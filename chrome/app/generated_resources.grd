@@ -7111,6 +7111,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_CUSTOM_LINKS_EDIT_SHORTCUT" desc="The title for custom link edit shortcut dialog. (On the New Tab Page)">
         Edit shortcut
       </message>
+      <message name="IDS_NTP_CUSTOM_LINKS_MORE_ACTIONS" desc="The tooltip and accessibility label for the 3 dot menu on a shortcut. (On the New Tab Page)">
+        More actions for <ph name="SHORTCUT_TITLE">$1<ex>YouTube</ex></ph> shortcut
+      </message>
       <message name="IDS_UPLOAD_IMAGE_FORMAT" desc="The permitted upload image format for the custom background. (On the New Tab Page)">
         *.jpeg, *.jpg, *.png
       </message>
@@ -7445,6 +7448,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       </message>
       <message name="IDS_NTP_MODULES_DISABLE_BUTTON_TEXT" desc="Text shown on the dismiss button of an NTP module.">
         Never show <ph name="MODULE_NAME">$1<ex>shopping suggestions</ex></ph>
+      </message>
+      <message name="IDS_NTP_MODULES_MORE_ACTIONS" desc="The tooltip and accessibility label for the 3 dot menu on a module.">
+        More actions for <ph name="MODULE_NAME">$1<ex>shopping suggestions</ex></ph>
       </message>
       <message name="IDS_NTP_MODULES_CUSTOMIZE_BUTTON_TEXT" desc="Text shown on the customize button of an NTP module.">
         Customize cards

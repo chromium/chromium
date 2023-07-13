@@ -865,6 +865,14 @@ export class MostVisitedElement extends MostVisitedElementBase {
     this.pageHandler_.onMostVisitedTilesRendered(
         this.tiles_.slice(0, this.maxVisibleTiles_), this.windowProxy_.now());
   }
+
+  private getMoreActionText_(title: string) {
+    // Check that 'shortcutMoreActions' is set to more than an empty string,
+    // since we do not use this text for third party NTP.
+    return loadTimeData.getString('shortcutMoreActions') ?
+        loadTimeData.getStringF('shortcutMoreActions', title) :
+        '';
+  }
 }
 
 declare global {

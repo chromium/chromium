@@ -113,7 +113,7 @@ void CreateAndAddNewTabPageThirdPartyUiHtmlSource(Profile* profile,
   source->AddString("linkCantEdit", "");
   source->AddString("linkDone", "");
   source->AddString("linkEditedMsg", "");
-  source->AddString("moreActions", "");
+  source->AddString("shortcutMoreActions", "");
   source->AddString("nameField", "");
   source->AddString("restoreDefaultLinks", "");
   source->AddString("shortcutAlreadyExists", "");

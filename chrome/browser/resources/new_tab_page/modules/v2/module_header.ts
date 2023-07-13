@@ -22,10 +22,12 @@ export class ModuleHeaderElementV2 extends I18nMixin
   static get properties() {
     return {
       headerText: String,
+      moreActionsText: String,
     };
   }
 
   headerText: string;
+  moreActionsText: string;
 
   private onMenuButtonClick_() {
     this.dispatchEvent(new Event('menu-button-click', {bubbles: true}));

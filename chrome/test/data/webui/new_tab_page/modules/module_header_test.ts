@@ -28,6 +28,7 @@ suite('NewTabPageModulesModuleHeaderTest', () => {
     moduleHeader.showDismissButton = true;
     moduleHeader.dismissText = 'baz';
     moduleHeader.disableText = 'abc';
+    moduleHeader.moreActionsText = 'def';
     moduleHeader.showInfoButtonDropdown = true;
     render(moduleHeader);
 
@@ -43,6 +44,8 @@ suite('NewTabPageModulesModuleHeaderTest', () => {
     assertEquals(
         'abc',
         $$<HTMLElement>(moduleHeader, '#disableButton')!.textContent!.trim());
+    assertEquals(
+        'def', $$<HTMLElement>(moduleHeader, '#menuButton')!.title!.trim());
     assertEquals(
         'About this card',
         $$<HTMLElement>(moduleHeader, '#infoButton')!.textContent!.trim());
