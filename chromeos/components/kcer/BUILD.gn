@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
 import("//third_party/protobuf/proto_library.gni")
 
@@ -83,21 +82,6 @@ source_set("unit_tests") {
     "//crypto:test_support",
     "//net",
     "//net:test_support",
-    "//testing/gtest",
-  ]
-}
-
-fuzzer_test("kcer_nss_fuzzer") {
-  sources = [ "kcer_nss/kcer_nss_fuzzer.cc" ]
-
-  deps = [
-    ":kcer",
-    ":key_permissions_proto",
-    ":test_support",
-    "//base/test:test_support",
-    "//content/public/browser",
-    "//content/test:test_support",
-    "//net",
     "//testing/gtest",
   ]
 }
