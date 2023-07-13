@@ -657,6 +657,15 @@ CreditCard GetMaskedServerCard() {
   return credit_card;
 }
 
+CreditCard GetMaskedServerCard2() {
+  CreditCard credit_card(CreditCard::MASKED_SERVER_CARD, "b456");
+  test::SetCreditCardInfo(&credit_card, "Rick Roman", "2109" /* Mastercard */,
+                          NextMonth().c_str(), NextYear().c_str(), "");
+  credit_card.SetNetworkForMaskedCard(kMasterCard);
+  credit_card.set_instrument_id(2);
+  return credit_card;
+}
+
 CreditCard GetMaskedServerCardWithLegacyId() {
   CreditCard credit_card(CreditCard::MASKED_SERVER_CARD, "a123");
   test::SetCreditCardInfo(&credit_card, "Bonnie Parker",

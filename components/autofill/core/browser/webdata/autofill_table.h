@@ -722,10 +722,14 @@ class AutofillTable : public WebDatabaseTable,
   bool RemoveServerCvc(int64_t instrument_id);
   // This will clear all server cvcs.
   bool ClearServerCvcs();
+  // When server cards are synced (triggered in wallet_sync_bridge),
+  // this function will be called to reconcile CVC. If the corresponding card
+  // doesn't exist anymore, remove it's cvc from `server_stored_cvc` table.
+  bool ReconcileServerCvcs();
   // Methods for getting cvc from server_stored_cvc. For testing purpose only
   // because CVC is populated to CreditCard via GetServerCreditCards.
   std::u16string GetServerCvcForTesting(int64_t instrument_id);
-  base::flat_map<int64_t, std::u16string> GetAllServerCvcForTesting();
+  base::flat_map<int64_t, std::u16string> GetAllServerCvcsForTesting();
 
   // Methods to add, update, remove and get the metadata for server cards and
   // addresses.

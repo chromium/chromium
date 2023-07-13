@@ -1345,10 +1345,30 @@ TEST_F(AutofillTableTest, ServerCvc) {
   // Clear the server_stored_cvc table.
   table_->AddServerCvc(kInstrumentId, kCvc);
   EXPECT_TRUE(table_->ClearServerCvcs());
-  EXPECT_TRUE(table_->GetAllServerCvcForTesting().empty());
+  EXPECT_TRUE(table_->GetAllServerCvcsForTesting().empty());
 
   // Clear the server_stored_cvc table when table is empty will return false.
   EXPECT_FALSE(table_->ClearServerCvcs());
+}
+
+// Tests that verify reconcile server cvc function working as expected.
+TEST_F(AutofillTableTest, ReconcileServerCvcs) {
+  // Add 2 server credit cards.
+  CreditCard card1 = test::GetMaskedServerCard();
+  card1.set_cvc(u"123");
+  CreditCard card2 = test::GetMaskedServerCard2();
+  card2.set_cvc(u"234");
+  test::SetServerCreditCards(table_.get(), {card1, card2});
+
+  // Add 1 server cvc that doesn't have a credit card associate with. We should
+  // have 3 cvcs in server_stored_cvc table.
+  EXPECT_TRUE(table_->AddServerCvc(3333, u"456"));
+  EXPECT_EQ(3U, table_->GetAllServerCvcsForTesting().size());
+
+  // After we reconcile server cvc, we should only see 2 cvcs in
+  // server_stored_cvc table because obsolete cvc has been reconciled.
+  EXPECT_TRUE(table_->ReconcileServerCvcs());
+  EXPECT_EQ(2U, table_->GetAllServerCvcsForTesting().size());
 }
 
 TEST_F(AutofillTableTest, AddFullServerCreditCard) {

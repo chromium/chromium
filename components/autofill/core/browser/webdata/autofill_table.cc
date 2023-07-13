@@ -2262,6 +2262,16 @@ bool AutofillTable::ClearServerCvcs() {
   return db_->GetLastChangeCount() > 0;
 }
 
+bool AutofillTable::ReconcileServerCvcs() {
+  sql::Statement s(db_->GetUniqueStatement(
+      base::StrCat({"DELETE FROM ", kServerStoredCvcTable, " WHERE ",
+                    kInstrumentId, " NOT IN (SELECT ", kInstrumentId, " FROM ",
+                    kMaskedCreditCardsTable, ")"})
+          .c_str()));
+  s.Run();
+  return db_->GetLastChangeCount() > 0;
+}
+
 std::u16string AutofillTable::GetServerCvcForTesting(int64_t instrument_id) {
   sql::Statement s;
   SelectBuilder(db_, s, kServerStoredCvcTable, {kValueEncrypted},
@@ -2273,7 +2283,7 @@ std::u16string AutofillTable::GetServerCvcForTesting(int64_t instrument_id) {
 }
 
 base::flat_map<int64_t, std::u16string>
-AutofillTable::GetAllServerCvcForTesting() {
+AutofillTable::GetAllServerCvcsForTesting() {
   return GetAllServerCvcs();
 }
 

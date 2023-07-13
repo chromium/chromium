@@ -345,6 +345,7 @@ CreditCard GetIncompleteCreditCard();
 
 // Returns a masked server card full of dummy info.
 CreditCard GetMaskedServerCard();
+CreditCard GetMaskedServerCard2();
 CreditCard GetMaskedServerCardWithNonLegacyId();
 CreditCard GetMaskedServerCardWithLegacyId();
 CreditCard GetMaskedServerCardVisa();
