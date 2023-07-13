@@ -15,6 +15,7 @@
 #import "base/time/time.h"
 #import "components/feed/core/v2/public/common_enums.h"
 #import "components/feed/core/v2/public/ios/pref_names.h"
+#import "components/feed/feed_feature_list.h"
 #import "components/policy/policy_constants.h"
 #import "components/pref_registry/pref_registry_syncable.h"
 #import "components/prefs/ios/pref_observer_bridge.h"
@@ -1108,7 +1109,7 @@
   id<ApplicationCommands> handler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), ApplicationCommands);
   AuthenticationOperation operation =
-      base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)
+      base::FeatureList::IsEnabled(feed::kFeedBottomSyncStringRemoval)
           ? AuthenticationOperationSigninOnly
           : AuthenticationOperationSigninAndSync;
   ShowSigninCommand* command =
