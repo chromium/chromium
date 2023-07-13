@@ -22,6 +22,7 @@ class ComboboxModel;
 namespace ash {
 
 class GlanceablesListFooterView;
+struct GlanceablesClassroomAssignment;
 
 class ASH_EXPORT ClassroomBubbleBaseView : public GlanceableTrayChildBubble {
  public:
@@ -41,6 +42,10 @@ class ASH_EXPORT ClassroomBubbleBaseView : public GlanceableTrayChildBubble {
   // Handles press on the "See all" button in `GlanceablesListFooterView`. Opens
   // classroom web UI based on the selected menu option.
   virtual void OnSeeAllPressed() = 0;
+
+  // Handles received assignments by rendering them in `list_container_view_`.
+  void OnGetAssignments(
+      std::vector<std::unique_ptr<GlanceablesClassroomAssignment>> assignments);
 
   // Opens classroom url.
   void OpenUrl(const GURL& url) const;

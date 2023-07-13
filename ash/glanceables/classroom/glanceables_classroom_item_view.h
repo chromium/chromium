@@ -29,23 +29,6 @@ class ASH_EXPORT GlanceablesClassroomItemView : public views::Button {
   ~GlanceablesClassroomItemView() override;
 };
 
-// A view which shows information about a single assignment in the classroom
-// glanceable.
-class ASH_EXPORT GlanceablesClassroomTeacherItemView
-    : public GlanceablesClassroomItemView {
- public:
-  METADATA_HEADER(GlanceablesClassroomTeacherItemView);
-
-  GlanceablesClassroomTeacherItemView(
-      const GlanceablesClassroomAssignment* assignment,
-      base::RepeatingClosure pressed_callback);
-  GlanceablesClassroomTeacherItemView(
-      const GlanceablesClassroomTeacherItemView&) = delete;
-  GlanceablesClassroomTeacherItemView& operator=(
-      const GlanceablesClassroomTeacherItemView&) = delete;
-  ~GlanceablesClassroomTeacherItemView() override;
-};
-
 }  // namespace ash
 
 #endif  // ASH_GLANCEABLES_CLASSROOM_GLANCEABLES_CLASSROOM_ITEM_VIEW_H_

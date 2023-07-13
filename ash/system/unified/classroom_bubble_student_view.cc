@@ -9,23 +9,18 @@
 #include <utility>
 
 #include "ash/glanceables/classroom/glanceables_classroom_client.h"
-#include "ash/glanceables/classroom/glanceables_classroom_item_view.h"
 #include "ash/glanceables/classroom/glanceables_classroom_types.h"
-#include "ash/glanceables/common/glanceables_list_footer_view.h"
 #include "ash/glanceables/glanceables_v2_controller.h"
 #include "ash/shell.h"
 #include "ash/system/tray/detailed_view_delegate.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/strings/string_piece_forward.h"
-#include "ui/gfx/geometry/insets.h"
 #include "ui/views/controls/combobox/combobox.h"
 #include "url/gurl.h"
 
 namespace ash {
 namespace {
-
-constexpr int kMaxAssignments = 3;
 
 enum class StudentAssignmentsListType {
   kAssigned,
@@ -115,27 +110,6 @@ void ClassroomBubbleStudentView::OnSeeAllPressed() {
   }
 }
 
-void ClassroomBubbleStudentView::OnGetStudentAssignments(
-    std::vector<std::unique_ptr<GlanceablesClassroomAssignment>> assignments) {
-  list_container_view_->RemoveAllChildViews();
-
-  for (const auto& assignment : assignments) {
-    list_container_view_->AddChildView(
-        std::make_unique<GlanceablesClassroomItemView>(
-            assignment.get(),
-            base::BindRepeating(&ClassroomBubbleStudentView::OpenUrl,
-                                base::Unretained(this), assignment->link)));
-
-    if (list_container_view_->children().size() >= kMaxAssignments) {
-      break;
-    }
-  }
-  list_container_view_->InvalidateLayout();
-
-  list_footer_view_->UpdateItemsCount(list_container_view_->children().size(),
-                                      assignments.size());
-}
-
 void ClassroomBubbleStudentView::SelectedAssignmentListChanged() {
   auto* const client =
       Shell::Get()->glanceables_v2_controller()->GetClassroomClient();
@@ -150,9 +124,8 @@ void ClassroomBubbleStudentView::SelectedAssignmentListChanged() {
   CHECK(selected_index >= 0 ||
         selected_index < kStudentAssignmentsListTypeOrdered.size());
 
-  auto callback =
-      base::BindOnce(&ClassroomBubbleStudentView::OnGetStudentAssignments,
-                     weak_ptr_factory_.GetWeakPtr());
+  auto callback = base::BindOnce(&ClassroomBubbleStudentView::OnGetAssignments,
+                                 weak_ptr_factory_.GetWeakPtr());
   switch (kStudentAssignmentsListTypeOrdered[selected_index]) {
     case StudentAssignmentsListType::kAssigned:
       return client->GetStudentAssignmentsWithApproachingDueDate(

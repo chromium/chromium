@@ -26,6 +26,7 @@ enum class GlanceablesViewId {
   kClassroomItemCourseTitleLabel,
   kClassroomItemDueDateLabel,
   kClassroomItemDueTimeLabel,
+  kClassroomItemTurnedInAndGradedLabel,
 };
 
 }  // namespace ash

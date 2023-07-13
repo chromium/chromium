@@ -21,6 +21,7 @@
 #include "base/check.h"
 #include "base/functional/callback_forward.h"
 #include "base/i18n/time_formatting.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/types/cxx23_to_underlying.h"
@@ -28,6 +29,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/button.h"
@@ -50,7 +52,7 @@ constexpr auto kInteriorMargin = gfx::Insets::VH(8, 0);
 
 // Styles for the icon view.
 constexpr int kIconViewBackgroundRadius = 16;
-constexpr auto kIconViewMargin = gfx::Insets::VH(0, 12);
+constexpr auto kIconViewMargin = gfx::Insets::VH(4, 12);
 constexpr auto kIconViewPreferredSize =
     gfx::Size(kIconViewBackgroundRadius * 2, kIconViewBackgroundRadius * 2);
 constexpr int kIconSize = 20;
@@ -99,7 +101,16 @@ std::u16string GetFormattedDueTime(const base::Time& due) {
                            : calendar_utils::GetTwentyFourHourClockTime(due);
 }
 
-std::unique_ptr<views::ImageView> BuildIcon() {
+std::u16string GetTurnedInAndGradedLabel(
+    const GlanceablesClassroomAggregatedSubmissionsState& state) {
+  return l10n_util::GetStringFUTF16(
+      IDS_GLANCEABLES_ITEMS_TURNED_IN_AND_GRADED,
+      base::NumberToString16(state.number_turned_in),
+      base::NumberToString16(state.total_count),
+      base::NumberToString16(state.number_graded));
+}
+
+std::unique_ptr<views::View> BuildIcon() {
   return views::Builder<views::ImageView>()
       .SetBackground(views::CreateThemedRoundedRectBackground(
           cros_tokens::kCrosSysSystemOnBase1, kIconViewBackgroundRadius))
@@ -116,33 +127,52 @@ std::unique_ptr<views::BoxLayoutView> BuildAssignmentTitleLabels(
     const GlanceablesClassroomAssignment* assignment) {
   const auto* const typography_provider = TypographyProvider::Get();
 
-  return views::Builder<views::BoxLayoutView>()
-      .SetOrientation(views::BoxLayout::Orientation::kVertical)
-      .SetMainAxisAlignment(views::BoxLayout::MainAxisAlignment::kCenter)
-      .SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kStart)
-      .SetProperty(
-          views::kFlexBehaviorKey,
-          views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
-                                   views::MaximumFlexSizeRule::kUnbounded))
-      .AddChild(views::Builder<views::Label>()
-                    .SetText(base::UTF8ToUTF16(assignment->course_work_title))
-                    .SetID(base::to_underlying(
-                        GlanceablesViewId::kClassroomItemCourseWorkTitleLabel))
-                    .SetEnabledColorId(cros_tokens::kCrosSysOnSurface)
-                    .SetFontList(typography_provider->ResolveTypographyToken(
-                        TypographyToken::kCrosButton2))
-                    .SetLineHeight(typography_provider->ResolveLineHeight(
-                        TypographyToken::kCrosButton2)))
-      .AddChild(views::Builder<views::Label>()
-                    .SetText(base::UTF8ToUTF16(assignment->course_title))
-                    .SetID(base::to_underlying(
-                        GlanceablesViewId::kClassroomItemCourseTitleLabel))
-                    .SetEnabledColorId(cros_tokens::kCrosSysOnSurfaceVariant)
-                    .SetFontList(typography_provider->ResolveTypographyToken(
-                        TypographyToken::kCrosAnnotation1))
-                    .SetLineHeight(typography_provider->ResolveLineHeight(
-                        TypographyToken::kCrosAnnotation1)))
-      .Build();
+  auto title_label_views =
+      views::Builder<views::BoxLayoutView>()
+          .SetOrientation(views::BoxLayout::Orientation::kVertical)
+          .SetMainAxisAlignment(views::BoxLayout::MainAxisAlignment::kCenter)
+          .SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kStart)
+          .SetProperty(
+              views::kFlexBehaviorKey,
+              views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+                                       views::MaximumFlexSizeRule::kUnbounded))
+          .AddChild(
+              views::Builder<views::Label>()
+                  .SetText(base::UTF8ToUTF16(assignment->course_work_title))
+                  .SetID(base::to_underlying(
+                      GlanceablesViewId::kClassroomItemCourseWorkTitleLabel))
+                  .SetEnabledColorId(cros_tokens::kCrosSysOnSurface)
+                  .SetFontList(typography_provider->ResolveTypographyToken(
+                      TypographyToken::kCrosButton2))
+                  .SetLineHeight(typography_provider->ResolveLineHeight(
+                      TypographyToken::kCrosButton2)))
+          .AddChild(
+              views::Builder<views::Label>()
+                  .SetText(base::UTF8ToUTF16(assignment->course_title))
+                  .SetID(base::to_underlying(
+                      GlanceablesViewId::kClassroomItemCourseTitleLabel))
+                  .SetEnabledColorId(cros_tokens::kCrosSysOnSurfaceVariant)
+                  .SetFontList(typography_provider->ResolveTypographyToken(
+                      TypographyToken::kCrosAnnotation1))
+                  .SetLineHeight(typography_provider->ResolveLineHeight(
+                      TypographyToken::kCrosAnnotation1)))
+          .Build();
+  if (assignment->submissions_state.has_value()) {
+    title_label_views->AddChildView(
+        views::Builder<views::Label>()
+            .SetText(GetTurnedInAndGradedLabel(
+                assignment->submissions_state.value()))
+            .SetID(base::to_underlying(
+                GlanceablesViewId::kClassroomItemTurnedInAndGradedLabel))
+            .SetEnabledColorId(cros_tokens::kCrosSysPrimary)
+            .SetFontList(typography_provider->ResolveTypographyToken(
+                TypographyToken::kCrosBody2))
+            .SetLineHeight(typography_provider->ResolveLineHeight(
+                TypographyToken::kCrosBody2))
+            .SetProperty(views::kMarginsKey, gfx::Insets::TLBR(4, 0, 0, 0))
+            .Build());
+  }
+  return title_label_views;
 }
 
 std::unique_ptr<views::BoxLayoutView> BuildDueLabels(
@@ -184,7 +214,7 @@ GlanceablesClassroomItemView::GlanceablesClassroomItemView(
   CHECK(assignment);
 
   auto* const layout = SetLayoutManager(std::make_unique<views::FlexLayout>());
-  layout->SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
+  layout->SetCrossAxisAlignment(views::LayoutAlignment::kStart);
   layout->SetInteriorMargin(kInteriorMargin);
 
   // TODO(b/283370862): update accessible name.
@@ -202,20 +232,6 @@ GlanceablesClassroomItemView::GlanceablesClassroomItemView(
 GlanceablesClassroomItemView::~GlanceablesClassroomItemView() = default;
 
 BEGIN_METADATA(GlanceablesClassroomItemView, views::View)
-END_METADATA
-
-GlanceablesClassroomTeacherItemView::GlanceablesClassroomTeacherItemView(
-    const GlanceablesClassroomAssignment* assignment,
-    base::RepeatingClosure pressed_callback)
-    : GlanceablesClassroomItemView(assignment, std::move(pressed_callback)) {
-  // TODO(b/283371064): Add grading/submission status for assignments in teacher
-  // glanceable UI
-}
-
-GlanceablesClassroomTeacherItemView::~GlanceablesClassroomTeacherItemView() =
-    default;
-
-BEGIN_METADATA(GlanceablesClassroomTeacherItemView, views::View)
 END_METADATA
 
 }  // namespace ash

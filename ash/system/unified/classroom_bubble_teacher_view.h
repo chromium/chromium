@@ -9,8 +9,6 @@
 
 namespace ash {
 
-struct GlanceablesClassroomAssignment;
-
 class ASH_EXPORT ClassroomBubbleTeacherView : public ClassroomBubbleBaseView {
  public:
   explicit ClassroomBubbleTeacherView(DetailedViewDelegate* delegate);
@@ -25,11 +23,6 @@ class ASH_EXPORT ClassroomBubbleTeacherView : public ClassroomBubbleBaseView {
 
   // Handle switching between assignment lists.
   void SelectedAssignmentListChanged();
-
-  // Handles received teacher assignments by rendering them in
-  // `list_container_view_`.
-  void OnGetTeacherAssignments(
-      std::vector<std::unique_ptr<GlanceablesClassroomAssignment>> assignments);
 
   base::WeakPtrFactory<ClassroomBubbleTeacherView> weak_ptr_factory_{this};
 };

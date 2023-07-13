@@ -7,6 +7,8 @@
 #include <memory>
 
 #include "ash/glanceables/classroom/glanceables_classroom_client.h"
+#include "ash/glanceables/classroom/glanceables_classroom_item_view.h"
+#include "ash/glanceables/classroom/glanceables_classroom_types.h"
 #include "ash/glanceables/common/glanceables_list_footer_view.h"
 #include "ash/glanceables/common/glanceables_view_id.h"
 #include "ash/glanceables/glanceables_v2_controller.h"
@@ -35,6 +37,8 @@ namespace {
 constexpr int kSpacingAboveListContainerView = 16;
 
 constexpr int kInteriorGlanceableBubbleMargin = 16;
+
+constexpr int kMaxAssignments = 3;
 
 }  // namespace
 
@@ -107,6 +111,27 @@ void ClassroomBubbleBaseView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   }
   node_data->role = ax::mojom::Role::kListBox;
   node_data->SetName(u"Glanceables Bubble Classroom View Accessible Name");
+}
+
+void ClassroomBubbleBaseView::OnGetAssignments(
+    std::vector<std::unique_ptr<GlanceablesClassroomAssignment>> assignments) {
+  list_container_view_->RemoveAllChildViews();
+
+  for (const auto& assignment : assignments) {
+    list_container_view_->AddChildView(
+        std::make_unique<GlanceablesClassroomItemView>(
+            assignment.get(),
+            base::BindRepeating(&ClassroomBubbleBaseView::OpenUrl,
+                                base::Unretained(this), assignment->link)));
+
+    if (list_container_view_->children().size() >= kMaxAssignments) {
+      break;
+    }
+  }
+  list_container_view_->InvalidateLayout();
+
+  list_footer_view_->UpdateItemsCount(list_container_view_->children().size(),
+                                      assignments.size());
 }
 
 void ClassroomBubbleBaseView::OpenUrl(const GURL& url) const {
