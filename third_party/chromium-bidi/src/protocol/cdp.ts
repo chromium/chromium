@@ -27,12 +27,15 @@ export type Command = {
 export type CommandData = SendCommandCommand | GetSessionCommand;
 
 export type CommandResponse = {
+  type: 'success';
   id: JsUint;
   result: ResultData;
 };
 export type ResultData = SendCommandResult | GetSessionResult;
 
-export type Event = EventData;
+export type Event = {
+  type: 'event';
+} & EventData;
 export type EventData = EventReceivedEvent;
 
 export type SendCommandCommand = {

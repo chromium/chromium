@@ -215,6 +215,7 @@ export class ChannelProxy {
 
       eventManager.registerEvent(
         {
+          type: 'event',
           method: ChromiumBidi.Script.EventNames.MessageEvent,
           params: {
             channel: this.#properties.channel,

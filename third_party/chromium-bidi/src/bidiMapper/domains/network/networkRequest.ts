@@ -147,6 +147,7 @@ export class NetworkRequest {
 
     this.#eventManager.registerEvent(
       {
+        type: 'event',
         method: ChromiumBidi.Network.EventNames.FetchErrorEvent,
         params: {
           ...this.#getBaseEventParams(),
@@ -248,7 +249,7 @@ export class NetworkRequest {
     if (!this.#isIgnoredEvent()) {
       this.#eventManager.registerPromiseEvent(
         this.#beforeRequestSentDeferred.then(() =>
-          this.#getBeforeRequestEvent()
+          Object.assign(this.#getBeforeRequestEvent(), {type: 'event' as const})
         ),
         this.#requestWillBeSentEvent?.frameId ?? null,
         ChromiumBidi.Network.EventNames.BeforeRequestSentEvent
@@ -278,7 +279,9 @@ export class NetworkRequest {
     if (!this.#isIgnoredEvent()) {
       this.#eventManager.registerPromiseEvent(
         this.#responseReceivedDeferred.then(() =>
-          this.#getResponseReceivedEvent()
+          Object.assign(this.#getResponseReceivedEvent(), {
+            type: 'event' as const,
+          })
         ),
         this.#responseReceivedEvent?.frameId ?? null,
         ChromiumBidi.Network.EventNames.ResponseCompletedEvent

@@ -92,6 +92,7 @@ async def test_consoleLog_textAndArgs(websocket, context_id):
     event_response = await wait_for_event(websocket, "log.entryAdded")
 
     assert {
+        "type": "event",
         "method": "log.entryAdded",
         "params": {
             # BaseLogEntry
@@ -336,6 +337,7 @@ async def test_exceptionThrown_logEntryAddedEventEmitted(
     event_response = await wait_for_event(websocket, "log.entryAdded")
 
     assert {
+        "type": "event",
         "method": "log.entryAdded",
         "params": {
             # BaseLogEntry
@@ -391,12 +393,12 @@ async def test_buffer_bufferedEventsReturned(websocket, context_id):
 
     # Wait for `LOG_ENTRY_1`.
     resp = await read_JSON_message(websocket)
-    assert {"method": "log.entryAdded", "params": ANY} == resp
+    assert {"type": "event", "method": "log.entryAdded", "params": ANY} == resp
     assert resp["params"]["text"] == "LOG_ENTRY_1"
 
     # Wait for `LOG_ENTRY_2`.
     resp = await read_JSON_message(websocket)
-    assert {"method": "log.entryAdded", "params": ANY} == resp
+    assert {"type": "event", "method": "log.entryAdded", "params": ANY} == resp
     assert resp["params"]["text"] == "LOG_ENTRY_2"
 
     # Wait for subscription command to finish.
@@ -431,6 +433,7 @@ async def test_runtimeException_emitted(websocket, context_id):
     # Assert event was emitted before the command is finished.
     resp = await read_JSON_message(websocket)
     assert {
+        "type": "event",
         "method": "log.entryAdded",
         "params": {
             "level": "error",
@@ -449,6 +452,7 @@ async def test_runtimeException_emitted(websocket, context_id):
     resp = await read_JSON_message(websocket)
     assert {
         "id": command_id,
+        "type": "success",
         "result": {
             "type": "success",
             "realm": ANY_STR,
@@ -480,7 +484,7 @@ async def test_runtimeException_buffered(websocket, context_id):
 
     # Assert evaluate command is finished.
     resp = await read_JSON_message(websocket)
-    assert {"id": command_id, "result": ANY} == resp
+    assert {"type": "success", "id": command_id, "result": ANY} == resp
 
     # Subscribe to events with buffer.
     subscribe_command_id = await send_JSON_command(websocket, {
@@ -493,6 +497,7 @@ async def test_runtimeException_buffered(websocket, context_id):
     # Assert event was emitted.
     resp = await read_JSON_message(websocket)
     assert {
+        "type": "event",
         "method": "log.entryAdded",
         "params": {
             "level": "error",
@@ -509,4 +514,8 @@ async def test_runtimeException_buffered(websocket, context_id):
 
     # Assert subscribe command is finished.
     resp = await read_JSON_message(websocket)
-    assert {"id": subscribe_command_id, "result": {}} == resp
+    assert {
+        "type": "success",
+        "id": subscribe_command_id,
+        "result": {}
+    } == resp

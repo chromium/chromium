@@ -37,6 +37,7 @@ async def test_network_before_request_sent_event_emitted(
     resp = await read_JSON_message(websocket)
 
     assert resp == {
+        'type': 'event',
         "method": "network.beforeRequestSent",
         "params": {
             "context": context_id,
@@ -79,6 +80,7 @@ async def test_network_global_subscription_enabled_in_new_context(
     resp = await read_JSON_message(websocket)
 
     assert resp == AnyExtending({
+        'type': 'event',
         "method": "network.beforeRequestSent",
         "params": {
             "context": new_context_id
@@ -113,7 +115,7 @@ async def test_network_specific_context_subscription_does_not_enable_cdp_network
             f"`{ resp['params']['event'] }` "
         resp = await read_JSON_message(websocket)
 
-    assert resp == AnyExtending({"id": command_id})
+    assert resp == AnyExtending({"type": "success", "id": command_id})
 
 
 @pytest.mark.asyncio
@@ -156,6 +158,7 @@ async def test_network_before_request_sent_event_with_cookies_emitted(
 
     resp = await read_JSON_message(websocket)
     assert resp == {
+        'type': 'event',
         "method": "network.beforeRequestSent",
         "params": {
             "context": context_id,
@@ -212,6 +215,7 @@ async def test_network_network_response_completed_event_emitted(
         resp["params"]["response"]["headers"])
 
     assert resp == {
+        'type': 'event',
         "method": "network.responseCompleted",
         "params": {
             "context": context_id,
@@ -266,6 +270,7 @@ async def test_network_bad_ssl(websocket, context_id):
 
     resp = await read_JSON_message(websocket)
     assert resp == {
+        'type': 'event',
         "method": "network.fetchError",
         "params": {
             "context": context_id,
@@ -303,6 +308,7 @@ async def test_network_before_request_sent_event_with_data_url_emitted(
         })
     resp = await read_JSON_message(websocket)
     assert resp == {
+        'type': 'event',
         "method": "network.beforeRequestSent",
         "params": {
             "context": context_id,

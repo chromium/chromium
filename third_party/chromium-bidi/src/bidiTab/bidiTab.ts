@@ -197,6 +197,7 @@ function createBidiServer(selfTargetId: string) {
       } catch {}
 
       return {
+        type: 'error',
         id: messageId,
         error: errorCode,
         message: errorMessage,

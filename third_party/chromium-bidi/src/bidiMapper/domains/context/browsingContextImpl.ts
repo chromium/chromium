@@ -117,6 +117,7 @@ export class BrowsingContextImpl {
 
     eventManager.registerEvent(
       {
+        type: 'event',
         method: ChromiumBidi.BrowsingContext.EventNames.ContextCreatedEvent,
         params: context.serializeToBidiValue(),
       },
@@ -155,6 +156,7 @@ export class BrowsingContextImpl {
 
     this.#eventManager.registerEvent(
       {
+        type: 'event',
         method: ChromiumBidi.BrowsingContext.EventNames.ContextDestroyedEvent,
         params: this.serializeToBidiValue(),
       },
@@ -300,6 +302,7 @@ export class BrowsingContextImpl {
     if (this.#isNavigating) {
       this.#eventManager.registerEvent(
         {
+          type: 'event',
           method: ChromiumBidi.BrowsingContext.EventNames.NavigationStarted,
           params: {
             context: this.id,
@@ -344,6 +347,7 @@ export class BrowsingContextImpl {
 
         this.#eventManager.registerEvent(
           {
+            type: 'event',
             method: ChromiumBidi.BrowsingContext.EventNames.FragmentNavigated,
             params: {
               context: this.id,
@@ -409,6 +413,7 @@ export class BrowsingContextImpl {
             );
             this.#eventManager.registerEvent(
               {
+                type: 'event',
                 method:
                   ChromiumBidi.BrowsingContext.EventNames.DomContentLoadedEvent,
                 params: {
@@ -426,6 +431,7 @@ export class BrowsingContextImpl {
             this.#deferreds.Page.lifecycleEvent.load.resolve(params);
             this.#eventManager.registerEvent(
               {
+                type: 'event',
                 method: ChromiumBidi.BrowsingContext.EventNames.LoadEvent,
                 params: {
                   context: this.id,
@@ -505,6 +511,7 @@ export class BrowsingContextImpl {
     this.#cdpTarget.cdpClient.on('Page.javascriptDialogClosed', (params) => {
       this.#eventManager.registerEvent(
         {
+          type: 'event',
           method: ChromiumBidi.BrowsingContext.EventNames.UserPromptClosed,
           params: {
             context: this.id,
@@ -520,6 +527,7 @@ export class BrowsingContextImpl {
     this.#cdpTarget.cdpClient.on('Page.javascriptDialogOpening', (params) => {
       this.#eventManager.registerEvent(
         {
+          type: 'event',
           method: ChromiumBidi.BrowsingContext.EventNames.UserPromptOpened,
           params: {
             context: this.id,

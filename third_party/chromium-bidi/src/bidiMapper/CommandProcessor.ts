@@ -226,6 +226,7 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEvents> {
       const result = await this.#processCommand(command);
 
       const response = {
+        type: 'success',
         id: command.id,
         result,
       } satisfies ChromiumBidi.CommandResponse;

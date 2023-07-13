@@ -76,6 +76,7 @@ export class Realm {
 
     this.#eventManager.registerEvent(
       {
+        type: 'event',
         method: ChromiumBidi.Script.EventNames.RealmCreated,
         params: this.realmInfo,
       },
@@ -776,6 +777,7 @@ export class Realm {
   dispose() {
     this.#eventManager.registerEvent(
       {
+        type: 'event',
         method: ChromiumBidi.Script.EventNames.RealmDestroyed,
         params: {
           realm: this.realmId,

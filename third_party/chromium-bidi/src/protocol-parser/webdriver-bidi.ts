@@ -49,6 +49,7 @@ export const MessageSchema = z.lazy(() =>
 export const CommandResponseSchema = z.lazy(() =>
   z
     .object({
+      type: z.literal('success'),
       id: JsUintSchema,
       result: ResultDataSchema,
     })
@@ -57,6 +58,7 @@ export const CommandResponseSchema = z.lazy(() =>
 export const ErrorResponseSchema = z.lazy(() =>
   z
     .object({
+      type: z.literal('error'),
       id: z.union([JsUintSchema, z.null()]),
       error: ErrorCodeSchema,
       message: z.string(),
@@ -74,7 +76,14 @@ export const ResultDataSchema = z.lazy(() =>
   ])
 );
 export const EmptyResultSchema = z.lazy(() => ExtensibleSchema);
-export const EventSchema = z.lazy(() => EventDataSchema.and(ExtensibleSchema));
+export const EventSchema = z.lazy(() =>
+  z
+    .object({
+      type: z.literal('event'),
+    })
+    .and(EventDataSchema)
+    .and(ExtensibleSchema)
+);
 export const EventDataSchema = z.lazy(() =>
   z.union([
     BrowsingContextEventSchema,

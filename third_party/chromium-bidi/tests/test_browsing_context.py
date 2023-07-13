@@ -89,6 +89,7 @@ async def test_browsingContext_noInitialLoadEvents(websocket, html):
     # Wait for the navigated page to be loaded.
     resp = await read_JSON_message(websocket)
     assert {
+        'type': 'event',
         'method': 'browsingContext.load',
         'params': {
             'context': context_id,
@@ -312,10 +313,17 @@ async def test_browsingContext_create_eventContextCreatedEmitted(
     new_context_id = command_result['result']['context']
 
     # Assert command done.
-    assert command_result == {"id": 9, "result": {'context': new_context_id}}
+    assert command_result == {
+        "type": "success",
+        "id": 9,
+        "result": {
+            'context': new_context_id
+        }
+    }
 
     # Assert "browsingContext.contextCreated" event emitted.
     assert {
+        "type": "event",
         "method": "browsingContext.contextCreated",
         "params": {
             "context": new_context_id,
@@ -327,6 +335,7 @@ async def test_browsingContext_create_eventContextCreatedEmitted(
 
     # Assert "browsingContext.domContentLoaded" event emitted.
     assert {
+        "type": "event",
         "method": "browsingContext.domContentLoaded",
         "params": {
             "context": new_context_id,
@@ -338,6 +347,7 @@ async def test_browsingContext_create_eventContextCreatedEmitted(
 
     # Assert "browsingContext.load" event emitted.
     assert {
+        "type": "event",
         "method": "browsingContext.load",
         "params": {
             "context": new_context_id,
@@ -404,6 +414,7 @@ async def test_browsingContext_createWithNestedSameOriginContexts_eventContextCr
     nested_iframe_context_id = \
         tree["contexts"][0]["children"][0]["children"][0]["context"]
     assert events[0] == {
+        'type': 'event',
         "method": "browsingContext.contextCreated",
         "params": {
             'context': intermediate_page_context_id,
@@ -414,6 +425,7 @@ async def test_browsingContext_createWithNestedSameOriginContexts_eventContextCr
     }
 
     assert events[1] == {
+        'type': 'event',
         "method": "browsingContext.contextCreated",
         "params": {
             'context': nested_iframe_context_id,
@@ -439,6 +451,7 @@ async def test_browsingContext_close_browsingContext_closed(
     # Assert "browsingContext.contextCreated" event emitted.
     resp = await read_JSON_message(websocket)
     assert resp == {
+        'type': 'event',
         "method": "browsingContext.contextDestroyed",
         "params": {
             "context": context_id,
@@ -449,7 +462,7 @@ async def test_browsingContext_close_browsingContext_closed(
     }
 
     resp = await read_JSON_message(websocket)
-    assert resp == {"id": command_id, "result": {}}
+    assert resp == {"type": "success", "id": command_id, "result": {}}
 
     result = await get_tree(websocket)
 
@@ -480,6 +493,7 @@ async def test_browsingContext_navigateWaitNone_navigated(
     navigation_id = resp["result"]["navigation"]
     assert resp == {
         "id": 13,
+        "type": "success",
         "result": {
             "navigation": navigation_id,
             "url": html("<h2>test</h2>")
@@ -489,6 +503,7 @@ async def test_browsingContext_navigateWaitNone_navigated(
     # Wait for `browsingContext.load` event.
     resp = await read_JSON_message(websocket)
     assert resp == {
+        'type': 'event',
         "method": "browsingContext.load",
         "params": {
             "context": context_id,
@@ -501,6 +516,7 @@ async def test_browsingContext_navigateWaitNone_navigated(
     # Wait for `browsingContext.domContentLoaded` event.
     resp = await read_JSON_message(websocket)
     assert resp == {
+        'type': 'event',
         "method": "browsingContext.domContentLoaded",
         "params": {
             "context": context_id,
@@ -533,6 +549,7 @@ async def test_browsingContext_navigateWaitInteractive_navigated(
     resp = await read_JSON_message(websocket)
     navigation_id = resp["params"]["navigation"]
     assert resp == {
+        'type': 'event',
         "method": "browsingContext.load",
         "params": {
             "context": context_id,
@@ -545,6 +562,7 @@ async def test_browsingContext_navigateWaitInteractive_navigated(
     # Wait for `browsingContext.domContentLoaded` event.
     resp = await read_JSON_message(websocket)
     assert resp == {
+        'type': 'event',
         "method": "browsingContext.domContentLoaded",
         "params": {
             "context": context_id,
@@ -558,6 +576,7 @@ async def test_browsingContext_navigateWaitInteractive_navigated(
     resp = await read_JSON_message(websocket)
     assert resp == {
         "id": 14,
+        "type": "success",
         "result": {
             "navigation": navigation_id,
             "url": html("<h2>test</h2>")
@@ -587,6 +606,7 @@ async def test_browsingContext_navigateWaitComplete_navigated(
     resp = await read_JSON_message(websocket)
     navigation_id = resp["params"]["navigation"]
     assert resp == {
+        'type': 'event',
         "method": "browsingContext.load",
         "params": {
             "context": context_id,
@@ -600,6 +620,7 @@ async def test_browsingContext_navigateWaitComplete_navigated(
     resp = await read_JSON_message(websocket)
     assert resp == {
         "id": 15,
+        "type": "success",
         "result": {
             "navigation": navigation_id,
             "url": html("<h2>test</h2>")
@@ -609,6 +630,7 @@ async def test_browsingContext_navigateWaitComplete_navigated(
     # Wait for `browsingContext.domContentLoaded` event.
     resp = await read_JSON_message(websocket)
     assert resp == {
+        'type': 'event',
         "method": "browsingContext.domContentLoaded",
         "params": {
             "context": context_id,
@@ -742,6 +764,7 @@ async def test_browsingContext_reload_waitNone(websocket, context_id, html):
     # Wait for `browsingContext.load` event.
     response = await read_JSON_message(websocket)
     assert response == {
+        'type': 'event',
         "method": "browsingContext.load",
         "params": {
             "context": context_id,
@@ -754,6 +777,7 @@ async def test_browsingContext_reload_waitNone(websocket, context_id, html):
     # Wait for `browsingContext.domContentLoaded` event.
     response = await read_JSON_message(websocket)
     assert response == {
+        'type': 'event',
         "method": "browsingContext.domContentLoaded",
         "params": {
             "context": context_id,
@@ -787,6 +811,7 @@ async def test_browsingContext_reload_waitInteractive(websocket, context_id,
     # Wait for `browsingContext.load` event.
     response = await read_JSON_message(websocket)
     assert response == {
+        'type': 'event',
         "method": "browsingContext.load",
         "params": {
             "context": context_id,
@@ -799,6 +824,7 @@ async def test_browsingContext_reload_waitInteractive(websocket, context_id,
     # Wait for `browsingContext.domContentLoaded` event.
     response = await read_JSON_message(websocket)
     assert response == {
+        'type': 'event',
         "method": "browsingContext.domContentLoaded",
         "params": {
             "context": context_id,
@@ -836,6 +862,7 @@ async def test_browsingContext_reload_waitComplete(websocket, context_id,
     # Wait for `browsingContext.load` event.
     response = await read_JSON_message(websocket)
     assert response == {
+        'type': 'event',
         "method": "browsingContext.load",
         "params": {
             "context": context_id,
@@ -852,6 +879,7 @@ async def test_browsingContext_reload_waitComplete(websocket, context_id,
     # Wait for `browsingContext.domContentLoaded` event.
     response = await read_JSON_message(websocket)
     assert response == {
+        'type': 'event',
         "method": "browsingContext.domContentLoaded",
         "params": {
             "context": context_id,
@@ -889,6 +917,7 @@ async def test_browsingContext_ignoreCache(websocket, context_id, ignoreCache):
 
     response = await read_JSON_message(websocket)
     assert response == {
+        'type': 'event',
         "method": "network.beforeRequestSent",
         "params": {
             "context": context_id,
@@ -902,6 +931,7 @@ async def test_browsingContext_ignoreCache(websocket, context_id, ignoreCache):
 
     response = await read_JSON_message(websocket)
     assert response == {
+        'type': 'event',
         "method": "network.responseCompleted",
         "params": {
             "context": context_id,
@@ -917,6 +947,7 @@ async def test_browsingContext_ignoreCache(websocket, context_id, ignoreCache):
     response = await read_JSON_message(websocket)
     assert response == {
         "id": id,
+        "type": "success",
         "result": {},
     }
 
@@ -952,6 +983,7 @@ async def test_browsingContext_fragmentNavigated_event(websocket, context_id,
 
     response = await read_JSON_message(websocket)
     assert response == {
+        'type': 'event',
         "method": "browsingContext.fragmentNavigated",
         "params": {
             "context": context_id,
@@ -981,6 +1013,7 @@ async def test_browsingContext_navigationStarted_event(websocket, context_id,
 
     response = await read_JSON_message(websocket)
     assert response == {
+        'type': 'event',
         "method": "browsingContext.navigationStarted",
         "params": {
             "context": context_id,
@@ -1013,6 +1046,7 @@ async def test_browsingContext_userPromptOpened_event(websocket, context_id):
     response = await wait_for_event(websocket,
                                     "browsingContext.userPromptOpened")
     assert response == {
+        'type': 'event',
         "method": "browsingContext.userPromptOpened",
         "params": {
             "context": context_id,
@@ -1057,6 +1091,7 @@ async def test_browsingContext_userPromptClosed_event(websocket, context_id):
                                     "browsingContext.userPromptClosed")
 
     assert response == {
+        'type': 'event',
         "method": "browsingContext.userPromptClosed",
         "params": {
             "context": context_id,
@@ -1093,6 +1128,7 @@ async def test_browsingContext_create_withUserGesture_eventsEmitted(
     ] = await read_sorted_messages(3)
     assert command_result == AnyExtending({
         "id": command_id,
+        "type": "success",
         "result": ANY_DICT,
     })
     assert dom_content_loaded_event == AnyExtending(
@@ -1124,10 +1160,12 @@ async def test_browsingContext_create_withUserGesture_eventsEmitted(
 
     assert command_result == AnyExtending({
         "id": command_id,
+        "type": "success",
         "result": ANY_DICT
     })
 
     assert context_created_event == {
+        'type': 'event',
         "method": "browsingContext.contextCreated",
         "params": {
             "context": ANY_STR,
@@ -1141,6 +1179,7 @@ async def test_browsingContext_create_withUserGesture_eventsEmitted(
     assert new_context_id != context_id
 
     assert dom_content_loaded_event == {
+        'type': 'event',
         "method": "browsingContext.domContentLoaded",
         "params": {
             "context": new_context_id,
@@ -1151,6 +1190,7 @@ async def test_browsingContext_create_withUserGesture_eventsEmitted(
     }
 
     assert load_event == {
+        'type': 'event',
         "method": "browsingContext.load",
         "params": {
             "context": new_context_id,

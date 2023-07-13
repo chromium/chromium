@@ -52,6 +52,7 @@ async def test_channel_twoMessageEvents(websocket, context_id):
 
     resp = await read_JSON_message(websocket)
     assert resp == {
+        "type": "event",
         "method": "script.message",
         "params": {
             "channel": "MY_CHANNEL",
@@ -68,6 +69,7 @@ async def test_channel_twoMessageEvents(websocket, context_id):
 
     resp = await read_JSON_message(websocket)
     assert resp == {
+        "type": "event",
         "method": "script.message",
         "params": {
             "channel": "MY_CHANNEL",
@@ -116,6 +118,7 @@ async def test_channel_beforeAndAfterExecutionFinished(websocket, context_id):
 
     resp = await read_JSON_message(websocket)
     assert resp == {
+        "type": "event",
         "method": "script.message",
         "params": {
             "channel": "MY_CHANNEL",
@@ -136,6 +139,7 @@ async def test_channel_beforeAndAfterExecutionFinished(websocket, context_id):
 
     resp = await read_JSON_message(websocket)
     assert resp == {
+        "type": "event",
         "method": "script.message",
         "params": {
             "channel": "MY_CHANNEL",
@@ -188,6 +192,7 @@ async def test_channel_and_another_channel(websocket, context_id):
 
     resp = await read_JSON_message(websocket)
     assert resp == {
+        "type": "event",
         "method": "script.message",
         "params": {
             "channel": "CHANNEL_1",
@@ -203,6 +208,7 @@ async def test_channel_and_another_channel(websocket, context_id):
     }
     resp = await read_JSON_message(websocket)
     assert resp == {
+        "type": "event",
         "method": "script.message",
         "params": {
             "channel": "CHANNEL_2",
@@ -357,6 +363,7 @@ async def test_channel_serialization_options(websocket, context_id,
 
     resp = await read_JSON_message(websocket)
     assert resp == {
+        "type": "event",
         "method": "script.message",
         "params": {
             "channel": "MY_CHANNEL",

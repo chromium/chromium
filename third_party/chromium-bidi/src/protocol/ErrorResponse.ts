@@ -27,6 +27,7 @@ export class Exception {
 
   toErrorResponse(commandId: number): ErrorResponse {
     return {
+      type: 'error',
       id: commandId,
       error: this.error,
       message: this.message,

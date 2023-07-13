@@ -37,6 +37,7 @@ async def test_binary(websocket):
     await websocket.send(binary_msg)
     resp = await read_JSON_message(websocket)
     assert resp == {
+        "type": "error",
         "error": "invalid argument",
         "message": "not supported type (binary)"
     }
@@ -48,6 +49,7 @@ async def test_invalid_json(websocket):
     await websocket.send(message)
     resp = await read_JSON_message(websocket)
     assert resp == {
+        "type": "error",
         "error": "invalid argument",
         "message": "Cannot parse data as JSON"
     }
@@ -59,6 +61,7 @@ async def test_empty_object(websocket):
     await websocket.send(json.dumps(command))
     resp = await read_JSON_message(websocket)
     assert resp == {
+        "type": "error",
         "error": "invalid argument",
         "message": "Expected unsigned integer but got undefined"
     }
@@ -66,11 +69,17 @@ async def test_empty_object(websocket):
 
 @pytest.mark.asyncio
 async def test_session_status(websocket):
-    command = {"id": 5, "method": "session.status", "params": {}}
+    command = {
+        "type": "success",
+        "id": 5,
+        "method": "session.status",
+        "params": {}
+    }
     await send_JSON_command(websocket, command)
     resp = await read_JSON_message(websocket)
     assert resp == {
         "id": 5,
+        "type": "success",
         "result": {
             "ready": False,
             "message": "already connected"
@@ -91,6 +100,7 @@ async def test_channel_non_empty(websocket):
     assert resp == {
         "id": 6000,
         "channel": "SOME_CHANNEL",
+        "type": "success",
         "result": {
             "ready": False,
             "message": "already connected"
@@ -109,6 +119,7 @@ async def test_channel_empty(websocket):
     resp = await read_JSON_message(websocket)
     assert resp == {
         "id": 7000,
+        "type": "success",
         "result": {
             "ready": False,
             "message": "already connected"

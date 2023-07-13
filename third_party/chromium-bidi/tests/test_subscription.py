@@ -116,6 +116,7 @@ async def test_subscribeWithContext_subscribesToEventsInNestedContext(
     # Wait for `browsingContext.load` event.
     resp = await read_JSON_message(websocket)
     assert {
+        "type": "event",
         "method": "browsingContext.contextCreated",
         "params": {
             "context": ANY_STR,
@@ -146,6 +147,7 @@ async def test_subscribeToNestedContext_subscribesToTopLevelContext(
     # Assert event received.
     resp = await read_JSON_message(websocket)
     assert {
+        "type": "event",
         "method": "log.entryAdded",
         "params": ANY,
     } == resp
@@ -179,7 +181,7 @@ async def test_subscribeToNestedContextAndUnsubscribeFromTopLevelContext_unsubsc
 
     # Assert evaluate script is ended without any events before.
     resp = await read_JSON_message(websocket)
-    assert {'id': command_id, 'result': ANY} == resp
+    assert {"type": "success", "id": command_id, 'result': ANY} == resp
 
     # Assert unsubscribed from nested context.
     command_id = await send_JSON_command(
@@ -196,7 +198,7 @@ async def test_subscribeToNestedContextAndUnsubscribeFromTopLevelContext_unsubsc
 
     # Assert evaluate script is ended without any events before.
     resp = await read_JSON_message(websocket)
-    assert {'id': command_id, 'result': ANY} == resp
+    assert {"type": "success", "id": command_id, 'result': ANY} == resp
 
 
 @pytest.mark.asyncio
@@ -227,7 +229,7 @@ async def test_subscribeToTopLevelContextAndUnsubscribeFromNestedContext_unsubsc
 
     # Assert evaluate script is ended without any events before.
     resp = await read_JSON_message(websocket)
-    assert {'id': command_id, 'result': ANY} == resp
+    assert {"type": "success", "id": command_id, 'result': ANY} == resp
 
     # Assert unsubscribed from nested context.
     command_id = await send_JSON_command(
@@ -244,7 +246,7 @@ async def test_subscribeToTopLevelContextAndUnsubscribeFromNestedContext_unsubsc
 
     # Assert evaluate script is ended without any events before.
     resp = await read_JSON_message(websocket)
-    assert {'id': command_id, 'result': ANY} == resp
+    assert {"type": "success", "id": command_id, 'result': ANY} == resp
 
 
 @pytest.mark.asyncio
@@ -344,6 +346,7 @@ async def test_subscribeToOneChannel_eventReceivedWithProperChannel(
     # Assert event received in `CHANNEL_2`.
     resp = await read_JSON_message(websocket)
     assert {
+        "type": "event",
         "method": "log.entryAdded",
         "params": ANY_DICT,
         "channel": "CHANNEL_2"
@@ -402,10 +405,15 @@ async def test_subscribeToMultipleChannels_eventsReceivedInProperOrder(
 
     # Empty string channel is considered as no channel provided.
     resp = await read_JSON_message(websocket)
-    assert {"method": "log.entryAdded", "params": ANY_DICT} == resp
+    assert {
+        "type": "event",
+        "method": "log.entryAdded",
+        "params": ANY_DICT
+    } == resp
 
     resp = await read_JSON_message(websocket)
     assert {
+        "type": "event",
         "method": "log.entryAdded",
         "channel": channel_2,
         "params": ANY_DICT
@@ -413,6 +421,7 @@ async def test_subscribeToMultipleChannels_eventsReceivedInProperOrder(
 
     resp = await read_JSON_message(websocket)
     assert {
+        "type": "event",
         "method": "log.entryAdded",
         "channel": channel_3,
         "params": ANY_DICT
@@ -420,6 +429,7 @@ async def test_subscribeToMultipleChannels_eventsReceivedInProperOrder(
 
     resp = await read_JSON_message(websocket)
     assert {
+        "type": "event",
         "method": "log.entryAdded",
         "channel": channel_4,
         "params": ANY_DICT
@@ -474,6 +484,7 @@ async def test_subscribeWithoutContext_bufferedEventsFromNotClosedContextsAreRet
     resp = await read_JSON_message(websocket)
 
     assert {
+        "type": "event",
         "method": "log.entryAdded",
         "params": {
             "level": "info",
@@ -495,7 +506,7 @@ async def test_subscribeWithoutContext_bufferedEventsFromNotClosedContextsAreRet
 
     # Assert no more events were buffered.
     resp = await read_JSON_message(websocket)
-    assert {'id': command_id, 'result': ANY} == resp
+    assert {"type": "success", "id": command_id, 'result': ANY} == resp
 
 
 @pytest.mark.asyncio
@@ -538,6 +549,7 @@ async def test_unsubscribeIsAtomic(websocket, context_id, iframe_id):
     # Assert evaluate script ended with an event before, as log.entryAdded was not unsubscribed.
     resp = await read_JSON_message(websocket)
     assert AnyWithEntries({
+        'type': 'event',
         'method': 'log.entryAdded',
         'params': AnyWithEntries({'text': 'SOME_MESSAGE'})
     }) == resp

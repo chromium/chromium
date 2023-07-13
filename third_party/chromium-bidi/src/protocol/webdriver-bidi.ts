@@ -33,10 +33,12 @@ export type CommandData =
 export type EmptyParams = Extensible;
 export type Message = CommandResponse | ErrorResponse | Event;
 export type CommandResponse = {
+  type: 'success';
   id: JsUint;
   result: ResultData;
 } & Extensible;
 export type ErrorResponse = {
+  type: 'error';
   id: JsUint | null;
   error: ErrorCode;
   message: string;
@@ -49,7 +51,10 @@ export type ResultData =
   | ScriptResult
   | SessionResult;
 export type EmptyResult = Extensible;
-export type Event = EventData & Extensible;
+export type Event = {
+  type: 'event';
+} & EventData &
+  Extensible;
 export type EventData =
   | BrowsingContextEvent
   | LogEvent

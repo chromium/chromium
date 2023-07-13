@@ -56,6 +56,7 @@ async def test_cdp_subscribe_toSpecificEvent(websocket, context_id,
     resp = await read_JSON_message(websocket)
 
     assert {
+        "type": "event",
         "method": "cdp.Runtime.consoleAPICalled",
         "params": {
             "event": "Runtime.consoleAPICalled",

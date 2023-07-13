@@ -108,6 +108,7 @@ export class LogManager {
 
         this.#eventManager.registerPromiseEvent(
           argsPromise.then((args) => ({
+            type: 'event',
             method: ChromiumBidi.Log.EventNames.LogEntryAddedEvent,
             params: {
               level: getLogLevel(params.type),
@@ -153,6 +154,7 @@ export class LogManager {
 
         this.#eventManager.registerPromiseEvent(
           textPromise.then((text) => ({
+            type: 'event',
             method: ChromiumBidi.Log.EventNames.LogEntryAddedEvent,
             params: {
               level: Log.Level.Error,

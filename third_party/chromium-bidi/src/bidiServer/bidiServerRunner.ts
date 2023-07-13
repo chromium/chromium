@@ -215,6 +215,7 @@ export class BidiServerRunner {
     } catch {}
 
     return {
+      type: 'error',
       id: commandId,
       error: errorCode,
       message: errorMessage,

@@ -160,6 +160,7 @@ export class CdpTarget {
       }
       this.#eventManager.registerEvent(
         {
+          type: 'event',
           method: `cdp.${event}`,
           params: {
             event,

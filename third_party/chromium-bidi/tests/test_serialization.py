@@ -807,6 +807,7 @@ async def test_deserialization_nestedObjectInObject(websocket, context_id):
 
     assert {
         "type": "success",
+        "type": "success",
         "result": {
             "type": "object",
             "value": [[
@@ -859,6 +860,7 @@ async def test_deserialization_nestedObjectInArray(websocket, context_id):
         })
 
     assert {
+        "type": "success",
         "type": "success",
         "result": {
             "type": "array",
@@ -921,6 +923,7 @@ async def test_deserialization_handleAndValue(websocket, context_id):
 
     # Assert the `type` and `value` were ignored.
     assert {
+        "type": "success",
         "type": "success",
         "result": {
             "type": "object",
@@ -992,6 +995,7 @@ async def test_channel_complexTypes(test_input, expected, websocket,
 
     resp = await read_JSON_message(websocket)
     assert resp == {
+        "type": "event",
         "method": "script.message",
         "params": {
             "channel": "MY_CHANNEL",

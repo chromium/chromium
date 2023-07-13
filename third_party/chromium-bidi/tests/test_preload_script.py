@@ -82,6 +82,7 @@ async def test_preloadScript_add_logging(websocket, context_id, html):
     # Log event should happen before navigation.
     result = await read_JSON_message(websocket)
     assert result == AnyExtending({
+        "type": "event",
         "method": "log.entryAdded",
         "params": {
             "args": [{
@@ -93,7 +94,7 @@ async def test_preloadScript_add_logging(websocket, context_id, html):
 
     # Assert navigation is finished.
     result = await read_JSON_message(websocket)
-    assert result == AnyExtending({"id": command_id})
+    assert result == AnyExtending({"type": "success", "id": command_id})
 
 
 @pytest.mark.asyncio
@@ -218,6 +219,7 @@ async def test_preloadScript_add_loadedInNewIframes(websocket, context_id,
     # Log event should happen before navigation.
     result = await read_JSON_message(websocket)
     assert result == AnyExtending({
+        "type": "event",
         "method": "log.entryAdded",
         "params": {
             "args": [{
@@ -229,7 +231,7 @@ async def test_preloadScript_add_loadedInNewIframes(websocket, context_id,
 
     # Assert navigation is finished.
     result = await read_JSON_message(websocket)
-    assert result == {"id": command_id, "result": ANY_DICT}
+    assert result == {"type": "success", "id": command_id, "result": ANY_DICT}
 
     # Create a new iframe within the same context.
     command_id = await send_JSON_command(
@@ -250,10 +252,15 @@ async def test_preloadScript_add_loadedInNewIframes(websocket, context_id,
     # Event order is not guaranteed, so read 2 messages, sort them and assert.
     [command_result, log_entry_added] = await read_sorted_messages(2)
 
-    assert command_result == {"id": command_id, "result": ANY_DICT}
+    assert command_result == {
+        "type": "success",
+        "id": command_id,
+        "result": ANY_DICT
+    }
 
     # Asset that the preload script is executed in the new iframe.
     assert log_entry_added == AnyExtending({
+        "type": "event",
         "method": "log.entryAdded",
         "params": {
             "args": [{
@@ -290,6 +297,7 @@ async def test_preloadScript_add_loadedInNewIframes_withChildScript(
     # Log event should happen before navigation.
     result = await read_JSON_message(websocket)
     assert result == AnyExtending({
+        "type": "event",
         "method": "log.entryAdded",
         "params": {
             "args": [{
@@ -301,7 +309,7 @@ async def test_preloadScript_add_loadedInNewIframes_withChildScript(
 
     # Assert navigation is finished.
     result = await read_JSON_message(websocket)
-    assert result == {"id": command_id, "result": ANY_DICT}
+    assert result == {"type": "success", "id": command_id, "result": ANY_DICT}
 
     # Create a new iframe within the same context.
     result = await execute_command(
@@ -322,6 +330,7 @@ async def test_preloadScript_add_loadedInNewIframes_withChildScript(
     # Asset that the preload script is executed in the new iframe.
     result = await read_JSON_message(websocket)
     assert result == AnyExtending({
+        "type": "event",
         "method": "log.entryAdded",
         "params": {
             "args": [{
@@ -334,6 +343,7 @@ async def test_preloadScript_add_loadedInNewIframes_withChildScript(
     # Asset that the child script is executed last.
     result = await read_JSON_message(websocket)
     assert result == AnyExtending({
+        "type": "event",
         "method": "log.entryAdded",
         "params": {
             "args": [{
@@ -437,8 +447,13 @@ async def test_preloadScript_add_loadedInMultipleContexts_withIframes(
     # Depending on the URL, the iframe can be loaded before or after the script
     # is done.
     [command_result, browsing_context_load] = await read_sorted_messages(2)
-    assert command_result == {"id": command_id, "result": ANY_DICT}
+    assert command_result == {
+        "type": "success",
+        "id": command_id,
+        "result": ANY_DICT
+    }
     assert browsing_context_load == {
+        'type': 'event',
         "method": "browsingContext.load",
         "params": AnyExtending({
             "context": ANY_STR,
@@ -703,9 +718,11 @@ async def test_preloadScript_add_withUserGesture_blankTargetLink(
     [command_result, log_entry_added] = await read_sorted_messages(2)
     assert command_result == AnyExtending({
         "id": command_id,
+        "type": "success",
         "result": ANY_DICT
     })
     assert log_entry_added == AnyExtending({
+        "type": "event",
         "method": "log.entryAdded",
         "params": {
             "args": [{
@@ -834,9 +851,14 @@ async def test_preloadScript_channel_navigate(websocket, context_id, html,
         })
 
     [command_result, channel_message] = await read_sorted_messages(2)
-    assert command_result == {"id": command_id, "result": ANY_DICT}
+    assert command_result == {
+        "type": "success",
+        "id": command_id,
+        "result": ANY_DICT
+    }
 
     assert channel_message == AnyExtending({
+        "type": "event",
         "method": "script.message",
         "params": {
             "channel": "channel_name",
@@ -882,10 +904,15 @@ async def test_preloadScript_channel_newContext(websocket,
     })
 
     [command_result, channel_message] = await read_sorted_messages(2)
-    assert command_result == {"id": command_id, "result": ANY_DICT}
+    assert command_result == {
+        "type": "success",
+        "id": command_id,
+        "result": ANY_DICT
+    }
     new_context_id = command_result["result"]["context"]
 
     assert channel_message == AnyExtending({
+        "type": "event",
         "method": "script.message",
         "params": {
             "channel": "channel_name",

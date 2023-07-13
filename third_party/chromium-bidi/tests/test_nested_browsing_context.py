@@ -65,6 +65,7 @@ async def test_nestedBrowsingContext_navigateWaitNone_navigated(
 
     [dom_content_loaded, browsing_context_load] = await read_sorted_messages(2)
     assert dom_content_loaded == {
+        'type': 'event',
         "method": "browsingContext.domContentLoaded",
         "params": {
             "context": iframe_id,
@@ -74,6 +75,7 @@ async def test_nestedBrowsingContext_navigateWaitNone_navigated(
         }
     }
     assert browsing_context_load == {
+        'type': 'event',
         "method": "browsingContext.load",
         "params": {
             "context": iframe_id,
@@ -134,6 +136,7 @@ async def test_nestedBrowsingContext_navigateWaitComplete_navigated(
     }
 
     assert await read_JSON_message(websocket) == {
+        'type': 'event',
         "method": "browsingContext.domContentLoaded",
         "params": {
             "context": iframe_id,

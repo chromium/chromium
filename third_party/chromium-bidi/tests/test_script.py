@@ -158,6 +158,7 @@ async def test_script_evaluateDontWaitPromise_promiseReturned(
     assert {
         "type": "success",
         "realm": ANY_STR,
+        "type": "success",
         "result": {
             "type": "promise",
             "handle": ANY_STR
@@ -208,6 +209,7 @@ async def test_script_evaluateWaitPromise_resultReturned(
     assert {
         "type": "success",
         "realm": ANY_STR,
+        "type": "success",
         "result": {
             "type": "string",
             "value": "SOME_RESULT"
@@ -247,6 +249,7 @@ async def test_script_evaluateChangingObject_resultObjectDidNotChange(
     assert {
         "type": "success",
         "realm": ANY_STR,
+        "type": "success",
         "result": {
             "type": "object",
             "value": [["i", {
@@ -277,6 +280,7 @@ async def test_script_evaluateInteractsWithDom_resultReceived(
     assert {
         "type": "success",
         "realm": ANY_STR,
+        "type": "success",
         "result": {
             "type": "string",
             "value": "!!@@##, about:blank"
@@ -309,6 +313,7 @@ async def test_script_callFunctionWithArgs_resultReturn(websocket, context_id):
     assert {
         "type": "success",
         "realm": ANY_STR,
+        "type": "success",
         "result": {
             "type": "array",
             "value": [{
@@ -377,6 +382,7 @@ async def test_script_callFunctionWithArgsAndDoNotAwaitPromise_promiseReturn(
     assert {
         "type": "success",
         "realm": ANY_STR,
+        "type": "success",
         "result": {
             "type": "promise",
             "handle": ANY_STR
@@ -421,6 +427,7 @@ async def test_script_callFunctionWithRemoteValueArgument_resultReturn(
     assert {
         "type": "success",
         "realm": ANY_STR,
+        "type": "success",
         "result": {
             "type": "string",
             "value": "SOME_VALUE"
@@ -451,6 +458,7 @@ async def test_script_callFunctionWithAsyncArrowFunctionAndAwaitPromise_resultRe
     assert {
         "type": "success",
         "realm": ANY_STR,
+        "type": "success",
         "result": {
             "type": "string",
             "value": "SOME_VALUE"
@@ -481,6 +489,7 @@ async def test_script_callFunctionWithAsyncArrowFunctionAndAwaitPromiseFalse_pro
     assert {
         "type": "success",
         "realm": ANY_STR,
+        "type": "success",
         "result": {
             "type": "promise",
             "handle": ANY_STR
@@ -511,6 +520,7 @@ async def test_script_callFunctionWithAsyncClassicFunctionAndAwaitPromise_result
     assert {
         "type": "success",
         "realm": ANY_STR,
+        "type": "success",
         "result": {
             "type": "string",
             "value": "SOME_VALUE"
@@ -541,6 +551,7 @@ async def test_script_callFunctionWithAsyncClassicFunctionAndAwaitPromiseFalse_p
     assert {
         "type": "success",
         "realm": ANY_STR,
+        "type": "success",
         "result": {
             "type": "promise",
             "handle": ANY_STR
@@ -571,6 +582,7 @@ async def test_script_callFunctionWithArrowFunctionAndThisParameter_thisIsIgnore
     assert {
         "type": "success",
         "realm": ANY_STR,
+        "type": "success",
         "result": {
             "type": "string",
             "value": "Window"
@@ -601,6 +613,7 @@ async def test_script_callFunctionWithClassicFunctionAndThisParameter_thisIsUsed
     assert {
         "type": "success",
         "realm": ANY_STR,
+        "type": "success",
         "result": {
             "type": "string",
             "value": "Number"
@@ -651,6 +664,7 @@ async def test_script_callFunctionWithNode_resultReceived(
     assert {
         "type": "success",
         "realm": ANY_STR,
+        "type": "success",
         "result": {
             "type": "string",
             "value": "!!@@##, test"
@@ -676,6 +690,7 @@ async def test_script_evaluate_windowOpen_windowOpened(websocket, context_id):
     assert {
         "type": "success",
         "realm": ANY_STR,
+        "type": "success",
         "result": {
             "type": "window",
             "handle": ANY_STR
@@ -707,6 +722,7 @@ async def test_scriptEvaluate_realm(websocket, context_id):
 
     assert {
         "type": "success",
+        "type": "success",
         "result": {
             "type": "string",
             "value": "bar"
@@ -731,6 +747,7 @@ async def test_scriptEvaluate_realm(websocket, context_id):
         })
 
     assert {
+        "type": "success",
         "type": "success",
         "result": {
             "type": "string",
@@ -782,6 +799,7 @@ async def test_scriptCallFunction_realm(websocket, context_id):
 
     assert {
         "type": "success",
+        "type": "success",
         "result": {
             "type": "string",
             "value": "bar"
@@ -807,6 +825,7 @@ async def test_scriptCallFunction_realm(websocket, context_id):
         })
 
     assert {
+        "type": "success",
         "type": "success",
         "result": {
             "type": "string",
@@ -933,6 +952,7 @@ async def test_disown_releasesObject(websocket, default_realm, sandbox_realm):
         })
     assert {
         "type": "success",
+        "type": "success",
         "result": {
             "type": "object",
             "value": ANY,
@@ -960,6 +980,7 @@ async def test_disown_releasesObject(websocket, default_realm, sandbox_realm):
         })
 
     assert {
+        "type": "success",
         "type": "success",
         "result": {
             "type": "object",
@@ -1000,6 +1021,7 @@ async def test_disown_releasesObject(websocket, default_realm, sandbox_realm):
         })
 
     assert {
+        "type": "success",
         "type": "success",
         "result": {
             "type": "object",

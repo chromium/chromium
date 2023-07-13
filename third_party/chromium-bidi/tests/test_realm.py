@@ -38,6 +38,7 @@ async def test_realm_realmCreated(websocket, context_id, html):
     response = await read_JSON_message(websocket)
 
     assert {
+        "type": "event",
         "method": "script.realmCreated",
         "params": {
             "type": "window",
@@ -69,6 +70,7 @@ async def test_realm_realmCreated_sandbox(websocket, context_id):
     response = await read_JSON_message(websocket)
 
     assert {
+        "type": "event",
         "method": "script.realmCreated",
         "params": {
             "type": "window",
@@ -95,6 +97,7 @@ async def test_realm_realmDestroyed(websocket, context_id):
     response = await read_JSON_message(websocket)
 
     assert {
+        "type": "event",
         "method": "script.realmDestroyed",
         "params": {
             "realm": ANY_STR,
@@ -130,6 +133,7 @@ async def test_realm_realmDestroyed_sandbox(websocket, context_id):
     response = await read_JSON_message(websocket)
 
     assert {
+        "type": "event",
         "method": "script.realmDestroyed",
         "params": {
             "realm": ANY_STR,
@@ -139,6 +143,7 @@ async def test_realm_realmDestroyed_sandbox(websocket, context_id):
     response = await read_JSON_message(websocket)
 
     assert {
+        "type": "event",
         "method": "script.realmDestroyed",
         "params": {
             "realm": ANY_STR,
