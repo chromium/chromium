@@ -1405,6 +1405,7 @@ void CompositorFrameReporter::ReportScrollJankMetrics() const {
   int32_t normal_input_count = 0;
   float total_predicted_delta = 0;
   bool had_gesture_scrolls = false;
+  bool is_scroll_start = false;
 
   // This handles cases when we have multiple scroll events. Events for dropped
   // frames are reported by the reporter for next presented frame which could
@@ -1428,10 +1429,7 @@ void CompositorFrameReporter::ReportScrollJankMetrics() const {
 
     switch (event->type()) {
       case EventMetrics::EventType::kFirstGestureScrollUpdate:
-        if (global_trackers_.predictor_jank_tracker) {
-          global_trackers_.predictor_jank_tracker
-              ->ResetCurrentScrollReporting();
-        }
+        is_scroll_start = true;
         ABSL_FALLTHROUGH_INTENDED;
       case EventMetrics::EventType::kGestureScrollUpdate:
         normal_input_count += scroll_update->coalesced_event_count();
@@ -1446,6 +1444,14 @@ void CompositorFrameReporter::ReportScrollJankMetrics() const {
 
   if (!had_gesture_scrolls) {
     return;
+  }
+  if (is_scroll_start) {
+    if (global_trackers_.predictor_jank_tracker) {
+      global_trackers_.predictor_jank_tracker->ResetCurrentScrollReporting();
+    }
+    if (global_trackers_.scroll_jank_dropped_frame_tracker) {
+      global_trackers_.scroll_jank_dropped_frame_tracker->OnScrollStarted();
+    }
   }
 
   TRACE_EVENT("input,input.scrolling", "PresentedFrameInformation",
