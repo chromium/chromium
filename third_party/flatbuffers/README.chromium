@@ -6,6 +6,7 @@ Date: 2023/06/22
 License: Apache 2.0
 License File: LICENSE
 Security Critical: yes
+Shipped: yes
 
 Description:
 FlatBuffers is an efficient cross platform serialization library for games and
