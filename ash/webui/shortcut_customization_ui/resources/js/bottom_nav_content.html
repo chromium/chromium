@@ -14,7 +14,8 @@
   }
 
   #keyboardSettingsLinkContainer {
-    margin-top: 12px;
+    margin-bottom: 16px;
+    padding-inline-start: 16px;
   }
 
   #keyboardSettingsLinkContainer a {
@@ -31,14 +32,14 @@
   }
 </style>
 <div id="container">
-  <cr-button id="restoreAllButton" on-click="onRestoreAllDefaultClicked"
-      hidden="[[restoreAllButtonHidden]]">
-      [[i18n('resetAllShortcuts')]]
-  </cr-button>
   <div id="keyboardSettingsLinkContainer">
     <a id="keyboardSettingsLink" href="[[keyboardSettingsLink]]">
       <span>[[i18n('keyboardSettings')]]</span>
       <iron-icon icon="shortcut-customization:open-in-new"></iron-icon>
     </a>
   </div>
+  <cr-button id="restoreAllButton" on-click="onRestoreAllDefaultClicked"
+      hidden="[[restoreAllButtonHidden]]">
+    [[i18n('resetAllShortcuts')]]
+  </cr-button>
 </div>
