@@ -909,7 +909,8 @@ void ChromeAutofillClient::PinPopupView() {
 }
 
 autofill::AutofillClient::PopupOpenArgs
-ChromeAutofillClient::GetReopenPopupArgs() const {
+ChromeAutofillClient::GetReopenPopupArgs(
+    AutofillSuggestionTriggerSource trigger_source) const {
   const AutofillPopupController* controller = popup_controller_.get();
   if (!controller)
     return autofill::AutofillClient::PopupOpenArgs();
@@ -919,19 +920,15 @@ ChromeAutofillClient::GetReopenPopupArgs() const {
   gfx::Rect client_area = web_contents()->GetContainerBounds();
   gfx::RectF screen_space_independent_bounds =
       controller->element_bounds() - client_area.OffsetFromOrigin();
-  // Reopening the popup is currently only used for password suggestions, so the
-  // trigger source can be set to `kPasswordManager`.
-  // TODO(crbug.com/1446318): Make the suggestion trigger source a parameter.
-  CHECK_EQ(controller->GetPopupType(), PopupType::kPasswords);
   return autofill::AutofillClient::PopupOpenArgs(
       screen_space_independent_bounds, controller->GetElementTextDirection(),
-      controller->GetSuggestions(),
-      AutofillSuggestionTriggerSource::kPasswordManager);
+      controller->GetSuggestions(), trigger_source);
 }
 
 void ChromeAutofillClient::UpdatePopup(
     const std::vector<Suggestion>& suggestions,
-    PopupType popup_type) {
+    PopupType popup_type,
+    AutofillSuggestionTriggerSource trigger_source) {
   if (!popup_controller_.get())
     return;  // Update only if there is a popup.
 
@@ -947,12 +944,7 @@ void ChromeAutofillClient::UpdatePopup(
   }
 
   // Calling show will reuse the existing view automatically.
-  // Updating the popup is currently only used for password suggestions, so the
-  // trigger source can be set to `kPasswordManager`.
-  // TODO(crbug.com/1446318): Make the suggestion trigger source a parameter.
-  CHECK_EQ(popup_type, PopupType::kPasswords);
-  popup_controller_->Show(suggestions,
-                          AutofillSuggestionTriggerSource::kPasswordManager);
+  popup_controller_->Show(suggestions, trigger_source);
 }
 
 void ChromeAutofillClient::HideAutofillPopup(PopupHidingReason reason) {

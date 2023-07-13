@@ -425,9 +425,11 @@ void PasswordAutofillManager::OnUnlockItemAccepted(
           : signin_metrics::ReauthAccessPoint::kGeneratePasswordDropdown;
   password_client_->TriggerReauthForPrimaryAccount(
       reauth_access_point,
-      base::BindOnce(&PasswordAutofillManager::OnUnlockReauthCompleted,
-                     weak_ptr_factory_.GetWeakPtr(), unlock_item,
-                     autofill_client_->GetReopenPopupArgs()));
+      base::BindOnce(
+          &PasswordAutofillManager::OnUnlockReauthCompleted,
+          weak_ptr_factory_.GetWeakPtr(), unlock_item,
+          autofill_client_->GetReopenPopupArgs(
+              autofill::AutofillSuggestionTriggerSource::kPasswordManager)));
 }
 
 void PasswordAutofillManager::DidAcceptSuggestion(
@@ -846,7 +848,9 @@ void PasswordAutofillManager::UpdatePopup(
         autofill::PopupHidingReason::kNoSuggestions);
     return;
   }
-  autofill_client_->UpdatePopup(suggestions, autofill::PopupType::kPasswords);
+  autofill_client_->UpdatePopup(
+      suggestions, autofill::PopupType::kPasswords,
+      autofill::AutofillSuggestionTriggerSource::kPasswordManager);
 }
 
 bool PasswordAutofillManager::FillSuggestion(

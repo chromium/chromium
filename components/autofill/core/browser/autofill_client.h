@@ -716,17 +716,27 @@ class AutofillClient : public RiskDataLoader {
   virtual void PinPopupView() = 0;
 
   // The returned arguments allow to reopen the dropdown with
-  // |ShowAutofillPopup| even if the controller is destroyed temporarily.
+  // `ShowAutofillPopup()` even if the controller is destroyed temporarily.
   // This function ensures that the element's bounds are transformed back to the
   // screen space-independent bounds.
-  virtual PopupOpenArgs GetReopenPopupArgs() const = 0;
+  // The suggestion trigger source of the existing popup is not reused, but
+  // replaced with `trigger_source`. This is because it should indicate the
+  // reason for reopening the popup. Reusing the existing trigger source can
+  // have unwanted implications such as re-auto-selecting the first suggestion
+  // in the `AutofillSuggestionTriggerSource::kTextFieldDidReceiveKeyDown` case.
+  // Note that the password manager doesn't distinguish between trigger sources.
+  virtual PopupOpenArgs GetReopenPopupArgs(
+      AutofillSuggestionTriggerSource trigger_source) const = 0;
 
   // Returns (not elided) suggestions currently held by the UI.
   virtual std::vector<Suggestion> GetPopupSuggestions() const = 0;
 
   // Updates the popup contents with the newly given suggestions.
+  // `trigger_source` indicates the reason for updating the popup. (However, the
+  // password manager makes no distinction).
   virtual void UpdatePopup(const std::vector<Suggestion>& suggestions,
-                           PopupType popup_type) = 0;
+                           PopupType popup_type,
+                           AutofillSuggestionTriggerSource trigger_source) = 0;
 
   // Hide the Autofill popup if one is currently showing.
   virtual void HideAutofillPopup(PopupHidingReason reason) = 0;

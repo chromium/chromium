@@ -232,9 +232,11 @@ class ChromeAutofillClient : public ContentAutofillClient,
       const std::vector<std::u16string>& labels) override;
   std::vector<Suggestion> GetPopupSuggestions() const override;
   void PinPopupView() override;
-  PopupOpenArgs GetReopenPopupArgs() const override;
+  PopupOpenArgs GetReopenPopupArgs(
+      AutofillSuggestionTriggerSource trigger_source) const override;
   void UpdatePopup(const std::vector<Suggestion>& suggestions,
-                   PopupType popup_type) override;
+                   PopupType popup_type,
+                   AutofillSuggestionTriggerSource trigger_source) override;
   void HideAutofillPopup(PopupHidingReason reason) override;
   void UpdateOfferNotification(const AutofillOfferData* offer,
                                bool notification_has_been_shown) override;

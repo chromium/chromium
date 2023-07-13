@@ -225,14 +225,19 @@ class MockAutofillClient : public autofill::TestAutofillClient {
                base::WeakPtr<autofill::AutofillPopupDelegate> delegate),
               (override));
   MOCK_METHOD(void, PinPopupView, (), (override));
-  MOCK_METHOD(PopupOpenArgs, GetReopenPopupArgs, (), (const, override));
+  MOCK_METHOD(PopupOpenArgs,
+              GetReopenPopupArgs,
+              (autofill::AutofillSuggestionTriggerSource),
+              (const, override));
   MOCK_METHOD(std::vector<autofill::Suggestion>,
               GetPopupSuggestions,
               (),
               (const, override));
   MOCK_METHOD(void,
               UpdatePopup,
-              (const std::vector<autofill::Suggestion>&, PopupType),
+              (const std::vector<autofill::Suggestion>&,
+               PopupType,
+               autofill::AutofillSuggestionTriggerSource),
               (override));
   MOCK_METHOD(void,
               HideAutofillPopup,
@@ -672,7 +677,8 @@ TEST_F(PasswordAutofillManagerTest,
                       autofill::PopupItemId::kPasswordEntry,
                       autofill::PopupItemId::kAllSavedPasswordsEntry,
                       autofill::PopupItemId::kPasswordAccountStorageOptIn),
-                  PopupType::kPasswords))
+                  PopupType::kPasswords,
+                  autofill::AutofillSuggestionTriggerSource::kPasswordManager))
       .WillOnce(testing::SaveArg<0>(&suggestions));
   EXPECT_CALL(client, TriggerReauthForPrimaryAccount);
   EXPECT_CALL(autofill_client, GetPopupSuggestions())
@@ -708,7 +714,8 @@ TEST_F(PasswordAutofillManagerTest,
               autofill::PopupItemId::kPasswordEntry,
               autofill::PopupItemId::kAllSavedPasswordsEntry,
               autofill::PopupItemId::kPasswordAccountStorageOptInAndGenerate),
-          PopupType::kPasswords))
+          PopupType::kPasswords,
+          autofill::AutofillSuggestionTriggerSource::kPasswordManager))
       .WillOnce(testing::SaveArg<0>(&suggestions));
   EXPECT_CALL(client, TriggerReauthForPrimaryAccount);
   EXPECT_CALL(autofill_client, GetPopupSuggestions())
@@ -779,11 +786,13 @@ TEST_F(PasswordAutofillManagerTest, FailedOptInAndFillUpdatesPopup) {
     EXPECT_CALL(autofill_client, PinPopupView);
     EXPECT_CALL(
         autofill_client,
-        UpdatePopup(SuggestionVectorIdsAre(
-                        autofill::PopupItemId::kPasswordEntry,
-                        autofill::PopupItemId::kAllSavedPasswordsEntry,
-                        autofill::PopupItemId::kPasswordAccountStorageOptIn),
-                    PopupType::kPasswords))
+        UpdatePopup(
+            SuggestionVectorIdsAre(
+                autofill::PopupItemId::kPasswordEntry,
+                autofill::PopupItemId::kAllSavedPasswordsEntry,
+                autofill::PopupItemId::kPasswordAccountStorageOptIn),
+            PopupType::kPasswords,
+            autofill::AutofillSuggestionTriggerSource::kPasswordManager))
         .WillOnce(testing::SaveArg<0>(&suggestions));
   });
 
@@ -835,7 +844,8 @@ TEST_F(PasswordAutofillManagerTest, FailedOptInAndGenerateUpdatesPopup) {
                 autofill::PopupItemId::kPasswordEntry,
                 autofill::PopupItemId::kAllSavedPasswordsEntry,
                 autofill::PopupItemId::kPasswordAccountStorageOptInAndGenerate),
-            PopupType::kPasswords))
+            PopupType::kPasswords,
+            autofill::AutofillSuggestionTriggerSource::kPasswordManager))
         .WillOnce(testing::SaveArg<0>(&suggestions));
   });
 
@@ -948,7 +958,8 @@ TEST_F(PasswordAutofillManagerTest, SuccessfullOptInMayShowEmptyState) {
       autofill_client,
       UpdatePopup(SuggestionVectorIdsAre(
                       autofill::PopupItemId::kPasswordAccountStorageEmpty),
-                  PopupType::kPasswords));
+                  PopupType::kPasswords,
+                  autofill::AutofillSuggestionTriggerSource::kPasswordManager));
 
   password_autofill_manager_->DeleteFillData();
   password_autofill_manager_->OnNoCredentialsFound();
@@ -990,7 +1001,8 @@ TEST_F(PasswordAutofillManagerTest,
                       autofill::PopupItemId::kSeparator,
 #endif
                       autofill::PopupItemId::kAllSavedPasswordsEntry),
-                  PopupType::kPasswords));
+                  PopupType::kPasswords,
+                  autofill::AutofillSuggestionTriggerSource::kPasswordManager));
 
   password_autofill_manager_->DeleteFillData();
   password_autofill_manager_->OnAddPasswordFillData(new_data);
