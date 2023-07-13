@@ -484,16 +484,10 @@ void ProxyImpl::RenewTreePriority() {
   bool precise_scrolling_in_progress =
       host_impl_->GetActivelyScrollingType() == ActivelyScrollingType::kPrecise;
 
-  bool prefer_new_content = false;
-  if (host_impl_->CurrentScrollCheckerboardsDueToNoRecording() &&
-      base::FeatureList::IsEnabled(
-          features::kPreferNewContentForCheckerboardedScrolls)) {
-    prefer_new_content = true;
-  }
-  if (precise_scrolling_in_progress &&
-      host_impl_->IsCurrentScrollMainRepainted()) {
-    prefer_new_content = true;
-  }
+  bool avoid_entering_smoothness =
+      host_impl_->CurrentScrollCheckerboardsDueToNoRecording() ||
+      (precise_scrolling_in_progress &&
+       host_impl_->IsCurrentScrollMainRepainted());
 
   bool non_scroll_interaction_in_progress =
       host_impl_->IsPinchGestureActive() ||
@@ -501,7 +495,7 @@ void ProxyImpl::RenewTreePriority() {
 
   // Schedule expiration if smoothness currently takes priority.
   if ((non_scroll_interaction_in_progress || precise_scrolling_in_progress) &&
-      !prefer_new_content) {
+      !avoid_entering_smoothness) {
     smoothness_priority_expiration_notifier_.Schedule();
   }
 

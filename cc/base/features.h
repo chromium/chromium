@@ -33,11 +33,6 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE(kScrollUnification);
 // display.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kHudDisplayForPerformanceMetrics);
 
-// When enabled, scheduler tree priority will change to
-// NEW_CONTENT_TAKES_PRIORITY if during a scrollbar scroll, CC has to
-// checkerboard.
-CC_BASE_EXPORT BASE_DECLARE_FEATURE(kPreferNewContentForCheckerboardedScrolls);
-
 // When enabled, CompositorTimingHistory will directly record the timing history
 // that is used to calculate main thread timing estimates, and use the
 // percentile of sum of different stages instead of the sum of percentiles.

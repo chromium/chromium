@@ -49,10 +49,6 @@ BASE_FEATURE(kHudDisplayForPerformanceMetrics,
              "HudDisplayForPerformanceMetrics",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kPreferNewContentForCheckerboardedScrolls,
-             "PreferNewContentForCheckerboardedScrolls",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kDurationEstimatesInCompositorTimingHistory,
              "DurationEstimatesInCompositorTimingHistory",
              base::FEATURE_DISABLED_BY_DEFAULT);
