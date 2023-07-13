@@ -926,6 +926,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Settings.TrackedPreferenceCleared" enum="TrackedPreference"
     expires_after="2022-12-22">
+  <expired_intentionally>
+    Kept as test chrome/browser/prefs/tracked/pref_hash_browsertest.cc depends
+    on this histogram.
+  </expired_intentionally>
   <owner>proberge@chromium.org</owner>
   <owner>junhao.huang@microsoft.com</owner>
   <summary>
@@ -937,6 +941,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Settings.TrackedPreferenceInitialized"
     enum="TrackedPreference" expires_after="2022-12-22">
+  <expired_intentionally>
+    Kept as test chrome/browser/prefs/tracked/pref_hash_browsertest.cc depends
+    on this histogram.
+  </expired_intentionally>
   <owner>proberge@chromium.org</owner>
   <owner>junhao.huang@microsoft.com</owner>
   <summary>
@@ -950,6 +958,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Settings.TrackedPreferenceMigratedLegacyDeviceId"
     enum="TrackedPreference" expires_after="2022-12-22">
+  <expired_intentionally>
+    Kept as test chrome/browser/prefs/tracked/pref_hash_browsertest.cc depends
+    on this histogram.
+  </expired_intentionally>
   <owner>proberge@chromium.org</owner>
   <owner>junhao.huang@microsoft.com</owner>
   <summary>
@@ -963,6 +975,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Settings.TrackedPreferenceNullInitialized"
     enum="TrackedPreference" expires_after="2022-12-22">
+  <expired_intentionally>
+    Kept as test chrome/browser/prefs/tracked/pref_hash_browsertest.cc depends
+    on this histogram.
+  </expired_intentionally>
   <owner>proberge@chromium.org</owner>
   <owner>junhao.huang@microsoft.com</owner>
   <summary>
@@ -991,6 +1007,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Settings.TrackedPreferenceTrustedInitialized"
     enum="TrackedPreference" expires_after="2022-12-22">
+  <expired_intentionally>
+    Kept as test chrome/browser/prefs/tracked/pref_hash_browsertest.cc depends
+    on this histogram.
+  </expired_intentionally>
   <owner>proberge@chromium.org</owner>
   <owner>junhao.huang@microsoft.com</owner>
   <summary>
@@ -1003,6 +1023,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Settings.TrackedPreferenceUnchanged" enum="TrackedPreference"
     expires_after="2022-12-22">
+  <expired_intentionally>
+    Kept as test chrome/browser/prefs/tracked/pref_hash_browsertest.cc depends
+    on this histogram.
+  </expired_intentionally>
   <owner>proberge@chromium.org</owner>
   <owner>junhao.huang@microsoft.com</owner>
   <summary>
