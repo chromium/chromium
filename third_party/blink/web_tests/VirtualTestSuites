@@ -1873,6 +1873,7 @@
     "prefix": "orb-v01",
     "platforms": ["Linux"],
     "bases": [
+      "external/wpt/fetch/orb",
       "external/wpt/fetch/corb",
       "external/wpt/fetch/api",
       "external/wpt/fetch/nosniff"
@@ -1885,6 +1886,7 @@
     "platforms": ["Linux"],
     "args": ["--enable-features=OpaqueResponseBlockingV01,OpaqueResponseBlockingV02", "--disable-features=OpaqueResponseBlockingErrorsForAllFetches"],
     "bases": [
+      "external/wpt/fetch/orb",
       "external/wpt/fetch/corb"
     ],
     "expires": "Jul 1, 2024"
@@ -1894,6 +1896,7 @@
     "platforms": ["Linux"],
     "args": ["--enable-features=OpaqueResponseBlockingV01,OpaqueResponseBlockingV02,OpaqueResponseBlockingErrorsForAllFetches"],
     "bases": [
+      "external/wpt/fetch/orb",
       "external/wpt/fetch/corb"
     ],
     "expires": "Jul 1, 2024"
