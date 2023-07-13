@@ -493,7 +493,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="424315890655130736">Wpisz hasło</translation>
 <translation id="4249955472157341256">Sortuj od najnowszego</translation>
 <translation id="4250432749243022864">{count,plural, =0{Otwórz {count} kartę}=1{Otwórz {count} kartę}few{Otwórz {count} karty}many{Otwórz {count} kart}other{Otwórz {count} karty}}</translation>
-<translation id="4253168017788158739">Uwaga</translation>
+<translation id="4253168017788158739">Notatka</translation>
 <translation id="4263576668337963058">Pokaż dostępne działania dotyczące strony</translation>
 <translation id="4267586310863245665">{COUNT,plural, =1{Odrzucono {COUNT} ostrzeżenie}few{Odrzucono {COUNT} ostrzeżenia}many{Odrzucono {COUNT} ostrzeżeń}other{Odrzucono {COUNT} ostrzeżenia}}</translation>
 <translation id="4272631900155121838">Aby zeskanować kod QR, włącz aparat w ustawieniach</translation>
