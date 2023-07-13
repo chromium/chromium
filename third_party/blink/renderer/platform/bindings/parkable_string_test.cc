@@ -1238,30 +1238,10 @@ TEST_P(ParkableStringTest, ReportTotalUnparkingTime) {
 
   task_environment_.FastForwardUntilNoTasksRemain();
 
-  // The string is unparked kNumIterations times.
-  histogram_tester.ExpectUniqueSample(
-      "Memory.ParkableString.MainThreadTime.5min",
-      base::ScopedMockElapsedTimersForTest::kMockElapsedTime.InMilliseconds() *
-          kNumIterations,
-      1);
-
-  if (base::ThreadTicks::IsSupported()) {
-    // The string is only compressed once despite the multiple parking/unparking
-    // calls.
-    histogram_tester.ExpectUniqueSample(
-        "Memory.ParkableString.ParkingThreadTime.5min",
-        base::ScopedMockElapsedTimersForTest::kMockElapsedTime.InMilliseconds(),
-        1);
-  }
-
   histogram_tester.ExpectUniqueSample("Memory.ParkableString.TotalSizeKb.5min",
                                       kSizeKb, 1);
   histogram_tester.ExpectUniqueSample(
       "Memory.ParkableString.CompressedSizeKb.5min", kCompressedSize / 1000, 1);
-
-  size_t expected_savings = kSizeKb * 1000 - kCompressedSize;
-  histogram_tester.ExpectUniqueSample("Memory.ParkableString.SavingsKb.5min",
-                                      expected_savings / 1000, 1);
   histogram_tester.ExpectUniqueSample(
       "Memory.ParkableString.CompressionRatio.5min",
       (100 * kCompressedSize) / (kSizeKb * 1000), 1);
@@ -1297,11 +1277,6 @@ TEST_P(ParkableStringTest, ReportTotalDiskTime) {
 
   // The string is only written once despite the multiple parking/unparking
   // calls.
-  histogram_tester.ExpectUniqueSample("Memory.ParkableString.DiskIsUsable.5min",
-                                      true, 1);
-
-  // The string is only written once despite the multiple parking/unparking
-  // calls.
   histogram_tester.ExpectUniqueSample(
       "Memory.ParkableString.DiskWriteTime.5min", mock_elapsed_time_ms, 1);
 
@@ -1309,15 +1284,8 @@ TEST_P(ParkableStringTest, ReportTotalDiskTime) {
                                       kSizeKb, 1);
   histogram_tester.ExpectUniqueSample(
       "Memory.ParkableString.CompressedSizeKb.5min", 0, 1);
-
-  size_t expected_savings = kSizeKb * 1000 - kCompressedSize;
-  histogram_tester.ExpectUniqueSample(
-      "Memory.ParkableString.MemorySavingsKb.5min", expected_savings / 1000, 1);
   histogram_tester.ExpectUniqueSample("Memory.ParkableString.OnDiskSizeKb.5min",
                                       kCompressedSize / 1000, 1);
-  histogram_tester.ExpectUniqueSample(
-      "Memory.ParkableString.OnDiskFootprintKb.5min", kCompressedSize / 1000,
-      1);
 }
 
 TEST_P(ParkableStringTest, EncodingAndDeduplication) {
