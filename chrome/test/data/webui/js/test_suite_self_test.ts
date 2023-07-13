@@ -4,9 +4,9 @@
 
 import {assertTrue} from 'chrome://webui-test/chai_assert.js';
 
-// Dummy test suite used to test the WebUIMochaBrowserTest C++ class itself. See
+// Test suite used to test the WebUIMochaBrowserTest C++ class itself. See
 // chrome/test/base/web_ui_mocha_browser_test_browsertest.cc for usages.
-suite('DummyTest', function() {
+suite('TestSuiteSelfTest', function() {
   test('Success', function() {
     assertTrue(true);
   });

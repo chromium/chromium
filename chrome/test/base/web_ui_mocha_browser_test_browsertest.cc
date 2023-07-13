@@ -36,7 +36,8 @@ IN_PROC_BROWSER_TEST_F(WebUIMochaCoverageTest, TestCoverageEmits) {
 
   // The actual WebUI test file used below does not matter here, as long as it
   // succeeds. Using it as a decoy to trigger the code coverage reporting.
-  RunTest("js/dummy_test.js", "mocha.fgrep('DummyTest Success').run();");
+  RunTest("js/test_suite_self_test.js",
+          "mocha.fgrep('TestSuiteSelfTest Success').run();");
 
   // Scripts and tests are special directories under the WebUI specific
   // directory, ensure they have been created and are not empty.
@@ -81,18 +82,20 @@ WebUIMochaSuccessFailureTest* WebUIMochaSuccessFailureTest::s_test_ = nullptr;
 // Test that when the script injected to trigger the Mocha tests contains an
 // error, the test fails.
 IN_PROC_BROWSER_TEST_F(WebUIMochaSuccessFailureTest, TriggerErrorFails) {
-  EXPECT_FATAL_FAILURE(RunTestStatic("js/dummy_test.js", "mmmmocha.run();"),
-                       "ReferenceError: mmmmocha is not defined");
+  EXPECT_FATAL_FAILURE(
+      RunTestStatic("js/test_suite_self_test.js", "mmmmocha.run();"),
+      "ReferenceError: mmmmocha is not defined");
 }
 
 // Test that when the requested host does not exist the test fails.
 IN_PROC_BROWSER_TEST_F(WebUIMochaSuccessFailureTest, HostErrorFails) {
   set_test_loader_host("does-not-exist");
-  EXPECT_FATAL_FAILURE(RunTestStatic("js/dummy_test.js", "mocha.run();"),
-                       "Navigation to "
-                       "'chrome://does-not-exist/"
-                       "test_loader.html?adapter=mocha_adapter_simple.js&"
-                       "module=js/dummy_test.js' failed.");
+  EXPECT_FATAL_FAILURE(
+      RunTestStatic("js/test_suite_self_test.js", "mocha.run();"),
+      "Navigation to "
+      "'chrome://does-not-exist/"
+      "test_loader.html?adapter=mocha_adapter_simple.js&"
+      "module=js/test_suite_self_test.js' failed.");
 }
 
 // Test that when the requested test file does not exist the test fails.
@@ -102,12 +105,14 @@ IN_PROC_BROWSER_TEST_F(WebUIMochaSuccessFailureTest, TestFileErrorFails) {
 
 // Test that when the underlying Mocha test fails, the C++ test also fails.
 IN_PROC_BROWSER_TEST_F(WebUIMochaSuccessFailureTest, TestFailureFails) {
-  EXPECT_FATAL_FAILURE(RunTestStatic("js/dummy_test.js",
-                                     "mocha.fgrep('DummyTest Failure').run();"),
-                       "Mocha test failures detected.");
+  EXPECT_FATAL_FAILURE(
+      RunTestStatic("js/test_suite_self_test.js",
+                    "mocha.fgrep('TestSuiteSelfTest Failure').run();"),
+      "Mocha test failures detected.");
 }
 
 // Test that when the underlying Mocha test succeeds, the C++ test also passes.
 IN_PROC_BROWSER_TEST_F(WebUIMochaSuccessFailureTest, TestSuccessPasses) {
-  RunTest("js/dummy_test.js", "mocha.fgrep('DummyTest Success').run();");
+  RunTest("js/test_suite_self_test.js",
+          "mocha.fgrep('TestSuiteSelfTest Success').run();");
 }
