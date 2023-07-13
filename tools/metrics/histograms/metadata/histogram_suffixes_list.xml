@@ -404,7 +404,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram_suffixes name="AttestationOps" separator=".">
   <suffix name="ActivateAttestationKey" label=""/>
-  <suffix name="AttestationVerify" label=""/>
   <suffix name="DecryptDatabase" label=""/>
   <suffix name="EncryptDatabase" label=""/>
   <suffix name="PrepareForEnrollment" label=""/>
