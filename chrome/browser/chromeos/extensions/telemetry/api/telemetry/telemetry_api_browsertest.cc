@@ -1536,42 +1536,42 @@ IN_PROC_BROWSER_TEST_F(PendingApprovalTelemetryExtensionTelemetryApiBrowserTest,
           // The dictionary members are ordered lexicographically by the Unicode
           // codepoints that comprise their identifiers.
           {
-            "dp_infos": [
+            "dpInfos": [
               {
-                "display_height": 12,
-                "display_name": "display2",
-                "display_width": 11,
-                "edid_version": "1.4",
-                "input_type": "analog",
-                "manufacture_week": 18,
-                "manufacture_year": 19,
+                "displayHeight": 12,
+                "displayName": "display2",
+                "displayWidth": 11,
+                "edidVersion": "1.4",
+                "inputType": "analog",
+                "manufactureWeek": 18,
+                "manufactureYear": 19,
                 "manufacturer": "manufacturer2",
-                "model_id": 16,
-                "refresh_rate": 15,
-                "resolution_horizontal": 13,
-                "resolution_vertical": 14,
-                "serial_number": 17
+                "modelId": 16,
+                "refreshRate": 15,
+                "resolutionHorizontal": 13,
+                "resolutionVertical": 14,
+                "serialNumber": 17
               },
               {
-                "input_type": "unknown"
+                "inputType": "unknown"
               }
             ],
-            "edp_info": {
-              "display_height": 2,
-              "display_name": "display1",
-              "display_width": 1,
-              "edid_version": "1.4",
-              "input_type": "digital",
-              "manufacture_week": 8,
-              "manufacture_year": 9,
+            "edpInfo": {
+              "displayHeight": 2,
+              "displayName": "display1",
+              "displayWidth": 1,
+              "edidVersion": "1.4",
+              "inputType": "digital",
+              "manufactureWeek": 8,
+              "manufactureYear": 9,
               "manufacturer": "manufacturer1",
-              "model_id": 6,
-              "privacy_screen_enabled": false,
-              "privacy_screen_supported": true,
-              "refresh_rate": 5,
-              "resolution_horizontal": 3,
-              "resolution_vertical": 4,
-              "serial_number": 7
+              "modelId": 6,
+              "privacyScreenEnabled": false,
+              "privacyScreenSupported": true,
+              "refreshRate": 5,
+              "resolutionHorizontal": 3,
+              "resolutionVertical": 4,
+              "serialNumber": 7
             }
           }, result);
         chrome.test.succeed();

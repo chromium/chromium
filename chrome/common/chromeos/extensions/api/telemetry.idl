@@ -117,71 +117,71 @@ namespace os.telemetry {
 
   dictionary EmbeddedDisplayInfo {
     // Privacy screen is supported or not.
-    boolean? privacy_screen_supported;
+    boolean? privacyScreenSupported;
     // Privacy screen is enabled or not.
-    boolean? privacy_screen_enabled;
+    boolean? privacyScreenEnabled;
     // Display width in millimeters.
-    long? display_width;
+    long? displayWidth;
     // Display height in millimeters.
-    long? display_height;
+    long? displayHeight;
     // Horizontal resolution.
-    long? resolution_horizontal;
+    long? resolutionHorizontal;
     // Vertical resolution.
-    long? resolution_vertical;
+    long? resolutionVertical;
     // Refresh rate.
-    double? refresh_rate;
+    double? refreshRate;
     // Three letter manufacturer ID.
     DOMString? manufacturer;
     // Manufacturer product code.
-    long? model_id;
+    long? modelId;
     // 32 bits serial number.
-    long? serial_number;
+    long? serialNumber;
     // Week of manufacture.
-    long? manufacture_week;
+    long? manufactureWeek;
     // Year of manufacture.
-    long? manufacture_year;
+    long? manufactureYear;
     // EDID version.
-    DOMString? edid_version;
+    DOMString? edidVersion;
     // Digital or analog input.
-    DisplayInputType input_type;
+    DisplayInputType inputType;
     // Name of display product.
-    DOMString? display_name;
+    DOMString? displayName;
   };
 
   dictionary ExternalDisplayInfo {
     // Display width in millimeters.
-    long? display_width;
+    long? displayWidth;
     // Display height in millimeters.
-    long? display_height;
+    long? displayHeight;
     // Horizontal resolution.
-    long? resolution_horizontal;
+    long? resolutionHorizontal;
     // Vertical resolution.
-    long? resolution_vertical;
+    long? resolutionVertical;
     // Refresh rate.
-    double? refresh_rate;
+    double? refreshRate;
     // Three letter manufacturer ID.
     DOMString? manufacturer;
     // Manufacturer product code.
-    long? model_id;
+    long? modelId;
     // 32 bits serial number.
-    long? serial_number;
+    long? serialNumber;
     // Week of manufacture.
-    long? manufacture_week;
+    long? manufactureWeek;
     // Year of manufacture.
-    long? manufacture_year;
+    long? manufactureYear;
     // EDID version.
-    DOMString? edid_version;
+    DOMString? edidVersion;
     // Digital or analog input.
-    DisplayInputType input_type;
+    DisplayInputType inputType;
     // Name of display product.
-    DOMString? display_name;
+    DOMString? displayName;
   };
 
   dictionary DisplayInfo {
     // Embedded display info.
-    EmbeddedDisplayInfo edp_info;
+    EmbeddedDisplayInfo edpInfo;
     // External display info.
-    ExternalDisplayInfo[] dp_infos;
+    ExternalDisplayInfo[] dpInfos;
   };
 
   callback DisplayInfoCallback = void (DisplayInfo displayInfo);
