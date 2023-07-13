@@ -5,6 +5,7 @@ Revision: 2a20a6899d0b8c47de26d6a33a12ece09821718a
 License: Apache 2.0
 License File: LICENSE
 Security Critical: yes
+Shipped: yes
 
 Description:
 Material Components is a production-quality UI framework focused on design
