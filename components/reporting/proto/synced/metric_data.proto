@@ -557,9 +557,9 @@ message FatalCrashTelemetry {
     // Unknown crashes.
     CRASH_TYPE_UNSPECIFIED = 0;
     // Kernel crashes.
-    KERNEL = 1;
+    CRASH_TYPE_KERNEL = 1;
     // EC crashes.
-    EMBEDDED_CONTROLLER = 2;
+    CRASH_TYPE_EMBEDDED_CONTROLLER = 2;
     // More is expected to be added in the future.
   }
   // The session types follow user_manager::UserType. The server side will
@@ -568,20 +568,20 @@ message FatalCrashTelemetry {
     // Including when a crash occurs on the login screen.
     SESSION_TYPE_UNSPECIFIED = 0;
     // When presenting to the admin, the following will be SIGNED_IN_USER
-    REGULAR = 1;
-    CHILD = 2;
+    SESSION_TYPE_REGULAR = 1;
+    SESSION_TYPE_CHILD = 2;
 
     // When presenting to the admin, the following will be KIOSK
-    KIOSK_APP = 3;
-    ARC_KIOSK_APP = 4;
-    WEB_KIOSK_APP = 5;
+    SESSION_TYPE_KIOSK_APP = 3;
+    SESSION_TYPE_ARC_KIOSK_APP = 4;
+    SESSION_TYPE_WEB_KIOSK_APP = 5;
 
     // When presenting to the admin, the following will be MANAGED_GUEST
-    GUEST = 6;
-    PUBLIC_ACCOUNT = 7;
+    SESSION_TYPE_GUEST = 6;
+    SESSION_TYPE_PUBLIC_ACCOUNT = 7;
 
     // When presenting to the admin, the following will be ACTIVE_DIRECTORY
-    ACTIVE_DIRECTORY = 8;
+    SESSION_TYPE_ACTIVE_DIRECTORY = 8;
   }
   // required
   optional CrashType type = 1;
