@@ -42,8 +42,7 @@ void VideoConferenceWebApp::ActivateApp() {
 
 void VideoConferenceWebApp::SetCapturingStatus(VideoConferenceMediaType device,
                                                bool is_capturing) {
-  // This needs to be called first.
-  vc_ukm_helper_->RegisterCapturingUpdate(device, is_capturing, state_);
+  vc_ukm_helper_->RegisterCapturingUpdate(device, is_capturing);
 
   switch (device) {
     case VideoConferenceMediaType::kCamera:

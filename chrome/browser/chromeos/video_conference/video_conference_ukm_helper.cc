@@ -63,40 +63,36 @@ VideoConferenceUkmHelper::~VideoConferenceUkmHelper() {
 
 void VideoConferenceUkmHelper::RegisterCapturingUpdate(
     VideoConferenceMediaType device,
-    bool is_capturing,
-    VideoConferenceWebAppState& state) {
+    bool is_capturing) {
   switch (device) {
     case VideoConferenceMediaType::kCamera: {
-      if (!state.is_capturing_camera && is_capturing) {
+      if (!prev_camera_capture_time_.has_value() && is_capturing) {
         // Camera changed from not capturing to capturing.
-        DCHECK(!prev_camera_capture_time_);
         did_capture_camera_ = true;
         prev_camera_capture_time_ = base::Time::Now();
-      } else if (state.is_capturing_camera && !is_capturing) {
+      } else if (prev_camera_capture_time_.has_value() && !is_capturing) {
         // Camera changed from capturing to not capturing.
         UpdateCameraCaptureDuration();
       }
       break;
     }
     case VideoConferenceMediaType::kMicrophone: {
-      if (!state.is_capturing_microphone && is_capturing) {
+      if (!prev_microphone_capture_time_.has_value() && is_capturing) {
         // Microphone changed from not capturing to capturing.
-        DCHECK(!prev_microphone_capture_time_);
         did_capture_microphone_ = true;
         prev_microphone_capture_time_ = base::Time::Now();
-      } else if (state.is_capturing_microphone && !is_capturing) {
+      } else if (prev_microphone_capture_time_.has_value() && !is_capturing) {
         // Microphone changed from capturing to not capturing.
         UpdateMicrophoneCaptureDuration();
       }
       break;
     }
     case VideoConferenceMediaType::kScreen: {
-      if (!state.is_capturing_screen && is_capturing) {
+      if (!prev_screen_capture_time_.has_value() && is_capturing) {
         // Screen changed from not capturing to capturing.
-        DCHECK(!prev_screen_capture_time_);
         did_capture_screen_ = true;
         prev_screen_capture_time_ = base::Time::Now();
-      } else if (state.is_capturing_screen && !is_capturing) {
+      } else if (prev_screen_capture_time_.has_value() && !is_capturing) {
         // Screen changed from capturing to not capturing.
         UpdateScreenCaptureDuration();
       }

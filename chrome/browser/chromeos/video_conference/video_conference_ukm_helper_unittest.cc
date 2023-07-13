@@ -56,29 +56,7 @@ class VideoConferenceUkmHelperTest : public testing::Test {
                        VideoConferenceMediaType device,
                        bool is_capturing) {
     // The update to the helper has to be sent before updating the state.
-    ukm_helper->RegisterCapturingUpdate(device, is_capturing, state_);
-
-    switch (device) {
-      case VideoConferenceMediaType::kCamera:
-        state_.is_capturing_camera = is_capturing;
-        break;
-      case VideoConferenceMediaType::kMicrophone:
-        state_.is_capturing_microphone = is_capturing;
-        break;
-      case VideoConferenceMediaType::kScreen:
-        state_.is_capturing_screen = is_capturing;
-        break;
-    }
-  }
-
-  VideoConferenceWebAppState state() { return state_; }
-
-  void ResetState() {
-    state_.last_activity_time = base::Time::Now();
-    state_.is_capturing_microphone = false;
-    state_.is_capturing_camera = false;
-    state_.is_capturing_screen = false;
-    state_.is_extension = false;
+    ukm_helper->RegisterCapturingUpdate(device, is_capturing);
   }
 
   content::BrowserTaskEnvironment& task_environment() {
@@ -88,15 +66,6 @@ class VideoConferenceUkmHelperTest : public testing::Test {
  private:
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-
-  VideoConferenceWebAppState state_{
-      .id = base::UnguessableToken::Create(),
-      .last_activity_time = base::Time::Now(),
-      .is_capturing_microphone = false,
-      .is_capturing_camera = false,
-      .is_capturing_screen = false,
-      .is_extension = false,
-  };
 };
 
 // Tests capturing a media device correctly sets DidCapture<Device> metrics
@@ -130,8 +99,6 @@ TEST_F(VideoConferenceUkmHelperTest, DidCaptureDevice) {
       ukm_recorder.GetEntriesByName(UkmEntry::kEntryName)[0],
       UkmEntry::kDidCaptureScreenName, false);
 
-  ResetState();
-
   // Create a FakeVideoConferenceUkmHelper
   std::unique_ptr<FakeVideoConferenceUkmHelper> ukm_helper2 =
       std::make_unique<FakeVideoConferenceUkmHelper>(&ukm_recorder);
@@ -161,8 +128,6 @@ TEST_F(VideoConferenceUkmHelperTest, DidCaptureDevice) {
   ukm_recorder.ExpectEntryMetric(
       ukm_recorder.GetEntriesByName(UkmEntry::kEntryName)[1],
       UkmEntry::kDidCaptureScreenName, false);
-
-  ResetState();
 
   // Create a FakeVideoConferenceUkmHelper
   std::unique_ptr<FakeVideoConferenceUkmHelper> ukm_helper3 =
@@ -195,8 +160,6 @@ TEST_F(VideoConferenceUkmHelperTest, DidCaptureDevice) {
   ukm_recorder.ExpectEntryMetric(
       ukm_recorder.GetEntriesByName(UkmEntry::kEntryName)[2],
       UkmEntry::kDidCaptureScreenName, true);
-
-  ResetState();
 }
 
 // Tests media device capture durations.
@@ -240,8 +203,6 @@ TEST_F(VideoConferenceUkmHelperTest, CaptureDurations) {
   ukm_recorder.ExpectEntryMetric(
       ukm_recorder.GetEntriesByName(UkmEntry::kEntryName)[0],
       UkmEntry::kScreenCaptureDurationName, kDuration70ms);
-
-  ResetState();
 }
 
 // Tests total duration equals the time duration from the creation of the
@@ -277,8 +238,6 @@ TEST_F(VideoConferenceUkmHelperTest, TotalDuration) {
       ukm_recorder.GetEntriesByName(UkmEntry::kEntryName)[0],
       UkmEntry::kTotalDurationName,
       kDuration10ms + kDuration20ms + kDuration70ms);
-
-  ResetState();
 }
 
 // Tests that the destructor correctly includes any pending media devices whose
@@ -315,8 +274,6 @@ TEST_F(VideoConferenceUkmHelperTest, DestructorIncludesPendingCaptures) {
   ukm_recorder.ExpectEntryMetric(
       ukm_recorder.GetEntriesByName(UkmEntry::kEntryName)[0],
       UkmEntry::kTotalDurationName, kDuration20ms);
-
-  ResetState();
 }
 
 }  // namespace video_conference

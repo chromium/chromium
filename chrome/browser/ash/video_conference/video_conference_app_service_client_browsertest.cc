@@ -30,6 +30,7 @@
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/video_conference/video_conference_manager_ash.h"
 #include "chrome/browser/chromeos/video_conference/video_conference_manager_client_common.h"
+#include "chrome/browser/chromeos/video_conference/video_conference_ukm_helper.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -39,14 +40,18 @@
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/capability_access_update.h"
 #include "components/services/app_service/public/cpp/instance_registry.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 
 namespace ash {
 namespace {
 
 using AppIdString = std::string;
+using UkmEntry = ukm::builders::VideoConferencingEvent;
 
 constexpr char kAppId1[] = "random_app_id_1";
 constexpr char kAppName1[] = "random_app_name_1";
@@ -69,7 +74,7 @@ apps::AppPtr MakeApp(const AppIdString& app_id,
     app->name = base::StrCat({"AppName-", app_id});
   }
 
-  app->publisher_id = app_id;
+  app->publisher_id = base::StrCat({"PublisherId-", app_id});
 
   app->permissions.push_back(std::make_unique<apps::Permission>(
       apps::PermissionType::kCamera,
@@ -145,6 +150,9 @@ class VideoConferenceAppServiceClientTest : public InProcessBrowserTest {
     InProcessBrowserTest::SetUpOnMainThread();
 
     client_ = VideoConferenceAppServiceClient::GetForTesting();
+
+    test_ukm_recorder_ = std::make_unique<ukm::TestUkmRecorder>();
+    client_->test_ukm_recorder_ = test_ukm_recorder_.get();
 
     Profile* profile = ProfileManager::GetActiveUserProfile();
     instance_registry_ = &apps::AppServiceProxyFactory::GetForProfile(profile)
@@ -239,6 +247,7 @@ class VideoConferenceAppServiceClientTest : public InProcessBrowserTest {
   raw_ptr<apps::AppCapabilityAccessCache, ExperimentalAsh> capability_cache_ =
       nullptr;
   raw_ptr<VideoConferenceAppServiceClient, ExperimentalAsh> client_ = nullptr;
+  std::unique_ptr<ukm::TestUkmRecorder> test_ukm_recorder_;
 
   base::test::ScopedFeatureList scoped_feature_list_{
       ash::features::kVideoConference};
@@ -744,6 +753,81 @@ IN_PROC_BROWSER_TEST_F(VideoConferenceAppServiceClientTest,
   }
 
   EXPECT_TRUE(GetMediaApps().empty());
+}
+
+IN_PROC_BROWSER_TEST_F(VideoConferenceAppServiceClientTest, UkmTest) {
+  // Install two apps with permissions.
+  InstallApp(kAppId1);
+  InstallApp(kAppId2);
+  UpdateAppPermision(kAppId1, /*has_camera_permission=*/true,
+                     /*has_microphone_permission=*/false);
+  UpdateAppPermision(kAppId2, /*has_camera_permission=*/false,
+                     /*has_microphone_permission=*/true);
+
+  // Start two running instance.
+  FakeAppInstance instance1(instance_registry_, kAppId1);
+  instance1.Start();
+  FakeAppInstance instance2(instance_registry_, kAppId2);
+  instance2.Start();
+
+  // Accessing camera should start a tracking of the kAppId1.
+  SetAppCapabilityAccess(kAppId1, /*is_capturing_camera=*/true,
+                         /*is_capturing_microphone=*/false);
+  // Stopping camera access.
+  SetAppCapabilityAccess(kAppId1, /*is_capturing_camera=*/false,
+                         /*is_capturing_microphone=*/false);
+
+  // Closing instance1 should remove tracking of kAppId1, thus triggers ukm
+  // logging.
+  instance1.Close();
+  // Wait for the VideoConferenceAppServiceClient::MaybeRemoveApp to be called
+  // in the PostTask.
+  base::RunLoop().RunUntilIdle();
+
+  auto* vc_entry0 =
+      test_ukm_recorder_->GetEntriesByName(UkmEntry::kEntryName)[0];
+  test_ukm_recorder_->ExpectEntryMetric(vc_entry0,
+                                        UkmEntry::kDidCaptureCameraName, true);
+  test_ukm_recorder_->ExpectEntryMetric(
+      vc_entry0, UkmEntry::kDidCaptureMicrophoneName, false);
+  test_ukm_recorder_->ExpectEntryMetric(vc_entry0,
+                                        UkmEntry::kDidCaptureScreenName, false);
+  test_ukm_recorder_->ExpectEntryMetric(
+      vc_entry0, UkmEntry::kMicrophoneCaptureDurationName, 0);
+  test_ukm_recorder_->ExpectEntryMetric(
+      vc_entry0, UkmEntry::kScreenCaptureDurationName, 0);
+
+  EXPECT_GT(*test_ukm_recorder_->GetEntryMetric(
+                vc_entry0, UkmEntry::kCameraCaptureDurationName),
+            0);
+
+  SetAppCapabilityAccess(kAppId2, /*is_capturing_camera=*/true,
+                         /*is_capturing_microphone=*/true);
+
+  // Closing instance2 should remove tracking of kAppId2, thus triggers ukm
+  // logging.
+  instance2.Close();
+  // Wait for the VideoConferenceAppServiceClient::MaybeRemoveApp to be called
+  // in the PostTask.
+  base::RunLoop().RunUntilIdle();
+
+  auto* vc_entry1 =
+      test_ukm_recorder_->GetEntriesByName(UkmEntry::kEntryName)[1];
+  test_ukm_recorder_->ExpectEntryMetric(vc_entry1,
+                                        UkmEntry::kDidCaptureCameraName, true);
+  test_ukm_recorder_->ExpectEntryMetric(
+      vc_entry1, UkmEntry::kDidCaptureMicrophoneName, true);
+  test_ukm_recorder_->ExpectEntryMetric(vc_entry1,
+                                        UkmEntry::kDidCaptureScreenName, false);
+  test_ukm_recorder_->ExpectEntryMetric(
+      vc_entry1, UkmEntry::kScreenCaptureDurationName, 0);
+
+  EXPECT_GT(*test_ukm_recorder_->GetEntryMetric(
+                vc_entry1, UkmEntry::kMicrophoneCaptureDurationName),
+            0);
+  EXPECT_GT(*test_ukm_recorder_->GetEntryMetric(
+                vc_entry1, UkmEntry::kCameraCaptureDurationName),
+            0);
 }
 
 }  // namespace ash
