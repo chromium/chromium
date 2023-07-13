@@ -60,6 +60,7 @@ source_set("omnibox_util") {
     "omnibox_util.mm",
   ]
   deps = [
+    ":features",
     ":omnibox_suggestion_icon_util",
     "//base",
     "//components/omnibox/browser",
