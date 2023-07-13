@@ -243,8 +243,15 @@ export class ProgressCenterPanel {
         }
         return item.message;
       case ProgressItemState.PAUSED:
-        // TODO(b/279435843): Replace with translation strings.
-        return 'Confirmation required';
+        switch (item.type) {
+          case ProgressItemType.COPY:
+            return str('DLP_FILES_COPY_REVIEW_TITLE');
+          case ProgressItemType.MOVE:
+            return str('DLP_FILES_MOVE_REVIEW_TITLE');
+          default:
+            console.error('Unexpected operation type: ' + item.type);
+            return '';
+        }
       case ProgressItemState.ERROR:
         if (item.policyError) {
           return getStrForPolicyError(item);
@@ -334,10 +341,15 @@ export class ProgressCenterPanel {
         console.warn('Policy file count missing');
         return '';
       }
-      // TODO(b/279435843): Replace with translation strings.
-      return (item.policyFileCount === 1) ?
-          `File may contain sensitive content` :
-          `Files may contain sensitive content`;
+      if (item.policyFileCount === 1) {
+        if (!item.policyFileName) {
+          console.warn('Policy file name missing');
+          return '';
+        }
+        return strf('DLP_FILES_WARN_MESSAGE_SINGLE', item.policyFileName);
+      } else {
+        return strf('DLP_FILES_WARN_MESSAGE_MULTIPLE', item.policyFileCount);
+      }
     }
 
     if (item.state === ProgressItemState.ERROR) {

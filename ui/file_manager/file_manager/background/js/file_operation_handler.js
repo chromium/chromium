@@ -86,23 +86,26 @@ export class FileOperationHandler {
         if (event.pauseParams && event.pauseParams.policyParams) {
           item.state = ProgressItemState.PAUSED;
           item.policyFileCount = event.pauseParams.policyParams.policyFileCount;
-          // TODO(b/279435843): Replace with translation strings.
-          const single = event.pauseParams.policyParams.policyFileCount === 1;
-          const extraButtonText = single ? `${event.type} anyway` : 'Review';
-          item.setExtraButton(ProgressItemState.PAUSED, extraButtonText, () => {
-            if (single) {
-              // Proceed/cancel the action directly from the notification.
-              chrome.fileManagerPrivate.resumeIOTask(event.taskId, {
-                policyParams: {type: event.pauseParams.policyParams.type},
-                conflictParams: undefined,
-              });
-            } else {
-              // Show the dialog to proceed/cancel.
-              chrome.fileManagerPrivate.showPolicyDialog(
-                  event.taskId,
-                  chrome.fileManagerPrivate.PolicyDialogType.WARNING);
-            }
-          });
+          item.policyFileName = event.pauseParams.policyParams.fileName;
+          const extraButtonText = getPolicyExtraButtonText_(event);
+          if (event.pauseParams.policyParams.policyFileCount === 1) {
+            item.setExtraButton(
+                ProgressItemState.PAUSED, extraButtonText, () => {
+                  // Proceed/cancel the action directly from the notification.
+                  chrome.fileManagerPrivate.resumeIOTask(event.taskId, {
+                    policyParams: {type: event.pauseParams.policyParams.type},
+                    conflictParams: undefined,
+                  });
+                });
+          } else {
+            item.setExtraButton(
+                ProgressItemState.PAUSED, extraButtonText, () => {
+                  // Show the dialog to proceed/cancel.
+                  chrome.fileManagerPrivate.showPolicyDialog(
+                      event.taskId,
+                      chrome.fileManagerPrivate.PolicyDialogType.WARNING);
+                });
+          }
           break;
         }
         // Otherwise same is in-progress - fall through
@@ -145,18 +148,20 @@ export class FileOperationHandler {
             item.policyError =
                 getPolicyErrorFromIOTaskPolicyError_(event.policyError.type);
             item.policyFileCount = event.policyError.policyFileCount;
-            // TODO(b/279435843): Replace with translation strings.
+            item.policyFileName = event.policyError.fileName;
+            const extraButtonText = getPolicyExtraButtonText_(event);
             if (event.policyError.type !==
                     PolicyErrorType.DLP_WARNING_TIMEOUT &&
                 event.policyError.policyFileCount > 1) {
-              item.setExtraButton(ProgressItemState.ERROR, 'Review', () => {
-                chrome.fileManagerPrivate.showPolicyDialog(
-                    event.taskId,
-                    chrome.fileManagerPrivate.PolicyDialogType.ERROR);
-              });
+              item.setExtraButton(
+                  ProgressItemState.ERROR, extraButtonText, () => {
+                    chrome.fileManagerPrivate.showPolicyDialog(
+                        event.taskId,
+                        chrome.fileManagerPrivate.PolicyDialogType.ERROR);
+                  });
             } else {
               item.setExtraButton(
-                  ProgressItemState.ERROR, 'Learn more',
+                  ProgressItemState.ERROR, extraButtonText,
                   () => {
                       // TODO(b/289919765): Implementation.
                   });
@@ -323,4 +328,41 @@ function getPolicyErrorFromIOTaskPolicyError_(error) {
       console.warn(`Unexpected policy error type: ${error}`);
       return null;
   }
+}
+
+/**
+ * Returns the extra button text for policy panel items. Currently only
+ * supported for PAUSED and ERROR states due to policy, and for COPY or MOVE
+ * operation types.
+ * @param {!chrome.fileManagerPrivate.ProgressStatus} event
+ * @return {string} button text or empty string if not applicable.
+ * @private
+ */
+function getPolicyExtraButtonText_(event) {
+  if (event.state === chrome.fileManagerPrivate.IOTaskState.PAUSED &&
+      event.pauseParams && event.pauseParams.policyParams) {
+    if (event.pauseParams.policyParams.policyFileCount > 1) {
+      return str('DLP_FILES_REVIEW_BUTTON');
+    }
+    // Single item:
+    switch (event.type) {
+      case chrome.fileManagerPrivate.IOTaskType.COPY:
+        return str('DLP_FILES_COPY_WARN_CONTINUE_BUTTON');
+      case chrome.fileManagerPrivate.IOTaskType.MOVE:
+        return str('DLP_FILES_MOVE_WARN_CONTINUE_BUTTON');
+      default:
+        console.error('Unexpected operation type: ' + event.type);
+        return '';
+    }
+  }
+  if (event.state === chrome.fileManagerPrivate.IOTaskState.ERROR &&
+      event.policyError) {
+    if (event.policyError.type !== PolicyErrorType.DLP_WARNING_TIMEOUT &&
+        event.policyError.policyFileCount > 1) {
+      return str('DLP_FILES_REVIEW_BUTTON');
+    } else {
+      return str('LEARN_MORE_LABEL');
+    }
+  }
+  return '';
 }

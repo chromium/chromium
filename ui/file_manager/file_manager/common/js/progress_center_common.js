@@ -184,6 +184,12 @@ export class ProgressCenterItem {
      * @type {?number}
      */
     this.policyFileCount = null;
+
+    /**
+     * The name of the first file with a policy restriction, if any.
+     * @type {?string}
+     */
+    this.policyFileName = null;
   }
 
   /**
