@@ -1241,7 +1241,8 @@ void AutocorrectManager::AcceptOrClearPendingAutocorrect() {
 
 void AutocorrectManager::OnTextFieldContextualInfoChanged(
     const TextFieldContextualInfo& info) {
-  disabled_by_rule_ = denylist_.Contains(info.tab_url);
+  disabled_by_rule_ =
+      denylist_.Contains(info.tab_url) || chromeos::IsKioskSession();
   if (disabled_by_rule_) {
     LogAssistiveAutocorrectInternalState(
         AutocorrectInternalStates::kAppIsInDenylist);
