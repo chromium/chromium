@@ -4,7 +4,8 @@
 # found in the LICENSE file.
 """An utility for signing an updater metainstaller and contained code. This
 utility can also be used to package and sign an offline metainstaller by
-specifying the `--appid`, `--installer_path` and `--manifest_path` arguments.
+specifying the `--appid`, `--installer_path` and `--manifest_path` arguments,
+along with the optional `--manifest_dict_replacements` argument.
 
 For example, to sign `UpdaterSetup.exe`:
 python3 sign.py --in_file UpdaterSetup.exe --out_file UpdaterSetup.signed.exe
@@ -16,6 +17,8 @@ python3 sign.py --in_file UpdaterSetup.exe --out_file ChromeOfflineSetup.exe
     --appid {8A69D345-D564-463c-AFF1-A69D9E530F96}
     --installer_path path/to/110.0.5478.0_chrome_installer.exe
     --manifest_path path/to/OfflineManifest.gup
+    --manifest_dict_replacements
+        "{'${INSTALLER_VERSION}':'110.0.5478.0', '${ARCH_REQUIREMENT}':'x86'}"
 ```
 
 Or, for example, to package and sign an offline metainstaller with a local PFX
@@ -27,10 +30,13 @@ python3 sign.py --in_file UpdaterSetup.exe --out_file ChromeOfflineSetup.exe
     --appid {8A69D345-D564-463c-AFF1-A69D9E530F96}
     --installer_path path/to/110.0.5478.0_chrome_installer.exe
     --manifest_path path/to/OfflineManifest.gup
+    --manifest_dict_replacements
+        "{'${INSTALLER_VERSION}':'110.0.5478.0', '${ARCH_REQUIREMENT}':'x86'}"
 ```
 
-`OfflineManifest.gup` can include the following replaceable parameters that will
-be replaced with the computed values:
+In addition to the keys found in `manifest_dict_replacements`,
+`OfflineManifest.gup` can also include the following replaceable parameters that
+will be replaced with values computed by this script:
 * `${INSTALLER_SIZE}`.
 * `${INSTALLER_HASH_SHA256}`.
 
@@ -45,6 +51,7 @@ To run locally with a certificate in `My` store:
 
 import argparse
 import array
+import ast
 import hashlib
 import os
 import shutil
@@ -102,10 +109,12 @@ class Signer:
         command += [in_file]
         subprocess.run(command, check=True)
 
-    def _generate_target_manifest(self, installer_path, manifest_path):
-        """Replaces `${INSTALLER_SIZE}` and `${INSTALLER_HASH_SHA256}` in the
-        manifest with the computed size and hash, and returns the resultant
-        string."""
+    def _generate_target_manifest(self, installer_path, manifest_path,
+                                  manifest_dict_replacements):
+        """Replaces the keys in `manifest_dict_replacements` with the
+        corresponding values, as well as computed values for `${INSTALLER_SIZE}`
+        and `${INSTALLER_HASH_SHA256}` replacements in the provided
+        `mainfest_path`. Returns the resultant manifest as a string."""
         size = os.stat(os.path.abspath(installer_path)).st_size
         data = array.array('B')
         with open(os.path.abspath(installer_path), 'rb') as installer_file:
@@ -116,13 +125,15 @@ class Signer:
             for key, value in {
                     '${INSTALLER_SIZE}': str(size),
                     '${INSTALLER_HASH_SHA256}':
-                    hashlib.sha256(data).hexdigest()
+                    hashlib.sha256(data).hexdigest(),
+                    **ast.literal_eval(manifest_dict_replacements)
             }.items():
                 manifest_result = manifest_result.replace(key, value)
         return manifest_result
 
     def _copy_offline_installer_files(self, root, appid, installer_path,
-                                      manifest_path):
+                                      manifest_path,
+                                      manifest_dict_replacements):
         """Copies the offline installer and generated manifest under `root`."""
         offline_dir = os.path.join(root, 'Offline',
                                    '{' + str(uuid.uuid4()) + '}')
@@ -132,12 +143,14 @@ class Signer:
         with open(os.path.join(offline_dir, 'OfflineManifest.gup'),
                   'w') as f_out:
             f_out.write(
-                self._generate_target_manifest(installer_path, manifest_path))
+                self._generate_target_manifest(installer_path, manifest_path,
+                                               manifest_dict_replacements))
         shutil.copyfile(
             installer_path,
             os.path.join(app_dir, os.path.basename(installer_path)))
 
-    def _sign_7z(self, in_file, appid, installer_path, manifest_path):
+    def _sign_7z(self, in_file, appid, installer_path, manifest_path,
+                 manifest_dict_replacements):
         """Extract, sign, and rearchive the contents of a 7z archive."""
         tmp = tempfile.mkdtemp(dir=self._tmpdir)
         subprocess.run([self._lzma_exe, 'x', in_file,
@@ -153,10 +166,11 @@ class Signer:
                     self._sign_item(os.path.join(root, f))
                 elif ext == '.7z':
                     self._sign_7z(os.path.join(root, f), appid, installer_path,
-                                  manifest_path)
+                                  manifest_path, manifest_dict_replacements)
             if appid and 'updater.exe' in files:
                 self._copy_offline_installer_files(root, appid, installer_path,
-                                                   manifest_path)
+                                                   manifest_path,
+                                                   manifest_dict_replacements)
         subprocess.run([self._lzma_exe, 'a', '-mx0', in_file, '*'],
                        check=True,
                        cwd=tmp)
@@ -165,7 +179,8 @@ class Signer:
                            in_file,
                            appid=None,
                            installer_path=None,
-                           manifest_path=None):
+                           manifest_path=None,
+                           manifest_dict_replacements=None):
         """Return a path to a signed copy of an updater metainstaller."""
         workdir = tempfile.mkdtemp(dir=self._tmpdir)
         out_metainstaller = os.path.join(workdir, "metainstaller.exe")
@@ -173,7 +188,8 @@ class Signer:
         resource = 'updater.packed.7z'
         extracted_7z = os.path.join(workdir, resource)
         resed.ExtractResource('B7', 1033, resource, extracted_7z)
-        self._sign_7z(extracted_7z, appid, installer_path, manifest_path)
+        self._sign_7z(extracted_7z, appid, installer_path, manifest_path,
+                      manifest_dict_replacements)
         resed.UpdateResource('B7', 1033, resource, extracted_7z)
         resed.Commit()
         self._sign_item(out_metainstaller)
@@ -223,11 +239,20 @@ def main():
     parser.add_argument('--manifest_path',
                         required=False,
                         help='The path to the offline manifest .gup file.')
+    parser.add_argument(
+        '--manifest_dict_replacements',
+        required=False,
+        help=('A dictionary of `{key1:value1, ...keyN:valueN}`. This script '
+              'replaces the keys that it finds in the offline manifest .gup '
+              'file with the corresponding values.'))
     args = parser.parse_args()
     if args.appid and (args.installer_path is None
                        or args.manifest_path is None):
         parser.error(
             '`--appid` requires `--installer_path` and `--manifest_path`.')
+    if args.manifest_dict_replacements and args.manifest_path is None:
+        parser.error(
+            '`--manifest_dict_replacements` requires `--manifest_path`.')
     if args.certificate_password and args.certificate_file_path is None:
         parser.error(
             '`--certificate_password` requires `--certificate_file_path`.')
@@ -238,7 +263,8 @@ def main():
                    args.identity, args.certificate_file_path,
                    args.certificate_password).sign_metainstaller(
                        args.in_file, args.appid, args.installer_path,
-                       args.manifest_path), args.out_file)
+                       args.manifest_path, args.manifest_dict_replacements),
+            args.out_file)
 
 
 if __name__ == '__main__':
