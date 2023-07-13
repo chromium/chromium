@@ -523,8 +523,10 @@ ui::EventDispatchDetails WindowEventDispatcher::PreDispatchEvent(
     ui::EventTarget* target,
     ui::Event* event) {
   if (host_->compositor() && cc::CustomMetricRecorder::Get()) {
-    event_metrics_monitors_.push_back(
-        CreateScropedMetricsMonitorForEvent(*event));
+    // Must destroy existing monitor before creating the new one since the
+    // monitors are expected to be added and removed in stack order (LIFO).
+    event_metrics_monitor_.reset();
+    event_metrics_monitor_ = CreateScropedMetricsMonitorForEvent(*event);
   }
 
   Window* target_window = static_cast<Window*>(target);
@@ -607,9 +609,7 @@ ui::EventDispatchDetails WindowEventDispatcher::PostDispatchEvent(
   // monitor creation code in PreDispatchEvent to track latencies properly.
   if (!details.dispatcher_destroyed && host_->compositor() &&
       cc::CustomMetricRecorder::Get()) {
-    std::unique_ptr<cc::EventsMetricsManager::ScopedMonitor> monitor =
-        std::move(event_metrics_monitors_.back());
-    event_metrics_monitors_.pop_back();
+    event_metrics_monitor_.reset();
   }
 
   return details;

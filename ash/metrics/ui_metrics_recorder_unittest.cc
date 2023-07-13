@@ -116,10 +116,6 @@ TEST_F(UiMetricsRecorderTest, KeyEvent) {
 
   base::HistogramTester histogram_tester;
 
-  // TODO(b/258382822): Each key event generates one extra latency data for IME.
-  // Ideally we should have only one latency data for each event.
-  DisableIME();
-
   EXPECT_EQ(view->GetReceivedKeyEvent(), 0);
   PressAndReleaseKey(ui::VKEY_A);
   // Expect to receive two key events: KeyPressed and KeyRelease.
