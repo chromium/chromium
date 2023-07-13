@@ -787,10 +787,6 @@ RealboxHandler::~RealboxHandler() {
   controller_ = nullptr;
 }
 
-bool RealboxHandler::IsRemoteBound() const {
-  return page_.is_bound();
-}
-
 void RealboxHandler::SetPage(
     mojo::PendingRemote<omnibox::mojom::Page> pending_page) {
   page_.Bind(std::move(pending_page));

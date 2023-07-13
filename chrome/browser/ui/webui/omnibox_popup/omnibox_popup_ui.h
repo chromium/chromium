@@ -50,10 +50,10 @@ class OmniboxPopupUI : public ui::MojoWebUIController {
       mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
           pending_receiver);
 
-  RealboxHandler* handler() { return handler_.get(); }
+  RealboxHandler* webui_handler() { return webui_handler_.get(); }
 
  private:
-  std::unique_ptr<RealboxHandler> handler_;
+  std::unique_ptr<RealboxHandler> webui_handler_;
   std::unique_ptr<ui::ColorChangeHandler> color_provider_handler_;
   raw_ptr<Profile> profile_;
   MetricsReporter metrics_reporter_;
