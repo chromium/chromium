@@ -480,6 +480,8 @@ TEST_F(VideoEncoderTest, BitrateCheck) {
     encoder->EncodeUntil(VideoEncoder::kFrameReleased,
                          kNumFramesToEncodeForBitrateCheck);
     EXPECT_TRUE(encoder->WaitUntilIdle());
+    EXPECT_TRUE(encoder->WaitForEvent(VideoEncoder::kBitstreamReady,
+                                      kNumFramesToEncodeForBitrateCheck));
   }
   EXPECT_NEAR(encoder->GetStats().Bitrate(), first_bitrate,
               tolerance * first_bitrate);
@@ -497,6 +499,8 @@ TEST_F(VideoEncoderTest, BitrateCheck) {
     encoder->EncodeUntil(VideoEncoder::kFrameReleased,
                          kNumFramesToEncodeForBitrateCheck * 2);
     EXPECT_TRUE(encoder->WaitUntilIdle());
+    EXPECT_TRUE(encoder->WaitForEvent(VideoEncoder::kBitstreamReady,
+                                      kNumFramesToEncodeForBitrateCheck));
     EXPECT_NEAR(encoder->GetStats().Bitrate(), second_bitrate,
                 tolerance * second_bitrate);
 
@@ -507,7 +511,6 @@ TEST_F(VideoEncoderTest, BitrateCheck) {
     encoder->UpdateBitrate(
         AllocateDefaultBitrateForTesting(
             config.num_spatial_layers, config.num_temporal_layers,
-            // TODO(b/181797390): Reconsider if this peak bitrate is reasonable.
             Bitrate::ConstantBitrate(third_bitrate)),
         third_framerate);
     encoder->Encode();
