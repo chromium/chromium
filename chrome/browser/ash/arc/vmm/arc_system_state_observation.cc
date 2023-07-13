@@ -58,7 +58,7 @@ void ArcSystemStateObservation::ThrottleInstance(bool should_throttle) {
 void ArcSystemStateObservation::OnAppStatesChanged(
     const std::string& id,
     const ArcAppListPrefs::AppInfo& app_info) {
-  if (id != arc::kPlayStoreAppId) {
+  if (id != arc::kPlayStoreAppId || app_info.ready == arc_running_) {
     return;
   }
   if (app_info.ready) {
