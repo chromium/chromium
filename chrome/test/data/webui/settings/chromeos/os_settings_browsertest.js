@@ -612,11 +612,12 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
    'os_printing_page/cups_printer_landing_page_test.js',
    {enabled: ['ash::features::kPrinterSettingsPrinterStatus']}
  ],
- [
-   'OsPrintingPageCupsPrinterPage',
-   'os_printing_page/cups_printer_page_test.js',
-   {enabled: ['ash::features::kPrinterSettingsRevamp']}
- ],
+ // TODO(crbug.com/1464595): Test is flaky on debug build.
+ // [
+ //   'OsPrintingPageCupsPrinterPage',
+ //   'os_printing_page/cups_printer_page_test.js',
+ //   {enabled: ['ash::features::kPrinterSettingsRevamp']}
+ // ],
  [
    'OsPrintingPageCupsPrintersEntry',
    'os_printing_page/cups_printers_entry_test.js', {
