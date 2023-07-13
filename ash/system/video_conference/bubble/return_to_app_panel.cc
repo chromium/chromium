@@ -7,12 +7,11 @@
 #include <memory>
 #include <string>
 
-#include "ash/bubble/bubble_utils.h"
 #include "ash/public/cpp/metrics_util.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/typography.h"
 #include "ash/system/video_conference/bubble/bubble_view_ids.h"
+#include "ash/system/video_conference/bubble/return_to_app_button_base.h"
 #include "ash/system/video_conference/video_conference_tray_controller.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -38,7 +37,6 @@
 #include "ui/views/animation/animation_builder.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/image_view.h"
-#include "ui/views/controls/label.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/view_class_properties.h"
@@ -55,7 +53,6 @@ const int kReturnToAppPanelSidePadding = 16;
 const int kReturnToAppPanelSpacing = 8;
 const int kReturnToAppButtonTopRowSpacing = 12;
 const int kReturnToAppButtonSpacing = 16;
-const int kReturnToAppButtonIconsSpacing = 2;
 const int kReturnToAppIconSize = 20;
 
 constexpr auto kPanelBoundsChangeAnimationDuration = base::Milliseconds(200);
@@ -153,48 +150,6 @@ void FadeOutView(views::View* view,
       .SetOpacity(view, 0.0f);
 }
 
-// Creates a view containing camera, microphone, and screen share icons that
-// shows capturing state of a media app.
-std::unique_ptr<views::View> CreateReturnToAppIconsContainer(
-    bool is_capturing_camera,
-    bool is_capturing_microphone,
-    bool is_capturing_screen) {
-  auto container = std::make_unique<views::View>();
-  container->SetLayoutManager(std::make_unique<views::FlexLayout>())
-      ->SetOrientation(views::LayoutOrientation::kHorizontal)
-      .SetMainAxisAlignment(views::LayoutAlignment::kEnd)
-      .SetCrossAxisAlignment(views::LayoutAlignment::kStretch)
-      .SetDefault(views::kMarginsKey,
-                  gfx::Insets::TLBR(0, kReturnToAppButtonIconsSpacing / 2, 0,
-                                    kReturnToAppButtonIconsSpacing / 2));
-
-  if (is_capturing_camera) {
-    auto camera_icon = std::make_unique<views::ImageView>();
-    camera_icon->SetImage(ui::ImageModel::FromVectorIcon(
-        kPrivacyIndicatorsCameraIcon, cros_tokens::kCrosSysPositive,
-        kReturnToAppIconSize));
-    container->AddChildView(std::move(camera_icon));
-  }
-
-  if (is_capturing_microphone) {
-    auto microphone_icon = std::make_unique<views::ImageView>();
-    microphone_icon->SetImage(ui::ImageModel::FromVectorIcon(
-        kPrivacyIndicatorsMicrophoneIcon, cros_tokens::kCrosSysPositive,
-        kReturnToAppIconSize));
-    container->AddChildView(std::move(microphone_icon));
-  }
-
-  if (is_capturing_screen) {
-    auto screen_share_icon = std::make_unique<views::ImageView>();
-    screen_share_icon->SetImage(ui::ImageModel::FromVectorIcon(
-        kPrivacyIndicatorsScreenShareIcon, cros_tokens::kCrosSysPositive,
-        kReturnToAppIconSize));
-    container->AddChildView(std::move(screen_share_icon));
-  }
-
-  return container;
-}
-
 // Gets the display text representing a media app shown in the return to app
 // panel.
 std::u16string GetMediaAppDisplayText(
@@ -280,14 +235,13 @@ ReturnToAppButton::ReturnToAppButton(
     bool is_capturing_screen,
     const std::u16string& display_text,
     crosapi::mojom::VideoConferenceAppType app_type)
-    : is_capturing_camera_(is_capturing_camera),
-      is_capturing_microphone_(is_capturing_microphone),
-      is_capturing_screen_(is_capturing_screen),
+    : ReturnToAppButtonBase(id,
+                            is_capturing_camera,
+                            is_capturing_microphone,
+                            is_capturing_screen,
+                            display_text,
+                            app_type),
       panel_(panel) {
-  SetCallback(base::BindRepeating(&ReturnToAppButton::OnButtonClicked,
-                                  weak_ptr_factory_.GetWeakPtr(), id,
-                                  app_type));
-
   auto spacing = is_top_row ? kReturnToAppButtonTopRowSpacing / 2
                             : kReturnToAppButtonSpacing / 2;
   SetLayoutManager(std::make_unique<views::FlexLayout>())
@@ -299,26 +253,11 @@ ReturnToAppButton::ReturnToAppButton(
       .SetInteriorMargin(gfx::Insets::TLBR(0, kReturnToAppPanelSidePadding, 0,
                                            kReturnToAppPanelSidePadding));
 
-  icons_container_ = AddChildView(CreateReturnToAppIconsContainer(
-      is_capturing_camera, is_capturing_microphone, is_capturing_screen));
   if (!is_top_row) {
-    icons_container_->SetPreferredSize(
+    icons_container()->SetPreferredSize(
         gfx::Size(/*width=*/kReturnToAppIconSize * panel->max_capturing_count(),
                   /*height=*/kReturnToAppIconSize));
   }
-
-  auto label = std::make_unique<views::Label>(display_text);
-  label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  label->SetProperty(
-      views::kFlexBehaviorKey,
-      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
-                               views::MaximumFlexSizeRule::kPreferred));
-
-  label->SetAutoColorReadabilityEnabled(false);
-  TypographyProvider::Get()->StyleLabel(TypographyToken::kLegacyBody2, *label);
-  label->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
-
-  label_ = AddChildView(std::move(label));
 
   if (is_top_row) {
     auto expand_indicator = std::make_unique<ReturnToAppExpandButton>(this);
@@ -329,8 +268,8 @@ ReturnToAppButton::ReturnToAppButton(
     expand_indicator_ = AddChildView(std::move(expand_indicator));
 
     // Add a layer for icons container in the top row to perform animation.
-    icons_container_->SetPaintToLayer();
-    icons_container_->layer()->SetFillsBoundsOpaquely(false);
+    icons_container()->SetPaintToLayer();
+    icons_container()->layer()->SetFillsBoundsOpaquely(false);
   }
 
   // An empty `id` means that this view is not associated with any particular
@@ -371,9 +310,7 @@ void ReturnToAppButton::OnButtonClicked(
   // For rows that are not the summary row (which has non-empty `id`), perform
   // return to app.
   if (!id.is_empty()) {
-    ash::VideoConferenceTrayController::Get()->ReturnToApp(id);
-    base::UmaHistogramEnumeration("Ash.VideoConference.ReturnToApp.Click",
-                                  app_type);
+    ReturnToAppButtonBase::OnButtonClicked(id, app_type);
     return;
   }
 
@@ -390,39 +327,17 @@ void ReturnToAppButton::OnButtonClicked(
     observer.OnExpandedStateChanged(expanded_);
   }
 
-  icons_container_->SetVisible(!expanded_);
+  icons_container()->SetVisible(!expanded_);
   auto tooltip_text_id =
       expanded_ ? IDS_ASH_VIDEO_CONFERENCE_RETURN_TO_APP_HIDE_TOOLTIP
                 : IDS_ASH_VIDEO_CONFERENCE_RETURN_TO_APP_SHOW_TOOLTIP;
   expand_indicator_->SetTooltipText(l10n_util::GetStringUTF16(tooltip_text_id));
 
-  if (icons_container_->GetVisible()) {
-    FadeInView(icons_container_, /*delay_in_ms=*/100, /*duration_in_ms=*/100,
+  if (icons_container()->GetVisible()) {
+    FadeInView(icons_container(), /*delay_in_ms=*/100, /*duration_in_ms=*/100,
                /*animation_histogram_name=*/
                "Ash.VideoConference.SummaryIcons.FadeIn.AnimationSmoothness");
   }
-}
-
-std::u16string ReturnToAppButton::GetPeripheralsAccessibleName() {
-  std::u16string tooltip_text;
-  if (is_capturing_camera_) {
-    tooltip_text += l10n_util::GetStringFUTF16(
-        VIDEO_CONFERENCE_RETURN_TO_APP_PERIPHERALS_ACCESSIBLE_NAME,
-        l10n_util::GetStringUTF16(VIDEO_CONFERENCE_TOGGLE_BUTTON_TYPE_CAMERA));
-  }
-  if (is_capturing_microphone_) {
-    tooltip_text += l10n_util::GetStringFUTF16(
-        VIDEO_CONFERENCE_RETURN_TO_APP_PERIPHERALS_ACCESSIBLE_NAME,
-        l10n_util::GetStringUTF16(
-            VIDEO_CONFERENCE_TOGGLE_BUTTON_TYPE_MICROPHONE));
-  }
-  if (is_capturing_screen_) {
-    tooltip_text += l10n_util::GetStringFUTF16(
-        VIDEO_CONFERENCE_RETURN_TO_APP_PERIPHERALS_ACCESSIBLE_NAME,
-        l10n_util::GetStringUTF16(
-            VIDEO_CONFERENCE_TOGGLE_BUTTON_TYPE_SCREEN_SHARE));
-  }
-  return tooltip_text;
 }
 
 // -----------------------------------------------------------------------------

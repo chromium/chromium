@@ -9,6 +9,7 @@
 #include <string>
 
 #include "ash/ash_export.h"
+#include "ash/system/video_conference/bubble/return_to_app_button_base.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -17,7 +18,6 @@
 #include "ui/compositor/throughput_tracker.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/animation/animation_delegate_views.h"
-#include "ui/views/controls/button/button.h"
 #include "ui/views/view.h"
 
 namespace base {
@@ -32,7 +32,6 @@ class LinearAnimation;
 namespace views {
 class FlexLayout;
 class ImageView;
-class Label;
 class View;
 }  // namespace views
 
@@ -42,10 +41,8 @@ class ReturnToAppPanel;
 
 using MediaApps = std::vector<crosapi::mojom::VideoConferenceMediaAppInfoPtr>;
 
-// The "return to app" button that resides within the "return to app" panel,
-// showing information of a particular running media app. Clicking on this
-// button will take users to the app.
-class ASH_EXPORT ReturnToAppButton : public views::Button {
+// The "return to app" button that resides within the "return to app" panel.
+class ASH_EXPORT ReturnToAppButton : public ReturnToAppButtonBase {
  public:
   class Observer : public base::CheckedObserver {
    public:
@@ -76,32 +73,16 @@ class ASH_EXPORT ReturnToAppButton : public views::Button {
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
-  bool is_capturing_camera() const { return is_capturing_camera_; }
-  bool is_capturing_microphone() const { return is_capturing_microphone_; }
-  bool is_capturing_screen() const { return is_capturing_screen_; }
+  // ReturnToAppButtonBase:
+  void OnButtonClicked(
+      const base::UnguessableToken& id,
+      crosapi::mojom::VideoConferenceAppType app_type) override;
 
   bool expanded() const { return expanded_; }
-
-  views::Label* label() { return label_; }
-  views::View* icons_container() { return icons_container_; }
   views::ImageView* expand_indicator() { return expand_indicator_; }
 
  private:
   FRIEND_TEST_ALL_PREFIXES(ReturnToAppPanelTest, ExpandCollapse);
-
-  // Callback for the button.
-  void OnButtonClicked(const base::UnguessableToken& id,
-                       crosapi::mojom::VideoConferenceAppType app_type);
-
-  // Get the text regarding the peripherals part of the return to app button
-  // accessible name.
-  std::u16string GetPeripheralsAccessibleName();
-
-  // Indicates if the running app is using camera, microphone, or screen
-  // sharing.
-  const bool is_capturing_camera_;
-  const bool is_capturing_microphone_;
-  const bool is_capturing_screen_;
 
   // Registered observers.
   base::ObserverList<Observer> observer_list_;
@@ -116,18 +97,9 @@ class ASH_EXPORT ReturnToAppButton : public views::Button {
   // This panel is the parent view of this button.
   const raw_ptr<ReturnToAppPanel, ExperimentalAsh> panel_;
 
-  // Label showing the url or name of the running app.
-  raw_ptr<views::Label, ExperimentalAsh> label_ = nullptr;
-
-  // The container of icons showing the state of camera/microphone/screen
-  // capturing of the media app.
-  raw_ptr<views::View, ExperimentalAsh> icons_container_ = nullptr;
-
   // The indicator showing if the panel is in expanded or collapsed state. Only
   // available if the button is in the top row.
   raw_ptr<views::ImageView, ExperimentalAsh> expand_indicator_ = nullptr;
-
-  base::WeakPtrFactory<ReturnToAppButton> weak_ptr_factory_{this};
 };
 
 // The "return to app" panel that resides in the video conference bubble. The
