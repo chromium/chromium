@@ -5590,10 +5590,12 @@ class LaunchDesktopTest(ChromeDriverBaseTest):
       os.close(file_descriptor)
       os.chmod(path, 0o777)
       exception_raised = False
+      switches = ['--remote-debugging-port=0']
       try:
         driver = chromedriver.ChromeDriver(_CHROMEDRIVER_SERVER_URL,
                                            _CHROMEDRIVER_SERVER_PID,
                                            chrome_binary=path,
+                                           chrome_switches=switches,
                                            test_name=self.id())
       except Exception as e:
         self.assertIn('Chrome failed to start', str(e))
