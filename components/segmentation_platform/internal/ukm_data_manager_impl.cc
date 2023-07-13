@@ -4,6 +4,7 @@
 
 #include "components/segmentation_platform/internal/ukm_data_manager_impl.h"
 
+#include "base/check_is_test.h"
 #include "base/check_op.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/segmentation_platform/internal/database/ukm_database_impl.h"
@@ -89,11 +90,21 @@ UrlSignalHandler* UkmDataManagerImpl::GetOrCreateUrlHandler() {
 
 void UkmDataManagerImpl::StartObservingUkm(const UkmConfig& ukm_config) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_check_);
+  // TODO(b/290821132): Remove this check.
+  if (!ukm_observer_) {
+    CHECK_IS_TEST();
+    return;
+  }
   ukm_observer_->StartObserving(ukm_config);
 }
 
 void UkmDataManagerImpl::PauseOrResumeObservation(bool pause) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_check_);
+  // TODO(b/290821132): Remove this check.
+  if (!ukm_observer_) {
+    CHECK_IS_TEST();
+    return;
+  }
   ukm_observer_->PauseOrResumeObservation(pause);
 }
 
@@ -101,6 +112,10 @@ UkmDatabase* UkmDataManagerImpl::GetUkmDatabase() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_check_);
   DCHECK(ukm_database_);
   return ukm_database_.get();
+}
+
+bool UkmDataManagerImpl::HasUkmDatabase() {
+  return ukm_database_ ? true : false;
 }
 
 void UkmDataManagerImpl::OnEntryAdded(ukm::mojom::UkmEntryPtr entry) {

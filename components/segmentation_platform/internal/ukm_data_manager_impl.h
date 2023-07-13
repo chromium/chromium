@@ -38,6 +38,7 @@ class UkmDataManagerImpl : public UkmDataManager {
   void PauseOrResumeObservation(bool pause) override;
   UrlSignalHandler* GetOrCreateUrlHandler() override;
   UkmDatabase* GetUkmDatabase() override;
+  bool HasUkmDatabase() override;
   void OnEntryAdded(ukm::mojom::UkmEntryPtr entry) override;
   void OnUkmSourceUpdated(ukm::SourceId source_id,
                           const std::vector<GURL>& urls) override;
