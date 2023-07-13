@@ -59934,6 +59934,8 @@ from previous Chrome versions.
   <int value="-2017778637" label="PrintSaveToDrive:disabled"/>
   <int value="-2017250992"
       label="AutofillSuggestServerCardInsteadOfLocalCard:disabled"/>
+  <int value="-2016586620"
+      label="(Obsolete) AccessibilityUnserializeOptimizations:enabled"/>
   <int value="-2015293660" label="AccessibilityExposeDisplayNone:disabled"/>
   <int value="-2014948560" label="TabGroupsAutoCreate:enabled"/>
   <int value="-2013551096" label="ViewsSimplifiedFullscreenUI:disabled"/>
@@ -61533,8 +61535,6 @@ from previous Chrome versions.
   <int value="-1217425153" label="ChromeHomeClearUrlOnOpen:enabled"/>
   <int value="-1216837777" label="clear-data-reduction-proxy-data-savings"/>
   <int value="-1216570731" label="OfflineHome:enabled"/>
-  <int value="-1215163628"
-      label="AccessibilityUnserializeOptimizations:disabled"/>
   <int value="-1214870820" label="EnableNewStyleLauncher:enabled"/>
   <int value="-1213127403" label="EnableLensPing:enabled"/>
   <int value="-1212855900" label="enable-all-bookmarks-view"/>
@@ -62634,8 +62634,6 @@ from previous Chrome versions.
       label="AutofillPreventOverridingPrefilledValues:disabled"/>
   <int value="-644402170"
       label="AccessibilityAcceleratorNotificationsTimeout:enabled"/>
-  <int value="-643702496"
-      label="AccessibilityUnserializeOptimizations:enabled"/>
   <int value="-643217597" label="EduCoexistenceConsentLog:enabled"/>
   <int value="-642346675" label="DesktopPWAsAttentionBadgingCrOS:enabled"/>
   <int value="-641846393" label="WebViewLegacyTlsSupport:enabled"/>
@@ -67441,6 +67439,8 @@ from previous Chrome versions.
   <int value="1835931933" label="ShareUsageRankingFixedMore:enabled"/>
   <int value="1835970010" label="UrlScoringModel:enabled"/>
   <int value="1836557489" label="EnableDangerousDownloadDialog:disabled"/>
+  <int value="1836617513"
+      label="(Obsolete) AccessibilityUnserializeOptimizations:disabled"/>
   <int value="1836729140" label="OmniboxInspireMe:disabled"/>
   <int value="1836774441" label="SameAppWindowCycle:enabled"/>
   <int value="1836916996" label="OmniboxShortcutExpanding:disabled"/>

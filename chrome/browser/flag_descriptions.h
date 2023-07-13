@@ -640,9 +640,6 @@ extern const char kAccessibilitySelectToSpeakPrefsMigrationDescription[];
 extern const char kAccessibilitySelectToSpeakHoverTextImprovementsName[];
 extern const char kAccessibilitySelectToSpeakHoverTextImprovementsDescription[];
 
-extern const char kAccessibilityUnserializeOptimizationsName[];
-extern const char kAccessibilityUnserializeOptimizationsDescription[];
-
 extern const char kMacCoreLocationBackendName[];
 extern const char kMacCoreLocationBackendDescription[];
 

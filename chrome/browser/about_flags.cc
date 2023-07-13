@@ -10354,12 +10354,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillEnableEmailOtpForVcnYellowPath)},
 
-    {"enable-accessibility-unserialize-optimizations",
-     flag_descriptions::kAccessibilityUnserializeOptimizationsName,
-     flag_descriptions::kAccessibilityUnserializeOptimizationsDescription,
-     kOsAll,
-     FEATURE_VALUE_TYPE(features::kAccessibilityUnserializeOptimizations)},
-
     {"enable-compression-dictionary-transport",
      flag_descriptions::kCompressionDictionaryTransportName,
      flag_descriptions::kCompressionDictionaryTransportDescription, kOsAll,

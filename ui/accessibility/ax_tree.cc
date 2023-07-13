@@ -14,7 +14,6 @@
 #include "base/command_line.h"
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
-#include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
@@ -26,7 +25,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/timer/elapsed_timer.h"
 #include "components/crash/core/common/crash_key.h"
-#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_event.h"
 #include "ui/accessibility/ax_language_detection.h"
@@ -1075,41 +1073,16 @@ bool AXTree::Unserialize(const AXTreeUpdate& update) {
 
   // Notify observers of subtrees and nodes that are about to be destroyed or
   // reparented, this must be done before applying any updates to the tree.
-  if (features::IsUnserializeOptimizationsEnabled()) {
-    for (AXTreeObserver& observer : observers_) {
-      for (auto&& pair : update_state.node_id_to_pending_data) {
-        AXNode* node = GetFromId(pair.first);
-        if (!node || node->id() == kInvalidAXNodeID) {
-          continue;
+  for (auto&& pair : update_state.node_id_to_pending_data) {
+    const AXNodeID node_id = pair.first;
+    const std::unique_ptr<PendingStructureChanges>& data = pair.second;
+    if (data->DoesNodeExpectSubtreeOrNodeWillBeDestroyed()) {
+      if (AXNode* node = GetFromId(node_id)) {
+        if (data->DoesNodeExpectSubtreeWillBeDestroyed()) {
+          NotifySubtreeWillBeReparentedOrDeleted(node, &update_state);
         }
-
-        if (pair.second->DoesNodeExpectSubtreeWillBeDestroyed()) {
-          NotifySubtreeWillBeReparentedOrDeletedExperimental(
-              node, &update_state, observer);
-        }
-        if (pair.second->DoesNodeExpectNodeWillBeDestroyed()) {
-          table_info_map_.erase(node->id());
-
-          if (update_state.IsReparentedNode(node)) {
-            observer.OnNodeWillBeReparented(this, node);
-          } else {
-            observer.OnNodeWillBeDeleted(this, node);
-          }
-        }
-      }
-    }
-  } else {
-    for (auto&& pair : update_state.node_id_to_pending_data) {
-      const AXNodeID node_id = pair.first;
-      const std::unique_ptr<PendingStructureChanges>& data = pair.second;
-      if (data->DoesNodeExpectSubtreeOrNodeWillBeDestroyed()) {
-        if (AXNode* node = GetFromId(node_id)) {
-          if (data->DoesNodeExpectSubtreeWillBeDestroyed()) {
-            NotifySubtreeWillBeReparentedOrDeleted(node, &update_state);
-          }
-          if (data->DoesNodeExpectNodeWillBeDestroyed()) {
-            NotifyNodeWillBeReparentedOrDeleted(node, &update_state);
-          }
+        if (data->DoesNodeExpectNodeWillBeDestroyed()) {
+          NotifyNodeWillBeReparentedOrDeleted(node, &update_state);
         }
       }
     }
@@ -1121,123 +1094,58 @@ bool AXTree::Unserialize(const AXTreeUpdate& update) {
   // so that we only notify the initial node data against the final node data,
   // unless the node is a new root.
   std::set<AXNodeID> notified_node_attributes_will_change;
-  if (features::IsUnserializeOptimizationsEnabled()) {
-    std::vector<std::pair<AXNodeData, AXNodeData>> nodes_to_notify;
-    // Iterate over ObserverList as the outer for loop, but to prevent repeated
-    // calls to GetFromId, first construct a list of nodes to notify.
-    for (const auto& new_data : update_state.updated_nodes) {
-      const bool is_new_root =
-          update_state.root_will_be_created && new_data.id == update.root_id;
-      if (is_new_root || new_data.id == kInvalidAXNodeID) {
-        continue;
-      }
-
-      AXNode* node = GetFromId(new_data.id);
-      if (node &&
-          notified_node_attributes_will_change.insert(new_data.id).second) {
-        nodes_to_notify.emplace_back(node->data(), new_data);
-        for (AXTreeObserver& observer : observers_) {
-          if (new_data.HasIntListAttribute(
-                  ax::mojom::IntListAttribute::kTextOperationStartOffsets)) {
-            DCHECK(new_data.HasIntListAttribute(
-                ax::mojom::IntListAttribute::kTextOperationStartOffsets));
-            DCHECK(new_data.HasIntListAttribute(
-                ax::mojom::IntListAttribute::kTextOperationEndOffsets));
-            DCHECK(new_data.HasIntListAttribute(
-                ax::mojom::IntListAttribute::kTextOperationStartAnchorIds));
-            DCHECK(new_data.HasIntListAttribute(
-                ax::mojom::IntListAttribute::kTextOperationEndAnchorIds));
-            DCHECK(new_data.HasIntListAttribute(
-                ax::mojom::IntListAttribute::kTextOperations));
-            observer.OnTextDeletionOrInsertion(*node, new_data);
-          }
-        }
-      }
+  for (const auto& new_data : update_state.updated_nodes) {
+    const bool is_new_root =
+        update_state.root_will_be_created && new_data.id == update.root_id;
+    if (is_new_root) {
+      continue;
     }
 
-    for (AXTreeObserver& observer : observers_) {
-      for (const auto& pair : nodes_to_notify) {
-        observer.OnNodeDataWillChange(this, pair.first, pair.second);
-      }
-    }
-  } else {
-    for (const auto& new_data : update_state.updated_nodes) {
-      const bool is_new_root =
-          update_state.root_will_be_created && new_data.id == update.root_id;
-      if (is_new_root) {
-        continue;
-      }
-
-      AXNode* node = GetFromId(new_data.id);
-      if (node &&
-          notified_node_attributes_will_change.insert(new_data.id).second) {
-        for (AXTreeObserver& observer : observers_) {
-          if (new_data.HasIntListAttribute(
-                  ax::mojom::IntListAttribute::kTextOperationStartOffsets)) {
-            DCHECK(new_data.HasIntListAttribute(
-                ax::mojom::IntListAttribute::kTextOperationStartOffsets));
-            DCHECK(new_data.HasIntListAttribute(
-                ax::mojom::IntListAttribute::kTextOperationEndOffsets));
-            DCHECK(new_data.HasIntListAttribute(
-                ax::mojom::IntListAttribute::kTextOperationStartAnchorIds));
-            DCHECK(new_data.HasIntListAttribute(
-                ax::mojom::IntListAttribute::kTextOperationEndAnchorIds));
-            DCHECK(new_data.HasIntListAttribute(
-                ax::mojom::IntListAttribute::kTextOperations));
-            observer.OnTextDeletionOrInsertion(*node, new_data);
-          }
+    AXNode* node = GetFromId(new_data.id);
+    if (node &&
+        notified_node_attributes_will_change.insert(new_data.id).second) {
+      for (AXTreeObserver& observer : observers_) {
+        if (new_data.HasIntListAttribute(
+                ax::mojom::IntListAttribute::kTextOperationStartOffsets)) {
+          DCHECK(new_data.HasIntListAttribute(
+              ax::mojom::IntListAttribute::kTextOperationStartOffsets));
+          DCHECK(new_data.HasIntListAttribute(
+              ax::mojom::IntListAttribute::kTextOperationEndOffsets));
+          DCHECK(new_data.HasIntListAttribute(
+              ax::mojom::IntListAttribute::kTextOperationStartAnchorIds));
+          DCHECK(new_data.HasIntListAttribute(
+              ax::mojom::IntListAttribute::kTextOperationEndAnchorIds));
+          DCHECK(new_data.HasIntListAttribute(
+              ax::mojom::IntListAttribute::kTextOperations));
+          observer.OnTextDeletionOrInsertion(*node, new_data);
         }
-        NotifyNodeAttributesWillChange(
-            node, update_state,
-            update_state.old_tree_data ? &update_state.old_tree_data.value()
-                                       : nullptr,
-            node->data(),
-            update_state.new_tree_data ? &update_state.new_tree_data.value()
-                                       : nullptr,
-            new_data);
       }
+      NotifyNodeAttributesWillChange(
+          node, update_state,
+          update_state.old_tree_data ? &update_state.old_tree_data.value()
+                                     : nullptr,
+          node->data(),
+          update_state.new_tree_data ? &update_state.new_tree_data.value()
+                                     : nullptr,
+          new_data);
     }
   }
 
   // Notify observers of nodes about to change their ignored state.
-  if (features::IsUnserializeOptimizationsEnabled()) {
-    std::vector<AXNode*> nodes_to_notify;
-    for (AXNodeID id : update_state.ignored_state_changed_ids) {
-      AXNode* node = GetFromId(id);
-      if (node) {
-        nodes_to_notify.push_back(node);
-      }
-    }
-    for (AXTreeObserver& observer : observers_) {
-      for (AXNode* node : nodes_to_notify) {
-        bool will_be_ignored = !node->IsIgnored();
-        // Don't fire ignored state change when the parent is also changing to
-        // the same ignored state.
-        bool is_root_of_ignored_change =
-            !node->parent() ||
-            node->IsIgnored() != node->parent()->IsIgnored() ||
-            !base::Contains(update_state.ignored_state_changed_ids,
-                            node->parent()->id());
+  for (AXNodeID id : update_state.ignored_state_changed_ids) {
+    AXNode* node = GetFromId(id);
+    if (node) {
+      bool will_be_ignored = !node->IsIgnored();
+      // Don't fire ignored state change when the parent is also changing to
+      // the same ignored state.
+      bool is_root_of_ignored_change =
+          !node->parent() ||
+          !base::Contains(update_state.ignored_state_changed_ids,
+                          node->parent()->id()) ||
+          node->IsIgnored() != node->parent()->IsIgnored();
+      for (AXTreeObserver& observer : observers_) {
         observer.OnIgnoredWillChange(this, node, will_be_ignored,
                                      is_root_of_ignored_change);
-      }
-    }
-  } else {
-    for (AXNodeID id : update_state.ignored_state_changed_ids) {
-      AXNode* node = GetFromId(id);
-      if (node) {
-        bool will_be_ignored = !node->IsIgnored();
-        // Don't fire ignored state change when the parent is also changing to
-        // the same ignored state.
-        bool is_root_of_ignored_change =
-            !node->parent() ||
-            !base::Contains(update_state.ignored_state_changed_ids,
-                            node->parent()->id()) ||
-            node->IsIgnored() != node->parent()->IsIgnored();
-        for (AXTreeObserver& observer : observers_) {
-          observer.OnIgnoredWillChange(this, node, will_be_ignored,
-                                       is_root_of_ignored_change);
-        }
       }
     }
   }
@@ -1453,109 +1361,20 @@ bool AXTree::Unserialize(const AXTreeUpdate& update) {
   // because deleting nodes can cause events to be fired, which will need to
   // access the root, and therefore the BrowserAccessibilityManager needs to be
   // aware of any newly created root as soon as possible.
-  if (features::IsUnserializeOptimizationsEnabled()) {
-    // Construct lists of nodes to minimize GetFromID and IsReparented calls.
-    // TODO(mschillaci): Move to AXTreeUpdateState to remove this layer's pass.
-    std::vector<AXNode*> reparented_nodes_to_notify;
-    std::vector<AXNode*> created_nodes_to_notify;
-    for (AXNodeID node_id : update_state.new_node_ids) {
-      AXNode* node = GetFromId(node_id);
-      if (!node || node->id() == kInvalidAXNodeID) {
-        continue;
-      }
-
-      if (update_state.IsReparentedNode(node)) {
-        reparented_nodes_to_notify.emplace_back(node);
-      } else {
-        created_nodes_to_notify.emplace_back(node);
-      }
-    }
-
-    std::vector<AXNodeID> deleted_nodes_to_notify;
-    for (AXNodeID node_id : update_state.removed_node_ids) {
-      if (node_id == kInvalidAXNodeID) {
-        continue;
-      }
-      if (!update_state.IsCreatedNode(node_id)) {
-        deleted_nodes_to_notify.emplace_back(node_id);
-      }
-    }
-
-    // Notify observers of all reparented and created nodes.
-    for (AXTreeObserver& observer : observers_) {
-      for (AXNode* node : reparented_nodes_to_notify) {
-        observer.OnNodeReparented(this, node);
-      }
-      for (AXNode* node : created_nodes_to_notify) {
-        observer.OnNodeCreated(this, node);
-      }
-    }
-
-    // Now that the unignored cached values are up to date, notify observers of
-    // the nodes that were deleted from the tree but not reparented.
-    for (AXTreeObserver& observer : observers_) {
-      for (AXNodeID node_id : deleted_nodes_to_notify) {
-        observer.OnNodeDeleted(this, node_id);
-      }
-    }
-  } else {
-    for (AXNodeID node_id : update_state.new_node_ids) {
-      AXNode* node = GetFromId(node_id);
-      if (node) {
-        NotifyNodeHasBeenReparentedOrCreated(node, &update_state);
-      }
-    }
-
-    // Now that the unignored cached values are up to date, notify observers of
-    // the nodes that were deleted from the tree but not reparented.
-    for (AXNodeID node_id : update_state.removed_node_ids) {
-      if (!update_state.IsCreatedNode(node_id)) {
-        NotifyNodeHasBeenDeleted(node_id);
-      }
+  for (AXNodeID node_id : update_state.new_node_ids) {
+    AXNode* node = GetFromId(node_id);
+    if (node) {
+      NotifyNodeHasBeenReparentedOrCreated(node, &update_state);
     }
   }
 
-  // The implementation for notifying node attributes changed is separated
-  // into different methods to reduce complexity. This block will return
-  // after execution if the feature flag is enabled.
-  // TODO(mschillaci): Consider moving this into a helper class.
-  if (features::IsUnserializeOptimizationsEnabled()) {
-    for (AXTreeObserver& observer : observers_) {
-      DCHECK(!GetTreeUpdateInProgressState());
-      for (AXNodeID changed_id : update_state.node_data_changed_ids) {
-        AXNode* node = GetFromId(changed_id);
-        DCHECK(node);
-        DCHECK(node->id() != kInvalidAXNodeID);
-
-        // If the node exists and is in the old data map, then the node data
-        // may have changed unless this is a new root.
-        const bool is_new_root =
-            update_state.root_will_be_created && changed_id == update.root_id;
-        if (!is_new_root) {
-          auto it = update_state.old_node_id_to_data.find(changed_id);
-          if (it != update_state.old_node_id_to_data.end()) {
-            NotifyNodeAttributesHaveBeenChangedOptimized(
-                node, update_state, observer,
-                update_state.old_tree_data ? &update_state.old_tree_data.value()
-                                           : nullptr,
-                it->second,
-                update_state.new_tree_data ? &update_state.new_tree_data.value()
-                                           : nullptr,
-                node->data());
-          }
-        }
-        // |OnNodeChanged| should be fired for all nodes that have been updated.
-        observer.OnNodeChanged(this, node);
-      }
+  // Now that the unignored cached values are up to date, notify observers of
+  // the nodes that were deleted from the tree but not reparented.
+  for (AXNodeID node_id : update_state.removed_node_ids) {
+    if (!update_state.IsCreatedNode(node_id)) {
+      NotifyNodeHasBeenDeleted(node_id);
     }
-    // Finally, notify all observers the update is finished and return.
-    for (AXTreeObserver& observer : observers_) {
-      observer.OnAtomicUpdateFinished(this, root_->id() != old_root_id,
-                                      changes);
-    }
-
-    return true;
-  }  // End |kAccessibilityUnserializeOptimization| impl.
+  }
 
   // Now that the unignored cached values are up to date, notify observers of
   // node changes.
@@ -2024,29 +1843,6 @@ void AXTree::NotifySubtreeWillBeReparentedOrDeleted(
   }
 }
 
-void AXTree::NotifySubtreeWillBeReparentedOrDeletedExperimental(
-    AXNode* node,
-    const AXTreeUpdateState* update_state,
-    AXTreeObserver& observer) {
-  bool notify_reparented = update_state->IsReparentedNode(node);
-  bool notify_removed = !notify_reparented;
-  // Don't fire redundant remove notification in the case where the parent
-  // will become ignored at the same time.
-  if (notify_removed && node->parent() &&
-      base::Contains(update_state->ignored_state_changed_ids,
-                     node->parent()->id()) &&
-      !node->parent()->IsIgnored()) {
-    notify_removed = false;
-  }
-
-  if (notify_reparented) {
-    observer.OnSubtreeWillBeReparented(this, node);
-  }
-  if (notify_removed) {
-    observer.OnSubtreeWillBeDeleted(this, node);
-  }
-}
-
 void AXTree::NotifyNodeWillBeReparentedOrDeleted(
     AXNode* node,
     const AXTreeUpdateState* update_state) {
@@ -2243,113 +2039,6 @@ void AXTree::NotifyNodeAttributesHaveBeenChanged(
         for (AXTreeObserver& observer : observers_)
           observer.OnStringListAttributeChanged(this, node, attr,
                                                 old_stringlist, new_stringlist);
-      };
-  CallIfAttributeValuesChanged(old_data.stringlist_attributes,
-                               new_data.stringlist_attributes,
-                               std::vector<std::string>(), stringlist_callback);
-}
-
-void AXTree::NotifyNodeAttributesHaveBeenChangedOptimized(
-    AXNode* node,
-    AXTreeUpdateState& update_state,
-    AXTreeObserver& observer,
-    const AXTreeData* optional_old_tree_data,
-    const AXNodeData& old_data,
-    const AXTreeData* optional_new_tree_data,
-    const AXNodeData& new_data) {
-  // Only called during |kAccessibilityUnserializeOptimizations| experiment.
-  CHECK(features::IsUnserializeOptimizationsEnabled());
-
-  // Do not fire generated events for initial empty document:
-  // The initial empty document and changes to it are uninteresting. It is a
-  // bit of a hack that may not need to exist in the future
-  // TODO(accessibility) Find a way to remove the initial empty document and the
-  // need for this special case.
-  if (node->GetRole() == ax::mojom::Role::kRootWebArea &&
-      old_data.child_ids.empty() && !node->GetParentCrossingTreeBoundary()) {
-    return;
-  }
-
-  observer.OnNodeDataChanged(this, old_data, new_data);
-
-  if (old_data.role != new_data.role) {
-    observer.OnRoleChanged(this, node, old_data.role, new_data.role);
-  }
-
-  if (base::Contains(update_state.ignored_state_changed_ids, new_data.id)) {
-    observer.OnIgnoredChanged(this, node, node->IsIgnored());
-  }
-
-  if (old_data.state != new_data.state) {
-    for (int32_t i = static_cast<int32_t>(ax::mojom::State::kNone) + 1;
-         i <= static_cast<int32_t>(ax::mojom::State::kMaxValue); ++i) {
-      ax::mojom::State state = static_cast<ax::mojom::State>(i);
-      // The ignored state has been already handled via `OnIgnoredChanged`.
-      if (state == ax::mojom::State::kIgnored) {
-        continue;
-      }
-
-      if (old_data.HasState(state) != new_data.HasState(state)) {
-        observer.OnStateChanged(this, node, state, new_data.HasState(state));
-      }
-    }
-  }
-
-  auto string_callback = [this, node, &observer](
-                             ax::mojom::StringAttribute attr,
-                             const std::string& old_string,
-                             const std::string& new_string) {
-    DCHECK_NE(old_string, new_string);
-    observer.OnStringAttributeChanged(this, node, attr, old_string, new_string);
-  };
-  CallIfAttributeValuesChanged(old_data.string_attributes,
-                               new_data.string_attributes, std::string(),
-                               string_callback);
-
-  auto bool_callback = [this, node, &observer](ax::mojom::BoolAttribute attr,
-                                               const bool& old_bool,
-                                               const bool& new_bool) {
-    DCHECK_NE(old_bool, new_bool);
-    observer.OnBoolAttributeChanged(this, node, attr, new_bool);
-  };
-  CallIfAttributeValuesChanged(old_data.bool_attributes,
-                               new_data.bool_attributes, false, bool_callback);
-
-  auto float_callback = [this, node, &observer](ax::mojom::FloatAttribute attr,
-                                                const float& old_float,
-                                                const float& new_float) {
-    DCHECK_NE(old_float, new_float);
-    observer.OnFloatAttributeChanged(this, node, attr, old_float, new_float);
-  };
-  CallIfAttributeValuesChanged(old_data.float_attributes,
-                               new_data.float_attributes, 0.0f, float_callback);
-
-  auto int_callback = [this, node, &observer](ax::mojom::IntAttribute attr,
-                                              const int& old_int,
-                                              const int& new_int) {
-    DCHECK_NE(old_int, new_int);
-    observer.OnIntAttributeChanged(this, node, attr, old_int, new_int);
-  };
-  CallIfAttributeValuesChanged(old_data.int_attributes, new_data.int_attributes,
-                               0, int_callback);
-
-  auto intlist_callback = [this, node, &observer](
-                              ax::mojom::IntListAttribute attr,
-                              const std::vector<int32_t>& old_intlist,
-                              const std::vector<int32_t>& new_intlist) {
-    observer.OnIntListAttributeChanged(this, node, attr, old_intlist,
-                                       new_intlist);
-  };
-  CallIfAttributeValuesChanged(old_data.intlist_attributes,
-                               new_data.intlist_attributes,
-                               std::vector<int32_t>(), intlist_callback);
-
-  auto stringlist_callback =
-      [this, node, &observer](ax::mojom::StringListAttribute attr,
-                              const std::vector<std::string>& old_stringlist,
-                              const std::vector<std::string>& new_stringlist) {
-        observer.OnStringListAttributeChanged(this, node, attr, old_stringlist,
-                                              new_stringlist);
       };
   CallIfAttributeValuesChanged(old_data.stringlist_attributes,
                                new_data.stringlist_attributes,

@@ -1108,13 +1108,6 @@ const char kAccessibilitySelectToSpeakHoverTextImprovementsDescription[] =
     "This option enables improvements in the text shown when hovering over the "
     "Select-to-Speak feature icon in the system tray.";
 
-const char kAccessibilityUnserializeOptimizationsName[] =
-    "Experimental optimzations for accessibility";
-const char kAccessibilityUnserializeOptimizationsDescription[] =
-    "This option enables the use of experimental optimzations to the "
-    "AXTree::Unserialize method, which may improve browser-side accessibility "
-    "performance.";
-
 const char kMacCoreLocationBackendName[] = "Core Location Backend";
 const char kMacCoreLocationBackendDescription[] =
     "Enables usage of the Core Location APIs as the backend for Geolocation "
