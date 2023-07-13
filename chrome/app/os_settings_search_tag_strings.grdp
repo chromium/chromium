@@ -1195,6 +1195,9 @@
   <message name="IDS_OS_SETTINGS_TAG_A11Y_TEXT_TO_SPEECH_PAGE_ALT4" desc="Text for search result item which, when clicked, navigates the user to text-to-speech accessibility settings. Alternate phrase for: 'Text-to-speech'">
     Speech synthesis
   </message>
+  <message name="IDS_OS_SETTINGS_TAG_A11Y_TEXT_TO_SPEECH_PAGE_ALT5" desc="Text for search result item which, when clicked, navigates the user to text-to-speech accessibility settings. Alternate phrase for: 'Text-to-speech'">
+    TTS
+  </message>
   <message name="IDS_OS_SETTINGS_TAG_A11y_CHROMEVOX" desc="Text for search result item which, when clicked, navigates the user to accessibility settings, with a toggle to enable/disable ChromeVox (spoken feedback).">
     ChromeVox (spoken feedback)
   </message>
