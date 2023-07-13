@@ -85,9 +85,9 @@ button:active {
 }
 
 #family-link-kite-icon {
-  height: 24px;
-  width: 24px;
-  padding: 16px;
+  height: 20px;
+  width: 20px;
+  padding-right: 16px;
 }
 
 .banner-header {
@@ -109,7 +109,6 @@ p,
 
 h1 {
   color: var(--header-color);
-  font-family: "Google Sans", sans-serif;
   font-size: 24px;
   font-weight: normal;
   margin: 0 0 16px;
@@ -294,7 +293,7 @@ button:focus-visible {
   }
 
     #family-link-kite-icon {
-    fill: var(--google-gray-500);
+    fill: #F1F3F4;
   }
 
   .secondary-button {
