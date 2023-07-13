@@ -81,6 +81,8 @@ bool IsSidePanelEnabledForLens(content::WebContents* web_contents) {
   is_companion_enabled =
       base::FeatureList::IsEnabled(
           companion::features::internal::kSidePanelCompanion) ||
+      base::FeatureList::IsEnabled(
+          companion::features::internal::kSidePanelCompanion2) ||
       (base::FeatureList::IsEnabled(
            companion::features::internal::
                kCompanionEnabledByObservingExpsNavigations) &&
