@@ -3483,7 +3483,7 @@ class AssistantInteractionHelper
     CHECK(on_interaction_finished_callback_)
         << "on_interaction_finished_callback_ is not set.";
 
-    if (resolution != AssistantInteractionResolution::kNormal) {
+    if (resolution == AssistantInteractionResolution::kError) {
       SendErrorResponse(
           base::StringPrintf("Interaction closed with resolution %s",
                              ResolutionToString(resolution).c_str()));
@@ -3497,6 +3497,13 @@ class AssistantInteractionHelper
     // on the client and return that to the server as part of a follow-up
     // interaction.
     if (result_.empty()) {
+      return;
+    }
+
+    if (resolution != AssistantInteractionResolution::kNormal) {
+      SendErrorResponse(
+          base::StringPrintf("Interaction closed with resolution %s",
+                             ResolutionToString(resolution).c_str()));
       return;
     }
 
