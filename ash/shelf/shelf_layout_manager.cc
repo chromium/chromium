@@ -1950,7 +1950,11 @@ void ShelfLayoutManager::UpdateTargetBounds(const State& state,
   if (features::IsDeskButtonEnabled() && desk_button->ShouldBeVisible()) {
     shelf_->hotseat_widget()->ReserveSpaceForAdjacentWidgets(
         shelf_->IsHorizontalAlignment()
-            ? gfx::Insets::TLBR(0, desk_button->GetPreferredLength(), 0, 0)
+            ? (base::i18n::IsRTL()
+                   ? gfx::Insets::TLBR(0, 0, 0,
+                                       desk_button->GetPreferredLength())
+                   : gfx::Insets::TLBR(0, desk_button->GetPreferredLength(), 0,
+                                       0))
             : gfx::Insets::TLBR(desk_button->GetPreferredLength(), 0, 0, 0));
   } else {
     shelf_->hotseat_widget()->ReserveSpaceForAdjacentWidgets(gfx::Insets());

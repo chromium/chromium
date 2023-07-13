@@ -10488,9 +10488,12 @@ class DeskButtonTest
     AshTestBase::SetUp();
     shelf_test_api_ = std::make_unique<ShelfViewTestAPI>(
         GetPrimaryShelf()->GetShelfViewForTesting());
-    Shelf::ForWindow(Shell::GetPrimaryRootWindow())
-        ->SetAlignment(GetParam().alignment);
+    GetPrimaryShelf()->SetAlignment(GetParam().alignment);
     SetShowDeskButtonInShelfPref(GetPrimaryUserPrefService(), true);
+    // Set the shelf alignment pref to the desired alignment because if a test
+    // updates the display size the shelf alignment will be reset from the pref.
+    SetShelfAlignmentPref(GetPrimaryUserPrefService(), GetPrimaryDisplay().id(),
+                          GetParam().alignment);
   }
 
   DeskButtonWidget* GetDeskButtonWidget() {
@@ -10788,6 +10791,32 @@ TEST_P(DeskButtonTest, DeskButtonPressMetrics) {
   histogram_tester.ExpectTotalCount(kDeskButtonPressesHistogramName, 1);
   ClickDeskButton();
   histogram_tester.ExpectTotalCount(kDeskButtonPressesHistogramName, 2);
+}
+
+// Tests that the desk button shows up in the correct position in RTL.
+TEST_P(DeskButtonTest, PositionInRTL) {
+  // Set the display size since this test tests the location of elements in the
+  // display.
+  UpdateDisplay("1200x800");
+
+  // Turn on RTL mode.
+  const bool default_rtl = base::i18n::IsRTL();
+  base::i18n::SetRTLForTesting(true);
+  EXPECT_TRUE(base::i18n::IsRTL());
+
+  auto* desk_button = GetDeskButton();
+  ASSERT_TRUE(desk_button);
+
+  if (GetParam().alignment == ShelfAlignment::kBottom) {
+    EXPECT_EQ(gfx::Rect(494, 758, 96, 36), desk_button->GetBoundsInScreen());
+  } else if (GetParam().alignment == ShelfAlignment::kLeft) {
+    EXPECT_EQ(gfx::Rect(6, 354, 36, 36), desk_button->GetBoundsInScreen());
+  } else if (GetParam().alignment == ShelfAlignment::kRight) {
+    EXPECT_EQ(gfx::Rect(1158, 354, 36, 36), desk_button->GetBoundsInScreen());
+  }
+
+  // Recover to default RTL mode.
+  base::i18n::SetRTLForTesting(default_rtl);
 }
 
 // TODO(afakhry): Add more tests:

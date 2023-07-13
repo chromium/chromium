@@ -14,6 +14,7 @@
 #include "ash/shell.h"
 #include "ash/wm/desks/desk_button/desk_button.h"
 #include "ash/wm/overview/overview_controller.h"
+#include "base/i18n/rtl.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
@@ -246,7 +247,11 @@ gfx::Point DeskButtonWidget::GetCenteredOrigin() const {
   if (is_horizontal_shelf_) {
     // TODO(b/272383056): We might want to find a better way of calculating this
     // because shelf_padding is not sufficient.
-    return gfx::Point(navigation_bounds.right() + shelf_padding.left(),
+    const int shelf_padding_offset =
+        base::i18n::IsRTL() ? -navigation_bounds.width() -
+                                  shelf_padding.right() - GetPreferredLength()
+                            : shelf_padding.left();
+    return gfx::Point(navigation_bounds.right() + shelf_padding_offset,
                       navigation_bounds.y() + kDeskButtonInsets);
   }
 
