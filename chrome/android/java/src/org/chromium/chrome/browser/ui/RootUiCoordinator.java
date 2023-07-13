@@ -820,7 +820,7 @@ public class RootUiCoordinator
 
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.READALOUD)) {
             ReadAloudController controller = new ReadAloudController(
-                    mProfileSupplier, mTabModelSelectorSupplier.get().getModel(false));
+                    mActivity, mProfileSupplier, mTabModelSelectorSupplier.get().getModel(false));
             mReadAloudControllerSupplier.set(controller);
         }
     }
