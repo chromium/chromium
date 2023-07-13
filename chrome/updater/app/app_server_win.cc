@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/updater/app/server/win/server.h"
+#include "chrome/updater/app/app_server_win.h"
 
 #include <regstr.h>
 #include <wrl/module.h>

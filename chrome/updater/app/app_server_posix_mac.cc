@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "chrome/updater/app/server/posix/app_server_posix.h"
+#import "chrome/updater/app/app_server_posix.h"
 
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"

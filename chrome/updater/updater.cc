@@ -46,11 +46,11 @@
 #if BUILDFLAG(IS_WIN)
 #include "base/win/process_startup_helper.h"
 #include "base/win/scoped_com_initializer.h"
-#include "chrome/updater/app/server/win/server.h"
+#include "chrome/updater/app/app_server_win.h"
 #include "chrome/updater/app/server/win/service_main.h"
 #include "chrome/updater/util/win_util.h"
 #elif BUILDFLAG(IS_POSIX)
-#include "chrome/updater/app/server/posix/app_server_posix.h"
+#include "chrome/updater/app/app_server_posix.h"
 #endif
 
 // Instructions For Windows.

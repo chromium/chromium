@@ -19,7 +19,7 @@
 #include "base/task/single_thread_task_executor.h"
 #include "base/win/scoped_com_initializer.h"
 #include "chrome/updater/app/app_server.h"
-#include "chrome/updater/app/server/win/server.h"
+#include "chrome/updater/app/app_server_win.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/util/win_util.h"
 
