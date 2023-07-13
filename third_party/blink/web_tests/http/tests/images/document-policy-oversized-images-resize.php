@@ -30,6 +30,10 @@ header("Document-Policy: oversized-images=2.0");
   <img src="resources/green-256x256.jpg?id=4" style="height: 100px; width: 100px">
 
   <script>
+    if (window.testRunner) {
+      testRunner.waitUntilDone();
+    }
+
     function changeImageSize() {
       var images = document.getElementsByTagName('img');
       for (var i = 0; i < images.length; i++) {
@@ -42,6 +46,12 @@ header("Document-Policy: oversized-images=2.0");
           image.style.height = "150px";
         }
       }
+
+      if (window.testRunner) {
+        testRunner.updateAllLifecyclePhasesAndCompositeThen(() => {
+          testRunner.notifyDone();
+        });
+      }
     }
 
     const imgs = document.getElementsByTagName('img');
@@ -51,7 +61,7 @@ header("Document-Policy: oversized-images=2.0");
         unloaded_image_count--;
         // Change image size after all images are loaded and painted.
         if (unloaded_image_count === 0) {
-          runAfterLayoutAndPaint(changeImageSize, true);
+          runAfterLayoutAndPaint(changeImageSize)
         }
       };
     }
