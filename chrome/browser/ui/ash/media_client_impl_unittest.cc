@@ -18,13 +18,9 @@
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/account_id/account_id.h"
-#include "components/services/app_service/public/cpp/app_capability_access_cache.h"
-#include "components/services/app_service/public/cpp/app_capability_access_cache_wrapper.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_registry_cache_wrapper.h"
 #include "components/services/app_service/public/cpp/app_types.h"
-#include "components/services/app_service/public/cpp/capability_access.h"
-#include "components/services/app_service/public/cpp/capability_access_update.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "media/capture/video/video_capture_device_info.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -229,66 +225,7 @@ class MediaClientTest : public BrowserWithTestWindowTest {
 
 class MediaClientAppUsingCameraTest : public testing::Test {
  public:
-  MediaClientAppUsingCameraTest() = default;
-  MediaClientAppUsingCameraTest(const MediaClientAppUsingCameraTest&) = delete;
-  MediaClientAppUsingCameraTest& operator=(
-      const MediaClientAppUsingCameraTest&) = delete;
-  ~MediaClientAppUsingCameraTest() override = default;
-
-  void SetUp() override {
-    registry_cache_.SetAccountId(account_id_);
-    apps::AppRegistryCacheWrapper::Get().AddAppRegistryCache(account_id_,
-                                                             &registry_cache_);
-    capability_access_cache_.SetAccountId(account_id_);
-    apps::AppCapabilityAccessCacheWrapper::Get().AddAppCapabilityAccessCache(
-        account_id_, &capability_access_cache_);
-  }
-
- protected:
-  static apps::AppPtr MakeApp(const char* app_id, const char* name) {
-    apps::AppPtr app =
-        std::make_unique<apps::App>(apps::AppType::kChromeApp, app_id);
-    app->name = name;
-    app->short_name = name;
-    return app;
-  }
-
-  static apps::CapabilityAccessPtr MakeCapabilityAccess(
-      const char* app_id,
-      absl::optional<bool> camera) {
-    apps::CapabilityAccessPtr access =
-        std::make_unique<apps::CapabilityAccess>(app_id);
-    access->camera = camera;
-    access->microphone = false;
-    return access;
-  }
-
-  void LaunchApp(const char* id,
-                 const char* name,
-                 absl::optional<bool> use_camera) {
-    std::vector<apps::AppPtr> registry_deltas;
-    registry_deltas.push_back(MakeApp(id, name));
-    registry_cache_.OnApps(std::move(registry_deltas), apps::AppType::kUnknown,
-                           /* should_notify_initialized = */ false);
-
-    std::vector<apps::CapabilityAccessPtr> capability_access_deltas;
-    capability_access_deltas.push_back(MakeCapabilityAccess(id, use_camera));
-    capability_access_cache_.OnCapabilityAccesses(
-        std::move(capability_access_deltas));
-  }
-
-  const std::string kPrimaryProfileName = "primary_profile";
-  const AccountId account_id_ = AccountId::FromUserEmail(kPrimaryProfileName);
-
-  apps::AppRegistryCache registry_cache_;
-  apps::AppCapabilityAccessCache capability_access_cache_;
-};
-
-class MediaClientAppUsingCameraInBrowserEnvironmentTest
-    : public MediaClientAppUsingCameraTest {
- public:
-  MediaClientAppUsingCameraInBrowserEnvironmentTest() {
-    user_manager_.Initialize();
+  MediaClientAppUsingCameraTest() {
     auto delegate = std::make_unique<MockNewWindowDelegate>();
     new_window_delegate_ = delegate.get();
     window_delegate_provider_ =
@@ -296,17 +233,8 @@ class MediaClientAppUsingCameraInBrowserEnvironmentTest
             std::move(delegate));
   }
 
-  ~MediaClientAppUsingCameraInBrowserEnvironmentTest() override {
-    user_manager_.Shutdown();
-    user_manager_.Destroy();
-  }
-
-  void LaunchAppUpdateActiveClientCount(const char* id,
-                                        const char* name,
-                                        absl::optional<bool> use_camera,
-                                        int active_client_count) {
+  void LaunchAppUsingCamera(int active_client_count) {
     media_client_.active_camera_client_count_ = active_client_count;
-    LaunchApp(id, name, use_camera);
   }
 
   void SetCameraHWPrivacySwitchState(
@@ -352,16 +280,6 @@ class MediaClientAppUsingCameraInBrowserEnvironmentTest
     media_client_.ShowCameraOffNotification(device_id, device_name);
   }
 
-  void OnCapabilityAccessUpdate(
-      const apps::CapabilityAccessUpdate& capability_update) {
-    media_client_.OnCapabilityAccessUpdate(capability_update);
-  }
-
-  apps::CapabilityAccessUpdate MakeCapabilityAccessUpdate(
-      const apps::CapabilityAccess* capability) const {
-    return apps::CapabilityAccessUpdate(capability, nullptr, account_id_);
-  }
-
   FakeNotificationDisplayService* SetSystemNotificationService() const {
     std::unique_ptr<FakeNotificationDisplayService>
         fake_notification_display_service =
@@ -381,7 +299,6 @@ class MediaClientAppUsingCameraInBrowserEnvironmentTest
 
   MediaClientImpl media_client_;
   SystemNotificationHelper system_notification_helper_;
-  user_manager::FakeUserManager user_manager_;
   raw_ptr<MockNewWindowDelegate, DanglingUntriaged> new_window_delegate_ =
       nullptr;
   std::unique_ptr<ash::TestNewWindowDelegateProvider> window_delegate_provider_;
@@ -458,129 +375,15 @@ TEST_F(MediaClientTest, HandleMediaAccelerators) {
   }
 }
 
-TEST_F(MediaClientAppUsingCameraTest, NoAppsLaunched) {
-  // Should return an empty string.
-  std::string app_name = MediaClientImpl::GetNameOfAppAccessingCamera(
-      &capability_access_cache_, &registry_cache_);
-  EXPECT_TRUE(app_name.empty());
-}
-
-TEST_F(MediaClientAppUsingCameraTest, AppLaunchedNotUsingCamaera) {
-  LaunchApp("id_rose", "name_rose", /*use_camera=*/false);
-
-  // Should return an empty string.
-  std::string app_name = MediaClientImpl::GetNameOfAppAccessingCamera(
-      &capability_access_cache_, &registry_cache_);
-  EXPECT_TRUE(app_name.empty());
-}
-
-TEST_F(MediaClientAppUsingCameraTest, AppLaunchedUsingCamera) {
-  LaunchApp("id_rose", "name_rose", /*use_camera=*/true);
-
-  // Should return the name of our app.
-  std::string app_name = MediaClientImpl::GetNameOfAppAccessingCamera(
-      &capability_access_cache_, &registry_cache_);
-  EXPECT_STREQ(app_name.c_str(), "name_rose");
-}
-
-TEST_F(MediaClientAppUsingCameraTest, MultipleAppsLaunchedUsingCamera) {
-  LaunchApp("id_rose", "name_rose", /*use_camera=*/true);
-  LaunchApp("id_mars", "name_mars", /*use_camera=*/true);
-  LaunchApp("id_zara", "name_zara", /*use_camera=*/true);
-  LaunchApp("id_oscar", "name_oscar", /*use_camera=*/false);
-
-  // Because AppCapabilityAccessCache::GetAppsAccessingCamera (invoked by
-  // GetNameOfAppAccessingCamera) returns a set, we have no guarantee of
-  // which app will be found first.  So we verify that the app name is one of
-  // our camera-users.
-  std::string app_name = MediaClientImpl::GetNameOfAppAccessingCamera(
-      &capability_access_cache_, &registry_cache_);
-  EXPECT_THAT(app_name, AnyOf("name_rose", "name_mars", "name_zara"));
-}
-
-TEST_F(MediaClientAppUsingCameraInBrowserEnvironmentTest,
-       OnCapabilityAccessUpdate) {
-  const FakeNotificationDisplayService* notification_display_service =
-      SetSystemNotificationService();
-  const char* app1_id = "app1";
-  const char* app2_id = "app2";
-  const char* app1_name = "App name";
-  const char* app2_name = "Other app";
-  const apps::CapabilityAccessPtr capability_access =
-      MakeCapabilityAccess(app1_id, false);
-  const apps::CapabilityAccessUpdate capability_access_update =
-      MakeCapabilityAccessUpdate(capability_access.get());
-  const char* generic_notification_message_prefix =
-      "An app is trying to access";
-
-  user_manager_.AddUser(account_id_);
-  ASSERT_TRUE(user_manager::UserManager::Get()->GetActiveUser());
-
-  EXPECT_EQ(notification_display_service->show_called_times(), 0u);
-
-  // No apps are active.
-  OnCapabilityAccessUpdate(capability_access_update);
-  EXPECT_EQ(notification_display_service->NumberOfActiveNotifications(), 0u);
-
-  // Launch an app. The notification shouldn't be active yet.
-  LaunchAppUpdateActiveClientCount(app1_id, app1_name, true, 1);
-  EXPECT_EQ(notification_display_service->show_called_times(), 0u);
-  // As there is no state change of camera usage by the app the notification
-  // shouldn't be shown either.
-  OnCapabilityAccessUpdate(capability_access_update);
-  EXPECT_EQ(notification_display_service->show_called_times(), 0u);
-
-  // Showing the camera notification, e.g. because the privacy switch was
-  // toggled.
-  SetCameraHWPrivacySwitchState("device_id",
-                                cros::mojom::CameraPrivacySwitchState::ON);
-  MakeDeviceActive("device_id");
-  ShowCameraOffNotification("device_id", "device_name");
-  EXPECT_EQ(notification_display_service->NumberOfActiveNotifications(), 1u);
-  EXPECT_TRUE(notification_display_service->HasNotificationMessageContaining(
-      generic_notification_message_prefix));
-  EXPECT_EQ(notification_display_service->show_called_times(), 1u);
-
-  // Start a second app that's also using the camera.
-  LaunchApp(app2_id, app2_name, true);
-  EXPECT_TRUE(notification_display_service->HasNotificationMessageContaining(
-      generic_notification_message_prefix));
-  EXPECT_EQ(notification_display_service->show_called_times(), 1u);
-
-  // Launching an App with `use_camera=false` is like minimizing/closing the
-  // app for the purpose of this test.
-  LaunchApp(app1_id, app1_name, false);
-
-  OnCapabilityAccessUpdate(capability_access_update);
-
-  // After the observer reacted to the change the notification should not pop up
-  // again but update the message body if necessary (which it isn't currently).
-  EXPECT_EQ(notification_display_service->show_called_times(), 2u);
-  EXPECT_TRUE(notification_display_service->HasNotificationMessageContaining(
-      generic_notification_message_prefix));
-  ASSERT_EQ(notification_display_service->NumberOfActiveNotifications(), 1u);
-}
-
-TEST_F(MediaClientAppUsingCameraInBrowserEnvironmentTest,
+TEST_F(MediaClientAppUsingCameraTest,
        NotificationRemovedWhenSWSwitchChangedToON) {
   const FakeNotificationDisplayService* notification_display_service =
       SetSystemNotificationService();
-  const char* app_id = "app_id";
-  const char* app_name = "app_name";
-  const apps::CapabilityAccessPtr capability_access =
-      MakeCapabilityAccess(app_id, false);
-  const apps::CapabilityAccessUpdate capability_access_update =
-      MakeCapabilityAccessUpdate(capability_access.get());
 
-  user_manager_.AddUser(account_id_);
-  ASSERT_TRUE(user_manager::UserManager::Get()->GetActiveUser());
-
-  // No apps are active.
-  OnCapabilityAccessUpdate(capability_access_update);
   EXPECT_EQ(notification_display_service->NumberOfActiveNotifications(), 0u);
 
   // Launch an app. The notification shouldn't be displayed yet.
-  LaunchAppUpdateActiveClientCount(app_id, app_name, true, 1);
+  LaunchAppUsingCamera(/*active_client_count=*/1);
   EXPECT_EQ(notification_display_service->NumberOfActiveNotifications(), 0u);
 
   // Showing the camera notification, e.g. because the hardware privacy switch
@@ -599,21 +402,13 @@ TEST_F(MediaClientAppUsingCameraInBrowserEnvironmentTest,
   EXPECT_EQ(notification_display_service->NumberOfActiveNotifications(), 0u);
 }
 
-TEST_F(MediaClientAppUsingCameraInBrowserEnvironmentTest,
-       LearnMoreButtonInteraction) {
+TEST_F(MediaClientAppUsingCameraTest, LearnMoreButtonInteraction) {
   FakeNotificationDisplayService* notification_display_service =
       SetSystemNotificationService();
-  const char* app_id = "app";
-  const char* app_name = "App name";
-  const apps::CapabilityAccessPtr capability_access =
-      MakeCapabilityAccess(app_id, false);
-
-  user_manager_.AddUser(account_id_);
-  ASSERT_TRUE(user_manager::UserManager::Get()->GetActiveUser());
 
   EXPECT_EQ(notification_display_service->show_called_times(), 0u);
 
-  LaunchAppUpdateActiveClientCount(app_id, app_name, true, 1);
+  LaunchAppUsingCamera(/*active_client_count=*/1);
 
   // Showing the camera notification, e.g. because the privacy switch was
   // toggled.
@@ -631,7 +426,7 @@ TEST_F(MediaClientAppUsingCameraInBrowserEnvironmentTest,
   EXPECT_EQ(notification_display_service->NumberOfActiveNotifications(), 0u);
 }
 
-TEST_F(MediaClientAppUsingCameraInBrowserEnvironmentTest,
+TEST_F(MediaClientAppUsingCameraTest,
        NotificationRemovedWhenCameraDetachedOrInactive) {
   FakeNotificationDisplayService* notification_display_service =
       SetSystemNotificationService();

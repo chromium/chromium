@@ -7,7 +7,6 @@
 
 #include "ash/public/cpp/media_client.h"
 #include "ash/public/cpp/media_controller.h"
-#include "ash/public/cpp/session/session_observer.h"
 #include "ash/system/privacy_hub/privacy_hub_notification.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
@@ -19,20 +18,13 @@
 #include "chrome/browser/ash/camera_mic/vm_camera_mic_manager.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/ui/browser_list_observer.h"
-#include "components/services/app_service/public/cpp/app_capability_access_cache.h"
 #include "media/capture/video/chromeos/camera_hal_dispatcher_impl.h"
 #include "media/capture/video/chromeos/mojom/cros_camera_service.mojom.h"
 #include "services/video_capture/public/mojom/video_source_provider.mojom.h"
 #include "ui/base/accelerators/media_keys_listener.h"
 
-namespace apps {
-class AppRegistryCache;
-}  // namespace apps
-
 class MediaClientImpl : public ash::MediaClient,
                         public ash::VmCameraMicManager::Observer,
-                        public ash::SessionObserver,
-                        public apps::AppCapabilityAccessCache::Observer,
                         public BrowserListObserver,
                         public MediaCaptureDevicesDispatcher::Observer,
                         public media::CameraPrivacySwitchObserver,
@@ -91,15 +83,6 @@ class MediaClientImpl : public ash::MediaClient,
       bool is_active,
       const base::flat_set<std::string>& device_ids) override;
 
-  // apps::AppCapabilityAccessCache::Observer:
-  void OnCapabilityAccessUpdate(
-      const apps::CapabilityAccessUpdate& update) override;
-  void OnAppCapabilityAccessCacheWillBeDestroyed(
-      apps::AppCapabilityAccessCache* cache) override;
-
-  // ash::SessionObserver:
-  void OnActiveUserSessionChanged(const AccountId& account_id) override;
-
   // Enables/disables custom media key handling when |context| is the active
   // browser. Media keys will be forwarded to |delegate|.
   void EnableCustomMediaKeyHandler(content::BrowserContext* context,
@@ -107,15 +90,8 @@ class MediaClientImpl : public ash::MediaClient,
   void DisableCustomMediaKeyHandler(content::BrowserContext* context,
                                     ui::MediaKeysListener::Delegate* delegate);
 
-  // Returns the (short) name of the app attempting to use the camera, or an
-  // empty string if the short name is not available.  Publicly visible for
-  // testing.
-  static std::string GetNameOfAppAccessingCamera(
-      apps::AppCapabilityAccessCache* capability_cache,
-      apps::AppRegistryCache* registry_cache);
-
  private:
-  friend class MediaClientAppUsingCameraInBrowserEnvironmentTest;
+  friend class MediaClientAppUsingCameraTest;
 
   // Sets |is_forcing_media_client_key_handling_| to true if
   // |GetCurrentMediaKeyDelegate| returns a delegate. This will also mirror the
@@ -198,11 +174,6 @@ class MediaClientImpl : public ash::MediaClient,
   mojo::Remote<video_capture::mojom::VideoSourceProvider>
       video_source_provider_remote_;
 
-  // Points an active app (short)name to the last (device id, device name) pair
-  // that the app used.
-  base::flat_map<std::string, std::pair<std::string, std::string>>
-      last_device_for_app_;
-
   // Points each CameraClientType to a set which contains the id of the devices
   // the CameraClientType is currently using.
   base::flat_map<cros::mojom::CameraClientType, base::flat_set<std::string>>
@@ -217,10 +188,6 @@ class MediaClientImpl : public ash::MediaClient,
       cros::mojom::CameraPrivacySwitchState::UNKNOWN;
 
   ash::PrivacyHubNotification notification_;
-
-  base::ScopedObservation<apps::AppCapabilityAccessCache,
-                          apps::AppCapabilityAccessCache::Observer>
-      capability_cache_observation_{this};
 
   SEQUENCE_CHECKER(sequence_checker_);
 

@@ -11,7 +11,6 @@
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/media_controller.h"
 #include "ash/public/cpp/sensor_disabled_notification_delegate.h"
-#include "ash/public/cpp/session/session_controller.h"
 #include "ash/public/cpp/system/toast_data.h"
 #include "ash/public/cpp/system/toast_manager.h"
 #include "ash/session/session_controller_impl.h"
@@ -209,50 +208,6 @@ MediaCaptureState GetMediaCaptureStateOfAllWebContents(
   return media_state;
 }
 
-const user_manager::User* GetActiveUser() {
-  if (user_manager::UserManager::IsInitialized()) {
-    return user_manager::UserManager::Get()->GetActiveUser();
-  }
-
-  return nullptr;
-}
-
-apps::AppRegistryCache* GetAppRegistryCache(
-    const user_manager::User* active_user) {
-  if (active_user) {
-    return apps::AppRegistryCacheWrapper::Get().GetAppRegistryCache(
-        active_user->GetAccountId());
-  }
-
-  return nullptr;
-}
-
-apps::AppCapabilityAccessCache* GetAppCapabilityAccessCache(
-    const user_manager::User* active_user) {
-  if (active_user) {
-    return apps::AppCapabilityAccessCacheWrapper::Get()
-        .GetAppCapabilityAccessCache(active_user->GetAccountId());
-  }
-
-  return nullptr;
-}
-
-// Relieves GetNameOfAppAccessingCamera() of the responsibility for gathering up
-// the AppRegistryCache and AppCapabilityAccessCache objects, which drastically
-// simplifies the unit tests of that function.
-std::string GetNameOfAppAccessingCameraInternal() {
-  const user_manager::User* active_user = GetActiveUser();
-  if (!active_user)
-    return std::string();
-
-  apps::AppRegistryCache* reg_cache = GetAppRegistryCache(active_user);
-  DCHECK(reg_cache);
-  apps::AppCapabilityAccessCache* cap_cache =
-      GetAppCapabilityAccessCache(active_user);
-  DCHECK(cap_cache);
-  return MediaClientImpl::GetNameOfAppAccessingCamera(cap_cache, reg_cache);
-}
-
 std::string GetDeviceName(
     const std::string& device_id,
     const std::vector<media::VideoCaptureDeviceInfo>& devices) {
@@ -292,12 +247,6 @@ MediaClientImpl::MediaClientImpl()
 
   ash::VmCameraMicManager::Get()->AddObserver(this);
 
-  // These checks are needed for testing, where Shell and/or the
-  // SessionController may not exist.
-  if (ash::SessionController::Get()) {
-    ash::SessionController::Get()->AddObserver(this);
-  }
-
   // Camera service does not behave in non ChromeOS environment (e.g. testing,
   // linux chromeos).
   if (base::SysInfo::IsRunningOnChromeOS() &&
@@ -335,10 +284,6 @@ MediaClientImpl::~MediaClientImpl() {
   BrowserList::RemoveObserver(this);
 
   ash::VmCameraMicManager::Get()->RemoveObserver(this);
-
-  if (ash::SessionController::Get()) {
-    ash::SessionController::Get()->RemoveObserver(this);
-  }
 
   if (base::SysInfo::IsRunningOnChromeOS() &&
       base::FeatureList::IsEnabled(
@@ -504,67 +449,6 @@ void MediaClientImpl::OnActiveClientChange(
                      weak_ptr_factory_.GetWeakPtr(), active_device_ids));
 }
 
-void MediaClientImpl::OnCapabilityAccessUpdate(
-    const apps::CapabilityAccessUpdate& capability_update) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // Updating the map eagerly is not necessary. We just want to make sure that
-  // the app name in the notification is one of the apps being used, not
-  // necessarily the most recent one.
-  if (capability_update.Camera().value_or(true) || last_device_for_app_.empty())
-    return;
-
-  apps::AppRegistryCache* registry_cache = GetAppRegistryCache(GetActiveUser());
-
-  // This can happen during testing.
-  if (!registry_cache)
-    return;
-
-  std::string app_name;
-  registry_cache->ForOneApp(capability_update.AppId(),
-                            [&app_name](const apps::AppUpdate& app_update) {
-                              app_name = app_update.ShortName();
-                            });
-
-  if (app_name.empty())
-    return;
-
-  if (!last_device_for_app_.contains(app_name))
-    return;
-
-  const auto [device_id, device_name] = last_device_for_app_.at(app_name);
-
-  // Remove the current app_name from the map. It will be repopulated in
-  // `ShowCameraOffNotification`.
-  last_device_for_app_.erase(app_name);
-
-  // Make sure we don't show the notification depending on the order of the
-  // observers being called and introduce a blinking effect when the last
-  // application stops using the camera.
-  if (active_camera_client_count_ > 0) {
-    ShowCameraOffNotification(device_id, device_name, /*resurface=*/false);
-  } else {
-    RemoveCameraOffNotificationForDevice(device_id);
-  }
-}
-
-void MediaClientImpl::OnAppCapabilityAccessCacheWillBeDestroyed(
-    apps::AppCapabilityAccessCache* cache) {
-  capability_cache_observation_.Reset();
-}
-
-void MediaClientImpl::OnActiveUserSessionChanged(const AccountId& account_id) {
-  apps::AppCapabilityAccessCache* capability_cache =
-      apps::AppCapabilityAccessCacheWrapper::Get().GetAppCapabilityAccessCache(
-          account_id);
-
-  // This can happen when testing.
-  if (!capability_cache)
-    return;
-
-  capability_cache_observation_.Reset();
-  capability_cache_observation_.Observe(capability_cache);
-}
-
 void MediaClientImpl::EnableCustomMediaKeyHandler(
     content::BrowserContext* context,
     ui::MediaKeysListener::Delegate* delegate) {
@@ -652,23 +536,6 @@ void MediaClientImpl::HandleMediaAction(ui::KeyboardCode keycode) {
   }
 }
 
-std::string MediaClientImpl::GetNameOfAppAccessingCamera(
-    apps::AppCapabilityAccessCache* capability_cache,
-    apps::AppRegistryCache* registry_cache) {
-  DCHECK(capability_cache);
-  DCHECK(registry_cache);
-  for (const std::string& app : capability_cache->GetAppsAccessingCamera()) {
-    std::string name;
-    registry_cache->ForOneApp(app, [&name](const apps::AppUpdate& update) {
-      name = update.ShortName();
-    });
-    if (!name.empty())
-      return name;
-  }
-
-  return std::string();
-}
-
 void MediaClientImpl::ShowCameraOffNotification(const std::string& device_id,
                                                 const std::string& device_name,
                                                 const bool resurface) {
@@ -692,14 +559,6 @@ void MediaClientImpl::ShowCameraOffNotification(const std::string& device_id,
   camera_switch_notification_shown_timestamp_ = base::TimeTicks::Now();
 
   const std::u16string device_name_u16 = base::UTF8ToUTF16(device_name);
-  // TODO(b/262380194) Show a message which includes the app name once we can
-  // reliably determine which app is being used by what camera that has an
-  // active privacy switch.
-  if (const std::string app_name = GetNameOfAppAccessingCameraInternal();
-      !app_name.empty()) {
-    last_device_for_app_.insert_or_assign(
-        app_name, std::make_pair(device_id, device_name));
-  }
 
   if (resurface) {
     RemoveCameraOffNotificationForDevice(device_id);
