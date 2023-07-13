@@ -56,6 +56,7 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the count of failed deletions from the auxiliary search.
   </summary>
+  <token key="AuxiliarySearchDataType" variants="AuxiliarySearchDataType"/>
 </histogram>
 
 <histogram name="Search.AuxiliarySearch.DeletionRequestStatus"
@@ -84,6 +85,7 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the count of failed donations from the auxiliary search.
   </summary>
+  <token key="AuxiliarySearchDataType" variants="AuxiliarySearchDataType"/>
 </histogram>
 
 <histogram name="Search.AuxiliarySearch.DonationRequestStatus"
@@ -104,6 +106,7 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the count of contents which are sent to the auxiliary search.
   </summary>
+  <token key="AuxiliarySearchDataType" variants="AuxiliarySearchDataType"/>
 </histogram>
 
 <histogram name="Search.AuxiliarySearch.QueryTime{AuxiliarySearchDataType}"
@@ -111,6 +114,7 @@ chromium-metrics-reviews@google.com.
   <owner>gangwu@chromium.org</owner>
   <owner>chrome-mobile-search@google.com</owner>
   <summary>Time taken for query contents for the auxiliary search.</summary>
+  <token key="AuxiliarySearchDataType" variants="AuxiliarySearchDataType"/>
 </histogram>
 
 <histogram name="Search.ContextualSearch.All.ResultsSeen" enum="Boolean"
