@@ -139,13 +139,14 @@ using MenuItemViewTestInsert22 = MenuItemViewTestInsert<2, 2>;
 #endif
 VIEW_TEST(MenuItemViewTestInsert00, MAYBE_InsertItem00)
 
+// TODO(b/523255): Test is failing consistently on "Linux Tests (Wayland)".
 // If this flakes, disable and log details in http://crbug.com/523255.
-#if defined(MEMORY_SANITIZER)
-#define MAYBE_InsertItem02 DISABLED_InsertItem02
-#else
-#define MAYBE_InsertItem02 InsertItem02
-#endif
-VIEW_TEST(MenuItemViewTestInsert02, MAYBE_InsertItem02)
+// #if defined(MEMORY_SANITIZER)
+// #define MAYBE_InsertItem02 DISABLED_InsertItem02
+// #else
+// #define MAYBE_InsertItem02 InsertItem02
+// #endif
+VIEW_TEST(MenuItemViewTestInsert02, DISABLED_InsertItem02)
 
 // If this flakes, disable and log details in http://crbug.com/523255.
 VIEW_TEST(MenuItemViewTestInsert10, InsertItem10)
