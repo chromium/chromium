@@ -3747,7 +3747,9 @@ are declared in tools/grit/grit_rule.gni.
       <message name="IDS_COOKIE_CONTROLS_BUBBLE_THIRD_PARTY_COOKIES_LABEL" translateable="false" desc="">
         Third-party cookies
       </message>
-
+      <message name="IDS_COOKIE_CONTROLS_BUBBLE_SEND_FEEDBACK_FORM_PLACEHOLDER" translateable="false"  desc="">
+        Tell us why you allowed third-party cookies on this site
+      </message>
 
       <!-- Win certificate selector dialog strings.  -->
       <if expr="toolkit_views">

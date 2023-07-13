@@ -23,6 +23,7 @@ class CookieControlsContentView : public views::View {
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kTitle);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kDescription);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kToggleButton);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kFeedbackButton);
   CookieControlsContentView();
 
   ~CookieControlsContentView() override;

@@ -6,6 +6,8 @@
 
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/url_identity.h"
 #include "chrome/browser/ui/views/accessibility/non_accessible_image_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -66,7 +68,9 @@ CookieControlsBubbleViewController::CookieControlsBubbleViewController(
     CookieControlsBubbleView* bubble_view,
     content_settings::CookieControlsController* controller,
     content::WebContents* web_contents)
-    : bubble_view_(bubble_view), controller_(controller->AsWeakPtr()) {
+    : bubble_view_(bubble_view),
+      controller_(controller->AsWeakPtr()),
+      browser_(chrome::FindBrowserWithWebContents(web_contents)) {
   controller_observation_.Observe(controller);
   bubble_view_->UpdateSubtitle(GetSubjectUrlName(web_contents));
 
@@ -173,7 +177,13 @@ void CookieControlsBubbleViewController::OnToggleButtonPressed(bool new_value) {
 }
 
 void CookieControlsBubbleViewController::OnFeedbackButtonPressed() {
-  // TODO(crbug.com/1446230): Handle Feedback button press.
+  chrome::ShowFeedbackPage(
+      browser_, chrome::kFeedbackSourceCookieControls,
+      /*description_template=*/std::string(),
+      l10n_util::GetStringUTF8(
+          IDS_COOKIE_CONTROLS_BUBBLE_SEND_FEEDBACK_FORM_PLACEHOLDER),
+      "cookie-controls",
+      /*extra_diagnostics=*/std::string());
 }
 
 void CookieControlsBubbleViewController::DidStopLoading() {

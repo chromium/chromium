@@ -84,3 +84,10 @@ IN_PROC_BROWSER_TEST_F(ShowFeedbackPageBrowserTest,
   ShowFeedbackPageWithFeedbackSource(chrome::kFeedbackSourceWindowLayoutMenu);
   histogram_tester.ExpectTotalCount("Feedback.RequestSource", 1);
 }
+
+IN_PROC_BROWSER_TEST_F(ShowFeedbackPageBrowserTest,
+                       ShowFeedbackPageFromCookieControls) {
+  base::HistogramTester histogram_tester;
+  ShowFeedbackPageWithFeedbackSource(chrome::kFeedbackSourceCookieControls);
+  histogram_tester.ExpectTotalCount("Feedback.RequestSource", 1);
+}

@@ -17,6 +17,7 @@
 #include "components/favicon_base/favicon_types.h"
 #include "url/gurl.h"
 
+class Browser;
 class CookieControlsBubbleView;
 
 class CookieControlsBubbleViewController
@@ -69,6 +70,7 @@ class CookieControlsBubbleViewController
   base::ScopedObservation<content_settings::CookieControlsController,
                           content_settings::CookieControlsObserver>
       controller_observation_{this};
+  raw_ptr<Browser> browser_ = nullptr;
 
   base::WeakPtrFactory<CookieControlsBubbleViewController> weak_factory_{this};
 };

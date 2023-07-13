@@ -160,6 +160,7 @@ bool IsFromUserInteraction(FeedbackSource source) {
     case kFeedbackSourceBrowserCommand:
     case kFeedbackSourceConnectivityDiagnostics:
     case kFeedbackSourceDesktopTabGroups:
+    case kFeedbackSourceCookieControls:
     case kFeedbackSourceNetworkHealthPage:
     case kFeedbackSourceMdSettingsAboutPage:
     case kFeedbackSourceOldSettingsAboutPage:

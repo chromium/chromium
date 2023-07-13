@@ -45,6 +45,8 @@ std::unique_ptr<views::View> CreateSeparator() {
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(CookieControlsContentView, kTitle);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(CookieControlsContentView, kDescription);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(CookieControlsContentView, kToggleButton);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(CookieControlsContentView,
+                                      kFeedbackButton);
 
 CookieControlsContentView::CookieControlsContentView() {
   SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -133,19 +135,22 @@ void CookieControlsContentView::AddFeedbackSection() {
 
   feedback_section_->AddChildView(CreateSeparator());
 
-  feedback_section_->AddChildView(std::make_unique<RichHoverButton>(
-      base::BindRepeating(
-          &CookieControlsContentView::NotifyFeedbackButtonPressedCallback,
-          base::Unretained(this)),
-      feedback_icon,
-      l10n_util::GetStringUTF16(
-          IDS_COOKIE_CONTROLS_BUBBLE_SEND_FEEDBACK_BUTTON_TITLE),
-      std::u16string(),
-      // TODO(crbug.com/1446230): Add a proper tooltip string.
-      std::u16string(),
-      l10n_util::GetStringUTF16(
-          IDS_COOKIE_CONTROLS_BUBBLE_SEND_FEEDBACK_BUTTON_DESCRIPTION),
-      launch_icon));
+  auto* feedback_button =
+      feedback_section_->AddChildView(std::make_unique<RichHoverButton>(
+          base::BindRepeating(
+              &CookieControlsContentView::NotifyFeedbackButtonPressedCallback,
+              base::Unretained(this)),
+          feedback_icon,
+          l10n_util::GetStringUTF16(
+              IDS_COOKIE_CONTROLS_BUBBLE_SEND_FEEDBACK_BUTTON_TITLE),
+          std::u16string(),
+          // TODO(crbug.com/1446230): Add a proper tooltip string.
+          std::u16string(),
+          l10n_util::GetStringUTF16(
+              IDS_COOKIE_CONTROLS_BUBBLE_SEND_FEEDBACK_BUTTON_DESCRIPTION),
+          launch_icon));
+
+  feedback_button->SetProperty(views::kElementIdentifierKey, kFeedbackButton);
 }
 
 void CookieControlsContentView::UpdateContentLabels(

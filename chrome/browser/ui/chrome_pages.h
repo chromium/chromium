@@ -118,6 +118,7 @@ enum FeedbackSource {
   kFeedbackSourceUnknownLacrosSource,
   kFeedbackSourceWindowLayoutMenu,
   kFeedbackSourcePriceInsights,
+  kFeedbackSourceCookieControls,
 
   // Must be last.
   kFeedbackSourceCount,

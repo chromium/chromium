@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/feature_list_buildflags.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -9,6 +10,7 @@
 #include "chrome/browser/ui/views/location_bar/cookie_controls/cookie_controls_bubble_view.h"
 #include "chrome/browser/ui/views/location_bar/cookie_controls/cookie_controls_content_view.h"
 #include "chrome/browser/ui/views/location_bar/cookie_controls_icon_view.h"
+#include "chrome/browser/ui/webui/feedback/feedback_dialog.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
@@ -190,3 +192,23 @@ IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiTest, RemoveException) {
       PressButton(CookieControlsContentView::kToggleButton),
       CheckStateForNoException());
 }
+
+// Opening the feedback dialog on CrOS & LaCrOS open a system level dialog,
+// which cannot be easily tested here. Instead, LaCrOS has a separate feedback
+// browser test which gives some coverage.
+#if !BUILDFLAG(IS_CHROMEOS)
+IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiTest, FeedbackOpens) {
+  browser()->profile()->GetPrefs()->SetInteger(
+      prefs::kCookieControlsMode,
+      static_cast<int>(content_settings::CookieControlsMode::kBlockThirdParty));
+  const GURL third_party_cookie_page_url =
+      https_server()->GetURL("a.test", "/third_party_partitioned_cookies.html");
+  cookie_settings()->SetCookieSettingForUserBypass(third_party_cookie_page_url);
+  RunTestSequenceInContext(
+      context(), InstrumentTab(kWebContentsElementId),
+      NavigateWebContents(kWebContentsElementId, third_party_cookie_page_url),
+      PressButton(CookieControlsIconView::kCookieControlsIcon),
+      PressButton(CookieControlsContentView::kFeedbackButton),
+      InAnyContext(WaitForShow(FeedbackDialog::kFeedbackDialogForTesting)));
+}
+#endif

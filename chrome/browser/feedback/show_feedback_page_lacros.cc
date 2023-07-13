@@ -29,6 +29,9 @@ crosapi::mojom::LacrosFeedbackSource ToMojoLacrosFeedbackSource(
     case kFeedbackSourceWindowLayoutMenu:
       return crosapi::mojom::LacrosFeedbackSource::
           kDeprecatedLacrosWindowLayoutMenu;
+    case kFeedbackSourceCookieControls:
+      return crosapi::mojom::LacrosFeedbackSource::
+          kFeedbackSourceCookieControls;
     default:
       LOG(ERROR) << "ShowFeedbackPage is called by unknown Lacros source: "
                  << static_cast<int>(source);
