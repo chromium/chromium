@@ -73,6 +73,7 @@ src/webgpu/util/texture.ts
 src/webgpu/util/texture/texture_ok.ts
 src/webgpu/gpu_test.ts
 src/webgpu/api/validation/validation_test.ts
+src/compat/api/validation/texture/createTexture.spec.ts
 src/compat/api/validation/texture/cubeArray.spec.ts
 src/unittests/unit_test.ts
 src/demo/a.spec.ts
@@ -134,6 +135,7 @@ src/unittests/query_string.spec.ts
 src/unittests/serialization.spec.ts
 src/unittests/test_group.spec.ts
 src/unittests/test_query.spec.ts
+src/unittests/texture_ok.spec.ts
 src/webgpu/examples.spec.ts
 src/webgpu/listing.ts
 src/webgpu/api/operation/labels.spec.ts
