@@ -90,9 +90,7 @@ BASE_DECLARE_FEATURE(kOmniboxTriggerForPrerender2);
 BASE_DECLARE_FEATURE(kBookmarkTriggerForPrerender2);
 
 // This flag controls whether to trigger prerendering when the default search
-// engine suggests to prerender a search result. It also enables
-// Prerender2-related features on the blink side. This flag takes effect only
-// when blink::features::Prerender2 is enabled.
+// engine suggests to prerender a search result.
 BASE_DECLARE_FEATURE(kSupportSearchSuggestionForPrerender2);
 enum class SearchSuggestionPrerenderImplementationType {
   kUsePrefetch,

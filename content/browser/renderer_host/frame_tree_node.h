@@ -440,9 +440,8 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
   }
 
   // Sets the associated FrameTree for this node. The node can change FrameTrees
-  // when blink::features::Prerender2 is enabled, which allows a page loaded in
-  // the prerendered FrameTree to be used for a navigation in the primary frame
-  // tree.
+  // as part of prerendering, which allows a page loaded in the prerendered
+  // FrameTree to be used for a navigation in the primary frame tree.
   void SetFrameTree(FrameTree& frame_tree);
 
   using TraceProto = perfetto::protos::pbzero::FrameTreeNodeInfo;
