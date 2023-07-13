@@ -12,12 +12,15 @@
 #include "ui/gl/gl_surface_egl.h"
 #include "ui/gl/gl_surface_stub.h"
 
-namespace gl {
-namespace init {
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
+namespace gl::init {
 
 std::vector<GLImplementationParts> GetAllowedGLImplementations() {
   std::vector<GLImplementationParts> impls;
-  impls.emplace_back(GLImplementationParts(kGLImplementationEGLANGLE));
+  impls.emplace_back(kGLImplementationEGLANGLE);
   return impls;
 }
 
@@ -54,9 +57,11 @@ scoped_refptr<GLSurface> CreateViewGLSurface(GLDisplay* display,
   switch (GetGLImplementation()) {
     case kGLImplementationEGLANGLE:
       if (window != gfx::kNullAcceleratedWidget) {
-        UIView* view = (__bridge id)window;
-        return InitializeGLSurface(new NativeViewGLSurfaceEGL(
-            display->GetAs<gl::GLDisplayEGL>(), view.layer, nullptr));
+        UIView* view = (__bridge id)(void*)window;
+        void* layer = (__bridge void*)view.layer;
+        return InitializeGLSurface(
+            new NativeViewGLSurfaceEGL(display->GetAs<gl::GLDisplayEGL>(),
+                                       layer, /*vsync_provider=*/nullptr));
       } else {
         return InitializeGLSurface(new GLSurfaceStub());
       }
@@ -108,5 +113,4 @@ bool InitializeExtensionSettingsOneOffPlatform(GLDisplay* display) {
   return true;
 }
 
-}  // namespace init
-}  // namespace gl
+}  // namespace gl::init

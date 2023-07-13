@@ -336,12 +336,10 @@ component("gl") {
       data_deps += [ "//third_party/vulkan-deps/vulkan-loader/src:libvulkan" ]
     }
   }
-  if (is_mac) {
+  if (is_apple) {
     sources += [
       "ca_renderer_layer_params.cc",
       "ca_renderer_layer_params.h",
-      "dual_gpu_state_mac.cc",
-      "dual_gpu_state_mac.h",
       "egl_surface_io_surface.cc",
       "egl_surface_io_surface.h",
       "gl_display_egl.mm",
@@ -352,6 +350,15 @@ component("gl") {
     frameworks = [
       "CoreFoundation.framework",
       "IOSurface.framework",
+    ]
+  }
+  if (is_mac) {
+    sources += [
+      "dual_gpu_state_mac.cc",
+      "dual_gpu_state_mac.h",
+    ]
+
+    frameworks += [
       "OpenGL.framework",
       "Quartz.framework",
     ]
@@ -370,21 +377,6 @@ component("gl") {
     }
 
     defines += [ "GL_SILENCE_DEPRECATION" ]
-  }
-  if (is_ios) {
-    sources += [
-      "ca_renderer_layer_params.cc",
-      "ca_renderer_layer_params.h",
-      "egl_surface_io_surface.cc",
-      "egl_surface_io_surface.h",
-      "gl_display_egl.mm",
-      "gl_fence_apple.cc",
-      "gl_fence_apple.h",
-    ]
-    frameworks = [
-      "CoreFoundation.framework",
-      "IOSurface.framework",
-    ]
   }
   if (is_android) {
     defines += [
