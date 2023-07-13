@@ -27,11 +27,17 @@ body > main {
 
 .header-shadow {
   box-shadow: 0 5px 6px -3px rgba(0, 0, 0, .4);
+  z-index: 1;
 }
 
 #status-box-container {
   display: flex;
   flex-wrap: wrap;
+  gap: 10px;
+}
+
+status-box {
+  width: 380px;
 }
 
 body > header {
@@ -159,11 +165,13 @@ a {
   }
 }
 
-<if expr="is_android or is_ios">
-body > main {
-  padding: 0;
+@media only screen and (max-width: 480px) {
+  status-box {
+    width: 100%;
+  }
 }
 
+<if expr="is_android or is_ios">
 #search-field-container {
   height: 36px;
 }
