@@ -246,12 +246,12 @@ bool ServiceWorkerSubresourceLoader::StartRaceNetworkRequest() {
 
   scoped_refptr<network::SharedURLLoaderFactory> factory =
       network::SharedURLLoaderFactory::Create(fallback_factory_->Clone());
-  mojo::PendingRemote<network::mojom::URLLoader> url_loader;
 
   CHECK_EQ(commit_responsibility(), FetchResponseFrom::kNoResponseYet);
   factory->CreateLoaderAndStart(
-      url_loader.InitWithNewPipeAndPassReceiver(), request_id_,
-      network::mojom::kURLLoadOptionNone, resource_request_,
+      forwarded_race_network_request_url_loader_factory_
+          ->InitURLLoaderNewPipeAndPassReceiver(),
+      request_id_, network::mojom::kURLLoadOptionNone, resource_request_,
       std::move(client_to_pass),
       net::MutableNetworkTrafficAnnotationTag(
           ServiceWorkerRaceNetworkRequestURLLoaderClient::
@@ -260,10 +260,8 @@ bool ServiceWorkerSubresourceLoader::StartRaceNetworkRequest() {
   // Keep the URL loader related assets alive while the FetchEvent is ongoing
   // in the service worker.
   DCHECK(!race_network_request_url_loader_factory_);
-  DCHECK(!race_network_request_url_loader_);
   CHECK(!remote_forwarded_race_network_request_url_loader_factory_);
   race_network_request_url_loader_factory_ = std::move(factory);
-  race_network_request_url_loader_ = std::move(url_loader);
   remote_forwarded_race_network_request_url_loader_factory_ =
       std::move(remote_factory);
 
@@ -676,8 +674,6 @@ void ServiceWorkerSubresourceLoader::StartResponse(
       return;
   }
 
-  race_network_request_loader_client_.reset();
-
   // A response with status code 0 is Blink telling us to respond with network
   // error.
   if (response->status_code == 0) {
@@ -1077,7 +1073,6 @@ void ServiceWorkerSubresourceLoader::FollowRedirect(
   response_callback_receiver_.reset();
   reset_commit_responsibility();
   race_network_request_loader_client_.reset();
-  race_network_request_url_loader_.reset();
   race_network_request_url_loader_factory_.reset();
   StartRequest(resource_request_);
 }

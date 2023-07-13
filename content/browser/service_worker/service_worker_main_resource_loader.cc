@@ -404,9 +404,9 @@ bool ServiceWorkerMainResourceLoader::StartRaceNetworkRequest(
 
   // Perform fetch
   CHECK_EQ(commit_responsibility(), FetchResponseFrom::kNoResponseYet);
-  mojo::PendingRemote<network::mojom::URLLoader> url_loader;
   factory->CreateLoaderAndStart(
-      url_loader.InitWithNewPipeAndPassReceiver(),
+      forwarded_race_network_request_url_loader_factory_
+          ->InitURLLoaderNewPipeAndPassReceiver(),
       GlobalRequestID::MakeBrowserInitiated().request_id,
       network::mojom::kURLLoadOptionNone, resource_request_,
       std::move(client_to_pass),
@@ -420,7 +420,6 @@ bool ServiceWorkerMainResourceLoader::StartRaceNetworkRequest(
   DCHECK(!race_network_request_url_loader_);
   DCHECK(!race_network_request_loader_client_);
   race_network_request_url_loader_factory_ = std::move(factory);
-  race_network_request_url_loader_ = std::move(url_loader);
   race_network_request_loader_client_ =
       std::move(race_network_request_url_loader_client);
 
@@ -543,9 +542,6 @@ void ServiceWorkerMainResourceLoader::DidDispatchFetchEvent(
       // fetch handler result.
       return;
   }
-
-  // Cancel the connection for RaceNetworkRequest.
-  race_network_request_url_loader_.reset();
 
   DCHECK_EQ(status_, Status::kStarted);
 

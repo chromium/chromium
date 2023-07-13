@@ -5532,10 +5532,42 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
   SetupAndRegisterServiceWorker();
   const std::string path =
       "/service_worker/mock_response?server_redirect&sw_slow&sw_respond";
+  const std::string path_after_redirect =
+      "/service_worker/mock_response?&sw_slow&sw_respond";
   NavigateToURLBlockUntilNavigationsComplete(
       shell(), embedded_test_server()->GetURL(path), 1);
+  // When a redirect happens, RaceNetworkRequest doesn't handle the final
+  // response, and forward the response to the fetch handler.
+  EXPECT_EQ("[ServiceWorkerRaceNetworkRequest] Response from the fetch handler",
+            GetInnerText());
+
+  // The first request is deduped.
+  EXPECT_EQ(1, GetRequestCount(path));
+  // Fetch handler handles the second request, and respond with a cached
+  // resource. RaceNetworkRequest is not triggered.
+  EXPECT_EQ(0, GetRequestCount(path_after_redirect));
+}
+
+IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
+                       NetworkRequest_Wins_Redirect_PassThrough) {
+  SetupAndRegisterServiceWorker();
+  const std::string path =
+      "/service_worker/mock_response?server_redirect&sw_slow&sw_pass_through";
+  const std::string path_after_redirect =
+      "/service_worker/mock_response?&sw_slow&sw_pass_through";
+  NavigateToURLBlockUntilNavigationsComplete(
+      shell(), embedded_test_server()->GetURL(path), 1);
+  // The final response is actually from the fetch handler but the fetch handler
+  // just passes thorough to the network. So the expected output is "from
+  // the network".
   EXPECT_EQ("[ServiceWorkerRaceNetworkRequest] Response from the network",
             GetInnerText());
+
+  // The first request is deduped.
+  EXPECT_EQ(1, GetRequestCount(path));
+  // Fetch handler handles the second request, and respond with a pass through
+  // fetch request.
+  EXPECT_EQ(1, GetRequestCount(path_after_redirect));
 }
 
 IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
@@ -5598,10 +5630,39 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
   SetupAndRegisterServiceWorker();
   const std::string path =
       "/service_worker/mock_response?server_redirect&server_slow&sw_respond";
+  const std::string path_after_redirect =
+      "/service_worker/mock_response?&server_slow&sw_respond";
   NavigateToURLBlockUntilNavigationsComplete(
       shell(), embedded_test_server()->GetURL(path), 1);
   EXPECT_EQ("[ServiceWorkerRaceNetworkRequest] Response from the fetch handler",
             GetInnerText());
+  // The first request is deduped.
+  EXPECT_EQ(1, GetRequestCount(path));
+  // Fetch handler handles the second request, and respond with a cached
+  // resource. RaceNetworkRequest is not triggered.
+  EXPECT_EQ(0, GetRequestCount(path_after_redirect));
+}
+
+IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
+                       FetchHandler_Wins_Redirect_PassThrough) {
+  SetupAndRegisterServiceWorker();
+  const std::string path =
+      "/service_worker/"
+      "mock_response?server_redirect&server_slow&sw_pass_through";
+  const std::string path_after_redirect =
+      "/service_worker/mock_response?&server_slow&sw_pass_through";
+  NavigateToURLBlockUntilNavigationsComplete(
+      shell(), embedded_test_server()->GetURL(path), 1);
+  // The final response is actually from the fetch handler but the fetch handler
+  // just passes thorough to the network. So the expected output is "from
+  // the network".
+  EXPECT_EQ("[ServiceWorkerRaceNetworkRequest] Slow response from the network",
+            GetInnerText());
+  // The first request is deduped.
+  EXPECT_EQ(1, GetRequestCount(path));
+  // Fetch handler handles the second request, and respond with a pass through
+  // fetch request.
+  EXPECT_EQ(1, GetRequestCount(path_after_redirect));
 }
 
 IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
@@ -5753,11 +5814,43 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
                        Subresource_NetworkRequest_Wins_Redirect) {
   SetupAndRegisterServiceWorker();
   ReloadBlockUntilNavigationsComplete(shell(), 1);
+
+  const std::string path =
+      "/service_worker/mock_response?server_redirect&sw_slow&sw_respond";
+  const std::string path_after_redirect =
+      "/service_worker/mock_response?&sw_slow&sw_respond";
+
+  EXPECT_EQ("[ServiceWorkerRaceNetworkRequest] Response from the fetch handler",
+            EvalJs(GetPrimaryMainFrame(),
+                   "fetch('" + path + "').then(response => response.text())"));
+  // The first request is deduped.
+  EXPECT_EQ(1, GetRequestCount(path));
+  // Fetch handler handles the second request, and respond with a cached
+  // resource. RaceNetworkRequest is not triggered.
+  EXPECT_EQ(0, GetRequestCount(path_after_redirect));
+}
+
+IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
+                       Subresource_NetworkRequest_Wins_Redirect_PassThrough) {
+  SetupAndRegisterServiceWorker();
+  ReloadBlockUntilNavigationsComplete(shell(), 1);
+
+  const std::string path =
+      "/service_worker/mock_response?server_redirect&sw_slow&sw_pass_through";
+  const std::string path_after_redirect =
+      "/service_worker/mock_response?&sw_slow&sw_pass_through";
+
+  // The final response is actually from the fetch handler but the fetch handler
+  // just passes thorough to the network. So the expected output is "from
+  // the network".
   EXPECT_EQ("[ServiceWorkerRaceNetworkRequest] Response from the network",
             EvalJs(GetPrimaryMainFrame(),
-                   "fetch('/service_worker/mock_response?"
-                   "server_redirect&sw_slow&sw_respond').then(response => "
-                   "response.text())"));
+                   "fetch('" + path + "').then(response => response.text())"));
+  // The first request is deduped.
+  EXPECT_EQ(1, GetRequestCount(path));
+  // Fetch handler handles the second request, and respond with a pass through
+  // fetch request.
+  EXPECT_EQ(1, GetRequestCount(path_after_redirect));
 }
 
 IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
@@ -5819,11 +5912,44 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
                        Subresource_FetchHandler_Wins_Redirect) {
   SetupAndRegisterServiceWorker();
   ReloadBlockUntilNavigationsComplete(shell(), 1);
+
+  const std::string path =
+      "/service_worker/mock_response?server_redirect&server_slow&sw_respond";
+  const std::string path_after_redirect =
+      "/service_worker/mock_response?&server_slow&sw_respond";
+
   EXPECT_EQ("[ServiceWorkerRaceNetworkRequest] Response from the fetch handler",
             EvalJs(GetPrimaryMainFrame(),
-                   "fetch('/service_worker/mock_response?"
-                   "server_redirect&server_slow&sw_respond').then(response => "
-                   "response.text())"));
+                   "fetch('" + path + "').then(response => response.text())"));
+  // The first request is deduped.
+  EXPECT_EQ(1, GetRequestCount(path));
+  // Fetch handler handles the second request, and respond with a cached
+  // resource. RaceNetworkRequest is not triggered.
+  EXPECT_EQ(0, GetRequestCount(path_after_redirect));
+}
+
+IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
+                       Subresource_FetchHandler_Wins_Redirect_PassThrough) {
+  SetupAndRegisterServiceWorker();
+  ReloadBlockUntilNavigationsComplete(shell(), 1);
+
+  const std::string path =
+      "/service_worker/"
+      "mock_response?server_redirect&server_slow&sw_pass_through";
+  const std::string path_after_redirect =
+      "/service_worker/mock_response?&server_slow&sw_pass_through";
+
+  // The final response is actually from the fetch handler but the fetch handler
+  // just passes thorough to the network. So the expected output is "from
+  // the network".
+  EXPECT_EQ("[ServiceWorkerRaceNetworkRequest] Slow response from the network",
+            EvalJs(GetPrimaryMainFrame(),
+                   "fetch('" + path + "').then(response => response.text())"));
+  // The first request is deduped.
+  EXPECT_EQ(1, GetRequestCount(path));
+  // Fetch handler handles the second request, and respond with a pass through
+  // fetch request.
+  EXPECT_EQ(1, GetRequestCount(path_after_redirect));
 }
 
 IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,

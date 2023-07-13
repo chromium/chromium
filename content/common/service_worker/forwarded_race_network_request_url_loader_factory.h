@@ -45,9 +45,13 @@ class ServiceWorkerForwardedRaceNetworkRequestURLLoaderFactory
   void Clone(mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver)
       override;
 
+  mojo::PendingReceiver<network::mojom::URLLoader>
+  InitURLLoaderNewPipeAndPassReceiver();
+
  private:
   mojo::Receiver<network::mojom::URLLoaderFactory> receiver_{this};
   mojo::PendingReceiver<network::mojom::URLLoaderClient> client_receiver_;
+  mojo::PendingRemote<network::mojom::URLLoader> loader_;
   GURL url_;
 };
 }  // namespace content
