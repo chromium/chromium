@@ -12,18 +12,33 @@
 #include "chrome/browser/signin/bound_session_credentials/bound_session_refresh_cookie_fetcher.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_refresh_cookie_fetcher_impl.h"
 #include "components/signin/public/base/signin_client.h"
+#include "components/unexportable_keys/background_task_priority.h"
+#include "components/unexportable_keys/unexportable_key_loader.h"
 
 namespace {
 using Result = BoundSessionRefreshCookieFetcher::Result;
 }
 
 BoundSessionCookieControllerImpl::BoundSessionCookieControllerImpl(
+    unexportable_keys::UnexportableKeyService& key_service,
     SigninClient* client,
     const GURL& url,
     const std::vector<std::string>& cookie_names,
+    base::span<const uint8_t> wrapped_key,
     Delegate* delegate)
     : BoundSessionCookieController(url, cookie_names, delegate),
-      client_(client) {}
+      key_service_(key_service),
+      client_(client) {
+  // TODO(b/273920907): Mark `wrapped_key` as non-optional when
+  // `BoundSessionCookieRefreshServiceImpl` uses only
+  // explicitly registered sessions.
+  if (!wrapped_key.empty()) {
+    key_loader_ =
+        unexportable_keys::UnexportableKeyLoader::CreateFromWrappedKey(
+            key_service_.get(), wrapped_key,
+            unexportable_keys::BackgroundTaskPriority::kUserBlocking);
+  }
+}
 
 BoundSessionCookieControllerImpl::~BoundSessionCookieControllerImpl() {
   // On shutdown or session termination, resume blocked requests if any.

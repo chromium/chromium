@@ -24,6 +24,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "components/unexportable_keys/fake_unexportable_key_service.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -36,19 +37,24 @@ constexpr char kEmail[] = "primaryaccount@example.com";
 constexpr char kSIDTSCookieName[] = "__Secure-1PSIDTS";
 constexpr char kRegistrationParamsPref[] =
     "bound_session_credentials_registration_params";
+constexpr char kWrappedKey[] = "wrapped_key";
 
 class FakeBoundSessionCookieController : public BoundSessionCookieController {
  public:
   explicit FakeBoundSessionCookieController(
       const GURL& url,
       const std::vector<std::string>& cookie_names,
+      base::span<const uint8_t> wrapped_key,
       Delegate* delegate)
-      : BoundSessionCookieController(url, cookie_names, delegate) {}
+      : BoundSessionCookieController(url, cookie_names, delegate),
+        wrapped_key_(wrapped_key.begin(), wrapped_key.end()) {}
 
   ~FakeBoundSessionCookieController() override {
     DCHECK(on_destroy_callback_);
     std::move(on_destroy_callback_).Run();
   }
+
+  const std::vector<uint8_t>& wrapped_key() { return wrapped_key_; }
 
   void OnRequestBlockedOnCookie(
       base::OnceClosure resume_blocked_request) override {
@@ -80,12 +86,14 @@ class FakeBoundSessionCookieController : public BoundSessionCookieController {
  private:
   base::OnceCallback<void()> on_destroy_callback_;
   std::vector<base::OnceClosure> resume_blocked_requests_;
+  std::vector<uint8_t> wrapped_key_;
 };
 
 bound_session_credentials::RegistrationParams CreateTestRegistrationParams() {
   bound_session_credentials::RegistrationParams params;
   params.set_site("google.com");
   params.set_session_id("test_session_id");
+  params.set_wrapped_key(kWrappedKey);
   return params;
 }
 
@@ -111,10 +119,11 @@ class BoundSessionCookieRefreshServiceImplTest
   std::unique_ptr<BoundSessionCookieController> GetBoundSessionCookieController(
       const GURL& url,
       const std::vector<std::string>& cookie_names,
+      base::span<const uint8_t> wrapped_key,
       BoundSessionCookieController::Delegate* delegate) {
     std::unique_ptr<FakeBoundSessionCookieController> controller =
-        std::make_unique<FakeBoundSessionCookieController>(url, cookie_names,
-                                                           delegate);
+        std::make_unique<FakeBoundSessionCookieController>(
+            url, cookie_names, wrapped_key, delegate);
     controller->set_on_destroy_callback(base::BindOnce(
         &BoundSessionCookieRefreshServiceImplTest::OnCookieControllerDestroy,
         base::Unretained(this)));
@@ -128,6 +137,7 @@ class BoundSessionCookieRefreshServiceImplTest
     if (!cookie_refresh_service_) {
       cookie_refresh_service_ =
           std::make_unique<BoundSessionCookieRefreshServiceImpl>(
+              fake_unexportable_key_service_,
               identity_test_env_.signin_client(), identity_manager());
       cookie_refresh_service_->set_controller_factory_for_testing(
           base::BindRepeating(&BoundSessionCookieRefreshServiceImplTest::
@@ -203,6 +213,7 @@ class BoundSessionCookieRefreshServiceImplTest
   network::TestURLLoaderFactory test_url_loader_factory_;
   signin::IdentityTestEnvironment identity_test_env_;
   std::unique_ptr<BoundSessionCookieRefreshServiceImpl> cookie_refresh_service_;
+  unexportable_keys::FakeUnexportableKeyService fake_unexportable_key_service_;
   raw_ptr<FakeBoundSessionCookieController> cookie_controller_ = nullptr;
 };
 
@@ -215,6 +226,13 @@ TEST_P(BoundSessionCookieRefreshServiceImplTest, VerifyControllerParams) {
   EXPECT_EQ(controller->url(), kTestGaiaURL);
   EXPECT_EQ(controller->cookie_name(), kSIDTSCookieName);
   EXPECT_EQ(controller->cookie_expiration_time(), base::Time());
+
+  if (IsExplicitRegistrationEnabled()) {
+    EXPECT_EQ(controller->wrapped_key(),
+              std::vector<uint8_t>(std::begin(kWrappedKey),
+                                   // Omit `\0`.
+                                   std::end(kWrappedKey) - 1));
+  }
 }
 
 TEST_P(BoundSessionCookieRefreshServiceImplTest,

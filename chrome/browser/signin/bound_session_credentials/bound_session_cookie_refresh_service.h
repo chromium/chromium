@@ -13,10 +13,6 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 
-namespace unexportable_keys {
-class UnexportableKeyService;
-}  // namespace unexportable_keys
-
 // BoundSessionCookieRefreshService is responsible for maintaining cookies
 // associated with bound sessions. This class does the following:
 // - Tracks bound sessions
@@ -51,8 +47,7 @@ class BoundSessionCookieRefreshService
       const = 0;
 
   virtual void CreateRegistrationRequest(
-      BoundSessionRegistrationFetcherParam registration_params,
-      unexportable_keys::UnexportableKeyService* key_service) = 0;
+      BoundSessionRegistrationFetcherParam registration_params) = 0;
 
   virtual base::WeakPtr<BoundSessionCookieRefreshService> GetWeakPtr() = 0;
 

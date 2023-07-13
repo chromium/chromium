@@ -8,6 +8,8 @@
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_controller.h"
 
 #include <memory>
+
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/time/time.h"
@@ -15,8 +17,12 @@
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_observer.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_refresh_cookie_fetcher.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-
 #include "url/gurl.h"
+
+namespace unexportable_keys {
+class UnexportableKeyLoader;
+class UnexportableKeyService;
+}  // namespace unexportable_keys
 
 class SigninClient;
 class BoundSessionCookieFetcher;
@@ -24,10 +30,13 @@ class BoundSessionCookieObserver;
 
 class BoundSessionCookieControllerImpl : public BoundSessionCookieController {
  public:
-  BoundSessionCookieControllerImpl(SigninClient* client,
-                                   const GURL& url,
-                                   const std::vector<std::string>& cookie_names,
-                                   Delegate* delegate);
+  BoundSessionCookieControllerImpl(
+      unexportable_keys::UnexportableKeyService& key_service,
+      SigninClient* client,
+      const GURL& url,
+      const std::vector<std::string>& cookie_names,
+      base::span<const uint8_t> wrapped_key,
+      Delegate* delegate);
 
   void Initialize() override;
 
@@ -71,6 +80,7 @@ class BoundSessionCookieControllerImpl : public BoundSessionCookieController {
         refresh_cookie_fetcher_factory_for_testing;
   }
 
+  const raw_ref<unexportable_keys::UnexportableKeyService> key_service_;
   const raw_ptr<SigninClient> client_;
   std::vector<std::unique_ptr<BoundSessionCookieObserver>>
       bound_cookies_observers_;
@@ -78,6 +88,8 @@ class BoundSessionCookieControllerImpl : public BoundSessionCookieController {
   std::vector<base::OnceClosure> resume_blocked_requests_;
   // Used to schedule preemptive cookie refresh.
   base::OneShotTimer cookie_refresh_timer_;
+
+  std::unique_ptr<unexportable_keys::UnexportableKeyLoader> key_loader_;
 
   RefreshCookieFetcherFactoryForTesting
       refresh_cookie_fetcher_factory_for_testing_;

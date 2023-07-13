@@ -159,8 +159,7 @@ void HeaderModificationDelegateImpl::ProcessResponse(
           response_adapter->GetUrl(), response_adapter->GetHeaders());
       if (params.has_value()) {
         bound_session_cookie_refresh_service->CreateRegistrationRequest(
-            std::move(params).value(),
-            UnexportableKeyServiceFactory::GetForProfile(profile_));
+            std::move(params).value());
       }
     }
   }

@@ -6,7 +6,9 @@
 
 #include <memory>
 
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
@@ -17,10 +19,20 @@
 #include "chrome/browser/signin/bound_session_credentials/fake_bound_session_refresh_cookie_fetcher.h"
 #include "components/signin/public/base/test_signin_client.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "components/unexportable_keys/service_error.h"
+#include "components/unexportable_keys/unexportable_key_id.h"
+#include "components/unexportable_keys/unexportable_key_loader.h"
+#include "components/unexportable_keys/unexportable_key_service_impl.h"
+#include "components/unexportable_keys/unexportable_key_task_manager.h"
+#include "crypto/scoped_mock_unexportable_key_provider.h"
+#include "crypto/signature_verifier.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "net/cookies/canonical_cookie.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+
+using unexportable_keys::ServiceErrorOr;
+using unexportable_keys::UnexportableKeyId;
 
 namespace {
 constexpr char k1PSIDTSCookieName[] = "__Secure-1PSIDTS";
@@ -38,14 +50,19 @@ class BoundSessionCookieControllerImplTest
     : public testing::Test,
       public BoundSessionCookieController::Delegate {
  public:
-  BoundSessionCookieControllerImplTest() : signin_client_(&prefs_) {
+  BoundSessionCookieControllerImplTest()
+      : unexportable_key_service_(unexportable_key_task_manager_),
+        signin_client_(&prefs_),
+        key_id_(GenerateNewKey()) {
     signin_client_.set_cookie_manager(
         std::make_unique<BoundSessionTestCookieManager>());
+
     bound_session_cookie_controller_ =
         std::make_unique<BoundSessionCookieControllerImpl>(
-            &signin_client_, GaiaUrls::GetInstance()->secure_google_url(),
+            unexportable_key_service_, &signin_client_,
+            GaiaUrls::GetInstance()->secure_google_url(),
             std::vector<std::string>({k1PSIDTSCookieName, k3PSIDTSCookieName}),
-            this);
+            GetWrappedKey(key_id_), this);
 
     bound_session_cookie_controller_
         ->set_refresh_cookie_fetcher_factory_for_testing(
@@ -56,6 +73,26 @@ class BoundSessionCookieControllerImplTest
   }
 
   ~BoundSessionCookieControllerImplTest() override = default;
+
+  UnexportableKeyId GenerateNewKey() {
+    base::test::TestFuture<ServiceErrorOr<UnexportableKeyId>> generate_future;
+    unexportable_key_service_.GenerateSigningKeySlowlyAsync(
+        base::span<const crypto::SignatureVerifier::SignatureAlgorithm>(
+            {crypto::SignatureVerifier::ECDSA_SHA256}),
+        unexportable_keys::BackgroundTaskPriority::kUserBlocking,
+        generate_future.GetCallback());
+    ServiceErrorOr<unexportable_keys::UnexportableKeyId> key_id =
+        generate_future.Get();
+    CHECK(key_id.has_value());
+    return *key_id;
+  }
+
+  std::vector<uint8_t> GetWrappedKey(const UnexportableKeyId& key_id) {
+    ServiceErrorOr<std::vector<uint8_t>> wrapped_key =
+        unexportable_key_service_.GetWrappedKey(key_id);
+    CHECK(wrapped_key.has_value());
+    return *wrapped_key;
+  }
 
   std::unique_ptr<BoundSessionRefreshCookieFetcher>
   CreateBoundSessionRefreshCookieFetcher(SigninClient* client,
@@ -154,6 +191,12 @@ class BoundSessionCookieControllerImplTest
     return &bound_session_cookie_controller()->cookie_refresh_timer_;
   }
 
+  unexportable_keys::UnexportableKeyLoader* key_loader() {
+    return bound_session_cookie_controller()->key_loader_.get();
+  }
+
+  const UnexportableKeyId& key_id() { return key_id_; }
+
   size_t on_cookie_expiration_date_changed_call_count() {
     return on_cookie_expiration_date_changed_call_count_;
   }
@@ -173,8 +216,12 @@ class BoundSessionCookieControllerImplTest
  private:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  crypto::ScopedMockUnexportableKeyProvider scoped_key_provider_;
+  unexportable_keys::UnexportableKeyTaskManager unexportable_key_task_manager_;
+  unexportable_keys::UnexportableKeyServiceImpl unexportable_key_service_;
   sync_preferences::TestingPrefServiceSyncable prefs_;
   TestSigninClient signin_client_;
+  UnexportableKeyId key_id_;
   std::unique_ptr<BoundSessionCookieControllerImpl>
       bound_session_cookie_controller_;
   raw_ptr<FakeBoundSessionRefreshCookieFetcher, DanglingUntriaged>
@@ -182,6 +229,14 @@ class BoundSessionCookieControllerImplTest
   size_t on_cookie_expiration_date_changed_call_count_ = 0;
   bool on_terminate_session_called_ = false;
 };
+
+TEST_F(BoundSessionCookieControllerImplTest, KeyLoadedOnStartup) {
+  EXPECT_NE(key_loader()->GetStateForTesting(),
+            unexportable_keys::UnexportableKeyLoader::State::kNotStarted);
+  base::test::TestFuture<ServiceErrorOr<UnexportableKeyId>> future;
+  key_loader()->InvokeCallbackAfterKeyLoaded(future.GetCallback());
+  EXPECT_EQ(*future.Get(), key_id());
+}
 
 TEST_F(BoundSessionCookieControllerImplTest, TwoCookieObserversCreated) {
   EXPECT_EQ(bound_cookies_observers()->size(), 2u);

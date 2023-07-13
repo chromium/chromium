@@ -3,10 +3,12 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_refresh_service_impl.h"
+
 #include <memory>
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
@@ -179,9 +181,12 @@ bool BoundSessionCookieRefreshServiceImpl::BoundSessionStateTracker::
 }
 
 BoundSessionCookieRefreshServiceImpl::BoundSessionCookieRefreshServiceImpl(
+    unexportable_keys::UnexportableKeyService& key_service,
     SigninClient* client,
     IdentityManager* identity_manager)
-    : client_(client), identity_manager_(identity_manager) {}
+    : key_service_(key_service),
+      client_(client),
+      identity_manager_(identity_manager) {}
 
 BoundSessionCookieRefreshServiceImpl::~BoundSessionCookieRefreshServiceImpl() =
     default;
@@ -268,8 +273,7 @@ void BoundSessionCookieRefreshServiceImpl::OnRequestBlockedOnCookie(
 }
 
 void BoundSessionCookieRefreshServiceImpl::CreateRegistrationRequest(
-    BoundSessionRegistrationFetcherParam registration_params,
-    unexportable_keys::UnexportableKeyService* key_service) {
+    BoundSessionRegistrationFetcherParam registration_params) {
   if (active_registration_request_) {
     // If there are multiple racing registration requests, only one will be
     // processed and it will contain the most up-to-date set of cookies.
@@ -279,7 +283,7 @@ void BoundSessionCookieRefreshServiceImpl::CreateRegistrationRequest(
   active_registration_request_ =
       std::make_unique<BoundSessionRegistrationFetcherImpl>(
           std::move(registration_params), client_->GetURLLoaderFactory(),
-          key_service);
+          &key_service_.get());
   // `base::Unretained(this)` is safe here because `this` owns the fetcher via
   // `active_registration_requests_`
   active_registration_request_->Start(base::BindOnce(
@@ -319,11 +323,14 @@ void BoundSessionCookieRefreshServiceImpl::TerminateSession() {
 std::unique_ptr<BoundSessionCookieController>
 BoundSessionCookieRefreshServiceImpl::CreateBoundSessionCookieController(
     const GURL& url,
-    const std::string& cookie_name) {
+    const std::string& cookie_name,
+    base::span<const uint8_t> wrapped_key) {
   return controller_factory_for_testing_.is_null()
              ? std::make_unique<BoundSessionCookieControllerImpl>(
-                   client_, url, std::vector<std::string>({cookie_name}), this)
-             : controller_factory_for_testing_.Run(url, {cookie_name}, this);
+                   key_service_.get(), client_, url,
+                   std::vector<std::string>({cookie_name}), wrapped_key, this)
+             : controller_factory_for_testing_.Run(url, {cookie_name},
+                                                   wrapped_key, this);
 }
 
 void BoundSessionCookieRefreshServiceImpl::StartManagingBoundSessionCookie() {
@@ -331,8 +338,21 @@ void BoundSessionCookieRefreshServiceImpl::StartManagingBoundSessionCookie() {
   constexpr char kSIDTSCookieName[] = "__Secure-1PSIDTS";
 
   // TODO(http://b/286222327): pass registration params to controller.
+  base::span<const uint8_t> wrapped_key;
+  bound_session_credentials::RegistrationParams params;
+  if (base::FeatureList::IsEnabled(kBoundSessionExplicitRegistration)) {
+    if (!params.ParseFromString(
+            client_->GetPrefs()->GetString(kRegistrationParamsPref)) ||
+        !params.has_wrapped_key()) {
+      TerminateSession();
+      return;
+    }
+    wrapped_key = base::as_bytes(base::make_span(params.wrapped_key()));
+  }
+
   cookie_controller_ = CreateBoundSessionCookieController(
-      GaiaUrls::GetInstance()->secure_google_url(), kSIDTSCookieName);
+      GaiaUrls::GetInstance()->secure_google_url(), kSIDTSCookieName,
+      wrapped_key);
   cookie_controller_->Initialize();
 }
 

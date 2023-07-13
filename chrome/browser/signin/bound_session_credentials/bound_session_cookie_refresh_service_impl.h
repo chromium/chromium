@@ -9,6 +9,7 @@
 
 #include <memory>
 
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
@@ -40,6 +41,7 @@ class BoundSessionCookieRefreshServiceImpl
       public BoundSessionCookieController::Delegate {
  public:
   explicit BoundSessionCookieRefreshServiceImpl(
+      unexportable_keys::UnexportableKeyService& key_service,
       SigninClient* client,
       signin::IdentityManager* identity_manager);
 
@@ -63,8 +65,7 @@ class BoundSessionCookieRefreshServiceImpl
       OnRequestBlockedOnCookieCallback resume_blocked_request) override;
 
   void CreateRegistrationRequest(
-      BoundSessionRegistrationFetcherParam registration_params,
-      unexportable_keys::UnexportableKeyService* key_service) override;
+      BoundSessionRegistrationFetcherParam registration_params) override;
 
   base::WeakPtr<BoundSessionCookieRefreshService> GetWeakPtr() override;
 
@@ -78,6 +79,7 @@ class BoundSessionCookieRefreshServiceImpl
       base::RepeatingCallback<std::unique_ptr<BoundSessionCookieController>(
           const GURL& url,
           const std::vector<std::string>& cookie_names,
+          base::span<const uint8_t> wrapped_key,
           Delegate* delegate)>;
 
   // BoundSessionCookieRefreshService:
@@ -100,13 +102,15 @@ class BoundSessionCookieRefreshServiceImpl
 
   std::unique_ptr<BoundSessionCookieController>
   CreateBoundSessionCookieController(const GURL& url,
-                                     const std::string& cookie_name);
+                                     const std::string& cookie_name,
+                                     base::span<const uint8_t> wrapped_key);
   void StartManagingBoundSessionCookie();
   void StopManagingBoundSessionCookie();
   void OnBoundSessionUpdated();
 
   void UpdateAllRenderers();
 
+  const raw_ref<unexportable_keys::UnexportableKeyService> key_service_;
   const raw_ptr<SigninClient> client_;
   const raw_ptr<signin::IdentityManager> identity_manager_;
   BoundSessionCookieControllerFactoryForTesting controller_factory_for_testing_;

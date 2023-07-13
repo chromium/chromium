@@ -20,10 +20,6 @@ namespace network {
 class SimpleURLLoader;
 }  // namespace network
 
-namespace unexportable_keys {
-class UnexportableKeyService;
-}
-
 namespace {
 class FakeBoundSessionCookieRefreshService
     : public BoundSessionCookieRefreshService {
@@ -50,8 +46,7 @@ class FakeBoundSessionCookieRefreshService
   }
 
   void CreateRegistrationRequest(
-      BoundSessionRegistrationFetcherParam registration_params,
-      unexportable_keys::UnexportableKeyService* key_service) override {}
+      BoundSessionRegistrationFetcherParam registration_params) override {}
 
   base::WeakPtr<BoundSessionCookieRefreshService> GetWeakPtr() override {
     return weak_ptr_factory_.GetWeakPtr();
