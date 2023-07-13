@@ -25,8 +25,10 @@
 #include "chrome/browser/ui/passwords/manage_passwords_ui_controller_mock.h"
 #include "chrome/browser/ui/passwords/password_dialog_prompts.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate.h"
+#include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/device_reauth/device_authenticator.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/mock_password_form_manager_for_ui.h"
 #include "components/password_manager/core/browser/mock_password_store_interface.h"
 #include "components/password_manager/core/browser/password_bubble_experiment.h"
@@ -2008,3 +2010,82 @@ TEST_F(ManagePasswordsUIControllerTest, OnBiometricAuthBeforeFillingDeclined) {
 }
 
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+
+class ManagePasswordsUIControllerWithBrowserTest
+    : public BrowserWithTestWindowTest {
+ public:
+  void SetUp() override;
+  content::WebContents* web_contents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+  ManagePasswordsUIController* controller() {
+    return ManagePasswordsUIController::FromWebContents(web_contents());
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_{
+      password_manager::features::kSharedPasswordNotificationUI};
+  TestPasswordManagerClient client_;
+};
+
+void ManagePasswordsUIControllerWithBrowserTest::SetUp() {
+  BrowserWithTestWindowTest::SetUp();
+  AddTab(browser(), GURL(kExampleUrl));
+  ManagePasswordsUIController::CreateForWebContents(web_contents());
+  controller()->set_client(&client_);
+}
+
+TEST_F(ManagePasswordsUIControllerWithBrowserTest,
+       OnAutofillingSharedPasswordNotNotifiedYet) {
+  // Simulate two candidates in the dropdown menu where one of them is shared.
+  // Shared passwords are identified by a non-empty sender email field.
+  PasswordForm non_shared_credentials;
+  non_shared_credentials.url = GURL("http://example.com/login");
+  non_shared_credentials.signon_realm = non_shared_credentials.url.spec();
+  non_shared_credentials.username_value = u"username";
+  non_shared_credentials.password_value = u"12345";
+
+  PasswordForm shared_credentials = non_shared_credentials;
+  non_shared_credentials.username_value = u"username2";
+  shared_credentials.sender_email = u"user@example.com";
+  shared_credentials.sharing_notification_displayed = false;
+
+  std::vector<const PasswordForm*> forms = {&shared_credentials,
+                                            &non_shared_credentials};
+  controller()->OnPasswordAutofilled(
+      forms, url::Origin::Create(forms.front()->url), nullptr);
+
+  ASSERT_EQ(2u, controller()->GetCurrentForms().size());
+  EXPECT_EQ(controller()->GetState(),
+            password_manager::ui::NOTIFY_RECEIVED_SHARED_CREDENTIALS);
+  EXPECT_TRUE(controller()->IsAutomaticallyOpeningBubble());
+}
+
+TEST_F(ManagePasswordsUIControllerWithBrowserTest,
+       OnAutofillingSharedPasswordNotifiedAlready) {
+  // Simulate two candidates in the dropdown menu where one of them is shared,
+  // while the user has been notified about the shared password already. Shared
+  // passwords are identified by a non-empty sender email field.
+  PasswordForm non_shared_credentials;
+  non_shared_credentials.url = GURL("http://example.com/login");
+  non_shared_credentials.signon_realm = non_shared_credentials.url.spec();
+  non_shared_credentials.username_value = u"username";
+  non_shared_credentials.password_value = u"12345";
+
+  PasswordForm shared_credentials = non_shared_credentials;
+  non_shared_credentials.username_value = u"username2";
+  shared_credentials.sender_email = u"user@example.com";
+  shared_credentials.sharing_notification_displayed = true;
+
+  std::vector<const PasswordForm*> forms = {&shared_credentials,
+                                            &non_shared_credentials};
+  controller()->OnPasswordAutofilled(
+      forms, url::Origin::Create(forms.front()->url), nullptr);
+
+  ASSERT_EQ(2u, controller()->GetCurrentForms().size());
+  // Shared password notification was displayed already, so the state should be
+  // MANAGE_STATE.
+  EXPECT_EQ(controller()->GetState(), password_manager::ui::MANAGE_STATE);
+  EXPECT_FALSE(controller()->IsAutomaticallyOpeningBubble());
+}

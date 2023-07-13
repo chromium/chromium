@@ -57,6 +57,13 @@ enum State {
   // The user enabled biometric authentication before filling feature from the
   // promo dialog and successfully authenticated.
   BIOMETRIC_AUTHENTICATION_CONFIRMATION_STATE,
+
+  // For the current sign-in form, one of the stored credentials is shared by
+  // another user. The user is notified about the existence of that credential
+  // using a native bubble. The bubble keeps showing every time the user visits
+  // the sign-in form until the user explicitly interacts with the notification
+  // bubble.
+  NOTIFY_RECEIVED_SHARED_CREDENTIALS,
 };
 
 }  // namespace ui

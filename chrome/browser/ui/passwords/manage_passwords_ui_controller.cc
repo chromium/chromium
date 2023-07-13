@@ -48,6 +48,7 @@
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/tracker.h"
 #include "components/password_manager/core/browser/browser_save_password_progress_logger.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/form_saver_impl.h"
 #include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #include "components/password_manager/core/browser/move_password_to_account_store_helper.h"
@@ -296,6 +297,23 @@ void ManagePasswordsUIController::OnPasswordAutofilled(
   if (browser->tab_strip_model()->GetActiveWebContents() != web_contents()) {
     return;
   }
+
+  const bool has_unnotified_shared_credentials = base::ranges::any_of(
+      GetCurrentForms(),
+      [](const std::unique_ptr<password_manager::PasswordForm>& form) {
+        return !form->sender_email.empty() &&
+               !form->sharing_notification_displayed;
+      });
+  if (has_unnotified_shared_credentials &&
+      base::FeatureList::IsEnabled(
+          password_manager::features::kSharedPasswordNotificationUI)) {
+    passwords_data_.TransitionToState(
+        password_manager::ui::NOTIFY_RECEIVED_SHARED_CREDENTIALS);
+    bubble_status_ = BubbleStatus::SHOULD_POP_UP;
+    UpdateBubbleAndIconVisibility();
+    return;
+  }
+
   const bool has_non_empty_note = !base::ranges::all_of(
       GetCurrentForms(), &std::u16string::empty,
       &password_manager::PasswordForm::GetNoteWithEmptyUniqueDisplayName);

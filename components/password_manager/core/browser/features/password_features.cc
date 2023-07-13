@@ -57,4 +57,10 @@ BASE_FEATURE(kFillingAcrossGroupedSites,
              "FillingAcrossGroupedSites",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables the notification UI that is displayed to the user when visiting a
+// website for which a stored password has been shared by another user.
+BASE_FEATURE(kSharedPasswordNotificationUI,
+             "SharedPasswordNotificationUI",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace password_manager::features
