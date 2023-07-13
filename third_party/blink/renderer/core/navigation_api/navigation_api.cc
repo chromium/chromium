@@ -551,13 +551,16 @@ NavigationResult* NavigationApi::traverseTo(ScriptState* script_state,
     heuristics->SameDocumentNavigationStarted(script_state);
   }
   auto* tracker = ThreadScheduler::Current()->GetTaskAttributionTracker();
-  absl::optional<scheduler::TaskAttributionId> task_id;
+  scheduler::TaskAttributionInfo* task = nullptr;
   if (tracker && script_state->World().IsMainWorld()) {
-    task_id = tracker->RunningTaskAttributionId(script_state);
+    task = tracker->RunningTask(script_state);
+
+    tracker->AddSameDocumentNavigationTask(task);
   }
   window_->GetFrame()->GetLocalFrameHostRemote().NavigateToNavigationApiKey(
       key, LocalFrame::HasTransientUserActivation(window_->GetFrame()),
-      task_id);
+      task ? absl::optional<scheduler::TaskAttributionId>(task->Id())
+           : absl::nullopt);
   return ongoing_navigation->GetNavigationResult();
 }
 
@@ -653,7 +656,7 @@ NavigationApi::DispatchResult NavigationApi::DispatchNavigateEvent(
   // fire a navigate event, but all should abort an ongoing navigate event.
   // The main case were that would be a problem (browser-initiated back/forward)
   // is not implemented yet. Move this once it is implemented.
-  InformAboutCanceledNavigation();
+  InformAboutCanceledNavigation(CancelNavigationReason::kNavigateEvent);
   CHECK(window_);
 
   if (HasEntriesAndEventsDisabled()) {
@@ -802,6 +805,10 @@ NavigationApi::DispatchResult NavigationApi::DispatchNavigateEvent(
 
 void NavigationApi::InformAboutCanceledNavigation(
     CancelNavigationReason reason) {
+  if (auto* tracker = ThreadScheduler::Current()->GetTaskAttributionTracker();
+      tracker && reason != CancelNavigationReason::kNavigateEvent) {
+    tracker->ResetSameDocumentNavigationTasks();
+  }
   if (reason == CancelNavigationReason::kDropped) {
     has_dropped_navigation_ = true;
     return;

@@ -601,7 +601,6 @@ source_set("unit_tests") {
     "remoteplayback/remote_playback_test.cc",
     "scheduler/dom_scheduler_test.cc",
     "scheduler/dom_timer_test.cc",
-    "scheduler/task_attribution_tracker_impl_test.cc",
     "screen_orientation/screen_orientation_controller_test.cc",
     "sensor/sensor_test_utils.cc",
     "sensor/sensor_test_utils.h",

@@ -36,7 +36,6 @@
 #include "third_party/blink/public/common/frame/delegated_capability_request_token.h"
 #include "third_party/blink/public/common/frame/history_user_activation_state.h"
 #include "third_party/blink/public/common/metrics/post_message_counter.h"
-#include "third_party/blink/public/common/scheduler/task_attribution_id.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -98,6 +97,10 @@ class V8FrameRequestCallback;
 class V8VoidFunction;
 struct WebPictureInPictureWindowOptions;
 class WindowAgent;
+
+namespace scheduler {
+class TaskAttributionInfo;
+}
 
 enum PageTransitionEventPersistence {
   kPageTransitionEventNotPersisted = 0,
@@ -421,8 +424,7 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   void EnqueueNonPersistedPageshowEvent();
   void EnqueueHashchangeEvent(const String& old_url, const String& new_url);
   void DispatchPopstateEvent(scoped_refptr<SerializedScriptValue>,
-                             absl::optional<scheduler::TaskAttributionId>
-                                 soft_navigation_heuristics_task_id);
+                             scheduler::TaskAttributionInfo* parent_task);
   void DispatchWindowLoadEvent();
   void DocumentWasClosed();
 
