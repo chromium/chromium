@@ -1305,7 +1305,7 @@
       'mac-inverse-fieldtrials-fyi-rel': 'gpu_tests_release_trybot_invert_fieldtrials_reclient',
       'mac-osxbeta-rel': 'gpu_tests_debug_trybot_reclient',
       'mac-perfetto-rel': 'perfetto_release_trybot_reclient',
-      'mac-rel': 'gpu_tests_release_trybot_no_symbols_mac_code_coverage_reclient',
+      'mac-rel': 'gpu_tests_release_trybot_no_symbols_mac_code_coverage_x64_reclient',
       'mac10.15-wpt-content-shell-fyi-rel': 'release_trybot_minimal_symbols_reclient',
       'mac11-arm64-rel': 'mac_arm64_gpu_tests_release_trybot_no_symbols_reclient',
       'mac11-wpt-content-shell-fyi-rel': 'release_trybot_minimal_symbols_reclient',
@@ -2777,11 +2777,11 @@
       'chrome_for_testing',
     ],
 
-    'gpu_tests_release_trybot_no_symbols_mac_code_coverage_reclient': [
+    'gpu_tests_release_trybot_no_symbols_mac_code_coverage_x64_reclient': [
       'gpu_tests', 'release_trybot_reclient', 'no_symbols',
       'use_clang_coverage', 'partial_code_coverage_instrumentation',
       'enable_dangling_raw_ptr_feature_flag',
-      "enable_backup_ref_ptr_feature_flag",
+      'enable_backup_ref_ptr_feature_flag', 'x64',
     ],
 
     # Keep in sync with

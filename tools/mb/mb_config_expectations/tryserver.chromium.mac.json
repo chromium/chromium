@@ -581,6 +581,7 @@
       "is_debug": false,
       "proprietary_codecs": true,
       "symbol_level": 0,
+      "target_cpu": "x64",
       "use_clang_coverage": true,
       "use_remoteexec": true
     }
