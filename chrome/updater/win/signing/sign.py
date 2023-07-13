@@ -109,12 +109,15 @@ class Signer:
         command += [in_file]
         subprocess.run(command, check=True)
 
-    def _generate_target_manifest(self, installer_path, manifest_path,
+    def _generate_target_manifest(self, appid, installer_path, manifest_path,
                                   manifest_dict_replacements):
-        """Replaces the keys in `manifest_dict_replacements` with the
-        corresponding values, as well as computed values for `${INSTALLER_SIZE}`
-        and `${INSTALLER_HASH_SHA256}` replacements in the provided
-        `mainfest_path`. Returns the resultant manifest as a string."""
+        """Replaces the following in the input file `manifest_path`:
+        * `${APP_ID}`: `appid`.
+        * `${INSTALLER_FILENAME}`: base name of `installer_path`.
+        * `${INSTALLER_SIZE}`: computed size of `installer_path`.
+        * `${INSTALLER_HASH_SHA256}`: computed sha256 hash of `installer_path`.
+        * Keys in `manifest_dict_replacements` with the corresponding values.
+        Returns the resultant manifest as a string."""
         size = os.stat(os.path.abspath(installer_path)).st_size
         data = array.array('B')
         with open(os.path.abspath(installer_path), 'rb') as installer_file:
@@ -123,6 +126,8 @@ class Signer:
         with open(manifest_path, 'rt') as f:
             manifest_result = f.read()
             for key, value in {
+                    '${APP_ID}': appid,
+                    '${INSTALLER_FILENAME}': os.path.basename(installer_path),
                     '${INSTALLER_SIZE}': str(size),
                     '${INSTALLER_HASH_SHA256}':
                     hashlib.sha256(data).hexdigest(),
@@ -143,7 +148,8 @@ class Signer:
         with open(os.path.join(offline_dir, 'OfflineManifest.gup'),
                   'w') as f_out:
             f_out.write(
-                self._generate_target_manifest(installer_path, manifest_path,
+                self._generate_target_manifest(appid, installer_path,
+                                               manifest_path,
                                                manifest_dict_replacements))
         shutil.copyfile(
             installer_path,
