@@ -28,13 +28,13 @@ class CookieControlsContentView : public views::View {
 
   ~CookieControlsContentView() override;
 
-  void UpdateContentLabels(const std::u16string& title,
-                           const std::u16string& description);
+  virtual void UpdateContentLabels(const std::u16string& title,
+                                   const std::u16string& description);
 
   void SetToggleIsOn(bool is_on);
   void SetToggleIcon(const gfx::VectorIcon& icon);
 
-  void SetFeedbackSectionVisibility(bool visible);
+  virtual void SetFeedbackSectionVisibility(bool visible);
 
   base::CallbackListSubscription RegisterToggleButtonPressedCallback(
       base::RepeatingCallback<void(bool)> callback);
