@@ -33,8 +33,20 @@ class NetworkSettingsServiceAsh : public crosapi::mojom::NetworkSettingsService,
   // crosapi::mojom::NetworkSettingsServiceAsh:
   void AddNetworkSettingsObserver(
       mojo::PendingRemote<mojom::NetworkSettingsObserver> observer) override;
+
+  // Deprecated. Please use `SetExtensionControllingProxyMetadata` and
+  // `ClearExtensionControllingProxyMetadata`.
   void SetExtensionProxy(crosapi::mojom::ProxyConfigPtr proxy_config) override;
   void ClearExtensionProxy() override;
+  // Stores metadata about the extension controlling the proxy in the primary
+  // profile. The actual proxy config is being set and cleared from the
+  // PrefService via the mojo::Prefs service.
+  // TODO(acostinas,b/268607394) Deprecate these methods when the mojo Prefs
+  // service implements sending the extension metadata along with the pref
+  // value.
+  void SetExtensionControllingProxyMetadata(
+      crosapi::mojom::ExtensionControllingProxyPtr extension) override;
+  void ClearExtensionControllingProxyMetadata() override;
 
  private:
   // ash::AshProxyMonitor::Observer:

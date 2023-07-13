@@ -12,10 +12,8 @@
 #include "base/notreached.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crosapi/network_settings_translation.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/profiles/profile_manager.h"
-#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/proxy_config/proxy_config_pref_names.h"
 #include "components/user_manager/user_manager.h"
@@ -66,19 +64,28 @@ void NetworkSettingsServiceAsh::BindReceiver(
 
 void NetworkSettingsServiceAsh::SetExtensionProxy(
     crosapi::mojom::ProxyConfigPtr proxy_config) {
-  if (!proxy_config->extension) {
-    LOG(ERROR)
-        << "Received extension proxy configuration without extension data";
-    return;
-  }
-  // Required to display the extension which is controlling the proxy in the OS
-  // Settings > Network > Proxy window.
-  ash_proxy_monitor_->SetLacrosExtensionControllingProxyInfo(
-      proxy_config->extension->name, proxy_config->extension->id,
-      proxy_config->extension->can_be_disabled);
+  NOTREACHED_NORETURN()
+      << "This version of Ash receives the proxy pref from the Prefs mojo "
+         "service. Please use SetExtensionControllingProxyMetadata to set the "
+         "extension metadata.";
 }
 
 void NetworkSettingsServiceAsh::ClearExtensionProxy() {
+  NOTREACHED_NORETURN()
+      << "This version of Ash clears the proxy pref from the Prefs mojo "
+         "service. Please use ClearExtensionControllingProxyMetadata to clear "
+         "the extension metadata.";
+}
+
+void NetworkSettingsServiceAsh::SetExtensionControllingProxyMetadata(
+    crosapi::mojom::ExtensionControllingProxyPtr extension) {
+  DCHECK(extension);
+
+  ash_proxy_monitor_->SetLacrosExtensionControllingProxyInfo(
+      extension->name, extension->id, extension->can_be_disabled);
+}
+
+void NetworkSettingsServiceAsh::ClearExtensionControllingProxyMetadata() {
   ash_proxy_monitor_->ClearLacrosExtensionControllingProxyInfo();
 }
 

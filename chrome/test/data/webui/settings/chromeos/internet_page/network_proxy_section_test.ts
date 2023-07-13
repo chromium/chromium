@@ -9,7 +9,7 @@ import {NetworkProxyElement} from 'chrome://resources/ash/common/network/network
 import {ManagedProperties} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {ConnectionStateType, NetworkType, OncSource, PolicySource, PortalState} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 suite('<network-proxy-section>', () => {
   let proxySection: NetworkProxySectionElement;
@@ -76,6 +76,7 @@ suite('<network-proxy-section>', () => {
           value: {},
         },
       },
+      'proxy': {},
     };
     props = initializeProps();
     document.body.appendChild(proxySection);
@@ -134,5 +135,83 @@ suite('<network-proxy-section>', () => {
 
     assertTrue(allowSharedToggle.disabled);
     assertFalse(networkProxy.editable);
+  });
+
+  const kExtensionId = 'ext-id';
+  const kExtensionName = 'ext-name';
+
+  function setDirectProxyConfig() {
+    props.proxySettings = {
+      type: {
+        activeValue: 'Direct',
+        policySource: PolicySource.kActiveExtension,
+        policyValue: undefined,
+      },
+      manual: undefined,
+      excludeDomains: undefined,
+      pac: undefined,
+    };
+    proxySection.managedProperties = {
+      ...props,
+      source: OncSource.kNone,
+    };
+    flush();
+  }
+
+  // Tests that the extension indicator is shown with the correct extension
+  // metadata when the proxy is controlled by an extension in Ash. In this case,
+  // the extension metadata is encapsulated with the proxy pref.
+  test('Proxy set by Ash extension', () => {
+    assertFalse(!!proxySection.shadowRoot!.querySelector(
+        'extension-controlled-indicator'));
+    // Configure the proxy pref with the extension data.
+    proxySection.prefs.proxy = {
+      type: chrome.settingsPrivate.PrefType.DICTIONARY,
+      value: {},
+      extensionId: kExtensionId,
+      controlledByName: kExtensionName,
+      extensionCanBeDisabled: false,
+    };
+    // Set the effective proxy value.
+    setDirectProxyConfig();
+
+    const extension_indicator = proxySection.shadowRoot!.querySelector(
+        'extension-controlled-indicator');
+    assertTrue(!!extension_indicator);
+    assertEquals(extension_indicator.extensionName, kExtensionName);
+    assertEquals(extension_indicator.extensionId, kExtensionId);
+    assertFalse(extension_indicator.extensionCanBeDisabled);
+  });
+
+  // Tests that the extension indicator is shown with the correct extension
+  // metadata when the proxy is controlled by an extension in Lacros. In this
+  // case, the extension metadata is stored in the
+  // ash.lacros_proxy_controlling_extension pref.
+  test('Proxy set by Lacros extension', () => {
+    assertFalse(!!proxySection.shadowRoot!.querySelector(
+        'extension-controlled-indicator'));
+    // Set the proxy pref without extension data.
+    proxySection.prefs.proxy = {
+      type: chrome.settingsPrivate.PrefType.DICTIONARY,
+      value: {},
+    };
+    // Set the pref which is populated when a Lacros extension controls the
+    // proxy.
+    proxySection.prefs.ash.lacros_proxy_controlling_extension = {
+      value: {
+        'extension_id_key': kExtensionId,
+        'extension_name_key': kExtensionName,
+        'can_be_disabled_key': false,
+      },
+    };
+    // Set the effective proxy value as controlled by an extension.
+    setDirectProxyConfig();
+
+    const extension_indicator = proxySection.shadowRoot!.querySelector(
+        'extension-controlled-indicator');
+    assertTrue(!!extension_indicator);
+    assertEquals(extension_indicator.extensionName, kExtensionName);
+    assertEquals(extension_indicator.extensionId, kExtensionId);
+    assertFalse(extension_indicator.extensionCanBeDisabled);
   });
 });

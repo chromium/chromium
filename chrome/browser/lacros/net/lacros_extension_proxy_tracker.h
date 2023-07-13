@@ -23,7 +23,7 @@ class LacrosExtensionProxyTracker {
       delete;
   ~LacrosExtensionProxyTracker();
 
-  static bool AshVersionSupportsExtensionSetProxies();
+  static bool AshVersionSupportsExtensionMetadata();
 
  private:
   void OnProxyPrefChanged(const std::string& pref_name);

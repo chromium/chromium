@@ -261,8 +261,6 @@ ProxyPrefs::ConfigState PrefProxyConfigTrackerImpl::ReadPrefConfig(
     net::ProxyConfigWithAnnotation* config) {
   // Clear the configuration and source.
   *config = net::ProxyConfigWithAnnotation();
-  ProxyPrefs::ConfigState config_state = ProxyPrefs::CONFIG_UNSET;
-
   const PrefService::Preference* pref =
       pref_service->FindPreference(proxy_config::prefs::kProxy);
   DCHECK(pref);
@@ -271,20 +269,26 @@ ProxyPrefs::ConfigState PrefProxyConfigTrackerImpl::ReadPrefConfig(
       pref_service->GetDict(proxy_config::prefs::kProxy);
   ProxyConfigDictionary proxy_dict(dict.Clone());
 
-  if (PrefConfigToNetConfig(proxy_dict, config)) {
-    if (!pref->IsUserModifiable() || pref->HasUserSetting()) {
-      if (pref->IsManaged())
-        config_state = ProxyPrefs::CONFIG_POLICY;
-      else if (pref->IsExtensionControlled())
-        config_state = ProxyPrefs::CONFIG_EXTENSION;
-      else
-        config_state = ProxyPrefs::CONFIG_OTHER_PRECEDE;
-    } else {
-      config_state = ProxyPrefs::CONFIG_FALLBACK;
-    }
+  if (!PrefConfigToNetConfig(proxy_dict, config)) {
+    return ProxyPrefs::CONFIG_UNSET;
   }
-
-  return config_state;
+  if (pref->IsUserModifiable() && !pref->HasUserSetting()) {
+    return ProxyPrefs::CONFIG_FALLBACK;
+  }
+  if (pref->IsManaged()) {
+    return ProxyPrefs::CONFIG_POLICY;
+  }
+  if (pref->IsExtensionControlled()) {
+    return ProxyPrefs::CONFIG_EXTENSION;
+  }
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (pref->IsStandaloneBrowserControlled()) {
+    // The proxy config is controlled by an extension active in the Lacros
+    // primary profile.
+    return ProxyPrefs::CONFIG_EXTENSION;
+  }
+#endif
+  return ProxyPrefs::CONFIG_OTHER_PRECEDE;
 }
 
 ProxyPrefs::ConfigState PrefProxyConfigTrackerImpl::GetProxyConfig(

@@ -101,7 +101,8 @@ export class NetworkProxySectionElement extends NetworkProxySectionElementBase {
   static get observers() {
     return [
       'useSharedProxiesChanged_(prefs.settings.use_shared_proxies.value)',
-      'extensionProxyChanged_(prefs.ash.lacros_proxy_controlling_extension)',
+      'extensionProxyChanged_(prefs.ash.lacros_proxy_controlling_extension, ' +
+          'managedProperties.proxySettings)',
     ];
   }
 
@@ -134,6 +135,13 @@ export class NetworkProxySectionElement extends NetworkProxySectionElementBase {
     if (this.proxySetByAshExtension_()) {
       return;
     }
+
+    const property = this.getProxySettingsTypeProperty_();
+    if (!property || !this.isExtensionControlled(property)) {
+      this.isProxySetByLacrosExtension_ = false;
+      return;
+    }
+
     const pref = this.getPref('ash.lacros_proxy_controlling_extension');
     this.isProxySetByLacrosExtension_ = !!pref.value &&
         !!pref.value['extension_id_key'] && !!pref.value['extension_name_key'];
@@ -148,7 +156,8 @@ export class NetworkProxySectionElement extends NetworkProxySectionElementBase {
 
   private proxySetByAshExtension_(): boolean {
     const property = this.getProxySettingsTypeProperty_();
-    if (!property || !this.isExtensionControlled(property)) {
+    if (!property || !this.isExtensionControlled(property) ||
+        !this.prefs.proxy.controlledByName) {
       return false;
     }
     this.extensionInfo_ = {

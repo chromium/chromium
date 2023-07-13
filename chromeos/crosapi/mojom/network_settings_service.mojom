@@ -103,13 +103,30 @@ interface NetworkSettingsService {
     // current proxy configuration as part of this call.
     AddNetworkSettingsObserver@0(
         pending_remote<NetworkSettingsObserver> observer);
+    // DEPRECATED. The proxy pref set by a Lacros extension is synced via the
+    // Prefs mojo service. Please use `SetExtensionControllingProxyMetadata` to
+    // set the extension metadata.
     // Used by the Lacros browser to forward proxy configurations set via
     // extensions in the primary profile to Ash. `proxy_config` must specify the
     // extension setting the proxy.
     [MinVersion=1]
     SetExtensionProxy@1(ProxyConfig proxy_config);
+    // DEPRECATED. The proxy pref set by a Lacros extension is cleared via the
+    // Prefs mojo service. Please use `ClearExtensionControllingProxyMetadata`
+    // to clear the extension metadata.
     // Used by the Lacros browser to clear proxy configurations set via
     // extensions in the primary profile to Ash.
     [MinVersion=1]
     ClearExtensionProxy@2();
+    // Used by the Lacros browser to forward metadata about the extension which
+    // is controlling the proxy settings in the Lacros primary profile.
+    // TODO(b/268607394): When the Prefs mojo service carries source metadata
+    // along with the pref value, deprecate this method and rely on the Prefs
+    // mojo service for this information.
+    [MinVersion=2]
+    SetExtensionControllingProxyMetadata@3(ExtensionControllingProxy extension);
+    // Used by the Lacros browser to clear metadata about the extension which
+    // used to control the proxy settings in the Lacros primary profile.
+    [MinVersion=2]
+    ClearExtensionControllingProxyMetadata@4();
 };
