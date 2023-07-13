@@ -401,18 +401,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Security.SafetyTips.GetDomainInfoTime" units="ms"
-    expires_after="2023-06-04">
-  <owner>jdeblasio@chromium.org</owner>
-  <owner>estark@chromium.org</owner>
-  <owner>blundell@chromium.org</owner>
-  <summary>
-    Records the time duration that a check for the reputation status of a site
-    spent in getting the domain info of the site on the main thread, or 0 if the
-    domain info was obtained off of the main thread. Recorded on every check.
-  </summary>
-</histogram>
-
 <histogram name="Security.SafetyTips.GetReputationStatusWithEngagedSitesTime"
     units="ms" expires_after="2023-12-10">
   <owner>jdeblasio@chromium.org</owner>
