@@ -144,18 +144,25 @@ ClipboardHistoryItemView::CreateFromClipboardHistoryItem(
   const auto display_format = item->display_format();
   UMA_HISTOGRAM_ENUMERATION(
       "Ash.ClipboardHistory.ContextMenu.DisplayFormatShown", display_format);
+
+  std::unique_ptr<ClipboardHistoryItemView> item_view;
   switch (display_format) {
     case crosapi::mojom::ClipboardHistoryDisplayFormat::kUnknown:
       NOTREACHED_NORETURN();
     case crosapi::mojom::ClipboardHistoryDisplayFormat::kText:
     case crosapi::mojom::ClipboardHistoryDisplayFormat::kFile:
-      return std::make_unique<ClipboardHistoryTextItemView>(
+      item_view = std::make_unique<ClipboardHistoryTextItemView>(
           item_id, clipboard_history, container);
+      break;
     case crosapi::mojom::ClipboardHistoryDisplayFormat::kPng:
     case crosapi::mojom::ClipboardHistoryDisplayFormat::kHtml:
-      return std::make_unique<ClipboardHistoryBitmapItemView>(
+      item_view = std::make_unique<ClipboardHistoryBitmapItemView>(
           item_id, clipboard_history, container);
+      break;
   }
+  // Initialize `item_view` now that it can create format-specific contents.
+  item_view->Init();
+  return item_view;
 }
 
 ClipboardHistoryItemView::~ClipboardHistoryItemView() = default;
@@ -223,24 +230,6 @@ void ClipboardHistoryItemView::HandleMainButtonPressEvent(
     pseudo_focus_ = PseudoFocus::kMainButton;
 
   Activate(CalculateActionForMainButtonClick(), event.flags());
-}
-
-void ClipboardHistoryItemView::Init() {
-  views::Builder<views::View>(this)
-      .SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY)
-      .SetLayoutManager(std::make_unique<views::FillLayout>())
-      .AddChildren(
-          // Add the main button below the delete button in the z-order so that
-          // hovering over the delete button causes it to be recognized as the
-          // item view's event handler.
-          views::Builder<views::View>(
-              std::make_unique<ClipboardHistoryMainButton>(this))
-              .CopyAddressTo(&main_button_),
-          views::Builder<views::View>(std::make_unique<DisplayView>(this)))
-      .BuildChildren();
-
-  subscription_ = container_->AddSelectedChangedCallback(base::BindRepeating(
-      &ClipboardHistoryItemView::OnSelectionChanged, base::Unretained(this)));
 }
 
 void ClipboardHistoryItemView::MaybeHandleGestureEventFromMainButton(
@@ -338,6 +327,24 @@ void ClipboardHistoryItemView::GetAccessibleNodeData(ui::AXNodeData* data) {
   // Enter will perform the item's default expected action: pasting.
   data->AddBoolAttribute(ax::mojom::BoolAttribute::kSelected,
                          IsMainButtonPseudoFocused());
+}
+
+void ClipboardHistoryItemView::Init() {
+  views::Builder<views::View>(this)
+      .SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY)
+      .SetLayoutManager(std::make_unique<views::FillLayout>())
+      .AddChildren(
+          // Add the main button below the delete button in the z-order so that
+          // hovering over the delete button causes it to be recognized as the
+          // item view's event handler.
+          views::Builder<views::View>(
+              std::make_unique<ClipboardHistoryMainButton>(this))
+              .CopyAddressTo(&main_button_),
+          views::Builder<views::View>(std::make_unique<DisplayView>(this)))
+      .BuildChildren();
+
+  subscription_ = container_->AddSelectedChangedCallback(base::BindRepeating(
+      &ClipboardHistoryItemView::OnSelectionChanged, base::Unretained(this)));
 }
 
 void ClipboardHistoryItemView::Activate(Action action, int event_flags) {

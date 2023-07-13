@@ -42,9 +42,6 @@ class ASH_EXPORT ClipboardHistoryItemView : public views::View {
 
   void HandleMainButtonPressEvent(const ui::Event& event);
 
-  // Initializes the menu item.
-  void Init();
-
   // Attempts to handle the gesture event redirected from `main_button_`.
   void MaybeHandleGestureEventFromMainButton(ui::GestureEvent* event);
 
@@ -102,6 +99,9 @@ class ASH_EXPORT ClipboardHistoryItemView : public views::View {
   // views::View:
   gfx::Size CalculatePreferredSize() const override;
   void GetAccessibleNodeData(ui::AXNodeData* data) override;
+
+  // Initializes the menu item after its construction.
+  void Init();
 
   // Activates the menu item with the specified action and event flags.
   void Activate(clipboard_history_util::Action action, int event_flags);
