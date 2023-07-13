@@ -514,6 +514,7 @@
 <translation id="4272631900155121838">要扫描 QR 码，请从设置中启用相机功能</translation>
 <translation id="4277990410970811858">安全浏览</translation>
 <translation id="4281844954008187215">服务条款</translation>
+<translation id="4286718549648564014">已将地址迁移到您的帐号 <ph name="USER_EMAIL" /></translation>
 <translation id="4293080268407233932">搜索</translation>
 <translation id="4302248187517737842">无用户名 ••••••••</translation>
 <translation id="4304713468139749426">密码管理工具</translation>
@@ -1167,6 +1168,7 @@
 <translation id="8264966119170358612">您保存的密码中有一些已在非 Google 数据泄露事件中外泄。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="826614135184049678">您在 iPad 重置过程中退出了帐号 <ph name="USER_NAME" />。如需重新登录，请点按下方的“继续”。</translation>
 <translation id="8271720166617117963">接受并登录</translation>
+<translation id="8273982424131314219">您的信息将会自动填充到 <ph name="URL" /> 中</translation>
 <translation id="8278938988428169257">输入字词或词组</translation>
 <translation id="8281781826761538115">默认语言区域 - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">跳过</translation>
@@ -1211,6 +1213,7 @@
 <translation id="8548878600947630424">在网页中查找...</translation>
 <translation id="8556590991644167667">{count,plural, =1{您忽略了 {count} 条警告}other{您忽略了 {count} 条警告}}</translation>
 <translation id="8558480467877843976">现在，每当浏览或点按消息、文档和其他应用中的链接时，您都可以使用 Chrome 打开链接。</translation>
+<translation id="8580411965900177618">不了，谢谢</translation>
 <translation id="8588404856427128947">已关闭</translation>
 <translation id="8591976964826315682">在无痕模式下阻止第三方 Cookie</translation>
 <translation id="8605219856220328675">关闭标签页。</translation>
@@ -1247,6 +1250,7 @@
 <ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="8810413591309742901">默认网站视图</translation>
 <translation id="8820817407110198400">书签</translation>
+<translation id="8825562130641217944">获取您保存的书签、密码等信息。</translation>
 <translation id="882557203579758546">在网页中查找…</translation>
 <translation id="8840513115188359703">您不会因此而退出自己的 Google 帐号。</translation>
 <translation id="8843129975935593190">贵单位限制了您可同步的内容。</translation>

@@ -512,12 +512,13 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="424315890655130736">Wpisz hasło</translation>
 <translation id="4249955472157341256">Sortuj od najnowszego</translation>
 <translation id="4250432749243022864">{count,plural, =0{Otwórz {count} kartę}=1{Otwórz {count} kartę}few{Otwórz {count} karty}many{Otwórz {count} kart}other{Otwórz {count} karty}}</translation>
-<translation id="4253168017788158739">Uwaga</translation>
+<translation id="4253168017788158739">Notatka</translation>
 <translation id="4263576668337963058">Pokaż dostępne działania dotyczące strony</translation>
 <translation id="4267586310863245665">{COUNT,plural, =1{Odrzucono {COUNT} ostrzeżenie}few{Odrzucono {COUNT} ostrzeżenia}many{Odrzucono {COUNT} ostrzeżeń}other{Odrzucono {COUNT} ostrzeżenia}}</translation>
 <translation id="4272631900155121838">Aby zeskanować kod QR, włącz aparat w ustawieniach</translation>
 <translation id="4277990410970811858">Bezpieczne przeglądanie</translation>
 <translation id="4281844954008187215">Warunki korzystania z usługi</translation>
+<translation id="4286718549648564014">Adres został przeniesiony na konto <ph name="USER_EMAIL" /></translation>
 <translation id="4293080268407233932">Szukaj</translation>
 <translation id="4302248187517737842">Brak nazwy użytkownika ••••••••</translation>
 <translation id="4304713468139749426">Menedżer haseł</translation>
@@ -1175,6 +1176,7 @@ Witryny mogą używać plików cookie do śledzenia Twojej aktywności związane
 <translation id="8264966119170358612">Niektóre z Twoich zapisanych haseł zostały ujawnione w wyniku naruszenia bezpieczeństwa danych poza firmą Google. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="826614135184049678">W ramach resetowania iPada nastąpiło wylogowanie z konta <ph name="USER_NAME" />. Aby ponownie się zalogować, kliknij „Dalej” poniżej.</translation>
 <translation id="8271720166617117963">Zaakceptuj i zaloguj się</translation>
+<translation id="8273982424131314219">Informacje zostaną podane na stronie <ph name="URL" /></translation>
 <translation id="8278938988428169257">Wpisz słowo lub wyrażenie</translation>
 <translation id="8281781826761538115">Domyślny – <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Pomiń</translation>
@@ -1221,6 +1223,7 @@ Dane zostały zaszyfrowane hasłem <ph name="TIME" />. Podaj hasło, aby korzyst
 <translation id="8548878600947630424">Znajdź na stronie...</translation>
 <translation id="8556590991644167667">{count,plural, =1{Odrzuciłeś(-aś) {count} ostrzeżenie}few{Odrzuciłeś(-aś) {count} ostrzeżenia}many{Odrzuciłeś(-aś) {count} ostrzeżeń}other{Odrzuciłeś(-aś) {count} ostrzeżenia}}</translation>
 <translation id="8558480467877843976">Teraz możesz używać Chrome za każdym razem, gdy przeglądasz lub klikasz linki w wiadomościach, dokumentach i innych aplikacjach.</translation>
+<translation id="8580411965900177618">Nie, dziękuję</translation>
 <translation id="8588404856427128947">Wyłączono</translation>
 <translation id="8591976964826315682">Blokuj pliki cookie innych firm w trybie incognito</translation>
 <translation id="8605219856220328675">Zamknij kartę</translation>
@@ -1257,6 +1260,7 @@ Dane zostały zaszyfrowane hasłem <ph name="TIME" />. Podaj hasło, aby korzyst
 <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="8810413591309742901">Domyślny widok witryny</translation>
 <translation id="8820817407110198400">Zakładki</translation>
+<translation id="8825562130641217944">Korzystaj ze swoich zakładek, haseł i innych ustawień.</translation>
 <translation id="882557203579758546">Znajdź na stronie…</translation>
 <translation id="8840513115188359703">Nie spowoduje to wylogowania z konta Google.</translation>
 <translation id="8843129975935593190">Twoja organizacja nie pozwala na synchronizację niektórych typów danych.</translation>

@@ -518,6 +518,7 @@
 <translation id="4272631900155121838">একটি QR কোড স্ক্যান করতে, সেটিংস থেকে ক্যামেরা চালু করুন</translation>
 <translation id="4277990410970811858">নিরাপদ ব্রাউজিং</translation>
 <translation id="4281844954008187215">পরিষেবার শর্তাদি</translation>
+<translation id="4286718549648564014">আপনার অ্যাকাউন্ট <ph name="USER_EMAIL" />-এ ঠিকানা সরানো হয়েছে</translation>
 <translation id="4293080268407233932">সার্চ করুন</translation>
 <translation id="4302248187517737842">কোনও ইউজারনেম নেই ••••••••</translation>
 <translation id="4304713468139749426">পাসওয়ার্ড ম্যানেজার</translation>
@@ -1176,6 +1177,7 @@
 <translation id="8264966119170358612">Google-এর নয়, এমন ডেটার নিরাপত্তা লঙ্ঘনের সময় আপনার সেভ করা কিছু পাসওয়ার্ড ফাঁস হয়ে গেছে। <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="826614135184049678">আপনার iPad রিসেটের অংশ হিসেবে আপনার অ্যাকাউন্ট <ph name="USER_NAME" /> থেকে সাইন-আউট হয়ে গেছেন। আবার সাইন ইন করতে, নিচে "চালিয়ে যান" বিকল্পে ট্যাপ করুন।</translation>
 <translation id="8271720166617117963">অ্যাক্সেপ্ট করে সাইন-ইন করুন</translation>
+<translation id="8273982424131314219">আপনি <ph name="URL" />-এ তথ্য পূরণ করবেন</translation>
 <translation id="8278938988428169257">শব্দ বা বাক্যাংশ লিখুন</translation>
 <translation id="8281781826761538115">ডিফল্ট - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">ছেড়ে যান</translation>
@@ -1222,6 +1224,7 @@
 <translation id="8548878600947630424">পৃষ্ঠাটি খুঁজুন...</translation>
 <translation id="8556590991644167667">{count,plural, =1{আপনি {count}টি সতর্কতা বাতিল করেছেন}one{আপনি {count}টি সতর্কতা বাতিল করেছেন}other{আপনি {count}টি সতর্কতা বাতিল করেছেন}}</translation>
 <translation id="8558480467877843976">এখন থেকে আপনি চাইলে মেসেজ, ডকুমেন্ট এবং অন্যান্য অ্যাপে থাকা লিঙ্ক ব্রাউজ বা ট্যাপ করে তা যেকোনও সময় Chrome খুলতে পারেন।</translation>
+<translation id="8580411965900177618">না, থাক</translation>
 <translation id="8588404856427128947">বন্ধ করা আছে</translation>
 <translation id="8591976964826315682">'ছদ্মবেশী' মোডে থার্ড-পার্টি কুকি ব্লক করুন</translation>
 <translation id="8605219856220328675">ট্যাব বন্ধ করুন।</translation>
@@ -1258,6 +1261,7 @@
 <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="8810413591309742901">ডিফল্ট সাইট ভিউ</translation>
 <translation id="8820817407110198400">Bookmarks</translation>
+<translation id="8825562130641217944">আপনার বুকমার্ক, পাসওয়ার্ড ও আরও অনেক কিছু পান।</translation>
 <translation id="882557203579758546">পৃষ্ঠাতে খুঁজুন…</translation>
 <translation id="8840513115188359703">আপনাকে Google অ্যাকাউন্ট থেকে সাইন-আউট করা হবে না।</translation>
 <translation id="8843129975935593190">আপনি কী সিঙ্ক করতে পারবেন সেটি আপনার প্রতিষ্ঠান সীমিত করে।</translation>

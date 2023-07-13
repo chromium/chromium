@@ -811,6 +811,7 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="1647408325348388858">Queres abrir e editar "<ph name="FILE_NAME" />" nesta aplicación web?</translation>
 <translation id="1648528859488547844">Utilizar a wifi ou as redes de telefonía móbil para determinar a localización</translation>
 <translation id="164936512206786300">Desvincular dispositivo Bluetooth</translation>
+<translation id="1650801028905250434">Os ficheiros de A miña unidade sincronizaranse co teu Chromebook automaticamente para que poidas acceder a eles sen conexión a Internet. Podes cambiar esta opción en calquera momento en Configuración &gt; Ficheiros.</translation>
 <translation id="1651008383952180276">Debes introducir a mesma frase de acceso dúas veces</translation>
 <translation id="1651609627703324721">Esta pestana está mostrando contido de RV nun visor</translation>
 <translation id="1652326691684645429">Activar Compartir por Nearby</translation>
@@ -4225,6 +4226,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4515872537870654449">Ponte en contacto con Dell para recibir asistencia técnica. A base apagarase se o ventilador non funciona.</translation>
 <translation id="4518840066030486079">Estilo do modo da tecla Maiúsculas</translation>
 <translation id="4519331665958994620">Os sitios poden pedirche permiso para usar a cámara</translation>
+<translation id="4519605771716872386">Activouse a sincronización de ficheiros</translation>
 <translation id="4519935350946509010">Produciuse un erro na conexión.</translation>
 <translation id="4520385623207007473">Cookies en uso</translation>
 <translation id="452039078290142656">dispositivos descoñecidos de <ph name="VENDOR_NAME" /></translation>
@@ -7264,6 +7266,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="7124712201233930202">Non se cumpren as políticas da túa organización</translation>
 <translation id="7125029162161377569">Coas probas de Privacy Sandbox, os sitios poden ofrecer a mesma experiencia de navegación usando menos información túa. Deste xeito, podes gozar de máis privacidade e menos seguimento en varios sitios. Engadiremos probas novas cando estean preparadas.</translation>
 <translation id="7125148293026877011">Eliminar Crostini</translation>
+<translation id="7125932261198019860">Asegúrate de que a impresora estea conectada á mesma rede wifi que o teu Chromebook ou usa un cable USB. <ph name="LINK_BEGIN" />Máis información sobre a compatibilidade<ph name="LINK_END" /></translation>
 <translation id="7127980134843952133">Historial de descargas</translation>
 <translation id="7128151990937044829">Mostrar un indicador na barra de enderezos cando se bloqueen notificacións</translation>
 <translation id="7131040479572660648">Lectura dos teus datos de <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> e <ph name="WEBSITE_3" /></translation>
@@ -7457,6 +7460,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="7307129035224081534">En pausa</translation>
 <translation id="7308643132139167865">Idiomas dos sitios web</translation>
 <translation id="7310598146671372464">Non se puido iniciar sesión. O servidor non admite os tipos especificados de encriptación Kerberos. Ponte en contacto co teu administrador.</translation>
+<translation id="7311005168897771689">Acceder aos ficheiros de Google Drive cando esteas sen conexión</translation>
 <translation id="7311244614769792472">Non se encontraron resultados</translation>
 <translation id="7312210124139670355">O teu administrador está restablecendo a eSIM. Esta acción pode tardar uns minutos.</translation>
 <translation id="7317831949569936035">Inscrición do centro educativo</translation>

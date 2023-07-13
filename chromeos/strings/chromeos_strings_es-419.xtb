@@ -9,6 +9,7 @@
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> subprocesos, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Hay una nueva función disponible. Para obtener más información, usa la flecha hacia arriba.</translation>
 <translation id="1059913517121127803">No se pudo comenzar el escaneo</translation>
+<translation id="1062823486781306604"><ph name="INDEX" /> de <ph name="COUNT" />, <ph name="NAME" />.</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Se detectó un firewall</translation>
 <translation id="1075811647922107217">Tamaño de la página</translation>
@@ -540,6 +541,7 @@
 <translation id="5257811368506016604">Habilitar el modo de color claro</translation>
 <translation id="5264277876637023664">Ejecutar prueba de CPU</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
+<translation id="527501763019887383">El APN está inhabilitado.</translation>
 <translation id="5275828089655680674">Volver a ejecutar las rutinas</translation>
 <translation id="5286252187236914003">L2TP/IPsec</translation>
 <translation id="5286263799730375393">color de retroiluminación</translation>
@@ -604,6 +606,7 @@
 <translation id="5832805196449965646">Agregar a una persona</translation>
 <translation id="583281660410589416">Desconocido</translation>
 <translation id="5843706793424741864">Fahrenheit</translation>
+<translation id="584953448295717128">El APN se detecta automáticamente.</translation>
 <translation id="5849570051105887917">Código del proveedor de origen</translation>
 <translation id="5859603669299126575">Álbum Galería de arte</translation>
 <translation id="5860033963881614850">Desactivado</translation>
@@ -882,6 +885,7 @@
 <translation id="80398733265834479">Habilitar el modo de color automático</translation>
 <translation id="8041089156583427627">Enviar comentario</translation>
 <translation id="8045012663542226664">Micrófono silenciado</translation>
+<translation id="8067126283828232460">El APN está conectado.</translation>
 <translation id="8075838845814659848">Carga restante</translation>
 <translation id="8076492880354921740">Pestañas</translation>
 <translation id="8082366717211101304">No se puede resolver el DNS desde apps para Android</translation>
@@ -1028,6 +1032,7 @@
 <translation id="9111102763498581341">Desbloquear</translation>
 <translation id="9122602430962285795">Para restablecer la conexión, ve a Configuración</translation>
 <translation id="9126720536733509015">Guardar varias páginas en un PDF</translation>
+<translation id="9133104754938025929">Para ahorrar batería, el protector de pantalla solo funciona mientras se carga.</translation>
 <translation id="9137526406337347448">Servicios de Google</translation>
 <translation id="9138630967333032450">Mayúsculas izquierda</translation>
 <translation id="9143347780818904997">por <ph name="MINUTES" /> minutos</translation>

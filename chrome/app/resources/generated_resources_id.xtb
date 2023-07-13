@@ -815,6 +815,7 @@ Izin yang telah Anda berikan ke aplikasi dapat berlaku untuk akun ini. Anda dapa
 <translation id="1647408325348388858">Buka dan edit <ph name="FILE_NAME" /> di aplikasi web ini?</translation>
 <translation id="1648528859488547844">Gunakan Wi-Fi atau jaringan seluler untuk menentukan lokasi</translation>
 <translation id="164936512206786300">Lepaskan sambungan perangkat Bluetooth</translation>
+<translation id="1650801028905250434">File Anda di Drive Saya akan otomatis disinkronkan ke Chromebook sehingga Anda dapat mengaksesnya tanpa koneksi internet. Anda dapat mengubahnya kapan saja di Setelan &gt; File.</translation>
 <translation id="1651008383952180276">Anda harus memasukkan frasa sandi yang sama dua kali</translation>
 <translation id="1651609627703324721">Tab ini menyajikan konten VR ke headset</translation>
 <translation id="1652326691684645429">Aktifkan Berbagi Langsung</translation>
@@ -4242,6 +4243,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="4515872537870654449">Hubungi Dell untuk perbaikan. Dok akan mati jika kipas tidak berfungsi.</translation>
 <translation id="4518840066030486079">Gaya Mode Tombol Shift</translation>
 <translation id="4519331665958994620">Situs dapat meminta untuk menggunakan kamera Anda</translation>
+<translation id="4519605771716872386">Sinkronisasi file diaktifkan</translation>
 <translation id="4519935350946509010">Error koneksi.</translation>
 <translation id="4520385623207007473">Cookie yang sedang digunakan</translation>
 <translation id="452039078290142656">perangkat tak dikenal dari <ph name="VENDOR_NAME" /></translation>
@@ -7284,6 +7286,7 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="7124712201233930202">Kebijakan organisasi Anda tidak terpenuhi</translation>
 <translation id="7125029162161377569">Dengan uji coba Privacy Sandbox, situs dapat memberikan pengalaman penjelajahan yang sama tetapi menggunakan lebih sedikit info pribadi Anda. Artinya, lebih banyak privasi untuk Anda dan lebih sedikit pelacakan lintas situs. Kami akan menambahkan uji coba baru saat uji coba siap untuk diuji.</translation>
 <translation id="7125148293026877011">Hapus Crostini</translation>
+<translation id="7125932261198019860">Pastikan printer Anda terhubung ke jaringan Wi-Fi yang sama dengan Chromebook atau gunakan kabel USB. <ph name="LINK_BEGIN" />Pelajari lebih lanjut kompatibilitas<ph name="LINK_END" /></translation>
 <translation id="7127980134843952133">Histori download</translation>
 <translation id="7128151990937044829">Tampilkan indikator dalam kolom URL saat notifikasi diblokir</translation>
 <translation id="7131040479572660648">Membaca data Anda di <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, dan <ph name="WEBSITE_3" /></translation>
@@ -7477,6 +7480,7 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="7307129035224081534">Dijeda</translation>
 <translation id="7308643132139167865">Bahasa situs</translation>
 <translation id="7310598146671372464">Gagal login. Server tidak mendukung jenis enkripsi Kerberos yang ditentukan. Harap hubungi administrator.</translation>
+<translation id="7311005168897771689">Akses file Google Drive Anda saat offline</translation>
 <translation id="7311244614769792472">Tidak ditemukan hasil</translation>
 <translation id="7312210124139670355">Administrator sedang mereset eSIM Anda. Proses ini mungkin perlu waktu beberapa menit.</translation>
 <translation id="7317831949569936035">Pendaftaran sekolah</translation>

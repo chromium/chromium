@@ -221,6 +221,7 @@
 <translation id="1198183996903759302">如果此政策设为 True（或者 <ph name="HARDWARE_ACCELERATION_MODE_ENABLED_POLICY_NAME" /> 设为 False），网页会无法访问 WebGL API，而且插件会无法使用 Pepper 3D API。
       如果此政策设为 False 或未设置，网页可以使用 WebGL API，而且插件可以使用 Pepper 3D API，但浏览器的默认设置可能仍然要求在使用这些 API 前先传递命令行参数。</translation>
 <translation id="1198458955128279215">使用功能发布计划的默认行为。</translation>
+<translation id="119943715168319757">MIDI 设置</translation>
 <translation id="1202216683470826356">在“新标签页”页面上显示卡片</translation>
 <translation id="120314092766637918">如果此政策已启用或未设置，<ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME" /> 将为 <ph name="PRODUCT_NAME" /> 控制客户端钓鱼式攻击保护。如果 <ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME" /> 设为 <ph name="SAFE_BROWSING_PROTECTION_LEVEL_VALUE_STANDARD" /> 或 <ph name="SAFE_BROWSING_PROTECTION_LEVEL_VALUE_ENHANCED" />，客户端钓鱼式攻击保护功能会运行本地模型来检查网页是否为钓鱼式攻击网页。如果模型认为某个网页是钓鱼式攻击网页，<ph name="PRODUCT_NAME" /> 会向 Google 发送请求，以做出最终判定。
 如果停用此政策，客户端钓鱼式攻击保护功能将不会执行任何保护，也不会向 Google 发送数据请求判定。</translation>
@@ -2577,6 +2578,7 @@
 <translation id="3278042410658310805">为登录屏幕停用语音反馈，并允许用户暂时启用它</translation>
 <translation id="328347261792478720">默认情况下，浏览器会显示为用户量身定制的媒体推荐内容。如果此政策已停用，系统将对用户隐藏这些推荐内容。如果此政策已启用或未设置，系统则会向用户显示媒体推荐内容。</translation>
 <translation id="3284094172359247914">控制对 WebUSB API 的使用</translation>
+<translation id="3284658508278342293">向这些网站授予 MIDI 权限</translation>
 <translation id="3286159327013237833">允许在登录屏幕上自动点击</translation>
 <translation id="3288595667065905535">发布版</translation>
 <translation id="3294430356898755483">通过设置此政策，管理员可以为用户配置打印机列表。当用户首次尝试打印时，需要选择打印机。
@@ -3011,6 +3013,11 @@
 
       如果您设置了此政策，用户便无法更改相关设置。如果您未设置此政策，“接入交流电时启动”会处于关闭状态，而且用户无法开启该功能。</translation>
 <translation id="3660562134618097814">在用户登录期间转移 SAML IdP Cookie</translation>
+<translation id="3661897198667953320">用于设置一个网站网址格式列表，以指定要让系统自动拒绝向哪些网站授予 MIDI 权限。这会禁止网站使用乐器和控制器等 MIDI 设备。
+
+如需详细了解有效网站网址格式，请访问 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。允许使用通配符 <ph name="WILDCARD_VALUE" />。此政策只能根据源进行匹配，因此网址格式中的任何路径都会被忽略。
+
+如果您未为某个网站设置此政策，系统便会将 <ph name="DEFAULT_MIDI_SETTING_POLICY_NAME" /> 中的政策（若已设置）应用于该网站，或者让该网站遵循浏览器的默认权限设置并允许用户按网站选择这项权限。</translation>
 <translation id="3665437376055221832">仅当没有任何证书与自动选择政策匹配时才提示用户。</translation>
 <translation id="3671773704245936868">禁止使用键盘焦点突出显示</translation>
 <translation id="3674010627788940405">不支持 CORS 非通配符式请求标头。</translation>
@@ -4199,6 +4206,7 @@
 <translation id="4735099388031364207">如果此政策已启用，系统会允许对设备执行远程认证。系统会自动生成一个证书，并将其上传到设备管理服务器。
 
       如果此政策已停用或未设置，系统将不会生成任何证书，并且无法调用 <ph name="ENTERPRISE_PLATFORM_KEYS_API" />。</translation>
+<translation id="473613500147803115">拒绝向这些网站授予 MIDI 权限</translation>
 <translation id="473673197014866318">通过设置此政策，您可以控制 <ph name="PRODUCT_NAME" /> 的扩展程序管理设置，包括由现有的与扩展程序相关的政策控制的设置。此政策会取代任何可能已设置的旧版政策。
 
 此政策仅会将某个扩展程序 ID 或某个更新网址映射至其对应的特定设置。您可为特殊 ID<ph name="DEFAULT_SCOPE" />设定默认配置，该配置会应用于未在此政策中设定自定义配置的所有扩展程序。对于更新网址，相应配置会应用于具有在扩展程序清单 (http://support.google.com/chrome/a?p=Configure_ExtensionSettings_policy) 中注明的确切更新网址的扩展程序。如果“override_update_url”flag 设为 true，系统会根据 <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> 政策中或此政策的“update_url”字段中指定的“更新”网址来安装并更新扩展程序。如果“update_url”是 Chrome 应用商店网址，“override_update_url”flag 会被忽略。
@@ -4508,6 +4516,11 @@
 
       如果此政策设为 true 或未设置，用户便能够在“新标签页”页面上自定义背景。</translation>
 <translation id="5076953589932162038">First-Party Sets 功能设置</translation>
+<translation id="507742683193937417">用于设置一个网站网址格式列表，以指定要让系统自动向哪些网站授予 MIDI 权限。这将允许网站使用乐器和控制器等 MIDI 设备。
+
+如需详细了解有效网站网址格式，请访问 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。允许使用通配符 <ph name="WILDCARD_VALUE" />。此政策只能根据源进行匹配，因此网址格式中的任何路径都会被忽略。
+
+如果您未为某个网站设置此政策，系统便会将 <ph name="DEFAULT_MIDI_SETTING_POLICY_NAME" /> 中的政策（若已设置）应用于该网站，或者让该网站遵循浏览器的默认权限设置并允许用户按网站选择这项权限。</translation>
 <translation id="5078623750797048009">启用 PDF 注释</translation>
 <translation id="5081204761483900654">受限受管理访客会话</translation>
 <translation id="5082296146261894974">允许用户通过点击 Phone Hub 通知来启动 Eche 应用。</translation>
@@ -4795,6 +4808,7 @@
       如果在 <ph name="GET_DISPLAY_MEDIA_SET_NAME" /> 请求中定义了 <ph name="AUTO_SELECT_ALL_SCREENS_NAME" /> 属性，系统会自动截取所有屏幕界面，而无需用户明确许可。
       如果未设置此政策，则任何 Web 应用都不能使用 <ph name="AUTO_SELECT_ALL_SCREENS_NAME" /> 属性。
 为了加强隐私保护，从 <ph name="PRODUCT_NAME" /> 116 版开始，此政策将不再支持动态刷新。因此，如果在会话启动时已禁止截取界面，用户可以确信在其登录后，任何其他页面都将无法截取界面。</translation>
+<translation id="5354891932736553743">默认 MIDI 权限设置</translation>
 <translation id="5361167871898066799">控制实体键盘的自动更正功能</translation>
 <translation id="5361708558735884308">通过设置此政策，您可列出允许访问的网址，以便将这些网址作为 <ph name="URL_BLOCKLIST_POLICY_NAME" /> 的例外情况。有关此列表所含条目的格式，请参阅 URLBlocklist 政策的说明。例如，将 <ph name="URL_BLOCKLIST_POLICY_NAME" /> 设置为 * 会屏蔽所有请求，但您可以通过此政策来允许访问您所列出的部分网址。您可借助此政策为某些 scheme、其他网域的子网域、端口或特定路径设置例外情况（需使用指定格式，详见 https://support.google.com/chrome/a?p=url_blocklist_filter_format）。系统是会屏蔽还是会允许某个网址取决于最具体的过滤条件。<ph name="URL_ALLOWLIST_POLICY_NAME" /> 政策的优先级高于 <ph name="URL_BLOCKLIST_POLICY_NAME" />。此政策最多只能包含 1,000 个条目。
 
@@ -6453,6 +6467,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 <translation id="6794083666143216172">允许来源查询设备属性</translation>
 <translation id="6795485990775913659">仅允许在没有 PIN 码的情况下打印</translation>
 <translation id="6796215185873669533">将 User-Agent 字符串版本默认设为浏览器设置。</translation>
+<translation id="6800111968763383631">默认拒绝向所有网站授予 MIDI 权限</translation>
 <translation id="6800181452282128474">不向 Quirks Server 发送查询</translation>
 <translation id="68031099365512050">报告音频状态</translation>
 <translation id="680356860463873420">不允许用户使用 PluginVm</translation>
@@ -6812,6 +6827,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 
       如果此政策设为 false 或未设置，系统将不会报告这些信息。
       如果此政策设为 true，系统将会报告设备的风扇信息。</translation>
+<translation id="7096708978256135543">每当网站想获得 MIDI 权限时都询问</translation>
 <translation id="7098400392308393199">实时下载保护服务由 <ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME" /> 政策控制</translation>
 <translation id="710003290625031750">已展开的架构说明：</translation>
 <translation id="7101550508196914704">不在书签栏中显示应用快捷方式</translation>
@@ -7754,6 +7770,11 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 只有当 <ph name="MAC_OS_NAME" /> 实例是通过 MDM 进行管理、已通过 MCX 加入网域或已注册 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />时，才能在该实例上强制安装并非来自 Chrome 应用商店的应用和扩展程序。
 
 注意：此政策不适用于无痕模式。了解如何托管扩展程序 (https://developer.chrome.com/extensions/hosting)。</translation>
+<translation id="798452960161141151">如果此政策设为 <ph name="BLOCK_MIDI_POLICY_NAME" />（值 2），系统会自动禁止网站使用乐器和控制器等 MIDI 设备。
+
+如果此政策设为 <ph name="ASK_MIDI_POLICY_NAME" />（值 3），当有网站想使用 MIDI 设备时，系统会提示用户。
+
+如果此政策未设置，系统会应用 <ph name="ASK_MIDI_POLICY_NAME" /> 政策，但用户可以更改此设置。</translation>
 <translation id="7985242821674907985"><ph name="PRODUCT_NAME" /></translation>
 <translation id="7986473886676689183">启用 Android 报告</translation>
 <translation id="7990280274626154329">启用“<ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" />”政策</translation>
@@ -9101,6 +9122,16 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 <translation id="9220314833408124365">使用默认引荐来源网址政策值 no-referrer-when-downgrade</translation>
 <translation id="9221827710437832530">允许在登录屏幕上访问地理定位。</translation>
 <translation id="922540222991413931">配置扩展程序、应用和用户脚本安装源</translation>
+<translation id="922656089385303086">此政策已被弃用，并将在里程碑 130 中移除，请改用 <ph name="URL_KEYED_METRICS_ALLOWED_POLICY_NAME" />。
+
+如果已启用此政策，系统会始终启用以网址为键的匿名化数据收集功能，从而将用户访问的网页网址发送给 Google，以用于改善搜索和浏览体验。
+
+如果已停用此政策，系统将不会启用以网址为键的匿名化数据收集功能。
+
+如果未设置此政策，用户将能手动更改此设置。
+
+在 <ph name="PRODUCT_OS_NAME" /> 自助服务终端中，此政策不提供“允许用户决定”选项。如果未为 <ph name="PRODUCT_OS_NAME" /> 自助服务终端设置此政策，系统会始终启用以网址为键的匿名化数据收集功能。
+为 <ph name="PRODUCT_OS_NAME" /> 自助服务终端设置此政策后，系统会为自助服务终端应用启用以网址为键的指标收集功能。</translation>
 <translation id="924557436754151212">首次运行时，从默认浏览器导入保存的密码</translation>
 <translation id="926104720905645793">此政策旨在控制 <ph name="PRODUCT_NAME" /> 云报告功能，该功能可将与浏览器操作相关的信息上传到 <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />。
 

@@ -518,6 +518,7 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="4272631900155121838">Als je een QR-code wilt scannen, zet je de camera aan via Instellingen</translation>
 <translation id="4277990410970811858">Safe Browsing</translation>
 <translation id="4281844954008187215">Servicevoorwaarden</translation>
+<translation id="4286718549648564014">Adres verplaatst naar je account <ph name="USER_EMAIL" /></translation>
 <translation id="4293080268407233932">Zoeken</translation>
 <translation id="4302248187517737842">Geen gebruikersnaam ••••••••</translation>
 <translation id="4304713468139749426">Wachtwoordmanager</translation>
@@ -1175,6 +1176,7 @@ Sites mogen cookies gebruiken om je browse-activiteit op verschillende sites te 
 <translation id="8264966119170358612">Sommige van je opgeslagen wachtwoorden zijn openbaar gemaakt bij een gegevenslek van derden. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="826614135184049678">Je bent uitgelogd van je account <ph name="USER_NAME" /> omdat je iPad wordt gereset. Tik hieronder op Doorgaan om weer in te loggen.</translation>
 <translation id="8271720166617117963">Akkoord en inloggen</translation>
+<translation id="8273982424131314219">Je vult informatie in op <ph name="URL" /></translation>
 <translation id="8278938988428169257">Geef een woord of woordgroep op</translation>
 <translation id="8281781826761538115">Standaard - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Overslaan</translation>
@@ -1221,6 +1223,7 @@ Je gegevens zijn op <ph name="TIME" /> versleuteld met je wachtwoordzin. Geef de
 <translation id="8548878600947630424">Zoeken op deze pagina...</translation>
 <translation id="8556590991644167667">{count,plural, =1{Je hebt {count} waarschuwing gesloten}other{Je hebt {count} waarschuwingen gesloten}}</translation>
 <translation id="8558480467877843976">Je kunt Chrome nu gebruiken als je browst of op links in berichten, documenten en andere apps tikt.</translation>
+<translation id="8580411965900177618">Nee, bedankt</translation>
 <translation id="8588404856427128947">Uit</translation>
 <translation id="8591976964826315682">Cookies van derden blokkeren in incognitomodus</translation>
 <translation id="8605219856220328675">Tabblad sluiten</translation>
@@ -1257,6 +1260,7 @@ Je gegevens zijn op <ph name="TIME" /> versleuteld met je wachtwoordzin. Geef de
 <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="8810413591309742901">Standaard siteweergave</translation>
 <translation id="8820817407110198400">Bookmarks</translation>
+<translation id="8825562130641217944">Je bookmarks, wachtwoorden en meer ophalen.</translation>
 <translation id="882557203579758546">Zoeken op pagina…</translation>
 <translation id="8840513115188359703">Je wordt niet uitgelogd van je Google-account.</translation>
 <translation id="8843129975935593190">De limieten van je organisatie voor wat je kunt synchroniseren.</translation>

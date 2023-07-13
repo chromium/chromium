@@ -518,6 +518,7 @@
 <translation id="4272631900155121838">За да скенирате QR код, овозможете ја камерата во „Поставки“</translation>
 <translation id="4277990410970811858">Безбедно прелистување</translation>
 <translation id="4281844954008187215">Услови за користење</translation>
+<translation id="4286718549648564014">Адресата е преместена во вашата сметка <ph name="USER_EMAIL" /></translation>
 <translation id="4293080268407233932">Пребарување</translation>
 <translation id="4302248187517737842">Нема корисничко име ••••••••</translation>
 <translation id="4304713468139749426">Управник со лозинки</translation>
@@ -1175,6 +1176,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="8264966119170358612">При упад во податоците што не се случи кај Google беа откриени некои од вашите зачувани лозинки. <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
 <translation id="826614135184049678">Одјавени сте од сметката, <ph name="USER_NAME" />, како дел од ресетирањето на вашиот iPad. За да се најавите повторно, допрете „Продолжи“ подолу.</translation>
 <translation id="8271720166617117963">Прифати и најави се</translation>
+<translation id="8273982424131314219">Ќе ги пополните податоците на <ph name="URL" /></translation>
 <translation id="8278938988428169257">Внесете збор или фраза</translation>
 <translation id="8281781826761538115">Стандардно - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Прескокни</translation>
@@ -1221,6 +1223,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="8548878600947630424">Најди во страница...</translation>
 <translation id="8556590991644167667">{count,plural, =1{Отфрливте {count} предупредување}one{Отфрливте {count} предупредување}other{Отфрливте {count} предупредувања}}</translation>
 <translation id="8558480467877843976">Отсега може да го користите Chrome секогаш кога ќе прелистувате или допрете линкови во пораки, документи и други апликации.</translation>
+<translation id="8580411965900177618">Не, фала</translation>
 <translation id="8588404856427128947">Исклучена</translation>
 <translation id="8591976964826315682">Блокирајте колачиња од трети страни во „Инкогнито“</translation>
 <translation id="8605219856220328675">Затвори ја картичката.</translation>
@@ -1257,6 +1260,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
 <translation id="8810413591309742901">Стандарден приказ на сајт</translation>
 <translation id="8820817407110198400">Обележувачи</translation>
+<translation id="8825562130641217944">Добијте ги вашите обележувачи, лозинки и друго.</translation>
 <translation id="882557203579758546">Најди на страницата…</translation>
 <translation id="8840513115188359703">Нема да ве одјавиме од сметката на Google.</translation>
 <translation id="8843129975935593190">Вашата организација ограничува што може да синхронизирате.</translation>

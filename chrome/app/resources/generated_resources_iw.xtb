@@ -142,6 +142,7 @@
 <translation id="1110965959145884739">צריך לבחור את השפות שרוצים להגדיר במכשיר הזה. קובצי השפה משותפים עם משתמשים כדי לחסוך מקום בכונן. <ph name="BEGIN_LINK_LEARN_MORE" />מידע נוסף<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1112420131909513020">‏כרטיסיית הרקע משתמשת ב-Bluetooth</translation>
 <translation id="1112998165730922436">‏ההעברה (cast) הושהתה</translation>
+<translation id="1113807501859230251">‏להסיר את Bruschetta ממכשיר <ph name="DEVICE_TYPE" />? הפעולה הזו תמחק את כל האפליקציות והנתונים במכונה הווירטואלית.</translation>
 <translation id="1114102982691049955"><ph name="PRINTER_MANUFACTURER" /> <ph name="PRINTER_MODEL" /> (USB)</translation>
 <translation id="1114202307280046356">יהלום</translation>
 <translation id="1114427165525619358">‏סיסמאות במכשיר הזה ובחשבון Google שלך</translation>
@@ -813,6 +814,7 @@
 <translation id="1647408325348388858">לפתוח ולערוך את <ph name="FILE_NAME" /> באפליקציית האינטרנט הזו?</translation>
 <translation id="1648528859488547844">‏קביעת מיקום באמצעות Wi-Fi או רשתות סלולריות</translation>
 <translation id="164936512206786300">‏ביטול הצמדה של התקן Bluetooth</translation>
+<translation id="1650801028905250434">‏הקבצים בתיקייה 'האחסון שלי' יסונכרנו באופן אוטומטי ב-Chromebook כדי שאפשר יהיה לגשת אליהם ללא חיבור לאינטרנט. תמיד אפשר לשנות זאת דרך 'הגדרות' &gt; 'קבצים'.</translation>
 <translation id="1651008383952180276">עליך להזין אותו ביטוי סיסמה פעמיים</translation>
 <translation id="1651609627703324721">‏הכרטיסייה הזו מציגה תוכן VR במשקפי VR</translation>
 <translation id="1652326691684645429">הפעלה של 'שיתוף בקרבת מקום'</translation>
@@ -1567,6 +1569,7 @@
     במרכז העזרה<ph name="END_LINK" />.</translation>
 <translation id="2266957463645820432">‏IPP בחיבור USB ‏(IPPUSB)</translation>
 <translation id="2268130516524549846">‏Bluetooth מושבת</translation>
+<translation id="2268182915828370037">להשבית את הסנכרון של הקבצים?</translation>
 <translation id="2269895253281481171">תתקבל התראה אם היא בסיכון</translation>
 <translation id="2270450558902169558">החלפת נתונים עם כל מכשיר בדומיין <ph name="DOMAIN" /></translation>
 <translation id="2270612886833477697"><ph name="BEGIN_PARAGRAPH1" />ההתקנה <ph name="BEGIN_BOLD" />תוביל למחיקה של כל הכונן הקשיח<ph name="END_BOLD" />. חשוב להקפיד על גיבוי הנתונים שלך.<ph name="END_PARAGRAPH1" />
@@ -2118,6 +2121,7 @@
 <translation id="2714393097308983682">Google Play Store</translation>
 <translation id="2715640894224696481">בקשה למפתח אבטחה</translation>
 <translation id="2715751256863167692">‏השדרוג הזה מאפס את ה-Chromebook ומסיר את נתוני המשתמש הנוכחיים.</translation>
+<translation id="2715934493766003251">אי אפשר לפנות נפח אחסון כשסנכרון הקבצים פועל</translation>
 <translation id="2716986496990888774">ההגדרה הזו מנוהלת על-ידי הורה.</translation>
 <translation id="271749239614426244">התעלמות מתנועות סמן קטנות</translation>
 <translation id="2718395828230677721">תאורת לילה</translation>
@@ -2266,6 +2270,7 @@
 <translation id="2817435998497102771">הגדרה של הטפט והסגנון שלך</translation>
 <translation id="2818476747334107629">פרטי מדפסת</translation>
 <translation id="2819167288942847344">כדאי להשתמש בהגדרות קבועות מראש לטלפון, לטאבלט ולחלונות שניתן לשנות את גודלם כדי למנוע פעילות לא תקינה של האפליקציה</translation>
+<translation id="2819519502129272135">סנכרון הקבצים מושבת</translation>
 <translation id="2820957248982571256">מתבצעת סריקה…</translation>
 <translation id="2822634587701817431">כיווץ / הרחבה</translation>
 <translation id="2822910719211888134">‏שגיאה במהלך הגיבוי של Linux</translation>
@@ -2734,6 +2739,7 @@
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - שגיאת רשת</translation>
 <translation id="3248902735035392926">חשוב להתנהל בצורה בטוחה. כדאי להקדיש כמה רגעים כדי <ph name="BEGIN_LINK" />לבדוק עכשיו את התוספים<ph name="END_LINK" /></translation>
 <translation id="3249323165366527554">כדאי להירשם וכך להיכנס לחשבון מהר יותר כשהסיסמה נשמרת באופן אוטומטי ב<ph name="GOOGLE_PASSWORD_MANAGER" /> בחשבון <ph name="EMAIL" />.</translation>
+<translation id="3251119461199395237">סנכרון קבצים</translation>
 <translation id="3251714896659475029">‏הרשאה ל<ph name="SUPERVISED_USER_NAME" /> להפעיל את Google Assistant באמצעות הפנייה “Hey Google”</translation>
 <translation id="3251759466064201842">&lt;לא חלק מהאישור&gt;</translation>
 <translation id="325238099842880997">מומלץ להגדיר כללים דיגיטליים כדי לעזור לילדים לשחק, לחקור ולעשות שיעורי בית</translation>
@@ -3111,6 +3117,7 @@
 <translation id="3567284462585300767">המכשיר שלך צריך להיות גלוי כדי לשתף קבצים עם אנשים אחרים בסביבה ולקבל מהם קבצים</translation>
 <translation id="356738834800832239">הסיסמה נשמרה</translation>
 <translation id="3569382839528428029">רוצה ש-<ph name="APP_NAME" /> ישתף את המסך שלך?</translation>
+<translation id="3569614820047645079">‏הקבצים בתיקייה 'האחסון שלי' יסונכרנו באופן אוטומטי ב-Chromebook כדי שאפשר יהיה לגשת אליהם בלי חיבור לאינטרנט.</translation>
 <translation id="3569682580018832495">ל-<ph name="ORIGIN" /> יש אפשרות להציג את התיקיות והקבצים הבאים</translation>
 <translation id="3571734092741541777">הגדרה</translation>
 <translation id="3575121482199441727">אישור לאתר הזה</translation>
@@ -3543,6 +3550,7 @@
 <translation id="3916233823027929090">בדיקות האבטחה הסתיימו</translation>
 <translation id="3916445069167113093">סוג קובץ זה עלול לגרום נזק למחשב שלך. האם ברצונך לשמור את <ph name="FILE_NAME" /> בכל מקרה?</translation>
 <translation id="3917184139185490151">‏המחשב שלך מכיל מודול מאובטח המשמש ליישום תכונות אבטחה קריטיות רבות ב-ChromeOS. אפשר להיכנס למרכז העזרה של Chromebook כדי לקבל מידע נוסף: https://support.google.com/chromebook/?p=sm</translation>
+<translation id="3917644013202553949">אין מספיק נפח אחסון לסנכרון הקבצים. כדאי לפנות מקום.</translation>
 <translation id="3918972485393593704">‏שליחת הפרטים אל Google</translation>
 <translation id="3919145445993746351">כדי לקבל גישה אל התוספים שלך בכל המחשבים שברשותך, יש להפעיל את הסנכרון</translation>
 <translation id="3919229493046408863">השבתת ההתראה כשמזוהים מכשירים בקרבת מקום</translation>
@@ -3854,6 +3862,7 @@
 <translation id="4184803915913850597">‏מכשיר HID (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
 <translation id="4186749321808907788"><ph name="QUERY_NAME" /> – חיפוש <ph name="DEFAULT_SEARCH_ENGINE_NAME" /></translation>
 <translation id="4187424053537113647">ההגדרה של <ph name="APP_NAME" /> מתבצעת…</translation>
+<translation id="4190492351494485814">‏בהגדרה הראשונית, עליך להתחבר לאינטרנט כדי שניתן יהיה לסנכרן קבצים ב-Chromebook.</translation>
 <translation id="4190828427319282529">הדגשת מיקוד המקלדת</translation>
 <translation id="4193251682249731404">רשות אישורים מהימנה</translation>
 <translation id="4193575319002689239">הצגת הכרטיסים</translation>
@@ -4046,6 +4055,7 @@
 <translation id="4361745360460842907">פתיחה ככרטיסייה</translation>
 <translation id="4362675504017386626"><ph name="ACCOUNT_EMAIL" /> הוא חשבון ברירת המחדל ב-<ph name="DEVICE_TYPE" /> שלך</translation>
 <translation id="4363215264289239958">‏אפליקציות Bruschetta</translation>
+<translation id="4363262124589131906">‏הסנכרון האוטומטי של קבצים חדשים ב'אחסון שלי' יופסק ב-Chromebook הזה</translation>
 <translation id="4363771538994847871">לא נמצא יעד להעברה. רוצה עזרה?</translation>
 <translation id="4364327530094270451">מלון</translation>
 <translation id="4364567974334641491"><ph name="APP_NAME" /> משתף חלון.</translation>
@@ -4233,6 +4243,7 @@
 <translation id="4515872537870654449">‏יש לפנות אל Dell כדי לקבל סיוע. אביזר העגינה יכבה אם המאוורר לא פועל.</translation>
 <translation id="4518840066030486079">‏הסגנון של מקש Shift</translation>
 <translation id="4519331665958994620">אתרים יכולים לבקש הרשאה להשתמש במצלמה</translation>
+<translation id="4519605771716872386">סנכרון הקבצים מופעל</translation>
 <translation id="4519935350946509010">שגיאת חיבור.</translation>
 <translation id="4520385623207007473">‏קובצי Cookie בשימוש</translation>
 <translation id="452039078290142656">מכשירים בלתי ידועים של <ph name="VENDOR_NAME" /></translation>
@@ -4470,6 +4481,7 @@
 <translation id="4715631922189108923">עריכת שם המשתמש</translation>
 <translation id="47158868804223727">לוחצים על שם הקבוצה כדי להרחיב או לכווץ אותה</translation>
 <translation id="4716483597559580346">‏ביצוע Powerwash להגברת האבטחה</translation>
+<translation id="4716715661140829720">אין מספיק נפח אחסון</translation>
 <translation id="471759229191973607">שינוי העיצוב</translation>
 <translation id="4718046540206070045">יותר מדפדפן</translation>
 <translation id="4722735765955348426">הסיסמה של <ph name="USERNAME" /></translation>
@@ -4522,6 +4534,7 @@
 <translation id="4763757134413542119">‏<ph name="USER_EMAIL" /> הוא לא חשבון חוקי של Google for Education. יש לפנות לאדמין. אדמינים יכולים להגדיר את הארגון שלהם בכתובת g.co/workspace/edusignup.</translation>
 <translation id="4765524037138975789">{MONTHS,plural, =1{המכשיר הזה יישמר למשך חודש אחד ותהיה לך אפשרות להתחבר ללא קוד בפעם הבאה. ההגדרה נקבעת על ידי האדמין שלך.}one{המכשיר הזה יישמר למשך {MONTHS} חודשים ותהיה לך אפשרות להתחבר ללא קוד בפעם הבאה. ההגדרה נקבעת על ידי האדמין שלך.}two{המכשיר הזה יישמר למשך חודשיים ({MONTHS}) ותהיה לך אפשרות להתחבר ללא קוד בפעם הבאה. ההגדרה נקבעת על ידי האדמין שלך.}other{המכשיר הזה יישמר למשך {MONTHS} חודשים ותהיה לך אפשרות להתחבר ללא קוד בפעם הבאה. ההגדרה נקבעת על ידי האדמין שלך.}}</translation>
 <translation id="4765582662863429759">‏מאפשר ל-Android Messages להעביר הודעות טקסט מהטלפון אל ה-Chromebook</translation>
+<translation id="476563889641554689">‏עליך לבחור אזור לחיפוש באמצעות Lens</translation>
 <translation id="4766598565665644999">כל התוספים יכולים לקרוא ולשנות את <ph name="HOST" /></translation>
 <translation id="4767427586072640478">מידע נוסף על תוספים מושבתים.</translation>
 <translation id="4768332406694066911">יש לך אישורים מארגונים אלה שמזהים אותך</translation>
@@ -4580,6 +4593,7 @@
 <translation id="481574578487123132">מכשירים מקושרים</translation>
 <translation id="4816097470512964351"><ph name="DEVICE" />, פרטים</translation>
 <translation id="4816336393325437908">{COUNT,plural, =1{סימנייה אחת נמחקה}one{סימנייה {COUNT} נמחקה}two{{COUNT} סימניות נמחקו}other{{COUNT} סימניות נמחקו}}</translation>
+<translation id="481689174647911539">‏יכול להיות שהקובץ הזה הוא וירוס או תוכנה זדונית.<ph name="LINE_BREAK" />אפשר לשלוח אותו לגלישה הבטוחה של Google כדי לבדוק אם הוא לא בטוח. בדרך כלל סריקות נמשכות כמה שניות.</translation>
 <translation id="4816900689218414104">יצירת מפתח גישה בטלפון או בטאבלט</translation>
 <translation id="4819323978093861656">{0,plural, =0{כל הדפדפנים ייסגרו עכשיו}=1{כל הדפדפנים ייסגרו בעוד: שנייה אחת}one{כל הדפדפנים ייסגרו בעוד: # שניות}two{כל הדפדפנים ייסגרו בעוד: # שניות}other{כל הדפדפנים ייסגרו בעוד: # שניות}}</translation>
 <translation id="4819607494758673676">‏התראות של Google Assistant</translation>
@@ -4998,12 +5012,14 @@
 <translation id="5185386675596372454">הגרסה החדשה ביותר של "<ph name="EXTENSION_NAME" />" הושבתה מכיוון שהיא דורשת הרשאות נרחבות יותר.</translation>
 <translation id="5185500136143151980">אין חיבור לאינטרנט</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> ‏(<ph name="DEVICE" />)</translation>
+<translation id="5190577235024772869">נפח אחסון בשימוש: <ph name="USED_SPACE" /></translation>
 <translation id="5190926251776387065">הפעלת היציאה</translation>
 <translation id="5190959794678983197">אין מיקרופון</translation>
 <translation id="5191094172448199359">קודי האימות שהזנת לא תואמים.</translation>
 <translation id="5191251636205085390">‏מידע על טכנולוגיות חדשות שמיועדות להחליף קובצי cookie של צד שלישי והוראות לשליטה בהן.</translation>
 <translation id="519185197579575131">‏שימוש ב-QT</translation>
 <translation id="5192062846343383368">‏כדי לראות את הגדרות הפיקוח יש לפתוח את האפליקציה Family Link</translation>
+<translation id="5193978546360574373">‏הפעולה הזו תסיר את הגישה ל-Google Drive מה-Chromebook הזה, כולל גישה לקבצים שזמינים במצב אופליין</translation>
 <translation id="5193988420012215838">הועתק אל הלוח</translation>
 <translation id="5194256020863090856">פעולה זו משפיעה רק על חלונות אנונימיים</translation>
 <translation id="5195074424945754995">‏כתובות ה‑URL שמתאימות לכללים האלה לא יגרמו להחלפת דפדפנים ויוכלו להיפתח בדפדפן <ph name="BROWSER_NAME" /> או בדפדפן <ph name="ALTERNATIVE_BROWSER_NAME" />.</translation>
@@ -5086,6 +5102,7 @@
 <translation id="526622169288322445">עוד פעולות לגבי <ph name="ADDRESS_SUMMARY" /></translation>
 <translation id="5268373933383932086">הדף שלך, הדרך שלך</translation>
 <translation id="5269977353971873915">ההדפסה נכשלה</translation>
+<translation id="5271578170655641944">‏להסיר את הגישה ל-Google Drive?</translation>
 <translation id="5273806377963980154">עריכה של כתובת האתר</translation>
 <translation id="5273966423195882879">הצבע מבוסס על העיצוב</translation>
 <translation id="5275084684151588738">מילוני משתמש</translation>
@@ -6348,6 +6365,7 @@
 <translation id="6345878117466430440">סימון כפריט שנקרא</translation>
 <translation id="6346952829206698721">הדבקה מהלוח</translation>
 <translation id="6347010704471250799">הצגת התראה</translation>
+<translation id="6348805481186204412">אחסון אופליין</translation>
 <translation id="634887995541211148">‏הפעלת Bruschetta במכשיר שלך.</translation>
 <translation id="6349101878882523185">התקנת <ph name="APP_NAME" /></translation>
 <translation id="6354918092619878358">‏עקומה אליפטית SECG מסוג secp256r1 (מוכרת גם בשם ANSI X9.62 prime256v1‏, NIST P-256)</translation>
@@ -6532,6 +6550,7 @@
 <translation id="6513247462497316522">‏Google Chrome ישתמש בחבילת הגלישה אם אין לך חיבור לרשת אחרת.</translation>
 <translation id="6514010653036109809">מכשיר זמין:</translation>
 <translation id="6514565641373682518">דף זה השבית את סמן העכבר שלך.</translation>
+<translation id="6517420300299531857">‏הקבצים בתיקייה 'האחסון שלי' יסונכרנו באופן אוטומטי ב-Chromebook כדי שאפשר יהיה לגשת אליהם בלי חיבור לאינטרנט. הפעולה הזו תנצל כ-<ph name="REQUIRED_SPACE" /> מנפח האחסון. עכשיו יש מקום פנוי בנפח <ph name="FREE_SPACE_AVAILABLE" />.</translation>
 <translation id="6517709704288360414">יכול להיות שהמכשיר שלך לא יעבוד כמו שצריך ושיהיו בעיות באבטחה ובביצועים. להשבתת העדכונים עשויה להיות גם השפעה על זכותך להגיש תביעות משפטיות במקרה שתהיה בעיה.</translation>
 <translation id="6518014396551869914">הע&amp;תקת תמונה</translation>
 <translation id="6518133107902771759">אימות</translation>
@@ -6795,6 +6814,7 @@
 <translation id="6736243959894955139">כתובת</translation>
 <translation id="6737393581255281855">לנקות את הנתונים המוצגים?</translation>
 <translation id="6737663862851963468">‏הסרה של כרטיס Kerberos</translation>
+<translation id="6737931010859480781">האפליקציה הזו הותקנה מראש במכשיר</translation>
 <translation id="6738180164164974883">‏אישור להגדיר קובצי cookie של צד שלישי</translation>
 <translation id="6738430949033571771">החשבון בתהליך אימות…</translation>
 <translation id="6739923123728562974">הצגת קיצור דרך בשולחן העבודה</translation>
@@ -7270,6 +7290,7 @@
 <translation id="7124712201233930202">ההורדה לא עומדת בדרישות המדיניות של הארגון שלך</translation>
 <translation id="7125029162161377569">במסגרת גרסאות הניסיון של ארגז החול לפרטיות, אתרים יכולים לספק את אותה חוויית גלישה תוך שימוש בפחות נתונים אישיים. כך מוגברת ההגנה על הפרטיות שלך והמעקב באתרים שונים מופחת. נוסיף גרסאות ניסיון חדשות ברגע שיהיו מוכנות לבדיקה.</translation>
 <translation id="7125148293026877011">‏מחיקה של Crostini</translation>
+<translation id="7125932261198019860">‏צריך לוודא שהמדפסת וה-Chromebook מחוברים לאותה רשת Wi-Fi או להשתמש בכבל USB. <ph name="LINK_BEGIN" />מידע נוסף על תאימות<ph name="LINK_END" /></translation>
 <translation id="7127980134843952133">היסטוריית הורדות</translation>
 <translation id="7128151990937044829">הצגה של חיווי בסרגל הכתובות כשהתראה נחסמת</translation>
 <translation id="7131040479572660648">קריאת הנתונים שלך באתרים <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> ו-<ph name="WEBSITE_3" /></translation>
@@ -7463,6 +7484,7 @@
 <translation id="7307129035224081534">מושהה</translation>
 <translation id="7308643132139167865">שפות לאתרים</translation>
 <translation id="7310598146671372464">‏ההתחברות נכשלה. השרת לא תומך בסוגי הצפנת Kerberos שצוינו. צריך לפנות אל מנהל המערכת.</translation>
+<translation id="7311005168897771689">‏גישה לקבצים ב-Google Drive במצב אופליין</translation>
 <translation id="7311244614769792472">לא נמצאו תוצאות</translation>
 <translation id="7312210124139670355">‏ה-eSIM הזה עובר איפוס בהוראת האדמין שלך. הפעולה עשויה להימשך מספר דקות.</translation>
 <translation id="7317831949569936035">הרשמה לשימוש בית ספרי</translation>
@@ -8490,6 +8512,7 @@
 <translation id="8138217203226449454">האם התכוונת לשנות את ספק החיפוש שלך?</translation>
 <translation id="8138997515734480534">הסטטוס של <ph name="VM_NAME" /></translation>
 <translation id="8139447493436036221">‏קבצים ב-Google Drive</translation>
+<translation id="8139643636835015859">‏הפעולה הזו תפנה מקום אחסון בנפח GB<ph name="OFFLINE_STORAGE_SIZE" /> שמשמש את הקבצים שלך במצב אופליין. חלק מהקבצים עדיין יהיו זמינים במצב אופליין. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
 <translation id="8140070492745508800"><ph name="FIRST_DEVICE" />, <ph name="SECOND_DEVICE" /></translation>
 <translation id="8141418916163800697">‏אפשר להגדיר תכונות נוספות בהגדרות Phone Hub</translation>
 <translation id="8141584439523427891">נפתח עכשיו בדפדפן חלופי</translation>
@@ -8581,6 +8604,7 @@
 <translation id="821119981794423735">‏כדי לייבא סיסמאות למנהל הסיסמאות של Google בחשבון <ph name="USER_EMAIL" />, צריך לבחור קובץ CSV.</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{הורדה מתבצעת}one{הורדות מתבצעות}two{הורדות מתבצעות}other{הורדות מתבצעות}}</translation>
 <translation id="8212601853154459483">הפרופיל הזה מנוהל על ידי <ph name="PROFILE_MANAGER" />, ועליך ליצור פרופיל נפרד לחשבון <ph name="USER_EMAIL_ADDRESS" />.</translation>
+<translation id="8212792694174629011">‏לא נמצאו פרופילים. צריך לסרוק את קוד ה-QR באמצעות מצלמת המכשיר או להזין את קוד ההפעלה שקיבלת מהספק.</translation>
 <translation id="8214489666383623925">פתיחת קובץ...</translation>
 <translation id="8215129063232901118">אפשר ליהנות מהיכולות של הטלפון ב-<ph name="DEVICE_TYPE" /></translation>
 <translation id="8217212468862726597">הדגשת המצביע</translation>
@@ -9124,6 +9148,7 @@
 <translation id="8680251145628383637">‏יש להיכנס כדי לקבל גישה אל הסימניות, ההיסטוריה, הסיסמאות והגדרות נוספות בכל המכשירים שברשותך. בנוסף, תחובר אוטומטית אל שירותי Google.</translation>
 <translation id="8681886425883659911">הצגת המודעות חסומה באתרים שידוע שמוצגות בהם מודעות שמפריעות או מודעות מטעות</translation>
 <translation id="8682730193597992579">המדפסת <ph name="PRINTER_NAME" /> מחוברת ומוכנה</translation>
+<translation id="8686142379631285985">נכנסת בתור <ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /></translation>
 <translation id="8687103160920393343">ביטול ההורדה של <ph name="FILE_NAME" /></translation>
 <translation id="8688672835843460752">זמינות</translation>
 <translation id="8689998525144040851">100</translation>

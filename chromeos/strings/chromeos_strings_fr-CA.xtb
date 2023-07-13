@@ -9,6 +9,7 @@
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> fils d'exécution, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Une nouvelle fonctionnalité est proposée, servez-vous de la touche de flèche vers le haut pour en savoir plus.</translation>
 <translation id="1059913517121127803">Impossible de démarrer la numérisation</translation>
+<translation id="1062823486781306604"><ph name="INDEX" /> sur <ph name="COUNT" />, <ph name="NAME" />.</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Pare-feu détecté</translation>
 <translation id="1075811647922107217">Taille de la page</translation>
@@ -534,6 +535,7 @@
 <translation id="5257811368506016604">Activer le mode Couleur claire</translation>
 <translation id="5264277876637023664">Exécuter le test de processeur</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
+<translation id="527501763019887383">Le nom de point d'accès (APN) est désactivé.</translation>
 <translation id="5275828089655680674">Relancer les routines</translation>
 <translation id="5286252187236914003">L2TP/IPsec</translation>
 <translation id="5286263799730375393">couleur de rétroéclairage</translation>
@@ -598,6 +600,7 @@
 <translation id="5832805196449965646">Ajouter une personne</translation>
 <translation id="583281660410589416">Inconnu</translation>
 <translation id="5843706793424741864">Fahrenheit</translation>
+<translation id="584953448295717128">Le nom de point d'accès (APN) est automatiquement détecté.</translation>
 <translation id="5849570051105887917">Code de propriétaire</translation>
 <translation id="5859603669299126575">Album de galerie d'art</translation>
 <translation id="5860033963881614850">Désactivé</translation>
@@ -874,6 +877,7 @@
 <translation id="80398733265834479">Activer le mode Couleur automatique</translation>
 <translation id="8041089156583427627">Envoyer des commentaires</translation>
 <translation id="8045012663542226664">Désactivation du microphone</translation>
+<translation id="8067126283828232460">Le nom de point d'accès (APN) est connecté.</translation>
 <translation id="8075838845814659848">Charge restante</translation>
 <translation id="8076492880354921740">Onglets</translation>
 <translation id="8082366717211101304">Impossible de résoudre le DNS à partir d'applications Android</translation>
@@ -1018,6 +1022,7 @@
 <translation id="9111102763498581341">Déverrouiller</translation>
 <translation id="9122602430962285795">Pour vous reconnecter, accédez à Paramètres</translation>
 <translation id="9126720536733509015">Enregistrer plusieurs pages en un seul PDF</translation>
+<translation id="9133104754938025929">Pour augmenter l'autonomie de la pile, l'écran de veille fonctionne uniquement pendant la recharge.</translation>
 <translation id="9137526406337347448">Services Google</translation>
 <translation id="9138630967333032450">Majuscule gauche</translation>
 <translation id="9143347780818904997">pendant <ph name="MINUTES" /> minutes</translation>

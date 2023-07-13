@@ -140,6 +140,7 @@
 <translation id="1110965959145884739">選擇要在這部裝置上安裝的語言。為節省磁碟空間，語言檔案會由裝置的所有使用者共用。<ph name="BEGIN_LINK_LEARN_MORE" />瞭解詳情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1112420131909513020">背景分頁正在使用藍牙</translation>
 <translation id="1112998165730922436">已暫停投放</translation>
+<translation id="1113807501859230251">要從 <ph name="DEVICE_TYPE" /> 中移除 Bruschetta 嗎？這項操作會刪除虛擬機器中的所有應用程式和資料！</translation>
 <translation id="1114102982691049955"><ph name="PRINTER_MANUFACTURER" /> <ph name="PRINTER_MODEL" /> (USB)</translation>
 <translation id="1114202307280046356">菱形鍵</translation>
 <translation id="1114427165525619358">儲存在這部裝置上和你的 Google 帳戶中的密碼</translation>
@@ -811,6 +812,7 @@
 <translation id="1647408325348388858">要在這個網頁應用程式中開啟並編輯「<ph name="FILE_NAME" />」嗎？</translation>
 <translation id="1648528859488547844">使用 Wi-Fi 或行動網路判斷所在位置</translation>
 <translation id="164936512206786300">取消配對藍牙裝置</translation>
+<translation id="1650801028905250434">「我的雲端硬碟」中的檔案會自動同步至 Chromebook，這樣你就能在沒有網際網路連線的情況下存取檔案。你隨時可以依序前往「設定」&gt;「檔案」，變更這項設定。</translation>
 <translation id="1651008383952180276">你必須輸入兩次相同的通關密語</translation>
 <translation id="1651609627703324721">這個分頁正在對頭戴式裝置展示 VR 內容</translation>
 <translation id="1652326691684645429">啟用鄰近分享功能</translation>
@@ -1553,6 +1555,7 @@
 <translation id="2263679799334060788">你的寶貴意見可協助我們讓 Google Cast 更臻完美。如需排解投放問題的相關說明，請參閱<ph name="BEGIN_LINK" />說明中心<ph name="END_LINK" />的文章。</translation>
 <translation id="2266957463645820432">USB 型 IPP (IPPUSB)</translation>
 <translation id="2268130516524549846">藍牙已停用</translation>
+<translation id="2268182915828370037">要關閉檔案同步處理功能嗎？</translation>
 <translation id="2269895253281481171">如果密碼有安全風險，系統會通知你</translation>
 <translation id="2270450558902169558">與 <ph name="DOMAIN" /> 網域中的任何裝置交換資料</translation>
 <translation id="2270612886833477697"><ph name="BEGIN_PARAGRAPH1" />安裝程序<ph name="BEGIN_BOLD" />會清除整個硬碟的資料<ph name="END_BOLD" />。請確認資料已備份。<ph name="END_PARAGRAPH1" />
@@ -2104,6 +2107,7 @@
 <translation id="2714393097308983682">Google Play 商店</translation>
 <translation id="2715640894224696481">安全金鑰要求</translation>
 <translation id="2715751256863167692">這項升級作業會重設你的 Chromebook 並移除目前的使用者資料。</translation>
+<translation id="2715934493766003251">檔案同步處理功能已開啟，因此無法清理儲存空間</translation>
 <translation id="2716986496990888774">這項設定是由家長管理。</translation>
 <translation id="271749239614426244">忽略微幅的游標移動</translation>
 <translation id="2718395828230677721">夜燈</translation>
@@ -2251,6 +2255,7 @@
 <translation id="2817435998497102771">設定桌布和樣式</translation>
 <translation id="2818476747334107629">印表機詳細資訊</translation>
 <translation id="2819167288942847344">採用手機視窗、平板電腦視窗或可調整式視窗的預設大小，以免應用程式無法正常運作</translation>
+<translation id="2819519502129272135">檔案同步處理功能已關閉</translation>
 <translation id="2820957248982571256">掃描中...</translation>
 <translation id="2822634587701817431">縮小/展開</translation>
 <translation id="2822910719211888134">備份 Linux 時發生錯誤</translation>
@@ -2719,6 +2724,7 @@
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - 網路錯誤</translation>
 <translation id="3248902735035392926">安全至上。現在就花點時間<ph name="BEGIN_LINK" />檢查擴充功能<ph name="END_LINK" />吧</translation>
 <translation id="3249323165366527554">將密碼自動儲存到 <ph name="EMAIL" /> 的 <ph name="GOOGLE_PASSWORD_MANAGER" />，提升註冊與登入速度。</translation>
+<translation id="3251119461199395237">檔案同步處理</translation>
 <translation id="3251714896659475029">讓<ph name="SUPERVISED_USER_NAME" />透過「Ok Google」語音指令存取 Google 助理</translation>
 <translation id="3251759466064201842">&lt;不是憑證的一部分&gt;</translation>
 <translation id="325238099842880997">設定數位裝置基本使用規則，協助孩子在家玩樂、探索及完成學校作業</translation>
@@ -3096,6 +3102,7 @@
 <translation id="3567284462585300767">如要與附近的使用者互相傳送檔案，請將裝置設為可供偵測狀態</translation>
 <translation id="356738834800832239">已儲存密碼</translation>
 <translation id="3569382839528428029">你想讓 <ph name="APP_NAME" /> 共用你的畫面嗎？</translation>
+<translation id="3569614820047645079">「我的雲端硬碟」中的檔案會自動同步至 Chromebook，這樣你就能在沒有網際網路連線的情況下存取檔案。</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> 可以檢視下列檔案和資料夾</translation>
 <translation id="3571734092741541777">設定</translation>
 <translation id="3575121482199441727">允許這個網站的通知</translation>
@@ -3528,6 +3535,7 @@
 <translation id="3916233823027929090">已完成安全性檢查</translation>
 <translation id="3916445069167113093">這種類型的檔案可能會損害你的電腦，你要保留 <ph name="FILE_NAME" /> 這個檔案嗎？</translation>
 <translation id="3917184139185490151">你的電腦含有安全性模組，可用於實作 Chrome OS 中許多重要的安全性功能。如要瞭解詳情，請造訪 Chromebook 說明中心：https://support.google.com/chromebook/?p=sm</translation>
+<translation id="3917644013202553949">儲存空間不足，無法同步處理檔案。請嘗試釋出空間。</translation>
 <translation id="3918972485393593704">向 Google 回報詳細資料</translation>
 <translation id="3919145445993746351">如要在所有電腦上使用你的擴充功能，請開啟同步功能</translation>
 <translation id="3919229493046408863">附近有其他裝置時關閉通知</translation>
@@ -3838,6 +3846,7 @@
 <translation id="4184803915913850597">HID 裝置 (<ph name="VENDOR_ID" />：<ph name="PRODUCT_ID" />)</translation>
 <translation id="4186749321808907788"><ph name="QUERY_NAME" /> - <ph name="DEFAULT_SEARCH_ENGINE_NAME" /> 搜尋</translation>
 <translation id="4187424053537113647">正在設定「<ph name="APP_NAME" />」...</translation>
+<translation id="4190492351494485814">如要進行初始設定，請先連上網際網路，才能將檔案同步至 Chromebook</translation>
 <translation id="4190828427319282529">醒目顯示鍵盤焦點</translation>
 <translation id="4193251682249731404">信任的 CA</translation>
 <translation id="4193575319002689239">顯示資訊卡</translation>
@@ -4030,6 +4039,7 @@
 <translation id="4361745360460842907">在分頁中開啟</translation>
 <translation id="4362675504017386626"><ph name="ACCOUNT_EMAIL" /> 是 <ph name="DEVICE_TYPE" /> 上的預設帳戶</translation>
 <translation id="4363215264289239958">Bruschetta 應用程式</translation>
+<translation id="4363262124589131906">「我的雲端硬碟」中的新檔案會自動停止同步至這部 Chromebook</translation>
 <translation id="4363771538994847871">找不到 Cast 目的地。需要協助嗎？</translation>
 <translation id="4364327530094270451">瓜</translation>
 <translation id="4364567974334641491"><ph name="APP_NAME" /> 正在共用視窗。</translation>
@@ -4216,6 +4226,7 @@
 <translation id="4515872537870654449">請聯絡 Dell 以取得支援服務。風扇故障時，座架將會停止運作。</translation>
 <translation id="4518840066030486079">Shift 鍵模式樣式</translation>
 <translation id="4519331665958994620">網站可以要求使用你的攝影機</translation>
+<translation id="4519605771716872386">檔案同步處理功能已開啟</translation>
 <translation id="4519935350946509010">連線錯誤。</translation>
 <translation id="4520385623207007473">使用中的 Cookie</translation>
 <translation id="452039078290142656">由 <ph name="VENDOR_NAME" /> 製造的不明裝置</translation>
@@ -4451,6 +4462,7 @@
 <translation id="4715631922189108923">編輯使用者名稱</translation>
 <translation id="47158868804223727">按一下以展開或收合群組名稱</translation>
 <translation id="4716483597559580346">執行 Powerwash 以提升安全性</translation>
+<translation id="4716715661140829720">儲存空間不足。</translation>
 <translation id="471759229191973607">變更主題</translation>
 <translation id="4718046540206070045">不只是瀏覽器</translation>
 <translation id="4722735765955348426"><ph name="USERNAME" />的密碼</translation>
@@ -4503,6 +4515,7 @@
 <translation id="4763757134413542119"><ph name="USER_EMAIL" /> 不是有效的 Google for Education 帳戶，請與系統管理員聯絡。如果你是系統管理員，可以前往 g.co/workspace/edusignup 設定貴機構</translation>
 <translation id="4765524037138975789">{MONTHS,plural, =1{系統會記住這部裝置，在 1 個月內無需輸入驗證碼即可再次連接。這項設定是由你系統管理員指定。}other{系統會記住這部裝置，在 {MONTHS} 個月內無需輸入驗證碼即可再次連接。這項設定是由你系統管理員指定。}}</translation>
 <translation id="4765582662863429759">允許 Android 訊息將簡訊內容從手機轉送到 Chromebook</translation>
+<translation id="476563889641554689">選取要使用智慧鏡頭搜尋的區域</translation>
 <translation id="4766598565665644999">所有擴充功能都可以讀取及變更 <ph name="HOST" /></translation>
 <translation id="4767427586072640478">進一步瞭解已停用的擴充功能。</translation>
 <translation id="4768332406694066911">您有這些機構核發給您的憑證</translation>
@@ -4561,6 +4574,7 @@
 <translation id="481574578487123132">連結的裝置</translation>
 <translation id="4816097470512964351"><ph name="DEVICE" />，詳細資料</translation>
 <translation id="4816336393325437908">{COUNT,plural, =1{已刪除 1 個書籤}other{已刪除 {COUNT} 個書籤}}</translation>
+<translation id="481689174647911539">這個檔案可能是病毒或惡意軟體。<ph name="LINE_BREAK" />你可以將檔案傳送給 Google 安全瀏覽，檢查是否安全。掃描通常需要幾秒鐘的時間。</translation>
 <translation id="4816900689218414104">在手機或平板電腦上建立密碼金鑰</translation>
 <translation id="4819323978093861656">{0,plural, =0{立即關閉。}=1{關閉時間：1 秒後}other{關閉時間：# 秒後}}</translation>
 <translation id="4819607494758673676">Google 助理通知</translation>
@@ -4979,12 +4993,14 @@
 <translation id="5185386675596372454">由於最新版本的 <ph name="EXTENSION_NAME" /> 需要更多權限，因此已經停用。</translation>
 <translation id="5185500136143151980">沒有網際網路連線</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
+<translation id="5190577235024772869">儲存空間使用量：<ph name="USED_SPACE" /></translation>
 <translation id="5190926251776387065">啟用連接埠</translation>
 <translation id="5190959794678983197">沒有麥克風</translation>
 <translation id="5191094172448199359">你輸入的 PIN 碼不相符</translation>
 <translation id="5191251636205085390">進一步瞭解用於取代第三方 Cookie 的全新技術並進行控管</translation>
 <translation id="519185197579575131">使用 QT</translation>
 <translation id="5192062846343383368">開啟 Family Link 應用程式以查看監督功能設定</translation>
+<translation id="5193978546360574373">這麼做會移除這部 Chromebook 的 Google 雲端硬碟存取權，包括已設為可離線存取的所有檔案存取權</translation>
 <translation id="5193988420012215838">已複製到剪貼簿</translation>
 <translation id="5194256020863090856">這項操作只會影響無痕式視窗</translation>
 <translation id="5195074424945754995">符合這些規則的網址不會觸發瀏覽器切換功能，且可在 <ph name="BROWSER_NAME" /> 或 <ph name="ALTERNATIVE_BROWSER_NAME" /> 中開啟。</translation>
@@ -5067,6 +5083,7 @@
 <translation id="526622169288322445">可對「<ph name="ADDRESS_SUMMARY" />」執行的其他動作</translation>
 <translation id="5268373933383932086">依喜好自訂頁面</translation>
 <translation id="5269977353971873915">列印失敗</translation>
+<translation id="5271578170655641944">要移除 Google 雲端硬碟存取權嗎？</translation>
 <translation id="5273806377963980154">編輯網站網址</translation>
 <translation id="5273966423195882879">根據主題設定顏色</translation>
 <translation id="5275084684151588738">使用者字典</translation>
@@ -6325,6 +6342,7 @@
 <translation id="6345878117466430440">標示為已讀取</translation>
 <translation id="6346952829206698721">從剪貼簿貼上</translation>
 <translation id="6347010704471250799">顯示通知</translation>
+<translation id="6348805481186204412">離線儲存空間</translation>
 <translation id="634887995541211148">在你的裝置上執行 Bruschetta。</translation>
 <translation id="6349101878882523185">安裝 <ph name="APP_NAME" /></translation>
 <translation id="6354918092619878358">SECG 橢圓曲線 secp256r1 (亦稱為 ANSI X9.62 prime256v1、NIST P-256)</translation>
@@ -6509,6 +6527,7 @@
 <translation id="6513247462497316522">如果你沒有連線至其他網路，Google Chrome 將使用行動數據網路連線。</translation>
 <translation id="6514010653036109809">可用的裝置：</translation>
 <translation id="6514565641373682518">這個網頁已停用滑鼠游標。</translation>
+<translation id="6517420300299531857">「我的雲端硬碟」中的檔案會自動同步至 Chromebook，這樣你就能在沒有網際網路連線的情況下存取檔案。這會使用大約 <ph name="REQUIRED_SPACE" /> 的空間。你目前的可用空間為 <ph name="FREE_SPACE_AVAILABLE" />。</translation>
 <translation id="6517709704288360414">裝置可能無法再正常運作，你可能會遇到安全性和效能問題。關閉更新可能也會影響你在遇到問題時，提出法律請求的權利。</translation>
 <translation id="6518014396551869914">複製圖片(&amp;Y)</translation>
 <translation id="6518133107902771759">驗證</translation>
@@ -6768,6 +6787,7 @@
 <translation id="6736243959894955139">位址</translation>
 <translation id="6737393581255281855">要清除顯示的資料嗎？</translation>
 <translation id="6737663862851963468">移除 Kerberos 票證</translation>
+<translation id="6737931010859480781">這個應用程式已預先安裝在裝置上</translation>
 <translation id="6738180164164974883">允許設定第三方 Cookie</translation>
 <translation id="6738430949033571771">正在驗證帳戶...</translation>
 <translation id="6739923123728562974">顯示桌面捷徑</translation>
@@ -7243,6 +7263,7 @@
 <translation id="7124712201233930202">不符合貴機構的政策規定</translation>
 <translation id="7125029162161377569">在 Privacy Sandbox 試用期間，網站可以減少使用訪客的個人資訊，同時又能維持相同的瀏覽體驗。這代表你的資料隱私性更高，跨網站追蹤情況則會減少。我們會在新的試用功能準備就緒時開放測試。</translation>
 <translation id="7125148293026877011">刪除 Crostini</translation>
+<translation id="7125932261198019860">確認印表機已連上 Chromebook 使用的 Wi-Fi 網路，或使用 USB 傳輸線。<ph name="LINK_BEGIN" />進一步瞭解相容性<ph name="LINK_END" /></translation>
 <translation id="7127980134843952133">下載記錄</translation>
 <translation id="7128151990937044829">封鎖通知時，在網址列上顯示圖示</translation>
 <translation id="7131040479572660648">讀取你在 <ph name="WEBSITE_1" />、<ph name="WEBSITE_2" /> 和 <ph name="WEBSITE_3" /> 上產生的資料</translation>
@@ -7436,6 +7457,7 @@
 <translation id="7307129035224081534">已暫停</translation>
 <translation id="7308643132139167865">網站語言</translation>
 <translation id="7310598146671372464">無法登入，伺服器不支援指定的 Kerberos 加密類型。請與你的管理員聯絡。</translation>
+<translation id="7311005168897771689">在離線狀態下存取 Google 雲端硬碟檔案</translation>
 <translation id="7311244614769792472">找不到任何結果</translation>
 <translation id="7312210124139670355">管理員正在重設 eSIM 卡，請稍候片刻。</translation>
 <translation id="7317831949569936035">學校註冊程序</translation>
@@ -8460,6 +8482,7 @@
 <translation id="8138217203226449454">你要變更搜尋引擎嗎？</translation>
 <translation id="8138997515734480534">「<ph name="VM_NAME" />」狀態</translation>
 <translation id="8139447493436036221">Google 雲端硬碟檔案</translation>
+<translation id="8139643636835015859">這麼做會釋出離線檔案使用的 <ph name="OFFLINE_STORAGE_SIZE" /> 空間，但仍可在離線時存取部分檔案。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="8140070492745508800">「<ph name="FIRST_DEVICE" />」、「<ph name="SECOND_DEVICE" />」</translation>
 <translation id="8141418916163800697">你可以前往 Phone Hub 設定調整更多功能</translation>
 <translation id="8141584439523427891">正在替代瀏覽器中開啟</translation>
@@ -8551,6 +8574,7 @@
 <translation id="821119981794423735">如要將密碼匯入 <ph name="USER_EMAIL" /> 的 Google 密碼管理工具，請選取 CSV 檔案</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{正在執行一項下載作業}other{正在執行多項下載作業}}</translation>
 <translation id="8212601853154459483">這個設定檔是由 <ph name="PROFILE_MANAGER" /> 管理，你必須為 <ph name="USER_EMAIL_ADDRESS" /> 帳戶建立個別的設定檔</translation>
+<translation id="8212792694174629011">找不到任何設定檔。請嘗試使用裝置攝影機掃描 QR code，或是輸入電信業者提供的啟用代碼。</translation>
 <translation id="8214489666383623925">開啟檔案...</translation>
 <translation id="8215129063232901118">透過 <ph name="DEVICE_TYPE" /> 使用手機上的功能和內容</translation>
 <translation id="8217212468862726597">醒目顯示指標</translation>
@@ -9094,6 +9118,7 @@
 <translation id="8680251145628383637">只要登入帳戶，你在任何裝置上都能取得自己的書籤、歷史記錄和密碼，並套用相同的設定。此外，系統還會自動讓您登入各項 Google 服務。</translation>
 <translation id="8681886425883659911">已在網站上封鎖已知的侵入式廣告或誤導性廣告</translation>
 <translation id="8682730193597992579"><ph name="PRINTER_NAME" /> 已連接且準備就緒</translation>
+<translation id="8686142379631285985">目前登入的帳戶：<ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /></translation>
 <translation id="8687103160920393343">取消下載 <ph name="FILE_NAME" /></translation>
 <translation id="8688672835843460752">可用空間</translation>
 <translation id="8689998525144040851">100</translation>

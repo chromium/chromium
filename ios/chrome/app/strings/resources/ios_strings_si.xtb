@@ -518,6 +518,7 @@
 <translation id="4272631900155121838">QR කේතය ස්කෑන් කිරීමට සැකසීම් වෙතින් කැමරාව සබල කරන්න</translation>
 <translation id="4277990410970811858">ආරක්ෂිත බ්‍රවුස් කිරීම</translation>
 <translation id="4281844954008187215">සේවා කොන්දේසි</translation>
+<translation id="4286718549648564014">ලිපිනය ඔබේ ගිණුමට <ph name="USER_EMAIL" /> ගෙන ගියා</translation>
 <translation id="4293080268407233932">සෙවීම</translation>
 <translation id="4302248187517737842">පරිශීලක නමක් නැත ••••••••</translation>
 <translation id="4304713468139749426">මුරපද කළමනාකරු</translation>
@@ -1175,6 +1176,7 @@
 <translation id="8264966119170358612">ඔබේ සුරකින ලද සමහර මුරපද Google නොවන දත්ත කඩ කිරීමක දී නිරාවරණය විය. <ph name="BEGIN_LINK" />තව දැන ගන්න<ph name="END_LINK" /></translation>
 <translation id="826614135184049678">ඔබේ iPad යළි සැකසීමේ කොටසක් ලෙස, ඔබ ඔබේ <ph name="USER_NAME" /> ගිණුමෙන් වරන ලදි. නැවත පුරන්නට, පහත "ඉදිරියට යන්න" වෙත තට්ටු කරන්න.</translation>
 <translation id="8271720166617117963">පිළිගන්න සහ පුරන්න</translation>
+<translation id="8273982424131314219">ඔබ <ph name="URL" /> වෙත තතු පුරවනු ඇත</translation>
 <translation id="8278938988428169257">වචනයක් හෝ වාක්‍ය ඛණ්ඩයක් ඇතුළු කරන්න</translation>
 <translation id="8281781826761538115">පෙරනිමි - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">මඟහරින්න</translation>
@@ -1221,6 +1223,7 @@
 <translation id="8548878600947630424">පිටුව තුළ සොයන්න...</translation>
 <translation id="8556590991644167667">{count,plural, =1{ඔබ {count} අනතුරු ඇඟවීමක් අස් කළා}one{ඔබ අනතුරු ඇඟවීම් {count}ක් අස් කළා}other{ඔබ අනතුරු ඇඟවීම් {count}ක් අස් කළා}}</translation>
 <translation id="8558480467877843976">ඔබට දැන් ඔබ පණිවිඩ, ලේඛන සහ වෙනත් යෙදුම්වල සබැඳි බ්‍රවුස් කරන හෝ තට්ටු කරන ඕනෑම වේලාවක Chrome භාවිත කළ හැක.</translation>
+<translation id="8580411965900177618">එපා ස්තුතියි</translation>
 <translation id="8588404856427128947">අක්‍රිය</translation>
 <translation id="8591976964826315682">අප්‍රසිද්ධය තුළ තෙවන පාර්ශ්ව කුකි අවහිර කරන්න</translation>
 <translation id="8605219856220328675">පටිත්ත වසන්න.</translation>
@@ -1257,6 +1260,7 @@
 <ph name="BEGIN_LINK" />තව දැන ගන්න<ph name="END_LINK" /></translation>
 <translation id="8810413591309742901">පෙරනිමි අඩවි දසුන</translation>
 <translation id="8820817407110198400">පිටුසන්</translation>
+<translation id="8825562130641217944">ඔබේ පිටුසන්, මුරපද, සහ තවත් දේ ලබා ගන්න.</translation>
 <translation id="882557203579758546">පිටුව තුළ සොයා ගන්න…</translation>
 <translation id="8840513115188359703">ඔබව ඔබගේ Google ගිණුමෙන් වරනය නොවනු ඇත</translation>
 <translation id="8843129975935593190">ඔබගේ සංවිධානය ඔබට සමමුහුර්ත කළ හැකි දේ සීමා කරයි.</translation>

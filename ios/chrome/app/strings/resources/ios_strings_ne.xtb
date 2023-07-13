@@ -518,6 +518,7 @@
 <translation id="4272631900155121838">QR कोड स्क्यान गर्न, सेटिङहरूबाट क्यामेरालाई सक्षम गर्नुहोस्</translation>
 <translation id="4277990410970811858">Safe Browsing</translation>
 <translation id="4281844954008187215">सेवाका सर्तहरू</translation>
+<translation id="4286718549648564014">ठेगाना तपाईंको खाता <ph name="USER_EMAIL" /> मा सारियो</translation>
 <translation id="4293080268407233932">खोज्नुहोस्</translation>
 <translation id="4302248187517737842">युजरनेम चाहिँदैन ••••••••</translation>
 <translation id="4304713468139749426">पासवर्ड म्यानेजर</translation>
@@ -1175,6 +1176,7 @@
 <translation id="8264966119170358612">तपाईंका सेभ गरिएका केही पासवर्डहरू तेस्रो पक्षले गरेको डेटा चोरीको घटनामा देखिएका थिए। <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="826614135184049678">तपाईंको iPad रिसेट गर्ने क्रममा तपाईंलाई तपाईंको <ph name="USER_NAME" /> खाताबाट साइन आउट गरिएको थियो। फेरि साइन इन गर्न तलको "जारी राख्नुहोस्" मा ट्याप गर्नुहोस्।</translation>
 <translation id="8271720166617117963">स्वीकार गर्नुहोस् र साइन इन गर्नुहोस्</translation>
+<translation id="8273982424131314219">तपाईंले <ph name="URL" /> मा जानकारी भर्नु पर्ने हुन्छ</translation>
 <translation id="8278938988428169257">कुनै शब्द वा वाक्यांश हाल्नुहोस्</translation>
 <translation id="8281781826761538115">डिफल्ट - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">त्याग्नुहोस्</translation>
@@ -1221,6 +1223,7 @@
 <translation id="8548878600947630424">पृष्ठमा फेला पार्नुहोस्...</translation>
 <translation id="8556590991644167667">{count,plural, =1{तपाईंले {count} वटा चेतावनी खारेज गर्नुभएको छ}other{तपाईंले {count} वटा चेतावनी खारेज गर्नुभएको छ}}</translation>
 <translation id="8558480467877843976">तपाईंले अब म्यासेज, डकुमेन्ट वा अन्य एपमा भएका लिंक ब्राउज गर्दा वा तिनमा ट्याप गर्दा ती लिंक Chrome मा खुल्ने छन्।</translation>
+<translation id="8580411965900177618">पर्दैन, धन्यवाद</translation>
 <translation id="8588404856427128947">निष्क्रिय</translation>
 <translation id="8591976964826315682">इन्कोग्निटो मोडमा तेस्रो पक्षीय कुकीलाई रोक लगाइयोस्</translation>
 <translation id="8605219856220328675">ट्याब बन्द गर्नुहोस्।</translation>
@@ -1257,6 +1260,7 @@
 <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="8810413591309742901">डिफल्ट साइट भ्यू</translation>
 <translation id="8820817407110198400">बुकमार्कहरू</translation>
+<translation id="8825562130641217944">तपाईंका बुकमार्क, पासवर्ड र अन्य कुराहरू प्राप्त गर्नुहोस्।</translation>
 <translation id="882557203579758546">पेजमा खोज्नुहोस्…</translation>
 <translation id="8840513115188359703">तपाईं आफ्नो Google खाताबाट साइन आउट हुनु हुने छैन।</translation>
 <translation id="8843129975935593190">तपाईंको सङ्गठनले तपाईंले सिंक गर्न पाउने कुराहरूका सम्बन्धमा सीमा तोकेको छ।</translation>

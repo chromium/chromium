@@ -518,6 +518,7 @@
 <translation id="4272631900155121838">Каб сканіраваць QR-код, уключыце камеру ў наладах</translation>
 <translation id="4277990410970811858">Бяспечны прагляд</translation>
 <translation id="4281844954008187215">Умовы выкарыстання</translation>
+<translation id="4286718549648564014">Адрас перамешчаны ва ўліковы запіс <ph name="USER_EMAIL" /></translation>
 <translation id="4293080268407233932">Пошук</translation>
 <translation id="4302248187517737842">Адсутнічае імя карыстальніка ••••••••</translation>
 <translation id="4304713468139749426">Менеджар пароляў</translation>
@@ -1175,6 +1176,7 @@
 <translation id="8264966119170358612">Некаторыя захаваныя вамі паролі былі раскрыты ў выніку ўцечкі даных у староннім сэрвісе. <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
 <translation id="826614135184049678">У выніку скіду налад iPad адбыўся выхад з уліковага запісу <ph name="USER_NAME" />. Каб увайсці зноў, націсніце "Працягнуць" ніжэй.</translation>
 <translation id="8271720166617117963">Прыняць і ўвайсці</translation>
+<translation id="8273982424131314219">Інфармацыя будзе запоўнена на старонцы <ph name="URL" /></translation>
 <translation id="8278938988428169257">Увядзіце слова або фразу</translation>
 <translation id="8281781826761538115">Стандартная мова: <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Прапусціць</translation>
@@ -1221,6 +1223,7 @@
 <translation id="8548878600947630424">Знайсці на старонцы...</translation>
 <translation id="8556590991644167667">{count,plural, =1{Вы адхілілі {count} папярэджанне}one{Вы адхілілі {count} папярэджанне}few{Вы адхілілі {count} папярэджанні}many{Вы адхілілі {count} папярэджанняў}other{Вы адхілілі {count} папярэджання}}</translation>
 <translation id="8558480467877843976">Цяпер вы можаце выкарыстоўваць Chrome кожны раз, калі вам трэба выйсці ў інтэрнэт або адкрыць спасылку ў паведамленнях, дакументах або іншых праграмах.</translation>
+<translation id="8580411965900177618">Не, дзякуй</translation>
 <translation id="8588404856427128947">Выключаны</translation>
 <translation id="8591976964826315682">Блакіраваць староннія файлы cookie у рэжыме інкогніта</translation>
 <translation id="8605219856220328675">Закрыць укладку.</translation>
@@ -1257,6 +1260,7 @@
 <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
 <translation id="8810413591309742901">Стандартны рэжым паказу сайтаў</translation>
 <translation id="8820817407110198400">Закладкі</translation>
+<translation id="8825562130641217944">Выкарыстоўвайце свае закладкі, паролі і не толькі.</translation>
 <translation id="882557203579758546">Пошук на старонцы…</translation>
 <translation id="8840513115188359703">З Уліковага запісу Google вы не выйдзеце.</translation>
 <translation id="8843129975935593190">Тыпы даных для сінхранізацыі вызначаюцца вашай арганізацыяй.</translation>

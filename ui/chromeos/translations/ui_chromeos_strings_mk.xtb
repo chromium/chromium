@@ -131,6 +131,7 @@
 <translation id="2084108471225856927">Поставки за уредот</translation>
 <translation id="2084809735218147718">Човек што пее „Благодарам“</translation>
 <translation id="2088690981887365033">VPN-мрежа</translation>
+<translation id="209653272837065803">Нема доволно простор за складирање за да продолжи синхронизацијата на датотеките</translation>
 <translation id="2111134541987263231">Вклучете <ph name="BEGIN_BOLD" />Дозволи во режим „Инкогнито“<ph name="END_BOLD" /></translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> ставки ќе се избришат и нема да може да ги вратите.</translation>
 <translation id="2122305276694332719">Автоматското поврзување на скриена мрежа им овозможува на другите да го видат вашиот уред и некои други мрежни поставки и не се препорачува.</translation>
@@ -147,9 +148,11 @@
 <translation id="2198315389084035571">поедноставен кинески</translation>
 <translation id="22085916256174561">корејски</translation>
 <translation id="2208919847696382164">Инсталирај со Linux</translation>
+<translation id="2215692307449050019">Батеријата е речиси празна. Синхронизацијата на датотеките ќе продолжи кога ќе се поврзете на струја.</translation>
 <translation id="2225536596944493418">Дали сигурно сакате да избришете <ph name="NUMBER_OF_ITEMS" /> ставки?</translation>
 <translation id="2230062665678605299">Не може да се создаде папка „<ph name="FOLDER_NAME" />“. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="2239068707900391003">Човек со шолја кафе</translation>
+<translation id="2247561763838186830">Одјавени сте</translation>
 <translation id="2251368349685848079">Врати од корпа</translation>
 <translation id="2278133026967558505">Пристап до датотеки од сите веб-сајтови и URL-адреси</translation>
 <translation id="2282155092769082568">Линк за автоматско конфигурирање:</translation>
@@ -164,6 +167,7 @@
 <translation id="2325650632570794183">Овој тип датотека не е поддржан. Посетете ја веб-продавницата на Chrome за да најдете апликација што може да го отвори овој тип датотека.</translation>
 <translation id="2326539130272988168">бугарски</translation>
 <translation id="2337715497728194187">Споделете со Bruschetta</translation>
+<translation id="233822363739146957">Нема доволно простор за складирање за синхронизација на сите ваши датотеки</translation>
 <translation id="23721837607121582">Преземи го профилот на мобилниот уред, мрежа <ph name="NETWORK_INDEX" /> од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Префрли на режим за преглед во список</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> папки се споделени со Linux</translation>
@@ -217,6 +221,7 @@
 <translation id="2782104745158847185">Грешка при инсталирањето на апликацијата за Linux</translation>
 <translation id="2802583107108007218">Дознајте повеќе за ограничувањава</translation>
 <translation id="2803375539583399270">Внесете PIN.</translation>
+<translation id="2819519502129272135">Синхронизацијата на датотеките е исклучена</translation>
 <translation id="2820957248982571256">Се скенира…</translation>
 <translation id="2830077785865012357">кинески џујин</translation>
 <translation id="2843806747483486897">Промени зададени вредности…</translation>
@@ -420,6 +425,7 @@
 <translation id="4432921877815220091">Мрежа <ph name="NETWORK_INDEX" /> од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Активирај по поставувањето на уредот, Управувано од вашиот администратор</translation>
 <translation id="4439427728133035643">Мрежа <ph name="NETWORK_INDEX" /> од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, јачина на сигналот: <ph name="SIGNAL_STRENGTH" /> %, поврзи</translation>
 <translation id="4442424173763614572">Барањето DNS не успеа</translation>
+<translation id="4445896958353114391">Се синхронизираат датотеки</translation>
 <translation id="4462159676511157176">Сервери со приспособено име</translation>
 <translation id="4465725236958772856">Мрежа <ph name="NETWORK_INDEX" /> од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, управувана од администраторот, поврзи</translation>
 <translation id="4470564870223067757">хангул, 2-делна</translation>
@@ -441,6 +447,7 @@
 <translation id="4599600860674643278">Филтерот е ресетиран.</translation>
 <translation id="4603392156942865207">Се копира <ph name="FILE_NAME" /> во <ph name="FOLDER_NAME" /></translation>
 <translation id="4631887759990505102">Уметник</translation>
+<translation id="4635373743001040938">Просторот за складирање беше речиси полн. Синхронизацијата на датотеките се исклучи.</translation>
 <translation id="4642769377300286600">Се инсталира профилот на мобилниот уред, мрежа <ph name="NETWORK_INDEX" /> од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="4646813851450205600">чешки со тастатура Qwerty</translation>
 <translation id="4656777537938206294">Направете датотеките да се достапни офлајн</translation>
@@ -494,6 +501,7 @@
 <translation id="4961158930123534723">1 папка е споделена со Parallels Desktop</translation>
 <translation id="496656650103537022"><ph name="FILE_NAME" /> вратени</translation>
 <translation id="4969785127455456148">Албум</translation>
+<translation id="4972330214479971536">Не можеше да се заврши поставувањето синхронизација на датотеки</translation>
 <translation id="4973523518332075481">Користете име што содржи <ph name="MAX_LENGTH" /> знаци или помалку</translation>
 <translation id="4973970068702235170">Пакувањето не успеа, неочекувана грешка: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">јапонски</translation>
@@ -517,6 +525,7 @@
 <translation id="5102922915594634436">Управувајте со синхронизирани папки</translation>
 <translation id="5109254780565519649">Грешка. Некои ставки можеби не се вратени.</translation>
 <translation id="5110329002213341433">англиски (Канада)</translation>
+<translation id="5119780910075847424">Синхронизацијата е паузирана</translation>
 <translation id="5123433949759960244">Баскет</translation>
 <translation id="5129662217315786329">полски</translation>
 <translation id="5144820558584035333">хангул, 3-делна (390)</translation>
@@ -799,6 +808,7 @@
 <translation id="7256405249507348194">Непрепознаена грешка: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Достапни услуги</translation>
 <translation id="7291818353625820805">Дали сакате да се повторуваат копчињата? Исклучете ги ознаките за акцент во поставките за тастатурата</translation>
+<translation id="729236380049459563">Синхронизацијата на датотеките е вклучена</translation>
 <translation id="7292816689782057017">Правило на администраторот го ограничува зачувувањето на одредени локации.</translation>
 <translation id="7294063083760278948">транслитерација на телугу</translation>
 <translation id="7295662345261934369">Сподели со другите</translation>
@@ -806,6 +816,7 @@
 <translation id="7309413087278791451">германски (Белгија)</translation>
 <translation id="7339898014177206373">Нов прозорец</translation>
 <translation id="7343393116438664539">виетнамски телекс</translation>
+<translation id="7347346221088620549">Шифрирана датотека</translation>
 <translation id="7357762654218998920">Типов датотека не е поддржан. <ph name="BEGIN_LINK_HELP" />Дознајте повеќе<ph name="END_LINK_HELP" /> за отворање датотеки во Chrome OS.</translation>
 <translation id="7359359531237882347">Се копираат <ph name="NUMBER_OF_ITEMS" /> ставки…</translation>
 <translation id="7375951387215729722">Списокот со датотеки е подреден според <ph name="COLUMN_NAME" /> по опаѓачки редослед.</translation>
@@ -911,6 +922,7 @@
 <translation id="8087576439476816834">Преземање, <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">Споделено со мене</translation>
 <translation id="8116072619078571545">Вода со мраз</translation>
+<translation id="8124093710070495550">Проблем со синхронизација</translation>
 <translation id="8128733386027980860">англиски (САД) со тастатура Dvorak</translation>
 <translation id="8137331602592933310">„<ph name="FILENAME" />“ е споделен со вас. Не може да го избришете затоа што не го поседувате.</translation>
 <translation id="8138705869659070104">Активирајте по поставувањето</translation>
@@ -992,6 +1004,7 @@
 <translation id="8609695766746872526">исландски</translation>
 <translation id="863903787380594467">Погрешен PIN. Имате уште <ph name="RETRIES" /> обиди.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - Порта</translation>
+<translation id="8656407365183407932">Мораше да се отстранат вашите офлајн датотеки</translation>
 <translation id="8656768832129462377">Не проверувај</translation>
 <translation id="8688591111840995413">Погрешна лозинка</translation>
 <translation id="8698464937041809063">Google-цртеж</translation>
@@ -1027,6 +1040,7 @@
 <translation id="8997962250644902079">кинески (традиционален) пинјин</translation>
 <translation id="8998871447376656508">Нема доволно слободен простор на вашиот Google Drive за да се заврши прикачувањево.</translation>
 <translation id="9003940392834790328">Мрежа <ph name="NETWORK_INDEX" /> од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, јачина на сигналот: <ph name="SIGNAL_STRENGTH" /> %, управувана од администраторот, детали</translation>
+<translation id="9007990314804111233">Најавете се на вашата сметка на Microsoft</translation>
 <translation id="9017798300203431059">фонетски руски</translation>
 <translation id="9034924485347205037">Датотеки на Linux</translation>
 <translation id="9035012421917565900">Ставките не може да се преместат назад во „<ph name="DESTINATION_NAME" />“, па нема да може да го вратите дејствово.</translation>

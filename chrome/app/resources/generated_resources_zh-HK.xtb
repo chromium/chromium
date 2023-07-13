@@ -815,6 +815,7 @@
 <translation id="1647408325348388858">要在這個網絡應用程式中開啟並編輯「<ph name="FILE_NAME" />」嗎？</translation>
 <translation id="1648528859488547844">使用 Wi‑Fi 或流動網絡確定位置</translation>
 <translation id="164936512206786300">取消配對藍牙裝置</translation>
+<translation id="1650801028905250434">「我的雲端硬碟」中的檔案會自動同步至 Chromebook，這樣你就能在沒有網際網路連線的情況下存取檔案。你隨時可以依序前往「設定」&gt;「檔案」，變更這項設定。</translation>
 <translation id="1651008383952180276">您必須輸入兩次相同的密碼短語</translation>
 <translation id="1651609627703324721">此分頁正在向眼罩展示 VR 內容</translation>
 <translation id="1652326691684645429">啟用「咫尺共享」功能</translation>
@@ -4242,6 +4243,7 @@
 <translation id="4515872537870654449">請聯絡 Dell 以取得支援服務。風扇故障時，插座會停止運作。</translation>
 <translation id="4518840066030486079">Shift 鍵模式樣式</translation>
 <translation id="4519331665958994620">網站可要求使用攝錄機</translation>
+<translation id="4519605771716872386">檔案同步處理功能已開啟</translation>
 <translation id="4519935350946509010">連線錯誤。</translation>
 <translation id="4520385623207007473">使用中的 Cookie</translation>
 <translation id="452039078290142656">來自 <ph name="VENDOR_NAME" /> 的未知裝置</translation>
@@ -7282,6 +7284,7 @@
 <translation id="7124712201233930202">不符合您機構的政策規定</translation>
 <translation id="7125029162161377569">透過「私隱沙箱」試用功能，網站可在使用較少資料的情況下，提供相同的瀏覽體驗。這代表您能享有更高私隱度，而且系統會使用較少跨網站追蹤功能。我們將會在更多試用功能準備好進行測試時，新增這些試用功能。</translation>
 <translation id="7125148293026877011">刪除 Crostini</translation>
+<translation id="7125932261198019860">確認印表機已連上 Chromebook 使用的 Wi-Fi 網路，或使用 USB 傳輸線。<ph name="LINK_BEGIN" />進一步瞭解相容性<ph name="LINK_END" /></translation>
 <translation id="7127980134843952133">下載記錄</translation>
 <translation id="7128151990937044829">封鎖通知時，在網址列上顯示圖示</translation>
 <translation id="7131040479572660648">讀取您在 <ph name="WEBSITE_1" />、<ph name="WEBSITE_2" /> 和 <ph name="WEBSITE_3" /> 上的資料</translation>
@@ -7475,6 +7478,7 @@
 <translation id="7307129035224081534">已暫停</translation>
 <translation id="7308643132139167865">網站語言</translation>
 <translation id="7310598146671372464">無法登入。伺服器不支援特定的 Kerberos 加密類型。請聯絡您的管理員。</translation>
+<translation id="7311005168897771689">在離線狀態下存取 Google 雲端硬碟檔案</translation>
 <translation id="7311244614769792472">找不到任何結果</translation>
 <translation id="7312210124139670355">管理員正在重設您的 eSIM 卡。這項操作可能需時數分鐘。</translation>
 <translation id="7317831949569936035">學校註冊程序</translation>

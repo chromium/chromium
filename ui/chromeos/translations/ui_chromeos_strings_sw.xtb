@@ -131,6 +131,7 @@
 <translation id="2084108471225856927">Mipangilio ya kifaa</translation>
 <translation id="2084809735218147718">Mtu anayesema asante kwa lugha ya ishara</translation>
 <translation id="2088690981887365033">Mtandao wa VPN</translation>
+<translation id="209653272837065803">Nafasi ya kuhifadhi haitoshi kuendelea kusawazisha faili</translation>
 <translation id="2111134541987263231">Washa <ph name="BEGIN_BOLD" />Ruhusu katika Hali fiche<ph name="END_BOLD" /></translation>
 <translation id="2114191879048183086">Vipengee <ph name="NUMBER_OF_ITEMS" /> vitafutwa na hutaweza kuvirejesha.</translation>
 <translation id="2122305276694332719">Hatua ya kuunganisha kiotomatiki kwenye mtandao uliofichwa huruhusu watu wengine kuona kifaa chako na baadhi ya mipangilio ya mtandao, na hali hii haipendekezwi.</translation>
@@ -147,9 +148,11 @@
 <translation id="2198315389084035571">Kichina Kilichorahisishwa</translation>
 <translation id="22085916256174561">Kikorea</translation>
 <translation id="2208919847696382164">Sakinisha ukitumia Linux</translation>
+<translation id="2215692307449050019">Chaji ya betri imepungua. Usawazishaji wa faili utaendelea utakapounganisha kwenye nishati.</translation>
 <translation id="2225536596944493418">Je, una uhakika ungependa kufuta vipengee <ph name="NUMBER_OF_ITEMS" />?</translation>
 <translation id="2230062665678605299">Haiwezi kuunda folda "<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
 <translation id="2239068707900391003">Mtu aliye na kahawa</translation>
+<translation id="2247561763838186830">Umeondolewa</translation>
 <translation id="2251368349685848079">Rejesha kutoka kwenye tupio</translation>
 <translation id="2278133026967558505">URL na tovuti zote zinaweza kufikia faili</translation>
 <translation id="2282155092769082568">URL ya kuweka mipangilio kiotomatiki:</translation>
@@ -164,6 +167,7 @@
 <translation id="2325650632570794183">Aina hii ya faili haihimiliwi. Tafadhali tembelea Duka la Wavuti la Chrome ili kupata programu ambayo inaweza kufungua aina hii ya faili.</translation>
 <translation id="2326539130272988168">Kibulgaria</translation>
 <translation id="2337715497728194187">Shiriki na Bruschetta</translation>
+<translation id="233822363739146957">Nafasi ya kuhifadhi haitoshi kusawazisha faili zako zote</translation>
 <translation id="23721837607121582">Pakua maelezo ya eSIM ya vifaa vya mkononi, Mtandao <ph name="NETWORK_INDEX" /> kati ya <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Tumia mwonekano wa orodha</translation>
 <translation id="2377590462528165447">Umeshiriki folda <ph name="NUMBER_OF_ITEMS" /> katika Linux</translation>
@@ -217,6 +221,7 @@
 <translation id="2782104745158847185">Hitilafu imetokea wakati wa kusakinisha programu ya Linux</translation>
 <translation id="2802583107108007218">Pata maelezo zaidi kuhusu vizuizi hivi</translation>
 <translation id="2803375539583399270">Weka PIN</translation>
+<translation id="2819519502129272135">Kipengele cha kusawazisha faili kimezimwa</translation>
 <translation id="2820957248982571256">Inatafuta...</translation>
 <translation id="2830077785865012357">Zhuyin ya Kichina</translation>
 <translation id="2843806747483486897">Badilisha chaguomsingi...</translation>
@@ -441,6 +446,7 @@
 <translation id="4599600860674643278">Kichujio kimewekwa upya.</translation>
 <translation id="4603392156942865207">Inanakili <ph name="FILE_NAME" /> kwenye <ph name="FOLDER_NAME" /></translation>
 <translation id="4631887759990505102">Msanii</translation>
+<translation id="4635373743001040938">Kiwango cha nafasi ya kuhifadhi kilikuwa chini sana. Kipengele cha kusawazisha faili kimezimwa.</translation>
 <translation id="4642769377300286600">Inasakinisha maelezo ya eSIM ya vifaa vya mkononi, Mtandao wa <ph name="NETWORK_INDEX" /> kati ya <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="4646813851450205600">Kicheki kwenye kibodi ya Qwerty</translation>
 <translation id="4656777537938206294">Fanya faili zipatikane nje ya mtandao</translation>
@@ -494,6 +500,7 @@
 <translation id="4961158930123534723">Umeshiriki folda moja na Parallels Desktop</translation>
 <translation id="496656650103537022"><ph name="FILE_NAME" /> imerejeshwa</translation>
 <translation id="4969785127455456148">Albamu</translation>
+<translation id="4972330214479971536">Imeshindwa kukamilisha mchakato wa kuweka mipangilio ya kusawazisha faili</translation>
 <translation id="4973523518332075481">Tumia jina lenye herufi <ph name="MAX_LENGTH" /> au chache</translation>
 <translation id="4973970068702235170">Imeshindwa kubana, hitilafu isiyotarajiwa imetokea: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">Kijapani</translation>
@@ -807,6 +814,7 @@
 <translation id="7309413087278791451">Kijerumani (Ubelgiji)</translation>
 <translation id="7339898014177206373">Dirisha jipya</translation>
 <translation id="7343393116438664539">Teleksi ya Kivietinamu</translation>
+<translation id="7347346221088620549">Faili iliyosimbwa kwa njia fiche</translation>
 <translation id="7357762654218998920">Aina hii ya faili haitumiki. <ph name="BEGIN_LINK_HELP" />Pata Maelezo Zaidi<ph name="END_LINK_HELP" /> kuhusu kufungua faili kwenye Mfumo wa Uendeshaji wa Chrome.</translation>
 <translation id="7359359531237882347">Inanakili vipengee <ph name="NUMBER_OF_ITEMS" />...</translation>
 <translation id="7375951387215729722">Orodha ya faili imepangwa kulingana na <ph name="COLUMN_NAME" /> katika mpangilio wa kushuka.</translation>
@@ -993,6 +1001,7 @@
 <translation id="8609695766746872526">Kiaislandi</translation>
 <translation id="863903787380594467">PIN si sahihi. Umebakisha majaribio <ph name="RETRIES" />.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - Mlango</translation>
+<translation id="8656407365183407932">Faili zako zilizo nje ya mtandao zilipaswa kuondolewa</translation>
 <translation id="8656768832129462377">Usikague</translation>
 <translation id="8688591111840995413">Nenosiri lisilo sahihi</translation>
 <translation id="8698464937041809063">Mchoro wa Google</translation>
@@ -1028,6 +1037,7 @@
 <translation id="8997962250644902079">Pinyin ya Kichina (cha Jadi)</translation>
 <translation id="8998871447376656508">Hakuna nafasi ya kutosha katika Hifadhi yako ya Google ili ukamilishe mchakato wa kupakia.</translation>
 <translation id="9003940392834790328">Mtandao wa <ph name="NETWORK_INDEX" /> kati ya <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Uthabiti wa Mtandao <ph name="SIGNAL_STRENGTH" />%, Unadhibitiwa na Msimamizi wako, Maelezo</translation>
+<translation id="9007990314804111233">Ingia katika akaunti yako ya Microsoft</translation>
 <translation id="9017798300203431059">Fonetiki ya Kirusi</translation>
 <translation id="9034924485347205037">Faili za Linux</translation>
 <translation id="9035012421917565900">Hutaweza kuvirudisha vipengee kwenye '<ph name="DESTINATION_NAME" />', hivyo hutaweza kutendua hatua hii.</translation>

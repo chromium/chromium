@@ -818,6 +818,7 @@ Dovoljenja, ki ste jih že odobrili aplikacijam, morda veljajo za ta račun. Dov
 <translation id="1647408325348388858">Želite odpreti in urediti datoteko <ph name="FILE_NAME" /> v tej spletni aplikaciji?</translation>
 <translation id="1648528859488547844">Uporaba Wi-Fi-ja, Bluetootha in mobilnih omrežij za določanje lokacije</translation>
 <translation id="164936512206786300">Preklic seznanitve z napravo Bluetooth</translation>
+<translation id="1650801028905250434">Datoteke v Mojem disku se bodo samodejno sinhronizirale s Chromebookom, tako da boste do njih lahko dostopali brez internetne povezave. To lahko kadar koli spremenite v »Nastavitve &gt; Datoteke«.</translation>
 <translation id="1651008383952180276">Dvakrat morate vnesti isto geslo</translation>
 <translation id="1651609627703324721">Ta zavihek predvaja vsebino VR v slušalkah z mikrofonom</translation>
 <translation id="1652326691684645429">Omogočanje deljenja v bližini</translation>
@@ -4245,6 +4246,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="4515872537870654449">Če potrebujete servisne storitve, se obrnite na družbo Dell. Če ventilator ne deluje, se bo priklopna postaja izklopila.</translation>
 <translation id="4518840066030486079">Slog načina tipke Shift</translation>
 <translation id="4519331665958994620">Spletna mesta lahko zahtevajo uporabo kamere.</translation>
+<translation id="4519605771716872386">Sinhronizacija datotek je vklopljena</translation>
 <translation id="4519935350946509010">Napaka pri povezavi.</translation>
 <translation id="4520385623207007473">Piškotki v uporabi</translation>
 <translation id="452039078290142656">neznane naprave prodajalca <ph name="VENDOR_NAME" /></translation>
@@ -7295,6 +7297,7 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="7124712201233930202">Ni skladno s pravilniki vaše organizacije</translation>
 <translation id="7125029162161377569">V okviru preizkusov Zasebnega peskovnika lahko spletna mesta zagotovijo enako izkušnjo brskanja, pri tem pa uporabljajo manj vaših podatkov. Tako vam zagotavljajo več zasebnosti in zmanjšajo sledenje na več spletnih mestih. Nove preizkuse bomo dodajali, ko bodo na voljo za uporabo.</translation>
 <translation id="7125148293026877011">Izbris Crostinija</translation>
+<translation id="7125932261198019860">Poskrbite, da je tiskalnik povezan v isto omrežje Wi-Fi kot Chromebook, ali uporabite kabel USB. <ph name="LINK_BEGIN" />Preberite več o združljivosti<ph name="LINK_END" />.</translation>
 <translation id="7127980134843952133">Zgodovina prenosov</translation>
 <translation id="7128151990937044829">Prikaži indikator v naslovni vrstici, ko so obvestila blokirana</translation>
 <translation id="7131040479572660648">Branje vaših podatkov na spletnih mestih <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> in <ph name="WEBSITE_3" /></translation>
@@ -7488,6 +7491,7 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="7307129035224081534">Zaustavljeno</translation>
 <translation id="7308643132139167865">Jeziki spletnih mest</translation>
 <translation id="7310598146671372464">Prijava ni uspela. Strežnik ne podpira navedenih vrst šifriranja Kerberos. Obrnite se na skrbnika.</translation>
+<translation id="7311005168897771689">Dostop do datotek v Googlu Drive, ko nimate povezave</translation>
 <translation id="7311244614769792472">Ni rezultatov</translation>
 <translation id="7312210124139670355">Skrbnik ponastavlja vašo kartico eSIM. To lahko traja nekaj minut.</translation>
 <translation id="7317831949569936035">Vpis v šolo</translation>

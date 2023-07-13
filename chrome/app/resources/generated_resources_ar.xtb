@@ -140,6 +140,7 @@
 <translation id="1110965959145884739">يمكنك اختيار اللغات المطلوب تثبيتها على هذا الجهاز. وتتم مشاركة ملفات اللغات مع المستخدمين لتوفير مساحة القرص. <ph name="BEGIN_LINK_LEARN_MORE" />مزيد من المعلومات<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1112420131909513020">هناك علامة تبويب خلفية تستخدم البلوتوث</translation>
 <translation id="1112998165730922436">البث متوقِّف مؤقتًا</translation>
+<translation id="1113807501859230251">‏هل تريد إزالة الجهاز الافتراضي Bruschetta من <ph name="DEVICE_TYPE" />؟ سيؤدي هذا الإجراء إلى حذف جميع التطبيقات والبيانات في الجهاز الافتراضي.</translation>
 <translation id="1114102982691049955"><ph name="PRINTER_MANUFACTURER" /> <ph name="PRINTER_MODEL" /> (USB)</translation>
 <translation id="1114202307280046356">معيّن</translation>
 <translation id="1114427165525619358">‏كلمات المرور المخزّنة على هذا الجهاز وفي حسابك على Google</translation>
@@ -1558,6 +1559,7 @@
 <translation id="2263679799334060788">‏تساعدنا ملاحظاتك في تحسين Google Cast ونقدّر لك ذلك. للحصول على مساعدة بشأن تحديد مشاكل الإرسال وحلّها، يُرجى الرجوع إلى <ph name="BEGIN_LINK" />مركز المساعدة<ph name="END_LINK" />.</translation>
 <translation id="2266957463645820432">‏بروتوكول الطباعة على الإنترنت (IPP) عبر USB (IPPUSB)</translation>
 <translation id="2268130516524549846">تم إيقاف البلوتوث</translation>
+<translation id="2268182915828370037">هل تريد إيقاف مزامنة الملفات؟</translation>
 <translation id="2269895253281481171">سيتم إرسال إشعار إليك في حال تعرُّض كلمة المرور للاختراق في أي وقت.</translation>
 <translation id="2270450558902169558">تبادل البيانات مع أي جهاز في النطاق <ph name="DOMAIN" /></translation>
 <translation id="2270612886833477697"><ph name="BEGIN_PARAGRAPH1" />ستؤدي عملية التثبيت إلى <ph name="BEGIN_BOLD" />محو بيانات محرّك الأقراص الثابتة بالكامل<ph name="END_BOLD" />. ولهذا السبب، احرص على الاحتفاظ بنسخة احتياطية من بياناتك.<ph name="END_PARAGRAPH1" />
@@ -2110,6 +2112,7 @@
 <translation id="2714393097308983682">‏متجر Google Play</translation>
 <translation id="2715640894224696481">طلب الحصول على مفتاح الأمان</translation>
 <translation id="2715751256863167692">‏تؤدي هذه الترقية إلى إعادة ضبط جهاز Chromebook وإزالة بيانات المستخدمين الحالية.</translation>
+<translation id="2715934493766003251">يتعذّر إخلاء مساحة التخزين أثناء تفعيل مزامنة الملفات.</translation>
 <translation id="2716986496990888774">يتولى إدارة هذا الإعداد أحد الوالدين.</translation>
 <translation id="271749239614426244">تجاهل حركة المؤشر الطفيفة</translation>
 <translation id="2718395828230677721">الإضاءة الليلية</translation>
@@ -2257,6 +2260,7 @@
 <translation id="2817435998497102771">ضبط الخلفية والأسلوب</translation>
 <translation id="2818476747334107629">تفاصيل الطابعة</translation>
 <translation id="2819167288942847344">يمكنك استخدام أحجام النوافذ المُعَدّة مسبقًا للهواتف والأجهزة اللوحية لمنع حدوث خلل في أداء التطبيق.</translation>
+<translation id="2819519502129272135">تم إيقاف مزامنة الملفات</translation>
 <translation id="2820957248982571256">جارٍ الفحص...</translation>
 <translation id="2822634587701817431">تقليص/توسيع</translation>
 <translation id="2822910719211888134">‏حدث خطأ أثناء الاحتفاظ بنسخة احتياطية من Linux</translation>
@@ -2725,6 +2729,7 @@
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - خطأ في الشبكة</translation>
 <translation id="3248902735035392926">الحفاظ على الأمان من أهم أولوياتنا. يُرجى <ph name="BEGIN_LINK" />التحقُّق من الإضافات الآن<ph name="END_LINK" />.</translation>
 <translation id="3249323165366527554">يمكنك الاشتراك وتسجيل الدخول بشكل أسرع عند حفظ كلمة مرورك تلقائيًا في "<ph name="GOOGLE_PASSWORD_MANAGER" />" للحساب <ph name="EMAIL" />.</translation>
+<translation id="3251119461199395237">مزامنة الملفات</translation>
 <translation id="3251714896659475029">‏إتاحة وصول <ph name="SUPERVISED_USER_NAME" /> إلى "مساعد Google" باستخدام "Ok Google"</translation>
 <translation id="3251759466064201842">&lt;ليس جزءًا من الشهادة&gt;</translation>
 <translation id="325238099842880997">يمكنك ضبط القواعد الرقمية الأساسية لمساعدة الأطفال على اللعب والاستكشاف وأداء الواجبات المدرسية في المنزل.</translation>
@@ -3102,6 +3107,7 @@
 <translation id="3567284462585300767">لاستلام الملفات وقبولها من الأشخاص من حولك، يجب إظهار جهازك.</translation>
 <translation id="356738834800832239">تم حفظ كلمة المرور</translation>
 <translation id="3569382839528428029">هل تريد من <ph name="APP_NAME" /> مشاركة شاشتك؟</translation>
+<translation id="3569614820047645079">‏تتم مزامنة ملفاتك في مجلد "ملفاتي" مع Chromebook تلقائيًا لتتمكّن من الوصول إليها بدون اتصال بالإنترنت.</translation>
 <translation id="3569682580018832495">بإمكان <ph name="ORIGIN" /> عرض الملفات والمجلدات التالية:</translation>
 <translation id="3571734092741541777">إعداد</translation>
 <translation id="3575121482199441727">سماح لهذا الموقع الإلكتروني</translation>
@@ -3535,6 +3541,7 @@
 <translation id="3916233823027929090">اكتملت عمليات فحص الأمان.</translation>
 <translation id="3916445069167113093">هذا النوع من الملفات قد يلحق الضرر بالكمبيوتر. هل تريد الاحتفاظ بـ <ph name="FILE_NAME" /> على أيّ حال؟</translation>
 <translation id="3917184139185490151">‏يحتوي الكمبيوتر على وحدة أمان يتم استخدامها لتفعيل العديد من ميزات الأمان المُهمة في نظام التشغيل Chrome. يمكنك الانتقال إلى مركز مساعدة Chromebook للتعرّف على مزيد من المعلومات: https://support.google.com/chromebook/?p=sm.</translation>
+<translation id="3917644013202553949">لا تتوفّر مساحة تخزين كافية لمزامنة ملفاتك. جرِّب إخلاء بعض المساحة.</translation>
 <translation id="3918972485393593704">‏إبلاغ Google بالتفاصيل</translation>
 <translation id="3919145445993746351">للحصول على الإضافات على جميع أجهزة الكمبيوتر، يُرجى تفعيل المزامنة</translation>
 <translation id="3919229493046408863">إيقاف الإشعارات عندما تكون الأجهزة قريبة</translation>
@@ -3843,6 +3850,7 @@
 <translation id="4184803915913850597">‏جهاز HID (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
 <translation id="4186749321808907788"><ph name="QUERY_NAME" /> - بحث <ph name="DEFAULT_SEARCH_ENGINE_NAME" /></translation>
 <translation id="4187424053537113647">جارٍ إعداد <ph name="APP_NAME" />...</translation>
+<translation id="4190492351494485814">‏لإجراء الإعداد الأوّلي، عليك الاتصال بالإنترنت كي تتم مزامنة الملفات مع جهاز Chromebook.</translation>
 <translation id="4190828427319282529">تمييز الكائن باستخدام تركيز لوحة المفاتيح</translation>
 <translation id="4193251682249731404">مرجع تصديق موثوق به</translation>
 <translation id="4193575319002689239">عرض البطاقات</translation>
@@ -4035,6 +4043,7 @@
 <translation id="4361745360460842907">فتح كعلامة تبويب</translation>
 <translation id="4362675504017386626"><ph name="ACCOUNT_EMAIL" /> هو الحساب التلقائي على جهاز <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4363215264289239958">‏تطبيقات Bruschetta</translation>
+<translation id="4363262124589131906">‏ستتوقف تلقائيًا مزامنة الملفات الجديدة في "ملفاتي" مع جهاز Chromebook هذا.</translation>
 <translation id="4363771538994847871">لم يتم العثور على وجهات الإرسال. هل تريد المساعدة؟</translation>
 <translation id="4364327530094270451">شمام</translation>
 <translation id="4364567974334641491">يشارك <ph name="APP_NAME" /> نافذة.</translation>
@@ -4459,6 +4468,7 @@
 <translation id="4715631922189108923">تعديل اسم المستخدم</translation>
 <translation id="47158868804223727">انقر على اسم المجموعة لتوسيعها أو تصغيرها.</translation>
 <translation id="4716483597559580346">‏Powerwash لمزيد من الأمان</translation>
+<translation id="4716715661140829720">لا تتوفّر مساحة تخزين كافية</translation>
 <translation id="471759229191973607">تغيير المظهر</translation>
 <translation id="4718046540206070045">متصفِّح ويب وميزات أخرى</translation>
 <translation id="4722735765955348426">كلمة مرور <ph name="USERNAME" /></translation>
@@ -4511,6 +4521,7 @@
 <translation id="4763757134413542119">‏‫<ph name="USER_EMAIL" /> ليس حسابًا صالحًا على Google for Education. يُرجى التواصل مع المشرف. إذا كنت مشرفًا، يمكنك ضبط إعدادات مؤسستك بالانتقال إلى g.co/workspace/edusignup.</translation>
 <translation id="4765524037138975789">{MONTHS,plural, =1{سيتم حفظ بيانات هذا الجهاز لمدة شهر واحد ويمكنك توصيله بدون استخدام رمز في المرة القادمة. تم ضبط هذا الإعداد من قِبل المشرف.}zero{سيتم حفظ بيانات هذا الجهاز لمدة {MONTHS} شهر ويمكنك توصيله بدون استخدام رمز في المرة القادمة. تم ضبط هذا الإعداد من قِبل المشرف.}two{سيتم حفظ بيانات هذا الجهاز لمدة شهرَين ({MONTHS}) ويمكنك توصيله بدون استخدام رمز في المرة القادمة. تم ضبط هذا الإعداد من قِبل المشرف.}few{سيتم حفظ بيانات هذا الجهاز لمدة {MONTHS} أشهر ويمكنك توصيله بدون استخدام رمز في المرة القادمة. تم ضبط هذا الإعداد من قِبل المشرف.}many{سيتم حفظ بيانات هذا الجهاز لمدة {MONTHS} شهرًا ويمكنك توصيله بدون استخدام رمز في المرة القادمة. تم ضبط هذا الإعداد من قِبل المشرف.}other{سيتم حفظ بيانات هذا الجهاز لمدة {MONTHS} شهر ويمكنك توصيله بدون استخدام رمز في المرة القادمة. تم ضبط هذا الإعداد من قِبل المشرف.}}</translation>
 <translation id="4765582662863429759">‏للسماح لتطبيق "رسائل Android" بترحيل الرسائل النصية من هاتفك إلى جهاز Chromebook</translation>
+<translation id="476563889641554689">‏اختَر منطقة للبحث فيها باستخدام "عدسة Google".</translation>
 <translation id="4766598565665644999">يمكن لجميع الإضافات قراءة محتوى الموقع الإلكتروني <ph name="HOST" /> وتغييره.</translation>
 <translation id="4767427586072640478">تعرَّف على مزيد من المعلومات حول الإضافات غير المفعّلة.</translation>
 <translation id="4768332406694066911">لديك شهادات تحدد هويتك من هذه المؤسسات</translation>
@@ -4569,6 +4580,7 @@
 <translation id="481574578487123132">الأجهزة المرتبطة</translation>
 <translation id="4816097470512964351">الشبكة <ph name="DEVICE" />، التفاصيل</translation>
 <translation id="4816336393325437908">{COUNT,plural, =1{تم حذف إشارة مرجعية واحدة.}zero{تم حذف {COUNT} إشارة مرجعية.}two{تم حذف إشارتَين مرجعيتَين ({COUNT}).}few{تم حذف {COUNT} إشارات مرجعية.}many{تم حذف {COUNT} إشارة مرجعية.}other{تم حذف {COUNT} إشارة مرجعية.}}</translation>
+<translation id="481689174647911539">‏قد يكون هذا الملف فيروسًا أو برنامجًا ضارًا.<ph name="LINE_BREAK" />يمكنك إرساله إلى "التصفح الآمن من Google" للتأكّد من أمانه. تستغرق عمليات الفحص عادةً بضع ثوانٍ.</translation>
 <translation id="4816900689218414104">إنشاء مفتاح مرور على هاتف أو جهاز لوحي</translation>
 <translation id="4819323978093861656">{0,plural, =0{‏سيتم إغلاق كل نوافذ Chrome الآن.}=1{‏سيتم إغلاق كل نوافذ Chrome بعد ثانية واحدة.}two{‏سيتم إغلاق كل نوافذ Chrome بعد ثانيتَين.}few{‏سيتم إغلاق كل نوافذ Chrome بعد # ثوانٍ.}many{‏سيتم إغلاق كل نوافذ Chrome بعد # ثانية.}other{‏سيتم إغلاق كل نوافذ Chrome بعد # ثانية.}}</translation>
 <translation id="4819607494758673676">‏إشعارات "مساعد Google"</translation>
@@ -4987,12 +4999,14 @@
 <translation id="5185386675596372454">تم إيقاف أحدث إصدار من "<ph name="EXTENSION_NAME" />" لأنه يتطلب المزيد من الأذونات.</translation>
 <translation id="5185500136143151980">لا يتوفّر اتصال بالإنترنت</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
+<translation id="5190577235024772869">مساحة التخزين المستخدَمة: <ph name="USED_SPACE" /></translation>
 <translation id="5190926251776387065">تفعيل المنفذ</translation>
 <translation id="5190959794678983197">ما مِن ميكروفون متّصل بالجهاز.</translation>
 <translation id="5191094172448199359">رقما التعريف الشخصيان اللذان أدخلتهما غير متطابقَين</translation>
 <translation id="5191251636205085390">يمكنك التعرّف على تقنيات جديدة تهدف إلى استبدال ملفات تعريف الارتباط التابعة لجهات خارجية وكيفية التحكُّم في تلك التقنيات.</translation>
 <translation id="519185197579575131">‏استخدام QT</translation>
 <translation id="5192062846343383368">‏فتح تطبيق Family Link للاطّلاع على إعدادات الإشراف</translation>
+<translation id="5193978546360574373">‏سيؤدي هذا الإجراء إلى إزالة إمكانية الوصول إلى Google Drive على جهاز Chromebook هذا، بما في ذلك إمكانية الوصول إلى أي ملفات تمت إتاحتها بلا اتصال بالإنترنت.</translation>
 <translation id="5193988420012215838">تم النسخ إلى الحافظة</translation>
 <translation id="5194256020863090856">لا يؤثّر هذا الإجراء سوى في نوافذ التصفُّح المتخفي.</translation>
 <translation id="5195074424945754995">‏لن يؤدي فرض فتح عناوين URL المتوافقة مع هذه القواعد إلى تبديل المتصفِّح، ويمكن فتح هذه العناوين في متصفِّح <ph name="BROWSER_NAME" /> أو متصفِّح <ph name="ALTERNATIVE_BROWSER_NAME" /> البديل.</translation>
@@ -5075,6 +5089,7 @@
 <translation id="526622169288322445">مزيد من الإجراءات للعنوان <ph name="ADDRESS_SUMMARY" /></translation>
 <translation id="5268373933383932086">اختيار المواضيع التي تهمّك لعرضها على صفحتك</translation>
 <translation id="5269977353971873915">تعذّرت الطباعة</translation>
+<translation id="5271578170655641944">‏هل تريد إزالة إمكانية الوصول إلى Google Drive؟</translation>
 <translation id="5273806377963980154">‏تعديل عنوان URL للموقع الإلكتروني</translation>
 <translation id="5273966423195882879">اللون حسب المظهر</translation>
 <translation id="5275084684151588738">قواميس المستخدم</translation>
@@ -6337,6 +6352,7 @@
 <translation id="6345878117466430440">وضع علامة "مقروءة"</translation>
 <translation id="6346952829206698721">لصق من الحافظة</translation>
 <translation id="6347010704471250799">عرض إشعار</translation>
+<translation id="6348805481186204412">مساحة التخزين بلا اتصال بالإنترنت</translation>
 <translation id="634887995541211148">‏يتيح لك هذا الخيار إمكانية تشغيل حاوية Bruschetta على جهازك.</translation>
 <translation id="6349101878882523185">تثبيت "<ph name="APP_NAME" />"</translation>
 <translation id="6354918092619878358">‏منحنى SECG ناقص المقطع secp256r1‏ (aka ANSI X9.62 prime256v1‏، NIST P-256)</translation>
@@ -6521,6 +6537,7 @@
 <translation id="6513247462497316522">‏سيستخدم Google Chrome بيانات الجوال إذا لم تكن متصلاً بشبكة أخرى.</translation>
 <translation id="6514010653036109809">الجهاز المتاح:</translation>
 <translation id="6514565641373682518">أوقفت هذه الصفحة مؤشر الماوس.</translation>
+<translation id="6517420300299531857">‏تتم مزامنة ملفاتك في مجلد "ملفاتي" مع Chromebook تلقائيًا لتتمكّن من الوصول إليها بدون اتصال بالإنترنت. سيتم استخدام مساحة تخزين تبلغ <ph name="REQUIRED_SPACE" /> تقريبًا. مساحة التخزين المتوفّرة حاليًا تبلغ <ph name="FREE_SPACE_AVAILABLE" />.</translation>
 <translation id="6517709704288360414">من المحتمَل أن يتوقف جهازك عن العمل بشكل صحيح، وقد تواجه مشاكل تتعلّق بالأمان والأداء. عند إيقاف التحديثات، قد يتأثّر أيضًا حقك في تقديم دعاوى قانونية في حال واجهتك أي مشاكل.</translation>
 <translation id="6518014396551869914">نس&amp;خ الصورة</translation>
 <translation id="6518133107902771759">تحقق</translation>
@@ -6788,6 +6805,7 @@
 <translation id="6736243959894955139">العنوان</translation>
 <translation id="6737393581255281855">هل تريد محو البيانات المُدرَجة؟</translation>
 <translation id="6737663862851963468">‏إزالة تذكرة Kerberos</translation>
+<translation id="6737931010859480781">هذا التطبيق مثبَّت مُسبقًا على جهازك.</translation>
 <translation id="6738180164164974883">السماح بتحديد ملفات تعريف الارتباط التابعة لجهات خارجية</translation>
 <translation id="6738430949033571771">جارٍ إثبات ملكية الحساب...</translation>
 <translation id="6739923123728562974">عرض اختصار على سطح المكتب</translation>
@@ -8484,6 +8502,7 @@
 <translation id="8138217203226449454">هل كنت تقصد تغيير مُوفِّر خدمة البحث؟</translation>
 <translation id="8138997515734480534">حالة <ph name="VM_NAME" /></translation>
 <translation id="8139447493436036221">‏ملفات Google Drive</translation>
+<translation id="8139643636835015859">سيؤدي هذا الإجراء إلى إزالة <ph name="OFFLINE_STORAGE_SIZE" /> من المساحة التي تستخدمها ملفاتك بلا اتصال بالإنترنت. وستظل بعض الملفات متاحة بلا اتصال بالإنترنت. <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
 <translation id="8140070492745508800"><ph name="FIRST_DEVICE" /> و<ph name="SECOND_DEVICE" /></translation>
 <translation id="8141418916163800697">يمكنك إعداد المزيد من الميزات في إعدادات "مركز التحكُّم بالهاتف".</translation>
 <translation id="8141584439523427891">جارٍ الفتح في متصفِّح بديل الآن</translation>
@@ -8576,6 +8595,7 @@
 <translation id="821119981794423735">‏لاستيراد كلمات المرور إلى "مدير كلمات المرور في Google" للحساب <ph name="USER_EMAIL" />، يُرجى اختيار ملف CSV.</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{جارٍ تنزيل عنصر واحد}zero{جارٍ تنزيل عدّة عناصر}two{جارِ تنزيل عنصرين}few{جارٍ تنزيل عدّة عناصر}many{جارٍ تنزيل عدّة عناصر}other{جارٍ تنزيل عدّة عناصر}}</translation>
 <translation id="8212601853154459483">هذا الملف الشخصي تتم إدارته من قِبَل <ph name="PROFILE_MANAGER" />، ويُطلب منك بموجب هذه الإدارة إنشاء ملف شخصي منفصل لحساب <ph name="USER_EMAIL_ADDRESS" />.</translation>
+<translation id="8212792694174629011">لم يتم العثور على أي ملفات شخصية. جرِّب مسح رمز الاستجابة السريعة ضوئيًا باستخدام كاميرا جهازك أو أدخِل رمز التفعيل المقدَّم من مشغِّل شبكة الجوّال.</translation>
 <translation id="8214489666383623925">فتح ملف...</translation>
 <translation id="8215129063232901118">يمكنك استخدام <ph name="DEVICE_TYPE" /> للاستفادة من إمكانيات هاتفك.</translation>
 <translation id="8217212468862726597">تمييز مؤشر الماوس</translation>
@@ -9119,6 +9139,7 @@
 <translation id="8680251145628383637">‏سجّل الدخول للحصول على الإشارات المرجعية، والسجل، وكلمات المرور، والإعدادات الأخرى على جميع أجهزتك. سيتم أيضًا تسجيل دخولك تلقائيًا إلى خدمات Google.</translation>
 <translation id="8681886425883659911">حظر الإعلانات على المواقع الإلكترونية التي تُعرف بعرضها إعلانات مضلِّلة أو متداخلة</translation>
 <translation id="8682730193597992579">تم توصيل <ph name="PRINTER_NAME" /> وهي جاهزة للاستخدام.</translation>
+<translation id="8686142379631285985">تم تسجيل الدخول بحساب <ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /></translation>
 <translation id="8687103160920393343">إلغاء تنزيل "<ph name="FILE_NAME" />"</translation>
 <translation id="8688672835843460752">متوفِّر</translation>
 <translation id="8689998525144040851">100</translation>

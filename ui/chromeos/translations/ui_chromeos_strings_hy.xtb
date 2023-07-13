@@ -131,6 +131,7 @@
 <translation id="2084108471225856927">Սարքի կարգավորումներ</translation>
 <translation id="2084809735218147718">Շնորհակալություն գրող մարդ</translation>
 <translation id="2088690981887365033">VPN ցանց</translation>
+<translation id="209653272837065803">Ֆայլերի համաժամացումը շարունակելու համար բավարար տարածք չկա</translation>
 <translation id="2111134541987263231">Միացրեք <ph name="BEGIN_BOLD" />Թույլ տալ ինկոգնիտո ռեժիմում<ph name="END_BOLD" /> կարգավորումը</translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> տարր կջնջվի, և դուք չեք կարողանա վերականգնել դրանք։</translation>
 <translation id="2122305276694332719">Թաքցված ցանցին ավտոմատ միացումը մյուս օգտատերերին թույլ է տալիս տեսնել ձեր սարքը և ցանցային որոշ կարգավորումներ: Այդ իսկ պատճառով Խորհուրդ չի տրվում միացնել այս գործառույթը:</translation>
@@ -147,9 +148,11 @@
 <translation id="2198315389084035571">Պարզեցված չինարեն</translation>
 <translation id="22085916256174561">կորեերեն</translation>
 <translation id="2208919847696382164">Տեղադրել Լինուքսի միջոցով</translation>
+<translation id="2215692307449050019">Մարտկոցի լիցքը քիչ է։ Ֆայլերի համաժամացումը կվերսկսվի, երբ դուք միանաք հոսանքի աղբյուրին։</translation>
 <translation id="2225536596944493418">Իսկապե՞ս ուզում եք ջնջել <ph name="NUMBER_OF_ITEMS" /> տարրերը։</translation>
 <translation id="2230062665678605299">Հնարավոր չէ ստեղծել «<ph name="FOLDER_NAME" />» պանակը: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="2239068707900391003">Սուրճով մարդ</translation>
+<translation id="2247561763838186830">Դուք դուրս եք եկել հաշվից</translation>
 <translation id="2251368349685848079">Վերականգնել աղբարկղից</translation>
 <translation id="2278133026967558505">Ֆայլի հասանելիություն բոլոր կայքերի և URL-ների միջոցով</translation>
 <translation id="2282155092769082568">Ինքնակազմաձևման URL-ը՝</translation>
@@ -164,6 +167,7 @@
 <translation id="2325650632570794183">Ֆայլի այս տեսակը չի աջակցվում: Այցելեք Chrome Web Store, որպեսզի գտնեք համապատասխան հավելված, որը կարող է բացել այս տեսակի ֆայլը:</translation>
 <translation id="2326539130272988168">բուլղարերեն</translation>
 <translation id="2337715497728194187">Կիսվել Bruschetta-ի հետ</translation>
+<translation id="233822363739146957">Ձեր բոլոր ֆայլերը համաժամացնելու համար բավարար տարածք չկա</translation>
 <translation id="23721837607121582">Ներբեռնել բջջային պրոֆիլը, ցանց <ph name="NETWORK_INDEX" />՝ <ph name="NETWORK_COUNT" />-ից, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Ցանկի տեսքով</translation>
 <translation id="2377590462528165447">Դուք <ph name="NUMBER_OF_ITEMS" /> պանակով կիսվեցին Լինուքսի հետ</translation>
@@ -217,6 +221,7 @@
 <translation id="2782104745158847185">Չհաջողվեց տեղադրել Լինուքսի հավելվածը</translation>
 <translation id="2802583107108007218">Իմանալ ավելին այս սահմանափակումների մասին</translation>
 <translation id="2803375539583399270">Մուտքագրեք PIN կոդը</translation>
+<translation id="2819519502129272135">Ֆայլերի համաժամացումն անջատված է</translation>
 <translation id="2820957248982571256">Որոնում…</translation>
 <translation id="2830077785865012357">չինարեն (ժույին)</translation>
 <translation id="2843806747483486897">Փոխել կանխադրվածը…</translation>
@@ -441,6 +446,7 @@
 <translation id="4599600860674643278">Զտիչը վերակայված է։</translation>
 <translation id="4603392156942865207">«<ph name="FILE_NAME" />» ֆայլը պատճենվում է «<ph name="FOLDER_NAME" />» պանակում</translation>
 <translation id="4631887759990505102">Կատարող</translation>
+<translation id="4635373743001040938">Տարածքը չափազանց քիչ էր։ Ֆայլերի համաժամացումն անջատվել էր։</translation>
 <translation id="4642769377300286600">Տեղադրվում է բջջային պրոֆիլը (ցանց <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />)</translation>
 <translation id="4646813851450205600">չեխերեն (QWERTY ստեղնաշար)</translation>
 <translation id="4656777537938206294">Ֆայլերը հասանելի դարձրեք առանց ինտերնետի օգտագործելու համար</translation>
@@ -494,6 +500,7 @@
 <translation id="4961158930123534723">Parallels Desktop-ին հասանելի է դարձել 1 պանակ</translation>
 <translation id="496656650103537022"><ph name="FILE_NAME" /> ֆայլը վերականգնվեց</translation>
 <translation id="4969785127455456148">Ալբոմ</translation>
+<translation id="4972330214479971536">Չհաջողվեց ավարտել ֆայլերի համաժամացման կարգավորումը</translation>
 <translation id="4973523518332075481">Նշեք անուն՝ առավելագույնը <ph name="MAX_LENGTH" /> նիշից</translation>
 <translation id="4973970068702235170">Չհաջողվեց արխիվացնել: Անսպասելի սխալ առաջացավ՝ <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">ճապոներեն</translation>
@@ -806,6 +813,7 @@
 <translation id="7309413087278791451">գերմաներեն (Բելգիա)</translation>
 <translation id="7339898014177206373">Նոր պատուհան</translation>
 <translation id="7343393116438664539">վիետնամերեն (տելեքս)</translation>
+<translation id="7347346221088620549">Գաղտնագրված ֆայլ</translation>
 <translation id="7357762654218998920">Ֆայլի այս տեսակը չի աջակցվում։ <ph name="BEGIN_LINK_HELP" />Իմացեք ավելին<ph name="END_LINK_HELP" />, թե ինչպես ֆայլերը բացել ChromeOS-ում։</translation>
 <translation id="7359359531237882347">Պատճենվում է <ph name="NUMBER_OF_ITEMS" /> տարր...</translation>
 <translation id="7375951387215729722">Ֆայլերի ցանկը տեսակավորված է ըստ «<ph name="COLUMN_NAME" />» ցուցանիշի՝ նվազման կարգով։</translation>
@@ -992,6 +1000,7 @@
 <translation id="8609695766746872526">իսլանդերեն</translation>
 <translation id="863903787380594467">PIN կոդը սխալ է։ Մնաց <ph name="RETRIES" /> փորձ։</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – Միացք</translation>
+<translation id="8656407365183407932">Ձեր օֆլայն ֆայլերը պետք է հեռացվեին</translation>
 <translation id="8656768832129462377">Չստուգել</translation>
 <translation id="8688591111840995413">Սխալ գաղտնաբառ</translation>
 <translation id="8698464937041809063">Google գծագիր</translation>
@@ -1027,6 +1036,7 @@
 <translation id="8997962250644902079">չինարեն փինյին (ավանդական)</translation>
 <translation id="8998871447376656508">Վերբեռնումն ավարտելու համար ձեր Google Drive-ում բավարար ազատ տարածք չկա։</translation>
 <translation id="9003940392834790328">Ցանց <ph name="NETWORK_INDEX" />՝ <ph name="NETWORK_COUNT" />-ից, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, ազդանշանի ուժգնությունը՝ <ph name="SIGNAL_STRENGTH" />%, կառավարվում է ձեր ադմինիստրատորի կողմից, մանրամասներ</translation>
+<translation id="9007990314804111233">Մուտք գործեք ձեր Microsoft հաշիվ</translation>
 <translation id="9017798300203431059">Ռուսական հնչյունային</translation>
 <translation id="9034924485347205037">Լինուքսի ֆայլեր</translation>
 <translation id="9035012421917565900">Տարրերը հնարավոր չէ տեղափոխել «<ph name="DESTINATION_NAME" />», այդ պատճառով այս գործողությունը չեք կարող հետարկել։</translation>

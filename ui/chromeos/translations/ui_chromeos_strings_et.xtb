@@ -425,6 +425,7 @@
 <translation id="4432921877815220091">Võrk <ph name="NETWORK_INDEX" />, võrke kokku <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, aktiveerige pärast seadme seadistust, võrku haldab teie administraator</translation>
 <translation id="4439427728133035643"><ph name="NETWORK_INDEX" />. võrk <ph name="NETWORK_COUNT" />-st, <ph name="NETWORK_NAME" />, signaalitugevus: <ph name="SIGNAL_STRENGTH" />%, ühenda</translation>
 <translation id="4442424173763614572">DNS-i otsing nurjus</translation>
+<translation id="4445896958353114391">Failide sünkroonimine</translation>
 <translation id="4462159676511157176">Kohandatud nimeserverid</translation>
 <translation id="4465725236958772856"><ph name="NETWORK_INDEX" />. võrk <ph name="NETWORK_COUNT" />-st, <ph name="NETWORK_NAME" />, võrku haldab teie administraator, ühenda</translation>
 <translation id="4470564870223067757">Hanguli 2. seade</translation>
@@ -524,6 +525,7 @@
 <translation id="5102922915594634436">Sünkroonitud kaustade haldamine</translation>
 <translation id="5109254780565519649">Ilmnes viga. Mõnda üksust ei pruugitud taastada.</translation>
 <translation id="5110329002213341433">inglise (Kanada)</translation>
+<translation id="5119780910075847424">Sünkroonimine on peatatud</translation>
 <translation id="5123433949759960244">Korvpall</translation>
 <translation id="5129662217315786329">poola keel</translation>
 <translation id="5144820558584035333">Hanguli 3. seade (390)</translation>
@@ -807,6 +809,7 @@
 <translation id="7256405249507348194">Tundmatu viga: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Saadaolevad teenused</translation>
 <translation id="7291818353625820805">Kas soovite, et klahvisisestust korrataks? Lülitage klaviatuuri seadetes rõhumärgid välja.</translation>
+<translation id="729236380049459563">Failide sünkroonimine on sisse lülitatud</translation>
 <translation id="7292816689782057017">Administraatori eeskirjad piiravad teatud asukohtadesse salvestamist.</translation>
 <translation id="7294063083760278948">telugu, transliteratsioon</translation>
 <translation id="7295662345261934369">Teistega jagamine</translation>
@@ -920,6 +923,7 @@
 <translation id="8087576439476816834">Allalaadimine, <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">Minuga jagatud</translation>
 <translation id="8116072619078571545">Jäävesi</translation>
+<translation id="8124093710070495550">Sünkroonimisprobleem</translation>
 <translation id="8128733386027980860">inglise (Ühendkuningriik), Dvoraki klaviatuuriga</translation>
 <translation id="8137331602592933310">Faili „<ph name="FILENAME" />” on teiega jagatud. Te ei saa seda kustutada, kuna te pole selle omanik.</translation>
 <translation id="8138705869659070104">Aktiveerige pärast seadme seadistust</translation>

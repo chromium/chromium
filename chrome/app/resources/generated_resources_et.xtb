@@ -815,6 +815,7 @@ Load, mille olete juba rakendustele andnud, võivad selle konto puhul kehtida. S
 <translation id="1647408325348388858">Kas soovite faili <ph name="FILE_NAME" /> avada ja seda redigeerida selles veebirakenduses?</translation>
 <translation id="1648528859488547844">Asukoha määramine WiFi- või mobiilsidevõrgu abil</translation>
 <translation id="164936512206786300">Bluetooth-seadme seose tühistamine</translation>
+<translation id="1650801028905250434">Teie failid jaotises Minu ketas sünkroonitakse automaatselt teie Chromebookiga, nii et pääsete neile juurde ilma internetiühenduseta. Saate seda igal ajal muuta menüüs Seaded &gt; Failid.</translation>
 <translation id="1651008383952180276">Peate sisestama sama parooli kaks korda</translation>
 <translation id="1651609627703324721">Sellel vahelehel esitletakse peakomplektile VR-sisu</translation>
 <translation id="1652326691684645429">Läheduses jagamise lubamine</translation>
@@ -4232,6 +4233,7 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="4515872537870654449">Hooldusteenuse saamiseks võtke ühendust Delliga. Kui ventilaator ei tööta, siis lülitub dokk välja.</translation>
 <translation id="4518840066030486079">Tõstuklahvi režiimi stiil</translation>
 <translation id="4519331665958994620">Saidid saavad küsida luba teie kaamera kasutamiseks</translation>
+<translation id="4519605771716872386">Failide sünkroonimine lülitati sisse</translation>
 <translation id="4519935350946509010">Ühenduse viga.</translation>
 <translation id="4520385623207007473">Küpsisefailid on kasutuses</translation>
 <translation id="452039078290142656">müüja <ph name="VENDOR_NAME" /> tundmatud seadmed</translation>
@@ -7274,6 +7276,7 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="7124712201233930202">Vastuolu teie organisatsiooni reeglitega</translation>
 <translation id="7125029162161377569">Privaatsuse liivakasti prooviversioonide puhul saavad saidid pakkuda samasugust sirvimiskogemust, kasutades teiega seotud teavet vähemal määral. See suurendab teie privaatsust ja vähendab saitidevahelist jälgimist. Lisame uued prooviversioonid, kui need on testimiseks valmis.</translation>
 <translation id="7125148293026877011">Crostini kustutamine</translation>
+<translation id="7125932261198019860">Veenduge, et teie printer oleks ühendatud Chromebookiga samasse WiFi-võrku, või kasutage USB-kaablit. <ph name="LINK_BEGIN" />Lisateave ühilduvuse kohta<ph name="LINK_END" /></translation>
 <translation id="7127980134843952133">Allalaadimiste ajalugu</translation>
 <translation id="7128151990937044829">Kuva märguande blokeerimisel aadressiribal indikaatorit</translation>
 <translation id="7131040479572660648">Lugege oma andmeid veebisaitidel <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> ja <ph name="WEBSITE_3" /></translation>
@@ -7467,6 +7470,7 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="7307129035224081534">Peatatud</translation>
 <translation id="7308643132139167865">Veebisaidi keeled</translation>
 <translation id="7310598146671372464">Sisselogimine ebaõnnestus. Server ei toeta määratud Kerberose krüpteerimistüüpe. Võtke ühendust administraatoriga.</translation>
+<translation id="7311005168897771689">Võrguühenduseta juurdepääs Google Drive'i failidele</translation>
 <translation id="7311244614769792472">Tulemusi ei leitud</translation>
 <translation id="7312210124139670355">Administraator lähtestab teie eSIM-i. See võib võtta mõne minuti.</translation>
 <translation id="7317831949569936035">Koolis kasutamiseks registreerimine</translation>

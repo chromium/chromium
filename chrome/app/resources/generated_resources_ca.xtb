@@ -812,6 +812,7 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1647408325348388858">Vols obrir i editar <ph name="FILE_NAME" /> en aquesta aplicació web?</translation>
 <translation id="1648528859488547844">Utilitza una xarxa Wi‑Fi o mòbil per determinar la ubicació</translation>
 <translation id="164936512206786300">Desvincula el dispositiu Bluetooth</translation>
+<translation id="1650801028905250434">Els fitxers de La meva unitat se sincronitzaran automàticament amb el Chromebook perquè hi puguis accedir sense connexió a Internet. Pots canviar aquesta opció en qualsevol moment a Configuració &gt; Fitxers.</translation>
 <translation id="1651008383952180276">Has d'escriure la mateixa frase de contrasenya dues vegades</translation>
 <translation id="1651609627703324721">Aquesta pestanya està mostrant contingut de realitat virtual en un visor</translation>
 <translation id="1652326691684645429">Activa Compartició Nearby</translation>
@@ -4225,6 +4226,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="4515872537870654449">Contacta amb Dell per obtenir assistència tècnica. La base s'apagarà si el ventilador no funciona.</translation>
 <translation id="4518840066030486079">Estil del mode de la tecla Maj</translation>
 <translation id="4519331665958994620">Els llocs web poden demanar permís per utilitzar la càmera</translation>
+<translation id="4519605771716872386">La sincronització de fitxers s'ha activat</translation>
 <translation id="4519935350946509010">Error de connexió</translation>
 <translation id="4520385623207007473">Galetes en ús</translation>
 <translation id="452039078290142656">dispositius desconeguts del proveïdor <ph name="VENDOR_NAME" /></translation>
@@ -7266,6 +7268,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7124712201233930202">No es compleixen les polítiques de la teva organització</translation>
 <translation id="7125029162161377569">Amb les proves de Privacy Sandbox, els llocs web poden oferir la mateixa experiència de navegació utilitzant menys informació teva. Això significa que tindràs més privadesa i que hi haurà menys seguiment entre llocs web. Afegirem noves proves a mesura que estiguin preparades per aplicar-les.</translation>
 <translation id="7125148293026877011">Suprimeix Crostini</translation>
+<translation id="7125932261198019860">Assegura't que la impressora estigui connectada a la mateixa xarxa Wi-Fi que el Chromebook o fes servir un cable USB. <ph name="LINK_BEGIN" />Més informació sobre la compatibilitat<ph name="LINK_END" /></translation>
 <translation id="7127980134843952133">Historial de baixades</translation>
 <translation id="7128151990937044829">Mostra un indicador a la barra d'adreces quan les notificacions estan bloquejades</translation>
 <translation id="7131040479572660648">Llegir les dades dels llocs <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> i <ph name="WEBSITE_3" /></translation>
@@ -7459,6 +7462,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7307129035224081534">En pausa</translation>
 <translation id="7308643132139167865">Idiomes del lloc web</translation>
 <translation id="7310598146671372464">No s'ha pogut iniciar la sessió. El servidor no admet els tipus d'encriptació de Kerberos especificats. Contacta amb l'administrador.</translation>
+<translation id="7311005168897771689">Accedeix als teus fitxers de Google Drive sense connexió</translation>
 <translation id="7311244614769792472">No s'ha trobat cap resultat</translation>
 <translation id="7312210124139670355">L'administrador està restablint l'eSIM. Aquest procés pot tardar uns minuts.</translation>
 <translation id="7317831949569936035">Inscripció en un centre educatiu</translation>

@@ -518,6 +518,7 @@
 <translation id="4272631900155121838">‏כדי לסרוק את קוד ה-QR, יש להפעיל את המצלמה דרך ההגדרות</translation>
 <translation id="4277990410970811858">גלישה בטוחה</translation>
 <translation id="4281844954008187215">תנאי שירות</translation>
+<translation id="4286718549648564014">הכתובת הועברה לחשבון שלך, <ph name="USER_EMAIL" /></translation>
 <translation id="4293080268407233932">חיפוש</translation>
 <translation id="4302248187517737842">אין שם משתמש ••••••••</translation>
 <translation id="4304713468139749426">מנהל הסיסמאות</translation>
@@ -1175,6 +1176,7 @@
 <translation id="8264966119170358612">‏חלק מהסיסמאות השמורות שלך נחשפו ברשומות שאינן של Google עקב פרצה באבטחת מידע. <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="826614135184049678">‏המערכת הוציאה אותך מהחשבון, <ph name="USER_NAME" />, במסגרת האיפוס של iPad. כדי להיכנס שוב לחשבון צריך להקיש על 'המשך' למטה.</translation>
 <translation id="8271720166617117963">אישור וכניסה</translation>
+<translation id="8273982424131314219">הפרטים ימולאו באתר <ph name="URL" /></translation>
 <translation id="8278938988428169257">מזינים מילה או ביטוי</translation>
 <translation id="8281781826761538115">ברירת מחדל - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">דילוג</translation>
@@ -1221,6 +1223,7 @@
 <translation id="8548878600947630424">חיפוש בדף...</translation>
 <translation id="8556590991644167667">{count,plural, =1{סגרת אזהרה אחת ({count})}one{סגרת {count} אזהרות}two{סגרת {count} אזהרות}other{סגרת {count} אזהרות}}</translation>
 <translation id="8558480467877843976">‏אפשר עכשיו להשתמש ב-Chrome בכל פעם שגולשים או מקישים על קישורים בהודעות, במסמכים ובאפליקציות אחרות.</translation>
+<translation id="8580411965900177618">לא, תודה</translation>
 <translation id="8588404856427128947">כבוי</translation>
 <translation id="8591976964826315682">‏חסימת קובצי cookie של צד שלישי במצב אנונימי</translation>
 <translation id="8605219856220328675">סגירת כרטיסייה.</translation>
@@ -1257,6 +1260,7 @@
 <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="8810413591309742901">תצוגת האתר שמוגדרת כברירת מחדל</translation>
 <translation id="8820817407110198400">סימניות</translation>
+<translation id="8825562130641217944">גישה לסימניות, לסיסמאות ועוד.</translation>
 <translation id="882557203579758546">חיפוש בדף…</translation>
 <translation id="8840513115188359703">‏פעולה זו לא תוציא אותך מחשבון Google שלך.</translation>
 <translation id="8843129975935593190">הארגון שלך מגביל את מה שאפשר לסנכרן.</translation>

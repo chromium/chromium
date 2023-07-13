@@ -83,6 +83,7 @@
 <translation id="1400642268715879018">گزشتہ 4 ہفتے</translation>
 <translation id="1404330357948037222">آپ سائن آؤٹ ہیں</translation>
 <translation id="1407135791313364759">سبھی کو کھولیں</translation>
+<translation id="1408847409015257906">"رازداری اور سیکیورٹی" پر تھپتھپائیں۔</translation>
 <translation id="1430915738399379752">پرنٹ کریں</translation>
 <translation id="1449835205994625556">پاس ورڈ چھپائیں</translation>
 <translation id="1450170672351507823">معیاری تحفظ آن ہے۔ اور بھی مزید سیکیورٹی کے لیے، بہتر تحفظ کا استعمال کریں۔</translation>
@@ -102,6 +103,7 @@
 <translation id="1545749641540134597">‏QR کوڈ اسکین کریں</translation>
 <translation id="1552525382687785070">مطابقت پذیری کو آپ کے منتظم نے غیر فعال کر دیا ہے</translation>
 <translation id="1554477036522844996">نئی ونڈو</translation>
+<translation id="1563071802032385236">"پوشیدگی میں دیگر ایپس سے لنکس کھولنے کے لیے پوچھیں" کو آن کریں۔</translation>
 <translation id="1565371473877914088">نیا پوشیدگی ٹیب</translation>
 <translation id="1580715474678097352">خطرناک ویب سائٹس سے محفوظ رہیں</translation>
 <translation id="1580783302095112590">میل بھیج دی گئی۔</translation>
@@ -112,6 +114,7 @@
 <translation id="1608337082864370066">کاپی کردہ تصویر تلاش کریں</translation>
 <translation id="1612730193129642006">ٹیب گرڈ دکھائیں</translation>
 <translation id="1620510694547887537">کیمرا</translation>
+<translation id="1622717322707146952">‏"Google کیلنڈر میں شامل کریں" یا "Apple کیلنڈر میں شامل کریں" کو منتخب کریں۔</translation>
 <translation id="1626771852476987600">دوبارہ استعمال کردہ <ph name="COUNT" /> پاس ورڈز</translation>
 <translation id="1641113438599504367">محفوظ براؤزنگ</translation>
 <translation id="1644574205037202324">سرگزشت</translation>
@@ -157,6 +160,7 @@
 <translation id="1941314575388338491">کاپی کرنے کیلئے دو بار تھپتھپائیں۔</translation>
 <translation id="1943478190258551035">مینیو ← ترتیبات</translation>
 <translation id="1952172573699511566">جب ممکن ہوگا، تو ویب سائٹس آپ کی پسندیدہ زبان میں متن دکھائیں گی۔</translation>
+<translation id="1959441496380398824">کسی تاریخ کو ٹچ کریں اور دبائے رکھیں۔</translation>
 <translation id="1959679933317802873">مواد کے منتظر</translation>
 <translation id="1965935827552890526">‏اپنی دوسری کھلی ہوئی Chrome ونڈو میں آپ کیا کر رہے تھے مکمل کریں۔</translation>
 <translation id="1967461193809857427">{count,plural, =1{‏وہ ٹیب منتخب کریں جو آپ نے Android پر چھوڑا تھا؟}other{‏وہ ٹیبز منتخب کریں جنہیں آپ نے Android پر چھوڑا تھا؟}}</translation>
@@ -229,6 +233,7 @@
 <translation id="2434405374328098816">آپ نے <ph name="WEBSITE" /> پر "<ph name="USERNAME" />" کے لیے پہلے ہی پاس ورڈ محفوظ کر لیا ہے</translation>
 <translation id="2435457462613246316">پاس ورڈ دکھائیں</translation>
 <translation id="2451654228769116489">ٹیب کو پن کریں</translation>
+<translation id="2459155039684421202">ایڈریس بار میں، "میری سرگزشت صاف کریں" یا "پاس ورڈز میں ترمیم کریں" جیسا کام درج کریں۔</translation>
 <translation id="2461070143328828326">پاس ورڈ کی ترتیبات</translation>
 <translation id="2469960372084740698">محفوظ براؤزنگ آف کریں؟</translation>
 <translation id="2473876017985765807">آپ نے پہلے ہی <ph name="WEBSITE" /> کے لیے ایک پاس ورڈ محفوظ کیا ہے</translation>
@@ -366,6 +371,7 @@
 <translation id="3224641773458703735">پاس ورڈز برآمد کرنے کیلئے، آپ کو اپنے آلے پر پہلے پاس کوڈ سیٹ کرنا ہوگا۔</translation>
 <translation id="3227137524299004712">مائیکروفون</translation>
 <translation id="3235063766008841141">ایک فریب کار سائٹ میں داخل ہو گیا اور ڈیٹا کی خلاف ورزی میں پایا گیا</translation>
+<translation id="3235242129752692527">ایونٹ کی تفصیلات میں ترمیم کریں اور "محفوظ کریں" پر تھپتھپائیں۔</translation>
 <translation id="3240426699337459095">لنک کاپی ہوگیا</translation>
 <translation id="3244271242291266297">MM</translation>
 <translation id="3245744387817103524">آپ کی تبدیلی محفوظ نہیں ہو سکی۔</translation>
@@ -536,6 +542,7 @@
 <translation id="4375040482473363939">‏QR کوڈ کی تلاش</translation>
 <translation id="4378154925671717803">فون</translation>
 <translation id="4389019817280890563">زبان تبدیل کرنے کے لیے تھپتھپائیں۔</translation>
+<translation id="4405320213589929829">مقامی معلومات اور ڈائریکشنز حاصل کرنے کے لیے ویب صفحات پر پتے استعمال کریں۔</translation>
 <translation id="4420409367264901497">بُک مارک میں ترمیم کریں</translation>
 <translation id="4442550905108052454"><ph name="BEGIN_BOLD" />ترتیبات<ph name="END_BOLD" /> کھولیں</translation>
 <translation id="4454246407045105932">زبان شامل کریں</translation>
@@ -668,6 +675,7 @@
 <translation id="5209674813563615506">ایک نیا ٹیب کھولیں</translation>
 <translation id="5211488077761630279">اپنے <ph name="PERMISSION" /> کا استعمال کرنے کے لیے "<ph name="SITE_NAME" />" کو اجازت دیں؟</translation>
 <translation id="5219295696240154694">سبھی کے لیے ویب پر سیکیورٹی کو بہتر بنانے میں مدد کریں</translation>
+<translation id="5220945116117011963">تاریخوں سے کیلنڈر ایونٹس تخلیق کریں</translation>
 <translation id="5221339005270097309">پاس ورڈز چیک ہو رہے ہیں…</translation>
 <translation id="5226568866393490213">وارننگ مسترد کریں</translation>
 <translation id="5228579091201413441">مطابقت پذیری فعال کریں</translation>
@@ -910,6 +918,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="6540120577248033958">‏کسی سائٹ پر جائیں اور Chrome مینیو میں پیروی کریں پر کلک کریں</translation>
 <translation id="6550675742724504774">اختیارات</translation>
 <translation id="6561262006871132942">زوم ان کریں</translation>
+<translation id="6579867704846662339">‏آپ پوشیدگی میں دیگر ایپس سے آنے والے URLs کو کھولنے کا انتخاب کر سکتے ہیں۔</translation>
 <translation id="6583087784430677195">آف کرنے کے لیے، <ph name="BEGIN_LINK" />ترتیبات<ph name="END_LINK" /> کھولیں اور آٹو فل پاس ورڈز پر جائیں۔</translation>
 <translation id="6585618849026997638">بُک مارک شامل کر کے آپ کسی ایسے صفحے پر واپس جا سکتے ہیں جو آپ کیلئے اہم ہے</translation>
 <translation id="6596481460663245319">‏Google کی مدد سے تصویر تلاش کریں</translation>
@@ -938,6 +947,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="6674571176963658787">مطابقت پذیری شروع کرنے کے لیے، اپنا پاس فریز درج کریں</translation>
 <translation id="667999046851023355">دستاویز</translation>
 <translation id="6684906340059221832">قیمتیں ٹریک کی جا رہی ہیں</translation>
+<translation id="6685259053455152195">ترتیبات میں تیزی سے ترمیم کرنے اور ایڈریس بار سے خصوصیات کو استعمال کرنے کے لیے شارٹ کٹس۔</translation>
 <translation id="6710079714193676716">آپ کی تنظیم کے زیر انتظام۔ ہو سکتا ہے کہ کچھ خصوصیات دستیاب نہ ہوں۔ <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="672735642903863329">اپنے تمام آلات پر اپنے بُک مارکس، پاس ورڈز وغیرہ حاصل کریں۔</translation>
@@ -949,6 +959,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="6762812039470893796">سبھی غیر منتخب کریں</translation>
 <translation id="6780034285637185932">زپ کوڈ</translation>
 <translation id="6781260999953472352">مطابقت پذیری آن کریں؟</translation>
+<translation id="6781405765516175232">راستے کے اختیارات کے لیے، "ڈائریکشنز حاصل کریں" پر تھپتھپائیں۔</translation>
 <translation id="6785453220513215166">کریش رپورٹ بھیج رہا ہے…</translation>
 <translation id="6790502149545262384">جلد ہی، نیا ٹیب کھولنے پر آپ کو <ph name="CHANNEL_NAME" /> سے کہانیاں دکھائی دیں گی۔</translation>
 <translation id="6797885426782475225">صوتی تلاش</translation>
@@ -1002,6 +1013,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="7108762695052995889">سائٹ ملاحظہ کریں</translation>
 <translation id="7133798577887235672">پورا نام</translation>
 <translation id="7136892417564438900">کیمرا دستیاب نہیں ہے</translation>
+<translation id="7154343200458623869">اپنا ٹاسک مکمل کریں۔</translation>
 <translation id="7161230316646448869">سبھی آلات پر اپنے بُک مارکس اور سرگزشت وغیرہ سنک کریں</translation>
 <translation id="7162168282402939716"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> سے پوشیدگی ٹیبز غیر مقفل کریں</translation>
 <translation id="7172852049901402487">سیکیورٹی کے معاملات سے اپنے پاس ورڈز محفوظ رکھیں</translation>
@@ -1074,6 +1086,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="7671141431838911305">انسٹال کریں</translation>
 <translation id="7679915578945954324">سائٹ کے پتے کاپی کیے گئے</translation>
 <translation id="7687508192620387263">کیلنڈر فائل دستیاب ہے</translation>
+<translation id="769104993356536261">‏iOS پر Chrome ایکشنز استعمال کریں</translation>
 <translation id="7701040980221191251">کوئی نہیں</translation>
 <translation id="7711440461521638739">آپ کوئی پاس ورڈ دوبارہ استعمال نہیں کر رہے ہیں</translation>
 <translation id="7719038820139380048">اپنی دلچسپیوں پر مبنی مواد حاصل کرنے کیلئے سائن ان کریں۔</translation>
@@ -1215,6 +1228,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="850600235656508448">پوشیدگی وضع میں کھولیں</translation>
 <translation id="8517375800490286174">اوپن سورس لائسنسز</translation>
 <translation id="8524799873541103884"><ph name="INCOGNITO" /> ٹیبز <ph name="FIRST_VISIBLE_TAB" /> سے <ph name="LAST_VISIBLE_TAB" /> از <ph name="NUMBER_OF_OPEN_TABS" /></translation>
+<translation id="8528009254289981965">پوشیدگی میں دیگر ایپس کے لنکس کھولیں</translation>
 <translation id="8529767659511976195">نئی</translation>
 <translation id="8532105204136943229">میعاد کے اختتام کا سال</translation>
 <translation id="8533166274275423134">کہیں اور کھلی ہوئیں</translation>

@@ -9,6 +9,7 @@
 <translation id="1047458377670401304"><ph name="CPU_NAME" />（<ph name="THREAD_COUNT" /> 个线程，<ph name="CPU_MAX_CLOCK_SPEED" />GHz）</translation>
 <translation id="1047773237499189053">有可用的新功能，使用向上键即可了解详情。</translation>
 <translation id="1059913517121127803">无法启动扫描</translation>
+<translation id="1062823486781306604">第 <ph name="INDEX" /> 个，共 <ph name="COUNT" /> 个，<ph name="NAME" />。</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">检测到防火墙</translation>
 <translation id="1075811647922107217">页面大小</translation>
@@ -169,6 +170,7 @@
 <translation id="2161656808144014275">文字</translation>
 <translation id="2163937499206714165">开启深色模式</translation>
 <translation id="2180197493692062006">出了点问题。请尝试重新打开此应用。</translation>
+<translation id="2189104374785738357">修改 APN 详细信息</translation>
 <translation id="2209788852729124853">重置流量计数器</translation>
 <translation id="2212733584906323460">域名解析</translation>
 <translation id="2217935453350629363">当前速度</translation>
@@ -534,6 +536,7 @@
 <translation id="5257811368506016604">启用浅色模式</translation>
 <translation id="5264277876637023664">运行 CPU 测试</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />，<ph name="PRINTER_NAME" />，<ph name="CREATION_TIME" />，<ph name="ERROR_STATUS" /></translation>
+<translation id="527501763019887383">已停用 APN。</translation>
 <translation id="5275828089655680674">重新运行诊断例程</translation>
 <translation id="5286252187236914003">L2TP/IPsec</translation>
 <translation id="5286263799730375393">背光颜色</translation>
@@ -598,6 +601,7 @@
 <translation id="5832805196449965646">添加用户</translation>
 <translation id="583281660410589416">未知</translation>
 <translation id="5843706793424741864">华氏度</translation>
+<translation id="584953448295717128">已自动检测到 APN。</translation>
 <translation id="5849570051105887917">家用移动网络提供商代码</translation>
 <translation id="5859603669299126575">画廊中的影集</translation>
 <translation id="5860033963881614850">关闭</translation>
@@ -874,6 +878,7 @@
 <translation id="80398733265834479">启用自动颜色模式</translation>
 <translation id="8041089156583427627">发送反馈</translation>
 <translation id="8045012663542226664">麦克风静音</translation>
+<translation id="8067126283828232460">已连接 APN。</translation>
 <translation id="8075838845814659848">剩余电量</translation>
 <translation id="8076492880354921740">标签页</translation>
 <translation id="8082366717211101304">无法从 Android 应用解析 DNS</translation>
@@ -1018,6 +1023,7 @@
 <translation id="9111102763498581341">解锁</translation>
 <translation id="9122602430962285795">若要重新连接，请转到“设置”</translation>
 <translation id="9126720536733509015">将多个页面扫描成 1 个 PDF 文件</translation>
+<translation id="9133104754938025929">为节省电池电量，屏保只会在充电时运行。</translation>
 <translation id="9137526406337347448">Google 服务</translation>
 <translation id="9138630967333032450">左 Shift</translation>
 <translation id="9143347780818904997"><ph name="MINUTES" /> 分钟</translation>

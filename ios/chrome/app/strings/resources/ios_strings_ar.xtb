@@ -520,6 +520,7 @@
 <translation id="4272631900155121838">لمسح رمز الاستجابة السريعة ضوئيًا، يمكنك تفعيل الكاميرا من الإعدادات</translation>
 <translation id="4277990410970811858">التصفُّح الآمن</translation>
 <translation id="4281844954008187215">بنود الخدمة</translation>
+<translation id="4286718549648564014">تم نقل العنوان إلى حسابك <ph name="USER_EMAIL" />.</translation>
 <translation id="4293080268407233932">بحث</translation>
 <translation id="4302248187517737842">بلا اسم مستخدم ••••••••</translation>
 <translation id="4304713468139749426">مدير كلمات المرور</translation>
@@ -1177,6 +1178,7 @@
 <translation id="8264966119170358612">‏تم رصد بعض كلمات المرور المحفوظة الخاصة بك ضمن عملية اختراق للبيانات من خارج Google. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="826614135184049678">‏تم تسجيل خروج حسابك <ph name="USER_NAME" /> كجزء من عملية إعادة ضبط جهاز iPad. لإعادة تسجيل الدخول، انقر على "متابعة" أدناه.</translation>
 <translation id="8271720166617117963">القبول وتسجيل الدخول</translation>
+<translation id="8273982424131314219">سيتم ملء المعلومات في <ph name="URL" />.</translation>
 <translation id="8278938988428169257">أدخِل كلمة أو عبارة.</translation>
 <translation id="8281781826761538115">التلقائي - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">التخطّي</translation>
@@ -1223,6 +1225,7 @@
 <translation id="8548878600947630424">بحث في الصفحة...</translation>
 <translation id="8556590991644167667">{count,plural, =1{أغلقت تحذيرًا واحدًا ({count}).}zero{أغلقت {count} تحذير.}two{أغلقت تحذيرَين ({count}).}few{أغلقت {count} تحذيرات.}many{أغلقت {count} تحذيرًا.}other{أغلقت {count} تحذير.}}</translation>
 <translation id="8558480467877843976">‏يمكنك الآن استخدام Chrome في أي وقت تتصفَّح فيه أو تنقر فيه على الروابط في الرسائل والمستندات والتطبيقات الأخرى.</translation>
+<translation id="8580411965900177618">لا، شكرًا</translation>
 <translation id="8588404856427128947">غير مفعَّل</translation>
 <translation id="8591976964826315682">حظر ملفات تعريف الارتباط التابعة لجهات خارجية في وضع التصفُّح المتخفي</translation>
 <translation id="8605219856220328675">إغلاق علامة التبويب.</translation>
@@ -1259,6 +1262,7 @@
 <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="8810413591309742901">طريقة العرض التلقائية للمواقع الإلكترونية</translation>
 <translation id="8820817407110198400">الإشارات المرجعية</translation>
+<translation id="8825562130641217944">الحصول على الإشارات المرجعية وكلمات المرور وإعدادات أخرى</translation>
 <translation id="882557203579758546">البحث في الصفحة…</translation>
 <translation id="8840513115188359703">‏لن يتم تسجيل خروجك من حساب Google.</translation>
 <translation id="8843129975935593190">تفرض مؤسستك قيودًا على أنواع البيانات التي يمكنك مزامنتها.</translation>

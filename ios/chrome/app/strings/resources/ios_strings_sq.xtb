@@ -518,6 +518,7 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="4272631900155121838">Për të skanuar një kod QR, aktivizo kamerën nga cilësimet</translation>
 <translation id="4277990410970811858">Shfletimi i sigurt</translation>
 <translation id="4281844954008187215">Kushtet e shërbimit</translation>
+<translation id="4286718549648564014">Adresa u zhvendos te llogaria <ph name="USER_EMAIL" /></translation>
 <translation id="4293080268407233932">Kërko</translation>
 <translation id="4302248187517737842">Nuk ka emër përdoruesi ••••••••</translation>
 <translation id="4304713468139749426">Menaxheri i fjalëkalimeve</translation>
@@ -1175,6 +1176,7 @@ Sajtet mund t'i përdorin kukit për të parë aktivitetin tënd të shfletimit 
 <translation id="8264966119170358612">Disa nga fjalëkalimet e tua të ruajtura janë ekspozuar në një nxjerrje të paautorizuar të të dhënave nga një palë që nuk është Google. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="826614135184049678">Ke dalë nga llogaria jote, <ph name="USER_NAME" />, si pjesë e rivendosjes së pajisjes iPad. Për t'u identifikuar përsëri, trokit te "Vazhdo" më poshtë.</translation>
 <translation id="8271720166617117963">Pranoje dhe identifikohu</translation>
+<translation id="8273982424131314219">Do të plotësosh informacionet në <ph name="URL" /></translation>
 <translation id="8278938988428169257">Fut një fjalë ose një frazë</translation>
 <translation id="8281781826761538115">Parazgjedhja - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Kapërceje</translation>
@@ -1221,6 +1223,7 @@ Të dhënat e tua janë enkriptuar me frazën tënde të kalimit më <ph name="T
 <translation id="8548878600947630424">Gjej në faqe...</translation>
 <translation id="8556590991644167667">{count,plural, =1{Hoqe {count} paralajmërim}other{Hoqe {count} paralajmërime}}</translation>
 <translation id="8558480467877843976">Tani mund të përdorësh Chrome sa herë që shfleton ose troket te lidhjet në mesazhe, dokumente dhe aplikacione të tjera.</translation>
+<translation id="8580411965900177618">Jo, faleminderit</translation>
 <translation id="8588404856427128947">Joaktiv</translation>
 <translation id="8591976964826315682">Blloko kukit e palëve të treta në modalitetin "i fshehtë"</translation>
 <translation id="8605219856220328675">Mbylle skedën</translation>
@@ -1257,6 +1260,7 @@ Të dhënat e tua janë enkriptuar me frazën tënde të kalimit më <ph name="T
 <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="8810413591309742901">Pamja e parazgjedhur e sajtit</translation>
 <translation id="8820817407110198400">Faqeshënuesit</translation>
+<translation id="8825562130641217944">Merr faqeshënuesit, fjalëkalimet etj.</translation>
 <translation id="882557203579758546">Gjej në faqe…</translation>
 <translation id="8840513115188359703">Nuk do të dalësh nga llogaria jote e Google</translation>
 <translation id="8843129975935593190">Organizata jote kufizon se çfarë mund të sinkronizosh.</translation>

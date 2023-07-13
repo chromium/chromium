@@ -130,6 +130,7 @@
 <translation id="2084108471225856927">Paramètres de l'appareil</translation>
 <translation id="2084809735218147718">Personne chantant des remerciements</translation>
 <translation id="2088690981887365033">Réseau privé virtuel</translation>
+<translation id="209653272837065803">L'espace de stockage est insuffisant pour poursuivre la synchronisation des fichiers</translation>
 <translation id="2111134541987263231">Activez <ph name="BEGIN_BOLD" />Autoriser en mode navigation privée<ph name="END_BOLD" /></translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> éléments seront supprimés et vous ne pourrez pas les restaurer.</translation>
 <translation id="2122305276694332719">La connexion automatique à un réseau masqué permet aux autres personnes de voir votre appareil et certains paramètres réseau, et n'est pas recommandée.</translation>
@@ -146,9 +147,11 @@
 <translation id="2198315389084035571">Chinois simplifié</translation>
 <translation id="22085916256174561">Coréen</translation>
 <translation id="2208919847696382164">Installer avec Linux</translation>
+<translation id="2215692307449050019">La pile est faible. La synchronisation des fichiers reprendra lorsque vous brancherez votre appareil sur une source d'alimentation.</translation>
 <translation id="2225536596944493418">Voulez-vous vraiment supprimer <ph name="NUMBER_OF_ITEMS" /> éléments?</translation>
 <translation id="2230062665678605299">Impossible de créer le dossier « <ph name="FOLDER_NAME" /> ». <ph name="ERROR_MESSAGE" /></translation>
 <translation id="2239068707900391003">Personne avec un café</translation>
+<translation id="2247561763838186830">Vous avez été déconnecté</translation>
 <translation id="2251368349685848079">Restaurer à partir de la corbeille</translation>
 <translation id="2278133026967558505">Accès aux fichiers par tous les sites Web et URL</translation>
 <translation id="2282155092769082568">URL d'autoconfiguration :</translation>
@@ -163,6 +166,7 @@
 <translation id="2325650632570794183">Ce type de fichier n'est pas pris en charge. Veuillez visiter la boutique Chrome Web Store pour trouver une application permettant de l'ouvrir.</translation>
 <translation id="2326539130272988168">Bulgare</translation>
 <translation id="2337715497728194187">Partager avec Bruschetta</translation>
+<translation id="233822363739146957">L'espace de stockage est insuffisant pour synchroniser tous vos fichiers</translation>
 <translation id="23721837607121582">Télécharger le profil mobile, réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Passer à l'affichage sous forme de liste</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> dossiers partagés avec Linux</translation>
@@ -215,6 +219,7 @@
 <translation id="2782104745158847185">Erreur lors de l'installation de l'application Linux</translation>
 <translation id="2802583107108007218">Pour en savoir plus au sujet de ces restrictions</translation>
 <translation id="2803375539583399270">Entrer le NIP</translation>
+<translation id="2819519502129272135">Synchronisation des fichiers désactivée</translation>
 <translation id="2820957248982571256">Recherche en cours…</translation>
 <translation id="2830077785865012357">Chinois (Zhuyin)</translation>
 <translation id="2843806747483486897">Changer l'action par défaut…</translation>
@@ -439,6 +444,7 @@
 <translation id="4599600860674643278">Le filtre est réinitialisé.</translation>
 <translation id="4603392156942865207">Copie de <ph name="FILE_NAME" /> vers <ph name="FOLDER_NAME" /> en cours…</translation>
 <translation id="4631887759990505102">Artiste</translation>
+<translation id="4635373743001040938">L'espace de stockage est extrêmement limité. La synchronisation des fichiers a été désactivée.</translation>
 <translation id="4642769377300286600">Installation du profil cellulaire, réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="4646813851450205600">Tchèque avec clavier QWERTY</translation>
 <translation id="4656777537938206294">Rendre les fichiers accessibles hors ligne</translation>
@@ -492,6 +498,7 @@
 <translation id="4961158930123534723">1 dossier partagé avec Parallels Desktop</translation>
 <translation id="496656650103537022"><ph name="FILE_NAME" /> restauré</translation>
 <translation id="4969785127455456148">Album</translation>
+<translation id="4972330214479971536">Impossible de terminer la configuration de la synchronisation des fichiers</translation>
 <translation id="4973523518332075481">Utilisez un nom contenant au maximum <ph name="MAX_LENGTH" /> caractères</translation>
 <translation id="4973970068702235170">Échec de compression au format .zip en raison d'une erreur inattendue : <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">Japonais</translation>
@@ -802,6 +809,7 @@
 <translation id="7309413087278791451">Allemand (Belgique)</translation>
 <translation id="7339898014177206373">Nouvelle fenêtre</translation>
 <translation id="7343393116438664539">Vietnamien (télex)</translation>
+<translation id="7347346221088620549">Fichier chiffré</translation>
 <translation id="7357762654218998920">Ce type de fichier n'est pas pris en charge. <ph name="BEGIN_LINK_HELP" />Apprenez-en plus<ph name="END_LINK_HELP" /> sur l'ouverture de fichiers dans Chrome OS.</translation>
 <translation id="7359359531237882347">Copie de <ph name="NUMBER_OF_ITEMS" /> éléments en cours…</translation>
 <translation id="7375951387215729722">Liste de fichiers triée par <ph name="COLUMN_NAME" /> en ordre décroissant.</translation>
@@ -984,6 +992,7 @@
 <translation id="8609695766746872526">Islandais</translation>
 <translation id="863903787380594467">NIP incorrect. Il vous reste <ph name="RETRIES" /> tentatives.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – Port</translation>
+<translation id="8656407365183407932">Vos fichiers hors ligne ont dû être retirés</translation>
 <translation id="8656768832129462377">Ne pas vérifier</translation>
 <translation id="8688591111840995413">Mot de passe incorrect</translation>
 <translation id="8698464937041809063">Dessin Google</translation>
@@ -1019,6 +1028,7 @@
 <translation id="8997962250644902079">Chinois (traditionnel, Pinyin)</translation>
 <translation id="8998871447376656508">Il n'y a pas assez d'espace libre dans votre Google Disque pour terminer le téléversement.</translation>
 <translation id="9003940392834790328">Réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, force du signal : <ph name="SIGNAL_STRENGTH" /> %, géré par votre administrateur, détails</translation>
+<translation id="9007990314804111233">Connectez-vous à votre compte Microsoft</translation>
 <translation id="9017798300203431059">Russe (phonétique)</translation>
 <translation id="9034924485347205037">Fichiers Linux</translation>
 <translation id="9035012421917565900">Les éléments ne peuvent pas être remis dans « <ph name="DESTINATION_NAME" /> ». Cette action est donc irréversible.</translation>

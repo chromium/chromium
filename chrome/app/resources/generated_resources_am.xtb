@@ -813,6 +813,7 @@
 <translation id="1647408325348388858">በዚህ የድር መተግበሪያ ውስጥ <ph name="FILE_NAME" />ን ይከፈት እና ያርትዑ?</translation>
 <translation id="1648528859488547844">አካባቢን ለመወሰን Wi‑Fi፣ ብሉቱዝ ወይም የተንቀሳቃሽ ስልክ አውታረ መረቦችን ተጠቀም</translation>
 <translation id="164936512206786300">የብሉቱዝ መሣሪያን ነጥል</translation>
+<translation id="1650801028905250434">በእኔ Drive ውስጥ ያሉ ፋይሎችዎን ያለ የበይነመረብ ግንኙነት መድረስ እንዲችሉ በራስ-ሰር ወደ እርስዎ Chromebook ይሰምራሉ። ይህን በማንኛውም ጊዜ በቅንብሮች &gt; ፋይሎች ውስጥ መለወጥ ይችላሉ።</translation>
 <translation id="1651008383952180276">ተመሳሳዩ የይለፍ ሐረጉን ሁለት ጊዜ ማስገባት አለብዎት</translation>
 <translation id="1651609627703324721">ይህ ትር የምናባዊ እውነታ ይዘትን ወደ የጆሮ ማዳመጫ በማቅረብ ላይ ነው</translation>
 <translation id="1652326691684645429">የአቅራቢያ አጋራን ያንቁ</translation>
@@ -4233,6 +4234,7 @@
 <translation id="4515872537870654449">ለጥገና አገልግሎት Dell ን ያነጋግሩ። አየር ማርገብገቢያው የማይሠራ ከሆነ መትከያው ይዘጋል።</translation>
 <translation id="4518840066030486079">የShift ቁልፍ ሁነታ ቅጥ</translation>
 <translation id="4519331665958994620">ጣቢያዎች ካሜራዎን ለመጠቀም መጠየቅ ይችላሉ</translation>
+<translation id="4519605771716872386">የፋይል ስምረት በርቷል</translation>
 <translation id="4519935350946509010">የግንኙነት ስህተት።</translation>
 <translation id="4520385623207007473">ጥቅም ላይ የዋሉ ኩኪዎች</translation>
 <translation id="452039078290142656">ከ<ph name="VENDOR_NAME" /> የመጡ ያልታወቁ መሣሪያዎች</translation>
@@ -7277,6 +7279,7 @@
 <translation id="7124712201233930202">የድርጅትዎ መመሪያዎች አልተሟሉም</translation>
 <translation id="7125029162161377569">በግላዊነት Sandbox ሙከራዎች ጣቢያዎች ያነሰ መረጃዎን በመጠቀም ተመሳሳይ የአሰሳ ተሞክሮን ማድረስ ይችላሉ። ይህ ማለት ለእርስዎ የበለጠ ግላዊነት እና ያነሰ የጣቢያ ተሻጋሪ ክትትል ማለት ነው። ልክ ለመሞከር ዝግጁ ሲሆኑ አዲስ ሙከራዎችን እናክላለን።</translation>
 <translation id="7125148293026877011">Crostiniን ይሰርዙ</translation>
+<translation id="7125932261198019860">የእርስዎ ማተሚያ የእርስዎ Chromebook ከተገናኘበት ተመሳሳይ የWi-Fi አውታረ መረብ ጋር እንደተገናኘ ያረጋግጡ ወይም የዩኤስቢ ገመድ ይጠቀሙ። <ph name="LINK_BEGIN" />ስለ ተኳዃኝነት የበለጠ ይወቁ<ph name="LINK_END" /></translation>
 <translation id="7127980134843952133">የአውርድ ታሪክ</translation>
 <translation id="7128151990937044829">ማሳወቂያ ሲታገድ በአድራሻ አሞሌ ውስጥ አመልካችን አሳይ</translation>
 <translation id="7131040479572660648">የእርስዎን ውሂብ በ<ph name="WEBSITE_1" />፣ በ<ph name="WEBSITE_2" />፣ እና በ<ph name="WEBSITE_3" /> ላይ ያንብቡ</translation>
@@ -7470,6 +7473,7 @@
 <translation id="7307129035224081534">ባለበት ቆሟል</translation>
 <translation id="7308643132139167865">የድር ጣቢያ ቋንቋዎች</translation>
 <translation id="7310598146671372464">በመለያ መግባት አልተሳካም። አገልጋዩ የተጠቀሱትን የKerberos ምሥጠራ ዓይነቶች አይደግፍም። እባክዎ የእርስዎን አስተዳዳሪ ያነጋግሩ።</translation>
+<translation id="7311005168897771689">ከመስመር ውጭ በሚሆኑበት ጊዜ የGoogle Drive ፋይሎችዎን ይድረሱ</translation>
 <translation id="7311244614769792472">ምንም ውጤቶች አልተገኙም</translation>
 <translation id="7312210124139670355">አስተዳዳሪዎ የእርስዎን ኢሲም ዳግም እያስጀመረው ነው። ይህ ጥቂት ደቂቃዎችን ሊወስድ ይችላል።</translation>
 <translation id="7317831949569936035">የትምህርት ቤት ምዝገባ</translation>

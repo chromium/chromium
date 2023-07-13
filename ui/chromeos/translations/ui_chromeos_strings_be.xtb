@@ -131,6 +131,7 @@
 <translation id="2084108471225856927">Налады прылады</translation>
 <translation id="2084809735218147718">Спеўная падзяка</translation>
 <translation id="2088690981887365033">Сетка VPN</translation>
+<translation id="209653272837065803">Недастаткова месца ў сховішчы, каб працягнуць сінхранізацыю файлаў</translation>
 <translation id="2111134541987263231">Уключыце параметр <ph name="BEGIN_BOLD" />Дазволіць у рэжыме інкогніта<ph name="END_BOLD" />.</translation>
 <translation id="2114191879048183086">Некалькі (<ph name="NUMBER_OF_ITEMS" />) элементаў будуць выдалены, і вы не зможаце іх аднавіць.</translation>
 <translation id="2122305276694332719">Аўтаматычнае падключэнне да схаванай сеткі дазваляе іншым бачыць вашу прыладу і некаторыя налады сеткі, а таму не рэкамендуецца.</translation>
@@ -147,9 +148,11 @@
 <translation id="2198315389084035571">Кітайская (спрошчаная)</translation>
 <translation id="22085916256174561">Карэйская</translation>
 <translation id="2208919847696382164">Усталюйце пакет Linux</translation>
+<translation id="2215692307449050019">Нізкі ўзровень зараду акумулятара. Сінхранізацыя файлаў узновіцца, калі вы падключыцеся да крыніцы сілкавання.</translation>
 <translation id="2225536596944493418">Сапраўды выдаліць гэтыя элементы (<ph name="NUMBER_OF_ITEMS" />)?</translation>
 <translation id="2230062665678605299">Не ўдалося стварыць папку "<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
 <translation id="2239068707900391003">Чалавек з кубкам кавы</translation>
+<translation id="2247561763838186830">Вы выйшлі з уліковага запісу</translation>
 <translation id="2251368349685848079">Аднавіць са сметніцы</translation>
 <translation id="2278133026967558505">Доступ да файла з усіх вэб-сайтаў і URL-адрасоў</translation>
 <translation id="2282155092769082568">URL-адрас аўтаматычнай канфігурацыі:</translation>
@@ -164,6 +167,7 @@
 <translation id="2325650632570794183">Гэты тып файла не падтрымліваецца. Знайсці праграму для адкрыцця файлаў такога тыпу можна ў Вэб-краме Chrome.</translation>
 <translation id="2326539130272988168">Балгарская</translation>
 <translation id="2337715497728194187">Абагуліць з Bruschetta</translation>
+<translation id="233822363739146957">Недастаткова месца ў сховішчы для сінхранізацыі ўсіх файлаў</translation>
 <translation id="23721837607121582">Спампаваць мабільны профіль, сетка <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, "<ph name="NETWORK_NAME" />"</translation>
 <translation id="2377319039870049694">Пераключыць на рэжым спіса</translation>
 <translation id="2377590462528165447">Папак абагулена з сістэмай Linux: <ph name="NUMBER_OF_ITEMS" /></translation>
@@ -217,6 +221,7 @@
 <translation id="2782104745158847185">Памылка ўсталявання Linux-праграмы</translation>
 <translation id="2802583107108007218">Даведацца больш пра гэтыя абмежаванні</translation>
 <translation id="2803375539583399270">Увядзіце PIN-код</translation>
+<translation id="2819519502129272135">Сінхранізацыя файлаў выключана</translation>
 <translation id="2820957248982571256">Ідзе пошук...</translation>
 <translation id="2830077785865012357">Кітайская (чжуінь)</translation>
 <translation id="2843806747483486897">Змяніць стандартнае дзеянне...</translation>
@@ -441,6 +446,7 @@
 <translation id="4599600860674643278">Фільтр скінуты.</translation>
 <translation id="4603392156942865207">Ідзе капіраванне файла "<ph name="FILE_NAME" />" у папку "<ph name="FOLDER_NAME" />"</translation>
 <translation id="4631887759990505102">Выканаўца</translation>
+<translation id="4635373743001040938">Месца ў сховішчы было вельмі мала. Сінхранізацыя файлаў выключана.</translation>
 <translation id="4642769377300286600">Ідзе ўсталяванне мабільнага профілю, сетка <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="4646813851450205600">Чэшская з раскладкай Qwerty</translation>
 <translation id="4656777537938206294">Доступ да файлаў у пазасеткавым рэжыме</translation>
@@ -494,6 +500,7 @@
 <translation id="4961158930123534723">1 папка абагулена з Parallels Desktop</translation>
 <translation id="496656650103537022">Файл "<ph name="FILE_NAME" />" адноўлены</translation>
 <translation id="4969785127455456148">Альбом</translation>
+<translation id="4972330214479971536">Не ўдалося завяршыць наладжванне сінхранізацыі файлаў</translation>
 <translation id="4973523518332075481">Максімальна дапушчальная даўжыня назвы (у сімвалах): <ph name="MAX_LENGTH" /></translation>
 <translation id="4973970068702235170">Не ўдалося стварыць архіў – нечаканая памылка: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">Японская</translation>
@@ -806,6 +813,7 @@
 <translation id="7309413087278791451">Нямецкая (Бельгія)</translation>
 <translation id="7339898014177206373">Новае акно</translation>
 <translation id="7343393116438664539">В'етнамская (раскладка Telex)</translation>
+<translation id="7347346221088620549">Зашыфраваны файл</translation>
 <translation id="7357762654218998920">Гэты тып файла не падтрымліваецца. <ph name="BEGIN_LINK_HELP" />Даведайцеся больш<ph name="END_LINK_HELP" /> пра адкрыццё файлаў на Chrome OS.</translation>
 <translation id="7359359531237882347">Ідзе капіраванне элементаў (<ph name="NUMBER_OF_ITEMS" />)...</translation>
 <translation id="7375951387215729722">Файлы ў спісе адсартаваны па параметры "<ph name="COLUMN_NAME" />" (у пачатку будуць нядаўна змененыя).</translation>
@@ -992,6 +1000,7 @@
 <translation id="8609695766746872526">Ісландская</translation>
 <translation id="863903787380594467">Няправільны PIN-код. Засталося спроб: <ph name="RETRIES" />.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – порт</translation>
+<translation id="8656407365183407932">Пазасеткавыя файлы былі выдалены</translation>
 <translation id="8656768832129462377">Не правяраць</translation>
 <translation id="8688591111840995413">Няправільны пароль</translation>
 <translation id="8698464937041809063">Рысунак Google</translation>
@@ -1027,6 +1036,7 @@
 <translation id="8997962250644902079">Кітайская (традыцыйная, піньінь)</translation>
 <translation id="8998871447376656508">Не ўдалося завяршыць запампоўванне: на Google Дыску недастаткова свабоднага месца.</translation>
 <translation id="9003940392834790328">Сетка <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, магутнасць сігналу – <ph name="SIGNAL_STRENGTH" />%, знаходзіцца пад кіраваннем адміністратара, падрабязныя звесткі</translation>
+<translation id="9007990314804111233">Увайдзіце ў свой уліковы запіс Microsoft</translation>
 <translation id="9017798300203431059">Руская фанетычная</translation>
 <translation id="9034924485347205037">Файлы Linux</translation>
 <translation id="9035012421917565900">Немагчыма перамясціць элементы назад у "<ph name="DESTINATION_NAME" />", таму вы не зможаце адрабіць гэта дзеянне.</translation>

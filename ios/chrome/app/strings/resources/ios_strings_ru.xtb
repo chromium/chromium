@@ -518,6 +518,7 @@
 <translation id="4272631900155121838">Чтобы отсканировать QR-код, разрешите доступ к камере в настройках.</translation>
 <translation id="4277990410970811858">Безопасный просмотр</translation>
 <translation id="4281844954008187215">Условия использования</translation>
+<translation id="4286718549648564014">Адрес перемещен в ваш аккаунт <ph name="USER_EMAIL" />.</translation>
 <translation id="4293080268407233932">Поиск</translation>
 <translation id="4302248187517737842">Имя пользователя не указано ••••••••</translation>
 <translation id="4304713468139749426">Менеджер паролей</translation>
@@ -1175,6 +1176,7 @@
 <translation id="8264966119170358612">Несколько ваших сохраненных паролей были раскрыты в результате утечки данных в стороннем сервисе. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="826614135184049678">В результате сброса настроек iPad произошел выход из аккаунта <ph name="USER_NAME" />. Чтобы войти, нажмите "Продолжить" ниже.</translation>
 <translation id="8271720166617117963">Принять и войти</translation>
+<translation id="8273982424131314219">Информация будет заполнена на странице <ph name="URL" />.</translation>
 <translation id="8278938988428169257">Введите слово или словосочетание.</translation>
 <translation id="8281781826761538115">Язык по умолчанию: <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Пропустить</translation>
@@ -1221,6 +1223,7 @@
 <translation id="8548878600947630424">Найти на странице…</translation>
 <translation id="8556590991644167667">{count,plural, =1{Вы закрыли {count} предупреждение.}one{Вы закрыли {count} предупреждение.}few{Вы закрыли {count} предупреждения.}many{Вы закрыли {count} предупреждений.}other{Вы закрыли {count} предупреждения.}}</translation>
 <translation id="8558480467877843976">Теперь можно сделать так, что при переходе по ссылкам в сообщениях, документах и других приложениях будет открываться браузер Chrome.</translation>
+<translation id="8580411965900177618">Нет, спасибо</translation>
 <translation id="8588404856427128947">Выключено</translation>
 <translation id="8591976964826315682">Блокировать файлы cookie сторонних сайтов в режиме инкогнито</translation>
 <translation id="8605219856220328675">Закрыть вкладку.</translation>
@@ -1257,6 +1260,7 @@
 <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="8810413591309742901">Режим просмотра сайтов по умолчанию</translation>
 <translation id="8820817407110198400">Закладки</translation>
+<translation id="8825562130641217944">Получите доступ к вашим закладкам, паролям и другим данным.</translation>
 <translation id="882557203579758546">Найти на странице…</translation>
 <translation id="8840513115188359703">Вы останетесь в аккаунте Google.</translation>
 <translation id="8843129975935593190">Ваша организация разрешила синхронизировать только некоторые данные.</translation>

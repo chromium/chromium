@@ -809,6 +809,7 @@ Baliteke aplikazioei emandako baimenak kontu honi aplikatzea. <ph name="APPS_LIN
 <translation id="1647408325348388858">Sareko aplikazio honetan ireki eta editatu nahi duzu <ph name="FILE_NAME" />?</translation>
 <translation id="1648528859488547844">Erabili Wi‑Fi edo sare mugikorrak kokapena zehazteko</translation>
 <translation id="164936512206786300">Desparekatu Bluetooth bidezko gailua</translation>
+<translation id="1650801028905250434">Nire unitatea ataleko fitxategiak Chromebook-arekin automatikoki sinkronizatuko dira, Interneteko konexiorik gabe atzitu ahal izan ditzazun. Hori aldatzeko, joan Ezarpenak &gt; Fitxategiak atalera.</translation>
 <translation id="1651008383952180276">Pasaesaldi bera idatzi behar duzu bietan</translation>
 <translation id="1651609627703324721">Fitxa hau errealitate birtuala erakusten ari da ikustaile batean</translation>
 <translation id="1652326691684645429">Gaitu Nearby Share</translation>
@@ -4211,6 +4212,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="4515872537870654449">Jarri Dell-ekin harremanetan laguntza teknikoa lortzeko. Oinarria itzali egingo da haizagailuak funtzionatzen ez badu.</translation>
 <translation id="4518840066030486079">Aldatu tekla moduaren estiloa</translation>
 <translation id="4519331665958994620">Webguneek kamera erabiltzea eska dezakete</translation>
+<translation id="4519605771716872386">Fitxategiak sinkronizatzeko aukera aktibatuta dago</translation>
 <translation id="4519935350946509010">Konexio-errorea.</translation>
 <translation id="4520385623207007473">Erabiltzen diren cookieak</translation>
 <translation id="452039078290142656"><ph name="VENDOR_NAME" /> saltzailearen gailu ezezagunak</translation>
@@ -7236,6 +7238,7 @@ Inoiz Voice Match erabiltzeari utzi nahi badiozu, ken ezazu Laguntzailea zerbitz
 <translation id="7124712201233930202">Ez dira gordetzen erakundearen gidalerroak</translation>
 <translation id="7125029162161377569">Privacy Sandbox-aren probei esker, berdin arakatu ahalko dituzu webguneak datu gutxiago erabilita. Pribatutasun handiagoa izango duzula eta webguneen arteko jarraipena mugatuko dela esan nahi du horrek. Proba berriak gehituko ditugu kaleratzeko prest egon ahala.</translation>
 <translation id="7125148293026877011">Ezabatu Crostini</translation>
+<translation id="7125932261198019860">Ziurtatu inprimagailua Chromebook-aren wifi-sare berera konektatuta dagoela, edo erabili USB kable bat. <ph name="LINK_BEGIN" />Lortu bateragarritasunari buruzko informazio gehiago<ph name="LINK_END" /></translation>
 <translation id="7127980134843952133">Deskargen historia</translation>
 <translation id="7128151990937044829">Jakinarazpenak blokeatuta badaude, erakutsi horren adierazle bat helbide-barran</translation>
 <translation id="7131040479572660648">Irakurri <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> eta <ph name="WEBSITE_3" /> webguneetan dituzun datuak</translation>
@@ -7428,6 +7431,7 @@ Inoiz Voice Match erabiltzeari utzi nahi badiozu, ken ezazu Laguntzailea zerbitz
 <translation id="7307129035224081534">Pausatuta</translation>
 <translation id="7308643132139167865">Webguneen hizkuntzak</translation>
 <translation id="7310598146671372464">Ezin izan da hasi saioa. Zerbitzariak ez ditu onartzen zehaztutako Kerberos enkriptatze motak. Jarri administratzailearekin harremanetan.</translation>
+<translation id="7311005168897771689">Atzitu Google Drive-ko fitxategiak Interneteko konexiorik ez daukazunean</translation>
 <translation id="7311244614769792472">Ez da aurkitu emaitzarik</translation>
 <translation id="7312210124139670355">Administratzailea zure eSIM txartela berrezartzen ari da. Agian minutu batzuk beharko dira.</translation>
 <translation id="7317831949569936035">Ikastetxeko gailuaren erregistroa</translation>

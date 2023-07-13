@@ -518,6 +518,7 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="4272631900155121838">Habilita la cámara en la configuración para escanear un código QR</translation>
 <translation id="4277990410970811858">Navegación segura</translation>
 <translation id="4281844954008187215">Condiciones del Servicio</translation>
+<translation id="4286718549648564014">La dirección se transfirió a tu cuenta <ph name="USER_EMAIL" /></translation>
 <translation id="4293080268407233932">Buscar</translation>
 <translation id="4302248187517737842">Sin nombre de usuario ••••••••</translation>
 <translation id="4304713468139749426">Administrador de contraseñas</translation>
@@ -1175,6 +1176,7 @@ También pueden usar cookies para ver la actividad de navegación en diferentes 
 <translation id="8264966119170358612">Se expusieron algunas de tus contraseñas guardadas en una violación de la seguridad de los datos de terceros. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="826614135184049678">Saliste de tu cuenta <ph name="USER_NAME" /> como parte del restablecimiento de tu iPad. Para volver a acceder, presiona "Continuar".</translation>
 <translation id="8271720166617117963">Aceptar y acceder</translation>
+<translation id="8273982424131314219">Completarás la información en <ph name="URL" /></translation>
 <translation id="8278938988428169257">Ingresa una palabra o frase.</translation>
 <translation id="8281781826761538115">Predeterminado: <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Omitir</translation>
@@ -1221,6 +1223,7 @@ Tus datos se encriptaron con tu frase de contraseña el <ph name="TIME" />. Ingr
 <translation id="8548878600947630424">Buscar en la página...</translation>
 <translation id="8556590991644167667">{count,plural, =1{Descartaste {count} advertencia}other{Descartaste {count} advertencias}}</translation>
 <translation id="8558480467877843976">Ahora puedes usar Chrome cada vez que navegas o presionas vínculos que aparecen en mensajes, documentos y otras apps.</translation>
+<translation id="8580411965900177618">No, gracias</translation>
 <translation id="8588404856427128947">Apagada</translation>
 <translation id="8591976964826315682">Bloquear cookies de terceros en modo Incógnito</translation>
 <translation id="8605219856220328675">Cierra la pestaña.</translation>
@@ -1257,6 +1260,7 @@ Tus datos se encriptaron con tu frase de contraseña el <ph name="TIME" />. Ingr
 <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="8810413591309742901">Vista predeterminada de sitios</translation>
 <translation id="8820817407110198400">Favoritos</translation>
+<translation id="8825562130641217944">Accede a tus favoritos, contraseñas y más.</translation>
 <translation id="882557203579758546">Buscar en la página…</translation>
 <translation id="8840513115188359703">No saldrás de tu cuenta de Google.</translation>
 <translation id="8843129975935593190">Tu organización limita lo que puedes sincronizar.</translation>

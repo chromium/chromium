@@ -425,6 +425,7 @@
 <translation id="4432921877815220091">第 <ph name="NETWORK_INDEX" /> 個網絡，總共 <ph name="NETWORK_COUNT" /> 個網絡，<ph name="NETWORK_NAME" />，喺裝置完成設定之後啟用，由管理員管理</translation>
 <translation id="4439427728133035643">第 <ph name="NETWORK_INDEX" /> 個網絡，一共有 <ph name="NETWORK_COUNT" /> 個網絡，<ph name="NETWORK_NAME" />，訊號強度係 <ph name="SIGNAL_STRENGTH" />%，連接</translation>
 <translation id="4442424173763614572">DNS 查詢失敗</translation>
+<translation id="4445896958353114391">正在同步處理檔案</translation>
 <translation id="4462159676511157176">自訂名稱伺服器</translation>
 <translation id="4465725236958772856">第 <ph name="NETWORK_INDEX" /> 個網絡，一共有 <ph name="NETWORK_COUNT" /> 個網絡，<ph name="NETWORK_NAME" />，由管理員管理，連接</translation>
 <translation id="4470564870223067757">韓文 2 Set</translation>
@@ -524,6 +525,7 @@
 <translation id="5102922915594634436">管理已同步處理的資料夾</translation>
 <translation id="5109254780565519649">發生錯誤。部分項目可能未還原。</translation>
 <translation id="5110329002213341433">英文 (加拿大)</translation>
+<translation id="5119780910075847424">同步處理作業已暫停</translation>
 <translation id="5123433949759960244">籃球</translation>
 <translation id="5129662217315786329">波蘭文</translation>
 <translation id="5144820558584035333">韓文 3 Set (390)</translation>
@@ -807,6 +809,7 @@
 <translation id="7256405249507348194">無法識別的錯誤：<ph name="DESC" /></translation>
 <translation id="7268659760406822741">可用服務</translation>
 <translation id="7291818353625820805">要重複按鍵動作嗎？請在「鍵盤設定」中關閉重音符號功能</translation>
+<translation id="729236380049459563">檔案同步處理功能已開啟</translation>
 <translation id="7292816689782057017">管理員政策已限制儲存至部份位置。</translation>
 <translation id="7294063083760278948">泰盧固文 (音譯)</translation>
 <translation id="7295662345261934369">與他人分享</translation>
@@ -920,6 +923,7 @@
 <translation id="8087576439476816834">下載，設定檔名稱：<ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">與我共用的項目</translation>
 <translation id="8116072619078571545">冰水</translation>
+<translation id="8124093710070495550">同步處理問題</translation>
 <translation id="8128733386027980860">英文 (英國)，Dvorak 鍵盤</translation>
 <translation id="8137331602592933310">「<ph name="FILENAME" />」是他人與您共用的項目。您不是這個檔案的擁有者，無法刪除這個檔案。</translation>
 <translation id="8138705869659070104">在裝置完成設定後啟用</translation>

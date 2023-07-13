@@ -814,6 +814,7 @@ Dopuštenja koja ste već dali aplikacijama mogu se primijeniti na ovaj račun. 
 <translation id="1647408325348388858">Otvoriti i urediti <ph name="FILE_NAME" /> u ovoj web-aplikaciji?</translation>
 <translation id="1648528859488547844">Za utvrđivanje lokacije upotrebljava se Wi‑Fi, Bluetooth ili mobilne mreže</translation>
 <translation id="164936512206786300">Rasparivanje Bluetooth uređaja</translation>
+<translation id="1650801028905250434">Vaše datoteke na stranici Moj disk automatski će se sinkronizirati s vašim Chromebookom kako biste im mogli pristupati bez internetske veze. To uvijek možete promijeniti u odjeljku Postavke &gt; Datoteke.</translation>
 <translation id="1651008383952180276">Morate dvaput unijeti istu šifru</translation>
 <translation id="1651609627703324721">VR sadržaj ove kartice prikazuje se putem maske</translation>
 <translation id="1652326691684645429">Omogući dijeljenje u blizini</translation>
@@ -4229,6 +4230,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="4515872537870654449">Za servis se obratite Dellu. Priključna stanica isključit će se ako ventilator ne radi.</translation>
 <translation id="4518840066030486079">Stil načina tipke Shift</translation>
 <translation id="4519331665958994620">Web-lokacije mogu tražiti dopuštenje za upotrebu kamere</translation>
+<translation id="4519605771716872386">Sinkronizacija datoteka uključena</translation>
 <translation id="4519935350946509010">Pogreška veze.</translation>
 <translation id="4520385623207007473">Upotreba kolačića</translation>
 <translation id="452039078290142656">nepoznati uređaji dobavljača <ph name="VENDOR_NAME" /></translation>
@@ -7272,6 +7274,7 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="7124712201233930202">Pravila vaše organizacije nisu zadovoljena</translation>
 <translation id="7125029162161377569">U eksperimentima Privacy Sandboxa web-lokacije mogu pružiti isti doživljaj pregledavanja koristeći manju količinu vaših podataka. To znači više privatnosti za vas i manje praćenja na različitim web-lokacijama. Nove eksperimente dodat ćemo kad budu spremni za testiranje.</translation>
 <translation id="7125148293026877011">Brisanje Crostinija</translation>
+<translation id="7125932261198019860">Pisač mora biti povezan s istom Wi-Fi mrežom kao i Chromebook ili upotrijebite USB kabel. <ph name="LINK_BEGIN" />Saznajte više o kompatibilnosti<ph name="LINK_END" /></translation>
 <translation id="7127980134843952133">Povijest preuzimanja</translation>
 <translation id="7128151990937044829">Prikaži pokazivač na adresnoj traci kada su obavijesti blokirane</translation>
 <translation id="7131040479572660648">čitati vaše podatke s web-lokacija <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> i <ph name="WEBSITE_3" /></translation>
@@ -7465,6 +7468,7 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="7307129035224081534">Pauzirano</translation>
 <translation id="7308643132139167865">Jezici web-lokacija</translation>
 <translation id="7310598146671372464">Prijava nije uspjela. Poslužitelj ne podržava navedene vrste enkripcije Kerberos. Obratite se administratoru.</translation>
+<translation id="7311005168897771689">Lako pristupajte datotekama Google diska offline</translation>
 <translation id="7311244614769792472">Nema rezultata</translation>
 <translation id="7312210124139670355">Vaš administrator vraća vaš eSIM na zadano. To može potrajati nekoliko minuta.</translation>
 <translation id="7317831949569936035">Upis u školu</translation>

@@ -812,6 +812,7 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="1647408325348388858">Abrir e editar <ph name="FILE_NAME" /> nesta app Web?</translation>
 <translation id="1648528859488547844">Usar Wi-Fi ou redes móveis para determinar a localização</translation>
 <translation id="164936512206786300">Dessincronizar dispositivo Bluetooth</translation>
+<translation id="1650801028905250434">Os seus ficheiros em O meu disco são sincronizados automaticamente com o Chromebook para que possa aceder-lhes sem uma ligação à Internet. Pode alterar esta opção em qualquer altura em Definições &gt; Ficheiros.</translation>
 <translation id="1651008383952180276">Tem de introduzir a mesma frase de acesso duas vezes</translation>
 <translation id="1651609627703324721">Este separador está a apresentar conteúdos de RV (realidade virtual) num capacete de realidade virtual</translation>
 <translation id="1652326691684645429">Ativar a funcionalidade Partilhar na proximidade</translation>
@@ -4227,6 +4228,7 @@ Pretende pará-lo?</translation>
 <translation id="4515872537870654449">Contacte a Dell para obter assistência. A estação de carregamento será encerrada se a ventoinha não estiver a funcionar.</translation>
 <translation id="4518840066030486079">Estilo do modo com tecla Shift</translation>
 <translation id="4519331665958994620">Os sites podem solicitar a utilização da câmara</translation>
+<translation id="4519605771716872386">Sincronização de ficheiros ativada</translation>
 <translation id="4519935350946509010">Erro de ligação.</translation>
 <translation id="4520385623207007473">Cookies em utilização</translation>
 <translation id="452039078290142656">dispositivos desconhecidos de <ph name="VENDOR_NAME" /></translation>
@@ -7270,6 +7272,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7124712201233930202">As políticas da sua organização não foram cumpridas</translation>
 <translation id="7125029162161377569">Com as avaliações da Privacy Sandbox, os sites podem proporcionar a mesma experiência de navegação com uma menor utilização das suas informações. Isso significa mais privacidade para si e menos monitorização entre sites. Vamos adicionar novas avaliações à medida que estiverem prontas para serem testadas.</translation>
 <translation id="7125148293026877011">Eliminar Crostini</translation>
+<translation id="7125932261198019860">Certifique-se de que a impressora está ligada à mesma rede Wi-Fi que o Chromebook ou use um cabo USB. <ph name="LINK_BEGIN" />Saiba mais acerca da compatibilidade<ph name="LINK_END" /></translation>
 <translation id="7127980134843952133">Histórico de transferências</translation>
 <translation id="7128151990937044829">Apresentar um indicador na barra de endereço quando as notificações estão bloqueadas</translation>
 <translation id="7131040479572660648">Ler os seus dados em <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> e <ph name="WEBSITE_3" /></translation>
@@ -7463,6 +7466,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7307129035224081534">Em pausa</translation>
 <translation id="7308643132139167865">Idiomas de Websites</translation>
 <translation id="7310598146671372464">Não é possível iniciar sessão. O servidor não suporta os tipos de encriptação Kerberos especificados. Contacte o administrador.</translation>
+<translation id="7311005168897771689">Aceda aos seus ficheiros do Google Drive quando estiver offline</translation>
 <translation id="7311244614769792472">Não foram encontrados resultados</translation>
 <translation id="7312210124139670355">O seu administrador está a repor o eSIM. Esta ação pode demorar alguns minutos.</translation>
 <translation id="7317831949569936035">Inscrição escolar</translation>

@@ -130,6 +130,7 @@
 <translation id="2084108471225856927">Geräteeinstellungen</translation>
 <translation id="2084809735218147718">Person, die in Zeichensprache „danke“ sagt</translation>
 <translation id="2088690981887365033">VPN-Netzwerk</translation>
+<translation id="209653272837065803">Es ist nicht genügend Speicherplatz vorhanden, um die Dateisynchronisierung fortzusetzen</translation>
 <translation id="2111134541987263231">Aktiviere die Option <ph name="BEGIN_BOLD" />Im Inkognitomodus zulassen<ph name="END_BOLD" /></translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> Elemente werden gelöscht und können nicht wiederhergestellt werden.</translation>
 <translation id="2122305276694332719">Wenn automatisch eine Verbindung zu einem verborgenen Netzwerk hergestellt wird, können andere dein Gerät sowie einige Netzwerkeinstellungen sehen. Dies wird nicht empfohlen.</translation>
@@ -146,9 +147,11 @@
 <translation id="2198315389084035571">Chinesisch (vereinfacht)</translation>
 <translation id="22085916256174561">Koreanisch</translation>
 <translation id="2208919847696382164">Mit Linux installieren</translation>
+<translation id="2215692307449050019">Akku ist schwach. Die Dateisynchronisierung wird fortgesetzt, wenn das Gerät an die Stromversorgung angeschlossen wird.</translation>
 <translation id="2225536596944493418">Möchtest du wirklich <ph name="NUMBER_OF_ITEMS" /> Elemente löschen?</translation>
 <translation id="2230062665678605299">Ordner "<ph name="FOLDER_NAME" />" kann nicht erstellt werden. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="2239068707900391003">Person mit Kaffee</translation>
+<translation id="2247561763838186830">Du wurdest abgemeldet</translation>
 <translation id="2251368349685848079">Aus Papierkorb wiederherstellen</translation>
 <translation id="2278133026967558505">Dateizugriff durch alle Websites und URLs</translation>
 <translation id="2282155092769082568">URL für Autokonfiguration:</translation>
@@ -163,6 +166,7 @@
 <translation id="2325650632570794183">Dieser Dateityp wird nicht unterstützt. Finde im Chrome Web Store eine App, mit der du diesen Dateityp öffnen kannst.</translation>
 <translation id="2326539130272988168">Bulgarisch</translation>
 <translation id="2337715497728194187">Für Bruschetta freigeben</translation>
+<translation id="233822363739146957">Es ist nicht genügend Speicherplatz vorhanden, um alle deine Dateien zu synchronisieren</translation>
 <translation id="23721837607121582">Mobiles Profil herunterladen, Netzwerk <ph name="NETWORK_INDEX" /> von <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Zur Listenansicht wechseln</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> Ordner für Linux freigegeben</translation>
@@ -215,6 +219,7 @@
 <translation id="2782104745158847185">Fehler beim Installieren der Linux-Anwendung</translation>
 <translation id="2802583107108007218">Weitere Informationen zu diesen Einschränkungen</translation>
 <translation id="2803375539583399270">PIN eingeben</translation>
+<translation id="2819519502129272135">Dateisynchronisierung deaktiviert</translation>
 <translation id="2820957248982571256">Wird gescannt...</translation>
 <translation id="2830077785865012357">Chinesisch (Zhuyin)</translation>
 <translation id="2843806747483486897">Standardeinstellungen ändern...</translation>
@@ -439,6 +444,7 @@
 <translation id="4599600860674643278">Filter wurde zurückgesetzt.</translation>
 <translation id="4603392156942865207"><ph name="FILE_NAME" /> wird in den Ordner "<ph name="FOLDER_NAME" />" kopiert</translation>
 <translation id="4631887759990505102">Künstler</translation>
+<translation id="4635373743001040938">Sehr wenig verfügbarer Speicherplatz. Die Dateisynchronisierung wurde deaktiviert.</translation>
 <translation id="4642769377300286600">Mobiles Profil wird installiert, Netzwerk <ph name="NETWORK_INDEX" /> von <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="4646813851450205600">Tschechisch mit Qwerty-Tastatur</translation>
 <translation id="4656777537938206294">Dateien offline verfügbar machen</translation>
@@ -492,6 +498,7 @@
 <translation id="4961158930123534723">1 Ordner für Parallels Desktop freigegeben</translation>
 <translation id="496656650103537022">„<ph name="FILE_NAME" />“ wiederhergestellt</translation>
 <translation id="4969785127455456148">Album</translation>
+<translation id="4972330214479971536">Die Einrichtung der Dateisynchronisierung konnte nicht abgeschlossen werden</translation>
 <translation id="4973523518332075481">Der Name darf höchstens <ph name="MAX_LENGTH" /> Zeichen lang sein</translation>
 <translation id="4973970068702235170">Fehler beim Zippen, unerwarteter Fehler: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">Japanisch</translation>
@@ -803,6 +810,7 @@
 <translation id="7309413087278791451">Deutsch (Belgien)</translation>
 <translation id="7339898014177206373">Neues Fenster</translation>
 <translation id="7343393116438664539">Vietnamesisch (Telex)</translation>
+<translation id="7347346221088620549">Verschlüsselte Datei</translation>
 <translation id="7357762654218998920">Dieser Dateityp wird nicht unterstützt. <ph name="BEGIN_LINK_HELP" />Weitere Informationen zum Öffnen von Dateien unter Chrome OS<ph name="END_LINK_HELP" /></translation>
 <translation id="7359359531237882347"><ph name="NUMBER_OF_ITEMS" /> Elemente werden kopiert...</translation>
 <translation id="7375951387215729722">Die Dateiliste wurde in absteigender Reihenfolge nach "<ph name="COLUMN_NAME" />" sortiert.</translation>
@@ -986,6 +994,7 @@
 <translation id="8609695766746872526">Isländisch</translation>
 <translation id="863903787380594467">Falsche PIN. Du hast noch <ph name="RETRIES" /> Versuche.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – Port</translation>
+<translation id="8656407365183407932">Deine Offlinedateien mussten entfernt werden</translation>
 <translation id="8656768832129462377">Nicht überprüfen</translation>
 <translation id="8688591111840995413">Passwort ungültig</translation>
 <translation id="8698464937041809063">Google-Zeichnung</translation>
@@ -1021,6 +1030,7 @@
 <translation id="8997962250644902079">Chinesisch (traditionell) (Pinyin)</translation>
 <translation id="8998871447376656508">In deinem Google Drive ist nicht genügend freier Speicherplatz vorhanden, um den Upload abzuschließen.</translation>
 <translation id="9003940392834790328">Netzwerk <ph name="NETWORK_INDEX" /> von <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Signalstärke bei <ph name="SIGNAL_STRENGTH" /> %, von deinem Administrator verwaltet, Details</translation>
+<translation id="9007990314804111233">Im Microsoft-Konto anmelden</translation>
 <translation id="9017798300203431059">Russisch – phonetisch</translation>
 <translation id="9034924485347205037">Linux-Dateien</translation>
 <translation id="9035012421917565900">Diese Elemente können nicht in "<ph name="DESTINATION_NAME" />" zurückverschoben werden. Diese Aktion lässt sich also nicht rückgängig machen.</translation>

@@ -812,6 +812,7 @@
 <translation id="1647408325348388858">Искате ли да отворите и редактирате „<ph name="FILE_NAME" />“ в това уеб приложение?</translation>
 <translation id="1648528859488547844">Определяне на местоположението посредством Wi‑Fi или мобилни мрежи</translation>
 <translation id="164936512206786300">Прекратяване на сдвояването на устройство с Bluetooth</translation>
+<translation id="1650801028905250434">Файловете ви в „Моят диск“ ще се синхронизират автоматично с вашия Chromebook, така че да можете да осъществявате достъп до тях без връзка с интернет. Можете да промените това по всяко време от „Настройки &gt; Файлове“.</translation>
 <translation id="1651008383952180276">Трябва да въведете един и същ пропуск два пъти</translation>
 <translation id="1651609627703324721">Този раздел предава съдържание във VR към очила</translation>
 <translation id="1652326691684645429">Активиране на „Споделяне наблизо“</translation>
@@ -4239,6 +4240,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4515872537870654449">Обърнете се към Dell за обслужване. Докинг станцията ще се изключи, ако вентилаторът не работи.</translation>
 <translation id="4518840066030486079">Стил на режимa за клавиша Shift</translation>
 <translation id="4519331665958994620">Сайтовете могат да извеждат запитвания за използване на камерата ви</translation>
+<translation id="4519605771716872386">Синхронизирането на файловете е включено</translation>
 <translation id="4519935350946509010">Грешка при свързване.</translation>
 <translation id="4520385623207007473">„Бисквитки“, които се използват</translation>
 <translation id="452039078290142656">неизвестни устройства от <ph name="VENDOR_NAME" /></translation>
@@ -7282,6 +7284,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7124712201233930202">Правилата на организацията ви не са спазени</translation>
 <translation id="7125029162161377569">С експериментите на Privacy Sandbox сайтовете могат да осигуряват същата практическа работа при сърфиране, използвайки по-малко ваши данни. Това означава по-голяма поверителност за вас и по-малко проследяване в различни сайтове. Ще добавим нови експерименти, когато са готови за тестване.</translation>
 <translation id="7125148293026877011">Изтриване на Crostini</translation>
+<translation id="7125932261198019860">Уверете се, че принтерът ви е свързан със същата Wi-Fi мрежа като вашия Chromebook, или използвайте USB кабел. <ph name="LINK_BEGIN" />Научете повече за съвместимостта<ph name="LINK_END" /></translation>
 <translation id="7127980134843952133">История на изтеглянията</translation>
 <translation id="7128151990937044829">Показване на индикатор в адресната лента, когато известията са блокирани</translation>
 <translation id="7131040479572660648">Четене на данните ви от <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> и <ph name="WEBSITE_3" /></translation>
@@ -7475,6 +7478,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7307129035224081534">На пауза</translation>
 <translation id="7308643132139167865">Езици на уебсайтовете</translation>
 <translation id="7310598146671372464">Влизането в профила не бе успешно. Сървърът не поддържа посочените типове шифроване в Kerberos. Моля, обърнете се към администратора си.</translation>
+<translation id="7311005168897771689">Работете с файловете си в Google Диск, когато сте офлайн</translation>
 <translation id="7311244614769792472">Няма намерени резултати</translation>
 <translation id="7312210124139670355">Администраторът ви нулира електронната ви SIM карта. Това може да отнеме няколко минути.</translation>
 <translation id="7317831949569936035">Регистриране в учебно заведение</translation>

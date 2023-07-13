@@ -9,6 +9,7 @@
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> հոսք, <ph name="CPU_MAX_CLOCK_SPEED" /> ԳՀց)</translation>
 <translation id="1047773237499189053">Հասանելի է նոր գործառույթ։ Ավելին իմանալու համար օգտագործեք վեր սլաքը։</translation>
 <translation id="1059913517121127803">Չհաջողվեց սկսել սկանավորումը</translation>
+<translation id="1062823486781306604"><ph name="INDEX" />/<ph name="COUNT" />, <ph name="NAME" />։</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Հայտնաբերվել է հրապատ</translation>
 <translation id="1075811647922107217">Էջի չափսը</translation>
@@ -540,6 +541,7 @@
 <translation id="5257811368506016604">Միացնել բաց գույների ռեժիմը</translation>
 <translation id="5264277876637023664">Փորձարկել CPU-ն</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
+<translation id="527501763019887383">APN-ն անջատված է։</translation>
 <translation id="5275828089655680674">Նորից գործարկել ծրագրերը</translation>
 <translation id="5286252187236914003">L2TP/IPsec</translation>
 <translation id="5286263799730375393">ֆոնի լուսավորության գույնը</translation>
@@ -604,6 +606,7 @@
 <translation id="5832805196449965646">Ավելացնել անձ</translation>
 <translation id="583281660410589416">Անհայտ</translation>
 <translation id="5843706793424741864">Ֆարենհայտ</translation>
+<translation id="584953448295717128">Ավտոմատ հայտնաբերվել է APN։</translation>
 <translation id="5849570051105887917">Տան ծառայությունների մատակարարի կոդը</translation>
 <translation id="5859603669299126575">Ցուցասրահի ալբոմ</translation>
 <translation id="5860033963881614850">Անջատ.</translation>
@@ -882,6 +885,7 @@
 <translation id="80398733265834479">Միացնել գույների ինքնակարգավորման ռեժիմը</translation>
 <translation id="8041089156583427627">Կարծիք հայտնել</translation>
 <translation id="8045012663542226664">Խոսափողն անջատված է</translation>
+<translation id="8067126283828232460">APN-ը միացած է։</translation>
 <translation id="8075838845814659848">Մարտկոցի լիցքը</translation>
 <translation id="8076492880354921740">Ներդիրներ</translation>
 <translation id="8082366717211101304">Չհաջողվեց փոխակերպել DNS-ը Android հավելվածներից</translation>
@@ -1028,6 +1032,7 @@
 <translation id="9111102763498581341">Ապակողպել</translation>
 <translation id="9122602430962285795">Նորից միանալու համար անցեք Կարգավորումներ</translation>
 <translation id="9126720536733509015">Պահեք մի քանի էջ մեկ PDF ֆայլում</translation>
+<translation id="9133104754938025929">Մարտկոցը խնայելու համար էկրանապահն աշխատում է միայն լիցքավորման ժամանակ։</translation>
 <translation id="9137526406337347448">Google-ի ծառայություններ</translation>
 <translation id="9138630967333032450">Ձախ Shift</translation>
 <translation id="9143347780818904997"><ph name="MINUTES" /> րոպեով</translation>

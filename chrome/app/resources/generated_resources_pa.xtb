@@ -142,6 +142,7 @@
 <translation id="1110965959145884739">ਚੁਣੋ ਕਿ ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਕਿਹੜੀਆਂ ਭਾਸ਼ਾਵਾਂ ਸਥਾਪਤ ਕਰਨੀਆਂ ਹਨ। ਡਿਸਕ ਵਿੱਚ ਜਗ੍ਹਾ ਬਚਾਉਣ ਲਈ ਵਰਤੋਂਕਾਰਾਂ ਵਿਚਕਾਰ ਭਾਸ਼ਾ ਫ਼ਾਈਲਾਂ ਸਾਂਝੀਆਂ ਕੀਤੀਆਂ ਜਾਂਦੀਆਂ ਹਨ। <ph name="BEGIN_LINK_LEARN_MORE" />ਹੋਰ ਜਾਣੋ<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1112420131909513020">ਬੈਕਗ੍ਰਾਊਂਡ ਟੈਬ ਬਲੂਟੁੱਥ ਦੀ ਵਰਤੋਂ ਕਰ ਰਹੀ ਹੈ</translation>
 <translation id="1112998165730922436">ਕਾਸਟਿੰਗ ਨੂੰ ਰੋਕਿਆ ਗਿਆ ਹੈ</translation>
+<translation id="1113807501859230251">ਕੀ ਆਪਣੇ <ph name="DEVICE_TYPE" /> ਤੋਂ Bruschetta ਨੂੰ ਹਟਾਉਣਾ ਹੈ? ਇਸ ਨਾਲ ਆਭਾਸੀ ਮਸ਼ੀਨ ਵਿੱਚ ਮੌਜੂਦ ਸਾਰੀਆਂ ਐਪਾਂ ਅਤੇ ਡਾਟਾ ਮਿਟ ਜਾਵੇਗਾ!</translation>
 <translation id="1114102982691049955"><ph name="PRINTER_MANUFACTURER" /> <ph name="PRINTER_MODEL" /> (USB)</translation>
 <translation id="1114202307280046356">ਡਾਇਮੰਡ</translation>
 <translation id="1114427165525619358">ਇਸ ਡੀਵਾਈਸ ਅਤੇ ਤੁਹਾਡੇ Google ਖਾਤੇ ਵਿਚਲੇ ਪਾਸਵਰਡ</translation>
@@ -1570,6 +1571,7 @@
     ਮਦਦ ਕੇਂਦਰ<ph name="END_LINK" /> 'ਤੇ ਜਾਓ।</translation>
 <translation id="2266957463645820432">USB 'ਤੇ IPP (IPPUSB)</translation>
 <translation id="2268130516524549846">ਬਲੂਟੁੱਥ ਬੰਦ ਹੈ</translation>
+<translation id="2268182915828370037">ਕੀ ਫ਼ਾਈਲ ਸਿੰਕ ਨੂੰ ਬੰਦ ਕਰਨਾ ਹੈ?</translation>
 <translation id="2269895253281481171">ਇਸਦੇ ਜੋਖਮ ਵਿੱਚ ਹੋਣ 'ਤੇ ਤੁਹਾਨੂੰ ਸੂਚਿਤ ਕੀਤਾ ਜਾਵੇਗਾ</translation>
 <translation id="2270450558902169558">ਡੋਮੇਨ <ph name="DOMAIN" /> ਵਿੱਚ ਕਿਸੇ ਵੀ ਡੀਵਾਈਸ ਨਾਲ ਡਾਟਾ ਐਕਸਚੇਂਜ ਕਰੋ</translation>
 <translation id="2270612886833477697"><ph name="BEGIN_PARAGRAPH1" />ਸਥਾਪਨਾ <ph name="BEGIN_BOLD" />ਨਾਲ ਤੁਹਾਡੀ ਹਾਰਡ ਡਰਾਈਵ ਦਾ ਸਾਰਾ ਡਾਟਾ ਮਿਟ ਜਾਵੇਗਾ<ph name="END_BOLD" />। ਪੱਕਾ ਕਰੋ ਕਿ ਤੁਹਾਡੇ ਡਾਟੇ ਦਾ ਬੈਕਅੱਪ ਲਿਆ ਗਿਆ ਹੈ।<ph name="END_PARAGRAPH1" />
@@ -2121,6 +2123,7 @@
 <translation id="2714393097308983682">Google Play Store</translation>
 <translation id="2715640894224696481">ਸੁਰੱਖਿਆ ਕੁੰਜੀ ਲਈ ਬੇਨਤੀ</translation>
 <translation id="2715751256863167692">ਇਹ ਅੱਪਗ੍ਰੇਡ ਤੁਹਾਡੀ Chromebook ਨੂੰ ਰੀਸੈੱਟ ਕਰਦਾ ਹੈ ਅਤੇ ਵਰਤਮਾਨ ਵਰਤੋਂਕਾਰ ਡਾਟੇ ਨੂੰ ਹਟਾਉਂਦਾ ਹੈ।</translation>
+<translation id="2715934493766003251">ਫ਼ਾਈਲ ਸਿੰਕ ਚਾਲੂ ਹੋਣ 'ਤੇ ਸਟੋਰੇਜ ਨੂੰ ਖਾਲੀ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ</translation>
 <translation id="2716986496990888774">ਇਸ ਸੈਟਿੰਗ ਦਾ ਪ੍ਰਬੰਧਨ ਮਾਂ-ਪਿਓ ਵੱਲੋਂ ਕੀਤਾ ਜਾਂਦਾ ਹੈ।</translation>
 <translation id="271749239614426244">ਮਾਮੂਲੀ ਕਰਸਰ ਹਿਲਜੁਲ ਨੂੰ ਅਣਡਿੱਠ ਕਰੋ</translation>
 <translation id="2718395828230677721">ਰਾਤ ਦੀ ਰੋਸ਼ਨੀ</translation>
@@ -2268,6 +2271,7 @@
 <translation id="2817435998497102771">ਆਪਣੇ ਵਾਲਪੇਪਰ ਅਤੇ ਸਟਾਈਲ ਸੈੱਟ ਕਰੋ</translation>
 <translation id="2818476747334107629">ਪ੍ਰਿੰਟਰ ਵੇਰਵੇ</translation>
 <translation id="2819167288942847344">ਸਕ੍ਰੀਨ 'ਤੇ ਐਪਾਂ ਦੇ ਅਜੀਬ ਢੰਗ ਨਾਲ ਦਿਖਾਈ ਦੇਣ ਤੋਂ ਬਚਣ ਲਈ ਫ਼ੋਨ ਅਤੇ ਟੈਬਲੈੱਟ ਵਾਸਤੇ ਪ੍ਰੀਸੈੱਟਾਂ ਜਾਂ ਆਕਾਰ ਬਦਲਣਯੋਗ ਵਿੰਡੋਆਂ ਨੂੰ ਵਰਤੋ</translation>
+<translation id="2819519502129272135">ਫ਼ਾਈਲ ਸਿੰਕ ਨੂੰ ਬੰਦ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="2820957248982571256">ਸਕੈਨ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ...</translation>
 <translation id="2822634587701817431">ਸੁੰਗੜਨ / ਵਿਸਤਾਰ ਕਰੋ</translation>
 <translation id="2822910719211888134">Linux ਦਾ ਬੈਕਅੱਪ ਲੈਣ ਵੇਲੇ ਗੜਬੜ ਹੋਈ</translation>
@@ -2735,6 +2739,7 @@
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - ਨੈੱਟਵਰਕ ਗੜਬੜ</translation>
 <translation id="3248902735035392926">ਸੁਰੱਖਿਆ ਮਾਈਨੇ ਰੱਖਦੀ ਹੈ। <ph name="BEGIN_LINK" />ਹੁਣੇ ਆਪਣੀਆਂ ਐਕਸਟੈਂਸ਼ਨਾਂ ਦੀ ਜਾਂਚ ਕਰਨ ਲਈ<ph name="END_LINK" /> ਲਈ ਸਮਾਂ ਕੱਢੋ</translation>
 <translation id="3249323165366527554"><ph name="EMAIL" /> ਦੇ ਲਈ <ph name="GOOGLE_PASSWORD_MANAGER" /> ਵਿੱਚ ਆਪਣਾ ਪਾਸਵਰਡ ਆਪਣੇ ਆਪ ਰੱਖਿਅਤ ਹੋਣ ਦੀ ਸੁਵਿਧਾ ਦੀ ਵਰਤੋਂ ਕਰ ਕੇ ਤੇਜ਼ੀ ਨਾਲ ਸਾਈਨ-ਅੱਪ ਅਤੇ ਸਾਈਨ-ਇਨ ਕਰੋ।</translation>
+<translation id="3251119461199395237">ਫ਼ਾਈਲ ਸਿੰਕ</translation>
 <translation id="3251714896659475029"><ph name="SUPERVISED_USER_NAME" /> ਨੂੰ "Ok Google" ਬੋਲ ਕੇ Google Assistant ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਦਿਓ</translation>
 <translation id="3251759466064201842">&lt;ਸਰਟੀਫਿਕੇਟ ਦਾ ਭਾਗ ਨਹੀਂ&gt;</translation>
 <translation id="325238099842880997">ਘਰ ਵਿੱਚ ਬੱਚਿਆਂ ਦੇ ਖੇਡਣ, ਪੜਚੋਲ ਅਤੇ ਸਕੂਲ ਦਾ ਕੰਮ ਕਰਨ ਵਿੱਚ ਮਦਦ ਲਈ ਬੁਨਿਆਦੀ ਡਿਜੀਟਲ ਨਿਯਮ ਸੈੱਟ ਕਰੋ</translation>
@@ -3112,6 +3117,7 @@
 <translation id="3567284462585300767">ਆਪਣੇ ਆਲੇ-ਦੁਆਲੇ ਦੇ ਲੋਕਾਂ ਤੋਂ ਫ਼ਾਈਲਾਂ ਪ੍ਰਾਪਤ ਕਰਨ ਅਤੇ ਸਵੀਕਾਰ ਕਰਨ ਲਈ, ਦਿਖਣਯੋਗ ਹੋਵੋ</translation>
 <translation id="356738834800832239">ਤੁਹਾਡਾ ਪਾਸਵਰਡ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ ਹੈ</translation>
 <translation id="3569382839528428029">ਕੀ ਤੁਸੀਂ <ph name="APP_NAME" /> ਨਾਲ ਆਪਣੀ ਸਕ੍ਰੀਨ ਸ਼ੇਅਰ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ?</translation>
+<translation id="3569614820047645079">'ਮੇਰੀ ਡਰਾਈਵ' ਵਿੱਚ ਮੌਜੂਦ ਤੁਹਾਡੀਆਂ ਫ਼ਾਈਲਾਂ ਆਪਣੇ ਆਪ ਤੁਹਾਡੇ Chromebook ਨਾਲ ਸਿੰਕ ਹੋ ਜਾਣਗੀਆਂ, ਤਾਂ ਜੋ ਤੁਸੀਂ ਉਨ੍ਹਾਂ ਤੱਕ ਇੰਟਰਨੈੱਟ ਕਨੈਕਸ਼ਨ ਦੇ ਬਿਨਾਂ ਪਹੁੰਚ ਕਰ ਸਕੋ।</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> ਵੱਲੋਂ ਅੱਗੇ ਦਿੱਤੀਆਂ ਫ਼ਾਈਲਾਂ ਅਤੇ ਫੋਲਡਰਾਂ ਨੂੰ ਦੇਖਿਆ ਜਾ ਸਕਦਾ ਹੈ</translation>
 <translation id="3571734092741541777">ਸਥਾਪਤ ਕਰੋ</translation>
 <translation id="3575121482199441727">ਇਸ ਸਾਈਟ ਨੂੰ ਦਿਖਾਉਣ ਦਿਓ</translation>
@@ -3544,6 +3550,7 @@
 <translation id="3916233823027929090">ਸੁਰੱਖਿਆ ਜਾਂਚਾਂ ਪੂਰੀਆਂ ਹੋਈਆਂ</translation>
 <translation id="3916445069167113093">ਇਸ ਕਿਸਮ ਦੀ ਫ਼ਾਈਲ ਤੁਹਾਡੇ ਕੰਪਿਊਟਰ ਨੂੰ ਨੁਕਸਾਨ ਪਹੁੰਚਾ ਸਕਦੀ ਹੈ। ਕੀ ਤੁਸੀਂ ਫੇਰ ਵੀ <ph name="FILE_NAME" /> ਨੂੰ ਰੱਖਣਾ ਚਾਹੁੰਦੇ ਹੋ?</translation>
 <translation id="3917184139185490151">ਤੁਹਾਡੇ ਕੰਪਿਊਟਰ ਵਿੱਚ ਕੋਈ ਅਜਿਹਾ ਸੁਰੱਖਿਆ ਮਾਡਿਊਲ ਹੈ, ਜਿਸਨੂੰ ChromeOS ਵਿਚਲੀਆਂ ਕਈ ਗੰਭੀਰ ਸੁਰੱਖਿਆ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਨੂੰ ਲਾਗੂ ਕਰਨ ਲਈ ਵਰਤਿਆ ਜਾਂਦਾ ਹੈ। ਹੋਰ ਜਾਣਨ ਲਈ Chromebook ਦੇ ਮਦਦ ਕੇਂਦਰ 'ਤੇ ਜਾਓ: https://support.google.com/chromebook/?p=sm</translation>
+<translation id="3917644013202553949">ਤੁਹਾਡੀਆਂ ਫ਼ਾਈਲਾਂ ਨੂੰ ਸਿੰਕ ਕਰਨ ਲਈ ਲੋੜੀਂਦੀ ਸਟੋਰੇਜ ਨਹੀਂ ਹੈ। ਜਗ੍ਹਾ ਖਾਲੀ ਕਰ ਕੇ ਦੇਖੋ।</translation>
 <translation id="3918972485393593704">Google ਨੂੰ ਵੇਰਵਿਆਂ ਦੀ ਰਿਪੋਰਟ ਕਰੋ</translation>
 <translation id="3919145445993746351">ਆਪਣੇ ਸਾਰੇ ਕੰਪਿਊਟਰਾਂ 'ਤੇ ਆਪਣੀਆਂ ਐਕਸਟੈਂਸ਼ਨਾਂ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ, ਸਿੰਕ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="3919229493046408863">ਡੀਵਾਈਸਾਂ ਦੇ ਨਜ਼ਦੀਕ ਹੋਣ 'ਤੇ ਸੂਚਨਾ ਬੰਦ ਕਰੋ</translation>
@@ -3855,6 +3862,7 @@
 <translation id="4184803915913850597">HID ਡੀਵਾਈਸ (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
 <translation id="4186749321808907788"><ph name="QUERY_NAME" /> - <ph name="DEFAULT_SEARCH_ENGINE_NAME" /> Search</translation>
 <translation id="4187424053537113647"><ph name="APP_NAME" /> ਦਾ ਸੈੱਟਅੱਪ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ...</translation>
+<translation id="4190492351494485814">ਸ਼ੁਰੂਆਤੀ ਸੈੱਟਅੱਪ ਲਈ, ਤੁਹਾਨੂੰ ਇੰਟਰਨੈੱਟ ਨਾਲ ਕਨੈਕਟ ਕਰਨਾ ਪਵੇਗਾ ਤਾਂ ਜੋ ਫ਼ਾਈਲਾਂ ਤੁਹਾਡੇ Chromebook ਨਾਲ ਸਿੰਕ ਕਰ ਸਕਣ</translation>
 <translation id="4190828427319282529">ਕੀ-ਬੋਰਡ ਫੋਕਸ ਨੂੰ ਉਜਾਗਰ ਕਰੋ</translation>
 <translation id="4193251682249731404">ਭਰੋਸੇਯੋਗ CA</translation>
 <translation id="4193575319002689239">ਕਾਰਡ ਦਿਖਾਓ</translation>
@@ -4047,6 +4055,7 @@
 <translation id="4361745360460842907">ਟੈਬ ਵਜੋਂ ਖੋਲ੍ਹੋ</translation>
 <translation id="4362675504017386626">ਤੁਹਾਡੇ <ph name="DEVICE_TYPE" /> 'ਤੇ <ph name="ACCOUNT_EMAIL" /> ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਖਾਤਾ ਹੈ</translation>
 <translation id="4363215264289239958">Bruschetta ਐਪਾਂ</translation>
+<translation id="4363262124589131906">ਮੇਰੀ ਡਰਾਈਵ ਵਿਚਲੀਆਂ ਨਵੀਆਂ ਫ਼ਾਈਲਾਂ ਆਪਣੇ ਆਪ ਇਸ Chromebook ਨਾਲ ਸਿੰਕ ਕਰਨਾ ਬੰਦ ਕਰ ਦੇਣਗੀਆਂ</translation>
 <translation id="4363771538994847871">ਕੋਈ ਵੀ ਕਾਸਟ ਮੰਜ਼ਿਲਾਂ ਨਹੀਂ ਮਿਲੀਆਂ। ਕੀ ਮਦਦ ਦੀ ਲੋੜ ਹੈ?</translation>
 <translation id="4364327530094270451">ਖਰਬੂਜ਼ਾ</translation>
 <translation id="4364567974334641491"><ph name="APP_NAME" /> ਸਾਂਝਾ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ।</translation>
@@ -4472,6 +4481,7 @@
 <translation id="4715631922189108923">ਵਰਤੋਂਕਾਰ ਨਾਮ ਦਾ ਸੰਪਾਦਨ ਕਰੋ</translation>
 <translation id="47158868804223727">ਇਸ ਦਾ ਵਿਸਤਾਰ ਕਰਨ ਜਾਂ ਸਮੇਟਣ ਲਈ ਗਰੁੱਪ ਦੇ ਨਾਮ 'ਤੇ ਕਲਿੱਕ ਕਰੋ</translation>
 <translation id="4716483597559580346">ਵਾਧੂ ਸੁਰੱਖਿਆ ਲਈ ਪਾਵਰਵਾਸ਼</translation>
+<translation id="4716715661140829720">ਲੋੜੀਂਦੀ ਸਟੋਰੇਜ ਜਗ੍ਹਾ ਉਪਲਬਧ ਨਹੀਂ ਹੈ</translation>
 <translation id="471759229191973607">ਥੀਮ ਬਦਲੋ</translation>
 <translation id="4718046540206070045">ਬ੍ਰਾਊਜ਼ਰ ਤੋਂ ਜ਼ਿਆਦਾ ਸੁਵਿਧਾਵਾਂ</translation>
 <translation id="4722735765955348426"><ph name="USERNAME" /> ਦਾ ਪਾਸਵਰਡ</translation>
@@ -4524,6 +4534,7 @@
 <translation id="4763757134413542119"><ph name="USER_EMAIL" /> ਵੈਧ Google for Education ਖਾਤਾ ਨਹੀਂ ਹੈ। ਆਪਣੇ ਪ੍ਰਸ਼ਾਸਕ ਨੂੰ ਸੰਪਰਕ ਕਰੋ। ਜੇ ਤੁਸੀਂ ਪ੍ਰਸ਼ਾਸਕ ਹੋ, ਤਾਂ ਤੁਸੀਂ ਇੱਥੇ ਜਾ ਕੇ ਆਪਣੀ ਸੰਸਥਾ ਦਾ ਸੈੱਟਅੱਪ ਕਰ ਸਕਦੇ ਹੋ: g.co/workspace/edusignup</translation>
 <translation id="4765524037138975789">{MONTHS,plural, =1{ਇਸ ਡੀਵਾਈਸ ਨੂੰ 1 ਮਹੀਨੇ ਲਈ ਰੱਖਿਅਤ ਕੀਤਾ ਜਾਵੇਗਾ ਅਤੇ ਅਗਲੀ ਵਾਰ ਤੁਸੀਂ ਬਿਨਾਂ ਕੋਡ ਦੇ ਕਨੈਕਟ ਹੋ ਸਕਦੇ ਹੋ। ਇਸਨੂੰ ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਵੱਲੋਂ ਸੈੱਟ ਕੀਤਾ ਗਿਆ ਹੈ।}one{ਇਸ ਡੀਵਾਈਸ ਨੂੰ {MONTHS} ਮਹੀਨੇ ਲਈ ਰੱਖਿਅਤ ਕੀਤਾ ਜਾਵੇਗਾ ਅਤੇ ਅਗਲੀ ਵਾਰ ਤੁਸੀਂ ਬਿਨਾਂ ਕੋਡ ਦੇ ਕਨੈਕਟ ਹੋ ਸਕਦੇ ਹੋ। ਇਸਨੂੰ ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਵੱਲੋਂ ਸੈੱਟ ਕੀਤਾ ਗਿਆ ਹੈ।}other{ਇਸ ਡੀਵਾਈਸ ਨੂੰ {MONTHS} ਮਹੀਨਿਆਂ ਲਈ ਰੱਖਿਅਤ ਕੀਤਾ ਜਾਵੇਗਾ ਅਤੇ ਅਗਲੀ ਵਾਰ ਤੁਸੀਂ ਬਿਨਾਂ ਕੋਡ ਦੇ ਕਨੈਕਟ ਹੋ ਸਕਦੇ ਹੋ। ਇਸਨੂੰ ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਵੱਲੋਂ ਸੈੱਟ ਕੀਤਾ ਗਿਆ ਹੈ।}}</translation>
 <translation id="4765582662863429759">'Android ਸੁਨੇਹੇ' ਨੂੰ ਤੁਹਾਡੇ ਫ਼ੋਨ ਦੇ ਲਿਖਤੀ ਸੁਨੇਹਿਆਂ ਨੂੰ ਤੁਹਾਡੀ Chromebook 'ਤੇ ਦਿਖਾਉਣ ਦਿਓ</translation>
+<translation id="476563889641554689">Lens ਨਾਲ ਖੋਜ ਕਰਨ ਲਈ ਕੋਈ ਖੇਤਰ ਚੁਣੋ</translation>
 <translation id="4766598565665644999">ਸਾਰੀਆਂ ਐਕਸਟੈਂਸ਼ਨਾਂ <ph name="HOST" /> ਨੂੰ ਪੜ੍ਹ ਅਤੇ ਬਦਲ ਸਕਦੀਆਂ ਹਨ</translation>
 <translation id="4767427586072640478">ਬੰਦ ਕੀਤੀਆਂ ਐਕਸਟੈਂਸ਼ਨਾਂ ਬਾਰੇ ਹੋਰ ਜਾਣੋ।</translation>
 <translation id="4768332406694066911">ਤੁਹਾਡੇ ਕੋਲ ਇਹਨਾਂ ਸੰਸਥਾਵਾਂ ਦੇ ਪ੍ਰਮਾਣ-ਪੱਤਰ ਹਨ ਜੋ ਤੁਹਾਡੀ ਪਛਾਣ ਕਰਦੇ ਹਨ</translation>
@@ -4582,6 +4593,7 @@
 <translation id="481574578487123132">ਲਿੰਕ ਕੀਤੇ ਡੀਵਾਈਸ</translation>
 <translation id="4816097470512964351"><ph name="DEVICE" />, ਵੇਰਵੇ</translation>
 <translation id="4816336393325437908">{COUNT,plural, =1{1 ਬੁੱਕਮਾਰਕ ਮਿਟਾਇਆ ਗਿਆ}one{{COUNT} ਬੁੱਕਮਾਰਕ ਮਿਟਾਇਆ ਗਿਆ}other{{COUNT} ਬੁੱਕਮਾਰਕ ਮਿਟਾਏ ਗਏ}}</translation>
+<translation id="481689174647911539">ਇਹ ਫ਼ਾਈਲ ਵਾਇਰਸ ਜਾਂ ਮਾਲਵੇਅਰ ਹੋ ਸਕਦੀ ਹੈ।<ph name="LINE_BREAK" />ਤੁਸੀਂ ਇਹ ਦੇਖਣ ਲਈ ਇਸਨੂੰ Google ਸੁਰੱਖਿਅਤ ਬ੍ਰਾਊਜ਼ਿੰਗ 'ਤੇ ਭੇਜ ਸਕਦੇ ਹੋ ਕਿ ਕੀ ਇਹ ਅਸੁਰੱਖਿਅਤ ਹੈ। ਸਕੈਨ ਵਿੱਚ ਆਮ ਤੌਰ 'ਤੇ ਕੁਝ ਸਕਿੰਟਾਂ ਦਾ ਸਮਾਂ ਲੱਗਦਾ ਹੈ।</translation>
 <translation id="4816900689218414104">ਫ਼ੋਨ ਜਾਂ ਟੈਬਲੈੱਟ 'ਤੇ ਪਾਸਕੀ ਬਣਾਓ</translation>
 <translation id="4819323978093861656">{0,plural, =0{ਹੁਣੇ ਬੰਦ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ।}=1{ਇੰਨੇ ਸਮੇਂ ਵਿੱਚ ਬੰਦ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ: 1 second}other{ਇੰਨੇ ਸਮੇਂ ਵਿੱਚ ਬੰਦ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ: # seconds}}</translation>
 <translation id="4819607494758673676">Google Assistant ਸੂਚਨਾਵਾਂ</translation>
@@ -5000,12 +5012,14 @@
 <translation id="5185386675596372454">"<ph name="EXTENSION_NAME" />" ਦੇ ਬਿਲਕੁਲ ਨਵੇਂ ਵਰਜਨ ਨੂੰ ਬੰਦ ਕੀਤਾ ਗਿਆ ਹੈ ਕਿਉਂਕਿ ਇਸਦੇ ਲਈ ਵੱਧ ਇਜਾਜ਼ਤਾਂ ਦੀ ਲੋੜ ਹੈ।</translation>
 <translation id="5185500136143151980">ਇੰਟਰਨੈੱਟ ਨਹੀਂ</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
+<translation id="5190577235024772869"><ph name="USED_SPACE" /> ਦੀ ਵਰਤੋਂ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ</translation>
 <translation id="5190926251776387065">ਪੋਰਟ ਕਿਰਿਆਸ਼ੀਲ ਕਰੋ</translation>
 <translation id="5190959794678983197">ਕੋਈ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਨਹੀਂ ਹੈ</translation>
 <translation id="5191094172448199359">ਤੁਹਾਡੇ ਵੱਲੋਂ ਦਾਖਲ ਕੀਤੇ ਪਿੰਨ ਮੇਲ ਨਹੀਂ ਖਾਂਦੇ</translation>
 <translation id="5191251636205085390">ਨਵੀਆਂ ਤਕਨੀਕਾਂ ਬਾਰੇ ਜਾਣੋ ਅਤੇ ਉਹਨਾਂ ਨੂੰ ਕੰਟਰੋਲ ਕਰੋ ਜਿਨ੍ਹਾਂ ਦਾ ਉਦੇਸ਼ ਤੀਜੀ-ਧਿਰ ਦੀਆਂ ਕੁਕੀਜ਼ ਨੂੰ ਬਦਲਣਾ ਹੈ</translation>
 <translation id="519185197579575131">QT ਵਰਤੋ</translation>
 <translation id="5192062846343383368">ਆਪਣੀਆਂ ਨਿਗਰਾਨੀ ਸੈਟਿੰਗਾਂ ਦੇਖਣ ਲਈ Family Link ਐਪ ਖੋਲ੍ਹੋ</translation>
+<translation id="5193978546360574373">ਇਸ ਨਾਲ ਇਸ Chromebook 'ਤੇ Google Drive ਤੱਕ ਪਹੁੰਚ ਨੂੰ ਹਟਾ ਦਿੱਤਾ ਜਾਵੇਗਾ, ਜਿਸ ਵਿੱਚ ਉਨ੍ਹਾਂ ਫ਼ਾਈਲਾਂ ਤੱਕ ਪਹੁੰਚ ਵੀ ਸ਼ਾਮਲ ਹੈ ਜਿਨ੍ਹਾਂ ਨੂੰ ਆਫ਼ਲਾਈਨ ਉਪਲਬਧ ਕਰਵਾਇਆ ਗਿਆ ਹੈ</translation>
 <translation id="5193988420012215838">ਤੁਹਾਡੇ ਕਲਿੱਪਬੋਰਡ 'ਤੇ ਕਾਪੀ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="5194256020863090856">ਇਸ ਨਾਲ ਸਿਰਫ਼ ਇਨਕੋਗਨਿਟੋ ਵਿੰਡੋ ਹੀ ਪ੍ਰਭਾਵਿਤ ਹੋਣਗੀਆਂ</translation>
 <translation id="5195074424945754995">ਇਨ੍ਹਾਂ ਨਿਯਮਾਂ ਨੂੰ ਪੂਰਾ ਕਰਨ ਵਾਲੇ URL ਬ੍ਰਾਊਜ਼ਰ ਸਵਿੱਚ ਨੂੰ ਟ੍ਰਿਗਰ ਨਹੀਂ ਕਰਨਗੇ ਅਤੇ ਇਨ੍ਹਾਂ ਨੂੰ <ph name="BROWSER_NAME" /> ਜਾਂ <ph name="ALTERNATIVE_BROWSER_NAME" /> ਵਿੱਚ ਖੋਲ੍ਹਿਆ ਜਾ ਸਕਦਾ ਹੈ।</translation>
@@ -5088,6 +5102,7 @@
 <translation id="526622169288322445"><ph name="ADDRESS_SUMMARY" /> ਲਈ ਹੋਰ ਕਾਰਵਾਈਆਂ</translation>
 <translation id="5268373933383932086">ਤੁਹਾਡਾ ਪੰਨਾ, ਤੁਹਾਡਾ ਤਰੀਕਾ</translation>
 <translation id="5269977353971873915">ਪ੍ਰਿੰਟ ਲੈਣਾ ਅਸਫਲ ਰਿਹਾ</translation>
+<translation id="5271578170655641944">ਕੀ Google Drive ਤੱਕ ਪਹੁੰਚ ਨੂੰ ਹਟਾਉਣਾ ਹੈ?</translation>
 <translation id="5273806377963980154">ਸਾਈਟ ਦੇ URL ਦਾ ਸੰਪਾਦਨ ਕਰੋ</translation>
 <translation id="5273966423195882879">ਥੀਮ ਦੇ ਆਧਾਰ 'ਤੇ ਰੰਗ</translation>
 <translation id="5275084684151588738">ਵਰਤੋਂਕਾਰ ਸ਼ਬਦਕੋਸ਼</translation>
@@ -6350,6 +6365,7 @@
 <translation id="6345878117466430440">ਪੜ੍ਹੇ ਵਜੋਂ ਨਿਸ਼ਾਨਦੇਹੀ ਕਰੋ</translation>
 <translation id="6346952829206698721">ਕਲਿੱਪਬੋਰਡ ਤੋਂ ਪੇਸਟ ਕਰੋ</translation>
 <translation id="6347010704471250799">ਸੂਚਨਾ ਦਿਖਾਓ</translation>
+<translation id="6348805481186204412">ਆਫ਼ਲਾਈਨ ਸਟੋਰੇਜ</translation>
 <translation id="634887995541211148">ਆਪਣੇ ਡੀਵਾਈਸ 'ਤੇ Bruschetta ਚਲਾਓ।</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> ਸਥਾਪਤ ਕਰੋ</translation>
 <translation id="6354918092619878358">SECG ਅੰਡਾਕਾਰ ਘੁਮਾਓ secp256r1 (aka ANSI X9.62 prime256v1, NIST P-256)</translation>
@@ -6534,6 +6550,7 @@
 <translation id="6513247462497316522">Google Chrome ਮੋਬਾਈਲ ਡਾਟਾ ਵਰਤੇਗਾ ਜੇਕਰ ਤੁਸੀਂ ਦੂਜੇ ਨੈੱਟਵਰਕ ਨਾਲ ਕਨੈਕਟ ਨਹੀਂ ਕੀਤਾ ਹੈ।</translation>
 <translation id="6514010653036109809">ਉਪਲਬਧ ਡੀਵਾਈਸ:</translation>
 <translation id="6514565641373682518">ਇਸ ਸਫ਼ੇ ਨੇ ਤੁਹਾਡੇ ਮਾਊਸ ਕਰਸਰ ਨੂੰ ਅਯੋਗ ਬਣਾਇਆ ਹੈ।</translation>
+<translation id="6517420300299531857">'ਮੇਰੀ ਡਰਾਈਵ' ਵਿੱਚ ਮੌਜੂਦ ਤੁਹਾਡੀਆਂ ਫ਼ਾਈਲਾਂ ਆਪਣੇ ਆਪ ਤੁਹਾਡੇ Chromebook ਨਾਲ ਸਿੰਕ ਹੋ ਜਾਣਗੀਆਂ, ਤਾਂ ਜੋ ਤੁਸੀਂ ਉਨ੍ਹਾਂ ਤੱਕ ਇੰਟਰਨੈੱਟ ਕਨੈਕਸ਼ਨ ਦੇ ਬਿਨਾਂ ਪਹੁੰਚ ਕਰ ਸਕੋ। ਇਹ ਵਿੱਚ ਲਗਭਗ <ph name="REQUIRED_SPACE" /> ਦੀ ਵਰਤੋਂ ਕੀਤੀ ਜਾਵੇਗੀ। ਫ਼ਿਲਹਾਲ ਤੁਹਾਡੇ ਕੋਲ <ph name="FREE_SPACE_AVAILABLE" /> ਉਪਲਬਧ ਹੈ।</translation>
 <translation id="6517709704288360414">ਤੁਹਾਡਾ ਡੀਵਾਈਸ ਸ਼ਾਇਦ ਹੁਣ ਸਹੀ ਢੰਗ ਨਾਲ ਕੰਮ ਨਾ ਕਰੇ ਅਤੇ ਤੁਹਾਨੂੰ ਸੁਰੱਖਿਆ ਅਤੇ ਕਾਰਗੁਜ਼ਾਰੀ ਸੰਬੰਧੀ ਸਮੱਸਿਆਵਾਂ ਹੋ ਸਕਦੀਆਂ ਹਨ। ਅੱਪਡੇਟਾਂ ਨੂੰ ਬੰਦ ਕਰਨ ਨਾਲ ਤੁਹਾਨੂੰ ਕਿਸੇ ਵੀ ਤਰ੍ਹਾਂ ਦੀ ਸਮੱਸਿਆ ਦਾ ਅਨੁਭਵ ਹੋਣ 'ਤੇ ਤੁਹਾਡੇ ਕਨੂੰਨੀ ਦਾਅਵੇ ਕਰਨ ਦੇ ਹੱਕ 'ਤੇ ਪ੍ਰਭਾਵ ਪੈ ਸਕਦਾ ਹੈ।</translation>
 <translation id="6518014396551869914">ਚਿੱਤਰ ਕਾ&amp;ਪੀ ਕਰੋ</translation>
 <translation id="6518133107902771759">ਪ੍ਰਮਾਣਿਤ ਕਰੋ</translation>
@@ -6796,6 +6813,7 @@
 <translation id="6736243959894955139">ਪਤਾ</translation>
 <translation id="6737393581255281855">ਕੀ ਦਿਖਾਇਆ ਗਿਆ ਡਾਟਾ ਕਲੀਅਰ ਕਰਨਾ ਹੈ?</translation>
 <translation id="6737663862851963468">Kerberos ਟਿਕਟ ਹਟਾਓ</translation>
+<translation id="6737931010859480781">ਇਹ ਐਪ ਤੁਹਾਡੇ ਡੀਵਾਈਸ 'ਤੇ ਪਹਿਲਾਂ ਤੋਂ ਸਥਾਪਤ ਹੈ</translation>
 <translation id="6738180164164974883">ਤੀਜੀ-ਧਿਰ ਦੀਆਂ ਕੂਕੀਜ਼ ਸੈੱਟ ਕਰਨ ਦੀ ਆਗਿਆ ਦਿਓ</translation>
 <translation id="6738430949033571771">ਖਾਤੇ ਦੀ ਪੁਸ਼ਟੀ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ...</translation>
 <translation id="6739923123728562974">ਡੈਸਕਟਾਪ ਸ਼ਾਰਟਕੱਟ ਦਿਖਾਓ</translation>
@@ -8490,6 +8508,7 @@
 <translation id="8138217203226449454">ਕੀ ਤੁਸੀਂ ਆਪਣਾ ਖੋਜ ਪ੍ਰਦਾਨਕ ਬਦਲਣਾ ਸੀ?</translation>
 <translation id="8138997515734480534"><ph name="VM_NAME" /> ਸਥਿਤੀ</translation>
 <translation id="8139447493436036221">Google Drive ਫ਼ਾਈਲਾਂ</translation>
+<translation id="8139643636835015859">ਇਸ ਨਾਲ ਤੁਹਾਡੀਆਂ ਆਫ਼ਲਾਈਨ ਫ਼ਾਈਲਾਂ ਵੱਲੋਂ ਵਰਤੀ ਜਾਣ ਵਾਲੀ <ph name="OFFLINE_STORAGE_SIZE" /> ਦੀ ਜਗ੍ਹਾ ਨੂੰ ਹਟਾਇਆ ਜਾਵੇਗਾ। ਕੁਝ ਫ਼ਾਈਲਾਂ ਹਾਲੇ ਵੀ ਆਫ਼ਲਾਈਨ ਉਪਲਬਧ ਰਹਿਣਗੀਆਂ। <ph name="LINK_BEGIN" />ਹੋਰ ਜਾਣੋ<ph name="LINK_END" /></translation>
 <translation id="8140070492745508800"><ph name="FIRST_DEVICE" />, <ph name="SECOND_DEVICE" /></translation>
 <translation id="8141418916163800697">ਤੁਸੀਂ ਫ਼ੋਨ ਹੱਬ ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਹੋਰ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਦਾ ਸੈੱਟਅੱਪ ਕਰ ਸਕਦੇ ਹੋ</translation>
 <translation id="8141584439523427891">ਹੁਣ ਵਿਕਲਪਿਕ ਬ੍ਰਾਊਜ਼ਰ ਵਿੱਚ ਖੋਲ੍ਹਿਆ ਜਾ ਰਿਹਾ ਹੈ</translation>
@@ -8581,6 +8600,7 @@
 <translation id="821119981794423735"><ph name="USER_EMAIL" /> ਲਈ Google Password Manager ਵਿੱਚ ਪਾਸਵਰਡ ਆਯਾਤ ਕਰਨ ਵਾਸਤੇ, ਕੋਈ CSV ਫ਼ਾਈਲ ਚੁਣੋ</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{ਡਾਊਨਲੋਡ ਪ੍ਰਗਤੀ ਵਿੱਚ ਹੈ}one{ਡਾਊਨਲੋਡ ਪ੍ਰਗਤੀ ਵਿੱਚ ਹੈ}other{ਡਾਊਨਲੋਡ ਪ੍ਰਗਤੀ ਵਿੱਚ ਹਨ}}</translation>
 <translation id="8212601853154459483">ਇਸ ਪ੍ਰੋਫਾਈਲ ਦਾ ਪ੍ਰਬੰਧਨ <ph name="PROFILE_MANAGER" /> ਵੱਲੋਂ ਕੀਤਾ ਜਾਂਦਾ ਹੈ ਅਤੇ ਤੁਹਾਨੂੰ <ph name="USER_EMAIL_ADDRESS" /> ਖਾਤੇ ਲਈ ਕੋਈ ਵੱਖਰਾ ਪ੍ਰੋਫਾਈਲ ਬਣਾਉਣ ਦੀ ਲੋੜ ਹੈ</translation>
+<translation id="8212792694174629011">ਕੋਈ ਪ੍ਰੋਫਾਈਲ ਨਹੀਂ ਮਿਲਿਆ। ਆਪਣੇ ਡੀਵਾਈਸ ਦੇ ਕੈਮਰੇ ਦੀ ਵਰਤੋਂ ਕਰ ਕੇ QR ਕੋਡ ਨੂੰ ਸਕੈਨ ਕਰ ਕੇ ਦੇਖੋ ਜਾਂ ਤੁਹਾਡੇ ਕੈਰੀਅਰ ਵੱਲੋਂ ਮੁਹੱਈਆ ਕਰਵਾਇਆ ਗਿਆ 'ਕਿਰਿਆਸ਼ੀਲ ਕਰਨ ਲਈ ਕੋਡ' ਦਾਖਲ ਕਰੋ।</translation>
 <translation id="8214489666383623925">ਫਾਈਲ ਖੋਲ੍ਹੋ...</translation>
 <translation id="8215129063232901118">ਆਪਣੀ <ph name="DEVICE_TYPE" /> ਤੋਂ ਫ਼ੋਨ ਦੀਆਂ ਸਮਰੱਥਾਵਾਂ ਤੱਕ ਪਹੁੰਚ ਕਰੋ</translation>
 <translation id="8217212468862726597">ਪੁਆਇੰਟਰ ਨੂੰ ਉਜਾਗਰ ਕਰੋ</translation>
@@ -9124,6 +9144,7 @@
 <translation id="8680251145628383637">ਆਪਣੇ ਸਾਰੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਆਪਣੇ ਬੁੱਕਮਾਰਕ, ਇਤਿਹਾਸ, ਪਾਸਵਰਡ ਅਤੇ ਹੋਰ ਸੈਟਿੰਗਾਂ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ ਸਾਈਨ-ਇਨ ਕਰੋ। ਤੁਸੀਂ ਆਪਣੀਆਂ Google ਸੇਵਾਵਾਂ 'ਤੇ ਵੀ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਸਾਈਨ-ਇਨ ਹੋ ਜਾਵੋਗੇ।</translation>
 <translation id="8681886425883659911">ਵਿਗਿਆਪਨਾਂ ਨੂੰ ਉਨ੍ਹਾਂ ਸਾਈਟਾਂ 'ਤੇ ਬਲਾਕ ਕੀਤਾ ਜਾਂਦਾ ਹੈ ਜੋ ਦਖਲਅੰਦਾਜ਼ੀ ਅਤੇ ਗੁਮਰਾਹ ਕਰਨ ਵਾਲੇ ਵਿਗਿਆਪਨ ਦਿਖਾਉਂਦੀਆਂ ਹਨ</translation>
 <translation id="8682730193597992579"><ph name="PRINTER_NAME" /> ਕਨੈਕਟ ਅਤੇ ਤਿਆਰ ਹੈ</translation>
+<translation id="8686142379631285985"><ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /> ਵਜੋਂ ਸਾਈਨ-ਇਨ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="8687103160920393343"><ph name="FILE_NAME" /> ਨੂੰ ਰੱਦ ਕਰੋ</translation>
 <translation id="8688672835843460752">ਉਪਲਬਧ</translation>
 <translation id="8689998525144040851">100</translation>

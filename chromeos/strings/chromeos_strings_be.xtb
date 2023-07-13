@@ -9,6 +9,7 @@
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (патокаў: <ph name="THREAD_COUNT" />, <ph name="CPU_MAX_CLOCK_SPEED" /> ГГц)</translation>
 <translation id="1047773237499189053">З'явілася новая функцыя, націсніце стрэлку ўверх, каб даведацца больш.</translation>
 <translation id="1059913517121127803">Не ўдалося запусціць сканіраванне</translation>
+<translation id="1062823486781306604"><ph name="INDEX" /> з <ph name="COUNT" />, <ph name="NAME" />.</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Выяўлены брандмаўар</translation>
 <translation id="1075811647922107217">Памер старонкі</translation>
@@ -540,6 +541,7 @@
 <translation id="5257811368506016604">Уключыць рэжым светлых колераў</translation>
 <translation id="5264277876637023664">Выканаць праверку ЦП</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
+<translation id="527501763019887383">APN адключана.</translation>
 <translation id="5275828089655680674">Перазапусціць паслядоўнасці дзеянняў</translation>
 <translation id="5286252187236914003">L2TP/IPsec</translation>
 <translation id="5286263799730375393">колер падсветкі</translation>
@@ -604,6 +606,7 @@
 <translation id="5832805196449965646">Дадаць карыстальніка</translation>
 <translation id="583281660410589416">Невядома</translation>
 <translation id="5843706793424741864">Шкала Фарэнгейта</translation>
+<translation id="584953448295717128">APN вызначаецца аўтаматычна.</translation>
 <translation id="5849570051105887917">Код аператара</translation>
 <translation id="5859603669299126575">Альбом мастацкай галерэі</translation>
 <translation id="5860033963881614850">Выключана</translation>
@@ -882,6 +885,7 @@
 <translation id="80398733265834479">Уключыць рэжым аўтакарэкцыі колераў</translation>
 <translation id="8041089156583427627">Адправіць водгук</translation>
 <translation id="8045012663542226664">Выключэнне гуку мікрафона</translation>
+<translation id="8067126283828232460">APN падключана.</translation>
 <translation id="8075838845814659848">Узровень зараду акумулятара</translation>
 <translation id="8076492880354921740">Укладкі</translation>
 <translation id="8082366717211101304">Не ўдалося ажыццявіць DNS-пераўтварэнне з праграм для Android</translation>
@@ -1028,6 +1032,7 @@
 <translation id="9111102763498581341">Разблакіраваць</translation>
 <translation id="9122602430962285795">Каб зноў падключыцца да сеткі, перайдзіце ў Налады</translation>
 <translation id="9126720536733509015">Захаваць некалькі старонак у адзін PDF-файл</translation>
+<translation id="9133104754938025929">Для эканоміі зараду акумулятара застаўка працуе толькі падчас зарадкі.</translation>
 <translation id="9137526406337347448">Сэрвісы Google</translation>
 <translation id="9138630967333032450">Shift злева</translation>
 <translation id="9143347780818904997">цягам <ph name="MINUTES" /> хв</translation>

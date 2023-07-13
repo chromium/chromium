@@ -140,6 +140,7 @@
 <translation id="1110965959145884739">Выберите языки, которые нужно установить на это устройство. Чтобы сэкономить место на диске, языковые пакеты доступны всем пользователям. <ph name="BEGIN_LINK_LEARN_MORE" />Подробнее…<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1112420131909513020">На фоновой вкладке используется Bluetooth.</translation>
 <translation id="1112998165730922436">Трансляция приостановлена</translation>
+<translation id="1113807501859230251">Удалить Bruschetta с устройства <ph name="DEVICE_TYPE" />? Это приведет к удалению всех приложений и данных на виртуальной машине.</translation>
 <translation id="1114102982691049955"><ph name="PRINTER_MANUFACTURER" /> <ph name="PRINTER_MODEL" /> (USB)</translation>
 <translation id="1114202307280046356">Diamond</translation>
 <translation id="1114427165525619358">Пароли на этом устройстве и в вашем аккаунте Google</translation>
@@ -1555,6 +1556,7 @@
 <translation id="2263679799334060788">Мы постоянно улучшаем Google Cast, поэтому ваш отзыв очень важен для нас. О том, как устранить неполадки, можно узнать в <ph name="BEGIN_LINK" />Справочном центре<ph name="END_LINK" />.</translation>
 <translation id="2266957463645820432">IPP через USB (IPPUSB)</translation>
 <translation id="2268130516524549846">Bluetooth отключен</translation>
+<translation id="2268182915828370037">Отключить синхронизацию файлов?</translation>
 <translation id="2269895253281481171">Вы будете уведомлены, если он окажется под угрозой.</translation>
 <translation id="2270450558902169558">Обмен данными с любыми устройствами в домене <ph name="DOMAIN" /></translation>
 <translation id="2270612886833477697"><ph name="BEGIN_PARAGRAPH1" />Установка <ph name="BEGIN_BOLD" />приведет к удалению всей информации с жесткого диска<ph name="END_BOLD" />. Рекомендуем создать резервную копию данных.<ph name="END_PARAGRAPH1" />
@@ -2106,6 +2108,7 @@
 <translation id="2714393097308983682">Google Play</translation>
 <translation id="2715640894224696481">Запрос электронного ключа</translation>
 <translation id="2715751256863167692">Установив это обновление, вы восстановите исходные настройки устройства Chromebook. При этом с него будут удалены пользовательские данные.</translation>
+<translation id="2715934493766003251">Невозможно очистить хранилище во время синхронизации файлов</translation>
 <translation id="2716986496990888774">Этим параметром управляет родитель.</translation>
 <translation id="271749239614426244">Не реагировать на незначительные движения курсора</translation>
 <translation id="2718395828230677721">Ночной свет</translation>
@@ -2253,6 +2256,7 @@
 <translation id="2817435998497102771">Настройка обоев и стиля</translation>
 <translation id="2818476747334107629">Сведения о принтере</translation>
 <translation id="2819167288942847344">Использовать стандартные параметры для телефона и планшета или разрешать изменять размер окон, чтобы избежать неполадок</translation>
+<translation id="2819519502129272135">Синхронизация файлов отключена</translation>
 <translation id="2820957248982571256">Поиск…</translation>
 <translation id="2822634587701817431">Свернуть или развернуть</translation>
 <translation id="2822910719211888134">Не удалось сохранить резервную копию Linux</translation>
@@ -2721,6 +2725,7 @@
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" />: ошибка сети</translation>
 <translation id="3248902735035392926">Безопасность – это важно. <ph name="BEGIN_LINK" />Проверьте расширения<ph name="END_LINK" />, которые у вас установлены.</translation>
 <translation id="3249323165366527554">Пароль будет автоматически сохранен для аккаунта <ph name="EMAIL" /> здесь: <ph name="GOOGLE_PASSWORD_MANAGER" />. Это позволит ускорить регистрацию и вход в сервисы.</translation>
+<translation id="3251119461199395237">Синхронизация файлов</translation>
 <translation id="3251714896659475029">Разрешите пользователю <ph name="SUPERVISED_USER_NAME" /> вызывать Ассистента с помощью команды "Окей, Google"</translation>
 <translation id="3251759466064201842">&lt;Не является частью сертификата&gt;</translation>
 <translation id="325238099842880997">Задайте базовые правила, чтобы сбалансировать учебу, игры и отдых ребенка</translation>
@@ -3098,6 +3103,7 @@
 <translation id="3567284462585300767">Чтобы обмениваться файлами с пользователями поблизости, сделайте свое устройство видимым.</translation>
 <translation id="356738834800832239">Пароль сохранен</translation>
 <translation id="3569382839528428029">Предоставить приложению "<ph name="APP_NAME" />" доступ к вашему экрану?</translation>
+<translation id="3569614820047645079">Файлы из раздела "Мой диск" будут автоматически синхронизироваться с Chromebook, чтобы у вас был доступ к ним даже без подключения к интернету.</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> может просматривать следующие файлы и папки:</translation>
 <translation id="3571734092741541777">Настроить</translation>
 <translation id="3575121482199441727">Показывать уведомления с этого сайта</translation>
@@ -3530,6 +3536,7 @@
 <translation id="3916233823027929090">Проверка безопасности выполнена.</translation>
 <translation id="3916445069167113093">Файл этого типа может нанести вред компьютеру. Все равно сохранить <ph name="FILE_NAME" />?</translation>
 <translation id="3917184139185490151">Ваш компьютер оснащен модулем безопасности, с помощью которого в Chrome OS реализовано множество критически важных функций защиты. Более подробную информацию можно получить в Справочном центре Chromebook: https://support.google.com/chromebook/?p=sm.</translation>
+<translation id="3917644013202553949">Недостаточно места для синхронизации файлов. Попробуйте освободить его.</translation>
 <translation id="3918972485393593704">Отправить данные в Google</translation>
 <translation id="3919145445993746351">Чтобы автоматически установить расширения на всех своих компьютерах, включите синхронизацию.</translation>
 <translation id="3919229493046408863">Отключить уведомления об устройствах поблизости</translation>
@@ -3841,6 +3848,7 @@
 <translation id="4184803915913850597">HID-устройство (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
 <translation id="4186749321808907788"><ph name="QUERY_NAME" /> – <ph name="DEFAULT_SEARCH_ENGINE_NAME" /> Поиск</translation>
 <translation id="4187424053537113647">Настройка <ph name="APP_NAME" />…</translation>
+<translation id="4190492351494485814">Для начальной настройки необходимо подключиться к интернету, чтобы синхронизировать файлы с Chromebook.</translation>
 <translation id="4190828427319282529">Выделение объектов, выбранных с помощью клавиатуры</translation>
 <translation id="4193251682249731404">Доверенные центры сертификации</translation>
 <translation id="4193575319002689239">Показывать карточки</translation>
@@ -4033,6 +4041,7 @@
 <translation id="4361745360460842907">Открыть во вкладке</translation>
 <translation id="4362675504017386626"><ph name="ACCOUNT_EMAIL" /> – аккаунт по умолчанию на устройстве <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4363215264289239958">Приложения Bruschetta</translation>
+<translation id="4363262124589131906">Новые файлы в разделе "Мой диск" перестанут автоматически синхронизироваться с этим устройством Chromebook.</translation>
 <translation id="4363771538994847871">Нет устройств для трансляции. Нужна помощь?</translation>
 <translation id="4364327530094270451">Дыня</translation>
 <translation id="4364567974334641491">Приложение "<ph name="APP_NAME" />" предоставило доступ к окну.</translation>
@@ -4456,6 +4465,7 @@
 <translation id="4715631922189108923">Изменить имя пользователя</translation>
 <translation id="47158868804223727">Нажмите на название группы, чтобы развернуть или свернуть ее.</translation>
 <translation id="4716483597559580346">Обновите систему безопасности с помощью Powerwash</translation>
+<translation id="4716715661140829720">Недостаточно места</translation>
 <translation id="471759229191973607">Сменить тему</translation>
 <translation id="4718046540206070045">Больше чем браузер</translation>
 <translation id="4722735765955348426">Пароль аккаунта пользователя <ph name="USERNAME" /></translation>
@@ -4508,6 +4518,7 @@
 <translation id="4763757134413542119"><ph name="USER_EMAIL" /> – недопустимый аккаунт Google for Education. Обратитесь к администратору. Если вы администратор, перейдите на страницу g.co/workspace/edusignup и настройте аккаунт организации.</translation>
 <translation id="4765524037138975789">{MONTHS,plural, =1{Устройство будет сохранено на 1 месяц. При следующем подключении код не потребуется. Этот параметр задается администратором.}one{Устройство будет сохранено на {MONTHS} месяц. При следующем подключении код не потребуется. Этот параметр задается администратором.}few{Устройство будет сохранено на {MONTHS} месяца. При следующем подключении код не потребуется. Этот параметр задается администратором.}many{Устройство будет сохранено на {MONTHS} месяцев. При следующем подключении код не потребуется. Этот параметр задается администратором.}other{Устройство будет сохранено на {MONTHS} месяца. При следующем подключении код не потребуется. Этот параметр задается администратором.}}</translation>
 <translation id="4765582662863429759">Позволяет приложению "Android Сообщения" ретранслировать сообщения с вашего телефона на Chromebook</translation>
+<translation id="476563889641554689">Выберите область для поиска с помощью Объектива.</translation>
 <translation id="4766598565665644999">Все расширения могут читать и изменять данные <ph name="HOST" />.</translation>
 <translation id="4767427586072640478">Подробнее об отключенных расширениях.</translation>
 <translation id="4768332406694066911">У вас есть идентифицирующие вас сертификаты этих организаций</translation>
@@ -4566,6 +4577,7 @@
 <translation id="481574578487123132">Связанные устройства</translation>
 <translation id="4816097470512964351"><ph name="DEVICE" />, подробная информация</translation>
 <translation id="4816336393325437908">{COUNT,plural, =1{Удалена 1 закладка.}one{Удалена {COUNT} закладка.}few{Удалено {COUNT} закладки.}many{Удалено {COUNT} закладок.}other{Удалено {COUNT} закладки.}}</translation>
+<translation id="481689174647911539">Этот файл может оказаться вирусом или вредоносным ПО.<ph name="LINE_BREAK" />Вы можете отправить его в сервис "Google Безопасный просмотр", чтобы проверить, представляет ли он угрозу. Обычно сканирование занимает несколько секунд.</translation>
 <translation id="4816900689218414104">Создайте ключ доступа на телефоне или планшете</translation>
 <translation id="4819323978093861656">{0,plural, =0{Браузер закрыт.}=1{Браузер будет закрыт через 1 секунду.}one{Браузер будет закрыт через # секунду.}few{Браузер будет закрыт через # секунды.}many{Браузер будет закрыт через # секунд.}other{Браузер будет закрыт через # секунды.}}</translation>
 <translation id="4819607494758673676">Уведомления Google Ассистента</translation>
@@ -4984,12 +4996,14 @@
 <translation id="5185386675596372454">Новая версия "<ph name="EXTENSION_NAME" />" была отключена, так как для нее требуются дополнительные разрешения.</translation>
 <translation id="5185500136143151980">Нет подключения к Интернету</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
+<translation id="5190577235024772869">Используется <ph name="USED_SPACE" /></translation>
 <translation id="5190926251776387065">Активировать порт</translation>
 <translation id="5190959794678983197">Микрофон недоступен</translation>
 <translation id="5191094172448199359">PIN-коды не совпадают.</translation>
 <translation id="5191251636205085390">Узнайте больше о новых технологиях, которые придут на смену сторонним файлам cookie.</translation>
 <translation id="519185197579575131">Использовать тему QT</translation>
 <translation id="5192062846343383368">Чтобы открыть настройки родительского контроля, запустите приложение Family Link.</translation>
+<translation id="5193978546360574373">Доступ к Google Диску на ноутбуке Chromebook, в том числе ко всем файлам в офлайн-режиме, будет закрыт.</translation>
 <translation id="5193988420012215838">Скопировано в буфер обмена.</translation>
 <translation id="5194256020863090856">Это действие применяется только к окнам в режиме инкогнито.</translation>
 <translation id="5195074424945754995">Для URL, соответствующих этим правилам, не будет запускаться смена браузера. Они могут быть открыты в браузере "<ph name="BROWSER_NAME" />" или "<ph name="ALTERNATIVE_BROWSER_NAME" />".</translation>
@@ -5072,6 +5086,7 @@
 <translation id="526622169288322445">Другие действия с адресом <ph name="ADDRESS_SUMMARY" /></translation>
 <translation id="5268373933383932086">Ваша страница, ваш выбор</translation>
 <translation id="5269977353971873915">Печать не выполнена</translation>
+<translation id="5271578170655641944">Закрыть доступ к Google Диску?</translation>
 <translation id="5273806377963980154">Изменить URL сайта</translation>
 <translation id="5273966423195882879">Цвет зависит от темы</translation>
 <translation id="5275084684151588738">Пользовательские словари</translation>
@@ -6334,6 +6349,7 @@
 <translation id="6345878117466430440">Отметить как прочитанное</translation>
 <translation id="6346952829206698721">Вставить из буфера обмена</translation>
 <translation id="6347010704471250799">Показывать уведомление</translation>
+<translation id="6348805481186204412">Офлайн-хранилище</translation>
 <translation id="634887995541211148">Запустите Bruschetta на своем устройстве</translation>
 <translation id="6349101878882523185">Установите приложение "<ph name="APP_NAME" />"</translation>
 <translation id="6354918092619878358">Эллиптическая кривая SECG secp256r1 (она же ANSI X9.62 prime256v1, NIST P-256)</translation>
@@ -6518,6 +6534,7 @@
 <translation id="6513247462497316522">При отсутствии подключения к другой сети Google Chrome будет использовать мобильную сеть передачи данных.</translation>
 <translation id="6514010653036109809">Доступное устройство:</translation>
 <translation id="6514565641373682518">Эта страница скрыла курсор.</translation>
+<translation id="6517420300299531857">Файлы из раздела "Мой диск" будут автоматически синхронизироваться с Chromebook, чтобы у вас был доступ к ним даже без подключения к интернету. Для этого потребуется <ph name="REQUIRED_SPACE" /> свободного места. Сейчас на вашем диске доступно <ph name="FREE_SPACE_AVAILABLE" />.</translation>
 <translation id="6517709704288360414">Возможны сбои в работе устройства, а также проблемы с производительностью и безопасностью. После отключения обновлений вы можете утратить право на подачу судебных исков в случае возникновения проблем.</translation>
 <translation id="6518014396551869914">Коп&amp;ировать картинку</translation>
 <translation id="6518133107902771759">Подтвердить</translation>
@@ -6783,6 +6800,7 @@
 <translation id="6736243959894955139">Адрес</translation>
 <translation id="6737393581255281855">Удалить показанные данные?</translation>
 <translation id="6737663862851963468">Удалить билет Kerberos</translation>
+<translation id="6737931010859480781">Приложение предустановлено на устройстве</translation>
 <translation id="6738180164164974883">Разрешить использование сторонних файлов cookie</translation>
 <translation id="6738430949033571771">Проверка аккаунта…</translation>
 <translation id="6739923123728562974">Показывать ярлык на рабочем столе</translation>
@@ -8476,6 +8494,7 @@
 <translation id="8138217203226449454">Вы хотели сменить поисковую систему?</translation>
 <translation id="8138997515734480534">Статус ВМ "<ph name="VM_NAME" />"</translation>
 <translation id="8139447493436036221">Файлы на Google Диске</translation>
+<translation id="8139643636835015859">На устройстве освободится <ph name="OFFLINE_STORAGE_SIZE" />. Некоторые файлы по-прежнему будут доступны в офлайн-режиме. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
 <translation id="8140070492745508800"><ph name="FIRST_DEVICE" />, <ph name="SECOND_DEVICE" /></translation>
 <translation id="8141418916163800697">Вы можете настроить больше функций в разделе "Управление телефоном".</translation>
 <translation id="8141584439523427891">Запуск альтернативного браузера…</translation>
@@ -8567,6 +8586,7 @@
 <translation id="821119981794423735">Чтобы импортировать пароли в Google Менеджер паролей для <ph name="USER_EMAIL" />, загрузите их в формате CSV.</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Выполняется скачивание}one{Выполняется скачивание}few{Выполняется скачивание}many{Выполняется скачивание}other{Выполняется скачивание}}</translation>
 <translation id="8212601853154459483">Этим профилем управляет <ph name="PROFILE_MANAGER" />. Необходимо создать отдельный профиль для аккаунта <ph name="USER_EMAIL_ADDRESS" />.</translation>
+<translation id="8212792694174629011">Профили не найдены. Попробуйте отсканировать QR-код с помощью камеры устройства или введите код активации, предоставленный вашим оператором связи.</translation>
 <translation id="8214489666383623925">Открыть файл...</translation>
 <translation id="8215129063232901118">Доступ к функциям телефона на устройстве <ph name="DEVICE_TYPE" /></translation>
 <translation id="8217212468862726597">Выделение указателя мыши</translation>
@@ -9110,6 +9130,7 @@
 <translation id="8680251145628383637">Войдите в аккаунт, чтобы синхронизировать закладки, историю, пароли и другие настройки на всех устройствах. Одновременно будет выполнена авторизация в сервисах Google.</translation>
 <translation id="8681886425883659911">Объявления блокируются на сайтах, где есть навязчивая или вводящая в заблуждение реклама</translation>
 <translation id="8682730193597992579">Принтер <ph name="PRINTER_NAME" /> подключен и готов к работе.</translation>
+<translation id="8686142379631285985">Вы вошли как <ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" />.</translation>
 <translation id="8687103160920393343">Отменить скачивание файла "<ph name="FILE_NAME" />"</translation>
 <translation id="8688672835843460752">Свободно</translation>
 <translation id="8689998525144040851">100</translation>

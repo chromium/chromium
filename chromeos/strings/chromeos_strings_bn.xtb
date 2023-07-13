@@ -9,6 +9,7 @@
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" />টি থ্রেড, <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
 <translation id="1047773237499189053">নতুন ফিচার উপলভ্য আছে, আরও জানতে, 'উর্ধমুখী তীরচিহ্ন' বোতাম ব্যবহার করুন।</translation>
 <translation id="1059913517121127803">স্ক্যান শুরু করা যায়নি</translation>
+<translation id="1062823486781306604"><ph name="COUNT" />টির মধ্যে <ph name="INDEX" />টি, <ph name="NAME" />।</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">ফায়ারওয়াল শনাক্ত করা হয়েছে</translation>
 <translation id="1075811647922107217">পৃষ্ঠার সাইজ</translation>
@@ -540,6 +541,7 @@
 <translation id="5257811368506016604">'লাইট কালার' মোড চালু করুন</translation>
 <translation id="5264277876637023664">সিপিইউ টেস্ট করুন</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
+<translation id="527501763019887383">APN বন্ধ করা হয়েছে।</translation>
 <translation id="5275828089655680674">রুটিন আবার রান করান</translation>
 <translation id="5286252187236914003">L2TP/IPসেক</translation>
 <translation id="5286263799730375393">ব্যাকলাইটের কালার</translation>
@@ -604,6 +606,7 @@
 <translation id="5832805196449965646">একজন ব্যক্তিকে যোগ করুন</translation>
 <translation id="583281660410589416">অজানা</translation>
 <translation id="5843706793424741864">ফারেনহাইট</translation>
+<translation id="584953448295717128">APN অটোমেটিক শনাক্ত করা হয়েছে।</translation>
 <translation id="5849570051105887917">হোম পরিষেবা প্রদানকারী কোড</translation>
 <translation id="5859603669299126575">আর্ট গ্যালারি অ্যালবাম</translation>
 <translation id="5860033963881614850">বন্ধ করুন</translation>
@@ -882,6 +885,7 @@
 <translation id="80398733265834479">'অটো কালার' মোড চালু করুন</translation>
 <translation id="8041089156583427627">প্রতিক্রিয়া পাঠান</translation>
 <translation id="8045012663542226664">'মাইক্রোফোন মিউট কী'</translation>
+<translation id="8067126283828232460">APN কানেক্ট করা হয়েছে।</translation>
 <translation id="8075838845814659848">বাকি থাকা চার্জ</translation>
 <translation id="8076492880354921740">ট্যাবগুলি</translation>
 <translation id="8082366717211101304">অ্যানড্রয়েড অ্যাপ থেকে ডিএনএস সংক্রান্ত সমস্যার সমাধান করা যাচ্ছে না</translation>
@@ -1028,6 +1032,7 @@
 <translation id="9111102763498581341">আনলক</translation>
 <translation id="9122602430962285795">আবার কানেক্ট করতে, সেটিংস বিকল্পে যান</translation>
 <translation id="9126720536733509015">একাধিক পৃষ্ঠা সেভ করে একটি পিডিএফ ফাইল তৈরি করুন</translation>
+<translation id="9133104754938025929">ব্যাটারির চার্জ বাঁচাতে, স্ক্রিন সেভার শুধুমাত্র চার্জ দেওয়ার সময় কাজ করে।</translation>
 <translation id="9137526406337347448">Google পরিসেবাসমূহ</translation>
 <translation id="9138630967333032450">বাঁদিকের shift কী</translation>
 <translation id="9143347780818904997"><ph name="MINUTES" /> মিনিটের জন্য</translation>

@@ -518,6 +518,7 @@ Angalia maagizo ya mtambo wako wa kutafuta, ikiwa yapo, kuhusu jinsi ya kufuta h
 <translation id="4272631900155121838">Ili kuchanganua msimbo wa QR, washa kamera kwenye mipangilio</translation>
 <translation id="4277990410970811858">Kuvinjari Salama</translation>
 <translation id="4281844954008187215">Sheria na Masharti</translation>
+<translation id="4286718549648564014">Anwani imehamishiwa kwenye akaunti yako ya <ph name="USER_EMAIL" /></translation>
 <translation id="4293080268407233932">Tafuta</translation>
 <translation id="4302248187517737842">Hakuna jina la Mtumiaji ••••••••</translation>
 <translation id="4304713468139749426">Kidhibiti cha Manenosiri</translation>
@@ -1175,6 +1176,7 @@ Tovuti zinaweza kutumia vidakuzi kuona shughuli zako za kuvinjari kwenye tovuti 
 <translation id="8264966119170358612">Baadhi ya manenosiri uliyohifadhi yalifichuliwa katika ufichuzi haramu wa data kwenye tovuti isiyo ya Google. <ph name="BEGIN_LINK" />Pata maelezo zaidi<ph name="END_LINK" /></translation>
 <translation id="826614135184049678">Uliondolewa kwenye akaunti yako, <ph name="USER_NAME" />, ikiwa ni sehemu ya kuweka upya mipangilio ya iPad yako. Ili uingie tena katika akaunti, bofya "Endelea" hapa chini.</translation>
 <translation id="8271720166617117963">Kubali na Uingie katika akaunti</translation>
+<translation id="8273982424131314219">Utajaza maelezo katika <ph name="URL" /></translation>
 <translation id="8278938988428169257">Weka Neno au Kifungu</translation>
 <translation id="8281781826761538115">Chaguomsingi - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Ruka</translation>
@@ -1221,6 +1223,7 @@ Data yako ilisimbwa kwa njia fiche kwa kutumia kauli ya siri <ph name="TIME" />.
 <translation id="8548878600947630424">Tafuta katika ukurasa...</translation>
 <translation id="8556590991644167667">{count,plural, =1{Umeondoa onyo {count}}other{Umeondoa maonyo {count}}}</translation>
 <translation id="8558480467877843976">Sasa unaweza kutumia Chrome wakati wowote unapovinjari au kugusa viungo kwenye ujumbe, hati na programu nyingine.</translation>
+<translation id="8580411965900177618">Hapana</translation>
 <translation id="8588404856427128947">Imezimwa</translation>
 <translation id="8591976964826315682">Zuia Vidakuzi vya Tovuti Nyingine katika Hali Fiche</translation>
 <translation id="8605219856220328675">Funga kichupo</translation>
@@ -1257,6 +1260,7 @@ Data yako ilisimbwa kwa njia fiche kwa kutumia kauli ya siri <ph name="TIME" />.
 <ph name="BEGIN_LINK" />Pata maelezo zaidi<ph name="END_LINK" /></translation>
 <translation id="8810413591309742901">Mwonekano Chaguomsingi wa Tovuti</translation>
 <translation id="8820817407110198400">Alamisho</translation>
+<translation id="8825562130641217944">Pata alamisho, manenosiri yako na zaidi.</translation>
 <translation id="882557203579758546">Pata katika Ukurasa…</translation>
 <translation id="8840513115188359703">Hutaondolewa katika Akaunti yako ya Google.</translation>
 <translation id="8843129975935593190">Shirika lako linadhibiti maudhui unayoweza kuyasawazisha.</translation>

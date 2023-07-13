@@ -516,6 +516,7 @@
 <translation id="4272631900155121838">如要掃描 QR 圖碼，請在設定中啟用相機</translation>
 <translation id="4277990410970811858">安全瀏覽</translation>
 <translation id="4281844954008187215">服務條款</translation>
+<translation id="4286718549648564014">地址已移至你的帳戶 <ph name="USER_EMAIL" /></translation>
 <translation id="4293080268407233932">搜尋</translation>
 <translation id="4302248187517737842">沒有使用者名稱 ••••••••</translation>
 <translation id="4304713468139749426">密碼管理工具</translation>
@@ -1171,6 +1172,7 @@
 <translation id="8264966119170358612">由於發生第三方 (非 Google) 資料侵害事件，你儲存的某些密碼已外洩。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="826614135184049678">你已在重設 iPad 時登出帳戶 (<ph name="USER_NAME" />)，如要重新登入，請輕觸下方的「繼續」。</translation>
 <translation id="8271720166617117963">接受並登入</translation>
+<translation id="8273982424131314219">你將在「<ph name="URL" />」中填入資訊</translation>
 <translation id="8278938988428169257">輸入字詞或詞組</translation>
 <translation id="8281781826761538115">預設 - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">略過</translation>
@@ -1217,6 +1219,7 @@
 <translation id="8548878600947630424">在網頁中尋找...</translation>
 <translation id="8556590991644167667">{count,plural, =1{你已忽略 {count} 則警告}other{你已忽略 {count} 則警告}}</translation>
 <translation id="8558480467877843976">現在起，每當你瀏覽或點選訊息、文件和其他應用程式中的連結時，都可以直接使用 Chrome 來開啟。</translation>
+<translation id="8580411965900177618">不用了，謝謝</translation>
 <translation id="8588404856427128947">關閉</translation>
 <translation id="8591976964826315682">在無痕模式中封鎖第三方 Cookie</translation>
 <translation id="8605219856220328675">關閉分頁。</translation>
@@ -1253,6 +1256,7 @@
 <ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="8810413591309742901">預設的網站檢視畫面</translation>
 <translation id="8820817407110198400">書籤</translation>
+<translation id="8825562130641217944">取得書籤、密碼等內容。</translation>
 <translation id="882557203579758546">在網頁中搜尋…</translation>
 <translation id="8840513115188359703">您不會因此登出 Google 帳戶。</translation>
 <translation id="8843129975935593190">貴機構對你能同步處理的內容設有限制。</translation>

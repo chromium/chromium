@@ -9,6 +9,7 @@
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> वटा थ्रेड, <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
 <translation id="1047773237499189053">नयाँ सुविधा उपलब्ध छ, थप जान्न अप एरो की प्रयोग गर्नुहोस्।</translation>
 <translation id="1059913517121127803">स्क्यान गर्ने प्रक्रिया सुरु गर्न सकिएन</translation>
+<translation id="1062823486781306604"><ph name="COUNT" /> मध्ये <ph name="INDEX" />, <ph name="NAME" />।</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">फायरवाल पत्ता लाग्यो</translation>
 <translation id="1075811647922107217">पेजको आकार</translation>
@@ -169,6 +170,7 @@
 <translation id="2161656808144014275">पाठ</translation>
 <translation id="2163937499206714165">अँध्यारो मोड अन गर्नुहोस्</translation>
 <translation id="2180197493692062006">कुनै समस्या आयो। यो एप फेरि खोली हेर्नुहोस्।</translation>
+<translation id="2189104374785738357">APN सम्बन्धी विवरणहरू परिवर्तन गर्नुहोस्</translation>
 <translation id="2209788852729124853">ट्राफिक काउन्टर रिसेट गर्नुहोस्</translation>
 <translation id="2212733584906323460">नेम रिजोल्युसन</translation>
 <translation id="2217935453350629363">हालको गति</translation>
@@ -540,6 +542,7 @@
 <translation id="5257811368506016604">उज्यालो रङ मोड अन गर्नुहोस्</translation>
 <translation id="5264277876637023664">CPU सम्बन्धी परीक्षण गर्नुहोस्</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
+<translation id="527501763019887383">APN अफ गरिएको छ।</translation>
 <translation id="5275828089655680674">निदानसम्बन्धी रुटिनहरू पुनः सञ्चालन गर्नुहोस्</translation>
 <translation id="5286252187236914003">L2TP/IPsec</translation>
 <translation id="5286263799730375393">ब्याकलाइटको रङ</translation>
@@ -604,6 +607,7 @@
 <translation id="5832805196449965646">व्यक्ति थप्नुहोस्</translation>
 <translation id="583281660410589416">अज्ञात</translation>
 <translation id="5843706793424741864">फरेनहाइट</translation>
+<translation id="584953448295717128">APN स्वतः पत्ता लगाइन्छ।</translation>
 <translation id="5849570051105887917">गृहपृष्ठ प्रदायकको कोड</translation>
 <translation id="5859603669299126575">आर्ट ग्यालेरी एल्बम</translation>
 <translation id="5860033963881614850">बन्द</translation>
@@ -882,6 +886,7 @@
 <translation id="80398733265834479">स्वतः रङ समायोजन गर्ने मोड अन गर्नुहोस्</translation>
 <translation id="8041089156583427627">प्रतिक्रिया पठाउनुहोस्।</translation>
 <translation id="8045012663542226664">माइक्रोफोन म्युट गर्ने की</translation>
+<translation id="8067126283828232460">APN कनेक्ट गरिएको छ।</translation>
 <translation id="8075838845814659848">बाँकी ब्याट्री</translation>
 <translation id="8076492880354921740">ट्याबहरू</translation>
 <translation id="8082366717211101304">Android एपहरूबाट DNS समाधान गर्न सकिएन</translation>
@@ -1028,6 +1033,7 @@
 <translation id="9111102763498581341">अनलक गर्नुहोस्</translation>
 <translation id="9122602430962285795">पुनः कनेक्ट गर्न सेटिङमा जानुहोस्</translation>
 <translation id="9126720536733509015">थुप्रै पेजहरू स्क्यान गरी एउटै PDF फाइलमा सेभ गर्नुहोस्</translation>
+<translation id="9133104754938025929">ब्याट्री जोगाउनका निम्ति डिभाइस चार्ज भइरहेका बेला मात्र स्क्रिन सेभर देखाइन्छ।</translation>
 <translation id="9137526406337347448">Google का सेवाहरू</translation>
 <translation id="9138630967333032450">लेफ्ट सिफ्ट</translation>
 <translation id="9143347780818904997"><ph name="MINUTES" /> मिनेटसम्म</translation>

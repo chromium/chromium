@@ -185,6 +185,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1770726142253415363">Przeniesiono do wiersza <ph name="ROW_NUMBER" />, kolumny <ph name="COLUMN_NUMBER" />.</translation>
 <translation id="1771761307086386028">Przewiń w prawo</translation>
 <translation id="1774796056689732716">Kalendarz, <ph name="CURRENT_MONTH_YEAR" />, obecnie wybrana jest data <ph name="DATE" />.</translation>
+<translation id="1775598828170459419">Wyświetlam <ph name="NUM_SHOWN_ITEMS" /> z <ph name="NUM_TOTAL_ITEMS" /></translation>
 <translation id="1787955149152357925">Wyłączono</translation>
 <translation id="181103072419391116">Siła sygnału: <ph name="SIGNAL_STRENGTH" />, zarządzana przez administratora</translation>
 <translation id="1815245884418711390">Przełącz hotspota. Hotspot jest wyłączony.</translation>

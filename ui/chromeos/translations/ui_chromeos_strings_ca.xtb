@@ -425,6 +425,7 @@
 <translation id="4432921877815220091">Xarxa <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Activa després de la configuració del dispositiu, Gestionada pel teu administrador</translation>
 <translation id="4439427728133035643">Xarxa <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SIGNAL_STRENGTH" />% d'intensitat del senyal, connecta</translation>
 <translation id="4442424173763614572">La cerca de DNS ha fallat</translation>
+<translation id="4445896958353114391">S'estan sincronitzant els fitxers</translation>
 <translation id="4462159676511157176">Servidors de noms personalitzats</translation>
 <translation id="4465725236958772856">Xarxa <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, gestionada per l'administrador, connecta</translation>
 <translation id="4470564870223067757">Configuració 2 de hangul</translation>
@@ -524,6 +525,7 @@
 <translation id="5102922915594634436">Gestiona les carpetes sincronitzades</translation>
 <translation id="5109254780565519649">S'ha produït un error. És possible que alguns elements no s'hagin restaurat.</translation>
 <translation id="5110329002213341433">Anglès (Canadà)</translation>
+<translation id="5119780910075847424">La sincronització s'ha posat en pausa</translation>
 <translation id="5123433949759960244">Pilota de bàsquet</translation>
 <translation id="5129662217315786329">Polonès</translation>
 <translation id="5144820558584035333">Configuració 3 de hangul (390)</translation>
@@ -807,6 +809,7 @@
 <translation id="7256405249507348194">Error no reconegut: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Serveis disponibles</translation>
 <translation id="7291818353625820805">Vols que les tecles es repeteixin? Desactiva les marques d'accentuació a Configuració del teclat.</translation>
+<translation id="729236380049459563">La sincronització de fitxers està activada</translation>
 <translation id="7292816689782057017">La política de l'administrador restringeix l'opció de desar en algunes ubicacions.</translation>
 <translation id="7294063083760278948">Telugu (transliteració)</translation>
 <translation id="7295662345261934369">Comparteix amb altres persones</translation>
@@ -920,6 +923,7 @@
 <translation id="8087576439476816834">Baixa, <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">Compartit amb mi</translation>
 <translation id="8116072619078571545">Aigua amb gel</translation>
+<translation id="8124093710070495550">Problema de sincronització</translation>
 <translation id="8128733386027980860">Anglès (Regne Unit) amb teclat Dvorak</translation>
 <translation id="8137331602592933310">El fitxer "<ph name="FILENAME" />" s'ha compartit amb l'usuari. No el podeu suprimir perquè no és vostre.</translation>
 <translation id="8138705869659070104">Activa després de configurar</translation>

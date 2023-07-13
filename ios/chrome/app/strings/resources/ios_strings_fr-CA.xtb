@@ -512,6 +512,7 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="4272631900155121838">Pour numériser un code QR, activez la caméra dans les paramètres</translation>
 <translation id="4277990410970811858">Navigation sécurisée</translation>
 <translation id="4281844954008187215">Conditions d'utilisation</translation>
+<translation id="4286718549648564014">Adresse déplacée vers votre compte <ph name="USER_EMAIL" /></translation>
 <translation id="4293080268407233932">Rechercher</translation>
 <translation id="4304713468139749426">Gestionnaire de mots de passe</translation>
 <translation id="430793432425771671">Tout synchroniser</translation>
@@ -1165,6 +1166,7 @@ Les sites peuvent utiliser des témoins afin de voir votre activité de navigati
 <translation id="8264966119170358612">Certains de vos mots de passe enregistrés ont été exposés à une violation de données d'un tiers. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="826614135184049678">Vous avez été déconnecté de votre compte <ph name="USER_NAME" /> lors de la réinitialisation de votre iPad. Pour vous reconnecter, touchez « Continuer » ci-dessous.</translation>
 <translation id="8271720166617117963">Accepter et se connecter</translation>
+<translation id="8273982424131314219">Vous remplirez les renseignements dans <ph name="URL" /></translation>
 <translation id="8278938988428169257">Saisir un mot ou une phrase</translation>
 <translation id="8281781826761538115">Paramètres régionaux par défaut - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Ignorer</translation>
@@ -1211,6 +1213,7 @@ Vos données ont été chiffrées avec votre phrase de passe sur <ph name="TIME"
 <translation id="8548878600947630424">Rechercher sur la page…</translation>
 <translation id="8556590991644167667">{count,plural, =1{Vous avez ignoré {count} avertissement}one{Vous avez ignoré {count} avertissement}other{Vous avez ignoré {count} avertissements}}</translation>
 <translation id="8558480467877843976">Vous pouvez désormais utiliser Chrome chaque fois que vous naviguez ou que vous touchez des liens dans des messages, des documents et d'autres applications.</translation>
+<translation id="8580411965900177618">Non merci</translation>
 <translation id="8588404856427128947">Désactivée</translation>
 <translation id="8591976964826315682">Bloquer les témoins tiers en navigation privée</translation>
 <translation id="8605219856220328675">Fermer l'onglet.</translation>
@@ -1247,6 +1250,7 @@ Vos données ont été chiffrées avec votre phrase de passe sur <ph name="TIME"
 <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="8810413591309742901">Affichage du site par défaut</translation>
 <translation id="8820817407110198400">Favoris</translation>
+<translation id="8825562130641217944">Accédez à vos favoris, à vos mots de passe et autres.</translation>
 <translation id="882557203579758546">Rechercher dans la page…</translation>
 <translation id="8840513115188359703">Vous ne serez pas déconnecté(e) de votre compte Google.</translation>
 <translation id="8843129975935593190">Votre organisation impose une limite quant à ce que vous pouvez synchroniser.</translation>

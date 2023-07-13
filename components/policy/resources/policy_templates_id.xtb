@@ -224,6 +224,7 @@ kebijakan ini tidak melarang screenshot yang diambil dengan aplikasi sistem oper
 
       Jika kebijakan disetel ke Salah (False) atau tidak disetel, halaman web akan menggunakan WebGL API dan plugin akan menggunakan Pepper 3D API, tetapi setelan browser default mungkin masih memerlukan argumen command line untuk menggunakan API ini.</translation>
 <translation id="1198458955128279215">Gunakan perilaku default rencana peluncuran fitur.</translation>
+<translation id="119943715168319757">Setelan MIDI</translation>
 <translation id="1202216683470826356">Tampilkan kartu di Halaman Tab Baru</translation>
 <translation id="120314092766637918">Jika kebijakan ini disetel ke aktif atau tidak disetel, perlindungan dari phishing sisi klien akan dikontrol oleh <ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME" /> untuk <ph name="PRODUCT_NAME" />. Jika <ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME" /> disetel ke <ph name="SAFE_BROWSING_PROTECTION_LEVEL_VALUE_STANDARD" /> atau <ph name="SAFE_BROWSING_PROTECTION_LEVEL_VALUE_ENHANCED" />, perlindungan dari phishing sisi klien akan menjalankan model lokal untuk memeriksa apakah halaman merupakan phishing. Jika model yakin bahwa halaman tersebut adalah phishing, <ph name="PRODUCT_NAME" /> akan mengirim permintaan ke Google untuk meminta keputusan akhir.
 Jika kebijakan ini disetel ke nonaktif, perlindungan dari phishing sisi klien tidak akan melakukan perlindungan apa pun dan tidak akan mengirim data ke Google untuk meminta keputusan.</translation>
@@ -2628,6 +2629,7 @@ Jika kebijakan ini tidak disetel, perilaku baru akan digunakan seperti pengguna 
 <translation id="3278042410658310805">Nonaktifkan respons lisan di layar login dan izinkan pengguna mengaktifkannya untuk sementara</translation>
 <translation id="328347261792478720">Secara default, browser akan menampilkan rekomendasi media yang dipersonalisasi kepada pengguna. Jika kebijakan ini disetel ke Nonaktif, rekomendasi ini akan disembunyikan dari pengguna. Jika kebijakan ini disetel ke Aktif atau tidak disetel, rekomendasi media akan ditampilkan kepada pengguna.</translation>
 <translation id="3284094172359247914">Penggunaan kontrol WebUSB API</translation>
+<translation id="3284658508278342293">Memberikan izin MIDI di situs ini</translation>
 <translation id="3286159327013237833">Aktifkan klik otomatis di layar login</translation>
 <translation id="3288595667065905535">Saluran rilis</translation>
 <translation id="3294430356898755483">Jike kebijakan disetel, administrator dapat menyiapkan daftar printer bagi pengguna mereka. Pemilihan printer dilakukan pada saat pengguna mencoba mencetak untuk pertama kalinya.
@@ -3110,6 +3112,11 @@ Pada versi 114 dan yang lebih baru, <ph name="DOH_SALT_POLICY_NAME" /> bersifat 
 
       Jika kebijakan ini disetel, pengguna tidak dapat mengubahnya. Jika tidak disetel, booting pada tegangan AC akan dinonaktifkan, dan pengguna tidak dapat mengaktifkannya.</translation>
 <translation id="3660562134618097814">Transfer cookie SAML IdP saat proses masuk.</translation>
+<translation id="3661897198667953320">Menetapkan daftar pola URL situs yang menentukan situs yang akan otomatis menolak izin MIDI. Tindakan ini akan memblokir situs agar tidak menggunakan perangkat MIDI seperti pengontrol dan alat musik.
+
+Untuk informasi selengkapnya tentang pola URL situs yang valid, lihat https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Karakter pengganti, <ph name="WILDCARD_VALUE" />, diizinkan. Kebijakan ini hanya mencocokkan berdasarkan origin, sehingga jalur apa pun di pola URL akan diabaikan.
+
+Tidak menyetel kebijakan ini untuk suatu situs akan membuat kebijakan dari <ph name="DEFAULT_MIDI_SETTING_POLICY_NAME" /> berlaku untuk situs tersebut, jika disetel, atau izin akan mengikuti setelan default browser dan memungkinkan pengguna memilih izin ini untuk setiap situs.</translation>
 <translation id="3665437376055221832">Hanya minta pengguna saat tidak ada sertifikat yang cocok dengan pemilihan otomatis.</translation>
 <translation id="3671773704245936868">Nonaktifkan penyorotan fokus keyboard</translation>
 <translation id="3674010627788940405">Jangan dukung header permintaan non-karakter pengganti CORS.</translation>
@@ -4349,6 +4356,7 @@ Kebijakan ini tidak akan berpengaruh jika kebijakan <ph name="DEVICE_SCREENSAVER
 <translation id="4735099388031364207">Jika kebijakan disetel ke Aktif, pengesahan jarak jauh perangkat lunak dapat dilakukan. Sertifikat akan otomatis dibuat dan diupload ke Server Pengelolaan Perangkat.
 
       Jika kebijakan disetel ke Nonaktif atau tidak disetel, tidak akan ada sertifikat yang dihasilkan dan panggilan ke <ph name="ENTERPRISE_PLATFORM_KEYS_API" /> akan gagal.</translation>
+<translation id="473613500147803115">Memblokir izin MIDI di situs ini</translation>
 <translation id="473673197014866318">Menyetel kebijakan akan mengontrol setelan pengelolaan ekstensi untuk <ph name="PRODUCT_NAME" />, termasuk setelan apa pun yang dikontrol oleh kebijakan terkait ekstensi yang sudah ada. Kebijakan ini akan menggantikan kebijakan lama apa pun yang mungkin disetel.
 
 Kebijakan ini hanya memetakan ID ekstensi atau URL update ke setelan khususnya. Konfigurasi default dapat disetel bagi ID khusus <ph name="DEFAULT_SCOPE" />, yang berlaku untuk semua ekstensi tanpa konfigurasi khusus dalam kebijakan ini. Dengan URL update, konfigurasi akan berlaku untuk ekstensi dengan URL update tepat yang disebutkan dalam manifes ekstensi ( http://support.google.com/chrome/a?p=Configure_ExtensionSettings_policy ). Jika tanda 'override_update_url' disetel ke benar (true), ekstensi akan diinstal dan diupdate menggunakan URL "update" yang ditentukan dalam kebijakan <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> atau kolom 'update_url' dalam kebijakan ini. Tanda 'override_update_url' akan diabaikan jika 'update_url' adalah URL Chrome Web Store.
@@ -4665,6 +4673,11 @@ Jika kebijakan disetel ke Salah (False), perilaku default akan digunakan.</trans
 
       Jika kebijakan ditetapkan ke true atau tidak ditetapkan, pengguna dapat menyesuaikan latar belakang di halaman Tab Baru.</translation>
 <translation id="5076953589932162038">Setelan Set Pihak Pertama</translation>
+<translation id="507742683193937417">Menetapkan daftar pola URL situs yang menentukan situs yang akan otomatis memberikan izin MIDI. Hal ini akan mengizinkan situs menggunakan perangkat MIDI seperti pengontrol dan alat musik.
+
+Untuk informasi selengkapnya tentang pola URL situs yang valid, lihat https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Karakter pengganti, <ph name="WILDCARD_VALUE" />, diizinkan. Kebijakan ini hanya mencocokkan berdasarkan origin, sehingga jalur apa pun di pola URL akan diabaikan.
+
+Tidak menyetel kebijakan ini untuk suatu situs akan membuat kebijakan dari <ph name="DEFAULT_MIDI_SETTING_POLICY_NAME" /> berlaku untuk situs tersebut, jika disetel, atau izin akan mengikuti setelan default browser dan memungkinkan pengguna memilih izin ini untuk setiap situs.</translation>
 <translation id="5078623750797048009">Mengaktifkan Anotasi PDF</translation>
 <translation id="5081204761483900654">Sesi tamu terkelola yang dibatasi</translation>
 <translation id="5082296146261894974">Mengizinkan pengguna mengklik notifikasi Phone Hub untuk meluncurkan aplikasi Eche.</translation>
@@ -4961,6 +4974,7 @@ Catatan: Kebijakan ini tidak berlaku untuk upgrade HSTS.</translation>
       Jika properti <ph name="AUTO_SELECT_ALL_SCREENS_NAME" /> ditentukan dalam permintaan <ph name="GET_DISPLAY_MEDIA_SET_NAME" />, semua platform layar akan otomatis direkam tanpa izin pengguna secara eksplisit.
       Jika kebijakan ini tidak disetel, <ph name="AUTO_SELECT_ALL_SCREENS_NAME" /> tidak tersedia untuk semua aplikasi web.
 Mulai dari versi 116 <ph name="PRODUCT_NAME" />, kebijakan ini tidak akan mendukung refresh dinamis lagi untuk meningkatkan privasi. Oleh karena itu, pengguna dapat memastikan bahwa tidak ada halaman tambahan yang dapat merekam layar setelah login jika tidak diizinkan sejak awal sesi.</translation>
+<translation id="5354891932736553743">Setelan izin MIDI default</translation>
 <translation id="5361167871898066799">Mengontrol fitur koreksi otomatis di keyboard fisik</translation>
 <translation id="5361708558735884308">Jika kebijakan disetel, akses ke URL yang tercantum akan diberikan sebagai pengecualian untuk <ph name="URL_BLOCKLIST_POLICY_NAME" />. Lihat deskripsi kebijakan tersebut untuk mengetahui format entri daftar ini. Misalnya, menyetel <ph name="URL_BLOCKLIST_POLICY_NAME" /> ke * akan memblokir semua permintaan, dan Anda dapat menggunakan kebijakan ini untuk mengizinkan akses ke URL yang ada dalam daftar terbatas. Gunakan kebijakan ini untuk membuka pengecualian untuk skema tertentu, subdomain dari domain lain, port, atau jalur khusus, menggunakan format yang ditentukan di ( https://support.google.com/chrome/a?p=url_blocklist_filter_format ). Filter paling spesifik akan menentukan apakah URL diblokir atau diizinkan. Kebijakan <ph name="URL_ALLOWLIST_POLICY_NAME" /> akan lebih diprioritaskan daripada <ph name="URL_BLOCKLIST_POLICY_NAME" />. Kebijakan ini terbatas untuk 1.000 entri.
 
@@ -6691,6 +6705,7 @@ Kebijakan ini akan dihapus dari <ph name="PRODUCT_NAME" /> pada masa mendatang.<
 <translation id="6794083666143216172">Mengizinkan asal mengkueri atribut perangkat</translation>
 <translation id="6795485990775913659">Hanya izinkan pencetakan tanpa PIN</translation>
 <translation id="6796215185873669533">Mengembalikan setelan browser untuk versi string Agen Pengguna ke defaultnya.</translation>
+<translation id="6800111968763383631">Tolak izin MIDI di semua situs secara default</translation>
 <translation id="6800181452282128474">Jangan kueri Server Quirks</translation>
 <translation id="68031099365512050">Laporkan status audio</translation>
 <translation id="680356860463873420">Jangan izinkan pengguna menggunakan PluginVm</translation>
@@ -7076,6 +7091,7 @@ Jika ditetapkan, daftar nilai default akan diperluas dengan nilai yang baru diko
 
       Jika kebijakan ditetapkan ke salah (false) atau tidak ditetapkan, informasi tidak akan dilaporkan.
       Jika ditetapkan ke benar (true), informasi kipas perangkat akan dilaporkan.</translation>
+<translation id="7096708978256135543">Tanyakan setiap kali situs ingin mendapatkan izin MIDI</translation>
 <translation id="7098400392308393199">Perlindungan Download Real Time dikontrol oleh kebijakan <ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME" /></translation>
 <translation id="710003290625031750">Deskripsi skema yang diluaskan:</translation>
 <translation id="7101550508196914704">Jangan tampilkan pintasan aplikasi di kolom bookmark</translation>
@@ -8027,6 +8043,11 @@ Di instance <ph name="MS_WIN_NAME" />, aplikasi dan ekstensi yang bukan dari Chr
 Di instance <ph name="MAC_OS_NAME" />, aplikasi dan ekstensi yang bukan dari Chrome Web Store hanya dapat diinstal otomatis jika instance dikelola melalui MDM, dihubungkan ke domain melalui MCX, atau didaftarkan di <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
 
 Catatan: Kebijakan ini tidak berlaku untuk mode Samaran. Baca tentang ekstensi hosting (https://developer.chrome.com/extensions/hosting).</translation>
+<translation id="798452960161141151">Jika kebijakan ini disetel ke <ph name="BLOCK_MIDI_POLICY_NAME" /> (nilai 2), situs akan otomatis diblokir agar tidak menggunakan perangkat MIDI seperti pengontrol dan alat musik.
+
+Jika kebijakan ini disetel ke <ph name="ASK_MIDI_POLICY_NAME" /> (nilai 3), pengguna akan diminta untuk menentukan saat situs ingin menggunakan perangkat MIDI.
+
+Jika kebijakan ini tidak disetel, kebijakan<ph name="ASK_MIDI_POLICY_NAME" /> akan berlaku, tetapi pengguna dapat mengubah setelan ini.</translation>
 <translation id="7985242821674907985"><ph name="PRODUCT_NAME" /></translation>
 <translation id="7986473886676689183">Aktifkan pelaporan Android</translation>
 <translation id="7990280274626154329">Aktifkan <ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /></translation>

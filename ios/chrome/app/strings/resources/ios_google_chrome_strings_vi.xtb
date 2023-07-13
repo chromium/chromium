@@ -6,6 +6,7 @@
 <translation id="1352919863522755794">Trình quản lý mật khẩu của Google không thể kiểm tra mật khẩu của bạn. Hãy thử kiểm tra kết nối Internet.</translation>
 <translation id="1462727070346936664">Đăng nhập để khai thác tối đa Chrome.</translation>
 <translation id="1479202195792305274">Chrome có thể kiểm tra mật khẩu khi bạn đăng nhập bằng Tài khoản Google của mình.</translation>
+<translation id="1491435845014430217">Bật chế độ "Khoá các thẻ Ẩn danh khi bạn đóng Chrome".</translation>
 <translation id="1493827051843127077">Hãy đặt Chrome làm trình duyệt mặc định để đồng bộ hóa các thẻ, mật khẩu và thông tin thanh toán trên mọi thiết bị của bạn</translation>
 <translation id="1504372625950710826">Chrome không thể kiểm tra xem có bản cập nhật mới nào không. Hãy thử kiểm tra kết nối Internet.</translation>
 <translation id="1511320244449497906">Bạn đang đăng nhập và đồng bộ hoá dữ liệu bằng một tài khoản do <ph name="DOMAIN" /> quản lý; theo đó, quản trị viên nay có thể thiết lập chính sách người dùng dành riêng cho tài khoản đó và việc này có thể làm thay đổi hành vi của Chrome.</translation>
@@ -80,6 +81,7 @@
 <translation id="5395376160638294582">Đảm bảo bạn luôn có thể sử dụng dữ liệu Chrome trong Tài khoản Google của mình</translation>
 <translation id="5460571915754665838">4. Chọn Chrome</translation>
 <translation id="5492504007368565877">Trình quản lý mật khẩu của Google không thể kiểm tra mật khẩu của bạn.</translation>
+<translation id="5527026824954593399">Nhấn vào "Xem bằng Google Maps trên Chrome".</translation>
 <translation id="5552137475244467770">Chrome kiểm tra định kỳ các mật khẩu của bạn so với những danh sách đã đăng trên Internet. Khi thực hiện việc này, mật khẩu và tên người dùng của bạn được mã hóa nên không ai có thể đọc được, kể cả Google.</translation>
 <translation id="5639704535586432836">Mở Cài đặt &gt; Bảo mật &gt; Máy ảnh &gt; Google Chrome và bật máy ảnh.</translation>
 <translation id="5642200033778930880">Google Chrome không thể sử dụng máy ảnh của bạn ở Chế độ xem phân tách</translation>
@@ -120,6 +122,7 @@
 <translation id="7501046334262221972">Để đặt Chrome làm trình duyệt mặc định, hãy mở phần Cài đặt. Nhấn vào Ứng dụng trình duyệt mặc định rồi chọn Chrome.</translation>
 <translation id="756809126120519699">Đã xóa dữ liệu Chrome</translation>
 <translation id="7662994914830945754">Để xem các thẻ của bạn trên bất cứ thiết bị nào mà bạn có dùng Chrome, hãy đăng nhập và bật tính năng đồng bộ hóa</translation>
+<translation id="7669869107155339016">Vào phần Cài đặt Chrome.</translation>
 <translation id="7693590760643069321">Giờ đây, bạn có thể dùng Chrome mỗi khi nhấn vào các đường liên kết trong thư/tin nhắn, tài liệu và các ứng dụng khác.</translation>
 <translation id="7698568245838009292">Chrome muốn truy cập vào máy ảnh</translation>
 <translation id="7754633291442704733">Tổ chức của bạn (<ph name="DOMAIN" />) sẽ có quyền truy cập vào dữ liệu của bạn trên Chrome, dấu trang, nhật ký, mật khẩu và các chế độ cài đặt khác mà bạn lưu trữ trong tài khoản này. Khi bạn đăng xuất, dữ liệu của bạn sẽ bị xoá khỏi thiết bị này.  Tuy nhiên, dữ liệu vẫn được lưu trữ trong Tài khoản Google được quản lý của bạn và tổ chức có thể sử dụng dữ liệu này. Tổ chức của bạn cũng có thể thiết lập chính sách người dùng dành riêng cho tài khoản đó và việc này có thể làm thay đổi hành vi của Chrome.</translation>

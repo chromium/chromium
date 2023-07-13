@@ -68,6 +68,7 @@
 <translation id="4985291216379576555">Không có kết nối mạng, Chromium không thể kiểm tra xem có bản cập nhật mới nào không</translation>
 <translation id="4996471330284142407">Với phiên bản Chromium đơn giản, an toàn và nhanh nhất từ trước đến nay, bạn sẽ làm được nhiều việc hơn.</translation>
 <translation id="4999538639245140991">Vì bạn đăng xuất khỏi tài khoản do <ph name="SIGNOUT_MANAGED_DOMAIN" /> quản lý, nên dữ liệu Chromium của bạn sẽ bị xóa khỏi thiết bị này. Dữ liệu của bạn sẽ vẫn còn trong Tài khoản Google của bạn.</translation>
+<translation id="5042011327527167688">Nhấn vào "Xem bằng Google Maps trên Chromium".</translation>
 <translation id="5048795749726991615">Để dễ dàng sử dụng mật khẩu đã lưu trong các ứng dụng khác, hãy dùng Chromium làm dịch vụ tự động điền</translation>
 <translation id="5171868502429358653">Đăng nhập vào Chromium</translation>
 <translation id="5224391634244552924">Bạn chưa lưu mật khẩu nào. Chromium có thể kiểm tra các mật khẩu của bạn khi bạn lưu các mật khẩu đó.</translation>
@@ -112,6 +113,7 @@
 <translation id="7357211569052832586">Dữ liệu được chọn đã bị xóa khỏi Chromium và các thiết bị được đồng bộ hóa. Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web khác, chẳng hạn như tìm kiếm và hoạt động từ các dịch vụ khác của Google tại history.google.com.</translation>
 <translation id="7395825497086981028">Mật khẩu của bạn sẽ được lưu vào Trình quản lý mật khẩu cho <ph name="EMAIL" />.</translation>
 <translation id="7400689562045506105">Sử dụng Chromium mọi nơi</translation>
+<translation id="7523464085759699266">Bật chế độ "Khoá các thẻ Ẩn danh khi bạn đóng Chromium".</translation>
 <translation id="7674213385180944843">Mở Cài đặt &gt; Bảo mật &gt; Máy ảnh &gt; Chromium và bật máy ảnh.</translation>
 <translation id="7746854981345936341">Mẹo dành cho Chromium. Một số nút hiện nằm ở cuối màn hình, chẳng hạn như nút Quay lại, Tiến lên và Tìm kiếm.</translation>
 <translation id="7763454117143368771">Hãy đặt Chromium làm trình duyệt mặc định để luôn được bảo vệ khỏi các trang web nguy hiểm và giữ cho mật khẩu của bạn an toàn</translation>
@@ -123,6 +125,7 @@
 <translation id="7931842119211730154">Khóa các thẻ Ẩn danh khi bạn đóng Chromium</translation>
 <translation id="7980860476903281594">Chromium chia sẻ thông tin vị trí của bạn với những trang web mà bạn cho phép.</translation>
 <translation id="8013573822802650211">Để xem các thẻ của bạn trên bất cứ thiết bị nào mà bạn có dùng Chromium, hãy đăng nhập trên tất cả thiết bị</translation>
+<translation id="8071041515667087705">Vào phần Cài đặt Chromium.</translation>
 <translation id="8073677936375100957">Xóa dữ liệu Chromium của bạn khỏi thiết bị này?</translation>
 <translation id="8235427517854598594">Đặt Chromium làm trình duyệt mặc định?</translation>
 <translation id="8240981428553046115">Chromium không thể kiểm tra xem có bản cập nhật mới nào không. Hãy thử lại sau.</translation>

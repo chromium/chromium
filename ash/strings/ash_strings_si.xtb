@@ -185,6 +185,7 @@
 <translation id="1770726142253415363"><ph name="ROW_NUMBER" /> පේළිය, <ph name="COLUMN_NUMBER" /> තීරුව වෙත යන්න.</translation>
 <translation id="1771761307086386028">දකුණට අනුචලන කරන්න</translation>
 <translation id="1774796056689732716">දින දර්ශනය, <ph name="CURRENT_MONTH_YEAR" />, දැනට <ph name="DATE" /> තෝරා ඇත.</translation>
+<translation id="1775598828170459419"><ph name="NUM_TOTAL_ITEMS" />න් <ph name="NUM_SHOWN_ITEMS" />ක් පෙන්වමින්</translation>
 <translation id="1787955149152357925">ක්‍රියාවිරහිතයි</translation>
 <translation id="181103072419391116">සංඥා ප්‍රබලතාව <ph name="SIGNAL_STRENGTH" />, ඔබේ පරිපාලකයා විසින් කළමනාකරණය කරයි</translation>
 <translation id="1815245884418711390">හොට්ස්පොට් ටොගල් කරන්න. හොට්ස්පොට් ක්‍රියා විරහිතයි.</translation>

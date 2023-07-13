@@ -131,6 +131,7 @@
 <translation id="2084108471225856927">डिभाइसका सेटिङहरू</translation>
 <translation id="2084809735218147718">साङ्केतिक भाषामा धन्यवाद भनिरहेका व्यक्ति</translation>
 <translation id="2088690981887365033">VPN नेटवर्क</translation>
+<translation id="209653272837065803">फाइलहरू सिंक गरिराख्नका निम्ति भण्डारणमा पर्याप्त खाली ठाउँ छैन</translation>
 <translation id="2111134541987263231">"<ph name="BEGIN_BOLD" />इन्कोग्निटो मोडमा अनुमति दिनुहोस्<ph name="END_BOLD" />" अन गर्नुहोस्</translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> वटा सामग्री मेटाइने छन् र तपाईं ती सामग्री रिस्टोर गर्न सक्नु हुने छैन।</translation>
 <translation id="2122305276694332719">कुनै लुकाइएको नेटवर्कमा स्वतः जोड्नुले तपाईंको यन्त्र र नेटवर्कसम्बन्धी केही सेटिङ अरूले देख्न सक्ने हुनाले यसो गर्न सिफारिस गरिँदैन।</translation>
@@ -147,9 +148,11 @@
 <translation id="2198315389084035571">सरल गरिएको चिनीया</translation>
 <translation id="22085916256174561">कोरियाली</translation>
 <translation id="2208919847696382164">Linux प्रयोग गरी इन्स्टल गर्नुहोस्</translation>
+<translation id="2215692307449050019">ब्याट्री कम छ। तपाईंको डिभाइस बिजुलीको स्रोतमा जोडिएपछि फाइल सिंक गर्ने कार्य सुचारु गरिने छ।</translation>
 <translation id="2225536596944493418">तपाईंले <ph name="NUMBER_OF_ITEMS" /> वस्तुहरू मेटाउन खोज्नुभएकै हो?</translation>
 <translation id="2230062665678605299">"<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /> फोल्डर सिर्जना गर्न सकिएन</translation>
 <translation id="2239068707900391003">कफी भएको कप समातिरहेका व्यक्ति</translation>
+<translation id="2247561763838186830">तपाईंलाई लग आउट गरिएको छ</translation>
 <translation id="2251368349685848079">ट्र्यासबाट रिस्टोर गर्नुहोस्</translation>
 <translation id="2278133026967558505">सबै वेबसाइट र URL मार्फत फाइल प्रयोग गर्न सकिन्छ</translation>
 <translation id="2282155092769082568">स्वतः कन्फिगुरेसनको URL:</translation>
@@ -164,6 +167,7 @@
 <translation id="2325650632570794183">यो फाइल प्रकार समर्थन गरिएको छैन। यो फाइल खोल्न सक्ने एक अनु्प्रयोग फेला पार्नको लागि कृपया Chrome वेब भण्डार भ्रमण गर्नुहोस्।</translation>
 <translation id="2326539130272988168">बुल्गेरियाली</translation>
 <translation id="2337715497728194187">Bruschetta सँग सेयर गर्नुहोस्</translation>
+<translation id="233822363739146957">तपाईंका सबै फाइलहरू सिंक गर्न भण्डारणमा पर्याप्त खाली ठाउँ छैन</translation>
 <translation id="23721837607121582">मोबाइल प्रोफाइल डाउनलोड गर्नुहोस्, <ph name="NETWORK_COUNT" /> मध्ये <ph name="NETWORK_INDEX" /> औँ नेटवर्क, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">सूची दृश्यमा बदल्नुहोस्‌</translation>
 <translation id="2377590462528165447">Linux सँग <ph name="NUMBER_OF_ITEMS" /> फोल्डरहरू आदान प्रदान गरिए</translation>
@@ -217,6 +221,7 @@
 <translation id="2782104745158847185">Linux एप स्थापना गर्ने क्रममा त्रुटि भयो</translation>
 <translation id="2802583107108007218">यी प्रतिबन्धहरूका बारेमा थप जान्नुहोस्</translation>
 <translation id="2803375539583399270">PIN हाल्नुहोस्</translation>
+<translation id="2819519502129272135">फाइल सिंक गर्ने सुविधा अफ गरिएको छ</translation>
 <translation id="2820957248982571256">स्क्यान गर्दै...</translation>
 <translation id="2830077785865012357">चिनियाँ झुयिन</translation>
 <translation id="2843806747483486897">डिफल्ट परिवर्तन गर्नुहोस्...</translation>
@@ -420,6 +425,7 @@
 <translation id="4432921877815220091"><ph name="NETWORK_COUNT" /> मध्ये <ph name="NETWORK_INDEX" /> औँ नेटवर्क, <ph name="NETWORK_NAME" />, डिभाइस सेटअप गरेपछि एक्टिभेट गर्नुहोस्, तपाईंका एड्मिनले व्यवस्थापन गर्नुभएको</translation>
 <translation id="4439427728133035643"><ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /> मध्ये नेटवर्क <ph name="NETWORK_INDEX" />सिग्नलको क्षमता <ph name="SIGNAL_STRENGTH" />%, जोड्नुहोस्</translation>
 <translation id="4442424173763614572">DNS लुकअप असफल भयो</translation>
+<translation id="4445896958353114391">फाइलहरू सिंक गरिँदै छन्</translation>
 <translation id="4462159676511157176">अनुकुल नाम सर्भरहरू</translation>
 <translation id="4465725236958772856"><ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /> मध्ये नेटवर्क <ph name="NETWORK_INDEX" />तपाईंका प्रशासकले व्यवस्थित गर्नुभएको छ, जोड्नुहोस्</translation>
 <translation id="4470564870223067757">हंगुल 2 सेट</translation>
@@ -441,6 +447,7 @@
 <translation id="4599600860674643278">फिल्टर रिसेट गरियो।</translation>
 <translation id="4603392156942865207"><ph name="FOLDER_NAME" /> मा <ph name="FILE_NAME" /> कपी गरिँदै छ</translation>
 <translation id="4631887759990505102">कलाकार</translation>
+<translation id="4635373743001040938">भण्डारणमा एकदमै कम खाली ठाउँ बाँकी छ। फाइल सिंक गर्ने सुविधा अफ गरिएको छ।</translation>
 <translation id="4642769377300286600">मोबाइल प्रोफाइल इन्स्टल गरिँदै छ। यो प्रोफाइल <ph name="NETWORK_PROVIDER_NAME" /> ले उपलब्ध गराएको <ph name="NETWORK_NAME" /> नेटवर्कको <ph name="NETWORK_COUNT" /> मध्ये <ph name="NETWORK_INDEX" /> औँ नेटवर्क हो।</translation>
 <translation id="4646813851450205600">चेक Qwerty किबोर्ड</translation>
 <translation id="4656777537938206294">फाइलहरू अफलाइन उपलब्ध गराउनुहोस्</translation>
@@ -494,6 +501,7 @@
 <translation id="4961158930123534723">Parallels Desktop सँग एउटा फोल्डर सेयर गरियो</translation>
 <translation id="496656650103537022"><ph name="FILE_NAME" /> रिस्टोर गरियो</translation>
 <translation id="4969785127455456148">एल्बम</translation>
+<translation id="4972330214479971536">फाइल सिंक गर्ने सुविधा सेटअप गर्ने कार्य पूरा सकिएन</translation>
 <translation id="4973523518332075481"><ph name="MAX_LENGTH" /> वा सोभन्दा कम वर्णहरू भएको कुनै नाम प्रयोग गर्नुहोस्</translation>
 <translation id="4973970068702235170">जिप गर्न सकिएन, अनपेक्षित त्रुटि: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">जापानी</translation>
@@ -517,6 +525,7 @@
 <translation id="5102922915594634436">सिंक गरिएका फोल्डरहरू व्यवस्थापन गर्नुहोस्</translation>
 <translation id="5109254780565519649">कुनै त्रुटि भयो। केही वस्तुहरू रिस्टोर नभएका हुन सक्छन्।</translation>
 <translation id="5110329002213341433">अङ्ग्रेजी (क्यानाडा)</translation>
+<translation id="5119780910075847424">सिंक गर्ने प्रक्रिया पज गरिएको छ</translation>
 <translation id="5123433949759960244">बास्केटबल</translation>
 <translation id="5129662217315786329">पोलिस</translation>
 <translation id="5144820558584035333">हंगुल 3 सेट (390)</translation>
@@ -799,6 +808,7 @@
 <translation id="7256405249507348194">पहिचान नभएको त्रुटि: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">उपलब्ध सेवाहरू</translation>
 <translation id="7291818353625820805">कीहरू दोहोर्‍याउन चाहनुहुन्छ? किबोर्डका सेटिङमा गई "एक्सेन्ट चिन्हहरू" अफ गर्नुहोस्</translation>
+<translation id="729236380049459563">फाइल सिंक गर्ने सुविधा अन छ</translation>
 <translation id="7292816689782057017">एड्मिनले तोक्नुभएको नीतिअनुसार केही लोकेसनहरूमा सेभ गर्न मिल्दैन।</translation>
 <translation id="7294063083760278948">तेलगू लिपि रूपान्तरण</translation>
 <translation id="7295662345261934369">अरूसँग सेयर गर्नुहोस्</translation>
@@ -806,6 +816,7 @@
 <translation id="7309413087278791451">जर्मन (बेल्जियम)</translation>
 <translation id="7339898014177206373">नयाँ विन्डो</translation>
 <translation id="7343393116438664539">भियतनामी टेलेक्स</translation>
+<translation id="7347346221088620549">इन्क्रिप्ट गरिएको फाइल</translation>
 <translation id="7357762654218998920">यो प्रकारको फाइल प्रयोग गर्न मिल्दैन। ChromeOS मा फाइल खोल्ने तरिकाका बारेमा <ph name="BEGIN_LINK_HELP" />थप जान्नुहोस्<ph name="END_LINK_HELP" />।</translation>
 <translation id="7359359531237882347"><ph name="NUMBER_OF_ITEMS" /> वस्तुहरू प्रतिलिपि गर्दै...</translation>
 <translation id="7375951387215729722"><ph name="COLUMN_NAME" /> का आधारमा घट्दो क्रममा क्रमबद्ध गरिएको फाइलको सूची।</translation>
@@ -911,6 +922,7 @@
 <translation id="8087576439476816834"><ph name="PROFILE_NAME" /> डाउनलोड गर्नुहोस्</translation>
 <translation id="8106045200081704138">मसँग साझा गरिएको</translation>
 <translation id="8116072619078571545">बरफजस्तो चिसो पानी</translation>
+<translation id="8124093710070495550">सिंकसम्बन्धी समस्या</translation>
 <translation id="8128733386027980860">अङ्ग्रेजी (संयुक्त अधिराज्य) ड्भोराक किबोर्ड</translation>
 <translation id="8137331602592933310">"<ph name="FILENAME" />" तपाईंसँग साझा गरिएको छ। तपाईंले यसलाई मेटाउन सक्नुहुन्न किनकी यसमा तपाईंको स्वामित्व छैन।</translation>
 <translation id="8138705869659070104">डिभाइस सेटअप गरेपछि एक्टिभेट गर्नुहोस्</translation>
@@ -992,6 +1004,7 @@
 <translation id="8609695766746872526">आइसल्यान्डिक</translation>
 <translation id="863903787380594467">PIN मिलेन। तपाईं अझै <ph name="RETRIES" /> पटक प्रयास गर्न सक्नुहुन्छ।</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - पोर्ट</translation>
+<translation id="8656407365183407932">तपाईंका अफलाइन फाइलहरू हटाइएका छन्</translation>
 <translation id="8656768832129462377">जाँच नगर्नुहोस्</translation>
 <translation id="8688591111840995413">खराब पासवर्ड</translation>
 <translation id="8698464937041809063">Google ड्रइङ</translation>
@@ -1027,6 +1040,7 @@
 <translation id="8997962250644902079">चिनियाँ (परम्परागत) पिनयिन</translation>
 <translation id="8998871447376656508">Google Drive मा पर्याप्त खाली ठाउँ नभएकाले अपलोड गर्ने कार्य पूरा गर्न सकिएन।</translation>
 <translation id="9003940392834790328"><ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /> <ph name="CONNECTION_STATUS" /> मध्ये नेटवर्क<ph name="NETWORK_INDEX" />, सिग्नलको क्षमता <ph name="SIGNAL_STRENGTH" />%, तपाईंका प्रशासकले व्यवस्थित गर्नुभएको छ, विवरणहरू</translation>
+<translation id="9007990314804111233">आफ्नो Microsoft खातामा साइन इन गर्नुहोस्</translation>
 <translation id="9017798300203431059">रसियन फोनेटिक</translation>
 <translation id="9034924485347205037">Linux का फाइलहरू</translation>
 <translation id="9035012421917565900">यी वस्तुहरूलाई फेरि '<ph name="DESTINATION_NAME" />' मा सार्न सकिँदैन, त्यसैले तपाईं यस कार्यलाई अन्डू गर्न सक्नुहुनेछैन।</translation>

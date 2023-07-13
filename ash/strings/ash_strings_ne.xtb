@@ -185,6 +185,7 @@
 <translation id="1770726142253415363">यो एप सारेर रो <ph name="ROW_NUMBER" />, कलम <ph name="COLUMN_NUMBER" /> मा लगिएको छ।</translation>
 <translation id="1771761307086386028">दायाँतिर स्क्रोल गर्नुहोस्</translation>
 <translation id="1774796056689732716">पात्रो, <ph name="CURRENT_MONTH_YEAR" />, हाल चयन गरिएको मिति: <ph name="DATE" />।</translation>
+<translation id="1775598828170459419"><ph name="NUM_TOTAL_ITEMS" /> मध्ये <ph name="NUM_SHOWN_ITEMS" /> औँ सामग्री देखाइँदै छ</translation>
 <translation id="1787955149152357925">अफ छ</translation>
 <translation id="181103072419391116">सिग्नलको क्षमता <ph name="SIGNAL_STRENGTH" />, तपाईंका प्रशासकले व्यवस्थित गर्नुभएको छ</translation>
 <translation id="1815245884418711390">हटस्पट टगल गर्नुहोस्। हटस्पट अफ छ।</translation>

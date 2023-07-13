@@ -518,6 +518,7 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="4272631900155121838">Om du vill skanna en QR-kod aktiverar du kameran i inställningarna</translation>
 <translation id="4277990410970811858">Säker webbsökning</translation>
 <translation id="4281844954008187215">Användarvillkor</translation>
+<translation id="4286718549648564014">Adressen har flyttats till ditt konto, <ph name="USER_EMAIL" /></translation>
 <translation id="4293080268407233932">Sök</translation>
 <translation id="4302248187517737842">Inget användarnamn ••••••••</translation>
 <translation id="4304713468139749426">Lösenordshantering</translation>
@@ -1175,6 +1176,7 @@ Webbplatser får se din webbaktivitet på olika webbplatser med hjälp av cookie
 <translation id="8264966119170358612">Vissa av dina lösenord har läckts i samband med ett dataintrång utanför Google. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="826614135184049678">Du har loggats ut från ditt konto, <ph name="USER_NAME" />, som en del av återställningen av din iPad. Tryck på Fortsätt nedan om du vill logga in igen.</translation>
 <translation id="8271720166617117963">Godkänn och logga in</translation>
+<translation id="8273982424131314219">Uppgifterna fylls i på <ph name="URL" /></translation>
 <translation id="8278938988428169257">Ange ett ord eller en fras</translation>
 <translation id="8281781826761538115">Standard – <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Hoppa över</translation>
@@ -1221,6 +1223,7 @@ Din data krypterades med lösenfrasen den <ph name="TIME" />. Ange den om du vil
 <translation id="8548878600947630424">Hitta på sidan ...</translation>
 <translation id="8556590991644167667">{count,plural, =1{Du har ignorerat {count} varning}other{Du har ignorerat {count} varningar}}</translation>
 <translation id="8558480467877843976">Nu kan du använda Chrome varje gång du surfar eller trycker på länkar i meddelanden, dokument och andra appar.</translation>
+<translation id="8580411965900177618">Nej tack</translation>
 <translation id="8588404856427128947">Av</translation>
 <translation id="8591976964826315682">Blockera cookies från tredje part i inkognitoläge</translation>
 <translation id="8605219856220328675">Stäng fliken.</translation>
@@ -1257,6 +1260,7 @@ Din data krypterades med lösenfrasen den <ph name="TIME" />. Ange den om du vil
 <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="8810413591309742901">Standardvy för webbplats</translation>
 <translation id="8820817407110198400">Bokmärken</translation>
+<translation id="8825562130641217944">Få dina bokmärken, lösenord och mer.</translation>
 <translation id="882557203579758546">Sök på sidan …</translation>
 <translation id="8840513115188359703">Du loggas inte ut från Google-kontot.</translation>
 <translation id="8843129975935593190">Organisationen begränsar vad du kan synkronisera.</translation>

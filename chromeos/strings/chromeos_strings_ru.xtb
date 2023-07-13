@@ -9,6 +9,7 @@
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (потоки: <ph name="THREAD_COUNT" />, <ph name="CPU_MAX_CLOCK_SPEED" /> ГГц)</translation>
 <translation id="1047773237499189053">Доступна новая функция. Чтобы получить подробную информацию, нажмите на стрелку вверх.</translation>
 <translation id="1059913517121127803">Не удалось начать сканирование.</translation>
+<translation id="1062823486781306604"><ph name="NAME" /> (<ph name="INDEX" /> из <ph name="COUNT" />).</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">обнаружен брандмауэр</translation>
 <translation id="1075811647922107217">Размер страницы</translation>
@@ -540,6 +541,7 @@
 <translation id="5257811368506016604">Включить режим светлых цветов</translation>
 <translation id="5264277876637023664">Запустить проверку ЦП</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
+<translation id="527501763019887383">Точка доступа отключена.</translation>
 <translation id="5275828089655680674">Запустить заново</translation>
 <translation id="5286252187236914003">L2TP/IPsec</translation>
 <translation id="5286263799730375393">цвет подсветки</translation>
@@ -604,6 +606,7 @@
 <translation id="5832805196449965646">Добавить пользователя</translation>
 <translation id="583281660410589416">Неизвестно</translation>
 <translation id="5843706793424741864">По шкале Фаренгейта</translation>
+<translation id="584953448295717128">Точка доступа определена автоматически.</translation>
 <translation id="5849570051105887917">Код провайдера</translation>
 <translation id="5859603669299126575">Художественная галерея</translation>
 <translation id="5860033963881614850">ВЫКЛ</translation>
@@ -882,6 +885,7 @@
 <translation id="80398733265834479">Включить автоматический цветовой режим</translation>
 <translation id="8041089156583427627">Отправить отзыв</translation>
 <translation id="8045012663542226664">Микрофон</translation>
+<translation id="8067126283828232460">Точка доступа подключена.</translation>
 <translation id="8075838845814659848">Уровень заряда</translation>
 <translation id="8076492880354921740">Вкладки</translation>
 <translation id="8082366717211101304">Не удается выполнить DNS-преобразование в приложениях для Android.</translation>
@@ -1028,6 +1032,7 @@
 <translation id="9111102763498581341">Разблокировать</translation>
 <translation id="9122602430962285795">Чтобы снова подключиться к сети, перейдите в настройки.</translation>
 <translation id="9126720536733509015">Сохранить несколько страниц в один PDF-файл</translation>
+<translation id="9133104754938025929">Для экономии заряда батареи заставка работает только во время зарядки.</translation>
 <translation id="9137526406337347448">Сервисы Google</translation>
 <translation id="9138630967333032450">Левая клавиша Shift</translation>
 <translation id="9143347780818904997">в течение <ph name="MINUTES" /> мин.</translation>

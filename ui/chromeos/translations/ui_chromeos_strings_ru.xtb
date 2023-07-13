@@ -131,6 +131,7 @@
 <translation id="2084108471225856927">Настройки устройства</translation>
 <translation id="2084809735218147718">Человек пишет благодарственное письмо</translation>
 <translation id="2088690981887365033">Сеть VPN</translation>
+<translation id="209653272837065803">Недостаточно места для продолжения синхронизации файлов.</translation>
 <translation id="2111134541987263231">Включите параметр <ph name="BEGIN_BOLD" />Разрешить использование в режиме инкогнито<ph name="END_BOLD" />.</translation>
 <translation id="2114191879048183086">Некоторые объекты (<ph name="NUMBER_OF_ITEMS" />) будут удалены, и вы не сможете их восстановить.</translation>
 <translation id="2122305276694332719">Включать этот параметр не рекомендуется, так как при автоматическом подключении к скрытой сети другие пользователи могут увидеть ваше устройство и некоторые сетевые настройки.</translation>
@@ -147,9 +148,11 @@
 <translation id="2198315389084035571">Китайский (упрощенный)</translation>
 <translation id="22085916256174561">Корейский</translation>
 <translation id="2208919847696382164">Установить с помощью Linux</translation>
+<translation id="2215692307449050019">Низкий уровень заряда батареи. Синхронизация файлов возобновится, когда вы подключите устройство к источнику питания.</translation>
 <translation id="2225536596944493418">Вы действительно хотите удалить объекты (<ph name="NUMBER_OF_ITEMS" />)?</translation>
 <translation id="2230062665678605299">Не удалось создать папку "<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
 <translation id="2239068707900391003">Человек с чашкой кофе</translation>
+<translation id="2247561763838186830">Вы вышли из аккаунта</translation>
 <translation id="2251368349685848079">Восстановить из корзины</translation>
 <translation id="2278133026967558505">Доступ к файлу через все сайты и URL.</translation>
 <translation id="2282155092769082568">URL автоматической настройки:</translation>
@@ -164,6 +167,7 @@
 <translation id="2325650632570794183">Этот тип файла не поддерживается. Зайдите в Интернет-магазин Chrome, чтобы найти приложение, с помощью которого его можно открыть.</translation>
 <translation id="2326539130272988168">Болгарский</translation>
 <translation id="2337715497728194187">Поделиться с Bruschetta</translation>
+<translation id="233822363739146957">Недостаточно места для синхронизации всех ваших файлов.</translation>
 <translation id="23721837607121582">Скачать мобильный профиль, сеть <ph name="NETWORK_INDEX" /> из <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Показать в виде списка</translation>
 <translation id="2377590462528165447">Linux предоставлен доступ к нескольким папкам (<ph name="NUMBER_OF_ITEMS" />)</translation>
@@ -217,6 +221,7 @@
 <translation id="2782104745158847185">Не удалось установить приложение для Linux</translation>
 <translation id="2802583107108007218">Подробнее об ограничениях</translation>
 <translation id="2803375539583399270">Введите PIN-код</translation>
+<translation id="2819519502129272135">Синхронизация файлов отключена</translation>
 <translation id="2820957248982571256">Поиск…</translation>
 <translation id="2830077785865012357">Китайский, чжуинь</translation>
 <translation id="2843806747483486897">Изменить настройки по умолчанию…</translation>
@@ -441,6 +446,7 @@
 <translation id="4599600860674643278">Фильтр сброшен.</translation>
 <translation id="4603392156942865207">Копирование файла "<ph name="FILE_NAME" />" в папку "<ph name="FOLDER_NAME" />"…</translation>
 <translation id="4631887759990505102">Исполнитель</translation>
+<translation id="4635373743001040938">В хранилище очень мало места, поэтому синхронизация файлов отключена.</translation>
 <translation id="4642769377300286600">Установка мобильного профиля, сеть <ph name="NETWORK_INDEX" /> из <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="4646813851450205600">Чешский, раскладка QWERTY</translation>
 <translation id="4656777537938206294">Доступ к файлам в офлайн-режиме</translation>
@@ -494,6 +500,7 @@
 <translation id="4961158930123534723">Parallels Desktop предоставлен доступ к 1 папке.</translation>
 <translation id="496656650103537022">Файл <ph name="FILE_NAME" /> восстановлен</translation>
 <translation id="4969785127455456148">Альбом</translation>
+<translation id="4972330214479971536">Не удалось завершить настройку синхронизации файлов</translation>
 <translation id="4973523518332075481">Слишком длинное название. Максимальное количество символов: <ph name="MAX_LENGTH" />.</translation>
 <translation id="4973970068702235170">Возникла непредвиденная ошибка. <ph name="ERROR_MESSAGE" />.</translation>
 <translation id="4984616446166309645">Японский</translation>
@@ -807,6 +814,7 @@
 <translation id="7309413087278791451">Немецкий (Бельгия)</translation>
 <translation id="7339898014177206373">Новое окно</translation>
 <translation id="7343393116438664539">Вьетнамский, раскладка Telex</translation>
+<translation id="7347346221088620549">Зашифрованный файл</translation>
 <translation id="7357762654218998920">Этот тип файла не поддерживается. Подробнее <ph name="BEGIN_LINK_HELP" />об открытии файлов в Chrome OS<ph name="END_LINK_HELP" />…</translation>
 <translation id="7359359531237882347">Копирование объектов (<ph name="NUMBER_OF_ITEMS" />)…</translation>
 <translation id="7375951387215729722">Данные в столбце "<ph name="COLUMN_NAME" />" отсортированы по убыванию.</translation>
@@ -993,6 +1001,7 @@
 <translation id="8609695766746872526">Исландский</translation>
 <translation id="863903787380594467">Неверный PIN-код. Осталось попыток: <ph name="RETRIES" />.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – порт</translation>
+<translation id="8656407365183407932">Доступ к файлам в офлайн-режиме закрыт</translation>
 <translation id="8656768832129462377">Не проверять</translation>
 <translation id="8688591111840995413">Неверный пароль</translation>
 <translation id="8698464937041809063">Рисунок Google</translation>
@@ -1028,6 +1037,7 @@
 <translation id="8997962250644902079">Китайский (традиционный), пиньинь</translation>
 <translation id="8998871447376656508">Не удалось завершить загрузку. На Google Диске недостаточно свободного места.</translation>
 <translation id="9003940392834790328">Сеть <ph name="NETWORK_INDEX" /> из <ph name="NETWORK_COUNT" />, название – "<ph name="NETWORK_NAME" />", статус подключения – "<ph name="CONNECTION_STATUS" />", уровень сигнала – <ph name="SIGNAL_STRENGTH" /> %, под управлением администратора, подробная информация</translation>
+<translation id="9007990314804111233">Войдите в аккаунт Microsoft.</translation>
 <translation id="9017798300203431059">Русская (фонетическая)</translation>
 <translation id="9034924485347205037">Файлы Linux</translation>
 <translation id="9035012421917565900">Объекты нельзя переместить обратно на общий диск "<ph name="DESTINATION_NAME" />", поэтому вы не сможете отменить это действие.</translation>

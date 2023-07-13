@@ -516,6 +516,7 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="4272631900155121838">Um einen QR-Code zu scannen, aktiviere in den Einstellungen die Kamera</translation>
 <translation id="4277990410970811858">Safe Browsing</translation>
 <translation id="4281844954008187215">Nutzungsbedingungen</translation>
+<translation id="4286718549648564014">Die Adresse wurde in dein Konto <ph name="USER_EMAIL" /> verschoben</translation>
 <translation id="4293080268407233932">Suchen</translation>
 <translation id="4302248187517737842">Kein Nutzername ••••••••</translation>
 <translation id="4304713468139749426">Passwort­manager</translation>
@@ -1173,6 +1174,7 @@ Websites können Cookies verwenden, um deine Browseraktivitäten auf anderen Web
 <translation id="8264966119170358612">Einige deiner gespeicherten Passwörter wurden durch eine Datenpanne (nicht bei Google) preisgegeben. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="826614135184049678">Du wurdest beim Zurücksetzen deines iPads von deinem Konto <ph name="USER_NAME" /> abgemeldet. Tippe unten auf „Weiter“, um dich wieder anzumelden.</translation>
 <translation id="8271720166617117963">Akzeptieren und anmelden</translation>
+<translation id="8273982424131314219">Du gibst Informationen in <ph name="URL" /> ein</translation>
 <translation id="8278938988428169257">Wort oder Wortgruppe eingeben</translation>
 <translation id="8281781826761538115">Standard: <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Überspringen</translation>
@@ -1219,6 +1221,7 @@ Deine Daten wurden am <ph name="TIME" /> mit deiner Passphrase verschlüsselt. G
 <translation id="8548878600947630424">Auf Seite suchen...</translation>
 <translation id="8556590991644167667">{count,plural, =1{Du hast {count} Warnung geschlossen}other{Du hast {count} Warnungen geschlossen}}</translation>
 <translation id="8558480467877843976">Du kannst jetzt Chrome jederzeit nutzen, wenn du surfst oder auf Links in Nachrichten, Dokumenten und anderen Apps tippst.</translation>
+<translation id="8580411965900177618">Nein danke</translation>
 <translation id="8588404856427128947">Aus</translation>
 <translation id="8591976964826315682">Drittanbieter-Cookies im Inkognitomodus blockieren</translation>
 <translation id="8605219856220328675">Tab schließen.</translation>
@@ -1255,6 +1258,7 @@ Deine Daten wurden am <ph name="TIME" /> mit deiner Passphrase verschlüsselt. G
 <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="8810413591309742901">Standardansicht für Websites</translation>
 <translation id="8820817407110198400">Lesezeichen</translation>
+<translation id="8825562130641217944">Du kannst Lesezeichen, Passwörter und mehr abrufen.</translation>
 <translation id="882557203579758546">Auf Seite suchen…</translation>
 <translation id="8840513115188359703">Du wirst nicht von deinem Google-Konto abgemeldet.</translation>
 <translation id="8843129975935593190">Deine Organisation legt fest, was du synchronisieren kannst.</translation>

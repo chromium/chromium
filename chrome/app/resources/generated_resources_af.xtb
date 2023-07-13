@@ -815,6 +815,7 @@ Toestemmings wat jy reeds aan programme gegee het, kan op hierdie rekening van t
 <translation id="1647408325348388858">Maak <ph name="FILE_NAME" /> in hierdie webprogram oop en wysig dit?</translation>
 <translation id="1648528859488547844">Gebruik Wi-Fi of selnetwerke om ligging te bepaal</translation>
 <translation id="164936512206786300">Maak Bluetooth-toestel los</translation>
+<translation id="1650801028905250434">Jou lêers in My Drive sal outomaties met jou Chromebook gesinkroniseer word sodat jy hulle sonder ’n internetverbinding kan kry. Jy kan dit enige tyd in Instellings &gt; Lêers verander.</translation>
 <translation id="1651008383952180276">Jy moet dieselfde wagfrase twee keer invoer</translation>
 <translation id="1651609627703324721">Hierdie oortjie bied VR-inhoud vir ’n kopstuk aan</translation>
 <translation id="1652326691684645429">Aktiveer Nabydeling</translation>
@@ -4242,6 +4243,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="4515872537870654449">Kontak Dell vir diens. Die dok sal afskakel as die waaier nie werk nie.</translation>
 <translation id="4518840066030486079">Shift-sleutelmodusstyl</translation>
 <translation id="4519331665958994620">Werwe kan vra om jou kamera te gebruik</translation>
+<translation id="4519605771716872386">Lêersinkronisering is aangeskakel</translation>
 <translation id="4519935350946509010">Verbindingsfout.</translation>
 <translation id="4520385623207007473">Webkoekies in gebruik</translation>
 <translation id="452039078290142656">onbekende toestelle van <ph name="VENDOR_NAME" /></translation>
@@ -7285,6 +7287,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7124712201233930202">Jou organisasie se beleide word nie aan voldoen nie</translation>
 <translation id="7125029162161377569">Met Privacy Sandbox-proeflopies kan werwe minder van jou inligting gebruik om dieselfde blaai-ervaring te lewer. Dit beteken meer privaatheid vir jou en minder kruiswerfnasporing. Ons sal nuwe proeflopies byvoeg namate hulle gereed is om getoets te word.</translation>
 <translation id="7125148293026877011">Vee Crostini uit</translation>
+<translation id="7125932261198019860">Maak seker dat jou drukker aan dieselfde wi-fi-netwerk as jou Chromebook gekoppel is, of gebruik ’n USB-kabel. <ph name="LINK_BEGIN" />Kom meer te wete oor versoenbaarheid<ph name="LINK_END" /></translation>
 <translation id="7127980134843952133">Laai geskiedenis af</translation>
 <translation id="7128151990937044829">Wys 'n verklikker in die adresbalk wanneer kennisgewing geblokkeer word</translation>
 <translation id="7131040479572660648">Lees jou data op <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> en <ph name="WEBSITE_3" /></translation>
@@ -7478,6 +7481,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7307129035224081534">Wag tans</translation>
 <translation id="7308643132139167865">Webwerftale</translation>
 <translation id="7310598146671372464">Kon nie aanmeld nie. Die bediener steun nie gespesifiseerde Kerberos-enkripsietipes nie. Kontak asseblief jou administrateur.</translation>
+<translation id="7311005168897771689">Kry toegang tot jou Google Drive-lêers terwyl jy vanlyn is</translation>
 <translation id="7311244614769792472">Geen resultate gekry nie</translation>
 <translation id="7312210124139670355">Jou administrateur stel tans jou e-SIM terug. Dit kan 'n paar minute neem.</translation>
 <translation id="7317831949569936035">Skoolinskrywing</translation>

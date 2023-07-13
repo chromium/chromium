@@ -9,6 +9,7 @@
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (pavedienu skaits: <ph name="THREAD_COUNT" />; <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Pieejama jauna funkcija. Lai uzzinātu vairāk, nospiediet augšupvērsto bulttaustiņu.</translation>
 <translation id="1059913517121127803">Nevarēja sākt skenēšanu.</translation>
+<translation id="1062823486781306604"><ph name="NAME" />: <ph name="INDEX" />. no <ph name="COUNT" />.</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Konstatēts ugunsmūris</translation>
 <translation id="1075811647922107217">Lapas lielums</translation>
@@ -169,6 +170,7 @@
 <translation id="2161656808144014275">Teksts</translation>
 <translation id="2163937499206714165">Ieslēgt tumšo režīmu</translation>
 <translation id="2180197493692062006">Radās kļūda. Mēģiniet atkārtoti atvērt lietotni.</translation>
+<translation id="2189104374785738357">APN informācijas rediģēšana</translation>
 <translation id="2209788852729124853">Atiestatīt datplūsmas skaitītājus</translation>
 <translation id="2212733584906323460">Nosaukumu atrisināšana</translation>
 <translation id="2217935453350629363">Pašreizējais ātrums</translation>
@@ -540,6 +542,7 @@
 <translation id="5257811368506016604">Iespējot gaišo krāsu režīmu</translation>
 <translation id="5264277876637023664">Veikt centrālā procesora pārbaudi</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />: <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
+<translation id="527501763019887383">APN ir atspējots.</translation>
 <translation id="5275828089655680674">Atkārtoti izpildīt darbību secību</translation>
 <translation id="5286252187236914003">L2TP/IPsec</translation>
 <translation id="5286263799730375393">izgaismojuma krāsa</translation>
@@ -604,6 +607,7 @@
 <translation id="5832805196449965646">Pievienot personu</translation>
 <translation id="583281660410589416">Nezināms</translation>
 <translation id="5843706793424741864">Fārenheita skala</translation>
+<translation id="584953448295717128">APN tiek noteikts automātiski.</translation>
 <translation id="5849570051105887917">Mājas pakalpojumu sniedzēja kods</translation>
 <translation id="5859603669299126575">Mākslas galerijas albums</translation>
 <translation id="5860033963881614850">Izsl.</translation>
@@ -882,6 +886,7 @@
 <translation id="80398733265834479">Iespējot automātisko krāsu režīmu</translation>
 <translation id="8041089156583427627">Sūtīt atsauksmes</translation>
 <translation id="8045012663542226664">Mikrofona izslēgšana</translation>
+<translation id="8067126283828232460">APN ir savienots.</translation>
 <translation id="8075838845814659848">Atlikusī akumulatora enerģija</translation>
 <translation id="8076492880354921740">Cilnes</translation>
 <translation id="8082366717211101304">Nevar atrast DNS no Android lietotnēm</translation>
@@ -1028,6 +1033,7 @@
 <translation id="9111102763498581341">Atbloķēt</translation>
 <translation id="9122602430962285795">Lai atkārtoti izveidotu savienojumu, pārejiet uz iestatījumiem.</translation>
 <translation id="9126720536733509015">Saglabāt vairākas lapas vienā PDF failā</translation>
+<translation id="9133104754938025929">Lai taupītu akumulatora enerģiju, ekrānsaudzētājs darbojas tikai uzlādes laikā.</translation>
 <translation id="9137526406337347448">Google pakalpojumi</translation>
 <translation id="9138630967333032450">Kreisais pārslēgšanas taustiņš</translation>
 <translation id="9143347780818904997">uz <ph name="MINUTES" /> minūtēm</translation>

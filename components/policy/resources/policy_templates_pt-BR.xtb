@@ -9408,6 +9408,16 @@ Se a política é deixada sem definição, o <ph name="PRODUCT_NAME" /> pode col
 <translation id="9220314833408124365">Usar uma política de referenciador padrão de no-referrer-when-downgrade</translation>
 <translation id="9221827710437832530">Permitir acesso à geolocalização na tela de login.</translation>
 <translation id="922540222991413931">Configurar extensão, aplicativo e origens de instalação do script do usuário</translation>
+<translation id="922656089385303086">Esta política foi descontinuada e vai ser removida na versão 130. Use a <ph name="URL_KEYED_METRICS_ALLOWED_POLICY_NAME" />.
+
+Se a política for ativada, a coleta de dados anônimos inseridos no URL, que envia os URLs das páginas acessadas pelo usuário ao Google para melhorar a pesquisa e navegação, sempre vai ficar ativa.
+
+Se a política for desativada, não vai haver coleta de dados anônimos inseridos no URL.
+
+Se ela for deixada sem definição, o usuário poderá mudar a configuração manualmente.
+
+No quiosque do <ph name="PRODUCT_OS_NAME" />, essa política não oferece a opção de "Permitir que o usuário decida". Se ela não for definida para o quiosque do <ph name="PRODUCT_OS_NAME" />, a coleta de dados anônimos inseridos no URL sempre vai ficar ativa.
+Quando definida para o quiosque do <ph name="PRODUCT_OS_NAME" />, esta política ativa a coleta de métricas inseridas por URL para aplicativos de quiosque.</translation>
 <translation id="924557436754151212">Importar senhas salvas do navegador padrão na primeira execução</translation>
 <translation id="926104720905645793">Esta política controla os relatórios de nuvem do <ph name="PRODUCT_NAME" />, que faz upload de informações sobre a operação do navegador para o <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
 

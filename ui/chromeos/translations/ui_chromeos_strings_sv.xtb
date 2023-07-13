@@ -131,6 +131,7 @@
 <translation id="2084108471225856927">Enhetsinställningar</translation>
 <translation id="2084809735218147718">Person som säger tack på teckenspråk</translation>
 <translation id="2088690981887365033">VPN-nätverk</translation>
+<translation id="209653272837065803">Det finns inte tillräckligt med lagringsutrymme för att fortsätta synkronisera filer</translation>
 <translation id="2111134541987263231">Aktivera <ph name="BEGIN_BOLD" />Tillåt i inkognito<ph name="END_BOLD" /></translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> objekt raderas och du kan inte återställa dem.</translation>
 <translation id="2122305276694332719">Med automatisk anslutning till ett dolt nätverk kan andra se enheten och vissa nätverksinställningar. Detta rekommenderas inte.</translation>
@@ -147,9 +148,11 @@
 <translation id="2198315389084035571">kinesiska (förenklad)</translation>
 <translation id="22085916256174561">koreanska</translation>
 <translation id="2208919847696382164">Installera med Linux</translation>
+<translation id="2215692307449050019">Batterinivån är låg. Filsynkroniseringen återupptas när du ansluter till en strömkälla.</translation>
 <translation id="2225536596944493418">Vill du ta bort <ph name="NUMBER_OF_ITEMS" /> objekt?</translation>
 <translation id="2230062665678605299">Det går inte att skapa mappen <ph name="FOLDER_NAME" />. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="2239068707900391003">Person med en kopp kaffe</translation>
+<translation id="2247561763838186830">Du har loggats ut</translation>
 <translation id="2251368349685848079">Återställ från papperskorgen</translation>
 <translation id="2278133026967558505">Filåtkomst för alla webbplatser och webbadresser</translation>
 <translation id="2282155092769082568">Webbadress för automatisk konfiguration:</translation>
@@ -164,6 +167,7 @@
 <translation id="2325650632570794183">Filtypen stöds inte. Besök Chrome Web Store om du vill hitta en app som kan öppna den här filtypen.</translation>
 <translation id="2326539130272988168">bulgariska</translation>
 <translation id="2337715497728194187">Dela med Bruschetta</translation>
+<translation id="233822363739146957">Det finns inte tillräckligt med lagringsutrymme för att synkronisera alla dina filer</translation>
 <translation id="23721837607121582">Ladda ned mobilprofil, Nätverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Byt till listvy</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> mappar delas med Linux</translation>
@@ -217,6 +221,7 @@
 <translation id="2782104745158847185">Ett fel uppstod när Linux-programmet skulle installeras</translation>
 <translation id="2802583107108007218">Läs mer om dessa begränsningar</translation>
 <translation id="2803375539583399270">Ange pinkod</translation>
+<translation id="2819519502129272135">Filsynkronisering har inaktiverats</translation>
 <translation id="2820957248982571256">Söker …</translation>
 <translation id="2830077785865012357">kinesiska (zhuyin)</translation>
 <translation id="2843806747483486897">Ändra standard ...</translation>
@@ -441,6 +446,7 @@
 <translation id="4599600860674643278">Filtret har återställts.</translation>
 <translation id="4603392156942865207"><ph name="FILE_NAME" /> kopieras till <ph name="FOLDER_NAME" /></translation>
 <translation id="4631887759990505102">Artist</translation>
+<translation id="4635373743001040938">Du hade mycket lite lagringsutrymme. Filsynkronisering har inaktiverats.</translation>
 <translation id="4642769377300286600">Installerar mobilprofil, Nätverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="4646813851450205600">tjeckiska med QWERTY-tangentbord</translation>
 <translation id="4656777537938206294">Gör filer tillgängliga offline</translation>
@@ -494,6 +500,7 @@
 <translation id="4961158930123534723">1 mapp delas med Parallels Desktop</translation>
 <translation id="496656650103537022"><ph name="FILE_NAME" /> har återställts</translation>
 <translation id="4969785127455456148">Album</translation>
+<translation id="4972330214479971536">Det gick inte att slutföra konfigureringen av filsynkronisering</translation>
 <translation id="4973523518332075481">Ange ett namn på högst <ph name="MAX_LENGTH" /> tecken</translation>
 <translation id="4973970068702235170">Komprimeringen misslyckades. Oväntat fel: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">japanska</translation>
@@ -807,6 +814,7 @@
 <translation id="7309413087278791451">tyska (Belgien)</translation>
 <translation id="7339898014177206373">Nytt fönster</translation>
 <translation id="7343393116438664539">vietnamesiska (telex)</translation>
+<translation id="7347346221088620549">Krypterad fil</translation>
 <translation id="7357762654218998920">Den här filtypen stöds inte. <ph name="BEGIN_LINK_HELP" />Läs mer<ph name="END_LINK_HELP" /> om att öppna filer i Chrome OS.</translation>
 <translation id="7359359531237882347"><ph name="NUMBER_OF_ITEMS" /> objekt kopieras ...</translation>
 <translation id="7375951387215729722">Fillistan har sorterats efter <ph name="COLUMN_NAME" /> i fallande ordning.</translation>
@@ -993,6 +1001,7 @@
 <translation id="8609695766746872526">isländska</translation>
 <translation id="863903787380594467">Fel pinkod. Du har <ph name="RETRIES" /> försök kvar.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – Port</translation>
+<translation id="8656407365183407932">Dina offlinefiler togs bort</translation>
 <translation id="8656768832129462377">Kontrollera inte</translation>
 <translation id="8688591111840995413">Felaktigt lösenord</translation>
 <translation id="8698464937041809063">Google-teckning</translation>
@@ -1028,6 +1037,7 @@
 <translation id="8997962250644902079">traditionell kinesiska (pinyin)</translation>
 <translation id="8998871447376656508">Det finns inte tillräckligt mycket ledigt utrymme på Google Drive för att slutföra uppladdningen.</translation>
 <translation id="9003940392834790328">Nätverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, signalstyrka <ph name="SIGNAL_STRENGTH" /> %, hanteras av administratören, information</translation>
+<translation id="9007990314804111233">Logga in på Microsoft-kontot</translation>
 <translation id="9017798300203431059">Ryska (fonetiskt)</translation>
 <translation id="9034924485347205037">Linux-filer</translation>
 <translation id="9035012421917565900">Eftersom det inte går att flytta tillbaka objekten till <ph name="DESTINATION_NAME" /> går det inte att ångra åtgärden.</translation>

@@ -811,6 +811,7 @@
 <translation id="1647408325348388858"><ph name="FILE_NAME" /> をこのウェブアプリで開いて編集しますか？</translation>
 <translation id="1648528859488547844">Wi‑Fi またはモバイル ネットワークを使用して現在地を特定する</translation>
 <translation id="164936512206786300">Bluetooth デバイスのペア設定の解除</translation>
+<translation id="1650801028905250434">マイドライブ内のファイルは Chromebook に自動的に同期されるので、インターネット接続がなくてもアクセスできます。これは [設定] &gt; [ファイル] でいつでも変更できます。</translation>
 <translation id="1651008383952180276">同じパスフレーズを 2 回入力する必要があります</translation>
 <translation id="1651609627703324721">このタブはヘッドセットに VR コンテンツを配信しています</translation>
 <translation id="1652326691684645429">ニアバイシェアを有効にする</translation>
@@ -4218,6 +4219,7 @@
 <translation id="4515872537870654449">サポートについては、Dell にお問い合わせください。ファンが動作しない場合、ドックはシャットダウンされます。</translation>
 <translation id="4518840066030486079">Shift キーモードのスタイル</translation>
 <translation id="4519331665958994620">サイトがカメラの使用を要求できるようにする</translation>
+<translation id="4519605771716872386">ファイルの同期がオンになっています</translation>
 <translation id="4519935350946509010">接続エラーが発生しました。</translation>
 <translation id="4520385623207007473">使用中の Cookie</translation>
 <translation id="452039078290142656"><ph name="VENDOR_NAME" /> の不明なデバイス</translation>
@@ -7256,6 +7258,7 @@
 <translation id="7124712201233930202">組織のポリシーに違反しています</translation>
 <translation id="7125029162161377569">プライバシー サンドボックスの試用版を使うと、使用するユーザー情報量を減らしながら、これまでと同様にブラウジングできる可能性があります。それによってユーザーのプライバシー保護が強化され、クロスサイト トラッキングが制限されます。テストの準備が整い次第、他の新しい試用版も追加されます。</translation>
 <translation id="7125148293026877011">Crostini を削除</translation>
+<translation id="7125932261198019860">プリンタが Chromebook と同じ Wi-Fi ネットワークに接続されていることを確認するか、USB ケーブルを使用します。<ph name="LINK_BEGIN" />互換性について<ph name="LINK_END" /></translation>
 <translation id="7127980134843952133">ダウンロード履歴</translation>
 <translation id="7128151990937044829">通知がブロックされたときにアドレスバーにインジケーターを表示する</translation>
 <translation id="7131040479572660648"><ph name="WEBSITE_1" />、<ph name="WEBSITE_2" />、<ph name="WEBSITE_3" /> でのユーザーデータの読み取り</translation>
@@ -7448,6 +7451,7 @@
 <translation id="7307129035224081534">一時停止中</translation>
 <translation id="7308643132139167865">ウェブサイトの言語</translation>
 <translation id="7310598146671372464">ログインできませんでした。指定した Kerberos 暗号化タイプがサーバーでサポートされていません。管理者にお問い合わせください。</translation>
+<translation id="7311005168897771689">オフラインでも Google ドライブのファイルにアクセス</translation>
 <translation id="7311244614769792472">一致する結果は見つかりませんでした</translation>
 <translation id="7312210124139670355">管理者が eSIM をリセットしています。この処理には数分かかることがあります。</translation>
 <translation id="7317831949569936035">教育機関の登録</translation>

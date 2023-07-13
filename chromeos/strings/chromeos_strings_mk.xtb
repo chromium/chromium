@@ -9,6 +9,7 @@
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> низи, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Достапна е нова функција. Користете го копчето со стрелка нагоре за да дознаете повеќе.</translation>
 <translation id="1059913517121127803">Не можеше да се започне со скенирање</translation>
+<translation id="1062823486781306604"><ph name="INDEX" /> од <ph name="COUNT" />, <ph name="NAME" />.</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Откриен е заштитен ѕид</translation>
 <translation id="1075811647922107217">Големина на страницата</translation>
@@ -169,6 +170,7 @@
 <translation id="2161656808144014275">Текст</translation>
 <translation id="2163937499206714165">Вклучи темен режим</translation>
 <translation id="2180197493692062006">Нешто тргна наопаку. Отворете ја апликацијата повторно.</translation>
+<translation id="2189104374785738357">Изменете ги деталите за APN</translation>
 <translation id="2209788852729124853">Ресетирај бројачи на сообраќај</translation>
 <translation id="2212733584906323460">Одредување име</translation>
 <translation id="2217935453350629363">Моментална брзина</translation>
@@ -540,6 +542,7 @@
 <translation id="5257811368506016604">Овозможете режим во светла боја</translation>
 <translation id="5264277876637023664">Изврши CPU-тест</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
+<translation id="527501763019887383">APN е оневозможено.</translation>
 <translation id="5275828089655680674">Изврши ги рутините повторно</translation>
 <translation id="5286252187236914003">L2TP/IPsec</translation>
 <translation id="5286263799730375393">боја на заднинско осветлување</translation>
@@ -604,6 +607,7 @@
 <translation id="5832805196449965646">Додај лице</translation>
 <translation id="583281660410589416">Непознат</translation>
 <translation id="5843706793424741864">Фаренхајтови</translation>
+<translation id="584953448295717128">APN е откриено автоматски.</translation>
 <translation id="5849570051105887917">Код на оператор на почетна страница</translation>
 <translation id="5859603669299126575">Албум од уметничката галерија</translation>
 <translation id="5860033963881614850">Исклучено</translation>
@@ -882,6 +886,7 @@
 <translation id="80398733265834479">Овозможете режим во автоматска боја</translation>
 <translation id="8041089156583427627">Испратете повратни информации</translation>
 <translation id="8045012663542226664">Исклучи звук на микрофон</translation>
+<translation id="8067126283828232460">APN е поврзано.</translation>
 <translation id="8075838845814659848">Преостанато полнење</translation>
 <translation id="8076492880354921740">Картички</translation>
 <translation id="8082366717211101304">Не може да се одреди со DNS од апликации на Android</translation>
@@ -1028,6 +1033,7 @@
 <translation id="9111102763498581341">Отклучи</translation>
 <translation id="9122602430962285795">За да се поврзете повторно, одете во „Поставки“</translation>
 <translation id="9126720536733509015">Зачувај повеќе страници во еден PDF-документ</translation>
+<translation id="9133104754938025929">За да заштеди батерија, штедачот на екран работи само при полнење.</translation>
 <translation id="9137526406337347448">Услуги на Google</translation>
 <translation id="9138630967333032450">Лев Shift</translation>
 <translation id="9143347780818904997"><ph name="MINUTES" /> минути</translation>

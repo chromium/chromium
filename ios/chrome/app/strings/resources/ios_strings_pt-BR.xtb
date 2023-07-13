@@ -518,6 +518,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="4272631900155121838">Para ler um código QR, ative a câmera nas configurações</translation>
 <translation id="4277990410970811858">Navegação segura</translation>
 <translation id="4281844954008187215">Termos de Serviço</translation>
+<translation id="4286718549648564014">Endereço movido para sua conta <ph name="USER_EMAIL" /></translation>
 <translation id="4293080268407233932">Pesquisar</translation>
 <translation id="4302248187517737842">Sem nome de usuário ••••••••</translation>
 <translation id="4304713468139749426">Gerenciador de senhas</translation>
@@ -1175,6 +1176,7 @@ Eles também podem usar cookies para ver sua atividade de navegação em diferen
 <translation id="8264966119170358612">Algumas das suas senhas salvas foram expostas em uma violação de dados de terceiros. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="826614135184049678">Sua conta <ph name="USER_NAME" /> foi desconectada como parte da redefinição do iPad. Para fazer login novamente, toque em "Continuar" abaixo.</translation>
 <translation id="8271720166617117963">Aceitar e fazer login</translation>
+<translation id="8273982424131314219">Você vai preencher informações em <ph name="URL" /></translation>
 <translation id="8278938988428169257">Insira uma palavra ou frase</translation>
 <translation id="8281781826761538115">Padrão: <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Pular</translation>
@@ -1221,6 +1223,7 @@ Seus dados foram criptografados com a senha longa em <ph name="TIME" />. Digite-
 <translation id="8548878600947630424">Encontrar na página...</translation>
 <translation id="8556590991644167667">{count,plural, =1{Você dispensou {count} aviso}one{Você dispensou {count} aviso}other{Você dispensou {count} avisos}}</translation>
 <translation id="8558480467877843976">Agora você pode usar o Chrome sempre que navegar ou tocar em links em mensagens, documentos e outros apps.</translation>
+<translation id="8580411965900177618">Não</translation>
 <translation id="8588404856427128947">Desativada</translation>
 <translation id="8591976964826315682">Bloquear cookies de terceiros na navegação anônima</translation>
 <translation id="8605219856220328675">Fechar guia.</translation>
@@ -1257,6 +1260,7 @@ Seus dados foram criptografados com a senha longa em <ph name="TIME" />. Digite-
 <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="8810413591309742901">Visualização padrão do site</translation>
 <translation id="8820817407110198400">Favoritos</translation>
+<translation id="8825562130641217944">Confira seus favoritos, senhas e muito mais.</translation>
 <translation id="882557203579758546">Localizar na página…</translation>
 <translation id="8840513115188359703">Você não será desconectado da sua Conta do Google.</translation>
 <translation id="8843129975935593190">Sua organização limita o que pode ser sincronizado.</translation>
