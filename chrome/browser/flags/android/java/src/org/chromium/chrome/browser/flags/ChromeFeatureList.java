@@ -143,6 +143,8 @@ public abstract class ChromeFeatureList {
     public static final String AUTOFILL_KEYBOARD_ACCESSORY = "AutofillKeyboardAccessory_LAUNCHED";
     public static final String AUTOFILL_TOUCH_TO_FILL_FOR_CREDIT_CARDS_ANDROID =
             "AutofillTouchToFillForCreditCardsAndroid";
+    public static final String AUTOFILL_VIRTUAL_VIEW_STRUCTURE_ANDROID =
+            "AutofillVirtualViewStructureAndroid";
     public static final String BACKGROUND_THREAD_POOL = "BackgroundThreadPool";
     public static final String BACK_FORWARD_CACHE = "BackForwardCache";
     public static final String BACK_FORWARD_TRANSITIONS = "BackForwardTransitions";

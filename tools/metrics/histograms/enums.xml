@@ -60138,6 +60138,7 @@ from previous Chrome versions.
   <int value="-1919683750" label="EnableOopPrintDrivers:disabled"/>
   <int value="-1919199528"
       label="AlwaysShowServerCardsInSyncTransport:disabled"/>
+  <int value="-1918375566" label="AutofillVirtualViewStructureAndroid:enabled"/>
   <int value="-1917538656" label="GetTheMostOutOfProgram:disabled"/>
   <int value="-1917031398" label="OmniboxNativeVoiceSuggestProvider:disabled"/>
   <int value="-1916060206" label="enable-display-zoom-setting"/>
@@ -64459,6 +64460,7 @@ from previous Chrome versions.
   <int value="305786802" label="PasswordDomainCapabilitiesFetching:enabled"/>
   <int value="306565540" label="UseOfHashAffiliationFetcher:enabled"/>
   <int value="306641800" label="AndroidSiteSettingsUIRefresh:disabled"/>
+  <int value="306662699" label="AutofillVirtualViewStructureAndroid:disabled"/>
   <int value="306834044" label="webui-tab-strip"/>
   <int value="307543404" label="disable-team-drives"/>
   <int value="307670929"

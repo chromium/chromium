@@ -93,6 +93,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &autofill::features::kAutofillEnableCardArtImage,
     &autofill::features::kAutofillEnableCardProductName,
     &autofill::features::kAutofillTouchToFillForCreditCardsAndroid,
+    &autofill::features::kAutofillVirtualViewStructureAndroid,
     &autofill::features::kAutofillEnablePaymentsMandatoryReauth,
     &blink::features::kForceWebContentsDarkMode,
     &blink::features::kPrerender2,

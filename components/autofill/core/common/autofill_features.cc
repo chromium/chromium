@@ -632,6 +632,12 @@ BASE_FEATURE(kAutofillTouchToFillForCreditCardsAndroid,
              "AutofillTouchToFillForCreditCardsAndroid",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Controls the whether the Chrome may provide a virtual view structure for
+// Android Autofill.
+BASE_FEATURE(kAutofillVirtualViewStructureAndroid,
+             "AutofillVirtualViewStructureAndroid",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)

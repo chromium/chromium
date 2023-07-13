@@ -2000,6 +2000,14 @@
     "expiry_milestone": 120
   },
   {
+    "name": "enable-autofill-virtual-view-structure",
+    "owners": [
+      "fhorschig",
+      "//components/autofill/android/OWNERS"
+    ],
+    "expiry_milestone": 123
+  },
+  {
     "name": "enable-automatic-snooze",
     "owners": [ "shaktisahu", "haileywang" ],
     "expiry_milestone": 101

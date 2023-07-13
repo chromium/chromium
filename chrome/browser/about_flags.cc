@@ -5630,6 +5630,12 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAndroid,
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillTouchToFillForCreditCardsAndroid)},
+    {"enable-autofill-virtual-view-structure",
+     flag_descriptions::kAutofillVirtualViewStructureAndroidName,
+     flag_descriptions::kAutofillVirtualViewStructureAndroidDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         autofill::features::kAutofillVirtualViewStructureAndroid)},
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

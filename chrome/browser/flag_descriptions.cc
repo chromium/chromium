@@ -665,6 +665,12 @@ const char kAutofillVirtualCardsOnTouchToFillAndroidDescription[] =
     "When enabled, virtual credit card suggestions are shown on the Touch To "
     "Fill bottomsheet for credit cards.";
 
+const char kAutofillVirtualViewStructureAndroidName[] =
+    "Enable the setting to provide a virtual view structure for Autofill";
+const char kAutofillVirtualViewStructureAndroidDescription[] =
+    "When enabled, a setting allows to switch to using Android Autofill. Chrome"
+    " then provides a virtual view structure but no own suggestions.";
+
 const char kBackForwardCacheName[] = "Back-forward cache";
 const char kBackForwardCacheDescription[] =
     "If enabled, caches eligible pages after cross-site navigations."

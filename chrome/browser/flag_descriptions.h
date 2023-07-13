@@ -367,6 +367,9 @@ extern const char kAutofillUseImprovedLabelDisambiguationDescription[];
 extern const char kAutofillVirtualCardsOnTouchToFillAndroidName[];
 extern const char kAutofillVirtualCardsOnTouchToFillAndroidDescription[];
 
+extern const char kAutofillVirtualViewStructureAndroidName[];
+extern const char kAutofillVirtualViewStructureAndroidDescription[];
+
 extern const char kBackForwardCacheName[];
 extern const char kBackForwardCacheDescription[];
 
