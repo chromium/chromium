@@ -86,9 +86,8 @@ void UserPerformanceTuningNotifier::OnProcessMemoryMetricsAvailable(
   proxies_and_pmf.reserve(all_page_nodes.size());
 
   for (auto* page_node : all_page_nodes) {
-    proxies_and_pmf.emplace_back(
-        page_node->GetContentsProxy(),
-        page_node->EstimateMainFramePrivateFootprintSize());
+    proxies_and_pmf.emplace_back(page_node->GetContentsProxy(),
+                                 page_node->EstimatePrivateFootprintSize());
   }
 
   receiver_->NotifyMemoryMetricsRefreshed(std::move(proxies_and_pmf));
