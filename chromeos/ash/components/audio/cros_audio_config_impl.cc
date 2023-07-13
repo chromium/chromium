@@ -374,6 +374,14 @@ void CrosAudioConfigImpl::RecordInputGain() {
   base::UmaHistogramEnumeration(
       CrasAudioHandler::kInputGainChangedSourceHistogramName,
       CrasAudioHandler::AudioSettingsChangeSource::kOsSettings);
+
+  CrasAudioHandler* audio_handler = CrasAudioHandler::Get();
+  CHECK(audio_handler);
+  if (!audio_handler->GetForceRespectUiGainsState()) {
+    base::UmaHistogramEnumeration(
+        CrasAudioHandler::kInputGainChangedHistogramName,
+        CrasAudioHandler::AudioSettingsChangeSource::kOsSettings);
+  }
 }
 
 void CrosAudioConfigImpl::OnOutputNodeVolumeChanged(uint64_t node_id,

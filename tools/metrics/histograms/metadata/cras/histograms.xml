@@ -420,6 +420,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Cras.InputGainChanged" enum="AudioSettingsChangeSource"
+    expires_after="2024-07-11">
+  <owner>eddyhsu@chromium.org</owner>
+  <owner>chromeos-audio-sw@google.com</owner>
+  <summary>
+    Records the source of a change to the input gain if users don't force to
+    respect UI gains.
+  </summary>
+</histogram>
+
 <histogram name="Cras.InputGainChangedSource" enum="AudioSettingsChangeSource"
     expires_after="2024-02-14">
   <owner>gavinwill@chromium.org</owner>
