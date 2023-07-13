@@ -517,8 +517,6 @@ crbug.com/982294 [ angle-opengl mojave nvidia passthrough ] conformance/textures
 
 ## Mac / M1 / OpenGL ##
 
-# No active browser window, but no crash stack.
-crbug.com/1240443 [ angle-opengl apple-apple-m1 mac-arm64 passthrough ] conformance/renderbuffers/stencil-renderbuffer-initialization.html [ Failure ]
 
 ####################
 # Linux failures   #
