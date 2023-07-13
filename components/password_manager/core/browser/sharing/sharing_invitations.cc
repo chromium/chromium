@@ -69,7 +69,6 @@ PasswordForm IncomingSharingInvitationToPasswordForm(
   form.sender_name = invitation.sender_display_name;
   form.date_received = base::Time::Now();
   form.sharing_notification_displayed = false;
-  // TODO(crbug.com/1448235): set the correct password type.
   return form;
 }
 
