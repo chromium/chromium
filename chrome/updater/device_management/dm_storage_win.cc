@@ -44,8 +44,8 @@ class TokenService : public TokenServiceInterface {
 std::string TokenService::GetDeviceID() const {
   std::wstring device_id;
   base::win::RegKey key;
-  if (key.Open(HKEY_LOCAL_MACHINE, kRegKeyCryptographyKey, KEY_READ) !=
-          ERROR_SUCCESS ||
+  if (key.Open(HKEY_LOCAL_MACHINE, kRegKeyCryptographyKey,
+               KEY_READ | KEY_WOW64_64KEY) != ERROR_SUCCESS ||
       key.ReadValue(kRegValueMachineGuid, &device_id) != ERROR_SUCCESS) {
     return std::string();
   }
