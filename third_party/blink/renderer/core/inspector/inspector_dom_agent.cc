@@ -942,8 +942,11 @@ protocol::Response InspectorDOMAgent::setAttributesAsText(int element_id,
 
   auto getParsedElement = [](Element* element, Element* contextElement,
                              const String& text, bool is_html_document) {
-    String markup = element->IsSVGElement() ? "<svg " + text + "></svg>"
-                                            : "<span " + text + "></span>";
+    String markup = element->IsSVGElement()
+                        ? "<svg " + text + "></svg>"
+                        : element->IsMathMLElement()
+                              ? "<math " + text + "></math>"
+                              : "<span " + text + "></span>";
     DocumentFragment* fragment =
         element->GetDocument().createDocumentFragment();
     if (is_html_document && contextElement)

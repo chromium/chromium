@@ -1,0 +1,11 @@
+Test that attribute case is preserved when modifying MathML elements.
+Original attributes:
+definitionURL=x
+id=main
+Original outerHTML:
+<math definitionURL="x" id="main"></math>
+Modified attribute:
+definitionURL=y
+Modified outerHTML:
+<math definitionURL="y" id="main"></math>
+
