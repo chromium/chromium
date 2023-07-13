@@ -4,6 +4,7 @@
 
 #include <cmath>
 #include <map>
+#include <memory>
 #include <string>
 #include <tuple>
 #include <vector>
@@ -11,6 +12,7 @@
 #include "base/barrier_closure.h"
 #include "base/functional/overloaded.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/statistics_recorder.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
@@ -26,12 +28,14 @@
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/shared_storage/shared_storage_document_service_impl.h"
 #include "content/browser/shared_storage/shared_storage_event_params.h"
+#include "content/browser/shared_storage/shared_storage_header_observer.h"
 #include "content/browser/shared_storage/shared_storage_worklet_driver.h"
 #include "content/browser/shared_storage/shared_storage_worklet_host.h"
 #include "content/browser/shared_storage/shared_storage_worklet_host_manager.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/network_service_util.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/back_forward_cache_util.h"
@@ -41,9 +45,11 @@
 #include "content/public/test/content_browser_test_content_browser_client.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/fenced_frame_test_util.h"
+#include "content/public/test/shared_storage_test_utils.h"
 #include "content/public/test/test_frame_navigation_observer.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_select_url_fenced_frame_config_observer.h"
+#include "content/public/test/test_shared_storage_header_observer.h"
 #include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "content/test/content_browser_test_utils_internal.h"
@@ -71,7 +77,19 @@ using SharedStorageUrlSpecWithMetadata =
 
 namespace {
 
+const auto& SetOperation = SharedStorageWriteOperationAndResult::SetOperation;
+const auto& AppendOperation =
+    SharedStorageWriteOperationAndResult::AppendOperation;
+const auto& DeleteOperation =
+    SharedStorageWriteOperationAndResult::DeleteOperation;
+const auto& ClearOperation =
+    SharedStorageWriteOperationAndResult::ClearOperation;
+
 const char kSimplePagePath[] = "/simple_page.html";
+
+const char kTitle1Path[] = "/title1.html";
+
+const char kTitle2Path[] = "/title2.html";
 
 const char kFencedFramePath[] = "/fenced_frames/title0.html";
 
@@ -785,8 +803,7 @@ class SharedStorageBrowserTestBase : public ContentBrowserTest {
 
     host_resolver()->AddRule("*", "127.0.0.1");
 
-    browser_client_ =
-        std::make_unique<MockPrivateAggregationShellContentBrowserClient>();
+    MakeMockPrivateAggregationShellContentBrowserClient();
 
     ON_CALL(browser_client(), IsPrivateAggregationAllowed)
         .WillByDefault(testing::Return(true));
@@ -813,6 +830,13 @@ class SharedStorageBrowserTestBase : public ContentBrowserTest {
 
   void TearDownOnMainThread() override {
     test_worklet_host_manager_->RemoveSharedStorageObserver(observer_.get());
+  }
+
+  // Virtual so that derived classes can use a different flavor of mock instead
+  // of `testing::NiceMock`.
+  virtual void MakeMockPrivateAggregationShellContentBrowserClient() {
+    browser_client_ = std::make_unique<
+        testing::NiceMock<MockPrivateAggregationShellContentBrowserClient>>();
   }
 
   // Virtual so that derived classes can delay starting the server, and/or add
@@ -6596,6 +6620,11 @@ class SharedStoragePrivateAggregationEnabledBrowserTest
         shell(), https_server()->GetURL("a.test", kSimplePagePath)));
   }
 
+  void MakeMockPrivateAggregationShellContentBrowserClient() override {
+    browser_client_ =
+        std::make_unique<MockPrivateAggregationShellContentBrowserClient>();
+  }
+
   const base::MockRepeatingCallback<void(AggregatableReportRequest,
                                          PrivateAggregationBudgetKey)>&
   mock_callback() {
@@ -8255,6 +8284,1599 @@ IN_PROC_BROWSER_TEST_P(
         base::UTF16ToUTF8(console_observer.messages()[4 * i + 3].message),
         testing::HasSubstr("' was retrieved: true"));
   }
+}
+
+class SharedStorageHeaderObserverBrowserTest
+    : public SharedStorageBrowserTestBase {
+ public:
+  using Operation = network::mojom::SharedStorageOperation;
+  using OperationResult = storage::SharedStorageManager::OperationResult;
+
+  SharedStorageHeaderObserverBrowserTest() {
+    shared_storage_m117_feature_.InitAndEnableFeature(
+        blink::features::kSharedStorageAPIM117);
+  }
+
+  void FinishSetup() override {
+    https_server()->ServeFilesFromSourceDirectory(GetTestDataFilePath());
+    https_server()->SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+
+    auto observer = std::make_unique<TestSharedStorageHeaderObserver>(
+        GetStoragePartition());
+    observer_ = observer->GetMutableWeakPtr();
+    static_cast<StoragePartitionImpl*>(GetStoragePartition())
+        ->OverrideSharedStorageHeaderObserverForTesting(std::move(observer));
+  }
+
+  bool NavigateToURLWithResponse(
+      Shell* window,
+      const GURL& url,
+      net::test_server::ControllableHttpResponse& response,
+      net::HttpStatusCode http_status,
+      const std::string& content_type = std::string("text/html"),
+      const std::string& content = std::string(),
+      const std::vector<std::string>& cookies = {},
+      const std::vector<std::string>& extra_headers = {}) {
+    auto* web_contents = window->web_contents();
+    DCHECK(web_contents);
+
+    // Prepare for the navigation.
+    WaitForLoadStop(web_contents);
+    TestNavigationObserver same_tab_observer(
+        web_contents,
+        /*expected_number_of_navigations=*/1,
+        MessageLoopRunner::QuitMode::IMMEDIATE,
+        /*ignore_uncommitted_navigations=*/false);
+    if (!blink::IsRendererDebugURL(url)) {
+      same_tab_observer.set_expected_initial_url(url);
+    }
+
+    // This mimics behavior of Shell::LoadURL...
+    NavigationController::LoadURLParams params(url);
+    params.transition_type = ui::PageTransitionFromInt(
+        ui::PAGE_TRANSITION_TYPED | ui::PAGE_TRANSITION_FROM_ADDRESS_BAR);
+    web_contents->GetController().LoadURLWithParams(params);
+    web_contents->GetOutermostWebContents()->Focus();
+
+    response.WaitForRequest();
+
+    response.Send(http_status, content_type, content, cookies, extra_headers);
+    response.Done();
+
+    // Wait until the expected number of navigations finish.
+    same_tab_observer.Wait();
+
+    if (!IsLastCommittedEntryOfPageType(web_contents, PAGE_TYPE_NORMAL)) {
+      return false;
+    }
+
+    bool is_same_url = web_contents->GetLastCommittedURL() == url;
+    if (!is_same_url) {
+      DLOG(WARNING) << "Expected URL " << url << " but observed "
+                    << web_contents->GetLastCommittedURL();
+    }
+    return is_same_url;
+  }
+
+ protected:
+  base::WeakPtr<TestSharedStorageHeaderObserver> observer_;
+
+ private:
+  base::test::ScopedFeatureList shared_storage_m117_feature_;
+};
+
+IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
+                       SameOrigin_PermissionsDefault_ClearSetAppend) {
+  net::test_server::ControllableHttpResponse response(https_server(),
+                                                      kTitle1Path);
+  ASSERT_TRUE(https_server()->Start());
+
+  GURL main_url = https_server()->GetURL("a.test", kSimplePagePath);
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  GURL fetch_url = https_server()->GetURL("a.test", kTitle1Path);
+  EXPECT_TRUE(ExecJs(shell(),
+                     JsReplace(R"(
+      fetch($1, {sharedStorageWritable: true});
+    )",
+                               fetch_url.spec()),
+                     EvalJsOptions::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
+
+  response.WaitForRequest();
+  ASSERT_TRUE(base::Contains(response.http_request()->headers,
+                             "Shared-Storage-Writable"));
+  EXPECT_EQ(response.http_request()->content, "");
+  response.Send(
+      /*http_status=*/net::HTTP_OK,
+      /*content_type=*/"text/plain;charset=UTF-8",
+      /*content=*/{}, /*cookies=*/{}, /*extra_headers=*/
+      {"Shared-Storage-Write: clear, "
+       "set;key=\"hello\";value=\"world\";ignore_if_present, "
+       "append;key=hello;value=there"});
+
+  ASSERT_TRUE(observer_);
+  observer_->WaitForOperations(3);
+
+  url::Origin fetch_origin = url::Origin::Create(fetch_url);
+  EXPECT_EQ(observer_->header_results().size(), 1u);
+  EXPECT_EQ(observer_->header_results().front().first, fetch_origin);
+  EXPECT_THAT(observer_->header_results().front().second,
+              testing::ElementsAre(true, true, true));
+  EXPECT_THAT(observer_->operations(),
+              testing::ElementsAre(
+                  ClearOperation(fetch_origin, OperationResult::kSuccess),
+                  SetOperation(fetch_origin, "hello", "world", true,
+                               OperationResult::kSet),
+                  AppendOperation(fetch_origin, "hello", "there",
+                                  OperationResult::kSet)));
+
+  response.Done();
+
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+
+  GURL out_script_url;
+  ExecuteScriptInWorklet(shell(), R"(
+      console.log(await sharedStorage.get('hello'));
+      console.log(await sharedStorage.length());
+    )",
+                         &out_script_url);
+
+  EXPECT_EQ(2u, console_observer.messages().size());
+  EXPECT_EQ("worldthere",
+            base::UTF16ToUTF8(console_observer.messages()[0].message));
+  EXPECT_EQ("1", base::UTF16ToUTF8(console_observer.messages()[1].message));
+}
+
+IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
+                       SameOrigin_PermissionsNone) {
+  net::test_server::ControllableHttpResponse response1(https_server(),
+                                                       kSimplePagePath);
+  net::test_server::ControllableHttpResponse response2(https_server(),
+                                                       kTitle1Path);
+  ASSERT_TRUE(https_server()->Start());
+
+  GURL main_url = https_server()->GetURL("a.test", kSimplePagePath);
+  EXPECT_TRUE(NavigateToURLWithResponse(
+      shell(), main_url, response1,
+      /*http_status=*/net::HTTP_OK,
+      /*content_type=*/"text/plain;charset=UTF-8",
+      /*content=*/{}, /*cookies=*/{}, /*extra_headers=*/
+      {"Permissions-Policy: shared-storage=()"}));
+
+  GURL fetch_url = https_server()->GetURL("a.test", kTitle1Path);
+  EXPECT_TRUE(ExecJs(shell(),
+                     JsReplace(R"(
+      fetch($1, {sharedStorageWritable: true});
+    )",
+                               fetch_url.spec()),
+                     EvalJsOptions::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
+
+  response2.WaitForRequest();
+  EXPECT_FALSE(base::Contains(response2.http_request()->headers,
+                              "Shared-Storage-Writable"));
+  EXPECT_EQ(response2.http_request()->content, "");
+  response2.Send(
+      /*http_status=*/net::HTTP_OK,
+      /*content_type=*/"text/plain;charset=UTF-8",
+      /*content=*/{}, /*cookies=*/{}, /*extra_headers=*/
+      {"Access-Control-Allow-Origin: *",
+       "Shared-Storage-Write: delete;key=a, set;value=wont;key=set"});
+
+  response2.Done();
+
+  // No operations are invoked.
+  ASSERT_TRUE(observer_);
+  EXPECT_TRUE(observer_->header_results().empty());
+  EXPECT_TRUE(observer_->operations().empty());
+}
+
+IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
+                       SameOrigin_PermissionsAll_ClearSetAppend) {
+  net::test_server::ControllableHttpResponse response1(https_server(),
+                                                       kSimplePagePath);
+  net::test_server::ControllableHttpResponse response2(https_server(),
+                                                       kTitle1Path);
+  ASSERT_TRUE(https_server()->Start());
+
+  GURL main_url = https_server()->GetURL("a.test", kSimplePagePath);
+  EXPECT_TRUE(NavigateToURLWithResponse(
+      shell(), main_url, response1,
+      /*http_status=*/net::HTTP_OK,
+      /*content_type=*/"text/plain;charset=UTF-8",
+      /*content=*/{}, /*cookies=*/{}, /*extra_headers=*/
+      {"Permissions-Policy: shared-storage=*"}));
+
+  GURL fetch_url = https_server()->GetURL("a.test", kTitle1Path);
+  EXPECT_TRUE(ExecJs(shell(),
+                     JsReplace(R"(
+      fetch($1, {sharedStorageWritable: true});
+    )",
+                               fetch_url.spec()),
+                     EvalJsOptions::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
+
+  response2.WaitForRequest();
+  ASSERT_TRUE(base::Contains(response2.http_request()->headers,
+                             "Shared-Storage-Writable"));
+  EXPECT_EQ(response2.http_request()->content, "");
+  response2.Send(
+      /*http_status=*/net::HTTP_OK,
+      /*content_type=*/"text/plain;charset=UTF-8",
+      /*content=*/{}, /*cookies=*/{}, /*extra_headers=*/
+      {"Shared-Storage-Write: clear, "
+       "set;key=\"hello\";value=\"world\";ignore_if_present, "
+       "append;key=hello;value=there"});
+
+  ASSERT_TRUE(observer_);
+  observer_->WaitForOperations(3);
+
+  url::Origin fetch_origin = url::Origin::Create(fetch_url);
+  EXPECT_EQ(observer_->header_results().size(), 1u);
+  EXPECT_EQ(observer_->header_results().front().first, fetch_origin);
+  EXPECT_THAT(observer_->header_results().front().second,
+              testing::ElementsAre(true, true, true));
+  EXPECT_THAT(observer_->operations(),
+              testing::ElementsAre(
+                  ClearOperation(fetch_origin, OperationResult::kSuccess),
+                  SetOperation(fetch_origin, "hello", "world", true,
+                               OperationResult::kSet),
+                  AppendOperation(fetch_origin, "hello", "there",
+                                  OperationResult::kSet)));
+
+  response2.Done();
+
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+
+  GURL out_script_url;
+  ExecuteScriptInWorklet(shell(), R"(
+      console.log(await sharedStorage.get('hello'));
+      console.log(await sharedStorage.length());
+    )",
+                         &out_script_url);
+
+  EXPECT_EQ(2u, console_observer.messages().size());
+  EXPECT_EQ("worldthere",
+            base::UTF16ToUTF8(console_observer.messages()[0].message));
+  EXPECT_EQ("1", base::UTF16ToUTF8(console_observer.messages()[1].message));
+}
+
+IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
+                       SameOrigin_PermissionsSelf_ClearSetAppend) {
+  net::test_server::ControllableHttpResponse response1(https_server(),
+                                                       kSimplePagePath);
+  net::test_server::ControllableHttpResponse response2(https_server(),
+                                                       kTitle1Path);
+  ASSERT_TRUE(https_server()->Start());
+
+  GURL main_url = https_server()->GetURL("a.test", kSimplePagePath);
+  EXPECT_TRUE(NavigateToURLWithResponse(
+      shell(), main_url, response1,
+      /*http_status=*/net::HTTP_OK,
+      /*content_type=*/"text/plain;charset=UTF-8",
+      /*content=*/{}, /*cookies=*/{}, /*extra_headers=*/
+      {"Permissions-Policy: shared-storage=self"}));
+
+  GURL fetch_url = https_server()->GetURL("a.test", kTitle1Path);
+  EXPECT_TRUE(ExecJs(shell(),
+                     JsReplace(R"(
+      fetch($1, {sharedStorageWritable: true});
+    )",
+                               fetch_url.spec()),
+                     EvalJsOptions::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
+
+  response2.WaitForRequest();
+  ASSERT_TRUE(base::Contains(response2.http_request()->headers,
+                             "Shared-Storage-Writable"));
+  EXPECT_EQ(response2.http_request()->content, "");
+  response2.Send(
+      /*http_status=*/net::HTTP_OK,
+      /*content_type=*/"text/plain;charset=UTF-8",
+      /*content=*/{}, /*cookies=*/{}, /*extra_headers=*/
+      {"Shared-Storage-Write: clear, "
+       "set;key=\"hello\";value=\"world\";ignore_if_present, "
+       "append;key=hello;value=there"});
+
+  ASSERT_TRUE(observer_);
+  observer_->WaitForOperations(3);
+
+  url::Origin fetch_origin = url::Origin::Create(fetch_url);
+  EXPECT_EQ(observer_->header_results().size(), 1u);
+  EXPECT_EQ(observer_->header_results().front().first, fetch_origin);
+  EXPECT_THAT(observer_->header_results().front().second,
+              testing::ElementsAre(true, true, true));
+  EXPECT_THAT(observer_->operations(),
+              testing::ElementsAre(
+                  ClearOperation(fetch_origin, OperationResult::kSuccess),
+                  SetOperation(fetch_origin, "hello", "world", true,
+                               OperationResult::kSet),
+                  AppendOperation(fetch_origin, "hello", "there",
+                                  OperationResult::kSet)));
+
+  response2.Done();
+
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+
+  GURL out_script_url;
+  ExecuteScriptInWorklet(shell(), R"(
+      console.log(await sharedStorage.get('hello'));
+      console.log(await sharedStorage.length());
+    )",
+                         &out_script_url);
+
+  EXPECT_EQ(2u, console_observer.messages().size());
+  EXPECT_EQ("worldthere",
+            base::UTF16ToUTF8(console_observer.messages()[0].message));
+  EXPECT_EQ("1", base::UTF16ToUTF8(console_observer.messages()[1].message));
+}
+
+IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
+                       CrossOrigin_PermissionsDefault_ClearSetAppend) {
+  net::test_server::ControllableHttpResponse response(https_server(),
+                                                      kTitle1Path);
+  ASSERT_TRUE(https_server()->Start());
+
+  GURL main_url = https_server()->GetURL("a.test", kSimplePagePath);
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  GURL fetch_url = https_server()->GetURL("b.test", kTitle1Path);
+  EXPECT_TRUE(ExecJs(shell(),
+                     JsReplace(R"(
+      fetch($1, {sharedStorageWritable: true});
+    )",
+                               fetch_url.spec()),
+                     EvalJsOptions::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
+
+  response.WaitForRequest();
+  ASSERT_TRUE(base::Contains(response.http_request()->headers,
+                             "Shared-Storage-Writable"));
+  EXPECT_EQ(response.http_request()->content, "");
+  response.Send(
+      /*http_status=*/net::HTTP_OK,
+      /*content_type=*/"text/plain;charset=UTF-8",
+      /*content=*/{}, /*cookies=*/{}, /*extra_headers=*/
+      {"Access-Control-Allow-Origin: *",
+       "Shared-Storage-Write: clear, "
+       "set;key=\"hello\";value=\"world\";ignore_if_present, "
+       "append;key=hello;value=there"});
+
+  ASSERT_TRUE(observer_);
+  observer_->WaitForOperations(3);
+
+  url::Origin fetch_origin = url::Origin::Create(fetch_url);
+  EXPECT_EQ(observer_->header_results().size(), 1u);
+  EXPECT_EQ(observer_->header_results().front().first, fetch_origin);
+  EXPECT_THAT(observer_->header_results().front().second,
+              testing::ElementsAre(true, true, true));
+  EXPECT_THAT(observer_->operations(),
+              testing::ElementsAre(
+                  ClearOperation(fetch_origin, OperationResult::kSuccess),
+                  SetOperation(fetch_origin, "hello", "world", true,
+                               OperationResult::kSet),
+                  AppendOperation(fetch_origin, "hello", "there",
+                                  OperationResult::kSet)));
+
+  response.Done();
+
+  // Create an iframe that's same-origin to the fetch URL.
+  FrameTreeNode* iframe_node =
+      CreateIFrame(PrimaryFrameTreeNodeRoot(),
+                   https_server()->GetURL("b.test", kTitle2Path));
+
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+
+  GURL out_script_url;
+  ExecuteScriptInWorklet(iframe_node, R"(
+      console.log(await sharedStorage.get('hello'));
+      console.log(await sharedStorage.length());
+    )",
+                         &out_script_url);
+
+  EXPECT_EQ(2u, console_observer.messages().size());
+  EXPECT_EQ("worldthere",
+            base::UTF16ToUTF8(console_observer.messages()[0].message));
+  EXPECT_EQ("1", base::UTF16ToUTF8(console_observer.messages()[1].message));
+}
+
+IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
+                       CrossOrigin_PermissionsNone) {
+  net::test_server::ControllableHttpResponse response1(https_server(),
+                                                       kSimplePagePath);
+  net::test_server::ControllableHttpResponse response2(https_server(),
+                                                       kTitle1Path);
+  ASSERT_TRUE(https_server()->Start());
+
+  GURL main_url = https_server()->GetURL("a.test", kSimplePagePath);
+  EXPECT_TRUE(NavigateToURLWithResponse(
+      shell(), main_url, response1,
+      /*http_status=*/net::HTTP_OK,
+      /*content_type=*/"text/plain;charset=UTF-8",
+      /*content=*/{}, /*cookies=*/{}, /*extra_headers=*/
+      {"Permissions-Policy: shared-storage=()"}));
+
+  GURL fetch_url = https_server()->GetURL("b.test", kTitle1Path);
+  EXPECT_TRUE(ExecJs(shell(),
+                     JsReplace(R"(
+      fetch($1, {sharedStorageWritable: true});
+    )",
+                               fetch_url.spec()),
+                     EvalJsOptions::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
+
+  response2.WaitForRequest();
+  EXPECT_FALSE(base::Contains(response2.http_request()->headers,
+                              "Shared-Storage-Writable"));
+  EXPECT_EQ(response2.http_request()->content, "");
+  response2.Send(
+      /*http_status=*/net::HTTP_OK,
+      /*content_type=*/"text/plain;charset=UTF-8",
+      /*content=*/{}, /*cookies=*/{}, /*extra_headers=*/
+      {"Access-Control-Allow-Origin: *",
+       "Shared-Storage-Write: delete;key=a, set;value=wont;key=set"});
+
+  response2.Done();
+
+  // No operations are invoked.
+  ASSERT_TRUE(observer_);
+  EXPECT_TRUE(observer_->header_results().empty());
+  EXPECT_TRUE(observer_->operations().empty());
+}
+
+IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
+                       CrossOrigin_PermissionsAll_ClearSetAppend) {
+  net::test_server::ControllableHttpResponse response1(https_server(),
+                                                       kSimplePagePath);
+  net::test_server::ControllableHttpResponse response2(https_server(),
+                                                       kTitle1Path);
+  ASSERT_TRUE(https_server()->Start());
+
+  GURL main_url = https_server()->GetURL("a.test", kSimplePagePath);
+  EXPECT_TRUE(NavigateToURLWithResponse(
+      shell(), main_url, response1,
+      /*http_status=*/net::HTTP_OK,
+      /*content_type=*/"text/plain;charset=UTF-8",
+      /*content=*/{}, /*cookies=*/{}, /*extra_headers=*/
+      {"Permissions-Policy: shared-storage=*"}));
+
+  GURL fetch_url = https_server()->GetURL("b.test", kTitle1Path);
+  EXPECT_TRUE(ExecJs(shell(),
+                     JsReplace(R"(
+      fetch($1, {sharedStorageWritable: true});
+    )",
+                               fetch_url.spec()),
+                     EvalJsOptions::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
+
+  response2.WaitForRequest();
+  ASSERT_TRUE(base::Contains(response2.http_request()->headers,
+                             "Shared-Storage-Writable"));
+  EXPECT_EQ(response2.http_request()->content, "");
+  response2.Send(
+      /*http_status=*/net::HTTP_OK,
+      /*content_type=*/"text/plain;charset=UTF-8",
+      /*content=*/{}, /*cookies=*/{}, /*extra_headers=*/
+      {"Shared-Storage-Write: clear, "
+       "set;key=\"hello\";value=\"world\";ignore_if_present, "
+       "append;key=hello;value=there"});
+
+  ASSERT_TRUE(observer_);
+  observer_->WaitForOperations(3);
+
+  url::Origin fetch_origin = url::Origin::Create(fetch_url);
+  EXPECT_EQ(observer_->header_results().size(), 1u);
+  EXPECT_EQ(observer_->header_results().front().first, fetch_origin);
+  EXPECT_THAT(observer_->header_results().front().second,
+              testing::ElementsAre(true, true, true));
+  EXPECT_THAT(observer_->operations(),
+              testing::ElementsAre(
+                  ClearOperation(fetch_origin, OperationResult::kSuccess),
+                  SetOperation(fetch_origin, "hello", "world", true,
+                               OperationResult::kSet),
+                  AppendOperation(fetch_origin, "hello", "there",
+                                  OperationResult::kSet)));
+
+  response2.Done();
+
+  // Create an iframe that's same-origin to the fetch URL.
+  FrameTreeNode* iframe_node =
+      CreateIFrame(PrimaryFrameTreeNodeRoot(),
+                   https_server()->GetURL("b.test", kTitle2Path));
+
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+
+  GURL out_script_url;
+  ExecuteScriptInWorklet(iframe_node, R"(
+      console.log(await sharedStorage.get('hello'));
+      console.log(await sharedStorage.length());
+    )",
+                         &out_script_url);
+
+  EXPECT_EQ(2u, console_observer.messages().size());
+  EXPECT_EQ("worldthere",
+            base::UTF16ToUTF8(console_observer.messages()[0].message));
+  EXPECT_EQ("1", base::UTF16ToUTF8(console_observer.messages()[1].message));
+}
+
+IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
+                       CrossOrigin_PermissionsSelf) {
+  net::test_server::ControllableHttpResponse response1(https_server(),
+                                                       kSimplePagePath);
+  net::test_server::ControllableHttpResponse response2(https_server(),
+                                                       kTitle1Path);
+  ASSERT_TRUE(https_server()->Start());
+
+  GURL main_url = https_server()->GetURL("a.test", kSimplePagePath);
+  EXPECT_TRUE(NavigateToURLWithResponse(
+      shell(), main_url, response1,
+      /*http_status=*/net::HTTP_OK,
+      /*content_type=*/"text/plain;charset=UTF-8",
+      /*content=*/{}, /*cookies=*/{}, /*extra_headers=*/
+      {"Permissions-Policy: shared-storage=self"}));
+
+  GURL fetch_url = https_server()->GetURL("b.test", kTitle1Path);
+  EXPECT_TRUE(ExecJs(shell(),
+                     JsReplace(R"(
+      fetch($1, {sharedStorageWritable: true});
+    )",
+                               fetch_url.spec()),
+                     EvalJsOptions::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
+
+  response2.WaitForRequest();
+  EXPECT_FALSE(base::Contains(response2.http_request()->headers,
+                              "Shared-Storage-Writable"));
+  EXPECT_EQ(response2.http_request()->content, "");
+  response2.Send(
+      /*http_status=*/net::HTTP_OK,
+      /*content_type=*/"text/plain;charset=UTF-8",
+      /*content=*/{}, /*cookies=*/{}, /*extra_headers=*/
+      {"Access-Control-Allow-Origin: *",
+       "Shared-Storage-Write: delete;key=a, set;value=wont;key=set"});
+
+  response2.Done();
+
+  // No operations are invoked.
+  ASSERT_TRUE(observer_);
+  EXPECT_TRUE(observer_->header_results().empty());
+  EXPECT_TRUE(observer_->operations().empty());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SharedStorageHeaderObserverBrowserTest,
+    CrossOrigin_Redirect_InititalAllowed_FinalAllowed_WriteInitial) {
+  net::test_server::ControllableHttpResponse response1(https_server(),
+                                                       kSimplePagePath);
+  net::test_server::ControllableHttpResponse response2(https_server(),
+                                                       kTitle1Path);
+  net::test_server::ControllableHttpResponse response3(https_server(),
+                                                       kTitle2Path);
+  ASSERT_TRUE(https_server()->Start());
+
+  GURL main_url = https_server()->GetURL("a.test", kSimplePagePath);
+  GURL fetch_url = https_server()->GetURL("b.test", kTitle1Path);
+  GURL redirect_url = https_server()->GetURL("c.test", kTitle2Path);
+
+  url::Origin fetch_origin = url::Origin::Create(fetch_url);
+  url::Origin redirect_origin = url::Origin::Create(redirect_url);
+
+  std::string fetch_origin_str = fetch_origin.Serialize();
+  std::string redirect_origin_str = redirect_origin.Serialize();
+  std::string permissions_header =
+      base::StrCat({"Permissions-Policy: shared-storage=(self \"",
+                    fetch_origin_str, "\" \"", redirect_origin_str, "\")"});
+
+  EXPECT_TRUE(NavigateToURLWithResponse(
+      shell(), main_url, response1,
+      /*http_status=*/net::HTTP_OK,
+      /*content_type=*/"text/plain;charset=UTF-8",
+      /*content=*/{}, /*cookies=*/{}, /*extra_headers=*/
+      {permissions_header}));
+
+  EXPECT_TRUE(ExecJs(shell(),
+                     JsReplace(R"(
+      fetch($1, {sharedStorageWritable: true});
+    )",
+                               fetch_url.spec()),
+                     EvalJsOptions::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
+
+  response2.WaitForRequest();
+  ASSERT_TRUE(base::Contains(response2.http_request()->headers,
+                             "Shared-Storage-Writable"));
+  EXPECT_EQ(response2.http_request()->content, "");
+  response2.Send(
+      /*http_status=*/net::HTTP_FOUND,
+      /*content_type=*/"text/plain;charset=UTF-8",
+      /*content=*/{}, /*cookies=*/{}, /*extra_headers=*/
+      {base::StrCat({"Location: ", redirect_url.spec()}),
+       "Access-Control-Allow-Origin: *",
+       "Shared-Storage-Write: clear, "
+       "set;key=\"hello\";value=\"world\";ignore_if_present, "
+       "append;key=hello;value=there"});
+
+  ASSERT_TRUE(observer_);
+  observer_->WaitForOperations(3);
+
+  EXPECT_EQ(observer_->header_results().size(), 1u);
+  EXPECT_EQ(observer_->header_results().front().first, fetch_origin);
+  EXPECT_THAT(observer_->header_results().front().second,
+              testing::ElementsAre(true, true, true));
+  EXPECT_THAT(observer_->operations(),
+              testing::ElementsAre(
+                  ClearOperation(fetch_origin, OperationResult::kSuccess),
+                  SetOperation(fetch_origin, "hello", "world", true,
+                               OperationResult::kSet),
+                  AppendOperation(fetch_origin, "hello", "there",
+                                  OperationResult::kSet)));
+
+  response2.Done();
+
+  response3.WaitForRequest();
+  EXPECT_TRUE(base::Contains(response3.http_request()->headers,
+                             "Shared-Storage-Writable"));
+  EXPECT_EQ(response3.http_request()->content, "");
+  response3.Send(
+      /*http_status=*/net::HTTP_OK,
+      /*content_type=*/"text/plain;charset=UTF-8",
+      /*content=*/{}, /*cookies=*/{}, /*extra_headers=*/
+      {"Access-Control-Allow-Origin: *"});
+
+  response3.Done();
+
+  // There won't be additional operations invoked.
+  EXPECT_EQ(observer_->header_results().size(), 1u);
+  EXPECT_EQ(observer_->header_results().front().first, fetch_origin);
+  EXPECT_THAT(observer_->header_results().front().second,
+              testing::ElementsAre(true, true, true));
+  EXPECT_THAT(observer_->operations(),
+              testing::ElementsAre(
+                  ClearOperation(fetch_origin, OperationResult::kSuccess),
+                  SetOperation(fetch_origin, "hello", "world", true,
+                               OperationResult::kSet),
+                  AppendOperation(fetch_origin, "hello", "there",
+                                  OperationResult::kSet)));
+
+  // Create an iframe that's same-origin to the original fetch URL.
+  FrameTreeNode* iframe_node1 =
+      CreateIFrame(PrimaryFrameTreeNodeRoot(), fetch_url);
+
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+
+  GURL out_script_url;
+  ExecuteScriptInWorklet(iframe_node1, R"(
+      console.log(await sharedStorage.get('hello'));
+      console.log(await sharedStorage.length());
+    )",
+                         &out_script_url);
+
+  EXPECT_EQ(2u, console_observer.messages().size());
+  EXPECT_EQ("worldthere",
+            base::UTF16ToUTF8(console_observer.messages()[0].message));
+  EXPECT_EQ("1", base::UTF16ToUTF8(console_observer.messages()[1].message));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SharedStorageHeaderObserverBrowserTest,
+    CrossOrigin_Redirect_InititalAllowed_FinalAllowed_WriteFinal) {
+  net::test_server::ControllableHttpResponse response1(https_server(),
+                                                       kSimplePagePath);
+  net::test_server::ControllableHttpResponse response2(https_server(),
+                                                       kTitle1Path);
+  net::test_server::ControllableHttpResponse response3(https_server(),
+                                                       kTitle2Path);
+  ASSERT_TRUE(https_server()->Start());
+
+  GURL main_url = https_server()->GetURL("a.test", kSimplePagePath);
+  GURL fetch_url = https_server()->GetURL("b.test", kTitle1Path);
+  GURL redirect_url = https_server()->GetURL("c.test", kTitle2Path);
+
+  url::Origin fetch_origin = url::Origin::Create(fetch_url);
+  url::Origin redirect_origin = url::Origin::Create(redirect_url);
+
+  std::string fetch_origin_str = fetch_origin.Serialize();
+  std::string redirect_origin_str = redirect_origin.Serialize();
+  std::string permissions_header =
+      base::StrCat({"Permissions-Policy: shared-storage=(self \"",
+                    fetch_origin_str, "\" \"", redirect_origin_str, "\")"});
+
+  EXPECT_TRUE(NavigateToURLWithResponse(
+      shell(), main_url, response1,
+      /*http_status=*/net::HTTP_OK,
+      /*content_type=*/"text/plain;charset=UTF-8",
+      /*content=*/{}, /*cookies=*/{}, /*extra_headers=*/
+      {permissions_header}));
+
+  EXPECT_TRUE(ExecJs(shell(),
+                     JsReplace(R"(
+      fetch($1, {sharedStorageWritable: true});
+    )",
+                               fetch_url.spec()),
+                     EvalJsOptions::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
+
+  response2.WaitForRequest();
+  ASSERT_TRUE(base::Contains(response2.http_request()->headers,
+                             "Shared-Storage-Writable"));
+  EXPECT_EQ(response2.http_request()->content, "");
+  response2.Send(
+      /*http_status=*/net::HTTP_FOUND,
+      /*content_type=*/"text/plain;charset=UTF-8",
+      /*content=*/{}, /*cookies=*/{}, /*extra_headers=*/
+      {base::StrCat({"Location: ", redirect_url.spec()}),
+       "Access-Control-Allow-Origin: *"});
+  response2.Done();
+
+  response3.WaitForRequest();
+  EXPECT_TRUE(base::Contains(response3.http_request()->headers,
+                             "Shared-Storage-Writable"));
+  EXPECT_EQ(response3.http_request()->content, "");
+  response3.Send(
+      /*http_status=*/net::HTTP_OK,
+      /*content_type=*/"text/plain;charset=UTF-8",
+      /*content=*/{}, /*cookies=*/{}, /*extra_headers=*/
+      {"Access-Control-Allow-Origin: *",
+       "Shared-Storage-Write: delete;key=a, set;value=will;key=set"});
+
+  response3.Done();
+
+  ASSERT_TRUE(observer_);
+  observer_->WaitForOperations(2);
+
+  EXPECT_EQ(observer_->header_results().size(), 1u);
+  EXPECT_EQ(observer_->header_results().back().first, redirect_origin);
+  EXPECT_THAT(observer_->header_results().back().second,
+              testing::ElementsAre(true, true));
+  EXPECT_THAT(
+      observer_->operations(),
+      testing::ElementsAre(
+          DeleteOperation(redirect_origin, "a", OperationResult::kSuccess),
+          SetOperation(redirect_origin, "set", "will", absl::nullopt,
+                       OperationResult::kSet)));
+
+  // Create an iframe that's same-origin to the original fetch URL.
+  FrameTreeNode* iframe_node1 =
+      CreateIFrame(PrimaryFrameTreeNodeRoot(), fetch_url);
+
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+
+  GURL out_script_url;
+  ExecuteScriptInWorklet(iframe_node1, R"(
+      console.log(await sharedStorage.get('set'));
+      console.log(await sharedStorage.length());
+    )",
+                         &out_script_url);
+
+  EXPECT_EQ(2u, console_observer.messages().size());
+
+  // Nothing was set in b.test's shared storage.
+  EXPECT_EQ("undefined",
+            base::UTF16ToUTF8(console_observer.messages()[0].message));
+  EXPECT_EQ("0", base::UTF16ToUTF8(console_observer.messages()[1].message));
+
+  // Create an iframe that's same-origin to the redirect URL.
+  FrameTreeNode* iframe_node2 =
+      CreateIFrame(PrimaryFrameTreeNodeRoot(), redirect_url);
+
+  ExecuteScriptInWorklet(iframe_node2, R"(
+      console.log(await sharedStorage.get('set'));
+      console.log(await sharedStorage.length());
+    )",
+                         &out_script_url, /*expected_total_host_count=*/2u);
+
+  // The entry was set in c.test's shared storage.
+  EXPECT_EQ(4u, console_observer.messages().size());
+  EXPECT_EQ("will", base::UTF16ToUTF8(console_observer.messages()[2].message));
+  EXPECT_EQ("1", base::UTF16ToUTF8(console_observer.messages()[3].message));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SharedStorageHeaderObserverBrowserTest,
+    CrossOrigin_Redirect_InititalAllowed_FinalAllowed_WriteBoth) {
+  net::test_server::ControllableHttpResponse response1(https_server(),
+                                                       kSimplePagePath);
+  net::test_server::ControllableHttpResponse response2(https_server(),
+                                                       kTitle1Path);
+  net::test_server::ControllableHttpResponse response3(https_server(),
+                                                       kTitle2Path);
+  ASSERT_TRUE(https_server()->Start());
+
+  GURL main_url = https_server()->GetURL("a.test", kSimplePagePath);
+  GURL fetch_url = https_server()->GetURL("b.test", kTitle1Path);
+  GURL redirect_url = https_server()->GetURL("c.test", kTitle2Path);
+
+  url::Origin fetch_origin = url::Origin::Create(fetch_url);
+  url::Origin redirect_origin = url::Origin::Create(redirect_url);
+
+  std::string fetch_origin_str = fetch_origin.Serialize();
+  std::string redirect_origin_str = redirect_origin.Serialize();
+  std::string permissions_header =
+      base::StrCat({"Permissions-Policy: shared-storage=(self \"",
+                    fetch_origin_str, "\" \"", redirect_origin_str, "\")"});
+
+  EXPECT_TRUE(NavigateToURLWithResponse(
+      shell(), main_url, response1,
+      /*http_status=*/net::HTTP_OK,
+      /*content_type=*/"text/plain;charset=UTF-8",
+      /*content=*/{}, /*cookies=*/{}, /*extra_headers=*/
+      {permissions_header}));
+
+  EXPECT_TRUE(ExecJs(shell(),
+                     JsReplace(R"(
+      fetch($1, {sharedStorageWritable: true});
+    )",
+                               fetch_url.spec()),
+                     EvalJsOptions::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
+
+  response2.WaitForRequest();
+  ASSERT_TRUE(base::Contains(response2.http_request()->headers,
+                             "Shared-Storage-Writable"));
+  EXPECT_EQ(response2.http_request()->content, "");
+  response2.Send(
+      /*http_status=*/net::HTTP_FOUND,
+      /*content_type=*/"text/plain;charset=UTF-8",
+      /*content=*/{}, /*cookies=*/{}, /*extra_headers=*/
+      {base::StrCat({"Location: ", redirect_url.spec()}),
+       "Access-Control-Allow-Origin: *",
+       "Shared-Storage-Write: clear, "
+       "set;key=\"hello\";value=\"world\";ignore_if_present, "
+       "append;key=hello;value=there"});
+
+  ASSERT_TRUE(observer_);
+  observer_->WaitForOperations(3);
+
+  EXPECT_EQ(observer_->header_results().size(), 1u);
+  EXPECT_EQ(observer_->header_results().front().first, fetch_origin);
+  EXPECT_THAT(observer_->header_results().front().second,
+              testing::ElementsAre(true, true, true));
+  EXPECT_THAT(observer_->operations(),
+              testing::ElementsAre(
+                  ClearOperation(fetch_origin, OperationResult::kSuccess),
+                  SetOperation(fetch_origin, "hello", "world", true,
+                               OperationResult::kSet),
+                  AppendOperation(fetch_origin, "hello", "there",
+                                  OperationResult::kSet)));
+
+  response2.Done();
+
+  response3.WaitForRequest();
+  EXPECT_TRUE(base::Contains(response3.http_request()->headers,
+                             "Shared-Storage-Writable"));
+  EXPECT_EQ(response3.http_request()->content, "");
+  response3.Send(
+      /*http_status=*/net::HTTP_OK,
+      /*content_type=*/"text/plain;charset=UTF-8",
+      /*content=*/{}, /*cookies=*/{}, /*extra_headers=*/
+      {"Access-Control-Allow-Origin: *",
+       "Shared-Storage-Write: delete;key=a, set;value=will;key=set"});
+
+  response3.Done();
+
+  // There will now have been a total of 5 operations (3 previous, 2 current).
+  ASSERT_TRUE(observer_);
+  observer_->WaitForOperations(5);
+
+  EXPECT_EQ(observer_->header_results().size(), 2u);
+  EXPECT_EQ(observer_->header_results().back().first, redirect_origin);
+  EXPECT_THAT(observer_->header_results().back().second,
+              testing::ElementsAre(true, true));
+  EXPECT_THAT(
+      observer_->operations(),
+      testing::ElementsAre(
+          ClearOperation(fetch_origin, OperationResult::kSuccess),
+          SetOperation(fetch_origin, "hello", "world", true,
+                       OperationResult::kSet),
+          AppendOperation(fetch_origin, "hello", "there",
+                          OperationResult::kSet),
+          DeleteOperation(redirect_origin, "a", OperationResult::kSuccess),
+          SetOperation(redirect_origin, "set", "will", absl::nullopt,
+                       OperationResult::kSet)));
+
+  // Create an iframe that's same-origin to the original fetch URL.
+  FrameTreeNode* iframe_node1 =
+      CreateIFrame(PrimaryFrameTreeNodeRoot(), fetch_url);
+
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+
+  GURL out_script_url;
+  ExecuteScriptInWorklet(iframe_node1, R"(
+      console.log(await sharedStorage.get('hello'));
+      console.log(await sharedStorage.get('set'));
+      console.log(await sharedStorage.length());
+    )",
+                         &out_script_url);
+
+  EXPECT_EQ(3u, console_observer.messages().size());
+  EXPECT_EQ("worldthere",
+            base::UTF16ToUTF8(console_observer.messages()[0].message));
+
+  // Only one entry was set in b.test's shared storage.
+  EXPECT_EQ("undefined",
+            base::UTF16ToUTF8(console_observer.messages()[1].message));
+  EXPECT_EQ("1", base::UTF16ToUTF8(console_observer.messages()[2].message));
+
+  // Create an iframe that's same-origin to the redirect URL.
+  FrameTreeNode* iframe_node2 =
+      CreateIFrame(PrimaryFrameTreeNodeRoot(), redirect_url);
+
+  ExecuteScriptInWorklet(iframe_node2, R"(
+      console.log(await sharedStorage.get('set'));
+      console.log(await sharedStorage.length());
+    )",
+                         &out_script_url, /*expected_total_host_count=*/2u);
+
+  // One entry was set in c.test's shared storage.
+  EXPECT_EQ(5u, console_observer.messages().size());
+  EXPECT_EQ("will", base::UTF16ToUTF8(console_observer.messages()[3].message));
+  EXPECT_EQ("1", base::UTF16ToUTF8(console_observer.messages()[4].message));
+}
+
+IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
+                       CrossOrigin_Redirect_InititalAllowed_FinalDenied) {
+  net::test_server::ControllableHttpResponse response1(https_server(),
+                                                       kSimplePagePath);
+  net::test_server::ControllableHttpResponse response2(https_server(),
+                                                       kTitle1Path);
+  net::test_server::ControllableHttpResponse response3(https_server(),
+                                                       kTitle2Path);
+  ASSERT_TRUE(https_server()->Start());
+
+  GURL main_url = https_server()->GetURL("a.test", kSimplePagePath);
+  GURL fetch_url = https_server()->GetURL("b.test", kTitle1Path);
+  GURL redirect_url = https_server()->GetURL("c.test", kTitle2Path);
+
+  url::Origin fetch_origin = url::Origin::Create(fetch_url);
+
+  std::string fetch_origin_str = fetch_origin.Serialize();
+
+  EXPECT_TRUE(NavigateToURLWithResponse(
+      shell(), main_url, response1,
+      /*http_status=*/net::HTTP_OK,
+      /*content_type=*/"text/plain;charset=UTF-8",
+      /*content=*/{}, /*cookies=*/{}, /*extra_headers=*/
+      {base::StrCat({"Permissions-Policy: shared-storage=(self \"",
+                     fetch_origin_str, "\")"})}));
+
+  EXPECT_TRUE(ExecJs(shell(),
+                     JsReplace(R"(
+      fetch($1, {sharedStorageWritable: true});
+    )",
+                               fetch_url.spec()),
+                     EvalJsOptions::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
+
+  response2.WaitForRequest();
+  ASSERT_TRUE(base::Contains(response2.http_request()->headers,
+                             "Shared-Storage-Writable"));
+  EXPECT_EQ(response2.http_request()->content, "");
+  response2.Send(
+      /*http_status=*/net::HTTP_FOUND,
+      /*content_type=*/"text/plain;charset=UTF-8",
+      /*content=*/{}, /*cookies=*/{}, /*extra_headers=*/
+      {base::StrCat({"Location: ", redirect_url.spec()}),
+       "Access-Control-Allow-Origin: *",
+       "Shared-Storage-Write: clear, "
+       "set;key=\"hello\";value=\"world\";ignore_if_present, "
+       "append;key=hello;value=there"});
+
+  ASSERT_TRUE(observer_);
+  observer_->WaitForOperations(3);
+
+  EXPECT_EQ(observer_->header_results().size(), 1u);
+  EXPECT_EQ(observer_->header_results().front().first, fetch_origin);
+  EXPECT_THAT(observer_->header_results().front().second,
+              testing::ElementsAre(true, true, true));
+  EXPECT_THAT(observer_->operations(),
+              testing::ElementsAre(
+                  ClearOperation(fetch_origin, OperationResult::kSuccess),
+                  SetOperation(fetch_origin, "hello", "world", true,
+                               OperationResult::kSet),
+                  AppendOperation(fetch_origin, "hello", "there",
+                                  OperationResult::kSet)));
+
+  response2.Done();
+
+  response3.WaitForRequest();
+  EXPECT_FALSE(base::Contains(response3.http_request()->headers,
+                              "Shared-Storage-Writable"));
+  EXPECT_EQ(response3.http_request()->content, "");
+  response3.Send(
+      /*http_status=*/net::HTTP_OK,
+      /*content_type=*/"text/plain;charset=UTF-8",
+      /*content=*/{}, /*cookies=*/{}, /*extra_headers=*/
+      {"Access-Control-Allow-Origin: *",
+       "Shared-Storage-Write: delete;key=a, set;value=wont;key=set"});
+
+  response3.Done();
+
+  // No new operations are invoked.
+  EXPECT_EQ(observer_->header_results().size(), 1u);
+  EXPECT_EQ(observer_->header_results().front().first, fetch_origin);
+  EXPECT_THAT(observer_->header_results().front().second,
+              testing::ElementsAre(true, true, true));
+  EXPECT_THAT(observer_->operations(),
+              testing::ElementsAre(
+                  ClearOperation(fetch_origin, OperationResult::kSuccess),
+                  SetOperation(fetch_origin, "hello", "world", true,
+                               OperationResult::kSet),
+                  AppendOperation(fetch_origin, "hello", "there",
+                                  OperationResult::kSet)));
+
+  // Create an iframe that's same-origin to the original fetch URL.
+  FrameTreeNode* iframe_node1 =
+      CreateIFrame(PrimaryFrameTreeNodeRoot(), fetch_url);
+
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+
+  GURL out_script_url;
+  ExecuteScriptInWorklet(iframe_node1, R"(
+      console.log(await sharedStorage.get('hello'));
+      console.log(await sharedStorage.length());
+    )",
+                         &out_script_url);
+
+  EXPECT_EQ(2u, console_observer.messages().size());
+  EXPECT_EQ("worldthere",
+            base::UTF16ToUTF8(console_observer.messages()[0].message));
+  EXPECT_EQ("1", base::UTF16ToUTF8(console_observer.messages()[1].message));
+
+  // Create an iframe that's same-origin to the redirect URL.
+  FrameTreeNode* iframe_node2 =
+      CreateIFrame(PrimaryFrameTreeNodeRoot(), redirect_url);
+
+  EvalJsResult result = EvalJs(iframe_node2, R"(
+        sharedStorage.worklet.addModule('/shared_storage/simple_module.js');
+      )");
+
+  EXPECT_THAT(result.error,
+              testing::HasSubstr("The \"shared-storage\" Permissions Policy "
+                                 "denied the method on window.sharedStorage."));
+}
+
+IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
+                       SameOrigin_PermissionsDefault_VerifyDelete) {
+  net::test_server::ControllableHttpResponse response(https_server(),
+                                                      kTitle1Path);
+  ASSERT_TRUE(https_server()->Start());
+
+  GURL main_url = https_server()->GetURL("a.test", kSimplePagePath);
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+  EXPECT_TRUE(ExecJs(shell(), R"(sharedStorage.set('hello', 'world');)"));
+
+  GURL script_url =
+      https_server()->GetURL("a.test", "/shared_storage/getter_module.js");
+
+  EXPECT_TRUE(ExecJs(
+      shell(), JsReplace("sharedStorage.worklet.addModule($1)", script_url)));
+
+  // There is 1 more "worklet operation": `run()`.
+  test_worklet_host_manager()
+      .GetAttachedWorkletHost()
+      ->SetExpectedWorkletResponsesCount(1);
+
+  EXPECT_TRUE(ExecJs(shell(), R"(
+        sharedStorage.run('get-operation', {data: {'key': 'hello'},
+                                            keepAlive: true});
+      )"));
+
+  test_worklet_host_manager()
+      .GetAttachedWorkletHost()
+      ->WaitForWorkletResponses();
+
+  EXPECT_EQ(2u, console_observer.messages().size());
+  EXPECT_EQ("sharedStorage.length(): 1",
+            base::UTF16ToUTF8(console_observer.messages()[0].message));
+  EXPECT_EQ("sharedStorage.get('hello'): world",
+            base::UTF16ToUTF8(console_observer.messages()[1].message));
+
+  GURL fetch_url = https_server()->GetURL("a.test", kTitle1Path);
+  EXPECT_TRUE(ExecJs(shell(),
+                     JsReplace(R"(
+      fetch($1, {sharedStorageWritable: true});
+    )",
+                               fetch_url.spec()),
+                     EvalJsOptions::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
+
+  response.WaitForRequest();
+  ASSERT_TRUE(base::Contains(response.http_request()->headers,
+                             "Shared-Storage-Writable"));
+  EXPECT_EQ(response.http_request()->content, "");
+  response.Send(
+      /*http_status=*/net::HTTP_OK,
+      /*content_type=*/"text/plain;charset=UTF-8",
+      /*content=*/{}, /*cookies=*/{}, /*extra_headers=*/
+      {"Shared-Storage-Write: \"delete\";key=hello"});
+
+  ASSERT_TRUE(observer_);
+  observer_->WaitForOperations(1);
+
+  url::Origin fetch_origin = url::Origin::Create(fetch_url);
+  EXPECT_EQ(observer_->header_results().size(), 1u);
+  EXPECT_EQ(observer_->header_results().front().first, fetch_origin);
+  EXPECT_THAT(observer_->header_results().front().second,
+              testing::ElementsAre(true));
+  EXPECT_THAT(observer_->operations(),
+              testing::ElementsAre(DeleteOperation(fetch_origin, "hello",
+                                                   OperationResult::kSuccess)));
+
+  response.Done();
+
+  // There is 1 more "worklet operation": `run()`.
+  test_worklet_host_manager()
+      .GetAttachedWorkletHost()
+      ->SetExpectedWorkletResponsesCount(1);
+
+  EXPECT_TRUE(ExecJs(shell(), R"(
+        sharedStorage.run('get-operation', {data: {'key': 'hello'}});
+      )"));
+
+  test_worklet_host_manager()
+      .GetAttachedWorkletHost()
+      ->WaitForWorkletResponses();
+
+  EXPECT_EQ(4u, console_observer.messages().size());
+  EXPECT_EQ("sharedStorage.length(): 0",
+            base::UTF16ToUTF8(console_observer.messages()[2].message));
+  EXPECT_EQ("sharedStorage.get('hello'): undefined",
+            base::UTF16ToUTF8(console_observer.messages()[3].message));
+}
+
+IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
+                       SameOrigin_PermissionsDefault_VerifyClear) {
+  net::test_server::ControllableHttpResponse response(https_server(),
+                                                      kTitle1Path);
+  ASSERT_TRUE(https_server()->Start());
+
+  GURL main_url = https_server()->GetURL("a.test", kSimplePagePath);
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+  EXPECT_TRUE(ExecJs(shell(), R"(sharedStorage.set('hello', 'world');)"));
+
+  GURL script_url =
+      https_server()->GetURL("a.test", "/shared_storage/getter_module.js");
+
+  EXPECT_TRUE(ExecJs(
+      shell(), JsReplace("sharedStorage.worklet.addModule($1)", script_url)));
+
+  // There is 1 more "worklet operation": `run()`.
+  test_worklet_host_manager()
+      .GetAttachedWorkletHost()
+      ->SetExpectedWorkletResponsesCount(1);
+
+  EXPECT_TRUE(ExecJs(shell(), R"(
+        sharedStorage.run('get-operation', {data: {'key': 'hello'},
+                                            keepAlive: true});
+      )"));
+
+  test_worklet_host_manager()
+      .GetAttachedWorkletHost()
+      ->WaitForWorkletResponses();
+
+  EXPECT_EQ(2u, console_observer.messages().size());
+  EXPECT_EQ("sharedStorage.length(): 1",
+            base::UTF16ToUTF8(console_observer.messages()[0].message));
+  EXPECT_EQ("sharedStorage.get('hello'): world",
+            base::UTF16ToUTF8(console_observer.messages()[1].message));
+
+  GURL fetch_url = https_server()->GetURL("a.test", kTitle1Path);
+  EXPECT_TRUE(ExecJs(shell(),
+                     JsReplace(R"(
+      fetch($1, {sharedStorageWritable: true});
+    )",
+                               fetch_url.spec()),
+                     EvalJsOptions::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
+
+  response.WaitForRequest();
+  ASSERT_TRUE(base::Contains(response.http_request()->headers,
+                             "Shared-Storage-Writable"));
+  EXPECT_EQ(response.http_request()->content, "");
+  response.Send(
+      /*http_status=*/net::HTTP_OK,
+      /*content_type=*/"text/plain;charset=UTF-8",
+      /*content=*/{}, /*cookies=*/{}, /*extra_headers=*/
+      {"Shared-Storage-Write: \"clear\""});
+
+  ASSERT_TRUE(observer_);
+  observer_->WaitForOperations(1);
+
+  url::Origin fetch_origin = url::Origin::Create(fetch_url);
+  EXPECT_EQ(observer_->header_results().size(), 1u);
+  EXPECT_EQ(observer_->header_results().front().first, fetch_origin);
+  EXPECT_THAT(observer_->header_results().front().second,
+              testing::ElementsAre(true));
+  EXPECT_THAT(observer_->operations(),
+              testing::ElementsAre(
+                  ClearOperation(fetch_origin, OperationResult::kSuccess)));
+
+  response.Done();
+
+  // There is 1 more "worklet operation": `run()`.
+  test_worklet_host_manager()
+      .GetAttachedWorkletHost()
+      ->SetExpectedWorkletResponsesCount(1);
+
+  EXPECT_TRUE(ExecJs(shell(), R"(
+        sharedStorage.run('get-operation', {data: {'key': 'hello'}});
+      )"));
+
+  test_worklet_host_manager()
+      .GetAttachedWorkletHost()
+      ->WaitForWorkletResponses();
+
+  EXPECT_EQ(4u, console_observer.messages().size());
+  EXPECT_EQ("sharedStorage.length(): 0",
+            base::UTF16ToUTF8(console_observer.messages()[2].message));
+  EXPECT_EQ("sharedStorage.get('hello'): undefined",
+            base::UTF16ToUTF8(console_observer.messages()[3].message));
+}
+
+IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
+                       SameOrigin_PermissionsDefault_MultipleSet_Bytes) {
+  net::test_server::ControllableHttpResponse response(https_server(),
+                                                      kTitle1Path);
+  ASSERT_TRUE(https_server()->Start());
+
+  GURL main_url = https_server()->GetURL("a.test", kSimplePagePath);
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  GURL fetch_url = https_server()->GetURL("a.test", kTitle1Path);
+  EXPECT_TRUE(ExecJs(shell(),
+                     JsReplace(R"(
+      fetch($1, {sharedStorageWritable: true});
+    )",
+                               fetch_url.spec()),
+                     EvalJsOptions::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
+
+  response.WaitForRequest();
+  ASSERT_TRUE(base::Contains(response.http_request()->headers,
+                             "Shared-Storage-Writable"));
+  EXPECT_EQ(response.http_request()->content, "");
+  response.Send(
+      /*http_status=*/net::HTTP_OK,
+      /*content_type=*/"text/plain;charset=UTF-8",
+      /*content=*/{}, /*cookies=*/{}, /*extra_headers=*/
+      {"Shared-Storage-Write: set;key=:aGVsbG8=:;value=:d29ybGQ=:, "
+       "set;value=:ZnJpZW5k:;key=:aGVsbG8=:;ignore_if_present=?0, "
+       "set;ignore_if_present;key=hello;value=there"});
+
+  ASSERT_TRUE(observer_);
+  observer_->WaitForOperations(3);
+
+  url::Origin fetch_origin = url::Origin::Create(fetch_url);
+  EXPECT_EQ(observer_->header_results().size(), 1u);
+  EXPECT_EQ(observer_->header_results().front().first, fetch_origin);
+  EXPECT_THAT(observer_->header_results().front().second,
+              testing::ElementsAre(true, true, true));
+  EXPECT_THAT(
+      observer_->operations(),
+      testing::ElementsAre(SetOperation(fetch_origin, "hello", "world",
+                                        absl::nullopt, OperationResult::kSet),
+                           SetOperation(fetch_origin, "hello", "friend", false,
+                                        OperationResult::kSet),
+                           SetOperation(fetch_origin, "hello", "there", true,
+                                        OperationResult::kIgnored)));
+
+  response.Done();
+
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+
+  GURL out_script_url;
+  ExecuteScriptInWorklet(shell(), R"(
+      console.log(await sharedStorage.get('hello'));
+      console.log(await sharedStorage.length());
+    )",
+                         &out_script_url);
+
+  EXPECT_EQ(2u, console_observer.messages().size());
+  EXPECT_EQ("friend",
+            base::UTF16ToUTF8(console_observer.messages()[0].message));
+  EXPECT_EQ("1", base::UTF16ToUTF8(console_observer.messages()[1].message));
+}
+
+IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
+                       NetworkServiceRestarts_HeaderObserverContinuesWorking) {
+  net::test_server::ControllableHttpResponse response(https_server(),
+                                                      kTitle1Path);
+  ASSERT_TRUE(https_server()->Start());
+
+  if (IsInProcessNetworkService()) {
+    return;
+  }
+
+  GURL main_url = https_server()->GetURL("a.test", kSimplePagePath);
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+  ASSERT_TRUE(observer_);
+
+  SimulateNetworkServiceCrash();
+  static_cast<StoragePartitionImpl*>(GetStoragePartition())
+      ->FlushNetworkInterfaceForTesting();
+
+  // We should still have an `observer_`.
+  ASSERT_TRUE(observer_);
+
+  // Fetching with `sharedStorageWritable` works as expected adter network
+  // service restart.
+  GURL fetch_url = https_server()->GetURL("a.test", kTitle1Path);
+  EXPECT_TRUE(ExecJs(shell(),
+                     JsReplace(R"(
+      fetch($1, {sharedStorageWritable: true});
+    )",
+                               fetch_url.spec()),
+                     EvalJsOptions::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
+
+  response.WaitForRequest();
+  ASSERT_TRUE(base::Contains(response.http_request()->headers,
+                             "Shared-Storage-Writable"));
+  EXPECT_EQ(response.http_request()->content, "");
+  response.Send(
+      /*http_status=*/net::HTTP_OK,
+      /*content_type=*/"text/plain;charset=UTF-8",
+      /*content=*/{}, /*cookies=*/{}, /*extra_headers=*/
+      {"Shared-Storage-Write: clear, "
+       "set;key=\"hello\";value=\"world\";ignore_if_present, "
+       "append;key=hello;value=there"});
+
+  ASSERT_TRUE(observer_);
+  observer_->WaitForOperations(3);
+
+  url::Origin fetch_origin = url::Origin::Create(fetch_url);
+  EXPECT_EQ(observer_->header_results().size(), 1u);
+  EXPECT_EQ(observer_->header_results().front().first, fetch_origin);
+  EXPECT_THAT(observer_->header_results().front().second,
+              testing::ElementsAre(true, true, true));
+  EXPECT_THAT(observer_->operations(),
+              testing::ElementsAre(
+                  ClearOperation(fetch_origin, OperationResult::kSuccess),
+                  SetOperation(fetch_origin, "hello", "world", true,
+                               OperationResult::kSet),
+                  AppendOperation(fetch_origin, "hello", "there",
+                                  OperationResult::kSet)));
+
+  response.Done();
+
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+
+  GURL out_script_url;
+  ExecuteScriptInWorklet(shell(), R"(
+      console.log(await sharedStorage.get('hello'));
+      console.log(await sharedStorage.length());
+    )",
+                         &out_script_url);
+
+  EXPECT_EQ(2u, console_observer.messages().size());
+  EXPECT_EQ("worldthere",
+            base::UTF16ToUTF8(console_observer.messages()[0].message));
+  EXPECT_EQ("1", base::UTF16ToUTF8(console_observer.messages()[1].message));
+}
+
+IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
+                       InvalidHeader_NoOperationsInvoked) {
+  net::test_server::ControllableHttpResponse response(https_server(),
+                                                      kTitle1Path);
+  ASSERT_TRUE(https_server()->Start());
+
+  GURL main_url = https_server()->GetURL("a.test", kSimplePagePath);
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  GURL fetch_url = https_server()->GetURL("a.test", kTitle1Path);
+  EXPECT_TRUE(ExecJs(shell(),
+                     JsReplace(R"(
+      fetch($1, {sharedStorageWritable: true});
+    )",
+                               fetch_url.spec()),
+                     EvalJsOptions::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
+
+  response.WaitForRequest();
+  ASSERT_TRUE(base::Contains(response.http_request()->headers,
+                             "Shared-Storage-Writable"));
+  EXPECT_EQ(response.http_request()->content, "");
+  response.Send(
+      /*http_status=*/net::HTTP_OK,
+      /*content_type=*/"text/plain;charset=UTF-8",
+      /*content=*/{}, /*cookies=*/{}, /*extra_headers=*/
+      {"Shared-Storage-Write: clear, invalid?item"});
+
+  // No operations are invoked.
+  ASSERT_TRUE(observer_);
+  EXPECT_TRUE(observer_->header_results().empty());
+  EXPECT_TRUE(observer_->operations().empty());
+
+  response.Done();
+
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+
+  GURL out_script_url;
+  ExecuteScriptInWorklet(shell(), R"(
+      console.log(await sharedStorage.length());
+    )",
+                         &out_script_url);
+
+  EXPECT_EQ(1u, console_observer.messages().size());
+  EXPECT_EQ("0", base::UTF16ToUTF8(console_observer.messages()[0].message));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SharedStorageHeaderObserverBrowserTest,
+    ParsableUnrecognizedItemSkipped_RecognizedOperationsInvoked) {
+  net::test_server::ControllableHttpResponse response(https_server(),
+                                                      kTitle1Path);
+  ASSERT_TRUE(https_server()->Start());
+
+  GURL main_url = https_server()->GetURL("a.test", kSimplePagePath);
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  GURL fetch_url = https_server()->GetURL("a.test", kTitle1Path);
+  EXPECT_TRUE(ExecJs(shell(),
+                     JsReplace(R"(
+      fetch($1, {sharedStorageWritable: true});
+    )",
+                               fetch_url.spec()),
+                     EvalJsOptions::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
+
+  response.WaitForRequest();
+  ASSERT_TRUE(base::Contains(response.http_request()->headers,
+                             "Shared-Storage-Writable"));
+  EXPECT_EQ(response.http_request()->content, "");
+  response.Send(
+      /*http_status=*/net::HTTP_OK,
+      /*content_type=*/"text/plain;charset=UTF-8",
+      /*content=*/{}, /*cookies=*/{}, /*extra_headers=*/
+      {"Shared-Storage-Write: clear, unrecognized;unknown_param=1,"
+       "set;key=\"hello\";value=\"world\";ignore_if_present, "
+       "append;key=hello;value=there"});
+
+  ASSERT_TRUE(observer_);
+  observer_->WaitForOperations(3);
+
+  url::Origin fetch_origin = url::Origin::Create(fetch_url);
+  EXPECT_EQ(observer_->header_results().size(), 1u);
+  EXPECT_EQ(observer_->header_results().front().first, fetch_origin);
+  EXPECT_THAT(observer_->header_results().front().second,
+              testing::ElementsAre(true, true, true));
+  EXPECT_THAT(observer_->operations(),
+              testing::ElementsAre(
+                  ClearOperation(fetch_origin, OperationResult::kSuccess),
+                  SetOperation(fetch_origin, "hello", "world", true,
+                               OperationResult::kSet),
+                  AppendOperation(fetch_origin, "hello", "there",
+                                  OperationResult::kSet)));
+
+  response.Done();
+
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+
+  GURL out_script_url;
+  ExecuteScriptInWorklet(shell(), R"(
+      console.log(await sharedStorage.get('hello'));
+      console.log(await sharedStorage.length());
+    )",
+                         &out_script_url);
+
+  EXPECT_EQ(2u, console_observer.messages().size());
+  EXPECT_EQ("worldthere",
+            base::UTF16ToUTF8(console_observer.messages()[0].message));
+  EXPECT_EQ("1", base::UTF16ToUTF8(console_observer.messages()[1].message));
+}
+
+IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
+                       ExtraParametersIgnored) {
+  net::test_server::ControllableHttpResponse response(https_server(),
+                                                      kTitle1Path);
+  ASSERT_TRUE(https_server()->Start());
+
+  GURL main_url = https_server()->GetURL("a.test", kSimplePagePath);
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  GURL fetch_url = https_server()->GetURL("a.test", kTitle1Path);
+  EXPECT_TRUE(ExecJs(shell(),
+                     JsReplace(R"(
+      fetch($1, {sharedStorageWritable: true});
+    )",
+                               fetch_url.spec()),
+                     EvalJsOptions::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
+
+  response.WaitForRequest();
+  ASSERT_TRUE(base::Contains(response.http_request()->headers,
+                             "Shared-Storage-Writable"));
+  EXPECT_EQ(response.http_request()->content, "");
+  response.Send(
+      /*http_status=*/net::HTTP_OK,
+      /*content_type=*/"text/plain;charset=UTF-8",
+      /*content=*/{}, /*cookies=*/{}, /*extra_headers=*/
+      {"Shared-Storage-Write: clear;unknown_param=1,"
+       "set;another_unknown=willIgnore;key=\"hello\";value=\"world\", "
+       "append;key=extra;key=hello;value=there;ignore_if_present;pi=3.14,"
+       "delete;value=ignored;key=toDelete;ignore_if_present=?0"});
+
+  ASSERT_TRUE(observer_);
+  observer_->WaitForOperations(4);
+
+  url::Origin fetch_origin = url::Origin::Create(fetch_url);
+  EXPECT_EQ(observer_->header_results().size(), 1u);
+  EXPECT_EQ(observer_->header_results().front().first, fetch_origin);
+  EXPECT_THAT(observer_->header_results().front().second,
+              testing::ElementsAre(true, true, true, true));
+  EXPECT_THAT(observer_->operations(),
+              testing::ElementsAre(
+                  ClearOperation(fetch_origin, OperationResult::kSuccess),
+                  SetOperation(fetch_origin, "hello", "world", absl::nullopt,
+                               OperationResult::kSet),
+                  AppendOperation(fetch_origin, "hello", "there",
+                                  OperationResult::kSet),
+                  DeleteOperation(fetch_origin, "toDelete",
+                                  OperationResult::kSuccess)));
+
+  response.Done();
+
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+
+  GURL out_script_url;
+  ExecuteScriptInWorklet(shell(), R"(
+      console.log(await sharedStorage.get('hello'));
+      console.log(await sharedStorage.length());
+    )",
+                         &out_script_url);
+
+  EXPECT_EQ(2u, console_observer.messages().size());
+  EXPECT_EQ("worldthere",
+            base::UTF16ToUTF8(console_observer.messages()[0].message));
+  EXPECT_EQ("1", base::UTF16ToUTF8(console_observer.messages()[1].message));
+}
+
+IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
+                       KeyOrValueLengthInvalid_ItemSkipped) {
+  net::test_server::ControllableHttpResponse response(https_server(),
+                                                      kTitle1Path);
+  ASSERT_TRUE(https_server()->Start());
+
+  GURL main_url = https_server()->GetURL("a.test", kSimplePagePath);
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  GURL fetch_url = https_server()->GetURL("a.test", kTitle1Path);
+  EXPECT_TRUE(ExecJs(shell(),
+                     JsReplace(R"(
+      fetch($1, {sharedStorageWritable: true});
+    )",
+                               fetch_url.spec()),
+                     EvalJsOptions::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
+
+  response.WaitForRequest();
+  ASSERT_TRUE(base::Contains(response.http_request()->headers,
+                             "Shared-Storage-Writable"));
+  EXPECT_EQ(response.http_request()->content, "");
+
+  std::string long_str(1025, 'x');
+  response.Send(
+      /*http_status=*/net::HTTP_OK,
+      /*content_type=*/"text/plain;charset=UTF-8",
+      /*content=*/{}, /*cookies=*/{}, /*extra_headers=*/
+      {base::StrCat(
+          {"Shared-Storage-Write: clear, set;key=", long_str,
+           ";value=v,set;key=k;value=", long_str, ",append;key=k;value=",
+           long_str, ",append;key=", long_str, ";value=v,delete;key=", long_str,
+           ",set;key=\"\";value=v,append;key=\"\";value=v,delete;key=\"\","
+           "clear"})});
+
+  ASSERT_TRUE(observer_);
+  observer_->WaitForOperations(2);
+
+  url::Origin fetch_origin = url::Origin::Create(fetch_url);
+  EXPECT_EQ(observer_->header_results().size(), 1u);
+  EXPECT_EQ(observer_->header_results().front().first, fetch_origin);
+  EXPECT_THAT(observer_->header_results().front().second,
+              testing::ElementsAre(true, false, false, false, false, false,
+                                   false, false, false, true));
+  EXPECT_THAT(observer_->operations(),
+              testing::ElementsAre(
+                  ClearOperation(fetch_origin, OperationResult::kSuccess),
+                  ClearOperation(fetch_origin, OperationResult::kSuccess)));
+
+  response.Done();
+
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+
+  GURL out_script_url;
+  ExecuteScriptInWorklet(shell(), R"(
+      console.log(await sharedStorage.length());
+    )",
+                         &out_script_url);
+
+  EXPECT_EQ(1u, console_observer.messages().size());
+  EXPECT_EQ("0", base::UTF16ToUTF8(console_observer.messages()[0].message));
 }
 
 }  // namespace content
