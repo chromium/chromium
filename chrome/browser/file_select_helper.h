@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
+#include "components/enterprise/buildflags/buildflags.h"
 #include "components/enterprise/common/files_scan_data.h"
 #include "components/safe_browsing/buildflags.h"
 #include "content/public/browser/browser_thread.h"
@@ -21,7 +22,7 @@
 #include "third_party/blink/public/mojom/choosers/file_chooser.mojom.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 
-#if BUILDFLAG(FULL_SAFE_BROWSING)
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate.h"
 #endif
 
@@ -211,8 +212,10 @@ class FileSelectHelper : public base::RefCountedThreadSafe<
   // platform, this function calls NotifyListenerAndEnd() directly.
   //
   // ContentAnalysisCompletionCallback: processes the results of the deep scan.
-  // Any files that did not pass the scan are removed from the list.  Ends by
-  // calling NotifyListenerAndEnd().
+  // For folder upload, any files not passing the scan result in the entire
+  // folder being blocked (the list cleared). For multiple-file upload, any
+  // files that did not pass the scan are removed from the list. Ends by calling
+  // NotifyListenerAndEnd().
   //
   // NotifyListenerAndEnd: Informs the listener of the final list of files to
   // use and performs any required cleanup.
@@ -228,31 +231,10 @@ class FileSelectHelper : public base::RefCountedThreadSafe<
   void PerformContentAnalysisIfNeeded(
       std::vector<blink::mojom::FileChooserFileInfoPtr> list);
 
-#if BUILDFLAG(FULL_SAFE_BROWSING)
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
   // Callback used to receive the results of a content analysis scan.
   void ContentAnalysisCompletionCallback(
       std::vector<blink::mojom::FileChooserFileInfoPtr> list,
-      const enterprise_connectors::ContentAnalysisDelegate::Data& data,
-      enterprise_connectors::ContentAnalysisDelegate::Result& result);
-#endif
-
-  // Perform a content analysis when using the file selection helper in
-  // folder selection mode.  In this case, if any one file would be blocked,
-  // the entire folder should be blocked.
-  void PerformContentAnalysisForFolderUploadIfNeeded(
-      const base::FilePath& path);
-
-#if BUILDFLAG(FULL_SAFE_BROWSING)
-  // Callback used with the FilesScanData class to calculate the files
-  // required for scanning during folder upload.
-  void ScanDataCallback(
-      const base::FilePath& path,
-      std::unique_ptr<enterprise_connectors::FilesScanData> files_scan_data);
-
-  // Callback used to receive the results of a content analysis scan
-  // when doing a folder upload.
-  void FolderUploadContentAnalysisCompletionCallback(
-      const base::FilePath& path,
       const enterprise_connectors::ContentAnalysisDelegate::Data& data,
       enterprise_connectors::ContentAnalysisDelegate::Result& result);
 #endif
@@ -279,8 +261,6 @@ class FileSelectHelper : public base::RefCountedThreadSafe<
       scoped_refptr<content::FileSelectListener> listener);
 
   void DontAbortOnMissingWebContentsForTesting();
-
-  bool IsDirectoryEnumerationStartedForTesting();
 
   // Helper method to get allowed extensions for select file dialog from
   // the specified accept types as defined in the spec:
