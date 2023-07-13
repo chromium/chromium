@@ -81,6 +81,8 @@ class PrintBrowserTest : public InProcessBrowserTest {
   }
 
  private:
+  void PrintAndWaitUntilPreviewIsReadyAndMaybeLoaded(const PrintParams& params,
+                                                     bool wait_for_loaded);
   TestPrintRenderFrame* GetFrameContent(content::RenderFrameHost* host) const;
   void OverrideBinderForTesting(content::RenderFrameHost* render_frame_host);
   void ShowPrintErrorDialog();

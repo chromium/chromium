@@ -486,18 +486,8 @@ void PrintBrowserTest::PrintAndWaitUntilPreviewIsReady() {
 
 void PrintBrowserTest::PrintAndWaitUntilPreviewIsReady(
     const PrintParams& params) {
-  TestPrintPreviewObserver print_preview_observer(/*wait_for_loaded=*/false,
-                                                  params.pages_per_sheet);
-
-  StartPrint(browser()->tab_strip_model()->GetActiveWebContents(),
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-             /*print_renderer=*/mojo::NullAssociatedRemote(),
-#endif
-             /*print_preview_disabled=*/false, params.print_only_selection);
-
-  print_preview_observer.WaitUntilPreviewIsReady();
-
-  set_rendered_page_count(print_preview_observer.rendered_page_count());
+  PrintAndWaitUntilPreviewIsReadyAndMaybeLoaded(params,
+                                                /*wait_for_loaded=*/false);
 }
 
 void PrintBrowserTest::PrintAndWaitUntilPreviewIsReadyAndLoaded() {
@@ -507,7 +497,14 @@ void PrintBrowserTest::PrintAndWaitUntilPreviewIsReadyAndLoaded() {
 
 void PrintBrowserTest::PrintAndWaitUntilPreviewIsReadyAndLoaded(
     const PrintParams& params) {
-  TestPrintPreviewObserver print_preview_observer(/*wait_for_loaded=*/true,
+  PrintAndWaitUntilPreviewIsReadyAndMaybeLoaded(params,
+                                                /*wait_for_loaded=*/true);
+}
+
+void PrintBrowserTest::PrintAndWaitUntilPreviewIsReadyAndMaybeLoaded(
+    const PrintParams& params,
+    bool wait_for_loaded) {
+  TestPrintPreviewObserver print_preview_observer(wait_for_loaded,
                                                   params.pages_per_sheet);
 
   StartPrint(browser()->tab_strip_model()->GetActiveWebContents(),
@@ -521,8 +518,8 @@ void PrintBrowserTest::PrintAndWaitUntilPreviewIsReadyAndLoaded(
   set_rendered_page_count(print_preview_observer.rendered_page_count());
 }
 
-  // The following are helper functions for having a wait loop in the test and
-  // exit when all expected messages are received.
+// The following are helper functions for having a wait loop in the test and
+// exit when all expected messages are received.
 void PrintBrowserTest::SetNumExpectedMessages(unsigned int num) {
   num_expected_messages_ = num;
 }
