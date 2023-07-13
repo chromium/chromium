@@ -7,8 +7,6 @@
 #include <utility>
 #include <vector>
 
-#include "components/performance_manager/public/features.h"
-#include "components/performance_manager/public/graph/page_node.h"
 #include "components/performance_manager/public/graph/process_node.h"
 
 namespace performance_manager::user_tuning {
@@ -64,20 +62,6 @@ void UserPerformanceTuningNotifier::OnTypeChanged(const PageNode* page_node,
     --tab_count_;
   } else {
     MaybeAddTabAndNotify(page_node);
-  }
-}
-
-void UserPerformanceTuningNotifier::OnLoadingStateChanged(
-    const PageNode* page_node,
-    PageNode::LoadingState previous_state) {
-  if (features::kMemoryUsageInHovercardsUpdateOnNavigation.Get() &&
-      page_node->GetType() == PageType::kTab &&
-      page_node->GetLoadingState() == PageNode::LoadingState::kLoadedIdle) {
-    auto* metrics_decorator =
-        page_node->GetGraph()
-            ->GetRegisteredObjectAs<
-                performance_manager::ProcessMetricsDecorator>();
-    metrics_decorator->RequestImmediateMetrics();
   }
 }
 
