@@ -3802,7 +3802,7 @@ crbug.com/807110 external/wpt/html/semantics/embedded-content/media-elements/mim
 crbug.com/807110 external/wpt/media-source/mediasource-addsourcebuffer.html [ Failure Pass ]
 crbug.com/807110 external/wpt/media-source/mediasource-buffered.html [ Failure Pass ]
 crbug.com/807110 [ Release Win ] external/wpt/media-source/mediasource-config-change-mp4-a-bitrate.html [ Failure Pass ]
-crbug.com/807110 external/wpt/media-source/mediasource-config-change-mp4-v-bitrate.html [ Failure Pass Timeout ]
+crbug.com/807110 [ Release Win ] external/wpt/media-source/mediasource-config-change-mp4-v-bitrate.html [ Failure Pass Timeout ]
 crbug.com/807110 [ Release Win ] external/wpt/media-source/mediasource-config-change-mp4-v-framerate.html [ Failure Pass Timeout ]
 # Failure and Pass for crbug.com/807110 and Timeout for crbug.com/727252.
 crbug.com/727252 external/wpt/media-source/mediasource-endofstream.html [ Failure Pass Timeout ]
@@ -3953,8 +3953,6 @@ crbug.com/933880 http/tests/inspector-protocol/network/xhr-interception-auth-fai
 # enabled this fails in both content_shell and chrome.
 crbug.com/933880 http/tests/misc/redirect-to-about-blank.html [ Failure Timeout ]
 
-# Sheriff 2019-02-22
-crbug.com/934636 http/tests/security/cross-origin-indexeddb-allowed.html [ Crash Pass ]
 
 # Sheriff 2019-02-28
 
@@ -5304,7 +5302,6 @@ crbug.com/1295707 http/tests/devtools/elements/elements-treeoutline-copy.js [ Fa
 crbug.com/1293714 external/wpt/css/selectors/invalidation/has-complexity.html [ Crash Failure Pass Timeout ]
 
 # Sheriff 2022-02-22
-crbug.com/1299858 [ Win ] http/tests/fetch/serviceworker/thorough/redirect-nocors-base-https-other-https.html [ Pass Timeout ]
 crbug.com/1299948 [ Mac10.15 Release ] external/wpt/css/css-tables/crashtests/textarea-intrinsic-size-crash.html [ Pass Timeout ]
 crbug.com/1299948 [ Mac11 Release ] external/wpt/css/css-tables/crashtests/textarea-intrinsic-size-crash.html [ Pass Timeout ]
 crbug.com/1299948 [ Mac12 ] external/wpt/css/css-tables/crashtests/textarea-intrinsic-size-crash.html [ Pass Timeout ]
@@ -5509,7 +5506,8 @@ external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-re
 
 crbug.com/1340716 [ Linux ] accessibility/notification-listeners.html [ Crash Failure Pass Timeout ]
 crbug.com/1340716 [ Win ] accessibility/notification-listeners.html [ Failure ]
-crbug.com/1452191 [ Mac ] accessibility/notification-listeners.html [ Failure ]
+crbug.com/1452191 [ Debug Mac13 ] accessibility/notification-listeners.html [ Failure ]
+crbug.com/1452191 [ Mac Release ] accessibility/notification-listeners.html [ Failure ]
 
 # Sheriff 2022-06-30
 crbug.com/1340781 fullscreen/full-screen-table-section.html [ Crash Failure Pass Timeout ]
@@ -5715,7 +5713,6 @@ crbug.com/1395840 [ Mac12 Release ] http/tests/accessibility/slow-document-load.
 crbug.com/1406027 [ Win ] virtual/media-foundation-for-clear-dcomp/media/controls/overflow-menu-hide-on-resize.html [ Failure ]
 crbug.com/1289607 [ Linux ] external/wpt/cookie-store/cookieStore_subscribe_arguments.https.any.html [ Failure ]
 crbug.com/1408294 [ Debug Linux ] virtual/gpu/external/wpt/mediacapture-record/MediaRecorder-canvas-media-source.https.html [ Failure ]
-crbug.com/1392781 [ Win ] http/tests/fetch/serviceworker/thorough/auth-base-https-other-https.html [ Crash Failure Pass Timeout ]
 crbug.com/1229708 [ Debug Linux ] fast/events/pointerevents/pointer-event-in-slop-region.html [ Failure ]
 crbug.com/1406896 [ Linux ] http/tests/inspector-protocol/cpu-profiler/record-cpu-profile-with-cpu-throttling.js [ Crash ]
 crbug.com/1370749 [ Debug Linux ] virtual/threaded-no-composited-antialiasing/animations/add-keyframes-recalc.html [ Failure ]
