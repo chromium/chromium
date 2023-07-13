@@ -387,7 +387,7 @@ class NET_EXPORT_PRIVATE BackendImpl : public Backend {
   bool CheckEntry(EntryImpl* cache_entry);
 
   // Returns the maximum total memory for the memory buffers.
-  int MaxBuffersSize();
+  static int MaxBuffersSize();
 
   // We want this destroyed after every other field.
   scoped_refptr<BackendCleanupTracker> cleanup_tracker_;

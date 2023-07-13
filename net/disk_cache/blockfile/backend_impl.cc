@@ -4,6 +4,7 @@
 
 #include "net/disk_cache/blockfile/backend_impl.h"
 
+#include <algorithm>
 #include <limits>
 #include <memory>
 #include <utility>
@@ -1977,21 +1978,21 @@ bool BackendImpl::CheckEntry(EntryImpl* cache_entry) {
   return ok && cache_entry->rankings()->VerifyHash();
 }
 
+// static
 int BackendImpl::MaxBuffersSize() {
-  static uint64_t total_memory = base::SysInfo::AmountOfPhysicalMemory();
-  static bool done = false;
+  // Calculate based on total memory the first time this function is called,
+  // then cache the result.
+  static const int max_buffers_size = ([]() {
+    constexpr uint64_t kMaxMaxBuffersSize = 30 * 1024 * 1024;
+    const uint64_t total_memory = base::SysInfo::AmountOfPhysicalMemory();
+    if (total_memory == 0u) {
+      return int{kMaxMaxBuffersSize};
+    }
+    const uint64_t two_percent = total_memory * 2 / 100;
+    return static_cast<int>(std::min(two_percent, kMaxMaxBuffersSize));
+  })();
 
-  if (!done) {
-    done = true;
-
-    // We want to use up to 2% of the computer's memory, limit 30 MB.
-    total_memory = total_memory * 2 / 100;
-    constexpr uint64_t kMaxBuffersSize = 30 * 1024 * 1024;
-    if (total_memory > kMaxBuffersSize || total_memory == 0)
-      total_memory = kMaxBuffersSize;
-  }
-
-  return static_cast<int>(total_memory);
+  return max_buffers_size;
 }
 
 void BackendImpl::FlushForTesting() {
