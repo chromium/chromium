@@ -386,10 +386,16 @@
   E_CPONLY(kColorSegmentedButtonChecked) \
   E_CPONLY(kColorSeparator) \
   E_CPONLY(kColorShadowBase) \
+  E_CPONLY(kColorShadowValueAmbientShadowElevationFour) \
   E_CPONLY(kColorShadowValueAmbientShadowElevationSixteen) \
   E_CPONLY(kColorShadowValueAmbientShadowElevationThree) \
+  E_CPONLY(kColorShadowValueAmbientShadowElevationTwelve) \
+  E_CPONLY(kColorShadowValueAmbientShadowElevationTwentyFour) \
+  E_CPONLY(kColorShadowValueKeyShadowElevationFour) \
   E_CPONLY(kColorShadowValueKeyShadowElevationSixteen) \
   E_CPONLY(kColorShadowValueKeyShadowElevationThree) \
+  E_CPONLY(kColorShadowValueKeyShadowElevationTwelve) \
+  E_CPONLY(kColorShadowValueKeyShadowElevationTwentyFour) \
   E_CPONLY(kColorSidePanelComboboxBorder) \
   E_CPONLY(kColorSidePanelComboboxBackground) \
   E_CPONLY(kColorSliderThumb) \

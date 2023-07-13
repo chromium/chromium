@@ -26,7 +26,9 @@ namespace ash {
 namespace {
 
 constexpr int kAlpha8 = SK_AlphaOPAQUE * 0.08f;
+constexpr int kAlpha10 = SK_AlphaOPAQUE * 0.1f;
 constexpr int kAlpha20 = SK_AlphaOPAQUE * 0.2f;
+constexpr int kAlpha24 = SK_AlphaOPAQUE * 0.24f;
 constexpr int kAlpha25 = SK_AlphaOPAQUE * 0.25f;
 constexpr int kAlpha40 = SK_AlphaOPAQUE * 0.4f;
 constexpr int kAlpha60 = SK_AlphaOPAQUE * 0.6f;
@@ -716,6 +718,32 @@ void AddAshColorMixer(ui::ColorProvider* provider,
     mixer[ui::kColorRadioButtonForegroundUnchecked] = {
         cros_tokens::kCrosSysSecondary};
   }
+
+  // Ambient shadow colors.
+  mixer[ui::kColorShadowValueAmbientShadowElevationFour] =
+      is_jelly_enabled
+          ? ui::SetAlpha(
+                use_dark_color
+                    ? static_cast<ui::ColorId>(cros_tokens::kCrosRefNeutral0)
+                    : static_cast<ui::ColorId>(cros_tokens::kCrosSysShadow),
+                kAlpha10)
+          : ui::SetAlpha(SK_ColorBLACK, kAlpha10);
+  mixer[ui::kColorShadowValueAmbientShadowElevationTwelve] = {
+      ui::kColorShadowValueAmbientShadowElevationFour};
+  mixer[ui::kColorShadowValueAmbientShadowElevationTwentyFour] =
+      is_jelly_enabled
+          ? ui::SetAlpha(cros_tokens::kCrosSysShadow, kAlpha10)
+          : ui::ColorTransform(ui::kColorShadowValueAmbientShadowElevationFour);
+
+  // Key shadow colors.
+  int key_shadow_opacity = is_jelly_enabled ? kAlpha20 : kAlpha24;
+  mixer[ui::kColorShadowValueKeyShadowElevationFour] = ui::SetAlpha(
+      ui::kColorShadowValueAmbientShadowElevationFour, key_shadow_opacity);
+  mixer[ui::kColorShadowValueKeyShadowElevationTwelve] = ui::SetAlpha(
+      ui::kColorShadowValueAmbientShadowElevationTwelve, key_shadow_opacity);
+  mixer[ui::kColorShadowValueKeyShadowElevationTwentyFour] =
+      ui::SetAlpha(ui::kColorShadowValueAmbientShadowElevationTwentyFour,
+                   key_shadow_opacity);
 
   mixer[ui::kColorToggleButtonThumbOn] = {cros_tokens::kCrosSysOnPrimary};
   mixer[ui::kColorToggleButtonThumbOff] = {cros_tokens::kCrosSysOnSecondary};

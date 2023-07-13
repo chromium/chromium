@@ -21,8 +21,9 @@
 #include "ui/aura/window_observer.h"
 #include "ui/base/class_property.h"
 #include "ui/base/ui_base_types.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
-#include "ui/compositor_extra/shadow.h"
 #include "ui/wm/core/shadow_controller_delegate.h"
 #include "ui/wm/core/shadow_types.h"
 #include "ui/wm/core/window_util.h"
@@ -313,6 +314,21 @@ ShadowController::Impl::GetInstances() {
 
 ui::Shadow* ShadowController::GetShadowForWindow(aura::Window* window) {
   return window->GetProperty(kShadowLayerKey);
+}
+
+ui::Shadow::ElevationToColorsMap ShadowController::GenerateShadowColorsMap(
+    const ui::ColorProvider* color_provider) {
+  ui::Shadow::ElevationToColorsMap color_map;
+  color_map[kShadowElevationInactiveWindow] = std::make_pair(
+      color_provider->GetColor(ui::kColorShadowValueKeyShadowElevationTwelve),
+      color_provider->GetColor(
+          ui::kColorShadowValueAmbientShadowElevationTwelve));
+  color_map[kShadowElevationActiveWindow] = std::make_pair(
+      color_provider->GetColor(
+          ui::kColorShadowValueKeyShadowElevationTwentyFour),
+      color_provider->GetColor(
+          ui::kColorShadowValueAmbientShadowElevationTwentyFour));
+  return color_map;
 }
 
 ShadowController::ShadowController(

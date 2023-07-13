@@ -230,10 +230,23 @@ void AddUiColorMixer(ColorProvider* provider, const ColorProviderKey& key) {
       SetAlpha(kColorShadowBase, 0x40);
   mixer[kColorShadowValueKeyShadowElevationThree] =
       SetAlpha(kColorShadowBase, 0x66);
+  mixer[kColorShadowValueAmbientShadowElevationFour] =
+      SetAlpha(SK_ColorBLACK, 0x3d);
+  mixer[kColorShadowValueKeyShadowElevationFour] =
+      SetAlpha(SK_ColorBLACK, 0x1f);
+  mixer[kColorShadowValueAmbientShadowElevationTwelve] = {
+      kColorShadowValueAmbientShadowElevationFour};
+  mixer[kColorShadowValueKeyShadowElevationTwelve] = {
+      kColorShadowValueKeyShadowElevationFour};
   mixer[kColorShadowValueAmbientShadowElevationSixteen] =
       SetAlpha(kColorShadowBase, 0x3d);
   mixer[kColorShadowValueKeyShadowElevationSixteen] =
       SetAlpha(kColorShadowBase, 0x1a);
+  mixer[kColorShadowValueAmbientShadowElevationTwentyFour] = {
+      kColorShadowValueAmbientShadowElevationFour};
+  mixer[kColorShadowValueKeyShadowElevationTwentyFour] = {
+      kColorShadowValueKeyShadowElevationFour};
+
   mixer[kColorSidePanelComboboxBorder] = {SK_ColorTRANSPARENT};
   mixer[kColorSidePanelComboboxBackground] = {kColorSubtleEmphasisBackground};
   mixer[kColorSliderThumb] =
