@@ -9,7 +9,7 @@
 
 #include "base/at_exit.h"
 #include "base/i18n/icu_util.h"
-#include "components/password_manager/core/browser/form_parsing/form_parser.h"
+#include "components/password_manager/core/browser/form_parsing/form_data_parser.h"
 #include "components/password_manager/core/browser/form_parsing/fuzzer/form_data_essentials.pb.h"
 #include "components/password_manager/core/browser/form_parsing/fuzzer/form_data_proto_producer.h"
 #include "components/password_manager/core/browser/password_form.h"
