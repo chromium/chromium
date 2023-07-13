@@ -183,7 +183,8 @@ var NewTabPageRealboxTest = class extends NewTabPageBrowserTest {
   }
 };
 
-TEST_F('NewTabPageRealboxTest', 'All', function() {
+// TODO(crbug.com/1431290): Test is flaky across platforms.
+TEST_F('NewTabPageRealboxTest', 'DISABLED_All', function() {
   mocha.run();
 });
 
