@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_DOM_NODE_PART_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_NODE_PART_H_
 
-#include "third_party/blink/renderer/bindings/core/v8/v8_node_part_init.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_part_init.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/node.h"
@@ -24,9 +24,9 @@ class CORE_EXPORT NodePart : public Part {
  public:
   static NodePart* Create(PartRootUnion* root_union,
                           Node* node,
-                          const NodePartInit* init,
+                          const PartInit* init,
                           ExceptionState& exception_state);
-  NodePart(PartRoot& root, Node& node, const NodePartInit* init)
+  NodePart(PartRoot& root, Node& node, const PartInit* init)
       : NodePart(root,
                  node,
                  init && init->hasMetadata() ? init->metadata()

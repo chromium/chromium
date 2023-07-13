@@ -7,10 +7,6 @@
 
 [RuntimeEnabled=DOMPartsAPI,Exposed=Window]
 interface NodePart : Part {
-  [RaisesException] constructor(PartRoot root, Node node, optional NodePartInit init = {});
+  [RaisesException] constructor(PartRoot root, Node node, optional PartInit init = {});
   readonly attribute Node node;
-};
-
-dictionary NodePartInit {
-  FrozenArray<DOMString> metadata;
 };

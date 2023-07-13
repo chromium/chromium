@@ -11,3 +11,9 @@ interface Part {
   readonly attribute FrozenArray<DOMString> metadata;
   void disconnect();
 };
+
+// While Part is not directly constructible, PartInit is used to initialize
+// the subclasses of Part.
+dictionary PartInit {
+  FrozenArray<DOMString> metadata;
+};

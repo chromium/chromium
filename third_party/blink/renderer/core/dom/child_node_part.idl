@@ -7,7 +7,7 @@
 
 [RuntimeEnabled=DOMPartsAPI,Exposed=Window]
 interface ChildNodePart : Part {
-  [RaisesException] constructor(PartRoot root, Node previousSibling, Node nextSibling, optional NodePartInit init = {});
+  [RaisesException] constructor(PartRoot root, Node previousSibling, Node nextSibling, optional PartInit init = {});
   readonly attribute Node previousSibling;
   readonly attribute Node nextSibling;
   readonly attribute FrozenArray<Node> children;

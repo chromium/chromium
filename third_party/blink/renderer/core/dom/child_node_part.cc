@@ -15,7 +15,7 @@ namespace blink {
 ChildNodePart* ChildNodePart::Create(PartRootUnion* root_union,
                                      Node* previous_sibling,
                                      Node* next_sibling,
-                                     const NodePartInit* init,
+                                     const PartInit* init,
                                      ExceptionState& exception_state) {
   return MakeGarbageCollected<ChildNodePart>(*GetPartRootFromUnion(root_union),
                                              *previous_sibling, *next_sibling,

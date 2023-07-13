@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_DOM_CHILD_NODE_PART_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_CHILD_NODE_PART_H_
 
-#include "third_party/blink/renderer/bindings/core/v8/v8_node_part_init.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_part_init.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_node_string_trustedscript.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/container_node.h"
@@ -29,12 +29,12 @@ class CORE_EXPORT ChildNodePart : public Part, public PartRoot {
   static ChildNodePart* Create(PartRootUnion* root_union,
                                Node* previous_sibling,
                                Node* next_sibling,
-                               const NodePartInit* init,
+                               const PartInit* init,
                                ExceptionState& exception_state);
   ChildNodePart(PartRoot& root,
                 Node& previous_sibling,
                 Node& next_sibling,
-                const NodePartInit* init)
+                const PartInit* init)
       : ChildNodePart(root,
                       previous_sibling,
                       next_sibling,
