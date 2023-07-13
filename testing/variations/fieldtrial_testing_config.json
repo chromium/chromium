@@ -12620,7 +12620,7 @@
             ]
         }
     ],
-    "SidePanelCompanion": [
+    "SidePanelCompanionDesktop": [
         {
             "platforms": [
                 "chromeos",
