@@ -2941,6 +2941,10 @@ bool IsFastPairDebugMetadataEnabled() {
   return base::FeatureList::IsEnabled(kFastPairDebugMetadata);
 }
 
+bool IsFastPairDevicesBluetoothSettingsEnabled() {
+  return base::FeatureList::IsEnabled(kFastPairDevicesBluetoothSettings);
+}
+
 bool IsFastPairHandshakeRefactorEnabled() {
   return base::FeatureList::IsEnabled(kFastPairHandshakeRefactor);
 }
