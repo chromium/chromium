@@ -4,6 +4,7 @@
 
 #include "android_webview/browser/aw_browser_main_parts.h"
 
+#include <sys/system_properties.h>
 #include <memory>
 #include <set>
 #include <string>
@@ -50,6 +51,7 @@
 #include "components/variations/synthetic_trials_active_group_id_provider.h"
 #include "components/variations/variations_crash_keys.h"
 #include "components/variations/variations_ids_provider.h"
+#include "components/version_info/version_info_values.h"
 #include "content/public/browser/android/synchronous_compositor.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -65,6 +67,33 @@
 #include "ui/gl/gl_surface.h"
 
 namespace android_webview {
+
+namespace {
+// Return true if the version code indicates the bundle is primarily 64-bit
+// (even if it may have 32-bit bits).
+bool Is64bitAccordingToVersionCode(const std::string& version_code) {
+  // Primary bitness of the bundle is encoded in the last digit of the version
+  // code.
+  //
+  // From build/util/android_chrome_version.py:
+  //       'arm': {
+  //          '32': 0,
+  //          '32_64': 1,
+  //          '64_32': 2,
+  //          '64_32_high': 3,
+  //          '64': 4,
+  //      },
+  //      'intel': {
+  //          '32': 6,
+  //          '32_64': 7,
+  //          '64_32': 8,
+  //          '64': 9,
+  //      },
+  std::set<char> arch_codes_64bit = {'2', '3', '4', '8', '9'};
+  char arch_code = version_code.back();
+  return arch_codes_64bit.count(arch_code) > 0;
+}
+}  // namespace
 
 AwBrowserMainParts::AwBrowserMainParts(AwContentBrowserClient* browser_client)
     : browser_client_(browser_client) {
@@ -170,6 +199,48 @@ void AwBrowserMainParts::RegisterSyntheticTrials() {
   AwMetricsServiceAccessor::RegisterSyntheticFieldTrial(
       metrics, kWebViewApkTypeTrial, apk_type_string,
       variations::SyntheticTrialAnnotationMode::kNextLog);
+
+  // Set up experiment for 64-bit WebView.
+  //
+  // We are specifically interested in devices that meet all of these criteria:
+  // 1) Devices with 4&6GB RAM, as we're launching the feature only for those
+  //    (using (3.2;6.5) range to match RAM targeting in Play).
+  // 2) Devices with only one Android profile (work versus personal), as having
+  //    multiple profiles is a source of a population bias (so is having
+  //    multiple users, but that bias is known to be small, and they're hard to
+  //    filter out).
+  // 3) Mixed 32-/64-bit devices, as non-mixed devices are forced to use
+  //    a particular bitness, thus don't participate in the experiment.
+  // TODO(crbug.com/1462131): Implement #2 for WebView.
+  size_t ram_mb = base::SysInfo::AmountOfPhysicalMemoryMB();
+  char abilist32[PROP_VALUE_MAX];
+  char abilist64[PROP_VALUE_MAX];
+  bool has_abilist32 =
+      __system_property_get("ro.vendor.product.cpu.abilist32", abilist32) > 0;
+  bool has_abilist64 =
+      __system_property_get("ro.vendor.product.cpu.abilist64", abilist64) > 0;
+  bool is_device_of_interest = (3.2 * 1024 < ram_mb && ram_mb < 6.5 * 1024) &&
+                               (has_abilist32 && has_abilist64);
+  if (is_device_of_interest) {
+    std::string trial_group;
+    // We can't use defined(ARCH_CPU_64_BITS) on WebView, because bitness of
+    // Browser doesn't have to match the bitness of the bundle. Browser always
+    // follows bitness of the app, whereas Renderer follows bitness of the
+    // bundle.
+    if (Is64bitAccordingToVersionCode(
+            base::android::BuildInfo::GetInstance()->package_version_code())) {
+      trial_group = "64bit";
+    } else {
+      trial_group = "32bit";
+    }
+    AwMetricsServiceAccessor::RegisterSyntheticFieldTrial(
+        metrics, "BitnessForMidRangeRAM", trial_group,
+        variations::SyntheticTrialAnnotationMode::kCurrentLog);
+    AwMetricsServiceAccessor::RegisterSyntheticFieldTrial(
+        metrics, "BitnessForMidRangeRAM_wVersion",
+        std::string(PRODUCT_VERSION) + "_" + trial_group,
+        variations::SyntheticTrialAnnotationMode::kCurrentLog);
+  }
 }
 
 int AwBrowserMainParts::PreMainMessageLoopRun() {
