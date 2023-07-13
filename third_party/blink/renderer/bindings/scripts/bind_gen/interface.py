@@ -1810,8 +1810,7 @@ def make_v8_set_return_value(cg_context):
                  "${blink_receiver});")
 
     if return_type.is_promise:
-        return T("bindings::V8SetReturnValue"
-                 "(${info}, ${return_value}.V8Value());")
+        return T("bindings::V8SetReturnValue(${info}, ${return_value});")
 
     return T("bindings::V8SetReturnValue(${info}, ${v8_return_value});")
 

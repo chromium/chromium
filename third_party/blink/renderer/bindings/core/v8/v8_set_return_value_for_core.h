@@ -7,6 +7,7 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/js_event_handler.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/platform/bindings/v8_set_return_value.h"
 
@@ -23,6 +24,12 @@ void V8SetReturnValue(const CallbackInfo& info,
   // ScriptValue regardless of their Web IDL type since they perform `ToV8` on
   // their side.  The use of `V8Value` (instead of `V8ValueFor`) must be fine
   // because the value must be created in the current world.
+  V8SetReturnValue(info, value.V8Value());
+}
+
+// ScriptPromise
+template <typename CallbackInfo>
+void V8SetReturnValue(const CallbackInfo& info, const ScriptPromise& value) {
   V8SetReturnValue(info, value.V8Value());
 }
 
