@@ -26,6 +26,9 @@ or waste time with redundant reviews.
 Please also read [Respectful Changes](cl_respect.md) and
 [Respectful Code Reviews](cr_respect.md).
 
+There are also a [collection of tips](cl_tips.md) for productive reviews, though
+these are advisory and not policy.
+
 #### Expectations for all reviewers
 
   * Aim to provide some kind of actionable response within 24 hours of receipt
