@@ -312,7 +312,7 @@
     "includes": [3220],
   },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/password_manager/resources.grd": {
-    "META": {"sizes": {"includes": [100]}},
+    "META": {"sizes": {"includes": [200]}},
     "includes": [3240],
   },
   "chrome/browser/resources/preinstalled_web_apps/resources.grd": {
