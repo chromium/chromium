@@ -39,4 +39,8 @@ BASE_FEATURE(kNearbySharingWifiLan,
              "NearbySharingWifiLan",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+bool IsSelfShareEnabled() {
+  return base::FeatureList::IsEnabled(kNearbySharingSelfShare);
+}
+
 }  // namespace features
