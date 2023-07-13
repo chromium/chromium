@@ -20,6 +20,8 @@
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "chromeos/lacros/lacros_service.h"
 #include "components/policy/policy_constants.h"
+#include "components/reporting/proto/synced/record.pb.h"
+#include "components/version_info/version_info.h"
 
 namespace reporting::metrics {
 namespace {
@@ -154,13 +156,18 @@ MetricReportingManagerLacros::MetricReportingManagerLacros(
           return;
         }
 
+        SourceInfo source_info;
+        source_info.set_source(SourceInfo::LACROS);
+        source_info.set_source_version(
+            std::string(::version_info::GetVersionNumber()));
         instance->telemetry_report_queue_ =
             instance->delegate_->CreatePeriodicUploadReportQueue(
                 EventType::kUser, Destination::TELEMETRY_METRIC,
                 Priority::MANUAL_BATCH_LACROS,
                 instance->device_reporting_settings_.get(),
                 ::policy::key::kReportUploadFrequency,
-                GetDefaultReportUploadFrequency());
+                GetDefaultReportUploadFrequency(),
+                /*rate_unit_to_ms=*/1, std::move(source_info));
 
         instance->delegate_->RegisterObserverWithCrosApiClient(instance.get());
         instance->delayed_init_timer_.Start(

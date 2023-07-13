@@ -36,6 +36,7 @@
 #include "components/reporting/metrics/metric_report_queue.h"
 #include "components/reporting/metrics/sampler.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
+#include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/proto/synced/record_constants.pb.h"
 #include "components/reporting/util/rate_limiter_interface.h"
 #include "content/public/test/browser_task_environment.h"
@@ -130,7 +131,8 @@ class MockDelegate : public MetricReportingManager::Delegate {
               (EventType event_type,
                Destination destination,
                Priority priority,
-               std::unique_ptr<RateLimiterInterface> rate_limiter),
+               std::unique_ptr<RateLimiterInterface> rate_limiter,
+               absl::optional<SourceInfo> source_info),
               (override));
 
   MOCK_METHOD(std::unique_ptr<MetricReportQueue>,
@@ -141,7 +143,8 @@ class MockDelegate : public MetricReportingManager::Delegate {
                ReportingSettings* reporting_settings,
                const std::string& rate_setting_path,
                base::TimeDelta default_rate,
-               int rate_unit_to_ms),
+               int rate_unit_to_ms,
+               absl::optional<SourceInfo> source_info),
               (override));
 
   MOCK_METHOD(std::unique_ptr<CollectorBase>,
@@ -264,8 +267,8 @@ test::FakeMetricReportQueue* CreateMockMetricReportQueueHelper(
   auto* metric_report_queue_ptr = metric_report_queue.get();
   // Only one report queue should be created with the given args: `event_type`,
   // `destination`, and `priority`.
-  ON_CALL(*mock_delegate,
-          CreateMetricReportQueue(event_type, destination, priority, IsNull()))
+  ON_CALL(*mock_delegate, CreateMetricReportQueue(event_type, destination,
+                                                  priority, IsNull(), _))
       .WillByDefault(Return(ByMove(std::move(metric_report_queue))));
   return metric_report_queue_ptr;
 }
@@ -279,8 +282,8 @@ test::FakeMetricReportQueue* CreateMockRateLimitedMetricReportQueueHelper(
   auto* metric_report_queue_ptr = metric_report_queue.get();
   // Only one report queue should be created with the given args: `event_type`,
   // `destination`, `priority` and a rate limiter.
-  ON_CALL(*mock_delegate,
-          CreateMetricReportQueue(event_type, destination, priority, NotNull()))
+  ON_CALL(*mock_delegate, CreateMetricReportQueue(event_type, destination,
+                                                  priority, NotNull(), _))
       .WillByDefault(Return(ByMove(std::move(metric_report_queue))));
   return metric_report_queue_ptr;
 }

@@ -32,6 +32,7 @@
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using HttpsLatencyProblemMojom =
     ::chromeos::network_diagnostics::mojom::HttpsLatencyProblem;
@@ -94,7 +95,8 @@ class FakeMetricReportingManagerDelegate
       EventType event_type,
       Destination destination,
       Priority priority,
-      std::unique_ptr<RateLimiterInterface> rate_limiter) override {
+      std::unique_ptr<RateLimiterInterface> rate_limiter,
+      absl::optional<SourceInfo> source_info) override {
     if (event_type != EventType::kDevice ||
         destination != Destination::EVENT_METRIC ||
         priority != Priority::SLOW_BATCH) {

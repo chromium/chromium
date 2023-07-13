@@ -19,15 +19,23 @@
 #include "components/policy/policy_constants.h"
 #include "components/reporting/metrics/collector_base.h"
 #include "components/reporting/metrics/fakes/fake_metric_report_queue.h"
+#include "components/reporting/proto/synced/record.pb.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using ::testing::_;
+using ::testing::AllOf;
 using ::testing::ByMove;
+using ::testing::Eq;
 using ::testing::Invoke;
+using ::testing::IsEmpty;
 using ::testing::IsNull;
 using ::testing::NiceMock;
+using ::testing::Not;
+using ::testing::Optional;
+using ::testing::Property;
 using ::testing::Return;
 
 namespace reporting {
@@ -104,7 +112,8 @@ class MockDelegate : public metrics::MetricReportingManagerLacros::Delegate {
                ReportingSettings* reporting_settings,
                const std::string& rate_setting_path,
                base::TimeDelta default_rate,
-               int rate_unit_to_ms),
+               int rate_unit_to_ms,
+               absl::optional<SourceInfo> source_info),
               (override));
 };
 
@@ -164,9 +173,13 @@ class MetricReportingManagerLacrosTest
 TEST_F(MetricReportingManagerLacrosTest, InitiallyDeprovisioned) {
   int periodic_collector_count = 0;
 
-  ON_CALL(*delegate_, CreatePeriodicUploadReportQueue(
-                          EventType::kUser, Destination::TELEMETRY_METRIC,
-                          Priority::MANUAL_BATCH_LACROS, _, _, _, 1))
+  ON_CALL(*delegate_,
+          CreatePeriodicUploadReportQueue(
+              EventType::kUser, Destination::TELEMETRY_METRIC,
+              Priority::MANUAL_BATCH_LACROS, _, _, _, 1,
+              Optional(AllOf(
+                  Property(&SourceInfo::source, Eq(SourceInfo::LACROS)),
+                  Property(&SourceInfo::source_version, Not(IsEmpty()))))))
       .WillByDefault(Return(ByMove(std::move(telemetry_queue_))));
 
   ON_CALL(*delegate_, IsAffiliated(profile_.get())).WillByDefault(Return(true));
@@ -207,9 +220,13 @@ TEST_P(MetricReportingManagerLacrosTelemetryTest, Default) {
   auto* const telemetry_queue_ptr = telemetry_queue_.get();
   int periodic_collector_count = 0;
 
-  ON_CALL(*delegate_, CreatePeriodicUploadReportQueue(
-                          EventType::kUser, Destination::TELEMETRY_METRIC,
-                          Priority::MANUAL_BATCH_LACROS, _, _, _, 1))
+  ON_CALL(*delegate_,
+          CreatePeriodicUploadReportQueue(
+              EventType::kUser, Destination::TELEMETRY_METRIC,
+              Priority::MANUAL_BATCH_LACROS, _, _, _, 1,
+              Optional(AllOf(
+                  Property(&SourceInfo::source, Eq(SourceInfo::LACROS)),
+                  Property(&SourceInfo::source_version, Not(IsEmpty()))))))
       .WillByDefault(Return(ByMove(std::move(telemetry_queue_))));
 
   ON_CALL(*delegate_, CreatePeriodicCollector(

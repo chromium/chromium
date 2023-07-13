@@ -25,11 +25,13 @@ namespace {
 std::unique_ptr<::reporting::ReportQueue, base::OnTaskRunnerDeleter>
 CreateReportQueue(EventType event_type,
                   Destination destination,
-                  std::unique_ptr<RateLimiterInterface> rate_limiter) {
+                  std::unique_ptr<RateLimiterInterface> rate_limiter,
+                  absl::optional<SourceInfo> source_info) {
   return ReportQueueFactory::CreateSpeculativeReportQueue(
       ReportQueueConfiguration::Create(
           {.event_type = event_type, .destination = destination})
-          .SetRateLimiter(std::move(rate_limiter)));
+          .SetRateLimiter(std::move(rate_limiter))
+          .SetSourceInfo(std::move(source_info)));
 }
 
 }  // namespace
@@ -39,10 +41,11 @@ MetricReportingManagerDelegateBase::CreateMetricReportQueue(
     EventType event_type,
     Destination destination,
     Priority priority,
-    std::unique_ptr<RateLimiterInterface> rate_limiter) {
+    std::unique_ptr<RateLimiterInterface> rate_limiter,
+    absl::optional<SourceInfo> source_info) {
   std::unique_ptr<MetricReportQueue> metric_report_queue;
-  auto report_queue =
-      CreateReportQueue(event_type, destination, std::move(rate_limiter));
+  auto report_queue = CreateReportQueue(
+      event_type, destination, std::move(rate_limiter), std::move(source_info));
   if (report_queue) {
     metric_report_queue =
         std::make_unique<MetricReportQueue>(std::move(report_queue), priority);
@@ -60,10 +63,12 @@ MetricReportingManagerDelegateBase::CreatePeriodicUploadReportQueue(
     ReportingSettings* reporting_settings,
     const std::string& rate_setting_path,
     base::TimeDelta default_rate,
-    int rate_unit_to_ms) {
+    int rate_unit_to_ms,
+    absl::optional<SourceInfo> source_info) {
   std::unique_ptr<MetricReportQueue> metric_report_queue;
   auto report_queue =
-      CreateReportQueue(event_type, destination, /*rate_limiter=*/nullptr);
+      CreateReportQueue(event_type, destination, /*rate_limiter=*/nullptr,
+                        std::move(source_info));
   if (report_queue) {
     metric_report_queue = std::make_unique<MetricReportQueue>(
         std::move(report_queue), priority, reporting_settings,
