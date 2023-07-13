@@ -15,6 +15,10 @@ void PartitionAllocSetCallNewHandlerOnMallocFailure(bool value);
 
 class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAllocMalloc {
  public:
+  // Returns true if ConfigurePartitions() has completed, meaning that the
+  // allocators are effectively set in stone.
+  static bool AllocatorConfigurationFinalized();
+
   static partition_alloc::PartitionRoot* Allocator();
   // May return |nullptr|, will never return the same pointer as |Allocator()|.
   static partition_alloc::PartitionRoot* OriginalAllocator();

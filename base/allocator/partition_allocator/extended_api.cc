@@ -38,6 +38,8 @@ void EnablePartitionAllocThreadCacheForRootIfDisabled(PartitionRoot* root) {
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 void DisablePartitionAllocThreadCacheForProcess() {
+  PA_CHECK(allocator_shim::internal::PartitionAllocMalloc::
+               AllocatorConfigurationFinalized());
   auto* regular_allocator =
       allocator_shim::internal::PartitionAllocMalloc::Allocator();
   auto* aligned_allocator =
