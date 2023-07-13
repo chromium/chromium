@@ -9,6 +9,8 @@ import static org.chromium.chrome.browser.pwd_migration.PasswordMigrationWarning
 import static org.chromium.chrome.browser.pwd_migration.PasswordMigrationWarningProperties.SHOULD_OFFER_SYNC;
 import static org.chromium.chrome.browser.pwd_migration.PasswordMigrationWarningProperties.VISIBLE;
 
+import android.net.Uri;
+
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.FragmentManager;
@@ -94,6 +96,13 @@ class PasswordMigrationWarningMediator
         void startExportFlow(FragmentManager fragmentManager);
 
         /**
+         * Writes the passwords into the file.
+         *
+         * @param passwordsFile The file into which the passwords are expected to be saved.
+         */
+        void savePasswordsToDownloads(Uri passwordsFile);
+
+        /**
          * Resumes the password export flow.
          */
         void resumeExportFlow();
@@ -174,7 +183,11 @@ class PasswordMigrationWarningMediator
                     PasswordMigrationWarningUserActions.EXPORT,
                     PasswordMigrationWarningUserActions.COUNT);
         }
-        // TODO(crbug.com/1445065): Launch the password Export flow.
+    }
+
+    @Override
+    public void onSavePasswordsToDownloads(Uri passwordsFile) {
+        mOptionsHandler.savePasswordsToDownloads(passwordsFile);
     }
 
     @Override

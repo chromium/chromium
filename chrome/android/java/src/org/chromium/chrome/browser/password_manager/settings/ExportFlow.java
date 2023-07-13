@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.password_manager.settings;
 
+import static org.chromium.chrome.browser.flags.ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_LOCAL_PWD_MIGRATION_WARNING;
+
 import android.content.ActivityNotFoundException;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -17,13 +19,19 @@ import androidx.appcompat.app.AlertDialog;
 
 import org.chromium.base.ContentUriUtils;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.FileUtils;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.task.AsyncTask;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.pwd_migration.ExportFlowInterface;
 import org.chromium.ui.widget.Toast;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
@@ -419,7 +427,7 @@ public class ExportFlow implements ExportFlowInterface {
      * dialog.
      */
     @VisibleForTesting
-    public void showExportErrorAndAbort(int descriptionId, @Nullable String detailedDescription,
+    void showExportErrorAndAbort(int descriptionId, @Nullable String detailedDescription,
             int positiveButtonLabelId, @HistogramExportResult int histogramExportResult) {
         assert mErrorDialogParams == null;
         mProgressBarManager.hide(() -> {
@@ -491,13 +499,38 @@ public class ExportFlow implements ExportFlowInterface {
 
         if (mExportFileUri.equals(Uri.EMPTY)) return;
 
+        // With UNIFIED_PASSWORD_MANAGER_LOCAL_PWD_MIGRATION_WARNING feature on, offer to save the
+        // exported passwords on disk. Otherwise offer to share the passwords with a chosen Android
+        // app.
+        if (ChromeFeatureList.isEnabled(UNIFIED_PASSWORD_MANAGER_LOCAL_PWD_MIGRATION_WARNING)) {
+            runCreateFileOnDiskIntent();
+        } else {
+            runSharePasswordsIntent();
+        }
+    }
+
+    private void runCreateFileOnDiskIntent() {
+        Intent saveToDownloads = new Intent(Intent.ACTION_CREATE_DOCUMENT);
+        saveToDownloads.setType("text/csv");
+        saveToDownloads.addCategory(Intent.CATEGORY_OPENABLE);
+        saveToDownloads.putExtra(Intent.EXTRA_TITLE,
+                mDelegate.getActivity().getResources().getString(
+                        R.string.password_manager_default_export_filename));
+        try {
+            mDelegate.runCreateFileOnDiskIntent(saveToDownloads);
+        } catch (ActivityNotFoundException e) {
+            showExportErrorAndAbort(R.string.password_settings_export_no_app, e.getMessage(),
+                    R.string.try_again, HistogramExportResult.NO_CONSUMER);
+        }
+    }
+
+    private void runSharePasswordsIntent() {
         Intent send = new Intent(Intent.ACTION_SEND);
         send.setType("text/csv");
         send.putExtra(Intent.EXTRA_STREAM, mExportFileUri);
         send.putExtra(Intent.EXTRA_SUBJECT,
                 mDelegate.getActivity().getResources().getString(
                         R.string.password_settings_export_subject));
-
         try {
             Intent chooser = Intent.createChooser(send, null);
             chooser.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -508,6 +541,44 @@ public class ExportFlow implements ExportFlowInterface {
                     HistogramExportResult.NO_CONSUMER);
         }
         mExportFileUri = null;
+    }
+
+    @Override
+    public void savePasswordsToDownloads(Uri passwordsFile) {
+        new AsyncTask<String>() {
+            @Override
+            protected String doInBackground() {
+                try {
+                    writeToInternalStorage(mExportFileUri, passwordsFile);
+                } catch (IOException e) {
+                    return e.getMessage();
+                }
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(String exceptionMessage) {
+                if (exceptionMessage != null) {
+                    showExportErrorAndAbort(R.string.password_settings_export_tips,
+                            exceptionMessage, R.string.try_again,
+                            HistogramExportResult.WRITE_FAILED);
+                }
+                mExportFileUri = null;
+            }
+        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    }
+
+    private static void writeToInternalStorage(Uri exportedPasswordsUri, Uri savedPasswordsFileUri)
+            throws IOException {
+        try (InputStream fileInputStream =
+                        ContextUtils.getApplicationContext().getContentResolver().openInputStream(
+                                exportedPasswordsUri)) {
+            try (OutputStream fileOutputStream = ContextUtils.getApplicationContext()
+                                                         .getContentResolver()
+                                                         .openOutputStream(savedPasswordsFileUri)) {
+                FileUtils.copyStream(fileInputStream, fileOutputStream);
+            }
+        }
     }
 
     @Override

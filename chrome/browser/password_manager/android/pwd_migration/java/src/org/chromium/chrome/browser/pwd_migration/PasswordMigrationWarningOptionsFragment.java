@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 package org.chromium.chrome.browser.pwd_migration;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -22,6 +24,8 @@ import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
  * alternatives are to export the passwords or to start syncing passwords.
  */
 public class PasswordMigrationWarningOptionsFragment extends Fragment {
+    private static final int PASSWORD_EXPORT_INTENT_REQUEST_CODE = 3485764;
+
     private static final String PASSWORD_EXPORT_TEXT = "PASSWORD_EXPORT_TEXT";
     private String mPaswordExportText;
     private PasswordMigrationWarningOnClickHandler mOnClickHandler;
@@ -81,6 +85,21 @@ public class PasswordMigrationWarningOptionsFragment extends Fragment {
     public void onResume() {
         super.onResume();
         mOnResumeExportFlowCallback.run();
+    }
+
+    void runCreateFileOnDiskIntent(Intent intent) {
+        startActivityForResult(intent, PASSWORD_EXPORT_INTENT_REQUEST_CODE);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        super.onActivityResult(requestCode, resultCode, intent);
+        if (requestCode != PASSWORD_EXPORT_INTENT_REQUEST_CODE) return;
+        if (resultCode != Activity.RESULT_OK) return;
+        if (intent == null || intent.getData() == null) return;
+        if (mOnClickHandler == null) return;
+
+        mOnClickHandler.onSavePasswordsToDownloads(intent.getData());
     }
 
     @Override

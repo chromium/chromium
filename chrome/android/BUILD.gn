@@ -1544,6 +1544,7 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/password_entry_edit/android/internal:javatests",
       "//chrome/browser/password_manager/android:java",
       "//chrome/browser/password_manager/android:test_support_java",
+      "//chrome/browser/password_manager/android/pwd_migration:java",
       "//chrome/browser/policy/android:java",
       "//chrome/browser/preferences:java",
       "//chrome/browser/prefetch/android:java",

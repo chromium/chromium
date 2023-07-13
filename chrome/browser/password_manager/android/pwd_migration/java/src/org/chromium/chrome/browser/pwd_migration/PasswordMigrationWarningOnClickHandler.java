@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.pwd_migration;
 
+import android.net.Uri;
+
 import androidx.fragment.app.FragmentManager;
 
 import org.chromium.chrome.browser.pwd_migration.PasswordMigrationWarningProperties.MigrationOption;
@@ -37,6 +39,14 @@ interface PasswordMigrationWarningOnClickHandler {
      *         used for creating the {@link ExportFlow}.
      */
     void onNext(@MigrationOption int selectedOption, FragmentManager fragmentManager);
+
+    /**
+     * Triggered when Chrome receives the file created in the file system after user's decision to
+     * export the passwords.
+     *
+     * @param passwordsFile The newly created empty file, into which passwords will be written.
+     */
+    void onSavePasswordsToDownloads(Uri passwordsFile);
 
     /**
      * Closes the sheet when the "Cancel" button is clicked, but doesn't mark

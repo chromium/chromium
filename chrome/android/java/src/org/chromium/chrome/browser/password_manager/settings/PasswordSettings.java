@@ -114,6 +114,9 @@ public class PasswordSettings extends PreferenceFragmentCompat
     // avoid bugs in the future if the request code is reused.
     private static final int REQUEST_CODE_TRUSTED_VAULT_OPT_IN = 1;
 
+    // Unique request code for the password exporting activity.
+    private static final int PASSWORD_EXPORT_INTENT_REQUEST_CODE = 3485764;
+
     private boolean mNoPasswords;
     private boolean mNoPasswordExceptions;
     private @TrustedVaultBannerState int mTrustedVaultBannerState =
@@ -157,6 +160,11 @@ public class PasswordSettings extends PreferenceFragmentCompat
             @Override
             public int getViewId() {
                 return getView().getId();
+            }
+
+            @Override
+            public void runCreateFileOnDiskIntent(Intent intent) {
+                startActivityForResult(intent, PASSWORD_EXPORT_INTENT_REQUEST_CODE);
             }
         });
         getActivity().setTitle(R.string.password_settings_title);
@@ -461,6 +469,16 @@ public class PasswordSettings extends PreferenceFragmentCompat
         super.onResume();
         mExportFlow.onResume();
         rebuildPasswordLists();
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        super.onActivityResult(requestCode, resultCode, intent);
+        if (requestCode != PASSWORD_EXPORT_INTENT_REQUEST_CODE) return;
+        if (resultCode != Activity.RESULT_OK) return;
+        if (intent == null || intent.getData() == null) return;
+
+        mExportFlow.savePasswordsToDownloads(intent.getData());
     }
 
     @Override
