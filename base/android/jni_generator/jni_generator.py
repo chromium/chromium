@@ -1213,10 +1213,6 @@ See SampleForTests.java for more details.
                       help='Input filenames, or paths within a .jar if '
                       '--jar-file is used.')
   parser.add_argument('--output_dir', required=True, help='Output directory.')
-  # TODO(agrieve): --prev_output_dir used only to make incremental builds work.
-  #     Remove --prev_output_dir at some point after 2022.
-  parser.add_argument('--prev_output_dir',
-                      help='Delete headers found in this directory.')
   parser.add_argument('--output_name',
                       action='append',
                       dest='output_names',
@@ -1261,10 +1257,6 @@ See SampleForTests.java for more details.
       '--package_prefix',
       help='Adds a prefix to the classes fully qualified-name. Effectively '
       'changing a class name fromfoo.bar -> prefix.foo.bar')
-  # TODO(agrieve): --stamp used only to make incremental builds work.
-  #     Remove --stamp at some point after 2022.
-  parser.add_argument('--stamp',
-                      help='Process --prev_output_dir and touch this file.')
   args = parser.parse_args()
   if args.jar_file and args.package_prefix:
     parser.error('--package_prefix not implemented for --jar_file')
@@ -1272,13 +1264,6 @@ See SampleForTests.java for more details.
   # Kotlin files are not supported by jni_generator.py, but they do end up in
   # the list of source files passed to jni_generator.py.
   input_files = [f for f in args.input_files if not f.endswith('.kt')]
-
-  if args.prev_output_dir:
-    _RemoveStaleHeaders(args.prev_output_dir, [])
-
-  if args.stamp:
-    build_utils.Touch(args.stamp)
-    sys.exit(0)
 
   # Remove existing headers so that moving .java source files but not updating
   # the corresponding C++ include will be a compile failure (otherwise
