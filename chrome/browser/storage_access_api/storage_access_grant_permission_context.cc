@@ -39,6 +39,7 @@
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/features_generated.h"
+#include "third_party/blink/public/mojom/devtools/console_message.mojom-shared.h"
 
 using content_settings::URLToSchemefulSitePattern;
 
@@ -387,6 +388,13 @@ void StorageAccessGrantPermissionContext::OnCheckedUserInteractionHeuristic(
     permissions::BrowserPermissionCallback callback,
     bool had_top_level_user_interaction) {
   if (!had_top_level_user_interaction) {
+    content::RenderFrameHost* rfh =
+        content::RenderFrameHost::FromID(id.global_render_frame_host_id());
+    CHECK(rfh);
+    rfh->AddMessageToConsole(
+        blink::mojom::ConsoleMessageLevel::kError,
+        "requestStorageAccess: Request denied because the embedded site has "
+        "never been interacted with as a top-level context");
     NotifyPermissionSetInternal(
         id, requesting_origin, embedding_origin, std::move(callback),
         /*persist=*/false, CONTENT_SETTING_BLOCK,
