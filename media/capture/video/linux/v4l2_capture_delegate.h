@@ -23,10 +23,6 @@
 #include "media/capture/video/linux/v4l2_capture_device_impl.h"
 #include "media/capture/video/video_capture_device.h"
 
-#if BUILDFLAG(IS_LINUX)
-#include "gpu/ipc/common/gpu_memory_buffer_support.h"
-#endif  // BUILDFLAG(IS_LINUX)
-
 #if BUILDFLAG(IS_OPENBSD)
 #include <sys/videoio.h>
 #else
