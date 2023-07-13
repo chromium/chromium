@@ -81,27 +81,12 @@ BASE_EXPORT int MacOSVersion();
   inline bool IsOS10_##V() {                                              \
     DEPLOYMENT_TARGET_TEST(>, V, false)                                   \
     return internal::MacOSVersion() == 1000 + V;                          \
-  }                                                                       \
-  inline bool IsAtMostOS10_##V() {                                        \
-    DEPLOYMENT_TARGET_TEST(>, V, false)                                   \
-    return internal::MacOSVersion() <= 1000 + V;                          \
-  }
-
-#define DEFINE_OLD_IS_OS_FUNCS(V, DEPLOYMENT_TARGET_TEST)           \
-  DEFINE_OLD_IS_OS_FUNCS_CR_MIN_REQUIRED(V, DEPLOYMENT_TARGET_TEST) \
-  inline bool IsAtLeastOS10_##V() {                                 \
-    DEPLOYMENT_TARGET_TEST(>=, V, true)                             \
-    return internal::MacOSVersion() >= 1000 + V;                    \
   }
 
 #define DEFINE_IS_OS_FUNCS_CR_MIN_REQUIRED(V, DEPLOYMENT_TARGET_TEST) \
   inline bool IsOS##V() {                                             \
     DEPLOYMENT_TARGET_TEST(>, V, false)                               \
     return internal::MacOSVersion() == V * 100;                       \
-  }                                                                   \
-  inline bool IsAtMostOS##V() {                                       \
-    DEPLOYMENT_TARGET_TEST(>, V, false)                               \
-    return internal::MacOSVersion() <= V * 100;                       \
   }
 
 #define DEFINE_IS_OS_FUNCS(V, DEPLOYMENT_TARGET_TEST)           \
@@ -109,6 +94,10 @@ BASE_EXPORT int MacOSVersion();
   inline bool IsAtLeastOS##V() {                                \
     DEPLOYMENT_TARGET_TEST(>=, V, true)                         \
     return internal::MacOSVersion() >= V * 100;                 \
+  }                                                             \
+  inline bool IsAtMostOS##V() {                                 \
+    DEPLOYMENT_TARGET_TEST(>, V, false)                         \
+    return internal::MacOSVersion() <= V * 100;                 \
   }
 
 #define OLD_TEST_DEPLOYMENT_TARGET(OP, V, RET)                  \
@@ -131,9 +120,7 @@ BASE_EXPORT int MacOSVersion();
 
 // Versions of macOS supported at runtime but whose SDK is not supported for
 // building.
-DEFINE_OLD_IS_OS_FUNCS_CR_MIN_REQUIRED(13, OLD_TEST_DEPLOYMENT_TARGET)
-DEFINE_OLD_IS_OS_FUNCS(14, OLD_TEST_DEPLOYMENT_TARGET)
-DEFINE_OLD_IS_OS_FUNCS(15, OLD_TEST_DEPLOYMENT_TARGET)
+DEFINE_OLD_IS_OS_FUNCS_CR_MIN_REQUIRED(15, OLD_TEST_DEPLOYMENT_TARGET)
 DEFINE_IS_OS_FUNCS(11, TEST_DEPLOYMENT_TARGET)
 DEFINE_IS_OS_FUNCS(12, TEST_DEPLOYMENT_TARGET)
 
@@ -158,13 +145,6 @@ DEFINE_IS_OS_FUNCS(14, IGNORE_DEPLOYMENT_TARGET)
 #undef OLD_TEST_DEPLOYMENT_TARGET
 #undef TEST_DEPLOYMENT_TARGET
 #undef IGNORE_DEPLOYMENT_TARGET
-
-// This should be infrequently used. It only makes sense to use this to avoid
-// codepaths that are very likely to break on future (unreleased, untested,
-// unborn) OS releases, or to log when the OS is newer than any known version.
-inline bool IsOSLaterThan14_DontCallThis() {
-  return !IsAtMostOS14();
-}
 
 enum class CPUType {
   kIntel,

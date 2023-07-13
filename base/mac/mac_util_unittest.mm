@@ -161,30 +161,15 @@ TEST_F(MacUtilTest, IsOSEllipsis) {
   // - FALSE/TRUE/FALSE (it is not the later version, it is "at most" the later
   //   version, it is not "at least" the later version)
 
-#define TEST_FOR_PAST_10_OS(V)      \
-  EXPECT_FALSE(IsOS10_##V());       \
-  EXPECT_FALSE(IsAtMostOS10_##V()); \
-  EXPECT_TRUE(IsAtLeastOS10_##V());
-
 #define TEST_FOR_PAST_OS(V)      \
   EXPECT_FALSE(IsOS##V());       \
   EXPECT_FALSE(IsAtMostOS##V()); \
   EXPECT_TRUE(IsAtLeastOS##V());
 
-#define TEST_FOR_SAME_10_OS(V)     \
-  EXPECT_TRUE(IsOS10_##V());       \
-  EXPECT_TRUE(IsAtMostOS10_##V()); \
-  EXPECT_TRUE(IsAtLeastOS10_##V());
-
 #define TEST_FOR_SAME_OS(V)     \
   EXPECT_TRUE(IsOS##V());       \
   EXPECT_TRUE(IsAtMostOS##V()); \
   EXPECT_TRUE(IsAtLeastOS##V());
-
-#define TEST_FOR_FUTURE_10_OS(V)   \
-  EXPECT_FALSE(IsOS10_##V());      \
-  EXPECT_TRUE(IsAtMostOS10_##V()); \
-  EXPECT_FALSE(IsAtLeastOS10_##V());
 
 #define TEST_FOR_FUTURE_OS(V)   \
   EXPECT_FALSE(IsOS##V());      \
@@ -192,94 +177,45 @@ TEST_F(MacUtilTest, IsOSEllipsis) {
   EXPECT_FALSE(IsAtLeastOS##V());
 
   if (major == 10) {
-    if (minor == 13) {
-      EXPECT_TRUE(IsOS10_13());
-      EXPECT_TRUE(IsAtMostOS10_13());
+    if (minor == 15) {
+      EXPECT_TRUE(IsOS10_15());
 
-      TEST_FOR_FUTURE_10_OS(14);
-      TEST_FOR_FUTURE_10_OS(15);
       TEST_FOR_FUTURE_OS(11);
       TEST_FOR_FUTURE_OS(12);
       TEST_FOR_FUTURE_OS(13);
       TEST_FOR_FUTURE_OS(14);
-
-      EXPECT_FALSE(IsOSLaterThan14_DontCallThis());
-    } else if (minor == 14) {
-      EXPECT_FALSE(IsOS10_13());
-      EXPECT_FALSE(IsAtMostOS10_13());
-
-      TEST_FOR_SAME_10_OS(14);
-      TEST_FOR_FUTURE_10_OS(15);
-      TEST_FOR_FUTURE_OS(11);
-      TEST_FOR_FUTURE_OS(12);
-      TEST_FOR_FUTURE_OS(13);
-      TEST_FOR_FUTURE_OS(14);
-
-      EXPECT_FALSE(IsOSLaterThan14_DontCallThis());
-    } else if (minor == 15) {
-      EXPECT_FALSE(IsOS10_13());
-      EXPECT_FALSE(IsAtMostOS10_13());
-
-      TEST_FOR_PAST_10_OS(14);
-      TEST_FOR_SAME_10_OS(15);
-      TEST_FOR_FUTURE_OS(11);
-      TEST_FOR_FUTURE_OS(12);
-      TEST_FOR_FUTURE_OS(13);
-      TEST_FOR_FUTURE_OS(14);
-
-      EXPECT_FALSE(IsOSLaterThan14_DontCallThis());
     } else {
       // macOS 10.15 was the end of the line.
       FAIL() << "Unexpected 10.x macOS.";
     }
   } else if (major == 11) {
-    EXPECT_FALSE(IsOS10_13());
-    EXPECT_FALSE(IsAtMostOS10_13());
+    EXPECT_FALSE(IsOS10_15());
 
-    TEST_FOR_PAST_10_OS(14);
-    TEST_FOR_PAST_10_OS(15);
     TEST_FOR_SAME_OS(11);
     TEST_FOR_FUTURE_OS(12);
     TEST_FOR_FUTURE_OS(13);
     TEST_FOR_FUTURE_OS(14);
-
-    EXPECT_FALSE(IsOSLaterThan14_DontCallThis());
   } else if (major == 12) {
-    EXPECT_FALSE(IsOS10_13());
-    EXPECT_FALSE(IsAtMostOS10_13());
+    EXPECT_FALSE(IsOS10_15());
 
-    TEST_FOR_PAST_10_OS(14);
-    TEST_FOR_PAST_10_OS(15);
     TEST_FOR_PAST_OS(11);
     TEST_FOR_SAME_OS(12);
     TEST_FOR_FUTURE_OS(13);
     TEST_FOR_FUTURE_OS(14);
-
-    EXPECT_FALSE(IsOSLaterThan14_DontCallThis());
   } else if (major == 13) {
-    EXPECT_FALSE(IsOS10_13());
-    EXPECT_FALSE(IsAtMostOS10_13());
+    EXPECT_FALSE(IsOS10_15());
 
-    TEST_FOR_PAST_10_OS(14);
-    TEST_FOR_PAST_10_OS(15);
     TEST_FOR_PAST_OS(11);
     TEST_FOR_PAST_OS(12);
     TEST_FOR_SAME_OS(13);
     TEST_FOR_FUTURE_OS(14);
-
-    EXPECT_FALSE(IsOSLaterThan14_DontCallThis());
   } else if (major == 14) {
-    EXPECT_FALSE(IsOS10_13());
-    EXPECT_FALSE(IsAtMostOS10_13());
+    EXPECT_FALSE(IsOS10_15());
 
-    TEST_FOR_PAST_10_OS(14);
-    TEST_FOR_PAST_10_OS(15);
     TEST_FOR_PAST_OS(11);
     TEST_FOR_PAST_OS(12);
     TEST_FOR_PAST_OS(13);
     TEST_FOR_SAME_OS(14);
-
-    EXPECT_FALSE(IsOSLaterThan14_DontCallThis());
   } else {
     // The spooky future.
     FAIL() << "Time to update the OS macros!";

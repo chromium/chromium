@@ -32,27 +32,12 @@ PA_COMPONENT_EXPORT(PARTITION_ALLOC) int MacOSVersion();
   inline bool IsOS10_##V() {                                                 \
     DEPLOYMENT_TARGET_TEST(>, V, false)                                      \
     return internal::MacOSVersion() == 1000 + V;                             \
-  }                                                                          \
-  inline bool IsAtMostOS10_##V() {                                           \
-    DEPLOYMENT_TARGET_TEST(>, V, false)                                      \
-    return internal::MacOSVersion() <= 1000 + V;                             \
-  }
-
-#define PA_DEFINE_OLD_IS_OS_FUNCS(V, DEPLOYMENT_TARGET_TEST)           \
-  PA_DEFINE_OLD_IS_OS_FUNCS_CR_MIN_REQUIRED(V, DEPLOYMENT_TARGET_TEST) \
-  inline bool IsAtLeastOS10_##V() {                                    \
-    DEPLOYMENT_TARGET_TEST(>=, V, true)                                \
-    return internal::MacOSVersion() >= 1000 + V;                       \
   }
 
 #define PA_DEFINE_IS_OS_FUNCS_CR_MIN_REQUIRED(V, DEPLOYMENT_TARGET_TEST) \
   inline bool IsOS##V() {                                                \
     DEPLOYMENT_TARGET_TEST(>, V, false)                                  \
     return internal::MacOSVersion() == V * 100;                          \
-  }                                                                      \
-  inline bool IsAtMostOS##V() {                                          \
-    DEPLOYMENT_TARGET_TEST(>, V, false)                                  \
-    return internal::MacOSVersion() <= V * 100;                          \
   }
 
 #define PA_DEFINE_IS_OS_FUNCS(V, DEPLOYMENT_TARGET_TEST)           \
@@ -60,6 +45,10 @@ PA_COMPONENT_EXPORT(PARTITION_ALLOC) int MacOSVersion();
   inline bool IsAtLeastOS##V() {                                   \
     DEPLOYMENT_TARGET_TEST(>=, V, true)                            \
     return internal::MacOSVersion() >= V * 100;                    \
+  }                                                                \
+  inline bool IsAtMostOS##V() {                                    \
+    DEPLOYMENT_TARGET_TEST(>, V, false)                            \
+    return internal::MacOSVersion() <= V * 100;                    \
   }
 
 #define PA_OLD_TEST_DEPLOYMENT_TARGET(OP, V, RET)               \
@@ -82,9 +71,7 @@ PA_COMPONENT_EXPORT(PARTITION_ALLOC) int MacOSVersion();
 
 // Versions of macOS supported at runtime but whose SDK is not supported for
 // building.
-PA_DEFINE_OLD_IS_OS_FUNCS_CR_MIN_REQUIRED(13, PA_OLD_TEST_DEPLOYMENT_TARGET)
-PA_DEFINE_OLD_IS_OS_FUNCS(14, PA_OLD_TEST_DEPLOYMENT_TARGET)
-PA_DEFINE_OLD_IS_OS_FUNCS(15, PA_OLD_TEST_DEPLOYMENT_TARGET)
+PA_DEFINE_OLD_IS_OS_FUNCS_CR_MIN_REQUIRED(15, PA_OLD_TEST_DEPLOYMENT_TARGET)
 PA_DEFINE_IS_OS_FUNCS(11, PA_TEST_DEPLOYMENT_TARGET)
 PA_DEFINE_IS_OS_FUNCS(12, PA_TEST_DEPLOYMENT_TARGET)
 
@@ -109,13 +96,6 @@ PA_DEFINE_IS_OS_FUNCS(14, PA_IGNORE_DEPLOYMENT_TARGET)
 #undef PA_OLD_TEST_DEPLOYMENT_TARGET
 #undef PA_TEST_DEPLOYMENT_TARGET
 #undef PA_IGNORE_DEPLOYMENT_TARGET
-
-// This should be infrequently used. It only makes sense to use this to avoid
-// codepaths that are very likely to break on future (unreleased, untested,
-// unborn) OS releases, or to log when the OS is newer than any known version.
-inline bool IsOSLaterThan14_DontCallThis() {
-  return !IsAtMostOS14();
-}
 
 }  // namespace partition_alloc::internal::base::mac
 
