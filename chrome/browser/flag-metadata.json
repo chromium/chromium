@@ -7881,6 +7881,11 @@
     "expiry_milestone": 116
   },
   {
+    "name": "vc-web-api",
+    "owners": [ "chenjih", "charleszhao" ],
+    "expiry_milestone": 120
+  },
+  {
     "name": "verbose-logging-in-nacl",
     "owners": [ "fabiansommer", "native-client-dev@googlegroups.com" ],
     // This flag is useful for debugging NaCl-related issues.

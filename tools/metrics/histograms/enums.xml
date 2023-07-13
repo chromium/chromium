@@ -61102,6 +61102,7 @@ from previous Chrome versions.
   <int value="-1419449681" label="PermissionChipRequestTypeSensitive:enabled"/>
   <int value="-1418200801" label="LauncherLacrosIntegration:enabled"/>
   <int value="-1418199391" label="FilesInlineSyncStatusProgressEvents:enabled"/>
+  <int value="-1418070574" label="VcWebApi:disabled"/>
   <int value="-1417642561" label="AutofillCreditCardUploadFeedback:enabled"/>
   <int value="-1417122729"
       label="AutofillCreditCardAblationExperiment:disabled"/>
@@ -65174,6 +65175,7 @@ from previous Chrome versions.
   <int value="676353150" label="OmniboxRetainSuggestionsWithHeaders:disabled"/>
   <int value="677866592" label="ClickToCallUI:disabled"/>
   <int value="677883800" label="DiagnosticsAppNavigation:disabled"/>
+  <int value="678752544" label="VcWebApi:enabled"/>
   <int value="679931272" label="DcheckIsFatal:enabled"/>
   <int value="680070635"
       label="enable-fullscreen-handwriting-virtual-keyboard:disabled"/>

@@ -2453,6 +2453,9 @@ BASE_FEATURE(kVcLightIntensity,
              "VCLightIntensity",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables or disables web API support for ChromeOS video conferencing.
+BASE_FEATURE(kVcWebApi, "VcWebApi", base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enable or disable multitouch for virtual keyboard on ChromeOS.
 BASE_FEATURE(kVirtualKeyboardMultitouch,
              "VirtualKeyboardMultitouch",
@@ -3751,6 +3754,10 @@ bool IsVcPortraitRelightEnabled() {
 
 bool IsVcControlsUiFakeEffectsEnabled() {
   return base::FeatureList::IsEnabled(kVcControlsUiFakeEffects);
+}
+
+bool IsVcWebApiEnabled() {
+  return base::FeatureList::IsEnabled(kVcWebApi) && IsVideoConferenceEnabled();
 }
 
 bool IsWallpaperFastRefreshEnabled() {

@@ -1949,6 +1949,9 @@ extern const char kVcSegmentationModelDescription[];
 extern const char kVcLightIntensityName[];
 extern const char kVcLightIntensityDescription[];
 
+extern const char kVcWebApiName[];
+extern const char kVcWebApiDescription[];
+
 extern const char kV8VmFutureName[];
 extern const char kV8VmFutureDescription[];
 

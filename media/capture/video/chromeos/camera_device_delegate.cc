@@ -464,8 +464,7 @@ void CameraDeviceDelegate::SetPhotoOptions(
 
   // Abort if background blur does not have already the desired value.
   if (settings->has_background_blur_mode &&
-      (!ash::features::IsVideoConferenceEnabled() ||
-       current_effects_.is_null() ||
+      (!ash::features::IsVcWebApiEnabled() || current_effects_.is_null() ||
        settings->background_blur_mode !=
            (current_effects_->blur_enabled ? mojom::BackgroundBlurMode::BLUR
                                            : mojom::BackgroundBlurMode::OFF))) {
@@ -857,7 +856,7 @@ void CameraDeviceDelegate::Initialize() {
   // The callback passed to CameraHalDispatcherImpl will be called on a
   // different thread inside CameraHalDispatcherImpl, so we need always
   // post the callback onto current task runner.
-  if (!camera_effect_observer_added_) {
+  if (ash::features::IsVcWebApiEnabled() && !camera_effect_observer_added_) {
     CameraHalDispatcherImpl::GetInstance()->AddCameraEffectObserver(
         this, base::BindPostTaskToCurrentDefault(base::BindOnce(
                   &CameraDeviceDelegate::OnCameraEffectObserverAdded,
@@ -1777,8 +1776,7 @@ void CameraDeviceDelegate::DoGetPhotoState(
   // configuration setting if the feature flag is enabled.
   //
   // https://w3c.github.io/mediacapture-extensions/#exposing-mediastreamtrack-source-background-blur-support
-  if (ash::features::IsVideoConferenceEnabled() &&
-      !current_effects_.is_null()) {
+  if (ash::features::IsVcWebApiEnabled() && !current_effects_.is_null()) {
     photo_state->supported_background_blur_modes = {
         current_effects_->blur_enabled ? mojom::BackgroundBlurMode::BLUR
                                        : mojom::BackgroundBlurMode::OFF};

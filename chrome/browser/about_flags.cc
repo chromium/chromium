@@ -9314,6 +9314,9 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(ash::features::kVcLightIntensity,
                                     kVcLightIntensityVariations,
                                     "VCLightIntensity")},
+    {"vc-web-api", flag_descriptions::kVcWebApiName,
+     flag_descriptions::kVcWebApiDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kVcWebApi)},
 
 #endif
 

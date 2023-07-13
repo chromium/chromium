@@ -3378,6 +3378,10 @@ const char kVcLightIntensityName[] = "VC relighting intensity";
 const char kVcLightIntensityDescription[] =
     "Allows different light intenisty to be used for relighting.";
 
+const char kVcWebApiName[] = "VC web API";
+const char kVcWebApiDescription[] =
+    "Allows web API support for video conferencing on chromebooks.";
+
 const char kV8VmFutureName[] = "Future V8 VM features";
 const char kV8VmFutureDescription[] =
     "This enables upcoming and experimental V8 VM features. "
