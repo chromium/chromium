@@ -32,6 +32,9 @@ class TabGroupStyle {
   // Returns the bounds of a title chip without any text.
   virtual gfx::Rect GetEmptyTitleChipBounds(const TabGroupHeader* header) const;
 
+  // Returns the starting y coordinate of the title chip from the `tabstrip`.
+  virtual int GetTitleChipTopOffset(absl::optional<int> text_height) const;
+
   // Returns the background of a title chip without any text.
   virtual std::unique_ptr<views::Background> GetEmptyTitleChipBackground(
       SkColor color) const;
@@ -87,6 +90,7 @@ class ChromeRefresh2023TabGroupStyle : public TabGroupStyle {
   int GetTitleAdjustmentToTabGroupHeaderDesiredWidth(
       std::u16string title) const override;
   float GetEmptyChipSize() const override;
+  int GetTitleChipTopOffset(absl::optional<int> text_height) const override;
   float GetSyncIconWidth() const override;
   int GetChipCornerRadius() const override;
 };

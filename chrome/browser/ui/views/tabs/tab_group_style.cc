@@ -36,7 +36,8 @@ constexpr int kSavedEmptyChipSize = 22;
 constexpr int kChromeRefreshHeaderChipVerticalInset = 2;
 constexpr int kChromeRefreshEmptyChipSize = 20;
 constexpr int kChromeRefreshSyncIconWidth = 16;
-constexpr int kCromeRefreshCornerRadius = 6;
+constexpr int kChromeRefreshCornerRadius = 6;
+constexpr int kTabGroupRefreshBottomMargin = 10;
 
 }  // namespace
 
@@ -77,9 +78,19 @@ SkPath TabGroupStyle::GetUnderlinePath(const gfx::Rect local_bounds) const {
 
 gfx::Rect TabGroupStyle::GetEmptyTitleChipBounds(
     const TabGroupHeader* const header) const {
-  const int y = (GetLayoutConstant(TAB_HEIGHT) - GetEmptyChipSize()) / 2;
+  const int y = GetTitleChipTopOffset(absl::nullopt);
   return gfx::Rect(TabGroupUnderline::GetStrokeInset(), y, GetEmptyChipSize(),
                    GetEmptyChipSize());
+}
+
+int TabGroupStyle::GetTitleChipTopOffset(
+    absl::optional<int> text_height) const {
+  if (text_height.has_value()) {
+    return ((GetLayoutConstant(TAB_HEIGHT) - text_height.value()) / 2 -
+            GetInsetsForHeaderChip().top());
+  } else {
+    return (GetLayoutConstant(TAB_HEIGHT) - GetEmptyChipSize()) / 2;
+  }
 }
 
 std::unique_ptr<views::Background> TabGroupStyle::GetEmptyTitleChipBackground(
@@ -162,9 +173,16 @@ SkPath ChromeRefresh2023TabGroupStyle::GetUnderlinePath(
 
 gfx::Rect ChromeRefresh2023TabGroupStyle::GetEmptyTitleChipBounds(
     const TabGroupHeader* const header) const {
-  const int y = (GetLayoutConstant(TAB_HEIGHT) - GetEmptyChipSize()) / 2;
+  const int y = GetTitleChipTopOffset(absl::nullopt);
   return gfx::Rect(TabGroupUnderline::GetStrokeInset(), y, GetEmptyChipSize(),
                    GetEmptyChipSize());
+}
+
+int ChromeRefresh2023TabGroupStyle::GetTitleChipTopOffset(
+    absl::optional<int> text_height) const {
+  return GetLayoutConstant(TAB_HEIGHT) -
+         GetLayoutConstant(TABSTRIP_TOOLBAR_OVERLAP) -
+         kTabGroupRefreshBottomMargin - GetEmptyChipSize();
 }
 
 gfx::Insets ChromeRefresh2023TabGroupStyle::GetInsetsForHeaderChip() const {
@@ -201,5 +219,5 @@ float ChromeRefresh2023TabGroupStyle::GetSyncIconWidth() const {
 }
 
 int ChromeRefresh2023TabGroupStyle::GetChipCornerRadius() const {
-  return kCromeRefreshCornerRadius;
+  return kChromeRefreshCornerRadius;
 }

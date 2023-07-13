@@ -505,8 +505,7 @@ void TabGroupHeader::VisualsChanged() {
 
     // The bounds and background for the `title_chip_` is set here.
     const int title_chip_content_y_coord =
-        (GetLayoutConstant(TAB_HEIGHT) - text_height) / 2 -
-        title_chip_vertical_inset;
+        group_style_->GetTitleChipTopOffset(text_height);
     title_chip_->SetBounds(TabGroupUnderline::GetStrokeInset(),
                            title_chip_content_y_coord, title_chip_width,
                            text_height + 2 * title_chip_vertical_inset);
