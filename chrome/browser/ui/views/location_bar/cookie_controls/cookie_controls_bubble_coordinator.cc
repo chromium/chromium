@@ -21,12 +21,13 @@ CookieControlsBubbleCoordinator::CookieControlsBubbleCoordinator(
 CookieControlsBubbleCoordinator::~CookieControlsBubbleCoordinator() = default;
 
 void CookieControlsBubbleCoordinator::ShowBubble(
+    views::Button* highlighted_button,
     content::WebContents* web_contents,
     content_settings::CookieControlsController* controller) {
   if (bubble_view_ != nullptr) {
     return;
   }
-  auto bubble_view = std::make_unique<CookieControlsBubbleViewImpl>(
+  auto bubble_view = std::make_unique<CookieControlsBubbleView>(
       anchor_view_, web_contents,
       base::BindOnce(&CookieControlsBubbleCoordinator::OnViewIsDeleting,
                      base::Unretained(this)));
@@ -42,7 +43,7 @@ void CookieControlsBubbleCoordinator::ShowBubble(
   widget->Show();
 }
 
-CookieControlsBubbleViewImpl* CookieControlsBubbleCoordinator::GetBubble() {
+CookieControlsBubbleView* CookieControlsBubbleCoordinator::GetBubble() {
   return bubble_view_;
 }
 

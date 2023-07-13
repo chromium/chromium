@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/views/location_bar/cookie_controls/cookie_controls_bubble_view_controller.h"
 
-#include "base/check_is_test.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -13,11 +12,9 @@
 #include "chrome/browser/ui/views/accessibility/non_accessible_image_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/location_bar/cookie_controls/cookie_controls_content_view.h"
-#include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/favicon/core/favicon_service.h"
 #include "content/public/browser/navigation_entry.h"
-#include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/views/vector_icons.h"
@@ -30,7 +27,7 @@ constexpr int kProgressBarHeight = 3;
 // Unique identifier within the CookieControlsBubbleView hierarchy.
 constexpr int kFaviconID = 1;
 
-int GetDaysToExpiration(base::Time expiration) {
+int getDaysToExpiration(base::Time expiration) {
   // TODO(crbug.com/1446230): Apply DST corrections.
   const base::Time midnight_today = base::Time::Now().LocalMidnight();
   const base::Time midnight_expiration = expiration.LocalMidnight();
@@ -94,36 +91,36 @@ void CookieControlsBubbleViewController::OnFaviconFetched(
 void CookieControlsBubbleViewController::ApplyThirdPartyCookiesAllowedState(
     base::Time expiration) {
   bool is_permanent_exception =
-      expiration == base::Time() || GetDaysToExpiration(expiration) == 0;
+      getDaysToExpiration(expiration) == 0 || expiration == base::Time();
   bubble_view_->UpdateTitle(l10n_util::GetStringUTF16(
       IDS_COOKIE_CONTROLS_BUBBLE_COOKIES_ALLOWED_TITLE));
-  bubble_view_->GetContentView()->UpdateContentLabels(
+  bubble_view_->content_view()->UpdateContentLabels(
       is_permanent_exception
           ? l10n_util::GetStringUTF16(
                 IDS_COOKIE_CONTROLS_BUBBLE_PERMANENT_ALLOWED_TITLE)
           : l10n_util::GetPluralStringFUTF16(
                 IDS_COOKIE_CONTROLS_BUBBLE_BLOCKING_RESTART_TITLE,
-                GetDaysToExpiration(expiration)),
+                getDaysToExpiration(expiration)),
       l10n_util::GetStringUTF16(
           is_permanent_exception
               ? IDS_COOKIE_CONTROLS_BUBBLE_PERMANENT_ALLOWED_DESCRIPTION
               : IDS_COOKIE_CONTROLS_BUBBLE_BLOCKING_RESTART_DESCRIPTION_TODAY));
-  bubble_view_->GetContentView()->SetFeedbackSectionVisibility(true);
-  bubble_view_->GetContentView()->SetToggleIsOn(true);
-  bubble_view_->GetContentView()->SetToggleIcon(GetToggleIcon(true));
+  bubble_view_->content_view()->SetFeedbackSectionVisibility(true);
+  bubble_view_->content_view()->SetToggleIsOn(true);
+  bubble_view_->content_view()->SetToggleIcon(GetToggleIcon(true));
 }
 
 void CookieControlsBubbleViewController::ApplyThirdPartyCookiesBlockedState() {
   bubble_view_->UpdateTitle(l10n_util::GetStringUTF16(
       IDS_COOKIE_CONTROLS_BUBBLE_COOKIES_BLOCKED_TITLE));
-  bubble_view_->GetContentView()->UpdateContentLabels(
+  bubble_view_->content_view()->UpdateContentLabels(
       l10n_util::GetStringUTF16(
           IDS_COOKIE_CONTROLS_BUBBLE_SITE_NOT_WORKING_TITLE),
       l10n_util::GetStringUTF16(
           IDS_COOKIE_CONTROLS_BUBBLE_SITE_NOT_WORKING_DESCRIPTION_TEMPORARY));
-  bubble_view_->GetContentView()->SetFeedbackSectionVisibility(false);
-  bubble_view_->GetContentView()->SetToggleIsOn(false);
-  bubble_view_->GetContentView()->SetToggleIcon(GetToggleIcon(false));
+  bubble_view_->content_view()->SetFeedbackSectionVisibility(false);
+  bubble_view_->content_view()->SetToggleIsOn(false);
+  bubble_view_->content_view()->SetToggleIcon(GetToggleIcon(false));
 }
 
 CookieControlsBubbleViewController::~CookieControlsBubbleViewController() =
@@ -163,13 +160,13 @@ void CookieControlsBubbleViewController::OnBreakageConfidenceLevelChanged(
 
 void CookieControlsBubbleViewController::SetButtonPressedCallbacks() {
   toggle_button_callback_ =
-      bubble_view_->GetContentView()->RegisterToggleButtonPressedCallback(
+      bubble_view_->content_view()->RegisterToggleButtonPressedCallback(
           base::BindRepeating(
               &CookieControlsBubbleViewController::OnToggleButtonPressed,
               base::Unretained(this)));
 
   feedback_button_callback_ =
-      bubble_view_->GetContentView()->RegisterFeedbackButtonPressedCallback(
+      bubble_view_->content_view()->RegisterFeedbackButtonPressedCallback(
           base::BindRepeating(
               &CookieControlsBubbleViewController::OnFeedbackButtonPressed,
               base::Unretained(this)));
@@ -190,7 +187,7 @@ void CookieControlsBubbleViewController::OnFeedbackButtonPressed() {
 }
 
 void CookieControlsBubbleViewController::DidStopLoading() {
-  bubble_view_->CloseWidget();
+  bubble_view_->GetWidget()->Close();
 }
 
 std::unique_ptr<views::View>
@@ -239,12 +236,6 @@ void CookieControlsBubbleViewController::FetchFaviconFrom(
   favicon::FaviconService* const favicon_service =
       FaviconServiceFactory::GetForProfile(profile,
                                            ServiceAccessType::EXPLICIT_ACCESS);
-  // FaviconService might be nullptr in unit tests.
-  if (!favicon_service) {
-    CHECK_IS_TEST();
-    return;
-  }
-
   favicon_service->GetFaviconImageForPageURL(
       web_contents->GetVisibleURL(),
       base::BindOnce(&CookieControlsBubbleViewController::OnFaviconFetched,
