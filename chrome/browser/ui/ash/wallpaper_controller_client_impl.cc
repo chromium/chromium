@@ -260,24 +260,6 @@ WallpaperControllerClientImpl* WallpaperControllerClientImpl::Get() {
   return g_wallpaper_controller_client_instance;
 }
 
-void WallpaperControllerClientImpl::SetOnlineWallpaper(
-    const ash::OnlineWallpaperParams& params,
-    ash::WallpaperController::SetWallpaperCallback callback) {
-  if (!IsKnownUser(params.account_id))
-    return;
-
-  wallpaper_controller_->SetOnlineWallpaper(params, std::move(callback));
-}
-
-void WallpaperControllerClientImpl::SetGooglePhotosWallpaper(
-    const ash::GooglePhotosWallpaperParams& params,
-    ash::WallpaperController::SetWallpaperCallback callback) {
-  if (!IsKnownUser(params.account_id))
-    return;
-
-  wallpaper_controller_->SetGooglePhotosWallpaper(params, std::move(callback));
-}
-
 void WallpaperControllerClientImpl::SetCustomizedDefaultWallpaperPaths(
     const base::FilePath& customized_default_small_path,
     const base::FilePath& customized_default_large_path) {

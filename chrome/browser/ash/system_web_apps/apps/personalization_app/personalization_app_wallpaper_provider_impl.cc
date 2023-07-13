@@ -510,9 +510,6 @@ void PersonalizationAppWallpaperProviderImpl::SelectWallpaper(
   auto* variant = FirstValidVariant(variants, checkpoint);
   DCHECK(variant);
 
-  WallpaperControllerClientImpl* client = WallpaperControllerClientImpl::Get();
-  DCHECK(client);
-
   if (pending_select_wallpaper_callback_) {
     std::move(pending_select_wallpaper_callback_).Run(/*success=*/false);
   }
@@ -520,9 +517,11 @@ void PersonalizationAppWallpaperProviderImpl::SelectWallpaper(
 
   SetMinimizedWindowStateForPreview(preview_mode);
 
+  WallpaperControllerClientImpl* client = WallpaperControllerClientImpl::Get();
+  DCHECK(client);
   client->RecordWallpaperSourceUMA(ash::WallpaperType::kOnline);
 
-  client->SetOnlineWallpaper(
+  wallpaper_controller->SetOnlineWallpaper(
       ash::OnlineWallpaperParams(
           GetAccountId(profile_), variant->asset_id,
           GURL(variant->raw_url.spec()), collection_id,
@@ -609,7 +608,7 @@ void PersonalizationAppWallpaperProviderImpl::SelectGooglePhotosPhoto(
 
   client->RecordWallpaperSourceUMA(ash::WallpaperType::kOnceGooglePhotos);
 
-  client->SetGooglePhotosWallpaper(
+  wallpaper_controller->SetGooglePhotosWallpaper(
       ash::GooglePhotosWallpaperParams(GetAccountId(profile_), id,
                                        /*daily_refresh_enabled=*/false, layout,
                                        preview_mode,

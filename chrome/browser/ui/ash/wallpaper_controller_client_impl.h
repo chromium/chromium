@@ -95,12 +95,6 @@ class WallpaperControllerClientImpl
   void OnUserProfileLoaded(const AccountId& account_id) override;
 
   // Wrappers around the ash::WallpaperController interface.
-  void SetOnlineWallpaper(
-      const ash::OnlineWallpaperParams& params,
-      ash::WallpaperController::SetWallpaperCallback callback);
-  void SetGooglePhotosWallpaper(
-      const ash::GooglePhotosWallpaperParams& params,
-      ash::WallpaperController::SetWallpaperCallback callback);
   void SetCustomizedDefaultWallpaperPaths(
       const base::FilePath& customized_default_small_path,
       const base::FilePath& customized_default_large_path);
