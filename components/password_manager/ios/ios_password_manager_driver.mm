@@ -11,6 +11,8 @@
 #include "components/password_manager/core/browser/password_generation_frame_helper.h"
 #include "components/password_manager/core/browser/password_manager.h"
 #import "components/password_manager/ios/ios_password_manager_driver_factory.h"
+#import "components/password_manager/ios/password_manager_java_script_feature.h"
+#import "ios/web/public/js_messaging/web_frames_manager.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -20,15 +22,18 @@ using password_manager::PasswordAutofillManager;
 using password_manager::PasswordManager;
 
 IOSPasswordManagerDriver::IOSPasswordManagerDriver(
+    web::WebState* web_state,
     id<PasswordManagerDriverBridge> bridge,
     password_manager::PasswordManagerInterface* password_manager,
     web::WebFrame* web_frame,
     int driver_id)
-    : bridge_(bridge),
+    : web_state_(web_state->GetWeakPtr()),
+      bridge_(bridge),
       password_manager_(password_manager),
       web_frame_(web_frame),
       id_(driver_id),
-      cached_frame_id_(base::FastHash(web_frame->GetFrameId())) {
+      cached_frame_id_(base::FastHash(web_frame->GetFrameId())),
+      frame_id_(web_frame->GetFrameId()) {
   password_generation_helper_ =
       std::make_unique<password_manager::PasswordGenerationFrameHelper>(
           password_manager_->GetClient(), this);
@@ -59,7 +64,17 @@ void IOSPasswordManagerDriver::SetPasswordFillData(
 
 void IOSPasswordManagerDriver::InformNoSavedCredentials(
     bool should_show_popup_without_passwords) {
-  [bridge_ onNoSavedCredentialsWithFrame:web_frame_];
+  if (!web_state_.get()) {
+    return;
+  }
+  password_manager::PasswordManagerJavaScriptFeature* feature =
+      password_manager::PasswordManagerJavaScriptFeature::GetInstance();
+  web::WebFrame* frame =
+      feature->GetWebFramesManager(web_state_.get())->GetFrameWithId(frame_id_);
+  if (!frame) {
+    return;
+  }
+  [bridge_ onNoSavedCredentialsWithFrame:frame];
 }
 
 void IOSPasswordManagerDriver::FormEligibleForGenerationFound(
