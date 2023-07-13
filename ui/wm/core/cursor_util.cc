@@ -4,6 +4,8 @@
 
 #include "ui/wm/core/cursor_util.h"
 
+#include <cfloat>
+
 #include "base/check_op.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"

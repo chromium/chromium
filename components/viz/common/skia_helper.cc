@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 #include "components/viz/common/skia_helper.h"
 
+#include "third_party/skia/include/core/SkColorFilter.h"
 #include "third_party/skia/include/effects/SkColorMatrix.h"
 #include "third_party/skia/include/effects/SkImageFilters.h"
 #include "third_party/skia/include/effects/SkOverdrawColorFilter.h"
