@@ -5,6 +5,7 @@
 #import "ios/chrome/app/deferred_initialization_runner.h"
 
 #import "base/test/ios/wait_util.h"
+#import "base/test/test_timeouts.h"
 #import "base/time/time.h"
 #import "testing/platform_test.h"
 
@@ -50,7 +51,8 @@ TEST_F(DeferredInitializationRunnerTest, TestRunBlockSequentially) {
   EXPECT_EQ(2U, [runner numberOfBlocksRemaining]);
 
   // Action.
-  base::test::ios::WaitUntilCondition(secondBlockRun);
+  ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      TestTimeouts::action_timeout(), secondBlockRun));
 
   // Test.
   EXPECT_TRUE(firstFlag);
@@ -87,7 +89,8 @@ TEST_F(DeferredInitializationRunnerTest, TestRunBlock) {
   [runner enqueueBlockNamed:@"slow block" block:slowBlock];
 
   // Test.
-  base::test::ios::WaitUntilCondition(quickBlockRun);
+  ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      TestTimeouts::action_timeout(), quickBlockRun));
   EXPECT_TRUE(quickFlag);
   EXPECT_FALSE(slowFlag);
   EXPECT_EQ(1U, [runner numberOfBlocksRemaining]);

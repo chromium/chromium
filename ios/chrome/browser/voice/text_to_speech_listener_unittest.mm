@@ -101,11 +101,10 @@ class TextToSpeechListenerTest : public PlatformTest {
   void TestExtraction(NSString* html, NSData* expected_audio_data) {
     [delegate_ setExpectedAudioData:expected_audio_data];
     web::test::LoadHtml(html, web_state());
-    base::test::ios::WaitUntilCondition(
-        ^bool {
+    ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+        base::Seconds(1000), true, ^bool {
           return [delegate_ audioDataReceived];
-        },
-        true, base::Seconds(1000));
+        }));
   }
 
  private:

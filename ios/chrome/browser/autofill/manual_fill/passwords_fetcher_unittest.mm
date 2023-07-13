@@ -28,7 +28,7 @@
 #endif
 
 using base::test::ios::kWaitForActionTimeout;
-using base::test::ios::WaitUntilCondition;
+using base::test::ios::WaitUntilConditionOrTimeout;
 
 // Test object conforming to PasswordFetcherDelegate used to verify the results
 // from the password store.
@@ -170,11 +170,11 @@ TEST_F(PasswordFetcherTest, ReturnsPassword) {
                           delegate:passwordFetcherDelegate
                                URL:GURL::EmptyGURL()];
 
-  WaitUntilCondition(
-      ^bool {
+  ASSERT_TRUE(WaitUntilConditionOrTimeout(
+      kWaitForActionTimeout,
+      /*run_message_loop=*/true, ^bool {
         return passwordFetcherDelegate.passwordNumber > 0;
-      },
-      /*run_message_loop=*/true, kWaitForActionTimeout);
+      }));
 
   EXPECT_EQ(passwordFetcherDelegate.passwordNumber, 1u);
   EXPECT_TRUE(passwordFetcher);
@@ -192,11 +192,11 @@ TEST_F(PasswordFetcherTest, ReturnsTwoPasswords) {
               accountPasswordStore:GetAccountPasswordStore()
                           delegate:passwordFetcherDelegate
                                URL:GURL::EmptyGURL()];
-  WaitUntilCondition(
-      ^bool {
+  ASSERT_TRUE(WaitUntilConditionOrTimeout(
+      kWaitForActionTimeout,
+      /*run_message_loop=*/true, ^bool {
         return passwordFetcherDelegate.passwordNumber > 0;
-      },
-      /*run_message_loop=*/true, kWaitForActionTimeout);
+      }));
 
   EXPECT_EQ(passwordFetcherDelegate.passwordNumber, 2u);
   EXPECT_TRUE(passwordFetcher);
@@ -214,11 +214,11 @@ TEST_F(PasswordFetcherTest, IgnoresBlocked) {
               accountPasswordStore:GetAccountPasswordStore()
                           delegate:passwordFetcherDelegate
                                URL:GURL::EmptyGURL()];
-  WaitUntilCondition(
-      ^bool {
+  ASSERT_TRUE(WaitUntilConditionOrTimeout(
+      kWaitForActionTimeout,
+      /*run_message_loop=*/true, ^bool {
         return passwordFetcherDelegate.passwordNumber > 0;
-      },
-      /*run_message_loop=*/true, kWaitForActionTimeout);
+      }));
 
   EXPECT_EQ(passwordFetcherDelegate.passwordNumber, 1u);
   EXPECT_TRUE(passwordFetcher);
@@ -238,11 +238,11 @@ TEST_F(PasswordFetcherTest, IgnoresDuplicated) {
               accountPasswordStore:GetAccountPasswordStore()
                           delegate:passwordFetcherDelegate
                                URL:GURL::EmptyGURL()];
-  WaitUntilCondition(
-      ^bool {
+  ASSERT_TRUE(WaitUntilConditionOrTimeout(
+      kWaitForActionTimeout,
+      /*run_message_loop=*/true, ^bool {
         return passwordFetcherDelegate.passwordNumber > 0;
-      },
-      /*run_message_loop=*/true, kWaitForActionTimeout);
+      }));
 
   EXPECT_EQ(passwordFetcherDelegate.passwordNumber, 1u);
   EXPECT_TRUE(passwordFetcher);
@@ -259,20 +259,20 @@ TEST_F(PasswordFetcherTest, ReceivesZeroPasswords) {
               accountPasswordStore:GetAccountPasswordStore()
                           delegate:passwordFetcherDelegate
                                URL:GURL::EmptyGURL()];
-  WaitUntilCondition(
-      ^bool {
+  ASSERT_TRUE(WaitUntilConditionOrTimeout(
+      kWaitForActionTimeout,
+      /*run_message_loop=*/true, ^bool {
         return passwordFetcherDelegate.passwordNumber > 0;
-      },
-      /*run_message_loop=*/true, kWaitForActionTimeout);
+      }));
   ASSERT_EQ(passwordFetcherDelegate.passwordNumber, 1u);
 
   GetProfilePasswordStore()->RemoveLogin(MakeForm1());
 
-  WaitUntilCondition(
-      ^bool {
+  ASSERT_TRUE(WaitUntilConditionOrTimeout(
+      kWaitForActionTimeout,
+      /*run_message_loop=*/true, ^bool {
         return passwordFetcherDelegate.passwordNumber == 0;
-      },
-      /*run_message_loop=*/true, kWaitForActionTimeout);
+      }));
   EXPECT_EQ(passwordFetcherDelegate.passwordNumber, 0u);
   EXPECT_TRUE(passwordFetcher);
 }
@@ -290,11 +290,11 @@ TEST_F(PasswordFetcherTest, FilterPassword) {
                           delegate:passwordFetcherDelegate
                                URL:GURL("http://www.example.com/accounts/"
                                         "Login")];
-  WaitUntilCondition(
-      ^bool {
+  ASSERT_TRUE(WaitUntilConditionOrTimeout(
+      kWaitForActionTimeout,
+      /*run_message_loop=*/true, ^bool {
         return passwordFetcherDelegate.passwordNumber > 0;
-      },
-      /*run_message_loop=*/true, kWaitForActionTimeout);
+      }));
 
   EXPECT_EQ(passwordFetcherDelegate.passwordNumber, 1u);
   EXPECT_TRUE(passwordFetcher);
@@ -312,11 +312,11 @@ TEST_F(PasswordFetcherTest, IgnoresDuplicateInOtherStore) {
               accountPasswordStore:GetAccountPasswordStore()
                           delegate:passwordFetcherDelegate
                                URL:GURL::EmptyGURL()];
-  WaitUntilCondition(
-      ^bool {
+  ASSERT_TRUE(WaitUntilConditionOrTimeout(
+      kWaitForActionTimeout,
+      /*run_message_loop=*/true, ^bool {
         return passwordFetcherDelegate.passwordNumber > 0;
-      },
-      /*run_message_loop=*/true, kWaitForActionTimeout);
+      }));
 
   EXPECT_EQ(passwordFetcherDelegate.passwordNumber, 1u);
   EXPECT_TRUE(passwordFetcher);

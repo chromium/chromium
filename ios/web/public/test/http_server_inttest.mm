@@ -11,6 +11,7 @@
 #import "base/path_service.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "base/test/test_timeouts.h"
 #import "ios/web/public/test/http_server/http_server.h"
 #import "ios/web/public/test/http_server/string_response_provider.h"
 #import "ios/web/test/web_int_test.h"
@@ -70,8 +71,9 @@ TEST_F(HttpServerTest, StartAndInterfaceWithResponseProvider) {
       [[NSURLSession sharedSession] dataTaskWithURL:net::NSURLWithGURL(url)
                                   completionHandler:completion_handler];
   [data_task resume];
-  base::test::ios::WaitUntilCondition(^bool() {
-    return page_result;
-  });
+  ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      TestTimeouts::action_timeout(), ^bool() {
+        return page_result;
+      }));
   EXPECT_NSEQ(page_result, base::SysUTF8ToNSString(kHelloWorld));
 }

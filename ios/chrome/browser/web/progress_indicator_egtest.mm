@@ -73,12 +73,12 @@ class InfinitePendingResponseProvider : public HtmlResponseProvider {
       condition_variable_.Signal();
     }
 
-    base::test::ios::WaitUntilCondition(
-        ^{
+    const bool success =
+        base::test::ios::WaitUntilConditionOrTimeout(base::Seconds(10), ^{
           base::AutoLock auto_lock(lock_);
           return terminated_.load(std::memory_order_acquire);
-        },
-        false, base::Seconds(10));
+        });
+    GREYAssertTrue(success, @"Timed out trying to Abort()");
   }
 
   // HtmlResponseProvider overrides:

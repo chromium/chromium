@@ -7,6 +7,7 @@
 #import "base/base64.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "base/test/test_timeouts.h"
 #import "components/autofill/core/browser/proto/password_requirements.pb.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
@@ -65,7 +66,8 @@ TEST_F(PasswordSpecFetcherTest, DefaultSpecInvalidFetch) {
     block_ran = true;
   }];
 
-  base::test::ios::WaitUntilCondition(^{
-    return block_ran;
-  });
+  EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      TestTimeouts::action_timeout(), ^{
+        return block_ran;
+      }));
 }

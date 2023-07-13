@@ -9,6 +9,7 @@
 #include "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #include "base/test/scoped_feature_list.h"
+#import "base/test/test_timeouts.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
@@ -47,7 +48,7 @@ using autofill::FieldRendererId;
 using autofill::FormRendererId;
 using autofill::PopupItemId;
 using autofill::PopupType;
-using base::test::ios::WaitUntilCondition;
+using base::test::ios::WaitUntilConditionOrTimeout;
 
 @interface AutofillAgent (Testing)
 - (void)updateFieldManagerWithFillingResults:(NSString*)jsonString;
@@ -211,9 +212,10 @@ TEST_F(AutofillAgentTests,
   fake_web_state_.WasShown();
 
   // Wait until the expected handler is called.
-  WaitUntilCondition(^bool() {
-    return completion_handler_called;
-  });
+  ASSERT_TRUE(
+      WaitUntilConditionOrTimeout(TestTimeouts::action_timeout(), ^bool() {
+        return completion_handler_called;
+      }));
   EXPECT_FALSE(completion_handler_success);
 }
 
@@ -253,9 +255,10 @@ TEST_F(AutofillAgentTests, onSuggestionsReady_ShowAccountCards) {
   fake_web_state_.WasShown();
 
   // Wait until the expected handler is called.
-  WaitUntilCondition(^bool() {
-    return completion_handler_called;
-  });
+  ASSERT_TRUE(
+      WaitUntilConditionOrTimeout(TestTimeouts::action_timeout(), ^bool() {
+        return completion_handler_called;
+      }));
 
   // "Show credit cards from account" should be the only suggestion.
   EXPECT_EQ(1U, completion_handler_suggestions.count);
@@ -435,9 +438,10 @@ TEST_F(AutofillAgentTests, onSuggestionsReady_ClearForm) {
   fake_web_state_.WasShown();
 
   // Wait until the expected handler is called.
-  WaitUntilCondition(^bool() {
-    return completion_handler_called;
-  });
+  ASSERT_TRUE(
+      WaitUntilConditionOrTimeout(TestTimeouts::action_timeout(), ^bool() {
+        return completion_handler_called;
+      }));
 
   // "Clear Form" should appear as the first suggestion. Otherwise, the order of
   // suggestions should not change.
@@ -489,9 +493,10 @@ TEST_F(AutofillAgentTests, onSuggestionsReady_ClearFormWithGPay) {
   fake_web_state_.WasShown();
 
   // Wait until the expected handler is called.
-  WaitUntilCondition(^bool() {
-    return completion_handler_called;
-  });
+  ASSERT_TRUE(
+      WaitUntilConditionOrTimeout(TestTimeouts::action_timeout(), ^bool() {
+        return completion_handler_called;
+      }));
 
   EXPECT_EQ(3U, completion_handler_suggestions.count);
   EXPECT_EQ(PopupItemId::kClearForm,

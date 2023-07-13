@@ -188,10 +188,9 @@ TEST_F(PaymentRequestFullCardRequesterTest, PresentAndDismissNewPrompt) {
 
   // Wait until the view controller is ordered to be dismissed and the animation
   // completes.
-  base::test::ios::WaitUntilCondition(
-      ^bool {
+  ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      base::Seconds(10), true, ^bool {
         return !base_view_controller.presentedViewController;
-      },
-      true, base::Seconds(10));
+      }));
   EXPECT_EQ(nil, base_view_controller.presentedViewController);
 }

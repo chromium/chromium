@@ -11,6 +11,7 @@
 #import "base/test/ios/wait_util.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_mock_clock_override.h"
+#import "base/test/test_timeouts.h"
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "components/bookmarks/test/bookmark_test_helpers.h"
 #import "ios/chrome/browser/bookmarks/local_or_syncable_bookmark_model_factory.h"
@@ -319,9 +320,10 @@ TEST_F(TabGridCoordinatorTest, CompletionHandlers) {
                            completion:^{
                              completion_handler_was_called = YES;
                            }];
-  base::test::ios::WaitUntilCondition(^bool() {
-    return completion_handler_was_called;
-  });
+  ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      TestTimeouts::action_timeout(), ^bool() {
+        return completion_handler_was_called;
+      }));
   ASSERT_TRUE(completion_handler_was_called);
   EXPECT_TRUE(delegate_.didEndCalled);
 
@@ -333,9 +335,10 @@ TEST_F(TabGridCoordinatorTest, CompletionHandlers) {
                            completion:^{
                              completion_handler_was_called = YES;
                            }];
-  base::test::ios::WaitUntilCondition(^bool() {
-    return completion_handler_was_called;
-  });
+  ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      TestTimeouts::action_timeout(), ^bool() {
+        return completion_handler_was_called;
+      }));
   ASSERT_TRUE(completion_handler_was_called);
   EXPECT_FALSE(delegate_.didEndCalled);
 }

@@ -418,7 +418,8 @@ void AutofillControllerTest::ExpectHappinessMetric(
 }
 
 void AutofillControllerTest::WaitForCondition(ConditionBlock condition) {
-  base::test::ios::WaitUntilCondition(condition, true, base::Seconds(1000));
+  ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(base::Seconds(1000),
+                                                           true, condition));
 }
 
 // Checks that viewing an HTML page containing a form results in the form being

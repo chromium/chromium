@@ -10,6 +10,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/task_environment.h"
+#import "base/test/test_timeouts.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/testing_pref_service.h"
 #import "components/signin/public/base/signin_pref_names.h"
@@ -54,15 +55,17 @@ class AddAccountSigninManagerTest : public PlatformTest {
   void WaitForFakeAddAccountViewPresented(NSString* expectedUserEmail) {
     EXPECT_NSEQ(expectedUserEmail,
                 identity_interaction_manager_.lastStartAuthActivityUserEmail);
-    base::test::ios::WaitUntilCondition(^bool() {
-      return identity_interaction_manager_.isActivityViewPresented;
-    });
+    ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+        TestTimeouts::action_timeout(), ^bool() {
+          return identity_interaction_manager_.isActivityViewPresented;
+        }));
   }
 
   void WaitForFakeAddAccountViewDismissed() {
-    base::test::ios::WaitUntilCondition(^bool() {
-      return !identity_interaction_manager_.isActivityViewPresented;
-    });
+    ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+        TestTimeouts::action_timeout(), ^bool() {
+          return !identity_interaction_manager_.isActivityViewPresented;
+        }));
   }
 
   FakeSystemIdentityManager* fake_system_identity_manager() {

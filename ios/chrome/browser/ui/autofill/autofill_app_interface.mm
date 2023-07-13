@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/autofill/autofill_app_interface.h"
 
+#import "base/check.h"
 #import "base/memory/singleton.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
@@ -169,8 +170,8 @@ void AddAutofillProfile(autofill::PersonalDataManager* personalDataManager,
   ConditionBlock conditionBlock = ^bool {
     return profileCount < personalDataManager->GetProfiles().size();
   };
-  base::test::ios::TimeUntilCondition(nil, conditionBlock, false,
-                                      base::test::ios::kWaitForActionTimeout);
+  CHECK(base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForActionTimeout, conditionBlock));
 }
 
 }  // namespace
@@ -378,8 +379,8 @@ class SaveCardInfobarEGTestHelper
   ConditionBlock conditionBlock = ^bool {
     return 0 == personalDataManager->GetProfiles().size();
   };
-  base::test::ios::TimeUntilCondition(nil, conditionBlock, false,
-                                      base::test::ios::kWaitForActionTimeout);
+  CHECK(base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForActionTimeout, conditionBlock));
 
   autofill::prefs::SetAutofillProfileEnabled(browserState->GetPrefs(), YES);
 }
@@ -421,9 +422,8 @@ class SaveCardInfobarEGTestHelper
   ConditionBlock conditionBlock = ^bool {
     return card_count < personalDataManager->GetCreditCards().size();
   };
-  base::test::ios::TimeUntilCondition(
-      nil, conditionBlock, false,
-      base::test::ios::kWaitForFileOperationTimeout);
+  CHECK(base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForFileOperationTimeout, conditionBlock));
   personalDataManager->NotifyPersonalDataObserver();
   return base::SysUTF16ToNSString(card.NetworkAndLastFourDigits());
 }

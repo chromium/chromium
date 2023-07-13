@@ -147,8 +147,8 @@ TEST_F(TwoScreensSigninCoordinatorTest, PresentScreens) {
   auto completion_condition = ^{
     return completion_block_done && interrupt_completion_done;
   };
-  base::test::ios::WaitUntilCondition(completion_condition, true,
-                                      base::Seconds(1));
+  ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      base::Seconds(1), true, completion_condition));
   EXPECT_EQ(signin_result, SigninCoordinatorResultInterrupted);
   EXPECT_EQ(signin_completion_info.identity, nil);
   EXPECT_EQ(signin_completion_info.signinCompletionAction,
@@ -201,8 +201,8 @@ TEST_F(TwoScreensSigninCoordinatorTest, CanceledByUser) {
   auto completion_condition = ^{
     return completion_block_done;
   };
-  base::test::ios::WaitUntilCondition(completion_condition, true,
-                                      base::Seconds(1));
+  ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      base::Seconds(1), true, completion_condition));
   EXPECT_EQ(signin_result, SigninCoordinatorResultCanceledByUser);
   EXPECT_EQ(signin_completion_info.identity, nil);
   EXPECT_EQ(signin_completion_info.signinCompletionAction,
@@ -235,8 +235,8 @@ TEST_F(TwoScreensSigninCoordinatorTest, SwipeToDismiss) {
   auto completion_condition = ^{
     return completion_block_done;
   };
-  base::test::ios::WaitUntilCondition(completion_condition, true,
-                                      base::Seconds(1));
+  ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      base::Seconds(1), true, completion_condition));
   EXPECT_EQ(signin_result, SigninCoordinatorResultInterrupted);
   EXPECT_EQ(signin_completion_info.identity, nil);
   EXPECT_EQ(signin_completion_info.signinCompletionAction,

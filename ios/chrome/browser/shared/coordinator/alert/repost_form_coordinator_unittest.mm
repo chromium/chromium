@@ -9,6 +9,7 @@
 #import "base/mac/foundation_util.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/task_environment.h"
+#import "base/test/test_timeouts.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
@@ -120,9 +121,10 @@ TEST_F(RepostFormCoordinatorTest, Retrying) {
 
   AddViewToWindow();
 
-  base::test::ios::WaitUntilCondition(^bool {
-    return GetAlertController();
-  });
+  ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      TestTimeouts::action_timeout(), ^bool {
+        return GetAlertController();
+      }));
 
   EXPECT_EQ(2U, GetAlertController().actions.count);
 

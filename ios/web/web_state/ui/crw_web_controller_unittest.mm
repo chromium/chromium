@@ -15,6 +15,7 @@
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/scoped_feature_list.h"
+#import "base/test/test_timeouts.h"
 #import "ios/testing/ocmock_complex_type_helper.h"
 #import "ios/web/common/crw_content_view.h"
 #import "ios/web/common/crw_web_view_content_view.h"
@@ -1346,9 +1347,10 @@ TEST_F(CRWWebControllerWebProcessTest, Crash) {
   FakeWebStateObserver observer(web_state());
   FakeWebStateObserver* observer_ptr = &observer;
   SimulateWKWebViewCrash(web_view_);
-  base::test::ios::WaitUntilCondition(^bool() {
-    return observer_ptr->render_process_gone_info();
-  });
+  ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      TestTimeouts::action_timeout(), ^bool() {
+        return observer_ptr->render_process_gone_info();
+      }));
   EXPECT_EQ(web_state(), observer.render_process_gone_info()->web_state);
   EXPECT_FALSE([web_controller() isViewAlive]);
   EXPECT_TRUE([web_controller() isWebProcessCrashed]);
@@ -1394,9 +1396,10 @@ TEST_F(CRWWebControllerWebViewTest, CheckNoKVOWhenWebStateDestroyed) {
   NSURL* URL = [NSURL URLWithString:@"about:blank"];
   NSURLRequest* request = [NSURLRequest requestWithURL:URL];
   [web_view_ loadRequest:request];
-  base::test::ios::WaitUntilCondition(^bool() {
-    return !web_view_.loading;
-  });
+  ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      TestTimeouts::action_timeout(), ^bool() {
+        return !web_view_.loading;
+      }));
 
   // Destroying the WebState should call stop at a point where all observers are
   // supposed to be removed.
