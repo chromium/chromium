@@ -100,6 +100,7 @@ public class ReengagementNotificationControllerIntegrationTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1464558")
     public void testReengagementNotificationSent() {
         DefaultBrowserInfo2.setDefaultInfoForTests(
                 createDefaultInfo(/* passesPrecondition = */ true));
