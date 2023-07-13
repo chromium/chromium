@@ -261,15 +261,6 @@ class AppServiceProxyBase : public KeyedService,
   std::vector<IntentLaunchInfo> GetAppsForFiles(
       std::vector<apps::IntentFilePtr> files);
 
-  // Adds a preferred app for |url|.
-  // Deprecated, prefer calling SetSupportedLinksPreference() instead.
-  // TODO(crbug.com/1416434): Migrate existing users.
-  void AddPreferredApp(const std::string& app_id, const GURL& url);
-  // Adds a preferred app for |intent|. Only supports link intents.
-  // Deprecated, prefer calling SetSupportedLinksPreference() instead.
-  // TODO(crbug.com/1416434): Migrate existing users.
-  void AddPreferredApp(const std::string& app_id, const IntentPtr& intent);
-
   // Sets |app_id| as the preferred app for all of its supported links ('view'
   // intent filters with a scheme and host). Any existing preferred apps for
   // those links will have all their supported links unset, as if
