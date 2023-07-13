@@ -22,7 +22,7 @@ declare_args() {
   use_sysroot =
       current_cpu == "x86" || current_cpu == "x64" || current_cpu == "arm" ||
       current_cpu == "arm64" || current_cpu == "mipsel" ||
-      current_cpu == "mips64el" || current_cpu == "riscv64"
+      current_cpu == "mips64el" || (current_cpu == "riscv64" && is_android)
 }
 
 if (sysroot == "") {
