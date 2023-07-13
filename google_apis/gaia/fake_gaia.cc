@@ -523,12 +523,12 @@ void FakeGaia::HandleMergeSession(const HttpRequest& request,
   http_response->set_code(net::HTTP_OK);
 }
 
-void FakeGaia::FormatOkJSONResponse(const base::Value& value,
+void FakeGaia::FormatOkJSONResponse(const base::ValueView& value,
                                     BasicHttpResponse* http_response) {
   FormatJSONResponse(value, net::HTTP_OK, http_response);
 }
 
-void FakeGaia::FormatJSONResponse(const base::Value& value,
+void FakeGaia::FormatJSONResponse(const base::ValueView& value,
                                   net::HttpStatusCode status,
                                   BasicHttpResponse* http_response) {
   std::string response_json;
@@ -764,16 +764,20 @@ void FakeGaia::HandleAuthToken(const HttpRequest& request,
       }
     }
 
-    base::Value::Dict response_dict;
-    response_dict.Set("refresh_token", merge_session_params_.refresh_token);
-    if (!device_id.empty())
+    if (!device_id.empty()) {
       refresh_token_to_device_id_map_[merge_session_params_.refresh_token] =
           device_id;
-    response_dict.Set("access_token", merge_session_params_.access_token);
-    if (!merge_session_params_.id_token.empty())
+    }
+
+    auto response_dict =
+        base::Value::Dict()
+            .Set("refresh_token", merge_session_params_.refresh_token)
+            .Set("access_token", merge_session_params_.access_token)
+            .Set("expires_in", 3600);
+    if (!merge_session_params_.id_token.empty()) {
       response_dict.Set("id_token", merge_session_params_.id_token);
-    response_dict.Set("expires_in", 3600);
-    FormatOkJSONResponse(base::Value(std::move(response_dict)), http_response);
+    }
+    FormatOkJSONResponse(response_dict, http_response);
     return;
   }
 
@@ -787,12 +791,11 @@ void FakeGaia::HandleAuthToken(const HttpRequest& request,
     const AccessTokenInfo* token_info =
         FindAccessTokenInfo(refresh_token, client_id, scope);
     if (token_info) {
-      base::Value::Dict response_dict;
-      response_dict.Set("access_token", token_info->token);
-      response_dict.Set("expires_in", 3600);
-      response_dict.Set("id_token", token_info->id_token);
-      FormatOkJSONResponse(base::Value(std::move(response_dict)),
-                           http_response);
+      auto response_dict = base::Value::Dict()
+                               .Set("access_token", token_info->token)
+                               .Set("expires_in", 3600)
+                               .Set("id_token", token_info->id_token);
+      FormatOkJSONResponse(response_dict, http_response);
       return;
     }
   }
@@ -811,17 +814,19 @@ void FakeGaia::HandleTokenInfo(const HttpRequest& request,
     token_info = GetAccessTokenInfo(access_token);
 
   if (token_info) {
-    base::Value::Dict response_dict;
-    response_dict.Set("issued_to", token_info->issued_to);
-    response_dict.Set("audience", token_info->audience);
-    response_dict.Set("user_id", token_info->user_id);
-    std::vector<base::StringPiece> scope_vector(token_info->scopes.begin(),
-                                                token_info->scopes.end());
-    response_dict.Set("scope", base::JoinString(scope_vector, " "));
-    response_dict.Set("expires_in", token_info->expires_in);
-    response_dict.Set("email", token_info->email);
-    response_dict.Set("id_token", token_info->id_token);
-    FormatOkJSONResponse(base::Value(std::move(response_dict)), http_response);
+    auto response_dict =
+        base::Value::Dict()
+            .Set("issued_to", token_info->issued_to)
+            .Set("audience", token_info->audience)
+            .Set("user_id", token_info->user_id)
+            .Set("scope", base::JoinString(std::vector<base::StringPiece>(
+                                               token_info->scopes.begin(),
+                                               token_info->scopes.end()),
+                                           " "))
+            .Set("expires_in", token_info->expires_in)
+            .Set("email", token_info->email)
+            .Set("id_token", token_info->id_token);
+    FormatOkJSONResponse(response_dict, http_response);
   } else {
     http_response->set_code(net::HTTP_BAD_REQUEST);
   }
@@ -838,15 +843,14 @@ void FakeGaia::HandleIssueToken(const HttpRequest& request,
     const AccessTokenInfo* token_info =
         FindAccessTokenInfo(access_token, client_id, scope);
     if (token_info) {
-      base::Value::Dict response_dict;
-      response_dict.Set("issueAdvice", "auto");
-      response_dict.Set("expiresIn",
-                        base::NumberToString(token_info->expires_in));
-      response_dict.Set("token", token_info->token);
-      response_dict.Set("grantedScopes", scope);
-      response_dict.Set("id_token", token_info->id_token);
-      FormatOkJSONResponse(base::Value(std::move(response_dict)),
-                           http_response);
+      auto response_dict =
+          base::Value::Dict()
+              .Set("issueAdvice", "auto")
+              .Set("expiresIn", base::NumberToString(token_info->expires_in))
+              .Set("token", token_info->token)
+              .Set("grantedScopes", scope)
+              .Set("id_token", token_info->id_token);
+      FormatOkJSONResponse(response_dict, http_response);
       return;
     }
   }
@@ -888,12 +892,12 @@ void FakeGaia::HandleOAuthUserInfo(const HttpRequest& request,
   }
 
   if (token_info) {
-    base::Value::Dict response_dict;
-    response_dict.Set("id", GetGaiaIdOfEmail(token_info->email));
-    response_dict.Set("email", token_info->email);
-    response_dict.Set("verified_email", token_info->email);
-    response_dict.Set("id_token", token_info->id_token);
-    FormatOkJSONResponse(base::Value(std::move(response_dict)), http_response);
+    auto response_dict = base::Value::Dict()
+                             .Set("id", GetGaiaIdOfEmail(token_info->email))
+                             .Set("email", token_info->email)
+                             .Set("verified_email", token_info->email)
+                             .Set("id_token", token_info->id_token);
+    FormatOkJSONResponse(response_dict, http_response);
   } else {
     http_response->set_code(net::HTTP_BAD_REQUEST);
   }
@@ -924,46 +928,46 @@ void FakeGaia::HandleSAMLRedirect(const HttpRequest& request,
 
 void FakeGaia::HandleGetCheckConnectionInfo(const HttpRequest& request,
                                             BasicHttpResponse* http_response) {
-  FormatOkJSONResponse(base::Value(base::Value::Type::LIST), http_response);
+  FormatOkJSONResponse(base::Value::List(), http_response);
 }
 
 void FakeGaia::HandleGetReAuthProofToken(const HttpRequest& request,
                                          BasicHttpResponse* http_response) {
-  base::Value response_dict(base::Value::Type::DICT);
-  base::Value error(base::Value::Type::DICT);
+  base::Value::Dict response_dict;
+  base::Value::Dict error;
 
   switch (next_reauth_status_) {
     case GaiaAuthConsumer::ReAuthProofTokenStatus::kSuccess:
-      response_dict.GetDict().Set("encodedRapt", "abc123");
+      response_dict.Set("encodedRapt", "abc123");
       FormatOkJSONResponse(response_dict, http_response);
       break;
 
     case GaiaAuthConsumer::ReAuthProofTokenStatus::kInvalidGrant:
-      error.GetDict().Set("message", "INVALID_GRANT");
-      response_dict.GetDict().Set("error", std::move(error));
+      error.Set("message", "INVALID_GRANT");
+      response_dict.Set("error", std::move(error));
       FormatJSONResponse(response_dict, net::HTTP_BAD_REQUEST, http_response);
       break;
 
     case GaiaAuthConsumer::ReAuthProofTokenStatus::kInvalidRequest:
-      error.GetDict().Set("message", "INVALID_REQUEST");
-      response_dict.GetDict().Set("error", std::move(error));
+      error.Set("message", "INVALID_REQUEST");
+      response_dict.Set("error", std::move(error));
       FormatJSONResponse(response_dict, net::HTTP_BAD_REQUEST, http_response);
       break;
 
     case GaiaAuthConsumer::ReAuthProofTokenStatus::kUnauthorizedClient:
-      error.GetDict().Set("message", "UNAUTHORIZED_CLIENT");
-      response_dict.GetDict().Set("error", std::move(error));
+      error.Set("message", "UNAUTHORIZED_CLIENT");
+      response_dict.Set("error", std::move(error));
       FormatJSONResponse(response_dict, net::HTTP_FORBIDDEN, http_response);
       break;
 
     case GaiaAuthConsumer::ReAuthProofTokenStatus::kInsufficientScope:
-      error.GetDict().Set("message", "INSUFFICIENT_SCOPE");
-      response_dict.GetDict().Set("error", std::move(error));
+      error.Set("message", "INSUFFICIENT_SCOPE");
+      response_dict.Set("error", std::move(error));
       FormatJSONResponse(response_dict, net::HTTP_FORBIDDEN, http_response);
       break;
 
     case GaiaAuthConsumer::ReAuthProofTokenStatus::kCredentialNotSet:
-      response_dict.GetDict().Set("error", std::move(error));
+      response_dict.Set("error", std::move(error));
       FormatJSONResponse(response_dict, net::HTTP_FORBIDDEN, http_response);
       break;
 

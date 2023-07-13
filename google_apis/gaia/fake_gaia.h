@@ -17,16 +17,14 @@
 #include "url/gurl.h"
 
 namespace base {
-class Value;
-}
+class ValueView;
+}  // namespace base
 
-namespace net {
-namespace test_server {
+namespace net::test_server {
 class BasicHttpResponse;
 struct HttpRequest;
 class HttpResponse;
-}
-}
+}  // namespace net::test_server
 
 // This is a test helper that implements a fake GAIA service for use in browser
 // tests. It's mainly intended for use with EmbeddedTestServer, for which it can
@@ -256,13 +254,13 @@ class FakeGaia {
 
   // Formats a JSON response with the data in |value|, setting the http status
   // to |status|.
-  void FormatJSONResponse(const base::Value& value,
+  void FormatJSONResponse(const base::ValueView& value,
                           net::HttpStatusCode status,
                           net::test_server::BasicHttpResponse* http_response);
 
   // Formats a JSON response with the data in |value|, setting the http status
   // to net::HTTP_OK.
-  void FormatOkJSONResponse(const base::Value& value,
+  void FormatOkJSONResponse(const base::ValueView& value,
                             net::test_server::BasicHttpResponse* http_response);
 
   using HttpRequestHandlerCallback = base::RepeatingCallback<void(
