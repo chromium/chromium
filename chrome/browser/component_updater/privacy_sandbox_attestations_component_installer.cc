@@ -29,7 +29,7 @@
 namespace {
 
 constexpr base::FilePath::CharType kPrivacySandboxAttestationsFileName[] =
-    FILE_PATH_LITERAL("attestations");
+    FILE_PATH_LITERAL("privacy-sandbox-attestations.dat");
 
 constexpr base::FilePath::CharType
     kPrivacySandboxAttestationsRelativeInstallDir[] =
