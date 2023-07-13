@@ -11,7 +11,6 @@
 #include <unordered_map>
 #include <utility>
 
-#include "base/auto_reset.h"
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
@@ -21,13 +20,11 @@
 #include "base/observer_list.h"
 #include "base/ranges/algorithm.h"
 #include "base/scoped_observation.h"
-#include "base/strings/string_util.h"
-#include "base/strings/utf_string_conversions.h"
+#include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
-#include "chrome/browser/defaults.h"
 #include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/profiles/profile.h"
@@ -41,7 +38,6 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_bubble.h"
 #include "chrome/browser/ui/side_panel/companion/companion_utils.h"
-#include "chrome/browser/ui/tab_ui_helper.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
 #include "chrome/browser/ui/tabs/tab.h"
@@ -51,6 +47,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/tabs/tab_utils.h"
+#include "chrome/browser/ui/thumbnails/thumbnail_tab_helper.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/user_notes/user_notes_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
@@ -60,13 +57,11 @@
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
-#include "chrome/common/url_constants.h"
-#include "chrome/grit/generated_resources.h"
+#include "chrome/common/webui_url_constants.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/reading_list/core/reading_list_model.h"
 #include "components/saved_tab_groups/saved_tab_group_model.h"
-#include "components/send_tab_to_self/metrics_util.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
@@ -75,12 +70,11 @@
 #include "content/public/browser/render_widget_host_observer.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/url_constants.h"
 #include "media/base/media_switches.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
-#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/gfx/range/range.h"
-#include "ui/gfx/text_elider.h"
 
 using base::UserMetricsAction;
 using content::WebContents;
@@ -127,7 +121,7 @@ bool ShouldForgetOpenersForTransition(ui::PageTransition transition) {
 
 // Installs RenderWidgetVisibilityTracker when the active tab has changed.
 std::unique_ptr<RenderWidgetHostVisibilityTracker>
-InstallRenderWigetVisibilityTracker(const TabStripSelectionChange& selection) {
+InstallRenderWidgetVisibilityTracker(const TabStripSelectionChange& selection) {
   if (!selection.active_tab_changed())
     return nullptr;
 
@@ -529,7 +523,7 @@ void TabStripModel::SendDetachWebContentsNotifications(
       });
   {
     auto visibility_tracker =
-        empty() ? nullptr : InstallRenderWigetVisibilityTracker(selection);
+        empty() ? nullptr : InstallRenderWidgetVisibilityTracker(selection);
 
     OnChange(change, selection);
   }
@@ -2086,7 +2080,7 @@ TabStripSelectionChange TabStripModel::SetSelection(
       }
     }
     TabStripModelChange change;
-    auto visibility_tracker = InstallRenderWigetVisibilityTracker(selection);
+    auto visibility_tracker = InstallRenderWidgetVisibilityTracker(selection);
     OnChange(change, selection);
   }
 
@@ -2636,6 +2630,19 @@ void TabStripModel::OnActiveTabChanged(
   if (old_contents) {
     int index = GetIndexOfWebContents(old_contents);
     if (index != TabStripModel::kNoTab) {
+      // When switching away from a tab, the tab preview system may want to
+      // capture an updated preview image. This must be done before any changes
+      // are made to the old contents, and while the contents are still visible.
+      //
+      // It's possible this could be done with a separate TabStripModelObserver,
+      // but then it would be possible for a different observer to jump in front
+      // and modify the WebContents, so for now, do it here.
+      auto* const thumbnail_helper =
+          ThumbnailTabHelper::FromWebContents(old_contents);
+      if (thumbnail_helper) {
+        thumbnail_helper->CaptureThumbnailOnTabBackgrounded();
+      }
+
       old_opener = GetOpenerOfWebContentsAt(index);
 
       // Forget the opener relationship if it needs to be reset whenever the

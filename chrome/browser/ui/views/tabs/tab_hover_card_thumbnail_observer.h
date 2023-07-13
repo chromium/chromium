@@ -8,8 +8,6 @@
 #include <memory>
 
 #include "base/callback_list.h"
-#include "base/functional/bind.h"
-#include "chrome/browser/ui/tabs/tab_style.h"
 #include "chrome/browser/ui/thumbnails/thumbnail_image.h"
 
 // Tracks a specific thumbnail, or no thumbnail. Provides a callback for when

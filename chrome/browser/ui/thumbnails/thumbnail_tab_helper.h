@@ -32,6 +32,11 @@ class ThumbnailTabHelper
 
   bool is_tab_discarded() const { return is_tab_discarded_; }
 
+  // Notify the helper that the tab is being hidden by being put into the
+  // background. Allows for an updated preview image after swapping away from an
+  // active tab.
+  void CaptureThumbnailOnTabBackgrounded();
+
  private:
   class TabStateTracker;
   friend class content::WebContentsUserData<ThumbnailTabHelper>;
@@ -50,7 +55,6 @@ class ThumbnailTabHelper
   // before a page is frozen or swapped out.
   void StartVideoCapture();
   void StopVideoCapture();
-  void CaptureThumbnailOnTabHidden();
 
   void StoreThumbnailForTabSwitch(base::TimeTicks start_time,
                                   const SkBitmap& bitmap);
