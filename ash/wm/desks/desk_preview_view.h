@@ -122,6 +122,7 @@ class ASH_EXPORT DeskPreviewView : public views::Button,
   void OnThemeChanged() override;
   void OnFocus() override;
   void OnBlur() override;
+  void AboutToRequestFocusFromTabTraversal(bool reverse) override;
 
   // OverviewHighlightableView:
   views::View* GetView() override;

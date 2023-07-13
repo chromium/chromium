@@ -579,13 +579,21 @@ void DeskPreviewView::OnFocus() {
     UpdateOverviewHighlightForFocus(this);
   }
 
+  mini_view_->UpdateDeskButtonVisibility();
   mini_view_->UpdateFocusColor();
   View::OnFocus();
 }
 
 void DeskPreviewView::OnBlur() {
+  mini_view_->UpdateDeskButtonVisibility();
   mini_view_->UpdateFocusColor();
   View::OnBlur();
+}
+
+void DeskPreviewView::AboutToRequestFocusFromTabTraversal(bool reverse) {
+  if (reverse) {
+    mini_view_->OnPreviewAboutToBeFocusedByReverseTab();
+  }
 }
 
 views::View* DeskPreviewView::GetView() {

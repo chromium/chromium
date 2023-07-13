@@ -9309,7 +9309,7 @@ class DeskBarTest
     }
   }
 
-  void CheckFocus(views::View* view, bool focused) {
+  void CheckFocus(const views::View* view, bool focused) {
     if (bar_type_ == DeskBarViewBase::Type::kDeskButton) {
       ASSERT_EQ(view->HasFocus(), focused);
     }
@@ -9928,8 +9928,13 @@ TEST_P(DeskBarTest, DeskRenameKeyShiftTab) {
   EXPECT_FALSE(desk_name_view->HasFocus());
   EXPECT_TRUE(desk->is_name_set_by_user());
   EXPECT_THAT(desk_name_view->GetText(), u"D1");
-  CheckHighlight(mini_view->desk_preview(), true);
-  CheckFocus(mini_view->desk_preview(), true);
+
+  if (bar_type_ == DeskBarViewBase::Type::kOverview) {
+    CheckHighlight(mini_view->desk_preview(), true);
+    CheckFocus(mini_view->desk_preview(), true);
+  } else {
+    CheckFocus(mini_view->desk_action_view()->close_all_button(), true);
+  }
 
   CloseDeskBar();
 }
@@ -10028,19 +10033,39 @@ TEST_P(DeskBarTest, ForwardTabbing) {
   auto* desk_controller = DesksController::Get();
   ASSERT_EQ(desk_controller->GetNumberOfDesks(),
             static_cast<int>(desks_util::GetMaxNumberOfDesks()) - 1);
+  const auto& window = CreateAppWindow();
+  desk_controller->SendToDeskAtIndex(window.get(), 0);
 
   OpenDeskBar();
   auto* desk_bar_view = GetDeskBarView();
   ASSERT_TRUE(desk_bar_view);
 
+  // Tab through the first window if we are in overview.
+  if (bar_type_ == DeskBarViewBase::Type::kOverview) {
+    SendKey(ui::VKEY_TAB);
+  }
+
   // Tab through all desks.
   for (int i = 0; i < desk_controller->GetNumberOfDesks(); i++) {
+    auto* mini_view = desk_bar_view->mini_views()[i];
+
     SendKey(ui::VKEY_TAB);
-    CheckHighlight(desk_bar_view->mini_views()[i]->desk_preview(), true);
-    CheckFocus(desk_bar_view->mini_views()[i]->desk_preview(), true);
+    CheckHighlight(mini_view->desk_preview(), true);
+    CheckFocus(mini_view->desk_preview(), true);
+
+    if (bar_type_ == DeskBarViewBase::Type::kDeskButton) {
+      if (i == 0) {
+        SendKey(ui::VKEY_TAB);
+        CheckFocus(mini_view->desk_action_view()->combine_desks_button(), true);
+      }
+
+      SendKey(ui::VKEY_TAB);
+      CheckFocus(mini_view->desk_action_view()->close_all_button(), true);
+    }
+
     SendKey(ui::VKEY_TAB);
-    CheckHighlight(desk_bar_view->mini_views()[i]->desk_name_view(), true);
-    CheckFocus(desk_bar_view->mini_views()[i]->desk_name_view(), true);
+    CheckHighlight(mini_view->desk_name_view(), true);
+    CheckFocus(mini_view->desk_name_view(), true);
   }
 
   // Tab through new desk button.
@@ -10085,10 +10110,17 @@ TEST_P(DeskBarTest, ReverseTabbing) {
   auto* desk_controller = DesksController::Get();
   ASSERT_EQ(desk_controller->GetNumberOfDesks(),
             static_cast<int>(desks_util::GetMaxNumberOfDesks()) - 1);
+  const auto& window = CreateAppWindow();
+  desk_controller->SendToDeskAtIndex(window.get(), 0);
 
   OpenDeskBar();
   auto* desk_bar_view = GetDeskBarView();
   ASSERT_TRUE(desk_bar_view);
+
+  // If in overview, tab through the save desk for later button.
+  if (bar_type_ == DeskBarViewBase::Type::kOverview) {
+    SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
+  }
 
   // Tab through library button.
   SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
@@ -10118,12 +10150,25 @@ TEST_P(DeskBarTest, ReverseTabbing) {
 
   // Tab through all desks.
   for (int i = desk_controller->GetNumberOfDesks() - 1; i >= 0; i--) {
+    auto* mini_view = desk_bar_view->mini_views()[i];
+
     SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
-    CheckHighlight(desk_bar_view->mini_views()[i]->desk_name_view(), true);
-    CheckFocus(desk_bar_view->mini_views()[i]->desk_name_view(), true);
+    CheckHighlight(mini_view->desk_name_view(), true);
+    CheckFocus(mini_view->desk_name_view(), true);
+
+    if (bar_type_ == DeskBarViewBase::Type::kDeskButton) {
+      SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
+      CheckFocus(mini_view->desk_action_view()->close_all_button(), true);
+
+      if (i == 0) {
+        SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
+        CheckFocus(mini_view->desk_action_view()->combine_desks_button(), true);
+      }
+    }
+
     SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
-    CheckHighlight(desk_bar_view->mini_views()[i]->desk_preview(), true);
-    CheckFocus(desk_bar_view->mini_views()[i]->desk_preview(), true);
+    CheckHighlight(mini_view->desk_preview(), true);
+    CheckFocus(mini_view->desk_preview(), true);
   }
 
   CloseDeskBar();
@@ -10146,12 +10191,14 @@ TEST_P(DeskBarTest, CloseActiveDesk) {
   auto* desk_bar_view = GetDeskBarView();
   ASSERT_TRUE(desk_bar_view);
 
-  // Highlight desk #1. For `kOverview` bar, it requires one more tab since
-  // there is an overview item.
-  const int tab_count = (bar_type_ == DeskBarViewBase::Type::kOverview ? 4 : 3);
-  for (int i = 0; i < tab_count; i++) {
+  // Highlight desk #1. For both `kOverview` and `kDeskButton` bars, we will
+  // need the same number of tabs because, while there is an overview item for
+  // the overview bar, the desk close button is added to the tab order for the
+  // first mini view.
+  for (int i = 0; i < 4; i++) {
     SendKey(ui::VKEY_TAB);
   }
+
   CheckHighlight(desk_bar_view->mini_views()[1]->desk_preview(), true);
   CheckFocus(desk_bar_view->mini_views()[1]->desk_preview(), true);
 
@@ -10195,12 +10242,14 @@ TEST_P(DeskBarTest, MergeActiveDesk) {
   auto* desk_bar_view = GetDeskBarView();
   ASSERT_TRUE(desk_bar_view);
 
-  // Highlight desk #1. For `kOverview` bar, it requires one more tab since
-  // there is an overview item.
-  const int tab_count = (bar_type_ == DeskBarViewBase::Type::kOverview ? 4 : 3);
-  for (int i = 0; i < tab_count; i++) {
+  // Highlight desk #1. For both `kOverview` and `kDeskButton` bars, we will
+  // need the same number of tabs because, while there is an overview item for
+  // the overview bar, the desk close button is added to the tab order for the
+  // first mini view.
+  for (int i = 0; i < 4; i++) {
     SendKey(ui::VKEY_TAB);
   }
+
   CheckHighlight(desk_bar_view->mini_views()[1]->desk_preview(), true);
   CheckFocus(desk_bar_view->mini_views()[1]->desk_preview(), true);
 
@@ -10247,6 +10296,11 @@ TEST_P(DeskBarTest, CloseNonActiveDesk) {
   SendKey(ui::VKEY_TAB);
   SendKey(ui::VKEY_TAB);
   SendKey(ui::VKEY_TAB);
+
+  if (bar_type_ == DeskBarViewBase::Type::kDeskButton) {
+    SendKey(ui::VKEY_TAB);
+  }
+
   CheckHighlight(desk_bar_view->mini_views()[1]->desk_preview(), true);
   CheckFocus(desk_bar_view->mini_views()[1]->desk_preview(), true);
 
@@ -10283,6 +10337,11 @@ TEST_P(DeskBarTest, MergeNonActiveDesk) {
   SendKey(ui::VKEY_TAB);
   SendKey(ui::VKEY_TAB);
   SendKey(ui::VKEY_TAB);
+
+  if (bar_type_ == DeskBarViewBase::Type::kDeskButton) {
+    SendKey(ui::VKEY_TAB);
+  }
+
   CheckHighlight(desk_bar_view->mini_views()[1]->desk_preview(), true);
   CheckFocus(desk_bar_view->mini_views()[1]->desk_preview(), true);
 

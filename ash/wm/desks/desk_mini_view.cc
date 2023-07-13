@@ -10,6 +10,7 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
+#include "ash/style/close_button.h"
 #include "ash/style/style_util.h"
 #include "ash/wm/desks/desk_action_context_menu.h"
 #include "ash/wm/desks/desk_action_view.h"
@@ -171,8 +172,6 @@ DeskMiniView::DeskMiniView(DeskBarViewBase* owner_bar,
       },
       base::Unretained(this)));
 
-  desk_name_view_ = AddChildView(std::move(desk_name_view));
-
   const std::u16string initial_combine_desks_target_name =
       desks_controller->GetCombineDesksTargetName(desk_);
 
@@ -183,7 +182,12 @@ DeskMiniView::DeskMiniView(DeskBarViewBase* owner_bar,
                           DeskCloseType::kCombineDesks),
       /*close_all_callback=*/
       base::BindRepeating(&DeskMiniView::OnRemovingDesk, base::Unretained(this),
-                          DeskCloseType::kCloseAllWindowsAndWait)));
+                          DeskCloseType::kCloseAllWindowsAndWait),
+      /*focus_change_callback=*/
+      base::BindRepeating(&DeskMiniView::UpdateDeskButtonVisibility,
+                          base::Unretained(this))));
+
+  desk_name_view_ = AddChildView(std::move(desk_name_view));
 
   context_menu_ = std::make_unique<DeskActionContextMenu>(
       initial_combine_desks_target_name,
@@ -231,7 +235,9 @@ void DeskMiniView::UpdateDeskButtonVisibility() {
       controller->CanRemoveDesks() && !owner_bar_->dragged_item_over_bar() &&
       !owner_bar_->IsDraggingDesk() &&
       (IsMouseHovered() || force_show_desk_buttons_ ||
-       Shell::Get()->accessibility_controller()->IsSwitchAccessRunning());
+       Shell::Get()->accessibility_controller()->IsSwitchAccessRunning() ||
+       (owner_bar_->type() == DeskBarViewBase::Type::kDeskButton &&
+        (desk_preview_->HasFocus() || desk_action_view_->ChildHasFocus())));
 
   // Only show the combine desks button if there are app windows in the desk,
   // or if the desk is active and there are windows that should be visible on
@@ -374,6 +380,13 @@ void DeskMiniView::OnRemovingDesk(DeskCloseType close_type) {
 
   controller->RemoveDesk(desk_, DesksCreationRemovalSource::kButton,
                          close_type);
+}
+
+void DeskMiniView::OnPreviewAboutToBeFocusedByReverseTab() {
+  if (!desk_action_view_->ChildHasFocus()) {
+    desk_action_view_->SetVisible(true);
+    desk_action_view_->close_all_button()->RequestFocus();
+  }
 }
 
 const char* DeskMiniView::GetClassName() const {
