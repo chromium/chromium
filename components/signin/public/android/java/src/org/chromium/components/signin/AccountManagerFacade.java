@@ -65,8 +65,12 @@ public interface AccountManagerFacade {
      * Since a different {@link Promise} will be returned every time the accounts get updated,
      * this makes the {@link Promise} a bad candidate for end users to cache locally unless
      * the end users are awaiting the current list of accounts only.
+     *
+     * @deprecated
+     * TODO(crbug.com/1463878): Use {@link #getCoreAccountInfos()} instead.
      */
     @MainThread
+    @Deprecated
     Promise<List<Account>> getAccounts();
 
     /**

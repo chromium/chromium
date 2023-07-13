@@ -22,7 +22,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import android.accounts.Account;
 import android.app.Activity;
 import android.os.Bundle;
 
@@ -117,8 +116,8 @@ public class SyncConsentFragmentTest {
         }
 
         @Override
-        protected void updateAccounts(List<Account> accounts) {
-            super.updateAccounts(accounts);
+        protected void updateAccounts(List<CoreAccountInfo> coreAccountInfos) {
+            super.updateAccounts(coreAccountInfos);
             mIsUpdateAccountCalled = true;
         }
     }
