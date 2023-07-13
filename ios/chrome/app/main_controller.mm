@@ -721,7 +721,7 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 
 - (void)sceneState:(SceneState*)sceneState
     transitionedToActivationLevel:(SceneActivationLevel)level {
-  if (level == SceneActivationLevelUnattached) {
+  if (level <= SceneActivationLevelDisconnected) {
     [sceneState removeObserver:self];
   } else if (level > SceneActivationLevelBackground) {
     // Stop observing all scenes since we only needed to know when the app
@@ -807,7 +807,7 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
   // connected scene states as disconnected in order to allow services to
   // properly unregister their observers and tear down remaining UI.
   for (SceneState* sceneState in self.appState.connectedScenes) {
-    sceneState.activationLevel = SceneActivationLevelUnattached;
+    sceneState.activationLevel = SceneActivationLevelDisconnected;
   }
 
 #if BUILDFLAG(FAST_APP_TERMINATE_ENABLED)

@@ -21,6 +21,9 @@
 typedef NS_ENUM(NSUInteger, SceneActivationLevel) {
   // The scene is not connected and has no window.
   SceneActivationLevelUnattached = 0,
+  // The scene has been disconnected. It also corresponds to
+  // UISceneActivationStateUnattached.
+  SceneActivationLevelDisconnected,
   // The scene is connected, and has a window associated with it. The window is
   // not visible to the user, except possibly in the app switcher.
   SceneActivationLevelBackground,

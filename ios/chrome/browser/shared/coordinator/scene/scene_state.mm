@@ -259,6 +259,11 @@ ContentVisibility ContentVisibilityForIncognito(BOOL isIncognito) {
       break;
     }
 
+    case SceneActivationLevelDisconnected: {
+      activityString = @"Disconnected";
+      break;
+    }
+
     case SceneActivationLevelBackground: {
       activityString = @"Background";
       break;

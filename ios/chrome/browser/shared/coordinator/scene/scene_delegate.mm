@@ -114,8 +114,11 @@ NSString* const kOriginDetectedKey = @"OriginDetectedKey";
 
 - (void)sceneDidDisconnect:(UIScene*)scene {
   CHECK(_sceneState);
-  self.sceneState.activationLevel = SceneActivationLevelUnattached;
+  self.sceneState.activationLevel = SceneActivationLevelDisconnected;
   _sceneState = nil;
+  // Setting the level to Disconnected had the side effect of tearing down the
+  // controller’s UI.
+  _sceneController = nil;
 }
 
 #pragma mark - private

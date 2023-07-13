@@ -46,6 +46,7 @@
       break;
     }
     case SceneActivationLevelUnattached:
+    case SceneActivationLevelDisconnected:
       break;
     case SceneActivationLevelBackground: {
       id<BrowserCoordinatorCommands> handler = HandlerForProtocol(

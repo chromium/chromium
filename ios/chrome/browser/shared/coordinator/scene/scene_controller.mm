@@ -720,8 +720,13 @@ void InjectNTP(Browser* browser) {
 // in one place.
 - (void)transitionToSceneActivationLevel:(SceneActivationLevel)level
                             appInitStage:(InitStage)appInitStage {
+  if (level == SceneActivationLevelDisconnected) {
+    //  The scene may become disconnected at any time. In that case, any UI that
+    //  was already set-up should be torn down.
+    [self teardownUI];
+  }
   if (appInitStage < InitStageNormalUI) {
-    // Nothing per-scene should happen before the app completes the global
+    // Nothing else per-scene should happen before the app completes the global
     // setup, like executing Safe mode, or creating the main BrowserState.
     return;
   }
@@ -766,14 +771,13 @@ void InjectNTP(Browser* browser) {
 
   [self recordWindowCreationForSceneState:self.sceneState];
 
-  if (self.sceneState.UIEnabled && level == SceneActivationLevelUnattached) {
+  if (self.sceneState.UIEnabled && level <= SceneActivationLevelDisconnected) {
     if (base::ios::IsMultipleScenesSupported()) {
       // If Multiple scenes are not supported, the session shouldn't be
       // removed as it can be used for normal restoration.
       [[PreviousSessionInfo sharedInstance]
           removeSceneSessionID:self.sceneState.sceneSessionID];
     }
-    [self teardownUI];
   }
 }
 

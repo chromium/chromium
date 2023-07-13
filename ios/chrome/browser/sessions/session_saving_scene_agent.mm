@@ -30,6 +30,7 @@
     transitionedToActivationLevel:(SceneActivationLevel)level {
   switch (level) {
     case SceneActivationLevelUnattached:
+    case SceneActivationLevelDisconnected:
       // no-op.
       break;
     case SceneActivationLevelBackground:
