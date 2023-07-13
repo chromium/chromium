@@ -87,15 +87,6 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::OnReceiveResponse(
     return;
   }
 
-  // If we already know that the response from ServiceWorker will commit (e.g.
-  // redirect) here, we don't have to create another data pipe and transfer
-  // data. Just forwarding the response to |forwarding_client_|.
-  if (owner_->commit_responsibility() == FetchResponseFrom::kServiceWorker) {
-    forwarding_client_->OnReceiveResponse(std::move(head), std::move(body),
-                                          std::move(cached_metadata));
-    return;
-  }
-
   head_ = std::move(head);
   cached_metadata_ = std::move(cached_metadata);
   body_ = std::move(body);
@@ -125,31 +116,25 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::OnReceiveRedirect(
   if (!owner_) {
     return;
   }
-  // TODO(crbug.com/1420517): Return a redirect response to |owner| as a
-  // RaceNetworkRequest result without breaking the cache storage compatibility.
-  // We need a mechanism to wait for the fetch handler completion.
-  //
-  // ServiceWorker allows its fetch handler to fetch and cache cross-origin
-  // resources. Also ServiceWorker may handle the request which has a redirect
-  // mode "manual". In those cases, cached responses may be `opaque filtered
-  // responses` or `opaque-redirect filtered responses`. The fetch handler may
-  // want to cache those responses.
-  //
-  // For now, if a redirect response is received, we don't back the response to
-  // |owner| as a RaceNetworkResponse's response, we stop the race and back the
-  // response to the fetch handler only instead, so that we guarantee the fetch
-  // handler completion.
-  owner_->SetCommitResponsibility(FetchResponseFrom::kServiceWorker);
-  forwarding_client_->OnReceiveRedirect(redirect_info, head->Clone());
+  switch (owner_->commit_responsibility()) {
+    case FetchResponseFrom::kNoResponseYet:
+      owner_->SetCommitResponsibility(FetchResponseFrom::kWithoutServiceWorker);
+      owner_->HandleRedirect(redirect_info, head);
+      break;
+    case FetchResponseFrom::kServiceWorker:
+      // If commit_responsibility() is FetchResponseFrom::kServiceWorker, that
+      // means the response was already received from the fetch handler. The
+      // response from RaceNetworkRequest is simply discarded in that case.
+      break;
+    case FetchResponseFrom::kWithoutServiceWorker:
+      owner_->HandleRedirect(redirect_info, head);
+      break;
+  }
 }
 
 void ServiceWorkerRaceNetworkRequestURLLoaderClient::OnComplete(
     const network::URLLoaderCompletionStatus& status) {
   if (!owner_) {
-    return;
-  }
-  if (owner_->commit_responsibility() == FetchResponseFrom::kServiceWorker) {
-    forwarding_client_->OnComplete(status);
     return;
   }
   completion_status_ = status;
