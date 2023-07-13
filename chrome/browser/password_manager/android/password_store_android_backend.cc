@@ -8,6 +8,7 @@
 #include <cmath>
 #include <list>
 #include <memory>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -17,12 +18,11 @@
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/sparse_histogram.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/password_manager/android/password_manager_lifecycle_helper_impl.h"
@@ -31,9 +31,9 @@
 #include "chrome/browser/password_manager/android/password_sync_controller_delegate_android.h"
 #include "chrome/browser/password_manager/android/password_sync_controller_delegate_bridge_impl.h"
 #include "components/autofill/core/common/autofill_regexes.h"
+#include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
 #include "components/password_manager/core/browser/android_backend_error.h"
 #include "components/password_manager/core/browser/get_logins_with_affiliations_request_handler.h"
-#include "components/password_manager/core/browser/login_database.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_eviction_util.h"
 #include "components/password_manager/core/browser/password_store_android_backend_api_error_codes.h"
@@ -41,13 +41,12 @@
 #include "components/password_manager/core/browser/password_store_backend_metrics_recorder.h"
 #include "components/password_manager/core/browser/password_store_util.h"
 #include "components/password_manager/core/browser/password_sync_util.h"
+#include "components/password_manager/core/browser/psl_matching_helper.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
-#include "components/sync/base/user_selectable_type.h"
 #include "components/sync/model/proxy_model_type_controller_delegate.h"
 #include "components/sync/service/sync_service.h"
-#include "components/sync/service/sync_user_settings.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace password_manager {
@@ -102,8 +101,8 @@ std::string FormToSignonRealmQuery(const PasswordFormDigest& form,
   return form.signon_realm;
 }
 
-bool MatchesRegexWithCache(base::StringPiece16 input,
-                           base::StringPiece16 regex) {
+bool MatchesRegexWithCache(std::u16string_view input,
+                           std::u16string_view regex) {
   static base::NoDestructor<autofill::AutofillRegexCache> cache(
       autofill::ThreadSafe(true));
   const icu::RegexPattern* regex_pattern = cache->GetRegexPattern(regex);

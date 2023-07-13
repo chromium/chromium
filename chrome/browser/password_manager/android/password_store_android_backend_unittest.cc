@@ -7,7 +7,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/android/scoped_java_ref.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -24,7 +23,6 @@
 #include "chrome/browser/password_manager/android/password_store_android_backend_dispatcher_bridge.h"
 #include "chrome/browser/password_manager/android/password_store_android_backend_receiver_bridge.h"
 #include "chrome/browser/password_manager/android/password_sync_controller_delegate_android.h"
-#include "chrome/browser/password_manager/android/password_sync_controller_delegate_bridge_impl.h"
 #include "components/password_manager/core/browser/affiliation/fake_affiliation_service.h"
 #include "components/password_manager/core/browser/affiliation/mock_affiliated_match_helper.h"
 #include "components/password_manager/core/browser/android_backend_error.h"
