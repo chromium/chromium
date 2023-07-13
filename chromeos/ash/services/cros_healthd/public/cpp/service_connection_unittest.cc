@@ -55,6 +55,13 @@ TEST_F(CrosHealthdServiceConnectionTest, GetEventService) {
   EXPECT_TRUE(service);
 }
 
+// Test that we can get event service.
+TEST_F(CrosHealthdServiceConnectionTest, GetRoutinesService) {
+  auto* service = ServiceConnection::GetInstance()->GetRoutinesService();
+  ServiceConnection::GetInstance()->FlushForTesting();
+  EXPECT_TRUE(service);
+}
+
 // Test that we can bind diagnostics service.
 TEST_F(CrosHealthdServiceConnectionTest, BindDiagnosticsService) {
   mojo::Remote<mojom::CrosHealthdDiagnosticsService> remote;

@@ -18,6 +18,7 @@
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_events.mojom.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_exception.mojom.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
+#include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_routines.mojom.h"
 #include "chromeos/services/network_health/public/mojom/network_health.mojom.h"
 #include "chromeos/services/network_health/public/mojom/network_health_types.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -78,7 +79,8 @@ class ServiceProvider
 // FakeCrosHealthd.
 class FakeCrosHealthd final : public mojom::CrosHealthdDiagnosticsService,
                               public mojom::CrosHealthdEventService,
-                              public mojom::CrosHealthdProbeService {
+                              public mojom::CrosHealthdProbeService,
+                              public mojom::CrosHealthdRoutinesService {
  public:
   // Stores the params passed to `GetRoutineUpdate`.
   struct RoutineUpdateParams {
@@ -366,6 +368,8 @@ class FakeCrosHealthd final : public mojom::CrosHealthdDiagnosticsService,
       this};
   internal::ServiceProvider<mojom::CrosHealthdProbeService> probe_provider_{
       this};
+  internal::ServiceProvider<mojom::CrosHealthdRoutinesService>
+      routines_provider_{this};
 
   // Collection of registered network observers.
   mojo::RemoteSet<chromeos::network_health::mojom::NetworkEventsObserver>

@@ -9,6 +9,7 @@
 
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_events.mojom.h"
+#include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_routines.mojom.h"
 #include "chromeos/services/network_health/public/mojom/network_diagnostics.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 
@@ -40,6 +41,12 @@ class ServiceConnection {
   // src/chromeos/ash/services/cros_healthd/public/mojom/cros_healthd.mojom for
   // details.
   virtual mojom::CrosHealthdEventService* GetEventService() = 0;
+
+  // Gets the interface for the bound routines service. In production, this
+  // implementation is provided by cros_healthd. See
+  // src/chromeos/ash/services/cros_healthd/public/mojom/
+  // cros_healthd_routines.mojom for details.
+  virtual mojom::CrosHealthdRoutinesService* GetRoutinesService() = 0;
 
   // Binds |service| to an implementation of CrosHealthdDiagnosticsService. This
   // function is only used to customize mojo disconnect handler, otherwise use

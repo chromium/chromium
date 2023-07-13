@@ -12,7 +12,9 @@
 #include "base/sequence_checker.h"
 #include "chromeos/ash/components/mojo_service_manager/connection.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
+#include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_routines.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/mojo/service_constants.h"
 #include "ui/events/ozone/evdev/event_device_info.h"
 
@@ -35,6 +37,7 @@ class ServiceConnectionImpl : public ServiceConnection {
   mojom::CrosHealthdDiagnosticsService* GetDiagnosticsService() override;
   mojom::CrosHealthdProbeService* GetProbeService() override;
   mojom::CrosHealthdEventService* GetEventService() override;
+  mojom::CrosHealthdRoutinesService* GetRoutinesService() override;
   void BindDiagnosticsService(
       mojo::PendingReceiver<mojom::CrosHealthdDiagnosticsService> service)
       override;
@@ -49,12 +52,17 @@ class ServiceConnectionImpl : public ServiceConnection {
   // Binds the event service remote if it is not already bound.
   void BindCrosHealthdEventServiceIfNeeded();
 
+  // Binds the routines service remote if it is not already bound.
+  void BindCrosHealthdRoutinesServiceIfNeeded();
+
   // Binds the probe service remote if it is not already bound.
   void BindCrosHealthdProbeServiceIfNeeded();
 
   mojo::Remote<mojom::CrosHealthdProbeService> cros_healthd_probe_service_;
   mojo::Remote<mojom::CrosHealthdDiagnosticsService>
       cros_healthd_diagnostics_service_;
+  mojo::Remote<mojom::CrosHealthdRoutinesService>
+      cros_healthd_routines_service_;
   mojo::Remote<mojom::CrosHealthdEventService> cros_healthd_event_service_;
 
   SEQUENCE_CHECKER(sequence_checker_);
@@ -81,6 +89,12 @@ mojom::CrosHealthdEventService* ServiceConnectionImpl::GetEventService() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   BindCrosHealthdEventServiceIfNeeded();
   return cros_healthd_event_service_.get();
+}
+
+mojom::CrosHealthdRoutinesService* ServiceConnectionImpl::GetRoutinesService() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  BindCrosHealthdRoutinesServiceIfNeeded();
+  return cros_healthd_routines_service_.get();
 }
 
 void ServiceConnectionImpl::BindDiagnosticsService(
@@ -148,6 +162,9 @@ void ServiceConnectionImpl::FlushForTesting() {
   if (cros_healthd_event_service_.is_bound()) {
     cros_healthd_event_service_.FlushForTesting();
   }
+  if (cros_healthd_routines_service_.is_bound()) {
+    cros_healthd_routines_service_.FlushForTesting();
+  }
 }
 
 void ServiceConnectionImpl::BindCrosHealthdDiagnosticsServiceIfNeeded() {
@@ -171,6 +188,18 @@ void ServiceConnectionImpl::BindCrosHealthdEventServiceIfNeeded() {
       chromeos::mojo_services::kCrosHealthdEvent, absl::nullopt,
       cros_healthd_event_service_.BindNewPipeAndPassReceiver().PassPipe());
   cros_healthd_event_service_.reset_on_disconnect();
+}
+
+void ServiceConnectionImpl::BindCrosHealthdRoutinesServiceIfNeeded() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (cros_healthd_routines_service_.is_bound()) {
+    return;
+  }
+
+  mojo_service_manager::GetServiceManagerProxy()->Request(
+      chromeos::mojo_services::kCrosHealthdRoutines, absl::nullopt,
+      cros_healthd_routines_service_.BindNewPipeAndPassReceiver().PassPipe());
+  cros_healthd_routines_service_.reset_on_disconnect();
 }
 
 void ServiceConnectionImpl::BindCrosHealthdProbeServiceIfNeeded() {

@@ -16,6 +16,7 @@
 #include "chromeos/ash/components/mojo_service_manager/connection.h"
 #include "chromeos/ash/services/cros_healthd/public/cpp/service_connection.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_events.mojom.h"
+#include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_routines.mojom.h"
 #include "chromeos/services/network_health/public/mojom/network_health.mojom.h"
 #include "chromeos/services/network_health/public/mojom/network_health_types.mojom.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
@@ -63,6 +64,8 @@ void FakeCrosHealthd::Initialize() {
                   g_instance->event_provider_.BindNewPipeAndPassRemote());
   proxy->Register(chromeos::mojo_services::kCrosHealthdProbe,
                   g_instance->probe_provider_.BindNewPipeAndPassRemote());
+  proxy->Register(chromeos::mojo_services::kCrosHealthdRoutines,
+                  g_instance->routines_provider_.BindNewPipeAndPassRemote());
 }
 
 // static
@@ -96,6 +99,8 @@ void FakeCrosHealthd::InitializeInBrowserTest() {
                   g_instance->event_provider_.BindNewPipeAndPassRemote());
   proxy->Register(chromeos::mojo_services::kCrosHealthdProbe,
                   g_instance->probe_provider_.BindNewPipeAndPassRemote());
+  proxy->Register(chromeos::mojo_services::kCrosHealthdRoutines,
+                  g_instance->routines_provider_.BindNewPipeAndPassRemote());
 }
 
 // static
