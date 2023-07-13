@@ -173,7 +173,9 @@ std::unique_ptr<PopupCellView> PopupSuggestionStrategy::CreateContent() {
   const Suggestion& kSuggestion =
       GetController()->GetSuggestionAt(GetLineNumber());
   std::unique_ptr<PopupCellView> view =
-      views::Builder<PopupCellView>()
+      views::Builder<PopupCellView>(
+          std::make_unique<PopupCellView>(
+              GetController()->GetAutofillSuggestionTriggerSource()))
           .SetAccessibilityDelegate(
               std::make_unique<ContentItemAccessibilityDelegate>(
                   GetController(), GetLineNumber()))
@@ -238,7 +240,9 @@ PopupPasswordSuggestionStrategy::CreateContent() {
   const Suggestion& kSuggestion =
       GetController()->GetSuggestionAt(GetLineNumber());
   std::unique_ptr<PopupCellView> view =
-      views::Builder<PopupCellView>()
+      views::Builder<PopupCellView>(
+          std::make_unique<PopupCellView>(
+              GetController()->GetAutofillSuggestionTriggerSource()))
           .SetAccessibilityDelegate(
               std::make_unique<ContentItemAccessibilityDelegate>(
                   GetController(), GetLineNumber()))
@@ -317,7 +321,9 @@ std::unique_ptr<PopupCellView> PopupFooterStrategy::CreateContent() {
   const Suggestion& kSuggestion =
       GetController()->GetSuggestionAt(GetLineNumber());
   std::unique_ptr<PopupCellView> view =
-      views::Builder<PopupCellView>()
+      views::Builder<PopupCellView>(
+          std::make_unique<PopupCellView>(
+              GetController()->GetAutofillSuggestionTriggerSource()))
           .SetAccessibilityDelegate(
               std::make_unique<ContentItemAccessibilityDelegate>(
                   GetController(), GetLineNumber()))

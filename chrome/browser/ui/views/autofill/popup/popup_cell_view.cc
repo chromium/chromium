@@ -10,6 +10,7 @@
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_action_data.h"
@@ -26,7 +27,8 @@
 
 namespace autofill {
 
-PopupCellView::PopupCellView() {
+PopupCellView::PopupCellView(AutofillSuggestionTriggerSource trigger_source)
+    : trigger_source_(trigger_source) {
   SetNotifyEnterExitOnChild(true);
   SetFocusBehavior(FocusBehavior::ALWAYS);
   RefreshStyle();
@@ -108,8 +110,13 @@ bool PopupCellView::OnMousePressed(const ui::MouseEvent& event) {
 void PopupCellView::OnMouseEntered(const ui::MouseEvent& event) {
   // `OnMouseEntered()` does not imply that the mouse had been outside of the
   // item's bounds before: `OnMouseEntered()` fires if the mouse moves just
-  // a little bit on the item. We don't want to show a preview in such a case.
-  if (!mouse_observed_outside_item_bounds_) {
+  // a little bit on the item. If the trigger source is not manual fallback we
+  // don't want to show a preview in such a case. In this case of manual
+  // fallback we do not care since the user has made a specific choice of
+  // opening the autofill popup.
+  if (!mouse_observed_outside_item_bounds_ &&
+      trigger_source_ != AutofillSuggestionTriggerSource::
+                             kManualFallbackForAutocompleteUnrecognized) {
     return;
   }
 
@@ -131,9 +138,13 @@ void PopupCellView::OnMouseExited(const ui::MouseEvent& event) {
 }
 
 void PopupCellView::OnMouseReleased(const ui::MouseEvent& event) {
-  // Ignore mouse clicks unless the user made the explicit choice to selected
-  // the current item.
-  if (!mouse_observed_outside_item_bounds_) {
+  // For trigger sources different from manual fallback we ignore mouse clicks
+  // unless the user made the explicit choice to select the current item. In
+  // the manual fallback case the user has made an explicit choice of opening
+  // the popup and so will not select an address by accident.
+  if (!mouse_observed_outside_item_bounds_ &&
+      trigger_source_ != AutofillSuggestionTriggerSource::
+                             kManualFallbackForAutocompleteUnrecognized) {
     return;
   }
 

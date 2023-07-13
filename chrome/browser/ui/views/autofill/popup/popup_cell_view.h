@@ -10,6 +10,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "components/autofill/core/common/aliases.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -48,7 +49,8 @@ class PopupCellView : public views::View {
 
   METADATA_HEADER(PopupCellView);
 
-  PopupCellView();
+  explicit PopupCellView(AutofillSuggestionTriggerSource trigger_source);
+
   PopupCellView(const PopupCellView&) = delete;
   PopupCellView& operator=(const PopupCellView&) = delete;
   ~PopupCellView() override;
@@ -156,7 +158,15 @@ class PopupCellView : public views::View {
   // processed with a delay, making it seem as if the two click interactions of
   // a double click were executed at intervals larger than the threshold (500ms)
   // checked in the controller (crbug.com/1418837).
+  //
+  // Please note that when `trigger_source_` is
+  // `kManualFallbackForAutocompleteUnrecognized` we always accept suggestions.
+  // This is because in this situation even though the popup could appear behind
+  // the cursor, the user intention about opening it is explicit.
   bool mouse_observed_outside_item_bounds_ = false;
+
+  // What the trigger source that led to the creation of this cell was.
+  AutofillSuggestionTriggerSource trigger_source_;
 };
 
 BEGIN_VIEW_BUILDER(/* no export*/, PopupCellView, views::View)

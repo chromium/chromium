@@ -65,7 +65,9 @@ constexpr int kCloseIconSize = 16;
 PopupAutocompleteCellView::PopupAutocompleteCellView(
     base::WeakPtr<AutofillPopupController> controller,
     int line_number)
-    : controller_(controller), line_number_(line_number) {
+    : PopupCellView(controller->GetAutofillSuggestionTriggerSource()),
+      controller_(controller),
+      line_number_(line_number) {
   CHECK(controller_);
   const Suggestion& kSuggestion = controller->GetSuggestionAt(line_number_);
 

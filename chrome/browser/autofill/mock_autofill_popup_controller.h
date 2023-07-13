@@ -36,6 +36,10 @@ class MockAutofillPopupController
   MOCK_METHOD(void, ViewDestroyed, (), (override));
   MOCK_METHOD(bool, HasSelection, (), (const override));
   MOCK_METHOD(gfx::Rect, popup_bounds, (), (const override));
+  MOCK_METHOD(AutofillSuggestionTriggerSource,
+              GetAutofillSuggestionTriggerSource,
+              (),
+              (const override));
   MOCK_METHOD(gfx::NativeView, container_view, (), (const override));
   MOCK_METHOD(content::WebContents*, GetWebContents, (), (const override));
   const gfx::RectF& element_bounds() const override { return element_bounds_; }

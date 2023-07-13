@@ -143,6 +143,8 @@ class AutofillPopupControllerImpl : public AutofillPopupController {
                                   std::u16string* title,
                                   std::u16string* body) override;
   PopupType GetPopupType() const override;
+  AutofillSuggestionTriggerSource GetAutofillSuggestionTriggerSource()
+      const override;
 
   // Returns true if the popup still has non-options entries to show the user.
   bool HasSuggestions() const;

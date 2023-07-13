@@ -186,6 +186,11 @@ void AutofillPopupControllerImpl::Show(
   delegate_->OnPopupShown();
 }
 
+AutofillSuggestionTriggerSource
+AutofillPopupControllerImpl::GetAutofillSuggestionTriggerSource() const {
+  return trigger_source_;
+}
+
 void AutofillPopupControllerImpl::UpdateDataListValues(
     const std::vector<std::u16string>& values,
     const std::vector<std::u16string>& labels) {
