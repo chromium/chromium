@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
+#include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/test/service_worker_registration_waiter.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -172,6 +173,10 @@ class MLPromotionBrowserTest : public MLPromotionBrowserTestBase {
   }
 
  protected:
+  GURL GetUrlWithFaviconsNoManifest() {
+    return https_server()->GetURL("/banners/test_page_with_favicon.html");
+  }
+
   GURL GetInstallableAppURL() {
     return https_server()->GetURL("/banners/manifest_test_page.html");
   }
@@ -579,9 +584,7 @@ IN_PROC_BROWSER_TEST_F(MLPromotionBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(MLPromotionBrowserTest, PageLoadsWithExistingFavicon) {
-  auto url_with_preloaded_favicons =
-      https_server()->GetURL("/banners/test_page_with_favicon.html");
-  NavigateAndAwaitMetricsCollectionPending(url_with_preloaded_favicons);
+  NavigateAndAwaitMetricsCollectionPending(GetUrlWithFaviconsNoManifest());
   task_runner_->RunPendingTasks();
 
   auto entries = test_ukm_recorder().GetEntries(
@@ -590,7 +593,7 @@ IN_PROC_BROWSER_TEST_F(MLPromotionBrowserTest, PageLoadsWithExistingFavicon) {
 
   auto entry = entries[0];
   EXPECT_EQ(test_ukm_recorder().GetSourceForSourceId(entry.source_id)->url(),
-            url_with_preloaded_favicons);
+            GetUrlWithFaviconsNoManifest());
   EXPECT_EQ(entry.metrics[QualityUkmEntry::kHasFaviconsName], 1);
 }
 
@@ -624,6 +627,58 @@ IN_PROC_BROWSER_TEST_F(MLPromotionBrowserTest, PageLoadVerifyFaviconUpdate) {
   EXPECT_EQ(test_ukm_recorder().GetSourceForSourceId(entry.source_id)->url(),
             GetUrlWithNoManifest());
   EXPECT_EQ(updated_entry.metrics[QualityUkmEntry::kHasFaviconsName], 1);
+}
+
+// This test is not parameterized because the site has no manifest (hence no
+// screenshots), hence only the single bubble view should show up.
+IN_PROC_BROWSER_TEST_F(MLPromotionBrowserTest,
+                       SitePassingGuardrailsNoManifestDoesNotCrash) {
+  NavigateAndAwaitMetricsCollectionPending(GetUrlWithFaviconsNoManifest());
+
+  ExpectClasificationCallReturnResult(
+      /*site_url=*/GetUrlWithFaviconsNoManifest(),
+      /*manifest_id=*/GetUrlWithFaviconsNoManifest(),
+      MLInstallabilityPromoter::kShowInstallPromptLabel,
+      TrainingRequestId(1ll));
+
+  views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
+                                       "PWAConfirmationBubbleView");
+  task_runner_->RunPendingTasks();
+  views::Widget* widget = waiter.WaitIfNeededAndGet();
+  views::test::WidgetDestroyedWaiter destroyed(widget);
+  ExpectTrainingResult(TrainingRequestId(1ll), MlInstallResponse::kAccepted);
+  views::test::AcceptDialog(widget);
+  destroyed.Wait();
+
+  provider().command_manager().AwaitAllCommandsCompleteForTesting();
+
+  EXPECT_FALSE(provider().registrar_unsafe().is_empty());
+  web_app::AppId app_id = provider().registrar_unsafe().GetAppIds()[0];
+  EXPECT_EQ("Web App Test Page with Favicon",
+            provider().registrar_unsafe().GetAppShortName(app_id));
+  auto user_display_mode =
+      provider().registrar_unsafe().GetAppUserDisplayMode(app_id);
+  EXPECT_TRUE(user_display_mode.has_value());
+  EXPECT_THAT(user_display_mode.value(),
+              web_app::mojom::UserDisplayMode::kStandalone);
+}
+
+// The fact that this test does not crash is proof that the guardrails based
+// check works for an empty site (no manifest and no icons).
+IN_PROC_BROWSER_TEST_F(MLPromotionBrowserTest, MLInstallEmptyPageNoIcons) {
+  NavigateAndAwaitMetricsCollectionPending(GetUrlWithNoManifest());
+
+  ExpectClasificationCallReturnResult(
+      /*site_url=*/GetUrlWithNoManifest(),
+      /*manifest_id=*/GetUrlWithNoManifest(),
+      MLInstallabilityPromoter::kShowInstallPromptLabel, TrainingRequestId(1ll),
+      web_contents());
+  task_runner_->RunPendingTasks();
+
+  ExpectTrainingResult(TrainingRequestId(1ll),
+                       MlInstallResponse::kBlockedGuardrails);
+  // Doing another navigation should now trigger the guardrail blocked signal.
+  web_app::NavigateToURLAndWait(browser(), GURL(url::kAboutBlankURL));
 }
 
 // TODO(b/285361272): Add tests for cache storage sizes.
