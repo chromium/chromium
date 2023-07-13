@@ -21,6 +21,8 @@
 #include "chrome/browser/invalidation/profile_invalidation_provider_factory.h"
 #include "chrome/browser/metrics/variations/google_groups_updater_service_factory.h"
 #include "chrome/browser/password_manager/account_password_store_factory.h"
+#include "chrome/browser/password_manager/password_receiver_service_factory.h"
+#include "chrome/browser/password_manager/password_sender_service_factory.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
 #include "chrome/browser/power_bookmarks/power_bookmark_service_factory.h"
 #include "chrome/browser/prefs/pref_service_syncable_util.h"
@@ -58,6 +60,8 @@
 #include "components/invalidation/impl/profile_invalidation_provider.h"
 #include "components/metrics/demographics/user_demographics.h"
 #include "components/password_manager/core/browser/password_store_interface.h"
+#include "components/password_manager/core/browser/sharing/password_receiver_service.h"
+#include "components/password_manager/core/browser/sharing/password_sender_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
@@ -330,6 +334,18 @@ ChromeSyncClient::GetPrefServiceSyncable() {
 sync_sessions::SessionSyncService* ChromeSyncClient::GetSessionSyncService() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return SessionSyncServiceFactory::GetForProfile(profile_);
+}
+
+password_manager::PasswordReceiverService*
+ChromeSyncClient::GetPasswordReceiverService() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  return PasswordReceiverServiceFactory::GetForProfile(profile_);
+}
+
+password_manager::PasswordSenderService*
+ChromeSyncClient::GetPasswordSenderService() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  return PasswordSenderServiceFactory::GetForProfile(profile_);
 }
 
 syncer::DataTypeController::TypeVector

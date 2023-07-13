@@ -63,4 +63,16 @@ BASE_FEATURE(kSharedPasswordNotificationUI,
              "SharedPasswordNotificationUI",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables password receiving service including incoming password sharing
+// invitation sync data type.
+BASE_FEATURE(kPasswordManagerEnableReceiverService,
+             "PasswordManagerEnableReceiverService",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables password sender service including outgoing password sharing
+// invitation sync data type.
+BASE_FEATURE(kPasswordManagerEnableSenderService,
+             "PasswordManagerEnableSenderService",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace password_manager::features

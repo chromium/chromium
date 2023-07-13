@@ -26,6 +26,8 @@
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/metrics/demographics/user_demographics.h"
 #import "components/password_manager/core/browser/password_store_interface.h"
+#import "components/password_manager/core/browser/sharing/password_receiver_service.h"
+#import "components/password_manager/core/browser/sharing/password_sender_service.h"
 #import "components/reading_list/core/reading_list_model.h"
 #import "components/sync/base/report_unrecoverable_error.h"
 #import "components/sync/base/sync_util.h"
@@ -165,6 +167,20 @@ sync_sessions::SessionSyncService*
 IOSChromeSyncClient::GetSessionSyncService() {
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
   return SessionSyncServiceFactory::GetForBrowserState(browser_state_);
+}
+
+password_manager::PasswordReceiverService*
+IOSChromeSyncClient::GetPasswordReceiverService() {
+  DCHECK_CURRENTLY_ON(web::WebThread::UI);
+  // TODO(crbug.com/1445868): return the service once there is a factory.
+  return nullptr;
+}
+
+password_manager::PasswordSenderService*
+IOSChromeSyncClient::GetPasswordSenderService() {
+  DCHECK_CURRENTLY_ON(web::WebThread::UI);
+  // TODO(crbug.com/1445868): return the service once there is a factory.
+  return nullptr;
 }
 
 syncer::DataTypeController::TypeVector

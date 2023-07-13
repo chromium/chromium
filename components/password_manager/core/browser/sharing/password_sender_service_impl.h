@@ -25,6 +25,8 @@ class PasswordSenderServiceImpl : public PasswordSenderService {
   // PasswordSenderService implementation
   void SendPassword(const CredentialUIEntry& credential_ui_entry,
                     const PasswordRecipient& recipient) override;
+  base::WeakPtr<syncer::ModelTypeControllerDelegate> GetControllerDelegate()
+      override;
 
   // KeyedService (through PasswordSenderService) implementation.
   void Shutdown() override;

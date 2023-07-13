@@ -58,6 +58,9 @@ class ChromeSyncClient : public browser_sync::BrowserSyncClient {
   send_tab_to_self::SendTabToSelfSyncService* GetSendTabToSelfSyncService()
       override;
   sync_sessions::SessionSyncService* GetSessionSyncService() override;
+  password_manager::PasswordReceiverService* GetPasswordReceiverService()
+      override;
+  password_manager::PasswordSenderService* GetPasswordSenderService() override;
   sync_preferences::PrefServiceSyncable* GetPrefServiceSyncable() override;
   syncer::DataTypeController::TypeVector CreateDataTypeControllers(
       syncer::SyncService* sync_service) override;

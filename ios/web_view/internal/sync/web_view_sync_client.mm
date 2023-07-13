@@ -16,6 +16,8 @@
 #import "components/invalidation/impl/profile_invalidation_provider.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/metrics/demographics/user_demographics.h"
+#import "components/password_manager/core/browser/sharing/password_receiver_service.h"
+#import "components/password_manager/core/browser/sharing/password_sender_service.h"
 #import "components/sync/base/sync_util.h"
 #import "components/sync/service/data_type_controller.h"
 #import "components/sync/service/sync_api_component_factory.h"
@@ -155,6 +157,16 @@ WebViewSyncClient::GetPrefServiceSyncable() {
 }
 
 sync_sessions::SessionSyncService* WebViewSyncClient::GetSessionSyncService() {
+  return nullptr;
+}
+
+password_manager::PasswordReceiverService*
+WebViewSyncClient::GetPasswordReceiverService() {
+  return nullptr;
+}
+
+password_manager::PasswordSenderService*
+WebViewSyncClient::GetPasswordSenderService() {
   return nullptr;
 }
 

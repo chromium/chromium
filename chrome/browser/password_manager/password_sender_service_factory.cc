@@ -6,12 +6,13 @@
 
 #include <memory>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/model_type_store_service_factory.h"
 #include "chrome/common/channel_info.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/sharing/outgoing_password_sharing_invitation_sync_bridge.h"
 #include "components/password_manager/core/browser/sharing/password_sender_service.h"
 #include "components/password_manager/core/browser/sharing/password_sender_service_impl.h"
@@ -47,6 +48,11 @@ PasswordSenderServiceFactory::~PasswordSenderServiceFactory() = default;
 
 KeyedService* PasswordSenderServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
+  if (!base::FeatureList::IsEnabled(
+          password_manager::features::kPasswordManagerEnableSenderService)) {
+    return nullptr;
+  }
+
   Profile* profile = Profile::FromBrowserContext(context);
 
   // Since Password Manager doesn't work for non-standard profiles, the

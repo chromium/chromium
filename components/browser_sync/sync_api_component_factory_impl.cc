@@ -29,6 +29,8 @@
 #include "components/history/core/browser/sync/history_delete_directives_model_type_controller.h"
 #include "components/history/core/browser/sync/history_model_type_controller.h"
 #include "components/password_manager/core/browser/password_store_interface.h"
+#include "components/password_manager/core/browser/sharing/password_receiver_service.h"
+#include "components/password_manager/core/browser/sharing/password_sender_service.h"
 #include "components/password_manager/core/browser/sync/credential_model_type_controller.h"
 #include "components/power_bookmarks/core/power_bookmark_features.h"
 #include "components/power_bookmarks/core/power_bookmark_service.h"
@@ -383,6 +385,35 @@ SyncApiComponentFactoryImpl::CreateCommonDataTypeControllers(
                   : nullptr,
               sync_client_->GetPrefService(),
               sync_client_->GetIdentityManager(), sync_service));
+
+      // Couple password sharing invitations with password data type.
+      if (!disabled_types.Has(syncer::INCOMING_PASSWORD_SHARING_INVITATION) &&
+          sync_client_->GetPasswordReceiverService()) {
+        syncer::ModelTypeControllerDelegate* delegate =
+            sync_client_->GetPasswordReceiverService()
+                ->GetControllerDelegate()
+                .get();
+        controllers.push_back(std::make_unique<syncer::ModelTypeController>(
+            syncer::INCOMING_PASSWORD_SHARING_INVITATION,
+            std::make_unique<syncer::ForwardingModelTypeControllerDelegate>(
+                delegate),
+            std::make_unique<syncer::ForwardingModelTypeControllerDelegate>(
+                delegate)));
+      }
+
+      if (!disabled_types.Has(syncer::OUTGOING_PASSWORD_SHARING_INVITATION) &&
+          sync_client_->GetPasswordSenderService()) {
+        syncer::ModelTypeControllerDelegate* delegate =
+            sync_client_->GetPasswordSenderService()
+                ->GetControllerDelegate()
+                .get();
+        controllers.push_back(std::make_unique<syncer::ModelTypeController>(
+            syncer::OUTGOING_PASSWORD_SHARING_INVITATION,
+            std::make_unique<syncer::ForwardingModelTypeControllerDelegate>(
+                delegate),
+            std::make_unique<syncer::ForwardingModelTypeControllerDelegate>(
+                delegate)));
+      }
     }
   }
 

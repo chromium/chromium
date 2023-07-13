@@ -5,8 +5,13 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_SHARING_PASSWORD_SENDER_SERVICE_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_SHARING_PASSWORD_SENDER_SERVICE_H_
 
+#include "base/memory/weak_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/password_manager/core/browser/ui/credential_ui_entry.h"
+
+namespace syncer {
+class ModelTypeControllerDelegate;
+}  // namespace syncer
 
 namespace password_manager {
 
@@ -31,6 +36,10 @@ class PasswordSenderService : public KeyedService {
   // `recipient`.
   virtual void SendPassword(const CredentialUIEntry& credential_ui_entry,
                             const PasswordRecipient& recipient) = 0;
+
+  // Used to wire sync data type.
+  virtual base::WeakPtr<syncer::ModelTypeControllerDelegate>
+  GetControllerDelegate() = 0;
 };
 
 }  // namespace password_manager

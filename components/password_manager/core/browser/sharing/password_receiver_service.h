@@ -13,6 +13,10 @@
 #include "components/password_manager/core/browser/sharing/password_receiver_service_interface.h"
 #include "components/password_manager/core/browser/sharing/sharing_invitations.h"
 
+namespace syncer {
+class ModelTypeControllerDelegate;
+}  // namespace syncer
+
 namespace password_manager {
 
 class PasswordStoreInterface;
@@ -60,12 +64,15 @@ class ProcessIncomingSharingInvitationTask : public PasswordStoreConsumer {
 class PasswordReceiverService : public KeyedService,
                                 public PasswordReceiverServiceInterface {
  public:
+  // |sync_bridge| may be null in tests.
   explicit PasswordReceiverService(
       std::unique_ptr<IncomingPasswordSharingInvitationSyncBridge> sync_bridge,
       PasswordStoreInterface* password_store);
   PasswordReceiverService(const PasswordReceiverService&) = delete;
   PasswordReceiverService& operator=(const PasswordReceiverService&) = delete;
   ~PasswordReceiverService() override;
+
+  base::WeakPtr<syncer::ModelTypeControllerDelegate> GetControllerDelegate();
 
  private:
   // PasswordReceiverServiceInterface implementation:

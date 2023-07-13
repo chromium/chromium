@@ -49,6 +49,9 @@ class IOSChromeSyncClient : public browser_sync::BrowserSyncClient {
       override;
   sync_preferences::PrefServiceSyncable* GetPrefServiceSyncable() override;
   sync_sessions::SessionSyncService* GetSessionSyncService() override;
+  password_manager::PasswordReceiverService* GetPasswordReceiverService()
+      override;
+  password_manager::PasswordSenderService* GetPasswordSenderService() override;
   syncer::DataTypeController::TypeVector CreateDataTypeControllers(
       syncer::SyncService* sync_service) override;
   invalidation::InvalidationService* GetInvalidationService() override;

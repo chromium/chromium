@@ -14,6 +14,7 @@ class PasswordReceiverServiceInterface {
  public:
   virtual void ProcessIncomingSharingInvitation(
       IncomingSharingInvitation invitation) = 0;
+  virtual ~PasswordReceiverServiceInterface() = default;
 };
 
 }  // namespace password_manager

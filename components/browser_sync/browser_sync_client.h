@@ -20,6 +20,11 @@ class HistoryService;
 
 class ReadingListModel;
 
+namespace password_manager {
+class PasswordReceiverService;
+class PasswordSenderService;
+}  // namespace password_manager
+
 namespace send_tab_to_self {
 class SendTabToSelfSyncService;
 }  // namespace send_tab_to_self
@@ -63,6 +68,10 @@ class BrowserSyncClient : public syncer::SyncClient {
   virtual syncer::DeviceInfoSyncService* GetDeviceInfoSyncService() = 0;
   virtual favicon::FaviconService* GetFaviconService() = 0;
   virtual history::HistoryService* GetHistoryService() = 0;
+  virtual password_manager::PasswordReceiverService*
+  GetPasswordReceiverService() = 0;
+  virtual password_manager::PasswordSenderService*
+  GetPasswordSenderService() = 0;
   virtual sync_preferences::PrefServiceSyncable* GetPrefServiceSyncable() = 0;
   virtual sync_sessions::SessionSyncService* GetSessionSyncService() = 0;
   virtual ReadingListModel* GetReadingListModel() = 0;

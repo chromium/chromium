@@ -15,6 +15,7 @@
 #include "components/password_manager/core/browser/password_store_interface.h"
 #include "components/password_manager/core/browser/sharing/incoming_password_sharing_invitation_sync_bridge.h"
 #include "components/password_manager/core/browser/sharing/sharing_invitations.h"
+#include "components/sync/model/model_type_controller_delegate.h"
 
 namespace password_manager {
 
@@ -57,7 +58,9 @@ void ProcessIncomingSharingInvitationTask::OnGetPasswordStoreResults(
 PasswordReceiverService::PasswordReceiverService(
     std::unique_ptr<IncomingPasswordSharingInvitationSyncBridge> sync_bridge,
     PasswordStoreInterface* password_store)
-    : sync_bridge_(std::move(sync_bridge)), password_store_(password_store) {}
+    : sync_bridge_(std::move(sync_bridge)), password_store_(password_store) {
+  CHECK(password_store_);
+}
 
 PasswordReceiverService::~PasswordReceiverService() = default;
 
@@ -77,6 +80,12 @@ void PasswordReceiverService::RemoveTaskFromTasksList(
       process_invitations_tasks_,
       [&task](const std::unique_ptr<ProcessIncomingSharingInvitationTask>&
                   cached_task) { return cached_task.get() == task; });
+}
+
+base::WeakPtr<syncer::ModelTypeControllerDelegate>
+PasswordReceiverService::GetControllerDelegate() {
+  CHECK(sync_bridge_);
+  return sync_bridge_->change_processor()->GetControllerDelegate();
 }
 
 }  // namespace password_manager
