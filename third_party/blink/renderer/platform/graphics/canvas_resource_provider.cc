@@ -958,6 +958,10 @@ CanvasResourceProvider::CreateSharedImageProvider(
     RasterMode raster_mode,
     bool is_origin_top_left,
     uint32_t shared_image_usage_flags) {
+  // TODO(crbug.com/1456636): Remove the |is_origin_top_left| parameter once
+  // all the CLs removing its usage stick. In the meantime, prevent any new
+  // usage of bottom left origin.
+  CHECK(is_origin_top_left);
   // IsGpuCompositingEnabled can re-create the context if it has been lost, do
   // this up front so that we can fail early and not expose ourselves to
   // use after free bugs (crbug.com/1126424)

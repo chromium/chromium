@@ -479,14 +479,15 @@ AcceleratedStaticBitmapImage::ConvertToColorSpace(
                    .makeColorType(color_type)
                    .makeWH(Size().width(), Size().height());
 
-  auto usage_flags = ContextProviderWrapper()
-                         ->ContextProvider()
-                         ->SharedImageInterface()
-                         ->UsageForMailbox(mailbox_);
+  constexpr bool kIsOriginTopLeft = true;
+  const auto usage_flags = ContextProviderWrapper()
+                               ->ContextProvider()
+                               ->SharedImageInterface()
+                               ->UsageForMailbox(mailbox_);
   auto provider = CanvasResourceProvider::CreateSharedImageProvider(
       image_info, cc::PaintFlags::FilterQuality::kLow,
       CanvasResourceProvider::ShouldInitialize::kNo, ContextProviderWrapper(),
-      RasterMode::kGPU, IsOriginTopLeft(), usage_flags);
+      RasterMode::kGPU, kIsOriginTopLeft, usage_flags);
   if (!provider) {
     return nullptr;
   }
