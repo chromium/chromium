@@ -5,6 +5,7 @@ Version: 691515491a4a3c119adc6c769c29de264b3f3806
 License: MIT
 License File: LICENSE
 Security Critical: no
+Shipped: yes
 
 Description:
 Standard X key constants and conversion to/from keycodes
