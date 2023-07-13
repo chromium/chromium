@@ -39,7 +39,7 @@ enum SmartCardProtocol {
 
 dictionary SmartCardConnectResult {
   required SmartCardConnection connection;
-  required SmartCardProtocol activeProtocol;
+  SmartCardProtocol activeProtocol;
 };
 
 enum SmartCardAccessMode {

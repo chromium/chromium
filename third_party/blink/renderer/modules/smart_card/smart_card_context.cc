@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/smart_card/smart_card_context.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_smart_card_connect_result.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_smart_card_reader_state_flags.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_smart_card_reader_state_in.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_smart_card_reader_state_out.h"
@@ -356,7 +357,25 @@ void SmartCardContext::OnConnectDone(
       std::move(success->connection), success->active_protocol,
       GetExecutionContext());
 
-  resolver->Resolve(connection);
+  auto* blink_result = SmartCardConnectResult::Create();
+  blink_result->setConnection(connection);
+
+  switch (success->active_protocol) {
+    case device::mojom::blink::SmartCardProtocol::kUndefined:
+      // NOOP: Do not set an activeProtocol.
+      break;
+    case device::mojom::blink::SmartCardProtocol::kT0:
+      blink_result->setActiveProtocol(V8SmartCardProtocol::Enum::kT0);
+      break;
+    case device::mojom::blink::SmartCardProtocol::kT1:
+      blink_result->setActiveProtocol(V8SmartCardProtocol::Enum::kT1);
+      break;
+    case device::mojom::blink::SmartCardProtocol::kRaw:
+      blink_result->setActiveProtocol(V8SmartCardProtocol::Enum::kRaw);
+      break;
+  }
+
+  resolver->Resolve(blink_result);
 }
 
 void SmartCardContext::AbortGetStatusChange() {
