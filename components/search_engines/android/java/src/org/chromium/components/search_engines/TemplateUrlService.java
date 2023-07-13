@@ -344,25 +344,6 @@ public class TemplateUrlService {
 
     /**
      * Adds a search engine, set by Play API.
-     * TODO(b/282975636): Delete once Android repo calls the other override.
-     * @param name The name of the search engine to be added.
-     * @param keyword The keyword of the search engine to be added.
-     * @param searchUrl Search url of the search engine to be added.
-     * @param suggestUrl Url for retrieving search suggestions.
-     * @param faviconUrl Favicon url of the search engine to be added.
-     * @param setAsDefault If true, set as default search provider.
-     * @return True if search engine was successfully added, false if search engine from Play API
-     *         with such keyword already existed (e.g. from previous attempt to set search engine).
-     */
-    public boolean setPlayAPISearchEngine(String name, String keyword, String searchUrl,
-            String suggestUrl, String faviconUrl, boolean setAsDefault) {
-        return TemplateUrlServiceJni.get().setPlayAPISearchEngine(mNativeTemplateUrlServiceAndroid,
-                TemplateUrlService.this, name, keyword, searchUrl, suggestUrl, faviconUrl, null,
-                null, null, null, null, null, setAsDefault);
-    }
-
-    /**
-     * Adds a search engine, set by Play API.
      * @param name The name of the search engine to be added.
      * @param keyword The keyword of the search engine to be added.
      * @param searchUrl Search url of the search engine to be added.
