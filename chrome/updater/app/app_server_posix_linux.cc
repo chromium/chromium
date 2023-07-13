@@ -15,12 +15,11 @@
 namespace updater {
 namespace {
 
-// Extends |AppServerPosix| to include a |SystemdService| which is enabled
-// during |ActiveDuty|. This is required for the server to operate as a systemd
+// Extends `AppServerPosix` to include a `SystemdService` which is enabled
+// during `ActiveDuty`. This is required for the server to operate as a systemd
 // daemon.
 class AppServerLinux : public AppServerPosix {
  public:
-  AppServerLinux() = default;
   void ActiveDuty(scoped_refptr<UpdateService> update_service) override {
     systemd_service_ = base::SequenceBound<SystemdService>(
         base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()}));
@@ -32,6 +31,7 @@ class AppServerLinux : public AppServerPosix {
 
   base::SequenceBound<SystemdService> systemd_service_;
 };
+
 }  // namespace
 
 bool AppServerPosix::MigrateLegacyUpdaters(

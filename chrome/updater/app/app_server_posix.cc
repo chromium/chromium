@@ -4,11 +4,11 @@
 
 #include "chrome/updater/app/app_server_posix.h"
 
+#include <utility>
+
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/sequence_checker.h"
-#include "base/task/sequenced_task_runner.h"
-#include "base/time/time.h"
 #include "chrome/updater/app/server/posix/update_service_internal_stub.h"
 #include "chrome/updater/app/server/posix/update_service_stub.h"
 #include "chrome/updater/constants.h"
@@ -25,11 +25,11 @@ void AppServerPosix::UninstallSelf() {
 
 void AppServerPosix::Uninitialize() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // These delegates need to have a reference to the AppServer. To break the
-  // circular reference, we need to reset them.
+
+  // These delegates need to have a reference to the AppServer. Reset them to
+  // break the circular reference.
   active_duty_stub_.reset();
   active_duty_internal_stub_.reset();
-
   AppServer::Uninitialize();
 }
 

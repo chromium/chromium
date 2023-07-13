@@ -8,8 +8,6 @@
 #include <memory>
 
 #include "base/memory/scoped_refptr.h"
-#include "base/task/sequenced_task_runner.h"
-#include "base/time/time.h"
 #include "chrome/updater/app/app_server.h"
 
 namespace updater {
@@ -22,13 +20,12 @@ class AppServerPosix : public AppServer {
   AppServerPosix();
 
  protected:
-  // Overrides of App.
   ~AppServerPosix() override;
+
   // Overrides of AppServer.
   void ActiveDuty(scoped_refptr<UpdateService> update_service) override;
 
  private:
-  // Overrides of AppServer.
   void ActiveDutyInternal(
       scoped_refptr<UpdateServiceInternal> update_service_internal) override;
   bool SwapInNewVersion() override;
@@ -42,9 +39,6 @@ class AppServerPosix : public AppServer {
 
   std::unique_ptr<UpdateServiceInternalStub> active_duty_internal_stub_;
   std::unique_ptr<UpdateServiceStub> active_duty_stub_;
-  // Task runner bound to the main sequence and the update service instance.
-  scoped_refptr<base::SequencedTaskRunner> main_task_runner_ =
-      base::SequencedTaskRunner::GetCurrentDefault();
 };
 
 scoped_refptr<App> MakeAppServer();
