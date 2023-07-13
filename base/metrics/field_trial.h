@@ -145,8 +145,8 @@ class BASE_EXPORT FieldTrial : public RefCounted<FieldTrial> {
   // FieldTrial object. Does not use StringPiece to avoid conversions back to
   // std::string.
   struct BASE_EXPORT PickleState {
-    raw_ptr<const std::string, DanglingUntriaged> trial_name = nullptr;
-    raw_ptr<const std::string, DanglingUntriaged> group_name = nullptr;
+    raw_ptr<const std::string> trial_name = nullptr;
+    raw_ptr<const std::string> group_name = nullptr;
     bool activated = false;
 
     PickleState();
