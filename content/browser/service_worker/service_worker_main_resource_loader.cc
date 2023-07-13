@@ -417,7 +417,6 @@ bool ServiceWorkerMainResourceLoader::StartRaceNetworkRequest(
   // Keep the URL loader related assets alive while the FetchEvent is ongoing in
   // the service worker.
   DCHECK(!race_network_request_url_loader_factory_);
-  DCHECK(!race_network_request_url_loader_);
   DCHECK(!race_network_request_loader_client_);
   race_network_request_url_loader_factory_ = std::move(factory);
   race_network_request_loader_client_ =

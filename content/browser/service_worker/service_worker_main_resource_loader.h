@@ -273,8 +273,6 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoader
 
   scoped_refptr<network::SharedURLLoaderFactory>
       race_network_request_url_loader_factory_;
-  mojo::PendingRemote<network::mojom::URLLoader>
-      race_network_request_url_loader_;
   std::unique_ptr<ServiceWorkerRaceNetworkRequestURLLoaderClient>
       race_network_request_loader_client_;
   std::unique_ptr<ServiceWorkerForwardedRaceNetworkRequestURLLoaderFactory>
