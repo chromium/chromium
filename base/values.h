@@ -148,36 +148,6 @@ namespace base {
 // - `EraseValue()`: Erases all matching `Value`s from the list.
 // - `EraseIf()`: Erase all `Value`s matching an arbitrary predicate from the
 //       list.
-//
-// ## Refactoring Notes
-//
-// `Value` was originally implemented as a class hierarchy, with a `Value` base
-// class, and a leaf class for each of the different types of `Value` subtypes.
-// https://docs.google.com/document/d/1uDLu5uTRlCWePxQUEHc8yNQdEoE1BDISYdpggWEABnw
-// proposed an overhaul of the `Value` API that has now largely been
-// implemented, though there remains a significant amount of legacy code that is
-// still being migrated as part of the code health migration.
-//
-// OLD WAY:
-//
-//   std::unique_ptr<base::Value> GetFoo() {
-//     std::unique_ptr<DictionaryValue> dict;
-//     dict->SetString("mykey", "foo");
-//     return dict;
-//   }
-//
-// NEW WAY:
-//
-//   base::Value GetFoo() {
-//     base::Value::Dict dict;
-//     dict.Set("mykey", "abc");
-//     return base::Value(std::move(dict));
-//   }
-//
-// Migrating code may require conversions on API boundaries. If something seems
-// awkward/inefficient, please reach out to #code-health-rotation on Slack for
-// consultation: it is entirely possible that certain classes of APIs may be
-// missing due to an unrealized need.
 class BASE_EXPORT GSL_OWNER Value {
  public:
   using BlobStorage = std::vector<uint8_t>;
@@ -356,9 +326,6 @@ class BASE_EXPORT GSL_OWNER Value {
     }
 
     ~Dict();
-
-    // TODO(dcheng): Probably need to allow construction from a pair of
-    // iterators for now due to the prevalence of DictStorage.
 
     // Returns true if there are no entries in this dictionary and false
     // otherwise.
@@ -606,9 +573,6 @@ class BASE_EXPORT GSL_OWNER Value {
     List& operator=(const List&) = delete;
 
     ~List();
-
-    // TODO(dcheng): Probably need to allow construction from a pair of
-    // iterators for now due to the prevalence of ListStorage now.
 
     // Returns true if there are no values in this list and false otherwise.
     bool empty() const;
