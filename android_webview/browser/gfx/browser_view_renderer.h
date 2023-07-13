@@ -211,6 +211,7 @@ class BrowserViewRenderer : public content::SynchronousCompositorClient,
   void ReleaseHardware();
   bool DoUpdateParentDrawData();
   void UpdateBeginFrameSource();
+  void UpdateForegroundForGpuResources();
 
   gfx::Point max_scroll_offset() const;
 
@@ -249,6 +250,8 @@ class BrowserViewRenderer : public content::SynchronousCompositorClient,
   float max_page_scale_factor_;
   bool on_new_picture_enable_;
   bool clear_view_;
+
+  bool foreground_for_gpu_resources_ = false;
 
   // Used for metrics, indicates if we called invalidate since last draw.
   bool did_invalidate_since_last_draw_ = false;

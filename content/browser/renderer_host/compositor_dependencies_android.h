@@ -44,6 +44,8 @@ class CONTENT_EXPORT CompositorDependenciesAndroid {
   void TryEstablishVizConnectionIfNeeded();
   void OnCompositorVisible(CompositorImpl* compositor);
   void OnCompositorHidden(CompositorImpl* compositor);
+  void OnSynchronousCompositorVisible();
+  void OnSynchronousCompositorHidden();
 
   void DoLowEndBackgroundCleanupForTesting() { DoLowEndBackgroundCleanup(); }
 
@@ -75,6 +77,7 @@ class CONTENT_EXPORT CompositorDependenciesAndroid {
 
   // The set of visible CompositorImpls.
   base::flat_set<CompositorImpl*> visible_compositors_;
+  size_t visible_synchronous_compositors_ = 0u;
 
   std::unique_ptr<cc::TaskGraphRunner> task_graph_runner_;
 };

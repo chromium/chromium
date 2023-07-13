@@ -84,6 +84,9 @@ class CONTENT_EXPORT SynchronousCompositor {
 #endif
   };
 
+  virtual void OnCompositorVisible() = 0;
+  virtual void OnCompositorHidden() = 0;
+
   // "On demand" hardware draw. Parameters are used by compositor for this draw.
   // |viewport_size| is the current size to improve results during resize.
   // |viewport_rect_for_tile_priority| and |transform_for_tile_priority| are

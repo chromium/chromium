@@ -30,6 +30,8 @@ class CONTENT_EXPORT TestSynchronousCompositor : public SynchronousCompositor {
 
   void SetClient(SynchronousCompositorClient* client);
 
+  void OnCompositorVisible() override {}
+  void OnCompositorHidden() override {}
   scoped_refptr<FrameFuture> DemandDrawHwAsync(
       const gfx::Size& viewport_size,
       const gfx::Rect& viewport_rect_for_tile_priority,

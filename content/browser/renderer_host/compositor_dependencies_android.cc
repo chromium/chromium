@@ -179,6 +179,7 @@ void CompositorDependenciesAndroid::DoLowEndBackgroundCleanup() {
 
 void CompositorDependenciesAndroid::OnCompositorVisible(
     CompositorImpl* compositor) {
+  CHECK(!visible_synchronous_compositors_);
   bool element_inserted = visible_compositors_.insert(compositor).second;
   DCHECK(element_inserted);
   if (visible_compositors_.size() == 1)
@@ -187,16 +188,35 @@ void CompositorDependenciesAndroid::OnCompositorVisible(
 
 void CompositorDependenciesAndroid::OnCompositorHidden(
     CompositorImpl* compositor) {
+  CHECK(!visible_synchronous_compositors_);
   size_t elements_removed = visible_compositors_.erase(compositor);
   DCHECK_EQ(1u, elements_removed);
   if (visible_compositors_.size() == 0)
     OnVisibilityChanged();
 }
 
+void CompositorDependenciesAndroid::OnSynchronousCompositorVisible() {
+  CHECK(visible_compositors_.empty());
+  visible_synchronous_compositors_++;
+  if (visible_synchronous_compositors_ == 1u) {
+    OnVisibilityChanged();
+  }
+}
+
+void CompositorDependenciesAndroid::OnSynchronousCompositorHidden() {
+  CHECK(visible_compositors_.empty());
+  CHECK_GT(visible_synchronous_compositors_, 0u);
+  visible_synchronous_compositors_--;
+  if (visible_synchronous_compositors_ == 0u) {
+    OnVisibilityChanged();
+  }
+}
+
 // This function runs when our first CompositorImpl becomes visible or when
 // our last Compositormpl is hidden.
 void CompositorDependenciesAndroid::OnVisibilityChanged() {
-  if (visible_compositors_.size() > 0) {
+  if (visible_compositors_.size() > 0 ||
+      visible_synchronous_compositors_ > 0u) {
     GpuDataManagerImpl::GetInstance()->SetApplicationVisible(true);
     BrowserGpuChannelHostFactorySetApplicationVisible(true);
     SendOnForegroundedToGpuService();
