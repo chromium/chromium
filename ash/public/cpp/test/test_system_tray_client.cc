@@ -181,4 +181,8 @@ void TestSystemTrayClient::ShowTouchpadSettings() {
   ++show_touchpad_settings_count_;
 }
 
+void TestSystemTrayClient::ShowRemapKeysSubpage(int device_id) {
+  ++show_remap_keys_subpage_count_;
+}
+
 }  // namespace ash

@@ -256,6 +256,16 @@ void InputDeviceSettingsNotificationController::
   }
   CHECK_NE(blocked_modifier, SixPackShortcutModifier::kNone);
   CHECK(ui::KeyboardCapability::IsSixPackKey(key_code));
+  auto on_click_handler =
+      base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
+          base::BindRepeating(
+              [](int device_id) {
+                Shell::Get()
+                    ->system_tray_model()
+                    ->client()
+                    ->ShowRemapKeysSubpage(device_id);
+              },
+              device_id));
   auto notification = CreateSystemNotificationPtr(
       message_center::NOTIFICATION_TYPE_SIMPLE,
       GetSixPackNotificationId(key_code, device_id),
@@ -267,7 +277,7 @@ void InputDeviceSettingsNotificationController::
       message_center::NotifierId(
           message_center::NotifierType::SYSTEM_COMPONENT, kNotifierId,
           NotificationCatalogName::kEventRewriterDeprecation),
-      message_center::RichNotificationData(), nullptr,
+      message_center::RichNotificationData(), std::move(on_click_handler),
       kNotificationKeyboardIcon,
       message_center::SystemNotificationWarningLevel::NORMAL);
   message_center_->AddNotification(std::move(notification));

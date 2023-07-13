@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/ash/system_tray_client_impl.h"
+#include <memory>
 
+#include "base/strings/strcat.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
@@ -14,6 +16,8 @@
 namespace {
 
 constexpr const char kShowTouchpadSettingsPage[] = "ShowTouchpadSettingsPage";
+constexpr const char kShowRemapKeysSettingsSubpage[] =
+    "ShowRemapKeysSettingsSubpage";
 
 class TestSettingsWindowManager : public chrome::SettingsWindowManager {
  public:
@@ -31,17 +35,31 @@ class TestSettingsWindowManager : public chrome::SettingsWindowManager {
 
 // Use BrowserWithTestWindowTest because it sets up ash::Shell, ash::SystemTray,
 // ProfileManager, etc.
-using SystemTrayClientImplTest = BrowserWithTestWindowTest;
+class SystemTrayClientImplTest : public BrowserWithTestWindowTest {
+ public:
+  void SetUp() override {
+    BrowserWithTestWindowTest::SetUp();
+    client_impl_ = std::make_unique<SystemTrayClientImpl>();
+    settings_window_manager_ = std::make_unique<TestSettingsWindowManager>();
 
+    chrome::SettingsWindowManager::SetInstanceForTesting(
+        settings_window_manager_.get());
+  }
+  void TearDown() override {
+    settings_window_manager_.reset();
+    client_impl_.reset();
+    chrome::SettingsWindowManager::SetInstanceForTesting(nullptr);
+    BrowserWithTestWindowTest::TearDown();
+  }
+
+ protected:
+  std::unique_ptr<SystemTrayClientImpl> client_impl_;
+  std::unique_ptr<TestSettingsWindowManager> settings_window_manager_;
+};
 TEST_F(SystemTrayClientImplTest, ShowAccountSettings) {
-  SystemTrayClientImpl client_impl;
-
-  TestSettingsWindowManager test_manager;
-  chrome::SettingsWindowManager::SetInstanceForTesting(&test_manager);
-
-  client_impl.ShowAccountSettings();
+  client_impl_->ShowAccountSettings();
   EXPECT_EQ(
-      test_manager.last_url(),
+      settings_window_manager_->last_url(),
       chrome::GetOSSettingsUrl(chromeos::settings::mojom::kPeopleSectionPath));
 
   chrome::SettingsWindowManager::SetInstanceForTesting(nullptr);
@@ -49,16 +67,25 @@ TEST_F(SystemTrayClientImplTest, ShowAccountSettings) {
 
 TEST_F(SystemTrayClientImplTest, ShowTouchpadSettings) {
   base::UserActionTester user_action_tester;
-  SystemTrayClientImpl client_impl;
-
-  TestSettingsWindowManager test_manager;
-  chrome::SettingsWindowManager::SetInstanceForTesting(&test_manager);
-
-  client_impl.ShowTouchpadSettings();
-  EXPECT_EQ(test_manager.last_url(),
+  client_impl_->ShowTouchpadSettings();
+  EXPECT_EQ(settings_window_manager_->last_url(),
             chrome::GetOSSettingsUrl(
                 chromeos::settings::mojom::kPerDeviceTouchpadSubpagePath));
   EXPECT_EQ(1, user_action_tester.GetActionCount(kShowTouchpadSettingsPage));
+  chrome::SettingsWindowManager::SetInstanceForTesting(nullptr);
+}
+
+TEST_F(SystemTrayClientImplTest, ShowRemapKeysSettings) {
+  base::UserActionTester user_action_tester;
+  client_impl_->ShowRemapKeysSubpage(/*device_id=*/1);
+  EXPECT_EQ(settings_window_manager_->last_url(),
+            base::StrCat({chrome::GetOSSettingsUrl(
+                              chromeos::settings::mojom::
+                                  kPerDeviceKeyboardRemapKeysSubpagePath)
+                              .spec(),
+                          "?keyboardId=1"}));
+  EXPECT_EQ(1,
+            user_action_tester.GetActionCount(kShowRemapKeysSettingsSubpage));
   chrome::SettingsWindowManager::SetInstanceForTesting(nullptr);
 }
 

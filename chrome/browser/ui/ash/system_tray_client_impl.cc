@@ -803,6 +803,16 @@ void SystemTrayClientImpl::ShowTouchpadSettings() {
       chromeos::settings::mojom::kPerDeviceTouchpadSubpagePath);
 }
 
+void SystemTrayClientImpl::ShowRemapKeysSubpage(int device_id) {
+  DCHECK(ash::features::IsInputDeviceSettingsSplitEnabled());
+  base::RecordAction(base::UserMetricsAction("ShowRemapKeysSettingsSubpage"));
+  ShowSettingsSubPageForActiveUser(base::StrCat({
+      chromeos::settings::mojom::kPerDeviceKeyboardRemapKeysSubpagePath,
+      "?keyboardId=",
+      base::NumberToString(device_id),
+  }));
+}
+
 void SystemTrayClientImpl::ShowEolInfoPage() {
   const bool use_offer_url = ash::features::kEolIncentiveParam.Get() !=
                                  ash::features::EolIncentiveParam::kNoOffer &&

@@ -31410,6 +31410,17 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="ShowRemapKeysSettingsSubpage">
+  <owner>michaelcheco@google.com</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <description>
+    Recorded when a user navigates to the remap keys settings subpage by
+    clicking on the notification shown when they attempted to rewrite a key
+    event to a six pack key action using a shortcut that is inconsistent with
+    their setting for that behavior.
+  </description>
+</action>
+
 <action name="ShowSections_RecentSitesDisabled">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>

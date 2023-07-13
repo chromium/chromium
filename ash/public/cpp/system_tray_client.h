@@ -204,6 +204,10 @@ class ASH_PUBLIC_EXPORT SystemTrayClient {
   // Shows settings related to touchpads.
   virtual void ShowTouchpadSettings() = 0;
 
+  // Shows the remap keyboard keys settings subpage for the keyboard with
+  // `device_id`.
+  virtual void ShowRemapKeysSubpage(int device_id) = 0;
+
  protected:
   SystemTrayClient() {}
 };
