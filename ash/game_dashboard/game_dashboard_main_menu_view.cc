@@ -24,7 +24,6 @@
 #include "ash/style/typography.h"
 #include "ash/system/unified/feature_pod_button.h"
 #include "ash/system/unified/feature_tile.h"
-#include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -298,7 +297,7 @@ void GameDashboardMainMenuView::AddShortcutTilesRow() {
       base::BindRepeating(&GameDashboardMainMenuView::OnToolbarTilePressed,
                           base::Unretained(this)),
       /*is_togglable=*/false, FeatureTile::TileType::kCompact,
-      VIEW_ID_GD_TOOLBAR_TILE, vector_icons::kVideogameAssetOutlineIcon,
+      VIEW_ID_GD_TOOLBAR_TILE, kGdToolbarIcon,
       l10n_util::GetStringUTF16(
           IDS_ASH_GAME_DASHBOARD_TOOLBAR_TILE_BUTTON_TITLE)));
 
@@ -310,7 +309,7 @@ void GameDashboardMainMenuView::AddShortcutTilesRow() {
         base::BindRepeating(&GameDashboardMainMenuView::OnRecordGameTilePressed,
                             base::Unretained(this)),
         /*is_togglable=*/false, FeatureTile::TileType::kCompact,
-        VIEW_ID_GD_RECORD_GAME_TILE, vector_icons::kVideocamIcon,
+        VIEW_ID_GD_RECORD_GAME_TILE, kGdRecordGameIcon,
         l10n_util::GetStringUTF16(
             IDS_ASH_GAME_DASHBOARD_RECORD_GAME_TILE_BUTTON_TITLE)));
   }
@@ -319,7 +318,7 @@ void GameDashboardMainMenuView::AddShortcutTilesRow() {
       base::BindRepeating(&GameDashboardMainMenuView::OnScreenshotTilePressed,
                           base::Unretained(this)),
       /*is_togglable=*/true, FeatureTile::TileType::kCompact,
-      VIEW_ID_GD_SCREENSHOT_TILE, vector_icons::kVideocamIcon,
+      VIEW_ID_GD_SCREENSHOT_TILE, kGdScreenshotIcon,
       l10n_util::GetStringUTF16(
           IDS_ASH_GAME_DASHBOARD_SCREENSHOT_TILE_BUTTON_TITLE)));
 }
@@ -443,7 +442,7 @@ void GameDashboardMainMenuView::MaybeAddScreenSizeSettingsRow(
             base::Unretained(this)),
         RoundedContainer::Behavior::kBottomRounded,
         /*default_drill_in_arrow=*/true,
-        /*icon=*/vector_icons::kSelectWindowIcon, /*title=*/
+        /*icon=*/kGdScreenSizeSettingsIcon, /*title=*/
         l10n_util::GetStringUTF16(
             IDS_ASH_GAME_DASHBOARD_SCREEN_SIZE_SETTINGS_TITLE)));
 
@@ -473,12 +472,12 @@ void GameDashboardMainMenuView::AddUtilityClusterRow() {
   container->AddChildView(CreateIconButton(
       base::BindRepeating(&GameDashboardMainMenuView::OnHelpButtonPressed,
                           base::Unretained(this)),
-      VIEW_ID_GD_HELP_BUTTON, vector_icons::kHelpIcon,
+      VIEW_ID_GD_HELP_BUTTON, kGdHelpIcon,
       l10n_util::GetStringUTF16(IDS_ASH_GAME_DASHBOARD_HELP_TOOLTIP)));
   container->AddChildView(CreateIconButton(
       base::BindRepeating(&GameDashboardMainMenuView::OnSettingsButtonPressed,
                           base::Unretained(this)),
-      VIEW_ID_GD_GENERAL_SETTINGS_BUTTON, vector_icons::kSettingsIcon,
+      VIEW_ID_GD_GENERAL_SETTINGS_BUTTON, kGdSettingsIcon,
       l10n_util::GetStringUTF16(IDS_ASH_GAME_DASHBOARD_SETTINGS_TOOLTIP)));
 }
 

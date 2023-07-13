@@ -15,7 +15,6 @@
 #include "ash/style/ash_color_id.h"
 #include "ash/style/icon_button.h"
 #include "base/types/cxx23_to_underlying.h"
-#include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/background.h"
@@ -91,8 +90,7 @@ void GameDashboardToolbarView::AddShortcutTiles() {
   gamepad_button_ = AddChildView(CreateIconButton(
       base::BindRepeating(&GameDashboardToolbarView::OnGamepadButtonPressed,
                           base::Unretained(this)),
-      &vector_icons::kVideogameAssetOutlineIcon,
-      base::to_underlying(ToolbarViewId::kGamepadButton),
+      &kGdToolbarIcon, base::to_underlying(ToolbarViewId::kGamepadButton),
       l10n_util::GetStringUTF16(
           IDS_ASH_GAME_DASHBOARD_TOOLBAR_TILE_BUTTON_TITLE),
       /*is_togglable=*/false));
@@ -103,7 +101,7 @@ void GameDashboardToolbarView::AddShortcutTiles() {
   AddChildView(CreateIconButton(
       base::BindRepeating(&GameDashboardToolbarView::OnRecordButtonPressed,
                           base::Unretained(this)),
-      &vector_icons::kVideocamIcon,
+      &kGdRecordGameIcon,
       base::to_underlying(ToolbarViewId::kScreenRecordButton),
       l10n_util::GetStringUTF16(
           IDS_ASH_GAME_DASHBOARD_RECORD_GAME_TILE_BUTTON_TITLE),
@@ -112,8 +110,7 @@ void GameDashboardToolbarView::AddShortcutTiles() {
   AddChildView(CreateIconButton(
       base::BindRepeating(&GameDashboardToolbarView::OnScreenshotButtonPressed,
                           base::Unretained(this)),
-      &vector_icons::kVideocamIcon,
-      base::to_underlying(ToolbarViewId::kScreenshotButton),
+      &kGdScreenshotIcon, base::to_underlying(ToolbarViewId::kScreenshotButton),
       l10n_util::GetStringUTF16(
           IDS_ASH_GAME_DASHBOARD_SCREENSHOT_TILE_BUTTON_TITLE),
       /*is_togglable=*/false));
