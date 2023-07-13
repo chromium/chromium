@@ -9,6 +9,7 @@
 
 #include <AudioToolbox/AudioToolbox.h>
 
+#include "base/mac/scoped_typeref.h"
 #include "base/memory/free_deleter.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_decoder.h"

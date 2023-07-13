@@ -348,8 +348,6 @@ particular order:
   files are included by non-ARC files. Remove all other use.
 - `ScopedNSAutoreleasePool`: Use `@autoreleasepool` instead, and remove any use
   of `ScopedNSAutoreleasePool` that you encounter, if possible.
-- `base::mac::ScopedBlock`: Not needed; block pointers get the same ARC
-  ownership management as Objective-C object pointers.
 
 ## Further reading {#references}
 

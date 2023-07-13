@@ -1953,7 +1953,6 @@ component("base") {
       "mac/mac_logging.mm",
       "mac/mach_logging.cc",
       "mac/mach_logging.h",
-      "mac/scoped_block.h",
       "mac/scoped_mach_port.cc",
       "mac/scoped_mach_port.h",
       "mac/scoped_mach_vm.cc",
@@ -2935,10 +2934,7 @@ if (is_ios) {
 if (is_apple) {
   source_set("base_unittests_noarc") {
     testonly = true
-    sources = [
-      "mac/bind_objc_block_unittest.mm",
-      "mac/scoped_nsobject_unittest.mm",
-    ]
+    sources = [ "mac/scoped_nsobject_unittest.mm" ]
     deps = [
       ":base",
       "//base/test:test_support",
