@@ -357,7 +357,7 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
   // foreground priority and disallows same version updates.
   HRESULT CheckForUpdate() {
     using AppWebImplPtr = Microsoft::WRL::ComPtr<AppWebImpl>;
-    scoped_refptr<ComServerApp> com_server = AppServerSingletonInstance();
+    scoped_refptr<AppServerWin> com_server = AppServerSingletonInstance();
     com_server->main_task_runner()->PostTask(
         FROM_HERE,
         base::BindOnce(
@@ -389,7 +389,7 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
 
   HRESULT Update() {
     using AppWebImplPtr = Microsoft::WRL::ComPtr<AppWebImpl>;
-    scoped_refptr<ComServerApp> com_server = AppServerSingletonInstance();
+    scoped_refptr<AppServerWin> com_server = AppServerSingletonInstance();
     com_server->main_task_runner()->PostTask(
         FROM_HERE,
         base::BindOnce(
@@ -1195,7 +1195,7 @@ STDMETHODIMP PolicyStatusImpl::refreshPolicies() {
   // self reference of the COM object, otherwise the server could shutdown if
   // the caller releases its interface pointer when this function returns.
   using PolicyStatusImplPtr = Microsoft::WRL::ComPtr<PolicyStatusImpl>;
-  scoped_refptr<ComServerApp> com_server = AppServerSingletonInstance();
+  scoped_refptr<AppServerWin> com_server = AppServerSingletonInstance();
   com_server->main_task_runner()->PostTask(
       FROM_HERE,
       base::BindOnce(&UpdateService::FetchPolicies,

@@ -237,20 +237,20 @@ HRESULT IsCOMCallerAllowed() {
 }
 
 // Returns a leaky singleton of the App instance.
-scoped_refptr<ComServerApp> AppServerSingletonInstance() {
-  return AppSingletonInstance<ComServerApp>();
+scoped_refptr<AppServerWin> AppServerSingletonInstance() {
+  return AppSingletonInstance<AppServerWin>();
 }
 
-ComServerApp::ComServerApp() = default;
-ComServerApp::~ComServerApp() {
+AppServerWin::AppServerWin() = default;
+AppServerWin::~AppServerWin() {
   NOTREACHED();  // The instance of this class is a leaky singleton.
 }
 
-void ComServerApp::Stop() {
+void AppServerWin::Stop() {
   VLOG(2) << __func__ << ": COM server is shutting down.";
   UnregisterClassObjects();
   main_task_runner_->PostTask(FROM_HERE, base::BindOnce([] {
-                                scoped_refptr<ComServerApp> this_server =
+                                scoped_refptr<AppServerWin> this_server =
                                     AppServerSingletonInstance();
                                 this_server->update_service_ = nullptr;
                                 this_server->update_service_internal_ = nullptr;
@@ -258,7 +258,7 @@ void ComServerApp::Stop() {
                               }));
 }
 
-HRESULT ComServerApp::RegisterClassObjects() {
+HRESULT AppServerWin::RegisterClassObjects() {
   // Register COM class objects that are under either the ActiveSystem or the
   // ActiveUser group.
   // See wrl_classes.cc for details on the COM classes within the group.
@@ -266,7 +266,7 @@ HRESULT ComServerApp::RegisterClassObjects() {
       .RegisterObjects(COMGroup(updater_scope()).c_str());
 }
 
-HRESULT ComServerApp::RegisterInternalClassObjects() {
+HRESULT AppServerWin::RegisterInternalClassObjects() {
   // Register COM class objects that are under either the InternalSystem or the
   // InternalUser group.
   // See wrl_classes.cc for details on the COM classes within the group.
@@ -274,19 +274,19 @@ HRESULT ComServerApp::RegisterInternalClassObjects() {
       .RegisterObjects(COMGroupInternal(updater_scope()).c_str());
 }
 
-void ComServerApp::UnregisterClassObjects() {
+void AppServerWin::UnregisterClassObjects() {
   const HRESULT hr =
       Microsoft::WRL::Module<Microsoft::WRL::OutOfProc>::GetModule()
           .UnregisterObjects();
   LOG_IF(ERROR, FAILED(hr)) << "UnregisterObjects failed; hr: " << hr;
 }
 
-void ComServerApp::CreateWRLModule() {
+void AppServerWin::CreateWRLModule() {
   Microsoft::WRL::Module<Microsoft::WRL::OutOfProc>::Create(
-      this, &ComServerApp::Stop);
+      this, &AppServerWin::Stop);
 }
 
-void ComServerApp::TaskStarted() {
+void AppServerWin::TaskStarted() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const auto count =
       Microsoft::WRL::Module<Microsoft::WRL::OutOfProc>::GetModule()
@@ -295,37 +295,37 @@ void ComServerApp::TaskStarted() {
   AppServer::TaskStarted();
 }
 
-bool ComServerApp::ShutdownIfIdleAfterTask() {
+bool AppServerWin::ShutdownIfIdleAfterTask() {
   return false;
 }
 
-void ComServerApp::OnDelayedTaskComplete() {
+void AppServerWin::OnDelayedTaskComplete() {
   const auto count =
       Microsoft::WRL::Module<Microsoft::WRL::OutOfProc>::GetModule()
           .DecrementObjectCount();
   VLOG(2) << "Completed task, Microsoft::WRL::Module count: " << count;
 }
 
-void ComServerApp::ActiveDuty(scoped_refptr<UpdateService> update_service) {
+void AppServerWin::ActiveDuty(scoped_refptr<UpdateService> update_service) {
   update_service_ = base::MakeRefCounted<UpdateServiceStubWin>(
       std::move(update_service),
-      base::BindRepeating(&ComServerApp::TaskStarted, this),
-      base::BindRepeating(&ComServerApp::TaskCompleted, this));
-  Start(base::BindOnce(&ComServerApp::RegisterClassObjects,
+      base::BindRepeating(&AppServerWin::TaskStarted, this),
+      base::BindRepeating(&AppServerWin::TaskCompleted, this));
+  Start(base::BindOnce(&AppServerWin::RegisterClassObjects,
                        base::Unretained(this)));
 }
 
-void ComServerApp::ActiveDutyInternal(
+void AppServerWin::ActiveDutyInternal(
     scoped_refptr<UpdateServiceInternal> update_service_internal) {
   update_service_internal_ = base::MakeRefCounted<UpdateServiceInternalStubWin>(
       std::move(update_service_internal),
-      base::BindRepeating(&ComServerApp::TaskStarted, this),
-      base::BindRepeating(&ComServerApp::TaskCompleted, this));
-  Start(base::BindOnce(&ComServerApp::RegisterInternalClassObjects,
+      base::BindRepeating(&AppServerWin::TaskStarted, this),
+      base::BindRepeating(&AppServerWin::TaskCompleted, this));
+  Start(base::BindOnce(&AppServerWin::RegisterInternalClassObjects,
                        base::Unretained(this)));
 }
 
-void ComServerApp::Start(base::OnceCallback<HRESULT()> register_callback) {
+void AppServerWin::Start(base::OnceCallback<HRESULT()> register_callback) {
   CreateWRLModule();
   HRESULT hr = std::move(register_callback).Run();
   if (FAILED(hr)) {
@@ -333,11 +333,11 @@ void ComServerApp::Start(base::OnceCallback<HRESULT()> register_callback) {
   }
 }
 
-void ComServerApp::UninstallSelf() {
+void AppServerWin::UninstallSelf() {
   UninstallCandidate(updater_scope());
 }
 
-bool ComServerApp::SwapInNewVersion() {
+bool AppServerWin::SwapInNewVersion() {
   std::unique_ptr<WorkItemList> list(WorkItem::CreateWorkItemList());
 
   const absl::optional<base::FilePath> versioned_directory =
@@ -392,7 +392,7 @@ bool ComServerApp::SwapInNewVersion() {
   return true;
 }
 
-bool ComServerApp::MigrateLegacyUpdaters(
+bool AppServerWin::MigrateLegacyUpdaters(
     base::RepeatingCallback<void(const RegistrationRequest&)>
         register_callback) {
   const HKEY root = UpdaterScopeToHKeyRoot(updater_scope());

@@ -39,9 +39,9 @@ HRESULT IsCOMCallerAllowed();
 //
 // The instance of the this class is managed by a singleton and it leaks at
 // runtime.
-class ComServerApp : public AppServer {
+class AppServerWin : public AppServer {
  public:
-  ComServerApp();
+  AppServerWin();
 
   using AppServer::config;
   using AppServer::prefs;
@@ -63,7 +63,7 @@ class ComServerApp : public AppServer {
   void Stop();
 
  private:
-  ~ComServerApp() override;
+  ~AppServerWin() override;
 
   // Called before each invocation of an `UpdateService` or
   // `UpdateServiceInternal` method. Increments the WRL Module count.
@@ -111,7 +111,7 @@ class ComServerApp : public AppServer {
 };
 
 // Returns a singleton application object bound to this COM server.
-scoped_refptr<ComServerApp> AppServerSingletonInstance();
+scoped_refptr<AppServerWin> AppServerSingletonInstance();
 
 }  // namespace updater
 
