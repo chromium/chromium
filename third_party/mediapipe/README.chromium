@@ -14,3 +14,33 @@ MediaPipe Tasks provides the core programming interface of the MediaPipe
 Solutions suite, including a set of libraries for deploying innovative ML
 solutions onto devices with a minimum of code. It supports multiple platforms,
 including Android, Web / JavaScript, Python, and support for iOS is coming soon.
+
+
+To make a new patch file
+========================
+
+1) Make changes in //third_party/mediapipe/src/
+
+2) `git commit` those changes.
+
+  Note: This works best when you are only making a single patch in your git
+  branch.
+
+3) Run this command (or one like it):
+
+  ```
+  git format-patch origin/main third_party/mediapipe/src/ -o third_party/mediapipe/patches
+  ```
+
+  Note: git format-patch takes arguments in the same style as git diff. See the
+  man page for git-format-patch for help.
+
+4) Rename the added patch file and change the subject line as needed.
+
+
+Patches which can be low-friction upstreamed
+============================================
+* safe_int_ignore_warning.patch - Uses a #pragma to disable an unhelpful
+  compiler warning.
+* set-executable-bit-for-files-with-shebang.patch - `chmod +x` on all files that
+  have a shebang, per Chromium presubmit checks.

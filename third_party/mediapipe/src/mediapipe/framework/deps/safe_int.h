@@ -90,10 +90,16 @@ class SafeIntStrongIntValidator {
     // sure the value is in range.  It is undefined behavior to convert to int
     // from a float that is out of range.
     if (std::is_floating_point<U>::value) {
+      // The compiler's static analysis thinks that we could be comparing an
+      // integer to a float, hence the warning. We know this is not possible
+      // given the if condition, so turn off the warning.
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wimplicit-const-int-float-conversion"
       if (arg < std::numeric_limits<T>::min() ||
           arg > std::numeric_limits<T>::max()) {
         ErrorType::Error("SafeInt: init from out of bounds float", arg, "=");
       }
+#pragma clang diagnostic pop
     } else {
       // If the initial value (type U) is changed by being converted to and from
       // the native type (type T), then it must be out of bounds for type T.

@@ -79,6 +79,9 @@ class ScopedExecutionStatusResultRecorder {
 // to keep memory usage of the browser process down, but does delay model
 // execution by the time it takes to load the model (about 50ms in practice).
 // See |SetShouldUnloadModelOnComplete| to override this behavior.
+//
+// Note that when built with the MediaPipe backend (non-default), task
+// cancellation is not supported.
 template <class OutputType,
           class InputType,
           // TODO(b/283522287): Remove this once all usage of TFLite Task
@@ -88,7 +91,13 @@ template <class OutputType,
 class TFLiteModelExecutor : public ModelExecutor<OutputType, InputType> {
  public:
   TFLiteModelExecutor()
-      : watchdog_(nullptr, base::OnTaskRunnerDeleter(nullptr)) {}
+#if BUILDFLAG(BUILD_WITH_MEDIAPIPE_LIB)
+      = default;
+#else
+      : watchdog_(nullptr, base::OnTaskRunnerDeleter(nullptr)) {
+  }
+#endif
+
   ~TFLiteModelExecutor() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   }

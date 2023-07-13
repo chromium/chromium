@@ -46,6 +46,8 @@ EXCLUDE_PATTERN=$(join_by '|' "${EXCLUDE_PATTERNS[@]}")
 if [[ -d "/tmp/mediapipe" ]]; then
   rm -rf /tmp/mediapipe
 fi
+
+echo "Downloading "mediapipe@${MP_VERSION}"..."
 mkdir -p /tmp/mediapipe
 curl -s -L "https://github.com/google/mediapipe/archive/${MP_VERSION}.tar.gz" | tar xz --strip=1 -C /tmp/mediapipe
 
@@ -56,6 +58,7 @@ cd "${SRC_DIR}"
 rm -rf third_party/mediapipe/src
 mkdir -p third_party/mediapipe/src
 
+echo "Replacing existing files..."
 cd third_party/mediapipe/src/
 for file in ${FILES[@]} ; do
   mkdir -p "$(dirname ${file})"
@@ -63,9 +66,11 @@ for file in ${FILES[@]} ; do
 done
 cd "${SRC_DIR}"
 
+echo "Applying patches..."
 for patch_file in $(ls third_party/mediapipe/patches/) ; do
-  echo "Attempting to apply ${patch_file}"
-  git apply "${patch_file}"
+  git apply "third_party/mediapipe/patches/${patch_file}" || echo "Failed to apply third_party/mediapipe/patches/${patch_file}"
 done
 
 rm -rf /tmp/mediapipe
+
+echo "Done"
