@@ -299,6 +299,14 @@ void CollectAncestorRoles(
   if (labelName.empty())
     return nil;
 
+  // In the case where we have a radio button or a checked box, no title UI
+  // element. This goes against Apple's documentation for AXTitleUIElement,
+  // but is consistent with Safari+Voiceover behavior.
+  // See crbug.com/1430419
+  ax::mojom::Role role = _node->GetRole();
+  if (ui::IsRadio(role) || ui::IsCheckBox(role))
+    return nil;
+
   return label->GetNativeViewAccessible();
 }
 
@@ -330,6 +338,26 @@ void CollectAncestorRoles(
   // VoiceOver computes the wrong description for a link.
   if (ui::IsLink(role))
     return true;
+
+  // If a radiobutton or checkbox has a single label, we are consistent
+  // with Safari+Voiceover and expose it via AccessibilityLabel.
+  // Note: Safari+Voiceover is inconsistent with Apple's documentation,
+  // which suggests this should be exposed via AXTitleUIElement. See
+  // crbug.com/1430419
+  if (ui::IsRadio(role) || ui::IsCheckBox(role)) {
+    std::vector<int32_t> labelledby_ids =
+        _node->GetIntListAttribute(ax::mojom::IntListAttribute::kLabelledbyIds);
+    if (labelledby_ids.size() == 1) {
+      ui::AXPlatformNode* label =
+          _node->GetDelegate()->GetFromNodeID(labelledby_ids[0]);
+      if (label) {
+        // No title UI element if the label's name is empty.
+        std::string labelName = label->GetDelegate()->GetName();
+        if (!labelName.empty())
+          return true;
+      }
+    }
+  }
 
   // VoiceOver will not read the label of these roles unless it is
   // exposed in the description instead of the title.

@@ -4,7 +4,7 @@ AXWebArea
 ++++AXCheckBox AXTitle='label ignored for checkbox' AXValue=0
 ++++AXGroup AXTitle='label exposed for radio button '
 ++++++AXStaticText AXValue='label exposed for radio button '
-++++++AXRadioButton AXTitleUIElement=:5 AXValue=0
+++++++AXRadioButton AXDescription='label exposed for radio button' AXValue=0
 ++++AXGroup AXTitle='label exposed for checkbox '
 ++++++AXStaticText AXValue='label exposed for checkbox '
-++++++AXCheckBox AXTitleUIElement=:8 AXValue=0
+++++++AXCheckBox AXDescription='label exposed for checkbox' AXValue=0
