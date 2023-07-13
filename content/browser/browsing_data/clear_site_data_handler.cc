@@ -4,7 +4,6 @@
 
 #include "content/browser/browsing_data/clear_site_data_handler.h"
 
-#include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_split.h"
@@ -14,7 +13,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
-#include "content/public/common/content_switches.h"
+#include "net/base/features.h"
 #include "net/base/load_flags.h"
 #include "net/url_request/clear_site_data.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
@@ -28,11 +27,6 @@ namespace {
 const char kConsoleMessageTemplate[] = "Clear-Site-Data header on '%s': %s";
 const char kConsoleMessageCleared[] = "Cleared data types: %s.";
 const char kConsoleMessageDatatypeSeparator[] = ", ";
-
-bool AreExperimentalFeaturesEnabled() {
-  return base::CommandLine::ForCurrentProcess()->HasSwitch(
-      switches::kEnableExperimentalWebPlatformFeatures);
-}
 
 enum LoggableEventMask {
   CLEAR_SITE_DATA_NO_RECOGNIZABLE_TYPES = 0,
@@ -271,7 +265,8 @@ bool ClearSiteDataHandler::ParseHeader(
       net::ClearSiteDataHeaderContents(header);
   std::string output_types;
 
-  if (AreExperimentalFeaturesEnabled() &&
+  if (base::FeatureList::IsEnabled(
+          net::features::kClearSiteDataWildcardSupport) &&
       std::find(input_types.begin(), input_types.end(),
                 net::kDatatypeWildcard) != input_types.end()) {
     input_types.push_back(net::kDatatypeCookies);
@@ -314,7 +309,8 @@ bool ClearSiteDataHandler::ParseHeader(
                    features::kClearSiteDataClientHintsSupport) &&
                input_type == net::kDatatypeClientHints) {
       data_type = ClearSiteDataType::kClientHints;
-    } else if (AreExperimentalFeaturesEnabled() &&
+    } else if (base::FeatureList::IsEnabled(
+                   net::features::kClearSiteDataWildcardSupport) &&
                input_type == net::kDatatypeWildcard) {
       continue;
     } else {

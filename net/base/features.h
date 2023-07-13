@@ -416,6 +416,10 @@ NET_EXPORT BASE_DECLARE_FEATURE(kEnableWebTransportDraft07);
 // Enables Zstandard Content-Encoding support.
 NET_EXPORT BASE_DECLARE_FEATURE(kZstdContentEncoding);
 
+// When enabled, the Clear-Site-Data HTTP Response header supports clearing all
+// targets as "*" rather than requiring all targets be listed out.
+NET_EXPORT BASE_DECLARE_FEATURE(kClearSiteDataWildcardSupport);
+
 }  // namespace net::features
 
 #endif  // NET_BASE_FEATURES_H_

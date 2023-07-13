@@ -2183,5 +2183,26 @@
     "args": ["--enable-features=ClearSiteDataClientHintsSupport"],
     "expires": "Jun 28, 2024",
     "owners": ["arichiv@chromium.org"]
+  },
+  {
+    "prefix": "clear-site-data-wildcard-support",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": [
+      "external/wpt/clear-site-data"
+    ],
+    "args": ["--enable-features=ClearSiteDataWildcardSupport"],
+    "expires": "Jun 28, 2024",
+    "owners": ["arichiv@chromium.org"]
+  },
+  {
+    "prefix": "clear-site-data-client-hints-and-wildcard-support",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": [
+      "external/wpt/clear-site-data",
+      "external/wpt/client-hints/clear-site-data"
+    ],
+    "args": ["--enable-features=ClearSiteDataClientHintsSupport,ClearSiteDataWildcardSupport"],
+    "expires": "Jun 28, 2024",
+    "owners": ["arichiv@chromium.org"]
   }
 ]

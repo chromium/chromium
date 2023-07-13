@@ -15,6 +15,7 @@
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/containers/adapters.h"
+#include "base/feature_list.h"
 #include "base/file_version_info.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -876,8 +877,10 @@ void URLRequestHttpJob::SaveCookiesAndNotifyHeadersComplete(int result) {
       ClearSiteDataHeaderContents(clear_site_data_header);
   std::set<std::string> clear_site_data_set(clear_site_data_types.begin(),
                                             clear_site_data_types.end());
-  // TODO(crbug.com/1464260): Add support for wildcard clears too.
-  if (clear_site_data_set.find(kDatatypeCookies) != clear_site_data_set.end()) {
+  if (clear_site_data_set.find(kDatatypeCookies) != clear_site_data_set.end() ||
+      (base::FeatureList::IsEnabled(features::kClearSiteDataWildcardSupport) &&
+       clear_site_data_set.find(kDatatypeWildcard) !=
+           clear_site_data_set.end())) {
     clear_site_data_prevents_cookies_from_being_stored = true;
   }
 

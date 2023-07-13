@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/base_switches.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -14,12 +13,11 @@
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "content/public/common/content_features.h"
-#include "content/public/common/content_switches.h"
 #include "content/public/test/browser_task_environment.h"
+#include "net/base/features.h"
 #include "net/base/load_flags.h"
 #include "net/http/http_util.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
@@ -167,6 +165,12 @@ class ClearSiteDataHandlerTest
            GetParam().end();
   }
 
+  bool IsWildcardSupportEnabled() {
+    return std::find(GetParam().begin(), GetParam().end(),
+                     net::features::kClearSiteDataWildcardSupport) !=
+           GetParam().end();
+  }
+
  private:
   BrowserTaskEnvironment task_environment_;
 };
@@ -178,7 +182,12 @@ INSTANTIATE_TEST_SUITE_P(
                     std::vector<base::test::FeatureRef>{
                         blink::features::kStorageBuckets},
                     std::vector<base::test::FeatureRef>{
-                        features::kClearSiteDataClientHintsSupport}));
+                        features::kClearSiteDataClientHintsSupport},
+                    std::vector<base::test::FeatureRef>{
+                        net::features::kClearSiteDataWildcardSupport},
+                    std::vector<base::test::FeatureRef>{
+                        features::kClearSiteDataClientHintsSupport,
+                        net::features::kClearSiteDataWildcardSupport}));
 
 TEST_P(ClearSiteDataHandlerTest, ParseHeaderAndExecuteClearingTask) {
   base::test::ScopedFeatureList features;
@@ -226,9 +235,15 @@ TEST_P(ClearSiteDataHandlerTest, ParseHeaderAndExecuteClearingTask) {
        IsClientHintsSupportEnabled()},
 
       // The wildcard datatype is not yet shipped.
-      {"\"*\", \"storage\"", false, true, false, false},
-      {"\"cookies\", \"*\", \"storage\"", true, true, false, false},
-      {"\"*\", \"cookies\", \"*\"", true, false, false, false},
+      {"\"*\", \"storage\"", IsWildcardSupportEnabled(), true,
+       IsWildcardSupportEnabled(),
+       IsWildcardSupportEnabled() && IsClientHintsSupportEnabled()},
+      {"\"cookies\", \"*\", \"storage\"", true, true,
+       IsWildcardSupportEnabled(),
+       IsWildcardSupportEnabled() && IsClientHintsSupportEnabled()},
+      {"\"*\", \"cookies\", \"*\"", true, IsWildcardSupportEnabled(),
+       IsWildcardSupportEnabled(),
+       IsWildcardSupportEnabled() && IsClientHintsSupportEnabled()},
 
       // Different formatting.
       {"\"cookies\"", true, false, false, false},
@@ -249,8 +264,9 @@ TEST_P(ClearSiteDataHandlerTest, ParseHeaderAndExecuteClearingTask) {
     // disabled as they would lack a valid target.
     standard_test_cases.emplace_back("\"clientHints\"", false, false, false,
                                      true);
-    standard_test_cases.emplace_back("\"*\", \"clientHints\"", false, false,
-                                     false, true);
+    standard_test_cases.emplace_back(
+        "\"*\", \"clientHints\"", IsWildcardSupportEnabled(),
+        IsWildcardSupportEnabled(), IsWildcardSupportEnabled(), true);
   }
 
   std::set<std::string> storage_buckets_test_case_expectation = {"drafts",
@@ -285,10 +301,8 @@ TEST_P(ClearSiteDataHandlerTest, ParseHeaderAndExecuteClearingTask) {
                                                    &experimental_test_cases};
 
   for (const std::vector<TestCase>* test_cases : test_case_sets) {
-    base::test::ScopedCommandLine scoped_command_line;
-    if (test_cases == &experimental_test_cases) {
-      scoped_command_line.GetProcessCommandLine()->AppendSwitch(
-          switches::kEnableExperimentalWebPlatformFeatures);
+    if (test_cases == &experimental_test_cases && !IsWildcardSupportEnabled()) {
+      continue;
     }
 
     for (const TestCase& test_case : *test_cases) {
@@ -526,7 +540,7 @@ TEST_F(ClearSiteDataHandlerTest, FormattedConsoleOutput) {
     const char* header;
     const char* url;
     const char* output;
-    bool experimental;
+    bool wildcard;
     bool client_hints;
   } kTestCases[] = {
       // Successful deletion outputs one line, and in case of cookies, also
@@ -640,16 +654,15 @@ TEST_F(ClearSiteDataHandlerTest, FormattedConsoleOutput) {
     // |NetworkServiceClient| creates a new |ClearSiteDataHandler| for each
     // navigation, redirect, or subresource header responses.
     for (const auto& test : kTestCases) {
-      base::test::ScopedCommandLine scoped_command_line;
-      if (test.experimental) {
-        scoped_command_line.GetProcessCommandLine()->AppendSwitch(
-            switches::kEnableExperimentalWebPlatformFeatures);
+      std::vector<base::test::FeatureRef> features;
+      if (test.wildcard) {
+        features.push_back(net::features::kClearSiteDataWildcardSupport);
+      }
+      if (test.client_hints) {
+        features.push_back(features::kClearSiteDataClientHintsSupport);
       }
       base::test::ScopedFeatureList scoped_feature_list;
-      if (test.client_hints) {
-        scoped_feature_list.InitAndEnableFeature(
-            features::kClearSiteDataClientHintsSupport);
-      }
+      scoped_feature_list.InitWithFeatures(features, {});
       TestHandler handler(
           base::BindRepeating(&FakeBrowserContextGetter),
           base::BindRepeating(&FakeWebContentsGetter), GURL(test.url),
