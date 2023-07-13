@@ -38,6 +38,7 @@ _allowed_config_options = [
 # Allowed compilerOptions
 _allowed_compiler_options = [
     'allowUmdGlobalAccess',
+    'isolatedModules',
     'lib',
     'noPropertyAccessFromIndexSignature',
     'noUncheckedIndexedAccess',
