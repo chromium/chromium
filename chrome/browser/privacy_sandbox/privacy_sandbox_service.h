@@ -136,7 +136,7 @@ class PrivacySandboxService : public KeyedService {
 
   PrivacySandboxService(
       privacy_sandbox::PrivacySandboxSettings* privacy_sandbox_settings,
-      content_settings::CookieSettings* cookie_settings,
+      scoped_refptr<content_settings::CookieSettings> cookie_settings,
       PrefService* pref_service,
       content::InterestGroupManager* interest_group_manager,
       profile_metrics::BrowserProfileType profile_type,
@@ -559,7 +559,7 @@ class PrivacySandboxService : public KeyedService {
  private:
   raw_ptr<privacy_sandbox::PrivacySandboxSettings, DanglingUntriaged>
       privacy_sandbox_settings_;
-  raw_ptr<content_settings::CookieSettings> cookie_settings_;
+  scoped_refptr<content_settings::CookieSettings> cookie_settings_;
   raw_ptr<PrefService> pref_service_;
   raw_ptr<content::InterestGroupManager> interest_group_manager_;
   profile_metrics::BrowserProfileType profile_type_;

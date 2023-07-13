@@ -195,7 +195,7 @@ PrivacySandboxService::PrivacySandboxService() = default;
 
 PrivacySandboxService::PrivacySandboxService(
     privacy_sandbox::PrivacySandboxSettings* privacy_sandbox_settings,
-    content_settings::CookieSettings* cookie_settings,
+    scoped_refptr<content_settings::CookieSettings> cookie_settings,
     PrefService* pref_service,
     content::InterestGroupManager* interest_group_manager,
     profile_metrics::BrowserProfileType profile_type,
@@ -293,7 +293,7 @@ PrivacySandboxService::~PrivacySandboxService() = default;
 PrivacySandboxService::PromptType
 PrivacySandboxService::GetRequiredPromptType() {
   const auto third_party_cookies_blocked =
-      AreThirdPartyCookiesBlocked(cookie_settings_);
+      AreThirdPartyCookiesBlocked(cookie_settings_.get());
   if (base::FeatureList::IsEnabled(privacy_sandbox::kPrivacySandboxSettings4)) {
     return GetRequiredPromptTypeInternalM1(
         pref_service_, profile_type_, privacy_sandbox_settings_,
@@ -1517,7 +1517,7 @@ void PrivacySandboxService::MaybeInitializeFirstPartySetsPref() {
   // side of privacy, this init logic is run per-device (the pref recording that
   // init has been run is not synced). If any of the user's devices local state
   // would disable the pref, it is disabled across all devices.
-  if (AreThirdPartyCookiesBlocked(cookie_settings_)) {
+  if (AreThirdPartyCookiesBlocked(cookie_settings_.get())) {
     pref_service_->SetBoolean(prefs::kPrivacySandboxFirstPartySetsEnabled,
                               false);
   }
@@ -1538,7 +1538,7 @@ void PrivacySandboxService::MaybeInitializeAntiAbuseContentSetting() {
   // side of privacy, this init logic is run per-device (the pref recording that
   // init has been run is not synced). If any of the user's devices local state
   // would disable the setting, it is disabled across all devices.
-  if (AreThirdPartyCookiesBlocked(cookie_settings_)) {
+  if (AreThirdPartyCookiesBlocked(cookie_settings_.get())) {
     host_content_settings_map_->SetDefaultContentSetting(
         ContentSettingsType::ANTI_ABUSE, ContentSetting::CONTENT_SETTING_BLOCK);
   }
