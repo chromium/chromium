@@ -649,6 +649,10 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
       assertWithMatcher:chrome_test_util::OmniboxContainingText("testupdown")];
 
+  // The omnibox popup may update multiple times.  Don't downArrow until this
+  // is done.
+  base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(1));
+
   // Go down to testautocomplete1 popup row.
   [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"downArrow" flags:0];
   [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"downArrow" flags:0];
@@ -665,13 +669,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
 // Tests that leading image in omnibox changes based on the suggestion
 // highlighted.
-// TODO(crbug.com/1455347): Test is flaky on simulators. Re-enable the test.
-#if TARGET_IPHONE_SIMULATOR
-#define MAYBE_testOmniboxLeadingImage DISABLED_testOmniboxLeadingImage
-#else
-#define MAYBE_testOmniboxLeadingImage testOmniboxLeadingImage
-#endif
-- (void)MAYBE_testOmniboxLeadingImage {
+- (void)testOmniboxLeadingImage {
   // Start a server to be able to navigate to a web page.
   self.testServer->RegisterRequestHandler(
       base::BindRepeating(&StandardResponse));
@@ -695,7 +693,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
   // The omnibox popup may update multiple times.  Don't downArrow until this
   // is done.
-  base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(0.2));
+  base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(1));
   [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"downArrow" flags:0];
 
   // We expect to have the default leading image.

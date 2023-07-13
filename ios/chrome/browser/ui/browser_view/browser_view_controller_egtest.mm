@@ -8,6 +8,7 @@
 #import "base/feature_list.h"
 #import "base/ios/ios_util.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/test/ios/wait_util.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -119,6 +120,10 @@
       [NSString stringWithFormat:@"javascript:location.href='%s'",
                                  destinationURL.spec().c_str()];
   [ChromeEarlGreyUI focusOmniboxAndType:script];
+
+  // The omnibox popup may update multiple times.
+  base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(1));
+
   // TODO(crbug.com/1454516): Use simulatePhysicalKeyboardEvent until
   // replaceText can properly handle \n.
   [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"\n" flags:0];
