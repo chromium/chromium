@@ -577,12 +577,23 @@ void HardwareRenderer::DrawAndSwap(const HardwareRendererDrawParams& params,
       output_surface_provider_.shared_context_state().get(),
       output_surface_provider_.gl_surface().get());
 
+  static bool first_make_context_current = true;
   if (!IsUsingVulkan() && gl::GLSurfaceEGL::GetGLDisplayEGL()
                               ->IsANGLEExternalContextAndSurfaceSupported()) {
+    auto delta = base::TimeTicks::Now() - make_context_current_start_time;
     UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
-        "Android.WebView.Gfx.MakeANGLEContextCurrentMicroseconds",
-        base::TimeTicks::Now() - make_context_current_start_time,
+        "Android.WebView.Gfx.MakeANGLEContextCurrentMicroseconds", delta,
         base::Microseconds(1), base::Seconds(1), 100);
+    if (first_make_context_current) {
+      UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+          "Android.WebView.Gfx.InitialMakeANGLEContextCurrentMicroseconds",
+          delta, base::Microseconds(1), base::Seconds(1), 100);
+      first_make_context_current = false;
+    } else {
+      UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+          "Android.WebView.Gfx.NonInitialMakeANGLEContextCurrentMicroseconds",
+          delta, base::Microseconds(1), base::Seconds(1), 100);
+    }
   }
 
   viz::FrameTimingDetailsMap timing_details;

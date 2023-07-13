@@ -4571,6 +4571,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Android.WebView.Gfx.InitialMakeANGLEContextCurrentMicroseconds"
+    units="microseconds" expires_after="2023-12-01">
+  <owner>blundell@chromium.org</owner>
+  <owner>vasilyt@chromium.org</owner>
+  <summary>
+    Tracks the amount of time that it took for WebView to initially make the
+    ANGLE context current (recorded only when using ANGLE). Recorded only on the
+    first time saving HWUI state when drawing with GL. This is recorded only on
+    devices that support high resolution timers.
+  </summary>
+</histogram>
+
 <histogram name="Android.WebView.Gfx.MakeANGLEContextCurrentMicroseconds"
     units="microseconds" expires_after="2023-12-01">
   <owner>blundell@chromium.org</owner>
@@ -4580,6 +4593,19 @@ chromium-metrics-reviews@google.com.
     ANGLE context current (recorded only when using ANGLE). Recorded once per
     saving of HWUI state when drawing with GL. This is recorded only on devices
     that support high resolution timers.
+  </summary>
+</histogram>
+
+<histogram
+    name="Android.WebView.Gfx.NonInitialMakeANGLEContextCurrentMicroseconds"
+    units="microseconds" expires_after="2023-12-01">
+  <owner>blundell@chromium.org</owner>
+  <owner>vasilyt@chromium.org</owner>
+  <summary>
+    Tracks the amount of time that it took for WebView to initially make the
+    ANGLE context current (recorded only when using ANGLE). Recorded only if
+    *not* the first time saving HWUI state when drawing with GL. This is
+    recorded only on devices that support high resolution timers.
   </summary>
 </histogram>
 
