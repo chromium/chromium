@@ -17,6 +17,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
+#include "chrome/browser/ui/ash/glanceables/glanceables_classroom_course_work_item.h"
 #include "google_apis/common/api_error_codes.h"
 #include "google_apis/common/request_sender.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -99,24 +100,23 @@ class GlanceablesClassroomClientImpl : public GlanceablesClassroomClient {
                            FetchStudentSubmissionsOnHttpError);
   FRIEND_TEST_ALL_PREFIXES(GlanceablesClassroomClientImplTest,
                            FetchStudentSubmissionsMultiplePages);
+  FRIEND_TEST_ALL_PREFIXES(GlanceablesClassroomClientImplTest,
+                           FetchCourseWorkAfterStudentSubmissions);
 
   // Done callback for fetching all courses for student or teacher roles.
   using CourseList = std::vector<std::unique_ptr<GlanceablesClassroomCourse>>;
   using FetchCoursesCallback =
       base::OnceCallback<void(const CourseList& courses)>;
 
-  using CourseWorkList =
-      std::vector<std::unique_ptr<GlanceablesClassroomCourseWorkItem>>;
+  using CourseWorkInfo =
+      base::flat_map<std::string, GlanceablesClassroomCourseWorkItem>;
   // Done callback for fetching all course work items in a course.
   using FetchCourseWorkCallback =
-      base::OnceCallback<void(const CourseWorkList& course_work)>;
+      base::OnceCallback<void(const CourseWorkInfo& course_work)>;
 
   // Done callback for fetching all student submissions in a course.
-  using SubmissionList =
-      std::vector<std::unique_ptr<GlanceablesClassroomStudentSubmission>>;
-  using SubmissionsPerCourseWork = base::flat_map<std::string, SubmissionList>;
-  using FetchStudentSubmissionsCallback = base::OnceCallback<void(
-      const SubmissionsPerCourseWork& student_submissions)>;
+  using FetchStudentSubmissionsCallback =
+      base::OnceCallback<void(const CourseWorkInfo& student_submissions)>;
 
   enum class FetchStatus { kNotFetched, kFetching, kFetched };
 
@@ -148,7 +148,7 @@ class GlanceablesClassroomClientImpl : public GlanceablesClassroomClient {
     // Returns whether the callback was run. If the callback is run, the object
     // can be discarded. and `RespondIfComplete()` should not be called any
     // longer.
-    bool RespondIfComplete(const CourseWorkList& course_work);
+    bool RespondIfComplete(const CourseWorkInfo& course_work);
 
    private:
     FetchCourseWorkCallback callback_;
@@ -308,8 +308,7 @@ class GlanceablesClassroomClientImpl : public GlanceablesClassroomClient {
   void GetFilteredStudentAssignments(
       base::RepeatingCallback<bool(const absl::optional<base::Time>&)>
           due_predicate,
-      base::RepeatingCallback<
-          bool(GlanceablesClassroomStudentSubmission::State)>
+      base::RepeatingCallback<bool(GlanceablesClassroomStudentSubmissionState)>
           submission_state_predicate,
       GetAssignmentsCallback callback);
 
@@ -323,8 +322,13 @@ class GlanceablesClassroomClientImpl : public GlanceablesClassroomClient {
   void GetFilteredTeacherAssignments(
       base::RepeatingCallback<bool(const absl::optional<base::Time>&)>
           due_predicate,
-      bool graded,
+      base::RepeatingCallback<bool(GlanceablesClassroomStudentSubmissionState)>
+          submission_state_predicate,
       GetAssignmentsCallback callback);
+
+  // Removes all invalid course work items from `course_work_` for courses in
+  // the course list.
+  void PruneInvalidCourseWork(const CourseList& courses);
 
   // Returns lazily initialized `request_sender_`.
   google_apis::RequestSender* GetRequestSender();
@@ -343,14 +347,8 @@ class GlanceablesClassroomClientImpl : public GlanceablesClassroomClient {
   CourseList student_courses_;
   CourseList teacher_courses_;
 
-  // All course work items grouped by course id.
-  base::flat_map<
-      std::string,
-      std::vector<std::unique_ptr<GlanceablesClassroomCourseWorkItem>>>
-      course_work_;
-
-  // All student submissions grouped by course and course_work id.
-  base::flat_map<std::string, SubmissionsPerCourseWork> student_submissions_;
+  // All course work information grouped by course id.
+  base::flat_map<std::string, CourseWorkInfo> course_work_;
 
   // Fetch status of all student data.
   FetchStatus student_data_fetch_status_ = FetchStatus::kNotFetched;

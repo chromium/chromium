@@ -23,6 +23,7 @@
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/ash/glanceables/glanceables_classroom_course_work_item.h"
 #include "chrome/browser/ui/singleton_tabs.h"
 #include "google_apis/classroom/classroom_api_course_work_response_types.h"
 #include "google_apis/classroom/classroom_api_courses_response_types.h"
@@ -89,44 +90,6 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotationTag =
         }
     )");
 
-absl::optional<base::Time> ConvertCourseWorkItemDue(
-    const absl::optional<CourseWorkItem::DueDateTime>& raw_due) {
-  if (!raw_due.has_value()) {
-    return absl::nullopt;
-  }
-
-  const auto exploded_due = base::Time::Exploded{.year = raw_due->year,
-                                                 .month = raw_due->month,
-                                                 .day_of_month = raw_due->day};
-  base::Time due;
-  if (!base::Time::FromUTCExploded(exploded_due, &due)) {
-    return absl::nullopt;
-  }
-  return due + raw_due->time_of_day;
-}
-
-GlanceablesClassroomStudentSubmission::State CalculateStudentSubmissionState(
-    const std::unique_ptr<StudentSubmission>& raw_student_submission) {
-  const auto raw_state = raw_student_submission->state();
-  if (raw_state == StudentSubmission::State::kNew ||
-      raw_state == StudentSubmission::State::kCreated ||
-      raw_state == StudentSubmission::State::kReclaimedByStudent) {
-    return GlanceablesClassroomStudentSubmission::State::kAssigned;
-  }
-
-  if (raw_state == StudentSubmission::State::kTurnedIn) {
-    return GlanceablesClassroomStudentSubmission::State::kTurnedIn;
-  }
-
-  if (raw_state == StudentSubmission::State::kReturned) {
-    return raw_student_submission->assigned_grade().has_value()
-               ? GlanceablesClassroomStudentSubmission::State::kGraded
-               : GlanceablesClassroomStudentSubmission::State::kAssigned;
-  }
-
-  return GlanceablesClassroomStudentSubmission::State::kOther;
-}
-
 }  // namespace
 
 GlanceablesClassroomClientImpl::CourseWorkRequest::CourseWorkRequest(
@@ -150,7 +113,7 @@ void GlanceablesClassroomClientImpl::CourseWorkRequest::
 }
 
 bool GlanceablesClassroomClientImpl::CourseWorkRequest::RespondIfComplete(
-    const CourseWorkList& course_work) {
+    const CourseWorkInfo& course_work) {
   CHECK(callback_);
 
   if (pending_page_requests_ == 0) {
@@ -191,11 +154,10 @@ void GlanceablesClassroomClientImpl::GetCompletedStudentAssignments(
 
   auto due_predicate = base::BindRepeating(
       [](const absl::optional<base::Time>& due) { return true; });
-  auto submission_state_predicate = base::BindRepeating(
-      [](GlanceablesClassroomStudentSubmission::State state) {
-        return state ==
-                   GlanceablesClassroomStudentSubmission::State::kTurnedIn ||
-               state == GlanceablesClassroomStudentSubmission::State::kGraded;
+  auto submission_state_predicate =
+      base::BindRepeating([](GlanceablesClassroomStudentSubmissionState state) {
+        return state == GlanceablesClassroomStudentSubmissionState::kTurnedIn ||
+               state == GlanceablesClassroomStudentSubmissionState::kGraded;
       });
   InvokeOnceStudentDataFetched(base::BindOnce(
       &GlanceablesClassroomClientImpl::GetFilteredStudentAssignments,
@@ -213,9 +175,9 @@ void GlanceablesClassroomClientImpl::
         return due.has_value() && now < due.value();
       },
       base::Time::Now());
-  auto submission_state_predicate = base::BindRepeating(
-      [](GlanceablesClassroomStudentSubmission::State state) {
-        return state == GlanceablesClassroomStudentSubmission::State::kAssigned;
+  auto submission_state_predicate =
+      base::BindRepeating([](GlanceablesClassroomStudentSubmissionState state) {
+        return state == GlanceablesClassroomStudentSubmissionState::kAssigned;
       });
   InvokeOnceStudentDataFetched(base::BindOnce(
       &GlanceablesClassroomClientImpl::GetFilteredStudentAssignments,
@@ -232,9 +194,9 @@ void GlanceablesClassroomClientImpl::GetStudentAssignmentsWithMissedDueDate(
         return due.has_value() && now > due.value();
       },
       base::Time::Now());
-  auto submission_state_predicate = base::BindRepeating(
-      [](GlanceablesClassroomStudentSubmission::State state) {
-        return state == GlanceablesClassroomStudentSubmission::State::kAssigned;
+  auto submission_state_predicate =
+      base::BindRepeating([](GlanceablesClassroomStudentSubmissionState state) {
+        return state == GlanceablesClassroomStudentSubmissionState::kAssigned;
       });
   InvokeOnceStudentDataFetched(base::BindOnce(
       &GlanceablesClassroomClientImpl::GetFilteredStudentAssignments,
@@ -248,9 +210,9 @@ void GlanceablesClassroomClientImpl::GetStudentAssignmentsWithoutDueDate(
 
   auto due_predicate = base::BindRepeating(
       [](const absl::optional<base::Time>& due) { return !due.has_value(); });
-  auto submission_state_predicate = base::BindRepeating(
-      [](GlanceablesClassroomStudentSubmission::State state) {
-        return state == GlanceablesClassroomStudentSubmission::State::kAssigned;
+  auto submission_state_predicate =
+      base::BindRepeating([](GlanceablesClassroomStudentSubmissionState state) {
+        return state == GlanceablesClassroomStudentSubmissionState::kAssigned;
       });
   InvokeOnceStudentDataFetched(base::BindOnce(
       &GlanceablesClassroomClientImpl::GetFilteredStudentAssignments,
@@ -285,10 +247,15 @@ void GlanceablesClassroomClientImpl::
       },
       base::Time::Now());
 
+  auto submissions_state_predicate =
+      base::BindRepeating([](GlanceablesClassroomStudentSubmissionState state) {
+        return state != GlanceablesClassroomStudentSubmissionState::kGraded;
+      });
+
   InvokeOnceTeacherDataFetched(base::BindOnce(
       &GlanceablesClassroomClientImpl::GetFilteredTeacherAssignments,
-      weak_factory_.GetWeakPtr(), std::move(due_predicate), /*graded=*/false,
-      std::move(callback)));
+      weak_factory_.GetWeakPtr(), std::move(due_predicate),
+      std::move(submissions_state_predicate), std::move(callback)));
 }
 
 void GlanceablesClassroomClientImpl::GetTeacherAssignmentsRecentlyDue(
@@ -300,10 +267,16 @@ void GlanceablesClassroomClientImpl::GetTeacherAssignmentsRecentlyDue(
         return due.has_value() && now > due.value();
       },
       base::Time::Now());
+
+  auto submissions_state_predicate =
+      base::BindRepeating([](GlanceablesClassroomStudentSubmissionState state) {
+        return state != GlanceablesClassroomStudentSubmissionState::kGraded;
+      });
+
   InvokeOnceTeacherDataFetched(base::BindOnce(
       &GlanceablesClassroomClientImpl::GetFilteredTeacherAssignments,
-      weak_factory_.GetWeakPtr(), std::move(due_predicate), /*graded=*/false,
-      std::move(callback)));
+      weak_factory_.GetWeakPtr(), std::move(due_predicate),
+      std::move(submissions_state_predicate), std::move(callback)));
 }
 
 void GlanceablesClassroomClientImpl::GetTeacherAssignmentsWithoutDueDate(
@@ -312,10 +285,16 @@ void GlanceablesClassroomClientImpl::GetTeacherAssignmentsWithoutDueDate(
 
   auto due_predicate = base::BindRepeating(
       [](const absl::optional<base::Time>& due) { return !due.has_value(); });
+
+  auto submissions_state_predicate =
+      base::BindRepeating([](GlanceablesClassroomStudentSubmissionState state) {
+        return state != GlanceablesClassroomStudentSubmissionState::kGraded;
+      });
+
   InvokeOnceTeacherDataFetched(base::BindOnce(
       &GlanceablesClassroomClientImpl::GetFilteredTeacherAssignments,
-      weak_factory_.GetWeakPtr(), std::move(due_predicate), /*graded=*/false,
-      std::move(callback)));
+      weak_factory_.GetWeakPtr(), std::move(due_predicate),
+      std::move(submissions_state_predicate), std::move(callback)));
 }
 
 void GlanceablesClassroomClientImpl::GetGradedTeacherAssignments(
@@ -323,10 +302,15 @@ void GlanceablesClassroomClientImpl::GetGradedTeacherAssignments(
   auto due_predicate = base::BindRepeating(
       [](const absl::optional<base::Time>& due) { return true; });
 
+  auto submissions_state_predicate =
+      base::BindRepeating([](GlanceablesClassroomStudentSubmissionState state) {
+        return state == GlanceablesClassroomStudentSubmissionState::kGraded;
+      });
+
   InvokeOnceTeacherDataFetched(base::BindOnce(
       &GlanceablesClassroomClientImpl::GetFilteredTeacherAssignments,
-      weak_factory_.GetWeakPtr(), std::move(due_predicate), /*graded=*/true,
-      std::move(callback)));
+      weak_factory_.GetWeakPtr(), std::move(due_predicate),
+      std::move(submissions_state_predicate), std::move(callback)));
 }
 
 void GlanceablesClassroomClientImpl::OpenUrl(const GURL& url) const {
@@ -365,12 +349,6 @@ void GlanceablesClassroomClientImpl::FetchCourseWork(
   CHECK(!course_id.empty());
   CHECK(callback);
 
-  const auto [iter, inserted] =
-      course_work_.emplace(course_id, CourseWorkList());
-  if (!inserted) {
-    iter->second.clear();
-  }
-
   const int request_id = next_course_work_request_id_++;
   const auto [request_it, request_inserted] = course_work_requests_.emplace(
       request_id, std::make_unique<CourseWorkRequest>(std::move(callback)));
@@ -387,12 +365,14 @@ void GlanceablesClassroomClientImpl::FetchStudentSubmissions(
   CHECK(!course_id.empty());
   CHECK(callback);
 
-  const auto [iter, inserted] =
-      student_submissions_.emplace(course_id, SubmissionsPerCourseWork());
+  // Invalidate any preexisting cached student submissions info for requested
+  // course work ID.
   if (course_work_id == kAllStudentSubmissionsParameterValue) {
-    iter->second.clear();
+    for (auto& course_work_info : course_work_[course_id]) {
+      course_work_info.second.InvalidateStudentSubmissions();
+    }
   } else {
-    iter->second[course_work_id].clear();
+    course_work_[course_id][course_work_id].InvalidateStudentSubmissions();
   }
 
   FetchStudentSubmissionsPage(course_id, course_work_id,
@@ -514,13 +494,15 @@ void GlanceablesClassroomClientImpl::OnCoursesFetched(
       std::move(on_course_work_and_student_submissions_fetched));
 
   for (const auto& course : courses) {
+    course_work_[course->id].clear();
+
     FetchCourseWork(course->id, fetch_submissions_per_course_work,
-                    base::IgnoreArgs<const CourseWorkList&>(barrier_closure));
+                    base::IgnoreArgs<const CourseWorkInfo&>(barrier_closure));
 
     if (!fetch_submissions_per_course_work) {
       FetchStudentSubmissions(
           course->id, kAllStudentSubmissionsParameterValue,
-          base::IgnoreArgs<const SubmissionsPerCourseWork&>(barrier_closure));
+          base::IgnoreArgs<const CourseWorkInfo&>(barrier_closure));
     }
   }
 }
@@ -561,20 +543,20 @@ void GlanceablesClassroomClientImpl::OnCourseWorkPageFetched(
   UMA_HISTOGRAM_SPARSE("Ash.Glanceables.Api.Classroom.GetCourseWork.Status",
                        result.error_or(ApiErrorCode::HTTP_SUCCESS));
 
-  const auto iter = course_work_.find(course_id);
-
   auto request_it = course_work_requests_.find(request_id);
   if (request_it == course_work_requests_.end() || !request_it->second) {
     return;
   }
 
+  CourseWorkInfo& course_work_for_course = course_work_[course_id];
+
   if (!result.has_value()) {
     // TODO(b/282013130): handle failures of a single page fetch request more
     // gracefully (retry and/or reflect errors on UI).
-    iter->second.clear();
+    course_work_for_course.clear();
 
     request_it->second->DecrementPendingPageCount();
-    if (request_it->second->RespondIfComplete(iter->second)) {
+    if (request_it->second->RespondIfComplete(course_work_for_course)) {
       course_work_requests_.erase(request_it);
     }
     return;
@@ -582,14 +564,14 @@ void GlanceablesClassroomClientImpl::OnCourseWorkPageFetched(
 
   std::set<std::string> submissions_to_fetch;
   for (const auto& item : result.value()->items()) {
-    if (item->state() == CourseWorkItem::State::kPublished) {
-      iter->second.push_back(
-          std::make_unique<GlanceablesClassroomCourseWorkItem>(
-              item->id(), item->title(), item->alternate_link(),
-              ConvertCourseWorkItemDue(item->due_date_time())));
-      if (fetch_submissions) {
-        submissions_to_fetch.insert(item->id());
-      }
+    if (item->state() != CourseWorkItem::State::kPublished) {
+      course_work_for_course.erase(item->id());
+      continue;
+    }
+
+    course_work_for_course[item->id()].SetCourseWorkItem(item.get());
+    if (fetch_submissions) {
+      submissions_to_fetch.insert(item->id());
     }
   }
 
@@ -608,7 +590,7 @@ void GlanceablesClassroomClientImpl::OnCourseWorkPageFetched(
   for (const auto& course_work_id : submissions_to_fetch) {
     FetchStudentSubmissions(
         course_id, course_work_id,
-        base::IgnoreArgs<const SubmissionsPerCourseWork&>(barrier_closure));
+        base::IgnoreArgs<const CourseWorkInfo&>(barrier_closure));
   }
 }
 
@@ -662,29 +644,40 @@ void GlanceablesClassroomClientImpl::OnStudentSubmissionsPageFetched(
       "Ash.Glanceables.Api.Classroom.GetStudentSubmissions.Status",
       result.error_or(ApiErrorCode::HTTP_SUCCESS));
 
+  auto& course_work_info_map = course_work_[course_id];
+  GlanceablesClassroomCourseWorkItem* const shared_course_work_info =
+      (course_work_id == kAllStudentSubmissionsParameterValue)
+          ? nullptr
+          : &course_work_info_map[course_work_id];
+
   if (!result.has_value()) {
     // TODO(b/282013130): handle failures of a single page fetch request more
     // gracefully (retry and/or reflect errors on UI).
-    auto& submissions = student_submissions_[course_id];
     if (course_work_id == kAllStudentSubmissionsParameterValue) {
-      submissions.clear();
+      for (auto& course_work : course_work_info_map) {
+        course_work.second.InvalidateStudentSubmissions();
+      }
     } else {
-      submissions[course_work_id].clear();
+      shared_course_work_info->InvalidateStudentSubmissions();
     }
 
-    std::move(callback).Run(submissions);
+    std::move(callback).Run(course_work_info_map);
     return;
   }
 
   for (const auto& item : result.value()->items()) {
-    student_submissions_[course_id][item->course_work_id()].push_back(
-        std::make_unique<GlanceablesClassroomStudentSubmission>(
-            item->id(), item->course_work_id(),
-            CalculateStudentSubmissionState(item)));
+    if (shared_course_work_info) {
+      CHECK_EQ(course_work_id, item->course_work_id());
+    }
+
+    GlanceablesClassroomCourseWorkItem* const submission_course_work_info =
+        shared_course_work_info ? shared_course_work_info
+                                : &course_work_info_map[item->course_work_id()];
+    submission_course_work_info->AddStudentSubmission(item.get());
   }
 
   if (result.value()->next_page_token().empty()) {
-    std::move(callback).Run(student_submissions_[course_id]);
+    std::move(callback).Run(course_work_info_map);
   } else {
     FetchStudentSubmissionsPage(course_id, course_work_id,
                                 result.value()->next_page_token(),
@@ -709,47 +702,31 @@ void GlanceablesClassroomClientImpl::OnTeacherDataFetched() {
 void GlanceablesClassroomClientImpl::GetFilteredStudentAssignments(
     base::RepeatingCallback<bool(const absl::optional<base::Time>&)>
         due_predicate,
-    base::RepeatingCallback<bool(GlanceablesClassroomStudentSubmission::State)>
+    base::RepeatingCallback<bool(GlanceablesClassroomStudentSubmissionState)>
         submission_state_predicate,
     GetAssignmentsCallback callback) {
   CHECK(due_predicate);
   CHECK(submission_state_predicate);
   CHECK(callback);
 
+  PruneInvalidCourseWork(student_courses_);
+
   std::vector<std::unique_ptr<GlanceablesClassroomAssignment>>
       filtered_assignments;
 
   for (const auto& course : student_courses_) {
     const auto course_work_iter = course_work_.find(course->id);
-    const auto submissions_iter = student_submissions_.find(course->id);
-    if (course_work_iter == course_work_.end() ||
-        submissions_iter == student_submissions_.end()) {
+    if (course_work_iter == course_work_.end()) {
       continue;
     }
 
     for (const auto& course_work_item : course_work_iter->second) {
-      if (!due_predicate.Run(course_work_item->due)) {
-        continue;
-      }
-
-      const auto submission_iter =
-          submissions_iter->second.find(course_work_item->id);
-      if (submission_iter == submissions_iter->second.end()) {
-        continue;
-      }
-
-      // There should be only one iteration, because course work item and
-      // student submission have 1:1 relationship for students.
-      for (const auto& submission : submission_iter->second) {
-        if (!submission_state_predicate.Run(submission->state)) {
-          continue;
-        }
-
-        filtered_assignments.push_back(
-            std::make_unique<GlanceablesClassroomAssignment>(
-                course->name, course_work_item->title, course_work_item->link,
-                course_work_item->due,
-                /*submissions_state=*/absl::nullopt));
+      std::unique_ptr<GlanceablesClassroomAssignment> assignment =
+          course_work_item.second.CreateClassroomAssignment(
+              course->name, /*include_aggregated_submissions_state=*/false,
+              due_predicate, submission_state_predicate);
+      if (assignment) {
+        filtered_assignments.push_back(std::move(assignment));
       }
     }
   }
@@ -760,64 +737,47 @@ void GlanceablesClassroomClientImpl::GetFilteredStudentAssignments(
 void GlanceablesClassroomClientImpl::GetFilteredTeacherAssignments(
     base::RepeatingCallback<bool(const absl::optional<base::Time>&)>
         due_predicate,
-    bool graded,
+    base::RepeatingCallback<bool(GlanceablesClassroomStudentSubmissionState)>
+        submission_state_predicate,
     GetAssignmentsCallback callback) {
   CHECK(due_predicate);
   CHECK(callback);
+
+  PruneInvalidCourseWork(teacher_courses_);
 
   std::vector<std::unique_ptr<GlanceablesClassroomAssignment>>
       filtered_assignments;
 
   for (const auto& course : teacher_courses_) {
     const auto course_work_iter = course_work_.find(course->id);
-    const auto submissions_iter = student_submissions_.find(course->id);
-    if (course_work_iter == course_work_.end() ||
-        submissions_iter == student_submissions_.end()) {
+    if (course_work_iter == course_work_.end()) {
       continue;
     }
 
     for (const auto& course_work_item : course_work_iter->second) {
-      if (!due_predicate.Run(course_work_item->due)) {
-        continue;
-      }
-
-      const auto submission_iter =
-          submissions_iter->second.find(course_work_item->id);
-      if (submission_iter == submissions_iter->second.end()) {
-        continue;
-      }
-
-      const int total_submissions = submission_iter->second.size();
-      int num_graded = 0;
-      int num_turned_in = 0;
-
-      // There can be multiple iterations, because a teachers's course work item
-      // will have a student submission for each student in the class.
-      for (const auto& submission : submission_iter->second) {
-        if (submission->state ==
-            GlanceablesClassroomStudentSubmission::State::kGraded) {
-          num_graded++;
-          num_turned_in++;
-        } else if (submission->state ==
-                   GlanceablesClassroomStudentSubmission::State::kTurnedIn) {
-          num_turned_in++;
-        }
-      }
-
-      // When filtering by `graded`, course work is only added when every
-      // sumbission has the state `kGraded`.
-      if ((graded && num_graded == total_submissions) ||
-          (!graded && num_graded < total_submissions)) {
-        filtered_assignments.push_back(
-            std::make_unique<GlanceablesClassroomAssignment>(
-                course->name, course_work_item->title, course_work_item->link,
-                course_work_item->due,
-                GlanceablesClassroomAggregatedSubmissionsState(
-                    total_submissions, num_turned_in, num_graded)));
+      std::unique_ptr<GlanceablesClassroomAssignment> assignment =
+          course_work_item.second.CreateClassroomAssignment(
+              course->name, /*include_aggregated_submissions_state=*/true,
+              due_predicate, submission_state_predicate);
+      if (assignment) {
+        filtered_assignments.push_back(std::move(assignment));
       }
     }
   }
+
   std::move(callback).Run(std::move(filtered_assignments));
+}
+
+void GlanceablesClassroomClientImpl::PruneInvalidCourseWork(
+    const CourseList& courses) {
+  for (const auto& course : courses) {
+    const auto course_work_iter = course_work_.find(course->id);
+    if (course_work_iter != course_work_.end()) {
+      base::EraseIf(course_work_iter->second, [](const auto& course_work_item) {
+        return !course_work_item.second.IsValid();
+      });
+    }
+  }
 }
 
 RequestSender* GlanceablesClassroomClientImpl::GetRequestSender() {
