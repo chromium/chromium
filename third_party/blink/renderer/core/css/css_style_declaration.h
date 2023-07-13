@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -48,6 +49,8 @@ class CORE_EXPORT CSSStyleDeclaration : public ScriptWrappable,
   ~CSSStyleDeclaration() override;
 
   void Trace(Visitor* visitor) const override;
+
+  virtual bool IsAbstractPropertySet() const { return false; }
 
   virtual CSSRule* parentRule() const = 0;
   String cssFloat() { return GetPropertyValueInternal(CSSPropertyID::kFloat); }

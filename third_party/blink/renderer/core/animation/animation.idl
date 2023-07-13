@@ -49,7 +49,7 @@ enum ReplaceState { "active", "removed", "persisted" };
     [Measure] readonly attribute AnimationPlayState playState;
     [RuntimeEnabled=WebAnimationsAPI, Measure] readonly attribute ReplaceState replaceState;
     [Measure] readonly attribute boolean pending;
-    [RuntimeEnabled=WebAnimationsAPI, Measure, RaisesException] void commitStyles();
+    [RuntimeEnabled=WebAnimationsAPI, Measure, RaisesException, CEReactions] void commitStyles();
     [Measure, RaisesException] void finish();
     [Measure, RaisesException] void play();
     [Measure, RaisesException] void pause();

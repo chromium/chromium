@@ -57,6 +57,7 @@
 #include "third_party/blink/renderer/core/css/properties/css_property_ref.h"
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
+#include "third_party/blink/renderer/core/css/style_attribute_mutation_scope.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_document_state.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
@@ -3185,6 +3186,12 @@ void Animation::commitStyles(ExceptionState& exception_state) {
   // 6. Update style attribute for inline style.
   ActiveInterpolationsMap interpolations_map =
       To<KeyframeEffect>(effect())->InterpolationsForCommitStyles();
+
+  // `inline_style` must be an inline style declaration, which is a subclass of
+  // `AbstractPropertySetCSSStyleDeclaration`.
+  CHECK(inline_style->IsAbstractPropertySet());
+  StyleAttributeMutationScope style_attr_mutation_scope(
+      To<AbstractPropertySetCSSStyleDeclaration>(inline_style));
 
   AnimationUtils::ForEachInterpolatedPropertyValue(
       target, animation_properties, interpolations_map,
