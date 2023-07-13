@@ -191,17 +191,19 @@ void ChromeExtensionsAPIClient::NotifyWebRequestWithheld(
 
   // Track down the ExtensionActionRunner and the extension. Since this is
   // asynchronous, we could hit a null anywhere along the path.
-  content::RenderFrameHost* rfh =
+  content::RenderFrameHost* render_frame_host =
       content::RenderFrameHost::FromID(render_process_id, render_frame_id);
-  if (!rfh)
+  if (!render_frame_host) {
     return;
+  }
   // We don't count subframes and prerendering blocked actions as yet, since
   // there's no way to surface this to the user. Ignore these (which is also
   // what we do for content scripts).
-  if (!rfh->IsInPrimaryMainFrame())
+  if (!render_frame_host->IsInPrimaryMainFrame()) {
     return;
+  }
   content::WebContents* web_contents =
-      content::WebContents::FromRenderFrameHost(rfh);
+      content::WebContents::FromRenderFrameHost(render_frame_host);
   if (!web_contents)
     return;
   extensions::ExtensionActionRunner* runner =
@@ -227,7 +229,7 @@ void ChromeExtensionsAPIClient::NotifyWebRequestWithheld(
   if (!extension->permissions_data()
            ->withheld_permissions()
            .explicit_hosts()
-           .MatchesURL(rfh->GetLastCommittedURL())) {
+           .MatchesURL(render_frame_host->GetLastCommittedURL())) {
     return;
   }
 

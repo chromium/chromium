@@ -2420,9 +2420,9 @@ bool ExecuteCodeInTabFunction::CanExecuteScriptOnPage(std::string* error) {
 
   int frame_id = details_->frame_id ? *details_->frame_id
                                     : ExtensionApiFrameIdMap::kTopFrameId;
-  content::RenderFrameHost* rfh =
+  content::RenderFrameHost* render_frame_host =
       ExtensionApiFrameIdMap::GetRenderFrameHostById(contents, frame_id);
-  if (!rfh) {
+  if (!render_frame_host) {
     *error = ErrorUtils::FormatErrorMessage(
         tabs_constants::kFrameNotFoundError, base::NumberToString(frame_id),
         base::NumberToString(execute_tab_id_));
@@ -2432,11 +2432,12 @@ bool ExecuteCodeInTabFunction::CanExecuteScriptOnPage(std::string* error) {
   // Content scripts declared in manifest.json can access frames at about:-URLs
   // if the extension has permission to access the frame's origin, so also allow
   // programmatic content scripts at about:-URLs for allowed origins.
-  GURL effective_document_url(rfh->GetLastCommittedURL());
+  GURL effective_document_url(render_frame_host->GetLastCommittedURL());
   bool is_about_url = effective_document_url.SchemeIs(url::kAboutScheme);
   if (is_about_url && details_->match_about_blank &&
       *details_->match_about_blank) {
-    effective_document_url = GURL(rfh->GetLastCommittedOrigin().Serialize());
+    effective_document_url =
+        GURL(render_frame_host->GetLastCommittedOrigin().Serialize());
   }
 
   if (!effective_document_url.is_valid()) {
@@ -2454,8 +2455,8 @@ bool ExecuteCodeInTabFunction::CanExecuteScriptOnPage(std::string* error) {
             mojom::APIPermissionID::kTab)) {
       *error = ErrorUtils::FormatErrorMessage(
           manifest_errors::kCannotAccessAboutUrl,
-          rfh->GetLastCommittedURL().spec(),
-          rfh->GetLastCommittedOrigin().Serialize());
+          render_frame_host->GetLastCommittedURL().spec(),
+          render_frame_host->GetLastCommittedOrigin().Serialize());
     }
     return false;
   }

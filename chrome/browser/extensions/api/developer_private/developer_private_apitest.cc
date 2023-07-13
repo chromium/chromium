@@ -130,10 +130,12 @@ IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiTest, InspectEmbeddedOptionsPage) {
       profile());
 
   // Verify that dev tools opened.
-  content::RenderFrameHost* rfh = content::RenderFrameHost::FromID(
-      view.render_process_id, view.render_view_id);
-  ASSERT_TRUE(rfh);
-  content::WebContents* wc = content::WebContents::FromRenderFrameHost(rfh);
+  content::RenderFrameHost* render_frame_host =
+      content::RenderFrameHost::FromID(view.render_process_id,
+                                       view.render_view_id);
+  ASSERT_TRUE(render_frame_host);
+  content::WebContents* wc =
+      content::WebContents::FromRenderFrameHost(render_frame_host);
   ASSERT_TRUE(wc);
   EXPECT_TRUE(DevToolsWindow::GetInstanceForInspectedWebContents(wc));
 }

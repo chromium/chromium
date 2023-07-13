@@ -430,11 +430,11 @@ bool WebNavigationTabObserver::IsReferenceFragmentNavigation(
 }
 
 void WebNavigationTabObserver::RenderFrameHostPendingDeletion(
-    content::RenderFrameHost* pending_delete_rfh) {
-  // The |pending_delete_rfh| and its children are now pending deletion.
-  // Stop tracking them.
+    content::RenderFrameHost* pending_delete_render_frame_host) {
+  // The |pending_delete_render_frame_host| and its children are now pending
+  // deletion. Stop tracking them.
 
-  pending_delete_rfh->ForEachRenderFrameHost(
+  pending_delete_render_frame_host->ForEachRenderFrameHost(
       [this](content::RenderFrameHost* render_frame_host) {
         auto* navigation_state =
             FrameNavigationState::GetForCurrentDocument(render_frame_host);

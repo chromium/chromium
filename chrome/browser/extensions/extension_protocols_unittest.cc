@@ -339,12 +339,6 @@ class ExtensionProtocolsTestBase : public testing::Test {
         browser_context(), std::move(site_instance));
   }
 
-  content::WebContents* web_contents() { return contents_.get(); }
-
-  content::RenderFrameHost* main_rfh() {
-    return web_contents()->GetPrimaryMainFrame();
-  }
-
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<content::RenderViewHostTestEnabler> rvh_test_enabler_;
   mojo::Remote<network::mojom::URLLoaderFactory> loader_factory_;

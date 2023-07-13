@@ -145,9 +145,10 @@ class NavigationCompletedObserver : public content::WebContentsObserver {
       : content::WebContentsObserver(web_contents),
         message_loop_runner_(new content::MessageLoopRunner) {
     web_contents->GetPrimaryMainFrame()->ForEachRenderFrameHost(
-        [this](content::RenderFrameHost* rfh) {
-          if (rfh->IsRenderFrameLive())
-            live_original_frames_.insert(rfh);
+        [this](content::RenderFrameHost* render_frame_host) {
+          if (render_frame_host->IsRenderFrameLive()) {
+            live_original_frames_.insert(render_frame_host);
+          }
         });
   }
 
@@ -160,8 +161,9 @@ class NavigationCompletedObserver : public content::WebContentsObserver {
       message_loop_runner_->Run();
   }
 
-  void RenderFrameDeleted(content::RenderFrameHost* rfh) override {
-    if (live_original_frames_.erase(rfh) != 0 &&
+  void RenderFrameDeleted(
+      content::RenderFrameHost* render_frame_host) override {
+    if (live_original_frames_.erase(render_frame_host) != 0 &&
         message_loop_runner_->loop_running() &&
         AllLiveRenderFrameHostsAreCurrent()) {
       message_loop_runner_->Quit();
@@ -176,9 +178,10 @@ class NavigationCompletedObserver : public content::WebContentsObserver {
   bool AllLiveRenderFrameHostsAreCurrent() {
     std::set<content::RenderFrameHost*> current_frames;
     web_contents()->GetPrimaryMainFrame()->ForEachRenderFrameHost(
-        [&current_frames](content::RenderFrameHost* rfh) {
-          if (rfh->IsRenderFrameLive())
-            current_frames.insert(rfh);
+        [&current_frames](content::RenderFrameHost* render_frame_host) {
+          if (render_frame_host->IsRenderFrameLive()) {
+            current_frames.insert(render_frame_host);
+          }
         });
 
     return base::STLSetDifference<std::set<content::RenderFrameHost*>>(
@@ -1204,9 +1207,11 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
                          ->GetAppWindowsForApp(app->id());
   EXPECT_EQ(1u, app_windows.size());
   content::WebContents* app_tab = (*app_windows.begin())->web_contents();
-  content::RenderFrameHost* app_rfh = app_tab->GetPrimaryMainFrame();
-  url::Origin app_origin(app_rfh->GetLastCommittedOrigin());
-  EXPECT_EQ(url::Origin::Create(app->url()), app_rfh->GetLastCommittedOrigin());
+  content::RenderFrameHost* app_render_frame_host =
+      app_tab->GetPrimaryMainFrame();
+  url::Origin app_origin(app_render_frame_host->GetLastCommittedOrigin());
+  EXPECT_EQ(url::Origin::Create(app->url()),
+            app_render_frame_host->GetLastCommittedOrigin());
 
   // Wait for the app's guest WebContents to load.
   guest_view::TestGuestViewManager* guest_manager =
@@ -1215,7 +1220,8 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
               browser()->profile()));
   auto* guest_view = guest_manager->WaitForSingleGuestViewCreated();
   guest_manager->WaitUntilAttached(guest_view);
-  auto* guest_rfh = guest_manager->GetLastGuestRenderFrameHostCreated();
+  auto* guest_render_frame_host =
+      guest_manager->GetLastGuestRenderFrameHostCreated();
 
   // There should be two extension frames in ProcessManager: the app's main
   // page and the background page.
@@ -1224,9 +1230,9 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
   EXPECT_EQ(2u, pm->GetRenderFrameHostsForExtension(app->id()).size());
 
   // Create valid blob and filesystem URLs in the app's origin.
-  GURL blob_url(CreateBlobURL(app_rfh, "foo"));
+  GURL blob_url(CreateBlobURL(app_render_frame_host, "foo"));
   EXPECT_EQ(app_origin, url::Origin::Create(blob_url));
-  GURL filesystem_url(CreateFileSystemURL(app_rfh, "foo"));
+  GURL filesystem_url(CreateFileSystemURL(app_render_frame_host, "foo"));
   EXPECT_EQ(app_origin, url::Origin::Create(filesystem_url));
 
   // Create a new tab, unrelated to the app, and navigate it to a web URL.
@@ -1237,7 +1243,7 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), web_url));
   EXPECT_NE(web_tab, app_tab);
   EXPECT_NE(web_tab->GetPrimaryMainFrame()->GetProcess(),
-            app_rfh->GetProcess());
+            app_render_frame_host->GetProcess());
 
   // The web process shouldn't have permission to request URLs in the app's
   // origin, but the guest process should.
@@ -1246,8 +1252,8 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
   EXPECT_FALSE(policy->CanRequestURL(
       web_tab->GetPrimaryMainFrame()->GetProcess()->GetID(),
       app_origin.GetURL()));
-  EXPECT_TRUE(policy->CanRequestURL(guest_rfh->GetProcess()->GetID(),
-                                    app_origin.GetURL()));
+  EXPECT_TRUE(policy->CanRequestURL(
+      guest_render_frame_host->GetProcess()->GetID(), app_origin.GetURL()));
 
   // Try navigating the web tab to each nested URL with the app's origin.  This
   // should be blocked.
@@ -1262,7 +1268,7 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
         web_tab->GetPrimaryMainFrame()->GetLastCommittedOrigin()));
     EXPECT_NE("foo", GetTextContent(web_tab->GetPrimaryMainFrame()));
     EXPECT_NE(web_tab->GetPrimaryMainFrame()->GetProcess(),
-              app_rfh->GetProcess());
+              app_render_frame_host->GetProcess());
 
     EXPECT_EQ(2u, pm->GetAllFrames().size());
     EXPECT_EQ(2u, pm->GetRenderFrameHostsForExtension(app->id()).size());
@@ -1703,10 +1709,10 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
   // wait for the old subframe to go away.
   ExtensionHost* background_host =
       pm->GetBackgroundHostForExtension(extension->id());
-  content::RenderFrameHost* background_rfh =
+  content::RenderFrameHost* background_render_frame_host =
       background_host->host_contents()->GetPrimaryMainFrame();
   content::RenderFrameHost* extension_subframe =
-      ChildFrameAt(background_rfh, 0);
+      ChildFrameAt(background_render_frame_host, 0);
   content::RenderFrameDeletedObserver deleted_observer(extension_subframe);
   EXPECT_TRUE(
       content::ExecJs(extension_subframe,
@@ -1717,7 +1723,8 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
   // subframe should've swapped processes and should now be a web frame.
   EXPECT_EQ(1u, pm->GetAllFrames().size());
   EXPECT_EQ(1u, pm->GetRenderFrameHostsForExtension(extension->id()).size());
-  content::RenderFrameHost* subframe = ChildFrameAt(background_rfh, 0);
+  content::RenderFrameHost* subframe =
+      ChildFrameAt(background_render_frame_host, 0);
   EXPECT_EQ(foo_url, subframe->GetLastCommittedURL());
 
   // Verify that the subframe did *not* reuse the existing foo.com process.

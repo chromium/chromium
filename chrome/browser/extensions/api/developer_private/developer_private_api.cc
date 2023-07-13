@@ -2018,11 +2018,14 @@ DeveloperPrivateOpenDevToolsFunction::Run() {
 
   // NOTE(devlin): Even though the properties use "render_view_id", this
   // actually refers to a render frame.
-  content::RenderFrameHost* rfh = content::RenderFrameHost::FromID(
-      properties.render_process_id, properties.render_view_id);
+  content::RenderFrameHost* render_frame_host =
+      content::RenderFrameHost::FromID(properties.render_process_id,
+                                       properties.render_view_id);
 
   content::WebContents* web_contents =
-      rfh ? content::WebContents::FromRenderFrameHost(rfh) : nullptr;
+      render_frame_host
+          ? content::WebContents::FromRenderFrameHost(render_frame_host)
+          : nullptr;
   // It's possible that the render frame was closed since we last updated the
   // links. Handle this gracefully.
   if (!web_contents)

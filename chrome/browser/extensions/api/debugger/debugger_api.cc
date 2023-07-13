@@ -163,15 +163,15 @@ bool ExtensionMayAttachToRenderFrameHost(
   bool result = true;
   render_frame_host->ForEachRenderFrameHostWithAction(
       [&extension, extension_profile, error,
-       &result](content::RenderFrameHost* rfh) {
-        // If |rfh| is attached to an inner MimeHandlerViewGuest skip it.
-        // This is done to fix crbug.com/1293856 because an extension cannot
-        // inspect another extension.
-        if (MimeHandlerViewGuest::FromRenderFrameHost(rfh)) {
+       &result](content::RenderFrameHost* render_frame_host) {
+        // If |render_frame_host| is attached to an inner MimeHandlerViewGuest
+        // skip it. This is done to fix crbug.com/1293856 because an extension
+        // cannot inspect another extension.
+        if (MimeHandlerViewGuest::FromRenderFrameHost(render_frame_host)) {
           return content::RenderFrameHost::FrameIterationAction::kSkipChildren;
         }
 
-        if (rfh->GetWebUI()) {
+        if (render_frame_host->GetWebUI()) {
           *error = debugger_api_constants::kRestrictedError;
           result = false;
           return content::RenderFrameHost::FrameIterationAction::kStop;
@@ -180,12 +180,12 @@ bool ExtensionMayAttachToRenderFrameHost(
         // We check both the last committed URL and the SiteURL because this
         // method may be called in the middle of a navigation where the SiteURL
         // has been updated but navigation hasn't committed yet.
-        if (!ExtensionMayAttachToURLOrInnerURL(extension, extension_profile,
-                                               rfh->GetLastCommittedURL(),
-                                               error) ||
+        if (!ExtensionMayAttachToURLOrInnerURL(
+                extension, extension_profile,
+                render_frame_host->GetLastCommittedURL(), error) ||
             !ExtensionMayAttachToURLOrInnerURL(
                 extension, extension_profile,
-                rfh->GetSiteInstance()->GetSiteURL(), error)) {
+                render_frame_host->GetSiteInstance()->GetSiteURL(), error)) {
           result = false;
           return content::RenderFrameHost::FrameIterationAction::kStop;
         }

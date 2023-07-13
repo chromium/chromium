@@ -858,8 +858,9 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveFencedFrameTest,
       manager->GetRenderFrameHostsForExtension(extension->id());
   const auto& it = base::ranges::find_if(
       hosts, &content::RenderFrameHost::IsInPrimaryMainFrame);
-  content::RenderFrameHost* primary_rfh = (it != hosts.end()) ? *it : nullptr;
-  ASSERT_TRUE(primary_rfh);
+  content::RenderFrameHost* primary_render_frame_host =
+      (it != hosts.end()) ? *it : nullptr;
+  ASSERT_TRUE(primary_render_frame_host);
 
   // Navigate the popup's fenced frame to a (cross-site) web page via its
   // parent, and wait for that page to send a message, which will ensure that
@@ -867,19 +868,20 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveFencedFrameTest,
   GURL foo_url(https_server.GetURL("a.test", "/popup_fencedframe.html"));
 
   content::TestNavigationObserver observer(
-      content::WebContents::FromRenderFrameHost(primary_rfh));
+      content::WebContents::FromRenderFrameHost(primary_render_frame_host));
   std::string script =
       "document.querySelector('fencedframe').config = new FencedFrameConfig('" +
       foo_url.spec() + "')";
-  EXPECT_TRUE(ExecJs(primary_rfh, script));
+  EXPECT_TRUE(ExecJs(primary_render_frame_host, script));
   observer.WaitForNavigationFinished();
 
-  content::RenderFrameHost* fenced_frame_rfh =
-      fenced_frame_test_helper().GetMostRecentlyAddedFencedFrame(primary_rfh);
-  ASSERT_TRUE(fenced_frame_rfh);
+  content::RenderFrameHost* fenced_frame_render_frame_host =
+      fenced_frame_test_helper().GetMostRecentlyAddedFencedFrame(
+          primary_render_frame_host);
+  ASSERT_TRUE(fenced_frame_render_frame_host);
 
   // Confirm that the new page (popup_fencedframe.html) is actually loaded.
-  content::DOMMessageQueue dom_message_queue(fenced_frame_rfh);
+  content::DOMMessageQueue dom_message_queue(fenced_frame_render_frame_host);
   std::string json;
   EXPECT_TRUE(dom_message_queue.WaitForMessage(&json));
   EXPECT_EQ("\"DONE\"", json);
