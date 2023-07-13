@@ -48,7 +48,6 @@
 #include "ipc/ipc_message_macros.h"
 #include "ipc/ipc_message_start.h"
 #include "ipc/ipc_message_utils.h"
-#include "ui/accessibility/ax_param_traits.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 

@@ -198,19 +198,6 @@ component("accessibility_internal") {
     "//skia",
   ]
 
-  if (!is_ios) {
-    sources += [
-      "ax_param_traits.cc",
-      "ax_param_traits.h",
-      "ax_param_traits_macros.h",
-    ]
-
-    public_deps += [
-      "//ipc",
-      "//ui/gfx/ipc/skia",
-    ]
-  }
-
   if (is_fuchsia) {
     public_deps += [ "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.accessibility.semantics:fuchsia.accessibility.semantics_cpp" ]
   }
