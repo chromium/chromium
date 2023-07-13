@@ -544,11 +544,10 @@ class UserMetricsActionTest(unittest.TestCase):
 
 class PydepsNeedsUpdatingTest(unittest.TestCase):
   class MockPopen:
-    def __init__(self, stdout_func):
-      self._stdout_func = stdout_func
+    def __init__(self, stdout):
+      self.stdout = io.StringIO(stdout)
 
     def wait(self):
-      self.stdout = io.StringIO(self._stdout_func())
       return 0
 
   class MockSubprocess:
@@ -562,7 +561,7 @@ class PydepsNeedsUpdatingTest(unittest.TestCase):
       self._popen_func = func
 
     def Popen(self, cmd, *args, **kwargs):
-      return PydepsNeedsUpdatingTest.MockPopen(lambda: self._popen_func(cmd))
+      return PydepsNeedsUpdatingTest.MockPopen(self._popen_func(cmd))
 
   def _MockParseGclientArgs(self, is_android=True):
     return lambda: {'checkout_android': 'true' if is_android else 'false' }

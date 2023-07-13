@@ -4385,10 +4385,10 @@ class _PydepsCheckerResult:
     def GetError(self):
         """Returns an error message, or None."""
         import difflib
+        new_contents = self._process.stdout.read().splitlines()[2:]
         if self._process.wait() != 0:
             # STDERR should already be printed.
             return 'Command failed: ' + self._cmd
-        new_contents = self._process.stdout.read().splitlines()[2:]
         if self._old_contents != new_contents:
             diff = '\n'.join(
                 difflib.context_diff(self._old_contents, new_contents))
