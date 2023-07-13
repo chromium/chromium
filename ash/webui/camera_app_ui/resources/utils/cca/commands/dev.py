@@ -127,6 +127,11 @@ class DevServerHandler(http.server.SimpleHTTPRequestHandler):
                        "'/chrome_stub/resources/js/load_time_data.js';"
                        f"loadTimeData.data = {json.dumps(load_time_data)}")
 
+    def _handle_preload_images_js(self):
+        # TODO(pihsun): With watch, we can cache the result and only
+        # re-generate when any image files are changed.
+        self._send_200(build.gen_preload_images_js())
+
     def _transform_main_html(self, html: str) -> str:
         name = self._load_grd_strings()["name"]
 
@@ -209,6 +214,9 @@ class DevServerHandler(http.server.SimpleHTTPRequestHandler):
         if path == "/strings.m.js":
             return self._handle_strings_m_js()
 
+        if path == "/js/preload_images.js":
+            return self._handle_preload_images_js()
+
         if path == "/chrome_stub/theme/typography.css":
             return self._send_200("")
 
@@ -256,7 +264,6 @@ def cmd(board: str, port: int) -> int:
     os.makedirs(_DEV_OUTPUT_TEMP_DIR, exist_ok=True)
 
     cca_root = os.getcwd()
-    js_out_dir = os.path.join(_DEV_OUTPUT_TEMP_DIR, "js")
 
     build.generate_tsconfig(board)
 
@@ -282,19 +289,12 @@ def cmd(board: str, port: int) -> int:
         "false",
     ])
 
-    # TODO(pihsun): Watch images and rebuild
-    build.build_preload_images_js(js_out_dir)
-
     dev_server = http.server.ThreadingHTTPServer(
         ("localhost", port),
         lambda *args: DevServerHandler(cca_root, _DEV_OUTPUT_TEMP_DIR,
                                        util.get_gen_dir(board), *args),
     )
 
-    # TODO(pihsun): Mention that chrome needs
-    # --use-fake-device-for-media-stream=fps=30 (also --user-data-dir=)
-    # (also the parameter that skips asking camera permission dialog, see
-    # factory repo.)
     logging.info(f"Starting server on http://localhost:{port}")
     logging.info(
         "Attach a camera, or use utils/launch_dev_chrome.sh to launch "

@@ -9,6 +9,20 @@ import json
 import os
 import shlex
 import sys
+from typing import List
+
+
+def gen_preload_images_js(in_app_images: List[str],
+                          standalone_images: List[str]) -> str:
+    images = {}
+    for image in in_app_images:
+        with open(image, 'r', encoding='utf-8') as f:
+            images[os.path.basename(image)] = f.read()
+
+    filenames = [os.path.basename(f) for f in standalone_images]
+    return (
+        f'export const preloadImagesList = {json.dumps(filenames, indent=2)};'
+        f'export const preloadedImages = {json.dumps(images)};')
 
 
 def main():
@@ -24,18 +38,10 @@ def main():
         nargs='*')
     args = argument_parser.parse_args()
     with open(args.in_app_images_file) as f:
-        files = shlex.split(f.read())
-
-    images = {}
-    for image in files:
-        with open(image, 'r', encoding='utf-8') as f:
-            images[os.path.basename(image)] = f.read()
+        in_app_images = shlex.split(f.read())
 
     with open(args.output_file, 'w', encoding='utf-8') as f:
-        filenames = [os.path.basename(f) for f in args.standalone_images]
-        f.write('export const preloadImagesList = %s;' %
-                json.dumps(filenames, indent=2))
-        f.write('export const preloadedImages = %s;' % json.dumps(images))
+        f.write(gen_preload_images_js(in_app_images, args.standalone_images))
 
     return 0
 

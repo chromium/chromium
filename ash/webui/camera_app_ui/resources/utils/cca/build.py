@@ -11,9 +11,10 @@ import tempfile
 from typing import Dict, List
 
 from cca import util
+import gen_preload_images_js as gen_preload_images_js_module
 
 
-def build_preload_images_js(outdir: str):
+def gen_preload_images_js() -> str:
     with open("images/images.gni") as f:
         gn = f.read()
         match = re.search(r"in_app_images\s*=\s*(\[.*?\])", gn, re.DOTALL)
@@ -24,6 +25,18 @@ def build_preload_images_js(outdir: str):
         assert match is not None
         standalone_images = ast.literal_eval(match.group(1))
 
+    in_app_images = [
+        os.path.abspath(f"images/{asset}") for asset in in_app_images
+    ]
+    standalone_images = [
+        os.path.abspath(f"images/{asset}") for asset in standalone_images
+    ]
+
+    return gen_preload_images_js_module.gen_preload_images_js(
+        in_app_images, standalone_images)
+
+
+def build_preload_images_js(outdir: str):
     preload_images_js_path = os.path.join(outdir, "preload_images.js")
     if os.path.exists(preload_images_js_path):
         with open(preload_images_js_path) as f:
@@ -31,30 +44,15 @@ def build_preload_images_js(outdir: str):
     else:
         preload_images_js = None
 
-    with tempfile.NamedTemporaryFile("w") as f:
-        f.writelines(
-            os.path.abspath(f"images/{asset}") + "\n"
-            for asset in in_app_images)
-        f.flush()
-        with tempfile.NamedTemporaryFile("r") as temp_file:
-            cmd = [
-                "utils/gen_preload_images_js.py",
-                "--in_app_images_file",
-                f.name,
-                "--output_file",
-                temp_file.name,
-                "--standalone_images",
-            ] + standalone_images
-            util.run(cmd)
+    new_preload_images_js = gen_preload_images_js()
 
-            new_preload_images_js = temp_file.read()
-            # Only write when the generated preload_images.js changes, to avoid
-            # changing mtime of the preload_images.js file when the images are
-            # not changed, so rsync won't copy the file again on deploy.
-            if new_preload_images_js == preload_images_js:
-                return
-            with open(preload_images_js_path, "w") as output_file:
-                output_file.write(new_preload_images_js)
+    # Only write when the generated preload_images.js changes, to avoid
+    # changing mtime of the preload_images.js file when the images are
+    # not changed, so rsync won't copy the file again on deploy.
+    if new_preload_images_js == preload_images_js:
+        return
+    with open(preload_images_js_path, "w") as output_file:
+        output_file.write(new_preload_images_js)
 
 
 def _get_tsc_paths(board: str) -> Dict[str, List[str]]:
