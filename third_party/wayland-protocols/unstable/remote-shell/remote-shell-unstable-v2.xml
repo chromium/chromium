@@ -38,7 +38,7 @@
     reset.
   </description>
 
-  <interface name="zcr_remote_shell_v2" version="3">
+  <interface name="zcr_remote_shell_v2" version="4">
     <description summary="remote_shell">
       The global interface that allows clients to turn a wl_surface into a
       "real window" which is remotely managed but can be stacked, activated
@@ -162,7 +162,7 @@
 
   </interface>
 
-  <interface name="zcr_remote_surface_v2" version="3">
+  <interface name="zcr_remote_surface_v2" version="4">
     <description summary="A desktop window">
       An interface that may be implemented by a wl_surface, for
       implementations that provide a desktop-style user interface
@@ -838,6 +838,21 @@
       <description summary="set the surface to be floated">
 	Request that surface is floated.
       </description>
+    </request>
+
+    <!-- Version 4 additions -->
+    <request name="set_scale_factor" since="4">
+      <description summary="Allows the client to set the scale factor for the future buffer commits.">
+        The client has a 32-bit float scale factor that is associated with each
+        remote surface. This scale factor must be propagated exactly to exo. To
+        do so we reinterpret_cast into a 32-bit uint and later cast back into a
+        float. This is because wayland does not support native transport of
+        floats. As different CPU architectures may use different endian
+        representations for IEEE 754 floats, this protocol implicitly assumes
+        that the caller and receiver are the same machine.
+        This is double buffered state and will be applied in the next commit.
+      </description>
+      <arg name="scale_factor_as_uint" type="uint"/>
     </request>
   </interface>
 

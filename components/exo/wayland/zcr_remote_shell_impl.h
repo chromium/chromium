@@ -362,6 +362,10 @@ void remote_surface_set_resize_lock_type(wl_client* client,
                                          wl_resource* resource,
                                          uint32_t mode);
 
+void remote_surface_set_scale_factor(wl_client* client,
+                                     wl_resource* resource,
+                                     uint mode);
+
 void remote_surface_set_float(wl_client* client, wl_resource* resource);
 
 void remote_surface_block_ime(wl_client* client, wl_resource* resource);
