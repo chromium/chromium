@@ -142,9 +142,12 @@ KeyedService* IdentityManagerFactory::BuildServiceInstanceFor(
   params.signin_client = ChromeSigninClientFactory::GetForProfile(profile);
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
-  params.delete_signin_cookies_on_exit =
-      signin::SettingsDeleteSigninCookiesOnExit(
-          CookieSettingsFactory::GetForProfile(profile).get());
+  {
+    scoped_refptr<content_settings::CookieSettings> cookie_settings =
+        CookieSettingsFactory::GetForProfile(profile);
+    params.delete_signin_cookies_on_exit =
+        signin::SettingsDeleteSigninCookiesOnExit(cookie_settings.get());
+  }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)

@@ -125,9 +125,9 @@ void ChromeSigninClient::DoFinalInit() {
 
 // static
 bool ChromeSigninClient::ProfileAllowsSigninCookies(Profile* profile) {
-  content_settings::CookieSettings* cookie_settings =
-      CookieSettingsFactory::GetForProfile(profile).get();
-  return signin::SettingsAllowSigninCookies(cookie_settings);
+  scoped_refptr<content_settings::CookieSettings> cookie_settings =
+      CookieSettingsFactory::GetForProfile(profile);
+  return signin::SettingsAllowSigninCookies(cookie_settings.get());
 }
 
 PrefService* ChromeSigninClient::GetPrefs() { return profile_->GetPrefs(); }
@@ -151,9 +151,9 @@ bool ChromeSigninClient::AreSigninCookiesAllowed() {
 }
 
 bool ChromeSigninClient::AreSigninCookiesDeletedOnExit() {
-  content_settings::CookieSettings* cookie_settings =
-      CookieSettingsFactory::GetForProfile(profile_).get();
-  return signin::SettingsDeleteSigninCookiesOnExit(cookie_settings);
+  scoped_refptr<content_settings::CookieSettings> cookie_settings =
+      CookieSettingsFactory::GetForProfile(profile_);
+  return signin::SettingsDeleteSigninCookiesOnExit(cookie_settings.get());
 }
 
 void ChromeSigninClient::AddContentSettingsObserver(
