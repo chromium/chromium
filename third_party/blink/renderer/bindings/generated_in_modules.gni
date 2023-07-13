@@ -3045,6 +3045,10 @@ if (target_os != "android") {
 # current_os="linux" and target_os="android". Using target_os is necessary as
 # we need to compile in the same way as would happen when current_os="android".
 if (target_os != "android") {
+  generated_callback_function_sources_in_modules += [
+    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_smart_card_transaction_callback.cc",
+    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_smart_card_transaction_callback.h",
+  ]
   generated_dictionary_sources_in_modules += [
     "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_smart_card_connect_result.cc",
     "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_smart_card_connect_result.h",

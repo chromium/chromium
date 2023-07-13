@@ -9,16 +9,20 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_piece.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_associated_remote.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 
 namespace blink {
 
 class V8SmartCardDisposition;
+class V8SmartCardTransactionCallback;
 
-class SmartCardConnection final : public ScriptWrappable {
+class SmartCardConnection final : public ScriptWrappable,
+                                  public ExecutionContextClient {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -49,6 +53,13 @@ class SmartCardConnection final : public ScriptWrappable {
                              uint32_t tag,
                              const DOMArrayPiece& data,
                              ExceptionState& exception_state);
+  ScriptPromise startTransaction(ScriptState* script_state,
+                                 V8SmartCardTransactionCallback* transaction,
+                                 ExceptionState& exception_state);
+
+  void OnTransactionCallbackDone(
+      device::mojom::blink::SmartCardDisposition disposition);
+  void OnTransactionCallbackFailed(const ScriptValue& exception);
 
   // ScriptWrappable overrides
   void Trace(Visitor*) const override;
@@ -64,11 +75,21 @@ class SmartCardConnection final : public ScriptWrappable {
                     device::mojom::blink::SmartCardDataResultPtr result);
   void OnStatusDone(ScriptPromiseResolver* resolver,
                     device::mojom::blink::SmartCardStatusResultPtr result);
+  void OnBeginTransactionDone(
+      ScriptPromiseResolver* resolver,
+      V8SmartCardTransactionCallback* transaction_callback,
+      device::mojom::blink::SmartCardTransactionResultPtr result);
+  void OnEndTransactionDone(device::mojom::blink::SmartCardResultPtr result);
   void CloseMojoConnection();
+  void EndTransaction(device::mojom::blink::SmartCardDisposition);
+  void MaybeEndTransaction();
 
   Member<ScriptPromiseResolver> ongoing_request_;
   HeapMojoRemote<device::mojom::blink::SmartCardConnection> connection_;
   device::mojom::blink::SmartCardProtocol active_protocol_;
+
+  class TransactionState;
+  Member<TransactionState> transaction_state_;
 };
 
 }  // namespace blink

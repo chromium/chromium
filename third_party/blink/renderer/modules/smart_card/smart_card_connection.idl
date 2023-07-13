@@ -11,6 +11,8 @@ enum SmartCardDisposition {
   "eject"
 };
 
+callback SmartCardTransactionCallback = Promise<SmartCardDisposition?> ();
+
 [
   Exposed=Window,
   RuntimeEnabled=SmartCard,
@@ -37,5 +39,6 @@ enum SmartCardDisposition {
   Promise<undefined> setAttribute([EnforceRange] unsigned long tag,
       BufferSource value);
 
-  // TODO(crbug.com/1386175): add the rest of the API
+  [CallWith=ScriptState, RaisesException]
+  Promise<undefined> startTransaction(SmartCardTransactionCallback transaction);
 };
