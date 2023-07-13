@@ -46,14 +46,10 @@ NotificationUIManagerImpl::NotificationUIManagerImpl()
   auto* message_center = MessageCenter::Get();
   message_center->AddObserver(this);
 
-  auto screen_lock_notification_blocker =
-      std::make_unique<ScreenLockNotificationBlocker>(message_center);
-  screen_lock_notification_blocker->Init();
-  blockers_.push_back(std::move(screen_lock_notification_blocker));
-  auto fullscreen_notification_blocker =
-      std::make_unique<FullscreenNotificationBlocker>(message_center);
-  fullscreen_notification_blocker->Init();
-  blockers_.push_back(std::move(fullscreen_notification_blocker));
+  blockers_.push_back(
+      std::make_unique<ScreenLockNotificationBlocker>(message_center));
+  blockers_.push_back(
+      std::make_unique<FullscreenNotificationBlocker>(message_center));
 }
 
 NotificationUIManagerImpl::~NotificationUIManagerImpl() {

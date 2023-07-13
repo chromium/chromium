@@ -88,13 +88,10 @@ MessageCenterController::MessageCenterController() {
 
   fullscreen_notification_blocker_ =
       std::make_unique<FullscreenNotificationBlocker>(MessageCenter::Get());
-  fullscreen_notification_blocker_->Init();
   inactive_user_notification_blocker_ =
       std::make_unique<InactiveUserNotificationBlocker>(MessageCenter::Get());
-  inactive_user_notification_blocker_->Init();
   session_state_notification_blocker_ =
       std::make_unique<SessionStateNotificationBlocker>(MessageCenter::Get());
-  session_state_notification_blocker_->Init();
 
   Shell::Get()->session_controller()->AddObserver(this);
 
@@ -102,7 +99,6 @@ MessageCenterController::MessageCenterController() {
           switches::kSuppressMessageCenterPopups)) {
     all_popup_blocker_ =
         std::make_unique<PopupNotificationBlocker>(MessageCenter::Get());
-    all_popup_blocker_->Init();
   }
 
   if (features::IsPhoneHubEnabled()) {
@@ -127,9 +123,8 @@ MessageCenterController::MessageCenterController() {
 }
 
 MessageCenterController::~MessageCenterController() {
-  for (auto& observer : observers_) {
+  for (auto& observer : observers_)
     observer.OnArcNotificationInitializerDestroyed(this);
-  }
 
   // These members all depend on the MessageCenter instance, so must be
   // destroyed first.
@@ -156,9 +151,8 @@ void MessageCenterController::SetArcNotificationManagerInstance(
           ->user_info.account_id,
       message_center::MessageCenter::Get());
 
-  for (auto& observer : observers_) {
+  for (auto& observer : observers_)
     observer.OnSetArcNotificationsInstance(arc_notification_manager_.get());
-  }
 }
 
 ArcNotificationManagerBase*

@@ -120,7 +120,7 @@ size_t PositionInInfoPopupMessage(const std::u16string& substr) {
 // A blocker that blocks only a popup with the given ID.
 class IdPopupBlocker : public message_center::NotificationBlocker {
  public:
-  explicit IdPopupBlocker(message_center::MessageCenter* message_center)
+  IdPopupBlocker(message_center::MessageCenter* message_center)
       : NotificationBlocker(message_center) {}
   IdPopupBlocker(const IdPopupBlocker&) = delete;
   IdPopupBlocker& operator=(const IdPopupBlocker&) = delete;
@@ -406,7 +406,6 @@ TEST_F(SnoopingProtectionNotificationBlockerTest, InfoPopup) {
 // blocking.
 TEST_F(SnoopingProtectionNotificationBlockerTest, InfoPopupOtherBlocker) {
   IdPopupBlocker other_blocker(message_center_);
-  other_blocker.Init();
   other_blocker.SetTargetId("notification-2");
 
   SetBlockerPref(true);
