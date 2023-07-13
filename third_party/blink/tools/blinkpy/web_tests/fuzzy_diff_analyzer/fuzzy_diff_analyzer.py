@@ -60,7 +60,8 @@ def main() -> int:
 
     querier_instance = queries.FuzzyDiffAnalyzerQuerier(
         args.sample_period, args.project)
-    query_results = querier_instance.get_failed_image_comparison_ci_tests()
+    query_results = querier_instance.get_failed_image_comparison_ci_tests(
+        args.test_path)
 
     results_processor = results.ResultProcessor()
     aggregated_results = results_processor.aggregate_results(query_results)

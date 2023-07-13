@@ -42,8 +42,9 @@ class FuzzyDiffAnalyzerQueriesUnittest(unittest.TestCase):
         """Tests that Fuzzy Diff Analyzer queries is sending the sql."""
         def side_effect(*_, **kwargs) -> uu.FakeProcess:
             query = kwargs['input']
-            self.assertEqual(query,
-                             queries.CI_FAILED_IMAGE_COMPARISON_TEST_QUERY)
+            self.assertEqual(
+                query,queries.CI_FAILED_IMAGE_COMPARISON_TEST_QUERY.format(
+                    test_path_selector=''))
             query_result = QUERY_DATA
             return uu.FakeProcess(stdout=json.dumps(query_result))
 
