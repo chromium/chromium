@@ -30,7 +30,7 @@ std::unique_ptr<SkBitmap> PlaybackOnBackgroundThread(
       bounds.width(), bounds.height(), SkColorType::kN32_SkColorType,
       SkAlphaType::kUnpremul_SkAlphaType, rec2020);
   if (!bitmap->tryAllocPixels(bitmap_info)) {
-    return bitmap;
+    return nullptr;
   }
 
   SkCanvas sk_canvas(*bitmap, skia::LegacyDisplayGlobals::GetSkSurfaceProps());
@@ -65,7 +65,8 @@ void PhishingVisualFeatureExtractor::ExtractFeatures(
   if (!frame->CapturePaintPreview(bounds, canvas,
                                   /*include_linked_destinations=*/false,
                                   /*skip_accelerated_content=*/true)) {
-    RunCallback(std::make_unique<SkBitmap>());
+    RunCallback(nullptr);
+    return;
   }
 
   cc::PaintRecord paint_record = recorder.finishRecordingAsPicture();

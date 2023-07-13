@@ -67,6 +67,7 @@ void PhishingImageEmbedder::OnPlaybackDone(std::unique_ptr<SkBitmap> bitmap) {
 
 void PhishingImageEmbedder::CancelPendingImageEmbedding() {
   DCHECK(is_ready());
+  visual_extractor_.reset();
   weak_factory_.InvalidateWeakPtrs();
   Clear();
 }

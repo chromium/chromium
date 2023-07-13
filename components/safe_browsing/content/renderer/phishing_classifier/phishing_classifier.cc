@@ -139,6 +139,7 @@ void PhishingClassifier::CancelPendingClassification() {
   DCHECK(is_ready());
   dom_extractor_.reset();
   term_extractor_.reset();
+  visual_extractor_.reset();
   weak_factory_.InvalidateWeakPtrs();
   Clear();
 }
