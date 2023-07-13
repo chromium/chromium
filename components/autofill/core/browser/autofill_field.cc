@@ -82,7 +82,8 @@ bool IsDefaultPrediction(const FieldPrediction& prediction) {
   constexpr DenseSet<FieldPrediction::Source> default_sources = {
       FieldPrediction::SOURCE_AUTOFILL_DEFAULT,
       FieldPrediction::SOURCE_PASSWORDS_DEFAULT,
-      FieldPrediction::SOURCE_OVERRIDE};
+      FieldPrediction::SOURCE_OVERRIDE,
+      FieldPrediction::SOURCE_MANUAL_OVERRIDE};
   return default_sources.contains(prediction.source());
 }
 

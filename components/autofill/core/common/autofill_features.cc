@@ -388,6 +388,26 @@ BASE_FEATURE(kAutofillLabelAffixRemoval,
              "AutofillLabelAffixRemoval",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Allows passing a set of overrides for Autofill server predictions.
+// Example command line to override server predictions manually:
+// chrome --enables-feature=AutofillOverridePredictions:spec/1_2_4-7_8_9
+// This creates two manual overrides that supersede server predictions as
+// follows:
+// * The server prediction for the field with signature 2 in the form with
+//   signature 1 is overridden to be 4 (NAME_MIDDLE).
+// * The server prediction for the field with signature 8 in the form with
+//   signature 7 is overridden to be 9 (EMAIL_ADDRESS).
+//
+// See components/autofill/core/browser/server_prediction_overrides.h for more
+// examples and details on how to specify overrides.
+BASE_FEATURE(kAutofillOverridePredictions,
+             "AutofillOverridePredictions",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// The override specification in string form.
+const base::FeatureParam<std::string> kAutofillOverridePredictionsSpecification{
+    &kAutofillOverridePredictions, "spec", "[]"};
+
 // When enabled, Autofill would not override the field values that were either
 // filled by Autofill or on page load.
 // TODO(crbug/1275649): Remove once experiment is finished.

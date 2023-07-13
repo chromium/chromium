@@ -34,6 +34,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_data_util.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_type.h"
@@ -51,6 +52,7 @@
 #include "components/autofill/core/browser/metrics/precedence_over_autocomplete_metrics.h"
 #include "components/autofill/core/browser/metrics/shadow_prediction_metrics.h"
 #include "components/autofill/core/browser/randomized_encoder.h"
+#include "components/autofill/core/browser/server_prediction_overrides.h"
 #include "components/autofill/core/browser/validation.h"
 #include "components/autofill/core/common/autocomplete_parsing_util.h"
 #include "components/autofill/core/common/autofill_constants.h"
@@ -78,6 +80,7 @@
 namespace autofill {
 
 using mojom::SubmissionIndicatorEvent;
+using FieldSuggestion = AutofillQueryResponse::FormSuggestion::FieldSuggestion;
 
 namespace {
 
@@ -197,6 +200,49 @@ void EncodeRandomizedValue(const RandomizedEncoder& encoder,
   EncodeRandomizedValue(encoder, form_signature, field_signature, data_type,
                         base::UTF16ToUTF8(data_value), include_checksum,
                         output);
+}
+
+// Merges manual and server type predictions.
+//
+// The logic to merge manual and server overrides (which may differ in length),
+// is as follows:
+// * Both overrides assume the same field order, so iterate through the manual
+//   overrides.
+// * If the manual override has at least one field prediction, use the manual
+//   override instead of the server override. Pop the server override, but only
+//   if there are at least two server overrides left. This is because the last
+//   server override may be used for multiple fields (`GetPrediction` inside
+//   `ProcessQueryResponse` will keep returning the last value) and we only wish
+//   to override the prediction for the current field.
+// * If the manual override has no specified field prediction (i.e. is a "pass
+//   through"), then it was not intended to override this specific prediction.
+//   In that case, use the server prediction instead. In the special case that
+//   the last specified manual override is a pass through, copy all server
+//   predictions.
+std::deque<FieldSuggestion> MergeManualAndServerOverrides(
+    std::deque<FieldSuggestion> manual_overrides,
+    std::deque<FieldSuggestion> server_overrides) {
+  std::deque<FieldSuggestion> result;
+  while (!manual_overrides.empty() && !server_overrides.empty()) {
+    // If the manual override has a no type specified, it means that the
+    // server prediction should be used.
+    result.push_back(manual_overrides.front().predictions().empty()
+                         ? server_overrides.front()
+                         : manual_overrides.front());
+
+    manual_overrides.pop_front();
+    // Generally consume the first element of each override source. However,
+    // the last server override can apply to multiple fields with the same
+    // signature, so we do not pop it while it is still useful.
+    if (server_overrides.size() > 1 || manual_overrides.empty()) {
+      server_overrides.pop_front();
+    }
+  }
+  // At most one override source is non-empty - preserve the values.
+  base::ranges::move(manual_overrides, std::back_inserter(result));
+  base::ranges::move(server_overrides, std::back_inserter(result));
+
+  return result;
 }
 
 void PopulateRandomizedFormMetadata(const RandomizedEncoder& encoder,
@@ -580,8 +626,6 @@ void FormStructure::ProcessQueryResponse(
     const std::vector<FormSignature>& queried_form_signatures,
     AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
     LogManager* log_manager) {
-  using FieldSuggestion =
-      AutofillQueryResponse::FormSuggestion::FieldSuggestion;
   AutofillMetrics::LogServerQueryMetric(AutofillMetrics::QUERY_RESPONSE_PARSED);
   LOG_AF(log_manager) << LoggingScope::kParsing
                       << LogMessage::kProcessingServerData;
@@ -604,6 +648,23 @@ void FormStructure::ProcessQueryResponse(
       field_types[{form_sig, field_sig}].push_back(field);
     }
   }
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  if (base::FeatureList::IsEnabled(features::kAutofillOverridePredictions)) {
+    auto parsed_overrides = ParseServerPredictionOverrides(
+        features::kAutofillOverridePredictionsSpecification.Get());
+
+    if (parsed_overrides.has_value()) {
+      for (auto& [key, value] : parsed_overrides.value()) {
+        field_types.insert_or_assign(
+            key,
+            MergeManualAndServerOverrides(std::move(value), field_types[key]));
+      }
+    } else {
+      LOG(ERROR) << parsed_overrides.error();
+    }
+  }
+#endif
 
   // Retrieves the next prediction for |form| and |field| and pops it. Popping
   // is omitted if no other predictions for |form| and |field| are left, so that

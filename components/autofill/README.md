@@ -254,6 +254,19 @@ may sacrifice a little bit of correctness in favor of simplicity.
     the server can handle small forms differently, see
     [`http://cs/IsSmallForm%20file:autofill`](http://cs/IsSmallForm%20file:autofill).
   * Crowd sourcing trumps local heuristics.
+  * For testing purposes, crowd sourcing can be overridden manually by command
+    line parameter:
+    ```
+    chrome --enables-feature=AutofillOverridePredictions:spec/1_2_4-7_8_9
+    ```
+
+    This creates two manual overrides that supersede server predictions as
+    follows:
+    * The server prediction for the field with signature 2 in the form with
+      signature 1 is overridden to be 4 (`NAME_MIDDLE`).
+    * The server prediction for the field with signature 8 in the form with
+      signature 7 is overridden to be 9 (`EMAIL_ADDRESS`).
+    For more detail, see the documentation of [`ServerPredictionOverrides`](https://source.chromium.org/chromium/chromium/src/+/main:components/autofill/core/browser/server_prediction_overrides.h).
 * Autocomplete attribute
   * The autocomplete attribute is parsed in `ParseAutocompleteAttribute`.
   * The autocomplete attribute trumps local heuristics and crowd sourcing

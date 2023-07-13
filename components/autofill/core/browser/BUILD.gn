@@ -657,6 +657,8 @@ static_library("browser") {
       "payments/local_card_migration_manager.h",
       "payments/upi_vpa_save_manager.cc",
       "payments/upi_vpa_save_manager.h",
+      "server_prediction_overrides.cc",
+      "server_prediction_overrides.h",
       "strike_databases/payments/local_card_migration_strike_database.cc",
       "strike_databases/payments/local_card_migration_strike_database.h",
       "ui/payments/local_card_migration_bubble_controller.h",
@@ -1039,6 +1041,7 @@ source_set("unit_tests") {
   if (!is_ios && !is_android) {
     sources += [
       "payments/local_card_migration_manager_unittest.cc",
+      "server_prediction_overrides_unittest.cc",
       "ui/address_contact_form_label_formatter_unittest.cc",
       "ui/address_email_form_label_formatter_unittest.cc",
       "ui/address_form_label_formatter_unittest.cc",

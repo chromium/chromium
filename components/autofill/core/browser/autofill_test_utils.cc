@@ -1189,8 +1189,10 @@ FieldPrediction CreateFieldPrediction(ServerFieldType type,
   FieldPrediction field_prediction;
   field_prediction.set_type(type);
   field_prediction.set_source(source);
-  if (source == FieldPrediction::SOURCE_OVERRIDE)
+  if (source == FieldPrediction::SOURCE_OVERRIDE ||
+      source == FieldPrediction::SOURCE_MANUAL_OVERRIDE) {
     field_prediction.set_override(true);
+  }
   return field_prediction;
 }
 

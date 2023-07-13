@@ -88,6 +88,9 @@ message AutofillQueryResponse {
           // The autofill prediction came from the experiment which considers
           // fields ranks.
           SOURCE_FIELD_RANKS = 5;
+          // The prediction was specified as a command line override (used for
+          // testing purposes only).
+          SOURCE_MANUAL_OVERRIDE = 6;
         }
 
         // The predicted field type.
