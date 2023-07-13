@@ -4150,11 +4150,8 @@ crbug.com/977033 http/tests/priorities/resource-load-priorities-media-preload.ht
 
 # Sheriff 2019-11-29
 crbug.com/1027434 external/wpt/html/browsers/origin/cross-origin-objects/cross-origin-objects.html [ Failure Pass Timeout ]
-crbug.com/1027434 [ Mac11 ] external/wpt/html/browsers/origin/cross-origin-objects/location-properties-smoke-test.html [ Timeout ]
-crbug.com/1350255 [ Mac12 Release ] external/wpt/html/browsers/origin/cross-origin-objects/location-properties-smoke-test.html [ Timeout ]
 
 # Sheriff 2019-12-02
-
 crbug.com/1031345 media/controls/overlay-play-button-tap-to-hide.html [ Pass Timeout ]
 
 # Temporary SkiaRenderer regressions
