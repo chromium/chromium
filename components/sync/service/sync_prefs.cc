@@ -227,8 +227,6 @@ UserSelectableTypeSet SyncPrefs::GetSelectedTypes(
 
         // TODO(crbug.com/1455963): Find a better solution than manually
         // overriding the prefs' default values.
-        // TODO(crbug.com/1455963): This should return true by default only if
-        // a given type can actually run in transport mode.
         if (pref_service_->GetBoolean(pref_name) ||
             pref_service_->FindPreference(pref_name)->IsDefaultValue()) {
           // In transport-mode, individual types are considered enabled by
@@ -627,18 +625,25 @@ void SyncPrefs::ClearPassphrasePromptMutedProductVersion() {
 }
 
 void SyncPrefs::MaybeMigratePrefsForSyncToSigninPart1(
-    SyncAccountState account_state) {
+    SyncAccountState account_state,
+    signin::GaiaIdHash gaia_id_hash) {
   if (!base::FeatureList::IsEnabled(kReplaceSyncPromosWithSignInPromos)) {
     // Ensure that the migration runs again when the feature gets enabled.
     pref_service_->ClearPref(kSyncToSigninMigrationState);
     return;
   }
 
-  // TODO(crbug.com/1447020, crbug.com/1451509): Update the migration logic to
-  // write to the gaia-keyed pref when kReplaceSyncPromosWithSignInPromos is
-  // enabled.
   // Don't migrate again if this profile was previously migrated.
   if (pref_service_->GetInteger(kSyncToSigninMigrationState) != kNotMigrated) {
+    return;
+  }
+
+  if (IsLocalSyncEnabled()) {
+    // Special case for local sync: There isn't necessarily a signed-in user
+    // (even if the SyncAccountState is kSyncing), so just mark the migration as
+    // done.
+    pref_service_->SetInteger(kSyncToSigninMigrationState,
+                              kMigratedPart2AndFullyDone);
     return;
   }
 
@@ -650,35 +655,66 @@ void SyncPrefs::MaybeMigratePrefsForSyncToSigninPart1(
       // later sign in / turn on sync.
       pref_service_->SetInteger(kSyncToSigninMigrationState,
                                 kMigratedPart2AndFullyDone);
-      break;
+      return;
     }
     case SyncAccountState::kSignedInNotSyncing: {
       pref_service_->SetInteger(kSyncToSigninMigrationState,
                                 kMigratedPart1ButNot2);
-      // For pre-existing signed-in users, some state needs to be migrated:
+      // For pre-existing signed-in users, some state needs to be migrated from
+      // the global to the account-scoped settings.
+      CHECK(gaia_id_hash.IsValid());
+      ScopedDictPrefUpdate update_selected_types_dict(
+          pref_service_, prefs::internal::kSelectedTypesPerAccount);
+      base::Value::Dict* account_settings =
+          update_selected_types_dict->EnsureDict(gaia_id_hash.ToBase64());
 
-      // Settings aka preferences remains off by default.
-      pref_service_->SetBoolean(
-          GetPrefNameForType(UserSelectableType::kPreferences), false);
+      // Mostly, the values of the "global" data type prefs get copied to the
+      // account-specific ones. But some data types get special treatment.
+      for (UserSelectableType type : UserSelectableTypeSet::All()) {
+        const char* pref_name = GetPrefNameForType(type);
+        CHECK(pref_name);
+
+        // Initial default value: From the global datatype pref (compare to
+        // GetSelectedTypes()).
+        // TODO(crbug.com/1455963): Find a better solution than manually
+        // overriding the prefs' default values.
+        bool enabled =
+            pref_service_->GetBoolean(pref_name) ||
+            pref_service_->FindPreference(pref_name)->IsDefaultValue();
+
+        // History and open tabs do *not* get migrated; they always start out
+        // "off".
+        if (type == UserSelectableType::kHistory ||
+            type == UserSelectableType::kTabs) {
+          enabled = false;
+        }
+
+        // Settings aka preferences always starts out "off".
+        if (type == UserSelectableType::kPreferences) {
+          enabled = false;
+        }
 
 #if BUILDFLAG(IS_IOS)
-      // Bookmarks and reading list remain enabled only if the user previously
-      // explicitly opted in.
-      if (!pref_service_->GetBoolean(
-              prefs::internal::kBookmarksAndReadingListAccountStorageOptIn)) {
-        pref_service_->SetBoolean(
-            GetPrefNameForType(UserSelectableType::kBookmarks), false);
-        pref_service_->SetBoolean(
-            GetPrefNameForType(UserSelectableType::kReadingList), false);
-      }
+        // Bookmarks and reading list remain enabled only if the user previously
+        // explicitly opted in.
+        if ((type == UserSelectableType::kBookmarks ||
+             type == UserSelectableType::kReadingList) &&
+            !pref_service_->GetBoolean(
+                prefs::internal::kBookmarksAndReadingListAccountStorageOptIn)) {
+          enabled = false;
+        }
 #endif  // BUILDFLAG(IS_IOS)
 
-      break;
+        account_settings->Set(pref_name, enabled);
+      }
+
+      return;
     }
   }
 }
 
 void SyncPrefs::MaybeMigratePrefsForSyncToSigninPart2(
+    signin::GaiaIdHash gaia_id_hash,
     bool is_using_explicit_passphrase) {
   // The migration pref shouldn't be set if the feature is disabled, but if it
   // somehow happened, do *not* run the migration, and clear the pref so that
@@ -699,9 +735,14 @@ void SyncPrefs::MaybeMigratePrefsForSyncToSigninPart2(
 
   // The actual migration: For explicit-passphrase users, addresses sync gets
   // disabled by default.
-  if (is_using_explicit_passphrase) {
-    pref_service_->SetBoolean(GetPrefNameForType(UserSelectableType::kAutofill),
-                              false);
+  if (is_using_explicit_passphrase && !IsLocalSyncEnabled()) {
+    CHECK(gaia_id_hash.IsValid());
+    ScopedDictPrefUpdate update_selected_types_dict(
+        pref_service_, prefs::internal::kSelectedTypesPerAccount);
+    base::Value::Dict* account_settings =
+        update_selected_types_dict->EnsureDict(gaia_id_hash.ToBase64());
+    account_settings->Set(GetPrefNameForType(UserSelectableType::kAutofill),
+                          false);
   }
 }
 

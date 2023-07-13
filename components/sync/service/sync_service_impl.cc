@@ -23,6 +23,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/invalidation/public/invalidation_service.h"
+#include "components/signin/public/base/gaia_id_hash.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
@@ -47,7 +48,6 @@
 #include "components/sync/service/sync_api_component_factory.h"
 #include "components/sync/service/sync_auth_manager.h"
 #include "components/sync/service/sync_prefs.h"
-#include "components/sync/service/sync_type_preference_provider.h"
 #include "components/sync/service/trusted_vault_histograms.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -289,7 +289,8 @@ void SyncServiceImpl::Initialize() {
   // *After* setting up `auth_manager_`, run a prefs migration that depends on
   // the account state.
   sync_prefs_.MaybeMigratePrefsForSyncToSigninPart1(
-      GetSyncAccountStateForPrefs());
+      GetSyncAccountStateForPrefs(),
+      signin::GaiaIdHash::FromGaiaId(GetAccountInfo().gaia));
 
   if (!IsLocalSyncEnabled()) {
     // TODO(crbug.com/1454037): Record these histograms only if
@@ -960,6 +961,7 @@ void SyncServiceImpl::OnEngineInitialized(bool success,
   }
 
   sync_prefs_.MaybeMigratePrefsForSyncToSigninPart2(
+      signin::GaiaIdHash::FromGaiaId(GetAccountInfo().gaia),
       user_settings_->IsUsingExplicitPassphrase());
 
   data_type_manager_ =

@@ -209,13 +209,15 @@ class SyncPrefs {
   // syncing users, no migration is necessary - this also covers new users (or
   // more precisely, new profiles).
   // This should be called early during browser startup.
-  void MaybeMigratePrefsForSyncToSigninPart1(SyncAccountState account_state);
+  void MaybeMigratePrefsForSyncToSigninPart1(SyncAccountState account_state,
+                                             signin::GaiaIdHash gaia_id_hash);
 
   // Second part of the above migration, which depends on the user's passphrase
   // type, which isn't known yet during browser startup. This should be called
   // as soon as the passphrase type is known, and will only do any migration if
   // the above method has flagged that it's necessary.
-  void MaybeMigratePrefsForSyncToSigninPart2(bool is_using_explicit_passphrase);
+  void MaybeMigratePrefsForSyncToSigninPart2(signin::GaiaIdHash gaia_id_hash,
+                                             bool is_using_explicit_passphrase);
 
   // Should be called when Sync gets disabled / the user signs out. Clears any
   // temporary state from the above migration.
