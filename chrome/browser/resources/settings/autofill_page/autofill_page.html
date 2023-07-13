@@ -11,11 +11,9 @@
         focus-config="[[focusConfig_]]">
       <div route-path="default">
         <cr-link-row id="passwordManagerButton" start-icon="settings20:vpn-key"
-            label="[[passwordsTitle_]]" on-click="onPasswordsClick_"
+            label="$i18n{localPasswordManager}" on-click="onPasswordsClick_"
             role-description="$i18n{subpageArrowRoleDescription}"
-            external="[[enableNewPasswordManagerPage_]]">
-          <span id="passwordManagerSubLabel" slot="sub-label">
-              [[passwordManagerSubLabel_]]</span>
+            external>
         </cr-link-row>
         <cr-link-row id="paymentManagerButton"
             start-icon="settings20:credit-card" label="$i18n{creditCards}"
@@ -26,42 +24,6 @@
             on-click="onAddressesClick_"
             role-description="$i18n{subpageArrowRoleDescription}"></cr-link-row>
       </div>
-      <template is="dom-if" if="[[!enableNewPasswordManagerPage_]]">
-        <template is="dom-if" route-path="/passwords">
-          <settings-subpage
-              associated-control="[[$$('#passwordManagerButton')]]"
-              page-title="$i18n{passwords}"
-              learn-more-url="$i18n{passwordManagerLearnMoreURL}"
-              search-label="$i18n{searchPasswords}"
-              search-term="{{passwordFilter_}}">
-            <passwords-section id="passwordSection" filter="[[passwordFilter_]]"
-                focus-config="[[focusConfig_]]" prefs="{{prefs}}"
-                on-password-view-page-requested="onPasswordViewPageRequested_">
-            </passwords-section>
-          </settings-subpage>
-        </template>
-        <!-- TODO(crbug.com/1102294): Add a learn-more-url, which will cause the
-        (?) button to appear. -->
-        <template is="dom-if" route-path="/passwords/device" no-search>
-          <settings-subpage
-              page-title="$i18n{passwordsDevice}"
-              search-label="$i18n{searchPasswords}"
-              search-term="{{passwordFilter_}}">
-            <passwords-device-section id="passwordDeviceSection"
-                filter="[[passwordFilter_]]" focus-config="[[focusConfig_]]"
-                on-password-view-page-requested="onPasswordViewPageRequested_">
-            </passwords-device-section>
-          </settings-subpage>
-        </template>
-        <template is="dom-if" route-path="/passwords/check">
-          <settings-subpage
-              associated-control="[[$$('#passwordManagerButton')]]"
-              page-title="$i18n{checkPasswords}"
-              learn-more-url="$i18n{passwordCheckLearnMoreURL}">
-            <settings-password-check prefs="{{prefs}}"></settings-password-check>
-          </settings-subpage>
-        </template>
-      </template>
       <if expr="is_win or is_macosx">
         <template is="dom-if" route-path="/passkeys">
           <settings-subpage
@@ -74,16 +36,6 @@
           </settings-subpage>
         </template>
       </if>
-      <template is="dom-if" if="[[enablePasswordViewPage_]]">
-        <template is="dom-if" route-path="/passwords/view">
-          <settings-subpage page-title="[[credential.urls.shown]]"
-              favicon-site-url="[[credential.urls.link]]">
-            <password-view credential="{{credential}}"
-                on-password-view-page-requested="onPasswordViewPageRequested_">
-            </password-view>
-            </settings-subpage>
-        </template>
-      </template>
       <template is="dom-if" route-path="/payments">
         <settings-subpage
             associated-control="[[$$('#paymentManagerButton')]]"
@@ -103,10 +55,3 @@
         </settings-subpage>
       </template>
     </settings-animated-pages>
-    <if expr="is_chromeos">
-      <template is="dom-if" if="[[showPasswordPromptDialog]]" restamp>
-        <settings-password-prompt-dialog on-token-obtained="onTokenObtained"
-            on-close="onPasswordPromptClose">
-        </settings-password-prompt-dialog>
-      </template>
-    </if>

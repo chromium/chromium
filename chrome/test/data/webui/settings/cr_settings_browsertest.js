@@ -17,7 +17,6 @@ GEN('#include "chrome/common/chrome_features.h"');
 GEN('#include "components/content_settings/core/common/features.h"');
 GEN('#include "components/performance_manager/public/features.h"');
 GEN('#include "components/privacy_sandbox/privacy_sandbox_features.h"');
-GEN('#include "components/password_manager/core/common/password_manager_features.h"');
 GEN('#include "components/autofill/core/common/autofill_features.h"');
 GEN('#include "components/privacy_sandbox/privacy_sandbox_features.h"');
 GEN('#include "content/public/common/content_features.h"');
@@ -66,17 +65,6 @@ TEST_F('CrSettingsAboutPageTest', 'AboutPage_OfficialBuild', function() {
   mocha.grep('AboutPageTest_OfficialBuilds').run();
 });
 GEN('#endif');
-
-var CrSettingsAvatarIconTest = class extends CrSettingsBrowserTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://settings/test_loader.html?module=settings/avatar_icon_test.js';
-  }
-};
-
-TEST_F('CrSettingsAvatarIconTest', 'All', function() {
-  mocha.run();
-});
 
 var CrSettingsBasicPageTest = class extends CrSettingsBrowserTest {
   /** @override */
@@ -282,11 +270,6 @@ var CrSettingsAutofillPageTest = class extends CrSettingsBrowserTest {
   get browsePreload() {
     return 'chrome://settings/test_loader.html?module=settings/autofill_page_test.js';
   }
-
-  /** @override */
-  get featureListInternal() {
-    return {disabled: ['password_manager::features::kPasswordManagerRedesign']};
-  }
 };
 
 TEST_F('CrSettingsAutofillPageTest', 'All', function() {
@@ -305,97 +288,11 @@ TEST_F('CrSettingsAutofillSectionCompanyEnabledTest', 'All', function() {
   mocha.run();
 });
 
-// TODO(crbug.com/1420597): remove this test after Password Manager redesign is
-// launched.
-var CrSettingsPasswordsSectionTest = class extends CrSettingsBrowserTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://settings/test_loader.html?module=settings/passwords_section_test.js';
-  }
-
-  /** @override */
-  get featureListInternal() {
-    return {disabled: ['password_manager::features::kPasswordManagerRedesign']};
-  }
-};
-
-// Flaky on Debug builds https://crbug.com/1090931
-GEN('#if !defined(NDEBUG)');
-GEN('#define MAYBE_All DISABLED_All');
-GEN('#else');
-GEN('#define MAYBE_All All');
-GEN('#endif');
-TEST_F('CrSettingsPasswordsSectionTest', 'MAYBE_All', function() {
-  mocha.run();
-});
-GEN('#undef MAYBE_All');
-
-// TODO(crbug.com/1420597): remove this test after Password Manager redesign is
-// launched.
-var CrSettingsPasswordsDeviceSectionTest = class extends CrSettingsBrowserTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://settings/test_loader.html?module=settings/passwords_device_section_test.js';
-  }
-
-  /** @override */
-  get featureListInternal() {
-    return {disabled: ['password_manager::features::kPasswordManagerRedesign']};
-  }
-};
-
-TEST_F('CrSettingsPasswordsDeviceSectionTest', 'All', function() {
-  mocha.run();
-});
-
-// TODO(crbug.com/1420597): remove this test after Password Manager redesign is
-// launched.
-var CrSettingsPasswordEditDialogTest = class extends CrSettingsBrowserTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://settings/test_loader.html?module=settings/password_edit_dialog_test.js';
-  }
-
-  /** @override */
-  get featureListInternal() {
-    return {disabled: ['password_manager::features::kPasswordManagerRedesign']};
-  }
-};
-
-TEST_F('CrSettingsPasswordEditDialogTest', 'All', function() {
-  mocha.run();
-});
-
-// TODO(crbug.com/1420597): remove this test after Password Manager redesign is
-// launched.
-var CrSettingsPasswordsCheckTest = class extends CrSettingsBrowserTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://settings/test_loader.html?module=settings/password_check_test.js';
-  }
-
-  /** @override */
-  get featureListInternal() {
-    return {disabled: ['password_manager::features::kPasswordManagerRedesign']};
-  }
-};
-
-// Flaky https://crbug.com/1143801
-TEST_F('CrSettingsPasswordsCheckTest', 'DISABLED_All', function() {
-  mocha.run();
-});
 
 var CrSettingsSafetyCheckPageTest = class extends CrSettingsBrowserTest {
   /** @override */
   get browsePreload() {
     return 'chrome://settings/test_loader.html?module=settings/safety_check_page_test.js';
-  }
-
-  /** @override */
-  get featureListInternal() {
-    // TODO(crbug.com/1420597): Clean up this after Password Manager redesign is
-    // launched.
-    return {disabled: ['password_manager::features::kPasswordManagerRedesign']};
   }
 };
 
@@ -1076,15 +973,6 @@ TEST_F('CrSettingsMenuTest', 'All', function() {
  ['FileSystemSettingsListEntries', 'file_system_site_entry_test.js'],
  ['FileSystemSettingsListEntryItems', 'file_system_site_entry_item_test.js'],
  ['HelpPage', 'help_page_test.js'],
- // TODO(crbug.com/1420597): Remove this test after Password Manager redesign is
- // launched.
- ['PasswordView', 'password_view_test.js'],
- // TODO(crbug.com/1420597): Remove this test after Password Manager redesign is
- // launched.
- ['PasswordsExportDialog', 'passwords_export_dialog_test.js'],
- // TODO(crbug.com/1420597): Remove this test after Password Manager redesign is
- // launched.
- ['PasswordsImportDialog', 'passwords_import_dialog_test.js'],
  ['PaymentsSection', 'payments_section_test.js'],
  ['PaymentsSectionCardDialogs', 'payments_section_card_dialogs_test.js'],
  ['PaymentsSectionCardRows', 'payments_section_card_rows_test.js'],
@@ -1137,13 +1025,6 @@ GEN('#if !(BUILDFLAG(IS_LINUX) && !defined(NDEBUG))');
     test => registerTest(...test));
 GEN('#endif');
 
-GEN('#if BUILDFLAG(IS_CHROMEOS)');
-// TODO(crbug.com/1420597): Remove this test after Password Manager redesign is
-// launched.
-[['PasswordsSectionCros', 'passwords_section_test_cros.js'],
-].forEach(test => registerTest(...test));
-GEN('#endif');
-
 GEN('#if BUILDFLAG(IS_CHROMEOS_ASH)');
 [['PeoplePageChromeOS', 'people_page_test_cros.js'],
  // Copied from Polymer 2 test. TODO(crbug.com/929455): flaky, fix.
@@ -1191,13 +1072,6 @@ function registerTest(testName, module, caseName) {
     /** @override */
     get browsePreload() {
       return `chrome://settings/test_loader.html?module=settings/${module}`;
-    }
-
-    /** @override */
-    get featureListInternal() {
-      return {
-        disabled: ['password_manager::features::kPasswordManagerRedesign']
-      };
     }
   };
 

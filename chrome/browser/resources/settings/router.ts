@@ -21,7 +21,6 @@ export interface SettingsRoutes {
   BASIC: Route;
   CAPTIONS: Route;
   CERTIFICATES: Route;
-  CHECK_PASSWORDS: Route;
   CHROME_CLEANUP: Route;
   CLEAR_BROWSER_DATA: Route;
   COOKIES: Route;
@@ -38,9 +37,6 @@ export interface SettingsRoutes {
   MANAGE_PROFILE: Route;
   ON_STARTUP: Route;
   PASSKEYS: Route;
-  PASSWORDS: Route;
-  PASSWORD_VIEW: Route;
-  DEVICE_PASSWORDS: Route;
   PAYMENTS: Route;
   PEOPLE: Route;
   PERFORMANCE: Route;

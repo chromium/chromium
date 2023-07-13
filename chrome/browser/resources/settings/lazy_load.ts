@@ -8,10 +8,6 @@ import './autofill_page/autofill_section.js';
 // <if expr="is_win or is_macosx">
 import './autofill_page/passkeys_subpage.js';
 // </if>
-import './autofill_page/password_check.js';
-import './autofill_page/password_view.js';
-import './autofill_page/passwords_device_section.js';
-import './autofill_page/passwords_section.js';
 import './autofill_page/payments_section.js';
 import './clear_browsing_data_dialog/clear_browsing_data_dialog.js';
 import './search_engines_page/search_engines_page.js';
@@ -114,9 +110,6 @@ export {CountryDetailManager, CountryDetailManagerImpl, SettingsAddressEditDialo
 export {SettingsAddressRemoveConfirmationDialogElement} from './autofill_page/address_remove_confirmation_dialog.js';
 export {AutofillManagerImpl, AutofillManagerProxy, PersonalDataChangedListener} from './autofill_page/autofill_manager_proxy.js';
 export {SettingsAutofillSectionElement} from './autofill_page/autofill_section.js';
-// <if expr="is_chromeos">
-export {BlockingRequestManager} from './autofill_page/blocking_request_manager.js';
-// </if>
 export {SettingsCreditCardEditDialogElement} from './autofill_page/credit_card_edit_dialog.js';
 export {SettingsCreditCardListEntryElement} from './autofill_page/credit_card_list_entry.js';
 export {SettingsIbanEditDialogElement} from './autofill_page/iban_edit_dialog.js';
@@ -125,19 +118,6 @@ export {SettingsIbanListEntryElement} from './autofill_page/iban_list_entry.js';
 export {Passkey, PasskeysBrowserProxy, PasskeysBrowserProxyImpl} from './autofill_page/passkeys_browser_proxy.js';
 export {SettingsPasskeysSubpageElement} from './autofill_page/passkeys_subpage.js';
 // </if>
-export {SettingsPasswordCheckElement} from './autofill_page/password_check.js';
-export {SettingsPasswordEditDisclaimerDialogElement} from './autofill_page/password_check_edit_disclaimer_dialog.js';
-export {PasswordCheckListItemElement} from './autofill_page/password_check_list_item.js';
-export {PasswordDialogMode, PasswordEditDialogElement} from './autofill_page/password_edit_dialog.js';
-export {PasswordListItemElement} from './autofill_page/password_list_item.js';
-export {PasswordMoveMultiplePasswordsToAccountDialogElement} from './autofill_page/password_move_multiple_passwords_to_account_dialog.js';
-export {SettingsPasswordRemoveConfirmationDialogElement} from './autofill_page/password_remove_confirmation_dialog.js';
-export {PasswordRemoveDialogElement} from './autofill_page/password_remove_dialog.js';
-export {PasswordViewElement} from './autofill_page/password_view.js';
-export {PasswordsDeviceSectionElement} from './autofill_page/passwords_device_section.js';
-export {PasswordsExportDialogElement} from './autofill_page/passwords_export_dialog.js';
-export {IMPORT_HELP_LANDING_PAGE, ImportDialogState, PasswordsImportDialogElement} from './autofill_page/passwords_import_dialog.js';
-export {PasswordsSectionElement} from './autofill_page/passwords_section.js';
 export {PaymentsManagerImpl, PaymentsManagerProxy} from './autofill_page/payments_manager_proxy.js';
 export {SettingsPaymentsSectionElement} from './autofill_page/payments_section.js';
 export {SettingsVirtualCardUnenrollDialogElement} from './autofill_page/virtual_card_unenroll_dialog.js';
