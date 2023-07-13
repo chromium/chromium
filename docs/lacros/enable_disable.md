@@ -24,6 +24,8 @@ Lacros is enabled.
 Navigate to `os://flags` (if using the Lacros browser), or `chrome://flags` on
 the (legacy) Ash browser.
 
+1. Set `#lacros-availability-ignore` to "Enabled".
+1. Click "Restart".
 1. Set `#lacros-support` to "Disabled" and click "Restart".
 1. Device is returned to the original state with the legacy ChromeOS browser
    (Ash).
