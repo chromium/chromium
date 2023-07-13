@@ -16,6 +16,7 @@
 #include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_token_builder.h"
+#include "third_party/blink/public/platform/modules/webrtc/webrtc_logging.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_insertable_streams.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_rtcp_parameters.h"
@@ -585,6 +586,8 @@ RTCRtpSender::RTCRtpSender(RTCPeerConnection* pc,
   DCHECK(pc_);
   DCHECK(sender_);
   DCHECK(!track || kind_ == track->kind());
+  LogMessage(base::StringPrintf("%s({encoded_insertable_streams=%s})", __func__,
+                                encoded_insertable_streams ? "true" : "false"));
   if (encoded_audio_transformer_) {
     RegisterEncodedAudioStreamCallback();
   }
@@ -859,6 +862,7 @@ RTCInsertableStreams* RTCRtpSender::createEncodedStreams(
     ScriptState* script_state,
     ExceptionState& exception_state) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  LogMessage(__func__);
   if (kind_ == "audio")
     return createEncodedAudioStreams(script_state, exception_state);
   DCHECK_EQ(kind_, "video");
@@ -1238,6 +1242,12 @@ void RTCRtpSender::OnVideoFrameFromEncoder(
   if (video_from_encoder_underlying_source_) {
     video_from_encoder_underlying_source_->OnFrameFromSource(std::move(frame));
   }
+}
+
+void RTCRtpSender::LogMessage(const std::string& message) {
+  blink::WebRtcLogMessage(
+      base::StringPrintf("RtpSndr::%s [this=0x%" PRIXPTR "]", message.c_str(),
+                         reinterpret_cast<uintptr_t>(this)));
 }
 
 }  // namespace blink
