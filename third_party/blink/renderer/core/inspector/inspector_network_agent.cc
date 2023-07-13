@@ -1549,8 +1549,7 @@ void InspectorNetworkAgent::DidFinishLoading(
     DocumentLoader* loader,
     base::TimeTicks monotonic_finish_time,
     int64_t encoded_data_length,
-    int64_t decoded_body_length,
-    bool should_report_corb_blocking) {
+    int64_t decoded_body_length) {
   String request_id = RequestId(loader, identifier);
   NetworkResourcesData::ResourceData const* resource_data =
       resources_data_->Data(request_id);
@@ -1578,7 +1577,7 @@ void InspectorNetworkAgent::DidFinishLoading(
   // TODO(npm): Use base::TimeTicks in Network.h.
   GetFrontend()->loadingFinished(
       request_id, monotonic_finish_time.since_origin().InSecondsF(),
-      encoded_data_length, should_report_corb_blocking);
+      encoded_data_length);
 }
 
 void InspectorNetworkAgent::DidReceiveCorsRedirectResponse(
@@ -1589,7 +1588,7 @@ void InspectorNetworkAgent::DidReceiveCorsRedirectResponse(
   // Update the response and finish loading
   DidReceiveResourceResponse(identifier, loader, response, resource);
   DidFinishLoading(identifier, loader, base::TimeTicks(),
-                   URLLoaderClient::kUnknownEncodedDataLength, 0, false);
+                   URLLoaderClient::kUnknownEncodedDataLength, 0);
 }
 
 void InspectorNetworkAgent::DidFailLoading(

@@ -103,9 +103,6 @@ class BLINK_PLATFORM_EXPORT URLLoaderClient {
 
   // Called when the load completes successfully.
   // |total_encoded_data_length| may be equal to kUnknownEncodedDataLength.
-  // |should_report_corb_blocking| is used to report that cross-site document
-  // request response was blocked from entering renderer. Corresponding message
-  // will be generated in devtools console if this flag is set to true.
   // TODO(crbug.com/798625): use different callback for subresources
   // with responses blocked due to document protection.
   virtual void DidFinishLoading(
@@ -113,7 +110,6 @@ class BLINK_PLATFORM_EXPORT URLLoaderClient {
       int64_t total_encoded_data_length,
       uint64_t total_encoded_body_length,
       int64_t total_decoded_body_length,
-      bool should_report_corb_blocking,
       absl::optional<bool> pervasive_payload_requested = absl::nullopt) {}
 
   // Called when the load completes with an error.

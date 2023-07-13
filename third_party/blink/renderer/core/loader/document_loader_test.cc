@@ -65,11 +65,10 @@ class DecodedBodyLoader : public StaticDataNavigationBodyLoader {
         int64_t total_encoded_data_length,
         int64_t total_encoded_body_length,
         int64_t total_decoded_body_length,
-        bool should_report_corb_blocking,
         const absl::optional<WebURLError>& error) override {
-      client_->BodyLoadingFinished(
-          completion_time, total_encoded_data_length, total_encoded_body_length,
-          total_decoded_body_length, should_report_corb_blocking, error);
+      client_->BodyLoadingFinished(completion_time, total_encoded_data_length,
+                                   total_encoded_body_length,
+                                   total_decoded_body_length, error);
     }
 
    private:

@@ -112,11 +112,9 @@ void ResourceLoadObserverForWorker::DidFinishLoading(
     uint64_t identifier,
     base::TimeTicks finish_time,
     int64_t encoded_data_length,
-    int64_t decoded_body_length,
-    bool should_report_corb_blocking) {
+    int64_t decoded_body_length) {
   probe::DidFinishLoading(probe_, identifier, nullptr, finish_time,
-                          encoded_data_length, decoded_body_length,
-                          should_report_corb_blocking);
+                          encoded_data_length, decoded_body_length);
 }
 
 void ResourceLoadObserverForWorker::DidFailLoading(const KURL&,

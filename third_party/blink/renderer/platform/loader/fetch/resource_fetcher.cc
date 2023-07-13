@@ -793,7 +793,7 @@ void ResourceFetcher::DidLoadResourceFromMemoryCache(
 
   resource_load_observer_->DidFinishLoading(
       request.InspectorId(), base::TimeTicks(), 0,
-      resource->GetResponse().DecodedBodyLength(), false);
+      resource->GetResponse().DecodedBodyLength());
 
   if (!is_static_data) {
     base::TimeTicks now = base::TimeTicks::Now();
@@ -2197,7 +2197,6 @@ void ResourceFetcher::HandleLoaderFinish(Resource* resource,
                                          base::TimeTicks response_end,
                                          LoaderFinishType type,
                                          uint32_t inflight_keepalive_bytes,
-                                         bool should_report_corb_blocking,
                                          bool pervasive_payload_requested,
                                          int64_t bytes_fetched) {
   DCHECK(resource);
@@ -2300,8 +2299,7 @@ void ResourceFetcher::HandleLoaderFinish(Resource* resource,
     DCHECK(!IsDetached());
     resource_load_observer_->DidFinishLoading(
         resource->InspectorId(), response_end, encoded_data_length,
-        resource->GetResponse().DecodedBodyLength(),
-        should_report_corb_blocking);
+        resource->GetResponse().DecodedBodyLength());
   }
   MaybeSaveResourceToStrongReference(resource);
 }

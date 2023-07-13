@@ -1280,7 +1280,6 @@ class RenderFrameImpl::MHTMLBodyLoaderClient
                            int64_t total_encoded_data_length,
                            int64_t total_encoded_body_length,
                            int64_t total_decoded_body_length,
-                           bool should_report_corb_blocking,
                            const absl::optional<WebURLError>& error) override {
     committing_ = true;
     AssertNavigationCommits assert_navigation_commits(frame_);

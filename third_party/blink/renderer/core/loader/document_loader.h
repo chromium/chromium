@@ -573,7 +573,6 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
                            int64_t total_encoded_data_length,
                            int64_t total_encoded_body_length,
                            int64_t total_decoded_body_length,
-                           bool should_report_corb_blocking,
                            const absl::optional<WebURLError>& error) override;
   ProcessBackgroundDataCallback TakeProcessBackgroundDataCallback() override;
 

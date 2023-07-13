@@ -155,7 +155,6 @@ class PLATFORM_EXPORT ResourceLoader final
                         int64_t encoded_data_length,
                         uint64_t encoded_body_length,
                         int64_t decoded_body_length,
-                        bool should_report_corb_blocking,
                         absl::optional<bool> pervasive_payload_requested =
                             absl::nullopt) override;
   void DidFail(const WebURLError&,
@@ -283,7 +282,6 @@ class PLATFORM_EXPORT ResourceLoader final
   // when the blob is finished too.
   struct DeferredFinishLoadingInfo {
     base::TimeTicks response_end_time;
-    bool should_report_corb_blocking;
     absl::optional<bool> pervasive_payload_requested;
   };
   absl::optional<DeferredFinishLoadingInfo> deferred_finish_loading_info_;

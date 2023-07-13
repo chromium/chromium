@@ -181,11 +181,6 @@ struct URLResponseHead {
   // for this response.
   bool did_service_worker_navigation_preload = false;
 
-  // Is used to report that a cross-origin response was blocked by Cross-Origin
-  // Read Blocking (CORB) from entering renderer. Corresponding message will be
-  // generated in devtools console if this flag is set to true.
-  bool should_report_corb_blocking = false;
-
   // True if this resource is stale and needs async revalidation. Will only
   // possibly be set if the load_flags indicated SUPPORT_ASYNC_REVALIDATION.
   bool async_revalidation_requested = false;

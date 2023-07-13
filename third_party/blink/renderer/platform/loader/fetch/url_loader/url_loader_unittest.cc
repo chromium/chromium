@@ -253,7 +253,6 @@ class TestURLLoaderClient : public URLLoaderClient {
       int64_t totalEncodedDataLength,
       uint64_t totalEncodedBodyLength,
       int64_t totalDecodedBodyLength,
-      bool should_report_corb_blocking,
       absl::optional<bool> pervasive_payload_requested) override {
     EXPECT_TRUE(loader_);
     EXPECT_TRUE(did_receive_response_);

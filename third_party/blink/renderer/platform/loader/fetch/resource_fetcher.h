@@ -255,7 +255,6 @@ class PLATFORM_EXPORT ResourceFetcher
                           base::TimeTicks finish_time,
                           LoaderFinishType,
                           uint32_t inflight_keepalive_bytes,
-                          bool should_report_corb_blocking,
                           bool pervasive_payload_requested,
                           int64_t bytes_fetched);
   void HandleLoaderError(Resource*,

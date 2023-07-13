@@ -1110,7 +1110,6 @@ void DocumentLoader::BodyLoadingFinished(
     int64_t total_encoded_data_length,
     int64_t total_encoded_body_length,
     int64_t total_decoded_body_length,
-    bool should_report_corb_blocking,
     const absl::optional<WebURLError>& error) {
   TRACE_EVENT0("loading", "DocumentLoader::BodyLoadingFinished");
 
@@ -1119,8 +1118,7 @@ void DocumentLoader::BodyLoadingFinished(
     GetFrameLoader().Progress().CompleteProgress(main_resource_identifier_);
     probe::DidFinishLoading(
         probe::ToCoreProbeSink(GetFrame()), main_resource_identifier_, this,
-        completion_time, total_encoded_data_length, total_decoded_body_length,
-        should_report_corb_blocking);
+        completion_time, total_encoded_data_length, total_decoded_body_length);
 
     DOMWindowPerformance::performance(*frame_->DomWindow())
         ->OnBodyLoadFinished(total_encoded_body_length,

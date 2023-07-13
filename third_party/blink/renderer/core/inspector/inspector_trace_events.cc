@@ -174,8 +174,7 @@ void InspectorTraceEvents::DidFinishLoading(uint64_t identifier,
                                             DocumentLoader* loader,
                                             base::TimeTicks finish_time,
                                             int64_t encoded_data_length,
-                                            int64_t decoded_body_length,
-                                            bool should_report_corb_blocking) {
+                                            int64_t decoded_body_length) {
   DEVTOOLS_TIMELINE_TRACE_EVENT_INSTANT(
       "ResourceFinish", inspector_resource_finish_event::Data, loader,
       identifier, finish_time, false, encoded_data_length, decoded_body_length);

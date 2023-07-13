@@ -143,7 +143,6 @@ class NavigationBodyLoaderTest : public ::testing::Test,
                            int64_t total_encoded_data_length,
                            int64_t total_encoded_body_length,
                            int64_t total_decoded_body_length,
-                           bool should_report_corb_blocking,
                            const absl::optional<WebURLError>& error) override {
     ASSERT_TRUE(expecting_finished_);
     did_finish_ = true;
@@ -533,7 +532,6 @@ class ChunkingLoaderClient : public WebNavigationBodyLoader::Client {
                            int64_t total_encoded_data_length,
                            int64_t total_encoded_body_length,
                            int64_t total_decoded_body_length,
-                           bool should_report_corb_blocking,
                            const absl::optional<WebURLError>& error) override {
     scheduler::GetSingleThreadTaskRunnerForTesting()->PostTask(
         FROM_HERE, run_loop_.QuitClosure());

@@ -106,7 +106,7 @@ interface CoreProbes {
   void DidReceiveData(CoreProbeSink*, uint64_t identifier, DocumentLoader*, const char* data, uint64_t data_length);
   void DidReceiveBlob(CoreProbeSink*, uint64_t identifier, DocumentLoader*, BlobDataHandle*);
   void DidReceiveEncodedDataLength(CoreProbeSink*, DocumentLoader* loader, uint64_t identifier, size_t encoded_data_length);
-  void DidFinishLoading(CoreProbeSink*, uint64_t identifier, DocumentLoader*, base::TimeTicks finish_time, int64_t encoded_data_length, int64_t decoded_body_length, bool should_report_corb_blocking);
+  void DidFinishLoading(CoreProbeSink*, uint64_t identifier, DocumentLoader*, base::TimeTicks finish_time, int64_t encoded_data_length, int64_t decoded_body_length);
   void DidReceiveCorsRedirectResponse(ExecutionContext*, uint64_t identifier, DocumentLoader*, const ResourceResponse&, Resource*);
   void DidFailLoading([Keep] CoreProbeSink*, uint64_t identifier, DocumentLoader*, const ResourceError&, const base::UnguessableToken&);
   void WillSendEventSourceRequest(ExecutionContext*);

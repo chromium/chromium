@@ -653,7 +653,6 @@ void ResourceLoader::DidFinishLoadingBody() {
         deferred_finish_loading_info_->response_end_time,
         response.EncodedDataLength(), response.EncodedBodyLength(),
         response.DecodedBodyLength(),
-        deferred_finish_loading_info_->should_report_corb_blocking,
         deferred_finish_loading_info_->pervasive_payload_requested);
   }
 }
@@ -1289,7 +1288,7 @@ void ResourceLoader::DidFinishLoadingFirstPartInMultipart() {
 
   fetcher_->HandleLoaderFinish(resource_.Get(), base::TimeTicks(),
                                ResourceFetcher::kDidFinishFirstPartInMultipart,
-                               0, false, false, 0);
+                               0, false, 0);
 }
 
 void ResourceLoader::DidFinishLoading(
@@ -1297,7 +1296,6 @@ void ResourceLoader::DidFinishLoading(
     int64_t encoded_data_length,
     uint64_t encoded_body_length,
     int64_t decoded_body_length,
-    bool should_report_corb_blocking,
     absl::optional<bool> pervasive_payload_requested) {
   if (resource_->response_.WasFetchedViaServiceWorker()) {
     encoded_body_length = received_body_length_from_service_worker_;
@@ -1316,8 +1314,7 @@ void ResourceLoader::DidFinishLoading(
     // If the body is still being loaded, we defer the completion until all the
     // body is received.
     deferred_finish_loading_info_ = DeferredFinishLoadingInfo{
-        response_end_time, should_report_corb_blocking,
-        pervasive_payload_requested};
+        response_end_time, pervasive_payload_requested};
 
     if (data_pipe_completion_notifier_)
       data_pipe_completion_notifier_->SignalComplete();
@@ -1341,8 +1338,8 @@ void ResourceLoader::DidFinishLoading(
 
   fetcher_->HandleLoaderFinish(
       resource_.Get(), response_end_time, ResourceFetcher::kDidFinishLoading,
-      inflight_keepalive_bytes_, should_report_corb_blocking,
-      pervasive_payload_requested.value_or(false), encoded_data_length);
+      inflight_keepalive_bytes_, pervasive_payload_requested.value_or(false),
+      encoded_data_length);
 }
 
 void ResourceLoader::DidFail(const WebURLError& error,
@@ -1626,11 +1623,9 @@ void ResourceLoader::FinishedCreatingBlob(
   blob_finished_ = true;
   if (deferred_finish_loading_info_) {
     const ResourceResponse& response = resource_->GetResponse();
-    DidFinishLoading(
-        deferred_finish_loading_info_->response_end_time,
-        response.EncodedDataLength(), response.EncodedBodyLength(),
-        response.DecodedBodyLength(),
-        deferred_finish_loading_info_->should_report_corb_blocking);
+    DidFinishLoading(deferred_finish_loading_info_->response_end_time,
+                     response.EncodedDataLength(), response.EncodedBodyLength(),
+                     response.DecodedBodyLength());
   }
 }
 
@@ -1697,8 +1692,7 @@ void ResourceLoader::HandleDataUrl() {
 
   // DidFinishLoading() may deferred until the response body loader reaches to
   // end.
-  DidFinishLoading(base::TimeTicks::Now(), data_size, data_size, data_size,
-                   false /* should_report_corb_blocking */);
+  DidFinishLoading(base::TimeTicks::Now(), data_size, data_size, data_size);
 }
 
 bool ResourceLoader::ShouldBlockRequestBasedOnSubresourceFilterDnsAliasCheck(
