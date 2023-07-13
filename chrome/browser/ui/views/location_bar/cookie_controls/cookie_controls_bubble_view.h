@@ -5,55 +5,43 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_COOKIE_CONTROLS_COOKIE_CONTROLS_BUBBLE_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_COOKIE_CONTROLS_COOKIE_CONTROLS_BUBBLE_VIEW_H_
 
-#include "base/memory/raw_ptr.h"
-#include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
-#include "content/public/browser/web_contents.h"
+#include "ui/base/interaction/element_identifier.h"
 
 class CookieControlsContentView;
 
-namespace content {
-class WebContents;
+namespace gfx {
+class Image;
 }
 
-using OnCloseBubbleCallback = base::OnceCallback<void(views::View*)>;
+namespace views {
+class View;
+}
 
 // Bubble view used to display the user bypass ui. This bubble view is
 // controlled by the CookieControlsBubbleViewController and contains a header
 // and a content views.
-class CookieControlsBubbleView : public LocationBarBubbleDelegateView {
+class CookieControlsBubbleView {
  public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kCookieControlsBubble);
-  CookieControlsBubbleView(views::View* anchor_view,
-                           content::WebContents* web_contents,
-                           OnCloseBubbleCallback callback);
 
-  ~CookieControlsBubbleView() override;
+  virtual ~CookieControlsBubbleView() = default;
 
-  void InitContentView(std::unique_ptr<CookieControlsContentView> view);
-  void InitReloadingView(std::unique_ptr<View> view);
+  virtual void InitContentView(
+      std::unique_ptr<CookieControlsContentView> view) = 0;
+  virtual void InitReloadingView(std::unique_ptr<views::View> view) = 0;
 
-  void UpdateTitle(const std::u16string& title);
-  void UpdateSubtitle(const std::u16string& subtitle);
-  void UpdateFaviconImage(const gfx::Image& image, int favicon_view_id);
+  virtual void UpdateTitle(const std::u16string& title) = 0;
+  virtual void UpdateSubtitle(const std::u16string& subtitle) = 0;
+  virtual void UpdateFaviconImage(const gfx::Image& image,
+                                  int favicon_view_id) = 0;
 
-  void ShowContentView();
-  void ShowReloadingView();
+  virtual void ShowContentView() = 0;
+  virtual void ShowReloadingView() = 0;
 
-  CookieControlsContentView* content_view() { return content_view_; }
-  View* reloading_view() { return reloading_view_; }
+  virtual CookieControlsContentView* GetContentView() = 0;
+  virtual views::View* GetReloadingView() = 0;
 
- private:
-  // LocationBarBubbleDelegateView:
-  void Init() override;
-  void CloseBubble() override;
-
-  // views::View:
-  void ChildPreferredSizeChanged(views::View* child) override;
-
-  raw_ptr<View> reloading_view_ = nullptr;
-  raw_ptr<CookieControlsContentView> content_view_ = nullptr;
-
-  OnCloseBubbleCallback callback_;
+  virtual void CloseWidget() = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_COOKIE_CONTROLS_COOKIE_CONTROLS_BUBBLE_VIEW_H_

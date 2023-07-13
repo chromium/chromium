@@ -162,8 +162,7 @@ void CookieControlsIconView::OnExecuting(
     PageActionIconView::ExecuteSource source) {
   if (base::FeatureList::IsEnabled(content_settings::features::kUserBypassUI)) {
     bubble_coordinator_->ShowBubble(
-        this, delegate()->GetWebContentsForPageActionIconView(),
-        controller_.get());
+        delegate()->GetWebContentsForPageActionIconView(), controller_.get());
   } else {
     OldCookieControlsBubbleView::ShowBubble(
         this, this, delegate()->GetWebContentsForPageActionIconView(),
