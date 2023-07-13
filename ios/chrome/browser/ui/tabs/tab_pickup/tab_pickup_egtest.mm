@@ -101,14 +101,14 @@ void WaitUntilInfobarBannerVisibleOrTimeout(bool should_show) {
   [ChromeEarlGrey waitForSyncEngineInitialized:NO
                                    syncTimeout:kSyncOperationTimeout];
   [ChromeEarlGrey clearSyncServerData];
+  [ChromeEarlGrey clearBrowsingHistory];
   [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
   [super tearDown];
 }
 
 // Verifies that the TabPickup banner is correctly displayed if the last tab
 // was synced before the defined threshold.
-// TODO(crbug.com/1464531): Re-enable test.
-- (void)DISABLED_testBannerVisibleBeforeThreshold {
+- (void)testBannerVisibleBeforeThreshold {
   // Create a distant session with 4 tabs.
   [DistantTabsAppInterface
       addSessionToFakeSyncServer:@"Desktop"
