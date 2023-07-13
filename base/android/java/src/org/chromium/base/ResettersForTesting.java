@@ -4,6 +4,8 @@
 
 package org.chromium.base;
 
+import org.chromium.build.BuildConfig;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashSet;
@@ -87,8 +89,10 @@ public class ResettersForTesting {
     // ...
     // ResettersForTesting.register(sResetter);
     // </code>
-    private static final LinkedHashSet<Runnable> sClassResetters = new LinkedHashSet<>();
-    private static final LinkedHashSet<Runnable> sMethodResetters = new LinkedHashSet<>();
+    private static final LinkedHashSet<Runnable> sClassResetters =
+            BuildConfig.IS_FOR_TEST ? new LinkedHashSet<>() : null;
+    private static final LinkedHashSet<Runnable> sMethodResetters =
+            BuildConfig.IS_FOR_TEST ? new LinkedHashSet<>() : null;
     // Starts in "class mode", since @BeforeClass runs before @Before.
     // Test runners toggle this via setMethodMode(), then reset it via onAfterClass().
     private static boolean sMethodMode;
@@ -98,6 +102,11 @@ public class ResettersForTesting {
      * @param runnable the {@link Runnable} to execute.
      */
     public static void register(Runnable runnable) {
+        // Allow calls from non-test code without callers needing to add a BuildConfig.IS_FOR_TEST
+        // check (enables R8 to optimize away the call).
+        if (!BuildConfig.IS_FOR_TEST) {
+            return;
+        }
         if (sMethodMode) {
             sMethodResetters.add(runnable);
         } else {

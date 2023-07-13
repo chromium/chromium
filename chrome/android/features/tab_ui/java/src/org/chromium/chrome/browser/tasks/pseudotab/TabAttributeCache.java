@@ -13,7 +13,6 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ResettersForTesting;
-import org.chromium.build.BuildConfig;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
@@ -50,9 +49,7 @@ public class TabAttributeCache {
         if (sPref == null) {
             sPref = ContextUtils.getApplicationContext().getSharedPreferences(
                     PREFERENCES_NAME, Context.MODE_PRIVATE);
-            if (BuildConfig.IS_FOR_TEST) {
-                ResettersForTesting.register(() -> sPref = null);
-            }
+            ResettersForTesting.register(() -> sPref = null);
         }
         return sPref;
     }

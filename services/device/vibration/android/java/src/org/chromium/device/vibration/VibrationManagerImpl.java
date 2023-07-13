@@ -15,7 +15,6 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.CalledByNativeForTesting;
 import org.chromium.base.annotations.JNINamespace;
-import org.chromium.build.BuildConfig;
 import org.chromium.device.mojom.VibrationManager;
 import org.chromium.mojo.system.MojoException;
 import org.chromium.services.service_manager.InterfaceFactory;
@@ -77,10 +76,8 @@ public class VibrationManagerImpl implements VibrationManager {
         if (mHasVibratePermission) {
             mVibrator.cancel();
         }
-        if (BuildConfig.IS_FOR_TEST) {
-            sVibrateCancelledForTesting = true;
-            ResettersForTesting.register(() -> sVibrateCancelledForTesting = false);
-        }
+        sVibrateCancelledForTesting = true;
+        ResettersForTesting.register(() -> sVibrateCancelledForTesting = false);
         callback.call();
     }
 
