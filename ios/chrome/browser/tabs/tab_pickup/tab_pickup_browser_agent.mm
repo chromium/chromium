@@ -126,7 +126,7 @@ void TabPickupBrowserAgent::ForeignSessionsChanged() {
     // Get the last synced session.
     session_ = synced_sessions->GetSession(0);
 
-    // Check that the last synced tab is yougner than the tab pickup time
+    // Check that the last synced tab is younger than the tab pickup time
     // threshold.
     const base::TimeDelta modified_time =
         base::Time::Now() - session_->modified_time;
