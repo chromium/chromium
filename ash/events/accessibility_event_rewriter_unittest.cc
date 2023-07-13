@@ -229,6 +229,12 @@ class ChromeVoxAccessibilityEventRewriterTest
       ui::mojom::SimulateRightClickModifier blocked_modifier,
       ui::mojom::SimulateRightClickModifier active_modifier) override {}
 
+  void NotifySixPackRewriteBlockedBySetting(
+      ui::KeyboardCode key_code,
+      ui::mojom::SixPackShortcutModifier blocked_modifier,
+      ui::mojom::SixPackShortcutModifier active_modifier,
+      int device_id) override {}
+
   std::map<std::string, ui::mojom::ModifierKey> modifier_remapping_;
 };
 
@@ -646,6 +652,12 @@ class SwitchAccessAccessibilityEventRewriterTest
   void NotifyRightClickRewriteBlockedBySetting(
       ui::mojom::SimulateRightClickModifier blocked_modifier,
       ui::mojom::SimulateRightClickModifier active_modifier) override {}
+
+  void NotifySixPackRewriteBlockedBySetting(
+      ui::KeyboardCode key_code,
+      ui::mojom::SixPackShortcutModifier blocked_modifier,
+      ui::mojom::SixPackShortcutModifier active_modifier,
+      int device_id) override {}
 
   std::map<std::string, ui::mojom::ModifierKey> modifier_remapping_;
 

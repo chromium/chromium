@@ -9,6 +9,7 @@
 #include "ash/test/ash_test_base.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/ash/mojom/simulate_right_click_modifier.mojom-shared.h"
+#include "ui/events/ash/mojom/six_pack_shortcut_modifier.mojom-shared.h"
 #include "ui/message_center/fake_message_center.h"
 
 namespace ash {
@@ -107,7 +108,7 @@ TEST_F(InputDeviceSettingsNotificationControllerTest,
 }
 
 TEST_F(InputDeviceSettingsNotificationControllerTest,
-       NotificationOnlyShownForActiveUserSessions) {
+       RemapToRightClickNotificationOnlyShownForActiveUserSessions) {
   GetSessionControllerClient()->LockScreen();
 
   controller()->NotifyRightClickRewriteBlockedBySetting(
@@ -155,6 +156,74 @@ TEST_F(InputDeviceSettingsNotificationControllerTest,
   message_center()->ClickOnNotification(
       "alt_right_click_rewrite_blocked_by_setting");
   EXPECT_EQ(0, GetPrefNotificationCount());
+}
+
+TEST_F(InputDeviceSettingsNotificationControllerTest,
+       NotifySixPackRewriteBlockedBySetting) {
+  size_t expected_notification_count = 1;
+  controller()->NotifySixPackRewriteBlockedBySetting(
+      ui::VKEY_DELETE, ui::mojom::SixPackShortcutModifier::kAlt,
+      ui::mojom::SixPackShortcutModifier::kSearch,
+      /*device_id=*/1);
+  EXPECT_EQ(expected_notification_count++,
+            message_center()->NotificationCount());
+  EXPECT_TRUE(message_center()->FindVisibleNotificationById(
+      "delete_six_pack_rewrite_blocked_by_setting_1"));
+
+  controller()->NotifySixPackRewriteBlockedBySetting(
+      ui::VKEY_INSERT, ui::mojom::SixPackShortcutModifier::kAlt,
+      ui::mojom::SixPackShortcutModifier::kSearch,
+      /*device_id=*/1);
+  EXPECT_EQ(expected_notification_count++,
+            message_center()->NotificationCount());
+  EXPECT_TRUE(message_center()->FindVisibleNotificationById(
+      "insert_six_pack_rewrite_blocked_by_setting_1"));
+
+  controller()->NotifySixPackRewriteBlockedBySetting(
+      ui::VKEY_HOME, ui::mojom::SixPackShortcutModifier::kAlt,
+      ui::mojom::SixPackShortcutModifier::kSearch,
+      /*device_id=*/1);
+  EXPECT_EQ(expected_notification_count++,
+            message_center()->NotificationCount());
+  EXPECT_TRUE(message_center()->FindVisibleNotificationById(
+      "home_six_pack_rewrite_blocked_by_setting_1"));
+
+  controller()->NotifySixPackRewriteBlockedBySetting(
+      ui::VKEY_END, ui::mojom::SixPackShortcutModifier::kAlt,
+      ui::mojom::SixPackShortcutModifier::kSearch,
+      /*device_id=*/1);
+  EXPECT_EQ(expected_notification_count++,
+            message_center()->NotificationCount());
+  EXPECT_TRUE(message_center()->FindVisibleNotificationById(
+      "end_six_pack_rewrite_blocked_by_setting_1"));
+
+  controller()->NotifySixPackRewriteBlockedBySetting(
+      ui::VKEY_PRIOR, ui::mojom::SixPackShortcutModifier::kAlt,
+      ui::mojom::SixPackShortcutModifier::kSearch,
+      /*device_id=*/1);
+  EXPECT_EQ(expected_notification_count++,
+            message_center()->NotificationCount());
+  EXPECT_TRUE(message_center()->FindVisibleNotificationById(
+      "page_up_six_pack_rewrite_blocked_by_setting_1"));
+
+  controller()->NotifySixPackRewriteBlockedBySetting(
+      ui::VKEY_NEXT, ui::mojom::SixPackShortcutModifier::kAlt,
+      ui::mojom::SixPackShortcutModifier::kSearch,
+      /*device_id=*/1);
+  EXPECT_EQ(expected_notification_count++,
+            message_center()->NotificationCount());
+  EXPECT_TRUE(message_center()->FindVisibleNotificationById(
+      "page_down_six_pack_rewrite_blocked_by_setting_1"));
+}
+
+TEST_F(InputDeviceSettingsNotificationControllerTest,
+       SixPackRewriteNotificationOnlyShownForActiveUserSessions) {
+  GetSessionControllerClient()->LockScreen();
+  controller()->NotifySixPackRewriteBlockedBySetting(
+      ui::VKEY_PRIOR, ui::mojom::SixPackShortcutModifier::kAlt,
+      ui::mojom::SixPackShortcutModifier::kSearch,
+      /*device_id=*/1);
+  EXPECT_EQ(message_center()->NotificationCount(), 0u);
 }
 
 }  // namespace ash

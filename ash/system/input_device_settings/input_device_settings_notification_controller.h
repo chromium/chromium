@@ -8,6 +8,8 @@
 #include "ash/ash_export.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/events/ash/mojom/simulate_right_click_modifier.mojom-shared.h"
+#include "ui/events/ash/mojom/six_pack_shortcut_modifier.mojom-shared.h"
+#include "ui/events/keycodes/keyboard_codes_posix.h"
 
 class PrefRegistrySimple;
 
@@ -17,6 +19,9 @@ class MessageCenter;
 
 namespace ash {
 
+// Manages showing notifications for Six Pack/right-click event rewrites.
+// Notifications are shown when the user's setting is inconsistent with
+// the matched modifier key or the setting is disabled.
 class ASH_EXPORT InputDeviceSettingsNotificationController {
  public:
   explicit InputDeviceSettingsNotificationController(
@@ -29,9 +34,24 @@ class ASH_EXPORT InputDeviceSettingsNotificationController {
 
   static void RegisterProfilePrefs(PrefRegistrySimple* pref_registry);
 
+  // Used to display a notification when an incoming event would have been
+  // remapped to a right click but either the user's setting is inconsistent
+  // with the matched modifier key or remapping to right click is disabled.
   void NotifyRightClickRewriteBlockedBySetting(
       ui::mojom::SimulateRightClickModifier blocked_modifier,
       ui::mojom::SimulateRightClickModifier active_modifier);
+
+  // Used to display a notification when an incoming event would have been
+  // remapped to a Six Pack key action but either the user's setting is
+  // inconsistent with the matched modifier key or remapping to right click
+  // is disabled. `key_code` is used to lookup the correct Six Pack key and
+  // the `device_id` is provided to route the user to the correct remap keys
+  // subpage when the notification is clicked on.
+  void NotifySixPackRewriteBlockedBySetting(
+      ui::KeyboardCode key_code,
+      ui::mojom::SixPackShortcutModifier blocked_modifier,
+      ui::mojom::SixPackShortcutModifier active_modifier,
+      int device_id);
 
  private:
   // MessageCenter for adding notifications.

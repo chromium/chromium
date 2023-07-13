@@ -175,6 +175,18 @@ class EventRewriterAsh : public EventRewriter {
     virtual void NotifyRightClickRewriteBlockedBySetting(
         ui::mojom::SimulateRightClickModifier blocked_modifier,
         ui::mojom::SimulateRightClickModifier active_modifier) = 0;
+
+    // Used to send a notification when an incoming event would have been
+    // remapped to a Six Pack key action but either the user's setting is
+    // inconsistent with the matched modifier key or remapping to right click
+    // is disabled. `key_code` is used to lookup the correct Six Pack key and
+    // the `device_id` is provided to route the user to the correct remap keys
+    // subpage when the notification is clicked on.
+    virtual void NotifySixPackRewriteBlockedBySetting(
+        ui::KeyboardCode key_code,
+        ui::mojom::SixPackShortcutModifier blocked_modifier,
+        ui::mojom::SixPackShortcutModifier active_modifier,
+        int device_id) = 0;
   };
 
   // Enum used to record the usage of the modifier keys on all devices. Do not

@@ -5437,6 +5437,12 @@ class ExtensionRewriterInputTest : public EventRewriterAshTest,
       ui::mojom::SimulateRightClickModifier blocked_modifier,
       ui::mojom::SimulateRightClickModifier active_modifier) override {}
 
+  void NotifySixPackRewriteBlockedBySetting(
+      ui::KeyboardCode key_code,
+      ui::mojom::SixPackShortcutModifier blocked_modifier,
+      ui::mojom::SixPackShortcutModifier active_modifier,
+      int device_id) override {}
+
   std::map<std::string, ui::mojom::ModifierKey> modifier_remapping_;
   base::flat_set<ui::Accelerator> registered_extension_shortcuts_;
 };
@@ -5927,13 +5933,13 @@ TEST_F(EventRewriterSixPackKeysTest, TestRewriteSixPackKeysBlockedBySetting) {
   // No rewrite should occur since the search-based rewrite is the setting for
   // the "Delete" 6-pack key.
   TestNonAppleKeyboardVariants({
-      {
-          ui::ET_KEY_PRESSED,
-          {ui::VKEY_BACK, ui::DomCode::BACKSPACE, ui::EF_ALT_DOWN,
-           ui::DomKey::BACKSPACE},
-          {ui::VKEY_BACK, ui::DomCode::BACKSPACE, ui::EF_ALT_DOWN,
-           ui::DomKey::BACKSPACE},
-      },
+      {ui::ET_KEY_PRESSED,
+       {ui::VKEY_BACK, ui::DomCode::BACKSPACE, ui::EF_ALT_DOWN,
+        ui::DomKey::BACKSPACE},
+       {ui::VKEY_BACK, ui::DomCode::BACKSPACE, ui::EF_ALT_DOWN,
+        ui::DomKey::BACKSPACE},
+       kKeyboardDeviceId,
+       /*triggers_notification=*/true},
   });
   settings.six_pack_key_remappings->del =
       ui::mojom::SixPackShortcutModifier::kAlt;
@@ -5950,13 +5956,13 @@ TEST_F(EventRewriterSixPackKeysTest, TestRewriteSixPackKeysBlockedBySetting) {
   // No rewrite should occur since remapping a key event to the "Delete"
   // 6-pack key is disabled.
   TestNonAppleKeyboardVariants({
-      {
-          ui::ET_KEY_PRESSED,
-          {ui::VKEY_BACK, ui::DomCode::BACKSPACE, ui::EF_ALT_DOWN,
-           ui::DomKey::BACKSPACE},
-          {ui::VKEY_BACK, ui::DomCode::BACKSPACE, ui::EF_ALT_DOWN,
-           ui::DomKey::BACKSPACE},
-      },
+      {ui::ET_KEY_PRESSED,
+       {ui::VKEY_BACK, ui::DomCode::BACKSPACE, ui::EF_ALT_DOWN,
+        ui::DomKey::BACKSPACE},
+       {ui::VKEY_BACK, ui::DomCode::BACKSPACE, ui::EF_ALT_DOWN,
+        ui::DomKey::BACKSPACE},
+       kKeyboardDeviceId,
+       /*triggers_notification=*/true},
   });
 }
 
@@ -6195,6 +6201,12 @@ class EventRewriterRemapToRightClickTest
       ui::mojom::SimulateRightClickModifier active_modifier) override {
     blocked_right_click_rewrite_notification_count_++;
   }
+
+  void NotifySixPackRewriteBlockedBySetting(
+      ui::KeyboardCode key_code,
+      ui::mojom::SixPackShortcutModifier blocked_modifier,
+      ui::mojom::SixPackShortcutModifier active_modifier,
+      int device_id) override {}
 };
 
 TEST_F(EventRewriterRemapToRightClickTest, AltClickRemappedToRightClick) {

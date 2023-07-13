@@ -6838,6 +6838,27 @@ To shut down the device, press and hold the power button on the device again.
       <message name="IDS_ASH_DEVICE_SETTINGS_NOTIFICATIONS_RIGHT_CLICK_DISABLED" translateable="false" desc="">
         Simulating a right-click using touchpad and keyboard is disabled, visit device settings to configure.
       </message>
+      <message name="IDS_ASH_DEVICE_SETTINGS_SIX_PACK_KEY_INSERT" translateable="false" desc="Label for the Insert 6-pack key.">
+        insert
+      </message>
+      <message name="IDS_ASH_DEVICE_SETTINGS_SIX_PACK_KEY_HOME" translateable="false" desc="Label for the Home 6-pack key.">
+        home
+      </message>
+      <message name="IDS_ASH_DEVICE_SETTINGS_SIX_PACK_KEY_END" translateable="false" desc="Label for the End 6-pack key.">
+        end
+      </message>
+      <message name="IDS_ASH_DEVICE_SETTINGS_SIX_PACK_KEY_PAGE_UP" translateable="false" desc="Label for the PageUp 6-pack key.">
+        page up
+      </message>
+      <message name="IDS_ASH_DEVICE_SETTINGS_SIX_PACK_KEY_PAGE_DOWN" translateable="false" desc="Label for the PageDown 6-pack key.">
+        page down
+      </message>
+      <message name="IDS_ASH_DEVICE_SETTINGS_SIX_PACK_KEY_DELETE" translateable="false" desc="Label for the Delete 6-pack key.">
+        delete
+      </message>
+      <message name="IDS_ASH_DEVICE_SETTINGS_NOTIFICATIONS_SIX_PACK_KEY" translateable="false" desc="">
+        The keyboard shortcut to use the <ph name="SIX_PACK_KEY_NAME">$1<ex>Delete</ex></ph> key has changed, visit device settings to configure the shortcut.
+      </message>
      </messages>
     </release>
 </grit>

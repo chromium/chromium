@@ -292,4 +292,15 @@ void EventRewriterDelegateImpl::NotifyRightClickRewriteBlockedBySetting(
                                                 active_modifier);
 }
 
+void EventRewriterDelegateImpl::NotifySixPackRewriteBlockedBySetting(
+    ui::KeyboardCode key_code,
+    ui::mojom::SixPackShortcutModifier blocked_modifier,
+    ui::mojom::SixPackShortcutModifier active_modifier,
+    int device_id) {
+  DCHECK(ash::features::IsAltClickAndSixPackCustomizationEnabled());
+  input_device_settings_notification_controller_
+      ->NotifySixPackRewriteBlockedBySetting(key_code, blocked_modifier,
+                                             active_modifier, device_id);
+}
+
 }  // namespace ash

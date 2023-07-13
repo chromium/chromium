@@ -604,17 +604,30 @@ bool SkipSearchKeyRemapping(EventRewriterAsh::Delegate* delegate,
 bool ShouldBlockSixPackEventRewrite(
     EventRewriterAsh::Delegate* delegate,
     absl::optional<ui::mojom::SixPackShortcutModifier> modifier,
-    int flags) {
-  if (!modifier.has_value() ||
-      *modifier == ui::mojom::SixPackShortcutModifier::kNone) {
+    int flags,
+    ui::KeyboardCode key_code,
+    int device_id) {
+  if (!modifier.has_value()) {
     return true;
   }
 
-  const auto flag_mask = *modifier == ui::mojom::SixPackShortcutModifier::kAlt
-                             ? EF_ALT_DOWN
-                             : EF_COMMAND_DOWN;
+  const auto matched_remapping_modifier =
+      flags & EF_COMMAND_DOWN ? ui::mojom::SixPackShortcutModifier::kSearch
+                              : ui::mojom::SixPackShortcutModifier::kAlt;
+
+  if (*modifier == ui::mojom::SixPackShortcutModifier::kNone) {
+    delegate->NotifySixPackRewriteBlockedBySetting(
+        key_code, matched_remapping_modifier, *modifier, device_id);
+    return true;
+  }
+
+  const auto flag_mask =
+      *modifier == ui::mojom::SixPackShortcutModifier::kSearch ? EF_COMMAND_DOWN
+                                                               : EF_ALT_DOWN;
 
   if (!AreFlagsSet(flags, flag_mask)) {
+    delegate->NotifySixPackRewriteBlockedBySetting(
+        key_code, matched_remapping_modifier, *modifier, device_id);
     return true;
   }
 
@@ -787,7 +800,8 @@ bool MaybeRewriteAltBasedShortcutToSixPackKeyAction(
 void MaybeRewriteKeyEventToSixPackKeyAction(
     EventRewriterAsh::Delegate* delegate,
     const KeyEvent& key_event,
-    EventRewriterAsh::MutableKeyState* state) {
+    EventRewriterAsh::MutableKeyState* state,
+    int device_id) {
   EventRewriterAsh::MutableKeyState incoming = *state;
   static const KeyboardRemapping kMergedSixPackRemappings[] = {
       {// Search+Shift+BackSpace -> Insert
@@ -832,7 +846,8 @@ void MaybeRewriteKeyEventToSixPackKeyAction(
     const auto modifier_flag = delegate->GetShortcutModifierForSixPackKey(
         key_event.source_device_id(), map.result.key_code);
     if (ShouldBlockSixPackEventRewrite(delegate, modifier_flag,
-                                       map.condition.flags)) {
+                                       map.condition.flags, map.result.key_code,
+                                       device_id)) {
       break;
     }
 
@@ -1692,12 +1707,10 @@ void EventRewriterAsh::RewriteExtendedKeys(const KeyEvent& key_event,
     }
   }
 
-  // TODO(b/279503977): Show a notification when the incoming event matches
-  // a "six pack" key remapping but the user's setting is inconsistent with
-  // the matched shortcut.
   if (ash::features::IsAltClickAndSixPackCustomizationEnabled() &&
       incoming.flags & (EF_COMMAND_DOWN | EF_ALT_DOWN)) {
-    MaybeRewriteKeyEventToSixPackKeyAction(delegate_, key_event, state);
+    MaybeRewriteKeyEventToSixPackKeyAction(delegate_, key_event, state,
+                                           last_keyboard_device_id_);
     return;
   }
 
