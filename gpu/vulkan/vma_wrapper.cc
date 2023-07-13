@@ -19,6 +19,7 @@ VkResult CreateAllocator(VkPhysicalDevice physical_device,
                          VkDevice device,
                          VkInstance instance,
                          const gfx::ExtensionSet& enabled_extensions,
+                         const VkDeviceSize preferred_large_heap_block_size,
                          const VkDeviceSize* heap_size_limit,
                          const bool is_thread_safe,
                          VmaAllocator* pAllocator) {
@@ -52,12 +53,7 @@ VkResult CreateAllocator(VkPhysicalDevice physical_device,
   VmaAllocatorCreateInfo allocator_info = {
       .physicalDevice = physical_device,
       .device = device,
-      // 4MB was picked for the size here by looking at memory usage of Android
-      // apps and runs of DM. It seems to be a good compromise of not wasting
-      // unused allocated space and not making too many small allocations. The
-      // AMD allocator will start making blocks at 1/8 the max size and builds
-      // up block size as needed before capping at the max set here.
-      .preferredLargeHeapBlockSize = 4 * 1024 * 1024,
+      .preferredLargeHeapBlockSize = preferred_large_heap_block_size,
       .pHeapSizeLimit = heap_size_limit,
       .pVulkanFunctions = &functions,
       .instance = instance,
