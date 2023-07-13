@@ -116,6 +116,8 @@ class AuthDialogContentsView::FingerprintView : public views::View {
     }
   }
 
+  void AddedToWidget() override { DisplayCurrentState(); }
+
   void SetState(FingerprintState state) {
     if (state_ == state) {
       return;
