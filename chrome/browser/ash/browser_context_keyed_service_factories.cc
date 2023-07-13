@@ -4,12 +4,14 @@
 
 #include "chrome/browser/ash/browser_context_keyed_service_factories.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/webui/help_app_ui/help_app_manager_factory.h"
 #include "ash/webui/shortcut_customization_ui/shortcuts_app_manager_factory.h"
 #include "chrome/browser/accessibility/service/accessibility_service_router_factory.h"
 #include "chrome/browser/apps/app_discovery_service/app_discovery_service_factory.h"
 #include "chrome/browser/apps/app_service/publishers/arc_apps_factory.h"
 #include "chrome/browser/ash/accessibility/live_caption/system_live_caption_service_factory.h"
+#include "chrome/browser/ash/account_manager/account_apps_availability_factory.h"
 #include "chrome/browser/ash/account_manager/account_manager_policy_controller_factory.h"
 #include "chrome/browser/ash/android_sms/android_sms_service_factory.h"
 #include "chrome/browser/ash/app_list/app_sync_ui_state_factory.h"
@@ -64,6 +66,7 @@
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_factory.h"
 #include "chrome/browser/ash/login/saml/in_session_password_sync_manager_factory.h"
 #include "chrome/browser/ash/login/saml/password_sync_token_verifier_factory.h"
+#include "chrome/browser/ash/login/security_token_session_controller_factory.h"
 #include "chrome/browser/ash/login/signin/auth_error_observer_factory.h"
 #include "chrome/browser/ash/login/signin/oauth2_login_manager_factory.h"
 #include "chrome/browser/ash/login/signin/offline_signin_limiter_factory.h"
@@ -100,6 +103,7 @@
 #include "chrome/browser/ash/sync/sync_error_notifier_factory.h"
 #include "chrome/browser/ash/sync/sync_mojo_service_factory_ash.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_manager_factory.h"
+#include "chrome/browser/ash/system_web_apps/system_web_app_manager_factory.h"
 #include "chrome/browser/ash/tether/tether_service_factory.h"
 #include "chrome/browser/browser_process_platform_part_ash.h"
 #include "chrome/browser/scalable_iph/scalable_iph_factory.h"
@@ -123,46 +127,19 @@
 namespace ash {
 
 void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
+  AccountAppsAvailabilityFactory::GetInstance();
+  AccountManagerPolicyControllerFactory::GetInstance();
+  AdminTemplateServiceFactory::GetInstance();
   android_sms::AndroidSmsServiceFactory::GetInstance();
-  AppSyncUIStateFactory::GetInstance();
+  ApkWebAppServiceFactory::GetInstance();
   app_list::ArcVpnProviderManagerFactory::GetInstance();
+  app_restore::AppRestoreArcTaskHandlerFactory::GetInstance();
   apps::AppDiscoveryServiceFactory::GetInstance();
   apps::ArcAppsFactory::GetInstance();
+  AppSyncUIStateFactory::GetInstance();
   arc::ArcServiceLauncher::EnsureFactoriesBuilt();
-  ash::AccountManagerPolicyControllerFactory::GetInstance();
-  ash::AdminTemplateServiceFactory::GetInstance();
-  ash::ApkWebAppServiceFactory::GetInstance();
-  ash::ArcKioskAppServiceFactory::GetInstance();
-  ash::AuthErrorObserverFactory::GetInstance();
-  ash::ChildStatusReportingServiceFactory::GetInstance();
-  ash::ChildUserServiceFactory::GetInstance();
-  ash::ConciergeHelperServiceFactory::GetInstance();
-  ash::EventBasedStatusReportingServiceFactory::GetInstance();
-  ash::FamilyUserMetricsServiceFactory::GetInstance();
-  ash::InSessionPasswordSyncManagerFactory::GetInstance();
-  ash::KioskAppUpdateServiceFactory::GetInstance();
-  ash::OAuth2LoginManagerFactory::GetInstance();
-  ash::OfflineSigninLimiterFactory::GetInstance();
-  ash::PasswordSyncTokenVerifierFactory::GetInstance();
-  ash::ProfilePrefsAuthPolicyConnectorFactory::GetInstance();
-  ash::RecentModelFactory::GetInstance();
-  ash::RemoteAppsManagerFactory::GetInstance();
-  ash::ScreenTimeControllerFactory::GetInstance();
-  ash::SigninErrorNotifierFactory::GetInstance();
-  ash::SyncErrorNotifierFactory::GetInstance();
-  ash::SystemLiveCaptionServiceFactory::GetInstance();
-  ash::TokenHandleFetcher::EnsureFactoryBuilt();
-  ash::app_restore::AppRestoreArcTaskHandlerFactory::GetInstance();
-  ash::help_app::HelpAppManagerFactory::GetInstance();
-  ash::shortcut_ui::ShortcutsAppManagerFactory::GetInstance();
-  ash::multidevice_setup::AuthTokenValidatorFactory::GetInstance();
-  ash::multidevice_setup::MultiDeviceSetupServiceFactory::GetInstance();
-  ash::multidevice_setup::OobeCompletionTrackerFactory::GetInstance();
-  ash::personalization_app::PersonalizationAppManagerFactory::GetInstance();
-  ash::quick_start::QuickStartConnectivityServiceFactory::GetInstance();
-  ash::quick_unlock::QuickUnlockFactory::GetInstance();
-  ash::settings::OsSettingsHatsManagerFactory::GetInstance();
-  ash::settings::OsSettingsManagerFactory::GetInstance();
+  ArcKioskAppServiceFactory::GetInstance();
+  AuthErrorObserverFactory::GetInstance();
   ax::AccessibilityServiceRouterFactory::EnsureFactoryBuilt();
   bluetooth::DebugLogsManagerFactory::GetInstance();
   borealis::BorealisServiceFactory::GetInstance();
@@ -171,6 +148,9 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   CalendarKeyedServiceFactory::GetInstance();
   CastMediaNotificationProducerKeyedServiceFactory::GetInstance();
   cert_provisioning::CertProvisioningSchedulerUserServiceFactory::GetInstance();
+  ChildStatusReportingServiceFactory::GetInstance();
+  ChildUserServiceFactory::GetInstance();
+  ConciergeHelperServiceFactory::GetInstance();
   crosapi::KeystoreServiceFactoryAsh::GetInstance();
   crosapi::PersistentForcedExtensionKeepAliveFactory::GetInstance();
   CrosSpeechRecognitionServiceFactory::EnsureFactoryBuilt();
@@ -183,22 +163,24 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   crostini::CrostiniSharedDevices::EnsureFactoryBuilt();
   crostini::CrostiniThrottle::EnsureFactoryBuilt();
   crostini::CrostiniUpgrader::EnsureFactoryBuilt();
+  CupsPrintersManagerFactory::GetInstance();
+  CupsPrintJobManagerFactory::GetInstance();
 #if BUILDFLAG(USE_CUPS)
   CupsProxyServiceManagerFactory::GetInstance();
 #endif
-  CupsPrintersManagerFactory::GetInstance();
-  CupsPrintJobManagerFactory::GetInstance();
   EasyUnlockServiceFactory::GetInstance();
   eche_app::EcheAppManagerFactory::GetInstance();
+  EventBasedStatusReportingServiceFactory::GetInstance();
   extensions::InputMethodAPI::GetFactoryInstance();
   extensions::MediaPlayerAPI::GetFactoryInstance();
 #if BUILDFLAG(USE_CUPS)
   extensions::PrintingAPIHandler::GetFactoryInstance();
 #endif
-  FileChangeServiceFactory::GetInstance();
+  FamilyUserMetricsServiceFactory::GetInstance();
   file_manager::EventRouterFactory::GetInstance();
   file_manager::VolumeManagerFactory::GetInstance();
   file_system_provider::ServiceFactory::GetInstance();
+  FileChangeServiceFactory::GetInstance();
   FloatingWorkspaceServiceFactory::GetInstance();
   full_restore::FullRestoreServiceFactory::GetInstance();
   GlanceablesKeyedServiceFactory::GetInstance();
@@ -207,17 +189,28 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   guest_os::GuestOsServiceFactory::GetInstance();
   guest_os::GuestOsSessionTrackerFactory::GetInstance();
   guest_os::GuestOsSharePathFactory::GetInstance();
+  help_app::HelpAppManagerFactory::GetInstance();
   HoldingSpaceKeyedServiceFactory::GetInstance();
+  InSessionPasswordSyncManagerFactory::GetInstance();
   KerberosCredentialsManagerFactory::GetInstance();
+  KioskAppUpdateServiceFactory::GetInstance();
   LockScreenAppsFactory::GetInstance();
-  LoginScreenExtensionsLifetimeManagerFactory::GetInstance();
-  LoginScreenExtensionsContentScriptManagerFactory::GetInstance();
+  login::SecurityTokenSessionControllerFactory::GetInstance();
   login::SigninPartitionManager::Factory::GetInstance();
+  LoginScreenExtensionsContentScriptManagerFactory::GetInstance();
+  LoginScreenExtensionsLifetimeManagerFactory::GetInstance();
+  multidevice_setup::AuthTokenValidatorFactory::GetInstance();
+  multidevice_setup::MultiDeviceSetupServiceFactory::GetInstance();
+  multidevice_setup::OobeCompletionTrackerFactory::GetInstance();
   nearby::NearbyDependenciesProvider::EnsureFactoryBuilt();
   nearby::NearbyDependenciesProviderFactory::GetInstance();
   nearby::NearbyProcessManagerFactory::GetInstance();
-  ash::nearby::presence::NearbyPresenceServiceFactory::GetInstance();
+  nearby::presence::NearbyPresenceServiceFactory::GetInstance();
+  OAuth2LoginManagerFactory::GetInstance();
+  OfflineSigninLimiterFactory::GetInstance();
   OwnerSettingsServiceAshFactory::GetInstance();
+  PasswordSyncTokenVerifierFactory::GetInstance();
+  personalization_app::PersonalizationAppManagerFactory::GetInstance();
   phonehub::PhoneHubManagerFactory::GetInstance();
   platform_keys::KeyPermissionsServiceFactory::GetInstance();
   platform_keys::UserPrivateTokenKeyPermissionsManagerServiceFactory::
@@ -229,15 +222,29 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   policy::UserCloudPolicyTokenForwarderFactory::GetInstance();
   printing::print_management::PrintingManagerFactory::GetInstance();
   PrintJobHistoryServiceFactory::GetInstance();
+  ProfilePrefsAuthPolicyConnectorFactory::GetInstance();
+  quick_start::QuickStartConnectivityServiceFactory::GetInstance();
+  quick_unlock::QuickUnlockFactory::GetInstance();
+  RecentModelFactory::GetInstance();
+  RemoteAppsManagerFactory::GetInstance();
   ScalableIphFactory::GetInstance();
   ScanServiceFactory::GetInstance();
+  ScreenTimeControllerFactory::GetInstance();
   secure_channel::NearbyConnectorFactory::GetInstance();
+  settings::OsSettingsHatsManagerFactory::GetInstance();
+  settings::OsSettingsManagerFactory::GetInstance();
   sharesheet::SharesheetServiceFactory::GetInstance();
+  shortcut_ui::ShortcutsAppManagerFactory::GetInstance();
+  SigninErrorNotifierFactory::GetInstance();
   smb_client::SmbServiceFactory::GetInstance();
   SyncAppsyncServiceFactory::GetInstance();
   SyncedPrintersManagerFactory::GetInstance();
+  SyncErrorNotifierFactory::GetInstance();
   SyncMojoServiceFactoryAsh::GetInstance();
+  SystemLiveCaptionServiceFactory::GetInstance();
+  SystemWebAppManagerFactory::GetInstance();
   tether::TetherServiceFactory::GetInstance();
+  TokenHandleFetcher::EnsureFactoryBuilt();
   TtsEngineExtensionObserverChromeOS::EnsureFactoryBuilt();
 }
 
