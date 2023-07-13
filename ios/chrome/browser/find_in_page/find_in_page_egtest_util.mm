@@ -292,8 +292,11 @@ id<GREYMatcher> PasteButton() {
 
     // Select and copy text on the web page.
     LongPressElement(kFindInPageTestShortTextID);
-    [[EarlGrey selectElementWithMatcher:chrome_test_util::
-                                            SystemSelectionCalloutCopyButton()]
+
+    [[EarlGrey
+        selectElementWithMatcher:
+            grey_allOf(chrome_test_util::SystemSelectionCalloutCopyButton(),
+                       grey_sufficientlyVisible(), nil)]
         performAction:grey_tap()];
 
     // Open FIP.

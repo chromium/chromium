@@ -428,7 +428,9 @@ void TapOnContextMenuButton(id<GREYMatcher> context_menu_item_button) {
       assertWithMatcher:grey_nil()];
 
   // Verify that system text selection callout is displayed.
-  [[EarlGrey selectElementWithMatcher:SystemSelectionCalloutCopyButton()]
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(SystemSelectionCalloutCopyButton(),
+                                          grey_sufficientlyVisible(), nil)]
       assertWithMatcher:grey_notNil()];
 
   // TODO(crbug.com/1233056): Tap to dismiss the system selection callout
