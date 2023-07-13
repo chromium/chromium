@@ -853,7 +853,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="SimpleCache.IndexInitializeMethod"/>
   <affected-histogram name="SimpleCache.IndexNumEntriesOnInit"/>
   <affected-histogram name="SimpleCache.IndexRestoreTime"/>
-  <affected-histogram name="SimpleCache.MaxCacheSizeOnInit"/>
   <affected-histogram name="SimpleCache.OpenEntryIndexState"/>
   <affected-histogram
       name="SimpleCache.OriginalConsistencyResultBeforeSuccessfulRetry"/>
