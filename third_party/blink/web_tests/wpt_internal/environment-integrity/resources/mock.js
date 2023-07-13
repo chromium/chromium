@@ -3,15 +3,40 @@
 // found in the LICENSE file.
 
 import '/resources/test-only-api.js';
-import { EnvironmentIntegrityService, EnvironmentIntegrityServiceReceiver } from '/gen/third_party/blink/public/mojom/environment_integrity/environment_integrity_service.mojom.m.js';
+import {
+    EnvironmentIntegrityService,
+    EnvironmentIntegrityServiceReceiver,
+    EnvironmentIntegrityResponseCode,
+} from '/gen/third_party/blink/public/mojom/environment_integrity/environment_integrity_service.mojom.m.js';
+
+export { EnvironmentIntegrityResponseCode } from '/gen/third_party/blink/public/mojom/environment_integrity/environment_integrity_service.mojom.m.js';
+
+/**
+ * We encode the content binding with SHA512 so this is a useful utility function
+ * for the tests for quick comparisons.
+ *
+ * @param {string} str Whatever you want to convert
+ * @returns {Promise<ArrayBuffer>}
+ */
+export async function convertStringToSha256(str) {
+    return crypto.subtle.digest(
+        "SHA-256",
+        new TextEncoder().encode(str),
+    );
+}
+
+/**
+ * @param {ArrayBuffer} arrayBuffer
+ * @returns {String} Base64 string
+ */
+export function convertArrayBufferToBase64(arrayBuffer) {
+    return btoa(String.fromCharCode(...new Uint8Array(arrayBuffer)));
+}
 
 export class MockEnvironmentIntegrity {
     #interceptor;
     #receiver;
-
-    // TODO(crbug.com/1439945): Temporary variable until the results from getEnvironmentIntegrity
-    // are actually used for something.
-    #wasCalled;
+    #responseCode;
 
     constructor() {
         this.#receiver = new EnvironmentIntegrityServiceReceiver(this);
@@ -23,16 +48,25 @@ export class MockEnvironmentIntegrity {
             e => this.#receiver.$.bindHandle(e.handle);
         this.#interceptor.start();
 
-        this.#wasCalled = false;
+        this.#responseCode = EnvironmentIntegrityResponseCode.kSuccess;
     }
 
-    async getEnvironmentIntegrity() {
-        this.#wasCalled = true;
-        return 0;
+    /**
+     * Change the mocked response code back from the attester.
+     *
+     * @param {number} responseCode
+     */
+    mockResponseCode(responseCode) {
+        this.#responseCode = responseCode;
     }
 
-    get wasCalled() {
-        return this.#wasCalled;
+    async getEnvironmentIntegrity(contentBinding) {
+        // For testing purposes, it is easiest to just return the content binding
+        // as the "token"
+        return Promise.resolve({
+            responseCode: this.#responseCode,
+            token: contentBinding,
+        });
     }
 
     stop() {

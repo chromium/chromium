@@ -19,5 +19,5 @@ Eg for TrichromeWebView64:
 ```sh
 # First build your WebView
 ...
-./third_party/blink/tools/run_wpt_tests.py -p webview -t <TARGET> --webview-provider ./out/<TARGET>/apks/TrichromeWebView64.apk --browser-apk ./out/<TARGET>/apks/SystemWebViewShell.apk -- wpt_internal/environment-integrity/navigator-environment-integrity.https.html
+./third_party/blink/tools/run_wpt_tests.py -p webview -t <TARGET> --webview-provider ./out/<TARGET>/apks/TrichromeWebView64.apk --browser-apk ./out/<TARGET>/apks/SystemWebViewShell.apk -- wpt_internal/environment-integrity/platform-agnostic.https.html
 ```
