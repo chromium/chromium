@@ -10,11 +10,13 @@
 #import "base/observer_list_types.h"
 #import "base/sequence_checker.h"
 #import "components/keyed_service/core/keyed_service.h"
+#import "components/prefs/pref_change_registrar.h"
 #import "ios/chrome/browser/safety_check/ios_chrome_safety_check_manager_constants.h"
 
 class IOSChromeSafetyCheckManager;
+class PrefService;
 
-// All IOSChromeSafetyCheckManager::Observer events will be evaluated on the
+// All IOSChromeSafetyCheckManagerObserver events will be evaluated on the
 // same sequence the IOSChromeSafetyCheckManager is created on.
 class IOSChromeSafetyCheckManagerObserver : public base::CheckedObserver {
  public:
@@ -55,7 +57,7 @@ class IOSChromeSafetyCheckManagerObserver : public base::CheckedObserver {
 // when state from the above list change.
 class IOSChromeSafetyCheckManager : public KeyedService {
  public:
-  IOSChromeSafetyCheckManager();
+  explicit IOSChromeSafetyCheckManager(PrefService* pref_service);
 
   IOSChromeSafetyCheckManager(const IOSChromeSafetyCheckManager&) = delete;
   IOSChromeSafetyCheckManager& operator=(const IOSChromeSafetyCheckManager&) =
@@ -72,9 +74,30 @@ class IOSChromeSafetyCheckManager : public KeyedService {
   void AddObserver(IOSChromeSafetyCheckManagerObserver* observer);
   void RemoveObserver(IOSChromeSafetyCheckManagerObserver* observer);
 
+  // Returns the current state of the Safe Browsing check.
+  SafeBrowsingSafetyCheckState GetSafeBrowsingCheckState() const;
+
  private:
+  // Sets `safe_browsing_check_state_` to `state` and notifies any observers
+  // of the change.
+  void SetSafeBrowsingCheckState(SafeBrowsingSafetyCheckState state);
+
+  // Called when a Safe Browsing pref value changes.
+  void OnSafeBrowsingPrefChanged();
+
   // Observers to listen to Safety Check changes.
   base::ObserverList<IOSChromeSafetyCheckManagerObserver> observers_;
+
+  // Current state of the Safe Browsing check.
+  SafeBrowsingSafetyCheckState safe_browsing_check_state_ =
+      SafeBrowsingSafetyCheckState::kDefault;
+
+  // Weak pointer to the pref service, which checks the user's Enhanced Safe
+  // Browsing state.
+  raw_ptr<PrefService> pref_service_;
+
+  // Registrar for pref changes notifications.
+  PrefChangeRegistrar pref_change_registrar_;
 
   // Validates IOSChromeSafetyCheckManager::Observer events are evaluated on the
   // same sequence that IOSChromeSafetyCheckManager was created on.

@@ -12,7 +12,9 @@ source_set("safety_check") {
   public_deps = [
     "//base",
     "//components/keyed_service/core",
+    "//components/prefs",
   ]
+  deps = [ "//components/safe_browsing/core/common:safe_browsing_prefs" ]
 }
 
 source_set("factory") {
@@ -28,7 +30,25 @@ source_set("factory") {
   deps = [
     ":safety_check",
     "//components/keyed_service/core",
+    "//components/prefs",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/public/features",
+  ]
+}
+
+source_set("unit_tests") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+  sources = [ "ios_chrome_safety_check_manager_unittest.mm" ]
+  deps = [
+    ":safety_check",
+    "//base",
+    "//base/test:test_support",
+    "//components/prefs",
+    "//components/prefs:test_support",
+    "//components/safe_browsing/core/common:safe_browsing_prefs",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/web/public/test",
+    "//testing/gtest",
   ]
 }
