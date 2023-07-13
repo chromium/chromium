@@ -42,7 +42,7 @@ class NetworkError {
     ERROR_REASON_PROXY_CONNECTION_FAILED = 2,
     ERROR_REASON_PROXY_CONFIG_CHANGED = 3,
     ERROR_REASON_LOADING_TIMEOUT = 4,
-    ERROR_REASON_PORTAL_DETECTED = 5,
+    // ERROR_REASON_PORTAL_DETECTED = 5,  // Deprecated.
 
     // Reason for a case when default network has changed.
     ERROR_REASON_NETWORK_STATE_CHANGED = 6,

@@ -1425,8 +1425,6 @@ void GaiaScreenHandler::UpdateStateInternal(NetworkError::ErrorReason reason,
   connecting_callback_.Cancel();
 
   const bool is_online = NetworkStateInformer::IsOnline(state, reason);
-  const bool is_behind_captive_portal =
-      NetworkStateInformer::IsBehindCaptivePortal(state, reason);
   const bool is_gaia_loading_timeout =
       (reason == NetworkError::ERROR_REASON_LOADING_TIMEOUT);
   const bool is_gaia_error =
@@ -1448,7 +1446,7 @@ void GaiaScreenHandler::UpdateStateInternal(NetworkError::ErrorReason reason,
     return;
   }
 
-  if (is_online || !is_behind_captive_portal) {
+  if (!NetworkStateInformer::IsBehindCaptivePortal(state)) {
     error_screen_->HideCaptivePortal();
   }
 

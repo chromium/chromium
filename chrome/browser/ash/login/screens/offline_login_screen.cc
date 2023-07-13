@@ -236,7 +236,6 @@ void OfflineLoginScreen::UpdateState(NetworkError::ErrorReason reason) {
   NetworkStateInformer::State state = network_state_informer_->state();
   is_network_available_ =
       (state == NetworkStateInformer::ONLINE &&
-       reason != NetworkError::ERROR_REASON_PORTAL_DETECTED &&
        reason != NetworkError::ERROR_REASON_LOADING_TIMEOUT);
 }
 
