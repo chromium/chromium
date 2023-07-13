@@ -57,7 +57,7 @@ suite(destination_dialog_cros_interactive_test.suiteName, function() {
     // Initialize
     destinationSettings.init(
         'FooDevice' /* printerName */, false /* pdfPrinterDisabled */,
-        true /* isDriveMounted */,
+        false /* saveToDriveDisabled */,
         '' /* serializedDefaultDestinationSelectionRulesStr */);
     return nativeLayer.whenCalled('getPrinterCapabilities').then(() => {
       // Retrieve a reference to dialog

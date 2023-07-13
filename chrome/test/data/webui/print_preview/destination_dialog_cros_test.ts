@@ -60,7 +60,7 @@ suite(destination_dialog_cros_test.suiteName, function() {
     recentDestinations = [makeRecentDestination(destinations[4]!)];
     nativeLayer.setLocalDestinations(localDestinations);
     destinationStore.init(
-        false /* pdfPrinterDisabled */, true /* isDriveMounted */,
+        false /* pdfPrinterDisabled */, false /* saveToDriveDisabled */,
         'FooDevice' /* printerName */,
         '' /* serializedDefaultDestinationSelectionRulesStr */,
         recentDestinations /* recentDestinations */);
@@ -261,7 +261,7 @@ suite(destination_dialog_cros_test.suiteName, function() {
         destinationStore = createDestinationStore();
         nativeLayer.setLocalDestinations([]);
         destinationStore.init(
-            false /* pdfPrinterDisabled */, true /* isDriveMounted */,
+            false /* pdfPrinterDisabled */, false /* saveToDriveDisabled */,
             'FooDevice' /* printerName */,
             '' /* serializedDefaultDestinationSelectionRulesStr */,
             [] /* recentDestinations */);

@@ -668,9 +668,10 @@ TEST_F(
       this.runMochaTest(destination_store_test.TestNames.LoadSaveToDriveCros);
     });
 
-TEST_F('PrintPreviewDestinationStoreTestCros', 'DriveNotMounted', function() {
-  this.runMochaTest(destination_store_test.TestNames.DriveNotMounted);
-});
+TEST_F(
+    'PrintPreviewDestinationStoreTestCros', 'SaveToDriveDisabled', function() {
+      this.runMochaTest(destination_store_test.TestNames.SaveToDriveDisabled);
+    });
 
 var PrintPreviewPrinterSetupInfoCrosTest = class extends PrintPreviewTest {
   /** @override */
@@ -1506,9 +1507,11 @@ TEST_F('PrintPreviewDestinationSettingsTest', 'EulaIsRetrieved', function() {
   this.runMochaTest(destination_settings_test.TestNames.EulaIsRetrieved);
 });
 
-TEST_F('PrintPreviewDestinationSettingsTest', 'DriveIsNotMounted', function() {
-  this.runMochaTest(destination_settings_test.TestNames.DriveIsNotMounted);
-});
+TEST_F(
+    'PrintPreviewDestinationSettingsTest', 'SaveToDriveDisabled', function() {
+      this.runMochaTest(
+          destination_settings_test.TestNames.SaveToDriveDisabled);
+    });
 GEN('#endif');
 
 var PrintPreviewScalingSettingsTest = class extends PrintPreviewTest {
