@@ -44,3 +44,13 @@ Patches which can be low-friction upstreamed
   compiler warning.
 * set-executable-bit-for-files-with-shebang.patch - `chmod +x` on all files that
   have a shebang, per Chromium presubmit checks.
+
+
+Patches which need to be upstreamed differently than they are patched
+=====================================================================
+* remove-usage-of-absl-flags.patch - Completely removes any `ABSL_FLAG`
+declaration and replaces it with non-functionality. None of these code paths are
+used by Chromium. In order to upstream this patch, each flag would need to be
+moved to a separate .cc file containing nothing but the flag declaration. Then,
+Chromium could use a good default value given by upstream or write our own logic
+to determine the best flag value.

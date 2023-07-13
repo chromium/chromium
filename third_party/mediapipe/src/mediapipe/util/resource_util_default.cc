@@ -14,15 +14,9 @@
 
 #include <fstream>
 
-#include "absl/flags/flag.h"
 #include "mediapipe/framework/deps/file_path.h"
 #include "mediapipe/framework/port/file_helpers.h"
 #include "mediapipe/framework/port/statusor.h"
-
-ABSL_FLAG(
-    std::string, resource_root_dir, "",
-    "The absolute path to the resource directory."
-    "If specified, resource_root_dir will be prepended to the original path.");
 
 namespace mediapipe {
 
@@ -49,7 +43,7 @@ absl::StatusOr<std::string> PathToResourceAsFile(const std::string& path) {
   if (file::Exists(bazel_path).ok()) {
     return bazel_path;
   }
-  return JoinPath(absl::GetFlag(FLAGS_resource_root_dir), path);
+  return path;
 }
 
 }  // namespace mediapipe
