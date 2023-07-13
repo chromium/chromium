@@ -1,8 +1,8 @@
-// Copyright 2013 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Test for brailleDisplayPrivate.writeDots.
+// Test for brailleDisplayPrivate.writeDotsMultiLine.
 // browser_tests.exe --gtest_filter="BrailleDisplayPrivateApiTest.*"
 
 var pass = chrome.test.callbackPass;
@@ -21,8 +21,9 @@ function waitForDisplay(callback) {
     if (!callbackCompleted) {
       return;
     }
-    chrome.test.assertTrue(state.available, "Display not available");
-    chrome.test.assertEq(11, state.textColumnCount);
+    chrome.test.assertTrue(state.available, 'Display not available');
+    chrome.test.assertEq(20, state.textColumnCount);
+    chrome.test.assertEq(7, state.textRowCount);
     callback(state);
     callbackCompleted();
     chrome.brailleDisplayPrivate.onDisplayStateChanged.removeListener(
@@ -37,7 +38,7 @@ function waitForDisplay(callback) {
     if (state.available) {
       displayStateHandler(state);
     } else {
-      console.log("Display not ready yet");
+      console.log('Display not ready yet');
     }
   }));
 }
@@ -45,25 +46,24 @@ function waitForDisplay(callback) {
 chrome.test.runTests([
   function testWriteEmptyCells() {
     waitForDisplay(pass(function() {
-      chrome.brailleDisplayPrivate.writeDots(new ArrayBuffer(0), 0, 0);
+      chrome.brailleDisplayPrivate.writeDots(new ArrayBuffer(0), 20, 7);
+      chrome.brailleDisplayPrivate.writeDots(new ArrayBuffer(0), 19, 6);
+      chrome.brailleDisplayPrivate.writeDots(new ArrayBuffer(0), 21, 8);
       chrome.brailleDisplayPrivate.getDisplayState(pass());
     }));
   },
 
   function testWriteOversizedCells() {
     waitForDisplay(pass(function(state) {
-      chrome.brailleDisplayPrivate.writeDots(
-          createBuffer(state.textColumnCount + 1, 1), state.textColumnCount, 1);
-      chrome.brailleDisplayPrivate.writeDots(
-          createBuffer(1000000, 2), 1000000, 1);
+      chrome.brailleDisplayPrivate.writeDots(createBuffer(141, 1), 19, 9);
+      chrome.brailleDisplayPrivate.writeDots(createBuffer(141, 2), 21, 8);
       chrome.brailleDisplayPrivate.getDisplayState(pass());
     }));
   },
 
   function testWriteUndersizedCellsNoCrash() {
     waitForDisplay(pass(function(state) {
-      chrome.brailleDisplayPrivate.writeDots(
-          createBuffer(state.textColumnCount - 2, 3), state.textColumnCount, 1);
+      chrome.brailleDisplayPrivate.writeDots(createBuffer(100, 3), 10, 2);
       chrome.brailleDisplayPrivate.getDisplayState(pass());
     }));
   }

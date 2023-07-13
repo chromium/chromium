@@ -189,16 +189,59 @@ IN_PROC_BROWSER_TEST_F(BrailleDisplayPrivateApiTest, WriteDots) {
   ASSERT_TRUE(RunExtensionTest("braille_display_private/write_dots", {},
                                {.load_as_component = true}))
       << message_;
-  ASSERT_EQ(3U, connection_data_.written_content.size());
-  const std::string expected_content(
-      connection_data_.display_columns * connection_data_.display_rows, '\0');
-  for (size_t i = 0; i < connection_data_.written_content.size(); ++i) {
-    ASSERT_EQ(std::string(connection_data_.display_columns *
-                              connection_data_.display_rows,
-                          static_cast<char>(i)),
-              connection_data_.written_content[i])
-        << "String " << i << " doesn't match";
-  }
+  ASSERT_EQ(4U, connection_data_.written_content.size());
+
+  // testWriteEmptyCells.
+  EXPECT_EQ(std::string(11, 0), connection_data_.written_content[0]);
+
+  // testWriteOversizedCells.
+  EXPECT_EQ(std::string(11, 1), connection_data_.written_content[1]);
+  EXPECT_EQ(std::string(11, 2), connection_data_.written_content[2]);
+
+  // testWriteUndersizedCellsNoCrash.
+  EXPECT_EQ(std::string(9, 3) + std::string(2, 0),
+            connection_data_.written_content[3]);
+}
+
+IN_PROC_BROWSER_TEST_F(BrailleDisplayPrivateApiTest, WriteDotsMultiLine) {
+  connection_data_.display_columns = 20;
+  connection_data_.display_rows = 7;
+  connection_data_.cell_size = 6;
+  ASSERT_TRUE(RunExtensionTest("braille_display_private/write_dots_multi_line",
+                               {}, {.load_as_component = true}))
+      << message_;
+  ASSERT_EQ(6U, connection_data_.written_content.size());
+
+  // testWriteEmptyCells.
+  EXPECT_EQ(std::string(140, 0), connection_data_.written_content[0]);
+  EXPECT_EQ(std::string(140, 0), connection_data_.written_content[1]);
+  EXPECT_EQ(std::string(140, 0), connection_data_.written_content[2]);
+
+  // testWriteOversizedCells.
+
+  // The test passes a grid of cells 19x9 on a display of 20x7. (cols x rows).
+  // Thus, the last two rows get truncated, and the last column is unfilled
+  // (0s).
+  std::string grid;
+  grid += std::string(19, 1) + std::string(1, 0);
+  grid += std::string(19, 1) + std::string(1, 0);
+  grid += std::string(19, 1) + std::string(1, 0);
+  grid += std::string(19, 1) + std::string(1, 0);
+  grid += std::string(19, 1) + std::string(1, 0);
+  grid += std::string(19, 1) + std::string(1, 0);
+  grid += std::string(19, 1) + std::string(1, 0);
+  EXPECT_EQ(grid, connection_data_.written_content[3]);
+
+  // This one is 21x8, so only the last row is truncated.
+  EXPECT_EQ(std::string(140, 2), connection_data_.written_content[4]);
+
+  // testWriteUndersizedCellsNoCrash.
+
+  // 10x2.
+  std::string grid2 = std::string(10, 3) + std::string(10, 0) +
+                      std::string(10, 3) + std::string(10, 0) +
+                      std::string(100, 0);
+  EXPECT_EQ(grid2, connection_data_.written_content[5]);
 }
 
 IN_PROC_BROWSER_TEST_F(BrailleDisplayPrivateApiTest, KeyEvents) {

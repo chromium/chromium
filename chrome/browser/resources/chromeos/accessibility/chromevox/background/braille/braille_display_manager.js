@@ -295,7 +295,8 @@ export class BrailleDisplayManager {
     const textBuf = this.panStrategy_.getCurrentTextViewportContents();
     if (this.realDisplayState_.available) {
       chrome.brailleDisplayPrivate.writeDots(
-          brailleBuf, brailleBuf.byteLength, 1);
+          brailleBuf, this.realDisplayState_.textColumnCount,
+          this.realDisplayState_.textRowCount);
     }
     if (BrailleCaptionsBackground.isEnabled()) {
       BrailleCaptionsBackground.setContent(
