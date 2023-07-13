@@ -377,11 +377,9 @@ void PaintFragment(const NGPhysicalBoxFragment& fragment,
 
   auto* layout_object = fragment.GetLayoutObject();
   DCHECK(layout_object);
-  if (fragment.IsPaintedAtomically() && fragment.IsLegacyLayoutRoot()) {
+  if (fragment.IsPaintedAtomically() && layout_object->IsLayoutReplaced()) {
     ObjectPainter(*layout_object).PaintAllPhasesAtomically(modified_paint_info);
   } else {
-    // TODO(ikilpatrick): Once FragmentItem ships we should call the
-    // NGBoxFragmentPainter directly for NG objects.
     layout_object->Paint(modified_paint_info);
   }
 }
