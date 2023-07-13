@@ -470,6 +470,9 @@ RepeatableFetchManager<Request, Response>::MakeFetcher(
 template class RepeatableFetchManager<
     kids_chrome_management::ClassifyUrlRequest,
     kids_chrome_management::ClassifyUrlResponse>;
+template class RepeatableFetchManager<
+    kids_chrome_management::PermissionRequest,
+    kids_chrome_management::CreatePermissionRequestResponse>;
 
 // Fetcher factories.
 std::unique_ptr<ClassifyUrlFetcher> ClassifyURL(

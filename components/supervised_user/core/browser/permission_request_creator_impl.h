@@ -7,8 +7,6 @@
 
 #include "components/supervised_user/core/browser/permission_request_creator.h"
 
-#include <memory>
-
 #include "components/supervised_user/core/browser/proto/kidschromemanagement_messages.pb.h"
 #include "components/supervised_user/core/browser/proto_fetcher.h"
 
@@ -27,6 +25,9 @@ class PermissionRequestCreatorImpl : public PermissionRequestCreator {
   PermissionRequestCreatorImpl(
       signin::IdentityManager* identity_manager,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+  PermissionRequestCreatorImpl(const PermissionRequestCreatorImpl&) = delete;
+  PermissionRequestCreatorImpl& operator=(const PermissionRequestCreatorImpl&) =
+      delete;
   ~PermissionRequestCreatorImpl() override;
 
   // PermissionRequestCreator implementation:
@@ -35,9 +36,11 @@ class PermissionRequestCreatorImpl : public PermissionRequestCreator {
                               SuccessCallback callback) override;
 
  private:
-  // Dependencies.
-  raw_ptr<signin::IdentityManager> identity_manager_;
-  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
+  // Manages the lifetime of every issued fetch.
+  RepeatableFetchManager<
+      kids_chrome_management::PermissionRequest,
+      kids_chrome_management::CreatePermissionRequestResponse>
+      fetch_manager_;
 };
 
 }  // namespace supervised_user
