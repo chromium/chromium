@@ -462,7 +462,7 @@ ExtensionsMenuMainPageView::ExtensionsMenuMainPageView(
       .AddChildren(
           // Subheader section.
           views::Builder<views::FlexLayoutView>()
-              .SetCrossAxisAlignment(views::LayoutAlignment::kStart)
+              .SetCrossAxisAlignment(views::LayoutAlignment::kCenter)
               // Add top dialog margins, since its the first element, and
               // horizontal dialog margins. Bottom margin will be added by the
               // next view (in general, vertical margins should be added by the
