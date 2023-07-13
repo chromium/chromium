@@ -71,6 +71,7 @@ GFMUL:
 .align	16
 aesgcmsiv_htable_init:
 .cfi_startproc	
+_CET_ENDBR
 	vmovdqa	(%rsi),%xmm0
 	vmovdqa	%xmm0,%xmm1
 	vmovdqa	%xmm0,(%rdi)
@@ -97,6 +98,7 @@ aesgcmsiv_htable_init:
 .align	16
 aesgcmsiv_htable6_init:
 .cfi_startproc	
+_CET_ENDBR
 	vmovdqa	(%rsi),%xmm0
 	vmovdqa	%xmm0,%xmm1
 	vmovdqa	%xmm0,(%rdi)
@@ -119,6 +121,7 @@ aesgcmsiv_htable6_init:
 .align	16
 aesgcmsiv_htable_polyval:
 .cfi_startproc	
+_CET_ENDBR
 	testq	%rdx,%rdx
 	jnz	.Lhtable_polyval_start
 	.byte	0xf3,0xc3
@@ -336,6 +339,7 @@ aesgcmsiv_htable_polyval:
 .align	16
 aesgcmsiv_polyval_horner:
 .cfi_startproc	
+_CET_ENDBR
 	testq	%rcx,%rcx
 	jnz	.Lpolyval_horner_start
 	.byte	0xf3,0xc3
@@ -369,6 +373,7 @@ aesgcmsiv_polyval_horner:
 .align	16
 aes128gcmsiv_aes_ks:
 .cfi_startproc	
+_CET_ENDBR
 	vmovdqu	(%rdi),%xmm1
 	vmovdqa	%xmm1,(%rsi)
 
@@ -425,6 +430,7 @@ aes128gcmsiv_aes_ks:
 .align	16
 aes256gcmsiv_aes_ks:
 .cfi_startproc	
+_CET_ENDBR
 	vmovdqu	(%rdi),%xmm1
 	vmovdqu	16(%rdi),%xmm3
 	vmovdqa	%xmm1,(%rsi)
@@ -472,6 +478,7 @@ aes256gcmsiv_aes_ks:
 .align	16
 aes128gcmsiv_aes_ks_enc_x1:
 .cfi_startproc	
+_CET_ENDBR
 	vmovdqa	(%rcx),%xmm1
 	vmovdqa	0(%rdi),%xmm4
 
@@ -614,6 +621,7 @@ aes128gcmsiv_aes_ks_enc_x1:
 .align	16
 aes128gcmsiv_kdf:
 .cfi_startproc	
+_CET_ENDBR
 
 
 
@@ -707,6 +715,7 @@ aes128gcmsiv_kdf:
 .align	16
 aes128gcmsiv_enc_msg_x4:
 .cfi_startproc	
+_CET_ENDBR
 	testq	%r8,%r8
 	jnz	.L128_enc_msg_x4_start
 	.byte	0xf3,0xc3
@@ -886,6 +895,7 @@ aes128gcmsiv_enc_msg_x4:
 .align	16
 aes128gcmsiv_enc_msg_x8:
 .cfi_startproc	
+_CET_ENDBR
 	testq	%r8,%r8
 	jnz	.L128_enc_msg_x8_start
 	.byte	0xf3,0xc3
@@ -1147,6 +1157,7 @@ aes128gcmsiv_enc_msg_x8:
 .align	16
 aes128gcmsiv_dec:
 .cfi_startproc	
+_CET_ENDBR
 	testq	$~15,%r9
 	jnz	.L128_dec_start
 	.byte	0xf3,0xc3
@@ -1639,6 +1650,7 @@ aes128gcmsiv_dec:
 .align	16
 aes128gcmsiv_ecb_enc_block:
 .cfi_startproc	
+_CET_ENDBR
 	vmovdqa	(%rdi),%xmm1
 
 	vpxor	(%rdx),%xmm1,%xmm1
@@ -1664,6 +1676,7 @@ aes128gcmsiv_ecb_enc_block:
 .align	16
 aes256gcmsiv_aes_ks_enc_x1:
 .cfi_startproc	
+_CET_ENDBR
 	vmovdqa	con1(%rip),%xmm0
 	vmovdqa	mask(%rip),%xmm15
 	vmovdqa	(%rdi),%xmm8
@@ -1847,6 +1860,7 @@ aes256gcmsiv_aes_ks_enc_x1:
 .align	16
 aes256gcmsiv_ecb_enc_block:
 .cfi_startproc	
+_CET_ENDBR
 	vmovdqa	(%rdi),%xmm1
 	vpxor	(%rdx),%xmm1,%xmm1
 	vaesenc	16(%rdx),%xmm1,%xmm1
@@ -1873,6 +1887,7 @@ aes256gcmsiv_ecb_enc_block:
 .align	16
 aes256gcmsiv_enc_msg_x4:
 .cfi_startproc	
+_CET_ENDBR
 	testq	%r8,%r8
 	jnz	.L256_enc_msg_x4_start
 	.byte	0xf3,0xc3
@@ -2074,6 +2089,7 @@ aes256gcmsiv_enc_msg_x4:
 .align	16
 aes256gcmsiv_enc_msg_x8:
 .cfi_startproc	
+_CET_ENDBR
 	testq	%r8,%r8
 	jnz	.L256_enc_msg_x8_start
 	.byte	0xf3,0xc3
@@ -2363,6 +2379,7 @@ aes256gcmsiv_enc_msg_x8:
 .align	16
 aes256gcmsiv_dec:
 .cfi_startproc	
+_CET_ENDBR
 	testq	$~15,%r9
 	jnz	.L256_dec_start
 	.byte	0xf3,0xc3
@@ -2923,6 +2940,7 @@ aes256gcmsiv_dec:
 .align	16
 aes256gcmsiv_kdf:
 .cfi_startproc	
+_CET_ENDBR
 
 
 

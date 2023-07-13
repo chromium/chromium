@@ -12,6 +12,7 @@
 .type	md5_block_asm_data_order,@function
 md5_block_asm_data_order:
 .cfi_startproc	
+_CET_ENDBR
 	pushq	%rbp
 .cfi_adjust_cfa_offset	8
 .cfi_offset	rbp,-16

@@ -17,6 +17,7 @@
 gcm_gmult_ssse3:
 .cfi_startproc	
 
+_CET_ENDBR
 	movdqu	(%rdi),%xmm0
 	movdqa	.Lreverse_bytes(%rip),%xmm10
 	movdqa	.Llow4_mask(%rip),%xmm2
@@ -207,6 +208,7 @@ gcm_gmult_ssse3:
 gcm_ghash_ssse3:
 .cfi_startproc	
 
+_CET_ENDBR
 	movdqu	(%rdi),%xmm0
 	movdqa	.Lreverse_bytes(%rip),%xmm10
 	movdqa	.Llow4_mask(%rip),%xmm11

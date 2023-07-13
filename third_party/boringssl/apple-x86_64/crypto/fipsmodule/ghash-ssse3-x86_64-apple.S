@@ -17,6 +17,7 @@
 _gcm_gmult_ssse3:
 
 
+_CET_ENDBR
 	movdqu	(%rdi),%xmm0
 	movdqa	L$reverse_bytes(%rip),%xmm10
 	movdqa	L$low4_mask(%rip),%xmm2
@@ -207,6 +208,7 @@ L$oop_row_3:
 _gcm_ghash_ssse3:
 
 
+_CET_ENDBR
 	movdqu	(%rdi),%xmm0
 	movdqa	L$reverse_bytes(%rip),%xmm10
 	movdqa	L$low4_mask(%rip),%xmm11

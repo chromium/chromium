@@ -12,6 +12,7 @@
 .p2align	6
 _rsaz_1024_sqr_avx2:
 
+_CET_ENDBR
 	leaq	(%rsp),%rax
 
 	pushq	%rbx
@@ -666,6 +667,7 @@ L$sqr_1024_epilogue:
 .p2align	6
 _rsaz_1024_mul_avx2:
 
+_CET_ENDBR
 	leaq	(%rsp),%rax
 
 	pushq	%rbx
@@ -1222,6 +1224,7 @@ L$mul_1024_epilogue:
 .p2align	5
 _rsaz_1024_red2norm_avx2:
 
+_CET_ENDBR
 	subq	$-128,%rsi
 	xorq	%rax,%rax
 	movq	-128(%rsi),%r8
@@ -1422,6 +1425,7 @@ _rsaz_1024_red2norm_avx2:
 .p2align	5
 _rsaz_1024_norm2red_avx2:
 
+_CET_ENDBR
 	subq	$-128,%rdi
 	movq	(%rsi),%r8
 	movl	$0x1fffffff,%eax
@@ -1582,6 +1586,7 @@ _rsaz_1024_norm2red_avx2:
 .p2align	5
 _rsaz_1024_scatter5_avx2:
 
+_CET_ENDBR
 	vzeroupper
 	vmovdqu	L$scatter_permd(%rip),%ymm5
 	shll	$4,%edx
@@ -1610,6 +1615,7 @@ L$oop_scatter_1024:
 .p2align	5
 _rsaz_1024_gather5_avx2:
 
+_CET_ENDBR
 	vzeroupper
 	movq	%rsp,%r11
 

@@ -15,6 +15,7 @@
 # This file is created by generate_build_files.py. Do not edit manually.
 
 test_support_sources = [
+  "src/crypto/test/abi_test.cc",
   "src/crypto/test/abi_test.h",
   "src/crypto/test/file_test.cc",
   "src/crypto/test/file_test.h",
@@ -94,7 +95,6 @@ crypto_test_sources = [
   "src/crypto/self_test.cc",
   "src/crypto/siphash/siphash_test.cc",
   "src/crypto/stack/stack_test.cc",
-  "src/crypto/test/abi_test.cc",
   "src/crypto/test/file_test_gtest.cc",
   "src/crypto/test/gtest_main.cc",
   "src/crypto/thread_test.cc",
@@ -339,7 +339,6 @@ crypto_test_data = [
 ]
 
 ssl_test_sources = [
-  "src/crypto/test/abi_test.cc",
   "src/crypto/test/gtest_main.cc",
   "src/ssl/span_test.cc",
   "src/ssl/ssl_c_test.c",

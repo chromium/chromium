@@ -805,6 +805,7 @@ _vpaes_schedule_mangle:
 .align	16
 vpaes_set_encrypt_key:
 .cfi_startproc	
+_CET_ENDBR
 #ifdef BORINGSSL_DISPATCH_TEST
 .extern	BORINGSSL_function_hit
 .hidden BORINGSSL_function_hit
@@ -830,6 +831,7 @@ vpaes_set_encrypt_key:
 .align	16
 vpaes_set_decrypt_key:
 .cfi_startproc	
+_CET_ENDBR
 	movl	%esi,%eax
 	shrl	$5,%eax
 	addl	$5,%eax
@@ -854,6 +856,7 @@ vpaes_set_decrypt_key:
 .align	16
 vpaes_encrypt:
 .cfi_startproc	
+_CET_ENDBR
 #ifdef BORINGSSL_DISPATCH_TEST
 .extern	BORINGSSL_function_hit
 .hidden BORINGSSL_function_hit
@@ -873,6 +876,7 @@ vpaes_encrypt:
 .align	16
 vpaes_decrypt:
 .cfi_startproc	
+_CET_ENDBR
 	movdqu	(%rdi),%xmm0
 	call	_vpaes_preheat
 	call	_vpaes_decrypt_core
@@ -886,6 +890,7 @@ vpaes_decrypt:
 .align	16
 vpaes_cbc_encrypt:
 .cfi_startproc	
+_CET_ENDBR
 	xchgq	%rcx,%rdx
 	subq	$16,%rcx
 	jc	.Lcbc_abort
@@ -929,6 +934,7 @@ vpaes_cbc_encrypt:
 .align	16
 vpaes_ctr32_encrypt_blocks:
 .cfi_startproc	
+_CET_ENDBR
 
 	xchgq	%rcx,%rdx
 	testq	%rcx,%rcx

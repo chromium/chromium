@@ -12,6 +12,7 @@
 .align	64
 rsaz_1024_sqr_avx2:
 .cfi_startproc	
+_CET_ENDBR
 	leaq	(%rsp),%rax
 .cfi_def_cfa_register	%rax
 	pushq	%rbx
@@ -666,6 +667,7 @@ rsaz_1024_sqr_avx2:
 .align	64
 rsaz_1024_mul_avx2:
 .cfi_startproc	
+_CET_ENDBR
 	leaq	(%rsp),%rax
 .cfi_def_cfa_register	%rax
 	pushq	%rbx
@@ -1222,6 +1224,7 @@ rsaz_1024_mul_avx2:
 .align	32
 rsaz_1024_red2norm_avx2:
 .cfi_startproc	
+_CET_ENDBR
 	subq	$-128,%rsi
 	xorq	%rax,%rax
 	movq	-128(%rsi),%r8
@@ -1422,6 +1425,7 @@ rsaz_1024_red2norm_avx2:
 .align	32
 rsaz_1024_norm2red_avx2:
 .cfi_startproc	
+_CET_ENDBR
 	subq	$-128,%rdi
 	movq	(%rsi),%r8
 	movl	$0x1fffffff,%eax
@@ -1582,6 +1586,7 @@ rsaz_1024_norm2red_avx2:
 .align	32
 rsaz_1024_scatter5_avx2:
 .cfi_startproc	
+_CET_ENDBR
 	vzeroupper
 	vmovdqu	.Lscatter_permd(%rip),%ymm5
 	shll	$4,%edx
@@ -1610,6 +1615,7 @@ rsaz_1024_scatter5_avx2:
 .align	32
 rsaz_1024_gather5_avx2:
 .cfi_startproc	
+_CET_ENDBR
 	vzeroupper
 	movq	%rsp,%r11
 .cfi_def_cfa_register	%r11

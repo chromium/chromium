@@ -14,6 +14,7 @@
 .align	16
 sha256_block_data_order:
 .cfi_startproc	
+_CET_ENDBR
 	leaq	OPENSSL_ia32cap_P(%rip),%r11
 	movl	0(%r11),%r9d
 	movl	4(%r11),%r10d

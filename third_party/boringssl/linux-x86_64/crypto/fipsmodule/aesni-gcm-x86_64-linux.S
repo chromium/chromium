@@ -346,6 +346,7 @@ _aesni_ctr32_ghash_6x:
 aesni_gcm_decrypt:
 .cfi_startproc	
 
+_CET_ENDBR
 	xorq	%rax,%rax
 
 
@@ -569,6 +570,7 @@ _aesni_ctr32_6x:
 aesni_gcm_encrypt:
 .cfi_startproc	
 
+_CET_ENDBR
 #ifdef BORINGSSL_DISPATCH_TEST
 .extern	BORINGSSL_function_hit
 .hidden BORINGSSL_function_hit

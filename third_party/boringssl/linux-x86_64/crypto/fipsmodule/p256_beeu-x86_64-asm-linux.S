@@ -13,6 +13,7 @@
 .align	32
 beeu_mod_inverse_vartime:
 .cfi_startproc	
+_CET_ENDBR
 	pushq	%rbp
 .cfi_adjust_cfa_offset	8
 .cfi_offset	rbp,-16

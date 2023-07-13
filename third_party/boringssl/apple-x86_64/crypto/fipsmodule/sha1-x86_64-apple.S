@@ -13,6 +13,7 @@
 .p2align	4
 _sha1_block_data_order:
 
+_CET_ENDBR
 	leaq	_OPENSSL_ia32cap_P(%rip),%r10
 	movl	0(%r10),%r9d
 	movl	4(%r10),%r8d

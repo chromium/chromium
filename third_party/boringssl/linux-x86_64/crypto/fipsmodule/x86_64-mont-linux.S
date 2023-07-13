@@ -15,6 +15,7 @@
 .align	16
 bn_mul_mont:
 .cfi_startproc	
+_CET_ENDBR
 	movl	%r9d,%r9d
 	movq	%rsp,%rax
 .cfi_def_cfa_register	%rax

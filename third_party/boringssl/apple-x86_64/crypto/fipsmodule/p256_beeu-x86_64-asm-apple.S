@@ -13,6 +13,7 @@
 .p2align	5
 _beeu_mod_inverse_vartime:
 
+_CET_ENDBR
 	pushq	%rbp
 
 	pushq	%r12

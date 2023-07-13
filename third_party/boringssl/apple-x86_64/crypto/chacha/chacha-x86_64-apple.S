@@ -45,6 +45,7 @@ L$sixteen:
 .p2align	6
 _ChaCha20_ctr32:
 
+_CET_ENDBR
 	cmpq	$0,%rdx
 	je	L$no_data
 	movq	_OPENSSL_ia32cap_P+4(%rip),%r10

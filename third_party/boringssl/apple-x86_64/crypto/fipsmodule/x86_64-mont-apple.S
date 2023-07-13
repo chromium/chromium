@@ -14,6 +14,7 @@
 .p2align	4
 _bn_mul_mont:
 
+_CET_ENDBR
 	movl	%r9d,%r9d
 	movq	%rsp,%rax
 

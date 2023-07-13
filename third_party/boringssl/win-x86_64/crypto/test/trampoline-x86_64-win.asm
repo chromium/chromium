@@ -6,6 +6,7 @@ default	rel
 %define XMMWORD
 %define YMMWORD
 %define ZMMWORD
+%define _CET_ENDBR
 
 %ifdef BORINGSSL_PREFIX
 %include "boringssl_prefix_symbols_nasm.inc"
@@ -26,6 +27,7 @@ ALIGN	16
 abi_test_trampoline:
 
 $L$SEH_begin_abi_test_trampoline_1:
+_CET_ENDBR
 
 
 
@@ -258,6 +260,7 @@ $L$SEH_end_abi_test_trampoline_21:
 global	abi_test_clobber_rax
 ALIGN	16
 abi_test_clobber_rax:
+_CET_ENDBR
 	xor	rax,rax
 	DB	0F3h,0C3h		;repret
 
@@ -265,6 +268,7 @@ abi_test_clobber_rax:
 global	abi_test_clobber_rbx
 ALIGN	16
 abi_test_clobber_rbx:
+_CET_ENDBR
 	xor	rbx,rbx
 	DB	0F3h,0C3h		;repret
 
@@ -272,6 +276,7 @@ abi_test_clobber_rbx:
 global	abi_test_clobber_rcx
 ALIGN	16
 abi_test_clobber_rcx:
+_CET_ENDBR
 	xor	rcx,rcx
 	DB	0F3h,0C3h		;repret
 
@@ -279,6 +284,7 @@ abi_test_clobber_rcx:
 global	abi_test_clobber_rdx
 ALIGN	16
 abi_test_clobber_rdx:
+_CET_ENDBR
 	xor	rdx,rdx
 	DB	0F3h,0C3h		;repret
 
@@ -286,6 +292,7 @@ abi_test_clobber_rdx:
 global	abi_test_clobber_rdi
 ALIGN	16
 abi_test_clobber_rdi:
+_CET_ENDBR
 	xor	rdi,rdi
 	DB	0F3h,0C3h		;repret
 
@@ -293,6 +300,7 @@ abi_test_clobber_rdi:
 global	abi_test_clobber_rsi
 ALIGN	16
 abi_test_clobber_rsi:
+_CET_ENDBR
 	xor	rsi,rsi
 	DB	0F3h,0C3h		;repret
 
@@ -300,6 +308,7 @@ abi_test_clobber_rsi:
 global	abi_test_clobber_rbp
 ALIGN	16
 abi_test_clobber_rbp:
+_CET_ENDBR
 	xor	rbp,rbp
 	DB	0F3h,0C3h		;repret
 
@@ -307,6 +316,7 @@ abi_test_clobber_rbp:
 global	abi_test_clobber_r8
 ALIGN	16
 abi_test_clobber_r8:
+_CET_ENDBR
 	xor	r8,r8
 	DB	0F3h,0C3h		;repret
 
@@ -314,6 +324,7 @@ abi_test_clobber_r8:
 global	abi_test_clobber_r9
 ALIGN	16
 abi_test_clobber_r9:
+_CET_ENDBR
 	xor	r9,r9
 	DB	0F3h,0C3h		;repret
 
@@ -321,6 +332,7 @@ abi_test_clobber_r9:
 global	abi_test_clobber_r10
 ALIGN	16
 abi_test_clobber_r10:
+_CET_ENDBR
 	xor	r10,r10
 	DB	0F3h,0C3h		;repret
 
@@ -328,6 +340,7 @@ abi_test_clobber_r10:
 global	abi_test_clobber_r11
 ALIGN	16
 abi_test_clobber_r11:
+_CET_ENDBR
 	xor	r11,r11
 	DB	0F3h,0C3h		;repret
 
@@ -335,6 +348,7 @@ abi_test_clobber_r11:
 global	abi_test_clobber_r12
 ALIGN	16
 abi_test_clobber_r12:
+_CET_ENDBR
 	xor	r12,r12
 	DB	0F3h,0C3h		;repret
 
@@ -342,6 +356,7 @@ abi_test_clobber_r12:
 global	abi_test_clobber_r13
 ALIGN	16
 abi_test_clobber_r13:
+_CET_ENDBR
 	xor	r13,r13
 	DB	0F3h,0C3h		;repret
 
@@ -349,6 +364,7 @@ abi_test_clobber_r13:
 global	abi_test_clobber_r14
 ALIGN	16
 abi_test_clobber_r14:
+_CET_ENDBR
 	xor	r14,r14
 	DB	0F3h,0C3h		;repret
 
@@ -356,6 +372,7 @@ abi_test_clobber_r14:
 global	abi_test_clobber_r15
 ALIGN	16
 abi_test_clobber_r15:
+_CET_ENDBR
 	xor	r15,r15
 	DB	0F3h,0C3h		;repret
 
@@ -363,6 +380,7 @@ abi_test_clobber_r15:
 global	abi_test_clobber_xmm0
 ALIGN	16
 abi_test_clobber_xmm0:
+_CET_ENDBR
 	pxor	xmm0,xmm0
 	DB	0F3h,0C3h		;repret
 
@@ -370,6 +388,7 @@ abi_test_clobber_xmm0:
 global	abi_test_clobber_xmm1
 ALIGN	16
 abi_test_clobber_xmm1:
+_CET_ENDBR
 	pxor	xmm1,xmm1
 	DB	0F3h,0C3h		;repret
 
@@ -377,6 +396,7 @@ abi_test_clobber_xmm1:
 global	abi_test_clobber_xmm2
 ALIGN	16
 abi_test_clobber_xmm2:
+_CET_ENDBR
 	pxor	xmm2,xmm2
 	DB	0F3h,0C3h		;repret
 
@@ -384,6 +404,7 @@ abi_test_clobber_xmm2:
 global	abi_test_clobber_xmm3
 ALIGN	16
 abi_test_clobber_xmm3:
+_CET_ENDBR
 	pxor	xmm3,xmm3
 	DB	0F3h,0C3h		;repret
 
@@ -391,6 +412,7 @@ abi_test_clobber_xmm3:
 global	abi_test_clobber_xmm4
 ALIGN	16
 abi_test_clobber_xmm4:
+_CET_ENDBR
 	pxor	xmm4,xmm4
 	DB	0F3h,0C3h		;repret
 
@@ -398,6 +420,7 @@ abi_test_clobber_xmm4:
 global	abi_test_clobber_xmm5
 ALIGN	16
 abi_test_clobber_xmm5:
+_CET_ENDBR
 	pxor	xmm5,xmm5
 	DB	0F3h,0C3h		;repret
 
@@ -405,6 +428,7 @@ abi_test_clobber_xmm5:
 global	abi_test_clobber_xmm6
 ALIGN	16
 abi_test_clobber_xmm6:
+_CET_ENDBR
 	pxor	xmm6,xmm6
 	DB	0F3h,0C3h		;repret
 
@@ -412,6 +436,7 @@ abi_test_clobber_xmm6:
 global	abi_test_clobber_xmm7
 ALIGN	16
 abi_test_clobber_xmm7:
+_CET_ENDBR
 	pxor	xmm7,xmm7
 	DB	0F3h,0C3h		;repret
 
@@ -419,6 +444,7 @@ abi_test_clobber_xmm7:
 global	abi_test_clobber_xmm8
 ALIGN	16
 abi_test_clobber_xmm8:
+_CET_ENDBR
 	pxor	xmm8,xmm8
 	DB	0F3h,0C3h		;repret
 
@@ -426,6 +452,7 @@ abi_test_clobber_xmm8:
 global	abi_test_clobber_xmm9
 ALIGN	16
 abi_test_clobber_xmm9:
+_CET_ENDBR
 	pxor	xmm9,xmm9
 	DB	0F3h,0C3h		;repret
 
@@ -433,6 +460,7 @@ abi_test_clobber_xmm9:
 global	abi_test_clobber_xmm10
 ALIGN	16
 abi_test_clobber_xmm10:
+_CET_ENDBR
 	pxor	xmm10,xmm10
 	DB	0F3h,0C3h		;repret
 
@@ -440,6 +468,7 @@ abi_test_clobber_xmm10:
 global	abi_test_clobber_xmm11
 ALIGN	16
 abi_test_clobber_xmm11:
+_CET_ENDBR
 	pxor	xmm11,xmm11
 	DB	0F3h,0C3h		;repret
 
@@ -447,6 +476,7 @@ abi_test_clobber_xmm11:
 global	abi_test_clobber_xmm12
 ALIGN	16
 abi_test_clobber_xmm12:
+_CET_ENDBR
 	pxor	xmm12,xmm12
 	DB	0F3h,0C3h		;repret
 
@@ -454,6 +484,7 @@ abi_test_clobber_xmm12:
 global	abi_test_clobber_xmm13
 ALIGN	16
 abi_test_clobber_xmm13:
+_CET_ENDBR
 	pxor	xmm13,xmm13
 	DB	0F3h,0C3h		;repret
 
@@ -461,6 +492,7 @@ abi_test_clobber_xmm13:
 global	abi_test_clobber_xmm14
 ALIGN	16
 abi_test_clobber_xmm14:
+_CET_ENDBR
 	pxor	xmm14,xmm14
 	DB	0F3h,0C3h		;repret
 
@@ -468,6 +500,7 @@ abi_test_clobber_xmm14:
 global	abi_test_clobber_xmm15
 ALIGN	16
 abi_test_clobber_xmm15:
+_CET_ENDBR
 	pxor	xmm15,xmm15
 	DB	0F3h,0C3h		;repret
 
@@ -480,6 +513,7 @@ ALIGN	16
 abi_test_bad_unwind_wrong_register:
 
 $L$SEH_begin_abi_test_bad_unwind_wrong_register_1:
+_CET_ENDBR
 	push	r12
 
 $L$SEH_prolog_abi_test_bad_unwind_wrong_register_2:
@@ -503,6 +537,7 @@ ALIGN	16
 abi_test_bad_unwind_temporary:
 
 $L$SEH_begin_abi_test_bad_unwind_temporary_1:
+_CET_ENDBR
 	push	r12
 
 $L$SEH_prolog_abi_test_bad_unwind_temporary_2:
@@ -529,6 +564,7 @@ $L$SEH_end_abi_test_bad_unwind_temporary_3:
 
 global	abi_test_get_and_clear_direction_flag
 abi_test_get_and_clear_direction_flag:
+_CET_ENDBR
 	pushfq
 	pop	rax
 	and	rax,0x400
@@ -542,6 +578,7 @@ abi_test_get_and_clear_direction_flag:
 
 global	abi_test_set_direction_flag
 abi_test_set_direction_flag:
+_CET_ENDBR
 	std
 	DB	0F3h,0C3h		;repret
 

@@ -14,6 +14,7 @@
 .p2align	6
 _bn_mul_mont_gather5:
 
+_CET_ENDBR
 	movl	%r9d,%r9d
 	movq	%rsp,%rax
 
@@ -1092,6 +1093,7 @@ L$inner4x:
 .p2align	5
 _bn_power5:
 
+_CET_ENDBR
 	movq	%rsp,%rax
 
 	leaq	_OPENSSL_ia32cap_P(%rip),%r11
@@ -1231,6 +1233,7 @@ L$power5_epilogue:
 _bn_sqr8x_internal:
 __bn_sqr8x_internal:
 
+_CET_ENDBR
 
 
 
@@ -2743,6 +2746,7 @@ L$powerx5_epilogue:
 _bn_sqrx8x_internal:
 __bn_sqrx8x_internal:
 
+_CET_ENDBR
 
 
 
@@ -3415,6 +3419,7 @@ L$sqrx4x_sub_entry:
 .p2align	4
 _bn_scatter5:
 
+_CET_ENDBR
 	cmpl	$0,%esi
 	jz	L$scatter_epilogue
 
@@ -3446,6 +3451,7 @@ L$scatter_epilogue:
 _bn_gather5:
 
 L$SEH_begin_bn_gather5:
+_CET_ENDBR
 
 .byte	0x4c,0x8d,0x14,0x24
 

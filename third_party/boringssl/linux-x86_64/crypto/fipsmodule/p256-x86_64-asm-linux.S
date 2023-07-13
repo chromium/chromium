@@ -38,6 +38,7 @@
 .align	32
 ecp_nistz256_neg:
 .cfi_startproc	
+_CET_ENDBR
 	pushq	%r12
 .cfi_adjust_cfa_offset	8
 .cfi_offset	%r12,-16
@@ -100,6 +101,7 @@ ecp_nistz256_neg:
 .align	32
 ecp_nistz256_ord_mul_mont:
 .cfi_startproc	
+_CET_ENDBR
 	leaq	OPENSSL_ia32cap_P(%rip),%rcx
 	movq	8(%rcx),%rcx
 	andl	$0x80100,%ecx
@@ -434,6 +436,7 @@ ecp_nistz256_ord_mul_mont:
 .align	32
 ecp_nistz256_ord_sqr_mont:
 .cfi_startproc	
+_CET_ENDBR
 	leaq	OPENSSL_ia32cap_P(%rip),%rcx
 	movq	8(%rcx),%rcx
 	andl	$0x80100,%ecx
@@ -1193,6 +1196,7 @@ ecp_nistz256_ord_sqr_montx:
 .align	32
 ecp_nistz256_mul_mont:
 .cfi_startproc	
+_CET_ENDBR
 	leaq	OPENSSL_ia32cap_P(%rip),%rcx
 	movq	8(%rcx),%rcx
 	andl	$0x80100,%ecx
@@ -1490,6 +1494,7 @@ __ecp_nistz256_mul_montq:
 .align	32
 ecp_nistz256_sqr_mont:
 .cfi_startproc	
+_CET_ENDBR
 	leaq	OPENSSL_ia32cap_P(%rip),%rcx
 	movq	8(%rcx),%rcx
 	andl	$0x80100,%ecx
@@ -2020,6 +2025,7 @@ __ecp_nistz256_sqr_montx:
 .align	32
 ecp_nistz256_select_w5:
 .cfi_startproc	
+_CET_ENDBR
 	leaq	OPENSSL_ia32cap_P(%rip),%rax
 	movq	8(%rax),%rax
 	testl	$32,%eax
@@ -2087,6 +2093,7 @@ ecp_nistz256_select_w5:
 .align	32
 ecp_nistz256_select_w7:
 .cfi_startproc	
+_CET_ENDBR
 	leaq	OPENSSL_ia32cap_P(%rip),%rax
 	movq	8(%rax),%rax
 	testl	$32,%eax
@@ -2207,6 +2214,7 @@ ecp_nistz256_avx2_select_w5:
 ecp_nistz256_avx2_select_w7:
 .cfi_startproc	
 .Lavx2_select_w7:
+_CET_ENDBR
 	vzeroupper
 	vmovdqa	.LThree(%rip),%ymm0
 
@@ -2413,6 +2421,7 @@ __ecp_nistz256_mul_by_2q:
 .align	32
 ecp_nistz256_point_double:
 .cfi_startproc	
+_CET_ENDBR
 	leaq	OPENSSL_ia32cap_P(%rip),%rcx
 	movq	8(%rcx),%rcx
 	andl	$0x80100,%ecx
@@ -2647,6 +2656,7 @@ ecp_nistz256_point_double:
 .align	32
 ecp_nistz256_point_add:
 .cfi_startproc	
+_CET_ENDBR
 	leaq	OPENSSL_ia32cap_P(%rip),%rcx
 	movq	8(%rcx),%rcx
 	andl	$0x80100,%ecx
@@ -3084,6 +3094,7 @@ ecp_nistz256_point_add:
 .align	32
 ecp_nistz256_point_add_affine:
 .cfi_startproc	
+_CET_ENDBR
 	leaq	OPENSSL_ia32cap_P(%rip),%rcx
 	movq	8(%rcx),%rcx
 	andl	$0x80100,%ecx
