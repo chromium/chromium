@@ -40,6 +40,7 @@ source_set("browser_tests") {
     "side_panel/customize_chrome/customize_chrome_browsertest.cc",
     "side_panel/read_anything/read_anything_browsertest.cc",
     "side_panel/user_notes/user_notes_browsertest.cc",
+    "tab_search/tab_search_browsertest.cc",
     "whats_new/whats_new_browsertest.cc",
   ]
 
@@ -80,6 +81,7 @@ source_set("interactive_ui_tests") {
     "password_manager/password_manager_focus_test.cc",
     "side_panel/bookmarks/sp_bookmarks_focus_test.cc",
     "side_panel/customize_chrome/customize_chrome_focus_test.cc",
+    "tab_search/tab_search_focus_test.cc",
   ]
 
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
@@ -99,7 +101,6 @@ if (include_js_tests) {
       "extensions/cr_extensions_interactive_ui_tests.js",
       "settings/cr_settings_interactive_ui_tests.js",
       "support_tool/support_tool_interactive_ui_test.js",
-      "tab_search/tab_search_interactive_ui_tests.js",
     ]
 
     if (is_chromeos_ash) {
@@ -300,7 +301,6 @@ if (include_js_tests) {
       "media/media_history_webui_browsertest.js",
       "metrics_reporter/metrics_reporter_browsertest.js",
       "new_tab_page/new_tab_page_browsertest.js",
-      "tab_search/tab_search_browsertest.js",
       "usb_internals/usb_internals_browsertest.js",
     ]
     if (is_chromeos_ash) {
