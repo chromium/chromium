@@ -123,6 +123,8 @@ class CopyOrMoveIOTaskPolicyImpl : public CopyOrMoveIOTaskImpl {
 
   // The number of files blocked by policies.
   size_t blocked_files_ = 0;
+  // The name of the first blocked file, if any. Used for notifications.
+  std::string blocked_file_name_;
 
   base::WeakPtrFactory<CopyOrMoveIOTaskPolicyImpl> weak_ptr_factory_{this};
 };

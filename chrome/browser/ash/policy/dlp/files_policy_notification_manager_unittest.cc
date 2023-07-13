@@ -272,7 +272,8 @@ TEST_F(FilesPolicyNotificationManagerTest, WarningPausesIOTask) {
   EXPECT_TRUE(fpnm_->HasIOTask(task_id));
 
   file_manager::io_task::PauseParams pause_params;
-  pause_params.policy_params.emplace(Policy::kDlp, /*warning_files_count=*/1);
+  pause_params.policy_params.emplace(Policy::kDlp, /*warning_files_count=*/1,
+                                     src_file_path.BaseName().value());
 
   // Task is paused.
   EXPECT_CALL(
@@ -387,7 +388,8 @@ TEST_F(FilesPolicyNotificationManagerTest, WarningCancelled) {
 
   file_manager::io_task::PauseParams pause_params;
   pause_params.policy_params = file_manager::io_task::PolicyPauseParams(
-      Policy::kDlp, /*warning_files_count=*/1);
+      Policy::kDlp, /*warning_files_count=*/1,
+      src_file_path.BaseName().value());
 
   // Task is paused.
   EXPECT_CALL(
@@ -444,7 +446,8 @@ TEST_F(FilesPolicyNotificationManagerTest, WarningResumed) {
 
   file_manager::io_task::PauseParams pause_params;
   pause_params.policy_params = file_manager::io_task::PolicyPauseParams(
-      Policy::kDlp, /*warning_files_count=*/1);
+      Policy::kDlp, /*warning_files_count=*/1,
+      src_file_path.BaseName().value());
 
   // Task is paused.
   EXPECT_CALL(
@@ -473,9 +476,6 @@ TEST_F(FilesPolicyNotificationManagerTest, WarningResumed) {
 TEST_F(FilesPolicyNotificationManagerTest, TaskBlockedNotTracked) {
   fpnm_->Shutdown();
   fpnm_.reset();
-
-  IOTaskStatusObserver observer;
-  io_task_controller_->AddObserver(&observer);
 
   int task_id = 1;
   auto dst_url =
@@ -523,7 +523,8 @@ TEST_F(FilesPolicyNotificationManagerTest, TaskWarnedNotTracked) {
 
   file_manager::io_task::PauseParams pause_params;
   pause_params.policy_params = file_manager::io_task::PolicyPauseParams(
-      Policy::kDlp, /*warning_files_count=*/1);
+      Policy::kDlp, /*warning_files_count=*/1,
+      src_file_path.BaseName().value());
 
   // Task is paused.
   EXPECT_CALL(

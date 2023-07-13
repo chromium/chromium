@@ -191,9 +191,12 @@ MATCHER_P3(ExpectEventArgString, index, field, expected_value, "") {
 // A matcher that matches an `extensions::Event::event_args` and attempts to
 // extract the "conflictParams" and "pauseParams" keys. It expects
 // "conflictParams" to be empty, and then matches the "policyParams" values
-// "type" and "policyFileCount" against the `expected_type` and
-// `expected_count`.
-MATCHER_P2(ExpectEventArgPauseParams, expected_type, expected_count, "") {
+// against the expected ones.
+MATCHER_P3(ExpectEventArgPauseParams,
+           expected_type,
+           expected_count,
+           expected_file_name,
+           "") {
   EXPECT_GE(arg.size(), 1u);
   const base::Value::Dict* pause_params =
       arg[0].GetDict().FindDict("pauseParams");
@@ -215,17 +218,26 @@ MATCHER_P2(ExpectEventArgPauseParams, expected_type, expected_count, "") {
       policy_pause_params->FindInt("policyFileCount");
   EXPECT_TRUE(actual_count.has_value())
       << "Could not find the number with key: type";
+  const std::string* actual_file_name =
+      policy_pause_params->FindString("fileName");
+  EXPECT_TRUE(actual_file_name)
+      << "Could not find the string with key: fileName";
   return testing::ExplainMatchResult(expected_type, *actual_type,
                                      result_listener) &&
          testing::ExplainMatchResult(expected_count, actual_count.value(),
+                                     result_listener) &&
+         testing::ExplainMatchResult(expected_file_name, *actual_file_name,
                                      result_listener);
 }
 
 // A matcher that matches an `extensions::Event::event_args` and attempts to
 // extract the "policyError" key. It then matches the "policyError" values
-// "type" and "policyFileCount" against the `expected_type` and
-// `expected_count`.
-MATCHER_P2(ExpectEventArgPolicyError, expected_type, expected_count, "") {
+// against the expected ones.
+MATCHER_P3(ExpectEventArgPolicyError,
+           expected_type,
+           expected_count,
+           expected_file_name,
+           "") {
   EXPECT_GE(arg.size(), 1u);
   const base::Value::Dict* policy_error =
       arg[0].GetDict().FindDict("policyError");
@@ -238,9 +250,14 @@ MATCHER_P2(ExpectEventArgPolicyError, expected_type, expected_count, "") {
       policy_error->FindInt("policyFileCount");
   EXPECT_TRUE(actual_count.has_value())
       << "Could not find the string with key: type";
+  const std::string* actual_file_name = policy_error->FindString("fileName");
+  EXPECT_TRUE(actual_file_name)
+      << "Could not find the string with key: fileName";
   return testing::ExplainMatchResult(expected_type, *actual_type,
                                      result_listener) &&
          testing::ExplainMatchResult(expected_count, actual_count.value(),
+                                     result_listener) &&
+         testing::ExplainMatchResult(expected_file_name, *actual_file_name,
                                      result_listener);
 }
 
@@ -305,13 +322,13 @@ TEST_F(FileManagerEventRouterTest, OnIOTaskStatusForCopyPause) {
   status.state = file_manager::io_task::State::kPaused;
   status.sources = std::move(source_entries);
   status.pause_params.policy_params = io_task::PolicyPauseParams(
-      policy::Policy::kDlp, /*warning_files_count*/ 2u);
+      policy::Policy::kDlp, /*warning_files_count*/ 2u, "foo.txt");
 
   // Expect the event to have dlp as policy pause params.
   base::RunLoop run_loop;
-  EXPECT_CALL(observer, OnBroadcastEvent(
-                            Field(&extensions::Event::event_args,
-                                  AllOf(ExpectEventArgPauseParams("dlp", 2)))))
+  EXPECT_CALL(observer, OnBroadcastEvent(Field(&extensions::Event::event_args,
+                                               AllOf(ExpectEventArgPauseParams(
+                                                   "dlp", 2, "foo.txt")))))
       .WillOnce(RunClosure(run_loop.QuitClosure()));
 
   event_router->OnIOTaskStatus(status);
@@ -338,13 +355,13 @@ TEST_F(FileManagerEventRouterTest, OnIOTaskStatusForPolicyError) {
   status.state = file_manager::io_task::State::kError;
   status.sources = std::move(source_entries);
   status.policy_error.emplace(io_task::PolicyErrorType::kDlp,
-                              /*blocked_files=*/1);
+                              /*blocked_files=*/1, "foo.txt");
 
   // Expect the event to have dlp as policy error.
   base::RunLoop run_loop;
-  EXPECT_CALL(observer, OnBroadcastEvent(
-                            Field(&extensions::Event::event_args,
-                                  AllOf(ExpectEventArgPolicyError("dlp", 1)))))
+  EXPECT_CALL(observer, OnBroadcastEvent(Field(&extensions::Event::event_args,
+                                               AllOf(ExpectEventArgPolicyError(
+                                                   "dlp", 1, "foo.txt")))))
       .WillOnce(RunClosure(run_loop.QuitClosure()));
 
   event_router->OnIOTaskStatus(status);

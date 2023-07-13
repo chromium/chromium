@@ -1080,6 +1080,8 @@ dictionary PolicyError {
   PolicyErrorType type;
   // The number of files blocked by the policy.
   long policyFileCount;
+  // The name of the first blocked file. Used for notifications.
+  DOMString fileName;
 };
 
 // IO task state::PAUSED name conflict parameters, see file_manager::io_task::ConflictPauseParams.
@@ -1103,6 +1105,8 @@ dictionary PolicyPauseParams {
   PolicyErrorType type;
   // The number of files under warning restriction.
   long policyFileCount;
+  // The name of the first file under warning restriction. Used for notifications.
+  DOMString fileName;
 };
 
 // IO task state::PAUSED parameters, see file_manager::io_task::PauseParams.

@@ -1098,7 +1098,11 @@ void FilesPolicyNotificationManager::PauseIOTask(
 
   file_manager::io_task::PauseParams pause_params;
   pause_params.policy_params = file_manager::io_task::PolicyPauseParams(
-      Policy::kDlp, io_tasks_.at(task_id).warning_info->files.size());
+      Policy::kDlp, io_tasks_.at(task_id).warning_info->files.size(),
+      io_tasks_.at(task_id)
+          .warning_info->files.begin()
+          ->file_path.BaseName()
+          .value());
   io_task_controller->Pause(task_id, std::move(pause_params));
   // TODO(ayaelattar): Timeout after total 5 minutes.
 }

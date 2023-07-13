@@ -7,6 +7,7 @@
 
 #include <cstddef>
 #include <ostream>
+#include <string>
 #include <vector>
 
 #include "base/files/file.h"
@@ -86,6 +87,9 @@ struct PolicyError {
   PolicyErrorType type;
   // The number of files blocked by the policy.
   size_t blocked_files = 0;
+  // The name of the first file among those under block restriction. Used for
+  // notifications.
+  std::string file_name;
 
   bool operator==(const PolicyError& other) const;
   bool operator!=(const PolicyError& other) const;
@@ -120,6 +124,9 @@ struct PolicyPauseParams {
   // The number of files under warning restriction. Needed to show correct
   // notifications.
   size_t warning_files_count = 0;
+  // The name of the first file among those under warning restriction. Used for
+  // notifications.
+  std::string file_name;
 
   bool operator==(const PolicyPauseParams& other) const;
 };
