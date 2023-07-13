@@ -94,14 +94,16 @@ void LayoutEmbeddedObject::PaintReplaced(
 void LayoutEmbeddedObject::UpdateLayout() {
   NOT_DESTROYED();
   DCHECK(NeedsLayout());
-
   ClearLayoutOverflow();
-
-  if (!GetEmbeddedContentView() && GetFrameView())
-    GetFrameView()->AddPartToUpdate(*this);
-
   ClearSelfNeedsLayoutOverflowRecalc();
   ClearNeedsLayout();
+}
+
+void LayoutEmbeddedObject::UpdateAfterLayout() {
+  NOT_DESTROYED();
+  LayoutEmbeddedContent::UpdateAfterLayout();
+  if (!GetEmbeddedContentView() && GetFrameView())
+    GetFrameView()->AddPartToUpdate(*this);
 }
 
 void LayoutEmbeddedObject::ComputeIntrinsicSizingInfo(
