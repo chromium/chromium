@@ -58,8 +58,8 @@ enum class Action {
 // IDs for the views used by the clipboard history menu.
 enum MenuViewID {
   // We start at 1 because 0 is not a valid view ID.
-  kDeleteButtonViewID = 1,
-  kMainButtonViewID,
+  kCtrlVLabelID = 1,
+  kDeleteButtonViewID,
 };
 
 // Modes for specifying a clipboard history pause's semantics.

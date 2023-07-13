@@ -42,6 +42,10 @@ class ASH_EXPORT ClipboardHistoryItemView : public views::View {
 
   void HandleMainButtonPressEvent(const ui::Event& event);
 
+  // Makes the Ctrl+V label located underneath this item's contents visible.
+  // Will have no effect if called before `Init()`.
+  void ShowCtrlVLabel();
+
   // Attempts to handle the gesture event redirected from `main_button_`.
   void MaybeHandleGestureEventFromMainButton(ui::GestureEvent* event);
 
@@ -131,6 +135,7 @@ class ASH_EXPORT ClipboardHistoryItemView : public views::View {
 
   // Owned by the view hierarchy.
   raw_ptr<views::View, ExperimentalAsh> main_button_ = nullptr;
+  raw_ptr<views::View, ExperimentalAsh> ctrl_v_label_ = nullptr;
   raw_ptr<views::View, ExperimentalAsh> delete_button_ = nullptr;
 
   PseudoFocus pseudo_focus_ = PseudoFocus::kEmpty;

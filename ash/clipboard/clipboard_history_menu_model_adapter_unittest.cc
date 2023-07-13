@@ -6,6 +6,7 @@
 
 #include "ash/clipboard/clipboard_history.h"
 #include "ash/clipboard/clipboard_history_controller_impl.h"
+#include "ash/clipboard/clipboard_history_util.h"
 #include "ash/constants/ash_features.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
@@ -16,6 +17,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/models/simple_menu_model.h"
+#include "ui/views/controls/menu/menu_item_view.h"
 
 namespace ash {
 using ::testing::Bool;
@@ -43,7 +45,115 @@ GetClipboardHistoryShowSources() {
   return sources;
 }
 
+void FlushMessageLoop() {
+  base::RunLoop run_loop;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, run_loop.QuitClosure());
+  run_loop.Run();
+}
+
 }  // namespace
+
+// Base class for `ClipboardHistoryMenuModelAdapter` tests whose only required
+// parameterization is whether the clipboard history refresh is enabled.
+class ClipboardHistoryMenuModelAdapterRefreshTest
+    : public AshTestBase,
+      public WithParamInterface</*enable_refresh=*/bool> {
+ public:
+  ClipboardHistoryMenuModelAdapterRefreshTest() {
+    scoped_feature_list_.InitWithFeatureStates(
+        {{chromeos::features::kClipboardHistoryRefresh,
+          IsClipboardHistoryRefreshEnabled()},
+         {chromeos::features::kJelly, IsClipboardHistoryRefreshEnabled()}});
+  }
+
+  // AshTestBase:
+  void SetUp() override {
+    AshTestBase::SetUp();
+    GetClipboardHistoryController()->set_confirmed_operation_callback_for_test(
+        operation_confirmed_future_.GetRepeatingCallback());
+  }
+
+  void WriteTextToClipboardAndConfirm(const std::u16string& str) {
+    EXPECT_FALSE(operation_confirmed_future_.IsReady());
+    {
+      ui::ScopedClipboardWriter scw(ui::ClipboardBuffer::kCopyPaste);
+      scw.WriteText(str);
+    }
+    EXPECT_TRUE(operation_confirmed_future_.Take());
+  }
+
+  bool IsClipboardHistoryRefreshEnabled() const { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::TestFuture<bool> operation_confirmed_future_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ClipboardHistoryMenuModelAdapterRefreshTest,
+                         /*enable_refresh=*/Bool());
+
+TEST_P(ClipboardHistoryMenuModelAdapterRefreshTest, FirstItemShowsCtrlVLabel) {
+  // Write items to clipboard history so that the menu can show.
+  WriteTextToClipboardAndConfirm(u"A");
+  WriteTextToClipboardAndConfirm(u"B");
+  WriteTextToClipboardAndConfirm(u"C");
+
+  // Show the clipboard history menu and wait for the first item to be selected
+  // so that item selection does not interfere with removing items later.
+  auto* const controller = GetClipboardHistoryController();
+  ASSERT_TRUE(controller);
+  base::RunLoop run_loop;
+  controller->set_initial_item_selected_callback_for_test(
+      run_loop.QuitClosure());
+  EXPECT_TRUE(controller->ShowMenu(
+      gfx::Rect(), ui::MenuSourceType::MENU_SOURCE_NONE,
+      ClipboardHistoryControllerShowSource::kDefaultValue));
+  run_loop.Run();
+  EXPECT_TRUE(controller->IsMenuShowing());
+
+  // Verify the number of items in the menu.
+  auto* const adapter = controller->context_menu_for_test();
+  ASSERT_EQ(adapter->GetMenuItemsCount(), 3u);
+
+  // Get handles to three clipboard history items' Ctrl+V labels, noting that
+  // the items' indices will be offset by 1 if the menu has a header.
+  const size_t offset = IsClipboardHistoryRefreshEnabled() ? 1u : 0u;
+  const auto* const ctrl_v_label1 =
+      adapter->GetMenuItemViewAtForTest(0u + offset)
+          ->GetViewByID(clipboard_history_util::kCtrlVLabelID);
+  ASSERT_EQ(!!ctrl_v_label1, IsClipboardHistoryRefreshEnabled());
+  const auto* const ctrl_v_label2 =
+      adapter->GetMenuItemViewAtForTest(1u + offset)
+          ->GetViewByID(clipboard_history_util::kCtrlVLabelID);
+  ASSERT_EQ(!!ctrl_v_label2, IsClipboardHistoryRefreshEnabled());
+  const auto* const ctrl_v_label3 =
+      adapter->GetMenuItemViewAtForTest(2u + offset)
+          ->GetViewByID(clipboard_history_util::kCtrlVLabelID);
+  ASSERT_EQ(!!ctrl_v_label3, IsClipboardHistoryRefreshEnabled());
+
+  // If the labels do exist, test that only the first item's label is visible.
+  if (IsClipboardHistoryRefreshEnabled()) {
+    // Initially, the first item's label should be visible.
+    EXPECT_TRUE(ctrl_v_label1->GetVisible());
+    EXPECT_FALSE(ctrl_v_label2->GetVisible());
+    EXPECT_FALSE(ctrl_v_label3->GetVisible());
+
+    // Remove the first item. Now the second item's label should be visible.
+    adapter->RemoveMenuItemWithCommandId(
+        clipboard_history_util::kFirstItemCommandId);
+    FlushMessageLoop();
+    EXPECT_TRUE(ctrl_v_label2->GetVisible());
+    EXPECT_FALSE(ctrl_v_label3->GetVisible());
+
+    // Remove the second item. Now the third item's label should be visible.
+    adapter->RemoveMenuItemWithCommandId(
+        clipboard_history_util::kFirstItemCommandId + 1);
+    FlushMessageLoop();
+    EXPECT_TRUE(ctrl_v_label3->GetVisible());
+  }
+}
 
 // Base class for `ClipboardHistoryMenuModelAdapter` tests that verify the
 // presence of a menu header, a menu footer, both, or neither.

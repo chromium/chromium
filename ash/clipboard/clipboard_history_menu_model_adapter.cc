@@ -26,6 +26,7 @@
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/menu_model.h"
@@ -525,6 +526,17 @@ int ClipboardHistoryMenuModelAdapter::CalculateSelectedCommandIdAfterDeletion(
   return previous_item_iter->first;
 }
 
+absl::optional<int>
+ClipboardHistoryMenuModelAdapter::GetFirstMenuItemCommand() {
+  if (item_views_by_command_id_.empty()) {
+    return absl::nullopt;
+  }
+
+  return base::ranges::min(item_views_by_command_id_, /*comp=*/{},
+                           /*proj=*/[](const auto& kv) { return kv.first; })
+      .first;
+}
+
 void ClipboardHistoryMenuModelAdapter::RemoveItemView(int command_id) {
   absl::optional<int> original_selected_command_id =
       GetSelectedMenuItemCommand();
@@ -533,6 +545,11 @@ void ClipboardHistoryMenuModelAdapter::RemoveItemView(int command_id) {
   // same time. Otherwise, it may run into check errors.
   model_->RemoveItemAt(model_->GetIndexOfCommandId(command_id).value());
   root_view_->RemoveMenuItem(root_view_->GetMenuItemByID(command_id));
+  if (const auto first_item_command_id = GetFirstMenuItemCommand();
+      first_item_command_id &&
+      chromeos::features::IsClipboardHistoryRefreshEnabled()) {
+    item_views_by_command_id_[*first_item_command_id]->ShowCtrlVLabel();
+  }
   root_view_->ChildrenChanged();
 
   --item_deletion_in_progress_count_;
@@ -572,6 +589,10 @@ views::MenuItemView* ClipboardHistoryMenuModelAdapter::AppendMenuItem(
         ClipboardHistoryItemView::CreateFromClipboardHistoryItem(
             GetItemFromCommandId(command_id).id(), clipboard_history_,
             container);
+    if (chromeos::features::IsClipboardHistoryRefreshEnabled() &&
+        command_id == clipboard_history_util::kFirstItemCommandId) {
+      item_view->ShowCtrlVLabel();
+    }
     item_views_by_command_id_.insert(
         std::make_pair(command_id, item_view.get()));
     container->AddChildView(std::move(item_view));

@@ -118,6 +118,11 @@ class ASH_EXPORT ClipboardHistoryMenuModelAdapter
   // menu item specified by `command_id` is deleted.
   int CalculateSelectedCommandIdAfterDeletion(int command_id) const;
 
+  // Returns the command of the menu's first clipboard history item. This
+  // differs from `clipboard_history_util::kFirstItemCommandId` when the menu's
+  // first item has been removed. If the menu is empty, the result is absent.
+  absl::optional<int> GetFirstMenuItemCommand();
+
   // Removes the item view specified by `command_id` from the root menu.
   void RemoveItemView(int command_id);
 

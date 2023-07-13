@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/bubble/bubble_utils.h"
 #include "ash/clipboard/clipboard_history.h"
 #include "ash/clipboard/clipboard_history_item.h"
 #include "ash/clipboard/clipboard_history_util.h"
@@ -14,6 +15,7 @@
 #include "ash/clipboard/views/clipboard_history_main_button.h"
 #include "ash/clipboard/views/clipboard_history_text_item_view.h"
 #include "ash/clipboard/views/clipboard_history_view_constants.h"
+#include "ash/style/typography.h"
 #include "base/auto_reset.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
@@ -22,12 +24,16 @@
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/base/accelerators/accelerator.h"
 #include "ui/base/clipboard/clipboard_data.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/events/event_constants.h"
+#include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/image_view.h"
+#include "ui/views/controls/label.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
@@ -61,6 +67,20 @@ const gfx::Insets GetDeleteButtonMargins(
     case crosapi::mojom::ClipboardHistoryDisplayFormat::kHtml:
       return ClipboardHistoryViews::kBitmapItemDeleteButtonMargins;
   }
+}
+
+// Creates a label with the text "Ctrl+V" to be displayed under the contents of
+// the first item in the clipboard history menu.
+std::unique_ptr<views::Label> CreateCtrlVLabel() {
+  return views::Builder<views::Label>(
+             bubble_utils::CreateLabel(
+                 TypographyToken::kCrosLabel1,
+                 ui::Accelerator(ui::VKEY_V, ui::EF_CONTROL_DOWN)
+                     .GetShortcutText(),
+                 cros_tokens::kCrosSysSecondary))
+      .SetID(clipboard_history_util::kCtrlVLabelID)
+      .SetHorizontalAlignment(gfx::ALIGN_LEFT)
+      .Build();
 }
 }  // namespace
 
@@ -97,7 +117,19 @@ class ClipboardHistoryItemView::DisplayView
           views::Builder<views::View>()
               .SetLayoutManager(std::make_unique<views::FillLayout>())
               .AddChildren(
-                  views::Builder<views::View>(container->CreateContentsView()),
+                  views::Builder<views::BoxLayoutView>()
+                      .SetOrientation(views::BoxLayout::Orientation::kVertical)
+                      .SetBetweenChildSpacing(
+                          ClipboardHistoryViews::kCtrlVLabelPadding)
+                      .AddChildren(
+                          views::Builder<views::View>(
+                              container->CreateContentsView()),
+                          views::Builder<views::Label>(CreateCtrlVLabel())
+                              .CopyAddressTo(&container->ctrl_v_label_)
+                              // The Ctrl+V label is hidden by default.
+                              // `ShowCtrlVLabel()` will be called on the menu's
+                              // first item to make its label visible.
+                              .SetVisible(false)),
                   views::Builder<views::View>(container->CreateDeleteButton()))
               .Build());
     } else {
@@ -230,6 +262,11 @@ void ClipboardHistoryItemView::HandleMainButtonPressEvent(
     pseudo_focus_ = PseudoFocus::kMainButton;
 
   Activate(CalculateActionForMainButtonClick(), event.flags());
+}
+
+void ClipboardHistoryItemView::ShowCtrlVLabel() {
+  CHECK(ctrl_v_label_);
+  ctrl_v_label_->SetVisible(true);
 }
 
 void ClipboardHistoryItemView::MaybeHandleGestureEventFromMainButton(

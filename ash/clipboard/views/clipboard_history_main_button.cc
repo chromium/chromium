@@ -4,7 +4,6 @@
 
 #include "ash/clipboard/views/clipboard_history_main_button.h"
 
-#include "ash/clipboard/clipboard_history_util.h"
 #include "ash/clipboard/views/clipboard_history_item_view.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/style_util.h"
@@ -30,7 +29,6 @@ ClipboardHistoryMainButton::ClipboardHistoryMainButton(
       container_(container) {
   SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
   views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
-  SetID(clipboard_history_util::kMainButtonViewID);
 
   // Let the parent handle accessibility features.
   GetViewAccessibility().OverrideIsIgnored(/*value=*/true);

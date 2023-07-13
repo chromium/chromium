@@ -13,6 +13,9 @@ namespace ash::ClipboardHistoryViews {
 constexpr int kContentsVerticalInset = 8;
 constexpr auto kContentsInsets = gfx::Insets::VH(kContentsVerticalInset, 16);
 
+// The padding vertically separating the Ctrl+V label from the contents view.
+constexpr int kCtrlVLabelPadding = 6;
+
 // The size of the `DeleteButton`.
 constexpr int kDeleteButtonSizeDip = 16;
 
