@@ -54,16 +54,6 @@ class CONTENT_EXPORT IndexedDBMetadataCoding {
                                          int64_t* id,
                                          bool* found);
 
-  // Creates a new object store metadata entry and writes it to the transaction.
-  virtual leveldb::Status CreateObjectStore(
-      TransactionalLevelDBTransaction* transaction,
-      int64_t database_id,
-      int64_t object_store_id,
-      std::u16string name,
-      blink::IndexedDBKeyPath key_path,
-      bool auto_increment,
-      blink::IndexedDBObjectStoreMetadata* metadata);
-
   // Deletes the given object store metadata on the transaction (but not any
   // data entries or blobs in the object store).
   virtual leveldb::Status DeleteObjectStore(

@@ -476,6 +476,7 @@ leveldb::Status IndexedDBDatabase::CreateObjectStoreOperation(
     bool auto_increment,
     IndexedDBTransaction* transaction) {
   DCHECK(transaction);
+  DCHECK_EQ(transaction->database().get(), this);
   TRACE_EVENT1("IndexedDB", "IndexedDBDatabase::CreateObjectStoreOperation",
                "txn.id", transaction->id());
   DCHECK_EQ(transaction->mode(),
@@ -485,10 +486,9 @@ leveldb::Status IndexedDBDatabase::CreateObjectStoreOperation(
     return leveldb::Status::InvalidArgument("Invalid object_store_id");
 
   IndexedDBObjectStoreMetadata object_store_metadata;
-  Status s = metadata_coding_->CreateObjectStore(
-      transaction->BackingStoreTransaction()->transaction(),
-      transaction->database()->id(), object_store_id, name, key_path,
-      auto_increment, &object_store_metadata);
+  Status s = backing_store_->CreateObjectStore(
+      transaction->BackingStoreTransaction(), id(), object_store_id, name,
+      key_path, auto_increment, &object_store_metadata);
 
   if (!s.ok())
     return s;

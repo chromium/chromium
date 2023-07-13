@@ -47,15 +47,6 @@ class FakeIndexedDBMetadataCoding : public IndexedDBMetadataCoding {
                                  int64_t* id,
                                  bool* found) override;
 
-  leveldb::Status CreateObjectStore(
-      TransactionalLevelDBTransaction* transaction,
-      int64_t database_id,
-      int64_t object_store_id,
-      std::u16string name,
-      blink::IndexedDBKeyPath key_path,
-      bool auto_increment,
-      blink::IndexedDBObjectStoreMetadata* metadata) override;
-
   leveldb::Status RenameObjectStore(
       TransactionalLevelDBTransaction* transaction,
       int64_t database_id,

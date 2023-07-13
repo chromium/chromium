@@ -1566,10 +1566,9 @@ TEST_F(IndexedDBBackingStoreTest, CreateDatabase) {
           transaction.Begin(CreateDummyLock());
 
           IndexedDBObjectStoreMetadata object_store;
-          s = metadata_coding.CreateObjectStore(
-              transaction.transaction(), database.id, object_store_id,
-              object_store_name, object_store_key_path, auto_increment,
-              &object_store);
+          s = backing_store()->CreateObjectStore(
+              &transaction, database.id, object_store_id, object_store_name,
+              object_store_key_path, auto_increment, &object_store);
           EXPECT_TRUE(s.ok());
 
           IndexedDBIndexMetadata index;
@@ -1880,10 +1879,9 @@ TEST_F(IndexedDBBackingStoreTest, SchemaUpgradeWithoutBlobsSurvives) {
     transaction.Begin(CreateDummyLock());
 
     IndexedDBObjectStoreMetadata object_store;
-    s = metadata_coding.CreateObjectStore(
-        transaction.transaction(), database.id, object_store_id,
-        object_store_name, object_store_key_path, auto_increment,
-        &object_store);
+    s = backing_store()->CreateObjectStore(
+        &transaction, database.id, object_store_id, object_store_name,
+        object_store_key_path, auto_increment, &object_store);
     EXPECT_TRUE(s.ok());
 
     bool succeeded = false;
@@ -1986,10 +1984,9 @@ TEST_F(IndexedDBBackingStoreTestWithBlobs, SchemaUpgradeWithBlobsCorrupt) {
     transaction.Begin(CreateDummyLock());
 
     IndexedDBObjectStoreMetadata object_store;
-    s = metadata_coding.CreateObjectStore(
-        transaction.transaction(), database.id, object_store_id,
-        object_store_name, object_store_key_path, auto_increment,
-        &object_store);
+    s = backing_store()->CreateObjectStore(
+        &transaction, database.id, object_store_id, object_store_name,
+        object_store_key_path, auto_increment, &object_store);
     EXPECT_TRUE(s.ok());
 
     bool succeeded = false;
@@ -2103,10 +2100,9 @@ TEST_F(IndexedDBBackingStoreTestWithBlobs, SchemaUpgradeV3ToV4) {
     transaction.Begin(CreateDummyLock());
 
     IndexedDBObjectStoreMetadata object_store;
-    s = metadata_coding.CreateObjectStore(
-        transaction.transaction(), database.id, object_store_id,
-        object_store_name, object_store_key_path, auto_increment,
-        &object_store);
+    s = backing_store()->CreateObjectStore(
+        &transaction, database.id, object_store_id, object_store_name,
+        object_store_key_path, auto_increment, &object_store);
     EXPECT_TRUE(s.ok());
 
     bool succeeded = false;
@@ -2257,10 +2253,9 @@ TEST_F(IndexedDBBackingStoreTestWithBlobs, SchemaUpgradeV4ToV5) {
     transaction.Begin(CreateDummyLock());
 
     IndexedDBObjectStoreMetadata object_store;
-    s = metadata_coding.CreateObjectStore(
-        transaction.transaction(), database.id, object_store_id,
-        object_store_name, object_store_key_path, auto_increment,
-        &object_store);
+    s = backing_store()->CreateObjectStore(
+        &transaction, database.id, object_store_id, object_store_name,
+        object_store_key_path, auto_increment, &object_store);
     EXPECT_TRUE(s.ok());
 
     bool succeeded = false;

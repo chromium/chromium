@@ -82,6 +82,22 @@ leveldb::Status IndexedDBFakeBackingStore::DeleteDatabase(
   return leveldb::Status::OK();
 }
 
+leveldb::Status IndexedDBFakeBackingStore::CreateObjectStore(
+    Transaction* transaction,
+    int64_t database_id,
+    int64_t object_store_id,
+    std::u16string name,
+    blink::IndexedDBKeyPath key_path,
+    bool auto_increment,
+    blink::IndexedDBObjectStoreMetadata* metadata) {
+  metadata->name = std::move(name);
+  metadata->id = object_store_id;
+  metadata->key_path = std::move(key_path);
+  metadata->auto_increment = auto_increment;
+  metadata->max_index_id = blink::IndexedDBObjectStoreMetadata::kMinimumIndexId;
+  return leveldb::Status::OK();
+}
+
 leveldb::Status IndexedDBFakeBackingStore::PutRecord(
     IndexedDBBackingStore::Transaction* transaction,
     int64_t database_id,

@@ -37,22 +37,6 @@ leveldb::Status FakeIndexedDBMetadataCoding::FindDatabaseId(
   return Status::OK();
 }
 
-leveldb::Status FakeIndexedDBMetadataCoding::CreateObjectStore(
-    TransactionalLevelDBTransaction* transaction,
-    int64_t database_id,
-    int64_t object_store_id,
-    std::u16string name,
-    blink::IndexedDBKeyPath key_path,
-    bool auto_increment,
-    IndexedDBObjectStoreMetadata* metadata) {
-  metadata->name = std::move(name);
-  metadata->id = object_store_id;
-  metadata->key_path = std::move(key_path);
-  metadata->auto_increment = auto_increment;
-  metadata->max_index_id = IndexedDBObjectStoreMetadata::kMinimumIndexId;
-  return Status::OK();
-}
-
 leveldb::Status FakeIndexedDBMetadataCoding::RenameObjectStore(
     TransactionalLevelDBTransaction* transaction,
     int64_t database_id,

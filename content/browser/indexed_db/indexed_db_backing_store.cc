@@ -1555,6 +1555,93 @@ Status IndexedDBBackingStore::DeleteDatabase(
   return s;
 }
 
+leveldb::Status IndexedDBBackingStore::CreateObjectStore(
+    Transaction* transaction,
+    int64_t database_id,
+    int64_t object_store_id,
+    std::u16string name,
+    blink::IndexedDBKeyPath key_path,
+    bool auto_increment,
+    blink::IndexedDBObjectStoreMetadata* metadata) {
+  TransactionalLevelDBTransaction* leveldb_transaction =
+      transaction->transaction();
+  if (!KeyPrefix::ValidIds(database_id, object_store_id)) {
+    return InvalidDBKeyStatus();
+  }
+  Status s = indexed_db::SetMaxObjectStoreId(leveldb_transaction, database_id,
+                                             object_store_id);
+  if (!s.ok()) {
+    return s;
+  }
+
+  static const constexpr int64_t kInitialLastVersionNumber = 1;
+  const std::string name_key = ObjectStoreMetaDataKey::Encode(
+      database_id, object_store_id, ObjectStoreMetaDataKey::NAME);
+  const std::string key_path_key = ObjectStoreMetaDataKey::Encode(
+      database_id, object_store_id, ObjectStoreMetaDataKey::KEY_PATH);
+  const std::string auto_increment_key = ObjectStoreMetaDataKey::Encode(
+      database_id, object_store_id, ObjectStoreMetaDataKey::AUTO_INCREMENT);
+  const std::string evictable_key = ObjectStoreMetaDataKey::Encode(
+      database_id, object_store_id, ObjectStoreMetaDataKey::EVICTABLE);
+  const std::string last_version_key = ObjectStoreMetaDataKey::Encode(
+      database_id, object_store_id, ObjectStoreMetaDataKey::LAST_VERSION);
+  const std::string max_index_id_key = ObjectStoreMetaDataKey::Encode(
+      database_id, object_store_id, ObjectStoreMetaDataKey::MAX_INDEX_ID);
+  const std::string has_key_path_key = ObjectStoreMetaDataKey::Encode(
+      database_id, object_store_id, ObjectStoreMetaDataKey::HAS_KEY_PATH);
+  const std::string key_generator_current_number_key =
+      ObjectStoreMetaDataKey::Encode(
+          database_id, object_store_id,
+          ObjectStoreMetaDataKey::KEY_GENERATOR_CURRENT_NUMBER);
+  const std::string names_key = ObjectStoreNamesKey::Encode(database_id, name);
+
+  s = PutString(leveldb_transaction, name_key, name);
+  if (!s.ok()) {
+    return s;
+  }
+  s = PutIDBKeyPath(leveldb_transaction, key_path_key, key_path);
+  if (!s.ok()) {
+    return s;
+  }
+  s = PutInt(leveldb_transaction, auto_increment_key, auto_increment);
+  if (!s.ok()) {
+    return s;
+  }
+  s = PutInt(leveldb_transaction, evictable_key, false);
+  if (!s.ok()) {
+    return s;
+  }
+  s = PutInt(leveldb_transaction, last_version_key, kInitialLastVersionNumber);
+  if (!s.ok()) {
+    return s;
+  }
+  s = PutInt(leveldb_transaction, max_index_id_key, kMinimumIndexId);
+  if (!s.ok()) {
+    return s;
+  }
+  s = PutBool(leveldb_transaction, has_key_path_key, !key_path.IsNull());
+  if (!s.ok()) {
+    return s;
+  }
+  s = PutInt(leveldb_transaction, key_generator_current_number_key,
+             ObjectStoreMetaDataKey::kKeyGeneratorInitialNumber);
+  if (!s.ok()) {
+    return s;
+  }
+  s = PutInt(leveldb_transaction, names_key, object_store_id);
+  if (!s.ok()) {
+    return s;
+  }
+
+  metadata->name = std::move(name);
+  metadata->id = object_store_id;
+  metadata->key_path = std::move(key_path);
+  metadata->auto_increment = auto_increment;
+  metadata->max_index_id = blink::IndexedDBObjectStoreMetadata::kMinimumIndexId;
+  metadata->indexes.clear();
+  return s;
+}
+
 void IndexedDBBackingStore::Compact() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 #if DCHECK_IS_ON()

@@ -43,7 +43,16 @@ class IndexedDBFakeBackingStore : public IndexedDBBackingStore {
       const std::u16string& name,
       TransactionalLevelDBTransaction* transaction) override;
 
-  leveldb::Status PutRecord(IndexedDBBackingStore::Transaction* transaction,
+  leveldb::Status CreateObjectStore(
+      Transaction* transaction,
+      int64_t database_id,
+      int64_t object_store_id,
+      std::u16string name,
+      blink::IndexedDBKeyPath key_path,
+      bool auto_increment,
+      blink::IndexedDBObjectStoreMetadata* metadata) override;
+
+  leveldb::Status PutRecord(Transaction* transaction,
                             int64_t database_id,
                             int64_t object_store_id,
                             const blink::IndexedDBKey& key,
@@ -123,7 +132,7 @@ class IndexedDBFakeBackingStore : public IndexedDBBackingStore {
       blink::mojom::IDBCursorDirection,
       leveldb::Status*) override;
 
-  class FakeTransaction : public IndexedDBBackingStore::Transaction {
+  class FakeTransaction : public Transaction {
    public:
     FakeTransaction(leveldb::Status phase_two_result,
                     blink::mojom::IDBTransactionMode mode);
@@ -142,11 +151,9 @@ class IndexedDBFakeBackingStore : public IndexedDBBackingStore {
     leveldb::Status result_;
   };
 
-  std::unique_ptr<IndexedDBBackingStore::Transaction> CreateTransaction(
+  std::unique_ptr<Transaction> CreateTransaction(
       blink::mojom::IDBTransactionDurability durability,
       blink::mojom::IDBTransactionMode mode) override;
-
- protected:
 };
 
 }  // namespace content
