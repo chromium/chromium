@@ -288,6 +288,17 @@ void ClipboardHistoryMenuModelAdapter::Cancel(bool will_paste_item) {
 }
 
 absl::optional<int>
+ClipboardHistoryMenuModelAdapter::GetFirstMenuItemCommand() {
+  if (item_views_by_command_id_.empty()) {
+    return absl::nullopt;
+  }
+
+  return base::ranges::min(item_views_by_command_id_, /*comp=*/{},
+                           /*proj=*/[](const auto& kv) { return kv.first; })
+      .first;
+}
+
+absl::optional<int>
 ClipboardHistoryMenuModelAdapter::GetSelectedMenuItemCommand() const {
   DCHECK(root_view_);
 
@@ -524,17 +535,6 @@ int ClipboardHistoryMenuModelAdapter::CalculateSelectedCommandIdAfterDeletion(
   auto previous_item_iter = item_to_delete;
   --previous_item_iter;
   return previous_item_iter->first;
-}
-
-absl::optional<int>
-ClipboardHistoryMenuModelAdapter::GetFirstMenuItemCommand() {
-  if (item_views_by_command_id_.empty()) {
-    return absl::nullopt;
-  }
-
-  return base::ranges::min(item_views_by_command_id_, /*comp=*/{},
-                           /*proj=*/[](const auto& kv) { return kv.first; })
-      .first;
 }
 
 void ClipboardHistoryMenuModelAdapter::RemoveItemView(int command_id) {

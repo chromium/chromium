@@ -65,7 +65,9 @@ class ASH_EXPORT ClipboardHistoryControllerImpl
     kRichTextTouch = 7,             // Rich text paste triggered by gesture tap
     kPlainTextVirtualKeyboard = 8,  // Plain text paste triggered by VK request
     kRichTextVirtualKeyboard = 9,   // Rich text paste triggered by VK request
-    kMaxValue = 9
+    kPlainTextCtrlV = 10,           // Plain text paste triggered by Ctrl+V
+    kRichTextCtrlV = 11,            // Rich text paste triggered by Ctrl+V
+    kMaxValue = 11
   };
 
   ClipboardHistoryControllerImpl();

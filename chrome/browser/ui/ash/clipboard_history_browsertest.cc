@@ -1090,6 +1090,58 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryPasteTypeBrowserTest,
     // Verify the clipboard buffer is restored to initial state.
     ClipboardDataWaiter().WaitFor(&clipboard_data);
   }
+
+  // Open clipboard history and paste the first history item by pressing Ctrl+V.
+  // The item should not paste as plain text.
+  {
+    SCOPED_TRACE("Paste by pressing Ctrl+V.");
+    ShowContextMenuViaAccelerator(/*wait_for_selection=*/true);
+    EXPECT_TRUE(GetClipboardHistoryController()->IsMenuShowing());
+    PressAndRelease(ui::KeyboardCode::VKEY_V, ui::EF_CONTROL_DOWN);
+    EXPECT_FALSE(GetClipboardHistoryController()->IsMenuShowing());
+
+    WaitForWebContentsPaste("C", /*paste_plain_text=*/false);
+    histogram_tester.ExpectBucketCount(
+        "Ash.ClipboardHistory.PasteType",
+        ClipboardHistoryPasteType::kRichTextCtrlV,
+        /*expected_count=*/1);
+    histogram_tester.ExpectTotalCount("Ash.ClipboardHistory.PasteType",
+                                      /*expected_count=*/8);
+
+    // Note: No buffer restoration needs to happen after the above paste.
+  }
+
+  // Open clipboard history and paste the first history item by pressing Ctrl+V
+  // while holding down the shift key. The item should paste as plain text.
+  {
+    SCOPED_TRACE("Paste by pressing Shift+Ctrl+V.");
+    ShowContextMenuViaAccelerator(/*wait_for_selection=*/true);
+    EXPECT_TRUE(GetClipboardHistoryController()->IsMenuShowing());
+
+    // Remove the menu's first item to verify that pasting via Ctrl+V works even
+    // when the first item has changed since the menu was shown.
+    {
+      ScopedClipboardHistoryListUpdateWaiter scoped_waiter;
+      PressAndRelease(ui::KeyboardCode::VKEY_BACK, ui::EF_NONE);
+    }
+    ui::ClipboardData new_clipboard_data(
+        *clipboard->GetClipboardData(&data_dst));
+
+    PressAndRelease(ui::KeyboardCode::VKEY_V,
+                    ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN);
+    EXPECT_FALSE(GetClipboardHistoryController()->IsMenuShowing());
+
+    WaitForWebContentsPaste("B", /*paste_plain_text=*/true);
+    histogram_tester.ExpectBucketCount(
+        "Ash.ClipboardHistory.PasteType",
+        ClipboardHistoryPasteType::kPlainTextCtrlV,
+        /*expected_count=*/1);
+    histogram_tester.ExpectTotalCount("Ash.ClipboardHistory.PasteType",
+                                      /*expected_count=*/9);
+
+    // Verify the clipboard buffer is restored to initial state.
+    ClipboardDataWaiter().WaitFor(&new_clipboard_data);
+  }
 }
 
 // Regression test for crbug.com/1363828 --- verifies that

@@ -150,12 +150,14 @@ bool IsPlainTextPaste(ClipboardHistoryPasteType paste_type) {
     case ClipboardHistoryPasteType::kPlainTextMouse:
     case ClipboardHistoryPasteType::kPlainTextTouch:
     case ClipboardHistoryPasteType::kPlainTextVirtualKeyboard:
+    case ClipboardHistoryPasteType::kPlainTextCtrlV:
       return true;
     case ClipboardHistoryPasteType::kRichTextAccelerator:
     case ClipboardHistoryPasteType::kRichTextKeystroke:
     case ClipboardHistoryPasteType::kRichTextMouse:
     case ClipboardHistoryPasteType::kRichTextTouch:
     case ClipboardHistoryPasteType::kRichTextVirtualKeyboard:
+    case ClipboardHistoryPasteType::kRichTextCtrlV:
       return false;
   }
 }
@@ -211,6 +213,14 @@ class ClipboardHistoryControllerImpl::AcceleratorTarget
         shift_tab_navigation_(ui::Accelerator(
             /*key_code=*/ui::VKEY_TAB,
             /*modifiers=*/ui::EF_SHIFT_DOWN,
+            /*key_state=*/ui::Accelerator::KeyState::PRESSED)),
+        paste_first_item_(ui::Accelerator(
+            /*key_code=*/ui::VKEY_V,
+            /*modifiers=*/ui::EF_CONTROL_DOWN,
+            /*key_state=*/ui::Accelerator::KeyState::PRESSED)),
+        paste_first_item_plaintext_(ui::Accelerator(
+            /*key_code=*/ui::VKEY_V,
+            /*modifiers=*/ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN,
             /*key_state=*/ui::Accelerator::KeyState::PRESSED)) {}
   AcceleratorTarget(const AcceleratorTarget&) = delete;
   AcceleratorTarget& operator=(const AcceleratorTarget&) = delete;
@@ -218,28 +228,30 @@ class ClipboardHistoryControllerImpl::AcceleratorTarget
 
   void OnMenuShown() {
     Shell::Get()->accelerator_controller()->Register(
-        {delete_selected_, tab_navigation_, shift_tab_navigation_},
-        /*accelerator_target=*/this);
+        {delete_selected_, tab_navigation_, shift_tab_navigation_,
+         paste_first_item_, paste_first_item_plaintext_},
+        /*target=*/this);
   }
 
   void OnMenuClosed() {
-    Shell::Get()->accelerator_controller()->Unregister(
-        delete_selected_, /*accelerator_target=*/this);
-    Shell::Get()->accelerator_controller()->Unregister(
-        tab_navigation_, /*accelerator_target=*/this);
-    Shell::Get()->accelerator_controller()->Unregister(
-        shift_tab_navigation_, /*accelerator_target=*/this);
+    Shell::Get()->accelerator_controller()->UnregisterAll(/*target=*/this);
   }
 
  private:
   // ui::AcceleratorTarget:
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override {
+    CHECK(controller_->IsMenuShowing());
+
     if (accelerator == delete_selected_) {
-      HandleDeleteSelected(accelerator.modifiers());
+      HandleDeleteSelected();
     } else if (accelerator == tab_navigation_) {
       HandleTab();
     } else if (accelerator == shift_tab_navigation_) {
       HandleShiftTab();
+    } else if (accelerator == paste_first_item_) {
+      HandlePasteFirstItem(ClipboardHistoryPasteType::kRichTextCtrlV);
+    } else if (accelerator == paste_first_item_plaintext_) {
+      HandlePasteFirstItem(ClipboardHistoryPasteType::kPlainTextCtrlV);
     } else {
       NOTREACHED();
       return false;
@@ -253,33 +265,37 @@ class ClipboardHistoryControllerImpl::AcceleratorTarget
            controller_->HasAvailableHistoryItems();
   }
 
-  void HandleDeleteSelected(int event_flags) {
-    DCHECK(controller_->IsMenuShowing());
-    controller_->DeleteSelectedMenuItemIfAny();
+  void HandleDeleteSelected() { controller_->DeleteSelectedMenuItemIfAny(); }
+
+  void HandleTab() { controller_->AdvancePseudoFocus(/*reverse=*/false); }
+
+  void HandleShiftTab() { controller_->AdvancePseudoFocus(/*reverse=*/true); }
+
+  void HandlePasteFirstItem(ClipboardHistoryPasteType paste_type) {
+    const auto first_item_command_id =
+        controller_->context_menu_->GetFirstMenuItemCommand();
+    CHECK(first_item_command_id);
+    controller_->PasteClipboardItemByCommandId(*first_item_command_id,
+                                               paste_type);
   }
 
-  void HandleTab() {
-    DCHECK(controller_->IsMenuShowing());
-    controller_->AdvancePseudoFocus(/*reverse=*/false);
-  }
-
-  void HandleShiftTab() {
-    DCHECK(controller_->IsMenuShowing());
-    controller_->AdvancePseudoFocus(/*reverse=*/true);
-  }
-
-  // The controller responsible for showing the Clipboard History menu.
+  // The controller responsible for showing the clipboard history menu.
   const raw_ptr<ClipboardHistoryControllerImpl, ExperimentalAsh> controller_;
 
-  // The accelerator to delete the selected menu item. It is only registered
-  // while the menu is showing.
+  // Deletes the selected menu item.
   const ui::Accelerator delete_selected_;
 
-  // Move the pseudo focus forward.
+  // Moves the pseudo focus forward.
   const ui::Accelerator tab_navigation_;
 
   // Moves the pseudo focus backward.
   const ui::Accelerator shift_tab_navigation_;
+
+  // Pastes the first item in the clipboard history menu.
+  const ui::Accelerator paste_first_item_;
+
+  // Pastes the plain text data of the first item in the clipboard history menu.
+  const ui::Accelerator paste_first_item_plaintext_;
 };
 
 // ClipboardHistoryControllerImpl::MenuDelegate --------------------------------
