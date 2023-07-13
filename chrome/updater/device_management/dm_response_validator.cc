@@ -413,7 +413,9 @@ bool DMResponseValidator::ValidateTimestamp(
   }
 
   if (policy_data.timestamp() < policy_info_.timestamp()) {
-    VLOG(1) << "Unexpected DM response timestamp older than cached timestamp.";
+    VLOG(1) << "Unexpected DM response timestamp [" << policy_data.timestamp()
+            << "] is older than cached timestamp [" << policy_info_.timestamp()
+            << "].";
     validation_result.status =
         PolicyValidationResult::Status::kValidationBadTimestamp;
     return false;

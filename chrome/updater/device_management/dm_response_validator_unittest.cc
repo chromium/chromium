@@ -50,7 +50,9 @@ DMResponseValidatorTests::GetDMResponseWithOmahaPolicy(
     const edm::OmahaSettingsClientProto& omaha_settings) const {
   std::unique_ptr<DMPolicyBuilderForTesting> policy_builder =
       DMPolicyBuilderForTesting::CreateInstanceWithOptions(
-          true, true, DMPolicyBuilderForTesting::SigningOption::kSignNormally);
+          /*first_request=*/true, /*rotate_to_new_key=*/true,
+          DMPolicyBuilderForTesting::SigningOption::kSignNormally,
+          "test-dm-token", "test-device-id");
   DMPolicyMap policy_map;
   policy_map.emplace(kGoogleUpdatePolicyType,
                      omaha_settings.SerializeAsString());
