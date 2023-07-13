@@ -553,6 +553,7 @@ ios_builder(
 ios_builder(
     name = "ios-simulator-code-coverage",
     mirrors = ["ci/ios-simulator-code-coverage"],
+    builderless = True,
     execution_timeout = 20 * time.hour,
 )
 
