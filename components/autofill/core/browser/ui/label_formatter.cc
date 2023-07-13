@@ -10,6 +10,7 @@
 #include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_data_util.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/ui/address_contact_form_label_formatter.h"
 #include "components/autofill/core/browser/ui/address_email_form_label_formatter.h"
@@ -35,7 +36,7 @@ LabelFormatter::LabelFormatter(const std::vector<AutofillProfile*>& profiles,
                                const std::string& app_locale,
                                ServerFieldType focused_field_type,
                                uint32_t groups,
-                               const std::vector<ServerFieldType>& field_types)
+                               const ServerFieldTypeSet& field_types)
     : profiles_(profiles),
       app_locale_(app_locale),
       focused_field_type_(focused_field_type),
@@ -84,7 +85,7 @@ std::unique_ptr<LabelFormatter> LabelFormatter::Create(
     const std::vector<AutofillProfile*>& profiles,
     const std::string& app_locale,
     ServerFieldType focused_field_type,
-    const std::vector<ServerFieldType>& field_types) {
+    const ServerFieldTypeSet& field_types) {
   const uint32_t groups = data_util::DetermineGroups(field_types);
   if (!data_util::IsSupportedFormType(groups)) {
     return nullptr;

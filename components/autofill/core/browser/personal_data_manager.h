@@ -416,7 +416,7 @@ class PersonalDataManager : public KeyedService,
       const AutofillType& type,
       const std::u16string& field_contents,
       bool field_is_autofilled,
-      const std::vector<ServerFieldType>& field_types);
+      const ServerFieldTypeSet& field_types);
 
   // Returns the credit cards to suggest to the user. Those have been deduped
   // and ordered by frecency with the expired cards put at the end of the

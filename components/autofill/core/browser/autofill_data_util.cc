@@ -321,9 +321,9 @@ uint32_t DetermineGroups(const FormStructure& form) {
   return group_bitmask;
 }
 
-uint32_t DetermineGroups(const std::vector<ServerFieldType>& types) {
+uint32_t DetermineGroups(const ServerFieldTypeSet& types) {
   uint32_t group_bitmask = 0;
-  for (const auto& type : types) {
+  for (const ServerFieldType type : types) {
     AddGroupToBitmask(&group_bitmask, type);
   }
   return group_bitmask;

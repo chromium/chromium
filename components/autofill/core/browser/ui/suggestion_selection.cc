@@ -175,7 +175,7 @@ std::vector<Suggestion> GetPrefixMatchedSuggestions(
 }
 
 std::vector<Suggestion> GetUniqueSuggestions(
-    const std::vector<ServerFieldType>& field_types,
+    const ServerFieldTypeSet& field_types,
     const AutofillProfileComparator& comparator,
     const std::string app_locale,
     const std::vector<AutofillProfile*> matched_profiles,
@@ -186,7 +186,6 @@ std::vector<Suggestion> GetUniqueSuggestions(
   // Limit number of unique profiles as having too many makes the
   // browser hang due to drawing calculations (and is also not
   // very useful for the user).
-  ServerFieldTypeSet types(field_types.begin(), field_types.end());
   for (size_t i = 0; i < matched_profiles.size() &&
                      unique_suggestions.size() < kMaxUniqueSuggestionsCount;
        ++i) {
@@ -198,7 +197,8 @@ std::vector<Suggestion> GetUniqueSuggestions(
       if (i == j ||
           !comparator.Compare(suggestions[i].main_text.value,
                               suggestions[j].main_text.value) ||
-          !profile_a->IsSubsetOfForFieldSet(comparator, *profile_b, types)) {
+          !profile_a->IsSubsetOfForFieldSet(comparator, *profile_b,
+                                            field_types)) {
         continue;
       }
 
@@ -211,8 +211,8 @@ std::vector<Suggestion> GetUniqueSuggestions(
           profile_a->source() == profile_b->source()
               ? i < j
               : profile_a->source() == AutofillProfile::Source::kAccount;
-      if (prefer_a_over_b &&
-          profile_b->IsSubsetOfForFieldSet(comparator, *profile_a, types)) {
+      if (prefer_a_over_b && profile_b->IsSubsetOfForFieldSet(
+                                 comparator, *profile_a, field_types)) {
         continue;
       }
 

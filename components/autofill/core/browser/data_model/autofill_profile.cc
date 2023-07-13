@@ -10,6 +10,7 @@
 #include <memory>
 #include <ostream>
 #include <set>
+#include <vector>
 
 #include "base/hash/sha1.h"
 #include "base/i18n/case_conversion.h"
@@ -694,22 +695,27 @@ void AutofillProfile::CreateDifferentiatingLabels(
     const std::string& app_locale,
     std::vector<std::u16string>* labels) {
   const size_t kMinimalFieldsShown = 2;
-  CreateInferredLabels(profiles, nullptr, UNKNOWN_TYPE, kMinimalFieldsShown,
-                       app_locale, labels);
+  CreateInferredLabels(profiles, absl::nullopt, UNKNOWN_TYPE,
+                       kMinimalFieldsShown, app_locale, labels);
   DCHECK_EQ(profiles.size(), labels->size());
 }
 
 // static
 void AutofillProfile::CreateInferredLabels(
     const std::vector<AutofillProfile*>& profiles,
-    const std::vector<ServerFieldType>* suggested_fields,
+    const absl::optional<ServerFieldTypeSet>& suggested_fields,
     ServerFieldType excluded_field,
     size_t minimal_fields_shown,
     const std::string& app_locale,
     std::vector<std::u16string>* labels) {
   std::vector<ServerFieldType> fields_to_use;
-  GetFieldsForDistinguishingProfiles(suggested_fields, excluded_field,
-                                     &fields_to_use);
+  std::vector<ServerFieldType> suggested_fields_types =
+      suggested_fields
+          ? std::vector(suggested_fields->begin(), suggested_fields->end())
+          : std::vector<ServerFieldType>();
+  GetFieldsForDistinguishingProfiles(
+      suggested_fields ? &suggested_fields_types : nullptr, excluded_field,
+      &fields_to_use);
 
   // Construct the default label for each profile. Also construct a map that
   // associates each label with the profiles that have this label. This map is

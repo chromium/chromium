@@ -2179,8 +2179,7 @@ TEST_F(PersonalDataManagerTest, GetProfileSuggestions) {
   ResetPersonalDataManager(USER_MODE_NORMAL);
 
   std::vector<Suggestion> suggestions = personal_data_->GetProfileSuggestions(
-      AutofillType(ADDRESS_HOME_STREET_ADDRESS), u"123", false,
-      std::vector<ServerFieldType>());
+      AutofillType(ADDRESS_HOME_STREET_ADDRESS), u"123", false, {});
   ASSERT_FALSE(suggestions.empty());
   EXPECT_EQ(u"123 Zoo St., Second Line, Third line, unit 5",
             suggestions[0].main_text.value);
@@ -2219,8 +2218,7 @@ TEST_F(PersonalDataManagerTest,
   ResetPersonalDataManager(USER_MODE_NORMAL);
 
   std::vector<Suggestion> suggestions = personal_data_->GetProfileSuggestions(
-      AutofillType(PHONE_HOME_WHOLE_NUMBER), u"234", false,
-      std::vector<ServerFieldType>());
+      AutofillType(PHONE_HOME_WHOLE_NUMBER), u"234", false, {});
   ASSERT_FALSE(suggestions.empty());
   EXPECT_EQ(u"12345678910", suggestions[0].main_text.value);
 }
@@ -2241,8 +2239,7 @@ TEST_F(PersonalDataManagerTest,
   ResetPersonalDataManager(USER_MODE_NORMAL);
 
   std::vector<Suggestion> suggestions = personal_data_->GetProfileSuggestions(
-      AutofillType(PHONE_HOME_WHOLE_NUMBER), u"234", false,
-      std::vector<ServerFieldType>());
+      AutofillType(PHONE_HOME_WHOLE_NUMBER), u"234", false, {});
   ASSERT_FALSE(suggestions.empty());
   EXPECT_EQ(u"(234) 567-8910", suggestions[0].main_text.value);
 }
@@ -2279,9 +2276,7 @@ TEST_F(PersonalDataManagerTest, GetProfileSuggestions_HideSubsets) {
   ResetPersonalDataManager(USER_MODE_NORMAL);
 
   // Simulate a form with street address, city and state.
-  std::vector<ServerFieldType> types;
-  types.push_back(ADDRESS_HOME_CITY);
-  types.push_back(ADDRESS_HOME_STATE);
+  ServerFieldTypeSet types = {ADDRESS_HOME_CITY, ADDRESS_HOME_STATE};
   std::vector<Suggestion> suggestions = personal_data_->GetProfileSuggestions(
       AutofillType(ADDRESS_HOME_STREET_ADDRESS), u"123", false, types);
   ASSERT_EQ(2U, suggestions.size());
@@ -2310,7 +2305,7 @@ TEST_F(PersonalDataManagerTest, GetProfileSuggestions_SuggestionsLimit) {
   ResetPersonalDataManager(USER_MODE_NORMAL);
 
   std::vector<Suggestion> suggestions = personal_data_->GetProfileSuggestions(
-      AutofillType(NAME_FIRST), u"Ma", false, std::vector<ServerFieldType>());
+      AutofillType(NAME_FIRST), u"Ma", false, {});
 
   ASSERT_EQ(2 * suggestion_selection::kMaxUniqueSuggestionsCount,
             personal_data_->GetProfiles().size());
@@ -2354,7 +2349,7 @@ TEST_F(PersonalDataManagerTest, GetProfileSuggestions_ProfilesLimit) {
   ResetPersonalDataManager(USER_MODE_NORMAL);
 
   std::vector<Suggestion> suggestions = personal_data_->GetProfileSuggestions(
-      AutofillType(NAME_FIRST), u"Ma", false, std::vector<ServerFieldType>());
+      AutofillType(NAME_FIRST), u"Ma", false, {});
 
   ASSERT_EQ(suggestion_selection::kMaxSuggestedProfilesCount + 1,
             personal_data_->GetProfiles().size());
@@ -2396,7 +2391,7 @@ TEST_F(PersonalDataManagerTest, GetProfileSuggestions_Ranking) {
 
   ResetPersonalDataManager(USER_MODE_NORMAL);
   std::vector<Suggestion> suggestions = personal_data_->GetProfileSuggestions(
-      AutofillType(NAME_FIRST), u"Ma", false, std::vector<ServerFieldType>());
+      AutofillType(NAME_FIRST), u"Ma", false, {});
   ASSERT_EQ(3U, suggestions.size());
   EXPECT_EQ(suggestions[0].main_text.value, u"Marion1");
   EXPECT_EQ(suggestions[1].main_text.value, u"Marion2");
@@ -2431,8 +2426,7 @@ TEST_F(PersonalDataManagerTest, GetProfileSuggestions_NumberOfSuggestions) {
 
   // Verify that all the profiles are suggested.
   std::vector<Suggestion> suggestions = personal_data_->GetProfileSuggestions(
-      AutofillType(NAME_FIRST), std::u16string(), false,
-      std::vector<ServerFieldType>());
+      AutofillType(NAME_FIRST), std::u16string(), false, {});
   EXPECT_EQ(3U, suggestions.size());
 }
 
@@ -2462,24 +2456,21 @@ TEST_F(PersonalDataManagerTest,
   // Query with empty string only returns profile2.
   {
     std::vector<Suggestion> suggestions = personal_data_->GetProfileSuggestions(
-        AutofillType(ADDRESS_HOME_STREET_ADDRESS), std::u16string(), false,
-        std::vector<ServerFieldType>());
+        AutofillType(ADDRESS_HOME_STREET_ADDRESS), std::u16string(), false, {});
     EXPECT_EQ(1U, suggestions.size());
   }
 
   // Query with non-alpha-numeric string only returns profile2.
   {
     std::vector<Suggestion> suggestions = personal_data_->GetProfileSuggestions(
-        AutofillType(ADDRESS_HOME_STREET_ADDRESS), u"--", false,
-        std::vector<ServerFieldType>());
+        AutofillType(ADDRESS_HOME_STREET_ADDRESS), u"--", false, {});
     EXPECT_EQ(1U, suggestions.size());
   }
 
   // Query with prefix for profile1 returns profile1.
   {
     std::vector<Suggestion> suggestions = personal_data_->GetProfileSuggestions(
-        AutofillType(ADDRESS_HOME_STREET_ADDRESS), u"123", false,
-        std::vector<ServerFieldType>());
+        AutofillType(ADDRESS_HOME_STREET_ADDRESS), u"123", false, {});
     ASSERT_EQ(1U, suggestions.size());
     EXPECT_EQ(u"123 Zoo St., Second Line, Third line, unit 5",
               suggestions[0].main_text.value);
@@ -2488,8 +2479,7 @@ TEST_F(PersonalDataManagerTest,
   // Query with prefix for profile2 returns profile2.
   {
     std::vector<Suggestion> suggestions = personal_data_->GetProfileSuggestions(
-        AutofillType(ADDRESS_HOME_STREET_ADDRESS), u"456", false,
-        std::vector<ServerFieldType>());
+        AutofillType(ADDRESS_HOME_STREET_ADDRESS), u"456", false, {});
     EXPECT_EQ(1U, suggestions.size());
     EXPECT_EQ(u"456 Zoo St., Second Line, Third line, unit 5",
               suggestions[0].main_text.value);
@@ -2538,8 +2528,7 @@ TEST_F(PersonalDataManagerTest, GetProfileSuggestions_ProfileAutofillDisabled) {
   EXPECT_EQ(0U, personal_data_->GetProfilesToSuggest().size());
 
   std::vector<Suggestion> suggestions = personal_data_->GetProfileSuggestions(
-      AutofillType(ADDRESS_HOME_STREET_ADDRESS), u"123", false,
-      std::vector<ServerFieldType>());
+      AutofillType(ADDRESS_HOME_STREET_ADDRESS), u"123", false, {});
   ASSERT_EQ(0U, suggestions.size());
 }
 
@@ -2592,8 +2581,7 @@ TEST_F(PersonalDataManagerTest,
   EXPECT_EQ(0U, personal_data_->GetProfilesToSuggest().size());
 
   std::vector<Suggestion> suggestions = personal_data_->GetProfileSuggestions(
-      AutofillType(ADDRESS_HOME_STREET_ADDRESS), u"123", false,
-      std::vector<ServerFieldType>());
+      AutofillType(ADDRESS_HOME_STREET_ADDRESS), u"123", false, {});
   ASSERT_EQ(0U, suggestions.size());
 }
 
@@ -2632,8 +2620,7 @@ TEST_F(PersonalDataManagerTest,
   EXPECT_THAT(
       personal_data_->GetProfileSuggestions(
           AutofillType(NAME_FIRST), std::u16string(), false,
-          std::vector<ServerFieldType>{NAME_FIRST, NAME_LAST, EMAIL_ADDRESS,
-                                       PHONE_HOME_WHOLE_NUMBER}),
+          {NAME_FIRST, NAME_LAST, EMAIL_ADDRESS, PHONE_HOME_WHOLE_NUMBER}),
       ElementsAre(testing::Field(
           &Suggestion::main_text,
           Suggestion::Text(u"Hoa", Suggestion::Text::IsPrimary(true)))));
@@ -2657,8 +2644,7 @@ TEST_F(PersonalDataManagerTest, GetProfileSuggestions_ForContactForm) {
   EXPECT_THAT(
       personal_data_->GetProfileSuggestions(
           AutofillType(NAME_FIRST), std::u16string(), false,
-          std::vector<ServerFieldType>{NAME_FIRST, NAME_LAST, EMAIL_ADDRESS,
-                                       PHONE_HOME_WHOLE_NUMBER}),
+          {NAME_FIRST, NAME_LAST, EMAIL_ADDRESS, PHONE_HOME_WHOLE_NUMBER}),
       ElementsAre(AllOf(
           testing::Field(&Suggestion::labels,
                          ConstructLabelLineMatrix(
@@ -2681,9 +2667,8 @@ TEST_F(PersonalDataManagerTest, GetProfileSuggestions_AddressForm) {
 
   EXPECT_THAT(personal_data_->GetProfileSuggestions(
                   AutofillType(NAME_FULL), std::u16string(), false,
-                  std::vector<ServerFieldType>{
-                      NAME_FULL, ADDRESS_HOME_STREET_ADDRESS, ADDRESS_HOME_CITY,
-                      ADDRESS_HOME_STATE, ADDRESS_HOME_ZIP}),
+                  {NAME_FULL, ADDRESS_HOME_STREET_ADDRESS, ADDRESS_HOME_CITY,
+                   ADDRESS_HOME_STATE, ADDRESS_HOME_ZIP}),
               ElementsAre(AllOf(
                   testing::Field(&Suggestion::labels,
                                  ConstructLabelLineMatrix(
@@ -2707,8 +2692,7 @@ TEST_F(PersonalDataManagerTest, GetProfileSuggestions_AddressPhoneForm) {
   EXPECT_THAT(
       personal_data_->GetProfileSuggestions(
           AutofillType(NAME_FULL), std::u16string(), false,
-          std::vector<ServerFieldType>{NAME_FULL, ADDRESS_HOME_STREET_ADDRESS,
-                                       PHONE_HOME_WHOLE_NUMBER}),
+          {NAME_FULL, ADDRESS_HOME_STREET_ADDRESS, PHONE_HOME_WHOLE_NUMBER}),
       ElementsAre(
           AllOf(testing::Field(&Suggestion::labels,
                                ConstructLabelLineMatrix(
@@ -2732,8 +2716,7 @@ TEST_F(PersonalDataManagerTest, GetProfileSuggestions_AddressEmailForm) {
   EXPECT_THAT(
       personal_data_->GetProfileSuggestions(
           AutofillType(NAME_FULL), std::u16string(), false,
-          std::vector<ServerFieldType>{NAME_FULL, ADDRESS_HOME_STREET_ADDRESS,
-                                       EMAIL_ADDRESS}),
+          {NAME_FULL, ADDRESS_HOME_STREET_ADDRESS, EMAIL_ADDRESS}),
       ElementsAre(AllOf(
           testing::Field(&Suggestion::labels,
                          ConstructLabelLineMatrix(
@@ -2757,8 +2740,8 @@ TEST_F(PersonalDataManagerTest, GetProfileSuggestions_FormWithOneProfile) {
   EXPECT_THAT(
       personal_data_->GetProfileSuggestions(
           AutofillType(NAME_FULL), std::u16string(), false,
-          std::vector<ServerFieldType>{NAME_FULL, ADDRESS_HOME_STREET_ADDRESS,
-                                       EMAIL_ADDRESS, PHONE_HOME_WHOLE_NUMBER}),
+          {NAME_FULL, ADDRESS_HOME_STREET_ADDRESS, EMAIL_ADDRESS,
+           PHONE_HOME_WHOLE_NUMBER}),
       ElementsAre(
           AllOf(testing::Field(&Suggestion::labels,
                                ConstructLabelLineMatrix({u"401 Merrimack St"})),
@@ -2804,8 +2787,8 @@ TEST_F(PersonalDataManagerTest,
   EXPECT_THAT(
       personal_data_->GetProfileSuggestions(
           AutofillType(NAME_FULL), std::u16string(), false,
-          std::vector<ServerFieldType>{NAME_FULL, ADDRESS_HOME_STREET_ADDRESS,
-                                       EMAIL_ADDRESS, PHONE_HOME_WHOLE_NUMBER}),
+          {NAME_FULL, ADDRESS_HOME_STREET_ADDRESS, EMAIL_ADDRESS,
+           PHONE_HOME_WHOLE_NUMBER}),
       ElementsAre(
           AllOf(testing::Field(&Suggestion::labels,
                                ConstructLabelLineMatrix(
@@ -2855,8 +2838,7 @@ TEST_F(PersonalDataManagerTest, GetProfileSuggestions_MobileShowOne) {
   EXPECT_THAT(
       personal_data_->GetProfileSuggestions(
           AutofillType(EMAIL_ADDRESS), std::u16string(), false,
-          std::vector<ServerFieldType>{NAME_FIRST, NAME_LAST, EMAIL_ADDRESS,
-                                       PHONE_HOME_WHOLE_NUMBER}),
+          {NAME_FIRST, NAME_LAST, EMAIL_ADDRESS, PHONE_HOME_WHOLE_NUMBER}),
       ElementsAre(
           AllOf(testing::Field(&Suggestion::labels,
                                std::vector<std::vector<Suggestion::Text>>{
@@ -2871,9 +2853,8 @@ TEST_F(PersonalDataManagerTest, GetProfileSuggestions_MobileShowOne) {
   EXPECT_THAT(
       personal_data_->GetProfileSuggestions(
           AutofillType(EMAIL_ADDRESS), std::u16string(), false,
-          std::vector<ServerFieldType>{NAME_FULL, ADDRESS_HOME_STREET_ADDRESS,
-                                       ADDRESS_HOME_CITY, EMAIL_ADDRESS,
-                                       PHONE_HOME_WHOLE_NUMBER}),
+          {NAME_FULL, ADDRESS_HOME_STREET_ADDRESS, ADDRESS_HOME_CITY,
+           EMAIL_ADDRESS, PHONE_HOME_WHOLE_NUMBER}),
       ElementsAre(
           AllOf(testing::Field(&Suggestion::labels,
                                std::vector<std::vector<Suggestion::Text>>{
@@ -2921,8 +2902,7 @@ TEST_F(PersonalDataManagerTest, GetProfileSuggestions_MobileShowAll) {
   EXPECT_THAT(
       personal_data_->GetProfileSuggestions(
           AutofillType(EMAIL_ADDRESS), std::u16string(), false,
-          std::vector<ServerFieldType>{NAME_FIRST, NAME_LAST, EMAIL_ADDRESS,
-                                       PHONE_HOME_WHOLE_NUMBER}),
+          {NAME_FIRST, NAME_LAST, EMAIL_ADDRESS, PHONE_HOME_WHOLE_NUMBER}),
       ElementsAre(
           AllOf(testing::Field(&Suggestion::labels,
                                std::vector<std::vector<Suggestion::Text>>{
@@ -2939,9 +2919,8 @@ TEST_F(PersonalDataManagerTest, GetProfileSuggestions_MobileShowAll) {
   EXPECT_THAT(
       personal_data_->GetProfileSuggestions(
           AutofillType(EMAIL_ADDRESS), std::u16string(), false,
-          std::vector<ServerFieldType>{NAME_FULL, ADDRESS_HOME_STREET_ADDRESS,
-                                       ADDRESS_HOME_CITY, EMAIL_ADDRESS,
-                                       PHONE_HOME_WHOLE_NUMBER}),
+          {NAME_FULL, ADDRESS_HOME_STREET_ADDRESS, ADDRESS_HOME_CITY,
+           EMAIL_ADDRESS, PHONE_HOME_WHOLE_NUMBER}),
       ElementsAre(
           AllOf(
               testing::Field(

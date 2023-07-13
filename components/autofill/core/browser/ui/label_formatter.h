@@ -22,7 +22,7 @@ class LabelFormatter {
                  const std::string& app_locale,
                  ServerFieldType focused_field_type,
                  uint32_t groups,
-                 const std::vector<ServerFieldType>& field_types);
+                 const ServerFieldTypeSet& field_types);
   virtual ~LabelFormatter();
 
   // Returns the bitmask indicating which FieldTypeGroups are represented in
@@ -40,7 +40,7 @@ class LabelFormatter {
       const std::vector<AutofillProfile*>& profiles,
       const std::string& app_locale,
       ServerFieldType focused_field_type,
-      const std::vector<ServerFieldType>& field_types);
+      const ServerFieldTypeSet& field_types);
 
  protected:
   // Returns a label to show the user. The elements of the label and their

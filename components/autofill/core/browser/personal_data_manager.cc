@@ -1504,7 +1504,7 @@ std::vector<Suggestion> PersonalDataManager::GetProfileSuggestions(
     const AutofillType& type,
     const std::u16string& field_contents,
     bool field_is_autofilled,
-    const std::vector<ServerFieldType>& field_types) {
+    const ServerFieldTypeSet& field_types) {
   if (IsInAutofillSuggestionsDisabledExperiment())
     return std::vector<Suggestion>();
 
@@ -1562,7 +1562,7 @@ std::vector<Suggestion> PersonalDataManager::GetProfileSuggestions(
   if (formatter) {
     labels = formatter->GetLabels();
   } else {
-    AutofillProfile::CreateInferredLabels(unique_matched_profiles, &field_types,
+    AutofillProfile::CreateInferredLabels(unique_matched_profiles, field_types,
                                           type.GetStorableType(), 1,
                                           app_locale_, &labels);
   }

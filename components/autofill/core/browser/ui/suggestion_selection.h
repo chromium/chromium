@@ -47,7 +47,7 @@ std::vector<Suggestion> GetPrefixMatchedSuggestions(
 // |field_types| stores all of the form's ServerFieldTypes, including that of
 // the field on which the user is currently focused.
 std::vector<Suggestion> GetUniqueSuggestions(
-    const std::vector<ServerFieldType>& field_types,
+    const ServerFieldTypeSet& field_types,
     const AutofillProfileComparator& comparator,
     const std::string app_locale,
     const std::vector<AutofillProfile*> matched_profiles,

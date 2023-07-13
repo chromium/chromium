@@ -820,24 +820,24 @@ ScopedJavaLocalRef<jobjectArray> PersonalDataManagerAndroid::GetProfileLabels(
     bool include_organization_in_label,
     bool include_country_in_label,
     std::vector<AutofillProfile*> profiles) {
-  std::unique_ptr<std::vector<ServerFieldType>> suggested_fields;
+  ServerFieldTypeSet suggested_fields;
   size_t minimal_fields_shown = 2;
   if (address_only) {
-    suggested_fields = std::make_unique<std::vector<ServerFieldType>>();
+    suggested_fields = ServerFieldTypeSet();
     if (include_name_in_label)
-      suggested_fields->push_back(NAME_FULL);
+      suggested_fields.insert(NAME_FULL);
     if (include_organization_in_label)
-      suggested_fields->push_back(COMPANY_NAME);
-    suggested_fields->push_back(ADDRESS_HOME_LINE1);
-    suggested_fields->push_back(ADDRESS_HOME_LINE2);
-    suggested_fields->push_back(ADDRESS_HOME_DEPENDENT_LOCALITY);
-    suggested_fields->push_back(ADDRESS_HOME_CITY);
-    suggested_fields->push_back(ADDRESS_HOME_STATE);
-    suggested_fields->push_back(ADDRESS_HOME_ZIP);
-    suggested_fields->push_back(ADDRESS_HOME_SORTING_CODE);
+      suggested_fields.insert(COMPANY_NAME);
+    suggested_fields.insert(ADDRESS_HOME_LINE1);
+    suggested_fields.insert(ADDRESS_HOME_LINE2);
+    suggested_fields.insert(ADDRESS_HOME_DEPENDENT_LOCALITY);
+    suggested_fields.insert(ADDRESS_HOME_CITY);
+    suggested_fields.insert(ADDRESS_HOME_STATE);
+    suggested_fields.insert(ADDRESS_HOME_ZIP);
+    suggested_fields.insert(ADDRESS_HOME_SORTING_CODE);
     if (include_country_in_label)
-      suggested_fields->push_back(ADDRESS_HOME_COUNTRY);
-    minimal_fields_shown = suggested_fields->size();
+      suggested_fields.insert(ADDRESS_HOME_COUNTRY);
+    minimal_fields_shown = suggested_fields.size();
   }
 
   ServerFieldType excluded_field =
@@ -845,7 +845,9 @@ ScopedJavaLocalRef<jobjectArray> PersonalDataManagerAndroid::GetProfileLabels(
 
   std::vector<std::u16string> labels;
   AutofillProfile::CreateInferredLabels(
-      profiles, suggested_fields.get(), excluded_field, minimal_fields_shown,
+      profiles,
+      address_only ? absl::make_optional(suggested_fields) : absl::nullopt,
+      excluded_field, minimal_fields_shown,
       g_browser_process->GetApplicationLocale(), &labels);
 
   return base::android::ToJavaArrayOfStrings(env, labels);

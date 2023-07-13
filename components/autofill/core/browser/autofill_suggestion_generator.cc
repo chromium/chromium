@@ -22,6 +22,7 @@
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/iban.h"
 #include "components/autofill/core/browser/field_filler.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/log_event.h"
@@ -113,12 +114,11 @@ std::vector<Suggestion> AutofillSuggestionGenerator::GetSuggestionsForProfiles(
     AutofillType field_type,
     base::span<SkipStatus> skip_statuses,
     const std::string& app_locale) {
-  std::vector<ServerFieldType> field_types;
-  field_types.reserve(form.field_count());
+  ServerFieldTypeSet field_types;
   CHECK_EQ(skip_statuses.size(), form.field_count());
   for (size_t i = 0; i < form.field_count(); ++i) {
     if (skip_statuses[i] == SkipStatus::kNotSkipped) {
-      field_types.push_back(form.field(i)->Type().GetStorableType());
+      field_types.insert(form.field(i)->Type().GetStorableType());
     }
   }
 
