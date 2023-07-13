@@ -438,7 +438,7 @@ void ExtensionsMenuViewController::OnExtensionToggleSelected(
     if (!action_runner) {
       return;
     }
-    action_runner->ShowReloadPageBubbleWithReloadPageCallback(extension_id);
+    action_runner->ShowReloadPageBubble({extension_id});
     return;
   }
 

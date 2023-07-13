@@ -148,7 +148,7 @@ void SitePermissionsHelper::UpdateSiteAccess(
     // extension re enforces the user confidence on blocking the extension.
     // Also, this scenario should not be that common and therefore hopefully is
     // not too noisy.
-    runner->ShowReloadPageBubbleWithReloadPageCallback(extension.id());
+    runner->ShowReloadPageBubble({extension.id()});
     return;
   }
 
@@ -157,7 +157,7 @@ void SitePermissionsHelper::UpdateSiteAccess(
   if (PageNeedsRefreshToRun(blocked_actions)) {
     // Show reload bubble when blocked actions mandate a page refresh.
     // Refreshing the page will run them.
-    runner->ShowReloadPageBubbleWithReloadPageCallback(extension.id());
+    runner->ShowReloadPageBubble({extension.id()});
   } else if (blocked_actions != BLOCKED_ACTION_NONE) {
     runner->RunBlockedActions(&extension);
   }
