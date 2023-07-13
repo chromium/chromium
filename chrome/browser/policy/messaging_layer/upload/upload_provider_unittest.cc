@@ -116,7 +116,9 @@ class EncryptedReportingUploadProviderTest : public ::testing::Test {
   std::unique_ptr<TestEncryptedReportingUploadProvider> service_provider_;
 };
 
-TEST_F(EncryptedReportingUploadProviderTest, SuccessfullyUploadsRecord) {
+// TODO(b/289375752): Test is flaky across platforms.
+TEST_F(EncryptedReportingUploadProviderTest,
+       DISABLED_SuccessfullyUploadsRecord) {
   test::TestMultiEvent<SequenceInformation, bool /*force*/> uploaded_event;
   EXPECT_CALL(*this, ReportSuccessfulUpload(_, _))
       .WillOnce([&uploaded_event](SequenceInformation seq_info, bool force) {
