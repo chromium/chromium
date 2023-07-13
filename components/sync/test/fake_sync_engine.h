@@ -111,7 +111,6 @@ class FakeSyncEngine : public SyncEngine,
 
   void OnCookieJarChanged(bool account_mismatch,
                           base::OnceClosure callback) override;
-  void SetInvalidationsForSessionsEnabled(bool enabled) override;
   bool IsNextPollTimeInThePast() const override;
   void GetNigoriNodeForDebugging(AllNodesCallback callback) override;
 

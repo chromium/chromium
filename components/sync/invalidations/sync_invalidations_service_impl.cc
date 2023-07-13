@@ -6,8 +6,6 @@
 
 #include <utility>
 
-#include "base/feature_list.h"
-#include "components/sync/base/features.h"
 #include "components/sync/invalidations/fcm_handler.h"
 #include "components/sync/invalidations/interested_data_types_handler.h"
 
@@ -57,8 +55,7 @@ void SyncInvalidationsServiceImpl::RemoveTokenObserver(
 
 void SyncInvalidationsServiceImpl::StartListening() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!base::FeatureList::IsEnabled(kUseSyncInvalidations) ||
-      fcm_handler_->IsListening()) {
+  if (fcm_handler_->IsListening()) {
     return;
   }
   fcm_handler_->StartListening();
@@ -74,17 +71,12 @@ void SyncInvalidationsServiceImpl::StopListeningPermanently() {
   if (!fcm_handler_->IsListening()) {
     return;
   }
-  DCHECK(base::FeatureList::IsEnabled(kUseSyncInvalidations));
   fcm_handler_->StopListeningPermanently();
 }
 
 absl::optional<std::string>
 SyncInvalidationsServiceImpl::GetFCMRegistrationToken() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // Return empty token if standalone invalidations are off.
-  if (!base::FeatureList::IsEnabled(kUseSyncInvalidations)) {
-    return std::string();
-  }
   return fcm_handler_->GetFCMRegistrationToken();
 }
 
@@ -116,13 +108,8 @@ void SyncInvalidationsServiceImpl::
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(interested_data_types_handler_);
 
-  // Do not send an additional GetUpdates request when invalidations are
-  // disabled.
-  if (base::FeatureList::IsEnabled(kUseSyncInvalidations)) {
-    interested_data_types_handler_
-        ->SetCommittedAdditionalInterestedDataTypesCallback(
-            std::move(callback));
-  }
+  interested_data_types_handler_
+      ->SetCommittedAdditionalInterestedDataTypesCallback(std::move(callback));
 }
 
 void SyncInvalidationsServiceImpl::Shutdown() {

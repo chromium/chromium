@@ -73,7 +73,6 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/sync/base/command_line_switches.h"
-#include "components/sync/base/invalidation_helper.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/engine/sync_scheduler_impl.h"
 #include "components/sync/invalidations/sync_invalidations_service_impl.h"

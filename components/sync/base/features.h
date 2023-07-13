@@ -81,14 +81,6 @@ BASE_DECLARE_FEATURE(kSyncChromeOSAppsToggleSharing);
 BASE_DECLARE_FEATURE(kChromeOSSyncedSessionSharing);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-// If enabled, the device will register with FCM and listen to new
-// invalidations. Also, FCM token will be set in DeviceInfo, which signals to
-// the server that device listens to new invalidations.
-// The device will not subscribe to old invalidations for any data types except
-// Wallet and Offer, since that will be covered by the new system.
-// SyncSendInterestedDataTypes must be enabled for this to take effect.
-BASE_DECLARE_FEATURE(kUseSyncInvalidations);
-
 // If enabled, all incoming invalidations will be stored in ModelTypeState
 // proto message.
 // TODO(crbug/1365292): Add more information about this feature after

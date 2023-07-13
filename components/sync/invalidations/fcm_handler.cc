@@ -14,7 +14,6 @@
 #include "base/time/time.h"
 #include "components/gcm_driver/gcm_driver.h"
 #include "components/gcm_driver/instance_id/instance_id_driver.h"
-#include "components/sync/base/features.h"
 #include "components/sync/invalidations/fcm_registration_token_observer.h"
 #include "components/sync/invalidations/invalidations_listener.h"
 
@@ -45,7 +44,6 @@ FCMHandler::~FCMHandler() {
 void FCMHandler::StartListening() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!IsListening());
-  DCHECK(base::FeatureList::IsEnabled(kUseSyncInvalidations));
   DCHECK(last_received_messages_.empty());
   DCHECK(!fcm_registration_token_.has_value());
   // Note that AddAppHandler() causes an immediate replay of all received
@@ -130,7 +128,6 @@ void FCMHandler::OnMessage(const std::string& app_id,
                            const gcm::IncomingMessage& message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(app_id, app_id_);
-  DCHECK(base::FeatureList::IsEnabled(kUseSyncInvalidations));
 
   base::UmaHistogramBoolean("Sync.FCMMessageDeliveredToListeners",
                             !listeners_.empty());

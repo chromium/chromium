@@ -257,61 +257,13 @@ sync_pb::DeviceInfoSpecifics CreateDeviceInfoSpecifics(
   return specifics;
 }
 
-class SingleClientSyncInvalidationsTestBase : public SyncTest {
+class SingleClientSyncInvalidationsTest : public SyncTest {
  public:
-  SingleClientSyncInvalidationsTestBase(
-      const std::vector<base::test::FeatureRef>& enabled_features,
-      const std::vector<base::test::FeatureRef>& disabled_features)
-      : SyncTest(SINGLE_CLIENT) {
-    override_features_.InitWithFeatures(enabled_features, disabled_features);
+  SingleClientSyncInvalidationsTest() : SyncTest(SINGLE_CLIENT) {
+    override_features_.InitWithFeatures(
+        /*enabled_features=*/{syncer::kSyncPersistInvalidations},
+        /*disabled_features=*/{});
   }
-
- private:
-  base::test::ScopedFeatureList override_features_;
-};
-
-class SingleClientWithSyncSendInterestedDataTypesTest
-    : public SingleClientSyncInvalidationsTestBase {
- public:
-  SingleClientWithSyncSendInterestedDataTypesTest()
-      : SingleClientSyncInvalidationsTestBase(
-            /*enabled_features=*/{},
-            /*disabled_features=*/{syncer::kUseSyncInvalidations}) {}
-};
-
-IN_PROC_BROWSER_TEST_F(SingleClientWithSyncSendInterestedDataTypesTest,
-                       SendInterestedDataTypesAsPartOfDeviceInfo) {
-  ASSERT_TRUE(SetupSync());
-
-  syncer::SyncInvalidationsService* sync_invalidations_service =
-      SyncInvalidationsServiceFactory::GetForProfile(GetProfile(0));
-  ASSERT_THAT(sync_invalidations_service, NotNull());
-  ASSERT_TRUE(sync_invalidations_service->GetInterestedDataTypes());
-  const syncer::ModelTypeSet interested_data_types =
-      *sync_invalidations_service->GetInterestedDataTypes();
-
-  // Check that some "standard" data types are included.
-  EXPECT_TRUE(
-      interested_data_types.HasAll({syncer::NIGORI, syncer::BOOKMARKS}));
-
-  // The local device should eventually be committed to the server.
-  // The InstanceID token should only be uploaded if kUseSyncInvalidations is
-  // also enabled.
-  EXPECT_TRUE(
-      ServerDeviceInfoMatchChecker(
-          ElementsAre(AllOf(InterestedDataTypesAre(interested_data_types),
-                            Not(HasInstanceIdToken()))))
-          .Wait());
-}
-
-class SingleClientWithUseSyncInvalidationsTest
-    : public SingleClientSyncInvalidationsTestBase {
- public:
-  SingleClientWithUseSyncInvalidationsTest()
-      : SingleClientSyncInvalidationsTestBase(
-            /*enabled_features=*/{syncer::kUseSyncInvalidations,
-                                  syncer::kSyncPersistInvalidations},
-            /*disabled_features=*/{}) {}
 
   // Injects a test DeviceInfo entity to the fake server.
   void InjectDeviceInfoEntityToServer(
@@ -336,9 +288,12 @@ class SingleClientWithUseSyncInvalidationsTest
     syncer::SyncTransportDataPrefs prefs(GetProfile(0)->GetPrefs());
     return prefs.GetCacheGuid();
   }
+
+ private:
+  base::test::ScopedFeatureList override_features_;
 };
 
-IN_PROC_BROWSER_TEST_F(SingleClientWithUseSyncInvalidationsTest,
+IN_PROC_BROWSER_TEST_F(SingleClientSyncInvalidationsTest,
                        SendInterestedDataTypesAndFCMTokenAsPartOfDeviceInfo) {
   ASSERT_TRUE(SetupSync());
 
@@ -365,7 +320,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWithUseSyncInvalidationsTest,
           .Wait());
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientWithUseSyncInvalidationsTest,
+IN_PROC_BROWSER_TEST_F(SingleClientSyncInvalidationsTest,
                        ShouldPropagateInvalidationHints) {
   ASSERT_TRUE(SetupSync());
 
@@ -404,7 +359,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWithUseSyncInvalidationsTest,
       Contains(Not(IsEmpty())));
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientWithUseSyncInvalidationsTest,
+IN_PROC_BROWSER_TEST_F(SingleClientSyncInvalidationsTest,
                        ShouldPopulateFCMRegistrationTokens) {
   const std::string kTitle = "title";
   const std::string kRemoteDeviceCacheGuid = "other_cache_guid";
@@ -437,7 +392,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWithUseSyncInvalidationsTest,
 }
 
 IN_PROC_BROWSER_TEST_F(
-    SingleClientWithUseSyncInvalidationsTest,
+    SingleClientSyncInvalidationsTest,
     ShouldNotPopulateFCMRegistrationTokensForInterestedDataTypes) {
   const std::string kTitle = "title";
   const std::string kRemoteDeviceCacheGuid = "other_cache_guid";
@@ -472,7 +427,7 @@ IN_PROC_BROWSER_TEST_F(
               IsEmpty());
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientWithUseSyncInvalidationsTest,
+IN_PROC_BROWSER_TEST_F(SingleClientSyncInvalidationsTest,
                        ShouldProvideNotificationsEnabledInGetUpdates) {
   ASSERT_TRUE(SetupSync());
 
@@ -506,12 +461,12 @@ IN_PROC_BROWSER_TEST_F(SingleClientWithUseSyncInvalidationsTest,
 
 // PRE_* tests aren't supported on Android browser tests.
 #if !BUILDFLAG(IS_ANDROID)
-IN_PROC_BROWSER_TEST_F(SingleClientWithUseSyncInvalidationsTest,
+IN_PROC_BROWSER_TEST_F(SingleClientSyncInvalidationsTest,
                        PRE_ShouldNotSendAdditionalGetUpdates) {
   ASSERT_TRUE(SetupSync());
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientWithUseSyncInvalidationsTest,
+IN_PROC_BROWSER_TEST_F(SingleClientSyncInvalidationsTest,
                        ShouldNotSendAdditionalGetUpdates) {
   const std::vector<sync_pb::SyncEntity> server_device_infos_before =
       fake_server_->GetSyncEntitiesByModelType(syncer::DEVICE_INFO);
@@ -560,7 +515,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWithUseSyncInvalidationsTest,
   EXPECT_EQ(0u, observer.num_nudged_get_updates_for_data_type());
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientWithUseSyncInvalidationsTest,
+IN_PROC_BROWSER_TEST_F(SingleClientSyncInvalidationsTest,
                        PRE_ShouldReceiveInvalidationSentBeforeSetupClients) {
   // Initialize and enable sync to simulate browser restart when sync is
   // enabled. This is required to receive an invalidation when browser is not
@@ -568,7 +523,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWithUseSyncInvalidationsTest,
   ASSERT_TRUE(SetupSync());
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientWithUseSyncInvalidationsTest,
+IN_PROC_BROWSER_TEST_F(SingleClientSyncInvalidationsTest,
                        ShouldReceiveInvalidationSentBeforeSetupClients) {
   const base::Uuid bookmark_uuid = InjectSyncedBookmark(GetFakeServer());
 
@@ -581,7 +536,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWithUseSyncInvalidationsTest,
           .Wait());
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientWithUseSyncInvalidationsTest,
+IN_PROC_BROWSER_TEST_F(SingleClientSyncInvalidationsTest,
                        PRE_PersistBookmarkInvalidation) {
   ASSERT_TRUE(SetupSync());
 
@@ -602,7 +557,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWithUseSyncInvalidationsTest,
               Not(IsEmpty()));
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientWithUseSyncInvalidationsTest,
+IN_PROC_BROWSER_TEST_F(SingleClientSyncInvalidationsTest,
                        PersistBookmarkInvalidation) {
   ASSERT_TRUE(SetupClients()) << "SetupClient() failed.";
   ASSERT_TRUE(GetClient(0)->AwaitSyncSetupCompletion());
@@ -614,7 +569,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWithUseSyncInvalidationsTest,
   EXPECT_TRUE(NotificationHintChecker(syncer::BOOKMARKS).Wait());
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientWithUseSyncInvalidationsTest,
+IN_PROC_BROWSER_TEST_F(SingleClientSyncInvalidationsTest,
                        PRE_PersistDeviceInfoInvalidation) {
   const std::string kRemoteDeviceCacheGuid = "other_cache_guid";
   const std::string kRemoteFCMRegistrationToken = "other_fcm_token";
@@ -639,7 +594,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWithUseSyncInvalidationsTest,
               Not(IsEmpty()));
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientWithUseSyncInvalidationsTest,
+IN_PROC_BROWSER_TEST_F(SingleClientSyncInvalidationsTest,
                        PersistDeviceInfoInvalidation) {
   ASSERT_TRUE(SetupClients()) << "SetupClient() failed.";
   ASSERT_TRUE(GetClient(0)->AwaitSyncSetupCompletion());
@@ -652,7 +607,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWithUseSyncInvalidationsTest,
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-IN_PROC_BROWSER_TEST_F(SingleClientWithUseSyncInvalidationsTest,
+IN_PROC_BROWSER_TEST_F(SingleClientSyncInvalidationsTest,
                        EnableAndDisableADataType) {
   ASSERT_TRUE(SetupSync());
 
@@ -696,7 +651,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWithUseSyncInvalidationsTest,
 #else
 #define MAYBE_SignoutAndSignin SignoutAndSignin
 #endif
-IN_PROC_BROWSER_TEST_F(SingleClientWithUseSyncInvalidationsTest,
+IN_PROC_BROWSER_TEST_F(SingleClientSyncInvalidationsTest,
                        MAYBE_SignoutAndSignin) {
   ASSERT_TRUE(SetupSync());
 

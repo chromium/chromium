@@ -96,12 +96,10 @@ void WaitForAutofillProfileLocallyPresent(const std::string& guid,
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
   config.additional_args.push_back(std::string("--") +
                                    syncer::kSyncShortNudgeDelayForTest);
-  if ([self isRunningTest:@selector(testSyncInvalidationsEnabled)]) {
-    config.features_enabled.push_back(syncer::kUseSyncInvalidations);
-  } else if ([self isRunningTest:@selector(testSyncTypedURLUpload)] ||
-             [self isRunningTest:@selector(testSyncTypedUrlDownload)] ||
-             [self isRunningTest:@selector(testSyncTypedURLDeleteFromClient)] ||
-             [self isRunningTest:@selector(testSyncTypedURLDeleteFromServer)]) {
+  if ([self isRunningTest:@selector(testSyncTypedURLUpload)] ||
+      [self isRunningTest:@selector(testSyncTypedUrlDownload)] ||
+      [self isRunningTest:@selector(testSyncTypedURLDeleteFromClient)] ||
+      [self isRunningTest:@selector(testSyncTypedURLDeleteFromServer)]) {
     // TypedURL tests need to disable the History data type, since that one
     // replaced TypedURLs.
     config.features_disabled.push_back(syncer::kSyncEnableHistoryDataType);

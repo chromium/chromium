@@ -25,14 +25,12 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
 #include "base/time/time.h"
-#include "build/build_config.h"
 #include "components/invalidation/impl/invalidation_logger.h"
 #include "components/invalidation/public/invalidation_service.h"
 #include "components/invalidation/public/invalidation_util.h"
 #include "components/invalidation/public/invalidator_state.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/sync/base/features.h"
-#include "components/sync/base/invalidation_helper.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/engine/cycle/sync_cycle_snapshot.h"
 #include "components/sync/engine/net/http_bridge.h"
@@ -336,19 +334,6 @@ class SyncEngineImplTest : public testing::Test {
   base::WeakPtrFactory<SyncEngineImplTest> weak_ptr_factory_{this};
 };
 
-// TODO(crbug.com/1404927): remove the test once feature toogles are cleaned up.
-class SyncEngineImplWithSyncInvalidationsTest : public SyncEngineImplTest {
- public:
-  SyncEngineImplWithSyncInvalidationsTest() {
-    override_features_.InitWithFeatures(
-        /*enabled_features=*/{kUseSyncInvalidations},
-        /*disabled_features=*/{});
-  }
-
- protected:
-  base::test::ScopedFeatureList override_features_;
-};
-
 // Test basic initialization with no initial types (first time initialization).
 // Only the nigori should be configured.
 TEST_F(SyncEngineImplTest, InitShutdownWithStopSync) {
@@ -588,99 +573,7 @@ TEST_F(SyncEngineImplTest, ModelTypeConnectorValidDuringShutdown) {
   backend_.reset();
 }
 
-// TODO(crbug.com/1404927): remove the test once old invalidations are not used
-// in sync anymore.
-TEST_F(SyncEngineImplTest,
-       NoisyDataTypesInvalidationAreDiscardedByDefaultOnAndroid) {
-  base::test::ScopedFeatureList feature_overrides;
-  feature_overrides.InitAndDisableFeature(syncer::kUseSyncInvalidations);
-
-  // Making sure that the noisy types we're interested in are in the
-  // |enabled_types_|.
-  enabled_types_.Put(SESSIONS);
-
-  ModelTypeSet invalidation_enabled_types(
-      Difference(enabled_types_, CommitOnlyTypes()));
-
-#if BUILDFLAG(IS_ANDROID)
-  // SESSIONS is a noisy data type whose invalidations aren't enabled by default
-  // on Android.
-  invalidation_enabled_types.Remove(SESSIONS);
-#endif
-
-  InitializeBackend();
-  EXPECT_CALL(
-      invalidator_,
-      UpdateInterestedTopics(
-          backend_.get(), ModelTypeSetToTopicSet(invalidation_enabled_types)));
-  ConfigureDataTypes();
-
-  // When Sync is stopped, we clear the registered invalidation ids.
-  EXPECT_CALL(invalidator_,
-              UpdateInterestedTopics(backend_.get(), invalidation::TopicSet()));
-  ShutdownBackend(ShutdownReason::STOP_SYNC_AND_KEEP_DATA);
-}
-
-// TODO(crbug.com/1404927): remove the test once old invalidations are not used
-// in sync anymore.
-TEST_F(SyncEngineImplTest, WhenEnabledTypesStayDisabled) {
-  base::test::ScopedFeatureList feature_overrides;
-  feature_overrides.InitAndDisableFeature(syncer::kUseSyncInvalidations);
-
-  // Tests that noisy types aren't used for registration if they're disabled,
-  // hence removing noisy datatypes from |enabled_types_|.
-  enabled_types_.Remove(SESSIONS);
-
-  InitializeBackend();
-  EXPECT_CALL(invalidator_,
-              UpdateInterestedTopics(backend_.get(),
-                                     ModelTypeSetToTopicSet(Difference(
-                                         enabled_types_, CommitOnlyTypes()))));
-  ConfigureDataTypes();
-
-  // When Sync is stopped, we clear the registered invalidation ids.
-  EXPECT_CALL(invalidator_,
-              UpdateInterestedTopics(backend_.get(), invalidation::TopicSet()));
-  ShutdownBackend(ShutdownReason::STOP_SYNC_AND_KEEP_DATA);
-}
-
-// TODO(crbug.com/1404927): remove the test once old invalidations are not used
-// in sync anymore.
-TEST_F(SyncEngineImplTest,
-       EnabledTypesChangesWhenSetInvalidationsForSessionsCalled) {
-  base::test::ScopedFeatureList feature_overrides;
-  feature_overrides.InitAndDisableFeature(syncer::kUseSyncInvalidations);
-
-  // Making sure that the noisy types we're interested in are in the
-  // |enabled_types_|.
-  enabled_types_.Put(SESSIONS);
-
-  InitializeBackend();
-  ConfigureDataTypes();
-
-  EXPECT_CALL(invalidator_,
-              UpdateInterestedTopics(backend_.get(),
-                                     ModelTypeSetToTopicSet(Difference(
-                                         enabled_types_, CommitOnlyTypes()))));
-  backend_->SetInvalidationsForSessionsEnabled(true);
-
-  ModelTypeSet enabled_types(enabled_types_);
-  enabled_types.Remove(SESSIONS);
-
-  EXPECT_CALL(invalidator_,
-              UpdateInterestedTopics(backend_.get(),
-                                     ModelTypeSetToTopicSet(Difference(
-                                         enabled_types, CommitOnlyTypes()))));
-  backend_->SetInvalidationsForSessionsEnabled(false);
-
-  // When Sync is stopped, we clear the registered invalidation ids.
-  EXPECT_CALL(invalidator_,
-              UpdateInterestedTopics(backend_.get(), invalidation::TopicSet()));
-  ShutdownBackend(ShutdownReason::STOP_SYNC_AND_KEEP_DATA);
-}
-
-TEST_F(SyncEngineImplWithSyncInvalidationsTest,
-       ShouldInvalidateDataTypesOnIncomingInvalidation) {
+TEST_F(SyncEngineImplTest, ShouldInvalidateDataTypesOnIncomingInvalidation) {
   enabled_types_.PutAll({syncer::BOOKMARKS, syncer::PREFERENCES});
 
   InitializeBackend(/*expect_success=*/true);
@@ -705,8 +598,7 @@ TEST_F(SyncEngineImplWithSyncInvalidationsTest,
   EXPECT_EQ(1, fake_manager_->GetInvalidationCount(ModelType::PREFERENCES));
 }
 
-TEST_F(SyncEngineImplWithSyncInvalidationsTest,
-       ShouldInvalidateOnlyEnabledDataTypes) {
+TEST_F(SyncEngineImplTest, ShouldInvalidateOnlyEnabledDataTypes) {
   enabled_types_.Remove(syncer::BOOKMARKS);
   enabled_types_.Put(syncer::PREFERENCES);
 
@@ -732,15 +624,14 @@ TEST_F(SyncEngineImplWithSyncInvalidationsTest,
   EXPECT_EQ(1, fake_manager_->GetInvalidationCount(ModelType::PREFERENCES));
 }
 
-TEST_F(SyncEngineImplWithSyncInvalidationsTest,
-       ShouldStartHandlingInvalidations) {
+TEST_F(SyncEngineImplTest, ShouldStartHandlingInvalidations) {
   ON_CALL(mock_sync_invalidations_service_, GetInterestedDataTypes())
       .WillByDefault(Return(enabled_types_));
   EXPECT_CALL(mock_sync_invalidations_service_, AddListener(backend_.get()));
   backend_->StartHandlingInvalidations();
 }
 
-TEST_F(SyncEngineImplWithSyncInvalidationsTest, DoNotUseOldInvalidationsAtAll) {
+TEST_F(SyncEngineImplTest, DoNotUseOldInvalidationsAtAll) {
   enabled_types_.PutAll({AUTOFILL_WALLET_DATA, AUTOFILL_WALLET_OFFER});
 
   EXPECT_CALL(invalidator_, UpdateInterestedTopics).Times(0);
@@ -752,8 +643,7 @@ TEST_F(SyncEngineImplWithSyncInvalidationsTest, DoNotUseOldInvalidationsAtAll) {
   ConfigureDataTypes();
 }
 
-TEST_F(SyncEngineImplWithSyncInvalidationsTest,
-       ShouldEnableInvalidationsWhenInitialized) {
+TEST_F(SyncEngineImplTest, ShouldEnableInvalidationsWhenInitialized) {
   EXPECT_CALL(mock_sync_invalidations_service_, GetFCMRegistrationToken)
       .WillRepeatedly(Return("fcm_token"));
   InitializeBackend(/*expect_success=*/true);
@@ -761,8 +651,7 @@ TEST_F(SyncEngineImplWithSyncInvalidationsTest,
   EXPECT_TRUE(fake_manager_->IsInvalidatorEnabled());
 }
 
-TEST_F(SyncEngineImplWithSyncInvalidationsTest,
-       ShouldEnableInvalidationsOnTokenUpdate) {
+TEST_F(SyncEngineImplTest, ShouldEnableInvalidationsOnTokenUpdate) {
   EXPECT_CALL(mock_sync_invalidations_service_, GetFCMRegistrationToken)
       .WillRepeatedly(Return(absl::nullopt));
   InitializeBackend(/*expect_success=*/true);

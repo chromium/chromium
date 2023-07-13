@@ -184,9 +184,6 @@ class SyncEngine : public ModelTypeConfigurer {
   virtual void OnCookieJarChanged(bool account_mismatch,
                                   base::OnceClosure callback) = 0;
 
-  // Enables/Disables invalidations for session sync related datatypes.
-  virtual void SetInvalidationsForSessionsEnabled(bool enabled) = 0;
-
   // Returns whether the poll interval elapsed since the last known poll time.
   // If returns true, there will likely be the next PERIODIC sync cycle soon but
   // it's not guaranteed, see SyncSchedulerImpl for details.

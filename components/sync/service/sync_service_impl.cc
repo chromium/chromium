@@ -2048,9 +2048,6 @@ bool SyncServiceImpl::HasSyncConsent() const {
 
 void SyncServiceImpl::SetInvalidationsForSessionsEnabled(bool enabled) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (engine_ && engine_->IsInitialized()) {
-    engine_->SetInvalidationsForSessionsEnabled(enabled);
-  }
 
   sessions_invalidations_enabled_ = enabled;
   UpdateDataTypesForInvalidations();

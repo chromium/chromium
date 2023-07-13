@@ -10,11 +10,10 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
+#include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/sequenced_task_runner.h"
-#include "components/invalidation/impl/invalidation_switches.h"
 #include "components/invalidation/public/invalidation_util.h"
-#include "components/sync/base/features.h"
 #include "components/sync/base/invalidation_adapter.h"
 #include "components/sync/base/legacy_directory_deletion.h"
 #include "components/sync/base/sync_invalidation_adapter.h"
@@ -444,7 +443,6 @@ void SyncEngineBackend::DoOnStandaloneInvalidationReceived(
     const std::string& payload,
     const ModelTypeSet& interested_data_types) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(base::FeatureList::IsEnabled(kUseSyncInvalidations));
   const IncomingInvalidationStatus status =
       DoOnStandaloneInvalidationReceivedImpl(payload, interested_data_types);
   RecordIncomingInvalidationStatus(status);

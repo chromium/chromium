@@ -80,7 +80,6 @@ class MockSyncEngine : public SyncEngine {
               (override));
   MOCK_METHOD(void, DisableProtocolEventForwarding, (), (override));
   MOCK_METHOD(void, OnCookieJarChanged, (bool, base::OnceClosure), (override));
-  MOCK_METHOD(void, SetInvalidationsForSessionsEnabled, (bool), (override));
   MOCK_METHOD(bool, IsNextPollTimeInThePast, (), (const override));
   MOCK_METHOD(void, GetNigoriNodeForDebugging, (AllNodesCallback), (override));
 };

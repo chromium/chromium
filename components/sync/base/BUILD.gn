@@ -32,8 +32,6 @@ static_library("base") {
     "hash_util.h",
     "invalidation_adapter.cc",
     "invalidation_adapter.h",
-    "invalidation_helper.cc",
-    "invalidation_helper.h",
     "legacy_directory_deletion.cc",
     "legacy_directory_deletion.h",
     "model_type.cc",
