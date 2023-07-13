@@ -8,6 +8,9 @@
 
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/game_dashboard/game_dashboard_context.h"
+#include "ash/game_dashboard/game_dashboard_utils.h"
+#include "ash/public/cpp/arc_game_controls_flag.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/icon_button.h"
@@ -31,10 +34,11 @@ constexpr int kBetweenChildSpacing = 8;
 std::unique_ptr<IconButton> CreateIconButton(base::RepeatingClosure callback,
                                              const gfx::VectorIcon* icon,
                                              int view_id,
-                                             const std::u16string& text) {
+                                             const std::u16string& text,
+                                             bool is_togglable) {
   auto button = std::make_unique<IconButton>(
       std::move(callback), IconButton::Type::kSmallFloating, icon, text,
-      /*is_togglable=*/false, /*has_border=*/true);
+      /*is_togglable=*/is_togglable, /*has_border=*/true);
   button->SetID(view_id);
   return button;
 }
@@ -69,6 +73,10 @@ void GameDashboardToolbarView::OnGamepadButtonPressed() {
   context_->MaybeUpdateToolbarWidgetBounds();
 }
 
+void GameDashboardToolbarView::OnGameControlsButtonPressed() {
+  // TODO(b/275380943): Disable or enable Game Controls.
+}
+
 void GameDashboardToolbarView::OnRecordButtonPressed() {
   // TODO(b/273641250): Add screen record support.
 }
@@ -86,9 +94,10 @@ void GameDashboardToolbarView::AddShortcutTiles() {
       &vector_icons::kVideogameAssetOutlineIcon,
       base::to_underlying(ToolbarViewId::kGamepadButton),
       l10n_util::GetStringUTF16(
-          IDS_ASH_GAME_DASHBOARD_TOOLBAR_TILE_BUTTON_TITLE)));
+          IDS_ASH_GAME_DASHBOARD_TOOLBAR_TILE_BUTTON_TITLE),
+      /*is_togglable=*/false));
 
-  // TODO(b/273641467): Add toggle Game Controls support.
+  MayAddGameControlsTile();
 
   // TODO(b/273641250): Filter out record game button based on device info.
   AddChildView(CreateIconButton(
@@ -97,7 +106,8 @@ void GameDashboardToolbarView::AddShortcutTiles() {
       &vector_icons::kVideocamIcon,
       base::to_underlying(ToolbarViewId::kScreenRecordButton),
       l10n_util::GetStringUTF16(
-          IDS_ASH_GAME_DASHBOARD_RECORD_GAME_TILE_BUTTON_TITLE)));
+          IDS_ASH_GAME_DASHBOARD_RECORD_GAME_TILE_BUTTON_TITLE),
+      /*is_togglable=*/false));
 
   AddChildView(CreateIconButton(
       base::BindRepeating(&GameDashboardToolbarView::OnScreenshotButtonPressed,
@@ -105,7 +115,32 @@ void GameDashboardToolbarView::AddShortcutTiles() {
       &vector_icons::kVideocamIcon,
       base::to_underlying(ToolbarViewId::kScreenshotButton),
       l10n_util::GetStringUTF16(
-          IDS_ASH_GAME_DASHBOARD_SCREENSHOT_TILE_BUTTON_TITLE)));
+          IDS_ASH_GAME_DASHBOARD_SCREENSHOT_TILE_BUTTON_TITLE),
+      /*is_togglable=*/false));
+}
+
+void GameDashboardToolbarView::MayAddGameControlsTile() {
+  auto flags =
+      game_dashboard_utils::GetGameControlsFlag(context_->game_window());
+  if (!flags) {
+    return;
+  }
+
+  auto* button = AddChildView(CreateIconButton(
+      base::BindRepeating(
+          &GameDashboardToolbarView::OnGameControlsButtonPressed,
+          base::Unretained(this)),
+      /*icon=*/&kGdGameControlsIcon,
+      base::to_underlying(ToolbarViewId::kGameControlsButton),
+      l10n_util::GetStringUTF16(
+          IDS_ASH_GAME_DASHBOARD_CONTROLS_TILE_BUTTON_TITLE),
+      /*is_togglable=*/true));
+  button->SetEnabled(
+      !game_dashboard_utils::IsFlagSet(*flags, ArcGameControlsFlag::kEmpty));
+  if (button->GetEnabled()) {
+    button->SetToggled(
+        game_dashboard_utils::IsFlagSet(*flags, ArcGameControlsFlag::kEnabled));
+  }
 }
 
 BEGIN_METADATA(GameDashboardToolbarView, views::BoxLayoutView)

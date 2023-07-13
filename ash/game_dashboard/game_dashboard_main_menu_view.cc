@@ -338,8 +338,9 @@ void GameDashboardMainMenuView::AddFeatureDetailsRows() {
 
 void GameDashboardMainMenuView::MaybeAddGameControlsTile(
     views::View* container) {
-  ArcGameControlsFlag flags = static_cast<ArcGameControlsFlag>(0);
-  if (!IsGameControlsAvailable(flags)) {
+  auto flags =
+      game_dashboard_utils::GetGameControlsFlag(context_->game_window());
+  if (!flags) {
     return;
   }
 
@@ -352,17 +353,18 @@ void GameDashboardMainMenuView::MaybeAddGameControlsTile(
           IDS_ASH_GAME_DASHBOARD_CONTROLS_TILE_BUTTON_TITLE)));
 
   controls_tile->SetEnabled(
-      !game_dashboard_utils::IsFlagSet(flags, ArcGameControlsFlag::kEmpty));
+      !game_dashboard_utils::IsFlagSet(*flags, ArcGameControlsFlag::kEmpty));
   if (controls_tile->GetEnabled()) {
     controls_tile->SetToggled(
-        game_dashboard_utils::IsFlagSet(flags, ArcGameControlsFlag::kEnabled));
+        game_dashboard_utils::IsFlagSet(*flags, ArcGameControlsFlag::kEnabled));
   }
 }
 
 void GameDashboardMainMenuView::MaybeAddGameControlsDetailsRow(
     views::View* container) {
-  ArcGameControlsFlag flags = static_cast<ArcGameControlsFlag>(0);
-  if (!IsGameControlsAvailable(flags)) {
+  auto flags =
+      game_dashboard_utils::GetGameControlsFlag(context_->game_window());
+  if (!flags) {
     return;
   }
 
@@ -379,13 +381,13 @@ void GameDashboardMainMenuView::MaybeAddGameControlsDetailsRow(
   game_controls_details->SetID(VIEW_ID_GD_CONTROLS_DETAILS_ROW);
 
   const bool is_enabled =
-      game_dashboard_utils::IsFlagSet(flags, ArcGameControlsFlag::kEnabled);
+      game_dashboard_utils::IsFlagSet(*flags, ArcGameControlsFlag::kEnabled);
   // TODO(b/279117180): Include application name in the subtitle.
   // TODO(b/274690042): Replace the strings with localized strings.
   game_controls_details->SetSubtitle(is_enabled ? u"On" : u"Off");
   game_controls_details->SetEnabled(is_enabled);
 
-  if (game_dashboard_utils::IsFlagSet(flags, ArcGameControlsFlag::kEmpty)) {
+  if (game_dashboard_utils::IsFlagSet(*flags, ArcGameControlsFlag::kEmpty)) {
     // Add "Set up" button for empty state.
     // TODO(b/274690042): Replace the strings with localized strings.
     auto* setup_button = game_controls_details->AddCustomizedTailView(
@@ -423,7 +425,7 @@ void GameDashboardMainMenuView::MaybeAddGameControlsDetailsRow(
                                gfx::Insets::TLBR(0, 0, 0, 18));
     switch_button->SetEnabled(is_enabled);
     switch_button->SetIsOn(is_enabled ? game_dashboard_utils::IsFlagSet(
-                                            flags, ArcGameControlsFlag::kHint)
+                                            *flags, ArcGameControlsFlag::kHint)
                                       : false);
     // Add arrow icon.
     edit_container->AddChildView(
@@ -478,20 +480,6 @@ void GameDashboardMainMenuView::AddUtilityClusterRow() {
                           base::Unretained(this)),
       VIEW_ID_GD_GENERAL_SETTINGS_BUTTON, vector_icons::kSettingsIcon,
       l10n_util::GetStringUTF16(IDS_ASH_GAME_DASHBOARD_SETTINGS_TOOLTIP)));
-}
-
-bool GameDashboardMainMenuView::IsGameControlsAvailable(
-    ArcGameControlsFlag& flags) const {
-  auto* window = context_->game_window();
-  if (!IsArcWindow(window)) {
-    return false;
-  }
-
-  flags = window->GetProperty(kArcGameControlsFlagsKey);
-  CHECK(game_dashboard_utils::IsFlagSet(flags, ArcGameControlsFlag::kKnown));
-
-  return game_dashboard_utils::IsFlagSet(flags,
-                                         ArcGameControlsFlag::kAvailable);
 }
 
 BEGIN_METADATA(GameDashboardMainMenuView, views::BubbleDialogDelegateView)

@@ -40,6 +40,8 @@ class GameDashboardToolbarView : public views::BoxLayoutView {
   // children and updating their visibility. The `gamepad_button_` is always
   // visible since it expands/collapses the toolbar.
   void OnGamepadButtonPressed();
+  // Enables or disables Game Controls.
+  void OnGameControlsButtonPressed();
   // Starts or stops recording the game window.
   void OnRecordButtonPressed();
   // Takes a screenshot of the game window.
@@ -47,6 +49,8 @@ class GameDashboardToolbarView : public views::BoxLayoutView {
 
   // Adds a list of shortcut tiles to the toolbar view.
   void AddShortcutTiles();
+  // Adds Game Controls button if needed.
+  void MayAddGameControlsTile();
 
   // The topmost `IconButton` in the toolbar's collection, which stays visible
   // in both the expanded and collapsed toolbar states.

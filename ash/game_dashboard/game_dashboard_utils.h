@@ -6,12 +6,21 @@
 #define ASH_GAME_DASHBOARD_GAME_DASHBOARD_UTILS_H_
 
 #include "ash/public/cpp/arc_game_controls_flag.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
+namespace aura {
+class Window;
+}  // namespace aura
 
 namespace ash::game_dashboard_utils {
 
-// Returns true if `checked_flag` is turned on for `flags`.
-bool IsFlagSet(const ArcGameControlsFlag flags,
-               const ArcGameControlsFlag checked_flag);
+// Returns true if `flag` is turned on for `flags`.
+bool IsFlagSet(ArcGameControlsFlag flags, ArcGameControlsFlag flag);
+
+// Returns flags value if Game Controls is available on `window`. Otherwise, it
+// returns nullopt.
+absl::optional<ArcGameControlsFlag> GetGameControlsFlag(aura::Window* window);
+
 }  // namespace ash::game_dashboard_utils
 
 #endif  // ASH_GAME_DASHBOARD_GAME_DASHBOARD_UTILS_H_

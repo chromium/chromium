@@ -78,9 +78,6 @@ class GameDashboardMainMenuView : public views::BubbleDialogDelegateView {
   // buttons) to the Game Controls tile view.
   void AddUtilityClusterRow();
 
-  // Returns true if Game Controls is available and saves the flags in `flags`.
-  bool IsGameControlsAvailable(ArcGameControlsFlag& flags) const;
-
   // Allows this class to access `GameDashboardContext` owned functions/objects.
   const raw_ptr<GameDashboardContext, ExperimentalAsh> context_;
 };

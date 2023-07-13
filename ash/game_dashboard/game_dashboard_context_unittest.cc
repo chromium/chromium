@@ -132,8 +132,32 @@ class GameDashboardContextTest : public GameDashboardTestBase {
       EXPECT_FALSE(setup_button);
     }
 
+    // Open toolbar and check the button state on toolbar.
+    LeftClickOn(GetMainMenuViewById(VIEW_ID_GD_TOOLBAR_TILE));
+    // The button state has the same state as the feature tile on the main menu.
+    auto* toolbar_button = GetToolbarGameControlsButton();
+    if (tile_states[0]) {
+      EXPECT_TRUE(toolbar_button);
+      EXPECT_EQ(tile_states[1], toolbar_button->GetEnabled());
+      EXPECT_EQ(tile_states[2], toolbar_button->toggled());
+    } else {
+      EXPECT_FALSE(toolbar_button);
+    }
+    // Close toolbar.
+    LeftClickOn(GetMainMenuViewById(VIEW_ID_GD_TOOLBAR_TILE));
+
     // Closes the main menu.
     LeftClickOn(menu_button);
+  }
+
+  IconButton* GetToolbarGameControlsButton() {
+    return GetToolbarViewById(base::to_underlying(
+        GameDashboardToolbarView::ToolbarViewId::kGameControlsButton));
+  }
+
+  IconButton* GetToolbarScreenRecordButton() {
+    return GetToolbarViewById(base::to_underlying(
+        GameDashboardToolbarView::ToolbarViewId::kScreenRecordButton));
   }
 
   IconButton* GetToolbarScreenshotButton() {
@@ -422,8 +446,10 @@ TEST_P(GameTypeGameDashboardContextTest, ScreenCaptureFromMainMenu) {
 // menu is clicked.
 TEST_P(GameTypeGameDashboardContextTest, OpenAndCloseToolbarWidget) {
   if (IsArcGame()) {
-    game_window_->SetProperty(ash::kArcGameControlsFlagsKey,
-                              ArcGameControlsFlag::kKnown);
+    game_window_->SetProperty(
+        ash::kArcGameControlsFlagsKey,
+        static_cast<ArcGameControlsFlag>(ArcGameControlsFlag::kKnown |
+                                         ArcGameControlsFlag::kAvailable));
   }
   // Retrieve the toolbar button and verify the toolbar widget is not available.
   LeftClickOn(GetMainMenuButtonWidget()->GetContentsView());
@@ -436,6 +462,16 @@ TEST_P(GameTypeGameDashboardContextTest, OpenAndCloseToolbarWidget) {
 
   // Verify that the toolbar widget is now available.
   EXPECT_TRUE(GetToolbarWidget());
+
+  // Verify available feature buttons.
+  EXPECT_TRUE(GetToolbarGamepadButton());
+  EXPECT_TRUE(GetToolbarScreenRecordButton());
+  EXPECT_TRUE(GetToolbarScreenshotButton());
+  if (IsArcGame()) {
+    EXPECT_TRUE(GetToolbarGameControlsButton());
+  } else {
+    EXPECT_FALSE(GetToolbarGameControlsButton());
+  }
 
   LeftClickOn(toolbar_tile);
 
