@@ -81,6 +81,8 @@ class NET_EXPORT_PRIVATE SystemDnsConfigChangeNotifier {
       std::unique_ptr<DnsConfigService> dns_config_service,
       base::OnceClosure done_cb);
 
+  void OnConfigChangedForTesting(const DnsConfig& config);
+
  private:
   class Core;
 

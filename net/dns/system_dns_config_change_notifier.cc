@@ -143,6 +143,12 @@ class SystemDnsConfigChangeNotifier::Core {
     }
   }
 
+  void OnConfigChangedForTesting(const DnsConfig& config) {
+    task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&Core::OnConfigChanged,
+                                  weak_ptr_factory_.GetWeakPtr(), config));
+  }
+
  private:
   void SetAndStartDnsConfigService(
       std::unique_ptr<DnsConfigService> dns_config_service) {
@@ -232,6 +238,11 @@ void SystemDnsConfigChangeNotifier::SetDnsConfigServiceForTesting(
 
   core_->SetDnsConfigServiceForTesting(  // IN-TEST
       std::move(dns_config_service), std::move(done_cb));
+}
+
+void SystemDnsConfigChangeNotifier::OnConfigChangedForTesting(
+    const DnsConfig& config) {
+  core_->OnConfigChangedForTesting(config);  // IN-TEST
 }
 
 }  // namespace net

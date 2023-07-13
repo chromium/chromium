@@ -594,6 +594,9 @@ source_set("tests") {
   if (is_linux) {
     sources += [ "network_interface_change_listener_mojom_traits_unittest.cc" ]
   }
+  if (is_android) {
+    sources += [ "system_dns_config_observer_mojom_traits_unittest.cc" ]
+  }
 
   deps = [
     ":cpp",
