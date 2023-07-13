@@ -81,6 +81,14 @@ void InstantiateLinuxUiDelegate() {
 #endif
 
 scoped_refptr<base::SequencedTaskRunner> GetPrintingTaskRunner() {
+#if BUILDFLAG(IS_LINUX)
+  // Use task runner associated with equivalent of UI thread.  Needed for calls
+  // made through `PrintDialogLinuxInterface` to properly execute.
+  CHECK(base::SequencedTaskRunner::HasCurrentDefault());
+  scoped_refptr<base::SequencedTaskRunner> task_runner =
+      base::SequencedTaskRunner::GetCurrentDefault();
+#else
+
   static constexpr base::TaskTraits kTraits = {
       base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN};
 
@@ -101,6 +109,7 @@ scoped_refptr<base::SequencedTaskRunner> GetPrintingTaskRunner() {
   static scoped_refptr<base::SequencedTaskRunner> task_runner =
       base::ThreadPool::CreateSingleThreadTaskRunner(kTraits);
 #endif
+#endif  // BUILDFLAG(IS_LINUX)
 
   return task_runner;
 }

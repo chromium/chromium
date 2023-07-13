@@ -33,6 +33,10 @@
 #include "printing/buildflags/buildflags.h"
 #include "printing/printing_features.h"
 
+#if BUILDFLAG(IS_LINUX)
+#include "content/public/common/content_switches.h"
+#endif
+
 #if BUILDFLAG(IS_WIN)
 #include "base/win/win_util.h"
 #include "chrome/browser/printing/printer_xml_parser_impl.h"
@@ -847,6 +851,9 @@ PrintBackendServiceManager::GetServiceFromBundle(
         host.BindNewPipeAndPassReceiver(),
         content::ServiceProcessHost::Options()
             .WithDisplayName(IDS_UTILITY_PROCESS_PRINT_BACKEND_SERVICE_NAME)
+#if BUILDFLAG(IS_LINUX)
+            .WithExtraCommandLineSwitches({switches::kMessageLoopTypeUi})
+#endif
             .Pass());
     host->BindBackend(service.BindNewPipeAndPassReceiver());
 
