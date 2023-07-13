@@ -128,6 +128,16 @@ class CookieControlsBubbleViewControllerTest : public TestWithBrowserView {
         mock_bubble_view(), controller_.get(), web_contents);
   }
 
+  void TearDown() override {
+    // Clean up the pointers in the correct order before the browser is
+    // destroyed to avoid dangling pointers.
+    view_controller_ = nullptr;
+    mock_bubble_view_ = nullptr;
+    mock_content_view_ = nullptr;
+    controller_ = nullptr;
+    TestWithBrowserView::TearDown();
+  }
+
   CookieControlsBubbleViewController* view_controller() {
     return view_controller_.get();
   }
