@@ -10,8 +10,12 @@
 #include "build/build_config.h"
 #include "chrome/browser/usb/usb_chooser_context.h"
 #include "chrome/browser/usb/usb_chooser_context_factory.h"
+#include "chrome/browser/usb/usb_connection_tracker.h"
+#include "chrome/browser/usb/usb_connection_tracker_factory.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "chrome/test/base/testing_browser_process.h"
+#include "chrome/test/base/testing_profile_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/embedded_worker_instance_test_harness.h"
 #include "content/public/test/test_renderer_host.h"
@@ -38,6 +42,7 @@
 
 namespace {
 
+using ::base::test::RunClosure;
 using ::base::test::RunOnceCallback;
 using ::base::test::RunOnceClosure;
 using ::base::test::TestFuture;
@@ -154,6 +159,16 @@ class MockDeviceManagerClient
   mojo::AssociatedReceiver<UsbDeviceManagerClient> receiver_{this};
 };
 
+class MockUsbConnectionTracker : public UsbConnectionTracker {
+ public:
+  explicit MockUsbConnectionTracker(Profile* profile)
+      : UsbConnectionTracker(profile) {}
+  ~MockUsbConnectionTracker() override = default;
+
+  MOCK_METHOD(void, IncrementConnectionCount, (const url::Origin&), (override));
+  MOCK_METHOD(void, DecrementConnectionCount, (const url::Origin&), (override));
+};
+
 // Tests for embedder-specific behaviors of Chrome's blink::mojom::WebUsbService
 // implementation.
 class ChromeUsbTestHelper {
@@ -223,6 +238,27 @@ class ChromeUsbTestHelper {
       device_manager_ = std::make_unique<device::FakeUsbDeviceManager>();
     }
     return device_manager_.get();
+  }
+
+  BrowserContextKeyedServiceFactory::TestingFactory
+  GetUsbConnectionTrackerTestingFactory() {
+    return base::BindRepeating([](content::BrowserContext* browser_context) {
+      return static_cast<std::unique_ptr<KeyedService>>(
+          std::make_unique<testing::NiceMock<MockUsbConnectionTracker>>(
+              Profile::FromBrowserContext(browser_context)));
+    });
+  }
+
+  void SetUpUsbConnectionTracker() {
+    // Even MockUsbConnectionTracker can be lazily created in ChromeUsbDelegate,
+    // we intentionally create it ahead of time so that we can test EXPECT_CALL
+    // for invoking mock method for the first time.
+    usb_connection_tracker_ = static_cast<MockUsbConnectionTracker*>(
+        UsbConnectionTrackerFactory::GetForProfile(profile_, /*create=*/true));
+  }
+
+  MockUsbConnectionTracker& usb_connection_tracker() {
+    return *usb_connection_tracker_;
   }
 
   void TestNoPermissionDevice() {
@@ -421,6 +457,9 @@ class ChromeUsbTestHelper {
     EXPECT_CALL(mock_device, Open)
         .WillOnce(RunOnceCallback<0>(NewUsbOpenDeviceSuccess()));
     TestFuture<device::mojom::UsbOpenDeviceResultPtr> open_future;
+    if (supports_usb_connection_tracker_) {
+      EXPECT_CALL(usb_connection_tracker(), IncrementConnectionCount(origin));
+    }
     device->Open(open_future.GetCallback());
     EXPECT_TRUE(open_future.Get()->is_success());
     if (web_contents) {
@@ -431,6 +470,9 @@ class ChromeUsbTestHelper {
     // are connected.
     EXPECT_CALL(mock_device, Close).WillOnce(RunOnceClosure<0>());
     base::RunLoop loop;
+    if (supports_usb_connection_tracker_) {
+      EXPECT_CALL(usb_connection_tracker(), DecrementConnectionCount(origin));
+    }
     device->Close(loop.QuitClosure());
     loop.Run();
     if (web_contents) {
@@ -467,6 +509,9 @@ class ChromeUsbTestHelper {
     EXPECT_CALL(mock_device, Open)
         .WillOnce(RunOnceCallback<0>(NewUsbOpenDeviceSuccess()));
     TestFuture<device::mojom::UsbOpenDeviceResultPtr> open_future;
+    if (supports_usb_connection_tracker_) {
+      EXPECT_CALL(usb_connection_tracker(), IncrementConnectionCount(origin));
+    }
     device->Open(open_future.GetCallback());
     EXPECT_TRUE(open_future.Get()->is_success());
     if (web_contents) {
@@ -475,9 +520,18 @@ class ChromeUsbTestHelper {
 
     // Remove the device and check that the WebContents no longer indicates we
     // are connected.
+    base::RunLoop decrement_connection_count_loop;
+    if (supports_usb_connection_tracker_) {
+      EXPECT_CALL(usb_connection_tracker(), DecrementConnectionCount(origin))
+          .WillOnce(RunClosure(decrement_connection_count_loop.QuitClosure()));
+    }
     EXPECT_CALL(mock_device, Close).WillOnce(RunOnceClosure<0>());
     device_manager()->RemoveDevice(fake_device);
-    base::RunLoop().RunUntilIdle();
+    if (supports_usb_connection_tracker_) {
+      decrement_connection_count_loop.Run();
+    } else {
+      base::RunLoop().RunUntilIdle();
+    }
     if (web_contents) {
       EXPECT_FALSE(web_contents->IsConnectedToUsbDevice());
     }
@@ -610,6 +664,11 @@ class ChromeUsbTestHelper {
  protected:
   raw_ptr<TestingProfile, DanglingUntriaged> profile_ = nullptr;
   GURL origin_url_;
+  raw_ptr<MockUsbConnectionTracker, DanglingUntriaged> usb_connection_tracker_ =
+      nullptr;
+  // This flag is expected to be set to true only for the scenario of extension
+  // origin and kEnableWebUsbOnExtensionServiceWorker enabled.
+  bool supports_usb_connection_tracker_ = false;
 
  private:
   std::unique_ptr<device::FakeUsbDeviceManager> device_manager_;
@@ -623,6 +682,9 @@ class ChromeUsbDelegateRenderFrameTestBase
     ChromeRenderViewHostTestHarness::SetUp();
     profile_ = profile();
     ASSERT_TRUE(profile_);
+    UsbConnectionTrackerFactory::GetInstance()->SetTestingFactory(
+        profile_, GetUsbConnectionTrackerTestingFactory());
+    SetUpUsbConnectionTracker();
     SetUpOriginUrl();
     NavigateAndCommit(origin_url_);
   }
@@ -688,6 +750,7 @@ class ChromeUsbDelegateServiceWorkerTestBase
   void SetUp() override {
     content::EmbeddedWorkerInstanceTestHarness::SetUp();
     SetUpOriginUrl();
+    SetUpUsbConnectionTracker();
     StartWorker();
   }
 
@@ -708,6 +771,8 @@ class ChromeUsbDelegateServiceWorkerTestBase
     auto builder = TestingProfile::Builder();
     auto testing_profile = builder.Build();
     profile_ = testing_profile.get();
+    UsbConnectionTrackerFactory::GetInstance()->SetTestingFactory(
+        profile_, GetUsbConnectionTrackerTestingFactory());
     return testing_profile;
   }
 
@@ -771,6 +836,9 @@ class ChromeUsbDelegateExtensionRenderFrameFeatureEnabledTest
     : public ChromeUsbDelegateRenderFrameTestBase,
       public EnableWebUsbOnExtensionServiceWorkerHelper {
  public:
+  ChromeUsbDelegateExtensionRenderFrameFeatureEnabledTest() {
+    supports_usb_connection_tracker_ = true;
+  }
   void SetUpOriginUrl() override { SetUpExtensionOriginUrl(kExtensionId); }
 };
 
@@ -784,6 +852,9 @@ class ChromeUsbDelegateExtensionServiceWorkerFeatureEnabledTest
     : public ChromeUsbDelegateServiceWorkerTestBase,
       public EnableWebUsbOnExtensionServiceWorkerHelper {
  public:
+  ChromeUsbDelegateExtensionServiceWorkerFeatureEnabledTest() {
+    supports_usb_connection_tracker_ = true;
+  }
   void SetUpOriginUrl() override { SetUpExtensionOriginUrl(kExtensionId); }
 };
 
@@ -791,6 +862,9 @@ class ChromeUsbDelegateImprivataExtensionServiceWorkerFeatureEnabledTest
     : public ChromeUsbDelegateServiceWorkerTestBase,
       public EnableWebUsbOnExtensionServiceWorkerHelper {
  public:
+  ChromeUsbDelegateImprivataExtensionServiceWorkerFeatureEnabledTest() {
+    supports_usb_connection_tracker_ = true;
+  }
   void SetUpOriginUrl() override {
     SetUpExtensionOriginUrl(kAllowlistedImprivataExtensionId);
   }
@@ -800,6 +874,9 @@ class ChromeUsbDelegateSmartCardExtensionServiceWorkerFeatureEnabledTest
     : public ChromeUsbDelegateServiceWorkerTestBase,
       public EnableWebUsbOnExtensionServiceWorkerHelper {
  public:
+  ChromeUsbDelegateSmartCardExtensionServiceWorkerFeatureEnabledTest() {
+    supports_usb_connection_tracker_ = true;
+  }
   void SetUpOriginUrl() override {
     SetUpExtensionOriginUrl(kAllowlistedSmartCardExtensionId);
   }
@@ -866,6 +943,16 @@ TEST_F(ChromeUsbDelegateImprivataExtensionRenderFrameTest,
 TEST_F(ChromeUsbDelegateSmartCardExtensionRenderFrameTest,
        AllowlistedSmartCardConnectorExtension) {
   TestAllowlistedSmartCardConnectorExtension(web_contents());
+}
+
+TEST_F(ChromeUsbDelegateExtensionRenderFrameFeatureEnabledTest,
+       OpenAndCloseDevice) {
+  TestOpenAndCloseDevice(web_contents());
+}
+
+TEST_F(ChromeUsbDelegateExtensionRenderFrameFeatureEnabledTest,
+       OpenAndDisconnectDevice) {
+  TestOpenAndDisconnectDevice(web_contents());
 }
 
 TEST_F(ChromeUsbDelegateExtensionServiceWorkerTest, WebUsbServiceNotConnected) {

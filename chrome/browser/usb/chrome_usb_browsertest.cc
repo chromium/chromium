@@ -11,8 +11,13 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/device_notifications/device_pinned_notification_renderer.h"
+#include "chrome/browser/device_notifications/device_status_icon_renderer.h"
+#include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_dialogs.h"
@@ -22,6 +27,8 @@
 #include "chrome/browser/usb/chrome_usb_delegate.h"
 #include "chrome/browser/usb/usb_chooser_context_factory.h"
 #include "chrome/browser/usb/usb_chooser_controller.h"
+#include "chrome/browser/usb/usb_pinned_notification.h"
+#include "chrome/browser/usb/usb_status_icon.h"
 #include "chrome/browser/usb/web_usb_chooser.h"
 #include "chrome/browser/usb/web_usb_histograms.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
@@ -66,6 +73,7 @@ namespace {
 
 using ::base::test::TestFuture;
 using ::content::JsReplace;
+using ::extensions::Extension;
 using ::testing::Return;
 
 constexpr char kNonAppHost[] = "nonapp.com";
@@ -983,6 +991,12 @@ class WebUsbExtensionBrowserTest : public extensions::ExtensionBrowserTest {
     scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
         std::move(fake_user_manager));
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS)
+    display_service_for_system_notification_ =
+        std::make_unique<NotificationDisplayServiceTester>(
+            /*profile=*/nullptr);
+#endif  // BUILDFLAG(IS_CHROMEOS)
   }
 
   void TearDownOnMainThread() override {
@@ -1020,7 +1034,7 @@ class WebUsbExtensionBrowserTest : public extensions::ExtensionBrowserTest {
             kPolicyTemplate, extension->url().spec().c_str())));
   }
 
-  void LoadExtensionAndRunTest(base::StringPiece background_js) {
+  const Extension* LoadExtensionAndRunTest(base::StringPiece background_js) {
     constexpr char kManifestTemplate[] =
         R"({
               "name": "Test Extension",
@@ -1049,6 +1063,8 @@ class WebUsbExtensionBrowserTest : public extensions::ExtensionBrowserTest {
     EXPECT_TRUE(ready_listener.WaitUntilSatisfied());
     ready_listener.Reply("ok");
     EXPECT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
+
+    return extension;
   }
 
   void AddFakeDevice() {
@@ -1056,8 +1072,64 @@ class WebUsbExtensionBrowserTest : public extensions::ExtensionBrowserTest {
                                        "Test Device", "123456");
   }
 
+  void SimulateClickOnSystemTrayIconButton(Browser* browser,
+                                           const Extension* extension) {
+#if BUILDFLAG(IS_CHROMEOS)
+    auto* usb_pinned_notification = static_cast<UsbPinnedNotification*>(
+        g_browser_process->usb_system_tray_icon());
+
+    auto* device_pinned_notification_renderer =
+        static_cast<DevicePinnedNotificationRenderer*>(
+            usb_pinned_notification->GetIconRendererForTesting());
+
+    auto expected_pinned_notification_id =
+        device_pinned_notification_renderer->GetNotificationId(
+            browser->profile());
+    auto maybe_indicator_notification =
+        display_service_for_system_notification_->GetNotification(
+            expected_pinned_notification_id);
+    ASSERT_TRUE(maybe_indicator_notification);
+    EXPECT_TRUE(maybe_indicator_notification->pinned());
+    display_service_for_system_notification_->SimulateClick(
+        NotificationHandler::Type::TRANSIENT, expected_pinned_notification_id,
+        /*action_index=*/0, /*reply=*/absl::nullopt);
+    auto* web_contents = browser->tab_strip_model()->GetActiveWebContents();
+    EXPECT_EQ(web_contents->GetURL(), "chrome://settings/content/usbDevices");
+#else
+    // On non-ChromeOS platforms, as they use status icon and there isn't good
+    // test infra to simulate click on the status icon button, so simulate the
+    // click event by invoking ExecuteCommand of UsbConnectionTracker directly.
+    auto* usb_status_icon =
+        static_cast<UsbStatusIcon*>(g_browser_process->usb_system_tray_icon());
+
+    auto* status_icon_renderer = static_cast<DeviceStatusIconRenderer*>(
+        usb_status_icon->GetIconRendererForTesting());
+
+    status_icon_renderer->ExecuteCommandForTesting(
+        IDC_DEVICE_SYSTEM_TRAY_ICON_FIRST, 0);
+    EXPECT_EQ(browser->tab_strip_model()->GetActiveWebContents()->GetURL(),
+              "https://support.google.com/chrome?p=webusb");
+
+    status_icon_renderer->ExecuteCommandForTesting(
+        IDC_DEVICE_SYSTEM_TRAY_ICON_FIRST + 1, 0);
+    EXPECT_EQ(browser->tab_strip_model()->GetActiveWebContents()->GetURL(),
+              "chrome://settings/content/usbDevices");
+
+    status_icon_renderer->ExecuteCommandForTesting(
+        IDC_DEVICE_SYSTEM_TRAY_ICON_FIRST + 2, 0);
+    EXPECT_EQ(
+        browser->tab_strip_model()->GetActiveWebContents()->GetURL(),
+        "chrome://settings/content/siteDetails?site=chrome-extension%3A%2F%2F" +
+            extension->id());
+#endif
+  }
+
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
+#if BUILDFLAG(IS_CHROMEOS)
+  std::unique_ptr<NotificationDisplayServiceTester>
+      display_service_for_system_notification_;
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
  private:
   device::FakeUsbDeviceManager device_manager_;
@@ -1144,6 +1216,34 @@ IN_PROC_BROWSER_TEST_F(WebUsbExtensionFeatureEnabledBrowserTest,
     });
   )";
   LoadExtensionAndRunTest(kBackgroundJs);
+}
+
+IN_PROC_BROWSER_TEST_F(WebUsbExtensionFeatureEnabledBrowserTest,
+                       UsbConnectionTracker) {
+  constexpr char kBackgroundJs[] = R"(
+    // |device| is a global variable to store UsbDevice object being tested in
+    // case the local one is garbage collected, which can close the connection.
+    var device;
+    chrome.test.sendMessage("ready", async () => {
+      try {
+        const devices = await navigator.usb.getDevices();
+        device = devices[0];
+        chrome.test.assertEq(1, devices.length);
+        // Bounce device a few times to make sure nothing unexpected happens.
+        await device.open();
+        await device.close();
+        await device.open();
+        await device.close();
+        await device.open();
+        chrome.test.notifyPass();
+      } catch (e) {
+        chrome.test.fail(e.name + ':' + e.message);
+      }
+    });
+  )";
+  AddFakeDevice();
+  const auto* extension = LoadExtensionAndRunTest(kBackgroundJs);
+  SimulateClickOnSystemTrayIconButton(browser(), extension);
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 

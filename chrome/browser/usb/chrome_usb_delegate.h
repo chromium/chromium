@@ -64,6 +64,10 @@ class ChromeUsbDelegate : public content::UsbDelegate {
   void RemoveObserver(content::BrowserContext* browser_context,
                       Observer* observer) override;
   bool IsServiceWorkerAllowedForOrigin(const url::Origin& origin) override;
+  void IncrementConnectionCount(content::BrowserContext* browser_context,
+                                const url::Origin& origin) override;
+  void DecrementConnectionCount(content::BrowserContext* browser_context,
+                                const url::Origin& origin) override;
 
  private:
   class ContextObservation;

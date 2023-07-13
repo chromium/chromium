@@ -377,9 +377,14 @@ void WebUsbServiceImpl::OnDeviceManagerConnectionError() {
 // device::mojom::UsbDeviceClient implementation:
 void WebUsbServiceImpl::IncrementConnectionCount() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  auto* delegate = GetContentClient()->browser()->GetUsbDelegate();
+  if (delegate) {
+    delegate->IncrementConnectionCount(GetBrowserContext(), origin_);
+  }
+
   if (!render_frame_host_)
     return;
-
   if (connection_count_++ == 0) {
     auto* web_contents = static_cast<WebContentsImpl*>(
         WebContents::FromRenderFrameHost(render_frame_host_));
@@ -389,9 +394,14 @@ void WebUsbServiceImpl::IncrementConnectionCount() {
 
 void WebUsbServiceImpl::DecrementConnectionCount() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  auto* delegate = GetContentClient()->browser()->GetUsbDelegate();
+  if (delegate) {
+    delegate->DecrementConnectionCount(GetBrowserContext(), origin_);
+  }
+
   if (!render_frame_host_)
     return;
-
   DCHECK_GT(connection_count_, 0);
   if (--connection_count_ == 0) {
     auto* web_contents = static_cast<WebContentsImpl*>(

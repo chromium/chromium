@@ -202,6 +202,7 @@ std::string GenerateContentSettingsExceptionsSubPage(ContentSettingsType type) {
           {ContentSettingsType::ADS, "ads"},
           {ContentSettingsType::HID_CHOOSER_DATA, "hidDevices"},
           {ContentSettingsType::STORAGE_ACCESS, "storageAccess"},
+          {ContentSettingsType::USB_CHOOSER_DATA, "usbDevices"},
       });
 
   const auto* it = kSettingsPathOverrides.find(type);

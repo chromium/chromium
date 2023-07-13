@@ -17,7 +17,10 @@
 #include "chrome/browser/usb/usb_chooser_context.h"
 #include "chrome/browser/usb/usb_chooser_context_factory.h"
 #include "chrome/browser/usb/usb_chooser_controller.h"
+#include "chrome/browser/usb/usb_connection_tracker.h"
+#include "chrome/browser/usb/usb_connection_tracker_factory.h"
 #include "chrome/browser/usb/web_usb_chooser.h"
+#include "chrome/common/chrome_features.h"
 #include "components/permissions/object_permission_context_base.h"
 #include "content/public/browser/render_frame_host.h"
 #include "services/device/public/mojom/usb_enumeration_options.mojom.h"
@@ -38,6 +41,16 @@ using ::content::UsbChooser;
 UsbChooserContext* GetChooserContext(content::BrowserContext* browser_context) {
   auto* profile = Profile::FromBrowserContext(browser_context);
   return profile ? UsbChooserContextFactory::GetForProfile(profile) : nullptr;
+}
+
+UsbConnectionTracker* GetConnectionTracker(
+    content::BrowserContext* browser_context,
+    bool create) {
+  // |browser_context| might be null in a service worker case when the browser
+  // context is destroyed before service worker's destruction.
+  auto* profile = Profile::FromBrowserContext(browser_context);
+  return profile ? UsbConnectionTrackerFactory::GetForProfile(profile, create)
+                 : nullptr;
 }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -352,4 +365,43 @@ bool ChromeUsbDelegate::IsServiceWorkerAllowedForOrigin(
   }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
   return false;
+}
+
+void ChromeUsbDelegate::IncrementConnectionCount(
+    content::BrowserContext* browser_context,
+    const url::Origin& origin) {
+// Don't track connection when the feature isn't enabled or the connection
+// isn't made by an extension origin.
+#if !BUILDFLAG(IS_ANDROID)
+  if (!base::FeatureList::IsEnabled(
+          features::kEnableWebUsbOnExtensionServiceWorker) ||
+      origin.scheme() != extensions::kExtensionScheme) {
+    return;
+  }
+
+  auto* usb_connection_tracker =
+      GetConnectionTracker(browser_context, /*create=*/true);
+  if (usb_connection_tracker) {
+    usb_connection_tracker->IncrementConnectionCount(origin);
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
+}
+
+void ChromeUsbDelegate::DecrementConnectionCount(
+    content::BrowserContext* browser_context,
+    const url::Origin& origin) {
+  // Don't track connection when the feature isn't enabled or the connection
+  // isn't made by an extension origin.
+#if !BUILDFLAG(IS_ANDROID)
+  if (!base::FeatureList::IsEnabled(
+          features::kEnableWebUsbOnExtensionServiceWorker) ||
+      origin.scheme() != extensions::kExtensionScheme) {
+    return;
+  }
+  auto* usb_connection_tracker =
+      GetConnectionTracker(browser_context, /*create=*/false);
+  if (usb_connection_tracker) {
+    usb_connection_tracker->DecrementConnectionCount(origin);
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
 }

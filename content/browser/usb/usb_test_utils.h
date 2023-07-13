@@ -85,6 +85,10 @@ class MockUsbDelegate : public UsbDelegate {
                     mojo::PendingRemote<device::mojom::UsbDeviceManager>
                         device_manager));
   MOCK_METHOD1(IsServiceWorkerAllowedForOrigin, bool(const url::Origin&));
+  MOCK_METHOD2(IncrementConnectionCount,
+               void(BrowserContext*, const url::Origin&));
+  MOCK_METHOD2(DecrementConnectionCount,
+               void(BrowserContext*, const url::Origin&));
 
  private:
   base::ObserverList<UsbDelegate::Observer> observer_list_;

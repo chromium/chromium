@@ -110,6 +110,15 @@ class CONTENT_EXPORT UsbDelegate {
 
   // Returns true if `origin` is allowed to access WebUSB from service workers.
   virtual bool IsServiceWorkerAllowedForOrigin(const url::Origin& origin) = 0;
+
+  // Notify the delegate a connection is created on |origin| by
+  // |browser_context|.
+  virtual void IncrementConnectionCount(BrowserContext* browser_context,
+                                        const url::Origin& origin) = 0;
+  // Notify the delegate a connection is closed on |origin| by
+  // |browser_context|.
+  virtual void DecrementConnectionCount(BrowserContext* browser_context,
+                                        const url::Origin& origin) = 0;
 };
 
 }  // namespace content
