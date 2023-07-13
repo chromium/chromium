@@ -413,7 +413,13 @@ class WPTAdapter:
 
             # Create the output directory if it doesn't already exist.
             self.fs.maybe_make_directory(self.port.artifacts_directory())
-
+            # Set additional environment for python subprocesses
+            string_variables = getattr(self.options, "additional_env_var", [])
+            for string_variable in string_variables:
+                [name, value] = string_variable.split('=', 1)
+                logger.info('Setting environment variable %s to %s', name,
+                            value)
+                os.environ[name] = value
             if self.options.use_upstream_wpt:
                 tests_root = tools_root = self.fs.join(tmp_dir, 'upstream-wpt')
                 logger.info('Using upstream wpt, cloning to %s ...',

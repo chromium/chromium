@@ -5,6 +5,7 @@
 import contextlib
 import io
 import json
+import os
 import textwrap
 import unittest
 from datetime import datetime
@@ -239,3 +240,9 @@ class WPTAdapterTest(unittest.TestCase):
             # Convert from a 0-based index to 1-based.
             self.assertEqual(options.this_chunk, 5)
             self.assertEqual(options.total_chunks, 5)
+
+    def test_env_var(self):
+        adapter = WPTAdapter.from_args(
+            self.host, ["--additional-env-var=NEW_ENV_VAR=new_env_var_value"])
+        with adapter.test_env():
+            self.assertEqual(os.environ["NEW_ENV_VAR"], "new_env_var_value")
