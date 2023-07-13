@@ -55,7 +55,7 @@ public class AccountSelectionCoordinator implements AccountSelectionComponent {
     private AccountSelectionMediator mMediator;
     private RecyclerView mSheetItemListView;
 
-    public AccountSelectionCoordinator(WindowAndroid windowAndroid,
+    public AccountSelectionCoordinator(Tab tab, WindowAndroid windowAndroid,
             BottomSheetController sheetController, AccountSelectionComponent.Delegate delegate) {
         mBottomSheetController = sheetController;
         mWindowAndroid = windowAndroid;
@@ -84,7 +84,7 @@ public class AccountSelectionCoordinator implements AccountSelectionComponent {
         @Px
         int avatarSize = context.getResources().getDimensionPixelSize(
                 R.dimen.account_selection_account_avatar_size);
-        mMediator = new AccountSelectionMediator(delegate, model, sheetItems,
+        mMediator = new AccountSelectionMediator(tab, delegate, model, sheetItems,
                 mBottomSheetController, mBottomSheetContent, imageFetcher, avatarSize);
     }
 

@@ -269,6 +269,7 @@ bool AccountSelectionViewAndroid::RecreateJavaObject() {
   }
   java_object_internal_ = Java_AccountSelectionBridge_create(
       AttachCurrentThread(), reinterpret_cast<intptr_t>(this),
+      delegate_->GetWebContents()->GetJavaWebContents(),
       delegate_->GetNativeView()->GetWindowAndroid()->GetJavaObject());
   return !!java_object_internal_;
 }

@@ -48,6 +48,7 @@ import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.AccountProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.AccountProperties.Avatar;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ContinueButtonProperties;
@@ -61,6 +62,7 @@ import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderMetadat
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.content.webid.IdentityRequestDialogDismissReason;
+import org.chromium.ui.KeyboardVisibilityDelegate.KeyboardVisibilityListener;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -122,6 +124,8 @@ public class AccountSelectionControllerTest {
     private ImageFetcher mMockImageFetcher;
     @Mock
     private BottomSheetController mMockBottomSheetController;
+    @Mock
+    private Tab mTab;
 
     private AccountSelectionBottomSheetContent mBottomSheetContent;
     private AccountSelectionMediator mMediator;
@@ -138,7 +142,7 @@ public class AccountSelectionControllerTest {
     @Before
     public void setUp() {
         mBottomSheetContent = new AccountSelectionBottomSheetContent(null, null);
-        mMediator = new AccountSelectionMediator(mMockDelegate, mModel, mSheetAccountItems,
+        mMediator = new AccountSelectionMediator(mTab, mMockDelegate, mModel, mSheetAccountItems,
                 mMockBottomSheetController, mBottomSheetContent, mMockImageFetcher,
                 DESIRED_AVATAR_SIZE);
     }
@@ -530,6 +534,45 @@ public class AccountSelectionControllerTest {
                     .onResult(null);
             verify(mMockDelegate, times(++count)).onSignInToIdp();
         }
+    }
+
+    @Test
+    public void testKeyboardShowingAndHiding() {
+        when(mMockBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(true);
+        mMediator.showAccounts(TEST_ETLD_PLUS_ONE, TEST_ETLD_PLUS_ONE_1, TEST_ETLD_PLUS_ONE_2,
+                Arrays.asList(ANA), IDP_METADATA, CLIENT_ID_METADATA, false /* isAutoReauthn */,
+                "signin" /* rpContext */);
+        KeyboardVisibilityListener listener = mMediator.getKeyboardEventListener();
+        listener.keyboardVisibilityChanged(true);
+        verify(mMockBottomSheetController).hideContent(mBottomSheetContent, true);
+        listener.keyboardVisibilityChanged(false);
+        verify(mMockBottomSheetController, times(2)).requestShowContent(mBottomSheetContent, true);
+        assertFalse(mMediator.wasDismissed());
+    }
+
+    @Test
+    public void testWebContentsInteractibilityChange() {
+        when(mMockBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(true);
+        mMediator.showAccounts(TEST_ETLD_PLUS_ONE, TEST_ETLD_PLUS_ONE_1, TEST_ETLD_PLUS_ONE_2,
+                Arrays.asList(ANA), IDP_METADATA, CLIENT_ID_METADATA, false /* isAutoReauthn */,
+                "signin" /* rpContext */);
+        mMediator.getTabObserver().onInteractabilityChanged(mTab, false);
+        verify(mMockBottomSheetController).hideContent(mBottomSheetContent, false);
+        mMediator.getTabObserver().onInteractabilityChanged(mTab, true);
+        verify(mMockBottomSheetController, times(2)).requestShowContent(mBottomSheetContent, true);
+        assertFalse(mMediator.wasDismissed());
+    }
+
+    @Test
+    public void testNavigationInPrimaryMainFrame() {
+        when(mMockBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(true);
+        mMediator.showAccounts(TEST_ETLD_PLUS_ONE, TEST_ETLD_PLUS_ONE_1, TEST_ETLD_PLUS_ONE_2,
+                Arrays.asList(ANA), IDP_METADATA, CLIENT_ID_METADATA, false /* isAutoReauthn */,
+                "signin" /* rpContext */);
+        // We pass null as |mMediatior| does not really care about where we navigate to.
+        mMediator.getTabObserver().onDidStartNavigationInPrimaryMainFrame(mTab, null);
+        assertTrue(mMediator.wasDismissed());
+        verify(mMockDelegate).onDismissed(IdentityRequestDialogDismissReason.OTHER);
     }
 
     private void pressBack() {

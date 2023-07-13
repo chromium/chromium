@@ -17,6 +17,9 @@ import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.chrome.browser.tab.EmptyTabObserver;
+import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.AccountProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ContinueButtonProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.DataSharingConsentProperties;
@@ -27,12 +30,14 @@ import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.I
 import org.chromium.chrome.browser.ui.android.webid.data.Account;
 import org.chromium.chrome.browser.ui.android.webid.data.ClientIdMetadata;
 import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderMetadata;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.content.webid.IdentityRequestDialogDismissReason;
+import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.KeyboardVisibilityDelegate.KeyboardVisibilityListener;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
@@ -70,6 +75,10 @@ class AccountSelectionMediator {
 
     private boolean mRegisteredObservers;
     private boolean mWasDismissed;
+    // Keeps track of the last bottom sheet seen by the BottomSheetObserver. Used to know whether a
+    // sheet state change affects the BottomSheet owned by this object or not.
+    private BottomSheetContent mLastSheetSeen;
+    private final Tab mTab;
     private final AccountSelectionComponent.Delegate mDelegate;
     private final PropertyModel mModel;
     private final ModelList mSheetAccountItems;
@@ -79,6 +88,7 @@ class AccountSelectionMediator {
     private final BottomSheetController mBottomSheetController;
     private final AccountSelectionBottomSheetContent mBottomSheetContent;
     private final BottomSheetObserver mBottomSheetObserver;
+    private final TabObserver mTabObserver;
 
     // Amount of time during which we ignore inputs. Note that this is timed from when we invoke the
     // methods to show the accounts, so it does include any time spent animating the sheet into
@@ -109,15 +119,20 @@ class AccountSelectionMediator {
                 @Override
                 public void keyboardVisibilityChanged(boolean isShowing) {
                     if (isShowing) {
-                        onDismissed(IdentityRequestDialogDismissReason.VIRTUAL_KEYBOARD_SHOWN);
+                        mBottomSheetController.hideContent(mBottomSheetContent, true);
+                    } else {
+                        showContent();
                     }
                 }
             };
 
-    AccountSelectionMediator(AccountSelectionComponent.Delegate delegate, PropertyModel model,
-            ModelList sheetAccountItems, BottomSheetController bottomSheetController,
+    AccountSelectionMediator(Tab tab, AccountSelectionComponent.Delegate delegate,
+            PropertyModel model, ModelList sheetAccountItems,
+            BottomSheetController bottomSheetController,
             AccountSelectionBottomSheetContent bottomSheetContent, ImageFetcher imageFetcher,
             @Px int desiredAvatarSize) {
+        assert tab != null;
+        mTab = tab;
         assert delegate != null;
         mDelegate = delegate;
         mModel = model;
@@ -126,6 +141,7 @@ class AccountSelectionMediator {
         mDesiredAvatarSize = desiredAvatarSize;
         mBottomSheetController = bottomSheetController;
         mBottomSheetContent = bottomSheetContent;
+        mLastSheetSeen = mBottomSheetContent;
 
         mBottomSheetObserver = new EmptyBottomSheetObserver() {
             // Sends focus events to the relevant views for accessibility.
@@ -151,17 +167,24 @@ class AccountSelectionMediator {
 
             @Override
             public void onSheetStateChanged(@SheetState int state, int reason) {
+                if (mLastSheetSeen != mBottomSheetContent) return;
+                if (mWasDismissed) return;
+
                 if (state == SheetState.HIDDEN) {
-                    super.onSheetClosed(reason);
-                    mBottomSheetController.removeObserver(mBottomSheetObserver);
-
-                    if (mWasDismissed) return;
-
-                    @IdentityRequestDialogDismissReason
-                    int dismissReason = (reason == BottomSheetController.StateChangeReason.SWIPE)
-                            ? IdentityRequestDialogDismissReason.SWIPE
-                            : IdentityRequestDialogDismissReason.OTHER;
-                    onDismissed(dismissReason);
+                    // BottomSheetController.StateChangeReason.NONE happens for instance when the
+                    // user opens the tab switcher or when the user leaves Chrome. We do not want to
+                    // dismiss in those cases.
+                    if (reason == BottomSheetController.StateChangeReason.NONE) {
+                        mBottomSheetController.hideContent(mBottomSheetContent, true);
+                    } else {
+                        super.onSheetClosed(reason);
+                        @IdentityRequestDialogDismissReason
+                        int dismissReason =
+                                (reason == BottomSheetController.StateChangeReason.SWIPE)
+                                ? IdentityRequestDialogDismissReason.SWIPE
+                                : IdentityRequestDialogDismissReason.OTHER;
+                        onDismissed(dismissReason);
+                    }
                     return;
                 }
 
@@ -173,6 +196,39 @@ class AccountSelectionMediator {
                 // continue button announcement. Hence, focusForAccessibility is called here after
                 // the bottom sheet's focus-taking actions.
                 focusForAccessibility();
+            }
+
+            @Override
+            public void onSheetContentChanged(BottomSheetContent bottomSheet) {
+                // Keep track of the latest sheet seen. Since this method is invoked before
+                // onSheetStateChanged() when the sheet is swiped out, we do not clear
+                // |mLastSheetSeen| if |bottomSheet| is null.
+                if (bottomSheet != null) {
+                    mLastSheetSeen = bottomSheet;
+                }
+            }
+        };
+
+        mTabObserver = new EmptyTabObserver() {
+            @Override
+            public void onDidStartNavigationInPrimaryMainFrame(
+                    Tab tab, NavigationHandle navigationHandle) {
+                assert tab == mTab;
+                onDismissed(IdentityRequestDialogDismissReason.OTHER);
+            }
+
+            @Override
+            public void onInteractabilityChanged(Tab tab, boolean isInteractable) {
+                assert tab == mTab;
+                // |isInteractable| is true when the tab is not hidden and its view is attached to
+                // the window. We use this method instead of onShown() and onHidden() because this
+                // one is correctly invoked when the user enters tab switcher (the current tab is no
+                // longer interactable in this case).
+                if (isInteractable) {
+                    showContent();
+                } else {
+                    mBottomSheetController.hideContent(mBottomSheetContent, false);
+                }
             }
         };
     }
@@ -260,8 +316,9 @@ class AccountSelectionMediator {
         }
     }
 
+    // Dismisses content without notifying the delegate. Should only be invoked during destruction.
     void close() {
-        if (!mWasDismissed) hideContent();
+        if (!mWasDismissed) dismissContent();
     }
 
     void showAccounts(String topFrameForDisplay, String iframeForDisplay, String idpForDisplay,
@@ -334,6 +391,16 @@ class AccountSelectionMediator {
     @VisibleForTesting
     void setComponentShowTime(long componentShowTime) {
         mComponentShowTime = componentShowTime;
+    }
+
+    @VisibleForTesting
+    KeyboardVisibilityListener getKeyboardEventListener() {
+        return mKeyboardVisibilityListener;
+    }
+
+    @VisibleForTesting
+    TabObserver getTabObserver() {
+        return mTabObserver;
     }
 
     private void showAccountsInternal(String topFrameForDisplay, String iframeForDisplay,
@@ -409,6 +476,7 @@ class AccountSelectionMediator {
      * controller queue and notifies the delegate of the dismissal.
      */
     private void showContent() {
+        if (mWasDismissed) return;
         if (mBottomSheetController.requestShowContent(mBottomSheetContent, true)) {
             if (mRegisteredObservers) return;
 
@@ -416,19 +484,22 @@ class AccountSelectionMediator {
             mBottomSheetController.addObserver(mBottomSheetObserver);
             KeyboardVisibilityDelegate.getInstance().addKeyboardVisibilityListener(
                     mKeyboardVisibilityListener);
+            mTab.addObserver(mTabObserver);
         } else {
             onDismissed(IdentityRequestDialogDismissReason.OTHER);
         }
     }
 
     /**
-     * Requests to hide the bottom sheet.
+     * Requests to dismiss bottomsheet.
      */
-    void hideContent() {
+    void dismissContent() {
         mWasDismissed = true;
         KeyboardVisibilityDelegate.getInstance().removeKeyboardVisibilityListener(
                 mKeyboardVisibilityListener);
+        mTab.removeObserver(mTabObserver);
         mBottomSheetController.hideContent(mBottomSheetContent, true);
+        mBottomSheetController.removeObserver(mBottomSheetObserver);
         updateBackPressBehavior();
     }
 
@@ -497,7 +568,7 @@ class AccountSelectionMediator {
     }
 
     void onDismissed(@IdentityRequestDialogDismissReason int dismissReason) {
-        hideContent();
+        dismissContent();
         mDelegate.onDismissed(dismissReason);
     }
 

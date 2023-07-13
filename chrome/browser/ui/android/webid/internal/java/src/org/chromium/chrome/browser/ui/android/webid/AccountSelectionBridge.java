@@ -11,6 +11,8 @@ import androidx.annotation.Nullable;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.ui.android.webid.data.Account;
 import org.chromium.chrome.browser.ui.android.webid.data.ClientIdMetadata;
 import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderMetadata;
@@ -37,11 +39,11 @@ class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
     private long mNativeView;
     private final AccountSelectionComponent mAccountSelectionComponent;
 
-    private AccountSelectionBridge(long nativeView, WindowAndroid windowAndroid,
+    private AccountSelectionBridge(long nativeView, Tab tab, WindowAndroid windowAndroid,
             BottomSheetController bottomSheetController) {
         mNativeView = nativeView;
         mAccountSelectionComponent =
-                new AccountSelectionCoordinator(windowAndroid, bottomSheetController, this);
+                new AccountSelectionCoordinator(tab, windowAndroid, bottomSheetController, this);
     }
 
     @CalledByNative
@@ -63,11 +65,12 @@ class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
 
     @CalledByNative
     private static @Nullable AccountSelectionBridge create(
-            long nativeView, WindowAndroid windowAndroid) {
+            long nativeView, WebContents webContents, WindowAndroid windowAndroid) {
         BottomSheetController bottomSheetController =
                 BottomSheetControllerProvider.from(windowAndroid);
         if (bottomSheetController == null) return null;
-        return new AccountSelectionBridge(nativeView, windowAndroid, bottomSheetController);
+        Tab tab = TabUtils.fromWebContents(webContents);
+        return new AccountSelectionBridge(nativeView, tab, windowAndroid, bottomSheetController);
     }
 
     @CalledByNative
