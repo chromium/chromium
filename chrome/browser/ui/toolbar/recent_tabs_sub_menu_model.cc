@@ -349,13 +349,16 @@ void RecentTabsSubMenuModel::BuildLocalEntries() {
   if (!service || service->entries().empty()) {
     // This is to show a disabled restore tab entry with the accelerator to
     // teach users about this command.
-    InsertItemWithStringIdAt(++last_local_model_index_,
-                             kDisabledRecentlyClosedHeaderCommandId,
-                             IDS_RECENTLY_CLOSED);
+    InsertItemWithStringIdAt(
+        ++last_local_model_index_, kDisabledRecentlyClosedHeaderCommandId,
+        features::IsChromeRefresh2023() ? IDS_RECENT_TABS
+                                        : IDS_RECENTLY_CLOSED);
   } else {
     recently_closed_title_index_ = ++last_local_model_index_;
     InsertTitleWithStringIdAt(recently_closed_title_index_.value(),
-                              IDS_RECENTLY_CLOSED);
+                              features::IsChromeRefresh2023()
+                                  ? IDS_RECENT_TABS
+                                  : IDS_RECENTLY_CLOSED);
     if (!features::IsChromeRefresh2023()) {
       SetIcon(last_local_model_index_, CreateFavicon(kTabIcon));
     }
@@ -586,6 +589,9 @@ RecentTabsSubMenuModel::CreateWindowSubMenuModel(
       restore_all_command_id, IDS_RESTORE_WINDOW,
       ui::ImageModel::FromVectorIcon(vector_icons::kLaunchIcon));
   local_window_items_.emplace(restore_all_command_id, window.id);
+  if (features::IsChromeRefresh2023()) {
+    window_model->AddSeparator(ui::NORMAL_SEPARATOR);
+  }
 
   absl::optional<tab_groups::TabGroupId> last_group;
   tab_groups::TabGroupVisualData current_group_visual_data;

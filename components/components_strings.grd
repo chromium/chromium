@@ -445,6 +445,9 @@
         </if>
       </if>
       <if expr="not use_titlecase">
+        <message name="IDS_RECENT_TABS" desc="The section header for the Recent Tabs section of the Recent Tabs menu.">
+          Recent tabs
+        </message>
         <message name="IDS_RECENTLY_CLOSED" desc="The section header for the Recently Closed section of the Recent Tabs menu.">
           Recently closed
         </message>
@@ -453,6 +456,9 @@
         </message>
       </if>
       <if expr="use_titlecase">
+        <message name="IDS_RECENT_TABS" desc="The section header for the Recent Tabs section of the Recent Tabs menu.">
+          Recent Tabs
+        </message>
         <message name="IDS_RECENTLY_CLOSED" desc="In Title Case: The section header for the Recently Closed section of the Recent Tabs menu.">
           Recently Closed
         </message>
