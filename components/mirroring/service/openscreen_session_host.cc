@@ -333,6 +333,11 @@ OpenscreenSessionHost::OpenscreenSessionHost(
           .message_source_id = session_params_.source_id,
           .message_destination_id = session_params_.destination_id});
 
+  if (session_params_.enable_rtcp_reporting) {
+    stats_client_ = std::make_unique<OpenscreenStatsClient>();
+    session_->SetStatsClient(stats_client_.get());
+  }
+
   // Use of `Unretained` is safe here since we own the update timer.
   bandwidth_update_timer_.Start(
       FROM_HERE, kBandwidthUpdateInterval,
@@ -1143,6 +1148,15 @@ void OpenscreenSessionHost::OnRemotingStartTimeout() {
 
 network::mojom::NetworkContext* OpenscreenSessionHost::GetNetworkContext() {
   return network_context_.get();
+}
+
+base::Value::Dict OpenscreenSessionHost::GetMirroringStats() const {
+  return stats_client_ ? stats_client_->GetStats() : base::Value::Dict();
+}
+
+void OpenscreenSessionHost::SetSenderStatsForTest(
+    const openscreen::cast::SenderStats& test_stats) {
+  stats_client_->OnStatisticsUpdated(test_stats);
 }
 
 }  // namespace mirroring
