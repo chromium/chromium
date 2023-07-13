@@ -324,7 +324,8 @@ class CredentialManagerImplTest : public testing::Test,
 
   void TearDown() override {
     cm_service_impl_.reset();
-
+    // Reset the match helper, since it references an object owned by the store.
+    mock_match_helper_ = nullptr;
     if (account_store_) {
       account_store_->ShutdownOnUIThread();
     }
@@ -427,7 +428,7 @@ class CredentialManagerImplTest : public testing::Test,
   scoped_refptr<TestPasswordStore> account_store_;
   std::unique_ptr<testing::NiceMock<MockPasswordManagerClient>> client_;
   std::unique_ptr<FakeAffiliationService> fake_affiliation_service_;
-  raw_ptr<MockAffiliatedMatchHelper, DanglingUntriaged> mock_match_helper_;
+  raw_ptr<MockAffiliatedMatchHelper> mock_match_helper_ = nullptr;
   std::unique_ptr<CredentialManagerImpl> cm_service_impl_;
 };
 
