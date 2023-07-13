@@ -275749,16 +275749,6 @@
    }
   },
   "support": {
-   ".cache": {
-    "gitignore2.json": [
-     "d6ce5bf8a53a15a2c968afc679b9d009b395a302",
-     []
-    ],
-    "mtime.json": [
-     "5297f91cd7c6a8dda0adf4d00b72b7732925d81b",
-     []
-    ]
-   },
    ".gitignore": [
     "d93e645d547894b50149d3726de2654957b6e06f",
     []
@@ -321440,7 +321430,7 @@
       []
      ],
      "scrollbar-color-007-ref.html": [
-      "2fc46863e67a4dc22b003b48bc157df776808783",
+      "f1822b81844458c30e857599838cace6660ddbef",
       []
      ],
      "scrollbar-color-007.html.ini": [
@@ -321448,7 +321438,7 @@
       []
      ],
      "scrollbar-color-008-ref.html": [
-      "2fc46863e67a4dc22b003b48bc157df776808783",
+      "f1822b81844458c30e857599838cace6660ddbef",
       []
      ],
      "scrollbar-color-008.html.ini": [
@@ -344401,14 +344391,6 @@
      []
     ],
     "reactions": {
-     "Animation-expected.txt": [
-      "74996f73e86c084f543fe44ac60562c5fdc25506",
-      []
-     ],
-     "Animation.html.ini": [
-      "07d9dcf6868e2acc59459292256827a58ac2deea",
-      []
-     ],
      "AriaMixin-element-attributes-expected.txt": [
       "b0df273d40a77324d5e01c2b5cb73fb3674420b6",
       []
@@ -392407,20 +392389,36 @@
       "1b63235b7cdffe9ebb43bfac3a01d5220e1519fb",
       []
      ],
+     "set-key-value.https.html": [
+      "ba0a24ceb2368b8e69e8f36fcf409efae7c414c0",
+      []
+     ],
      "shared-storage-permissions-policy-helper.html": [
       "d87092aad1d2efedf5d4245884e28e159880b2df",
       []
      ],
+     "shared-storage-write.py": [
+      "8770b11f09d75eeeaa00b8f2cd4f315cb8eba01c",
+      []
+     ],
      "simple-module.js": [
-      "5ebc149fd4a44527116eb71b63a06b9b4817499b",
+      "968afed31b9a86904d2389a7ae5a34d4d7624595",
       []
      ],
      "util.js": [
-      "a41b4de3a59f2d401c682cab707dafa40ef23f79",
+      "b8997e080dda97789df627cf62dcd560267c874e",
       []
      ],
      "verify-get-undefined-module.js": [
       "56bc2f51e2b2a19915f430ce863e398c90ba6e69",
+      []
+     ],
+     "verify-key-not-found.https.html": [
+      "f1c7919c19f2adb9c2e3840f149ec10ce710ab51",
+      []
+     ],
+     "verify-key-value.https.html": [
+      "20c469410492c8a3d600366a285eae9fdbde5ea0",
       []
      ],
      "verify-storage-entries-module.js": [
@@ -392441,6 +392439,14 @@
      []
     ],
     "shared-storage-permissions-policy-self.tentative.https.sub.html.headers": [
+     "36c95f2b087ba06f930731dbd16a54e913d588ca",
+     []
+    ],
+    "shared-storage-writable-permissions-policy-none.tentative.https.sub.html.headers": [
+     "9903f7c578df6af6d2a43454e305aec6cffdfa5f",
+     []
+    ],
+    "shared-storage-writable-permissions-policy-self.tentative.https.sub.html.headers": [
      "36c95f2b087ba06f930731dbd16a54e913d588ca",
      []
     ]
@@ -443166,7 +443172,7 @@
       ]
      ],
      "schemeful-navigation.tentative.html": [
-      "5ead2a54c7f989353a1b496eea2ab5b1ff4b3b05",
+      "c1a86690dc90f569ad3c6eaa23f1e6d6c2589dae",
       [
        null,
        {
@@ -485029,7 +485035,7 @@
     },
     "parts": {
      "basic-dom-part-objects.tentative.html": [
-      "7b051f285b35ceecd727145e839866b00fa14a67",
+      "db41c9e40eaf9a301324461fed458b8ae81ebe29",
       [
        null,
        {}
@@ -562152,9 +562158,9 @@
         ]
        ],
        "selection-not-application.html": [
-        "7771c3cf312d5514c0bc1d68d34109ac54e87f6d",
+        "063836cd23588bb832723664bf19256c9a646bdf",
         [
-         null,
+         "html/semantics/forms/textfieldselection/selection-not-application.html?default",
          {}
         ],
         [
@@ -565341,9 +565347,9 @@
          ]
         ],
         "async-script.html": [
-         "dea7f987bfa9a67a6662972b7965ac9f26df9b57",
+         "90f657679f922b92f8ac3737b44660e1562defb6",
          [
-          null,
+          "html/semantics/scripting-1/the-script-element/defer-script/async-script.html?default",
           {}
          ],
          [
@@ -576020,9 +576026,9 @@
       ]
      ],
      "wpt-server-wpt-flags.sub.html": [
-      "9af9cda4631de949791005698bcc1ff64f1083ba",
+      "682759d7c3849fa288b61f6e6f4ffea08b22fedf",
       [
-       null,
+       "infrastructure/server/wpt-server-wpt-flags.sub.html?no_flag",
        {}
       ],
       [
@@ -618401,28 +618407,56 @@
      ]
     ],
     "shared-storage-permissions-policy-default.tentative.https.sub.html": [
-     "87fcdfe18706bf45617428e3092ebdcc4d070098",
+     "5439df2a0684331e63059e095396a9b2af89c17f",
      [
       null,
       {}
      ]
     ],
     "shared-storage-permissions-policy-none.tentative.https.sub.html": [
-     "1f64d9a538cd558241eb6724ab2193d83a90ac61",
+     "17a4bf1803ca33edb2d0259d14f484839c9aa3e5",
      [
       null,
       {}
      ]
     ],
     "shared-storage-permissions-policy-self.tentative.https.sub.html": [
-     "d3787f3caa54cddd025b12cef89e921ea5e62500",
+     "171325cdf8f0a909eac659e1dcbb334e50eef216",
      [
       null,
       {}
      ]
     ],
     "shared-storage-writable-insecure-context.tentative.http.sub.html": [
-     "346321a41f46032dadf65a3abe4a69c3fb5f8dba",
+     "debb6cf9c56fb4cda8e72293e0de4b533648c845",
+     [
+      null,
+      {}
+     ]
+    ],
+    "shared-storage-writable-permissions-policy-default.tentative.https.sub.html": [
+     "4dae771f3f9b2d57cbd7d9d8e809da27714df64c",
+     [
+      null,
+      {}
+     ]
+    ],
+    "shared-storage-writable-permissions-policy-none.tentative.https.sub.html": [
+     "7f9584e6146d9ffb92be620de850bbb8125e6214",
+     [
+      null,
+      {}
+     ]
+    ],
+    "shared-storage-writable-permissions-policy-self.tentative.https.sub.html": [
+     "ca5ae16eff2e2ee545fb8eaf0c8999cec439c96b",
+     [
+      null,
+      {}
+     ]
+    ],
+    "shared-storage-writable.tentative.https.sub.html": [
+     "8797a801d8d11bf86434051e79e9469d9425f22e",
      [
       null,
       {}
