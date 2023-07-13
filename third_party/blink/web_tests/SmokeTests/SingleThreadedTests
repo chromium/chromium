@@ -1058,7 +1058,6 @@ http/tests/devtools/profiler/heap-profiler-profiling.js
 http/tests/devtools/profiler/heap-snapshot-comparison-expansion-preserved-when-sorting.js
 http/tests/devtools/profiler/heap-snapshot-comparison-shown-node-count-preserved-when-sorting.js
 http/tests/devtools/profiler/heap-snapshot-loader.js
-http/tests/devtools/profiler/heap-snapshot-location.js
 http/tests/devtools/profiler/heap-snapshot-summary-expand-collapse.js
 http/tests/devtools/profiler/heap-snapshot-summary-show-next.js
 http/tests/devtools/profiler/heap-snapshot-summary-show-ranges.js
