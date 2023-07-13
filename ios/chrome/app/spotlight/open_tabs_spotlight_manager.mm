@@ -160,16 +160,14 @@ using web::WebState;
         change.As<WebStateListChangeInsert>();
     insertChange.inserted_web_state()->AddObserver(
         _webStateObserverBridge.get());
+  } else if (change.type() == WebStateListChange::Type::kDetach) {
+    const WebStateListChangeDetach& detachChange =
+        change.As<WebStateListChangeDetach>();
+    raw_ptr<web::WebState> webState = detachChange.detached_web_state();
+    webState->RemoveObserver(_webStateObserverBridge.get());
+
+    [self removeLatestCommittedURLForWebState:webState];
   }
-}
-
-- (void)webStateList:(WebStateList*)webStateList
-    willCloseWebState:(web::WebState*)webState
-              atIndex:(int)atIndex
-           userAction:(BOOL)userAction {
-  webState->RemoveObserver(_webStateObserverBridge.get());
-
-  [self removeLatestCommittedURLForWebState:webState];
 }
 
 - (void)webStateListDestroyed:(WebStateList*)webStateList {
