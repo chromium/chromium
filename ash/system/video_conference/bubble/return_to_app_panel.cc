@@ -198,7 +198,8 @@ std::unique_ptr<views::View> CreateReturnToAppIconsContainer(
 // Gets the display text representing a media app shown in the return to app
 // panel.
 std::u16string GetMediaAppDisplayText(
-    mojo::StructPtr<crosapi::mojom::VideoConferenceMediaAppInfo>& media_app) {
+    const mojo::StructPtr<crosapi::mojom::VideoConferenceMediaAppInfo>&
+        media_app) {
   auto url = media_app->url;
   auto title = media_app->title;
 
@@ -517,7 +518,7 @@ gfx::Size ReturnToAppPanel::ReturnToAppContainer::CalculatePreferredSize()
 // -----------------------------------------------------------------------------
 // ReturnToAppPanel:
 
-ReturnToAppPanel::ReturnToAppPanel() {
+ReturnToAppPanel::ReturnToAppPanel(const MediaApps& apps) {
   SetID(BubbleViewID::kReturnToApp);
 
   SetLayoutManager(std::make_unique<views::FlexLayout>())
@@ -528,71 +529,6 @@ ReturnToAppPanel::ReturnToAppPanel() {
 
   auto container_view = std::make_unique<ReturnToAppContainer>();
   container_view_ = AddChildView(std::move(container_view));
-
-  // Add running media apps buttons to the panel.
-  VideoConferenceTrayController::Get()->GetMediaApps(base::BindOnce(
-      &ReturnToAppPanel::AddButtonsToPanel, weak_ptr_factory_.GetWeakPtr()));
-}
-
-ReturnToAppPanel::~ReturnToAppPanel() {
-  // We only need to remove observer in case that there's a summary row
-  // (multiple apps).
-  if (summary_row_view_) {
-    summary_row_view_->RemoveObserver(this);
-  }
-}
-
-bool ReturnToAppPanel::IsExpandCollapseAnimationRunning() {
-  return container_view_->animation()->is_animating();
-}
-
-void ReturnToAppPanel::OnExpandedStateChanged(bool expanded) {
-  container_view_->set_height_before_animation(
-      container_view_->GetPreferredSize().height());
-  container_view_->AdjustLayoutForExpandCollapseState(expanded);
-
-  for (auto* child : container_view_->children()) {
-    // Skip the first child since we always show the summary row. Otherwise,
-    // show the other rows if `expanded` and vice versa.
-    if (child == container_view_->children().front()) {
-      continue;
-    }
-    child->SetVisible(expanded);
-
-    if (expanded) {
-      FadeInView(
-          child, /*delay_in_ms=*/50,
-          /*duration_in_ms=*/150, /*animation_histogram_name=*/
-          "Ash.VideoConference.ReturnToAppButton.FadeIn.AnimationSmoothness");
-    } else {
-      FadeOutView(
-          child, weak_ptr_factory_.GetWeakPtr(), /*animation_histogram_name=*/
-          "Ash.VideoConference.ReturnToAppButton.FadeOut.AnimationSmoothness");
-    }
-  }
-
-  // In tests, widget might be null and the animation, in some cases, might be
-  // configured to have zero duration.
-  if (GetWidget() &&
-      ui::ScopedAnimationDurationScaleMode::duration_multiplier() !=
-          ui::ScopedAnimationDurationScaleMode::ZERO_DURATION) {
-    container_view_->set_expanded_target(expanded);
-    container_view_->StartExpandCollapseAnimation();
-  } else {
-    PreferredSizeChanged();
-  }
-}
-
-void ReturnToAppPanel::ChildPreferredSizeChanged(View* child) {
-  PreferredSizeChanged();
-}
-
-void ReturnToAppPanel::AddButtonsToPanel(MediaApps apps) {
-  // Every exit path of this function needs to call `PreferredSizeChanged()`
-  // because these views are added asynchronously in LaCrOS, after the bubble
-  // widget has allocated size for the bubble. See b/273814401.
-  base::ScopedClosureRunner preferred_size_changed_runner(base::BindOnce(
-      &ReturnToAppPanel::PreferredSizeChanged, base::Unretained(this)));
 
   if (apps.size() < 1) {
     SetVisible(false);
@@ -647,6 +583,59 @@ void ReturnToAppPanel::AddButtonsToPanel(MediaApps apps) {
         app->is_capturing_microphone, app->is_capturing_screen,
         GetMediaAppDisplayText(app), app->app_type));
   }
+}
+
+ReturnToAppPanel::~ReturnToAppPanel() {
+  // We only need to remove observer in case that there's a summary row
+  // (multiple apps).
+  if (summary_row_view_) {
+    summary_row_view_->RemoveObserver(this);
+  }
+}
+
+bool ReturnToAppPanel::IsExpandCollapseAnimationRunning() {
+  return container_view_->animation()->is_animating();
+}
+
+void ReturnToAppPanel::OnExpandedStateChanged(bool expanded) {
+  container_view_->set_height_before_animation(
+      container_view_->GetPreferredSize().height());
+  container_view_->AdjustLayoutForExpandCollapseState(expanded);
+
+  for (auto* child : container_view_->children()) {
+    // Skip the first child since we always show the summary row. Otherwise,
+    // show the other rows if `expanded` and vice versa.
+    if (child == container_view_->children().front()) {
+      continue;
+    }
+    child->SetVisible(expanded);
+
+    if (expanded) {
+      FadeInView(
+          child, /*delay_in_ms=*/50,
+          /*duration_in_ms=*/150, /*animation_histogram_name=*/
+          "Ash.VideoConference.ReturnToAppButton.FadeIn.AnimationSmoothness");
+    } else {
+      FadeOutView(
+          child, weak_ptr_factory_.GetWeakPtr(), /*animation_histogram_name=*/
+          "Ash.VideoConference.ReturnToAppButton.FadeOut.AnimationSmoothness");
+    }
+  }
+
+  // In tests, widget might be null and the animation, in some cases, might be
+  // configured to have zero duration.
+  if (GetWidget() &&
+      ui::ScopedAnimationDurationScaleMode::duration_multiplier() !=
+          ui::ScopedAnimationDurationScaleMode::ZERO_DURATION) {
+    container_view_->set_expanded_target(expanded);
+    container_view_->StartExpandCollapseAnimation();
+  } else {
+    PreferredSizeChanged();
+  }
+}
+
+void ReturnToAppPanel::ChildPreferredSizeChanged(View* child) {
+  PreferredSizeChanged();
 }
 
 }  // namespace ash::video_conference

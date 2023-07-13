@@ -7,6 +7,7 @@
 
 #include "ash/system/tray/tray_bubble_view.h"
 #include "base/memory/raw_ptr.h"
+#include "chromeos/crosapi/mojom/video_conference.mojom-forward.h"
 
 namespace views {
 class View;
@@ -18,15 +19,18 @@ class VideoConferenceTrayController;
 
 namespace video_conference {
 
+using MediaApps = std::vector<crosapi::mojom::VideoConferenceMediaAppInfoPtr>;
+
 // The bubble that contains controls for camera and microphone effects,
 // and for easy navigation to apps performing video/audio capture.
 class BubbleView : public TrayBubbleView {
  public:
   explicit BubbleView(const InitParams& init_params,
+                      const MediaApps& media_apps,
                       VideoConferenceTrayController* controller);
   BubbleView(const BubbleView&) = delete;
   BubbleView& operator=(const BubbleView&) = delete;
-  ~BubbleView() override = default;
+  ~BubbleView() override;
 
   // views::View:
   void AddedToWidget() override;
@@ -38,6 +42,8 @@ class BubbleView : public TrayBubbleView {
  private:
   // Unowned by `BubbleView`.
   raw_ptr<VideoConferenceTrayController, ExperimentalAsh> controller_;
+
+  const MediaApps& media_apps_;
 };
 
 }  // namespace video_conference

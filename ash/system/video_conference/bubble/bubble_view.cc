@@ -21,8 +21,11 @@
 namespace ash::video_conference {
 
 BubbleView::BubbleView(const InitParams& init_params,
+                       const MediaApps& media_apps,
                        VideoConferenceTrayController* controller)
-    : TrayBubbleView(init_params), controller_(controller) {
+    : TrayBubbleView(init_params),
+      controller_(controller),
+      media_apps_(media_apps) {
   SetID(BubbleViewID::kMainBubbleView);
 
   // Add a `FlexLayout` for the entire view.
@@ -32,11 +35,13 @@ BubbleView::BubbleView(const InitParams& init_params,
       .SetCrossAxisAlignment(views::LayoutAlignment::kStretch);
 }
 
+BubbleView::~BubbleView() = default;
+
 void BubbleView::AddedToWidget() {
   // `ReturnToAppPanel` resides in the top-level layout and isn't part of the
   // scrollable area (that can't be added until the `BubbleView` officially has
   // a parent widget).
-  AddChildView(std::make_unique<ReturnToAppPanel>());
+  AddChildView(std::make_unique<ReturnToAppPanel>(media_apps_));
 
   // Create the `views::ScrollView` to house the effects sections. This has to
   // be done here because `BubbleDialogDelegate::GetBubbleBounds` requires a
@@ -52,23 +57,25 @@ void BubbleView::AddedToWidget() {
   scroll_view->SetVerticalScrollBarMode(
       views::ScrollView::ScrollBarMode::kHiddenButEnabled);
 
-  views::BoxLayoutView* layout_view =
+  auto* scroll_contents_view =
       scroll_view->SetContents(std::make_unique<views::BoxLayoutView>());
-  layout_view->SetOrientation(views::BoxLayout::Orientation::kVertical);
-  layout_view->SetCrossAxisAlignment(
+  scroll_contents_view->SetOrientation(
+      views::BoxLayout::Orientation::kVertical);
+  scroll_contents_view->SetCrossAxisAlignment(
       views::BoxLayout::CrossAxisAlignment::kStretch);
-  layout_view->SetInsideBorderInsets(
+  scroll_contents_view->SetInsideBorderInsets(
       gfx::Insets::VH(16, kVideoConferenceBubbleHorizontalPadding));
-  layout_view->SetBetweenChildSpacing(16);
+  scroll_contents_view->SetBetweenChildSpacing(16);
 
   // Make the effects sections children of the `views::FlexLayoutView`, so that
   // they scroll (if more effects are present than can fit in the available
   // height).
   if (controller_->effects_manager().HasToggleEffects()) {
-    layout_view->AddChildView(std::make_unique<ToggleEffectsView>(controller_));
+    scroll_contents_view->AddChildView(
+        std::make_unique<ToggleEffectsView>(controller_));
   }
   if (controller_->effects_manager().HasSetValueEffects()) {
-    layout_view->AddChildView(
+    scroll_contents_view->AddChildView(
         std::make_unique<SetValueEffectsView>(controller_));
   }
 }

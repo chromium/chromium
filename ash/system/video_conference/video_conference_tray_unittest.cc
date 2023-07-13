@@ -21,9 +21,13 @@
 #include "ash/system/video_conference/video_conference_common.h"
 #include "ash/test/ash_test_base.h"
 #include "base/command_line.h"
+#include "base/functional/bind.h"
+#include "base/location.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "chromeos/crosapi/mojom/video_conference.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/animation/ink_drop.h"
@@ -41,11 +45,50 @@ constexpr char kMicrophoneMuteHistogramName[] =
 constexpr char kStopScreenShareHistogramName[] =
     "Ash.VideoConferenceTray.StopScreenShareButton.Click";
 
+constexpr base::TimeDelta kGetMediaAppsDelayTime = base::Milliseconds(100);
+
 void SetSessionState(session_manager::SessionState state) {
   ash::SessionInfo info;
   info.state = state;
   ash::Shell::Get()->session_controller()->SetSessionInfo(info);
 }
+
+using MediaApps = std::vector<crosapi::mojom::VideoConferenceMediaAppInfoPtr>;
+
+// A customized controller that will mock a delay for `GetMediaApps()`. We might
+// have this delay when getting lacros media apps.
+class DelayVideoConferenceTrayController
+    : public ash::FakeVideoConferenceTrayController {
+ public:
+  DelayVideoConferenceTrayController() = default;
+  DelayVideoConferenceTrayController(
+      const DelayVideoConferenceTrayController&) = delete;
+  DelayVideoConferenceTrayController& operator=(
+      const DelayVideoConferenceTrayController&) = delete;
+  ~DelayVideoConferenceTrayController() override = default;
+
+  // ash::FakeVideoConferenceTrayController:
+  void GetMediaApps(base::OnceCallback<void(MediaApps)> ui_callback) override {
+    getting_media_apps_called_++;
+    MediaApps apps;
+    for (auto& app : media_apps()) {
+      apps.push_back(app->Clone());
+    }
+    timer_.Start(
+        FROM_HERE, kGetMediaAppsDelayTime,
+        base::BindOnce(
+            [](base::OnceCallback<void(MediaApps)> ui_callback,
+               MediaApps apps) { std::move(ui_callback).Run(std::move(apps)); },
+            std::move(ui_callback), std::move(apps)));
+  }
+
+  int getting_media_apps_called() { return getting_media_apps_called_; }
+
+ private:
+  base::OneShotTimer timer_;
+
+  int getting_media_apps_called_ = 0;
+};
 
 }  // namespace
 
@@ -932,6 +975,73 @@ TEST_F(VideoConferenceTrayTest, CloseBubbleOnEffectSupportStateChange) {
   // When there's a change to effect support state, the bubble should be
   // automatically close to update.
   EXPECT_FALSE(video_conference_tray()->GetBubbleView());
+}
+
+// Tests the tray when there's a delay in `GetMediaApps()`.
+class VideoConferenceTrayDelayTest : public VideoConferenceTrayTest {
+ public:
+  VideoConferenceTrayDelayTest() = default;
+  VideoConferenceTrayDelayTest(const VideoConferenceTrayDelayTest&) = delete;
+  VideoConferenceTrayDelayTest& operator=(const VideoConferenceTrayDelayTest&) =
+      delete;
+  ~VideoConferenceTrayDelayTest() override = default;
+
+  // AshTestBase:
+  void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeature(features::kVideoConference);
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        switches::kCameraEffectsSupportedByHardware);
+
+    // Instantiates a fake controller (the real one is created in
+    // ChromeBrowserMainExtraPartsAsh::PreProfileInit() which is not called in
+    // ash unit tests).
+    delay_controller_ = std::make_unique<DelayVideoConferenceTrayController>();
+
+    AshTestBase::SetUp();
+  }
+
+  DelayVideoConferenceTrayController* delay_controller() {
+    return delay_controller_.get();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  std::unique_ptr<DelayVideoConferenceTrayController> delay_controller_;
+};
+
+TEST_F(VideoConferenceTrayDelayTest, OpenBubble) {
+  VideoConferenceMediaState state;
+  state.has_media_app = true;
+  state.has_camera_permission = true;
+  state.has_microphone_permission = true;
+  state.is_capturing_screen = true;
+  delay_controller()->UpdateWithMediaState(state);
+
+  // Clicking the toggle button should construct and open up the bubble.
+  LeftClickOn(toggle_bubble_button());
+
+  // First it should not be visible since `GetMediaApps()` is running.
+  ASSERT_FALSE(video_conference_tray()->GetBubbleView());
+
+  // Bubble should appear after the delay.
+  task_environment()->FastForwardBy(kGetMediaAppsDelayTime);
+
+  EXPECT_TRUE(video_conference_tray()->GetBubbleView());
+  EXPECT_EQ(1, delay_controller()->getting_media_apps_called());
+
+  LeftClickOn(toggle_bubble_button());
+  ASSERT_FALSE(video_conference_tray()->GetBubbleView());
+
+  // Spam clicking the button should only cost one extra call to
+  // `GetMediaApps()`.
+  LeftClickOn(toggle_bubble_button());
+  LeftClickOn(toggle_bubble_button());
+  LeftClickOn(toggle_bubble_button());
+  EXPECT_EQ(2, delay_controller()->getting_media_apps_called());
+
+  // Bubble should appear after the delay.
+  task_environment()->FastForwardBy(kGetMediaAppsDelayTime);
+  EXPECT_TRUE(video_conference_tray()->GetBubbleView());
 }
 
 }  // namespace ash

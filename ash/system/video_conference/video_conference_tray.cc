@@ -27,6 +27,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "chromeos/crosapi/mojom/video_conference.mojom.h"
 #include "components/session_manager/session_manager_types.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -270,8 +271,8 @@ VideoConferenceTray::~VideoConferenceTray() {
 }
 
 void VideoConferenceTray::CloseBubble() {
+  bubble_open_ = false;
   toggle_bubble_button_->SetToggled(false);
-
   bubble_.reset();
   shelf()->UpdateAutoHideState();
 }
@@ -406,25 +407,26 @@ void VideoConferenceTray::OnSessionStateChanged(
 }
 
 void VideoConferenceTray::ToggleBubble(const ui::Event& event) {
-  const bool bubble_open = GetBubbleWidget();
-  base::UmaHistogramBoolean(kToggleButtonHistogramName, !bubble_open);
+  bubble_open_ = !bubble_open_;
+  base::UmaHistogramBoolean(kToggleButtonHistogramName, bubble_open_);
 
-  if (bubble_open) {
+  if (!bubble_open_) {
     CloseBubble();
     return;
   }
 
   VideoConferenceTrayController::Get()->CloseAllVcNudges();
 
-  // Create top-level bubble.
-  auto bubble_view = std::make_unique<video_conference::BubbleView>(
-      /*init_params=*/CreateInitParamsForTrayBubble(/*tray=*/this),
-      /*controller=*/VideoConferenceTrayController::Get());
-
-  bubble_ = std::make_unique<TrayBubbleWrapper>(this);
-  bubble_->ShowBubble(std::move(bubble_view));
-
-  toggle_bubble_button_->SetToggled(true);
+  // If we are already in the process of getting the media apps, we don't need
+  // to get it again.
+  if (!getting_media_apps_) {
+    getting_media_apps_ = true;
+    // Get all the currently running media apps from the controller and use it
+    // to construct the bubble.
+    VideoConferenceTrayController::Get()->GetMediaApps(
+        base::BindOnce(&VideoConferenceTray::ConstructBubbleWithMediaApps,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
 }
 
 void VideoConferenceTray::OnCameraButtonClicked(const ui::Event& event) {
@@ -446,6 +448,25 @@ void VideoConferenceTray::OnScreenShareButtonClicked(const ui::Event& event) {
     VideoConferenceTrayController::Get()->StopAllScreenShare();
     base::UmaHistogramBoolean(kStopScreenShareHistogramName, true);
   }
+}
+
+void VideoConferenceTray::ConstructBubbleWithMediaApps(MediaApps apps) {
+  getting_media_apps_ = false;
+
+  // Should not show anything if bubble is intended to be close.
+  if (!bubble_open_) {
+    return;
+  }
+
+  auto bubble_view = std::make_unique<video_conference::BubbleView>(
+      /*init_params=*/CreateInitParamsForTrayBubble(/*tray=*/this),
+      /*media_apps=*/apps,
+      /*controller=*/VideoConferenceTrayController::Get());
+
+  bubble_ = std::make_unique<TrayBubbleWrapper>(this);
+  bubble_->ShowBubble(std::move(bubble_view));
+
+  toggle_bubble_button_->SetToggled(true);
 }
 
 BEGIN_METADATA(VideoConferenceTray, TrayBackgroundView)

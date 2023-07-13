@@ -47,6 +47,8 @@ class Shelf;
 class TrayBubbleView;
 class TrayBubbleWrapper;
 
+using MediaApps = std::vector<crosapi::mojom::VideoConferenceMediaAppInfoPtr>;
+
 // A toggle icon button in the VC tray, which is used for toggling camera,
 // microphone, and screen sharing.
 class VideoConferenceTrayButton : public IconButton {
@@ -175,6 +177,10 @@ class ASH_EXPORT VideoConferenceTray
   void OnAudioButtonClicked(const ui::Event& event);
   void OnScreenShareButtonClicked(const ui::Event& event);
 
+  // Creates the bubble with the correct views after retrieving the list of
+  // `apps` from `VideoConferenceTrayController`.
+  void ConstructBubbleWithMediaApps(MediaApps apps);
+
   // Owned by the views hierarchy.
   raw_ptr<VideoConferenceTrayButton, ExperimentalAsh> audio_icon_ = nullptr;
   raw_ptr<VideoConferenceTrayButton, ExperimentalAsh> camera_icon_ = nullptr;
@@ -184,6 +190,13 @@ class ASH_EXPORT VideoConferenceTray
 
   // The bubble that appears after clicking the tray button.
   std::unique_ptr<TrayBubbleWrapper> bubble_;
+
+  // True if the bubble is open or in the process of being opened.
+  bool bubble_open_ = false;
+
+  // True if we are already in the process of getting the media apps from
+  // `VideoConferenceTrayController()`.
+  bool getting_media_apps_ = false;
 
   base::WeakPtrFactory<VideoConferenceTray> weak_ptr_factory_{this};
 };

@@ -137,7 +137,7 @@ class ASH_EXPORT ReturnToAppButton : public views::Button {
 class ASH_EXPORT ReturnToAppPanel : public views::View,
                                     ReturnToAppButton::Observer {
  public:
-  ReturnToAppPanel();
+  explicit ReturnToAppPanel(const MediaApps& apps);
   ReturnToAppPanel(const ReturnToAppPanel&) = delete;
   ReturnToAppPanel& operator=(const ReturnToAppPanel&) = delete;
   ~ReturnToAppPanel() override;
@@ -211,9 +211,6 @@ class ASH_EXPORT ReturnToAppPanel : public views::View,
 
   // views::View:
   void ChildPreferredSizeChanged(View* child) override;
-
-  // Used by the ctor to add `ReturnToAppButton`(s) to the panel.
-  void AddButtonsToPanel(MediaApps apps);
 
   // The container of the panel, which contains all the views and is used for
   // setting padding and background painting. Owned by the views hierarchy.

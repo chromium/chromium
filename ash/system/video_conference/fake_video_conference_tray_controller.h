@@ -67,6 +67,8 @@ class ASH_EXPORT FakeVideoConferenceTrayController
   }
   int stop_all_screen_share_count() { return stop_all_screen_share_count_; }
 
+  const MediaApps& media_apps() { return media_apps_; }
+
  private:
   FRIEND_TEST_ALL_PREFIXES(video_conference::ReturnToAppPanelTest, ReturnToApp);
   FRIEND_TEST_ALL_PREFIXES(VideoConferenceAppServiceClientTest,
