@@ -396,7 +396,8 @@ TEST_F(PrerenderHostRegistryTest, NumberLimit_Activation) {
 // Tests that PrerenderHostRegistry limits the number of started prerenders
 // to 1, and new candidates can be processed after the initiator page navigates
 // to a new same-origin page.
-TEST_F(PrerenderHostRegistryTest, NumberLimit_SameOriginNavigateAway) {
+// TODO(crbug.com/1464684): Test is flaky across platforms.
+TEST_F(PrerenderHostRegistryTest, DISABLED_NumberLimit_SameOriginNavigateAway) {
   RenderFrameHostImpl* render_frame_host = contents()->GetPrimaryMainFrame();
   ASSERT_TRUE(render_frame_host);
 
@@ -434,7 +435,9 @@ TEST_F(PrerenderHostRegistryTest, NumberLimit_SameOriginNavigateAway) {
 // Tests that PrerenderHostRegistry limits the number of started prerenders
 // to 1, and new candidates can be processed after the initiator page navigates
 // to a new cross-origin page.
-TEST_F(PrerenderHostRegistryTest, NumberLimit_CrossOriginNavigateAway) {
+// TODO(crbug.com/1464684): Test is flaky across platforms.
+TEST_F(PrerenderHostRegistryTest,
+       DISABLED_NumberLimit_CrossOriginNavigateAway) {
   RenderFrameHostImpl* render_frame_host = contents()->GetPrimaryMainFrame();
   ASSERT_TRUE(render_frame_host);
 
