@@ -7,7 +7,6 @@ package org.chromium.components.external_intents;
 import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.Intent.ShortcutIconResource;
 import android.content.IntentFilter;
@@ -26,7 +25,6 @@ import android.provider.Telephony;
 import android.text.TextUtils;
 import android.util.AndroidRuntimeException;
 import android.util.Pair;
-import android.view.WindowManager.BadTokenException;
 import android.webkit.MimeTypeMap;
 import android.webkit.WebView;
 
@@ -34,7 +32,6 @@ import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
-import androidx.appcompat.app.AlertDialog;
 
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
@@ -62,9 +59,13 @@ import org.chromium.components.webapk.lib.client.ChromeWebApkHostSignature;
 import org.chromium.components.webapk.lib.client.WebApkValidator;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.ContentUrlConstants;
+import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.MimeTypeUtils;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.modaldialog.DialogDismissalCause;
+import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.permissions.PermissionCallback;
 import org.chromium.url.GURL;
@@ -78,7 +79,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Logic related to the URL overriding/intercepting functionality.
@@ -233,6 +233,96 @@ public class ExternalNavigationHandler {
         public T get() {
             assertIntentMatches();
             return super.get();
+        }
+    }
+
+    @VisibleForTesting
+    // A delegate responsible for showing a confirmation dialog in Incognito session, which upon
+    // positive user confirmation would result in navigations outside of Incognito.
+    class IncognitoDialogDelegate implements ModalDialogProperties.Controller {
+        private final Context mContext;
+        private final ExternalNavigationParams mParams;
+        private final Intent mIntent;
+        private final GURL mFallbackUrl;
+
+        private PropertyModel mPropertyModel;
+
+        IncognitoDialogDelegate(@NonNull Context context, @NonNull ExternalNavigationParams params,
+                @NonNull Intent intent, @NonNull GURL fallbackUrl) {
+            mContext = context;
+            mParams = params;
+            mIntent = intent;
+            mFallbackUrl = fallbackUrl;
+        }
+
+        @Override
+        public void onClick(
+                @NonNull PropertyModel model, @ModalDialogProperties.ButtonType int buttonType) {
+            if (ModalDialogProperties.ButtonType.POSITIVE == buttonType) {
+                onUserDecidedWhetherToLaunchIncognitoIntent(true, mParams, mIntent, mFallbackUrl);
+                mModalDialogManager.dismissDialog(
+                        mPropertyModel, DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
+            } else if (ModalDialogProperties.ButtonType.NEGATIVE == buttonType) {
+                onUserDecidedWhetherToLaunchIncognitoIntent(false, mParams, mIntent, mFallbackUrl);
+                mModalDialogManager.dismissDialog(
+                        mPropertyModel, DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
+            }
+        }
+
+        @Override
+        public void onDismiss(PropertyModel model, int dismissalCause) {
+            // This is already handled by the #onClick.
+            if (DialogDismissalCause.POSITIVE_BUTTON_CLICKED == dismissalCause
+                    || DialogDismissalCause.NEGATIVE_BUTTON_CLICKED == dismissalCause) {
+                return;
+            }
+
+            onUserDecidedWhetherToLaunchIncognitoIntent(false, mParams, mIntent, mFallbackUrl);
+            mIncognitoDialogDelegate = null;
+        }
+
+        void showDialog() {
+            if (isShowing()) {
+                assert false : "Previous dialog is still being shown.";
+                return;
+            }
+
+            mPropertyModel =
+                    new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
+                            .with(ModalDialogProperties.CONTROLLER, this)
+                            .with(ModalDialogProperties.BUTTON_TAP_PROTECTION_PERIOD_MS,
+                                    UiUtils.PROMPT_INPUT_PROTECTION_SHORT_DELAY_MS)
+                            .with(ModalDialogProperties.TITLE,
+                                    mContext.getString(
+                                            R.string.external_app_leave_incognito_warning_title))
+                            .with(ModalDialogProperties.MESSAGE_PARAGRAPH_1,
+                                    mContext.getString(
+                                            R.string.external_app_leave_incognito_warning))
+                            .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT,
+                                    mContext.getString(R.string.external_app_leave_incognito_leave))
+                            .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
+                                    mContext.getString(R.string.external_app_leave_incognito_stay))
+                            .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, true)
+                            .with(ModalDialogProperties.BUTTON_STYLES,
+                                    ModalDialogProperties.ButtonStyles
+                                            .PRIMARY_OUTLINE_NEGATIVE_OUTLINE)
+                            .build();
+
+            mModalDialogManager.showDialog(mPropertyModel, ModalDialogManager.ModalDialogType.APP);
+        }
+
+        /** Browser initiated cancellation. */
+        void cancelDialog() {
+            mModalDialogManager.dismissDialog(mPropertyModel, DialogDismissalCause.NAVIGATE);
+        }
+
+        boolean isShowing() {
+            return mPropertyModel != null && mModalDialogManager.isShowing();
+        }
+
+        @VisibleForTesting
+        void performClick(@ModalDialogProperties.ButtonType int buttonType) {
+            onClick(mPropertyModel, buttonType);
         }
     }
 
@@ -446,7 +536,8 @@ public class ExternalNavigationHandler {
 
     public static boolean sAllowIntentsToSelfForTesting;
     private final ExternalNavigationDelegate mDelegate;
-    private AlertDialog mIncognitoAlertDialog;
+    private final ModalDialogManager mModalDialogManager;
+    private IncognitoDialogDelegate mIncognitoDialogDelegate;
 
     /**
      * Constructs a new instance of {@link ExternalNavigationHandler}, using the injected
@@ -454,6 +545,7 @@ public class ExternalNavigationHandler {
      */
     public ExternalNavigationHandler(ExternalNavigationDelegate delegate) {
         mDelegate = delegate;
+        mModalDialogManager = mDelegate.getWindowAndroid().getModalDialogManager();
     }
 
     private static boolean debug() {
@@ -1326,8 +1418,8 @@ public class ExternalNavigationHandler {
      * intent. Give the user the opportunity to cancel the action. And if it is canceled, a
      * navigation will happen in this app. Catches BadTokenExceptions caused by showing the dialog
      * on certain devices. (crbug.com/782602)
+     * @param params {@link ExternalNavigationParams}
      * @param intent The intent for external application that will be sent.
-     * @param referrerUrl The referrer for the current navigation.
      * @param fallbackUrl The URL to load if the user doesn't proceed with external intent.
      * @return True if the function returned error free, false if it threw an exception.
      */
@@ -1345,12 +1437,9 @@ public class ExternalNavigationHandler {
             return true;
         }
 
-        try {
-            mIncognitoAlertDialog = showLeavingIncognitoAlert(context, params, intent, fallbackUrl);
-            return mIncognitoAlertDialog != null;
-        } catch (BadTokenException e) {
-            return false;
-        }
+        mIncognitoDialogDelegate = showLeavingIncognitoDialog(context, params, intent, fallbackUrl);
+        mIncognitoDialogDelegate.showDialog();
+        return true;
     }
 
     @VisibleForTesting
@@ -1360,40 +1449,10 @@ public class ExternalNavigationHandler {
         return true;
     }
 
-    /**
-     * Shows and returns an AlertDialog asking if the user would like to leave incognito.
-     */
     @VisibleForTesting
-    protected AlertDialog showLeavingIncognitoAlert(final Context context,
+    protected IncognitoDialogDelegate showLeavingIncognitoDialog(final Context context,
             final ExternalNavigationParams params, final Intent intent, final GURL fallbackUrl) {
-        // https://crbug.com/1412842: It seems dialogs sometimes end up with multiple results
-        // chosen.
-        final AtomicBoolean dialogResultChosen = new AtomicBoolean(false);
-        return new AlertDialog.Builder(context, R.style.ThemeOverlay_BrowserUI_AlertDialog)
-                .setTitle(R.string.external_app_leave_incognito_warning_title)
-                .setMessage(R.string.external_app_leave_incognito_warning)
-                .setPositiveButton(R.string.external_app_leave_incognito_leave,
-                        (DialogInterface dialog, int which) -> {
-                            if (dialogResultChosen.get()) return;
-                            dialogResultChosen.set(true);
-                            onUserDecidedWhetherToLaunchIncognitoIntent(
-                                    /*shouldLaunch=*/true, params, intent, fallbackUrl);
-                        })
-                .setNegativeButton(R.string.external_app_leave_incognito_stay,
-                        (DialogInterface dialog, int which) -> {
-                            if (dialogResultChosen.get()) return;
-                            dialogResultChosen.set(true);
-                            onUserDecidedWhetherToLaunchIncognitoIntent(
-                                    /*shouldLaunch=*/false, params, intent, fallbackUrl);
-                        })
-                .setOnCancelListener((DialogInterface dialog) -> {
-                    if (dialogResultChosen.get()) return;
-                    dialogResultChosen.set(true);
-                    onUserDecidedWhetherToLaunchIncognitoIntent(
-                            /*shouldLaunch=*/false, params, intent, fallbackUrl);
-                })
-                .setOnDismissListener((DialogInterface dialog) -> { mIncognitoAlertDialog = null; })
-                .show();
+        return new IncognitoDialogDelegate(context, params, intent, fallbackUrl);
     }
 
     private void onUserDecidedWhetherToLaunchIncognitoIntent(final boolean shouldLaunch,
@@ -1502,9 +1561,9 @@ public class ExternalNavigationHandler {
             MutableBoolean canLaunchExternalFallbackResult) {
         sanitizeQueryIntentActivitiesIntent(targetIntent);
 
-        // Any subsequent navigations should cancel the existing AlertDialog.
-        if (mIncognitoAlertDialog != null && mIncognitoAlertDialog.isShowing()) {
-            mIncognitoAlertDialog.cancel();
+        // Any subsequent navigations should cancel the existing dialog.
+        if (mIncognitoDialogDelegate != null && mIncognitoDialogDelegate.isShowing()) {
+            mIncognitoDialogDelegate.cancelDialog();
         }
 
         // Don't allow external fallback URLs by default.

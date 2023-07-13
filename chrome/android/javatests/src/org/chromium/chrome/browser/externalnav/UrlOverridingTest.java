@@ -89,6 +89,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.components.browser_ui.modaldialog.ModalDialogTestUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.external_intents.ExternalIntentsFeatures;
 import org.chromium.components.external_intents.ExternalNavigationHandler;
@@ -207,9 +208,6 @@ public class UrlOverridingTest {
     private static final String OTHER_BROWSER_PACKAGE = "com.other.browser";
 
     private static final String EXTERNAL_APP_SCHEME = "externalappscheme";
-
-    private static final int ALERT_OK_BUTTON = android.R.id.button1;
-    private static final int ALERT_CANCEL_BUTTON = android.R.id.button2;
 
     @Mock
     private RedirectHandler mRedirectHandler;
@@ -366,6 +364,7 @@ public class UrlOverridingTest {
                 filter, new Instrumentation.ActivityResult(Activity.RESULT_OK, null), true);
         mTestServer = mActivityTestRule.getTestServer();
         mTestContext.setIntentFilterForScheme(EXTERNAL_APP_SCHEME, filter);
+        ModalDialogTestUtils.overrideEnableButtonTapProtection(false);
     }
 
     @After
@@ -373,6 +372,7 @@ public class UrlOverridingTest {
         if (mContextToRestore != null) {
             ContextUtils.initApplicationContextForTests(mContextToRestore);
         }
+        ModalDialogTestUtils.overrideEnableButtonTapProtection(true);
     }
 
     private Origin createExampleOrigin() {
@@ -1510,7 +1510,7 @@ public class UrlOverridingTest {
                 OverrideUrlLoadingResultType.OVERRIDE_WITH_ASYNC_ACTION, result.getResultType());
 
         if (acceptPrompt) {
-            Espresso.onView(withId(ALERT_OK_BUTTON)).perform(click());
+            Espresso.onView(withId(R.id.positive_button)).perform(click());
             CriteriaHelper.pollUiThread(() -> {
                 Criteria.checkThat(mActivityMonitor.getHits(), Matchers.is(1));
                 Criteria.checkThat(
@@ -1518,7 +1518,7 @@ public class UrlOverridingTest {
                         Matchers.is(originalUrl));
             });
         } else {
-            Espresso.onView(withId(ALERT_CANCEL_BUTTON)).perform(click());
+            Espresso.onView(withId(R.id.negative_button)).perform(click());
             subframeRedirect.waitForFirst();
             Assert.assertEquals(0, mActivityMonitor.getHits());
         }
