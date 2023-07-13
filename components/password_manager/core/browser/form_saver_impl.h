@@ -48,7 +48,7 @@ class FormSaverImpl : public FormSaver {
   // form handler or origin handler which could embed FormSaver.
 
   // Cached pointer to the PasswordStoreInterface.
-  const raw_ptr<PasswordStoreInterface, DanglingUntriaged> store_;
+  const raw_ptr<PasswordStoreInterface> store_;
 };
 
 }  // namespace password_manager
