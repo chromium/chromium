@@ -43,7 +43,6 @@
 #include "third_party/blink/renderer/platform/fonts/font_data_cache.h"
 #include "third_party/blink/renderer/platform/fonts/font_face_creation_params.h"
 #include "third_party/blink/renderer/platform/fonts/font_fallback_priority.h"
-#include "third_party/blink/renderer/platform/fonts/shaping/ng_shape_cache.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_cache.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
@@ -87,11 +86,6 @@ enum class AlternateFontName {
   kLocalUniqueFace,
   kLastResort
 };
-
-typedef HashMap<FallbackListCompositeKey,
-                std::unique_ptr<NGShapeCache>,
-                FallbackListCompositeKeyTraits>
-    FallbackListNGShaperCache;
 
 typedef HashMap<FallbackListCompositeKey,
                 std::unique_ptr<ShapeCache>,
@@ -154,13 +148,6 @@ class PLATFORM_EXPORT FontCache final {
       const AtomicString& unique_font_name);
 
   static String FirstAvailableOrFirst(const String&);
-
-  // Returns the NGShapeCache instance associated with the given cache key.
-  // Creates a new instance as needed and as such is guaranteed not to return
-  // a nullptr. Instances are managed by FontCache and are only guaranteed to
-  // be valid for the duration of the current session, as controlled by
-  // disable/enablePurging.
-  NGShapeCache* GetNGShapeCache(const FallbackListCompositeKey&);
 
   // Returns the ShapeCache instance associated with the given cache key.
   // Creates a new instance as needed and as such is guaranteed not to return
@@ -274,7 +261,6 @@ class PLATFORM_EXPORT FontCache final {
       ShouldRetain = kRetain,
       bool subpixel_ascent_descent = false);
 
-  void InvalidateNGShapeCache();
   void InvalidateShapeCache();
 
   static void CrashWithFontInfo(const FontDescription*);
@@ -390,7 +376,6 @@ class PLATFORM_EXPORT FontCache final {
   bool platform_init_ = false;
   Persistent<HeapHashSet<WeakMember<FontCacheClient>>> font_cache_clients_;
   std::unique_ptr<FontPlatformDataCache> font_platform_data_cache_;
-  absl::optional<FallbackListNGShaperCache> fallback_list_ng_shaper_cache_;
   FallbackListShaperCache fallback_list_shaper_cache_;
 
   std::unique_ptr<FontDataCache> font_data_cache_;
@@ -398,7 +383,6 @@ class PLATFORM_EXPORT FontCache final {
   Persistent<FontFallbackMap> font_fallback_map_;
 
   void PurgePlatformFontDataCache();
-  void PurgeFallbackListNGShaperCache();
   void PurgeFallbackListShaperCache();
 
   friend class SimpleFontData;  // For fontDataFromFontPlatformData

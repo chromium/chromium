@@ -26,6 +26,8 @@
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/svg_names.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
+#include "third_party/blink/renderer/platform/fonts/shaping/shape_result_spacing.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
 namespace blink {
@@ -45,6 +47,13 @@ class NGInlineNodeForTest : public NGInlineNode {
   HeapVector<NGInlineItem>& Items() { return MutableData()->items; }
   static HeapVector<NGInlineItem>& Items(NGInlineNodeData& data) {
     return data.items;
+  }
+  bool IsNGShapeCacheAllowed(const String& text_content,
+                             const Font* override_font,
+                             const HeapVector<NGInlineItem>& items,
+                             ShapeResultSpacing<String>& spacing) const {
+    return NGInlineNode::IsNGShapeCacheAllowed(text_content, override_font,
+                                               items, spacing);
   }
 
   void Append(const String& text, LayoutObject* layout_object) {
@@ -1677,6 +1686,72 @@ TEST_F(NGInlineNodeTest, FindSvgTextChunksCrash3) {
   tspan->appendChild(GetDocument().createTextNode(String(kText, 2u)));
   UpdateAllLifecyclePhasesForTest();
   // Pass if no CHECK() failures in FindSvgTextChunks().
+}
+
+TEST_F(NGInlineNodeTest, ShapeCacheDisabled) {
+  ScopedLayoutNGShapeCacheForTest scoped_feature(false);
+
+  SetupHtml("t",
+            "<style>div { font-family: serif; }</style>"
+            "<div id=t>abc</div>");
+  NGInlineNodeForTest node = CreateInlineNode();
+  node.CollectInlines();
+  EXPECT_EQ("abc", node.Text());
+
+  const String& text_content(node.Text().c_str());
+  HeapVector<NGInlineItem>& items = node.Items();
+  ShapeResultSpacing<String> spacing(text_content, node.IsSvgText());
+
+  EXPECT_FALSE(
+      node.IsNGShapeCacheAllowed(text_content, nullptr, items, spacing));
+}
+
+TEST_F(NGInlineNodeTest, ShapeCacheLongString) {
+  ScopedLayoutNGShapeCacheForTest scoped_feature(true);
+
+  SetupHtml("t", "<div id=t>abcdefghijklmnopqrstuvwxyz</div>");
+  NGInlineNodeForTest node = CreateInlineNode();
+  node.CollectInlines();
+
+  const String& text_content(node.Text().c_str());
+  HeapVector<NGInlineItem>& items = node.Items();
+  ShapeResultSpacing<String> spacing(text_content, node.IsSvgText());
+
+  EXPECT_FALSE(
+      node.IsNGShapeCacheAllowed(text_content, nullptr, items, spacing));
+}
+
+TEST_F(NGInlineNodeTest, ShapeCacheMultiItems) {
+  ScopedLayoutNGShapeCacheForTest scoped_feature(true);
+
+  SetupHtml("t", "<div id=t>abc<span>def</span>ghi</div>");
+  NGInlineNodeForTest node = CreateInlineNode();
+  node.CollectInlines();
+
+  const String& text_content(node.Text().c_str());
+  HeapVector<NGInlineItem>& items = node.Items();
+  EXPECT_EQ(5u, items.size());
+  ShapeResultSpacing<String> spacing(text_content, node.IsSvgText());
+
+  EXPECT_FALSE(
+      node.IsNGShapeCacheAllowed(text_content, nullptr, items, spacing));
+}
+
+TEST_F(NGInlineNodeTest, ShapeCacheSpacingRequired) {
+  ScopedLayoutNGShapeCacheForTest scoped_feature(true);
+
+  SetupHtml("t",
+            "<style>div { letter-spacing: 5px; }</style>"
+            "<div id=t>abc</div>");
+  NGInlineNodeForTest node = CreateInlineNode();
+  node.CollectInlines();
+
+  const String& text_content(node.Text().c_str());
+  HeapVector<NGInlineItem>& items = node.Items();
+  ShapeResultSpacing<String> spacing(text_content, node.IsSvgText());
+
+  EXPECT_FALSE(
+      node.IsNGShapeCacheAllowed(text_content, nullptr, items, spacing));
 }
 
 }  // namespace blink

@@ -174,6 +174,10 @@ class CORE_EXPORT NGInlineNode : public NGLayoutInputNode {
       const String* previous_text,
       const HeapVector<NGInlineItem>* previous_items) const;
   void AssociateItemsWithInlines(NGInlineNodeData*) const;
+  bool IsNGShapeCacheAllowed(const String&,
+                             const Font*,
+                             const HeapVector<NGInlineItem>&,
+                             ShapeResultSpacing<String>&) const;
 
   NGInlineNodeData* MutableData() const {
     return To<LayoutBlockFlow>(box_.Get())->GetNGInlineNodeData();

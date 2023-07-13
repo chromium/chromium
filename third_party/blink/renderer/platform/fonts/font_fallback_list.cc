@@ -213,40 +213,6 @@ scoped_refptr<FontData> FontFallbackList::GetFontData(
   return last_resort;
 }
 
-FallbackListCompositeKey FontFallbackList::CompositeKey(
-    const FontDescription& font_description) const {
-  FallbackListCompositeKey key(font_description);
-  const FontFamily* current_family = &font_description.Family();
-  while (current_family) {
-    if (!current_family->FamilyName().empty()) {
-      FontFaceCreationParams params(AdjustFamilyNameToAvoidUnsupportedFonts(
-          current_family->FamilyName()));
-      scoped_refptr<FontData> result;
-      if (GetFontSelector()) {
-        result =
-            GetFontSelector()->GetFontData(font_description, *current_family);
-      }
-      if (!result) {
-        if (FontPlatformData* platform_data =
-                FontCache::Get().GetFontPlatformData(font_description, params))
-          result = FontCache::Get().FontDataFromFontPlatformData(platform_data);
-      }
-      if (result) {
-        bool is_unique_match = false;
-        bool is_generic_family = current_family->FamilyIsGeneric();
-        key.Add(font_description.CacheKey(params, is_unique_match,
-                                          is_generic_family));
-        auto* font_data = DynamicTo<SimpleFontData>(result.get());
-        if (!font_data && !result->IsCustomFont())
-          FontCache::Get().ReleaseFontData(font_data);
-      }
-    }
-    current_family = current_family->Next();
-  }
-
-  return key;
-}
-
 const FontData* FontFallbackList::FontDataAt(
     const FontDescription& font_description,
     unsigned realized_font_index) {

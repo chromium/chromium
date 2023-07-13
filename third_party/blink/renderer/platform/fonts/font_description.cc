@@ -382,8 +382,13 @@ unsigned FontDescription::StyleHashWithoutFamilyList() const {
     }
   }
 
-  if (VariationSettings())
+  if (VariationSettings()) {
     WTF::AddIntToHash(hash, VariationSettings()->GetHash());
+  }
+
+  if (font_palette_) {
+    WTF::AddIntToHash(hash, font_palette_->GetHash());
+  }
 
   if (locale_) {
     const AtomicString& locale = locale_->LocaleString();
