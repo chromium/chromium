@@ -387,6 +387,12 @@ bool MediaValues::CalculatePrefersReducedData(LocalFrame* frame) {
   return override_value.value_or(GetNetworkStateNotifier().SaveDataEnabled());
 }
 
+bool MediaValues::CalculatePrefersReducedTransparency(LocalFrame* frame) {
+  DCHECK(frame);
+  DCHECK(frame->GetSettings());
+  return frame->GetSettings()->GetPrefersReducedTransparency();
+}
+
 ForcedColors MediaValues::CalculateForcedColors(LocalFrame* frame) {
   DCHECK(frame);
   DCHECK(frame->GetSettings());

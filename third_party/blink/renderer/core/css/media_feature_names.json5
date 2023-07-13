@@ -61,6 +61,7 @@
     "prefers-contrast",
     "prefers-reduced-motion",
     "prefers-reduced-data",
+    "prefers-reduced-transparency",
     "resolution",
     "-webkit-transform-3d",
     "scan",

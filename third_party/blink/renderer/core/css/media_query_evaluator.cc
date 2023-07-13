@@ -1072,6 +1072,27 @@ static bool PrefersReducedDataMediaFeatureEval(
          media_values.PrefersReducedData();
 }
 
+static bool PrefersReducedTransparencyMediaFeatureEval(
+    const MediaQueryExpValue& value,
+    MediaQueryOperator,
+    const MediaValues& media_values) {
+  MaybeRecordMediaFeatureValue(
+      media_values,
+      IdentifiableSurface::MediaFeatureName::kPrefersReducedTransparency,
+      media_values.PrefersReducedTransparency());
+
+  if (!value.IsValid()) {
+    return media_values.PrefersReducedTransparency();
+  }
+
+  if (!value.IsId()) {
+    return false;
+  }
+
+  return (value.Id() == CSSValueID::kNoPreference) ^
+         media_values.PrefersReducedTransparency();
+}
+
 static bool AnyPointerMediaFeatureEval(const MediaQueryExpValue& value,
                                        MediaQueryOperator,
                                        const MediaValues& media_values) {

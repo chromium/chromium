@@ -88,6 +88,7 @@ class CORE_EXPORT WebSettingsImpl final : public WebSettings {
   void SetEditingBehavior(mojom::blink::EditingBehavior) override;
   void SetEnableScrollAnimator(bool) override;
   void SetPrefersReducedMotion(bool) override;
+  void SetPrefersReducedTransparency(bool) override;
   void SetWebGL1Enabled(bool) override;
   void SetWebGL2Enabled(bool) override;
   void SetFantasyFontFamily(const WebString&,

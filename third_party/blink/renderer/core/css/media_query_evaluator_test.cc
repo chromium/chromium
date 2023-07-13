@@ -275,6 +275,21 @@ MediaQueryEvaluatorTestCase g_preferscontrast_custom_cases[] = {
     {nullptr, false}  // Do not remove the terminator line.
 };
 
+MediaQueryEvaluatorTestCase g_prefersreducedtransparency_nopreference_cases[] =
+    {
+        {"(prefers-reduced-transparency)", false},
+        {"(prefers-reduced-transparency: reduce)", false},
+        {"(prefers-reduced-transparency: no-preference)", true},
+        {nullptr, false}  // Do not remove the terminator line.
+};
+
+MediaQueryEvaluatorTestCase g_prefersreducedtransparency_reduce_cases[] = {
+    {"(prefers-reduced-transparency)", true},
+    {"(prefers-reduced-transparency: reduce)", true},
+    {"(prefers-reduced-transparency: no-preference)", false},
+    {nullptr, false}  // Do not remove the terminator line.
+};
+
 MediaQueryEvaluatorTestCase g_navigationcontrols_back_button_cases[] = {
     {"(navigation-controls: back-button)", true},
     {"(navigation-controls: none)", false},
@@ -644,6 +659,28 @@ TEST(MediaQueryEvaluatorTest, CachedPrefersContrast) {
     MediaValues* media_values = MakeGarbageCollected<MediaValuesCached>(data);
     MediaQueryEvaluator media_query_evaluator(media_values);
     TestMQEvaluator(g_preferscontrast_custom_cases, media_query_evaluator);
+  }
+}
+
+TEST(MediaQueryEvaluatorTest, CachedPrefersReducedTransparency) {
+  MediaValuesCached::MediaValuesCachedData data;
+
+  // Prefers-reduced-transparency - no-preference.
+  {
+    data.prefers_reduced_transparency = false;
+    MediaValues* media_values = MakeGarbageCollected<MediaValuesCached>(data);
+    MediaQueryEvaluator media_query_evaluator(media_values);
+    TestMQEvaluator(g_prefersreducedtransparency_nopreference_cases,
+                    media_query_evaluator);
+  }
+
+  // Prefers-reduced-transparency - reduce.
+  {
+    data.prefers_reduced_transparency = true;
+    MediaValues* media_values = MakeGarbageCollected<MediaValuesCached>(data);
+    MediaQueryEvaluator media_query_evaluator(media_values);
+    TestMQEvaluator(g_prefersreducedtransparency_reduce_cases,
+                    media_query_evaluator);
   }
 }
 
@@ -1300,6 +1337,33 @@ TEST_F(MediaQueryEvaluatorIdentifiabilityTest,
           IdentifiableSurface::Type::kMediaFeature,
           IdentifiableToken(
               IdentifiableSurface::MediaFeatureName::kPrefersReducedMotion)));
+  EXPECT_EQ(entry.metrics.begin()->value, IdentifiableToken(false));
+}
+
+TEST_F(MediaQueryEvaluatorIdentifiabilityTest,
+       MediaFeatureIdentifiableSurfacePrefersReducedTransparency) {
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+      @media (prefers-reduced-transparency: reduce) {
+        div { color: green }
+      }
+    </style>
+    <div id="green"></div>
+    <span></span>
+  )HTML");
+
+  UpdateAllLifecyclePhases();
+  EXPECT_TRUE(GetDocument().WasMediaFeatureEvaluated(static_cast<int>(
+      IdentifiableSurface::MediaFeatureName::kPrefersReducedTransparency)));
+  EXPECT_EQ(collector()->entries().size(), 1u);
+
+  auto& entry = collector()->entries().front();
+  EXPECT_EQ(entry.metrics.size(), 1u);
+  EXPECT_EQ(entry.metrics.begin()->surface,
+            IdentifiableSurface::FromTypeAndToken(
+                IdentifiableSurface::Type::kMediaFeature,
+                IdentifiableToken(IdentifiableSurface::MediaFeatureName::
+                                      kPrefersReducedTransparency)));
   EXPECT_EQ(entry.metrics.begin()->value, IdentifiableToken(false));
 }
 

@@ -115,6 +115,12 @@ static inline bool FeatureWithValidIdent(const String& media_feature,
     return ident == CSSValueID::kNoPreference || ident == CSSValueID::kReduce;
   }
 
+  if (RuntimeEnabledFeatures::PrefersReducedTransparencyEnabled() &&
+      media_feature ==
+          media_feature_names::kPrefersReducedTransparencyMediaFeature) {
+    return ident == CSSValueID::kNoPreference || ident == CSSValueID::kReduce;
+  }
+
   if (RuntimeEnabledFeatures::ForcedColorsEnabled()) {
     if (media_feature == media_feature_names::kForcedColorsMediaFeature) {
       return ident == CSSValueID::kNone || ident == CSSValueID::kActive;

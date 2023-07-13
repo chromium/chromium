@@ -1835,6 +1835,29 @@ TEST_F(StyleEngineTest, MediaQueriesChangePrefersReducedMotion) {
                 GetCSSPropertyColor()));
 }
 
+TEST_F(StyleEngineTest, MediaQueriesChangePrefersReducedTransparency) {
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+      body { color: red }
+      @media (prefers-reduced-transparency: reduce) {
+        body { color: green }
+      }
+    </style>
+    <body></body>
+  )HTML");
+
+  UpdateAllLifecyclePhases();
+  EXPECT_EQ(Color::FromRGB(255, 0, 0),
+            GetDocument().body()->GetComputedStyle()->VisitedDependentColor(
+                GetCSSPropertyColor()));
+
+  GetDocument().GetSettings()->SetPrefersReducedTransparency(true);
+  UpdateAllLifecyclePhases();
+  EXPECT_EQ(Color::FromRGB(0, 128, 0),
+            GetDocument().body()->GetComputedStyle()->VisitedDependentColor(
+                GetCSSPropertyColor()));
+}
+
 TEST_F(StyleEngineTest, MediaQueriesChangePrefersReducedDataOn) {
   GetNetworkStateNotifier().SetSaveDataEnabled(true);
 

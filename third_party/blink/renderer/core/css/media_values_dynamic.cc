@@ -241,6 +241,10 @@ bool MediaValuesDynamic::PrefersReducedData() const {
   return CalculatePrefersReducedData(frame_);
 }
 
+bool MediaValuesDynamic::PrefersReducedTransparency() const {
+  return CalculatePrefersReducedTransparency(frame_);
+}
+
 ForcedColors MediaValuesDynamic::GetForcedColors() const {
   return CalculateForcedColors(frame_);
 }

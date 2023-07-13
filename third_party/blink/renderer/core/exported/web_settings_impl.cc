@@ -570,6 +570,10 @@ void WebSettingsImpl::SetPrefersReducedMotion(bool enabled) {
   settings_->SetPrefersReducedMotion(enabled);
 }
 
+void WebSettingsImpl::SetPrefersReducedTransparency(bool enabled) {
+  settings_->SetPrefersReducedTransparency(enabled);
+}
+
 bool WebSettingsImpl::ViewportEnabled() const {
   return settings_->GetViewportEnabled();
 }

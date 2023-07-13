@@ -1019,6 +1019,14 @@
       initial: false,
       invalidate: ["MediaQuery"],
     },
+
+    // Preferred transparency-reduction setting from the OS/application passed to the
+    // renderer for evaluating the prefers-reduced-transparency media query.
+    {
+      name: "prefersReducedTransparency",
+      initial: false,
+      invalidate: ["MediaQuery"],
+    },
     {
       name: "DontSendKeyEventsToJavascript",
       initial: false,

@@ -1537,6 +1537,7 @@
 
     // (prefers-reduced-motion:) media feature
     // (prefers-reduced-data:) media feature
+    // (prefers-reduced-transparency:) media feature
     "reduce",
 
     // (forced-colors:) media feature
