@@ -6268,8 +6268,8 @@ void WebContentsImpl::DidInferColorScheme(PageImpl& page) {
                   blink::mojom::PreferredColorScheme::kDark;
       base::UmaHistogramBoolean("Power.DarkMode.InferredDarkPageColorScheme",
                                 dark);
-      if (web_preferences_->preferred_color_scheme ==
-          blink::mojom::PreferredColorScheme::kDark) {
+      if (web_preferences_ && web_preferences_->preferred_color_scheme ==
+                                  blink::mojom::PreferredColorScheme::kDark) {
         base::UmaHistogramBoolean(
             "Power.DarkMode.DarkColorScheme.InferredDarkPageColorScheme", dark);
       }
