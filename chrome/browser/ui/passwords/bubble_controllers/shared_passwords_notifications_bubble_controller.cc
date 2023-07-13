@@ -4,13 +4,15 @@
 
 #include "chrome/browser/ui/passwords/bubble_controllers/shared_passwords_notifications_bubble_controller.h"
 
+#include "components/password_manager/core/browser/password_manager_metrics_util.h"
+
 SharedPasswordsNotificationBubbleController::
     SharedPasswordsNotificationBubbleController(
         base::WeakPtr<PasswordsModelDelegate> delegate)
     : PasswordBubbleControllerBase(
           std::move(delegate),
-          // TODO(crbug.com/1464209): Use correct metrics enum value.
-          password_manager::metrics_util::AUTOMATIC_MOVE_TO_ACCOUNT_STORE) {}
+          password_manager::metrics_util::
+              AUTOMATIC_SHARED_PASSWORDS_NOTIFICATION) {}
 
 SharedPasswordsNotificationBubbleController::
     ~SharedPasswordsNotificationBubbleController() {
