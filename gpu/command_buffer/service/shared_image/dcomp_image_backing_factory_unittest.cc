@@ -484,6 +484,7 @@ class DCompImageBackingFactoryVisualTreeTest
         GrSemaphoresSubmitted::kYes,
         direct_context->flush(write_access->surface(), flush_info, nullptr));
 
+    write_access->ApplyBackendSurfaceEndState();
     direct_context->submit(true);
   }
 

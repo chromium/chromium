@@ -172,6 +172,7 @@ void ReadbackTexturesOnGpuThread(gpu::SharedImageManager* shared_image_manager,
   if (GrDirectContext* direct_context = context_state->gr_context()) {
     direct_context->flush(flush_info);
   }
+  scoped_write->ApplyBackendSurfaceEndState();
 }
 
 void WriteTextureOnGpuMainThread(gpu::SharedImageManager* shared_image_manager,
@@ -223,6 +224,7 @@ void WriteTextureOnGpuMainThread(gpu::SharedImageManager* shared_image_manager,
   if (GrDirectContext* direct_context = context_state->gr_context()) {
     direct_context->flush(flush_info);
   }
+  scoped_write->ApplyBackendSurfaceEndState();
 }
 
 // Reads back NV12 planes from textures returned in the result.
