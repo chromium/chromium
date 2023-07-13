@@ -2483,7 +2483,8 @@ TEST_F(TraceEventDataSourceTest, HistogramSampleTraceConfigEmpty) {
   EXPECT_EQ(e_packet->interned_data().histogram_names()[0].name(), "Foo.Bar");
 }
 
-TEST_F(TraceEventDataSourceTest, HistogramSampleTraceConfigNotEmpty) {
+// TODO(crbug.com/1464718): The test is flaky across platforms.
+TEST_F(TraceEventDataSourceTest, DISABLED_HistogramSampleTraceConfigNotEmpty) {
   std::vector<std::string> histograms;
   histograms.push_back("Foo1.Bar1");
   histograms.push_back("Foo3.Bar3");
