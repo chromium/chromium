@@ -63,8 +63,6 @@ class UserPerformanceTuningNotifier : public performance_manager::GraphOwned,
   void OnBeforePageNodeRemoved(const PageNode* page_node) override;
   void OnTypeChanged(const PageNode* page_node,
                      PageType previous_type) override;
-  void OnLoadingStateChanged(const PageNode* page_node,
-                             PageNode::LoadingState previous_state) override;
 
   // SystemNode::ObserverDefaultImpl:
   void OnProcessMemoryMetricsAvailable(const SystemNode* system_node) override;
