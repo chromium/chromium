@@ -3,7 +3,9 @@ URL: http://source.android.com
 Description: Android shared memory implementation. Only applies to OS_ANDROID.
 Version: 7203eb2a8a29a7b721a48cd291700f38f3da1456
 Security Critical: yes
+Shipped: yes
 License: Apache 2.0
+License File: LICENSE
 Patches:
   0001-Add-ashmem-get-prot-region.path:
      Add ashmem_get_prot_region() declaration and implementation to return
