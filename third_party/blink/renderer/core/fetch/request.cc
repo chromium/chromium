@@ -477,7 +477,7 @@ Request* Request::CreateRequestWithRequestOrString(
   // present, and |unknown| otherwise."
   if (init->hasTargetAddressSpace()) {
     if (init->targetAddressSpace() == "local") {
-      request->SetTargetAddressSpace(network::mojom::IPAddressSpace::kLoopback);
+      request->SetTargetAddressSpace(network::mojom::IPAddressSpace::kLocal);
     } else if (init->targetAddressSpace() == "private") {
       request->SetTargetAddressSpace(network::mojom::IPAddressSpace::kPrivate);
     } else if (init->targetAddressSpace() == "public") {
@@ -1019,7 +1019,7 @@ bool Request::keepalive() const {
 }
 String Request::targetAddressSpace() const {
   switch (request_->TargetAddressSpace()) {
-    case network::mojom::IPAddressSpace::kLoopback:
+    case network::mojom::IPAddressSpace::kLocal:
       return "local";
     case network::mojom::IPAddressSpace::kPrivate:
       return "private";

@@ -3352,8 +3352,7 @@ String NetworkHandler::BuildPrivateNetworkRequestPolicy(
 String NetworkHandler::BuildIpAddressSpace(
     network::mojom::IPAddressSpace space) {
   switch (space) {
-    case network::mojom::IPAddressSpace::kLoopback:
-      // TODO(https://crbug.com/1418287): Rename as Loopback;
+    case network::mojom::IPAddressSpace::kLocal:
       return protocol::Network::IPAddressSpaceEnum::Local;
     case network::mojom::IPAddressSpace::kPrivate:
       return protocol::Network::IPAddressSpaceEnum::Private;

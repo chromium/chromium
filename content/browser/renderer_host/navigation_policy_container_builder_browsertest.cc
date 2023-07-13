@@ -105,7 +105,7 @@ IN_PROC_BROWSER_TEST_F(NavigationPolicyContainerBuilderBrowserTest,
 
   const PolicyContainerPolicies& root_policies = GetPolicies(root_frame_host());
   EXPECT_EQ(root_policies.ip_address_space,
-            network::mojom::IPAddressSpace::kLoopback);
+            network::mojom::IPAddressSpace::kLocal);
 
   NavigationPolicyContainerBuilder builder(
       nullptr, nullptr, GetLastCommittedFrameNavigationEntry());
@@ -149,7 +149,7 @@ IN_PROC_BROWSER_TEST_F(NavigationPolicyContainerBuilderBrowserTest,
 
   const PolicyContainerPolicies& root_policies = GetPolicies(root_frame_host());
   EXPECT_EQ(root_policies.ip_address_space,
-            network::mojom::IPAddressSpace::kLoopback);
+            network::mojom::IPAddressSpace::kLocal);
 
   FrameNavigationEntry* entry = GetLastCommittedFrameNavigationEntry();
   NavigationPolicyContainerBuilder builder(nullptr, nullptr, entry);
@@ -203,8 +203,7 @@ IN_PROC_BROWSER_TEST_F(NavigationPolicyContainerBuilderBrowserTest,
   EXPECT_TRUE(NavigateToURLFromRenderer(root, AboutBlankUrl()));
 
   PolicyContainerPolicies initiator_policies;
-  initiator_policies.ip_address_space =
-      network::mojom::IPAddressSpace::kLoopback;
+  initiator_policies.ip_address_space = network::mojom::IPAddressSpace::kLocal;
 
   blink::LocalFrameToken token;
   auto initiator_host =

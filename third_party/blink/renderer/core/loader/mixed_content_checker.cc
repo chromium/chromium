@@ -540,8 +540,7 @@ bool MixedContentChecker::ShouldBlockFetch(
   if (RuntimeEnabledFeatures::PrivateNetworkAccessPermissionPromptEnabled()) {
     if (target_address_space ==
             network::mojom::blink::IPAddressSpace::kPrivate ||
-        target_address_space ==
-            network::mojom::blink::IPAddressSpace::kLoopback) {
+        target_address_space == network::mojom::blink::IPAddressSpace::kLocal) {
       allowed = true;
     }
   }

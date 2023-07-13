@@ -8,7 +8,7 @@ module network.mojom;
 // is important, as it's used to determine whether preflights are required, as
 // per https://wicg.github.io/private-network-access/#framework
 enum IPAddressSpace {
-  kLoopback, // contains the local host only. In other words, addresses whose
+  kLocal,    // contains the local host only. In other words, addresses whose
              // target differs for every device.
 
   kPrivate,  // contains addresses that have meaning only within the current

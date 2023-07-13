@@ -768,14 +768,14 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest, CachesPreflightResult) {
   RunUntilComplete();
 
   // Send the same request again. This time the initial connection observes a
-  // private network access to a different IP address space: `kLoopback`.
+  // private network access to a different IP address space: `kLocal`.
   // A preflight request should be sent with its `target_ip_address_space` set
-  // to `kLoopback`.  CreateLoaderAndStart(request);
+  // to `kLocal`.  CreateLoaderAndStart(request);
   CreateLoaderAndStart(request);
   RunUntilCreateLoaderAndStartCalled();
   NotifyLoaderClientOnComplete(CorsErrorStatus(
       mojom::CorsError::kUnexpectedPrivateNetworkAccess,
-      mojom::IPAddressSpace::kUnknown, mojom::IPAddressSpace::kLoopback));
+      mojom::IPAddressSpace::kUnknown, mojom::IPAddressSpace::kLocal));
 
   RunUntilCreateLoaderAndStartCalled();
 

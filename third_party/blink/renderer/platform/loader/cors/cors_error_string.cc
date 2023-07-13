@@ -56,7 +56,7 @@ StringView ShortAddressSpace(network::mojom::IPAddressSpace space) {
       return "public";
     case network::mojom::IPAddressSpace::kPrivate:
       return "private";
-    case network::mojom::IPAddressSpace::kLoopback:
+    case network::mojom::IPAddressSpace::kLocal:
       return "local";
   }
 

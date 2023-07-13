@@ -1308,7 +1308,7 @@ TEST_F(URLLoaderTest, MatchingTargetIPAddressSpaceIsOk) {
   set_factory_client_security_state(std::move(client_security_state));
 
   ResourceRequest request = CreateCrossOriginResourceRequest();
-  request.target_ip_address_space = mojom::IPAddressSpace::kLoopback;
+  request.target_ip_address_space = mojom::IPAddressSpace::kLocal;
 
   EXPECT_EQ(net::OK, LoadRequest(request));
 }
@@ -1347,7 +1347,7 @@ TEST_F(URLLoaderTest, MismatchingTargetIPAddressSpaceIsBlocked) {
       client()->completion_status().cors_error_status,
       Optional(CorsErrorStatus(mojom::CorsError::kInvalidPrivateNetworkAccess,
                                mojom::IPAddressSpace::kPrivate,
-                               mojom::IPAddressSpace::kLoopback)));
+                               mojom::IPAddressSpace::kLocal)));
 }
 
 // This test verifies that when the request's `target_ip_address_space` does not
@@ -1385,7 +1385,7 @@ TEST_F(URLLoaderTest, MismatchingTargetIPAddressSpaceErrorCode) {
       client()->completion_status().cors_error_status,
       Optional(CorsErrorStatus(mojom::CorsError::kInvalidPrivateNetworkAccess,
                                mojom::IPAddressSpace::kPrivate,
-                               mojom::IPAddressSpace::kLoopback)));
+                               mojom::IPAddressSpace::kLocal)));
 
   EXPECT_THAT(connected_callback_result_observer.results(),
               ElementsAre(IsError(net::ERR_INCONSISTENT_IP_ADDRESS_SPACE)));
@@ -1461,7 +1461,7 @@ TEST_F(URLLoaderTest, InconsistentIPAddressSpaceIsBlocked) {
                                // TODO(https://crbug.com/1279376): Expect
                                // `kPublic` here instead, for better debugging.
                                mojom::IPAddressSpace::kUnknown,
-                               mojom::IPAddressSpace::kLoopback)));
+                               mojom::IPAddressSpace::kLocal)));
 
   // The first connection was fine, but the second was inconsistent.
   EXPECT_THAT(connected_callback_result_observer.results(),
@@ -1470,8 +1470,8 @@ TEST_F(URLLoaderTest, InconsistentIPAddressSpaceIsBlocked) {
 }
 
 // These tests verify that requests from both secure and non-secure contexts to
-// an IP in the `kLoopback` address space are only blocked when the policy is
-// `kBlock` and the initiator's address space is not `kLoopback`.
+// an IP in the `kLocal` address space are only blocked when the policy is
+// `kBlock` and the initiator's address space is not `kLocal`.
 //
 // NOTE: These tests exercise the same codepath as
 // URLLoaderFakeTransportInfoTest below, except they use real URLRequestJob and
@@ -1490,7 +1490,7 @@ TEST_F(URLLoaderTest, SecureUnknownToLocalBlock) {
   EXPECT_EQ(net::ERR_FAILED, LoadRequest(request));
   EXPECT_THAT(client()->completion_status().cors_error_status,
               Optional(InsecurePrivateNetworkCorsErrorStatus(
-                  mojom::IPAddressSpace::kLoopback)));
+                  mojom::IPAddressSpace::kLocal)));
 }
 
 TEST_F(URLLoaderTest, SecureUnknownToLocalWarn) {
@@ -1534,7 +1534,7 @@ TEST_F(URLLoaderTest, SecureUnknownToLocalPreflightWarn) {
       client()->completion_status().cors_error_status,
       Optional(CorsErrorStatus(
           mojom::CorsError::kUnexpectedPrivateNetworkAccess,
-          mojom::IPAddressSpace::kUnknown, mojom::IPAddressSpace::kLoopback)));
+          mojom::IPAddressSpace::kUnknown, mojom::IPAddressSpace::kLocal)));
 }
 
 TEST_F(URLLoaderTest, SecureUnknownToLocalPreflightBlock) {
@@ -1552,7 +1552,7 @@ TEST_F(URLLoaderTest, SecureUnknownToLocalPreflightBlock) {
       client()->completion_status().cors_error_status,
       Optional(CorsErrorStatus(
           mojom::CorsError::kUnexpectedPrivateNetworkAccess,
-          mojom::IPAddressSpace::kUnknown, mojom::IPAddressSpace::kLoopback)));
+          mojom::IPAddressSpace::kUnknown, mojom::IPAddressSpace::kLocal)));
 }
 
 TEST_F(URLLoaderTest, NonSecureUnknownToLocalBlock) {
@@ -1565,7 +1565,7 @@ TEST_F(URLLoaderTest, NonSecureUnknownToLocalBlock) {
   EXPECT_EQ(net::ERR_FAILED, LoadRequest(request));
   EXPECT_THAT(client()->completion_status().cors_error_status,
               Optional(InsecurePrivateNetworkCorsErrorStatus(
-                  mojom::IPAddressSpace::kLoopback)));
+                  mojom::IPAddressSpace::kLocal)));
 }
 
 TEST_F(URLLoaderTest, NonSecureUnknownToLocalWarn) {
@@ -1606,7 +1606,7 @@ TEST_F(URLLoaderTest, NonSecureUnknownToLocalPreflightWarn) {
       client()->completion_status().cors_error_status,
       Optional(CorsErrorStatus(
           mojom::CorsError::kUnexpectedPrivateNetworkAccess,
-          mojom::IPAddressSpace::kUnknown, mojom::IPAddressSpace::kLoopback)));
+          mojom::IPAddressSpace::kUnknown, mojom::IPAddressSpace::kLocal)));
 }
 
 TEST_F(URLLoaderTest, NonSecureUnknownToLocalPreflightBlock) {
@@ -1623,7 +1623,7 @@ TEST_F(URLLoaderTest, NonSecureUnknownToLocalPreflightBlock) {
       client()->completion_status().cors_error_status,
       Optional(CorsErrorStatus(
           mojom::CorsError::kUnexpectedPrivateNetworkAccess,
-          mojom::IPAddressSpace::kUnknown, mojom::IPAddressSpace::kLoopback)));
+          mojom::IPAddressSpace::kUnknown, mojom::IPAddressSpace::kLocal)));
 }
 
 TEST_F(URLLoaderTest, SecurePublicToLocalBlock) {
@@ -1637,7 +1637,7 @@ TEST_F(URLLoaderTest, SecurePublicToLocalBlock) {
   EXPECT_EQ(net::ERR_FAILED, LoadRequest(request));
   EXPECT_THAT(client()->completion_status().cors_error_status,
               Optional(InsecurePrivateNetworkCorsErrorStatus(
-                  mojom::IPAddressSpace::kLoopback)));
+                  mojom::IPAddressSpace::kLocal)));
 }
 
 TEST_F(URLLoaderTest, SecurePublicToLocalWarn) {
@@ -1681,7 +1681,7 @@ TEST_F(URLLoaderTest, SecurePublicToLocalPreflightWarn) {
       client()->completion_status().cors_error_status,
       Optional(CorsErrorStatus(
           mojom::CorsError::kUnexpectedPrivateNetworkAccess,
-          mojom::IPAddressSpace::kUnknown, mojom::IPAddressSpace::kLoopback)));
+          mojom::IPAddressSpace::kUnknown, mojom::IPAddressSpace::kLocal)));
 }
 
 TEST_F(URLLoaderTest, SecurePublicToLocalPreflightBlock) {
@@ -1699,7 +1699,7 @@ TEST_F(URLLoaderTest, SecurePublicToLocalPreflightBlock) {
       client()->completion_status().cors_error_status,
       Optional(CorsErrorStatus(
           mojom::CorsError::kUnexpectedPrivateNetworkAccess,
-          mojom::IPAddressSpace::kUnknown, mojom::IPAddressSpace::kLoopback)));
+          mojom::IPAddressSpace::kUnknown, mojom::IPAddressSpace::kLocal)));
 }
 
 TEST_F(URLLoaderTest, NonSecurePublicToLocalBlock) {
@@ -1712,7 +1712,7 @@ TEST_F(URLLoaderTest, NonSecurePublicToLocalBlock) {
   EXPECT_EQ(net::ERR_FAILED, LoadRequest(request));
   EXPECT_THAT(client()->completion_status().cors_error_status,
               Optional(InsecurePrivateNetworkCorsErrorStatus(
-                  mojom::IPAddressSpace::kLoopback)));
+                  mojom::IPAddressSpace::kLocal)));
 }
 
 TEST_F(URLLoaderTest, NonSecurePublicToLocalWarn) {
@@ -1753,7 +1753,7 @@ TEST_F(URLLoaderTest, NonSecurePublicToLocalPreflightWarn) {
       client()->completion_status().cors_error_status,
       Optional(CorsErrorStatus(
           mojom::CorsError::kUnexpectedPrivateNetworkAccess,
-          mojom::IPAddressSpace::kUnknown, mojom::IPAddressSpace::kLoopback)));
+          mojom::IPAddressSpace::kUnknown, mojom::IPAddressSpace::kLocal)));
 }
 
 TEST_F(URLLoaderTest, NonSecurePublicToLocalPreflightBlock) {
@@ -1770,7 +1770,7 @@ TEST_F(URLLoaderTest, NonSecurePublicToLocalPreflightBlock) {
       client()->completion_status().cors_error_status,
       Optional(CorsErrorStatus(
           mojom::CorsError::kUnexpectedPrivateNetworkAccess,
-          mojom::IPAddressSpace::kUnknown, mojom::IPAddressSpace::kLoopback)));
+          mojom::IPAddressSpace::kUnknown, mojom::IPAddressSpace::kLocal)));
 }
 
 TEST_F(URLLoaderTest, SecurePrivateToLocalBlock) {
@@ -1784,7 +1784,7 @@ TEST_F(URLLoaderTest, SecurePrivateToLocalBlock) {
   EXPECT_EQ(net::ERR_FAILED, LoadRequest(request));
   EXPECT_THAT(client()->completion_status().cors_error_status,
               Optional(InsecurePrivateNetworkCorsErrorStatus(
-                  mojom::IPAddressSpace::kLoopback)));
+                  mojom::IPAddressSpace::kLocal)));
 }
 
 TEST_F(URLLoaderTest, SecurePrivateToLocalWarn) {
@@ -1828,7 +1828,7 @@ TEST_F(URLLoaderTest, SecurePrivateToLocalPreflightBlock) {
       client()->completion_status().cors_error_status,
       Optional(CorsErrorStatus(
           mojom::CorsError::kUnexpectedPrivateNetworkAccess,
-          mojom::IPAddressSpace::kUnknown, mojom::IPAddressSpace::kLoopback)));
+          mojom::IPAddressSpace::kUnknown, mojom::IPAddressSpace::kLocal)));
 }
 
 TEST_F(URLLoaderTest, SecurePrivateToLocalPreflightWarn) {
@@ -1846,7 +1846,7 @@ TEST_F(URLLoaderTest, SecurePrivateToLocalPreflightWarn) {
       client()->completion_status().cors_error_status,
       Optional(CorsErrorStatus(
           mojom::CorsError::kUnexpectedPrivateNetworkAccess,
-          mojom::IPAddressSpace::kUnknown, mojom::IPAddressSpace::kLoopback)));
+          mojom::IPAddressSpace::kUnknown, mojom::IPAddressSpace::kLocal)));
 }
 
 TEST_F(URLLoaderTest, NonSecurePrivateToLocalBlock) {
@@ -1859,7 +1859,7 @@ TEST_F(URLLoaderTest, NonSecurePrivateToLocalBlock) {
   EXPECT_EQ(net::ERR_FAILED, LoadRequest(request));
   EXPECT_THAT(client()->completion_status().cors_error_status,
               Optional(InsecurePrivateNetworkCorsErrorStatus(
-                  mojom::IPAddressSpace::kLoopback)));
+                  mojom::IPAddressSpace::kLocal)));
 }
 
 TEST_F(URLLoaderTest, NonSecurePrivateToLocalWarn) {
@@ -1900,7 +1900,7 @@ TEST_F(URLLoaderTest, NonSecurePrivateToLocalPreflightBlock) {
       client()->completion_status().cors_error_status,
       Optional(CorsErrorStatus(
           mojom::CorsError::kUnexpectedPrivateNetworkAccess,
-          mojom::IPAddressSpace::kUnknown, mojom::IPAddressSpace::kLoopback)));
+          mojom::IPAddressSpace::kUnknown, mojom::IPAddressSpace::kLocal)));
 }
 
 TEST_F(URLLoaderTest, NonSecurePrivateToLocalPreflightWarn) {
@@ -1917,13 +1917,13 @@ TEST_F(URLLoaderTest, NonSecurePrivateToLocalPreflightWarn) {
       client()->completion_status().cors_error_status,
       Optional(CorsErrorStatus(
           mojom::CorsError::kUnexpectedPrivateNetworkAccess,
-          mojom::IPAddressSpace::kUnknown, mojom::IPAddressSpace::kLoopback)));
+          mojom::IPAddressSpace::kUnknown, mojom::IPAddressSpace::kLocal)));
 }
 
 TEST_F(URLLoaderTest, SecureLocalToLocalBlock) {
   auto client_security_state = NewSecurityState();
   client_security_state->is_web_secure_context = true;
-  client_security_state->ip_address_space = mojom::IPAddressSpace::kLoopback;
+  client_security_state->ip_address_space = mojom::IPAddressSpace::kLocal;
   set_factory_client_security_state(std::move(client_security_state));
 
   ResourceRequest request = CreateCrossOriginResourceRequest();
@@ -1934,7 +1934,7 @@ TEST_F(URLLoaderTest, SecureLocalToLocalBlock) {
 TEST_F(URLLoaderTest, SecureLocalToLocalWarn) {
   auto client_security_state = NewSecurityState();
   client_security_state->is_web_secure_context = true;
-  client_security_state->ip_address_space = mojom::IPAddressSpace::kLoopback;
+  client_security_state->ip_address_space = mojom::IPAddressSpace::kLocal;
   client_security_state->private_network_request_policy =
       mojom::PrivateNetworkRequestPolicy::kWarn;
   set_factory_client_security_state(std::move(client_security_state));
@@ -1947,7 +1947,7 @@ TEST_F(URLLoaderTest, SecureLocalToLocalWarn) {
 TEST_F(URLLoaderTest, SecureLocalToLocalAllow) {
   auto client_security_state = NewSecurityState();
   client_security_state->is_web_secure_context = true;
-  client_security_state->ip_address_space = mojom::IPAddressSpace::kLoopback;
+  client_security_state->ip_address_space = mojom::IPAddressSpace::kLocal;
   client_security_state->private_network_request_policy =
       mojom::PrivateNetworkRequestPolicy::kAllow;
   set_factory_client_security_state(std::move(client_security_state));
@@ -1960,7 +1960,7 @@ TEST_F(URLLoaderTest, SecureLocalToLocalAllow) {
 TEST_F(URLLoaderTest, SecureLocalToLocalPreflightBlock) {
   auto client_security_state = NewSecurityState();
   client_security_state->is_web_secure_context = true;
-  client_security_state->ip_address_space = mojom::IPAddressSpace::kLoopback;
+  client_security_state->ip_address_space = mojom::IPAddressSpace::kLocal;
   client_security_state->private_network_request_policy =
       mojom::PrivateNetworkRequestPolicy::kPreflightBlock;
   set_factory_client_security_state(std::move(client_security_state));
@@ -1973,7 +1973,7 @@ TEST_F(URLLoaderTest, SecureLocalToLocalPreflightBlock) {
 TEST_F(URLLoaderTest, SecureLocalToLocalPreflightWarn) {
   auto client_security_state = NewSecurityState();
   client_security_state->is_web_secure_context = true;
-  client_security_state->ip_address_space = mojom::IPAddressSpace::kLoopback;
+  client_security_state->ip_address_space = mojom::IPAddressSpace::kLocal;
   client_security_state->private_network_request_policy =
       mojom::PrivateNetworkRequestPolicy::kPreflightWarn;
   set_factory_client_security_state(std::move(client_security_state));
@@ -1985,7 +1985,7 @@ TEST_F(URLLoaderTest, SecureLocalToLocalPreflightWarn) {
 
 TEST_F(URLLoaderTest, NonSecureLocalToLocalBlock) {
   auto client_security_state = NewSecurityState();
-  client_security_state->ip_address_space = mojom::IPAddressSpace::kLoopback;
+  client_security_state->ip_address_space = mojom::IPAddressSpace::kLocal;
   set_factory_client_security_state(std::move(client_security_state));
 
   ResourceRequest request = CreateCrossOriginResourceRequest();
@@ -1995,7 +1995,7 @@ TEST_F(URLLoaderTest, NonSecureLocalToLocalBlock) {
 
 TEST_F(URLLoaderTest, NonSecureLocalToLocalWarn) {
   auto client_security_state = NewSecurityState();
-  client_security_state->ip_address_space = mojom::IPAddressSpace::kLoopback;
+  client_security_state->ip_address_space = mojom::IPAddressSpace::kLocal;
   client_security_state->private_network_request_policy =
       mojom::PrivateNetworkRequestPolicy::kWarn;
   set_factory_client_security_state(std::move(client_security_state));
@@ -2007,7 +2007,7 @@ TEST_F(URLLoaderTest, NonSecureLocalToLocalWarn) {
 
 TEST_F(URLLoaderTest, NonSecureLocalToLocalAllow) {
   auto client_security_state = NewSecurityState();
-  client_security_state->ip_address_space = mojom::IPAddressSpace::kLoopback;
+  client_security_state->ip_address_space = mojom::IPAddressSpace::kLocal;
   client_security_state->private_network_request_policy =
       mojom::PrivateNetworkRequestPolicy::kAllow;
   set_factory_client_security_state(std::move(client_security_state));
@@ -2019,7 +2019,7 @@ TEST_F(URLLoaderTest, NonSecureLocalToLocalAllow) {
 
 TEST_F(URLLoaderTest, NonSecureLocalToLocalPreflightBlock) {
   auto client_security_state = NewSecurityState();
-  client_security_state->ip_address_space = mojom::IPAddressSpace::kLoopback;
+  client_security_state->ip_address_space = mojom::IPAddressSpace::kLocal;
   client_security_state->private_network_request_policy =
       mojom::PrivateNetworkRequestPolicy::kPreflightBlock;
   set_factory_client_security_state(std::move(client_security_state));
@@ -2031,7 +2031,7 @@ TEST_F(URLLoaderTest, NonSecureLocalToLocalPreflightBlock) {
 
 TEST_F(URLLoaderTest, NonSecureLocalToLocalPreflightWarn) {
   auto client_security_state = NewSecurityState();
-  client_security_state->ip_address_space = mojom::IPAddressSpace::kLoopback;
+  client_security_state->ip_address_space = mojom::IPAddressSpace::kLocal;
   client_security_state->private_network_request_policy =
       mojom::PrivateNetworkRequestPolicy::kPreflightWarn;
   set_factory_client_security_state(std::move(client_security_state));
@@ -2043,7 +2043,7 @@ TEST_F(URLLoaderTest, NonSecureLocalToLocalPreflightWarn) {
 
 TEST_F(URLLoaderTest, AddsNetLogEntryForPrivateNetworkAccessCheckSuccess) {
   auto client_security_state = NewSecurityState();
-  client_security_state->ip_address_space = mojom::IPAddressSpace::kLoopback;
+  client_security_state->ip_address_space = mojom::IPAddressSpace::kLocal;
   set_factory_client_security_state(std::move(client_security_state));
 
   net::RecordingNetLogObserver net_log_observer;
@@ -2179,7 +2179,7 @@ class URLLoaderFakeTransportInfoTest
         return net::IPAddress(42, 0, 1, 2);
       case mojom::IPAddressSpace::kPrivate:
         return net::IPAddress(10, 0, 1, 2);
-      case mojom::IPAddressSpace::kLoopback:
+      case mojom::IPAddressSpace::kLocal:
         return net::IPAddress::IPv4Localhost();
     }
   }
@@ -2262,7 +2262,7 @@ constexpr URLLoaderFakeTransportInfoTestParams
         },
         {
             mojom::IPAddressSpace::kUnknown,
-            mojom::IPAddressSpace::kLoopback,
+            mojom::IPAddressSpace::kLocal,
             net::TransportType::kDirect,
             net::ERR_FAILED,
         },
@@ -2287,7 +2287,7 @@ constexpr URLLoaderFakeTransportInfoTestParams
         },
         {
             mojom::IPAddressSpace::kPublic,
-            mojom::IPAddressSpace::kLoopback,
+            mojom::IPAddressSpace::kLocal,
             net::TransportType::kDirect,
             net::ERR_FAILED,
         },
@@ -2312,45 +2312,45 @@ constexpr URLLoaderFakeTransportInfoTestParams
         },
         {
             mojom::IPAddressSpace::kPrivate,
-            mojom::IPAddressSpace::kLoopback,
+            mojom::IPAddressSpace::kLocal,
             net::TransportType::kDirect,
             net::ERR_FAILED,
         },
-        // Client: kLoopback
+        // Client: kLocal
         {
-            mojom::IPAddressSpace::kLoopback,
+            mojom::IPAddressSpace::kLocal,
             mojom::IPAddressSpace::kUnknown,
             net::TransportType::kDirect,
             net::OK,
         },
         {
-            mojom::IPAddressSpace::kLoopback,
+            mojom::IPAddressSpace::kLocal,
             mojom::IPAddressSpace::kPublic,
             net::TransportType::kDirect,
             net::OK,
         },
         {
-            mojom::IPAddressSpace::kLoopback,
+            mojom::IPAddressSpace::kLocal,
             mojom::IPAddressSpace::kPrivate,
             net::TransportType::kDirect,
             net::OK,
         },
         {
-            mojom::IPAddressSpace::kLoopback,
-            mojom::IPAddressSpace::kLoopback,
+            mojom::IPAddressSpace::kLocal,
+            mojom::IPAddressSpace::kLocal,
             net::TransportType::kDirect,
             net::OK,
         },
         // TransportType: kProxied
         {
             mojom::IPAddressSpace::kUnknown,
-            mojom::IPAddressSpace::kLoopback,
+            mojom::IPAddressSpace::kLocal,
             net::TransportType::kProxied,
             net::OK,
         },
         {
             mojom::IPAddressSpace::kPublic,
-            mojom::IPAddressSpace::kLoopback,
+            mojom::IPAddressSpace::kLocal,
             net::TransportType::kProxied,
             net::OK,
         },
@@ -2362,20 +2362,20 @@ constexpr URLLoaderFakeTransportInfoTestParams
         },
         {
             mojom::IPAddressSpace::kPrivate,
-            mojom::IPAddressSpace::kLoopback,
+            mojom::IPAddressSpace::kLocal,
             net::TransportType::kProxied,
             net::OK,
         },
         // TransportType: kCachedFromProxy
         {
             mojom::IPAddressSpace::kUnknown,
-            mojom::IPAddressSpace::kLoopback,
+            mojom::IPAddressSpace::kLocal,
             net::TransportType::kCachedFromProxy,
             net::OK,
         },
         {
             mojom::IPAddressSpace::kPublic,
-            mojom::IPAddressSpace::kLoopback,
+            mojom::IPAddressSpace::kLocal,
             net::TransportType::kCachedFromProxy,
             net::OK,
         },
@@ -2387,35 +2387,35 @@ constexpr URLLoaderFakeTransportInfoTestParams
         },
         {
             mojom::IPAddressSpace::kPrivate,
-            mojom::IPAddressSpace::kLoopback,
+            mojom::IPAddressSpace::kLocal,
             net::TransportType::kCachedFromProxy,
             net::OK,
         },
         // TransportType: kCached. We only test a local target for brevity.
         {
             mojom::IPAddressSpace::kUnknown,
-            mojom::IPAddressSpace::kLoopback,
+            mojom::IPAddressSpace::kLocal,
             net::TransportType::kCached,
             net::
                 ERR_CACHED_IP_ADDRESS_SPACE_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_POLICY,
         },
         {
             mojom::IPAddressSpace::kPublic,
-            mojom::IPAddressSpace::kLoopback,
+            mojom::IPAddressSpace::kLocal,
             net::TransportType::kCached,
             net::
                 ERR_CACHED_IP_ADDRESS_SPACE_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_POLICY,
         },
         {
             mojom::IPAddressSpace::kPrivate,
-            mojom::IPAddressSpace::kLoopback,
+            mojom::IPAddressSpace::kLocal,
             net::TransportType::kCached,
             net::
                 ERR_CACHED_IP_ADDRESS_SPACE_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_POLICY,
         },
         {
-            mojom::IPAddressSpace::kLoopback,
-            mojom::IPAddressSpace::kLoopback,
+            mojom::IPAddressSpace::kLocal,
+            mojom::IPAddressSpace::kLocal,
             net::TransportType::kCached,
             net::OK,
         },
@@ -6840,7 +6840,7 @@ TEST_F(URLLoaderTest, OnRawResponseIPAddressSpace) {
 
   devtools_observer.WaitUntilRawResponse(0);
   ASSERT_EQ(devtools_observer.resource_address_space(),
-            mojom::IPAddressSpace::kLoopback);
+            mojom::IPAddressSpace::kLocal);
 }
 
 TEST_F(URLLoaderMockSocketTest,
@@ -7242,7 +7242,7 @@ TEST_F(URLLoaderTest,
             mojom::PrivateNetworkRequestPolicy::kWarn);
   EXPECT_EQ(state->is_web_secure_context, false);
   EXPECT_EQ(state->ip_address_space, mojom::IPAddressSpace::kPublic);
-  EXPECT_EQ(params.resource_address_space, mojom::IPAddressSpace::kLoopback);
+  EXPECT_EQ(params.resource_address_space, mojom::IPAddressSpace::kLocal);
   EXPECT_EQ(params.devtools_request_id, "fake-id");
   EXPECT_TRUE(params.is_warning);
   EXPECT_THAT(params.url.spec(), testing::HasSubstr("simple_page.html"));
@@ -7280,7 +7280,7 @@ TEST_F(URLLoaderTest,
             mojom::PrivateNetworkRequestPolicy::kBlock);
   EXPECT_EQ(state->is_web_secure_context, false);
   EXPECT_EQ(state->ip_address_space, mojom::IPAddressSpace::kPublic);
-  EXPECT_EQ(params.resource_address_space, mojom::IPAddressSpace::kLoopback);
+  EXPECT_EQ(params.resource_address_space, mojom::IPAddressSpace::kLocal);
   EXPECT_EQ(params.devtools_request_id, "fake-id");
   EXPECT_FALSE(params.is_warning);
   EXPECT_THAT(params.url.spec(), testing::HasSubstr("simple_page.html"));

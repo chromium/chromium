@@ -2484,7 +2484,7 @@ void DocumentLoader::CommitNavigation() {
   if (frame_->IsOutermostMainFrame()) {
     auto address_space = response_.AddressSpace();
     if ((address_space == network::mojom::blink::IPAddressSpace::kPrivate ||
-         address_space == network::mojom::blink::IPAddressSpace::kLoopback) &&
+         address_space == network::mojom::blink::IPAddressSpace::kLocal) &&
         !frame_->DomWindow()->IsSecureContext()) {
       CountUse(WebFeature::kMainFrameNonSecurePrivateAddressSpace);
     }
