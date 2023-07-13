@@ -9,6 +9,7 @@
 #include "chrome/browser/profiles/profile_selections.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/storage_partition.h"
 
 // static
 IpProtectionAuthTokenGetter* IpProtectionAuthTokenGetterFactory::GetForProfile(
@@ -57,7 +58,9 @@ IpProtectionAuthTokenGetterFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
   return std::make_unique<IpProtectionAuthTokenGetter>(
-      IdentityManagerFactory::GetForProfile(profile));
+      IdentityManagerFactory::GetForProfile(profile),
+      profile->GetDefaultStoragePartition()
+          ->GetURLLoaderFactoryForBrowserProcess());
 }
 
 bool IpProtectionAuthTokenGetterFactory::ServiceIsCreatedWithBrowserContext()

@@ -1774,6 +1774,7 @@ component("blind_sign_auth") {
     ":blind_sign_auth_test_support",
     ":quiche_tests",
     "//chrome/browser:browser",
+    "//chrome/test:*",
   ]
 
   sources = [

@@ -12,18 +12,21 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
+#include "chrome/browser/ip_protection/blind_sign_http_impl.h"
 #include "chrome/browser/ip_protection/ip_protection_auth_token_getter_factory.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
 #include "google_apis/gaia/google_service_auth_error.h"
-#include "net/third_party/quiche/src/quiche/blind_sign_auth/blind_sign_auth.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 
 class Profile;
 
 namespace quiche {
+class BlindSignAuthInterface;
 class BlindSignAuth;
+struct BlindSignToken;
 }  // namespace quiche
 
 // The result of a fetch of tokens from the IP Protection auth token server.
@@ -63,8 +66,9 @@ class IpProtectionAuthTokenGetter
       absl::optional<std::vector<network::mojom::BlindSignedAuthTokenPtr>>
           bsa_tokens)>;
 
-  explicit IpProtectionAuthTokenGetter(
-      signin::IdentityManager* identity_manager);
+  IpProtectionAuthTokenGetter(
+      signin::IdentityManager* identity_manager,
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 
   ~IpProtectionAuthTokenGetter() override;
 
@@ -109,7 +113,12 @@ class IpProtectionAuthTokenGetter
           bsa_tokens,
       IpProtectionTryGetAuthTokensResult result);
 
-  // The BlindSignAuth implementation used to fetch blind-signed auth tokens.
+  // The BlindSignAuth implementation used to fetch blind-signed auth tokens. A
+  // raw pointer to `url_loader_factory_` gets passed to
+  // `blind_sign_http_impl_`, so we ensure it stays alive by storing its
+  // scoped_refptr here.
+  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
+  std::unique_ptr<BlindSignHttpImpl> blind_sign_http_impl_;
   std::unique_ptr<quiche::BlindSignAuth> blind_sign_auth_;
 
   // For testing, BlindSignAuth is accessed via its interface. In production,

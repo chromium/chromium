@@ -2,20 +2,26 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <functional>
-#include <optional>
-
-#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ip_protection/ip_protection_auth_token_getter.h"
+#include "base/metrics/histogram_functions.h"
+#include "chrome/browser/ip_protection/blind_sign_http_impl.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/browser_thread.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/google_api_keys.h"
 #include "mojo/public/cpp/bindings/message.h"
+#include "net/third_party/quiche/src/quiche/blind_sign_auth/blind_sign_auth.h"
 
 IpProtectionAuthTokenGetter::IpProtectionAuthTokenGetter(
-    signin::IdentityManager* identity_manager)
-    : identity_manager_(identity_manager) {
+    signin::IdentityManager* identity_manager,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
+    : identity_manager_(identity_manager),
+      url_loader_factory_(url_loader_factory),
+      blind_sign_http_impl_(
+          std::make_unique<BlindSignHttpImpl>(url_loader_factory_.get())),
+      blind_sign_auth_(
+          std::make_unique<quiche::BlindSignAuth>(blind_sign_http_impl_.get())),
+      bsa_(blind_sign_auth_.get()) {
   CHECK(identity_manager);
 }
 

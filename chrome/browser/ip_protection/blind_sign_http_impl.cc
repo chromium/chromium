@@ -9,6 +9,8 @@
 #include <string>
 
 #include "base/strings/strcat.h"
+#include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "url/gurl.h"
 
@@ -47,12 +49,15 @@ constexpr net::NetworkTrafficAnnotationTag kIpProtectionTrafficAnnotation =
 
 }  // namespace
 
-int kIpProtectionRequestMaxBodySize = 1024;
-char kIpProtectionContentType[] = "application/x-protobuf";
+// The maximum size of the IpProtectionRequests - 256 KB (in practice these
+// should be much smaller than this).
+const int kIpProtectionRequestMaxBodySize = 256 * 1024;
+const char kIpProtectionContentType[] = "application/x-protobuf";
 
 BlindSignHttpImpl::BlindSignHttpImpl(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
-    : url_loader_factory_(std::move(url_loader_factory)) {
+    : url_loader_factory_(std::move(url_loader_factory)),
+      ip_protection_server_url_(BlindSignHttpImpl::kIpProtectionServerUrl) {
   CHECK(url_loader_factory_);
 }
 
@@ -64,8 +69,26 @@ void BlindSignHttpImpl::DoRequest(const std::string& path_and_query,
                                   quiche::BlindSignHttpCallback callback) {
   callback_ = std::move(callback);
 
+  std::vector<base::StringPiece> split_path_and_query = base::SplitStringPiece(
+      path_and_query, "?", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
+  // We assume there will always be a non-empty path component.
+  CHECK(split_path_and_query.size() >= 1);
+
+  GURL::Replacements replacements;
+  replacements.SetPathStr(split_path_and_query.front());
+  // Define `new_query` here so that its value stays alive for the lifetime of
+  // `replacements` (if needed).
+  std::string new_query;
+  if (split_path_and_query.size() > 1) {
+    std::vector<base::StringPiece> split_query(split_path_and_query.begin() + 1,
+                                               split_path_and_query.end());
+    new_query = base::JoinString(split_query, "?");
+    replacements.SetQueryStr(new_query);
+  }
+
   auto resource_request = std::make_unique<network::ResourceRequest>();
-  resource_request->url = GURL(path_and_query);
+  resource_request->url =
+      ip_protection_server_url_.ReplaceComponents(replacements);
   resource_request->method = net::HttpRequestHeaders::kPostMethod;
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
   resource_request->headers.SetHeader(
