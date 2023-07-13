@@ -5,6 +5,7 @@ Revision: 8f360fc6f016af373276f858796a5e9f73498af9
 License: Apache 2.0
 License File: LICENSE
 Security Critical: yes
+Shipped: yes
 
 Description:
 Light-weight API for building UIViewController transitions.
