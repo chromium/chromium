@@ -9,6 +9,7 @@
 #include "base/time/time.h"
 #include "media/audio/audio_device_description.h"
 #include "media/audio/cras/audio_manager_cras_base.h"
+#include "media/base/media_switches.h"
 
 namespace media {
 
@@ -202,6 +203,13 @@ bool CrasUtil::CacheEffects() {
     LOG(ERROR) << "Fail to query NS supported";
     ns_supported_ = false;
   }
+  if (base::FeatureList::IsEnabled(media::kCrOSSystemVoiceIsolationOption)) {
+    if (libcras_client_get_voice_isolation_supported(
+            client, &voice_isolation_supported_) < 0) {
+      LOG(ERROR) << "Fail to query VoiceIsolation supported";
+      voice_isolation_supported_ = false;
+    }
+  }
   if (libcras_client_get_aec_group_id(client, &aec_group_id_) < 0) {
     LOG(ERROR) << "Fail to query AEC group ID";
     aec_group_id_ = -1;  // The default group ID is -1
@@ -285,6 +293,13 @@ int CrasUtil::CrasGetNsSupported() {
     cras_effects_cached_ = CacheEffects();
   }
   return ns_supported_;
+}
+
+int CrasUtil::CrasGetVoiceIsolationSupported() {
+  if (!cras_effects_cached_) {
+    cras_effects_cached_ = CacheEffects();
+  }
+  return voice_isolation_supported_;
 }
 
 int CrasUtil::CrasGetAecGroupId() {
