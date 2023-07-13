@@ -38,13 +38,6 @@ BASE_FEATURE(kForceInitialSyncWhenDecryptionFails,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-// Enables finding a confirmation password field during saving by inspecting the
-// values of the fields. Used as a kill switch.
-// TODO(crbug.com/1164861): Remove once confirmed to be safe (around M92 or so).
-BASE_FEATURE(kInferConfirmationPasswordField,
-             "InferConfirmationPasswordField",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 #if BUILDFLAG(IS_IOS)
 // Removes the list of passwords from the Settings UI and adds a separate
 // Password Manager view.

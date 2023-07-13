@@ -10,13 +10,11 @@
 #include <string>
 #include <utility>
 
-#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "build/build_config.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
@@ -1259,8 +1257,6 @@ TEST_F(FormParserTest, ServerPredictionsForClearTextPasswordFields) {
 }
 
 TEST_F(FormParserTest, InferConfirmationPasswordField) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kInferConfirmationPasswordField);
   CheckTestData({
       {
           .description_for_logging = "Infer confirmation password during "

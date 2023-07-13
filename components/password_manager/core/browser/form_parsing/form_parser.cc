@@ -1147,9 +1147,7 @@ std::unique_ptr<PasswordForm> FormDataParser::Parse(const FormData& form_data,
     // field's value to find a confirmation password field, and thus won't find
     // it now if we didn't find it already.
     if (mode == Mode::kSaving &&
-        significant_fields.MissesConfirmationPassword() &&
-        base::FeatureList::IsEnabled(
-            features::kInferConfirmationPasswordField)) {
+        significant_fields.MissesConfirmationPassword()) {
       significant_fields.confirmation_password = FindConfirmationPasswordField(
           processed_fields, *significant_fields.new_password);
     }
