@@ -46,9 +46,9 @@ class SystemTrayClientImplTest : public BrowserWithTestWindowTest {
         settings_window_manager_.get());
   }
   void TearDown() override {
+    chrome::SettingsWindowManager::SetInstanceForTesting(nullptr);
     settings_window_manager_.reset();
     client_impl_.reset();
-    chrome::SettingsWindowManager::SetInstanceForTesting(nullptr);
     BrowserWithTestWindowTest::TearDown();
   }
 
@@ -56,13 +56,12 @@ class SystemTrayClientImplTest : public BrowserWithTestWindowTest {
   std::unique_ptr<SystemTrayClientImpl> client_impl_;
   std::unique_ptr<TestSettingsWindowManager> settings_window_manager_;
 };
+
 TEST_F(SystemTrayClientImplTest, ShowAccountSettings) {
   client_impl_->ShowAccountSettings();
   EXPECT_EQ(
       settings_window_manager_->last_url(),
       chrome::GetOSSettingsUrl(chromeos::settings::mojom::kPeopleSectionPath));
-
-  chrome::SettingsWindowManager::SetInstanceForTesting(nullptr);
 }
 
 TEST_F(SystemTrayClientImplTest, ShowTouchpadSettings) {
@@ -72,7 +71,6 @@ TEST_F(SystemTrayClientImplTest, ShowTouchpadSettings) {
             chrome::GetOSSettingsUrl(
                 chromeos::settings::mojom::kPerDeviceTouchpadSubpagePath));
   EXPECT_EQ(1, user_action_tester.GetActionCount(kShowTouchpadSettingsPage));
-  chrome::SettingsWindowManager::SetInstanceForTesting(nullptr);
 }
 
 TEST_F(SystemTrayClientImplTest, ShowRemapKeysSettings) {
@@ -86,7 +84,6 @@ TEST_F(SystemTrayClientImplTest, ShowRemapKeysSettings) {
                           "?keyboardId=1"}));
   EXPECT_EQ(1,
             user_action_tester.GetActionCount(kShowRemapKeysSettingsSubpage));
-  chrome::SettingsWindowManager::SetInstanceForTesting(nullptr);
 }
 
 }  // namespace
