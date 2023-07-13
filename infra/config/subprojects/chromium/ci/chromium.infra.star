@@ -113,6 +113,7 @@ packager_builder(
                 "tools/android/avd/proto/creation/generic_playstore_android24.textpb",
                 "tools/android/avd/proto/creation/generic_android25.textpb",
                 "tools/android/avd/proto/creation/generic_playstore_android25.textpb",
+                "tools/android/avd/proto/creation/generic_android26.textpb",
                 "tools/android/avd/proto/creation/generic_android27.textpb",
                 "tools/android/avd/proto/creation/generic_playstore_android27.textpb",
                 "tools/android/avd/proto/creation/generic_android28.textpb",
