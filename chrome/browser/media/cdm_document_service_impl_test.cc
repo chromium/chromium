@@ -21,6 +21,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_browser_process.h"
+#include "chrome/test/base/testing_profile_manager.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/user_prefs/user_prefs.h"
@@ -70,6 +71,10 @@ class CdmDocumentServiceImplTest : public ChromeRenderViewHostTestHarness {
       GTEST_SKIP() << "skipping all test for this fixture when not running on "
                       "Windows 10.";
     }
+
+    // Set up a testing profile manager.
+    profile_manager_ = std::make_unique<TestingProfileManager>(
+        TestingBrowserProcess::GetGlobal());
   }
 
   void NavigateToUrlAndCreateCdmDocumentService(GURL url) {
@@ -126,6 +131,7 @@ class CdmDocumentServiceImplTest : public ChromeRenderViewHostTestHarness {
 
  protected:
   mojo::Remote<media::mojom::CdmDocumentService> cdm_document_service_;
+  std::unique_ptr<TestingProfileManager> profile_manager_;
 };
 
 // Verify that we get a non null origin id.

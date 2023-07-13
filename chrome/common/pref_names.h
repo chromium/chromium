@@ -2919,8 +2919,10 @@ inline constexpr char kMacRestoreLocationPermissionsExperimentCount[] =
 // A list of base::Time value indicating the timestamps when hardware secure
 // decryption was disabled due to errors or crashes. The implementation
 // maintains a max size of the list (e.g. 2).
-inline constexpr char kHardwareSecureDecryptionDisabledTimes[] =
+inline constexpr char kGlobalHardwareSecureDecryptionDisabledTimes[] =
     "media.hardware_secure_decryption.disabled_times";
+inline constexpr char kHardwareSecureDecryptionDisabledTimes[] =
+    "hardware_secure_decryption.disabled_times";
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS)

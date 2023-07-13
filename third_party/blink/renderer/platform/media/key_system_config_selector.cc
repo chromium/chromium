@@ -1124,19 +1124,24 @@ void KeySystemConfigSelector::SelectConfigInternal(
         cdm_config.use_hw_secure_codecs =
             config_state.AreHwSecureCodecsRequired();
 #if BUILDFLAG(IS_WIN)
+        // Check whether hardware secure decryption CDM should be disabled.
         if (cdm_config.use_hw_secure_codecs &&
-            !request->was_hardware_secure_decryption_preferences_requested) {
-          media_permission_->IsHardwareSecureDecryptionAllowed(base::BindOnce(
-              &KeySystemConfigSelector::OnHardwareSecureDecryptionAllowedResult,
-              weak_factory_.GetWeakPtr(), std::move(request)));
-          return;
-        }
+            base::FeatureList::IsEnabled(
+                media::kHardwareSecureDecryptionFallback) &&
+            media::kHardwareSecureDecryptionFallbackPerSite.Get()) {
+          if (!request->was_hardware_secure_decryption_preferences_requested) {
+            media_permission_->IsHardwareSecureDecryptionAllowed(
+                base::BindOnce(&KeySystemConfigSelector::
+                                   OnHardwareSecureDecryptionAllowedResult,
+                               weak_factory_.GetWeakPtr(), std::move(request)));
+            return;
+          }
 
-        if (cdm_config.use_hw_secure_codecs &&
-            !config_state.IsHardwareSecureDecryptionAllowed()) {
-          DVLOG(2) << "Rejecting requested configuration because "
-                   << "Hardware secure decryption is not allowed.";
-          continue;
+          if (!config_state.IsHardwareSecureDecryptionAllowed()) {
+            DVLOG(2) << "Rejecting requested configuration because "
+                     << "Hardware secure decryption is not allowed.";
+            continue;
+          }
         }
 #endif  // BUILDFLAG(IS_WIN)
 

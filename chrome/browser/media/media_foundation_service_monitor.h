@@ -5,11 +5,14 @@
 #ifndef CHROME_BROWSER_MEDIA_MEDIA_FOUNDATION_SERVICE_MONITOR_H_
 #define CHROME_BROWSER_MEDIA_MEDIA_FOUNDATION_SERVICE_MONITOR_H_
 
+#include <map>
+
 #include "base/power_monitor/moving_average.h"
 #include "base/power_monitor/power_observer.h"
 #include "base/time/time.h"
 #include "content/public/browser/service_process_host.h"
 #include "ui/display/display_observer.h"
+#include "url/gurl.h"
 
 class PrefRegistrySimple;
 
@@ -56,23 +59,34 @@ class MediaFoundationServiceMonitor final
 
   // Called when a significant playback or error happened when using
   // MediaFoundationCdm.
-  void OnSignificantPlayback();
-  void OnPlaybackOrCdmError(HRESULT hr);
-  void OnUnexpectedHardwareContextReset();
+  void OnSignificantPlayback(const GURL& site);
+  void OnPlaybackOrCdmError(const GURL& site, HRESULT hr);
+  void OnUnexpectedHardwareContextReset(const GURL& site);
 
   // Whether there was any recent power or display change.
   bool HasRecentPowerOrDisplayChange() const;
+
+  // Resets the singleton for testing.
+  void ResetForTesting();
 
  private:
   // Make constructor/destructor private since this is a singleton.
   MediaFoundationServiceMonitor();
   ~MediaFoundationServiceMonitor() final;
 
+  // Initializes the state of MediaFoundationServiceMonitor.
+  void Initialize();
+
   void OnPowerOrDisplayChange();
 
   // Adds a sample with failure score. Zero means success. The higher the value
   // the more severe the error is. See the .cc file for details.
-  void AddSample(int failure_score);
+  void AddSample(const GURL& site, int failure_score, base::Time time);
+
+  // Adds a sample to global samples with failure score. Zero means success. The
+  // higher the value the more severe the error is. See the .cc file for
+  // details.
+  void AddGlobalSample(int failure_score, base::Time time);
 
   // Last time when a power or display event happened. This is used to ignore
   // playback or CDM errors caused by those events. For example, playback
@@ -80,9 +94,15 @@ class MediaFoundationServiceMonitor final
   // requires HDCP enforcement.
   base::TimeTicks last_power_or_display_change_time_;
 
-  // Keep track the last fixed length reported samples (scores). The average
-  // score is used to decide whether to disable hardware secure decryption.
-  base::MovingAverage samples_;
+  // Keep track the last fixed length reported samples (scores) per site. The
+  // average score is used to decide whether to disable hardware secure
+  // decryption for a particular site.
+  std::map<GURL, base::MovingAverage> samples_;
+
+  // Keep track the last fixed length reported samples (scores) globally. The
+  // average score is used to decide whether to disable hardware secure
+  // decryption globally.
+  base::MovingAverage global_samples_;
 };
 
 #endif  // CHROME_BROWSER_MEDIA_MEDIA_FOUNDATION_SERVICE_MONITOR_H_

@@ -5,23 +5,35 @@
 #include "chrome/browser/media/media_foundation_service_monitor.h"
 
 #include <algorithm>
+#include <memory>
+#include <set>
 #include <vector>
 
 #include "base/feature_list.h"
 #include "base/json/values_util.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/power_monitor/moving_average.h"
 #include "base/power_monitor/power_monitor.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/media/cdm_pref_service_helper.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/prefs/scoped_user_pref_update.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/cdm_registry.h"
 #include "media/base/media_switches.h"
 #include "media/mojo/mojom/media_foundation_service.mojom.h"
+#include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "ui/display/screen.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 
 namespace {
 
@@ -46,13 +58,13 @@ constexpr int kUnexpectedHardwareContextReset = 1;
 constexpr int kMaxNumberOfDisabledTimesInPref = 3;
 
 // Gets the list of disabled times from "Local State".
-std::vector<base::Time> GetDisabledTimesPref() {
+std::vector<base::Time> GetDisabledTimesGlobal() {
   PrefService* service = g_browser_process->local_state();
   DCHECK(service);
 
   std::vector<base::Time> times;
   for (const base::Value& time_value :
-       service->GetList(prefs::kHardwareSecureDecryptionDisabledTimes)) {
+       service->GetList(prefs::kGlobalHardwareSecureDecryptionDisabledTimes)) {
     auto time = base::ValueToTime(time_value);
     if (time.has_value())
       times.push_back(time.value());
@@ -62,7 +74,7 @@ std::vector<base::Time> GetDisabledTimesPref() {
 }
 
 // Sets the list of disabled times in "Local State".
-void SetDisabledTimesPref(std::vector<base::Time> times) {
+void SetDisabledTimesGlobal(std::vector<base::Time> times) {
   PrefService* service = g_browser_process->local_state();
   DCHECK(service);
 
@@ -70,19 +82,116 @@ void SetDisabledTimesPref(std::vector<base::Time> times) {
   for (auto time : times)
     time_list.Append(base::TimeToValue(time));
 
-  service->SetList(prefs::kHardwareSecureDecryptionDisabledTimes,
+  service->SetList(prefs::kGlobalHardwareSecureDecryptionDisabledTimes,
                    std::move(time_list));
 }
 
-// Adds a new time to the list of disabled times in "Local State".
-void AddDisabledTimeToPref(base::Time time) {
-  std::vector<base::Time> disabled_times = GetDisabledTimesPref();
+// Gets a dictionary key from site. This is used to map origins to sites. E.g.
+// subdomain.domain.com becomes domain.com.
+std::string GetDictKeyFromSite(const GURL& site) {
+  return net::registry_controlled_domains::GetDomainAndRegistry(
+      site, net::registry_controlled_domains::PrivateRegistryFilter::
+                EXCLUDE_PRIVATE_REGISTRIES);
+}
+
+// Returns all origins that map to a site from a dictionary.
+std::vector<std::string> GetOriginsForSite(const base::Value::Dict& origin_dict,
+                                           const GURL& site) {
+  std::vector<std::string> result;
+  for (auto [origin_str, value] : origin_dict) {
+    auto origin_url = GURL(origin_str);
+    if (GetDictKeyFromSite(origin_url) == GetDictKeyFromSite(site)) {
+      result.push_back(origin_str);
+    }
+  }
+  return result;
+}
+
+// Gets the list of disabled times from "Pref Service".
+// If there are no disabled times for site, Use "Local State" to check
+// disabled times. CDM pref service helper will create origin id mapping and
+// will initialize "Pref Service" entry.
+std::vector<base::Time> GetDisabledTimesPerSite(const GURL& site) {
+  Profile* profile = ProfileManager::GetLastUsedProfile();
+  CHECK(profile);
+  PrefService* user_prefs = profile->GetPrefs();
+  CHECK(user_prefs);
+
+  auto& origin_dict = user_prefs->GetDict(prefs::kMediaCdmOriginData);
+  auto origins = GetOriginsForSite(origin_dict, site);
+
+  // On first visit, use "Local State" disabled times.
+  // `origins` will get populated with local state if playback is successful
+  // eventually when we initialize te pref entry.
+  if (origins.empty()) {
+    return GetDisabledTimesGlobal();
+  }
+
+  std::set<base::Time> times;
+  for (auto origin : origins) {
+    const base::Value::List* list = origin_dict.FindDict(origin)->FindList(
+        prefs::kHardwareSecureDecryptionDisabledTimes);
+    if (list) {
+      for (const base::Value& time_value : *list) {
+        auto time = base::ValueToTime(time_value);
+        if (time.has_value()) {
+          times.insert(time.value());
+        }
+      }
+    }
+  }
+
+  return {times.begin(), times.end()};
+}
+
+// Sets the list of disabled times in "Pref Service" for a site.
+void SetDisabledTimesPerSite(const GURL& site, std::vector<base::Time> times) {
+  Profile* profile = ProfileManager::GetLastUsedProfile();
+  CHECK(profile);
+  PrefService* user_prefs = profile->GetPrefs();
+  CHECK(user_prefs);
+
+  ScopedDictPrefUpdate update(user_prefs, prefs::kMediaCdmOriginData);
+
+  // Find all origins that maps to site.
+  auto origins = GetOriginsForSite(update.Get(), site);
+
+  for (auto origin : origins) {
+    base::Value::Dict* origin_dict = update->FindDict(origin);
+    if (!origin_dict) {
+      continue;
+    }
+
+    auto* list = update->FindDict(origin)->EnsureList(
+        prefs::kHardwareSecureDecryptionDisabledTimes);
+    list->clear();
+    for (auto time : times) {
+      list->Append(base::TimeToValue(time));
+    }
+  }
+}
+
+// Sorts the times in descending order so the resize will drop the oldest time.
+std::vector<base::Time> CappedTimes(std::vector<base::Time> times) {
+  std::sort(times.begin(), times.end(), std::greater<>());
+  if (times.size() > kMaxNumberOfDisabledTimesInPref) {
+    times.resize(kMaxNumberOfDisabledTimesInPref);
+  }
+  return times;
+}
+
+// Adds a new time to the list of disabled times "Local State".
+void AddDisabledTimeGlobal(base::Time time) {
+  std::vector<base::Time> disabled_times = GetDisabledTimesGlobal();
   disabled_times.push_back(time);
-  // Sort the times in descending order so the resize will drop the oldest time.
-  std::sort(disabled_times.begin(), disabled_times.end(), std::greater<>());
-  if (disabled_times.size() > kMaxNumberOfDisabledTimesInPref)
-    disabled_times.resize(kMaxNumberOfDisabledTimesInPref);
-  SetDisabledTimesPref(disabled_times);
+  SetDisabledTimesGlobal(CappedTimes(disabled_times));
+}
+
+// Adds a new time to the list of disabled times in "Pref Service".
+void AddDisabledTimePerSite(const GURL& site, base::Time time) {
+  std::vector<base::Time> disabled_times = GetDisabledTimesPerSite(site);
+  disabled_times.push_back(time);
+  SetDisabledTimesPerSite(site, CappedTimes(disabled_times));
 }
 
 }  // namespace
@@ -90,18 +199,20 @@ void AddDisabledTimeToPref(base::Time time) {
 // static
 void MediaFoundationServiceMonitor::RegisterPrefs(
     PrefRegistrySimple* registry) {
-  registry->RegisterListPref(prefs::kHardwareSecureDecryptionDisabledTimes);
+  registry->RegisterListPref(
+      prefs::kGlobalHardwareSecureDecryptionDisabledTimes);
 }
 
 // static
 base::Time MediaFoundationServiceMonitor::GetEarliestEnableTime(
     std::vector<base::Time> disabled_times) {
   // No disabled time. No need to disable the feature.
-  if (disabled_times.empty())
+  if (disabled_times.empty()) {
     return base::Time::Min();
+  }
 
   // The disabled times should be sorted already. But since they are from the
-  // local state, sort it again just in case.
+  // local state or user profile, sort it again just in case.
   std::sort(disabled_times.begin(), disabled_times.end(), std::greater<>());
 
   base::Time last_disabled_time = disabled_times[0];
@@ -157,18 +268,23 @@ bool MediaFoundationServiceMonitor::IsHardwareSecureDecryptionDisabledByPref() {
   DVLOG(1) << __func__;
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  auto earliest_enable_time = GetEarliestEnableTime(GetDisabledTimesPref());
+  auto earliest_enable_time = GetEarliestEnableTime(GetDisabledTimesGlobal());
   DVLOG(1) << __func__ << ": earliest_enable_time=" << earliest_enable_time;
 
   return base::Time::Now() < earliest_enable_time;
 }
 
 // static
-// TODO(crbug.com/1443038): Implement per site disabling.
 bool MediaFoundationServiceMonitor::IsHardwareSecureDecryptionAllowedForSite(
     const GURL& site) {
-  DVLOG(1) << __func__ << ": site='" << site << "'";
-  return true;
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  auto earliest_enable_time =
+      GetEarliestEnableTime(GetDisabledTimesPerSite(site));
+  DVLOG(1) << __func__ << ": site='" << site
+           << "' earliest_enable_time=" << earliest_enable_time;
+
+  return base::Time::Now() > earliest_enable_time;
 }
 
 // static
@@ -177,19 +293,31 @@ MediaFoundationServiceMonitor* MediaFoundationServiceMonitor::GetInstance() {
   return monitor;
 }
 
-MediaFoundationServiceMonitor::MediaFoundationServiceMonitor()
-    : samples_(kMaxNumberOfSamples) {
+void MediaFoundationServiceMonitor::Initialize() {
   DVLOG(1) << __func__;
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
   // Initialize samples with success cases so the average score won't be
   // dominated by one error. No need to report UMA here.
   for (int i = 0; i < kMaxNumberOfSamples; ++i)
-    AddSample(kSignificantPlayback);
+    AddGlobalSample(kSignificantPlayback, base::Time::Now());
 
   content::ServiceProcessHost::AddObserver(this);
   base::PowerMonitor::AddPowerSuspendObserver(this);
   display::Screen::GetScreen()->AddObserver(this);
+}
+
+void MediaFoundationServiceMonitor::ResetForTesting() {
+  DVLOG(1) << __func__;
+  global_samples_.Reset();
+  samples_.clear();
+  last_power_or_display_change_time_ = base::TimeTicks::Min();
+}
+
+MediaFoundationServiceMonitor::MediaFoundationServiceMonitor()
+    : global_samples_(kMaxNumberOfSamples) {
+  DVLOG(1) << __func__;
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  Initialize();
 }
 
 MediaFoundationServiceMonitor::~MediaFoundationServiceMonitor() = default;
@@ -213,7 +341,7 @@ void MediaFoundationServiceMonitor::OnServiceProcessCrashed(
            << info.site().value() << ") crashed!";
 
   // Not checking `last_power_or_display_change_time_`; crashes are always bad.
-  AddSample(kCrash);
+  AddSample(info.site().value(), kCrash, base::Time::Now());
 }
 
 void MediaFoundationServiceMonitor::OnSuspend() {
@@ -237,15 +365,16 @@ void MediaFoundationServiceMonitor::OnDisplayMetricsChanged(
   OnPowerOrDisplayChange();
 }
 
-void MediaFoundationServiceMonitor::OnSignificantPlayback() {
-  DVLOG(1) << __func__;
+void MediaFoundationServiceMonitor::OnSignificantPlayback(const GURL& site) {
+  DVLOG(1) << __func__ << ": site=" << site;
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  AddSample(kSignificantPlayback);
+  AddSample(site, kSignificantPlayback, base::Time::Now());
 }
 
-void MediaFoundationServiceMonitor::OnPlaybackOrCdmError(HRESULT hr) {
-  DVLOG(1) << __func__;
+void MediaFoundationServiceMonitor::OnPlaybackOrCdmError(const GURL& site,
+                                                         HRESULT hr) {
+  DVLOG(1) << __func__ << ": site=" << site;
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   if (HasRecentPowerOrDisplayChange()) {
@@ -259,15 +388,16 @@ void MediaFoundationServiceMonitor::OnPlaybackOrCdmError(HRESULT hr) {
   base::UmaHistogramSparse(
       "Media.EME.MediaFoundationService.ErrorNotAfterPowerOrDisplayChange2",
       hr);
-  AddSample(kPlaybackOrCdmError);
+  AddSample(site, kPlaybackOrCdmError, base::Time::Now());
 }
 
-void MediaFoundationServiceMonitor::OnUnexpectedHardwareContextReset() {
+void MediaFoundationServiceMonitor::OnUnexpectedHardwareContextReset(
+    const GURL& site) {
   DVLOG(1) << __func__;
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   if (media::kHardwareSecureDecryptionFallbackOnHardwareContextReset.Get()) {
-    AddSample(kUnexpectedHardwareContextReset);
+    AddSample(site, kUnexpectedHardwareContextReset, base::Time::Now());
   }
 }
 
@@ -283,16 +413,44 @@ void MediaFoundationServiceMonitor::OnPowerOrDisplayChange() {
   last_power_or_display_change_time_ = base::TimeTicks::Now();
 }
 
-void MediaFoundationServiceMonitor::AddSample(int failure_score) {
-  samples_.AddSample(failure_score);
+void MediaFoundationServiceMonitor::AddSample(const GURL& site,
+                                              int failure_score,
+                                              base::Time time) {
+  AddGlobalSample(failure_score, time);
+
+  // Ensure map of samples for `site` is constructed.
+  auto [iterator, added] = samples_.try_emplace(site, kMaxNumberOfSamples);
+  auto& moving_average = iterator->second;
+  if (added) {
+    // Initialize samples with success cases so the average score won't be
+    // dominated by one error. No need to report UMA here.
+    for (int i = 0; i < kMaxNumberOfSamples; ++i) {
+      moving_average.AddSample(kSignificantPlayback);
+    }
+  }
+  moving_average.AddSample(failure_score);
+
+  // When the max average failure score is reached, update the Pref with
+  // the new disabled time.
+  if (moving_average.GetUnroundedAverage() >= kMaxAverageFailureScore) {
+    AddDisabledTimePerSite(site, time);
+  }
+}
+
+void MediaFoundationServiceMonitor::AddGlobalSample(int failure_score,
+                                                    base::Time time) {
+  global_samples_.AddSample(failure_score);
 
   // When the max average failure score is reached, always update the local
   // state with the new disabled time, but only actually disable hardware secure
-  // decryption when fallback is allowed (by the feature).
-  if (samples_.GetUnroundedAverage() >= kMaxAverageFailureScore) {
-    AddDisabledTimeToPref(base::Time::Now());
-    if (base::FeatureList::IsEnabled(media::kHardwareSecureDecryptionFallback))
+  // decryption globally when fallback is allowed (by the feature).
+  if (global_samples_.GetUnroundedAverage() >= kMaxAverageFailureScore) {
+    AddDisabledTimeGlobal(time);
+    if (base::FeatureList::IsEnabled(
+            media::kHardwareSecureDecryptionFallback) &&
+        !media::kHardwareSecureDecryptionFallbackPerSite.Get()) {
       content::CdmRegistry::GetInstance()->SetHardwareSecureCdmStatus(
           content::CdmInfo::Status::kDisabledOnError);
+    }
   }
 }

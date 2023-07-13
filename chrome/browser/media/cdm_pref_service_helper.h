@@ -23,12 +23,17 @@ class CdmPrefData {
   CdmPrefData(const base::UnguessableToken& origin_id,
               base::Time origin_id_time);
 
+  CdmPrefData(const base::UnguessableToken& origin_id,
+              base::Time origin_id_time,
+              std::vector<base::Time> hw_secure_decryption_disable_times);
+
   ~CdmPrefData();
 
   const base::UnguessableToken& origin_id() const;
   base::Time origin_id_creation_time() const;
   const absl::optional<std::vector<uint8_t>> client_token() const;
   base::Time client_token_creation_time() const;
+  std::vector<base::Time> hw_secure_decryption_disable_times() const;
 
   void SetClientToken(const std::vector<uint8_t>& client_token,
                       const base::Time creation_time);
@@ -36,6 +41,7 @@ class CdmPrefData {
  private:
   base::UnguessableToken origin_id_;
   base::Time origin_id_creation_time_;
+  std::vector<base::Time> hw_secure_decryption_disable_times_;
 
   absl::optional<std::vector<uint8_t>> client_token_;
   base::Time client_token_creation_time_;

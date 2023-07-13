@@ -399,16 +399,17 @@ void CdmDocumentServiceImpl::OnCdmEvent(media::CdmEvent event,
     return;
   }
 
+  auto site = render_frame_host().GetSiteInstance()->GetSiteURL();
   switch (event) {
     case media::CdmEvent::kSignificantPlayback:
-      monitor->OnSignificantPlayback();
+      monitor->OnSignificantPlayback(site);
       break;
     case media::CdmEvent::kPlaybackError:
     case media::CdmEvent::kCdmError:
-      monitor->OnPlaybackOrCdmError(static_cast<HRESULT>(hresult));
+      monitor->OnPlaybackOrCdmError(site, static_cast<HRESULT>(hresult));
       break;
     case media::CdmEvent::kHardwareContextReset:
-      monitor->OnUnexpectedHardwareContextReset();
+      monitor->OnUnexpectedHardwareContextReset(site);
       break;
   }
 }
