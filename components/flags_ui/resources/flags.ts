@@ -123,8 +123,6 @@ function render(experimentalFeaturesData: ExperimentalFeaturesData) {
   // </if>
 
   highlightReferencedFlag();
-  const search = FlagSearch.getInstance();
-  search.init();
 }
 
 /**
@@ -276,6 +274,9 @@ function returnExperimentalFeatures(
       !experimentalFeaturesData.showDevChannelPromotion;
 
   bodyContainer.style.visibility = 'visible';
+
+  FlagSearch.getInstance().init();
+
   const ownerWarningDiv = $('owner-warning');
   if (ownerWarningDiv) {
     ownerWarningDiv.hidden = !experimentalFeaturesData.showOwnerWarning;
