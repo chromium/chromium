@@ -99,7 +99,7 @@ std::unique_ptr<sync_preferences::PrefServiceSyncable> CreatePrefService(
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   supervised_user_settings =
       SupervisedUserSettingsServiceFactory::GetForKey(key);
-  supervised_user_settings->Init(path, io_task_runner.get(), !async_prefs);
+  supervised_user_settings->Init(path, io_task_runner, !async_prefs);
 #endif
   {
     return chrome_prefs::CreateProfilePrefs(

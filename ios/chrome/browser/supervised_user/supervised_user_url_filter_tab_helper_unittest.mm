@@ -97,7 +97,7 @@ class SupervisedUserURLFilterTabHelperTest : public PlatformTest {
     SupervisedUserSettingsServiceFactory::GetForBrowserState(
         chrome_browser_state_.get())
         ->Init(chrome_browser_state_->GetStatePath(),
-               chrome_browser_state_->GetIOTaskRunner().get(),
+               chrome_browser_state_->GetIOTaskRunner(),
                /*load_synchronously=*/true);
     ChildAccountServiceFactory::GetForBrowserState(chrome_browser_state_.get())
         ->Init();

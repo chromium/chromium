@@ -96,12 +96,12 @@ SupervisedUserSettingsService::~SupervisedUserSettingsService() {}
 
 void SupervisedUserSettingsService::Init(
     base::FilePath profile_path,
-    base::SequencedTaskRunner* sequenced_task_runner,
+    scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner,
     bool load_synchronously) {
   base::FilePath path =
       profile_path.Append(supervised_user::kSupervisedUserSettingsFilename);
   PersistentPrefStore* store = new JsonPrefStore(
-      path, std::unique_ptr<PrefFilter>(), sequenced_task_runner);
+      path, std::unique_ptr<PrefFilter>(), std::move(sequenced_task_runner));
   Init(store);
   if (load_synchronously) {
     store_->ReadPrefs();

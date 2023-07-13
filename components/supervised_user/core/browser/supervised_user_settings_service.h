@@ -94,7 +94,7 @@ class SupervisedUserSettingsService : public KeyedService,
   // |sequenced_task_runner|. If |load_synchronously| is true, the settings will
   // be loaded synchronously, otherwise asynchronously.
   void Init(base::FilePath profile_path,
-            base::SequencedTaskRunner* sequenced_task_runner,
+            scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner,
             bool load_synchronously);
 
   // Initializes the service by loading its settings from the |pref_store|.
