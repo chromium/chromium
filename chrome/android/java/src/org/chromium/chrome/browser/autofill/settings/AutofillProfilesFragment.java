@@ -172,7 +172,7 @@ public class AutofillProfilesFragment extends PreferenceFragmentCompat
         });
         getPreferenceScreen().addPreference(autofillSwitch);
 
-        for (AutofillProfile profile : PersonalDataManager.getInstance().getAutofillProfilesForSettings()) {
+        for (AutofillProfile profile : PersonalDataManager.getInstance().getProfilesForSettings()) {
             assert profile.getIsLocal();
             // Add a preference for the profile.
             Preference pref = new AutofillProfileEditorPreference(getStyledContext());

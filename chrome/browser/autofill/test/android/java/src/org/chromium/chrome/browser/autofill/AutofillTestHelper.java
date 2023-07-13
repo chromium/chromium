@@ -51,7 +51,7 @@ public class AutofillTestHelper {
 
     List<AutofillProfile> getProfilesForSettings() {
         return runOnUiThreadBlockingNoException(
-                () -> PersonalDataManager.getInstance().getAutofillProfilesForSettings());
+                () -> PersonalDataManager.getInstance().getProfilesForSettings());
     }
 
     int getNumberOfProfilesToSuggest() {

@@ -29,7 +29,6 @@ import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
-import java.util.stream.Collectors;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
@@ -442,19 +441,12 @@ public class PersonalDataManager {
      *
      * @return The list of profiles to show in the settings.
      */
-    public List<AutofillProfile> getAutofillProfilesForSettings() {
+    public List<AutofillProfile> getProfilesForSettings() {
         ThreadUtils.assertOnUiThread();
         return getProfilesWithLabels(PersonalDataManagerJni.get().getProfileLabelsForSettings(
                                              mPersonalDataManagerAndroid, PersonalDataManager.this),
                 PersonalDataManagerJni.get().getProfileGUIDsForSettings(
                         mPersonalDataManagerAndroid, PersonalDataManager.this));
-    }
-
-    public List<AutofillProfile> getProfilesForSettings() {
-        return getAutofillProfilesForSettings()
-                .stream()
-                .map(profile -> (AutofillProfile) profile)
-                .collect(Collectors.toList());
     }
 
     /**
