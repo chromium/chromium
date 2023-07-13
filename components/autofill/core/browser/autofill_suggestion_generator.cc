@@ -24,6 +24,7 @@
 #include "components/autofill/core/browser/field_filler.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
+#include "components/autofill/core/browser/metrics/log_event.h"
 #include "components/autofill/core/browser/metrics/payments/card_metadata_metrics.h"
 #include "components/autofill/core/browser/payments/autofill_offer_manager.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
@@ -110,15 +111,14 @@ std::vector<Suggestion> AutofillSuggestionGenerator::GetSuggestionsForProfiles(
     const FormStructure& form,
     const FormFieldData& field,
     AutofillType field_type,
-    AutofillSuggestionTriggerSource trigger_source,
+    base::span<SkipStatus> skip_statuses,
     const std::string& app_locale) {
   std::vector<ServerFieldType> field_types;
   field_types.reserve(form.field_count());
-  for (const std::unique_ptr<AutofillField>& form_field : form) {
-    if (!form_field->ShouldSuppressSuggestionsAndFillingByDefault() ||
-        trigger_source == AutofillSuggestionTriggerSource::
-                              kManualFallbackForAutocompleteUnrecognized) {
-      field_types.push_back(form_field->Type().GetStorableType());
+  CHECK_EQ(skip_statuses.size(), form.field_count());
+  for (size_t i = 0; i < form.field_count(); ++i) {
+    if (skip_statuses[i] == SkipStatus::kNotSkipped) {
+      field_types.push_back(form.field(i)->Type().GetStorableType());
     }
   }
 

@@ -2743,13 +2743,23 @@ bool BrowserAutofillManager::FormHasAddressField(const FormData& form) {
 }
 
 std::vector<Suggestion> BrowserAutofillManager::GetProfileSuggestions(
-    const FormStructure& form,
+    const FormData& form,
+    const FormStructure& form_structure,
     const FormFieldData& field,
-    AutofillType field_type,
+    const AutofillField& autofill_field,
     AutofillSuggestionTriggerSource trigger_source) const {
   address_form_event_logger_->OnDidPollSuggestions(field, sync_state_);
+  AutofillProfile fake_profile;
+  std::vector<SkipStatus> skip_statuses = GetSkipStatuses(
+      form, form_structure, field, autofill_field.section,
+      /*optional_credit_card=*/absl::nullopt,
+      /*type_groups_originally_filled=*/{},
+      /*skip_unrecognized_autocomplete_fields=*/trigger_source !=
+          AutofillSuggestionTriggerSource::
+              kManualFallbackForAutocompleteUnrecognized,
+      /*is_refill=*/false);
   return suggestion_generator_->GetSuggestionsForProfiles(
-      form, field, field_type, trigger_source, app_locale_);
+      form_structure, field, autofill_field.Type(), skip_statuses, app_locale_);
 }
 
 std::vector<Suggestion> BrowserAutofillManager::GetCreditCardSuggestions(
@@ -3362,8 +3372,8 @@ void BrowserAutofillManager::GetAvailableSuggestions(
     // through manual fallbacks. As such, suggestion labels differ depending on
     // the `trigger_source`.
     *suggestions =
-        GetProfileSuggestions(*context->form_structure, field,
-                              context->focused_field->Type(), trigger_source);
+        GetProfileSuggestions(form, *context->form_structure, field,
+                              *context->focused_field, trigger_source);
   }
 
   // Ablation experiment:

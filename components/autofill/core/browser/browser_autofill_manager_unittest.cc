@@ -1767,30 +1767,11 @@ TEST_P(SuggestionMatchingTest,
   FormFieldData field;
   test::CreateTestFormField("Last Name", "lastname", "G", "text", &field);
   GetAutofillSuggestions(form, field);
-
-  switch (enabled_feature_) {
-    case EnabledFeature::kDesktop:
-    case EnabledFeature::kMobileShowAll:
-    case EnabledFeature::kMobileShowOne:
-      CheckSuggestions(
-          field.global_id(),
-          Suggestion("Googler", "1600 Amphitheater pkwy", kAddressEntryIcon,
-                     PopupItemId::kAddressEntry),
-          Suggestion("Grimes", "1234 Smith Blvd.", kAddressEntryIcon,
-                     PopupItemId::kAddressEntry));
-      break;
-    case EnabledFeature::kNone:
-      // Test that we sent the right values to the external delegate. No labels
-      // with duplicate values "Grimes" merged.
-      CheckSuggestions(
-          field.global_id(),
-          Suggestion("Googler", "1600 Amphitheater pkwy", kAddressEntryIcon,
-                     PopupItemId::kAddressEntry),
-          Suggestion("Grimes", "1234 Smith Blvd., Carl Grimes",
-                     kAddressEntryIcon, PopupItemId::kAddressEntry),
-          Suggestion("Grimes", "1234 Smith Blvd., Robin Grimes",
-                     kAddressEntryIcon, PopupItemId::kAddressEntry));
-  }
+  CheckSuggestions(field.global_id(),
+                   Suggestion("Googler", "1600 Amphitheater pkwy",
+                              kAddressEntryIcon, PopupItemId::kAddressEntry),
+                   Suggestion("Grimes", "1234 Smith Blvd.", kAddressEntryIcon,
+                              PopupItemId::kAddressEntry));
 }
 
 // Tests that we return address profile suggestions values when the section
