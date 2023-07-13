@@ -77,8 +77,8 @@ ui::ColorId TabStripControlButton::GetForegroundColor() {
 }
 
 void TabStripControlButton::UpdateIcon() {
-  const ui::ImageModel icon_image_model =
-      ui::ImageModel::FromVectorIcon(icon_, GetForegroundColor(), kIconSize);
+  const ui::ImageModel icon_image_model = ui::ImageModel::FromVectorIcon(
+      icon_.get(), GetForegroundColor(), kIconSize);
 
   SetImageModel(views::Button::STATE_NORMAL, icon_image_model);
   SetImageModel(views::Button::STATE_HOVERED, icon_image_model);

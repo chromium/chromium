@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TABS_TAB_STRIP_CONTROL_BUTTON_H_
 #define CHROME_BROWSER_UI_VIEWS_TABS_TAB_STRIP_CONTROL_BUTTON_H_
 
+#include "base/memory/raw_ref.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/geometry/size.h"
@@ -58,7 +59,7 @@ class TabStripControlButton : public views::LabelButton {
 
  private:
   // Icon for the label button.
-  const gfx::VectorIcon& icon_;
+  const raw_ref<const gfx::VectorIcon> icon_;
 
   // Stored ColorId values to differentiate for ChromeRefresh.
   ui::ColorId foreground_frame_active_color_id_;
