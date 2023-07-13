@@ -2006,4 +2006,6 @@ message ChromeDeviceSettingsProto {
       device_login_screen_geolocation_access_level = 147;
   optional StringPolicyProto device_login_screen_webhid_allow_devices_for_urls =
       148;
+  optional StringListPolicyProto device_authentication_url_blocklist = 149;
+  optional StringListPolicyProto device_authentication_url_allowlist = 150;
 }

@@ -82,6 +82,14 @@ const DevicePolicyToUserPolicyMapEntry kDevicePoliciesWithPolicyOptionsMap[] = {
     {key::kDeviceLoginScreenContextAwareAccessSignalsAllowlist,
      key::kUserContextAwareAccessSignalsAllowlist},
 
+    // The authentication URL blocklist and allowlist policies implement content
+    // control for authentication flows, including in the login screen and lock
+    // screen.  Since these use the SigninProfile and LockScreenProfile, content
+    // control is already possible there through the URLBlocklist/URLAllowlist
+    // user policies.
+    {key::kDeviceAuthenticationURLBlocklist, key::kURLBlocklist},
+    {key::kDeviceAuthenticationURLAllowlist, key::kURLAllowlist},
+
     // key::kDeviceLoginScreenLocales maps to the ash::kDeviceLoginScreenLocales
     // CrosSetting elsewhere. Also map it to the key::kForcedLanguages policy in
     // the login/lock screen profile so web contents within those profiles
