@@ -3440,6 +3440,7 @@ test("base_unittests") {
     ":base_stack_sampling_profiler_test_util",
     ":feature_list_buildflags",
     ":i18n",
+    ":partition_alloc_test_support",
     ":path_service_unittest",
     ":sanitizer_buildflags",
     "//base/allocator:buildflags",
@@ -4902,6 +4903,7 @@ source_set("partition_alloc_test_support") {
     "allocator/partition_allocator/extended_api.h",
     "allocator/partition_allocator/partition_alloc_base/threading/platform_thread_for_testing.h",
     "allocator/partition_allocator/partition_alloc_for_testing.h",
+    "allocator/partition_allocator/pointers/raw_ptr_counting_impl_wrapper_for_test.h",
   ]
   if (is_posix) {
     sources += [ "allocator/partition_allocator/partition_alloc_base/threading/platform_thread_posix_for_testing.cc" ]
