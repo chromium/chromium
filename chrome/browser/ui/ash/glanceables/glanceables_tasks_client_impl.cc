@@ -16,6 +16,7 @@
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/time/time.h"
 #include "base/types/expected.h"
 #include "google_apis/common/api_error_codes.h"
 #include "google_apis/common/request_sender.h"
@@ -157,7 +158,7 @@ void GlanceablesTasksClientImpl::MarkAsCompleted(
       request_sender,
       base::BindOnce(&GlanceablesTasksClientImpl::OnMarkedAsCompleted,
                      weak_factory_.GetWeakPtr(), task_list_id, task_id,
-                     std::move(callback)),
+                     base::Time::Now(), std::move(callback)),
       task_list_id, task_id, Task::Status::kCompleted));
 }
 
@@ -169,13 +170,17 @@ void GlanceablesTasksClientImpl::FetchTaskListsPage(
       std::make_unique<ListTaskListsRequest>(
           request_sender,
           base::BindOnce(&GlanceablesTasksClientImpl::OnTaskListsPageFetched,
-                         weak_factory_.GetWeakPtr(), std::move(callback)),
+                         weak_factory_.GetWeakPtr(), base::Time::Now(),
+                         std::move(callback)),
           page_token));
 }
 
 void GlanceablesTasksClientImpl::OnTaskListsPageFetched(
+    const base::Time& request_start_time,
     GlanceablesTasksClient::GetTaskListsCallback callback,
     base::expected<std::unique_ptr<TaskLists>, ApiErrorCode> result) {
+  UMA_HISTOGRAM_TIMES("Ash.Glanceables.Api.Tasks.GetTaskLists.Latency",
+                      base::Time::Now() - request_start_time);
   UMA_HISTOGRAM_SPARSE("Ash.Glanceables.Api.Tasks.GetTaskLists.Status",
                        result.error_or(ApiErrorCode::HTTP_SUCCESS));
 
@@ -207,15 +212,19 @@ void GlanceablesTasksClientImpl::FetchTasksPage(
       request_sender,
       base::BindOnce(&GlanceablesTasksClientImpl::OnTasksPageFetched,
                      weak_factory_.GetWeakPtr(), task_list_id,
-                     std::move(accumulated_raw_tasks), std::move(callback)),
+                     std::move(accumulated_raw_tasks), base::Time::Now(),
+                     std::move(callback)),
       task_list_id, page_token));
 }
 
 void GlanceablesTasksClientImpl::OnTasksPageFetched(
     const std::string& task_list_id,
     std::vector<std::unique_ptr<Task>> accumulated_raw_tasks,
+    const base::Time& request_start_time,
     GlanceablesTasksClient::GetTasksCallback callback,
     base::expected<std::unique_ptr<Tasks>, ApiErrorCode> result) {
+  UMA_HISTOGRAM_TIMES("Ash.Glanceables.Api.Tasks.GetTasks.Latency",
+                      base::Time::Now() - request_start_time);
   UMA_HISTOGRAM_SPARSE("Ash.Glanceables.Api.Tasks.GetTasks.Status",
                        result.error_or(ApiErrorCode::HTTP_SUCCESS));
 
@@ -245,8 +254,11 @@ void GlanceablesTasksClientImpl::OnTasksPageFetched(
 void GlanceablesTasksClientImpl::OnMarkedAsCompleted(
     const std::string& task_list_id,
     const std::string& task_id,
+    const base::Time& request_start_time,
     GlanceablesTasksClient::MarkAsCompletedCallback callback,
     ApiErrorCode status_code) {
+  UMA_HISTOGRAM_TIMES("Ash.Glanceables.Api.Tasks.PatchTask.Latency",
+                      base::Time::Now() - request_start_time);
   UMA_HISTOGRAM_SPARSE("Ash.Glanceables.Api.Tasks.PatchTask.Status",
                        status_code);
 

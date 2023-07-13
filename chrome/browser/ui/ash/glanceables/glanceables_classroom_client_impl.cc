@@ -458,18 +458,22 @@ void GlanceablesClassroomClientImpl::FetchCoursesPage(
           request_sender, student_id, teacher_id, page_token,
           base::BindOnce(&GlanceablesClassroomClientImpl::OnCoursesPageFetched,
                          weak_factory_.GetWeakPtr(), student_id, teacher_id,
-                         std::ref(courses_container), std::move(callback))));
+                         std::ref(courses_container), base::Time::Now(),
+                         std::move(callback))));
 }
 
 void GlanceablesClassroomClientImpl::OnCoursesPageFetched(
     const std::string& student_id,
     const std::string& teacher_id,
     CourseList& courses_container,
+    const base::Time& request_start_time,
     FetchCoursesCallback callback,
     base::expected<std::unique_ptr<Courses>, ApiErrorCode> result) {
   CHECK(!student_id.empty() || !teacher_id.empty());
   CHECK(callback);
 
+  UMA_HISTOGRAM_TIMES("Ash.Glanceables.Api.Classroom.GetCourses.Latency",
+                      base::Time::Now() - request_start_time);
   UMA_HISTOGRAM_SPARSE("Ash.Glanceables.Api.Classroom.GetCourses.Status",
                        result.error_or(ApiErrorCode::HTTP_SUCCESS));
 
@@ -541,16 +545,19 @@ void GlanceablesClassroomClientImpl::FetchCourseWorkPage(
           base::BindOnce(
               &GlanceablesClassroomClientImpl::OnCourseWorkPageFetched,
               weak_factory_.GetWeakPtr(), request_id, course_id,
-              fetch_submissions)));
+              fetch_submissions, base::Time::Now())));
 }
 
 void GlanceablesClassroomClientImpl::OnCourseWorkPageFetched(
     int request_id,
     const std::string& course_id,
     bool fetch_submissions,
+    const base::Time& request_start_time,
     base::expected<std::unique_ptr<CourseWork>, ApiErrorCode> result) {
   CHECK(!course_id.empty());
 
+  UMA_HISTOGRAM_TIMES("Ash.Glanceables.Api.Classroom.GetCourseWork.Latency",
+                      base::Time::Now() - request_start_time);
   UMA_HISTOGRAM_SPARSE("Ash.Glanceables.Api.Classroom.GetCourseWork.Status",
                        result.error_or(ApiErrorCode::HTTP_SUCCESS));
 
@@ -636,17 +643,21 @@ void GlanceablesClassroomClientImpl::FetchStudentSubmissionsPage(
           base::BindOnce(
               &GlanceablesClassroomClientImpl::OnStudentSubmissionsPageFetched,
               weak_factory_.GetWeakPtr(), course_id, course_work_id,
-              std::move(callback))));
+              base::Time::Now(), std::move(callback))));
 }
 
 void GlanceablesClassroomClientImpl::OnStudentSubmissionsPageFetched(
     const std::string& course_id,
     const std::string& course_work_id,
+    const base::Time& request_start_time,
     FetchStudentSubmissionsCallback callback,
     base::expected<std::unique_ptr<StudentSubmissions>, ApiErrorCode> result) {
   CHECK(!course_id.empty());
   CHECK(callback);
 
+  UMA_HISTOGRAM_TIMES(
+      "Ash.Glanceables.Api.Classroom.GetStudentSubmissions.Latency",
+      base::Time::Now() - request_start_time);
   UMA_HISTOGRAM_SPARSE(
       "Ash.Glanceables.Api.Classroom.GetStudentSubmissions.Status",
       result.error_or(ApiErrorCode::HTTP_SUCCESS));

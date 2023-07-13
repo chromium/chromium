@@ -24,6 +24,10 @@
 class GURL;
 class Profile;
 
+namespace base {
+class Time;
+}  // namespace base
+
 namespace google_apis::classroom {
 class Courses;
 class CourseWork;
@@ -205,6 +209,7 @@ class GlanceablesClassroomClientImpl : public GlanceablesClassroomClient {
       const std::string& student_id,
       const std::string& teacher_id,
       CourseList& courses_container,
+      const base::Time& request_start_time,
       FetchCoursesCallback callback,
       base::expected<std::unique_ptr<google_apis::classroom::Courses>,
                      google_apis::ApiErrorCode> result);
@@ -241,6 +246,7 @@ class GlanceablesClassroomClientImpl : public GlanceablesClassroomClient {
       int request_id,
       const std::string& course_id,
       bool fetch_submissions,
+      const base::Time& request_start_time,
       base::expected<std::unique_ptr<google_apis::classroom::CourseWork>,
                      google_apis::ApiErrorCode> result);
 
@@ -268,6 +274,7 @@ class GlanceablesClassroomClientImpl : public GlanceablesClassroomClient {
   void OnStudentSubmissionsPageFetched(
       const std::string& course_id,
       const std::string& course_work_id,
+      const base::Time& request_start_time,
       FetchStudentSubmissionsCallback callback,
       base::expected<
           std::unique_ptr<google_apis::classroom::StudentSubmissions>,

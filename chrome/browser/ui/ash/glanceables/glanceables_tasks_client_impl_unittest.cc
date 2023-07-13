@@ -204,6 +204,8 @@ TEST_F(GlanceablesTasksClientImplTest, GetTaskLists) {
   EXPECT_EQ(FormatTimeAsString(task_lists->GetItemAt(1)->updated),
             "2022-12-21T23:38:22.590Z");
 
+  histogram_tester()->ExpectTotalCount(
+      "Ash.Glanceables.Api.Tasks.GetTaskLists.Latency", /*expected_count=*/1);
   histogram_tester()->ExpectUniqueSample(
       "Ash.Glanceables.Api.Tasks.GetTaskLists.Status",
       ApiErrorCode::HTTP_SUCCESS,
@@ -240,6 +242,8 @@ TEST_F(GlanceablesTasksClientImplTest,
   const auto* const task_lists = future.Get();
   EXPECT_EQ(task_lists->item_count(), 0u);
 
+  histogram_tester()->ExpectTotalCount(
+      "Ash.Glanceables.Api.Tasks.GetTaskLists.Latency", /*expected_count=*/1);
   histogram_tester()->ExpectUniqueSample(
       "Ash.Glanceables.Api.Tasks.GetTaskLists.Status",
       ApiErrorCode::HTTP_INTERNAL_SERVER_ERROR,
@@ -318,6 +322,8 @@ TEST_F(GlanceablesTasksClientImplTest, GetTasks) {
   EXPECT_FALSE(root_tasks->GetItemAt(1)->has_subtasks);
   EXPECT_TRUE(root_tasks->GetItemAt(1)->has_email_link);
 
+  histogram_tester()->ExpectTotalCount(
+      "Ash.Glanceables.Api.Tasks.GetTasks.Latency", /*expected_count=*/1);
   histogram_tester()->ExpectUniqueSample(
       "Ash.Glanceables.Api.Tasks.GetTasks.Status", ApiErrorCode::HTTP_SUCCESS,
       /*expected_bucket_count=*/1);
@@ -352,6 +358,8 @@ TEST_F(GlanceablesTasksClientImplTest, GetTasksReturnsEmptyVectorOnHttpError) {
   const auto* const root_tasks = future.Get();
   EXPECT_EQ(root_tasks->item_count(), 0u);
 
+  histogram_tester()->ExpectTotalCount(
+      "Ash.Glanceables.Api.Tasks.GetTasks.Latency", /*expected_count=*/1);
   histogram_tester()->ExpectUniqueSample(
       "Ash.Glanceables.Api.Tasks.GetTasks.Status",
       ApiErrorCode::HTTP_INTERNAL_SERVER_ERROR,
@@ -481,6 +489,8 @@ TEST_F(GlanceablesTasksClientImplTest, MarkAsCompleted) {
   EXPECT_EQ(tasks->item_count(), 1u);
   EXPECT_EQ(tasks->GetItemAt(0)->id, "task-1");
 
+  histogram_tester()->ExpectTotalCount(
+      "Ash.Glanceables.Api.Tasks.PatchTask.Latency", /*expected_count=*/1);
   histogram_tester()->ExpectUniqueSample(
       "Ash.Glanceables.Api.Tasks.PatchTask.Status", ApiErrorCode::HTTP_SUCCESS,
       /*expected_bucket_count=*/1);
@@ -525,6 +535,8 @@ TEST_F(GlanceablesTasksClientImplTest, MarkAsCompletedOnHttpError) {
   EXPECT_FALSE(mark_as_completed_future.Get());
   EXPECT_EQ(tasks->item_count(), 2u);
 
+  histogram_tester()->ExpectTotalCount(
+      "Ash.Glanceables.Api.Tasks.PatchTask.Latency", /*expected_count=*/1);
   histogram_tester()->ExpectUniqueSample(
       "Ash.Glanceables.Api.Tasks.PatchTask.Status",
       ApiErrorCode::HTTP_INTERNAL_SERVER_ERROR, /*expected_bucket_count=*/1);

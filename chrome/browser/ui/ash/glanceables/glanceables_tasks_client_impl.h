@@ -17,6 +17,10 @@
 #include "google_apis/tasks/tasks_api_requests.h"
 #include "ui/base/models/list_model.h"
 
+namespace base {
+class Time;
+}  // namespace base
+
 namespace google_apis {
 class RequestSender;
 namespace tasks {
@@ -76,6 +80,7 @@ class GlanceablesTasksClientImpl : public GlanceablesTasksClient {
   // ash-friendly types. If `next_page_token()` in the `result` is not empty -
   // calls another `FetchTaskListsPage()`, otherwise runs `callback`.
   void OnTaskListsPageFetched(
+      const base::Time& request_start_time,
       GlanceablesTasksClient::GetTaskListsCallback callback,
       base::expected<std::unique_ptr<google_apis::tasks::TaskLists>,
                      google_apis::ApiErrorCode> result);
@@ -107,6 +112,7 @@ class GlanceablesTasksClientImpl : public GlanceablesTasksClient {
       const std::string& task_list_id,
       std::vector<std::unique_ptr<google_apis::tasks::Task>>
           accumulated_raw_tasks,
+      const base::Time& request_start_time,
       GlanceablesTasksClient::GetTasksCallback callback,
       base::expected<std::unique_ptr<google_apis::tasks::Tasks>,
                      google_apis::ApiErrorCode> result);
@@ -117,6 +123,7 @@ class GlanceablesTasksClientImpl : public GlanceablesTasksClient {
   void OnMarkedAsCompleted(
       const std::string& task_list_id,
       const std::string& task_id,
+      const base::Time& request_start_time,
       GlanceablesTasksClient::MarkAsCompletedCallback callback,
       google_apis::ApiErrorCode status_code);
 

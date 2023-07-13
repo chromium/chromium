@@ -186,6 +186,9 @@ TEST_F(GlanceablesClassroomClientImplTest, FetchCourses) {
           EXPECT_EQ(courses.at(0)->id, "course-id-1");
           EXPECT_EQ(courses.at(0)->name, "Active Course 1");
 
+          histogram_tester.ExpectTotalCount(
+              "Ash.Glanceables.Api.Classroom.GetCourses.Latency",
+              /*expected_count=*/1);
           histogram_tester.ExpectUniqueSample(
               "Ash.Glanceables.Api.Classroom.GetCourses.Status",
               ApiErrorCode::HTTP_SUCCESS,
@@ -217,6 +220,9 @@ TEST_F(GlanceablesClassroomClientImplTest, FetchCoursesOnHttpError) {
 
           ASSERT_TRUE(courses.empty());
 
+          histogram_tester.ExpectTotalCount(
+              "Ash.Glanceables.Api.Classroom.GetCourses.Latency",
+              /*expected_count=*/1);
           histogram_tester.ExpectUniqueSample(
               "Ash.Glanceables.Api.Classroom.GetCourses.Status",
               ApiErrorCode::HTTP_INTERNAL_SERVER_ERROR,
@@ -355,6 +361,9 @@ TEST_F(GlanceablesClassroomClientImplTest, FetchCourseWork) {
             EXPECT_EQ(FormatTimeAsString(course_work.at(1)->due.value()),
                       "2023-04-25T15:09:25.250Z");
 
+            histogram_tester()->ExpectTotalCount(
+                "Ash.Glanceables.Api.Classroom.GetCourseWork.Latency",
+                /*expected_count=*/1);
             histogram_tester()->ExpectUniqueSample(
                 "Ash.Glanceables.Api.Classroom.GetCourseWork.Status",
                 ApiErrorCode::HTTP_SUCCESS,
@@ -513,6 +522,9 @@ TEST_F(GlanceablesClassroomClientImplTest, FetchCourseWorkOnHttpError) {
 
             ASSERT_TRUE(course_work.empty());
 
+            histogram_tester()->ExpectTotalCount(
+                "Ash.Glanceables.Api.Classroom.GetCourseWork.Latency",
+                /*expected_count=*/1);
             histogram_tester()->ExpectUniqueSample(
                 "Ash.Glanceables.Api.Classroom.GetCourseWork.Status",
                 ApiErrorCode::HTTP_INTERNAL_SERVER_ERROR,
@@ -808,6 +820,9 @@ TEST_F(GlanceablesClassroomClientImplTest, FetchStudentSubmissions) {
             EXPECT_EQ(submissions_for_course_work.at(6)->state,
                       GlanceablesClassroomStudentSubmission::State::kOther);
 
+            histogram_tester()->ExpectTotalCount(
+                "Ash.Glanceables.Api.Classroom.GetStudentSubmissions.Latency",
+                /*expected_count=*/1);
             histogram_tester()->ExpectUniqueSample(
                 "Ash.Glanceables.Api.Classroom.GetStudentSubmissions.Status",
                 ApiErrorCode::HTTP_SUCCESS,
@@ -824,7 +839,7 @@ TEST_F(GlanceablesClassroomClientImplTest, FetchStudentSubmissionsOnHttpError) {
 
   base::RunLoop run_loop;
   client()->FetchStudentSubmissions(
-      /*course_id=*/"course-123", /*course_wor_id=*/"-",
+      /*course_id=*/"course-123", /*course_work_id=*/"-",
       base::BindLambdaForTesting(
           [&](const GlanceablesClassroomClientImpl::SubmissionsPerCourseWork&
                   student_submissions) {
@@ -832,6 +847,9 @@ TEST_F(GlanceablesClassroomClientImplTest, FetchStudentSubmissionsOnHttpError) {
 
             ASSERT_TRUE(student_submissions.empty());
 
+            histogram_tester()->ExpectTotalCount(
+                "Ash.Glanceables.Api.Classroom.GetStudentSubmissions.Latency",
+                /*expected_count=*/1);
             histogram_tester()->ExpectUniqueSample(
                 "Ash.Glanceables.Api.Classroom.GetStudentSubmissions.Status",
                 ApiErrorCode::HTTP_INTERNAL_SERVER_ERROR,
