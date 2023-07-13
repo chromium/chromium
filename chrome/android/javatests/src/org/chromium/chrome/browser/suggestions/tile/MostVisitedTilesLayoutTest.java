@@ -185,7 +185,10 @@ public class MostVisitedTilesLayoutTest {
     @Test
     @MediumTest
     @Feature({"NewTabPage", "RenderTest"})
-    public void testModernTilesLayoutAppearance_Full() throws IOException, InterruptedException {
+    @DisableIf.Build(message = "Both variants are flaky on Nougat emulator, see crbug.com/1450693",
+            supported_abis_includes = "x86", sdk_is_less_than = VERSION_CODES.O)
+    public void
+    testModernTilesLayoutAppearance_Full() throws IOException, InterruptedException {
         View tilesLayout = renderTiles(makeSuggestions(FAKE_MOST_VISITED_URLS.length));
 
         Activity activity = mActivityTestRule.getActivity();
