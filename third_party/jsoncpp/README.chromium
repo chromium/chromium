@@ -5,6 +5,7 @@ CPEPrefix: cpe:/a:jsoncpp_project:jsoncpp:1.9.4
 License: MIT
 License File: LICENSE
 Security Critical: yes
+Shipped: yes
 
 Description:
 JsonCpp is used by multiple projects for parsing and generating JSON data. This
