@@ -20,7 +20,7 @@ The tables in this file are parsed as action templates for critical user journey
 
 TODO(dmurph): Possibly this table up into markdown-header section.
 
-| # Action base name | Argument Types | Output Actions | Unique Identifier (next: 172) | Status (WIP, Implemented, Not Implemented, Parameterized) | Description | Metadata, implementation bug, etc |
+| # Action base name | Argument Types | Output Actions | Unique Identifier (next: 171) | Status (WIP, Implemented, Not Implemented, Parameterized) | Description | Metadata, implementation bug, etc |
 | --- | --- | --- | --- | --- | --- | --- |
 | # Badging |
 | check_app_badge_empty | Site |  | 2 | Not Implemented | Check that the 'badge' on the app icon is empty |  |
@@ -128,8 +128,7 @@ TODO(dmurph): Possibly this table up into markdown-header section.
 | delete_profile |  |  | 83 | Not Implemented | Delete the user profile. | P4 |
 | enter_full_screen_app |  |  | 168 | Implemented | Enter full screen mode for the app window. | P1 |
 | exit_full_screen_app |  |  | 169 | Implemented | Exit full screen mode for the app window. | P1 |
-| check_app_toolbar_visible |  |  | 170 | Implemented | Check the toolbar is visible on the app window . | P1 |
-| check_app_toolbar_not_visible |  |  | 171 | Implemented | Check the toolbar is not visible on the app window. | P1 |
+| check_window_controls_overlay_toggle_icon | IsShown |  | 170 | Implemented | Checks if the Window Controls Overlay icon exists. | P1 |
 | # Launching |
 | launch_from_launch_icon | Site |  | 35 | Implemented | Launch the web app by navigating the browser to the web app, and selecting the launch icon in the omnibox (intent picker), |  |
 | launch_from_menu_option | Site |  | 69 | Implemented | Launch the web app by navigating the browser to the web app, and selecting the "Launch _" menu option in the 3-dot menu. | cliffordcheng@, P1 |
