@@ -136,6 +136,8 @@ void PrinterQueryOop::UseDefaultSettings(SettingsCallback callback) {
 #if BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
   CHECK(query_with_ui_client_id_.has_value());
 
+  PRINTER_LOG(EVENT) << "Using printer default settings via service";
+
   // Any settings selected from the system dialog could need to be retained
   // for printing, so establish a printing context.
   CHECK(!context_id_.has_value());
@@ -160,6 +162,7 @@ void PrinterQueryOop::GetSettingsWithUI(uint32_t document_page_count,
   print_from_system_dialog_ = true;
 
 #if BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
+  PRINTER_LOG(EVENT) << "Getting printer settings from user via service";
   SendAskUserForSettings(document_page_count, has_selection, is_scripted,
                          std::move(callback));
 #else
