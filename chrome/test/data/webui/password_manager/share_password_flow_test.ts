@@ -106,4 +106,40 @@ suite('SharePasswordFlowTest', function() {
 
     await shareFlowDone;
   });
+
+  test('Has correct no members state', async function() {
+    const shareElement = startPasswordShare();
+    await flushTasks();
+    shareElement.flowState = ShareFlowState.NO_MEMBERS;
+    await flushTasks();
+
+    const dialog = shareElement.shadowRoot!.querySelector(
+        'share-password-no-members-dialog');
+    assertTrue(!!dialog);
+
+    assertVisibleTextContent(
+        dialog.$.header, shareElement.i18n('shareDialogTitle', SITE));
+    assertVisibleTextContent(
+        dialog.$.description,
+        shareElement.i18n('sharePasswordNoMembersDescription'));
+    assertVisibleTextContent(
+        dialog.$.action, shareElement.i18n('sharePasswordGotIt'));
+  });
+
+  test('Action button should hide the no members dialog', async function() {
+    const shareElement = startPasswordShare();
+    await flushTasks();
+    shareElement.flowState = ShareFlowState.NO_MEMBERS;
+    await flushTasks();
+
+    const shareFlowDone = eventToPromise('share-flow-done', shareElement);
+
+    const dialog = shareElement.shadowRoot!.querySelector(
+        'share-password-no-members-dialog');
+    assertTrue(!!dialog);
+    dialog.$.action.click();
+    await flushTasks();
+
+    await shareFlowDone;
+  });
 });

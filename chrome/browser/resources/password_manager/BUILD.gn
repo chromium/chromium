@@ -16,6 +16,7 @@ build_webui("build") {
     "images/checkup_result_banner_running.svg",
     "images/checkup_result_banner_running_dark.svg",
     "images/password_manager_logo.svg",
+    "images/password_sharing_family_banner.svg",
     "password_manager.html",
   ]
   if (is_chrome_branded) {
@@ -64,6 +65,7 @@ build_webui("build") {
     "sharing/share_password_dialog_header.ts",
     "sharing/share_password_loading_dialog.ts",
     "sharing/share_password_error_dialog.ts",
+    "sharing/share_password_no_members_dialog.ts",
     "side_bar.ts",
     "site_favicon.ts",
     "toolbar.ts",

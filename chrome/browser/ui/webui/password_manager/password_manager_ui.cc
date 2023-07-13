@@ -301,6 +301,7 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
      IDS_PASSWORD_MANAGER_UI_SHARE_PASSWORD_ERROR_DESCRIPTION},
     {"sharePasswordErrorTitle",
      IDS_PASSWORD_MANAGER_UI_SHARE_PASSWORD_ERROR_TITLE},
+    {"sharePasswordGotIt", IDS_PASSWORD_MANAGER_UI_SHARE_PASSWORD_GOT_IT},
     {"sharePasswordTryAgain", IDS_PASSWORD_MANAGER_UI_SHARE_PASSWORD_TRY_AGAIN},
     {"searchPrompt", IDS_PASSWORD_MANAGER_UI_SEARCH_PROMPT},
     {"selectFile", IDS_PASSWORD_MANAGER_UI_SELECT_FILE},
@@ -357,6 +358,12 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
       l10n_util::GetStringFUTF16(
           IDS_PASSWORD_MANAGER_UI_PASSWORDS_DESCRIPTION,
           base::ASCIIToUTF16(chrome::kPasswordManagerLearnMoreURL)));
+
+  source->AddString(
+      "sharePasswordNoMembersDescription",
+      l10n_util::GetStringFUTF16(
+          IDS_PASSWORD_MANAGER_UI_SHARE_PASSWORD_NO_MEMBERS_DESCRIPTION,
+          base::ASCIIToUTF16(chrome::kFamilyGroupSiteURL)));
 
   source->AddString(
       "checkupUrl",

@@ -159,6 +159,9 @@ extern const char kExtensionControlledSettingLearnMoreURL[];
 // URL used to indicate that an extension resource load request was invalid.
 extern const char kExtensionInvalidRequestURL[];
 
+// Link for creating family group with Google Families.
+extern const char kFamilyGroupSiteURL[];
+
 // "Learn more" URL for first party sets.
 extern const char kFirstPartySetsLearnMoreURL[];
 

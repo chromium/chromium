@@ -7,6 +7,7 @@
  */
 import './share_password_loading_dialog.js';
 import './share_password_error_dialog.js';
+import './share_password_no_members_dialog.js';
 
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -18,6 +19,7 @@ export enum ShareFlowState {
   NO_DIALOG,
   FETCHING,
   ERROR,
+  NO_MEMBERS,
 }
 
 const SharePasswordFlowElementBase = I18nMixin(PolymerElement);
