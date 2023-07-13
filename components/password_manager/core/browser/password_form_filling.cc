@@ -73,10 +73,8 @@ void Autofill(PasswordManagerClient* client,
               const PasswordForm& form_for_autofill,
               const std::vector<const PasswordForm*>& best_matches,
               const std::vector<const PasswordForm*>& federated_matches,
-              const PasswordForm& preferred_match,
+              absl::optional<PasswordForm> preferred_match,
               bool wait_for_username) {
-  DCHECK_EQ(PasswordForm::Scheme::kHtml, preferred_match.scheme);
-
   std::unique_ptr<BrowserSavePasswordProgressLogger> logger;
   if (password_manager_util::IsLoggingActive(client)) {
     logger = std::make_unique<BrowserSavePasswordProgressLogger>(
@@ -85,7 +83,7 @@ void Autofill(PasswordManagerClient* client,
   }
 
   PasswordFormFillData fill_data = CreatePasswordFormFillData(
-      form_for_autofill, best_matches, preferred_match,
+      form_for_autofill, best_matches, std::move(preferred_match),
       client->GetLastCommittedOrigin(), wait_for_username);
   if (logger)
     logger->LogBoolean(Logger::STRING_WAIT_FOR_USERNAME, wait_for_username);
@@ -273,9 +271,10 @@ LikelyFormFilling SendFillInformationToRenderer(
 
   // Continue with autofilling any password forms as traditionally has been
   // done.
-  Autofill(client, driver, observed_form, best_matches, federated_matches,
-           preferred_match ? *preferred_match : PasswordForm(),
-           wait_for_username);
+  Autofill(
+      client, driver, observed_form, best_matches, federated_matches,
+      preferred_match ? absl::make_optional(*preferred_match) : absl::nullopt,
+      wait_for_username);
 
   return wait_for_username ? LikelyFormFilling::kFillOnAccountSelect
                            : LikelyFormFilling::kFillOnPageLoad;
@@ -284,7 +283,7 @@ LikelyFormFilling SendFillInformationToRenderer(
 PasswordFormFillData CreatePasswordFormFillData(
     const PasswordForm& form_on_page,
     const std::vector<const PasswordForm*>& matches,
-    const PasswordForm& preferred_match,
+    absl::optional<PasswordForm> preferred_match,
     const Origin& main_frame_origin,
     bool wait_for_username) {
   PasswordFormFillData result;
@@ -292,9 +291,6 @@ PasswordFormFillData CreatePasswordFormFillData(
   result.form_renderer_id = form_on_page.form_data.unique_renderer_id;
   result.url = form_on_page.url;
   result.wait_for_username = wait_for_username;
-
-  result.preferred_login.username_value = preferred_match.username_value;
-  result.preferred_login.password_value = preferred_match.password_value;
 
   if (!form_on_page.only_for_fallback &&
       (form_on_page.HasPasswordElement() || form_on_page.IsSingleUsername())) {
@@ -310,20 +306,30 @@ PasswordFormFillData CreatePasswordFormFillData(
         form_on_page.password_element_renderer_id;
   }
 
-  result.preferred_login.uses_account_store =
-      preferred_match.IsUsingAccountStore();
+  if (preferred_match.has_value()) {
+    CHECK_EQ(PasswordForm::Scheme::kHtml, preferred_match.value().scheme);
 
-  if (GetMatchType(preferred_match) != GetLoginMatchType::kExact ||
-      !IsSameOrigin(main_frame_origin, form_on_page.url)) {
-    // If the origins of the |preferred_match|, the main frame and the form's
-    // frame differ, then show the origin of the match.
-    result.preferred_login.realm = GetPreferredRealm(preferred_match);
+    result.preferred_login.username_value =
+        preferred_match.value().username_value;
+    result.preferred_login.password_value =
+        preferred_match.value().password_value;
+
+    result.preferred_login.uses_account_store =
+        preferred_match->IsUsingAccountStore();
+
+    if (GetMatchType(preferred_match.value()) != GetLoginMatchType::kExact ||
+        !IsSameOrigin(main_frame_origin, form_on_page.url)) {
+      // If the origins of the |preferred_match|, the main frame and the form's
+      // frame differ, then show the origin of the match.
+      result.preferred_login.realm = GetPreferredRealm(preferred_match.value());
+    }
   }
 
-  // Copy additional username/value pairs.
+  // Add additional username/value pairs.
   for (const PasswordForm* match : matches) {
-    if (match->username_value == preferred_match.username_value &&
-        match->password_value == preferred_match.password_value) {
+    if (preferred_match.has_value() &&
+        (match->username_value == preferred_match.value().username_value &&
+         match->password_value == preferred_match.value().password_value)) {
       continue;
     }
     PasswordAndMetadata value;
