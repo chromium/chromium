@@ -46,8 +46,8 @@ ChosenObjectView::ChosenObjectView(
       views::CreateVectorImageButton(base::BindRepeating(
           &ChosenObjectView::ExecuteDeleteCommand, base::Unretained(this)));
   delete_button->SetRequestFocusOnPress(true);
-  delete_button->SetTooltipText(
-      l10n_util::GetStringUTF16(info_->ui_info->delete_tooltip_string_id));
+  delete_button->SetTooltipText(l10n_util::GetStringFUTF16(
+      info_->ui_info->delete_tooltip_string_id, display_name));
   views::InstallCircleHighlightPathGenerator(delete_button.get());
 
   // Disable the delete button for policy controlled objects and display the

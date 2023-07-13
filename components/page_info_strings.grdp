@@ -435,8 +435,8 @@
     <message name="IDS_PAGE_INFO_USB_DEVICE_ALLOWED_BY_POLICY_LABEL" desc="The label displayed underneath the device name to inform the user that the item listed is refering to a USB device explicitly allowed by the user's enterprise policy.">
       USB device allowed by your administrator
     </message>
-    <message name="IDS_PAGE_INFO_DELETE_USB_DEVICE" desc="The tooltip displayed when hovering over the button that will remove permission to access a USB device that the user previously granted to the site.">
-      Revoke access
+    <message name="IDS_PAGE_INFO_DELETE_USB_DEVICE_WITH_NAME" desc="The tooltip displayed when hovering over the button that will remove permission to access a USB device that the user previously granted to the site.">
+      Revoke access for <ph name="DEVICE_NAME">$1<ex>USB Keyboard</ex></ph>
     </message>
     <message name="IDS_PAGE_INFO_SERIAL_PORT_SECONDARY_LABEL" desc="The label displayed underneath the port name to inform the user that the permission listed refers to a serial port.">
       Serial port
@@ -444,14 +444,14 @@
     <message name="IDS_PAGE_INFO_SERIAL_PORT_ALLOWED_BY_POLICY_LABEL" desc="The label displayed underneath the device name to inform the user that the item listed is refering to a serial port explicitly allowed by the user's enterprise policy.">
       Serial port allowed by your administrator
     </message>
-    <message name="IDS_PAGE_INFO_DELETE_SERIAL_PORT" desc="The tooltip displayed when hovering over the button that will remove permission to access a serial port that the user previously granted to the site.">
-      Revoke access
+    <message name="IDS_PAGE_INFO_DELETE_SERIAL_PORT_WITH_NAME" desc="The tooltip displayed when hovering over the button that will remove permission to access a serial port that the user previously granted to the site.">
+      Revoke access for <ph name="PORT_NAME">$1<ex>COM1</ex></ph>
     </message>
     <message name="IDS_PAGE_INFO_BLUETOOTH_DEVICE_SECONDARY_LABEL" desc="The label displayed underneath the device name to inform the user that the item refers to a Bluetooth device.">
       Bluetooth device
     </message>
-    <message name="IDS_PAGE_INFO_DELETE_BLUETOOTH_DEVICE" desc="The tooltip displayed when hovering over the button that will remove permission to access a Bluetooth device that the user previously granted to the site.">
-      Revoke access
+    <message name="IDS_PAGE_INFO_DELETE_BLUETOOTH_DEVICE_WITH_NAME" desc="The tooltip displayed when hovering over the button that will remove permission to access a Bluetooth device that the user previously granted to the site.">
+      Revoke access for <ph name="DEVICE_NAME">$1<ex>Pixel Buds Pro</ex></ph>
     </message>
     <message name="IDS_PAGE_INFO_HID_DEVICE_SECONDARY_LABEL" desc="The label displayed underneath the device name to inform the user that the permission listed refers to a HID device.">
       HID device
@@ -459,8 +459,8 @@
     <message name="IDS_PAGE_INFO_HID_DEVICE_ALLOWED_BY_POLICY_LABEL" desc="The label displayed underneath the device name to inform the user that the item listed is refering to a HID device explicitly allowed by the user's enterprise policy.">
       HID device allowed by your administrator
     </message>
-    <message name="IDS_PAGE_INFO_DELETE_HID_DEVICE" desc="The tooltip displayed when hovering over the button that will remove permission to access a HID device that the user previously granted to the site.">
-      Revoke access
+    <message name="IDS_PAGE_INFO_DELETE_HID_DEVICE_WITH_NAME" desc="The tooltip displayed when hovering over the button that will remove permission to access a HID device that the user previously granted to the site.">
+      Revoke access for <ph name="DEVICE_NAME">$1<ex>Stadia Controller</ex></ph>
     </message>
 
     <!-- Site settings link -->
