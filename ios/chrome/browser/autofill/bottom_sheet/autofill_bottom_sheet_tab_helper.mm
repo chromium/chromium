@@ -180,6 +180,12 @@ void AutofillBottomSheetTabHelper::AttachListeners(
 
 void AutofillBottomSheetTabHelper::DetachPasswordListeners(web::WebFrame* frame,
                                                            bool refocus) {
+  // Verify that the password bottom sheet feature is enabled.
+  if (!base::FeatureList::IsEnabled(
+          password_manager::features::kIOSPasswordBottomSheet)) {
+    return;
+  }
+
   AutofillBottomSheetJavaScriptFeature::GetInstance()->DetachListeners(
       registered_password_renderer_ids_, frame, /*must_be_empty = */ false,
       refocus);
@@ -187,6 +193,12 @@ void AutofillBottomSheetTabHelper::DetachPasswordListeners(web::WebFrame* frame,
 
 void AutofillBottomSheetTabHelper::DetachPasswordListenersForAllFrames(
     bool refocus) {
+  // Verify that the password bottom sheet feature is enabled.
+  if (!base::FeatureList::IsEnabled(
+          password_manager::features::kIOSPasswordBottomSheet)) {
+    return;
+  }
+
   DetachListenersForAllFrames(registered_password_renderer_ids_,
                               /*must_be_empty = */ false, refocus);
 }
