@@ -15,6 +15,7 @@
 #include "components/favicon/content/content_favicon_driver.h"
 #include "components/favicon/core/fallback_url_util.h"
 #include "components/favicon/core/favicon_service.h"
+#include "components/password_manager/content/common/web_ui_constants.h"
 #include "content/public/browser/favicon_status.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
@@ -197,7 +198,9 @@ bool ShouldThemifyFaviconForEntry(content::NavigationEntry* entry) {
       virtual_url.host_piece() != chrome::kChromeUIHelpHost &&
       virtual_url.host_piece() != chrome::kChromeUIVersionHost &&
       virtual_url.host_piece() != chrome::kChromeUINetExportHost &&
-      virtual_url.host_piece() != chrome::kChromeUINewTabHost) {
+      virtual_url.host_piece() != chrome::kChromeUINewTabHost &&
+      virtual_url.host_piece() !=
+          password_manager::kChromeUIPasswordManagerHost) {
     return true;
   }
 
