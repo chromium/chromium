@@ -5,6 +5,7 @@ Revision: bc63eabbbd1e14cee0779b05827e08db2e413553
 License: Apache 2.0
 License File: LICENSE
 Security Critical: yes
+Shipped: yes
 
 Description:
 The Roboto Font Loader lazy loads the Roboto font.
