@@ -114,7 +114,7 @@ class VideoEncoderTestEnvironment : public VideoTestEnvironment {
       SVCInterLayerPredMode inter_layer_pred_mode,
       size_t num_temporal_layers,
       size_t num_spatial_layers,
-      const media::Bitrate& bitrate,
+      const media::VideoBitrateAllocation& bitrate,
       bool save_output_bitstream,
       bool reverse,
       const FrameOutputConfig& frame_output_config,

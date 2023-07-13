@@ -59,6 +59,14 @@ MEDIA_GPU_EXPORT VideoBitrateAllocation
 AllocateDefaultBitrateForTesting(const size_t num_spatial_layers,
                                  const size_t num_temporal_layers,
                                  const Bitrate& bitrate);
+
+// Create VideoBitrateAllocation with the bitrate for each spatial layer and
+// |num_temporal_layers|.
+VideoBitrateAllocation MEDIA_GPU_EXPORT
+AllocateBitrateForDefaultEncodingWithBitrates(
+    const std::vector<uint32_t>& spatial_layer_bitrates,
+    const size_t num_temporal_layers,
+    const bool uses_vbr);
 }  // namespace media
 
 #endif  // MEDIA_GPU_GPU_VIDEO_ENCODE_ACCELERATOR_HELPERS_H_

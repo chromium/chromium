@@ -59,6 +59,7 @@ size_t GetMaxEncodeBitstreamBufferSize(const gfx::Size& size) {
     return kMaxBitstreamBufferSizeInBytes * 2;
   return kMaxBitstreamBufferSizeInBytes;
 }
+}  // namespace
 
 // This function sets the peak equal to the target. The peak can then be
 // updated by callers.
@@ -99,7 +100,6 @@ VideoBitrateAllocation AllocateBitrateForDefaultEncodingWithBitrates(
 
   return bitrate_allocation;
 }
-}  // namespace
 
 size_t GetEncodeBitstreamBufferSize(const gfx::Size& size,
                                     uint32_t bitrate,

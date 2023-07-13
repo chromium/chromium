@@ -116,6 +116,53 @@ uint32_t GetDefaultTargetBitrate(const VideoCodec codec,
   return bitrate_in_30fps_in_kbps * framerate_multiplier * 1000;
 }
 
+constexpr int kSpatialLayersResolutionScaleDenom[][3] = {
+    {1, 0, 0},  // For one spatial layer.
+    {2, 1, 0},  // For two spatial layers.
+    {4, 2, 1},  // For three spatial layers.
+};
+
+VideoBitrateAllocation CreateBitrateAllocation(
+    const VideoCodec codec,
+    const gfx::Size& resolution,
+    uint32_t frame_rate,
+    absl::optional<uint32_t> encode_bitrate,
+    size_t num_spatial_layers,
+    size_t num_temporal_layers,
+    bool is_vbr,
+    bool validation) {
+  // If |encode_bitrate| is specified, we use the default way of distributing it
+  // to layers.
+  if ((num_spatial_layers == 1 && num_temporal_layers == 1) || encode_bitrate) {
+    const uint32_t target_bitrate = encode_bitrate.value_or(
+        GetDefaultTargetBitrate(codec, resolution, frame_rate, validation));
+    // TODO(b/181797390): Reconsider if this peak bitrate is reasonable.
+    const Bitrate bitrate =
+        is_vbr ? media::Bitrate::VariableBitrate(
+                     target_bitrate, /*peak_bps=*/target_bitrate * 2)
+               : media::Bitrate::ConstantBitrate(target_bitrate);
+    return AllocateDefaultBitrateForTesting(num_spatial_layers,
+                                            num_temporal_layers, bitrate);
+  }
+  std::vector<uint32_t> spatial_layer_bitrates(num_spatial_layers);
+  for (size_t sid = 0; sid < num_spatial_layers; ++sid) {
+    const int resolution_denom =
+        kSpatialLayersResolutionScaleDenom[num_spatial_layers - 1][sid];
+    LOG_IF(WARNING, resolution.width() % resolution_denom != 0)
+        << "width of SL#" << sid << " is not dividable by " << resolution_denom;
+    LOG_IF(WARNING, resolution.height() % resolution_denom != 0)
+        << "height of SL#" << sid << " is not dividable by "
+        << resolution_denom;
+    const gfx::Size spatial_layer_resolution(
+        resolution.width() / resolution_denom,
+        resolution.height() / resolution_denom);
+    spatial_layer_bitrates[sid] = GetDefaultTargetBitrate(
+        codec, spatial_layer_resolution, frame_rate, validation);
+  }
+  return AllocateBitrateForDefaultEncodingWithBitrates(
+      spatial_layer_bitrates, num_temporal_layers, is_vbr);
+}
+
 std::vector<VideoEncodeAccelerator::Config::SpatialLayer>
 GetDefaultSpatialLayers(const VideoBitrateAllocation& bitrate,
                         const gfx::Size& resolution,
@@ -127,12 +174,6 @@ GetDefaultSpatialLayers(const VideoBitrateAllocation& bitrate,
   if (num_spatial_layers == 1 && num_temporal_layers == 1) {
     return {};
   }
-
-  constexpr int kSpatialLayersResolutionScaleDenom[][3] = {
-      {1, 0, 0},  // For one spatial layer.
-      {2, 1, 0},  // For two spatial layers.
-      {4, 2, 1},  // For three spatial layers.
-  };
 
   std::vector<VideoEncodeAccelerator::Config::SpatialLayer> spatial_layers;
   for (size_t sid = 0; sid < num_spatial_layers; ++sid) {
@@ -215,6 +256,17 @@ VideoEncoderTestEnvironment* VideoEncoderTestEnvironment::Create(
     return nullptr;
   }
 
+  const bool is_vbr = bitrate_mode == media::Bitrate::Mode::kVariable;
+  const VideoCodec video_codec = VideoCodecProfileToVideoCodec(profile);
+  if (is_vbr && video_codec != VideoCodec::kH264) {
+    LOG(ERROR) << "VBR is only supported for H264 encoding";
+    return nullptr;
+  }
+  const VideoBitrateAllocation bitrate_allocation = CreateBitrateAllocation(
+      video_codec, video->Resolution(), video->FrameRate(), encode_bitrate,
+      num_spatial_layers, num_temporal_layers, is_vbr,
+      test_type == TestType::kValidation);
+
   // TODO(b/182008564) Add checks to make sure no features are duplicated, and
   // there is no intersection between the enabled and disabled set.
   std::vector<base::test::FeatureRef> combined_enabled_features(
@@ -249,25 +301,10 @@ VideoEncoderTestEnvironment* VideoEncoderTestEnvironment::Create(
   combined_enabled_features.push_back(media::kChromeOSHWVBREncoding);
 #endif
 
-  const uint32_t target_bitrate =
-      encode_bitrate.value_or(GetDefaultTargetBitrate(
-          VideoCodecProfileToVideoCodec(profile), video->Resolution(),
-          video->FrameRate(), test_type == TestType::kValidation));
-  // TODO(b/181797390): Reconsider if this peak bitrate is reasonable.
-  const media::Bitrate bitrate =
-      bitrate_mode == media::Bitrate::Mode::kVariable
-          ? media::Bitrate::VariableBitrate(target_bitrate,
-                                            /*peak_bps=*/target_bitrate * 2)
-          : media::Bitrate::ConstantBitrate(target_bitrate);
-  if (bitrate.mode() == media::Bitrate::Mode::kVariable &&
-      VideoCodecProfileToVideoCodec(profile) != VideoCodec::kH264) {
-    LOG(ERROR) << "VBR is only supported for H264 encoding";
-    return nullptr;
-  }
   return new VideoEncoderTestEnvironment(
       test_type, std::move(video), output_folder, video_path.BaseName(),
       profile, inter_layer_pred_mode, num_spatial_layers, num_temporal_layers,
-      bitrate, save_output_bitstream, reverse, frame_output_config,
+      bitrate_allocation, save_output_bitstream, reverse, frame_output_config,
       combined_enabled_features, combined_disabled_features);
 }
 
@@ -280,7 +317,7 @@ VideoEncoderTestEnvironment::VideoEncoderTestEnvironment(
     SVCInterLayerPredMode inter_layer_pred_mode,
     size_t num_spatial_layers,
     size_t num_temporal_layers,
-    const Bitrate& bitrate,
+    const VideoBitrateAllocation& bitrate,
     bool save_output_bitstream,
     bool reverse,
     const FrameOutputConfig& frame_output_config,
@@ -293,9 +330,7 @@ VideoEncoderTestEnvironment::VideoEncoderTestEnvironment(
       output_bitstream_file_base_name_(output_bitstream_file_base_name),
       profile_(profile),
       inter_layer_pred_mode_(inter_layer_pred_mode),
-      bitrate_(AllocateDefaultBitrateForTesting(num_spatial_layers,
-                                                num_temporal_layers,
-                                                bitrate)),
+      bitrate_(bitrate),
       spatial_layers_(GetDefaultSpatialLayers(bitrate_,
                                               video_->Resolution(),
                                               video_->FrameRate(),
