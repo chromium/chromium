@@ -5,10 +5,12 @@
 #include "content/public/test/shared_storage_test_utils.h"
 
 #include <map>
+#include <memory>
 #include <string>
 #include <utility>
 
 #include "base/functional/overloaded.h"
+#include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "components/services/storage/shared_storage/shared_storage_manager.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
@@ -21,6 +23,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_frame_navigation_observer.h"
+#include "content/public/test/test_shared_storage_header_observer.h"
 #include "content/test/fenced_frame_test_utils.h"
 #include "services/network/public/mojom/optional_bool.mojom.h"
 #include "services/network/public/mojom/url_loader_network_service_observer.mojom.h"
@@ -322,6 +325,15 @@ PrivateAggregationHost::SendHistogramReportResult
 GetPrivateAggregationSendHistogramApiDisabledValue() {
   return PrivateAggregationHost::SendHistogramReportResult::
       kApiDisabledInSettings;
+}
+
+base::WeakPtr<TestSharedStorageHeaderObserver>
+CreateAndOverrideSharedStorageHeaderObserver(StoragePartition* partition) {
+  auto observer = std::make_unique<TestSharedStorageHeaderObserver>(partition);
+  auto observer_ptr = observer->GetMutableWeakPtr();
+  static_cast<StoragePartitionImpl*>(partition)
+      ->OverrideSharedStorageHeaderObserverForTesting(std::move(observer));
+  return observer_ptr;
 }
 
 }  // namespace content

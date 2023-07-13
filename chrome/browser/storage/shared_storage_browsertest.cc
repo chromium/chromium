@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/containers/contains.h"
+#include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/task/single_thread_task_runner.h"
@@ -31,6 +32,7 @@
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/privacy_sandbox/privacy_sandbox_test_util.h"
+#include "components/services/storage/shared_storage/shared_storage_manager.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/common/content_features.h"
@@ -39,8 +41,10 @@
 #include "content/public/test/shared_storage_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_select_url_fenced_frame_config_observer.h"
+#include "content/public/test/test_shared_storage_header_observer.h"
 #include "net/base/schemeful_site.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/test/embedded_test_server/controllable_http_response.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -62,8 +66,18 @@ namespace storage {
 
 namespace {
 
+using OperationResult = SharedStorageManager::OperationResult;
+
+const auto& SetOperation =
+    content::SharedStorageWriteOperationAndResult::SetOperation;
+const auto& AppendOperation =
+    content::SharedStorageWriteOperationAndResult::AppendOperation;
+const auto& ClearOperation =
+    content::SharedStorageWriteOperationAndResult::ClearOperation;
+
 constexpr char kMainHost[] = "a.test";
 constexpr char kSimplePagePath[] = "/simple.html";
+constexpr char kTitle1Path[] = "/title1.html";
 constexpr char kCrossOriginHost[] = "b.test";
 constexpr char kThirdOriginHost[] = "c.test";
 constexpr char kFourthOriginHost[] = "d.test";
@@ -258,9 +272,9 @@ class SharedStorageChromeBrowserTestBase : public PlatformBrowserTest {
     https_server()->AddDefaultHandlers(GetChromeTestDataDir());
     https_server()->SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
     content::SetupCrossSiteRedirector(https_server());
-    CHECK(https_server()->Start());
 
     SetPrefs(EnablePrivacySandbox(), AllowThirdPartyCookies());
+    FinishSetUp();
   }
 
   ~SharedStorageChromeBrowserTestBase() override = default;
@@ -269,6 +283,12 @@ class SharedStorageChromeBrowserTestBase : public PlatformBrowserTest {
 
   content::WebContents* GetActiveWebContents() {
     return chrome_test_utils::GetActiveWebContents(this);
+  }
+
+  content::StoragePartition* GetStoragePartition() {
+    return content::ToRenderFrameHost(GetActiveWebContents())
+        .render_frame_host()
+        ->GetStoragePartition();
   }
 
   Profile* GetProfile() {
@@ -282,6 +302,10 @@ class SharedStorageChromeBrowserTestBase : public PlatformBrowserTest {
   privacy_sandbox::PrivacySandboxSettings* GetPrivacySandboxSettings() {
     return PrivacySandboxSettingsFactory::GetForProfile(GetProfile());
   }
+
+  // Virtual so derived classes can delay or perform additional set up before
+  // starting the server.
+  virtual void FinishSetUp() { CHECK(https_server()->Start()); }
 
   void SetPrefs(bool enable_privacy_sandbox, bool allow_third_party_cookies) {
     GetProfile()->GetPrefs()->SetBoolean(prefs::kPrivacySandboxApisEnabledV2,
@@ -731,20 +755,12 @@ class SharedStoragePrefBrowserTest
   base::test::ScopedFeatureList attestation_feature_;
 };
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    SharedStoragePrefBrowserTest,
-    testing::Combine(
-#if !BUILDFLAG(IS_ANDROID)
-        testing::Bool(),
-#endif
-        testing::Bool(),
-        testing::Bool(),
-        testing::Bool(),
-        testing::Bool()),
-    [](const testing::TestParamInfo<SharedStoragePrefBrowserTest::ParamType>&
-           info) {
-      return base::StrCat({
+namespace {
+std::string DescribePrefBrowserTestParams(
+    const testing::TestParamInfo<SharedStoragePrefBrowserTest::ParamType>&
+        info) {
+  return base::StrCat(
+      {
 #if !BUILDFLAG(IS_ANDROID)
         "ResolveSelectURLTo", std::get<4>(info.param) ? "Config_" : "URN_",
 #endif
@@ -754,7 +770,21 @@ INSTANTIATE_TEST_SUITE_P(
             std::get<2>(info.param) ? "Enforced" : "Unenforced", "_MainHost",
             std::get<3>(info.param) ? "Enrolled" : "Unenrolled"
       });
-    });
+}
+
+}  // namespace
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         SharedStoragePrefBrowserTest,
+                         testing::Combine(
+#if !BUILDFLAG(IS_ANDROID)
+                             testing::Bool(),
+#endif
+                             testing::Bool(),
+                             testing::Bool(),
+                             testing::Bool(),
+                             testing::Bool()),
+                         DescribePrefBrowserTestParams);
 
 IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, AddModule) {
   Set3rdPartyCookieAndMainHostAttestationSettingsThenNavigateToMainHostPage();
@@ -862,10 +892,7 @@ IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, RunURLSelectionOperation) {
 
   // Construct and add the `TestSelectURLFencedFrameConfigObserver` to shared
   // storage worklet host manager.
-  content::StoragePartition* storage_partition =
-      content::ToRenderFrameHost(GetActiveWebContents())
-          .render_frame_host()
-          ->GetStoragePartition();
+  content::StoragePartition* storage_partition = GetStoragePartition();
   content::TestSelectURLFencedFrameConfigObserver config_observer(
       storage_partition);
   content::EvalJsResult run_url_op_result = EvalJs(GetActiveWebContents(), R"(
@@ -2625,10 +2652,7 @@ class SharedStorageFencedFrameChromeBrowserTest
 
     // Construct and add the `TestSelectURLFencedFrameConfigObserver` to shared
     // storage worklet host manager.
-    content::StoragePartition* storage_partition =
-        content::ToRenderFrameHost(GetActiveWebContents())
-            .render_frame_host()
-            ->GetStoragePartition();
+    content::StoragePartition* storage_partition = GetStoragePartition();
     content::TestSelectURLFencedFrameConfigObserver config_observer(
         storage_partition);
     content::EvalJsResult run_url_op_result = EvalJs(render_frame_host, R"(
@@ -2948,6 +2972,114 @@ IN_PROC_BROWSER_TEST_P(SharedStoragePrivateAggregationChromeBrowserTest,
           ? content::GetPrivateAggregationSendHistogramSuccessValue()
           : content::GetPrivateAggregationSendHistogramApiDisabledValue(),
       1);
+}
+
+class SharedStorageHeaderPrefBrowserTest : public SharedStoragePrefBrowserTest {
+ public:
+  SharedStorageHeaderPrefBrowserTest() {
+    shared_storage_m117_feature_.InitAndEnableFeature(
+        blink::features::kSharedStorageAPIM117);
+  }
+
+  void FinishSetUp() override {
+    observer_ = content::CreateAndOverrideSharedStorageHeaderObserver(
+        GetStoragePartition());
+  }
+
+ protected:
+  base::WeakPtr<content::TestSharedStorageHeaderObserver> observer_;
+
+ private:
+  base::test::ScopedFeatureList shared_storage_m117_feature_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         SharedStorageHeaderPrefBrowserTest,
+                         testing::Combine(
+#if !BUILDFLAG(IS_ANDROID)
+                             testing::Bool(),
+#endif
+                             testing::Bool(),
+                             testing::Bool(),
+                             testing::Bool(),
+                             testing::Bool()),
+                         DescribePrefBrowserTestParams);
+
+IN_PROC_BROWSER_TEST_P(SharedStorageHeaderPrefBrowserTest, Basic) {
+  net::test_server::ControllableHttpResponse response(https_server(),
+                                                      kTitle1Path);
+  ASSERT_TRUE(https_server()->Start());
+  Set3rdPartyCookieAndMainHostAttestationSettingsThenNavigateToMainHostPage();
+
+  GURL fetch_url = https_server()->GetURL(kMainHost, kTitle1Path);
+  EXPECT_TRUE(content::ExecJs(
+      GetActiveWebContents(),
+      content::JsReplace(R"(
+      fetch($1, {sharedStorageWritable: true});
+    )",
+                         fetch_url.spec()),
+      content::EvalJsOptions::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
+
+  response.WaitForRequest();
+  ASSERT_TRUE(base::Contains(response.http_request()->headers,
+                             "Shared-Storage-Writable"));
+  EXPECT_EQ(response.http_request()->content, "");
+  response.Send(
+      /*http_status=*/net::HTTP_OK,
+      /*content_type=*/"text/plain;charset=UTF-8",
+      /*content=*/{}, /*cookies=*/{}, /*extra_headers=*/
+      {"Shared-Storage-Write: clear, "
+       "set;key=\"hello\";value=\"world\";ignore_if_present, "
+       "append;key=hello;value=there"});
+
+  ASSERT_TRUE(observer_);
+
+  if (!SuccessExpected()) {
+    // Shared Storage is disabled, so the `SharedStorageHeaderObserver` ignores
+    // the header and no operations are invoked.
+    EXPECT_TRUE(observer_->header_results().empty());
+    EXPECT_TRUE(observer_->operations().empty());
+    response.Done();
+    return;
+  }
+
+  // Shared Storage is enabled.
+
+  observer_->WaitForOperations(3);
+
+  url::Origin fetch_origin = url::Origin::Create(fetch_url);
+  EXPECT_EQ(observer_->header_results().size(), 1u);
+  EXPECT_EQ(observer_->header_results().front().first, fetch_origin);
+  EXPECT_THAT(observer_->header_results().front().second,
+              testing::ElementsAre(true, true, true));
+  EXPECT_THAT(observer_->operations(),
+              testing::ElementsAre(
+                  ClearOperation(fetch_origin, OperationResult::kSuccess),
+                  SetOperation(fetch_origin, "hello", "world", true,
+                               OperationResult::kSet),
+                  AppendOperation(fetch_origin, "hello", "there",
+                                  OperationResult::kSet)));
+
+  response.Done();
+
+  content::WebContentsConsoleObserver console_observer(GetActiveWebContents());
+  ExecuteScriptInWorklet(GetActiveWebContents(), R"(
+      console.log(await sharedStorage.get('hello'));
+      console.log(await sharedStorage.length());
+      console.log('Finished script');
+    )",
+                         "Finished script");
+
+  EXPECT_EQ(5u, console_observer.messages().size());
+  EXPECT_EQ("Start executing customizable_module.js",
+            base::UTF16ToUTF8(console_observer.messages()[0].message));
+  EXPECT_EQ("Finish executing customizable_module.js",
+            base::UTF16ToUTF8(console_observer.messages()[1].message));
+  EXPECT_EQ("worldthere",
+            base::UTF16ToUTF8(console_observer.messages()[2].message));
+  EXPECT_EQ("1", base::UTF16ToUTF8(console_observer.messages()[3].message));
+  EXPECT_EQ("Finished script",
+            base::UTF16ToUTF8(console_observer.messages()[4].message));
 }
 
 }  // namespace storage

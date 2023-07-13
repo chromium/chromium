@@ -601,4 +601,7 @@ specific_include_rules = {
   "webauth_interactive_uitest.cc": [
     "+device/fido",
   ],
+  "shared_storage_browsertest.cc": [
+    "+components/services/storage/shared_storage/shared_storage_manager.h",
+  ],
 }
