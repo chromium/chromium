@@ -158,7 +158,7 @@ void WebRtcAudioSink::DeliverRebufferedAudio(const media::AudioBus& audio_bus,
 
 namespace {
 void DereferenceOnMainThread(
-    const scoped_refptr<webrtc::AudioProcessorInterface>& processor) {}
+    scoped_refptr<webrtc::AudioProcessorInterface> processor) {}
 }  // namespace
 
 WebRtcAudioSink::Adapter::Adapter(
