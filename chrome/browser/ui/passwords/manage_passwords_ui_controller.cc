@@ -948,6 +948,8 @@ void ManagePasswordsUIController::WebContentsDestroyed() {
   if (account_password_store)
     account_password_store->RemoveObserver(this);
   HidePasswordBubble();
+  web_contents()->RemoveUserData(UserDataKey());
+  // `this` is now destroyed - do not add code here.
 }
 
 void ManagePasswordsUIController::
