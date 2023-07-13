@@ -39,7 +39,7 @@ def __protoc_scandeps(ctx, proto, proto_paths = []):
 
 def __scandeps(ctx, args):
     protoc_wrapper_args = []
-    for i, arg in enumerate(args)
+    for i, arg in enumerate(args):
         if path.base(arg) in ["protoc_wrapper.py", "protoc_java.py"]:
             protoc_wrapper_args = args[i + 1:]
             break
