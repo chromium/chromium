@@ -37,6 +37,9 @@ MockManifestDemuxerEngineHost::~MockManifestDemuxerEngineHost() = default;
 MockHlsRenditionHost::MockHlsRenditionHost() {}
 MockHlsRenditionHost::~MockHlsRenditionHost() {}
 
+MockHlsRendition::MockHlsRendition() {}
+MockHlsRendition::~MockHlsRendition() {}
+
 FakeHlsDataSource::FakeHlsDataSource(std::vector<uint8_t> data)
     : HlsDataSource(data.size()), data_(std::move(data)) {}
 

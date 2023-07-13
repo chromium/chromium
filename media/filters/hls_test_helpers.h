@@ -101,6 +101,22 @@ class MockHlsRenditionHost : public HlsRenditionHost {
               (override));
 };
 
+class MockHlsRendition : public HlsRendition {
+ public:
+  MockHlsRendition();
+  ~MockHlsRendition() override;
+
+  MOCK_METHOD(void,
+              CheckState,
+              (base::TimeDelta time,
+               double rate,
+               ManifestDemuxer::DelayCallback cb),
+              (override));
+  MOCK_METHOD(bool, Seek, (base::TimeDelta time), (override));
+  MOCK_METHOD(void, CancelPendingNetworkRequests, (), (override));
+  MOCK_METHOD(absl::optional<base::TimeDelta>, GetDuration, (), (override));
+};
+
 }  // namespace media
 
 #endif  // MEDIA_FILTERS_HLS_TEST_HELPERS_H_
