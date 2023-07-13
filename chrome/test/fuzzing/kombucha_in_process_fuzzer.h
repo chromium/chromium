@@ -102,9 +102,7 @@ class KombuchaInProcessFuzzer
   raw_ptr<const google::protobuf::EnumDescriptor> accelerator_descriptor =
       raw_ptr(test::fuzzing::ui_fuzzing::Accelerator_descriptor());
 
-  ui::Accelerator fullscreen_accelerator_;
-  ui::Accelerator close_tab_accelerator_;
-  ui::Accelerator group_target_tab_accelerator_;
+  ui::Accelerator current_accelerator_;
 
  private:
   // List that enables browser startup with custom features

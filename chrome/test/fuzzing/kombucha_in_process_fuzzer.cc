@@ -91,14 +91,6 @@ void KombuchaInProcessFuzzer::SetUpOnMainThread() {
       base::BindRepeating(&KombuchaInProcessFuzzer::HandleHTTPRequest,
                           weak_ptr_factory_.GetWeakPtr()));
   ASSERT_TRUE(embedded_test_server()->Start());
-
-  // Accelerators for using in fuzzing
-  chrome::AcceleratorProviderForBrowser(browser())->GetAcceleratorForCommandId(
-      IDC_FULLSCREEN, &fullscreen_accelerator_);
-  chrome::AcceleratorProviderForBrowser(browser())->GetAcceleratorForCommandId(
-      IDC_CLOSE_TAB, &close_tab_accelerator_);
-  chrome::AcceleratorProviderForBrowser(browser())->GetAcceleratorForCommandId(
-      IDC_GROUP_TARGET_TAB, &group_target_tab_accelerator_);
 }
 
 std::unique_ptr<net::test_server::HttpResponse>
@@ -212,24 +204,16 @@ int KombuchaInProcessFuzzer::Fuzz(const uint8_t* data, size_t size) {
         break;
       }
       case test::fuzzing::ui_fuzzing::Step::kSendAccelerator: {
-        switch (step.send_accelerator().target()) {
-          case test::fuzzing::ui_fuzzing::Accelerator::fullscreen_accelerator_:
-            AddStep(input_buffer, SendAccelerator(kBrowserViewElementId,
-                                                  fullscreen_accelerator_));
-            break;
-          case test::fuzzing::ui_fuzzing::Accelerator::closetab_accelerator_:
+        int chosen_id = step.send_accelerator().target();
+        AddStep(input_buffer, Log("[KOMB] Adding Accelerator: ", chosen_id));
 
-            AddStep(input_buffer, SendAccelerator(kBrowserViewElementId,
-                                                  close_tab_accelerator_));
-            break;
-          case test::fuzzing::ui_fuzzing::Accelerator::grouptab_accelerator_:
-            AddStep(input_buffer,
-                    SendAccelerator(kBrowserViewElementId,
-                                    group_target_tab_accelerator_));
-            break;
-          default:  // Unspecified Value
-            break;
-        }
+        // Set current_accelerator_ to chosen id's accelerator then add it to
+        // input
+        chrome::AcceleratorProviderForBrowser(browser())
+            ->GetAcceleratorForCommandId(chosen_id, &current_accelerator_);
+        AddStep(input_buffer,
+                SendAccelerator(kBrowserViewElementId, current_accelerator_));
+
         break;
       }
       default:  // Unspecified Value
