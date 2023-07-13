@@ -22,29 +22,32 @@
   "     to expire. Tests will not be run starting from the expiration date.   ",
 
   {
-    "prefix": "lna-permission",
+    "prefix": "pna-permission",
     "platforms": ["Linux", "Mac", "Win"],
-    "bases": ["external/wpt/fetch/local-network-access"],
+    "bases": ["external/wpt/fetch/private-network-access"],
     "args": [
       "--enable-features=PrivateNetworkAccessPermissionPrompt",
       "--enable-blink-features=PrivateNetworkAccessPermissionPrompt"],
+    "owners": ["phao@google.com", "lyf@google.com"],
     "expires": "Jan 1, 2024"
   },
   {
-    "prefix": "lna-workers-disabled",
+    "prefix": "pna-workers-disabled",
     "platforms": ["Linux", "Mac", "Win"],
-    "bases": ["external/wpt/fetch/local-network-access"],
+    "bases": ["external/wpt/fetch/private-network-access"],
     "args": ["--disable-features=PrivateNetworkAccessForWorkers"],
+    "owners": ["phao@google.com", "lyf@google.com"],
     "expires": "Jan 1, 2024"
   },
   {
-    "prefix": "lna-workers-enabled",
+    "prefix": "pna-workers-enabled",
     "platforms": ["Linux", "Mac", "Win"],
-    "bases": ["external/wpt/fetch/local-network-access"],
+    "bases": ["external/wpt/fetch/private-network-access"],
     "args": [
       "--enable-features=PrivateNetworkAccessForWorkers",
       "--disable-features=PrivateNetworkAccessForWorkersWarningOnly"
     ],
+    "owners": ["phao@google.com", "lyf@google.com"],
     "expires": "Jan 1, 2024"
   },
   {
@@ -1588,18 +1591,18 @@
       "http/tests/inspector-protocol/fenced-frame",
       "external/wpt/html/anonymous-iframe",
       "external/wpt/fenced-frame",
-      "external/wpt/fetch/local-network-access/fenced-frame-subresource-fetch.tentative.https.window.js",
-      "external/wpt/fetch/local-network-access/fenced-frame.tentative.https.window.js",
-      "external/wpt/fetch/local-network-access/fenced-frame-no-preflight-required.tentative.https.window.js"
+      "external/wpt/fetch/private-network-access/fenced-frame-subresource-fetch.tentative.https.window.js",
+      "external/wpt/fetch/private-network-access/fenced-frame.tentative.https.window.js",
+      "external/wpt/fetch/private-network-access/fenced-frame-no-preflight-required.tentative.https.window.js"
     ],
     "exclusive_tests": [
       "http/tests/fenced_frame",
       "wpt_internal/fenced_frame",
       "external/wpt/fenced-frame",
       "http/tests/inspector-protocol/fenced-frame",
-      "external/wpt/fetch/local-network-access/fenced-frame-subresource-fetch.tentative.https.window.js",
-      "external/wpt/fetch/local-network-access/fenced-frame.tentative.https.window.js",
-      "external/wpt/fetch/local-network-access/fenced-frame-no-preflight-required.tentative.https.window.js"
+      "external/wpt/fetch/private-network-access/fenced-frame-subresource-fetch.tentative.https.window.js",
+      "external/wpt/fetch/private-network-access/fenced-frame.tentative.https.window.js",
+      "external/wpt/fetch/private-network-access/fenced-frame-no-preflight-required.tentative.https.window.js"
     ],
     "args": ["--enable-features=FencedFrames:implementation_type/mparch,PrivacySandboxAdsAPIsOverride,SharedStorageAPI,NoncedPartitionedCookies,Fledge,InterestGroupStorage,AdInterestGroupAPI,AllowURNsInIframes,BiddingAndScoringDebugReportingAPI,ComputePressure",
              "--enable-blink-features=FencedFramesAPIChanges,FencedFramesDefaultMode"],
