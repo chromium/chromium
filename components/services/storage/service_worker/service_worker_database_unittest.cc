@@ -3346,7 +3346,7 @@ TEST(ServiceWorkerDatabaseTest, PolicyContainerPoliciesStoreRestore) {
 
     for (auto ip_address_space : {
              network::mojom::IPAddressSpace::kLoopback,
-             network::mojom::IPAddressSpace::kLocal,
+             network::mojom::IPAddressSpace::kPrivate,
              network::mojom::IPAddressSpace::kPublic,
              network::mojom::IPAddressSpace::kUnknown,
          }) {

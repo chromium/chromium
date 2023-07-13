@@ -71,7 +71,7 @@ Policy DerivePolicyForNonSecureContext(AddressSpace ip_address_space) {
                  features::kBlockInsecurePrivateNetworkRequestsFromUnknown)
                  ? Policy::kBlock
                  : Policy::kAllow;
-    case AddressSpace::kLocal:
+    case AddressSpace::kPrivate:
       // Requests from the non secure contexts in the `private` address space
       // to localhost are blocked only if the right feature is enabled.
       // This is controlled separately because private network websites face

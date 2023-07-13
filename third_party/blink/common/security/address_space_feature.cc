@@ -76,12 +76,12 @@ constexpr bool kSecureContext = true;
 
 constexpr struct FeatureEntry kFeatureMap[] = {
     {
-        {AddressSpace::kLocal, kNonSecureContext, AddressSpace::kLoopback},
+        {AddressSpace::kPrivate, kNonSecureContext, AddressSpace::kLoopback},
         Feature::kAddressSpacePrivateNonSecureContextEmbeddedLocal,
         Feature::kAddressSpacePrivateNonSecureContextNavigatedToLocal,
     },
     {
-        {AddressSpace::kLocal, kSecureContext, AddressSpace::kLoopback},
+        {AddressSpace::kPrivate, kSecureContext, AddressSpace::kLoopback},
         Feature::kAddressSpacePrivateSecureContextEmbeddedLocal,
         Feature::kAddressSpacePrivateSecureContextNavigatedToLocal,
     },
@@ -96,12 +96,12 @@ constexpr struct FeatureEntry kFeatureMap[] = {
         Feature::kAddressSpacePublicSecureContextNavigatedToLocal,
     },
     {
-        {AddressSpace::kPublic, kNonSecureContext, AddressSpace::kLocal},
+        {AddressSpace::kPublic, kNonSecureContext, AddressSpace::kPrivate},
         Feature::kAddressSpacePublicNonSecureContextEmbeddedPrivate,
         Feature::kAddressSpacePublicNonSecureContextNavigatedToPrivate,
     },
     {
-        {AddressSpace::kPublic, kSecureContext, AddressSpace::kLocal},
+        {AddressSpace::kPublic, kSecureContext, AddressSpace::kPrivate},
         Feature::kAddressSpacePublicSecureContextEmbeddedPrivate,
         Feature::kAddressSpacePublicSecureContextNavigatedToPrivate,
     },
@@ -116,12 +116,12 @@ constexpr struct FeatureEntry kFeatureMap[] = {
         Feature::kAddressSpaceUnknownSecureContextNavigatedToLocal,
     },
     {
-        {AddressSpace::kUnknown, kNonSecureContext, AddressSpace::kLocal},
+        {AddressSpace::kUnknown, kNonSecureContext, AddressSpace::kPrivate},
         Feature::kAddressSpaceUnknownNonSecureContextEmbeddedPrivate,
         Feature::kAddressSpaceUnknownNonSecureContextNavigatedToPrivate,
     },
     {
-        {AddressSpace::kUnknown, kSecureContext, AddressSpace::kLocal},
+        {AddressSpace::kUnknown, kSecureContext, AddressSpace::kPrivate},
         Feature::kAddressSpaceUnknownSecureContextEmbeddedPrivate,
         Feature::kAddressSpaceUnknownSecureContextNavigatedToPrivate,
     },

@@ -137,12 +137,12 @@ class DocumentLoaderTest : public testing::TestWithParam<bool> {
         url_test_helpers::ToKURL("http://192.168.1.1/foo.html"),
         test::CoreTestDataPath("foo.html"), WebString::FromUTF8("text/html"),
         URLLoaderMockFactory::GetSingletonInstance(),
-        network::mojom::IPAddressSpace::kLocal);
+        network::mojom::IPAddressSpace::kPrivate);
     url_test_helpers::RegisterMockedURLLoad(
         url_test_helpers::ToKURL("https://192.168.1.1/foo.html"),
         test::CoreTestDataPath("foo.html"), WebString::FromUTF8("text/html"),
         URLLoaderMockFactory::GetSingletonInstance(),
-        network::mojom::IPAddressSpace::kLocal);
+        network::mojom::IPAddressSpace::kPrivate);
     url_test_helpers::RegisterMockedURLLoad(
         url_test_helpers::ToKURL("http://somethinglocal/foo.html"),
         test::CoreTestDataPath("foo.html"), WebString::FromUTF8("text/html"),

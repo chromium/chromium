@@ -59,7 +59,7 @@ absl::optional<net::IPAddress> ParsePrivateIpFromUrl(const GURL& url) {
     return absl::nullopt;
   }
 
-  if (IPAddressToIPAddressSpace(address) != mojom::IPAddressSpace::kLocal) {
+  if (IPAddressToIPAddressSpace(address) != mojom::IPAddressSpace::kPrivate) {
     return absl::nullopt;
   }
 
@@ -113,7 +113,7 @@ PrivateNetworkAccessCheckResult PrivateNetworkAccessChecker::Check(
   // If we are connecting to a private IP endpoint over HTTP without a target IP
   // address space, record whether we could have successfully inferred the
   // target IP address space from the request URL.
-  if (resource_address_space == mojom::IPAddressSpace::kLocal &&
+  if (resource_address_space == mojom::IPAddressSpace::kPrivate &&
       is_request_url_scheme_http_ &&
       target_address_space_ == mojom::IPAddressSpace::kUnknown) {
     base::UmaHistogramBoolean(

@@ -74,7 +74,7 @@ absl::optional<IPAddressSpace> ParseIPAddressSpace(base::StringPiece str) {
   }
 
   if (str == "private") {
-    return IPAddressSpace::kLocal;
+    return IPAddressSpace::kPrivate;
   }
 
   if (str == "local") {
@@ -236,18 +236,18 @@ const AddressSpaceMap& NonPublicAddressSpaceMap() {
       Entry(IPAddress::IPv6Localhost(), 128, IPAddressSpace::kLoopback),
       // IPv6 Unique-local (RFC 4193, RFC 8190): fc00::/7
       Entry(IPAddress(0xfc, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0), 7,
-            IPAddressSpace::kLocal),
+            IPAddressSpace::kPrivate),
       // IPv6 Link-local unicast (RFC 4291): fe80::/10
       Entry(IPAddress(0xfe, 0x80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0), 10,
-            IPAddressSpace::kLocal),
+            IPAddressSpace::kPrivate),
       // IPv4 Loopback (RFC 1122): 127.0.0.0/8
       Entry(IPAddress(127, 0, 0, 0), 8, IPAddressSpace::kLoopback),
       // IPv4 Private use (RFC 1918): 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16
-      Entry(IPAddress(10, 0, 0, 0), 8, IPAddressSpace::kLocal),
-      Entry(IPAddress(172, 16, 0, 0), 12, IPAddressSpace::kLocal),
-      Entry(IPAddress(192, 168, 0, 0), 16, IPAddressSpace::kLocal),
+      Entry(IPAddress(10, 0, 0, 0), 8, IPAddressSpace::kPrivate),
+      Entry(IPAddress(172, 16, 0, 0), 12, IPAddressSpace::kPrivate),
+      Entry(IPAddress(192, 168, 0, 0), 16, IPAddressSpace::kPrivate),
       // IPv4 Link-local (RFC 3927): 169.254.0.0/16
-      Entry(IPAddress(169, 254, 0, 0), 16, IPAddressSpace::kLocal),
+      Entry(IPAddress(169, 254, 0, 0), 16, IPAddressSpace::kPrivate),
   }));
   return *kMap;
 }
@@ -282,7 +282,7 @@ base::StringPiece IPAddressSpaceToStringPiece(IPAddressSpace space) {
       return "unknown";
     case IPAddressSpace::kPublic:
       return "public";
-    case IPAddressSpace::kLocal:
+    case IPAddressSpace::kPrivate:
       return "private";
     case IPAddressSpace::kLoopback:
       return "local";

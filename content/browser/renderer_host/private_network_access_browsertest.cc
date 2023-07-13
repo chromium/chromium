@@ -394,7 +394,7 @@ class FakeAddressSpaceServer {
     switch (space) {
       case network::mojom::IPAddressSpace::kLoopback:
         return "local";
-      case network::mojom::IPAddressSpace::kLocal:
+      case network::mojom::IPAddressSpace::kPrivate:
         return "private";
       case network::mojom::IPAddressSpace::kPublic:
         return "public";
@@ -454,7 +454,7 @@ class PrivateNetworkAccessBrowserTestBase : public ContentBrowserTest {
         insecure_private_server_(
             net::EmbeddedTestServer::TYPE_HTTP,
             net::test_server::HttpConnection::Protocol::kHttp1,
-            network::mojom::IPAddressSpace::kLocal,
+            network::mojom::IPAddressSpace::kPrivate,
             GetTestDataFilePath()),
         insecure_public_server_(
             net::EmbeddedTestServer::TYPE_HTTP,
@@ -468,7 +468,7 @@ class PrivateNetworkAccessBrowserTestBase : public ContentBrowserTest {
         secure_private_server_(
             net::EmbeddedTestServer::TYPE_HTTPS,
             net::test_server::HttpConnection::Protocol::kHttp1,
-            network::mojom::IPAddressSpace::kLocal,
+            network::mojom::IPAddressSpace::kPrivate,
             GetTestDataFilePath()),
         secure_public_server_(
             net::EmbeddedTestServer::TYPE_HTTPS,
@@ -829,7 +829,7 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
       root_frame_host()->BuildClientSecurityState();
   ASSERT_FALSE(security_state.is_null());
   EXPECT_FALSE(security_state->is_web_secure_context);
-  EXPECT_EQ(network::mojom::IPAddressSpace::kLocal,
+  EXPECT_EQ(network::mojom::IPAddressSpace::kPrivate,
             security_state->ip_address_space);
 }
 
@@ -865,7 +865,7 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
       root_frame_host()->BuildClientSecurityState();
   ASSERT_FALSE(security_state.is_null());
   EXPECT_TRUE(security_state->is_web_secure_context);
-  EXPECT_EQ(network::mojom::IPAddressSpace::kLocal,
+  EXPECT_EQ(network::mojom::IPAddressSpace::kPrivate,
             security_state->ip_address_space);
 }
 
@@ -995,7 +995,7 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
       root_frame_host()->BuildClientSecurityState();
   ASSERT_FALSE(security_state.is_null());
   EXPECT_TRUE(security_state->is_web_secure_context);
-  EXPECT_EQ(network::mojom::IPAddressSpace::kLocal,
+  EXPECT_EQ(network::mojom::IPAddressSpace::kPrivate,
             security_state->ip_address_space);
 }
 
@@ -1030,7 +1030,7 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
       root_frame_host()->BuildClientSecurityState();
   ASSERT_FALSE(security_state.is_null());
   EXPECT_FALSE(security_state->is_web_secure_context);
-  EXPECT_EQ(network::mojom::IPAddressSpace::kLocal,
+  EXPECT_EQ(network::mojom::IPAddressSpace::kPrivate,
             security_state->ip_address_space);
 }
 
@@ -2627,7 +2627,7 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
 }
 
 // This test verifies that when sending preflights is enabled, the private
-// network request policy for non-secure contexts in the `kLocal` address
+// network request policy for non-secure contexts in the `kPrivate` address
 // space is `kWarn`.
 // This checks that as long as the "block from insecure private" feature flag
 // is not enabled, we will only show warnings for these requests.
@@ -2675,7 +2675,7 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestRespectPreflightResults,
 }
 
 // This test verifies that when enforcing preflights is enabled, the private
-// network request policy for non-secure contexts in the `kLocal` address
+// network request policy for non-secure contexts in the `kPrivate` address
 // space is `kPreflightBlock`.
 // This checks that as long as the "block from insecure private" feature flag
 // is not enabled, we will only show warnings for these requests.

@@ -322,7 +322,7 @@ NetworkServiceMemoryCache::MaybeCreateWriter(
 
   // TODO(https://crbug.com/1339708): Make `this` work for responses from
   // private network. Currently some tests are failing.
-  if (response->response_address_space == mojom::IPAddressSpace::kLocal) {
+  if (response->response_address_space == mojom::IPAddressSpace::kPrivate) {
     return nullptr;
   }
 
