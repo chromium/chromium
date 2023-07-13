@@ -556,7 +556,6 @@ class CORE_EXPORT NGFragmentBuilder {
   bool is_pushed_by_floats_ = false;
   bool subtree_modified_margin_strut_ = false;
   bool is_new_fc_ = false;
-  bool is_legacy_layout_root_ = false;
   bool is_block_in_inline_ = false;
   bool has_floating_descendants_for_paint_ = false;
   bool has_descendant_that_depends_on_percentage_block_size_ = false;
