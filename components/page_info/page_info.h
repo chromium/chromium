@@ -47,7 +47,8 @@ class PageInfoUI;
 // information and allows users to change the permissions. |PageInfo|
 // objects must be created on the heap. They destroy themselves after the UI is
 // closed.
-class PageInfo : private content_settings::OldCookieControlsObserver {
+class PageInfo : private content_settings::CookieControlsObserver,
+                 content_settings::OldCookieControlsObserver {
  public:
   // Status of a connection to a website.
   enum SiteConnectionStatus {
@@ -353,6 +354,14 @@ class PageInfo : private content_settings::OldCookieControlsObserver {
   void OnCookiesCountChanged(int allowed_cookies, int blocked_cookies) override;
   void OnStatefulBounceCountChanged(int bounce_count) override;
 
+  // CookieControlsObserver:
+  void OnStatusChanged(CookieControlsStatus status,
+                       CookieControlsEnforcement enforcement,
+                       base::Time expiration) override;
+  void OnSitesCountChanged(int allowed_sites, int blocked_sites) override;
+  void OnBreakageConfidenceLevelChanged(
+      CookieControlsBreakageConfidenceLevel level) override;
+
   // Populates this object's UI state with provided security context. This
   // function does not update visible UI-- that's part of Present*().
   void ComputeUIInputs(const GURL& url);
@@ -525,13 +534,21 @@ class PageInfo : private content_settings::OldCookieControlsObserver {
 
   std::unique_ptr<content_settings::CookieControlsController> controller_;
   base::ScopedObservation<content_settings::CookieControlsController,
-                          content_settings::OldCookieControlsObserver>
+                          content_settings::CookieControlsObserver>
       observation_{this};
+  base::ScopedObservation<content_settings::CookieControlsController,
+                          content_settings::OldCookieControlsObserver>
+      old_observation_{this};
 
   CookieControlsStatus status_ = CookieControlsStatus::kUninitialized;
 
   CookieControlsEnforcement enforcement_ =
       CookieControlsEnforcement::kNoEnforcement;
+
+  base::Time cookie_exception_expiration_;
+
+  CookieControlsBreakageConfidenceLevel cookie_controls_confidence_ =
+      CookieControlsBreakageConfidenceLevel::kUninitialized;
 
   bool is_subscribed_to_permission_change_for_testing = false;
 

@@ -14,6 +14,7 @@
 #include "ui/views/view.h"
 
 namespace views {
+class BoxLayoutView;
 class Label;
 }  // namespace views
 
@@ -41,6 +42,16 @@ class PageInfoCookiesContentView : public views::View, public PageInfoUI {
   // Sets the callback for when the cookies subpage is fully initialized. If it
   // is already calls the callback
   void SetInitializedCallbackForTesting(base::OnceClosure initialized_callback);
+
+  views::BoxLayoutView* third_party_cookies_container_for_testing() {
+    return third_party_cookies_container_;
+  }
+  views::Label* third_party_cookies_title_for_testing() {
+    return third_party_cookies_title_;
+  }
+  views::Label* third_party_cookies_description_for_testing() {
+    return third_party_cookies_description_;
+  }
 
  private:
   // Ensures the allowed sites information UI is present, with placeholder
@@ -117,7 +128,7 @@ class PageInfoCookiesContentView : public views::View, public PageInfoUI {
 
   // Third-party cookies section which contains a title, a description and a
   // toggle row view.
-  raw_ptr<views::View> third_party_cookies_container_ = nullptr;
+  raw_ptr<views::BoxLayoutView> third_party_cookies_container_ = nullptr;
   raw_ptr<views::Label> third_party_cookies_title_ = nullptr;
   raw_ptr<views::Label> third_party_cookies_description_ = nullptr;
 };
