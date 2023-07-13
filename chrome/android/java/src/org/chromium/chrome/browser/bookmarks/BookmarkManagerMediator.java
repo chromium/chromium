@@ -1076,23 +1076,42 @@ class BookmarkManagerMediator
         BookmarkItem item = bookmarkListEntry.getBookmarkItem();
         BookmarkId id = item.getId();
         PowerBookmarkMeta meta = bookmarkListEntry.getPowerBookmarkMeta();
+        final @BookmarkRowDisplayPref int displayPref =
+                mBookmarkUiPrefs.getBookmarkRowDisplayPref();
 
         propertyModel.set(BookmarkManagerProperties.BOOKMARK_LIST_ENTRY, bookmarkListEntry);
         propertyModel.set(BookmarkManagerProperties.BOOKMARK_ID, id);
-        propertyModel.set(ImprovedBookmarkRowProperties.TITLE, item.getTitle());
-        propertyModel.set(ImprovedBookmarkRowProperties.DESCRIPTION,
-                item.isFolder() ? BookmarkUtils.getFolderDescriptionText(
-                        id, mBookmarkModel, mContext.getResources())
-                                : item.getUrlForDisplay());
+
+        // Title
+        if (displayPref == BookmarkRowDisplayPref.COMPACT && item.isFolder()) {
+            propertyModel.set(ImprovedBookmarkRowProperties.TITLE,
+                    String.format(item.getTitle() + " (%s)",
+                            BookmarkUtils.getChildCountForDisplay(id, mBookmarkModel)));
+        } else {
+            propertyModel.set(ImprovedBookmarkRowProperties.TITLE, item.getTitle());
+        }
+
+        // Description
+        propertyModel.set(ImprovedBookmarkRowProperties.DESCRIPTION_VISIBLE, !item.isFolder());
+        // Only bookmarks have descriptions.
+        if (!item.isFolder()) {
+            propertyModel.set(ImprovedBookmarkRowProperties.DESCRIPTION, item.getUrlForDisplay());
+        }
+
+        // Icon
         resolveIconForBookmark(item, propertyModel);
+
+        // Menu
         propertyModel.set(
                 ImprovedBookmarkRowProperties.POPUP_LISTENER, this::onBookmarkItemMenuOpened);
-        propertyModel.set(ImprovedBookmarkRowProperties.SELECTED, false);
-        propertyModel.set(ImprovedBookmarkRowProperties.SELECTION_ACTIVE, false);
-        propertyModel.set(ImprovedBookmarkRowProperties.DRAG_ENABLED, false);
         // TODO(crbug.com/1442044): Investigate caching ModelList for the menu.
         propertyModel.set(ImprovedBookmarkRowProperties.LIST_MENU_BUTTON_DELEGATE,
                 () -> createListMenuForBookmark(propertyModel));
+
+        // Selection and drag state
+        propertyModel.set(ImprovedBookmarkRowProperties.SELECTED, false);
+        propertyModel.set(ImprovedBookmarkRowProperties.SELECTION_ACTIVE, false);
+        propertyModel.set(ImprovedBookmarkRowProperties.DRAG_ENABLED, false);
         propertyModel.set(ImprovedBookmarkRowProperties.EDITABLE, item.isEditable());
         propertyModel.set(
                 ImprovedBookmarkRowProperties.OPEN_BOOKMARK_CALLBACK, () -> openBookmarkId(id));

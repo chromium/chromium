@@ -20,6 +20,8 @@ class ImprovedBookmarkRowViewBinder {
             row.setTitle(model.get(ImprovedBookmarkRowProperties.TITLE));
         } else if (key == ImprovedBookmarkRowProperties.DESCRIPTION) {
             row.setDescription(model.get(ImprovedBookmarkRowProperties.DESCRIPTION));
+        } else if (key == ImprovedBookmarkRowProperties.DESCRIPTION_VISIBLE) {
+            row.setDescriptionVisible(model.get(ImprovedBookmarkRowProperties.DESCRIPTION_VISIBLE));
         } else if (key == ImprovedBookmarkRowProperties.START_IMAGE_VISIBILITY) {
             int startImageVisibility =
                     model.get(ImprovedBookmarkRowProperties.START_IMAGE_VISIBILITY);

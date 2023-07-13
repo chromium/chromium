@@ -76,6 +76,7 @@ public class ImprovedBookmarkRowTest {
         mModel = new PropertyModel.Builder(ImprovedBookmarkRowProperties.ALL_KEYS)
                          .with(ImprovedBookmarkRowProperties.TITLE, TITLE)
                          .with(ImprovedBookmarkRowProperties.DESCRIPTION, DESCRIPTION)
+                         .with(ImprovedBookmarkRowProperties.DESCRIPTION_VISIBLE, true)
                          .with(ImprovedBookmarkRowProperties.START_ICON_DRAWABLE, mDrawable)
                          .with(ImprovedBookmarkRowProperties.LIST_MENU_BUTTON_DELEGATE,
                                  mListMenuButtonDelegate)
@@ -95,6 +96,13 @@ public class ImprovedBookmarkRowTest {
                 TITLE, ((TextView) mImprovedBookmarkRow.findViewById(R.id.title)).getText());
         Assert.assertEquals(DESCRIPTION,
                 ((TextView) mImprovedBookmarkRow.findViewById(R.id.description)).getText());
+    }
+
+    @Test
+    public void testDescriptionVisibility() {
+        mModel.set(ImprovedBookmarkRowProperties.DESCRIPTION_VISIBLE, false);
+        Assert.assertEquals(
+                View.GONE, mImprovedBookmarkRow.findViewById(R.id.description).getVisibility());
     }
 
     @Test

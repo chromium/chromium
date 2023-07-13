@@ -32,6 +32,7 @@ class ImprovedBookmarkRowProperties {
 
     static final WritableObjectPropertyKey<String> TITLE = new WritableObjectPropertyKey<>();
     static final WritableObjectPropertyKey<String> DESCRIPTION = new WritableObjectPropertyKey<>();
+    static final WritableBooleanPropertyKey DESCRIPTION_VISIBLE = new WritableBooleanPropertyKey();
     static final WritableIntPropertyKey START_IMAGE_VISIBILITY = new WritableIntPropertyKey();
     // Sets the background color for the start image, both for the image and folder view.
     static final WritableIntPropertyKey START_AREA_BACKGROUND_COLOR = new WritableIntPropertyKey();
@@ -59,10 +60,10 @@ class ImprovedBookmarkRowProperties {
             SHOPPING_ACCESSORY_COORDINATOR = new WritableObjectPropertyKey<>();
 
     private static final PropertyKey[] IMPROVED_BOOKAMRK_ROW_PROPERTIES = {TITLE, DESCRIPTION,
-            START_IMAGE_VISIBILITY, START_AREA_BACKGROUND_COLOR, START_ICON_TINT,
-            START_ICON_DRAWABLE, START_IMAGE_FOLDER_DRAWABLES, FOLDER_CHILD_COUNT, ACCESSORY_VIEW,
-            LIST_MENU_BUTTON_DELEGATE, POPUP_LISTENER, SELECTED, SELECTION_ACTIVE, DRAG_ENABLED,
-            EDITABLE, OPEN_BOOKMARK_CALLBACK, SHOPPING_ACCESSORY_COORDINATOR};
+            DESCRIPTION_VISIBLE, START_IMAGE_VISIBILITY, START_AREA_BACKGROUND_COLOR,
+            START_ICON_TINT, START_ICON_DRAWABLE, START_IMAGE_FOLDER_DRAWABLES, FOLDER_CHILD_COUNT,
+            ACCESSORY_VIEW, LIST_MENU_BUTTON_DELEGATE, POPUP_LISTENER, SELECTED, SELECTION_ACTIVE,
+            DRAG_ENABLED, EDITABLE, OPEN_BOOKMARK_CALLBACK, SHOPPING_ACCESSORY_COORDINATOR};
     static final PropertyKey[] ALL_KEYS = PropertyModel.concatKeys(
             BookmarkManagerProperties.ALL_KEYS, IMPROVED_BOOKAMRK_ROW_PROPERTIES);
 }

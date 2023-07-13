@@ -114,6 +114,10 @@ public class ImprovedBookmarkRow extends SelectableItemViewBase<BookmarkId> {
         mDescriptionView.setText(description);
     }
 
+    void setDescriptionVisible(boolean visible) {
+        mDescriptionView.setVisibility(visible ? View.VISIBLE : View.GONE);
+    }
+
     void setStartImageVisible(boolean visible) {
         mStartImageView.setVisibility(visible ? View.VISIBLE : View.GONE);
     }

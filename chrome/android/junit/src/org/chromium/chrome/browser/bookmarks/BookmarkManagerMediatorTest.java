@@ -753,8 +753,9 @@ public class BookmarkManagerMediatorTest {
         assertEquals(mFolderItem2.getId(),
                 model.get(BookmarkManagerProperties.BOOKMARK_LIST_ENTRY).getBookmarkItem().getId());
         assertEquals(mFolderId2, model.get(BookmarkManagerProperties.BOOKMARK_ID));
-        assertEquals(mFolderItem2.getTitle(), model.get(ImprovedBookmarkRowProperties.TITLE));
-        assertEquals("1 bookmark", model.get(ImprovedBookmarkRowProperties.DESCRIPTION));
+        assertEquals(
+                mFolderItem2.getTitle() + " (1)", model.get(ImprovedBookmarkRowProperties.TITLE));
+        assertFalse(model.get(ImprovedBookmarkRowProperties.DESCRIPTION_VISIBLE));
         assertEquals(StartImageVisibility.DRAWABLE,
                 model.get(ImprovedBookmarkRowProperties.START_IMAGE_VISIBILITY));
         assertNotNull(model.get(ImprovedBookmarkRowProperties.START_ICON_DRAWABLE));
@@ -785,7 +786,7 @@ public class BookmarkManagerMediatorTest {
                 model.get(BookmarkManagerProperties.BOOKMARK_LIST_ENTRY).getBookmarkItem().getId());
         assertEquals(mFolderId2, model.get(BookmarkManagerProperties.BOOKMARK_ID));
         assertEquals(mFolderItem2.getTitle(), model.get(ImprovedBookmarkRowProperties.TITLE));
-        assertEquals("1 bookmark", model.get(ImprovedBookmarkRowProperties.DESCRIPTION));
+        assertFalse(model.get(ImprovedBookmarkRowProperties.DESCRIPTION_VISIBLE));
         assertEquals(StartImageVisibility.FOLDER_DRAWABLE,
                 model.get(ImprovedBookmarkRowProperties.START_IMAGE_VISIBILITY));
         assertNotNull(model.get(ImprovedBookmarkRowProperties.START_ICON_DRAWABLE));
@@ -814,8 +815,8 @@ public class BookmarkManagerMediatorTest {
         assertEquals(mFolderItem2.getId(),
                 model.get(BookmarkManagerProperties.BOOKMARK_LIST_ENTRY).getBookmarkItem().getId());
         assertEquals(mFolderId2, model.get(BookmarkManagerProperties.BOOKMARK_ID));
-        assertEquals(mFolderItem2.getTitle(), model.get(ImprovedBookmarkRowProperties.TITLE));
-        assertEquals("1 bookmark", model.get(ImprovedBookmarkRowProperties.DESCRIPTION));
+        assertEquals(
+                mFolderItem2.getTitle() + " (1)", model.get(ImprovedBookmarkRowProperties.TITLE));
         assertNotNull(model.get(ImprovedBookmarkRowProperties.START_ICON_DRAWABLE));
         assertNotNull(model.get(ImprovedBookmarkRowProperties.START_AREA_BACKGROUND_COLOR));
         assertNotNull(model.get(ImprovedBookmarkRowProperties.START_ICON_TINT));
@@ -844,7 +845,7 @@ public class BookmarkManagerMediatorTest {
                 model.get(BookmarkManagerProperties.BOOKMARK_LIST_ENTRY).getBookmarkItem());
         assertEquals(mFolderId2, model.get(BookmarkManagerProperties.BOOKMARK_ID));
         assertEquals(mFolderItem2.getTitle(), model.get(ImprovedBookmarkRowProperties.TITLE));
-        assertEquals("1 bookmark", model.get(ImprovedBookmarkRowProperties.DESCRIPTION));
+        assertFalse(model.get(ImprovedBookmarkRowProperties.DESCRIPTION_VISIBLE));
         assertNotNull(model.get(ImprovedBookmarkRowProperties.START_ICON_DRAWABLE));
         assertNotNull(model.get(ImprovedBookmarkRowProperties.START_IMAGE_FOLDER_DRAWABLES));
         assertNotNull(model.get(ImprovedBookmarkRowProperties.POPUP_LISTENER));
