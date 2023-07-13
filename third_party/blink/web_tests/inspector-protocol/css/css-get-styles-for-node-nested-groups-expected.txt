@@ -1,0 +1,34 @@
+The test verifies functionality of protocol method CSS.getMatchedStylesForNode for nested groups.
+There shouldn't be an empty rule for #no-properties
+Dumping inline style: 
+{
+}
+Dumping matched rules: 
+*#no-properties* {    regular
+}
+@supports (display: flex)
+    *&* {    regular
+        color: red; @[4:8-4:19]
+        color: red; @[undefined-undefined]
+    }
+Dumping inherited rules: 
+
+There should be a rule for implicit nested group.
+Dumping inline style: 
+{
+}
+Dumping matched rules: 
+*#with-properties* {    regular
+}
+@supports (display: flex)
+     {    regular
+        color: blue; @[11:6-11:18]
+        color: blue; @[undefined-undefined]
+    }
+@supports (display: flex)
+    *&* {    regular
+        color: red; @[13:8-13:19]
+        color: red; @[undefined-undefined]
+    }
+Dumping inherited rules: 
+
