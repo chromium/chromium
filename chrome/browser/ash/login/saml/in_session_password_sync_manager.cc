@@ -6,18 +6,14 @@
 
 #include <utility>
 
-#include "ash/constants/ash_features.h"
 #include "base/check.h"
-#include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/time/default_clock.h"
 #include "chrome/browser/ash/login/auth/chrome_safe_mode_delegate.h"
 #include "chrome/browser/ash/login/helper.h"
-#include "chrome/browser/ash/login/lock/screen_locker.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/profile_auth_data.h"
 #include "chrome/browser/ash/login/saml/password_sync_token_fetcher.h"
-#include "chrome/browser/ash/login/screens/network_error.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/browser_process.h"
@@ -30,7 +26,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/known_user.h"
-#include "components/user_manager/user_manager_base.h"
+#include "components/user_manager/user_manager.h"
 #include "content/public/browser/storage_partition.h"
 
 namespace ash {

@@ -4,23 +4,11 @@
 
 #include "chrome/browser/ash/login/saml/password_expiry_notification.h"
 
-#include "ash/public/cpp/session/session_activation_observer.h"
-#include "ash/public/cpp/session/session_controller.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/notifications/notification_display_service_impl.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
-#include "chrome/common/pref_names.h"
-#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
-#include "chrome/test/base/testing_profile_manager.h"
-#include "chromeos/ash/components/login/auth/public/saml_password_attributes.h"
-#include "components/user_manager/scoped_user_manager.h"
-#include "components/user_manager/user_names.h"
 #include "content/public/test/browser_task_environment.h"
-#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {

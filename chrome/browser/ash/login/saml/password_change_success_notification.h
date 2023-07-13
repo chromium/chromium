@@ -5,10 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_SAML_PASSWORD_CHANGE_SUCCESS_NOTIFICATION_H_
 #define CHROME_BROWSER_ASH_LOGIN_SAML_PASSWORD_CHANGE_SUCCESS_NOTIFICATION_H_
 
-#include <string>
-
-#include "base/time/time.h"
-
 class Profile;
 
 namespace ash {

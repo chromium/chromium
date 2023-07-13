@@ -13,10 +13,9 @@
 #include "base/path_service.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_restrictions.h"
-#include "chrome/browser/ash/login/users/test_users.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/fake_gaia_mixin.h"
-#include "chromeos/ash/components/dbus/attestation/fake_attestation_client.h"
+#include "chromeos/ash/components/dbus/attestation/attestation_client.h"
 #include "net/base/url_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -392,7 +391,7 @@ FakeSamlIdpMixin::BuildResponseForCheckDeviceAnswer(const HttpRequest& request,
 
   auto iter = request.headers.find(kSamlVerifiedAccessResponseHeader);
   if (iter != request.headers.end()) {
-    SaveChallengeResponse(/*challenge_response=*/iter->second);
+    SaveChallengeResponse(/*response=*/iter->second);
   } else {
     ClearChallengeResponse();
   }
