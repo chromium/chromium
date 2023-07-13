@@ -63,7 +63,7 @@
           signin::ConsentLevel::kSignin);
       DCHECK(self.promosManager);
       if (ShouldRegisterPromoWithPromoManager(
-              isSignedIn,
+              isSignedIn, /*is_omnibox_copy_paste=*/false,
               feature_engagement::TrackerFactory::GetForBrowserState(
                   sceneState.appState.mainBrowserState))) {
         self.promosManager->RegisterPromoForSingleDisplay(

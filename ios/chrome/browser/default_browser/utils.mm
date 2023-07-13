@@ -796,20 +796,32 @@ bool HasAppLaunchedOnColdStartAndRecordsLaunch() {
 }
 
 bool ShouldRegisterPromoWithPromoManager(bool is_signed_in,
+                                         bool is_omnibox_copy_paste,
                                          feature_engagement::Tracker* tracker) {
   if (ShouldForceDefaultPromoType()) {
     return YES;
   }
 
   // Consider showing the default browser promo if (1) launch is not after a
-  // crash, (2) chrome is not likely set as default browser, (3) the user has
-  // not seen a default browser promo too recently, (4) the user is eligible
-  // for either the tailored or generic default browser promo.
-  return GetApplicationContext()->WasLastShutdownClean() &&
-         !IsChromeLikelyDefaultBrowser() && !UserInPromoCooldown() &&
-         (IsTailoredPromoEligibleUser(is_signed_in) ||
-          IsGeneralPromoEligibleUser(is_signed_in) ||
-          IsVideoPromoEligibleUser(tracker));
+  // crash, (2) chrome is not likely set as default browser.
+  if (!GetApplicationContext()->WasLastShutdownClean() ||
+      IsChromeLikelyDefaultBrowser()) {
+    return NO;
+  }
+
+  // If in trigger criteria experiment, then show default browser promo if the
+  // promo show reason matches the experiment group.
+  if (IsDefaultBrowserTriggerCriteraExperimentEnabled()) {
+    return ShouldTriggerDefaultBrowserPromoOnOmniboxCopyPaste() ==
+           is_omnibox_copy_paste;
+  }
+
+  // Consider showing the default browser promo if (1) the user has not seen a
+  // default browser promo too recently, (2) the user is eligible for either the
+  // tailored or generic default browser promo.
+  return !UserInPromoCooldown() && (IsTailoredPromoEligibleUser(is_signed_in) ||
+                                    IsGeneralPromoEligibleUser(is_signed_in) ||
+                                    IsVideoPromoEligibleUser(tracker));
 }
 
 bool IsTailoredPromoEligibleUser(bool is_signed_in) {

@@ -228,6 +228,7 @@ bool HasAppLaunchedOnColdStartAndRecordsLaunch();
 // Return true if the default browser promo should be registered with the promo
 // manager to display a default browser promo.
 bool ShouldRegisterPromoWithPromoManager(bool is_signed_in,
+                                         bool is_omnibox_copy_paste,
                                          feature_engagement::Tracker* tracker);
 
 // Returns true if it was determined that the user is eligible for a

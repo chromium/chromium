@@ -94,6 +94,7 @@ class DefaultBrowserPromoManagerTest : public PlatformTest {
   UIViewController* view_controller_;
   DefaultBrowserPromoManager* default_browser_promo_manager_;
   std::unique_ptr<TestingPrefServiceSimple> local_state_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // Tests that the DefaultPromoTypeMadeForIOS tailored promo is shown when it was
@@ -169,4 +170,22 @@ TEST_F(DefaultBrowserPromoManagerTest, showDefaultBrowserVideoPromo) {
   EXPECT_OCMOCK_VERIFY(mock);
 }
 
+// Tests that the DefaultPromoTypeGeneral promo is shown if the trigger criteria
+// experiment is enabled.
+TEST_F(DefaultBrowserPromoManagerTest,
+       showDefaultBrowserFullscreenPromo_TriggerExpEnabled) {
+  feature_list_.InitWithFeatures({kDefaultBrowserTriggerCriteriaExperiment},
+                                 {});
+  TestingApplicationContext::GetGlobal()->SetLastShutdownClean(true);
+  id mock = [OCMockObject mockForClass:[DefaultBrowserPromoManager class]];
+
+  // Even if the conditions are right for tailored promo, it should display
+  // default browser promo if the trigger criteria experiment is on.
+  LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeAllTabs);
+  SignIn();
+
+  [[mock expect] showPromoForTesting:DefaultPromoTypeGeneral];
+  [default_browser_promo_manager_ start];
+  EXPECT_OCMOCK_VERIFY(mock);
+}
 }  // namespace

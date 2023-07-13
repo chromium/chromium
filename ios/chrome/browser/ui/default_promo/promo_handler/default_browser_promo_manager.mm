@@ -76,6 +76,11 @@
     return;
   }
 
+  if (IsDefaultBrowserTriggerCriteraExperimentEnabled()) {
+    [self showPromo:DefaultPromoTypeGeneral];
+    return;
+  }
+
   feature_engagement::Tracker* tracker =
       feature_engagement::TrackerFactory::GetForBrowserState(browserState);
 
