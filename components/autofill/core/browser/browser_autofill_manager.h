@@ -28,6 +28,7 @@
 #include "components/autofill/core/browser/autofill_external_delegate.h"
 #include "components/autofill/core/browser/autofill_manager.h"
 #include "components/autofill/core/browser/field_filler.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_autofill_history.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/form_types.h"
@@ -535,28 +536,26 @@ class BrowserAutofillManager : public AutofillManager,
     std::map<FieldGlobalId, std::u16string> forced_fill_values;
   };
 
-  // Given a `form` (and corresponding `form_structure`) to fill with a
-  // `profile_or_credit_card`, return a list of field indices of the fields that
-  // should be filled and not skipped. Also logs the reason for skipping the
-  // other fields.
-  // `trigger_field` and corresponding `trigger_autofill_field` are the field
-  // that initiated the filling.
-  // `action` records whether the browser filling is a renderer fill or preview
-  // operation. `fill_event_id` is used to record log events.
-  // TODO(crbug/1331312): Keep only one of 'form' and 'form_structure', and one
-  // of `trigger_field` and `autofill_trigger_field`.
-  std::vector<size_t> GetFieldsToFill(
-      mojom::RendererFormDataAction action,
-      FormData& form,
-      FormStructure& form_structure,
+  // Given a `form` (and corresponding `form_structure`) to fill, return a list
+  // of skip statuses for the fields.
+  // `optional_credit_card` is the credit card to be filled or nullopt if we're
+  // filling an AutofillProfile.
+  // `type_group_originally_filled` denotes, in case of a refill, what groups
+  // where filled in the initial filling.
+  // It is assumed here that `form` and `form_structure` have the same
+  // number of fields, and this would be the size of the returned list.
+  // TODO(crbug/1331312): Keep only one of 'form' and 'form_structure'.
+  // TODO(crbug/1275649): Add the case removed in crrev.com/c/4675831 when the
+  // experiment resumes.
+  std::vector<SkipStatus> GetSkipStatuses(
+      const FormData& form,
+      const FormStructure& form_structure,
       const FormFieldData& trigger_field,
-      const AutofillField& autofill_trigger_field,
-      absl::variant<const AutofillProfile*, const CreditCard*>
-          profile_or_credit_card,
-      absl::optional<FillEventId> fill_event_id,
-      const std::u16string* optional_cvc,
-      bool is_refill,
-      AutofillTriggerSource trigger_source);
+      const Section& filling_section,
+      const absl::optional<CreditCard>& optional_credit_card,
+      const std::set<FieldTypeGroup>& type_groups_originally_filled,
+      bool skip_unrecognized_autocomplete_fields,
+      bool is_refill) const;
 
   // CreditCardAccessManager::Accessor
   void OnCreditCardFetched(CreditCardFetchResult result,

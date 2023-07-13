@@ -7933,8 +7933,9 @@ TEST_F(AutofillMetricsTest, PageLanguageMetricsInvalidLanguage) {
 // 4. Selection fields are always overridden by Autofill.
 //    |Autofill.IsValueNotAutofilledOverExistingValueSameAsSubmittedValue2|
 //    should not record anything in this case.
+// TODO(1275649): Re-enable when restarting the experiment.
 TEST_F(AutofillMetricsTest,
-       IsValueNotAutofilledOverExistingValueSameAsSubmittedValue) {
+       DISABLED_IsValueNotAutofilledOverExistingValueSameAsSubmittedValue) {
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeature(
       features::kAutofillPreventOverridingPrefilledValues);

@@ -10243,7 +10243,9 @@ TEST_F(BrowserAutofillManagerTest, GetSuggestions_AboutBlankTarget) {
 
 // Test that the Autofill does not override input field values that were already
 // prefilled.
-TEST_F(BrowserAutofillManagerTest, PreventOverridingOfPrefilledValues) {
+// TODO(1275649): Re-enable when restarting the experiment.
+TEST_F(BrowserAutofillManagerTest,
+       DISABLED_PreventOverridingOfPrefilledValues) {
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeature(
       autofill::features::kAutofillPreventOverridingPrefilledValues);
@@ -10333,7 +10335,8 @@ TEST_F(BrowserAutofillManagerTest, PreventOverridingOfPrefilledValues) {
 // Tests that the Autofill does override the prefilled field value since the
 // field is the initiating field for the Autofill and has a prefilled value
 // which is a substring of the autofillable value.
-TEST_F(BrowserAutofillManagerTest, AutofillOverridePrefilledValue) {
+// TODO(1275649): Re-enable when restarting the experiment.
+TEST_F(BrowserAutofillManagerTest, DISABLED_AutofillOverridePrefilledValue) {
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeature(
       autofill::features::kAutofillPreventOverridingPrefilledValues);

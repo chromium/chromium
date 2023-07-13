@@ -55,6 +55,7 @@
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_optimization_guide.h"
 #include "components/autofill/core/browser/autofill_suggestion_generator.h"
+#include "components/autofill/core/browser/autofill_trigger_source.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/browser_autofill_manager_test_delegate.h"
 #include "components/autofill/core/browser/data_model/autofill_data_model.h"
@@ -134,6 +135,39 @@ constexpr base::TimeDelta kWaitTimeForDynamicForms = base::Milliseconds(200);
 
 // Characters to be removed from the string before comparisons.
 constexpr char16_t kCharsToBeRemoved[] = u"-_/\\.";
+
+std::string_view GetSkipFieldFillLogMessage(SkipStatus skip_status) {
+  switch (skip_status) {
+    case SkipStatus::kNotInFilledSection:
+      return "Skipped: Not part of filled section";
+    case SkipStatus::kNotFocused:
+      return "Skipped: Only fill when focused";
+    case SkipStatus::kUnrecognizedAutocompleteAttribute:
+      return "Skipped: Unrecognized autocomplete attribute";
+    case SkipStatus::kFormChanged:
+      return "Skipped: Form has changed";
+    case SkipStatus::kInvisibleField:
+      return "Skipped: Invisible field";
+    case SkipStatus::kValuePrefilled:
+      return "Skipped: Value is prefilled";
+    case SkipStatus::kUserFilledFields:
+      return "Skipped: User filled the field";
+    case SkipStatus::kAutofilledFieldsNotRefill:
+      return "Skipped: Previously autofilled field and not a refill";
+    case SkipStatus::kNoFillableGroup:
+      return "Skipped: Field type has no fillable group";
+    case SkipStatus::kRefillNotInInitialFill:
+      return "Skipped: Refill field group different from initial filling group";
+    case SkipStatus::kExpiredCards:
+      return "Skipped: Expired expiration date for credit card";
+    case SkipStatus::kFillingLimitReachedType:
+      return "Skipped: Field type filling limit reached";
+    case SkipStatus::kNotSkipped:
+      return "Fillable";
+    case SkipStatus::kUnknown:
+      NOTREACHED_NORETURN();
+  }
+}
 
 // Returns whether the |field| is predicted as being any kind of name.
 bool IsNameType(const AutofillField& field) {
@@ -2213,104 +2247,57 @@ AutofillProfile* BrowserAutofillManager::GetProfile(
   return nullptr;
 }
 
-std::vector<size_t> BrowserAutofillManager::GetFieldsToFill(
-    mojom::RendererFormDataAction action,
-    FormData& form,
-    FormStructure& form_structure,
+std::vector<SkipStatus> BrowserAutofillManager::GetSkipStatuses(
+    const FormData& form,
+    const FormStructure& form_structure,
     const FormFieldData& trigger_field,
-    const AutofillField& autofill_trigger_field,
-    absl::variant<const AutofillProfile*, const CreditCard*>
-        profile_or_credit_card,
-    absl::optional<FillEventId> fill_event_id,
-    const std::u16string* optional_cvc,
-    bool is_refill,
-    AutofillTriggerSource trigger_source) {
-  LogBuffer buffer(IsLoggingActive(log_manager()));
-  FillingContext* filling_context = GetFillingContext(form_structure);
+    const Section& filling_section,
+    const absl::optional<CreditCard>& optional_credit_card,
+    const std::set<FieldTypeGroup>& type_groups_originally_filled,
+    bool skip_unrecognized_autocomplete_fields,
+    bool is_refill) const {
   // Counts the number of times a type was seen in the section to be filled.
   // This is used to limit the maximum number of fills per value.
   base::flat_map<ServerFieldType, size_t> type_count;
   type_count.reserve(form_structure.field_count());
 
-  std::vector<size_t> fields_to_fill;
+  CHECK_EQ(form.fields.size(), form_structure.field_count());
+  std::vector<SkipStatus> skip_statuses(form_structure.field_count());
   for (size_t i = 0; i < form_structure.field_count(); ++i) {
-    std::string field_number = base::StringPrintf("Field %zu", i);
-
     // Log events when the fields on the form are filled by autofill suggestion.
-    AutofillField* autofill_field = form_structure.field(i);
-    bool has_value_before = !form.fields[i].value.empty();
+    const AutofillField* autofill_field = form_structure.field(i);
 
-    // Log when the suggestion is selected and log on non-checkable fields that
-    // skip filling.
-    auto LogSkippedStatusIfFill = [&fill_event_id, autofill_field,
-                                   has_value_before](SkipStatus skip_status) {
-      if (fill_event_id && !IsCheckable(autofill_field->check_status)) {
-        autofill_field->AppendLogEventIfNotRepeated(FillFieldLogEvent{
-            .fill_event_id = *fill_event_id,
-            .had_value_before_filling = ToOptionalBoolean(has_value_before),
-            .autofill_skipped_status = skip_status,
-            .was_autofilled = OptionalBoolean::kFalse,
-            .had_value_after_filling = ToOptionalBoolean(has_value_before),
-        });
-      }
-    };
-
-    if (autofill_field->section != autofill_trigger_field.section) {
-      LOG_AF(buffer) << Tr{} << field_number
-                     << "Skipped: not part of filled section";
-      LogSkippedStatusIfFill(SkipStatus::kNotInFilledSection);
+    if (autofill_field->section != filling_section) {
+      skip_statuses[i] = SkipStatus::kNotInFilledSection;
       continue;
     }
 
     if (autofill_field->only_fill_when_focused() &&
-        !autofill_field->SameFieldAs(trigger_field)) {
-      LOG_AF(buffer) << Tr{} << field_number
-                     << "Skipped: only fill when focused";
-      LogSkippedStatusIfFill(SkipStatus::kNotFocused);
+        !FormFieldData::DeepEqual(*autofill_field, trigger_field)) {
+      skip_statuses[i] = SkipStatus::kNotFocused;
       continue;
     }
 
     // Address fields with unrecognized autocomplete attribute are only filled
     // when triggered through manual fallbacks.
-    if (trigger_source !=
-            AutofillTriggerSource::kManualFallbackForAutocompleteUnrecognized &&
+    if (skip_unrecognized_autocomplete_fields &&
         autofill_field->ShouldSuppressSuggestionsAndFillingByDefault()) {
-      LOG_AF(buffer) << Tr{} << "Skipped: Unrecognized autocomplete attribute";
-      LogSkippedStatusIfFill(SkipStatus::kUnrecognizedAutocompleteAttribute);
+      skip_statuses[i] = SkipStatus::kUnrecognizedAutocompleteAttribute;
       continue;
     }
 
     // TODO(crbug/1203667#c9): Skip if the form has changed in the meantime,
     // which may happen with refills.
     if (autofill_field->global_id() != form.fields[i].global_id()) {
-      LOG_AF(buffer) << Tr{} << field_number << "Skipped: the form has changed";
-      LogSkippedStatusIfFill(SkipStatus::kFormChanged);
+      skip_statuses[i] = SkipStatus::kFormChanged;
       continue;
     }
 
     // Don't fill unfocusable fields, with the exception of <select> and
     // <selectmenu> fields, for the sake of filling the synthetic fields.
-    if (!autofill_field->IsFocusable()) {
-      bool skip = !form.fields[i].IsSelectOrSelectMenuElement();
-      form_interactions_ukm_logger()
-          ->LogHiddenRepresentationalFieldSkipDecision(form_structure,
-                                                       *autofill_field, skip);
-      if (skip) {
-        LOG_AF(buffer) << Tr{} << field_number << "Skipped: invisible field";
-        LogSkippedStatusIfFill(SkipStatus::kInvisibleField);
-        continue;
-      }
-    }
-
-    if (bool has_override = filling_context &&
-                            base::Contains(filling_context->forced_fill_values,
-                                           form.fields[i].global_id());
-        !has_override && ShouldPreventAutofillFromOverridingPrefilledField(
-                             action, autofill_field, &form.fields[i],
-                             autofill_field->SameFieldAs(trigger_field),
-                             profile_or_credit_card, optional_cvc)) {
-      LOG_AF(buffer) << Tr{} << field_number << "Skipped: value is prefilled";
-      LogSkippedStatusIfFill(SkipStatus::kValuePrefilled);
+    if (!autofill_field->IsFocusable() &&
+        !autofill_field->IsSelectOrSelectMenuElement()) {
+      skip_statuses[i] = SkipStatus::kInvisibleField;
       continue;
     }
 
@@ -2320,69 +2307,52 @@ std::vector<size_t> BrowserAutofillManager::GetFieldsToFill(
     // frequently has false negatives.
     if ((form.fields[i].properties_mask & kUserTyped) &&
         (!form.fields[i].value.empty() || !autofill_field->value.empty()) &&
-        !autofill_field->SameFieldAs(trigger_field)) {
-      LOG_AF(buffer) << Tr{} << field_number
-                     << "Skipped: don't fill user-filled fields";
-      LogSkippedStatusIfFill(SkipStatus::kUserFilledFields);
+        !FormFieldData::DeepEqual(*autofill_field, trigger_field)) {
+      skip_statuses[i] = SkipStatus::kUserFilledFields;
       continue;
     }
 
     // Don't fill previously autofilled fields except the initiating field or
     // when it's a refill.
     if (form.fields[i].is_autofilled &&
-        !autofill_field->SameFieldAs(trigger_field) && !is_refill) {
-      LOG_AF(buffer)
-          << Tr{} << field_number
-          << "Skipped: don't fill previously filled fields unless during a "
-             "refill";
-      LogSkippedStatusIfFill(SkipStatus::kAutofilledFieldsNotRefill);
+        !FormFieldData::DeepEqual(*autofill_field, trigger_field) &&
+        !is_refill) {
+      skip_statuses[i] = SkipStatus::kAutofilledFieldsNotRefill;
       continue;
     }
 
     FieldTypeGroup field_group_type = autofill_field->Type().group();
     if (field_group_type == FieldTypeGroup::kNoGroup) {
-      LOG_AF(buffer) << Tr{} << field_number
-                     << "Skipped: field type has no fillable group";
-      LogSkippedStatusIfFill(SkipStatus::kNoFillableGroup);
+      skip_statuses[i] = SkipStatus::kNoFillableGroup;
       continue;
     }
 
     // On a refill, only fill fields from type groups that were present during
     // the initial fill.
     if (is_refill &&
-        !base::Contains(filling_context->type_groups_originally_filled,
-                        field_group_type)) {
-      LOG_AF(buffer)
-          << Tr{} << field_number
-          << "Skipped: in a refill, only fields from the group that was "
-             "filled in the initial fill may be filled";
-      LogSkippedStatusIfFill(SkipStatus::kRefillNotInInitialFill);
+        !base::Contains(type_groups_originally_filled, field_group_type)) {
+      skip_statuses[i] = SkipStatus::kRefillNotInInitialFill;
       continue;
     }
 
     ServerFieldType field_type = autofill_field->Type().GetStorableType();
     // Don't fill expired cards expiration date.
     if (data_util::IsCreditCardExpirationType(field_type) &&
-        (absl::holds_alternative<const CreditCard*>(profile_or_credit_card) &&
-         absl::get<const CreditCard*>(profile_or_credit_card)
-             ->IsExpired(AutofillClock::Now()))) {
-      LOG_AF(buffer) << Tr{} << field_number
-                     << "Skipped: don't fill expiration date of expired cards";
-      LogSkippedStatusIfFill(SkipStatus::kExpiredCards);
+        (optional_credit_card &&
+         optional_credit_card->IsExpired(AutofillClock::Now()))) {
+      skip_statuses[i] = SkipStatus::kExpiredCards;
       continue;
     }
 
     // A field with a specific type is only allowed to be filled a limited
     // number of times given by |TypeValueFormFillingLimit(field_type)|.
     if (++type_count[field_type] > TypeValueFormFillingLimit(field_type)) {
-      LOG_AF(buffer) << Tr{} << field_number
-                     << "Skipped: field-type filling-limit reached";
-      LogSkippedStatusIfFill(SkipStatus::kFillingLimitReachedType);
+      skip_statuses[i] = SkipStatus::kFillingLimitReachedType;
       continue;
     }
-    fields_to_fill.push_back(i);
+    skip_statuses[i] = SkipStatus::kNotSkipped;
   }
-  return fields_to_fill;
+  return skip_statuses;
 }
 
 void BrowserAutofillManager::FillOrPreviewDataModelForm(
@@ -2475,6 +2445,7 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
     fill_event_id = trigger_fill_field_log_event.fill_event_id;
   }
 
+  // Create a copy of the current form to fill and send to the renderer.
   FormData result = form;
   CHECK_EQ(result.fields.size(), form_structure->field_count());
   for (size_t i = 0; i < form_structure->field_count(); ++i) {
@@ -2482,18 +2453,54 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
     result.fields[i].section = form_structure->field(i)->section;
   }
 
-  for (size_t i : GetFieldsToFill(action, result, *form_structure, field,
-                                  *autofill_trigger_field,
-                                  profile_or_credit_card, fill_event_id,
-                                  optional_cvc, is_refill, trigger_source)) {
+  std::vector<SkipStatus> skip_statuses = GetSkipStatuses(
+      result, *form_structure, field, autofill_trigger_field->section,
+      absl::holds_alternative<const CreditCard*>(profile_or_credit_card)
+          ? absl::make_optional(
+                *absl::get<const CreditCard*>(profile_or_credit_card))
+          : absl::nullopt,
+      filling_context->type_groups_originally_filled,
+      /*skip_unrecognized_autocomplete_fields=*/trigger_source !=
+          AutofillTriggerSource::kManualFallbackForAutocompleteUnrecognized,
+      is_refill);
+
+  constexpr DenseSet<SkipStatus> pre_ukm_logging_skips{
+      SkipStatus::kNotInFilledSection, SkipStatus::kFormChanged,
+      SkipStatus::kNotFocused};
+  CHECK_EQ(skip_statuses.size(), result.fields.size());
+  for (size_t i = 0; i < result.fields.size(); ++i) {
     AutofillField* autofill_field = form_structure->field(i);
+
+    if (!pre_ukm_logging_skips.contains(skip_statuses[i]) &&
+        !autofill_field->IsFocusable()) {
+      form_interactions_ukm_logger()
+          ->LogHiddenRepresentationalFieldSkipDecision(
+              *form_structure, *autofill_field,
+              !autofill_field->IsSelectOrSelectMenuElement());
+    }
+    const bool has_value_before = !result.fields[i].value.empty();
+    // Log when the suggestion is selected and log on non-checkable fields that
+    // skip filling.
+    if (skip_statuses[i] != SkipStatus::kNotSkipped) {
+      LOG_AF(buffer) << Tr{} << base::StringPrintf("Field %zu", i)
+                     << GetSkipFieldFillLogMessage(skip_statuses[i]);
+      if (fill_event_id && !IsCheckable(autofill_field->check_status)) {
+        autofill_field->AppendLogEventIfNotRepeated(FillFieldLogEvent{
+            .fill_event_id = *fill_event_id,
+            .had_value_before_filling = ToOptionalBoolean(has_value_before),
+            .autofill_skipped_status = skip_statuses[i],
+            .was_autofilled = OptionalBoolean::kFalse,
+            .had_value_after_filling = ToOptionalBoolean(has_value_before),
+        });
+      }
+      continue;
+    }
+
     if (could_attempt_refill) {
       filling_context->type_groups_originally_filled.insert(
           autofill_field->Type().group());
     }
 
-    const bool has_value_before = !result.fields[i].value.empty();
-    const bool is_autofilled_before = result.fields[i].is_autofilled;
     // Must match ForEachMatchingFormField() in form_autofill_util.cc.
     // Only notify autofilling of empty fields and the field that initiated the
     // filling (note that "select-one" controls may not be empty but will still
@@ -2534,6 +2541,7 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
       });
     }
 
+    const bool is_autofilled_before = result.fields[i].is_autofilled;
     LOG_AF(buffer)
         << Tr{}
         << base::StringPrintf(
