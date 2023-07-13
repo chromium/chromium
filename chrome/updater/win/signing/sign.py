@@ -56,6 +56,7 @@ import hashlib
 import os
 import shutil
 import subprocess
+import sys
 import tempfile
 import uuid
 
@@ -68,7 +69,6 @@ class SigningError(Exception):
 
 class Signer:
     """A container for a signing operation."""
-
     def __init__(self, tmpdir, lzma_exe, signtool_exe, tagging_exe, identity,
                  certificate_file_path, certificate_password):
         """Inits a signer with the necessary tools."""
@@ -196,6 +196,10 @@ class Signer:
         return self._add_tagging_cert(out_metainstaller)
 
 
+def has_switch(switch_name: str) -> bool:
+    return any(switch.startswith(switch_name) for switch in sys.argv)
+
+
 def main():
     parser = argparse.ArgumentParser(
         description=__doc__,
@@ -208,13 +212,17 @@ def main():
                         help='The path to save the signed metainstaller to.')
     parser.add_argument('--lzma_7z',
                         default='7z.exe',
-                        help='The path to the 7z executable.')
+                        required=not shutil.which('7z.exe'),
+                        help=('The path to the 7z executable.'
+                              'Required when 7z.exe is not in the PATH.'))
     parser.add_argument(
         '--signtool',
         default='signtool.exe',
         help='The path to the signtool executable. Look in depot_tools.')
     parser.add_argument('--certificate_tag',
-                        default='.\certificate_tag.exe',
+                        default=os.path.join(
+                            os.path.realpath(os.path.dirname(__file__)),
+                            'certificate_tag.exe'),
                         help='The path to the certificate_tag executable.')
     parser.add_argument(
         '--identity',
@@ -223,9 +231,10 @@ def main():
               'Can be a substring of the entire subject name.'))
     parser.add_argument(
         '--certificate_file_path',
-        required=False,
+        required=has_switch('--certificate_password'),
         help=('Specifies the path to a PFX signing certificate. Takes '
-              'precedence over `--identity`.'))
+              'precedence over `--identity`.'
+              'Required when `--certificate_password` is present.'))
     parser.add_argument(
         '--certificate_password',
         required=False,
@@ -234,11 +243,16 @@ def main():
                         required=False,
                         help='The offline installer appid.')
     parser.add_argument('--installer_path',
-                        required=False,
-                        help='The path to the offline installer.')
-    parser.add_argument('--manifest_path',
-                        required=False,
-                        help='The path to the offline manifest .gup file.')
+                        required=has_switch('--appid'),
+                        help=('The path to the offline installer.'
+                              'Required when `--appid` is present.'))
+    parser.add_argument(
+        '--manifest_path',
+        required=(has_switch('--appid')
+                  or has_switch('--manifest_dict_replacements')),
+        help=('The path to the offline manifest .gup file.'
+              'Required when `--appid` or '
+              '`--manifest_dict_replacements` is present.'))
     parser.add_argument(
         '--manifest_dict_replacements',
         required=False,
@@ -246,17 +260,6 @@ def main():
               'replaces the keys that it finds in the offline manifest .gup '
               'file with the corresponding values.'))
     args = parser.parse_args()
-    if args.appid and (args.installer_path is None
-                       or args.manifest_path is None):
-        parser.error(
-            '`--appid` requires `--installer_path` and `--manifest_path`.')
-    if args.manifest_dict_replacements and args.manifest_path is None:
-        parser.error(
-            '`--manifest_dict_replacements` requires `--manifest_path`.')
-    if args.certificate_password and args.certificate_file_path is None:
-        parser.error(
-            '`--certificate_password` requires `--certificate_file_path`.')
-
     with tempfile.TemporaryDirectory() as tmpdir:
         shutil.move(
             Signer(tmpdir, args.lzma_7z, args.signtool, args.certificate_tag,
