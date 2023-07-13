@@ -560,6 +560,7 @@ void ConfigurePartitions(
   // weren't already.
   auto* current_root = g_root.Get();
   auto* current_aligned_root = g_aligned_root.Get();
+  PA_DCHECK(current_root == current_aligned_root);
 
   if (!split_main_partition) {
     switch (use_alternate_bucket_distribution) {
@@ -568,7 +569,6 @@ void ConfigurePartitions(
         break;
       case AlternateBucketDistribution::kDenser:
         current_root->SwitchToDenserBucketDistribution();
-        current_aligned_root->SwitchToDenserBucketDistribution();
         break;
     }
     PA_DCHECK(!enable_brp);
@@ -652,8 +652,10 @@ void ConfigurePartitions(
       // We start in the 'default' case.
       break;
     case AlternateBucketDistribution::kDenser:
-      g_root.Get()->SwitchToDenserBucketDistribution();
-      g_aligned_root.Get()->SwitchToDenserBucketDistribution();
+      new_root->SwitchToDenserBucketDistribution();
+      if (new_aligned_root != new_root) {
+        new_aligned_root->SwitchToDenserBucketDistribution();
+      }
       break;
   }
 }
