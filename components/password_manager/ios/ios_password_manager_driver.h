@@ -22,6 +22,7 @@ class PasswordManager;
 
 namespace web {
 class WebFrame;
+class WebState;
 }  // namespace web
 
 // An iOS implementation of password_manager::PasswordManagerDriver.
@@ -78,6 +79,7 @@ class IOSPasswordManagerDriver
   // To create a new driver, use
   // IOSPasswordManagerDriverFactory::FromWebStateAndWebFrame.
   IOSPasswordManagerDriver(
+      web::WebState* web_state,
       id<PasswordManagerDriverBridge> bridge,
       password_manager::PasswordManagerInterface* password_manager,
       web::WebFrame* web_frame,
@@ -85,16 +87,26 @@ class IOSPasswordManagerDriver
 
   ~IOSPasswordManagerDriver() override;
 
+  base::WeakPtr<web::WebState> web_state_;
   __weak id<PasswordManagerDriverBridge> bridge_;  // (weak)
   password_manager::PasswordManagerInterface* password_manager_;
   std::unique_ptr<password_manager::PasswordGenerationFrameHelper>
       password_generation_helper_;
+  // TODO(crbug.com/1383214): Investigate to see if this can be removed
+  // entirely.
   web::WebFrame* web_frame_;
   int id_;
 
   // The hash of the cached frame ID of `web_frame_`. This is cached because
   // `web_frame` might be set to null when the frame is deleted.
   int cached_frame_id_;
+
+  // The frame ID of `web_frame_`. This is used to get the web frame associated
+  // to it and determine if it is still a valid web frame. See `web_frame_`
+  // comment: the driver can outlive the `web_frame()`. This can happen when the
+  // driver is handling the saving, editing or syncing of the password after a
+  // form submission.
+  std::string frame_id_;
 
   bool is_in_main_frame_;
   // The security origin associated with |web_frame_|.

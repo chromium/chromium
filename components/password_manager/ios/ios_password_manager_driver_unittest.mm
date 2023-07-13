@@ -5,6 +5,7 @@
 #import "components/password_manager/ios/ios_password_manager_driver.h"
 
 #import "base/strings/sys_string_conversions.h"
+#import "components/autofill/ios/browser/autofill_java_script_feature.h"
 #import "components/password_manager/core/browser/password_manager.h"
 #import "components/password_manager/core/browser/password_manager_client.h"
 #import "components/password_manager/core/browser/stub_password_manager_client.h"
@@ -21,6 +22,7 @@
 #error "This file requires ARC support."
 #endif
 
+using autofill::AutofillJavaScriptFeature;
 using base::SysNSStringToUTF8;
 using password_manager::PasswordManager;
 using testing::Return;
@@ -56,8 +58,11 @@ class IOSPasswordManagerDriverTest : public PlatformTest {
  public:
   IOSPasswordManagerDriverTest() : PlatformTest() {
     auto web_frames_manager = std::make_unique<web::FakeWebFramesManager>();
-    web::FakeWebFramesManager* web_frames_manager_ = web_frames_manager.get();
-    web_state_.SetWebFramesManager(std::move(web_frames_manager));
+    web_frames_manager_ = web_frames_manager.get();
+    web::ContentWorld content_world =
+        AutofillJavaScriptFeature::GetInstance()->GetSupportedContentWorld();
+    web_state_.SetWebFramesManager(content_world,
+                                   std::move(web_frames_manager));
 
     auto web_frame =
         web::FakeWebFrame::Create(SysNSStringToUTF8(@"main-frame"),
@@ -82,6 +87,7 @@ class IOSPasswordManagerDriverTest : public PlatformTest {
   }
 
  protected:
+  web::FakeWebFramesManager* web_frames_manager_;
   web::FakeWebState web_state_;
   IOSPasswordManagerDriver* driver_;
   IOSPasswordManagerDriver* driver2_;
@@ -119,7 +125,8 @@ TEST_F(IOSPasswordManagerDriverTest, SetPasswordFillData) {
 // Tests the InformNoSavedCredentials method.
 TEST_F(IOSPasswordManagerDriverTest, InformNoSavedCredentials) {
   OCMExpect([password_controller_
-      onNoSavedCredentialsWithFrame:driver_->web_frame()]);
+      onNoSavedCredentialsWithFrame:web_frames_manager_->GetFrameWithId(
+                                        SysNSStringToUTF8(@"main-frame"))]);
   driver_->InformNoSavedCredentials(true);
   [password_controller_ verify];
 }
