@@ -42,6 +42,7 @@
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/companion/core/features.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/download/download_prefs.h"
@@ -479,13 +480,14 @@ const std::map<int, int>& GetIdcToUmaMap(UmaEnumIdLookupType type) {
        {IDC_CONTENT_CONTEXT_TRANSLATEIMAGEWITHWEB, 130},
        {IDC_CONTENT_CONTEXT_TRANSLATEIMAGEWITHLENS, 131},
        {IDC_CONTENT_CONTEXT_COPYVIDEOFRAME, 132},
+       {IDC_CONTENT_CONTEXT_SEARCHWEBFORNEWTAB, 135},
        // To add new items:
        //   - Add one more line above this comment block, using the UMA value
        //     from the line below this comment block.
        //   - Increment the UMA value in that latter line.
        //   - Add the new item to the RenderViewContextMenuItem enum in
        //     tools/metrics/histograms/enums.xml.
-       {0, 133}});
+       {0, 136}});
 
   // These UMA values are for the the ContextMenuOptionDesktop enum, used for
   // the ContextMenu.SelectedOptionDesktop histograms.
@@ -519,13 +521,14 @@ const std::map<int, int>& GetIdcToUmaMap(UmaEnumIdLookupType type) {
        {IDC_CONTENT_CONTEXT_ADD_A_NOTE, 26},
        {IDC_CONTENT_CONTEXT_TRANSLATEIMAGEWITHWEB, 27},
        {IDC_CONTENT_CONTEXT_TRANSLATEIMAGEWITHLENS, 28},
+       {IDC_CONTENT_CONTEXT_SEARCHWEBFORNEWTAB, 29},
        // To add new items:
        //   - Add one more line above this comment block, using the UMA value
        //     from the line below this comment block.
        //   - Increment the UMA value in that latter line.
        //   - Add the new item to the ContextMenuOptionDesktop enum in
        //     tools/metrics/histograms/enums.xml.
-       {0, 29}});
+       {0, 30}});
 
   return *(type == UmaEnumIdLookupType::GeneralEnumId ? kGeneralMap
                                                       : kSpecificMap);
@@ -2147,6 +2150,19 @@ void RenderViewContextMenu::AppendSearchProvider() {
                                      printable_selection_text));
       if (companion::IsSearchWebInCompanionSidePanelSupported(GetBrowser())) {
         menu_model_.SetIsNewFeatureAt(menu_model_.GetItemCount() - 1, true);
+        // Add an "in new tab" item performing the non-side panel behavior.
+        if (base::FeatureList::IsEnabled(
+                companion::features::
+                    kCompanionEnableSearchWebInNewTabContextMenuItem) &&
+            selection_navigation_url_ != params_.link_url &&
+            ChildProcessSecurityPolicy::GetInstance()->IsWebSafeScheme(
+                selection_navigation_url_.scheme())) {
+          menu_model_.AddItem(
+              IDC_CONTENT_CONTEXT_SEARCHWEBFORNEWTAB,
+              l10n_util::GetStringFUTF16(IDS_CONTENT_CONTEXT_SEARCHWEBFORNEWTAB,
+                                         default_provider->short_name(),
+                                         printable_selection_text));
+        }
       }
     }
   } else {
@@ -2644,6 +2660,7 @@ bool RenderViewContextMenu::IsCommandIdEnabled(int id) const {
       return IsPrintPreviewEnabled();
 
     case IDC_CONTENT_CONTEXT_SEARCHWEBFOR:
+    case IDC_CONTENT_CONTEXT_SEARCHWEBFORNEWTAB:
     case IDC_CONTENT_CONTEXT_GOTOURL:
       return IsOpenLinkAllowedByDlp(selection_navigation_url_);
 
@@ -3142,6 +3159,7 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
       }
       ABSL_FALLTHROUGH_INTENDED;
     }
+    case IDC_CONTENT_CONTEXT_SEARCHWEBFORNEWTAB:
     case IDC_CONTENT_CONTEXT_GOTOURL: {
       auto disposition = ui::DispositionFromEventFlags(
           event_flags, WindowOpenDisposition::NEW_FOREGROUND_TAB);

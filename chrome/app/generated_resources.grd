@@ -784,6 +784,9 @@ are declared in tools/grit/grit_rule.gni.
           <message name="IDS_CONTENT_CONTEXT_SEARCHWEBFOR" desc="The name of the Search the Web for “string” command in the content area context menu">
             &amp;Search <ph name="SEARCH_ENGINE">$1<ex>Google</ex></ph> for “<ph name="SEARCH_TERMS">$2<ex>flowers</ex></ph>”
           </message>
+          <message name="IDS_CONTENT_CONTEXT_SEARCHWEBFORNEWTAB" desc="The name of the Search the Web for “string” in New Tab command in the content area context menu">
+            &amp;Search <ph name="SEARCH_ENGINE">$1<ex>Google</ex></ph> for “<ph name="SEARCH_TERMS">$2<ex>flowers</ex></ph>” in new tab
+          </message>
           <message name="IDS_CONTENT_CONTEXT_SEARCHWEBFORIMAGE" desc="The name of the Search For Image command in the content area context menu">
             &amp;Search <ph name="SEARCH_ENGINE">$1<ex>Google</ex></ph> for image
           </message>
@@ -1067,6 +1070,9 @@ are declared in tools/grit/grit_rule.gni.
           </message>
           <message name="IDS_CONTENT_CONTEXT_SEARCHWEBFOR" desc="In Title Case: The name of the Search the Web for “string” command in the content area context menu">
             &amp;Search <ph name="SEARCH_ENGINE">$1<ex>Google</ex></ph> for “<ph name="SEARCH_TERMS">$2<ex>flowers</ex></ph>”
+          </message>
+          <message name="IDS_CONTENT_CONTEXT_SEARCHWEBFORNEWTAB" desc="In Title Case: The name of the Search the Web for “string” in New Tab command in the content area context menu">
+            &amp;Search <ph name="SEARCH_ENGINE">$1<ex>Google</ex></ph> for “<ph name="SEARCH_TERMS">$2<ex>flowers</ex></ph>” in New Tab
           </message>
           <message name="IDS_CONTENT_CONTEXT_SEARCHWEBFORIMAGE" desc="In Title Case: The name of the Search For Image command in the content area context menu">
             &amp;Search <ph name="SEARCH_ENGINE">$1<ex>Google</ex></ph> for Image

@@ -858,6 +858,31 @@ TEST_F(RenderViewContextMenuDlpPrefsTest,
   menu->set_selection_navigation_url(GURL(NOT_RESTRICTED_URL));
   EXPECT_TRUE(menu->IsCommandIdEnabled(IDC_CONTENT_CONTEXT_SEARCHWEBFOR));
 }
+
+// Verifies that SearchWebForNewTab field is enabled/disabled based on DLP
+// rules.
+TEST_F(RenderViewContextMenuDlpPrefsTest,
+       DisableSearchWebForNewTabWhenClipboardIsBlocked) {
+  content::ContextMenuParams params = CreateParams(MenuItem::SELECTION);
+  params.page_url = GURL(PAGE_URL);
+  auto menu = std::make_unique<TestRenderViewContextMenu>(
+      *web_contents()->GetPrimaryMainFrame(), params);
+  menu->set_dlp_rules_manager(nullptr);
+  menu->set_selection_navigation_url(GURL(RESTRICTED_URL));
+
+  EXPECT_TRUE(menu->IsCommandIdEnabled(IDC_CONTENT_CONTEXT_SEARCHWEBFORNEWTAB));
+
+  MockDlpRulesManager mock_dlp_rules_manager(local_state());
+  menu->set_dlp_rules_manager(&mock_dlp_rules_manager);
+  EXPECT_TRUE(menu->IsCommandIdEnabled(IDC_CONTENT_CONTEXT_SEARCHWEBFORNEWTAB));
+
+  SetDlpClipboardRestriction();
+  EXPECT_FALSE(
+      menu->IsCommandIdEnabled(IDC_CONTENT_CONTEXT_SEARCHWEBFORNEWTAB));
+
+  menu->set_selection_navigation_url(GURL(NOT_RESTRICTED_URL));
+  EXPECT_TRUE(menu->IsCommandIdEnabled(IDC_CONTENT_CONTEXT_SEARCHWEBFORNEWTAB));
+}
 #endif
 
 // Verifies Incognito Mode is not enabled for links disallowed in Incognito.
@@ -1039,6 +1064,7 @@ TEST_F(RenderViewContextMenuPrefsTest,
   menu->Init();
 
   EXPECT_FALSE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_SEARCHWEBFOR));
+  EXPECT_FALSE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_SEARCHWEBFORNEWTAB));
 }
 
 // Verify that item "Search web for" on password check is not present
@@ -1053,6 +1079,7 @@ TEST_F(RenderViewContextMenuPrefsTest,
   menu->Init();
 
   EXPECT_FALSE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_SEARCHWEBFOR));
+  EXPECT_FALSE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_SEARCHWEBFORNEWTAB));
 }
 
 TEST_F(RenderViewContextMenuPrefsTest, FollowOrUnfollow) {

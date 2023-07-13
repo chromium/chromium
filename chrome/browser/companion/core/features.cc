@@ -36,6 +36,11 @@ BASE_FEATURE(kCompanionEnabledByObservingExpsNavigations,
              base::FEATURE_DISABLED_BY_DEFAULT);
 }  // namespace internal
 
+// When search companion is enabled, show a context menu item that allows the
+// user to bypass the companion and open search results in a new tab.
+BASE_FEATURE(kCompanionEnableSearchWebInNewTabContextMenuItem,
+             "CompanionEnableSearchWebInNewTabContextMenuItem",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 }  // namespace features
 
 namespace switches {

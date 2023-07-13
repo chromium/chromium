@@ -18,6 +18,8 @@ BASE_DECLARE_FEATURE(kSidePanelCompanion);
 BASE_DECLARE_FEATURE(kSidePanelCompanion2);
 BASE_DECLARE_FEATURE(kCompanionEnabledByObservingExpsNavigations);
 }  // namespace internal
+
+BASE_DECLARE_FEATURE(kCompanionEnableSearchWebInNewTabContextMenuItem);
 }  // namespace features
 
 namespace switches {
