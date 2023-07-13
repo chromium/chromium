@@ -599,6 +599,24 @@ TEST_P(CompositingTest, CompositedOverlayScrollbarUnderNonNonFastBorderRadius) {
   EXPECT_EQ(1u, CcLayersByName(RootCcLayer(), "Synthesized Clip").size());
 }
 
+// https://crbug.com/1459318
+TEST_P(CompositingTest, FullPACUpdateOnScrollWithSyntheticClipAcrossScroller) {
+  InitializeWithHTML(*WebView()->MainFrameImpl()->GetFrame(), R"HTML(
+    <div id="scroll" style="width: 200px; height: 200px; border-radius: 2px;
+                            overflow: scroll; background: white">
+      <div id="masked" style="width: 100px; height: 100px;
+                              backdrop-filter: blur(1px)"></div>
+      <div style="height: 200px"></div>
+    </div>
+  )HTML");
+
+  EXPECT_FALSE(paint_artifact_compositor()->NeedsUpdate());
+  GetElementById("scroll")->scrollTo(0, 2);
+  GetLocalFrameView()->UpdateAllLifecyclePhasesExceptPaint(
+      DocumentUpdateReason::kTest);
+  EXPECT_TRUE(paint_artifact_compositor()->NeedsUpdate());
+}
+
 class CompositingSimTest : public PaintTestConfigurations, public SimTest {
  public:
   void InitializeWithHTML(const String& html) {

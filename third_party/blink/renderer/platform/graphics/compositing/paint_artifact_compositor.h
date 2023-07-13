@@ -241,6 +241,10 @@ class PLATFORM_EXPORT PaintArtifactCompositor final
   // found by `element_id`.
   bool SetScrollbarNeedsDisplay(CompositorElementId element_id);
 
+  bool ShouldAlwaysUpdateOnScroll() const {
+    return should_always_update_on_scroll_;
+  }
+
  private:
   void UpdateCompositorViewportProperties(const ViewportProperties&,
                                           PropertyTreeManager&,
@@ -322,8 +326,9 @@ class PLATFORM_EXPORT PaintArtifactCompositor final
 
   bool tracks_raster_invalidations_;
   bool needs_update_ = true;
-  PreviousUpdateType previous_update_for_testing_ = PreviousUpdateType::kNone;
   bool layer_debug_info_enabled_ = false;
+  bool should_always_update_on_scroll_ = false;
+  PreviousUpdateType previous_update_for_testing_ = PreviousUpdateType::kNone;
   LCDTextPreference lcd_text_preference_ = LCDTextPreference::kIgnored;
 
   scoped_refptr<cc::Layer> root_layer_;

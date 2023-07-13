@@ -548,6 +548,12 @@ void PaintLayerScrollableArea::InvalidatePaintForScrollOffsetChange() {
       BackgroundNeedsRepaintOnScroll()) {
     box->SetBackgroundNeedsFullPaintInvalidation();
   }
+
+  if (auto* compositor = frame_view->GetPaintArtifactCompositor()) {
+    if (compositor->ShouldAlwaysUpdateOnScroll()) {
+      compositor->SetNeedsUpdate();
+    }
+  }
 }
 
 // See the comment in .h about background-attachment:fixed.

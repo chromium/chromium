@@ -731,6 +731,19 @@ SynthesizedClip& PaintArtifactCompositor::CreateOrReuseSynthesizedClipLayer(
     synthesized_clip.Layer()->SetLayerTreeHost(root_layer_->layer_tree_host());
     if (layer_debug_info_enabled_ && !synthesized_clip.Layer()->debug_info())
       synthesized_clip.Layer()->SetDebugName("Synthesized Clip");
+
+    if (!should_always_update_on_scroll_) {
+      // If there is any scroll translation between `clip.LocalTransformSpace`
+      // and `transform`, the synthesized clip layer's geometry and paint
+      // operations depend on the scroll offset and we need to update them
+      // on each scroll of the scroller.
+      const auto& clip_transform = clip.LocalTransformSpace().Unalias();
+      if (&clip_transform != &transform &&
+          &clip_transform.NearestScrollTranslationNode() !=
+              &transform.NearestScrollTranslationNode()) {
+        should_always_update_on_scroll_ = true;
+      }
+    }
   }
   mask_isolation_id = synthesized_clip.GetMaskIsolationId();
   mask_effect_id = synthesized_clip.GetMaskEffectId();
@@ -830,6 +843,7 @@ void PaintArtifactCompositor::Update(
   UpdateCompositorViewportProperties(viewport_properties, property_tree_manager,
                                      host);
 
+  should_always_update_on_scroll_ = false;
   for (auto& entry : synthesized_clip_cache_)
     entry.in_use = false;
 
