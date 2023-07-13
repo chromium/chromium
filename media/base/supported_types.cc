@@ -42,24 +42,30 @@ namespace media {
 
 namespace {
 
+template <typename T>
 class SupplementalProfileCache {
  public:
-  void UpdateCache(const base::flat_set<media::VideoCodecProfile>& profiles) {
+  void UpdateCache(const base::flat_set<T>& profiles) {
     base::AutoLock lock(profiles_lock_);
     profiles_ = profiles;
   }
-  bool IsProfileSupported(media::VideoCodecProfile profile) {
+  bool IsProfileSupported(T profile) {
     base::AutoLock lock(profiles_lock_);
     return profiles_.find(profile) != profiles_.end();
   }
 
  private:
   base::Lock profiles_lock_;
-  base::flat_set<media::VideoCodecProfile> profiles_ GUARDED_BY(profiles_lock_);
+  base::flat_set<T> profiles_ GUARDED_BY(profiles_lock_);
 };
 
-SupplementalProfileCache* GetSupplementalProfileCache() {
-  static base::NoDestructor<SupplementalProfileCache> cache;
+SupplementalProfileCache<VideoCodecProfile>* GetSupplementalProfileCache() {
+  static base::NoDestructor<SupplementalProfileCache<VideoCodecProfile>> cache;
+  return cache.get();
+}
+
+SupplementalProfileCache<AudioType>* GetSupplementalAudioTypeCache() {
+  static base::NoDestructor<SupplementalProfileCache<AudioType>> cache;
   return cache.get();
 }
 
@@ -308,6 +314,29 @@ bool IsAACSupported(const AudioType& type) {
 #endif
 }
 
+bool IsDolbyVisionProfileSupported(const VideoType& type) {
+#if BUILDFLAG(ENABLE_PLATFORM_HEVC) &&               \
+    BUILDFLAG(PLATFORM_HAS_OPTIONAL_HEVC_SUPPORT) && \
+    BUILDFLAG(ENABLE_PLATFORM_DOLBY_VISION)
+  return GetSupplementalProfileCache()->IsProfileSupported(type.profile);
+#else
+  return false;
+#endif
+}
+
+bool IsDolbyAudioCodecSupported(const AudioType& type) {
+#if BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
+#if BUILDFLAG(IS_WIN)
+  return GetSupplementalAudioTypeCache()->IsProfileSupported(type);
+#else
+  // Keep 'true' for other platforms as old code snippet
+  return true;
+#endif  // BUILDFLAG(IS_WIN)
+#else
+  return false;
+#endif  // BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
+}
+
 }  // namespace
 
 bool IsSupportedAudioType(const AudioType& type) {
@@ -346,10 +375,11 @@ bool IsDefaultSupportedVideoType(const VideoType& type) {
       return IsHevcProfileSupported(type);
     case VideoCodec::kMPEG4:
       return IsMPEG4Supported();
+    case VideoCodec::kDolbyVision:
+      return IsDolbyVisionProfileSupported(type);
     case VideoCodec::kUnknown:
     case VideoCodec::kVC1:
     case VideoCodec::kMPEG2:
-    case VideoCodec::kDolbyVision:
       return false;
   }
 }
@@ -393,11 +423,7 @@ bool IsDefaultSupportedAudioType(const AudioType& type) {
 #endif
     case AudioCodec::kAC3:
     case AudioCodec::kEAC3:
-#if BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
-      return true;
-#else
-      return false;
-#endif
+      return IsDolbyAudioCodecSupported(type);
   }
 }
 
@@ -426,6 +452,10 @@ bool IsBuiltInVideoCodec(VideoCodec codec) {
 void UpdateDefaultSupportedVideoProfiles(
     const base::flat_set<media::VideoCodecProfile>& profiles) {
   GetSupplementalProfileCache()->UpdateCache(profiles);
+}
+
+void UpdateDefaultSupportedAudioTypes(const base::flat_set<AudioType>& types) {
+  GetSupplementalAudioTypeCache()->UpdateCache(types);
 }
 
 }  // namespace media

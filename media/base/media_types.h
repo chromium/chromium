@@ -38,6 +38,7 @@ struct MEDIA_EXPORT VideoType {
 
 MEDIA_EXPORT bool operator==(const AudioType& x, const AudioType& y);
 MEDIA_EXPORT bool operator!=(const AudioType& x, const AudioType& y);
+MEDIA_EXPORT bool operator<(const AudioType& x, const AudioType& y);
 MEDIA_EXPORT bool operator==(const VideoType& x, const VideoType& y);
 MEDIA_EXPORT bool operator!=(const VideoType& x, const VideoType& y);
 

@@ -33,6 +33,11 @@ MEDIA_EXPORT bool IsBuiltInVideoCodec(VideoCodec codec);
 MEDIA_EXPORT void UpdateDefaultSupportedVideoProfiles(
     const base::flat_set<VideoCodecProfile>& profiles);
 
+// This function lets the caller add additional codec and profile to those
+// supported by default. Used primarily to add platform supported codecs once
+// support is known.
+MEDIA_EXPORT void UpdateDefaultSupportedAudioTypes(
+    const base::flat_set<AudioType>& types);
 }  // namespace media
 
 #endif  // MEDIA_BASE_SUPPORTED_TYPES_H_
