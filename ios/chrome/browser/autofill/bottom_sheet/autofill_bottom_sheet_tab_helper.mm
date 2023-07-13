@@ -205,6 +205,11 @@ void AutofillBottomSheetTabHelper::DetachPasswordListenersForAllFrames(
 
 void AutofillBottomSheetTabHelper::DetachPaymentsListeners(web::WebFrame* frame,
                                                            bool refocus) {
+  // Verify that the payments bottom sheet feature is enabled
+  if (!base::FeatureList::IsEnabled(kIOSPaymentsBottomSheet)) {
+    return;
+  }
+
   AutofillBottomSheetJavaScriptFeature::GetInstance()->DetachListeners(
       registered_payments_renderer_ids_, frame, /*must_be_empty = */ true,
       refocus);
@@ -212,6 +217,11 @@ void AutofillBottomSheetTabHelper::DetachPaymentsListeners(web::WebFrame* frame,
 
 void AutofillBottomSheetTabHelper::DetachPaymentsListenersForAllFrames(
     bool refocus) {
+  // Verify that the payments bottom sheet feature is enabled
+  if (!base::FeatureList::IsEnabled(kIOSPaymentsBottomSheet)) {
+    return;
+  }
+
   DetachListenersForAllFrames(registered_payments_renderer_ids_,
                               /*must_be_empty = */ true, refocus);
 }
