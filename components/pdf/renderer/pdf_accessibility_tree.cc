@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/containers/cxx20_erase.h"
-#include "base/containers/queue.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/i18n/break_iterator.h"
@@ -18,7 +17,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
-#include "base/sequence_checker.h"
 #include "base/strings/utf_string_conversion_utils.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/pdf/renderer/pdf_ax_action_target.h"
@@ -26,7 +24,6 @@
 #include "content/public/renderer/render_accessibility.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_thread.h"
-#include "pdf/accessibility_structs.h"
 #include "pdf/pdf_accessibility_action_handler.h"
 #include "pdf/pdf_features.h"
 #include "third_party/blink/public/strings/grit/blink_accessibility_strings.h"
@@ -43,8 +40,6 @@
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 #include "base/metrics/metrics_hashes.h"
 #include "components/language/core/common/language_util.h"  // nogncheck
-#include "components/services/screen_ai/public/mojom/screen_ai_service.mojom.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "ui/accessibility/accessibility_features.h"
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
@@ -63,103 +58,82 @@ enum class PdfOcrRequestStatus {
   kMaxValue = kPerformed,
 };
 
-// Handles the connection to the Screen AI Service which can perform OCR on
-// images.
-class PdfOcrService final {
- public:
-  using OcrServiceCallback = screen_ai::mojom::ScreenAIAnnotator::
-      PerformOcrAndReturnAXTreeUpdateCallback;
+//
+// PdfOcrRequest
+//
 
-  using OnOcrDataReceivedCallback = base::RepeatingCallback<void(
-      const ui::AXNodeID& image_node_id,
-      const chrome_pdf::AccessibilityImageInfo& image,
-      const ui::AXNodeID& parent_node_id,
-      const ui::AXTreeUpdate& tree_update)>;
+using PdfOcrRequest = PdfAccessibilityTree::PdfOcrRequest;
 
-  struct OcrRequest {
-    OcrRequest(const ui::AXNodeID& image_node_id,
-               const chrome_pdf::AccessibilityImageInfo& image,
-               const ui::AXNodeID& parent_node_id)
-        : image_node_id(image_node_id),
-          image(image),
-          parent_node_id(parent_node_id) {}
+PdfOcrRequest::PdfOcrRequest(const ui::AXNodeID& image_node_id,
+                             const chrome_pdf::AccessibilityImageInfo& image,
+                             const ui::AXNodeID& parent_node_id)
+    : image_node_id(image_node_id),
+      image(image),
+      parent_node_id(parent_node_id) {}
 
-    const ui::AXNodeID image_node_id;
-    const chrome_pdf::AccessibilityImageInfo image;
-    const ui::AXNodeID parent_node_id;
-  };
+//
+// PdfOcrService
+//
 
-  PdfOcrService(content::RenderFrame& render_frame,
-                OnOcrDataReceivedCallback callback)
-      : callback_(std::move(callback)) {
-    if (features::IsPdfOcrEnabled()) {
-      render_frame.GetBrowserInterfaceBroker()->GetInterface(
-          screen_ai_annotator_.BindNewPipeAndPassReceiver());
+using PdfOcrService = PdfAccessibilityTree::PdfOcrService;
+
+PdfOcrService::PdfOcrService(content::RenderFrame& render_frame,
+                             OnOcrDataReceivedCallback callback)
+    : callback_(std::move(callback)) {
+  CHECK(features::IsPdfOcrEnabled());
+  render_frame.GetBrowserInterfaceBroker()->GetInterface(
+      screen_ai_annotator_.BindNewPipeAndPassReceiver());
+}
+
+PdfOcrService::~PdfOcrService() = default;
+
+void PdfOcrService::ScheduleOcrRequests(base::queue<PdfOcrRequest> requests) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (queued_requests_.empty()) {
+    queued_requests_.swap(requests);
+  } else {
+    while (!requests.empty()) {
+      queued_requests_.push(requests.front());
+      requests.pop();
     }
   }
 
-  PdfOcrService(const PdfOcrService&) = delete;
-  PdfOcrService& operator=(const PdfOcrService&) = delete;
-  ~PdfOcrService() = default;
+  ScheduleNextQueuedTask();
+}
 
-  // Schedules the OCR requests to be sent to the Screen AI Service.
-  void ScheduleOcrRequests(base::queue<OcrRequest> requests) {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+bool PdfOcrService::IsQueueEmpty() const {
+  return queued_requests_.empty();
+}
 
-    DCHECK(IsOcrReady());
-
-    if (queued_requests_.empty()) {
-      queued_requests_.swap(requests);
-    } else {
-      while (!requests.empty()) {
-        queued_requests_.push(requests.front());
-        requests.pop();
-      }
-    }
-
-    ScheduleNextQueuedTask();
+void PdfOcrService::ScheduleNextQueuedTask() {
+  if (queued_requests_.empty()) {
+    return;
   }
 
-  bool IsOcrReady() const { return screen_ai_annotator_.is_bound(); }
+  PdfOcrRequest request = queued_requests_.front();
+  queued_requests_.pop();
 
-  bool IsQueueEmpty() const { return queued_requests_.empty(); }
+  screen_ai_annotator_->PerformOcrAndReturnAXTreeUpdate(
+      request.image.image_data,
+      base::BindOnce(&PdfOcrService::ReceiveOcrResultsForRequest,
+                     weak_ptr_factory_.GetWeakPtr(), request));
+  // TODO(crbug.com/1443345): Add a browser test to validate this UMA metric.
+  base::UmaHistogramEnumeration("Accessibility.PdfOcr.PDFImages",
+                                PdfOcrRequestStatus::kRequested);
+}
 
- private:
-  void ScheduleNextQueuedTask() {
-    if (queued_requests_.empty()) {
-      return;
-    }
+void PdfOcrService::ReceiveOcrResultsForRequest(
+    const PdfOcrRequest& request,
+    const ui::AXTreeUpdate& tree_update) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-    OcrRequest request = queued_requests_.front();
-    queued_requests_.pop();
+  callback_.Run(request.image_node_id, request.image, request.parent_node_id,
+                tree_update);
 
-    screen_ai_annotator_->PerformOcrAndReturnAXTreeUpdate(
-        request.image.image_data,
-        base::BindOnce(&PdfOcrService::ReceiveOcrResultsForRequest,
-                       weak_ptr_factory_.GetWeakPtr(), request));
-    // TODO(crbug.com/1443345): Add a browser test to validate this UMA metric.
-    base::UmaHistogramEnumeration("Accessibility.PdfOcr.PDFImages",
-                                  PdfOcrRequestStatus::kRequested);
-  }
+  ScheduleNextQueuedTask();
+}
 
-  void ReceiveOcrResultsForRequest(OcrRequest request,
-                                   const ui::AXTreeUpdate& tree_update) {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-    callback_.Run(request.image_node_id, request.image, request.parent_node_id,
-                  tree_update);
-
-    ScheduleNextQueuedTask();
-  }
-
-  base::queue<OcrRequest> queued_requests_;
-  OnOcrDataReceivedCallback callback_;
-
-  mojo::Remote<screen_ai::mojom::ScreenAIAnnotator> screen_ai_annotator_;
-
-  SEQUENCE_CHECKER(sequence_checker_);
-  base::WeakPtrFactory<PdfOcrService> weak_ptr_factory_{this};
-};
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
 namespace {
@@ -1325,8 +1299,8 @@ class PdfAccessibilityTreeBuilder {
     }
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-    base::queue<PdfOcrService::OcrRequest> ocr_requests;
-    bool ocr_available = ocr_service_ && ocr_service_->IsOcrReady();
+    base::queue<PdfOcrRequest> ocr_requests;
+    bool ocr_available = ocr_service_;
 #endif
 
     // Push all the images not anchored to any text run to the last paragraph.
