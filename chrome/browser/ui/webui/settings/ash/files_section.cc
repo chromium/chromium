@@ -209,10 +209,8 @@ void FilesSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
 
   html_source->AddString(
       "googleDriveCleanUpStorageLearnMoreLink",
-      GetHelpUrlWithBoard(chrome::kGoogleDriveOfflineLearnMoreURL));
+      GetHelpUrlWithBoard(chrome::kGoogleDriveCleanUpStorageLearnMoreURL));
 
-  // TODO(b/289450495): Replace this link with the new help article link once it
-  // has a live p link.
   html_source->AddString(
       "googleDriveFileSyncLearnMoreLink",
       GetHelpUrlWithBoard(chrome::kGoogleDriveOfflineLearnMoreURL));

@@ -451,6 +451,8 @@ extern const char kSmbSharesLearnMoreURL[];
 
 // The URL for the "Learn more" page when the user tries to clean up their
 // Google Drive offline storage in the OS settings page.
+extern const char kGoogleDriveCleanUpStorageLearnMoreURL[];
+
 extern const char kGoogleDriveOfflineLearnMoreURL[];
 
 // The URL for the "Learn more" page for Speak-on-mute Detection in the privacy
