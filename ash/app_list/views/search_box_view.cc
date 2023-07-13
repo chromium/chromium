@@ -19,6 +19,7 @@
 #include "ash/app_list/views/result_selection_controller.h"
 #include "ash/app_list/views/search_box_view_delegate.h"
 #include "ash/app_list/views/search_result_base_view.h"
+#include "ash/ash_element_identifiers.h"
 #include "ash/constants/ash_features.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
@@ -33,7 +34,6 @@
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/typography.h"
 #include "ash/user_education/user_education_class_properties.h"
-#include "ash/user_education/user_education_constants.h"
 #include "base/i18n/rtl.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -253,8 +253,8 @@ SearchBoxView::SearchBoxView(SearchBoxViewDelegate* delegate,
     // NOTE: Set `kHelpBubbleContextKey` before `views::kElementIdentifierKey`
     // in case registration causes a help bubble to be created synchronously.
     SetProperty(kHelpBubbleContextKey, HelpBubbleContext::kAsh);
-    SetProperty(views::kElementIdentifierKey, kSearchBoxViewElementId);
   }
+  SetProperty(views::kElementIdentifierKey, kSearchBoxViewElementId);
 
   if (is_jelly_enabled_) {
     auto font_list = TypographyProvider::Get()->ResolveTypographyToken(

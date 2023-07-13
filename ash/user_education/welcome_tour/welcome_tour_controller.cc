@@ -11,7 +11,6 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/user_education/user_education_constants.h"
 #include "ash/user_education/user_education_controller.h"
 #include "ash/user_education/user_education_tutorial_controller.h"
 #include "ash/user_education/user_education_types.h"

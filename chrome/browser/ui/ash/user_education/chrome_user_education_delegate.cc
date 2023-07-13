@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/ash/user_education/chrome_user_education_delegate.h"
 
-#include "ash/user_education/user_education_constants.h"
+#include "ash/ash_element_identifiers.h"
 #include "ash/user_education/user_education_types.h"
 #include "ash/user_education/user_education_util.h"
 #include "base/check.h"

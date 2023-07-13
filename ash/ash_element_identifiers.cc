@@ -10,6 +10,13 @@ namespace ash {
 
 // Please keep this list alphabetized.
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kAppListBubbleViewElementId);
+DEFINE_ELEMENT_IDENTIFIER_VALUE(kExploreAppElementId);
+DEFINE_ELEMENT_IDENTIFIER_VALUE(kHoldingSpaceTrayElementId);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kHomeButtonElementId);
+DEFINE_ELEMENT_IDENTIFIER_VALUE(kSearchBoxViewElementId);
+DEFINE_ELEMENT_IDENTIFIER_VALUE(kSettingsAppElementId);
+DEFINE_ELEMENT_IDENTIFIER_VALUE(kShelfViewElementId);
+DEFINE_ELEMENT_IDENTIFIER_VALUE(kUnifiedSystemTrayElementId);
+// Please keep this list alphabetized.
 
 }  // namespace ash

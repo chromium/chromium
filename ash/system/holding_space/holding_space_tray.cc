@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/ash_element_identifiers.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/tray_background_view_catalog.h"
 #include "ash/public/cpp/holding_space/holding_space_client.h"
@@ -32,7 +33,6 @@
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_container.h"
 #include "ash/user_education/user_education_class_properties.h"
-#include "ash/user_education/user_education_constants.h"
 #include "base/check.h"
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
@@ -228,8 +228,8 @@ HoldingSpaceTray::HoldingSpaceTray(Shelf* shelf)
     // NOTE: Set `kHelpBubbleContextKey` before `views::kElementIdentifierKey`
     // in case registration causes a help bubble to be created synchronously.
     SetProperty(kHelpBubbleContextKey, HelpBubbleContext::kAsh);
-    SetProperty(views::kElementIdentifierKey, kHoldingSpaceTrayElementId);
   }
+  SetProperty(views::kElementIdentifierKey, kHoldingSpaceTrayElementId);
 
   // Default icon.
   default_tray_icon_ =

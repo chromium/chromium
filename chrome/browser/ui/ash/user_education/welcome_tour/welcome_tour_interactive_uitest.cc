@@ -8,7 +8,6 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/pill_button.h"
 #include "ash/style/system_dialog_delegate_view.h"
-#include "ash/user_education/user_education_constants.h"
 #include "ash/user_education/views/help_bubble_view_ash.h"
 #include "ash/user_education/welcome_tour/welcome_tour_controller.h"
 #include "ash/user_education/welcome_tour/welcome_tour_dialog.h"
