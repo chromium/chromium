@@ -179,7 +179,7 @@
     </settings-multidevice-smartlock-item>
   </template>
   <template is="dom-if" if="[[showSetupPinDialog_]]" restamp>
-    <settings-setup-pin-dialog id="setupPin" set-modes="[[setModes]]"
+    <settings-setup-pin-dialog id="setupPin" auth-token="[[authToken]]"
         on-close="onSetupPinDialogClose_">
     </settings-setup-pin-dialog>
   </template>

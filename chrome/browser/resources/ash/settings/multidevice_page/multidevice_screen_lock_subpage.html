@@ -74,7 +74,7 @@
     <div id="illustration"></div>
   </div>
   <div id="half-container">
-    <template is="dom-if" if="[[authToken_]]">
+    <template is="dom-if" if="[[authTokenInfo_]]">
       <cr-radio-group id=radio-button-container
           disabled$="[[quickUnlockDisabledByPolicy_]]"
           selected="{{selectedUnlockType}}"
@@ -97,7 +97,7 @@
 </template>
 <template is="dom-if" if="[[showSetupPinDialog]]" restamp>
   <settings-setup-pin-dialog id="setupPin"
-      set-modes="[[setModes_]]"
+      auth-token="[[authTokenInfo_.token]]"
       on-close="onSetupPinDialogClose_">
   </settings-setup-pin-dialog>
 </template>

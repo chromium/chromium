@@ -47,13 +47,13 @@ class LocalDataRecoveryDialogElement extends
        * Authentication token provided by settings-people-page.
        */
       authToken: {
-        type: Object,
+        type: String,
         notify: true,
       },
     };
   }
 
-  authToken: chrome.quickUnlockPrivate.TokenInfo|undefined;
+  authToken: string|undefined;
 
   constructor() {
     super();
@@ -80,13 +80,13 @@ class LocalDataRecoveryDialogElement extends
 
   private async onDisableClick_(): Promise<void> {
     try {
-      if (!this.authToken) {
+      if (typeof this.authToken !== 'string') {
         console.error('Recovery changed with expired token.');
         return;
       }
 
-      const {result} = await this.recoveryFactorEditor.configure(
-          this.authToken!.token, false);
+      const {result} =
+          await this.recoveryFactorEditor.configure(this.authToken, false);
       if (result !== ConfigureResult.kSuccess) {
         console.error('RecoveryFactorEditor::Configure failed:', result);
       }

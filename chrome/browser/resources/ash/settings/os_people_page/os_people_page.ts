@@ -75,7 +75,7 @@ export class OsSettingsPeoplePageElement extends
        */
       pageAvailability: Object,
 
-      authToken_: {
+      authTokenInfo_: {
         type: Object,
         observer: 'onAuthTokenChanged_',
       },
@@ -143,14 +143,6 @@ export class OsSettingsPeoplePageElement extends
       },
 
       /**
-       * setModes_ is a partially applied function that stores the current auth
-       * token. It's defined only when the user has entered a valid password.
-       */
-      setModes_: {
-        type: Object,
-      },
-
-      /**
        * Used by DeepLinkingMixin to focus this page's deep links.
        */
       supportedSettingIds: {
@@ -182,7 +174,7 @@ export class OsSettingsPeoplePageElement extends
 
   syncStatus: SyncStatus;
   pageAvailability: OsPageAvailability;
-  private authToken_: chrome.quickUnlockPrivate.TokenInfo|undefined;
+  private authTokenInfo_: chrome.quickUnlockPrivate.TokenInfo|undefined;
   private profileIconUrl_: string;
   private profileName_: string;
   private profileEmail_: string;
@@ -194,7 +186,6 @@ export class OsSettingsPeoplePageElement extends
   private section_: Section;
   private showPasswordPromptDialog_: boolean;
   private showSyncSettingsRevamp_: boolean;
-  private setModes_: Object|undefined;
   private syncBrowserProxy_: SyncBrowserProxy;
   private clearAccountPasswordTimeoutId_: number|undefined;
 
@@ -240,12 +231,12 @@ export class OsSettingsPeoplePageElement extends
   // Invalidate the token to trigger a password re-prompt. Used for PIN auto
   // submit when too many attempts were made when using PrefStore based PIN.
   private onInvalidateTokenRequested_(): void {
-    this.authToken_ = undefined;
+    this.authTokenInfo_ = undefined;
   }
 
   private onPasswordPromptDialogClose_(): void {
     this.showPasswordPromptDialog_ = false;
-    if (!this.setModes_) {
+    if (!this.authTokenInfo_) {
       Router.getInstance().navigateToPreviousRoute();
     }
   }
@@ -340,7 +331,7 @@ export class OsSettingsPeoplePageElement extends
 
   private onAuthTokenObtained_(
       e: CustomEvent<chrome.quickUnlockPrivate.TokenInfo>): void {
-    this.authToken_ = e.detail;
+    this.authTokenInfo_ = e.detail;
   }
 
   private getSyncAndGoogleServicesSubtext_(): string {
@@ -432,41 +423,22 @@ export class OsSettingsPeoplePageElement extends
   }
 
   private onAuthTokenChanged_(): void {
-    if (this.authToken_ === undefined) {
-      this.setModes_ = undefined;
-    } else {
-      const token = this.authToken_.token;
-      this.setModes_ =
-          (modes: chrome.quickUnlockPrivate.QuickUnlockMode[],
-           credentials: string[], onComplete: (result: boolean) => void) => {
-            this.quickUnlockPrivate.setModes(token, modes, credentials, () => {
-              let result = true;
-              if (chrome.runtime.lastError) {
-                console.error(
-                    'setModes failed: ' + chrome.runtime.lastError.message);
-                result = false;
-              }
-              onComplete(result);
-            });
-          };
-    }
-
     if (this.clearAccountPasswordTimeoutId_) {
       clearTimeout(this.clearAccountPasswordTimeoutId_);
     }
-    if (this.authToken_ === undefined) {
+    if (this.authTokenInfo_ === undefined) {
       return;
     }
-    // Clear |this.authToken_| after
-    // |this.authToken_.tokenInfo.lifetimeSeconds|.
+    // Clear |this.authTokenInfo_| after
+    // |this.authTokenInfo_.tokenInfo.lifetimeSeconds|.
     // Subtract time from the expiration time to account for IPC delays.
     // Treat values less than the minimum as 0 for testing.
     const IPC_SECONDS = 2;
-    const lifetimeMs = this.authToken_.lifetimeSeconds > IPC_SECONDS ?
-        (this.authToken_.lifetimeSeconds - IPC_SECONDS) * 1000 :
+    const lifetimeMs = this.authTokenInfo_.lifetimeSeconds > IPC_SECONDS ?
+        (this.authTokenInfo_.lifetimeSeconds - IPC_SECONDS) * 1000 :
         0;
     this.clearAccountPasswordTimeoutId_ = setTimeout(() => {
-      this.authToken_ = undefined;
+      this.authTokenInfo_ = undefined;
     }, lifetimeMs);
   }
 }

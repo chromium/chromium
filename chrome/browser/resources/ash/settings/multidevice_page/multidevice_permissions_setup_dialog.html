@@ -346,6 +346,7 @@
     <template is="dom-if" if="[[hasStartedSetupAttempt_]]" restamp>
       <template is="dom-if" if="[[shouldShowScreenLockInstructions_(flowState_)]]" restamp>
         <settings-multidevice-screen-lock-subpage
+            id="screen-lock-subpage"
             is-screen-lock-enabled="{{isScreenLockEnabled_}}"
             on-pin-number-selected="onPinNumberSelected_"
             show-setup-pin-dialog="{{showSetupPinDialog_}}"

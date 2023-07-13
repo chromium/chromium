@@ -15,9 +15,9 @@ import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
-import './multidevice_screen_lock_subpage.js';
 import '../os_settings_icons.html.js';
 import '../settings_shared.css.js';
+import './multidevice_screen_lock_subpage.js';
 
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
@@ -29,6 +29,7 @@ import {LockStateMixin} from '../lock_state_mixin.js';
 import {MultiDeviceBrowserProxy, MultiDeviceBrowserProxyImpl} from './multidevice_browser_proxy.js';
 import {MultiDeviceFeature, PhoneHubPermissionsSetupAction, PhoneHubPermissionsSetupFeatureCombination, PhoneHubPermissionsSetupFlowScreens} from './multidevice_constants.js';
 import {getTemplate} from './multidevice_permissions_setup_dialog.html.js';
+import {SettingsMultideviceScreenLockSubpageElement} from './multidevice_screen_lock_subpage.js';
 
 /**
  * Numerical values should not be changed because they must stay in sync with
@@ -612,6 +613,23 @@ export class SettingsMultidevicePermissionsSetupDialogElement extends
         this.completedMode_ === 0;
   }
 
+  // Retrieves whether the user has a fully configured PIN. Must only be called
+  // if the screen-lock-subpage element is currently attached to the DOM.
+  private hasPin_(): boolean {
+    // We retrieve the screen-lock-subpage child element directly with
+    // |getElementById| because |this.$| is populated only once during
+    // initialization of |this| element. Thus, if |screen-lock-subpage| is
+    // attached only later (e.g. because of a |dom-if|), then it won't appear
+    // in |this.$|.
+    assert(this.shadowRoot !== null);
+    const screenLockSubpage =
+        this.shadowRoot.getElementById('screen-lock-subpage');
+    assert(
+        screenLockSubpage instanceof
+        SettingsMultideviceScreenLockSubpageElement);
+    return screenLockSubpage.hasPin;
+  }
+
   private nextPage_(): void {
     this.browserProxy_.logPhoneHubPermissionSetUpScreenAction(
         this.getCurrentScreen_(),
@@ -633,7 +651,7 @@ export class SettingsMultidevicePermissionsSetupDialogElement extends
         if (!this.isScreenLockEnabled_) {
           return;
         }
-        if (this.isPinNumberSelected_ && !this.isPinSet_ && !this.hasPin) {
+        if (this.isPinNumberSelected_ && !this.isPinSet_ && !this.hasPin_()) {
           // When users select pin number and click next button, popup set pin
           // dialog.
           this.showSetupPinDialog_ = true;

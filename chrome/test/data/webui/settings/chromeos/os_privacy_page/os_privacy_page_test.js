@@ -275,7 +275,7 @@ suite('PrivacyPageTests', function() {
     await waitAfterNextRender(privacyPage);
 
     const quickUnlockPrivateApi = new FakeQuickUnlockPrivate();
-    privacyPage.authToken_ = quickUnlockPrivateApi.getFakeToken();
+    privacyPage.authTokenInfo_ = quickUnlockPrivateApi.getFakeToken();
 
     Router.getInstance().navigateTo(routes.LOCK_SCREEN);
     flush();
@@ -290,7 +290,7 @@ suite('PrivacyPageTests', function() {
     const lockScreenPage =
         assert(privacyPage.shadowRoot.querySelector('#lockScreen'));
 
-    // Password dialog should not open because the authToken_ is set.
+    // Password dialog should not open because the authTokenInfo_ is set.
     assertFalse(privacyPage.showPasswordPromptDialog_);
 
     const editFingerprintsTrigger =
@@ -307,10 +307,10 @@ suite('PrivacyPageTests', function() {
     fingerprintTrigger.click();
 
     // Invalidate the auth token by firing an event.
-    assertFalse(privacyPage.authToken_ === undefined);
+    assertFalse(privacyPage.authTokenInfo_ === undefined);
     const event = new CustomEvent('invalidate-auth-token-requested');
     lockScreenPage.dispatchEvent(event);
-    assertTrue(privacyPage.authToken_ === undefined);
+    assertTrue(privacyPage.authTokenInfo_ === undefined);
 
     assertEquals(Router.getInstance().currentRoute, routes.FINGERPRINT);
     assertTrue(privacyPage.showPasswordPromptDialog_);

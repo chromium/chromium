@@ -29,12 +29,13 @@ import '../multidevice_page/multidevice_smartlock_item.js';
 
 import {SettingsToggleButtonElement} from '/shared/settings/controls/settings_toggle_button.js';
 import {LockScreenProgress, recordLockScreenProgress} from 'chrome://resources/ash/common/quick_unlock/lock_screen_constants.js';
+import {fireAuthTokenInvalidEvent} from 'chrome://resources/ash/common/quick_unlock/utils.js';
 import {CrRadioGroupElement} from 'chrome://resources/cr_elements/cr_radio_group/cr_radio_group.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
-import {AuthFactor, ConfigureResult, FactorObserverReceiver, ManagementType} from 'chrome://resources/mojo/chromeos/ash/services/auth_factor_config/public/mojom/auth_factor_config.mojom-webui.js';
+import {AuthFactor, ConfigureResult, FactorObserverReceiver, ManagementType, PinFactorEditor} from 'chrome://resources/mojo/chromeos/ash/services/auth_factor_config/public/mojom/auth_factor_config.mojom-webui.js';
 import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {castExists} from '../assert_extras.js';
@@ -64,20 +65,12 @@ export class SettingsLockScreenElement extends SettingsLockScreenElementBase {
       prefs: {type: Object},
 
       /**
-       * setModes is a partially applied function that stores the current auth
-       * token. It's defined only when the user has entered a valid password.
-       */
-      setModes: {
-        type: Object,
-        observer: 'onSetModesChanged_',
-      },
-
-      /**
        * Authentication token provided by lock-screen-password-prompt-dialog.
        */
       authToken: {
-        type: Object,
+        type: String,
         notify: true,
+        observer: 'onAuthTokenChanged_',
       },
 
       /**
@@ -182,6 +175,11 @@ export class SettingsLockScreenElement extends SettingsLockScreenElementBase {
         value: false,
       },
 
+      hasPin: {
+        type: Boolean,
+        value: false,
+      },
+
       /**
        * True if quick unlock settings should be displayed on this machine.
        */
@@ -228,8 +226,7 @@ export class SettingsLockScreenElement extends SettingsLockScreenElementBase {
   }
 
   prefs: Object;
-  setModes: Function|undefined;
-  authToken: chrome.quickUnlockPrivate.TokenInfo|undefined;
+  authToken: string|undefined;
   private writeUma_: Function;
   private quickUnlockEnabled_: boolean;
   private quickUnlockDisabledByPolicy_: boolean;
@@ -242,6 +239,7 @@ export class SettingsLockScreenElement extends SettingsLockScreenElementBase {
   private recovery_: chrome.settingsPrivate.PrefObject|null;
   private noRecoveryVirtualPref_: chrome.settingsPrivate.PrefObject;
   private recoveryChangeInProcess_: boolean;
+  private hasPin: boolean;
   private quickUnlockPinAutosubmitFeatureEnabled_: boolean;
   private smartLockUIRevampEnabled_: boolean;
   private showSetupPinDialog_: boolean;
@@ -253,6 +251,7 @@ export class SettingsLockScreenElement extends SettingsLockScreenElementBase {
     return [
       'selectedUnlockTypeChanged_(selectedUnlockType)',
       'updateRecoveryState_(authToken)',
+      'updatePinState_(authToken)',
     ];
   }
 
@@ -298,7 +297,7 @@ export class SettingsLockScreenElement extends SettingsLockScreenElementBase {
 
   override currentRouteChanged(newRoute: Route) {
     if (newRoute === routes.LOCK_SCREEN) {
-      this.updateUnlockType(/*activeModesChanged=*/ false);
+      this.updatePinState_(this.authToken);
       this.updateNumFingerprints_();
       this.attemptDeepLink();
     }
@@ -309,33 +308,24 @@ export class SettingsLockScreenElement extends SettingsLockScreenElementBase {
     }
   }
 
-  // Dispatch an event that signal that the auth token is invalid. This will
-  // reopen the password prompt.
-  private dispatchAuthTokenInvalidEvent_(): void {
-    const authTokenInvalid =
-        new CustomEvent('auth-token-invalid', {bubbles: true, composed: true});
-    this.dispatchEvent(authTokenInvalid);
-  }
-
   private onScreenLockChange_(event: Event): void {
     const target = event.target as SettingsToggleButtonElement;
-    if (!this.authToken) {
+    if (typeof this.authToken !== 'string') {
       console.error('Screen lock changed with expired token.');
       target.checked = !target.checked;
       return;
     }
-    this.setLockScreenEnabled(
-        this.authToken.token, target.checked, (success) => {
-          if (!success) {
-            target.checked = !target.checked;
-            this.dispatchAuthTokenInvalidEvent_();
-          }
-        });
+    this.setLockScreenEnabled(this.authToken, target.checked, (success) => {
+      if (!success) {
+        target.checked = !target.checked;
+        fireAuthTokenInvalidEvent(this);
+      }
+    });
   }
 
   private onPinAutosubmitChange_(event: Event): void {
     const target = event.target as SettingsToggleButtonElement;
-    if (!this.authToken) {
+    if (typeof this.authToken !== 'string') {
       console.error('PIN autosubmit setting changed with expired token.');
       target.checked = !target.checked;
       return;
@@ -350,33 +340,51 @@ export class SettingsLockScreenElement extends SettingsLockScreenElementBase {
     } else {
       // Call quick unlock to disable the auto-submit option.
       this.quickUnlockPrivate.setPinAutosubmitEnabled(
-          this.authToken.token, '' /* PIN */, false /*enabled*/, function() {});
+          this.authToken, '' /* PIN */, false /*enabled*/, () => {});
     }
   }
 
-  private selectedUnlockTypeChanged_(selected: string): void {
-    if (selected === LockScreenUnlockType.VALUE_PENDING) {
-      return;
-    }
-
-    if (selected !== LockScreenUnlockType.PIN_PASSWORD && this.setModes) {
-      // If the user selects PASSWORD only (which sends an asynchronous
-      // setModes.call() to clear the quick unlock capability), indicate to the
-      // user immediately that the quick unlock capability is cleared by setting
-      // |hasPin| to false. If there is an error clearing quick unlock, revert
-      // |hasPin| to true. This prevents setupPinButton UI delays, except in the
-      // small chance that CrOS fails to remove the quick unlock capability. See
-      // https://crbug.com/1054327 for details.
-      this.hasPin = false;
-      this.setModes.call(null, [], [], (result: string) => {
-        // Revert |hasPin| to true in the event setModes fails to set lock state
-        // to PASSWORD only.
-        if (!result) {
+  private async selectedUnlockTypeChanged_(selected: string): Promise<void> {
+    switch (selected) {
+      case LockScreenUnlockType.VALUE_PENDING:
+      case LockScreenUnlockType.PIN_PASSWORD:
+        return;
+      case LockScreenUnlockType.PASSWORD: {
+        if (typeof this.authToken !== 'string') {
+          // This is not an error scenario, since the selected unlock type
+          // changes from the initial VALUE_PENDING to either PIN_PASSWORD or
+          // PASSWORD initially.
+          fireAuthTokenInvalidEvent(this);
+          return;
+        }
+        // If the user selects PASSWORD only (which sends an asynchronous
+        // PinFactorEditor.removePin() to clear the quick unlock capability),
+        // indicate to the user immediately that the quick unlock capability is
+        // cleared by setting |hasPin| to false. If there is an error clearing
+        // quick unlock, revert |hasPin| to true. This prevents setupPinButton
+        // UI delays, except in the small chance that CrOS fails to remove the
+        // quick unlock capability. See https://crbug.com/1054327 for details.
+        this.hasPin = false;
+        const {result} =
+            await PinFactorEditor.getRemote().removePin(this.authToken);
+        if (result !== ConfigureResult.kSuccess) {
           this.hasPin = true;
         }
 
-        assert(result, 'Failed to clear quick unlock modes');
-      });
+        switch (result) {
+          case ConfigureResult.kSuccess:
+            break;
+          case ConfigureResult.kInvalidTokenError:
+            fireAuthTokenInvalidEvent(this);
+            break;
+          case ConfigureResult.kFatalError:
+            console.error('Error removing PIN');
+            break;
+        }
+        return;
+      }
+      default:
+        assertNotReached();
     }
   }
 
@@ -393,7 +401,7 @@ export class SettingsLockScreenElement extends SettingsLockScreenElementBase {
     });
   }
 
-  private onSetModesChanged_(): void {
+  private onAuthTokenChanged_(): void {
     if (this.requestPasswordIfApplicable_()) {
       this.showSetupPinDialog_ = false;
       this.showPinAutosubmitDialog_ = false;
@@ -504,7 +512,8 @@ export class SettingsLockScreenElement extends SettingsLockScreenElementBase {
    */
   private requestPasswordIfApplicable_(): boolean {
     const currentRoute = Router.getInstance().currentRoute;
-    if (currentRoute === routes.LOCK_SCREEN && !this.setModes) {
+    if (currentRoute === routes.LOCK_SCREEN &&
+        typeof this.authToken !== 'string') {
       const event = new CustomEvent(
           'password-requested', {bubbles: true, composed: true});
       this.dispatchEvent(event);
@@ -540,6 +549,9 @@ export class SettingsLockScreenElement extends SettingsLockScreenElementBase {
       case AuthFactor.kRecovery:
         this.updateRecoveryState_(this.authToken);
         break;
+      case AuthFactor.kPin:
+        this.updatePinState_(this.authToken, /*factorChanged=*/ true);
+        break;
       default:
         assertNotReached();
     }
@@ -552,19 +564,19 @@ export class SettingsLockScreenElement extends SettingsLockScreenElementBase {
    */
   private async fetchFactorState_(authFactor: AuthFactor):
       Promise<chrome.settingsPrivate.PrefObject|null> {
-    const token = this.authToken!.token;
+    assert(typeof this.authToken === 'string');
 
     const {supported} =
-        await this.authFactorConfig.isSupported(token, authFactor);
+        await this.authFactorConfig.isSupported(this.authToken, authFactor);
     if (!supported) {
       return null;
     }
 
     // Fetch properties of the factor concurrently.
     const [{configured}, {management}, {editable}] = await Promise.all([
-      this.authFactorConfig.isConfigured(token, authFactor),
-      this.authFactorConfig.getManagementType(token, authFactor),
-      this.authFactorConfig.isEditable(token, authFactor),
+      this.authFactorConfig.isConfigured(this.authToken, authFactor),
+      this.authFactorConfig.getManagementType(this.authToken, authFactor),
+      this.authFactorConfig.isEditable(this.authToken, authFactor),
     ]);
 
     const state: chrome.settingsPrivate.PrefObject<boolean> = {
@@ -598,14 +610,59 @@ export class SettingsLockScreenElement extends SettingsLockScreenElementBase {
    * Fetches the state of the recovery factor and updates the corresponding
    * property.
    */
-  private async updateRecoveryState_(authToken:
-                                         chrome.quickUnlockPrivate.TokenInfo|
+  private async updateRecoveryState_(authToken: string|
                                      undefined): Promise<void> {
     if (!authToken) {
       return;
     }
-    assert(authToken.token === this.authToken!.token);
+    assert(authToken === this.authToken);
     this.recovery_ = await this.fetchFactorState_(AuthFactor.kRecovery);
+  }
+
+  /**
+   * Fetches the state of the PIN factor and updates the corresponding
+   * property.
+   * @param authToken Must be equal to `this.authToken`. This parameter is
+   *     passed as parameter so that this function can be used as callback for
+   *     changes of the `authToken` property.
+   * @param factorChanged Should be `true` if this function is called in
+   *     response to a PIN change (as opposed to e.g. during initialization).
+   */
+  private async updatePinState_(
+      authToken: string|undefined,
+      factorChanged: boolean = false): Promise<void> {
+    if (!authToken) {
+      return;
+    }
+    assert(authToken === this.authToken);
+
+    const {configured} = await this.authFactorConfig.isConfigured(
+        this.authToken, AuthFactor.kPin);
+    if (configured) {
+      this.hasPin = true;
+      this.selectedUnlockType = LockScreenUnlockType.PIN_PASSWORD;
+      return;
+    }
+    assert(!configured);
+
+    // A race condition can occur:
+    // (1) User selects PIN_PASSSWORD, and successfully sets a pin, adding
+    //     QuickUnlockMode.PIN to active modes.
+    // (2) User selects PASSWORD, QuickUnlockMode.PIN capability is cleared
+    //     from the active modes, notifying LockStateMixin to call
+    //     updateUnlockType to fetch the active modes asynchronously.
+    // (3) User selects PIN_PASSWORD, but the process from step 2 has not yet
+    //     completed.
+    // In this case, do not forcibly select the PASSWORD radio button even
+    // though the unlock type is still PASSWORD (|hasPin| is false). If the
+    // user wishes to set a pin, they will have to click the set pin button.
+    // See https://crbug.com/1054327 for details.
+    if (factorChanged && !this.hasPin &&
+        this.selectedUnlockType === LockScreenUnlockType.PIN_PASSWORD) {
+      return;
+    }
+    this.hasPin = false;
+    this.selectedUnlockType = LockScreenUnlockType.PASSWORD;
   }
 
   /**
@@ -628,19 +685,19 @@ export class SettingsLockScreenElement extends SettingsLockScreenElementBase {
       return;
     }
     try {
-      if (!this.authToken) {
-        this.dispatchAuthTokenInvalidEvent_();
+      if (typeof this.authToken !== 'string') {
+        fireAuthTokenInvalidEvent(this);
         return;
       }
 
       const {result} = await this.recoveryFactorEditor.configure(
-          this.authToken.token, shouldEnable);
+          this.authToken, shouldEnable);
       switch (result) {
         case ConfigureResult.kSuccess:
           break;
         case ConfigureResult.kInvalidTokenError:
           // This will open the password prompt.
-          this.dispatchAuthTokenInvalidEvent_();
+          fireAuthTokenInvalidEvent(this);
           return;
         case ConfigureResult.kFatalError:
           console.error('Error configuring recovery');

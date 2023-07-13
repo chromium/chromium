@@ -19,8 +19,10 @@ import '../os_settings_page/os_settings_subpage.js';
 import '../os_settings_page/settings_card.js';
 import './metrics_consent_toggle_button.js';
 import './peripheral_data_access_protection_dialog.js';
+import '../os_people_page/lock_screen_password_prompt_dialog.js';
 
 import {SettingsToggleButtonElement} from '/shared/settings/controls/settings_toggle_button.js';
+import {AUTH_TOKEN_INVALID_EVENT_TYPE} from 'chrome://resources/ash/common/quick_unlock/utils.js';
 import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -82,7 +84,7 @@ export class OsSettingsPrivacyPageElement extends
       /**
        * Authentication token.
        */
-      authToken_: {
+      authTokenInfo_: {
         type: Object,
         observer: 'onAuthTokenChanged_',
       },
@@ -90,14 +92,6 @@ export class OsSettingsPrivacyPageElement extends
       showPasswordPromptDialog_: {
         type: Boolean,
         value: false,
-      },
-
-      /**
-       * setModes_ is a partially applied function that stores the current auth
-       * token. It's defined only when the user has entered a valid password.
-       */
-      setModes_: {
-        type: Object,
       },
 
       /**
@@ -219,7 +213,7 @@ export class OsSettingsPrivacyPageElement extends
     return ['onDataAccessFlagsSet_(isThunderboltSupported_.*)'];
   }
 
-  private authToken_: chrome.quickUnlockPrivate.TokenInfo|undefined;
+  private authTokenInfo_: chrome.quickUnlockPrivate.TokenInfo|undefined;
   private browserProxy_: PeripheralDataAccessBrowserProxy;
   private privacyHubBrowserProxy_: PrivacyHubBrowserProxy;
 
@@ -239,7 +233,6 @@ export class OsSettingsPrivacyPageElement extends
   private isThunderboltSupported_: boolean;
   private isUserConfigurable_: boolean;
   private section_: Section;
-  private setModes_: Object|undefined;
   private showDisableProtectionDialog_: boolean;
   private showPasswordPromptDialog_: boolean;
   private showPrivacyHubPage_: boolean;
@@ -263,7 +256,8 @@ export class OsSettingsPrivacyPageElement extends
   override ready(): void {
     super.ready();
 
-    this.addEventListener('auth-token-invalid', this.onAuthTokenInvalid_);
+    this.addEventListener(
+        AUTH_TOKEN_INVALID_EVENT_TYPE, this.onAuthTokenInvalid_);
   }
 
   override currentRouteChanged(route: Route): void {
@@ -310,26 +304,26 @@ export class OsSettingsPrivacyPageElement extends
    * submit when too many attempts were made when using PrefStore based PIN.
    */
   private onInvalidateTokenRequested_(): void {
-    this.authToken_ = undefined;
+    this.authTokenInfo_ = undefined;
   }
 
   private onPasswordPromptDialogClose_(): void {
     this.showPasswordPromptDialog_ = false;
-    if (!this.setModes_) {
+    if (!this.authTokenInfo_) {
       Router.getInstance().navigateToPreviousRoute();
     }
   }
 
   private onAuthTokenObtained_(
       e: CustomEvent<chrome.quickUnlockPrivate.TokenInfo>): void {
-    this.authToken_ = e.detail;
+    this.authTokenInfo_ = e.detail;
   }
 
   /**
    * Should request the password again to get latest token.
    */
   private onAuthTokenInvalid_(): void {
-    this.setModes_ = undefined;
+    this.authTokenInfo_ = undefined;
   }
 
   private onConfigureLockClick_(e: Event): void {
@@ -357,41 +351,22 @@ export class OsSettingsPrivacyPageElement extends
   }
 
   private onAuthTokenChanged_(): void {
-    if (this.authToken_ === undefined) {
-      this.setModes_ = undefined;
-    } else {
-      const token = this.authToken_.token;
-      this.setModes_ =
-          (modes: chrome.quickUnlockPrivate.QuickUnlockMode[],
-           credentials: string[], onComplete: (result: boolean) => void) => {
-            this.quickUnlockPrivate.setModes(token, modes, credentials, () => {
-              let result = true;
-              if (chrome.runtime.lastError) {
-                console.error(
-                    'setModes failed: ' + chrome.runtime.lastError.message);
-                result = false;
-              }
-              onComplete(result);
-            });
-          };
-    }
-
     if (this.clearAccountPasswordTimeoutId_) {
       clearTimeout(this.clearAccountPasswordTimeoutId_);
     }
-    if (this.authToken_ === undefined) {
+    if (this.authTokenInfo_ === undefined) {
       return;
     }
-    // Clear |this.authToken_| after
-    // |this.authToken_.tokenInfo.lifetimeSeconds|.
+    // Clear |this.authTokenInfo_| after
+    // |this.authTokenInfo_.tokenInfo.lifetimeSeconds|.
     // Subtract time from the expiration time to account for IPC delays.
     // Treat values less than the minimum as 0 for testing.
     const IPC_SECONDS = 2;
-    const lifetimeMs = this.authToken_.lifetimeSeconds > IPC_SECONDS ?
-        (this.authToken_.lifetimeSeconds - IPC_SECONDS) * 1000 :
+    const lifetimeMs = this.authTokenInfo_.lifetimeSeconds > IPC_SECONDS ?
+        (this.authTokenInfo_.lifetimeSeconds - IPC_SECONDS) * 1000 :
         0;
     this.clearAccountPasswordTimeoutId_ = setTimeout(() => {
-      this.authToken_ = undefined;
+      this.authTokenInfo_ = undefined;
     }, lifetimeMs);
   }
 

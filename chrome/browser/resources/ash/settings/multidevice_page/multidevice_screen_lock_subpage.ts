@@ -12,8 +12,10 @@ import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import '../os_people_page/lock_screen_password_prompt_dialog.js';
 import '../os_people_page/setup_pin_dialog.js';
 
+import {fireAuthTokenInvalidEvent} from 'chrome://resources/ash/common/quick_unlock/utils.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {AuthFactor, AuthFactorConfig, ConfigureResult, FactorObserverReceiver, PinFactorEditor} from 'chrome://resources/mojo/chromeos/ash/services/auth_factor_config/public/mojom/auth_factor_config.mojom-webui.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {LockScreenUnlockType, LockStateMixin} from '../lock_state_mixin.js';
@@ -21,12 +23,11 @@ import {LockScreenUnlockType, LockStateMixin} from '../lock_state_mixin.js';
 import {getTemplate} from './multidevice_screen_lock_subpage.html.js';
 
 import TokenInfo = chrome.quickUnlockPrivate.TokenInfo;
-import QuickUnlockMode = chrome.quickUnlockPrivate.QuickUnlockMode;
 
 const SettingsMultideviceScreenLockSubpageElementBase =
     LockStateMixin(PolymerElement);
 
-class SettingsMultideviceScreenLockSubpageElement extends
+export class SettingsMultideviceScreenLockSubpageElement extends
     SettingsMultideviceScreenLockSubpageElementBase {
   static get is() {
     return 'settings-multidevice-screen-lock-subpage' as const;
@@ -39,21 +40,9 @@ class SettingsMultideviceScreenLockSubpageElement extends
   static get properties() {
     return {
       /**
-       * setModes_ is a partially applied function of
-       * {@link chrome.quickUnlockPrivate.setModes} that stores the current auth
-       * token. It's defined only when the user has entered a valid password.
-       */
-      setModes_: {
-        type: Object,
-      },
-
-      /**
        * Authentication token.
        */
-      authToken_: {
-        type: Object,
-        observer: 'onAuthTokenChanged_',
-      },
+      authTokenInfo_: Object,
 
       /**
        * True if quick unlock settings are disabled by policy.
@@ -88,37 +77,110 @@ class SettingsMultideviceScreenLockSubpageElement extends
         value: false,
         notify: true,
       },
+
+      hasPin: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
   isPasswordDialogShowing: boolean;
   isScreenLockEnabled: boolean;
   showSetupPinDialog: boolean;
-  private authToken_: TokenInfo|undefined;
+  private authTokenInfo_: TokenInfo|undefined;
   private quickUnlockDisabledByPolicy_: boolean;
-  private setModes_:
-      ((modes: QuickUnlockMode[], credentials: string[],
-        onComplete: (success: boolean) => void) => void)|undefined;
   private shouldPromptPasswordDialog_: boolean;
-
+  hasPin: boolean;
 
   static get observers() {
-    return ['selectedUnlockTypeChanged_(selectedUnlockType)'];
+    return [
+      'selectedUnlockTypeChanged_(selectedUnlockType)',
+      'updatePinState_(authTokenInfo_)',
+    ];
   }
 
   constructor() {
     super();
 
-    if (this.authToken_ === undefined) {
+    if (this.authTokenInfo_ === undefined) {
       this.shouldPromptPasswordDialog_ = true;
     }
+  }
+
+  override ready() {
+    super.ready();
+
+    // Register this object as listener to factor change events (via
+    // |onFactorChanged|):
+    const receiver = new FactorObserverReceiver(this);
+    const remote = receiver.$.bindNewPipeAndPassRemote();
+    AuthFactorConfig.getRemote().observeFactorChanges(remote);
+  }
+
+  async onFactorChanged(factor: AuthFactor): Promise<void> {
+    if (factor !== AuthFactor.kPin) {
+      return;
+    }
+    if (!this.authTokenInfo_) {
+      return;
+    }
+
+    await this.updatePinState_(this.authTokenInfo_, /*factorChanged=*/ true);
+  }
+
+  /**
+   * Fetches the state of the PIN factor and updates the corresponding
+   * property.
+   * @param authTokenInfo Must be equal to `this.authTokenInfo_`. This is
+   *     passed as parameter so that this function can be used as callback for
+   *     changes of the `authTokenInfo_` property.
+   * @param factorChanged Should be `true` if this function is called in
+   *     response to a PIN change (as opposed to e.g. during initialization).
+   */
+  private async updatePinState_(
+      authTokenInfo: TokenInfo, factorChanged: boolean = false): Promise<void> {
+    if (!authTokenInfo) {
+      return;
+    }
+    const authToken = authTokenInfo.token;
+    assert(this.authTokenInfo_ && this.authTokenInfo_.token === authToken);
+
+    const {configured} = await AuthFactorConfig.getRemote().isConfigured(
+        authToken, AuthFactor.kPin);
+    if (configured) {
+      this.hasPin = true;
+      this.selectedUnlockType = LockScreenUnlockType.PIN_PASSWORD;
+      return;
+    }
+    assert(!configured);
+
+    // A race condition can occur:
+    // (1) User selects PIN_PASSSWORD, and successfully sets a pin, adding
+    //     QuickUnlockMode.PIN to active modes.
+    // (2) User selects PASSWORD, QuickUnlockMode.PIN capability is cleared
+    //     from the active modes. This notifies this class via
+    //     |onFactorChanged| and prompts us to fetch the current state of the
+    //     PIN asynchronously.
+    // (3) User selects PIN_PASSWORD, but the process from step 2 has not yet
+    //     completed.
+    // In this case, do not forcibly select the PASSWORD radio button even
+    // though the unlock type is still PASSWORD (|hasPin| is false). If the
+    // user wishes to set a pin, they will have to click the set pin button.
+    // See https://crbug.com/1054327 for details.
+    if (factorChanged && !this.hasPin &&
+        this.selectedUnlockType === LockScreenUnlockType.PIN_PASSWORD) {
+      return;
+    }
+    this.hasPin = false;
+    this.selectedUnlockType = LockScreenUnlockType.PASSWORD;
   }
 
   /**
    * Called when the unlock type has changed.
    * @param selected The current unlock type.
    */
-  private selectedUnlockTypeChanged_(selected: string): void {
+  private async selectedUnlockTypeChanged_(selected: string): Promise<void> {
     const pinNumberEvent = new CustomEvent('pin-number-selected', {
       bubbles: true,
       composed: true,
@@ -127,43 +189,31 @@ class SettingsMultideviceScreenLockSubpageElement extends
       },
     });
     this.dispatchEvent(pinNumberEvent);
-    if (selected === LockScreenUnlockType.PASSWORD && this.setModes_) {
+    if (selected === LockScreenUnlockType.PASSWORD && this.authTokenInfo_) {
       // If the user selects PASSWORD only (which sends an asynchronous
-      // setModes_.call() to clear the quick unlock capability), indicate to the
+      // removePin call to clear the quick unlock capability), indicate to the
       // user immediately that the quick unlock capability is cleared by setting
       // |hasPin| to false. If there is an error clearing quick unlock, revert
       // |hasPin| to true. This prevents setupPinButton UI delays, except in the
       // small chance that CrOS fails to remove the quick unlock capability. See
       // https://crbug.com/1054327 for details.
       this.hasPin = false;
-      this.setModes_.call(null, [], [], (result: boolean) => {
-        // Revert |hasPin| to true in the event setModes_ fails to set lock
-        // state to PASSWORD only.
-        if (!result) {
-          this.hasPin = true;
-        }
+      const {result} = await PinFactorEditor.getRemote().removePin(
+          this.authTokenInfo_.token);
+      if (result !== ConfigureResult.kSuccess) {
+        this.hasPin = true;
+      }
 
-        assert(result, 'Failed to clear quick unlock modes');
-      });
-    }
-  }
-
-  private onAuthTokenChanged_(): void {
-    if (this.authToken_ === undefined) {
-      this.setModes_ = undefined;
-    } else {
-      const token = this.authToken_.token;
-      this.setModes_ = (modes, credentials, onComplete) => {
-        this.quickUnlockPrivate.setModes(token, modes, credentials, () => {
-          let result = true;
-          if (chrome.runtime.lastError) {
-            console.error(
-                `setModes failed: ${chrome.runtime.lastError.message}`);
-            result = false;
-          }
-          onComplete(result);
-        });
-      };
+      switch (result) {
+        case ConfigureResult.kSuccess:
+          break;
+        case ConfigureResult.kInvalidTokenError:
+          fireAuthTokenInvalidEvent(this);
+          break;
+        case ConfigureResult.kFatalError:
+          console.error('Error removing PIN');
+          break;
+      }
     }
   }
 
@@ -172,9 +222,9 @@ class SettingsMultideviceScreenLockSubpageElement extends
   }
 
   private onAuthTokenObtained_(e: CustomEvent<TokenInfo>): void {
-    this.authToken_ = e.detail;
+    this.authTokenInfo_ = e.detail;
     this.setLockScreenEnabled(
-        this.authToken_.token, true, (_success: boolean) => {});
+        this.authTokenInfo_.token, true, (_success: boolean) => {});
     this.isScreenLockEnabled = true;
     // Avoid dialog.close() of password_prompt_dialog.ts to close main dialog
     this.isPasswordDialogShowing = true;

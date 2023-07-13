@@ -7,7 +7,7 @@
  * 'settings-setup-pin-dialog' is the settings page for choosing a PIN.
  *
  * Example:
- * * <settings-setup-pin-dialog set-modes="[[quickUnlockSetModes]]">
+ * * <settings-setup-pin-dialog auth-token="[[authToken]]">
  * </settings-setup-pin-dialog>
  */
 
@@ -44,13 +44,10 @@ class SettingsSetupPinDialogElement extends SettingsSetupPinDialogElementBase {
 
   static get properties() {
     return {
-      /**
-       * Reflects property set in password_prompt_dialog.js.
+      /*
+       * Token to be used for calls into the pinFactorEditor service.
        */
-      setModes: {
-        type: Object,
-        notify: true,
-      },
+      authToken: {type: String, notify: true},
 
       /**
        * Should the step-specific submit button be displayed?
@@ -81,7 +78,6 @@ class SettingsSetupPinDialogElement extends SettingsSetupPinDialogElementBase {
     };
   }
 
-  setModes: Object|null;
   private enableSubmit_: boolean;
   private isConfirmStep_: boolean;
   private quickUnlockPrivate: Object;

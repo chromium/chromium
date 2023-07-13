@@ -57,6 +57,14 @@ void PinFactorEditor::RemovePin(
     return;
   }
 
+  const bool has_pin =
+      user_context_ptr->GetAuthFactorsConfiguration().HasConfiguredFactor(
+          cryptohome::AuthFactorType::kPin);
+  if (!has_pin) {
+    std::move(callback).Run(mojom::ConfigureResult::kSuccess);
+    return;
+  }
+
   pin_backend_->Remove(
       user->GetAccountId(), auth_token,
       base::BindOnce(&PinFactorEditor::OnPinConfigured,

@@ -15,11 +15,13 @@ import './pin_keyboard.js';
 
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
+import {ConfigureResult, PinFactorEditor} from 'chrome://resources/mojo/chromeos/ash/services/auth_factor_config/public/mojom/auth_factor_config.mojom-webui.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {LockScreenProgress} from './lock_screen_constants.js';
 import {PinKeyboardElement} from './pin_keyboard.js';
 import {getTemplate} from './setup_pin_keyboard.html.js';
+import {fireAuthTokenInvalidEvent} from './utils.js';
 
 /**
  * Keep in sync with the string keys provided by settings.
@@ -57,12 +59,9 @@ export class SetupPinKeyboardElement extends SetupPinKeyboardElementBase {
   static get properties() {
     return {
       /**
-       * Reflects property set in password_prompt_dialog.js.
+       * The token to be used to call into the PinFactorEditor mojo service.
        */
-      setModes: {
-        type: Object,
-        notify: true,
-      },
+      authToken: String,
 
       /**
        * The current PIN keyboard value.
@@ -152,7 +151,7 @@ export class SetupPinKeyboardElement extends SetupPinKeyboardElementBase {
         value: false,
       },
 
-      isSetModesCallPending_: {
+      isSetPinCallPending_: {
         notify: true,
         type: Boolean,
         value: false,
@@ -166,11 +165,8 @@ export class SetupPinKeyboardElement extends SetupPinKeyboardElementBase {
   private problemMessageParameters_: string;
   private problemClass_: string|undefined;
   private pinHasPassedMinimumLength_: boolean;
-  private isSetModesCallPending_: boolean;
-  setModes:
-      ((modes: chrome.quickUnlockPrivate.QuickUnlockMode[],
-        credentials: string[],
-        onComplete: (result: boolean) => void) => void)|undefined;
+  private isSetPinCallPending_: boolean;
+  authToken: string|undefined;
   enableSubmit: boolean;
   writeUma: (progress: LockScreenProgress) => void;
   isConfirmStep: boolean;
@@ -330,24 +326,8 @@ export class SetupPinKeyboardElement extends SetupPinKeyboardElementBase {
     this.dispatchEvent(new Event('pin-submit'));
   }
 
-  /**
-   * This is callback for quickUnlockPrivate.QuickUnlockMode.PIN API.
-   */
-  private onSetModesCompleted_(didSet: boolean): void {
-    this.isSetModesCallPending_ = false;
-    if (!didSet) {
-      console.error('Failed to update pin');
-      this.showProblem_(MessageType.INTERNAL_ERROR, ProblemType.ERROR);
-      this.enableSubmit = true;
-      return;
-    }
-
-    this.resetState();
-    this.dispatchEvent(new Event('set-pin-done'));
-  }
-
   /** This is called by container object when user initiated submit. */
-  doSubmit(): void {
+  async doSubmit(): Promise<void> {
     if (!this.isConfirmStep) {
       if (!this.enableSubmit) {
         return;
@@ -371,12 +351,32 @@ export class SetupPinKeyboardElement extends SetupPinKeyboardElementBase {
       return;
     }
 
-    assert(this.setModes);
-    this.isSetModesCallPending_ = true;
+    if (typeof this.authToken !== 'string') {
+      fireAuthTokenInvalidEvent(this);
+      return;
+    }
+
+    this.isSetPinCallPending_ = true;
     this.enableSubmit = false;
-    this.setModes.call(
-        null, [chrome.quickUnlockPrivate.QuickUnlockMode.PIN],
-        [this.pinKeyboardValue_], this.onSetModesCompleted_.bind(this));
+    const {result} = await PinFactorEditor.getRemote().setPin(
+        this.authToken, this.pinKeyboardValue_);
+    this.isSetPinCallPending_ = false;
+
+    switch (result) {
+      case ConfigureResult.kSuccess:
+        break;
+      case ConfigureResult.kInvalidTokenError:
+        fireAuthTokenInvalidEvent(this);
+        break;
+      case ConfigureResult.kFatalError:
+        console.error('Failed to update pin');
+        this.showProblem_(MessageType.INTERNAL_ERROR, ProblemType.ERROR);
+        this.enableSubmit = true;
+        break;
+    }
+
+    this.resetState();
+    this.dispatchEvent(new Event('set-pin-done'));
     this.writeUma(LockScreenProgress.CONFIRM_PIN);
   }
 

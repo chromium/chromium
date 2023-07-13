@@ -156,6 +156,7 @@ non_web_component_files_ts = [
   "connectivity/mojo_connectivity_provider.ts",
   "hotspot/cros_hotspot_config.ts",
   "hotspot/fake_hotspot_config.ts",
+  "quick_unlock/utils.ts",
   "typescript_utils/strict_query.ts",
   "quick_unlock/lock_screen_constants.ts",
 ]

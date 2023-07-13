@@ -19,11 +19,10 @@ import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '../settings_shared.css.js';
 
 import {PinKeyboardElement} from 'chrome://resources/ash/common/quick_unlock/pin_keyboard.js';
+import {fireAuthTokenInvalidEvent} from 'chrome://resources/ash/common/quick_unlock/utils.js';
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
-import {assertExists} from '../assert_extras.js';
 
 import {getTemplate} from './pin_autosubmit_dialog.html.js';
 
@@ -94,7 +93,7 @@ class SettingsPinAutosubmitDialogElement extends
        * Authentication token provided by lock-screen-password-prompt-dialog.
        */
       authToken: {
-        type: Object,
+        type: String,
         notify: true,
       },
 
@@ -106,7 +105,7 @@ class SettingsPinAutosubmitDialogElement extends
     };
   }
 
-  authToken: chrome.quickUnlockPrivate.TokenInfo|undefined;
+  authToken: string|undefined;
   private error_: string|null;
   private confirmButtonDisabled_: boolean;
   private pinValue_: string;
@@ -171,11 +170,16 @@ class SettingsPinAutosubmitDialogElement extends
       return;
     }
 
+    if (typeof this.authToken !== 'string') {
+      fireAuthTokenInvalidEvent(this);
+      return;
+    }
+
     // Make a request to enable pin autosubmit.
     this.requestInProcess_ = true;
-    assertExists(this.authToken);
+
     this.quickUnlockPrivate.setPinAutosubmitEnabled(
-        this.authToken.token, this.pinValue_ /* PIN */, true /*enabled*/,
+        this.authToken, this.pinValue_ /* PIN */, true /*enabled*/,
         this.onPinSubmitResponse_.bind(this));
   }
 
