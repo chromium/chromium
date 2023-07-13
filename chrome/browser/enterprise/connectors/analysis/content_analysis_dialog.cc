@@ -252,7 +252,7 @@ ContentAnalysisDialog::ContentAnalysisDialog(
   // now, ignore input events manually.
   top_level_contents_ =
       constrained_window::GetTopLevelWebContents(web_contents_)->GetWeakPtr();
-  top_level_contents_->ClearFocusedElement();
+  top_level_contents_->StoreFocus();
   top_level_contents_->SetIgnoreInputEvents(true);
 
   if (ShowDialogDelay().is_zero() || !is_pending()) {
@@ -461,8 +461,10 @@ void ContentAnalysisDialog::ShowResult(FinalContentAnalysisResult result) {
 }
 
 ContentAnalysisDialog::~ContentAnalysisDialog() {
-  if (top_level_contents_)
+  if (top_level_contents_) {
     top_level_contents_->SetIgnoreInputEvents(false);
+    top_level_contents_->RestoreFocus();
+  }
   if (download_item_)
     download_item_->RemoveObserver(this);
   if (observer_for_testing)
