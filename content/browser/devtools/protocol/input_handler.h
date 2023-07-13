@@ -227,22 +227,36 @@ class InputHandler : public DevToolsDomainHandler, public Input::Backend {
                        blink::DragOperationsMask drag_operations_mask);
 
     // Updates the drag with the given mouse event.
-    void UpdateDragging(RenderWidgetHostImpl& host,
-                        const blink::WebMouseEvent& event,
-                        std::unique_ptr<FailSafe<DispatchMouseEventCallback>>
-                            callback = nullptr);
+    //
+    // `callback` may be null.
+    void UpdateDragging(
+        RenderWidgetHostImpl& host,
+        std::unique_ptr<blink::WebMouseEvent> event,
+        std::unique_ptr<FailSafe<DispatchMouseEventCallback>> callback);
     void DragUpdated(
+        std::unique_ptr<blink::WebMouseEvent> event,
         std::unique_ptr<FailSafe<DispatchMouseEventCallback>> callback,
         ui::mojom::DragOperation operation);
 
-    // Ends the drag with the given event modifiers.
+    // Ends the drag with the given event and host.
     //
-    // Note an event cannot be passed in here, so it's expected you've updated
-    // the drag with the latest info (e.g. position) excluding modifiers. This
-    // ensures the drag event sequence is semantically correct.
+    // Note only the modifiers for the event are really used here, so it's
+    // expected you've updated the drag with the latest info (e.g. position)
+    // excluding modifiers. This ensures the drag event sequence is semantically
+    // correct. The event itself is still needed in case dragging suddenly stops
+    // for external reasons and we need to reschedule it.
+    //
+    // Also note the host is only used if there are no updates ongoing.
+    // Otherwise, it's a nullptr. This is an optimization.
     void EndDragging(
-        int event_modifiers,
+        RenderWidgetHostImpl* host,
+        std::unique_ptr<blink::WebMouseEvent> event,
         std::unique_ptr<FailSafe<DispatchMouseEventCallback>> callback);
+    void EndDraggingWithRenderWidgetHostAtPoint(
+        std::unique_ptr<blink::WebMouseEvent> event,
+        std::unique_ptr<FailSafe<DispatchMouseEventCallback>> callback,
+        base::WeakPtr<RenderWidgetHostViewBase> view,
+        absl::optional<gfx::PointF> maybe_point);
 
     InputHandler& handler_;
 
