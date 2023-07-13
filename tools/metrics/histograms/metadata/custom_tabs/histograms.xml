@@ -435,6 +435,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="CustomTabs.PostMessage.RequestPostMessageChannelWithTargetOrigin"
+    enum="Boolean" expires_after="2024-03-22">
+  <owner>elabadysayed@chromium.org</owner>
+  <owner>chrome-connective-tissue@google.com</owner>
+  <summary>
+    Android only. Recorded when the CCT client calls requestPostMessageChannel
+    to establish a two way postMessage channel. Emits true if the request is
+    with targetOrigin specified and false otherwise. That should determine if we
+    can to delete the old API (Without targetOrigin) or not.
+  </summary>
+</histogram>
+
 <histogram name="CustomTabs.PredictionStatus" enum="PredictionStatus"
     expires_after="2020-03-01">
   <owner>lizeb@chromium.org</owner>

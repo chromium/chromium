@@ -15,6 +15,7 @@ import androidx.browser.customtabs.CustomTabsSessionToken;
 import androidx.browser.customtabs.EngagementSignalsCallback;
 
 import org.chromium.base.BundleUtils;
+import org.chromium.base.metrics.RecordHistogram;
 
 import java.util.List;
 
@@ -84,12 +85,16 @@ public class SplitCompatCustomTabsService extends CustomTabsService {
     @Override
     protected boolean requestPostMessageChannel(
             CustomTabsSessionToken sessionToken, Uri postMessageOrigin) {
+        RecordHistogram.recordBooleanHistogram(
+                "CustomTabs.PostMessage.RequestPostMessageChannelWithTargetOrigin", false);
         return mImpl.requestPostMessageChannel(sessionToken, postMessageOrigin, null);
     }
 
     @Override
     protected boolean requestPostMessageChannel(CustomTabsSessionToken sessionToken,
             Uri postMessageSourceOrigin, Uri postMessageTargetOrigin, Bundle extras) {
+        RecordHistogram.recordBooleanHistogram(
+                "CustomTabs.PostMessage.RequestPostMessageChannelWithTargetOrigin", true);
         return mImpl.requestPostMessageChannel(
                 sessionToken, postMessageSourceOrigin, postMessageTargetOrigin);
     }
