@@ -2035,9 +2035,8 @@ TEST_P(PointerTest, SetCursorWithSurfaceChange) {
 
   MockPointerDelegate delegate;
   Seat seat;
-  auto pointer = std::make_unique<Pointer>(&delegate, &seat);
-  pointer->SetHostWindowForTesting(std::make_unique<PointerTestHostWindow>(),
-                                   "TestPointerHostWindow");
+  auto pointer = std::make_unique<Pointer>(
+      &delegate, &seat, std::make_unique<PointerTestHostWindow>());
   ui::test::EventGenerator* generator = AshTestBase::GetEventGenerator();
 
   EXPECT_CALL(delegate, CanAcceptPointerEventsForSurface(surface))

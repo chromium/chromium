@@ -103,9 +103,14 @@ class CustomWindowTargeter : public aura::WindowTargeter {
 // SurfaceTreeHost, public:
 
 SurfaceTreeHost::SurfaceTreeHost(const std::string& window_name)
-    : host_window_(
-          std::make_unique<aura::Window>(nullptr,
-                                         aura::client::WINDOW_TYPE_CONTROL)),
+    : SurfaceTreeHost(window_name, nullptr) {}
+
+SurfaceTreeHost::SurfaceTreeHost(const std::string& window_name,
+                                 std::unique_ptr<aura::Window> host_window)
+    : host_window_(host_window ? std::move(host_window)
+                               : std::make_unique<aura::Window>(
+                                     nullptr,
+                                     aura::client::WINDOW_TYPE_CONTROL)),
       frame_sink_holder_factory_(
           base::BindRepeating(&SurfaceTreeHost::CreateLayerTreeFrameSinkHolder,
                               base::Unretained(this))) {
@@ -208,13 +213,6 @@ void SurfaceTreeHost::SubmitCompositorFrameForTesting(
   active_presentation_callbacks_[frame.metadata.frame_token] =
       PresentationCallbacks();
   layer_tree_frame_sink_holder_->SubmitCompositorFrame(std::move(frame));
-}
-
-void SurfaceTreeHost::SetHostWindowForTesting(
-    std::unique_ptr<aura::Window> test_host_window,
-    const std::string& window_name) {
-  host_window_ = std::move(test_host_window);
-  InitHostWindow(window_name);
 }
 
 void SurfaceTreeHost::SetLayerTreeFrameSinkHolderFactoryForTesting(

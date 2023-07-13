@@ -38,6 +38,8 @@ class SurfaceTreeHost : public SurfaceDelegate,
                         public viz::ContextLostObserver {
  public:
   explicit SurfaceTreeHost(const std::string& window_name);
+  SurfaceTreeHost(const std::string& window_name,
+                  std::unique_ptr<aura::Window> host_window);
 
   SurfaceTreeHost(const SurfaceTreeHost&) = delete;
   SurfaceTreeHost& operator=(const SurfaceTreeHost&) = delete;
@@ -143,10 +145,6 @@ class SurfaceTreeHost : public SurfaceDelegate,
   void SetSecurityDelegate(SecurityDelegate* security_delegate);
 
   void SubmitCompositorFrameForTesting(viz::CompositorFrame frame);
-
-  // Set and initialize the host window for testing.
-  void SetHostWindowForTesting(std::unique_ptr<aura::Window> test_host_window,
-                               const std::string& window_name);
 
   using LayerTreeFrameSinkHolderFactory =
       base::RepeatingCallback<std::unique_ptr<LayerTreeFrameSinkHolder>()>;

@@ -56,7 +56,9 @@ class Pointer : public SurfaceTreeHost,
                 public aura::client::FocusChangeObserver,
                 public ash::ShellObserver {
  public:
-  Pointer(PointerDelegate* delegate, Seat* seat);
+  Pointer(PointerDelegate* delegate,
+          Seat* seat,
+          std::unique_ptr<aura::Window> host_window = nullptr);
 
   Pointer(const Pointer&) = delete;
   Pointer& operator=(const Pointer&) = delete;

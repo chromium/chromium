@@ -82,8 +82,10 @@ int GetContainerIdForMouseCursor() {
 ////////////////////////////////////////////////////////////////////////////////
 // Pointer, public:
 
-Pointer::Pointer(PointerDelegate* delegate, Seat* seat)
-    : SurfaceTreeHost("ExoPointer"),
+Pointer::Pointer(PointerDelegate* delegate,
+                 Seat* seat,
+                 std::unique_ptr<aura::Window> host_window)
+    : SurfaceTreeHost("ExoPointer", std::move(host_window)),
       delegate_(delegate),
       seat_(seat),
       cursor_(ui::mojom::CursorType::kNull),
