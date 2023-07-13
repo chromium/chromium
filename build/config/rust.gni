@@ -83,19 +83,17 @@ declare_args() {
   # Conversions between Rust types and C++ types.
   #
   # TODO(crbug.com/1463749): Enable on ChromeOS.
-  # TODO(crbug.com/1386212): Enable on Mac.
   enable_rust_base_conversions =
-      enable_rust &&
-      (!(is_chromeos || is_ios || is_mac) || enable_all_rust_features)
+      enable_rust && (!(is_chromeos || is_ios) || enable_all_rust_features)
 
   # The base::JSONReader implementation. Requires base conversions.
   enable_rust_json = enable_rust && enable_all_rust_features
 
   # Support for chrome://crash-rust to check crash dump collection works.
   #
-  # Note that `enable_rust_crash` is true on all platforms except Mac and
-  # ChromeOS, but `chrome://crash-rust` is only actually building and present
-  # on platforms that include Blink (e.g. it is *not* present on iOS).
+  # Note that `enable_rust_crash` is true on all platforms except ChromeOS, but
+  # `chrome://crash-rust` is only actually building and present on platforms
+  # that include Blink (e.g. it is *not* present on iOS).
   #
   # TODO(crbug.com/1463749): Enable on ChromeOS.
   # TODO(crbug.com/1464415): Enable on iOS.
@@ -104,11 +102,13 @@ declare_args() {
 
   # Support for QR code generation - see https://crbug.com/1431991.
   #
+  # Per go/rusty-qr-code-generator the feature is not actually used on iOS, but
+  # `is_ios` below is checked for parity with `enable_rust_base_conversions`
+  # (which is a dependency of `enable_rust_qr`).
+  #
   # TODO(crbug.com/1463749): Enable on ChromeOS.
-  # TODO(crbug.com/1386212): Enable on Mac (per go/rusty-qr-code-generation
-  # this feature is not used on iOS).
-  enable_rust_qr = enable_rust && (!(is_chromeos || is_ios || is_mac) ||
-                                   enable_all_rust_features)
+  enable_rust_qr =
+      enable_rust && (!(is_chromeos || is_ios) || enable_all_rust_features)
 
   # Support for Rust mojo bindings.
   enable_rust_mojo = enable_rust && enable_all_rust_features
