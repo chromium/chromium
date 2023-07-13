@@ -251,13 +251,11 @@ TEST_F(ConnectionTest, RequestAccountTransferAssertion) {
 
   std::vector<uint8_t> bootstrap_options_data =
       fake_nearby_connection_->GetWrittenData();
-  std::unique_ptr<ash::quick_start::QuickStartMessage>
-      bootstrap_options_message =
-          ash::quick_start::QuickStartMessage::ReadMessage(
-              bootstrap_options_data, QuickStartMessageType::kBootstrapOptions);
-  ASSERT_TRUE(bootstrap_options_message != nullptr);
-  base::Value::Dict& bootstrap_options =
-      *bootstrap_options_message->GetPayload();
+  QuickStartMessage::ReadResult read_result =
+      ash::quick_start::QuickStartMessage::ReadMessage(
+          bootstrap_options_data, QuickStartMessageType::kBootstrapOptions);
+  ASSERT_TRUE(read_result.has_value());
+  base::Value::Dict& bootstrap_options = *read_result.value()->GetPayload();
 
   // Verify that BootstrapOptions is written as expected.
   EXPECT_EQ(*bootstrap_options.FindInt(kAccountRequirementKey),
@@ -278,13 +276,13 @@ TEST_F(ConnectionTest, RequestAccountTransferAssertion) {
   std::vector<uint8_t> fido_get_info_data =
       fake_nearby_connection_->GetWrittenData();
 
-  std::unique_ptr<ash::quick_start::QuickStartMessage> fido_message =
+  QuickStartMessage::ReadResult get_info_request =
       ash::quick_start::QuickStartMessage::ReadMessage(
           fido_get_info_data, QuickStartMessageType::kSecondDeviceAuthPayload);
-  ASSERT_TRUE(fido_message != nullptr);
+  ASSERT_TRUE(get_info_request.has_value());
 
   // Verify that FIDO GetInfo request is written as expected
-  base::Value::Dict* get_info_payload = fido_message->GetPayload();
+  base::Value::Dict* get_info_payload = get_info_request.value()->GetPayload();
   std::string get_info_message = *get_info_payload->FindString("fidoMessage");
   absl::optional<std::vector<uint8_t>> get_info_command =
       base::Base64Decode(get_info_message);
@@ -299,15 +297,15 @@ TEST_F(ConnectionTest, RequestAccountTransferAssertion) {
   std::vector<uint8_t> fido_assertion_request_data =
       fake_nearby_connection_->GetWrittenData();
 
-  std::unique_ptr<ash::quick_start::QuickStartMessage> assertion_message =
+  QuickStartMessage::ReadResult assertion_read_result =
       ash::quick_start::QuickStartMessage::ReadMessage(
           fido_assertion_request_data,
           QuickStartMessageType::kSecondDeviceAuthPayload);
 
-  ASSERT_TRUE(assertion_message != nullptr);
+  ASSERT_TRUE(assertion_read_result.has_value());
 
   std::string get_assertion_message_payload =
-      *assertion_message->GetPayload()->FindString("fidoMessage");
+      *assertion_read_result.value()->GetPayload()->FindString("fidoMessage");
   absl::optional<std::vector<uint8_t>> get_assertion_command =
       base::Base64Decode(get_assertion_message_payload);
   EXPECT_TRUE(get_assertion_command);
@@ -363,11 +361,11 @@ TEST_F(ConnectionTest, NotifySourceOfUpdate_Success) {
   std::vector<uint8_t> notify_source_data =
       fake_nearby_connection_->GetWrittenData();
 
-  std::unique_ptr<ash::quick_start::QuickStartMessage> notify_source_message =
+  QuickStartMessage::ReadResult read_result =
       ash::quick_start::QuickStartMessage::ReadMessage(
           notify_source_data, QuickStartMessageType::kQuickStartPayload);
-  ASSERT_TRUE(notify_source_message != nullptr);
-  base::Value::Dict& parsed_payload = *notify_source_message->GetPayload();
+  ASSERT_TRUE(read_result.has_value());
+  base::Value::Dict& parsed_payload = *read_result.value()->GetPayload();
 
   EXPECT_EQ(parsed_payload.FindBool(kNotifySourceOfUpdateMessageKey), true);
 

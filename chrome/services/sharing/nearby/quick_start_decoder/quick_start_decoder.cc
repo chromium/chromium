@@ -257,11 +257,17 @@ void QuickStartDecoder::DoDecodeBootstrapConfigurations(
     return;
   }
 
-  std::unique_ptr<QuickStartMessage> message = QuickStartMessage::ReadMessage(
+  QuickStartMessage::ReadResult read_result = QuickStartMessage::ReadMessage(
       data.value(), QuickStartMessageType::kBootstrapConfigurations);
 
+  if (!read_result.has_value()) {
+    LOG(ERROR) << "Bootstrap Configurations decoder failed";
+    std::move(callback).Run(
+        nullptr, mojom::QuickStartDecoderError::kMessageDoesNotMatchSchema);
+  }
+
   base::Value::Dict* device_details =
-      message->GetPayload()->FindDict(kDeviceDetailsKey);
+      read_result.value()->GetPayload()->FindDict(kDeviceDetailsKey);
   if (!device_details) {
     LOG(ERROR)
         << "DeviceDetails cannot be found within BootstrapConfigurations.";
@@ -306,10 +312,9 @@ void QuickStartDecoder::DecodeUserVerificationRequested(
     return;
   }
 
-  std::unique_ptr<ash::quick_start::QuickStartMessage> message =
-      QuickStartMessage::ReadMessage(data.value(),
-                                     QuickStartMessageType::kQuickStartPayload);
-  if (!message) {
+  QuickStartMessage::ReadResult read_result = QuickStartMessage::ReadMessage(
+      data.value(), QuickStartMessageType::kQuickStartPayload);
+  if (!read_result.has_value()) {
     LOG(ERROR)
         << "Failed to read UserVerificationRequested as QuickStartMessage";
     std::move(callback).Run(nullptr,
@@ -318,7 +323,7 @@ void QuickStartDecoder::DecodeUserVerificationRequested(
   }
 
   absl::optional<bool> is_awaiting_user_verification =
-      message->GetPayload()->FindBool(kAwaitingUserVerificationKey);
+      read_result.value()->GetPayload()->FindBool(kAwaitingUserVerificationKey);
   if (!is_awaiting_user_verification.has_value()) {
     LOG(ERROR) << "UserVerificationRequested message does not include "
                   "await_user_verification";
@@ -342,11 +347,10 @@ void QuickStartDecoder::DecodeUserVerificationResult(
     return;
   }
 
-  std::unique_ptr<ash::quick_start::QuickStartMessage> message =
-      QuickStartMessage::ReadMessage(data.value(),
-                                     QuickStartMessageType::kQuickStartPayload);
+  QuickStartMessage::ReadResult read_result = QuickStartMessage::ReadMessage(
+      data.value(), QuickStartMessageType::kQuickStartPayload);
 
-  if (!message) {
+  if (!read_result.has_value()) {
     LOG(ERROR) << "Failed to read UserVerificationResult as QuickStartMessage";
     std::move(callback).Run(nullptr,
                             mojom::QuickStartDecoderError::kUnableToReadAsJSON);
@@ -354,7 +358,7 @@ void QuickStartDecoder::DecodeUserVerificationResult(
   }
 
   absl::optional<int> user_verification_result_code =
-      message->GetPayload()->FindInt(kUserVerificationResultKey);
+      read_result.value()->GetPayload()->FindInt(kUserVerificationResultKey);
 
   if (!user_verification_result_code.has_value()) {
     LOG(ERROR) << "User Verification Result was not include in verification "
@@ -376,7 +380,7 @@ void QuickStartDecoder::DecodeUserVerificationResult(
   }
 
   absl::optional<bool> is_first_user_verification =
-      message->GetPayload()->FindBool(kIsFirstUserVerificationKey);
+      read_result.value()->GetPayload()->FindBool(kIsFirstUserVerificationKey);
   if (!is_first_user_verification.has_value()) {
     LOG(ERROR) << "Message does not contain key is_first_user_verification";
     std::move(callback).Run(
@@ -400,11 +404,10 @@ void QuickStartDecoder::DoDecodeWifiCredentialsResponse(
     return;
   }
 
-  std::unique_ptr<ash::quick_start::QuickStartMessage> message =
-      QuickStartMessage::ReadMessage(data.value(),
-                                     QuickStartMessageType::kQuickStartPayload);
+  QuickStartMessage::ReadResult read_result = QuickStartMessage::ReadMessage(
+      data.value(), QuickStartMessageType::kQuickStartPayload);
 
-  if (!message) {
+  if (!read_result.has_value()) {
     LOG(ERROR) << "Message cannot be parsed as a JSON Dictionary.";
     std::move(callback).Run(nullptr,
                             mojom::QuickStartDecoderError::kUnableToReadAsJSON);
@@ -415,7 +418,7 @@ void QuickStartDecoder::DoDecodeWifiCredentialsResponse(
   }
 
   base::Value::Dict* wifi_network_information =
-      message->GetPayload()->FindDict(kWifiNetworkInformationKey);
+      read_result.value()->GetPayload()->FindDict(kWifiNetworkInformationKey);
   if (!wifi_network_information) {
     LOG(ERROR) << "Wifi Network information not present in payload";
     std::move(callback).Run(
@@ -535,16 +538,17 @@ void QuickStartDecoder::DecodeGetAssertionResponse(
 absl::optional<std::vector<uint8_t>>
 QuickStartDecoder::ExtractFidoDataFromJsonResponse(
     const std::vector<uint8_t>& data) {
-  std::unique_ptr<ash::quick_start::QuickStartMessage> parsed_message =
+  QuickStartMessage::ReadResult read_result =
       ash::quick_start::QuickStartMessage::ReadMessage(
           data, QuickStartMessageType::kSecondDeviceAuthPayload);
 
-  if (!parsed_message) {
+  if (!read_result.has_value()) {
     LOG(ERROR) << "MessagePayload cannot be parsed as a JSON Dictionary.";
     return absl::nullopt;
   }
 
-  base::Value::Dict* second_device_auth_payload = parsed_message->GetPayload();
+  base::Value::Dict* second_device_auth_payload =
+      read_result.value()->GetPayload();
   if (!second_device_auth_payload) {
     LOG(ERROR) << "secondDeviceAuthPayload cannot be found within Message.";
     return absl::nullopt;
@@ -582,17 +586,17 @@ absl::optional<bool> QuickStartDecoder::DoDecodeNotifySourceOfUpdateResponse(
     return absl::nullopt;
   }
 
-  std::unique_ptr<ash::quick_start::QuickStartMessage> message =
-      QuickStartMessage::ReadMessage(data.value(),
-                                     QuickStartMessageType::kQuickStartPayload);
+  QuickStartMessage::ReadResult read_result = QuickStartMessage::ReadMessage(
+      data.value(), QuickStartMessageType::kQuickStartPayload);
 
-  if (!message) {
+  if (!read_result.has_value()) {
     LOG(ERROR) << "Notify Source of Update message cannot be parsed as a JSON "
                   "Dictionary.";
     return absl::nullopt;
   }
 
-  return message->GetPayload()->FindBool(kNotifySourceOfUpdateAckKey);
+  return read_result.value()->GetPayload()->FindBool(
+      kNotifySourceOfUpdateAckKey);
 }
 
 }  // namespace ash::quick_start
