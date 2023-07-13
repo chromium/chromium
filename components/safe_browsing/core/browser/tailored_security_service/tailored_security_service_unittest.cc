@@ -277,6 +277,11 @@ class TailoredSecurityServiceTest : public testing::Test {
     prefs_.registry()->RegisterBooleanPref(prefs::kSafeBrowsingEnabled, true);
     prefs_.registry()->RegisterBooleanPref(
         prefs::kEnhancedProtectionEnabledViaTailoredSecurity, false);
+    prefs_.registry()->RegisterIntegerPref(
+        prefs::kTailoredSecuritySyncFlowLastUserInteractionState,
+        TailoredSecurityUserInteractionState::UNSET);
+    prefs_.registry()->RegisterTimePref(
+        prefs::kTailoredSecuritySyncFlowLastRunTime, base::Time());
 
     tailored_security_service_ =
         std::make_unique<TestingTailoredSecurityService>(
@@ -298,14 +303,17 @@ class TailoredSecurityServiceTest : public testing::Test {
 
   PrefService* prefs() { return &prefs_; }
 
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
+
  private:
-  base::test::SingleThreadTaskEnvironment task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::SingleThreadTaskEnvironment::TimeSource::MOCK_TIME};
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
   TestingPrefServiceSimple prefs_;
   std::unique_ptr<TestingTailoredSecurityService> tailored_security_service_;
   std::vector<bool> notify_sync_calls_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(TailoredSecurityServiceTest, GetTailoredSecurityServiceEnabled) {
@@ -506,6 +514,89 @@ TEST_F(TailoredSecurityServiceTest, NotifiesSyncForDisabled) {
   run_loop.Run();
   EXPECT_TRUE(tailored_security_service()->notify_sync_user_called());
   EXPECT_FALSE(tailored_security_service()->notify_sync_user_called_enabled());
+}
+
+TEST_F(TailoredSecurityServiceTest,
+       RetryEnabledTimestampUpdateCallbackSetsOutcomeToUnknown) {
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitWithFeatures(
+      {safe_browsing::kTailoredSecurityRetryForSyncUsers}, {});
+  {
+    tailored_security_service()->SetExpectedURL(
+        GURL(kQueryTailoredSecurityServiceUrl));
+    tailored_security_service()->SetExpectedTailoredSecurityServiceValue(true);
+
+    EXPECT_NE(prefs()->GetInteger(
+                  prefs::kTailoredSecuritySyncFlowLastUserInteractionState),
+              TailoredSecurityUserInteractionState::UNKNOWN);
+
+    tailored_security_service()->TailoredSecurityTimestampUpdateCallback();
+
+    EXPECT_EQ(prefs()->GetInteger(
+                  prefs::kTailoredSecuritySyncFlowLastUserInteractionState),
+              TailoredSecurityUserInteractionState::UNKNOWN);
+  }
+}
+
+TEST_F(TailoredSecurityServiceTest, RetryDisabledOutcomeRemainsUnset) {
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitWithFeatures(
+      {}, {safe_browsing::kTailoredSecurityRetryForSyncUsers});
+  {
+    tailored_security_service()->SetExpectedURL(
+        GURL(kQueryTailoredSecurityServiceUrl));
+    tailored_security_service()->SetExpectedTailoredSecurityServiceValue(true);
+
+    EXPECT_EQ(prefs()->GetInteger(
+                  prefs::kTailoredSecuritySyncFlowLastUserInteractionState),
+              TailoredSecurityUserInteractionState::UNSET);
+
+    tailored_security_service()->TailoredSecurityTimestampUpdateCallback();
+
+    EXPECT_EQ(prefs()->GetInteger(
+                  prefs::kTailoredSecuritySyncFlowLastUserInteractionState),
+              TailoredSecurityUserInteractionState::UNSET);
+  }
+}
+
+TEST_F(TailoredSecurityServiceTest,
+       RetryEnabledTimestampUpdateCallbackRecordsStartTime) {
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitWithFeatures(
+      {safe_browsing::kTailoredSecurityRetryForSyncUsers}, {});
+  {
+    tailored_security_service()->SetExpectedURL(
+        GURL(kQueryTailoredSecurityServiceUrl));
+    tailored_security_service()->SetExpectedTailoredSecurityServiceValue(true);
+
+    EXPECT_NE(prefs()->GetTime(prefs::kTailoredSecuritySyncFlowLastRunTime),
+              base::Time::Now());
+
+    tailored_security_service()->TailoredSecurityTimestampUpdateCallback();
+
+    EXPECT_EQ(prefs()->GetTime(prefs::kTailoredSecuritySyncFlowLastRunTime),
+              base::Time::Now());
+  }
+}
+
+TEST_F(TailoredSecurityServiceTest,
+       RetryDisabledTimestampUpdateCallbackDoesNotRecordStartTime) {
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitWithFeatures(
+      {}, {safe_browsing::kTailoredSecurityRetryForSyncUsers});
+  {
+    tailored_security_service()->SetExpectedURL(
+        GURL(kQueryTailoredSecurityServiceUrl));
+    tailored_security_service()->SetExpectedTailoredSecurityServiceValue(true);
+
+    EXPECT_EQ(prefs()->GetTime(prefs::kTailoredSecuritySyncFlowLastRunTime),
+              base::Time());
+
+    tailored_security_service()->TailoredSecurityTimestampUpdateCallback();
+
+    EXPECT_EQ(prefs()->GetTime(prefs::kTailoredSecuritySyncFlowLastRunTime),
+              base::Time());
+  }
 }
 
 }  // namespace safe_browsing

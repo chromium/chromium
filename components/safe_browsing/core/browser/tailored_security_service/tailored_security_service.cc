@@ -505,6 +505,14 @@ void TailoredSecurityService::Shutdown() {
 }
 
 void TailoredSecurityService::TailoredSecurityTimestampUpdateCallback() {
+  if (base::FeatureList::IsEnabled(
+          safe_browsing::kTailoredSecurityRetryForSyncUsers)) {
+    prefs_->SetInteger(prefs::kTailoredSecuritySyncFlowLastUserInteractionState,
+                       TailoredSecurityUserInteractionState::UNKNOWN);
+    prefs_->SetTime(prefs::kTailoredSecuritySyncFlowLastRunTime,
+                    base::Time::Now());
+  }
+
   StartRequest(base::BindOnce(&TailoredSecurityService::MaybeNotifySyncUser,
                               weak_ptr_factory_.GetWeakPtr()));
 }
