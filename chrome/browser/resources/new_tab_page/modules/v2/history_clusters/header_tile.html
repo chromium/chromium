@@ -87,15 +87,15 @@
 
 <cr-action-menu id="actionMenu">
   <button id="openInfoDialogButton" class="dropdown-item"
-      on-click="onInfoButtonClick_" type="button">
+      on-click="onButtonClick_" data-action="info">
     [[i18n('moduleInfoButtonTitle')]]
   </button>
   <button id="dismissButton" class="dropdown-item"
-      on-click="onDismissButtonClick_">
+      on-click="onButtonClick_" data-action="dismiss">
     [[dismissText]]
   </button>
   <button id="disableButton" class="dropdown-item"
-      on-click="onDisableButtonClick_">
+      on-click="onButtonClick_" data-action="disable">
     [[disableText]]
   </button>
   <button id="customizeButton" class="dropdown-item"

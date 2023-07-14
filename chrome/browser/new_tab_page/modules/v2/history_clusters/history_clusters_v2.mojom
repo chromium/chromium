@@ -23,4 +23,10 @@ interface PageHandler {
   // Records the layout type for the cluster with `cluster_id`.
   RecordLayoutTypeShown(ntp.history_clusters.mojom.LayoutType layout_type,
                         int64 cluster_id);
+
+  // Dismiss or undo a dismiss of a cluster by marking its associated visits
+  // with a given interaction state.
+  UpdateClusterVisitsInteractionState(
+      array<history_clusters.mojom.URLVisit> visits,
+      history_clusters.mojom.InteractionState state);
 };

@@ -32,11 +32,12 @@ MockHistoryService::MockHistoryService() = default;
 MockHistoryService::~MockHistoryService() = default;
 
 history::ClusterVisit SampleVisitForURL(
+    history::VisitID id,
     GURL url,
     bool has_url_keyed_image,
     const std::vector<std::string>& related_searches) {
   history::VisitRow visit_row;
-  visit_row.visit_id = 1;
+  visit_row.visit_id = id;
   visit_row.visit_time = base::Time::Now();
   visit_row.is_known_to_sync = true;
   auto content_annotations = history::VisitContentAnnotations();
@@ -60,9 +61,9 @@ history::Cluster SampleCluster(
     int non_srp_visits,
     const std::vector<std::string> related_searches) {
   history::ClusterVisit sample_srp_visit =
-      SampleVisitForURL(GURL(kSampleSearchUrl), false);
+      SampleVisitForURL(1, GURL(kSampleSearchUrl), false);
   history::ClusterVisit sample_non_srp_visit =
-      SampleVisitForURL(GURL(kSampleNonSearchUrl), true, related_searches);
+      SampleVisitForURL(2, GURL(kSampleNonSearchUrl), true, related_searches);
 
   std::vector<history::ClusterVisit> visits;
   visits.insert(visits.end(), srp_visits, sample_srp_visit);

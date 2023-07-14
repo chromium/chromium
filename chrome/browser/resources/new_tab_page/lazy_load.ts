@@ -55,5 +55,5 @@ export {DummyModuleElement, dummyV2Descriptor} from './modules/v2/dummy/module.j
 // </if>
 export {HistoryClustersProxyImpl as HistoryClustersProxyImplV2} from './modules/v2/history_clusters/history_clusters_proxy.js';
 export {historyClustersDescriptor as historyClustersV2Descriptor, HistoryClustersModuleElement as HistoryClustersV2ModuleElement} from './modules/v2/history_clusters/module.js';
-export {MAX_COLUMN_COUNT, ModulesV2Element, NamedWidth, SUPPORTED_MODULE_WIDTHS} from './modules/v2/modules.js';
+export {DismissModuleInstanceEvent, MAX_COLUMN_COUNT, ModulesV2Element, NamedWidth, SUPPORTED_MODULE_WIDTHS} from './modules/v2/modules.js';
 export {VoiceSearchOverlayElement} from './voice_search_overlay.js';

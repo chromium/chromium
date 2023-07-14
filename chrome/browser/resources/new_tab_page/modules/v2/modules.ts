@@ -38,6 +38,15 @@ const CONTAINER_GAP_WIDTH = 8;
 
 const MARGIN_WIDTH = 48;
 
+export type DismissModuleInstanceEvent =
+    CustomEvent<{message: string, restoreCallback?: () => void}>;
+
+declare global {
+  interface HTMLElementEventMap {
+    'dismiss-module-instance': DismissModuleInstanceEvent;
+  }
+}
+
 /** Container for the NTP modules. */
 export class ModulesV2Element extends PolymerElement {
   static get is() {

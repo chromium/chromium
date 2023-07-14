@@ -36,7 +36,8 @@
 
 namespace {
 
-// TODO(romanarora): The V2 implementation does not require an SRP entry.
+// The minimum number of visits to render a layout is 2 URL visits plus a SRP
+// visit.
 constexpr int kMinRequiredVisits = 3;
 
 constexpr int kMinRequiredRelatedSearches = 2;
@@ -150,4 +151,24 @@ void HistoryClustersPageHandlerV2::RecordLayoutTypeShown(
     ntp::history_clusters::mojom::LayoutType layout_type,
     int64_t cluster_id) {
   ranking_metrics_logger_->SetLayoutTypeShown(layout_type, cluster_id);
+}
+
+void HistoryClustersPageHandlerV2::UpdateClusterVisitsInteractionState(
+    const std::vector<history_clusters::mojom::URLVisitPtr> visits,
+    const history_clusters::mojom::InteractionState state) {
+  if (visits.empty()) {
+    return;
+  }
+
+  std::vector<history::VisitID> visit_ids;
+  base::ranges::transform(
+      visits, std::back_inserter(visit_ids),
+      [](const auto& url_visit_ptr) { return url_visit_ptr->visit_id; });
+
+  auto* history_service = HistoryServiceFactory::GetForProfile(
+      profile_, ServiceAccessType::EXPLICIT_ACCESS);
+
+  history_service->UpdateVisitsInteractionState(
+      visit_ids, static_cast<history::ClusterVisit::InteractionState>(state),
+      base::BindOnce([]() {}), &update_visits_task_tracker_);
 }

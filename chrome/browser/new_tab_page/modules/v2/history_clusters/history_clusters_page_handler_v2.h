@@ -47,6 +47,9 @@ class HistoryClustersPageHandlerV2
   void RecordLayoutTypeShown(
       ntp::history_clusters::mojom::LayoutType layout_type,
       int64_t cluster_id) override;
+  void UpdateClusterVisitsInteractionState(
+      const std::vector<history_clusters::mojom::URLVisitPtr> visits,
+      const history_clusters::mojom::InteractionState state) override;
 
  private:
   // Forward the most relevant history clusters to the callback if any.
@@ -60,7 +63,7 @@ class HistoryClustersPageHandlerV2
   raw_ptr<Profile, DanglingUntriaged> profile_;
   raw_ptr<content::WebContents, DanglingUntriaged> web_contents_;
 
-  base::CancelableTaskTracker hide_visits_task_tracker_;
+  base::CancelableTaskTracker update_visits_task_tracker_;
   // The logger used to record metrics related to module ranking scoped to
   // `this`. Will be nullptr until clusters are received and ranking signals are
   // returned in the callback.

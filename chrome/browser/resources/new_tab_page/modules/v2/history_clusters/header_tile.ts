@@ -7,6 +7,7 @@ import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 
 import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {I18nMixin, loadTimeData} from '../../../i18n_setup.js';
@@ -51,24 +52,16 @@ export class HistoryClustersHeaderElementV2 extends I18nMixin
   disableText: string;
   private suggestionChipHeaderEnabled_: boolean;
 
-  private onInfoButtonClick_() {
+  private onButtonClick_(e: Event) {
+    const action: string = (e.target! as any).dataset.action;
+    assert(action);
     this.$.actionMenu.close();
     this.dispatchEvent(
-        new Event('info-button-click', {bubbles: true, composed: true}));
+        new Event(`${action}-button-click`, {bubbles: true, composed: true}));
   }
 
   private onMenuButtonClick_(e: Event) {
     this.$.actionMenu.showAt(e.target as HTMLElement);
-  }
-
-  private onDismissButtonClick_() {
-    this.$.actionMenu.close();
-    this.dispatchEvent(new Event('dismiss-button-click', {bubbles: true}));
-  }
-
-  private onDisableButtonClick_() {
-    this.$.actionMenu.close();
-    this.dispatchEvent(new Event('disable-button-click', {bubbles: true}));
   }
 
   private onCustomizeButtonClick_() {

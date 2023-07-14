@@ -355,4 +355,38 @@ TEST_F(HistoryClustersPageHandlerV2Test, RecordLayoutTypeShown) {
       ukm::builders::NewTabPage_HistoryClusters::kDidEngageWithModuleName, 0);
 }
 
+TEST_F(HistoryClustersPageHandlerV2Test, UpdateClusterVisitsInteractionState) {
+  std::vector<history::VisitID> visit_ids;
+  history::ClusterVisit::InteractionState state;
+  EXPECT_CALL(mock_history_service(), UpdateVisitsInteractionState)
+      .Times(1)
+      .WillOnce(testing::Invoke(
+          [&visit_ids, &state](
+              const std::vector<history::VisitID>& visit_ids_arg,
+              const history::ClusterVisit::InteractionState state_arg,
+              base::OnceClosure callback_arg,
+              base::CancelableTaskTracker* tracker_arg)
+              -> base::CancelableTaskTracker::TaskId {
+            visit_ids = visit_ids_arg;
+            state = state_arg;
+            return 0;
+          }));
+
+  const int kSampleClusterVisitCount = 3;
+  std::vector<history_clusters::mojom::URLVisitPtr> sample_cluster_visits;
+  for (int i = 0; i < kSampleClusterVisitCount; i++) {
+    auto visit_mojom = history_clusters::mojom::URLVisit::New();
+    visit_mojom->visit_id = i;
+    sample_cluster_visits.push_back(std::move(visit_mojom));
+  }
+
+  handler().UpdateClusterVisitsInteractionState(
+      std::move(sample_cluster_visits),
+      history_clusters::mojom::InteractionState::kDone);
+  ASSERT_EQ(static_cast<size_t>(kSampleClusterVisitCount), visit_ids.size());
+  for (size_t i = 0; i < visit_ids.size(); i++) {
+    ASSERT_EQ(static_cast<history::VisitID>(i), visit_ids[i]);
+  }
+}
+
 }  // namespace

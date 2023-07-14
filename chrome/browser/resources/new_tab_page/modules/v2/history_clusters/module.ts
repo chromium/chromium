@@ -11,7 +11,7 @@ import {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {Cluster} from '../../../history_cluster_types.mojom-webui.js';
+import {Cluster, InteractionState} from '../../../history_cluster_types.mojom-webui.js';
 import {I18nMixin, loadTimeData} from '../../../i18n_setup.js';
 import {InfoDialogElement} from '../../info_dialog';
 import {ModuleDescriptor} from '../../module_descriptor.js';
@@ -69,6 +69,20 @@ export class HistoryClustersModuleElement extends I18nMixin
       },
     });
     this.dispatchEvent(disableEvent);
+  }
+
+  private onDismissButtonClick_() {
+    HistoryClustersProxyImpl.getInstance()
+        .handler.updateClusterVisitsInteractionState(
+            this.cluster.visits, InteractionState.kHidden);
+    this.dispatchEvent(new CustomEvent('dismiss-module-instance', {
+      bubbles: true,
+      composed: true,
+      detail: {
+        message: loadTimeData.getStringF(
+            'dismissModuleToastMessage', this.cluster.label),
+      },
+    }));
   }
 
   private onInfoButtonClick_() {

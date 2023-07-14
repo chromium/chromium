@@ -93,9 +93,17 @@ class MockHistoryService : public history::HistoryService {
                    const std::vector<history::VisitID>& visit_ids,
                    base::OnceClosure callback,
                    base::CancelableTaskTracker* tracker));
+  MOCK_METHOD4(
+      UpdateVisitsInteractionState,
+      base::CancelableTaskTracker::TaskId(
+          const std::vector<history::VisitID>& visit_ids,
+          const history::ClusterVisit::InteractionState interaction_state,
+          base::OnceClosure callback,
+          base::CancelableTaskTracker* tracker));
 };
 
 history::ClusterVisit SampleVisitForURL(
+    history::VisitID id,
     GURL url,
     bool has_url_keyed_image = true,
     const std::vector<std::string>& related_searches = {});
