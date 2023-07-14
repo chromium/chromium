@@ -480,8 +480,7 @@ void PrintBrowserTest::SetPrinterNameForSubsequentContexts(
 }
 
 void PrintBrowserTest::PrintAndWaitUntilPreviewIsReady() {
-  const PrintParams kParams;
-  PrintAndWaitUntilPreviewIsReady(kParams);
+  PrintAndWaitUntilPreviewIsReady(PrintParams());
 }
 
 void PrintBrowserTest::PrintAndWaitUntilPreviewIsReady(
@@ -490,18 +489,21 @@ void PrintBrowserTest::PrintAndWaitUntilPreviewIsReady(
                                                 /*wait_for_loaded=*/false);
 }
 
-void PrintBrowserTest::PrintAndWaitUntilPreviewIsReadyAndLoaded() {
-  const PrintParams kParams;
-  PrintAndWaitUntilPreviewIsReadyAndLoaded(kParams);
+content::WebContents*
+PrintBrowserTest::PrintAndWaitUntilPreviewIsReadyAndLoaded() {
+  return PrintAndWaitUntilPreviewIsReadyAndLoaded(PrintParams());
 }
 
-void PrintBrowserTest::PrintAndWaitUntilPreviewIsReadyAndLoaded(
+content::WebContents*
+PrintBrowserTest::PrintAndWaitUntilPreviewIsReadyAndLoaded(
     const PrintParams& params) {
-  PrintAndWaitUntilPreviewIsReadyAndMaybeLoaded(params,
-                                                /*wait_for_loaded=*/true);
+  return PrintAndWaitUntilPreviewIsReadyAndMaybeLoaded(
+      params,
+      /*wait_for_loaded=*/true);
 }
 
-void PrintBrowserTest::PrintAndWaitUntilPreviewIsReadyAndMaybeLoaded(
+content::WebContents*
+PrintBrowserTest::PrintAndWaitUntilPreviewIsReadyAndMaybeLoaded(
     const PrintParams& params,
     bool wait_for_loaded) {
   TestPrintPreviewObserver print_preview_observer(wait_for_loaded,
@@ -513,9 +515,12 @@ void PrintBrowserTest::PrintAndWaitUntilPreviewIsReadyAndMaybeLoaded(
 #endif
              /*print_preview_disabled=*/false, params.print_only_selection);
 
-  print_preview_observer.WaitUntilPreviewIsReady();
+  content::WebContents* preview_dialog =
+      print_preview_observer.WaitUntilPreviewIsReadyAndReturnPreviewDialog();
 
   set_rendered_page_count(print_preview_observer.rendered_page_count());
+
+  return preview_dialog;
 }
 
 // The following are helper functions for having a wait loop in the test and

@@ -5,12 +5,13 @@
 #ifndef CHROME_BROWSER_PRINTING_PRINT_BROWSERTEST_H_
 #define CHROME_BROWSER_PRINTING_PRINT_BROWSERTEST_H_
 
-#include "chrome/test/base/in_process_browser_test.h"
-
+#include <map>
+#include <memory>
 #include <string>
 
 #include "build/build_config.h"
 #include "chrome/browser/printing/browser_printing_context_factory_for_test.h"
+#include "chrome/test/base/in_process_browser_test.h"
 #include "components/printing/common/print.mojom.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -41,10 +42,13 @@ class PrintBrowserTest : public InProcessBrowserTest {
 
   void AddPrinter(const std::string& printer_name);
   void SetPrinterNameForSubsequentContexts(const std::string& printer_name);
+
   void PrintAndWaitUntilPreviewIsReady();
   void PrintAndWaitUntilPreviewIsReady(const PrintParams& params);
-  void PrintAndWaitUntilPreviewIsReadyAndLoaded();
-  void PrintAndWaitUntilPreviewIsReadyAndLoaded(const PrintParams& params);
+  // Returns the Print Preview dialog.
+  content::WebContents* PrintAndWaitUntilPreviewIsReadyAndLoaded();
+  content::WebContents* PrintAndWaitUntilPreviewIsReadyAndLoaded(
+      const PrintParams& params);
 
   void SetNumExpectedMessages(unsigned int num);
   void ResetNumReceivedMessages();
@@ -81,8 +85,9 @@ class PrintBrowserTest : public InProcessBrowserTest {
   }
 
  private:
-  void PrintAndWaitUntilPreviewIsReadyAndMaybeLoaded(const PrintParams& params,
-                                                     bool wait_for_loaded);
+  content::WebContents* PrintAndWaitUntilPreviewIsReadyAndMaybeLoaded(
+      const PrintParams& params,
+      bool wait_for_loaded);
   TestPrintRenderFrame* GetFrameContent(content::RenderFrameHost* host) const;
   void OverrideBinderForTesting(content::RenderFrameHost* render_frame_host);
   void ShowPrintErrorDialog();

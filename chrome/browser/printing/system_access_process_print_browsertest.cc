@@ -519,13 +519,9 @@ class SystemAccessProcessPrintBrowserTestBase
 
   void PrintAfterPreviewIsReadyAndLoaded() {
     // First invoke the Print Preview dialog with `StartPrint()`.
-    TestPrintPreviewObserver print_preview_observer(/*wait_for_loaded=*/true);
-    test::StartPrint(browser()->tab_strip_model()->GetActiveWebContents());
     content::WebContents* preview_dialog =
-        print_preview_observer.WaitUntilPreviewIsReadyAndReturnPreviewDialog();
+        PrintAndWaitUntilPreviewIsReadyAndLoaded();
     ASSERT_TRUE(preview_dialog);
-
-    set_rendered_page_count(print_preview_observer.rendered_page_count());
 
     // Print Preview is completely ready, can now initiate printing.
     // This script locates and clicks the Print button.
@@ -541,20 +537,16 @@ class SystemAccessProcessPrintBrowserTestBase
 
   void AdjustMediaAfterPreviewIsReadyAndLoaded() {
     // First invoke the Print Preview dialog with `StartPrint()`.
-    TestPrintPreviewObserver print_preview_observer(/*wait_for_loaded=*/true);
-    test::StartPrint(browser()->tab_strip_model()->GetActiveWebContents());
     content::WebContents* preview_dialog =
-        print_preview_observer.WaitUntilPreviewIsReadyAndReturnPreviewDialog();
+        PrintAndWaitUntilPreviewIsReadyAndLoaded();
     ASSERT_TRUE(preview_dialog);
 
-    set_rendered_page_count(print_preview_observer.rendered_page_count());
-
     // Initial Print Preview is completely ready.
-    // Reset the observer, and then modify the paper size.  This will initiate
-    // another preview render.
+    // Create an observer and modify the paper size.  This will initiate another
+    // preview render.
     // The default paper size is first in the list at index zero, so choose
     // the second item from the list to cause a change.
-    print_preview_observer.ResetForAnotherPreview();
+    TestPrintPreviewObserver print_preview_observer(/*wait_for_loaded=*/true);
     const char kSetPaperSizeScript[] = R"(
       var element =
           document.getElementsByTagName('print-preview-app')[0]
@@ -568,13 +560,9 @@ class SystemAccessProcessPrintBrowserTestBase
 #if BUILDFLAG(ENABLE_BASIC_PRINT_DIALOG)
   void SystemPrintFromPreviewOnceReadyAndLoaded(bool wait_for_callback) {
     // First invoke the Print Preview dialog with `StartPrint()`.
-    TestPrintPreviewObserver print_preview_observer(/*wait_for_loaded=*/true);
-    test::StartPrint(browser()->tab_strip_model()->GetActiveWebContents());
     content::WebContents* preview_dialog =
-        print_preview_observer.WaitUntilPreviewIsReadyAndReturnPreviewDialog();
+        PrintAndWaitUntilPreviewIsReadyAndLoaded();
     ASSERT_TRUE(preview_dialog);
-
-    set_rendered_page_count(print_preview_observer.rendered_page_count());
 
     // Print Preview is completely ready, can now initiate printing.
     // This script locates and clicks the "Print using system dialog",
