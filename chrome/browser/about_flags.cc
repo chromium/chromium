@@ -7840,13 +7840,6 @@ const FeatureEntry kFeatureEntries[] = {
                                     "LensCameraAssistedSearch")},
 #endif  // BUILDFLAG(IS_ANDROID)
 
-    {"autofill-always-return-cloud-tokenized-card",
-     flag_descriptions::kAutofillAlwaysReturnCloudTokenizedCardName,
-     flag_descriptions::kAutofillAlwaysReturnCloudTokenizedCardDescription,
-     kOsAll,
-     FEATURE_VALUE_TYPE(
-         autofill::features::kAutofillAlwaysReturnCloudTokenizedCard)},
-
     {"back-forward-cache", flag_descriptions::kBackForwardCacheName,
      flag_descriptions::kBackForwardCacheDescription, kOsAll,
      FEATURE_WITH_PARAMS_VALUE_TYPE(features::kBackForwardCache,

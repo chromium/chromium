@@ -153,9 +153,6 @@ class FullCardRequestTest : public testing::Test {
                               response.with_real_pan(real_pan).with_dcvv(dcvv));
   }
 
- protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
-
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
   variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
@@ -208,11 +205,8 @@ TEST_F(FullCardRequestTest, GetFullCardPanAndCvcForMaskedServerCardViaCvc) {
   card_unmask_delegate()->OnUnmaskPromptClosed();
 }
 
-// Verify getting the full PAN and the dCVV for a masked server card when cloud
-// tokenization is enabled.
+// Verify full PAN and dCVV are both used when returned by the server.
 TEST_F(FullCardRequestTest, GetFullCardPanAndDcvvForMaskedServerCardViaDcvv) {
-  scoped_feature_list_.InitAndEnableFeature(
-      features::kAutofillAlwaysReturnCloudTokenizedCard);
   EXPECT_CALL(*result_delegate(),
               OnFullCardRequestSucceeded(
                   testing::Ref(*request()),
@@ -231,31 +225,6 @@ TEST_F(FullCardRequestTest, GetFullCardPanAndDcvvForMaskedServerCardViaDcvv) {
   card_unmask_delegate()->OnUnmaskPromptAccepted(details);
   OnDidGetRealPanWithDcvv(AutofillClient::PaymentsRpcResult::kSuccess, "4111",
                           "321");
-  card_unmask_delegate()->OnUnmaskPromptClosed();
-}
-
-// Verify getting the full PAN for a masked server card when cloud
-// tokenization is enabled but no dCVV is returned.
-TEST_F(FullCardRequestTest, GetFullCardPanForMaskedServerCardWithoutDcvv) {
-  scoped_feature_list_.InitAndEnableFeature(
-      features::kAutofillAlwaysReturnCloudTokenizedCard);
-  EXPECT_CALL(*result_delegate(),
-              OnFullCardRequestSucceeded(
-                  testing::Ref(*request()),
-                  CardMatches(CreditCard::FULL_SERVER_CARD, "4111"),
-                  testing::Eq(u"123")));
-  EXPECT_CALL(*ui_delegate(), ShowUnmaskPrompt(_, _, _));
-  EXPECT_CALL(*ui_delegate(), OnUnmaskVerificationResult(
-                                  AutofillClient::PaymentsRpcResult::kSuccess));
-
-  request()->GetFullCard(
-      CreditCard(CreditCard::MASKED_SERVER_CARD, "server_id"),
-      AutofillClient::UnmaskCardReason::kAutofill,
-      result_delegate()->AsWeakPtr(), ui_delegate()->AsWeakPtr());
-  CardUnmaskDelegate::UserProvidedUnmaskDetails details;
-  details.cvc = u"123";
-  card_unmask_delegate()->OnUnmaskPromptAccepted(details);
-  OnDidGetRealPan(AutofillClient::PaymentsRpcResult::kSuccess, "4111");
   card_unmask_delegate()->OnUnmaskPromptClosed();
 }
 

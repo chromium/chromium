@@ -208,11 +208,6 @@ std::string UnmaskCardRequest::GetRequestContent() {
         "instrument_id",
         base::NumberToString(request_details_.card.instrument_id()));
   }
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillAlwaysReturnCloudTokenizedCard)) {
-    // See b/140727361.
-    request_dict.Set("instrument_token", "INSTRUMENT_TOKEN_FOR_TEST");
-  }
   request_dict.Set("risk_data_encoded",
                    BuildRiskDictionary(request_details_.risk_data));
   base::Value::Dict context;

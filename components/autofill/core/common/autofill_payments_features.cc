@@ -23,12 +23,6 @@ namespace autofill::features {
 
 // Features
 
-// Controls whether or not Autofill client will populate form with CPAN and
-// dCVV, rather than FPAN.
-BASE_FEATURE(kAutofillAlwaysReturnCloudTokenizedCard,
-             "AutofillAlwaysReturnCloudTokenizedCard",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // When enabled, card art images (instead of network icons) will be shown in
 // Payments Autofill UI.
 BASE_FEATURE(kAutofillEnableCardArtImage,

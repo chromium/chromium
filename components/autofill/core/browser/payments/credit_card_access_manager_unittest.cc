@@ -566,9 +566,6 @@ class CreditCardAccessManagerTest : public testing::Test {
   TestAutofillClient autofill_client_;
   std::unique_ptr<TestAutofillDriver> autofill_driver_;
   scoped_refptr<AutofillWebDataService> database_;
-  // TODO(crbug.com/1249665): Remove this member variable and use test-local
-  // feature lists.
-  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<BrowserAutofillManager> browser_autofill_manager_;
   raw_ptr<CreditCardAccessManager, DanglingUntriaged>
       credit_card_access_manager_;
@@ -1068,10 +1065,7 @@ TEST_F(CreditCardAccessManagerTest, FetchServerCardFIDOSuccess) {
 // Ensures that FetchCreditCard() returns the full PAN upon a successful
 // WebAuthn verification and response from payments.
 TEST_F(CreditCardAccessManagerTest, FetchServerCardFIDOSuccessWithDcvv) {
-  // Enable both features and opt user in for FIDO auth.
-  scoped_feature_list_.Reset();
-  scoped_feature_list_.InitAndEnableFeature(
-      features::kAutofillAlwaysReturnCloudTokenizedCard);
+  // Opt user in for FIDO auth.
   prefs::SetCreditCardFIDOAuthEnabled(autofill_client_.GetPrefs(), true);
 
   // General setup.
