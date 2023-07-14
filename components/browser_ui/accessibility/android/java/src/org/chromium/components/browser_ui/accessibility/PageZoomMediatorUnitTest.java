@@ -40,6 +40,8 @@ public class PageZoomMediatorUnitTest {
             "Failure in decrease zoom method. Expected 1 JNI call but none occurred.";
     private static final String INCREASE_ZOOM_FAILURE_NO_JNI =
             "Failure in increase zoom method. Expected 1 JNI call but none occurred.";
+    private static final String RESET_ZOOM_FAILURE_NO_JNI =
+            "Failure in reset zoom method. Expected 1 JNI call but none occurred.";
     private static final String DECREASE_ZOOM_FAILURE_WITH_JNI =
             "Failure in decrease zoom method. Expected no JNI calls but at least 1 occurred.";
     private static final String INCREASE_ZOOM_FAILURE_WITH_JNI =
@@ -56,6 +58,7 @@ public class PageZoomMediatorUnitTest {
             "Failure to update zoom factor or seekbar level when value seekbar value changed.";
     private static final String SEEKBAR_VALUE_FAILURE_NO_JNI =
             "Failure in seekbar value method. Expected 1 JNI call but none occurred.";
+    private static final String RESET_ZOOM_FAILURE = "Failure to reset to the default zoom level.";
 
     @Rule
     public JniMocker mJniMocker = new JniMocker();
@@ -245,5 +248,40 @@ public class PageZoomMediatorUnitTest {
         mMediator.handleDecreaseClicked(null);
         Assert.assertTrue(
                 INCREASE_ENABLED_FAILURE, mModel.get(PageZoomProperties.INCREASE_ZOOM_ENABLED));
+    }
+
+    @Test
+    public void testResetZoom() {
+        // The decimal value in the when() statements refer to the zoom factor, while the integer
+        // value in the assert() statements refers to the seek value listed in the table in
+        // PageZoomUtils.java
+        when(mHostZoomMapMock.getZoomLevel(any())).thenReturn(0.0);
+        mMediator.setWebContents(mWebContentsMock);
+        Assert.assertEquals(
+                CURRENT_ZOOM_FAILURE, 50, mModel.get(PageZoomProperties.CURRENT_SEEK_VALUE));
+        mMediator.handleResetClicked(null);
+        // Ensure that setZoomLevel method is called with the correct params (0.0, 0.0)
+        verify(mHostZoomMapMock, times(1).description(RESET_ZOOM_FAILURE_NO_JNI))
+                .setZoomLevel(mWebContentsMock, 0.0, 0.0);
+        // Ensure that zoom stays the same if already at default
+        Assert.assertEquals(
+                RESET_ZOOM_FAILURE, 50, mModel.get(PageZoomProperties.CURRENT_SEEK_VALUE));
+
+        // Increase the zoom and ensure that zoom returns to default
+        mMediator.handleIncreaseClicked(null);
+        mMediator.handleResetClicked(null);
+        // Check that number of times setZoomLevel(0,0) is called has increased by 1
+        verify(mHostZoomMapMock, times(2).description(RESET_ZOOM_FAILURE_NO_JNI))
+                .setZoomLevel(mWebContentsMock, 0.0, 0.0);
+        Assert.assertEquals(
+                RESET_ZOOM_FAILURE, 50, mModel.get(PageZoomProperties.CURRENT_SEEK_VALUE));
+
+        // Decrease the zoom and ensure that zoom returns to default
+        mMediator.handleDecreaseClicked(null);
+        mMediator.handleResetClicked(null);
+        verify(mHostZoomMapMock, times(3).description(RESET_ZOOM_FAILURE_NO_JNI))
+                .setZoomLevel(mWebContentsMock, 0.0, 0.0);
+        Assert.assertEquals(
+                RESET_ZOOM_FAILURE, 50, mModel.get(PageZoomProperties.CURRENT_SEEK_VALUE));
     }
 }

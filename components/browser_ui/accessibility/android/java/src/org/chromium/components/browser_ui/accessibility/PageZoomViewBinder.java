@@ -58,6 +58,11 @@ class PageZoomViewBinder {
                             view.findViewById(R.id.page_zoom_reset_zoom_button).getLayoutParams())
                     : new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
             view.findViewById(R.id.page_zoom_current_zoom_level).setLayoutParams(params);
+        } else if (PageZoomProperties.RESET_ZOOM_CALLBACK == propertyKey) {
+            view.findViewById(R.id.page_zoom_reset_zoom_button).setOnClickListener(v -> {
+                model.get(PageZoomProperties.RESET_ZOOM_CALLBACK).onResult(null);
+                model.get(PageZoomProperties.USER_INTERACTION_CALLBACK).onResult(null);
+            });
         } else if (PageZoomProperties.DECREASE_ZOOM_ENABLED == propertyKey) {
             view.findViewById(R.id.page_zoom_decrease_zoom_button)
                     .setEnabled(model.get(PageZoomProperties.DECREASE_ZOOM_ENABLED));

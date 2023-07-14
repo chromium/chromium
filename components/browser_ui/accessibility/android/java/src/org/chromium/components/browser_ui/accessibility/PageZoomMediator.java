@@ -32,6 +32,7 @@ public class PageZoomMediator {
 
         mModel.set(PageZoomProperties.DECREASE_ZOOM_CALLBACK, this::handleDecreaseClicked);
         mModel.set(PageZoomProperties.INCREASE_ZOOM_CALLBACK, this::handleIncreaseClicked);
+        mModel.set(PageZoomProperties.RESET_ZOOM_CALLBACK, this::handleResetClicked);
         mModel.set(PageZoomProperties.SEEKBAR_CHANGE_CALLBACK, this::handleSeekBarValueChanged);
         mModel.set(PageZoomProperties.MAXIMUM_SEEK_VALUE, PAGE_ZOOM_MAXIMUM_SEEKBAR_VALUE);
 
@@ -89,6 +90,12 @@ public class PageZoomMediator {
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    void handleResetClicked(Void unused) {
+        // Reset as if the user moved the seekbar to the default zoom value
+        handleSeekBarValueChanged(
+                PageZoomUtils.convertZoomFactorToSeekBarValue(mDefaultZoomFactor));
+    }
+
     void handleSeekBarValueChanged(int newValue) {
         if (PageZoomUtils.shouldSnapSeekBarValueToDefaultZoom(newValue, mDefaultZoomFactor)) {
             newValue = PageZoomUtils.convertZoomFactorToSeekBarValue(mDefaultZoomFactor);
