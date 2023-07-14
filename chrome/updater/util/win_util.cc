@@ -545,8 +545,9 @@ HRESULT RunDeElevated(const std::wstring& path,
   hr = shell->FindWindowSW(base::win::ScopedVariant(CSIDL_DESKTOP).AsInput(),
                            base::win::ScopedVariant().AsInput(), SWC_DESKTOP,
                            &hwnd, SWFO_NEEDDISPATCH, &dispatch);
-  if (FAILED(hr))
-    return hr;
+  if (hr == S_FALSE || FAILED(hr)) {
+    return hr == S_FALSE ? E_FAIL : hr;
+  }
 
   Microsoft::WRL::ComPtr<IServiceProvider> service;
   hr = dispatch.As(&service);
