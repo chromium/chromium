@@ -178,9 +178,10 @@ using password_manager::WarningType;
 
 #pragma mark - SafetyCheckNavigationCommands
 
+// TODO(crbug.com/1464966): Make sure there aren't mutiple active
+// `passwordCheckupCoordinator`s at once.
 - (void)showPasswordCheckupPage {
   CHECK(password_manager::features::IsPasswordCheckupEnabled());
-  CHECK(!self.passwordCheckupCoordinator);
   self.passwordCheckupCoordinator = [[PasswordCheckupCoordinator alloc]
       initWithBaseNavigationController:self.baseNavigationController
                                browser:self.browser

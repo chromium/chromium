@@ -1660,8 +1660,9 @@ UIImage* GetBrandedGoogleServicesSymbol() {
 }
 
 // Shows Safety Check Screen.
+// TODO(crbug.com/1464966): Make sure there aren't mutiple active
+// `_safetyCheckCoordinator`s at once.
 - (void)showSafetyCheck {
-  DCHECK(!_safetyCheckCoordinator);
   _safetyCheckCoordinator = [[SafetyCheckCoordinator alloc]
       initWithBaseNavigationController:self.navigationController
                                browser:_browser];
