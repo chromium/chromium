@@ -52,6 +52,9 @@ class TabListEmptyCoordinator {
 
     public void initializeEmptyStateView(
             int imageResId, int emptyHeadingStringResId, int emptySubheadingStringResId) {
+        if (mEmptyView != null) {
+            return;
+        }
         // Initialize empty state resource.
         mEmptyView = (ViewGroup) android.view.LayoutInflater.from(mContext).inflate(
                 R.layout.empty_state_view, null);
@@ -64,18 +67,19 @@ class TabListEmptyCoordinator {
         setEmptyStateViewText(emptyHeadingStringResId, emptySubheadingStringResId);
     }
 
-    public void setEmptyStateViewText(int emptyHeadingStringResId, int emptySubheadingStringResId) {
+    private void setEmptyStateViewText(
+            int emptyHeadingStringResId, int emptySubheadingStringResId) {
         mEmptyStateHeading.setText(emptyHeadingStringResId);
         mEmptyStateSubheading.setText(emptySubheadingStringResId);
     }
 
-    public void setEmptyStateImageRes(int imageResId) {
+    private void setEmptyStateImageRes(int imageResId) {
         mImageView.setImageResource(imageResId);
     }
 
     private void updateEmptyView() {
         boolean isInEmptyState = mModel.size() == 0 && mIsTabSwitcherShowing;
-        boolean isEmptyViewAttached = mEmptyView.getParent() != null;
+        boolean isEmptyViewAttached = mEmptyView != null && mEmptyView.getParent() != null;
 
         if (isEmptyViewAttached) {
             if (isInEmptyState) {
@@ -112,8 +116,17 @@ class TabListEmptyCoordinator {
     }
 
     public void attachEmptyView() {
-        mRootView.addView(mEmptyView);
+        if (mEmptyView != null && mEmptyView.getParent() == null) {
+            mRootView.addView(mEmptyView);
+        }
         setEmptyViewVisibility(View.GONE);
+    }
+
+    public void destroyEmptyView() {
+        if (mEmptyView != null && mEmptyView.getParent() != null) {
+            mRootView.removeView(mEmptyView);
+        }
+        mEmptyView = null;
     }
 
     public void setEmptyViewVisibility(int isVisible) {

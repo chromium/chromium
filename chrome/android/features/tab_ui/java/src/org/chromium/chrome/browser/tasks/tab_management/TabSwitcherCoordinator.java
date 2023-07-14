@@ -126,6 +126,7 @@ public class TabSwitcherCoordinator
     private final ViewGroup mRootView;
     private TabContentManager mTabContentManager;
     private IncognitoReauthPromoMessageService mIncognitoReauthPromoMessageService;
+    private boolean mHasEmptyView;
     /**
      * TODO(crbug.com/1227656): Refactor this to pass a supplier instead to ensure we re-use the
      * same instance of {@link IncognitoReauthManager} across the codebase.
@@ -230,7 +231,7 @@ public class TabSwitcherCoordinator
             mMediator = new TabSwitcherMediator(activity, this, containerViewModel,
                     tabModelSelector, browserControls, container, tabContentManager, this, this,
                     multiWindowModeStateDispatcher, mode, incognitoReauthControllerSupplier,
-                    backPressManager, dialogControllerSupplier);
+                    backPressManager, dialogControllerSupplier, this::onTabSwitcherShown);
 
             mTabSwitcherCustomViewManager = new TabSwitcherCustomViewManager(mMediator);
 
@@ -246,10 +247,31 @@ public class TabSwitcherCoordinator
             };
 
             long startTimeMs = SystemClock.uptimeMillis();
-            mTabListCoordinator = new TabListCoordinator(mode, activity, tabModelSelector,
-                    mMultiThumbnailCardProvider, titleProvider, true, mMediator, null,
-                    TabProperties.UiType.CLOSABLE, null, this, container, true, COMPONENT_NAME,
-                    mRootView, null, ChromeFeatureList.sEmptyStates.isEnabled());
+
+            mHasEmptyView = ChromeFeatureList.sEmptyStates.isEnabled()
+                    && (mMode == TabListMode.GRID || mMode == TabListMode.LIST);
+
+            if (mHasEmptyView) {
+                int emptyImageResId =
+                        DeviceFormFactor.isNonMultiDisplayContextOnTablet(mRootView.getContext())
+                        ? R.drawable.tablet_tab_switcher_empty_state_illustration
+                        : R.drawable.phone_tab_switcher_empty_state_illustration;
+                int emptyHeadingStringResId = R.string.tabswitcher_no_tabs_empty_state;
+                int emptySubheadingStringResId =
+                        R.string.tabswitcher_no_tabs_open_to_visit_different_pages;
+
+                mTabListCoordinator = new TabListCoordinator(mode, activity, tabModelSelector,
+                        mMultiThumbnailCardProvider, titleProvider, true, mMediator, null,
+                        TabProperties.UiType.CLOSABLE, null, this, container, true, COMPONENT_NAME,
+                        mRootView, null, mHasEmptyView, emptyImageResId, emptyHeadingStringResId,
+                        emptySubheadingStringResId);
+            } else {
+                mTabListCoordinator = new TabListCoordinator(mode, activity, tabModelSelector,
+                        mMultiThumbnailCardProvider, titleProvider, true, mMediator, null,
+                        TabProperties.UiType.CLOSABLE, null, this, container, true, COMPONENT_NAME,
+                        mRootView, null);
+            }
+
             mTabListCoordinator.setOnLongPressTabItemEventListener(this);
             mContainerViewChangeProcessor = PropertyModelChangeProcessor.create(containerViewModel,
                     mTabListCoordinator.getContainerView(), TabListContainerViewBinder::bind);
@@ -328,6 +350,13 @@ public class TabSwitcherCoordinator
 
             mLifecycleDispatcher = lifecycleDispatcher;
             mLifecycleDispatcher.register(this);
+        }
+    }
+
+    // @Todo(crbug.com/1464841) can use VisibilityListener instead of this callback.
+    public void onTabSwitcherShown() {
+        if (mHasEmptyView) {
+            mTabListCoordinator.attachEmptyView();
         }
     }
 
@@ -547,6 +576,9 @@ public class TabSwitcherCoordinator
 
     @Override
     public void postHiding() {
+        if (mHasEmptyView) {
+            mTabListCoordinator.destroyEmptyView();
+        }
         mTabListCoordinator.postHiding();
         mMediator.postHiding();
     }
