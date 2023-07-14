@@ -47,16 +47,25 @@ TEST_F(DocumentPictureInPictureNavigationThrottleTest,
 
 TEST_F(DocumentPictureInPictureNavigationThrottleTest,
        SameDocumentNavigationsOkay) {
+  auto* committed_rfh = NavigationSimulatorImpl::NavigateAndCommitFromDocument(
+      GURL("https://example.test/"), main_rfh());
+  EXPECT_EQ(committed_rfh, main_rfh());
+  EXPECT_EQ(GURL("https://example.test/"), main_rfh()->GetLastCommittedURL());
+
   // Simulate that we're inside a document picture-in-picture window.
   blink::mojom::PictureInPictureWindowOptions options;
   static_cast<TestWebContents*>(web_contents())
       ->SetPictureInPictureOptions(options);
 
   // Simulate a same-document navigation, which should succeed.
-  auto nav_simulator =
-      NavigationSimulatorImpl::CreateRendererInitiated(GURL("#"), main_rfh());
-  nav_simulator->CommitSameDocument();
-  EXPECT_FALSE(nav_simulator->HasFailed());
+  {
+    auto nav_simulator = NavigationSimulatorImpl::CreateRendererInitiated(
+        GURL("https://example.test/#"), main_rfh());
+    nav_simulator->CommitSameDocument();
+    EXPECT_FALSE(nav_simulator->HasFailed());
+    EXPECT_EQ(GURL("https://example.test/#"),
+              main_rfh()->GetLastCommittedURL());
+  }
 }
 
 }  // namespace content
