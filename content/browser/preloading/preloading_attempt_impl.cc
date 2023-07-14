@@ -88,9 +88,11 @@ void PreloadingAttemptImpl::SetEligibility(PreloadingEligibility eligibility) {
   eligibility_ = eligibility;
 }
 
-// TODO(crbug.com/1383267): remove this once we've switched to the
-// PreloadingConfig feature. The holdback status should be determined by the
-// preloading configuration only.
+// TODO(crbug.com/1464836): most call sites of this should be removed, as
+// PreloadingConfig should subsume most feature-specific holdbacks that exist
+// today. Some cases can remain as specific overrides of the PreloadingConfig
+// logic, e.g. if DevTools is open, or for features that are still launching and
+// thus have their own separate holdback feature while they ramp up.
 void PreloadingAttemptImpl::SetHoldbackStatus(
     PreloadingHoldbackStatus holdback_status) {
   // Ensure that the holdback status is only set once and that it's set for
