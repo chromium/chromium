@@ -4,7 +4,6 @@
 
 #include "components/browsing_topics/browsing_topics_state.h"
 
-#include "base/base64.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback_helpers.h"
@@ -207,24 +206,29 @@ TEST_F(BrowsingTopicsStateTest, AddEpoch) {
   task_environment_->RunUntilIdle();
 
   // Successful topics calculation at `kTime1`.
-  state.AddEpoch(CreateTestEpochTopics(
-      kTime1, /*from_manually_triggered_calculation=*/false));
+  absl::optional<EpochTopics> maybe_removed_epoch_1 =
+      state.AddEpoch(CreateTestEpochTopics(
+          kTime1, /*from_manually_triggered_calculation=*/false));
 
   EXPECT_EQ(state.epochs().size(), 1u);
   EXPECT_FALSE(state.epochs()[0].empty());
   EXPECT_EQ(state.epochs()[0].calculation_time(), kTime1);
+  EXPECT_FALSE(maybe_removed_epoch_1.has_value());
 
   // Successful topics calculation at `kTime2`.
-  state.AddEpoch(CreateTestEpochTopics(
-      kTime2, /*from_manually_triggered_calculation=*/false));
+  absl::optional<EpochTopics> maybe_removed_epoch_2 =
+      state.AddEpoch(CreateTestEpochTopics(
+          kTime2, /*from_manually_triggered_calculation=*/false));
   EXPECT_EQ(state.epochs().size(), 2u);
   EXPECT_FALSE(state.epochs()[0].empty());
   EXPECT_EQ(state.epochs()[0].calculation_time(), kTime1);
   EXPECT_FALSE(state.epochs()[1].empty());
   EXPECT_EQ(state.epochs()[1].calculation_time(), kTime2);
+  EXPECT_FALSE(maybe_removed_epoch_2.has_value());
 
   // Failed topics calculation.
-  state.AddEpoch(EpochTopics(kTime3));
+  absl::optional<EpochTopics> maybe_removed_epoch_3 =
+      state.AddEpoch(EpochTopics(kTime3));
   EXPECT_EQ(state.epochs().size(), 3u);
   EXPECT_FALSE(state.epochs()[0].empty());
   EXPECT_EQ(state.epochs()[0].calculation_time(), kTime1);
@@ -232,10 +236,12 @@ TEST_F(BrowsingTopicsStateTest, AddEpoch) {
   EXPECT_EQ(state.epochs()[1].calculation_time(), kTime2);
   EXPECT_TRUE(state.epochs()[2].empty());
   EXPECT_EQ(state.epochs()[2].calculation_time(), kTime3);
+  EXPECT_FALSE(maybe_removed_epoch_3.has_value());
 
   // Successful topics calculation at `kTime4`.
-  state.AddEpoch(CreateTestEpochTopics(
-      kTime4, /*from_manually_triggered_calculation=*/false));
+  absl::optional<EpochTopics> maybe_removed_epoch_4 =
+      state.AddEpoch(CreateTestEpochTopics(
+          kTime4, /*from_manually_triggered_calculation=*/false));
   EXPECT_EQ(state.epochs().size(), 4u);
   EXPECT_FALSE(state.epochs()[0].empty());
   EXPECT_EQ(state.epochs()[0].calculation_time(), kTime1);
@@ -244,11 +250,13 @@ TEST_F(BrowsingTopicsStateTest, AddEpoch) {
   EXPECT_TRUE(state.epochs()[2].empty());
   EXPECT_FALSE(state.epochs()[3].empty());
   EXPECT_EQ(state.epochs()[3].calculation_time(), kTime4);
+  EXPECT_FALSE(maybe_removed_epoch_4.has_value());
 
   // Successful topics calculation at `kTime5`. When this epoch is added, the
   // first one should be evicted.
-  state.AddEpoch(CreateTestEpochTopics(
-      kTime5, /*from_manually_triggered_calculation=*/false));
+  absl::optional<EpochTopics> maybe_removed_epoch_5 =
+      state.AddEpoch(CreateTestEpochTopics(
+          kTime5, /*from_manually_triggered_calculation=*/false));
   EXPECT_EQ(state.epochs().size(), 4u);
   EXPECT_FALSE(state.epochs()[0].empty());
   EXPECT_EQ(state.epochs()[0].calculation_time(), kTime2);
@@ -257,6 +265,8 @@ TEST_F(BrowsingTopicsStateTest, AddEpoch) {
   EXPECT_EQ(state.epochs()[2].calculation_time(), kTime4);
   EXPECT_FALSE(state.epochs()[3].empty());
   EXPECT_EQ(state.epochs()[3].calculation_time(), kTime5);
+  EXPECT_TRUE(maybe_removed_epoch_5.has_value());
+  EXPECT_EQ(maybe_removed_epoch_5.value().calculation_time(), kTime1);
 
   // The `next_scheduled_calculation_time` and `hmac_key` are unaffected.
   EXPECT_EQ(state.next_scheduled_calculation_time(), base::Time());

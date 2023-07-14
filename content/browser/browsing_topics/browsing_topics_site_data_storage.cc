@@ -121,9 +121,6 @@ BrowsingTopicsSiteDataStorage::GetBrowsingTopicsApiUsage(base::Time begin_time,
   if (!LazyInit())
     return {};
 
-  // Expire data before `begin_time`, as they are no longer needed.
-  ExpireDataBefore(begin_time);
-
   static constexpr char kGetApiUsageSql[] =
       // clang-format off
       "SELECT hashed_context_domain,hashed_main_frame_host,last_usage_time "
@@ -208,6 +205,31 @@ void BrowsingTopicsSiteDataStorage::OnBrowsingTopicsApiUsed(
   }
 
   transaction.Commit();
+}
+
+std::map<browsing_topics::HashedDomain, std::string>
+BrowsingTopicsSiteDataStorage::GetContextDomainsFromHashedContextDomains(
+    const std::set<browsing_topics::HashedDomain>& hashed_context_domains) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  std::map<browsing_topics::HashedDomain, std::string> context_domains;
+  static constexpr char kGetContextDomainSql[] =
+      // clang-format off
+      "SELECT context_domain "
+          "FROM browsing_topics_api_hashed_to_unhashed_domain "
+          "WHERE hashed_context_domain = ?";
+  // clang-format on
+  for (const browsing_topics::HashedDomain& hashed_domain :
+       hashed_context_domains) {
+    sql::Statement select_unhashed_domain_statement(
+        db_->GetCachedStatement(SQL_FROM_HERE, kGetContextDomainSql));
+    select_unhashed_domain_statement.BindInt64(0, hashed_domain.value());
+    if (select_unhashed_domain_statement.Step()) {
+      context_domains[hashed_domain] =
+          select_unhashed_domain_statement.ColumnString(0);
+    }
+  }
+  return context_domains;
 }
 
 bool BrowsingTopicsSiteDataStorage::LazyInit() {

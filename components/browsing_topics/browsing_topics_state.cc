@@ -139,20 +139,24 @@ void BrowsingTopicsState::ClearContextDomain(
   ScheduleSave();
 }
 
-void BrowsingTopicsState::AddEpoch(EpochTopics epoch_topics) {
+absl::optional<EpochTopics> BrowsingTopicsState::AddEpoch(
+    EpochTopics epoch_topics) {
   DCHECK(loaded_);
 
   epochs_.push_back(std::move(epoch_topics));
 
   // Remove the epoch data that is no longer useful.
+  absl::optional<EpochTopics> removed_epoch_topics;
   if (epochs_.size() >
       static_cast<size_t>(
           blink::features::kBrowsingTopicsNumberOfEpochsToExpose.Get()) +
           1) {
+    removed_epoch_topics = std::move(epochs_[0]);
     epochs_.pop_front();
   }
 
   ScheduleSave();
+  return removed_epoch_topics;
 }
 
 void BrowsingTopicsState::UpdateNextScheduledCalculationTime() {

@@ -50,6 +50,7 @@ constexpr base::TimeDelta kOneTestDay = base::Seconds(1);
 constexpr base::TimeDelta kEpoch = 7 * kOneTestDay;
 constexpr base::TimeDelta kMaxEpochIntroductionDelay = 2 * kOneTestDay;
 
+constexpr base::TimeDelta kDatabaseFetchDelay = base::Milliseconds(1);
 constexpr base::TimeDelta kCalculatorDelay = base::Milliseconds(1);
 
 constexpr browsing_topics::HmacKey kTestKey = {1};
@@ -701,8 +702,126 @@ TEST_F(BrowsingTopicsServiceImplTest,
   base::test::TestFuture<mojom::WebUIGetBrowsingTopicsStateResultPtr> future2;
   browsing_topics_service_->GetBrowsingTopicsStateForWebUi(
       /*calculate_now=*/false, future2.GetCallback());
+  task_environment()->FastForwardBy(kDatabaseFetchDelay);
   EXPECT_TRUE(future2.IsReady());
   EXPECT_FALSE(future2.Take()->is_override_status_message());
+}
+
+TEST_F(BrowsingTopicsServiceImplTest,
+       StartFromPreexistingState_DataDeletionOnCalculation) {
+  base::Time start_time = base::Time::Now();
+  topics_site_data_manager()->OnBrowsingTopicsApiUsed(
+      HashMainFrameHostForStorage("a.com"), HashedDomain(1), "a.com",
+      kTime1 -
+          blink::features::
+                  kBrowsingTopicsNumberOfEpochsOfObservationDataToUseForFiltering
+                      .Get() *
+              blink::features::kBrowsingTopicsTimePeriodPerEpoch.Get() -
+          kCalculatorDelay);
+
+  topics_site_data_manager()->OnBrowsingTopicsApiUsed(
+      HashMainFrameHostForStorage("b.com"), HashedDomain(2), "b.com", kTime2);
+
+  topics_site_data_manager()->OnBrowsingTopicsApiUsed(
+      HashMainFrameHostForStorage("c.com"), HashedDomain(3), "c.com",
+      kTime2 + kCalculatorDelay);
+
+  EXPECT_EQ(
+      content::GetBrowsingTopicsApiUsage(topics_site_data_manager()).size(),
+      3u);
+
+  std::vector<EpochTopics> preexisting_epochs;
+  preexisting_epochs.push_back(CreateTestEpochTopics({{Topic(1), {}},
+                                                      {Topic(2), {}},
+                                                      {Topic(3), {}},
+                                                      {Topic(4), {}},
+                                                      {Topic(5), {}}},
+                                                     kTime1));
+
+  preexisting_epochs.push_back(CreateTestEpochTopics({{Topic(1), {}},
+                                                      {Topic(2), {}},
+                                                      {Topic(3), {}},
+                                                      {Topic(4), {}},
+                                                      {Topic(5), {}}},
+                                                     kTime2));
+  preexisting_epochs.push_back(CreateTestEpochTopics({{Topic(1), {}},
+                                                      {Topic(2), {}},
+                                                      {Topic(3), {}},
+                                                      {Topic(4), {}},
+                                                      {Topic(5), {}}},
+                                                     kTime2));
+
+  CreateBrowsingTopicsStateFile(
+      std::move(preexisting_epochs),
+      /*next_scheduled_calculation_time=*/start_time + kOneTestDay);
+
+  base::queue<EpochTopics> mock_calculator_results;
+  mock_calculator_results.push(
+      CreateTestEpochTopics({{Topic(1), {}},
+                             {Topic(2), {}},
+                             {Topic(3), {}},
+                             {Topic(4), {}},
+                             {Topic(5), {}}},
+                            start_time + kCalculatorDelay));
+  mock_calculator_results.push(
+      CreateTestEpochTopics({{Topic(6), {}},
+                             {Topic(7), {}},
+                             {Topic(8), {}},
+                             {Topic(9), {}},
+                             {Topic(10), {}}},
+                            start_time + 2 * kCalculatorDelay));
+
+  InitializeBrowsingTopicsService(std::move(mock_calculator_results));
+
+  EXPECT_EQ(browsing_topics_service_->started_calculations_count(), 0u);
+
+  // Finish file loading.
+  task_environment()->RunUntilIdle();
+
+  EXPECT_EQ(browsing_topics_state().epochs().size(), 3u);
+  EXPECT_EQ(browsing_topics_service_->started_calculations_count(), 0u);
+
+  // Advance the time to the scheduled calculation time. A calculation should
+  // happen.
+  task_environment()->FastForwardBy(kOneTestDay);
+  EXPECT_EQ(browsing_topics_service_->started_calculations_count(), 1u);
+  task_environment()->FastForwardBy(kCalculatorDelay);
+  EXPECT_EQ(browsing_topics_state().epochs().size(), 4u);
+
+  // No data is deleted because we didn't remove any epochs with this
+  // calculation.
+  EXPECT_EQ(
+      content::GetBrowsingTopicsApiUsage(topics_site_data_manager()).size(),
+      3u);
+  std::map<HashedDomain, std::string> expected_context_domains(
+      {{HashedDomain(1), "a.com"},
+       {HashedDomain(2), "b.com"},
+       {HashedDomain(3), "c.com"}});
+  std::map<HashedDomain, std::string> context_domains_result =
+      content::GetContextDomainsFromHashedContextDomains(
+          topics_site_data_manager(),
+          {HashedDomain(1), HashedDomain(2), HashedDomain(3)});
+  EXPECT_EQ(context_domains_result, expected_context_domains);
+
+  // Advance the time to the next scheduled calculation time. A calculation
+  // should happen. One of the existing epochs will be replaced with a new one.
+  task_environment()->FastForwardBy(kEpoch);
+  EXPECT_EQ(browsing_topics_service_->started_calculations_count(), 2u);
+  task_environment()->FastForwardBy(kCalculatorDelay);
+  EXPECT_EQ(browsing_topics_state().epochs().size(), 4u);
+
+  // Data prior to kTime1 - (number of epochs * epoch length) is deleted.
+  std::vector<ApiUsageContext> browsing_topics_api_usage =
+      content::GetBrowsingTopicsApiUsage(topics_site_data_manager());
+  EXPECT_EQ(browsing_topics_api_usage.size(), 2u);
+  EXPECT_EQ(browsing_topics_api_usage[0].time, kTime2);
+  EXPECT_EQ(browsing_topics_api_usage[1].time, kTime2 + kCalculatorDelay);
+  expected_context_domains = {{HashedDomain(2), "b.com"},
+                              {HashedDomain(3), "c.com"}};
+  context_domains_result = content::GetContextDomainsFromHashedContextDomains(
+      topics_site_data_manager(),
+      {HashedDomain(1), HashedDomain(2), HashedDomain(3)});
+  EXPECT_EQ(context_domains_result, expected_context_domains);
 }
 
 TEST_F(
@@ -1977,6 +2096,11 @@ TEST_F(BrowsingTopicsServiceImplTest,
 TEST_F(BrowsingTopicsServiceImplTest, GetBrowsingTopicsStateForWebUi) {
   base::Time start_time = base::Time::Now();
 
+  // Add a database entry for HashedDomain(456) so that we can check if the
+  // unhashed domain is displayed if available.
+  topics_site_data_manager()->OnBrowsingTopicsApiUsed(
+      HashedHost(123), HashedDomain(456), "456.com", base::Time::Now());
+
   base::queue<EpochTopics> mock_calculator_results;
   mock_calculator_results.push(
       CreateTestEpochTopics({{Topic(1), {HashedDomain(123), HashedDomain(456)}},
@@ -2006,6 +2130,7 @@ TEST_F(BrowsingTopicsServiceImplTest, GetBrowsingTopicsStateForWebUi) {
   base::test::TestFuture<mojom::WebUIGetBrowsingTopicsStateResultPtr> future;
   browsing_topics_service_->GetBrowsingTopicsStateForWebUi(
       /*calculate_now=*/false, future.GetCallback());
+  task_environment()->FastForwardBy(kDatabaseFetchDelay);
   EXPECT_TRUE(future.IsReady());
 
   mojom::WebUIGetBrowsingTopicsStateResultPtr result = future.Take();
@@ -2058,8 +2183,10 @@ TEST_F(BrowsingTopicsServiceImplTest, GetBrowsingTopicsStateForWebUi) {
   EXPECT_EQ(epoch2->topics[0]->topic_name, u"Arts & entertainment");
   EXPECT_TRUE(epoch2->topics[0]->is_real_topic);
   EXPECT_EQ(epoch2->topics[0]->observed_by_domains.size(), 2u);
+  // The unhashed domain for 123 is unavailable, so "123" is used.
   EXPECT_EQ(epoch2->topics[0]->observed_by_domains[0], "123");
-  EXPECT_EQ(epoch2->topics[0]->observed_by_domains[1], "456");
+  // "456.com" is stored in the call to OnBrowsingTopicsApiUsed above.
+  EXPECT_EQ(epoch2->topics[0]->observed_by_domains[1], "456.com");
   EXPECT_EQ(epoch2->topics[1]->topic_id, 2);
   EXPECT_EQ(epoch2->topics[1]->topic_name, u"Acting & theater");
   EXPECT_TRUE(epoch2->topics[1]->is_real_topic);
