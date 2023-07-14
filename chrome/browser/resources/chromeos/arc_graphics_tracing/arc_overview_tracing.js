@@ -16,7 +16,6 @@ cr.define('cr.ArcOverviewTracing', function() {
       maxTime.addEventListener('change', function(event) {
         chrome.send('setMaxTime', [parseInt(maxTime.value)]);
       }, false);
-      chrome.send('ready');
       chrome.send('setMaxTime', [parseInt(maxTime.value)]);
       initializeOverviewUi();
     },
