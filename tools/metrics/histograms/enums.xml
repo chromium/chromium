@@ -50,6 +50,13 @@ uploading your change for review.  These are checked by presubmit scripts.
       label="LoadEventEnd+LoadEventStart+FinishAllLoads+FinishDoc missing"/>
 </enum>
 
+<enum name="AbiBitnessSupport">
+  <int value="0" label="neither"/>
+  <int value="1" label="32-bit only"/>
+  <int value="2" label="64-bit only"/>
+  <int value="3" label="both 32-bit and 64-bit"/>
+</enum>
+
 <enum name="AboutThisSiteInteraction">
   <int value="0" label="kNotShown"/>
   <int value="1" label="kShownWithDescription"/>
@@ -109106,6 +109113,13 @@ Full version information for the fingerprint enum values:
   </summary>
   <int value="0" label="Success"/>
   <int value="1" label="Failure"/>
+</enum>
+
+<enum name="VersionCode">
+<!-- VersionCode values span the entire int, but fake an enum instead.
+  A numeric type involve percentiles which don't make sense here -->
+
+  <int value="0" label="Unknown"/>
 </enum>
 
 <enum name="VersionComparison">

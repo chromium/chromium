@@ -4,15 +4,14 @@
 
 #include "chrome/browser/metrics/chrome_android_metrics_provider.h"
 
-#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/android/customtabs/custom_tab_session_state_tracker.h"
 #include "chrome/browser/android/locale/locale_manager.h"
 #include "chrome/browser/android/metrics/uma_session_stats.h"
-#include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/flags/android/chrome_session_state.h"
 #include "chrome/browser/notifications/jni_headers/NotificationSystemStatusUtil_jni.h"
+#include "components/metrics/android_metrics_helper.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "system_profile.pb.h"
@@ -95,6 +94,9 @@ void ChromeAndroidMetricsProvider::ProvidePreviousSessionData(
   // Save whether multiple user profiles are present in Android. This is
   // unlikely to change across sessions.
   EmitMultipleUserProfilesHistogram();
+
+  metrics::AndroidMetricsHelper::GetInstance()->EmitHistograms(
+      /*current_session=*/false);
 }
 
 void ChromeAndroidMetricsProvider::ProvideCurrentSessionData(
@@ -119,5 +121,7 @@ void ChromeAndroidMetricsProvider::ProvideCurrentSessionData(
   UmaSessionStats::GetInstance()->ProvideCurrentSessionData();
   EmitAppNotificationStatusHistogram();
   EmitMultipleUserProfilesHistogram();
+  metrics::AndroidMetricsHelper::GetInstance()->EmitHistograms(
+      /*current_session=*/true);
   LocaleManager::RecordUserTypeMetrics();
 }

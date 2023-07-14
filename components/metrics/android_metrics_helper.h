@@ -1,0 +1,60 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef COMPONENTS_METRICS_ANDROID_METRICS_HELPER_H_
+#define COMPONENTS_METRICS_ANDROID_METRICS_HELPER_H_
+
+#include <string>
+
+namespace metrics {
+
+// Whether 64-bit and/or 32-bit apps can be installed on this device/OS.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused. See AbiBitnessSupport in enums.xml.
+enum class AbiBitnessSupport {
+  kNeither = 0,
+  k32bitOnly = 1,
+  k64bitOnly = 2,
+  k32And64bit = 3,
+  kMaxValue = k32And64bit,
+};
+
+// AndroidMetricsHelper is responsible for helping to log information related to
+// system-level information about the Android device as well as the process.
+class AndroidMetricsHelper {
+ public:
+  AndroidMetricsHelper(const AndroidMetricsHelper&) = delete;
+  AndroidMetricsHelper& operator=(const AndroidMetricsHelper&) = delete;
+  ~AndroidMetricsHelper() = default;
+
+  static AndroidMetricsHelper* GetInstance();
+  static AndroidMetricsHelper* CreateInstanceForTest(
+      const std::string& version_code,
+      bool has_abilist32,
+      bool has_abilist64) {
+    return new AndroidMetricsHelper(version_code, has_abilist32, has_abilist64);
+  }
+
+  int version_code_int() const { return version_code_int_; }
+  AbiBitnessSupport abi_bitness_support() const { return abi_bitness_support_; }
+
+  // |current_session| denotes whether data is emitted for the current session,
+  // as opposed to the previous session.
+  void EmitHistograms(bool current_session) const;
+
+ private:
+  friend struct AndroidMetricsHelperSingletonTraits;
+
+  AndroidMetricsHelper(const std::string& version_code,
+                       bool has_abilist32,
+                       bool has_abilist64);
+
+  int version_code_int_ = 0;
+  AbiBitnessSupport abi_bitness_support_ = AbiBitnessSupport::kNeither;
+};
+
+}  // namespace metrics
+
+#endif  // COMPONENTS_METRICS_ANDROID_METRICS_HELPER_H_

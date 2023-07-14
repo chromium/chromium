@@ -42,6 +42,7 @@
 #include "chrome/browser/shell_integration.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/flags_ui/pref_service_flags_storage.h"
+#include "components/metrics/android_metrics_helper.h"
 #include "components/policy/core/common/management/management_service.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -68,11 +69,10 @@
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
-#include <sys/system_properties.h>
-#include "chrome/browser/flags/android/chrome_session_state.h"
 #if defined(__arm__)
 #include <cpu-features.h>
 #endif
+#include "chrome/browser/flags/android/chrome_session_state.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
@@ -654,17 +654,13 @@ void ChromeBrowserMainExtraPartsMetrics::PreBrowserStart() {
   // 3) Mixed 32-/64-bit devices, as non-mixed devices are forced to use
   //    a particular bitness, thus don't participate in the experiment.
   size_t ram_mb = base::SysInfo::AmountOfPhysicalMemoryMB();
-  char abilist32[PROP_VALUE_MAX];
-  char abilist64[PROP_VALUE_MAX];
-  bool has_abilist32 =
-      __system_property_get("ro.vendor.product.cpu.abilist32", abilist32) > 0;
-  bool has_abilist64 =
-      __system_property_get("ro.vendor.product.cpu.abilist64", abilist64) > 0;
+  auto abi_bitness_support =
+      metrics::AndroidMetricsHelper::GetInstance()->abi_bitness_support();
   bool is_device_of_interest =
       (3.2 * 1024 < ram_mb && ram_mb < 6.5 * 1024) &&
       (chrome::android::GetMultipleUserProfilesState() ==
        chrome::android::MultipleUserProfilesState::kSingleProfile) &&
-      (has_abilist32 && has_abilist64);
+      (abi_bitness_support == metrics::AbiBitnessSupport::k32And64bit);
   if (is_device_of_interest) {
     uint32_t gws_experiment_id = 0;
     std::string trial_group;
