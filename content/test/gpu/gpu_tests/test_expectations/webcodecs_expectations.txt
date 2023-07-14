@@ -89,14 +89,13 @@
 # Suspected of causing flakes in other tests.
 crbug.com/1311091 WebCodecs_WebRTCPeerConnection_* [ Skip ]
 
+# There's a maximum 25% bitrate deviation for high bitrate HEVC encoding on x64 Macs.
+crbug.com/1379766 [ mac-x86_64 ] WebCodecs_EncodingRateControl_hvc1.1.6.L123.00_prefer-hardware_constant_3000000 [ Skip ]
+
 ###################
 # Failures/Flakes #
 ###################
 # Non-"Skip" expectations go here to suppress regular flakes/failures.
-
-
-# Not all platform encoders are very good at adhering to specified bitrate
-crbug.com/1368785 [ asan intel-0x3e9b mac-x86_64 ventura ] WebCodecs_EncodingRateControl_avc1.420034_prefer-hardware_constant_* [ Failure ]
 
 # AVC VBR seems to be unreliable on some Android devices
 crbug.com/1368785 [ android-pixel-6 android-t arm renderer-skia-vulkan target-cpu-64 ] WebCodecs_EncodingRateControl_avc1.420034_prefer-software_variable_* [ Failure ]

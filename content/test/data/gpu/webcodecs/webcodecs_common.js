@@ -345,8 +345,11 @@ async function prepareDecoderSource(
     framerate: 24
   };
 
-  if (codec.startsWith('avc1'))
+  if (codec.startsWith('avc1')) {
     encoder_config.avc = {format: 'annexb'};
+  } else if (codec.startsWith('hvc1')) {
+    encoder_config.hevc = {format: 'annexb'};
+  }
 
   let decoder_config = {
     codec: codec,
@@ -424,6 +427,9 @@ async function createFrameSource(type, width, height) {
       // Trying to find any hardware decoder supported by the platform.
       let src = await prepareDecoderSource(
           40, width, height, 'avc1.42001E', 'prefer-hardware');
+      if (!src)
+        src = await prepareDecoderSource(
+            40, width, height, 'hvc1.1.6.L123.00', 'prefer-hardware');
       if (!src)
         src = await prepareDecoderSource(
             40, width, height, 'vp8', 'prefer-hardware');

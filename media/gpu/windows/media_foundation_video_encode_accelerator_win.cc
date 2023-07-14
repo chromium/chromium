@@ -183,7 +183,7 @@ MediaFoundationVideoEncodeAccelerator::DriverVendor GetDriverVendor(
   return DriverVendor::kOther;
 }
 
-bool IsSvcSupported(IMFActivate* activate, VideoCodec codec) {
+bool IsSVCSupported(IMFActivate* activate, VideoCodec codec) {
 #if defined(ARCH_CPU_X86)
   // x86 systems sometimes crash in video drivers here.
   // More info: https://crbug.com/1253748
@@ -273,7 +273,7 @@ bool IsCodecSupportedForEncoding(VideoCodec codec, bool* svc_supported) {
 
   *svc_supported = false;
   for (UINT32 i = 0; i < encoder_count; i++) {
-    if (!*svc_supported && IsSvcSupported(activates[i], codec)) {
+    if (!*svc_supported && IsSVCSupported(activates[i], codec)) {
       *svc_supported = true;
     }
     activates[i]->Release();

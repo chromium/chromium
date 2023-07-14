@@ -228,6 +228,8 @@ MP4Status H265AnnexBToHevcBitstreamConverter::ConvertChunk(
     active_sps_id_ = new_active_sps_id;
     active_vps_id_ = new_active_vps_id;
 
+    config_.arrays.clear();
+
     // General profile space and tier level is not provided by the parser and it
     // must always be 0.
     config_.general_profile_space = 0;
