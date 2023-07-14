@@ -41,6 +41,7 @@ class OperationRequestManager;
 // Path of a sample fake file, which is added to the fake file system by
 // default.
 extern const base::FilePath::CharType kFakeFilePath[];
+extern const char kFakeFileText[];
 
 // Represents a file or a directory on a fake file system.
 struct FakeEntry {
@@ -55,6 +56,8 @@ struct FakeEntry {
 
   std::unique_ptr<EntryMetadata> metadata;
   std::string contents;
+  // Used when the file is open for writing.
+  absl::optional<std::string> write_buffer;
 };
 
 // Fake provided file system implementation. Does not communicate with target
@@ -87,6 +90,8 @@ class FakeProvidedFileSystem : public ProvidedFileSystemInterface {
   base::File::Error CopyOrMoveEntry(const base::FilePath& source_path,
                                     const base::FilePath& target_path,
                                     bool is_move);
+
+  void SetFlushRequired(bool required) { flush_required_ = required; }
 
   // ProvidedFileSystemInterface overrides.
   AbortCallback RequestUnmount(
@@ -144,6 +149,9 @@ class FakeProvidedFileSystem : public ProvidedFileSystemInterface {
       int64_t offset,
       int length,
       storage::AsyncFileUtil::StatusCallback callback) override;
+  AbortCallback FlushFile(
+      int file_handle,
+      storage::AsyncFileUtil::StatusCallback callback) override;
   AbortCallback AddWatcher(const GURL& origin,
                            const base::FilePath& entry_path,
                            bool recursive,
@@ -193,6 +201,7 @@ class FakeProvidedFileSystem : public ProvidedFileSystemInterface {
   base::CancelableTaskTracker tracker_;
   base::ObserverList<ProvidedFileSystemObserver>::Unchecked observers_;
   Watchers watchers_;
+  bool flush_required_ = false;
 
   base::WeakPtrFactory<FakeProvidedFileSystem> weak_ptr_factory_{this};
 };

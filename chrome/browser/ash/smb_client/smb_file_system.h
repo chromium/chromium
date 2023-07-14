@@ -123,6 +123,10 @@ class SmbFileSystem : public file_system_provider::ProvidedFileSystemInterface,
       int length,
       storage::AsyncFileUtil::StatusCallback callback) override;
 
+  file_system_provider::AbortCallback FlushFile(
+      int file_handle,
+      storage::AsyncFileUtil::StatusCallback callback) override;
+
   file_system_provider::AbortCallback AddWatcher(
       const GURL& origin,
       const base::FilePath& entry_path,
