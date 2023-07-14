@@ -402,25 +402,24 @@ void SurfaceTreeHost::UpdateHostWindowBounds() {
   aura::WindowOcclusionTracker::ScopedPause pause_occlusion;
 
   const gfx::Rect& bounds = root_surface_->surface_hierarchy_content_bounds();
-  if (previous_content_bounds_ != bounds) {
-    const viz::LocalSurfaceId old_id = host_window_->GetLocalSurfaceId();
-    previous_content_bounds_ = bounds;
-    gfx::Size size = bounds.size();
-    if (client_submits_surfaces_in_pixel_coordinates_) {
-      size = gfx::ScaleToCeiledSize(size, 1.0f / GetScaleFactor());
-    }
-    gfx::Rect scaled_bounds(bounds.origin(), size);
-    if (scaled_bounds != host_window_->bounds()) {
-      // DP size has changed, set new bounds.
-      host_window_->SetBounds({host_window_->bounds().origin(), size});
-    }
-
-    if (host_window_->GetLocalSurfaceId() == old_id) {
-      // Explicitly allocate local surface id if it's not updated since pixel
-      // bounds has changed.
-      host_window_->AllocateLocalSurfaceId();
-    }
+  gfx::Size size = bounds.size();
+  if (client_submits_surfaces_in_pixel_coordinates_) {
+    size = gfx::ScaleToCeiledSize(size, 1.0f / GetScaleFactor());
   }
+  gfx::Rect scaled_bounds(bounds.origin(), size);
+  if (scaled_bounds != host_window_->bounds()) {
+    // DP size has changed, set new bounds.
+    host_window_->SetBounds({host_window_->bounds().origin(), size});
+  }
+
+  const viz::LocalSurfaceId old_id = host_window_->GetLocalSurfaceId();
+  if (previous_content_bounds_ != bounds &&
+      host_window_->GetLocalSurfaceId() == old_id) {
+    // Explicitly allocate local surface id if it's not updated since pixel
+    // bounds has changed.
+    host_window_->AllocateLocalSurfaceId();
+  }
+  previous_content_bounds_ = bounds;
 
   // TODO(yjliu): a) consolidate with ClientControlledShellSurface. b) use the
   // scale factor the buffer is created for to set the transform for
