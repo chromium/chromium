@@ -413,9 +413,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.Capture.ProcessingAudioFifo.MaxUsage"
-    units="buffers" expires_after="2023-12-10">
+    units="buffers" expires_after="2024-07-01">
   <owner>tguilbert@chromium.org</owner>
   <owner>olka@chromium.org</owner>
+  <owner>fhernqvist@google.com</owner>
   <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     Maximum size (in buffers) of the unprocessed data queue, reached over a
@@ -425,9 +426,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.Capture.ProcessingAudioFifo.Overruns"
-    units="count" expires_after="2023-08-08">
+    units="count" expires_after="2024-07-01">
   <owner>tguilbert@chromium.org</owner>
   <owner>olka@chromium.org</owner>
+  <owner>fhernqvist@google.com</owner>
   <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     Number of times over a sampling interval (1000 callbacks) a
