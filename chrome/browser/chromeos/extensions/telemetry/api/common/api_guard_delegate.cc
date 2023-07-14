@@ -21,6 +21,8 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chromeos/extensions/chromeos_system_extension_info.h"
+#include "chrome/common/url_constants.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/security_state/content/content_utils.h"
 #include "components/security_state/core/security_state.h"
 #include "content/public/browser/web_contents.h"
@@ -144,6 +146,13 @@ class ApiGuardDelegateImplBase : public ApiGuardDelegate {
           // Ensure the PWA URL connection is secure (e.g. valid certificate).
           const auto visible_security_state =
               security_state::GetVisibleSecurityState(target_contents);
+          // TODO(b/290909386): Remove this line once we reach a conclusion on
+          // how we should perform security check on IWA.
+          if (chromeos::features::IsIWAForTelemetryExtensionAPIEnabled() &&
+              target_contents->GetLastCommittedURL().SchemeIs(
+                  chrome::kIsolatedAppScheme)) {
+            return true;
+          }
           return security_state::GetSecurityLevel(
                      *visible_security_state,
                      /*used_policy_installed_certificate=*/false) ==
