@@ -18,6 +18,13 @@
     border-color: var(--cr-input-error-color);
   }
 
+  :host-context([chrome-refresh-2023]) #input {
+    padding-bottom: var(--cr-input-padding-bottom);
+    padding-inline-end: var(--cr-input-padding-end);
+    padding-inline-start: var(--cr-input-padding-start);
+    padding-top: var(--cr-input-padding-top);
+  }
+
   #footerContainer {
     border-top: 0;
     /* Components that use the footer should set this to "flex". */
