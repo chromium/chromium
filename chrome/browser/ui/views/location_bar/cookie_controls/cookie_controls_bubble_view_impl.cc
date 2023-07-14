@@ -16,6 +16,12 @@
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
 
+namespace {
+
+constexpr int kMaxBubbleWidth = 1000;
+
+}  // namespace
+
 CookieControlsBubbleViewImpl::CookieControlsBubbleViewImpl(
     views::View* anchor_view,
     content::WebContents* web_contents,
@@ -37,8 +43,6 @@ void CookieControlsBubbleViewImpl::Init() {
   const int vertical_margin =
       provider->GetDistanceMetric(DISTANCE_CONTENT_LIST_VERTICAL_MULTI);
   set_margins(gfx::Insets::VH(vertical_margin, 0));
-  set_fixed_width(provider->GetDistanceMetric(
-      views::DistanceMetric::DISTANCE_BUBBLE_PREFERRED_WIDTH));
 }
 
 void CookieControlsBubbleViewImpl::InitContentView(
@@ -91,6 +95,19 @@ views::View* CookieControlsBubbleViewImpl::GetReloadingView() {
 
 void CookieControlsBubbleViewImpl::CloseWidget() {
   GetWidget()->Close();
+}
+
+gfx::Size CookieControlsBubbleViewImpl::CalculatePreferredSize() const {
+  auto size = LocationBarBubbleDelegateView::CalculatePreferredSize();
+
+  // Enforce a range of valid widths.
+  auto* provider = ChromeLayoutProvider::Get();
+  int width =
+      std::clamp(size.width(),
+                 provider->GetDistanceMetric(
+                     views::DistanceMetric::DISTANCE_BUBBLE_PREFERRED_WIDTH),
+                 kMaxBubbleWidth);
+  return gfx::Size(width, size.height());
 }
 
 void CookieControlsBubbleViewImpl::ChildPreferredSizeChanged(

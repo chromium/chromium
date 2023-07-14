@@ -74,7 +74,6 @@ void CookieControlsContentView::AddContentLabels() {
   title_->SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT);
   title_->SetTextStyle(views::style::STYLE_PRIMARY);
   title_->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
-  title_->SetMultiLine(true);
   title_->SetProperty(views::kElementIdentifierKey, kTitle);
 
   description_ = label_wrapper->AddChildView(std::make_unique<views::Label>());

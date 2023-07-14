@@ -218,3 +218,64 @@ TEST_F(CookieControlsBubbleViewControllerTest,
 }
 
 // TODO(crbug.com/1446230): Add tests for enforced cookie controls.
+
+class CookieControlsBubbleViewImplTest : public TestWithBrowserView {
+ public:
+  void SetUp() override {
+    TestWithBrowserView::SetUp();
+
+    const GURL url = GURL("http://a.com");
+    AddTab(browser(), url);
+    auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+
+    PageActionIconView* button =
+        browser_view()->toolbar_button_provider()->GetPageActionIconView(
+            PageActionIconType::kCookieControls);
+
+    controller_ = std::make_unique<content_settings::CookieControlsController>(
+        CookieSettingsFactory::GetForProfile(browser()->profile()), nullptr);
+
+    coordinator_ = std::make_unique<CookieControlsBubbleCoordinator>(button);
+    coordinator_->ShowBubble(web_contents, controller_.get());
+  }
+
+  void TearDown() override {
+    // Ensure things are destroyed in an appropriate order to ensure pointers
+    // are not considered dangling.
+    views::test::WidgetDestroyedWaiter waiter(bubble_view()->GetWidget());
+    bubble_view()->GetWidget()->Close();
+    waiter.Wait();
+    EXPECT_EQ(coordinator_->GetBubble(), nullptr);
+
+    coordinator_ = nullptr;
+    TestWithBrowserView::TearDown();
+  }
+
+  CookieControlsBubbleViewImpl* bubble_view() {
+    return coordinator_->GetBubble();
+  }
+
+ private:
+  std::unique_ptr<CookieControlsBubbleCoordinator> coordinator_;
+  std::unique_ptr<content_settings::CookieControlsController> controller_;
+};
+
+TEST_F(CookieControlsBubbleViewImplTest, BubbleWidth) {
+  // Confirm that with extreme label lengths, the width of the bubble remains
+  // within an acceptable range.
+  const int kMinWidth = ChromeLayoutProvider::Get()->GetDistanceMetric(
+      views::DistanceMetric::DISTANCE_BUBBLE_PREFERRED_WIDTH);
+  const int kMaxWidth = 1000;
+
+  EXPECT_GE(bubble_view()->GetPreferredSize().width(), kMinWidth);
+  EXPECT_LE(bubble_view()->GetPreferredSize().width(), kMaxWidth);
+
+  bubble_view()->GetContentView()->UpdateContentLabels(
+      std::u16string(10000, u'a'), std::u16string(10000, u'b'));
+  EXPECT_GE(bubble_view()->GetPreferredSize().width(), kMinWidth);
+  EXPECT_LE(bubble_view()->GetPreferredSize().width(), kMaxWidth);
+
+  bubble_view()->GetContentView()->UpdateContentLabels(u"a", u"b");
+  EXPECT_GE(bubble_view()->GetPreferredSize().width(), kMinWidth);
+  EXPECT_LE(bubble_view()->GetPreferredSize().width(), kMaxWidth);
+}

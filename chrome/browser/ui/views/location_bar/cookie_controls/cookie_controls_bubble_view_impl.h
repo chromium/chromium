@@ -44,6 +44,9 @@ class CookieControlsBubbleViewImpl : public CookieControlsBubbleView,
 
   void CloseWidget() override;
 
+ protected:
+  gfx::Size CalculatePreferredSize() const override;
+
  private:
   // LocationBarBubbleDelegateView:
   void Init() override;
