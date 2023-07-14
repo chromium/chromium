@@ -46,7 +46,7 @@
 namespace blink {
 
 struct DecodedImageMetaData {
-  ImageOrientation orientation;
+  ImageOrientationEnum orientation = ImageOrientationEnum::kDefault;
   gfx::SizeF resolution;
   gfx::Size size;
   unsigned resolution_unit{0};

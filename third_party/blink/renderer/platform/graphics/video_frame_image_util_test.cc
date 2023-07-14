@@ -72,10 +72,11 @@ void TestOrientation(scoped_refptr<media::VideoFrame> frame,
   auto image =
       CreateImageFromVideoFrame(frame, true, nullptr, nullptr, gfx::Rect(),
                                 /*prefer_tagged_orientation=*/true);
-  if (expect_broken_tagging)
+  if (expect_broken_tagging) {
     EXPECT_EQ(image->CurrentFrameOrientation(), ImageOrientationEnum::kDefault);
-  else
+  } else {
     EXPECT_EQ(image->CurrentFrameOrientation(), kTestOrientation);
+  }
 
   image = CreateImageFromVideoFrame(frame, true, nullptr, nullptr, gfx::Rect(),
                                     /*prefer_tagged_orientation=*/false);
@@ -85,8 +86,9 @@ void TestOrientation(scoped_refptr<media::VideoFrame> frame,
 }  // namespace
 
 TEST(VideoFrameImageUtilTest, VideoTransformationToFromImageOrientation) {
-  for (int i = 0; i < static_cast<int>(ImageOrientationEnum::kMaxValue); ++i) {
-    auto blink_orientation = ImageOrientation::FromEXIFValue(i).Orientation();
+  for (int i = static_cast<int>(ImageOrientationEnum::kMinValue);
+       i <= static_cast<int>(ImageOrientationEnum::kMaxValue); ++i) {
+    auto blink_orientation = static_cast<ImageOrientationEnum>(i);
     auto media_transform =
         ImageOrientationToVideoTransformation(blink_orientation);
     EXPECT_EQ(blink_orientation,

@@ -353,7 +353,7 @@ class PLATFORM_EXPORT ImageDecoder {
   // it has been cleared).
   virtual wtf_size_t FrameBytesAtIndex(wtf_size_t) const;
 
-  ImageOrientation Orientation() const { return orientation_; }
+  ImageOrientationEnum Orientation() const { return orientation_; }
   gfx::Size DensityCorrectedSize() const { return density_corrected_size_; }
 
   // Updates orientation, pixel density etc based on |metadata|.
@@ -517,7 +517,7 @@ class PLATFORM_EXPORT ImageDecoder {
   const bool premultiply_alpha_;
   const HighBitDepthDecodingOption high_bit_depth_decoding_option_;
   const ColorBehavior color_behavior_;
-  ImageOrientation orientation_;
+  ImageOrientationEnum orientation_ = ImageOrientationEnum::kDefault;
   gfx::Size density_corrected_size_;
 
   // The maximum amount of memory a decoded image should require. Ideally,

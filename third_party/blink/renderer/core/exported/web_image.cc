@@ -82,8 +82,9 @@ SkBitmap WebImage::FromData(const WebData& data,
     return {};
   }
 
-  if (decoder->Orientation().Orientation() == ImageOrientationEnum::kDefault)
+  if (decoder->Orientation() == ImageOrientationEnum::kDefault) {
     return frame->Bitmap();
+  }
 
   cc::PaintImage paint_image(Image::ResizeAndOrientImage(
       cc::PaintImage::CreateFromBitmap(frame->Bitmap()),

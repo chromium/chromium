@@ -372,7 +372,7 @@ void DecodeImageOnDecoderThread(
   sk_sp<SkImage> frame;
   ImageOrientationEnum orientation = ImageOrientationEnum::kDefault;
   if (decoder) {
-    orientation = decoder->Orientation().Orientation();
+    orientation = decoder->Orientation();
     frame = ImageBitmap::GetSkImageFromDecoder(std::move(decoder));
   }
   PostCrossThreadTask(*task_runner, FROM_HERE,

@@ -70,10 +70,6 @@ class PLATFORM_EXPORT JPEGImageDecoder final : public ImageDecoder {
   bool ShouldGenerateAllSizes() const;
   void Complete();
 
-  void SetOrientation(ImageOrientation orientation) {
-    orientation_ = orientation;
-  }
-
   void SetDensityCorrectedSize(const gfx::Size& size) {
     density_corrected_size_ = size;
   }

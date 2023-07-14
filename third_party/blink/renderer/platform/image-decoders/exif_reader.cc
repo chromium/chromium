@@ -43,6 +43,32 @@ namespace {
 
 constexpr unsigned kExifHeaderSize = 8;
 
+ImageOrientationEnum ImageOrientationFromEXIFValue(unsigned exif_value) {
+  switch (exif_value) {
+    case 1:
+      return ImageOrientationEnum::kOriginTopLeft;
+    case 2:
+      return ImageOrientationEnum::kOriginTopRight;
+    case 3:
+      return ImageOrientationEnum::kOriginBottomRight;
+    case 4:
+      return ImageOrientationEnum::kOriginBottomLeft;
+    case 5:
+      return ImageOrientationEnum::kOriginLeftTop;
+    case 6:
+      return ImageOrientationEnum::kOriginRightTop;
+    case 7:
+      return ImageOrientationEnum::kOriginRightBottom;
+    case 8:
+      return ImageOrientationEnum::kOriginLeftBottom;
+    default:
+      // Values direct from images may be invalid, in which case we use the
+      // default.
+      return ImageOrientationEnum::kDefault;
+  }
+  NOTREACHED_NORETURN();
+}
+
 unsigned ReadUint16(const uint8_t* data, bool is_big_endian) {
   if (is_big_endian) {
     return (data[0] << 8) | data[1];
@@ -151,7 +177,7 @@ void ReadExifDirectory(const uint8_t* dir_start,
     switch (tag) {
       case ExifTags::kOrientationTag:
         if (type == kUnsignedShortType && count == 1) {
-          metadata.orientation = ImageOrientation::FromEXIFValue(
+          metadata.orientation = ImageOrientationFromEXIFValue(
               ReadUint16(value_ptr, is_big_endian));
         }
         break;

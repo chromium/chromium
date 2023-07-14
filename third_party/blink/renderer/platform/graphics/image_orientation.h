@@ -56,6 +56,7 @@ enum class ImageOrientationEnum : int8_t {
   kOriginLeftBottom = 8,   // 270 degree CW rotation
   // All other values are "reserved" as of EXIF 2.2
   kDefault = kOriginTopLeft,
+  kMinValue = kOriginTopLeft,
   kMaxValue = kOriginLeftBottom,
 };
 
@@ -75,17 +76,6 @@ class PLATFORM_EXPORT ImageOrientation final {
   bool UsesWidthAsHeight() const {
     // Values 5 through 8 all flip the width/height.
     return orientation_ >= ImageOrientationEnum::kOriginLeftTop;
-  }
-
-  // ImageOrientationEnum currently matches EXIF values, however code outside
-  // this function should never assume that.
-  static ImageOrientation FromEXIFValue(int exif_value) {
-    // Values direct from images may be invalid, in which case we use the
-    // default.
-    if (exif_value < static_cast<int>(ImageOrientationEnum::kOriginTopLeft) ||
-        exif_value > static_cast<int>(ImageOrientationEnum::kOriginLeftBottom))
-      return ImageOrientationEnum::kDefault;
-    return static_cast<ImageOrientationEnum>(exif_value);
   }
 
   // This transform can be used for drawing an image according to the

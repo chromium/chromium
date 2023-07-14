@@ -250,8 +250,8 @@ std::unique_ptr<ImageDecoderCore::ImageDecodeResult> ImageDecoderCore::Decode(
     return result;
   }
 
-  frame->metadata().transformation = ImageOrientationToVideoTransformation(
-      decoder_->Orientation().Orientation());
+  frame->metadata().transformation =
+      ImageOrientationToVideoTransformation(decoder_->Orientation());
 
   // Only animated images have frame durations.
   if (decoder_->FrameCount() > 1 ||
@@ -400,8 +400,8 @@ void ImageDecoderCore::MaybeDecodeToYuv() {
   }
 
   yuv_frame_->set_timestamp(GetTimestampForFrame(0));
-  yuv_frame_->metadata().transformation = ImageOrientationToVideoTransformation(
-      decoder_->Orientation().Orientation());
+  yuv_frame_->metadata().transformation =
+      ImageOrientationToVideoTransformation(decoder_->Orientation());
 
   if (gfx_cs.IsValid()) {
     yuv_frame_->set_color_space(YUVColorSpaceToGfxColorSpace(

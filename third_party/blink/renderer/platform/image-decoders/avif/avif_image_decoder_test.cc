@@ -67,7 +67,7 @@ struct StaticColorCheckParam {
   ImageDecoder::CompressionFormat compression_format;
   ImageDecoder::AlphaOption alpha_option;
   ColorBehavior color_behavior;
-  ImageOrientation orientation;
+  ImageOrientationEnum orientation = ImageOrientationEnum::kDefault;
   int color_threshold;
   std::vector<ExpectedColor> colors;
 };
@@ -102,7 +102,7 @@ std::ostream& operator<<(std::ostream& os, const StaticColorCheckParam& param) {
     color_behavior = "TransformToSRGB";
   }
   const char* orientation;
-  switch (param.orientation.Orientation()) {
+  switch (param.orientation) {
     case ImageOrientationEnum::kOriginTopLeft:
       orientation = "kOriginTopLeft";
       break;
