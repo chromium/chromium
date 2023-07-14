@@ -104,11 +104,12 @@ class SyncPrefs {
   UserSelectableTypeSet GetSelectedTypesForAccount(
       const signin::GaiaIdHash& gaia_id_hash) const;
 
-  // Returns whether `type` is "managed" i.e. controlled by enterprise policy
-  // or a custodian (i.e. parent/guardian of a child account).
-  // TODO(crbug.com/1298010): Rename this function to convey that is includes
-  // more than just enterprise policies.
+  // Returns whether `type` is "managed" i.e. controlled by enterprise policy.
   bool IsTypeManagedByPolicy(UserSelectableType type) const;
+
+  // Returns whether `type` is "managed" i.e. controlled by a custodian (i.e.
+  // parent/guardian of a child account).
+  bool IsTypeManagedByCustodian(UserSelectableType type) const;
 
   // Sets the selection state for all |registered_types| and "keep everything
   // synced" flag.

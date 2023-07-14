@@ -176,7 +176,7 @@ UserSelectableTypeSet SyncPrefs::GetSelectedTypesForAccount(
     const char* pref_name = GetPrefNameForType(type);
     DCHECK(pref_name);
     bool type_enabled = false;
-    if (IsTypeManagedByPolicy(type)) {
+    if (IsTypeManagedByPolicy(type) || IsTypeManagedByCustodian(type)) {
       type_enabled = pref_service_->GetBoolean(pref_name);
     } else {
       const base::Value::Dict* account_settings =
@@ -251,7 +251,7 @@ UserSelectableTypeSet SyncPrefs::GetSelectedTypes(
         const char* pref_name = GetPrefNameForType(type);
         DCHECK(pref_name);
         if (pref_service_->GetBoolean(pref_name) ||
-            (!IsTypeManagedByPolicy(type) &&
+            (!IsTypeManagedByPolicy(type) && !IsTypeManagedByCustodian(type) &&
              pref_service_->GetBoolean(
                  prefs::internal::kSyncKeepEverythingSynced))) {
           // In full-sync mode, the "sync everything" bit is honored. If it's
@@ -270,10 +270,13 @@ UserSelectableTypeSet SyncPrefs::GetSelectedTypes(
 bool SyncPrefs::IsTypeManagedByPolicy(UserSelectableType type) const {
   const char* pref_name = GetPrefNameForType(type);
   CHECK(pref_name);
-  // TODO(crbug.com/1298010): Consider more general-purpose alternatives such as
-  // IsUserModifiablePreference().
-  return pref_service_->IsManagedPreference(pref_name) ||
-         pref_service_->IsPreferenceManagedByCustodian(pref_name);
+  return pref_service_->IsManagedPreference(pref_name);
+}
+
+bool SyncPrefs::IsTypeManagedByCustodian(UserSelectableType type) const {
+  const char* pref_name = GetPrefNameForType(type);
+  CHECK(pref_name);
+  return pref_service_->IsPreferenceManagedByCustodian(pref_name);
 }
 
 void SyncPrefs::SetSelectedTypes(bool keep_everything_synced,

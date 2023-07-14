@@ -226,12 +226,47 @@ TEST_F(SyncPrefsTest, SetTypeDisabledByPolicy) {
           .Has(UserSelectableType::kBookmarks));
   EXPECT_TRUE(
       sync_prefs_->IsTypeManagedByPolicy(UserSelectableType::kBookmarks));
+  EXPECT_FALSE(
+      sync_prefs_->IsTypeManagedByCustodian(UserSelectableType::kBookmarks));
   // Other types should be unaffected.
   EXPECT_TRUE(
       sync_prefs_->GetSelectedTypes(SyncPrefs::SyncAccountState::kSyncing)
           .Has(UserSelectableType::kAutofill));
   EXPECT_FALSE(
       sync_prefs_->IsTypeManagedByPolicy(UserSelectableType::kAutofill));
+}
+
+TEST_F(SyncPrefsTest, SetTypeDisabledByCustodian) {
+  // By default, data types are enabled, and not custodian-controlled.
+  ASSERT_TRUE(
+      sync_prefs_->GetSelectedTypes(SyncPrefs::SyncAccountState::kSyncing)
+          .Has(UserSelectableType::kBookmarks));
+  ASSERT_FALSE(
+      sync_prefs_->IsTypeManagedByCustodian(UserSelectableType::kBookmarks));
+  ASSERT_TRUE(
+      sync_prefs_->GetSelectedTypes(SyncPrefs::SyncAccountState::kSyncing)
+          .Has(UserSelectableType::kAutofill));
+  ASSERT_FALSE(
+      sync_prefs_->IsTypeManagedByCustodian(UserSelectableType::kAutofill));
+
+  // Set up a custodian enforcement to disable bookmarks.
+  pref_service_.SetSupervisedUserPref(prefs::internal::kSyncBookmarks,
+                                      base::Value(false));
+
+  // The restriction should take effect and disable bookmarks.
+  EXPECT_FALSE(
+      sync_prefs_->GetSelectedTypes(SyncPrefs::SyncAccountState::kSyncing)
+          .Has(UserSelectableType::kBookmarks));
+  EXPECT_TRUE(
+      sync_prefs_->IsTypeManagedByCustodian(UserSelectableType::kBookmarks));
+  EXPECT_FALSE(
+      sync_prefs_->IsTypeManagedByPolicy(UserSelectableType::kBookmarks));
+  // Other types should be unaffected.
+  EXPECT_TRUE(
+      sync_prefs_->GetSelectedTypes(SyncPrefs::SyncAccountState::kSyncing)
+          .Has(UserSelectableType::kAutofill));
+  EXPECT_FALSE(
+      sync_prefs_->IsTypeManagedByCustodian(UserSelectableType::kAutofill));
 }
 
 TEST_F(SyncPrefsTest, DefaultSelectedTypesInTransportMode) {
