@@ -154,10 +154,6 @@ class CORE_EXPORT NGBlockNode : public NGLayoutInputNode {
   // Returns the aspect ratio of a replaced element.
   LogicalSize GetAspectRatio() const;
 
-  // SVG roots sometimes have sizing peculiarities that override regular sizing.
-  // Returns {0,0} if there's no override.
-  LogicalSize GetReplacedSizeOverrideIfAny(const NGConstraintSpace&) const;
-
   // Returns the transform to apply to a child (e.g. for layout-overflow).
   absl::optional<gfx::Transform> GetTransformForChildFragment(
       const NGPhysicalBoxFragment& child_fragment,

@@ -865,13 +865,6 @@ LogicalSize ComputeReplacedSizeInternal(
     const Length::AnchorEvaluator* anchor_evaluator) {
   DCHECK(node.IsReplaced());
 
-  LogicalSize size_override = node.GetReplacedSizeOverrideIfAny(space);
-  if (!size_override.IsEmpty()) {
-    DCHECK_GE(size_override.block_size, border_padding.BlockSum());
-    DCHECK_GE(size_override.inline_size, border_padding.InlineSum());
-    return size_override;
-  }
-
   LayoutUnit override_available_inline_size = kIndefiniteSize;
   LayoutUnit override_available_block_size = kIndefiniteSize;
   if (override_available_size) {
@@ -1148,13 +1141,13 @@ LogicalSize ComputeReplacedSize(
     const Length::AnchorEvaluator* anchor_evaluator) {
   DCHECK(node.IsReplaced());
 
-  if (!node.GetLayoutBox()->IsSVGRoot()) {
+  const auto* svg_root = DynamicTo<LayoutSVGRoot>(node.GetLayoutBox());
+  if (!svg_root || !svg_root->IsDocumentElement()) {
     return ComputeReplacedSizeInternal(node, space, border_padding,
                                        override_available_size, mode,
                                        anchor_evaluator);
   }
 
-  const LayoutSVGRoot* svg_root = To<LayoutSVGRoot>(node.GetLayoutBox());
   PhysicalSize container_size(svg_root->GetContainerSize());
   if (!container_size.IsEmpty()) {
     LogicalSize size =
@@ -1184,7 +1177,7 @@ LogicalSize ComputeReplacedSize(
   }
 
   const Length& logical_height = node.Style().LogicalHeight();
-  if (svg_root->IsDocumentElement() && logical_height.IsPercentOrCalc()) {
+  if (logical_height.IsPercentOrCalc()) {
     LayoutUnit height = ValueForLength(
         logical_height,
         node.GetDocument().GetLayoutView()->ViewLogicalHeightForPercentages());

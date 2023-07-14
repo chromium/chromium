@@ -137,8 +137,10 @@ bool LayoutSVGRoot::IsEmbeddedThroughFrameContainingSVGDocument() const {
 
 double LayoutSVGRoot::LogicalSizeScaleFactorForPercentageLengths() const {
   NOT_DESTROYED();
-  if (!IsDocumentElement() || !GetDocument().IsInOutermostMainFrame())
+  CHECK(IsDocumentElement());
+  if (!GetDocument().IsInOutermostMainFrame()) {
     return 1;
+  }
   if (GetDocument().GetLayoutView()->ShouldUsePrintingLayout())
     return 1;
   // This will return the zoom factor which is different from the typical usage
