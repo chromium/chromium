@@ -316,8 +316,8 @@ const NGLayoutResult* NGMathUnderOverLayoutAlgorithm::Layout() {
              (over_fragment.InlineSize() + over_margins.InlineSum())) /
                 2,
         BorderScrollbarPadding().block_start + ascent};
-    container_builder_.AddResult(*over_layout_result, over_offset);
-    over.StoreMargins(ConstraintSpace(), over_margins);
+    container_builder_.AddResult(*over_layout_result, over_offset,
+                                 over_margins);
     if (parameters.use_under_over_bar_fallback) {
       ascent += over_fragment.BlockSize();
       if (HasAccent(Node(), false)) {
@@ -342,8 +342,7 @@ const NGLayoutResult* NGMathUnderOverLayoutAlgorithm::Layout() {
            (base_fragment.InlineSize() + base_margins.InlineSum())) /
               2,
       BorderScrollbarPadding().block_start + ascent};
-  container_builder_.AddResult(*base_layout_result, base_offset);
-  base.StoreMargins(ConstraintSpace(), base_margins);
+  container_builder_.AddResult(*base_layout_result, base_offset, base_margins);
   ascent += base_ascent;
   ascent = ascent.ClampNegativeToZero();
   ascent += BorderScrollbarPadding().block_start;
@@ -375,8 +374,8 @@ const NGLayoutResult* NGMathUnderOverLayoutAlgorithm::Layout() {
         ascent + descent};
     descent += under_fragment.BlockSize();
     descent += parameters.under_extra_descender;
-    container_builder_.AddResult(*under_layout_result, under_offset);
-    under.StoreMargins(ConstraintSpace(), under_margins);
+    container_builder_.AddResult(*under_layout_result, under_offset,
+                                 under_margins);
     descent += under_margins.block_end;
   }
 

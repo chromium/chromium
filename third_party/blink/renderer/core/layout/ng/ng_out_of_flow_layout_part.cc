@@ -890,8 +890,14 @@ void NGOutOfFlowLayoutPart::LayoutCandidates(
             CalculateOffset(node_info, /* is_first_run */ false,
                             needs_anchor_queries ? &*anchor_queries : nullptr)};
         const NGLayoutResult* result = LayoutOOFNode(node_to_layout);
+        NGPhysicalBoxStrut physical_margins =
+            node_to_layout.offset_info.node_dimensions.margins
+                .ConvertToPhysical(
+                    node_info.node.Style().GetWritingDirection());
+        NGBoxStrut margins = physical_margins.ConvertToLogical(
+            container_builder_->GetWritingDirection());
         container_builder_->AddResult(
-            *result, result->OutOfFlowPositionedOffset(),
+            *result, result->OutOfFlowPositionedOffset(), margins,
             /* relative_offset */ absl::nullopt, &candidate.inline_container);
         container_builder_->SetHasOutOfFlowFragmentChild(true);
         if (container_builder_->IsInitialColumnBalancingPass()) {
@@ -1988,7 +1994,6 @@ const NGLayoutResult* NGOutOfFlowLayoutPart::Layout(
     const NodeToLayout& oof_node_to_layout,
     const NGConstraintSpace* fragmentainer_constraint_space,
     bool is_last_fragmentainer_so_far) {
-  const NodeInfo& node_info = oof_node_to_layout.node_info;
   const OffsetInfo& offset_info = oof_node_to_layout.offset_info;
 
   const NGLayoutResult* layout_result = offset_info.initial_layout_result;
@@ -2012,16 +2017,6 @@ const NGLayoutResult* NGOutOfFlowLayoutPart::Layout(
     DCHECK_EQ(layout_result->Status(),
               NGLayoutResult::kOutOfFragmentainerSpace);
     return layout_result;
-  }
-
-  // Legacy grid and flexbox handle OOF-positioned margins on their own, and
-  // break if we set them here.
-  if (!container_builder_->GetLayoutObject()
-           ->Style()
-           ->IsDisplayFlexibleOrGridBox()) {
-    node_info.node.GetLayoutBox()->SetMargin(
-        offset_info.node_dimensions.margins.ConvertToPhysical(
-            node_info.node.Style().GetWritingDirection()));
   }
 
   layout_result->GetMutableForOutOfFlow().SetOutOfFlowInsetsForGetComputedStyle(

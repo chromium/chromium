@@ -100,8 +100,8 @@ const NGLayoutResult* NGMathPaddedLayoutAlgorithm::Layout() {
     LogicalOffset content_offset = {
         BorderScrollbarPadding().inline_start + RequestedLSpace(),
         (ascent - content_ascent) - RequestedVOffset()};
-    container_builder_.AddResult(*content_layout_result, content_offset);
-    content.StoreMargins(ConstraintSpace(), content_margins);
+    container_builder_.AddResult(*content_layout_result, content_offset,
+                                 content_margins);
   }
 
   LayoutUnit intrinsic_block_size = ascent + descent;

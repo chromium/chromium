@@ -24,7 +24,6 @@ class NGInlineNode;
 class NGLayoutResult;
 class NGPhysicalBoxFragment;
 class NGPhysicalFragment;
-struct NGBoxStrut;
 struct NGLayoutAlgorithmParams;
 
 enum class MathScriptType;
@@ -211,10 +210,6 @@ class CORE_EXPORT NGBlockNode : public NGLayoutInputNode {
       const ComputedStyle& parent_style,
       bool use_first_line_style,
       NGBaselineAlgorithmType baseline_algorithm_type);
-
-  // Write back resolved margins to legacy.
-  void StoreMargins(const NGConstraintSpace&, const NGBoxStrut& margins);
-  void StoreMargins(const NGPhysicalBoxStrut& margins);
 
   // Write the inline-size and number of columns in a multicol container to
   // legacy.

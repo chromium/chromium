@@ -3522,8 +3522,6 @@ void NGGridLayoutAlgorithm::PlaceGridItems(
           containing_grid_area.size);
     }
 
-    NGBlockNode(grid_item.node).StoreMargins(container_space, margins);
-
     // If |out_grid_items_placement_data| is present we just want to record the
     // initial position of all the children for the purposes of fragmentation.
     // Don't add these to the builder.
@@ -3533,7 +3531,7 @@ void NGGridLayoutAlgorithm::PlaceGridItems(
           result->HasDescendantThatDependsOnPercentageBlockSize());
     } else {
       container_builder_.AddResult(*result, containing_grid_area.offset,
-                                   relative_offset);
+                                   margins, relative_offset);
       baseline_accumulator.Accumulate(grid_item, fragment,
                                       containing_grid_area.offset.block_offset);
     }
@@ -3998,9 +3996,9 @@ void NGGridLayoutAlgorithm::PlaceGridItemsForFragmentation(
 
   // Add all the results into the builder.
   for (auto& result_and_offset : result_and_offsets) {
-    container_builder_.AddResult(*result_and_offset.result,
-                                 result_and_offset.offset,
-                                 result_and_offset.relative_offset);
+    container_builder_.AddResult(
+        *result_and_offset.result, result_and_offset.offset,
+        /* margins */ absl::nullopt, result_and_offset.relative_offset);
   }
 
   // Propagate the baselines.

@@ -253,11 +253,10 @@ const NGLayoutResult* NGMathFractionLayoutAlgorithm::Layout() {
                                     fraction_ascent + denominator_shift -
                                     denominator_ascent;
 
-  container_builder_.AddResult(*numerator_layout_result, numerator_offset);
-  container_builder_.AddResult(*denominator_layout_result, denominator_offset);
-
-  numerator.StoreMargins(ConstraintSpace(), numerator_margins);
-  denominator.StoreMargins(ConstraintSpace(), denominator_margins);
+  container_builder_.AddResult(*numerator_layout_result, numerator_offset,
+                               numerator_margins);
+  container_builder_.AddResult(*denominator_layout_result, denominator_offset,
+                               denominator_margins);
 
   LayoutUnit block_size = ComputeBlockSizeForFragment(
       ConstraintSpace(), Style(), BorderPadding(), intrinsic_block_size,

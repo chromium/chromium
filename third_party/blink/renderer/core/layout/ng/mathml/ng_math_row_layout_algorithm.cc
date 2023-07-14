@@ -211,8 +211,8 @@ const NGLayoutResult* NGMathRowLayoutAlgorithm::Layout() {
   adjust_offset += LogicalOffset{center_offset, max_row_block_baseline};
   for (auto& child_data : children) {
     child_data.offset += adjust_offset;
-    container_builder_.AddResult(*child_data.result, child_data.offset);
-    child_data.child.StoreMargins(ConstraintSpace(), child_data.margins);
+    container_builder_.AddResult(*child_data.result, child_data.offset,
+                                 child_data.margins);
   }
 
   container_builder_.SetBaselines(adjust_offset.block_offset);

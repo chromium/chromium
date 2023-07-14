@@ -1838,17 +1838,6 @@ void NGBlockNode::UpdateShapeOutsideInfoIfNeeded(
       percentage_resolution_inline_size);
 }
 
-void NGBlockNode::StoreMargins(const NGConstraintSpace& constraint_space,
-                               const NGBoxStrut& margins) {
-  NGPhysicalBoxStrut physical_margins =
-      margins.ConvertToPhysical(constraint_space.GetWritingDirection());
-  box_->SetMargin(physical_margins);
-}
-
-void NGBlockNode::StoreMargins(const NGPhysicalBoxStrut& physical_margins) {
-  box_->SetMargin(physical_margins);
-}
-
 void NGBlockNode::StoreColumnSizeAndCount(LayoutUnit inline_size, int count) {
   LayoutMultiColumnFlowThread* flow_thread =
       To<LayoutBlockFlow>(box_.Get())->MultiColumnFlowThread();

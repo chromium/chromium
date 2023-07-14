@@ -1559,14 +1559,14 @@ NGLayoutResult::EStatus NGBlockLayoutAlgorithm::HandleNewFormattingContext(
 
   PropagateBaselineFromBlockChild(physical_fragment, child_data.margins,
                                   logical_offset.block_offset);
-  container_builder_.AddResult(*layout_result, logical_offset);
 
   // The margins we store will be used by e.g. getComputedStyle().
   // When calculating these values, ignore any floats that might have
   // affected the child. This is what Edge does.
   ResolveInlineMargins(child_style, Style(), ChildAvailableSize().inline_size,
                        fragment.InlineSize(), &child_data.margins);
-  To<NGBlockNode>(child).StoreMargins(ConstraintSpace(), child_data.margins);
+  container_builder_.AddResult(*layout_result, logical_offset,
+                               child_data.margins);
 
   *previous_inflow_position = ComputeInflowPosition(
       *previous_inflow_position, child, child_data,
@@ -2147,7 +2147,6 @@ NGLayoutResult::EStatus NGBlockLayoutAlgorithm::FinishInflow(
     PropagateBaselineFromBlockChild(physical_fragment, child_data->margins,
                                     logical_offset.block_offset);
   }
-  container_builder_.AddResult(*layout_result, logical_offset);
 
   if (auto* block_child = DynamicTo<NGBlockNode>(child)) {
     // We haven't yet resolved margins wrt. overconstrainedness, unless that was
@@ -2161,7 +2160,10 @@ NGLayoutResult::EStatus NGBlockLayoutAlgorithm::FinishInflow(
       child_data->margins_fully_resolved = true;
     }
 
-    block_child->StoreMargins(ConstraintSpace(), child_data->margins);
+    container_builder_.AddResult(*layout_result, logical_offset,
+                                 child_data->margins);
+  } else {
+    container_builder_.AddResult(*layout_result, logical_offset);
   }
 
   *previous_inflow_position = ComputeInflowPosition(

@@ -1525,10 +1525,12 @@ NGLayoutResult::EStatus NGFlexLayoutAlgorithm::GiveItemsFinalPositionAndSize(
       const auto& physical_fragment =
           To<NGPhysicalBoxFragment>(layout_result->PhysicalFragment());
 
-      NGBoxFragment fragment(ConstraintSpace().GetWritingDirection(),
-                             physical_fragment);
+      const auto writing_direction = ConstraintSpace().GetWritingDirection();
+      NGBoxFragment fragment(writing_direction, physical_fragment);
       if (!InvolvedInBlockFragmentation(container_builder_)) {
-        container_builder_.AddResult(*layout_result, offset);
+        container_builder_.AddResult(
+            *layout_result, offset,
+            item->physical_margins_.ConvertToLogical(writing_direction));
         baseline_accumulator.AccumulateItem(fragment, offset.block_offset,
                                             is_first_line, is_last_line);
       } else {
@@ -2080,8 +2082,6 @@ NGLayoutResult::EStatus NGFlexLayoutAlgorithm::PropagateFlexItemInfo(
                        Style().FlexWrap() == EFlexWrap::kWrapReverse));
     layout_info_for_devtools_->lines[flex_line_idx].items.push_back(item);
   }
-
-  flex_item->ng_input_node_.StoreMargins(flex_item->physical_margins_);
 
   // Detect if the flex-item had its scrollbar state change. If so we need
   // to relayout as the input to the flex algorithm is incorrect.

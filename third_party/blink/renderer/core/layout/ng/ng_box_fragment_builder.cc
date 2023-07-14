@@ -105,6 +105,7 @@ void NGBoxFragmentBuilder::AddBreakBeforeChild(
 void NGBoxFragmentBuilder::AddResult(
     const NGLayoutResult& child_layout_result,
     const LogicalOffset offset,
+    absl::optional<const NGBoxStrut> margins,
     absl::optional<LogicalOffset> relative_offset,
     const NGInlineContainer<LogicalOffset>* inline_container) {
   const auto& fragment = child_layout_result.PhysicalFragment();
@@ -141,6 +142,11 @@ void NGBoxFragmentBuilder::AddResult(
   AddChild(fragment, offset, &end_margin_strut,
            child_layout_result.IsSelfCollapsing(), relative_offset,
            inline_container);
+  if (margins) {
+    // TODO(crbug.com/1353190): Store margins in physical fragments.
+    To<LayoutBox>(fragment.GetMutableLayoutObject())
+        ->SetMargin((*margins).ConvertToPhysical(GetWritingDirection()));
+  }
 
   if (UNLIKELY(has_block_fragmentation_))
     PropagateBreakInfo(*result_for_propagation, offset);
@@ -148,6 +154,11 @@ void NGBoxFragmentBuilder::AddResult(
     PropagateChildBreakValues(*result_for_propagation);
 
   PropagateFromLayoutResult(*result_for_propagation);
+}
+
+void NGBoxFragmentBuilder::AddResult(const NGLayoutResult& child_layout_result,
+                                     const LogicalOffset offset) {
+  AddResult(child_layout_result, offset, absl::nullopt, absl::nullopt, nullptr);
 }
 
 void NGBoxFragmentBuilder::AddChild(

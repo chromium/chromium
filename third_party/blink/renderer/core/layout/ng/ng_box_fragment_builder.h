@@ -212,8 +212,12 @@ class CORE_EXPORT NGBoxFragmentBuilder final : public NGFragmentBuilder {
   void AddResult(
       const NGLayoutResult&,
       const LogicalOffset,
+      absl::optional<const NGBoxStrut> margins,
       absl::optional<LogicalOffset> relative_offset = absl::nullopt,
       const NGInlineContainer<LogicalOffset>* inline_container = nullptr);
+  // AddResult() with the default margin computation.
+  void AddResult(const NGLayoutResult& child_layout_result,
+                 const LogicalOffset offset);
 
   // Add a child fragment and propagate info from it. Called by AddResult().
   // Other callers should call AddResult() instead of this when possible, since
