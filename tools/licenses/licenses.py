@@ -755,7 +755,9 @@ def GetThirdPartyDepsFromGNDepsOutput(
     Note that it always returns the direct sub-directory of third_party
     where README.chromium and LICENSE files are, so that it can be passed to
     ParseDir(). e.g.:
-        third_party/cld_3/src/src/BUILD.gn -> third_party/cld_3
+        third_party/cld_3/src/src/BUILD.gn -> third_party/cld_3/
+    Rust dependencies are a special case, with a deeper structure:
+        third_party/rust/foo/v1/crate/BUILD.gn -> third_party/rust/foo/v1/
 
     It returns relative paths from _REPOSITORY_ROOT, not absolute paths.
     """
@@ -765,8 +767,20 @@ def GetThirdPartyDepsFromGNDepsOutput(
 
   # Use non-capturing group with or's for all possible options.
   allowed_paths = '|'.join([re.escape(x) for x in allowed_paths_list])
-  path_regex = re.compile(r'^((.+[/\\])?(?:' + allowed_paths +
-                          r')[/\\][^/\\]+[/\\])(.+[/\\])?BUILD\.gn$')
+  path_regex = re.compile(
+      r'''^
+            (                                     # capture
+              (.+{sep})?                          # any prefix
+              (?:{allowed_paths})                 # any of the allowed paths
+              {sep}
+              (?:                                 # either..
+                rust{sep}{nonsep}+{sep}v{nonsep}+ #  rust/<crate>/v<version>
+                |{nonsep}+)                       #  or any single path element
+              {sep}
+            )
+            (.+{sep})?BUILD\.gn$                  # with filename BUILD.gn
+  '''.format(allowed_paths=allowed_paths, sep=r'[/\\]', nonsep=r'[^/\\]'),
+      re.VERBOSE)
 
   third_party_deps = set()
   for absolute_build_dep in gn_deps.split():
