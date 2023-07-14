@@ -1668,9 +1668,6 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
             .EnableInlineSyncStatusProgressEvents(),
         TestCase("driveInlineSyncStatusParentFolderProgressEvents")
             .EnableInlineSyncStatusProgressEvents(),
-        TestCase("driveFolderShouldShowOfflineTickWhenBulkPinningEnabled")
-            .EnableBulkPinning()
-            .EnableInlineSyncStatus(),
         TestCase("driveFoldersRetainPinnedPropertyWhenBulkPinningEnabled")
             .EnableBulkPinning(),
         TestCase("drivePinToggleIsEnabledInSharedWithMeWhenBulkPinningEnabled")

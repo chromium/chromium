@@ -278,10 +278,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
   // Starts checking for free space.
   void CheckFreeSpace();
 
-  // Whether `path` is parented at a path that is untracked (e.g. a shortcut
-  // directory residing outside of My drive).
-  bool IsUntrackedPath(const Path& path);
-
   // Whether the supplied `id` is currently being tracked by the PinManager and
   // that it is unpinned.
   bool IsTrackedAndUnpinned(Id id) const;
@@ -507,10 +503,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
 
   // Tracks the remaining seconds for the current syncing operation to complete.
   file_manager::Speedometer speedometer_ GUARDED_BY_CONTEXT(sequence_checker_);
-
-  // Shortcut paths where the target path resides outside the users My drive.
-  std::unordered_set<Path> untracked_shortcut_paths_
-      GUARDED_BY_CONTEXT(sequence_checker_);
 
   base::WeakPtrFactory<PinManager> weak_ptr_factory_{this};
 

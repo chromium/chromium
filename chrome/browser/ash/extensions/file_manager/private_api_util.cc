@@ -428,33 +428,20 @@ void SingleEntryPropertiesGetterForDriveFs::OnGetFileInfo(
       drivefs::pinning::PinManager* const pin_manager =
           GetPinManager(running_profile_);
 
-      // The `PinManager` maintains a list of 200 items that it pins, if the
-      // item is not within these 200 items it will eventually be pinned, but
-      // does not enter into a queued state just yet. This ensures the queued
-      // state is reflected for items that will be pinned but haven't called
-      // `SetPinned` yet.
       const auto stable_id =
           drivefs::pinning::PinManager::Id(metadata->stable_id);
       if (properties_->sync_status ==
               file_manager_private::SYNC_STATUS_NOT_FOUND &&
           pin_manager->IsTrackedAndUnpinned(stable_id)) {
+        // The `PinManager` maintains a list of 200 items that it pins, if the
+        // item is not within these 200 items it will eventually be pinned, but
+        // does not enter into a queued state just yet. This ensures the queued
+        // state is reflected for items that will be pinned but haven't called
+        // `SetPinned` yet.
         properties_->sync_status = file_manager_private::SYNC_STATUS_QUEUED;
       }
 
-      if (metadata->type == drivefs::mojom::FileMetadata::Type::kDirectory &&
-          pin_manager &&
-          !pin_manager->IsUntrackedPath(file_system_url_.path())) {
-        // Folders can't be pinned automatically to provide a way to intercept
-        // items being added to these folders. However items in the folders will
-        // be pinned, so to ensure the UI shows these folders as available
-        // offline, return these items as pinned and available offline. This
-        // should not include shortcuts and only cover directories that are
-        // parented at "My drive" (e.g. no Shared drives).
-        properties_->available_when_metered = true;
-        properties_->available_offline = true;
-        properties_->pinned = true;
-      } else if (drive::util::IsPinnableGDocMimeType(
-                     metadata->content_mime_type)) {
+      if (drive::util::IsPinnableGDocMimeType(metadata->content_mime_type)) {
         // When bulk pinning is enabled, hosted files should reflect the pinned
         // state as their available offline state.
         properties_->pinned = properties_->available_offline;

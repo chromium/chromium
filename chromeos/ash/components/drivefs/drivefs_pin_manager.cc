@@ -232,13 +232,6 @@ int64_t GetSize(const FileMetadata& metadata) {
                                                       : metadata.size;
 }
 
-Path AppendAbsoluteToMountPath(const Path& mount_path, StringPiece path) {
-  DCHECK(!path.empty());
-  DCHECK_EQ(path.front(), '/');
-  path.remove_prefix(1);
-  return mount_path.Append(path);
-}
-
 }  // namespace
 
 void RecordBulkPinningEnabledSource(BulkPinningEnabledSource source) {
@@ -813,16 +806,6 @@ void PinManager::BatterySaverModeStateChanged(
   }
 }
 
-bool PinManager::IsUntrackedPath(const Path& path) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  return base::ranges::any_of(
-      untracked_shortcut_paths_.cbegin(), untracked_shortcut_paths_.cend(),
-      [&path](const Path& untracked_path) {
-        return untracked_path == path || untracked_path.IsParent(path);
-      });
-}
-
 bool PinManager::IsTrackedAndUnpinned(Id id) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const Files::const_iterator it = files_to_track_.find(id);
@@ -990,14 +973,6 @@ void PinManager::HandleQueryItem(Id dir_id,
       VLOG(1) << "Skipped shortcut " << id << " " << Quote(path) << " to "
               << Quote(md.type) << " "
               << Id(md.shortcut_details->target_stable_id);
-
-      absl::optional<Path> target_path = md.shortcut_details->target_path;
-      if (target_path.has_value() &&
-          !mount_path_.Append("root").IsParent(target_path.value())) {
-        // The shortcut's target directory resides outside of My drive.
-        untracked_shortcut_paths_.emplace(
-            AppendAbsoluteToMountPath(mount_path_, path.value()));
-      }
       return;
     }
 

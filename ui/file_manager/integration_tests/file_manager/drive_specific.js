@@ -1531,58 +1531,6 @@ testcase.drivePinToggleIsDisabledAndHiddenWhenBulkPinningEnabled = async () => {
 };
 
 /**
- * Tests that when bulk pinning is enabled, the "Available offline" toggle
- * should not be visible. When the preference is updated, the toggle should
- * reappear.
- */
-testcase.driveFolderShouldShowOfflineTickWhenBulkPinningEnabled = async () => {
-  const appId = await setupAndWaitUntilReady(
-      RootPath.DRIVE, [],
-      [ENTRIES.directoryA, ENTRIES.directoryB, ENTRIES.linkGtoB]);
-
-  // Wait for the directory "A" to not have the pinned class attached.
-  await remoteCall.waitForElement(
-      appId, '#file-list [file-name="A"]:not(.pinned)');
-
-  // Mock the free space returned by spaced to be 4 GB and enable the bulk
-  // pinning preference.
-  await remoteCall.setSpacedFreeSpace(4n << 30n);
-  await sendTestMessage({name: 'setBulkPinningEnabledPref', enabled: true});
-
-  // Wait for the folder to show up as pinned (the underlying folder will not
-  // actually get pinned but the class should still be added).
-  await remoteCall.waitForElement(appId, '#file-list [file-name="A"].pinned');
-
-  // Disable the bulk pinning preference and wait for the folder to lose the
-  // pinned class.
-  await sendTestMessage({name: 'setBulkPinningEnabledPref', enabled: false});
-  await remoteCall.waitForElement(
-      appId, '#file-list [file-name="A"]:not(.pinned)');
-
-  // Show the context menu for the "A" directory and click the pinning command.
-  await remoteCall.showContextMenuFor(appId, 'A');
-  await remoteCall.waitAndClickElement(
-      appId,
-      '#file-context-menu:not([hidden]) ' +
-          '[command="#toggle-pinned"]:not([checked])');
-
-  // Wait for the element to receive the pinned class from the explicit pinning
-  // action then enable the bulk pinning feature.
-  await remoteCall.waitForElement(appId, '#file-list [file-name="A"].pinned');
-  await sendTestMessage({name: 'setBulkPinningEnabledPref', enabled: true});
-
-  // The folder should not lose it's pinning status when the pinning manager
-  // enters the Syncing state.
-  await remoteCall.waitForBulkPinningStage('Syncing');
-  await remoteCall.waitForElement(appId, '#file-list [file-name="A"].pinned');
-
-  // Disable the bulk pinning preference and ensure the folder retains its
-  // pinned state.
-  await sendTestMessage({name: 'setBulkPinningEnabledPref', enabled: false});
-  await remoteCall.waitForElement(appId, '#file-list [file-name="A"].pinned');
-};
-
-/**
  * Tests that "Shared with me" which is outside "My drive" retains the pinned
  * property and it is not updated when bulk pinning is enabled.
  */
