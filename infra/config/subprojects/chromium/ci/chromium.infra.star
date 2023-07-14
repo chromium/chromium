@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 """Definitions of builders in the chromium.infra builder group."""
 
+load("//lib/branches.star", "branches")
 load("//lib/builders.star", "os", "sheriff_rotations")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
@@ -20,6 +21,20 @@ ci.defaults.set(
 consoles.console_view(
     name = "chromium.infra",
 )
+
+# Builders monitored by go/clank-autoroll
+consoles.list_view(
+    name = "android.autoroll",
+    title = "Android Autoroll Gardening",
+)
+[branches.list_view_entry(
+    list_view = "android.autoroll",
+    builder = "chromium:ci/{}".format(name),
+) for name in (
+    "android-androidx-packager",
+    "android-sdk-packager",
+    "3pp-linux-amd64-packager",
+)]
 
 def packager_builder(**kwargs):
     return ci.builder(
