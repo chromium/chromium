@@ -13,11 +13,11 @@
 #include "ash/public/cpp/window_properties.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/ash_color_id.h"
 #include "ash/style/icon_button.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/views/background.h"
 
 namespace ash {
@@ -52,11 +52,11 @@ GameDashboardToolbarView::GameDashboardToolbarView(
   DCHECK(context_->game_window());
 
   SetOrientation(views::BoxLayout::Orientation::kVertical);
-  SetBackground(views::CreateThemedSolidBackground(kColorAshShieldAndBase80));
-  SetOrientation(views::BoxLayout::Orientation::kVertical);
   SetInsideBorderInsets(gfx::Insets::VH(kPaddingHeight, kPaddingWidth));
   SetBetweenChildSpacing(kBetweenChildSpacing);
   SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kCenter);
+  SetBackground(
+      views::CreateThemedSolidBackground(cros_tokens::kCrosSysBaseElevated));
 
   AddShortcutTiles();
 }

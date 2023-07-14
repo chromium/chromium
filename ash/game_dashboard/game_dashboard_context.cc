@@ -29,7 +29,7 @@ static const int kMainMenuButtonVerticalPaddingDp = 3;
 // Toolbar padding from the border of the game window.
 static const int kToolbarEdgePadding = 10;
 
-std::unique_ptr<views::Widget> CreateTransientChildWidget(
+std::unique_ptr<GameDashboardWidget> CreateTransientChildWidget(
     aura::Window* game_window,
     const std::string& widget_name,
     std::unique_ptr<views::View> view) {
@@ -42,7 +42,7 @@ std::unique_ptr<views::Widget> CreateTransientChildWidget(
   params.parent = game_window;
   params.name = widget_name;
 
-  auto widget = std::make_unique<views::Widget>();
+  auto widget = std::make_unique<GameDashboardWidget>();
   widget->Init(std::move(params));
   wm::TransientWindowManager::GetOrCreate(widget->GetNativeWindow())
       ->set_parent_controls_visibility(true);

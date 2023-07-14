@@ -13,14 +13,19 @@
 #include "ash/game_dashboard/game_dashboard_test_base.h"
 #include "ash/game_dashboard/game_dashboard_toolbar_view.h"
 #include "ash/game_dashboard/game_dashboard_utils.h"
+#include "ash/game_dashboard/game_dashboard_widget.h"
 #include "ash/game_dashboard/test_game_dashboard_delegate.h"
 #include "ash/public/cpp/ash_view_ids.h"
 #include "ash/public/cpp/capture_mode/capture_mode_test_api.h"
+#include "ash/public/cpp/style/dark_light_mode_controller.h"
 #include "ash/public/cpp/window_properties.h"
+#include "ash/shell.h"
+#include "ash/style/color_palette_controller.h"
 #include "ash/style/icon_button.h"
 #include "ash/style/pill_button.h"
 #include "ash/style/switch.h"
 #include "ash/system/unified/feature_tile.h"
+#include "ash/wallpaper/wallpaper_controller_test_api.h"
 #include "base/check.h"
 #include "base/memory/raw_ptr.h"
 #include "base/types/cxx23_to_underlying.h"
@@ -28,7 +33,9 @@
 #include "chromeos/ui/frame/frame_header.h"
 #include "chromeos/ui/wm/window_util.h"
 #include "extensions/common/constants.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/aura/window.h"
+#include "ui/color/color_provider_key.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/views/widget/widget.h"
 
@@ -46,7 +53,7 @@ class GameDashboardContextTest : public GameDashboardTestBase {
     GameDashboardTestBase::TearDown();
   }
 
-  views::Widget* GetMainMenuButtonWidget() {
+  GameDashboardWidget* GetMainMenuButtonWidget() {
     return game_context_->main_menu_button_widget_.get();
   }
 
@@ -54,7 +61,7 @@ class GameDashboardContextTest : public GameDashboardTestBase {
     return game_context_->main_menu_widget_.get();
   }
 
-  views::Widget* GetToolbarWidget() {
+  GameDashboardWidget* GetToolbarWidget() {
     return game_context_->toolbar_widget_.get();
   }
 
@@ -634,6 +641,59 @@ TEST_P(GameTypeGameDashboardContextTest, CollapseAndExpandToolbarWidget) {
 
   // Verify that the toolbar is back to its initially expanded height.
   EXPECT_EQ(initial_height, updated_height);
+}
+
+// Verifies the color mode, user color, and scheme variant never change.
+TEST_P(GameTypeGameDashboardContextTest, ColorProviderKey) {
+  // The user color to always use for GameDashboard widgets.
+  constexpr SkColor kExpectedUserColor = SkColorSetRGB(0x3F, 0x5A, 0xA9);
+
+  if (IsArcGame()) {
+    game_window_->SetProperty(kArcGameControlsFlagsKey,
+                              ArcGameControlsFlag::kKnown);
+  }
+
+  // Retrieve the toolbar via the main menu.
+  LeftClickOn(GetMainMenuButtonWidget()->GetContentsView());
+  LeftClickOn(
+      static_cast<FeatureTile*>(GetMainMenuViewById(VIEW_ID_GD_TOOLBAR_TILE)));
+  ASSERT_TRUE(GetToolbarWidget());
+
+  const GameDashboardWidget* widgets[] = {GetMainMenuButtonWidget(),
+                                          GetToolbarWidget()};
+
+  for (auto* widget : widgets) {
+    auto color_provider_key = widget->GetColorProviderKey();
+    EXPECT_EQ(ui::ColorProviderKey::ColorMode::kDark,
+              color_provider_key.color_mode);
+    EXPECT_EQ(kExpectedUserColor, color_provider_key.user_color.value());
+    EXPECT_EQ(ui::ColorProviderKey::SchemeVariant::kTonalSpot,
+              color_provider_key.scheme_variant);
+  }
+
+  // Update and verify the color mode doesn't change.
+  DarkLightModeController::Get()->SetDarkModeEnabledForTest(false);
+  for (auto* widget : widgets) {
+    EXPECT_EQ(ui::ColorProviderKey::ColorMode::kDark, widget->GetColorMode());
+  }
+
+  // Update and verify the color scheme doesn't change.
+  Shell::Get()->color_palette_controller()->SetColorScheme(
+      ColorScheme::kExpressive,
+      AccountId::FromUserEmailGaiaId("user@gmail.com", "user@gmail.com"),
+      base::DoNothing());
+  for (auto* widget : widgets) {
+    EXPECT_EQ(ui::ColorProviderKey::SchemeVariant::kTonalSpot,
+              widget->GetColorProviderKey().scheme_variant);
+  }
+
+  // Update and verify the user color doesn't change.
+  WallpaperControllerTestApi wallpaper(Shell::Get()->wallpaper_controller());
+  wallpaper.SetCalculatedColors(WallpaperCalculatedColors(
+      {}, SkColorSetRGB(0xae, 0x00, 0xff), SK_ColorWHITE));
+  for (auto* widget : widgets) {
+    EXPECT_EQ(kExpectedUserColor, *widget->GetColorProviderKey().user_color);
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
