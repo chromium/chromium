@@ -309,6 +309,7 @@ void RemoteFrame::Navigate(FrameLoadRequest& frame_request,
 
   params->initiator_activation_and_ad_status =
       GetNavigationInitiatorActivationAndAdStatus(request.HasUserGesture(),
+                                                  initiator_frame_is_ad,
                                                   is_ad_script_in_stack);
 
   params->is_container_initiated = frame_request.IsContainerInitiated();
