@@ -1461,8 +1461,7 @@ RenderFrameImpl* RenderFrameImpl::CreateMainFrame(
       // This conversion is a little sad, as this often comes from a
       // WebString...
       WebString::FromUTF8(replication_state->name),
-      replication_state->frame_policy.sandbox_flags, base_url,
-      params->coop_forbids_initial_empty_document_to_be_cross_origin_isolated);
+      replication_state->frame_policy.sandbox_flags, base_url);
   if (!params->is_on_initial_empty_document)
     render_frame->frame_->SetIsNotOnInitialEmptyDocument();
 
@@ -2563,7 +2562,6 @@ void RenderFrameImpl::CommitNavigation(
     mojo::PendingRemote<blink::mojom::ResourceCache> resource_cache,
     mojom::CookieManagerInfoPtr cookie_manager_info,
     mojom::StorageInfoPtr storage_info,
-    bool coop_forbids_document_to_be_cross_origin_isolated,
     mojom::NavigationClient::CommitNavigationCallback commit_callback) {
   DCHECK(navigation_client_impl_);
   DCHECK(!blink::IsRendererDebugURL(common_params->url));
@@ -2607,8 +2605,6 @@ void RenderFrameImpl::CommitNavigation(
       ToWebPolicyContainer(std::move(policy_container));
   navigation_params->view_transition_state =
       std::move(commit_params->view_transition_state);
-  navigation_params->coop_forbids_document_to_be_cross_origin_isolated =
-      coop_forbids_document_to_be_cross_origin_isolated;
 
   if (frame_->IsOutermostMainFrame() && permissions_policy) {
     navigation_params->permissions_policy_override = permissions_policy;
@@ -6405,9 +6401,6 @@ WebView* RenderFrameImpl::CreateNewWindow(
   main_frame_params->subresource_loader_factories =
       base::WrapUnique(static_cast<blink::PendingURLLoaderFactoryBundle*>(
           CloneLoaderFactories()->Clone().release()));
-  main_frame_params
-      ->coop_forbids_initial_empty_document_to_be_cross_origin_isolated =
-      reply->coop_forbids_initial_empty_document_to_be_cross_origin_isolated;
 
   view_params->main_frame =
       mojom::CreateMainFrameUnion::NewLocalParams(std::move(main_frame_params));

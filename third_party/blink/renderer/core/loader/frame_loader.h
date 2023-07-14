@@ -259,10 +259,6 @@ class CORE_EXPORT FrameLoader final {
 
   mojo::PendingRemote<mojom::blink::CodeCacheHost> CreateWorkerCodeCacheHost();
 
-  bool CoopForbidsDocumentToBeCrossOriginIsolated() const {
-    return coop_forbids_document_to_be_cross_origin_isolated_;
-  }
-
  private:
   bool AllowRequestForThisFrame(const FrameLoadRequest&);
 
@@ -350,9 +346,6 @@ class CORE_EXPORT FrameLoader final {
   // The origins for which a legacy TLS version warning has been printed. The
   // size of this set is capped, after which no more warnings are printed.
   HashSet<String> tls_version_warning_origins_;
-
-  // If this is true, the frame cannot be crossOriginIsolated.
-  bool coop_forbids_document_to_be_cross_origin_isolated_ = true;
 };
 
 }  // namespace blink

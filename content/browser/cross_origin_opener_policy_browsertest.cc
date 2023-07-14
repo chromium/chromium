@@ -562,7 +562,9 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
   EXPECT_EQ(popup_rfh->cross_origin_opener_policy(),
             CoopSameOrigin(url::Origin::Create(starting_page)));
 
-  EXPECT_FALSE(popup_rfh->CoopForbidsDocumentToBeCrossOriginIsolated());
+  EXPECT_TRUE(popup_rfh->policy_container_host()
+                  ->policies()
+                  .allow_cross_origin_isolation);
 }
 
 IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
@@ -595,7 +597,9 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
   EXPECT_EQ(popup_rfh->cross_origin_opener_policy(),
             CoopSameOriginAllowPopups(url::Origin::Create(starting_page)));
 
-  EXPECT_FALSE(popup_rfh->CoopForbidsDocumentToBeCrossOriginIsolated());
+  EXPECT_TRUE(popup_rfh->policy_container_host()
+                  ->policies()
+                  .allow_cross_origin_isolation);
 }
 
 IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
@@ -629,10 +633,9 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
             CoopSameOrigin(url::Origin::Create(starting_page)));
   EXPECT_EQ(popup_rfh->cross_origin_opener_policy(), CoopUnsafeNone());
 
-  // This is false because the opener connection is severed, so there's nothing
-  // to be mismatched with. SInce the COOP value is not inherited, it won't be
-  // crossOriginIsolated anyway.
-  EXPECT_FALSE(popup_rfh->CoopForbidsDocumentToBeCrossOriginIsolated());
+  EXPECT_FALSE(popup_rfh->policy_container_host()
+                   ->policies()
+                   .allow_cross_origin_isolation);
 }
 
 IN_PROC_BROWSER_TEST_P(CoopRestrictPropertiesBrowserTest,
@@ -669,15 +672,19 @@ IN_PROC_BROWSER_TEST_P(CoopRestrictPropertiesBrowserTest,
   EXPECT_EQ(popup_rfh->cross_origin_opener_policy(),
             CoopRestrictProperties(url::Origin::Create(starting_page)));
 
-  EXPECT_TRUE(popup_rfh->CoopForbidsDocumentToBeCrossOriginIsolated());
+  EXPECT_FALSE(popup_rfh->policy_container_host()
+                   ->policies()
+                   .allow_cross_origin_isolation);
 
   ASSERT_TRUE(NavigateToURL(popup_webcontents, url_b_with_headers));
 
   popup_rfh = popup_webcontents->GetPrimaryMainFrame();
   EXPECT_EQ(popup_rfh->cross_origin_opener_policy(),
             CoopRestrictProperties(url::Origin::Create(url_b)));
-  EXPECT_FALSE(popup_webcontents->GetPrimaryMainFrame()
-                   ->CoopForbidsDocumentToBeCrossOriginIsolated());
+  EXPECT_TRUE(popup_webcontents->GetPrimaryMainFrame()
+                  ->policy_container_host()
+                  ->policies()
+                  .allow_cross_origin_isolation);
 }
 
 IN_PROC_BROWSER_TEST_P(
@@ -721,15 +728,19 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_EQ(popup_rfh->cross_origin_opener_policy(),
             CoopRestrictPropertiesPlusCoep(url::Origin::Create(starting_page)));
 
-  EXPECT_TRUE(popup_rfh->CoopForbidsDocumentToBeCrossOriginIsolated());
+  EXPECT_FALSE(popup_rfh->policy_container_host()
+                   ->policies()
+                   .allow_cross_origin_isolation);
 
   ASSERT_TRUE(NavigateToURL(popup_webcontents, url_b_with_headers));
 
   popup_rfh = popup_webcontents->GetPrimaryMainFrame();
   EXPECT_EQ(popup_rfh->cross_origin_opener_policy(),
             CoopRestrictPropertiesPlusCoep(url::Origin::Create(url_b)));
-  EXPECT_FALSE(popup_webcontents->GetPrimaryMainFrame()
-                   ->CoopForbidsDocumentToBeCrossOriginIsolated());
+  EXPECT_TRUE(popup_webcontents->GetPrimaryMainFrame()
+                  ->policy_container_host()
+                  ->policies()
+                  .allow_cross_origin_isolation);
 }
 
 IN_PROC_BROWSER_TEST_P(
@@ -773,7 +784,9 @@ IN_PROC_BROWSER_TEST_P(
             CoopReportOnlyRestrictPropertiesWithSoapByDefault(
                 url::Origin::Create(starting_page)));
 
-  EXPECT_TRUE(popup_rfh->CoopForbidsDocumentToBeCrossOriginIsolated());
+  EXPECT_FALSE(popup_rfh->policy_container_host()
+                   ->policies()
+                   .allow_cross_origin_isolation);
 
   ASSERT_TRUE(NavigateToURL(popup_webcontents, url_b_with_headers));
 
@@ -781,8 +794,10 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_EQ(popup_rfh->cross_origin_opener_policy(),
             CoopReportOnlyRestrictPropertiesWithSoapByDefault(
                 url::Origin::Create(url_b)));
-  EXPECT_FALSE(popup_webcontents->GetPrimaryMainFrame()
-                   ->CoopForbidsDocumentToBeCrossOriginIsolated());
+  EXPECT_TRUE(popup_webcontents->GetPrimaryMainFrame()
+                  ->policy_container_host()
+                  ->policies()
+                  .allow_cross_origin_isolation);
 }
 
 IN_PROC_BROWSER_TEST_P(
@@ -828,7 +843,9 @@ IN_PROC_BROWSER_TEST_P(
             CoopReportOnlyRestrictPropertiesPlusCoepWithSoapByDefault(
                 url::Origin::Create(starting_page)));
 
-  EXPECT_TRUE(popup_rfh->CoopForbidsDocumentToBeCrossOriginIsolated());
+  EXPECT_FALSE(popup_rfh->policy_container_host()
+                   ->policies()
+                   .allow_cross_origin_isolation);
 
   ASSERT_TRUE(NavigateToURL(popup_webcontents, url_b_with_headers));
 
@@ -836,8 +853,10 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_EQ(popup_rfh->cross_origin_opener_policy(),
             CoopReportOnlyRestrictPropertiesPlusCoepWithSoapByDefault(
                 url::Origin::Create(url_b)));
-  EXPECT_FALSE(popup_webcontents->GetPrimaryMainFrame()
-                   ->CoopForbidsDocumentToBeCrossOriginIsolated());
+  EXPECT_TRUE(popup_webcontents->GetPrimaryMainFrame()
+                  ->policy_container_host()
+                  ->policies()
+                  .allow_cross_origin_isolation);
 }
 
 IN_PROC_BROWSER_TEST_P(
@@ -884,7 +903,9 @@ IN_PROC_BROWSER_TEST_P(
   popup_rfh = popup_webcontents->GetPrimaryMainFrame();
   // Expect popup doesn't navigate, and its origin is still a.test.
   EXPECT_EQ(popup_rfh->GetLastCommittedOrigin(), url::Origin::Create(url_b));
-  EXPECT_FALSE(popup_rfh->CoopForbidsDocumentToBeCrossOriginIsolated());
+  EXPECT_TRUE(popup_rfh->policy_container_host()
+                  ->policies()
+                  .allow_cross_origin_isolation);
 }
 
 IN_PROC_BROWSER_TEST_P(
@@ -931,7 +952,9 @@ IN_PROC_BROWSER_TEST_P(
   // Expect popup doesn't navigate, and its origin is still a.test.
   EXPECT_EQ(popup_rfh->GetLastCommittedOrigin(),
             url::Origin::Create(starting_page));
-  EXPECT_FALSE(popup_rfh->CoopForbidsDocumentToBeCrossOriginIsolated());
+  EXPECT_TRUE(popup_rfh->policy_container_host()
+                  ->policies()
+                  .allow_cross_origin_isolation);
 }
 
 IN_PROC_BROWSER_TEST_P(
@@ -978,7 +1001,9 @@ IN_PROC_BROWSER_TEST_P(
   // Expect popup doesn't navigate, and its origin is still a.test.
   EXPECT_EQ(popup_rfh->GetLastCommittedOrigin(),
             url::Origin::Create(starting_page));
-  EXPECT_FALSE(popup_rfh->CoopForbidsDocumentToBeCrossOriginIsolated());
+  EXPECT_TRUE(popup_rfh->policy_container_host()
+                  ->policies()
+                  .allow_cross_origin_isolation);
 }
 
 IN_PROC_BROWSER_TEST_P(
@@ -1026,7 +1051,9 @@ IN_PROC_BROWSER_TEST_P(
   // Expect popup doesn't navigate, and its origin is still a.test.
   EXPECT_EQ(popup_rfh->GetLastCommittedOrigin(),
             url::Origin::Create(starting_page));
-  EXPECT_FALSE(popup_rfh->CoopForbidsDocumentToBeCrossOriginIsolated());
+  EXPECT_TRUE(popup_rfh->policy_container_host()
+                  ->policies()
+                  .allow_cross_origin_isolation);
 }
 
 IN_PROC_BROWSER_TEST_P(
@@ -4805,6 +4832,46 @@ IN_PROC_BROWSER_TEST_P(NoSharedArrayBufferByDefault,
   )"));
 
   EXPECT_EQ(1234, EvalJs(sub_document, "g_sab_size"));
+}
+
+IN_PROC_BROWSER_TEST_P(NoSharedArrayBufferByDefault,
+                       CoopCoepTransferSharedArrayBufferToAboutBlankIframe) {
+  CHECK(!base::FeatureList::IsEnabled(features::kSharedArrayBuffer));
+  GURL url =
+      https_server()->GetURL("a.test",
+                             "/set-header?"
+                             "Cross-Origin-Opener-Policy: same-origin&"
+                             "Cross-Origin-Embedder-Policy: require-corp");
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+  EXPECT_TRUE(ExecJs(current_frame_host(),
+                     "g_iframe = document.createElement('iframe');"
+                     "g_iframe.src = 'about:blank';"
+                     "document.body.appendChild(g_iframe);"));
+  WaitForLoadStop(web_contents());
+
+  RenderFrameHostImpl* main_document = current_frame_host();
+  RenderFrameHostImpl* sub_document =
+      current_frame_host()->child_at(0)->current_frame_host();
+
+  EXPECT_EQ(true, EvalJs(main_document, "self.crossOriginIsolated"));
+  EXPECT_EQ(true, EvalJs(sub_document, "self.crossOriginIsolated"));
+  EXPECT_EQ(true, EvalJs(sub_document, "'SharedArrayBuffer' in globalThis"));
+}
+
+IN_PROC_BROWSER_TEST_P(
+    NoSharedArrayBufferByDefault,
+    CoopCoepTransferSharedArrayBufferToAboutBlankIframeWithoutWaiting) {
+  CHECK(!base::FeatureList::IsEnabled(features::kSharedArrayBuffer));
+  GURL url =
+      https_server()->GetURL("a.test",
+                             "/set-header?"
+                             "Cross-Origin-Opener-Policy: same-origin&"
+                             "Cross-Origin-Embedder-Policy: require-corp");
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+  EXPECT_EQ(true, EvalJs(current_frame_host(),
+                         "const iframe = document.createElement('iframe');"
+                         "document.body.appendChild(iframe);"
+                         "iframe.contentWindow.crossOriginIsolated;"));
 }
 
 // Transfer a SharedArrayBuffer in between two COOP+COEP document with a

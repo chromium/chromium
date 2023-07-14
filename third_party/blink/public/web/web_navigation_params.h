@@ -470,10 +470,6 @@ struct BLINK_EXPORT WebNavigationParams {
   // enforced on the document created by this navigation.
   std::unique_ptr<WebPolicyContainer> policy_container;
 
-  // The browser process can set this to true if it decides that this frame
-  // cannot be crossOriginIsolated (e.g. due to COOP origin mismatch).
-  bool coop_forbids_document_to_be_cross_origin_isolated = true;
-
   // Blink's copy of a permissions policy constructed in the browser that should
   // take precedence over any permissions policy constructed in blink. This is
   // useful for isolated applications, which use a different base permissions
