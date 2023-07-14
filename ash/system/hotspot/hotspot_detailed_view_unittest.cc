@@ -219,7 +219,7 @@ TEST_F(HotspotDetailedViewTest, HotspotEnablingUI) {
 
   ASSERT_TRUE(hotspot_detailed_view_);
   AssertTextLabel(kHotspotTitle);
-  AssertSubtextLabel(u"Enabling…");
+  AssertSubtextLabel(u"Turning on…");
   AssertEntryRowEnabled(/*expected_enabled=*/false);
   AssertToggleOn(/*expected_toggle_on=*/true);
   views::ImageView* extra_icon = GetExtraIcon();
@@ -245,7 +245,7 @@ TEST_F(HotspotDetailedViewTest, HotspotDisablingUI) {
 
   ASSERT_TRUE(hotspot_detailed_view_);
   AssertTextLabel(kHotspotTitle);
-  AssertSubtextLabel(u"Disabling…");
+  AssertSubtextLabel(u"Turning off…");
   AssertEntryRowEnabled(/*expected_enabled=*/false);
   AssertToggleOn(/*expected_toggle_on=*/false);
   views::ImageView* extra_icon = GetExtraIcon();
@@ -280,7 +280,7 @@ TEST_F(HotspotDetailedViewTest, HotspotDisabledAndNoMobileNetworkUI) {
 
   ASSERT_TRUE(hotspot_detailed_view_);
   AssertTextLabel(kHotspotTitle);
-  AssertSubtextLabel(u"Connect to mobile data to use hotspot");
+  AssertSubtextLabel(u"Connect to mobile data");
   AssertEntryRowEnabled(/*expected_enabled=*/false);
   AssertToggleOn(/*expected_toggle_on=*/false);
   views::ImageView* extra_icon = GetExtraIcon();

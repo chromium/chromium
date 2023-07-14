@@ -2724,19 +2724,19 @@ Turning on battery saver to increase your battery life.
         Off
       </message>
       <message name="IDS_ASH_STATUS_TRAY_HOTSPOT_STATUS_ENABLING" desc="The sublabel for hotspot feature pod in quick settings to show hotspot is enabling.">
-        Enabling...
+        Turning on...
       </message>
       <message name="IDS_ASH_STATUS_TRAY_HOTSPOT_STATUS_DISABLING" desc="The sublabel for hotspot feature pod in quick settings to show hotspot is disabling.">
-        Disabling...
+        Turning off...
       </message>
       <message name="IDS_ASH_STATUS_TRAY_HOTSPOT_FEATURE_TILE_DRILL_IN_TOOLTIP_STATUS_ON" desc="The tooltip for the drill in button in hotspot feature tile of quick settings when hotspot is on.">
         Show hotspot details. Hotspot is on.
       </message>
       <message name="IDS_ASH_STATUS_TRAY_HOTSPOT_FEATURE_TILE_TOOLTIP_STATUS_ENABLING" desc="The tooltip for the hotspot feature tile of quick settings when hotspot is enabling.">
-        Show hotspot details. Hotspot is enabling.
+        Show hotspot details. Hotspot is turning on.
       </message>
       <message name="IDS_ASH_STATUS_TRAY_HOTSPOT_FEATURE_TILE_TOOLTIP_STATUS_DISABLING" desc="The tooltip for the hotspot feature tile of quick settings when hotspot is disabling.">
-        Show hotspot details. Hotspot is disabling.
+        Show hotspot details. Hotspot is turning off.
       </message>
       <message name="IDS_ASH_STATUS_TRAY_HOTSPOT_FEATURE_TILE_DRILL_IN_TOOLTIP_STATUS_OFF" desc="The tooltip for the drill in button in hotspot feature tile of quick settings when hotspot is off and is not allowed to turn on.">
         Show hotspot details. Hotspot is off.
@@ -2763,7 +2763,7 @@ Turning on battery saver to increase your battery life.
         Show hotspot details. Hotspot is blocked by your administrator.
       </message>
       <message name="IDS_ASH_HOTSPOT_DETAILED_VIEW_SUBLABEL_NO_MOBILE_DATA" desc="The sublabel text in the hotspot detailed view when hotspot is off and not allowed to turn on due to no mobile network connection.">
-        Connect to mobile data to use hotspot
+        Connect to mobile data
       </message>
       <message name="IDS_ASH_HOTSPOT_DETAILED_VIEW_INFO_TOOLTIP_MOBILE_DATA_NOT_SUPPORTED" desc="The tooltip for the info icon in hotspot detailed view when hotspot is off and not allowed to turn on due to the connected mobile data doesn't support hotspot.">
         Your mobile network doesn't support hotspot
@@ -2787,13 +2787,13 @@ Turning on battery saver to increase your battery life.
         "<ph name="NAME">$1<ex>Chromebook</ex></ph>" visible to Bluetooth devices.
       </message>
       <message name="IDS_ASH_STATUS_TRAY_HOTSPOT_ON_MULTIPLE_CONNECTED_DEVICES" desc="Tooltip or accessiblity text for the hotspot icon in system tray when hotspot is turned on and multiple devices are connected.">
-        <ph name="DEVICECOUNT">$1</ph> devices connected to your <ph name="DEVICE_NAME">$2<ex>Chromebook</ex></ph> hotspot
+        <ph name="DEVICECOUNT">$1</ph> devices connected to <ph name="DEVICE_NAME">$2<ex>Chromebook</ex></ph> hotspot
       </message>
       <message name="IDS_ASH_STATUS_TRAY_HOTSPOT_ON_ONE_CONNECTED_DEVICE" desc="Tooltip or accessiblity text for the hotspot icon in system tray when hotspot is turned on and one device is connected.">
-        1 device connected to your <ph name="DEVICE_NAME">$1<ex>Chromebook</ex></ph> hotspot
+        1 device connected to <ph name="DEVICE_NAME">$1<ex>Chromebook</ex></ph> hotspot
       </message>
       <message name="IDS_ASH_STATUS_TRAY_HOTSPOT_ON_NO_CONNECTED_DEVICES" desc="Tooltip or accessiblity text for the hotspot icon in system tray when hotspot is turned on and no devices are connected.">
-        Your <ph name="DEVICE_NAME">$1<ex>Chromebook</ex></ph> hotspot is on, no devices connected
+        <ph name="DEVICE_NAME">$1<ex>Chromebook</ex></ph> hotspot is on, no devices connected
       </message>
       <message name="IDS_ASH_HOTSPOT_ON_TITLE" desc="Title used for the system notification shown when the hotspot is turned on.">
         Hotspot is on

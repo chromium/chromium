@@ -192,10 +192,10 @@ TEST_F(HotspotFeaturePodControllerTest, HotspotEnabling) {
   EXPECT_TRUE(hotspot_feature_tile_->GetEnabled());
   EXPECT_TRUE(hotspot_feature_tile_->IsToggled());
   EXPECT_EQ(u"Hotspot", hotspot_feature_tile_->label()->GetText());
-  EXPECT_EQ(u"Enabling…", hotspot_feature_tile_->sub_label()->GetText());
-  EXPECT_EQ(u"Show hotspot details. Hotspot is enabling.",
+  EXPECT_EQ(u"Turning on…", hotspot_feature_tile_->sub_label()->GetText());
+  EXPECT_EQ(u"Show hotspot details. Hotspot is turning on.",
             hotspot_feature_tile_->icon_button()->GetTooltipText());
-  EXPECT_EQ(u"Show hotspot details. Hotspot is enabling.",
+  EXPECT_EQ(u"Show hotspot details. Hotspot is turning on.",
             hotspot_feature_tile_->GetTooltipText());
   EXPECT_STREQ(kHotspotDotIcon.name, GetVectorIconName());
   // Verifies the hotspot icon is animating when enabling.
@@ -221,10 +221,10 @@ TEST_F(HotspotFeaturePodControllerTest, HotspotDisabling) {
   EXPECT_TRUE(hotspot_feature_tile_->GetEnabled());
   EXPECT_TRUE(hotspot_feature_tile_->IsToggled());
   EXPECT_EQ(u"Hotspot", hotspot_feature_tile_->label()->GetText());
-  EXPECT_EQ(u"Disabling…", hotspot_feature_tile_->sub_label()->GetText());
-  EXPECT_EQ(u"Show hotspot details. Hotspot is disabling.",
+  EXPECT_EQ(u"Turning off…", hotspot_feature_tile_->sub_label()->GetText());
+  EXPECT_EQ(u"Show hotspot details. Hotspot is turning off.",
             hotspot_feature_tile_->icon_button()->GetTooltipText());
-  EXPECT_EQ(u"Show hotspot details. Hotspot is disabling.",
+  EXPECT_EQ(u"Show hotspot details. Hotspot is turning off.",
             hotspot_feature_tile_->GetTooltipText());
   EXPECT_STREQ(kHotspotOffIcon.name, GetVectorIconName());
 
