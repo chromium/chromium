@@ -79,7 +79,9 @@ if (enable_rust_boringssl) {
     visibility = [ ":*" ]  # private, should only be exposed through bssl_crypto
 
     _bindgen_output = get_target_outputs(":raw_bssl_sys_bindings")
-    rustenv = [ "BINDGEN_RS_FILE=" + rebase_path(_bindgen_output[0]) ]
+    rustenv =
+        [ "BINDGEN_RS_FILE=" +
+          rebase_path(_bindgen_output[0], get_path_info(crate_root, "dir")) ]
   }
 
   # Rust bindings to boringssl
