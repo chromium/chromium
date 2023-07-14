@@ -194,7 +194,6 @@ class BuildConfigGenerator extends DefaultTask {
         String licenseString = String.join(', ', licenseStrings)
 
         boolean securityCritical = dependency.supportsAndroid && dependency.isShipped
-        String licenseFile = dependency.isShipped ? 'LICENSE' : 'NOT_SHIPPED'
         String cpePrefix = dependency.cpePrefix ? dependency.cpePrefix : 'unknown'
 
         return """\
@@ -203,9 +202,10 @@ class BuildConfigGenerator extends DefaultTask {
             URL: ${dependency.url}
             Version: ${dependency.version}
             License: ${licenseString}
-            License File: ${licenseFile}
+            License File: LICENSE
             CPEPrefix: ${cpePrefix}
             Security Critical: ${securityCritical ? 'yes' : 'no'}
+            Shipped: ${dependency.isShipped ? 'yes' : 'no'}
             ${dependency.licenseAndroidCompatible ? 'License Android Compatible: yes' : ''}
             Description:
             ${dependency.description}
