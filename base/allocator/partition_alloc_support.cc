@@ -1257,7 +1257,8 @@ void PartitionAllocSupport::ReconfigureAfterTaskRunnerInit(
 
 #if BUILDFLAG(IS_ANDROID)
   // Lower thread cache limits to avoid stranding too much memory in the caches.
-  if (base::SysInfo::IsLowEndDeviceOrPartialLowEndModeEnabled()) {
+  if (SysInfo::IsLowEndDeviceOrPartialLowEndModeEnabled(
+          features::kPartialLowEndModeExcludePartitionAllocSupport)) {
     ::partition_alloc::ThreadCacheRegistry::Instance().SetThreadCacheMultiplier(
         ::partition_alloc::ThreadCache::kDefaultMultiplier / 2.);
   }

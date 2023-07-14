@@ -171,6 +171,11 @@ BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocMemoryReclaimer);
 BASE_EXPORT BASE_DECLARE_FEATURE(kPageAllocatorRetryOnCommitFailure);
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
+extern const base::FeatureParam<bool>
+    kPartialLowEndModeExcludePartitionAllocSupport;
+#endif
+
 // Name of the synthetic trial associated with forcibly enabling BRP in
 // all processes.
 inline constexpr base::StringPiece kRendererLiveBRPSyntheticTrialName =

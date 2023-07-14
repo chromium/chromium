@@ -7,6 +7,7 @@
 #include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "base/base_export.h"
 #include "base/feature_list.h"
+#include "base/features.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
 #include "build/chromeos_buildflags.h"
@@ -272,6 +273,18 @@ BASE_FEATURE(kPartitionAllocSortActiveSlotSpans,
 BASE_FEATURE(kPageAllocatorRetryOnCommitFailure,
              "PageAllocatorRetryOnCommitFailure",
              FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
+#if BUILDFLAG(IS_ANDROID)
+// A parameter to exclude or not exclude PartitionAllocSupport from
+// PartialLowModeOnMidRangeDevices. This is used to see how it affects
+// renderer performances, e.g. blink_perf.parser benchmark.
+// The feature: kPartialLowEndModeOnMidRangeDevices is defined in
+// //base/features.cc. Since the following feature param is related to
+// PartitionAlloc, define the param here.
+const FeatureParam<bool> kPartialLowEndModeExcludePartitionAllocSupport{
+    &kPartialLowEndModeOnMidRangeDevices, "exclude-partition-alloc-support",
+    false};
 #endif
 
 }  // namespace features
