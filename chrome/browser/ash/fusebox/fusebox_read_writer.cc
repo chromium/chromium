@@ -147,7 +147,8 @@ void FlushFsWriterIfNecessary(
       },
       std::move(fs_writer), write_offset, std::move(callback)));
 
-  int result = fs_writer_ptr->Flush(std::move(pair.first));
+  int result = fs_writer_ptr->Flush(storage::FlushMode::kEndOfFile,
+                                    std::move(pair.first));
   if (result != net::ERR_IO_PENDING) {  // The flush was synchronous.
     std::move(pair.second).Run(result);
   }

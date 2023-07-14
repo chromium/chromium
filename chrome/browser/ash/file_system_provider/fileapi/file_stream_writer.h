@@ -33,7 +33,8 @@ class FileStreamWriter : public storage::FileStreamWriter {
             int buf_len,
             net::CompletionOnceCallback callback) override;
   int Cancel(net::CompletionOnceCallback callback) override;
-  int Flush(net::CompletionOnceCallback callback) override;
+  int Flush(storage::FlushMode flush_mode,
+            net::CompletionOnceCallback callback) override;
 
  private:
   // Helper class for executing operations on the provided file system. All

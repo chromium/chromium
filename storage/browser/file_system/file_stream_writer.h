@@ -24,6 +24,12 @@ class IOBuffer;
 
 namespace storage {
 
+// Indicates whether the flush is done in the middle or at the end of a file.
+enum class FlushMode {
+  kDefault,
+  kEndOfFile,
+};
+
 // A generic interface for writing to a file-like object.
 class FileStreamWriter {
  public:
@@ -95,7 +101,8 @@ class FileStreamWriter {
   // called when the flush has completed.
   //
   // It is invalid to call Flush while there is an in-flight async operation.
-  virtual int Flush(net::CompletionOnceCallback callback) = 0;
+  virtual int Flush(FlushMode flush_mode,
+                    net::CompletionOnceCallback callback) = 0;
 
  protected:
   FileStreamWriter() = default;

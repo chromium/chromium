@@ -28,6 +28,7 @@ namespace storage {
 class FileStreamReader;
 class FileStreamWriter;
 enum class FlushPolicy;
+enum class FlushMode;
 
 // A delegate class for recursive copy or move operations.
 class COMPONENT_EXPORT(STORAGE_BROWSER) CopyOrMoveOperationDelegate
@@ -73,8 +74,8 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) CopyOrMoveOperationDelegate
     void DidWrite(scoped_refptr<net::DrainableIOBuffer> buffer, int result);
 
     // Flushes the written content in |writer_|.
-    void Flush(bool is_eof);
-    void DidFlush(bool is_eof, int result);
+    void Flush(FlushMode flush_mode);
+    void DidFlush(FlushMode flush_mode, int result);
 
     std::unique_ptr<FileStreamReader> reader_;
     std::unique_ptr<FileStreamWriter> writer_;

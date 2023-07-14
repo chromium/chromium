@@ -46,7 +46,8 @@ class ArcContentFileSystemFileStreamWriter : public storage::FileStreamWriter {
             int buffer_length,
             net::CompletionOnceCallback callback) override;
   int Cancel(net::CompletionOnceCallback callback) override;
-  int Flush(net::CompletionOnceCallback callback) override;
+  int Flush(storage::FlushMode flush_mode,
+            net::CompletionOnceCallback callback) override;
 
  private:
   using CloseStatus = file_system_operation_runner_util::CloseStatus;

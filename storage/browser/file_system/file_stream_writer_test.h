@@ -178,7 +178,7 @@ TYPED_TEST_P(FileStreamWriterTypedTest, CancelFlush) {
   EXPECT_EQ(net::OK, WriteStringToWriter(writer.get(), "foo"));
 
   int cancel_expectation = net::OK;
-  int result = writer->Flush(base::DoNothing());
+  int result = writer->Flush(FlushMode::kEndOfFile, base::DoNothing());
   // Flush can run synchronously or asynchronously.
   if (result == net::OK) {
     // Cancel() should error if called when there is no in-flight operation.
@@ -199,7 +199,7 @@ TYPED_TEST_P(FileStreamWriterTypedTest, FlushBeforeWriting) {
   std::unique_ptr<FileStreamWriter> writer(
       this->CreateWriter(std::string(this->kTestFileName), 0));
 
-  EXPECT_EQ(net::OK, writer->Flush(base::DoNothing()));
+  EXPECT_EQ(net::OK, writer->Flush(FlushMode::kDefault, base::DoNothing()));
   EXPECT_EQ(net::OK, WriteStringToWriter(writer.get(), "foo"));
   EXPECT_EQ("foo", this->GetFileContent(std::string(this->kTestFileName)));
 }
@@ -214,7 +214,8 @@ TYPED_TEST_P(FileStreamWriterTypedTest, FlushAfterWriting) {
 
   net::TestCompletionCallback callback;
   int result =
-      writer->Flush(base::OnceCallback<void(int)>(callback.callback()));
+      writer->Flush(FlushMode::kEndOfFile,
+                    base::OnceCallback<void(int)>(callback.callback()));
   ASSERT_EQ(net::OK, callback.GetResult(result));
 
   EXPECT_EQ("foo", this->GetFileContent(std::string(this->kTestFileName)));
