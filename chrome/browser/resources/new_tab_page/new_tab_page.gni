@@ -45,6 +45,7 @@ if (optimize_webui) {
     "feed.mojom-webui.js",
     "history_cluster_types.mojom-webui.js",
     "history_clusters.mojom-webui.js",
+    "history_clusters_v2.mojom-webui.js",
     "history_clusters_layout_type.mojom-webui.js",
     "new_tab_page.mojom-webui.js",
     "photos.mojom-webui.js",

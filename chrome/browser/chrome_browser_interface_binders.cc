@@ -159,6 +159,7 @@
 #include "chrome/browser/new_tab_page/modules/history_clusters/history_clusters.mojom.h"
 #include "chrome/browser/new_tab_page/modules/photos/photos.mojom.h"
 #include "chrome/browser/new_tab_page/modules/recipes/recipes.mojom.h"
+#include "chrome/browser/new_tab_page/modules/v2/history_clusters/history_clusters_v2.mojom.h"
 #include "chrome/browser/new_tab_page/new_tab_page_util.h"
 #include "chrome/browser/payments/payment_request_factory.h"
 #include "chrome/browser/ui/webui/access_code_cast/access_code_cast.mojom.h"
@@ -1172,8 +1173,13 @@ void PopulateChromeWebUIFrameBinders(
   if (base::FeatureList::IsEnabled(ntp_features::kNtpHistoryClustersModule) ||
       base::FeatureList::IsEnabled(
           ntp_features::kNtpHistoryClustersModuleLoad)) {
-    RegisterWebUIControllerInterfaceBinder<
-        ntp::history_clusters::mojom::PageHandler, NewTabPageUI>(map);
+    if (base::FeatureList::IsEnabled(ntp_features::kNtpModulesRedesigned)) {
+      RegisterWebUIControllerInterfaceBinder<
+          ntp::history_clusters_v2::mojom::PageHandler, NewTabPageUI>(map);
+    } else {
+      RegisterWebUIControllerInterfaceBinder<
+          ntp::history_clusters::mojom::PageHandler, NewTabPageUI>(map);
+    }
   }
 
   RegisterWebUIControllerInterfaceBinder<

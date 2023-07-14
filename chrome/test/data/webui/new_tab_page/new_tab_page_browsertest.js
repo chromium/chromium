@@ -249,6 +249,15 @@ var NewTabPageModulesModulesV2Test = class extends NewTabPageBrowserTest {
   get browsePreload() {
     return 'chrome://new-tab-page/test_loader.html?module=new_tab_page/modules/v2/modules_test.js';
   }
+
+  /** @override */
+  get featureList() {
+    return {
+      enabled: [
+        'ntp_features::kNtpModulesRedesigned',
+      ],
+    };
+  }
 };
 
 TEST_F('NewTabPageModulesModulesV2Test', 'All', function() {

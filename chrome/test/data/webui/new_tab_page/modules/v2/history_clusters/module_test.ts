@@ -4,10 +4,9 @@
 
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
-import {Cart} from 'chrome://new-tab-page/cart.mojom-webui.js';
 import {Cluster} from 'chrome://new-tab-page/history_cluster_types.mojom-webui.js';
-import {PageHandlerRemote} from 'chrome://new-tab-page/history_clusters.mojom-webui.js';
-import {HistoryClustersProxyImpl, historyClustersV2Descriptor, HistoryClustersV2ModuleElement} from 'chrome://new-tab-page/lazy_load.js';
+import {PageHandlerRemote} from 'chrome://new-tab-page/history_clusters_v2.mojom-webui.js';
+import {HistoryClustersProxyImplV2, historyClustersV2Descriptor, HistoryClustersV2ModuleElement} from 'chrome://new-tab-page/lazy_load.js';
 import {$$} from 'chrome://new-tab-page/new_tab_page.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -49,14 +48,13 @@ suite('NewTabPageModulesHistoryClustersV2ModuleTest', () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     handler = installMock(
         PageHandlerRemote,
-        mock => HistoryClustersProxyImpl.setInstance(
-            new HistoryClustersProxyImpl(mock)));
+        mock => HistoryClustersProxyImplV2.setInstance(
+            new HistoryClustersProxyImplV2(mock)));
   });
 
-  async function initializeModule(clusters: Cluster[], cart: Cart|null = null):
+  async function initializeModule(clusters: Cluster[]):
       Promise<HistoryClustersV2ModuleElement[]> {
     handler.setResultFor('getClusters', Promise.resolve({clusters}));
-    handler.setResultFor('getCartForCluster', Promise.resolve({cart}));
     const moduleElements = await historyClustersV2Descriptor.initialize(0) as
         HistoryClustersV2ModuleElement[];
     if (moduleElements) {

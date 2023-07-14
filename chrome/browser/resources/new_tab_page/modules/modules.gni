@@ -23,7 +23,8 @@ modules_non_web_component_files =
       "modules/module_registry.ts",
     ] + cart_non_web_component_files + drive_non_web_component_files +
     feed_non_web_component_files + photos_non_web_component_files +
-    recipes_non_web_component_files + history_clusters_non_web_component_files
+    recipes_non_web_component_files + history_clusters_non_web_component_files +
+    history_clusters_v2_non_web_component_files
 
 if (!is_official_build) {
   modules_non_web_component_files += dummy_v2_non_web_component_files
