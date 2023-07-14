@@ -23,6 +23,8 @@
 
 namespace apps {
 
+namespace {
+
 // An app publisher (in the App Service sense) that inherits GuestOSApps and
 // implements the necessary virtual functions.
 class TestPublisher : public GuestOSApps {
@@ -55,6 +57,8 @@ class TestPublisher : public GuestOSApps {
     app->name = "override_name";
   }
 };
+
+}  // namespace
 
 class GuestOSAppsTest : public testing::Test {
  public:
