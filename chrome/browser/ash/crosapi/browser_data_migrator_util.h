@@ -244,7 +244,8 @@ constexpr char kStorageFilePath[] = "Storage";
 constexpr char kStorageExtFilePath[] = "ext";
 
 // Values used for the kBrowserDataMigrationMode flag.
-constexpr char kCopySwitchValue[] = "copy";  // Corresponds to kCopy.
+constexpr char kCopySwitchValue[] =
+    "copy";  // Corresponds to kCopy. No longer in use.
 constexpr char kMoveSwitchValue[] = "move";  // Corresponds to KMove.
 
 // The type of LevelDB schema.

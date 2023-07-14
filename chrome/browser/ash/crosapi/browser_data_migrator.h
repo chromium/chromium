@@ -80,6 +80,8 @@ class BrowserDataMigrator {
   // Carries out the migration with the mode specified by `MigrationMode`. It
   // needs to be called on UI thread. |callback| will be called on the end of
   // the migration procedure.
+  // TODO(crbug.com/1416750): Once `CopyMigrator` is removed, stop passing
+  // `MigrationMode` since there will only be one mode.
   virtual void Migrate(crosapi::browser_util::MigrationMode mode,
                        MigrateCallback callback) = 0;
 

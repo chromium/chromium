@@ -413,6 +413,8 @@ bool IsProfileMigrationAvailable();
 
 // Returns `MigrationMode::kMove` if LacrosOnly or `kLacrosMoveProfileMigration`
 // is enabled and `MigrationMode::kCopy` otherwise.
+// TODO(crbug.com/1416750): Remove this function once `CopyMigrator` is
+// completely removed.
 MigrationMode GetMigrationMode(const user_manager::User* user,
                                PolicyInitState policy_init_state);
 
