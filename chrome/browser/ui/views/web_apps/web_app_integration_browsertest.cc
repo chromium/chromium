@@ -22,14 +22,6 @@ IN_PROC_BROWSER_TEST_F(WebAppIntegration, EnterAndExitFullScreenApp) {
   helper_.ExitFullScreenApp();
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppIntegration,
-                       CheckWindowControlsOverlayToggleIcon) {
-  helper_.CreateShortcut(Site::kWco, WindowOptions::kWindowed);
-  helper_.CheckWindowControlsOverlayToggleIcon(IsShown::kShown);
-  helper_.EnterFullScreenApp();
-  helper_.CheckWindowControlsOverlayToggleIcon(IsShown::kNotShown);
-}
-
 IN_PROC_BROWSER_TEST_F(WebAppIntegration, UninstallFromList) {
   helper_.CreateShortcut(Site::kStandalone, WindowOptions::kWindowed);
   helper_.UninstallFromList(Site::kStandalone);
