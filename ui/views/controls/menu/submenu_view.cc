@@ -101,10 +101,10 @@ void SubmenuView::ChildPreferredSizeChanged(View* child) {
   MenuController* controller = item->GetMenuController();
 
   if (controller) {
-    bool dir;
+    MenuController::MenuOpenDirection dir;
     ui::OwnedWindowAnchor anchor;
-    gfx::Rect bounds =
-        controller->CalculateMenuBounds(item, false, &dir, &anchor);
+    gfx::Rect bounds = controller->CalculateMenuBounds(
+        item, MenuController::MenuOpenDirection::kTrailing, &dir, &anchor);
     Reposition(bounds, anchor);
   }
 }

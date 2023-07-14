@@ -389,19 +389,21 @@ class MenuControllerTest : public ViewsTestBase,
 
   gfx::Rect CalculateMenuBounds(const MenuBoundsOptions& options) {
     SetUpMenuControllerForCalculateBounds(options);
-    bool is_leading;
+    MenuController::MenuOpenDirection resulting_direction;
     ui::OwnedWindowAnchor anchor;
-    return menu_controller_->CalculateMenuBounds(menu_item_.get(), true,
-                                                 &is_leading, &anchor);
+    return menu_controller_->CalculateMenuBounds(
+        menu_item_.get(), MenuController::MenuOpenDirection::kLeading,
+        &resulting_direction, &anchor);
   }
 
   gfx::Rect CalculateBubbleMenuBounds(const MenuBoundsOptions& options,
                                       MenuItemView* menu_item) {
     SetUpMenuControllerForCalculateBounds(options);
-    bool is_leading;
+    MenuController::MenuOpenDirection resulting_direction;
     ui::OwnedWindowAnchor anchor;
-    return menu_controller_->CalculateBubbleMenuBounds(menu_item, true,
-                                                       &is_leading, &anchor);
+    return menu_controller_->CalculateBubbleMenuBounds(
+        menu_item, MenuController::MenuOpenDirection::kLeading,
+        &resulting_direction, &anchor);
   }
 
   gfx::Rect CalculateBubbleMenuBounds(const MenuBoundsOptions& options) {
@@ -425,6 +427,17 @@ class MenuControllerTest : public ViewsTestBase,
       return anchor_rect;
     }
     return menu_item->bounds();
+  }
+
+  MenuController::MenuOpenDirection GetChildMenuOpenDirectionAtDepth(
+      size_t depth) const {
+    return menu_controller_->GetChildMenuOpenDirectionAtDepth(depth);
+  }
+
+  void SetChildMenuOpenDirectionAtDepth(
+      size_t depth,
+      MenuController::MenuOpenDirection direction) {
+    menu_controller_->SetChildMenuOpenDirectionAtDepth(depth, direction);
   }
 
   void MenuChildrenChanged(MenuItemView* item) {
@@ -3451,6 +3464,43 @@ TEST_F(ExecuteCommandWithoutClosingMenuTest, OnReturnKey) {
   EXPECT_TRUE(IsShowing());
   EXPECT_EQ(menu_delegate()->execute_command_id(),
             menu_item()->GetSubmenu()->GetMenuItemAt(0)->GetCommand());
+}
+
+// Simple test to ensure child menu open direction is correctly set and
+// retrieved.
+TEST_F(MenuControllerTest, ChildMenuOpenDirectionStateUpdatesCorrectly) {
+  // Before any open directions have been set, the leading direction should
+  // be used as the default for any depth value.
+  EXPECT_EQ(MenuController::MenuOpenDirection::kLeading,
+            GetChildMenuOpenDirectionAtDepth(0));
+  EXPECT_EQ(MenuController::MenuOpenDirection::kLeading,
+            GetChildMenuOpenDirectionAtDepth(1));
+  EXPECT_EQ(MenuController::MenuOpenDirection::kLeading,
+            GetChildMenuOpenDirectionAtDepth(10));
+
+  // Set alternating open directions, this should be correctly reflected in
+  // subsequent open direction queries.
+  SetChildMenuOpenDirectionAtDepth(1,
+                                   MenuController::MenuOpenDirection::kLeading);
+  SetChildMenuOpenDirectionAtDepth(
+      2, MenuController::MenuOpenDirection::kTrailing);
+  SetChildMenuOpenDirectionAtDepth(3,
+                                   MenuController::MenuOpenDirection::kLeading);
+  SetChildMenuOpenDirectionAtDepth(
+      4, MenuController::MenuOpenDirection::kTrailing);
+
+  EXPECT_EQ(MenuController::MenuOpenDirection::kLeading,
+            GetChildMenuOpenDirectionAtDepth(0));
+  EXPECT_EQ(MenuController::MenuOpenDirection::kLeading,
+            GetChildMenuOpenDirectionAtDepth(1));
+  EXPECT_EQ(MenuController::MenuOpenDirection::kTrailing,
+            GetChildMenuOpenDirectionAtDepth(2));
+  EXPECT_EQ(MenuController::MenuOpenDirection::kLeading,
+            GetChildMenuOpenDirectionAtDepth(3));
+  EXPECT_EQ(MenuController::MenuOpenDirection::kTrailing,
+            GetChildMenuOpenDirectionAtDepth(4));
+  EXPECT_EQ(MenuController::MenuOpenDirection::kLeading,
+            GetChildMenuOpenDirectionAtDepth(10));
 }
 
 }  // namespace views::test
