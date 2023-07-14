@@ -401,7 +401,13 @@ crbug.com/853977 [ Linux ] http/tests/fetch/chromium/release-handle-crash.html [
 crbug.com/942951 [ Debug Linux ] media/controls/controls-layout-in-different-size.html [ Slow ]
 crbug.com/942951 [ Release ] media/controls/controls-layout-in-different-size.html [ Slow ]
 
-crbug.com/910627 webexposed/global-interface-listing-shared-worker.html [ Slow ]
+crbug.com/910627 [ Debug ] webexposed/global-interface-listing-shared-worker.html [ Slow ]
+crbug.com/910627 [ Linux Release ] webexposed/global-interface-listing-shared-worker.html [ Slow ]
+crbug.com/910627 [ Mac10.15 Release ] webexposed/global-interface-listing-shared-worker.html [ Slow ]
+crbug.com/910627 [ Mac11 Release ] webexposed/global-interface-listing-shared-worker.html [ Slow ]
+crbug.com/910627 [ Mac12 Release ] webexposed/global-interface-listing-shared-worker.html [ Slow ]
+crbug.com/910627 [ Mac13 Release ] webexposed/global-interface-listing-shared-worker.html [ Slow ]
+crbug.com/910627 [ Release Win ] webexposed/global-interface-listing-shared-worker.html [ Slow ]
 
 ### virtual/gpu/fast/canvas/ blending layout tests are slow
 crbug.com/866850 [ Debug Mac13-arm64 ] virtual/gpu/fast/canvas/canvas-blend-image.html [ Slow ]
@@ -745,7 +751,7 @@ crbug.com/874695 [ Mac12-arm64 Release ] virtual/display-compositor-pixel-dump/f
 crbug.com/874695 [ Release Win ] virtual/display-compositor-pixel-dump/fast/canvas/display-compositor-pixel-dump/OffscreenCanvas-opaque-background-compositing.html [ Slow ]
 crbug.com/874695 virtual/gpu/fast/canvas/canvas-blending-image-over-color.html [ Slow ]
 crbug.com/874695 virtual/gpu/fast/canvas/canvas-composite-transformclip.html [ Slow ]
-crbug.com/874695 virtual/gpu/fast/canvas/canvas-composite-video.html [ Slow ]
+crbug.com/874695 [ Linux ] virtual/gpu/fast/canvas/canvas-composite-video.html [ Slow ]
 crbug.com/874695 virtual/gpu/fast/canvas/canvas-createImageBitmap-svg-image.html [ Slow ]
 crbug.com/874695 virtual/gpu/fast/canvas/canvas-draw-canvas-on-canvas-shadow.html [ Slow ]
 crbug.com/874695 virtual/gpu/fast/canvas/canvas-filter-modified.html [ Slow ]
