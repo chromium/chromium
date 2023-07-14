@@ -503,6 +503,7 @@ source_set("platform_api_comm") {
     "src/internal/platform/implementation/bluetooth_classic.h",
     "src/internal/platform/implementation/credential_callbacks.h",
     "src/internal/platform/implementation/credential_storage.h",
+    "src/internal/platform/implementation/http_loader.h",
     "src/internal/platform/implementation/server_sync.h",
     "src/internal/platform/implementation/webrtc.h",
     "src/internal/platform/implementation/wifi.h",
@@ -531,8 +532,10 @@ source_set("platform_api_types") {
   sources = [
     "src/internal/platform/implementation/atomic_boolean.h",
     "src/internal/platform/implementation/atomic_reference.h",
+    "src/internal/platform/implementation/bluetooth_adapter.h",
     "src/internal/platform/implementation/cancelable.h",
     "src/internal/platform/implementation/condition_variable.h",
+    "src/internal/platform/implementation/count_down_latch.h",
     "src/internal/platform/implementation/crypto.h",
     "src/internal/platform/implementation/executor.h",
     "src/internal/platform/implementation/future.h",
@@ -751,11 +754,14 @@ source_set("platform_public_types") {
     "src/internal/platform/borrowable.h",
     "src/internal/platform/cancelable.h",
     "src/internal/platform/cancelable_alarm.h",
+    "src/internal/platform/cancellable_task.h",
     "src/internal/platform/condition_variable.h",
     "src/internal/platform/count_down_latch.h",
     "src/internal/platform/crypto.h",
+    "src/internal/platform/direct_executor.h",
     "src/internal/platform/file.h",
     "src/internal/platform/future.h",
+    "src/internal/platform/lockable.h",
     "src/internal/platform/logging.h",
     "src/internal/platform/monitored_runnable.h",
     "src/internal/platform/multi_thread_executor.h",
@@ -768,6 +774,8 @@ source_set("platform_public_types") {
     "src/internal/platform/single_thread_executor.h",
     "src/internal/platform/submittable_executor.h",
     "src/internal/platform/system_clock.h",
+    "src/internal/platform/thread_check_callable.h",
+    "src/internal/platform/thread_check_runnable.h",
   ]
   public_deps = [
     ":platform_api_platform",
@@ -777,6 +785,7 @@ source_set("platform_public_types") {
     ":platform_base_logging",
     ":platform_base_util",
     ":platform_public_logging",
+    "//crypto:crypto",
     "//third_party/abseil-cpp:absl",
   ]
   configs -= [ "//build/config/compiler:chromium_code" ]
@@ -856,6 +865,7 @@ source_set("presence") {
   ]
   public_deps = [
     ":connections_metadata_proto",
+    ":interop_device",
     ":platform_public_types",
     ":presence_internal",
     ":presence_types",
@@ -1005,6 +1015,7 @@ source_set("presence_mediums") {
     ":nearby_defines",
   ]
   public = [
+    "src/presence/implementation/mediums/advertisement_data.h",
     "src/presence/implementation/mediums/ble.h",
     "src/presence/implementation/mediums/mediums.h",
   ]
