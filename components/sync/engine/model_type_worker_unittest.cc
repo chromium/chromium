@@ -2415,10 +2415,10 @@ TEST_F(ModelTypeWorkerTest, ShouldNotHaveLocalChangesOnSuccessfulLastCommit) {
 
   NormalInitialize();
 
-  ASSERT_FALSE(worker()->HasLocalChangesForTest());
+  ASSERT_FALSE(worker()->HasLocalChanges());
   processor()->SetCommitRequest(GenerateCommitRequest(kTag1, kValue1));
   worker()->NudgeForCommit();
-  ASSERT_TRUE(worker()->HasLocalChangesForTest());
+  ASSERT_TRUE(worker()->HasLocalChanges());
 
   std::unique_ptr<CommitContribution> contribution(
       worker()->GetContribution(kMaxEntities));
@@ -2426,23 +2426,23 @@ TEST_F(ModelTypeWorkerTest, ShouldNotHaveLocalChangesOnSuccessfulLastCommit) {
   ASSERT_EQ(1u, contribution->GetNumEntries());
 
   // Entities are in-flight and it's considered to have local changes.
-  EXPECT_TRUE(worker()->HasLocalChangesForTest());
+  EXPECT_TRUE(worker()->HasLocalChanges());
 
   // Finish the commit successfully.
   DoSuccessfulCommit(std::move(contribution));
-  EXPECT_FALSE(worker()->HasLocalChangesForTest());
+  EXPECT_FALSE(worker()->HasLocalChanges());
 }
 
 TEST_F(ModelTypeWorkerTest, ShouldHaveLocalChangesOnCommitFailure) {
   NormalInitialize();
 
-  ASSERT_FALSE(worker()->HasLocalChangesForTest());
+  ASSERT_FALSE(worker()->HasLocalChanges());
   processor()->SetCommitRequest(GenerateCommitRequest(kTag1, kValue1));
   worker()->NudgeForCommit();
-  ASSERT_TRUE(worker()->HasLocalChangesForTest());
+  ASSERT_TRUE(worker()->HasLocalChanges());
 
   DoCommitFailure();
-  EXPECT_TRUE(worker()->HasLocalChangesForTest());
+  EXPECT_TRUE(worker()->HasLocalChanges());
 }
 
 TEST_F(ModelTypeWorkerTest, ShouldHaveLocalChangesOnSuccessfulNotLastCommit) {
@@ -2452,12 +2452,12 @@ TEST_F(ModelTypeWorkerTest, ShouldHaveLocalChangesOnSuccessfulNotLastCommit) {
   sync_pb::EntitySpecifics specifics;
   specifics.mutable_bookmark();
 
-  ASSERT_FALSE(worker()->HasLocalChangesForTest());
+  ASSERT_FALSE(worker()->HasLocalChanges());
   processor()->AppendCommitRequest(kHash1, specifics);
   processor()->AppendCommitRequest(kHash2, specifics);
   processor()->AppendCommitRequest(kHash3, specifics);
   worker()->NudgeForCommit();
-  ASSERT_TRUE(worker()->HasLocalChangesForTest());
+  ASSERT_TRUE(worker()->HasLocalChanges());
 
   std::unique_ptr<CommitContribution> contribution(
       worker()->GetContribution(kMaxEntities));
@@ -2466,21 +2466,21 @@ TEST_F(ModelTypeWorkerTest, ShouldHaveLocalChangesOnSuccessfulNotLastCommit) {
   DoSuccessfulCommit(std::move(contribution));
 
   // There are still changes in the processor waiting for commit.
-  EXPECT_TRUE(worker()->HasLocalChangesForTest());
+  EXPECT_TRUE(worker()->HasLocalChanges());
 
   // Commit the rest of entities.
   DoSuccessfulCommit();
-  EXPECT_FALSE(worker()->HasLocalChangesForTest());
+  EXPECT_FALSE(worker()->HasLocalChanges());
 }
 
 TEST_F(ModelTypeWorkerTest, ShouldHaveLocalChangesWhenNudgedWhileInFlight) {
   const size_t kMaxEntities = 5;
   NormalInitialize();
 
-  ASSERT_FALSE(worker()->HasLocalChangesForTest());
+  ASSERT_FALSE(worker()->HasLocalChanges());
   processor()->SetCommitRequest(GenerateCommitRequest(kTag1, kValue1));
   worker()->NudgeForCommit();
-  ASSERT_TRUE(worker()->HasLocalChangesForTest());
+  ASSERT_TRUE(worker()->HasLocalChanges());
 
   // Start a commit.
   std::unique_ptr<CommitContribution> contribution(
@@ -2491,28 +2491,28 @@ TEST_F(ModelTypeWorkerTest, ShouldHaveLocalChangesWhenNudgedWhileInFlight) {
   // Add new data while the commit is in progress.
   processor()->SetCommitRequest(GenerateCommitRequest(kTag2, kValue2));
   worker()->NudgeForCommit();
-  EXPECT_TRUE(worker()->HasLocalChangesForTest());
+  EXPECT_TRUE(worker()->HasLocalChanges());
 
   // Finish the started commit request.
   DoSuccessfulCommit(std::move(contribution));
 
   // There are still entities to commit.
-  EXPECT_TRUE(worker()->HasLocalChangesForTest());
+  EXPECT_TRUE(worker()->HasLocalChanges());
 
   // Commit the rest of entities.
   DoSuccessfulCommit();
-  EXPECT_FALSE(worker()->HasLocalChangesForTest());
+  EXPECT_FALSE(worker()->HasLocalChanges());
 }
 
 TEST_F(ModelTypeWorkerTest, ShouldHaveLocalChangesWhenContributedMaxEntities) {
   const size_t kMaxEntities = 2;
   NormalInitialize();
-  ASSERT_FALSE(worker()->HasLocalChangesForTest());
+  ASSERT_FALSE(worker()->HasLocalChanges());
 
   processor()->AppendCommitRequest(kHash1, GenerateSpecifics(kTag1, kValue1));
   processor()->AppendCommitRequest(kHash2, GenerateSpecifics(kTag2, kValue2));
   worker()->NudgeForCommit();
-  ASSERT_TRUE(worker()->HasLocalChangesForTest());
+  ASSERT_TRUE(worker()->HasLocalChanges());
 
   std::unique_ptr<CommitContribution> contribution(
       worker()->GetContribution(kMaxEntities));
@@ -2524,10 +2524,10 @@ TEST_F(ModelTypeWorkerTest, ShouldHaveLocalChangesWhenContributedMaxEntities) {
   // supposed that GetContribution() will be called until it returns less than
   // |max_entities| items. This is not the intended behaviour, but this is how
   // things currently work.
-  EXPECT_TRUE(worker()->HasLocalChangesForTest());
+  EXPECT_TRUE(worker()->HasLocalChanges());
   contribution = worker()->GetContribution(kMaxEntities);
   ASSERT_THAT(contribution, IsNull());
-  EXPECT_FALSE(worker()->HasLocalChangesForTest());
+  EXPECT_FALSE(worker()->HasLocalChanges());
 }
 
 class ModelTypeWorkerPasswordsTestWithNotes

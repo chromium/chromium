@@ -790,7 +790,7 @@ std::unique_ptr<CommitContribution> ModelTypeWorker::GetContribution(
       CommitOnlyTypes().Has(type_));
 }
 
-bool ModelTypeWorker::HasLocalChangesForTest() const {
+bool ModelTypeWorker::HasLocalChanges() const {
   return has_local_changes_state_ != kNoNudgedLocalChanges;
 }
 

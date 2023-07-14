@@ -197,7 +197,7 @@ class ModelTypeWorker : public UpdateHandler,
   // Returns the estimate of dynamically allocated memory in bytes.
   size_t EstimateMemoryUsage() const;
 
-  bool HasLocalChangesForTest() const;
+  bool HasLocalChanges() const;
 
   void SetMinGetUpdatesToIgnoreKeyForTest(int min_get_updates_to_ignore_key) {
     min_get_updates_to_ignore_key_ = min_get_updates_to_ignore_key;
