@@ -2286,8 +2286,6 @@ crbug.com/893480 external/wpt/shadow-dom/focus-navigation/focus-reverse-unassign
 crbug.com/893480 external/wpt/shadow-dom/focus-navigation/focus-unassignable-slot.html [ Failure ]
 crbug.com/893480 external/wpt/shadow-dom/focus-navigation/focus-with-negative-index.html [ Failure ]
 
-crbug.com/1462196 external/wpt/shadow-dom/accesskey.tentative.html [ Timeout ]
-
 # needs implementation of test_driver_internal.action_sequence
 # for these tests there is an exception when scrolling: element click intercepted error
 crbug.com/1040611 external/wpt/uievents/order-of-events/mouse-events/wheel-basic.html [ Failure Timeout ]
@@ -4561,10 +4559,6 @@ crbug.com/1171331 [ Mac11 Release ] tables/mozilla_expected_failures/bugs/bug893
 crbug.com/1171331 [ Mac11-arm64 Release ] tables/mozilla_expected_failures/bugs/bug89315.html [ Failure Pass ]
 crbug.com/1171331 [ Mac12 ] tables/mozilla_expected_failures/bugs/bug89315.html [ Failure Pass ]
 crbug.com/1171331 [ Mac12-arm64 Release ] tables/mozilla_expected_failures/bugs/bug89315.html [ Failure Pass ]
-
-
-# No support for key combinations like Alt + c in testdriver.Actions for content_shell
-crbug.com/893480 external/wpt/uievents/interface/keyboard-accesskey-click-event.html [ Timeout ]
 
 # No support for Drag-and-Drop handlers being called.
 crbug.com/1353435 external/wpt/html/editing/dnd/images/001.html [ Timeout ]

@@ -267,6 +267,9 @@ class EventSender {
 
   bool force_layout_on_events_;
 
+  // Currently pressed modifiers for key events.
+  int key_modifiers_ = 0;
+
   // When set to true (the default value), we batch mouse move and mouse up
   // events so we can simulate drag & drop.
   bool is_drag_mode_;

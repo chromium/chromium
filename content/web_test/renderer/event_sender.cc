@@ -1629,6 +1629,35 @@ void EventSender::KeyEvent(KeyEventType event_type,
       break;
   }
 
+  // Update the currently pressed modifiers if `kKeyDown` or `kKeyUp`.
+  switch (event_type) {
+    case KeyEventType::kKeyDown:
+      // Add the given `modifier` to the `key_modifiers_`. For example:
+      // 1. Received `keyDown` of `kControlKey`. Keep it in `key_modifiers_`.
+      // 2. Then received `keyDown` of `kShiftKey`. The given `modifier` is
+      //    `kShiftKey`, but the current modifier state should become
+      //    `kControlKey | kShiftKey`.
+      key_modifiers_ |= modifiers;
+      // `WebKeyboardEvent` should have all modifiers currently in the down
+      // state. For example, if this event is `kShiftKey` while `kControlKey` is
+      // currently down, the event should have `kControlKey | kShiftKey`. If
+      // this is a non-modifier key (e.g., 'a') with `modifiers == 0` but
+      // `kControlKey` is currently down (`key_modifiers_ == kControlKey`), then
+      // the event should have `kControlKey`, meaning this is `Ctrl+A`.
+      modifiers = key_modifiers_;
+      break;
+    case KeyEventType::kKeyUp:
+      // Remove the released modifiers from the `key_modifiers_`.
+      key_modifiers_ &= ~modifiers;
+      // See `keyDown` above. For example, if this is `keyUp` for 'a' with no
+      // modifiers (`modifiers == 0`) but `kControlKey` is currently down, this
+      // should be `Ctrl+A`.
+      modifiers |= key_modifiers_;
+      break;
+    case KeyEventType::kKeyPress:
+      break;
+  }
+
   // For one generated keyboard event, we need to generate a keyDown/keyUp
   // pair;
   // On Windows, we might also need to generate a char event to mimic the
