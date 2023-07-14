@@ -407,11 +407,6 @@ void LockScreenReauthHandler::SamlConfirmPassword(
 }
 
 void LockScreenReauthHandler::HandleWebviewLoadAborted(int error_code) {
-  if (error_code == net::ERR_BLOCKED_BY_ADMINISTRATOR) {
-    // Ignore this error to let the user see the error screen for blocked sites.
-    return;
-  }
-
   if (error_code == net::ERR_INVALID_AUTH_CREDENTIALS) {
     // Silently ignore this error - it is used as an intermediate state for
     // committed interstitials (see https://crbug.com/1049349 for details).
