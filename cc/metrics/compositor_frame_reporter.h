@@ -430,6 +430,10 @@ class CC_EXPORT CompositorFrameReporter {
     return events_metrics_;
   }
 
+  // Erase and return only the EventMetrics objects which depend on main thread
+  // updates (see comments on EventMetrics::requires_main_thread_update_).
+  EventMetrics::List TakeMainBlockedEventsMetrics();
+
  protected:
   void set_has_partial_update(bool has_partial_update) {
     has_partial_update_ = has_partial_update;
@@ -478,10 +482,6 @@ class CC_EXPORT CompositorFrameReporter {
   FrameInfo GenerateFrameInfo() const;
 
   base::WeakPtr<CompositorFrameReporter> GetWeakPtr();
-
-  // Erase and return only the EventMetrics objects which depend on main thread
-  // updates (see comments on EventMetrics::requires_main_thread_update_).
-  EventMetrics::List TakeMainBlockedEventsMetrics();
 
   void FindHighLatencyAttribution(
       CompositorLatencyInfo& previous_predictions,

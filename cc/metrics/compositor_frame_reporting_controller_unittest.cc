@@ -2303,7 +2303,7 @@ TEST_F(CompositorFrameReportingControllerTest,
 // The order of events (using the glossary above) is:
 // BF1->BMF1->SF1->PF1->BF2->SF2->PF2(dropped)->AMF1->BF3->SF(3+1)->PF(3+1)
 TEST_F(CompositorFrameReportingControllerTest,
-       ScrollJankMetricsPresentationOrderDroppedPartialImpl) {
+       ScrollJankMetricsPresentationOrderDroppedPartialOnMainScroll) {
   base::HistogramTester histogram_tester;
 
 #if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
@@ -2392,6 +2392,93 @@ TEST_F(CompositorFrameReportingControllerTest,
   // R1main should ideally have gotten both the events i.e. from R1impl and
   // R2impl, so we wouldn't expect anything to be out of order with just 1
   // reporter having both inputs.
+  EXPECT_THAT(result.value(),
+              ::testing::ElementsAre(std::vector<std::string>{"cnt"},
+                                     std::vector<std::string>{"0"}));
+#endif
+
+  histogram_tester.ExpectTotalCount("Event.ScrollJank.MissedVsyncs.PerFrame",
+                                    1);
+}
+
+// This test verifies events from a dropped impl reporter gets added to
+// corresponding impl reporter only.
+//
+// |     R1main      |
+// | R1impl | R2impl |
+//
+// The order of events (using the glossary above) is:
+// BF1->BMF1->SF1->PF1(dropped)->BF2->AMF1->SF(2+1)->PF(2+1)
+TEST_F(CompositorFrameReportingControllerTest,
+       ScrollJankMetricsPresentationOrderDroppedPartialOnImplScroll) {
+  base::HistogramTester histogram_tester;
+
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+  base::test::TestTraceProcessor ttp;
+  ttp.StartTrace("input");
+#endif
+
+  std::unique_ptr<EventMetrics> metrics_1 = CreateScrollUpdateEventMetrics(
+      ui::ScrollInputType::kWheel, /*is_inertial=*/false,
+      ScrollUpdateEventMetrics::ScrollUpdateType::kStarted);
+
+  std::unique_ptr<EventMetrics> metrics_2 = CreateScrollUpdateEventMetrics(
+      ui::ScrollInputType::kWheel, /*is_inertial=*/false,
+      ScrollUpdateEventMetrics::ScrollUpdateType::kContinued);
+
+  SimulateBeginImplFrame();  // BF1
+  viz::BeginFrameId bf1_id = current_id_;
+  SimulateBeginMainFrame();  // BMF1
+  reporting_controller_.OnFinishImplFrame(current_id_);
+
+  // Submit a partial update including only main update from R1impl.
+  EventMetrics::List metrics_list_1;
+  metrics_list_1.push_back(std::move(metrics_1));
+  ++current_token_;
+  reporting_controller_.DidSubmitCompositorFrame(
+      *current_token_, AdvanceNowByMs(10), current_id_, {},
+      {{}, std::move(metrics_list_1)},
+      /*has_missing_content=*/false);  // SF1
+
+  // Frame 1 is dropped.
+  viz::FrameTimingDetails details_1 = {};
+  details_1.presentation_feedback.timestamp = AdvanceNowByMs(10);
+  details_1.presentation_feedback.flags |= gfx::PresentationFeedback::kFailure;
+  reporting_controller_.DidPresentCompositorFrame(*current_token_,
+                                                  details_1);  // PF1(dropped)
+
+  SimulateBeginImplFrame();  // BF2
+  reporting_controller_.OnFinishImplFrame(current_id_);
+  SimulateCommit(nullptr);
+  SimulateActivate();  // AMF1
+
+  // Submit a partial update including only main update from R2impl.
+  EventMetrics::List metrics_list_2;
+  metrics_list_2.push_back(std::move(metrics_2));
+  ++current_token_;
+  reporting_controller_.DidSubmitCompositorFrame(
+      *current_token_, AdvanceNowByMs(10), current_id_, bf1_id,
+      {{}, std::move(metrics_list_2)},
+      /*has_missing_content=*/false);  // SF(2+1)
+
+  // The frame containing R2impl and R1main is presented.
+  viz::FrameTimingDetails details_2 = {};
+  details_2.presentation_feedback.timestamp = AdvanceNowByMs(10);
+  reporting_controller_.DidPresentCompositorFrame(*current_token_,
+                                                  details_2);  // PF(2+1)
+
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+  absl::Status status = ttp.StopAndParseTrace();
+  ASSERT_TRUE(status.ok()) << status.message();
+  std::string query =
+      R"(
+      SELECT count(*) as cnt from slice
+      where name = 'OutOfOrderTerminatedFrame'
+      )";
+  auto result = ttp.RunQuery(query);
+  ASSERT_TRUE(result.has_value()) << result.error();
+  // R2impl should get the events from R1impl so we wouldn't expect anything to
+  // be out of order with just 1 reporter having both inputs.
   EXPECT_THAT(result.value(),
               ::testing::ElementsAre(std::vector<std::string>{"cnt"},
                                      std::vector<std::string>{"0"}));

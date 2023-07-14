@@ -471,6 +471,88 @@ void CompositorFrameReportingController::OnFinishImplFrame(
   }
 }
 
+void CompositorFrameReportingController::MaybePassEventMetricsFromDroppedFrames(
+    CompositorFrameReporter& reporter,
+    uint32_t frame_token,
+    bool next_reporter_from_same_frame) {
+  // If there are outstanding metrics from dropped frames older than this
+  // frame, this frame would be the first frame presented after those
+  // dropped frames. So, this frame is the one presenting updates from those
+  // frames to the user and should report metrics for them. Note that since
+  // reporters for submitted but dropped frames are terminated before any
+  // following frame being presented, all events metrics that should
+  // potentially be included in this presented frame are already in
+  // `events_metrics_from_dropped_frames_`.
+  // The implicit assumption is that submitted_frame->frame_token will never
+  // be equal to it->first
+  if ((reporter.get_reporter_type() ==
+           CompositorFrameReporter::ReporterType::kMain &&
+       !next_reporter_from_same_frame) ||
+      (reporter.get_reporter_type() ==
+       CompositorFrameReporter::ReporterType::kImpl)) {
+    // Just take all the events.
+    for (auto it = events_metrics_from_dropped_frames_.begin();
+         it != events_metrics_from_dropped_frames_.end() &&
+         frame_token > it->first;
+         it = events_metrics_from_dropped_frames_.erase(it)) {
+      reporter.AddEventsMetrics(std::move(it->second.main_event_metrics));
+      reporter.AddEventsMetrics(std::move(it->second.impl_event_metrics));
+    }
+  } else {
+    // Main with accompanying impl - just take main events and don't remove them
+    // from list, impl reporter will erase them.
+    for (auto it = events_metrics_from_dropped_frames_.begin();
+         it != events_metrics_from_dropped_frames_.end() &&
+         frame_token > it->first;
+         it++) {
+      reporter.AddEventsMetrics(std::move(it->second.main_event_metrics));
+    }
+  }
+}
+
+void CompositorFrameReportingController::StoreEventMetricsFromDroppedFrames(
+    CompositorFrameReporter& reporter,
+    uint32_t frame_token) {
+  // If the frame didn't end up being presented, keep its metrics around to
+  // be reported with the first following presented frame.
+  auto main_reporter_events_metrics = reporter.TakeMainBlockedEventsMetrics();
+  auto remaining_reporter_events_metrics = reporter.TakeEventsMetrics();
+  EventMetricsSet& frame_events_metrics =
+      events_metrics_from_dropped_frames_[frame_token];
+
+  switch (reporter.get_reporter_type()) {
+    case CompositorFrameReporter::ReporterType::kImpl:
+      // Impl events marked with `requires_main_thread` go to main list.
+      frame_events_metrics.main_event_metrics.insert(
+          frame_events_metrics.main_event_metrics.end(),
+          std::make_move_iterator(main_reporter_events_metrics.begin()),
+          std::make_move_iterator(main_reporter_events_metrics.end()));
+      // Remaining events go to impl list.
+      frame_events_metrics.impl_event_metrics.insert(
+          frame_events_metrics.impl_event_metrics.end(),
+          std::make_move_iterator(remaining_reporter_events_metrics.begin()),
+          std::make_move_iterator(remaining_reporter_events_metrics.end()));
+      break;
+    case CompositorFrameReporter::ReporterType::kMain:
+      // TODO(b/291088394): Handle events from a "main" reporter that is marked
+      // as main because it had updates from the latest begin main frame. In
+      // such a case even when scrolling on impl the events will go to the
+      // "main" reporter and then if the frame corresponding to this gets
+      // dropped then the events would actually be passed to a main reporter
+      // instead of impl reporter if it was present. All events from main
+      // reporter go to main events list.
+      frame_events_metrics.main_event_metrics.insert(
+          frame_events_metrics.main_event_metrics.end(),
+          std::make_move_iterator(main_reporter_events_metrics.begin()),
+          std::make_move_iterator(main_reporter_events_metrics.end()));
+      frame_events_metrics.main_event_metrics.insert(
+          frame_events_metrics.main_event_metrics.end(),
+          std::make_move_iterator(remaining_reporter_events_metrics.begin()),
+          std::make_move_iterator(remaining_reporter_events_metrics.end()));
+      break;
+  }
+}
+
 void CompositorFrameReportingController::DidPresentCompositorFrame(
     uint32_t frame_token,
     const viz::FrameTimingDetails& details) {
@@ -539,22 +621,13 @@ void CompositorFrameReportingController::DidPresentCompositorFrame(
     }
 
     if (termination_status == FrameTerminationStatus::kPresentedFrame) {
-      // If there are outstanding metrics from dropped frames older than this
-      // frame, this frame would be the first frame presented after those
-      // dropped frames. So, this frame is the one presenting updates from those
-      // frames to the user and should report metrics for them. Note that since
-      // reporters for submitted but dropped frames are terminated before any
-      // following frame being presented, all events metrics that should
-      // potentially be included in this presented frame are already in
-      // `events_metrics_from_dropped_frames_`.
-      // The implicit assumption is that submitted_frame->frame_token will never
-      // be equal to it->first
-      for (auto it = events_metrics_from_dropped_frames_.begin();
-           it != events_metrics_from_dropped_frames_.end() &&
-           submitted_frame->frame_token > it->first;
-           it = events_metrics_from_dropped_frames_.erase(it)) {
-        reporter->AddEventsMetrics(std::move(it->second));
-      }
+      auto next = submitted_frame + 1;
+      bool next_reporter_from_same_frame =
+          next != submitted_compositor_frames_.end() &&
+          submitted_frame->frame_token == next->frame_token;
+      MaybePassEventMetricsFromDroppedFrames(*reporter,
+                                             submitted_frame->frame_token,
+                                             next_reporter_from_same_frame);
 
       // TODO(crbug.com/1334827): Consider using a separate container to
       // differentiate event predictions with and without a main dispatch stage.
@@ -580,17 +653,8 @@ void CompositorFrameReportingController::DidPresentCompositorFrame(
       }
       reporter_ptr->DidSuccessfullyPresentFrame();
     } else {
-      // If the frame didn't end up being presented, keep its metrics around to
-      // be reported with the first following presented frame.
-      auto reporter_events_metrics = reporter->TakeEventsMetrics();
-      if (!reporter_events_metrics.empty()) {
-        auto& frame_events_metrics =
-            events_metrics_from_dropped_frames_[submitted_frame->frame_token];
-        frame_events_metrics.insert(
-            frame_events_metrics.end(),
-            std::make_move_iterator(reporter_events_metrics.begin()),
-            std::make_move_iterator(reporter_events_metrics.end()));
-      }
+      StoreEventMetricsFromDroppedFrames(*reporter,
+                                         submitted_frame->frame_token);
     }
 
     if (feedback_failed) {
