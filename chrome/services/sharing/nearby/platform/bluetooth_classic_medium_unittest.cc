@@ -279,11 +279,30 @@ TEST_F(BluetoothClassicMediumTest, TestConnectToService_Success) {
   fake_adapter_->AllowConnectionForAddressAndUuidPair(
       kDeviceAddress1, kNearbySharingServiceUuid);
 
+  auto cancellation_flag = std::make_unique<CancellationFlag>();
   auto bluetooth_socket = bluetooth_classic_medium_->ConnectToService(
-      *last_device_discovered_, kNearbySharingServiceUuid.value(), nullptr);
+      *last_device_discovered_, kNearbySharingServiceUuid.value(),
+      cancellation_flag.get());
   EXPECT_EQ(last_device_discovered_, bluetooth_socket->GetRemoteDevice());
 
   EXPECT_TRUE(bluetooth_socket->Close().Ok());
+}
+
+TEST_F(BluetoothClassicMediumTest,
+       TestConnectToService_CancelledByCancellationFlag) {
+  StartDiscovery();
+  NotifyDeviceAdded(kDeviceAddress1, kDeviceName1);
+  StopDiscovery();
+
+  fake_adapter_->AllowConnectionForAddressAndUuidPair(
+      kDeviceAddress1, kNearbySharingServiceUuid);
+
+  auto cancellation_flag = std::make_unique<CancellationFlag>();
+  cancellation_flag->Cancel();
+
+  EXPECT_FALSE(bluetooth_classic_medium_->ConnectToService(
+      *last_device_discovered_, kNearbySharingServiceUuid.value(),
+      cancellation_flag.get()));
 }
 
 TEST_F(BluetoothClassicMediumTest, TestConnectToService_Failure) {
