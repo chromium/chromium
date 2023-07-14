@@ -1146,19 +1146,19 @@ targets.mixin(
 targets.mixin(
     name = "oreo-x86-emulator",
     args = [
-        "--avd-config=../../tools/android/avd/proto/generic_android27.textpb",
+        "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
     ],
     swarming = targets.swarming(
         # soft affinity so that bots with caches will be picked first
         optional_dimensions = {
             60: {
-                "caches": "generic_android27",
+                "caches": "generic_android26",
             },
         },
         named_caches = [
             swarming.cache(
-                name = "generic_android27",
-                path = ".android_emulator/generic_android27",
+                name = "generic_android26",
+                path = ".android_emulator/generic_android26",
             ),
         ],
     ),

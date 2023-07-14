@@ -24958,7 +24958,7 @@
         "args": [
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android27.textpb"
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
         ],
         "merge": {
           "args": [
@@ -24986,14 +24986,14 @@
           ],
           "named_caches": [
             {
-              "name": "generic_android27",
-              "path": ".android_emulator/generic_android27"
+              "name": "generic_android26",
+              "path": ".android_emulator/generic_android26"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "generic_android27"
+                "caches": "generic_android26"
               }
             ]
           },
@@ -25016,7 +25016,7 @@
         "args": [
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android27.textpb"
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
         ],
         "merge": {
           "args": [
@@ -25044,14 +25044,14 @@
           ],
           "named_caches": [
             {
-              "name": "generic_android27",
-              "path": ".android_emulator/generic_android27"
+              "name": "generic_android26",
+              "path": ".android_emulator/generic_android26"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "generic_android27"
+                "caches": "generic_android26"
               }
             ]
           },
@@ -25074,7 +25074,7 @@
         "args": [
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android27.textpb"
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
         ],
         "merge": {
           "args": [
@@ -25102,14 +25102,14 @@
           ],
           "named_caches": [
             {
-              "name": "generic_android27",
-              "path": ".android_emulator/generic_android27"
+              "name": "generic_android26",
+              "path": ".android_emulator/generic_android26"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "generic_android27"
+                "caches": "generic_android26"
               }
             ]
           },
@@ -25132,7 +25132,7 @@
         "args": [
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android27.textpb"
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
         ],
         "merge": {
           "args": [
@@ -25160,14 +25160,14 @@
           ],
           "named_caches": [
             {
-              "name": "generic_android27",
-              "path": ".android_emulator/generic_android27"
+              "name": "generic_android26",
+              "path": ".android_emulator/generic_android26"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "generic_android27"
+                "caches": "generic_android26"
               }
             ]
           },
@@ -25190,7 +25190,7 @@
         "args": [
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android27.textpb"
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
         ],
         "merge": {
           "args": [
@@ -25218,14 +25218,14 @@
           ],
           "named_caches": [
             {
-              "name": "generic_android27",
-              "path": ".android_emulator/generic_android27"
+              "name": "generic_android26",
+              "path": ".android_emulator/generic_android26"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "generic_android27"
+                "caches": "generic_android26"
               }
             ]
           },
@@ -25248,7 +25248,7 @@
         "args": [
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android27.textpb"
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
         ],
         "merge": {
           "args": [
@@ -25276,14 +25276,14 @@
           ],
           "named_caches": [
             {
-              "name": "generic_android27",
-              "path": ".android_emulator/generic_android27"
+              "name": "generic_android26",
+              "path": ".android_emulator/generic_android26"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "generic_android27"
+                "caches": "generic_android26"
               }
             ]
           },
@@ -25306,7 +25306,7 @@
         "args": [
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android27.textpb",
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
           "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.net_unittests.filter"
         ],
         "merge": {
@@ -25335,14 +25335,14 @@
           ],
           "named_caches": [
             {
-              "name": "generic_android27",
-              "path": ".android_emulator/generic_android27"
+              "name": "generic_android26",
+              "path": ".android_emulator/generic_android26"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "generic_android27"
+                "caches": "generic_android26"
               }
             ]
           },
@@ -31447,7 +31447,7 @@
           "--use-persistent-shell",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android27.textpb"
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -31476,14 +31476,14 @@
           ],
           "named_caches": [
             {
-              "name": "generic_android27",
-              "path": ".android_emulator/generic_android27"
+              "name": "generic_android26",
+              "path": ".android_emulator/generic_android26"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "generic_android27"
+                "caches": "generic_android26"
               }
             ]
           },
@@ -31507,7 +31507,7 @@
           "--use-persistent-shell",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android27.textpb"
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
         ],
         "ci_only": true,
         "isolate_profile_data": true,
@@ -31537,14 +31537,14 @@
           ],
           "named_caches": [
             {
-              "name": "generic_android27",
-              "path": ".android_emulator/generic_android27"
+              "name": "generic_android26",
+              "path": ".android_emulator/generic_android26"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "generic_android27"
+                "caches": "generic_android26"
               }
             ]
           },
@@ -31570,7 +31570,7 @@
           "--use-persistent-shell",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android27.textpb"
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
         ],
         "ci_only": true,
         "isolate_profile_data": true,
@@ -31600,14 +31600,14 @@
           ],
           "named_caches": [
             {
-              "name": "generic_android27",
-              "path": ".android_emulator/generic_android27"
+              "name": "generic_android26",
+              "path": ".android_emulator/generic_android26"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "generic_android27"
+                "caches": "generic_android26"
               }
             ]
           },
@@ -31632,7 +31632,7 @@
           "--use-persistent-shell",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android27.textpb"
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -31661,14 +31661,14 @@
           ],
           "named_caches": [
             {
-              "name": "generic_android27",
-              "path": ".android_emulator/generic_android27"
+              "name": "generic_android26",
+              "path": ".android_emulator/generic_android26"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "generic_android27"
+                "caches": "generic_android26"
               }
             ]
           },
@@ -31691,7 +31691,7 @@
         "args": [
           "--use-persistent-shell",
           "-v",
-          "--avd-config=../../tools/android/avd/proto/generic_android27.textpb"
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -31714,14 +31714,14 @@
           ],
           "named_caches": [
             {
-              "name": "generic_android27",
-              "path": ".android_emulator/generic_android27"
+              "name": "generic_android26",
+              "path": ".android_emulator/generic_android26"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "generic_android27"
+                "caches": "generic_android26"
               }
             ]
           },
@@ -31736,7 +31736,7 @@
           "--use-persistent-shell",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android27.textpb"
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -31765,14 +31765,14 @@
           ],
           "named_caches": [
             {
-              "name": "generic_android27",
-              "path": ".android_emulator/generic_android27"
+              "name": "generic_android26",
+              "path": ".android_emulator/generic_android26"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "generic_android27"
+                "caches": "generic_android26"
               }
             ]
           },
@@ -31796,7 +31796,7 @@
           "--use-persistent-shell",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android27.textpb"
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -31825,14 +31825,14 @@
           ],
           "named_caches": [
             {
-              "name": "generic_android27",
-              "path": ".android_emulator/generic_android27"
+              "name": "generic_android26",
+              "path": ".android_emulator/generic_android26"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "generic_android27"
+                "caches": "generic_android26"
               }
             ]
           },
@@ -31856,7 +31856,7 @@
           "--use-persistent-shell",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android27.textpb"
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -31885,14 +31885,14 @@
           ],
           "named_caches": [
             {
-              "name": "generic_android27",
-              "path": ".android_emulator/generic_android27"
+              "name": "generic_android26",
+              "path": ".android_emulator/generic_android26"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "generic_android27"
+                "caches": "generic_android26"
               }
             ]
           },
@@ -31916,7 +31916,7 @@
           "--use-persistent-shell",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android27.textpb"
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -31945,14 +31945,14 @@
           ],
           "named_caches": [
             {
-              "name": "generic_android27",
-              "path": ".android_emulator/generic_android27"
+              "name": "generic_android26",
+              "path": ".android_emulator/generic_android26"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "generic_android27"
+                "caches": "generic_android26"
               }
             ]
           },
@@ -31976,7 +31976,7 @@
           "--use-persistent-shell",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android27.textpb"
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -32006,14 +32006,14 @@
           ],
           "named_caches": [
             {
-              "name": "generic_android27",
-              "path": ".android_emulator/generic_android27"
+              "name": "generic_android26",
+              "path": ".android_emulator/generic_android26"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "generic_android27"
+                "caches": "generic_android26"
               }
             ]
           },
@@ -32038,7 +32038,7 @@
           "--use-persistent-shell",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android27.textpb"
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -32067,14 +32067,14 @@
           ],
           "named_caches": [
             {
-              "name": "generic_android27",
-              "path": ".android_emulator/generic_android27"
+              "name": "generic_android26",
+              "path": ".android_emulator/generic_android26"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "generic_android27"
+                "caches": "generic_android26"
               }
             ]
           },
@@ -32098,7 +32098,7 @@
           "--use-persistent-shell",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android27.textpb"
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -32127,14 +32127,14 @@
           ],
           "named_caches": [
             {
-              "name": "generic_android27",
-              "path": ".android_emulator/generic_android27"
+              "name": "generic_android26",
+              "path": ".android_emulator/generic_android26"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "generic_android27"
+                "caches": "generic_android26"
               }
             ]
           },
@@ -32159,7 +32159,7 @@
           "--use-persistent-shell",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android27.textpb"
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -32188,14 +32188,14 @@
           ],
           "named_caches": [
             {
-              "name": "generic_android27",
-              "path": ".android_emulator/generic_android27"
+              "name": "generic_android26",
+              "path": ".android_emulator/generic_android26"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "generic_android27"
+                "caches": "generic_android26"
               }
             ]
           },
@@ -32219,7 +32219,7 @@
           "--use-persistent-shell",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android27.textpb"
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -32248,14 +32248,14 @@
           ],
           "named_caches": [
             {
-              "name": "generic_android27",
-              "path": ".android_emulator/generic_android27"
+              "name": "generic_android26",
+              "path": ".android_emulator/generic_android26"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "generic_android27"
+                "caches": "generic_android26"
               }
             ]
           },
@@ -32279,7 +32279,7 @@
           "--use-persistent-shell",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android27.textpb"
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -32308,14 +32308,14 @@
           ],
           "named_caches": [
             {
-              "name": "generic_android27",
-              "path": ".android_emulator/generic_android27"
+              "name": "generic_android26",
+              "path": ".android_emulator/generic_android26"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "generic_android27"
+                "caches": "generic_android26"
               }
             ]
           },
@@ -32339,7 +32339,7 @@
           "--use-persistent-shell",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android27.textpb",
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
           "--git-revision=${got_revision}"
         ],
         "isolate_profile_data": true,
@@ -32374,14 +32374,14 @@
           ],
           "named_caches": [
             {
-              "name": "generic_android27",
-              "path": ".android_emulator/generic_android27"
+              "name": "generic_android26",
+              "path": ".android_emulator/generic_android26"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "generic_android27"
+                "caches": "generic_android26"
               }
             ]
           },
@@ -32405,7 +32405,7 @@
           "--use-persistent-shell",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android27.textpb"
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -32434,14 +32434,14 @@
           ],
           "named_caches": [
             {
-              "name": "generic_android27",
-              "path": ".android_emulator/generic_android27"
+              "name": "generic_android26",
+              "path": ".android_emulator/generic_android26"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "generic_android27"
+                "caches": "generic_android26"
               }
             ]
           },
@@ -32466,7 +32466,7 @@
           "--use-persistent-shell",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android27.textpb",
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
           "--git-revision=${got_revision}"
         ],
         "isolate_profile_data": true,
@@ -32501,14 +32501,14 @@
           ],
           "named_caches": [
             {
-              "name": "generic_android27",
-              "path": ".android_emulator/generic_android27"
+              "name": "generic_android26",
+              "path": ".android_emulator/generic_android26"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "generic_android27"
+                "caches": "generic_android26"
               }
             ]
           },
@@ -32534,7 +32534,7 @@
           "--use-persistent-shell",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android27.textpb",
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
           "--git-revision=${got_revision}"
         ],
         "isolate_profile_data": true,
@@ -32570,14 +32570,14 @@
           ],
           "named_caches": [
             {
-              "name": "generic_android27",
-              "path": ".android_emulator/generic_android27"
+              "name": "generic_android26",
+              "path": ".android_emulator/generic_android26"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "generic_android27"
+                "caches": "generic_android26"
               }
             ]
           },
@@ -32601,7 +32601,7 @@
           "--use-persistent-shell",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android27.textpb",
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
           "--git-revision=${got_revision}"
         ],
         "isolate_profile_data": true,
@@ -32636,14 +32636,14 @@
           ],
           "named_caches": [
             {
-              "name": "generic_android27",
-              "path": ".android_emulator/generic_android27"
+              "name": "generic_android26",
+              "path": ".android_emulator/generic_android26"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "generic_android27"
+                "caches": "generic_android26"
               }
             ]
           },
@@ -32668,7 +32668,7 @@
           "--use-persistent-shell",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android27.textpb"
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -32697,14 +32697,14 @@
           ],
           "named_caches": [
             {
-              "name": "generic_android27",
-              "path": ".android_emulator/generic_android27"
+              "name": "generic_android26",
+              "path": ".android_emulator/generic_android26"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "generic_android27"
+                "caches": "generic_android26"
               }
             ]
           },
@@ -32729,7 +32729,7 @@
           "--use-persistent-shell",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android27.textpb"
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -32758,14 +32758,14 @@
           ],
           "named_caches": [
             {
-              "name": "generic_android27",
-              "path": ".android_emulator/generic_android27"
+              "name": "generic_android26",
+              "path": ".android_emulator/generic_android26"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "generic_android27"
+                "caches": "generic_android26"
               }
             ]
           },
@@ -32790,7 +32790,7 @@
           "--use-persistent-shell",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android27.textpb"
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -32819,14 +32819,14 @@
           ],
           "named_caches": [
             {
-              "name": "generic_android27",
-              "path": ".android_emulator/generic_android27"
+              "name": "generic_android26",
+              "path": ".android_emulator/generic_android26"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "generic_android27"
+                "caches": "generic_android26"
               }
             ]
           },
@@ -32851,7 +32851,7 @@
           "--use-persistent-shell",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android27.textpb"
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -32880,14 +32880,14 @@
           ],
           "named_caches": [
             {
-              "name": "generic_android27",
-              "path": ".android_emulator/generic_android27"
+              "name": "generic_android26",
+              "path": ".android_emulator/generic_android26"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "generic_android27"
+                "caches": "generic_android26"
               }
             ]
           },
@@ -32912,7 +32912,7 @@
           "--use-persistent-shell",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android27.textpb"
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -32941,14 +32941,14 @@
           ],
           "named_caches": [
             {
-              "name": "generic_android27",
-              "path": ".android_emulator/generic_android27"
+              "name": "generic_android26",
+              "path": ".android_emulator/generic_android26"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "generic_android27"
+                "caches": "generic_android26"
               }
             ]
           },
@@ -32973,7 +32973,7 @@
           "--use-persistent-shell",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android27.textpb"
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -33002,14 +33002,14 @@
           ],
           "named_caches": [
             {
-              "name": "generic_android27",
-              "path": ".android_emulator/generic_android27"
+              "name": "generic_android26",
+              "path": ".android_emulator/generic_android26"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "generic_android27"
+                "caches": "generic_android26"
               }
             ]
           },
@@ -33033,7 +33033,7 @@
           "--use-persistent-shell",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android27.textpb"
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -33062,14 +33062,14 @@
           ],
           "named_caches": [
             {
-              "name": "generic_android27",
-              "path": ".android_emulator/generic_android27"
+              "name": "generic_android26",
+              "path": ".android_emulator/generic_android26"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "generic_android27"
+                "caches": "generic_android26"
               }
             ]
           },
@@ -33093,7 +33093,7 @@
           "--use-persistent-shell",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android27.textpb"
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -33122,14 +33122,14 @@
           ],
           "named_caches": [
             {
-              "name": "generic_android27",
-              "path": ".android_emulator/generic_android27"
+              "name": "generic_android26",
+              "path": ".android_emulator/generic_android26"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "generic_android27"
+                "caches": "generic_android26"
               }
             ]
           },
@@ -33153,7 +33153,7 @@
           "--use-persistent-shell",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android27.textpb"
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -33182,14 +33182,14 @@
           ],
           "named_caches": [
             {
-              "name": "generic_android27",
-              "path": ".android_emulator/generic_android27"
+              "name": "generic_android26",
+              "path": ".android_emulator/generic_android26"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "generic_android27"
+                "caches": "generic_android26"
               }
             ]
           },
@@ -33213,7 +33213,7 @@
           "--use-persistent-shell",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android27.textpb"
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
         ],
         "ci_only": true,
         "isolate_profile_data": true,
@@ -33243,14 +33243,14 @@
           ],
           "named_caches": [
             {
-              "name": "generic_android27",
-              "path": ".android_emulator/generic_android27"
+              "name": "generic_android26",
+              "path": ".android_emulator/generic_android26"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "generic_android27"
+                "caches": "generic_android26"
               }
             ]
           },
@@ -33274,7 +33274,7 @@
           "--use-persistent-shell",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android27.textpb"
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -33303,14 +33303,14 @@
           ],
           "named_caches": [
             {
-              "name": "generic_android27",
-              "path": ".android_emulator/generic_android27"
+              "name": "generic_android26",
+              "path": ".android_emulator/generic_android26"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "generic_android27"
+                "caches": "generic_android26"
               }
             ]
           },
@@ -33334,7 +33334,7 @@
           "--use-persistent-shell",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android27.textpb"
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -33363,14 +33363,14 @@
           ],
           "named_caches": [
             {
-              "name": "generic_android27",
-              "path": ".android_emulator/generic_android27"
+              "name": "generic_android26",
+              "path": ".android_emulator/generic_android26"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "generic_android27"
+                "caches": "generic_android26"
               }
             ]
           },
@@ -33394,7 +33394,7 @@
           "--use-persistent-shell",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android27.textpb"
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -33423,14 +33423,14 @@
           ],
           "named_caches": [
             {
-              "name": "generic_android27",
-              "path": ".android_emulator/generic_android27"
+              "name": "generic_android26",
+              "path": ".android_emulator/generic_android26"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "generic_android27"
+                "caches": "generic_android26"
               }
             ]
           },
@@ -33454,7 +33454,7 @@
           "--use-persistent-shell",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android27.textpb"
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -33483,14 +33483,14 @@
           ],
           "named_caches": [
             {
-              "name": "generic_android27",
-              "path": ".android_emulator/generic_android27"
+              "name": "generic_android26",
+              "path": ".android_emulator/generic_android26"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "generic_android27"
+                "caches": "generic_android26"
               }
             ]
           },
@@ -33515,7 +33515,7 @@
           "--use-persistent-shell",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android27.textpb"
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -33545,14 +33545,14 @@
           ],
           "named_caches": [
             {
-              "name": "generic_android27",
-              "path": ".android_emulator/generic_android27"
+              "name": "generic_android26",
+              "path": ".android_emulator/generic_android26"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "generic_android27"
+                "caches": "generic_android26"
               }
             ]
           },
@@ -33576,7 +33576,7 @@
           "--use-persistent-shell",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android27.textpb"
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -33605,14 +33605,14 @@
           ],
           "named_caches": [
             {
-              "name": "generic_android27",
-              "path": ".android_emulator/generic_android27"
+              "name": "generic_android26",
+              "path": ".android_emulator/generic_android26"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "generic_android27"
+                "caches": "generic_android26"
               }
             ]
           },
@@ -33636,7 +33636,7 @@
           "--use-persistent-shell",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android27.textpb"
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -33665,14 +33665,14 @@
           ],
           "named_caches": [
             {
-              "name": "generic_android27",
-              "path": ".android_emulator/generic_android27"
+              "name": "generic_android26",
+              "path": ".android_emulator/generic_android26"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "generic_android27"
+                "caches": "generic_android26"
               }
             ]
           },
@@ -33696,7 +33696,7 @@
           "--use-persistent-shell",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android27.textpb"
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -33725,14 +33725,14 @@
           ],
           "named_caches": [
             {
-              "name": "generic_android27",
-              "path": ".android_emulator/generic_android27"
+              "name": "generic_android26",
+              "path": ".android_emulator/generic_android26"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "generic_android27"
+                "caches": "generic_android26"
               }
             ]
           },
@@ -33756,7 +33756,7 @@
           "--use-persistent-shell",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android27.textpb"
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -33785,14 +33785,14 @@
           ],
           "named_caches": [
             {
-              "name": "generic_android27",
-              "path": ".android_emulator/generic_android27"
+              "name": "generic_android26",
+              "path": ".android_emulator/generic_android26"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "generic_android27"
+                "caches": "generic_android26"
               }
             ]
           },
@@ -33816,7 +33816,7 @@
           "--use-persistent-shell",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android27.textpb"
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -33845,14 +33845,14 @@
           ],
           "named_caches": [
             {
-              "name": "generic_android27",
-              "path": ".android_emulator/generic_android27"
+              "name": "generic_android26",
+              "path": ".android_emulator/generic_android26"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "generic_android27"
+                "caches": "generic_android26"
               }
             ]
           },
@@ -33876,7 +33876,7 @@
           "--use-persistent-shell",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android27.textpb"
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -33905,14 +33905,14 @@
           ],
           "named_caches": [
             {
-              "name": "generic_android27",
-              "path": ".android_emulator/generic_android27"
+              "name": "generic_android26",
+              "path": ".android_emulator/generic_android26"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "generic_android27"
+                "caches": "generic_android26"
               }
             ]
           },
@@ -33936,7 +33936,7 @@
           "--use-persistent-shell",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android27.textpb"
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -33965,14 +33965,14 @@
           ],
           "named_caches": [
             {
-              "name": "generic_android27",
-              "path": ".android_emulator/generic_android27"
+              "name": "generic_android26",
+              "path": ".android_emulator/generic_android26"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "generic_android27"
+                "caches": "generic_android26"
               }
             ]
           },
@@ -33996,7 +33996,7 @@
           "--use-persistent-shell",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android27.textpb"
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -34025,14 +34025,14 @@
           ],
           "named_caches": [
             {
-              "name": "generic_android27",
-              "path": ".android_emulator/generic_android27"
+              "name": "generic_android26",
+              "path": ".android_emulator/generic_android26"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "generic_android27"
+                "caches": "generic_android26"
               }
             ]
           },
@@ -34056,7 +34056,7 @@
           "--use-persistent-shell",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android27.textpb"
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -34085,14 +34085,14 @@
           ],
           "named_caches": [
             {
-              "name": "generic_android27",
-              "path": ".android_emulator/generic_android27"
+              "name": "generic_android26",
+              "path": ".android_emulator/generic_android26"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "generic_android27"
+                "caches": "generic_android26"
               }
             ]
           },
@@ -34116,7 +34116,7 @@
           "--use-persistent-shell",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android27.textpb"
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -34145,14 +34145,14 @@
           ],
           "named_caches": [
             {
-              "name": "generic_android27",
-              "path": ".android_emulator/generic_android27"
+              "name": "generic_android26",
+              "path": ".android_emulator/generic_android26"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "generic_android27"
+                "caches": "generic_android26"
               }
             ]
           },
@@ -34176,7 +34176,7 @@
           "--use-persistent-shell",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android27.textpb"
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -34205,14 +34205,14 @@
           ],
           "named_caches": [
             {
-              "name": "generic_android27",
-              "path": ".android_emulator/generic_android27"
+              "name": "generic_android26",
+              "path": ".android_emulator/generic_android26"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "generic_android27"
+                "caches": "generic_android26"
               }
             ]
           },
@@ -34236,7 +34236,7 @@
           "--use-persistent-shell",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android27.textpb"
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -34265,14 +34265,14 @@
           ],
           "named_caches": [
             {
-              "name": "generic_android27",
-              "path": ".android_emulator/generic_android27"
+              "name": "generic_android26",
+              "path": ".android_emulator/generic_android26"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "generic_android27"
+                "caches": "generic_android26"
               }
             ]
           },
@@ -34296,7 +34296,7 @@
           "--use-persistent-shell",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android27.textpb"
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -34325,14 +34325,14 @@
           ],
           "named_caches": [
             {
-              "name": "generic_android27",
-              "path": ".android_emulator/generic_android27"
+              "name": "generic_android26",
+              "path": ".android_emulator/generic_android26"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "generic_android27"
+                "caches": "generic_android26"
               }
             ]
           },
@@ -34356,7 +34356,7 @@
           "--use-persistent-shell",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android27.textpb"
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -34385,14 +34385,14 @@
           ],
           "named_caches": [
             {
-              "name": "generic_android27",
-              "path": ".android_emulator/generic_android27"
+              "name": "generic_android26",
+              "path": ".android_emulator/generic_android26"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "generic_android27"
+                "caches": "generic_android26"
               }
             ]
           },
@@ -34416,7 +34416,7 @@
           "--use-persistent-shell",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android27.textpb"
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -34445,14 +34445,14 @@
           ],
           "named_caches": [
             {
-              "name": "generic_android27",
-              "path": ".android_emulator/generic_android27"
+              "name": "generic_android26",
+              "path": ".android_emulator/generic_android26"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "generic_android27"
+                "caches": "generic_android26"
               }
             ]
           },
@@ -34477,7 +34477,7 @@
           "--use-persistent-shell",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android27.textpb"
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -34506,14 +34506,14 @@
           ],
           "named_caches": [
             {
-              "name": "generic_android27",
-              "path": ".android_emulator/generic_android27"
+              "name": "generic_android26",
+              "path": ".android_emulator/generic_android26"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "generic_android27"
+                "caches": "generic_android26"
               }
             ]
           },
@@ -34537,7 +34537,7 @@
           "--use-persistent-shell",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android27.textpb"
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -34566,14 +34566,14 @@
           ],
           "named_caches": [
             {
-              "name": "generic_android27",
-              "path": ".android_emulator/generic_android27"
+              "name": "generic_android26",
+              "path": ".android_emulator/generic_android26"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "generic_android27"
+                "caches": "generic_android26"
               }
             ]
           },
@@ -34597,7 +34597,7 @@
           "--use-persistent-shell",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android27.textpb"
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
         ],
         "ci_only": true,
         "isolate_profile_data": true,
@@ -34627,14 +34627,14 @@
           ],
           "named_caches": [
             {
-              "name": "generic_android27",
-              "path": ".android_emulator/generic_android27"
+              "name": "generic_android26",
+              "path": ".android_emulator/generic_android26"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "generic_android27"
+                "caches": "generic_android26"
               }
             ]
           },
@@ -34659,7 +34659,7 @@
           "--use-persistent-shell",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android27.textpb"
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -34688,14 +34688,14 @@
           ],
           "named_caches": [
             {
-              "name": "generic_android27",
-              "path": ".android_emulator/generic_android27"
+              "name": "generic_android26",
+              "path": ".android_emulator/generic_android26"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "generic_android27"
+                "caches": "generic_android26"
               }
             ]
           },
@@ -34719,7 +34719,7 @@
           "--use-persistent-shell",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android27.textpb"
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -34748,14 +34748,14 @@
           ],
           "named_caches": [
             {
-              "name": "generic_android27",
-              "path": ".android_emulator/generic_android27"
+              "name": "generic_android26",
+              "path": ".android_emulator/generic_android26"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "generic_android27"
+                "caches": "generic_android26"
               }
             ]
           },
@@ -34779,7 +34779,7 @@
           "--use-persistent-shell",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android27.textpb"
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -34808,14 +34808,14 @@
           ],
           "named_caches": [
             {
-              "name": "generic_android27",
-              "path": ".android_emulator/generic_android27"
+              "name": "generic_android26",
+              "path": ".android_emulator/generic_android26"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "generic_android27"
+                "caches": "generic_android26"
               }
             ]
           },
@@ -34839,7 +34839,7 @@
           "--use-persistent-shell",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android27.textpb"
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -34868,14 +34868,14 @@
           ],
           "named_caches": [
             {
-              "name": "generic_android27",
-              "path": ".android_emulator/generic_android27"
+              "name": "generic_android26",
+              "path": ".android_emulator/generic_android26"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "generic_android27"
+                "caches": "generic_android26"
               }
             ]
           },
@@ -34899,7 +34899,7 @@
           "--use-persistent-shell",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android27.textpb"
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -34928,14 +34928,14 @@
           ],
           "named_caches": [
             {
-              "name": "generic_android27",
-              "path": ".android_emulator/generic_android27"
+              "name": "generic_android26",
+              "path": ".android_emulator/generic_android26"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "generic_android27"
+                "caches": "generic_android26"
               }
             ]
           },
@@ -34959,7 +34959,7 @@
           "--use-persistent-shell",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android27.textpb"
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -34988,14 +34988,14 @@
           ],
           "named_caches": [
             {
-              "name": "generic_android27",
-              "path": ".android_emulator/generic_android27"
+              "name": "generic_android26",
+              "path": ".android_emulator/generic_android26"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "generic_android27"
+                "caches": "generic_android26"
               }
             ]
           },
@@ -35019,7 +35019,7 @@
           "--use-persistent-shell",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android27.textpb"
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -35048,14 +35048,14 @@
           ],
           "named_caches": [
             {
-              "name": "generic_android27",
-              "path": ".android_emulator/generic_android27"
+              "name": "generic_android26",
+              "path": ".android_emulator/generic_android26"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "generic_android27"
+                "caches": "generic_android26"
               }
             ]
           },
@@ -35079,7 +35079,7 @@
           "--use-persistent-shell",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android27.textpb"
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -35108,14 +35108,14 @@
           ],
           "named_caches": [
             {
-              "name": "generic_android27",
-              "path": ".android_emulator/generic_android27"
+              "name": "generic_android26",
+              "path": ".android_emulator/generic_android26"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "generic_android27"
+                "caches": "generic_android26"
               }
             ]
           },
@@ -35139,7 +35139,7 @@
           "--use-persistent-shell",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android27.textpb"
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -35168,14 +35168,14 @@
           ],
           "named_caches": [
             {
-              "name": "generic_android27",
-              "path": ".android_emulator/generic_android27"
+              "name": "generic_android26",
+              "path": ".android_emulator/generic_android26"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "generic_android27"
+                "caches": "generic_android26"
               }
             ]
           },
@@ -35200,7 +35200,7 @@
           "--use-persistent-shell",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android27.textpb"
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -35229,14 +35229,14 @@
           ],
           "named_caches": [
             {
-              "name": "generic_android27",
-              "path": ".android_emulator/generic_android27"
+              "name": "generic_android26",
+              "path": ".android_emulator/generic_android26"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "generic_android27"
+                "caches": "generic_android26"
               }
             ]
           },
@@ -35260,7 +35260,7 @@
           "--use-persistent-shell",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android27.textpb"
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -35289,14 +35289,14 @@
           ],
           "named_caches": [
             {
-              "name": "generic_android27",
-              "path": ".android_emulator/generic_android27"
+              "name": "generic_android26",
+              "path": ".android_emulator/generic_android26"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "generic_android27"
+                "caches": "generic_android26"
               }
             ]
           },
@@ -35320,7 +35320,7 @@
           "--use-persistent-shell",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android27.textpb"
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
         ],
         "ci_only": true,
         "isolate_profile_data": true,
@@ -35350,14 +35350,14 @@
           ],
           "named_caches": [
             {
-              "name": "generic_android27",
-              "path": ".android_emulator/generic_android27"
+              "name": "generic_android26",
+              "path": ".android_emulator/generic_android26"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "generic_android27"
+                "caches": "generic_android26"
               }
             ]
           },
@@ -35381,7 +35381,7 @@
           "--use-persistent-shell",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android27.textpb"
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
         ],
         "ci_only": true,
         "isolate_profile_data": true,
@@ -35411,14 +35411,14 @@
           ],
           "named_caches": [
             {
-              "name": "generic_android27",
-              "path": ".android_emulator/generic_android27"
+              "name": "generic_android26",
+              "path": ".android_emulator/generic_android26"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "generic_android27"
+                "caches": "generic_android26"
               }
             ]
           },
@@ -35442,7 +35442,7 @@
           "--use-persistent-shell",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android27.textpb"
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -35478,14 +35478,14 @@
           ],
           "named_caches": [
             {
-              "name": "generic_android27",
-              "path": ".android_emulator/generic_android27"
+              "name": "generic_android26",
+              "path": ".android_emulator/generic_android26"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "generic_android27"
+                "caches": "generic_android26"
               }
             ]
           },
@@ -35510,7 +35510,7 @@
           "--use-persistent-shell",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android27.textpb",
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
           "--use-persistent-shell"
         ],
         "isolate_profile_data": true,
@@ -35540,14 +35540,14 @@
           ],
           "named_caches": [
             {
-              "name": "generic_android27",
-              "path": ".android_emulator/generic_android27"
+              "name": "generic_android26",
+              "path": ".android_emulator/generic_android26"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "generic_android27"
+                "caches": "generic_android26"
               }
             ]
           },
@@ -35572,7 +35572,7 @@
           "--use-persistent-shell",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android27.textpb"
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -35601,14 +35601,14 @@
           ],
           "named_caches": [
             {
-              "name": "generic_android27",
-              "path": ".android_emulator/generic_android27"
+              "name": "generic_android26",
+              "path": ".android_emulator/generic_android26"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "generic_android27"
+                "caches": "generic_android26"
               }
             ]
           },
@@ -35632,7 +35632,7 @@
           "--use-persistent-shell",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android27.textpb"
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -35661,14 +35661,14 @@
           ],
           "named_caches": [
             {
-              "name": "generic_android27",
-              "path": ".android_emulator/generic_android27"
+              "name": "generic_android26",
+              "path": ".android_emulator/generic_android26"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "generic_android27"
+                "caches": "generic_android26"
               }
             ]
           },
@@ -35692,7 +35692,7 @@
           "--use-persistent-shell",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android27.textpb"
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -35721,14 +35721,14 @@
           ],
           "named_caches": [
             {
-              "name": "generic_android27",
-              "path": ".android_emulator/generic_android27"
+              "name": "generic_android26",
+              "path": ".android_emulator/generic_android26"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "generic_android27"
+                "caches": "generic_android26"
               }
             ]
           },
@@ -35921,7 +35921,7 @@
         "args": [
           "--gtest-benchmark-name=components_perftests",
           "--use-persistent-shell",
-          "--avd-config=../../tools/android/avd/proto/generic_android27.textpb"
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
         ],
         "isolate_name": "components_perftests",
         "isolate_profile_data": true,
@@ -35949,14 +35949,14 @@
           ],
           "named_caches": [
             {
-              "name": "generic_android27",
-              "path": ".android_emulator/generic_android27"
+              "name": "generic_android26",
+              "path": ".android_emulator/generic_android26"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "generic_android27"
+                "caches": "generic_android26"
               }
             ]
           },
@@ -36135,7 +36135,7 @@
       {
         "args": [
           "--use-persistent-shell",
-          "--avd-config=../../tools/android/avd/proto/generic_android27.textpb"
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
         ],
         "isolate_name": "monochrome_public_apk_checker",
         "isolate_profile_data": true,
@@ -36162,14 +36162,14 @@
           ],
           "named_caches": [
             {
-              "name": "generic_android27",
-              "path": ".android_emulator/generic_android27"
+              "name": "generic_android26",
+              "path": ".android_emulator/generic_android26"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "generic_android27"
+                "caches": "generic_android26"
               }
             ]
           },
@@ -36325,7 +36325,7 @@
           "--passthrough",
           "--retry-limit=2",
           "--use-persistent-shell",
-          "--avd-config=../../tools/android/avd/proto/generic_android27.textpb"
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
         ],
         "check_flakiness_for_new_tests": false,
         "ci_only": true,
@@ -36352,14 +36352,14 @@
           ],
           "named_caches": [
             {
-              "name": "generic_android27",
-              "path": ".android_emulator/generic_android27"
+              "name": "generic_android26",
+              "path": ".android_emulator/generic_android26"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "generic_android27"
+                "caches": "generic_android26"
               }
             ]
           },
@@ -36375,7 +36375,7 @@
           "--passthrough",
           "--retry-limit=2",
           "--use-persistent-shell",
-          "--avd-config=../../tools/android/avd/proto/generic_android27.textpb"
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
         ],
         "ci_only": true,
         "isolate_name": "telemetry_perf_unittests_android_monochrome",
@@ -36401,14 +36401,14 @@
           ],
           "named_caches": [
             {
-              "name": "generic_android27",
-              "path": ".android_emulator/generic_android27"
+              "name": "generic_android26",
+              "path": ".android_emulator/generic_android26"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "generic_android27"
+                "caches": "generic_android26"
               }
             ]
           },
@@ -36420,7 +36420,7 @@
         "args": [
           "--extra-browser-args=--enable-crashpad",
           "--use-persistent-shell",
-          "--avd-config=../../tools/android/avd/proto/generic_android27.textpb",
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
           "--browser=android-chromium"
         ],
         "ci_only": true,
@@ -36448,14 +36448,14 @@
           "idempotent": false,
           "named_caches": [
             {
-              "name": "generic_android27",
-              "path": ".android_emulator/generic_android27"
+              "name": "generic_android26",
+              "path": ".android_emulator/generic_android26"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "generic_android27"
+                "caches": "generic_android26"
               }
             ]
           },
@@ -36608,7 +36608,7 @@
     "scripts": [
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/generic_android27.textpb"
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
         ],
         "isolate_profile_data": true,
         "name": "check_network_annotations",
