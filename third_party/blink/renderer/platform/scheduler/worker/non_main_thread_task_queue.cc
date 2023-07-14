@@ -69,6 +69,10 @@ void NonMainThreadTaskQueue::OnTaskCompleted(
     base::LazyNow* lazy_now) {
   // |non_main_thread_scheduler_| can be nullptr in tests.
   if (non_main_thread_scheduler_) {
+    // The last ref to `non_main_thread_scheduler_` might be released as part of
+    // this task's cleanup microtasks, make sure it lives through its own
+    // cleanup: crbug.com/1464113.
+    auto self_ref = WrapRefCounted(this);
     non_main_thread_scheduler_->OnTaskCompleted(this, task, task_timing,
                                                 lazy_now);
   }
