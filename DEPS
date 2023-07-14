@@ -651,17 +651,6 @@ deps = {
       'dep_type': 'cipd',
   },
 
-  'src/third_party/mainline_clang/linux-amd64': {
-      'packages': [
-          {
-              'package': 'chromium/third_party/mainline_clang/linux-amd64',
-              'version': '-MHcIYwDDRyZ2HMefnWEkV-_R5A8I7HS1jxDfGXoE4MC',
-          },
-      ],
-      'condition': 'use_lenient_compiler_flags',
-      'dep_type': 'cipd',
-  },
-
   'src/android_webview/tools/cts_archive': {
       'packages': [
           {
