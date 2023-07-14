@@ -4052,8 +4052,9 @@ TEST_F(BrowserAutofillManagerTest, FillCreditCardNumberIntoSingleDigitFields) {
   // Add 20 identical card number fields.
   for (int i = 0; i < 20; i++) {
     test::CreateTestFormField("Card Number", "cardnumber", "", "text", &field);
-    // Limit the length the field to 1.
-    field.max_length = 1;
+    field.host_frame = form.host_frame;
+    field.host_form_id = form.unique_renderer_id;
+    field.max_length = i < 19 ? 1 : std::numeric_limits<int>::max();
     form.fields.push_back(field);
   }
 

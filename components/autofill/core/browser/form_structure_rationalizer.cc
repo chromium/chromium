@@ -472,7 +472,7 @@ void FormStructureRationalizer::RationalizeCreditCardNumberOffsets(
     size_t length_without_overflow =
         length - last_is_overflow * group[last]->max_length;
     return length >= kMinValidCardNumberSize &&
-           length_without_overflow < kMaxValidCardNumberSize &&
+           length_without_overflow <= kMaxValidCardNumberSize &&
            size >= 2 + last_is_overflow;
   };
 
