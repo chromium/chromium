@@ -25,6 +25,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.android_webview.AwBrowserProcess;
 import org.chromium.android_webview.AwContents;
+import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.common.PlatformServiceBridge;
 import org.chromium.android_webview.metrics.AwMetricsServiceClient;
 import org.chromium.base.ContextUtils;
@@ -590,5 +591,31 @@ public class AwMetricsIntegrationTest {
         } finally {
             embeddedTestServer.stopAndDestroyServer();
         }
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView"})
+    public void testServerSideAllowlistFilteringRequired() throws Throwable {
+        ChromeUserMetricsExtension log = mPlatformServiceBridge.waitForNextMetricsLog();
+        SystemProfileProto.AppPackageNameAllowlistFilter filter =
+                log.getSystemProfile().getAppPackageNameAllowlistFilter();
+        assertEquals(filter,
+                SystemProfileProto.AppPackageNameAllowlistFilter.SERVER_SIDE_FILTER_REQUIRED);
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView"})
+    @CommandLineFlags.
+    Add("disable-features=" + AwFeatures.WEBVIEW_APPS_PACKAGE_NAMES_SERVER_SIDE_ALLOWLIST)
+    public void testServerSideAllowlistFilteringNotRequiredDueToClientSideFiltering()
+            throws Throwable {
+        ChromeUserMetricsExtension log = mPlatformServiceBridge.waitForNextMetricsLog();
+        SystemProfileProto.AppPackageNameAllowlistFilter filter =
+                log.getSystemProfile().getAppPackageNameAllowlistFilter();
+        assertEquals(filter,
+                SystemProfileProto.AppPackageNameAllowlistFilter
+                        .NO_SERVER_SIDE_FILTER_REQUIRED_DUE_TO_CLIENT_FILTERING);
     }
 }
