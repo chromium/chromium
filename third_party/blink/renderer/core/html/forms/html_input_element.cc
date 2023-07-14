@@ -167,7 +167,7 @@ bool HTMLInputElement::HasPendingActivity() const {
 HTMLImageLoader& HTMLInputElement::EnsureImageLoader() {
   if (!image_loader_) {
     image_loader_ = MakeGarbageCollected<HTMLImageLoader>(this);
-    RegisterActiveScriptWrappable();
+    RegisterActiveScriptWrappable(GetExecutionContext()->GetIsolate());
   }
   return *image_loader_;
 }

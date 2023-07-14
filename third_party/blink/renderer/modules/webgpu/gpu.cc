@@ -154,7 +154,7 @@ void GPU::ContextDestroyed() {
   // short amount of JS can still execute after the ContextDestroyed event
   // is received.
   if (!mappable_buffers_.empty()) {
-    v8::Isolate* isolate = ThreadState::Current()->GetIsolate();
+    v8::Isolate* isolate = GetExecutionContext()->GetIsolate();
     v8::HandleScope scope(isolate);
     for (GPUBuffer* buffer : mappable_buffers_) {
       buffer->DetachMappedArrayBuffers(isolate);

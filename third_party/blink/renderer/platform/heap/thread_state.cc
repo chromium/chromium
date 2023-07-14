@@ -278,7 +278,7 @@ class BufferedStream final : public v8::OutputStream {
 }  // namespace
 
 void ThreadState::TakeHeapSnapshotForTesting(const char* filename) const {
-  CHECK(IsAttachedToIsolate());
+  CHECK(isolate_);
   v8::HeapProfiler* profiler = isolate_->GetHeapProfiler();
   CHECK(profiler);
 

@@ -361,7 +361,7 @@ void AbortSignal::ActiveScriptWrappableBaseConstructed() {
       signal_type_ == AbortSignal::SignalType::kComposite) {
     // Composite signals need to be kept alive when they have relevant event
     // listeners or pending algorithms.
-    RegisterActiveScriptWrappable();
+    RegisterActiveScriptWrappable(GetExecutionContext()->GetIsolate());
   }
 }
 
