@@ -1972,7 +1972,7 @@ deps = {
       'packages': [
         {
           'package': 'skia/tools/goldctl/windows-amd64',
-          'version': '2TTyPqsPqp1OkBgLd-IG17NyPibqY0_DCckrh7LCFfAC',
+          'version': 'OzmCj3mfsBuDD-gOktZNf1BcL8eg8Ewi8ekcYDI4tsAC',
         },
       ],
       'dep_type': 'cipd',
