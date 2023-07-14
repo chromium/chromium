@@ -5,17 +5,20 @@
 #include <memory>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "ash/ambient/ui/ambient_view_ids.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_paths.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/public/cpp/ambient/ambient_prefs.h"
 #include "ash/public/cpp/autotest_ambient_api.h"
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
+#include "base/test/repeating_test_future.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
@@ -34,8 +37,8 @@
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "components/ownership/mock_owner_key_util.h"
-#include "components/policy/core/common/cloud/test/policy_builder.h"
 #include "components/policy/proto/cloud_policy.pb.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -203,15 +206,31 @@ class ManagedScreensaverBrowserTest : public LoginManagerTest {
         ->set_device_screensaver_login_screen_idle_timeout_seconds(timeout);
   }
 
-  void RefreshDevicePolicy() {
+  // Note: Waits for changes to policy preferences. Verifies that all
+  // |policy_prefs| receive a policy update, fails the test otherwise.
+  void RefreshDevicePolicyAndWait(
+      const std::vector<std::string>& policy_prefs) {
+    base::test::RepeatingTestFuture<void> test_future;
+    PrefChangeRegistrar registar;
+    registar.Init(
+        Shell::Get()->session_controller()->GetSigninScreenPrefService());
+
+    for (const std::string& path : policy_prefs) {
+      registar.Add(path, test_future.GetCallback());
+    }
     device_policy_.Build();
     FakeSessionManagerClient::Get()->set_device_policy(
         device_policy_.GetBlob());
     FakeSessionManagerClient::Get()->OnPropertyChangeComplete(
         /*success=*/true);
+    for (size_t count = 0; count < policy_prefs.size(); count++) {
+      ASSERT_TRUE(test_future.Wait())
+          << "Timed out trying to wait for pref update";
+      test_future.Take();
+    }
   }
 
-  void RefreshUserPolicy() {
+  void RefreshUserPolicyAndWait() {
     Profile* profile =
         ash::ProfileHelper::Get()->GetProfileByAccountId(test_account_id_);
     user_policy_test_helper_.RefreshPolicyAndWait(profile);
@@ -322,12 +341,15 @@ class ManagedScreensaverBrowserTestForAnyScreen
         ManagedScreensaverBrowserTest::InitializeForLockScreen();
         // Call refresh policy manually to not have multiple refresh calls
         // running at the same time.
-        RefreshUserPolicy();
-
+        RefreshUserPolicyAndWait();
         return;
       case TestType::LoginScreen:
         ManagedScreensaverBrowserTest::InitializeForLoginScreen();
-        RefreshDevicePolicy();
+        RefreshDevicePolicyAndWait(
+            {ambient::prefs::kAmbientModeManagedScreensaverEnabled,
+             ambient::prefs::
+                 kAmbientModeManagedScreensaverImageDisplayIntervalSeconds,
+             ambient::prefs::kAmbientModeManagedScreensaverIdleTimeoutSeconds});
         return;
     }
     NOTREACHED();
@@ -338,17 +360,31 @@ class ManagedScreensaverBrowserTestForAnyScreen
     switch (test_case.test_type) {
       case TestType::LockScreen:
         SetPolicyEnabled(enabled);
+        RefreshUserPolicyAndWait();
+
         // Set intervals to zero so that we don't rely on time during testing.
-        SetPolicyImageDisplayIntervalSeconds(0);
-        SetPolicyScreenIdleTimeoutSeconds(0);
-        RefreshUserPolicy();
+        // This is needed as disabling the policy can unset other policy values.
+        if (!enabled) {
+          SetPolicyImageDisplayIntervalSeconds(0);
+          SetPolicyScreenIdleTimeoutSeconds(0);
+          RefreshUserPolicyAndWait();
+        }
         return;
       case TestType::LoginScreen:
         SetDevicePolicyEnabled(enabled);
+        RefreshDevicePolicyAndWait(
+            {ambient::prefs::kAmbientModeManagedScreensaverEnabled});
         // Set intervals to zero so that we don't rely on time during testing.
-        SetDevicePolicyImageDisplayIntervalSeconds(0);
-        SetDevicePolicyScreenIdleTimeoutSeconds(0);
-        RefreshDevicePolicy();
+        // This is needed as disabling the policy can unset other policy values.
+        if (!enabled) {
+          SetDevicePolicyImageDisplayIntervalSeconds(0);
+          SetDevicePolicyScreenIdleTimeoutSeconds(0);
+          RefreshDevicePolicyAndWait(
+              {ambient::prefs::
+                   kAmbientModeManagedScreensaverImageDisplayIntervalSeconds,
+               ambient::prefs::
+                   kAmbientModeManagedScreensaverIdleTimeoutSeconds});
+        }
         return;
     }
     NOTREACHED();
@@ -361,11 +397,12 @@ class ManagedScreensaverBrowserTestForAnyScreen
         SetPolicyImages(images);
         // Call refresh policy manually to not have multiple refresh calls
         // running at the same time.
-        RefreshUserPolicy();
+        RefreshUserPolicyAndWait();
         return;
       case TestType::LoginScreen:
         SetDevicePolicyImages(images);
-        RefreshDevicePolicy();
+        RefreshDevicePolicyAndWait(
+            {ambient::prefs::kAmbientModeManagedScreensaverImages});
         return;
     }
     NOTREACHED();
