@@ -112,6 +112,11 @@ void QuickAppAccessModel::ItemDefaultIconChanged() {
   }
 }
 
+void QuickAppAccessModel::ItemIconVersionChanged() {
+  icon_load_start_time_ = base::TimeTicks::Now();
+  Shell::Get()->app_list_controller()->LoadIcon(quick_app_id_);
+}
+
 void QuickAppAccessModel::ItemBeingDestroyed() {
   ClearQuickApp();
   UpdateQuickAppShouldShowState();

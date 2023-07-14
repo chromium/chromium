@@ -70,6 +70,7 @@ class QuickAppAccessModel : public AppListItemObserver,
  private:
   // AppListItemObserver:
   void ItemDefaultIconChanged() override;
+  void ItemIconVersionChanged() override;
   void ItemBeingDestroyed() override;
 
   // AppListControllerObserver:
