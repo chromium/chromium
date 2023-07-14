@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/password_manager/core/browser/sharing/password_receiver_service.h"
+#include "components/password_manager/core/browser/sharing/password_receiver_service_impl.h"
 
 #include <algorithm>
 #include <memory>
@@ -55,26 +55,26 @@ void ProcessIncomingSharingInvitationTask::OnGetPasswordStoreResults(
       base::BindOnce(std::move(done_processing_invitation_callback_), this));
 }
 
-PasswordReceiverService::PasswordReceiverService(
+PasswordReceiverServiceImpl::PasswordReceiverServiceImpl(
     std::unique_ptr<IncomingPasswordSharingInvitationSyncBridge> sync_bridge,
     PasswordStoreInterface* password_store)
     : sync_bridge_(std::move(sync_bridge)), password_store_(password_store) {
   CHECK(password_store_);
 }
 
-PasswordReceiverService::~PasswordReceiverService() = default;
+PasswordReceiverServiceImpl::~PasswordReceiverServiceImpl() = default;
 
-void PasswordReceiverService::ProcessIncomingSharingInvitation(
+void PasswordReceiverServiceImpl::ProcessIncomingSharingInvitation(
     IncomingSharingInvitation invitation) {
   auto task = std::make_unique<ProcessIncomingSharingInvitationTask>(
       std::move(invitation), password_store_,
       /*done_callback=*/
-      base::BindOnce(&PasswordReceiverService::RemoveTaskFromTasksList,
+      base::BindOnce(&PasswordReceiverServiceImpl::RemoveTaskFromTasksList,
                      base::Unretained(this)));
   process_invitations_tasks_.push_back(std::move(task));
 }
 
-void PasswordReceiverService::RemoveTaskFromTasksList(
+void PasswordReceiverServiceImpl::RemoveTaskFromTasksList(
     ProcessIncomingSharingInvitationTask* task) {
   base::EraseIf(
       process_invitations_tasks_,
@@ -83,7 +83,7 @@ void PasswordReceiverService::RemoveTaskFromTasksList(
 }
 
 base::WeakPtr<syncer::ModelTypeControllerDelegate>
-PasswordReceiverService::GetControllerDelegate() {
+PasswordReceiverServiceImpl::GetControllerDelegate() {
   CHECK(sync_bridge_);
   return sync_bridge_->change_processor()->GetControllerDelegate();
 }

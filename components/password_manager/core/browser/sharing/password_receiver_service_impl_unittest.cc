@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/password_manager/core/browser/sharing/password_receiver_service.h"
+#include "components/password_manager/core/browser/sharing/password_receiver_service_impl.h"
 
 #include <memory>
 
@@ -59,14 +59,14 @@ IncomingSharingInvitation PasswordFormToIncomingSharingInvitation(
 
 }  // namespace
 
-class PasswordReceiverServiceTest : public testing::Test {
+class PasswordReceiverServiceImplTest : public testing::Test {
  public:
-  PasswordReceiverServiceTest() {
+  PasswordReceiverServiceImplTest() {
     password_store_ = base::MakeRefCounted<TestPasswordStore>();
     password_store_->Init(/*prefs=*/nullptr,
                           /*affiliated_match_helper=*/nullptr);
 
-    password_receiver_service_ = std::make_unique<PasswordReceiverService>(
+    password_receiver_service_ = std::make_unique<PasswordReceiverServiceImpl>(
         /*sync_bridge=*/nullptr, password_store_.get());
   }
 
@@ -82,7 +82,7 @@ class PasswordReceiverServiceTest : public testing::Test {
     RunUntilIdle();
   }
 
-  PasswordReceiverServiceInterface* password_receiver_service() {
+  PasswordReceiverService* password_receiver_service() {
     return password_receiver_service_.get();
   }
 
@@ -92,10 +92,10 @@ class PasswordReceiverServiceTest : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   scoped_refptr<TestPasswordStore> password_store_;
-  std::unique_ptr<PasswordReceiverService> password_receiver_service_;
+  std::unique_ptr<PasswordReceiverServiceImpl> password_receiver_service_;
 };
 
-TEST_F(PasswordReceiverServiceTest,
+TEST_F(PasswordReceiverServiceImplTest,
        ShouldAcceptIncomingInvitationWhenStoreIsEmpty) {
   IncomingSharingInvitation invitation = CreateIncomingSharingInvitation();
 
@@ -115,7 +115,7 @@ TEST_F(PasswordReceiverServiceTest,
           Field(&PasswordForm::sharing_notification_displayed, false))));
 }
 
-TEST_F(PasswordReceiverServiceTest,
+TEST_F(PasswordReceiverServiceImplTest,
        ShouldIgnoreIncomingInvitationWhenPasswordAlreadyExists) {
   PasswordForm existing_password = CreatePasswordForm();
   // Mark the password as generated to guarantee that this remains as is and
@@ -137,7 +137,7 @@ TEST_F(PasswordReceiverServiceTest,
               ElementsAre(existing_password));
 }
 
-TEST_F(PasswordReceiverServiceTest,
+TEST_F(PasswordReceiverServiceImplTest,
        ShouldIgnoreIncomingInvitationWhenConflictingPasswordExists) {
   IncomingSharingInvitation invitation = CreateIncomingSharingInvitation();
   PasswordForm conflicting_password =

@@ -12,7 +12,7 @@
 #include "chrome/common/channel_info.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/sharing/incoming_password_sharing_invitation_sync_bridge.h"
-#include "components/password_manager/core/browser/sharing/password_receiver_service.h"
+#include "components/password_manager/core/browser/sharing/password_receiver_service_impl.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/report_unrecoverable_error.h"
 #include "components/sync/model/client_tag_based_model_type_processor.h"
@@ -68,7 +68,7 @@ KeyedService* PasswordReceiverServiceFactory::BuildServiceInstanceFor(
       password_manager::IncomingPasswordSharingInvitationSyncBridge>(
       std::move(change_processor));
 
-  return new password_manager::PasswordReceiverService(
+  return new password_manager::PasswordReceiverServiceImpl(
       std::move(sync_bridge), PasswordStoreFactory::GetForProfile(
                                   profile, ServiceAccessType::EXPLICIT_ACCESS)
                                   .get());
