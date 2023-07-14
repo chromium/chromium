@@ -300,6 +300,12 @@ class HostContentSettingsMap : public content_settings::Observer,
       base::Time end_time,
       PatternSourcePredicate pattern_predicate);
 
+  // Clears all host-specific settings for one content type which also satisfy a
+  // predicate.
+  void ClearSettingsForOneTypeWithPredicate(
+      ContentSettingsType content_type,
+      base::FunctionRef<bool(const ContentSettingPatternSource&)> predicate);
+
   // RefcountedKeyedService implementation.
   void ShutdownOnUIThread() override;
 

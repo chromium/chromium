@@ -8,14 +8,12 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
-#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
-#include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/permissions/test/mock_permission_prompt_factory.h"
 #include "components/policy/core/common/policy_map.h"
@@ -194,8 +192,6 @@ IN_PROC_BROWSER_TEST_P(EnabledPolicyBrowsertest, ToggleFeature_Memberships) {
             AreSitesInSameFirstPartySet(kHostA, kHostB));
 
   SetEnabledPolicyState(!pref_initially_enabled);
-  HostContentSettingsMapFactory::GetForProfile(browser()->profile())
-      ->ClearSettingsForOneType(ContentSettingsType::STORAGE_ACCESS);
 
   EXPECT_EQ(feature_enabled && !pref_initially_enabled,
             AreSitesInSameFirstPartySet(kHostA, kHostC));
@@ -207,8 +203,6 @@ IN_PROC_BROWSER_TEST_P(EnabledPolicyBrowsertest, ToggleFeature_NonMemberships) {
   EXPECT_FALSE(AreSitesInSameFirstPartySet(kHostD, kHostA));
   const bool pref_initially_enabled = GetPrefState() != PrefState::kDisabled;
   SetEnabledPolicyState(!pref_initially_enabled);
-  HostContentSettingsMapFactory::GetForProfile(browser()->profile())
-      ->ClearSettingsForOneType(ContentSettingsType::STORAGE_ACCESS);
 
   EXPECT_FALSE(AreSitesInSameFirstPartySet(kHostD, kHostA));
 }

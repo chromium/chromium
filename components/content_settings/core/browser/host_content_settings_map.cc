@@ -776,20 +776,30 @@ void HostContentSettingsMap::ClearSettingsForOneTypeWithPredicate(
     ClearSettingsForOneType(content_type);
     return;
   }
+  ClearSettingsForOneTypeWithPredicate(
+      content_type, [&](const ContentSettingPatternSource& setting) -> bool {
+        if (!pattern_predicate.is_null() &&
+            !pattern_predicate.Run(setting.primary_pattern,
+                                   setting.secondary_pattern)) {
+          return false;
+        }
+        base::Time last_modified = setting.metadata.last_modified();
+        return last_modified >= begin_time &&
+               (last_modified < end_time || end_time.is_null());
+      });
+}
+
+void HostContentSettingsMap::ClearSettingsForOneTypeWithPredicate(
+    ContentSettingsType content_type,
+    base::FunctionRef<bool(const ContentSettingPatternSource&)> predicate) {
   UsedContentSettingsProviders();
   for (const ContentSettingPatternSource& setting :
        GetSettingsForOneType(content_type)) {
-    if (pattern_predicate.is_null() ||
-        pattern_predicate.Run(setting.primary_pattern,
-                              setting.secondary_pattern)) {
-      base::Time last_modified = setting.metadata.last_modified();
-      if (last_modified >= begin_time &&
-          (last_modified < end_time || end_time.is_null())) {
-        for (auto* provider : user_modifiable_providers_) {
-          provider->SetWebsiteSetting(setting.primary_pattern,
-                                      setting.secondary_pattern, content_type,
-                                      base::Value(), {});
-        }
+    if (predicate(setting)) {
+      for (auto* provider : user_modifiable_providers_) {
+        provider->SetWebsiteSetting(setting.primary_pattern,
+                                    setting.secondary_pattern, content_type,
+                                    base::Value(), {});
       }
     }
   }
