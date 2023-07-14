@@ -835,7 +835,7 @@ export namespace Script {
 }
 export namespace Script {
   export type MappingLocalValue = [
-    ...[Script.LocalValue | string, Script.LocalValue][]
+    ...[Script.LocalValue | string, Script.LocalValue][],
   ];
 }
 export namespace Script {
@@ -1040,7 +1040,7 @@ export namespace Script {
 }
 export namespace Script {
   export type MappingRemoteValue = [
-    ...[Script.RemoteValue | string, Script.RemoteValue][]
+    ...[Script.RemoteValue | string, Script.RemoteValue][],
   ];
 }
 export namespace Script {

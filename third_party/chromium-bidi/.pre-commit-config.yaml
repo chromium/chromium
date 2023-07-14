@@ -43,17 +43,15 @@ repos:
     hooks:
       - id: flake8
   - repo: https://github.com/pre-commit/mirrors-eslint
-    rev: v8.42.0
+    rev: v8.44.0
     hooks:
       - id: eslint
         files: \.[jt]s$
         types: [file]
   - repo: https://github.com/pre-commit/mirrors-prettier
-    rev: v3.0.0-alpha.9-for-vscode
+    rev: v3.0.0
     hooks:
       - id: prettier
-        additional_dependencies:
-          - prettier@2.8.8
   - repo: https://github.com/google/yapf
     # Use v0.31.0 to match the version in Chromium depot_tools: https://chromium.googlesource.com/chromium/tools/depot_tools.git
     # XXX: Upgrade to v0.32.0 when upstream is addressed: https://bugs.chromium.org/p/chromium/issues/detail?id=1420681
@@ -67,12 +65,12 @@ repos:
     hooks:
       - id: isort
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.3.0
+    rev: v1.4.1
     hooks:
       - id: mypy
         additional_dependencies: [types-requests]
   - repo: https://github.com/asottile/pyupgrade
-    rev: v3.4.0
+    rev: v3.9.0
     hooks:
       - id: pyupgrade
         args: [--py310-plus]
@@ -86,7 +84,7 @@ repos:
     hooks:
       - id: shellcheck
   - repo: https://github.com/codespell-project/codespell
-    rev: v2.2.4
+    rev: v2.2.5
     hooks:
       - id: codespell
         # skip false positives

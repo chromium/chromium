@@ -44,7 +44,8 @@ export type SendCommandCommand = {
 };
 
 export type SendCommandParameters<
-  Command extends keyof ProtocolMapping.Commands = keyof ProtocolMapping.Commands
+  Command extends
+    keyof ProtocolMapping.Commands = keyof ProtocolMapping.Commands,
 > = {
   method: Command;
   params?: ProtocolMapping.Commands[Command]['paramsType'][0];
@@ -74,7 +75,7 @@ export type EventReceivedEvent = {
 };
 
 export type EventParameters<
-  EventName extends keyof ProtocolMapping.Events = keyof ProtocolMapping.Events
+  EventName extends keyof ProtocolMapping.Events = keyof ProtocolMapping.Events,
 > = {
   event: EventName;
   params: ProtocolMapping.Events[EventName];

@@ -141,7 +141,8 @@ function toJson(arg: Script.RemoteValue): string {
     return `[${arg.value?.map((val) => toJson(val)).join(',') ?? ''}]`;
   }
 
-  throw Error(`Invalid value type: ${arg.toString()}`);
+  // eslint-disable-next-line @typescript-eslint/no-base-to-string
+  throw Error(`Invalid value type: ${arg}`);
 }
 
 function stringFromArg(arg: Script.RemoteValue): string {

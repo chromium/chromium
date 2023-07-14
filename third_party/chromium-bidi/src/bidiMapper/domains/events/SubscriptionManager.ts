@@ -244,7 +244,7 @@ export class SubscriptionManager {
 
     const eventContextPairs: [
       eventName: ChromiumBidi.EventNames,
-      contextId: BrowsingContext.BrowsingContext | null
+      contextId: BrowsingContext.BrowsingContext | null,
     ][] = cartesianProduct(unrollEvents(events), contextIds);
 
     // Assert all unsubscriptions are valid.

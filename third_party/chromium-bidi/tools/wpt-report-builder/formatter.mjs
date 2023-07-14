@@ -130,8 +130,8 @@ export function generateHtml(map) {
     <div class="top">
       <h1>WPT test results</h1>
       <h2>${map.stat.pass} / ${map.stat.all} (${
-    map.stat.all - map.stat.pass
-  } remaining)</h2>
+        map.stat.all - map.stat.pass
+      } remaining)</h2>
       <div>
         ${Array.from(map.children.values())
           .map((t) => generateTestReport(t, map.path))
@@ -171,8 +171,10 @@ function generateSubtestReport(subtest) {
           subtest.status === 'PASS' ? 'pass' : 'fail'
         }">
           ${escapeHtml(subtest.name ?? subtest.path)} ${
-    subtest.message ? `<br /><small>${escapeHtml(subtest.message)}</small>` : ''
-  }
+            subtest.message
+              ? `<br /><small>${escapeHtml(subtest.message)}</small>`
+              : ''
+          }
           <span class="stat"><b>${escapeHtml(subtest.status)}</b></span>
         </p>
       </div>`;
