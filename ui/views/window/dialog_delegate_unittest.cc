@@ -135,6 +135,12 @@ class DialogTest : public ViewsTestBase {
     return widget;
   }
 
+  views::Widget* CreateDialogWidget(std::unique_ptr<WidgetDelegate> dialog) {
+    views::Widget* widget = DialogDelegate::CreateDialogWidget(
+        std::move(dialog), GetContext(), parent_widget_->GetNativeView());
+    return widget;
+  }
+
   void ShowDialog() { CreateDialogWidget(dialog_)->Show(); }
 
   void SimulateKeyPress(ui::KeyboardCode key) {
@@ -570,6 +576,74 @@ TEST_F(DialogDelegateCloseTest, CloseParentWidgetDoesNotInvokeCloseCallback) {
   dialog_waiter.Wait();
 
   EXPECT_FALSE(closed);
+}
+
+TEST_F(DialogTest, AcceptCallbackWithCloseDoesNotClose) {
+  test::WidgetTest::WidgetAutoclosePtr widget(
+      CreateDialogWidget(std::make_unique<DialogDelegateView>()));
+  auto* dialog = static_cast<DialogDelegateView*>(widget->widget_delegate());
+
+  bool accepted = false;
+  dialog->SetAcceptCallbackWithClose(base::BindLambdaForTesting([&]() {
+    accepted = true;
+    return false;
+  }));
+
+  EXPECT_FALSE(widget->IsClosed());
+  dialog->AcceptDialog();
+  EXPECT_FALSE(widget->IsClosed());
+  EXPECT_TRUE(accepted);
+}
+
+TEST_F(DialogTest, AcceptCallbackWithCloseDoesClose) {
+  test::WidgetTest::WidgetAutoclosePtr widget(
+      CreateDialogWidget(std::make_unique<DialogDelegateView>()));
+  auto* dialog = static_cast<DialogDelegateView*>(widget->widget_delegate());
+
+  bool accepted = false;
+  dialog->SetAcceptCallbackWithClose(base::BindLambdaForTesting([&]() {
+    accepted = true;
+    return true;
+  }));
+
+  EXPECT_FALSE(widget->IsClosed());
+  dialog->AcceptDialog();
+  EXPECT_TRUE(widget->IsClosed());
+  EXPECT_TRUE(accepted);
+}
+
+TEST_F(DialogTest, CancelCallbackWithCloseDoesNotClose) {
+  test::WidgetTest::WidgetAutoclosePtr widget(
+      CreateDialogWidget(std::make_unique<DialogDelegateView>()));
+  auto* dialog = static_cast<DialogDelegateView*>(widget->widget_delegate());
+
+  bool canceled = false;
+  dialog->SetCancelCallbackWithClose(base::BindLambdaForTesting([&]() {
+    canceled = true;
+    return false;
+  }));
+
+  EXPECT_FALSE(widget->IsClosed());
+  dialog->CancelDialog();
+  EXPECT_FALSE(widget->IsClosed());
+  EXPECT_TRUE(canceled);
+}
+
+TEST_F(DialogTest, CancelCallbackWithCloseDoesClose) {
+  test::WidgetTest::WidgetAutoclosePtr widget(
+      CreateDialogWidget(std::make_unique<DialogDelegateView>()));
+  auto* dialog = static_cast<DialogDelegateView*>(widget->widget_delegate());
+
+  bool canceled = false;
+  dialog->SetCancelCallbackWithClose(base::BindLambdaForTesting([&]() {
+    canceled = true;
+    return true;
+  }));
+
+  EXPECT_FALSE(widget->IsClosed());
+  dialog->CancelDialog();
+  EXPECT_TRUE(widget->IsClosed());
+  EXPECT_TRUE(canceled);
 }
 
 }  // namespace views

@@ -252,12 +252,24 @@ class VIEWS_EXPORT DialogDelegate : public WidgetDelegate {
   void SetButtonEnabled(ui::DialogButton button, bool enabled);
 
   // Called when the user presses the dialog's "OK" button or presses the dialog
-  // accept accelerator, if there is one.
+  // accept accelerator, if there is one. The dialog is closed after the
+  // callback is run.
   void SetAcceptCallback(base::OnceClosure callback);
 
+  // Called when the user presses the dialog's "OK" button or presses the dialog
+  // accept accelerator, if there is one. Callbacks can return true to close the
+  // dialog, false to leave the dialog open.
+  void SetAcceptCallbackWithClose(base::RepeatingCallback<bool()> callback);
+
   // Called when the user presses the dialog's "Cancel" button or presses the
-  // dialog close accelerator (which is always VKEY_ESCAPE).
+  // dialog close accelerator (which is always VKEY_ESCAPE). The dialog is
+  // closed after the callback is run.
   void SetCancelCallback(base::OnceClosure callback);
+
+  // Called when the user presses the dialog's "Cancel" button or presses the
+  // dialog close accelerator (which is always VKEY_ESCAPE). Callbacks can
+  // return true to close the dialog, false to leave the dialog open.
+  void SetCancelCallbackWithClose(base::RepeatingCallback<bool()> callback);
 
   // Called when:
   // * The user presses the dialog's close button, if it has one
@@ -349,9 +361,11 @@ class VIEWS_EXPORT DialogDelegate : public WidgetDelegate {
   std::unique_ptr<View> DisownFootnoteView();
 
  private:
-  // Runs a close callback, ensuring that at most one close callback is ever
-  // run.
-  void RunCloseCallback(base::OnceClosure callback);
+  // Runs a close callback, ensuring that at most one close callback is run
+  // if `callback` is a OnceClosure or returns true.
+  bool RunCloseCallback(
+      absl::variant<base::OnceClosure, base::RepeatingCallback<bool()>>&
+          callback);
 
   // The margins between the content and the inside of the border.
   // TODO(crbug.com/733040): Most subclasses assume they must set their own
@@ -375,12 +389,15 @@ class VIEWS_EXPORT DialogDelegate : public WidgetDelegate {
   base::ObserverList<DialogObserver>::Unchecked observer_list_;
 
   // Callbacks for the dialog's actions:
-  base::OnceClosure accept_callback_;
-  base::OnceClosure cancel_callback_;
+  absl::variant<base::OnceClosure, base::RepeatingCallback<bool()>>
+      accept_callback_;
+  absl::variant<base::OnceClosure, base::RepeatingCallback<bool()>>
+      cancel_callback_;
   base::OnceClosure close_callback_;
 
-  // Whether any of the three callbacks just above has been delivered yet, *or*
-  // one of the Accept/Cancel methods have been called and returned true.
+  // Whether any of the three callbacks just above has been delivered yet and
+  // returned true, *or* one of the Accept/Cancel methods have been called and
+  // returned true.
   bool already_started_close_ = false;
 };
 
