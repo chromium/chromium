@@ -12,12 +12,13 @@ namespace blink {
 
 // Manages the contain style scopes and quotes of the document.
 // Maps as 1:1 to the StyleEngine.
-class StyleContainmentScopeTree final
+class CORE_EXPORT StyleContainmentScopeTree final
     : public GarbageCollected<StyleContainmentScopeTree> {
  public:
   StyleContainmentScopeTree()
       : root_scope_(MakeGarbageCollected<StyleContainmentScope>(nullptr)),
-        outermost_quotes_dirty_scope_(nullptr) {}
+        outermost_quotes_dirty_scope_(nullptr),
+        outermost_counters_dirty_scope_(nullptr) {}
   StyleContainmentScopeTree(const StyleContainmentScopeTree&) = delete;
   StyleContainmentScopeTree& operator=(const StyleContainmentScopeTree&) =
       delete;
@@ -25,22 +26,29 @@ class StyleContainmentScopeTree final
   void CreateScopeForElement(const Element&);
   void DestroyScopeForElement(const Element&);
   void ElementWillBeRemoved(const Element&);
+  StyleContainmentScope* FindOrCreateEnclosingScopeForElement(const Element&);
 
   // If there is a dirty scope start an update from it going down its subtree.
   // During the update we calculate the correct depth for each quote and set
   // the correct text.
   // It can change the layout tree by creating text fragments.
   void UpdateQuotes();
+  void UpdateCounters();
   void UpdateOutermostQuotesDirtyScope(StyleContainmentScope*);
-
-  StyleContainmentScope* FindOrCreateEnclosingScopeForElement(const Element&);
+  void UpdateOutermostCountersDirtyScope(StyleContainmentScope*);
 
   void Trace(Visitor*) const;
+
+#if DCHECK_IS_ON()
+  void PrintScopesTree(StyleContainmentScope* scope = nullptr,
+                       wtf_size_t depth = 0u) const;
+#endif  // DCHECK_IS_ON()
 
  private:
   // The implicit top level scope for elements with no contain:style ancestors.
   Member<StyleContainmentScope> root_scope_;
   Member<StyleContainmentScope> outermost_quotes_dirty_scope_;
+  Member<StyleContainmentScope> outermost_counters_dirty_scope_;
   HeapHashMap<Member<const Element>, Member<StyleContainmentScope>> scopes_;
 };
 

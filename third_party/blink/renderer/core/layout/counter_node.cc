@@ -22,7 +22,9 @@
 #include "third_party/blink/renderer/core/layout/counter_node.h"
 
 #include "base/numerics/checked_math.h"
+#include "third_party/blink/renderer/core/css/style_containment_scope.h"
 #include "third_party/blink/renderer/core/layout/layout_counter.h"
+#include "third_party/blink/renderer/core/layout/layout_object.h"
 
 #if DCHECK_IS_ON()
 #include <stdio.h>
@@ -33,6 +35,7 @@ namespace blink {
 CounterNode::CounterNode(LayoutObject& o, unsigned type_mask, int value)
     : type_mask_(type_mask),
       value_(value),
+      value_before_(0),
       count_in_parent_(0),
       owner_(&o),
       root_layout_object_(nullptr),
@@ -41,6 +44,23 @@ CounterNode::CounterNode(LayoutObject& o, unsigned type_mask, int value)
       next_sibling_(nullptr),
       first_child_(nullptr),
       last_child_(nullptr) {}
+
+CounterNode::CounterNode(LayoutObject& o,
+                         const AtomicString& identifier,
+                         unsigned type_mask,
+                         int value)
+    : type_mask_(type_mask),
+      value_(value),
+      value_before_(0),
+      count_in_parent_(0),
+      owner_(&o),
+      root_layout_object_(nullptr),
+      parent_(nullptr),
+      previous_sibling_(nullptr),
+      next_sibling_(nullptr),
+      first_child_(nullptr),
+      last_child_(nullptr),
+      identifier_(identifier) {}
 
 void CounterNode::Destroy() {
   // Ideally this would be an assert and this would never be reached. In reality
@@ -100,6 +120,7 @@ void CounterNode::Trace(Visitor* visitor) const {
   visitor->Trace(next_sibling_);
   visitor->Trace(first_child_);
   visitor->Trace(last_child_);
+  visitor->Trace(scope_);
 }
 
 CounterNode* CounterNode::NextInPreOrderAfterChildren(
@@ -253,6 +274,15 @@ CounterNode* CounterNode::ParentCrossingStyleContainment(
   if (parent_)
     return parent_;
   return AncestorNodeAcrossStyleContainment(Owner(), identifier);
+}
+
+Element& CounterNode::OwnerElement() const {
+  LayoutObject* owner = owner_;
+  while (owner && !IsA<Element>(owner->GetNode())) {
+    owner = owner->PreviousInPreOrder();
+  }
+  CHECK(owner && IsA<Element>(owner->GetNode()));
+  return *To<Element>(owner->GetNode());
 }
 
 void CounterNode::ResetThisAndDescendantsLayoutObjects() {
