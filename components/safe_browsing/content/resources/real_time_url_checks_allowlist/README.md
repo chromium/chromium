@@ -22,6 +22,9 @@ allowlist.
   `components/safe_browsing/content/resources/real_time_url_checks_allowlist/` directory.
   This script will use the Safe Browsing API to fetch the URL hash prefixes, validate
   them, and if they're valid, store them in the real_time_url_allowlist.asciipb file.
+    * To double check that the new allowlist contents are valid, **run**
+    `~/chromium/src/out/{Android}/components_unittests --gtest_filter="RealTimeUrlChecksAllowlistResourceFileTest.*"`
+    before proceeding
 * **Submit** a chromium CL with the new `real_time_url_allowlist.asciipb` version.
     * When chrome builds, it will automatically run the make_real_time_url_allowlist_protobuf
       target. This target builds the new version of the local real_time_url_allowlist.pb file.
@@ -34,7 +37,7 @@ allowlist.
           (SafeBrowsing.BrowserThrottle.IsCheckCompletedOnProcessResponse)
         * Time to contentful paint
           (PageLoad.PaintTiming.NavigationToFirstContentfulPaint)
-* **Push*** the new version of the component to GCS to roll it out to users.
+* **Push** the new version of the component to GCS to roll it out to users.
     * In a synced checkout, run the following to generate the proto and push it to GCS. Run this
       from the `/chromium/src/` directory. Replace the arg with your build directory:
         * % `components/safe_browsing/content/resources/real_time_url_checks_allowlist/push_real_time_url_allowlist_proto.py -d out-gn/Android`
