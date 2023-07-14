@@ -493,7 +493,8 @@ class VIEWS_EXPORT MenuController
 
   // Calculates the bounds of the menu to show. `resulting_direction` is set to
   // match the direction the menu opened in. Also calculates anchor that system
-  // compositor can use to position the menu.
+  // compositor can use to position the menu. Resulting menu bounds, and bounds
+  // set for the `anchor` are in screen coordinates.
   gfx::Rect CalculateMenuBounds(MenuItemView* item,
                                 MenuOpenDirection preferred_open_direction,
                                 MenuOpenDirection* resulting_direction,

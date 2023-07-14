@@ -410,23 +410,11 @@ class MenuControllerTest : public ViewsTestBase,
     return CalculateBubbleMenuBounds(options, menu_item_.get());
   }
 
-  gfx::Rect CalculateExpectedMenuAnchorRect(MenuItemView* menu_item,
-                                            const gfx::Rect& item_bounds) {
-    if (menu_item->GetParentMenuItem()) {
-      gfx::Rect anchor_rect = item_bounds;
-      anchor_rect.set_size({1, 1});
-      const MenuConfig& menu_config = MenuConfig::instance();
-      const int submenu_horizontal_inset = menu_config.submenu_horizontal_inset;
-
-      const int left_of_parent = menu_item->GetBoundsInScreen().x() -
-                                 item_bounds.width() + submenu_horizontal_inset;
-
-      // TODO(1163646): handle RTL layout.
-      anchor_rect.set_x(left_of_parent + item_bounds.width());
-      anchor_rect.set_width(item_bounds.x() - anchor_rect.x());
-      return anchor_rect;
-    }
-    return menu_item->bounds();
+  gfx::Rect CalculateExpectedMenuAnchorRect(MenuItemView* menu_item) {
+    return menu_item->GetParentMenuItem()
+               ? gfx::Rect(menu_item->GetBoundsInScreen().origin(),
+                           {menu_item->width(), 1})
+               : menu_item->bounds();
   }
 
   MenuController::MenuOpenDirection GetChildMenuOpenDirectionAtDepth(
@@ -2854,9 +2842,7 @@ TEST_F(MenuControllerTest, ContextMenuInitializesAuraWindowWhenShown) {
              ui::OwnedWindowConstraintAdjustment::kAdjustmentFlipY |
              ui::OwnedWindowConstraintAdjustment::kAdjustmentRezizeY),
             anchor->constraint_adjustment);
-  EXPECT_EQ(
-      CalculateExpectedMenuAnchorRect(menu_item(), window->GetBoundsInScreen()),
-      anchor->anchor_rect);
+  EXPECT_EQ(CalculateExpectedMenuAnchorRect(menu_item()), anchor->anchor_rect);
 
   // Checking that child menu properties are calculated correctly.
   MenuItemView* const child_menu = menu_item()->GetSubmenu()->GetMenuItemAt(0);
@@ -2880,9 +2866,7 @@ TEST_F(MenuControllerTest, ContextMenuInitializesAuraWindowWhenShown) {
              ui::OwnedWindowConstraintAdjustment::kAdjustmentResizeX |
              ui::OwnedWindowConstraintAdjustment::kAdjustmentRezizeY),
             anchor->constraint_adjustment);
-  EXPECT_EQ(
-      CalculateExpectedMenuAnchorRect(child_menu, window->GetBoundsInScreen()),
-      anchor->anchor_rect);
+  EXPECT_EQ(CalculateExpectedMenuAnchorRect(child_menu), anchor->anchor_rect);
 }
 
 // Tests that |aura::Window| has the correct properties when a root or a child
@@ -2915,9 +2899,7 @@ TEST_F(MenuControllerTest, RootAndChildMenusInitializeAuraWindowWhenShown) {
              ui::OwnedWindowConstraintAdjustment::kAdjustmentFlipY |
              ui::OwnedWindowConstraintAdjustment::kAdjustmentRezizeY),
             anchor->constraint_adjustment);
-  EXPECT_EQ(
-      CalculateExpectedMenuAnchorRect(menu_item(), window->GetBoundsInScreen()),
-      anchor->anchor_rect);
+  EXPECT_EQ(CalculateExpectedMenuAnchorRect(menu_item()), anchor->anchor_rect);
 
   // Checking that child menu properties are calculated correctly.
   MenuItemView* const child_menu = menu_item()->GetSubmenu()->GetMenuItemAt(0);
@@ -2942,9 +2924,7 @@ TEST_F(MenuControllerTest, RootAndChildMenusInitializeAuraWindowWhenShown) {
              ui::OwnedWindowConstraintAdjustment::kAdjustmentRezizeY),
             anchor->constraint_adjustment);
   auto anchor_rect = anchor->anchor_rect;
-  EXPECT_EQ(
-      CalculateExpectedMenuAnchorRect(child_menu, window->GetBoundsInScreen()),
-      anchor->anchor_rect);
+  EXPECT_EQ(CalculateExpectedMenuAnchorRect(child_menu), anchor->anchor_rect);
 
   // Try to reposition the existing menu. Its anchor must change.
   child_menu->SetY(menu_item()->bounds().y() + 2);
@@ -2952,9 +2932,7 @@ TEST_F(MenuControllerTest, RootAndChildMenusInitializeAuraWindowWhenShown) {
                          MenuAnchorPosition::kTopLeft, false, false);
   MenuChildrenChanged(child_menu);
 
-  EXPECT_EQ(
-      CalculateExpectedMenuAnchorRect(child_menu, window->GetBoundsInScreen()),
-      anchor->anchor_rect);
+  EXPECT_EQ(CalculateExpectedMenuAnchorRect(child_menu), anchor->anchor_rect);
   // New anchor mustn't be the same as the old one.
   EXPECT_NE(anchor->anchor_rect, anchor_rect);
 }

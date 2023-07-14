@@ -2413,15 +2413,11 @@ gfx::Rect MenuController::CalculateMenuBounds(
     // Assume the menu can be placed in the preferred location.
     menu_bounds.set_x(create_on_right ? right_of_parent : left_of_parent);
 
-    // Calculate anchor for |menu_bounds|. Screen bounds must be ignored here
-    // as system compositors that do not provide global screen coordinates will
-    // use this anchor (instead of bounds) and check if the window fits the
-    // screen area (if it's constrained, etc).
-    anchor->anchor_rect = menu_bounds;
-    anchor->anchor_rect.set_size({1, 1});
-    // TODO(1163646): handle RTL layout.
-    anchor->anchor_rect.set_x(left_of_parent + menu_bounds.width());
-    anchor->anchor_rect.set_width(menu_bounds.x() - anchor->anchor_rect.x());
+    // Calculate the anchor for `menu_bounds`. This is set in screen coordinates
+    // in dip and this is later translated as needed into appropriate relative
+    // bounds as needed by the platform.
+    anchor->anchor_rect.set_origin(item_loc);
+    anchor->anchor_rect.set_size({item->width(), 1});
 
     // Everything after this check requires monitor bounds to be non-empty.
     if (ShouldIgnoreScreenBoundsForMenus() || monitor_bounds.IsEmpty())
