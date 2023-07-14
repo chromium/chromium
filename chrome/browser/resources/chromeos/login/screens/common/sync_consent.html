@@ -5,11 +5,6 @@ found in the LICENSE file.
 -->
 
 <style include="oobe-dialog-host-styles cros-color-overrides">
-  :host {
-    --iron-icon-height: var(--oobe-adaptive-dialog-icon-size);
-    --iron-icon-width: var(--oobe-adaptive-dialog-icon-size);
-  }
-
   .overview-list-item {
     border-top: 1px solid var(--cros-sys-separator);
     padding: 16px;
@@ -29,6 +24,13 @@ found in the LICENSE file.
 
   .overview-list-item-icon {
     padding-inline-end: 16px;
+    --iron-icon-fill-color: var(--cros-icon-color-blue);
+    --iron-icon-height: 24px;
+    --iron-icon-width: 24px;
+  }
+
+  :host-context(.jelly-enabled) .overview-list-item-icon {
+    --iron-icon-fill-color: var(--cros-sys-primary);
   }
 
   .overview-list-item-description {
@@ -79,15 +81,25 @@ found in the LICENSE file.
   }
 
   .card-icon {
-    --iron-icon-fill-color: var(--cros-icon-color-blue);
     align-items: center;
     align-self: center;
-    background-color: var(--cros-button-background-color-primary-disabled);
     border-radius: 20px;
     display: flex;
     flex-direction: row;
     justify-content: center;
     margin-inline-end: 16px;
+    --iron-icon-fill-color: var(--cros-icon-color-blue);
+    --iron-icon-height: 32px;
+    --iron-icon-width: 32px;
+  }
+
+  #tooltip-icon {
+    --iron-icon-height: 32px;
+    --iron-icon-width: 32px;
+  }
+
+  :host-context(.jelly-enabled) .card-icon {
+    --iron-icon-fill-color: var(--cros-sys-primary);
   }
 
   .card-title {
@@ -151,8 +163,8 @@ found in the LICENSE file.
   <div slot="content" class="landscape-header-aligned">
     <div class="overview-list-item layout horizontal"
         hidden="[[isLacrosEnabled_]]">
-      <img class="overview-list-item-icon" src="images/settings_gear.svg"
-          width="24" height="24" aria-hidden="true">
+      <iron-icon icon="oobe-24:settings-gear" class="overview-list-item-icon"
+          aria-hidden="true"></iron-icon>
       <div class="flex layout vertical center-justified">
         <div role="heading" aria-level="2" class="overview-list-item-title"
             consent-description>
@@ -162,8 +174,8 @@ found in the LICENSE file.
     </div>
     <div class="overview-list-item layout horizontal"
         hidden="[[isLacrosEnabled_]]">
-      <img class="overview-list-item-icon" src="images/browser_sync.svg"
-          width="24" height="24" aria-hidden="true">
+      <iron-icon icon="oobe-24:browser-sync" class="overview-list-item-icon"
+          aria-hidden="true"></iron-icon>
       <div class="flex layout vertical center-justified">
         <div role="heading" aria-level="2" class="overview-list-item-title"
             consent-description>

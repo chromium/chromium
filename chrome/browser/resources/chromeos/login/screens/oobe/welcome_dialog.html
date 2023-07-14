@@ -184,6 +184,10 @@ found in the LICENSE file.
   :host-context([orientation='horizontal']) .welcome-header-text {
     text-align: start;
   }
+
+  :host-context(.jelly-enabled) oobe-icon-button.bg-transparent {
+    --oobe-button-icon-fill-color: var(--cros-sys-primary);
+  }
 </style>
 <div id="dialog" class="layout vertical">
   <h1 id="title" class="welcome-header-text">

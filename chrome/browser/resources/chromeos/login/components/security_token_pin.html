@@ -35,6 +35,10 @@ found in the LICENSE file.
   [invisible] {
     visibility: hidden;
   }
+
+  :host-context(.jelly-enabled) iron-icon[icon='cr:error-outline'] {
+    color: var(--cros-sys-error);
+  }
 </style>
 <oobe-adaptive-dialog class="gaia-dialog" role="dialog" id="dialog"
     aria-describedby="description"
