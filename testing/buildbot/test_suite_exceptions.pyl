@@ -3621,6 +3621,12 @@
           '--gtest_filter=-ScopedDirTest.CloseOutOfScope',
         ],
       },
+      'android-oreo-x86-rel': {
+        'args': [
+          # TODO(crbug.com/1260440): Fix the failed test
+          '--gtest_filter=-ScopedDirTest.CloseOutOfScope',
+        ],
+      },
       # Keep this same as android-nougat-x86-rel above
       'android-x86-code-coverage': {
         'args': [

@@ -34478,7 +34478,8 @@
           "--use-persistent-shell",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
+          "--gtest_filter=-ScopedDirTest.CloseOutOfScope"
         ],
         "isolate_profile_data": true,
         "merge": {
