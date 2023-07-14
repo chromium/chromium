@@ -6,6 +6,7 @@
 #include <utility>
 
 #include "base/functional/callback.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/ui/browser.h"
@@ -22,10 +23,29 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
+#include "url/url_constants.h"
 
 namespace {
 
-constexpr char kTestDictionaryString[] = "A dictionary";
+constexpr base::StringPiece kTestDictionaryString = "A dictionary";
+
+constexpr base::StringPiece kCompressedDataOriginalString =
+    "This is compressed test data using a test dictionary";
+
+// kCompressedData is generated using the following commands:
+//  $ echo -n "A dictionary" > /tmp/dict
+//  $ echo -n "This is compressed test data using a test dictionary" > /tmp/data
+//  $ ./brotli -o /tmp/out.sbr -D /tmp/dict /tmp/data
+//  $ xxd -i  /tmp/out.sbr
+constexpr uint8_t kCompressedData[] = {
+    0xa1, 0x98, 0x01, 0x80, 0x22, 0xe0, 0x26, 0x4b, 0x95, 0x5c, 0x19,
+    0x18, 0x9d, 0xc1, 0xc3, 0x44, 0x0e, 0x5c, 0x6a, 0x09, 0x9d, 0xf0,
+    0xb0, 0x01, 0x47, 0x14, 0x87, 0x14, 0x6d, 0xfb, 0x60, 0x96, 0xdb,
+    0xae, 0x9e, 0x79, 0x54, 0xe3, 0x69, 0x03, 0x29};
+const std::string kCompressedDataString =
+    std::string(reinterpret_cast<const char*>(kCompressedData),
+                sizeof(kCompressedData));
 
 class SharedDictionaryAccessObserver : public content::WebContentsObserver {
  public:
@@ -64,6 +84,34 @@ absl::optional<std::string> GetSecAvailableDictionary(
     return absl::nullopt;
   }
   return it->second;
+}
+
+void CheckSharedDictionaryUseCounter(
+    base::HistogramTester& histograms,
+    int expected_used_count,
+    int expected_used_for_navigation_count,
+    int expected_used_for_main_frame_navigation_count,
+    int expected_used_for_sub_frame_navigation_count,
+    int expected_used_for_subresource_count) {
+  histograms.ExpectBucketCount("Blink.UseCounter.Features",
+                               blink::mojom::WebFeature::kSharedDictionaryUsed,
+                               expected_used_count);
+  histograms.ExpectBucketCount(
+      "Blink.UseCounter.Features",
+      blink::mojom::WebFeature::kSharedDictionaryUsedForNavigation,
+      expected_used_for_navigation_count);
+  histograms.ExpectBucketCount(
+      "Blink.UseCounter.Features",
+      blink::mojom::WebFeature::kSharedDictionaryUsedForMainFrameNavigation,
+      expected_used_for_main_frame_navigation_count);
+  histograms.ExpectBucketCount(
+      "Blink.UseCounter.Features",
+      blink::mojom::WebFeature::kSharedDictionaryUsedForSubFrameNavigation,
+      expected_used_for_sub_frame_navigation_count);
+  histograms.ExpectBucketCount(
+      "Blink.UseCounter.Features",
+      blink::mojom::WebFeature::kSharedDictionaryUsedForSubresource,
+      expected_used_for_subresource_count);
 }
 
 }  // namespace
@@ -237,6 +285,12 @@ class ChromeSharedDictionaryBrowserTest : public InProcessBrowserTest {
       response->set_content(dict_hash ? "Dictionary header available"
                                       : "Dictionary header not available");
       return response;
+    } else if (request.relative_url == "/path/compressed") {
+      CHECK(GetSecAvailableDictionary(request.headers));
+      response->set_content_type("text/html");
+      response->AddCustomHeader("content-encoding", "sbr");
+      response->set_content(kCompressedDataString);
+      return response;
     }
     return nullptr;
   }
@@ -342,4 +396,119 @@ IN_PROC_BROWSER_TEST_F(ChromeSharedDictionaryBrowserTest,
   EXPECT_FALSE(CheckDictionaryHeaderByIframeNavigation(
       embedded_test_server()->GetURL("/path/check_header2.html"),
       /*expect_blocked=*/true));
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeSharedDictionaryBrowserTest,
+                       UseCounterMainFrameNavigation) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/title1.html")));
+  EXPECT_TRUE(TryRegisterDictionary(*embedded_test_server()));
+  WaitForDictionaryReady(*embedded_test_server());
+
+  // Navigate away in order to flush use counters.
+  EXPECT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
+
+  base::HistogramTester histograms;
+
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/path/compressed")));
+  EXPECT_EQ(kCompressedDataOriginalString,
+            EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                   "document.body.innerText")
+                .ExtractString());
+
+  // Navigate away in order to flush use counters.
+  EXPECT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
+
+  CheckSharedDictionaryUseCounter(
+      histograms,
+      /*expected_used_count=*/1,
+      /*expected_used_for_navigation_count=*/1,
+      /*expected_used_for_main_frame_navigation_count=*/1,
+      /*expected_used_for_sub_frame_navigation_count=*/0,
+      /*expected_used_for_subresource_count=*/0);
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeSharedDictionaryBrowserTest,
+                       UseCounterSubFrameNavigation) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/title1.html")));
+  EXPECT_TRUE(TryRegisterDictionary(*embedded_test_server()));
+  WaitForDictionaryReady(*embedded_test_server());
+
+  // Navigate away in order to flush use counters.
+  EXPECT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
+
+  base::HistogramTester histograms;
+
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/title1.html")));
+
+  EXPECT_EQ(kCompressedDataOriginalString,
+            EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                   R"(
+  (async () => {
+    const iframe = document.createElement('iframe');
+    iframe.src = '/path/compressed';
+    const promise =
+        new Promise(resolve => { iframe.addEventListener('load', resolve); });
+    document.body.appendChild(iframe);
+    await promise;
+    return iframe.contentDocument.body.innerText;
+  })()
+                   )")
+                .ExtractString());
+
+  // Navigate away in order to flush use counters.
+  EXPECT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
+
+  CheckSharedDictionaryUseCounter(
+      histograms,
+      /*expected_used_count=*/1,
+      /*expected_used_for_navigation_count=*/1,
+      /*expected_used_for_main_frame_navigation_count=*/0,
+      /*expected_used_for_sub_frame_navigation_count=*/1,
+      /*expected_used_for_subresource_count=*/0);
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeSharedDictionaryBrowserTest,
+                       UseCounterSubresource) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/title1.html")));
+  EXPECT_TRUE(TryRegisterDictionary(*embedded_test_server()));
+  WaitForDictionaryReady(*embedded_test_server());
+
+  // Navigate away in order to flush use counters.
+  EXPECT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
+
+  base::HistogramTester histograms;
+
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/title1.html")));
+
+  EXPECT_EQ(kCompressedDataOriginalString,
+            EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                   R"(
+  (async () => {
+    return await (await fetch('path/compressed')).text();
+  })()
+                   )")
+                .ExtractString());
+
+  // Navigate away in order to flush use counters.
+  EXPECT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
+
+  CheckSharedDictionaryUseCounter(
+      histograms,
+      /*expected_used_count=*/1,
+      /*expected_used_for_navigation_count=*/0,
+      /*expected_used_for_main_frame_navigation_count=*/0,
+      /*expected_used_for_sub_frame_navigation_count=*/0,
+      /*expected_used_for_subresource_count=*/1);
 }

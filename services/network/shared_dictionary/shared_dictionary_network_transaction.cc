@@ -5,6 +5,7 @@
 #include "services/network/shared_dictionary/shared_dictionary_network_transaction.h"
 
 #include "base/functional/callback_helpers.h"
+#include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "net/base/completion_once_callback.h"
@@ -105,22 +106,48 @@ int SharedDictionaryNetworkTransaction::Start(
   network_transaction_->SetModifyRequestHeadersCallback(base::BindRepeating(
       &SharedDictionaryNetworkTransaction::ModifyRequestHeaders,
       base::Unretained(this), request->url));
+  return network_transaction_->Start(
+      request,
+      base::BindOnce(&SharedDictionaryNetworkTransaction::OnStartCompleted,
+                     base::Unretained(this), std::move(callback)),
+      net_log);
+}
 
-  return network_transaction_->Start(request, std::move(callback), net_log);
+void SharedDictionaryNetworkTransaction::OnStartCompleted(
+    net::CompletionOnceCallback callback,
+    int result) {
+  if (result == net::OK && shared_dictionary_ &&
+      ContentEncodingIsSbrOnly(
+          *network_transaction_->GetResponseInfo()->headers)) {
+    shared_dictionary_used_response_info_ =
+        std::make_unique<net::HttpResponseInfo>(
+            *network_transaction_->GetResponseInfo());
+    shared_dictionary_used_response_info_->did_use_shared_dictionary = true;
+  }
+  std::move(callback).Run(result);
 }
 
 void SharedDictionaryNetworkTransaction::ModifyRequestHeaders(
     const GURL& request_url,
     net::HttpRequestHeaders* request_headers) {
   DCHECK(shared_dictionary_storage_);
-  shared_dictionary_ =
-      shared_dictionary_storage_->GetDictionarySync(request_url);
+  // `shared_dictionary_` may have been already set if this transaction was
+  // restarted
+  if (!shared_dictionary_) {
+    shared_dictionary_ =
+        shared_dictionary_storage_->GetDictionarySync(request_url);
+  }
   if (!shared_dictionary_) {
     return;
   }
 
+  // `is_shared_dictionary_read_allowed_callback_` triggers a notification of
+  // the shared dictionary usage to the browser process. So we need to call
+  // `is_shared_dictionary_read_allowed_callback_` after checking the result
+  // of `GetDictionarySync()`.
   CHECK(is_shared_dictionary_read_allowed_callback_);
   if (!is_shared_dictionary_read_allowed_callback_.Run()) {
+    shared_dictionary_.reset();
     return;
   }
 
@@ -138,15 +165,16 @@ void SharedDictionaryNetworkTransaction::ModifyRequestHeaders(
           ? accept_encoding + ", sbr"
           : "sbr");
 
-  CHECK_EQ(DictionaryStatus::kNoDictionary, dictionary_status_);
-  dictionary_status_ = DictionaryStatus::kReading;
-  auto split_callback = base::SplitOnceCallback(base::BindOnce(
-      &SharedDictionaryNetworkTransaction::OnReadSharedDictionary,
-      base::Unretained(this)));
-  int read_result =
-      shared_dictionary_->ReadAll(std::move(split_callback.first));
-  if (read_result != net::ERR_IO_PENDING) {
-    std::move(split_callback.second).Run(read_result);
+  if (dictionary_status_ == DictionaryStatus::kNoDictionary) {
+    dictionary_status_ = DictionaryStatus::kReading;
+    auto split_callback = base::SplitOnceCallback(base::BindOnce(
+        &SharedDictionaryNetworkTransaction::OnReadSharedDictionary,
+        base::Unretained(this)));
+    int read_result =
+        shared_dictionary_->ReadAll(std::move(split_callback.first));
+    if (read_result != net::ERR_IO_PENDING) {
+      std::move(split_callback.second).Run(read_result);
+    }
   }
 }
 
@@ -170,23 +198,31 @@ void SharedDictionaryNetworkTransaction::OnReadSharedDictionary(int result) {
 
 int SharedDictionaryNetworkTransaction::RestartIgnoringLastError(
     net::CompletionOnceCallback callback) {
-  return network_transaction_->RestartIgnoringLastError(std::move(callback));
+  shared_dictionary_used_response_info_.reset();
+  return network_transaction_->RestartIgnoringLastError(
+      base::BindOnce(&SharedDictionaryNetworkTransaction::OnStartCompleted,
+                     base::Unretained(this), std::move(callback)));
 }
 
 int SharedDictionaryNetworkTransaction::RestartWithCertificate(
     scoped_refptr<net::X509Certificate> client_cert,
     scoped_refptr<net::SSLPrivateKey> client_private_key,
     net::CompletionOnceCallback callback) {
+  shared_dictionary_used_response_info_.reset();
   return network_transaction_->RestartWithCertificate(
       std::move(client_cert), std::move(client_private_key),
-      std::move(callback));
+      base::BindOnce(&SharedDictionaryNetworkTransaction::OnStartCompleted,
+                     base::Unretained(this), std::move(callback)));
 }
 
 int SharedDictionaryNetworkTransaction::RestartWithAuth(
     const net::AuthCredentials& credentials,
     net::CompletionOnceCallback callback) {
-  return network_transaction_->RestartWithAuth(credentials,
-                                               std::move(callback));
+  shared_dictionary_used_response_info_.reset();
+  return network_transaction_->RestartWithAuth(
+      credentials,
+      base::BindOnce(&SharedDictionaryNetworkTransaction::OnStartCompleted,
+                     base::Unretained(this), std::move(callback)));
 }
 
 bool SharedDictionaryNetworkTransaction::IsReadyToRestartForAuth() {
@@ -197,35 +233,28 @@ int SharedDictionaryNetworkTransaction::Read(
     net::IOBuffer* buf,
     int buf_len,
     net::CompletionOnceCallback callback) {
-  if (dictionary_status_ == DictionaryStatus::kNoDictionary) {
+  if (!shared_dictionary_used_response_info_) {
     return network_transaction_->Read(buf, buf_len, std::move(callback));
-  } else if (dictionary_status_ == DictionaryStatus::kReading) {
-    CHECK(!pending_read_task_);
-    pending_read_task_ =
-        std::make_unique<PendingReadTask>(buf, buf_len, std::move(callback));
-    return net::ERR_IO_PENDING;
   }
 
-  if (header_status_ == HeaderStatus::kUnknown) {
-    header_status_ = ContentEncodingIsSbrOnly(
-                         *network_transaction_->GetResponseInfo()->headers)
-                         ? HeaderStatus::kSharedBrotliUsed
-                         : HeaderStatus::kSharedBrotliNotUsed;
-    if (header_status_ == HeaderStatus::kSharedBrotliUsed &&
-        dictionary_status_ == DictionaryStatus::kFinished) {
-      shared_brotli_stream_ = net::CreateBrotliSourceStreamWithDictionary(
-          std::make_unique<ProxyingSourceStream>(network_transaction_.get()),
-          shared_dictionary_->data(), shared_dictionary_->size());
-    }
+  switch (dictionary_status_) {
+    case DictionaryStatus::kNoDictionary:
+      NOTREACHED_NORETURN();
+    case DictionaryStatus::kReading:
+      CHECK(!pending_read_task_);
+      pending_read_task_ =
+          std::make_unique<PendingReadTask>(buf, buf_len, std::move(callback));
+      return net::ERR_IO_PENDING;
+    case DictionaryStatus::kFinished:
+      if (!shared_brotli_stream_) {
+        shared_brotli_stream_ = net::CreateBrotliSourceStreamWithDictionary(
+            std::make_unique<ProxyingSourceStream>(network_transaction_.get()),
+            shared_dictionary_->data(), shared_dictionary_->size());
+      }
+      return shared_brotli_stream_->Read(buf, buf_len, std::move(callback));
+    case DictionaryStatus::kFailed:
+      return net::ERR_DICTIONARY_LOAD_FAILED;
   }
-  if (header_status_ == HeaderStatus::kSharedBrotliNotUsed) {
-    return network_transaction_->Read(buf, buf_len, std::move(callback));
-  }
-  if (dictionary_status_ == DictionaryStatus::kFailed) {
-    return net::ERR_DICTIONARY_LOAD_FAILED;
-  }
-  CHECK_EQ(DictionaryStatus::kFinished, dictionary_status_);
-  return shared_brotli_stream_->Read(buf, buf_len, std::move(callback));
 }
 
 void SharedDictionaryNetworkTransaction::StopCaching() {
@@ -246,6 +275,9 @@ void SharedDictionaryNetworkTransaction::DoneReading() {
 
 const net::HttpResponseInfo*
 SharedDictionaryNetworkTransaction::GetResponseInfo() const {
+  if (shared_dictionary_used_response_info_) {
+    return shared_dictionary_used_response_info_.get();
+  }
   return network_transaction_->GetResponseInfo();
 }
 

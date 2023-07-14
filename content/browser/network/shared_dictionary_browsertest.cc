@@ -9,20 +9,27 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/platform_thread.h"
+#include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/clear_site_data_utils.h"
+#include "content/public/browser/client_certificate_delegate.h"
+#include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
+#include "content/public/test/content_browser_test_content_browser_client.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/url_loader_interceptor.h"
 #include "content/shell/browser/shell.h"
@@ -32,7 +39,13 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/extras/shared_dictionary/shared_dictionary_isolation_key.h"
 #include "net/extras/shared_dictionary/shared_dictionary_usage_info.h"
+#include "net/ssl/client_cert_identity.h"
+#include "net/ssl/client_cert_identity_test_util.h"
+#include "net/ssl/client_cert_store.h"
+#include "net/ssl/ssl_private_key.h"
+#include "net/ssl/ssl_server_config.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "net/test/test_data_directory.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/shared_dictionary_access_observer.mojom.h"
@@ -59,7 +72,7 @@ namespace {
 //  Signature (Base64):
 //      rQhlXQ0eRMV/mXUd7hJ3M+kVYMcsH4YKt2Tk6aNuUwKLooNKKLi0cQLrGnTB6sVPV/pryxXV
 //      DNJ9HZ1z8KNzCw==
-constexpr char kOriginTrialToken[] =
+constexpr base::StringPiece kOriginTrialToken =
     "A60IZV0NHkTFf5l1He4SdzPpFWDHLB+GCrdk5OmjblMCi6KDSii4tHEC6xp0werFT1f6a8sV1Q"
     "zSfR2dc/CjcwsAAABzeyJvcmlnaW4iOiAiaHR0cHM6Ly9zaGFyZWQtZGljdGlvbmFyeS50ZXN0"
     "OjQ0MyIsICJmZWF0dXJlIjogIkNvbXByZXNzaW9uRGljdGlvbmFyeVRyYW5zcG9ydCIsICJleH"
@@ -67,21 +80,22 @@ constexpr char kOriginTrialToken[] =
 
 // The SHA256 hash of dictionary
 // (content/test/data/shared_dictionary/test.dict).
-const std::string kExpectedDictionaryHash =
+constexpr base::StringPiece kExpectedDictionaryHash =
     "53969bcf5e960e0edbf0a4bdde6b0b3e9381e156de7f5b91ce8391624270f416";
-const net::SHA256HashValue kExpectedDictionaryHashValue = {
+constexpr net::SHA256HashValue kExpectedDictionaryHashValue = {
     {0x53, 0x96, 0x9b, 0xcf, 0x5e, 0x96, 0x0e, 0x0e, 0xdb, 0xf0, 0xa4,
      0xbd, 0xde, 0x6b, 0x0b, 0x3e, 0x93, 0x81, 0xe1, 0x56, 0xde, 0x7f,
      0x5b, 0x91, 0xce, 0x83, 0x91, 0x62, 0x42, 0x70, 0xf4, 0x16}};
-const std::string kUncompressedDataString = "test(\"This is uncompressed.\");";
-const std::string kErrorInvalidHashString =
+constexpr base::StringPiece kUncompressedDataString =
+    "test(\"This is uncompressed.\");";
+constexpr base::StringPiece kErrorInvalidHashString =
     "test(\"Invalid dictionary hash.\");";
-const std::string kErrorNoSbrAcceptEncodingString =
+constexpr base::StringPiece kErrorNoSbrAcceptEncodingString =
     "test(\"sbr is not set in accept-encoding header.\");";
 
-const std::string kCompressedDataOriginalString =
+constexpr base::StringPiece kCompressedDataOriginalString =
     "test(\"This is compressed test data using a test dictionary\");";
-const uint8_t kCompressedData[] = {
+constexpr uint8_t kCompressedData[] = {
     0xa1, 0xe0, 0x01, 0x00, 0x64, 0x9c, 0xa4, 0xaa, 0xd7, 0x47, 0xe0, 0x26,
     0x4b, 0x95, 0x91, 0xb4, 0x46, 0x36, 0x09, 0xc9, 0xc7, 0x0e, 0x38, 0xe4,
     0x44, 0xe8, 0x72, 0x0d, 0x3c, 0x6e, 0xab, 0x35, 0x9b, 0x0f, 0x4b, 0xd1,
@@ -89,6 +103,8 @@ const uint8_t kCompressedData[] = {
 const std::string kCompressedDataString =
     std::string(reinterpret_cast<const char*>(kCompressedData),
                 sizeof(kCompressedData));
+
+constexpr base::StringPiece kHttpAuthPath = "/shared_dictionary/path/http_auth";
 
 class SharedDictionaryAccessObserver : public WebContentsObserver {
  public:
@@ -266,6 +282,142 @@ bool HasSbrAcceptEncoding(
   }
   return it->second == "sbr" || base::EndsWith(it->second, ", sbr");
 }
+
+// A dummy ContentBrowserClient for testing HTTP Auth.
+class DummyAuthContentBrowserClient
+    : public ContentBrowserTestContentBrowserClient {
+ public:
+  DummyAuthContentBrowserClient() = default;
+  ~DummyAuthContentBrowserClient() override = default;
+  DummyAuthContentBrowserClient(const DummyAuthContentBrowserClient&) = delete;
+  DummyAuthContentBrowserClient& operator=(
+      const DummyAuthContentBrowserClient&) = delete;
+
+  // ContentBrowserClient method:
+  std::unique_ptr<LoginDelegate> CreateLoginDelegate(
+      const net::AuthChallengeInfo& auth_info,
+      content::WebContents* web_contents,
+      const GlobalRequestID& request_id,
+      bool is_request_for_primary_main_frame,
+      const GURL& url,
+      scoped_refptr<net::HttpResponseHeaders> response_headers,
+      bool first_auth_attempt,
+      LoginAuthRequiredCallback auth_required_callback) override {
+    create_login_delegate_called_ = true;
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(auth_required_callback),
+                       net::AuthCredentials(u"username", u"password")));
+    return std::make_unique<LoginDelegate>();
+  }
+
+  bool create_login_delegate_called() const {
+    return create_login_delegate_called_;
+  }
+
+ private:
+  bool create_login_delegate_called_ = false;
+};
+
+// A dummy ContentBrowserClient for allowing all certificate errors.
+class CertificateErrorAllowingContentBrowserClient
+    : public ContentBrowserTestContentBrowserClient {
+ public:
+  CertificateErrorAllowingContentBrowserClient() = default;
+  ~CertificateErrorAllowingContentBrowserClient() override = default;
+  CertificateErrorAllowingContentBrowserClient(
+      const CertificateErrorAllowingContentBrowserClient&) = delete;
+  CertificateErrorAllowingContentBrowserClient& operator=(
+      const CertificateErrorAllowingContentBrowserClient&) = delete;
+
+  // ContentBrowserClient method:
+  void AllowCertificateError(
+      WebContents* web_contents,
+      int cert_error,
+      const net::SSLInfo& ssl_info,
+      const GURL& request_url,
+      bool is_primary_main_frame_request,
+      bool strict_enforcement,
+      base::OnceCallback<void(CertificateRequestResultType)> callback)
+      override {
+    allow_certificate_error_called_ = true;
+    std::move(callback).Run(CERTIFICATE_REQUEST_RESULT_TYPE_CONTINUE);
+  }
+
+  bool allow_certificate_error_called() const {
+    return allow_certificate_error_called_;
+  }
+
+ private:
+  bool allow_certificate_error_called_ = false;
+};
+
+// A dummy ContentBrowserClient for setting client certificate.
+class DummyClientCertStoreContentBrowserClient
+    : public ContentBrowserTestContentBrowserClient {
+ public:
+  DummyClientCertStoreContentBrowserClient() = default;
+  ~DummyClientCertStoreContentBrowserClient() override = default;
+  DummyClientCertStoreContentBrowserClient(
+      const DummyClientCertStoreContentBrowserClient&) = delete;
+  DummyClientCertStoreContentBrowserClient& operator=(
+      const DummyClientCertStoreContentBrowserClient&) = delete;
+
+  // ContentBrowserClient methods:
+  std::unique_ptr<net::ClientCertStore> CreateClientCertStore(
+      BrowserContext* browser_context) override {
+    net::ClientCertIdentityList cert_identity_list;
+    {
+      base::ScopedAllowBlockingForTesting allow_blocking;
+      std::unique_ptr<net::FakeClientCertIdentity> cert_identity =
+          net::FakeClientCertIdentity::CreateFromCertAndKeyFiles(
+              net::GetTestCertsDirectory(), "client_1.pem", "client_1.pk8");
+      EXPECT_TRUE(cert_identity.get());
+      cert_identity_list.push_back(std::move(cert_identity));
+    }
+    return std::make_unique<DummyClientCertStore>(
+        std::move(cert_identity_list));
+  }
+  base::OnceClosure SelectClientCertificate(
+      WebContents* web_contents,
+      net::SSLCertRequestInfo* cert_request_info,
+      net::ClientCertIdentityList client_certs,
+      std::unique_ptr<ClientCertificateDelegate> delegate) override {
+    select_client_certificate_called_ = true;
+    CHECK_EQ(1u, client_certs.size());
+    scoped_refptr<net::X509Certificate> cert(client_certs[0]->certificate());
+    client_certs[0]->AcquirePrivateKey(base::BindOnce(
+        [](std::unique_ptr<ClientCertificateDelegate> delegate,
+           scoped_refptr<net::X509Certificate> cert,
+           scoped_refptr<net::SSLPrivateKey> key) {
+          delegate->ContinueWithCertificate(std::move(cert), std::move(key));
+        },
+        std::move(delegate), std::move(cert)));
+    return base::OnceClosure();
+  }
+
+  bool select_client_certificate_called() const {
+    return select_client_certificate_called_;
+  }
+
+ private:
+  class DummyClientCertStore : public net::ClientCertStore {
+   public:
+    explicit DummyClientCertStore(net::ClientCertIdentityList list)
+        : list_(std::move(list)) {}
+    ~DummyClientCertStore() override = default;
+
+    // net::ClientCertStore:
+    void GetClientCerts(const net::SSLCertRequestInfo& cert_request_info,
+                        ClientCertListCallback callback) override {
+      std::move(callback).Run(std::move(list_));
+    }
+
+   private:
+    net::ClientCertIdentityList list_;
+  };
+  bool select_client_certificate_called_ = false;
+};
 
 class SharedDictionaryBrowserTestBase : public ContentBrowserTest {
  public:
@@ -777,6 +929,7 @@ class SharedDictionaryBrowserTest
   void SetUpOnMainThread() override {
     RegisterTestRequestHandler(*embedded_test_server());
     RegisterClearSiteDataRequestHandler(*embedded_test_server());
+    RegisterHttpAuthRequestHandler(*embedded_test_server());
     ASSERT_TRUE(embedded_test_server()->Start());
 
     cross_origin_server_ = std::make_unique<net::EmbeddedTestServer>();
@@ -852,6 +1005,42 @@ class SharedDictionaryBrowserTest
       response->AddCustomHeader("Clear-Site-Data", "\"storage\"");
     }
     response->set_content("");
+    return response;
+  }
+  void RegisterHttpAuthRequestHandler(net::EmbeddedTestServer& server) {
+    server.RegisterRequestHandler(base::BindRepeating(
+        &SharedDictionaryBrowserTest::HttpAuthRequestHandler,
+        base::Unretained(this)));
+  }
+  std::unique_ptr<net::test_server::HttpResponse> HttpAuthRequestHandler(
+      const net::test_server::HttpRequest& request) {
+    if (!base::StartsWith(request.relative_url, kHttpAuthPath)) {
+      return nullptr;
+    }
+    auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+    if (base::Contains(request.headers, "Authorization")) {
+      response->set_code(net::HTTP_OK);
+      absl::optional<std::string> dict_hash =
+          GetSecAvailableDictionary(request.headers);
+      if (dict_hash) {
+        if (*dict_hash == kExpectedDictionaryHash) {
+          if (HasSbrAcceptEncoding(request.headers)) {
+            response->AddCustomHeader("content-encoding", "sbr");
+            response->set_content(kCompressedDataString);
+          } else {
+            response->set_content(kErrorNoSbrAcceptEncodingString);
+          }
+        } else {
+          response->set_content(kErrorInvalidHashString);
+        }
+      } else {
+        response->set_content(kUncompressedDataString);
+      }
+    } else {
+      response->set_code(net::HTTP_UNAUTHORIZED);
+      response->AddCustomHeader("WWW-Authenticate",
+                                "Basic realm=\"test realm\"");
+    }
     return response;
   }
 
@@ -1344,6 +1533,79 @@ IN_PROC_BROWSER_TEST_P(SharedDictionaryBrowserTest,
   EXPECT_TRUE(WaitForHistogram(histogram_name));
   histogram_tester.ExpectTotalCount(histogram_name,
                                     /*expected_count=*/1);
+}
+
+IN_PROC_BROWSER_TEST_P(SharedDictionaryBrowserTest, RestartWithAuth) {
+  RunWriteDictionaryTest(
+      FetchType::kFetchApi,
+      embedded_test_server()->GetURL("/shared_dictionary/blank.html"),
+      embedded_test_server()->GetURL("/shared_dictionary/test.dict"));
+
+  DummyAuthContentBrowserClient browser_client;
+
+  EXPECT_FALSE(browser_client.create_login_delegate_called());
+  ASSERT_TRUE(NavigateToURL(GetTargetShell(),
+                            embedded_test_server()->GetURL(kHttpAuthPath)));
+  EXPECT_TRUE(browser_client.create_login_delegate_called());
+  EXPECT_EQ(kCompressedDataOriginalString,
+            EvalJs(GetTargetShell()->web_contents()->GetPrimaryMainFrame(),
+                   "document.body.innerText")
+                .ExtractString());
+}
+
+IN_PROC_BROWSER_TEST_P(SharedDictionaryBrowserTest,
+                       RestartedAfterCertErrorPageUseSbr) {
+  net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
+  https_server.ServeFilesFromSourceDirectory(GetTestDataFilePath());
+  RegisterTestRequestHandler(https_server);
+  ASSERT_TRUE(https_server.Start());
+  RunWriteDictionaryTest(FetchType::kFetchApi,
+                         https_server.GetURL("/shared_dictionary/blank.html"),
+                         https_server.GetURL("/shared_dictionary/test.dict"));
+
+  // Resetting the SSL config of the server to trigger a certificate error.
+  ASSERT_TRUE(https_server.ResetSSLConfig(net::EmbeddedTestServer::CERT_EXPIRED,
+                                          net::SSLServerConfig()));
+
+  CertificateErrorAllowingContentBrowserClient browser_client;
+  EXPECT_FALSE(browser_client.allow_certificate_error_called());
+  EXPECT_TRUE(
+      NavigateToURL(GetTargetShell(),
+                    https_server.GetURL("/shared_dictionary/path/test?html")));
+  EXPECT_TRUE(browser_client.allow_certificate_error_called());
+
+  EXPECT_EQ(kCompressedDataOriginalString,
+            EvalJs(GetTargetShell()->web_contents()->GetPrimaryMainFrame(),
+                   "document.body.innerText")
+                .ExtractString());
+}
+
+IN_PROC_BROWSER_TEST_P(SharedDictionaryBrowserTest,
+                       RestartWithCertificatePageUseSbr) {
+  net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
+  https_server.ServeFilesFromSourceDirectory(GetTestDataFilePath());
+  RegisterTestRequestHandler(https_server);
+  ASSERT_TRUE(https_server.Start());
+  RunWriteDictionaryTest(FetchType::kFetchApi,
+                         https_server.GetURL("/shared_dictionary/blank.html"),
+                         https_server.GetURL("/shared_dictionary/test.dict"));
+
+  // Resetting the SSL config of the server to require a client certificate.
+  net::SSLServerConfig server_config;
+  server_config.client_cert_type = net::SSLServerConfig::REQUIRE_CLIENT_CERT;
+  ASSERT_TRUE(https_server.ResetSSLConfig(net::EmbeddedTestServer::CERT_OK,
+                                          server_config));
+
+  DummyClientCertStoreContentBrowserClient browser_client;
+  EXPECT_FALSE(browser_client.select_client_certificate_called());
+  EXPECT_TRUE(
+      NavigateToURL(GetTargetShell(),
+                    https_server.GetURL("/shared_dictionary/path/test?html")));
+  EXPECT_TRUE(browser_client.select_client_certificate_called());
+  EXPECT_EQ(kCompressedDataOriginalString,
+            EvalJs(GetTargetShell()->web_contents()->GetPrimaryMainFrame(),
+                   "document.body.innerText")
+                .ExtractString());
 }
 
 }  // namespace

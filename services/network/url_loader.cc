@@ -1373,6 +1373,7 @@ mojom::URLResponseHeadPtr URLLoader::BuildResponseHead() const {
   response->was_in_prefetch_cache =
       !(url_request_->load_flags() & net::LOAD_PREFETCH) &&
       response_info.unused_since_prefetch;
+  response->did_use_shared_dictionary = response_info.did_use_shared_dictionary;
 
   response->was_cookie_in_request = false;
   for (const auto& cookie_with_access_result :

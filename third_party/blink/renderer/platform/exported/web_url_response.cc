@@ -146,6 +146,7 @@ WebURLResponse WebURLResponse::Create(
   response.SetConnectionReused(head.load_timing.socket_reused);
   response.SetWasFetchedViaSPDY(head.was_fetched_via_spdy);
   response.SetWasFetchedViaServiceWorker(head.was_fetched_via_service_worker);
+  response.SetDidUseSharedDictionary(head.did_use_shared_dictionary);
   response.SetServiceWorkerResponseSource(head.service_worker_response_source);
   response.SetType(head.response_type);
   response.SetPadding(head.padding);
@@ -507,6 +508,10 @@ WebURLResponse::GetServiceWorkerResponseSource() const {
 void WebURLResponse::SetServiceWorkerResponseSource(
     network::mojom::FetchResponseSource value) {
   resource_response_->SetServiceWorkerResponseSource(value);
+}
+
+void WebURLResponse::SetDidUseSharedDictionary(bool did_use_shared_dictionary) {
+  resource_response_->SetDidUseSharedDictionary(did_use_shared_dictionary);
 }
 
 void WebURLResponse::SetType(network::mojom::FetchResponseType value) {

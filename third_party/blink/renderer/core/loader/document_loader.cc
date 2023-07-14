@@ -2956,7 +2956,13 @@ void DocumentLoader::RecordUseCountersForCommit() {
           mojom::blink::DocumentPolicyFeature::kForceLoadAtTop)) {
     CountUse(WebFeature::kForceLoadAtTop);
   }
-
+  if (response_.DidUseSharedDictionary()) {
+    CountUse(WebFeature::kSharedDictionaryUsed);
+    CountUse(WebFeature::kSharedDictionaryUsedForNavigation);
+    CountUse(frame_->IsOutermostMainFrame()
+                 ? WebFeature::kSharedDictionaryUsedForMainFrameNavigation
+                 : WebFeature::kSharedDictionaryUsedForSubFrameNavigation);
+  }
   if (response_.IsSignedExchangeInnerResponse()) {
     CountUse(WebFeature::kSignedExchangeInnerResponse);
     CountUse(frame_->IsOutermostMainFrame()

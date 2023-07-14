@@ -1041,6 +1041,12 @@ void ResourceLoader::DidReceiveResponseInternal(
                             response_arrival - request_start);
   }
 
+  if (response.DidUseSharedDictionary()) {
+    fetcher_->GetUseCounter().CountUse(WebFeature::kSharedDictionaryUsed);
+    fetcher_->GetUseCounter().CountUse(
+        WebFeature::kSharedDictionaryUsedForSubresource);
+  }
+
   if (response.HasAuthorizationCoveredByWildcardOnPreflight()) {
     fetcher_->GetUseCounter().CountDeprecation(
         mojom::WebFeature::kAuthorizationCoveredByWildcard);

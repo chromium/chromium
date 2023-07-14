@@ -43457,6 +43457,11 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4598" label="GetCoalescedEventsInInsecureContext"/>
   <int value="4599" label="CSPEESameOriginBlanketEnforcement"/>
   <int value="4600" label="V8Navigator_GetEnvironmentIntegrity_Method"/>
+  <int value="4601" label="SharedDictionaryUsed"/>
+  <int value="4602" label="SharedDictionaryUsedForNavigation"/>
+  <int value="4603" label="SharedDictionaryUsedForMainFrameNavigation"/>
+  <int value="4604" label="SharedDictionaryUsedForSubFrameNavigation"/>
+  <int value="4605" label="SharedDictionaryUsedForSubresource"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

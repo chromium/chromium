@@ -272,6 +272,9 @@ class NET_EXPORT HttpResponseInfo {
   // session. Used for filtering cache access.
   absl::optional<int64_t> browser_run_id;
 
+  // True if the response used a shared dictionary for decoding its body.
+  bool did_use_shared_dictionary = false;
+
   static std::string ConnectionInfoToString(ConnectionInfo connection_info);
 };
 

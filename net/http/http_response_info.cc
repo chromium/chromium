@@ -128,9 +128,16 @@ enum {
   // This bit is set if the response has `browser_run_id` set.
   RESPONSE_INFO_BROWSER_RUN_ID = 1 << 30,
 
-  // This enum only has a few bits (`1 << 31` is the limit). If allocating the
-  // last flag, instead allocate it as `RESPONSE_INFO_HAS_EXTRA_FLAGS` to
-  // signal another flags word.
+  // This bit is set if the response has extra bit set.
+  RESPONSE_INFO_HAS_EXTRA_FLAGS = 1 << 31,
+};
+
+// These values can be bit-wise combined to form the extra flags field of the
+// serialized HttpResponseInfo.
+enum {
+  // This bit is set if the request usd a shared dictionary for decoding its
+  // body.
+  RESPONSE_EXTRA_INFO_DID_USE_SHARED_DICTIONARY = 1,
 };
 
 HttpResponseInfo::ConnectionInfoCoarse HttpResponseInfo::ConnectionInfoToCoarse(
@@ -211,8 +218,14 @@ bool HttpResponseInfo::InitFromPickle(const base::Pickle& pickle,
 
   // Read flags and verify version
   int flags;
+  int extra_flags = 0;
   if (!iter.ReadInt(&flags))
     return false;
+  if (flags & RESPONSE_INFO_HAS_EXTRA_FLAGS) {
+    if (!iter.ReadInt(&extra_flags)) {
+      return false;
+    }
+  }
   int version = flags & RESPONSE_INFO_VERSION_MASK;
   if (version < RESPONSE_INFO_MINIMUM_VERSION ||
       version > RESPONSE_INFO_VERSION) {
@@ -401,6 +414,8 @@ bool HttpResponseInfo::InitFromPickle(const base::Pickle& pickle,
     browser_run_id = absl::make_optional(id);
   }
 
+  did_use_shared_dictionary =
+      (extra_flags & RESPONSE_EXTRA_INFO_DID_USE_SHARED_DICTIONARY) != 0;
   return true;
 }
 
@@ -408,6 +423,7 @@ void HttpResponseInfo::Persist(base::Pickle* pickle,
                                bool skip_transient_headers,
                                bool response_truncated) const {
   int flags = RESPONSE_INFO_VERSION;
+  int extra_flags = 0;
   if (ssl_info.is_valid()) {
     flags |= RESPONSE_INFO_HAS_CERT;
     flags |= RESPONSE_INFO_HAS_CERT_STATUS;
@@ -451,7 +467,18 @@ void HttpResponseInfo::Persist(base::Pickle* pickle,
   if (browser_run_id.has_value())
     flags |= RESPONSE_INFO_BROWSER_RUN_ID;
 
+  if (did_use_shared_dictionary) {
+    extra_flags |= RESPONSE_EXTRA_INFO_DID_USE_SHARED_DICTIONARY;
+  }
+
+  if (extra_flags) {
+    flags |= RESPONSE_INFO_HAS_EXTRA_FLAGS;
+  }
+
   pickle->WriteInt(flags);
+  if (extra_flags) {
+    pickle->WriteInt(extra_flags);
+  }
   pickle->WriteInt64(request_time.ToInternalValue());
   pickle->WriteInt64(response_time.ToInternalValue());
 

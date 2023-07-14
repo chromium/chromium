@@ -282,6 +282,11 @@ class PLATFORM_EXPORT ResourceResponse final {
     did_service_worker_navigation_preload_ = value;
   }
 
+  bool DidUseSharedDictionary() const { return did_use_shared_dictionary_; }
+  void SetDidUseSharedDictionary(bool value) {
+    did_use_shared_dictionary_ = value;
+  }
+
   base::Time ResponseTime() const { return response_time_; }
   void SetResponseTime(base::Time response_time) {
     response_time_ = response_time;
@@ -516,6 +521,9 @@ class PLATFORM_EXPORT ResourceResponse final {
   // True if service worker navigation preload was performed due to
   // the request for this resource.
   bool did_service_worker_navigation_preload_ : 1;
+
+  // True if a shared dictionary was used to decompress the response body.
+  bool did_use_shared_dictionary_ : 1;
 
   // True if this resource is stale and needs async revalidation. Will only
   // possibly be set if the load_flags indicated SUPPORT_ASYNC_REVALIDATION.

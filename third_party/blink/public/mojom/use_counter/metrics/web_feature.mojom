@@ -3938,6 +3938,11 @@ enum WebFeature {
   kGetCoalescedEventsInInsecureContext = 4598,
   kCSPEESameOriginBlanketEnforcement = 4599,
   kV8Navigator_GetEnvironmentIntegrity_Method = 4600,
+  kSharedDictionaryUsed = 4601,
+  kSharedDictionaryUsedForNavigation = 4602,
+  kSharedDictionaryUsedForMainFrameNavigation = 4603,
+  kSharedDictionaryUsedForSubFrameNavigation = 4604,
+  kSharedDictionaryUsedForSubresource = 4605,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

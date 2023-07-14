@@ -184,6 +184,9 @@ class BLINK_PLATFORM_EXPORT WebURLResponse {
   network::mojom::FetchResponseSource GetServiceWorkerResponseSource() const;
   void SetServiceWorkerResponseSource(network::mojom::FetchResponseSource);
 
+  // Flag whether a shared dictionary was used to decompress the response body.
+  void SetDidUseSharedDictionary(bool);
+
   // https://fetch.spec.whatwg.org/#concept-response-type
   void SetType(network::mojom::FetchResponseType);
   network::mojom::FetchResponseType GetType() const;

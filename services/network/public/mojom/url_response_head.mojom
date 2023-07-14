@@ -291,4 +291,7 @@ struct URLResponseHead {
   // TODO(https://crbug.com/1268378): Remove this once preflights are enforced.
   PrivateNetworkAccessPreflightResult private_network_access_preflight_result =
       PrivateNetworkAccessPreflightResult.kNone;
+
+  // True if the response used a shared dictionary for decoding its body.
+  bool did_use_shared_dictionary = false;
 };
