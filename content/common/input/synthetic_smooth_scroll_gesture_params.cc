@@ -22,12 +22,4 @@ SyntheticSmoothScrollGestureParams::GetGestureType() const {
   return SMOOTH_SCROLL_GESTURE;
 }
 
-const SyntheticSmoothScrollGestureParams*
-SyntheticSmoothScrollGestureParams::Cast(
-    const SyntheticGestureParams* gesture_params) {
-  DCHECK(gesture_params);
-  DCHECK_EQ(SMOOTH_SCROLL_GESTURE, gesture_params->GetGestureType());
-  return static_cast<const SyntheticSmoothScrollGestureParams*>(gesture_params);
-}
-
 }  // namespace content

@@ -20,6 +20,7 @@
 #include "content/browser/renderer_host/input/synthetic_gesture.h"
 #include "content/browser/renderer_host/input/synthetic_gesture_controller.h"
 #include "content/browser/renderer_host/input/synthetic_gesture_target.h"
+#include "content/browser/renderer_host/input/synthetic_pointer_action.h"
 #include "content/browser/renderer_host/input/synthetic_smooth_scroll_gesture.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
@@ -254,18 +255,15 @@ class TouchActionBrowserTest : public ContentBrowserTest {
 
     run_loop_ = std::make_unique<base::RunLoop>();
 
-    std::unique_ptr<SyntheticSmoothScrollGesture> gesture1(
-        new SyntheticSmoothScrollGesture(params1));
-    GetWidgetHost()->QueueSyntheticGesture(std::move(gesture1),
-                                           base::DoNothing());
+    GetWidgetHost()->QueueSyntheticGesture(
+        std::make_unique<SyntheticSmoothScrollGesture>(params1),
+        base::DoNothing());
 
     JankMainThread(kLongJankTime);
     GiveItSomeTime(800);
 
-    std::unique_ptr<SyntheticSmoothScrollGesture> gesture2(
-        new SyntheticSmoothScrollGesture(params2));
     GetWidgetHost()->QueueSyntheticGesture(
-        std::move(gesture2),
+        std::make_unique<SyntheticSmoothScrollGesture>(params2),
         base::BindOnce(&TouchActionBrowserTest::OnSyntheticGestureCompleted,
                        base::Unretained(this)));
 
@@ -323,10 +321,8 @@ class TouchActionBrowserTest : public ContentBrowserTest {
 
     run_loop_ = std::make_unique<base::RunLoop>();
 
-    std::unique_ptr<SyntheticSmoothScrollGesture> gesture(
-        new SyntheticSmoothScrollGesture(params));
     GetWidgetHost()->QueueSyntheticGesture(
-        std::move(gesture),
+        std::make_unique<SyntheticSmoothScrollGesture>(params),
         base::BindOnce(&TouchActionBrowserTest::OnSyntheticGestureCompleted,
                        base::Unretained(this)));
 
@@ -367,7 +363,8 @@ class TouchActionBrowserTest : public ContentBrowserTest {
     run_loop_ = std::make_unique<base::RunLoop>();
 
     GetWidgetHost()->QueueSyntheticGesture(
-        SyntheticGesture::Create(actions_parser.gesture_params()),
+        std::make_unique<SyntheticPointerAction>(
+            actions_parser.pointer_action_params()),
         base::BindOnce(&TouchActionBrowserTest::OnSyntheticGestureCompleted,
                        base::Unretained(this)));
 
@@ -405,7 +402,8 @@ class TouchActionBrowserTest : public ContentBrowserTest {
     run_loop_ = std::make_unique<base::RunLoop>();
 
     GetWidgetHost()->QueueSyntheticGesture(
-        SyntheticGesture::Create(actions_parser.gesture_params()),
+        std::make_unique<SyntheticPointerAction>(
+            actions_parser.pointer_action_params()),
         base::BindOnce(&TouchActionBrowserTest::OnSyntheticGestureCompleted,
                        base::Unretained(this)));
 

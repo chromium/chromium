@@ -25,11 +25,4 @@ SyntheticGestureParams::GestureType SyntheticTapGestureParams::GetGestureType()
   return TAP_GESTURE;
 }
 
-const SyntheticTapGestureParams* SyntheticTapGestureParams::Cast(
-    const SyntheticGestureParams* gesture_params) {
-  DCHECK(gesture_params);
-  DCHECK_EQ(TAP_GESTURE, gesture_params->GetGestureType());
-  return static_cast<const SyntheticTapGestureParams*>(gesture_params);
-}
-
 }  // namespace content

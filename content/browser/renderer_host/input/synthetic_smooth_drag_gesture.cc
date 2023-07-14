@@ -10,7 +10,9 @@ namespace content {
 
 SyntheticSmoothDragGesture::SyntheticSmoothDragGesture(
     const SyntheticSmoothDragGestureParams& params)
-    : params_(params) {
+    : SyntheticGestureBase(params) {
+  CHECK_EQ(SyntheticGestureParams::SMOOTH_DRAG_GESTURE,
+           params.GetGestureType());
 }
 
 SyntheticSmoothDragGesture::~SyntheticSmoothDragGesture() {
@@ -21,8 +23,9 @@ SyntheticGesture::Result SyntheticSmoothDragGesture::ForwardInputEvents(
     SyntheticGestureTarget* target) {
   DCHECK(dispatching_controller_);
   if (!move_gesture_) {
-    if (!InitializeMoveGesture(params_.gesture_source_type, target))
+    if (!InitializeMoveGesture(params().gesture_source_type, target)) {
       return SyntheticGesture::GESTURE_SOURCE_TYPE_NOT_IMPLEMENTED;
+    }
   }
   return move_gesture_->ForwardInputEvents(timestamp, target);
 }
@@ -30,8 +33,8 @@ SyntheticGesture::Result SyntheticSmoothDragGesture::ForwardInputEvents(
 void SyntheticSmoothDragGesture::WaitForTargetAck(
     base::OnceClosure callback,
     SyntheticGestureTarget* target) const {
-  target->WaitForTargetAck(params_.GetGestureType(),
-                           params_.gesture_source_type, std::move(callback));
+  target->WaitForTargetAck(params().GetGestureType(),
+                           params().gesture_source_type, std::move(callback));
 }
 
 SyntheticSmoothMoveGestureParams::InputType
@@ -52,13 +55,13 @@ bool SyntheticSmoothDragGesture::InitializeMoveGesture(
   if (gesture_type == content::mojom::GestureSourceType::kTouchInput ||
       gesture_type == content::mojom::GestureSourceType::kMouseInput) {
     SyntheticSmoothMoveGestureParams move_params;
-    move_params.start_point = params_.start_point;
-    move_params.distances = params_.distances;
-    move_params.speed_in_pixels_s = params_.speed_in_pixels_s;
+    move_params.start_point = params().start_point;
+    move_params.distances = params().distances;
+    move_params.speed_in_pixels_s = params().speed_in_pixels_s;
     move_params.prevent_fling = true;
     move_params.input_type = GetInputSourceType(gesture_type);
     move_params.add_slop = false;
-    move_params.from_devtools_debugger = params_.from_devtools_debugger;
+    move_params.from_devtools_debugger = params().from_devtools_debugger;
     move_gesture_ = std::make_unique<SyntheticSmoothMoveGesture>(move_params);
     move_gesture_->DidQueue(dispatching_controller_);
     return true;

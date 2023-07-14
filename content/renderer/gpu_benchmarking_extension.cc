@@ -1276,19 +1276,17 @@ bool GpuBenchmarking::PointerActionSequence(gin::Arguments* args) {
       new CallbackAndContext(args->isolate(), callback,
                              context.web_frame()->MainWorldScriptContext());
   EnsureRemoteInterface();
-  if (actions_parser.gesture_params().GetGestureType() ==
+  if (actions_parser.parsed_gesture_type() ==
       SyntheticGestureParams::SMOOTH_SCROLL_GESTURE) {
     input_injector_->QueueSyntheticSmoothScroll(
-        static_cast<const SyntheticSmoothScrollGestureParams&>(
-            actions_parser.gesture_params()),
+        actions_parser.smooth_scroll_params(),
         base::BindOnce(&OnSyntheticGestureCompleted,
                        base::RetainedRef(callback_and_context)));
   } else {
-    DCHECK(actions_parser.gesture_params().GetGestureType() ==
-           SyntheticGestureParams::POINTER_ACTION_LIST);
+    CHECK_EQ(actions_parser.parsed_gesture_type(),
+             SyntheticGestureParams::POINTER_ACTION_LIST);
     input_injector_->QueueSyntheticPointerAction(
-        static_cast<const SyntheticPointerActionListParams&>(
-            actions_parser.gesture_params()),
+        actions_parser.pointer_action_params(),
         base::BindOnce(&OnSyntheticGestureCompleted,
                        base::RetainedRef(callback_and_context)));
   }

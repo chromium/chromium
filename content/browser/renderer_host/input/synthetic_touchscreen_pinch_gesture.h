@@ -5,6 +5,8 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_INPUT_SYNTHETIC_TOUCHSCREEN_PINCH_GESTURE_H_
 #define CONTENT_BROWSER_RENDERER_HOST_INPUT_SYNTHETIC_TOUCHSCREEN_PINCH_GESTURE_H_
 
+#include <memory>
+
 #include "base/time/time.h"
 #include "content/browser/renderer_host/input/synthetic_gesture.h"
 #include "content/browser/renderer_host/input/synthetic_gesture_target.h"
@@ -17,7 +19,7 @@
 namespace content {
 
 class CONTENT_EXPORT SyntheticTouchscreenPinchGesture
-    : public SyntheticGesture {
+    : public SyntheticGestureBase<SyntheticPinchGestureParams> {
  public:
   explicit SyntheticTouchscreenPinchGesture(
       const SyntheticPinchGestureParams& params);
@@ -54,7 +56,6 @@ class CONTENT_EXPORT SyntheticTouchscreenPinchGesture
   base::TimeTicks ClampTimestamp(const base::TimeTicks& timestamp) const;
   bool HasReachedTarget(const base::TimeTicks& timestamp) const;
 
-  SyntheticPinchGestureParams params_;
   std::unique_ptr<SyntheticPointerDriver> synthetic_pointer_driver_;
   float start_y_0_;
   float start_y_1_;

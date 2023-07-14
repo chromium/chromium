@@ -12,6 +12,7 @@
 #include "base/values.h"
 #include "content/common/content_export.h"
 #include "content/common/input/synthetic_pointer_action_list_params.h"
+#include "content/common/input/synthetic_smooth_scroll_gesture_params.h"
 
 namespace content {
 
@@ -49,8 +50,24 @@ class CONTENT_EXPORT ActionsParser {
   ~ActionsParser();
   bool Parse();
   const std::string& error_message() const { return error_message_; }
-  const SyntheticGestureParams& gesture_params() const {
-    return *gesture_params_.get();
+
+  SyntheticGestureParams::GestureType parsed_gesture_type() const {
+    CHECK(gesture_params_);
+    return gesture_params_->GetGestureType();
+  }
+
+  const SyntheticPointerActionListParams& pointer_action_params() const {
+    CHECK_EQ(parsed_gesture_type(),
+             SyntheticGestureParams::POINTER_ACTION_LIST);
+    return static_cast<const SyntheticPointerActionListParams&>(
+        *gesture_params_.get());
+  }
+
+  const SyntheticSmoothScrollGestureParams& smooth_scroll_params() const {
+    CHECK_EQ(parsed_gesture_type(),
+             SyntheticGestureParams::SMOOTH_SCROLL_GESTURE);
+    return static_cast<const SyntheticSmoothScrollGestureParams&>(
+        *gesture_params_.get());
   }
 
  private:

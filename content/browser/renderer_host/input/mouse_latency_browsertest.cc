@@ -15,7 +15,9 @@
 #include "content/browser/renderer_host/input/synthetic_gesture.h"
 #include "content/browser/renderer_host/input/synthetic_gesture_controller.h"
 #include "content/browser/renderer_host/input/synthetic_gesture_target.h"
+#include "content/browser/renderer_host/input/synthetic_pointer_action.h"
 #include "content/browser/renderer_host/input/synthetic_smooth_move_gesture.h"
+#include "content/browser/renderer_host/input/synthetic_smooth_scroll_gesture.h"
 #include "content/browser/renderer_host/input/synthetic_tap_gesture.h"
 #include "content/browser/renderer_host/render_widget_host_factory.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
@@ -212,7 +214,7 @@ class MouseLatencyBrowserTest : public ContentBrowserTest {
     params.distances.push_back(delta);
 
     GetWidgetHost()->QueueSyntheticGesture(
-        SyntheticGesture::Create(params),
+        std::make_unique<SyntheticSmoothScrollGesture>(params),
         base::BindOnce(&MouseLatencyBrowserTest::OnSyntheticGestureCompleted,
                        base::Unretained(this)));
 

@@ -10,6 +10,7 @@
 #include "build/chromeos_buildflags.h"
 #include "cc/base/math_util.h"
 #include "content/browser/renderer_host/cross_process_frame_connector.h"
+#include "content/browser/renderer_host/input/synthetic_pointer_action.h"
 #include "content/browser/renderer_host/input/synthetic_touchscreen_pinch_gesture.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_child_frame.h"
@@ -2432,8 +2433,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   ActionsParser actions_parser(std::move(*parsed_json));
 
   ASSERT_TRUE(actions_parser.Parse());
-  auto synthetic_scroll_gesture =
-      SyntheticGesture::Create(actions_parser.gesture_params());
+  auto synthetic_scroll_gesture = std::make_unique<SyntheticPointerAction>(
+      actions_parser.pointer_action_params());
 
   {
     auto* child_host = static_cast<RenderWidgetHostImpl*>(

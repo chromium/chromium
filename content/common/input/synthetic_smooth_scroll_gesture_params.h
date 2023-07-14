@@ -34,9 +34,6 @@ struct CONTENT_EXPORT SyntheticSmoothScrollGestureParams
   ui::ScrollGranularity granularity = ui::ScrollGranularity::kScrollByPixel;
   // A bitfield of values from blink::WebInputEvent::Modifiers.
   int modifiers = 0;
-
-  static const SyntheticSmoothScrollGestureParams* Cast(
-      const SyntheticGestureParams* gesture_params);
 };
 
 }  // namespace content

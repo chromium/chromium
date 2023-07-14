@@ -29,9 +29,6 @@ struct CONTENT_EXPORT SyntheticPointerActionListParams
   void PushPointerActionParamsList(const ParamList& param_list);
 
   std::vector<ParamList> params;
-
-  static const SyntheticPointerActionListParams* Cast(
-      const SyntheticGestureParams* gesture_params);
 };
 
 }  // namespace content

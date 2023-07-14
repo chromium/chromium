@@ -26,13 +26,6 @@ SyntheticPointerActionListParams::GetGestureType() const {
   return POINTER_ACTION_LIST;
 }
 
-const SyntheticPointerActionListParams* SyntheticPointerActionListParams::Cast(
-    const SyntheticGestureParams* gesture_params) {
-  DCHECK(gesture_params);
-  DCHECK_EQ(POINTER_ACTION_LIST, gesture_params->GetGestureType());
-  return static_cast<const SyntheticPointerActionListParams*>(gesture_params);
-}
-
 void SyntheticPointerActionListParams::PushPointerActionParams(
     const SyntheticPointerActionParams& param) {
   ParamList param_list;

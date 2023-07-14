@@ -27,11 +27,4 @@ SyntheticPinchGestureParams::GetGestureType() const {
   return PINCH_GESTURE;
 }
 
-const SyntheticPinchGestureParams* SyntheticPinchGestureParams::Cast(
-    const SyntheticGestureParams* gesture_params) {
-  DCHECK(gesture_params);
-  DCHECK_EQ(PINCH_GESTURE, gesture_params->GetGestureType());
-  return static_cast<const SyntheticPinchGestureParams*>(gesture_params);
-}
-
 }  // namespace content

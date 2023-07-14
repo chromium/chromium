@@ -23,7 +23,11 @@
 #include "content/browser/devtools/protocol/native_input_event_builder.h"
 #include "content/browser/devtools/protocol/protocol.h"
 #include "content/browser/renderer_host/data_transfer_util.h"
+#include "content/browser/renderer_host/input/synthetic_pinch_gesture.h"
 #include "content/browser/renderer_host/input/synthetic_pointer_action.h"
+#include "content/browser/renderer_host/input/synthetic_pointer_driver.h"
+#include "content/browser/renderer_host/input/synthetic_smooth_scroll_gesture.h"
+#include "content/browser/renderer_host/input/synthetic_tap_gesture.h"
 #include "content/browser/renderer_host/input/touch_emulator.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
@@ -1949,7 +1953,7 @@ void InputHandler::SynthesizePinchGesture(
   }
 
   root_view->host()->QueueSyntheticGesture(
-      SyntheticGesture::Create(gesture_params),
+      std::make_unique<SyntheticPinchGesture>(gesture_params),
       base::BindOnce(&SendSynthesizePinchGestureResponse, std::move(callback)));
 }
 
@@ -2033,7 +2037,7 @@ void InputHandler::SynthesizeRepeatingScroll(
   }
 
   root_view->host()->QueueSyntheticGesture(
-      SyntheticGesture::Create(gesture_params),
+      std::make_unique<SyntheticSmoothScrollGesture>(gesture_params),
       base::BindOnce(&InputHandler::OnScrollFinished,
                      weak_factory_.GetWeakPtr(), gesture_params, repeat_count,
                      repeat_delay, interaction_marker_name, id,
@@ -2116,7 +2120,7 @@ void InputHandler::SynthesizeTapGesture(
       new TapGestureResponse(std::move(callback), count);
   for (int i = 0; i < count; i++) {
     root_view->host()->QueueSyntheticGesture(
-        SyntheticGesture::Create(gesture_params),
+        std::make_unique<SyntheticTapGesture>(gesture_params),
         base::BindOnce(&TapGestureResponse::OnGestureResult,
                        base::Unretained(response)));
   }

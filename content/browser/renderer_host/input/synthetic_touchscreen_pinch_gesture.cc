@@ -15,19 +15,21 @@
 namespace content {
 
 SyntheticTouchscreenPinchGesture::SyntheticTouchscreenPinchGesture(
-    const SyntheticPinchGestureParams& params)
-    : params_(params),
+    const SyntheticPinchGestureParams& gesture_params)
+    : SyntheticGestureBase(gesture_params),
       start_y_0_(0.0f),
       start_y_1_(0.0f),
       max_pointer_delta_0_(0.0f),
       gesture_source_type_(content::mojom::GestureSourceType::kDefaultInput),
       state_(SETUP) {
-  DCHECK_GT(params_.scale_factor, 0.0f);
-  if (params_.gesture_source_type !=
+  CHECK_EQ(SyntheticGestureParams::PINCH_GESTURE,
+           gesture_params.GetGestureType());
+  DCHECK_GT(params().scale_factor, 0.0f);
+  if (params().gesture_source_type !=
       content::mojom::GestureSourceType::kTouchInput) {
-    DCHECK_EQ(params_.gesture_source_type,
+    DCHECK_EQ(params().gesture_source_type,
               content::mojom::GestureSourceType::kDefaultInput);
-    params_.gesture_source_type =
+    params_->gesture_source_type =
         content::mojom::GestureSourceType::kTouchInput;
   }
 }
@@ -43,7 +45,7 @@ SyntheticGesture::Result SyntheticTouchscreenPinchGesture::ForwardInputEvents(
   base::WeakPtr<SyntheticGestureController> weak_controller =
       dispatching_controller_;
   if (state_ == SETUP) {
-    gesture_source_type_ = params_.gesture_source_type;
+    gesture_source_type_ = params().gesture_source_type;
     if (gesture_source_type_ ==
         content::mojom::GestureSourceType::kDefaultInput)
       gesture_source_type_ = target->GetDefaultSyntheticGestureSourceType();
@@ -57,7 +59,7 @@ SyntheticGesture::Result SyntheticTouchscreenPinchGesture::ForwardInputEvents(
 
   if (!synthetic_pointer_driver_)
     synthetic_pointer_driver_ = SyntheticPointerDriver::Create(
-        gesture_source_type_, params_.from_devtools_debugger);
+        gesture_source_type_, params().from_devtools_debugger);
 
   if (gesture_source_type_ == content::mojom::GestureSourceType::kTouchInput) {
     ForwardTouchInputEvents(timestamp, target);
@@ -74,7 +76,7 @@ SyntheticGesture::Result SyntheticTouchscreenPinchGesture::ForwardInputEvents(
 void SyntheticTouchscreenPinchGesture::WaitForTargetAck(
     base::OnceClosure callback,
     SyntheticGestureTarget* target) const {
-  target->WaitForTargetAck(params_.GetGestureType(), gesture_source_type_,
+  target->WaitForTargetAck(params().GetGestureType(), gesture_source_type_,
                            std::move(callback));
 }
 
@@ -84,7 +86,7 @@ void SyntheticTouchscreenPinchGesture::ForwardTouchInputEvents(
   switch (state_) {
     case STARTED:
       // Check for an early finish.
-      if (params_.scale_factor == 1.0f) {
+      if (params().scale_factor == 1.0f) {
         state_ = DONE;
         break;
       }
@@ -113,9 +115,9 @@ void SyntheticTouchscreenPinchGesture::ForwardTouchInputEvents(
 void SyntheticTouchscreenPinchGesture::PressTouchPoints(
     SyntheticGestureTarget* target,
     const base::TimeTicks& timestamp) {
-  synthetic_pointer_driver_->Press(params_.anchor.x(), start_y_0_, 0);
+  synthetic_pointer_driver_->Press(params().anchor.x(), start_y_0_, 0);
   synthetic_pointer_driver_->DispatchEvent(target, timestamp);
-  synthetic_pointer_driver_->Press(params_.anchor.x(), start_y_1_, 1);
+  synthetic_pointer_driver_->Press(params().anchor.x(), start_y_1_, 1);
   synthetic_pointer_driver_->DispatchEvent(target, timestamp);
 }
 
@@ -127,8 +129,8 @@ void SyntheticTouchscreenPinchGesture::MoveTouchPoints(
   float current_y_0 = start_y_0_ + delta;
   float current_y_1 = start_y_1_ - delta;
 
-  synthetic_pointer_driver_->Move(params_.anchor.x(), current_y_0, 0);
-  synthetic_pointer_driver_->Move(params_.anchor.x(), current_y_1, 1);
+  synthetic_pointer_driver_->Move(params().anchor.x(), current_y_0, 0);
+  synthetic_pointer_driver_->Move(params().anchor.x(), current_y_1, 1);
   synthetic_pointer_driver_->DispatchEvent(target, timestamp);
 }
 
@@ -149,24 +151,25 @@ void SyntheticTouchscreenPinchGesture::SetupCoordinatesAndStopTime(
   // distance to the anchor is half the span.
   float initial_distance_to_anchor, final_distance_to_anchor;
   const float single_point_slop = target->GetSpanSlopInDips() / 2.0f;
-  if (params_.scale_factor > 1.0f) {  // zooming in
+  if (params().scale_factor > 1.0f) {  // zooming in
     initial_distance_to_anchor = target->GetMinScalingSpanInDips() / 2.0f;
     final_distance_to_anchor =
-        (initial_distance_to_anchor + single_point_slop) * params_.scale_factor;
+        (initial_distance_to_anchor + single_point_slop) *
+        params().scale_factor;
   } else {  // zooming out
     final_distance_to_anchor = target->GetMinScalingSpanInDips() / 2.0f;
     initial_distance_to_anchor =
-        (final_distance_to_anchor / params_.scale_factor) + single_point_slop;
+        (final_distance_to_anchor / params().scale_factor) + single_point_slop;
   }
 
-  start_y_0_ = params_.anchor.y() - initial_distance_to_anchor;
-  start_y_1_ = params_.anchor.y() + initial_distance_to_anchor;
+  start_y_0_ = params().anchor.y() - initial_distance_to_anchor;
+  start_y_1_ = params().anchor.y() + initial_distance_to_anchor;
 
   max_pointer_delta_0_ = initial_distance_to_anchor - final_distance_to_anchor;
 
   int64_t total_duration_in_us = static_cast<int64_t>(
       1e6 * (static_cast<double>(std::abs(2 * max_pointer_delta_0_)) /
-             params_.relative_pointer_speed_in_pixels_s));
+             params().relative_pointer_speed_in_pixels_s));
   DCHECK_GT(total_duration_in_us, 0);
   stop_time_ = start_time_ + base::Microseconds(total_duration_in_us);
 }
@@ -178,11 +181,11 @@ float SyntheticTouchscreenPinchGesture::GetDeltaForPointer0AtTime(
   if (HasReachedTarget(timestamp))
     return max_pointer_delta_0_;
 
-  float total_abs_delta = params_.relative_pointer_speed_in_pixels_s *
+  float total_abs_delta = params().relative_pointer_speed_in_pixels_s *
                           (timestamp - start_time_).InSecondsF();
   float abs_delta_pointer_0 = total_abs_delta / 2.0f;
-  return (params_.scale_factor > 1.0f) ? -abs_delta_pointer_0
-                                       : abs_delta_pointer_0;
+  return (params().scale_factor > 1.0f) ? -abs_delta_pointer_0
+                                        : abs_delta_pointer_0;
 }
 
 base::TimeTicks SyntheticTouchscreenPinchGesture::ClampTimestamp(

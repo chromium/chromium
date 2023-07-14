@@ -13,15 +13,19 @@ namespace content {
 
 SyntheticPinchGesture::SyntheticPinchGesture(
     const SyntheticPinchGestureParams& params)
-    : params_(params) {}
-SyntheticPinchGesture::~SyntheticPinchGesture() {}
+    : SyntheticGestureBase(params) {
+  CHECK_EQ(SyntheticGestureParams::PINCH_GESTURE, params.GetGestureType());
+}
+
+SyntheticPinchGesture::~SyntheticPinchGesture() = default;
 
 SyntheticGesture::Result SyntheticPinchGesture::ForwardInputEvents(
     const base::TimeTicks& timestamp,
     SyntheticGestureTarget* target) {
   DCHECK(dispatching_controller_);
   if (!lazy_gesture_) {
-    content::mojom::GestureSourceType source_type = params_.gesture_source_type;
+    content::mojom::GestureSourceType source_type =
+        params().gesture_source_type;
     if (source_type == content::mojom::GestureSourceType::kDefaultInput) {
       source_type = target->GetDefaultSyntheticGestureSourceType();
     }
@@ -29,10 +33,10 @@ SyntheticGesture::Result SyntheticPinchGesture::ForwardInputEvents(
     DCHECK_NE(content::mojom::GestureSourceType::kDefaultInput, source_type);
     if (source_type == content::mojom::GestureSourceType::kTouchInput) {
       lazy_gesture_ =
-          std::make_unique<SyntheticTouchscreenPinchGesture>(params_);
+          std::make_unique<SyntheticTouchscreenPinchGesture>(params());
     } else {
       DCHECK_EQ(content::mojom::GestureSourceType::kMouseInput, source_type);
-      lazy_gesture_ = std::make_unique<SyntheticTouchpadPinchGesture>(params_);
+      lazy_gesture_ = std::make_unique<SyntheticTouchpadPinchGesture>(params());
     }
     lazy_gesture_->DidQueue(dispatching_controller_);
   }
@@ -43,8 +47,8 @@ SyntheticGesture::Result SyntheticPinchGesture::ForwardInputEvents(
 void SyntheticPinchGesture::WaitForTargetAck(
     base::OnceClosure callback,
     SyntheticGestureTarget* target) const {
-  target->WaitForTargetAck(params_.GetGestureType(),
-                           params_.gesture_source_type, std::move(callback));
+  target->WaitForTargetAck(params().GetGestureType(),
+                           params().gesture_source_type, std::move(callback));
 }
 
 }  // namespace content
