@@ -51,6 +51,8 @@ void MakeServableStreamingURLLoaderForTest(
                  network::mojom::URLResponseHeadPtr response_head) {
                 NOTREACHED();
               }),
+          base::BindOnce(&PrefetchContainer::OnReceivedHead,
+                         prefetch_container->GetWeakPtr()),
           prefetch_container->GetResponseReaderForCurrentPrefetch());
 
   auto weak_streaming_loader = streaming_loader->GetWeakPtr();
@@ -124,6 +126,8 @@ void MakeServableStreamingURLLoaderWithRedirectForTest(
               &on_response_complete_loop),
           CreatePrefetchRedirectCallbackForTest(&on_receive_redirect_loop,
                                                 &redirect_info, &redirect_head),
+          base::BindOnce(&PrefetchContainer::OnReceivedHead,
+                         prefetch_container->GetWeakPtr()),
           prefetch_container->GetResponseReaderForCurrentPrefetch());
 
   auto weak_streaming_loader = streaming_loader->GetWeakPtr();
@@ -197,6 +201,8 @@ MakeServableStreamingURLLoadersWithNetworkTransitionRedirectForTest(
           }),
       CreatePrefetchRedirectCallbackForTest(&on_receive_redirect_loop,
                                             &redirect_info, &redirect_head),
+      base::BindOnce(&PrefetchContainer::OnReceivedHead,
+                     prefetch_container->GetWeakPtr()),
       prefetch_container->GetResponseReaderForCurrentPrefetch());
 
   auto weak_first_streaming_loader = first_streaming_loader->GetWeakPtr();
@@ -253,6 +259,8 @@ MakeServableStreamingURLLoadersWithNetworkTransitionRedirectForTest(
                              network::mojom::URLResponseHeadPtr response_head) {
         NOTREACHED();
       }),
+      base::BindOnce(&PrefetchContainer::OnReceivedHead,
+                     prefetch_container->GetWeakPtr()),
       prefetch_container->GetResponseReaderForCurrentPrefetch());
 
   auto weak_second_streaming_loader = second_streaming_loader->GetWeakPtr();

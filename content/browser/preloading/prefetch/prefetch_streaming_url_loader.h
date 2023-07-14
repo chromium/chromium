@@ -170,6 +170,7 @@ class CONTENT_EXPORT PrefetchStreamingURLLoader
       OnPrefetchResponseCompletedCallback
           on_prefetch_response_completed_callback,
       OnPrefetchRedirectCallback on_prefetch_redirect_callback,
+      base::OnceClosure on_received_head_callback,
       base::WeakPtr<PrefetchResponseReader> response_reader);
   ~PrefetchStreamingURLLoader() override;
 
@@ -191,15 +192,6 @@ class CONTENT_EXPORT PrefetchStreamingURLLoader
   void HandleRedirect(PrefetchStreamingURLLoaderStatus new_status,
                       const net::RedirectInfo& redirect_info,
                       network::mojom::URLResponseHeadPtr redirect_head);
-
-  // Registers a callback that is called once the head of the response is
-  // received via either |OnReceiveResponse| or |OnReceiveRedirect|. The
-  // callback is called once it is determined whether or not the prefetch is
-  // servable.
-  void SetOnReceivedHeadCallback(base::OnceClosure on_received_head_callback);
-
-  // Releases the closure registered via |SetOnReceivedHeadCallback|.
-  base::OnceClosure ReleaseOnReceivedHeadCallback();
 
   bool Servable(base::TimeDelta cacheable_duration) const;
   bool Failed() const;
@@ -267,6 +259,10 @@ class CONTENT_EXPORT PrefetchStreamingURLLoader
   OnPrefetchResponseStartedCallback on_prefetch_response_started_callback_;
   OnPrefetchResponseCompletedCallback on_prefetch_response_completed_callback_;
   OnPrefetchRedirectCallback on_prefetch_redirect_callback_;
+
+  // Called once it is determined whether or not the prefetch is servable, i.e.
+  // either when non-redirect response head is received, or when determined not
+  // servable.
   base::OnceClosure on_received_head_callback_;
 
   // The prefetched data and metadata.

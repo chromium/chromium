@@ -23,12 +23,14 @@ PrefetchStreamingURLLoader::PrefetchStreamingURLLoader(
     OnPrefetchResponseStartedCallback on_prefetch_response_started_callback,
     OnPrefetchResponseCompletedCallback on_prefetch_response_completed_callback,
     OnPrefetchRedirectCallback on_prefetch_redirect_callback,
+    base::OnceClosure on_received_head_callback,
     base::WeakPtr<PrefetchResponseReader> response_reader)
     : on_prefetch_response_started_callback_(
           std::move(on_prefetch_response_started_callback)),
       on_prefetch_response_completed_callback_(
           std::move(on_prefetch_response_completed_callback)),
-      on_prefetch_redirect_callback_(std::move(on_prefetch_redirect_callback)) {
+      on_prefetch_redirect_callback_(std::move(on_prefetch_redirect_callback)),
+      on_received_head_callback_(std::move(on_received_head_callback)) {
   SetResponseReader(std::move(response_reader));
 
   url_loader_factory->CreateLoaderAndStart(
@@ -64,15 +66,6 @@ void PrefetchStreamingURLLoader::SetResponseReader(
   if (response_reader_) {
     response_reader_->SetStreamingURLLoader(GetWeakPtr());
   }
-}
-
-void PrefetchStreamingURLLoader::SetOnReceivedHeadCallback(
-    base::OnceClosure on_received_head_callback) {
-  on_received_head_callback_ = std::move(on_received_head_callback);
-}
-
-base::OnceClosure PrefetchStreamingURLLoader::ReleaseOnReceivedHeadCallback() {
-  return std::move(on_received_head_callback_);
 }
 
 bool PrefetchStreamingURLLoader::Servable(

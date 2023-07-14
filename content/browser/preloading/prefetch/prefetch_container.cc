@@ -663,12 +663,6 @@ void PrefetchContainer::Reader::SetOnCookieCopyCompleteCallback(
 
 void PrefetchContainer::TakeStreamingURLLoader(
     std::unique_ptr<PrefetchStreamingURLLoader> streaming_loader) {
-  // Transfer the OnReceivedHeadCallback to the last streaming URL loader.
-  if (!streaming_loaders_.empty()) {
-    streaming_loader->SetOnReceivedHeadCallback(
-        streaming_loaders_.back()->ReleaseOnReceivedHeadCallback());
-  }
-
   streaming_loaders_.push_back(std::move(streaming_loader));
 }
 
@@ -778,10 +772,25 @@ void PrefetchContainer::Reader::OnPrefetchProbeResult(
   }
 }
 
-void PrefetchContainer::OnPrefetchedResponseHeadReceived() {
-  if (prefetch_document_manager_) {
+void PrefetchContainer::OnReceivedHead() {
+  // Check `GetHead()` here, because `OnReceivedHead()` can be called in
+  // non-servable cases when response headers are not available.
+  if (prefetch_document_manager_ && GetHead()) {
     prefetch_document_manager_->OnPrefetchedHeadReceived(GetURL());
   }
+  if (on_received_head_callback_) {
+    std::move(on_received_head_callback_).Run();
+  }
+}
+
+void PrefetchContainer::SetOnReceivedHeadCallback(
+    base::OnceClosure on_received_head_callback) {
+  DCHECK(!on_received_head_callback_);
+  on_received_head_callback_ = std::move(on_received_head_callback);
+}
+
+base::OnceClosure PrefetchContainer::ReleaseOnReceivedHeadCallback() {
+  return std::move(on_received_head_callback_);
 }
 
 void PrefetchContainer::OnPrefetchComplete() {

@@ -157,7 +157,6 @@ class PrefetchDocumentManagerTest : public RenderViewHostTestHarness {
 
     MakeServableStreamingURLLoaderForTest(GetPrefetches()[0].get(),
                                           std::move(head), "empty");
-    GetPrefetches()[0]->OnPrefetchedResponseHeadReceived();
 
     auto& test_rfh = static_cast<TestRenderFrameHost&>(GetPrimaryMainFrame());
     return test_rfh.GetConsoleMessages()[0];
@@ -285,7 +284,6 @@ TEST_F(PrefetchDocumentManagerTest, ProcessNoVarySearchResponse) {
 
     MakeServableStreamingURLLoaderForTest(GetPrefetches()[0].get(),
                                           std::move(head), "empty");
-    GetPrefetches()[0]->OnPrefetchedResponseHeadReceived();
 
     const auto urls_with_no_vary_search =
         prefetch_document_manager->GetAllForUrlWithoutRefAndQueryForTesting(
@@ -328,7 +326,6 @@ TEST_F(PrefetchDocumentManagerTest, ProcessNoVarySearchResponse) {
 
     MakeServableStreamingURLLoaderForTest(GetPrefetches().back().get(),
                                           std::move(head), "empty");
-    GetPrefetches().back()->OnPrefetchedResponseHeadReceived();
 
     const auto urls_with_no_vary_search =
         prefetch_document_manager->GetAllForUrlWithoutRefAndQueryForTesting(

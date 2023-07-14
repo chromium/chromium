@@ -267,8 +267,7 @@ void BlockUntilHeadTimeoutHelper(
 
   // Takes the on_received_head_callback
   base::OnceClosure on_received_head_callback =
-      prefetch_container->GetLastStreamingURLLoader()
-          ->ReleaseOnReceivedHeadCallback();
+      prefetch_container->ReleaseOnReceivedHeadCallback();
   if (on_received_head_callback) {
     std::move(on_received_head_callback).Run();
   }
@@ -1106,6 +1105,8 @@ void PrefetchService::MakePrefetchRequest(
                          base::Unretained(this), prefetch_container),
           base::BindRepeating(&PrefetchService::OnPrefetchRedirect,
                               base::Unretained(this), prefetch_container),
+          base::BindOnce(&PrefetchContainer::OnReceivedHead,
+                         prefetch_container),
           prefetch_container->GetResponseReaderForCurrentPrefetch());
 
   prefetch_container->TakeStreamingURLLoader(std::move(streaming_loader));
@@ -1256,7 +1257,6 @@ PrefetchStreamingURLLoaderStatus PrefetchService::OnPrefetchResponseStarted(
     return PrefetchStreamingURLLoaderStatus::kFailedMIMENotSupported;
   }
 
-  prefetch_container->OnPrefetchedResponseHeadReceived();
   return PrefetchStreamingURLLoaderStatus::kHeadReceivedWaitingOnBody;
 }
 
@@ -1522,7 +1522,7 @@ void PrefetchService::GetPrefetchToServe(
     DVLOG(1) << "PrefetchService::GetPrefetchToServe(" << url
              << "): PrefetchContainer is blocked until head";
     prefetch_container->OnGetPrefetchToServe(/*blocked_until_head=*/true);
-    prefetch_container->GetLastStreamingURLLoader()->SetOnReceivedHeadCallback(
+    prefetch_container->SetOnReceivedHeadCallback(
         base::BindOnce(&PrefetchService::WaitOnPrefetchToServeHead,
                        weak_method_factory_.GetWeakPtr(), key,
                        prefetch_container->GetWeakPtr(),

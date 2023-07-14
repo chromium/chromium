@@ -250,10 +250,12 @@ class CONTENT_EXPORT PrefetchContainer {
   // Whether or not |this| is servable.
   bool IsPrefetchServable(base::TimeDelta cacheable_duration) const;
 
-  // Called when |this| has received prefetched response's head.
-  // Once this is called, we should be able to call GetHead() and receive a
-  // non-null result.
-  void OnPrefetchedResponseHeadReceived();
+  // Called once it is determined whether or not the prefetch is servable, i.e.
+  // either when non-redirect response head is received, or when determined not
+  // servable.
+  void OnReceivedHead();
+  void SetOnReceivedHeadCallback(base::OnceClosure on_received_head_callback);
+  base::OnceClosure ReleaseOnReceivedHeadCallback();
 
   // Returns the head of the prefetched response. If there is no valid response,
   // then returns null.
@@ -522,6 +524,9 @@ class CONTENT_EXPORT PrefetchContainer {
   // A timer used to limit the maximum amount of time that a navigation can be
   // blocked waiting for the head of this prefetch to be received.
   std::unique_ptr<base::OneShotTimer> block_until_head_timer_;
+
+  // Called when `OnReceivedHead()` is called.
+  base::OnceClosure on_received_head_callback_;
 
   base::WeakPtrFactory<PrefetchContainer> weak_method_factory_{this};
 };
