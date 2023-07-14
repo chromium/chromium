@@ -172,12 +172,6 @@ void CheckClientDownloadRequestBase::FinishRequest(
         FROM_HERE, base::BindOnce(std::move(callback_), result));
   }
 
-  if (FileTypePolicies::GetInstance()
-          ->PolicyForFile(target_file_path_, GURL{}, nullptr)
-          .extension() == "exe") {
-    base::UmaHistogramEnumeration("SBClientDownload.CheckDownloadStats.Exe",
-                                  reason, REASON_MAX);
-  }
   base::UmaHistogramEnumeration("SBClientDownload.CheckDownloadStats", reason,
                                 REASON_MAX);
   MaybeLogDocumentMetrics(client_download_request_data_, reason);
