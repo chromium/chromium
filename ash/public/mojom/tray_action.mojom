@@ -22,56 +22,49 @@ enum TrayActionState {
 };
 
 // The user action that triggered a request for a new note.
-// Used in histograms - should be kept in sync with
-// NewLockScreenNoteRequestType histogram enum, and assigned values should
-// never be changed.
 enum LockScreenNoteOrigin {
   // The note request originated from the new note button in the system
   // tray - note that this UI element is deprecated.
-  kTrayAction = 0,
+  kTrayAction,
 
   // The user tapped the note action button shown on the lock screen.
-  kLockScreenButtonTap = 1,
+  kLockScreenButtonTap,
 
   // The user swiped from the note action button shown on the lock screen.
-  kLockScreenButtonSwipe = 2,
+  kLockScreenButtonSwipe,
 
   // The user activated the lock screen button shown on the lock screen using
   // the keyboard.
-  kLockScreenButtonKeyboard = 3,
+  kLockScreenButtonKeyboard,
 
   // The user ejected the stylus tool from the device.
-  kStylusEject = 4,
+  kStylusEject,
 };
 
 // Reason for closing a lock screen note, and consequentially closing any
 // existing note handler app windows.
-// Used primarily for metrics reporting.
-// IMPORTANT: The values should be kept in sync with
-// LockScreenNoteTakingExitReason histogram enum, and assigned values should
-// never be changed.
 enum CloseLockScreenNoteReason {
   // The user session was unlocked.
-  kSessionUnlock = 0,
+  kSessionUnlock,
 
   // The user session was shut down (e.g. due to user sign-out).
-  kShutdown = 1,
+  kShutdown,
 
   // The user display was completely dimmed (e.g. due to user inactivity).
-  kScreenDimmed = 2,
+  kScreenDimmed,
 
   // Device suspended.
-  kSuspend = 3,
+  kSuspend,
 
   // The app window associated with the note was closed by the app.
-  kAppWindowClosed = 4,
+  kAppWindowClosed,
 
   // The note taking app's support for the lock screen note taking was disabled
   // (e.g. because of a policy update).
-  kAppLockScreenSupportDisabled = 5,
+  kAppLockScreenSupportDisabled,
 
   // The user pressed "Unlock" button on the lock screen UI.
-  kUnlockButtonPressed = 6,
+  kUnlockButtonPressed,
 };
 
 // Used by a client (e.g. Chrome) to set up a handler for a tray action, and

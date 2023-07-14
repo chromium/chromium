@@ -56,7 +56,6 @@ class LockScreenItemStorage;
 namespace lock_screen_apps {
 
 class AppManager;
-class AppWindowMetricsTracker;
 class FirstAppRunToastManager;
 class FocusCyclerDelegate;
 class LockScreenProfileCreator;
@@ -241,11 +240,6 @@ class StateController : public ash::mojom::TrayActionClient,
       nullptr;
 
   raw_ptr<extensions::AppWindow, ExperimentalAsh> note_app_window_ = nullptr;
-  // Used to track metrics for app window launches - it is set when the user
-  // session is locked (and reset on unlock). Note that a single instance
-  // should not be reused for different lock sessions - it tracks number of app
-  // launches per lock screen.
-  std::unique_ptr<AppWindowMetricsTracker> note_app_window_metrics_;
 
   // Used to show first lock screen app run (toast) dialog when an app window
   // is first launched for an app.

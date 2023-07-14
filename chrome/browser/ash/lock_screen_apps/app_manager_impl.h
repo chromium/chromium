@@ -91,20 +91,6 @@ class AppManagerImpl : public AppManager,
     kAppUnavailable,
   };
 
-  // The lock screen note taking app state when a note action launch is
-  // requested.
-  // Used to report UMA histograms - the values should map to
-  // LockScreenNoteAppStatusOnLaunch UMA enum values, and the values assigned to
-  // enum states should NOT be changed.
-  enum class AppStatus {
-    kEnabled = 0,
-    kAppReloaded = 1,
-    kAppReloadFailed = 2,
-    kTerminatedReloadLimitExceeded = 3,
-    kNotLoadedNotTerminated = 4,
-    kCount = 5
-  };
-
   // Called when lock screen apps profile is ready to be used. Calling this will
   // cause app availability re-calculation.
   void OnLockScreenProfileLoaded();
@@ -149,10 +135,6 @@ class AppManagerImpl : public AppManager,
   // Returns null if the extension is not enabled, and cannot be enabled, or if
   // a web app is the current lock screen app.
   const extensions::Extension* GetChromeAppForLockScreenAppLaunch();
-
-  // Reports UMA for the app status when lock screen note action launch is
-  // attempted.
-  void ReportAppStatusOnAppLaunch(AppStatus status);
 
   // Updates internal state, and reports relevant metrics when the lock screen
   // app gets unloaded from the lock screen profile.

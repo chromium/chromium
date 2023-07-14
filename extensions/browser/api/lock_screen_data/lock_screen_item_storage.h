@@ -246,19 +246,6 @@ class LockScreenItemStorage : public ExtensionRegistryObserver {
                         CreateCallback callback,
                         OperationResult result);
 
-  // Callback for data item write operation - it invokes the callback with the
-  // operation result.
-  void OnItemWritten(const base::TimeTicks& start_time,
-                     WriteCallback callback,
-                     OperationResult result);
-
-  // Callback for data item read operation - it invokes the callback with the
-  // operation result.
-  void OnItemRead(const base::TimeTicks& start_time,
-                  ReadCallback callback,
-                  OperationResult result,
-                  std::unique_ptr<std::vector<char>> data);
-
   // Callback for item deletion operation. It removes the item from the cached
   // state and invokes the callback with the operation result.
   void OnItemDeleted(const std::string& extension_id,

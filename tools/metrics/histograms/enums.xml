@@ -59525,40 +59525,6 @@ chromeos/ash/components/language/language_packs/language_pack_manager.h -->
   <int value="1" label="Entered"/>
 </enum>
 
-<enum name="LockScreenActionAvailability">
-  <int value="0" label="Available"/>
-  <int value="1" label="Not available - no action handler app"/>
-  <int value="2" label="Not available - app with no lock screen support"/>
-  <int value="3" label="Not available - action not enabled on lock screen"/>
-  <int value="4" label="Not available - disallowed by policy"/>
-  <int value="5" label="Not available (temporarily) - no lock screen profile"/>
-</enum>
-
-<enum name="LockScreenAppSessionState">
-  <int value="0" label="Not launched"/>
-  <int value="1" label="Launching"/>
-  <int value="2" label="App window created"/>
-  <int value="3" label="App window shown"/>
-  <int value="4" label="App window in foreground"/>
-  <int value="5" label="App window in background"/>
-</enum>
-
-<enum name="LockScreenAppUnloadStatus">
-  <int value="0" label="Unload reason other than termination"/>
-  <int value="1" label="Terminated, app reload can be attempted"/>
-  <int value="2" label="Terminated, number of reload attempts exceeded"/>
-</enum>
-
-<enum name="LockScreenDataItemOperationResult">
-  <int value="0" label="Success"/>
-  <int value="1" label="Operation failed"/>
-  <int value="2" label="Data item not found"/>
-  <int value="3" label="Unknown app"/>
-  <int value="4" label="Item already registered"/>
-  <int value="5" label="Invalid encryption key"/>
-  <int value="6" label="Wrong encryption key"/>
-</enum>
-
 <enum name="LockScreenMediaControlsHideReason">
   <int value="0" label="Session changed"/>
   <int value="1" label="Dismissed by user"/>
@@ -59572,31 +59538,6 @@ chromeos/ash/components/language/language_packs/language_pack_manager.h -->
   <int value="2" label="Not shown - session paused"/>
   <int value="3" label="Shown"/>
   <int value="4" label="Not shown - session sensitive"/>
-</enum>
-
-<enum name="LockScreenNoteAppStatusOnLaunch">
-  <int value="0" label="Enabled"/>
-  <int value="1" label="Terminated - reloaded"/>
-  <int value="2" label="Terminated - reload attempt failed"/>
-  <int value="3" label="Terminated - number of reload attempts exceeded"/>
-  <int value="4" label="Not loaded, not terminated"/>
-</enum>
-
-<enum name="LockScreenNoteTakingExitReason">
-  <int value="0" label="Session was unlocked"/>
-  <int value="1" label="Session shutdown"/>
-  <int value="2" label="Screen turned off"/>
-  <int value="3" label="Device suspended"/>
-  <int value="4" label="App window closed"/>
-  <int value="5" label="Lock screen note taking disabled"/>
-  <int value="6" label="Unlock button pressed"/>
-</enum>
-
-<enum name="LockScreenNoteTakingUnlockUIAction">
-  <int value="0" label="User unlocked the session"/>
-  <int value="1" label="Session unlock was cancelled"/>
-  <int value="2" label="Device shut down"/>
-  <int value="3" label="User signed out"/>
 </enum>
 
 <enum name="LockScreenProgress">
@@ -75907,14 +75848,6 @@ Called by update_net_trust_anchors.py.-->
   <int value="4" label="Tether"/>
   <int value="5" label="VPN"/>
   <int value="6" label="Unknown"/>
-</enum>
-
-<enum name="NewLockScreenNoteRequestType">
-  <int value="0" label="System tray action"/>
-  <int value="1" label="Lock screen - button tap"/>
-  <int value="2" label="Lock screen - swipe gesture"/>
-  <int value="3" label="Lock screen - button activated by keyboard"/>
-  <int value="4" label="Stylus ejected"/>
 </enum>
 
 <enum name="NewTabPage.ExploreOffline.Action">

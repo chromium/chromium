@@ -20,8 +20,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
-#include "base/metrics/histogram_base.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/tick_clock.h"
@@ -64,9 +62,6 @@ using ExtensionCallback = base::OnceCallback<void(
 constexpr int kMaxLockScreenAppReloadsCount = 3;
 
 // The lock screen note taking availability state.
-// Used to report UMA histograms - the values should map to
-// LockScreenActionAvailability UMA enum values, and the values assigned to
-// enum states should NOT be changed.
 enum class ActionAvailability {
   kAvailable = 0,
   kNoActionHandlerApp = 1,
@@ -79,9 +74,6 @@ enum class ActionAvailability {
 
 // The reason the note taking app was unloaded from the lock screen apps
 // profile.
-// Used to report UMA histograms - the values should map to
-// LockScreenAppUnloadStatus UMA enum values, and the values assigned to
-// enum states should NOT be changed.
 enum class AppUnloadStatus {
   kNotTerminated = 0,
   kTerminatedReloadable = 1,
@@ -382,15 +374,9 @@ std::string AppManagerImpl::FindLockScreenAppId() const {
   // be nullptr.
   // If the app is available and the lock_screen_profile is not set, the profile
   // might still be loading, and |FindLockScreenAppId| will be called
-  // again when the profile is loaded - until then, report to UMA that lock
-  // screen profile was not created at this point, and otherwise ignore the
-  // available app.
+  // again when the profile is loaded - until then, ignore the available app.
   if (!lock_screen_profile_ && availability == ActionAvailability::kAvailable)
     availability = ActionAvailability::kLockScreenProfileNotCreated;
-
-  UMA_HISTOGRAM_ENUMERATION(
-      "Apps.LockScreen.NoteTakingApp.AvailabilityOnScreenLock", availability,
-      ActionAvailability::kCount);
 
   if (availability != ActionAvailability::kAvailable)
     return std::string();
@@ -472,10 +458,6 @@ void AppManagerImpl::CompleteLockScreenChromeAppInstall(
     int install_id,
     base::TimeTicks install_start_time,
     const scoped_refptr<const extensions::Extension>& app) {
-  UMA_HISTOGRAM_TIMES(
-      "Apps.LockScreen.NoteTakingApp.LockScreenInstallationDuration",
-      tick_clock_->NowTicks() - install_start_time);
-
   // Bail out if the app manager is no longer waiting for this app's
   // installation - the copied resources will be cleaned up when the (ephemeral)
   // lock screen profile is destroyed.
@@ -542,7 +524,6 @@ AppManagerImpl::GetChromeAppForLockScreenAppLaunch() {
   const extensions::Extension* app = extension_registry->GetExtensionById(
       lock_screen_app_id_, extensions::ExtensionRegistry::ENABLED);
   if (app) {
-    ReportAppStatusOnAppLaunch(AppStatus::kEnabled);
     return app;
   }
 
@@ -552,12 +533,10 @@ AppManagerImpl::GetChromeAppForLockScreenAppLaunch() {
   app =
       extension_registry->terminated_extensions().GetByID(lock_screen_app_id_);
   if (!app) {
-    ReportAppStatusOnAppLaunch(AppStatus::kNotLoadedNotTerminated);
     return nullptr;
   }
 
   if (available_lock_screen_app_reloads_ <= 0) {
-    ReportAppStatusOnAppLaunch(AppStatus::kTerminatedReloadLimitExceeded);
     return nullptr;
   }
 
@@ -578,15 +557,7 @@ AppManagerImpl::GetChromeAppForLockScreenAppLaunch() {
   app = extension_registry->GetExtensionById(
       lock_screen_app_id_, extensions::ExtensionRegistry::ENABLED);
 
-  ReportAppStatusOnAppLaunch(app ? AppStatus::kAppReloaded
-                                 : AppStatus::kAppReloadFailed);
   return app;
-}
-
-void AppManagerImpl::ReportAppStatusOnAppLaunch(AppStatus status) {
-  UMA_HISTOGRAM_ENUMERATION(
-      "Apps.LockScreen.NoteTakingApp.AppStatusOnNoteLaunch", status,
-      AppStatus::kCount);
 }
 
 void AppManagerImpl::HandleLockScreenChromeAppUnload(
@@ -600,9 +571,6 @@ void AppManagerImpl::HandleLockScreenChromeAppUnload(
                  ? AppUnloadStatus::kTerminatedReloadable
                  : AppUnloadStatus::kTerminatedReloadAttemptsExceeded;
   }
-  UMA_HISTOGRAM_ENUMERATION(
-      "Apps.LockScreen.NoteTakingApp.LockScreenAppUnloaded", status,
-      AppUnloadStatus::kCount);
 
   // If the app is terminated, it will be reloaded on the next app launch
   // request - if the app cannot be reloaded (e.g. if it was unloaded for a
@@ -611,13 +579,6 @@ void AppManagerImpl::HandleLockScreenChromeAppUnload(
   // that lock screen note action is not available anymore.
   if (status != AppUnloadStatus::kTerminatedReloadable)
     RemoveLockScreenAppDueToError();
-
-  if (status != AppUnloadStatus::kNotTerminated) {
-    UMA_HISTOGRAM_ENUMERATION(
-        "Apps.LockScreen.NoteTakingApp.ReloadCountOnAppTermination",
-        kMaxLockScreenAppReloadsCount - available_lock_screen_app_reloads_,
-        kMaxLockScreenAppReloadsCount + 1);
-  }
 }
 
 void AppManagerImpl::RemoveLockScreenAppDueToError() {

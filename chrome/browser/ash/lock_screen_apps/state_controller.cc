@@ -20,14 +20,10 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_base.h"
-#include "base/metrics/histogram_macros.h"
-#include "base/metrics/histogram_macros_internal.h"
 #include "base/path_service.h"
 #include "base/time/default_tick_clock.h"
 #include "chrome/browser/ash/lock_screen_apps/app_manager.h"
 #include "chrome/browser/ash/lock_screen_apps/app_manager_impl.h"
-#include "chrome/browser/ash/lock_screen_apps/app_window_metrics_tracker.h"
 #include "chrome/browser/ash/lock_screen_apps/first_app_run_toast_manager.h"
 #include "chrome/browser/ash/lock_screen_apps/focus_cycler_delegate.h"
 #include "chrome/browser/ash/lock_screen_apps/lock_screen_apps.h"
@@ -308,9 +304,6 @@ void StateController::RequestNewLockScreenNote(LockScreenNoteOrigin origin) {
 
   DCHECK(app_manager_->IsLockScreenAppAvailable());
 
-  UMA_HISTOGRAM_ENUMERATION("Apps.LockScreen.NoteTakingApp.LaunchRequestReason",
-                            origin);
-
   // Update state to launching even if app fails to launch - this is to notify
   // listeners that a lock screen note request was handled.
   UpdateLockScreenNoteState(TrayActionState::kLaunching);
@@ -319,8 +312,6 @@ void StateController::RequestNewLockScreenNote(LockScreenNoteOrigin origin) {
     UpdateLockScreenNoteState(TrayActionState::kAvailable);
     return;
   }
-
-  note_app_window_metrics_->AppLaunchRequested();
 }
 
 void StateController::CloseLockScreenNote(CloseLockScreenNoteReason reason) {
@@ -333,7 +324,6 @@ void StateController::OnSessionStateChanged() {
     app_manager_->Stop();
     ResetNoteTakingWindowAndMoveToNextState(
         true /*close_window*/, CloseLockScreenNoteReason::kSessionUnlock);
-    note_app_window_metrics_.reset();
     return;
   }
 
@@ -343,8 +333,6 @@ void StateController::OnSessionStateChanged() {
   app_manager_->Start(
       base::BindRepeating(&StateController::OnNoteTakingAvailabilityChanged,
                           base::Unretained(this)));
-  note_app_window_metrics_ =
-      std::make_unique<AppWindowMetricsTracker>(tick_clock_);
   lock_screen_data_->SetSessionLocked(true);
   OnNoteTakingAvailabilityChanged();
 }
@@ -380,7 +368,6 @@ void StateController::OnAppWindowAdded(extensions::AppWindow* app_window) {
     return;
   note_window_observation_.Observe(note_app_window_->GetNativeWindow());
   first_app_run_toast_manager_->RunForAppWindow(note_app_window_);
-  note_app_window_metrics_->AppWindowCreated(app_window);
 }
 
 void StateController::OnAppWindowRemoved(extensions::AppWindow* app_window) {
@@ -488,15 +475,6 @@ void StateController::ResetNoteTakingWindowAndMoveToNextState(
   app_window_observation_.Reset();
   if (first_app_run_toast_manager_)
     first_app_run_toast_manager_->Reset();
-
-  if (note_app_window_metrics_)
-    note_app_window_metrics_->Reset();
-
-  if (lock_screen_note_state_ != TrayActionState::kAvailable &&
-      lock_screen_note_state_ != TrayActionState::kNotAvailable) {
-    UMA_HISTOGRAM_ENUMERATION(
-        "Apps.LockScreen.NoteTakingApp.NoteTakingExitReason", reason);
-  }
 
   if (focus_cycler_delegate_ &&
       lock_screen_note_state_ == TrayActionState::kActive) {

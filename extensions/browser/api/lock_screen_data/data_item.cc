@@ -182,12 +182,6 @@ void WriteImpl(OperationResult* result,
   }
   base::Base64Encode(encrypted, &encrypted);
 
-  UMA_HISTOGRAM_COUNTS_10M("Apps.LockScreen.DataItemStorage.ClearTextItemSize",
-                           data.size());
-
-  UMA_HISTOGRAM_COUNTS_10M("Apps.LockScreen.DataItemStorage.EncryptedItemSize",
-                           encrypted.size());
-
   ValueStore::WriteResult write = store->Set(ValueStore::DEFAULTS, item_id,
                                              base::Value(std::move(encrypted)));
 

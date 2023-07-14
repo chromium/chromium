@@ -654,12 +654,6 @@ TEST_F(LockScreenProfileCreatorImplTest, MetricsOnSuccess) {
                   ->WaitForCreationAndOverrideResponse(true));
 
   EXPECT_TRUE(callback_run);
-
-  histogram_tester->ExpectTimeBucketCount(
-      "Apps.LockScreen.AppsProfile.Creation.Duration", base::Milliseconds(20),
-      1);
-  histogram_tester->ExpectUniqueSample(
-      "Apps.LockScreen.AppsProfile.Creation.Success", 1, 1);
 }
 
 TEST_F(LockScreenProfileCreatorImplTest, MetricsOnFailure) {
@@ -689,9 +683,4 @@ TEST_F(LockScreenProfileCreatorImplTest, MetricsOnFailure) {
                   ->WaitForCreationAndOverrideResponse(false));
 
   EXPECT_TRUE(callback_run);
-
-  histogram_tester->ExpectTotalCount(
-      "Apps.LockScreen.AppsProfile.Creation.Duration", 0);
-  histogram_tester->ExpectUniqueSample(
-      "Apps.LockScreen.AppsProfile.Creation.Success", 0, 1);
 }
