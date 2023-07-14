@@ -57,18 +57,36 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
           trigger:
             "These requests are sent periodically when a session is connected, "
             "i.e. CRD host is running and is connected to a client."
+          user_data {
+            type: OTHER
+          }
           data:
             "Anonymous usage statistics, which includes CRD host version, OS "
             "name, OS version, and CPU architecture (e.g. x86_64)."
           destination: GOOGLE_OWNED_SERVICE
+          internal {
+            contacts { email: "garykac@chromium.org" }
+            contacts { email: "jamiewalch@chromium.org" }
+            contacts { email: "joedow@chromium.org" }
+            contacts { email: "lambroslambrou@chromium.org" }
+            contacts { email: "rkjnsn@chromium.org" }
+            contacts { email: "yuweih@chromium.org" }
+          }
+          last_reviewed: "2023-07-07"
         }
         policy {
           cookies_allowed: NO
           setting:
             "This request cannot be stopped in settings, but will not be sent "
             "if the user does not use Chrome Remote Desktop."
-          policy_exception_justification:
-            "Not implemented."
+          chrome_policy {
+            RemoteAccessHostAllowRemoteSupportConnections {
+              RemoteAccessHostAllowRemoteSupportConnections: false
+            }
+            RemoteAccessHostAllowEnterpriseRemoteSupportConnections {
+              RemoteAccessHostAllowEnterpriseRemoteSupportConnections: false
+            }
+          }
         })");
 
 constexpr char kCreateLogEntryPath[] = "/v1/telemetry:createlogentry";
