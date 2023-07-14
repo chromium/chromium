@@ -223,6 +223,7 @@ TEST_F(HttpAuthManagerTest, UpdateLastUsedTimeWhenSubmittingSavedCredentials) {
   stored_form.password_value = u"1234";
   stored_form.in_store = PasswordForm::Store::kProfileStore;
   stored_form.date_last_used = base::Time::Now() - base::Days(1);
+  stored_form.match_type = PasswordForm::MatchType::kExact;
 
   MockHttpAuthObserver observer;
 

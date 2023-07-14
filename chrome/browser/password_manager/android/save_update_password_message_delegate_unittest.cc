@@ -295,6 +295,7 @@ PasswordForm SaveUpdatePasswordMessageDelegateTest::CreatePasswordForm(
   PasswordForm password_form;
   password_form.username_value = std::move(username);
   password_form.password_value = std::move(password);
+  password_form.match_type = PasswordForm::MatchType::kExact;
   return password_form;
 }
 

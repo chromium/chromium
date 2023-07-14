@@ -66,8 +66,7 @@ PasswordForm CreateTestForm() {
   form.username_value = u"Todd Tester";
   form.password_value = u"S3cr3t";
   form.url = GURL(u"https://example.com");
-  form.is_public_suffix_match = false;
-  form.is_affiliation_based_match = false;
+  form.match_type = PasswordForm::MatchType::kExact;
   return form;
 }
 
@@ -75,12 +74,10 @@ std::vector<std::unique_ptr<PasswordForm>> CreateTestLogins() {
   std::vector<std::unique_ptr<PasswordForm>> forms;
   forms.push_back(CreateEntry("Todd Tester", "S3cr3t",
                               GURL(u"https://example.com"),
-                              /*is_psl_match=*/false,
-                              /*is_affiliation_based_match=*/false));
+                              PasswordForm::MatchType::kExact));
   forms.push_back(CreateEntry("Marcus McSpartanGregor", "S0m3th1ngCr34t1v3",
                               GURL(u"https://m.example.com"),
-                              /*is_psl_match=*/true,
-                              /*is_affiliation_based_match=*/false));
+                              PasswordForm::MatchType::kPSL));
   return forms;
 }
 

@@ -190,6 +190,7 @@ PasswordForm CreatePasswordForm(const char* origin_url,
   form.username_value = ASCIIToUTF16(username_value);
   form.password_value = ASCIIToUTF16(password_value);
   form.in_store = password_manager::PasswordForm::Store::kProfileStore;
+  form.match_type = PasswordForm::MatchType::kExact;
   return form;
 }
 
@@ -677,6 +678,7 @@ PasswordForm MakeSimpleForm() {
   form.signon_realm = "http://www.google.com/";
   form.form_data = MakeSimpleFormData();
   form.in_store = password_manager::PasswordForm::Store::kProfileStore;
+  form.match_type = password_manager::PasswordForm::MatchType::kExact;
   return form;
 }
 

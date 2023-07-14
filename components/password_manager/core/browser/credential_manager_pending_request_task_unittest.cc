@@ -7,6 +7,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "components/password_manager/core/browser/test_password_store.h"
 #include "components/password_manager/core/common/credential_manager_types.h"
@@ -96,6 +97,7 @@ class CredentialManagerPendingRequestTaskTest : public ::testing::Test {
     form_.signon_realm = form_.url.DeprecatedGetOriginAsURL().spec();
     form_.scheme = PasswordForm::Scheme::kHtml;
     form_.skip_zero_click = false;
+    form_.match_type = PasswordForm::MatchType::kExact;
   }
   ~CredentialManagerPendingRequestTaskTest() override = default;
 

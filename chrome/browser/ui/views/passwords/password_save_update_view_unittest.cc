@@ -17,6 +17,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/password_manager/core/browser/mock_password_feature_manager.h"
 #include "components/password_manager/core/browser/mock_password_store_interface.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/sync/test/test_sync_service.h"
 #include "content/public/test/navigation_simulator.h"
@@ -173,6 +174,7 @@ TEST_F(PasswordSaveUpdateViewTest,
 
   // Set the federation_origin to force a Federated Credentials bubble.
   pending_password_.federation_origin = kOrigin;
-
+  pending_password_.match_type =
+      password_manager::PasswordForm::MatchType::kExact;
   CreateViewAndShow();
 }

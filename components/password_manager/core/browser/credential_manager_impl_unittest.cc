@@ -714,6 +714,7 @@ TEST_P(CredentialManagerImplTest,
   form_.password_value = std::u16string();
   form_.skip_zero_click = true;
   form_.signon_realm = "federation://example.com/example.com";
+  form_.match_type = PasswordForm::MatchType::kExact;
   store_->AddLogin(form_);
   RunAllPendingTasks();
 

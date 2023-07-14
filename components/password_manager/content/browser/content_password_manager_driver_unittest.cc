@@ -15,6 +15,7 @@
 #include "components/autofill/core/browser/logging/stub_log_manager.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/password_manager/content/browser/form_meta_data.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_filling.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "components/safe_browsing/buildflags.h"
@@ -165,11 +166,13 @@ PasswordFormFillData GetTestPasswordFormFillData() {
   preferred_match.username_value = u"test@gmail.com";
   preferred_match.password_element = u"password";
   preferred_match.password_value = u"test";
+  preferred_match.match_type = PasswordForm::MatchType::kExact;
 
   std::vector<const PasswordForm*> matches;
   PasswordForm non_preferred_match = preferred_match;
   non_preferred_match.username_value = u"test1@gmail.com";
   non_preferred_match.password_value = u"test1";
+  non_preferred_match.match_type = PasswordForm::MatchType::kPSL;
   matches.push_back(&non_preferred_match);
 
   url::Origin page_origin = url::Origin::Create(GURL("https://foo.com/"));

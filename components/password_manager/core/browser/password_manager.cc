@@ -114,24 +114,26 @@ bool ShouldPromptUserToSavePassword(const PasswordFormManager& manager) {
     return false;
   }
 
-  switch (
-      password_manager_util::GetMatchType(manager.GetPendingCredentials())) {
-    case password_manager_util::GetLoginMatchType::kExact:
-      break;
-    case password_manager_util::GetLoginMatchType::kAffiliated:
-      // User successfully signed-in with affiliated web credentials. These
-      // credentials should be automatically saved in order to be autofilled on
-      // next login.
-      if (!IsValidAndroidFacetURI(
-              manager.GetPendingCredentials().signon_realm)) {
+  const auto& form = manager.GetPendingCredentials();
+  if (form.match_type.has_value()) {
+    switch (password_manager_util::GetMatchType(form)) {
+      case password_manager_util::GetLoginMatchType::kExact:
+        break;
+      case password_manager_util::GetLoginMatchType::kAffiliated:
+        // User successfully signed-in with affiliated web credentials. These
+        // credentials should be automatically saved in order to be autofilled
+        // on next login.
+        if (!IsValidAndroidFacetURI(
+                manager.GetPendingCredentials().signon_realm)) {
+          return false;
+        }
+        break;
+      case password_manager_util::GetLoginMatchType::kPSL:
+        // User successfully signed-in with PSL match credentials. These
+        // credentials should be automatically saved in order to be autofilled
+        // on next login.
         return false;
-      }
-      break;
-    case password_manager_util::GetLoginMatchType::kPSL:
-      // User successfully signed-in with PSL match credentials. These
-      // credentials should be automatically saved in order to be autofilled on
-      // next login.
-      return false;
+    }
   }
 
   return manager.IsNewLogin();

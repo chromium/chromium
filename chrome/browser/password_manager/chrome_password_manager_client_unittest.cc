@@ -140,6 +140,7 @@ std::unique_ptr<PasswordForm> MakePasswordForm() {
   form->submit_element = u"signIn";
   form->signon_realm = "https://www.example.com/";
   form->in_store = PasswordForm::Store::kProfileStore;
+  form->match_type = PasswordForm::MatchType::kExact;
   return form;
 }
 #endif
@@ -1214,14 +1215,11 @@ TEST_F(ChromePasswordManagerClientAndroidTest,
 TEST_F(ChromePasswordManagerClientAndroidTest,
        SameDocumentNavigationDoesNotClearCache) {
   auto origin = url::Origin::Create(GURL("https://example.com"));
-  PasswordForm form;
-  form.url = origin.GetURL();
-  form.username_value = u"alice";
-  form.password_value = u"S3cr3t";
+  auto form = MakePasswordForm();
   GetClient()
       ->GetCredentialCacheForTesting()
       ->SaveCredentialsAndBlocklistedForOrigin(
-          {&form}, CredentialCache::IsOriginBlocklisted(false), origin);
+          {form.get()}, CredentialCache::IsOriginBlocklisted(false), origin);
 
   // Check that a navigation within the same document does not clear the cache.
   content::MockNavigationHandle handle(web_contents());

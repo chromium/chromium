@@ -236,15 +236,17 @@ void CredentialManagerImpl::OnProvisionalSaveComplete() {
   const PasswordForm& form = form_manager_->GetPendingCredentials();
   DCHECK(client_->IsSavingAndFillingEnabled(form.url));
 
-  GetLoginMatchType match_type = GetMatchType(form);
-  // Having PSL or affiliated web match implies there is no credential with an
-  // exactly matching origin and username. In order to avoid showing a save
-  // bubble to the user Save() is called directly.
-  if (match_type == GetLoginMatchType::kPSL ||
-      (match_type == GetLoginMatchType::kAffiliated &&
-       !IsValidAndroidFacetURI(form.signon_realm))) {
-    form_manager_->Save();
-    return;
+  if (form.match_type.has_value()) {
+    // Having PSL or affiliated web match implies there is no credential with an
+    // exactly matching origin and username. In order to avoid showing a save
+    // bubble to the user Save() is called directly.
+    GetLoginMatchType match_type = GetMatchType(form);
+    if (match_type == GetLoginMatchType::kPSL ||
+        (match_type == GetLoginMatchType::kAffiliated &&
+         !IsValidAndroidFacetURI(form.signon_realm))) {
+      form_manager_->Save();
+      return;
+    }
   }
   if (!form.federation_origin.opaque()) {
     // If this is a federated credential, check it against the federated matches

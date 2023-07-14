@@ -43,6 +43,7 @@
 #include "components/password_manager/core/browser/mock_webauthn_credentials_delegate.h"
 #include "components/password_manager/core/browser/password_autofill_manager.h"
 #include "components/password_manager/core/browser/password_bubble_experiment.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_manager.h"
 #include "components/password_manager/core/browser/password_form_manager_for_ui.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
@@ -489,6 +490,7 @@ class PasswordManagerTest : public testing::Test {
     form.submit_element = u"signIn";
     form.signon_realm = test_signon_realm_;
     form.in_store = PasswordForm::Store::kProfileStore;
+    form.match_type = PasswordForm::MatchType::kExact;
     return form;
   }
 
@@ -579,6 +581,7 @@ class PasswordManagerTest : public testing::Test {
     android_form.password_value = u"password";
     android_form.is_affiliation_based_match = true;
     android_form.in_store = PasswordForm::Store::kProfileStore;
+    android_form.match_type = PasswordForm::MatchType::kAffiliated;
     return android_form;
   }
 
@@ -1602,6 +1605,7 @@ TEST_F(PasswordManagerTest, AttemptedSavePasswordSameOriginInsecureScheme) {
   secure_form.form_data.url = secure_form.url;
   secure_form.form_data.action = secure_form.action;
   secure_form.signon_realm = "https://example.com/";
+  secure_form.match_type = PasswordForm::MatchType::kExact;
 
   PasswordForm insecure_form(MakeSimpleForm());
   // If all inputs of |secure_form| and |insecure_form| are the same, then
@@ -1620,6 +1624,7 @@ TEST_F(PasswordManagerTest, AttemptedSavePasswordSameOriginInsecureScheme) {
   insecure_form.form_data.url = insecure_form.url;
   insecure_form.form_data.action = insecure_form.action;
   insecure_form.signon_realm = "http://example.com/";
+  insecure_form.match_type = PasswordForm::MatchType::kExact;
 
   EXPECT_CALL(client_, IsSavingAndFillingEnabled(secure_form.url))
       .WillRepeatedly(Return(true));

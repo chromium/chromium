@@ -439,28 +439,26 @@ TEST(PasswordManagerUtil, GetSignonRealmWithProtocolExcluded) {
 
 TEST(PasswordManagerUtil, GetMatchType_Android) {
   PasswordForm form = GetTestAndroidCredential();
-  form.is_affiliation_based_match = true;
+  form.match_type = PasswordForm::MatchType::kAffiliated;
 
   EXPECT_EQ(GetLoginMatchType::kAffiliated, GetMatchType(form));
 }
 
 TEST(PasswordManagerUtil, GetMatchType_Web) {
   PasswordForm form = GetTestCredential();
-  form.is_public_suffix_match = true;
-  form.is_affiliation_based_match = true;
-  EXPECT_EQ(GetLoginMatchType::kAffiliated, GetMatchType(form));
 
-  form.is_public_suffix_match = false;
-  form.is_affiliation_based_match = true;
-  EXPECT_EQ(GetLoginMatchType::kAffiliated, GetMatchType(form));
-
-  form.is_public_suffix_match = true;
-  form.is_affiliation_based_match = false;
-  EXPECT_EQ(GetLoginMatchType::kPSL, GetMatchType(form));
-
-  form.is_public_suffix_match = false;
-  form.is_affiliation_based_match = false;
+  form.match_type = PasswordForm::MatchType::kExact;
   EXPECT_EQ(GetLoginMatchType::kExact, GetMatchType(form));
+
+  form.match_type =
+      PasswordForm::MatchType::kPSL | PasswordForm::MatchType::kAffiliated;
+  EXPECT_EQ(GetLoginMatchType::kAffiliated, GetMatchType(form));
+
+  form.match_type = PasswordForm::MatchType::kAffiliated;
+  EXPECT_EQ(GetLoginMatchType::kAffiliated, GetMatchType(form));
+
+  form.match_type = PasswordForm::MatchType::kPSL;
+  EXPECT_EQ(GetLoginMatchType::kPSL, GetMatchType(form));
 }
 
 TEST(PasswordManagerUtil, FindBestMatches) {
@@ -534,7 +532,8 @@ TEST(PasswordManagerUtil, FindBestMatches) {
     std::vector<PasswordForm> owning_matches;
     for (const TestMatch& match : test_case.matches) {
       PasswordForm form;
-      form.is_public_suffix_match = match.is_psl_match;
+      form.match_type = match.is_psl_match ? PasswordForm::MatchType::kPSL
+                                           : PasswordForm::MatchType::kExact;
       form.date_last_used = match.date_last_used;
       form.username_value = match.username;
       owning_matches.push_back(form);
@@ -586,7 +585,7 @@ TEST(PasswordManagerUtil, FindBestMatchesInProfileAndAccountStores) {
   const std::u16string kPassword2 = u"Password2";
 
   PasswordForm form;
-  form.is_public_suffix_match = false;
+  form.match_type = PasswordForm::MatchType::kExact;
   form.date_last_used = base::Time::Now();
 
   // Add the same credentials in account and profile stores.
@@ -629,6 +628,7 @@ TEST(PasswordManagerUtil, FindBestMatchesInProfileAndAccountStores) {
 
 TEST(PasswordManagerUtil, GetMatchForUpdating_MatchUsername) {
   PasswordForm stored = GetTestCredential();
+  stored.match_type = PasswordForm::MatchType::kExact;
   PasswordForm parsed = GetTestCredential();
   parsed.password_value = u"new_password";
 
@@ -637,6 +637,7 @@ TEST(PasswordManagerUtil, GetMatchForUpdating_MatchUsername) {
 
 TEST(PasswordManagerUtil, GetMatchForUpdating_RejectUnknownUsername) {
   PasswordForm stored = GetTestCredential();
+  stored.match_type = PasswordForm::MatchType::kExact;
   PasswordForm parsed = GetTestCredential();
   parsed.username_value = u"other_username";
 
@@ -645,6 +646,7 @@ TEST(PasswordManagerUtil, GetMatchForUpdating_RejectUnknownUsername) {
 
 TEST(PasswordManagerUtil, GetMatchForUpdating_FederatedCredential) {
   PasswordForm stored = GetTestCredential();
+  stored.match_type = PasswordForm::MatchType::kExact;
   PasswordForm parsed = GetTestCredential();
   parsed.password_value.clear();
   parsed.federation_origin = url::Origin::Create(GURL(kTestFederationURL));
@@ -654,7 +656,7 @@ TEST(PasswordManagerUtil, GetMatchForUpdating_FederatedCredential) {
 
 TEST(PasswordManagerUtil, GetMatchForUpdating_MatchUsernamePSL) {
   PasswordForm stored = GetTestCredential();
-  stored.is_public_suffix_match = true;
+  stored.match_type = PasswordForm::MatchType::kPSL;
   PasswordForm parsed = GetTestCredential();
 
   EXPECT_EQ(&stored, GetMatchForUpdating(parsed, {&stored}));
@@ -662,7 +664,7 @@ TEST(PasswordManagerUtil, GetMatchForUpdating_MatchUsernamePSL) {
 
 TEST(PasswordManagerUtil, GetMatchForUpdating_MatchUsernamePSLAnotherPassword) {
   PasswordForm stored = GetTestCredential();
-  stored.is_public_suffix_match = true;
+  stored.match_type = PasswordForm::MatchType::kPSL;
   PasswordForm parsed = GetTestCredential();
   parsed.password_value = u"new_password";
 
@@ -672,7 +674,7 @@ TEST(PasswordManagerUtil, GetMatchForUpdating_MatchUsernamePSLAnotherPassword) {
 TEST(PasswordManagerUtil,
      GetMatchForUpdating_MatchUsernamePSLNewPasswordKnown) {
   PasswordForm stored = GetTestCredential();
-  stored.is_public_suffix_match = true;
+  stored.match_type = PasswordForm::MatchType::kPSL;
   PasswordForm parsed = GetTestCredential();
   parsed.new_password_value = parsed.password_value;
   parsed.password_value.clear();
@@ -683,7 +685,7 @@ TEST(PasswordManagerUtil,
 TEST(PasswordManagerUtil,
      GetMatchForUpdating_MatchUsernamePSLNewPasswordUnknown) {
   PasswordForm stored = GetTestCredential();
-  stored.is_public_suffix_match = true;
+  stored.match_type = PasswordForm::MatchType::kPSL;
   PasswordForm parsed = GetTestCredential();
   parsed.new_password_value = u"new_password";
   parsed.password_value.clear();
@@ -701,7 +703,7 @@ TEST(PasswordManagerUtil, GetMatchForUpdating_EmptyUsernameFindByPassword) {
 
 TEST(PasswordManagerUtil, GetMatchForUpdating_EmptyUsernameFindByPasswordPSL) {
   PasswordForm stored = GetTestCredential();
-  stored.is_public_suffix_match = true;
+  stored.match_type = PasswordForm::MatchType::kPSL;
   PasswordForm parsed = GetTestCredential();
   parsed.username_value.clear();
 

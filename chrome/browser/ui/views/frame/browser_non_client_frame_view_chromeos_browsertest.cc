@@ -930,6 +930,7 @@ IN_PROC_BROWSER_TEST_P(WebAppNonClientFrameViewAshTest,
   password_manager::PasswordForm password_form;
   password_form.username_value = u"test";
   password_form.url = GetAppURL().DeprecatedGetOriginAsURL();
+  password_form.match_type = password_manager::PasswordForm::MatchType::kExact;
   PasswordsClientUIDelegateFromWebContents(web_contents)
       ->OnPasswordAutofilled({&password_form},
                              url::Origin::Create(password_form.url), nullptr);

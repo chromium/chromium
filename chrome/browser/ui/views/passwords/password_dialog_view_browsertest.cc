@@ -242,6 +242,7 @@ IN_PROC_BROWSER_TEST_F(PasswordDialogViewTest,
   form.display_name = u"Peter";
   form.username_value = u"peter@pan.test";
   form.icon_url = GURL("broken url");
+  form.match_type = password_manager::PasswordForm::MatchType::kExact;
   local_credentials.push_back(
       std::make_unique<password_manager::PasswordForm>(form));
   form.icon_url = embedded_test_server()->GetURL("/icon.png");
@@ -278,6 +279,7 @@ IN_PROC_BROWSER_TEST_F(
   form.display_name = u"Peter";
   form.username_value = u"peter@pan.test";
   form.icon_url = GURL("broken url");
+  form.match_type = password_manager::PasswordForm::MatchType::kExact;
   local_credentials.push_back(
       std::make_unique<password_manager::PasswordForm>(form));
   GURL icon_url("https://google.com/icon.png");
@@ -313,6 +315,7 @@ IN_PROC_BROWSER_TEST_F(PasswordDialogViewTest,
   form.url = origin;
   form.display_name = u"Peter";
   form.username_value = u"peter@pan.test";
+  form.match_type = password_manager::PasswordForm::MatchType::kExact;
   local_credentials.push_back(
       std::make_unique<password_manager::PasswordForm>(form));
 
@@ -337,6 +340,7 @@ IN_PROC_BROWSER_TEST_F(PasswordDialogViewTest,
   form.url = origin;
   form.display_name = u"Peter";
   form.username_value = u"peter@pan.test";
+  form.match_type = password_manager::PasswordForm::MatchType::kExact;
   local_credentials.push_back(
       std::make_unique<password_manager::PasswordForm>(form));
 
@@ -361,6 +365,7 @@ IN_PROC_BROWSER_TEST_F(PasswordDialogViewTest,
   form.url = origin;
   form.display_name = u"Peter";
   form.username_value = u"peter@pan.test";
+  form.match_type = password_manager::PasswordForm::MatchType::kExact;
   local_credentials.push_back(
       std::make_unique<password_manager::PasswordForm>(form));
 
@@ -393,6 +398,7 @@ IN_PROC_BROWSER_TEST_F(PasswordDialogViewTest,
   form.url = origin;
   form.display_name = u"Peter";
   form.username_value = u"peter@pan.test";
+  form.match_type = password_manager::PasswordForm::MatchType::kExact;
   local_credentials.push_back(
       std::make_unique<password_manager::PasswordForm>(form));
 
@@ -426,6 +432,7 @@ IN_PROC_BROWSER_TEST_F(PasswordDialogViewTest, PopupAccountChooserInIncognito) {
   form.url = origin;
   form.display_name = u"Peter";
   form.username_value = u"peter@pan.test";
+  form.match_type = password_manager::PasswordForm::MatchType::kExact;
   local_credentials.push_back(
       std::make_unique<password_manager::PasswordForm>(form));
 
@@ -498,6 +505,7 @@ IN_PROC_BROWSER_TEST_F(PasswordDialogViewTest,
   form.url = origin;
   form.username_value = u"peter@pan.test";
   form.password_value = u"I can fly!";
+  form.match_type = password_manager::PasswordForm::MatchType::kExact;
 
   // Successful login alone will not prompt:
   client()->NotifySuccessfulLoginWithExistingPassword(WrapFormInManager(&form));
@@ -557,6 +565,8 @@ void PasswordDialogViewTest::ShowUi(const std::string& name) {
   form.url = origin;
   form.display_name = u"Peter Pan";
   form.username_value = u"peter@pan.test";
+  form.match_type = password_manager::PasswordForm::MatchType::kExact;
+
   if (name == "PopupAutoSigninPrompt") {
     form.icon_url = GURL("broken url");
     local_credentials.push_back(

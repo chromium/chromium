@@ -14,6 +14,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/task/sequenced_task_runner.h"
@@ -258,11 +259,22 @@ base::StringPiece GetSignonRealmWithProtocolExcluded(const PasswordForm& form) {
 }
 
 GetLoginMatchType GetMatchType(const password_manager::PasswordForm& form) {
-  if (form.is_affiliation_based_match)
-    return GetLoginMatchType::kAffiliated;
+  CHECK(form.match_type.has_value());
+  if (form.match_type.value() == PasswordForm::MatchType::kExact) {
+    return GetLoginMatchType::kExact;
+  }
 
-  return form.is_public_suffix_match ? GetLoginMatchType::kPSL
-                                     : GetLoginMatchType::kExact;
+  if (static_cast<int>(form.match_type.value() &
+                       PasswordForm::MatchType::kAffiliated)) {
+    return GetLoginMatchType::kAffiliated;
+  }
+
+  if (static_cast<int>(form.match_type.value() &
+                       PasswordForm::MatchType::kPSL)) {
+    return GetLoginMatchType::kPSL;
+  }
+
+  NOTREACHED_NORETURN();
 }
 
 void FindBestMatches(

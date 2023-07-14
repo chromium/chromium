@@ -252,7 +252,7 @@ class PasswordSaveManagerImplTestBase : public testing::Test {
     saved_match_.username_element = u"field1";
     saved_match_.password_value = u"test1";
     saved_match_.password_element = u"field2";
-    saved_match_.is_public_suffix_match = false;
+    saved_match_.match_type = PasswordForm::MatchType::kExact;
     saved_match_.scheme = PasswordForm::Scheme::kHtml;
     saved_match_.in_store = PasswordForm::Store::kProfileStore;
 
@@ -260,7 +260,7 @@ class PasswordSaveManagerImplTestBase : public testing::Test {
     psl_saved_match_.url = psl_origin;
     psl_saved_match_.action = psl_action;
     psl_saved_match_.signon_realm = "https://myaccounts.google.com/";
-    psl_saved_match_.is_public_suffix_match = true;
+    psl_saved_match_.match_type = PasswordForm::MatchType::kPSL;
 
     parsed_observed_form_ = saved_match_;
     parsed_observed_form_.form_data = observed_form_;
@@ -488,7 +488,7 @@ TEST_P(PasswordSaveManagerImplTest, CreatePendingCredentialsPSLMatchSaved) {
 
   saved_match_.url = GURL("https://m.accounts.google.com/auth");
   saved_match_.signon_realm = "https://m.accounts.google.com/";
-  saved_match_.is_public_suffix_match = true;
+  saved_match_.match_type = PasswordForm::MatchType::kPSL;
 
   SetNonFederatedAndNotifyFetchCompleted({&saved_match_});
 
@@ -687,9 +687,8 @@ TEST_P(PasswordSaveManagerImplTest, SavePSLToAlreadySaved) {
       /*is_credential_api_save=*/false);
 
   EXPECT_TRUE(password_save_manager_impl()->IsNewLogin());
-  EXPECT_TRUE(password_save_manager_impl()
-                  ->GetPendingCredentials()
-                  .is_public_suffix_match);
+  EXPECT_EQ(PasswordForm::MatchType::kPSL,
+            password_save_manager_impl()->GetPendingCredentials().match_type);
 
   PasswordForm saved_form;
   std::vector<const PasswordForm*> best_matches;

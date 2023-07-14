@@ -105,11 +105,10 @@ std::vector<std::unique_ptr<PasswordForm>> CreateTestLogins() {
   std::vector<std::unique_ptr<PasswordForm>> forms;
   forms.push_back(CreateEntry("Todd Tester", "S3cr3t",
                               GURL(u"https://example.com"),
-                              /*psl=*/false,
-                              /*affiliation=*/false));
+                              PasswordForm::MatchType::kExact));
   forms.push_back(CreateEntry("Marcus McSpartanGregor", "S0m3th1ngCr34t1v3",
-                              GURL(u"https://m.example.com"), /*psl=*/true,
-                              /*affiliation=*/false));
+                              GURL(u"https://m.example.com"),
+                              PasswordForm::MatchType::kPSL));
   return forms;
 }
 
