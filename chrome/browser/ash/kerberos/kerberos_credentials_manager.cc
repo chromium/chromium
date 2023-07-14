@@ -110,9 +110,12 @@ bool Succeeded(kerberos::ErrorType error) {
 
 bool ShouldRetry(kerberos::ErrorType error) {
   // The error types that should trigger a managed accounts addition retry.
+  // ERROR_UNKNOWN_KRB5_ERROR will cover unknown temporary issues preventing the
+  // device from adding a ticket, such as "resource temporarily unavailable".
   return error == kerberos::ERROR_NETWORK_PROBLEM ||
          error == kerberos::ERROR_CONTACTING_KDC_FAILED ||
-         error == kerberos::ERROR_IN_PROGRESS;
+         error == kerberos::ERROR_IN_PROGRESS ||
+         error == kerberos::ERROR_UNKNOWN_KRB5_ERROR;
 }
 
 }  // namespace
