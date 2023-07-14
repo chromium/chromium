@@ -82,3 +82,57 @@ TEST_F(VisualSearchSuggestionsServiceTest, OnModelUpdated) {
                            *model_info_);
   task_environment_.RunUntilIdle();
 }
+
+TEST_F(VisualSearchSuggestionsServiceTest,
+       OnModelUpdated_BadOptimizationTarget) {
+  VisualSearchSuggestionsService::ModelUpdateCallback callback =
+      base::BindOnce([](base::File model, std::string config_proto) {
+        EXPECT_FALSE(model.IsValid());
+        EXPECT_TRUE(config_proto.empty());
+      });
+  service_->OnModelUpdated(optimization_guide::proto::OptimizationTarget::
+                               OPTIMIZATION_TARGET_TEXT_EMBEDDER,
+                           *model_info_);
+  task_environment_.RunUntilIdle();
+}
+
+TEST_F(VisualSearchSuggestionsServiceTest, OnModelUpdated_InvalidModelFile) {
+  base::FilePath source_root_dir;
+  base::PathService::Get(base::DIR_SOURCE_ROOT, &source_root_dir);
+  std::unique_ptr<optimization_guide::ModelInfo> invalid_model_info_ =
+      optimization_guide::TestModelInfoBuilder()
+          .SetModelFilePath(source_root_dir.AppendASCII("chrome")
+                                .AppendASCII("test")
+                                .AppendASCII("data")
+                                .AppendASCII("companion_visual_search")
+                                .AppendASCII("wack-a-doodle.tflite"))
+          .SetVersion(123)
+          .Build();
+
+  VisualSearchSuggestionsService::ModelUpdateCallback callback =
+      base::BindOnce([](base::File model, std::string config_proto) {
+        EXPECT_FALSE(model.IsValid());
+        EXPECT_TRUE(config_proto.empty());
+      });
+  service_->OnModelUpdated(optimization_guide::proto::OptimizationTarget::
+                               OPTIMIZATION_TARGET_VISUAL_SEARCH_CLASSIFICATION,
+                           *invalid_model_info_);
+  task_environment_.RunUntilIdle();
+}
+
+TEST_F(VisualSearchSuggestionsServiceTest, OnModelUpdated_ModelAlreadyLoaded) {
+  VisualSearchSuggestionsService::ModelUpdateCallback callback =
+      base::BindOnce([](base::File model, std::string config_proto) {
+        EXPECT_TRUE(model.IsValid());
+        EXPECT_TRUE(config_proto.empty());
+      });
+  service_->OnModelUpdated(optimization_guide::proto::OptimizationTarget::
+                               OPTIMIZATION_TARGET_VISUAL_SEARCH_CLASSIFICATION,
+                           *model_info_);
+  // Call OnModelUpdated again to instrument closing the model file before
+  // reload.
+  service_->OnModelUpdated(optimization_guide::proto::OptimizationTarget::
+                               OPTIMIZATION_TARGET_VISUAL_SEARCH_CLASSIFICATION,
+                           *model_info_);
+  task_environment_.RunUntilIdle();
+}
