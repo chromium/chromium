@@ -12,6 +12,7 @@
 #include "ash/public/cpp/external_arc/message_center/arc_notification_content_view.h"
 #include "ash/public/cpp/external_arc/message_center/arc_notification_delegate.h"
 #include "ash/public/cpp/external_arc/message_center/arc_notification_view.h"
+#include "ash/public/cpp/external_arc/message_center/metadata_utils.h"
 #include "ash/public/cpp/external_arc/message_center/metrics_utils.h"
 #include "ash/public/cpp/message_center/arc_notification_constants.h"
 #include "base/metrics/histogram_macros.h"
@@ -163,13 +164,10 @@ void ArcNotificationItemImpl::OnUpdatedFromAndroid(
     }
   }
 
-  auto notification = std::make_unique<message_center::Notification>(
-      notification_type, notification_id_, base::UTF8ToUTF16(data->title),
-      base::UTF8ToUTF16(data->message), ui::ImageModel(),
-      u"arc",  // display source
-      GURL(),  // empty origin url, for system component
-      notifier_id, rich_data,
+  auto notification = CreateNotificationFromArcNotificationData(
+      notification_type, notification_id_, data.get(), notifier_id, rich_data,
       new ArcNotificationDelegate(weak_ptr_factory_.GetWeakPtr()));
+
   notification->set_timestamp(base::Time::FromJavaTime(data->time));
 
   if (notification_type == message_center::NOTIFICATION_TYPE_CUSTOM) {

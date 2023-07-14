@@ -142,9 +142,10 @@ struct ArcNotificationData {
   // Flag if the notification has FLAG_ONGOING_EVENT.
   [MinVersion=1]
   bool ongoing_event;
-  // DEPRECATED: Subtexts for list notifications.
+  // Subtexts for list notifications. Provided when the notification style is
+  // inbox.
   [MinVersion=3]
-  array<string>? deprecated_texts;
+  array<string>? texts;
   // Image for image notifications.
   [MinVersion=3]
   ArcBitmap? big_picture;
