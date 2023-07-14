@@ -955,10 +955,10 @@ uint32_t VideoFrame::codedHeight() const {
   return local_frame->coded_size().height();
 }
 
-absl::optional<DOMRectReadOnly*> VideoFrame::codedRect() {
+DOMRectReadOnly* VideoFrame::codedRect() {
   auto local_frame = handle_->frame();
   if (!local_frame)
-    return absl::nullopt;
+    return nullptr;
 
   if (!coded_rect_) {
     coded_rect_ = MakeGarbageCollected<DOMRectReadOnly>(
@@ -968,10 +968,10 @@ absl::optional<DOMRectReadOnly*> VideoFrame::codedRect() {
   return coded_rect_;
 }
 
-absl::optional<DOMRectReadOnly*> VideoFrame::visibleRect() {
+DOMRectReadOnly* VideoFrame::visibleRect() {
   auto local_frame = handle_->frame();
   if (!local_frame)
-    return absl::nullopt;
+    return nullptr;
 
   if (!visible_rect_) {
     visible_rect_ = MakeGarbageCollected<DOMRectReadOnly>(
