@@ -922,6 +922,90 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_MAC) && \
     !(BUILDFLAG(IS_IOS) && BUILDFLAG(USE_BLINK))
 IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
+                       GetBoundsRectWithScroll) {
+  LoadInitialAccessibilityTreeFromHtml(std::string(R"HTML(
+      <!DOCTYPE html>
+      <html>
+      <body>
+        <div style="height: 200vh;"></div>
+        <script>
+        window.onload = () => {
+          document.body.innerHTML +=
+            `<select aria-label="Select" id="select_node">
+              <option>Option 1</option>
+              <option>Option 2</option>
+              <option>Option 3</option>
+            </select>`;
+          window.scroll(0, 9999);
+        }
+        </script>
+      </body>
+      </html>
+  )HTML"));
+
+  WaitForAccessibilityTreeToContainNodeWithName(shell()->web_contents(),
+                                                "Select");
+
+  ui::AXNode* root = GetManager()->GetRoot();
+  ASSERT_NE(nullptr, root);
+
+  ui::AXNode* select_node = root->children()[0]->children()[0]->children()[1];
+  ASSERT_NE(nullptr, select_node);
+  ASSERT_EQ(select_node->GetRole(), ax::mojom::Role::kComboBoxSelect);
+  BrowserAccessibility* select = GetManager()->GetFromAXNode(select_node);
+
+  ui::AXNode* first_list_item_node = select_node->children()[0]->children()[0];
+  ASSERT_EQ(first_list_item_node->GetRole(), ax::mojom::Role::kMenuListOption);
+  ui::AXNode* second_list_item_node = select_node->children()[0]->children()[1];
+  ASSERT_EQ(second_list_item_node->GetRole(), ax::mojom::Role::kMenuListOption);
+  ui::AXNode* third_list_item_node = select_node->children()[0]->children()[2];
+  ASSERT_EQ(third_list_item_node->GetRole(), ax::mojom::Role::kMenuListOption);
+  BrowserAccessibility* first_list_item =
+      GetManager()->GetFromAXNode(first_list_item_node);
+  BrowserAccessibility* second_list_item =
+      GetManager()->GetFromAXNode(second_list_item_node);
+  BrowserAccessibility* third_list_item =
+      GetManager()->GetFromAXNode(third_list_item_node);
+
+  gfx::Rect select_bounds =
+      select->GetBoundsRect(ui::AXCoordinateSystem::kScreenPhysicalPixels,
+                            ui::AXClippingBehavior::kUnclipped);
+
+  {
+    AccessibilityNotificationWaiter waiter(
+        shell()->web_contents(), ui::kAXModeComplete,
+        ui::AXEventGenerator::Event::EXPANDED);
+    ui::AXActionData action_data;
+    action_data.action = ax::mojom::Action::kDoDefault;
+    select->AccessibilityPerformAction(action_data);
+    ASSERT_TRUE(waiter.WaitForNotification());
+  }
+
+  gfx::Rect first_list_item_bounds = first_list_item->GetBoundsRect(
+      ui::AXCoordinateSystem::kScreenPhysicalPixels,
+      ui::AXClippingBehavior::kUnclipped);
+  gfx::Rect second_list_item_bounds = second_list_item->GetBoundsRect(
+      ui::AXCoordinateSystem::kScreenPhysicalPixels,
+      ui::AXClippingBehavior::kUnclipped);
+  gfx::Rect third_list_item_bounds = third_list_item->GetBoundsRect(
+      ui::AXCoordinateSystem::kScreenPhysicalPixels,
+      ui::AXClippingBehavior::kUnclipped);
+
+  // Expect that the difference between the select element and the pop up menu
+  // options are an arbitrary amount of px away. This is to account for
+  // differences between platforms.
+  EXPECT_LT(std::abs(first_list_item_bounds.y() - select_bounds.y()), 100);
+  EXPECT_LT(std::abs(second_list_item_bounds.y() - select_bounds.y()), 100);
+  EXPECT_LT(std::abs(third_list_item_bounds.y() - select_bounds.y()), 100);
+}
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_MAC) && !(BUILDFLAG(IS_IOS)
+        // && BUILDFLAG(USE_BLINK))
+
+// Select controls behave differently on Mac/Android/iOS-Blink, this test
+// doesn't apply.
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_MAC) && \
+    !(BUILDFLAG(IS_IOS) && BUILDFLAG(USE_BLINK))
+IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
                        // TODO(crbug.com/1446550): Re-enable this test
                        DISABLED_SelectWithOptgroupActiveDescendant) {
   LoadInitialAccessibilityTreeFromHtml(R"HTML(
