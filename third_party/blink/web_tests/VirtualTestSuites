@@ -1785,6 +1785,7 @@
   "rules prefetch.",
   {
     "prefix": "prefetch",
+    "owners": ["jbroman@chromium.org", "liviutinta@chromium.org"],
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [
       "external/wpt/speculation-rules/prefetch",
@@ -1800,9 +1801,11 @@
   },
   {
     "prefix": "prefetch-no-vary-search",
+    "owners": ["jbroman@chromium.org", "liviutinta@chromium.org"],
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [
-      "external/wpt/speculation-rules/prefetch/no-vary-search"
+      "external/wpt/speculation-rules/prefetch/no-vary-search",
+      "wpt_internal/speculation-rules/prefetch/no-vary-search"
     ],
     "exclusive_tests": "ALL",
     "args": [

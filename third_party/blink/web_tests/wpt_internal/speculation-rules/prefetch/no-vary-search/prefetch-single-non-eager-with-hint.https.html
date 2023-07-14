@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<title>Use for navigation the requested prefetched response annotated with No-Vary-Search hint, if
+No-Vary-Search headers also match during navigation in the case where the prefetch is triggered by
+on-hover or pointerdown</title>
+<meta charset="utf-8">
+
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<script src="/common/dispatcher/dispatcher.js"></script>
+<script src="/common/utils.js"></script>
+<script src="/common/subset-tests.js"></script>
+<script src="/speculation-rules/resources/utils.js"></script>
+<script src="/speculation-rules/prefetch/resources/utils.sub.js"></script>
+
+<meta name="variant" content="?1-1">
+<meta name="variant" content="?2-2">
+<meta name="variant" content="?3-3">
+<meta name="variant" content="?4-4">
+<meta name="variant" content="?5-5">
+<meta name="variant" content="?6-6">
+<meta name="variant" content="?7-7">
+<meta name="variant" content="?8-8">
+<meta name="variant" content="?9-9">
+<meta name="variant" content="?10-10">
+<meta name="variant" content="?11-11">
+<meta name="variant" content="?12-12">
+<meta name="variant" content="?13-13">
+<meta name="variant" content="?14-14">
+<meta name="variant" content="?15-15">
+<meta name="variant" content="?16-16">
+<meta name="variant" content="?17-17">
+<meta name="variant" content="?18-18">
+<meta name="variant" content="?19-19">
+<meta name="variant" content="?20-20">
+<meta name="variant" content="?21-21">
+<meta name="variant" content="?22-22">
+<meta name="variant" content="?23-23">
+<meta name="variant" content="?24-24">
+<meta name="variant" content="?25-25">
+<meta name="variant" content="?26-26">
+<meta name="variant" content="?27-27">
+<meta name="variant" content="?28-28">
+<meta name="variant" content="?29-29">
+<meta name="variant" content="?30-last">
+
+<body>
+<script>
+const EAGERNESS_MODERATE = "moderate";
+const EAGERNESS_CONSERVATIVE = "conservative";
+
+setup(() => assertSpeculationRulesIsSupported());
+
+async function prefetchAndNavigate(test, remoteAgent, noVarySearchHeaderValue, noVarySearchHintValue,
+  eagerness, prefetchQuery, navigateQuery, shouldUsePrefetch, noPointerdownForConservativeEagerness){
+    /*
+    Flow:
+      * set up non-eager prefetch prefetch_nvs_hint.py?uuid=...&nvs_header=...&otherqueryparams
+      * the prefetch above includes no_vary_search_hint in the speculation
+        rules
+      * the prefetch request is triggered by on-hover or pointerdown
+      * the server blocks progress on this prefetch request on the server side so
+        from the browser perspective the server is "thinking"
+      * the test waits for the prefetch request to start processing on the
+        server side
+      * the test starts navigation to
+        prefetch_nvs_hint.py?uuid=...&nvs_header=...&otherdifferentqueryparams.
+        This navigation matches by No-Vary-Search hint the above in
+        progress prefetch.
+      * the test fetches prefetch_nvs_hint.py?uuid=...&unblock="unblock"
+        which unblocks the in progress prefetch so that the in-progress
+        navigation can continue
+    */
+  const prefetch_nvs_hint_server_page = "prefetch_nvs_hint.py";
+  const prefetchUrl = remoteAgent.getExecutorURL({executor:prefetch_nvs_hint_server_page});
+  const navigateToUrl = new URL(prefetchUrl);
+  // Add query params to the url to be prefetched.
+  const additionalPrefetchedUrlSearchParams = new URLSearchParams(prefetchQuery);
+  addNoVarySearchHeaderUsingQueryParam(prefetchUrl, noVarySearchHeaderValue);
+  const waitForPrefetchStartUuid = token();
+  additionalPrefetchedUrlSearchParams.append("wait_for_prefetch_uuid", waitForPrefetchStartUuid);
+  additionalPrefetchedUrlSearchParams.forEach((value, key) => {
+    prefetchUrl.searchParams.append(key, value);
+  });
+
+  // Add speculation rules to non-eagerly prefetch the URL above
+  // when matching via No-Vary-Search hint.
+  await remoteAgent.forceSinglePrefetch(prefetchUrl,
+      {expects_no_vary_search:noVarySearchHintValue, eagerness:eagerness}, false);
+
+  // Add new query params to navigateToUrl to match No-Vary-Search test case.
+  const additionalNavigateToUrlSearchParams = new URLSearchParams(navigateQuery);
+  addNoVarySearchHeaderUsingQueryParam(navigateToUrl, noVarySearchHeaderValue);
+  additionalNavigateToUrlSearchParams.append("wait_for_prefetch_uuid", waitForPrefetchStartUuid);
+  additionalNavigateToUrlSearchParams.forEach((value, key) => {
+    navigateToUrl.searchParams.append(key, value);
+  });
+
+  const link_id = "target";
+  await remoteAgent.execute_script(async (link_id, navigateToUrl) => {
+    // Set up a link to a URL we want to non-eagerly prefetch.
+    add_link(link_id, navigateToUrl);
+  }, [link_id, navigateToUrl]);
+
+  await remoteAgent.execute_script(async (link_id, eagerness, noPointerdownForConservativeEagerness, EAGERNESS_CONSERVATIVE) => {
+    if(eagerness == EAGERNESS_CONSERVATIVE && !noPointerdownForConservativeEagerness) {
+      await start_non_eager_prefetch_on_pointerdown(link_id);
+    } else {
+      await start_non_eager_prefetch_on_hover(link_id);
+    }
+  }, [link_id, eagerness, noPointerdownForConservativeEagerness, EAGERNESS_CONSERVATIVE]);
+
+  if(shouldUsePrefetch) {
+    const wait_for_prefetch_start_url = remoteAgent.getExecutorURL(
+      {executor:prefetch_nvs_hint_server_page,
+        wait_for_prefetch_uuid:waitForPrefetchStartUuid,
+        wait_for_prefetch:"wait"});
+    await fetch(wait_for_prefetch_start_url);
+  } else {
+    // Wait for longer than 200 ms for the onhover trigger to fire
+    await new Promise(resolve => test.step_timeout(resolve, 500));
+  }
+  // Url used by fetch in order to unblock the prefetched url
+  const nvshint_unblock_url = remoteAgent.getExecutorURL(
+    {executor:prefetch_nvs_hint_server_page, unblock:"unblock"});
+  await remoteAgent.execute_script((unblock_url) => {
+    onbeforeunload = (event) => {
+        fetch(unblock_url);
+    };
+  }, [nvshint_unblock_url]);
+
+  // Navigate to use the in-flight prefetch.
+  // Try navigating to a non-exact prefetched URL that matches by
+  // No-Vary-Search hint
+  // Wait for the navigation to finish
+  await remoteAgent.navigate(navigateToUrl);
+}
+
+function prefetch_no_vary_search_test_func(description, noVarySearch, noVarySearchHint, eagerness, prefetchQuery, navigateQuery, shouldUsePrefetch, noPointerdownForConservativeEagerness){
+    promise_test(async t => {
+      assert_not_equals(window.eventSender, undefined, 'This test requires eventSender.');
+      const agent_window_pair = await spawnWindowWithReference(t, {executor:new URL("../no-vary-search/executor-non-eager-nvs-with-hint.html", document.baseURI)});
+      const agent = agent_window_pair.agent;
+      input_window = agent_window_pair.window;
+
+      let inputWindowEventWatcher = new EventWatcher(t, input_window, ["load"]);
+      await inputWindowEventWatcher.wait_for("load");
+
+      shouldUsePrefetch = (eagerness === EAGERNESS_CONSERVATIVE && noPointerdownForConservativeEagerness) ? false : shouldUsePrefetch;
+      await prefetchAndNavigate(t, agent,
+        noVarySearch,
+        noVarySearchHint,
+        eagerness,
+        prefetchQuery,
+        navigateQuery,
+        shouldUsePrefetch, noPointerdownForConservativeEagerness);
+
+      if(shouldUsePrefetch){
+        assert_prefetched(await agent.getRequestHeaders(),
+          "Navigation didn't use the prefetched response!");
+      }
+      else{
+        assert_not_prefetched(await agent.getRequestHeaders(),
+          "Navigation used the prefetched response!");
+      }
+    }, description + " Eagerness trigger " + eagerness + "."
+        + ((noPointerdownForConservativeEagerness)?" No Pointerdown for conservative trigger.":""));
+};
+
+window.onload = ()=> {
+  // Test inputs:
+  // - description: a description of the test.
+  // - noVarySearch: No-Vary-Search header value for the response.
+  // - noVarySearchHint: No-Vary-Search hint to include in prefetch
+  //   speculation rules
+  // - eagerness: moderate for starting the prefetch at pointerover,
+  //   conservative for starting the prefetch at pointerdown
+  // - prefetchQuery: added to query part of prefetch-executor when prefetching
+  // - navigateQuery: added to query part of prefetch-executor when navigating
+  // - shouldUsePrefetch: if the test case expects the prefetched entry to be
+  //   used or not.
+  [{description:"Use in-flight prefetch as query parameter b has the same value.",
+    noVarySearch: 'params=("a")',
+    noVarySearchHint: 'params=("a")',
+    prefetchQuery: "a=2&b=3",
+    navigateQuery: "b=3",
+    shouldUsePrefetch: true},
+
+   {description:"Don't use in-flight prefetch as there is no No-Vary-Search hint.",
+    noVarySearch: 'params=("a")',
+    noVarySearchHint: '',
+    prefetchQuery: "a=2&b=3",
+    navigateQuery: "b=3",
+    shouldUsePrefetch: false},
+
+   {description:"Don't use in-flight prefetch as the prefetched URL has the extra \"a\" query parameter.",
+    noVarySearch: 'params=("b")',
+    noVarySearchHint: 'params=("b")',
+    prefetchQuery: "a=2&b=3",
+    navigateQuery: "b=2",
+    shouldUsePrefetch: false},
+
+   {description:"Do not use in-flight prefetch as the navigation URL has" +
+                " a different value for the \"b\" query parameter.",
+    noVarySearch: 'params=("a" "b")',
+    noVarySearchHint: 'params=("a")',
+    prefetchQuery: "a=2&b=3",
+    navigateQuery: "b=2",
+    shouldUsePrefetch: false},
+
+   {description:"Use in-flight prefetch as the URLs have the same values for all keys, only differing by order.",
+    noVarySearch: "key-order",
+    noVarySearchHint: "key-order",
+    prefetchQuery: "b=5&a=3&a=4&d=6&c=5&b=3",
+    navigateQuery: "d=6&a=3&b=5&b=3&c=5&a=4",
+    shouldUsePrefetch: true},
+
+   {description:"Use in-flight prefetch as all query parameters except c can be ignored.",
+    noVarySearch: 'params, except=("c")',
+    noVarySearchHint: 'params, except=("c")',
+    prefetchQuery: "b=5&a=3&d=6&c=3",
+    navigateQuery: "a=1&b=2&c=3",
+    shouldUsePrefetch: true},
+
+   {description:"Don't use in-flight prefetch as query parameter c has different value.",
+    noVarySearch: 'params, except=("c")',
+    noVarySearchHint: 'params, except=("c")',
+    prefetchQuery: "b=5&a=3&d=6&c=3",
+    navigateQuery: "a=1&b=2&c=2",
+    shouldUsePrefetch: false},
+
+   {description:"Use in-flight prefetch as query parameter c can be ignored." +
+                " Allow extension via parameters.",
+    noVarySearch: 'params=("c";unknown)',
+    noVarySearchHint: 'params=("c";unknown)',
+    prefetchQuery: "a=2&b=2&c=5",
+    navigateQuery: "a=2&c=3&b=2",
+    shouldUsePrefetch: true},
+
+   {description:"Use in-flight prefetch as the URLs have the values in different order for a." +
+                " Allow extension via parameters.",
+    noVarySearch: "key-order;unknown",
+    noVarySearchHint: "key-order;unknown",
+    prefetchQuery: "b=5&a=3&a=4&d=6&c=5&b=3",
+    navigateQuery: "d=6&a=3&b=5&b=3&c=5&a=4",
+    shouldUsePrefetch: true},
+
+   {description:"Use in-flight prefetch as all query parameters except c can be ignored." +
+                " Allow extension via parameters.",
+    noVarySearch: 'params;unknown, except=("c");unknown',
+    noVarySearchHint: 'params;unknown, except=("c");unknown',
+    prefetchQuery: "b=5&a=3&d=6&c=3",
+    navigateQuery: "a=1&b=2&c=3",
+    shouldUsePrefetch: true},
+  ].reduce((test_cases, e)=>{
+    // Add test cases for `moderate` and `conservative` `eagerness`.
+    // `noPointerdowForConservativeEagerness` is set to false unless
+    // testing that `conservative` `eagerness` prefetch is not triggered by
+    // hovering over the link.
+    test_cases.push(Object.assign({eagerness:EAGERNESS_MODERATE, noPointerdownForConservativeEagerness: false}, e),
+                    Object.assign({eagerness:EAGERNESS_CONSERVATIVE, noPointerdownForConservativeEagerness: false}, e),
+                    Object.assign({eagerness:EAGERNESS_CONSERVATIVE, noPointerdownForConservativeEagerness: true}, e));
+    return test_cases;
+  }, []).forEach(({eagerness, noPointerdownForConservativeEagerness, description, noVarySearch, noVarySearchHint, prefetchQuery, navigateQuery, shouldUsePrefetch}) => {
+    let test_func = subsetTest(prefetch_no_vary_search_test_func,
+      description, noVarySearch, noVarySearchHint, eagerness, prefetchQuery, navigateQuery,
+      shouldUsePrefetch, noPointerdownForConservativeEagerness);
+  });
+}
+</script>
+</body>

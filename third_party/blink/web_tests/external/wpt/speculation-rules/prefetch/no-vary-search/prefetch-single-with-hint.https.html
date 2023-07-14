@@ -39,14 +39,6 @@ No-Vary-Search headers also match during navigation</title>
 <script>
   setup(() => assertSpeculationRulesIsSupported());
 
-  function addNoVarySearchHeaderUsingQueryParam(url, value){
-    // Use nvs_header query parameter to ask the wpt server
-    // to populate No-Vary-Search response header.
-    if(value){
-      url.searchParams.append("nvs_header", value);
-    }
-  }
-
   /*
     remoteAgent: the RemoteContext instance used to communicate between the
       test and the window where prefetch/navigation is happening
