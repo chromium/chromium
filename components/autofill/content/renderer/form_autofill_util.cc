@@ -1347,10 +1347,9 @@ void PreviewFormField(const FormFieldData& data,
     // returns the default maxlength value.
     input_element.SetSuggestedValue(blink::WebString::FromUTF16(
         data.value.substr(0, input_element.MaxLength())));
-  } else if (IsTextAreaElement(*field) || IsSelectElement(*field)) {
+  } else if (IsTextAreaElement(*field) || IsSelectOrSelectMenuElement(*field)) {
     field->SetSuggestedValue(blink::WebString::FromUTF16(data.value));
   }
-  // TODO(crbug.com/1336051): Support preview for selectmenu.
 
   if (is_initiating_node &&
       (IsTextInput(input_element) || IsTextAreaElement(*field))) {

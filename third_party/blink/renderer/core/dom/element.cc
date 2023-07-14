@@ -8857,7 +8857,7 @@ Element* Element::ImplicitAnchorElement() {
     if (Element* anchor = html_element->anchorElement()) {
       return anchor;
     }
-    if (Element* select_menu = html_element->ownerSelectMenuElement()) {
+    if (Element* select_menu = html_element->popoverOwnerSelectMenuElement()) {
       return select_menu;
     }
   } else if (PseudoElement* pseudo_element = DynamicTo<PseudoElement>(this)) {
