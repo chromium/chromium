@@ -49,8 +49,6 @@ export class XfIcon extends XfBase {
           svg`<use xlink:href="foreground/images/files/ui/cloud_offline.svg#cloud_offline"></use>`,
       [constants.ICON_TYPES.CLOUD_SYNC]:
           svg`<use xlink:href="foreground/images/files/ui/cloud_sync.svg#cloud_sync"></use>`,
-      [constants.ICON_TYPES.CLOUD]:
-          svg`<use xlink:href="foreground/images/files/ui/cloud.svg#cloud"></use>`,
       [constants.ICON_TYPES.ERROR]:
           svg`<use xlink:href="foreground/images/files/ui/error.svg#error"></use>`,
       [constants.ICON_TYPES.OFFLINE]:
@@ -386,6 +384,10 @@ function getCSS() {
 
     :host([type="bulk_pinning_offline"]) span {
       -webkit-mask-image: url(../foreground/images/files/ui/bulk_pinning_offline.svg);
+    }
+
+    :host([type="cloud"]) span {
+      -webkit-mask-image: url(../foreground/images/files/ui/cloud.svg);
     }
 
     :host([type="error_banner"]) span {

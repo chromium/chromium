@@ -1776,9 +1776,6 @@
   <message name="IDS_FILE_BROWSER_BULK_PINNING_SPACE" desc="Text in the dialog offering the Google Drive bulk pinning feature">
     This will use about <ph name="REQUIRED_SPACE">$1<ex>12.2 GB</ex></ph>. You currently have <ph name="FREE_SPACE">$2<ex>96.8 GB</ex></ph> available.
   </message>
-  <message name="IDS_FILE_BROWSER_GOOGLE_DRIVE_ALL_FILES_SYNCED_LABEL" desc="The text used when all the Drive items have successfully finished downloading and are synced.">
-    File sync complete. My Drive files are available offline.
-  </message>
   <message name="IDS_FILE_BROWSER_BULK_PINNING_TURN_ON" desc="Text in the Continue button of the dialog offering the Google Drive bulk pinning feature">
     Turn on
   </message>
@@ -1830,7 +1827,7 @@
   <message name="IDS_FILE_BROWSER_BULK_PINNING_BUTTON_LABEL_OFFLINE" desc="The cloud button label text when bulk pinning is paused when the device is offline.">
     Offline
   </message>
-  <message name="IDS_FILE_BROWSER_BULK_PINNING_BUTTON_LABEL_ON" desc="The cloud button label text when bulk pinning is turned on.">
+  <message name="IDS_FILE_BROWSER_BULK_PINNING_FILE_SYNC_ON" desc="The cloud button label text when bulk pinning is turned on and the text used in the cloud panel when the known files have finished syncing.">
     File sync is on
   </message>
   <message name="IDS_FILE_BROWSER_BULK_PINNING_BUTTON_LABEL_PAUSED" desc="The cloud button label text when bulk pinning is paused.">

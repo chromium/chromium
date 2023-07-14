@@ -582,9 +582,9 @@ export class ToolbarController {
         this.cloudButtonIcon_.setAttribute('type', constants.ICON_TYPES.CLOUD);
         if (progress.bytesToPin === 0 ||
             progress.pinnedBytes / progress.bytesToPin === 1) {
-          this.cloudButton_.ariaLabel = str('BULK_PINNING_BUTTON_LABEL_ON');
+          this.cloudButton_.ariaLabel = str('BULK_PINNING_FILE_SYNC_ON');
           this.cloudStatusIcon_.setAttribute(
-              'type', constants.ICON_TYPES.CLOUD_DONE);
+              'type', constants.ICON_TYPES.BLANK);
         } else {
           this.cloudButton_.ariaLabel =
               str('BULK_PINNING_BUTTON_LABEL_SYNCING');
@@ -613,9 +613,9 @@ export class ToolbarController {
         this.cloudStatusIcon_.removeAttribute('size');
         break;
       default:
-        this.cloudButton_.ariaLabel = str('BULK_PINNING_BUTTON_LABEL_ON');
+        this.cloudButton_.ariaLabel = str('BULK_PINNING_FILE_SYNC_ON');
         this.cloudButtonIcon_.setAttribute('type', constants.ICON_TYPES.CLOUD);
-        this.cloudStatusIcon_.removeAttribute('type');
+        this.cloudStatusIcon_.setAttribute('type', constants.ICON_TYPES.BLANK);
         this.cloudStatusIcon_.removeAttribute('size');
         break;
     }

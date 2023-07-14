@@ -202,10 +202,9 @@ export class XfCloudPanel extends XfBase {
           </div>
         </div>
         <div class="static" id="progress-finished">
-          <xf-icon type="${
-        constants.ICON_TYPES.BULK_PINNING_DONE}" size="large"></xf-icon>
+          <xf-icon type="${constants.ICON_TYPES.CLOUD}" size="large"></xf-icon>
           <div class="status-description">
-            ${str('DRIVE_ALL_FILES_SYNCED')}
+            ${str('BULK_PINNING_FILE_SYNC_ON')}
           </div>
         </div>
         <div class="static" id="progress-offline">
