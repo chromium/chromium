@@ -1149,6 +1149,14 @@ BASE_FEATURE(kUSeSequencedTaskRunnerForVEA,
 BASE_FEATURE(kPreferGLImageProcessor,
              "PreferGLImageProcessor",
              base::FEATURE_DISABLED_BY_DEFAULT);
+// Experimental support for software based MT21 conversion. On some (older)
+// architectures, the hardware video decoder outputs frames in a pixel format
+// known as MT21. Normally a hardware block performs to the conversion between
+// this pixel format and NV12, but this flag will use a software equivalent
+// instead.
+BASE_FEATURE(kPreferSoftwareMT21,
+             "PreferSoftwareMT21",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // defined(ARCH_CPU_ARM_FAMILY)
 #if BUILDFLAG(IS_CHROMEOS)
 // ChromeOS has one of two VideoDecoder implementations active based on

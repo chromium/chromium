@@ -7037,6 +7037,10 @@ const char kPreferGLImageProcessorName[] = "Prefer GL image processor";
 const char kPreferGLImageProcessorDescription[] =
     "Prefers the GL image processor for format conversion of video frames over"
     " both the libYUV and hardware implementations";
+const char kPreferSoftwareMT21Name[] = "Prefer software MT21 conversion";
+const char kPreferSoftwareMT21Description[] =
+    "Prefer using the software MT21 conversion instead of the MDP hardware "
+    "conversion on MT8173 devices.";
 #endif  // defined(ARCH_CPU_ARM_FAMILY)
 #endif  // BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
 

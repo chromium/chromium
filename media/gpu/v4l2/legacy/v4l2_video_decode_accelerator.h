@@ -32,6 +32,7 @@
 #include "media/gpu/chromeos/image_processor.h"
 #include "media/gpu/gpu_video_decode_accelerator_helpers.h"
 #include "media/gpu/media_gpu_export.h"
+#include "media/gpu/v4l2/mt21/mt21_decompressor.h"
 #include "media/gpu/v4l2/v4l2_device.h"
 #include "media/video/picture.h"
 #include "media/video/video_decode_accelerator.h"
@@ -614,6 +615,8 @@ class MEDIA_GPU_EXPORT V4L2VideoDecodeAccelerator
   scoped_refptr<V4L2Device> image_processor_device_;
   // Image processor. Accessed on |decoder_thread_|.
   std::unique_ptr<ImageProcessor> image_processor_;
+
+  std::unique_ptr<MT21Decompressor> mt21_decompressor_;
 
   // The format of EGLImage.
   absl::optional<Fourcc> egl_image_format_fourcc_;

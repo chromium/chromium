@@ -135,6 +135,10 @@ ResultExpr HardwareVideoDecodingProcessPolicy::EvaluateSyscallForV4L2(
   if (system_call_number == __NR_ioctl)
     return Allow();
 
+  if (system_call_number == __NR_sched_setaffinity) {
+    return RestrictSchedTarget(GetPolicyPid(), system_call_number);
+  }
+
   auto* sandbox_linux = SandboxLinux::GetInstance();
   if (sandbox_linux->ShouldBrokerHandleSyscall(system_call_number))
     return sandbox_linux->HandleViaBroker(system_call_number);

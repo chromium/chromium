@@ -33,10 +33,12 @@
 #include "media/gpu/chromeos/fourcc.h"
 #include "media/gpu/chromeos/platform_video_frame_utils.h"
 #include "media/gpu/macros.h"
-#include "media/gpu/v4l2/v4l2_image_processor_backend.h"
 #include "media/gpu/v4l2/legacy/v4l2_stateful_workaround.h"
+#include "media/gpu/v4l2/v4l2_image_processor_backend.h"
 #include "media/gpu/v4l2/v4l2_utils.h"
 #include "media/gpu/v4l2/v4l2_vda_helpers.h"
+#include "media/gpu/video_frame_mapper.h"
+#include "media/gpu/video_frame_mapper_factory.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_pixmap_handle.h"
 #include "ui/gl/gl_bindings.h"
@@ -412,10 +414,13 @@ void V4L2VideoDecodeAccelerator::AssignPictureBuffersTask(
   }
 
   enum v4l2_memory memory;
-  if (!image_processor_device_ && output_mode_ == Config::OutputMode::IMPORT)
+  if (!image_processor_device_ &&
+      !base::FeatureList::IsEnabled(media::kPreferSoftwareMT21) &&
+      output_mode_ == Config::OutputMode::IMPORT) {
     memory = V4L2_MEMORY_DMABUF;
-  else
+  } else {
     memory = V4L2_MEMORY_MMAP;
+  }
 
   if (output_queue_->AllocateBuffers(buffers.size(), memory,
                                      /*incoherent=*/false) == 0) {
@@ -567,7 +572,7 @@ void V4L2VideoDecodeAccelerator::AssignEGLImage(size_t buffer_index,
 
   // Make ourselves available if CreateEGLImageFor has been called from
   // ImportBufferForPictureTask.
-  if (!image_processor_) {
+  if (!image_processor_ && !mt21_decompressor_) {
     DCHECK_EQ(output_wait_map_.count(picture_buffer_id), 1u);
     output_wait_map_.erase(picture_buffer_id);
     if (decoder_state_ != kChangingResolution) {
@@ -671,9 +676,16 @@ void V4L2VideoDecodeAccelerator::ImportBufferForPictureTask(
     }
     DCHECK_EQ(egl_image_size_, handle_size);
 
+    if (base::FeatureList::IsEnabled(media::kPreferSoftwareMT21) &&
+        !mt21_decompressor_) {
+      mt21_decompressor_ = std::make_unique<MT21Decompressor>(coded_size_);
+    }
+
     // For allocate mode, the IP will already have been created in
     // AssignPictureBuffersTask.
-    if (image_processor_device_ && !image_processor_) {
+    // Note: usage of the MT21 software decompressor disables the image
+    // processor.
+    if (image_processor_device_ && !image_processor_ && !mt21_decompressor_) {
       DCHECK_EQ(kAwaitingPictureBuffers, decoder_state_);
       // This is the first buffer import. Create the image processor and change
       // the decoder state. The client may adjust the coded width. We don't have
@@ -739,7 +751,7 @@ void V4L2VideoDecodeAccelerator::ImportBufferForPictureTask(
     // time since we already have its DMABUF fds. It is guaranteed that
     // CreateEGLImageFor will run before the picture is passed to the client
     // because the picture will need to be cleared on the child thread first.
-    if (!image_processor_) {
+    if (!image_processor_ && !mt21_decompressor_) {
       DCHECK_GT(handle.planes.size(), 0u);
       size_t index = iter - output_buffer_map_.begin();
 
@@ -1500,7 +1512,7 @@ bool V4L2VideoDecodeAccelerator::DequeueOutputBuffer() {
     DCHECK_GE(bitstream_buffer_id, 0);
     DVLOGF(4) << "Dequeue output buffer: dqbuf index=" << buf->BufferId()
               << " bitstream input_id=" << bitstream_buffer_id;
-    if (image_processor_device_) {
+    if (image_processor_device_ || mt21_decompressor_) {
       if (!ProcessFrame(bitstream_buffer_id, buf)) {
         LOG(ERROR) << "Processing frame failed";
         NOTIFY_ERROR(PLATFORM_FAILURE);
@@ -1883,6 +1895,7 @@ void V4L2VideoDecodeAccelerator::DestroyTask() {
   image_processor_ = nullptr;
   while (!buffers_at_ip_.empty())
     buffers_at_ip_.pop();
+  mt21_decompressor_ = nullptr;
 
   DestroyInputBuffers();
   DestroyOutputBuffers();
@@ -1959,7 +1972,7 @@ bool V4L2VideoDecodeAccelerator::StopOutputStream() {
     return true;
 
   if (!output_queue_->Streamoff()) {
-    LOG(ERROR) << "Failed streaming off output queue";
+    VLOGF(1) << "Failed streaming off output queue";
     NOTIFY_ERROR(PLATFORM_FAILURE);
     return false;
   }
@@ -2011,6 +2024,7 @@ void V4L2VideoDecodeAccelerator::StartResolutionChange() {
   buffers_at_client_.clear();
 
   image_processor_ = nullptr;
+  mt21_decompressor_ = nullptr;
 
   if (!DestroyOutputBuffers()) {
     LOG(ERROR) << "Failed destroying output buffers.";
@@ -2290,23 +2304,28 @@ bool V4L2VideoDecodeAccelerator::SetupFormats() {
   DCHECK(!image_processor_device_);
   if (!output_format_fourcc_) {
     VLOGF(2) << "Could not find a usable output format. Try image processor";
-    if (!V4L2ImageProcessorBackend::IsSupported()) {
-      VLOGF(1) << "Image processor not available";
-      return false;
+    if (base::FeatureList::IsEnabled(media::kPreferSoftwareMT21)) {
+      output_format_fourcc_ = Fourcc(Fourcc::MT21);
+      egl_image_format_fourcc_ = Fourcc(Fourcc::NV12);
+    } else {
+      if (!V4L2ImageProcessorBackend::IsSupported()) {
+        VLOGF(1) << "Image processor not available";
+        return false;
+      }
+      output_format_fourcc_ =
+          v4l2_vda_helpers::FindImageProcessorInputFormat(device_.get());
+      if (!output_format_fourcc_) {
+        VLOGF(1) << "Can't find a usable input format from image processor";
+        return false;
+      }
+      egl_image_format_fourcc_ =
+          v4l2_vda_helpers::FindImageProcessorOutputFormat(device_.get());
+      if (!egl_image_format_fourcc_) {
+        VLOGF(1) << "Can't find a usable output format from image processor";
+        return false;
+      }
+      image_processor_device_ = base::MakeRefCounted<V4L2Device>();
     }
-    output_format_fourcc_ =
-        v4l2_vda_helpers::FindImageProcessorInputFormat(device_.get());
-    if (!output_format_fourcc_) {
-      VLOGF(1) << "Can't find a usable input format from image processor";
-      return false;
-    }
-    egl_image_format_fourcc_ =
-        v4l2_vda_helpers::FindImageProcessorOutputFormat(device_.get());
-    if (!egl_image_format_fourcc_) {
-      VLOGF(1) << "Can't find a usable output format from image processor";
-      return false;
-    }
-    image_processor_device_ = base::MakeRefCounted<V4L2Device>();
   } else {
     egl_image_format_fourcc_ = output_format_fourcc_;
   }
@@ -2379,6 +2398,65 @@ bool V4L2VideoDecodeAccelerator::ProcessFrame(int32_t bitstream_buffer_id,
 
   OutputRecord& output_record = output_buffer_map_[buf->BufferId()];
 
+  // Keep reference to the IP input until the frame is processed
+  buffers_at_ip_.push(std::make_pair(bitstream_buffer_id, buf));
+
+  if (base::FeatureList::IsEnabled(media::kPreferSoftwareMT21)) {
+    if (!mt21_decompressor_) {
+      LOG(ERROR) << "PreferSoftwareMT21 enabled, but MT21 decompressor was not "
+                    "created!";
+      NOTIFY_ERROR(PLATFORM_FAILURE);
+      return false;
+    }
+
+    if (output_mode_ != Config::OutputMode::IMPORT) {
+      LOG(ERROR) << "Software MT21 does not support ALLOCATE output mode!";
+      NOTIFY_ERROR(PLATFORM_FAILURE);
+      return false;
+    }
+
+    if (buf->PlanesCount() != 2) {
+      LOG(ERROR) << "Wrong number of planes for MT21!";
+      NOTIFY_ERROR(PLATFORM_FAILURE);
+      return false;
+    }
+
+    std::unique_ptr<VideoFrameMapper> output_frame_mapper;
+    output_frame_mapper = VideoFrameMapperFactory::CreateMapper(
+        PIXEL_FORMAT_NV12, VideoFrame::STORAGE_DMABUFS, true);
+    if (!output_frame_mapper) {
+      output_frame_mapper = VideoFrameMapperFactory::CreateMapper(
+          PIXEL_FORMAT_NV12, VideoFrame::STORAGE_GPU_MEMORY_BUFFER, true);
+    }
+    if (!output_frame_mapper) {
+      LOG(ERROR) << "Failed to instantiate MT21 frame mapper!";
+      NOTIFY_ERROR(PLATFORM_FAILURE);
+      return false;
+    }
+
+    scoped_refptr<VideoFrame> mapped_output_frame = output_frame_mapper->Map(
+        output_record.output_frame, PROT_READ | PROT_WRITE);
+    if (!mapped_output_frame) {
+      LOG(ERROR) << "Failed to map MT21 frame!";
+      NOTIFY_ERROR(PLATFORM_FAILURE);
+      return false;
+    }
+
+    {
+      TRACE_EVENT0("media,gpu", "V4L2VDA::MT21ToNV12");
+      mt21_decompressor_->MT21ToNV12(
+          static_cast<const uint8_t*>(buf->GetPlaneMapping(0)),
+          static_cast<const uint8_t*>(buf->GetPlaneMapping(1)),
+          buf->GetPlaneBytesUsed(0), buf->GetPlaneBytesUsed(1),
+          mapped_output_frame->GetWritableVisibleData(VideoFrame::kYPlane),
+          mapped_output_frame->GetWritableVisibleData(VideoFrame::kUVPlane));
+    }
+
+    FrameProcessed(bitstream_buffer_id, buf->BufferId(), mapped_output_frame);
+
+    return true;
+  }
+
   scoped_refptr<VideoFrame> input_frame = buf->GetVideoFrame();
   if (!input_frame) {
     VLOGF(1) << "Could not get the input frame for the image processor!";
@@ -2410,9 +2488,6 @@ bool V4L2VideoDecodeAccelerator::ProcessFrame(int32_t bitstream_buffer_id,
     VLOGF(1) << "Could not wrap the input frame for the image processor!";
     return false;
   }
-
-  // Keep reference to the IP input until the frame is processed
-  buffers_at_ip_.push(std::make_pair(bitstream_buffer_id, buf));
 
   // Unretained(this) is safe for FrameReadyCB because |decoder_thread_| is
   // owned by this V4L2VideoDecodeAccelerator and |this| must be valid when
