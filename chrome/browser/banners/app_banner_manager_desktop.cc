@@ -161,7 +161,10 @@ void AppBannerManagerDesktop::OnMlInstallPrediction(
     base::PassKey<MLInstallabilityPromoter>,
     std::string result_label) {
   if (result_label == MLInstallabilityPromoter::kShowInstallPromptLabel) {
-    ShowBannerUi(WebappInstallSource::ML_PROMOTION);
+    CreateWebApp(
+        WebappInstallSource::ML_PROMOTION,
+        base::BindOnce(&AppBannerManagerDesktop::DidCreateWebAppFromMLDialog,
+                       weak_factory_.GetWeakPtr()));
   }
 }
 
@@ -256,7 +259,9 @@ void AppBannerManagerDesktop::ShowBannerUi(WebappInstallSource install_source) {
   RecordDidShowBanner();
   TrackDisplayEvent(DISPLAY_EVENT_WEB_APP_BANNER_CREATED);
   ReportStatus(SHOWING_APP_INSTALLATION_DIALOG);
-  CreateWebApp(install_source);
+  CreateWebApp(install_source,
+               base::BindOnce(&AppBannerManagerDesktop::DidFinishCreatingWebApp,
+                              weak_factory_.GetWeakPtr()));
 }
 
 void AppBannerManagerDesktop::OnWebAppInstalled(
@@ -291,14 +296,15 @@ void AppBannerManagerDesktop::OnWebAppInstallManagerDestroyed() {
   install_manager_observation_.Reset();
 }
 
-void AppBannerManagerDesktop::CreateWebApp(WebappInstallSource install_source) {
+void AppBannerManagerDesktop::CreateWebApp(
+    WebappInstallSource install_source,
+    web_app::WebAppInstalledCallback install_callback) {
   content::WebContents* contents = web_contents();
   DCHECK(contents);
 
   web_app::CreateWebAppFromManifest(
       contents, /*bypass_service_worker_check=*/true, install_source,
-      base::BindOnce(&AppBannerManagerDesktop::DidFinishCreatingWebApp,
-                     weak_factory_.GetWeakPtr()));
+      std::move(install_callback));
 }
 
 void AppBannerManagerDesktop::DidFinishCreatingWebApp(
@@ -320,6 +326,16 @@ void AppBannerManagerDesktop::DidFinishCreatingWebApp(
     TrackUserResponse(USER_RESPONSE_WEB_APP_DISMISSED);
     AppBannerSettingsHelper::RecordBannerDismissEvent(contents,
                                                       GetAppIdentifier());
+  }
+}
+
+void AppBannerManagerDesktop::DidCreateWebAppFromMLDialog(
+    const web_app::AppId& app_id,
+    webapps::InstallResultCode code) {
+  if (code == webapps::InstallResultCode::kSuccessNewInstall) {
+    TrackUserResponse(USER_RESPONSE_WEB_APP_ACCEPTED);
+  } else if (code == webapps::InstallResultCode::kUserInstallDeclined) {
+    TrackUserResponse(USER_RESPONSE_WEB_APP_DISMISSED);
   }
 }
 
