@@ -35,6 +35,7 @@
 #include "chrome/browser/devtools/devtools_file_watcher.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/devtools/url_constants.h"
+#include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
@@ -1538,6 +1539,9 @@ void DevToolsUIBindings::AddDevToolsExtensionsToClient() {
   base::Value::List results;
   base::Value::List component_extension_origins;
   bool have_user_installed_devtools_extensions = false;
+  extensions::ExtensionManagement* management =
+      extensions::ExtensionManagementFactory::GetForBrowserContext(
+          web_contents_->GetBrowserContext());
   for (const scoped_refptr<const extensions::Extension>& extension :
        registry->enabled_extensions()) {
     if (extensions::Manifest::IsComponentLocation(extension->location())) {
@@ -1560,6 +1564,19 @@ void DevToolsUIBindings::AddDevToolsExtensionsToClient() {
         web_contents_->GetPrimaryMainFrame()->GetProcess()->GetID(),
         url::Origin::Create(extension->url()));
 
+    base::Value::List runtime_allowed_hosts;
+    std::vector<std::string> allowed_hosts =
+        management->GetPolicyAllowedHosts(extension.get()).ToStringVector();
+    for (auto& host : allowed_hosts) {
+      runtime_allowed_hosts.Append(std::move(host));
+    }
+    base::Value::List runtime_blocked_hosts;
+    std::vector<std::string> blocked_hosts =
+        management->GetPolicyBlockedHosts(extension.get()).ToStringVector();
+    for (auto& host : blocked_hosts) {
+      runtime_blocked_hosts.Append(std::move(host));
+    }
+
     base::Value::Dict extension_info;
     extension_info.Set("startPage", url.spec());
     extension_info.Set("name", extension->name());
@@ -1568,6 +1585,11 @@ void DevToolsUIBindings::AddDevToolsExtensionsToClient() {
                            extensions::mojom::APIPermissionID::kExperimental));
     extension_info.Set("allowFileAccess", extensions::util::AllowFileAccess(
                                               extension->id(), profile_));
+    extension_info.Set(
+        "hostsPolicy",
+        base::Value::Dict()
+            .Set("runtimeAllowedHosts", std::move(runtime_allowed_hosts))
+            .Set("runtimeBlockedHosts", std::move(runtime_blocked_hosts)));
     results.Append(std::move(extension_info));
 
     if (!(extensions::Manifest::IsPolicyLocation(extension->location()) ||
