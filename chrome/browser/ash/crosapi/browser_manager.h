@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <set>
+#include <utility>
 #include <vector>
 
 #include "base/feature_list.h"
@@ -28,6 +29,7 @@
 #include "chrome/browser/ash/crosapi/browser_version_service_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_id.h"
 #include "chrome/browser/ash/crosapi/crosapi_util.h"
+#include "chrome/browser/ash/crosapi/device_ownership_waiter_impl.h"
 #include "chrome/browser/ash/crosapi/environment_provider.h"
 #include "chrome/browser/ash/crosapi/primary_profile_creation_waiter.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
@@ -86,6 +88,7 @@ class Crosapi;
 BASE_DECLARE_FEATURE(kLacrosLaunchAtLoginScreen);
 
 class BrowserLoader;
+class DeviceOwnershipWaiter;
 class FilesAppLauncher;
 class PersistentForcedExtensionKeepAlive;
 class TestMojoConnectionManager;
@@ -314,6 +317,11 @@ class BrowserManager : public session_manager::SessionManagerObserver,
           version_service_delegate) {
     version_service_delegate_ = std::move(version_service_delegate);
   }
+
+  // TODO(crbug.com/1463883): Remove this once we refactored to use the
+  // constructor.
+  void set_device_ownership_waiter_for_testing(
+      std::unique_ptr<DeviceOwnershipWaiter> device_ownership_waiter);
 
   void set_relaunch_requested_for_testing(bool relaunch_requested);
 
@@ -631,6 +639,16 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // resuming Lacros post-login.
   void WaitForProfileAddedBeforeResuming();
 
+  // Waits for the device owner being fetched from `UserManager` and then
+  // executes a callback. If Lacros is launched at the login screen, this
+  // just executes the callback directly.
+  void WaitForDeviceOwnerFetchedAndThen(base::OnceClosure cb,
+                                        bool launching_at_login_screen);
+
+  // Called as soon as `LaunchParamsFromBackground` are fetched.
+  void OnLaunchParamsFetched(bool launching_at_login_screens,
+                             LaunchParamsFromBackground params);
+
   // Writes post login data to the Lacros process after login.
   void WritePostLoginData();
 
@@ -789,6 +807,9 @@ class BrowserManager : public session_manager::SessionManagerObserver,
 
   const bool disabled_for_testing_;
 
+  // Indicates whether the delegate has been used.
+  bool device_ownership_waiter_called_{false};
+
   // Used to launch files.app when user clicked "Go to files" on the migration
   // error screen.
   std::unique_ptr<FilesAppLauncher> files_app_launcher_;
@@ -808,6 +829,9 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   base::ScopedObservation<user_manager::UserManager,
                           user_manager::UserManager::Observer>
       user_manager_observation_{this};
+
+  // Used to delay an action until the definitive device owner is fetched.
+  std::unique_ptr<DeviceOwnershipWaiter> device_ownership_waiter_;
 
   base::WeakPtrFactory<BrowserManager> weak_factory_{this};
 };

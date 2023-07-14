@@ -98,6 +98,10 @@ source_set("crosapi") {
     "device_local_account_extension_service_ash.h",
     "device_oauth2_token_service_ash.cc",
     "device_oauth2_token_service_ash.h",
+    "device_ownership_waiter.cc",
+    "device_ownership_waiter.h",
+    "device_ownership_waiter_impl.cc",
+    "device_ownership_waiter_impl.h",
     "device_settings_ash.cc",
     "device_settings_ash.h",
     "dlp_ash.cc",
@@ -401,6 +405,21 @@ source_set("crosapi") {
   ]
 }
 
+# TODO(b/291266467): Merge this with the `test_support` target.
+source_set("fake_device_ownership_waiter") {
+  testonly = true
+  sources = [
+    "fake_device_ownership_waiter.cc",
+    "fake_device_ownership_waiter.h",
+  ]
+  deps = [
+    ":crosapi",
+    "//base",
+    "//chrome/browser",
+    "//components/user_manager",
+  ]
+}
+
 source_set("test_support") {
   testonly = true
   sources = [
@@ -460,6 +479,7 @@ source_set("unit_tests") {
     "desk_ash_unittest.cc",
     "device_attributes_ash_unittest.cc",
     "device_oauth2_token_service_ash_unittest.cc",
+    "device_ownership_waiter_unittest.cc",
     "device_settings_ash_unittest.cc",
     "dlp_ash_unittest.cc",
     "document_scan_ash_unittest.cc",
@@ -500,6 +520,7 @@ source_set("unit_tests") {
 
   deps = [
     ":crosapi",
+    ":fake_device_ownership_waiter",
     ":test_support",
     "//ash",
     "//ash/components/arc:arc_test_support",

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/crosapi/browser_manager.h"
 
+#include <memory>
+
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/shelf_model.h"
@@ -12,6 +14,7 @@
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/crosapi/browser_loader.h"
+#include "chrome/browser/ash/crosapi/fake_device_ownership_waiter.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/component_updater/fake_cros_component_manager.h"
@@ -185,6 +188,8 @@ class BrowserManagerTest : public testing::Test {
     version_service_delegate_ = version_service_delegate.get();
     fake_browser_manager_->set_version_service_delegate_for_testing(
         std::move(version_service_delegate));
+    fake_browser_manager_->set_device_ownership_waiter_for_testing(
+        std::make_unique<FakeDeviceOwnershipWaiter>());
 
     shelf_model_ = std::make_unique<ash::ShelfModel>();
     shelf_controller_ = std::make_unique<ChromeShelfController>(
