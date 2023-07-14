@@ -48,6 +48,10 @@
   .container {
     height: 64px;
   }
+
+  .row-button {
+    margin-inline-end: 20px;
+  }
 </style>
 <div class="container" focus-row-container>
   <div id="entry" class="list-item" focus-row-control focus-type="entry">
@@ -78,7 +82,7 @@
     </div>
     <template is="dom-if"
         if="[[showActionsMenu_(printerEntry.printerType)]]">
-      <cr-icon-button id="moreActions" class="icon-more-vert"
+      <cr-icon-button id="moreActions" class="icon-more-vert row-button"
           on-click="onOpenActionMenuClick_" title="$i18n{moreActions}"
           aria-label="[[printerEntry.printerInfo.printerName]]"
           focus-row-control focus-type="moreActions" tabindex$="[[tabindex]]">
@@ -86,7 +90,7 @@
     </template>
     <template is="dom-if"
         if="[[isDiscoveredPrinter_(printerEntry.printerType)]]">
-      <cr-button id="setupPrinterButton"
+      <cr-button id="setupPrinterButton" class="row-button"
           on-click="onAddDiscoveredPrinterClick_"
           aria-label$="[[getSetupButtonAria_()]]"
           focus-row-control
@@ -98,7 +102,8 @@
     </template>
     <template is="dom-if"
         if="[[isAutomaticPrinter_(printerEntry.printerType)]]">
-      <cr-button id="automaticPrinterButton" class="save-printer-button"
+      <cr-button id="automaticPrinterButton"
+          class="save-printer-button row-button"
           on-click="onAddAutomaticPrinterClick_"
           aria-label$="[[getSaveButtonAria_()]]"
           focus-row-control
@@ -111,7 +116,8 @@
     <template is="dom-if"
         if="[[isPrintServerPrinter_(printerEntry.printerType)]]">
       <cr-button id="savePrinterButton"
-      class="save-printer-button" on-click="onAddServerPrinterClick_"
+          class="save-printer-button row-button"
+          on-click="onAddServerPrinterClick_"
           aria-label$="[[getSaveButtonAria_()]]"
           focus-row-control
           focus-type="savePrinterButton"

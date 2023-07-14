@@ -83,23 +83,14 @@
   }
 
   #nearbyPrinterToggleButton {
-    --paper-ripple-opacity: 0;
-    background: none;
-    border: none;
-    border-radius: initial;
-    flex-basis: 0;
-  }
-
-  #nearbyPrinterToggleButton:active {
-    box-shadow: none;
-  }
-
-  #nearbyPrinterToggleButton:focus {
-    outline: none;
+    margin: 0;
   }
 
   :host([is-printer-settings-revamp-enabled_]) #collapsibleSection {
-    padding: 0 20px 20px 20px;
+    padding-inline-end: 0;
+    padding-inline-start: 20px;
+    padding-bottom: 20px;
+    padding-top: 0;
   }
 
   #helpSection {
@@ -108,7 +99,7 @@
     border-radius: 12px;
     display: flex;
     margin-bottom: 8px;
-    margin-inline: -6px;
+    margin-inline: -6px 14px;
     padding: 16px 12px;
   }
 
@@ -148,10 +139,11 @@
 
   #addPrinterSectionRevamp {
     height: 64px;
-    padding-inline-start: 20px;
+    padding-inline: 0;
   }
 
   #addPrinterSectionRevampContainer {
+    padding-inline-start: 20px;
     padding-top: 8px;
   }
 
@@ -230,11 +222,10 @@
         $i18n{availablePrintersReadySubtext}
       </div>
     </div>
-    <cr-button id="nearbyPrinterToggleButton" on-click="toggleClicked_"
+    <cr-icon-button id="nearbyPrinterToggleButton" on-click="toggleClicked_"
+        iron-icon="[[getIconDirection_(nearbyPrintersExpanded_)]]"
         aria-expanded="[[nearbyPrintersExpanded_]]">
-      <iron-icon icon="[[getIconDirection_(nearbyPrintersExpanded_)]]">
-      </iron-icon>
-    </cr-button>
+    </cr-icon-button>
     <cr-policy-pref-indicator
         pref="[[prefs.native_printing.user_native_printers_allowed]]"
         icon-aria-label="$i18n{printingPageTitle}">
