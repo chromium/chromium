@@ -344,12 +344,13 @@ void CloudBinaryUploadService::OnFCMConnected(Request::Id request_id) {
   bool is_auth_request = request->IsAuthRequest();
   // Auth requests and paste requests are never going to need waiting for an
   // async response, so don't bother getting a token from `binary_fcm_service_`.
-  if (is_auth_request ||
-      request->analysis_connector() ==
-          enterprise_connectors::AnalysisConnector::BULK_DATA_ENTRY) {
+  if (is_auth_request) {
     request->GetRequestData(
         base::BindOnce(&CloudBinaryUploadService::OnGetRequestData,
                        weakptr_factory_.GetWeakPtr(), request_id));
+  } else if (request->analysis_connector() ==
+             enterprise_connectors::AnalysisConnector::BULK_DATA_ENTRY) {
+    MaybeGetAccessToken(request_id);
   } else {
     binary_fcm_service_->SetCallbackForToken(
         request->request_token(),
@@ -395,6 +396,14 @@ void CloudBinaryUploadService::OnGetInstanceID(Request::Id request_id,
       base::Minutes(6), 50);
 
   request->set_fcm_token(instance_id);
+  MaybeGetAccessToken(request_id);
+}
+
+void CloudBinaryUploadService::MaybeGetAccessToken(Request::Id request_id) {
+  Request* request = GetRequest(request_id);
+  if (!request) {
+    return;
+  }
 
   if (CanUseAccessToken(*request, profile_)) {
     if (!token_fetcher_) {

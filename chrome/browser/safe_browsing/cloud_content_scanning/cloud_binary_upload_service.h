@@ -92,6 +92,9 @@ class CloudBinaryUploadService : public BinaryUploadService {
   // This may destroy `request`.
   void OnGetInstanceID(Request::Id request_id, const std::string& token);
 
+  // Get the access token only if the user matches the management and
+  // affiliation requirements.
+  void MaybeGetAccessToken(Request::Id request_id);
   void OnGetAccessToken(Request::Id request_id,
                         const std::string& access_token);
 
