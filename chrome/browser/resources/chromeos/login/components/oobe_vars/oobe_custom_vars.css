@@ -120,6 +120,7 @@
 
       /* Dialog */
       --oobe-adaptive-dialog-icon-size: 32px;
+      --oobe-adaptive-dialog-icon-fill-color: var(--cros-icon-color-blue);
 
       /* Welcome screen */
       --selection-entry-height: 60px;
@@ -234,6 +235,10 @@
           var(--cros-display-6_regular-font-size);
       --oobe-welcome-subheader-line-height:
           var(--cros-display-6_regular-line-height);
+
+      /* Dialog */
+      --oobe-adaptive-dialog-icon-size: 48px;
+      --oobe-adaptive-dialog-icon-fill-color: var(--cros-sys-primary);
     }
 
     html.simon-enabled {

@@ -21,19 +21,25 @@ found in the LICENSE file.
     margin-bottom: 20px;
     margin-top: 20px;
   }
+
+  :host-context(.jelly-enabled) paper-progress {
+    --paper-progress-active-color: var(--cros-sys-primary);
+    --paper-progress-container-color: var(--cros-sys-primary_container);
+    --paper-progress-secondary-color: var(--cros-color-prominent-dark);
+  }
 </style>
 
 <oobe-loading-dialog id="loading-dialog" for-step="loading" role="dialog"
     title-key="loadingDialogTitle">
   <iron-icon slot="icon"
-             src="/images/arc_vm_data_migration_icon.svg"
+             icon="oobe-32:arc-vm-data-migration-icon"
              aria-hidden="true">
   </iron-icon>
 </oobe-loading-dialog>
 
 <oobe-adaptive-dialog id="welcome-dialog" for-step="welcome" role="dialog">
   <iron-icon slot="icon"
-             src="/images/arc_vm_data_migration_icon.svg"
+             icon="oobe-32:arc-vm-data-migration-icon"
              aria-hidden="true">
   </iron-icon>
   <h1 slot="title">[[i18nDynamic(locale, 'welcomeScreenTitle')]]</h1>
@@ -81,7 +87,7 @@ found in the LICENSE file.
 
 <oobe-adaptive-dialog id="resume-dialog" for-step="resume" role="dialog">
   <iron-icon slot="icon"
-             src="/images/arc_vm_data_migration_icon.svg"
+             icon="oobe-32:arc-vm-data-migration-icon"
              aria-hidden="true">
   </iron-icon>
   <h1 slot="title">[[i18nDynamic(locale, 'resumeScreenTitle')]]</h1>
@@ -114,7 +120,7 @@ found in the LICENSE file.
 
 <oobe-adaptive-dialog id="progress-dialog" for-step="progress" role="dialog">
   <iron-icon slot="icon"
-             src="/images/arc_vm_data_migration_icon.svg"
+             icon="oobe-32:arc-vm-data-migration-icon"
              aria-hidden="true">
   </iron-icon>
   <h1 slot="title">[[i18nDynamic(locale, 'progressScreenTitle')]]</h1>

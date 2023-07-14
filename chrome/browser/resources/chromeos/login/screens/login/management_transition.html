@@ -12,6 +12,13 @@ found in the LICENSE file.
     height: 3px;
     width: 100%;
   }
+
+  :host-context(.jelly-enabled) paper-progress {
+    --paper-progress-active-color: var(--cros-sys-primary);
+    --paper-progress-container-color: var(--cros-sys-primary_container);
+    --paper-progress-secondary-color: var(--cros-sys-primary);
+  }
+
 </style>
 <oobe-adaptive-dialog id="managementTransitionDialog" role="dialog"
     aria-label$="[[getDialogTitle_(locale, arcTransition_, managementEntity_)]]"
@@ -60,4 +67,3 @@ found in the LICENSE file.
     </oobe-text-button>
   </div>
 </oobe-adaptive-dialog>
-
