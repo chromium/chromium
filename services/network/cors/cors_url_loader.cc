@@ -252,10 +252,26 @@ void RecordNetworkLoaderCompletionTime(const char* suffix,
       elapsed);
 }
 
-bool IsSharedDictionaryWriteAllowedMode(mojom::RequestMode mode) {
-  return mode == mojom::RequestMode::kCors ||
-         mode == mojom::RequestMode::kCorsWithForcedPreflight ||
-         mode == mojom::RequestMode::kSameOrigin;
+// The compressed dictionary transport feature supports storing dictionaries
+// if the request was fetched by cors enabled mode request or same-origin mode
+// request or no-cors mode same origin request.
+bool IsSharedDictionaryWriteAllowed(
+    mojom::RequestMode mode,
+    mojom::FetchResponseType response_tainting) {
+  switch (mode) {
+    case mojom::RequestMode::kSameOrigin:
+      return true;
+    case mojom::RequestMode::kNoCors:
+      // Basic `response_tainting` for no-cors request means that the response
+      // is from same origin without any cross origin redirect.
+      return response_tainting == mojom::FetchResponseType::kBasic;
+    case mojom::RequestMode::kCors:
+      return true;
+    case mojom::RequestMode::kCorsWithForcedPreflight:
+      return true;
+    case mojom::RequestMode::kNavigate:
+      return false;
+  }
 }
 
 constexpr const char kTimingAllowOrigin[] = "Timing-Allow-Origin";
@@ -575,10 +591,10 @@ void CorsURLLoader::OnReceiveResponse(
   }
 
   if (request_.shared_dictionary_writer_enabled && shared_dictionary_storage_ &&
-      (IsSharedDictionaryWriteAllowedMode(request_.mode))) {
-    // The compressed dictionary transport feature supports storing
-    // dictionaries only if the request was fetched using cors enabled mode or
-    // same-origin mode.
+      IsSharedDictionaryWriteAllowed(request_.mode, response_tainting_)) {
+    // Opaque response tainting requests should not trigger dictionary
+    // registration.
+    CHECK_NE(mojom::FetchResponseType::kOpaque, response_tainting_);
     auto writer = shared_dictionary_storage_->MaybeCreateWriter(
         request_.url, response_head->response_time, *response_head->headers,
         base::BindOnce(

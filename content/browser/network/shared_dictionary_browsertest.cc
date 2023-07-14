@@ -79,7 +79,7 @@ constexpr base::StringPiece kOriginTrialToken =
     "BpcnkiOiAxOTk5ODQzODIwfQ==";
 
 // The SHA256 hash of dictionary
-// (content/test/data/shared_dictionary/test.dict).
+// (content/test/data/shared_dictionary/test.dict and test_dict.html).
 constexpr base::StringPiece kExpectedDictionaryHash =
     "53969bcf5e960e0edbf0a4bdde6b0b3e9381e156de7f5b91ce8391624270f416";
 constexpr net::SHA256HashValue kExpectedDictionaryHashValue = {
@@ -167,6 +167,7 @@ enum class FetchType {
   kFetchApiFromDedicatedWorker,
   kFetchApiFromSharedWorker,
   kFetchApiFromServiceWorker,
+  kIframeNavigation,
 };
 
 std::string LinkRelDictionaryScript(const GURL& dictionary_url) {
@@ -271,6 +272,24 @@ std::string FetchTargetDataScript(const GURL& dictionary_url) {
                    dictionary_url);
 }
 
+std::string IframeLoadScript(const GURL& url) {
+  return JsReplace(R"(
+  (async () => {
+    const iframe = document.createElement('iframe');
+    iframe.src = $1;
+    const promise =
+        new Promise(resolve => { iframe.addEventListener('load', resolve); });
+    document.body.appendChild(iframe);
+    await promise;
+    try {
+      return iframe.contentDocument.body.innerText;
+    } catch {
+      return 'failed to access iframe';
+    }
+  })()
+                  )",
+                   url);
+}
 absl::optional<std::string> GetSecAvailableDictionary(
     const net::test_server::HttpRequest::HeaderMap& headers) {
   auto it = headers.find("sec-available-dictionary");
@@ -494,6 +513,9 @@ class SharedDictionaryBrowserTestBase : public ContentBrowserTest {
         break;
       case FetchType::kFetchApiFromServiceWorker:
         script = RegisterTestServiceWorkerScript(dictionary_url);
+        break;
+      case FetchType::kIframeNavigation:
+        script = IframeLoadScript(dictionary_url);
         break;
     }
     EXPECT_TRUE(ExecJs(shell->web_contents()->GetPrimaryMainFrame(), script));
@@ -1019,18 +1041,7 @@ class SharedDictionaryBrowserTest
   }
   std::string LoadTestIframe(const GURL& url) {
     return EvalJs(GetTargetShell()->web_contents()->GetPrimaryMainFrame(),
-                  JsReplace(R"(
-  (async () => {
-    const iframe = document.createElement('iframe');
-    iframe.src = $1;
-    const promise =
-        new Promise(resolve => { iframe.addEventListener('load', resolve); });
-    document.body.appendChild(iframe);
-    await promise;
-    return iframe.contentDocument.body.innerText;
-  })()
-                  )",
-                            url))
+                  IframeLoadScript(url))
         .ExtractString();
   }
 
@@ -1218,8 +1229,7 @@ IN_PROC_BROWSER_TEST_P(SharedDictionaryBrowserTest,
                        FetchDictionaryWithNoCorsMode) {
   RunWriteDictionaryTest(FetchType::kFetchApiWithNoCorsMode,
                          GetURL("/shared_dictionary/blank.html"),
-                         GetURL("/shared_dictionary/test.dict"),
-                         /*expect_success=*/false);
+                         GetURL("/shared_dictionary/test.dict"));
 }
 
 IN_PROC_BROWSER_TEST_P(SharedDictionaryBrowserTest,
@@ -1267,6 +1277,14 @@ IN_PROC_BROWSER_TEST_P(SharedDictionaryBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_P(SharedDictionaryBrowserTest,
+                       FetchDictionaryUingIframeNavigation) {
+  RunWriteDictionaryTest(FetchType::kIframeNavigation,
+                         GetURL("/shared_dictionary/blank.html"),
+                         GetURL("/shared_dictionary/test_dict.html"),
+                         /*expect_success=*/false);
+}
+
+IN_PROC_BROWSER_TEST_P(SharedDictionaryBrowserTest,
                        CrossOriginLinkRelDictionary) {
   RunWriteDictionaryTest(FetchType::kLinkRelDictionary,
                          GetURL("/shared_dictionary/blank.html"),
@@ -1294,6 +1312,22 @@ IN_PROC_BROWSER_TEST_P(SharedDictionaryBrowserTest,
       FetchType::kFetchApi, GetURL("/shared_dictionary/blank.html"),
       GetCrossOriginURL("/shared_dictionary/test_no_acao.dict"),
       /*expect_success=*/false);
+}
+
+IN_PROC_BROWSER_TEST_P(SharedDictionaryBrowserTest,
+                       CrossOriginFetchDictionaryWithNoCorsMode) {
+  RunWriteDictionaryTest(FetchType::kFetchApiWithNoCorsMode,
+                         GetURL("/shared_dictionary/blank.html"),
+                         GetCrossOriginURL("/shared_dictionary/test.dict"),
+                         /*expect_success=*/false);
+}
+
+IN_PROC_BROWSER_TEST_P(SharedDictionaryBrowserTest,
+                       CrossOriginFetchDictionaryUingIframeNavigation) {
+  RunWriteDictionaryTest(FetchType::kIframeNavigation,
+                         GetURL("/shared_dictionary/blank.html"),
+                         GetCrossOriginURL("/shared_dictionary/test_dict.html"),
+                         /*expect_success=*/false);
 }
 
 IN_PROC_BROWSER_TEST_P(SharedDictionaryBrowserTest,

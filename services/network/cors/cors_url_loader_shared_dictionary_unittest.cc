@@ -200,8 +200,29 @@ TEST_F(CorsURLLoaderSharedDictionaryTest, SameOriginUrlNoCorsModeRequest) {
   RunUntilComplete();
   EXPECT_EQ(net::OK, client().completion_status().error_code);
 
-  // The response of NoCors mode request should not be stored to the dictionary
-  // storage.
+  // The response of NoCors mode same origin request should be stored to
+  // the dictionary storage.
+  CheckDictionaryInStorage(/*expect_exists=*/true);
+}
+
+TEST_F(CorsURLLoaderSharedDictionaryTest, CrossOriginUrlNoCorsModeRequest) {
+  ResetFactory();
+
+  ResourceRequest request = CreateResourceRequest();
+  request.url = GURL("https://crossorigin.test/test");
+  request.mode = mojom::RequestMode::kNoCors;
+  CreateLoaderAndStart(request);
+
+  RunUntilCreateLoaderAndStartCalled();
+
+  CreateDataPipeAndWriteTestData();
+  CallOnReceiveResponseAndOnCompleteAndFinishBody();
+
+  RunUntilComplete();
+  EXPECT_EQ(net::OK, client().completion_status().error_code);
+
+  // The response of NoCors mode cross origin request should not be
+  // stored to the dictionary storage.
   CheckDictionaryInStorage(/*expect_exists=*/false);
 }
 
