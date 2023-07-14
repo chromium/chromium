@@ -29,7 +29,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest]
+        os: [ubuntu-latest, macos-latest, windows-latest]
         head: [headful, headless]
     runs-on: ${{ matrix.os }}
     steps:
@@ -69,7 +69,7 @@ jobs:
           BROWSER_BIN: ${{ steps.browser.outputs.executablePath }}
           VERBOSE: ${{ github.event.inputs.verbose }}
       - name: Run E2E tests
-        if: matrix.os == 'macos-latest' || (matrix.os == 'ubuntu-latest' && matrix.head == 'headless')
+        if: matrix.os != 'ubuntu-latest' || (matrix.os == 'ubuntu-latest' && matrix.head == 'headless')
         timeout-minutes: 20
         run: npm run e2e-${{ matrix.head }}
         # For verbose logging, set `DEBUG: 'bidi:mapper:debug:*'` and `VERBOSE: true`.

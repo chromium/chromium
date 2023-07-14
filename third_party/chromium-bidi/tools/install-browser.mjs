@@ -40,7 +40,7 @@ const SHELL_ARG = '--shell';
 try {
   const browserSpec = (await readFile('.browser', 'utf-8')).trim();
 
-  let cacheDir = resolve(homedir(), '.cache/chromium-bidi');
+  let cacheDir = resolve(homedir(), '.cache', 'chromium-bidi');
   if (process.argv[2] && process.argv[2] !== SHELL_ARG) {
     cacheDir = process.argv[2];
   }

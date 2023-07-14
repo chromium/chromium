@@ -19,6 +19,8 @@
 
 import {spawnSync} from 'child_process';
 import {cpus} from 'os';
+import {join, resolve, sep} from 'path';
+
 import {packageDirectorySync} from 'pkg-dir';
 
 // Changing the current work directory to the package directory.
@@ -43,17 +45,35 @@ if (
   process.exit(0);
 }
 
-const isLinux = process.platform === 'linux';
-const isMacOS = process.platform === 'darwin';
-
-// The path to the browser binary.
-const BROWSER_BIN =
-  process.env.BROWSER_BIN ||
-  (isLinux
-    ? '/usr/bin/google-chrome-unstable'
-    : isMacOS
-    ? '/Applications/Google Chrome Dev.app/Contents/MacOS/Google Chrome Dev'
-    : '');
+let BROWSER_BIN = process.env.BROWSER_BIN;
+if (!BROWSER_BIN) {
+  switch (process.platform) {
+    case 'linux':
+      BROWSER_BIN = join(sep, 'usr', 'bin', 'google-chrome-unstable');
+      break;
+    case 'darwin':
+      BROWSER_BIN = join(
+        sep,
+        'Applications',
+        'Google Chrome Dev.app',
+        'Contents',
+        'MacOS',
+        'Google Chrome Dev'
+      );
+      break;
+    case 'win32':
+      BROWSER_BIN = join(
+        process.env['PROGRAMFILES'],
+        'Google',
+        'Chrome Dev',
+        'Application',
+        'chrome.exe'
+      );
+      break;
+    default:
+      BROWSER_BIN = '';
+  }
+}
 
 // Whether to use Chromedriver with mapper.
 const CHROMEDRIVER = process.env.CHROMEDRIVER || 'false';
@@ -83,12 +103,12 @@ const WPT_REPORT = process.env.WPT_REPORT || 'wptreport.json';
 let WPT_METADATA;
 if (typeof process.env.WPT_METADATA === 'undefined') {
   if (CHROMEDRIVER === 'true') {
-    WPT_METADATA = 'wpt-metadata/chromedriver/headless';
+    WPT_METADATA = join('wpt-metadata', 'chromedriver', 'headless');
   } else {
     WPT_METADATA =
       HEADLESS === 'true'
-        ? 'wpt-metadata/mapper/headless'
-        : 'wpt-metadata/mapper/headful';
+        ? join('wpt-metadata', 'mapper', 'headless')
+        : join('wpt-metadata', 'mapper', 'headful');
   }
 } else {
   WPT_METADATA = process.env.WPT_METADATA;
@@ -137,8 +157,8 @@ if (CHROMEDRIVER === 'true') {
   wptRunArgs.push(
     '--binary-arg=--headless=new',
     '--install-webdriver',
-    '--webdriver-arg=--bidi-mapper-path=lib/iife/mapperTab.js',
-    '--webdriver-arg=--log-path=out/chromedriver.log',
+    `--webdriver-arg=--bidi-mapper-path=${join('lib', 'iife', 'mapperTab.js')}`,
+    `--webdriver-arg=--log-path=${join('out', 'chromedriver.log')}`,
     '--webdriver-arg=--verbose',
     '--yes'
   );
@@ -147,7 +167,8 @@ if (CHROMEDRIVER === 'true') {
 }
 
 const restArgs = process.argv.slice(2);
-const test = restArgs[restArgs.length - 1] ?? 'webdriver/tests/bidi';
+const test =
+  restArgs[restArgs.length - 1] ?? join('webdriver', 'tests', 'bidi');
 
 log(`Running "${test}" with "${BROWSER_BIN}"...`);
 
@@ -159,7 +180,8 @@ wptRunArgs.push(
   test
 );
 
-const {status} = spawnSync('./wpt/wpt', ['run', ...wptRunArgs], {
+const wptBinary = resolve(join('wpt', 'wpt'));
+const {status} = spawnSync(wptBinary, ['run', ...wptRunArgs], {
   stdio: 'inherit',
 });
 
@@ -167,7 +189,7 @@ if (UPDATE_EXPECTATIONS === 'true') {
   log('Updating WPT expectations...');
 
   spawnSync(
-    './wpt/wpt',
+    wptBinary,
     [
       'update-expectations',
       '--product',

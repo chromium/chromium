@@ -19,9 +19,9 @@
 
 import {spawn, spawnSync} from 'child_process';
 import {createWriteStream, mkdirSync} from 'fs';
-import {basename, join} from 'path';
-import {packageDirectorySync} from 'pkg-dir';
+import {basename, join, resolve} from 'path';
 
+import {packageDirectorySync} from 'pkg-dir';
 import yargs from 'yargs';
 import {hideBin} from 'yargs/helpers';
 
@@ -49,7 +49,10 @@ let BROWSER_BIN = process.env.BROWSER_BIN;
 let CHANNEL = process.env.CHANNEL || 'local';
 if (CHANNEL === 'local') {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  BROWSER_BIN = spawnSync('node', ['tools/install-browser.mjs', '--shell'])
+  BROWSER_BIN = spawnSync('node', [
+    join('tools', 'install-browser.mjs'),
+    '--shell',
+  ])
     .stdout.toString()
     .trim();
   // Need to pass valid CHANNEL to the command below
@@ -74,7 +77,7 @@ mkdirSync(LOG_DIR, {recursive: true});
 const subprocess = spawn(
   'node',
   [
-    'lib/cjs/bidiServer/index.js',
+    resolve(join('lib', 'cjs', 'bidiServer', 'index.js')),
     `--channel`,
     CHANNEL,
     `--headless`,
