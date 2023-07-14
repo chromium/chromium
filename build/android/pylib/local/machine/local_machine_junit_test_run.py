@@ -44,6 +44,12 @@ _JOB_TIMEOUT = 30
 # RegExp to detect logcat lines, e.g., 'I/AssetManager: not found'.
 _LOGCAT_RE = re.compile(r'(:?\d+\| )?[A-Z]/[\w\d_-]+:')
 
+# Regex to detect start or failure of tests. Matches
+# [ RUN      ] org.ui.ForeignSessionItemViewBinderUnitTest.test_phone[28]
+# [ FAILED|CRASHED|TIMEOUT ] org.ui.ForeignBinderUnitTest.test_phone[28] (56 ms)
+_TEST_START_RE = re.compile(r'.*\[\s+RUN\s+\]\s(.*)')
+_TEST_FAILED_RE = re.compile(r'.*\[\s+(?:FAILED|CRASHED|TIMEOUT)\s+\]')
+
 # Regex that matches a test name, and optionally matches the sdk version e.g.:
 # org.chromium.default_browser_promo.PromoUtilsTest#testNoPromo[28]'
 _TEST_SDK_VERSION = re.compile(r'(.*\.\w+)#\w+(?:\[(\d+)\])?')
@@ -208,6 +214,9 @@ class LocalMachineJunitTestRun(test_run.TestRun):
 
       show_logcat = logging.getLogger().isEnabledFor(logging.INFO)
       num_omitted_lines = 0
+      failed_test_logs = {}
+      log_lines = []
+      current_test = None
       for line in _RunCommandsAndSerializeOutput(cmd_list, num_workers,
                                                  shard_list):
         if raw_logs_fh:
@@ -216,6 +225,20 @@ class LocalMachineJunitTestRun(test_run.TestRun):
           sys.stdout.write(line)
         else:
           num_omitted_lines += 1
+
+        # Collect log data between a test starting and the test failing.
+        # There can be info after a test fails and before the next test starts
+        # that we discard.
+        test_start_match = _TEST_START_RE.match(line)
+        if test_start_match:
+          current_test = test_start_match.group(1)
+          log_lines = [line]
+        elif _TEST_FAILED_RE.match(line) and current_test:
+          log_lines.append(line)
+          failed_test_logs[current_test] = ''.join(log_lines)
+          current_test = None
+        else:
+          log_lines.append(line)
 
       if num_omitted_lines > 0:
         logging.critical('%d log lines omitted.', num_omitted_lines)
@@ -230,6 +253,11 @@ class LocalMachineJunitTestRun(test_run.TestRun):
           with open(json_file_path, 'r') as f:
             parsed_results = json_results.ParseResultsFromJson(
                 json.loads(f.read()))
+            for r in parsed_results:
+              if r.GetType() in _FAILURE_TYPES:
+                r.SetLog(failed_test_logs.get(r.GetName().replace('#', '.'),
+                                              ''))
+
             results_list += parsed_results
             if any(r for r in parsed_results if r.GetType() in _FAILURE_TYPES):
               failed_shards.append(shard_list[i])
