@@ -306,7 +306,13 @@ class SuggestionLayout extends ViewGroup {
         assert contentView != null : "No content views";
 
         // Pad suggestion around to guarantee appropriate spacing around suggestions.
-        if (!hasFooter) contentHeightPx += mContentPaddingPx;
+        // "Shorter" suggestions (no extra padding) are used to present footer closer to
+        // the suggestions content to make them show as related.
+        // Modernized UI present their content in distinc blocks, and the extra space
+        // does not break visually the relationship between the content and footer parts.
+        if (OmniboxFeatures.shouldShowModernizeVisualUpdate(getContext()) || !hasFooter) {
+            contentHeightPx += mContentPaddingPx;
+        }
 
         // Guarantee that the suggestion height meets our required minimum tap target size.
         var height =
