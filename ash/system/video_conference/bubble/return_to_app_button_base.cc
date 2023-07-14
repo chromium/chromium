@@ -11,6 +11,7 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/typography.h"
+#include "ash/system/video_conference/video_conference_common.h"
 #include "ash/system/video_conference/video_conference_tray_controller.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -34,7 +35,6 @@ namespace ash::video_conference {
 namespace {
 
 const int kReturnToAppIconsContainerSpacing = 2;
-const int kReturnToAppIconSize = 20;
 
 // Creates a view containing camera, microphone, and screen share icons that
 // shows capturing state of a media app.

@@ -16,6 +16,9 @@
 #include "ash/system/status_area_widget_test_helper.h"
 #include "ash/system/tray/system_tray_notifier.h"
 #include "ash/system/unified/unified_system_tray.h"
+#include "ash/system/video_conference/bubble/bubble_view.h"
+#include "ash/system/video_conference/bubble/bubble_view_ids.h"
+#include "ash/system/video_conference/bubble/linux_apps_bubble_view.h"
 #include "ash/system/video_conference/effects/video_conference_tray_effects_manager_types.h"
 #include "ash/system/video_conference/fake_video_conference_tray_controller.h"
 #include "ash/system/video_conference/video_conference_common.h"
@@ -28,6 +31,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "chromeos/crosapi/mojom/video_conference.mojom-shared.h"
 #include "chromeos/crosapi/mojom/video_conference.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/animation/ink_drop.h"
@@ -129,7 +133,10 @@ class VideoConferenceTrayTest : public AshTestBase {
   }
 
   // Convenience function to create `num_apps` media apps.
-  void CreateMediaApps(int num_apps, bool clear_existing_apps = true) {
+  void CreateMediaApps(int num_apps,
+                       bool clear_existing_apps = true,
+                       crosapi::mojom::VideoConferenceAppType app_type =
+                           crosapi::mojom::VideoConferenceAppType::kChromeApp) {
     if (clear_existing_apps) {
       controller()->ClearMediaApps();
     }
@@ -144,7 +151,7 @@ class VideoConferenceTrayTest : public AshTestBase {
               /*is_capturing_camera=*/true,
               /*is_capturing_microphone=*/true, /*is_capturing_screen=*/true,
               title,
-              /*url=*/GURL(kMeetTestUrl)));
+              /*url=*/GURL(kMeetTestUrl), /*app_type=*/app_type));
     }
   }
 
@@ -975,6 +982,47 @@ TEST_F(VideoConferenceTrayTest, CloseBubbleOnEffectSupportStateChange) {
   // When there's a change to effect support state, the bubble should be
   // automatically close to update.
   EXPECT_FALSE(video_conference_tray()->GetBubbleView());
+}
+
+TEST_F(VideoConferenceTrayTest, BubbleWithOnlyLinuxApps) {
+  SetTrayAndButtonsVisible();
+
+  // Create 1 non-linux app. We should show `kMainBubbleView`.
+  CreateMediaApps(1, /*clear_existing_apps=*/true);
+  LeftClickOn(toggle_bubble_button());
+  auto* bubble_view = video_conference_tray()->GetBubbleView();
+  ASSERT_TRUE(bubble_view);
+
+  EXPECT_EQ(video_conference::BubbleViewID::kMainBubbleView,
+            bubble_view->GetID());
+
+  // Close the bubble.
+  LeftClickOn(toggle_bubble_button());
+
+  // Create 1 linux app. We should show `kLinuxAppBubbleView`.
+  CreateMediaApps(1, /*clear_existing_apps=*/true,
+                  crosapi::mojom::VideoConferenceAppType::kBorealis);
+  LeftClickOn(toggle_bubble_button());
+  bubble_view = video_conference_tray()->GetBubbleView();
+  ASSERT_TRUE(bubble_view);
+
+  EXPECT_EQ(video_conference::BubbleViewID::kLinuxAppBubbleView,
+            bubble_view->GetID());
+
+  // Close the bubble.
+  LeftClickOn(toggle_bubble_button());
+
+  // Create 1 linux app and 1 non-linux app. We should still show
+  // `kMainBubbleView`.
+  CreateMediaApps(1, /*clear_existing_apps=*/true,
+                  crosapi::mojom::VideoConferenceAppType::kBorealis);
+  CreateMediaApps(1, /*clear_existing_apps=*/false);
+  LeftClickOn(toggle_bubble_button());
+  bubble_view = video_conference_tray()->GetBubbleView();
+  ASSERT_TRUE(bubble_view);
+
+  EXPECT_EQ(video_conference::BubbleViewID::kMainBubbleView,
+            bubble_view->GetID());
 }
 
 // Tests the tray when there's a delay in `GetMediaApps()`.

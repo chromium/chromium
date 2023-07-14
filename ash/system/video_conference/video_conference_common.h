@@ -15,6 +15,8 @@ namespace ash {
 
 constexpr int kVideoConferenceBubbleHorizontalPadding = 12;
 
+const int kReturnToAppIconSize = 20;
+
 // This struct provides aggregated attributes of media apps
 // from one or more clients.
 struct VideoConferenceMediaState {

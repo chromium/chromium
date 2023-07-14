@@ -5,6 +5,7 @@
 #include <memory>
 #include <string>
 
+#include "ash/constants/app_types.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/style/icon_button.h"
@@ -24,6 +25,7 @@
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "chromeos/crosapi/mojom/video_conference.mojom-shared.h"
 #include "chromeos/crosapi/mojom/video_conference.mojom.h"
 #include "url/gurl.h"
 
@@ -257,6 +259,41 @@ TEST_F(BubbleViewPixelTest, ReturnToApp) {
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "video_conference_tray_return_to_app_two_apps_expanded",
       /*revision_number=*/1, return_to_app_panel));
+}
+
+TEST_F(BubbleViewPixelTest, ReturnToAppLinux) {
+  controller()->ClearMediaApps();
+  controller()->AddMediaApp(CreateFakeMediaApp(
+      /*is_capturing_camera=*/true, /*is_capturing_microphone=*/false,
+      /*is_capturing_screen=*/false, /*title=*/u"Linux",
+      /*url=*/"",
+      /*app_type=*/crosapi::mojom::VideoConferenceAppType::kCrostiniVm));
+
+  SetTrayAndButtonsVisible();
+  ASSERT_TRUE(video_conference_tray()->GetVisible());
+
+  auto* toggle_bubble_button = video_conference_tray()->toggle_bubble_button();
+  LeftClickOn(toggle_bubble_button);
+  ASSERT_TRUE(video_conference_tray()->GetBubbleView());
+
+  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
+      "video_conference_tray_linux_bubble_one_app",
+      /*revision_number=*/0, video_conference_tray()->GetBubbleView()));
+
+  controller()->AddMediaApp(CreateFakeMediaApp(
+      /*is_capturing_camera=*/true, /*is_capturing_microphone=*/true,
+      /*is_capturing_screen=*/false, /*title=*/u"Parallels",
+      /*url=*/"",
+      /*app_type=*/crosapi::mojom::VideoConferenceAppType::kPluginVm));
+
+  // Double click to reset the bubble to show the newly added media app.
+  LeftClickOn(toggle_bubble_button);
+  LeftClickOn(toggle_bubble_button);
+  ASSERT_TRUE(video_conference_tray()->GetBubbleView());
+
+  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
+      "video_conference_tray_linux_bubble_two_app",
+      /*revision_number=*/0, video_conference_tray()->GetBubbleView()));
 }
 
 TEST_F(BubbleViewPixelTest, OneToggleEffects) {

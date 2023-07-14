@@ -45,7 +45,11 @@ enum BubbleViewID {
   // for linux apps.
   kLinuxAppWarningView,
 
-  kNextAvailableId = kLinuxAppWarningView + 1,
+  // The VC bubble that will be displayed when all the running media apps are
+  // Linux apps.
+  kLinuxAppBubbleView,
+
+  kNextAvailableId = kLinuxAppBubbleView + 1,
 };
 
 }  // namespace ash::video_conference

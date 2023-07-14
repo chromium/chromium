@@ -4,6 +4,7 @@
 
 #include "ash/system/video_conference/video_conference_tray.h"
 
+#include <memory>
 #include <string>
 
 #include "ash/public/cpp/shelf_types.h"
@@ -17,11 +18,13 @@
 #include "ash/system/privacy/screen_security_controller.h"
 #include "ash/system/system_notification_controller.h"
 #include "ash/system/tray/tray_background_view.h"
+#include "ash/system/tray/tray_bubble_view.h"
 #include "ash/system/tray/tray_bubble_wrapper.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_container.h"
 #include "ash/system/tray/tray_utils.h"
 #include "ash/system/video_conference/bubble/bubble_view.h"
+#include "ash/system/video_conference/bubble/linux_apps_bubble_view.h"
 #include "ash/system/video_conference/video_conference_tray_controller.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -57,6 +60,18 @@ constexpr char kMicrophoneMuteHistogramName[] =
     "Ash.VideoConferenceTray.MicrophoneMuteButton.Click";
 constexpr char kStopScreenShareHistogramName[] =
     "Ash.VideoConferenceTray.StopScreenShareButton.Click";
+
+// Check if there's a non-linux app(s) from the given `apps`.
+bool HasNonLinuxMediaApps(const MediaApps& apps) {
+  for (auto& app : apps) {
+    if (app->app_type != crosapi::mojom::VideoConferenceAppType::kCrostiniVm &&
+        app->app_type != crosapi::mojom::VideoConferenceAppType::kPluginVm &&
+        app->app_type != crosapi::mojom::VideoConferenceAppType::kBorealis) {
+      return true;
+    }
+  }
+  return false;
+}
 
 // A customized toggle button for the VC tray's toggle bubble button.
 class ToggleBubbleButton : public IconButton {
@@ -458,10 +473,21 @@ void VideoConferenceTray::ConstructBubbleWithMediaApps(MediaApps apps) {
     return;
   }
 
-  auto bubble_view = std::make_unique<video_conference::BubbleView>(
-      /*init_params=*/CreateInitParamsForTrayBubble(/*tray=*/this),
-      /*media_apps=*/apps,
-      /*controller=*/VideoConferenceTrayController::Get());
+  std::unique_ptr<TrayBubbleView> bubble_view;
+  auto init_params = CreateInitParamsForTrayBubble(/*tray=*/this);
+
+  // If all of the apps are Linux apps, we will just use `LinuxAppsBubbleView`
+  // specifically for this situation.
+  if (!HasNonLinuxMediaApps(apps)) {
+    init_params.corner_radius = 18;
+    bubble_view = std::make_unique<video_conference::LinuxAppsBubbleView>(
+        init_params, apps);
+    bubble_view->SetPreferredWidth(bubble_view->GetPreferredSize().width());
+  } else {
+    bubble_view = std::make_unique<video_conference::BubbleView>(
+        /*init_params=*/init_params, /*media_apps=*/apps,
+        /*controller=*/VideoConferenceTrayController::Get());
+  }
 
   bubble_ = std::make_unique<TrayBubbleWrapper>(this);
   bubble_->ShowBubble(std::move(bubble_view));

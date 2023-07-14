@@ -12,7 +12,9 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/video_conference/bubble/bubble_view_ids.h"
 #include "ash/system/video_conference/bubble/return_to_app_button_base.h"
+#include "ash/system/video_conference/video_conference_common.h"
 #include "ash/system/video_conference/video_conference_tray_controller.h"
+#include "ash/system/video_conference/video_conference_utils.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -53,7 +55,6 @@ const int kReturnToAppPanelSidePadding = 16;
 const int kReturnToAppPanelSpacing = 8;
 const int kReturnToAppButtonTopRowSpacing = 12;
 const int kReturnToAppButtonSpacing = 16;
-const int kReturnToAppIconSize = 20;
 
 constexpr auto kPanelBoundsChangeAnimationDuration = base::Milliseconds(200);
 
@@ -148,26 +149,6 @@ void FadeOutView(views::View* view,
       .SetDuration(base::Milliseconds(50))
       .SetVisibility(view, false)
       .SetOpacity(view, 0.0f);
-}
-
-// Gets the display text representing a media app shown in the return to app
-// panel.
-std::u16string GetMediaAppDisplayText(
-    const mojo::StructPtr<crosapi::mojom::VideoConferenceMediaAppInfo>&
-        media_app) {
-  auto url = media_app->url;
-  auto title = media_app->title;
-
-  // Displays the title if it is not empty. Otherwise, display app url.
-  if (!title.empty()) {
-    return title;
-  }
-
-  if (url) {
-    return base::UTF8ToUTF16(url->GetContent());
-  }
-
-  return std::u16string();
 }
 
 // A customized toggle button for the return to app panel, which rotates
@@ -456,7 +437,7 @@ ReturnToAppPanel::ReturnToAppPanel(const MediaApps& apps) {
         /*panel=*/this,
         /*is_top_row=*/true, app->id, app->is_capturing_camera,
         app->is_capturing_microphone, app->is_capturing_screen,
-        GetMediaAppDisplayText(app), app->app_type);
+        video_conference_utils::GetMediaAppDisplayText(app), app->app_type);
     app_button->expand_indicator()->SetVisible(false);
     container_view_->AddChildView(std::move(app_button));
     return;
@@ -496,7 +477,7 @@ ReturnToAppPanel::ReturnToAppPanel(const MediaApps& apps) {
         /*panel=*/this,
         /*is_top_row=*/false, app->id, app->is_capturing_camera,
         app->is_capturing_microphone, app->is_capturing_screen,
-        GetMediaAppDisplayText(app), app->app_type));
+        video_conference_utils::GetMediaAppDisplayText(app), app->app_type));
   }
 }
 

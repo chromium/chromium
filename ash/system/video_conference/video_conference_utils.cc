@@ -7,6 +7,8 @@
 #include <string>
 
 #include "ash/system/video_conference/effects/video_conference_tray_effects_manager_types.h"
+#include "base/strings/utf_string_conversions.h"
+#include "chromeos/crosapi/mojom/video_conference.mojom.h"
 
 namespace ash::video_conference_utils {
 
@@ -37,6 +39,24 @@ std::string GetEffectHistogramNameForClick(VcEffectId effect_id) {
 
 std::string GetEffectHistogramNameForInitialState(VcEffectId effect_id) {
   return GetEffectHistogramNameBase(effect_id) + ".InitialState";
+}
+
+std::u16string GetMediaAppDisplayText(
+    const mojo::StructPtr<crosapi::mojom::VideoConferenceMediaAppInfo>&
+        media_app) {
+  auto url = media_app->url;
+  auto title = media_app->title;
+
+  // Displays the title if it is not empty. Otherwise, display app url.
+  if (!title.empty()) {
+    return title;
+  }
+
+  if (url) {
+    return base::UTF8ToUTF16(url->GetContent());
+  }
+
+  return std::u16string();
 }
 
 }  // namespace ash::video_conference_utils
