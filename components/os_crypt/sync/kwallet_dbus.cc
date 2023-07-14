@@ -31,8 +31,7 @@ const char kKLauncherInterface[] = "org.kde.KLauncher";
 
 }  // namespace
 
-KWalletDBus::KWalletDBus(base::nix::DesktopEnvironment desktop_env)
-    : session_bus_(nullptr), kwallet_proxy_(nullptr) {
+KWalletDBus::KWalletDBus(base::nix::DesktopEnvironment desktop_env) {
   if (desktop_env == base::nix::DESKTOP_ENVIRONMENT_KDE6) {
     dbus_service_name_ = kKWallet6ServiceName;
     dbus_path_ = kKWallet6Path;
