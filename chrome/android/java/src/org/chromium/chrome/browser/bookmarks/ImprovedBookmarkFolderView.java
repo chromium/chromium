@@ -9,7 +9,6 @@ import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -27,7 +26,6 @@ import org.chromium.components.browser_ui.widget.RoundedCornerOutlineProvider;
  * Draws the image at the start of a bookmark folder row. This may contains elements from the
  * folder's children bookmarks, such as thumbnail or count.
  */
-// TODO(https://crbug.com/1448907): Create coordinator for this view.
 public class ImprovedBookmarkFolderView extends FrameLayout {
     private final RoundedCornerOutlineProvider mPrimaryImageOutline;
     private final RoundedCornerOutlineProvider mSecondaryImageOutline;
@@ -80,14 +78,11 @@ public class ImprovedBookmarkFolderView extends FrameLayout {
     protected void onFinishInflate() {
         super.onFinishInflate();
 
-        Context context = getContext();
+        final Context context = getContext();
         final @ColorInt int surface0 =
                 ChromeColors.getSurfaceColor(context, R.dimen.default_elevation_0);
         final @ColorInt int surface1 =
                 ChromeColors.getSurfaceColor(context, R.dimen.default_elevation_1);
-
-        LayoutInflater.from(context).inflate(
-                R.layout.improved_bookmark_row_folder_view_layout, this);
 
         mPrimaryImage = findViewById(R.id.primary_image);
         mPrimaryImage.setOutlineProvider(mPrimaryImageOutline);

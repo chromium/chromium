@@ -17,10 +17,8 @@ found in the LICENSE file.
     android:paddingVertical="8dp"
     android:background="@drawable/rounded_rectangle_surface_0">
 
-    <org.chromium.chrome.browser.bookmarks.ImprovedBookmarkFolderView
-        android:id="@+id/folder_view"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+    <include layout="@layout/improved_bookmark_folder_view_layout"
+             android:id="@+id/folder_view" />
 
     <ImageView
         android:id="@+id/start_image"

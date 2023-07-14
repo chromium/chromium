@@ -5,13 +5,11 @@
 package org.chromium.chrome.browser.bookmarks;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
 import static org.chromium.ui.test.util.MockitoHelper.doCallback;
@@ -19,6 +17,7 @@ import static org.chromium.ui.test.util.MockitoHelper.doCallback;
 import android.app.Activity;
 import android.graphics.drawable.Drawable;
 import android.util.Pair;
+import android.view.LayoutInflater;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
@@ -34,12 +33,12 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.chrome.R;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.bookmarks.BookmarkType;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.test.util.MockitoHelper;
 import org.chromium.url.JUnitTestGURLs;
 
 import java.util.Arrays;
@@ -73,8 +72,6 @@ public class ImprovedBookmarkFolderSelectRowCoordinatorTest {
             false, 0, false);
 
     @Mock
-    private ImprovedBookmarkFolderSelectRow mView;
-    @Mock
     private BookmarkImageFetcher mBookmarkImageFetcher;
     @Mock
     private BookmarkModel mBookmarkModel;
@@ -82,12 +79,15 @@ public class ImprovedBookmarkFolderSelectRowCoordinatorTest {
     private Drawable mDrawable;
 
     private Activity mActivity;
+    private ImprovedBookmarkFolderSelectRow mView;
     private ImprovedBookmarkRow mImprovedBookmarkRow;
     private PropertyModel mModel;
 
     @Before
     public void setUp() {
         mActivityScenarioRule.getScenario().onActivity((activity) -> mActivity = activity);
+        mView = spy((ImprovedBookmarkFolderSelectRow) LayoutInflater.from(mActivity).inflate(
+                R.layout.improved_bookmark_folder_select_layout, null));
 
         // Setup BookmarkModel.
         doReturn(mBookmarkItem).when(mBookmarkModel).getBookmarkById(mBookmarkId);
@@ -113,53 +113,11 @@ public class ImprovedBookmarkFolderSelectRowCoordinatorTest {
         PropertyModel model = coordinator.getModel();
 
         assertEquals(TITLE, model.get(ImprovedBookmarkFolderSelectRowProperties.TITLE));
-        assertEquals(CHILD_COUNT,
-                model.get(ImprovedBookmarkFolderSelectRowProperties.FOLDER_CHILD_COUNT));
-        assertNotNull(
-                model.get(ImprovedBookmarkFolderSelectRowProperties.START_AREA_BACKGROUND_COLOR));
-        assertNotNull(model.get(ImprovedBookmarkFolderSelectRowProperties.START_ICON_DRAWABLE));
-        assertNotNull(model.get(ImprovedBookmarkFolderSelectRowProperties.START_ICON_TINT));
         assertTrue(model.get(ImprovedBookmarkFolderSelectRowProperties.END_ICON_VISIBLE));
-        assertEquals(new Pair<>(mDrawable, mDrawable),
-                model.get(ImprovedBookmarkFolderSelectRowProperties.START_IMAGE_FOLDER_DRAWABLES));
 
         verify(mView).setTitle(TITLE);
-        verify(mView).setStartAreaBackgroundColor(anyInt());
-        verify(mView).setStartIconDrawable(any());
-        verify(mView).setStartIconTint(any());
-        verify(mView, times(2)).setStartImageDrawables(any(), any());
-        verify(mView).setChildCount(CHILD_COUNT);
         verify(mView).setEndIconVisible(true);
         verify(mView).setRowClickListener(any());
-    }
-
-    @Test
-    public void testConstructor_noImages() {
-        MockitoHelper
-                .doCallback(1,
-                        (Callback<Pair<Drawable, Drawable>> callback)
-                                -> callback.onResult(new Pair<>(null, null)))
-                .when(mBookmarkImageFetcher)
-                .fetchFirstTwoImagesForFolder(any(), any());
-        ImprovedBookmarkFolderSelectRowCoordinator coordinator =
-                new ImprovedBookmarkFolderSelectRowCoordinator(
-                        mActivity, mView, mBookmarkImageFetcher, mFolderId, mBookmarkModel);
-        PropertyModel model = coordinator.getModel();
-        assertEquals(new Pair<>(null, null),
-                model.get(ImprovedBookmarkFolderSelectRowProperties.START_IMAGE_FOLDER_DRAWABLES));
-    }
-
-    @Test
-    public void testConstructor_bookmarksBarFolder() {
-        doReturn(Arrays.asList(mFolderId))
-                .when(mBookmarkModel)
-                .getTopLevelFolderIds(anyBoolean(), anyBoolean());
-        ImprovedBookmarkFolderSelectRowCoordinator coordinator =
-                new ImprovedBookmarkFolderSelectRowCoordinator(
-                        mActivity, mView, mBookmarkImageFetcher, mFolderId, mBookmarkModel);
-        PropertyModel model = coordinator.getModel();
-        assertEquals(new Pair<>(null, null),
-                model.get(ImprovedBookmarkFolderSelectRowProperties.START_IMAGE_FOLDER_DRAWABLES));
     }
 
     @Test
@@ -174,9 +132,5 @@ public class ImprovedBookmarkFolderSelectRowCoordinatorTest {
 
         assertEquals(
                 READING_LIST_TITLE, model.get(ImprovedBookmarkFolderSelectRowProperties.TITLE));
-        assertEquals(READING_LIST_CHILD_COUNT,
-                model.get(ImprovedBookmarkFolderSelectRowProperties.FOLDER_CHILD_COUNT));
-        assertEquals(new Pair<>(null, null),
-                model.get(ImprovedBookmarkFolderSelectRowProperties.START_IMAGE_FOLDER_DRAWABLES));
     }
 }

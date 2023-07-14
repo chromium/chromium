@@ -128,25 +128,14 @@ public class ImprovedBookmarkRow extends SelectableItemViewBase<BookmarkId> {
 
     void setStartIconDrawable(Drawable drawable) {
         mStartImageView.setImageDrawable(drawable);
-        mFolderIconView.setStartIconDrawable(drawable);
     }
 
     void setStartIconTint(ColorStateList tint) {
-        mFolderIconView.setStartIconTint(tint);
         mStartImageView.setImageTintList(tint);
     }
 
     void setStartAreaBackgroundColor(@ColorInt int color) {
-        mFolderIconView.setStartAreaBackgroundColor(color);
         mStartImageView.setBackgroundColor(color);
-    }
-
-    void setStartImageDrawables(@Nullable Drawable first, @Nullable Drawable second) {
-        mFolderIconView.setStartImageDrawables(first, second);
-    }
-
-    void setFolderChildCount(int count) {
-        mFolderIconView.setChildCount(count);
     }
 
     void setAccessoryView(@Nullable View view) {
@@ -193,6 +182,10 @@ public class ImprovedBookmarkRow extends SelectableItemViewBase<BookmarkId> {
     void setBookmarkIdEditable(boolean bookmarkIdEditable) {
         mBookmarkIdEditable = bookmarkIdEditable;
         updateView(false);
+    }
+
+    void setFolderCoordinator(ImprovedBookmarkFolderViewCoordinator folderCoordinator) {
+        folderCoordinator.setView(mFolderIconView);
     }
 
     // SelectableItemViewBase implementation.

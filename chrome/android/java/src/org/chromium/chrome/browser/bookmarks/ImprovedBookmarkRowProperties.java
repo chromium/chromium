@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.bookmarks;
 
 import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
-import android.util.Pair;
 import android.view.View;
 
 import androidx.annotation.IntDef;
@@ -34,16 +33,13 @@ class ImprovedBookmarkRowProperties {
     static final WritableObjectPropertyKey<String> DESCRIPTION = new WritableObjectPropertyKey<>();
     static final WritableBooleanPropertyKey DESCRIPTION_VISIBLE = new WritableBooleanPropertyKey();
     static final WritableIntPropertyKey START_IMAGE_VISIBILITY = new WritableIntPropertyKey();
-    // Sets the background color for the start image, both for the image and folder view.
+    // Sets the background color for the start image.
     static final WritableIntPropertyKey START_AREA_BACKGROUND_COLOR = new WritableIntPropertyKey();
-    // Sets the tint color for the start image, both for the image and folder view.
+    // Sets the tint color for the start image.
     static final WritableObjectPropertyKey<ColorStateList> START_ICON_TINT =
             new WritableObjectPropertyKey<>();
     static final WritableObjectPropertyKey<Drawable> START_ICON_DRAWABLE =
             new WritableObjectPropertyKey<>();
-    static final WritableObjectPropertyKey<Pair<Drawable, Drawable>> START_IMAGE_FOLDER_DRAWABLES =
-            new WritableObjectPropertyKey<>();
-    static final WritableIntPropertyKey FOLDER_CHILD_COUNT = new WritableIntPropertyKey();
     static final WritableObjectPropertyKey<View> ACCESSORY_VIEW = new WritableObjectPropertyKey<>();
     static final WritableObjectPropertyKey<ListMenuButtonDelegate> LIST_MENU_BUTTON_DELEGATE =
             new WritableObjectPropertyKey<>();
@@ -58,12 +54,14 @@ class ImprovedBookmarkRowProperties {
 
     static final WritableObjectPropertyKey<ShoppingAccessoryCoordinator>
             SHOPPING_ACCESSORY_COORDINATOR = new WritableObjectPropertyKey<>();
+    static final WritableObjectPropertyKey<ImprovedBookmarkFolderViewCoordinator>
+            FOLDER_COORDINATOR = new WritableObjectPropertyKey<>();
 
     private static final PropertyKey[] IMPROVED_BOOKAMRK_ROW_PROPERTIES = {TITLE, DESCRIPTION,
             DESCRIPTION_VISIBLE, START_IMAGE_VISIBILITY, START_AREA_BACKGROUND_COLOR,
-            START_ICON_TINT, START_ICON_DRAWABLE, START_IMAGE_FOLDER_DRAWABLES, FOLDER_CHILD_COUNT,
-            ACCESSORY_VIEW, LIST_MENU_BUTTON_DELEGATE, POPUP_LISTENER, SELECTED, SELECTION_ACTIVE,
-            DRAG_ENABLED, EDITABLE, OPEN_BOOKMARK_CALLBACK, SHOPPING_ACCESSORY_COORDINATOR};
+            START_ICON_TINT, START_ICON_DRAWABLE, ACCESSORY_VIEW, LIST_MENU_BUTTON_DELEGATE,
+            POPUP_LISTENER, SELECTED, SELECTION_ACTIVE, DRAG_ENABLED, EDITABLE,
+            OPEN_BOOKMARK_CALLBACK, SHOPPING_ACCESSORY_COORDINATOR, FOLDER_COORDINATOR};
     static final PropertyKey[] ALL_KEYS = PropertyModel.concatKeys(
             BookmarkManagerProperties.ALL_KEYS, IMPROVED_BOOKAMRK_ROW_PROPERTIES);
 }

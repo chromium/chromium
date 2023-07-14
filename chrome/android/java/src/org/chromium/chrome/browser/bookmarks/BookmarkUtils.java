@@ -17,9 +17,11 @@ import android.os.LocaleList;
 import android.provider.Browser;
 import android.text.TextUtils;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.BuildInfo;
 import org.chromium.base.Callback;
@@ -54,6 +56,7 @@ import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.bookmarks.BookmarkType;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
 import org.chromium.components.commerce.core.ShoppingService;
@@ -572,6 +575,7 @@ public class BookmarkUtils {
      * @return The list of top level bookmark folder ids.
      */
     public static List<BookmarkId> populateTopLevelFolders(BookmarkModel bookmarkModel) {
+        // TODO(crbug.com/1449020): Refactor this to not go through JNI so much.
         List<BookmarkId> topLevelFolders = new ArrayList<>();
         BookmarkId desktopNodeId = bookmarkModel.getDesktopFolderId();
         BookmarkId mobileNodeId = bookmarkModel.getMobileFolderId();
@@ -714,11 +718,46 @@ public class BookmarkUtils {
                 && !Objects.equals(folder, bookmarkModel.getPartnerFolderId());
     }
 
-    /** Returns whether the given folder can have a new folder added to it. */
+    /** Returns whether the given folder should display images. */
     public static boolean shouldShowImagesForFolder(
             BookmarkModel bookmarkModel, BookmarkId folder) {
-        return !bookmarkModel.getTopLevelFolderIds(/*getSpecial=*/true, /*getNormal=*/true)
-                        .contains(folder);
+        // TODO(crbug.com/1449020): Refactor this to not go through JNI so much.
+        BookmarkId rootNodeId = bookmarkModel.getRootFolderId();
+        BookmarkId desktopNodeId = bookmarkModel.getDesktopFolderId();
+        BookmarkId mobileNodeId = bookmarkModel.getMobileFolderId();
+        BookmarkId othersNodeId = bookmarkModel.getOtherFolderId();
+
+        List<BookmarkId> specialFoldersIds =
+                bookmarkModel.getTopLevelFolderIds(/*getSpecial=*/true, /*getNormal=*/false);
+        return !Objects.equals(folder, rootNodeId) && !Objects.equals(folder, desktopNodeId)
+                && !Objects.equals(folder, mobileNodeId) && !Objects.equals(folder, othersNodeId)
+                && !specialFoldersIds.contains(folder);
+    }
+
+    /** Returns whether the given id is a special folder. */
+    public static boolean isSpecialFolder(BookmarkModel bookmarkModel, BookmarkItem item) {
+        return item != null && Objects.equals(item.getParentId(), bookmarkModel.getRootFolderId());
+    }
+
+    /** Return the background color for the given {@link BookmarkType}. */
+    public static @ColorInt int getIconBackground(
+            Context context, BookmarkModel bookmarkModel, BookmarkItem item) {
+        if (isSpecialFolder(bookmarkModel, item)) {
+            return SemanticColorUtils.getColorPrimaryContainer(context);
+        } else {
+            return ChromeColors.getSurfaceColor(context, R.dimen.default_elevation_1);
+        }
+    }
+
+    /** Return the icon tint for the given {@link BookmarkType}. */
+    public static ColorStateList getIconTint(
+            Context context, BookmarkModel bookmarkModel, BookmarkItem item) {
+        if (isSpecialFolder(bookmarkModel, item)) {
+            return ColorStateList.valueOf(SemanticColorUtils.getDefaultIconColorAccent1(context));
+        } else {
+            return AppCompatResources.getColorStateList(
+                    context, R.color.default_icon_color_secondary_tint_list);
+        }
     }
 
     private static int getDisplayTextSize(Resources resources) {

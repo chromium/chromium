@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.bookmarks;
 
-import android.graphics.drawable.Drawable;
-import android.util.Pair;
 import android.view.View;
 
 import org.chromium.chrome.browser.bookmarks.ImprovedBookmarkRowProperties.StartImageVisibility;
@@ -34,12 +32,6 @@ class ImprovedBookmarkRowViewBinder {
             row.setStartIconTint(model.get(ImprovedBookmarkRowProperties.START_ICON_TINT));
         } else if (key == ImprovedBookmarkRowProperties.START_ICON_DRAWABLE) {
             row.setStartIconDrawable(model.get(ImprovedBookmarkRowProperties.START_ICON_DRAWABLE));
-        } else if (key == ImprovedBookmarkRowProperties.START_IMAGE_FOLDER_DRAWABLES) {
-            Pair<Drawable, Drawable> drawables =
-                    model.get(ImprovedBookmarkRowProperties.START_IMAGE_FOLDER_DRAWABLES);
-            row.setStartImageDrawables(drawables.first, drawables.second);
-        } else if (key == ImprovedBookmarkRowProperties.FOLDER_CHILD_COUNT) {
-            row.setFolderChildCount(model.get(ImprovedBookmarkRowProperties.FOLDER_CHILD_COUNT));
         } else if (key == ImprovedBookmarkRowProperties.ACCESSORY_VIEW) {
             row.setAccessoryView(model.get(ImprovedBookmarkRowProperties.ACCESSORY_VIEW));
         } else if (key == ImprovedBookmarkRowProperties.LIST_MENU_BUTTON_DELEGATE) {
@@ -61,6 +53,8 @@ class ImprovedBookmarkRowViewBinder {
                     model.get(ImprovedBookmarkRowProperties.OPEN_BOOKMARK_CALLBACK));
         } else if (key == BookmarkManagerProperties.BOOKMARK_ID) {
             row.setItem(model.get(BookmarkManagerProperties.BOOKMARK_ID));
+        } else if (key == ImprovedBookmarkRowProperties.FOLDER_COORDINATOR) {
+            row.setFolderCoordinator(model.get(ImprovedBookmarkRowProperties.FOLDER_COORDINATOR));
         }
     }
 }

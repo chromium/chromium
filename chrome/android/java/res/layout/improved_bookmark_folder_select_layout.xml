@@ -17,18 +17,16 @@ found in the LICENSE file.
         android:layout_height="wrap_content"
         android:layout_width="match_parent"
         android:paddingVertical="18dp"
-        android:foreground="@drawable/bookmark_touch_ripple"
         android:focusable="true"
         android:clickable="true" >
 
         <!-- TODO(crbug.com/1448927): Rename this class for clarity. -->
-        <org.chromium.chrome.browser.bookmarks.ImprovedBookmarkFolderView
-            android:id="@+id/image"
+        <FrameLayout
+            android:id="@+id/folder_view_container"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            android:layout_width="@dimen/improved_bookmark_row_size"
-            android:layout_height="@dimen/improved_bookmark_row_size"
-            android:scaleType="center"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             app:cornerRadiusBottomStart="@dimen/default_rounded_corner_radius"
             app:cornerRadiusBottomEnd="@dimen/default_rounded_corner_radius"
             app:cornerRadiusTopStart="@dimen/default_rounded_corner_radius"
@@ -36,13 +34,16 @@ found in the LICENSE file.
             android:background="@drawable/rounded_rectangle_surface_0"
             android:importantForAccessibility="no"
             android:focusable="false"
-            android:clickable="false" />
+            android:clickable="false">
+            <include layout="@layout/improved_bookmark_folder_view_layout"
+                    android:id="@+id/folder_view" />
+        </FrameLayout>
 
         <TextView
             android:id="@+id/title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintStart_toEndOf="@id/image"
+            app:layout_constraintStart_toEndOf="@id/folder_view_container"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             android:layout_marginStart="16dp"
