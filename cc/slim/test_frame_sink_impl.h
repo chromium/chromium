@@ -41,6 +41,9 @@ class TestFrameSinkImpl : public FrameSinkImpl {
   const UploadedResourceMap& uploaded_resources() const {
     return uploaded_resources_;
   }
+  const viz::LocalSurfaceId& GetCurrentLocalSurfaceId() const {
+    return local_surface_id_;
+  }
 
  private:
   class TestMojoCompositorFrameSink;
