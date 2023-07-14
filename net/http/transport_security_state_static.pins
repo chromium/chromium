@@ -43,9 +43,9 @@
 #   hash function for preloaded entries again (we have already done so once).
 #
 
-# Last updated: 2023-07-13 12:54 UTC
+# Last updated: 2023-07-14 12:56 UTC
 PinsListTimestamp
-1689252860
+1689339365
 
 TestSPKI
 sha256/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=
