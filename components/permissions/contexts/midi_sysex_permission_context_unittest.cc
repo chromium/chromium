@@ -7,9 +7,11 @@
 #include <string>
 
 #include "base/functional/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/permissions/features.h"
 #include "components/permissions/permission_request_id.h"
 #include "components/permissions/test/test_permissions_client.h"
 #include "content/public/browser/render_frame_host.h"
@@ -61,11 +63,17 @@ class TestPermissionContext : public MidiSysexPermissionContext {
 
 class MidiSysexPermissionContextTests
     : public content::RenderViewHostTestHarness {
+ public:
+  void EnableBlockMidiByDefault() {
+    feature_list_.InitAndEnableFeature(features::kBlockMidiByDefault);
+  }
+
  protected:
   MidiSysexPermissionContextTests() = default;
   ~MidiSysexPermissionContextTests() override = default;
 
  private:
+  base::test::ScopedFeatureList feature_list_;
   TestPermissionsClient client_;
 };
 
@@ -133,6 +141,71 @@ TEST_F(MidiSysexPermissionContextTests, TestInsecureQueryingUrl) {
                 .GetPermissionStatus(nullptr /* render_frame_host */,
                                      insecure_url, secure_url)
                 .content_setting);
+}
+
+// Setting MIDI_SYSEX should update MIDI permissions
+TEST_F(MidiSysexPermissionContextTests, TestSynchronizingPermissions) {
+  EnableBlockMidiByDefault();
+
+  TestPermissionContext permission_context(browser_context());
+  GURL secure_url("https://www.example.com");
+  auto* settings_map =
+      PermissionsClient::Get()->GetSettingsMap(browser_context());
+
+  struct TestData {
+    // Set MIDI to this setting first
+    ContentSetting midi_set;
+
+    // Set SysEx to this setting next
+    ContentSetting sysex_set;
+
+    // Expected MIDI setting after SysEx setting completes
+    ContentSetting midi_result;
+  };
+  std::vector<TestData> tests;
+
+  tests.emplace_back(CONTENT_SETTING_BLOCK, CONTENT_SETTING_BLOCK,
+                     CONTENT_SETTING_BLOCK);
+  tests.emplace_back(CONTENT_SETTING_ASK, CONTENT_SETTING_BLOCK,
+                     CONTENT_SETTING_BLOCK);
+  tests.emplace_back(CONTENT_SETTING_ALLOW, CONTENT_SETTING_BLOCK,
+                     CONTENT_SETTING_BLOCK);
+
+  tests.emplace_back(CONTENT_SETTING_BLOCK, CONTENT_SETTING_ASK,
+                     CONTENT_SETTING_ASK);
+  tests.emplace_back(CONTENT_SETTING_ASK, CONTENT_SETTING_ASK,
+                     CONTENT_SETTING_ASK);
+  tests.emplace_back(CONTENT_SETTING_ALLOW, CONTENT_SETTING_ASK,
+                     CONTENT_SETTING_ALLOW);
+
+  tests.emplace_back(CONTENT_SETTING_BLOCK, CONTENT_SETTING_ALLOW,
+                     CONTENT_SETTING_ALLOW);
+  tests.emplace_back(CONTENT_SETTING_ASK, CONTENT_SETTING_ALLOW,
+                     CONTENT_SETTING_ALLOW);
+  tests.emplace_back(CONTENT_SETTING_ALLOW, CONTENT_SETTING_ALLOW,
+                     CONTENT_SETTING_ALLOW);
+
+  for (auto test : tests) {
+    // First set the MIDI permission, and verify it is set correctly:
+    settings_map->SetContentSettingDefaultScope(
+        secure_url, secure_url, ContentSettingsType::MIDI, test.midi_set);
+    EXPECT_EQ(test.midi_set,
+              settings_map->GetContentSetting(secure_url, secure_url,
+                                              ContentSettingsType::MIDI));
+
+    // Next, set the SysEx permission, and verify it is set correctly
+    settings_map->SetContentSettingDefaultScope(secure_url, secure_url,
+                                                ContentSettingsType::MIDI_SYSEX,
+                                                test.sysex_set);
+    EXPECT_EQ(test.sysex_set,
+              settings_map->GetContentSetting(secure_url, secure_url,
+                                              ContentSettingsType::MIDI_SYSEX));
+
+    // Verify the MIDI permission is as expected:
+    EXPECT_EQ(test.midi_result,
+              settings_map->GetContentSetting(secure_url, secure_url,
+                                              ContentSettingsType::MIDI));
+  }
 }
 
 }  // namespace permissions

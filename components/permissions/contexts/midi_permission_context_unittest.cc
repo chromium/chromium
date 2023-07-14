@@ -93,4 +93,69 @@ TEST_F(MidiPermissionContextTests, TestInsecureQueryingUrl) {
                 .content_setting);
 }
 
+// Setting MIDI should update MIDI_SYSEX permissions
+TEST_F(MidiPermissionContextTests, TestSynchronizingPermissions) {
+  EnableBlockMidiByDefault();
+
+  MidiPermissionContext permission_context(browser_context());
+  GURL secure_url("https://www.example.com");
+  auto* settings_map =
+      PermissionsClient::Get()->GetSettingsMap(browser_context());
+
+  struct TestData {
+    // Set SysEx to this setting first
+    ContentSetting sysex_set;
+
+    // Set MIDI to this setting next
+    ContentSetting midi_set;
+
+    // Expected SysEx setting after MIDI setting completes
+    ContentSetting sysex_result;
+  };
+  std::vector<TestData> tests;
+
+  tests.emplace_back(CONTENT_SETTING_BLOCK, CONTENT_SETTING_BLOCK,
+                     CONTENT_SETTING_BLOCK);
+  tests.emplace_back(CONTENT_SETTING_ASK, CONTENT_SETTING_BLOCK,
+                     CONTENT_SETTING_BLOCK);
+  tests.emplace_back(CONTENT_SETTING_ALLOW, CONTENT_SETTING_BLOCK,
+                     CONTENT_SETTING_BLOCK);
+
+  tests.emplace_back(CONTENT_SETTING_BLOCK, CONTENT_SETTING_ASK,
+                     CONTENT_SETTING_ASK);
+  tests.emplace_back(CONTENT_SETTING_ASK, CONTENT_SETTING_ASK,
+                     CONTENT_SETTING_ASK);
+  tests.emplace_back(CONTENT_SETTING_ALLOW, CONTENT_SETTING_ASK,
+                     CONTENT_SETTING_ASK);
+
+  tests.emplace_back(CONTENT_SETTING_BLOCK, CONTENT_SETTING_ALLOW,
+                     CONTENT_SETTING_ASK);
+  tests.emplace_back(CONTENT_SETTING_ASK, CONTENT_SETTING_ALLOW,
+                     CONTENT_SETTING_ASK);
+  tests.emplace_back(CONTENT_SETTING_ALLOW, CONTENT_SETTING_ALLOW,
+                     CONTENT_SETTING_ALLOW);
+
+  for (auto test : tests) {
+    // First set the SysEx permission, and verify it is set correctly:
+    settings_map->SetContentSettingDefaultScope(secure_url, secure_url,
+                                                ContentSettingsType::MIDI_SYSEX,
+                                                test.sysex_set);
+    EXPECT_EQ(test.sysex_set,
+              settings_map->GetContentSetting(secure_url, secure_url,
+                                              ContentSettingsType::MIDI_SYSEX));
+
+    // Next, set the MIDI permission, and verify it is set correctly:
+    settings_map->SetContentSettingDefaultScope(
+        secure_url, secure_url, ContentSettingsType::MIDI, test.midi_set);
+    EXPECT_EQ(test.midi_set,
+              settings_map->GetContentSetting(secure_url, secure_url,
+                                              ContentSettingsType::MIDI));
+
+    // Verify the SysEx permission is as expected:
+    EXPECT_EQ(test.sysex_result,
+              settings_map->GetContentSetting(secure_url, secure_url,
+                                              ContentSettingsType::MIDI_SYSEX));
+  }
+}
+
 }  // namespace permissions
