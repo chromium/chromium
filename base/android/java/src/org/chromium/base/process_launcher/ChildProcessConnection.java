@@ -903,9 +903,10 @@ public class ChildProcessConnection {
 
     public void updateGroupImportance(int group, int importanceInGroup) {
         assert isRunningOnLauncherThread();
-        assert !mUnbound;
-        assert mWaivedBinding.isBound();
         assert group != 0 || importanceInGroup == 0;
+        if (mUnbound || !mWaivedBinding.isBound()) {
+          return;
+        }
         if (mGroup != group || mImportanceInGroup != importanceInGroup) {
             mGroup = group;
             mImportanceInGroup = importanceInGroup;
