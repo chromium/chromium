@@ -6583,4 +6583,9 @@ crbug.com/1463964 virtual/coop-restrict-properties/external/wpt/html/cross-origi
 crbug.com/1404855 virtual/gpu-rasterization/images/ycbcr-with-cmyk-color-profile.html [ Failure Pass ]
 crbug.com/1367514 http/tests/images/document-policy-oversized-images-resize.php [ Failure Pass Timeout ]
 
+# To allow devtools-frontend CL crrev.com/c/4678759 to land.
+crbug.com/1464206 http/tests/devtools/a11y-axe-core/performance/timeline-overview-container-a11y-test.js [ Failure Pass ]
+crbug.com/1464206 http/tests/devtools/tracing/timeline-misc/timeline-auto-zoom.js [ Failure Pass ]
+crbug.com/1464206 http/tests/devtools/tracing/timeline-misc/timeline-flame-chart-automatically-size-window.js [ Failure Pass ]
+
 crbug.com/1464866 http/tests/devtools/background-services/background-services-panel.js [ Failure Pass ]
