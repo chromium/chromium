@@ -2844,11 +2844,9 @@ crbug.com/626703 external/wpt/css/css-backgrounds/border-image-004.html [ Failur
 crbug.com/626703 virtual/threaded/external/wpt/css/css-backgrounds/border-image-002.html [ Failure ]
 crbug.com/626703 virtual/threaded/external/wpt/css/css-backgrounds/border-image-003.html [ Failure ]
 crbug.com/626703 virtual/threaded/external/wpt/css/css-backgrounds/border-image-004.html [ Failure ]
-crbug.com/626703 [ Mac13 Release ] virtual/keepalive-in-browser-migration/external/wpt/fetch/api/response/response-clone.any.serviceworker.html [ Timeout ]
 crbug.com/626703 external/wpt/css/css-nesting/nesting-type-selector.html [ Failure ]
 crbug.com/626703 [ Mac11 ] external/wpt/fetch/api/cors/cors-keepalive.any.html [ Skip Timeout ]
 crbug.com/626703 [ Mac12 ] external/wpt/fetch/api/cors/cors-keepalive.any.html [ Skip Timeout ]
-crbug.com/626703 [ Mac11 ] virtual/keepalive-in-browser-migration/external/wpt/fetch/api/cors/cors-keepalive.any.html [ Skip Timeout ]
 crbug.com/626703 [ Mac13 Release ] virtual/threaded-prefer-compositing/external/wpt/scroll-animations/css/scroll-timeline-range-animation.html [ Timeout ]
 crbug.com/626703 [ Mac13 Release ] virtual/threaded-prefer-compositing/external/wpt/scroll-animations/css/animation-timeline-view-functional-notation.tentative.html [ Timeout ]
 crbug.com/626703 [ Mac13 Release ] virtual/threaded-prefer-compositing/external/wpt/scroll-animations/view-timelines/view-timeline-inset.html [ Pass Timeout ]
@@ -2890,7 +2888,6 @@ crbug.com/626703 [ Mac13 Release ] external/wpt/css/css-sizing/min-content-negat
 crbug.com/626703 [ Mac13 Release ] external/wpt/css/css-tables/crashtests/textarea-intrinsic-size-crash.html [ Timeout ]
 crbug.com/626703 [ Mac13 ] external/wpt/fetch/api/abort/serviceworker-intercepted.https.html [ Timeout ]
 crbug.com/626703 [ Mac13 ] external/wpt/service-workers/cache-storage/crashtests/cache-response-clone.https.html [ Timeout ]
-crbug.com/626703 [ Mac13 ] virtual/keepalive-in-browser-migration/external/wpt/fetch/api/abort/serviceworker-intercepted.https.html [ Timeout ]
 crbug.com/626703 external/wpt/css/css-inline/text-box-trim/text-box-trim-half-leading-block-box-001-ref.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-inline/text-box-trim/text-box-trim-half-leading-block-box-001.html [ Failure ]
 crbug.com/626703 [ Mac13 ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/background-sync.https.html [ Timeout ]
@@ -2909,7 +2906,6 @@ crbug.com/626703 external/wpt/shape-detection/single-text-detection.https.html [
 crbug.com/626703 virtual/fenced-frame-mparch/wpt_internal/fenced_frame/unfenced-top.https.html [ Skip Timeout ]
 crbug.com/626703 [ Linux ] virtual/fenced-frame-mparch/external/wpt/html/anonymous-iframe/web-lock.tentative.https.window.html [ Timeout ]
 crbug.com/626703 [ Linux ] virtual/isolate-sandboxed-iframes/external/wpt/html/infrastructure/urls/terminology-0/document-base-url-initiated-grand-parent.https.window.html [ Timeout ]
-crbug.com/626703 [ Linux ] virtual/keepalive-in-browser-migration/external/wpt/fetch/metadata/generated/element-frame.https.sub.html [ Timeout ]
 crbug.com/626703 [ Linux ] virtual/partitioned-cookies/external/wpt/html/anonymous-iframe/web-lock.tentative.https.window.html [ Timeout ]
 crbug.com/626703 virtual/plz-dedicated-worker/external/wpt/fetch/private-network-access/redirect.tentative.https.window.html [ Timeout ]
 crbug.com/626703 virtual/plz-dedicated-worker/external/wpt/fetch/metadata/generated/element-img.https.sub.html [ Timeout ]
@@ -2953,7 +2949,6 @@ crbug.com/626703 external/wpt/css/css-box/margin-trim/flex-row-style-change-trig
 crbug.com/626703 external/wpt/css/css-box/margin-trim/flex-row-style-change-triggers-layout-inline-start.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-box/margin-trim/flex-row-style-change-triggers-layout-inline.html [ Failure ]
 crbug.com/626703 [ Linux ] virtual/pending-beacon/external/wpt/pending-beacon/pending_beacon-sendonhidden.tentative.https.window.html [ Timeout ]
-crbug.com/626703 [ Mac12 ] virtual/keepalive-in-browser-migration/external/wpt/fetch/api/response/response-clone.any.serviceworker.html [ Timeout ]
 crbug.com/626703 external/wpt/css/css-transitions/transition-events-with-document-change.html [ Timeout ]
 crbug.com/626703 external/wpt/css/css-animations/animation-canceled-by-parent-details-element-being-closed.html [ Timeout ]
 crbug.com/626703 virtual/threaded/external/wpt/css/css-animations/animation-canceled-by-parent-details-element-being-closed.html [ Timeout ]
@@ -6150,6 +6145,19 @@ crbug.com/1362106 [ Win ] virtual/media-foundation-for-clear-dcomp/media/W3C/vid
 crbug.com/1362106 [ Win ] virtual/media-foundation-for-clear-dcomp/media/W3C/video/readyState/readyState_during_canplaythrough.html [ Failure Skip ]
 crbug.com/1362106 [ Win ] virtual/media-foundation-for-clear-dcomp/media/W3C/video/readyState/readyState_during_loadeddata.html [ Failure Skip ]
 crbug.com/1362106 [ Win ] virtual/media-foundation-for-clear-dcomp/media/W3C/video/readyState/readyState_during_playing.html [ Failure Skip ]
+
+# crbug.com/1356128 Disable flaky tests for fetch keepalive migration.
+# Some of the following tests are both flaky in non-virtual and virtual versions.
+# Some of the following tests are not relevant. Consider remove them from virtual tests.
+crbug.com/626703 [ Mac13 Release ] virtual/keepalive-in-browser-migration/external/wpt/fetch/api/response/response-clone.any.serviceworker.html [ Timeout ]
+crbug.com/626703 [ Mac11 ] virtual/keepalive-in-browser-migration/external/wpt/fetch/api/cors/cors-keepalive.any.html [ Skip Timeout ]
+crbug.com/626703 [ Mac13 ] virtual/keepalive-in-browser-migration/external/wpt/fetch/api/abort/serviceworker-intercepted.https.html [ Timeout ]
+crbug.com/626703 [ Linux ] virtual/keepalive-in-browser-migration/external/wpt/fetch/metadata/generated/element-frame.https.sub.html [ Timeout ]
+crbug.com/1462796 [ Win ] virtual/keepalive-in-browser-migration/external/wpt/fetch/metadata/generated/element-meta-refresh.https.optional.sub.html [ Timeout ]
+crbug.com/626703 [ Linux ] virtual/keepalive-in-browser-migration/external/wpt/fetch/local-network-access/iframe.tentative.https.window.html [ Timeout ]
+crbug.com/626703 [ Mac10.15 ] virtual/keepalive-in-browser-migration/external/wpt/fetch/local-network-access/iframe.tentative.https.window.html [ Timeout ]
+crbug.com/626703 [ Mac12 ] virtual/keepalive-in-browser-migration/external/wpt/fetch/local-network-access/iframe.tentative.https.window.html [ Timeout ]
+crbug.com/626703 [ Mac12 ] virtual/keepalive-in-browser-migration/external/wpt/fetch/api/response/response-clone.any.serviceworker.html [ Timeout ]
 
 crbug.com/1431228 media/video-delay-load-event.html [ Failure Pass ]
 
