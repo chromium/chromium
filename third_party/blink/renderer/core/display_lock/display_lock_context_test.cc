@@ -3045,24 +3045,11 @@ TEST_P(DisplayLockContextRenderingTest,
   EXPECT_TRUE(element->GetDisplayLockContext()->IsLocked());
   EXPECT_EQ(GetDocument().scrollingElement()->scrollTop(), 29000.);
 
-  // It again gets unlocked and shrink. This time scroll anchoring puts it right
-  // off the edge of the screen.
+  // However, because c-v auto implies c-i-s auto when relocking it doesn't
+  // grow anymore and this is a stable state.
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_FALSE(element->GetDisplayLockContext()->IsLocked());
-  EXPECT_EQ(GetDocument().scrollingElement()->scrollTop(), 23008.);
-
-  // On the next update we select the following element as an anchor and the
-  // scroll offset doesn't change.
-  UpdateAllLifecyclePhasesForTest();
-  EXPECT_FALSE(element->GetDisplayLockContext()->IsLocked());
-  EXPECT_EQ(GetDocument().scrollingElement()->scrollTop(), 23008.);
-
-  // Subsequent updates are in a stable state.
-  for (int i = 0; i < 5; ++i) {
-    UpdateAllLifecyclePhasesForTest();
-    EXPECT_FALSE(element->GetDisplayLockContext()->IsLocked());
-    EXPECT_EQ(GetDocument().scrollingElement()->scrollTop(), 23008.);
-  }
+  EXPECT_TRUE(element->GetDisplayLockContext()->IsLocked());
+  EXPECT_EQ(GetDocument().scrollingElement()->scrollTop(), 29000.);
 }
 
 TEST_P(DisplayLockContextRenderingTest,
@@ -3110,24 +3097,11 @@ TEST_P(DisplayLockContextRenderingTest,
   EXPECT_TRUE(element->GetDisplayLockContext()->IsLocked());
   EXPECT_EQ(GetDocument().scrollingElement()->scrollLeft(), 29000.);
 
-  // It again gets unlocked and shrink. This time scroll anchoring puts it right
-  // off the edge of the screen.
+  // Because c-v auto implies c-i-s auto, the element doesn't grow again so this
+  // is a stable state.
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_FALSE(element->GetDisplayLockContext()->IsLocked());
-  EXPECT_EQ(GetDocument().scrollingElement()->scrollLeft(), 23008.);
-
-  // On the next update we select the following element as an anchor and the
-  // scroll offset doesn't change.
-  UpdateAllLifecyclePhasesForTest();
-  EXPECT_FALSE(element->GetDisplayLockContext()->IsLocked());
-  EXPECT_EQ(GetDocument().scrollingElement()->scrollLeft(), 23008.);
-
-  // Subsequent updates are in a stable state.
-  for (int i = 0; i < 5; ++i) {
-    UpdateAllLifecyclePhasesForTest();
-    EXPECT_FALSE(element->GetDisplayLockContext()->IsLocked());
-    EXPECT_EQ(GetDocument().scrollingElement()->scrollLeft(), 23008.);
-  }
+  EXPECT_TRUE(element->GetDisplayLockContext()->IsLocked());
+  EXPECT_EQ(GetDocument().scrollingElement()->scrollLeft(), 29000.);
 }
 
 TEST_P(DisplayLockContextRenderingTest,
@@ -3175,24 +3149,10 @@ TEST_P(DisplayLockContextRenderingTest,
   EXPECT_TRUE(element->GetDisplayLockContext()->IsLocked());
   EXPECT_EQ(GetDocument().scrollingElement()->scrollLeft(), -29000.);
 
-  // It again gets unlocked and shrink. This time scroll anchoring puts it right
-  // off the edge of the screen.
+  // Because c-v auto implies c-i-s auto, this is a stable state.
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_FALSE(element->GetDisplayLockContext()->IsLocked());
-  EXPECT_EQ(GetDocument().scrollingElement()->scrollLeft(), -23008.);
-
-  // On the next update we select the following element as an anchor and the
-  // scroll offset doesn't change.
-  UpdateAllLifecyclePhasesForTest();
-  EXPECT_FALSE(element->GetDisplayLockContext()->IsLocked());
-  EXPECT_EQ(GetDocument().scrollingElement()->scrollLeft(), -23008.);
-
-  // Subsequent updates are in a stable state.
-  for (int i = 0; i < 5; ++i) {
-    UpdateAllLifecyclePhasesForTest();
-    EXPECT_FALSE(element->GetDisplayLockContext()->IsLocked());
-    EXPECT_EQ(GetDocument().scrollingElement()->scrollLeft(), -23008.);
-  }
+  EXPECT_TRUE(element->GetDisplayLockContext()->IsLocked());
+  EXPECT_EQ(GetDocument().scrollingElement()->scrollLeft(), -29000.);
 }
 
 TEST_P(DisplayLockContextRenderingTest, FirstAutoFramePaintsInViewport) {

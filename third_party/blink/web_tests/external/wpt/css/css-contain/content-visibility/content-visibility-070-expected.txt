@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL Content Visibility: off-screen selection assert_equals: step6 height expected 10 but got 100
-Harness: the test ran to completion.
-

@@ -826,6 +826,10 @@
       name: "CSSContainIntrinsicSizeAutoNone",
       status: "stable",
     },
+    {
+      name: "CSSContentVisibilityImpliesContainIntrinsicSizeAuto",
+      status: "experimental",
+    },
     // Ablation study to try to measure very roughly memory savings from not saving
     // pretokenized strings in CSS custom properties.
     {

@@ -3582,6 +3582,17 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
                          static_cast<unsigned>(ViewportUnitFlag::kDynamic));
   }
 
+  // ContainIntrinsicSize
+  void SetContainIntrinsicSizeAuto() {
+    StyleIntrinsicLength width = ContainIntrinsicWidth();
+    width.SetHasAuto();
+    SetContainIntrinsicWidth(width);
+
+    StyleIntrinsicLength height = ContainIntrinsicHeight();
+    height.SetHasAuto();
+    SetContainIntrinsicHeight(height);
+  }
+
  private:
   scoped_refptr<ComputedStyle> style_;
 };

@@ -29,6 +29,8 @@ class StyleIntrinsicLength {
 
   bool HasAuto() const { return has_auto_; }
 
+  void SetHasAuto() { has_auto_ = true; }
+
   const absl::optional<LayoutUnit>& GetLength() const { return length_; }
 
   bool operator==(const StyleIntrinsicLength& o) const {

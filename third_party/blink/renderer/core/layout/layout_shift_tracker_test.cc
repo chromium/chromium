@@ -1086,7 +1086,9 @@ TEST_F(LayoutShiftTrackerTest,
   offscreen = To<LayoutBox>(GetLayoutObjectByElementId("offscreen"));
   EXPECT_FLOAT_EQ(0, GetLayoutShiftTracker().Score());
   EXPECT_EQ(PhysicalSize(100, 100), offscreen->Size());
-  EXPECT_EQ(PhysicalSize(100, 1), onscreen->Size());
+  // Because content-visibility: auto implies contain-intrinsic-size auto, the
+  // size stays at 100x100.
+  EXPECT_EQ(PhysicalSize(100, 100), onscreen->Size());
 
   // Move |offscreen| (which is visible and unlocked now), for which we should
   // report layout shift.
@@ -1102,7 +1104,7 @@ TEST_F(LayoutShiftTrackerTest,
   UpdateAllLifecyclePhasesForTest();
   EXPECT_FLOAT_EQ(score, GetLayoutShiftTracker().Score());
   EXPECT_EQ(PhysicalSize(100, 100), offscreen->Size());
-  EXPECT_EQ(PhysicalSize(100, 1), onscreen->Size());
+  EXPECT_EQ(PhysicalSize(100, 100), onscreen->Size());
 
   // In the subsequent frame, #offscreen becomes locked and changes its
   // layout size (and vice-versa for #onscreen).
@@ -1111,7 +1113,7 @@ TEST_F(LayoutShiftTrackerTest,
   onscreen = To<LayoutBox>(GetLayoutObjectByElementId("onscreen"));
 
   EXPECT_FLOAT_EQ(score, GetLayoutShiftTracker().Score());
-  EXPECT_EQ(PhysicalSize(100, 1), offscreen->Size());
+  EXPECT_EQ(PhysicalSize(100, 100), offscreen->Size());
   EXPECT_EQ(PhysicalSize(100, 100), onscreen->Size());
 }
 

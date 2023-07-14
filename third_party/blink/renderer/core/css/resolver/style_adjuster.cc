@@ -1074,6 +1074,12 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
           *element)) {
     builder.SetElementIsViewTransitionParticipant();
   }
+
+  if (RuntimeEnabledFeatures::
+          CSSContentVisibilityImpliesContainIntrinsicSizeAutoEnabled() &&
+      builder.ContentVisibility() == EContentVisibility::kAuto) {
+    builder.SetContainIntrinsicSizeAuto();
+  }
 }
 
 }  // namespace blink
