@@ -147,10 +147,6 @@ void BrowsingDataQuotaHelperImpl::OnGetHostsUsageComplete(
   QuotaInfoArray result;
   for (auto& pair : *quota_info) {
     QuotaInfo& info = pair.second;
-    // Skip unused entries
-    if (info.temporary_usage <= 0 && info.syncable_usage <= 0) {
-      continue;
-    }
 
     info.storage_key = pair.first;
     result.push_back(info);

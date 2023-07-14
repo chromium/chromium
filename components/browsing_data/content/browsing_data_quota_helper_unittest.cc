@@ -236,6 +236,7 @@ TEST_F(BrowsingDataQuotaHelperTest, DeleteHostData) {
   EXPECT_TRUE(expected == actual);
 
   DeleteHostData("example2.com", StorageType::kTemporary);
+  content::RunAllTasksUntilIdle();
 
   StartFetching();
   content::RunAllTasksUntilIdle();
@@ -250,5 +251,6 @@ TEST_F(BrowsingDataQuotaHelperTest, DeleteHostData) {
   expected.insert(QuotaInfo(
       blink::StorageKey::CreateFromStringForTesting("https://example.com"), 10,
       0));
+
   EXPECT_TRUE(expected == actual);
 }

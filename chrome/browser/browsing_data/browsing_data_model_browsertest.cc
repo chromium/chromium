@@ -16,6 +16,7 @@
 #include "base/test/test_timeouts.h"
 #include "base/threading/platform_thread.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_model_delegate.h"
+#include "chrome/browser/media/clear_key_cdm_test_helper.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -42,6 +43,7 @@
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "media/base/media_switches.h"
 #include "net/base/features.h"
 #include "net/base/schemeful_site.h"
 #include "net/dns/mock_host_resolver.h"
@@ -255,6 +257,10 @@ class BrowsingDataModelBrowserTest
         {network::features::kCompressionDictionaryTransport, {}}};
     std::vector<FeatureRef> disabled_features = {};
 
+#if BUILDFLAG(ENABLE_LIBRARY_CDMS)
+    enabled_features.push_back({media::kExternalClearKeyForTesting, {}});
+#endif
+
     if (GetParam()) {
       enabled_features.push_back(
           {browsing_data::features::kMigrateStorageToBDM, {}});
@@ -281,6 +287,14 @@ class BrowsingDataModelBrowserTest
     network::test::RegisterTrustTokenTestHandlers(https_test_server(),
                                                   &request_handler_);
     ASSERT_TRUE(https_server_->Start());
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+#if BUILDFLAG(ENABLE_LIBRARY_CDMS)
+    // Testing MediaLicenses requires additional command line parameters as
+    // it uses the External Clear Key CDM.
+    RegisterClearKeyCdm(command_line);
+#endif
   }
 
  protected:
@@ -766,9 +780,12 @@ IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,
   ValidateBrowsingDataEntries(browsing_data_model.get(), {});
   ASSERT_EQ(browsing_data_model->size(), 0u);
 
-  // TODO(crbug.com/1442473): Investigate and include remaining quota managed
-  // data types ["ServiceWorker", "WebSql", "MediaLicense"].
-  std::string quota_managed_data_types[] = {"IndexedDb", "FileSystem"};
+  std::vector<std::string> quota_managed_data_types = {
+      "ServiceWorker", "IndexedDb", "FileSystem", "WebSql"};
+
+#if BUILDFLAG(ENABLE_LIBRARY_CDMS)
+  quota_managed_data_types.push_back("MediaLicense");
+#endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
 
   for (auto data_type : quota_managed_data_types) {
     SetDataForType(data_type, web_contents());

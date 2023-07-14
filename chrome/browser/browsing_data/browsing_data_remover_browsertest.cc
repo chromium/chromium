@@ -246,12 +246,6 @@ class BrowsingDataRemoverBrowserTest
     ExpectCookieTreeModelCount(0);
   }
 
-#if BUILDFLAG(ENABLE_LIBRARY_CDMS)
-  // TODO(crbug.com/1307796): Include quota nodes in CookieTreeModelCount to
-  // allow testing media licenses with TestSiteData().
-  int GetMediaLicenseCount() { return 0; }
-#endif
-
   inline void ExpectCookieTreeModelCount(int expected) {
     std::unique_ptr<CookiesTreeModel> model = GetCookiesTreeModel(GetProfile());
     EXPECT_EQ(expected, GetCookiesTreeModelCount(model->GetRoot()))
@@ -262,7 +256,8 @@ class BrowsingDataRemoverBrowserTest
                                          int expected3PSPEnabled) {
     // TODO(crbug.com/1307796): Use a different approach to determine presence
     // of data that does not depend on UI code and has a better resolution when
-    // 3PSP is fully enabled.
+    // 3PSP is fully enabled. Also, remove helper duplication between the
+    // incognito, and remover, browsing data browser tests.
     if (base::FeatureList::IsEnabled(
             net::features::kThirdPartyStoragePartitioning)) {
       ExpectCookieTreeModelCount(expected3PSPEnabled);
@@ -1297,23 +1292,17 @@ IN_PROC_BROWSER_TEST_P(BrowsingDataRemoverBrowserTestP, MediaLicenseDeletion) {
   const TimeEnum delete_begin = GetParam();
 
   EXPECT_EQ(0, GetSiteDataCount());
-  EXPECT_EQ(0, GetMediaLicenseCount());
   GURL url =
       embedded_test_server()->GetURL("/browsing_data/media_license.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   EXPECT_EQ(0, GetSiteDataCount());
-  EXPECT_EQ(0, GetMediaLicenseCount());
   ExpectCookieTreeModelCount(0);
   EXPECT_FALSE(HasDataForType(kMediaLicenseType));
 
-  // TODO(crbug.com/1307796): Fix GetCookiesTreeModelCount() to include quota
-  // nodes. `count` should be 1 here.
-  int count = 0;
   SetDataForType(kMediaLicenseType);
   EXPECT_EQ(1, GetSiteDataCount());
-  EXPECT_EQ(count, GetMediaLicenseCount());
-  ExpectCookieTreeModelCount(count);
+  ExpectCookieTreeModelCount(0, 1);
   EXPECT_TRUE(HasDataForType(kMediaLicenseType));
 
   // Try to remove the Media Licenses using a time frame up until an hour ago,
@@ -1321,8 +1310,7 @@ IN_PROC_BROWSER_TEST_P(BrowsingDataRemoverBrowserTestP, MediaLicenseDeletion) {
   RemoveAndWait(chrome_browsing_data_remover::DATA_TYPE_SITE_DATA, delete_begin,
                 TimeEnum::kLastHour);
   EXPECT_EQ(1, GetSiteDataCount());
-  EXPECT_EQ(count, GetMediaLicenseCount());
-  ExpectCookieTreeModelCount(count);
+  ExpectCookieTreeModelCount(0, 1);
   EXPECT_TRUE(HasDataForType(kMediaLicenseType));
 
   // Now try with a time range that includes the current time, which should
@@ -1330,7 +1318,6 @@ IN_PROC_BROWSER_TEST_P(BrowsingDataRemoverBrowserTestP, MediaLicenseDeletion) {
   RemoveAndWait(chrome_browsing_data_remover::DATA_TYPE_SITE_DATA, delete_begin,
                 TimeEnum::kMax);
   EXPECT_EQ(0, GetSiteDataCount());
-  EXPECT_EQ(0, GetMediaLicenseCount());
   ExpectCookieTreeModelCount(0);
   EXPECT_FALSE(HasDataForType(kMediaLicenseType));
 }
@@ -1342,24 +1329,18 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
   const std::string kMediaLicenseType = "MediaLicense";
 
   EXPECT_EQ(0, GetSiteDataCount());
-  EXPECT_EQ(0, GetMediaLicenseCount());
 
   GURL url =
       embedded_test_server()->GetURL("/browsing_data/media_license.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   EXPECT_EQ(0, GetSiteDataCount());
-  EXPECT_EQ(0, GetMediaLicenseCount());
   ExpectCookieTreeModelCount(0);
   EXPECT_FALSE(HasDataForType(kMediaLicenseType));
 
-  // TODO(crbug.com/1307796): Fix GetCookiesTreeModelCount() to include quota
-  // nodes. `count` should be 1 here.
-  int count = 0;
   SetDataForType(kMediaLicenseType);
   EXPECT_EQ(1, GetSiteDataCount());
-  EXPECT_EQ(count, GetMediaLicenseCount());
-  ExpectCookieTreeModelCount(count);
+  ExpectCookieTreeModelCount(0, 1);
   EXPECT_TRUE(HasDataForType(kMediaLicenseType));
 }
 
@@ -1369,16 +1350,12 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
                        MediaLicenseTimedDeletion) {
   const std::string kMediaLicenseType = "MediaLicense";
 
-  // TODO(crbug.com/1307796): Fix GetCookiesTreeModelCount() to include quota
-  // nodes. `count` should be 1 here.
-  int count = 0;
-
   // As the PRE_ test should run first, there should be one media license
   // still stored. The time of it's creation should be sometime before
-  // this test starts. We can't see the license, since it's stored for a
-  // different origin (but we can delete it).
+  // this test starts. This license will be for a different origin, and so wont
+  // affect HasDataForType, but it still exists.
   LOG(INFO) << "MediaLicenseTimedDeletion starting @ " << kStartTime;
-  EXPECT_EQ(count, GetMediaLicenseCount());
+  EXPECT_EQ(1, GetSiteDataCount());
 
   GURL url =
       embedded_test_server()->GetURL("/browsing_data/media_license.html");
@@ -1400,12 +1377,8 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
   // http://crbug.com/909829.
   EXPECT_FALSE(HasDataForType(kMediaLicenseType));
 
-  // TODO(crbug.com/1307796): Fix GetCookiesTreeModelCount() to include quota
-  // nodes. `count` should be 2 here.
-  count = 0;
-  // Create a media license for this domain.
   SetDataForType(kMediaLicenseType);
-  EXPECT_EQ(count, GetMediaLicenseCount());
+  ExpectCookieTreeModelCount(0, 1);
   EXPECT_TRUE(HasDataForType(kMediaLicenseType));
 
   // As Clear Browsing Data typically deletes recent data (e.g. last hour,
@@ -1416,16 +1389,14 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
                 TimeEnum::kStart);
   // TODO(crbug.com/1307796): Fix GetCookiesTreeModelCount() to include quota
   // nodes. `count` should be 1 here.
-  count = 0;
   EXPECT_EQ(1, GetSiteDataCount());
-  EXPECT_EQ(count, GetMediaLicenseCount());
+  ExpectCookieTreeModelCount(0, 1);
   EXPECT_FALSE(HasDataForType(kMediaLicenseType));
 
   // Now try with a time range that includes all time, which should
   // clear the media license created by the PRE_ test.
   RemoveAndWait(chrome_browsing_data_remover::DATA_TYPE_SITE_DATA);
   EXPECT_EQ(0, GetSiteDataCount());
-  EXPECT_EQ(0, GetMediaLicenseCount());
   ExpectCookieTreeModelCount(0);
 }
 
@@ -1437,14 +1408,12 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
       embedded_test_server()->GetURL("/browsing_data/media_license.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
-  EXPECT_EQ(0, GetMediaLicenseCount());
+  ExpectCookieTreeModelCount(0);
   EXPECT_FALSE(HasDataForType(kMediaLicenseType));
 
-  // TODO(crbug.com/1307796): Fix GetCookiesTreeModelCount() to include quota
-  // nodes. `count` should be 1 here.
-  int count = 0;
   SetDataForType(kMediaLicenseType);
-  EXPECT_EQ(count, GetMediaLicenseCount());
+
+  ExpectCookieTreeModelCount(0, 1);
   EXPECT_TRUE(HasDataForType(kMediaLicenseType));
 
   // Try to remove the Media Licenses using a deletelist that doesn't include
@@ -1457,7 +1426,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
   RemoveWithFilterAndWait(
       content::BrowsingDataRemover::DATA_TYPE_MEDIA_LICENSES,
       std::move(filter_builder));
-  EXPECT_EQ(count, GetMediaLicenseCount());
+  ExpectCookieTreeModelCount(0, 1);
 
   // Now try with a preservelist that includes the current URL. Media License
   // should not be deleted.
@@ -1467,7 +1436,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
   RemoveWithFilterAndWait(
       content::BrowsingDataRemover::DATA_TYPE_MEDIA_LICENSES,
       std::move(filter_builder));
-  EXPECT_EQ(count, GetMediaLicenseCount());
+  ExpectCookieTreeModelCount(0, 1);
 
   // Now try with a deletelist that includes the current URL. Media License
   // should be deleted this time.
@@ -1477,7 +1446,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
   RemoveWithFilterAndWait(
       content::BrowsingDataRemover::DATA_TYPE_MEDIA_LICENSES,
       std::move(filter_builder));
-  EXPECT_EQ(0, GetMediaLicenseCount());
+  ExpectCookieTreeModelCount(0, 1);
 }
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
 
