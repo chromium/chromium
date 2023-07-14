@@ -23,6 +23,14 @@
 #error "This file requires ARC support."
 #endif
 
+@interface DefaultBrowserPromoSceneAgent ()
+
+// Indicates whether the user has already seen the post restore default browser
+// promo in the current app session.
+@property(nonatomic, assign) BOOL postRestorePromoSeenInCurrentSession;
+
+@end
+
 @implementation DefaultBrowserPromoSceneAgent
 
 - (instancetype)initWithCommandDispatcher:(CommandDispatcher*)dispatcher {
@@ -38,16 +46,8 @@
 - (void)sceneState:(SceneState*)sceneState
     transitionedToActivationLevel:(SceneActivationLevel)level {
   // Post Restore promo takes priority over other default browser promos.
-  if (IsPostRestoreDefaultBrowserEligibleUser()) {
-    if (level == SceneActivationLevelForegroundActive) {
-      // TODO(crbug.com/1453786): register other variations.
-      if (GetPostRestoreDefaultBrowserPromoType() ==
-          PostRestoreDefaultBrowserPromoType::kAlert) {
-        self.promosManager->RegisterPromoForSingleDisplay(
-            promos_manager::Promo::PostRestoreDefaultBrowserAlert);
-      }
-    }
-    return;
+  if (level == SceneActivationLevelForegroundActive) {
+    [self maybeRegisterPostRestorePromo];
   }
 
   // Register default browser promo manager to the promo manager.
@@ -102,6 +102,25 @@
     }
 
     appState.shouldShowDefaultBrowserPromo = NO;
+  }
+}
+
+// Registers the post restore default browser promo if the user is eligible. To
+// be eligible, they must be in the first session after an iOS restore and have
+// previously set Chrome as their default browser.
+- (void)maybeRegisterPostRestorePromo {
+  if (!_postRestorePromoSeenInCurrentSession &&
+      IsPostRestoreDefaultBrowserEligibleUser()) {
+    // TODO(crbug.com/1453786): register other variations.
+    if (GetPostRestoreDefaultBrowserPromoType() ==
+        PostRestoreDefaultBrowserPromoType::kAlert) {
+      self.promosManager->RegisterPromoForSingleDisplay(
+          promos_manager::Promo::PostRestoreDefaultBrowserAlert);
+      _postRestorePromoSeenInCurrentSession = YES;
+    }
+  } else {
+    self.promosManager->DeregisterPromo(
+        promos_manager::Promo::PostRestoreDefaultBrowserAlert);
   }
 }
 
