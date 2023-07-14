@@ -40,8 +40,8 @@ namespace {
 constexpr uint32_t kBufferLength = 64;
 
 absl::StatusOr<std::string> GetFilePath(int cpu) {
-  return absl::InternalError(
-      "system_cpu_max_freq_file flag not supported in Chromium");
+  return absl::Substitute(
+      "/sys/devices/system/cpu/cpu$0/cpufreq/cpuinfo_max_freq", cpu);
 }
 
 absl::StatusOr<uint64_t> GetCpuMaxFrequency(int cpu) {

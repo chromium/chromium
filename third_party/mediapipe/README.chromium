@@ -1,8 +1,8 @@
 Name: MediaPipe
 Short Name: mediapipe
 URL: https://github.com/google/mediapipe
-Version: 201b2d739d994c51bb1b72336a09b8a93ed982d2
-Date: 2023/05/23
+Version: 723e91cec10ecd50d05427ef09c735addb709e6f
+Date: 2023/07/14
 License: Apache 2.0
 License File: LICENSE
 Security Critical: Yes
@@ -14,6 +14,16 @@ MediaPipe Tasks provides the core programming interface of the MediaPipe
 Solutions suite, including a set of libraries for deploying innovative ML
 solutions onto devices with a minimum of code. It supports multiple platforms,
 including Android, Web / JavaScript, Python, and support for iOS is coming soon.
+
+To update this library
+======================
+
+1) Change the `Version` and `Date` lines above.
+
+2) Run the `update.sh` script in this directory.
+
+3) Fix the build and get everything compiling and `component_unittests` passing
+  with the gn arg `build_with_mediapipe_lib = true`.
 
 
 To make a new patch file
@@ -40,8 +50,6 @@ To make a new patch file
 
 Patches which can be low-friction upstreamed
 ============================================
-* safe_int_ignore_warning.patch - Uses a #pragma to disable an unhelpful
-  compiler warning.
 * set-executable-bit-for-files-with-shebang.patch - `chmod +x` on all files that
   have a shebang, per Chromium presubmit checks.
 

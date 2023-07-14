@@ -1,0 +1,42 @@
+From b94c4e84a0920e8d59b19aae997f89ad67dfea0e Mon Sep 17 00:00:00 2001
+From: Robert Ogden <robertogden@chromium.org>
+Date: Fri, 14 Jul 2023 14:22:14 -0700
+Subject: [PATCH] remove absl flag in resource_util_default.cc
+
+---
+ .../mediapipe/src/mediapipe/util/resource_util_default.cc | 8 +-------
+ 1 file changed, 1 insertion(+), 7 deletions(-)
+
+diff --git a/third_party/mediapipe/src/mediapipe/util/resource_util_default.cc b/third_party/mediapipe/src/mediapipe/util/resource_util_default.cc
+index 3ebbd1f34b8d8..13263cea023fb 100644
+--- a/third_party/mediapipe/src/mediapipe/util/resource_util_default.cc
++++ b/third_party/mediapipe/src/mediapipe/util/resource_util_default.cc
+@@ -14,16 +14,10 @@
+ 
+ #include <fstream>
+ 
+-#include "absl/flags/flag.h"
+ #include "mediapipe/framework/deps/file_path.h"
+ #include "mediapipe/framework/port/file_helpers.h"
+ #include "mediapipe/framework/port/statusor.h"
+ 
+-ABSL_FLAG(
+-    std::string, resource_root_dir, "",
+-    "The absolute path to the resource directory."
+-    "If specified, resource_root_dir will be prepended to the original path.");
+-
+ namespace mediapipe {
+ 
+ using mediapipe::file::GetContents;
+@@ -49,7 +43,7 @@ absl::StatusOr<std::string> PathToResourceAsFile(const std::string& path) {
+   if (file::Exists(bazel_path).ok()) {
+     return bazel_path;
+   }
+-  return JoinPath(absl::GetFlag(FLAGS_resource_root_dir), path);
++  return path;
+ }
+ 
+ }  // namespace mediapipe
+-- 
+2.41.0.255.g8b1d071c50-goog
+

@@ -88,18 +88,15 @@ class SafeIntStrongIntValidator {
 
     // If the argument is floating point, we can do a simple check to make
     // sure the value is in range.  It is undefined behavior to convert to int
-    // from a float that is out of range.
+    // from a float that is out of range. Since large integers will loose some
+    // precision when being converted to floating point, the integer max and min
+    // are explicitly converted back to floating point for this comparison, in
+    // order to satisfy compiler warnings.
     if (std::is_floating_point<U>::value) {
-      // The compiler's static analysis thinks that we could be comparing an
-      // integer to a float, hence the warning. We know this is not possible
-      // given the if condition, so turn off the warning.
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wimplicit-const-int-float-conversion"
-      if (arg < std::numeric_limits<T>::min() ||
-          arg > std::numeric_limits<T>::max()) {
+      if (arg < static_cast<U>(std::numeric_limits<T>::min()) ||
+          arg > static_cast<U>(std::numeric_limits<T>::max())) {
         ErrorType::Error("SafeInt: init from out of bounds float", arg, "=");
       }
-#pragma clang diagnostic pop
     } else {
       // If the initial value (type U) is changed by being converted to and from
       // the native type (type T), then it must be out of bounds for type T.
@@ -290,11 +287,11 @@ class SafeIntStrongIntValidator {
 // A SafeIntStrongIntValidator policy class to LOG(FATAL) on errors.
 struct LogFatalOnError {
   template <typename Tlhs, typename Trhs>
-  static void Error(const char *error, Tlhs lhs, Trhs rhs, const char *op) {
+  static void Error(const char* error, Tlhs lhs, Trhs rhs, const char* op) {
     LOG(FATAL) << error << ": (" << lhs << " " << op << " " << rhs << ")";
   }
   template <typename Tval>
-  static void Error(const char *error, Tval val, const char *op) {
+  static void Error(const char* error, Tval val, const char* op) {
     LOG(FATAL) << error << ": (" << op << val << ")";
   }
 };

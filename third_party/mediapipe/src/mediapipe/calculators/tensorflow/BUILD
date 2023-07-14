@@ -927,7 +927,6 @@ cc_test(
         "//mediapipe/framework:timestamp",
         "//mediapipe/framework/formats:detection_cc_proto",
         "//mediapipe/framework/formats:image_frame",
-        "//mediapipe/framework/formats:image_frame_opencv",
         "//mediapipe/framework/formats:location",
         "//mediapipe/framework/formats:location_opencv",
         "//mediapipe/framework/port:gtest_main",
@@ -1077,6 +1076,7 @@ cc_test(
     linkstatic = 1,
     deps = [
         ":tensor_to_image_frame_calculator",
+        ":tensor_to_image_frame_calculator_cc_proto",
         "//mediapipe/framework:calculator_framework",
         "//mediapipe/framework:calculator_runner",
         "//mediapipe/framework/formats:image_frame",

@@ -228,7 +228,6 @@ cc_library(
         "//mediapipe/tasks/metadata:metadata_schema_cc",
         "@com_google_absl//absl/container:flat_hash_set",
         "@com_google_absl//absl/status",
-        "@com_google_absl//absl/status:statusor",
         "@com_google_absl//absl/strings",
     ],
     alwayslink = 1,
@@ -280,7 +279,6 @@ cc_library(
         "//mediapipe/tasks/cc/text/tokenizers:tokenizer_utils",
         "//mediapipe/tasks/metadata:metadata_schema_cc",
         "@com_google_absl//absl/status",
-        "@com_google_absl//absl/status:statusor",
     ],
     alwayslink = 1,
 )
@@ -394,7 +392,7 @@ mediapipe_proto_library(
 # If you want to have precise control of which implementations to include (e.g. for strict binary
 # size concerns), depend on those implementations directly, and do not depend on
 # :inference_calculator.
-# In all cases, use "InferenceCalulator" in your graphs.
+# In all cases, use "InferenceCalculator" in your graphs.
 cc_library_with_tflite(
     name = "inference_calculator_interface",
     srcs = ["inference_calculator.cc"],
@@ -655,6 +653,11 @@ cc_library(
     ] + select({
         "//mediapipe/gpu:disable_gpu": [],
         "//conditions:default": ["tensor_converter_calculator_gpu_deps"],
+    }) + select({
+        "//mediapipe:apple": [
+            "//third_party/apple_frameworks:MetalKit",
+        ],
+        "//conditions:default": [],
     }),
     alwayslink = 1,
 )
