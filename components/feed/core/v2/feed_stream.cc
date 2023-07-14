@@ -383,24 +383,22 @@ void FeedStream::StreamLoadComplete(LoadStreamTask::Result result) {
   // When done loading the for-you feed, try to refresh the web-feed if there's
   // no unread content.
   if (base::FeatureList::IsEnabled(kWebFeed) &&
-      result.load_type != LoadType::kManualRefresh) {
-    if (result.stream_type.IsForYou()) {
-      // Checking for users without follows.
-      // TODO(b/229143375) - We should rate limit fetches if the server side is
-      // turned off for this locale, and continually fails.
-      StreamType following_type = StreamType(StreamKind::kFollowing);
-      if (!HasUnreadContent(following_type)) {
-        LoadStreamTask::Options options;
-        options.load_type = LoadType::kBackgroundRefresh;
-        options.stream_type = following_type;
-        options.abort_if_unread_content = true;
-        task_queue_.AddTask(
-            FROM_HERE,
-            std::make_unique<LoadStreamTask>(
-                options, this,
-                base::BindOnce(&FeedStream::BackgroundRefreshComplete,
-                               base::Unretained(this))));
-      }
+      result.load_type != LoadType::kManualRefresh &&
+      result.stream_type.IsForYou() && chained_web_feed_refresh_enabled_) {
+    // Checking for users without follows.
+    // TODO(b/229143375) - We should rate limit fetches if the server side is
+    // turned off for this locale, and continually fails.
+    StreamType following_type = StreamType(StreamKind::kFollowing);
+    if (!HasUnreadContent(following_type)) {
+      LoadStreamTask::Options options;
+      options.load_type = LoadType::kBackgroundRefresh;
+      options.stream_type = following_type;
+      options.abort_if_unread_content = true;
+      task_queue_.AddTask(
+          FROM_HERE, std::make_unique<LoadStreamTask>(
+                         options, this,
+                         base::BindOnce(&FeedStream::BackgroundRefreshComplete,
+                                        base::Unretained(this))));
     }
   }
 

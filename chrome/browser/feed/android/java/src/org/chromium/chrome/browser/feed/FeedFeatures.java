@@ -58,10 +58,10 @@ public final class FeedFeatures {
     }
 
     public static boolean shouldUseWebFeedAwarenessIPH() {
-        return ChromeFeatureList
-                .getFieldTrialParamByFeature(
-                        ChromeFeatureList.WEB_FEED_AWARENESS, "awareness_style")
-                .equals("IPH");
+        String awarenessStyleParam = ChromeFeatureList.getFieldTrialParamByFeature(
+                ChromeFeatureList.WEB_FEED_AWARENESS, "awareness_style");
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.WEB_FEED)
+                && (awarenessStyleParam.equals("IPH") || awarenessStyleParam.isEmpty());
     }
 
     public static boolean shouldUseNewIndicator() {
@@ -176,7 +176,6 @@ public final class FeedFeatures {
         return getPrefService().getInteger(Pref.LAST_SEEN_FEED_TYPE);
     }
 
-    @VisibleForTesting
     static void resetInternalStateForTesting() {
         sIsFirstFeedTabStickinessCheckSinceLaunch = true;
     }

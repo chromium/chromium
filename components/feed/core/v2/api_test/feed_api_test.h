@@ -489,6 +489,8 @@ class TestMetricsReporter : public MetricsReporter {
   StreamMetrics for_you;
 };
 
+// Base text fixture for feed API tests.
+// Note: The web-feeds feature (kWebFeed) is enabled by default for these tests.
 class FeedApiTest : public testing::Test, public FeedStream::Delegate {
  public:
   FeedApiTest();

@@ -359,6 +359,11 @@ class FeedStream : public FeedApi,
     return FindStream(stream_type) != nullptr;
   }
 
+  // Used by tests to control the chained refresh of the web-feed.
+  void SetChainedWebFeedRefreshEnabledForTesting(bool enabled) {
+    chained_web_feed_refresh_enabled_ = enabled;
+  }
+
  private:
   using UnreadContentNotifier = feed_stream::UnreadContentNotifier;
 
@@ -519,6 +524,8 @@ class FeedStream : public FeedApi,
   UserActionsCollector user_actions_collector_;
 
   base::TimeTicks last_refresh_scheduled_on_interaction_time_{};
+
+  bool chained_web_feed_refresh_enabled_ = true;
 
   base::WeakPtrFactory<FeedStream> weak_ptr_factory_{this};
 };

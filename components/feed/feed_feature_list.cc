@@ -90,11 +90,11 @@ const char kDefaultReferrerUrl[] = "https://www.google.com/";
 
 BASE_FEATURE(kWebFeedAwareness,
              "WebFeedAwareness",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kWebFeedOnboarding,
              "WebFeedOnboarding",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kWebFeedSort, "WebFeedSort", base::FEATURE_DISABLED_BY_DEFAULT);
 

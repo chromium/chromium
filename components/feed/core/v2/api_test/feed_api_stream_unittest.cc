@@ -457,14 +457,8 @@ TEST_P(FeedStreamTestForAllStreamTypes, UseFeedQueryOverride) {
   EXPECT_EQ("loading -> [user@foo] 2 slices", surface.DescribeUpdates());
 }
 
-TEST_F(FeedApiTest, OnboardingFetchAfterStartup) {
-  // Enable WebFeed and WebFeedOnboarding flags.
-  base::test::ScopedFeatureList features;
-  std::vector<base::test::FeatureRef> enabled_features = {kWebFeed,
-                                                          kWebFeedOnboarding},
-                                      disabled_features = {};
+TEST_F(FeedApiTest, FetchAfterStartup) {
   response_translator_.InjectResponse(MakeTypicalInitialModelState());
-  features.InitWithFeatures(enabled_features, disabled_features);
 
   TestForYouSurface surface(stream_.get());
   WaitForIdleTaskQueue();
@@ -474,20 +468,19 @@ TEST_F(FeedApiTest, OnboardingFetchAfterStartup) {
   ASSERT_EQ(1, network_.GetWebFeedListContentsCount());
 }
 
-TEST_F(FeedApiTest, WebFeedLoadWithNoSubscriptions) {
+TEST_F(FeedApiTest, WebFeedLoadWithNoSubscriptionsWithoutOnboarding) {
+  // Disable the onboarding feature.
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(kWebFeedOnboarding);
+
   TestWebFeedSurface surface(stream_.get());
   WaitForIdleTaskQueue();
 
   EXPECT_EQ("loading -> no-subscriptions", surface.DescribeUpdates());
 }
 
-TEST_F(FeedApiTest, WebFeedLoadWithNoSubscriptionsAndOnboarding) {
-  // Turn on the onboarding feature.
-  base::test::ScopedFeatureList features;
-  std::vector<base::test::FeatureRef> enabled_features = {kWebFeedOnboarding},
-                                      disabled_features = {};
+TEST_F(FeedApiTest, WebFeedLoadWithNoSubscriptions) {
   response_translator_.InjectResponse(MakeTypicalInitialModelState());
-  features.InitWithFeatures(enabled_features, disabled_features);
 
   // Scopes are to control the lifetime of the surface object.
   {
@@ -518,13 +511,8 @@ TEST_F(FeedApiTest, WebFeedLoadWithNoSubscriptionsAndOnboarding) {
   ASSERT_EQ(2, network_.GetWebFeedListContentsCount());
 }
 
-TEST_F(FeedApiTest, WebFeedContentExprirationWithNoSubscriptionsAndOnboarding) {
-  // Turn on the onboarding feature.
-  base::test::ScopedFeatureList features;
-  std::vector<base::test::FeatureRef> enabled_features = {kWebFeedOnboarding},
-                                      disabled_features = {};
+TEST_F(FeedApiTest, WebFeedContentExprirationWithNoSubscriptions) {
   response_translator_.InjectResponse(MakeTypicalInitialModelState());
-  features.InitWithFeatures(enabled_features, disabled_features);
 
   // Scopes are to control the lifetime of the surface object.
   {
@@ -559,6 +547,7 @@ TEST_F(FeedApiTest, WebFeedContentExprirationWithNoSubscriptionsAndOnboarding) {
 TEST_F(FeedApiTest, LoadFromNetworkDiscoFeedEnabled) {
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeature(kDiscoFeedEndpoint);
+  stream_->SetChainedWebFeedRefreshEnabledForTesting(false);
 
   response_translator_.InjectResponse(MakeTypicalInitialModelState());
   response_translator_.InjectResponse(MakeTypicalNextPageState());
@@ -577,17 +566,14 @@ TEST_F(FeedApiTest, LoadFromNetworkDiscoFeedEnabled) {
 TEST_P(FeedNetworkEndpointTest, TestAllNetworkEndpointConfigs) {
   SetUseFeedQueryRequests(GetUseFeedQueryRequests());
 
-  // Enable WebFeed and subscribe to a page, so that we can check if the WebFeed
-  // is refreshed by ForceRefreshForDebugging.
+  // Subscribe to a page, so that we can check if the WebFeed is refreshed by
+  // ForceRefreshForDebugging.
   base::test::ScopedFeatureList features;
-  std::vector<base::test::FeatureRef> enabled_features = {kWebFeed},
-                                      disabled_features = {};
   if (GetDiscoFeedEnabled()) {
-    enabled_features.push_back(kDiscoFeedEndpoint);
+    features.InitAndEnableFeature(kDiscoFeedEndpoint);
   } else {
-    disabled_features.push_back(kDiscoFeedEndpoint);
+    features.InitAndDisableFeature(kDiscoFeedEndpoint);
   }
-  features.InitWithFeatures(enabled_features, disabled_features);
 
   // WebFeed stream is only fetched when there's a subscription.
   network_.InjectListWebFeedsResponse({MakeWireWebFeed("cats")});
@@ -704,6 +690,7 @@ TEST_F(FeedApiTest, RefreshScheduleFlow) {
 }
 
 TEST_F(FeedApiTest, ForceRefreshIfMissedScheduledRefresh) {
+  stream_->SetChainedWebFeedRefreshEnabledForTesting(false);
   // Inject a typical network response, with a server-defined request schedule.
   {
     RequestSchedule schedule;
@@ -1016,6 +1003,7 @@ TEST_F(FeedApiTest, ShouldMakeFeedQueryRequestConsumesQuota) {
 }
 
 TEST_F(FeedApiTest, LoadStreamFromStore) {
+  stream_->SetChainedWebFeedRefreshEnabledForTesting(false);
   // Fill the store with stream data that is just barely fresh, and verify it
   // loads.
   store_->OverwriteStream(
@@ -1070,6 +1058,7 @@ TEST_F(FeedApiTest, DetachSurfaceWhileLoadingModel) {
 }
 
 TEST_F(FeedApiTest, AttachMultipleSurfacesLoadsModelOnce) {
+  stream_->SetChainedWebFeedRefreshEnabledForTesting(false);
   response_translator_.InjectResponse(MakeTypicalInitialModelState());
   TestForYouSurface surface(stream_.get());
   TestForYouSurface other_surface(stream_.get());
@@ -1508,6 +1497,7 @@ TEST_P(FeedStreamTestForAllStreamTypes, LoadMorePersistsData) {
 }
 
 TEST_F(FeedApiTest, LoadMorePersistAndLoadMore) {
+  stream_->SetChainedWebFeedRefreshEnabledForTesting(false);
   // Verify we can persist a LoadMore, and then do another LoadMore after
   // reloading state.
   response_translator_.InjectResponse(MakeTypicalInitialModelState());
@@ -1587,6 +1577,7 @@ TEST_F(FeedApiTest, LoadMoreSendsTokens) {
 }
 
 TEST_F(FeedApiTest, LoadMoreAbortsIfNoNextPageToken) {
+  stream_->SetChainedWebFeedRefreshEnabledForTesting(false);
   {
     std::unique_ptr<StreamModelUpdateRequest> initial_state =
         MakeTypicalInitialModelState();
@@ -2287,6 +2278,7 @@ TEST_F(FeedApiTest, ModelUnloadsAfterSecondTimeout) {
 }
 
 TEST_F(FeedApiTest, SendsClientInstanceId) {
+  stream_->SetChainedWebFeedRefreshEnabledForTesting(false);
   // Store is empty, so we should fallback to a network request.
   response_translator_.InjectResponse(MakeTypicalInitialModelState());
   TestForYouSurface surface(stream_.get());
@@ -2341,6 +2333,7 @@ TEST_F(FeedApiTest, SendsClientInstanceId) {
 }
 
 TEST_F(FeedApiTest, SignedOutSessionIdConsistency) {
+  stream_->SetChainedWebFeedRefreshEnabledForTesting(false);
   const std::string kSessionToken1("session-token-1");
   const std::string kSessionToken2("session-token-2");
 
@@ -2462,6 +2455,7 @@ TEST_F(FeedApiTest, ClearAllResetsSessionId) {
 }
 
 TEST_F(FeedApiTest, SignedOutSessionIdExpiry) {
+  stream_->SetChainedWebFeedRefreshEnabledForTesting(false);
   const std::string kSessionToken1("session-token-1");
   const std::string kSessionToken2("session-token-2");
 
@@ -2528,6 +2522,7 @@ TEST_F(FeedApiTest, SignedOutSessionIdExpiry) {
 }
 
 TEST_F(FeedApiTest, SessionIdPersistsAcrossStreamLoads) {
+  stream_->SetChainedWebFeedRefreshEnabledForTesting(false);
   const std::string kSessionToken("session-token-ftw");
   const base::Time kExpiryTime =
       kTestTimeEpoch + GetFeedConfig().session_id_max_age;
@@ -2676,6 +2671,7 @@ TEST_F(FeedApiTest, RejectEphemeralChange) {
 
 // Test that we overwrite stored stream data, even if ContentId's do not change.
 TEST_F(FeedApiTest, StreamDataOverwritesOldStream) {
+  stream_->SetChainedWebFeedRefreshEnabledForTesting(false);
   // Inject two FeedQuery responses with some different data.
   {
     std::unique_ptr<StreamModelUpdateRequest> new_state =
@@ -2760,8 +2756,13 @@ TEST_F(FeedApiTest,
             metrics_reporter_->load_stream_status);
 }
 
-TEST_F(FeedApiTest,
-       LoadingForYouStreamDoesNotTriggerWebFeedRefreshIfNoSubscriptions) {
+TEST_F(
+    FeedApiTest,
+    LoadingForYouStreamDoesNotTriggerWebFeedRefreshIfNoSubscriptionsWhithoutOnboarding) {
+  // With WebFeedOnboarding disabled, WebFeed should not fetch without
+  // subscriptions.
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(kWebFeedOnboarding);
   // Only for-you feed is fetched on load.
   response_translator_.InjectResponse(MakeTypicalInitialModelState());
   TestForYouSurface surface(stream_.get());
@@ -3252,6 +3253,7 @@ TEST_F(FeedApiTest, NoStartSurface) {
 }
 
 TEST_F(FeedApiTest, ForYouContentOrderUnset) {
+  stream_->SetChainedWebFeedRefreshEnabledForTesting(false);
   response_translator_.InjectResponse(MakeTypicalInitialModelState());
   TestForYouSurface surface(stream_.get());
   WaitForIdleTaskQueue();
@@ -3584,13 +3586,6 @@ TEST_F(FeedApiTest, InvalidateFeedCache_DoesNotForceRefreshFeedWhileInUse) {
 }
 
 TEST_F(FeedApiTest, InvalidateFeedCache_UnknownDoesNotForceRefreshAnyFeeds) {
-  // Enable WebFeed and WebFeedOnboarding flags to force WebFeed to fetch
-  // without subscriptions.
-  base::test::ScopedFeatureList features;
-  std::vector<base::test::FeatureRef> enabled_features = {kWebFeed,
-                                                          kWebFeedOnboarding},
-                                      disabled_features = {};
-  features.InitWithFeatures(enabled_features, disabled_features);
   {
     // Load both feeds and allow them to fetch network contents.
     response_translator_.InjectResponse(MakeTypicalInitialModelState());
@@ -3625,13 +3620,6 @@ TEST_F(FeedApiTest, InvalidateFeedCache_UnknownDoesNotForceRefreshAnyFeeds) {
 }
 
 TEST_F(FeedApiTest, InvalidateFeedCache_DoesNotRefreshOtherFeed) {
-  // Enable WebFeed and WebFeedOnboarding flags to force WebFeed to fetch
-  // without subscriptions.
-  base::test::ScopedFeatureList features;
-  std::vector<base::test::FeatureRef> enabled_features = {kWebFeed,
-                                                          kWebFeedOnboarding},
-                                      disabled_features = {};
-  features.InitWithFeatures(enabled_features, disabled_features);
   {
     // Load both feeds and allow them to fetch network contents.
     response_translator_.InjectResponse(MakeTypicalInitialModelState());
@@ -3665,13 +3653,22 @@ TEST_F(FeedApiTest, InvalidateFeedCache_DoesNotRefreshOtherFeed) {
   EXPECT_TRUE(response_translator_.InjectedResponseConsumed());
 }
 
-TEST_F(FeedApiTest, FeedCloseRefresh_Scroll) {
-  // Sometimes the clock starts near zero; move it forward just in case.
-  task_environment_.AdvanceClock(base::Minutes(10));
+class FeedCloseRefreshTest : public FeedApiTest {
+ public:
+  void SetUp() override {
+    FeedApiTest::SetUp();
+    // Sometimes the clock starts near zero; move it forward just in case.
+    task_environment_.AdvanceClock(base::Minutes(10));
 
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      kFeedCloseRefresh, {{"require_interaction", "true"}});
+    features_.InitAndEnableFeatureWithParameters(
+        kFeedCloseRefresh, {{"require_interaction", "true"}});
+  }
+
+ private:
+  base::test::ScopedFeatureList features_;
+};
+
+TEST_F(FeedCloseRefreshTest, Scroll) {
   TestForYouSurface surface(stream_.get());
   WaitForIdleTaskQueue();
 
@@ -3705,13 +3702,7 @@ TEST_F(FeedApiTest, FeedCloseRefresh_Scroll) {
                 .scheduled_run_times[RefreshTaskId::kRefreshForYouFeed]);
 }
 
-TEST_F(FeedApiTest, FeedCloseRefresh_Open) {
-  // Sometimes the clock starts near zero; move it forward just in case.
-  task_environment_.AdvanceClock(base::Minutes(10));
-
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      kFeedCloseRefresh, {{"require_interaction", "true"}});
+TEST_F(FeedCloseRefreshTest, Open) {
   TestForYouSurface surface(stream_.get());
   WaitForIdleTaskQueue();
 
@@ -3723,13 +3714,7 @@ TEST_F(FeedApiTest, FeedCloseRefresh_Open) {
                 .scheduled_run_times[RefreshTaskId::kRefreshForYouFeed]);
 }
 
-TEST_F(FeedApiTest, FeedCloseRefresh_OpenInNewTab) {
-  // Sometimes the clock starts near zero; move it forward just in case.
-  task_environment_.AdvanceClock(base::Minutes(10));
-
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      kFeedCloseRefresh, {{"require_interaction", "true"}});
+TEST_F(FeedCloseRefreshTest, OpenInNewTab) {
   TestForYouSurface surface(stream_.get());
   WaitForIdleTaskQueue();
 
@@ -3741,13 +3726,7 @@ TEST_F(FeedApiTest, FeedCloseRefresh_OpenInNewTab) {
                 .scheduled_run_times[RefreshTaskId::kRefreshForYouFeed]);
 }
 
-TEST_F(FeedApiTest, FeedCloseRefresh_ManualRefreshResetsCoalesceTimestamp) {
-  // Sometimes the clock starts near zero; move it forward just in case.
-  task_environment_.AdvanceClock(base::Minutes(10));
-
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      kFeedCloseRefresh, {{"require_interaction", "true"}});
+TEST_F(FeedCloseRefreshTest, ManualRefreshResetsCoalesceTimestamp) {
   TestForYouSurface surface(stream_.get());
   WaitForIdleTaskQueue();
 
@@ -3770,10 +3749,8 @@ TEST_F(FeedApiTest, FeedCloseRefresh_ManualRefreshResetsCoalesceTimestamp) {
                 .scheduled_run_times[RefreshTaskId::kRefreshForYouFeed]);
 }
 
-TEST_F(FeedApiTest, FeedCloseRefresh_FeedViewed) {
-  // Sometimes the clock starts near zero; move it forward just in case.
-  task_environment_.AdvanceClock(base::Minutes(10));
-
+TEST_F(FeedCloseRefreshTest, FeedViewed) {
+  // Disable the interaction requirement for refreshes.
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
       kFeedCloseRefresh, {{"require_interaction", "false"}});
@@ -3820,14 +3797,7 @@ TEST_F(FeedApiTest, FeedCloseRefresh_FeedViewed) {
                 .scheduled_run_times[RefreshTaskId::kRefreshForYouFeed]);
 }
 
-TEST_F(FeedApiTest, FeedCloseRefresh_ExistingScheduleGetsReplaced) {
-  // Sometimes the clock starts near zero; move it forward just in case.
-  task_environment_.AdvanceClock(base::Minutes(10));
-
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      kFeedCloseRefresh, {{"require_interaction", "true"}});
-
+TEST_F(FeedCloseRefreshTest, ExistingScheduleGetsReplaced) {
   // Inject a typical network response, with a server-defined request schedule.
   {
     RequestSchedule schedule;
@@ -3856,10 +3826,8 @@ TEST_F(FeedApiTest, FeedCloseRefresh_ExistingScheduleGetsReplaced) {
                 .scheduled_run_times[RefreshTaskId::kRefreshForYouFeed]);
 }
 
-TEST_F(FeedApiTest, FeedCloseRefresh_Retry) {
-  // Sometimes the clock starts near zero; move it forward just in case.
-  task_environment_.AdvanceClock(base::Minutes(10));
-
+TEST_F(FeedCloseRefreshTest, Retry) {
+  // Disable the interaction requirement for refreshes.
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
       kFeedCloseRefresh, {{"require_interaction", "false"}});
@@ -3908,13 +3876,7 @@ TEST_F(FeedApiTest, FeedCloseRefresh_Retry) {
                 .scheduled_run_times[RefreshTaskId::kRefreshForYouFeed]);
 }
 
-TEST_F(FeedApiTest, FeedCloseRefresh_RequestType) {
-  // Sometimes the clock starts near zero; move it forward just in case.
-  task_environment_.AdvanceClock(base::Minutes(10));
-
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      kFeedCloseRefresh, {{"require_interaction", "true"}});
+TEST_F(FeedCloseRefreshTest, RequestType) {
   response_translator_.InjectResponse(MakeTypicalInitialModelState());
   TestForYouSurface surface(stream_.get());
   WaitForIdleTaskQueue();
@@ -4179,14 +4141,12 @@ TEST_F(FeedApiTest, ClearAllOnSigninAllowedPrefChange) {
 class SignedOutViewDemotionTest : public FeedApiTest {
  public:
   void SetUp() override {
-    std::vector<base::test::FeatureRef> enabled_features =
-                                            {kFeedSignedOutViewDemotion},
-                                        disabled_features = {};
-    features.InitWithFeatures(enabled_features, disabled_features);
     FeedApiTest::SetUp();
+    features_.InitAndEnableFeature(kFeedSignedOutViewDemotion);
   }
 
-  base::test::ScopedFeatureList features;
+ private:
+  base::test::ScopedFeatureList features_;
 };
 
 TEST_F(SignedOutViewDemotionTest, ViewsAreSent) {
@@ -4207,6 +4167,8 @@ TEST_F(SignedOutViewDemotionTest, ViewsAreSent) {
   task_environment_.FastForwardBy(GetFeedConfig().stale_content_threshold +
                                   base::Minutes(1));
   CreateStream(true);
+  // Avoid a chained web-feed request to focus only on the for-you feed.
+  stream_->SetChainedWebFeedRefreshEnabledForTesting(false);
   response_translator_.InjectResponse(MakeTypicalInitialModelState());
   TestForYouSurface surface(stream_.get());
   WaitForIdleTaskQueue();
@@ -4259,10 +4221,7 @@ TEST_F(SignedOutViewDemotionTest, ViewsAreNotStoredWhenSignedIn) {
 TEST_F(SignedOutViewDemotionTest, ViewsAreNotStoredWhenFeatureIsOff) {
   base::HistogramTester histograms;
   base::test::ScopedFeatureList features;
-  std::vector<base::test::FeatureRef> enabled_features = {},
-                                      disabled_features = {
-                                          kFeedSignedOutViewDemotion};
-  features.InitWithFeatures(enabled_features, disabled_features);
+  features.InitAndDisableFeature(kFeedSignedOutViewDemotion);
 
   account_info_ = {};
   response_translator_.InjectResponse(MakeTypicalInitialModelState());
