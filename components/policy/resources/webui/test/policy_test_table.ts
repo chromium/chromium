@@ -18,11 +18,21 @@ export class PolicyTestTableElement extends CustomElement {
         .addEventListener('click', this.addRow.bind(this));
   }
 
+  clearRows() {
+    const table = this.getRequiredElement<HTMLElement>('.table');
+    while (table.childElementCount > 1) {
+      table.removeChild(table.lastChild!);
+    }
+  }
+
   // Event listener function that adds a new PolicyTestRowElement to the table
   // when the Add Policy button is clicked
-  private addRow() {
-    this.getRequiredElement<HTMLElement>('.table').appendChild(
+  addRow(initialValues: {[key: string]: any}|undefined) {
+    const row = this.getRequiredElement<HTMLElement>('.table').appendChild(
         document.createElement('policy-test-row'));
+    if (initialValues) {
+      row.setInitialValues(initialValues);
+    }
   }
 }
 

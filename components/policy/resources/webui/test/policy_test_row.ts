@@ -18,6 +18,25 @@ export class PolicyTestRowElement extends CustomElement {
     this.initialize();
   }
 
+  setInitialValues(initialValues: {[key: string]: any}) {
+    const policyNameInput =
+        this.getRequiredElement('.name-select') as HTMLInputElement;
+    const policySourceInput =
+        this.getRequiredElement('.source-select') as HTMLInputElement;
+    const policyLevelInput =
+        this.getRequiredElement('.level-select') as HTMLInputElement;
+    const policyScopeInput =
+        this.getRequiredElement('.target-select') as HTMLInputElement;
+    const policyValueInput =
+        this.getRequiredElement('.value-input') as HTMLInputElement;
+
+    policyNameInput.value = initialValues['name'];
+    policySourceInput.value = initialValues['source'];
+    policyLevelInput.value = initialValues['level'];
+    policyScopeInput.value = initialValues['scope'];
+    policyValueInput.value = initialValues['value'];
+  }
+
   // Function that initializes the policy selection dropdowns and delete
   // button for the current row.
   private initialize() {

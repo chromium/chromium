@@ -30,6 +30,7 @@ build_webui("build") {
     "logs/policy_logs.ts",
     "policy.ts",
     "policy_base.ts",
+    "test/policy_test.ts",
   ]
 
   ts_composite = true
