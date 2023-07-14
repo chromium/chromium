@@ -329,8 +329,7 @@ void RecentTabsSubMenuModel::Build() {
   // |local_window_items_| contains the local recently closed windows.
   InsertItemWithStringIdAt(0, IDC_SHOW_HISTORY, IDS_HISTORY_SHOW_HISTORY);
   if (features::IsChromeRefresh2023()) {
-    SetCommandIcon(this, IDC_SHOW_HISTORY,
-                   vector_icons::kHistoryChromeRefreshIcon);
+    SetCommandIcon(this, IDC_SHOW_HISTORY, kHistoryIcon);
   }
   InsertSeparatorAt(1, ui::NORMAL_SEPARATOR);
   BuildLocalEntries();
