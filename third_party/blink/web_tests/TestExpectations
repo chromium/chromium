@@ -6582,3 +6582,5 @@ crbug.com/1463964 virtual/coop-restrict-properties/external/wpt/html/cross-origi
 # Sheriff 2023-07-13
 crbug.com/1404855 virtual/gpu-rasterization/images/ycbcr-with-cmyk-color-profile.html [ Failure Pass ]
 crbug.com/1367514 http/tests/images/document-policy-oversized-images-resize.php [ Failure Pass Timeout ]
+
+crbug.com/1464866 http/tests/devtools/background-services/background-services-panel.js [ Failure Pass ]
