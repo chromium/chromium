@@ -728,11 +728,16 @@ class ComputedStyle : public ComputedStyleBase,
     return ScrollbarGutter() & kScrollbarGutterBothEdges;
   }
 
-  // ignore non-standard ::-webkit-scrollbar when standard properties are in use
+  bool UsesStandardScrollbarStyle() const {
+    return ScrollbarWidth() != EScrollbarWidth::kAuto ||
+           ScrollbarColor().has_value();
+  }
+
+  // Ignore non-standard ::-webkit-scrollbar when standard properties are in
+  // use.
   bool HasCustomScrollbarStyle() const {
     return HasPseudoElementStyle(kPseudoIdScrollbar) &&
-           ScrollbarWidth() == EScrollbarWidth::kAuto &&
-           ScrollbarColor() == absl::nullopt;
+           !UsesStandardScrollbarStyle();
   }
 
   // shape-outside (aka -webkit-shape-outside)

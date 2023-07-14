@@ -2023,8 +2023,10 @@ void PaintLayerScrollableArea::UpdateScrollCornerStyle() {
     return;
   }
   const LayoutObject& style_source = ScrollbarStyleSource(*GetLayoutBox());
+  bool uses_standard_scrollbar_style =
+      style_source.StyleRef().UsesStandardScrollbarStyle();
   scoped_refptr<const ComputedStyle> corner =
-      GetLayoutBox()->IsScrollContainer()
+      (GetLayoutBox()->IsScrollContainer() && !uses_standard_scrollbar_style)
           ? style_source.GetUncachedPseudoElementStyle(
                 StyleRequest(kPseudoIdScrollbarCorner, style_source.Style()))
           : scoped_refptr<ComputedStyle>(nullptr);
