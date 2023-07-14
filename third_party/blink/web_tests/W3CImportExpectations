@@ -344,7 +344,7 @@ external/wpt/webdriver/tests/classic/new_session/invalid_capabilities.py [ Skip 
 external/wpt/webdriver/tests/classic/new_session/response.py [ Skip ]
 external/wpt/webdriver/tests/classic/send_alert_text/send.py [ Skip ]
 
-# Skip all bidi tests for now
+# Skip all bidi tests for now: crbug.com/1281421
 external/wpt/webdriver/tests/bidi [ Skip ]
 
 # WebVr was never supported on Chrome more than as an experimental feature,
