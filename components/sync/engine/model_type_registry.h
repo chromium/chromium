@@ -93,6 +93,9 @@ class ModelTypeRegistry : public ModelTypeConnector,
 
   bool HasUnsyncedItems() const;
 
+  const std::vector<std::unique_ptr<ModelTypeWorker>>&
+  GetConnectedModelTypeWorkersForTest() const;
+
   base::WeakPtr<ModelTypeConnector> AsWeakPtr();
 
  private:
