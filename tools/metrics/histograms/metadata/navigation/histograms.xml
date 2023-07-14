@@ -1578,6 +1578,19 @@ chromium-metrics-reviews@google.com.
   <token key="PrerenderTriggerType" variants="PrerenderTriggerType"/>
 </histogram>
 
+<histogram name="Prerender.Experimental.ActivationIPCDelay" units="ms"
+    expires_after="2023-11-03">
+  <owner>lingqi@chromium.org</owner>
+  <owner>chrome-prerendering@google.com</owner>
+  <summary>
+    Recorded by WebViewImpl::ActivatePrerenderedPage when renderer process
+    starts to ask the receiver end of the prerender activation IPC to process
+    this signal, i.e., when this method is invoked. This metric is used to
+    measure the delay of when renderer process receives the signal and when it
+    can process this signal. Recorded on the main document only.
+  </summary>
+</histogram>
+
 <histogram
     name="Prerender.Experimental.ActivationNavigationParamsMatch{PrerenderTriggerType}"
     enum="PrerenderActivationNavigationParamsMatch" expires_after="2023-09-03">

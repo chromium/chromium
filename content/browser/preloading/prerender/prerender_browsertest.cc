@@ -715,6 +715,11 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, SpeculationRulesPrerender) {
         << test::ActualVsExpectedUkmEntryToString(prediction_ukm_entries[1],
                                                   prediction_expected_entry);
   }
+
+  // Collect metrics we recorded the renderer processes.
+  FetchHistogramsFromChildProcesses();
+  histogram_tester().ExpectTotalCount(
+      "Prerender.Experimental.ActivationIPCDelay", 1u);
 }
 
 // Tests that the speculationrules-triggered prerender would be destroyed after
