@@ -5,6 +5,7 @@
 import 'chrome://shortcut-customization/js/accelerator_edit_view.js';
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
+import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {AcceleratorEditViewElement} from 'chrome://shortcut-customization/js/accelerator_edit_view.js';
 import {AcceleratorLookupManager} from 'chrome://shortcut-customization/js/accelerator_lookup_manager.js';
@@ -13,7 +14,7 @@ import {FakeShortcutProvider} from 'chrome://shortcut-customization/js/fake_shor
 import {setShortcutProviderForTesting} from 'chrome://shortcut-customization/js/mojo_interface_provider.js';
 import {AcceleratorConfigResult, AcceleratorSource, Modifier} from 'chrome://shortcut-customization/js/shortcut_types.js';
 import {AcceleratorResultData} from 'chrome://shortcut-customization/mojom-webui/ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom-webui.js';
-import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
@@ -142,5 +143,30 @@ suite('acceleratorEditViewTest', function() {
 
     await flushTasks();
     assertFalse(editViewElement!.hasError);
+  });
+
+  test('ClickEditAndShowInputHint', async () => {
+    const acceleratorInfo = createStandardAcceleratorInfo(
+        Modifier.ALT,
+        /*key=*/ 221,
+        /*keyDisplay=*/ ']');
+
+    editViewElement!.acceleratorInfo = acceleratorInfo;
+    editViewElement!.source = AcceleratorSource.kAsh;
+    editViewElement!.action = 1;
+    await flushTasks();
+
+    // Check that the edit button is visible.
+    assertTrue(isVisible(getElementById('editButtonsContainer')));
+
+    // Click on the edit button.
+    getElementById('editButton')!.click();
+
+    // Input hint message should be shown.
+    const expectedHintMessage =
+        'Press 1-4 modifiers and 1 other key on your keyboard';
+    const statusMessageElement = strictQuery(
+        '#acceleratorInfoText', editViewElement!.shadowRoot, HTMLDivElement);
+    assertEquals(expectedHintMessage, statusMessageElement.textContent!.trim());
   });
 });

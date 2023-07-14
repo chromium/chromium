@@ -5,6 +5,7 @@
 import 'chrome://shortcut-customization/js/accelerator_edit_dialog.js';
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
+import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -169,6 +170,16 @@ suite('acceleratorEditDialogTest', function() {
     const restoreButton =
         dialog!.querySelector('#restoreDefault') as CrButtonElement;
     assertTrue(restoreButton!.hidden);
+
+    // Input hint should be shown when adding a new accelerator.
+    const acceleratorElements =
+        dialog.querySelectorAll('accelerator-edit-view');
+    const expectedHintMessage =
+        'Press 1-4 modifiers and 1 other key on your keyboard';
+    const statusMessageElement = strictQuery(
+        '#acceleratorInfoText', acceleratorElements[0]!.shadowRoot,
+        HTMLDivElement);
+    assertEquals(expectedHintMessage, statusMessageElement.textContent!.trim());
 
     // Re-query the stamped element.
     pendingAccelerator = dialog!.querySelector('#pendingAccelerator');

@@ -142,9 +142,7 @@ export class AcceleratorEditViewElement extends AcceleratorEditViewElementBase {
                   configResult.result.shortcutName as String16));
         }
         return;
-      }
-      if (this.viewState === ViewState.EDIT) {
-        this.hasError = false;
+      } else {
         this.statusMessage = this.i18n('editViewStatusMessage');
       }
     }
