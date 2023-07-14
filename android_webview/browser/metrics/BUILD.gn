@@ -17,6 +17,8 @@ source_set("metrics") {
     "aw_server_side_allowlist_metrics_provider.h",
     "renderer_process_metrics_provider.cc",
     "renderer_process_metrics_provider.h",
+    "system_state_util.cc",
+    "system_state_util.h",
     "visibility_metrics_logger.cc",
     "visibility_metrics_logger.h",
     "visibility_metrics_provider.cc",
