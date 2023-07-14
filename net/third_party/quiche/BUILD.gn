@@ -716,7 +716,7 @@ component("quiche") {
   ]
 
   configs += [ ":quiche_internal_config" ]
-  public_configs = [ ":quiche_config" ]
+  all_dependent_configs = [ ":quiche_config" ]
 
   deps = [
     "//net:uri_template",

@@ -544,7 +544,7 @@ component("skia") {
     ":skia_library_config",
     "//build/config/compiler:no_chromium_code",
   ]
-  public_configs = [ ":skia_config" ]
+  all_dependent_configs = [ ":skia_config" ]
 
   deps += [
     ":skcms",
