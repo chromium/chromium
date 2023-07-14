@@ -840,6 +840,65 @@ IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest,
   ASSERT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
 }
 
+// If SmartCardConnection::Disconnect() was previously successfully called,
+// do nothing once that SmartCardConnection is disconnected from its remote
+// endpoint.
+// Reasoning being that the PC/SC handle represented by this SmartCardConnection
+// is no longer valid. There's nothing to cleanup at that point.
+IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest,
+                       ConnectionApiDisconnectAndMojoDisconnection) {
+  LoadFakeProviderExtension({kEstablishContextJs, kConnectJs,
+                             R"(
+      chrome.smartCardProviderPrivate.onDisconnectRequested.addListener(
+          disconnect);
+
+      function disconnect(requestId, scardHandle, disposition) {
+        if (scardHandle !== validHandle) {
+          chrome.smartCardProviderPrivate.reportPlainResult(requestId,
+            "INVALID_HANDLE");
+          return;
+        }
+        validHandle = 0;
+        chrome.smartCardProviderPrivate.reportPlainResult(requestId,
+          "SUCCESS");
+      }
+      )"});
+
+  auto context_result = CreateContext();
+  ASSERT_TRUE(context_result->is_context());
+  mojo::Remote<device::mojom::SmartCardContext> context(
+      std::move(context_result->get_context()));
+
+  mojo::Remote<device::mojom::SmartCardConnection> connection =
+      CreateConnection(*context.get());
+  ASSERT_TRUE(connection.is_bound());
+
+  base::test::TestFuture<SmartCardResultPtr> disconnect_result_future;
+  connection->Disconnect(SmartCardDisposition::kLeave,
+                         disconnect_result_future.GetCallback());
+
+  ASSERT_TRUE(disconnect_result_future.Take()->is_success());
+
+  DisconnectObserver disconnect_observer;
+  ProviderAPI().SetDisconnectObserverForTesting(
+      disconnect_observer.GetClosure());
+
+  EventObserver event_observer;
+  EventRouter* event_router =
+      EventRouterFactory::GetForBrowserContext(profile());
+  event_router->AddObserverForTesting(&event_observer);
+
+  // Mojo disconnection from the remote endpoint should not cause
+  // SmartCardProviderPrivateAPI to dispatch a
+  // smartCardProviderPrivate.onDisconnectRequested event to the provider
+  // extension since a successful PC/SC disconnection already took place.
+  connection.reset();
+  disconnect_observer.Wait();
+  EXPECT_EQ(event_observer.GetEventCount(
+                scard_api::OnDisconnectRequested::kEventName),
+            0u);
+}
+
 IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest, Cancel) {
   LoadFakeProviderExtension({kEstablishContextJs,
                              R"(
