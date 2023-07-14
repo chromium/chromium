@@ -348,9 +348,10 @@ void CardboardRenderLoop::GetFrameData(
   xr_frame->bounds_right = right_bounds_;
 
   if (CardboardImageTransport::UseSharedBuffer()) {
-    // TODO(https://crbug.com/1429099): Do we need to pass a uv_transform?
+    // We aren't modifying the texture that we give to the page, so we just pass
+    // in identity for the uv_transform.
     frame_data->buffer_holder = cardboard_image_transport_->TransferFrame(
-        webxr_.get(), texture_size_, /*uv_transform=*/gfx::Transform());
+        webxr_.get(), texture_size_, gfx::Transform());
   }
 
   // Get the head pose
@@ -461,7 +462,8 @@ void CardboardRenderLoop::ProcessFrameFromMailbox(
   CHECK(webxr_->HaveProcessingFrame());
   CHECK(!CardboardImageTransport::UseSharedBuffer());
 
-  // TODO(https://crbug.com/1429099): Do we need to pass a uv_transform?
+  // We aren't modifying the texture that we've received from the page, so we
+  // just pass in identity.
   cardboard_image_transport_->CopyMailboxToSurfaceAndSwap(
       texture_size_, mailbox, gfx::Transform());
 

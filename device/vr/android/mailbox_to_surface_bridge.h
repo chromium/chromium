@@ -56,8 +56,6 @@ class MailboxToSurfaceBridge {
   // context isn't ready for use yet, in that case the caller
   // won't get a new frame on the SurfaceTexture.
   virtual bool CopyMailboxToSurfaceAndSwap(
-      const gpu::MailboxHolder& mailbox) = 0;
-  virtual bool CopyMailboxToSurfaceAndSwap(
       const gpu::MailboxHolder& mailbox,
       const gfx::Transform& uv_transform) = 0;
 
