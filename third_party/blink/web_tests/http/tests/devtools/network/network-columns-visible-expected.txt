@@ -11,7 +11,7 @@ type: xhr
 initiator: network-columns-visible.js:15Script
 cookies: 0
 setcookies: 0
-priority: High
+priority: HighHigh
 cache-control: 
 connection: Keep-Alive
 content-encoding: 
