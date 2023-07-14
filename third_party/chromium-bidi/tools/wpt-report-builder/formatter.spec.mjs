@@ -28,6 +28,7 @@ describe('HTML WPT reporter', () => {
   it('should escapeHtml', () => {
     expect(escapeHtml('&<>\'"/')).to.equal('&amp;&lt;&gt;&#39;&quot;&#47;');
   });
+
   describe('flattenSingleTest', () => {
     it('should flatten half passed test', () => {
       expect(
@@ -61,6 +62,7 @@ describe('HTML WPT reporter', () => {
         },
       ]);
     });
+
     it('should flatten test without subtests', () => {
       expect(
         flattenSingleTest({
@@ -79,6 +81,7 @@ describe('HTML WPT reporter', () => {
       ]);
     });
   });
+
   describe('flattenTests', () => {
     it('should flatten tests', () => {
       expect(
@@ -138,7 +141,40 @@ describe('HTML WPT reporter', () => {
         },
       ]);
     });
+
+    it('should exclude tentative tests', () => {
+      expect(
+        flattenTests({
+          results: [
+            {
+              test: '/a/b/c_tentative.py',
+              subtests: [
+                {
+                  name: 'sub_1',
+                  status: 'PASS',
+                },
+              ],
+              status: 'OK',
+            },
+            {
+              test: '/d/e/f.py',
+              subtests: [],
+              status: 'TIMEOUT',
+              message: null,
+            },
+          ],
+        })
+      ).to.deep.equal([
+        {
+          message: null,
+          name: null,
+          path: '/d/e/f.py',
+          status: 'TIMEOUT',
+        },
+      ]);
+    });
   });
+
   describe('groupTests', () => {
     it('should group tests', () => {
       let tests = groupTests([
@@ -173,6 +209,7 @@ describe('HTML WPT reporter', () => {
           status: 'TIMEOUT',
         },
       ]);
+
       expect(tests).to.deep.equal({
         message: null,
         path: '/a',

@@ -35,16 +35,35 @@ export function flattenSingleTest(test) {
       },
     ];
   }
-  return test.subtests.map((sub) => ({
-    path: `${test.test}/${escapeHtml(sub.name)}`,
-    name: sub.name,
-    status: sub.status,
-    message: sub.message ?? null,
+
+  return test.subtests.map((subtest) => ({
+    path: `${test.test}/${escapeHtml(subtest.name)}`,
+    name: subtest.name,
+    status: subtest.status,
+    message: subtest.message ?? null,
   }));
 }
 
+/**
+ *  "Tentative" means a WPT test was written even though consensus was never
+ *  reached in the spec whether it will actually take place.
+ *
+ *  Tentative tests will usually never pass and they are not final.
+ *  Since these are not spec finalized, they only add noise to the report.
+ *
+ *  Once (if ever) consensus is reached upon upstream, the tentative suffix
+ *  is removed from the WPT test file, then the tests appear in the report
+ *  as usual.
+ */
+export function excludeTentativeTests(test) {
+  return !test.test.includes('_tentative.py');
+}
+
 export function flattenTests(report) {
-  return report.results.map(flattenSingleTest).flat();
+  return report.results
+    .filter(excludeTentativeTests)
+    .map(flattenSingleTest)
+    .flat();
 }
 
 export function groupTests(tests) {
@@ -64,14 +83,17 @@ export function groupTests(tests) {
       parts.shift();
     }
 
-    let curPath = '';
+    let currentPath = '';
     for (const part of parts) {
-      curPath = `${curPath}/${part}`;
+      currentPath = `${currentPath}/${part}`;
       if (!currentPathMap.children.has(part)) {
         currentPathMap.children.set(part, {
-          group: curPath,
+          group: currentPath,
           children: new Map(),
-          stat: {all: 0, pass: 0},
+          stat: {
+            all: 0,
+            pass: 0,
+          },
         });
       }
       currentPathMap = currentPathMap.children.get(part);
@@ -81,6 +103,7 @@ export function groupTests(tests) {
     }
     currentPathMap.test = test;
   }
+
   return mergeSingleChildren(pathMap);
 }
 
