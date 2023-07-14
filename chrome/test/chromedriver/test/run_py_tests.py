@@ -869,6 +869,12 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
     result = self._driver.ExecuteScript(script)
     self.assertEqual(result['toJSON'], 'text')
 
+  def testExecuteScriptWithDeletedGlobalJSON(self):
+    """Tests that deleted global JSON object does not affect serialization"""
+    result = self._driver.ExecuteScript('delete JSON; return 321')
+    self.assertIsInstance(result, int)
+    self.assertEqual(result, 321)
+
   def testExecuteScriptStaleElement1(self):
     # Test the standard compliance of error handling
     div = self._driver.ExecuteScript(
