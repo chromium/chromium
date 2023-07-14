@@ -162,13 +162,17 @@ export class PrintPreviewDocumentInfoElement extends
         new Size(pageLayout.printableAreaWidth, pageLayout.printableAreaHeight);
 
     const margins = new Margins(
-        Math.round(pageLayout.marginTop), Math.round(pageLayout.marginRight),
-        Math.round(pageLayout.marginBottom), Math.round(pageLayout.marginLeft));
+        pageLayout.marginTop, pageLayout.marginRight, pageLayout.marginBottom,
+        pageLayout.marginLeft);
 
     const o = CustomMarginsOrientation;
     const pageSize = new Size(
-        pageLayout.contentWidth + margins.get(o.LEFT) + margins.get(o.RIGHT),
-        pageLayout.contentHeight + margins.get(o.TOP) + margins.get(o.BOTTOM));
+        Math.round(
+            pageLayout.contentWidth + margins.get(o.LEFT) +
+            margins.get(o.RIGHT)),
+        Math.round(
+            pageLayout.contentHeight + margins.get(o.TOP) +
+            margins.get(o.BOTTOM)));
 
     if (this.isInitialized_) {
       this.printableArea = new PrintableArea(origin, size);
