@@ -304,7 +304,7 @@ targets.mixin(
                 "cpu": "x86",
                 "kvm": "1",
                 "gce": "1",
-                "os": "Ubuntu-18.04",
+                "os": "Ubuntu-22.04",
                 "pool": "chrome.tests.finch",
             },
         ],
