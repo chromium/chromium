@@ -225,37 +225,8 @@ using DestinationLookup =
   return sortedDestinations;
 }
 
-- (NSArray<OverflowMenuAction*>*)pageActions {
-  if (!IsOverflowMenuCustomizationEnabled()) {
-    ActionRanking availableActions = [self.actionProvider basePageActions];
-    // Convert back to Objective-C array for returning. This step also filters
-    // out any actions that are not supported on the current page.
-    NSMutableArray<OverflowMenuAction*>* sortedActions =
-        [[NSMutableArray alloc] init];
-    for (overflow_menu::ActionType action : availableActions) {
-      if (OverflowMenuAction* overflowMenuAction =
-              [self.actionProvider actionForActionType:action]) {
-        [sortedActions addObject:overflowMenuAction];
-      }
-    }
-
-    return sortedActions;
-  }
-
-  [self initializeActionOrderDataIfEmpty];
-
-  // Convert back to Objective-C array for returning. This step also filters out
-  // any actions that are not supported on the current page.
-  NSMutableArray<OverflowMenuAction*>* sortedActions =
-      [[NSMutableArray alloc] init];
-  for (overflow_menu::ActionType action : _actionOrderData.shownActions) {
-    if (OverflowMenuAction* overflowMenuAction =
-            [self.actionProvider actionForActionType:action]) {
-      [sortedActions addObject:overflowMenuAction];
-    }
-  }
-
-  return sortedActions;
+- (void)updatePageActions {
+  self.pageActionsGroup.actions = [self pageActions];
 }
 
 - (void)commitActionsUpdate {
@@ -274,6 +245,8 @@ using DestinationLookup =
 
   _actionOrderData = actionOrderData;
   [self flushActionsToPrefs];
+
+  [self updatePageActions];
 }
 
 #pragma mark - Private
@@ -541,6 +514,40 @@ using DestinationLookup =
 
     [self flushActionsToPrefs];
   }
+}
+
+// Returns the current pageActions in order.
+- (NSArray<OverflowMenuAction*>*)pageActions {
+  if (!IsOverflowMenuCustomizationEnabled()) {
+    ActionRanking availableActions = [self.actionProvider basePageActions];
+    // Convert back to Objective-C array for returning. This step also filters
+    // out any actions that are not supported on the current page.
+    NSMutableArray<OverflowMenuAction*>* sortedActions =
+        [[NSMutableArray alloc] init];
+    for (overflow_menu::ActionType action : availableActions) {
+      if (OverflowMenuAction* overflowMenuAction =
+              [self.actionProvider actionForActionType:action]) {
+        [sortedActions addObject:overflowMenuAction];
+      }
+    }
+
+    return sortedActions;
+  }
+
+  [self initializeActionOrderDataIfEmpty];
+
+  // Convert back to Objective-C array for returning. This step also filters out
+  // any actions that are not supported on the current page.
+  NSMutableArray<OverflowMenuAction*>* sortedActions =
+      [[NSMutableArray alloc] init];
+  for (overflow_menu::ActionType action : _actionOrderData.shownActions) {
+    if (OverflowMenuAction* overflowMenuAction =
+            [self.actionProvider actionForActionType:action]) {
+      [sortedActions addObject:overflowMenuAction];
+    }
+  }
+
+  return sortedActions;
 }
 
 @end

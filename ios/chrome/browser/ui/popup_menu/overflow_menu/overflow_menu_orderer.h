@@ -15,6 +15,7 @@ enum class ActionType;
 }
 @class ActionCustomizationModel;
 @class OverflowMenuAction;
+@class OverflowMenuActionGroup;
 @class OverflowMenuDestination;
 class PrefService;
 
@@ -70,6 +71,10 @@ class PrefService;
 
 @property(nonatomic, weak) id<OverflowMenuActionProvider> actionProvider;
 
+// The page actions group provided to this orderer, allowing it to update the
+// order when needed.
+@property(nonatomic, weak) OverflowMenuActionGroup* pageActionsGroup;
+
 // Model object to be used for customizing (reordering, showing/hiding) actions.
 @property(nonatomic, readonly)
     ActionCustomizationModel* actionCustomizationModel;
@@ -83,8 +88,9 @@ class PrefService;
 // Returns the current sorted list of active destinations.
 - (NSArray<OverflowMenuDestination*>*)sortedDestinations;
 
-// Returns the current ordering of active page actions.
-- (NSArray<OverflowMenuAction*>*)pageActions;
+// Requests that the orderer update the order of the page actions in its page
+// actions group.
+- (void)updatePageActions;
 
 // Tells the orderer that actions customization has finished using the current
 // data in `actionCustomizationModel`.

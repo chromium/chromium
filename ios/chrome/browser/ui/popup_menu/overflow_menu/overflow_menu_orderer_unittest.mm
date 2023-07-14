@@ -714,7 +714,8 @@ TEST_F(OverflowMenuOrdererTest, StoresInitialActionRanking) {
   InitializeOverflowMenuOrderer(NO);
   ActionRanking sample_actions = SampleActions();
   action_provider_.basePageActions = sample_actions;
-  [overflow_menu_orderer_ pageActions];
+
+  [overflow_menu_orderer_ updatePageActions];
 
   const base::Value::Dict& stored_ranking =
       prefs_->GetDict(prefs::kOverflowMenuActionsOrder);

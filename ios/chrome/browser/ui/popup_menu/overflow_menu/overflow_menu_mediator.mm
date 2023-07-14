@@ -745,6 +745,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
       [[OverflowMenuActionGroup alloc] initWithGroupName:@"page_actions"
                                                  actions:@[]
                                                   footer:nil];
+  self.menuOrderer.pageActionsGroup = self.pageActionsGroup;
 
   // Footer and actions vary based on state, so they're set in -updateModel.
   self.helpActionsGroup =
@@ -995,7 +996,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
 
   self.appActionsGroup.actions = appActions;
 
-  self.pageActionsGroup.actions = [self.menuOrderer pageActions];
+  [self.menuOrderer updatePageActions];
 
   NSMutableArray<OverflowMenuAction*>* helpActions =
       [[NSMutableArray alloc] init];
