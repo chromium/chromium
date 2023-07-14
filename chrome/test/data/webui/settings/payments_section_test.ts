@@ -9,7 +9,7 @@ import {CrButtonElement, loadTimeData, MetricsBrowserProxyImpl, PrivacyElementIn
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isMac, isWindows} from 'chrome://resources/js/platform.js';
 
-import {createCreditCardEntry, TestPaymentsManager} from './passwords_and_autofill_fake_data.js';
+import {createCreditCardEntry, TestPaymentsManager} from './autofill_fake_data.js';
 import {createPaymentsSection, getLocalAndServerCreditCardListItems, getDefaultExpectations, getCardRowShadowRoot} from './payments_section_utils.js';
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 

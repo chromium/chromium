@@ -11,7 +11,7 @@ import {CrButtonElement, loadTimeData} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, whenAttributeIs} from 'chrome://webui-test/test_util.js';
 
-import {createIbanEntry, TestPaymentsManager} from './passwords_and_autofill_fake_data.js';
+import {createIbanEntry, TestPaymentsManager} from './autofill_fake_data.js';
 import {createPaymentsSection, getDefaultExpectations} from './payments_section_utils.js';
 
 // clang-format on

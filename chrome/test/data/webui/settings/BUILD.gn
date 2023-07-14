@@ -44,7 +44,7 @@ build_webui_tests("build") {
     "help_page_test.ts",
     "idle_load_test.ts",
     "on_startup_page_test.ts",
-    "passwords_and_autofill_fake_data.ts",
+    "autofill_fake_data.ts",
     "payments_section_card_rows_test.ts",
     "payments_section_card_dialogs_test.ts",
     "payments_section_focus_test.ts",

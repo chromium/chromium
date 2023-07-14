@@ -9,7 +9,7 @@ import {assertTrue, assertLT} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise, whenAttributeIs} from 'chrome://webui-test/test_util.js';
 
-import {PaymentsManagerExpectations, TestPaymentsManager} from './passwords_and_autofill_fake_data.js';
+import {PaymentsManagerExpectations, TestPaymentsManager} from './autofill_fake_data.js';
 
 // clang-format on
 
