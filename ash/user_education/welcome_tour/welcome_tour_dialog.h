@@ -8,7 +8,6 @@
 #include "ash/ash_export.h"
 #include "ash/style/system_dialog_delegate_view.h"
 #include "base/functional/callback_forward.h"
-#include "ui/base/interaction/element_identifier.h"
 
 namespace ash {
 
@@ -18,8 +17,6 @@ namespace ash {
 class ASH_EXPORT WelcomeTourDialog : public SystemDialogDelegateView {
  public:
   METADATA_HEADER(WelcomeTourDialog);
-
-  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kWelcomeTourDialogElementIdForTesting);
 
   // Creates and shows the Welcome Tour dialog at the center of the primary
   // display. `accept_callback` is the callback that runs when the accept button

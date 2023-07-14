@@ -62,12 +62,11 @@ class ASH_EXPORT WelcomeTourController : public UserEducationFeatureController,
   void OnTabletControllerDestroyed() override;
   void OnTabletModeStarting() override;
 
-  // Shows the Welcome Tour dialog iff the primary user session is active.
-  void MaybeShowDialog();
+  // Starts the Welcome Tour if and only if the primary user session is active.
+  void MaybeStartWelcomeTour();
 
-  // Starts the Welcome Tour tutorial. The tutorial should start when the accept
-  // button of the Welcome Tour dialog is clicked.
-  void StartTutorial();
+  // Aborts the Welcome Tour if and only if the tour is in progress.
+  void MaybeAbortWelcomeTour();
 
   // Invoked when the Welcome Tour is started/ended. The latter is called
   // regardless of whether the tour was `completed` or aborted.
@@ -88,13 +87,12 @@ class ASH_EXPORT WelcomeTourController : public UserEducationFeatureController,
   base::ObserverList<WelcomeTourControllerObserver> observer_list_;
 
   // Sessions are observed only until the primary user session is activated for
-  // the first time at which point the Welcome Tour dialog is shown.
+  // the first time at which point the Welcome Tour is started.
   base::ScopedObservation<SessionController, SessionObserver>
       session_observation_{this};
 
-  // Tablet mode is observed from when the dialog shows until the tour ends or
-  // is canceled, and will trigger an abort if the device switches to tablet
-  // mode.
+  // Tablet mode is observed only while the Welcome Tour is in progress, and
+  // will trigger an abort of the tour if the device switches to tablet mode.
   base::ScopedObservation<TabletMode, TabletModeObserver>
       tablet_mode_observation_{this};
 

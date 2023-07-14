@@ -17,6 +17,7 @@ DEFINE_ELEMENT_IDENTIFIER_VALUE(kSearchBoxViewElementId);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kSettingsAppElementId);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kShelfViewElementId);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kUnifiedSystemTrayElementId);
+DEFINE_ELEMENT_IDENTIFIER_VALUE(kWelcomeTourDialogElementId);
 // Please keep this list alphabetized.
 
 }  // namespace ash

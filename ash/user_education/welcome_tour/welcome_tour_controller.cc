@@ -81,7 +81,7 @@ WelcomeTourController::WelcomeTourController() {
   g_instance = this;
 
   session_observation_.Observe(Shell::Get()->session_controller());
-  MaybeShowDialog();
+  MaybeStartWelcomeTour();
 }
 
 WelcomeTourController::~WelcomeTourController() {
@@ -123,6 +123,20 @@ WelcomeTourController::GetTutorialDescriptions() {
                    std::forward_as_tuple(TutorialId::kWelcomeTourPrototype1),
                    std::forward_as_tuple())
           .first->second;
+
+  // Step 0: Dialog.
+  tutorial_description.steps.emplace_back(
+      user_education::TutorialDescription::HiddenStep::WaitForShown(
+          kWelcomeTourDialogElementId)
+          .InAnyContext());
+
+  // Wait for the dialog to be hidden before proceeding to the next bubble step.
+  // Note that if the dialog is closed without the user having accepted it, the
+  // Welcome Tour will be aborted and the next bubble step will not be reached.
+  tutorial_description.steps.emplace_back(
+      user_education::TutorialDescription::HiddenStep::WaitForHidden(
+          kWelcomeTourDialogElementId)
+          .InSameContext());
 
   // Step 1: Shelf.
   tutorial_description.steps.emplace_back(
@@ -232,7 +246,7 @@ WelcomeTourController::GetTutorialDescriptions() {
 
 void WelcomeTourController::OnActiveUserSessionChanged(
     const AccountId& account_id) {
-  MaybeShowDialog();
+  MaybeStartWelcomeTour();
 }
 
 void WelcomeTourController::OnChromeTerminating() {
@@ -241,7 +255,7 @@ void WelcomeTourController::OnChromeTerminating() {
 
 void WelcomeTourController::OnSessionStateChanged(
     session_manager::SessionState session_state) {
-  MaybeShowDialog();
+  MaybeStartWelcomeTour();
 }
 
 void WelcomeTourController::OnTabletControllerDestroyed() {
@@ -249,22 +263,10 @@ void WelcomeTourController::OnTabletControllerDestroyed() {
 }
 
 void WelcomeTourController::OnTabletModeStarting() {
-  auto* dialog = WelcomeTourDialog::Get();
-  auto* widget = dialog ? dialog->GetWidget() : nullptr;
-
-  if (widget && !widget->IsClosed()) {
-    // If the dialog's widget is not closed, then the tutorial hasn't started,
-    // so just close the dialog.
-    widget->Close();
-  } else {
-    // If the dialog is closed, and this event has been reached, then we can be
-    // certain the Welcome Tour is the active tutorial, so it is safe to abort.
-    UserEducationTutorialController::Get()->AbortTutorial(
-        UserEducationPrivateApiKey());
-  }
+  MaybeAbortWelcomeTour();
 }
 
-void WelcomeTourController::MaybeShowDialog() {
+void WelcomeTourController::MaybeStartWelcomeTour() {
   // NOTE: User education in Ash is currently only supported for the primary
   // user profile. This is a self-imposed restriction.
   if (!user_education_util::IsPrimaryAccountActive()) {
@@ -272,7 +274,7 @@ void WelcomeTourController::MaybeShowDialog() {
   }
 
   // We can stop observations since we only observe sessions in order to start
-  // the tutorial when the primary user session is activated for the first time.
+  // the tour when the primary user session is activated for the first time.
   session_observation_.Reset();
 
   // Welcome Tour is not supported in tablet mode.
@@ -280,25 +282,6 @@ void WelcomeTourController::MaybeShowDialog() {
     return;
   }
 
-  // Begin observing `TabletMode` so we can abort if it starts.
-  tablet_mode_observation_.Observe(TabletMode::Get());
-
-  WelcomeTourDialog::CreateAndShow(
-      /*accept_callback=*/base::BindOnce(&WelcomeTourController::StartTutorial,
-                                         weak_ptr_factory_.GetWeakPtr()),
-      /*cancel_callback=*/
-      base::BindOnce(&WelcomeTourController::OnWelcomeTourEnded,
-                     weak_ptr_factory_.GetWeakPtr(), /*completed=*/false),
-      /*close_callback=*/
-      base::BindOnce(&WelcomeTourController::OnWelcomeTourEnded,
-                     weak_ptr_factory_.GetWeakPtr(), /*completed=*/false));
-
-  // `WelcomeTourDialog` is part of the Welcome Tour. Therefore, when the dialog
-  // shows, the tour has indeed been started.
-  OnWelcomeTourStarted();
-}
-
-void WelcomeTourController::StartTutorial() {
   // NOTE: It is theoretically possible for the tutorial to outlive `this`
   // controller during the destruction sequence.
   UserEducationTutorialController::Get()->StartTutorial(
@@ -310,6 +293,15 @@ void WelcomeTourController::StartTutorial() {
       /*aborted_callback=*/
       base::BindOnce(&WelcomeTourController::OnWelcomeTourEnded,
                      weak_ptr_factory_.GetWeakPtr(), /*completed=*/false));
+
+  // The attempt to start the tutorial above is guaranteed to succeed or crash.
+  // If this line of code is reached, the tour has indeed been started.
+  OnWelcomeTourStarted();
+}
+
+void WelcomeTourController::MaybeAbortWelcomeTour() {
+  UserEducationTutorialController::Get()->AbortTutorial(
+      UserEducationPrivateApiKey(), TutorialId::kWelcomeTourPrototype1);
 }
 
 // TODO(http://b/277091006): Stabilize app launches.
@@ -324,6 +316,19 @@ void WelcomeTourController::OnWelcomeTourStarted() {
   notification_blocker_->Init();
 
   scrim_ = std::make_unique<WelcomeTourScrim>();
+  tablet_mode_observation_.Observe(TabletMode::Get());
+
+  // NOTE: The accept button doesn't need to be explicitly handled because the
+  // Welcome Tour will automatically proceed to the next step once the dialog is
+  // closed unless it has been aborted.
+  WelcomeTourDialog::CreateAndShow(
+      /*accept_callback=*/base::DoNothing(),
+      /*cancel_callback=*/
+      base::BindOnce(&WelcomeTourController::MaybeAbortWelcomeTour,
+                     weak_ptr_factory_.GetWeakPtr()),
+      /*close_callback=*/
+      base::BindOnce(&WelcomeTourController::MaybeAbortWelcomeTour,
+                     weak_ptr_factory_.GetWeakPtr()));
 
   for (auto& observer : observer_list_) {
     observer.OnWelcomeTourStarted();
@@ -338,16 +343,24 @@ void WelcomeTourController::OnWelcomeTourStarted() {
 // TODO(http://b/277091619): Restore wallpaper.
 // TODO(http://b/277091624): Restore nudges/toasts.
 void WelcomeTourController::OnWelcomeTourEnded(bool completed) {
+  notification_blocker_.reset();
+  scrim_.reset();
+  tablet_mode_observation_.Reset();
+
   if (completed) {
+    // Attempt to launch the Explore app on successful completion of the tour.
     UserEducationController::Get()->LaunchSystemWebAppAsync(
         UserEducationPrivateApiKey(), ash::SystemWebAppType::HELP,
         display::Screen::GetScreen()->GetPrimaryDisplay().id());
+  } else if (auto* dialog = WelcomeTourDialog::Get()) {
+    // Ensure the Welcome Tour dialog is closed when the tour is aborted since
+    // the abort could have originated from outside of the dialog itself. Note
+    // that weak pointers are invalidated to avoid doing work on widget close.
+    if (auto* widget = dialog->GetWidget(); widget && !widget->IsClosed()) {
+      weak_ptr_factory_.InvalidateWeakPtrs();
+      widget->Close();
+    }
   }
-
-  notification_blocker_.reset();
-  scrim_.reset();
-
-  tablet_mode_observation_.Reset();
 
   for (auto& observer : observer_list_) {
     observer.OnWelcomeTourEnded();

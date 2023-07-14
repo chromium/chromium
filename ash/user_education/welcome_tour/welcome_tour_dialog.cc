@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "ash/ash_element_identifiers.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
 #include "ash/public/cpp/shell_window_ids.h"
@@ -30,9 +31,6 @@ constexpr gfx::Size kImagePreferredSize(240, 240);
 }  // namespace
 
 // WelcomeTourDialog -----------------------------------------------------------
-
-DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(WelcomeTourDialog,
-                                      kWelcomeTourDialogElementIdForTesting);
 
 // static
 void WelcomeTourDialog::CreateAndShow(base::OnceClosure accept_callback,
@@ -79,8 +77,7 @@ WelcomeTourDialog::WelcomeTourDialog(base::OnceClosure accept_callback,
       .SetCloseCallback(std::move(close_callback))
       .SetDescription(l10n_util::GetStringUTF16(
           IDS_ASH_WELCOME_TOUR_DIALOG_DESCRIPTION_TEXT))
-      .SetProperty(views::kElementIdentifierKey,
-                   kWelcomeTourDialogElementIdForTesting)
+      .SetProperty(views::kElementIdentifierKey, kWelcomeTourDialogElementId)
       .SetTitleText(
           l10n_util::GetStringUTF16(IDS_ASH_WELCOME_TOUR_DIALOG_TITLE_TEXT))
       .SetTopContentView(views::Builder<views::ImageView>()

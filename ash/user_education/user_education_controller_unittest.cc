@@ -220,6 +220,11 @@ TEST_P(UserEducationControllerTest, RegistersTutorials) {
   SimulateUserLogin(primary_user_account_id);
   testing::Mock::VerifyAndClearExpectations(user_education_delegate);
 
+  // Abort any tutorials that started automatically when the primary user
+  // session started since this test only cares about tutorial registration.
+  user_education_delegate->AbortTutorial(primary_user_account_id,
+                                         /*tutorial_id=*/absl::nullopt);
+
   // Add a secondary user session and verify that *no* tutorials are registered
   // with user education services in the browser.
   EXPECT_CALL(*user_education_delegate, RegisterTutorial).Times(0);

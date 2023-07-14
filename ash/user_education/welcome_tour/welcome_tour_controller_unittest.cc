@@ -68,6 +68,7 @@ using ::testing::Property;
 using ::testing::StrictMock;
 using ::user_education::HelpBubbleArrow;
 using ::user_education::TutorialDescription;
+using ::views::test::WidgetDestroyedWaiter;
 
 using ContextMode = TutorialDescription::ContextMode;
 using ElementSpecifier = TutorialDescription::ElementSpecifier;
@@ -119,6 +120,12 @@ MATCHER_P6(BubbleStep,
          arg.next_button_callback().is_null() != has_next_button;
 }
 
+MATCHER_P2(HiddenStep, element_specifier, context_mode, "") {
+  return arg.step_type() == ui::InteractionSequence::StepType::kHidden &&
+         Matches(ElementSpecifierEq(element_specifier))(arg) &&
+         arg.context_mode() == context_mode;
+}
+
 MATCHER_P3(EventStep,
            element_specifier,
            context_mode,
@@ -128,6 +135,12 @@ MATCHER_P3(EventStep,
          Matches(ElementSpecifierEq(element_specifier))(arg) &&
          arg.context_mode() == context_mode &&
          arg.name_elements_callback().is_null() != has_name_elements_callback;
+}
+
+MATCHER_P2(ShownStep, element_specifier, context_mode, "") {
+  return arg.step_type() == ui::InteractionSequence::StepType::kShown &&
+         Matches(ElementSpecifierEq(element_specifier))(arg) &&
+         arg.context_mode() == context_mode;
 }
 
 // Helpers ---------------------------------------------------------------------
@@ -201,6 +214,10 @@ TEST_F(WelcomeTourControllerTest, GetTutorialDescriptions) {
           Field(
               &TutorialDescription::steps,
               ElementsAre(
+                  ShownStep(ElementSpecifier(kWelcomeTourDialogElementId),
+                            ContextMode::kAny),
+                  HiddenStep(ElementSpecifier(kWelcomeTourDialogElementId),
+                             ContextMode::kFromPreviousStep),
                   BubbleStep(ElementSpecifier(kShelfViewElementId),
                              ContextMode::kInitial,
                              HelpBubbleId::kWelcomeTourShelf,
@@ -281,16 +298,9 @@ TEST_F(WelcomeTourControllerTest, StartsTourAndPropagatesEvents) {
   session_controller_client->AddUserSession(
       secondary_account_id.GetUserEmail());
 
-  // Activate the primary user session. The shown dialog marks the start of the
-  // Welcome Tour and the observers are notified.
-  EXPECT_CALL(observer, OnWelcomeTourStarted);
-  session_controller_client->SetSessionState(SessionState::ACTIVE);
-  EXPECT_TRUE(WelcomeTourDialog::Get());
-  Mock::VerifyAndClearExpectations(&observer);
-
-  // Click `accept_button`. This *should* trigger the Welcome Tour tutorial to
-  // start. Note that the tutorial completed/aborted callbacks are cached for
-  // later verification.
+  // Activate the primary user session. This *should* trigger the Welcome Tour
+  // to start as well as notify observers. Note that completed/aborted
+  // callbacks are cached for later verification.
   base::OnceClosure completed_callback;
   base::OnceClosure aborted_callback;
   EXPECT_CALL(
@@ -301,32 +311,26 @@ TEST_F(WelcomeTourControllerTest, StartsTourAndPropagatesEvents) {
                     /*completed_callback=*/_,
                     /*aborted_callback=*/_))
       .WillOnce(MoveArgs<3, 4>(&completed_callback, &aborted_callback));
-  const views::View* const accept_button = GetDialogAcceptButton();
-  ASSERT_TRUE(accept_button);
-  LeftClickOn(accept_button);
+  EXPECT_CALL(observer, OnWelcomeTourStarted);
+  session_controller_client->SetSessionState(SessionState::ACTIVE);
   Mock::VerifyAndClearExpectations(user_education_delegate);
+  Mock::VerifyAndClearExpectations(&observer);
 
-  // Wait until `welcome_tour_dialog` gets destroyed.
-  views::test::WidgetDestroyedWaiter(WelcomeTourDialog::Get()->GetWidget())
-      .Wait();
-  EXPECT_FALSE(WelcomeTourDialog::Get());
+  // The Welcome Tour dialog is expected to be shown at the start of the tour.
+  EXPECT_TRUE(WelcomeTourDialog::Get());
 
   // Disallow any unexpected tutorial starts.
   EXPECT_CALL(*user_education_delegate, StartTutorial).Times(0);
 
   // Switch to the secondary user session and back again. This should *not*
-  // either show the dialog or start the Welcome Tour tutorial.
+  // trigger the Welcome Tour to start.
   session_controller_client->SwitchActiveUser(secondary_account_id);
-  EXPECT_FALSE(WelcomeTourDialog::Get());
   session_controller_client->SwitchActiveUser(primary_account_id);
-  EXPECT_FALSE(WelcomeTourDialog::Get());
 
   // Deactivate and then reactivate the primary user session. This should *not*
-  // either show the dialog or start the Welcome Tour tutorial.
+  // trigger the Welcome Tour to start.
   session_controller_client->SetSessionState(SessionState::LOCKED);
-  EXPECT_FALSE(WelcomeTourDialog::Get());
   session_controller_client->SetSessionState(SessionState::ACTIVE);
-  EXPECT_FALSE(WelcomeTourDialog::Get());
 
   // Verify that the same event is propagated to observers regardless of whether
   // user education services in the browser indicate the tour was completed or
@@ -344,12 +348,25 @@ TEST_F(WelcomeTourControllerTest, StartsTourAndPropagatesEvents) {
     std::move(ended_callback).Run();
     Mock::VerifyAndClearExpectations(&observer);
     Mock::VerifyAndClearExpectations(user_education_delegate);
+
+    // Aborting the Welcome Tour should close the dialog.
+    if (&ended_callback == &aborted_callback) {
+      WidgetDestroyedWaiter(WelcomeTourDialog::Get()->GetWidget()).Wait();
+      EXPECT_FALSE(WelcomeTourDialog::Get());
+    }
   }
 }
 
-// Verifies that the Welcome Tour ends without starting the tutorial after
-// clicking the dialog cancel button.
-TEST_F(WelcomeTourControllerTest, CancelsTourAndPropagatesEvents) {
+// Verifies that the Welcome Tour can be aborted via the dialog.
+TEST_F(WelcomeTourControllerTest, AbortsTourAndPropagatesEvents) {
+  // Expect the Welcome Tour to start when logging in the primary user. Note
+  // that the `aborted_callback` is cached.
+  base::OnceClosure aborted_callback;
+  EXPECT_CALL(*user_education_delegate(),
+              StartTutorial(_, Eq(TutorialId::kWelcomeTourPrototype1), _, _, _))
+      .WillOnce(MoveArg<4>(&aborted_callback));
+
+  // Start the Welcome Tour by logging in the primary user.
   SimulateUserLogin("primary@test");
 
   // Observe the `WelcomeTourController` for end events.
@@ -358,10 +375,18 @@ TEST_F(WelcomeTourControllerTest, CancelsTourAndPropagatesEvents) {
       observation{&observer};
   observation.Observe(WelcomeTourController::Get());
 
+  // Satisfy `ended_future` when an end event is received.
   base::test::TestFuture<void> ended_future;
   EXPECT_CALL(observer, OnWelcomeTourEnded)
       .WillOnce(RunOnceClosure(ended_future.GetCallback()));
 
+  // Expect the Welcome Tour to be aborted when clicking the `cancel_button`.
+  // Fulfill the request to abort the tour by running the `aborted_callback`.
+  EXPECT_CALL(*user_education_delegate(),
+              AbortTutorial(_, Eq(TutorialId::kWelcomeTourPrototype1)))
+      .WillOnce(RunOnceClosure(std::move(aborted_callback)));
+
+  // Click the `cancel_button` and verify the Welcome Tour is ended.
   const views::View* const cancel_button = GetDialogCancelButton();
   ASSERT_TRUE(cancel_button);
   LeftClickOn(cancel_button);
@@ -414,11 +439,6 @@ class WelcomeTourControllerRunTest : public WelcomeTourControllerTest {
     const auto primary_account_id = AccountId::FromUserEmail("primary@test");
     SimulateUserLogin(primary_account_id);
     EXPECT_TRUE(started_future.Wait());
-
-    // Click the dialog's accept button to start the tutorial.
-    const views::View* const accept_button = GetDialogAcceptButton();
-    ASSERT_TRUE(accept_button);
-    LeftClickOn(accept_button);
 
     // Invoke the `in_progress_callback` so that tests can assert expectations
     // while the Welcome Tour is in progress.
@@ -599,8 +619,8 @@ TEST_F(WelcomeTourControllerTabletTest, DoesNotStart) {
   EXPECT_CALL(*user_education_delegate(), StartTutorial).Times(0);
   SimulateUserLogin("user@test");
   EXPECT_FALSE(WelcomeTourDialog::Get());
-  testing::Mock::VerifyAndClearExpectations(user_education_delegate());
-  testing::Mock::VerifyAndClearExpectations(observer());
+  Mock::VerifyAndClearExpectations(user_education_delegate());
+  Mock::VerifyAndClearExpectations(observer());
 }
 
 // Verifies that the tour will abort if we enter tablet mode.
@@ -618,14 +638,8 @@ TEST_F(WelcomeTourControllerTabletTest, TriggersAbort) {
       .WillOnce(MoveArgs<4>(&aborted_callback));
   EXPECT_CALL(*observer(), OnWelcomeTourStarted);
   SimulateUserLogin("user@test");
-
-  // Click through the opening dialog so that the actual tutorial starts.
-  const views::View* const accept_button = GetDialogAcceptButton();
-  ASSERT_TRUE(accept_button);
-  LeftClickOn(accept_button);
-
-  testing::Mock::VerifyAndClearExpectations(user_education_delegate());
-  testing::Mock::VerifyAndClearExpectations(observer());
+  Mock::VerifyAndClearExpectations(user_education_delegate());
+  Mock::VerifyAndClearExpectations(observer());
   ASSERT_FALSE(aborted_callback.is_null());
 
   // Force tablet mode on, which should cause the tutorial to abort.
@@ -633,37 +647,14 @@ TEST_F(WelcomeTourControllerTabletTest, TriggersAbort) {
       .WillOnce(RunOnceClosure(std::move(aborted_callback)));
   EXPECT_CALL(*observer(), OnWelcomeTourEnded);
   TabletMode::Get()->SetEnabledForTest(true);
-  testing::Mock::VerifyAndClearExpectations(observer());
-  testing::Mock::VerifyAndClearExpectations(user_education_delegate());
-}
-
-// Verifies that the dialog will be closed if we enter tablet mode while it is
-// open.
-TEST_F(WelcomeTourControllerTabletTest, ClosesDialog) {
-  EXPECT_FALSE(WelcomeTourDialog::Get());
-
-  // Activate the user session to trigger the Welcome Tour to start, as well as
-  // notify observers.
-  EXPECT_CALL(*observer(), OnWelcomeTourStarted);
-  SimulateUserLogin("user@test");
-  testing::Mock::VerifyAndClearExpectations(observer());
-
-  // The dialog should exist and be visible.
-  EXPECT_THAT(
-      WelcomeTourDialog::Get(),
-      AllOf(NotNull(), Property(&WelcomeTourDialog::GetVisible, IsTrue())));
-
-  // Force tablet mode on, which should cause the tutorial to abort, in this
-  // case closing the dialog.
-  EXPECT_CALL(*observer(), OnWelcomeTourEnded);
-  TabletMode::Get()->SetEnabledForTest(true);
+  Mock::VerifyAndClearExpectations(observer());
+  Mock::VerifyAndClearExpectations(user_education_delegate());
 
   // Wait for the dialog widget to be destroyed.
-  views::test::WidgetDestroyedWaiter(WelcomeTourDialog::Get()->GetWidget())
-      .Wait();
+  ASSERT_THAT(WelcomeTourDialog::Get(),
+              Property(&WelcomeTourDialog::GetWidget, NotNull()));
+  WidgetDestroyedWaiter(WelcomeTourDialog::Get()->GetWidget()).Wait();
   EXPECT_FALSE(WelcomeTourDialog::Get());
-
-  testing::Mock::VerifyAndClearExpectations(observer());
 }
 
 }  // namespace ash

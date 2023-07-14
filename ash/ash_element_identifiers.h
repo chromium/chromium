@@ -46,7 +46,12 @@ DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(ASH_EXPORT, kShelfViewElementId);
 DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(ASH_EXPORT,
                                           kUnifiedSystemTrayElementId);
 
+// Uniquely identifies the `WelcomeTourDialog` for user education.
+DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(ASH_EXPORT,
+                                          kWelcomeTourDialogElementId);
+
 // Element Names ---------------------------------------------------------------
+// Please keep this list alphabetized.
 
 // Name which may be set for the `HomeButton` during an interaction sequence to
 // uniquely identify a particular instance.

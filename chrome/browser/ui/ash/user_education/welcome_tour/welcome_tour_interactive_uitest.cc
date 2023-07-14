@@ -94,8 +94,7 @@ class WelcomeTourInteractiveUiTest : public InteractiveBrowserTest {
 
   // Returns a builder for an interaction step that waits for the dialog.
   [[nodiscard]] static auto WaitForDialog() {
-    return WaitForShow(
-        ash::WelcomeTourDialog::kWelcomeTourDialogElementIdForTesting);
+    return WaitForShow(ash::kWelcomeTourDialogElementId);
   }
 
   // Returns a builder for an interaction step that waits for a help bubble.
