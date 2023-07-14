@@ -2510,6 +2510,21 @@
             ]
         }
     ],
+    "CVDisplayLinkBeginFrameSource": [
+        {
+            "platforms": [
+                "mac"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "CVDisplayLinkBeginFrameSource"
+                    ]
+                }
+            ]
+        }
+    ],
     "CacheCodeOnIdle": [
         {
             "platforms": [
