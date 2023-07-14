@@ -72,6 +72,9 @@ class ASH_EXPORT AnchoredNudgeManagerImpl : public AnchoredNudgeManager,
   // Resets the registry map that records the time a nudge was last shown.
   void ResetNudgeRegistryForTesting();
 
+  // Records button pressed metrics.
+  void RecordButtonPressed(NudgeCatalogName catalog_name, bool first_button);
+
  private:
   friend class AnchoredNudgeManagerImplTest;
   class AnchorViewObserver;
@@ -91,7 +94,9 @@ class ASH_EXPORT AnchoredNudgeManagerImpl : public AnchoredNudgeManager,
   // `id`, and returns this chained callback. If the provided `callback` is
   // empty, only a `Cancel()` callback will be returned.
   base::RepeatingClosure ChainCancelCallback(base::RepeatingClosure callback,
-                                             const std::string& id);
+                                             NudgeCatalogName catalog_name,
+                                             const std::string& id,
+                                             bool first_button);
 
   // Maps an `AnchoredNudge` `id` to pointer to the nudge with that id.
   // Used to cache and keep track of nudges that are currently displayed, so

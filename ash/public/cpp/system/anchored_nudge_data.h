@@ -62,10 +62,10 @@ struct ASH_PUBLIC_EXPORT AnchoredNudgeData {
   // `RepeatingClosure` so we don't have to manually modify the provided
   // callbacks in the manager.
   std::u16string first_button_text;
-  base::RepeatingClosure first_button_callback;
+  base::RepeatingClosure first_button_callback = base::DoNothing();
 
   std::u16string second_button_text;
-  base::RepeatingClosure second_button_callback;
+  base::RepeatingClosure second_button_callback = base::DoNothing();
 
   // Unowned view that the nudge may anchor to, to define its bounds.
   // Nudges with no `anchor_view` will show on their default location.

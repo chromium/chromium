@@ -34,6 +34,10 @@ namespace {
 constexpr NudgeCatalogName kTestCatalogName =
     NudgeCatalogName::kTestCatalogName;
 
+constexpr char kFirstButtonPressed[] =
+    "Ash.NotifierFramework.Nudge.FirstButtonPressed";
+constexpr char kSecondButtonPressed[] =
+    "Ash.NotifierFramework.Nudge.SecondButtonPressed";
 constexpr char kNudgeShownCount[] = "Ash.NotifierFramework.Nudge.ShownCount";
 constexpr char kNudgeTimeToActionWithin1m[] =
     "Ash.NotifierFramework.Nudge.TimeToAction.Within1m";
@@ -151,6 +155,7 @@ TEST_F(AnchoredNudgeManagerImplTest, ShowNudge_TwoNudges) {
 // Tests that a nudge with buttons can be shown, execute callbacks and dismiss
 // the nudge when the button is pressed.
 TEST_F(AnchoredNudgeManagerImplTest, ShowNudge_WithButtons) {
+  base::HistogramTester histogram_tester;
   std::unique_ptr<views::Widget> widget = CreateFramelessTestWidget();
 
   // Set up nudge data contents.
@@ -176,6 +181,7 @@ TEST_F(AnchoredNudgeManagerImplTest, ShowNudge_WithButtons) {
   // Press the first button, the nudge should have dismissed.
   LeftClickOn(nudge->GetFirstButton());
   EXPECT_FALSE(GetShownNudges()[id]);
+  histogram_tester.ExpectBucketCount(kFirstButtonPressed, kTestCatalogName, 1);
 
   // Add callbacks for the first button.
   bool first_button_callback_ran = false;
@@ -191,6 +197,7 @@ TEST_F(AnchoredNudgeManagerImplTest, ShowNudge_WithButtons) {
   LeftClickOn(nudge->GetFirstButton());
   EXPECT_TRUE(first_button_callback_ran);
   EXPECT_FALSE(GetShownNudges()[id]);
+  histogram_tester.ExpectBucketCount(kFirstButtonPressed, kTestCatalogName, 2);
 
   // Add a second button with no callbacks.
   nudge_data.second_button_text = second_button_text;
@@ -206,6 +213,7 @@ TEST_F(AnchoredNudgeManagerImplTest, ShowNudge_WithButtons) {
   // Press the second button, the nudge should have dismissed.
   LeftClickOn(nudge->GetSecondButton());
   EXPECT_FALSE(GetShownNudges()[id]);
+  histogram_tester.ExpectBucketCount(kSecondButtonPressed, kTestCatalogName, 1);
 
   // Add a callback for the second button.
   bool second_button_callback_ran = false;
@@ -221,6 +229,7 @@ TEST_F(AnchoredNudgeManagerImplTest, ShowNudge_WithButtons) {
   LeftClickOn(nudge->GetSecondButton());
   EXPECT_TRUE(second_button_callback_ran);
   EXPECT_FALSE(GetShownNudges()[id]);
+  histogram_tester.ExpectBucketCount(kSecondButtonPressed, kTestCatalogName, 2);
 }
 
 // Tests that a nudge without an anchor view is shown on its default location.
