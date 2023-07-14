@@ -154,7 +154,7 @@ WindowTransientDescendantIteratorRange GetVisibleTransientTreeIterator(
 // transient hierarchy. The returned Rect is in screen coordinates. The returned
 // bounds are adjusted to allow the original |transformed_window|'s header to be
 // hidden if |top_inset| is not zero.
-gfx::RectF GetTransformedBounds(aura::Window* transformed_window,
+ASH_EXPORT gfx::RectF GetTransformedBounds(aura::Window* transformed_window,
                                 int top_inset);
 
 // If multi profile is on, check if |window| should be shown for the current

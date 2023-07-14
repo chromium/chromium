@@ -4043,6 +4043,28 @@ TEST_F(TabletModeOverviewSessionTest, SnappingFullscreenWindow) {
   EXPECT_TRUE(WindowState::Get(window.get())->IsSnapped());
 }
 
+class ContinuousOverviewAnimationTest : public OverviewTestBase {
+ public:
+  ContinuousOverviewAnimationTest() = default;
+  ContinuousOverviewAnimationTest(const ContinuousOverviewAnimationTest&) =
+      delete;
+  ContinuousOverviewAnimationTest& operator=(
+      const ContinuousOverviewAnimationTest&) = delete;
+  ~ContinuousOverviewAnimationTest() override = default;
+
+  // OverviewTestBase:
+  void SetUp() override {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kContinuousOverviewScrollAnimation,
+                              chromeos::features::kJelly},
+        /*disabled_features=*/{});
+    OverviewTestBase::SetUp();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
 class ClamshellScrollOverviewSessionTest : public OverviewTestBase {
  public:
   ClamshellScrollOverviewSessionTest() = default;

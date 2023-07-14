@@ -53,7 +53,7 @@ class ASH_EXPORT WmGestureHandler {
 
     // Continuous gestures need to first pass a threshold before we update the
     // UI. We still update this struct before that happens.
-    bool continuous_gesture_started = false;
+    bool horizontal_continuous_gesture_started = false;
   };
 
   // Called by ProcessScrollEvent(). Depending on |finger_count|, may switch

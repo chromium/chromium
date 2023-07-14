@@ -233,7 +233,7 @@ bool WmGestureHandler::ProcessEventImpl(int finger_count,
     auto* desks_controller = DesksController::Get();
     // Update the continuous desk animation if it has already been started,
     // otherwise start it if it passes the threshold.
-    if (scroll_data_->continuous_gesture_started) {
+    if (scroll_data_->horizontal_continuous_gesture_started) {
       desks_controller->UpdateSwipeAnimation(offset_x);
     } else if (std::abs(scroll_x) > kContinuousGestureMoveThresholdDp) {
       if (!desks_controller->StartSwipeAnimation(/*move_left=*/offset_x > 0)) {
@@ -250,7 +250,7 @@ bool WmGestureHandler::ProcessEventImpl(int finger_count,
           desks_controller->GetPreviousDesk(/*use_target_active_desk=*/false),
           desks_controller->GetNextDesk(/*use_target_active_desk=*/false));
 
-      scroll_data_->continuous_gesture_started = true;
+      scroll_data_->horizontal_continuous_gesture_started = true;
     }
   }
 
@@ -267,8 +267,8 @@ bool WmGestureHandler::EndScroll() {
   const int finger_count = scroll_data_->finger_count;
   const float scroll_x = scroll_data_->scroll_x;
   const float scroll_y = scroll_data_->scroll_y;
-  const bool continuous_gesture_started =
-      scroll_data_->continuous_gesture_started;
+  const bool horizontal_continuous_gesture_started =
+      scroll_data_->horizontal_continuous_gesture_started;
   scroll_data_.reset();
 
   if (finger_count == 0)
@@ -284,10 +284,11 @@ bool WmGestureHandler::EndScroll() {
   if (finger_count != 4)
     return false;
 
-  if (continuous_gesture_started)
+  if (horizontal_continuous_gesture_started) {
     DesksController::Get()->EndSwipeAnimation();
+  }
 
-  return continuous_gesture_started;
+  return horizontal_continuous_gesture_started;
 }
 
 bool WmGestureHandler::MoveOverviewSelection(int finger_count,

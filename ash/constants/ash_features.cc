@@ -383,6 +383,11 @@ BASE_FEATURE(kConsumerAutoUpdateToggleAllowed,
              "ConsumerAutoUpdateToggleAllowed",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables a smooth overview mode transition based on the gesture position.
+BASE_FEATURE(kContinuousOverviewScrollAnimation,
+             "ContinuousOverviewScrollAnimation",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables Privacy Hub for ChromeOS.
 BASE_FEATURE(kCrosPrivacyHub,
              "CrosPrivacyHub",
@@ -2812,6 +2817,11 @@ bool IsCheckPasswordsAgainstCryptohomeHelperEnabled() {
 
 bool IsClipboardHistoryLongpressEnabled() {
   return base::FeatureList::IsEnabled(kClipboardHistoryLongpress);
+}
+
+bool IsContinuousOverviewScrollAnimationEnabled() {
+  return base::FeatureList::IsEnabled(kContinuousOverviewScrollAnimation) &&
+         chromeos::features::IsJellyEnabled();
 }
 
 bool IsCryptauthAttestationSyncingEnabled() {
