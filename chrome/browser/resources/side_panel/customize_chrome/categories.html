@@ -52,13 +52,19 @@
         --color-side-panel-customize-chrome-custom-option-background);
   }
 
-  :host-context([chrome-refresh-2023]) #chromeWebStoreTile .image-container {
+  :host-context([chrome-refresh-2023]) #chromeWebStoreTile .image-container,
+  :host-context([chrome-refresh-2023]) #cornerNewTabPageTile  {
     border: solid 1px
-        var(--color-side-panel-customize-chrome-web-store-option-border);
+        var(--color-side-panel-customize-chrome-categories-tile-border);
   }
 
   :host-context([chrome-refresh-2023]) #chromeWebStoreTile .cr-icon {
     --cr-icon-color: currentColor;
+  }
+
+  :host-context([chrome-refresh-2023]) #cornerNewTabPageTile {
+    background-color: var(
+        --color-side-panel-customize-chrome-corner-ntp-background);
   }
 
   .image-container img,
@@ -172,9 +178,18 @@
     width: 21px;
   }
 
-  #miniNewTabPage {
+  #cornerNewTabPage {
     left: 12%;
     top: 15%;
+  }
+
+  :host-context([chrome-refresh-2023]) #cornerNewTabPage {
+    border-radius: 4px;
+    box-shadow: var(--cr-elevation-2);
+    height: 128px;
+    width: 128px;
+    left: 20px;
+    top: 20px;
   }
 
   svg {
@@ -243,8 +258,17 @@
         aria-current$="[[boolToString_(isClassicChromeSelected_)]]">
       <customize-chrome-check-mark-wrapper
           checked="[[isClassicChromeSelected_]]">
-        <div class="image-container">
-          <img id="miniNewTabPage" src="icons/corner_new_tab_page.svg"></img>
+        <div id="cornerNewTabPageTile" class="image-container">
+          <template is="dom-if" if="[[!chromeRefresh2023Enabled_]]">
+            <img id="cornerNewTabPage"
+                src="icons/corner_new_tab_page.svg">
+            </img>
+          </template>
+          <template is="dom-if" if="[[chromeRefresh2023Enabled_]]">
+            <img id="cornerNewTabPage"
+                src="icons/gm3_corner_new_tab_page.svg">
+            </img>
+          </template>
         </div>
       </customize-chrome-check-mark-wrapper>
       <div class="label">$i18n{classicChrome}</div>

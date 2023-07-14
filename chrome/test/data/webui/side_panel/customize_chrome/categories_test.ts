@@ -12,7 +12,7 @@ import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
-import {createBackgroundImage, createTheme, installMock} from './test_support.js';
+import {$$, createBackgroundImage, createTheme, installMock} from './test_support.js';
 
 function createTestCollections(length: number): BackgroundCollection[] {
   const testCollections: BackgroundCollection[] = [];
@@ -219,5 +219,31 @@ suite('CategoriesTest', () => {
           [CHROME_THEME_COLLECTION_ELEMENT_ID, true],
         ],
     );
+  });
+
+  test('non-gm3 classic chrome tile shows correct image', async () => {
+    document.documentElement.toggleAttribute('chrome-refresh-2023', false);
+
+    await setInitialSettings(0);
+
+    assertEquals(
+        $$<HTMLImageElement>(
+            categoriesElement,
+            '#classicChromeTile #cornerNewTabPageTile #cornerNewTabPage')!.src,
+        'chrome://customize-chrome-side-panel.top-chrome/icons/' +
+            'corner_new_tab_page.svg');
+  });
+
+  test('gm3 classic chrome tile shows correct image', async () => {
+    document.documentElement.toggleAttribute('chrome-refresh-2023', true);
+
+    await setInitialSettings(0);
+
+    assertEquals(
+        $$<HTMLImageElement>(
+            categoriesElement,
+            '#classicChromeTile #cornerNewTabPageTile #cornerNewTabPage')!.src,
+        'chrome://customize-chrome-side-panel.top-chrome/icons/' +
+            'gm3_corner_new_tab_page.svg');
   });
 });

@@ -62,6 +62,11 @@ export class CategoriesElement extends CategoriesElementBase {
 
   static get properties() {
     return {
+      chromeRefresh2023Enabled_: {
+        type: Boolean,
+        value: () =>
+            document.documentElement.hasAttribute('chrome-refresh-2023'),
+      },
       collections_: Array,
       theme_: Object,
       selectedCategory_: {
