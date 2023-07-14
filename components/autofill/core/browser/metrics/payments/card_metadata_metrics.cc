@@ -78,10 +78,6 @@ CardMetadataLoggingContext GetMetadataLoggingContext(
   CardMetadataLoggingContext metadata_logging_context;
 
   for (const CreditCard& card : cards) {
-    if (card.issuer_id().empty()) {
-      continue;
-    }
-
     // If there is a product description, denote in the
     // `metadata_logging_context` that we have shown at least one product
     // description so we can log it later.
@@ -101,8 +97,13 @@ CardMetadataLoggingContext GetMetadataLoggingContext(
 
     bool card_has_metadata = !card.product_description().empty() ||
                              HasRichCardArtImageFromMetadata(card);
-    metadata_logging_context
-        .issuer_to_metadata_availability[card.issuer_id()] |= card_has_metadata;
+
+    if (!card.issuer_id().empty()) {
+      metadata_logging_context
+          .issuer_to_metadata_availability[card.issuer_id()] |=
+          card_has_metadata;
+    }
+
     // If there is at least one card having product description or rich card
     // art, denote in the `metadata_logging_context`.
     if (card_has_metadata) {
