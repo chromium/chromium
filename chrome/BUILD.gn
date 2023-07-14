@@ -532,7 +532,7 @@ if (is_win) {
 
     sources = [ "app/chrome_exe_main_mac.cc" ]
 
-    extra_configs = [ "//build/config/compiler:wexit_time_destructors" ]
+    configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
     deps = [
       ":chrome_app_strings_bundle_data",
@@ -774,7 +774,7 @@ if (is_win) {
 
       sources = [ "app/chrome_exe_main_mac.cc" ]
 
-      extra_configs = [ "//build/config/compiler:wexit_time_destructors" ]
+      configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
       defines = [ "HELPER_EXECUTABLE" ]
 

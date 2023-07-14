@@ -331,16 +331,11 @@ if (!is_chromeos_ash && enable_remoting_host) {
           "VERSION_SHORT=$remoting_version_short",
           "MACOSX_DEPLOYMENT_TARGET=10.15",
         ]
-        extra_configs = [
-          "//build/config/compiler:wexit_time_destructors",
-          "//remoting/build/config:version",
-        ]
-      } else {
-        configs += [
-          "//build/config/compiler:wexit_time_destructors",
-          "//remoting/build/config:version",
-        ]
       }
+      configs += [
+        "//build/config/compiler:wexit_time_destructors",
+        "//remoting/build/config:version",
+      ]
 
       sources = [ "it2me_native_messaging_host_entry_point.cc" ]
 

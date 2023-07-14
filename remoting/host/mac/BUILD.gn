@@ -93,7 +93,7 @@ bundle_data("remoting_host_resources") {
 }
 
 target("mac_app_bundle", "remoting_me2me_host") {
-  extra_configs = [ "//remoting/build/config:version" ]
+  configs += [ "//remoting/build/config:version" ]
   info_plist = "remoting_me2me_host-Info.plist"
   extra_substitutions = [
     "BUNDLE_ID=$host_bundle_id",
@@ -172,7 +172,7 @@ bundle_data("remoting_native_messaging_host_resources") {
 target("mac_app_bundle", "remoting_native_messaging_host") {
   output_name = "native_messaging_host"
   info_plist = "../setup/native_messaging_host-Info.plist"
-  extra_configs = [ "//build/config/compiler:wexit_time_destructors" ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
   extra_substitutions = [
     "BUNDLE_ID=$native_messaging_host_bundle_id",
     "VERSION_FULL=$remoting_version_full",
