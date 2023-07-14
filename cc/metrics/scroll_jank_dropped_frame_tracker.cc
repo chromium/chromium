@@ -82,7 +82,11 @@ ScrollJankDroppedFrameTracker::~ScrollJankDroppedFrameTracker() {
 void ScrollJankDroppedFrameTracker::EmitPerScrollHistogramsAndResetCounters() {
   // There should be at least one presented frame given the method is only
   // called after we have a successful presentation.
-  DCHECK_GT(per_scroll_->num_presented_frames, 0);
+  if (per_scroll_->num_presented_frames == 0) {
+    // TODO(1464878): Debug cases where we can have 0 presented frames.
+    TRACE_EVENT_INSTANT("input", "NoPresentedFramesInScroll");
+    return;
+  }
   // Emit non-bucketed histograms.
   int delayed_frames_percentage =
       (100 * per_scroll_->missed_frames) / per_scroll_->num_presented_frames;
