@@ -79,7 +79,8 @@ IN_PROC_BROWSER_TEST_F(WebAppUninstallDialogViewBrowserTest,
       base::BindLambdaForTesting([&](webapps::UninstallResultCode code) {
         EXPECT_EQ(code, webapps::UninstallResultCode::kCancelled);
         run_loop.Quit();
-      }));
+      }),
+      base::DoNothing());
   run_loop.Run();
 }
 
@@ -109,7 +110,8 @@ IN_PROC_BROWSER_TEST_F(WebAppUninstallDialogViewBrowserTest,
       base::BindLambdaForTesting([&](webapps::UninstallResultCode code) {
         EXPECT_EQ(code, webapps::UninstallResultCode::kCancelled);
         run_loop.Quit();
-      }));
+      }),
+      base::DoNothing());
 
   // Kill parent window.
   browser()->window()->Close();
@@ -139,7 +141,8 @@ IN_PROC_BROWSER_TEST_F(WebAppUninstallDialogViewBrowserTest,
       base::BindLambdaForTesting([&](webapps::UninstallResultCode code) {
         EXPECT_EQ(code, webapps::UninstallResultCode::kSuccess);
         run_loop.Quit();
-      }));
+      }),
+      base::DoNothing());
   run_loop.Run();
 }
 
@@ -179,7 +182,8 @@ IN_PROC_BROWSER_TEST_F(WebAppUninstallDialogViewBrowserTest,
         EXPECT_EQ(code, webapps::UninstallResultCode::kCancelled);
         scoped_keep_alive.reset();
         run_loop.Quit();
-      }));
+      }),
+      base::DoNothing());
   run_loop.Run();
 }
 
@@ -202,7 +206,8 @@ IN_PROC_BROWSER_TEST_F(WebAppUninstallDialogViewBrowserTest,
       base::BindLambdaForTesting([&](webapps::UninstallResultCode code) {
         EXPECT_EQ(code, webapps::UninstallResultCode::kCancelled);
         callback.Run();
-      }));
+      }),
+      base::DoNothing());
   run_loop.Run();
 }
 
@@ -225,7 +230,8 @@ IN_PROC_BROWSER_TEST_F(WebAppUninstallDialogViewBrowserTest,
       base::BindLambdaForTesting([&](webapps::UninstallResultCode code) {
         EXPECT_EQ(code, webapps::UninstallResultCode::kSuccess);
         callback.Run();
-      }));
+      }),
+      base::DoNothing());
 
   run_loop.Run();
 }
@@ -251,7 +257,7 @@ IN_PROC_BROWSER_TEST_F(WebAppUninstallDialogViewBrowserTest,
   {
     base::RunLoop run_loop;
     dialog->ConfirmUninstall(app_id, webapps::WebappUninstallSource::kAppMenu,
-                             base::DoNothing());
+                             base::DoNothing(), base::DoNothing());
     run_loop.RunUntilIdle();
   }
 }
@@ -270,7 +276,7 @@ class WebAppUninstallDialogViewInteractiveBrowserTest
     dialog_->SetDialogShownCallbackForTesting(run_loop.QuitClosure());
 
     dialog_->ConfirmUninstall(app_id, webapps::WebappUninstallSource::kAppMenu,
-                              base::DoNothing());
+                              base::DoNothing(), base::DoNothing());
 
     run_loop.Run();
   }

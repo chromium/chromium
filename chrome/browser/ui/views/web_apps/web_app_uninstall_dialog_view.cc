@@ -178,6 +178,7 @@ void WebAppUninstallDialogDelegateView::Uninstall() {
   // uninstallation.
   provider->scheduler().UninstallWebApp(app_id_, uninstall_source_,
                                         dialog_->UninstallStarted());
+  std::move(dialog_->TakeUninstallScheduledCallback()).Run();
   // We successfully call Web App Uninstall routine, then
   // WebAppUninstallDialogDelegateView can be terminated, but can't call the
   // callback of the dialog caller.
@@ -235,11 +236,13 @@ WebAppUninstallDialogViews::~WebAppUninstallDialogViews() {
 void WebAppUninstallDialogViews::ConfirmUninstall(
     const web_app::AppId& app_id,
     webapps::WebappUninstallSource uninstall_source,
-    WebAppUninstallDialogViews::OnWebAppUninstallDialogClosed closed_callback) {
+    WebAppUninstallDialogViews::OnWebAppUninstallDialogClosed closed_callback,
+    base::OnceClosure uninstall_scheduled_callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   app_id_ = app_id;
   closed_callback_ = std::move(closed_callback);
+  uninstall_scheduled_callback_ = std::move(uninstall_scheduled_callback);
 
   if (parent_ && parent_window_tracker_->WasNativeWindowDestroyed()) {
     UninstallCancelled();
@@ -311,6 +314,11 @@ WebAppUninstallDialogViews::UninstallStarted() {
       [](OnWebAppUninstallDialogClosed callback,
          webapps::UninstallResultCode code) { std::move(callback).Run(code); },
       std::move(closed_callback_));
+}
+
+base::OnceClosure WebAppUninstallDialogViews::TakeUninstallScheduledCallback() {
+  DCHECK(uninstall_scheduled_callback_);
+  return std::move(uninstall_scheduled_callback_);
 }
 
 void WebAppUninstallDialogViews::UninstallCancelled() {

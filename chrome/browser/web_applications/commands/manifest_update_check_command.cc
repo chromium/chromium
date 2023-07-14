@@ -475,9 +475,6 @@ void ManifestUpdateCheckCommand::ConfirmAppIdentityUpdate(
     return;
   }
 
-  // TODO(https://crbug.com/1378271): Pull this out of this command so the app
-  // lock is no longer held while a dialog is showing. We should not hold locks
-  // while waiting on user input.
   lock_->ui_manager().ShowWebAppIdentityUpdateDialog(
       app_id_,
       /*title_change=*/manifest_data_changes_.app_name_changed,

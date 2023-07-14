@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -100,9 +101,11 @@ class WebAppUninstallDialogViews
   ~WebAppUninstallDialogViews() override;
 
   // web_app::WebAppUninstallDialog:
-  void ConfirmUninstall(const web_app::AppId& app_id,
-                        webapps::WebappUninstallSource uninstall_source,
-                        OnWebAppUninstallDialogClosed closed_callback) override;
+  void ConfirmUninstall(
+      const web_app::AppId& app_id,
+      webapps::WebappUninstallSource uninstall_source,
+      OnWebAppUninstallDialogClosed closed_callback,
+      base::OnceClosure uninstall_scheduled_callback) override;
   void SetDialogShownCallbackForTesting(base::OnceClosure callback) override;
 
   // The following methods are used by WebAppUninstallDialogDelegateView to
@@ -113,6 +116,7 @@ class WebAppUninstallDialogViews
   // WebAppProvider system. Returns a callback to be passed to this system.
   base::OnceCallback<void(webapps::UninstallResultCode code)>
   UninstallStarted();
+  base::OnceClosure TakeUninstallScheduledCallback();
 
   // Called to signify that the uninstall has been cancelled.
   void UninstallCancelled();
@@ -130,6 +134,7 @@ class WebAppUninstallDialogViews
 
   // The callback we will call Accepted/Canceled on after confirmation dialog.
   OnWebAppUninstallDialogClosed closed_callback_;
+  base::OnceClosure uninstall_scheduled_callback_;
 
   base::OnceClosure dialog_shown_callback_for_testing_;
 

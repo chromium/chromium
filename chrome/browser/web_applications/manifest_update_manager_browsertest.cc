@@ -60,6 +60,7 @@
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_callback_app_identity.h"
+#include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -109,8 +110,12 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_family.h"
+#include "ui/views/test/dialog_test.h"
+#include "ui/views/test/widget_test.h"
 #include "ui/views/widget/any_widget_observer.h"
 #include "ui/views/widget/widget.h"
+#include "ui/views/widget/widget_delegate.h"
+#include "ui/views/window/dialog_delegate.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -693,6 +698,11 @@ class ManifestUpdateManagerBrowserTest : public WebAppControllerBrowserTest {
   void AcceptAppIdentityUpdateDialogForTesting() {
     update_dialog_scope_ =
         SetIdentityUpdateDialogActionForTesting(AppIdentityUpdate::kAllowed);
+  }
+
+  void ResetAutomatedAppIdentityUpdateDialogBehavior() {
+    update_dialog_scope_ =
+        SetIdentityUpdateDialogActionForTesting(absl::nullopt);
   }
 
  protected:
@@ -1441,6 +1451,108 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
                                  {{256, kAll}, kInstallableIconTopLeftColor}});
   EXPECT_EQ(GetProvider().registrar_unsafe().GetAppScope(app_id),
             http_server_.GetURL("/"));
+}
+
+IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
+                       UninstallDialogClosesAppUpdateDialogUninstallsApp) {
+  ResetAutomatedAppIdentityUpdateDialogBehavior();
+  constexpr char kManifestTemplate[] = R"(
+    {
+      "name": "$1",
+      "start_url": ".",
+      "scope": "/",
+      "display": "standalone",
+      "icons": $2
+    }
+  )";
+  OverrideManifest(kManifestTemplate, {"Test app name", kInstallableIconList});
+  AppId app_id = InstallWebApp();
+  EXPECT_EQ("Test app name",
+            GetProvider().registrar_unsafe().GetAppShortName(app_id));
+
+  views::NamedWidgetShownWaiter manifest_waiter(
+      views::test::AnyWidgetTestPasskey{},
+      "WebAppIdentityUpdateConfirmationView");
+  OverrideManifest(kManifestTemplate, {"Test app name2", kInstallableIconList});
+
+  UpdateCheckResultAwaiter awaiter(GetAppURL());
+  ui_test_utils::NavigateToURL(browser(), GetAppURL());
+
+  // Wait for the app identity update dialog to show up.
+  auto* manifest_update_widget = manifest_waiter.WaitIfNeededAndGet();
+  EXPECT_NE(manifest_update_widget, nullptr);
+
+  views::NamedWidgetShownWaiter uninstall_waiter(
+      views::test::AnyWidgetTestPasskey{}, "WebAppUninstallDialogDelegateView");
+
+  // Wait for the uninstall dialog to show up after cancelling the app identity
+  // update dialog. We cannot use views::test::CancelDialog here because under
+  // the hood, CancelDialog starts running a callback for the update dialog to
+  // be closed, which does not happen until uninstallation is scheduled, and
+  // uninstallation cannot be scheduled because the callback is running, thus
+  // leading to a deadlock.
+  manifest_update_widget->widget_delegate()->AsDialogDelegate()->CancelDialog();
+  auto* uninstall_widget = uninstall_waiter.WaitIfNeededAndGet();
+  EXPECT_NE(uninstall_widget, nullptr);
+
+  // Accept the uninstall dialog, and verify changes are propagated back to the
+  // manifest update manager with the correct result.
+  views::test::AcceptDialog(uninstall_widget);
+  EXPECT_EQ(std::move(awaiter).AwaitNextResult(),
+            ManifestUpdateResult::kAppIdentityUpdateRejectedAndUninstalled);
+
+  // This is to ensure that the uninstall command that was scheduled also
+  // completes.
+  GetProvider().command_manager().AwaitAllCommandsCompleteForTesting();
+  EXPECT_FALSE(GetProvider().registrar_unsafe().IsInstalled(app_id));
+}
+
+IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
+                       UninstallDialogCancelStillShowsAppUpdateDialog) {
+  ResetAutomatedAppIdentityUpdateDialogBehavior();
+  constexpr char kManifestTemplate[] = R"(
+    {
+      "name": "$1",
+      "start_url": ".",
+      "scope": "/",
+      "display": "standalone",
+      "icons": $2
+    }
+  )";
+  OverrideManifest(kManifestTemplate, {"Test app name", kInstallableIconList});
+  AppId app_id = InstallWebApp();
+  EXPECT_EQ("Test app name",
+            GetProvider().registrar_unsafe().GetAppShortName(app_id));
+
+  views::NamedWidgetShownWaiter manifest_waiter(
+      views::test::AnyWidgetTestPasskey{},
+      "WebAppIdentityUpdateConfirmationView");
+  OverrideManifest(kManifestTemplate, {"App Name 2", kInstallableIconList});
+
+  UpdateCheckResultAwaiter awaiter(GetAppURL());
+  ui_test_utils::NavigateToURL(browser(), GetAppURL());
+
+  auto* manifest_update_widget = manifest_waiter.WaitIfNeededAndGet();
+  EXPECT_NE(manifest_update_widget, nullptr);
+
+  views::NamedWidgetShownWaiter uninstall_waiter(
+      views::test::AnyWidgetTestPasskey{}, "WebAppUninstallDialogDelegateView");
+  manifest_update_widget->widget_delegate()->AsDialogDelegate()->CancelDialog();
+  auto* uninstall_widget = uninstall_waiter.WaitIfNeededAndGet();
+  EXPECT_NE(uninstall_widget, nullptr);
+
+  views::test::WidgetVisibleWaiter update_visible_waiter(
+      manifest_update_widget);
+
+  // If the uninstall dialog is cancelled, then app identity update dialog
+  // should regain visibility.
+  views::test::CancelDialog(uninstall_widget);
+  update_visible_waiter.Wait();
+  views::test::AcceptDialog(manifest_update_widget);
+  EXPECT_EQ(std::move(awaiter).AwaitNextResult(),
+            ManifestUpdateResult::kAppUpdated);
+  EXPECT_EQ("App Name 2",
+            GetProvider().registrar_unsafe().GetAppShortName(app_id));
 }
 
 IN_PROC_BROWSER_TEST_P(ManifestUpdateManagerBrowserTest_UpdateDialog,

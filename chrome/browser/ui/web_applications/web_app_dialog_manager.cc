@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -45,7 +46,8 @@ void WebAppDialogManager::UninstallWebApp(
       app_id, uninstall_source,
       base::BindOnce(&WebAppDialogManager::OnWebAppUninstallDialogClosed,
                      base::Unretained(this), uninstall_dialog.get(),
-                     std::move(callback)));
+                     std::move(callback)),
+      base::DoNothing());
 
   dialogs_.insert(std::move(uninstall_dialog));
 }

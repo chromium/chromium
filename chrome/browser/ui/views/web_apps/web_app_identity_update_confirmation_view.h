@@ -48,17 +48,14 @@ class WebAppIdentityUpdateConfirmationView
 
  private:
   // web_app::WebAppInstallManagerObserver:
-  void OnWebAppWillBeUninstalled(const web_app::AppId& app_id) override;
   void OnWebAppInstallManagerDestroyed() override;
 
   // views::WidgetDelegate:
   bool ShouldShowCloseButton() const override;
-
-  // views::DialogDelegateView:
   bool Cancel() override;
 
   void OnDialogAccepted();
-  void OnWebAppUninstallDialogClosed(webapps::UninstallResultCode code);
+  void OnWebAppUninstallScheduled();
 
   const raw_ptr<Profile> profile_;
 
