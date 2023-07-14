@@ -295,7 +295,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
 
         mPageInsightsCoordinator = new PageInsightsCoordinator(mActivity, mActivityTabProvider,
                 controller, getBottomSheetController(), mExpandedBottomSheetHelper,
-                mBrowserControlsManager, mBrowserControlsManager);
+                mBrowserControlsManager, mBrowserControlsManager, this::isPageInsightsHubEnabled);
 
         mContextualSearchObserver = new ContextualSearchObserver() {
             @Override

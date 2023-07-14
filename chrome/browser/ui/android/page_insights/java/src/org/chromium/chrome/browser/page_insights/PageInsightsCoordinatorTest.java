@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.page_insights;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
@@ -51,6 +52,8 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 
+import java.util.function.BooleanSupplier;
+
 /**
  * This class tests the functionality of the {@link PageInsights Hub}
  * through the coordinator API and the mediator.
@@ -74,6 +77,9 @@ public class PageInsightsCoordinatorTest {
     private ArgumentCaptor<TabObserver> mTabObserverCaptor;
     @Captor
     private ArgumentCaptor<BottomSheetObserver> mBottomUiObserverCaptor;
+    @Captor
+    private ArgumentCaptor<BrowserControlsStateProvider.Observer>
+            mBrowserControlsStateObserverCaptor;
     @Mock
     private Tab mTab;
     @Mock
@@ -84,6 +90,8 @@ public class PageInsightsCoordinatorTest {
     private BottomSheetController mBottomUiController;
     @Mock
     private ExpandedSheetHelper mExpandedSheetHelper;
+    @Mock
+    private BooleanSupplier mIsPageInsightsHubEnabled;
 
     private PageInsightsCoordinator mPageInsightsCoordinator;
     private ManagedBottomSheetController mPageInsightsController;
@@ -108,6 +116,12 @@ public class PageInsightsCoordinatorTest {
         return getActivity().findViewById(android.R.id.content);
     }
 
+    private void createAndLaunchPageInsightsCoordinator() throws Exception {
+        createPageInsightsCoordinator();
+        TestThreadUtils.runOnUiThreadBlocking(mPageInsightsCoordinator::launch);
+        waitForAnimationToFinish();
+    }
+
     private void createPageInsightsCoordinator() throws Exception {
         Activity activity = getActivity();
         mScrimCoordinator =
@@ -126,11 +140,11 @@ public class PageInsightsCoordinatorTest {
                     initializedCallback, activity.getWindow(),
                     KeyboardVisibilityDelegate.getInstance(), () -> rootView());
         });
+        doReturn(true).when(mIsPageInsightsHubEnabled).getAsBoolean();
         mPageInsightsCoordinator = new PageInsightsCoordinator(activity, mTabProvider,
                 mPageInsightsController, mBottomUiController, mExpandedSheetHelper,
-                mBrowserControlsStateProvider, mBrowserControlsSizer);
+                mBrowserControlsStateProvider, mBrowserControlsSizer, mIsPageInsightsHubEnabled);
         mTestSupport = new BottomSheetTestSupport(mPageInsightsController);
-        TestThreadUtils.runOnUiThreadBlocking(mPageInsightsCoordinator::launch);
         waitForAnimationToFinish();
     }
 
@@ -157,10 +171,30 @@ public class PageInsightsCoordinatorTest {
         waitForAnimationToFinish();
     }
 
+    private void showTopBar() throws Exception {
+        verify(mBrowserControlsStateProvider)
+                .addObserver(mBrowserControlsStateObserverCaptor.capture());
+        TestThreadUtils.runOnUiThreadBlocking(
+                ()
+                        -> mBrowserControlsStateObserverCaptor.getValue()
+                                   .onAndroidControlsVisibilityChanged(View.VISIBLE));
+        waitForAnimationToFinish();
+    }
+
+    private void setConfidenceTooLowForAutoTrigger() {
+        PageInsightsDataLoader testingPageInsightsDataLoader = new PageInsightsDataLoader();
+        testingPageInsightsDataLoader.setConfidenceForTesting(0.4f);
+        mPageInsightsCoordinator.setPageInsightsDataLoaderForTesting(testingPageInsightsDataLoader);
+    }
+
+    private void setTabLoadTimestampOldEnoughForAutoTrigger() {
+        mPageInsightsCoordinator.setTabLoadTimestampForTesting(1000L);
+    }
+
     @Test
     @MediumTest
     public void testRoundTopCornerAtExpandedState() throws Exception {
-        createPageInsightsCoordinator();
+        createAndLaunchPageInsightsCoordinator();
         assertEquals(0.f, mPageInsightsCoordinator.getCornerRadiusForTesting(), ASSERTION_DELTA);
 
         expandSheet();
@@ -173,7 +207,7 @@ public class PageInsightsCoordinatorTest {
     @Test
     @MediumTest
     public void testHideOnPageLoad() throws Exception {
-        createPageInsightsCoordinator();
+        createAndLaunchPageInsightsCoordinator();
         verify(mTabProvider).addObserver(mTabCallbackCaptor.capture());
         mTabCallbackCaptor.getValue().onResult(mTab);
         verify(mTab).addObserver(mTabObserverCaptor.capture());
@@ -193,7 +227,7 @@ public class PageInsightsCoordinatorTest {
     @Test
     @MediumTest
     public void testResizeContent() throws Exception {
-        createPageInsightsCoordinator();
+        createAndLaunchPageInsightsCoordinator();
         int peekHeight = mPageInsightsController.getCurrentOffset();
         verify(mBrowserControlsSizer).setBottomControlsHeight(eq(peekHeight), eq(0));
 
@@ -210,7 +244,7 @@ public class PageInsightsCoordinatorTest {
     @Test
     @MediumTest
     public void testHideWhenOtherBottomUiOpens() throws Exception {
-        createPageInsightsCoordinator();
+        createAndLaunchPageInsightsCoordinator();
 
         // Invoke |onBottomUiStateChanged| directly - Contextual search
         TestThreadUtils.runOnUiThreadBlocking(
@@ -247,10 +281,59 @@ public class PageInsightsCoordinatorTest {
     @Test
     @MediumTest
     public void testExpandSheetHelper() throws Exception {
-        createPageInsightsCoordinator();
+        createAndLaunchPageInsightsCoordinator();
         expandSheet();
         verify(mExpandedSheetHelper).onSheetExpanded();
         collapseSheet();
         verify(mExpandedSheetHelper).onSheetCollapsed();
+    }
+
+    @Test
+    @MediumTest
+    public void testAutoTrigger() throws Exception {
+        createPageInsightsCoordinator();
+        assertEquals(SheetState.HIDDEN, mPageInsightsController.getSheetState());
+        setTabLoadTimestampOldEnoughForAutoTrigger();
+
+        showTopBar(); // Signal for auto triggering the PIH
+
+        assertEquals(SheetState.PEEK, mPageInsightsController.getSheetState());
+    }
+
+    @Test
+    @MediumTest
+    public void testAutoTrigger_notEnoughDuration() throws Exception {
+        createPageInsightsCoordinator();
+        assertEquals(SheetState.HIDDEN, mPageInsightsController.getSheetState());
+
+        showTopBar(); // Signal for auto triggering the PIH
+
+        assertEquals(SheetState.HIDDEN, mPageInsightsController.getSheetState());
+    }
+
+    @Test
+    @MediumTest
+    public void testAutoTrigger_notEnoughConfidence() throws Exception {
+        createPageInsightsCoordinator();
+        assertEquals(SheetState.HIDDEN, mPageInsightsController.getSheetState());
+        setTabLoadTimestampOldEnoughForAutoTrigger();
+        setConfidenceTooLowForAutoTrigger(); // By default, the confidence is over the threashold
+
+        showTopBar(); // Signal for auto triggering the PIH
+
+        assertEquals(SheetState.HIDDEN, mPageInsightsController.getSheetState());
+    }
+
+    @Test
+    @MediumTest
+    public void testAutoTrigger_notEnabled() throws Exception {
+        createPageInsightsCoordinator();
+        assertEquals(SheetState.HIDDEN, mPageInsightsController.getSheetState());
+        setTabLoadTimestampOldEnoughForAutoTrigger();
+        doReturn(false).when(mIsPageInsightsHubEnabled).getAsBoolean();
+
+        showTopBar(); // Signal for auto triggering the PIH
+
+        assertEquals(SheetState.HIDDEN, mPageInsightsController.getSheetState());
     }
 }

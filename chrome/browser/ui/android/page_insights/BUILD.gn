@@ -8,6 +8,7 @@ import("//build/config/android/rules.gni")
 android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/page_insights/PageInsightsCoordinator.java",
+    "java/src/org/chromium/chrome/browser/page_insights/PageInsightsDataLoader.java",
     "java/src/org/chromium/chrome/browser/page_insights/PageInsightsMediator.java",
     "java/src/org/chromium/chrome/browser/page_insights/PageInsightsSheetContent.java",
     "java/src/org/chromium/chrome/browser/page_insights/PageInsightsSwaaChecker.java",

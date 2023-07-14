@@ -4,7 +4,9 @@
 
 package org.chromium.chrome.browser.page_insights;
 
+import android.content.Context;
 import android.graphics.drawable.GradientDrawable;
+import android.os.SystemClock;
 import android.view.View;
 
 import androidx.annotation.Nullable;
@@ -26,6 +28,8 @@ import org.chromium.components.browser_ui.bottomsheet.ExpandedSheetHelper;
 import org.chromium.components.browser_ui.bottomsheet.ManagedBottomSheetController;
 import org.chromium.url.GURL;
 
+import java.util.function.BooleanSupplier;
+
 /**
  * PageInsights mediator component listening to various external events to update UI, internal
  * states accordingly:
@@ -37,8 +41,12 @@ import org.chromium.url.GURL;
  * </ul>
  */
 public class PageInsightsMediator extends EmptyTabObserver implements BottomSheetObserver {
+    private static final int DEFAULT_TRIGGER_DELAY_MS = 60000;
+    private static final double MINIMUM_CONFIDENCE = 50;
+
     private final PageInsightsSheetContent mSheetContent;
     private final ManagedBottomSheetController mSheetController;
+    private final Context mContext;
 
     // BottomSheetController for other bottom sheet UIs.
     private final BottomSheetController mBottomUiController;
@@ -64,6 +72,12 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
     private int mMaxCornerRadiusPx;
     private View mSheetContainer;
 
+    private final BooleanSupplier mIsPageInsightsHubEnabled;
+
+    private PageInsightsDataLoader mPageInsightsDataLoader;
+
+    private Long mTabLoadTimestamp;
+
     // Caches the sheet height at the current state. Avoids the repeated call to resize the content
     // if the size hasn't changed since.
     private int mCachedSheetHeight;
@@ -74,20 +88,23 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
 
     private boolean mLoadingFirstPage;
 
-    public PageInsightsMediator(PageInsightsSheetContent sheetContent,
-            ObservableSupplier<Tab> tabObservable,
+    public PageInsightsMediator(Context context, ObservableSupplier<Tab> tabObservable,
             ManagedBottomSheetController bottomSheetController,
             BottomSheetController bottomUiController, ExpandedSheetHelper expandedSheetHelper,
             BrowserControlsStateProvider controlsStateProvider,
-            BrowserControlsSizer browserControlsSizer) {
-        mSheetContent = sheetContent;
+            BrowserControlsSizer browserControlsSizer, BooleanSupplier isPageInsightsHubEnabled) {
+        mContext = context;
+        mSheetContent = new PageInsightsSheetContent(mContext);
         mSheetController = bottomSheetController;
         mBottomUiController = bottomUiController;
         tabObservable.addObserver(tab -> {
-            if (tab != null) tab.addObserver(this);
+            if (tab != null) {
+                tab.addObserver(this);
+            }
         });
         mLoadingFirstPage = true;
         mExpandedSheetHelper = expandedSheetHelper;
+        updatePageLoadTimestamp();
         mBrowserControlsSizer = browserControlsSizer;
         mBrowserControlsObserver = new BrowserControlsStateProvider.Observer() {
             @Override
@@ -95,6 +112,11 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
                     int bottomOffset, int bottomControlsMinHeightOffset, boolean needsAnimate) {
                 bottomSheetController.setBrowserControlsHiddenRatio(
                         controlsStateProvider.getBrowserControlHiddenRatio());
+            }
+
+            @Override
+            public void onAndroidControlsVisibilityChanged(int visibility) {
+                if (visibility == View.VISIBLE) maybeAutoTriggerPageInsights();
             }
         };
         controlsStateProvider.addObserver(mBrowserControlsObserver);
@@ -107,6 +129,8 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
         };
         bottomUiController.addObserver(mBottomUiObserver);
         mControlsStateProvider = controlsStateProvider;
+        mIsPageInsightsHubEnabled = isPageInsightsHubEnabled;
+        mPageInsightsDataLoader = new PageInsightsDataLoader();
     }
 
     void initView(View bottomSheetContainer) {
@@ -149,6 +173,27 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
             return;
         }
         mSheetController.hideContent(mSheetContent, true);
+        updatePageLoadTimestamp();
+    }
+
+    private void updatePageLoadTimestamp() {
+        mTabLoadTimestamp = SystemClock.elapsedRealtime();
+    }
+
+    private void maybeAutoTriggerPageInsights() {
+        if (!mIsPageInsightsHubEnabled.getAsBoolean()) return;
+
+        // TODO(ggeorgiana): read duration from flag
+        long currentTimeMs = SystemClock.elapsedRealtime();
+        long elapsedMs = currentTimeMs - mTabLoadTimestamp;
+        if (elapsedMs < DEFAULT_TRIGGER_DELAY_MS) return;
+
+        boolean hasEnoughConfidence =
+                mPageInsightsDataLoader.loadInsightsData().getConfidence() * 100
+                > MINIMUM_CONFIDENCE;
+        if (hasEnoughConfidence) {
+            requestShowContent();
+        }
     }
 
     void requestShowContent() {
@@ -219,5 +264,13 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
         float[] radii = mBackgroundDrawable.getCornerRadii();
         assert radii[0] == radii[1] && radii[1] == radii[2] && radii[2] == radii[3];
         return radii[0];
+    }
+
+    void setTabLoadTimestampForTesting(Long elapsedRealtime) {
+        mTabLoadTimestamp = elapsedRealtime;
+    }
+
+    void setPageInsightsDataLoaderForTesting(PageInsightsDataLoader pageInsightsDataLoader) {
+        mPageInsightsDataLoader = pageInsightsDataLoader;
     }
 }

@@ -19,6 +19,8 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.ExpandedSheetHelper;
 import org.chromium.components.browser_ui.bottomsheet.ManagedBottomSheetController;
 
+import java.util.function.BooleanSupplier;
+
 /**
  * Coordinator for PageInsights bottom sheet module. Provides API, and initializes
  * various components lazily.
@@ -36,8 +38,7 @@ public class PageInsightsCoordinator {
     private final BrowserControlsSizer mBrowserControlsSizer;
     private final ExpandedSheetHelper mExpandedSheetHelper;
 
-    private PageInsightsMediator mMediator;
-    private PageInsightsSheetContent mSheetContent;
+    private final PageInsightsMediator mMediator;
 
     /** Returns true if page insight is enabled in the feature flag. */
     public static boolean isFeatureEnabled() {
@@ -59,7 +60,7 @@ public class PageInsightsCoordinator {
             ManagedBottomSheetController bottomSheetController,
             BottomSheetController bottomUiController, ExpandedSheetHelper expandedSheetHelper,
             BrowserControlsStateProvider controlsStateProvider,
-            BrowserControlsSizer browserControlsSizer) {
+            BrowserControlsSizer browserControlsSizer, BooleanSupplier isPageInsightsHubEnabled) {
         mContext = context;
         mTabProvider = tabProvider;
         mBottomSheetController = bottomSheetController;
@@ -67,20 +68,15 @@ public class PageInsightsCoordinator {
         mBottomUiController = bottomUiController;
         mControlsStateProvider = controlsStateProvider;
         mBrowserControlsSizer = browserControlsSizer;
+        mMediator = new PageInsightsMediator(mContext, mTabProvider, mBottomSheetController,
+                mBottomUiController, mExpandedSheetHelper, mControlsStateProvider,
+                mBrowserControlsSizer, isPageInsightsHubEnabled);
     }
 
     /**
      * Launch PageInsights hub in bottom sheet container and fetch the data to show.
      */
     public void launch() {
-        if (mSheetContent == null) {
-            mSheetContent = new PageInsightsSheetContent(mContext);
-        }
-        if (mMediator == null) {
-            mMediator = new PageInsightsMediator(mSheetContent, mTabProvider,
-                    mBottomSheetController, mBottomUiController, mExpandedSheetHelper,
-                    mControlsStateProvider, mBrowserControlsSizer);
-        }
         mMediator.requestShowContent();
     }
 
@@ -109,5 +105,13 @@ public class PageInsightsCoordinator {
     @VisibleForTesting
     float getCornerRadiusForTesting() {
         return mMediator.getCornerRadiusForTesting();
+    }
+
+    void setTabLoadTimestampForTesting(Long elapsedRealtime) {
+        mMediator.setTabLoadTimestampForTesting(elapsedRealtime);
+    }
+
+    void setPageInsightsDataLoaderForTesting(PageInsightsDataLoader pageInsightsDataLoader) {
+        mMediator.setPageInsightsDataLoaderForTesting(pageInsightsDataLoader);
     }
 }
