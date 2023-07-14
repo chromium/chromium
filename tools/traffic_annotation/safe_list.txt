@@ -318,7 +318,6 @@ missing_new_fields,remoting/base/directory_service_client.cc
 missing_new_fields,remoting/base/telemetry_log_writer.cc
 missing_new_fields,remoting/client/notification/notification_client.cc
 missing_new_fields,remoting/host/heartbeat_sender.cc
-missing_new_fields,remoting/host/remoting_register_support_host_request.cc
 missing_new_fields,remoting/host/security_key/security_key_socket.cc
 missing_new_fields,remoting/protocol/remoting_ice_config_request.cc
 missing_new_fields,remoting/protocol/ssl_hmac_channel_authenticator.cc

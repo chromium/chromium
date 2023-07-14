@@ -33,19 +33,38 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
             "support host."
           trigger:
             "User requests for remote assistance using Chrome Remote Desktop."
+          user_data {
+            type: CREDENTIALS
+            type: ACCESS_TOKEN
+          }
           data:
             "The user's OAuth token for Chrome Remote Desktop (CRD) and CRD "
             "host information such as CRD host public key, host version, and "
             "OS version."
           destination: GOOGLE_OWNED_SERVICE
+          internal {
+            contacts { email: "garykac@chromium.org" }
+            contacts { email: "jamiewalch@chromium.org" }
+            contacts { email: "joedow@chromium.org" }
+            contacts { email: "lambroslambrou@chromium.org" }
+            contacts { email: "rkjnsn@chromium.org" }
+            contacts { email: "yuweih@chromium.org" }
+          }
+          last_reviewed: "2023-07-07"
         }
         policy {
           cookies_allowed: NO
           setting:
             "This request cannot be stopped in settings, but will not be sent "
             "if the user does not use Chrome Remote Desktop."
-          policy_exception_justification:
-            "Not implemented."
+          chrome_policy {
+            RemoteAccessHostAllowRemoteSupportConnections {
+              RemoteAccessHostAllowRemoteSupportConnections: false
+            }
+            RemoteAccessHostAllowEnterpriseRemoteSupportConnections {
+              RemoteAccessHostAllowEnterpriseRemoteSupportConnections: false
+            }
+          }
         })");
 
 constexpr char kRegisterSupportHostPath[] =
