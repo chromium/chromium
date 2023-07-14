@@ -92,6 +92,11 @@ typedef NS_ENUM(NSInteger, ItemType) {
   return self;
 }
 
+- (void)dealloc {
+  // TODO(crbug.com/1454777)
+  DUMP_WILL_BE_CHECK(_settingsAreDismissed);
+}
+
 - (void)viewDidLoad {
   [super viewDidLoad];
   self.tableView.estimatedSectionFooterHeight =
