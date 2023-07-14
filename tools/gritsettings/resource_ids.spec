@@ -694,7 +694,7 @@
     "includes": [5160],
   },
   "<(SHARED_INTERMEDIATE_DIR)/ash/webui/file_manager/resources/file_manager_swa_resources.grd": {
-    "META": {"sizes": {"includes": [100]}},
+    "META": {"sizes": {"includes": [200]}},
     "includes": [5180],
   },
   "<(SHARED_INTERMEDIATE_DIR)/ash/webui/file_manager/untrusted_resources/file_manager_untrusted_resources.grd": {
