@@ -20,6 +20,8 @@ const char kAllowSecondaryKioskAppEnabledOnLaunch[] =
 
 const char kKeyPermissionsInLoginScreen[] = "key_permissions_in_login_screen";
 
+const char kImprivataExtension[] = "imprivata_extension";
+
 const char kImprivataInSessionExtension[] = "imprivata_in_session_extension";
 
 const char kImprivataLoginScreenExtension[] =

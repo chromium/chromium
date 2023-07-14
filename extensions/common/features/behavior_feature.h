@@ -16,6 +16,7 @@ extern const char kAllowUsbDevicesPermissionInterfaceClass[];
 extern const char kSigninScreen[];
 extern const char kAllowSecondaryKioskAppEnabledOnLaunch[];
 extern const char kKeyPermissionsInLoginScreen[];
+extern const char kImprivataExtension[];
 extern const char kImprivataInSessionExtension[];
 extern const char kImprivataLoginScreenExtension[];
 
