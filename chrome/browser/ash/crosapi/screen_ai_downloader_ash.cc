@@ -18,8 +18,9 @@ void ScreenAIDownloaderAsh::Bind(
   receivers_.Add(this, std::move(screen_ai_downloader));
 }
 
-void ScreenAIDownloaderAsh::DownloadComponent(
-    DownloadComponentCallback callback) {
+void ScreenAIDownloaderAsh::GetComponentFolder(
+    bool download_if_needed,
+    GetComponentFolderCallback callback) {
   auto* install_state = screen_ai::ScreenAIInstallState::GetInstance();
 
   if (install_state->IsComponentAvailable()) {
@@ -28,8 +29,10 @@ void ScreenAIDownloaderAsh::DownloadComponent(
     return;
   }
 
-  if (install_state->get_state() ==
-      screen_ai::ScreenAIInstallState::State::kFailed) {
+  // TODO(b:289011135): Consider trying again if download has failed before.
+  if (!download_if_needed ||
+      (install_state->get_state() ==
+       screen_ai::ScreenAIInstallState::State::kFailed)) {
     std::move(callback).Run(absl::nullopt);
     return;
   }
@@ -39,6 +42,11 @@ void ScreenAIDownloaderAsh::DownloadComponent(
   if (!install_state_observer_.IsObserving()) {
     install_state_observer_.Observe(install_state);
   }
+}
+
+void ScreenAIDownloaderAsh::DownloadComponentDeprecated(
+    DownloadComponentDeprecatedCallback callback) {
+  GetComponentFolder(/*download_if_needed=*/true, std::move(callback));
 }
 
 void ScreenAIDownloaderAsh::SetLastUsageTime() {

@@ -9,6 +9,8 @@
 
 #include "build/chromeos_buildflags.h"
 
+#include "base/memory/weak_ptr.h"
+
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chromeos/crosapi/mojom/screen_ai_downloader.mojom.h"
 #endif
@@ -27,9 +29,11 @@ class ScreenAIDownloader : public ScreenAIInstallState {
 
  private:
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  void MaybeTriggerDownloadInAsh();
+  void MaybeGetComponentFolderFromAsh(bool download_if_needed);
   void MaybeSetLastUsageTimeInAsh();
 #endif
+
+  base::WeakPtrFactory<ScreenAIDownloader> weak_ptr_factory_{this};
 };
 
 }  // namespace screen_ai

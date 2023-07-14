@@ -22,11 +22,12 @@ namespace {
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 void SetScreenAIComponentPath(
+    bool set_failed_state_if_not_available,
     const absl::optional<base::FilePath>& component_path) {
   auto* install_state = screen_ai::ScreenAIInstallState::GetInstance();
   if (component_path) {
     install_state->SetComponentFolder(*component_path);
-  } else {
+  } else if (set_failed_state_if_not_available) {
     install_state->SetState(screen_ai::ScreenAIInstallState::State::kFailed);
   }
 }
@@ -42,7 +43,23 @@ void SetLastUsageTimeToNow() {
 
 namespace screen_ai {
 
-ScreenAIDownloader::ScreenAIDownloader() = default;
+ScreenAIDownloader::ScreenAIDownloader() {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // If component is already downloaded in Ash, update Lacros state.
+  // Ash may download the component in the startup steps as it was used in
+  // previous sessions, but that can be a bit after Lacros is created. Therefor
+  // we wait for 3 seconds to ask. This is a best effort, and if it does not get
+  // the state now, it will be done later on the first time that Lacros needs
+  // the library.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&ScreenAIDownloader::MaybeGetComponentFolderFromAsh,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     /*download_if_needed=*/false),
+      base::Seconds(3));
+#endif
+}
+
 ScreenAIDownloader::~ScreenAIDownloader() = default;
 
 void ScreenAIDownloader::DownloadComponent() {
@@ -57,7 +74,7 @@ void ScreenAIDownloader::DownloadComponent() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   screen_ai::dlc_installer::Install();
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  MaybeTriggerDownloadInAsh();
+  MaybeGetComponentFolderFromAsh(/*download_if_needed=*/true);
 #else
   component_updater::RegisterScreenAIComponent(
       g_browser_process->component_updater());
@@ -82,7 +99,8 @@ void ScreenAIDownloader::SetLastUsageTime() {
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 
-void ScreenAIDownloader::MaybeTriggerDownloadInAsh() {
+void ScreenAIDownloader::MaybeGetComponentFolderFromAsh(
+    bool download_if_needed) {
   chromeos::LacrosService* impl = chromeos::LacrosService::Get();
   if (!impl->IsAvailable<crosapi::mojom::ScreenAIDownloader>()) {
     VLOG(0) << "ScreenAIDownloader is not available.";
@@ -91,10 +109,32 @@ void ScreenAIDownloader::MaybeTriggerDownloadInAsh() {
     return;
   }
 
-  ScreenAIInstallState::GetInstance()->SetState(
-      ScreenAIInstallState::State::kDownloading);
-  impl->GetRemote<crosapi::mojom::ScreenAIDownloader>()->DownloadComponent(
-      base::BindOnce(&SetScreenAIComponentPath));
+  if (download_if_needed) {
+    ScreenAIInstallState::GetInstance()->SetState(
+        ScreenAIInstallState::State::kDownloading);
+  }
+
+  if (static_cast<uint32_t>(
+          impl->GetInterfaceVersion<crosapi::mojom::ScreenAIDownloader>()) <
+      crosapi::mojom::ScreenAIDownloader::kGetComponentFolderMinVersion) {
+    // Getting component folder without asking for download is not supported
+    // yet.
+    if (!download_if_needed) {
+      return;
+    }
+
+    impl->GetRemote<crosapi::mojom::ScreenAIDownloader>()
+        ->DownloadComponentDeprecated(
+            base::BindOnce(&SetScreenAIComponentPath,
+                           /*set_failed_state_if_not_available=*/true));
+
+  } else {
+    impl->GetRemote<crosapi::mojom::ScreenAIDownloader>()->GetComponentFolder(
+        download_if_needed,
+        base::BindOnce(
+            &SetScreenAIComponentPath,
+            /*set_failed_state_if_not_available=*/download_if_needed));
+  }
 }
 
 void ScreenAIDownloader::MaybeSetLastUsageTimeInAsh() {

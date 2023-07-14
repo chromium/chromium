@@ -7,14 +7,24 @@ module crosapi.mojom;
 import "mojo/public/mojom/base/file_path.mojom";
 
 // Interface for download of Screen AI component. Implemented by ash-chrome.
-// Next version: 1
-// Next method id: 2
+// Next version: 2
+// Next method id: 3
 [Stable, Uuid="36b1fdf3-6c5c-4411-be0d-949a43037a34"]
 interface ScreenAIDownloader {
+  // Deprecated.
   // Requests downloading the component.
-  DownloadComponent@0() => (mojo_base.mojom.FilePath? loaded_folder);
+  // Added in M116.
+  DownloadComponentDeprecated@0() => (mojo_base.mojom.FilePath? loaded_folder);
 
   // Updates the last usage time of the service. This is used by Ash to know if
   // the DLC should be kept up to date, or is not needed and can be deleted.
+  // Added in M116.
   SetLastUsageTime@1();
+
+  // Returns the component folder if it is available. Tries to download it if
+  // `download_if_needed` is true.
+  // Added in M117.
+  [MinVersion=1]
+  GetComponentFolder@2(bool download_if_needed)
+    => (mojo_base.mojom.FilePath? component_folder);
 };
