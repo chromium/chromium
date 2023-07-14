@@ -115,7 +115,6 @@ void CloudUploadPageHandler::RespondWithLocalTaskAndClose(int task_position) {
 void CloudUploadPageHandler::SetOfficeAsDefaultHandler() {
   using file_manager::file_tasks::kActionIdOpenInOffice;
 
-  // TODO(b:275912658): Only set handlers if that group has no type set already
   file_manager::file_tasks::SetWordFileHandlerToFilesSWA(profile_,
                                                          kActionIdOpenInOffice);
   file_manager::file_tasks::SetExcelFileHandlerToFilesSWA(
