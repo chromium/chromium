@@ -17,6 +17,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
+#include "chromeos/ash/components/system/statistics_provider.h"
 #include "components/quirks/quirks_manager.h"
 #include "third_party/qcms/src/qcms.h"
 #include "ui/display/display.h"
@@ -318,12 +319,30 @@ bool DisplayColorManager::LoadCalibrationForDisplay(
   // Look for calibrations for this display. Each calibration may overwrite the
   // previous one.
   // TODO(jchinlee): Consider collapsing queries.
-  QueryVpdForCalibration(display->display_id(), display->product_code(),
-                         display->has_color_correction_matrix(),
-                         display->type());
+  // TODO(b/290383914): Ensure VPD-written ICC is applied.
+  system::StatisticsProvider::GetInstance()->ScheduleOnMachineStatisticsLoaded(
+      base::BindOnce(&DisplayColorManager::QueryVpdForCalibration,
+                     weak_ptr_factory_.GetWeakPtr(), display->display_id(),
+                     display->product_code(),
+                     display->has_color_correction_matrix(), display->type()));
   QueryQuirksForCalibration(
       display->display_id(), display->display_name(), display->product_code(),
       display->has_color_correction_matrix(), display->type());
+  return true;
+}
+
+bool DisplayColorManager::HasVpdDisplayProfilesEntry(
+    int64_t product_code) const {
+  absl::optional<std::string_view> display_profile_string =
+      system::StatisticsProvider::GetInstance()->GetMachineStatistic(
+          system::kDisplayProfilesKey);
+  if (!display_profile_string)
+    return false;
+
+  const std::string hex_id = quirks::IdToHexString(product_code);
+  if (!display_profile_string->starts_with(hex_id))
+    return false;
+
   return true;
 }
 
@@ -333,6 +352,9 @@ void DisplayColorManager::QueryVpdForCalibration(
     bool has_color_correction_matrix,
     display::DisplayConnectionType type) {
   if (type != display::DISPLAY_CONNECTION_TYPE_INTERNAL)
+    return;
+
+  if (!HasVpdDisplayProfilesEntry(product_code))
     return;
 
   base::FilePath directory;
@@ -354,8 +376,10 @@ void DisplayColorManager::FinishQueryVpdForCalibration(
     display::DisplayConnectionType type,
     const base::FilePath& expected_icc_path,
     bool found_icc) {
-  if (!found_icc)
+  if (!found_icc) {
+    LOG(WARNING) << "No ICC file found at: " << expected_icc_path.value();
     return;
+  }
 
   DisplayColorManager::FinishLoadCalibrationForDisplay(
       display_id, product_code, has_color_correction_matrix, type,

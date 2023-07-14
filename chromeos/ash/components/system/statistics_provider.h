@@ -162,6 +162,10 @@ extern const char kAttestedDeviceIdKey[];
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM)
 extern const char kSerialNumberKeyForTest[];
 
+// Display Profiles key.
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM)
+extern const char kDisplayProfilesKey[];
+
 // This interface provides access to Chrome OS statistics.
 class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM) StatisticsProvider {
  public:

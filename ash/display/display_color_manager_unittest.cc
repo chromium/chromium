@@ -12,8 +12,10 @@
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/pattern.h"
+#include "base/strings/strcat.h"
 #include "base/test/scoped_path_override.h"
 #include "base/test/task_environment.h"
+#include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "components/quirks/quirks_manager.h"
 #include "net/url_request/url_request_context_getter.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -32,6 +34,8 @@ const char kSetGammaAction[] =
 const char kSetFullCTMAction[] =
     "set_color_matrix(id=123,ctm[0]*ctm[8]*),"
     "set_gamma_correction(id=123,degamma[0]*gamma[0]*)";
+const char kValidIccProfile[] = "ENCODED_ICC_PROFILE_IGNORED";
+const char kInvalidIccProfile[] = "ENCODED_ICC_PROFILE_IGNORED";
 
 class DisplayColorManagerForTest : public DisplayColorManager {
  public:
@@ -132,6 +136,8 @@ class DisplayColorManagerTest : public testing::Test {
         std::unique_ptr<quirks::QuirksManager::Delegate>(
             new QuirksManagerDelegateTestImpl(color_path_)),
         nullptr, nullptr);
+
+    system::StatisticsProvider::SetTestProvider(&fake_statistics_provider_);
   }
 
   void TearDown() override {
@@ -161,6 +167,7 @@ class DisplayColorManagerTest : public testing::Test {
   raw_ptr<display::test::TestNativeDisplayDelegate, ExperimentalAsh>
       native_display_delegate_;  // not owned
   std::unique_ptr<DisplayColorManagerForTest> color_manager_;
+  system::ScopedFakeStatisticsProvider fake_statistics_provider_;
 };
 
 TEST_F(DisplayColorManagerTest, VCGTOnly) {
@@ -429,6 +436,10 @@ TEST_F(DisplayColorManagerTest, FullWithoutPlatformCTM) {
 }
 
 TEST_F(DisplayColorManagerTest, NoMatchProductID) {
+  std::string encoded_icc_profile = "00000000:";
+  encoded_icc_profile += kValidIccProfile;
+  fake_statistics_provider_.SetMachineStatistic(system::kDisplayProfilesKey,
+                                                encoded_icc_profile);
   std::unique_ptr<display::DisplaySnapshot> snapshot =
       display::FakeDisplaySnapshot::Builder()
           .SetId(123)
@@ -478,10 +489,53 @@ TEST_F(DisplayColorManagerTest, NoVCGT) {
       base::MatchPattern(log_->GetActionsAndClear(), kResetGammaAction));
 }
 
+TEST_F(DisplayColorManagerTest, NoVpdDisplayProfilesEntry) {
+  // Set the VPD-written ICC data of |product_id| to be the contents in
+  // |icc_path|.
+  int64_t product_id = 0x0;  // No matching product ID, so no Quirks ICC.
+  const base::FilePath& icc_path = color_path_.Append("06af5c10.icc");
+  auto vpd_dir_override = std::make_unique<base::ScopedPathOverride>(
+      DIR_DEVICE_DISPLAY_PROFILES_VPD);
+  base::FilePath vpd_dir;
+  EXPECT_TRUE(
+      base::PathService::Get(DIR_DEVICE_DISPLAY_PROFILES_VPD, &vpd_dir));
+  EXPECT_TRUE(base::CopyFile(icc_path,
+                             vpd_dir.Append(quirks::IdToFileName(product_id))));
+
+  std::unique_ptr<display::DisplaySnapshot> snapshot =
+      display::FakeDisplaySnapshot::Builder()
+          .SetId(123)
+          .SetNativeMode(kDisplaySize)
+          .SetCurrentMode(kDisplaySize)
+          .SetType(display::DISPLAY_CONNECTION_TYPE_INTERNAL)
+          .SetHasColorCorrectionMatrix(false)
+          .SetProductCode(product_id)
+          .Build();
+
+  std::vector<display::DisplaySnapshot*> outputs({snapshot.get()});
+  native_display_delegate_->set_outputs(outputs);
+
+  configurator_.OnConfigurationChanged();
+  EXPECT_TRUE(test_api_.TriggerConfigureTimeout());
+
+  // DisplayColorManager::ResetDisplayColorCalibration() will be called since
+  // VPD has no display_profile key:value pair.
+  EXPECT_TRUE(
+      base::MatchPattern(log_->GetActionsAndClear(), kResetGammaAction));
+
+  // NOTE: If product_code == 0, there is no thread switching in Quirks or
+  // Display code, so we shouldn't call WaitOnColorCalibration().
+  EXPECT_STREQ("", log_->GetActionsAndClear().c_str());
+}
+
 TEST_F(DisplayColorManagerTest, VpdCalibration) {
   // Set the VPD-written ICC data of |product_id| to be the contents in
   // |icc_path|.
   int64_t product_id = 0x0;  // No matching product ID, so no Quirks ICC.
+  std::string encoded_icc_profile = "00000000:";
+  encoded_icc_profile += kValidIccProfile;
+  fake_statistics_provider_.SetMachineStatistic(system::kDisplayProfilesKey,
+                                                encoded_icc_profile);
   const base::FilePath& icc_path = color_path_.Append("06af5c10.icc");
   auto vpd_dir_override = std::make_unique<base::ScopedPathOverride>(
       DIR_DEVICE_DISPLAY_PROFILES_VPD);
@@ -515,11 +569,56 @@ TEST_F(DisplayColorManagerTest, VpdCalibration) {
   EXPECT_TRUE(base::MatchPattern(log_->GetActionsAndClear(), kSetGammaAction));
 }
 
+TEST_F(DisplayColorManagerTest, QuirksCalibration) {
+  // Set the VPD-written ICC data of |product_id| to be the contents in
+  // |icc_path|.
+  int64_t product_id = 0x06af5c10;
+  std::string encoded_icc_profile = "06af5c10:";
+  encoded_icc_profile += kInvalidIccProfile;
+  fake_statistics_provider_.SetMachineStatistic(system::kDisplayProfilesKey,
+                                                encoded_icc_profile);
+  const base::FilePath& icc_path = color_path_.Append("4c834a42.icc");
+  auto quirks_dir_override = std::make_unique<base::ScopedPathOverride>(
+      DIR_DEVICE_DISPLAY_PROFILES_VPD);
+  base::FilePath quirks_dir;
+  EXPECT_TRUE(
+      base::PathService::Get(DIR_DEVICE_DISPLAY_PROFILES_VPD, &quirks_dir));
+  EXPECT_TRUE(base::CopyFile(
+      icc_path, quirks_dir.Append(quirks::IdToFileName(product_id))));
+  std::unique_ptr<display::DisplaySnapshot> snapshot =
+      display::FakeDisplaySnapshot::Builder()
+          .SetId(123)
+          .SetNativeMode(kDisplaySize)
+          .SetCurrentMode(kDisplaySize)
+          .SetType(display::DISPLAY_CONNECTION_TYPE_INTERNAL)
+          .SetHasColorCorrectionMatrix(false)
+          .SetProductCode(product_id)
+          .Build();
+
+  std::vector<display::DisplaySnapshot*> outputs({snapshot.get()});
+  native_display_delegate_->set_outputs(outputs);
+
+  configurator_.OnConfigurationChanged();
+  EXPECT_TRUE(test_api_.TriggerConfigureTimeout());
+  // Clear initial configuration log.
+  log_->GetActionsAndClear();
+
+  WaitOnColorCalibration();
+  // The VPD-written ICC has no vcgt table and would call
+  // DisplayColorManager::ResetDisplayColorCalibration().
+  // Confirm that the Quirks-fetched ICC, which does, is what is applied.
+  EXPECT_TRUE(base::MatchPattern(log_->GetActionsAndClear(), kSetGammaAction));
+}
+
 TEST_F(DisplayColorManagerTest, VpdCalibrationWithQuirks) {
   // Set the VPD-written ICC data of |product_id| to be the contents in
   // |icc_path|.
   int64_t product_id = 0x06af5c10;
-  const base::FilePath& icc_path = color_path_.Append("4c834a42.icc");
+  std::string encoded_icc_profile = "06af5c10:";
+  encoded_icc_profile += kValidIccProfile;
+  fake_statistics_provider_.SetMachineStatistic(system::kDisplayProfilesKey,
+                                                encoded_icc_profile);
+  const base::FilePath& icc_path = color_path_.Append("06af5c10.icc");
   auto vpd_dir_override = std::make_unique<base::ScopedPathOverride>(
       DIR_DEVICE_DISPLAY_PROFILES_VPD);
   base::FilePath vpd_dir;
@@ -547,9 +646,7 @@ TEST_F(DisplayColorManagerTest, VpdCalibrationWithQuirks) {
   log_->GetActionsAndClear();
 
   WaitOnColorCalibration();
-  // The VPD-written ICC has no vcgt table and would call
-  // DisplayColorManager::ResetDisplayColorCalibration().
-  // Confirm that the Quirks-fetched ICC, which does, is what is applied.
+  // Both the Quirks-fetched ICC and the the VPD-written ICC are valid.
   EXPECT_TRUE(base::MatchPattern(log_->GetActionsAndClear(), kSetGammaAction));
 }
 

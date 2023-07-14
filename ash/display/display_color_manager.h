@@ -122,6 +122,8 @@ class ASH_EXPORT DisplayColorManager
   bool LoadCalibrationForDisplay(const display::DisplaySnapshot* display);
 
   // Display-specific calibration methods.
+  // Look for VPD display profiles entry.
+  bool HasVpdDisplayProfilesEntry(int64_t product_code) const;
   // Look for VPD-written calibration.
   void QueryVpdForCalibration(int64_t display_id,
                               int64_t product_code,
