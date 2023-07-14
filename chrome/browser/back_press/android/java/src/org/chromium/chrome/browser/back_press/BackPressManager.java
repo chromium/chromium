@@ -15,6 +15,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.chrome.browser.flags.BooleanCachedFieldTrialParameter;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.BackPressResult;
@@ -35,6 +36,9 @@ import java.util.List;
  * {@link BackPressHandler} with the new defined {@link Type}.
  */
 public class BackPressManager implements Destroyable {
+    public static final BooleanCachedFieldTrialParameter TAB_HISTORY_RECOVER =
+            new BooleanCachedFieldTrialParameter(
+                    ChromeFeatureList.BACK_GESTURE_REFACTOR, "tab_history_recover", false);
     private static final SparseIntArray sMetricsMap;
     private static final int sMetricsMaxValue;
     static {
@@ -104,6 +108,13 @@ public class BackPressManager implements Destroyable {
      */
     public static boolean shouldUseActivityTabProvider() {
         return isEnabled() || ChromeFeatureList.sBackGestureActivityTabProvider.isEnabled();
+    }
+
+    /**
+     * @return True if the tab navigation should be corrected on fallback callback.
+     */
+    public static boolean correctTabNavigationOnFallback() {
+        return isEnabled() && TAB_HISTORY_RECOVER.getValue();
     }
 
     /**
@@ -253,7 +264,7 @@ public class BackPressManager implements Destroyable {
         }
         if (mFallbackOnBackPressed != null) mFallbackOnBackPressed.run();
         assertListOfFailedHandlers(failed, -1);
-        assert false : "Callback is enabled but no handler consumed back gesture.";
+        assert !failed.isEmpty() : "Callback is enabled but no handler consumed back gesture.";
     }
 
     @Override

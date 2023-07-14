@@ -146,6 +146,9 @@ public class MinimizeAppAndCloseTabBackPressHandler implements BackPressHandler,
                         : TimeUtils.elapsedRealtimeMillis() - mLastBackPressSupplier.get();
                 var msg = "Tab should be navigated back before closing or exiting app; interval %s";
                 assert false : String.format(msg, interval);
+                if (BackPressManager.correctTabNavigationOnFallback()) {
+                    return BackPressResult.FAILURE;
+                }
             }
             // At this point we know either the tab will close or the app will minimize.
             NativePage nativePage = currentTab.getNativePage();

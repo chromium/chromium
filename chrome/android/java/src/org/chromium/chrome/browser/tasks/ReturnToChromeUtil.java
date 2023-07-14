@@ -33,6 +33,7 @@ import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.ChromeInactivityTracker;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.app.ChromeActivity;
+import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.feed.FeedFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.IntCachedFieldTrialParameter;
@@ -183,13 +184,15 @@ public final class ReturnToChromeUtil {
                 if (mLastBackPressMsSupplier.get() != -1) {
                     interval = TimeUtils.elapsedRealtimeMillis() - mLastBackPressMsSupplier.get();
                 }
-                assert false
-                    : String.format(
-                              "tab %s; control tab %s; back press state %s; layout %s; interval %s",
-                              tab, controlTab, tab != null && tab.canGoBack(), layoutType,
-                              interval);
+                String msg =
+                        "tab %s; control tab %s; back press state %s; layout %s; isFromSS: %s; interval %s";
+                boolean isFromSS = tab != null && isTabFromStartSurface(tab);
+                assert false : String.format(msg, tab, controlTab, tab != null && tab.canGoBack(),
+                                       layoutType, isFromSS, interval);
+                if (BackPressManager.correctTabNavigationOnFallback()) {
+                    return BackPressResult.FAILURE;
+                }
             }
-
             mOnBackPressedCallback.run();
             return res ? BackPressResult.SUCCESS : BackPressResult.FAILURE;
         }
