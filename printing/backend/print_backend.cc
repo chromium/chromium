@@ -186,6 +186,25 @@ bool PrinterSemanticCapsAndDefaults::Paper::operator==(
          max_height_um_ == other.max_height_um_;
 }
 
+bool PrinterSemanticCapsAndDefaults::Paper::SupportsCustomSize() const {
+  return max_height_um_ > 0;
+}
+
+bool PrinterSemanticCapsAndDefaults::Paper::IsSizeWithinBounds(
+    const gfx::Size& other_um) const {
+  if (other_um == size_um_) {
+    return true;
+  }
+
+  if (!SupportsCustomSize()) {
+    return false;
+  }
+
+  return size_um_.width() == other_um.width() &&
+         size_um_.height() <= other_um.height() &&
+         other_um.height() <= max_height_um_;
+}
+
 PrinterSemanticCapsAndDefaults::PrinterSemanticCapsAndDefaults() = default;
 
 PrinterSemanticCapsAndDefaults::PrinterSemanticCapsAndDefaults(

@@ -220,6 +220,12 @@ struct COMPONENT_EXPORT(PRINT_BACKEND) PrinterSemanticCapsAndDefaults {
       printable_area_um_ = gfx::Rect(size_um_);
     }
 
+    bool SupportsCustomSize() const;
+    // Return true if `other_um` is the same size as this object or if this
+    // object supports a custom size and `other_um` falls within the custom size
+    // of this object.  Else, return false.
+    bool IsSizeWithinBounds(const gfx::Size& other_um) const;
+
    private:
     std::string display_name_;
     std::string vendor_id_;

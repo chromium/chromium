@@ -32,6 +32,7 @@ constexpr int kHorizontalDpi = 300;
 constexpr int kVerticalDpi = 400;
 constexpr int kMediaSizeWidth = 210000;
 constexpr int kMediaSizeHeight = 297000;
+constexpr int kCustomMediaSizeMin = 2540;
 constexpr char kMediaSizeVendorId[] = "iso_a4_210x297mm";
 constexpr char kVendorItemId[] = "finishings";
 constexpr char kVendorItemValue[] = "trim";
@@ -159,6 +160,21 @@ printing::PrinterSemanticCapsAndDefaults ConstructPrinterCapabilities() {
   return capabilities;
 }
 
+printing::PrinterSemanticCapsAndDefaults
+ConstructPrinterCapabilitiesWithCustomSize() {
+  printing::PrinterSemanticCapsAndDefaults capabilities =
+      ConstructPrinterCapabilities();
+  // Reset our papers and create a new paper with a custom size range.
+  capabilities.papers.clear();
+  printing::PrinterSemanticCapsAndDefaults::Paper paper(
+      /*display_name=*/"", kMediaSizeVendorId,
+      gfx::Size(kMediaSizeWidth, kCustomMediaSizeMin),
+      /*printable_area_um=*/gfx::Rect(), kMediaSizeHeight);
+  capabilities.papers.push_back(paper);
+
+  return capabilities;
+}
+
 }  // namespace
 
 TEST(PrintingApiUtilsTest, GetDefaultPrinterRules) {
@@ -283,6 +299,41 @@ TEST(PrintingApiUtilsTest,
   printing::PrinterSemanticCapsAndDefaults capabilities =
       ConstructPrinterCapabilities();
   capabilities.papers.clear();
+  EXPECT_FALSE(
+      CheckSettingsAndCapabilitiesCompatibility(*settings, capabilities));
+}
+
+TEST(PrintingApiUtilsTest,
+     CheckSettingsAndCapabilitiesCompatibilityCustomMediaSize) {
+  std::unique_ptr<printing::PrintSettings> settings = ConstructPrintSettings();
+  printing::PrinterSemanticCapsAndDefaults capabilities =
+      ConstructPrinterCapabilitiesWithCustomSize();
+  EXPECT_TRUE(
+      CheckSettingsAndCapabilitiesCompatibility(*settings, capabilities));
+}
+
+TEST(PrintingApiUtilsTest,
+     CheckSettingsAndCapabilitiesCompatibilityCustomMediaSizeLongWidth) {
+  std::unique_ptr<printing::PrintSettings> settings = ConstructPrintSettings();
+  // Update the requested media so the width is wider than our custom size.
+  printing::PrintSettings::RequestedMedia media = settings->requested_media();
+  media.size_microns.set_width(kMediaSizeWidth + 1);
+  settings->set_requested_media(media);
+  printing::PrinterSemanticCapsAndDefaults capabilities =
+      ConstructPrinterCapabilitiesWithCustomSize();
+  EXPECT_FALSE(
+      CheckSettingsAndCapabilitiesCompatibility(*settings, capabilities));
+}
+
+TEST(PrintingApiUtilsTest,
+     CheckSettingsAndCapabilitiesCompatibilityCustomMediaSizeShortHeight) {
+  std::unique_ptr<printing::PrintSettings> settings = ConstructPrintSettings();
+  // Update the requested media so the length is shorter than our custom size.
+  printing::PrintSettings::RequestedMedia media = settings->requested_media();
+  media.size_microns.set_height(kCustomMediaSizeMin - 1);
+  settings->set_requested_media(media);
+  printing::PrinterSemanticCapsAndDefaults capabilities =
+      ConstructPrinterCapabilitiesWithCustomSize();
   EXPECT_FALSE(
       CheckSettingsAndCapabilitiesCompatibility(*settings, capabilities));
 }
