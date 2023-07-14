@@ -61,18 +61,49 @@ TabRendererData MakeTabRendererData() {
   new_tab_data.alert_state = {TabAlertState::AUDIO_PLAYING};
   return new_tab_data;
 }
+
+struct TabHoverCardTestFeatureConfig {
+  std::vector<base::test::FeatureRef> enabled_features;
+  std::vector<base::test::FeatureRef> disabled_features;
+};
+
+std::vector<TabHoverCardTestFeatureConfig> GetTabHoverCardTestFeatureConfig() {
+  return {
+      {{features::kChromeRefresh2023},
+       {performance_manager::features::kDiscardedTabTreatment,
+        performance_manager::features::kMemoryUsageInHovercards}},
+      {{},
+       {features::kChromeRefresh2023,
+        performance_manager::features::kDiscardedTabTreatment,
+        performance_manager::features::kMemoryUsageInHovercards}},
+  };
+}
+
+std::vector<TabHoverCardTestFeatureConfig>
+GetTabHoverCardFooterTestFeatureConfig() {
+  return {
+      {{performance_manager::features::kDiscardedTabTreatment,
+        performance_manager::features::kMemoryUsageInHovercards,
+        features::kChromeRefresh2023},
+       {}},
+      {{performance_manager::features::kDiscardedTabTreatment,
+        performance_manager::features::kMemoryUsageInHovercards},
+       {features::kChromeRefresh2023}},
+  };
+}
 }  // namespace
 
-class TabHoverCardInteractiveUiTest : public InteractiveBrowserTest,
-                                      public test::TabHoverCardTestUtil {
+class TabHoverCardInteractiveUiTest
+    : public InteractiveBrowserTest,
+      public test::TabHoverCardTestUtil,
+      public testing::WithParamInterface<TabHoverCardTestFeatureConfig> {
  public:
   ~TabHoverCardInteractiveUiTest() override = default;
 
   void SetUp() override {
     ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
-    scoped_feature_list_.InitWithFeatures(
-        {}, {performance_manager::features::kDiscardedTabTreatment,
-             performance_manager::features::kMemoryUsageInHovercards});
+    scoped_feature_list_.InitWithFeatures({GetParam().enabled_features},
+                                          {GetParam().disabled_features});
     InteractiveBrowserTest::SetUp();
   }
 
@@ -99,7 +130,7 @@ class TabHoverCardInteractiveUiTest : public InteractiveBrowserTest,
     InteractiveBrowserTest::TearDownOnMainThread();
   }
 
-  MultiStep HoverTabAt(int index) {
+  auto HoverTabAt(int index) {
 #if BUILDFLAG(IS_MAC)
     // TODO(crbug.com/1396074): Fix for mac
     return Steps(Do(base::BindLambdaForTesting(
@@ -112,7 +143,7 @@ class TabHoverCardInteractiveUiTest : public InteractiveBrowserTest,
 #endif
   }
 
-  MultiStep UnhoverTab() {
+  auto UnhoverTab() {
 #if BUILDFLAG(IS_MAC)
     // TODO(crbug.com/1396074): Fix for mac
     return Steps(Do(base::BindLambdaForTesting([=]() {
@@ -145,7 +176,7 @@ class TabHoverCardInteractiveUiTest : public InteractiveBrowserTest,
 
 // Verify that the hover card is not visible when any key is pressed.
 // Because this test depends on Aura event handling, it is not performed on Mac.
-IN_PROC_BROWSER_TEST_F(TabHoverCardInteractiveUiTest,
+IN_PROC_BROWSER_TEST_P(TabHoverCardInteractiveUiTest,
                        HoverCardHidesOnAnyKeyPressInSameWindow) {
   RunTestSequence(HoverTabAt(0), CheckHovercardIsOpen(),
                   Check(base::BindLambdaForTesting([=]() {
@@ -157,14 +188,14 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardInteractiveUiTest,
 
 #endif
 
-IN_PROC_BROWSER_TEST_F(TabHoverCardInteractiveUiTest,
+IN_PROC_BROWSER_TEST_P(TabHoverCardInteractiveUiTest,
                        HoverCardHidesOnMouseExit) {
   RunTestSequence(HoverTabAt(0), CheckHovercardIsOpen(), UnhoverTab(),
                   CheckHovercardIsClosed());
 }
 
 // TODO(crbug.com/1050765): test may be flaky on Linux and/or ChromeOS.
-IN_PROC_BROWSER_TEST_F(TabHoverCardInteractiveUiTest,
+IN_PROC_BROWSER_TEST_P(TabHoverCardInteractiveUiTest,
                        HoverCardShownOnTabFocus) {
   TabStrip* const tab_strip = GetTabStrip(browser());
   Tab* const tab = tab_strip->tab_at(0);
@@ -173,7 +204,7 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardInteractiveUiTest,
 }
 
 // TODO(crbug.com/1050765): test may be flaky on Linux and/or ChromeOS.
-IN_PROC_BROWSER_TEST_F(TabHoverCardInteractiveUiTest,
+IN_PROC_BROWSER_TEST_P(TabHoverCardInteractiveUiTest,
                        HoverCardVisibleOnTabCloseButtonFocusAfterTabFocus) {
   TabStrip* const tab_strip = GetTabStrip(browser());
   Tab* const tab = tab_strip->tab_at(0);
@@ -184,7 +215,7 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardInteractiveUiTest,
 }
 
 // Verify hover card is visible when tab is focused and a key is pressed.
-IN_PROC_BROWSER_TEST_F(TabHoverCardInteractiveUiTest,
+IN_PROC_BROWSER_TEST_P(TabHoverCardInteractiveUiTest,
                        WidgetVisibleOnKeyPressAfterTabFocus) {
   TabStrip* const tab_strip = GetTabStrip(browser());
   Tab* const tab = tab_strip->tab_at(0);
@@ -198,7 +229,7 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardInteractiveUiTest,
 
 // Verify hover card is not visible when tab is focused and the mouse is
 // pressed.
-IN_PROC_BROWSER_TEST_F(TabHoverCardInteractiveUiTest,
+IN_PROC_BROWSER_TEST_P(TabHoverCardInteractiveUiTest,
                        WidgetNotVisibleOnMousePressAfterTabFocus) {
   TabStrip* const tab_strip = GetTabStrip(browser());
   Tab* const tab = tab_strip->tab_at(0);
@@ -211,14 +242,14 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardInteractiveUiTest,
   EXPECT_FALSE(IsHoverCardVisible(tab_strip));
 }
 
-IN_PROC_BROWSER_TEST_F(TabHoverCardInteractiveUiTest,
+IN_PROC_BROWSER_TEST_P(TabHoverCardInteractiveUiTest,
                        WidgetNotVisibleOnMousePressAfterHover) {
   RunTestSequence(HoverTabAt(0), CheckHovercardIsOpen(),
                   SelectTab(kTabStripElementId, 0), CheckHovercardIsClosed());
 }
 
 // TODO(crbug.com/1050765): test may be flaky on Linux and/or ChromeOS.
-IN_PROC_BROWSER_TEST_F(TabHoverCardInteractiveUiTest,
+IN_PROC_BROWSER_TEST_P(TabHoverCardInteractiveUiTest,
                        HoverCardVisibleOnTabFocusFromKeyboardAccelerator) {
   TabStrip* const tab_strip = GetTabStrip(browser());
 
@@ -238,7 +269,7 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardInteractiveUiTest,
 }
 
 // TODO(crbug.com/1050765): test may be flaky on Windows.
-IN_PROC_BROWSER_TEST_F(TabHoverCardInteractiveUiTest,
+IN_PROC_BROWSER_TEST_P(TabHoverCardInteractiveUiTest,
                        InactiveWindowStaysInactiveOnHover) {
   const BrowserList* active_browser_list = BrowserList::GetInstance();
 
@@ -269,7 +300,7 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardInteractiveUiTest,
 }
 
 // TODO(crbug.com/1050765): test may be flaky on Windows.
-IN_PROC_BROWSER_TEST_F(TabHoverCardInteractiveUiTest,
+IN_PROC_BROWSER_TEST_P(TabHoverCardInteractiveUiTest,
                        UpdatesHoverCardOnHoverDifferentTab) {
   TabStrip* const tab_strip = GetTabStrip(browser());
   ASSERT_TRUE(
@@ -284,7 +315,7 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardInteractiveUiTest,
   EXPECT_EQ(tab_strip->tab_at(1), hover_card->GetAnchorView());
 }
 
-IN_PROC_BROWSER_TEST_F(TabHoverCardInteractiveUiTest,
+IN_PROC_BROWSER_TEST_P(TabHoverCardInteractiveUiTest,
                        HoverCardDoesNotHaveFooterView) {
   TabStrip* const tab_strip = GetTabStrip(browser());
   ASSERT_TRUE(
@@ -297,7 +328,7 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardInteractiveUiTest,
 
 using TabHoverCardBubbleViewMetricsTest = TabHoverCardInteractiveUiTest;
 
-IN_PROC_BROWSER_TEST_F(TabHoverCardBubbleViewMetricsTest,
+IN_PROC_BROWSER_TEST_P(TabHoverCardBubbleViewMetricsTest,
                        HoverCardsSeenRatioMetric) {
   TabStrip* const tab_strip = GetTabStrip(browser());
   ASSERT_TRUE(
@@ -321,6 +352,13 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardBubbleViewMetricsTest,
   EXPECT_FALSE(hover_card && hover_card->GetWidget()->IsVisible());
   EXPECT_EQ(0, GetHoverCardsSeenCount(browser()));
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         TabHoverCardInteractiveUiTest,
+                         testing::ValuesIn(GetTabHoverCardTestFeatureConfig()));
+INSTANTIATE_TEST_SUITE_P(All,
+                         TabHoverCardBubbleViewMetricsTest,
+                         testing::ValuesIn(GetTabHoverCardTestFeatureConfig()));
 
 // Tests for tabs showing interstitials to check whether the URL in the hover
 // card is displayed or hidden as appropriate.
@@ -352,7 +390,7 @@ class TabHoverCardBubbleViewInterstitialBrowserTest
 
 // Verify that the domain field of tab's hover card is empty if the tab is
 // showing a lookalike interstitial is ("Did you mean google.com?").
-IN_PROC_BROWSER_TEST_F(TabHoverCardBubbleViewInterstitialBrowserTest,
+IN_PROC_BROWSER_TEST_P(TabHoverCardBubbleViewInterstitialBrowserTest,
                        LookalikeInterstitial_ShouldHideHoverCardUrl) {
   //  Navigate the tab to a lookalike URL and check the hover card. The domain
   //  field must be empty.
@@ -375,7 +413,7 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardBubbleViewInterstitialBrowserTest,
 
 // Verify that the domain field of tab's hover card is not empty on other types
 // of interstitials (here, SSL).
-IN_PROC_BROWSER_TEST_F(TabHoverCardBubbleViewInterstitialBrowserTest,
+IN_PROC_BROWSER_TEST_P(TabHoverCardBubbleViewInterstitialBrowserTest,
                        SSLInterstitial_ShouldShowHoverCardUrl) {
   ASSERT_TRUE(https_server_mismatched()->Start());
   // Navigate the tab to an SSL error.
@@ -397,25 +435,17 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardBubbleViewInterstitialBrowserTest,
   EXPECT_EQ(1, GetHoverCardsSeenCount(browser()));
 }
 
+INSTANTIATE_TEST_SUITE_P(All,
+                         TabHoverCardBubbleViewInterstitialBrowserTest,
+                         testing::ValuesIn(GetTabHoverCardTestFeatureConfig()));
+
 class TabHoverCardFadeFooterInteractiveUiTest
     : public TabHoverCardInteractiveUiTest {
  public:
   ~TabHoverCardFadeFooterInteractiveUiTest() override = default;
-
-  void SetUp() override {
-    ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
-    scoped_feature_list_.InitWithFeatures(
-        {performance_manager::features::kDiscardedTabTreatment,
-         performance_manager::features::kMemoryUsageInHovercards},
-        {});
-    InteractiveBrowserTest::SetUp();
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(TabHoverCardFadeFooterInteractiveUiTest,
+IN_PROC_BROWSER_TEST_P(TabHoverCardFadeFooterInteractiveUiTest,
                        HoverCardFooterUpdates) {
   TabStrip* const tab_strip = GetTabStrip(browser());
   ASSERT_TRUE(
@@ -437,7 +467,7 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardFadeFooterInteractiveUiTest,
   EXPECT_TRUE(alert_row->icon_->GetImageModel().IsEmpty());
 }
 
-IN_PROC_BROWSER_TEST_F(TabHoverCardFadeFooterInteractiveUiTest,
+IN_PROC_BROWSER_TEST_P(TabHoverCardFadeFooterInteractiveUiTest,
                        HoverCardFooterShowsDiscardStatus) {
   TabStrip* const tab_strip = GetTabStrip(browser());
   ASSERT_TRUE(
@@ -472,7 +502,7 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardFadeFooterInteractiveUiTest,
       performance_row->footer_label_->GetText());
 }
 
-IN_PROC_BROWSER_TEST_F(TabHoverCardFadeFooterInteractiveUiTest,
+IN_PROC_BROWSER_TEST_P(TabHoverCardFadeFooterInteractiveUiTest,
                        HoverCardFooterShowsMemoryUsage) {
   ASSERT_TRUE(
       AddTabAtIndex(1, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
@@ -509,3 +539,8 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardFadeFooterInteractiveUiTest,
                 {ui::FormatBytes(bytes_used)}, nullptr),
             performance_row->footer_label_->GetText());
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    TabHoverCardFadeFooterInteractiveUiTest,
+    testing::ValuesIn(GetTabHoverCardFooterTestFeatureConfig()));

@@ -146,6 +146,8 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip)
           base::BindRepeating(&TabStrip::NewTabButtonPressed,
                               base::Unretained(tab_strip_)),
           kAddIcon));
+      new_tab_button_->SetProperty(views::kElementIdentifierKey,
+                                   kNewTabButtonElementId);
     } else {
       std::unique_ptr<NewTabButton> new_tab_button =
           std::make_unique<NewTabButton>(
