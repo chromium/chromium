@@ -47,7 +47,7 @@ class ExtensionMessagePort : public MessagePort {
   ExtensionMessagePort(base::WeakPtr<ChannelDelegate> channel_delegate,
                        const PortId& port_id,
                        const std::string& extension_id,
-                       content::RenderFrameHost* rfh,
+                       content::RenderFrameHost* render_frame_host,
                        bool include_child_frames);
 
   // Create a port that is tied to all frames and service workers of an
@@ -79,7 +79,7 @@ class ExtensionMessagePort : public MessagePort {
 
   // MessagePort:
   void RemoveCommonFrames(const MessagePort& port) override;
-  bool HasFrame(content::RenderFrameHost* rfh) const override;
+  bool HasFrame(content::RenderFrameHost* render_frame_host) const override;
   bool IsValidPort() override;
   void RevalidatePort() override;
   void DispatchOnConnect(ChannelType channel_type,
@@ -105,11 +105,11 @@ class ExtensionMessagePort : public MessagePort {
   struct IPCTarget;
 
   // Registers a frame as a receiver / sender.
-  void RegisterFrame(content::RenderFrameHost* rfh);
+  void RegisterFrame(content::RenderFrameHost* render_frame_host);
 
   // Unregisters a frame as a receiver / sender. When there are no registered
   // frames any more, the port closes via CloseChannel().
-  void UnregisterFrame(content::RenderFrameHost* rfh);
+  void UnregisterFrame(content::RenderFrameHost* render_frame_host);
 
   // Returns whether or not a live frame or Service Worker is present for this
   // port.

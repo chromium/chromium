@@ -101,19 +101,21 @@ const Extension* GetExtensionForNativeAppChannel(
   }
 
   DCHECK(source.is_for_render_frame());
-  content::RenderFrameHost* source_rfh = source.GetRenderFrameHost();
-  if (!source_rfh)
+  content::RenderFrameHost* source_render_frame_host =
+      source.GetRenderFrameHost();
+  if (!source_render_frame_host) {
     return nullptr;
+  }
   content::WebContents* web_contents =
-      content::WebContents::FromRenderFrameHost(source_rfh);
+      content::WebContents::FromRenderFrameHost(source_render_frame_host);
   if (!web_contents)
     return nullptr;
   ExtensionWebContentsObserver* extension_web_contents_observer =
       ExtensionWebContentsObserver::GetForWebContents(web_contents);
   if (!extension_web_contents_observer)
     return nullptr;
-  return extension_web_contents_observer->GetExtensionFromFrame(source_rfh,
-                                                                true);
+  return extension_web_contents_observer->GetExtensionFromFrame(
+      source_render_frame_host, true);
 }
 
 bool IsExtensionMessageSupportedInBackForwardCache() {
@@ -508,20 +510,20 @@ void MessageService::OpenChannelToNativeApp(
   channel->opener = std::move(opener_port);
   channel->opener->OpenPort(source.render_process_id(), source.port_context());
 
-  content::RenderFrameHost* source_rfh =
+  content::RenderFrameHost* source_render_frame_host =
       source.is_for_render_frame() ? source.GetRenderFrameHost() : nullptr;
 
-  MaybeDisableBackForwardCacheForMessaging(source_rfh);
+  MaybeDisableBackForwardCacheForMessaging(source_render_frame_host);
 
   std::string error = kReceivingEndDoesntExistError;
   const PortId receiver_port_id = source_port_id.GetOppositePortId();
-  // NOTE: We're creating |receiver| with nullptr |source_rfh|, which seems to
-  // work for native messaging tests. This might need further checking in case
-  // any issues arise from it.
+  // NOTE: We're creating |receiver| with nullptr |source_render_frame_host|,
+  // which seems to work for native messaging tests. This might need further
+  // checking in case any issues arise from it.
   std::unique_ptr<MessagePort> receiver(
       messaging_delegate_->CreateReceiverForNativeApp(
-          context_, weak_factory_.GetWeakPtr(), source_rfh, extension->id(),
-          receiver_port_id, native_app_name,
+          context_, weak_factory_.GetWeakPtr(), source_render_frame_host,
+          extension->id(), receiver_port_id, native_app_name,
           policy_permission == MessagingDelegate::PolicyPermission::ALLOW_ALL,
           &error));
 

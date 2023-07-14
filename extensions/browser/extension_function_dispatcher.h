@@ -137,7 +137,7 @@ class ExtensionFunctionDispatcher {
       const Extension* extension,
       int requesting_process_id,
       bool is_worker_request,
-      const GURL* rfh_url,
+      const GURL* render_frame_host_url,
       Feature::Context context_type,
       ExtensionAPI* api,
       ExtensionFunction::ResponseCallback callback,

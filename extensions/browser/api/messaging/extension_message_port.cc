@@ -142,33 +142,36 @@ ExtensionMessagePort::ExtensionMessagePort(
     base::WeakPtr<ChannelDelegate> channel_delegate,
     const PortId& port_id,
     const std::string& extension_id,
-    content::RenderFrameHost* rfh,
+    content::RenderFrameHost* render_frame_host,
     bool include_child_frames)
     : weak_channel_delegate_(channel_delegate),
       port_id_(port_id),
       extension_id_(extension_id),
-      browser_context_(rfh->GetProcess()->GetBrowserContext()),
+      browser_context_(render_frame_host->GetProcess()->GetBrowserContext()),
       frame_tracker_(new FrameTracker(this)) {
-  content::WebContents* tab = content::WebContents::FromRenderFrameHost(rfh);
+  content::WebContents* tab =
+      content::WebContents::FromRenderFrameHost(render_frame_host);
   CHECK(tab);
   frame_tracker_->TrackTabFrames(tab);
   if (include_child_frames) {
     // TODO(https://crbug.com/1227787) We don't yet support MParch for
     // prerender so make sure `include_child_frames` is only provided for
     // primary main frames.
-    CHECK(rfh->IsInPrimaryMainFrame());
-    rfh->ForEachRenderFrameHostWithAction([tab, this](
-                                              content::RenderFrameHost* rfh) {
-      // RegisterFrame should only be called for frames associated with
-      // `tab` and not any inner WebContents.
-      if (content::WebContents::FromRenderFrameHost(rfh) != tab) {
-        return content::RenderFrameHost::FrameIterationAction::kSkipChildren;
-      }
-      RegisterFrame(rfh);
-      return content::RenderFrameHost::FrameIterationAction::kContinue;
-    });
+    CHECK(render_frame_host->IsInPrimaryMainFrame());
+    render_frame_host->ForEachRenderFrameHostWithAction(
+        [tab, this](content::RenderFrameHost* render_frame_host) {
+          // RegisterFrame should only be called for frames associated with
+          // `tab` and not any inner WebContents.
+          if (content::WebContents::FromRenderFrameHost(render_frame_host) !=
+              tab) {
+            return content::RenderFrameHost::FrameIterationAction::
+                kSkipChildren;
+          }
+          RegisterFrame(render_frame_host);
+          return content::RenderFrameHost::FrameIterationAction::kContinue;
+        });
   } else {
-    RegisterFrame(rfh);
+    RegisterFrame(render_frame_host);
   }
 }
 
@@ -188,8 +191,9 @@ std::unique_ptr<ExtensionMessagePort> ExtensionMessagePort::CreateForExtension(
   auto* process_manager = ProcessManager::Get(browser_context);
   auto all_hosts =
       process_manager->GetRenderFrameHostsForExtension(extension_id);
-  for (content::RenderFrameHost* rfh : all_hosts)
-    port->RegisterFrame(rfh);
+  for (content::RenderFrameHost* render_frame_host : all_hosts) {
+    port->RegisterFrame(render_frame_host);
+  }
 
   std::vector<WorkerId> running_workers =
       process_manager->GetServiceWorkersForExtension(extension_id);
@@ -246,8 +250,9 @@ void ExtensionMessagePort::RemoveCommonFrames(const MessagePort& port) {
   }
 }
 
-bool ExtensionMessagePort::HasFrame(content::RenderFrameHost* rfh) const {
-  return frames_.find(rfh) != frames_.end();
+bool ExtensionMessagePort::HasFrame(
+    content::RenderFrameHost* render_frame_host) const {
+  return frames_.find(render_frame_host) != frames_.end();
 }
 
 bool ExtensionMessagePort::IsValidPort() {
@@ -418,9 +423,9 @@ void ExtensionMessagePort::ClosePort(int process_id,
 
   if (is_for_service_worker) {
     UnregisterWorker(process_id, worker_thread_id);
-  } else if (auto* rfh =
+  } else if (auto* render_frame_host =
                  content::RenderFrameHost::FromID(process_id, routing_id)) {
-    UnregisterFrame(rfh);
+    UnregisterFrame(render_frame_host);
   }
 }
 
@@ -435,19 +440,22 @@ void ExtensionMessagePort::CloseChannel() {
     weak_channel_delegate_->CloseChannel(port_id_, error_message);
 }
 
-void ExtensionMessagePort::RegisterFrame(content::RenderFrameHost* rfh) {
+void ExtensionMessagePort::RegisterFrame(
+    content::RenderFrameHost* render_frame_host) {
   // Only register a RenderFrameHost whose RenderFrame has been created, to
   // ensure that we are notified of frame destruction. Without this check,
   // |frames_| can eventually contain a stale pointer because RenderFrameDeleted
-  // is not triggered for |rfh|.
-  if (rfh->IsRenderFrameLive()) {
-    frames_.insert(rfh);
+  // is not triggered for |render_frame_host|.
+  if (render_frame_host->IsRenderFrameLive()) {
+    frames_.insert(render_frame_host);
   }
 }
 
-void ExtensionMessagePort::UnregisterFrame(content::RenderFrameHost* rfh) {
-  if (frames_.erase(rfh) != 0 && !HasReceivers())
+void ExtensionMessagePort::UnregisterFrame(
+    content::RenderFrameHost* render_frame_host) {
+  if (frames_.erase(render_frame_host) != 0 && !HasReceivers()) {
     CloseChannel();
+  }
 }
 
 bool ExtensionMessagePort::HasReceivers() const {

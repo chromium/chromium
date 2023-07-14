@@ -29,7 +29,7 @@ class ExtensionFrameHost : public mojom::LocalFrameHost {
 
   void BindLocalFrameHost(
       mojo::PendingAssociatedReceiver<mojom::LocalFrameHost> receiver,
-      content::RenderFrameHost* rfh);
+      content::RenderFrameHost* render_frame_host);
 
   content::RenderFrameHostReceiverSet<mojom::LocalFrameHost>&
   receivers_for_testing() {

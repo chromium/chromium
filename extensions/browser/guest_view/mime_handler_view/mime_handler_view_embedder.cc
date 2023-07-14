@@ -149,7 +149,7 @@ void MimeHandlerViewEmbedder::RenderFrameCreated(
     return;
   }
 
-  placeholder_rfh_for_inner_contents_ = render_frame_host;
+  placeholder_render_frame_host_for_inner_contents_ = render_frame_host;
 
   // This suggests that a same-origin child frame is created under the
   // RFH associated with |frame_tree_node_id_|. This suggests that the HTML
@@ -166,12 +166,12 @@ void MimeHandlerViewEmbedder::RenderFrameCreated(
 
 void MimeHandlerViewEmbedder::FrameDeleted(int frame_tree_node_id) {
   // TODO(mcnee): RenderFrameDeleted seems like a better fit for the child frame
-  // case (i.e. |placeholder_rfh_for_inner_contents_|), though we'd still need
-  // FrameDeleted for |frame_tree_node_id_|.
+  // case (i.e. |placeholder_render_frame_host_for_inner_contents_|), though
+  // we'd still need FrameDeleted for |frame_tree_node_id_|.
   if (frame_tree_node_id == frame_tree_node_id_ ||
-      (placeholder_rfh_for_inner_contents_ &&
-       placeholder_rfh_for_inner_contents_->GetFrameTreeNodeId() ==
-           frame_tree_node_id)) {
+      (placeholder_render_frame_host_for_inner_contents_ &&
+       placeholder_render_frame_host_for_inner_contents_
+               ->GetFrameTreeNodeId() == frame_tree_node_id)) {
     DestroySelf();
   }
 }
@@ -210,15 +210,15 @@ void MimeHandlerViewEmbedder::DidCreateMimeHandlerViewGuest(
   guest_view->SetBeforeUnloadController(
       std::move(before_unload_control_remote));
 
-  DCHECK(placeholder_rfh_for_inner_contents_);
+  DCHECK(placeholder_render_frame_host_for_inner_contents_);
   DCHECK(render_frame_host_);
-  DCHECK_EQ(placeholder_rfh_for_inner_contents_->GetParent(),
+  DCHECK_EQ(placeholder_render_frame_host_for_inner_contents_->GetParent(),
             render_frame_host_);
 
   const int embedder_frame_process_id =
       render_frame_host_->GetProcess()->GetID();
   const int element_instance_id =
-      placeholder_rfh_for_inner_contents_->GetRoutingID();
+      placeholder_render_frame_host_for_inner_contents_->GetRoutingID();
   const int guest_instance_id = guest_view->guest_instance_id();
 
   // TODO(ekaramad): This URL is used to communicate with
@@ -239,8 +239,8 @@ void MimeHandlerViewEmbedder::DidCreateMimeHandlerViewGuest(
   MimeHandlerViewAttachHelper::Get(embedder_frame_process_id)
       ->AttachToOuterWebContents(
           std::move(guest_view), embedder_frame_process_id,
-          placeholder_rfh_for_inner_contents_, element_instance_id,
-          is_full_page /* is_full_page_plugin */);
+          placeholder_render_frame_host_for_inner_contents_,
+          element_instance_id, is_full_page /* is_full_page_plugin */);
   // MHVE is no longer required.
   DestroySelf();
 }

@@ -512,20 +512,21 @@ IN_PROC_BROWSER_TEST_F(WebViewAPITest, TestContextMenu) {
   auto* guest_view = GetGuestViewManager()->WaitForSingleGuestViewCreated();
   ASSERT_TRUE(guest_view);
 
-  auto* guest_rfh = guest_view->GetGuestMainFrame();
-  content::WaitForHitTestData(guest_rfh);
+  auto* guest_render_frame_host = guest_view->GetGuestMainFrame();
+  content::WaitForHitTestData(guest_render_frame_host);
 
   // Create a ContextMenuInterceptor to intercept the ShowContextMenu event
   // before RenderFrameHost receives.
   auto context_menu_interceptor =
-      std::make_unique<content::ContextMenuInterceptor>(guest_rfh);
+      std::make_unique<content::ContextMenuInterceptor>(
+          guest_render_frame_host);
 
   // Trigger the context menu. AppShell doesn't show a context menu; this is
   // just a sanity check that nothing breaks.
   content::WebContents* embedder_web_contents = GetEmbedderWebContents();
 
   content::RenderWidgetHostView* guest_rwhv =
-      guest_rfh->GetRenderWidgetHost()->GetView();
+      guest_render_frame_host->GetRenderWidgetHost()->GetView();
   gfx::Point guest_context_menu_position(5, 5);
   gfx::Point root_context_menu_position =
       guest_rwhv->TransformPointToRootCoordSpace(guest_context_menu_position);

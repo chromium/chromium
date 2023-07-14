@@ -19,8 +19,8 @@ ExtensionFrameHost::~ExtensionFrameHost() = default;
 
 void ExtensionFrameHost::BindLocalFrameHost(
     mojo::PendingAssociatedReceiver<mojom::LocalFrameHost> receiver,
-    content::RenderFrameHost* rfh) {
-  receivers_.Bind(rfh, std::move(receiver));
+    content::RenderFrameHost* render_frame_host) {
+  receivers_.Bind(render_frame_host, std::move(receiver));
 }
 
 void ExtensionFrameHost::RequestScriptInjectionPermission(

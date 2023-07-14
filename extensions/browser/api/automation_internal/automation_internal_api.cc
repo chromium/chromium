@@ -496,12 +496,14 @@ class AutomationWebContentsObserver
             *web_contents),
         browser_context_(web_contents->GetBrowserContext()) {
     if (web_contents->IsCurrentlyAudible()) {
-      content::RenderFrameHost* rfh = web_contents->GetPrimaryMainFrame();
-      if (!rfh)
+      content::RenderFrameHost* render_frame_host =
+          web_contents->GetPrimaryMainFrame();
+      if (!render_frame_host) {
         return;
+      }
 
       content::AXEventNotificationDetails content_event_bundle;
-      content_event_bundle.ax_tree_id = rfh->GetAXTreeID();
+      content_event_bundle.ax_tree_id = render_frame_host->GetAXTreeID();
       content_event_bundle.events.resize(1);
       content_event_bundle.events[0].event_type =
           ax::mojom::Event::kMediaStartedPlaying;
@@ -531,19 +533,21 @@ absl::optional<std::string> AutomationInternalEnableTreeFunction::EnableTree(
   if (automation_api_delegate->EnableTree(ax_tree_id))
     return absl::nullopt;
 
-  content::RenderFrameHost* rfh =
+  content::RenderFrameHost* render_frame_host =
       content::RenderFrameHost::FromAXTreeID(ax_tree_id);
-  if (!rfh)
+  if (!render_frame_host) {
     return absl::nullopt;
+  }
 
   content::WebContents* contents =
-      content::WebContents::FromRenderFrameHost(rfh);
+      content::WebContents::FromRenderFrameHost(render_frame_host);
   AutomationWebContentsObserver::CreateForWebContents(contents);
 
   // Only call this if this is the root of a frame tree, to avoid resetting
   // the accessibility state multiple times.
-  if (rfh->IsInPrimaryMainFrame())
+  if (render_frame_host->IsInPrimaryMainFrame()) {
     contents->EnableWebContentsOnlyAccessibilityMode();
+  }
 
   return absl::nullopt;
 }
@@ -586,14 +590,14 @@ AutomationInternalPerformActionFunction::PerformAction(
   ui::AXActionHandlerBase* action_handler =
       registry->GetActionHandler(data.target_tree_id);
   if (action_handler) {
-    // Handle an AXActionHandler with a rfh first. Some actions require a rfh ->
-    // web contents and this api requires web contents to perform a permissions
-    // check.
-    content::RenderFrameHost* rfh =
+    // Handle an AXActionHandler with a render frame host first. Some actions
+    // require a render frame host -> web contents and this api requires web
+    // contents to perform a permissions check.
+    content::RenderFrameHost* render_frame_host =
         content::RenderFrameHost::FromAXTreeID(data.target_tree_id);
-    if (rfh) {
+    if (render_frame_host) {
       content::WebContents* contents =
-          content::WebContents::FromRenderFrameHost(rfh);
+          content::WebContents::FromRenderFrameHost(render_frame_host);
       if (extension && automation_info) {
         if (!ExtensionsAPIClient::Get()
                  ->GetAutomationInternalApiDelegate()
@@ -721,17 +725,18 @@ AutomationInternalQuerySelectorFunction::Run() {
   absl::optional<Params> params = Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  content::RenderFrameHost* rfh = content::RenderFrameHost::FromAXTreeID(
-      ui::AXTreeID::FromString(params->args.tree_id));
-  if (!rfh) {
+  content::RenderFrameHost* render_frame_host =
+      content::RenderFrameHost::FromAXTreeID(
+          ui::AXTreeID::FromString(params->args.tree_id));
+  if (!render_frame_host) {
     return RespondNow(
         Error("domQuerySelector query sent on non-web or destroyed tree."));
   }
 
   // QuerySelectorHandler handles IPCs and deletes itself on completion.
   new QuerySelectorHandler(
-      rfh->GetRemoteAssociatedInterfaces(), params->args.automation_node_id,
-      params->args.selector,
+      render_frame_host->GetRemoteAssociatedInterfaces(),
+      params->args.automation_node_id, params->args.selector,
       base::BindOnce(&AutomationInternalQuerySelectorFunction::OnResponse,
                      this));
 

@@ -11,7 +11,7 @@ MessagePort::~MessagePort() = default;
 
 void MessagePort::RemoveCommonFrames(const MessagePort& port) {}
 
-bool MessagePort::HasFrame(content::RenderFrameHost* rfh) const {
+bool MessagePort::HasFrame(content::RenderFrameHost* render_frame_host) const {
   return false;
 }
 

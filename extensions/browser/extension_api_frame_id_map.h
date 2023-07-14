@@ -104,20 +104,21 @@ class ExtensionApiFrameIdMap {
 
   static ExtensionApiFrameIdMap* Get();
 
-  // Get the extension API frame ID for |rfh|.
-  static int GetFrameId(content::RenderFrameHost* rfh);
+  // Get the extension API frame ID for |render_frame_host|.
+  static int GetFrameId(content::RenderFrameHost* render_frame_host);
 
   // Get the extension API frame ID for |navigation_handle|.
   static int GetFrameId(content::NavigationHandle* navigation_handle);
 
-  // Get the extension API frame ID for the parent of |rfh|.
-  static int GetParentFrameId(content::RenderFrameHost* rfh);
+  // Get the extension API frame ID for the parent of |render_frame_host|.
+  static int GetParentFrameId(content::RenderFrameHost* render_frame_host);
 
   // Get the extension API frame ID for the parent of |navigation_handle|.
   static int GetParentFrameId(content::NavigationHandle* navigation_handle);
 
-  // Get the extension API document ID for the current document of |rfh|.
-  static DocumentId GetDocumentId(content::RenderFrameHost* rfh);
+  // Get the extension API document ID for the current document of
+  // |render_frame_host|.
+  static DocumentId GetDocumentId(content::RenderFrameHost* render_frame_host);
 
   // Get the extension API document ID for the document of |navigation_handle|.
   static DocumentId GetDocumentId(content::NavigationHandle* navigation_handle);
@@ -126,17 +127,19 @@ class ExtensionApiFrameIdMap {
   // `render_frame_host`).
   static base::Uuid GetContextId(content::RenderFrameHost* render_frame_host);
 
-  // Get the extension API frame type for the current document of |rfh|.
+  // Get the extension API frame type for the current document of
+  // |render_frame_host|.
   static api::extension_types::FrameType GetFrameType(
-      content::RenderFrameHost* rfh);
+      content::RenderFrameHost* render_frame_host);
 
   // Get the extension API frame type for the frame of |navigation_handle|.
   static api::extension_types::FrameType GetFrameType(
       content::NavigationHandle* navigation_handle);
 
-  // Get the extension API document lifecycle for the current document of |rfh|.
+  // Get the extension API document lifecycle for the current document of
+  // |render_frame_host|.
   static api::extension_types::DocumentLifecycle GetDocumentLifecycle(
-      content::RenderFrameHost* rfh);
+      content::RenderFrameHost* render_frame_host);
 
   // Get the extension API document lifecycle for the frame of
   // |navigation_handle|.
@@ -159,12 +162,13 @@ class ExtensionApiFrameIdMap {
   static DocumentId DocumentIdFromString(const std::string& document_id);
 
   // Retrieves the FrameData for a given RenderFrameHost id.
-  [[nodiscard]] FrameData GetFrameData(content::GlobalRenderFrameHostId rfh_id);
+  [[nodiscard]] FrameData GetFrameData(
+      content::GlobalRenderFrameHostId render_frame_host_id);
 
-  // Called when a render frame is deleted. Stores the FrameData for |rfh| in
-  // the deleted frames map so it can still be accessed for beacon requests. The
-  // FrameData will be removed later in a task.
-  void OnRenderFrameDeleted(content::RenderFrameHost* rfh);
+  // Called when a render frame is deleted. Stores the FrameData for
+  // |render_frame_host| in the deleted frames map so it can still be accessed
+  // for beacon requests. The FrameData will be removed later in a task.
+  void OnRenderFrameDeleted(content::RenderFrameHost* render_frame_host);
 
  protected:
   friend struct base::LazyInstanceTraitsBase<ExtensionApiFrameIdMap>;
@@ -195,7 +199,7 @@ class ExtensionApiFrameIdMap {
   // alive and |require_live_frame| is true.
   FrameData KeyToValue(content::GlobalRenderFrameHostId key,
                        bool require_live_frame) const;
-  FrameData KeyToValue(content::RenderFrameHost* rfh,
+  FrameData KeyToValue(content::RenderFrameHost* render_frame_host,
                        bool require_live_frame) const;
 
   // Holds mappings of render frame key to FrameData from frames that have been

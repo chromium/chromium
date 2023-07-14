@@ -1061,18 +1061,21 @@ CreateExtensionURLLoaderFactory(int render_process_id, int render_frame_id) {
   content::RenderProcessHost* process_host =
       content::RenderProcessHost::FromID(render_process_id);
   content::BrowserContext* browser_context = process_host->GetBrowserContext();
-  content::RenderFrameHost* rfh =
+  content::RenderFrameHost* render_frame_host =
       content::RenderFrameHost::FromID(render_process_id, render_frame_id);
-  bool is_web_view_request = WebViewGuest::FromRenderFrameHost(rfh) != nullptr;
+  bool is_web_view_request =
+      WebViewGuest::FromRenderFrameHost(render_frame_host) != nullptr;
 
   ukm::SourceIdObj ukm_source_id = ukm::kInvalidSourceIdObj;
   // Our data collection policy disallows collecting UKMs while prerendering.
   // So, assign a valid ID only when the page is not in the prerendering state.
   // See //content/browser/preloading/prerender/README.md and ask the team to
   // explore options to record data for prerendering pages.
-  if (rfh && !rfh->IsInLifecycleState(
-                 content::RenderFrameHost::LifecycleState::kPrerendering)) {
-    ukm_source_id = ukm::SourceIdObj::FromInt64(rfh->GetPageUkmSourceId());
+  if (render_frame_host &&
+      !render_frame_host->IsInLifecycleState(
+          content::RenderFrameHost::LifecycleState::kPrerendering)) {
+    ukm_source_id =
+        ukm::SourceIdObj::FromInt64(render_frame_host->GetPageUkmSourceId());
   }
 
   return ExtensionURLLoaderFactory::Create(

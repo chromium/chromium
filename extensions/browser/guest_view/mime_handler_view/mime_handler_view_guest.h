@@ -161,7 +161,7 @@ class MimeHandlerViewGuest
   bool GuestSaveFrame(content::WebContents* guest_web_contents) final;
   bool SaveFrame(const GURL& url,
                  const content::Referrer& referrer,
-                 content::RenderFrameHost* rfh) final;
+                 content::RenderFrameHost* render_frame_host) final;
   void EnterFullscreenModeForTab(
       content::RenderFrameHost* requesting_frame,
       const blink::mojom::FullscreenOptions& options) override;

@@ -341,13 +341,15 @@ bool MimeHandlerViewGuest::GuestSaveFrame(
   return guest_view == this && PluginDoSave();
 }
 
-bool MimeHandlerViewGuest::SaveFrame(const GURL& url,
-                                     const content::Referrer& referrer,
-                                     content::RenderFrameHost* rfh) {
+bool MimeHandlerViewGuest::SaveFrame(
+    const GURL& url,
+    const content::Referrer& referrer,
+    content::RenderFrameHost* render_frame_host) {
   if (!attached())
     return false;
 
-  embedder_web_contents()->SaveFrame(stream_->original_url(), referrer, rfh);
+  embedder_web_contents()->SaveFrame(stream_->original_url(), referrer,
+                                     render_frame_host);
   return true;
 }
 
@@ -427,11 +429,13 @@ void MimeHandlerViewGuest::DocumentOnLoadCompletedInPrimaryMainFrame() {
   // For plugin elements, the embedder should be notified so that the queued
   // messages (postMessage) are forwarded to the guest page. Otherwise we
   // just send the update to the embedder (full page  MHV).
-  auto* rfh = maybe_has_frame_container_ ? GetEmbedderFrame()->GetParent()
-                                         : GetEmbedderFrame();
+  auto* render_frame_host = maybe_has_frame_container_
+                                ? GetEmbedderFrame()->GetParent()
+                                : GetEmbedderFrame();
   mojo::AssociatedRemote<mojom::MimeHandlerViewContainerManager>
       container_manager;
-  rfh->GetRemoteAssociatedInterfaces()->GetInterface(&container_manager);
+  render_frame_host->GetRemoteAssociatedInterfaces()->GetInterface(
+      &container_manager);
   container_manager->DidLoad(element_instance_id(), original_resource_url_);
 }
 
