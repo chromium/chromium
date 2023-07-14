@@ -58,39 +58,155 @@ TODO(crbug.com/1035895): Implement bundle installers.
 The bundle installer allows installation of more than one application. The
 bundle installer is typically used in software distribution scenarios.
 
-### Standalone Installer
-TODO(crbug.com/1281688): Add scripts to build standalone installers.
-
-TODO(crbug.com/1035895): Document building a standalone installer for a given
-application.
-
-Standalone installers embed all data required to install the application,
+### Offline/Standalone Installer
+Offline installers embed all data required to install the application,
 including the payload and various configuration data needed by the application
 setup. Such an install completes even if a network connection is not available.
 
-Standalone installers are used:
+Offline installers are used:
 
 1. when an interactive user experience is not needed, such as automated
 deployments in an enterprise.
 2. when downloading the application payload is not desirable for any reason.
 3. during OEM installation.
 
-On Windows, a standalone installer can be created by embedding a manifest file
-and application installer inside of the metainstaller (UpdaterSetup). These
-files must be embedded in the metainstaller's `updater.7z` archive at the
-following paths:
+On Windows, a offline installer is created by embedding a manifest file and
+application installer inside of the metainstaller (UpdaterSetup). These files
+are embedded in the metainstaller's `updater.7z` archive at the following paths
+using
+[sign.py](https://source.chromium.org/chromium/chromium/src/+/main:chrome/updater/win/signing/sign.py)
+:
 * `bin\Offline\{GUID}\OfflineManifest.gup`
 * `bin\Offline\{GUID}\{app_id}\installer.exe`
 
-Standalone installers may use any `{GUID}` value as long as it is a valid
-Windows GUID in the format `{XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX}`. See the
-"Offline installs" section below for more information on the manifest file and
-application installer.
+`{GUID}` is an unique Windows GUID in the format
+`{XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX}`.
+
+See the
+[Steps to create an offline metainstaller for Windows](#steps-to-create-an-offline-metainstaller-for-windows)
+section for how to create an example offline installer.
+
+See the [Offline installs](#offline-installs) section below for more information
+on the manifest file and application installer.
 
 Applications on macOS frequently install via "drag-install", and then install
-the updater using a standalone installer on the application's first-run. The
+the updater using an offline installer on the application's first-run. The
 updater app can be embedded in a macOS application bundle as a helper and then
 invoked with appropriate command line arguments to install itself.
+
+##### Steps to create an offline metainstaller for Windows
+
+An offline metainstaller can be created using the
+[sign.py](https://source.chromium.org/chromium/chromium/src/+/main:chrome/updater/win/signing/sign.py)
+tool, and can then be tagged by using the metainstaller tagging tool
+[tag.py](https://source.chromium.org/chromium/chromium/src/+/main:chrome/updater/tools/tag.py).
+
+The example below generates an offline installer for `Chrome Beta`, with an
+`appid` of `{8237E44A-0054-442C-B6B6-EA0509993955}`.
+
+The input files are the following:
+* the untagged metainstaller `out\ChromeBrandedDebug\UpdaterSetup.exe`.
+* the setup executable for Chrome Beta, saved at:
+`out/ChromeBrandedDebug/UpdaterSigning/chrome_installer.exe`.
+* the manifest, shown below, saved at:
+`out/ChromeBrandedDebug/UpdaterSigning/OfflineManifest.gup`.
+```
+<?xml version="1.0" encoding="UTF-8"?>
+<response protocol="3.0">
+  <systemrequirements platform="win" arch="${ARCH_REQUIREMENT}" min_os_version="6.1"/>
+  <app appid="${APP_ID}" status="ok">
+    <updatecheck status="ok">
+      <urls>
+        <url codebase="http://dl.google.com/edgedl/chrome/install/${INSTALLER_VERSION}/"/>
+      </urls>
+      <manifest version="${INSTALLER_VERSION}">
+        <packages>
+          <package name="${INSTALLER_FILENAME}" hash_sha256="${INSTALLER_HASH_SHA256}" size="${INSTALLER_SIZE}" required="true"/>
+        </packages>
+        <actions>
+          <action event="install" run="${INSTALLER_FILENAME}" arguments="--do-not-launch-chrome" needsadmin="false" />
+          <action event="postinstall" onsuccess="exitsilentlyonlaunchcmd"/>
+        </actions>
+      </manifest>
+    </updatecheck>
+  </app>
+</response>
+```
+
+* and the final tagged offline setup file will be
+`out\ChromeBrandedDebug\UpdaterSigning\Signed_ChromeBetaOfflineSetup.exe`.
+
+Here are the steps to create a tagged offline metainstaller, with the `out`
+directory at `out\ChromeBrandedDebug`:
+
+* One-time step: from an elevated powershell prompt:
+```
+New-SelfSignedCertificate -DnsName id@domain.tld -Type CodeSigning
+ -CertStoreLocation cert:\CurrentUser\My
+```
+* Note: all the steps below are run from a medium cmd prompt.
+* One-time step: `python3 -m pip install pypiwin32`
+* One-time step:
+```
+set PYTHONPATH=C:\src\chromium\src\chrome\tools\build\win`
+```
+* create the untagged offline installer `ChromeBetaOfflineSetup.exe`:
+```
+python3 chrome/updater/win/signing/sign.py                                     ^
+  --in_file out/ChromeBrandedDebug/UpdaterSetup.exe                            ^
+  --out_file out/ChromeBrandedDebug/UpdaterSigning/ChromeBetaOfflineSetup.exe  ^
+  --identity id@domain.tld                                                     ^
+  --appid {8237E44A-0054-442C-B6B6-EA0509993955}                               ^
+  --installer_path out/ChromeBrandedDebug/UpdaterSigning/chrome_installer.exe  ^
+  --manifest_path out/ChromeBrandedDebug/UpdaterSigning/OfflineManifest.gup    ^
+  --lzma_7z "C:/Program Files/7-Zip/7z.exe"                                    ^
+  --signtool ../../fig/google3/third_party/windows_sdk/windows_sdk_10/files/bin/10.0.22000.0/x86/signtool.exe ^
+  --certificate_tag out/ChromeBrandedDebug/UpdaterSigning/certificate_tag.exe  ^
+  --manifest_dict_replacements "{'${INSTALLER_VERSION}':'110.0.5478.0', '${ARCH_REQUIREMENT}':'x86'}"
+```
+* tag the offline installer and save the result as
+`Signed_ChromeBetaOfflineSetup.exe`:
+```
+python3 chrome/updater/tools/tag.py                                            ^
+  --certificate_tag=out/ChromeBrandedDebug/UpdaterSigning/certificate_tag.exe  ^
+  --in_file=out/ChromeBrandedDebug/UpdaterSigning/ChromeBetaOfflineSetup.exe   ^
+  --out_file=out/ChromeBrandedDebug/UpdaterSigning/Signed_ChromeBetaOfflineSetup.exe ^
+  --tag="appguid={8237E44A-0054-442C-B6B6-EA0509993955}&appname=Google%20Chrome%20Beta&needsadmin=Prefers"
+```
+* Now you can run the final signed offline installer:
+`Signed_ChromeBetaOfflineSetup.exe`!
+
+In the example above, the `OfflineManifest.gup` has the following replaceable parameters which are replaced by `sign.py` as follows:
+* `${APP_ID}`: `{8237E44A-0054-442C-B6B6-EA0509993955}`.
+* `${INSTALLER_FILENAME}`: `chrome_installer.exe`.
+* `${INSTALLER_SIZE}`: computed size of `installer_path`.
+* `${INSTALLER_HASH_SHA256}`: computed sha256 hash of `installer_path`.
+* `${INSTALLER_VERSION}`: `110.0.5478.0` (provided on the command line in `--manifest_dict_replacements`).
+* `${ARCH_REQUIREMENT}`: `x86` (provided on the command line in `--manifest_dict_replacements`).
+
+The final manifest looks as follows:
+```
+<?xml version="1.0" encoding="UTF-8"?>
+<response protocol="3.0">
+  <systemrequirements platform="win" arch="x86" min_os_version="6.1"/>
+  <app appid="{8237E44A-0054-442C-B6B6-EA0509993955}" status="ok">
+    <updatecheck status="ok">
+      <urls>
+        <url codebase="http://dl.google.com/edgedl/chrome/install/110.0.5478.0/"/>
+      </urls>
+      <manifest version="110.0.5478.0">
+        <packages>
+          <package name="chrome_installer.exe" hash_sha256="1d28b3ca401b063b3e06b281f8ba80b52797e40de7830f1532c1018544027af8" size="89150504" required="true"/>
+        </packages>
+        <actions>
+          <action event="install" run="chrome_installer.exe" arguments="--do-not-launch-chrome" needsadmin="false" />
+          <action event="postinstall" onsuccess="exitsilentlyonlaunchcmd"/>
+        </actions>
+      </manifest>
+    </updatecheck>
+  </app>
+</response>
+```
 
 ### MSI Wrapper
 TODO(crbug.com/1327497) - Implement and document.
