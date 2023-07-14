@@ -65,6 +65,11 @@ BASE_FEATURE(kExperimentalWebAppStoragePartitionIsolation,
              "ExperimentalWebAppStoragePartitionIsolation",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enable IWA support for Telemetry Extension API.
+BASE_FEATURE(kIWAForTelemetryExtensionAPI,
+             "IWAForTelemetryExtensionAPI",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables Jelly features. go/jelly-flags
 BASE_FEATURE(kJelly, "Jelly", base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -112,6 +117,10 @@ bool IsCloudGamingDeviceEnabled() {
 
 bool IsDemoModeSWAEnabled() {
   return base::FeatureList::IsEnabled(kDemoModeSWA);
+}
+
+bool IsIWAForTelemetryExtensionAPIEnabled() {
+  return base::FeatureList::IsEnabled(kIWAForTelemetryExtensionAPI);
 }
 
 bool IsJellyEnabled() {
