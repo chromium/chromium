@@ -151,19 +151,22 @@ class BaselineOptimizerTest(BaselineTest):
                 'gpu',
                 'platforms': ['Linux', 'Mac', 'Win'],
                 'bases': [
+                    'webexposed',
                     'fast/canvas',
                     'slow/canvas/mock-test.html',
                     'virtual/virtual_empty_bases/',
                 ],
                 'args': ['--foo'],
-                'expires':
-                'never',
             }, {
                 'prefix': 'virtual_empty_bases',
                 'platforms': ['Linux', 'Mac', 'Win'],
                 'bases': [],
                 'args': ['--foo'],
-                'expires': 'never',
+            }, {
+                'prefix': 'stable',
+                'platforms': ['Linux', 'Mac', 'Win'],
+                'bases': ['webexposed'],
+                'args': ['--stable-release-mode'],
             }]))
         self.fs.write_text_file(
             self.finder.path_from_web_tests('FlagSpecificConfig'),
@@ -729,6 +732,25 @@ class BaselineOptimizerTest(BaselineTest):
                 'fast/canvas': '3',
             },
             baseline_dirname='virtual/gpu/fast/canvas')
+
+    def test_virtual_stable_webexposed_preserved(self):
+        self._assert_optimization(
+            {
+                'platform/mac/virtual/gpu/webexposed': '1',
+                'platform/win/virtual/gpu/webexposed': '1',
+                'platform/mac/virtual/stable/webexposed': '1',
+                'platform/win/virtual/stable/webexposed': '1',
+                'platform/mac/webexposed': '1',
+                'platform/win/webexposed': '1',
+            },
+            {
+                'webexposed': '1',
+                # Baselines are optimized among platforms, but not between the
+                # virtual/nonvirtual trees for the "stable" suite, so this
+                # virtual root should still exist.
+                'virtual/stable/webexposed': '1',
+            },
+            baseline_dirname='webexposed')
 
     def test_extra_png_for_reftest_at_root(self):
         self._assert_reftest_optimization({'': 'extra'}, {'': None})
