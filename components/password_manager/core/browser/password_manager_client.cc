@@ -34,7 +34,7 @@ void PasswordManagerClient::ShowPasswordManagerErrorMessage(
 
 void PasswordManagerClient::ShowKeyboardReplacingSurface(
     PasswordManagerDriver* driver,
-    autofill::mojom::SubmissionReadinessState submission_readiness,
+    const SubmissionReadinessParams& submission_readiness_params,
     bool is_webauthn_form) {}
 #endif
 

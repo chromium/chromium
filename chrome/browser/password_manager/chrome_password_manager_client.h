@@ -142,7 +142,7 @@ class ChromePasswordManagerClient
 
   void ShowKeyboardReplacingSurface(
       password_manager::PasswordManagerDriver* driver,
-      autofill::mojom::SubmissionReadinessState submission_readiness,
+      const password_manager::SubmissionReadinessParams& submission_readiness,
       bool is_webauthn_form) override;
 #endif
 

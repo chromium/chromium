@@ -404,7 +404,8 @@ void ChromePasswordManagerClient::ShowPasswordManagerErrorMessage(
 
 void ChromePasswordManagerClient::ShowKeyboardReplacingSurface(
     password_manager::PasswordManagerDriver* driver,
-    autofill::mojom::SubmissionReadinessState submission_readiness,
+    const password_manager::SubmissionReadinessParams&
+        submission_readiness_params,
     bool is_webauthn_form) {
   if (base::FeatureList::IsEnabled(
           password_manager::features::kPasswordSuggestionBottomSheetV2) &&
@@ -421,7 +422,7 @@ void ChromePasswordManagerClient::ShowKeyboardReplacingSurface(
   if (GetOrCreateCredManController()->Show(
           GetWebAuthnCredManDelegateForDriver(driver),
           std::make_unique<password_manager::PasswordCredentialFillerImpl>(
-              driver->AsWeakPtr(), submission_readiness),
+              driver->AsWeakPtr(), submission_readiness_params),
           render_widget_host, is_webauthn_form)) {
     return;
   }
@@ -434,7 +435,7 @@ void ChromePasswordManagerClient::ShowKeyboardReplacingSurface(
   }
   auto filler =
       std::make_unique<password_manager::PasswordCredentialFillerImpl>(
-          driver->AsWeakPtr(), submission_readiness);
+          driver->AsWeakPtr(), submission_readiness_params);
   auto ttf_controller_autofill_delegate =
       std::make_unique<TouchToFillControllerAutofillDelegate>(
           this, GetDeviceAuthenticator(), webauthn_delegate->AsWeakPtr(),

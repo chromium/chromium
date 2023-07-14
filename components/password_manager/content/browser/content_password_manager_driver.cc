@@ -450,7 +450,10 @@ void ContentPasswordManagerDriver::ShowPasswordSuggestions(
     // was shown or not) and do not call the OnShowPasswordSuggestions on the
     // password autofill manager if TTF was shown.
     client_->ShowKeyboardReplacingSurface(
-        this, autofill::mojom::SubmissionReadinessState::kNoInformation,
+        this,
+        SubmissionReadinessParams(
+            form, username_field_index, password_field_index,
+            autofill::mojom::SubmissionReadinessState::kNoInformation),
         options & autofill::ACCEPTS_WEBAUTHN_CREDENTIALS);
   }
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -468,8 +471,10 @@ void ContentPasswordManagerDriver::ShowKeyboardReplacingSurface(
           render_frame_host_)) {
     return;
   }
-  client_->ShowKeyboardReplacingSurface(this, submission_readiness,
-                                        is_webauthn_form);
+  autofill::FormData form;
+  client_->ShowKeyboardReplacingSurface(
+      this, SubmissionReadinessParams(form, 0, 0, submission_readiness),
+      is_webauthn_form);
 }
 #endif
 

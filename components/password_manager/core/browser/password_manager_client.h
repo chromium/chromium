@@ -105,6 +105,17 @@ enum class SyncState {
 
 enum class ErrorMessageFlowType { kSaveFlow, kFillFlow };
 
+#if BUILDFLAG(IS_ANDROID)
+struct SubmissionReadinessParams {
+  autofill::FormData form;
+  uint64_t username_field_index;
+  uint64_t password_field_index;
+  // TODO(crbug/1462532): Remove this param after
+  // PasswordSuggestionBottomSheetV2 is launched.
+  autofill::mojom::SubmissionReadinessState submission_readiness;
+};
+#endif  // BUILDFLAG(IS_ANDROID)
+
 // An abstraction of operations that depend on the embedders (e.g. Chrome)
 // environment. PasswordManagerClient is instantiated once per WebContents.
 // Main frame w.r.t WebContents refers to the primary main frame so usages of
@@ -203,7 +214,7 @@ class PasswordManagerClient {
   // TouchToFill).
   virtual void ShowKeyboardReplacingSurface(
       PasswordManagerDriver* driver,
-      autofill::mojom::SubmissionReadinessState submission_readiness,
+      const SubmissionReadinessParams& submission_readiness_params,
       bool is_webauthn_form);
 #endif
 
