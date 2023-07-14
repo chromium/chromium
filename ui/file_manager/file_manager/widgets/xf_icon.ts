@@ -63,6 +63,10 @@ export class XfIcon extends XfBase {
   }
 
   override render() {
+    if (this.type === constants.ICON_TYPES.BLANK) {
+      return html``;
+    }
+
     if (Object.keys(XfIcon.multiColor).includes(this.type)) {
       return html`
         <span class="multi-color keep-color">

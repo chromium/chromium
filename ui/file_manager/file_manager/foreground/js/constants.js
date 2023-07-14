@@ -138,6 +138,9 @@ constants.ICON_TYPES = {
   ANDROID_FILES: 'android_files',
   ARCHIVE: 'archive',
   AUDIO: 'audio',
+  // Explicitly request the icon to be 0x0. Used to avoid the scenario where a
+  // `type` is not specifically supplied vs. actually wanting a blank icon.
+  BLANK: 'blank',
   BRUSCHETTA: 'bruschetta',
   BULK_PINNING_BATTERY_SAVER: 'bulk_pinning_battery_saver',
   BULK_PINNING_DONE: 'bulk_pinning_done',
