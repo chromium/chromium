@@ -24,7 +24,7 @@ class GPUDeviceLostInfo : public ScriptWrappable {
   GPUDeviceLostInfo& operator=(const GPUDeviceLostInfo&) = delete;
 
   // gpu_device_lost_info.idl
-  const ScriptValue reason(ScriptState* script_state) const;
+  const String& reason() const;
   const String& message() const;
 
  private:
