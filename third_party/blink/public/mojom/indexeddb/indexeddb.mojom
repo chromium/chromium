@@ -228,12 +228,9 @@ struct IDBReturnValue {
   IDBKeyPath key_path;
 };
 
-// The IDBCallbacks interface is used to return results for individual requests.
-// Some requests may return multiple results before completion, such as
-// UpgradeNeeded before SuccessDatabase.
-//
-// TODO(https://crbug.com/627484): Many of these could be replaced with
-// replies associated with particular messages.
+// The IDBCallbacks interface is used to return results for requests to open or
+// delete databases.
+// TODO(estade): this interface should be renamed.
 interface IDBCallbacks {
   Error(IDBException code, mojo_base.mojom.String16 message);
 
@@ -416,12 +413,9 @@ interface IDBDatabase {
   DeleteRange(int64 transaction_id,
               int64 object_store_id,
               IDBKeyRange key_range) => (bool success);
-  // Gets the current number of an IndexedDB ObjectStore's key generator. It
-  // is implemented in the browser (more priviledged) and handles requests in
-  // the renderer process: WebIDBDatabaseImpl::GetKeyGeneratorCurrentNumber()
-  GetKeyGeneratorCurrentNumber(int64 transaction_id,
-                               int64 object_store_id,
-                               pending_associated_remote<IDBCallbacks> pending_callbacks);
+  // Gets the current number of an IndexedDB ObjectStore's key generator.
+  GetKeyGeneratorCurrentNumber(int64 transaction_id, int64 object_store_id)
+      => (int64 result, IDBError? error);
   // Correlates to IDBObjectStore::clear()
   Clear(int64 transaction_id,
         int64 object_store_id) => (bool success);

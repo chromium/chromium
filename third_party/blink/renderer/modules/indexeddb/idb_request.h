@@ -288,6 +288,8 @@ class MODULES_EXPORT IDBRequest : public EventTarget,
   void OnBatchGetAll(mojom::blink::IDBDatabaseBatchGetAllResultPtr result);
   void OnOpenCursor(mojom::blink::IDBDatabaseOpenCursorResultPtr result);
   void OnAdvanceCursor(mojom::blink::IDBCursorResultPtr result);
+  void OnGotKeyGeneratorCurrentNumber(int64_t number,
+                                      mojom::blink::IDBErrorPtr error);
 
   // Only IDBOpenDBRequest instances should receive these:
   virtual void EnqueueBlocked(int64_t old_version) { NOTREACHED(); }

@@ -736,7 +736,9 @@ IDBRequest* IDBObjectStore::getKeyGeneratorCurrentNumber(
       script_state, this, transaction_.Get(), std::move(metrics));
 
   BackendDB()->GetKeyGeneratorCurrentNumber(
-      transaction_->Id(), Id(), request->CreateWebCallbacks().release());
+      transaction_->Id(), Id(),
+      WTF::BindOnce(&IDBRequest::OnGotKeyGeneratorCurrentNumber,
+                    WrapWeakPersistent(request)));
   return request;
 }
 

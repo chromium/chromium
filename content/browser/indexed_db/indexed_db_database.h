@@ -288,7 +288,7 @@ class CONTENT_EXPORT IndexedDBDatabase {
 
   leveldb::Status GetKeyGeneratorCurrentNumberOperation(
       int64_t object_store_id,
-      std::unique_ptr<IndexedDBCallbacks> callbacks,
+      blink::mojom::IDBDatabase::GetKeyGeneratorCurrentNumberCallback callback,
       IndexedDBTransaction* transaction);
 
   leveldb::Status ClearOperation(

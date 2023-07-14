@@ -176,13 +176,12 @@ void WebIDBDatabase::DeleteRange(
                          std::move(key_range_ptr), std::move(success_callback));
 }
 
-void WebIDBDatabase::GetKeyGeneratorCurrentNumber(int64_t transaction_id,
-                                                  int64_t object_store_id,
-                                                  WebIDBCallbacks* callbacks) {
-  callbacks->SetState(transaction_id);
-  database_->GetKeyGeneratorCurrentNumber(
-      transaction_id, object_store_id,
-      GetCallbacksProxy(base::WrapUnique(callbacks)));
+void WebIDBDatabase::GetKeyGeneratorCurrentNumber(
+    int64_t transaction_id,
+    int64_t object_store_id,
+    mojom::blink::IDBDatabase::GetKeyGeneratorCurrentNumberCallback callback) {
+  database_->GetKeyGeneratorCurrentNumber(transaction_id, object_store_id,
+                                          std::move(callback));
 }
 
 void WebIDBDatabase::Clear(

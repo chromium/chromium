@@ -13,6 +13,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_math.h"
 #include "base/sequence_checker.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "content/browser/indexed_db/indexed_db_callback_helpers.h"
 #include "content/browser/indexed_db/indexed_db_connection.h"
@@ -562,14 +563,13 @@ void DatabaseImpl::DeleteRange(int64_t transaction_id,
 void DatabaseImpl::GetKeyGeneratorCurrentNumber(
     int64_t transaction_id,
     int64_t object_store_id,
-    mojo::PendingAssociatedRemote<blink::mojom::IDBCallbacks>
-        pending_callbacks) {
+    GetKeyGeneratorCurrentNumberCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto callbacks = std::make_unique<IndexedDBCallbacks>(
-      dispatcher_host_->AsWeakPtr(), bucket_info_, std::move(pending_callbacks),
-      idb_runner_);
-  if (!connection_->IsConnected())
-    return;
+  auto wrapped_callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+      std::move(callback), -1,
+      blink::mojom::IDBError::New(
+          blink::mojom::IDBException::kIgnorableAbortError,
+          u"Aborting due to unknown failure."));
 
   IndexedDBTransaction* transaction =
       connection_->GetTransaction(transaction_id);
@@ -588,7 +588,7 @@ void DatabaseImpl::GetKeyGeneratorCurrentNumber(
   transaction->ScheduleTask(BindWeakOperation(
       &IndexedDBDatabase::GetKeyGeneratorCurrentNumberOperation,
       connection_->database()->AsWeakPtr(), object_store_id,
-      std::move(callbacks)));
+      std::move(wrapped_callback)));
 }
 
 void DatabaseImpl::Clear(int64_t transaction_id,

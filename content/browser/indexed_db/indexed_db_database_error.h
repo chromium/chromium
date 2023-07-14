@@ -18,7 +18,8 @@ class CONTENT_EXPORT IndexedDBDatabaseError {
  public:
   IndexedDBDatabaseError();
   explicit IndexedDBDatabaseError(blink::mojom::IDBException code);
-  IndexedDBDatabaseError(blink::mojom::IDBException code, const char* message);
+  IndexedDBDatabaseError(blink::mojom::IDBException code,
+                         const std::string& message);
   IndexedDBDatabaseError(blink::mojom::IDBException code,
                          const std::u16string& message);
   ~IndexedDBDatabaseError();

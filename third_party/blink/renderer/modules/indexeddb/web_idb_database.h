@@ -91,9 +91,10 @@ class MODULES_EXPORT WebIDBDatabase final {
                    int64_t object_store_id,
                    const IDBKeyRange*,
                    mojom::blink::IDBDatabase::DeleteRangeCallback callback);
-  void GetKeyGeneratorCurrentNumber(int64_t transaction_id,
-                                    int64_t object_store_id,
-                                    WebIDBCallbacks*);
+  void GetKeyGeneratorCurrentNumber(
+      int64_t transaction_id,
+      int64_t object_store_id,
+      mojom::blink::IDBDatabase::GetKeyGeneratorCurrentNumberCallback callback);
   void Clear(int64_t transaction_id,
              int64_t object_store_id,
              mojom::blink::IDBDatabase::ClearCallback callback);

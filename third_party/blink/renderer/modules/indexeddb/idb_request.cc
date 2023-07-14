@@ -577,6 +577,17 @@ void IDBRequest::OnAdvanceCursor(mojom::blink::IDBCursorResultPtr result) {
                  std::move(result->get_values()->values[0]));
 }
 
+void IDBRequest::OnGotKeyGeneratorCurrentNumber(
+    int64_t number,
+    mojom::blink::IDBErrorPtr error) {
+  if (error) {
+    HandleError(std::move(error));
+  } else {
+    DCHECK_GE(number, 0);
+    HandleResponse(number);
+  }
+}
+
 void IDBRequest::EnqueueResponse(DOMException* error) {
   TRACE_EVENT0("IndexedDB", "IDBRequest::EnqueueResponse(DOMException)");
   if (!ShouldEnqueueEvent()) {

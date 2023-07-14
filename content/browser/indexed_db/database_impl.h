@@ -108,8 +108,7 @@ class DatabaseImpl : public blink::mojom::IDBDatabase {
   void GetKeyGeneratorCurrentNumber(
       int64_t transaction_id,
       int64_t object_store_id,
-      mojo::PendingAssociatedRemote<blink::mojom::IDBCallbacks>
-          pending_callbacks) override;
+      GetKeyGeneratorCurrentNumberCallback callback) override;
   void Clear(int64_t transaction_id,
              int64_t object_store_id,
              ClearCallback callback) override;

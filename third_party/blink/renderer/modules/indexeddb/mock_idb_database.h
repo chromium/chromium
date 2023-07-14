@@ -128,7 +128,7 @@ class MockIDBDatabase : public testing::StrictMock<mojom::blink::IDBDatabase> {
               GetKeyGeneratorCurrentNumber,
               (int64_t transaction_id,
                int64_t object_store_id,
-               mojo::PendingAssociatedRemote<mojom::blink::IDBCallbacks>),
+               GetKeyGeneratorCurrentNumberCallback),
               (override));
   MOCK_METHOD(void,
               Clear,
