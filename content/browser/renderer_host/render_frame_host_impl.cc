@@ -5602,6 +5602,13 @@ void RenderFrameHostImpl::MaybeStartOutermostMainFrameNavigation(
   TRACE_EVENT0("navigation",
                "RenderFrameHostImpl::MaybeStartOutermostMainFrameNavigation");
 
+  // Disallow service worker start-up nor warm-up when there are other
+  // windows that might script with this frame to mitigate security and
+  // privacy concerns.
+  if (site_instance_->GetRelatedActiveContentsCount() > 1u) {
+    return;
+  }
+
   ServiceWorkerContextWrapper* context =
       GetStoragePartition()->GetServiceWorkerContext();
 
