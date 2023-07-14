@@ -62,15 +62,16 @@ class ContentPasswordManagerDriverFactory
       autofill::AutofillClient* autofill_client);
 
   // content::WebContentsObserver:
-  void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
+  void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
+  void WebContentsDestroyed() override;
 
   std::map<content::RenderFrameHost*, ContentPasswordManagerDriver>
       frame_driver_map_;
 
-  raw_ptr<PasswordManagerClient, DanglingAcrossTasks> password_client_;
-  raw_ptr<autofill::AutofillClient, DanglingAcrossTasks> autofill_client_;
+  const raw_ptr<PasswordManagerClient> password_client_;
+  raw_ptr<autofill::AutofillClient> autofill_client_ = nullptr;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

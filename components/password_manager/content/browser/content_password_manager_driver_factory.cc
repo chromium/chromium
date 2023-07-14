@@ -95,11 +95,6 @@ ContentPasswordManagerDriverFactory::GetDriverForFrame(
   return &it->second;
 }
 
-void ContentPasswordManagerDriverFactory::RenderFrameDeleted(
-    content::RenderFrameHost* render_frame_host) {
-  frame_driver_map_.erase(render_frame_host);
-}
-
 void ContentPasswordManagerDriverFactory::DidFinishNavigation(
     content::NavigationHandle* navigation) {
   if (navigation->IsSameDocument() || !navigation->HasCommitted()) {
@@ -128,6 +123,16 @@ void ContentPasswordManagerDriverFactory::DidFinishNavigation(
   // EnablePasswordManagerWithinFencedFrame is launched.
   if (auto* driver = GetDriverForFrame(navigation->GetRenderFrameHost()))
     driver->GetPasswordAutofillManager()->DidNavigateMainFrame();
+}
+
+void ContentPasswordManagerDriverFactory::RenderFrameDeleted(
+    content::RenderFrameHost* render_frame_host) {
+  frame_driver_map_.erase(render_frame_host);
+}
+
+void ContentPasswordManagerDriverFactory::WebContentsDestroyed() {
+  web_contents()->RemoveUserData(UserDataKey());
+  // Do not add code - `this` is now destroyed.
 }
 
 void ContentPasswordManagerDriverFactory::RequestSendLoggingAvailability() {

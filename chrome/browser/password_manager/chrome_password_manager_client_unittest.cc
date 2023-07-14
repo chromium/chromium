@@ -149,16 +149,14 @@ std::unique_ptr<PasswordForm> MakePasswordForm() {
 // test.
 class MockChromePasswordManagerClient : public ChromePasswordManagerClient {
  public:
-  MOCK_CONST_METHOD0(GetMainFrameCertStatus, net::CertStatus());
-
-  explicit MockChromePasswordManagerClient(content::WebContents* web_contents)
-      : ChromePasswordManagerClient(web_contents, nullptr) {
-    ON_CALL(*this, GetMainFrameCertStatus()).WillByDefault(testing::Return(0));
-#if BUILDFLAG(FULL_SAFE_BROWSING)
-    password_protection_service_ =
-        std::make_unique<safe_browsing::MockPasswordProtectionService>();
-#endif
+  static MockChromePasswordManagerClient* CreateForWebContentsAndGet(
+      content::WebContents* contents) {
+    auto* client = new MockChromePasswordManagerClient(contents);
+    contents->SetUserData(UserDataKey(), base::WrapUnique(client));
+    return client;
   }
+
+  MOCK_METHOD(net::CertStatus, GetMainFrameCertStatus, (), (const override));
 
   MockChromePasswordManagerClient(const MockChromePasswordManagerClient&) =
       delete;
@@ -177,6 +175,14 @@ class MockChromePasswordManagerClient : public ChromePasswordManagerClient {
 #endif
 
  private:
+  explicit MockChromePasswordManagerClient(content::WebContents* web_contents)
+      : ChromePasswordManagerClient(web_contents, nullptr) {
+#if BUILDFLAG(FULL_SAFE_BROWSING)
+    password_protection_service_ =
+        std::make_unique<safe_browsing::MockPasswordProtectionService>();
+#endif
+  }
+
 #if BUILDFLAG(FULL_SAFE_BROWSING)
   std::unique_ptr<safe_browsing::MockPasswordProtectionService>
       password_protection_service_;
@@ -482,8 +488,10 @@ TEST_F(ChromePasswordManagerClientTest, SavingAndFillingEnabledConditionsTest) {
   std::unique_ptr<WebContents> test_web_contents(
       content::WebContentsTester::CreateTestWebContents(
           web_contents()->GetBrowserContext(), nullptr));
-  std::unique_ptr<MockChromePasswordManagerClient> client(
-      new MockChromePasswordManagerClient(test_web_contents.get()));
+  MockChromePasswordManagerClient* client =
+      MockChromePasswordManagerClient::CreateForWebContentsAndGet(
+          test_web_contents.get());
+  ON_CALL(*client, GetMainFrameCertStatus()).WillByDefault(Return(0));
   MockPasswordManagerSettingsService* settings_service =
       static_cast<MockPasswordManagerSettingsService*>(
           PasswordManagerSettingsServiceFactory::GetForProfile(profile()));
@@ -533,8 +541,9 @@ TEST_F(ChromePasswordManagerClientTest,
   std::unique_ptr<WebContents> incognito_web_contents(
       content::WebContentsTester::CreateTestWebContents(
           profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true), nullptr));
-  std::unique_ptr<MockChromePasswordManagerClient> client(
-      new MockChromePasswordManagerClient(incognito_web_contents.get()));
+  MockChromePasswordManagerClient* client =
+      MockChromePasswordManagerClient::CreateForWebContentsAndGet(
+          incognito_web_contents.get());
   EXPECT_CALL(*client, GetMainFrameCertStatus()).WillRepeatedly(Return(0));
 
   // Saving disabled in Incognito mode.
@@ -882,12 +891,14 @@ TEST_F(ChromePasswordManagerClientTest,
   std::unique_ptr<WebContents> test_web_contents(
       content::WebContentsTester::CreateTestWebContents(
           web_contents()->GetBrowserContext(), nullptr));
-  std::unique_ptr<MockChromePasswordManagerClient> client(
-      new MockChromePasswordManagerClient(test_web_contents.get()));
+  MockChromePasswordManagerClient* client =
+      MockChromePasswordManagerClient::CreateForWebContentsAndGet(
+          test_web_contents.get());
+  ON_CALL(*client, GetMainFrameCertStatus()).WillByDefault(Return(0));
   EXPECT_CALL(*client->password_protection_service(),
               MaybeStartPasswordFieldOnFocusRequest(_, _, _, _, _))
       .Times(1);
-  PasswordManagerClient* mojom_client = client.get();
+  PasswordManagerClient* mojom_client = client;
   mojom_client->CheckSafeBrowsingReputation(GURL("http://foo.com/submit"),
                                             GURL("http://foo.com/iframe.html"));
 }
@@ -911,8 +922,10 @@ TEST_F(ChromePasswordManagerClientTest,
   safe_browsing::SafeBrowsingUserInteractionObserver::CreateForWebContents(
       test_web_contents.get(), resource, /* is_main_frame= */ true, ui_manager);
 
-  auto client = std::make_unique<MockChromePasswordManagerClient>(
-      test_web_contents.get());
+  MockChromePasswordManagerClient* client =
+      MockChromePasswordManagerClient::CreateForWebContentsAndGet(
+          test_web_contents.get());
+  ON_CALL(*client, GetMainFrameCertStatus()).WillByDefault(Return(0));
   // Saving is disabled when the page has a delayed SafeBrowsing warning.
   const GURL kUrlOn("https://accounts.google.com");
   EXPECT_FALSE(client->IsSavingAndFillingEnabled(kUrlOn));
