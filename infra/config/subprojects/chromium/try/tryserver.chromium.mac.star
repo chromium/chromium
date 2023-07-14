@@ -145,6 +145,8 @@ try_.compilator_builder(
     name = "mac-rel-compilator",
     branch_selector = branches.selector.MAC_BRANCHES,
     os = os.MAC_DEFAULT,
+    # Allow both x64 and arm64 bots.
+    cpu = None,
     check_for_flakiness = True,
     main_list_view = "try",
 )
