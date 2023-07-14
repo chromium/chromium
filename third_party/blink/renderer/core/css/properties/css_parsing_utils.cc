@@ -5280,8 +5280,9 @@ CSSValue* ConsumeFontSize(CSSParserTokenRange& range,
   if (range.Peek().Id() == CSSValueID::kWebkitXxxLarge) {
     context.Count(WebFeature::kFontSizeWebkitXxxLarge);
   }
-  if (range.Peek().Id() >= CSSValueID::kXxSmall &&
-      range.Peek().Id() <= CSSValueID::kMath) {
+  if ((range.Peek().Id() >= CSSValueID::kXxSmall &&
+       range.Peek().Id() <= CSSValueID::kWebkitXxxLarge) ||
+      range.Peek().Id() == CSSValueID::kMath) {
     return ConsumeIdent(range);
   }
   return ConsumeLengthOrPercent(
