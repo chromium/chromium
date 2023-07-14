@@ -3203,10 +3203,6 @@ inline constexpr char kSecurityKeyPermitAttestation[] =
 // latter if necessary. The timestamp therefore represents the "freshness" of
 // the CWS information saved.
 inline constexpr char kCWSInfoTimestamp[] = "extensions.cws_info_timestamp";
-
-// A bool value for running GarbageCollectStoragePartitionCommand.
-inline constexpr char kShouldGarbageCollectStoragePartitions[] =
-    "storage_partitions.should_garbage_collect";
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)

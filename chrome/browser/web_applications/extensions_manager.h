@@ -17,17 +17,10 @@ class FilePath;
 }  // namespace base
 
 namespace extensions {
-class Extension;
 class ExtensionRegistry;
-class ExtensionService;
 }  // namespace extensions
 
 namespace web_app {
-
-class ExtensionInstallGate {
- public:
-  virtual ~ExtensionInstallGate();
-};
 
 class ExtensionsManager {
  public:
@@ -35,16 +28,6 @@ class ExtensionsManager {
   virtual ~ExtensionsManager();
 
   virtual std::unordered_set<base::FilePath> GetIsolatedStoragePaths();
-
-  // Returns ExtensionsPref::kStorageGarbageCollect which indicates possibly
-  // deleted Storage Partitions on disk requiring garbage collection.
-  // TODO(crbug.com/1463825): Delete ExtensionsPref::kStorageGarbageCollect.
-  virtual bool ShouldGarbageCollectStoragePartitions();
-
-  // Creates an ExtensionInstallerGate which registers itself on
-  // ExtensionService to delay Extension installs.
-  virtual std::unique_ptr<ExtensionInstallGate>
-  RegisterGarbageCollectionInstallGate();
 
  private:
   base::raw_ptr<Profile> profile_;

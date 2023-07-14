@@ -23,8 +23,6 @@
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/browser/web_applications/web_app_translation_manager.h"
-#include "chrome/common/pref_names.h"
-#include "components/prefs/pref_service.h"
 #include "components/webapps/browser/uninstall_result_code.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -86,10 +84,6 @@ void RemoveWebAppJob::Start(AllAppsLock& lock, Callback callback) {
   if (!app) {
     CompleteAndSelfDestruct(webapps::UninstallResultCode::kNoAppToUninstall);
     return;
-  }
-
-  if (app->isolation_data().has_value()) {
-    has_isolated_storage_ = true;
   }
 
   if (is_initial_request_) {
@@ -265,14 +259,6 @@ void RemoveWebAppJob::MaybeFinishPrimaryRemoval() {
   primary_removal_result_ = errors_ ? webapps::UninstallResultCode::kError
                                     : webapps::UninstallResultCode::kSuccess;
   base::UmaHistogramBoolean("WebApp.Uninstall.Result", !errors_);
-
-  // For IWAs, set pref for garbage collection.
-  if (has_isolated_storage_ &&
-      primary_removal_result_ == webapps::UninstallResultCode::kSuccess) {
-    profile_->GetPrefs()->SetBoolean(
-        prefs::kShouldGarbageCollectStoragePartitions, true);
-  }
-
   lock_->install_manager().NotifyWebAppUninstalled(app_id_, uninstall_source_);
 
   ProcessSubAppsPendingRemovalOrComplete();

@@ -22,7 +22,6 @@
 #include "chrome/browser/web_applications/extensions_manager.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/file_utils_wrapper.h"
-#include "chrome/browser/web_applications/isolated_web_apps/garbage_collect_storage_partitions_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/install_isolated_web_app_from_command_line.h"
 #include "chrome/browser/web_applications/manifest_update_manager.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
@@ -49,8 +48,6 @@
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/browser/web_applications/web_contents/web_contents_manager.h"
 #include "chrome/common/chrome_features.h"
-#include "chrome/common/pref_names.h"
-#include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
 
 #if (BUILDFLAG(IS_CHROMEOS))
@@ -293,7 +290,6 @@ void WebAppProvider::Shutdown() {
 
 void WebAppProvider::StartImpl() {
   StartSyncBridge();
-  MaybeScheduleGarbageCollection();
 }
 
 void WebAppProvider::CreateSubsystems(Profile* profile) {
@@ -450,20 +446,6 @@ void WebAppProvider::DoMigrateProfilePrefs(Profile* profile) {
       web_app->SetLatestInstallSource(
           static_cast<webapps::WebappInstallSource>(iter.second));
     }
-  }
-}
-
-void WebAppProvider::MaybeScheduleGarbageCollection() {
-  // We are mirating from ExtensionsPref::kStorageGarbageCollect to
-  // prefs::kShouldGarbageCollectStoragePartitions. During migration, either
-  // one of the prefs can trigget garbge collection.
-  // TODO(crbug.com/1463825): Delete ExtensionsPref::kStorageGarbageCollect.
-  if (profile_->GetPrefs()->GetBoolean(
-          prefs::kShouldGarbageCollectStoragePartitions) ||
-      extensions_manager_->ShouldGarbageCollectStoragePartitions()) {
-    command_manager().ScheduleCommand(
-        std::make_unique<web_app::GarbageCollectStoragePartititonsCommand>(
-            profile_, base::DoNothing()));
   }
 }
 
