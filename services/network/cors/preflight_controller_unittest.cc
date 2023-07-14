@@ -379,7 +379,7 @@ class MockDevToolsObserver : public mojom::DevToolsObserver {
   void Clone(mojo::PendingReceiver<DevToolsObserver> observer) override {
     receivers_.Add(this, std::move(observer));
   }
-  void OnLocalNetworkRequest(
+  void OnPrivateNetworkRequest(
       const absl::optional<std::string>& devtool_request_id,
       const GURL& url,
       bool is_warning,

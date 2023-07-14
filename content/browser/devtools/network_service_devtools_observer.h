@@ -53,7 +53,7 @@ class NetworkServiceDevToolsObserver : public network::mojom::DevToolsObserver {
   void OnTrustTokenOperationDone(
       const std::string& devtools_request_id,
       network::mojom::TrustTokenOperationResultPtr result) override;
-  void OnLocalNetworkRequest(
+  void OnPrivateNetworkRequest(
       const absl::optional<std::string>& devtools_request_id,
       const GURL& url,
       bool is_warning,
