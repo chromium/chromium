@@ -2,8 +2,7 @@
 # Copyright 2012 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-
-"""Tests for jni_generator.py.
+"""Tests for jni_zero.py.
 
 This test suite contains various tests for the JNI generator.
 It exercises the low-level parser all the way up to the
@@ -27,7 +26,7 @@ import zipfile
 
 _SCRIPT_DIR = os.path.normpath(os.path.dirname(__file__))
 _GOLDENS_DIR = os.path.join(_SCRIPT_DIR, 'golden')
-_INCLUDES = ('base/android/jni_generator/jni_generator_helper.h')
+_EXTRA_INCLUDES = 'base/android/jni_generator/jni_generator_helper.h'
 _JAVA_SRC_DIR = os.path.join(_SCRIPT_DIR, 'java', 'src', 'org', 'chromium',
                              'example', 'jni_generator')
 
@@ -39,22 +38,27 @@ _accessed_goldens = set()
 
 
 class CommonOptions:
-  def __init__(self):
+  def __init__(self, action):
+    self.action = action
     self.enable_jni_multiplexing = False
     self.package_prefix = None
     self.use_proxy_hash = False
 
   def to_args(self):
-    ret = []
+    ret = [os.path.join(_SCRIPT_DIR, 'jni_zero.py'), self.action]
+    if self.enable_jni_multiplexing:
+      ret.append('--enable-jni-multiplexing')
     if self.package_prefix:
-      ret += ['--package_prefix', self.package_prefix]
+      ret += ['--package-prefix', self.package_prefix]
+    if self.use_proxy_hash:
+      ret.append('--use-proxy-hash')
     return ret
 
 
-class JniGeneratorOptions(CommonOptions):
+class IntermediatesOptions(CommonOptions):
   def __init__(self, **kwargs):
-    super().__init__()
-    self.includes = _INCLUDES
+    super().__init__('generate-library')
+    self.extra_include = _EXTRA_INCLUDES
     self.input_file = None
     self.jar_file = None
     self.module_name = ''
@@ -64,25 +68,20 @@ class JniGeneratorOptions(CommonOptions):
 
   def to_args(self):
     ret = super().to_args()
-    ret += ['--output_dir', self.output_dir]
-    ret += ['--input_file', self.input_file]
-    ret += ['--output_name', self.output_name]
+    ret += ['--output-dir', self.output_dir]
+    ret += ['--input-file', self.input_file]
+    ret += ['--output-name', self.output_name]
     if self.jar_file:
-      ret += ['--jar_file', self.jar_file]
-    if self.enable_jni_multiplexing:
-      ret.append('--enable_jni_multiplexing')
-    if self.includes:
-      ret += ['--includes', self.includes, '--ptr_type', 'long']
-    if self.use_proxy_hash:
-      ret.append('--use_proxy_hash')
+      ret += ['--jar-file', self.jar_file]
+    if self.extra_include:
+      ret += ['--extra-include', self.extra_include]
     return ret
 
 
-class JniRegistrationGeneratorOptions(CommonOptions):
+class LinkOptions(CommonOptions):
   """The mock options object which is passed to the jni_generator.py script."""
-
   def __init__(self, **kwargs):
-    super().__init__()
+    super().__init__('generate-final')
     self.add_stubs_for_missing_native = False
     self.enable_proxy_mocks = False
     self.header_path = None
@@ -97,8 +96,6 @@ class JniRegistrationGeneratorOptions(CommonOptions):
     ret = super().to_args()
     if self.add_stubs_for_missing_native:
       ret.append('--add-stubs-for-missing-native')
-    if self.enable_jni_multiplexing:
-      ret.append('--enable-jni-multiplexing')
     if self.enable_proxy_mocks:
       ret.append('--enable-proxy-mocks')
     if self.header_path:
@@ -109,14 +106,10 @@ class JniRegistrationGeneratorOptions(CommonOptions):
       ret.append('--manual-jni-registration')
     if self.module_name:
       ret += ['--module-name', self.module_name]
-    if self.package_prefix:
-      ret += ['--package_prefix', self.package_prefix]
     if self.remove_uncalled_methods:
       ret.append('--remove-uncalled-methods')
     if self.require_mocks:
       ret.append('--require-mocks')
-    if self.use_proxy_hash:
-      ret.append('--use-proxy-hash')
     return ret
 
 
@@ -131,7 +124,6 @@ def _MakePrefixes(options):
 
 
 class BaseTest(unittest.TestCase):
-
   def _CheckSrcjarGoldens(self, srcjar_path, name_to_goldens):
     with zipfile.ZipFile(srcjar_path, 'r') as srcjar:
       self.assertEqual(set(srcjar.namelist()), set(name_to_goldens))
@@ -144,7 +136,7 @@ class BaseTest(unittest.TestCase):
 
   def _TestEndToEndGeneration(self, input_file, *, srcjar=False, **kwargs):
     golden_name = self._testMethodName
-    options = JniGeneratorOptions(**kwargs)
+    options = IntermediatesOptions(**kwargs)
     basename = os.path.splitext(input_file)[0]
     header_golden = f'{golden_name}-{basename}_jni.h.golden'
     if srcjar:
@@ -168,11 +160,10 @@ class BaseTest(unittest.TestCase):
         options.input_file = relative_input_file
 
       options.output_dir = tdir
-      cmd = [os.path.join(_SCRIPT_DIR, 'jni_generator.py')]
+      cmd = options.to_args()
       if srcjar:
         srcjar_path = os.path.join(tdir, 'srcjar.jar')
         cmd += ['--srcjar-path', srcjar_path]
-      cmd += options.to_args()
 
       logging.info('Running: %s', shlex.join(cmd))
       subprocess.check_call(cmd)
@@ -190,7 +181,7 @@ class BaseTest(unittest.TestCase):
                                 src_files_for_asserts_and_stubs=None,
                                 **kwargs):
     golden_name = self._testMethodName
-    options = JniRegistrationGeneratorOptions(**kwargs)
+    options = LinkOptions(**kwargs)
     dir_prefix, file_prefix = _MakePrefixes(options)
     name_to_goldens = {
         f'{dir_prefix}org/chromium/base/natives/{file_prefix}GEN_JNI.java':
@@ -214,7 +205,7 @@ class BaseTest(unittest.TestCase):
       else:
         java_sources = native_sources
 
-      cmd = [os.path.join(_SCRIPT_DIR, 'jni_registration_generator.py')]
+      cmd = options.to_args()
 
       java_sources_file = pathlib.Path(tdir) / 'java_sources.txt'
       java_sources_file.write_text('\n'.join(java_sources))
@@ -230,7 +221,6 @@ class BaseTest(unittest.TestCase):
         header_path = os.path.join(tdir, 'header.h')
         cmd += ['--header-path', header_path]
 
-      cmd += options.to_args()
       logging.info('Running: %s', shlex.join(cmd))
       subprocess.check_call(cmd)
 
@@ -256,7 +246,6 @@ class BaseTest(unittest.TestCase):
       self.fail('Golden text mismatch.')
 
   def CompareText(self, golden_text, generated_text):
-
     def FilterText(text):
       return [
           l.strip() for l in text.split('\n')

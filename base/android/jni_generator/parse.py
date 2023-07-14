@@ -281,8 +281,7 @@ def _do_parse(filename, *, package_prefix):
 
   # TODO(crbug.com/1406605): Remove circular dep.
   import jni_generator
-  non_proxy_natives = jni_generator.ExtractNatives(type_resolver, contents,
-                                                   'long')
+  non_proxy_natives = jni_generator.ExtractNatives(type_resolver, contents)
   called_by_natives = jni_generator.ExtractCalledByNatives(
       type_resolver, contents)
 
