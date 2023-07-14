@@ -856,6 +856,10 @@ extern const char kExperimentalWebPlatformFeaturesDescription[];
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 extern const char kExtensionsMenuAccessControlName[];
 extern const char kExtensionsMenuAccessControlDescription[];
+extern const char kIPHExtensionsMenuFeatureName[];
+extern const char kIPHExtensionsMenuFeatureDescription[];
+extern const char kIPHExtensionsRequestAccessButtonFeatureName[];
+extern const char kIPHExtensionsRequestAccessButtonFeatureDescription[];
 extern const char kWebViewTagMPArchBehaviorName[];
 extern const char kWebViewTagMPArchBehaviorDescription[];
 

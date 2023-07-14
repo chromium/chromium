@@ -273,7 +273,7 @@ DEFINE_VARIATION_PARAM(kIPHDownloadToolbarButtonFeature,
 DEFINE_VARIATION_PARAM(kIPHExtensionsMenuFeature, "IPH_ExtensionsMenu");
 DEFINE_VARIATION_PARAM(kIPHFocusModeFeature, "IPH_FocusMode");
 DEFINE_VARIATION_PARAM(kIPHExtensionsRequestAccessButtonFeature,
-                       "IPH_ExtensionsRequestAccessFeature");
+                       "IPH_ExtensionsRequestAccessButton");
 DEFINE_VARIATION_PARAM(kIPHGlobalMediaControls, "IPH_GlobalMediaControls");
 DEFINE_VARIATION_PARAM(kIPHGMCCastStartStopFeature, "IPH_GMCCastStartStop");
 DEFINE_VARIATION_PARAM(kIPHHighEfficiencyModeFeature, "IPH_HighEfficiencyMode");

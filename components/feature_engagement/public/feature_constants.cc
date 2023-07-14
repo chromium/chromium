@@ -50,7 +50,7 @@ BASE_FEATURE(kIPHExtensionsMenuFeature,
              "IPH_ExtensionsMenu",
              base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHExtensionsRequestAccessButtonFeature,
-             "IPH_ExtensionsRequestAccessFeature",
+             "IPH_ExtensionsRequestAccessButton",
              base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHFocusHelpBubbleScreenReaderPromoFeature,
              "IPH_FocusHelpBubbleScreenReaderPromo",

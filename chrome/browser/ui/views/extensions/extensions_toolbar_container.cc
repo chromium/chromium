@@ -510,6 +510,10 @@ void ExtensionsToolbarContainer::OnTabStripModelChanged(
   if (tab_strip_model->empty() || !selection.active_tab_changed())
     return;
 
+  // Close Extensions menu IPH if it is open.
+  browser_->window()->CloseFeaturePromo(
+      feature_engagement::kIPHExtensionsMenuFeature);
+
   extensions::MaybeShowExtensionControlledNewTabPage(browser_,
                                                      selection.new_contents);
 
@@ -529,6 +533,10 @@ void ExtensionsToolbarContainer::TabChangedAt(content::WebContents* contents,
   if (change_type != TabChangeType::kAll) {
     return;
   }
+
+  // Close Extensions menu IPH if it is open.
+  browser_->window()->CloseFeaturePromo(
+      feature_engagement::kIPHExtensionsMenuFeature);
 
   // Request access button confirmation is tab-specific for a specific origin.
   // Therefore, we need to reset it if it's currently showing, we are on the

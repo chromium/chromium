@@ -60788,6 +60788,7 @@ from previous Chrome versions.
   <int value="-1578503491" label="EnableContinueReading:disabled"/>
   <int value="-1578295753" label="UserMediaScreenCapturing:disabled"/>
   <int value="-1576943648" label="JourneysPersistCachesToPrefs:enabled"/>
+  <int value="-1576789123" label="IPH_ExtensionsRequestAccessButton:disabled"/>
   <int value="-1576408607" label="ChromeTipsInMainMenu:enabled"/>
   <int value="-1576014168" label="DesktopPWAsSubApps:enabled"/>
   <int value="-1575868447" label="RemoveNtpFakebox:enabled"/>
@@ -63454,6 +63455,7 @@ from previous Chrome versions.
   <int value="-222282965"
       label="disable_idle_sockets_close_on_memory_pressure:enabled"/>
   <int value="-221649438" label="AllowTouchpadHapticClickSettings:disabled"/>
+  <int value="-221490518" label="IPH_ExtensionsMenu:enabled"/>
   <int value="-220829663" label="TimeOfDayScreenSaver:disabled"/>
   <int value="-220599034" label="UsePdfCompositorServiceForPrint:enabled"/>
   <int value="-220298483" label="ImeOptionsInSettings:enabled"/>
@@ -66856,6 +66858,7 @@ from previous Chrome versions.
   <int value="1543027970" label="EnableDisplayZoomSetting:disabled"/>
   <int value="1543349770" label="CastUseBlocklistForRemotingQuery:disabled"/>
   <int value="1544561349" label="PdfUseSkiaRenderer:disabled"/>
+  <int value="1544887706" label="IPH_ExtensionsRequestAccessButton:enabled"/>
   <int value="1546652609" label="SharingHubDesktopOmnibox:disabled"/>
   <int value="1547049944" label="ScalableIph:enabled"/>
   <int value="1548776701" label="AllBookmarks:disabled"/>
@@ -67003,6 +67006,7 @@ from previous Chrome versions.
   <int value="1627666567" label="ChromeOSAmbientMode:disabled"/>
   <int value="1628259213" label="DuetTabStripIntegrationAndroid:enabled"/>
   <int value="1628831121" label="SafeBrowsingUseLocalBlacklistsV2:enabled"/>
+  <int value="1629047185" label="IPH_ExtensionsMenu:disabled"/>
   <int value="1629289109" label="EnableBloom:disabled"/>
   <int value="1629497607" label="CertDualVerificationTrial:disabled"/>
   <int value="1629523329" label="WebUiSystemFont:enabled"/>

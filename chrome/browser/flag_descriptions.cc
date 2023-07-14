@@ -1522,6 +1522,17 @@ const char kExtensionsMenuAccessControlName[] =
 const char kExtensionsMenuAccessControlDescription[] =
     "Enables a redesigned extensions menu that allows the user to control "
     "extensions site access.";
+const char kIPHExtensionsMenuFeatureName[] = "IPH Extensions Menu";
+const char kIPHExtensionsMenuFeatureDescription[] =
+    "Enables In-Product-Help that appears when at least one extension has "
+    "access to the current page. This feature is gated by "
+    "extensions-menu-access-control.";
+const char kIPHExtensionsRequestAccessButtonFeatureName[] =
+    "IPH Extensions Request Access Button Feature";
+const char kIPHExtensionsRequestAccessButtonFeatureDescription[] =
+    "Enables In-Product-Help that appears when at least one extension is "
+    "requesting access to the current page. This feature is gated by "
+    "extensions-menu-access-control.";
 const char kWebViewTagMPArchBehaviorName[] =
     "MPArch behavior change for <webview> tags";
 const char kWebViewTagMPArchBehaviorDescription[] =

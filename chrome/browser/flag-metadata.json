@@ -4907,6 +4907,20 @@
     "expiry_milestone": 120
   },
   {
+    "name": "iph-extensions-menu-feature",
+    "owners": [
+      "emiliapaz"
+    ],
+    "expiry_milestone": 120
+  },
+  {
+    "name": "iph-extensions-request-access-button-feature",
+    "owners": [
+      "emiliapaz"
+    ],
+    "expiry_milestone": 120
+  },
+  {
       "name": "iph-price-notifications-while-browsing",
       "owners": [ "danieltwhite", "ajuma" ],
       "expiry_milestone": 118
