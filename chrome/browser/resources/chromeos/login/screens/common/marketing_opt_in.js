@@ -48,18 +48,6 @@ const MarketingOptInStep = {
 };
 
 /**
- * URL of the animation in the light mode.
- * @type {string}
- */
-const ANIMATION_LIGHT_URL = 'animations/all_set_light.json';
-
-/**
- * URL of the animation in the dark mode.
- * @type {string}
- */
-const ANIMATION_DARK_URL = 'animations/all_set_dark.json';
-
-/**
  * @typedef {{
  *   marketingOptInOverviewDialog:  OobeAdaptiveDialog,
  *   chromebookUpdatesOption:  CrToggleElement,
@@ -108,15 +96,6 @@ class MarketingOptIn extends MarketingScreenElementBase {
        * Canada only.
        */
       hasLegalFooter_: {
-        type: Boolean,
-        value: false,
-      },
-
-      /**
-       * Whether the marketing opt-in page is being rendered in dark mode.
-       * @private {boolean}
-       */
-      isDarkModeActive_: {
         type: Boolean,
         value: false,
       },
@@ -246,16 +225,6 @@ class MarketingOptIn extends MarketingScreenElementBase {
   getMarginTop_() {
     return this.isCloudGamingDevice_ ? 'margin-top: 65px;' :
                                        'margin-top: 20px;';
-  }
-
-
-
-  /**
-   * Returns the url of the animation asset.
-   * @private
-   */
-  getAnimationUrl_() {
-    return this.isDarkModeActive_ ? ANIMATION_DARK_URL : ANIMATION_LIGHT_URL;
   }
 }
 

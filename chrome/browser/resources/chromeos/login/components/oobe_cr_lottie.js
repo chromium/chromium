@@ -68,7 +68,7 @@ export class OobeCrLottie extends OobeCrLottieBase {
        */
       dynamic: {
         type: Boolean,
-        value: false,
+        value: true,
       },
     };
   }

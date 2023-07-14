@@ -165,11 +165,8 @@ found in the LICENSE file.
         slot="content" class="layout flex vertical">
     <!-- Animation -->
     <div  class="marketing-animation-content">
-      <iron-media-query query="(prefers-color-scheme: dark)"
-          query-matches="{{isDarkModeActive_}}">
-      </iron-media-query>
       <oobe-cr-lottie id="animation"
-          animation-url="[[getAnimationUrl_(isDarkModeActive_)]]"
+          animation-url="animations/all_set.json"
           singleLoop="true">
       </oobe-cr-lottie>
     </div>
