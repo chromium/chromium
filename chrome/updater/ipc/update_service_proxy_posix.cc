@@ -388,7 +388,6 @@ void UpdateServiceProxy::OnConnected(
     absl::optional<mojo::PlatformChannelEndpoint> endpoint) {
   VLOG(1) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  connecting_ = false;
   if (!endpoint) {
     remote_.reset();
     return;
@@ -429,10 +428,9 @@ UpdateServiceProxy::~UpdateServiceProxy() {
 void UpdateServiceProxy::EnsureConnecting() {
   VLOG(1) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (remote_ || connecting_) {
+  if (remote_) {
     return;
   }
-  connecting_ = true;
   base::ThreadPool::PostTask(
       FROM_HERE, {base::MayBlock()},
       base::BindOnce(

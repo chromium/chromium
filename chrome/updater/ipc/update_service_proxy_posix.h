@@ -114,7 +114,6 @@ class UpdateServiceProxy : public UpdateService {
       GUARDED_BY_CONTEXT(sequence_checker_);
   mojo::Remote<mojom::UpdateService> remote_
       GUARDED_BY_CONTEXT(sequence_checker_);
-  bool connecting_ = false;
   base::WeakPtrFactory<UpdateServiceProxy> weak_factory_{this};
 };
 

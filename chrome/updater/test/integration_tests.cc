@@ -456,7 +456,7 @@ class IntegrationTest : public ::testing::Test {
 #define MAYBE_UninstallIfUnusedSelfAndOldReal UninstallIfUnusedSelfAndOldReal
 // TODO(crbug.com/1456556): enable OverinstallBrokenSameVersion once it works
 // on non-Windows platforms.
-#if BUILDFLAG(IS_WIN)
+#if !BUILDFLAG(IS_LINUX)
 #define MAYBE_OverinstallBrokenSameVersion OverinstallBrokenSameVersion
 #else
 #define MAYBE_OverinstallBrokenSameVersion DISABLED_OverinstallBrokenSameVersion

@@ -39,7 +39,7 @@
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/updater_version.h"
 #import "chrome/updater/util/mac_util.h"
-#import "chrome/updater/util/posix_util.h"
+#include "chrome/updater/util/posix_util.h"
 #include "chrome/updater/util/util.h"
 #include "components/crash/core/common/crash_key.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -59,14 +59,19 @@ bool CopyBundle(UpdaterScope scope) {
     LOG(ERROR) << "Failed to get install directory.";
     return false;
   }
-  if (!base::PathExists(*versioned_install_dir)) {
-    base::File::Error error;
-    if (!base::CreateDirectoryAndGetError(*versioned_install_dir, &error)) {
-      LOG(ERROR) << "Failed to create '"
-                 << versioned_install_dir->value().c_str()
-                 << "' directory: " << base::File::ErrorToString(error);
+
+  if (base::PathExists(*versioned_install_dir)) {
+    if (!DeleteExcept(versioned_install_dir->Append("Crashpad"))) {
+      LOG(ERROR) << "Could not remove existing copy of this updater.";
       return false;
     }
+  }
+
+  base::File::Error error;
+  if (!base::CreateDirectoryAndGetError(*versioned_install_dir, &error)) {
+    LOG(ERROR) << "Failed to create '" << versioned_install_dir->value().c_str()
+               << "' directory: " << base::File::ErrorToString(error);
+    return false;
   }
 
   // For system installs, set file permissions to be drwxr-xr-x

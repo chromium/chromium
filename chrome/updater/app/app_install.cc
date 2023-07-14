@@ -143,12 +143,14 @@ void AppInstall::FirstTaskRun() {
   splash_screen_ = splash_screen_maker_.Run(app_name_);
   splash_screen_->Show();
 
-  // Creating instances of `UpdateServiceProxy` is possible only after task
-  // scheduling has been initialized.
-  update_service_ = CreateUpdateServiceProxy(
-      updater_scope(), external_constants_->OverinstallTimeout());
+  CreateUpdateServiceProxy();
   update_service_->GetVersion(
       base::BindOnce(&AppInstall::GetVersionDone, this));
+}
+
+void AppInstall::CreateUpdateServiceProxy() {
+  update_service_ = updater::CreateUpdateServiceProxy(
+      updater_scope(), external_constants_->OverinstallTimeout());
 }
 
 void AppInstall::GetVersionDone(const base::Version& version) {
@@ -209,7 +211,8 @@ void AppInstall::WakeCandidate() {
   // Invoke UpdateServiceInternal::Hello to wake this version of the updater,
   // qualify, and possibly promote this version as a result.
   CreateUpdateServiceInternalProxy(updater_scope())
-      ->Hello(base::BindOnce(&AppInstall::FetchPolicies, this));
+      ->Hello(base::BindOnce(&AppInstall::CreateUpdateServiceProxy, this)
+                  .Then(base::BindOnce(&AppInstall::FetchPolicies, this)));
 }
 
 void AppInstall::FetchPolicies() {
