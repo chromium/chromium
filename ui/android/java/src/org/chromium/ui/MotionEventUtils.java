@@ -30,17 +30,19 @@ public class MotionEventUtils {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
             return event.getEventTimeNanos();
         }
+        if (sFailedReflection) {
+            return event.getEventTime() * 1_000_000;
+        }
         long timeNs = 0;
         // We are calling a method that was set as maxSDK=P so need to ignore strictmode violations.
         try (StrictModeContext ignored = StrictModeContext.allowAllVmPolicies()) {
             if (sGetTimeNanoMethod == null) {
-                Class<?> cls = Class.forName("android.view.MotionEvent");
-                sGetTimeNanoMethod = cls.getMethod("getEventTimeNano");
+                sGetTimeNanoMethod = MotionEvent.class.getMethod("getEventTimeNano");
             }
             timeNs = (long) sGetTimeNanoMethod.invoke(event);
-        } catch (IllegalAccessException | NoSuchMethodException | ClassNotFoundException
-                | InvocationTargetException e) {
+        } catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
             TraceEvent.instant("MotionEventUtils::getEventTimeNano error", e.toString());
+            sFailedReflection = true;
             timeNs = event.getEventTime() * 1_000_000;
         }
         return timeNs;
@@ -62,4 +64,5 @@ public class MotionEventUtils {
 
     @Nullable
     private static Method sGetTimeNanoMethod;
+    private static boolean sFailedReflection;
 }
