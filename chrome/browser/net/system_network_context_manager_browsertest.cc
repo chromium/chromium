@@ -34,7 +34,7 @@
 #include "content/public/common/user_agent.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
-#include "content/public/test/frame_test_utils.h"
+#include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/test_utils.h"
 #include "net/base/features.h"
 #include "net/cookies/canonical_cookie_test_helpers.h"
@@ -53,7 +53,7 @@
 
 using SystemNetworkContextManagerBrowsertest = InProcessBrowserTest;
 
-const char* kSamePartyCookieName = "SamePartyCookie";
+const char* kCookieName = "Cookie";
 const char* kHostA = "a.test";
 
 IN_PROC_BROWSER_TEST_F(SystemNetworkContextManagerBrowsertest,
@@ -229,8 +229,10 @@ class SystemNetworkContextManagerWithFirstPartySetComponentBrowserTest
 
   void SetUpInProcessBrowserTestFixture() override {
     SystemNetworkContextManagerBrowsertest::SetUpInProcessBrowserTestFixture();
+    // Since we set kWaitForFirstPartySetsInit, all cookie-carrying network
+    // requests are blocked until FPS is initialized.
     feature_list_.InitWithFeatures(
-        {features::kFirstPartySets, net::features::kSamePartyAttributeEnabled},
+        {features::kFirstPartySets, net::features::kWaitForFirstPartySetsInit},
         {});
     CHECK(component_dir_.CreateUniqueTempDir());
     base::ScopedAllowBlockingForTesting allow_blocking;
@@ -290,12 +292,10 @@ IN_PROC_BROWSER_TEST_F(
   const GURL host_root = https_server()->GetURL(kHostA, "/");
   ASSERT_TRUE(content::SetCookie(
       browser()->profile(), host_root,
-      base::StrCat(
-          {kSamePartyCookieName,
-           "=1; samesite=lax; secure; sameparty; max-age=2147483647"})));
+      base::StrCat({kCookieName, "=1; secure; max-age=2147483647"})));
   ASSERT_THAT(content::GetCookies(browser()->profile(), host_root),
-              net::CookieStringIs(testing::UnorderedElementsAre(
-                  testing::Key(kSamePartyCookieName))));
+              net::CookieStringIs(
+                  testing::UnorderedElementsAre(testing::Key(kCookieName))));
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -307,22 +307,22 @@ IN_PROC_BROWSER_TEST_F(
 
   const GURL host_root = https_server()->GetURL(kHostA, "/");
   ASSERT_THAT(content::GetCookies(browser()->profile(), host_root),
-              net::CookieStringIs(testing::UnorderedElementsAre(
-                  testing::Key(kSamePartyCookieName))));
+              net::CookieStringIs(
+                  testing::UnorderedElementsAre(testing::Key(kCookieName))));
 
-  EXPECT_THAT(content::ArrangeFramesAndGetContentFromLeaf(
-                  web_contents(), https_server(), "b.test(%s)", {0},
-                  EchoCookiesUrl(kHostA)),
-              net::CookieStringIs(testing::UnorderedElementsAre(
-                  testing::Key(kSamePartyCookieName))));
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), EchoCookiesUrl(kHostA)));
+  EXPECT_THAT(content::EvalJs(web_contents(), "document.body.textContent")
+                  .ExtractString(),
+              net::CookieStringIs(
+                  testing::UnorderedElementsAre(testing::Key(kCookieName))));
 
   SimulateNetworkServiceCrash();
 
-  EXPECT_THAT(content::ArrangeFramesAndGetContentFromLeaf(
-                  web_contents(), https_server(), "b.test(%s)", {0},
-                  EchoCookiesUrl(kHostA)),
-              net::CookieStringIs(testing::UnorderedElementsAre(
-                  testing::Key(kSamePartyCookieName))));
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), EchoCookiesUrl(kHostA)));
+  EXPECT_THAT(content::EvalJs(web_contents(), "document.body.textContent")
+                  .ExtractString(),
+              net::CookieStringIs(
+                  testing::UnorderedElementsAre(testing::Key(kCookieName))));
 }
 
 class SystemNetworkContextManagerReferrersFeatureBrowsertest
@@ -333,7 +333,7 @@ class SystemNetworkContextManagerReferrersFeatureBrowsertest
     scoped_feature_list_.InitWithFeatureState(features::kNoReferrers,
                                               GetParam());
   }
-  ~SystemNetworkContextManagerReferrersFeatureBrowsertest() override {}
+  ~SystemNetworkContextManagerReferrersFeatureBrowsertest() override = default;
 
   void SetUpOnMainThread() override {}
 
@@ -359,7 +359,7 @@ class SystemNetworkContextManagerFreezeQUICUaBrowsertest
     : public SystemNetworkContextManagerBrowsertest {
  public:
   SystemNetworkContextManagerFreezeQUICUaBrowsertest() = default;
-  ~SystemNetworkContextManagerFreezeQUICUaBrowsertest() override {}
+  ~SystemNetworkContextManagerFreezeQUICUaBrowsertest() override = default;
 
   void SetUpOnMainThread() override {}
 
