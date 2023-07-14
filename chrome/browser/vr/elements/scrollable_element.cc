@@ -5,6 +5,7 @@
 #include "chrome/browser/vr/elements/scrollable_element.h"
 
 #include <algorithm>
+#include <cfloat>
 
 #include "base/numerics/ranges.h"
 #include "chrome/browser/vr/input_event.h"
