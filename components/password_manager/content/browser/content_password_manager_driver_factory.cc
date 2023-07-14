@@ -6,22 +6,15 @@
 
 #include <utility>
 
-#include "base/memory/ptr_util.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
-#include "components/autofill/core/common/form_data.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
 #include "components/password_manager/content/browser/form_submission_tracker_util.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
-#include "components/password_manager/core/common/password_manager_features.h"
-#include "content/public/browser/browser_context.h"
-#include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_view_host.h"
-#include "content/public/browser/ssl_status.h"
 #include "content/public/browser/web_contents.h"
-#include "net/cert/cert_status_flags.h"
 #include "third_party/blink/public/common/features.h"
 
 namespace password_manager {

@@ -6,8 +6,6 @@
 
 #include <utility>
 
-#include "base/functional/bind.h"
-#include "base/functional/callback.h"
 #include "base/metrics/histogram_macros.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
@@ -25,16 +23,12 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
-#include "content/public/browser/page.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_widget_host_view.h"
-#include "content/public/browser/ssl_status.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
 #include "mojo/public/cpp/bindings/message.h"
-#include "net/cert/cert_status_flags.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
-#include "ui/base/page_transition_types.h"
 
 using autofill::mojom::FocusedFieldType;
 
