@@ -979,6 +979,7 @@
 <translation id="1795214765651529549">使用經典主題</translation>
 <translation id="1796588414813960292">需要使用音訊的功能將無法運作</translation>
 <translation id="1797117170091578105">使用 Chromebook 鍵盤玩遊戲。您可為特定動作自訂按鍵。</translation>
+<translation id="1801571666562084067">將 PDF 圖片轉成文字</translation>
 <translation id="180203835522132923">搜尋 + O，然後按 W</translation>
 <translation id="1802624026913571222">蓋上機蓋時進入休眠狀態</translation>
 <translation id="1802687198411089702">網頁沒有回應，您可以繼續等待或離開。</translation>
@@ -1952,7 +1953,6 @@
 <translation id="2577446426265992344">沒有網址列</translation>
 <translation id="257779572837908839">設定為 Chromebox 視像會議</translation>
 <translation id="2579309488038515659">啟用熱點</translation>
-<translation id="2579596474754516455">您可按需要掃瞄 PDF 圖片並轉成文字，讓螢幕閱讀器朗讀當中的內容</translation>
 <translation id="2580889980133367162">永遠允許 <ph name="HOST" /> 下載多個檔案</translation>
 <translation id="258095186877893873">長</translation>
 <translation id="2581455244799175627">進一步了解允許第三方 Cookie</translation>
@@ -2636,6 +2636,7 @@
 <translation id="3165390001037658081">部分流動網絡供應商可能會封鎖此功能。</translation>
 <translation id="3169930038976362151">選擇切合您需要的主題。如要變更主題、桌布、螢幕保護程式和其他設定，只要輕觸並按住桌面即可。</translation>
 <translation id="3170072451822350649">您也可以略過登入程序，<ph name="LINK_START" />以訪客身分瀏覽<ph name="LINK_END" />。</translation>
+<translation id="3174311489448105660">喺可用嘅情況下掃瞄 PDF 圖片，將內容轉成文字俾螢幕閱讀器讀出嚟。呢個功能淨係適用喺 Chrome 瀏覽器。</translation>
 <translation id="31774765611822736">新分頁位於左側</translation>
 <translation id="3177909033752230686">網頁語言：</translation>
 <translation id="3177914167275935955">您的裝置包含一項 Chrome Education 升級，但您的使用者名稱尚未連結 Google for Education 帳戶。請在次要裝置上前往 g.co/workspace/edusignup 建立 Google for Education 帳戶。</translation>
@@ -7221,7 +7222,6 @@
 <translation id="7149839598364933473">在此裝置上安裝 <ph name="DEVICE_OS" />。</translation>
 <translation id="7149893636342594995">最近 24 小時</translation>
 <translation id="7152478047064750137">這個擴充程式不需要任何特殊權限</translation>
-<translation id="7153309176431047193">將圖片轉成文字</translation>
 <translation id="7154130902455071009">將您的起始網頁變更為：<ph name="START_PAGE" /></translation>
 <translation id="7156231244155528270">將圖片轉換成文字</translation>
 <translation id="7159953856712257647">預設已安裝</translation>

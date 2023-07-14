@@ -964,6 +964,7 @@
 <translation id="1795214765651529549">使用经典主题背景</translation>
 <translation id="1796588414813960292">所有需要使用声音的功能都将无法正常运行</translation>
 <translation id="1797117170091578105">使用 Chromebook 键盘玩游戏。您可以为特定操作自定义按键。</translation>
+<translation id="1801571666562084067">将 PDF 图片转换成文字</translation>
 <translation id="180203835522132923">搜索键 + O，然后按 W</translation>
 <translation id="1802624026913571222">合盖后休眠</translation>
 <translation id="1802687198411089702">该页面没有响应。您可以继续等待，也可以退出。</translation>
@@ -1929,7 +1930,6 @@
 <translation id="2577446426265992344">不包括多功能框</translation>
 <translation id="257779572837908839">设为 Chromebox 会易设备</translation>
 <translation id="2579309488038515659">热点启用</translation>
-<translation id="2579596474754516455">必要时扫描 PDF 图片以转换成文字供屏幕阅读器读取</translation>
 <translation id="2580889980133367162">始终允许 <ph name="HOST" /> 下载多个文件</translation>
 <translation id="258095186877893873">长</translation>
 <translation id="2581455244799175627">详细了解如何允许第三方 Cookie</translation>
@@ -2613,6 +2613,7 @@
 <translation id="3165390001037658081">有些运营商可能会屏蔽此功能。</translation>
 <translation id="3169930038976362151">选择与您的需求相符的主题。若要更改主题、壁纸、屏保等，轻触并按住桌面即可执行所需操作。</translation>
 <translation id="3170072451822350649">您也可以跳过登录步骤，<ph name="LINK_START" />以访客身份浏览<ph name="LINK_END" />。</translation>
+<translation id="3174311489448105660">扫描 PDF 图片，将内容转换成文字供屏幕阅读器读取（如果可用）。仅适用于 Chrome 浏览器。</translation>
 <translation id="31774765611822736">在左侧新增标签页</translation>
 <translation id="3177909033752230686">网页语言：</translation>
 <translation id="3177914167275935955">您的设备随附了一份 Chrome 教育版升级许可，但您的用户名并未与 Google for Education 帐号关联。请先在辅助设备上前往 g.co/workspace/edusignup 创建一个 Google for Education 帐号。</translation>
@@ -7193,7 +7194,6 @@
 <translation id="7149839598364933473">将此设备转换成一部 <ph name="DEVICE_OS" /> 设备。</translation>
 <translation id="7149893636342594995">过去 24 小时</translation>
 <translation id="7152478047064750137">此扩展程序无需任何特殊权限</translation>
-<translation id="7153309176431047193">将图片转换成文字</translation>
 <translation id="7154130902455071009">将您的初始页更改为：<ph name="START_PAGE" /></translation>
 <translation id="7156231244155528270">将图片转换为文字</translation>
 <translation id="7159953856712257647">默认安装</translation>

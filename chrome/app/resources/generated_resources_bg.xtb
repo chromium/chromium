@@ -976,6 +976,7 @@
 <translation id="1795214765651529549">Използване на класическата тема</translation>
 <translation id="1796588414813960292">Функциите, за които е нужен звук, няма да работят</translation>
 <translation id="1797117170091578105">Играйте с клавиатурата на своя Chromebook. Можете да персонализирате клавишите за конкретни действия.</translation>
+<translation id="1801571666562084067">Преобразуване на изображенията в PDF формат в текст</translation>
 <translation id="180203835522132923">Клавиш „търсене“ + O, след това W</translation>
 <translation id="1802624026913571222">Преминаване в спящ режим при затваряне на капака</translation>
 <translation id="1802687198411089702">Страницата не реагира. Можете да изчакате или да я затворите.</translation>
@@ -1948,7 +1949,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2577446426265992344">без поле за всичко</translation>
 <translation id="257779572837908839">Настройване като Chromebox за срещи</translation>
 <translation id="2579309488038515659">Активиране на точката за достъп</translation>
-<translation id="2579596474754516455">Сканирайте изображенията в PDF формат, така че при необходимост да ги преобразувате в текст, подходящ за екранен четец</translation>
 <translation id="2580889980133367162">Винаги да е разрешено на <ph name="HOST" /> да изтегля няколко файла</translation>
 <translation id="258095186877893873">Дълго</translation>
 <translation id="2581455244799175627">Още за разрешаването на „бисквитки“ на трети страни</translation>
@@ -2632,6 +2632,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3165390001037658081">Някои оператори може да блокират тази функция.</translation>
 <translation id="3169930038976362151">Изберете темата, която отговаря на нуждите ви. За да промените темата, тапета, скрийнсейвъра и др., трябва само да докоснете и да задържите работния плот.</translation>
 <translation id="3170072451822350649">Може също да пропуснете влизането и <ph name="LINK_START" />да сърфирате като гост<ph name="LINK_END" />.</translation>
+<translation id="3174311489448105660">Сканирайте изображенията в PDF формат, така че да бъдат преобразувани в текст, подходящ за екранния четец, когато е налице. Поддържа се само в браузъра Chrome.</translation>
 <translation id="31774765611822736">Нов раздел отляво</translation>
 <translation id="3177909033752230686">Език на страницата:</translation>
 <translation id="3177914167275935955">Устройството ви включва Chrome Education Upgrade, но потребителското ви име не е свързано с профил в Google for Education. Създайте такъв, като посетите g.co/workspace/edusignup от алтернативно устройство.</translation>
@@ -7221,7 +7222,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7149839598364933473">Преобразуване на това устройство в такова с <ph name="DEVICE_OS" />.</translation>
 <translation id="7149893636342594995">Последните 24 часа</translation>
 <translation id="7152478047064750137">Това разширение не изисква специални разрешения</translation>
-<translation id="7153309176431047193">Преобразуване на изображенията в текст</translation>
 <translation id="7154130902455071009">Промяна на началната ви страница на <ph name="START_PAGE" /></translation>
 <translation id="7156231244155528270">Преобразуване на изображението в текст</translation>
 <translation id="7159953856712257647">Инсталирано по подразбиране</translation>

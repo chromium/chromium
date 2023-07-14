@@ -980,6 +980,7 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1795214765651529549">Use Classic</translation>
 <translation id="1796588414813960292">Features that need sound won't work</translation>
 <translation id="1797117170091578105">Play using your Chromebook keyboard. You can customise keys to specific actions.</translation>
+<translation id="1801571666562084067">Convert PDF images to text</translation>
 <translation id="180203835522132923">Search + O, then W</translation>
 <translation id="1802624026913571222">Sleep when cover is closed</translation>
 <translation id="1802687198411089702">The page isn't responding. You can wait for it or exit.</translation>
@@ -1952,7 +1953,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2577446426265992344">without Omnibox</translation>
 <translation id="257779572837908839">Set up as Chromebox for meetings</translation>
 <translation id="2579309488038515659">Hotspot enable</translation>
-<translation id="2579596474754516455">Scan PDF images to convert text for screen reader when necessary</translation>
 <translation id="2580889980133367162">Always allow <ph name="HOST" /> to download multiple files</translation>
 <translation id="258095186877893873">Long</translation>
 <translation id="2581455244799175627">More about allowing third-party cookies</translation>
@@ -2636,6 +2636,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3165390001037658081">Some operators might block this feature.</translation>
 <translation id="3169930038976362151">Choose the theme that fits your needs. To change your theme, wallpaper, screen saver and more, just touch and hold on the desktop.</translation>
 <translation id="3170072451822350649">You may also skip signing in and <ph name="LINK_START" />browse as Guest<ph name="LINK_END" />.</translation>
+<translation id="3174311489448105660">Scan PDF images to convert content to text for the screen reader, when available. Only supported on Chrome Browser.</translation>
 <translation id="31774765611822736">New tab to the left</translation>
 <translation id="3177909033752230686">Page Language:</translation>
 <translation id="3177914167275935955">Your device includes a Chrome Education upgrade, but your username is not associated with a Google for Education account. Please create a Google for Education account by visiting g.co/workspace/edusignup on a secondary device.</translation>
@@ -7223,7 +7224,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7149839598364933473">Convert this device into a <ph name="DEVICE_OS" /> device.</translation>
 <translation id="7149893636342594995">Last 24 Hours</translation>
 <translation id="7152478047064750137">This extension requires no special permissions</translation>
-<translation id="7153309176431047193">Convert images to text</translation>
 <translation id="7154130902455071009">Change your start page to: <ph name="START_PAGE" /></translation>
 <translation id="7156231244155528270">Convert image to text</translation>
 <translation id="7159953856712257647">Installed by default</translation>
