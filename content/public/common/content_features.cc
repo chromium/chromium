@@ -285,11 +285,6 @@ BASE_FEATURE(kCriticalClientHint,
              "CriticalClientHint",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enable debugging the issue crbug.com/1201355
-BASE_FEATURE(kDebugHistoryInterventionNoUserActivation,
-             "DebugHistoryInterventionNoUserActivation",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enable changing source dynamically for desktop capture.
 BASE_FEATURE(kDesktopCaptureChangeSource,
              "DesktopCaptureChangeSource",

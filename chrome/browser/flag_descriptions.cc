@@ -190,14 +190,6 @@ const char kTangibleSyncName[] = "Tangible Sync";
 const char kTangibleSyncDescription[] =
     "Enables the tangible sync when a user starts the sync consent flow";
 
-const char kDebugHistoryInterventionNoUserActivationName[] =
-    "Debug flag for history intervention on no user activation";
-const char kDebugHistoryInterventionNoUserActivationDescription[] =
-    "This flag when enabled, will be used to debug an issue where a page that "
-    "did not get user activation "
-    "is able to work around the history intervention which is not the expected "
-    "behavior";
-
 const char kDIPSName[] = "Bounce Tracking Mitigations";
 const char kDIPSDescription[] =
     "This flag controls bounce tracking mitigations. Setting the flag to "

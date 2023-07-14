@@ -2649,10 +2649,6 @@ void NavigationControllerImpl::NotifyUserActivation() {
   // When a user activation occurs, ensure that all adjacent entries for the
   // same document clear their skippable bit, so that the history manipulation
   // intervention does not apply to them.
-  if (base::FeatureList::IsEnabled(
-          features::kDebugHistoryInterventionNoUserActivation)) {
-    return;
-  }
 
   SetSkippableForSameDocumentEntries(GetLastCommittedEntryIndex(), false);
 }

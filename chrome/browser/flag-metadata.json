@@ -1467,11 +1467,6 @@
     "expiry_milestone": 100
   },
   {
-    "name": "debug-history-intervention-no-user-activation",
-    "owners": [ "shivanisha" ],
-    "expiry_milestone": 95
-  },
-  {
     "name": "debug-packed-apps",
     "owners": [ "benwells", "ericwilligers" ],
     "expiry_milestone": 120

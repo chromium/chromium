@@ -60724,8 +60724,6 @@ from previous Chrome versions.
       label="SafeBrowsingSeparateNetworkContexts:disabled"/>
   <int value="-1591450227" label="enable-microphone-mute-switch-device"/>
   <int value="-1590882897" label="LacrosResourcesFileSharing:enabled"/>
-  <int value="-1589720671"
-      label="DebugHistoryInterventionNoUserActivation:disabled"/>
   <int value="-1588702520" label="WebOTPCrossDevice:disabled"/>
   <int value="-1588221814" label="NtpReducedLogoSpace:disabled"/>
   <int value="-1586642651" label="MaterialDesignExtensions:disabled"/>
@@ -63425,8 +63423,6 @@ from previous Chrome versions.
   <int value="-217352290"
       label="BindingManagerUseNotPerceptibleBinding:disabled"/>
   <int value="-216219963" label="ash-shelf-color-scheme"/>
-  <int value="-216189310"
-      label="DebugHistoryInterventionNoUserActivation:enabled"/>
   <int value="-215580565"
       label="OmniboxEnableClipboardProviderImageSuggestions:disabled"/>
   <int value="-215534141" label="NativeWindowNavButtons:enabled"/>

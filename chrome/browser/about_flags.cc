@@ -9030,12 +9030,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kChromeWhatsNewUIDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kChromeWhatsNewUI)},
 
-    {"debug-history-intervention-no-user-activation",
-     flag_descriptions::kDebugHistoryInterventionNoUserActivationName,
-     flag_descriptions::kDebugHistoryInterventionNoUserActivationDescription,
-     kOsAll,
-     FEATURE_VALUE_TYPE(features::kDebugHistoryInterventionNoUserActivation)},
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"enable-phone-hub-call-notification",
      flag_descriptions::kPhoneHubCallNotificationName,

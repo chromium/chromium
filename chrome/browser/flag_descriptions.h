@@ -124,9 +124,6 @@ extern const char kCustomizeChromeColorExtractionDescription[];
 extern const char kCustomizeChromeSidePanelName[];
 extern const char KCustomizeChromeSidePanelDescription[];
 
-extern const char kDebugHistoryInterventionNoUserActivationName[];
-extern const char kDebugHistoryInterventionNoUserActivationDescription[];
-
 extern const char kDIPSName[];
 extern const char kDIPSDescription[];
 
