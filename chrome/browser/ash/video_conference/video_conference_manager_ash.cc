@@ -188,6 +188,14 @@ VideoConferenceMediaState VideoConferenceManagerAsh::GetAggregatedState() {
     state.is_capturing_screen |= client_state.is_capturing_screen;
   }
 
+  // Theoretically, capturing should imply permission, but we have seen bugs
+  // in permission checker that returns inconsisitent result with capturing,
+  // which leads to a bad ui to the user. This workaround is not ideal but will
+  // prevent showing the bad ui.
+  // TODO(b/291147970): consider removing this.
+  state.has_camera_permission |= state.is_capturing_camera;
+  state.has_microphone_permission |= state.is_capturing_microphone;
+
   return state;
 }
 
