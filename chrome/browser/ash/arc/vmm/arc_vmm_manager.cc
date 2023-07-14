@@ -140,7 +140,10 @@ void ArcVmmManager::SetSwapState(SwapState state) {
     return;
   }
 
-  if (latest_swap_state_ == state &&
+  // Do not re-send "enable" signal if the timer is waiting for resend it. But
+  // allow "force-enable" bypass this restriction and redo the entire swap
+  // process.
+  if (latest_swap_state_ == SwapState::ENABLE && latest_swap_state_ == state &&
       enabled_state_heartbeat_timer_.IsRunning()) {
     // The state is not update, do not send request now but leave it to heart
     // beat timer.

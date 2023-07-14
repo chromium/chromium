@@ -408,13 +408,45 @@ TEST_F(ArcVmmManagerTest, ReForceEnable) {
   EXPECT_EQ(1, client()->disable_count());
 
   task_environment_.FastForwardBy(base::Seconds(10));
-  // Re-disable, expect re-send force_enable to concierge.
+  // Re-disable, expect re-send disable to concierge.
   manager()->SetSwapState(SwapState::DISABLE);
   task_environment_.RunUntilIdle();
   EXPECT_EQ(2, client()->force_enable_count());
   EXPECT_EQ(0, client()->enable_count());
   EXPECT_EQ(0, client()->swap_out_count());
   EXPECT_EQ(2, client()->disable_count());
+}
+
+TEST_F(ArcVmmManagerTest, ForceEnableAlwaysSendCall) {
+  InitVmmManager();
+  EnableAndConnectArcVm();
+  SetTrimCall(true);
+  InitAggressiveBallonResponse(false);
+
+  manager()->SetSwapState(SwapState::FORCE_ENABLE);
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ(1, client()->force_enable_count());
+  EXPECT_EQ(0, client()->enable_count());
+  EXPECT_EQ(0, client()->swap_out_count());
+  EXPECT_EQ(0, client()->disable_count());
+
+  task_environment_.FastForwardBy(base::Seconds(10));
+  // Re-enable, expect re-send force_enable to concierge.
+  manager()->SetSwapState(SwapState::FORCE_ENABLE);
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ(2, client()->force_enable_count());
+  EXPECT_EQ(0, client()->enable_count());
+  EXPECT_EQ(0, client()->swap_out_count());
+  EXPECT_EQ(0, client()->disable_count());
+
+  task_environment_.FastForwardBy(base::Seconds(10));
+  // Re-enable, expect re-send force_enable to concierge.
+  manager()->SetSwapState(SwapState::FORCE_ENABLE);
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ(3, client()->force_enable_count());
+  EXPECT_EQ(0, client()->enable_count());
+  EXPECT_EQ(0, client()->swap_out_count());
+  EXPECT_EQ(0, client()->disable_count());
 }
 
 TEST_F(ArcVmmManagerTest, EnableAndDisableRaceCondition) {
