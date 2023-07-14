@@ -253,6 +253,11 @@ class PolicyNotificationClickHandler
       base::OnceCallback<void(absl::optional<int>)> callback)
       : callback_(std::move(callback)) {}
 
+  void Close(bool by_user) override {
+    // Treat any close reason as the user clicking the Cancel button.
+    Click(NotificationButton::CANCEL, /*reply=*/absl::nullopt);
+  }
+
   // message_center::NotificationDelegate overrides:
   void Click(const absl::optional<int>& button_index,
              const absl::optional<std::u16string>& reply) override {
@@ -261,6 +266,7 @@ class PolicyNotificationClickHandler
       return;
     }
 
+    // The callback might have already been invoked earlier, so check first.
     if (callback_) {
       std::move(callback_).Run(button_index);
     }
@@ -521,7 +527,6 @@ void FilesPolicyNotificationManager::HandleDlpWarningNotificationClick(
     }
   }
 
-  // Dismiss the notification.
   Dismiss(context_, notification_id);
 }
 
@@ -566,10 +571,9 @@ void FilesPolicyNotificationManager::HandleDlpErrorNotificationClick(
           base::BindOnce(&FilesPolicyNotificationManager::OnNonIOTaskTimedOut,
                          weak_factory_.GetWeakPtr(), notification_id)));
     }
-  }
 
-  // Dismiss the notification.
-  Dismiss(context_, notification_id);
+    Dismiss(context_, notification_id);
+  }
 }
 
 FilesPolicyNotificationManager::WarningInfo::WarningInfo(

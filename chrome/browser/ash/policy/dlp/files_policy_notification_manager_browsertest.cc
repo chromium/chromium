@@ -238,6 +238,50 @@ class OnDlpWarningNotificationClickedTest
       public ::testing::WithParamInterface<
           std::tuple<dlp::FileAction, DlpFileDestination>> {};
 
+// Tests that clicking on the warning notification, but no button is ignored.
+IN_PROC_BROWSER_TEST_P(OnDlpWarningNotificationClickedTest,
+                       SingleFileNoButtonIgnored) {
+  auto [action, destination] = GetParam();
+  auto* fpnm = FilesPolicyNotificationManagerFactory::GetForBrowserContext(
+      browser()->profile());
+  ASSERT_TRUE(fpnm);
+
+  // The callback is not invoked.
+  base::MockCallback<OnDlpRestrictionCheckedCallback> cb;
+  EXPECT_CALL(cb, Run).Times(0);
+
+  fpnm->ShowDlpWarning(cb.Get(), /*task_id=*/absl::nullopt,
+                       {base::FilePath("file1.txt")}, destination, action);
+
+  ASSERT_TRUE(bridge_->GetDisplayedNotification(kNotificationId).has_value());
+  bridge_->Click(kNotificationId, /*button_index=*/absl::nullopt);
+  // The notification shouldn't be closed.
+  EXPECT_TRUE(bridge_->GetDisplayedNotification(kNotificationId).has_value());
+}
+
+// Tests that closing the warning notification (e.g. by X or Dismiss all)
+// invokes the Cancel callback.
+IN_PROC_BROWSER_TEST_P(OnDlpWarningNotificationClickedTest,
+                       SingleFileCloseCancels) {
+  auto [action, destination] = GetParam();
+  auto* fpnm = FilesPolicyNotificationManagerFactory::GetForBrowserContext(
+      browser()->profile());
+  ASSERT_TRUE(fpnm);
+
+  // The task is cancelled.
+  base::MockCallback<OnDlpRestrictionCheckedCallback> cb;
+  EXPECT_CALL(cb, Run(/*should_proceed=*/false)).Times(1);
+
+  fpnm->ShowDlpWarning(cb.Get(), /*task_id=*/absl::nullopt,
+                       {base::FilePath("file1.txt")}, destination, action);
+
+  auto notification = bridge_->GetDisplayedNotification(kNotificationId);
+  ASSERT_TRUE(notification.has_value());
+  notification->delegate()->Close(
+      /*by_user=*/true);  // parameter doesn't matter
+  EXPECT_FALSE(bridge_->GetDisplayedNotification(kNotificationId).has_value());
+}
+
 // Tests that clicking the OK button on a warning notification for a single
 // file continues the action without showing the dialog.
 IN_PROC_BROWSER_TEST_P(OnDlpWarningNotificationClickedTest,
@@ -452,6 +496,47 @@ IN_PROC_BROWSER_TEST_P(OnDlpErrorNotificationClickedTest,
   ASSERT_EQ(ui_test_utils::WaitForBrowserToOpen(), FindFilesApp());
 
   // The notification should be closed.
+  EXPECT_FALSE(bridge_->GetDisplayedNotification(kNotificationId).has_value());
+}
+
+// Tests that clicking on the error notification, but no button is ignored.
+IN_PROC_BROWSER_TEST_P(OnDlpErrorNotificationClickedTest,
+                       MultiFileNoButtonIgnored) {
+  auto [action, destination] = GetParam();
+  auto* fpnm = FilesPolicyNotificationManagerFactory::GetForBrowserContext(
+      browser()->profile());
+  ASSERT_TRUE(fpnm);
+
+  std::vector<base::FilePath> blocked_files;
+  blocked_files.emplace_back("file1.txt");
+  blocked_files.emplace_back("file2.txt");
+  fpnm->ShowDlpBlockedFiles(absl::nullopt, std::move(blocked_files), action);
+
+  ASSERT_TRUE(bridge_->GetDisplayedNotification(kNotificationId).has_value());
+  bridge_->Click(kNotificationId, /*button_index=*/absl::nullopt);
+  // The notification shouldn't be closed.
+  EXPECT_TRUE(bridge_->GetDisplayedNotification(kNotificationId).has_value());
+}
+
+// Tests that closing the error notification (e.g. by X or Dismiss all)
+// correctly closes it.
+IN_PROC_BROWSER_TEST_P(OnDlpErrorNotificationClickedTest,
+                       MultiFileCloseCancels) {
+  auto [action, destination] = GetParam();
+
+  auto* fpnm = FilesPolicyNotificationManagerFactory::GetForBrowserContext(
+      browser()->profile());
+  ASSERT_TRUE(fpnm);
+
+  std::vector<base::FilePath> blocked_files;
+  blocked_files.emplace_back("file1.txt");
+  blocked_files.emplace_back("file2.txt");
+  fpnm->ShowDlpBlockedFiles(absl::nullopt, std::move(blocked_files), action);
+
+  auto notification = bridge_->GetDisplayedNotification(kNotificationId);
+  ASSERT_TRUE(notification.has_value());
+  notification->delegate()->Close(
+      /*by_user=*/false);  // parameter doesn't matter
   EXPECT_FALSE(bridge_->GetDisplayedNotification(kNotificationId).has_value());
 }
 
