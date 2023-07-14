@@ -110,8 +110,8 @@ class AppServerWin : public AppServer {
   scoped_refptr<UpdateServiceInternal> update_service_internal_;
 };
 
-// Returns a singleton application object bound to this COM server.
-scoped_refptr<AppServerWin> AppServerSingletonInstance();
+// Returns the singleton AppServerWin instance.
+scoped_refptr<AppServerWin> GetAppServerWinInstance();
 
 }  // namespace updater
 

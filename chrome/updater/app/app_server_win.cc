@@ -21,6 +21,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/sys_string_conversions.h"
@@ -236,9 +237,15 @@ HRESULT IsCOMCallerAllowed() {
   return result.value() ? S_OK : E_ACCESSDENIED;
 }
 
-// Returns a leaky singleton of the App instance.
-scoped_refptr<AppServerWin> AppServerSingletonInstance() {
-  return AppSingletonInstance<AppServerWin>();
+scoped_refptr<App> MakeAppServer() {
+  return GetAppServerWinInstance();
+}
+
+// Returns a leaky singleton instance of `AppServerWin`.
+scoped_refptr<AppServerWin> GetAppServerWinInstance() {
+  static base::NoDestructor<scoped_refptr<AppServerWin>> app_server{
+      base::MakeRefCounted<AppServerWin>()};
+  return *app_server;
 }
 
 AppServerWin::AppServerWin() = default;
@@ -251,7 +258,7 @@ void AppServerWin::Stop() {
   UnregisterClassObjects();
   main_task_runner_->PostTask(FROM_HERE, base::BindOnce([] {
                                 scoped_refptr<AppServerWin> this_server =
-                                    AppServerSingletonInstance();
+                                    GetAppServerWinInstance();
                                 this_server->update_service_ = nullptr;
                                 this_server->update_service_internal_ = nullptr;
                                 this_server->Shutdown(0);

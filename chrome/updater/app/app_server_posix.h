@@ -41,8 +41,6 @@ class AppServerPosix : public AppServer {
   std::unique_ptr<UpdateServiceStub> active_duty_stub_;
 };
 
-scoped_refptr<App> MakeAppServer();
-
 }  // namespace updater
 
 #endif  // CHROME_UPDATER_APP_APP_SERVER_POSIX_H_

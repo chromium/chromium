@@ -7,20 +7,9 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
-#include "base/no_destructor.h"
 #include "chrome/updater/updater_scope.h"
 
 namespace updater {
-
-// Creates a ref-counted singleton instance of the type T. Use this function
-// to get instances of classes derived from |updater::App|, only if a
-// singleton design is needed.
-template <typename T>
-scoped_refptr<T> AppSingletonInstance() {
-  static base::NoDestructor<scoped_refptr<T>> instance{
-      base::MakeRefCounted<T>()};
-  return *instance;
-}
 
 // An App is an abstract class used as a main processing mode for the updater.
 // Prefer creating non-singleton instances of |App| using |base::MakeRefCounted|

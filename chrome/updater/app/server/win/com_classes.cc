@@ -223,7 +223,7 @@ HRESULT UpdaterImpl::FetchPolicies(IUpdaterCallback* callback) {
   if (!callback) {
     return E_INVALIDARG;
   }
-  scoped_refptr<AppServerWin> com_server = AppServerSingletonInstance();
+  scoped_refptr<AppServerWin> com_server = GetAppServerWinInstance();
   com_server->main_task_runner()->PostTask(
       FROM_HERE,
       base::BindOnce(
@@ -294,7 +294,7 @@ HRESULT UpdaterImpl::RegisterApp(const wchar_t* app_id,
     return E_INVALIDARG;
 
   using IUpdaterCallbackPtr = Microsoft::WRL::ComPtr<IUpdaterCallback>;
-  scoped_refptr<AppServerWin> com_server = AppServerSingletonInstance();
+  scoped_refptr<AppServerWin> com_server = GetAppServerWinInstance();
 
   // This task runner is responsible for sequencing the COM calls and callbacks.
   auto task_runner = base::ThreadPool::CreateSequencedTaskRunner(
@@ -335,7 +335,7 @@ HRESULT UpdaterImpl::RunPeriodicTasks(IUpdaterCallback* callback) {
   if (!callback) {
     return E_INVALIDARG;
   }
-  scoped_refptr<AppServerWin> com_server = AppServerSingletonInstance();
+  scoped_refptr<AppServerWin> com_server = GetAppServerWinInstance();
   com_server->main_task_runner()->PostTask(
       FROM_HERE,
       base::BindOnce(
@@ -417,7 +417,7 @@ HRESULT UpdaterImpl::CheckForUpdate(const wchar_t* app_id,
   using IUpdaterObserverPtr = Microsoft::WRL::ComPtr<IUpdaterObserver>;
   auto observer_local = IUpdaterObserverPtr(observer);
 
-  scoped_refptr<AppServerWin> com_server = AppServerSingletonInstance();
+  scoped_refptr<AppServerWin> com_server = GetAppServerWinInstance();
   com_server->main_task_runner()->PostTask(
       FROM_HERE,
       base::BindOnce(
@@ -480,7 +480,7 @@ HRESULT UpdaterImpl::Update(const wchar_t* app_id,
   using IUpdaterObserverPtr = Microsoft::WRL::ComPtr<IUpdaterObserver>;
   auto observer_local = IUpdaterObserverPtr(observer);
 
-  scoped_refptr<AppServerWin> com_server = AppServerSingletonInstance();
+  scoped_refptr<AppServerWin> com_server = GetAppServerWinInstance();
   com_server->main_task_runner()->PostTask(
       FROM_HERE,
       base::BindOnce(
@@ -528,7 +528,7 @@ HRESULT UpdaterImpl::UpdateAll(IUpdaterObserver* observer) {
   }
 
   using IUpdaterObserverPtr = Microsoft::WRL::ComPtr<IUpdaterObserver>;
-  scoped_refptr<AppServerWin> com_server = AppServerSingletonInstance();
+  scoped_refptr<AppServerWin> com_server = GetAppServerWinInstance();
 
   auto task_runner = base::ThreadPool::CreateSequencedTaskRunner(
       {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
@@ -628,7 +628,7 @@ HRESULT UpdaterImpl::Install(const wchar_t* app_id,
   using IUpdaterObserverPtr = Microsoft::WRL::ComPtr<IUpdaterObserver>;
   auto observer_local = IUpdaterObserverPtr(observer);
 
-  scoped_refptr<AppServerWin> com_server = AppServerSingletonInstance();
+  scoped_refptr<AppServerWin> com_server = GetAppServerWinInstance();
   com_server->main_task_runner()->PostTask(
       FROM_HERE,
       base::BindOnce(
@@ -674,7 +674,7 @@ HRESULT UpdaterImpl::CancelInstalls(const wchar_t* app_id) {
     return E_INVALIDARG;
   }
 
-  scoped_refptr<AppServerWin> com_server = AppServerSingletonInstance();
+  scoped_refptr<AppServerWin> com_server = GetAppServerWinInstance();
   com_server->main_task_runner()->PostTask(
       FROM_HERE, base::BindOnce(&UpdateService::CancelInstalls,
                                 com_server->update_service(), app_id_str));
@@ -730,7 +730,7 @@ HRESULT UpdaterImpl::RunInstaller(const wchar_t* app_id,
   }
 
   using IUpdaterObserverPtr = Microsoft::WRL::ComPtr<IUpdaterObserver>;
-  scoped_refptr<AppServerWin> com_server = AppServerSingletonInstance();
+  scoped_refptr<AppServerWin> com_server = GetAppServerWinInstance();
 
   // This task runner is responsible for sequencing the COM calls and callbacks.
   auto task_runner = base::ThreadPool::CreateSequencedTaskRunner(
@@ -779,7 +779,7 @@ HRESULT UpdaterImpl::GetAppStates(IUpdaterAppStatesCallback* callback) {
   if (!callback) {
     return E_INVALIDARG;
   }
-  scoped_refptr<AppServerWin> com_server = AppServerSingletonInstance();
+  scoped_refptr<AppServerWin> com_server = GetAppServerWinInstance();
   com_server->main_task_runner()->PostTask(
       FROM_HERE,
       base::BindOnce(
@@ -833,7 +833,7 @@ HRESULT UpdaterInternalImpl::Run(IUpdaterInternalCallback* callback) {
 
   using IUpdaterInternalCallbackPtr =
       Microsoft::WRL::ComPtr<IUpdaterInternalCallback>;
-  scoped_refptr<AppServerWin> com_server = AppServerSingletonInstance();
+  scoped_refptr<AppServerWin> com_server = GetAppServerWinInstance();
 
   auto task_runner = base::ThreadPool::CreateSequencedTaskRunner(
       {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
@@ -870,7 +870,7 @@ HRESULT UpdaterInternalImpl::Hello(IUpdaterInternalCallback* callback) {
 
   using IUpdaterInternalCallbackPtr =
       Microsoft::WRL::ComPtr<IUpdaterInternalCallback>;
-  scoped_refptr<AppServerWin> com_server = AppServerSingletonInstance();
+  scoped_refptr<AppServerWin> com_server = GetAppServerWinInstance();
 
   auto task_runner = base::ThreadPool::CreateSequencedTaskRunner(
       {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});

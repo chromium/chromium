@@ -118,7 +118,7 @@ class AppServer : public App {
   int tasks_running_ = 0;
 };
 
-scoped_refptr<App> AppServerInstance();
+scoped_refptr<App> MakeAppServer();
 
 }  // namespace updater
 

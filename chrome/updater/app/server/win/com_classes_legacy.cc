@@ -357,7 +357,7 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
   // foreground priority and disallows same version updates.
   HRESULT CheckForUpdate() {
     using AppWebImplPtr = Microsoft::WRL::ComPtr<AppWebImpl>;
-    scoped_refptr<AppServerWin> com_server = AppServerSingletonInstance();
+    scoped_refptr<AppServerWin> com_server = GetAppServerWinInstance();
     com_server->main_task_runner()->PostTask(
         FROM_HERE,
         base::BindOnce(
@@ -389,7 +389,7 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
 
   HRESULT Update() {
     using AppWebImplPtr = Microsoft::WRL::ComPtr<AppWebImpl>;
-    scoped_refptr<AppServerWin> com_server = AppServerSingletonInstance();
+    scoped_refptr<AppServerWin> com_server = GetAppServerWinInstance();
     com_server->main_task_runner()->PostTask(
         FROM_HERE,
         base::BindOnce(
@@ -440,7 +440,7 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
     };
 
     auto result = base::MakeRefCounted<CurrentVersionResult>();
-    AppServerSingletonInstance()->main_task_runner()->PostTask(
+    GetAppServerWinInstance()->main_task_runner()->PostTask(
         FROM_HERE,
         base::BindOnce(
             [](const std::string app_id,
@@ -454,7 +454,7 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
               const base::Version current_version =
                   base::MakeRefCounted<const PersistedData>(
                       GetUpdaterScope(),
-                      AppServerSingletonInstance()->prefs()->GetPrefService())
+                      GetAppServerWinInstance()->prefs()->GetPrefService())
                       ->GetProductVersion(app_id);
               if (!current_version.IsValid()) {
                 return;
@@ -931,8 +931,8 @@ PolicyStatusImpl::PolicyStatusImpl()
           {IID_MAP_ENTRY_SYSTEM(IPolicyStatus3),
            IID_MAP_ENTRY_SYSTEM(IPolicyStatus2),
            IID_MAP_ENTRY_SYSTEM(IPolicyStatus)}),
-      policy_service_(
-          AppServerSingletonInstance()->config()->GetPolicyService()) {}
+      policy_service_(GetAppServerWinInstance()->config()->GetPolicyService()) {
+}
 PolicyStatusImpl::~PolicyStatusImpl() = default;
 
 HRESULT PolicyStatusImpl::RuntimeClassInitialize() {
@@ -1112,7 +1112,7 @@ class PolicyStatusResult
 
   static auto Get(ValueGetter value_getter) {
     auto result = base::WrapRefCounted(new PolicyStatusResult<T>(value_getter));
-    AppServerSingletonInstance()->main_task_runner()->PostTask(
+    GetAppServerWinInstance()->main_task_runner()->PostTask(
         FROM_HERE,
         base::BindOnce(&PolicyStatusResult::GetValueOnSequence, result));
     result->completion_event.TimedWait(base::Seconds(60));
@@ -1146,7 +1146,7 @@ STDMETHODIMP PolicyStatusImpl::get_lastCheckedTime(DATE* last_checked) {
 
   using PolicyStatusImplPtr = Microsoft::WRL::ComPtr<PolicyStatusImpl>;
   auto result = base::MakeRefCounted<LastCheckedTimeResult>();
-  AppServerSingletonInstance()->main_task_runner()->PostTask(
+  GetAppServerWinInstance()->main_task_runner()->PostTask(
       FROM_HERE,
       base::BindOnce(
           [](PolicyStatusImplPtr obj,
@@ -1160,7 +1160,7 @@ STDMETHODIMP PolicyStatusImpl::get_lastCheckedTime(DATE* last_checked) {
             const base::Time last_checked_time =
                 base::MakeRefCounted<const PersistedData>(
                     GetUpdaterScope(),
-                    AppServerSingletonInstance()->prefs()->GetPrefService())
+                    GetAppServerWinInstance()->prefs()->GetPrefService())
                     ->GetLastChecked();
             if (last_checked_time.is_null()) {
               return;
@@ -1195,7 +1195,7 @@ STDMETHODIMP PolicyStatusImpl::refreshPolicies() {
   // self reference of the COM object, otherwise the server could shutdown if
   // the caller releases its interface pointer when this function returns.
   using PolicyStatusImplPtr = Microsoft::WRL::ComPtr<PolicyStatusImpl>;
-  scoped_refptr<AppServerWin> com_server = AppServerSingletonInstance();
+  scoped_refptr<AppServerWin> com_server = GetAppServerWinInstance();
   com_server->main_task_runner()->PostTask(
       FROM_HERE,
       base::BindOnce(&UpdateService::FetchPolicies,
