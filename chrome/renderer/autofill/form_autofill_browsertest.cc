@@ -2135,23 +2135,24 @@ class FormAutofillTest : public ChromeRenderViewTest {
     }
 
     // Set the suggested values on two of the elements.
+    firstname.SetSuggestedValue(WebString::FromASCII("Wyatt"));
     lastname.SetSuggestedValue(WebString::FromASCII("Earp"));
     elements[2].SetSuggestedValue(WebString::FromASCII("wyatt@earp.com"));
     elements[3].SetSuggestedValue(WebString::FromASCII("wyatt@earp.com"));
     elements[4].SetSuggestedValue(WebString::FromASCII("650-777-9999"));
 
+    std::vector<bool> is_value_empty(elements.size());
+    for (size_t i = 0; i < elements.size(); ++i) {
+      is_value_empty[i] = elements[i].Value().IsEmpty();
+    }
+
     // Clear the previewed fields.
     ClearPreviewedElements(elements, lastname, WebAutofillState::kNotFilled);
 
-    // Fields with empty suggestions suggestions are not modified.
-    EXPECT_EQ(u"Wyatt", firstname.Value().Utf16());
-    EXPECT_TRUE(firstname.SuggestedValue().IsEmpty());
-    EXPECT_TRUE(firstname.IsAutofilled());
-
     // Verify the previewed fields are cleared.
-    for (size_t i = 1; i < elements.size(); ++i) {
+    for (size_t i = 0; i < elements.size(); ++i) {
       SCOPED_TRACE(testing::Message() << "Element " << i);
-      EXPECT_TRUE(elements[i].Value().IsEmpty());
+      EXPECT_EQ(elements[i].Value().IsEmpty(), is_value_empty[i]);
       EXPECT_TRUE(elements[i].SuggestedValue().IsEmpty());
       EXPECT_FALSE(elements[i].IsAutofilled());
     }

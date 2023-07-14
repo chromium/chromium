@@ -665,12 +665,14 @@ void AutofillAgent::FillOrPreviewForm(const FormData& form,
         document, form.fields.front().unique_renderer_id);
   }
 
-  if (element_.IsNull())
+  if (element_.IsNull()) {
     return;
+  }
+
+  // Clear anything that might have been previewing previously.
+  ClearPreviewedForm();
 
   if (action == mojom::RendererFormDataAction::kPreview) {
-    ClearPreviewedForm();
-
     query_node_autofill_state_ = element_.GetAutofillState();
     previewed_elements_ = form_util::FillOrPreviewForm(form, element_, action);
 
