@@ -89,11 +89,14 @@ scoped_refptr<VideoFrame> CreateNV12Frame(const gfx::Size& size,
     return CreateGpuMemoryBufferVideoFrame(
         VideoPixelFormat::PIXEL_FORMAT_NV12, size, visible_rect, size,
         kNullTimestamp, gfx::BufferUsage::SCANOUT_CPU_READ_WRITE);
-  } else {
-    DCHECK(type == VideoFrame::STORAGE_DMABUFS);
+  } else if (type == VideoFrame::STORAGE_DMABUFS) {
     return CreatePlatformVideoFrame(VideoPixelFormat::PIXEL_FORMAT_NV12, size,
                                     visible_rect, size, kNullTimestamp,
                                     gfx::BufferUsage::SCANOUT_CPU_READ_WRITE);
+  } else {
+    DCHECK_EQ(type, VideoFrame::STORAGE_OWNED_MEMORY);
+    return VideoFrame::CreateFrame(VideoPixelFormat::PIXEL_FORMAT_NV12, size,
+                                   visible_rect, size, kNullTimestamp);
   }
 }
 
@@ -108,15 +111,19 @@ scoped_refptr<VideoFrame> CreateRandomMM21Frame(const gfx::Size& size,
     return nullptr;
   }
 
-  std::unique_ptr<VideoFrameMapper> frame_mapper =
-      VideoFrameMapperFactory::CreateMapper(
-          VideoPixelFormat::PIXEL_FORMAT_NV12, type,
-          /*force_linear_buffer_mapper=*/true);
-  scoped_refptr<VideoFrame> mapped_frame =
-      frame_mapper->Map(frame, PROT_READ | PROT_WRITE);
-  if (!mapped_frame) {
-    LOG(ERROR) << "Unable to map MM21 frame";
-    return nullptr;
+  scoped_refptr<VideoFrame> mapped_frame;
+  if (type != VideoFrame::STORAGE_OWNED_MEMORY) {
+    std::unique_ptr<VideoFrameMapper> frame_mapper =
+        VideoFrameMapperFactory::CreateMapper(
+            VideoPixelFormat::PIXEL_FORMAT_NV12, type,
+            /*force_linear_buffer_mapper=*/true);
+    mapped_frame = frame_mapper->Map(frame, PROT_READ | PROT_WRITE);
+    if (!mapped_frame) {
+      LOG(ERROR) << "Unable to map MM21 frame";
+      return nullptr;
+    }
+  } else {
+    mapped_frame = frame;
   }
 
   uint8_t* y_plane = mapped_frame->GetWritableVisibleData(VideoFrame::kYPlane);
@@ -126,6 +133,7 @@ scoped_refptr<VideoFrame> CreateRandomMM21Frame(const gfx::Size& size,
   for (int row = 0; row < size.height(); row++, y_plane += y_plane_stride) {
     base::RandBytes(y_plane, size.width());
   }
+
   const auto uv_plane_stride = mapped_frame->stride(VideoFrame::kUVPlane);
   for (int row = 0; row < size.height() / 2;
        row++, uv_plane += uv_plane_stride) {
@@ -137,7 +145,7 @@ scoped_refptr<VideoFrame> CreateRandomMM21Frame(const gfx::Size& size,
 
 class ImageProcessorPerfTest : public ::testing::Test {
  public:
-  void InitializeImageProcessorTest() {
+  void InitializeImageProcessorTest(bool use_cpu_memory) {
     test_image_size_.SetSize(kTestImageWidth, kTestImageHeight);
     ASSERT_TRUE((test_image_size_.width() % kMM21TileWidth) == 0);
     ASSERT_TRUE((test_image_size_.height() % kMM21TileHeight) == 0);
@@ -154,8 +162,9 @@ class ImageProcessorPerfTest : public ::testing::Test {
 
     input_frames_.reserve(kNumberOfTestFrames);
     for (int i = 0; i < kNumberOfTestFrames; i++) {
-      input_frames_.push_back(
-          CreateRandomMM21Frame(test_image_size_, VideoFrame::STORAGE_DMABUFS));
+      input_frames_.push_back(CreateRandomMM21Frame(
+          test_image_size_, use_cpu_memory ? VideoFrame::STORAGE_OWNED_MEMORY
+                                           : VideoFrame::STORAGE_DMABUFS));
     }
 
     output_frame_ = CreateNV12Frame(test_image_size_,
@@ -201,7 +210,7 @@ TEST_F(ImageProcessorPerfTest, UncappedGLImageProcessorPerfTest) {
     GTEST_SKIP() << "Skipping GL Backend test, unsupported platform.";
   }
 
-  InitializeImageProcessorTest();
+  InitializeImageProcessorTest(/*use_cpu_memory=*/false);
 
   scoped_refptr<base::SequencedTaskRunner> client_task_runner =
       base::SequencedTaskRunner::GetCurrentDefault();
@@ -248,7 +257,7 @@ TEST_F(ImageProcessorPerfTest, UncappedGLImageProcessorPerfTest) {
 // frames looped over |kNumberOfTestCycles| iterations to the LibYUV
 // as fast as possible. Will print out elapsed processing time.
 TEST_F(ImageProcessorPerfTest, UncappedLibYUVPerfTest) {
-  InitializeImageProcessorTest();
+  InitializeImageProcessorTest(/*use_cpu_memory=*/true);
 
   scoped_refptr<base::SequencedTaskRunner> client_task_runner =
       base::SequencedTaskRunner::GetCurrentDefault();
@@ -299,7 +308,7 @@ TEST_F(ImageProcessorPerfTest, UncappedLibYUVPerfTest) {
 // frames looped over |kNumberOfCappedTestCycles| iterations to the
 // GLImageProcessor at 60fps. Will print out elapsed processing time.
 TEST_F(ImageProcessorPerfTest, CappedGLImageProcessorPerfTest) {
-  InitializeImageProcessorTest();
+  InitializeImageProcessorTest(/*use_cpu_memory=*/false);
 
   scoped_refptr<base::SequencedTaskRunner> client_task_runner =
       base::SequencedTaskRunner::GetCurrentDefault();
@@ -366,7 +375,7 @@ TEST_F(ImageProcessorPerfTest, CappedGLImageProcessorPerfTest) {
 // frames looped over |kNumberOfCappedTestCycles| iterations to the
 // LibYUV at 60fps. Will print out elapsed processing time.
 TEST_F(ImageProcessorPerfTest, CappedLibYUVPerfTest) {
-  InitializeImageProcessorTest();
+  InitializeImageProcessorTest(/*use_cpu_memory=*/true);
 
   scoped_refptr<base::SequencedTaskRunner> client_task_runner =
       base::SequencedTaskRunner::GetCurrentDefault();
