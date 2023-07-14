@@ -48,6 +48,12 @@ export class VisitTileModuleElement extends I18nMixin
         computed: `computeLabel_(visit.urlForDisplay)`,
       },
 
+      imagesEnabled_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('historyClustersImagesEnabled'),
+        reflectToAttribute: true,
+      },
+
       /* The image url for the tile. */
       imageUrl_: {
         type: Object,
@@ -56,7 +62,7 @@ export class VisitTileModuleElement extends I18nMixin
 
       format: {
         type: String,
-        value: 'wide',
+        value: 'narrow',
         reflectToAttribute: true,
       },
     };
@@ -64,6 +70,7 @@ export class VisitTileModuleElement extends I18nMixin
 
   format: string;
   visit: URLVisit;
+  private imagesEnabled_: boolean;
   private imageUrl_: Url|null;
 
   hasImageUrl(): boolean {

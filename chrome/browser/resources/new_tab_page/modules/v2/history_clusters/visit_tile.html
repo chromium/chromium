@@ -2,7 +2,8 @@
   :host {
     background: var(--color-new-tab-page-module-background);
     border-radius: var(--ntp-module-item-border-radius);
-    display: inline-block;
+    display: inline-flex;
+    height: 100%;
     width: 100%;
   }
 
@@ -21,20 +22,68 @@
   }
 
   #content {
-    display: inline-block;
+    flex: 1;
+    position: relative;
+  }
+
+  #label-container {
+    color: var(--color-new-tab-page-secondary-foreground);
+    display: flex;
+    flex-direction: row;
+    font-size: 11px;
+    height: 20px;
     margin: 16px;
+  }
+
+  :host([images-enabled_]) #label-container {
+    background: linear-gradient(0, rgba(0, 0, 0, 0) 0%,
+      rgba(0, 0, 0, 0.4) 69.79%);
+    border-radius: var(--ntp-module-item-border-radius);
+    color: var(--color-new-tab-page-primary-foreground);
+    display: flex;
+    font-size: 11px;
+    position: absolute;
+    height: 40px;
+    margin: 4px;
+    width: calc(100% - 8px); /* Subtract parent margin */
+    z-index: 1;
+  }
+
+  /*TODO: mfacey@: Fix label size */
+  #label {
+    max-width: 100px;
+  }
+
+  :host([images-enabled_]) #label {
+    margin-top: 12px;
+  }
+
+  :host([images-enabled_]) #icon {
+    margin: 12px 8px 0 12px;
   }
 
   #image {
     background: var(--color-new-tab-page-module-background);
+    border-radius: var(--ntp-module-item-border-radius);
+    margin: 4px;
     overflow: hidden;
     position: relative;
+    height: 50%;
   }
 
   #image img {
     height: 100%;
     object-fit: cover;
     width: 100%;
+  }
+
+  #image-icon {
+    height: 24px;
+    left: 50%;
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 24px;
   }
 
   #icon {
@@ -48,12 +97,12 @@
     color: var(--color-new-tab-page-primary-foreground);
     display: -webkit-box;
     font-size: var(--ntp-module-text-size);
-    margin: 16px 0 16px 0;
+    margin: 16px;
     white-space: initial;
   }
 
   :host([format='wide']) #title {
-    margin: 24px 0 86px 0;
+    margin: 24px 16px;
   }
 
   #title {
@@ -62,27 +111,16 @@
     line-height: 20px;
   }
 
-  #label-container {
-    color: var(--color-new-tab-page-secondary-foreground);
-    display: flex;
-    flex-direction: row;
-    font-size: 11px;
-    height: 20px;
-  }
-
   #date {
-    /*TODO: Update color */
-    color: var(--color-new-tab-page-primary-foreground);
+    color: var(--color-new-tab-page-secondary-foreground);
     min-width: max-content;
+    bottom: 16px;
+    left: 16px;
+    position: absolute;
   }
 
   #annotation {
     display: none;
-  }
-
-  /*TODO: Fix label size */
-  #label {
-    max-width: 100px;
   }
 
   /* Set styles for high contrast mode in Windows. */
@@ -107,11 +145,16 @@
     </page-favicon>
     <div id="label" class="truncate">[[label_]]</div>
   </div>
-  <div id="image">
+  <div id="image" hidden="[[!imagesEnabled_]]">
     <template is="dom-if" if="[[imageUrl_]]" restamp>
       <img is="cr-auto-img" auto-src="[[imageUrl_.url]]"
           draggable="false" alt="">
       </img>
+    </template>
+    <template is="dom-if" if="[[!imageUrl_]]" restamp>
+      <page-favicon id="image-icon" url="[[visit.normalizedUrl]]"
+                  is-known-to-sync="[[visit.isKnownToSync]]" size="24">
+      </page-favicon>
     </template>
   </div>
   <div id="title" class="truncate">[[visit.pageTitle]]</div>

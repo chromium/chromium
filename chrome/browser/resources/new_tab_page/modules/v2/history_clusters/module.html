@@ -5,6 +5,10 @@
     width: 100%;
   }
 
+  :host([images-enabled_]:not([format='wide'])) {
+    height: 496px;
+  }
+
   :host([format='wide']) {
     height: 244px;
   }
@@ -25,6 +29,10 @@
     height: 100%;
   }
 
+  :host([images-enabled_]:not([format='wide'])) #layout {
+    grid-template: repeat(8, 1fr) / repeat(2, 1fr);
+  }
+
   :host([format='wide']) #layout  {
     grid-template: repeat(4, 1fr) / repeat(4, 1fr);
   }
@@ -39,9 +47,17 @@
     grid-row: 3 / 6;
   }
 
+  :host([images-enabled_]:not([format='wide'])) #first-tile {
+    grid-row: 3 / 7;
+  }
+
   #last-tile {
     grid-column: 2 / 3;
     grid-row: 3 / 6;
+  }
+
+  :host([images-enabled_]:not([format='wide'])) #last-tile {
+    grid-row: 3 / 7;
   }
 
   :host([format='wide']) #first-tile {
@@ -84,6 +100,10 @@
     width: 100%;
   }
 
+  :host([images-enabled_]:not([format='wide'])) #related-searches {
+    grid-row: 7 / 9;
+  }
+
   :host([format='wide']) #related-searches {
     display: grid;
     grid-auto-flow: row;
@@ -105,11 +125,11 @@
   </history-clusters-header-v2>
   <ntp-history-clusters-visit-tile id="first-tile"
       visit="[[cluster.visits.1]]" on-click="onVisitTileClick_"
-      on-aux-click="onVisitTileClick_">
+      on-aux-click="onVisitTileClick_" format="[[format]]">
   </ntp-history-clusters-visit-tile>
   <ntp-history-clusters-visit-tile id="last-tile"
       visit="[[cluster.visits.2]]" on-click="onVisitTileClick_"
-      on-aux-click="onVisitTileClick_">
+      on-aux-click="onVisitTileClick_" format="[[format]]">
   </ntp-history-clusters-visit-tile>
   <div id="related-searches">
     <ntp-history-clusters-suggest-tile-v2 id="first-related-search"

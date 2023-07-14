@@ -53,11 +53,18 @@ export class HistoryClustersModuleElement extends I18nMixin
         value: 'narrow',
         reflectToAttribute: true,
       },
+
+      imagesEnabled_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('historyClustersImagesEnabled'),
+        reflectToAttribute: true,
+      },
     };
   }
 
   cluster: Cluster;
   format: string;
+  private imagesEnabled_: boolean;
 
   private onDisableButtonClick_() {
     const disableEvent = new CustomEvent('disable-module', {
