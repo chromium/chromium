@@ -259,3 +259,126 @@
     'type': 'success',
   })
 # ---
+# name: test_input_performActionsEmitsWheelEvents
+  dict({
+    'result': dict({
+      'type': 'array',
+      'value': list([
+        dict({
+          'type': 'object',
+          'value': list([
+            list([
+              'event',
+              dict({
+                'type': 'string',
+                'value': 'mousedown',
+              }),
+            ]),
+            list([
+              'button',
+              dict({
+                'type': 'number',
+                'value': 0,
+              }),
+            ]),
+            list([
+              'buttons',
+              dict({
+                'type': 'number',
+                'value': 1,
+              }),
+            ]),
+            list([
+              'clientX',
+              dict({
+                'type': 'number',
+                'value': 0,
+              }),
+            ]),
+            list([
+              'clientY',
+              dict({
+                'type': 'number',
+                'value': 0,
+              }),
+            ]),
+          ]),
+        }),
+        dict({
+          'type': 'object',
+          'value': list([
+            list([
+              'event',
+              dict({
+                'type': 'string',
+                'value': 'wheel',
+              }),
+            ]),
+            list([
+              'deltaX',
+              dict({
+                'type': 'number',
+                'value': 0,
+              }),
+            ]),
+            list([
+              'deltaY',
+              dict({
+                'type': 'number',
+                'value': 5,
+              }),
+            ]),
+            list([
+              'deltaZ',
+              dict({
+                'type': 'number',
+                'value': 0,
+              }),
+            ]),
+          ]),
+        }),
+        dict({
+          'type': 'object',
+          'value': list([
+            list([
+              'event',
+              dict({
+                'type': 'string',
+                'value': 'mouseup',
+              }),
+            ]),
+            list([
+              'button',
+              dict({
+                'type': 'number',
+                'value': 0,
+              }),
+            ]),
+            list([
+              'buttons',
+              dict({
+                'type': 'number',
+                'value': 0,
+              }),
+            ]),
+            list([
+              'clientX',
+              dict({
+                'type': 'number',
+                'value': 0,
+              }),
+            ]),
+            list([
+              'clientY',
+              dict({
+                'type': 'number',
+                'value': 0,
+              }),
+            ]),
+          ]),
+        }),
+      ]),
+    }),
+    'type': 'success',
+  })
+# ---

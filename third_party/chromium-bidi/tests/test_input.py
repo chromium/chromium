@@ -466,10 +466,6 @@ async def test_input_performActionsEmitsPointerEvents(websocket, context_id,
     assert result == snapshot(exclude=props("realm"))
 
 
-@pytest.mark.skip(reason="""
-        TODO(jrandolf): Investigate mouse wheel flakiness. The deltaY sometimes
-        doubles and other times not. It is also not independent of the mouse.
-    """)
 @pytest.mark.asyncio
 async def test_input_performActionsEmitsWheelEvents(websocket, context_id,
                                                     html, activate_main_tab,
@@ -485,7 +481,7 @@ async def test_input_performActionsEmitsWheelEvents(websocket, context_id,
                 "context": context_id,
                 "actions": [{
                     "type": "pointer",
-                    "id": "main2",
+                    "id": "main_mouse",
                     "actions": [{
                         "type": "pointerDown",
                         "button": 0,
@@ -495,7 +491,7 @@ async def test_input_performActionsEmitsWheelEvents(websocket, context_id,
                     }]
                 }, {
                     "type": "wheel",
-                    "id": "main_mouse",
+                    "id": "main_wheel",
                     "actions": [{
                         "type": "scroll",
                         "x": 0,
