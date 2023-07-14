@@ -62,3 +62,7 @@ used by Chromium. In order to upstream this patch, each flag would need to be
 moved to a separate .cc file containing nothing but the flag declaration. Then,
 Chromium could use a good default value given by upstream or write our own logic
 to determine the best flag value.
+* remove-xnnpack-from-cpu-delegate.patch - Removes references to XNNPACK from
+the CPU inference delegate. Not sure why this is here, but it is not needed in
+Chromium because we conditionally add the XNNPACK delegate when the platform
+supports it.

@@ -28,7 +28,6 @@
 #if defined(MEDIAPIPE_ANDROID)
 #include "tensorflow/lite/delegates/nnapi/nnapi_delegate.h"
 #endif  // ANDROID
-#include "tensorflow/lite/delegates/xnnpack/xnnpack_delegate.h"
 
 namespace mediapipe {
 namespace api2 {
@@ -104,7 +103,6 @@ InferenceCalculatorCpuImpl::MaybeCreateDelegate(CalculatorContext* cc) {
         input_side_packet_delegate = kDelegate(cc).Get();
     RET_CHECK(
         input_side_packet_delegate.has_tflite() ||
-        input_side_packet_delegate.has_xnnpack() ||
         input_side_packet_delegate.has_nnapi() ||
         input_side_packet_delegate.delegate_case() ==
             mediapipe::InferenceCalculatorOptions::Delegate::DELEGATE_NOT_SET)
@@ -140,20 +138,6 @@ InferenceCalculatorCpuImpl::MaybeCreateDelegate(CalculatorContext* cc) {
                              [](TfLiteDelegate*) {});
   }
 #endif  // MEDIAPIPE_ANDROID
-
-#if defined(__EMSCRIPTEN__)
-  const bool use_xnnpack = true;
-#else
-  const bool use_xnnpack = opts_has_delegate && opts_delegate.has_xnnpack();
-#endif  // defined(__EMSCRIPTEN__)
-
-  if (use_xnnpack) {
-    auto xnnpack_opts = TfLiteXNNPackDelegateOptionsDefault();
-    xnnpack_opts.num_threads =
-        GetXnnpackNumThreads(opts_has_delegate, opts_delegate);
-    return TfLiteDelegatePtr(TfLiteXNNPackDelegateCreate(&xnnpack_opts),
-                             &TfLiteXNNPackDelegateDelete);
-  }
 
   return nullptr;
 }
