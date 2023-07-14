@@ -81,7 +81,7 @@ template("rust_bindgen") {
 
     args = [
       "--exe",
-      rebase_path(_bindgen_path),
+      rebase_path(_bindgen_path, root_build_dir),
       "--header",
       rebase_path(invoker.header, root_build_dir),
       "--depfile",

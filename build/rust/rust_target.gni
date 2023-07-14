@@ -172,7 +172,8 @@ template("rust_target") {
                "outside the Chromium build.")
     _cxx_bindings = invoker.cxx_bindings
   }
-  _rustenv = [ "OUT_DIR=" + rebase_path(_env_out_dir) ]
+  _rustenv = [ "OUT_DIR=" +
+               rebase_path(_env_out_dir, get_path_info(_crate_root, "dir")) ]
   if (defined(invoker.rustenv)) {
     _rustenv += invoker.rustenv
   }

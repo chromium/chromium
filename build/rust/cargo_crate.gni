@@ -322,7 +322,7 @@ template("cargo_crate") {
         "--output",
         rebase_path(_flags_file, root_build_dir),
         "--rust-prefix",
-        rebase_path("${rust_sysroot}/bin"),
+        rebase_path("${rust_sysroot}/bin", root_build_dir),
         "--out-dir",
         rebase_path(_build_script_env_out_dir, root_build_dir),
         "--src-dir",
