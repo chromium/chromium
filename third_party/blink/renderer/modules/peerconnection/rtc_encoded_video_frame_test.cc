@@ -261,6 +261,7 @@ TEST_F(RTCEncodedVideoFrameTest, SetMetadataWithFeatureAllowsModifications) {
   }
   EXPECT_EQ(actual_csrcs, new_metadata->contributingSources());
 }
+
 TEST_F(RTCEncodedVideoFrameTest, SetMetadataOnEmptyFrameFails) {
   V8TestingScope v8_scope;
 
@@ -282,4 +283,78 @@ TEST_F(RTCEncodedVideoFrameTest, SetMetadataOnEmptyFrameFails) {
   EXPECT_EQ(exception_state.Message(),
             "Cannot set metadata on an empty frame.");
 }
+
+TEST_F(RTCEncodedVideoFrameTest, SetMetadataRejectsInvalidDependencies) {
+  V8TestingScope v8_scope;
+  base::test::ScopedFeatureList feature_list_;
+  feature_list_.InitWithFeatures(
+      /*enabled_features=*/{kAllowRTCEncodedVideoFrameSetMetadataAllFields},
+      /*disabled_features=*/{});
+
+  std::unique_ptr<MockTransformableVideoFrame> frame =
+      std::make_unique<NiceMock<MockTransformableVideoFrame>>();
+  MockVP9Metadata(frame.get());
+
+  EXPECT_CALL(*frame, SetMetadata(_)).Times(0);
+
+  RTCEncodedVideoFrame encoded_frame(std::move(frame));
+  RTCEncodedVideoFrameMetadata* new_metadata = CreateMetadata();
+  // Set an invalid dependency - all deps must be less than frame id.
+  new_metadata->setDependencies({new_metadata->frameId()});
+
+  DummyExceptionStateForTesting exception_state;
+  encoded_frame.setMetadata(new_metadata, exception_state);
+  EXPECT_TRUE(exception_state.HadException());
+  EXPECT_EQ(exception_state.Message(), "Invalid frame dependency.");
+}
+
+TEST_F(RTCEncodedVideoFrameTest, SetMetadataRejectsTooEarlyDependencies) {
+  V8TestingScope v8_scope;
+  base::test::ScopedFeatureList feature_list_;
+  feature_list_.InitWithFeatures(
+      /*enabled_features=*/{kAllowRTCEncodedVideoFrameSetMetadataAllFields},
+      /*disabled_features=*/{});
+
+  std::unique_ptr<MockTransformableVideoFrame> frame =
+      std::make_unique<NiceMock<MockTransformableVideoFrame>>();
+  MockVP9Metadata(frame.get());
+
+  EXPECT_CALL(*frame, SetMetadata(_)).Times(0);
+
+  RTCEncodedVideoFrame encoded_frame(std::move(frame));
+  RTCEncodedVideoFrameMetadata* new_metadata = CreateMetadata();
+  // Set an invalid dependency - deps must be within 1 << 14 of the frame id.
+  new_metadata->setFrameId(1 << 14);
+  new_metadata->setDependencies({0});
+
+  DummyExceptionStateForTesting exception_state;
+  encoded_frame.setMetadata(new_metadata, exception_state);
+  EXPECT_TRUE(exception_state.HadException());
+  EXPECT_EQ(exception_state.Message(), "Invalid frame dependency.");
+}
+
+TEST_F(RTCEncodedVideoFrameTest, SetMetadataRejectsTooManyDependencies) {
+  V8TestingScope v8_scope;
+  base::test::ScopedFeatureList feature_list_;
+  feature_list_.InitWithFeatures(
+      /*enabled_features=*/{kAllowRTCEncodedVideoFrameSetMetadataAllFields},
+      /*disabled_features=*/{});
+
+  std::unique_ptr<MockTransformableVideoFrame> frame =
+      std::make_unique<NiceMock<MockTransformableVideoFrame>>();
+  MockVP9Metadata(frame.get());
+
+  EXPECT_CALL(*frame, SetMetadata(_)).Times(0);
+
+  RTCEncodedVideoFrame encoded_frame(std::move(frame));
+  RTCEncodedVideoFrameMetadata* new_metadata = CreateMetadata();
+  // Set too many dependencies.
+  new_metadata->setDependencies({1, 2, 3, 4, 5, 6, 7, 8, 9});
+
+  DummyExceptionStateForTesting exception_state;
+  encoded_frame.setMetadata(new_metadata, exception_state);
+  EXPECT_TRUE(exception_state.HadException());
+  EXPECT_EQ(exception_state.Message(), "Too many dependencies.");
+}
+
 }  // namespace blink
