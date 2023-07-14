@@ -138,10 +138,7 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
     private PreferenceCategory mSyncingCategory;
 
     private ChromeSwitchPreference mSyncEverything;
-    private ChromeBaseCheckBoxPreference mSyncPaymentsIntegration;
-    // Maps {@link UserSelectableType} to the corresponding preference. There is no entry
-    // for {@code mSyncPaymentsIntegration} because it does not correspond to a {@link
-    // UserSelectableType}
+    // Maps {@link UserSelectableType} to the corresponding preference.
     private Map<Integer, ChromeBaseCheckBoxPreference> mSyncTypePreferencesMap = new HashMap<>();
 
     private Preference mGoogleActivityControls;
@@ -224,16 +221,14 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
         mSyncTypePreferencesMap.put(
                 UserSelectableType.PASSWORDS, findPreference(PREF_SYNC_PASSWORDS));
         mSyncTypePreferencesMap.put(
-                UserSelectableType.READING_LIST, findPreference(PREF_SYNC_READING_LIST));
-        mSyncTypePreferencesMap.put(UserSelectableType.TABS, findPreference(PREF_SYNC_RECENT_TABS));
+                UserSelectableType.PAYMENTS, findPreference(PREF_SYNC_PAYMENTS_INTEGRATION));
         mSyncTypePreferencesMap.put(
                 UserSelectableType.PREFERENCES, findPreference(PREF_SYNC_SETTINGS));
+        mSyncTypePreferencesMap.put(
+                UserSelectableType.READING_LIST, findPreference(PREF_SYNC_READING_LIST));
+        mSyncTypePreferencesMap.put(UserSelectableType.TABS, findPreference(PREF_SYNC_RECENT_TABS));
 
         mSyncTypePreferencesMap.values().forEach(pref -> pref.setOnPreferenceChangeListener(this));
-
-        mSyncPaymentsIntegration =
-                (ChromeBaseCheckBoxPreference) findPreference(PREF_SYNC_PAYMENTS_INTEGRATION);
-        mSyncPaymentsIntegration.setOnPreferenceChangeListener(this);
 
         // Prevent sync settings changes from taking effect until the user leaves this screen.
         mSyncSetupInProgressHandle = mSyncService.getSetupInProgressHandle();
@@ -432,12 +427,11 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
                                      .stream()
                                      .filter(type -> mSyncTypePreferencesMap.get(type).isChecked())
                                      .collect(Collectors.toSet());
-        // TODO(crbug.com/1459963): mSyncPaymentsIntegration.isChecked should be listed in
-        // mSyncTypePreferencesMap to avoid special-casing here.
-        if (mSyncEverything.isChecked()
-                || (mSyncPaymentsIntegration.isChecked()
-                        && mSyncTypePreferencesMap.get(UserSelectableType.AUTOFILL).isChecked())) {
-            types.add(UserSelectableType.PAYMENTS);
+        // PAYMENTS can only be selected if AUTOFILL is also selected.
+        // TODO(crbug.com/1435431): Remove this coupling.
+        if (!mSyncEverything.isChecked()
+                && !mSyncTypePreferencesMap.get(UserSelectableType.AUTOFILL).isChecked()) {
+            types.remove(UserSelectableType.PAYMENTS);
         }
         return types;
     }
@@ -589,7 +583,6 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
         mSyncEverything.setChecked(syncEverything);
 
         Set<Integer> selectedSyncTypes = mSyncService.getSelectedTypes();
-        ChromeManagedPreferenceDelegate autofillChromeManagedPreferenceDelegate = null;
 
         for (Map.Entry<Integer, ChromeBaseCheckBoxPreference> entry :
                 mSyncTypePreferencesMap.entrySet()) {
@@ -597,31 +590,27 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
             int type = entry.getKey();
             ChromeBaseCheckBoxPreference pref = entry.getValue();
             boolean managed = mSyncService.isTypeManagedByPolicy(type);
-            pref.setEnabled(!syncEverything);
-            pref.setChecked(selectedSyncTypes.contains(type));
 
-            ChromeManagedPreferenceDelegate managedDelegate =
-                    new ChromeManagedPreferenceDelegate() {
-                        @Override
-                        public boolean isPreferenceControlledByPolicy(Preference preference) {
-                            return managed;
-                        }
-                    };
-            pref.setManagedPreferenceDelegate(managedDelegate);
-            if (type == UserSelectableType.AUTOFILL) {
-                autofillChromeManagedPreferenceDelegate = managedDelegate;
+            // PAYMENTS can only be selected if AUTOFILL is also selected.
+            // TODO(crbug.com/1435431): Remove this coupling.
+            if (type == UserSelectableType.PAYMENTS) {
+                pref.setEnabled(!syncEverything
+                        && selectedSyncTypes.contains(UserSelectableType.AUTOFILL)
+                        && !Profile.getLastUsedRegularProfile().isChild());
+                pref.setChecked(selectedSyncTypes.contains(type)
+                        && selectedSyncTypes.contains(UserSelectableType.AUTOFILL));
+            } else {
+                pref.setEnabled(!syncEverything);
+                pref.setChecked(selectedSyncTypes.contains(type));
             }
-        }
 
-        // Payments integration requires AUTOFILL user selectable type.
-        mSyncPaymentsIntegration.setChecked(
-                mSyncTypePreferencesMap.get(UserSelectableType.AUTOFILL).isChecked()
-                && selectedSyncTypes.contains(UserSelectableType.PAYMENTS));
-        mSyncPaymentsIntegration.setEnabled(!syncEverything
-                && mSyncTypePreferencesMap.get(UserSelectableType.AUTOFILL).isChecked()
-                && !Profile.getLastUsedRegularProfile().isChild());
-        mSyncPaymentsIntegration.setManagedPreferenceDelegate(
-                autofillChromeManagedPreferenceDelegate);
+            pref.setManagedPreferenceDelegate(new ChromeManagedPreferenceDelegate() {
+                @Override
+                public boolean isPreferenceControlledByPolicy(Preference preference) {
+                    return managed;
+                }
+            });
+        }
     }
 
     /**
