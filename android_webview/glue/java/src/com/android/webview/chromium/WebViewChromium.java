@@ -247,7 +247,8 @@ class WebViewChromium implements WebViewProvider, WebViewProvider.ScrollDelegate
             ApiCall.WEB_SETTINGS_SUPPORT_MULTIPLE_WINDOWS, ApiCall.WEB_SETTINGS_SUPPORT_ZOOM,
             ApiCall.GET_RENDERER_REQUESTED_PRIORITY,
             ApiCall.GET_RENDERER_PRIORITY_WAIVED_WHEN_NOT_VISIBLE,
-            ApiCall.SET_RENDERER_PRIORITY_POLICY})
+            ApiCall.SET_RENDERER_PRIORITY_POLICY, ApiCall.LOAD_URL,
+            ApiCall.LOAD_URL_ADDITIONAL_HEADERS})
 
     @interface ApiCall {
         int ADD_JAVASCRIPT_INTERFACE = 0;
@@ -440,7 +441,9 @@ class WebViewChromium implements WebViewProvider, WebViewProvider.ScrollDelegate
         int GET_RENDERER_REQUESTED_PRIORITY = 187;
         int GET_RENDERER_PRIORITY_WAIVED_WHEN_NOT_VISIBLE = 188;
         int SET_RENDERER_PRIORITY_POLICY = 189;
-        int COUNT = 190;
+        int LOAD_URL = 190;
+        int LOAD_URL_ADDITIONAL_HEADERS = 191;
+        int COUNT = 192;
     }
 
     public static void recordWebViewApiCall(@ApiCall int sample) {
@@ -927,6 +930,7 @@ class WebViewChromium implements WebViewProvider, WebViewProvider.ScrollDelegate
                 public void run() {
                     try (TraceEvent event = TraceEvent.scoped(
                                  "WebView.APICall.Framework.LOAD_URL_ADDITIONAL_HEADERS")) {
+                        recordWebViewApiCall(ApiCall.LOAD_URL_ADDITIONAL_HEADERS);
                         mAwContents.loadUrl(url, additionalHttpHeaders);
                     }
                 }
@@ -935,6 +939,7 @@ class WebViewChromium implements WebViewProvider, WebViewProvider.ScrollDelegate
         }
         try (TraceEvent event = TraceEvent.scoped(
                      "WebView.APICall.Framework.LOAD_URL_ADDITIONAL_HEADERS")) {
+            recordWebViewApiCall(ApiCall.LOAD_URL_ADDITIONAL_HEADERS);
             mAwContents.loadUrl(url, additionalHttpHeaders);
         }
     }
@@ -950,6 +955,7 @@ class WebViewChromium implements WebViewProvider, WebViewProvider.ScrollDelegate
                 public void run() {
                     try (TraceEvent event =
                                     TraceEvent.scoped("WebView.APICall.Framework.LOAD_URL")) {
+                        recordWebViewApiCall(ApiCall.LOAD_URL);
                         mAwContents.loadUrl(url);
                     }
                 }
@@ -957,6 +963,7 @@ class WebViewChromium implements WebViewProvider, WebViewProvider.ScrollDelegate
             return;
         }
         try (TraceEvent event = TraceEvent.scoped("WebView.APICall.Framework.LOAD_URL")) {
+            recordWebViewApiCall(ApiCall.LOAD_URL);
             mAwContents.loadUrl(url);
         }
     }

@@ -113717,6 +113717,8 @@ Called by update_scheduler_enums.py.-->
   <int value="187" label="getRendererRequestedPriority"/>
   <int value="188" label="getRendererPriorityWaivedWhenNotVisible"/>
   <int value="189" label="setRendererPriorityPolicy"/>
+  <int value="190" label="loadUrl"/>
+  <int value="191" label="loadUrlAdditionalHeaders"/>
 </enum>
 
 <enum name="WebViewAppProvidedMimeType">
