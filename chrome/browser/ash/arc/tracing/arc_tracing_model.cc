@@ -339,7 +339,7 @@ ArcTracingModel::~ArcTracingModel() = default;
 
 void ArcTracingModel::SetMinMaxTime(uint64_t min_timestamp,
                                     uint64_t max_timestamp) {
-  DCHECK(min_timestamp < max_timestamp);
+  DCHECK_LT(min_timestamp, max_timestamp);
   min_timestamp_ = min_timestamp;
   max_timestamp_ = max_timestamp;
 }
