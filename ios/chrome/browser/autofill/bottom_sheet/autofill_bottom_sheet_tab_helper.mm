@@ -102,6 +102,12 @@ void AutofillBottomSheetTabHelper::AttachPasswordListeners(
 
 void AutofillBottomSheetTabHelper::DetachListenersAndRefocus(
     web::WebFrame* frame) {
+  // Verify that the password bottom sheet feature is enabled.
+  if (!base::FeatureList::IsEnabled(
+          password_manager::features::kIOSPasswordBottomSheet)) {
+    return;
+  }
+
   AutofillBottomSheetJavaScriptFeature::GetInstance()
       ->DetachListenersAndRefocus(frame);
 }
