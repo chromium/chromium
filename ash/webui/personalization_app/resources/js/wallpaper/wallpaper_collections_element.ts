@@ -29,7 +29,7 @@ import {getCountText, isImageDataUrl, isNonEmptyArray, isSelectionEvent} from '.
 import {DefaultImageSymbol, kDefaultImageSymbol, kMaximumLocalImagePreviews} from './constants.js';
 import {getLoadingPlaceholderAnimationDelay, getLoadingPlaceholders, getPathOrSymbol} from './utils.js';
 import {getTemplate} from './wallpaper_collections_element.html.js';
-import {fetchLocalData, getDefaultImageThumbnail, initializeBackdropData} from './wallpaper_controller.js';
+import {fetchGooglePhotosEnabled, fetchLocalData, getDefaultImageThumbnail, initializeBackdropData} from './wallpaper_controller.js';
 import {WallpaperGridItemSelectedEvent} from './wallpaper_grid_item_element.js';
 import {getWallpaperProvider} from './wallpaper_interface_provider.js';
 
@@ -386,6 +386,9 @@ export class WallpaperCollections extends WithPersonalizationStore {
     window.addEventListener('focus', () => {
       fetchLocalData(getWallpaperProvider(), this.getStore());
     });
+    if (isGooglePhotosIntegrationEnabled()) {
+      fetchGooglePhotosEnabled(getWallpaperProvider(), this.getStore());
+    }
   }
 
   /**

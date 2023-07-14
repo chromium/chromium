@@ -7,7 +7,7 @@ import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {emptyState, GooglePhotosEnablementState, kDefaultImageSymbol, PersonalizationRouter, WallpaperActionName, WallpaperCollection, WallpaperCollections, WallpaperGridItem, WallpaperImage} from 'chrome://personalization/js/personalization_app.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {assertDeepEquals, assertEquals, assertGE, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertGE, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 
@@ -37,6 +37,7 @@ suite('WallpaperCollectionsTest', function() {
   }
 
   setup(function() {
+    loadTimeData.overrideValues({isGooglePhotosIntegrationEnabled: true});
     const mocks = baseSetup();
     wallpaperProvider = mocks.wallpaperProvider;
     personalizationStore = mocks.personalizationStore;
@@ -213,6 +214,18 @@ suite('WallpaperCollectionsTest', function() {
           {url: 'data:image/png;base64,qwer'},
         ],
         localTile.src, 'all three images are displayed');
+  });
+
+  test('no Google Photos tile for ineligible users', async () => {
+    loadTimeData.overrideValues({isGooglePhotosIntegrationEnabled: false});
+    wallpaperCollectionsElement = initElement(WallpaperCollections);
+    await waitAfterNextRender(wallpaperCollectionsElement);
+
+    const googlePhotosTile =
+        wallpaperCollectionsElement.shadowRoot!
+            .querySelector<WallpaperGridItem>(
+                `${WallpaperGridItem.is}[data-google-photos]`);
+    assertFalse(!!googlePhotosTile, 'google photos tile is not present');
   });
 
   test('customizes text for managed google photos', async () => {
@@ -428,7 +441,7 @@ suite('WallpaperCollectionsTest', function() {
         type: 'image_online',
       },
       {id: 'local_', type: 'image_local'},
-      {id: 'google_photos_', 'type': 'loading'},
+      {id: 'google_photos_', 'type': 'image_google_photos'},
       {id: 'id_0', type: 'image_online'},
       {id: 'id_1', type: 'image_online'},
       {id: 'id_2', type: 'image_online'},

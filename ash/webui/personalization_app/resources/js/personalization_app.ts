@@ -124,6 +124,7 @@ export {setWallpaperProviderForTesting} from './wallpaper/wallpaper_interface_pr
 export {WallpaperObserver} from './wallpaper/wallpaper_observer.js';
 export {WallpaperPreview} from './wallpaper/wallpaper_preview_element.js';
 export {WallpaperSelected} from './wallpaper/wallpaper_selected_element.js';
+export {WallpaperSubpage} from './wallpaper/wallpaper_subpage_element.js';
 export {DailyRefreshType} from './wallpaper/wallpaper_state.js';
 
 PersonalizationStore.getInstance().init(emptyState());

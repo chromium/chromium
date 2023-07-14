@@ -213,6 +213,10 @@ export class PersonalizationRouter extends PolymerElement {
         }
         break;
       }
+      case Paths.GOOGLE_PHOTOS_COLLECTION: {
+        document.title = loadTimeData.getString('googlePhotosLabel');
+        break;
+      }
       case Paths.LOCAL_COLLECTION: {
         document.title = loadTimeData.getString('myImagesLabel');
         break;

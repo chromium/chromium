@@ -60,10 +60,10 @@
   <template is="dom-if" if="[[shouldShowCollectionImages_(path)]]" restamp>
     <wallpaper-images collection-id="[[queryParams.id]]"></wallpaper-images>
   </template>
-  <template is="dom-if" if="[[isGooglePhotosIntegrationEnabled_]]">
+  <template is="dom-if" if="[[shouldShowGooglePhotosCollection_(path)]]"
+      restamp>
     <google-photos-collection path="[[path]]"
-        album-id="[[queryParams.googlePhotosAlbumId]]"
-        hidden="[[!shouldShowGooglePhotosCollection_(path)]]">
+        album-id="[[queryParams.googlePhotosAlbumId]]">
     </google-photos-collection>
   </template>
   <template is="dom-if" if="[[shouldShowLocalCollection_(path)]]" restamp>

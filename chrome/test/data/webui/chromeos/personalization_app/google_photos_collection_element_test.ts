@@ -20,7 +20,19 @@ suite('GooglePhotosCollectionTest', function() {
   let wallpaperProvider: TestWallpaperProvider;
 
   /**
-   * Returns the match for |selector| in |googlePhotosCollectionElement|'s
+   * Returns an initialized `googlePhotosCollectionElement`.
+   */
+  async function displayElement(enabled = GooglePhotosEnablementState.kEnabled):
+      Promise<GooglePhotosCollection> {
+    personalizationStore.data.wallpaper.googlePhotos.enabled = enabled;
+    const googlePhotosCollectionElement = initElement(GooglePhotosCollection);
+    personalizationStore.notifyObservers();
+    await waitAfterNextRender(googlePhotosCollectionElement);
+    return Promise.resolve(googlePhotosCollectionElement);
+  }
+
+  /**
+   * Returns the match for `selector` in `googlePhotosCollectionElement`'s
    * shadow DOM.
    */
   function querySelector(selector: string): HTMLElement|null {
@@ -50,10 +62,7 @@ suite('GooglePhotosCollectionTest', function() {
       url: {url: 'foo.com'},
       location: 'home',
     }]);
-
-    googlePhotosCollectionElement =
-        initElement(GooglePhotosCollection, {hidden: false});
-    await waitAfterNextRender(googlePhotosCollectionElement);
+    googlePhotosCollectionElement = await displayElement();
 
     // Zero state should be absent.
     assertEquals(querySelector('#zeroState'), null);
@@ -86,10 +95,7 @@ suite('GooglePhotosCollectionTest', function() {
       timestamp: {internalValue: BigInt('1')},
       isShared: false,
     }]);
-
-    // Initialize |googlePhotosCollectionElement|.
-    googlePhotosCollectionElement =
-        initElement(GooglePhotosCollection, {hidden: false});
+    googlePhotosCollectionElement = await displayElement();
     await wallpaperProvider.whenCalled('fetchGooglePhotosAlbums');
     await waitAfterNextRender(googlePhotosCollectionElement);
 
@@ -159,10 +165,7 @@ suite('GooglePhotosCollectionTest', function() {
       url: {url: 'foo.com'},
       location: 'home',
     }]);
-
-    googlePhotosCollectionElement =
-        initElement(GooglePhotosCollection, {hidden: false});
-    await waitAfterNextRender(googlePhotosCollectionElement);
+    googlePhotosCollectionElement = await displayElement();
 
     // Zero state should be absent.
     assertEquals(querySelector('#zeroState'), null);
@@ -257,10 +260,7 @@ suite('GooglePhotosCollectionTest', function() {
   test('displays zero state when there is no content', async () => {
     wallpaperProvider.setGooglePhotosAlbums([]);
     wallpaperProvider.setGooglePhotosPhotos([]);
-
-    googlePhotosCollectionElement =
-        initElement(GooglePhotosCollection, {hidden: false});
-    await waitAfterNextRender(googlePhotosCollectionElement);
+    googlePhotosCollectionElement = await displayElement();
 
     // Photos tab should be absent.
     assertEquals(querySelector('#photosTab'), null);
@@ -293,13 +293,10 @@ suite('GooglePhotosCollectionTest', function() {
       timestamp: {internalValue: BigInt(0)},
     };
 
-    // Initialize Google Photos data in the |personalizationStore|.
+    // Initialize Google Photos data in the `personalizationStore`.
     personalizationStore.data.wallpaper.googlePhotos.photosByAlbumId[album.id] =
         [];
-
-    // Initialize |googlePhotosCollectionElement| and select |album|.
-    googlePhotosCollectionElement =
-        initElement(GooglePhotosCollection, {hidden: false});
+    googlePhotosCollectionElement = await displayElement();
     googlePhotosCollectionElement.setAttribute('album-id', album.id);
     await waitAfterNextRender(googlePhotosCollectionElement);
 
@@ -324,78 +321,42 @@ suite('GooglePhotosCollectionTest', function() {
     assertFalse(zeroState.hidden);
   });
 
-  [true, false].forEach(
-      hidden => test('fetches albums on first show', async () => {
-        // Initialize |googlePhotosCollectionElement| in |hidden| state.
-        googlePhotosCollectionElement =
-            initElement(GooglePhotosCollection, {hidden});
-        await waitAfterNextRender(googlePhotosCollectionElement);
+  test('fetches albums on first show', async () => {
+    googlePhotosCollectionElement = await displayElement();
 
-        if (hidden) {
-          // Albums should *not* be fetched when hidden.
-          await new Promise<void>(resolve => setTimeout(resolve, 100));
-          assertEquals(
-              wallpaperProvider.getCallCount('fetchGooglePhotosAlbums'), 0);
+    // Albums *should* be fetched when shown.
+    await wallpaperProvider.whenCalled('fetchGooglePhotosAlbums');
+    wallpaperProvider.reset();
 
-          // Show |googlePhotosCollectionElement|.
-          googlePhotosCollectionElement.hidden = false;
-          await waitAfterNextRender(googlePhotosCollectionElement);
-        }
+    // Tear down and re-init `googlePhotosCollectionElement`.
+    await teardownElement(googlePhotosCollectionElement);
+    googlePhotosCollectionElement = null;
+    googlePhotosCollectionElement = await displayElement();
 
-        // Albums *should* be fetched when shown.
-        await wallpaperProvider.whenCalled('fetchGooglePhotosAlbums');
-        wallpaperProvider.reset();
+    // Albums should *not* be fetched when re-shown.
+    await new Promise<void>(resolve => setTimeout(resolve, 100));
+    assertEquals(wallpaperProvider.getCallCount('fetchGooglePhotosAlbums'), 0);
+  });
 
-        // Hide and re-show |googlePhotosCollectionElement|.
-        googlePhotosCollectionElement.hidden = true;
-        await waitAfterNextRender(googlePhotosCollectionElement);
-        googlePhotosCollectionElement.hidden = false;
-        await waitAfterNextRender(googlePhotosCollectionElement);
+  test('fetches photos on first show', async () => {
+    googlePhotosCollectionElement = await displayElement();
 
-        // Albums should *not* be fetched when re-shown.
-        await new Promise<void>(resolve => setTimeout(resolve, 100));
-        assertEquals(
-            wallpaperProvider.getCallCount('fetchGooglePhotosAlbums'), 0);
-      }));
+    // Photos *should* be fetched when shown.
+    await wallpaperProvider.whenCalled('fetchGooglePhotosPhotos');
+    wallpaperProvider.reset();
 
-  [true, false].forEach(
-      hidden => test('fetches photos on first show', async () => {
-        // Initialize |googlePhotosCollectionElement| in |hidden| state.
-        googlePhotosCollectionElement =
-            initElement(GooglePhotosCollection, {hidden});
-        await waitAfterNextRender(googlePhotosCollectionElement);
+    // Tear down and re-init `googlePhotosCollectionElement`.
+    await teardownElement(googlePhotosCollectionElement);
+    googlePhotosCollectionElement = null;
+    googlePhotosCollectionElement = await displayElement();
 
-        if (hidden) {
-          // Photos should *not* be fetched when hidden.
-          await new Promise<void>(resolve => setTimeout(resolve, 100));
-          assertEquals(
-              wallpaperProvider.getCallCount('fetchGooglePhotosPhotos'), 0);
-
-          // Show |googlePhotosCollectionElement|.
-          googlePhotosCollectionElement.hidden = false;
-          await waitAfterNextRender(googlePhotosCollectionElement);
-        }
-
-        // Photos *should* be fetched when shown.
-        await wallpaperProvider.whenCalled('fetchGooglePhotosPhotos');
-        wallpaperProvider.reset();
-
-        // Hide and re-show |googlePhotosCollectionElement|.
-        googlePhotosCollectionElement.hidden = true;
-        await waitAfterNextRender(googlePhotosCollectionElement);
-        googlePhotosCollectionElement.hidden = false;
-        await waitAfterNextRender(googlePhotosCollectionElement);
-
-        // Photos should *not* be fetched when re-shown.
-        await new Promise<void>(resolve => setTimeout(resolve, 100));
-        assertEquals(
-            wallpaperProvider.getCallCount('fetchGooglePhotosPhotos'), 0);
-      }));
+    // Photos should *not* be fetched when re-shown.
+    await new Promise<void>(resolve => setTimeout(resolve, 100));
+    assertEquals(wallpaperProvider.getCallCount('fetchGooglePhotosPhotos'), 0);
+  });
 
   test('sets aria label', async () => {
-    googlePhotosCollectionElement =
-        initElement(GooglePhotosCollection, {hidden: false});
-    await waitAfterNextRender(googlePhotosCollectionElement);
+    googlePhotosCollectionElement = await displayElement();
 
     assertEquals(
         loadTimeData.getString('googlePhotosLabel'),
@@ -407,15 +368,9 @@ suite('GooglePhotosCollectionTest', function() {
       .forEach(
           enabled => test(
               'Redirects when Google Photos access is disabled.', async () => {
-                // Set values returned by |wallpaperProvider|.
-                wallpaperProvider.setGooglePhotosEnabled(enabled);
+                googlePhotosCollectionElement = await displayElement(enabled);
 
-                // Initialize |googlePhotosCollectionElement|.
-                googlePhotosCollectionElement =
-                    initElement(GooglePhotosCollection, {hidden: false});
-                await waitAfterNextRender(googlePhotosCollectionElement);
-
-                // Mock |PersonalizationRouter.reloadAtWallpaper()|.
+                // Mock `PersonalizationRouter.reloadAtWallpaper()`.
                 let didCallReloadAtWallpaper = false;
                 PersonalizationRouter.reloadAtWallpaper = () => {
                   didCallReloadAtWallpaper = true;

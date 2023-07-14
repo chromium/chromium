@@ -62,15 +62,15 @@
     </div>
   </template>
   <google-photos-photos id="photosContent"
-    hidden="[[!isPhotosTabContentVisible_(hidden, photos_, tab_)]]">
+    hidden="[[!isPhotosTabContentVisible_(photos_, tab_)]]">
   </google-photos-photos>
   <template is="dom-if" if="[[!isAlbumsEmpty_(albums_, albumsShared_)]]">
     <google-photos-albums id="albumsContent"
-      hidden="[[!isAlbumsTabContentVisible_(hidden, tab_)]]">
+      hidden="[[!isAlbumsTabContentVisible_(tab_)]]">
     </google-photos-albums>
     <google-photos-photos-by-album-id id="photosByAlbumIdContent"
       album-id="[[albumId]]"
-      hidden="[[!isPhotosByAlbumIdTabContentVisible_(albumId, hidden, photosByAlbumId_, tab_)]]">
+      hidden="[[!isPhotosByAlbumIdTabContentVisible_(albumId, photosByAlbumId_, tab_)]]">
     </google-photos-photos-by-album-id>
   </template>
   <template is="dom-if"
