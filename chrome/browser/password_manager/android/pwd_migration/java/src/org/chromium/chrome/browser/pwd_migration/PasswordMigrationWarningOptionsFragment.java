@@ -51,6 +51,8 @@ public class PasswordMigrationWarningOptionsFragment extends Fragment {
         mOnResumeExportFlowCallback = onResumeExportFlowCallback;
     }
 
+    public PasswordMigrationWarningOptionsFragment() {}
+
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         mSignInOrSyncButton = view.findViewById(R.id.radio_sign_in_or_sync);
@@ -84,6 +86,8 @@ public class PasswordMigrationWarningOptionsFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+        if (mOnResumeExportFlowCallback == null) return;
+
         mOnResumeExportFlowCallback.run();
     }
 
