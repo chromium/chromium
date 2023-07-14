@@ -40,10 +40,12 @@ class WebAppServiceAsh : public crosapi::mojom::WebAppService {
   void RegisterWebAppProviderBridge(
       mojo::PendingRemote<mojom::WebAppProviderBridge> web_app_provider_bridge)
       override;
-
   void GetAssociatedAndroidPackage(
       const std::string& app_id,
       GetAssociatedAndroidPackageCallback callback) override;
+  void MigrateLauncherState(const std::string& from_app_id,
+                            const std::string& to_app_id,
+                            MigrateLauncherStateCallback callback) override;
 
   // Returns the web app provider bridge of the currently connected
   // lacros-chrome, or nullptr if there is no connection.

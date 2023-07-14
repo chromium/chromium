@@ -67,8 +67,11 @@ class FakeWebAppUiManager : public WebAppUiManager {
                            Profile& profile,
                            LaunchWebAppCallback callback,
                            AppLock& lock) override;
-  void MaybeTransferAppAttributes(const AppId& from_extension_or_app,
-                                  const AppId& to_app) override;
+#if BUILDFLAG(IS_CHROMEOS)
+  void MigrateLauncherState(const AppId& from_app_id,
+                            const AppId& to_app_id,
+                            base::OnceClosure callback) override;
+#endif
   content::WebContents* CreateNewTab() override;
   void TriggerInstallDialog(content::WebContents* web_contents) override;
 

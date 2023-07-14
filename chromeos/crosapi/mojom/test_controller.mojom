@@ -46,6 +46,12 @@ enum OptionalBoolean {
   kTrue,
 };
 
+[Stable]
+struct AppListItemAttributes {
+  string item_position@0;
+  string pin_position@1;
+};
+
 // Implemented in lacros-chrome.
 // Lets the Ash browser tests that require Lacros to send commands to this
 // lacros-chrome instance.
@@ -251,8 +257,8 @@ enum AssistiveTechnologyType {
 // This interface is implemented by Ash-Chrome.
 // This interface provides tests a mechanism to mutate or query ash.
 // In the future, this interface may merge with an automation or a11y interface.
-// Next version: 26
-// Next method id: 38
+// Next version: 28
+// Next method id: 41
 [Stable, Uuid="1f93f9d7-e466-466c-a675-c21b48cf30d3"]
 interface TestController {
   // Clicks the middle of the views element identified by |element_name|.
@@ -462,4 +468,13 @@ interface TestController {
   SetAssistiveTechnologyEnabled@38(AssistiveTechnologyType at_type,
       bool enabled);
 
+  // Gets an app's shelf attributes.
+  [MinVersion=27]
+  GetAppListItemAttributes@39(string item_id)
+      => (AppListItemAttributes attributes);
+
+  // Sets an app's shelf attributes.
+  [MinVersion=27]
+  SetAppListItemAttributes@40(string item_id,
+                              AppListItemAttributes attributes) => ();
 };
