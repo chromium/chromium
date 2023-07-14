@@ -38,6 +38,7 @@
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_mediator.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_mediator_delegate.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_table_view_controller.h"
+#import "ios/chrome/browser/ui/settings/password/password_sharing/family_picker_coordinator.h"
 #import "ios/chrome/browser/ui/settings/utils/password_utils.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -73,6 +74,9 @@
 
 // The action sheet coordinator, if one is currently being shown.
 @property(nonatomic, strong) ActionSheetCoordinator* actionSheetCoordinator;
+
+// Coordinator for family picker for password sharing.
+@property(nonatomic, strong) FamilyPickerCoordinator* familyPickerCoordinator;
 
 @end
 
@@ -367,7 +371,13 @@
 }
 
 - (void)onShareButtonPressed {
-  // TODO(crbug.com/1463882): Implement sharing logic.
+  // TODO(crbug.com/1463882): Implement displaying appropriate view based on the
+  // family query and amount of credential groups.
+  DCHECK(!self.familyPickerCoordinator);
+  self.familyPickerCoordinator = [[FamilyPickerCoordinator alloc]
+      initWithBaseViewController:self.viewController
+                         browser:self.browser];
+  [self.familyPickerCoordinator start];
 }
 
 #pragma mark - PasswordDetailsMediatorDelegate

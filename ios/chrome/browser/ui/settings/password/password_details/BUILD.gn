@@ -44,6 +44,7 @@ source_set("password_details") {
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/sync",
     "//ios/chrome/browser/ui/settings/password:common",
+    "//ios/chrome/browser/ui/settings/password/password_sharing",
     "//ios/chrome/browser/ui/settings/utils",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/reauthentication",
