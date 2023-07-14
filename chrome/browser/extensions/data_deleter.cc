@@ -16,13 +16,13 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_io_data.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
+#include "chrome/common/pref_names.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/storage_partition.h"
 #include "extensions/browser/api/storage/storage_frontend.h"
-#include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/common/constants.h"
@@ -81,8 +81,10 @@ void DeleteOrigin(Profile* profile,
 }
 
 void OnNeedsToGarbageCollectIsolatedStorage(WeakPtr<ExtensionService> es) {
-  if (es)
-    ExtensionPrefs::Get(es->profile())->SetNeedsStorageGarbageCollection(true);
+  if (es) {
+    es->profile()->GetPrefs()->SetBoolean(
+        prefs::kShouldGarbageCollectStoragePartitions, true);
+  }
 }
 
 }  // namespace

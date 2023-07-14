@@ -19,6 +19,7 @@ namespace web_app {
 
 class AllAppsLock;
 class AllAppsLockDescription;
+class ExtensionInstallGate;
 
 // Starts a transaction to:
 // 1. Gather all the valid Storage Partition domains and store them in
@@ -52,6 +53,8 @@ class GarbageCollectStoragePartititonsCommand
   base::raw_ptr<Profile> profile_;
 
   base::OnceClosure done_closure_;
+
+  std::unique_ptr<ExtensionInstallGate> install_gate_;
 
   base::Value::Dict debug_info_;
 

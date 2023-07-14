@@ -230,6 +230,8 @@ class WebAppProvider : public KeyedService {
   // after 02-2022.
   void DoMigrateProfilePrefs(Profile* profile);
 
+  void MaybeScheduleGarbageCollection();
+
   std::unique_ptr<AbstractWebAppDatabaseFactory> database_factory_;
   std::unique_ptr<WebAppRegistrarMutable> registrar_;
   std::unique_ptr<WebAppSyncBridge> sync_bridge_;

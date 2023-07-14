@@ -2202,10 +2202,6 @@ AppSorting* ExtensionPrefs::app_sorting() const {
   return ExtensionSystem::Get(browser_context_)->app_sorting();
 }
 
-void ExtensionPrefs::SetNeedsStorageGarbageCollection(bool value) {
-  prefs_->SetBoolean(pref_names::kStorageGarbageCollect, value);
-}
-
 bool ExtensionPrefs::NeedsStorageGarbageCollection() const {
   return prefs_->GetBoolean(pref_names::kStorageGarbageCollect);
 }

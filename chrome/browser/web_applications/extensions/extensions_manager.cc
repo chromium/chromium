@@ -4,16 +4,50 @@
 
 #include "chrome/browser/web_applications/extensions_manager.h"
 
-#include "base/memory/ptr_util.h"
+#include <memory>
+
+#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_util.h"
+#include "chrome/browser/extensions/install_gate.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/storage_partition.h"
+#include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_set.h"
 
 namespace web_app {
+
+// This class registers itself to ExtensionService on construction and
+// unregisters itself on destruction. It always delays extension install.
+class ExtensionInstallGateImpl : public extensions::InstallGate,
+                                 public ExtensionInstallGate {
+ public:
+  explicit ExtensionInstallGateImpl(Profile* profile)
+      : extension_service_(
+            extensions::ExtensionSystem::Get(profile)->extension_service()) {
+    extension_service_->RegisterInstallGate(
+        extensions::ExtensionPrefs::DelayReason::DELAY_REASON_GC,
+        static_cast<ExtensionInstallGateImpl*>(this));
+  }
+
+  ~ExtensionInstallGateImpl() override {
+    extension_service_->UnregisterInstallGate(this);
+  }
+
+  extensions::InstallGate::Action ShouldDelay(
+      const extensions::Extension* extension,
+      bool install_immediately) override {
+    return extensions::InstallGate::DELAY;
+  }
+
+ private:
+  base::raw_ptr<extensions::ExtensionService> extension_service_;
+};
+
+ExtensionInstallGate::~ExtensionInstallGate() = default;
 
 ExtensionsManager::ExtensionsManager(Profile* profile)
     : profile_(profile),
@@ -34,6 +68,17 @@ ExtensionsManager::GetIsolatedStoragePaths() {
     }
   }
   return allowlist;
+}
+
+bool ExtensionsManager::ShouldGarbageCollectStoragePartitions() {
+  extensions::ExtensionPrefs* extension_prefs =
+      extensions::ExtensionPrefs::Get(profile_);
+  return extension_prefs && extension_prefs->NeedsStorageGarbageCollection();
+}
+
+std::unique_ptr<ExtensionInstallGate>
+ExtensionsManager::RegisterGarbageCollectionInstallGate() {
+  return std::make_unique<web_app::ExtensionInstallGateImpl>(profile_);
 }
 
 }  // namespace web_app

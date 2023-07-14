@@ -65,6 +65,7 @@ class RemoveWebAppJob : public UninstallJob {
   bool hooks_uninstalled_ = false;
   bool pending_app_profile_deletion_ = false;
   bool errors_ = false;
+  bool has_isolated_storage_ = false;
   absl::optional<webapps::UninstallResultCode> primary_removal_result_;
 
   std::vector<AppId> sub_apps_pending_removal_;
