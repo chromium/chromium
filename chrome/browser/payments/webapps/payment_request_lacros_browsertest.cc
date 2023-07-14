@@ -60,6 +60,12 @@ class MockWebAppService : public crosapi::mojom::WebAppService {
               (const std::string& web_app_id,
                GetAssociatedAndroidPackageCallback callback),
               (override));
+  MOCK_METHOD(void,
+              MigrateLauncherState,
+              (const std::string& from_app_id,
+               const std::string& to_app_id,
+               MigrateLauncherStateCallback callback),
+              (override));
 };
 
 crosapi::mojom::WebAppAndroidPackagePtr CreateWebAppAndroidPackage() {

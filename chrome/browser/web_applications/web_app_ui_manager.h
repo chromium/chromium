@@ -153,11 +153,15 @@ class WebAppUiManager {
                                    Profile& profile,
                                    LaunchWebAppCallback callback,
                                    AppLock& lock) = 0;
-  // On Chrome OS ash, transfers app attributes, such as parent folder id,
-  // position in App Launcher and pin position on the shelf from one app to
-  // another app.
-  virtual void MaybeTransferAppAttributes(const AppId& from_extension_or_app,
-                                          const AppId& to_app) = 0;
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // Migrates launcher state, such as parent folder id, position in App Launcher
+  // and pin position on the shelf from one app to another app.
+  // Avoids migrating if the to_app_id is already pinned.
+  virtual void MigrateLauncherState(const AppId& from_app_id,
+                                    const AppId& to_app_id,
+                                    base::OnceClosure callback) = 0;
+#endif
 
   // Creates a new Browser tab on the "about:blank" URL. Creates a new browser
   // if there isn't one that is already open.

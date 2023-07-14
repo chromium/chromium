@@ -121,6 +121,15 @@ class TestControllerAsh : public mojom::TestController,
   void SetAssistiveTechnologyEnabled(mojom::AssistiveTechnologyType at_type,
                                      bool enabled) override;
 
+  void GetAppListItemAttributes(
+      const std::string& item_id,
+      GetAppListItemAttributesCallback callback) override;
+
+  void SetAppListItemAttributes(
+      const std::string& item_id,
+      mojom::AppListItemAttributesPtr attributes,
+      SetAppListItemAttributesCallback callback) override;
+
   mojo::Remote<mojom::StandaloneBrowserTestController>&
   GetStandaloneBrowserTestController() {
     DCHECK(standalone_browser_test_controller_.is_bound());

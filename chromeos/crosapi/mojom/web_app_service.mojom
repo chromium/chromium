@@ -89,8 +89,8 @@ interface WebAppProviderBridge {
 // 2) to register its own |crosapi::mojom::WebAppProviderBridge| to let
 //    ash-chrome to modify or query WebAppProvider in lacros-chrome.
 //
-// Next version: 2
-// Next method id: 2
+// Next version: 3
+// Next method id: 3
 [Stable, Uuid="dfa7b3f8-236f-4706-861b-98068aa5fc8f"]
 interface WebAppService {
   // Register a web app provider bridge that lets ash-chrome to update or query
@@ -104,4 +104,10 @@ interface WebAppService {
   [MinVersion=1]
   GetAssociatedAndroidPackage@1(string web_app_id)
     => (WebAppAndroidPackage? package);
+
+  // Migrates launcher state, such as parent folder id, position in App Launcher
+  // and pin position on the shelf from one app to another app.
+  // Avoids migrating if the to_app_id is already pinned.
+  [MinVersion=2]
+  MigrateLauncherState@2(string from_app_id, string to_app_id) => ();
 };
