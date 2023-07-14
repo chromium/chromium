@@ -34,7 +34,6 @@ class IsolateHolder;
 namespace ax {
 class AutomationInternalBindings;
 class AssistiveTechnologyControllerImpl;
-class TtsInterfaceBinder;
 
 // A V8Manager owns a V8 isolate within the Accessibility Service, and manages
 // the bindings that belong to that isolate, as well as loading the Javascript
@@ -115,11 +114,7 @@ class V8Manager : public BindingsIsolateHolder,
   // TODO(crbug.com/1355633): Add more APIs including TTS, SST, etc.
   std::unique_ptr<AutomationInternalBindings> automation_bindings_
       GUARDED_BY_CONTEXT(sequence_checker_);
-  std::unique_ptr<TtsInterfaceBinder> tts_interface_binder_
-      GUARDED_BY_CONTEXT(sequence_checker_);
-
-  // Bindings wrappers for test.
-  std::unique_ptr<InterfaceBinder> test_mojo_interface_
+  std::vector<std::unique_ptr<InterfaceBinder>> interface_binders_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Holders for isolate and context.

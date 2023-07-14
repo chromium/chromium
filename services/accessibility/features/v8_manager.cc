@@ -137,15 +137,10 @@ void V8Manager::BindInterface(const std::string& interface_name,
   // TODO(b:262637071): Add mappings for bindings for other C++/JS mojom APIs.
   // TODO(b:262637071): We may need to use associated remotes/receivers to avoid
   // messages coming in an unpredicted order compared to the Extensions system.
-  if (test_mojo_interface_ &&
-      test_mojo_interface_->MatchesInterface(interface_name)) {
-    test_mojo_interface_->BindReceiver(std::move(pending_receiver));
-    return;
-  }
-  if (tts_interface_binder_ &&
-      tts_interface_binder_->MatchesInterface(interface_name)) {
-    tts_interface_binder_->BindReceiver(std::move(pending_receiver));
-    return;
+  for (auto& binder : interface_binders_) {
+    if (binder->MatchesInterface(interface_name)) {
+      binder->BindReceiver(std::move(pending_receiver));
+    }
   }
   LOG(ERROR) << "Couldn't find Receiver for interface " << interface_name
              << ". Ensure it's installed in the isolate with "
@@ -268,14 +263,15 @@ void V8Manager::BindAutomationOnThread(
 void V8Manager::BindTtsOnThread(
     base::WeakPtr<AssistiveTechnologyControllerImpl> at_controller) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  tts_interface_binder_ =
+  std::unique_ptr<InterfaceBinder> binder =
       std::make_unique<TtsInterfaceBinder>(at_controller, main_runner_);
+  interface_binders_.emplace_back(std::move(binder));
 }
 
 void V8Manager::SetTestMojoInterfaceOnThread(
     std::unique_ptr<InterfaceBinder> test_interface) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  test_mojo_interface_ = std::move(test_interface);
+  interface_binders_.emplace_back(std::move(test_interface));
 }
 
 void V8Manager::ExecuteScriptOnThread(const std::string& script,
