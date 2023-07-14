@@ -33,10 +33,15 @@ class SVGTextPositioningElement : public SVGTextContentElement {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
+  SVGAnimatedLengthList* x() { return x_.Get(); }
   const SVGAnimatedLengthList* x() const { return x_.Get(); }
+  SVGAnimatedLengthList* y() { return y_.Get(); }
   const SVGAnimatedLengthList* y() const { return y_.Get(); }
+  SVGAnimatedLengthList* dx() { return dx_.Get(); }
   const SVGAnimatedLengthList* dx() const { return dx_.Get(); }
+  SVGAnimatedLengthList* dy() { return dy_.Get(); }
   const SVGAnimatedLengthList* dy() const { return dy_.Get(); }
+  SVGAnimatedNumberList* rotate() { return rotate_.Get(); }
   const SVGAnimatedNumberList* rotate() const { return rotate_.Get(); }
 
   void Trace(Visitor*) const override;
