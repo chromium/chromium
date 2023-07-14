@@ -40,11 +40,7 @@ class PixelIntegrationTest(
     return True
 
   def _GetSerialGlobs(self) -> Set[str]:
-    serial_globs = {
-        # Test page flakily reports a failure when run in parallel on Linux and
-        # Windows w/ Intel GPUs.
-        'Pixel_MediaRecorderFromVideoElement*',
-    }
+    serial_globs = set()
     if sys.platform == 'darwin':
       serial_globs |= {
           # Flakily produces only half the image when run in parallel on Mac.
@@ -84,7 +80,6 @@ class PixelIntegrationTest(
     pages += namespace.WebGPUCanvasCapturePages(cls.test_base_name)
     pages += namespace.PaintWorkletPages(cls.test_base_name)
     pages += namespace.VideoFromCanvasPages(cls.test_base_name)
-    pages += namespace.MediaRecorderPages(cls.test_base_name)
     # pages += namespace.NoGpuProcessPages(cls.test_base_name)
     # The following pages should run only on platforms where SwiftShader is
     # enabled. They are skipped on other platforms through test expectations.

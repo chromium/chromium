@@ -79,6 +79,10 @@
 # This is for things like tests that will never be supported on a particular
 # platform/configuration.
 
+# ExpectedColor_MediaRecorderFromVideoElement fails when protected memory is used.
+crbug.com/1417006 [ fuchsia fuchsia-board-astro ] ExpectedColor_MediaRecorderFromVideoElement [ Skip ]
+crbug.com/1417006 [ fuchsia fuchsia-board-sherlock ] ExpectedColor_MediaRecorderFromVideoElement [ Skip ]
+
 ###############################
 # Temporary Skip Expectations #
 ###############################
@@ -93,6 +97,18 @@
 
 # Flaking frequently on Fuchsia and nobody has triaged why.
 crbug.com/1288217 [ angle-swiftshader fuchsia fuchsia-board-qemu-x64 google-0xc0de no-clang-coverage ] ExpectedColor_maps [ Failure ]
+
+# ExpectedColor_MediaRecorderFromVideoElement fails on several FYI bots
+crbug.com/1382332 [ chromeos target-cpu-64 ] ExpectedColor_MediaRecorderFromVideoElement [ Failure ]
+crbug.com/1382332 [ angle-disabled chromeos chromeos-board-amd64-generic cros-chrome no-passthrough target-cpu-64 ] ExpectedColor_MediaRecorderFromVideoElementWithOoprCanvasDisabled [ Failure ]
+crbug.com/1382332 [ angle-opengles arm chromeos chromeos-board-jacuzzi display-server-x lacros-chrome passthrough target-cpu-32 ] ExpectedColor_MediaRecorderFromVideoElementWithOoprCanvasDisabled [ Failure ]
+crbug.com/1382332 [ android-chromium android-s android-sm-a135m angle-disabled arm no-clang-coverage no-passthrough renderer-skia-gl target-cpu-32 ] ExpectedColor_MediaRecorderFromVideoElementWithOoprCanvasDisabled [ Failure ]
+crbug.com/1382332 [ android-nexus-5x android-nougat angle-disabled no-clang-coverage no-passthrough qualcomm renderer-skia-gl target-cpu-64 ] ExpectedColor_MediaRecorderFromVideoElementWithOoprCanvasDisabled [ Failure ]
+crbug.com/1382332 [ android-pixel-4 android-r no-clang-coverage qualcomm renderer-skia-gl target-cpu-32 ] ExpectedColor_MediaRecorderFromVideoElement [ Failure ]
+crbug.com/1382332 [ android-pixel-4 android-r no-clang-coverage qualcomm renderer-skia-gl target-cpu-32 ] ExpectedColor_MediaRecorderFromVideoElementWithOoprCanvasDisabled [ Failure ]
+crbug.com/1382332 [ fuchsia ] ExpectedColor_MediaRecorderFromVideoElementWithOoprCanvasDisabled [ Failure ]
+
+crbug.com/1302427 [ fuchsia fuchsia-board-qemu-x64 ] ExpectedColor_MediaRecorderFrom2DCanvas [ Failure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #

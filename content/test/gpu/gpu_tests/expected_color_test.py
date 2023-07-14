@@ -22,24 +22,6 @@ from telemetry.util import rgba_color
 _MAPS_PERF_TEST_PATH = os.path.join(gpu_path_util.TOOLS_PERF_DIR, 'page_sets',
                                     'maps_perf_test')
 
-# Certain devices, particularly Android devices, report incorrect device pixel
-# ratios. These overrides are the correct values for such devices calculated
-# using the fact that the maps expected color test should produce an 800x600
-# image on a device with a DPR of 1.
-SCALE_FACTOR_OVERRIDES = {
-    'Nexus 5': 1.105,
-    'Nexus 5X': 1.105,
-    # NVIDIA Shield.
-    'sb_na_wf': 1.226,
-    'Pixel 2': 1.1067,
-    'Pixel 4': 1.1025,
-    'Pixel 6': 1.10375,
-    # Samsung A13.
-    'SM-A135M': 1.1025,
-    # Samsung A23.
-    'SM-A235M': 1.1025,
-}
-
 _OFF_WHITE_TOP_ROW_DEVICES = {
     # Samsung A13.
     'SM-A135M',
@@ -77,8 +59,10 @@ class ExpectedColorTest(
 
   @classmethod
   def GenerateGpuTests(cls, options: ct.ParsedCmdArgs) -> ct.TestGenerator:
-    for test_case in expected_color_test_cases.MapsTestCases():
-      yield (test_case.name, test_case.url, [test_case])
+    test_cases = expected_color_test_cases.MapsTestCases()
+    test_cases.extend(expected_color_test_cases.MediaRecorderTestCases())
+    for tc in test_cases:
+      yield (tc.name, tc.url, [tc])
 
   @classmethod
   def ExpectationsFiles(cls) -> List[str]:
@@ -99,7 +83,7 @@ class ExpectedColorTest(
         url,
         script_to_evaluate_on_commit=self._dom_automation_controller_script)
 
-    test_case.pre_capture_action(test_case, tab)
+    test_case.pre_capture_action(tab)
 
     if test_case.ShouldCaptureFullScreenshot(self.browser):
       screenshot = tab.FullScreenshot(5)
@@ -222,12 +206,11 @@ class ExpectedColorTest(
                        actual_color.g, actual_color.b, actual_color.a))
 
     expected_colors = test_case.expected_colors
-    tolerance = test_case.tolerance
 
     # First scan through the expected_colors and see if there are any scale
     # factor overrides that would preempt the device pixel ratio. This
     # is mainly a workaround for complex tests like the Maps test.
-    for device_type, scale_factor in SCALE_FACTOR_OVERRIDES.items():
+    for device_type, scale_factor in test_case.scale_factor_overrides.items():
       # Require exact matches to avoid confusion, because some
       # machine models and names might be subsets of others
       # (e.g. Nexus 5 vs Nexus 5X).
@@ -239,6 +222,9 @@ class ExpectedColorTest(
         device_pixel_ratio = scale_factor
         break
     for color_expectation in expected_colors:
+      tolerance = (test_case.base_tolerance
+                   if color_expectation.tolerance is None else
+                   color_expectation.tolerance)
       _CompareScreenshotWithExpectation(color_expectation)
 
 
@@ -258,15 +244,23 @@ def _GetCropBoundaries(screenshot: ct.Screenshot) -> Tuple[int, int, int, int]:
   img_height = image_util.Height(screenshot)
   img_width = image_util.Width(screenshot)
 
-  def RowIsWhite(row):
-    for col in range(img_width):
+  # We include start/end as optional arguments as an optimization for finding
+  # the lower right corner. If the original image is large and the non-white
+  # portions are small and in the upper left (which is the most common case),
+  # checking every row/column for white can take a while.
+  def RowIsWhite(row, start=None, end=None):
+    start = start or 0
+    end = end or img_width
+    for col in range(start, end):
       pixel = image_util.GetPixelColor(screenshot, col, row)
       if pixel.r != 255 or pixel.g != 255 or pixel.b != 255:
         return False
     return True
 
-  def ColumnIsWhite(column):
-    for row in range(img_height):
+  def ColumnIsWhite(column, start=None, end=None):
+    start = start or 0
+    end = end or img_height
+    for row in range(start, end):
       pixel = image_util.GetPixelColor(screenshot, column, row)
       if pixel.r != 255 or pixel.g != 255 or pixel.b != 255:
         return False
@@ -281,17 +275,20 @@ def _GetCropBoundaries(screenshot: ct.Screenshot) -> Tuple[int, int, int, int]:
       break
 
   for row in range(img_height):
-    if not RowIsWhite(row):
+    if not RowIsWhite(row, start=x1):
       y1 = row
       break
 
-  for column in range(x1 + 1, img_width):
-    if ColumnIsWhite(column):
+  # We work from the right/bottom of the image here in case there are multiple
+  # things that need to be tested separated by whitespace like is the case for
+  # many video-related tests.
+  for column in range(img_width - 1, x1, -1):
+    if not ColumnIsWhite(column, start=y1):
       x2 = column
       break
 
-  for row in range(y1 + 1, img_height):
-    if RowIsWhite(row):
+  for row in range(img_height - 1, y1, -1):
+    if not RowIsWhite(row, start=x1, end=x2):
       y2 = row
       break
   return x1, y1, x2, y2
