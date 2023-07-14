@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://webui-test/mojo_webui_test_support.js';
-
 import {counterfactualLoad, LensUploadDialogElement, Module, ModuleDescriptor, ModuleRegistry} from 'chrome://new-tab-page/lazy_load.js';
 import {$$, AppElement, BackgroundManager, BrowserCommandProxy, CUSTOMIZE_CHROME_BUTTON_ELEMENT_ID, CustomizeDialogPage, NewTabPageProxy, NtpCustomizeChromeEntryPoint, NtpElement, VoiceAction, WindowProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import {CustomizeChromeSection, NtpBackgroundImageSource, PageCallbackRouter, PageHandlerRemote, PageRemote} from 'chrome://new-tab-page/new_tab_page.mojom-webui.js';
@@ -73,7 +71,7 @@ suite('NewTabPageAppTest', () => {
     await flushTasks();
   });
 
-  suite('misc', () => {
+  suite('Misc', () => {
     test('customize dialog closed on start', () => {
       // Assert.
       assertFalse(!!app.shadowRoot!.querySelector('ntp-customize-dialog'));
@@ -165,7 +163,7 @@ suite('NewTabPageAppTest', () => {
   });
 
   [true, false].forEach((removeScrim) => {
-    suite(`ogb theming removeScrim is ${removeScrim}`, () => {
+    suite(`OgbThemingRemoveScrim_${removeScrim}`, () => {
       suiteSetup(() => {
         loadTimeData.overrideValues({removeScrim});
       });
@@ -207,7 +205,7 @@ suite('NewTabPageAppTest', () => {
     });
   });
 
-  suite('ogb scrim', () => {
+  suite('OgbScrim', () => {
     suiteSetup(() => {
       loadTimeData.overrideValues({removeScrim: true});
     });
@@ -252,7 +250,7 @@ suite('NewTabPageAppTest', () => {
     });
   });
 
-  suite('theming', () => {
+  suite('Theming', () => {
     test('setting theme updates ntp', async () => {
       // Act.
       callbackRouterRemote.setTheme(createTheme());
@@ -539,7 +537,7 @@ suite('NewTabPageAppTest', () => {
     });
   });
 
-  suite('promo', () => {
+  suite('Promo', () => {
     test('can show promo with browser command', async () => {
       const promoBrowserCommandHandler = installMock(
           CommandHandlerRemote,
@@ -608,7 +606,7 @@ suite('NewTabPageAppTest', () => {
     });
   });
 
-  suite('clicks', () => {
+  suite('Clicks', () => {
     suiteSetup(() => {
       loadTimeData.overrideValues({
         modulesEnabled: true,
@@ -683,7 +681,7 @@ suite('NewTabPageAppTest', () => {
     });
   }
 
-  suite('modules', () => {
+  suite('Modules', () => {
     suiteSetup(() => {
       loadTimeData.overrideValues({
         modulesEnabled: true,
@@ -732,7 +730,7 @@ suite('NewTabPageAppTest', () => {
     modulesCommonTests('ntp-modules');
   });
 
-  suite('v2 modules', () => {
+  suite('V2Modules', () => {
     suiteSetup(() => {
       loadTimeData.overrideValues({
         modulesEnabled: true,
@@ -782,7 +780,7 @@ suite('NewTabPageAppTest', () => {
     });
   });
 
-  suite('counterfactual modules', () => {
+  suite('CounterfactualModules', () => {
     suiteSetup(() => {
       loadTimeData.overrideValues({
         modulesEnabled: false,
@@ -817,7 +815,7 @@ suite('NewTabPageAppTest', () => {
     });
   });
 
-  suite('customize dialog', () => {
+  suite('CustomizeDialog', () => {
     suiteSetup(() => {
       loadTimeData.overrideValues({
         customizeChromeEnabled: false,
@@ -922,7 +920,7 @@ suite('NewTabPageAppTest', () => {
     });
   });
 
-  suite('customize chrome side panel', () => {
+  suite('CustomizeChromeSidePanel', () => {
     suiteSetup(() => {
       loadTimeData.overrideValues({
         customizeChromeEnabled: true,
@@ -1034,7 +1032,7 @@ suite('NewTabPageAppTest', () => {
     });
   });
 
-  suite('Lens upload dialog', () => {
+  suite('LensUploadDialog', () => {
     suiteSetup(() => {
       loadTimeData.overrideValues({
         realboxLensSearch: true,

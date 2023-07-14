@@ -18,65 +18,6 @@ class NewTabPageBrowserTest extends PolymerTest {
   }
 }
 
-var NewTabPageAppTest = class extends NewTabPageBrowserTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://new-tab-page/test_loader.html?module=new_tab_page/app_test.js';
-  }
-};
-
-TEST_F('NewTabPageAppTest', 'Misc', function() {
-  runMochaSuite('NewTabPageAppTest misc');
-});
-
-TEST_F('NewTabPageAppTest', 'OgbThemingRemoveScrimFalse', function() {
-  runMochaSuite('NewTabPageAppTest ogb theming removeScrim is false');
-});
-
-TEST_F('NewTabPageAppTest', 'OgbThemingRemoveScrimTrue', function() {
-  runMochaSuite('NewTabPageAppTest ogb theming removeScrim is true');
-});
-
-TEST_F('NewTabPageAppTest', 'OgbScrim', function() {
-  runMochaSuite('NewTabPageAppTest ogb scrim');
-});
-
-TEST_F('NewTabPageAppTest', 'Theming', function() {
-  runMochaSuite('NewTabPageAppTest theming');
-});
-
-TEST_F('NewTabPageAppTest', 'Promo', function() {
-  runMochaSuite('NewTabPageAppTest promo');
-});
-
-TEST_F('NewTabPageAppTest', 'Clicks', function() {
-  runMochaSuite('NewTabPageAppTest clicks');
-});
-
-TEST_F('NewTabPageAppTest', 'Modules', function() {
-  runMochaSuite('NewTabPageAppTest modules');
-});
-
-TEST_F('NewTabPageAppTest', 'V2Modules', function() {
-  runMochaSuite('NewTabPageAppTest v2 modules');
-});
-
-TEST_F('NewTabPageAppTest', 'CounterfactualModules', function() {
-  runMochaSuite('NewTabPageAppTest counterfactual modules');
-});
-
-TEST_F('NewTabPageAppTest', 'CustomizeDialog', function() {
-  runMochaSuite('NewTabPageAppTest customize dialog');
-});
-
-TEST_F('NewTabPageAppTest', 'CustomizeChromeSidePanel', function() {
-  runMochaSuite('NewTabPageAppTest customize chrome side panel');
-});
-
-TEST_F('NewTabPageAppTest', 'LensUploadDialog', function() {
-  runMochaSuite('NewTabPageAppTest Lens upload dialog');
-});
-
 var NewTabPageCustomizeDialogTest = class extends NewTabPageBrowserTest {
   /** @override */
   get browsePreload() {
