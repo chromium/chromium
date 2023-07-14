@@ -1,4 +1,28 @@
 This is a testharness.js-based test.
-Harness Error. harness_status.status = 1 , harness_status.message = Uncaught SyntaxError: Unexpected token '{'
+FAIL .foo { & { color: green; }} assert_equals: Inner rule's selector should be "&". expected "&" but got ".foo"
+FAIL .foo { &.bar { color: green; }} assert_equals: Inner rule's selector should be "&.bar". expected "&.bar" but got ".foo"
+FAIL .foo { & .bar { color: green; }} assert_equals: Inner rule's selector should be "& .bar". expected "& .bar" but got ".foo"
+FAIL .foo { & > .bar { color: green; }} assert_equals: Inner rule's selector should be "& > .bar". expected "& > .bar" but got ".foo"
+FAIL .foo { > & .bar { color: green; }} assert_equals: Inner rule's selector should be "> & .bar". expected "> & .bar" but got ".foo"
+FAIL .foo { > .bar { color: green; }} assert_equals: Inner rule's selector should be "& > .bar". expected "& > .bar" but got ".foo"
+FAIL .foo { + .bar & { color: green; }} assert_equals: Inner rule's selector should be "& + .bar &". expected "& + .bar &" but got ".foo"
+FAIL .foo { .test > & .bar { color: green; }} assert_equals: Inner rule's selector should be ".test > & .bar". expected ".test > & .bar" but got ".foo"
+FAIL .foo { + .bar, .foo, > .baz { color: green; }} assert_equals: Inner rule's selector should be "& + .bar, & .foo, & > .baz". expected "& + .bar, & .foo, & > .baz" but got ".foo"
+FAIL .foo { .foo, .foo & { color: green; }} assert_equals: Inner rule's selector should be "& .foo, .foo &". expected "& .foo, .foo &" but got ".foo"
+FAIL .foo { &:is(.bar, .baz) { color: green; }} assert_equals: Inner rule's selector should be "&:is(.bar, .baz)". expected "&:is(.bar, .baz)" but got ".foo"
+FAIL .foo { :is(.bar, .baz) { color: green; }} assert_equals: Inner rule's selector should be "&:is(.bar, .baz)". expected "&:is(.bar, .baz)" but got ".foo"
+FAIL .foo { &:is(.bar, &.baz) { color: green; }} assert_equals: Inner rule's selector should be "&:is(.bar, &.baz)". expected "&:is(.bar, &.baz)" but got ".foo"
+FAIL .foo { :is(.bar, &.baz) { color: green; }} assert_equals: Inner rule's selector should be ":is(.bar, &.baz)". expected ":is(.bar, &.baz)" but got ".foo"
+FAIL .foo { div& { color: green; }} assert_equals: Inner rule should exist. expected 1 but got 0
+FAIL .foo { .bar& { color: green; }} assert_equals: Inner rule's selector should be ".bar&". expected ".bar&" but got ".foo"
+FAIL .foo { [bar]& { color: green; }} assert_equals: Inner rule's selector should be "[bar]&". expected "[bar]&" but got ".foo"
+FAIL .foo { #bar& { color: green; }} assert_equals: Inner rule's selector should be "#bar&". expected "#bar&" but got ".foo"
+FAIL .foo { :hover& { color: green; }} assert_equals: Inner rule's selector should be ":hover&". expected ":hover&" but got ".foo"
+FAIL .foo { :is(div)& { color: green; }} assert_equals: Inner rule's selector should be ":is(div)&". expected ":is(div)&" but got ".foo"
+FAIL .foo { .bar > & { color: green; }} assert_equals: Inner rule's selector should be ".bar > &". expected ".bar > &" but got ".foo"
+FAIL .foo { & .bar & .baz & .qux { color: green; }} assert_equals: Inner rule's selector should be "& .bar & .baz & .qux". expected "& .bar & .baz & .qux" but got ".foo"
+FAIL .foo { & > section, & > article { color: green; }} assert_equals: Inner rule's selector should be "& > section, & > article". expected "& > section, & > article" but got ".foo"
+FAIL .foo, .bar { & + .baz, &.qux { color: green; }} assert_equals: Inner rule's selector should be "& + .baz, &.qux". expected "& + .baz, &.qux" but got ".foo, .bar"
+PASS INVALID: .foo { &div { color: green; }}
 Harness: the test ran to completion.
 

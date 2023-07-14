@@ -27,7 +27,7 @@
     }, ruleText);
   }
 
-  function testInvalidSelector(sel {parent=".foo"}={}) {
+  function testInvalidSelector(sel, {parent=".foo"}={}) {
     resetStylesheet();
     const ruleText = `${parent} { ${sel} { color: green; }}`
     test(()=>{
