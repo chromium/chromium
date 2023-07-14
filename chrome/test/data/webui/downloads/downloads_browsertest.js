@@ -9,47 +9,13 @@ GEN_INCLUDE(['//chrome/test/data/webui/polymer_browser_test_base.js']);
 
 GEN('#include "content/public/test/browser_test.h"');
 
-var DownloadsTest = class extends PolymerTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://downloads';
-  }
-};
+// NOTE: Do not add any more tests here, instead add them in
+// downloads_browsertest.cc. This file will be deleted once the TODO below is
+// addressed.
 
-var DownloadsItemTest = class extends DownloadsTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://downloads/test_loader.html?module=downloads/item_test.js';
-  }
-};
-
-TEST_F('DownloadsItemTest', 'All', function() {
-  mocha.run();
-});
-
-var DownloadsManagerTest = class extends DownloadsTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://downloads/test_loader.html?module=downloads/manager_test.js';
-  }
-};
-
-TEST_F('DownloadsManagerTest', 'All', function() {
-  mocha.run();
-});
-
-var DownloadsToolbarTest = class extends DownloadsTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://downloads/test_loader.html?module=downloads/toolbar_test.js';
-  }
-};
-
-TEST_F('DownloadsToolbarTest', 'All', function() {
-  mocha.run();
-});
-
-var DownloadsUrlTest = class extends DownloadsTest {
+// TODO(crbug.com/1457360): Figure out how to migrate this test, which does not
+// use test_loader.html, to WebUIMochaBrowserTest.
+var DownloadsUrlTest = class extends PolymerTest {
   /** @override */
   get browsePreload() {
     return 'chrome://downloads/a/b/';
@@ -73,16 +39,5 @@ TEST_F('DownloadsUrlTest', 'All', async function() {
       });
     });
   });
-  mocha.run();
-});
-
-var DownloadsSearchServiceTest = class extends DownloadsTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://downloads/test_loader.html?module=downloads/search_service_test.js';
-  }
-};
-
-TEST_F('DownloadsSearchServiceTest', 'All', function() {
   mocha.run();
 });

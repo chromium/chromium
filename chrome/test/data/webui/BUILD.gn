@@ -32,6 +32,7 @@ source_set("browser_tests") {
     "cr_components/cr_components_browsertest.cc",
     "cr_elements/cr_elements_browsertest.cc",
     "css/css_browsertest.cc",
+    "downloads/downloads_browsertest.cc",
     "history/history_supervised_user_browsertest.cc",
     "history/history_ui_browsertest.cc",
     "js/js_browsertest.cc",
