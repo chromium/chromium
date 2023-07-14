@@ -90,6 +90,7 @@ class KeyboardBacklightColorControllerTest : public AshTestBase {
     controller_ =
         std::make_unique<KeyboardBacklightColorController>(local_state());
     wallpaper_controller_ = Shell::Get()->wallpaper_controller();
+    WallpaperControllerTestApi(wallpaper_controller_).ResetCalculatedColors();
   }
 
   void TearDown() override {
