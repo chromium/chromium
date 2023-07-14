@@ -4536,6 +4536,13 @@
        {}
       ]
      ],
+     "delete-immediately-after-changing-input-type-from-time.html": [
+      "e608b8c86612d73f731d3127127e768328c7644c",
+      [
+       null,
+       {}
+      ]
+     ],
      "delete-in-dd-editing-host-after-selectall-with-focus.html": [
       "585cd17bb82d8b763168cb14b52fe7d18ec457aa",
       [
@@ -275805,11 +275812,11 @@
   "support": {
    ".cache": {
     "gitignore2.json": [
-     "6c43f67c4f2c419fe8ad1119416c2292301121e9",
+     "d96069f936b4e2d2f8376a75921ed6a2ba50bf28",
      []
     ],
     "mtime.json": [
-     "a8d8b9809c8ca9c7c4b042d31408afd295bd60ca",
+     "2b8a87980861ac2750d50c2f64e09242e656c911",
      []
     ]
    },
@@ -283632,6 +283639,10 @@
       ],
       "background-043-ref.xht": [
        "86cbebe62e06f8f90f2801d348af7f84ced12312",
+       []
+      ],
+      "background-068.xht.ini": [
+       "d004a2dd3d819b45ee19371e8e774f08954aa012",
        []
       ],
       "background-082.xht.ini": [
@@ -296513,6 +296524,10 @@
         "921482afcdf10cc38d113d0d428e1df43d09dd66",
         []
        ],
+       "color-scheme-iframe-background-mismatch-opaque-cross-origin.sub.html.ini": [
+        "05402085b4a9dd1b0cbdac96eb6c37125294dd9e",
+        []
+       ],
        "color-scheme-iframe-background-mismatch-used-preferred-ref.html": [
         "4eb06f35fd269617d9789f85be8e6420dcbfce53",
         []
@@ -297126,6 +297141,10 @@
       ],
       "content-visibility-064-ref.html": [
        "814c8fba6ad6209d4be323bcce933ad605c0fac0",
+       []
+      ],
+      "content-visibility-065.html.ini": [
+       "08c4bcc9e8c1e8dfa2352ccebf46477659054186",
        []
       ],
       "content-visibility-068-expected.txt": [
@@ -317752,11 +317771,11 @@
       []
      ],
      "parsing-expected.txt": [
-      "be2f139bbb539c0d5c74e02215a852b0c9f15a08",
+      "f416914920c69b3b091f09fd02e719c4b6554c3a",
       []
      ],
      "parsing.html.ini": [
-      "bd2fe6bc495859f77e4facf64abf29ae8fd4243c",
+      "24cf7d970e30771a8537106e76a887672146d372",
       []
      ],
      "serialize-group-rules-with-decls-expected.txt": [
@@ -343461,14 +343480,6 @@
       "3c3141a862df19ad62f343e00b37f248fbd845b1",
       []
      ],
-     "focus-visible-024-expected.txt": [
-      "3a8d4d801f539a30aef9ed74feab7d360fd8b205",
-      []
-     ],
-     "focus-visible-025-expected.txt": [
-      "7aac83bb3e959c3499e0d070adf9ec2fdb6186f1",
-      []
-     ],
      "focus-within-001-ref.html": [
       "2913775a2204eb173ba45251a84ab2c01cda35bc",
       []
@@ -361673,6 +361684,10 @@
       "23d80f798b7a26ee2c86d2ec028204d1db95e3dc",
       []
      ],
+     "coop-navigate-same-origin-csp-sandbox.html.ini": [
+      "4c5eccf5c4b5734b0194346a62b8766980462f35",
+      []
+     ],
      "coop-navigated-popup.https.html.headers": [
       "d83ed86fb9b5d159b9f380424887402edc96cb75",
       []
@@ -369759,7 +369774,7 @@
          []
         ],
         "download_stash.py": [
-         "a95fe37dd88e7db829edf3d260d3bdc3b7a7460e",
+         "11366a9c3f1d89cc378a142bbfa73bd8716062a7",
          []
         ],
         "iframe-that-checks-contentDocument.html": [
@@ -388296,7 +388311,7 @@
       ]
      },
      "pseudo-on-scroller.html.ini": [
-      "2cd9297ee202a460769a011c9d78bdc5cef9c0b4",
+      "8ffc7d1079dc07423e73e85be363201f22d55f51",
       []
      ],
      "scroll-animation-initial-offset-ref.html": [
@@ -392004,10 +392019,6 @@
     ],
     "META.yml": [
      "8fb0a9b995d6289bb28582fa01e6bb092afa5dda",
-     []
-    ],
-    "accesskey.tentative-expected.txt": [
-     "ee3f3004d1e9749331345dfbd53513c32b6e3e22",
      []
     ],
     "crashtests": {
@@ -396455,6 +396466,10 @@
       "970fdd4df3517297e344019930d88fbb53b1a002",
       []
      ],
+     "keyboard-accesskey-click-event-expected.txt": [
+      "23a5fb2d6910ebb1dfaa0691bf090f399c04e428",
+      []
+     ],
      "keyboard-accesskey-click-event.html.ini": [
       "504fff3ec5103ea58502ecfc48496ac120408008",
       []
@@ -399883,7 +399898,7 @@
      []
     ],
     "full-cycle-test.https.any.js.ini": [
-     "042658a6202ee92d98968267f267379e249c5d35",
+     "e241f382354a6ce53e8d5bf86fc0b39e9d73efd6",
      []
     ],
     "h264.annexb": [
@@ -399927,7 +399942,7 @@
      []
     ],
     "reconfiguring-encoder.https.any.js.ini": [
-     "d2281f7c657b83da9bc3f1c20976be40bad73b9a",
+     "2b18c00a4e85ffaef076dbfca0b10dfd238a5e31",
      []
     ],
     "sfx-aac.mp4": [
@@ -402566,15 +402581,11 @@
      "c0c2dff7bedda980c35f32252ac2e3a73c11fe5a",
      []
     ],
-    "Create-protocols-repeated-case-insensitive.any-expected.txt": [
-     "326368358efeaed3fb51ac2d8595b56b93743aef",
-     []
-    ],
     "Create-protocols-repeated-case-insensitive.any.js.ini": [
-     "c7ec916a6609144bcec373467dce63eb5d82e30a",
+     "d111522f775f6a4a6e2343b0707f482f4bcc28b7",
      []
     ],
-    "Create-protocols-repeated-case-insensitive.any.worker-expected.txt": [
+    "Create-protocols-repeated-case-insensitive.any.worker_default-expected.txt": [
      "326368358efeaed3fb51ac2d8595b56b93743aef",
      []
     ],
@@ -402586,6 +402597,10 @@
      "326368358efeaed3fb51ac2d8595b56b93743aef",
      []
     ],
+    "Create-protocols-repeated-case-insensitive.any_default-expected.txt": [
+     "326368358efeaed3fb51ac2d8595b56b93743aef",
+     []
+    ],
     "Create-protocols-repeated-case-insensitive.any_wpt_flags=h2-expected.txt": [
      "326368358efeaed3fb51ac2d8595b56b93743aef",
      []
@@ -402594,15 +402609,11 @@
      "326368358efeaed3fb51ac2d8595b56b93743aef",
      []
     ],
-    "Create-url-with-space.any-expected.txt": [
-     "114fa7d07a2ffcefe166bf8e30e81b9bfa2e7225",
-     []
-    ],
     "Create-url-with-space.any.js.ini": [
-     "7318d31c307aa619ef0b0f5b3e86179f2d21316a",
+     "4e8c7ff44bc38779b0a6bd1861ad1a922a2409db",
      []
     ],
-    "Create-url-with-space.any.worker-expected.txt": [
+    "Create-url-with-space.any.worker_default-expected.txt": [
      "114fa7d07a2ffcefe166bf8e30e81b9bfa2e7225",
      []
     ],
@@ -402611,6 +402622,10 @@
      []
     ],
     "Create-url-with-space.any.worker_wss-expected.txt": [
+     "114fa7d07a2ffcefe166bf8e30e81b9bfa2e7225",
+     []
+    ],
+    "Create-url-with-space.any_default-expected.txt": [
      "114fa7d07a2ffcefe166bf8e30e81b9bfa2e7225",
      []
     ],
@@ -402815,12 +402830,12 @@
       "5cd37f416058b1e1982f5ecbb95b85489eb9617a",
       []
      ],
-     "007-expected.txt": [
-      "31f81ab668a73ac19650d1fb4730f66ec4711489",
+     "007.html.ini": [
+      "a1320c28d814fdba70a6adaf9d082f0b351d1581",
       []
      ],
-     "007.html.ini": [
-      "8accbb209e4d78a8e38723249c310d0b889711ce",
+     "007_default-expected.txt": [
+      "31f81ab668a73ac19650d1fb4730f66ec4711489",
       []
      ],
      "007_wpt_flags=h2-expected.txt": [
@@ -402991,24 +403006,24 @@
        ]
       },
       "close": {
-       "close-connecting-expected.txt": [
-        "c0aab55e792d5783a7ebdc43d512611046db753e",
+       "close-connecting.html.ini": [
+        "cc6b6202234c37624ac80261db89903f058f1521",
         []
        ],
-       "close-connecting.html.ini": [
-        "6c6b16b330c8e98c1f0f8ee4c61f2a603920600b",
+       "close-connecting_default-expected.txt": [
+        "c0aab55e792d5783a7ebdc43d512611046db753e",
         []
        ],
        "close-connecting_wss-expected.txt": [
         "8527773092900bb9980989085fe672f1064929af",
         []
        ],
-       "close-nested-expected.txt": [
-        "83939e33476fa56bd02884c57a065ccdad7efa06",
+       "close-nested.html.ini": [
+        "d6cf7570d28ed267fb575076d260c1459a3d16b0",
         []
        ],
-       "close-nested.html.ini": [
-        "ef9db90de3e6a68dca6d483b7f5434b313dd4343",
+       "close-nested_default-expected.txt": [
+        "83939e33476fa56bd02884c57a065ccdad7efa06",
         []
        ],
        "close-nested_wss-expected.txt": [
@@ -403027,12 +403042,12 @@
        ]
       },
       "readyState": {
-       "003-expected.txt": [
-        "4af29be2d04443eb41baca4e59abd83e435c1a80",
+       "003.html.ini": [
+        "77ac70c4e7ef0b93c34223b6b1fb2aa13db41385",
         []
        ],
-       "003.html.ini": [
-        "cdee78637565190b579e181435a866c902be58df",
+       "003_default-expected.txt": [
+        "4af29be2d04443eb41baca4e59abd83e435c1a80",
         []
        ],
        "003_wss-expected.txt": [
@@ -403127,7 +403142,7 @@
      ]
     },
     "send-many-64K-messages-with-backpressure.any.js.ini": [
-     "430b307ebb261d6b228335dd5ab50ab808f25d4d",
+     "2312bdc171dfadd5f096f8a33fcf5c0f92d18f06",
      []
     ],
     "send-many-64K-messages-with-backpressure.any.serviceworker_wpt_flags=h2-expected.txt": [
@@ -403253,12 +403268,12 @@
       "9a246a1dd8ddf0d97ab3ccc21120df0670ae32e5",
       []
      ],
-     "002-expected.txt": [
-      "1da3d918cc7a5d19defaf83597f2ad43524b53ae",
+     "002.html.ini": [
+      "2215b8695b31b3a943486e8666028a3a0c463678",
       []
      ],
-     "002.html.ini": [
-      "b347018ea3163ff95dcc587cf6bf7d8c6be3cf0b",
+     "002_default-expected.txt": [
+      "1da3d918cc7a5d19defaf83597f2ad43524b53ae",
       []
      ],
      "002_wpt_flags=h2-expected.txt": [
@@ -452630,7 +452645,7 @@
        ]
       ],
       "row-compat-001.html": [
-       "cc6809243eec892387cd4039d8133060d61a26e2",
+       "1fb248acb8e9581a247dedc5fd85d161f0a4ecd1",
        [
         null,
         {}
@@ -453565,7 +453580,7 @@
        ]
       ],
       "font-face-src-tech.html": [
-       "fb7d92f8e4c99bc0a47aa198aafd3d00311c6449",
+       "0a58c34524f099a791b96df573b94ea36b5d7ee2",
        [
         null,
         {}
@@ -460119,7 +460134,7 @@
       ]
      ],
      "parsing.html": [
-      "6cd3528c9558066e0311e5e455694eb7038b78d9",
+      "a533d86196ec6796c8c65c1a7b7019ad4537968a",
       [
        null,
        {}
@@ -475254,6 +475269,13 @@
       ],
       "select-size-scrolling-and-sizing.optional.html": [
        "d70e018da72a3c5636c2b5c4907d22c839378cc4",
+       [
+        null,
+        {}
+       ]
+      ],
+      "text-input-baseline.html": [
+       "35f44a6dc3d9156be50fcaada0afd1ce8a1f5a03",
        [
         null,
         {}
@@ -653467,9 +653489,9 @@
    },
    "websockets": {
     "Close-1000-reason.any.js": [
-     "6fc3c1fade8e70ca67fae93501e08b05624fefe6",
+     "79ad6a0418bd3a1a24dc2a27fbb8e82670e76741",
      [
-      "websockets/Close-1000-reason.any.html",
+      "websockets/Close-1000-reason.any.html?default",
       {
        "script_metadata": [
         [
@@ -653478,7 +653500,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -653501,7 +653523,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -653524,7 +653546,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -653538,7 +653560,7 @@
       }
      ],
      [
-      "websockets/Close-1000-reason.any.worker.html",
+      "websockets/Close-1000-reason.any.worker.html?default",
       {
        "script_metadata": [
         [
@@ -653547,7 +653569,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -653570,7 +653592,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -653593,7 +653615,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -653608,9 +653630,9 @@
      ]
     ],
     "Close-1000-verify-code.any.js": [
-     "de50130660291f9cabb2db5f6780ac0189cda83a",
+     "c3a9274caa5ecde7a71956880743e2814abb1388",
      [
-      "websockets/Close-1000-verify-code.any.html",
+      "websockets/Close-1000-verify-code.any.html?default",
       {
        "script_metadata": [
         [
@@ -653619,7 +653641,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -653642,7 +653664,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -653665,7 +653687,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -653679,7 +653701,7 @@
       }
      ],
      [
-      "websockets/Close-1000-verify-code.any.worker.html",
+      "websockets/Close-1000-verify-code.any.worker.html?default",
       {
        "script_metadata": [
         [
@@ -653688,7 +653710,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -653711,7 +653733,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -653734,7 +653756,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -653749,9 +653771,9 @@
      ]
     ],
     "Close-1000.any.js": [
-     "f3100c6caaa3d2524be6721e41153a123f86ef2d",
+     "2f535ba21af290e970e3d7a24f7e4bbf17e800d2",
      [
-      "websockets/Close-1000.any.html",
+      "websockets/Close-1000.any.html?default",
       {
        "script_metadata": [
         [
@@ -653760,7 +653782,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -653783,7 +653805,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -653806,7 +653828,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -653820,7 +653842,7 @@
       }
      ],
      [
-      "websockets/Close-1000.any.worker.html",
+      "websockets/Close-1000.any.worker.html?default",
       {
        "script_metadata": [
         [
@@ -653829,7 +653851,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -653852,7 +653874,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -653875,7 +653897,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -653890,9 +653912,9 @@
      ]
     ],
     "Close-1005-verify-code.any.js": [
-     "afa7d7b0d983fca5892cc602eae955f790a6b57f",
+     "28f84c8003f64ca59fc366fad27bf3ccec265b68",
      [
-      "websockets/Close-1005-verify-code.any.html",
+      "websockets/Close-1005-verify-code.any.html?default",
       {
        "script_metadata": [
         [
@@ -653901,7 +653923,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -653924,7 +653946,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -653947,7 +653969,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -653961,7 +653983,7 @@
       }
      ],
      [
-      "websockets/Close-1005-verify-code.any.worker.html",
+      "websockets/Close-1005-verify-code.any.worker.html?default",
       {
        "script_metadata": [
         [
@@ -653970,7 +653992,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -653993,7 +654015,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -654016,7 +654038,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -654031,9 +654053,9 @@
      ]
     ],
     "Close-1005.any.js": [
-     "514d03ac632431737e821619a54309b8a250b41d",
+     "5055e283f309f1da2a38d6ec7f66a2e8e4fe9b2d",
      [
-      "websockets/Close-1005.any.html",
+      "websockets/Close-1005.any.html?default",
       {
        "script_metadata": [
         [
@@ -654042,7 +654064,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -654065,7 +654087,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -654088,7 +654110,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -654102,7 +654124,7 @@
       }
      ],
      [
-      "websockets/Close-1005.any.worker.html",
+      "websockets/Close-1005.any.worker.html?default",
       {
        "script_metadata": [
         [
@@ -654111,7 +654133,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -654134,7 +654156,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -654157,7 +654179,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -654172,9 +654194,9 @@
      ]
     ],
     "Close-2999-reason.any.js": [
-     "95e481e53cf38c805b8af0c15a594296981289bf",
+     "6336c7db4f398cb365206ee374ce83d1de87d3fe",
      [
-      "websockets/Close-2999-reason.any.html",
+      "websockets/Close-2999-reason.any.html?default",
       {
        "script_metadata": [
         [
@@ -654183,7 +654205,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -654206,7 +654228,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -654229,7 +654251,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -654243,7 +654265,7 @@
       }
      ],
      [
-      "websockets/Close-2999-reason.any.worker.html",
+      "websockets/Close-2999-reason.any.worker.html?default",
       {
        "script_metadata": [
         [
@@ -654252,7 +654274,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -654275,7 +654297,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -654298,7 +654320,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -654313,9 +654335,9 @@
      ]
     ],
     "Close-3000-reason.any.js": [
-     "2db122934c787abab8a4c4a7b398c54f763b9991",
+     "8e34ce7c0536cead607efcb02eff7a37074be05e",
      [
-      "websockets/Close-3000-reason.any.html",
+      "websockets/Close-3000-reason.any.html?default",
       {
        "script_metadata": [
         [
@@ -654324,7 +654346,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -654347,7 +654369,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -654370,7 +654392,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -654384,7 +654406,7 @@
       }
      ],
      [
-      "websockets/Close-3000-reason.any.worker.html",
+      "websockets/Close-3000-reason.any.worker.html?default",
       {
        "script_metadata": [
         [
@@ -654393,7 +654415,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -654416,7 +654438,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -654439,7 +654461,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -654454,9 +654476,9 @@
      ]
     ],
     "Close-3000-verify-code.any.js": [
-     "bfa441f1ee4d6161c7c8f29a8d27d4145aef6795",
+     "a6703dec1680522fd20e1a6173682f1b985184e9",
      [
-      "websockets/Close-3000-verify-code.any.html",
+      "websockets/Close-3000-verify-code.any.html?default",
       {
        "script_metadata": [
         [
@@ -654465,7 +654487,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -654488,7 +654510,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -654511,7 +654533,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -654525,7 +654547,7 @@
       }
      ],
      [
-      "websockets/Close-3000-verify-code.any.worker.html",
+      "websockets/Close-3000-verify-code.any.worker.html?default",
       {
        "script_metadata": [
         [
@@ -654534,7 +654556,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -654557,7 +654579,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -654580,7 +654602,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -654595,9 +654617,9 @@
      ]
     ],
     "Close-4999-reason.any.js": [
-     "3516dc2f462d97aa52a21f2d4d308c422423d12c",
+     "8c2a1c9ad911e9756b929bc66c86e4458361073e",
      [
-      "websockets/Close-4999-reason.any.html",
+      "websockets/Close-4999-reason.any.html?default",
       {
        "script_metadata": [
         [
@@ -654606,7 +654628,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -654629,7 +654651,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -654652,7 +654674,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -654666,7 +654688,7 @@
       }
      ],
      [
-      "websockets/Close-4999-reason.any.worker.html",
+      "websockets/Close-4999-reason.any.worker.html?default",
       {
        "script_metadata": [
         [
@@ -654675,7 +654697,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -654698,7 +654720,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -654721,7 +654743,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -654736,9 +654758,9 @@
      ]
     ],
     "Close-Reason-124Bytes.any.js": [
-     "aa7fc8ffe83818daeb7faf630e2196f454d0735c",
+     "063b12be16f91da64bba0aadfb9ba0cd8e46d3de",
      [
-      "websockets/Close-Reason-124Bytes.any.html",
+      "websockets/Close-Reason-124Bytes.any.html?default",
       {
        "script_metadata": [
         [
@@ -654747,7 +654769,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -654770,7 +654792,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -654793,7 +654815,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -654807,7 +654829,7 @@
       }
      ],
      [
-      "websockets/Close-Reason-124Bytes.any.worker.html",
+      "websockets/Close-Reason-124Bytes.any.worker.html?default",
       {
        "script_metadata": [
         [
@@ -654816,7 +654838,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -654839,7 +654861,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -654862,7 +654884,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -654877,9 +654899,9 @@
      ]
     ],
     "Close-delayed.any.js": [
-     "212925bb93109b932812618e515acebe2e96dbb0",
+     "9e0a60cc6ae5671a93b2646aeea4893abdc9981f",
      [
-      "websockets/Close-delayed.any.html",
+      "websockets/Close-delayed.any.html?default",
       {
        "script_metadata": [
         [
@@ -654888,7 +654910,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -654911,7 +654933,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -654934,7 +654956,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -654948,7 +654970,7 @@
       }
      ],
      [
-      "websockets/Close-delayed.any.worker.html",
+      "websockets/Close-delayed.any.worker.html?default",
       {
        "script_metadata": [
         [
@@ -654957,7 +654979,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -654980,7 +655002,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -655003,7 +655025,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -655018,9 +655040,9 @@
      ]
     ],
     "Close-onlyReason.any.js": [
-     "7c5d10d2a833b97a32863e498f30c225774828ba",
+     "243eb05e73eb89c847931939ca82c44ec217a24d",
      [
-      "websockets/Close-onlyReason.any.html",
+      "websockets/Close-onlyReason.any.html?default",
       {
        "script_metadata": [
         [
@@ -655029,7 +655051,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -655052,7 +655074,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -655075,7 +655097,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -655089,7 +655111,7 @@
       }
      ],
      [
-      "websockets/Close-onlyReason.any.worker.html",
+      "websockets/Close-onlyReason.any.worker.html?default",
       {
        "script_metadata": [
         [
@@ -655098,7 +655120,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -655121,7 +655143,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -655144,7 +655166,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -655159,9 +655181,9 @@
      ]
     ],
     "Close-readyState-Closed.any.js": [
-     "bfd61c48c14aa28ca61f703937432a181f22cbd0",
+     "6c7b5f11322342f5c4090a400ff1ffb4661ab650",
      [
-      "websockets/Close-readyState-Closed.any.html",
+      "websockets/Close-readyState-Closed.any.html?default",
       {
        "script_metadata": [
         [
@@ -655170,7 +655192,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -655193,7 +655215,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -655216,7 +655238,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -655230,7 +655252,7 @@
       }
      ],
      [
-      "websockets/Close-readyState-Closed.any.worker.html",
+      "websockets/Close-readyState-Closed.any.worker.html?default",
       {
        "script_metadata": [
         [
@@ -655239,7 +655261,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -655262,7 +655284,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -655285,7 +655307,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -655300,9 +655322,9 @@
      ]
     ],
     "Close-readyState-Closing.any.js": [
-     "554744d6297e3b843a288393c9c0969dce7ca96b",
+     "221130b8f71db5580165f0ace68fa434ebd828f5",
      [
-      "websockets/Close-readyState-Closing.any.html",
+      "websockets/Close-readyState-Closing.any.html?default",
       {
        "script_metadata": [
         [
@@ -655311,7 +655333,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -655334,7 +655356,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -655357,7 +655379,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -655371,7 +655393,7 @@
       }
      ],
      [
-      "websockets/Close-readyState-Closing.any.worker.html",
+      "websockets/Close-readyState-Closing.any.worker.html?default",
       {
        "script_metadata": [
         [
@@ -655380,7 +655402,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -655403,7 +655425,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -655426,7 +655448,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -655441,9 +655463,9 @@
      ]
     ],
     "Close-reason-unpaired-surrogates.any.js": [
-     "647a1216b99ce4f89fe8f2bac65aa2f2bd35c1f6",
+     "e5a71d2735ec6d0a4f3050535852b6fa15d5a4b8",
      [
-      "websockets/Close-reason-unpaired-surrogates.any.html",
+      "websockets/Close-reason-unpaired-surrogates.any.html?default",
       {
        "script_metadata": [
         [
@@ -655452,7 +655474,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -655475,7 +655497,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -655498,7 +655520,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -655512,7 +655534,7 @@
       }
      ],
      [
-      "websockets/Close-reason-unpaired-surrogates.any.worker.html",
+      "websockets/Close-reason-unpaired-surrogates.any.worker.html?default",
       {
        "script_metadata": [
         [
@@ -655521,7 +655543,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -655544,7 +655566,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -655567,7 +655589,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -655582,9 +655604,9 @@
      ]
     ],
     "Close-server-initiated-close.any.js": [
-     "c86793b23a1d8c9592d74c3f5e13dacd57e9a643",
+     "82fd457e1e7e00677ffa8929a8da61c4823bd4b1",
      [
-      "websockets/Close-server-initiated-close.any.html",
+      "websockets/Close-server-initiated-close.any.html?default",
       {
        "script_metadata": [
         [
@@ -655593,7 +655615,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -655616,7 +655638,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -655639,7 +655661,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -655653,7 +655675,7 @@
       }
      ],
      [
-      "websockets/Close-server-initiated-close.any.worker.html",
+      "websockets/Close-server-initiated-close.any.worker.html?default",
       {
        "script_metadata": [
         [
@@ -655662,7 +655684,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -655685,7 +655707,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -655708,7 +655730,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -655723,9 +655745,9 @@
      ]
     ],
     "Close-undefined.any.js": [
-     "a8106c6f155a7aa8357529be3f39c1195ce686b9",
+     "e24ef0c3db8bc40242029706b23aac52aafae73e",
      [
-      "websockets/Close-undefined.any.html",
+      "websockets/Close-undefined.any.html?default",
       {
        "script_metadata": [
         [
@@ -655734,7 +655756,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -655757,7 +655779,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -655780,7 +655802,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -655794,7 +655816,7 @@
       }
      ],
      [
-      "websockets/Close-undefined.any.worker.html",
+      "websockets/Close-undefined.any.worker.html?default",
       {
        "script_metadata": [
         [
@@ -655803,7 +655825,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -655826,7 +655848,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -655849,7 +655871,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -655864,9 +655886,9 @@
      ]
     ],
     "Create-asciiSep-protocol-string.any.js": [
-     "1221c5611459199e77f0e3dc67aadcb9292dfc45",
+     "d0102ce533c804bdd3dcf26e3729df6b55e4d5c8",
      [
-      "websockets/Create-asciiSep-protocol-string.any.html",
+      "websockets/Create-asciiSep-protocol-string.any.html?default",
       {
        "script_metadata": [
         [
@@ -655875,7 +655897,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -655898,7 +655920,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -655921,7 +655943,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -655935,7 +655957,7 @@
       }
      ],
      [
-      "websockets/Create-asciiSep-protocol-string.any.worker.html",
+      "websockets/Create-asciiSep-protocol-string.any.worker.html?default",
       {
        "script_metadata": [
         [
@@ -655944,7 +655966,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -655967,7 +655989,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -655990,7 +656012,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -656005,9 +656027,9 @@
      ]
     ],
     "Create-blocked-port.any.js": [
-     "c670009b25d4237bfc56955b5f85ca80ac830b62",
+     "2962312ff5f7fd8f09332a8124dd5fb559f2cb8b",
      [
-      "websockets/Create-blocked-port.any.html",
+      "websockets/Create-blocked-port.any.html?default",
       {
        "script_metadata": [
         [
@@ -656016,7 +656038,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -656039,7 +656061,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -656062,7 +656084,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -656076,7 +656098,7 @@
       }
      ],
      [
-      "websockets/Create-blocked-port.any.worker.html",
+      "websockets/Create-blocked-port.any.worker.html?default",
       {
        "script_metadata": [
         [
@@ -656085,7 +656107,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -656108,7 +656130,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -656131,7 +656153,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -656146,9 +656168,9 @@
      ]
     ],
     "Create-extensions-empty.any.js": [
-     "1fba4bd2cc5a61556256167a97613d51517b210e",
+     "98a7d65ab5a86cf64c2d8e9ef19b935b79a45be5",
      [
-      "websockets/Create-extensions-empty.any.html",
+      "websockets/Create-extensions-empty.any.html?default",
       {
        "script_metadata": [
         [
@@ -656161,7 +656183,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -656189,7 +656211,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -656217,7 +656239,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -656232,7 +656254,7 @@
       }
      ],
      [
-      "websockets/Create-extensions-empty.any.worker.html",
+      "websockets/Create-extensions-empty.any.worker.html?default",
       {
        "script_metadata": [
         [
@@ -656245,7 +656267,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -656273,7 +656295,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -656301,7 +656323,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -656350,9 +656372,9 @@
      ]
     ],
     "Create-nonAscii-protocol-string.any.js": [
-     "1b56cc914b7d4a2a311c0969791118c67ba51b7b",
+     "fda926a9d54842dc1dcf1cde974e700062dbae1c",
      [
-      "websockets/Create-nonAscii-protocol-string.any.html",
+      "websockets/Create-nonAscii-protocol-string.any.html?default",
       {
        "script_metadata": [
         [
@@ -656361,7 +656383,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -656384,7 +656406,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -656407,7 +656429,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -656421,7 +656443,7 @@
       }
      ],
      [
-      "websockets/Create-nonAscii-protocol-string.any.worker.html",
+      "websockets/Create-nonAscii-protocol-string.any.worker.html?default",
       {
        "script_metadata": [
         [
@@ -656430,7 +656452,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -656453,7 +656475,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -656476,7 +656498,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -656502,9 +656524,9 @@
      ]
     ],
     "Create-protocol-with-space.any.js": [
-     "f49d1fec0c392f83e9c01f2ff6ca59d4df782d84",
+     "a85d4e5df9d615a0550a44c47cf5c163a7aa938b",
      [
-      "websockets/Create-protocol-with-space.any.html",
+      "websockets/Create-protocol-with-space.any.html?default",
       {
        "script_metadata": [
         [
@@ -656513,7 +656535,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -656536,7 +656558,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -656559,7 +656581,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -656573,7 +656595,7 @@
       }
      ],
      [
-      "websockets/Create-protocol-with-space.any.worker.html",
+      "websockets/Create-protocol-with-space.any.worker.html?default",
       {
        "script_metadata": [
         [
@@ -656582,7 +656604,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -656605,7 +656627,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -656628,7 +656650,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -656643,9 +656665,9 @@
      ]
     ],
     "Create-protocols-repeated-case-insensitive.any.js": [
-     "41f78396fc3b77ad795eda099a87206e2411281d",
+     "1a508e87d380331bdd6f6f7071dc3c34f91f38c2",
      [
-      "websockets/Create-protocols-repeated-case-insensitive.any.html",
+      "websockets/Create-protocols-repeated-case-insensitive.any.html?default",
       {
        "script_metadata": [
         [
@@ -656654,7 +656676,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -656677,7 +656699,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -656700,7 +656722,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -656714,7 +656736,7 @@
       }
      ],
      [
-      "websockets/Create-protocols-repeated-case-insensitive.any.worker.html",
+      "websockets/Create-protocols-repeated-case-insensitive.any.worker.html?default",
       {
        "script_metadata": [
         [
@@ -656723,7 +656745,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -656746,7 +656768,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -656769,7 +656791,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -656784,9 +656806,9 @@
      ]
     ],
     "Create-protocols-repeated.any.js": [
-     "fc7d1b6ad2ffd65c507670f67bd198057aedbc88",
+     "2f12a47f964b88f723b0072e56e23148094e7381",
      [
-      "websockets/Create-protocols-repeated.any.html",
+      "websockets/Create-protocols-repeated.any.html?default",
       {
        "script_metadata": [
         [
@@ -656795,7 +656817,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -656818,7 +656840,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -656841,7 +656863,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -656855,7 +656877,7 @@
       }
      ],
      [
-      "websockets/Create-protocols-repeated.any.worker.html",
+      "websockets/Create-protocols-repeated.any.worker.html?default",
       {
        "script_metadata": [
         [
@@ -656864,7 +656886,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -656887,7 +656909,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -656910,7 +656932,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -656925,9 +656947,9 @@
      ]
     ],
     "Create-url-with-space.any.js": [
-     "d1e1ea1cba924970db4755eccc83f79b166038aa",
+     "f2bea5b9d9f7639db8645d1d8e3f3dc67aab62b9",
      [
-      "websockets/Create-url-with-space.any.html",
+      "websockets/Create-url-with-space.any.html?default",
       {
        "script_metadata": [
         [
@@ -656936,7 +656958,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -656959,7 +656981,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -656982,7 +657004,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -656996,7 +657018,7 @@
       }
      ],
      [
-      "websockets/Create-url-with-space.any.worker.html",
+      "websockets/Create-url-with-space.any.worker.html?default",
       {
        "script_metadata": [
         [
@@ -657005,7 +657027,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -657028,7 +657050,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -657051,7 +657073,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -657073,9 +657095,9 @@
      ]
     ],
     "Create-valid-url-array-protocols.any.js": [
-     "00ab1ca9873248013dfaab04720befb8c0083f1f",
+     "fe71fd7ca23c8b46608aaf18fbcdd6b6abbea5bd",
      [
-      "websockets/Create-valid-url-array-protocols.any.html",
+      "websockets/Create-valid-url-array-protocols.any.html?default",
       {
        "script_metadata": [
         [
@@ -657084,7 +657106,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -657107,7 +657129,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -657130,7 +657152,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -657144,7 +657166,7 @@
       }
      ],
      [
-      "websockets/Create-valid-url-array-protocols.any.worker.html",
+      "websockets/Create-valid-url-array-protocols.any.worker.html?default",
       {
        "script_metadata": [
         [
@@ -657153,7 +657175,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -657176,7 +657198,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -657199,7 +657221,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -657214,9 +657236,9 @@
      ]
     ],
     "Create-valid-url-binaryType-blob.any.js": [
-     "59eec8e29d3e52648e21ace92a81df64bb65b1da",
+     "7840ff314ffacd69625909b0ff47d5397a512ca0",
      [
-      "websockets/Create-valid-url-binaryType-blob.any.html",
+      "websockets/Create-valid-url-binaryType-blob.any.html?default",
       {
        "script_metadata": [
         [
@@ -657225,7 +657247,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -657248,7 +657270,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -657271,7 +657293,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -657285,7 +657307,7 @@
       }
      ],
      [
-      "websockets/Create-valid-url-binaryType-blob.any.worker.html",
+      "websockets/Create-valid-url-binaryType-blob.any.worker.html?default",
       {
        "script_metadata": [
         [
@@ -657294,7 +657316,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -657317,7 +657339,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -657340,7 +657362,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -657355,9 +657377,9 @@
      ]
     ],
     "Create-valid-url-protocol-empty.any.js": [
-     "9e1de6dab46c5d7e3bc8bcaf2a49bb227e7c2411",
+     "f18a9d89084955d4f50029c224fbed3e9e96dbba",
      [
-      "websockets/Create-valid-url-protocol-empty.any.html",
+      "websockets/Create-valid-url-protocol-empty.any.html?default",
       {
        "script_metadata": [
         [
@@ -657366,7 +657388,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -657389,7 +657411,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -657412,7 +657434,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -657426,7 +657448,7 @@
       }
      ],
      [
-      "websockets/Create-valid-url-protocol-empty.any.worker.html",
+      "websockets/Create-valid-url-protocol-empty.any.worker.html?default",
       {
        "script_metadata": [
         [
@@ -657435,7 +657457,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -657458,7 +657480,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -657481,7 +657503,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -657496,9 +657518,9 @@
      ]
     ],
     "Create-valid-url-protocol-setCorrectly.any.js": [
-     "bb1f32fbce1fa6a823db5947cc691e52ae02d8b9",
+     "c5d06ac84c0f12b8fada569f7d2438cc4434a712",
      [
-      "websockets/Create-valid-url-protocol-setCorrectly.any.html",
+      "websockets/Create-valid-url-protocol-setCorrectly.any.html?default",
       {
        "script_metadata": [
         [
@@ -657507,7 +657529,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -657530,7 +657552,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -657553,7 +657575,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -657567,7 +657589,7 @@
       }
      ],
      [
-      "websockets/Create-valid-url-protocol-setCorrectly.any.worker.html",
+      "websockets/Create-valid-url-protocol-setCorrectly.any.worker.html?default",
       {
        "script_metadata": [
         [
@@ -657576,7 +657598,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -657599,7 +657621,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -657622,7 +657644,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -657637,9 +657659,9 @@
      ]
     ],
     "Create-valid-url-protocol-string.any.js": [
-     "4f730db94f7ef2720f7d564e13b3740bd9554ba2",
+     "10e928d333f2024ece21144c1e18faceb2023966",
      [
-      "websockets/Create-valid-url-protocol-string.any.html",
+      "websockets/Create-valid-url-protocol-string.any.html?default",
       {
        "script_metadata": [
         [
@@ -657648,7 +657670,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -657671,7 +657693,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -657694,7 +657716,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -657708,7 +657730,7 @@
       }
      ],
      [
-      "websockets/Create-valid-url-protocol-string.any.worker.html",
+      "websockets/Create-valid-url-protocol-string.any.worker.html?default",
       {
        "script_metadata": [
         [
@@ -657717,7 +657739,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -657740,7 +657762,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -657763,7 +657785,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -657778,9 +657800,9 @@
      ]
     ],
     "Create-valid-url-protocol.any.js": [
-     "599a9eb8f1b350cf79900620002c183aef4dd1d9",
+     "37b5a0e886ceb4c2ab9ebc791ab79e54c02f0d1e",
      [
-      "websockets/Create-valid-url-protocol.any.html",
+      "websockets/Create-valid-url-protocol.any.html?default",
       {
        "script_metadata": [
         [
@@ -657789,7 +657811,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -657812,7 +657834,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -657835,7 +657857,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -657849,7 +657871,7 @@
       }
      ],
      [
-      "websockets/Create-valid-url-protocol.any.worker.html",
+      "websockets/Create-valid-url-protocol.any.worker.html?default",
       {
        "script_metadata": [
         [
@@ -657858,7 +657880,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -657881,7 +657903,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -657904,7 +657926,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -657919,9 +657941,9 @@
      ]
     ],
     "Create-valid-url.any.js": [
-     "edb27f61d3c33c9028e4fd178d5a3d795ca23b1a",
+     "1df995fb8b0abe8fbecb6fc92069773a356dfe4f",
      [
-      "websockets/Create-valid-url.any.html",
+      "websockets/Create-valid-url.any.html?default",
       {
        "script_metadata": [
         [
@@ -657930,7 +657952,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -657953,7 +657975,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -657976,7 +657998,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -657990,7 +658012,7 @@
       }
      ],
      [
-      "websockets/Create-valid-url.any.worker.html",
+      "websockets/Create-valid-url.any.worker.html?default",
       {
        "script_metadata": [
         [
@@ -657999,7 +658021,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -658022,7 +658044,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -658045,7 +658067,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -658060,9 +658082,9 @@
      ]
     ],
     "Send-0byte-data.any.js": [
-     "b984b641084a3cddbf1b757aa794532ab708000c",
+     "4176de411c6721cf53403035883f48bb81a86468",
      [
-      "websockets/Send-0byte-data.any.html",
+      "websockets/Send-0byte-data.any.html?default",
       {
        "script_metadata": [
         [
@@ -658071,7 +658093,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -658094,7 +658116,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -658117,7 +658139,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -658131,7 +658153,7 @@
       }
      ],
      [
-      "websockets/Send-0byte-data.any.worker.html",
+      "websockets/Send-0byte-data.any.worker.html?default",
       {
        "script_metadata": [
         [
@@ -658140,7 +658162,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -658163,7 +658185,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -658186,7 +658208,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -658201,9 +658223,9 @@
      ]
     ],
     "Send-65K-data.any.js": [
-     "5c3437999b99a40e0676534a9748e4d503b34f3e",
+     "20e5ba7c94952b88ced569abce103f73adb7c8a1",
      [
-      "websockets/Send-65K-data.any.html",
+      "websockets/Send-65K-data.any.html?default",
       {
        "script_metadata": [
         [
@@ -658212,7 +658234,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -658235,7 +658257,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -658258,7 +658280,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -658272,7 +658294,7 @@
       }
      ],
      [
-      "websockets/Send-65K-data.any.worker.html",
+      "websockets/Send-65K-data.any.worker.html?default",
       {
        "script_metadata": [
         [
@@ -658281,7 +658303,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -658304,7 +658326,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -658327,7 +658349,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -658342,9 +658364,9 @@
      ]
     ],
     "Send-before-open.any.js": [
-     "5982535583fbb5da6d9889450597314c5c29060c",
+     "4fdbf71c6f5f573f36752c30635e8281d8dd01f9",
      [
-      "websockets/Send-before-open.any.html",
+      "websockets/Send-before-open.any.html?default",
       {
        "script_metadata": [
         [
@@ -658353,7 +658375,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -658376,7 +658398,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -658399,7 +658421,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -658413,7 +658435,7 @@
       }
      ],
      [
-      "websockets/Send-before-open.any.worker.html",
+      "websockets/Send-before-open.any.worker.html?default",
       {
        "script_metadata": [
         [
@@ -658422,7 +658444,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -658445,7 +658467,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -658468,7 +658490,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -658483,9 +658505,9 @@
      ]
     ],
     "Send-binary-65K-arraybuffer.any.js": [
-     "1e02ac2d37f99c5ab4d4d8b3639786b1a738db46",
+     "6bee660bb38b4d3bae62cb9b9731b45546be1820",
      [
-      "websockets/Send-binary-65K-arraybuffer.any.html",
+      "websockets/Send-binary-65K-arraybuffer.any.html?default",
       {
        "script_metadata": [
         [
@@ -658494,7 +658516,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -658517,7 +658539,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -658540,7 +658562,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -658554,7 +658576,7 @@
       }
      ],
      [
-      "websockets/Send-binary-65K-arraybuffer.any.worker.html",
+      "websockets/Send-binary-65K-arraybuffer.any.worker.html?default",
       {
        "script_metadata": [
         [
@@ -658563,7 +658585,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -658586,7 +658608,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -658609,7 +658631,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -658624,9 +658646,9 @@
      ]
     ],
     "Send-binary-arraybuffer.any.js": [
-     "5c985edd61638688eb73dd4ca7912372d123cac9",
+     "0b34e0cfc937096f2afef3dc0d9e23359036a85c",
      [
-      "websockets/Send-binary-arraybuffer.any.html",
+      "websockets/Send-binary-arraybuffer.any.html?default",
       {
        "script_metadata": [
         [
@@ -658635,7 +658657,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -658658,7 +658680,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -658681,7 +658703,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -658695,7 +658717,7 @@
       }
      ],
      [
-      "websockets/Send-binary-arraybuffer.any.worker.html",
+      "websockets/Send-binary-arraybuffer.any.worker.html?default",
       {
        "script_metadata": [
         [
@@ -658704,7 +658726,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -658727,7 +658749,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -658750,7 +658772,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -658765,9 +658787,9 @@
      ]
     ],
     "Send-binary-arraybufferview-float32.any.js": [
-     "9a8e3426f49c3ae6815f2a672be0c716569fdd0c",
+     "47ee5b1170b8d20ba217395e693ecdceb774810a",
      [
-      "websockets/Send-binary-arraybufferview-float32.any.html",
+      "websockets/Send-binary-arraybufferview-float32.any.html?default",
       {
        "script_metadata": [
         [
@@ -658776,7 +658798,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -658799,7 +658821,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -658822,7 +658844,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -658836,7 +658858,7 @@
       }
      ],
      [
-      "websockets/Send-binary-arraybufferview-float32.any.worker.html",
+      "websockets/Send-binary-arraybufferview-float32.any.worker.html?default",
       {
        "script_metadata": [
         [
@@ -658845,7 +658867,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -658868,7 +658890,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -658891,7 +658913,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -658906,9 +658928,9 @@
      ]
     ],
     "Send-binary-arraybufferview-float64.any.js": [
-     "d71d2d8c58f5d5d0d285320d59e0f42c13e4031c",
+     "78bcb13d43f3f776ffbe16e3ef62dd3ee9ab379b",
      [
-      "websockets/Send-binary-arraybufferview-float64.any.html",
+      "websockets/Send-binary-arraybufferview-float64.any.html?default",
       {
        "script_metadata": [
         [
@@ -658917,7 +658939,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -658940,7 +658962,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -658963,7 +658985,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -658977,7 +658999,7 @@
       }
      ],
      [
-      "websockets/Send-binary-arraybufferview-float64.any.worker.html",
+      "websockets/Send-binary-arraybufferview-float64.any.worker.html?default",
       {
        "script_metadata": [
         [
@@ -658986,7 +659008,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -659009,7 +659031,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -659032,7 +659054,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -659047,9 +659069,9 @@
      ]
     ],
     "Send-binary-arraybufferview-int16-offset.any.js": [
-     "bb77d300ad1f9c1d435a0c5e7b648b8e4d1f2b60",
+     "3dd64552b01c55d7c7d061493ac88e4aec311fb1",
      [
-      "websockets/Send-binary-arraybufferview-int16-offset.any.html",
+      "websockets/Send-binary-arraybufferview-int16-offset.any.html?default",
       {
        "script_metadata": [
         [
@@ -659058,7 +659080,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -659081,7 +659103,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -659104,7 +659126,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -659118,7 +659140,7 @@
       }
      ],
      [
-      "websockets/Send-binary-arraybufferview-int16-offset.any.worker.html",
+      "websockets/Send-binary-arraybufferview-int16-offset.any.worker.html?default",
       {
        "script_metadata": [
         [
@@ -659127,7 +659149,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -659150,7 +659172,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -659173,7 +659195,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -659188,9 +659210,9 @@
      ]
     ],
     "Send-binary-arraybufferview-int32.any.js": [
-     "f4312e410ab738f086b576fe656c9a4046fff266",
+     "853ba39b4b51ebfcb132938d71728289d4318b36",
      [
-      "websockets/Send-binary-arraybufferview-int32.any.html",
+      "websockets/Send-binary-arraybufferview-int32.any.html?default",
       {
        "script_metadata": [
         [
@@ -659199,7 +659221,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -659222,7 +659244,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -659245,7 +659267,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -659259,7 +659281,7 @@
       }
      ],
      [
-      "websockets/Send-binary-arraybufferview-int32.any.worker.html",
+      "websockets/Send-binary-arraybufferview-int32.any.worker.html?default",
       {
        "script_metadata": [
         [
@@ -659268,7 +659290,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -659291,7 +659313,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -659314,7 +659336,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -659329,9 +659351,9 @@
      ]
     ],
     "Send-binary-arraybufferview-int8.any.js": [
-     "f2374fb413908548f9d9d5e4ada145dbac4af4cb",
+     "aa90020bba84f1234972cb7eef0127732fe8c149",
      [
-      "websockets/Send-binary-arraybufferview-int8.any.html",
+      "websockets/Send-binary-arraybufferview-int8.any.html?default",
       {
        "script_metadata": [
         [
@@ -659340,7 +659362,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -659363,7 +659385,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -659386,7 +659408,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -659400,7 +659422,7 @@
       }
      ],
      [
-      "websockets/Send-binary-arraybufferview-int8.any.worker.html",
+      "websockets/Send-binary-arraybufferview-int8.any.worker.html?default",
       {
        "script_metadata": [
         [
@@ -659409,7 +659431,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -659432,7 +659454,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -659455,7 +659477,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -659470,9 +659492,9 @@
      ]
     ],
     "Send-binary-arraybufferview-uint16-offset-length.any.js": [
-     "f917a3af007d8ca29df385c1397dbcb6378f526f",
+     "a3c1f326a59420bd9779b5b368432e967352086d",
      [
-      "websockets/Send-binary-arraybufferview-uint16-offset-length.any.html",
+      "websockets/Send-binary-arraybufferview-uint16-offset-length.any.html?default",
       {
        "script_metadata": [
         [
@@ -659481,7 +659503,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -659504,7 +659526,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -659527,7 +659549,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -659541,7 +659563,7 @@
       }
      ],
      [
-      "websockets/Send-binary-arraybufferview-uint16-offset-length.any.worker.html",
+      "websockets/Send-binary-arraybufferview-uint16-offset-length.any.worker.html?default",
       {
        "script_metadata": [
         [
@@ -659550,7 +659572,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -659573,7 +659595,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -659596,7 +659618,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -659611,9 +659633,9 @@
      ]
     ],
     "Send-binary-arraybufferview-uint32-offset.any.js": [
-     "33758dc65449e5fd662abd042be6373a1fd1abbe",
+     "fede995450ca7123b8ca4da9f4631d29a63fb7d1",
      [
-      "websockets/Send-binary-arraybufferview-uint32-offset.any.html",
+      "websockets/Send-binary-arraybufferview-uint32-offset.any.html?default",
       {
        "script_metadata": [
         [
@@ -659622,7 +659644,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -659645,7 +659667,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -659668,7 +659690,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -659682,7 +659704,7 @@
       }
      ],
      [
-      "websockets/Send-binary-arraybufferview-uint32-offset.any.worker.html",
+      "websockets/Send-binary-arraybufferview-uint32-offset.any.worker.html?default",
       {
        "script_metadata": [
         [
@@ -659691,7 +659713,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -659714,7 +659736,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -659737,7 +659759,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -659752,9 +659774,9 @@
      ]
     ],
     "Send-binary-arraybufferview-uint8-offset-length.any.js": [
-     "1d256dbdca128771040325541ecb61f72a3e42c5",
+     "de3ae00f27060031a79712641153eb946486781d",
      [
-      "websockets/Send-binary-arraybufferview-uint8-offset-length.any.html",
+      "websockets/Send-binary-arraybufferview-uint8-offset-length.any.html?default",
       {
        "script_metadata": [
         [
@@ -659763,7 +659785,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -659786,7 +659808,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -659809,7 +659831,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -659823,7 +659845,7 @@
       }
      ],
      [
-      "websockets/Send-binary-arraybufferview-uint8-offset-length.any.worker.html",
+      "websockets/Send-binary-arraybufferview-uint8-offset-length.any.worker.html?default",
       {
        "script_metadata": [
         [
@@ -659832,7 +659854,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -659855,7 +659877,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -659878,7 +659900,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -659893,9 +659915,9 @@
      ]
     ],
     "Send-binary-arraybufferview-uint8-offset.any.js": [
-     "43e9fe6849919049af67a66c8b71cc3b5f159c14",
+     "089174b384dc43cd57ffb11de4088d50a58d1502",
      [
-      "websockets/Send-binary-arraybufferview-uint8-offset.any.html",
+      "websockets/Send-binary-arraybufferview-uint8-offset.any.html?default",
       {
        "script_metadata": [
         [
@@ -659904,7 +659926,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -659927,7 +659949,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -659950,7 +659972,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -659964,7 +659986,7 @@
       }
      ],
      [
-      "websockets/Send-binary-arraybufferview-uint8-offset.any.worker.html",
+      "websockets/Send-binary-arraybufferview-uint8-offset.any.worker.html?default",
       {
        "script_metadata": [
         [
@@ -659973,7 +659995,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -659996,7 +660018,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -660019,7 +660041,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -660034,9 +660056,9 @@
      ]
     ],
     "Send-binary-blob.any.js": [
-     "56c89a1b53c4e5e87fa30c3b64f669f7dfe94d78",
+     "5131b716b4fb90bf8387dc1b1e12d3b82c894812",
      [
-      "websockets/Send-binary-blob.any.html",
+      "websockets/Send-binary-blob.any.html?default",
       {
        "script_metadata": [
         [
@@ -660045,7 +660067,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -660068,7 +660090,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -660091,7 +660113,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -660105,7 +660127,7 @@
       }
      ],
      [
-      "websockets/Send-binary-blob.any.worker.html",
+      "websockets/Send-binary-blob.any.worker.html?default",
       {
        "script_metadata": [
         [
@@ -660114,7 +660136,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -660137,7 +660159,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -660160,7 +660182,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -660175,9 +660197,9 @@
      ]
     ],
     "Send-data.any.js": [
-     "203ab54dffc62b9b7b28e8344d573a0e911b9570",
+     "a606ada310d2e529a6325df4679dc4ab83ddd6ac",
      [
-      "websockets/Send-data.any.html",
+      "websockets/Send-data.any.html?default",
       {
        "script_metadata": [
         [
@@ -660186,7 +660208,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -660209,7 +660231,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -660232,7 +660254,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -660246,7 +660268,7 @@
       }
      ],
      [
-      "websockets/Send-data.any.worker.html",
+      "websockets/Send-data.any.worker.html?default",
       {
        "script_metadata": [
         [
@@ -660255,7 +660277,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -660278,7 +660300,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -660301,7 +660323,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -660316,14 +660338,14 @@
      ]
     ],
     "Send-data.worker.js": [
-     "b141fb382070307751b742f6f5f516fc32872264",
+     "5a8bdd5fa3a489fd107f84fc7801a224f9d9b853",
      [
-      "websockets/Send-data.worker.html",
+      "websockets/Send-data.worker.html?default",
       {
        "script_metadata": [
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -660342,7 +660364,7 @@
        "script_metadata": [
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -660361,7 +660383,7 @@
        "script_metadata": [
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -660376,9 +660398,9 @@
      ]
     ],
     "Send-null.any.js": [
-     "a12eaf9c591af8ddfe95c75aef34cb5fd309d160",
+     "e621bb892bbd84590dc22343eef4e900abb2631e",
      [
-      "websockets/Send-null.any.html",
+      "websockets/Send-null.any.html?default",
       {
        "script_metadata": [
         [
@@ -660387,7 +660409,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -660410,7 +660432,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -660433,7 +660455,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -660447,7 +660469,7 @@
       }
      ],
      [
-      "websockets/Send-null.any.worker.html",
+      "websockets/Send-null.any.worker.html?default",
       {
        "script_metadata": [
         [
@@ -660456,7 +660478,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -660479,7 +660501,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -660502,7 +660524,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -660517,9 +660539,9 @@
      ]
     ],
     "Send-paired-surrogates.any.js": [
-     "e2dc004bfcf4e9e5d1b71d65d8c69b2fd6efc715",
+     "51e4fb965e269c2389d1bbfeabcfd2eb4bdddbb2",
      [
-      "websockets/Send-paired-surrogates.any.html",
+      "websockets/Send-paired-surrogates.any.html?default",
       {
        "script_metadata": [
         [
@@ -660528,7 +660550,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -660551,7 +660573,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -660574,7 +660596,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -660588,7 +660610,7 @@
       }
      ],
      [
-      "websockets/Send-paired-surrogates.any.worker.html",
+      "websockets/Send-paired-surrogates.any.worker.html?default",
       {
        "script_metadata": [
         [
@@ -660597,7 +660619,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -660620,7 +660642,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -660643,7 +660665,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -660658,9 +660680,9 @@
      ]
     ],
     "Send-unicode-data.any.js": [
-     "f22094a243c96d1cb0777db3cfa975bf0fbff9e3",
+     "a3556b26ab21de4632c0ccfe57788896c22027f6",
      [
-      "websockets/Send-unicode-data.any.html",
+      "websockets/Send-unicode-data.any.html?default",
       {
        "script_metadata": [
         [
@@ -660669,7 +660691,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -660692,7 +660714,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -660715,7 +660737,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -660729,7 +660751,7 @@
       }
      ],
      [
-      "websockets/Send-unicode-data.any.worker.html",
+      "websockets/Send-unicode-data.any.worker.html?default",
       {
        "script_metadata": [
         [
@@ -660738,7 +660760,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -660761,7 +660783,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -660784,7 +660806,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -660799,9 +660821,9 @@
      ]
     ],
     "Send-unpaired-surrogates.any.js": [
-     "1cb5d0ac9cd49647fc384c077dbbc194a4edb051",
+     "cbbcc6ebf64c24790e3819c3b588b64bae9aa313",
      [
-      "websockets/Send-unpaired-surrogates.any.html",
+      "websockets/Send-unpaired-surrogates.any.html?default",
       {
        "script_metadata": [
         [
@@ -660810,7 +660832,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -660833,7 +660855,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -660856,7 +660878,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -660870,7 +660892,7 @@
       }
      ],
      [
-      "websockets/Send-unpaired-surrogates.any.worker.html",
+      "websockets/Send-unpaired-surrogates.any.worker.html?default",
       {
        "script_metadata": [
         [
@@ -660879,7 +660901,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -660902,7 +660924,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -660925,7 +660947,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -661280,9 +661302,9 @@
     ],
     "binary": {
      "001.html": [
-      "21ffff40eb0f3fb225cecc2b698c54d779ab8d0b",
+      "077bf79def3e19252bc2afe26180b68c6d7d32ce",
       [
-       null,
+       "websockets/binary/001.html?default",
        {}
       ],
       [
@@ -661295,9 +661317,9 @@
       ]
      ],
      "002.html": [
-      "ffd1ee7a7a27510d88c23501791adef70e57572d",
+      "558777694bbc6b414f2de27531297ff0686e86a3",
       [
-       null,
+       "websockets/binary/002.html?default",
        {
         "timeout": "long"
        }
@@ -661316,9 +661338,9 @@
       ]
      ],
      "004.html": [
-      "76bb902cf95b258d802a8c315179179cfd5a7822",
+      "8ca4e923ea09b20445f1080f7babc64e2438cdc1",
       [
-       null,
+       "websockets/binary/004.html?default",
        {
         "timeout": "long"
        }
@@ -661337,9 +661359,9 @@
       ]
      ],
      "005.html": [
-      "9b8b2c4edfd54049044e77e9d9d9ec0309c567a5",
+      "e89f4c0e837f866ad023e68b4fbd853af75bc9ed",
       [
-       null,
+       "websockets/binary/005.html?default",
        {}
       ],
       [
@@ -661353,9 +661375,9 @@
      ]
     },
     "binaryType-wrong-value.any.js": [
-     "007510d030bff14d1cc0d5198f850d5ad5e96a48",
+     "683fb47bede98427e2d8afb8f6dda33367683c34",
      [
-      "websockets/binaryType-wrong-value.any.html",
+      "websockets/binaryType-wrong-value.any.html?default",
       {
        "script_metadata": [
         [
@@ -661364,7 +661386,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -661387,7 +661409,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -661410,7 +661432,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -661424,7 +661446,7 @@
       }
      ],
      [
-      "websockets/binaryType-wrong-value.any.worker.html",
+      "websockets/binaryType-wrong-value.any.worker.html?default",
       {
        "script_metadata": [
         [
@@ -661433,7 +661455,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -661456,7 +661478,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -661479,7 +661501,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -661494,9 +661516,9 @@
      ]
     ],
     "bufferedAmount-unchanged-by-sync-xhr.any.js": [
-     "b247ee56f62f3f82e6bbae4f42022afcf6ffa6ff",
+     "c15536d76749fb6792316bc0446cc8a09d3d9c55",
      [
-      "websockets/bufferedAmount-unchanged-by-sync-xhr.any.html",
+      "websockets/bufferedAmount-unchanged-by-sync-xhr.any.html?default",
       {
        "script_metadata": [
         [
@@ -661509,7 +661531,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -661536,7 +661558,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -661563,7 +661585,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -661577,7 +661599,7 @@
       }
      ],
      [
-      "websockets/bufferedAmount-unchanged-by-sync-xhr.any.sharedworker.html",
+      "websockets/bufferedAmount-unchanged-by-sync-xhr.any.sharedworker.html?default",
       {
        "script_metadata": [
         [
@@ -661590,7 +661612,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -661617,7 +661639,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -661644,7 +661666,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -661658,7 +661680,7 @@
       }
      ],
      [
-      "websockets/bufferedAmount-unchanged-by-sync-xhr.any.worker.html",
+      "websockets/bufferedAmount-unchanged-by-sync-xhr.any.worker.html?default",
       {
        "script_metadata": [
         [
@@ -661671,7 +661693,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -661698,7 +661720,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -661725,7 +661747,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -661740,9 +661762,9 @@
      ]
     ],
     "close-invalid.any.js": [
-     "3223063765ab09f26fdbbe43b13aa0b04322368a",
+     "c964c8391d5de900b7e78fabc8c74fd1390bf2b3",
      [
-      "websockets/close-invalid.any.html",
+      "websockets/close-invalid.any.html?default",
       {
        "script_metadata": [
         [
@@ -661751,7 +661773,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -661774,7 +661796,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -661797,7 +661819,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -661811,7 +661833,7 @@
       }
      ],
      [
-      "websockets/close-invalid.any.worker.html",
+      "websockets/close-invalid.any.worker.html?default",
       {
        "script_metadata": [
         [
@@ -661820,7 +661842,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -661843,7 +661865,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -661866,7 +661888,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -661882,9 +661904,9 @@
     ],
     "closing-handshake": {
      "002.html": [
-      "b0e39a955ce415fcd1b8e228de1a0560862c28b9",
+      "8d1e43b6de9193e1281e38bb009bd5827a5798fd",
       [
-       null,
+       "websockets/closing-handshake/002.html?default",
        {}
       ],
       [
@@ -661897,9 +661919,9 @@
       ]
      ],
      "003.html": [
-      "72eb09d8337c8d3760257a34b719a3e3f8f345c6",
+      "43e1603d34fe7219b75f50450a9be4b7df3b071e",
       [
-       null,
+       "websockets/closing-handshake/003.html?default",
        {}
       ],
       [
@@ -661912,9 +661934,9 @@
       ]
      ],
      "004.html": [
-      "eb89ad33857c45f4f0043e19b369bd17e0b662ac",
+      "96411ea63903ec0f217c90fee546fc53a6c85562",
       [
-       null,
+       "websockets/closing-handshake/004.html?default",
        {}
       ],
       [
@@ -661929,9 +661951,9 @@
     },
     "constructor": {
      "001.html": [
-      "0c39a0ee71b5968a0c4643a947771a87e2ea22e5",
+      "13493e3430fe77c3546752d164f8369a966af8af",
       [
-       null,
+       "websockets/constructor/001.html?default",
        {}
       ],
       [
@@ -661944,9 +661966,9 @@
       ]
      ],
      "004.html": [
-      "e599bf224ae0fe7667bfa08ff2d92be206648d0b",
+      "814321089bed722550e1239cf22ead9915108b29",
       [
-       null,
+       "websockets/constructor/004.html?default",
        {}
       ],
       [
@@ -661959,9 +661981,9 @@
       ]
      ],
      "005.html": [
-      "377d9c4217a8cb6fbe447f766d3315b5681979ff",
+      "9d467def3f9cb5b3ca7905b4a04ba5644e25f8a1",
       [
-       null,
+       "websockets/constructor/005.html?default",
        {}
       ],
       [
@@ -661974,9 +661996,9 @@
       ]
      ],
      "006.html": [
-      "65178e001652a8ea9c56dcf8df0263c058b8d489",
+      "59875830da2778ee5bc701031a1b61c7ea9407cf",
       [
-       null,
+       "websockets/constructor/006.html?default",
        {}
       ],
       [
@@ -661989,9 +662011,9 @@
       ]
      ],
      "007.html": [
-      "647f4202a1743b79fb8c17985d1c79d491076aeb",
+      "e126d1aa0f8d69a01a74ee7c0a858b5e1603f3bf",
       [
-       null,
+       "websockets/constructor/007.html?default",
        {}
       ],
       [
@@ -662004,9 +662026,9 @@
       ]
      ],
      "008.html": [
-      "de7fb457bae97024bc3a331eeab23886e4d8c15b",
+      "e10c652134e246b98ce5170bfdb0dc0852b42950",
       [
-       null,
+       "websockets/constructor/008.html?default",
        {}
       ],
       [
@@ -662015,9 +662037,9 @@
       ]
      ],
      "009.html": [
-      "4e69a839ebdeeaff58b361091563601722f5f4ae",
+      "f8123c2c86defa22e1f08b4569c21deeadfea291",
       [
-       null,
+       "websockets/constructor/009.html?default",
        {}
       ],
       [
@@ -662030,9 +662052,9 @@
       ]
      ],
      "010.html": [
-      "0adf2b13f9bdaea74a8f150990242b47d8227630",
+      "e5bc6ecc36ed8137b7b315f8479db87972a62615",
       [
-       null,
+       "websockets/constructor/010.html?default",
        {}
       ],
       [
@@ -662045,9 +662067,9 @@
       ]
      ],
      "011.html": [
-      "9b7f114dc034f92f76863b368a60132c6cd9006d",
+      "33b09dbaf8f4af424f27ede742c1db8267a2191e",
       [
-       null,
+       "websockets/constructor/011.html?default",
        {}
       ],
       [
@@ -662060,9 +662082,9 @@
       ]
      ],
      "012.html": [
-      "34723616728e47abbe3513ca80928a9b38873ed1",
+      "ba2b6b2df06994192180455385f8944e89d30e55",
       [
-       null,
+       "websockets/constructor/012.html?default",
        {}
       ],
       [
@@ -662075,9 +662097,9 @@
       ]
      ],
      "013.html": [
-      "53b0400a2d64627f51060b21e56eddfd62af2614",
+      "d599fde528a02155e1e92f31b3a3551c0a6e74aa",
       [
-       null,
+       "websockets/constructor/013.html?default",
        {
         "timeout": "long"
        }
@@ -662096,9 +662118,9 @@
       ]
      ],
      "014.html": [
-      "f3f38ad2788bf75a0cbb9da1e461c67315506f6f",
+      "afa0dac4c1d5436354e0082b7ec9b2445fe155d8",
       [
-       null,
+       "websockets/constructor/014.html?default",
        {
         "timeout": "long"
        }
@@ -662111,9 +662133,9 @@
       ]
      ],
      "016.html": [
-      "7a5c9a9e0721c68c6e3b3b5c16b5aac4386ad24a",
+      "18605056dd65cb73565313feaf4c0928fa8e5469",
       [
-       null,
+       "websockets/constructor/016.html?default",
        {}
       ],
       [
@@ -662126,9 +662148,9 @@
       ]
      ],
      "017.html": [
-      "5087290f3ca0445620fe4d0430756b0fd9f729d8",
+      "e1795b175e39124bdb95868a152239159807da17",
       [
-       null,
+       "websockets/constructor/017.html?default",
        {}
       ],
       [
@@ -662141,9 +662163,9 @@
       ]
      ],
      "018.html": [
-      "f4d6ab30d9532df78e81bbb31c2b1a5f1bb41cd2",
+      "71f7376496a8d6174de8cb05913da7c0a7049cc0",
       [
-       null,
+       "websockets/constructor/018.html?default",
        {}
       ],
       [
@@ -662156,9 +662178,9 @@
       ]
      ],
      "019.html": [
-      "a0ec6c3ad78304ff0858c57fe0271b37fd2c4065",
+      "8fbb1cbfff66d37147711eed048574239e595567",
       [
-       null,
+       "websockets/constructor/019.html?default",
        {}
       ],
       [
@@ -662171,9 +662193,9 @@
       ]
      ],
      "020.html": [
-      "f050a1b8fa97e24d06b26e505f77e6fa8744bc23",
+      "e4d61f366ea185c518c826d272fa570afa1790b5",
       [
-       null,
+       "websockets/constructor/020.html?default",
        {}
       ],
       [
@@ -662186,9 +662208,9 @@
       ]
      ],
      "021.html": [
-      "039d74b0430fe2b653ef2dba15a71b49a1f289e9",
+      "d3854feeb474f764df8672db6400eee252934163",
       [
-       null,
+       "websockets/constructor/021.html?default",
        {}
       ],
       [
@@ -662201,9 +662223,9 @@
       ]
      ],
      "022.html": [
-      "a55d8f349d7d71c9605da2e3e37bb6c66e9ea717",
+      "fd53c0f29ab53dbc4066e41c4740f038aed418e8",
       [
-       null,
+       "websockets/constructor/022.html?default",
        {}
       ],
       [
@@ -662217,9 +662239,9 @@
      ]
     },
     "constructor.any.js": [
-     "c92dda4567c5a0399cc0b6eb84d71c523b3c7ee8",
+     "0cef2065f6d8a052c4721faef03a5d169cb4ab01",
      [
-      "websockets/constructor.any.html",
+      "websockets/constructor.any.html?default",
       {
        "script_metadata": [
         [
@@ -662228,7 +662250,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -662251,7 +662273,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -662274,7 +662296,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -662288,7 +662310,7 @@
       }
      ],
      [
-      "websockets/constructor.any.worker.html",
+      "websockets/constructor.any.worker.html?default",
       {
        "script_metadata": [
         [
@@ -662297,7 +662319,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -662320,7 +662342,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -662343,7 +662365,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -662359,9 +662381,9 @@
     ],
     "cookies": {
      "001.html": [
-      "c43947fa877c76e87f3a393dff363cf0d5fd2d57",
+      "abec94e4b10aa13089631b6d0faf96344a4da2b0",
       [
-       null,
+       "websockets/cookies/001.html?default",
        {}
       ],
       [
@@ -662374,9 +662396,9 @@
       ]
      ],
      "002.html": [
-      "1a5e03e335146e2832f1e43450d8e15e5b495a54",
+      "758ce473a9127c52a8f675e155dcbd766dbb0ecc",
       [
-       null,
+       "websockets/cookies/002.html?default",
        {}
       ],
       [
@@ -662389,9 +662411,9 @@
       ]
      ],
      "003.html": [
-      "2af47354028362cf05222702975b969a51ea2e44",
+      "9f770aef220c1425a4211c02319d10747a15a677",
       [
-       null,
+       "websockets/cookies/003.html?default",
        {}
       ],
       [
@@ -662404,9 +662426,9 @@
       ]
      ],
      "004.html": [
-      "efc3a9f84d4937a9dffe131faa693c3943b4ac97",
+      "523dabaf6359bf16397fc1faada69c69c33f8f24",
       [
-       null,
+       "websockets/cookies/004.html?default",
        {}
       ],
       [
@@ -662415,9 +662437,9 @@
       ]
      ],
      "005.html": [
-      "8940d95127ff0b504380e6c4c39109c13661b1d7",
+      "f3e334c1df760e68681bdaaa9542e9019e61bce1",
       [
-       null,
+       "websockets/cookies/005.html?default",
        {
         "timeout": "long"
        }
@@ -662430,9 +662452,9 @@
       ]
      ],
      "006.html": [
-      "3c74363a4324fc16353712e492ce2f4e9a80d1c7",
+      "6e12bfac6c0d3c92bf5793b62c6a3ed1ecae9641",
       [
-       null,
+       "websockets/cookies/006.html?default",
        {}
       ],
       [
@@ -662445,9 +662467,9 @@
       ]
      ],
      "007.html": [
-      "2c214a1dbb0d19ea63b7f7af483eb7c686341513",
+      "3e69bfc09d57b03044a7dd4fa0e28220a7c5c590",
       [
-       null,
+       "websockets/cookies/007.html?default",
        {
         "timeout": "long"
        }
@@ -662474,9 +662496,9 @@
      ]
     },
     "eventhandlers.any.js": [
-     "7bccd47139b1056a4e9cf3f6cf51e2fd26f072bc",
+     "f596328b923a9d9bf3259cef2257d63a851317b6",
      [
-      "websockets/eventhandlers.any.html",
+      "websockets/eventhandlers.any.html?default",
       {
        "script_metadata": [
         [
@@ -662485,7 +662507,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -662508,7 +662530,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -662531,7 +662553,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -662545,7 +662567,7 @@
       }
      ],
      [
-      "websockets/eventhandlers.any.worker.html",
+      "websockets/eventhandlers.any.worker.html?default",
       {
        "script_metadata": [
         [
@@ -662554,7 +662576,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -662577,7 +662599,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -662600,7 +662622,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -662615,9 +662637,9 @@
      ]
     ],
     "extended-payload-length.html": [
-     "23caedc461c475da25b5dea07aa6a8399c9183e1",
+     "92e3802c352176b7d0cd2bdaa3aec8f8e90277ea",
      [
-      null,
+      "websockets/extended-payload-length.html?default",
       {
        "timeout": "long"
       }
@@ -662671,9 +662693,9 @@
     "interfaces": {
      "CloseEvent": {
       "clean-close.html": [
-       "db253761f63700b7bf3012a4879edeaa76f62135",
+       "8614028fd0546663be851520a6ddf9581a808524",
        [
-        null,
+        "websockets/interfaces/CloseEvent/clean-close.html?default",
         {}
        ],
        [
@@ -662703,9 +662725,9 @@
      "WebSocket": {
       "bufferedAmount": {
        "bufferedAmount-arraybuffer.html": [
-        "258eaa782797bf94a5a7ce4030a4d64f5eb60cc9",
+        "5d2bfd076cb22e43d22a87cb554cf538083beed2",
         [
-         null,
+         "websockets/interfaces/WebSocket/bufferedAmount/bufferedAmount-arraybuffer.html?default",
          {}
         ],
         [
@@ -662718,9 +662740,9 @@
         ]
        ],
        "bufferedAmount-blob.html": [
-        "ac5140de6cc572f1a0b1f9fcf23a4e3722667440",
+        "d0028dae0f40d9d2aaf7b04c5db09a3952dc8367",
         [
-         null,
+         "websockets/interfaces/WebSocket/bufferedAmount/bufferedAmount-blob.html?default",
          {}
         ],
         [
@@ -662733,9 +662755,9 @@
         ]
        ],
        "bufferedAmount-defineProperty-getter.html": [
-        "df1c3a5bb22bc9b77215792b0aefdd1dd60b18e8",
+        "ea6e70cfcf74b07b1f74fa5560334aaf3d325821",
         [
-         null,
+         "websockets/interfaces/WebSocket/bufferedAmount/bufferedAmount-defineProperty-getter.html?default",
          {}
         ],
         [
@@ -662744,9 +662766,9 @@
         ]
        ],
        "bufferedAmount-defineProperty-setter.html": [
-        "b65ed9e9b72b894ca2122916d45b6c7db7da4a6b",
+        "8f0fa5c806483c6d0b2df0b4da58cae8e1c94b39",
         [
-         null,
+         "websockets/interfaces/WebSocket/bufferedAmount/bufferedAmount-defineProperty-setter.html?default",
          {}
         ],
         [
@@ -662755,9 +662777,9 @@
         ]
        ],
        "bufferedAmount-deleting.html": [
-        "0d8c456e5ca4be48e64df59dfb4f473ebcbc37a0",
+        "1d99636bf01c7828404a5bbda9d00eb4d1cac412",
         [
-         null,
+         "websockets/interfaces/WebSocket/bufferedAmount/bufferedAmount-deleting.html?default",
          {}
         ],
         [
@@ -662766,9 +662788,9 @@
         ]
        ],
        "bufferedAmount-getting.html": [
-        "307f595ec2dd7effcdf94bcd6a57918e2b830baa",
+        "92bcea60822624a02105d909fc452f855e2e87f3",
         [
-         null,
+         "websockets/interfaces/WebSocket/bufferedAmount/bufferedAmount-getting.html?default",
          {}
         ],
         [
@@ -662781,9 +662803,9 @@
         ]
        ],
        "bufferedAmount-initial.html": [
-        "7c66d20282613c24464b17a42464be486762e99c",
+        "be37b6dea0ed08570053df4d0f77e61614e89df5",
         [
-         null,
+         "websockets/interfaces/WebSocket/bufferedAmount/bufferedAmount-initial.html?default",
          {}
         ],
         [
@@ -662792,9 +662814,9 @@
         ]
        ],
        "bufferedAmount-large.html": [
-        "e599614103b4d3abafdda20db8176dee1578380e",
+        "18c5482535282de2e9c6a2724a28199b61934c75",
         [
-         null,
+         "websockets/interfaces/WebSocket/bufferedAmount/bufferedAmount-large.html?default",
          {
           "timeout": "long"
          }
@@ -662813,9 +662835,9 @@
         ]
        ],
        "bufferedAmount-readonly.html": [
-        "951aaea57b760bdcce0f14c143c4002d46f9bcd0",
+        "152da696e1af92e71f02ff9c2fde8ca590dec0a8",
         [
-         null,
+         "websockets/interfaces/WebSocket/bufferedAmount/bufferedAmount-readonly.html?default",
          {}
         ],
         [
@@ -662824,9 +662846,9 @@
         ]
        ],
        "bufferedAmount-unicode.html": [
-        "ba25caeb220e5d201d62616ea31a5b8e5f5007cc",
+        "ab01f3c790102f3a589db712324116269b157b82",
         [
-         null,
+         "websockets/interfaces/WebSocket/bufferedAmount/bufferedAmount-unicode.html?default",
          {}
         ],
         [
@@ -662841,9 +662863,9 @@
       },
       "close": {
        "close-basic.html": [
-        "b9059414954f0450d633cd47b17cc6165a43d16e",
+        "b646ca41679857484d73ae0306efa46e51c699d4",
         [
-         null,
+         "websockets/interfaces/WebSocket/close/close-basic.html?default",
          {}
         ],
         [
@@ -662852,9 +662874,9 @@
         ]
        ],
        "close-connecting.html": [
-        "6151b7b1a765db538daa10072c5ea3eafa2eb913",
+        "de038ca09f0ea6b24419e9ae3da1c621b6302f3c",
         [
-         null,
+         "websockets/interfaces/WebSocket/close/close-connecting.html?default",
          {
           "timeout": "long"
          }
@@ -662867,9 +662889,9 @@
         ]
        ],
        "close-multiple.html": [
-        "7c6192555a939f7620b082ca224ec283eee93b26",
+        "e440d80179ec33abd235b7829feaf78816492204",
         [
-         null,
+         "websockets/interfaces/WebSocket/close/close-multiple.html?default",
          {}
         ],
         [
@@ -662878,9 +662900,9 @@
         ]
        ],
        "close-nested.html": [
-        "0a1c86ccd0381dba9efdee5864158a2e94478651",
+        "74b8fa0c48c390f076f53db25735ab960a8c353e",
         [
-         null,
+         "websockets/interfaces/WebSocket/close/close-nested.html?default",
          {}
         ],
         [
@@ -662889,9 +662911,9 @@
         ]
        ],
        "close-replace.html": [
-        "3607f8d8c313a0815dd191610cad1e2ca7c2a191",
+        "e9d2364794c19473681e8707843b6ee5b6c6fa1b",
         [
-         null,
+         "websockets/interfaces/WebSocket/close/close-replace.html?default",
          {}
         ],
         [
@@ -662900,9 +662922,9 @@
         ]
        ],
        "close-return.html": [
-        "5988605cf6ce848b68bc7d2aa8a1344ae9515d1e",
+        "e74c9b076d40e40fc9826411708dfc1e6093ba72",
         [
-         null,
+         "websockets/interfaces/WebSocket/close/close-return.html?default",
          {}
         ],
         [
@@ -662913,9 +662935,9 @@
       },
       "constants": {
        "001.html": [
-        "9701047662f0a1ff75e76ea6fe23587e2b06d7c5",
+        "7d79bf5d7b4df89d36ac813097fd94e64b322c22",
         [
-         null,
+         "websockets/interfaces/WebSocket/constants/001.html?default",
          {}
         ],
         [
@@ -662924,9 +662946,9 @@
         ]
        ],
        "002.html": [
-        "46ad3b1fb1aa343acb41a18e8bb5ecf65142fc86",
+        "6810bc6c292092c66375083bd1bb3443664911a3",
         [
-         null,
+         "websockets/interfaces/WebSocket/constants/002.html?default",
          {}
         ],
         [
@@ -662935,9 +662957,9 @@
         ]
        ],
        "003.html": [
-        "01127e023553cf351639ab94c22ec9469dae7160",
+        "4a86af8b1c1b473cbd7eb452c1a2ea452d7ac1c2",
         [
-         null,
+         "websockets/interfaces/WebSocket/constants/003.html?default",
          {}
         ],
         [
@@ -662946,9 +662968,9 @@
         ]
        ],
        "004.html": [
-        "035e099b65626fc7850fed2984f217465d8bde27",
+        "2ca3830b721e98ab34a1af838348e8ca6d4a1673",
         [
-         null,
+         "websockets/interfaces/WebSocket/constants/004.html?default",
          {}
         ],
         [
@@ -662957,9 +662979,9 @@
         ]
        ],
        "005.html": [
-        "8e3de05a6097f7583a9b0e791255e546b6e4ae30",
+        "26d5b24d2cfc4abf22f69d3d719989ca7cd8954d",
         [
-         null,
+         "websockets/interfaces/WebSocket/constants/005.html?default",
          {}
         ],
         [
@@ -662968,9 +662990,9 @@
         ]
        ],
        "006.html": [
-        "9dcd1941593f2d0123ed3ca977ba6f57be6262a0",
+        "78126c86f51a5bbac4534331babf6bd4746e5781",
         [
-         null,
+         "websockets/interfaces/WebSocket/constants/006.html?default",
          {}
         ],
         [
@@ -662981,9 +663003,9 @@
       },
       "events": {
        "001.html": [
-        "2043f0dd84715eff0bbd0ecc3c05bf17b2c78521",
+        "88dcf9e424143abf97a1947ecd1b8dafc8e1f28f",
         [
-         null,
+         "websockets/interfaces/WebSocket/events/001.html?default",
          {}
         ],
         [
@@ -662996,9 +663018,9 @@
         ]
        ],
        "002.html": [
-        "df8e9f73d54508b72a0875fe9231fbdf4b8a785c",
+        "481730800c26d38b782f51bf64fb3d82514c7a69",
         [
-         null,
+         "websockets/interfaces/WebSocket/events/002.html?default",
          {}
         ],
         [
@@ -663011,9 +663033,9 @@
         ]
        ],
        "003.html": [
-        "f03ab49be6702749b33d751f565fc91817f797ce",
+        "a5373ecded2c03368a79328c194d7d3b18569d88",
         [
-         null,
+         "websockets/interfaces/WebSocket/events/003.html?default",
          {}
         ],
         [
@@ -663022,9 +663044,9 @@
         ]
        ],
        "004.html": [
-        "f3698263ed526252dab3a7fb7cdff4e45e615a0d",
+        "9c5144cefa8aae68a6bf7982304ace6954154c91",
         [
-         null,
+         "websockets/interfaces/WebSocket/events/004.html?default",
          {}
         ],
         [
@@ -663033,9 +663055,9 @@
         ]
        ],
        "006.html": [
-        "76930516c85b8442f73ec3b588c23840489ee559",
+        "de2f55694d8315918eda49728e6aab75459c6fd1",
         [
-         null,
+         "websockets/interfaces/WebSocket/events/006.html?default",
          {}
         ],
         [
@@ -663044,9 +663066,9 @@
         ]
        ],
        "007.html": [
-        "c009f48a97b852b2ea629eb2514c6e789e0b0ba1",
+        "0fe7241ecf52e3a2382af2acd5c870d3a7ebeb3d",
         [
-         null,
+         "websockets/interfaces/WebSocket/events/007.html?default",
          {}
         ],
         [
@@ -663059,9 +663081,9 @@
         ]
        ],
        "008.html": [
-        "eb46efbb1a3e0abe217605449c82b275232cd4e6",
+        "066eb0922e3579c7101e07f0d32511945e6c06bf",
         [
-         null,
+         "websockets/interfaces/WebSocket/events/008.html?default",
          {}
         ],
         [
@@ -663070,9 +663092,9 @@
         ]
        ],
        "009.html": [
-        "1194fb8b090a6b02d8c5e6ff61ba7cbe765e2b9e",
+        "b9e56e2fbd88164a6236bd6275396a77d9c78985",
         [
-         null,
+         "websockets/interfaces/WebSocket/events/009.html?default",
          {}
         ],
         [
@@ -663081,9 +663103,9 @@
         ]
        ],
        "010.html": [
-        "ccdbc4dbf98bb98b69fa69b14eafb246c5fb9790",
+        "360e7d9bd243e19164ad907e80df59b57d594cd4",
         [
-         null,
+         "websockets/interfaces/WebSocket/events/010.html?default",
          {}
         ],
         [
@@ -663092,9 +663114,9 @@
         ]
        ],
        "011.html": [
-        "4bb0ef391c2b8cc047bf4f65620d5fcedce550a5",
+        "f64857579e91304d89a6eefdf8a4e7283ce944c3",
         [
-         null,
+         "websockets/interfaces/WebSocket/events/011.html?default",
          {}
         ],
         [
@@ -663103,9 +663125,9 @@
         ]
        ],
        "012.html": [
-        "d2f39194fd96b83f54ee06502614ae3f4b30ddc9",
+        "bdd63e3f693a595d7273fa6081dfd66bd947d417",
         [
-         null,
+         "websockets/interfaces/WebSocket/events/012.html?default",
          {}
         ],
         [
@@ -663114,9 +663136,9 @@
         ]
        ],
        "013.html": [
-        "121f6e6c3048af9789a25d42548b427021361a6c",
+        "9e251c62171a4b392327d96de625b3de609126ae",
         [
-         null,
+         "websockets/interfaces/WebSocket/events/013.html?default",
          {}
         ],
         [
@@ -663125,9 +663147,9 @@
         ]
        ],
        "014.html": [
-        "a427ce98c58e2d19439889dd69200103b7dd40fe",
+        "9fcd8b3f6a909fa378da24cdc737b6914d00fc6d",
         [
-         null,
+         "websockets/interfaces/WebSocket/events/014.html?default",
          {}
         ],
         [
@@ -663136,9 +663158,9 @@
         ]
        ],
        "015.html": [
-        "663ccca80d0cec8949a1e9114bbfdb7b1cfe3e55",
+        "5089c0fb676cc493f0cf4b6e20b3c3d2c70fe465",
         [
-         null,
+         "websockets/interfaces/WebSocket/events/015.html?default",
          {}
         ],
         [
@@ -663151,9 +663173,9 @@
         ]
        ],
        "016.html": [
-        "fcd14c854cefe400b12038078c7bfd788f6c0a0e",
+        "8b5aaf9f42c0414d869bb0e9b705ddb6d04cdb85",
         [
-         null,
+         "websockets/interfaces/WebSocket/events/016.html?default",
          {
           "timeout": "long"
          }
@@ -663172,9 +663194,9 @@
         ]
        ],
        "017.html": [
-        "9208261c1212478638676bc4886bbf84eb6876c6",
+        "a9f06eaf7df9d2018882287824e382d3622f6e8b",
         [
-         null,
+         "websockets/interfaces/WebSocket/events/017.html?default",
          {}
         ],
         [
@@ -663187,9 +663209,9 @@
         ]
        ],
        "018.html": [
-        "3dc36d0c5f118bf9b8f0e0e0f593fbf14b82a0ff",
+        "a340c69f451663f6a2d0e8d7ca7a54457e432f09",
         [
-         null,
+         "websockets/interfaces/WebSocket/events/018.html?default",
          {}
         ],
         [
@@ -663202,9 +663224,9 @@
         ]
        ],
        "019.html": [
-        "cbc271d9e63a95286b3536692820fd99675cb3ec",
+        "deb079f81aaf825beb6e1c2224e581bf6acfd01d",
         [
-         null,
+         "websockets/interfaces/WebSocket/events/019.html?default",
          {}
         ],
         [
@@ -663213,9 +663235,9 @@
         ]
        ],
        "020.html": [
-        "34c1f35312bdc5b2701382e8b36fddeb71a6a054",
+        "f43b0af93f75494a15c5c24a28862b5ec04e0b3f",
         [
-         null,
+         "websockets/interfaces/WebSocket/events/020.html?default",
          {}
         ],
         [
@@ -663226,9 +663248,9 @@
       },
       "extensions": {
        "001.html": [
-        "4f86da57b8da9c839d642f27981cd26d737a6e1c",
+        "bd26483a7910161d53aae7c52c708f4a4858fc96",
         [
-         null,
+         "websockets/interfaces/WebSocket/extensions/001.html?default",
          {}
         ],
         [
@@ -663239,9 +663261,9 @@
       },
       "protocol": {
        "protocol-initial.html": [
-        "33c123abacbfa0f0e32fbbe9aec51c294bc274ad",
+        "2e7bf665576496d80303de6c27fc40fb590d014d",
         [
-         null,
+         "websockets/interfaces/WebSocket/protocol/protocol-initial.html?default",
          {}
         ],
         [
@@ -663252,9 +663274,9 @@
       },
       "readyState": {
        "001.html": [
-        "b8f96740cafbafb2931862ae25ceafc8a30878e8",
+        "15b73fdb7c62fa90cc2c22f50d36c40baf5e3b5c",
         [
-         null,
+         "websockets/interfaces/WebSocket/readyState/001.html?default",
          {}
         ],
         [
@@ -663263,9 +663285,9 @@
         ]
        ],
        "002.html": [
-        "b86e128059c2f3047cfe4e40d8a78f79a635cfa1",
+        "239e5d7cf8de6a089acace2321650d5cb039f964",
         [
-         null,
+         "websockets/interfaces/WebSocket/readyState/002.html?default",
          {}
         ],
         [
@@ -663274,9 +663296,9 @@
         ]
        ],
        "003.html": [
-        "0143480721717284a648fcb58a72d160cb449732",
+        "65d86c437f7ca0e8b74242593c4c010f6887ad10",
         [
-         null,
+         "websockets/interfaces/WebSocket/readyState/003.html?default",
          {}
         ],
         [
@@ -663285,9 +663307,9 @@
         ]
        ],
        "004.html": [
-        "7864f0e853d80708b2148c330067fb142324dbd3",
+        "0645816a6c52ca3e18885a69d8da6cd617977c8b",
         [
-         null,
+         "websockets/interfaces/WebSocket/readyState/004.html?default",
          {}
         ],
         [
@@ -663296,9 +663318,9 @@
         ]
        ],
        "005.html": [
-        "c42939316a576d027becb48a53e4595ddae11b9b",
+        "bee179ffcbb09b985a7676dff04a7ea1b66ced48",
         [
-         null,
+         "websockets/interfaces/WebSocket/readyState/005.html?default",
          {}
         ],
         [
@@ -663307,9 +663329,9 @@
         ]
        ],
        "006.html": [
-        "993655abd93bc793094c65ca1bd752dd3ab1db58",
+        "4290c008363ad01b50dc7266f9c5def01c7a1e2b",
         [
-         null,
+         "websockets/interfaces/WebSocket/readyState/006.html?default",
          {}
         ],
         [
@@ -663318,9 +663340,9 @@
         ]
        ],
        "007.html": [
-        "f9ab27a40536d0b0c69bd0b89e413e025f152129",
+        "69b5d9c9a9920fe8bf746cd7dec8b812dfe589fc",
         [
-         null,
+         "websockets/interfaces/WebSocket/readyState/007.html?default",
          {}
         ],
         [
@@ -663329,9 +663351,9 @@
         ]
        ],
        "008.html": [
-        "5dcd362ce9a33393067d21b04c06e2927792a362",
+        "d085a7f4e30ad4a3626c2e4049678bfa83c4edf2",
         [
-         null,
+         "websockets/interfaces/WebSocket/readyState/008.html?default",
          {}
         ],
         [
@@ -663342,9 +663364,9 @@
       },
       "send": {
        "001.html": [
-        "e99ce7722f3859c1cacadeadd948591d6db10f5c",
+        "8abc655f5d8db0d0aa5cac091e40f3ae37e1a1fa",
         [
-         null,
+         "websockets/interfaces/WebSocket/send/001.html?default",
          {}
         ],
         [
@@ -663353,9 +663375,9 @@
         ]
        ],
        "002.html": [
-        "8a384df32db1ec4a6cd278fff9726c700a7523f6",
+        "a51c67762ca2cca91ef1391c59ae6dfdcb69ea5f",
         [
-         null,
+         "websockets/interfaces/WebSocket/send/002.html?default",
          {}
         ],
         [
@@ -663364,9 +663386,9 @@
         ]
        ],
        "003.html": [
-        "d5aa6c57667e8cea54d5704cfa9baf1958bd9081",
+        "069f24cde5a5d7172c5c5629aca2998266f36562",
         [
-         null,
+         "websockets/interfaces/WebSocket/send/003.html?default",
          {}
         ],
         [
@@ -663375,9 +663397,9 @@
         ]
        ],
        "004.html": [
-        "63fd83a7e9fa3acc2506be006756d68dcfbd5030",
+        "7125d1922a3588b64e461a3cb235566f468fcbeb",
         [
-         null,
+         "websockets/interfaces/WebSocket/send/004.html?default",
          {}
         ],
         [
@@ -663386,9 +663408,9 @@
         ]
        ],
        "005.html": [
-        "ddba5bf4a3eafad4648f628fc4d25c933c9045aa",
+        "5da4600771e60bdc511d9d414bb05ae12ad45d47",
         [
-         null,
+         "websockets/interfaces/WebSocket/send/005.html?default",
          {
           "timeout": "long"
          }
@@ -663401,9 +663423,9 @@
         ]
        ],
        "006.html": [
-        "a7c00b154f12898e2f2a022aa9c23434d8d595f1",
+        "4095c0ba6b9829085090e47d11d015fa247426f5",
         [
-         null,
+         "websockets/interfaces/WebSocket/send/006.html?default",
          {}
         ],
         [
@@ -663416,9 +663438,9 @@
         ]
        ],
        "007.html": [
-        "e2a8999e2fa6e3d025f26b6e856c2a0275bf9d01",
+        "6a5614257a3556246175591f25c51f639cb145fa",
         [
-         null,
+         "websockets/interfaces/WebSocket/send/007.html?default",
          {}
         ],
         [
@@ -663431,9 +663453,9 @@
         ]
        ],
        "008.html": [
-        "7b6125b8c8ef11e4bfbc3942d21a0133050f2b97",
+        "709c066aded5c2353cce8a6c39a8c09a9d3575c9",
         [
-         null,
+         "websockets/interfaces/WebSocket/send/008.html?default",
          {}
         ],
         [
@@ -663442,9 +663464,9 @@
         ]
        ],
        "009.html": [
-        "65d9270ecb36c82f83b2162332104546e6d3f754",
+        "57da896ea653ed29284f46903c3059d63765e397",
         [
-         null,
+         "websockets/interfaces/WebSocket/send/009.html?default",
          {}
         ],
         [
@@ -663457,9 +663479,9 @@
         ]
        ],
        "010.html": [
-        "4e4f5c57b825fe1d6d458a4222c57354b5c059da",
+        "4a008b610c56c4dfc8c4e60aa10a4e25c1221adf",
         [
-         null,
+         "websockets/interfaces/WebSocket/send/010.html?default",
          {
           "timeout": "long"
          }
@@ -663472,9 +663494,9 @@
         ]
        ],
        "011.html": [
-        "bcf0422a3180b2b82e4a9f7b237952719a28061b",
+        "5f63c4471caa63622f8fb567a122685b10bd8927",
         [
-         null,
+         "websockets/interfaces/WebSocket/send/011.html?default",
          {}
         ],
         [
@@ -663487,9 +663509,9 @@
         ]
        ],
        "012.html": [
-        "058ab9f6214bfbae8c831c5016340f819704ddf0",
+        "9876c7bdd32963a4579dfe88a7baae8c4c0cde84",
         [
-         null,
+         "websockets/interfaces/WebSocket/send/012.html?default",
          {}
         ],
         [
@@ -663504,9 +663526,9 @@
       },
       "url": {
        "001.html": [
-        "76f68b9093348f7735b907ced7479caa1162acf9",
+        "6c7306d0388aea603c7178174857d79d0ca26de3",
         [
-         null,
+         "websockets/interfaces/WebSocket/url/001.html?default",
          {}
         ],
         [
@@ -663515,9 +663537,9 @@
         ]
        ],
        "002.html": [
-        "b7e74eecea9a283207891b055554e81d34dc6413",
+        "e1cc6d0c01390a598e061f1c741b54200511edc5",
         [
-         null,
+         "websockets/interfaces/WebSocket/url/002.html?default",
          {}
         ],
         [
@@ -663526,9 +663548,9 @@
         ]
        ],
        "003.html": [
-        "5a98b50f55b790e48e96bde9c097c7c7f31327fe",
+        "aaae33a4ccacd1529f8f28d122e2630bbf581e6a",
         [
-         null,
+         "websockets/interfaces/WebSocket/url/003.html?default",
          {}
         ],
         [
@@ -663537,9 +663559,9 @@
         ]
        ],
        "004.html": [
-        "a3c90c73d9104311f7d3b8af96f8c44e7fb8e910",
+        "7db5e1e425436922c86543dc782f221342fdfc99",
         [
-         null,
+         "websockets/interfaces/WebSocket/url/004.html?default",
          {}
         ],
         [
@@ -663548,9 +663570,9 @@
         ]
        ],
        "005.html": [
-        "f897b88de0d8ec99fc382b7fb68b1d0fbc0aba57",
+        "00a5d9002465451dc7e50f4b00033f6f89941ffb",
         [
-         null,
+         "websockets/interfaces/WebSocket/url/005.html?default",
          {}
         ],
         [
@@ -663559,9 +663581,9 @@
         ]
        ],
        "006.html": [
-        "8c4e29aa83645b059451ebcf3d6c0841a400c8d4",
+        "6e837704051e42f27017cbaeeb65ba865da3559c",
         [
-         null,
+         "websockets/interfaces/WebSocket/url/006.html?default",
          {}
         ],
         [
@@ -663570,9 +663592,9 @@
         ]
        ],
        "resolve.html": [
-        "0526872d56f836e62e4ab61cc5f1b2ef7343648e",
+        "24520738274fe945965d96b053720cfffd0a36a9",
         [
-         null,
+         "websockets/interfaces/WebSocket/url/resolve.html?default",
          {}
         ],
         [
@@ -663585,9 +663607,9 @@
     },
     "keeping-connection-open": {
      "001.html": [
-      "a5d7207dec4bf07aef054284a3453f97c3b4f756",
+      "ab5bd1a54014ae6fb2d196db5890b9d320f558d4",
       [
-       null,
+       "websockets/keeping-connection-open/001.html?default",
        {
         "timeout": "long"
        }
@@ -663689,9 +663711,9 @@
     },
     "opening-handshake": {
      "001.html": [
-      "cbc0355e2bd6c1a42e1eb54b183f7d5edfaf672c",
+      "d8585d833ba40a8d7a7b7d75fa4dd0fbf215d32a",
       [
-       null,
+       "websockets/opening-handshake/001.html?default",
        {}
       ],
       [
@@ -663704,9 +663726,9 @@
       ]
      ],
      "002.html": [
-      "27b85602d44da1d2e33b2b8a3f0e4df07280850c",
+      "00d8dccaeeeed332ca1d61da39483253df2ab047",
       [
-       null,
+       "websockets/opening-handshake/002.html?default",
        {
         "timeout": "long"
        }
@@ -663732,9 +663754,9 @@
       ]
      ],
      "003.html": [
-      "f21219f5b5abca260e12a96907ea9463b255c4fb",
+      "1fc7535d5035f59f4c1f9d7158bbde6c3f7ce93b",
       [
-       null,
+       "websockets/opening-handshake/003.html?default",
        {
         "timeout": "long"
        }
@@ -663747,9 +663769,9 @@
       ]
      ],
      "005.html": [
-      "219760c51898e0d0f56ca42b6cf8725c34db14c2",
+      "dcbd8dfebb5f10ff4d92d5d6ea891aec3f78c9dd",
       [
-       null,
+       "websockets/opening-handshake/005.html?default",
        {}
       ],
       [
@@ -663784,9 +663806,9 @@
      ]
     ],
     "remove-own-iframe-during-onerror.window.js": [
-     "c3d5235e7c573706fbf2ae19083b1c7ae0b6da71",
+     "aa1cf6028f211bb631a55bd50927457915ea2f98",
      [
-      "websockets/remove-own-iframe-during-onerror.window.html",
+      "websockets/remove-own-iframe-during-onerror.window.html?default",
       {
        "script_metadata": [
         [
@@ -663799,7 +663821,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -663827,7 +663849,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -663855,7 +663877,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -663872,9 +663894,9 @@
     ],
     "security": {
      "001.html": [
-      "106c5dca6290e8fecdc258b17c39eb172f2e7153",
+      "a34ae3963933a3591f183195bebc9a24eb8f912e",
       [
-       null,
+       "websockets/security/001.html?default",
        {}
       ],
       [
@@ -663883,9 +663905,9 @@
       ]
      ],
      "002.html": [
-      "402af947c50d80831487ecb0300f65f3fd5b94c5",
+      "3286cca980f5f00729f92cd505a9239ffe6c231a",
       [
-       null,
+       "websockets/security/002.html?default",
        {}
       ],
       [
@@ -663895,9 +663917,9 @@
      ]
     },
     "send-many-64K-messages-with-backpressure.any.js": [
-     "e93231f2df9e491f4a98d36cf21306f7bba12283",
+     "78c244b262c8871ff6d20c31eeb245adf40b4bce",
      [
-      "websockets/send-many-64K-messages-with-backpressure.any.html",
+      "websockets/send-many-64K-messages-with-backpressure.any.html?default",
       {
        "script_metadata": [
         [
@@ -663914,7 +663936,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -663946,7 +663968,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -663978,7 +664000,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -663993,7 +664015,7 @@
       }
      ],
      [
-      "websockets/send-many-64K-messages-with-backpressure.any.serviceworker.html",
+      "websockets/send-many-64K-messages-with-backpressure.any.serviceworker.html?default",
       {
        "script_metadata": [
         [
@@ -664010,7 +664032,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -664042,7 +664064,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -664074,7 +664096,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -664089,7 +664111,7 @@
       }
      ],
      [
-      "websockets/send-many-64K-messages-with-backpressure.any.sharedworker.html",
+      "websockets/send-many-64K-messages-with-backpressure.any.sharedworker.html?default",
       {
        "script_metadata": [
         [
@@ -664106,7 +664128,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -664138,7 +664160,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -664170,7 +664192,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -664185,7 +664207,7 @@
       }
      ],
      [
-      "websockets/send-many-64K-messages-with-backpressure.any.worker.html",
+      "websockets/send-many-64K-messages-with-backpressure.any.worker.html?default",
       {
        "script_metadata": [
         [
@@ -664202,7 +664224,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -664234,7 +664256,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -664266,7 +664288,7 @@
         ],
         [
          "variant",
-         ""
+         "?default"
         ],
         [
          "variant",
@@ -665494,9 +665516,9 @@
     },
     "unload-a-document": {
      "001.html": [
-      "e7cc60d593baa11155aa34dc4a162ad41d2e12cf",
+      "28ce9c4614b38a2aed227bdbcc40b84cedcb5cb9",
       [
-       null,
+       "websockets/unload-a-document/001.html?default",
        {}
       ],
       [
@@ -665509,9 +665531,9 @@
       ]
      ],
      "002.html": [
-      "013f5266bf919a5a13a2be69cd06037e45cf4554",
+      "f79b3b7297668a16eb166b039cb0b7d20bba61e3",
       [
-       null,
+       "websockets/unload-a-document/002.html?default",
        {
         "timeout": "long"
        }
@@ -665546,9 +665568,9 @@
       ]
      ],
      "005.html": [
-      "fc4b02cbb298baf9242cace3b1ea27db10711466",
+      "1abb1b552f37a10615a4db552510b68038fa23c6",
       [
-       null,
+       "websockets/unload-a-document/005.html?default",
        {
         "timeout": "long"
        }
