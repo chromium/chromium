@@ -93,11 +93,11 @@ TEST(WebAuthenticationJSONConversionTest,
           device::UserVerificationRequirement::kRequired),
       device::AttestationConveyancePreference::kDirect,
       /*hmac_create_secret=*/true,
-      /*prf_enable=*/false, blink::mojom::ProtectionPolicy::UV_REQUIRED,
+      /*prf_enable=*/true, blink::mojom::ProtectionPolicy::UV_REQUIRED,
       /*enforce_protection_policy=*/true,
       /*appid_exclude=*/kAppId,
       /*cred_props=*/true, device::LargeBlobSupport::kRequired,
-      /*is_payment_credential_creation=*/false,
+      /*is_payment_credential_creation=*/true,
       /*cred_blob=*/ToByteVector("test cred blob"),
       /*min_pin_length_requested=*/true,
       blink::mojom::RemoteDesktopClientOverride::New(
@@ -112,11 +112,18 @@ TEST(WebAuthenticationJSONConversionTest,
   ASSERT_TRUE(serializer.Serialize(value));
   EXPECT_EQ(
       json,
-      R"({"attestation":"direct","authenticatorSelection":{"authenticatorAttachment":"platform","residentKey":"required","userVerification":"required"},"challenge":"dGVzdCBjaGFsbGVuZ2U","excludeCredentials":[{"id":"FBUW","transports":["usb"],"type":"public-key"},{"id":"Hh8g","type":"public-key"}],"extensions":{"appIdExclude":"https://example.test/appid.json","credBlob":"dGVzdCBjcmVkIGJsb2I","credProps":true,"credentialProtectionPolicy":"userVerificationRequired","enforceCredentialProtectionPolicy":true,"hmacCreateSecret":true,"largeBlob":{"support":"required"},"minPinLength":true,"remoteDesktopClientOverride":{"origin":"https://login.example.test","sameOriginWithAncestors":true}},"pubKeyCredParams":[{"alg":-7,"type":"public-key"},{"alg":-257,"type":"public-key"}],"rp":{"id":"example.test","name":"Example LLC"},"user":{"displayName":"Example User","id":"dGVzdCB1c2VyIGlk","name":"user@example.test"}})");
+      R"({"attestation":"direct","authenticatorSelection":{"authenticatorAttachment":"platform","residentKey":"required","userVerification":"required"},"challenge":"dGVzdCBjaGFsbGVuZ2U","excludeCredentials":[{"id":"FBUW","transports":["usb"],"type":"public-key"},{"id":"Hh8g","type":"public-key"}],"extensions":{"appIdExclude":"https://example.test/appid.json","credBlob":"dGVzdCBjcmVkIGJsb2I","credProps":true,"credentialProtectionPolicy":"userVerificationRequired","enforceCredentialProtectionPolicy":true,"hmacCreateSecret":true,"largeBlob":{"support":"required"},"minPinLength":true,"payment":{"isPayment":true},"prf":{},"remoteDesktopClientOverride":{"origin":"https://login.example.test","sameOriginWithAncestors":true}},"pubKeyCredParams":[{"alg":-7,"type":"public-key"},{"alg":-257,"type":"public-key"}],"rp":{"id":"example.test","name":"Example LLC"},"user":{"displayName":"Example User","id":"dGVzdCB1c2VyIGlk","name":"user@example.test"}})");
 }
 
 TEST(WebAuthenticationJSONConversionTest,
      PublicKeyCredentialRequestOptionsToValue) {
+  std::vector<blink::mojom::PRFValuesPtr> prf_values;
+  prf_values.emplace_back(blink::mojom::PRFValues::New(
+      absl::nullopt, std::vector<uint8_t>({1, 2, 3, 4}), absl::nullopt));
+  prf_values.emplace_back(blink::mojom::PRFValues::New(
+      std::vector<uint8_t>({1, 2, 3}), std::vector<uint8_t>({4, 5, 6}),
+      std::vector<uint8_t>({7, 8, 9})));
+
   // Exercise all supported fields.
   auto options = PublicKeyCredentialRequestOptions::New(
       /*is_conditional=*/false, kChallenge, kTimeout, kRpId,
@@ -129,7 +136,7 @@ TEST(WebAuthenticationJSONConversionTest,
 #if BUILDFLAG(IS_ANDROID)
           /*user_verification_methods=*/false,
 #endif
-          /*prf=*/false, std::vector<blink::mojom::PRFValuesPtr>(),
+          /*prf=*/true, std::move(prf_values),
           /*prf_inputs_hashed=*/false,
           /*large_blob_read=*/true,
           /*large_blob_write=*/std::vector<uint8_t>{8, 9, 10},
@@ -146,7 +153,7 @@ TEST(WebAuthenticationJSONConversionTest,
   ASSERT_TRUE(serializer.Serialize(value));
   EXPECT_EQ(
       json,
-      R"({"allowCredentials":[{"id":"FBUW","transports":["usb"],"type":"public-key"},{"id":"Hh8g","type":"public-key"}],"challenge":"dGVzdCBjaGFsbGVuZ2U","extensions":{"appid":"https://example.test/appid.json","cableAuthentication":[{"authenticatorEid":"AAAAAAAAAAAAAAAAAAAAAA","clientEid":"AAAAAAAAAAAAAAAAAAAAAA","sessionPreKey":"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA","version":1}],"getCredBlob":true,"largeBlob":{"read":true,"write":"CAkK"},"remoteDesktopClientOverride":{"origin":"https://login.example.test","sameOriginWithAncestors":true}},"rpId":"example.test","userVerification":"required"})");
+      R"({"allowCredentials":[{"id":"FBUW","transports":["usb"],"type":"public-key"},{"id":"Hh8g","type":"public-key"}],"challenge":"dGVzdCBjaGFsbGVuZ2U","extensions":{"appid":"https://example.test/appid.json","cableAuthentication":[{"authenticatorEid":"AAAAAAAAAAAAAAAAAAAAAA","clientEid":"AAAAAAAAAAAAAAAAAAAAAA","sessionPreKey":"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA","version":1}],"getCredBlob":true,"largeBlob":{"read":true,"write":"CAkK"},"prf":{"eval":{"first":"AQIDBA"},"evalByCredential":{"AQID":{"first":"BAUG","second":"BwgJ"}}},"remoteDesktopClientOverride":{"origin":"https://login.example.test","sameOriginWithAncestors":true}},"rpId":"example.test","userVerification":"required"})");
 }
 
 TEST(WebAuthenticationJSONConversionTest,

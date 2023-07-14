@@ -377,8 +377,6 @@ base::Value ToValue(
     extensions.Set("largeBlob", std::move(large_blob_value));
   }
 
-  DCHECK(!options->is_payment_credential_creation);
-
   if (options->cred_blob) {
     extensions.Set("credBlob", Base64UrlEncode(*options->cred_blob));
   }
@@ -392,13 +390,34 @@ base::Value ToValue(
                    ToValue(*options->remote_desktop_client_override));
   }
 
-  DCHECK(!options->prf_enable);
+  if (options->prf_enable) {
+    base::Value::Dict prf_value;
+    extensions.Set("prf", std::move(prf_value));
+  }
+
+  // On Android, requests with the payments extension should not be forwarded to
+  // CredMan and so shouldn't need to be serialized to JSON. But we might end
+  // up sending such requests to an enclave.
+  if (options->is_payment_credential_creation) {
+    base::Value::Dict payments_value;
+    payments_value.Set("isPayment", true);
+    extensions.Set("payment", std::move(payments_value));
+  }
 
   if (!extensions.empty()) {
     value.Set("extensions", std::move(extensions));
   }
 
   return base::Value(std::move(value));
+}
+
+base::Value ToValue(const blink::mojom::PRFValuesPtr& prf_input) {
+  base::Value::Dict prf_value;
+  prf_value.Set("first", Base64UrlEncode(prf_input->first));
+  if (prf_input->second) {
+    prf_value.Set("second", Base64UrlEncode(*prf_input->second));
+  }
+  return base::Value(std::move(prf_value));
 }
 
 base::Value ToValue(
@@ -455,7 +474,33 @@ base::Value ToValue(
         ToValue(*options->extensions->remote_desktop_client_override));
   }
 
-  DCHECK(!options->extensions->prf);
+  if (!options->extensions->prf_inputs.empty()) {
+    // Hashed PRF inputs are only used when Chrome is acting as a caBLE
+    // authenticator on Android. We can't convert the request to JSON in that
+    // context and should never try.
+    CHECK(!options->extensions->prf_inputs_hashed);
+
+    base::Value::Dict prf_value;
+    base::Value::Dict eval_by_cred;
+    bool is_first = true;
+    for (const blink::mojom::PRFValuesPtr& prf_input :
+         options->extensions->prf_inputs) {
+      // The first element of `prf_inputs` may be a default, which applies when
+      // no specific credential ID matches. All other values must specify the
+      // credential ID that they apply to.
+      if (!prf_input->id) {
+        CHECK(is_first);
+        prf_value.Set("eval", ToValue(prf_input));
+      } else {
+        eval_by_cred.Set(Base64UrlEncode(*prf_input->id), ToValue(prf_input));
+      }
+      is_first = false;
+    }
+    if (!eval_by_cred.empty()) {
+      prf_value.Set("evalByCredential", std::move(eval_by_cred));
+    }
+    extensions.Set("prf", std::move(prf_value));
+  }
 
   if (!extensions.empty()) {
     value.Set("extensions", std::move(extensions));
