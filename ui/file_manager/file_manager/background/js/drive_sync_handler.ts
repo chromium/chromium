@@ -328,6 +328,7 @@ export class DriveSyncHandlerImpl extends EventTarget {
       ...METADATA_KEYS,
       chrome.fileManagerPrivate.EntryPropertyName.AVAILABLE_OFFLINE,
       chrome.fileManagerPrivate.EntryPropertyName.PINNED,
+      chrome.fileManagerPrivate.EntryPropertyName.CAN_PIN,
     ]);
   }
 

@@ -1000,6 +1000,7 @@ filelist.updateCacheItemInlineStatus =
       const metadata = metadataModel.getCache([entry], [
         'availableOffline',
         'pinned',
+        'canPin',
         'syncStatus',
         'progress',
         'syncCompletedTime',

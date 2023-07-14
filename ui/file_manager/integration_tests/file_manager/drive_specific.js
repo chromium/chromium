@@ -1675,6 +1675,14 @@ testcase.driveItemsOutOfViewportShouldUpdateTheirSyncStatus = async () => {
   await remoteCall.waitAndClickElement(
       appId, ['.table-header-cell:nth-of-type(1)']);
 
+  // Update the second file's metadata to "not pinnable" and wait for the
+  // corresponding icon to be displayed.
+  const secondFileName = entries[1].nameText;
+  await sendTestMessage(
+      {name: 'setCanPin', path: `/root/${secondFileName}`, canPin: false});
+  await remoteCall.waitForElement(
+      appId, `#file-list [file-name="${secondFileName}"].cant-pin`);
+
   // Wait for the first entry to appear in the file list.
   const firstFileName = entries[0].nameText;
   await remoteCall.waitForElement(
@@ -1716,6 +1724,15 @@ testcase.driveItemsOutOfViewportShouldUpdateTheirSyncStatus = async () => {
   chrome.test.assertEq(
       Number(lastFileInlineStatus.attributes['progress']), 0.5);
 
+  // Send a "completed" sync progress event for the second last file and wait
+  // for its effect.
+  const secondLastFileName = entries[entries.length - 2].nameText;
+  await sendTestMessage({
+    name: 'setDriveSyncProgress',
+    path: `/root/${secondLastFileName}`,
+    progress: 100,
+  });
+
   // Scroll back up to the first element.
   await remoteCall.callRemoteTestUtil('setScrollTop', appId, ['#file-list', 0]);
 
@@ -1725,6 +1742,10 @@ testcase.driveItemsOutOfViewportShouldUpdateTheirSyncStatus = async () => {
       await remoteCall.waitForElement(appId, inlineSyncSelector(firstFileName));
   chrome.test.assertEq(
       Number(firstFileInlineStatus.attributes['progress']), 0.5);
+
+  // Ensure the second file is still displayed as "not pinnable".
+  await remoteCall.waitForElement(
+      appId, `#file-list [file-name="${secondFileName}"].cant-pin`);
 
   // Switch to grid view.
   await remoteCall.waitAndClickElement(appId, '#view-button');
