@@ -53,6 +53,10 @@ source_set("browser_tests") {
     sources += [ "extensions/extensions_browsertest.cc" ]
   }
 
+  if (enable_webui_tab_strip) {
+    sources += [ "tab_strip/tab_strip_browsertest.cc" ]
+  }
+
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
   deps = [
@@ -86,6 +90,10 @@ source_set("interactive_ui_tests") {
     "tab_search/tab_search_focus_test.cc",
   ]
 
+  if (enable_webui_tab_strip) {
+    sources += [ "tab_strip/tab_strip_focus_test.cc" ]
+  }
+
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
   deps = [
@@ -111,10 +119,6 @@ if (include_js_tests) {
 
     if (enable_print_preview) {
       sources += [ "print_preview/print_preview_interactive_ui_tests.js" ]
-    }
-
-    if (enable_webui_tab_strip) {
-      sources += [ "tab_strip/tab_strip_interactive_ui_tests.js" ]
     }
 
     gen_include_files = [
@@ -258,9 +262,6 @@ if (include_js_tests) {
     }
     if (enable_print_preview) {
       sources += [ "print_preview/print_preview_ui_browsertest.js" ]
-    }
-    if (enable_webui_tab_strip) {
-      sources += [ "tab_strip/tab_strip_browsertest.js" ]
     }
     if (is_cfm) {
       sources += [
