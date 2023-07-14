@@ -422,8 +422,9 @@ void V4L2VideoDecodeAccelerator::AssignPictureBuffersTask(
     memory = V4L2_MEMORY_MMAP;
   }
 
-  if (output_queue_->AllocateBuffers(buffers.size(), memory,
-                                     /*incoherent=*/false) == 0) {
+  if (output_queue_->AllocateBuffers(
+          buffers.size(), memory,
+          base::FeatureList::IsEnabled(media::kPreferSoftwareMT21)) == 0) {
     LOG(ERROR) << "Failed to request buffers!";
     NOTIFY_ERROR(PLATFORM_FAILURE);
     return;
