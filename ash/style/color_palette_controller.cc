@@ -435,7 +435,7 @@ class ColorPaletteControllerImpl : public ColorPaletteController,
     const auto wallpaper_color = GetUserWallpaperColor();
     if (!wallpaper_color.has_value()) {
       DVLOG(1) << "Failed to get wallpaper color";
-      return default_color;
+      return ColorUtil::AdjustKMeansColor(default_color, dark_mode);
     }
 
     if (chromeos::features::IsJellyEnabled()) {
