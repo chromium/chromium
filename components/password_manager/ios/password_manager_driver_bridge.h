@@ -32,6 +32,8 @@ class GURL;
                   forSecurityOrigin:(const GURL&)origin;
 
 // Informs delegate that there are no saved credentials for the current page.
+// The frame is used to get the AccountSelectFillData and reset the credentials
+// cache and also to detach the bottom sheet listener.
 - (void)onNoSavedCredentialsWithFrame:(web::WebFrame*)frame;
 
 // Informs delegate of form for password generation found.
