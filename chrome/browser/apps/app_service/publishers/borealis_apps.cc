@@ -159,8 +159,6 @@ void BorealisApps::SetUpSpecialApps(bool allowed) {
   initial_steam_app->show_in_management = false;
   initial_steam_app->allow_uninstall = false;
   AppPublisher::Publish(std::move(initial_steam_app));
-
-  // TODO(crbug.com/1253250): Add other fields for the App struct.
 }
 
 bool BorealisApps::CouldBeAllowed() const {

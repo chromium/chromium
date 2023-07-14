@@ -184,8 +184,6 @@ void CrostiniApps::CreateAppOverrides(
 
   app->allow_uninstall =
       crostini::IsUninstallable(profile(), registration.app_id());
-
-  // TODO(crbug.com/1253250): Add other fields for the App struct.
 }
 
 }  // namespace apps

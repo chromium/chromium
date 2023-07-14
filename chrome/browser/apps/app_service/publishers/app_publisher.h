@@ -36,8 +36,6 @@ using PromiseAppPtr = std::unique_ptr<PromiseApp>;
 
 // AppPublisher parent class (in the App Service sense) for all app publishers.
 // See components/services/app_service/README.md.
-//
-// TODO(crbug.com/1253250): Add other mojom publisher functions.
 class AppPublisher {
  public:
   explicit AppPublisher(AppServiceProxy* proxy);

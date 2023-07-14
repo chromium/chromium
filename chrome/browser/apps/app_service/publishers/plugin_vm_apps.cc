@@ -101,8 +101,6 @@ apps::AppPtr CreatePluginVmApp(Profile* profile, bool allowed) {
   // to uninstall and free up space.
   app->show_in_management =
       plugin_vm::PluginVmFeatures::Get()->IsConfigured(profile);
-
-  // TODO(crbug.com/1253250): Add other fields for the App struct.
   return app;
 }
 
@@ -369,8 +367,6 @@ AppPtr PluginVmApps::CreateApp(
   app->allow_uninstall = false;
   app->handles_intents = true;
   app->intent_filters = CreateIntentFilterForPluginVm(registration);
-
-  // TODO(crbug.com/1253250): Add other fields for the App struct.
   return app;
 }
 
