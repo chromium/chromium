@@ -393,6 +393,33 @@
         "motionmark_anim_suits_125": {
             "DEFAULT": "rendering_mobile_f7f3ea1d6e.wprgo"
         },
+        "motionmark_fixed_2_seconds_canvas_arcs": {
+            "DEFAULT": "rendering_common_c95200764f.wprgo"
+        },
+        "motionmark_fixed_2_seconds_canvas_lines": {
+            "DEFAULT": "rendering_common_c95200764f.wprgo"
+        },
+        "motionmark_fixed_2_seconds_composite": {
+            "DEFAULT": "rendering_common_c95200764f.wprgo"
+        },
+        "motionmark_fixed_2_seconds_design": {
+            "DEFAULT": "rendering_common_c95200764f.wprgo"
+        },
+        "motionmark_fixed_2_seconds_images": {
+            "DEFAULT": "rendering_common_c95200764f.wprgo"
+        },
+        "motionmark_fixed_2_seconds_leaves": {
+            "DEFAULT": "rendering_common_c95200764f.wprgo"
+        },
+        "motionmark_fixed_2_seconds_multiply": {
+            "DEFAULT": "rendering_common_c95200764f.wprgo"
+        },
+        "motionmark_fixed_2_seconds_paths": {
+            "DEFAULT": "rendering_common_c95200764f.wprgo"
+        },
+        "motionmark_fixed_2_seconds_suits": {
+            "DEFAULT": "rendering_common_c95200764f.wprgo"
+        },
         "motionmark_html_composited_transforms_125": {
             "DEFAULT": "rendering_mobile_f7f3ea1d6e.wprgo"
         },

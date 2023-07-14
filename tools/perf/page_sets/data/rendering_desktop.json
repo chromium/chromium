@@ -252,33 +252,6 @@
         "motion_mark_focus": {
             "DEFAULT": "rendering_desktop_002.wprgo"
         },
-        "motionmark_ramp_canvas_arcs": {
-            "DEFAULT": "rendering_common_c95200764f.wprgo"
-        },
-        "motionmark_ramp_canvas_lines": {
-            "DEFAULT": "rendering_common_c95200764f.wprgo"
-        },
-        "motionmark_ramp_composite": {
-            "DEFAULT": "rendering_common_c95200764f.wprgo"
-        },
-        "motionmark_ramp_design": {
-            "DEFAULT": "rendering_common_c95200764f.wprgo"
-        },
-        "motionmark_ramp_images": {
-            "DEFAULT": "rendering_common_c95200764f.wprgo"
-        },
-        "motionmark_ramp_leaves": {
-            "DEFAULT": "rendering_common_c95200764f.wprgo"
-        },
-        "motionmark_ramp_multiply": {
-            "DEFAULT": "rendering_common_c95200764f.wprgo"
-        },
-        "motionmark_ramp_paths": {
-            "DEFAULT": "rendering_common_c95200764f.wprgo"
-        },
-        "motionmark_ramp_suits": {
-            "DEFAULT": "rendering_common_c95200764f.wprgo"
-        },
         "motionmark_fixed_2_seconds_canvas_arcs": {
             "DEFAULT": "rendering_common_c95200764f.wprgo"
         },
@@ -304,6 +277,33 @@
             "DEFAULT": "rendering_common_c95200764f.wprgo"
         },
         "motionmark_fixed_2_seconds_suits": {
+            "DEFAULT": "rendering_common_c95200764f.wprgo"
+        },
+        "motionmark_ramp_canvas_arcs": {
+            "DEFAULT": "rendering_common_c95200764f.wprgo"
+        },
+        "motionmark_ramp_canvas_lines": {
+            "DEFAULT": "rendering_common_c95200764f.wprgo"
+        },
+        "motionmark_ramp_composite": {
+            "DEFAULT": "rendering_common_c95200764f.wprgo"
+        },
+        "motionmark_ramp_design": {
+            "DEFAULT": "rendering_common_c95200764f.wprgo"
+        },
+        "motionmark_ramp_images": {
+            "DEFAULT": "rendering_common_c95200764f.wprgo"
+        },
+        "motionmark_ramp_leaves": {
+            "DEFAULT": "rendering_common_c95200764f.wprgo"
+        },
+        "motionmark_ramp_multiply": {
+            "DEFAULT": "rendering_common_c95200764f.wprgo"
+        },
+        "motionmark_ramp_paths": {
+            "DEFAULT": "rendering_common_c95200764f.wprgo"
+        },
+        "motionmark_ramp_suits": {
             "DEFAULT": "rendering_common_c95200764f.wprgo"
         },
         "new_tilings": {
