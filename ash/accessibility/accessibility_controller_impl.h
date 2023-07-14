@@ -423,6 +423,7 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
       int point_scan_speed_dips_per_second) override;
   void SetDictationActive(bool is_active) override;
   void ToggleDictationFromSource(DictationToggleSource source) override;
+  void EnableOrToggleDictationFromSource(DictationToggleSource source) override;
   void ShowDictationLanguageUpgradedNudge(
       const std::string& dictation_locale,
       const std::string& application_locale) override;

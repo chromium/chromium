@@ -1776,7 +1776,7 @@ TEST_F(AshAcceleratorConfigurationTest,
       {/*trigger_on_press=*/true, ui::VKEY_C, ui::EF_COMMAND_DOWN,
        AcceleratorAction::kToggleCalendar},
       {/*trigger_on_press=*/true, ui::VKEY_A, ui::EF_COMMAND_DOWN,
-       AcceleratorAction::kToggleDictation},
+       AcceleratorAction::kEnableOrToggleDictation},
   };
 
   config_->Initialize(test_data);
@@ -1821,16 +1821,16 @@ TEST_F(AshAcceleratorConfigurationTest,
       {/*trigger_on_press=*/true, ui::VKEY_SPACE, ui::EF_CONTROL_DOWN,
        AcceleratorAction::kSwitchToLastUsedIme},
       {/*trigger_on_press=*/true, ui::VKEY_A, ui::EF_COMMAND_DOWN,
-       AcceleratorAction::kToggleDictation},
+       AcceleratorAction::kEnableOrToggleDictation},
   };
   // `AcceleratorAction::kSwitchToLastUsedIme_data` has all the available
   // accelerators.
   ExpectAllAcceleratorsEqual(expected_test_data, config_->GetAllAccelerators());
 
-  // Now have `AcceleratorAction::kToggleDictation` add Search + C, removing it
-  // from `AcceleratorAction::kSwitchToLastUsedIme`.
-  result = config_->AddUserAccelerator(AcceleratorAction::kToggleDictation,
-                                       new_accelerator);
+  // Now have `AcceleratorAction::kEnableOrToggleDictation` add Search + C,
+  // removing it from `AcceleratorAction::kSwitchToLastUsedIme`.
+  result = config_->AddUserAccelerator(
+      AcceleratorAction::kEnableOrToggleDictation, new_accelerator);
   EXPECT_EQ(AcceleratorConfigResult::kSuccess, result);
   // Expect just one entry, since `AcceleratorAction::kSwitchToLastUsedIme` no
   // longer holds the Search + C accelerator.
@@ -1839,7 +1839,7 @@ TEST_F(AshAcceleratorConfigurationTest,
 
   const base::Value::List* toggle_dictation_overrides =
       updated_overrides_2.FindList(
-          base::NumberToString(AcceleratorAction::kToggleDictation));
+          base::NumberToString(AcceleratorAction::kEnableOrToggleDictation));
   // Confirm that prefs are stored correctly.
   EXPECT_EQ(1u, toggle_dictation_overrides->size());
   AcceleratorModificationData toggle_dictation_data =
@@ -1853,9 +1853,9 @@ TEST_F(AshAcceleratorConfigurationTest,
 
   const AcceleratorData expected_test_data_2[] = {
       {/*trigger_on_press=*/true, ui::VKEY_C, ui::EF_COMMAND_DOWN,
-       AcceleratorAction::kToggleDictation},
+       AcceleratorAction::kEnableOrToggleDictation},
       {/*trigger_on_press=*/true, ui::VKEY_A, ui::EF_COMMAND_DOWN,
-       AcceleratorAction::kToggleDictation},
+       AcceleratorAction::kEnableOrToggleDictation},
       {/*trigger_on_press=*/true, ui::VKEY_SPACE, ui::EF_CONTROL_DOWN,
        AcceleratorAction::kSwitchToLastUsedIme},
   };
@@ -1879,7 +1879,7 @@ TEST_F(AshAcceleratorConfigurationTest,
   EXPECT_EQ(1u, relogin_overrides.size());
 
   // Verify pref overrides were applied correctly.
-  EXPECT_EQ(AcceleratorAction::kToggleDictation,
+  EXPECT_EQ(AcceleratorAction::kEnableOrToggleDictation,
             *config_->FindAcceleratorAction(new_accelerator));
 
   // `AcceleratorAction::kSwitchToLastUsedIme_data` has all the available

@@ -627,6 +627,15 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="Accel_Enable_Dictation">
+  <owner>akihiroota@chromium.org</owner>
+  <owner>ash/accessibility/OWNERS</owner>
+  <description>
+    User enables Dictation by pressing the Dictation key (on supported keboards)
+    or presses the Search + D keyboard shortcut.
+  </description>
+</action>
+
 <action name="Accel_Exit_First_Q">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>

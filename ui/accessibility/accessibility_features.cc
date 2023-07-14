@@ -181,6 +181,15 @@ bool IsAccessibilityChromeVoxPageMigrationEnabled() {
       ::features::kAccessibilityChromeVoxPageMigration);
 }
 
+BASE_FEATURE(kAccessibilityDictationKeyboardImprovements,
+             "AccessibilityDictationKeyboardImprovements",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsAccessibilityDictationKeyboardImprovementsEnabled() {
+  return base::FeatureList::IsEnabled(
+      ::features::kAccessibilityDictationKeyboardImprovements);
+}
+
 BASE_FEATURE(kAccessibilitySelectToSpeakPrefsMigration,
              "AccessibilitySelectToSpeakPrefsMigration",
              base::FEATURE_DISABLED_BY_DEFAULT);

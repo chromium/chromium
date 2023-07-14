@@ -1793,6 +1793,26 @@ void AccessibilityControllerImpl::ToggleDictationFromSource(
   ToggleDictation();
 }
 
+void AccessibilityControllerImpl::EnableOrToggleDictationFromSource(
+    DictationToggleSource source) {
+  if (::features::IsAccessibilityDictationKeyboardImprovementsEnabled()) {
+    if (dictation().enabled()) {
+      ToggleDictationFromSource(source);
+    } else if (source == DictationToggleSource::kKeyboard) {
+      // Only allow direct-enabling of Dictation from the keyboard.
+      base::RecordAction(base::UserMetricsAction("Accel_Enable_Dictation"));
+      dictation().SetEnabled(true);
+    }
+    return;
+  }
+
+  if (dictation().enabled()) {
+    // If Dictation keyboard improvements aren't enabled, then only allow
+    // Dictation to be toggled if Dictation is already enabled.
+    ToggleDictationFromSource(source);
+  }
+}
+
 void AccessibilityControllerImpl::ShowDictationLanguageUpgradedNudge(
     const std::string& dictation_locale,
     const std::string& application_locale) {

@@ -196,12 +196,12 @@ TEST_F(DictationButtonTrayTest, ActiveStateOnlyDuringDictation) {
   EXPECT_TRUE(GetTray()->GetEnabled());
 
   Shell::Get()->accelerator_controller()->PerformActionIfEnabled(
-      AcceleratorAction::kToggleDictation, {});
+      AcceleratorAction::kEnableOrToggleDictation, {});
   EXPECT_TRUE(controller->dictation_active());
   EXPECT_TRUE(GetTray()->is_active());
 
   Shell::Get()->accelerator_controller()->PerformActionIfEnabled(
-      AcceleratorAction::kToggleDictation, {});
+      AcceleratorAction::kEnableOrToggleDictation, {});
   EXPECT_FALSE(controller->dictation_active());
   EXPECT_FALSE(GetTray()->is_active());
 }
@@ -233,7 +233,7 @@ TEST_F(DictationButtonTrayTest, ImageIcons) {
                                          *off_icon.bitmap()));
 
   Shell::Get()->accelerator_controller()->PerformActionIfEnabled(
-      AcceleratorAction::kToggleDictation, {});
+      AcceleratorAction::kEnableOrToggleDictation, {});
 
   EXPECT_TRUE(gfx::test::AreBitmapsEqual(*view->GetImage().bitmap(),
                                          *on_icon.bitmap()));
@@ -250,7 +250,7 @@ TEST_F(DictationButtonTrayTest, DisabledWhenNoInputFocused) {
 
   // Action doesn't work because disabled.
   Shell::Get()->accelerator_controller()->PerformActionIfEnabled(
-      AcceleratorAction::kToggleDictation, {});
+      AcceleratorAction::kEnableOrToggleDictation, {});
   EXPECT_FALSE(controller->dictation_active());
   EXPECT_FALSE(tray->GetEnabled());
 

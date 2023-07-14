@@ -4213,8 +4213,8 @@
         <message name="IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_BROWSER_SEARCH" desc="The text read aloud by the screen reader describing the keyboard icon 'browser search'.">
           browser search
         </message>
-        <message name="IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_TOGGLE_DICTATION" desc="The text read aloud by the screen reader describing the keyboard icon 'toggle dictation'.">
-          toggle dictation
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_ENABLE_OR_TOGGLE_DICTATION" desc="The text read aloud by the screen reader describing the keyboard icon 'toggle dictation'." is_accessibility_with_no_ui="true">
+          enable or toggle dictation
         </message>
         <message name="IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_EMOJI_PICKER" desc="The text read aloud by the screen reader describing the keyboard icon 'emoji picker'.">
           emoji picker

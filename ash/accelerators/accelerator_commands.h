@@ -91,7 +91,7 @@ ASH_EXPORT bool CanSwapPrimaryDisplay();
 
 ASH_EXPORT bool CanToggleCalendar();
 
-ASH_EXPORT bool CanToggleDictation();
+ASH_EXPORT bool CanEnableOrToggleDictation();
 
 ASH_EXPORT bool CanToggleFloatingWindow();
 
@@ -317,8 +317,9 @@ ASH_EXPORT void ToggleCapsLock();
 // Toggles the clipboard history.
 ASH_EXPORT void ToggleClipboardHistory(bool is_plain_text_paste);
 
-// Turns the dictation on or off.
-ASH_EXPORT void ToggleDictation();
+// Enables Dictation if the feature is currently disabled. Toggles (either
+// starts or stops) Dictation if the feature is currently enabled.
+ASH_EXPORT void EnableOrToggleDictation();
 
 // Turns the docked magnifier on or off.
 ASH_EXPORT void ToggleDockedMagnifier();

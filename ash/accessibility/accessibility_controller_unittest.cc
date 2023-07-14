@@ -1360,6 +1360,124 @@ TEST_F(AccessibilityControllerTest,
             (*notifications.begin())->system_notification_warning_level());
 }
 
+// Verifies the behavior of EnableOrToggleDictation without the keyboard
+// improvements feature (current behavior).
+TEST_F(AccessibilityControllerTest, EnableOrToggleDictation) {
+  AccessibilityControllerImpl* controller =
+      Shell::Get()->accessibility_controller();
+  TestAccessibilityControllerClient client;
+  controller->SetClient(&client);
+  PrefService* prefs =
+      Shell::Get()->session_controller()->GetLastActiveUserPrefService();
+
+  // If Dictation is disabled, then EnableOrToggleDictation should do nothing.
+  prefs->SetBoolean(prefs::kDictationAcceleratorDialogHasBeenAccepted, false);
+  ASSERT_FALSE(controller->dictation().enabled());
+  ASSERT_FALSE(controller->dictation_active());
+  controller->EnableOrToggleDictationFromSource(
+      DictationToggleSource::kKeyboard);
+  ASSERT_FALSE(controller->dictation().enabled());
+  ASSERT_FALSE(controller->dictation_active());
+
+  prefs->SetBoolean(prefs::kDictationAcceleratorDialogHasBeenAccepted, true);
+  ASSERT_FALSE(controller->dictation().enabled());
+  ASSERT_FALSE(controller->dictation_active());
+  controller->EnableOrToggleDictationFromSource(
+      DictationToggleSource::kKeyboard);
+  ASSERT_FALSE(controller->dictation().enabled());
+  ASSERT_FALSE(controller->dictation_active());
+
+  // If Dictation is enabled, then EnableOrToggleDictation should toggle
+  // Dictation on/off.
+  ASSERT_TRUE(
+      prefs->GetBoolean(prefs::kDictationAcceleratorDialogHasBeenAccepted));
+  ASSERT_FALSE(controller->dictation_active());
+  controller->dictation().SetEnabled(true);
+  controller->EnableOrToggleDictationFromSource(
+      DictationToggleSource::kKeyboard);
+  ASSERT_TRUE(controller->dictation().enabled());
+  ASSERT_TRUE(controller->dictation_active());
+  controller->EnableOrToggleDictationFromSource(
+      DictationToggleSource::kKeyboard);
+  ASSERT_TRUE(controller->dictation().enabled());
+  ASSERT_FALSE(controller->dictation_active());
+}
+
+class AccessibilityControllerDictationKeyboardImprovementsTest
+    : public AshTestBase {
+ protected:
+  AccessibilityControllerDictationKeyboardImprovementsTest() = default;
+  AccessibilityControllerDictationKeyboardImprovementsTest(
+      const AccessibilityControllerDictationKeyboardImprovementsTest&) = delete;
+  AccessibilityControllerDictationKeyboardImprovementsTest& operator=(
+      const AccessibilityControllerDictationKeyboardImprovementsTest&) = delete;
+  ~AccessibilityControllerDictationKeyboardImprovementsTest() override =
+      default;
+
+  void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeature(
+        ::features::kAccessibilityDictationKeyboardImprovements);
+    AshTestBase::SetUp();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Verifies the behavior of EnableOrToggleDictation with the keyboard
+// improvements feature (new behavior).
+TEST_F(AccessibilityControllerDictationKeyboardImprovementsTest,
+       EnableOrToggleDictation) {
+  AccessibilityControllerImpl* controller =
+      Shell::Get()->accessibility_controller();
+  TestAccessibilityControllerClient client;
+  controller->SetClient(&client);
+  PrefService* prefs =
+      Shell::Get()->session_controller()->GetLastActiveUserPrefService();
+
+  // Dictation disabled.
+
+  prefs->SetBoolean(prefs::kDictationAcceleratorDialogHasBeenAccepted, false);
+  ASSERT_FALSE(controller->dictation().enabled());
+  ASSERT_FALSE(controller->dictation_active());
+  controller->EnableOrToggleDictationFromSource(
+      DictationToggleSource::kKeyboard);
+  // If the dialog hasn't been accepted yet, then pressing the Dictation key
+  // should enable Dictation and show the network dialog.
+  // AccessibilityController should update Dictation's enabled state, but
+  // Dictation should remain inactive. Logic for the Dictation network dialog
+  // isn't tested here since that logic lives in AccessibilityManager.
+  ASSERT_TRUE(controller->dictation().enabled());
+  ASSERT_FALSE(controller->dictation_active());
+
+  prefs->SetBoolean(prefs::kDictationAcceleratorDialogHasBeenAccepted, true);
+  controller->dictation().SetEnabled(false);
+  controller->SetDictationActive(false);
+  controller->EnableOrToggleDictationFromSource(
+      DictationToggleSource::kKeyboard);
+  // If the dialog has been accepted, then pressing the Dictation key should
+  // enable Dictation (Dictation should still remain inactive).
+  ASSERT_TRUE(controller->dictation().enabled());
+  ASSERT_FALSE(controller->dictation_active());
+
+  // Dictation enabled.
+
+  ASSERT_TRUE(
+      prefs->GetBoolean(prefs::kDictationAcceleratorDialogHasBeenAccepted));
+  ASSERT_FALSE(controller->dictation_active());
+  controller->dictation().SetEnabled(true);
+  controller->EnableOrToggleDictationFromSource(
+      DictationToggleSource::kKeyboard);
+  // If Dictation is already on, then pressing the Dictation key should toggle
+  // Dictation on/off.
+  ASSERT_TRUE(controller->dictation().enabled());
+  ASSERT_TRUE(controller->dictation_active());
+  controller->EnableOrToggleDictationFromSource(
+      DictationToggleSource::kKeyboard);
+  ASSERT_TRUE(controller->dictation().enabled());
+  ASSERT_FALSE(controller->dictation_active());
+}
+
 namespace {
 
 enum class TestUserLoginType {
