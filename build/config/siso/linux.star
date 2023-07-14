@@ -13,7 +13,7 @@ load("./nasm_linux.star", "nasm")
 load("./proto_linux.star", "proto")
 load("./remote_exec_wrapper.star", "remote_exec_wrapper")
 load("./reproxy_from_rewrapper.star", "reproxy_from_rewrapper")
-load("./reproxy_linux.star", "reproxy")
+load("./reproxy_from_remote.star", "reproxy_from_remote")
 load("./android.star", "android")
 
 __filegroups = {}
@@ -33,7 +33,6 @@ __handlers.update(nasm.handlers)
 __handlers.update(proto.handlers)
 __handlers.update(remote_exec_wrapper.handlers)
 __handlers.update(reproxy_from_rewrapper.handlers)
-__handlers.update(reproxy.handlers)
 
 def __disable_remote_b281663988(step_config):
     step_config["rules"].extend([
@@ -77,7 +76,15 @@ def __step_config(ctx, step_config):
     if reproxy_from_rewrapper.enabled(ctx):
         __disable_remote_b281663988(step_config)
         step_config = reproxy_from_rewrapper.step_config(ctx, step_config)
-        step_config = reproxy.step_config(ctx, step_config)
+        if config.get(ctx, "remote_to_reproxy"):
+            # Exclude mojo and clang. Already covered by reproxy_from_rewrapper.
+            # (Duplicate rules are not allowed, so it wouldn't work anyway.)
+            if android.enabled(ctx):
+                step_config = android.step_config(ctx, step_config)
+            step_config = nacl.step_config(ctx, step_config)
+            step_config = nasm.step_config(ctx, step_config)
+            step_config = proto.step_config(ctx, step_config)
+            step_config = reproxy_from_remote.step_config(ctx, step_config)
     elif remote_exec_wrapper.enabled(ctx):
         __disable_remote_b281663988(step_config)
         step_config = remote_exec_wrapper.step_config(ctx, step_config)
