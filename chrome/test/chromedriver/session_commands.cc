@@ -258,27 +258,6 @@ base::Value::Dict CreateCapabilities(Session* session,
   return caps;
 }
 
-Status CheckSessionCreated(Session* session) {
-  WebView* web_view = nullptr;
-  Status status = session->GetTargetWindow(&web_view);
-  if (status.IsError())
-    return Status(kSessionNotCreated, status);
-
-  base::Value::List args;
-  std::unique_ptr<base::Value> result(new base::Value(0));
-  status = web_view->CallFunction(session->GetCurrentFrameId(),
-                                  "function(s) { return 1; }", args, &result);
-  if (status.IsError())
-    return Status(kSessionNotCreated, status);
-
-  if (!result->is_int() || result->GetInt() != 1) {
-    return Status(kSessionNotCreated,
-                  "unexpected response from browser");
-  }
-
-  return Status(kOk);
-}
-
 Status InitSessionHelper(const InitSessionParams& bound_params,
                          Session* session,
                          const base::Value::Dict& params,
@@ -361,10 +340,6 @@ Status InitSessionHelper(const InitSessionParams& bound_params,
   } else {
     *value = std::make_unique<base::Value>(session->capabilities->Clone());
   }
-
-  status = CheckSessionCreated(session);
-  if (status.IsError())
-    return status;
 
   if (session->webSocketUrl) {
     WebView* web_view = nullptr;
