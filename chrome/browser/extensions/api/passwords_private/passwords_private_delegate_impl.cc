@@ -612,17 +612,14 @@ void PasswordsPrivateDelegateImpl::SetCredentials(
           CreatePasswordUiEntryFromCredentialUiEntry(std::move(credential)));
     }
   }
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kPasswordsGrouping)) {
-    for (CredentialUIEntry& credential :
-         saved_passwords_presenter_.GetBlockedSites()) {
-      api::passwords_private::ExceptionEntry current_exception_entry;
-      current_exception_entry.urls =
-          CreateUrlCollectionFromCredential(credential);
-      current_exception_entry.id =
-          credential_id_generator_.GenerateId(std::move(credential));
-      current_exceptions_.push_back(std::move(current_exception_entry));
-    }
+  for (CredentialUIEntry& credential :
+       saved_passwords_presenter_.GetBlockedSites()) {
+    api::passwords_private::ExceptionEntry current_exception_entry;
+    current_exception_entry.urls =
+        CreateUrlCollectionFromCredential(credential);
+    current_exception_entry.id =
+        credential_id_generator_.GenerateId(std::move(credential));
+    current_exceptions_.push_back(std::move(current_exception_entry));
   }
 
   if (current_entries_initialized_) {
@@ -1083,21 +1080,16 @@ api::passwords_private::PasswordUiEntry
 PasswordsPrivateDelegateImpl::CreatePasswordUiEntryFromCredentialUiEntry(
     CredentialUIEntry credential) {
   api::passwords_private::PasswordUiEntry entry;
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kPasswordsGrouping)) {
-    entry.affiliated_domains =
-        std::vector<api::passwords_private::DomainInfo>();
-    base::ranges::transform(
-        credential.GetAffiliatedDomains(),
-        std::back_inserter(entry.affiliated_domains.value()),
-        [](const CredentialUIEntry::DomainInfo& domain) {
-          api::passwords_private::DomainInfo domainInfo;
-          domainInfo.name = domain.name;
-          domainInfo.url = domain.url.spec();
-          domainInfo.signon_realm = domain.signon_realm;
-          return domainInfo;
-        });
-  }
+  entry.affiliated_domains = std::vector<api::passwords_private::DomainInfo>();
+  base::ranges::transform(credential.GetAffiliatedDomains(),
+                          std::back_inserter(entry.affiliated_domains.value()),
+                          [](const CredentialUIEntry::DomainInfo& domain) {
+                            api::passwords_private::DomainInfo domainInfo;
+                            domainInfo.name = domain.name;
+                            domainInfo.url = domain.url.spec();
+                            domainInfo.signon_realm = domain.signon_realm;
+                            return domainInfo;
+                          });
   entry.is_passkey = !credential.passkey_credential_id.empty();
   entry.urls = extensions::CreateUrlCollectionFromCredential(credential);
   entry.username = base::UTF16ToUTF8(credential.username);
@@ -1113,13 +1105,7 @@ PasswordsPrivateDelegateImpl::CreatePasswordUiEntryFromCredentialUiEntry(
             credential.federation_origin,
             url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC);
 
-    if (base::FeatureList::IsEnabled(
-            password_manager::features::kPasswordsGrouping)) {
-      entry.federation_text = base::UTF16ToUTF8(formatted_origin);
-    } else {
-      entry.federation_text = l10n_util::GetStringFUTF8(
-          IDS_PASSWORDS_VIA_FEDERATION, formatted_origin);
-    }
+    entry.federation_text = base::UTF16ToUTF8(formatted_origin);
   }
   entry.id = credential_id_generator_.GenerateId(std::move(credential));
   return entry;

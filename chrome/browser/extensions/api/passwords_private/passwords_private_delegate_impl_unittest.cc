@@ -989,8 +989,7 @@ TEST_F(PasswordsPrivateDelegateImplTest,
 TEST_F(PasswordsPrivateDelegateImplTest, ChangeCredential_Passkey) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
-      {password_manager::features::kPasswordsGrouping,
-       password_manager::features::kPasswordManagerPasskeys,
+      {password_manager::features::kPasswordManagerPasskeys,
        syncer::kSyncWebauthnCredentials},
       /*disabled_features=*/{});
 
@@ -1642,10 +1641,6 @@ TEST_F(PasswordsPrivateDelegateImplTest, DISABLED_ShowAddShortcutDialog) {
 }
 
 TEST_F(PasswordsPrivateDelegateImplTest, GetCredentialGroups) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      password_manager::features::kPasswordsGrouping);
-
   auto delegate = CreateDelegate();
 
   password_manager::PasswordForm password1 = CreateSampleForm(
@@ -1694,8 +1689,7 @@ TEST_F(PasswordsPrivateDelegateImplTest, PasswordManagerAppInstalled) {
 TEST_F(PasswordsPrivateDelegateImplTest, GetPasskeyInGroups) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
-      {password_manager::features::kPasswordsGrouping,
-       password_manager::features::kPasswordManagerPasskeys,
+      {password_manager::features::kPasswordManagerPasskeys,
        syncer::kSyncWebauthnCredentials},
       /*disabled_features=*/{});
 
@@ -1739,8 +1733,7 @@ TEST_F(PasswordsPrivateDelegateImplTest, RemovePasskey) {
   base::UserActionTester user_action_tester;
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
-      {password_manager::features::kPasswordsGrouping,
-       password_manager::features::kPasswordManagerPasskeys,
+      {password_manager::features::kPasswordManagerPasskeys,
        syncer::kSyncWebauthnCredentials},
       /*disabled_features=*/{});
 
