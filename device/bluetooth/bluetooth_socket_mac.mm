@@ -443,7 +443,7 @@ void BluetoothSocketMac::Connect(IOBluetoothDevice* device,
                                         device:device
                               success_callback:std::move(success_callback)
                                 error_callback:std::move(error_callback)];
-  [device performSDPQuery:listener uuids:@[ GetIOBluetoothSDPUUID(uuid_) ]];
+  [device performSDPQuery:listener];
 }
 
 void BluetoothSocketMac::ListenUsingRfcomm(
