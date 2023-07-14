@@ -56,14 +56,23 @@ TEST_F(MediapipeTextModelExecutorTest, Execute) {
           [](base::RunLoop* run_loop,
              const absl::optional<std::vector<Category>>& output) {
             EXPECT_TRUE(output);
-            for (const auto& cat : *output) {
-              LOG(INFO) << cat.category_name.value_or("(empty)") << ": "
-                        << cat.score;
+
+            std::string top_topic;
+            double top_topic_weight = 0;
+
+            for (const auto& category : *output) {
+              if (category.score > top_topic_weight) {
+                top_topic_weight = category.score;
+                top_topic = category.category_name.value_or(std::string());
+              }
             }
+
+            EXPECT_EQ(/* /Sports/Baseball */ "303", top_topic);
+
             run_loop->Quit();
           },
           &run_loop),
-      base::TimeTicks(), "test");
+      base::TimeTicks(), "baseball");
   run_loop.Run();
 }
 
