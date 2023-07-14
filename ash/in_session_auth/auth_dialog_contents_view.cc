@@ -73,6 +73,35 @@ constexpr int kSpacingBeforeButtons = 32;
 
 }  // namespace
 
+AuthDialogContentsView::TestApi::TestApi(AuthDialogContentsView* view)
+    : view_(view) {}
+
+AuthDialogContentsView::TestApi::~TestApi() = default;
+
+void AuthDialogContentsView::TestApi::PasswordOrPinAuthComplete(
+    bool authenticated_by_pin,
+    bool success,
+    bool can_use_pin) const {
+  view_->OnPasswordOrPinAuthComplete(authenticated_by_pin, success,
+                                     can_use_pin);
+}
+
+void AuthDialogContentsView::TestApi::FingerprintAuthComplete(
+    bool success,
+    FingerprintState fingerprint_state) const {
+  view_->OnFingerprintAuthComplete(success, fingerprint_state);
+}
+
+raw_ptr<LoginPasswordView, ExperimentalAsh>
+AuthDialogContentsView::TestApi::GetPasswordView() const {
+  return view_->password_view_;
+}
+
+raw_ptr<LoginPasswordView, ExperimentalAsh>
+AuthDialogContentsView::TestApi::GetPinTextInputView() const {
+  return view_->pin_text_input_view_;
+}
+
 // Consists of fingerprint icon view and a label.
 class AuthDialogContentsView::FingerprintView : public views::View {
  public:
