@@ -62,7 +62,7 @@ if (host_os == "mac") {
   host_shlib_extension = ".dylib"
 } else if (host_os == "win") {
   host_shlib_extension = ".dll"
-} else if (host_os == "linux") {
+} else if (host_os == "linux" || host_os == "aix") {
   host_shlib_extension = ".so"
 } else {
   assert(false, "Host platform not supported")
