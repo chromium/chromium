@@ -485,13 +485,9 @@ TEST_F(WelcomeTourControllerRunTest, NotificationBlocking) {
       Run(/*in_progress_callback=*/base::BindLambdaForTesting([&]() {
         {
           SCOPED_TRACE("Beginning of Welcome Tour");
-
-          // TODO(http:/b/286590651): Once `NotificationBlocker` properly
-          // updates notification visibility on construction,
-          // `visible_notifications` should be `0u` here.
           ExpectNotificationCounts(
               /*total_notifications=*/2u,
-              /*visible_notifications=*/2u,
+              /*visible_notifications=*/0u,
               /*popup_notifications=*/0u);
         }
 

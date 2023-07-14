@@ -56,6 +56,7 @@ class SessionStateNotificationBlockerTest
     NoSessionAshTestBase::SetUp();
     blocker_ = std::make_unique<SessionStateNotificationBlocker>(
         message_center::MessageCenter::Get());
+    blocker_->Init();
     blocker_->AddObserver(this);
   }
 

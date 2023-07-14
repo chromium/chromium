@@ -72,7 +72,7 @@ class ToggledNotificationBlocker : public message_center::NotificationBlocker {
   ToggledNotificationBlocker(const ToggledNotificationBlocker&) = delete;
   ToggledNotificationBlocker& operator=(const ToggledNotificationBlocker&) =
       delete;
-  ~ToggledNotificationBlocker() override {}
+  ~ToggledNotificationBlocker() override = default;
 
   void SetNotificationsEnabled(bool enabled) {
     if (notifications_enabled_ != enabled) {
@@ -158,6 +158,7 @@ IN_PROC_BROWSER_TEST_F(NotificationsTest, TestCreateSimpleNotification) {
 
 IN_PROC_BROWSER_TEST_F(NotificationsTest, NotificationBlockerTest) {
   ToggledNotificationBlocker blocker;
+  blocker.Init();
   TestMessageCenterObserver observer;
 
   ASSERT_TRUE(embedded_test_server()->Start());
