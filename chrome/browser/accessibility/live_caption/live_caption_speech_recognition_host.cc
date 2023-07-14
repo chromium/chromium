@@ -266,7 +266,7 @@ void LiveCaptionSpeechRecognitionHost::OnTranslationCallback(
         std::string sentence = RemoveTrailingSpace(original_sentences[i]);
         translation_cache_.insert(
             {GetTranslationCacheKey(source_language, target_language, sentence),
-             translated_sentences[i]});
+             RemoveTrailingSpace(translated_sentences[i])});
       }
     }
   }
