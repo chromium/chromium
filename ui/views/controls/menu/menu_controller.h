@@ -574,7 +574,7 @@ class VIEWS_EXPORT MenuController
   void UpdateScrolling(const MenuPart& part);
 
   // Stops scrolling.
-  void StopScrolling();
+  void StopScrollingViaButton();
 
   // Updates active mouse view from the location of the event and sends it
   // the appropriate events. This is used to send mouse events to child views so
@@ -746,8 +746,8 @@ class VIEWS_EXPORT MenuController
   // If true, we're in the middle of invoking ShowAt on a submenu.
   bool showing_submenu_ = false;
 
-  // Task for scrolling the menu. If non-null indicates a scroll is currently
-  // underway.
+  // Task for scrolling the menu via scroll button. If non-null, indicates a
+  // scroll is currently underway.
   std::unique_ptr<MenuScrollTask> scroll_task_;
 
   // The lock to keep the menu button pressed while a menu is visible.

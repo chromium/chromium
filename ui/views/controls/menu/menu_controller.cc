@@ -970,6 +970,9 @@ void MenuController::OnMouseEntered(SubmenuView* source,
 
 bool MenuController::OnMouseWheel(SubmenuView* source,
                                   const ui::MouseWheelEvent& event) {
+  // Stop scrolling via scroll button to prevent flickering.
+  StopScrollingViaButton();
+
   MenuPart part = GetMenuPart(source, event.location());
 
   SetSelection(part.menu ? part.menu.get() : state_.item.get(),
@@ -1257,7 +1260,7 @@ void MenuController::OnDragEnteredScrollButton(SubmenuView* source,
 void MenuController::OnDragExitedScrollButton(SubmenuView* source) {
   StartCancelAllTimer();
   SetDropMenuItem(nullptr, MenuDelegate::DropPosition::kNone);
-  StopScrolling();
+  StopScrollingViaButton();
 }
 
 void MenuController::OnDragWillStart() {
@@ -1607,7 +1610,7 @@ void MenuController::StartDrag(SubmenuView* source,
   item->GetDelegate()->WriteDragData(item, data.get());
   data->provider().SetDragImage(image, press_loc.OffsetFromOrigin());
 
-  StopScrolling();
+  StopScrollingViaButton();
   int drag_ops = item->GetDelegate()->GetDragOperations(item);
   did_initiate_drag_ = true;
   base::WeakPtr<MenuController> this_ref = AsWeakPtr();
@@ -2118,7 +2121,7 @@ void MenuController::CommitPendingSelection() {
 
   if (!state_.item) {
     // Nothing to select.
-    StopScrolling();
+    StopScrollingViaButton();
     return;
   }
 
@@ -2150,7 +2153,7 @@ void MenuController::CommitPendingSelection() {
                item->GetSubmenu() == scroll_task_->submenu());
     }
     if (!found)
-      StopScrolling();
+      StopScrollingViaButton();
   }
 }
 
@@ -3145,7 +3148,7 @@ void MenuController::UpdateScrolling(const MenuPart& part) {
   scroll_task_->Update(part);
 }
 
-void MenuController::StopScrolling() {
+void MenuController::StopScrollingViaButton() {
   scroll_task_.reset(nullptr);
 }
 
