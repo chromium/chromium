@@ -70,6 +70,9 @@ class PasswordManagerDriverFactory::PasswordManagerDriver
       const std::u16string& value,
       bool autocomplete_attribute_has_username) override {}
   void ShowPasswordSuggestions(autofill::FieldRendererId element_id,
+                               const autofill::FormData& form,
+                               uint64_t username_field_index,
+                               uint64_t password_field_index,
                                base::i18n::TextDirection text_direction,
                                const std::u16string& typed_username,
                                int options,

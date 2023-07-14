@@ -704,9 +704,9 @@ class PasswordAutofillAgentTest : public ChromeRenderViewTest {
       return show_all == ((options & autofill::SHOW_ALL) != 0);
     };
 
-    EXPECT_CALL(
-        fake_driver_,
-        ShowPasswordSuggestions(_, _, Eq(username), Truly(show_all_matches), _))
+    EXPECT_CALL(fake_driver_,
+                ShowPasswordSuggestions(_, _, _, _, _, Eq(username),
+                                        Truly(show_all_matches), _))
         .Times(testing::AtLeast(1));
     base::RunLoop().RunUntilIdle();
   }
@@ -2353,7 +2353,7 @@ TEST_F(PasswordAutofillAgentTest, CredentialsOnClick) {
       fake_driver_,
       ShowPasswordSuggestions(
           FieldRendererId(username_element_.UniqueRendererFormControlId()), _,
-          _, 0, _))
+          _, _, _, _, 0, _))
       .Times(testing::AtLeast(1));
   SimulateUsernameTyping(kAliceUsername);
 }

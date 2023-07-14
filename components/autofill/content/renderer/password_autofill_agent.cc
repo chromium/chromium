@@ -478,9 +478,11 @@ void FillNonTypedOrFilledPropertiesMasks(std::vector<FormFieldData>* fields,
   }
 }
 
-#if BUILDFLAG(IS_ANDROID)
 size_t GetIndexOfElement(const FormData& form_data,
                          const WebInputElement& element) {
+  if (element.IsNull()) {
+    return form_data.fields.size();
+  }
   for (size_t i = 0; i < form_data.fields.size(); ++i) {
     if (form_data.fields[i].unique_renderer_id.value() ==
         element.UniqueRendererFormControlId())
@@ -489,6 +491,7 @@ size_t GetIndexOfElement(const FormData& form_data,
   return form_data.fields.size();
 }
 
+#if BUILDFLAG(IS_ANDROID)
 // Returns a prediction whether the form that contains |username_element| and
 // |password_element| will be ready for submission after filling these two
 // elements.
@@ -628,12 +631,16 @@ class PasswordAutofillAgent::DeferringPasswordManagerDriver
              autocomplete_attribute_has_username);
   }
   void ShowPasswordSuggestions(FieldRendererId element_id,
+                               const FormData& form,
+                               uint64_t username_field_index,
+                               uint64_t password_field_index,
                                ::base::i18n::TextDirection text_direction,
                                const std::u16string& typed_username,
                                int32_t options,
                                const gfx::RectF& bounds) override {
     DeferMsg(&mojom::PasswordManagerDriver::ShowPasswordSuggestions, element_id,
-             text_direction, typed_username, options, bounds);
+             form, username_field_index, password_field_index, text_direction,
+             typed_username, options, bounds);
   }
 #if BUILDFLAG(IS_ANDROID)
   void ShowKeyboardReplacingSurface(
@@ -1682,8 +1689,17 @@ void PasswordAutofillAgent::ShowSuggestionPopup(
   if (field.parsed_autocomplete && field.parsed_autocomplete->webauthn)
     options |= ACCEPTS_WEBAUTHN_CREDENTIALS;
 
+  WebInputElement username_element;
+  WebInputElement password_element;
+  PasswordInfo* password_info = nullptr;
+  FindPasswordInfoForElement(user_input, UseFallbackData(false),
+                             &username_element, &password_element,
+                             &password_info);
+
   GetPasswordManagerDriver().ShowPasswordSuggestions(
-      field.unique_renderer_id, field.text_direction, typed_username, options,
+      field.unique_renderer_id, form, GetIndexOfElement(form, username_element),
+      GetIndexOfElement(form, password_element), field.text_direction,
+      typed_username, options,
       render_frame()->ElementBoundsInWindow(user_input));
 }
 

@@ -4229,6 +4229,9 @@ class MockPrerenderPasswordManagerDriver
   MOCK_METHOD(void,
               ShowPasswordSuggestions,
               (autofill::FieldRendererId element_id,
+               const autofill::FormData& form,
+               uint64_t username_field_index,
+               uint64_t password_field_index,
                base::i18n::TextDirection text_direction,
                const std::u16string& typed_username,
                int options,
@@ -4302,11 +4305,16 @@ class MockPrerenderPasswordManagerDriver
         });
     ON_CALL(*this, ShowPasswordSuggestions)
         .WillByDefault([this](autofill::FieldRendererId element_id,
+                              const autofill::FormData& form,
+                              uint64_t username_field_index,
+                              uint64_t password_field_index,
                               base::i18n::TextDirection text_direction,
                               const std::u16string& typed_username, int options,
                               const gfx::RectF& bounds) {
-          impl_->ShowPasswordSuggestions(element_id, text_direction,
-                                         typed_username, options, bounds);
+          const autofill::FormData form_data;
+          impl_->ShowPasswordSuggestions(element_id, form_data, 0, 0,
+                                         text_direction, typed_username,
+                                         options, bounds);
         });
 #if BUILDFLAG(IS_ANDROID)
     ON_CALL(*this, ShowKeyboardReplacingSurface)

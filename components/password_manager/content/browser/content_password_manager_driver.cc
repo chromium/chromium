@@ -31,6 +31,7 @@
 #include "content/public/browser/ssl_status.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
+#include "mojo/public/cpp/bindings/message.h"
 #include "net/cert/cert_status_flags.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "ui/base/page_transition_types.h"
@@ -428,6 +429,9 @@ void ContentPasswordManagerDriver::UserModifiedNonPasswordField(
 
 void ContentPasswordManagerDriver::ShowPasswordSuggestions(
     autofill::FieldRendererId element_id,
+    const autofill::FormData& form,
+    uint64_t username_field_index,
+    uint64_t password_field_index,
     base::i18n::TextDirection text_direction,
     const std::u16string& typed_username,
     int options,
@@ -435,6 +439,13 @@ void ContentPasswordManagerDriver::ShowPasswordSuggestions(
   if (!password_manager::bad_message::CheckFrameNotPrerendering(
           render_frame_host_))
     return;
+
+  if ((username_field_index > form.fields.size()) ||
+      (password_field_index > form.fields.size())) {
+    mojo::ReportBadMessage(
+        "username_field_index or password_field_index cannot be greater than "
+        "form.fields.size()!");
+  }
 
 #if BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(
