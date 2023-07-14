@@ -53,9 +53,11 @@ FeedType NewTabPageTabHelper::DefaultFeedType() {
 void NewTabPageTabHelper::SetDelegate(
     id<NewTabPageTabHelperDelegate> delegate) {
   delegate_ = delegate;
-  active_ = IsUrlNtp(web_state_->GetVisibleURL());
-  if (active_) {
-    UpdateItem(web_state_->GetNavigationManager()->GetPendingItem());
+  if (delegate_) {
+    active_ = IsUrlNtp(web_state_->GetVisibleURL());
+    if (active_) {
+      UpdateItem(web_state_->GetNavigationManager()->GetPendingItem());
+    }
   }
 }
 
