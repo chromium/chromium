@@ -53,8 +53,10 @@ public interface ExportFlowInterface {
      * @param savedInstanceState The {@link Bundle} passed from the fragment's onCreate
      * method.
      * @param delegate The {@link Delegate} for this ExportFlow.
+     * @param callerMetricsId The unique string, which identifies the caller. This will be used as
+     *         the prefix for metrics histograms names.
      */
-    public void onCreate(Bundle savedInstanceState, Delegate delegate);
+    public void onCreate(Bundle savedInstanceState, Delegate delegate, String callerMetricsId);
 
     /**
      * Starts the password export flow.

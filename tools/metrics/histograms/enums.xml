@@ -50830,6 +50830,13 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="10" label="Persistent histograms created"/>
 </enum>
 
+<enum name="HistogramExportResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="User aborted"/>
+  <int value="2" label="Writing to disk failed"/>
+  <int value="3" label="Could not find consumer for exporting"/>
+</enum>
+
 <enum name="HistogramNameHash">
   <summary>
     These numbers are the lower 32 bits of the hash of the metric name.

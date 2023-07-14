@@ -48,9 +48,11 @@ import org.mockito.MockitoAnnotations;
 import org.chromium.base.FileUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.password_manager.settings.ExportFlow;
+import org.chromium.chrome.browser.password_manager.settings.ExportFlow.HistogramExportResult;
 import org.chromium.chrome.browser.password_manager.settings.FakePasswordManagerHandler;
 import org.chromium.chrome.browser.password_manager.settings.ManualCallbackDelayer;
 import org.chromium.chrome.browser.password_manager.settings.PasswordListObserver;
@@ -137,6 +139,14 @@ public class PasswordMigrationWarningExportFlowTest {
 
         requestExport();
 
+        var histogram =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(mExportFlow.getExportEventHistogramName(),
+                                ExportFlow.PasswordExportEvent.EXPORT_CONFIRMED)
+                        .expectIntRecord(mExportFlow.getExportResultHistogramNameForTesting(),
+                                HistogramExportResult.SUCCESS)
+                        .build();
+
         File tempFile = null;
         File outputFile = null;
         try {
@@ -166,6 +176,7 @@ public class PasswordMigrationWarningExportFlowTest {
 
             // Assert that the output file was written.
             Assert.assertTrue(outputFile.length() > 0);
+            histogram.assertExpected();
         } finally {
             if (tempFile != null) {
                 tempFile.delete();
