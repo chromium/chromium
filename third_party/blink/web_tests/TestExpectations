@@ -2784,6 +2784,7 @@ crbug.com/626703 [ Mac ] external/wpt/css/css-text/text-transform/text-transform
 crbug.com/626703 [ Win ] external/wpt/css/css-text/text-transform/text-transform-capitalize-034.html [ Failure ]
 crbug.com/626703 [ Mac10.15 ] external/wpt/pointerevents/compat/pointerevent_mouse-pointer-preventdefault.html [ Timeout ]
 crbug.com/626703 [ Mac11 ] external/wpt/pointerevents/compat/pointerevent_mouse-pointer-preventdefault.html [ Timeout ]
+crbug.com/626703 [ Mac13 ] external/wpt/pointerevents/compat/pointerevent_mouse-pointer-preventdefault.html [ Timeout ]
 crbug.com/626703 [ Mac ] external/wpt/css/css-scrollbars/scrollbar-color-007.html [ Failure ]
 crbug.com/626703 [ Mac ] external/wpt/css/css-scrollbars/scrollbar-color-008.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-scrollbars/scrollbar-color-009.html [ Failure ]

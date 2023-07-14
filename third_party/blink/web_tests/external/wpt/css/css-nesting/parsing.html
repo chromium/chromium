@@ -46,22 +46,19 @@
     {
       rule: `.foo {\n  > & .bar { color: green; }\n}`,
       check(rule) {
-        // TODO: https://github.com/w3c/csswg-drafts/issues/8970
-        assert_in_array(rule.cssRules[0].selectorText, [ "& > & .bar", "> & .bar" ]);
+        assert_equals(rule.cssRules[0].selectorText, "& > & .bar");
       },
     },
     {
       rule: `.foo {\n  > .bar { color: green; }\n}`,
       check(rule) {
-        // TODO: https://github.com/w3c/csswg-drafts/issues/8970
-        assert_in_array(rule.cssRules[0].selectorText, [ "& > .bar", "> .bar" ]);
+        assert_equals(rule.cssRules[0].selectorText, "& > .bar");
       },
     },
     {
       rule: `.foo {\n  + .bar & { color: green; }\n}`,
       check(rule) {
-        // TODO: https://github.com/w3c/csswg-drafts/issues/8970
-        assert_in_array(rule.cssRules[0].selectorText, [ "& + .bar &", "+ .bar &" ]);
+        assert_equals(rule.cssRules[0].selectorText, "& + .bar &");
       },
     },
     {
@@ -74,8 +71,7 @@
     {
       rule: `.foo {\n  + .bar, .foo, > .lol { color: green; }\n}`,
       check(rule) {
-        // TODO: https://github.com/w3c/csswg-drafts/issues/8970
-        assert_in_array(rule.cssRules[0].selectorText, [ "& + .bar, .foo, & > .lol", "+ .bar, .foo, > .lol" ]);
+        assert_equals(rule.cssRules[0].selectorText, "& + .bar, .foo, & > .lol");
       },
     },
     {

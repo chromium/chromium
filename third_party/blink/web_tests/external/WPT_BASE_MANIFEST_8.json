@@ -14639,7 +14639,34 @@
     },
     "canvas": {
      "element": {
-      "drawing-text-to-the-canvas": {
+      "manual": {
+       "drawing-paths-to-the-canvas": {
+        "canvas_focus_drawFocusIfNeeded_AAPI_001-manual.html": [
+         "bf38fa68b7d0bc0e51a685e0cf0a4c83f36e0419",
+         [
+          null,
+          {}
+         ]
+        ]
+       }
+      },
+      "shadows": {
+       "2d.shadow.blur.high-manual.html": [
+        "aae0a163bb152344592755b06f2e78e834092edd",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.shadow.blur.low-manual.html": [
+        "9674d6f0dbaa856fb62ca3e28a15611aa84d476f",
+        [
+         null,
+         {}
+        ]
+       ]
+      },
+      "text": {
        "2d.text.draw.fill.basic-manual.html": [
         "d3f5df9d018f58d112fb0afc7fe260638bc300a9",
         [
@@ -14670,33 +14697,6 @@
        ],
        "2d.text.draw.stroke.basic-manual.html": [
         "1db0f0694e8eeb1b4b59e6e68082a439e14af1ce",
-        [
-         null,
-         {}
-        ]
-       ]
-      },
-      "manual": {
-       "drawing-paths-to-the-canvas": {
-        "canvas_focus_drawFocusIfNeeded_AAPI_001-manual.html": [
-         "bf38fa68b7d0bc0e51a685e0cf0a4c83f36e0419",
-         [
-          null,
-          {}
-         ]
-        ]
-       }
-      },
-      "shadows": {
-       "2d.shadow.blur.high-manual.html": [
-        "aae0a163bb152344592755b06f2e78e834092edd",
-        [
-         null,
-         {}
-        ]
-       ],
-       "2d.shadow.blur.low-manual.html": [
-        "9674d6f0dbaa856fb62ca3e28a15611aa84d476f",
         [
          null,
          {}
@@ -143243,6 +143243,21 @@
      ]
     },
     "css-inline": {
+     "baseline-source": {
+      "baseline-source-inline-box.html": [
+       "cc88067c285c226d961673baa567236c95ad489b",
+       [
+        null,
+        [
+         [
+          "/css/css-inline/baseline-source/baseline-source-inline-box-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ]
+     },
      "empty-text-node-001.html": [
       "eddf31ec59ccc206975b9947d1b4bf75e88063ed",
       [
@@ -254192,125 +254207,6 @@
         {}
        ]
       ],
-      "drawing-text-to-the-canvas": {
-       "direction-inherit-rtl.html": [
-        "0ad92181a06acfdd4ca1d553b5fc7dfa4970f001",
-        [
-         null,
-         [
-          [
-           "/html/canvas/element/drawing-text-to-the-canvas/reference/direction-rtl-ref.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "direction-ltr.html": [
-        "42a39ac589c6da944af4cfc450675044d619be3f",
-        [
-         null,
-         [
-          [
-           "/html/canvas/element/drawing-text-to-the-canvas/reference/direction-default-ref.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "direction-rtl.html": [
-        "3cc67c69f585f88dce6e4db4518c4016d5f39b03",
-        [
-         null,
-         [
-          [
-           "/html/canvas/element/drawing-text-to-the-canvas/reference/direction-rtl-ref.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "fontVariantCaps-1.html": [
-        "3240476ad0f03e9a1b3f37a242fe781b2a46d613",
-        [
-         null,
-         [
-          [
-           "/html/canvas/element/drawing-text-to-the-canvas/reference/fontVariantCaps-1-ref.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "fontVariantCaps-2.html": [
-        "cbcb73b231ce9051cb1386e366a241dc980bc05c",
-        [
-         null,
-         [
-          [
-           "/html/canvas/element/drawing-text-to-the-canvas/reference/fontVariantCaps-2-ref.html",
-           "!="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "fontVariantCaps-3.html": [
-        "8c0761121efb0bfbdda0871d7d735ceeb5105cd3",
-        [
-         null,
-         [
-          [
-           "/html/canvas/element/drawing-text-to-the-canvas/reference/fontVariantCaps-3-ref.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "fontVariantCaps-4.html": [
-        "62fe241838b2a9ab5d1656a4165266232fb4ec0d",
-        [
-         null,
-         [
-          [
-           "/html/canvas/element/drawing-text-to-the-canvas/reference/fontVariantCaps-3-ref.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "fontVariantCaps-5.html": [
-        "a21169f8bb64781ca5235cfedcde562a3c8f85e3",
-        [
-         null,
-         [
-          [
-           "/html/canvas/element/drawing-text-to-the-canvas/reference/fontVariantCaps-1-ref.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "fontVariantCaps-6.html": [
-        "6126c4e7b2f3ebf17e1fa8e79947750be1728beb",
-        [
-         null,
-         [
-          [
-           "/html/canvas/element/drawing-text-to-the-canvas/reference/fontVariantCaps-2-ref.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ]
-      },
       "filters": {
        "2d.filter.canvasFilterObject.dropShadow.tentative.html": [
         "09eb09473d15d30bfd7faa9f20ae4044c13e122c",
@@ -255141,154 +255037,6 @@
          ]
         }
        },
-       "drawing-text-to-the-canvas": {
-        "canvas.2d.disconnected.html": [
-         "a1715f6663c96289adac6db909035020b6640d1c",
-         [
-          null,
-          [
-           [
-            "/html/canvas/element/manual/drawing-text-to-the-canvas/canvas.2d.disconnected-ref.html",
-            "=="
-           ]
-          ],
-          {
-           "fuzzy": [
-            [
-             null,
-             [
-              [
-               0,
-               23
-              ],
-              [
-               0,
-               829
-              ]
-             ]
-            ]
-           ]
-          }
-         ]
-        ],
-        "canvas.2d.fontStretch.condensed.html": [
-         "72db41f007a503f5767b2f3a1812397cd74bad8c",
-         [
-          null,
-          [
-           [
-            "/html/canvas/element/manual/drawing-text-to-the-canvas/canvas.2d.fontStretch-ref.html",
-            "=="
-           ]
-          ],
-          {}
-         ]
-        ],
-        "canvas.2d.fontStretch.expanded.html": [
-         "8a13ba13fcb633b4d1176fb3e2f31cb9ddf26dca",
-         [
-          null,
-          [
-           [
-            "/html/canvas/element/manual/drawing-text-to-the-canvas/canvas.2d.fontStretch-ref.html",
-            "=="
-           ]
-          ],
-          {}
-         ]
-        ],
-        "canvas.2d.fontStretch.extra-condensed.html": [
-         "afa910f62cef05a60a1398828069d5752be17fa8",
-         [
-          null,
-          [
-           [
-            "/html/canvas/element/manual/drawing-text-to-the-canvas/canvas.2d.fontStretch-ref.html",
-            "=="
-           ]
-          ],
-          {}
-         ]
-        ],
-        "canvas.2d.fontStretch.extra-expanded.html": [
-         "d10d4d931256cd827348162d7fb7c7a454f181ec",
-         [
-          null,
-          [
-           [
-            "/html/canvas/element/manual/drawing-text-to-the-canvas/canvas.2d.fontStretch-ref.html",
-            "=="
-           ]
-          ],
-          {}
-         ]
-        ],
-        "canvas.2d.fontStretch.normal.html": [
-         "e8fd66acad92fd00175bfbe77971f6312129d84e",
-         [
-          null,
-          [
-           [
-            "/html/canvas/element/manual/drawing-text-to-the-canvas/canvas.2d.fontStretch-ref.html",
-            "=="
-           ]
-          ],
-          {}
-         ]
-        ],
-        "canvas.2d.fontStretch.semi-condensed.html": [
-         "2ac97195958a3b979eb839cfce7016073f667f72",
-         [
-          null,
-          [
-           [
-            "/html/canvas/element/manual/drawing-text-to-the-canvas/canvas.2d.fontStretch-ref.html",
-            "=="
-           ]
-          ],
-          {}
-         ]
-        ],
-        "canvas.2d.fontStretch.semi-expanded.html": [
-         "3c9fa278947331ea355d4a60081a52f06ba155f4",
-         [
-          null,
-          [
-           [
-            "/html/canvas/element/manual/drawing-text-to-the-canvas/canvas.2d.fontStretch-ref.html",
-            "=="
-           ]
-          ],
-          {}
-         ]
-        ],
-        "canvas.2d.fontStretch.ultra-condensed.html": [
-         "2b0426e976d97beca8873d2eb663c61d0ebb14f5",
-         [
-          null,
-          [
-           [
-            "/html/canvas/element/manual/drawing-text-to-the-canvas/canvas.2d.fontStretch-ref.html",
-            "=="
-           ]
-          ],
-          {}
-         ]
-        ],
-        "canvas.2d.fontStretch.ultra-expanded.html": [
-         "5b4979de864b0dcac967a8bae61b265546323a3f",
-         [
-          null,
-          [
-           [
-            "/html/canvas/element/manual/drawing-text-to-the-canvas/canvas.2d.fontStretch-ref.html",
-            "=="
-           ]
-          ],
-          {}
-         ]
-        ]
-       },
        "fill-and-stroke-styles": {
         "conic-gradient-rotation.html": [
          "e8b213b3d83d416bac353693747f3d06b9e8b64f",
@@ -255711,14 +255459,160 @@
          ]
         ]
        },
-       "text-styles": {
+       "text": {
+        "canvas.2d.disconnected.html": [
+         "a1715f6663c96289adac6db909035020b6640d1c",
+         [
+          null,
+          [
+           [
+            "/html/canvas/element/manual/text/canvas.2d.disconnected-ref.html",
+            "=="
+           ]
+          ],
+          {
+           "fuzzy": [
+            [
+             null,
+             [
+              [
+               0,
+               23
+              ],
+              [
+               0,
+               829
+              ]
+             ]
+            ]
+           ]
+          }
+         ]
+        ],
+        "canvas.2d.fontStretch.condensed.html": [
+         "72db41f007a503f5767b2f3a1812397cd74bad8c",
+         [
+          null,
+          [
+           [
+            "/html/canvas/element/manual/text/canvas.2d.fontStretch-ref.html",
+            "=="
+           ]
+          ],
+          {}
+         ]
+        ],
+        "canvas.2d.fontStretch.expanded.html": [
+         "8a13ba13fcb633b4d1176fb3e2f31cb9ddf26dca",
+         [
+          null,
+          [
+           [
+            "/html/canvas/element/manual/text/canvas.2d.fontStretch-ref.html",
+            "=="
+           ]
+          ],
+          {}
+         ]
+        ],
+        "canvas.2d.fontStretch.extra-condensed.html": [
+         "afa910f62cef05a60a1398828069d5752be17fa8",
+         [
+          null,
+          [
+           [
+            "/html/canvas/element/manual/text/canvas.2d.fontStretch-ref.html",
+            "=="
+           ]
+          ],
+          {}
+         ]
+        ],
+        "canvas.2d.fontStretch.extra-expanded.html": [
+         "d10d4d931256cd827348162d7fb7c7a454f181ec",
+         [
+          null,
+          [
+           [
+            "/html/canvas/element/manual/text/canvas.2d.fontStretch-ref.html",
+            "=="
+           ]
+          ],
+          {}
+         ]
+        ],
+        "canvas.2d.fontStretch.normal.html": [
+         "e8fd66acad92fd00175bfbe77971f6312129d84e",
+         [
+          null,
+          [
+           [
+            "/html/canvas/element/manual/text/canvas.2d.fontStretch-ref.html",
+            "=="
+           ]
+          ],
+          {}
+         ]
+        ],
+        "canvas.2d.fontStretch.semi-condensed.html": [
+         "2ac97195958a3b979eb839cfce7016073f667f72",
+         [
+          null,
+          [
+           [
+            "/html/canvas/element/manual/text/canvas.2d.fontStretch-ref.html",
+            "=="
+           ]
+          ],
+          {}
+         ]
+        ],
+        "canvas.2d.fontStretch.semi-expanded.html": [
+         "3c9fa278947331ea355d4a60081a52f06ba155f4",
+         [
+          null,
+          [
+           [
+            "/html/canvas/element/manual/text/canvas.2d.fontStretch-ref.html",
+            "=="
+           ]
+          ],
+          {}
+         ]
+        ],
+        "canvas.2d.fontStretch.ultra-condensed.html": [
+         "2b0426e976d97beca8873d2eb663c61d0ebb14f5",
+         [
+          null,
+          [
+           [
+            "/html/canvas/element/manual/text/canvas.2d.fontStretch-ref.html",
+            "=="
+           ]
+          ],
+          {}
+         ]
+        ],
+        "canvas.2d.fontStretch.ultra-expanded.html": [
+         "5b4979de864b0dcac967a8bae61b265546323a3f",
+         [
+          null,
+          [
+           [
+            "/html/canvas/element/manual/text/canvas.2d.fontStretch-ref.html",
+            "=="
+           ]
+          ],
+          {}
+         ]
+        ],
         "canvas_text_font_001.htm": [
          "923ce71c077c99e61678f1b97759f871324eba03",
          [
           null,
           [
            [
-            "/html/canvas/element/manual/text-styles/canvas_text_font_001-ref.htm",
+            "/html/canvas/element/manual/text/canvas_text_font_001-ref.htm",
             "=="
            ]
           ],
@@ -255828,6 +255722,125 @@
          [
           [
            "/html/canvas/element/manual/unclosed-canvas-4-expected.htm",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ]
+      },
+      "text": {
+       "direction-inherit-rtl.html": [
+        "0ad92181a06acfdd4ca1d553b5fc7dfa4970f001",
+        [
+         null,
+         [
+          [
+           "/html/canvas/element/text/reference/direction-rtl-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "direction-ltr.html": [
+        "42a39ac589c6da944af4cfc450675044d619be3f",
+        [
+         null,
+         [
+          [
+           "/html/canvas/element/text/reference/direction-default-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "direction-rtl.html": [
+        "3cc67c69f585f88dce6e4db4518c4016d5f39b03",
+        [
+         null,
+         [
+          [
+           "/html/canvas/element/text/reference/direction-rtl-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "fontVariantCaps-1.html": [
+        "3240476ad0f03e9a1b3f37a242fe781b2a46d613",
+        [
+         null,
+         [
+          [
+           "/html/canvas/element/text/reference/fontVariantCaps-1-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "fontVariantCaps-2.html": [
+        "cbcb73b231ce9051cb1386e366a241dc980bc05c",
+        [
+         null,
+         [
+          [
+           "/html/canvas/element/text/reference/fontVariantCaps-2-ref.html",
+           "!="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "fontVariantCaps-3.html": [
+        "8c0761121efb0bfbdda0871d7d735ceeb5105cd3",
+        [
+         null,
+         [
+          [
+           "/html/canvas/element/text/reference/fontVariantCaps-3-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "fontVariantCaps-4.html": [
+        "62fe241838b2a9ab5d1656a4165266232fb4ec0d",
+        [
+         null,
+         [
+          [
+           "/html/canvas/element/text/reference/fontVariantCaps-3-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "fontVariantCaps-5.html": [
+        "a21169f8bb64781ca5235cfedcde562a3c8f85e3",
+        [
+         null,
+         [
+          [
+           "/html/canvas/element/text/reference/fontVariantCaps-1-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "fontVariantCaps-6.html": [
+        "6126c4e7b2f3ebf17e1fa8e79947750be1728beb",
+        [
+         null,
+         [
+          [
+           "/html/canvas/element/text/reference/fontVariantCaps-2-ref.html",
            "=="
           ]
          ],
@@ -268474,6 +268487,19 @@
        {}
       ]
      ],
+     "custom-property.html": [
+      "d6fdda6752224f72ae64e3c9cc89685bfbe78a57",
+      [
+       null,
+       [
+        [
+         "/scroll-animations/scroll-timelines/custom-property-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "layout-changes-on-percentage-based-timeline.html": [
       "c5a46a501e872fabfbd70526339e0c37a6b843c7",
       [
@@ -268918,6 +268944,21 @@
    },
    "svg": {
     "animations": {
+     "scripted": {
+      "animateMotion-animated-line.svg": [
+       "5e853dab03a547f2e963e0ecc51048a9ea3ea307",
+       [
+        null,
+        [
+         [
+          "/svg/embedded/reference/green-rect-100x100.svg",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ]
+     },
      "use-animate-display-none-symbol.html": [
       "6ae10ca8739dbedcc148bf7b398437131519d62b",
       [
@@ -269192,6 +269233,19 @@
         [
          [
           "/svg/extensibility/foreignObject/filter-repaint-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "foreign-object-containing-svg-in-svg-in-object.html": [
+       "311697dd7bf135142f0920e108e2b0f726f39591",
+       [
+        null,
+        [
+         [
+          "/svg/struct/reftests/reference/green-100x100.html",
           "=="
          ]
         ],
@@ -275751,11 +275805,11 @@
   "support": {
    ".cache": {
     "gitignore2.json": [
-     "e199c3fb7ebfdd6bf42dcac3efd20fbd5253d5ce",
+     "6c43f67c4f2c419fe8ad1119416c2292301121e9",
      []
     ],
     "mtime.json": [
-     "945d9b11328b83c8aa34c9c8c8df2349bce19fd6",
+     "a8d8b9809c8ca9c7c4b042d31408afd295bd60ca",
      []
     ]
    },
@@ -313510,6 +313564,10 @@
       ]
      },
      "baseline-source": {
+      "baseline-source-inline-box-ref.html": [
+       "ef3077970a298a026ffaa2e0584ed5220ae10f59",
+       []
+      ],
       "baseline-source-no-interpolation.html.ini": [
        "07a5bc361d9f3fd16df8e5977d7fe4e5d0373e69",
        []
@@ -315525,7 +315583,7 @@
        []
       ],
       "interpolation.html.ini": [
-       "1686045ef7f0d5d67fbf05d0995730194b23d751",
+       "5d1998151b468e51fd74e83b878f1c187016bb5a",
        []
       ],
       "reference": {
@@ -317691,6 +317749,22 @@
      ],
      "nesting-type-selector.html.ini": [
       "013b754f2b59a392cbc63e6f7b81f5d168a1e69c",
+      []
+     ],
+     "parsing-expected.txt": [
+      "be2f139bbb539c0d5c74e02215a852b0c9f15a08",
+      []
+     ],
+     "parsing.html.ini": [
+      "bd2fe6bc495859f77e4facf64abf29ae8fd4243c",
+      []
+     ],
+     "serialize-group-rules-with-decls-expected.txt": [
+      "a507eca8d811f797b0476e512275f7814584e7e7",
+      []
+     ],
+     "serialize-group-rules-with-decls.html.ini": [
+      "814bf1f079542ff777066a80e9a69630c3f17a8b",
       []
      ],
      "supports-is-consistent-ref.html": [
@@ -321301,7 +321375,7 @@
      ],
      "input": {
       "mouse-wheel.html.ini": [
-       "9fa78163cda38f06b9dab07275f70d4327f81371",
+       "557e95c11bb079653071a32533805c362e88a2c7",
        []
       ],
       "snap-area-overflow-boundary-expected.txt": [
@@ -341646,7 +341720,7 @@
       []
      ],
      "backdrop-filters-grayscale-002.html.ini": [
-      "3f30c1142708545ae86e3b30eb8787f4453f404f",
+      "e91e83db52eaca288604f934abc9234f5f43db92",
       []
      ],
      "backdrop-filters-grayscale-003.html.ini": [
@@ -341754,7 +341828,7 @@
       []
      ],
      "css-backdrop-filters-animation-hue-rotate.html.ini": [
-      "e687e19bdf80fa9b1640d51e32a85b9c8a6ba121",
+      "3bf879d5464337f7daff3c64d8d552104cee62a6",
       []
      ],
      "css-backdrop-filters-animation-invert-ref.html": [
@@ -342611,14 +342685,6 @@
       "7da496cf8831819c0e75d73f07004e8d96e5b65a",
       []
      ],
-     "prefers-reduced-transparency-expected.txt": [
-      "84491ff92f3c1376721b411a55fb330b80499a03",
-      []
-     ],
-     "prefers-reduced-transparency.html.ini": [
-      "89ce0f3212228c4f05a9283c317ebfbb1927b21f",
-      []
-     ],
      "reference": {
       "ref-green-body.xht": [
        "f79255de9cb1af511c23247de02918844a9afcc4",
@@ -342725,7 +342791,7 @@
        []
       ],
       "offset-path-interpolation-006.html.ini": [
-       "523b7afb878de542718d69db87ab27c128e1429f",
+       "231e760e07af44b8b93667f8e59ffc4f713db054",
        []
       ],
       "offset-position-interpolation.html.ini": [
@@ -344900,7 +344966,7 @@
       []
      ],
      "making-a-testing-plan.md": [
-      "a4007039ae4aa47ee2f06df784b34b48e8678214",
+      "eb96f31202e21fa2509781fead227931075c5e97",
       []
      ],
      "manual.md": [
@@ -352126,314 +352192,6 @@
       []
      ]
     },
-    "local-network-access": {
-     "META.yml": [
-      "944ce6f14a1204f048e00db3b7ea21da93037709",
-      []
-     ],
-     "README.md": [
-      "8995e3d7ef6ba5b7286c334842bd0b77426882a1",
-      []
-     ],
-     "fenced-frame-no-preflight-required.tentative.https.window-expected.txt": [
-      "b7540e37b1cf04e8ab9a98b5500a2ea4d2754314",
-      []
-     ],
-     "fenced-frame-no-preflight-required.tentative.https.window.js.ini": [
-      "d0fe85a532afec39dd6696deee3ff7dd47e0b409",
-      []
-     ],
-     "fenced-frame-subresource-fetch.tentative.https.window.js.ini": [
-      "85eb4213f4760d05257e356beb7e8431697364e2",
-      []
-     ],
-     "fenced-frame-subresource-fetch.tentative.https.window_include=baseline-expected.txt": [
-      "e1f3eb6392b64d8dbd5062205623fe192a50fc86",
-      []
-     ],
-     "fenced-frame-subresource-fetch.tentative.https.window_include=from-local-expected.txt": [
-      "18bb619fa288d1cce5eacbd93f2f1cd85fb13b10",
-      []
-     ],
-     "fenced-frame-subresource-fetch.tentative.https.window_include=from-private-expected.txt": [
-      "7ab69d7ea481d2c9804fd92e9a4d982e26a7408b",
-      []
-     ],
-     "fenced-frame-subresource-fetch.tentative.https.window_include=from-public-expected.txt": [
-      "a256c961774e104bada3b3a2fde4cb50c12a967d",
-      []
-     ],
-     "fenced-frame.tentative.https.window-expected.txt": [
-      "d38e4b1dcd54150e4a7a2601c9687b97efe978f0",
-      []
-     ],
-     "fenced-frame.tentative.https.window.js.ini": [
-      "5f152aed4517cf24950912b56923ca6164fe37dd",
-      []
-     ],
-     "fetch.https.window.js.ini": [
-      "07ffff1851bbfa8fa11419ba7991d711dac31612",
-      []
-     ],
-     "fetch.window.js.ini": [
-      "480ba790be423c6571e573ed5407540ecae53eb6",
-      []
-     ],
-     "iframe.tentative.https.window-expected.txt": [
-      "6d3da80d6a3e7531153398d78f3f93b3b7395e83",
-      []
-     ],
-     "iframe.tentative.https.window.js.ini": [
-      "29a1ee33aba20ddd3e561ac78d81a200e8e911bc",
-      []
-     ],
-     "iframe.tentative.window-expected.txt": [
-      "1e588987138e3c475fd712f3e567947a419b4c8e",
-      []
-     ],
-     "iframe.tentative.window.js.ini": [
-      "748f04ef3af6a77924259ed88ba277dc171f1520",
-      []
-     ],
-     "mixed-content-fetch.tentative.https.window-expected.txt": [
-      "75548db207be4eed89934de400c76809ee73c002",
-      []
-     ],
-     "mixed-content-fetch.tentative.https.window.js.ini": [
-      "a80e733b7f15ba98e511c32f8555b223c8dc2f35",
-      []
-     ],
-     "mixed-content-fetch.tentative.https.window_include=from-private-expected.txt": [
-      "2be30f6cf7c4302b2a91705e7fa53dfb432de879",
-      []
-     ],
-     "mixed-content-fetch.tentative.https.window_include=from-public-expected.txt": [
-      "dbd89ca75519fa39e0708a2e3bd18df0eb438439",
-      []
-     ],
-     "mixed-content-fetch.tentative.https.window_include=from-treat-as-public-expected.txt": [
-      "3218128f8e691209609c0665601492b993081243",
-      []
-     ],
-     "nested-worker.https.window-expected.txt": [
-      "8718ffde7bc70a2802ec04ecd5c1e3b42e0dca32",
-      []
-     ],
-     "nested-worker.https.window.js.ini": [
-      "a9b78417a52b9cdc3412d39ebc72913773b5c302",
-      []
-     ],
-     "nested-worker.window-expected.txt": [
-      "8718ffde7bc70a2802ec04ecd5c1e3b42e0dca32",
-      []
-     ],
-     "nested-worker.window.js.ini": [
-      "3e9038297b08cca8bbe6b0f169f5ecea7c2f4c52",
-      []
-     ],
-     "preflight-cache.https.window.js.ini": [
-      "730ae07bdef0db7f3aa8573cb9b8c5b18232437f",
-      []
-     ],
-     "redirect.https.window.js.ini": [
-      "285947e683dff9d57ab56aff1b304e785bf94c4e",
-      []
-     ],
-     "resources": {
-      "executor.html": [
-       "d71212951cb63ebd310820d1df7c8789b5fbd316",
-       []
-      ],
-      "fenced-frame-fetcher.https.html": [
-       "b14601dba51d96e29340a43bde00f7b8af25fd9d",
-       []
-      ],
-      "fenced-frame-fetcher.https.html.headers": [
-       "6247f6d63211cd39dffca9fc507aefcdee586eba",
-       []
-      ],
-      "fenced-frame-local-network-access-target.https.html": [
-       "2b55e056f39834bbad4af96d2dc2549fbc400bf7",
-       []
-      ],
-      "fenced-frame-local-network-access.https.html": [
-       "860371f22396477f1af1a8d89aecf04893977222",
-       []
-      ],
-      "fenced-frame-local-network-access.https.html.headers": [
-       "6247f6d63211cd39dffca9fc507aefcdee586eba",
-       []
-      ],
-      "fetcher.html": [
-       "000a5cc25bb72b334d41ff05e7b8f22691f48f30",
-       []
-      ],
-      "fetcher.js": [
-       "3a1859876d406cebe9a2bbc63952d019ddc5ed06",
-       []
-      ],
-      "iframed.html": [
-       "c889c2882a45030fb1257db6be812a722475c9f3",
-       []
-      ],
-      "iframer.html": [
-       "304cc54ae4448b84bf43aad3279b2dd198add165",
-       []
-      ],
-      "preflight.py": [
-       "be3abdbb2a1850c6c68ed0064ee45645fa85496b",
-       []
-      ],
-      "service-worker-bridge.html": [
-       "816de535feaa83c224e76159d3defa571b1199fe",
-       []
-      ],
-      "service-worker.js": [
-       "bca71ad910cb189c2de6298b4ea59b5594aba637",
-       []
-      ],
-      "shared-fetcher.js": [
-       "30bde1e0542d144f9b5b0e47824802df13556ee2",
-       []
-      ],
-      "shared-worker-blob-fetcher.html": [
-       "a79869b2f96249969d44e5f18341fa1cbd094f4d",
-       []
-      ],
-      "shared-worker-fetcher.html": [
-       "4af4b1f23959e00c50d48a926f24d97edb8edb90",
-       []
-      ],
-      "socket-opener.html": [
-       "48d27216bedf9aa1daf4d2a4e96f860e9315a0c3",
-       []
-      ],
-      "support.sub.js": [
-       "f72a57a2c35d2555fb5452c9cbb0bcb777251765",
-       []
-      ],
-      "worker-blob-fetcher.html": [
-       "5a50271e11b57d808b01a5849b1bee7d3dbeba28",
-       []
-      ],
-      "worker-fetcher.html": [
-       "bd155a532bd2d9dd2b5f96383cb8bde27a289856",
-       []
-      ],
-      "worker-fetcher.js": [
-       "aab49afe6f47c752884d407cfa48ef38e3b4a847",
-       []
-      ],
-      "xhr-sender.html": [
-       "b131fa41f9a8bf14c5c0a1aac8fcc2593bec6c42",
-       []
-      ]
-     },
-     "service-worker-background-fetch.https.window.js.ini": [
-      "c33e5fd45ccb07d7acf8fc86db1d8055f158130c",
-      []
-     ],
-     "service-worker-fetch.https.window.js.ini": [
-      "6234723cbc19d0201175362baf1a04924a491b83",
-      []
-     ],
-     "service-worker-fetch.https.window_1-8-expected.txt": [
-      "afb1dd167a994c1f0f0fcca86b84939968e2d1d0",
-      []
-     ],
-     "service-worker-fetch.https.window_9-last-expected.txt": [
-      "ec3b5c1515edb7f3cb1afcf4efdfd14b5e66244f",
-      []
-     ],
-     "service-worker-update.https.window.js.ini": [
-      "169f1746682aa007ee3de7edeca6dfe47d5f57a0",
-      []
-     ],
-     "service-worker.https.window.js.ini": [
-      "2dbdad597586b04e19e6f05bc960aedea31cc120",
-      []
-     ],
-     "shared-worker-blob-fetch.https.window-expected.txt": [
-      "2fa1ec2bbc20620b6b949dcea8257109e55aa118",
-      []
-     ],
-     "shared-worker-blob-fetch.https.window.js.ini": [
-      "01dba54d1472f415c43cf82ed7ce25f7f7abe23f",
-      []
-     ],
-     "shared-worker-blob-fetch.window-expected.txt": [
-      "c6368e6354de6f00438e758b290621add7be3f78",
-      []
-     ],
-     "shared-worker-blob-fetch.window.js.ini": [
-      "b48d5d48ea420bcb120b1948ade50e9c1002f2ca",
-      []
-     ],
-     "shared-worker-fetch.https.window-expected.txt": [
-      "614004f0837c38ec8adbdb4c8eb9fce88c1e6877",
-      []
-     ],
-     "shared-worker-fetch.https.window.js.ini": [
-      "7380b01f5c7d968d97d8237a2de54b286696349a",
-      []
-     ],
-     "shared-worker-fetch.window-expected.txt": [
-      "27ca7e55b73e1908f085c56aaf18094723171f89",
-      []
-     ],
-     "shared-worker-fetch.window.js.ini": [
-      "d1f917576c908489c9f3750da001df7ace9c153b",
-      []
-     ],
-     "shared-worker.https.window.js.ini": [
-      "fbe8d7875167bb5af084fda65df75cecc1773ec4",
-      []
-     ],
-     "shared-worker.window-expected.txt": [
-      "8718ffde7bc70a2802ec04ecd5c1e3b42e0dca32",
-      []
-     ],
-     "shared-worker.window.js.ini": [
-      "4630b8760cbd5b62170407c1d71f16b35de13d3f",
-      []
-     ],
-     "websocket.window-expected.txt": [
-      "11e2dcac903cb8fb7f68563036c4b8a4a9c1a9e7",
-      []
-     ],
-     "websocket.window.js.ini": [
-      "fa8c34f60503d122c7d0672f440e56dc540c9477",
-      []
-     ],
-     "worker-blob-fetch.window.js.ini": [
-      "eb5dd2d46fca085584da9a2cc794de7830ab7e8e",
-      []
-     ],
-     "worker-fetch.https.window-expected.txt": [
-      "c4e0af3e551c20ffcdcd9905691c0bdc7a4d5e10",
-      []
-     ],
-     "worker-fetch.https.window.js.ini": [
-      "7fc1fd6c8a1c504dda6e890027c69c6184f5e167",
-      []
-     ],
-     "worker-fetch.window-expected.txt": [
-      "704fdf845ae321cec9e5d9577c0de494d34484c0",
-      []
-     ],
-     "worker-fetch.window.js.ini": [
-      "4457d855217e26be94fa38bf4d27b797265811d0",
-      []
-     ],
-     "xhr.https.window.js.ini": [
-      "2c03dd4f48e90a1c687c3af6a32d20d9601623e6",
-      []
-     ],
-     "xhr.window.js.ini": [
-      "b7f31e0e2d96ef65d542bd6b7bb6557d747ac380",
-      []
-     ]
-    },
     "metadata": {
      "META.yml": [
       "85f0a7d2ee12616aa7a5698b346954829d8a8bb0",
@@ -353025,6 +352783,306 @@
        []
       ]
      }
+    },
+    "private-network-access": {
+     "META.yml": [
+      "944ce6f14a1204f048e00db3b7ea21da93037709",
+      []
+     ],
+     "README.md": [
+      "a69aab487239021088f944b0a8cee2dad4b3d111",
+      []
+     ],
+     "fenced-frame-no-preflight-required.tentative.https.window-expected.txt": [
+      "b7540e37b1cf04e8ab9a98b5500a2ea4d2754314",
+      []
+     ],
+     "fenced-frame-no-preflight-required.tentative.https.window.js.ini": [
+      "d0fe85a532afec39dd6696deee3ff7dd47e0b409",
+      []
+     ],
+     "fenced-frame-subresource-fetch.tentative.https.window.js.ini": [
+      "85eb4213f4760d05257e356beb7e8431697364e2",
+      []
+     ],
+     "fenced-frame-subresource-fetch.tentative.https.window_include=baseline-expected.txt": [
+      "e1f3eb6392b64d8dbd5062205623fe192a50fc86",
+      []
+     ],
+     "fenced-frame-subresource-fetch.tentative.https.window_include=from-local-expected.txt": [
+      "18bb619fa288d1cce5eacbd93f2f1cd85fb13b10",
+      []
+     ],
+     "fenced-frame-subresource-fetch.tentative.https.window_include=from-private-expected.txt": [
+      "7ab69d7ea481d2c9804fd92e9a4d982e26a7408b",
+      []
+     ],
+     "fenced-frame-subresource-fetch.tentative.https.window_include=from-public-expected.txt": [
+      "a256c961774e104bada3b3a2fde4cb50c12a967d",
+      []
+     ],
+     "fenced-frame.tentative.https.window-expected.txt": [
+      "d38e4b1dcd54150e4a7a2601c9687b97efe978f0",
+      []
+     ],
+     "fenced-frame.tentative.https.window.js.ini": [
+      "5f152aed4517cf24950912b56923ca6164fe37dd",
+      []
+     ],
+     "fetch.tentative.https.window.js.ini": [
+      "2a6d3e9f377d6ac7cfaa37848423174895a13590",
+      []
+     ],
+     "fetch.tentative.window.js.ini": [
+      "5cf8a87504bcb141f51965ec98829eb61f1d4811",
+      []
+     ],
+     "iframe.tentative.https.window-expected.txt": [
+      "6d3da80d6a3e7531153398d78f3f93b3b7395e83",
+      []
+     ],
+     "iframe.tentative.https.window.js.ini": [
+      "29a1ee33aba20ddd3e561ac78d81a200e8e911bc",
+      []
+     ],
+     "iframe.tentative.window-expected.txt": [
+      "1e588987138e3c475fd712f3e567947a419b4c8e",
+      []
+     ],
+     "iframe.tentative.window.js.ini": [
+      "748f04ef3af6a77924259ed88ba277dc171f1520",
+      []
+     ],
+     "mixed-content-fetch.tentative.https.window-expected.txt": [
+      "75548db207be4eed89934de400c76809ee73c002",
+      []
+     ],
+     "mixed-content-fetch.tentative.https.window.js.ini": [
+      "a80e733b7f15ba98e511c32f8555b223c8dc2f35",
+      []
+     ],
+     "mixed-content-fetch.tentative.https.window_include=from-private-expected.txt": [
+      "2be30f6cf7c4302b2a91705e7fa53dfb432de879",
+      []
+     ],
+     "mixed-content-fetch.tentative.https.window_include=from-public-expected.txt": [
+      "dbd89ca75519fa39e0708a2e3bd18df0eb438439",
+      []
+     ],
+     "mixed-content-fetch.tentative.https.window_include=from-treat-as-public-expected.txt": [
+      "3218128f8e691209609c0665601492b993081243",
+      []
+     ],
+     "nested-worker.tentative.https.window-expected.txt": [
+      "8718ffde7bc70a2802ec04ecd5c1e3b42e0dca32",
+      []
+     ],
+     "nested-worker.tentative.https.window.js.ini": [
+      "334ebe21b849a529c7817e034f9e42d77d6f166f",
+      []
+     ],
+     "nested-worker.tentative.window-expected.txt": [
+      "8718ffde7bc70a2802ec04ecd5c1e3b42e0dca32",
+      []
+     ],
+     "nested-worker.tentative.window.js.ini": [
+      "97774a3eaa794a6090f67da4d8e22046b5ad3a03",
+      []
+     ],
+     "redirect.tentative.https.window.js.ini": [
+      "17c6b9174e1082f2946c9ee8a5fd7b76dcf3dd2e",
+      []
+     ],
+     "resources": {
+      "executor.html": [
+       "d71212951cb63ebd310820d1df7c8789b5fbd316",
+       []
+      ],
+      "fenced-frame-fetcher.https.html": [
+       "b14601dba51d96e29340a43bde00f7b8af25fd9d",
+       []
+      ],
+      "fenced-frame-fetcher.https.html.headers": [
+       "6247f6d63211cd39dffca9fc507aefcdee586eba",
+       []
+      ],
+      "fenced-frame-local-network-access-target.https.html": [
+       "2b55e056f39834bbad4af96d2dc2549fbc400bf7",
+       []
+      ],
+      "fenced-frame-local-network-access.https.html": [
+       "860371f22396477f1af1a8d89aecf04893977222",
+       []
+      ],
+      "fenced-frame-local-network-access.https.html.headers": [
+       "6247f6d63211cd39dffca9fc507aefcdee586eba",
+       []
+      ],
+      "fetcher.html": [
+       "000a5cc25bb72b334d41ff05e7b8f22691f48f30",
+       []
+      ],
+      "fetcher.js": [
+       "3a1859876d406cebe9a2bbc63952d019ddc5ed06",
+       []
+      ],
+      "iframed.html": [
+       "c889c2882a45030fb1257db6be812a722475c9f3",
+       []
+      ],
+      "iframer.html": [
+       "304cc54ae4448b84bf43aad3279b2dd198add165",
+       []
+      ],
+      "preflight.py": [
+       "be3abdbb2a1850c6c68ed0064ee45645fa85496b",
+       []
+      ],
+      "service-worker-bridge.html": [
+       "816de535feaa83c224e76159d3defa571b1199fe",
+       []
+      ],
+      "service-worker.js": [
+       "bca71ad910cb189c2de6298b4ea59b5594aba637",
+       []
+      ],
+      "shared-fetcher.js": [
+       "30bde1e0542d144f9b5b0e47824802df13556ee2",
+       []
+      ],
+      "shared-worker-blob-fetcher.html": [
+       "a79869b2f96249969d44e5f18341fa1cbd094f4d",
+       []
+      ],
+      "shared-worker-fetcher.html": [
+       "4af4b1f23959e00c50d48a926f24d97edb8edb90",
+       []
+      ],
+      "socket-opener.html": [
+       "48d27216bedf9aa1daf4d2a4e96f860e9315a0c3",
+       []
+      ],
+      "support.sub.js": [
+       "f72a57a2c35d2555fb5452c9cbb0bcb777251765",
+       []
+      ],
+      "worker-blob-fetcher.html": [
+       "5a50271e11b57d808b01a5849b1bee7d3dbeba28",
+       []
+      ],
+      "worker-fetcher.html": [
+       "bd155a532bd2d9dd2b5f96383cb8bde27a289856",
+       []
+      ],
+      "worker-fetcher.js": [
+       "aab49afe6f47c752884d407cfa48ef38e3b4a847",
+       []
+      ],
+      "xhr-sender.html": [
+       "b131fa41f9a8bf14c5c0a1aac8fcc2593bec6c42",
+       []
+      ]
+     },
+     "service-worker-background-fetch.tentative.https.window.js.ini": [
+      "9f47f7c991b513cfa12aff194595ab98cf8def82",
+      []
+     ],
+     "service-worker-fetch.tentative.https.window.js.ini": [
+      "425f09dc05ec76e326f9141faee6375aaeb430b3",
+      []
+     ],
+     "service-worker-fetch.tentative.https.window_1-8-expected.txt": [
+      "afb1dd167a994c1f0f0fcca86b84939968e2d1d0",
+      []
+     ],
+     "service-worker-fetch.tentative.https.window_9-last-expected.txt": [
+      "ec3b5c1515edb7f3cb1afcf4efdfd14b5e66244f",
+      []
+     ],
+     "service-worker-update.tentative.https.window.js.ini": [
+      "6dc9ab2dd9d11857f6c4c8a28b4b8fd1cdd81ed8",
+      []
+     ],
+     "service-worker.tentative.https.window.js.ini": [
+      "bbff8f21d24f3e1b3281df64fa01a9eae2081cdc",
+      []
+     ],
+     "shared-worker-blob-fetch.tentative.https.window-expected.txt": [
+      "2fa1ec2bbc20620b6b949dcea8257109e55aa118",
+      []
+     ],
+     "shared-worker-blob-fetch.tentative.https.window.js.ini": [
+      "c9dd3ed62e0d8eb4b934b3a3fede2a993765d418",
+      []
+     ],
+     "shared-worker-blob-fetch.tentative.window-expected.txt": [
+      "c6368e6354de6f00438e758b290621add7be3f78",
+      []
+     ],
+     "shared-worker-blob-fetch.tentative.window.js.ini": [
+      "34d1d85c0b0e9b1d29ef7afac4010f54077f7e5f",
+      []
+     ],
+     "shared-worker-fetch.tentative.https.window-expected.txt": [
+      "614004f0837c38ec8adbdb4c8eb9fce88c1e6877",
+      []
+     ],
+     "shared-worker-fetch.tentative.https.window.js.ini": [
+      "7356faf4ad7d34c960e166a0564a5ce086b27c74",
+      []
+     ],
+     "shared-worker-fetch.tentative.window-expected.txt": [
+      "27ca7e55b73e1908f085c56aaf18094723171f89",
+      []
+     ],
+     "shared-worker-fetch.tentative.window.js.ini": [
+      "bf02bde963e49069fee3de60bd57ad2f917ec035",
+      []
+     ],
+     "shared-worker.tentative.https.window.js.ini": [
+      "4de66a048d445ccc3817ad46e3b5ca7f9d12170d",
+      []
+     ],
+     "shared-worker.tentative.window-expected.txt": [
+      "8718ffde7bc70a2802ec04ecd5c1e3b42e0dca32",
+      []
+     ],
+     "shared-worker.tentative.window.js.ini": [
+      "c9680e54b5f2ede058f3ea3e06502fd826ac36e9",
+      []
+     ],
+     "websocket.tentative.window-expected.txt": [
+      "11e2dcac903cb8fb7f68563036c4b8a4a9c1a9e7",
+      []
+     ],
+     "websocket.tentative.window.js.ini": [
+      "e91b14127676878ff778f9682b84d1738873f94c",
+      []
+     ],
+     "worker-blob-fetch.tentative.window.js.ini": [
+      "ea527a6f6611046fe4ce91c2b1ca747cb6ffda9b",
+      []
+     ],
+     "worker-fetch.tentative.https.window-expected.txt": [
+      "c4e0af3e551c20ffcdcd9905691c0bdc7a4d5e10",
+      []
+     ],
+     "worker-fetch.tentative.https.window.js.ini": [
+      "570aff38b9c0e0a674b99e40a29b51f4e0a3020f",
+      []
+     ],
+     "worker-fetch.tentative.window-expected.txt": [
+      "704fdf845ae321cec9e5d9577c0de494d34484c0",
+      []
+     ],
+     "worker-fetch.tentative.window.js.ini": [
+      "45b027e3eb57116bbab0b33d86fa724a871a413c",
+      []
+     ],
+     "xhr.tentative.window.js.ini": [
+      "96ddcb17c7c2ef362bbb65253181eb5251fed14d",
+      []
+     ]
     },
     "range": {
      "blob.any-expected.txt": [
@@ -358920,78 +358978,6 @@
         []
        ]
       },
-      "drawing-text-to-the-canvas": {
-       "2d.text.draw.fill.basic.png": [
-        "70d7b046cb226cfcb2bfeebe3477d3b580d8270a",
-        []
-       ],
-       "2d.text.draw.fill.maxWidth.large.png": [
-        "70d7b046cb226cfcb2bfeebe3477d3b580d8270a",
-        []
-       ],
-       "2d.text.draw.fill.rtl.png": [
-        "70d7b046cb226cfcb2bfeebe3477d3b580d8270a",
-        []
-       ],
-       "2d.text.draw.fontface.notinpage-expected.txt": [
-        "995821ce4b4ab2f7f64ef0528004a176171a04b2",
-        []
-       ],
-       "2d.text.draw.fontface.notinpage.html.ini": [
-        "5de0c0d20bb1ff6872367faefccfa85c52aec7b9",
-        []
-       ],
-       "2d.text.draw.stroke.basic.png": [
-        "fb3b5b830d345d2aa858e41673e08f99977baf08",
-        []
-       ],
-       "2d.text.measure.baselines-expected.txt": [
-        "fb1758f8793dc1b179dae4ff48a5be96710410c5",
-        []
-       ],
-       "2d.text.measure.baselines.html.ini": [
-        "b9ed0e903b22e680d97a28a4a9b386d748ec6f23",
-        []
-       ],
-       "direction-inherit-rtl.html.ini": [
-        "3b5c4cfa6b3d8a4db32e0037eb6c4ff54030e3fb",
-        []
-       ],
-       "direction-rtl.html.ini": [
-        "850216c2612f39dd7c07a372332fc7b0a788547d",
-        []
-       ],
-       "fontVariantCaps-3.html.ini": [
-        "89e2b31be5c09c37ae3d1cb261a64f929f7a2c7d",
-        []
-       ],
-       "fontVariantCaps-4.html.ini": [
-        "bd95cda9bd5d5ee94b10c816bef6ce499e364670",
-        []
-       ],
-       "reference": {
-        "direction-default-ref.html": [
-         "cef6df259c4801e93e7ce8dd1692e6f3157d77bc",
-         []
-        ],
-        "direction-rtl-ref.html": [
-         "010526d667b0746a014aa5706b19c001cd16d67e",
-         []
-        ],
-        "fontVariantCaps-1-ref.html": [
-         "8ea3c22be13dd3bf1421c3f80b121edcc8b2d3bc",
-         []
-        ],
-        "fontVariantCaps-2-ref.html": [
-         "c64f5d0ec2aea8307ea4ba5257498f2f236186e6",
-         []
-        ],
-        "fontVariantCaps-3-ref.html": [
-         "069fbfba8823e3e0f5fcf7ada4bd600b6dce1bbd",
-         []
-        ]
-       }
-      },
       "fill-and-stroke-styles": {
        "2d.fillStyle.colorObject.html.ini": [
         "059bd445312303d2a963fb4bc0cf6de5ee3c55e7",
@@ -359645,20 +359631,6 @@
          ]
         }
        },
-       "drawing-text-to-the-canvas": {
-        "canvas.2d.disconnected-ref.html": [
-         "b36d29b97f5e3b0065ea13ca008ce0054835efdc",
-         []
-        ],
-        "canvas.2d.disconnected.html.ini": [
-         "5cdcce07c65ae157e29030dd2f658f60d92dcb7d",
-         []
-        ],
-        "canvas.2d.fontStretch-ref.html": [
-         "00ecdccad3743db0d0a1ec99850f80ea7964d512",
-         []
-        ]
-       },
        "fill-and-stroke-styles": {
         "conic-gradient-expected.html": [
          "f347abc9d3939fb52c4fe08d949f8d96c4de3386",
@@ -359855,7 +359827,19 @@
          []
         ]
        },
-       "text-styles": {
+       "text": {
+        "canvas.2d.disconnected-ref.html": [
+         "b36d29b97f5e3b0065ea13ca008ce0054835efdc",
+         []
+        ],
+        "canvas.2d.disconnected.html.ini": [
+         "5cdcce07c65ae157e29030dd2f658f60d92dcb7d",
+         []
+        ],
+        "canvas.2d.fontStretch-ref.html": [
+         "00ecdccad3743db0d0a1ec99850f80ea7964d512",
+         []
+        ],
         "canvas_text_font_001-ref.htm": [
          "1a19757e001541f72bf375bd49c595d5a6ce85b0",
          []
@@ -360358,13 +360342,13 @@
         []
        ]
       },
-      "text-styles": {
+      "text": {
        "2d.text.draw.baseline.hanging-expected.txt": [
         "77c808753698d96427e9dc4f901b775cfde58ecf",
         []
        ],
        "2d.text.draw.baseline.hanging.html.ini": [
-        "e86ff8370811a2c465bb11553285f5ce13b187ce",
+        "4b933de9c99d2a37e9a55620fd4e497b4bcb386d",
         []
        ],
        "2d.text.draw.baseline.ideographic-expected.txt": [
@@ -360372,9 +360356,79 @@
         []
        ],
        "2d.text.draw.baseline.ideographic.html.ini": [
-        "6666ef57b2113a299fd94f38ab17a7706ebd3638",
+        "b099ac007cab7beb5bff1707d62768c8d77b1ecb",
         []
-       ]
+       ],
+       "2d.text.draw.fill.basic.png": [
+        "70d7b046cb226cfcb2bfeebe3477d3b580d8270a",
+        []
+       ],
+       "2d.text.draw.fill.maxWidth.large.png": [
+        "70d7b046cb226cfcb2bfeebe3477d3b580d8270a",
+        []
+       ],
+       "2d.text.draw.fill.rtl.png": [
+        "70d7b046cb226cfcb2bfeebe3477d3b580d8270a",
+        []
+       ],
+       "2d.text.draw.fontface.notinpage-expected.txt": [
+        "995821ce4b4ab2f7f64ef0528004a176171a04b2",
+        []
+       ],
+       "2d.text.draw.fontface.notinpage.html.ini": [
+        "5de0c0d20bb1ff6872367faefccfa85c52aec7b9",
+        []
+       ],
+       "2d.text.draw.stroke.basic.png": [
+        "fb3b5b830d345d2aa858e41673e08f99977baf08",
+        []
+       ],
+       "2d.text.measure.baselines-expected.txt": [
+        "fb1758f8793dc1b179dae4ff48a5be96710410c5",
+        []
+       ],
+       "2d.text.measure.baselines.html.ini": [
+        "b9ed0e903b22e680d97a28a4a9b386d748ec6f23",
+        []
+       ],
+       "direction-inherit-rtl.html.ini": [
+        "3b5c4cfa6b3d8a4db32e0037eb6c4ff54030e3fb",
+        []
+       ],
+       "direction-rtl.html.ini": [
+        "850216c2612f39dd7c07a372332fc7b0a788547d",
+        []
+       ],
+       "fontVariantCaps-3.html.ini": [
+        "89e2b31be5c09c37ae3d1cb261a64f929f7a2c7d",
+        []
+       ],
+       "fontVariantCaps-4.html.ini": [
+        "bd95cda9bd5d5ee94b10c816bef6ce499e364670",
+        []
+       ],
+       "reference": {
+        "direction-default-ref.html": [
+         "cef6df259c4801e93e7ce8dd1692e6f3157d77bc",
+         []
+        ],
+        "direction-rtl-ref.html": [
+         "010526d667b0746a014aa5706b19c001cd16d67e",
+         []
+        ],
+        "fontVariantCaps-1-ref.html": [
+         "8ea3c22be13dd3bf1421c3f80b121edcc8b2d3bc",
+         []
+        ],
+        "fontVariantCaps-2-ref.html": [
+         "c64f5d0ec2aea8307ea4ba5257498f2f236186e6",
+         []
+        ],
+        "fontVariantCaps-3-ref.html": [
+         "069fbfba8823e3e0f5fcf7ada4bd600b6dce1bbd",
+         []
+        ]
+       }
       },
       "wide-gamut-canvas": {
        "2d.color.space.p3.fillText.shadow.html.ini": [
@@ -360829,6 +360883,10 @@
         "bd95cda9bd5d5ee94b10c816bef6ce499e364670",
         []
        ],
+       "fontVariantCaps-5.html.ini": [
+        "98160f80ddb7ceef020460e2734bdd82cdcd02cc",
+        []
+       ],
        "fontVariantCaps-6.html.ini": [
         "f3690f83fbf3aef11cfd68b0c0289f46c9faf5c5",
         []
@@ -360917,7 +360975,7 @@
        []
       ],
       "name2dir-canvas.yaml": [
-       "c3818ebc76e8d85636ed298a580ec14f8253a6fa",
+       "2ad5197d34c166a15f7f19db2e74affc9e8d8c77",
        []
       ],
       "name2dir-offscreen.yaml": [
@@ -360964,16 +361022,12 @@
       ],
       "yaml": {
        "element": {
-        "drawing-text-to-the-canvas.yaml": [
-         "5d050477af1ad358eb40cc88b23389ba68d9d19a",
-         []
-        ],
         "meta.yaml": [
-         "e8c425042668653f6908e6cf25ad6bf658aeb2f5",
+         "7b6f28f1713f19c601be350e7ffa12a76f08a42e",
          []
         ],
-        "text-styles.yaml": [
-         "ee319c4fef183405b9bd855644941c32f995f833",
+        "text.yaml": [
+         "bdca739bd5bc8c4ab4b99754388cfed968c332ac",
          []
         ],
         "the-canvas-element.yaml": [
@@ -369210,7 +369264,7 @@
           []
          ],
          "track-cues-enter-exit.html.ini": [
-          "e05c3fa0f5a1c9200fdaa0ebbffe5860ddb8e1e8",
+          "7cbd3fa921ad5a1c8a0ff9c1c1fff1e69ce196ae",
           []
          ],
          "track-cues-enter-seeking.html.ini": [
@@ -378498,7 +378552,7 @@
     ]
    },
    "lint.ignore": [
-    "457c93c2149bad23ff39cf176e145419e3c6dabb",
+    "18d6fdb97e0da15e8a67a3f4dd231abe8a6caf4e",
     []
    ],
    "loading": {
@@ -384749,7 +384803,7 @@
      []
     ],
     "modulepreload-as.html.ini": [
-     "9a6dd7c0aefee675c17cacc6790fbbeeaca22ea7",
+     "0e2b659232948542e76417f3e2d8da0d8b3ea969",
      []
     ],
     "modulepreload-expected.txt": [
@@ -388242,7 +388296,7 @@
       ]
      },
      "pseudo-on-scroller.html.ini": [
-      "493cd2c1812b62f2c1abf6050010eaae89e7bf0c",
+      "2cd9297ee202a460769a011c9d78bdc5cef9c0b4",
       []
      ],
      "scroll-animation-initial-offset-ref.html": [
@@ -388331,6 +388385,10 @@
      ],
      "animation-with-root-scroller-ref.html": [
       "58435be6312cb06f936117c631679663c4ed2b07",
+      []
+     ],
+     "custom-property-ref.html": [
+      "66e29cde65026e330ad07728ef498edb675682f3",
       []
      ],
      "progress-based-effect-delay-ref.html": [
@@ -392924,7 +392982,7 @@
       []
      ],
      "soft-navigation-helper.js": [
-      "4b8a1e4a1feff2d549ac5d862044fb664c4c504d",
+      "edc9331c26375e81c3b89b6ad891bdcd10d90e86",
       []
      ]
     }
@@ -399825,7 +399883,7 @@
      []
     ],
     "full-cycle-test.https.any.js.ini": [
-     "a5dcb8a7d320720c1ec1084f40f391b9b8c6a66f",
+     "042658a6202ee92d98968267f267379e249c5d35",
      []
     ],
     "h264.annexb": [
@@ -399869,7 +399927,7 @@
      []
     ],
     "reconfiguring-encoder.https.any.js.ini": [
-     "5a8b4ae280e15389af5908f5e88d5251aa722c4d",
+     "d2281f7c657b83da9bc3f1c20976be40bad73b9a",
      []
     ],
     "sfx-aac.mp4": [
@@ -402413,7 +402471,7 @@
      []
     ],
     "supported-stats.https.html.ini": [
-     "6ef28630a8918535fcd4f3233b063ca36e866678",
+     "b1147a438f2f098922b4ca425badcce3e396aff7",
      []
     ]
    },
@@ -460061,14 +460119,14 @@
       ]
      ],
      "parsing.html": [
-      "063221ea0d9d02b93b677a3eaf172bc8f28f06b2",
+      "6cd3528c9558066e0311e5e455694eb7038b78d9",
       [
        null,
        {}
       ]
      ],
-     "serialize-group-rules-with-decls.tentative.html": [
-      "c3b6bb7be749e27d3ead37d2f2d32ab37d350828",
+     "serialize-group-rules-with-decls.html": [
+      "7e9aaafbeb894c2cbb2ff8acfb47b576f89da5c4",
       [
        null,
        {}
@@ -504142,7 +504200,7 @@
      ]
     ],
     "disallowed-navigation-to-blob.https.html": [
-     "9b299cd5e1e03641586004eb0b53ab14ce3bfd1b",
+     "3722609410745847a34b91555f3cd8e5b402d0bf",
      [
       null,
       {
@@ -504151,7 +504209,7 @@
      ]
     ],
     "disallowed-navigation-to-data.https.html": [
-     "7ab8edc7e11076ca33f4affa0a88a622e17afe8e",
+     "99c2e05bee3b491fe6f67976899527ec7bd1fa23",
      [
       null,
       {
@@ -504169,7 +504227,7 @@
      ]
     ],
     "disallowed-navigations-dangling-markup-urn.https.html": [
-     "1a5720b0343e485a374ab49cdafdecd63268e8c5",
+     "eceb2a4a901ebe82c6e0a38c4f237cae7cb43c88",
      [
       null,
       {
@@ -504187,7 +504245,7 @@
      ]
     ],
     "disallowed-navigations.https.html": [
-     "5cde50d4201beb36418fbb18399dec693d3d50d4",
+     "54fa95f16f469c59101e4f0c43206824770bcffe",
      [
       null,
       {
@@ -515012,1036 +515070,6 @@
       ]
      ]
     },
-    "local-network-access": {
-     "fenced-frame-no-preflight-required.tentative.https.window.js": [
-      "21233f61ea617cd8c53d598d5d6af14cf6b274dd",
-      [
-       "fetch/local-network-access/fenced-frame-no-preflight-required.tentative.https.window.html",
-       {
-        "script_metadata": [
-         [
-          "script",
-          "/common/dispatcher/dispatcher.js"
-         ],
-         [
-          "script",
-          "/common/utils.js"
-         ],
-         [
-          "script",
-          "resources/support.sub.js"
-         ],
-         [
-          "script",
-          "/fenced-frame/resources/utils.js"
-         ],
-         [
-          "timeout",
-          "long"
-         ]
-        ],
-        "timeout": "long"
-       }
-      ]
-     ],
-     "fenced-frame-subresource-fetch.tentative.https.window.js": [
-      "2dff325e3e1bcffc885ac59b46dbe278c9d00c42",
-      [
-       "fetch/local-network-access/fenced-frame-subresource-fetch.tentative.https.window.html?include=baseline",
-       {
-        "script_metadata": [
-         [
-          "script",
-          "/common/subset-tests-by-key.js"
-         ],
-         [
-          "script",
-          "/common/utils.js"
-         ],
-         [
-          "script",
-          "resources/support.sub.js"
-         ],
-         [
-          "script",
-          "/fenced-frame/resources/utils.js"
-         ],
-         [
-          "variant",
-          "?include=baseline"
-         ],
-         [
-          "variant",
-          "?include=from-local"
-         ],
-         [
-          "variant",
-          "?include=from-private"
-         ],
-         [
-          "variant",
-          "?include=from-public"
-         ],
-         [
-          "timeout",
-          "long"
-         ]
-        ],
-        "timeout": "long"
-       }
-      ],
-      [
-       "fetch/local-network-access/fenced-frame-subresource-fetch.tentative.https.window.html?include=from-local",
-       {
-        "script_metadata": [
-         [
-          "script",
-          "/common/subset-tests-by-key.js"
-         ],
-         [
-          "script",
-          "/common/utils.js"
-         ],
-         [
-          "script",
-          "resources/support.sub.js"
-         ],
-         [
-          "script",
-          "/fenced-frame/resources/utils.js"
-         ],
-         [
-          "variant",
-          "?include=baseline"
-         ],
-         [
-          "variant",
-          "?include=from-local"
-         ],
-         [
-          "variant",
-          "?include=from-private"
-         ],
-         [
-          "variant",
-          "?include=from-public"
-         ],
-         [
-          "timeout",
-          "long"
-         ]
-        ],
-        "timeout": "long"
-       }
-      ],
-      [
-       "fetch/local-network-access/fenced-frame-subresource-fetch.tentative.https.window.html?include=from-private",
-       {
-        "script_metadata": [
-         [
-          "script",
-          "/common/subset-tests-by-key.js"
-         ],
-         [
-          "script",
-          "/common/utils.js"
-         ],
-         [
-          "script",
-          "resources/support.sub.js"
-         ],
-         [
-          "script",
-          "/fenced-frame/resources/utils.js"
-         ],
-         [
-          "variant",
-          "?include=baseline"
-         ],
-         [
-          "variant",
-          "?include=from-local"
-         ],
-         [
-          "variant",
-          "?include=from-private"
-         ],
-         [
-          "variant",
-          "?include=from-public"
-         ],
-         [
-          "timeout",
-          "long"
-         ]
-        ],
-        "timeout": "long"
-       }
-      ],
-      [
-       "fetch/local-network-access/fenced-frame-subresource-fetch.tentative.https.window.html?include=from-public",
-       {
-        "script_metadata": [
-         [
-          "script",
-          "/common/subset-tests-by-key.js"
-         ],
-         [
-          "script",
-          "/common/utils.js"
-         ],
-         [
-          "script",
-          "resources/support.sub.js"
-         ],
-         [
-          "script",
-          "/fenced-frame/resources/utils.js"
-         ],
-         [
-          "variant",
-          "?include=baseline"
-         ],
-         [
-          "variant",
-          "?include=from-local"
-         ],
-         [
-          "variant",
-          "?include=from-private"
-         ],
-         [
-          "variant",
-          "?include=from-public"
-         ],
-         [
-          "timeout",
-          "long"
-         ]
-        ],
-        "timeout": "long"
-       }
-      ]
-     ],
-     "fenced-frame.tentative.https.window.js": [
-      "370cc9fbe9d28b002238ff027a44cfdea058ae73",
-      [
-       "fetch/local-network-access/fenced-frame.tentative.https.window.html",
-       {
-        "script_metadata": [
-         [
-          "script",
-          "/common/dispatcher/dispatcher.js"
-         ],
-         [
-          "script",
-          "/common/utils.js"
-         ],
-         [
-          "script",
-          "resources/support.sub.js"
-         ],
-         [
-          "script",
-          "/fenced-frame/resources/utils.js"
-         ],
-         [
-          "timeout",
-          "long"
-         ]
-        ],
-        "timeout": "long"
-       }
-      ]
-     ],
-     "fetch-from-treat-as-public.https.window.js": [
-      "084e03282f4f78cf10408647ffd7d9a2f274c0e7",
-      [
-       "fetch/local-network-access/fetch-from-treat-as-public.https.window.html",
-       {
-        "script_metadata": [
-         [
-          "script",
-          "/common/utils.js"
-         ],
-         [
-          "script",
-          "resources/support.sub.js"
-         ]
-        ]
-       }
-      ]
-     ],
-     "fetch.https.window.js": [
-      "dbc4f23f677c716ba439c508c42ee33f4b1b3233",
-      [
-       "fetch/local-network-access/fetch.https.window.html?include=baseline",
-       {
-        "script_metadata": [
-         [
-          "script",
-          "/common/subset-tests-by-key.js"
-         ],
-         [
-          "script",
-          "/common/utils.js"
-         ],
-         [
-          "script",
-          "resources/support.sub.js"
-         ],
-         [
-          "variant",
-          "?include=baseline"
-         ],
-         [
-          "variant",
-          "?include=from-local"
-         ],
-         [
-          "variant",
-          "?include=from-private"
-         ],
-         [
-          "variant",
-          "?include=from-public"
-         ]
-        ]
-       }
-      ],
-      [
-       "fetch/local-network-access/fetch.https.window.html?include=from-local",
-       {
-        "script_metadata": [
-         [
-          "script",
-          "/common/subset-tests-by-key.js"
-         ],
-         [
-          "script",
-          "/common/utils.js"
-         ],
-         [
-          "script",
-          "resources/support.sub.js"
-         ],
-         [
-          "variant",
-          "?include=baseline"
-         ],
-         [
-          "variant",
-          "?include=from-local"
-         ],
-         [
-          "variant",
-          "?include=from-private"
-         ],
-         [
-          "variant",
-          "?include=from-public"
-         ]
-        ]
-       }
-      ],
-      [
-       "fetch/local-network-access/fetch.https.window.html?include=from-private",
-       {
-        "script_metadata": [
-         [
-          "script",
-          "/common/subset-tests-by-key.js"
-         ],
-         [
-          "script",
-          "/common/utils.js"
-         ],
-         [
-          "script",
-          "resources/support.sub.js"
-         ],
-         [
-          "variant",
-          "?include=baseline"
-         ],
-         [
-          "variant",
-          "?include=from-local"
-         ],
-         [
-          "variant",
-          "?include=from-private"
-         ],
-         [
-          "variant",
-          "?include=from-public"
-         ]
-        ]
-       }
-      ],
-      [
-       "fetch/local-network-access/fetch.https.window.html?include=from-public",
-       {
-        "script_metadata": [
-         [
-          "script",
-          "/common/subset-tests-by-key.js"
-         ],
-         [
-          "script",
-          "/common/utils.js"
-         ],
-         [
-          "script",
-          "resources/support.sub.js"
-         ],
-         [
-          "variant",
-          "?include=baseline"
-         ],
-         [
-          "variant",
-          "?include=from-local"
-         ],
-         [
-          "variant",
-          "?include=from-private"
-         ],
-         [
-          "variant",
-          "?include=from-public"
-         ]
-        ]
-       }
-      ]
-     ],
-     "fetch.window.js": [
-      "8ee54c905629293255551d560b240c5ac7086707",
-      [
-       "fetch/local-network-access/fetch.window.html",
-       {
-        "script_metadata": [
-         [
-          "script",
-          "/common/utils.js"
-         ],
-         [
-          "script",
-          "resources/support.sub.js"
-         ]
-        ]
-       }
-      ]
-     ],
-     "iframe.tentative.https.window.js": [
-      "0208b715eaf22384c1fbdca4d8f95dd0ceb7119e",
-      [
-       "fetch/local-network-access/iframe.tentative.https.window.html",
-       {
-        "script_metadata": [
-         [
-          "script",
-          "/common/dispatcher/dispatcher.js"
-         ],
-         [
-          "script",
-          "/common/utils.js"
-         ],
-         [
-          "script",
-          "resources/support.sub.js"
-         ],
-         [
-          "timeout",
-          "long"
-         ]
-        ],
-        "timeout": "long"
-       }
-      ]
-     ],
-     "iframe.tentative.window.js": [
-      "c0770df83854c2c463febaaef65e073d46b4446a",
-      [
-       "fetch/local-network-access/iframe.tentative.window.html",
-       {
-        "script_metadata": [
-         [
-          "script",
-          "/common/dispatcher/dispatcher.js"
-         ],
-         [
-          "script",
-          "/common/utils.js"
-         ],
-         [
-          "script",
-          "resources/support.sub.js"
-         ]
-        ]
-       }
-      ]
-     ],
-     "mixed-content-fetch.tentative.https.window.js": [
-      "54485dc70474023683f2a9f4f4fba1f0df0032af",
-      [
-       "fetch/local-network-access/mixed-content-fetch.tentative.https.window.html",
-       {
-        "script_metadata": [
-         [
-          "script",
-          "/common/utils.js"
-         ],
-         [
-          "script",
-          "resources/support.sub.js"
-         ]
-        ]
-       }
-      ]
-     ],
-     "nested-worker.https.window.js": [
-      "3eeb435badb2d00404e0e214e1d42c4be2817f8a",
-      [
-       "fetch/local-network-access/nested-worker.https.window.html",
-       {
-        "script_metadata": [
-         [
-          "script",
-          "/common/utils.js"
-         ],
-         [
-          "script",
-          "resources/support.sub.js"
-         ]
-        ]
-       }
-      ]
-     ],
-     "nested-worker.window.js": [
-      "6d246e1c76d6c5f603c3e29430ae0586fdb9f5ad",
-      [
-       "fetch/local-network-access/nested-worker.window.html",
-       {
-        "script_metadata": [
-         [
-          "script",
-          "/common/utils.js"
-         ],
-         [
-          "script",
-          "resources/support.sub.js"
-         ]
-        ]
-       }
-      ]
-     ],
-     "preflight-cache.https.window.js": [
-      "87dbf501f628a25fa299240da5d5856f4366d8cc",
-      [
-       "fetch/local-network-access/preflight-cache.https.window.html",
-       {
-        "script_metadata": [
-         [
-          "script",
-          "/common/utils.js"
-         ],
-         [
-          "script",
-          "resources/support.sub.js"
-         ]
-        ]
-       }
-      ]
-     ],
-     "redirect.https.window.js": [
-      "efbd8f31f936ad22aac5685e04676177b1dc31d7",
-      [
-       "fetch/local-network-access/redirect.https.window.html",
-       {
-        "script_metadata": [
-         [
-          "script",
-          "/common/utils.js"
-         ],
-         [
-          "script",
-          "resources/support.sub.js"
-         ]
-        ]
-       }
-      ]
-     ],
-     "service-worker-background-fetch.https.window.js": [
-      "6369b166e21ef023c17ec5140282990092621990",
-      [
-       "fetch/local-network-access/service-worker-background-fetch.https.window.html",
-       {
-        "script_metadata": [
-         [
-          "script",
-          "/common/utils.js"
-         ],
-         [
-          "script",
-          "resources/support.sub.js"
-         ]
-        ]
-       }
-      ]
-     ],
-     "service-worker-fetch.https.window.js": [
-      "cb6d1f79b01f7c3fc7ba13884bd675bfd01d74a2",
-      [
-       "fetch/local-network-access/service-worker-fetch.https.window.html?1-8",
-       {
-        "script_metadata": [
-         [
-          "script",
-          "/common/utils.js"
-         ],
-         [
-          "script",
-          "resources/support.sub.js"
-         ],
-         [
-          "script",
-          "/common/subset-tests.js"
-         ],
-         [
-          "variant",
-          "?1-8"
-         ],
-         [
-          "variant",
-          "?9-last"
-         ]
-        ]
-       }
-      ],
-      [
-       "fetch/local-network-access/service-worker-fetch.https.window.html?9-last",
-       {
-        "script_metadata": [
-         [
-          "script",
-          "/common/utils.js"
-         ],
-         [
-          "script",
-          "resources/support.sub.js"
-         ],
-         [
-          "script",
-          "/common/subset-tests.js"
-         ],
-         [
-          "variant",
-          "?1-8"
-         ],
-         [
-          "variant",
-          "?9-last"
-         ]
-        ]
-       }
-      ]
-     ],
-     "service-worker-update.https.window.js": [
-      "4882d235bb01c7498cf956ba5a46c0d496e66067",
-      [
-       "fetch/local-network-access/service-worker-update.https.window.html",
-       {
-        "script_metadata": [
-         [
-          "script",
-          "/common/utils.js"
-         ],
-         [
-          "script",
-          "resources/support.sub.js"
-         ]
-        ]
-       }
-      ]
-     ],
-     "service-worker.https.window.js": [
-      "046f662a1275a9b017784139e85b83f419e71098",
-      [
-       "fetch/local-network-access/service-worker.https.window.html",
-       {
-        "script_metadata": [
-         [
-          "script",
-          "/common/utils.js"
-         ],
-         [
-          "script",
-          "resources/support.sub.js"
-         ]
-        ]
-       }
-      ]
-     ],
-     "shared-worker-blob-fetch.https.window.js": [
-      "269abb7edc4ce9be544c08b6206d8a2994e45759",
-      [
-       "fetch/local-network-access/shared-worker-blob-fetch.https.window.html",
-       {
-        "script_metadata": [
-         [
-          "script",
-          "/common/utils.js"
-         ],
-         [
-          "script",
-          "resources/support.sub.js"
-         ]
-        ]
-       }
-      ]
-     ],
-     "shared-worker-blob-fetch.window.js": [
-      "d430ea7383771844bb8955e4c6be23c63e6adc59",
-      [
-       "fetch/local-network-access/shared-worker-blob-fetch.window.html",
-       {
-        "script_metadata": [
-         [
-          "script",
-          "/common/utils.js"
-         ],
-         [
-          "script",
-          "resources/support.sub.js"
-         ]
-        ]
-       }
-      ]
-     ],
-     "shared-worker-fetch.https.window.js": [
-      "e5f2b94920276e0360d1566e5d343886c4382b54",
-      [
-       "fetch/local-network-access/shared-worker-fetch.https.window.html",
-       {
-        "script_metadata": [
-         [
-          "script",
-          "/common/utils.js"
-         ],
-         [
-          "script",
-          "resources/support.sub.js"
-         ]
-        ]
-       }
-      ]
-     ],
-     "shared-worker-fetch.window.js": [
-      "9bc1a89beadc673afe783eb56b5e0b2560dbf408",
-      [
-       "fetch/local-network-access/shared-worker-fetch.window.html",
-       {
-        "script_metadata": [
-         [
-          "script",
-          "/common/utils.js"
-         ],
-         [
-          "script",
-          "resources/support.sub.js"
-         ]
-        ]
-       }
-      ]
-     ],
-     "shared-worker.https.window.js": [
-      "24ae10878281b153ba6a267a8b3cb3c30a38b628",
-      [
-       "fetch/local-network-access/shared-worker.https.window.html",
-       {
-        "script_metadata": [
-         [
-          "script",
-          "/common/utils.js"
-         ],
-         [
-          "script",
-          "resources/support.sub.js"
-         ]
-        ]
-       }
-      ]
-     ],
-     "shared-worker.window.js": [
-      "ffa8a360c7032138b89d48507b0d1dcb9a23d5a2",
-      [
-       "fetch/local-network-access/shared-worker.window.html",
-       {
-        "script_metadata": [
-         [
-          "script",
-          "/common/utils.js"
-         ],
-         [
-          "script",
-          "resources/support.sub.js"
-         ]
-        ]
-       }
-      ]
-     ],
-     "websocket.https.window.js": [
-      "0731896098bcefa614ebdf28765a04766b5e6cda",
-      [
-       "fetch/local-network-access/websocket.https.window.html",
-       {
-        "script_metadata": [
-         [
-          "script",
-          "resources/support.sub.js"
-         ]
-        ]
-       }
-      ]
-     ],
-     "websocket.window.js": [
-      "a44cfaedec78b2570e868f3b81ac59575c76bc54",
-      [
-       "fetch/local-network-access/websocket.window.html",
-       {
-        "script_metadata": [
-         [
-          "script",
-          "resources/support.sub.js"
-         ]
-        ]
-       }
-      ]
-     ],
-     "worker-blob-fetch.window.js": [
-      "e119746b8a6b298a2c57bde63f03a59d8e72d477",
-      [
-       "fetch/local-network-access/worker-blob-fetch.window.html",
-       {
-        "script_metadata": [
-         [
-          "script",
-          "/common/utils.js"
-         ],
-         [
-          "script",
-          "resources/support.sub.js"
-         ]
-        ]
-       }
-      ]
-     ],
-     "worker-fetch.https.window.js": [
-      "89e0c3cf1f35f0cf741957c3eb0bff38a4705d93",
-      [
-       "fetch/local-network-access/worker-fetch.https.window.html",
-       {
-        "script_metadata": [
-         [
-          "script",
-          "/common/utils.js"
-         ],
-         [
-          "script",
-          "resources/support.sub.js"
-         ]
-        ]
-       }
-      ]
-     ],
-     "worker-fetch.window.js": [
-      "4d6b12f06715a8aaa88e2a290531713c036df3c1",
-      [
-       "fetch/local-network-access/worker-fetch.window.html",
-       {
-        "script_metadata": [
-         [
-          "script",
-          "/common/utils.js"
-         ],
-         [
-          "script",
-          "resources/support.sub.js"
-         ]
-        ]
-       }
-      ]
-     ],
-     "worker.https.window.js": [
-      "a0f19314ee386c67445afa149faa301938ff1110",
-      [
-       "fetch/local-network-access/worker.https.window.html",
-       {
-        "script_metadata": [
-         [
-          "script",
-          "/common/utils.js"
-         ],
-         [
-          "script",
-          "resources/support.sub.js"
-         ]
-        ]
-       }
-      ]
-     ],
-     "worker.window.js": [
-      "118c0992544265603671862af5511f6e7220af28",
-      [
-       "fetch/local-network-access/worker.window.html",
-       {
-        "script_metadata": [
-         [
-          "script",
-          "/common/utils.js"
-         ],
-         [
-          "script",
-          "resources/support.sub.js"
-         ]
-        ]
-       }
-      ]
-     ],
-     "xhr-from-treat-as-public.https.window.js": [
-      "3aae3050d97d900c51ad6a3b31de67db6442deea",
-      [
-       "fetch/local-network-access/xhr-from-treat-as-public.https.window.html",
-       {
-        "script_metadata": [
-         [
-          "script",
-          "/common/utils.js"
-         ],
-         [
-          "script",
-          "resources/support.sub.js"
-         ]
-        ]
-       }
-      ]
-     ],
-     "xhr.https.window.js": [
-      "4dc5da9912f1012bf72a9e689acfbc125d7c2923",
-      [
-       "fetch/local-network-access/xhr.https.window.html?include=from-local",
-       {
-        "script_metadata": [
-         [
-          "script",
-          "/common/subset-tests-by-key.js"
-         ],
-         [
-          "script",
-          "/common/utils.js"
-         ],
-         [
-          "script",
-          "resources/support.sub.js"
-         ],
-         [
-          "variant",
-          "?include=from-local"
-         ],
-         [
-          "variant",
-          "?include=from-private"
-         ],
-         [
-          "variant",
-          "?include=from-public"
-         ]
-        ]
-       }
-      ],
-      [
-       "fetch/local-network-access/xhr.https.window.html?include=from-private",
-       {
-        "script_metadata": [
-         [
-          "script",
-          "/common/subset-tests-by-key.js"
-         ],
-         [
-          "script",
-          "/common/utils.js"
-         ],
-         [
-          "script",
-          "resources/support.sub.js"
-         ],
-         [
-          "variant",
-          "?include=from-local"
-         ],
-         [
-          "variant",
-          "?include=from-private"
-         ],
-         [
-          "variant",
-          "?include=from-public"
-         ]
-        ]
-       }
-      ],
-      [
-       "fetch/local-network-access/xhr.https.window.html?include=from-public",
-       {
-        "script_metadata": [
-         [
-          "script",
-          "/common/subset-tests-by-key.js"
-         ],
-         [
-          "script",
-          "/common/utils.js"
-         ],
-         [
-          "script",
-          "resources/support.sub.js"
-         ],
-         [
-          "variant",
-          "?include=from-local"
-         ],
-         [
-          "variant",
-          "?include=from-private"
-         ],
-         [
-          "variant",
-          "?include=from-public"
-         ]
-        ]
-       }
-      ]
-     ],
-     "xhr.window.js": [
-      "fa307dc559a76cb3cd3f70f76a3c904f4602a442",
-      [
-       "fetch/local-network-access/xhr.window.html",
-       {
-        "script_metadata": [
-         [
-          "script",
-          "/common/utils.js"
-         ],
-         [
-          "script",
-          "resources/support.sub.js"
-         ]
-        ]
-       }
-      ]
-     ]
-    },
     "metadata": {
      "audio-worklet.https.html": [
       "3b768ef0b5ddd2d13361629afd011e6987cb38d0",
@@ -517098,6 +516126,1036 @@
          [
           "script",
           "/common/get-host-info.sub.js"
+         ]
+        ]
+       }
+      ]
+     ]
+    },
+    "private-network-access": {
+     "fenced-frame-no-preflight-required.tentative.https.window.js": [
+      "21233f61ea617cd8c53d598d5d6af14cf6b274dd",
+      [
+       "fetch/private-network-access/fenced-frame-no-preflight-required.tentative.https.window.html",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/dispatcher/dispatcher.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/support.sub.js"
+         ],
+         [
+          "script",
+          "/fenced-frame/resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
+     "fenced-frame-subresource-fetch.tentative.https.window.js": [
+      "2dff325e3e1bcffc885ac59b46dbe278c9d00c42",
+      [
+       "fetch/private-network-access/fenced-frame-subresource-fetch.tentative.https.window.html?include=baseline",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/subset-tests-by-key.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/support.sub.js"
+         ],
+         [
+          "script",
+          "/fenced-frame/resources/utils.js"
+         ],
+         [
+          "variant",
+          "?include=baseline"
+         ],
+         [
+          "variant",
+          "?include=from-local"
+         ],
+         [
+          "variant",
+          "?include=from-private"
+         ],
+         [
+          "variant",
+          "?include=from-public"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "fetch/private-network-access/fenced-frame-subresource-fetch.tentative.https.window.html?include=from-local",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/subset-tests-by-key.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/support.sub.js"
+         ],
+         [
+          "script",
+          "/fenced-frame/resources/utils.js"
+         ],
+         [
+          "variant",
+          "?include=baseline"
+         ],
+         [
+          "variant",
+          "?include=from-local"
+         ],
+         [
+          "variant",
+          "?include=from-private"
+         ],
+         [
+          "variant",
+          "?include=from-public"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "fetch/private-network-access/fenced-frame-subresource-fetch.tentative.https.window.html?include=from-private",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/subset-tests-by-key.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/support.sub.js"
+         ],
+         [
+          "script",
+          "/fenced-frame/resources/utils.js"
+         ],
+         [
+          "variant",
+          "?include=baseline"
+         ],
+         [
+          "variant",
+          "?include=from-local"
+         ],
+         [
+          "variant",
+          "?include=from-private"
+         ],
+         [
+          "variant",
+          "?include=from-public"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "fetch/private-network-access/fenced-frame-subresource-fetch.tentative.https.window.html?include=from-public",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/subset-tests-by-key.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/support.sub.js"
+         ],
+         [
+          "script",
+          "/fenced-frame/resources/utils.js"
+         ],
+         [
+          "variant",
+          "?include=baseline"
+         ],
+         [
+          "variant",
+          "?include=from-local"
+         ],
+         [
+          "variant",
+          "?include=from-private"
+         ],
+         [
+          "variant",
+          "?include=from-public"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
+     "fenced-frame.tentative.https.window.js": [
+      "370cc9fbe9d28b002238ff027a44cfdea058ae73",
+      [
+       "fetch/private-network-access/fenced-frame.tentative.https.window.html",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/dispatcher/dispatcher.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/support.sub.js"
+         ],
+         [
+          "script",
+          "/fenced-frame/resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
+     "fetch-from-treat-as-public.tentative.https.window.js": [
+      "084e03282f4f78cf10408647ffd7d9a2f274c0e7",
+      [
+       "fetch/private-network-access/fetch-from-treat-as-public.tentative.https.window.html",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/support.sub.js"
+         ]
+        ]
+       }
+      ]
+     ],
+     "fetch.tentative.https.window.js": [
+      "dbc4f23f677c716ba439c508c42ee33f4b1b3233",
+      [
+       "fetch/private-network-access/fetch.tentative.https.window.html?include=baseline",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/subset-tests-by-key.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/support.sub.js"
+         ],
+         [
+          "variant",
+          "?include=baseline"
+         ],
+         [
+          "variant",
+          "?include=from-local"
+         ],
+         [
+          "variant",
+          "?include=from-private"
+         ],
+         [
+          "variant",
+          "?include=from-public"
+         ]
+        ]
+       }
+      ],
+      [
+       "fetch/private-network-access/fetch.tentative.https.window.html?include=from-local",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/subset-tests-by-key.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/support.sub.js"
+         ],
+         [
+          "variant",
+          "?include=baseline"
+         ],
+         [
+          "variant",
+          "?include=from-local"
+         ],
+         [
+          "variant",
+          "?include=from-private"
+         ],
+         [
+          "variant",
+          "?include=from-public"
+         ]
+        ]
+       }
+      ],
+      [
+       "fetch/private-network-access/fetch.tentative.https.window.html?include=from-private",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/subset-tests-by-key.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/support.sub.js"
+         ],
+         [
+          "variant",
+          "?include=baseline"
+         ],
+         [
+          "variant",
+          "?include=from-local"
+         ],
+         [
+          "variant",
+          "?include=from-private"
+         ],
+         [
+          "variant",
+          "?include=from-public"
+         ]
+        ]
+       }
+      ],
+      [
+       "fetch/private-network-access/fetch.tentative.https.window.html?include=from-public",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/subset-tests-by-key.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/support.sub.js"
+         ],
+         [
+          "variant",
+          "?include=baseline"
+         ],
+         [
+          "variant",
+          "?include=from-local"
+         ],
+         [
+          "variant",
+          "?include=from-private"
+         ],
+         [
+          "variant",
+          "?include=from-public"
+         ]
+        ]
+       }
+      ]
+     ],
+     "fetch.tentative.window.js": [
+      "8ee54c905629293255551d560b240c5ac7086707",
+      [
+       "fetch/private-network-access/fetch.tentative.window.html",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/support.sub.js"
+         ]
+        ]
+       }
+      ]
+     ],
+     "iframe.tentative.https.window.js": [
+      "0208b715eaf22384c1fbdca4d8f95dd0ceb7119e",
+      [
+       "fetch/private-network-access/iframe.tentative.https.window.html",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/dispatcher/dispatcher.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/support.sub.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
+     "iframe.tentative.window.js": [
+      "c0770df83854c2c463febaaef65e073d46b4446a",
+      [
+       "fetch/private-network-access/iframe.tentative.window.html",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/dispatcher/dispatcher.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/support.sub.js"
+         ]
+        ]
+       }
+      ]
+     ],
+     "mixed-content-fetch.tentative.https.window.js": [
+      "54485dc70474023683f2a9f4f4fba1f0df0032af",
+      [
+       "fetch/private-network-access/mixed-content-fetch.tentative.https.window.html",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/support.sub.js"
+         ]
+        ]
+       }
+      ]
+     ],
+     "nested-worker.tentative.https.window.js": [
+      "3eeb435badb2d00404e0e214e1d42c4be2817f8a",
+      [
+       "fetch/private-network-access/nested-worker.tentative.https.window.html",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/support.sub.js"
+         ]
+        ]
+       }
+      ]
+     ],
+     "nested-worker.tentative.window.js": [
+      "6d246e1c76d6c5f603c3e29430ae0586fdb9f5ad",
+      [
+       "fetch/private-network-access/nested-worker.tentative.window.html",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/support.sub.js"
+         ]
+        ]
+       }
+      ]
+     ],
+     "preflight-cache.https.tentative.window.js": [
+      "87dbf501f628a25fa299240da5d5856f4366d8cc",
+      [
+       "fetch/private-network-access/preflight-cache.https.tentative.window.html",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/support.sub.js"
+         ]
+        ]
+       }
+      ]
+     ],
+     "redirect.tentative.https.window.js": [
+      "efbd8f31f936ad22aac5685e04676177b1dc31d7",
+      [
+       "fetch/private-network-access/redirect.tentative.https.window.html",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/support.sub.js"
+         ]
+        ]
+       }
+      ]
+     ],
+     "service-worker-background-fetch.tentative.https.window.js": [
+      "6369b166e21ef023c17ec5140282990092621990",
+      [
+       "fetch/private-network-access/service-worker-background-fetch.tentative.https.window.html",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/support.sub.js"
+         ]
+        ]
+       }
+      ]
+     ],
+     "service-worker-fetch.tentative.https.window.js": [
+      "cb6d1f79b01f7c3fc7ba13884bd675bfd01d74a2",
+      [
+       "fetch/private-network-access/service-worker-fetch.tentative.https.window.html?1-8",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/support.sub.js"
+         ],
+         [
+          "script",
+          "/common/subset-tests.js"
+         ],
+         [
+          "variant",
+          "?1-8"
+         ],
+         [
+          "variant",
+          "?9-last"
+         ]
+        ]
+       }
+      ],
+      [
+       "fetch/private-network-access/service-worker-fetch.tentative.https.window.html?9-last",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/support.sub.js"
+         ],
+         [
+          "script",
+          "/common/subset-tests.js"
+         ],
+         [
+          "variant",
+          "?1-8"
+         ],
+         [
+          "variant",
+          "?9-last"
+         ]
+        ]
+       }
+      ]
+     ],
+     "service-worker-update.tentative.https.window.js": [
+      "4882d235bb01c7498cf956ba5a46c0d496e66067",
+      [
+       "fetch/private-network-access/service-worker-update.tentative.https.window.html",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/support.sub.js"
+         ]
+        ]
+       }
+      ]
+     ],
+     "service-worker.tentative.https.window.js": [
+      "046f662a1275a9b017784139e85b83f419e71098",
+      [
+       "fetch/private-network-access/service-worker.tentative.https.window.html",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/support.sub.js"
+         ]
+        ]
+       }
+      ]
+     ],
+     "shared-worker-blob-fetch.tentative.https.window.js": [
+      "269abb7edc4ce9be544c08b6206d8a2994e45759",
+      [
+       "fetch/private-network-access/shared-worker-blob-fetch.tentative.https.window.html",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/support.sub.js"
+         ]
+        ]
+       }
+      ]
+     ],
+     "shared-worker-blob-fetch.tentative.window.js": [
+      "d430ea7383771844bb8955e4c6be23c63e6adc59",
+      [
+       "fetch/private-network-access/shared-worker-blob-fetch.tentative.window.html",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/support.sub.js"
+         ]
+        ]
+       }
+      ]
+     ],
+     "shared-worker-fetch.tentative.https.window.js": [
+      "e5f2b94920276e0360d1566e5d343886c4382b54",
+      [
+       "fetch/private-network-access/shared-worker-fetch.tentative.https.window.html",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/support.sub.js"
+         ]
+        ]
+       }
+      ]
+     ],
+     "shared-worker-fetch.tentative.window.js": [
+      "9bc1a89beadc673afe783eb56b5e0b2560dbf408",
+      [
+       "fetch/private-network-access/shared-worker-fetch.tentative.window.html",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/support.sub.js"
+         ]
+        ]
+       }
+      ]
+     ],
+     "shared-worker.tentative.https.window.js": [
+      "24ae10878281b153ba6a267a8b3cb3c30a38b628",
+      [
+       "fetch/private-network-access/shared-worker.tentative.https.window.html",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/support.sub.js"
+         ]
+        ]
+       }
+      ]
+     ],
+     "shared-worker.tentative.window.js": [
+      "ffa8a360c7032138b89d48507b0d1dcb9a23d5a2",
+      [
+       "fetch/private-network-access/shared-worker.tentative.window.html",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/support.sub.js"
+         ]
+        ]
+       }
+      ]
+     ],
+     "websocket.tentative.https.window.js": [
+      "0731896098bcefa614ebdf28765a04766b5e6cda",
+      [
+       "fetch/private-network-access/websocket.tentative.https.window.html",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "resources/support.sub.js"
+         ]
+        ]
+       }
+      ]
+     ],
+     "websocket.tentative.window.js": [
+      "a44cfaedec78b2570e868f3b81ac59575c76bc54",
+      [
+       "fetch/private-network-access/websocket.tentative.window.html",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "resources/support.sub.js"
+         ]
+        ]
+       }
+      ]
+     ],
+     "worker-blob-fetch.tentative.window.js": [
+      "e119746b8a6b298a2c57bde63f03a59d8e72d477",
+      [
+       "fetch/private-network-access/worker-blob-fetch.tentative.window.html",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/support.sub.js"
+         ]
+        ]
+       }
+      ]
+     ],
+     "worker-fetch.tentative.https.window.js": [
+      "89e0c3cf1f35f0cf741957c3eb0bff38a4705d93",
+      [
+       "fetch/private-network-access/worker-fetch.tentative.https.window.html",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/support.sub.js"
+         ]
+        ]
+       }
+      ]
+     ],
+     "worker-fetch.tentative.window.js": [
+      "4d6b12f06715a8aaa88e2a290531713c036df3c1",
+      [
+       "fetch/private-network-access/worker-fetch.tentative.window.html",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/support.sub.js"
+         ]
+        ]
+       }
+      ]
+     ],
+     "worker.tentative.https.window.js": [
+      "a0f19314ee386c67445afa149faa301938ff1110",
+      [
+       "fetch/private-network-access/worker.tentative.https.window.html",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/support.sub.js"
+         ]
+        ]
+       }
+      ]
+     ],
+     "worker.tentative.window.js": [
+      "118c0992544265603671862af5511f6e7220af28",
+      [
+       "fetch/private-network-access/worker.tentative.window.html",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/support.sub.js"
+         ]
+        ]
+       }
+      ]
+     ],
+     "xhr-from-treat-as-public.tentative.https.window.js": [
+      "3aae3050d97d900c51ad6a3b31de67db6442deea",
+      [
+       "fetch/private-network-access/xhr-from-treat-as-public.tentative.https.window.html",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/support.sub.js"
+         ]
+        ]
+       }
+      ]
+     ],
+     "xhr.https.tentative.window.js": [
+      "4dc5da9912f1012bf72a9e689acfbc125d7c2923",
+      [
+       "fetch/private-network-access/xhr.https.tentative.window.html?include=from-local",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/subset-tests-by-key.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/support.sub.js"
+         ],
+         [
+          "variant",
+          "?include=from-local"
+         ],
+         [
+          "variant",
+          "?include=from-private"
+         ],
+         [
+          "variant",
+          "?include=from-public"
+         ]
+        ]
+       }
+      ],
+      [
+       "fetch/private-network-access/xhr.https.tentative.window.html?include=from-private",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/subset-tests-by-key.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/support.sub.js"
+         ],
+         [
+          "variant",
+          "?include=from-local"
+         ],
+         [
+          "variant",
+          "?include=from-private"
+         ],
+         [
+          "variant",
+          "?include=from-public"
+         ]
+        ]
+       }
+      ],
+      [
+       "fetch/private-network-access/xhr.https.tentative.window.html?include=from-public",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/subset-tests-by-key.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/support.sub.js"
+         ],
+         [
+          "variant",
+          "?include=from-local"
+         ],
+         [
+          "variant",
+          "?include=from-private"
+         ],
+         [
+          "variant",
+          "?include=from-public"
+         ]
+        ]
+       }
+      ]
+     ],
+     "xhr.tentative.window.js": [
+      "fa307dc559a76cb3cd3f70f76a3c904f4602a442",
+      [
+       "fetch/private-network-access/xhr.tentative.window.html",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/support.sub.js"
          ]
         ]
        }
@@ -529930,316 +529988,6 @@
         ]
        ]
       },
-      "drawing-text-to-the-canvas": {
-       "2d.text.draw.align.center.html": [
-        "6f54844b29ab66b0548d187c97a14e68e0096364",
-        [
-         null,
-         {}
-        ]
-       ],
-       "2d.text.draw.align.end.ltr.html": [
-        "39751e139ca33b48dae855932d0ec9048906fb81",
-        [
-         null,
-         {}
-        ]
-       ],
-       "2d.text.draw.align.end.rtl.html": [
-        "86645a91742340a443e512a2c5b57f5a67d6c5ea",
-        [
-         null,
-         {}
-        ]
-       ],
-       "2d.text.draw.align.left.html": [
-        "cd01f2588af9fd4537cba3656910e06e92538f13",
-        [
-         null,
-         {}
-        ]
-       ],
-       "2d.text.draw.align.right.html": [
-        "64207b06e6e90744680fc219f32ea79f23d2cfa4",
-        [
-         null,
-         {}
-        ]
-       ],
-       "2d.text.draw.align.start.ltr.html": [
-        "abf8086e8c1b32185d7df65884dcf30a6cc338e1",
-        [
-         null,
-         {}
-        ]
-       ],
-       "2d.text.draw.align.start.rtl.html": [
-        "8c5b819854c535f8f5c78dcbebe25b5ec72e33b1",
-        [
-         null,
-         {}
-        ]
-       ],
-       "2d.text.draw.fill.maxWidth.NaN.html": [
-        "9705d2883065a566b3bf15f34bf703683cf34888",
-        [
-         null,
-         {}
-        ]
-       ],
-       "2d.text.draw.fill.maxWidth.bound.html": [
-        "88dc1099238741923c335a6b39c1e3821a4ff7ce",
-        [
-         null,
-         {}
-        ]
-       ],
-       "2d.text.draw.fill.maxWidth.fontface.html": [
-        "ed241deeb222de3109b7ad53dbfed9a1e27f661c",
-        [
-         null,
-         {}
-        ]
-       ],
-       "2d.text.draw.fill.maxWidth.negative.html": [
-        "ad50d5760834a117d1f348c144065c87211dce86",
-        [
-         null,
-         {}
-        ]
-       ],
-       "2d.text.draw.fill.maxWidth.small.html": [
-        "75866af40628ba88e6ab8861956b80a8263476a7",
-        [
-         null,
-         {}
-        ]
-       ],
-       "2d.text.draw.fill.maxWidth.zero.html": [
-        "a175a5787905548e03336b13c89ee3fe433297d2",
-        [
-         null,
-         {}
-        ]
-       ],
-       "2d.text.draw.fill.unaffected.html": [
-        "94ed31d1993eb6736c5a0c635bbe80aaa6a5391d",
-        [
-         null,
-         {}
-        ]
-       ],
-       "2d.text.draw.fontface.html": [
-        "cb7d6984d1f9e4380506136661cec3ba7ec09426",
-        [
-         null,
-         {}
-        ]
-       ],
-       "2d.text.draw.fontface.notinpage.html": [
-        "6c347399b2a53a00943ee6a74c0b83b343d44865",
-        [
-         null,
-         {}
-        ]
-       ],
-       "2d.text.draw.fontface.repeat.html": [
-        "d6d33a07681b4ab20ccff156c2918b2cc336aeee",
-        [
-         null,
-         {}
-        ]
-       ],
-       "2d.text.draw.space.basic.html": [
-        "2c5d4710134417be51c00ba1f8eb18957449407a",
-        [
-         null,
-         {}
-        ]
-       ],
-       "2d.text.draw.space.collapse.nonspace.html": [
-        "00877c6a0b78b38caba641498a9c53727b2f0cc7",
-        [
-         null,
-         {}
-        ]
-       ],
-       "2d.text.draw.stroke.unaffected.html": [
-        "76a36476eeb21c32908a10f8da9d24e8a0cb6bfb",
-        [
-         null,
-         {}
-        ]
-       ],
-       "2d.text.drawing.style.absolute.spacing.html": [
-        "1207f84e2bfbe54281ae94792675e837e8bb5390",
-        [
-         null,
-         {}
-        ]
-       ],
-       "2d.text.drawing.style.font-relative.spacing.html": [
-        "a232ec16029e5a58b522962791bc8c8473be65e4",
-        [
-         null,
-         {}
-        ]
-       ],
-       "2d.text.drawing.style.fontKerning.html": [
-        "6de9c6eb504209806ce529bf04522237dacc9694",
-        [
-         null,
-         {}
-        ]
-       ],
-       "2d.text.drawing.style.fontKerning.with.uppercase.html": [
-        "991f35af0dd841cc3c3671330a6454dbcb7ffe58",
-        [
-         null,
-         {}
-        ]
-       ],
-       "2d.text.drawing.style.fontStretch.settings.html": [
-        "b19eced89171199dcfb57f1d5aea4b8f7e83c427",
-        [
-         null,
-         {}
-        ]
-       ],
-       "2d.text.drawing.style.fontVariant.settings.html": [
-        "cff5ad183a084adddc905ef76ff58e7a3ad6a5f9",
-        [
-         null,
-         {}
-        ]
-       ],
-       "2d.text.drawing.style.invalid.spacing.html": [
-        "a0b8340b2cddff4d38cfdcea6529f7911a17c1a9",
-        [
-         null,
-         {}
-        ]
-       ],
-       "2d.text.drawing.style.letterSpacing.change.font.html": [
-        "d7543e5d9a829c6c91e987f5e38872d1d04300a5",
-        [
-         null,
-         {}
-        ]
-       ],
-       "2d.text.drawing.style.letterSpacing.measure.html": [
-        "9b0ce16eafde2685eb145d326fc3531a354434ce",
-        [
-         null,
-         {}
-        ]
-       ],
-       "2d.text.drawing.style.nonfinite.spacing.html": [
-        "5ba20208e5eb36cde14c5b5a34f877a324a37edf",
-        [
-         null,
-         {}
-        ]
-       ],
-       "2d.text.drawing.style.textRendering.settings.html": [
-        "dee856842ae8e764ddf454e77749c098e8d8ce6d",
-        [
-         null,
-         {}
-        ]
-       ],
-       "2d.text.drawing.style.wordSpacing.change.font.html": [
-        "8bad1a0447cba76e0f6178678ddd588f2af07c65",
-        [
-         null,
-         {}
-        ]
-       ],
-       "2d.text.drawing.style.wordSpacing.measure.html": [
-        "d4f10032eb5b33d51d97f13383eaea174455e585",
-        [
-         null,
-         {}
-        ]
-       ],
-       "2d.text.measure.actualBoundingBox.html": [
-        "2317493032182fd8e58a71eff64e796e7a05dfbb",
-        [
-         null,
-         {}
-        ]
-       ],
-       "2d.text.measure.advances.html": [
-        "84d0af46b84052e3244404636d399bed5e07e369",
-        [
-         null,
-         {}
-        ]
-       ],
-       "2d.text.measure.baselines.html": [
-        "f5d149239611a932da0785cabf6e18db653d1305",
-        [
-         null,
-         {}
-        ]
-       ],
-       "2d.text.measure.boundingBox.direction.html": [
-        "a00eb7eb9c056c9a994ce6ffaa73cee46eef6cc4",
-        [
-         null,
-         {}
-        ]
-       ],
-       "2d.text.measure.boundingBox.textAlign.html": [
-        "88f594c7c8f5a6518cf710f1d31a14fc130ba062",
-        [
-         null,
-         {}
-        ]
-       ],
-       "2d.text.measure.emHeights.html": [
-        "d1085abd6e7c16a2c9873ee866b7b86ce7c0f530",
-        [
-         null,
-         {}
-        ]
-       ],
-       "2d.text.measure.fontBoundingBox.ahem.html": [
-        "80cbabac8f23cb8a0c432c4c04a77ec9287cd67f",
-        [
-         null,
-         {}
-        ]
-       ],
-       "2d.text.measure.fontBoundingBox.html": [
-        "03f2dfc04203845edf0ca2fa451817da4ab09f2f",
-        [
-         null,
-         {}
-        ]
-       ],
-       "2d.text.measure.rtl.text.html": [
-        "a92d5cbd0be86825797744c734bec255c7c98e51",
-        [
-         null,
-         {}
-        ]
-       ],
-       "2d.text.measure.width.basic.html": [
-        "1d5502d8f0ee5d8d8d33a083e677e31a5d9bbfe3",
-        [
-         null,
-         {}
-        ]
-       ],
-       "2d.text.measure.width.empty.html": [
-        "ce9e80b3381e8f5cc3b3d2e88473aeea62f6b05d",
-        [
-         null,
-         {}
-        ]
-       ]
-      },
       "fill-and-stroke-styles": {
        "2d.fillStyle.CSSHSL.html": [
         "481d6fe9e51914cb864dd024ab7e37078442646e",
@@ -535083,7 +534831,7 @@
         ]
        ]
       },
-      "text-styles": {
+      "text": {
        "2d.text.align.default.html": [
         "d32f7831d056202d71ea387333cd090bcf591b8e",
         [
@@ -535121,6 +534869,55 @@
        ],
        "2d.text.baseline.valid.html": [
         "238f6ff7dc81cfcd2da245ff6e30adb4281eedde",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.text.draw.align.center.html": [
+        "6f54844b29ab66b0548d187c97a14e68e0096364",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.text.draw.align.end.ltr.html": [
+        "39751e139ca33b48dae855932d0ec9048906fb81",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.text.draw.align.end.rtl.html": [
+        "86645a91742340a443e512a2c5b57f5a67d6c5ea",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.text.draw.align.left.html": [
+        "cd01f2588af9fd4537cba3656910e06e92538f13",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.text.draw.align.right.html": [
+        "64207b06e6e90744680fc219f32ea79f23d2cfa4",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.text.draw.align.start.ltr.html": [
+        "abf8086e8c1b32185d7df65884dcf30a6cc338e1",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.text.draw.align.start.rtl.html": [
+        "8c5b819854c535f8f5c78dcbebe25b5ec72e33b1",
         [
          null,
          {}
@@ -535168,8 +534965,92 @@
          {}
         ]
        ],
+       "2d.text.draw.fill.maxWidth.NaN.html": [
+        "9705d2883065a566b3bf15f34bf703683cf34888",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.text.draw.fill.maxWidth.bound.html": [
+        "88dc1099238741923c335a6b39c1e3821a4ff7ce",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.text.draw.fill.maxWidth.fontface.html": [
+        "ed241deeb222de3109b7ad53dbfed9a1e27f661c",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.text.draw.fill.maxWidth.negative.html": [
+        "ad50d5760834a117d1f348c144065c87211dce86",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.text.draw.fill.maxWidth.small.html": [
+        "75866af40628ba88e6ab8861956b80a8263476a7",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.text.draw.fill.maxWidth.zero.html": [
+        "a175a5787905548e03336b13c89ee3fe433297d2",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.text.draw.fill.unaffected.html": [
+        "94ed31d1993eb6736c5a0c635bbe80aaa6a5391d",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.text.draw.fontface.html": [
+        "cb7d6984d1f9e4380506136661cec3ba7ec09426",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.text.draw.fontface.notinpage.html": [
+        "6c347399b2a53a00943ee6a74c0b83b343d44865",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.text.draw.fontface.repeat.html": [
+        "d6d33a07681b4ab20ccff156c2918b2cc336aeee",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.text.draw.space.basic.html": [
+        "2c5d4710134417be51c00ba1f8eb18957449407a",
+        [
+         null,
+         {}
+        ]
+       ],
        "2d.text.draw.space.collapse.end.html": [
         "aebdd0e87e5de65b7d7e8f28b19c6f623218aee3",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.text.draw.space.collapse.nonspace.html": [
+        "00877c6a0b78b38caba641498a9c53727b2f0cc7",
         [
          null,
          {}
@@ -535191,6 +535072,104 @@
        ],
        "2d.text.draw.space.collapse.start.html": [
         "6f1b81e533eb42fd950c8fc4251a0af40c7d1971",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.text.draw.stroke.unaffected.html": [
+        "76a36476eeb21c32908a10f8da9d24e8a0cb6bfb",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.text.drawing.style.absolute.spacing.html": [
+        "1207f84e2bfbe54281ae94792675e837e8bb5390",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.text.drawing.style.font-relative.spacing.html": [
+        "a232ec16029e5a58b522962791bc8c8473be65e4",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.text.drawing.style.fontKerning.html": [
+        "6de9c6eb504209806ce529bf04522237dacc9694",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.text.drawing.style.fontKerning.with.uppercase.html": [
+        "991f35af0dd841cc3c3671330a6454dbcb7ffe58",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.text.drawing.style.fontStretch.settings.html": [
+        "b19eced89171199dcfb57f1d5aea4b8f7e83c427",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.text.drawing.style.fontVariant.settings.html": [
+        "cff5ad183a084adddc905ef76ff58e7a3ad6a5f9",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.text.drawing.style.invalid.spacing.html": [
+        "a0b8340b2cddff4d38cfdcea6529f7911a17c1a9",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.text.drawing.style.letterSpacing.change.font.html": [
+        "d7543e5d9a829c6c91e987f5e38872d1d04300a5",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.text.drawing.style.letterSpacing.measure.html": [
+        "9b0ce16eafde2685eb145d326fc3531a354434ce",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.text.drawing.style.nonfinite.spacing.html": [
+        "5ba20208e5eb36cde14c5b5a34f877a324a37edf",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.text.drawing.style.textRendering.settings.html": [
+        "dee856842ae8e764ddf454e77749c098e8d8ce6d",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.text.drawing.style.wordSpacing.change.font.html": [
+        "8bad1a0447cba76e0f6178678ddd588f2af07c65",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.text.drawing.style.wordSpacing.measure.html": [
+        "d4f10032eb5b33d51d97f13383eaea174455e585",
         [
          null,
          {}
@@ -535273,6 +535252,83 @@
          {}
         ]
        ],
+       "2d.text.measure.actualBoundingBox.html": [
+        "2317493032182fd8e58a71eff64e796e7a05dfbb",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.text.measure.advances.html": [
+        "84d0af46b84052e3244404636d399bed5e07e369",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.text.measure.baselines.html": [
+        "f5d149239611a932da0785cabf6e18db653d1305",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.text.measure.boundingBox.direction.html": [
+        "a00eb7eb9c056c9a994ce6ffaa73cee46eef6cc4",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.text.measure.boundingBox.textAlign.html": [
+        "88f594c7c8f5a6518cf710f1d31a14fc130ba062",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.text.measure.emHeights.html": [
+        "d1085abd6e7c16a2c9873ee866b7b86ce7c0f530",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.text.measure.fontBoundingBox.ahem.html": [
+        "80cbabac8f23cb8a0c432c4c04a77ec9287cd67f",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.text.measure.fontBoundingBox.html": [
+        "03f2dfc04203845edf0ca2fa451817da4ab09f2f",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.text.measure.rtl.text.html": [
+        "a92d5cbd0be86825797744c734bec255c7c98e51",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.text.measure.width.basic.html": [
+        "1d5502d8f0ee5d8d8d33a083e677e31a5d9bbfe3",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.text.measure.width.empty.html": [
+        "ce9e80b3381e8f5cc3b3d2e88473aeea62f6b05d",
+        [
+         null,
+         {}
+        ]
+       ],
        "2d.text.measure.width.space.html": [
         "1cf93c032d43b8e6c9bafd46c231dc494e408b95",
         [
@@ -535281,7 +535337,7 @@
         ]
        ],
        "parent-style-relative-units.html": [
-        "ee44c0b75023fb3f8e844bdfc97d8e298e93cae5",
+        "b9a6b314c6ff2b8cff34740ef13d708ecdc976eb",
         [
          null,
          {}
@@ -576298,7 +576354,7 @@
       ]
      ],
      "non-local-ports.sub.window.js": [
-      "06ecb3ab21b9cee404bb3618117dd0511da076b3",
+      "8c9eb33c4f77ba1b7724a253a3f73d765d7425ab",
       [
        "infrastructure/assumptions/non-local-ports.sub.window.html",
        {}
@@ -582430,7 +582486,7 @@
       ]
      ],
      "mediasource-worker-play-terminate-worker.html": [
-      "c95fa486521dbf3136fe2a6b6d1dab4eede7b3e4",
+      "fb3dc8add15b9753c8b42fffb3bb9e7490f8e356",
       [
        null,
        {}
@@ -619902,15 +619958,6 @@
     ],
     "navigation-api.tentative.html": [
      "ca11f684f49908855323e8a337092f9dc971823b",
-     [
-      null,
-      {
-       "testdriver": true
-      }
-     ]
-    ],
-    "popstate-multiple-backs.tentative.html": [
-     "2a12a352bffc3fed4f207daaf877c781b0799ff3",
      [
       null,
       {
@@ -674822,6 +674869,13 @@
     ],
     "responsexml-get-twice.htm": [
      "e86a6d59e51ecef0ba0a07e7c53e586ac48a62ae",
+     [
+      null,
+      {}
+     ]
+    ],
+    "responsexml-invalid-type.html": [
+     "57ba462551ffc27b9246c82e116dc871e35ad5da",
      [
       null,
       {}
