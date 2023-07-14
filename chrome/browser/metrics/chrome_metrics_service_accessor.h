@@ -168,7 +168,7 @@ class ChromeMetricsServiceAccessor : public metrics::MetricsServiceAccessor {
   friend class ClonedInstallClientIdResetBrowserTest;
   friend class metrics::ChromeOSPerUserMetricsBrowserTestBase;
   friend class SampledOutClientIdSavedBrowserTest;
-  friend class MetricsInternalsUIBrowserTest;
+  friend class MetricsInternalsUIBrowserTestWithLog;
   FRIEND_TEST_ALL_PREFIXES(ChromeMetricsServiceAccessorTest,
                            MetricsReportingEnabled);
   FRIEND_TEST_ALL_PREFIXES(ChromeMetricsServicesManagerClientTest,
