@@ -96,7 +96,8 @@
       </accelerator-edit-view>
     </template>
     <div id="addAcceleratorContainer"
-        hidden="[[!showAddButton(pendingNewAcceleratorState, acceleratorInfos)]]">
+        hidden="[[!showAddButton(pendingNewAcceleratorState, acceleratorInfos,
+          isAcceleratorCapturing, observableDefaultAcceleratorsWithConflict.*)]]">
       <cr-button id="addAcceleratorButton" on-click="onAddAcceleratorClicked">
         <iron-icon id="addIcon" icon="shortcut-customization:add">
         </iron-icon>

@@ -337,10 +337,13 @@ suite('acceleratorEditDialogTest', function() {
         dialog.querySelectorAll('accelerator-edit-view');
     assertEquals(1, updatedAcceleratorElements.length);
 
-    // Verify that the restore button is hidden.
+    // Verify that the add button and restore button are hidden.
+    let addButtonContainer =
+        dialog!.querySelector('#addAcceleratorContainer') as HTMLDivElement;
     restoreDefaultButton =
         dialog!.querySelector('#restoreDefault') as CrButtonElement;
     assertTrue(restoreDefaultButton.hidden);
+    assertTrue(addButtonContainer.hidden);
 
     // Click on the trash button to effectively ignore the conflict.
     const cancelButton =
@@ -357,10 +360,13 @@ suite('acceleratorEditDialogTest', function() {
         dialog.querySelectorAll('accelerator-edit-view');
     assertEquals(0, updatedAcceleratorElements.length);
 
-    // Verify that the restore button is shown.
+    // Verify that the add button and restore button are shown.
+    addButtonContainer =
+        dialog!.querySelector('#addAcceleratorContainer') as HTMLDivElement;
     restoreDefaultButton =
         dialog!.querySelector('#restoreDefault') as CrButtonElement;
     assertFalse(restoreDefaultButton.hidden);
+    assertFalse(addButtonContainer.hidden);
   });
 
   test('RestoreDefaultButtonFixConflict', async () => {

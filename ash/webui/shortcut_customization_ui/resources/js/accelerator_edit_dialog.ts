@@ -215,7 +215,7 @@ export class AcceleratorEditDialogElement extends
   protected showAddButton(): boolean {
     // If the state is VIEW, no new pending accelerators are being added.
     return this.pendingNewAcceleratorState === ViewState.VIEW &&
-        this.acceleratorLimitNotReached();
+        this.acceleratorLimitNotReached() && !this.shouldHideRestoreDefaults();
   }
 
   protected acceleratorLimitNotReached(): boolean {
