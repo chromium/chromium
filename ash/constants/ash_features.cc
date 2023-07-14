@@ -2088,6 +2088,12 @@ BASE_FEATURE(kRenderArcNotificationsByChrome,
              "RenderArcNotificationsByChrome",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Allows the OS to unpin apps that were pinned by PinnedLauncherApps policy
+// but are no longer a part of it from shelf under specific conditions.
+BASE_FEATURE(kRemoveStalePolicyPinnedAppsFromShelf,
+             "RemoveStalePolicyPinnedAppsFromShelf",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables ChromeOS scalable IPH.
 BASE_FEATURE(kScalableIph, "ScalableIph", base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -3603,6 +3609,10 @@ bool IsPerDeskZOrderEnabled() {
 
 bool IsRenderArcNotificationsByChromeEnabled() {
   return base::FeatureList::IsEnabled(kRenderArcNotificationsByChrome);
+}
+
+bool IsRemoveStalePolicyPinnedAppsFromShelfEnabled() {
+  return base::FeatureList::IsEnabled(kRemoveStalePolicyPinnedAppsFromShelf);
 }
 
 bool IsSameAppWindowCycleEnabled() {
