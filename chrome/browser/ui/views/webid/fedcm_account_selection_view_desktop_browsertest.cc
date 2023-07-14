@@ -104,6 +104,18 @@ IN_PROC_BROWSER_TEST_F(FedCmAccountSelectionViewBrowserTest, ReShow) {
   EXPECT_TRUE(GetBubble()->widget_delegate()->CanActivate());
 }
 
+IN_PROC_BROWSER_TEST_F(FedCmAccountSelectionViewBrowserTest, ShowWhileHidden) {
+  browser()->tab_strip_model()->GetActiveWebContents()->WasHidden();
+  Show();
+  // Since Show() was called while hidden, the bubble should have been created,
+  // but should not be visible.
+  ASSERT_TRUE(GetBubble());
+  EXPECT_FALSE(GetBubble()->IsVisible());
+  browser()->tab_strip_model()->GetActiveWebContents()->WasShown();
+  ASSERT_TRUE(GetBubble());
+  EXPECT_TRUE(GetBubble()->IsVisible());
+}
+
 IN_PROC_BROWSER_TEST_F(FedCmAccountSelectionViewBrowserTest, DetachAndDelete) {
   Show();
   browser()->tab_strip_model()->DetachAndDeleteWebContentsAt(0);

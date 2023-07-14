@@ -231,7 +231,7 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   // boolean to let bubble widget know it should unhide itself when the dialog
   // is ready. This can happen when the accounts fetch has yet to finish but the
   // pop-up window has already been closed.
-  bool should_show_bubble_widget_{false};
+  bool is_modal_closed_but_accounts_fetch_pending_{false};
 
   // If IDP sign-in pop-up window is closed through means other than
   // IdentityProvider.close() such as the user closing the pop-up window or
@@ -239,6 +239,9 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   // navigator.credentials.get promise. This boolean tracks whether
   // IdentityProvider.close() was called.
   bool should_destroy_bubble_widget_{true};
+
+  // Whether the associated WebContents is visible or not.
+  bool is_web_contents_visible_;
 
   // Whether the "Continue" button on the mismatch dialog is clicked. Once the
   // "Continue" button is clicked, a pop-up window is shown for the user to sign

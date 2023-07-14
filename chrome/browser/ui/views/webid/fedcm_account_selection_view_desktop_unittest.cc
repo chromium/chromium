@@ -1015,3 +1015,37 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
   histogram_tester_.ExpectTotalCount(
       "Blink.FedCm.Timing.AccountsDialogShownDuration", 1);
 }
+
+// Tests that the accounts bubble is not shown if the tab is hidden after the
+// modal dialog is closed but before Show() is invoked, but that it is shown
+// once the tab is visible.
+TEST_F(FedCmAccountSelectionViewDesktopTest,
+       AccountsAfterModalNotShownIfHiddenBeforeShow) {
+  // Trigger IdP sign-in status mismatch dialog.
+  std::unique_ptr<TestFedCmAccountSelectionView> controller =
+      CreateAndShowMismatchDialog();
+  // Emulate user clicking on "Continue" button in the mismatch dialog.
+  AccountSelectionBubbleView::Observer* observer =
+      static_cast<AccountSelectionBubbleView::Observer*>(controller.get());
+  observer->OnSigninToIdP();
+  CreateAndShowPopupWindow(*controller);
+
+  // Emulate IdP closing the pop-up window.
+  controller->CloseModalDialog();
+
+  controller->OnVisibilityChanged(content::Visibility::HIDDEN);
+
+  // Emulate IdP sending the IdP sign-in status header which updates the
+  // mismatch dialog to an accounts dialog.
+  const char kAccountId[] = "account_id";
+  IdentityProviderDisplayData idp_data = CreateIdentityProviderDisplayData({
+      {kAccountId, LoginState::kSignUp},
+  });
+  Show(*controller, idp_data.accounts, SignInMode::kExplicit);
+  EXPECT_FALSE(widget_->IsVisible());
+
+  controller->OnVisibilityChanged(content::Visibility::VISIBLE);
+  EXPECT_TRUE(widget_->IsVisible());
+  EXPECT_EQ(TestBubbleView::SheetType::kConfirmAccount,
+            bubble_view_->sheet_type_);
+}
