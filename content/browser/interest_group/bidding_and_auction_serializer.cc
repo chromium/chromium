@@ -8,12 +8,14 @@
 #include <vector>
 
 #include "base/containers/cxx20_erase.h"
+#include "base/feature_list.h"
 #include "base/json/json_string_value_serializer.h"
 #include "components/cbor/diagnostic_writer.h"
 #include "components/cbor/values.h"
 #include "components/cbor/writer.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "third_party/abseil-cpp/absl/numeric/bits.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
 #include "third_party/zlib/google/compression_utils.h"
 
@@ -172,6 +174,10 @@ BiddingAndAuctionData BiddingAndAuctionSerializer::Build() {
         cbor::Value(compressed_groups, cbor::Value::Type::BYTE_STRING);
     data.group_names.emplace(bidder_groups.first, std::move(names));
   }
+
+  message_obj[cbor::Value("enableDebugReporting")] =
+      cbor::Value(base::FeatureList::IsEnabled(
+          blink::features::kBiddingAndScoringDebugReportingAPI));
 
   message_obj[cbor::Value("interestGroups")] =
       cbor::Value(std::move(groups_map));
