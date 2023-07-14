@@ -133,6 +133,7 @@ TEST_F(WebIDLCompatTest, UndefinedEmptyDict) {
   EXPECT_FALSE(converter->GetRequired("a", out2));
   EXPECT_EQ("<error prefix> Required field 'a' missing.",
             converter->ErrorMessage());
+  EXPECT_FALSE(converter->FailureIsTimeout());
 }
 
 // WebIDL treats null as empty dictionary.
@@ -154,6 +155,7 @@ TEST_F(WebIDLCompatTest, NullEmptyDict) {
   EXPECT_FALSE(converter->GetRequired("a", out2));
   EXPECT_EQ("<error prefix> Required field 'a' missing.",
             converter->ErrorMessage());
+  EXPECT_FALSE(converter->FailureIsTimeout());
 }
 
 TEST_F(WebIDLCompatTest, OptionalOrRequired) {
@@ -182,6 +184,7 @@ TEST_F(WebIDLCompatTest, OptionalOrRequired) {
   EXPECT_FALSE(converter->GetRequired("b", out_required));
   EXPECT_EQ("<error prefix> Required field 'b' missing.",
             converter->ErrorMessage());
+  EXPECT_FALSE(converter->FailureIsTimeout());
 }
 
 TEST_F(WebIDLCompatTest, NullUndefinedValues) {
@@ -219,6 +222,7 @@ TEST_F(WebIDLCompatTest, NotDict) {
       "<error prefix> Value passed as dictionary is neither object, null, nor "
       "undefined.",
       converter->ErrorMessage());
+  EXPECT_FALSE(converter->FailureIsTimeout());
 }
 
 TEST_F(WebIDLCompatTest, ErrorLatch) {
@@ -243,6 +247,7 @@ TEST_F(WebIDLCompatTest, ErrorLatch) {
   EXPECT_FALSE(converter->GetRequired("a", out_required));
   EXPECT_EQ("<error prefix> Required field 'a' missing.",
             converter->ErrorMessage());
+  EXPECT_FALSE(converter->FailureIsTimeout());
 
   // Further look ups fail.
   EXPECT_FALSE(converter->GetOptional("b", out));
@@ -251,6 +256,7 @@ TEST_F(WebIDLCompatTest, ErrorLatch) {
   // .. and don't mess up the error message.
   EXPECT_EQ("<error prefix> Required field 'a' missing.",
             converter->ErrorMessage());
+  EXPECT_FALSE(converter->FailureIsTimeout());
 }
 
 TEST_F(WebIDLCompatTest, Double) {
@@ -281,6 +287,7 @@ TEST_F(WebIDLCompatTest, Double) {
       "<error prefix> Converting field 'e' to a Number did not produce a "
       "finite double.",
       converter->ErrorMessage());
+  EXPECT_FALSE(converter->FailureIsTimeout());
 }
 
 TEST_F(WebIDLCompatTest, UnrestrictedDouble) {
@@ -358,6 +365,7 @@ TEST_F(WebIDLCompatTest, DoubleCoercion) {
   EXPECT_TRUE(gin::Converter<std::string>::FromV8(
       v8_helper_->isolate(), exception.ToLocalChecked(), &exception_str));
   EXPECT_EQ("valueOf threw", exception_str);
+  EXPECT_FALSE(converter->FailureIsTimeout());
 }
 
 TEST_F(WebIDLCompatTest, DoubleCoercionNonTermination) {
@@ -378,6 +386,7 @@ TEST_F(WebIDLCompatTest, DoubleCoercionNonTermination) {
   EXPECT_FALSE(converter->GetRequired("a", out));
   EXPECT_EQ("<error prefix> Converting field 'a' to Number timed out.",
             converter->ErrorMessage());
+  EXPECT_TRUE(converter->FailureIsTimeout());
 }
 
 TEST_F(WebIDLCompatTest, DoubleCoercionResultNotFinite) {
@@ -399,6 +408,7 @@ TEST_F(WebIDLCompatTest, DoubleCoercionResultNotFinite) {
       "<error prefix> Converting field 'a' to a Number did not produce a "
       "finite double.",
       converter->ErrorMessage());
+  EXPECT_FALSE(converter->FailureIsTimeout());
 }
 
 TEST_F(WebIDLCompatTest, Boolean) {
@@ -430,6 +440,7 @@ TEST_F(WebIDLCompatTest, Boolean) {
   EXPECT_FALSE(converter->GetRequired("f", out));
   EXPECT_EQ("<error prefix> Required field 'f' missing.",
             converter->ErrorMessage());
+  EXPECT_FALSE(converter->FailureIsTimeout());
 }
 
 TEST_F(WebIDLCompatTest, String) {
@@ -491,6 +502,7 @@ TEST_F(WebIDLCompatTest, StringCoercion) {
   EXPECT_TRUE(gin::Converter<std::string>::FromV8(
       v8_helper_->isolate(), exception.ToLocalChecked(), &exception_str));
   EXPECT_EQ("toString threw", exception_str);
+  EXPECT_FALSE(converter->FailureIsTimeout());
 }
 
 TEST_F(WebIDLCompatTest, StringCoercionNonTermination) {
@@ -511,6 +523,7 @@ TEST_F(WebIDLCompatTest, StringCoercionNonTermination) {
   EXPECT_FALSE(converter->GetRequired("a", out));
   EXPECT_EQ("<error prefix> Converting field 'a' to String timed out.",
             converter->ErrorMessage());
+  EXPECT_TRUE(converter->FailureIsTimeout());
 }
 
 TEST_F(WebIDLCompatTest, FieldAccessThrows) {
@@ -543,6 +556,7 @@ TEST_F(WebIDLCompatTest, FieldAccessThrows) {
   EXPECT_TRUE(gin::Converter<std::string>::FromV8(
       v8_helper_->isolate(), exception.ToLocalChecked(), &exception_str));
   EXPECT_EQ("oh no!", exception_str);
+  EXPECT_FALSE(converter->FailureIsTimeout());
 }
 
 TEST_F(WebIDLCompatTest, FieldAccessNonTermination) {
@@ -563,6 +577,7 @@ TEST_F(WebIDLCompatTest, FieldAccessNonTermination) {
   EXPECT_FALSE(converter->GetRequired("a", out));
   EXPECT_EQ("<error prefix> Execution timed out trying to access field 'a'.",
             converter->ErrorMessage());
+  EXPECT_TRUE(converter->FailureIsTimeout());
 }
 
 TEST_F(WebIDLCompatTest, Sequence) {
@@ -662,6 +677,7 @@ TEST_F(WebIDLCompatTest, SeqItemError) {
   EXPECT_EQ(
       "<error prefix> Conversion for an item for sequence field 'f1' failed.",
       converter->ErrorMessage());
+  EXPECT_FALSE(converter->FailureIsTimeout());
 }
 
 TEST_F(WebIDLCompatTest, SequenceSimpleIter) {
@@ -714,6 +730,7 @@ TEST_F(WebIDLCompatTest, SequenceNonObj) {
   EXPECT_FALSE(GetSequence(converter.get(), "a", out));
   EXPECT_EQ("<error prefix> Sequence field 'a' must be an Object.",
             converter->ErrorMessage());
+  EXPECT_FALSE(converter->FailureIsTimeout());
 }
 
 TEST_F(WebIDLCompatTest, SequenceNonIter) {
@@ -732,6 +749,7 @@ TEST_F(WebIDLCompatTest, SequenceNonIter) {
   EXPECT_FALSE(GetSequence(converter.get(), "a", out));
   EXPECT_EQ("<error prefix> Trouble iterating over 'a'.",
             converter->ErrorMessage());
+  EXPECT_FALSE(converter->FailureIsTimeout());
 }
 
 TEST_F(WebIDLCompatTest, SequenceNonIter2) {
@@ -752,6 +770,7 @@ TEST_F(WebIDLCompatTest, SequenceNonIter2) {
   EXPECT_FALSE(GetSequence(converter.get(), "a", out));
   EXPECT_EQ("<error prefix> Trouble iterating over 'a'.",
             converter->ErrorMessage());
+  EXPECT_FALSE(converter->FailureIsTimeout());
 }
 
 TEST_F(WebIDLCompatTest, SequenceNonIter3) {
@@ -772,6 +791,7 @@ TEST_F(WebIDLCompatTest, SequenceNonIter3) {
   EXPECT_FALSE(GetSequence(converter.get(), "a", out));
   EXPECT_EQ("https://example.org/:5 Uncaught no iterating!.",
             converter->ErrorMessage());
+  EXPECT_FALSE(converter->FailureIsTimeout());
 }
 
 TEST_F(WebIDLCompatTest, SequenceNonIter4) {
@@ -792,6 +812,7 @@ TEST_F(WebIDLCompatTest, SequenceNonIter4) {
   EXPECT_FALSE(GetSequence(converter.get(), "a", out));
   EXPECT_EQ("<error prefix> Trouble iterating over 'a'.",
             converter->ErrorMessage());
+  EXPECT_FALSE(converter->FailureIsTimeout());
 }
 
 TEST_F(WebIDLCompatTest, SequenceNonIter5) {
@@ -812,6 +833,7 @@ TEST_F(WebIDLCompatTest, SequenceNonIter5) {
   EXPECT_FALSE(GetSequence(converter.get(), "a", out));
   EXPECT_EQ("<error prefix> Trouble iterating over 'a'.",
             converter->ErrorMessage());
+  EXPECT_FALSE(converter->FailureIsTimeout());
 }
 
 TEST_F(WebIDLCompatTest, SequenceNonIter6) {
@@ -831,6 +853,7 @@ TEST_F(WebIDLCompatTest, SequenceNonIter6) {
   std::vector<v8::Local<v8::Value>> out;
   EXPECT_FALSE(GetSequence(converter.get(), "a", out));
   EXPECT_EQ("https://example.org/:5 Uncaught boo.", converter->ErrorMessage());
+  EXPECT_FALSE(converter->FailureIsTimeout());
 }
 
 TEST_F(WebIDLCompatTest, SequenceNonIter7) {
@@ -859,6 +882,7 @@ TEST_F(WebIDLCompatTest, SequenceNonIter7) {
   EXPECT_FALSE(GetSequence(converter.get(), "a", out));
   EXPECT_EQ("https://example.org/:9 Uncaught dunno.",
             converter->ErrorMessage());
+  EXPECT_FALSE(converter->FailureIsTimeout());
 }
 
 TEST_F(WebIDLCompatTest, SequenceNonIter8) {
@@ -887,6 +911,7 @@ TEST_F(WebIDLCompatTest, SequenceNonIter8) {
   EXPECT_FALSE(GetSequence(converter.get(), "a", out));
   EXPECT_EQ("https://example.org/:9 Uncaught have an abrupt completion.",
             converter->ErrorMessage());
+  EXPECT_FALSE(converter->FailureIsTimeout());
 }
 
 TEST_F(WebIDLCompatTest, SequenceInfiniteIter) {
@@ -916,6 +941,7 @@ TEST_F(WebIDLCompatTest, SequenceInfiniteIter) {
   EXPECT_FALSE(GetSequence(converter.get(), "a", out));
   EXPECT_EQ("<error prefix> Length limit for sequence field 'a' exceeded.",
             converter->ErrorMessage());
+  EXPECT_FALSE(converter->FailureIsTimeout());
 }
 
 TEST_F(WebIDLCompatTest, SequenceNonTermIter) {
@@ -943,6 +969,7 @@ TEST_F(WebIDLCompatTest, SequenceNonTermIter) {
   EXPECT_FALSE(GetSequence(converter.get(), "a", out));
   EXPECT_EQ("<error prefix> Timeout iterating over 'a'.",
             converter->ErrorMessage());
+  EXPECT_TRUE(converter->FailureIsTimeout());
 }
 
 TEST_F(WebIDLCompatTest, SequenceUnsetValueOk) {

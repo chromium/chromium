@@ -71,7 +71,7 @@ v8::Local<v8::Value> DictConverter::GetMember(base::StringPiece field) {
     // An exception can get thrown in case of getter, proxy, etc, or those
     // conversions may fail to terminate, causing the time out to be hit.
     if (try_catch.HasTerminated()) {
-      MarkFailed(base::StrCat(
+      MarkFailedWithTimeout(base::StrCat(
           {"Execution timed out trying to access field '", field, "'."}));
     } else if (try_catch.HasCaught()) {
       MarkFailedWithException(try_catch);
@@ -98,7 +98,7 @@ bool DictConverter::Convert(base::StringPiece field,
                   .ToLocal(&number_value)) {
     // Converting a non-Number to a Number failed somehow.
     if (try_catch.HasTerminated()) {
-      MarkFailed(base::StrCat(
+      MarkFailedWithTimeout(base::StrCat(
           {"Converting field '", field, "' to Number timed out."}));
     } else {
       MarkFailedWithExceptionOrMessage(
@@ -152,7 +152,7 @@ bool DictConverter::Convert(base::StringPiece field,
   } else if (!value->ToString(isolate->GetCurrentContext())
                   .ToLocal(&v8_string)) {
     if (try_catch.HasTerminated()) {
-      MarkFailed(base::StrCat(
+      MarkFailedWithTimeout(base::StrCat(
           {"Converting field '", field, "' to String timed out."}));
     } else {
       MarkFailedWithExceptionOrMessage(
@@ -305,6 +305,11 @@ void DictConverter::MarkFailed(base::StringPiece fail_message) {
   failure_message_ = base::StrCat({error_prefix_, fail_message});
 }
 
+void DictConverter::MarkFailedWithTimeout(base::StringPiece fail_message) {
+  failed_with_timeout_ = true;
+  MarkFailed(fail_message);
+}
+
 void DictConverter::MarkFailedWithException(const v8::TryCatch& catcher) {
   DCHECK(!failed_);
   failed_ = true;
@@ -326,7 +331,8 @@ void DictConverter::MarkFailedWithExceptionOrMessage(
 void DictConverter::MarkFailedIter(base::StringPiece field,
                                    const v8::TryCatch& catcher) {
   if (catcher.HasTerminated()) {
-    MarkFailed(base::StrCat({"Timeout iterating over '", field, "'."}));
+    MarkFailedWithTimeout(
+        base::StrCat({"Timeout iterating over '", field, "'."}));
   } else if (catcher.HasCaught()) {
     MarkFailedWithException(catcher);
   } else {

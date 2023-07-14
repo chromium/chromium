@@ -2107,6 +2107,42 @@ TEST_F(BidderWorkletTest, GenerateBidSetBidThrows) {
       {"https://url.test/:10 Uncaught something."});
 }
 
+TEST_F(BidderWorkletTest, GenerateBidSetBidNonTermConversion) {
+  // A setBid() that hits a timeout in value conversion.
+  RunGenerateBidWithJavascriptExpectingResult(
+      R"(function generateBid() {
+         setBid({bid:{valueOf: () => { while(true) {} } },
+                 render:"https://response.test/"});
+         return {ad: "not_reached", bid: 4, render:"https://response.test/2"};
+       })",
+      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_data_version=*/absl::nullopt,
+      {"https://url.test/ execution of `generateBid` timed out."});
+
+  // Variant that tries to catch it.
+  RunGenerateBidWithJavascriptExpectingResult(
+      R"(function generateBid() {
+         try { setBid({bid:{valueOf: () => { while(true) {} } },
+               render:"https://response.test/"});
+         } catch (e) {}
+         return {ad: "not_reached", bid: 4, render:"https://response.test/2"};
+       })",
+      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_data_version=*/absl::nullopt,
+      {"https://url.test/ execution of `generateBid` timed out."});
+
+  // A setBid() that hits a timeout in a field getter.
+  RunGenerateBidWithJavascriptExpectingResult(
+      R"(function generateBid() {
+         setBid({ get bid() { while(true) {} },
+                 render:"https://response.test/"});
+         return {ad: "not_reached", bid: 4, render:"https://response.test/2"};
+       })",
+      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_data_version=*/absl::nullopt,
+      {"https://url.test/ execution of `generateBid` timed out."});
+}
+
 // Make sure Date() is not available when running generateBid().
 TEST_F(BidderWorkletTest, GenerateBidDateNotAvailable) {
   RunGenerateBidWithReturnValueExpectingResult(

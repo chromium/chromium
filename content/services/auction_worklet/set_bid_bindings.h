@@ -55,7 +55,8 @@ class CONTENT_EXPORT SetBidBindings : public Bindings {
   bool SetBid(v8::Local<v8::Value> generate_bid_result,
               std::string error_prefix,
               v8::MaybeLocal<v8::Value>& exception_out,
-              std::vector<std::string>& errors_out);
+              std::vector<std::string>& errors_out,
+              bool& timeout_out);
 
  private:
   static void SetBid(const v8::FunctionCallbackInfo<v8::Value>& args);

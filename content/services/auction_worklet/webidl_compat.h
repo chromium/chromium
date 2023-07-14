@@ -126,6 +126,10 @@ class CONTENT_EXPORT DictConverter {
   // something invoked during conversion; not for any errors synthesized here.
   v8::MaybeLocal<v8::Value> FailureException() { return failure_exception_; }
 
+  // Returns true if conversion failed because execution timeout has been
+  // reached.
+  bool FailureIsTimeout() { return failed_with_timeout_; }
+
  private:
   // This can mark failure.
   v8::Local<v8::Value> GetMember(base::StringPiece field);
@@ -151,6 +155,7 @@ class CONTENT_EXPORT DictConverter {
       base::RepeatingCallback<bool(v8::Local<v8::Value>)> item_callback);
 
   void MarkFailed(base::StringPiece fail_message);
+  void MarkFailedWithTimeout(base::StringPiece fail_message);
   void MarkFailedWithException(const v8::TryCatch& catcher);
 
   void MarkFailedWithExceptionOrMessage(const v8::TryCatch& catcher,
@@ -165,6 +170,7 @@ class CONTENT_EXPORT DictConverter {
   // that. This is needed because user-provided custom type coercions can have
   // side effects, so we should not run them when the process already failed.
   bool failed_ = false;
+  bool failed_with_timeout_ = false;
   v8::Local<v8::Value> failure_exception_;
   std::string failure_message_;
 };

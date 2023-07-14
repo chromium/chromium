@@ -1239,10 +1239,11 @@ BidderWorklet::V8State::GenerateSingleBid(
 
   if (got_return_value) {
     v8::MaybeLocal<v8::Value> ignore_exception;  // only need the message.
+    bool ignore_timeout;  // handle timeout the same way as everything else.
     context_recycler->set_bid_bindings()->SetBid(
         generate_bid_result,
         base::StrCat({script_source_url_.spec(), " generateBid() "}),
-        ignore_exception, errors_out);
+        ignore_exception, errors_out, ignore_timeout);
   }
 
   if (!context_recycler->set_bid_bindings()->has_bid()) {

@@ -200,11 +200,15 @@ void SetBidBindings::SetBid(const v8::FunctionCallbackInfo<v8::Value>& args) {
 
   std::vector<std::string> errors;
   v8::MaybeLocal<v8::Value> maybe_exception;
+  bool timeout;
   if (!bindings->SetBid(argument_value, /*error_prefix=*/"", maybe_exception,
-                        errors)) {
+                        errors, timeout)) {
     DCHECK_EQ(1u, errors.size());
     v8::Local<v8::Value> exception;
-    if (maybe_exception.ToLocal(&exception)) {
+    if (timeout) {
+      // The timeout shouldn't be turned into a catchable exception.
+      return;
+    } else if (maybe_exception.ToLocal(&exception)) {
       args.GetIsolate()->ThrowException(exception);
     } else {
       // Remove the trailing period from the error message.
@@ -218,7 +222,8 @@ void SetBidBindings::SetBid(const v8::FunctionCallbackInfo<v8::Value>& args) {
 bool SetBidBindings::SetBid(v8::Local<v8::Value> generate_bid_result,
                             std::string error_prefix,
                             v8::MaybeLocal<v8::Value>& exception_out,
-                            std::vector<std::string>& errors_out) {
+                            std::vector<std::string>& errors_out,
+                            bool& timeout_out) {
   v8::Isolate* isolate = v8_helper_->isolate();
   v8::Local<v8::Context> context = isolate->GetCurrentContext();
   bid_.reset();
@@ -251,8 +256,14 @@ bool SetBidBindings::SetBid(v8::Local<v8::Value> generate_bid_result,
       std::ref(idl));
 
   AuctionV8Helper::TimeLimitScope time_limit_scope(time_limit_);
+  // Since we can get here due to setBid(), we need to renew permission for
+  // timeouts to work here --- if we don't make a SafeForTerminationScope,
+  // all timeouts will be ignored until the invoked v8 ops exit, which would
+  // defeat the purpose of the timeout if they don't.
+  v8::Isolate::SafeForTerminationScope handle_timeout_here(isolate);
   DictConverter convert_set_bid(v8_helper_.get(), time_limit_scope,
                                 error_prefix, generate_bid_result);
+  timeout_out = false;
   if (!convert_set_bid.GetOptional("ad", idl.ad) ||
       !convert_set_bid.GetOptionalSequence(
           "adComponents", std::move(components_exist), collect_components) ||
@@ -265,6 +276,7 @@ bool SetBidBindings::SetBid(v8::Local<v8::Value> generate_bid_result,
       !convert_set_bid.GetOptional("render", idl.render)) {
     exception_out = convert_set_bid.FailureException();
     errors_out.push_back(convert_set_bid.ErrorMessage());
+    timeout_out = convert_set_bid.FailureIsTimeout();
     return false;
   }
 
