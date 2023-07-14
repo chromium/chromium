@@ -2,8 +2,8 @@ Name: instrumented_libraries
 URL: n/a
 Version: 0
 Security Critical: no
+Shipped: no
 License: n/a
-License File: NOT_SHIPPED
 
 Description:
 Scripts which can download and build several third party libraries
