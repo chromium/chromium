@@ -23,6 +23,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/test_web_ui.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 
 namespace ash::personalization_app {
@@ -60,7 +61,7 @@ class TestKeyboardBacklightObserver
     return current_backlight_state_.get();
   }
 
-  SkColor wallpaper_color() {
+  absl::optional<SkColor> wallpaper_color() {
     keyboard_backlight_observer_receiver_.FlushForTesting();
     return wallpaper_color_;
   }
@@ -70,7 +71,7 @@ class TestKeyboardBacklightObserver
       keyboard_backlight_observer_receiver_{this};
   mojom::CurrentBacklightStatePtr current_backlight_state_ =
       mojom::CurrentBacklightState::NewColor(mojom::BacklightColor::kRed);
-  SkColor wallpaper_color_ = SK_ColorTRANSPARENT;
+  absl::optional<SkColor> wallpaper_color_;
 };
 
 }  // namespace
@@ -151,7 +152,7 @@ class PersonalizationAppKeyboardBacklightProviderImplTest
     return test_keyboard_backlight_observer_.current_backlight_state();
   }
 
-  SkColor ObservedWallpaperColor() {
+  absl::optional<SkColor> ObservedWallpaperColor() {
     keyboard_backlight_provider_remote_.FlushForTesting();
     return test_keyboard_backlight_observer_.wallpaper_color();
   }
@@ -225,7 +226,7 @@ TEST_F(PersonalizationAppKeyboardBacklightProviderImplTest,
   keyboard_backlight_provider()->OnWallpaperColorsChanged();
 
   // Verify JS side is notified.
-  EXPECT_EQ(SK_ColorTRANSPARENT, ObservedWallpaperColor());
+  EXPECT_TRUE(ObservedWallpaperColor().has_value());
 }
 
 }  // namespace ash::personalization_app
