@@ -180,28 +180,26 @@ std::unique_ptr<CanvasResourceProvider> CreateProvider(
     const SkImageInfo& info,
     const scoped_refptr<StaticBitmapImage>& source_image,
     bool fallback_to_software) {
-  constexpr auto kFilterQuality = cc::PaintFlags::FilterQuality::kLow;
-  constexpr auto kShouldInitialize =
-      CanvasResourceProvider::ShouldInitialize::kNo;
+  const cc::PaintFlags::FilterQuality filter_quality =
+      cc::PaintFlags::FilterQuality::kLow;
   if (context_provider) {
-    constexpr bool kIsOriginTopLeft = true;
-    const uint32_t usage_flags =
+    uint32_t usage_flags =
         context_provider->ContextProvider()
             ->SharedImageInterface()
             ->UsageForMailbox(source_image->GetMailboxHolder().mailbox);
     auto resource_provider = CanvasResourceProvider::CreateSharedImageProvider(
-        info, kFilterQuality, kShouldInitialize, context_provider,
-        RasterMode::kGPU, kIsOriginTopLeft, usage_flags);
-    if (resource_provider) {
+        info, filter_quality, CanvasResourceProvider::ShouldInitialize::kNo,
+        context_provider, RasterMode::kGPU, source_image->IsOriginTopLeft(),
+        usage_flags);
+    if (resource_provider)
       return resource_provider;
-    }
-    if (!fallback_to_software) {
+
+    if (!fallback_to_software)
       return nullptr;
-    }
   }
 
-  return CanvasResourceProvider::CreateBitmapProvider(info, kFilterQuality,
-                                                      kShouldInitialize);
+  return CanvasResourceProvider::CreateBitmapProvider(
+      info, filter_quality, CanvasResourceProvider::ShouldInitialize::kNo);
 }
 
 scoped_refptr<StaticBitmapImage> FlipImageVertically(

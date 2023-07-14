@@ -35,31 +35,30 @@ class FakeCanvasResourceHost : public CanvasResourceHost {
       return ResourceProvider();
     const SkImageInfo resource_info =
         SkImageInfo::MakeN32Premul(size_.width(), size_.height());
-    constexpr auto kFilterQuality = cc::PaintFlags::FilterQuality::kMedium;
-    constexpr auto kShouldInitialize =
-        CanvasResourceProvider::ShouldInitialize::kCallClear;
+
     std::unique_ptr<CanvasResourceProvider> provider;
     if (hint == RasterModeHint::kPreferGPU ||
         RuntimeEnabledFeatures::Canvas2dImageChromiumEnabled()) {
-      constexpr bool kIsOriginTopLeft = true;
-      constexpr uint32_t kSharedImageUsageFlags =
-          gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
-          gpu::SHARED_IMAGE_USAGE_SCANOUT;
+      uint32_t shared_image_usage_flags = gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
+                                          gpu::SHARED_IMAGE_USAGE_SCANOUT;
       provider = CanvasResourceProvider::CreateSharedImageProvider(
-          resource_info, kFilterQuality, kShouldInitialize,
+          resource_info, cc::PaintFlags::FilterQuality::kMedium,
+          CanvasResourceProvider::ShouldInitialize::kCallClear,
           SharedGpuContext::ContextProviderWrapper(),
           hint == RasterModeHint::kPreferGPU ? RasterMode::kGPU
                                              : RasterMode::kCPU,
-          kIsOriginTopLeft, kSharedImageUsageFlags);
+          false /*is_origin_top_left*/, shared_image_usage_flags);
     }
     if (!provider) {
       provider = CanvasResourceProvider::CreateSharedBitmapProvider(
-          resource_info, kFilterQuality, kShouldInitialize,
+          resource_info, cc::PaintFlags::FilterQuality::kMedium,
+          CanvasResourceProvider::ShouldInitialize::kCallClear,
           nullptr /* dispatcher_weakptr */);
     }
     if (!provider) {
       provider = CanvasResourceProvider::CreateBitmapProvider(
-          resource_info, kFilterQuality, kShouldInitialize);
+          resource_info, cc::PaintFlags::FilterQuality::kMedium,
+          CanvasResourceProvider::ShouldInitialize::kCallClear);
     }
 
     ReplaceResourceProvider(std::move(provider));
