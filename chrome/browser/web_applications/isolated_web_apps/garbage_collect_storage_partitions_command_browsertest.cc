@@ -9,7 +9,6 @@
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/run_loop.h"
 #include "base/strings/string_piece.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
@@ -23,6 +22,9 @@
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/common/pref_names.h"
+#include "components/prefs/pref_service.h"
+#include "components/prefs/pref_test_utils.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/browser/uninstall_result_code.h"
 #include "content/public/browser/storage_partition.h"
@@ -170,6 +172,7 @@ IN_PROC_BROWSER_TEST_F(GarbageCollectStoragePartitionsCommandBrowserTest,
   ASSERT_TRUE(
       profile()->GetStoragePartition(iwa_2_sp_1_config, /*can_create=*/true));
 
+  // Uninstall one of the IWAs.
   base::test::TestFuture<webapps::UninstallResultCode> future;
   auto job = std::make_unique<RemoveWebAppJob>(
       webapps::WebappUninstallSource::kAppsPage, *profile(),
@@ -179,16 +182,10 @@ IN_PROC_BROWSER_TEST_F(GarbageCollectStoragePartitionsCommandBrowserTest,
                                                future.GetCallback()));
   auto code = future.Get();
   ASSERT_TRUE(code == webapps::UninstallResultCode::kSuccess);
-}
 
-IN_PROC_BROWSER_TEST_F(GarbageCollectStoragePartitionsCommandBrowserTest,
-                       UninstalledAppsHaveStoragePartitionsCleanedUp) {
-  base::ScopedAllowBlockingForTesting blocking_allow;
-  const GURL kIwa1Url(kIwa1UrlString);
-  const GURL kIwa2Url(kIwa2UrlString);
-
-  ASSERT_TRUE(base::PathExists(storage_partition_path()));
-
+  // Pref value is set.
+  ASSERT_TRUE(profile()->GetPrefs()->GetBoolean(
+      prefs::kShouldGarbageCollectStoragePartitions));
   // Both paths exist before garbage collection.
   ASSERT_TRUE(PathHasSubPath(storage_partition_path(),
                              UrlToRelativeDomainPath(kIwa1Url)))
@@ -196,14 +193,20 @@ IN_PROC_BROWSER_TEST_F(GarbageCollectStoragePartitionsCommandBrowserTest,
   ASSERT_TRUE(PathHasSubPath(storage_partition_path(),
                              UrlToRelativeDomainPath(kIwa2Url)))
       << SubDirDebugValue(storage_partition_path());
+}
 
-  // Run Garbage Collection Command.
-  base::RunLoop run_loop;
-  provider().command_manager().ScheduleCommand(
-      std::make_unique<GarbageCollectStoragePartititonsCommand>(
-          profile(), run_loop.QuitClosure()));
-  run_loop.Run();
+IN_PROC_BROWSER_TEST_F(GarbageCollectStoragePartitionsCommandBrowserTest,
+                       UninstalledAppsHaveStoragePartitionsCleanedUp) {
+  base::ScopedAllowBlockingForTesting blocking_allow;
 
+  WaitForPrefValue(profile()->GetPrefs(),
+                   prefs::kShouldGarbageCollectStoragePartitions,
+                   base::Value(false));
+
+  const GURL kIwa1Url(kIwa1UrlString);
+  const GURL kIwa2Url(kIwa2UrlString);
+
+  ASSERT_TRUE(base::PathExists(storage_partition_path()));
   // Only IWA1's path still exists.
   EXPECT_TRUE(PathHasSubPath(storage_partition_path(),
                              UrlToRelativeDomainPath(kIwa1Url)))

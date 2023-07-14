@@ -167,9 +167,6 @@ void ExtensionSystemImpl::Shared::InitInstallGates() {
   extension_service_->RegisterInstallGate(
       ExtensionPrefs::DELAY_REASON_WAIT_FOR_IDLE, update_install_gate_.get());
   extension_service_->RegisterInstallGate(
-      ExtensionPrefs::DELAY_REASON_GC,
-      ExtensionGarbageCollector::Get(profile_));
-  extension_service_->RegisterInstallGate(
       ExtensionPrefs::DELAY_REASON_WAIT_FOR_IMPORTS,
       extension_service_->shared_module_service());
 #if BUILDFLAG(IS_CHROMEOS_ASH)

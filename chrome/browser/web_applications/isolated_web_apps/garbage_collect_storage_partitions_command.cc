@@ -19,6 +19,8 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/locks/all_apps_lock.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/common/pref_names.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/storage_partition_config.h"
 
@@ -56,6 +58,10 @@ base::Value GarbageCollectStoragePartititonsCommand::ToDebugValue() const {
 void GarbageCollectStoragePartititonsCommand::Run() {
   std::unordered_set<base::FilePath> allowlist;
 
+  // InstallGate delays extension installations.
+  install_gate_ =
+      lock_->extensions_manager().RegisterGarbageCollectionInstallGate();
+
   // Get all paths from Extension system.
   {
     ExtensionsManager& extensions_manager = lock_->extensions_manager();
@@ -63,7 +69,6 @@ void GarbageCollectStoragePartititonsCommand::Run() {
   }
 
   // Get all paths from Web App system.
-  // For Isolated Web Apps, top
   {
     WebAppRegistrar::AppSet app_set = lock_->registrar().GetApps();
     for (const auto& app : app_set) {
@@ -96,7 +101,11 @@ void GarbageCollectStoragePartititonsCommand::OnShutdown() {
 }
 
 void GarbageCollectStoragePartititonsCommand::OnSuccess() {
+  profile_->GetPrefs()->SetBoolean(
+      prefs::kShouldGarbageCollectStoragePartitions, false);
+
   SignalCompletionAndSelfDestruct(CommandResult::kSuccess,
                                   std::move(done_closure_));
 }
+
 }  // namespace web_app

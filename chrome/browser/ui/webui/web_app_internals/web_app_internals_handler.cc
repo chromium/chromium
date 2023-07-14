@@ -52,6 +52,8 @@ constexpr char kUserUninstalledPreinstalledWebAppPrefs[] =
 constexpr char kWebAppPreferences[] = "WebAppPreferences";
 constexpr char kWebAppIphPreferences[] = "WebAppIphPreferences";
 constexpr char kWebAppMlPreferences[] = "WebAppMlPreferences";
+constexpr char kShouldGarbageCollectStoragePartitions[] =
+    "ShouldGarbageCollectStoragePartitions";
 constexpr char kLockManager[] = "LockManager";
 constexpr char kCommandManager[] = "CommandManager";
 constexpr char kIconErrorLog[] = "IconErrorLog";
@@ -85,6 +87,7 @@ base::Value::Dict BuildIndexJson() {
   index.Append(kWebAppPreferences);
   index.Append(kWebAppIphPreferences);
   index.Append(kWebAppMlPreferences);
+  index.Append(kShouldGarbageCollectStoragePartitions);
   index.Append(kLockManager);
   index.Append(kCommandManager);
   index.Append(kIconErrorLog);
@@ -202,6 +205,15 @@ base::Value::Dict BuildWebAppMlPrefsJson(Profile* profile) {
   root.Set(
       kWebAppMlPreferences,
       profile->GetPrefs()->GetDict(prefs::kWebAppsAppAgnosticMlState).Clone());
+  return root;
+}
+
+base::Value::Dict BuildShouldGarbageCollectStoragePartitionsPrefsJson(
+    Profile* profile) {
+  base::Value::Dict root;
+  root.Set(kShouldGarbageCollectStoragePartitions,
+           profile->GetPrefs()->GetBoolean(
+               prefs::kShouldGarbageCollectStoragePartitions));
   return root;
 }
 
@@ -360,6 +372,7 @@ void WebAppInternalsHandler::BuildDebugInfo(
   root.Append(BuildWebAppsPrefsJson(profile));
   root.Append(BuildWebAppIphPrefsJson(profile));
   root.Append(BuildWebAppMlPrefsJson(profile));
+  root.Append(BuildShouldGarbageCollectStoragePartitionsPrefsJson(profile));
   root.Append(BuildLockManagerJson(*provider));
   root.Append(BuildCommandManagerJson(*provider));
   root.Append(BuildIconErrorLogJson(*provider));

@@ -123,6 +123,8 @@ void WebAppPrefsUtilsRegisterProfilePrefs(
   registry->RegisterDictionaryPref(::prefs::kWebAppsPreferences);
   registry->RegisterDictionaryPref(::prefs::kWebAppsAppAgnosticIphState);
   registry->RegisterDictionaryPref(::prefs::kWebAppsAppAgnosticMlState);
+  registry->RegisterBooleanPref(::prefs::kShouldGarbageCollectStoragePartitions,
+                                false);
 }
 
 absl::optional<int> GetIntWebAppPref(const PrefService* pref_service,
