@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ip_protection/ip_protection_auth_token_getter_factory.h"
+#include "chrome/browser/ip_protection/ip_protection_auth_token_provider_factory.h"
 
-#include "chrome/browser/ip_protection/ip_protection_auth_token_getter.h"
+#include "chrome/browser/ip_protection/ip_protection_auth_token_provider.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_selections.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -12,22 +12,22 @@
 #include "content/public/browser/storage_partition.h"
 
 // static
-IpProtectionAuthTokenGetter* IpProtectionAuthTokenGetterFactory::GetForProfile(
-    Profile* profile) {
-  return static_cast<IpProtectionAuthTokenGetter*>(
+IpProtectionAuthTokenProvider*
+IpProtectionAuthTokenProviderFactory::GetForProfile(Profile* profile) {
+  return static_cast<IpProtectionAuthTokenProvider*>(
       GetInstance()->GetServiceForBrowserContext(profile, /*create=*/true));
 }
 
 // static
-IpProtectionAuthTokenGetterFactory*
-IpProtectionAuthTokenGetterFactory::GetInstance() {
-  static base::NoDestructor<IpProtectionAuthTokenGetterFactory> instance;
+IpProtectionAuthTokenProviderFactory*
+IpProtectionAuthTokenProviderFactory::GetInstance() {
+  static base::NoDestructor<IpProtectionAuthTokenProviderFactory> instance;
   return instance.get();
 }
 
 // static
 ProfileSelections
-IpProtectionAuthTokenGetterFactory::CreateProfileSelections() {
+IpProtectionAuthTokenProviderFactory::CreateProfileSelections() {
   if (!base::FeatureList::IsEnabled(net::features::kEnableIpProtectionProxy)) {
     return ProfileSelections::BuildNoProfilesSelected();
   }
@@ -44,30 +44,30 @@ IpProtectionAuthTokenGetterFactory::CreateProfileSelections() {
       .Build();
 }
 
-IpProtectionAuthTokenGetterFactory::IpProtectionAuthTokenGetterFactory()
-    : ProfileKeyedServiceFactory("IpProtectionAuthTokenGetterFactory",
+IpProtectionAuthTokenProviderFactory::IpProtectionAuthTokenProviderFactory()
+    : ProfileKeyedServiceFactory("IpProtectionAuthTokenProviderFactory",
                                  CreateProfileSelections()) {
   DependsOn(IdentityManagerFactory::GetInstance());
 }
 
-IpProtectionAuthTokenGetterFactory::~IpProtectionAuthTokenGetterFactory() =
+IpProtectionAuthTokenProviderFactory::~IpProtectionAuthTokenProviderFactory() =
     default;
 
 std::unique_ptr<KeyedService>
-IpProtectionAuthTokenGetterFactory::BuildServiceInstanceForBrowserContext(
+IpProtectionAuthTokenProviderFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
-  return std::make_unique<IpProtectionAuthTokenGetter>(
+  return std::make_unique<IpProtectionAuthTokenProvider>(
       IdentityManagerFactory::GetForProfile(profile),
       profile->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess());
 }
 
-bool IpProtectionAuthTokenGetterFactory::ServiceIsCreatedWithBrowserContext()
+bool IpProtectionAuthTokenProviderFactory::ServiceIsCreatedWithBrowserContext()
     const {
-  // TODO(https://crbug.com/1444621): If we update IpProtectionAuthTokenGetter
+  // TODO(https://crbug.com/1444621): If we update IpProtectionAuthTokenProvider
   // to begin requesting tokens on construction, have this return true to
-  // instantiate an instance of the IpProtectionAuthTokenGetter when the
+  // instantiate an instance of the IpProtectionAuthTokenProvider when the
   // BrowserContext is created instead of lazily so that it can begin fetching
   // tokens as soon as possible.
   return false;

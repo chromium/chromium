@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ip_protection/ip_protection_auth_token_getter.h"
+#include "chrome/browser/ip_protection/ip_protection_auth_token_provider.h"
+
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
@@ -87,12 +88,12 @@ enum class PrimaryAccountBehavior {
 
 }  // namespace
 
-class IpProtectionAuthTokenGetterTest : public testing::Test {
+class IpProtectionAuthTokenProviderTest : public testing::Test {
  protected:
   using TokensResult =
       absl::optional<std::vector<network::mojom::BlindSignedAuthTokenPtr>>;
 
-  IpProtectionAuthTokenGetterTest()
+  IpProtectionAuthTokenProviderTest()
       : absl_expiration_time_(absl::Now() + absl::Hours(1)),
         base_expiration_time_(
             base::Time::FromTimeT(absl::ToTimeT(absl_expiration_time_))) {}
@@ -104,7 +105,7 @@ class IpProtectionAuthTokenGetterTest : public testing::Test {
 
   // Call `TryGetAuthTokens()` with `TokensCallback()` and run until it
   // completes.
-  void TryGetAuthTokens(int num_tokens, IpProtectionAuthTokenGetter* getter) {
+  void TryGetAuthTokens(int num_tokens, IpProtectionAuthTokenProvider* getter) {
     if (primary_account_behavior_ != PrimaryAccountBehavior::kNone) {
       identity_test_env_.MakePrimaryAccountAvailable(
           kTestEmail, signin::ConsentLevel::kSignin);
@@ -174,10 +175,10 @@ class IpProtectionAuthTokenGetterTest : public testing::Test {
 
 // The success case: a primary account is available, and BSA gets a token for
 // it.
-TEST_F(IpProtectionAuthTokenGetterTest, Success) {
+TEST_F(IpProtectionAuthTokenProviderTest, Success) {
   primary_account_behavior_ = PrimaryAccountBehavior::kReturnsToken;
   auto bsa = MockBlindSignAuth();
-  IpProtectionAuthTokenGetter getter(
+  IpProtectionAuthTokenProvider getter(
       IdentityManager(),
       base::MakeRefCounted<network::TestSharedURLLoaderFactory>());
   getter.SetBlindSignAuthInterfaceForTesting(&bsa);
@@ -203,10 +204,10 @@ TEST_F(IpProtectionAuthTokenGetterTest, Success) {
 }
 
 // BSA returns no tokens.
-TEST_F(IpProtectionAuthTokenGetterTest, NoTokens) {
+TEST_F(IpProtectionAuthTokenProviderTest, NoTokens) {
   primary_account_behavior_ = PrimaryAccountBehavior::kReturnsToken;
   auto bsa = MockBlindSignAuth();
-  IpProtectionAuthTokenGetter getter(
+  IpProtectionAuthTokenProvider getter(
       IdentityManager(),
       base::MakeRefCounted<network::TestSharedURLLoaderFactory>());
   getter.SetBlindSignAuthInterfaceForTesting(&bsa);
@@ -225,10 +226,10 @@ TEST_F(IpProtectionAuthTokenGetterTest, NoTokens) {
 }
 
 // BSA returns a 400 error.
-TEST_F(IpProtectionAuthTokenGetterTest, BlindSignedTokenError400) {
+TEST_F(IpProtectionAuthTokenProviderTest, BlindSignedTokenError400) {
   primary_account_behavior_ = PrimaryAccountBehavior::kReturnsToken;
   auto bsa = MockBlindSignAuth();
-  IpProtectionAuthTokenGetter getter(
+  IpProtectionAuthTokenProvider getter(
       IdentityManager(),
       base::MakeRefCounted<network::TestSharedURLLoaderFactory>());
   getter.SetBlindSignAuthInterfaceForTesting(&bsa);
@@ -248,10 +249,10 @@ TEST_F(IpProtectionAuthTokenGetterTest, BlindSignedTokenError400) {
 }
 
 // BSA returns a 401 error.
-TEST_F(IpProtectionAuthTokenGetterTest, BlindSignedTokenError401) {
+TEST_F(IpProtectionAuthTokenProviderTest, BlindSignedTokenError401) {
   primary_account_behavior_ = PrimaryAccountBehavior::kReturnsToken;
   auto bsa = MockBlindSignAuth();
-  IpProtectionAuthTokenGetter getter(
+  IpProtectionAuthTokenProvider getter(
       IdentityManager(),
       base::MakeRefCounted<network::TestSharedURLLoaderFactory>());
   bsa.status_ = absl::UnauthenticatedError("uhoh");
@@ -271,10 +272,10 @@ TEST_F(IpProtectionAuthTokenGetterTest, BlindSignedTokenError401) {
 }
 
 // BSA returns a 403 error.
-TEST_F(IpProtectionAuthTokenGetterTest, BlindSignedTokenError403) {
+TEST_F(IpProtectionAuthTokenProviderTest, BlindSignedTokenError403) {
   primary_account_behavior_ = PrimaryAccountBehavior::kReturnsToken;
   auto bsa = MockBlindSignAuth();
-  IpProtectionAuthTokenGetter getter(
+  IpProtectionAuthTokenProvider getter(
       IdentityManager(),
       base::MakeRefCounted<network::TestSharedURLLoaderFactory>());
   bsa.status_ = absl::PermissionDeniedError("uhoh");
@@ -294,10 +295,10 @@ TEST_F(IpProtectionAuthTokenGetterTest, BlindSignedTokenError403) {
 }
 
 // BSA returns some other error.
-TEST_F(IpProtectionAuthTokenGetterTest, BlindSignedTokenErrorOther) {
+TEST_F(IpProtectionAuthTokenProviderTest, BlindSignedTokenErrorOther) {
   primary_account_behavior_ = PrimaryAccountBehavior::kReturnsToken;
   auto bsa = MockBlindSignAuth();
-  IpProtectionAuthTokenGetter getter(
+  IpProtectionAuthTokenProvider getter(
       IdentityManager(),
       base::MakeRefCounted<network::TestSharedURLLoaderFactory>());
   bsa.status_ = absl::UnknownError("uhoh");
@@ -317,10 +318,10 @@ TEST_F(IpProtectionAuthTokenGetterTest, BlindSignedTokenErrorOther) {
 }
 
 // The CanUseChromeIpProtection capability is not present (`kUnknown`).
-TEST_F(IpProtectionAuthTokenGetterTest, AccountCapabilityUnknown) {
+TEST_F(IpProtectionAuthTokenProviderTest, AccountCapabilityUnknown) {
   primary_account_behavior_ = PrimaryAccountBehavior::kUnknownEligibility;
   auto bsa = MockBlindSignAuth();
-  IpProtectionAuthTokenGetter getter(
+  IpProtectionAuthTokenProvider getter(
       IdentityManager(),
       base::MakeRefCounted<network::TestSharedURLLoaderFactory>());
   bsa.tokens_ = {{"single-use-1", absl_expiration_time_},
@@ -346,10 +347,10 @@ TEST_F(IpProtectionAuthTokenGetterTest, AccountCapabilityUnknown) {
 }
 
 // Fetching OAuth token returns an error.
-TEST_F(IpProtectionAuthTokenGetterTest, AuthTokenError) {
+TEST_F(IpProtectionAuthTokenProviderTest, AuthTokenError) {
   primary_account_behavior_ = PrimaryAccountBehavior::kTokenFetchError;
   auto bsa = MockBlindSignAuth();
-  IpProtectionAuthTokenGetter getter(
+  IpProtectionAuthTokenProvider getter(
       IdentityManager(),
       base::MakeRefCounted<network::TestSharedURLLoaderFactory>());
   getter.SetBlindSignAuthInterfaceForTesting(&bsa);
@@ -364,10 +365,10 @@ TEST_F(IpProtectionAuthTokenGetterTest, AuthTokenError) {
 }
 
 // Ineligible primary account.
-TEST_F(IpProtectionAuthTokenGetterTest, IneligiblePrimary) {
+TEST_F(IpProtectionAuthTokenProviderTest, IneligiblePrimary) {
   primary_account_behavior_ = PrimaryAccountBehavior::kIneligible;
   auto bsa = MockBlindSignAuth();
-  IpProtectionAuthTokenGetter getter(
+  IpProtectionAuthTokenProvider getter(
       IdentityManager(),
       base::MakeRefCounted<network::TestSharedURLLoaderFactory>());
   getter.SetBlindSignAuthInterfaceForTesting(&bsa);
@@ -384,10 +385,10 @@ TEST_F(IpProtectionAuthTokenGetterTest, IneligiblePrimary) {
 }
 
 // No primary account.
-TEST_F(IpProtectionAuthTokenGetterTest, NoPrimary) {
+TEST_F(IpProtectionAuthTokenProviderTest, NoPrimary) {
   primary_account_behavior_ = PrimaryAccountBehavior::kNone;
   auto bsa = MockBlindSignAuth();
-  IpProtectionAuthTokenGetter getter(
+  IpProtectionAuthTokenProvider getter(
       IdentityManager(),
       base::MakeRefCounted<network::TestSharedURLLoaderFactory>());
   getter.SetBlindSignAuthInterfaceForTesting(&bsa);

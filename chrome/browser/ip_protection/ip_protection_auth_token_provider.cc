@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ip_protection/ip_protection_auth_token_getter.h"
+#include "chrome/browser/ip_protection/ip_protection_auth_token_provider.h"
+
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ip_protection/blind_sign_http_impl.h"
 #include "chrome/browser/profiles/profile.h"
@@ -12,7 +13,7 @@
 #include "mojo/public/cpp/bindings/message.h"
 #include "net/third_party/quiche/src/quiche/blind_sign_auth/blind_sign_auth.h"
 
-IpProtectionAuthTokenGetter::IpProtectionAuthTokenGetter(
+IpProtectionAuthTokenProvider::IpProtectionAuthTokenProvider(
     signin::IdentityManager* identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : identity_manager_(identity_manager),
@@ -25,9 +26,9 @@ IpProtectionAuthTokenGetter::IpProtectionAuthTokenGetter(
   CHECK(identity_manager);
 }
 
-IpProtectionAuthTokenGetter::~IpProtectionAuthTokenGetter() = default;
+IpProtectionAuthTokenProvider::~IpProtectionAuthTokenProvider() = default;
 
-void IpProtectionAuthTokenGetter::TryGetAuthTokens(
+void IpProtectionAuthTokenProvider::TryGetAuthTokens(
     uint32_t batch_size,
     TryGetAuthTokensCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -47,7 +48,7 @@ void IpProtectionAuthTokenGetter::TryGetAuthTokens(
   RequestOAuthToken();
 }
 
-void IpProtectionAuthTokenGetter::RequestOAuthToken() {
+void IpProtectionAuthTokenProvider::RequestOAuthToken() {
   if (!identity_manager_ ||
       !identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
     TryGetAuthTokensComplete(
@@ -85,12 +86,12 @@ void IpProtectionAuthTokenGetter::RequestOAuthToken() {
       std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(
           /*consumer_name=*/"IpProtectionService", identity_manager_, scopes,
           base::BindOnce(
-              &IpProtectionAuthTokenGetter::OnRequestOAuthTokenCompleted,
+              &IpProtectionAuthTokenProvider::OnRequestOAuthTokenCompleted,
               base::Unretained(this)),
           mode, signin::ConsentLevel::kSignin);
 }
 
-void IpProtectionAuthTokenGetter::OnRequestOAuthTokenCompleted(
+void IpProtectionAuthTokenProvider::OnRequestOAuthTokenCompleted(
     GoogleServiceAuthError error,
     signin::AccessTokenInfo access_token_info) {
   access_token_fetcher_.reset();
@@ -109,7 +110,7 @@ void IpProtectionAuthTokenGetter::OnRequestOAuthTokenCompleted(
   FetchBlindSignedToken(access_token_info);
 }
 
-void IpProtectionAuthTokenGetter::FetchBlindSignedToken(
+void IpProtectionAuthTokenProvider::FetchBlindSignedToken(
     signin::AccessTokenInfo access_token_info) {
   DCHECK(bsa_);
   start_time_ = base::TimeTicks::Now();
@@ -120,7 +121,7 @@ void IpProtectionAuthTokenGetter::FetchBlindSignedToken(
       });
 }
 
-void IpProtectionAuthTokenGetter::OnFetchBlindSignedTokenCompleted(
+void IpProtectionAuthTokenProvider::OnFetchBlindSignedTokenCompleted(
     absl::StatusOr<absl::Span<quiche::BlindSignToken>> tokens) {
   if (!tokens.ok()) {
     // Apply the canonical mapping from abseil status to HTTP status.
@@ -166,7 +167,7 @@ void IpProtectionAuthTokenGetter::OnFetchBlindSignedTokenCompleted(
                            IpProtectionTryGetAuthTokensResult::kSuccess);
 }
 
-void IpProtectionAuthTokenGetter::TryGetAuthTokensComplete(
+void IpProtectionAuthTokenProvider::TryGetAuthTokensComplete(
     absl::optional<std::vector<network::mojom::BlindSignedAuthTokenPtr>>
         bsa_tokens,
     IpProtectionTryGetAuthTokensResult result) {
@@ -175,12 +176,12 @@ void IpProtectionAuthTokenGetter::TryGetAuthTokensComplete(
   std::move(try_get_auth_token_callback_).Run(std::move(bsa_tokens));
 }
 
-void IpProtectionAuthTokenGetter::Shutdown() {
+void IpProtectionAuthTokenProvider::Shutdown() {
   identity_manager_ = nullptr;
 }
 
 /*static*/
-IpProtectionAuthTokenGetter* IpProtectionAuthTokenGetter::Get(
+IpProtectionAuthTokenProvider* IpProtectionAuthTokenProvider::Get(
     Profile* profile) {
-  return IpProtectionAuthTokenGetterFactory::GetForProfile(profile);
+  return IpProtectionAuthTokenProviderFactory::GetForProfile(profile);
 }

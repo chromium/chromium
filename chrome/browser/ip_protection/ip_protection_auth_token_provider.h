@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_IP_PROTECTION_IP_PROTECTION_AUTH_TOKEN_GETTER_H_
-#define CHROME_BROWSER_IP_PROTECTION_IP_PROTECTION_AUTH_TOKEN_GETTER_H_
+#ifndef CHROME_BROWSER_IP_PROTECTION_IP_PROTECTION_AUTH_TOKEN_PROVIDER_H_
+#define CHROME_BROWSER_IP_PROTECTION_IP_PROTECTION_AUTH_TOKEN_PROVIDER_H_
 
 #include <memory>
 #include <string>
@@ -13,7 +13,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ip_protection/blind_sign_http_impl.h"
-#include "chrome/browser/ip_protection/ip_protection_auth_token_getter_factory.h"
+#include "chrome/browser/ip_protection/ip_protection_auth_token_provider_factory.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -58,7 +58,7 @@ enum class IpProtectionTryGetAuthTokensResult {
 // This class handles both requesting OAuth2 tokens for the signed-in user, and
 // fetching blind-signed auth tokens for that user. It may only be used on the
 // UI thread.
-class IpProtectionAuthTokenGetter
+class IpProtectionAuthTokenProvider
     : public KeyedService,
       public network::mojom::IpProtectionAuthTokenGetter {
  public:
@@ -66,11 +66,11 @@ class IpProtectionAuthTokenGetter
       absl::optional<std::vector<network::mojom::BlindSignedAuthTokenPtr>>
           bsa_tokens)>;
 
-  IpProtectionAuthTokenGetter(
+  IpProtectionAuthTokenProvider(
       signin::IdentityManager* identity_manager,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 
-  ~IpProtectionAuthTokenGetter() override;
+  ~IpProtectionAuthTokenProvider() override;
 
   void SetBlindSignAuthInterfaceForTesting(
       quiche::BlindSignAuthInterface* bsa) {
@@ -87,7 +87,7 @@ class IpProtectionAuthTokenGetter
   // KeyedService:
   void Shutdown() override;
 
-  static IpProtectionAuthTokenGetter* Get(Profile* profile);
+  static IpProtectionAuthTokenProvider* Get(Profile* profile);
 
  private:
   // Calls the IdentityManager asynchronously to request the OAuth token for the
@@ -139,4 +139,4 @@ class IpProtectionAuthTokenGetter
   base::TimeTicks start_time_;
 };
 
-#endif  // CHROME_BROWSER_IP_PROTECTION_IP_PROTECTION_AUTH_TOKEN_GETTER_H_
+#endif  // CHROME_BROWSER_IP_PROTECTION_IP_PROTECTION_AUTH_TOKEN_PROVIDER_H_
