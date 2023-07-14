@@ -13,6 +13,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/policy_test_utils.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/relaunch_notification/relaunch_required_dialog_view.h"
 #include "chrome/browser/upgrade_detector/build_state.h"
@@ -51,6 +52,21 @@ class UpgradeRecommendedWaiter : public UpgradeObserver {
 
 class RelaunchNotificationControllerUiTest : public policy::PolicyTest {
  protected:
+  // policy::PolicyTest:
+  void SetUpOnMainThread() override {
+    policy::PolicyTest::SetUpOnMainThread();
+
+    // Configure required relaunch notifications.
+    SetRelaunchNotificationPolicies();
+  }
+
+  void TearDownOnMainThread() override {
+    // Disable notifications so that the timer doesn't fire during teardown.
+    DisableRelaunchNotifications();
+
+    policy::PolicyTest::TearDownOnMainThread();
+  }
+
   // Sets the RelaunchNotification policies to show the required notification
   // at the default deadline.
   void SetRelaunchNotificationPolicies() {
@@ -69,8 +85,18 @@ class RelaunchNotificationControllerUiTest : public policy::PolicyTest {
     UpdateProviderPolicy(policies_);
   }
 
+  // Disables relaunch notifications.
+  void DisableRelaunchNotifications() {
+    policies_.Set(policy::key::kRelaunchNotification,
+                  policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_MACHINE,
+                  policy::POLICY_SOURCE_PLATFORM,
+                  base::Value(0),  // Disabled
+                  nullptr);
+    UpdateProviderPolicy(policies_);
+  }
+
   // Simulates that an update is available.
-  void SimulateUpdate() {
+  static void SimulateUpdate() {
     g_browser_process->GetBuildState()->SetUpdate(
         BuildState::UpdateType::kNormalUpdate,
         base::Version({CHROME_VERSION_MAJOR, CHROME_VERSION_MINOR,
@@ -105,35 +131,30 @@ class RelaunchNotificationControllerUiTest : public policy::PolicyTest {
   }
 
   // Closes `dialog` and waits for it to be destroyed.
-  void CloseDialog(RelaunchRequiredDialogView* dialog) {
+  static void CloseDialog(RelaunchRequiredDialogView* dialog) {
     views::test::WidgetDestroyedWaiter waiter(dialog->GetWidget());
     std::exchange(dialog, nullptr)->CancelDialog();
     waiter.Wait();
   }
 
   // Minimizes `browser_view` and waits for it to be deactivated.
-  void MinimizeBrowser(BrowserView* browser_view) {
+  static void MinimizeBrowser(BrowserView* browser_view) {
     views::test::WidgetActivationWaiter waiter(browser_view->GetWidget(),
                                                /*active=*/false);
     browser_view->Minimize();
     waiter.Wait();
-  }
-
-  // Restores `browser_view` and waits for it to be activated.
-  void RestoreBrowser(BrowserView* browser_view) {
-    views::test::WidgetActivationWaiter waiter(browser_view->GetWidget(),
-                                               /*active=*/true);
-    browser_view->Restore();
-    waiter.Wait();
+    // Pump all pending UI events so that the window manager isn't racing with
+    // the test.
+    base::RunLoop().RunUntilIdle();
   }
 
   // Sets the RelaunchNotificationPeriod so that the deadline is `delta` in
-  // the future.
-  void AdjustPeriodToDeadlineIn(base::TimeDelta delta) {
+  // the future. Returns the new deadline.
+  base::Time AdjustPeriodToDeadlineIn(base::TimeDelta delta) {
     UpgradeRecommendedWaiter waiter;
-    base::Time now = base::Time::Now();
-    base::TimeDelta period =
-        (now - UpgradeDetector::GetInstance()->upgrade_detected_time()) + delta;
+    const base::Time deadline = base::Time::Now() + delta;
+    const base::TimeDelta period =
+        deadline - UpgradeDetector::GetInstance()->upgrade_detected_time();
     policies_.Set(
         policy::key::kRelaunchNotificationPeriod,
         policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_MACHINE,
@@ -142,6 +163,7 @@ class RelaunchNotificationControllerUiTest : public policy::PolicyTest {
         nullptr);
     UpdateProviderPolicy(policies_);
     waiter.Wait();
+    return deadline;
   }
 
  private:
@@ -151,19 +173,12 @@ class RelaunchNotificationControllerUiTest : public policy::PolicyTest {
 // Tests that reactivating a browser window after the deadline has passed does
 // not show a negative delta.
 // Fails on mac64; see https://crbug.com/1462892.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_ReactivateAfterDeadline DISABLED_ReactivateAfterDeadline
-#else
-#define MAYBE_ReactivateAfterDeadline ReactivateAfterDeadline
-#endif
 IN_PROC_BROWSER_TEST_F(RelaunchNotificationControllerUiTest,
-                       MAYBE_ReactivateAfterDeadline) {
+                       ReactivateAfterDeadline) {
   // Make sure a browser window is active.
   auto* const browser_view = BrowserView::GetBrowserViewForBrowser(browser());
   ASSERT_TRUE(browser_view->IsActive());
-
-  // Configure required relaunch notifications.
-  SetRelaunchNotificationPolicies();
+  ASSERT_EQ(chrome::FindBrowserWithActiveWindow(), browser());
 
   // Simulate an update and wait for the notification to show.
   RelaunchRequiredDialogView* dialog = nullptr;
@@ -172,8 +187,9 @@ IN_PROC_BROWSER_TEST_F(RelaunchNotificationControllerUiTest,
                                          "RelaunchRequiredDialog");
     SimulateUpdate();
     TriggerAnnoyanceLevel(UpgradeDetector::UPGRADE_ANNOYANCE_ELEVATED);
-    dialog =
-        RelaunchRequiredDialogView::FromWidget(waiter.WaitIfNeededAndGet());
+    auto* widget = waiter.WaitIfNeededAndGet();
+    ASSERT_TRUE(widget);
+    dialog = RelaunchRequiredDialogView::FromWidget(widget);
   }
 
   // Dismiss the notification and wait for its destruction.
@@ -181,6 +197,7 @@ IN_PROC_BROWSER_TEST_F(RelaunchNotificationControllerUiTest,
 
   // Deactivate the browser window.
   MinimizeBrowser(browser_view);
+  ASSERT_FALSE(chrome::FindBrowserWithActiveWindow());
 
   // The code below assumes that `action_timeout` is greater than 2.5 seconds.
   ASSERT_GT(TestTimeouts::action_timeout(), base::Milliseconds(2500));
@@ -189,22 +206,22 @@ IN_PROC_BROWSER_TEST_F(RelaunchNotificationControllerUiTest,
   // future. The browser is not active, so the controller will install an
   // observer and wait for it to become active. The controller caches this
   // deadline.
-  AdjustPeriodToDeadlineIn(TestTimeouts::action_timeout() / 5);
+  auto deadline = AdjustPeriodToDeadlineIn(TestTimeouts::action_timeout() / 5);
 
   // Increase the relaunch notification period a bit. In the buggy case, the
   // controller does not update the cached value of the deadline.
   AdjustPeriodToDeadlineIn(TestTimeouts::action_timeout() / 2.5);
 
-  // Advance one second past the first revised deadline. This lets the clock
+  // Advance 1/2 second past the first revised deadline. This lets the clock
   // move past the bad deadline cached by the controller for the dialog, but is
   // still before the true relaunch deadline. It is significant that the clock
-  // is one second ahead so that the rounded delta to be shown in the UX is
-  // less than zero.
+  // is at least 1/2 second ahead so that the rounded delta to be shown in the
+  // UX is less than zero in the buggy case.
   {
     base::RunLoop run_loop;
     base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE, run_loop.QuitClosure(),
-        TestTimeouts::action_timeout() / 5 + base::Seconds(1));
+        (deadline + base::Milliseconds(500)) - base::Time::Now());
     run_loop.Run();
   }
 
@@ -212,9 +229,10 @@ IN_PROC_BROWSER_TEST_F(RelaunchNotificationControllerUiTest,
   {
     views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
                                          "RelaunchRequiredDialog");
-    RestoreBrowser(browser_view);
-    dialog =
-        RelaunchRequiredDialogView::FromWidget(waiter.WaitIfNeededAndGet());
+    browser_view->Restore();
+    auto* widget = waiter.WaitIfNeededAndGet();
+    ASSERT_TRUE(widget);
+    dialog = RelaunchRequiredDialogView::FromWidget(widget);
   }
 
   ASSERT_TRUE(dialog);

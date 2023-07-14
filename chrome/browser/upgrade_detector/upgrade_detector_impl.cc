@@ -43,8 +43,6 @@
 #include "base/enterprise_util.h"
 #include "chrome/installer/util/google_update_settings.h"
 #include "components/enterprise/browser/controller/browser_dm_token_storage.h"
-#elif BUILDFLAG(IS_MAC)
-#include "chrome/browser/mac/keystone_glue.h"
 #endif
 
 namespace {
@@ -475,14 +473,6 @@ void UpgradeDetectorImpl::Init() {
   }
 
 #if BUILDFLAG(ENABLE_UPDATE_NOTIFICATIONS)
-
-  // On macOS, only enable upgrade notifications if the updater (Keystone) is
-  // present.
-#if BUILDFLAG(IS_MAC)
-  if (!keystone_glue::KeystoneEnabled())
-    return;
-#endif
-
   // Start checking for outdated builds sometime after startup completes.
   content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
       ->PostTask(
