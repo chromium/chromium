@@ -308,17 +308,19 @@ class PrerenderHostBuilder {
   PrerenderHostBuilder(PrerenderHostBuilder&&) = delete;
   PrerenderHostBuilder& operator=(PrerenderHostBuilder&&) = delete;
 
-  void SetHoldbackAllowed();
-
   // The following methods consumes this class.
   std::unique_ptr<PrerenderHost> Build(const PrerenderAttributes& attributes,
                                        WebContentsImpl& prerender_web_contents);
   void RejectAsNotEligible(const PrerenderAttributes& attributes,
                            PrerenderFinalStatus status);
-  void RejectDueToHoldback();
   void RejectAsDuplicate();
   void RejectAsFailure(const PrerenderAttributes& attributes,
                        PrerenderFinalStatus status);
+  void RejectDueToHoldback();
+
+  void SetHoldback(bool holdback);
+  bool CheckIfShouldHoldback();
+
   // Public only for exceptional case.
   // TODO(https://crbug.com/1435376): Make this private again.
   void Drop();
@@ -347,12 +349,6 @@ void PrerenderHostBuilder::Drop() {
 
 bool PrerenderHostBuilder::IsDropped() {
   return devtools_attempt_ == nullptr;
-}
-
-void PrerenderHostBuilder::SetHoldbackAllowed() {
-  if (attempt_) {
-    attempt_->SetHoldbackStatus(PreloadingHoldbackStatus::kAllowed);
-  }
 }
 
 std::unique_ptr<PrerenderHost> PrerenderHostBuilder::Build(
@@ -387,6 +383,22 @@ void PrerenderHostBuilder::RejectAsNotEligible(
   Drop();
 }
 
+bool PrerenderHostBuilder::CheckIfShouldHoldback() {
+  CHECK(!IsDropped());
+
+  // Assigns the holdback status in the attempt it was not overridden earlier.
+  return attempt_ && attempt_->ShouldHoldback();
+}
+
+void PrerenderHostBuilder::RejectDueToHoldback() {
+  CHECK(!IsDropped());
+
+  // If DevTools is opened, holdbacks are force-disabled. So, we don't need to
+  // report this case to DevTools.
+
+  Drop();
+}
+
 void PrerenderHostBuilder::RejectAsDuplicate() {
   CHECK(!IsDropped());
 
@@ -399,17 +411,15 @@ void PrerenderHostBuilder::RejectAsDuplicate() {
   Drop();
 }
 
-void PrerenderHostBuilder::RejectDueToHoldback() {
-  CHECK(!IsDropped());
-
-  if (attempt_) {
-    attempt_->SetHoldbackStatus(PreloadingHoldbackStatus::kHoldback);
+void PrerenderHostBuilder::SetHoldback(bool holdback) {
+  if (!attempt_) {
+    return;
   }
-
-  // If DevTools is opened, holdbacks are force-disabled. So, we don't need to
-  // report this case to DevTools.
-
-  Drop();
+  if (holdback) {
+    attempt_->SetHoldbackStatus(PreloadingHoldbackStatus::kHoldback);
+  } else {
+    attempt_->SetHoldbackStatus(PreloadingHoldbackStatus::kAllowed);
+  }
 }
 
 void PrerenderHostBuilder::RejectAsFailure(
@@ -628,19 +638,23 @@ int PrerenderHostRegistry::CreateAndStartHost(
     if (attempt)
       attempt->SetEligibility(PreloadingEligibility::kEligible);
 
-    // Check for the HoldbackStatus after checking the eligibility.
-    // Override Prerender2Holdback for speculation rules when DevTools is
-    // opened to mitigate the cases in which developers are affected by
-    // kPrerender2Holdback.
-    bool should_prerender2holdback_be_overridden =
+    // Check for the HoldbackStatus after checking the eligibility. Override
+    // preloading holdbacks rules when DevTools is opened to mitigate the cases
+    // in which developers are affected by holdbacks.
+    bool should_holdbacks_be_overridden =
         initiator_rfh &&
         RenderFrameDevToolsAgentHost::GetFor(initiator_rfh) != nullptr;
-    if (!should_prerender2holdback_be_overridden &&
-        base::FeatureList::IsEnabled(features::kPrerender2Holdback)) {
+    if (should_holdbacks_be_overridden) {
+      builder.SetHoldback(false);
+    } else if (base::FeatureList::IsEnabled(features::kPrerender2Holdback)) {
+      builder.SetHoldback(true);
+    }
+    // Check if the attempt is held back either due to the check above or via
+    // PreloadingConfig.
+    if (builder.CheckIfShouldHoldback()) {
       builder.RejectDueToHoldback();
       return RenderFrameHost::kNoFrameTreeNodeId;
     }
-    builder.SetHoldbackAllowed();
 
     // Ignore prerendering requests for the same URL.
     for (auto& iter : prerender_host_by_frame_tree_node_id_) {
