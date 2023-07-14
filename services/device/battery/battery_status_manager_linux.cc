@@ -107,8 +107,11 @@ std::vector<dbus::ObjectPath> UPowerObject::EnumerateDevices() {
   std::vector<dbus::ObjectPath> paths;
   dbus::MethodCall method_call(kUPowerServiceName,
                                kUPowerMethodEnumerateDevices);
-  std::unique_ptr<dbus::Response> response(proxy_->CallMethodAndBlock(
-      &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT));
+  std::unique_ptr<dbus::Response> response(
+      proxy_
+          ->CallMethodAndBlock(&method_call,
+                               dbus::ObjectProxy::TIMEOUT_USE_DEFAULT)
+          .value_or(nullptr));
 
   if (response) {
     dbus::MessageReader reader(response.get());
@@ -124,8 +127,11 @@ dbus::ObjectPath UPowerObject::GetDisplayDevice() {
 
   dbus::MethodCall method_call(kUPowerServiceName,
                                kUPowerMethodGetDisplayDevice);
-  std::unique_ptr<dbus::Response> response(proxy_->CallMethodAndBlock(
-      &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT));
+  std::unique_ptr<dbus::Response> response(
+      proxy_
+          ->CallMethodAndBlock(&method_call,
+                               dbus::ObjectProxy::TIMEOUT_USE_DEFAULT)
+          .value_or(nullptr));
 
   if (response) {
     dbus::MessageReader reader(response.get());

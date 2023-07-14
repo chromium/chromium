@@ -128,15 +128,14 @@ ObjectProxy::~ObjectProxy() {
 // Originally we tried to make |method_call| a const reference, but we
 // gave up as dbus_connection_send_with_reply_and_block() takes a
 // non-const pointer of DBusMessage as the second parameter.
-std::unique_ptr<Response> ObjectProxy::CallMethodAndBlockWithErrorDetails(
-    MethodCall* method_call,
-    int timeout_ms,
-    Error* error) {
+base::expected<std::unique_ptr<Response>, Error>
+ObjectProxy::CallMethodAndBlock(MethodCall* method_call, int timeout_ms) {
   bus_->AssertOnDBusThread();
 
   if (!bus_->Connect() || !method_call->SetDestination(service_name_) ||
       !method_call->SetPath(object_path_)) {
-    return nullptr;
+    // Not an error from libdbus, so returns invalid error.
+    return base::unexpected(Error());
   }
 
   // Send the message synchronously.
@@ -147,18 +146,8 @@ std::unique_ptr<Response> ObjectProxy::CallMethodAndBlockWithErrorDetails(
   if (!result.has_value()) {
     LogMethodCallFailure(method_call->GetInterface(), method_call->GetMember(),
                          result.error().name(), result.error().message());
-    *error = std::move(result.error());
-    return nullptr;
   }
-
-  return std::move(result.value());
-}
-
-std::unique_ptr<Response> ObjectProxy::CallMethodAndBlock(
-    MethodCall* method_call,
-    int timeout_ms) {
-  Error error;
-  return CallMethodAndBlockWithErrorDetails(method_call, timeout_ms, &error);
+  return result;
 }
 
 void ObjectProxy::CallMethod(MethodCall* method_call,

@@ -46,10 +46,6 @@ class MockTest : public testing::Test {
     // CreateMockProxyResponse() to return responses.
     EXPECT_CALL(*mock_proxy_.get(), CallMethodAndBlock(_, _))
         .WillRepeatedly(Invoke(this, &MockTest::CreateMockProxyResponse));
-    EXPECT_CALL(*mock_proxy_.get(),
-                CallMethodAndBlockWithErrorDetails(_, _, _))
-        .WillRepeatedly(
-            Invoke(this, &MockTest::CreateMockProxyResponseWithErrorDetails));
 
     // Set an expectation so mock_proxy's CallMethod() will use
     // HandleMockProxyResponseWithMessageLoop() to return responses.
@@ -91,8 +87,9 @@ class MockTest : public testing::Test {
  private:
   // Returns a response for the given method call. Used to implement
   // CallMethodAndBlock() for |mock_proxy_|.
-  std::unique_ptr<Response> CreateMockProxyResponse(MethodCall* method_call,
-                                                    int timeout_ms) {
+  base::expected<std::unique_ptr<Response>, Error> CreateMockProxyResponse(
+      MethodCall* method_call,
+      int timeout_ms) {
     if (method_call->GetInterface() == "org.chromium.TestInterface" &&
         method_call->GetMember() == "Echo") {
       MessageReader reader(method_call);
@@ -101,20 +98,14 @@ class MockTest : public testing::Test {
         std::unique_ptr<Response> response = Response::CreateEmpty();
         MessageWriter writer(response.get());
         writer.AppendString(text_message);
-        return response;
+        return base::ok(std::move(response));
       }
+
+      LOG(ERROR) << "Unexpected method call: " << method_call->ToString();
+      return base::unexpected(Error());
     }
 
-    LOG(ERROR) << "Unexpected method call: " << method_call->ToString();
-    return nullptr;
-  }
-
-  std::unique_ptr<Response> CreateMockProxyResponseWithErrorDetails(
-      MethodCall* method_call,
-      int timeout_ms,
-      Error* error) {
-    *error = Error(DBUS_ERROR_NOT_SUPPORTED, "Not implemented");
-    return nullptr;
+    return base::unexpected(Error(DBUS_ERROR_NOT_SUPPORTED, "Not implemented"));
   }
 
   // Creates a response and posts the given response callback with the
@@ -124,7 +115,7 @@ class MockTest : public testing::Test {
       int timeout_ms,
       ObjectProxy::ResponseCallback* response_callback) {
     std::unique_ptr<Response> response =
-        CreateMockProxyResponse(method_call, timeout_ms);
+        CreateMockProxyResponse(method_call, timeout_ms).value_or(nullptr);
     task_environment_.GetMainThreadTaskRunner()->PostTask(
         FROM_HERE,
         base::BindOnce(&MockTest::RunResponseCallback, base::Unretained(this),
@@ -154,34 +145,34 @@ TEST_F(MockTest, CallMethodAndBlock) {
   writer.AppendString(kHello);
 
   // Call the method.
-  std::unique_ptr<Response> response(proxy->CallMethodAndBlock(
-      &method_call, ObjectProxy::TIMEOUT_USE_DEFAULT));
+  auto result =
+      proxy->CallMethodAndBlock(&method_call, ObjectProxy::TIMEOUT_USE_DEFAULT);
 
   // Check the response.
-  ASSERT_TRUE(response.get());
-  MessageReader reader(response.get());
+  ASSERT_TRUE(result.has_value());
+  MessageReader reader(result->get());
   std::string text_message;
   ASSERT_TRUE(reader.PopString(&text_message));
   // The text message should be echo'ed back.
   EXPECT_EQ(kHello, text_message);
 }
 
-TEST_F(MockTest, CallMethodAndBlockWithErrorDetails) {
+TEST_F(MockTest, CallMethodAndBlockOnError) {
   // Get an object proxy from the mock bus.
   ObjectProxy* proxy = mock_bus_->GetObjectProxy(
       "org.chromium.TestService",
       ObjectPath("/org/chromium/TestObject"));
 
   // Create a method call.
-  MethodCall method_call("org.chromium.TestInterface", "Echo");
+  MethodCall method_call("org.chromium.TestInterface", "MissingMethod");
 
-  Error error;
   // Call the method.
-  std::unique_ptr<Response> response(proxy->CallMethodAndBlockWithErrorDetails(
-      &method_call, ObjectProxy::TIMEOUT_USE_DEFAULT, &error));
+  auto result =
+      proxy->CallMethodAndBlock(&method_call, ObjectProxy::TIMEOUT_USE_DEFAULT);
 
   // Check the response.
-  ASSERT_FALSE(response.get());
+  ASSERT_FALSE(result.has_value());
+  const Error& error = result.error();
   EXPECT_EQ(DBUS_ERROR_NOT_SUPPORTED, error.name());
   EXPECT_EQ("Not implemented", error.message());
 }

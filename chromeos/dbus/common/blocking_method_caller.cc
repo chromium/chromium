@@ -23,8 +23,13 @@ void CallMethodAndBlockInternal(std::unique_ptr<dbus::Response>* response,
                                 dbus::ObjectProxy* proxy,
                                 dbus::MethodCall* method_call,
                                 dbus::Error* error_out) {
-  *response = proxy->CallMethodAndBlockWithErrorDetails(
-      method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT, error_out);
+  auto result = proxy->CallMethodAndBlock(
+      method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT);
+  if (result.has_value()) {
+    *response = std::move(result.value());
+  } else {
+    *error_out = std::move(result.error());
+  }
 }
 
 }  // namespace

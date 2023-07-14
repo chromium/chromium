@@ -281,8 +281,10 @@ bool CheckNotificationsNameHasOwnerOrIsActivatable(dbus::Bus* bus) {
   dbus::MessageWriter writer(&name_has_owner_call);
   writer.AppendString(kFreedesktopNotificationsName);
   std::unique_ptr<dbus::Response> name_has_owner_response =
-      dbus_proxy->CallMethodAndBlock(&name_has_owner_call,
-                                     dbus::ObjectProxy::TIMEOUT_USE_DEFAULT);
+      dbus_proxy
+          ->CallMethodAndBlock(&name_has_owner_call,
+                               dbus::ObjectProxy::TIMEOUT_USE_DEFAULT)
+          .value_or(nullptr);
   dbus::MessageReader owner_reader(name_has_owner_response.get());
   bool owned = false;
   if (name_has_owner_response && owner_reader.PopBool(&owned) && owned)
@@ -292,8 +294,10 @@ bool CheckNotificationsNameHasOwnerOrIsActivatable(dbus::Bus* bus) {
   dbus::MethodCall list_activatable_names_call(DBUS_INTERFACE_DBUS,
                                                kMethodListActivatableNames);
   std::unique_ptr<dbus::Response> list_activatable_names_response =
-      dbus_proxy->CallMethodAndBlock(&list_activatable_names_call,
-                                     dbus::ObjectProxy::TIMEOUT_USE_DEFAULT);
+      dbus_proxy
+          ->CallMethodAndBlock(&list_activatable_names_call,
+                               dbus::ObjectProxy::TIMEOUT_USE_DEFAULT)
+          .value_or(nullptr);
   if (list_activatable_names_response) {
     dbus::MessageReader reader(list_activatable_names_response.get());
     std::vector<std::string> activatable_names;
@@ -304,8 +308,11 @@ bool CheckNotificationsNameHasOwnerOrIsActivatable(dbus::Bus* bus) {
       dbus::MessageWriter start_service_writer(&start_service_call);
       start_service_writer.AppendString(kFreedesktopNotificationsName);
       start_service_writer.AppendUint32(/*flags=*/0);
-      auto start_service_response = dbus_proxy->CallMethodAndBlock(
-          &start_service_call, kStartServiceTimeout.InMilliseconds());
+      auto start_service_response =
+          dbus_proxy
+              ->CallMethodAndBlock(&start_service_call,
+                                   kStartServiceTimeout.InMilliseconds())
+              .value_or(nullptr);
       if (!start_service_response)
         return false;
       dbus::MessageReader start_service_reader(start_service_response.get());
@@ -518,8 +525,10 @@ class NotificationPlatformBridgeLinuxImpl
     dbus::MethodCall get_capabilities_call(kFreedesktopNotificationsName,
                                            kMethodGetCapabilities);
     std::unique_ptr<dbus::Response> capabilities_response =
-        notification_proxy_->CallMethodAndBlock(
-            &get_capabilities_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT);
+        notification_proxy_
+            ->CallMethodAndBlock(&get_capabilities_call,
+                                 dbus::ObjectProxy::TIMEOUT_USE_DEFAULT)
+            .value_or(nullptr);
     if (capabilities_response) {
       dbus::MessageReader reader(capabilities_response.get());
       std::vector<std::string> capabilities;
@@ -542,9 +551,10 @@ class NotificationPlatformBridgeLinuxImpl
     dbus::MethodCall get_server_information_call(kFreedesktopNotificationsName,
                                                  "GetServerInformation");
     std::unique_ptr<dbus::Response> server_information_response =
-        notification_proxy_->CallMethodAndBlock(
-            &get_server_information_call,
-            dbus::ObjectProxy::TIMEOUT_USE_DEFAULT);
+        notification_proxy_
+            ->CallMethodAndBlock(&get_server_information_call,
+                                 dbus::ObjectProxy::TIMEOUT_USE_DEFAULT)
+            .value_or(nullptr);
     if (server_information_response) {
       dbus::MessageReader reader(server_information_response.get());
       reader.PopString(&server_name_);
@@ -848,8 +858,10 @@ class NotificationPlatformBridgeLinuxImpl
                   : kExpireTimeout);
 
     std::unique_ptr<dbus::Response> response =
-        notification_proxy_->CallMethodAndBlock(
-            &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT);
+        notification_proxy_
+            ->CallMethodAndBlock(&method_call,
+                                 dbus::ObjectProxy::TIMEOUT_USE_DEFAULT)
+            .value_or(nullptr);
     if (response) {
       dbus::MessageReader reader(response.get());
       reader.PopUint32(&data->dbus_id);

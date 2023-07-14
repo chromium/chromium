@@ -448,9 +448,6 @@ class CHROME_DBUS_EXPORT Bus : public base::RefCountedThreadSafe<Bus> {
   // Sends a message to the bus and blocks until the response is
   // received. Used to implement synchronous method calls.
   //
-  // The |error| must not be nullptr.
-  // TODO(crbug.com/1459945): Use base::expected<void, Error> to return error.
-  //
   // BLOCKING CALL.
   virtual base::expected<std::unique_ptr<Response>, Error>
   SendWithReplyAndBlock(DBusMessage* request, int timeout_ms);
