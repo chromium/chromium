@@ -329,7 +329,7 @@ test("test_libaom") {
     defines += [ string_join("",
                              [
                                "LIBAOM_TEST_DATA_PATH=",
-                               rebase_path("testdata"),
+                               rebase_path("testdata", root_build_dir),
                              ]) ]
   }
 
