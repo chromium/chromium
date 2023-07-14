@@ -1626,11 +1626,8 @@ TEST_F(ComputedStyleTest, ShouldApplyAnyContainment) {
                                CSSValueID::kInlineGrid,
                                CSSValueID::kContents,
                                CSSValueID::kFlowRoot,
-                               CSSValueID::kNone};
-  if (RuntimeEnabledFeatures::MathMLCoreEnabled()) {
-    display_types.push_back(CSSValueID::kMath);
-  }
-
+                               CSSValueID::kNone,
+                               CSSValueID::kMath};
   for (auto contain :
        {CSSValueID::kNone, CSSValueID::kLayout, CSSValueID::kPaint,
         CSSValueID::kSize, CSSValueID::kStyle}) {

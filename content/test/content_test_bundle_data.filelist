@@ -4886,11 +4886,6 @@ data/accessibility/mathml/maction-node-expected-auralinux.txt
 data/accessibility/mathml/maction-node-expected-blink.txt
 data/accessibility/mathml/maction-node-expected-mac.txt
 data/accessibility/mathml/maction.html
-data/accessibility/mathml/math-disabled-node-expected-auralinux.txt
-data/accessibility/mathml/math-disabled-node-expected-blink.txt
-data/accessibility/mathml/math-disabled-node-expected-mac.txt
-data/accessibility/mathml/math-disabled-node-expected-win.txt
-data/accessibility/mathml/math-disabled.html
 data/accessibility/mathml/math-node-expected-auralinux.txt
 data/accessibility/mathml/math-node-expected-blink.txt
 data/accessibility/mathml/math-node-expected-mac.txt

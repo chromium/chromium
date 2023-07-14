@@ -40,9 +40,6 @@ static inline bool IsDisallowedMathSizeAttribute(const AtomicString& value) {
 }
 
 bool MathMLElement::IsPresentationAttribute(const QualifiedName& name) const {
-  if (!RuntimeEnabledFeatures::MathMLCoreEnabled())
-    return Element::IsPresentationAttribute(name);
-
   if (name == html_names::kDirAttr || name == mathml_names::kMathsizeAttr ||
       name == mathml_names::kMathcolorAttr ||
       name == mathml_names::kMathbackgroundAttr ||
@@ -80,11 +77,6 @@ void MathMLElement::CollectStyleForPresentationAttribute(
     const QualifiedName& name,
     const AtomicString& value,
     MutableCSSPropertyValueSet* style) {
-  if (!RuntimeEnabledFeatures::MathMLCoreEnabled()) {
-    Element::CollectStyleForPresentationAttribute(name, value, style);
-    return;
-  }
-
   if (name == html_names::kDirAttr) {
     if (IsValidDirAttribute(value)) {
       AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kDirection,
@@ -128,11 +120,6 @@ void MathMLElement::CollectStyleForPresentationAttribute(
 }
 
 void MathMLElement::ParseAttribute(const AttributeModificationParams& param) {
-  if (!RuntimeEnabledFeatures::MathMLCoreEnabled()) {
-    Element::ParseAttribute(param);
-    return;
-  }
-
   const AtomicString& event_name =
       HTMLElement::EventNameForAttributeName(param.name);
   if (!event_name.IsNull()) {

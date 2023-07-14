@@ -263,8 +263,7 @@ static bool ConvertFontFamilyName(
       }
     } else if (cssValueID == CSSValueID::kSystemUi) {
       family_name = font_family_names::kSystemUi;
-    } else if (RuntimeEnabledFeatures::CSSFontFamilyMathEnabled() &&
-               cssValueID == CSSValueID::kMath) {
+    } else if (cssValueID == CSSValueID::kMath) {
       family_name = font_family_names::kMath;
     }
     // Something went wrong with the conversion or retrieving the name from

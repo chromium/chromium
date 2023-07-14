@@ -175,8 +175,7 @@ void CSSDefaultStyleSheets::VerifyUniversalRuleCount() {
   // consciously add more universal bucket rules.
   if (mathml_style_sheet_) {
     default_mathml_style_->CompactRulesIfNeeded();
-    DCHECK_EQ(default_mathml_style_->UniversalRules().size(),
-              RuntimeEnabledFeatures::MathMLCoreEnabled() ? 24u : 0u);
+    DCHECK_EQ(default_mathml_style_->UniversalRules().size(), 24u);
   }
 
   if (svg_style_sheet_) {
@@ -285,10 +284,8 @@ bool CSSDefaultStyleSheets::EnsureDefaultStyleSheetsForElement(
   // FIXME: We should assert that the sheet only styles MathML elements.
   if (element.namespaceURI() == mathml_names::kNamespaceURI &&
       !mathml_style_sheet_) {
-    mathml_style_sheet_ = ParseUASheet(
-        RuntimeEnabledFeatures::MathMLCoreEnabled()
-            ? UncompressResourceAsASCIIString(IDR_UASTYLE_MATHML_CSS)
-            : UncompressResourceAsASCIIString(IDR_UASTYLE_MATHML_FALLBACK_CSS));
+    mathml_style_sheet_ =
+        ParseUASheet(UncompressResourceAsASCIIString(IDR_UASTYLE_MATHML_CSS));
     AddRulesToDefaultStyleSheets(mathml_style_sheet_, NamespaceType::kMathML);
     changed_default_style = true;
   }

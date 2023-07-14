@@ -1071,17 +1071,14 @@ Element* Document::CreateRawElement(const QualifiedName& qname,
       element = MakeGarbageCollected<SVGUnknownElement>(qname, *this);
     saw_elements_in_known_namespaces_ = true;
   } else if (qname.NamespaceURI() == mathml_names::kNamespaceURI) {
-    if (RuntimeEnabledFeatures::MathMLCoreEnabled()) {
-      element = MathMLElementFactory::Create(qname.LocalName(), *this, flags);
-      // An unknown MathML element is treated like an <mrow> element.
-      // TODO(crbug.com/1021837): Determine if we need to introduce a
-      // MathMLUnknownElement IDL.
-      if (!element)
-        element = MakeGarbageCollected<MathMLRowElement>(qname, *this);
-      saw_elements_in_known_namespaces_ = true;
-    } else {
-      element = MakeGarbageCollected<MathMLElement>(qname, *this);
+    element = MathMLElementFactory::Create(qname.LocalName(), *this, flags);
+    // An unknown MathML element is treated like an <mrow> element.
+    // TODO(crbug.com/1021837): Determine if we need to introduce a
+    // MathMLUnknownElement IDL.
+    if (!element) {
+      element = MakeGarbageCollected<MathMLRowElement>(qname, *this);
     }
+    saw_elements_in_known_namespaces_ = true;
   } else {
     element = MakeGarbageCollected<Element>(qname, this);
   }

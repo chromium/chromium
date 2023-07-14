@@ -2764,11 +2764,9 @@ static bool IsDisplayInside(CSSValueID id) {
   if (id == CSSValueID::kFlow) {
     return RuntimeEnabledFeatures::CSSDisplayMultipleValuesEnabled();
   }
-  if (id >= CSSValueID::kFlowRoot && id <= CSSValueID::kGrid) {
+  if ((id >= CSSValueID::kFlowRoot && id <= CSSValueID::kGrid) ||
+      id == CSSValueID::kMath) {
     return true;
-  }
-  if (id == CSSValueID::kMath) {
-    return RuntimeEnabledFeatures::MathMLCoreEnabled();
   }
   return false;
 }
@@ -2891,8 +2889,7 @@ const CSSValue* ParseDisplayMultipleKeywords(
   }
 
   if (!RuntimeEnabledFeatures::CSSDisplayMultipleValuesEnabled() &&
-      (result->inside->GetValueID() != CSSValueID::kMath ||
-       !RuntimeEnabledFeatures::MathMLCoreEnabled())) {
+      result->inside->GetValueID() != CSSValueID::kMath) {
     return nullptr;
   }
 

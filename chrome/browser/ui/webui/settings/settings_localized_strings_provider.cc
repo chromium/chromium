@@ -3354,10 +3354,6 @@ void AddSiteSettingsStrings(content::WebUIDataSource* html_source,
                               features::kWebBluetoothNewPermissionsBackend));
 
   html_source->AddBoolean(
-      "enableMathMLCore",
-      base::FeatureList::IsEnabled(blink::features::kMathMLCore));
-
-  html_source->AddBoolean(
       "showPersistentPermissions",
       base::FeatureList::IsEnabled(
           features::kFileSystemAccessPersistentPermissions));

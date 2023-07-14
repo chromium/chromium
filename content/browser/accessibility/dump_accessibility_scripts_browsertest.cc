@@ -75,12 +75,6 @@ class DumpAccessibilityScriptTest : public DumpAccessibilityTestBase {
       delete;
 
  protected:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    // Enable MathMLCore for some MathML tests.
-    base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-        switches::kEnableBlinkFeatures, "MathMLCore");
-  }
-
   std::vector<ui::AXPropertyFilter> DefaultFilters() const override {
     return {};
   }

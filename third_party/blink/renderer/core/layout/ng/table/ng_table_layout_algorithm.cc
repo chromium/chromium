@@ -1617,7 +1617,7 @@ const NGLayoutResult* NGTableLayoutAlgorithm::GenerateFragment(
   }
   container_builder_.SetFragmentsTotalBlockSize(block_size);
 
-  if (RuntimeEnabledFeatures::MathMLCoreEnabled() && Node().GetDOMNode() &&
+  if (Node().GetDOMNode() &&
       Node().GetDOMNode()->HasTagName(mathml_names::kMtableTag)) {
     container_builder_.SetBaselines(
         MathTableBaseline(Style(), child_block_offset));

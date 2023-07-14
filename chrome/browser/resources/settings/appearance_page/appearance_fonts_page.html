@@ -123,88 +123,87 @@
         $i18n{quickBrownFox}
       </div>
     </div>
-    <template is="dom-if" if="[[cssFontFamilyMathMenuEnabled_]]">
-      <div class="cr-row" aria-hidden="true">
-        <h2>$i18n{mathFont}</h2>
+    <div class="cr-row" aria-hidden="true">
+      <h2>$i18n{mathFont}</h2>
+    </div>
+    <div class="list-frame">
+      <div class="list-item">
+        <settings-dropdown-menu class="start" label="$i18n{mathFont}"
+            pref="{{prefs.webkit.webprefs.fonts.math.Zyyy}}"
+            menu-options="[[fontOptions_]]">
+        </settings-dropdown-menu>
       </div>
-      <div class="list-frame">
-        <div class="list-item">
-          <settings-dropdown-menu class="start" label="$i18n{mathFont}"
-              pref="{{prefs.webkit.webprefs.fonts.math.Zyyy}}"
-              menu-options="[[fontOptions_]]">
-          </settings-dropdown-menu>
-        </div>
-        <!-- A text preview like quickBrownFox is not really helpful for
-             mathematical fonts. Not only it's desired to show special math
-             characters but also to demo advanced features involving the
-             OpenType MATH table such as big/stretchy operators or special
-             layout constants. This is what the formula below tries to do. -->
-        <div id="mathFontPreview" class="list-item cr-padded-text"
-            style="
-                font-size:[[prefs.webkit.webprefs.default_font_size.value]]px;
-                font-family:
-                    '[[prefs.webkit.webprefs.fonts.math.Zyyy.value]]';">
-          [[prefs.webkit.webprefs.default_font_size.value]]:
-          <math style="font: inherit;" displaystyle="true">
-            <mrow>
-              <msqrt>
-                <mrow>
-                  <munderover>
-                    <mo>∑</mo>
-                    <mrow>
-                      <mi>n</mi>
-                      <mo>=</mo>
-                      <mn>1</mn>
-                    </mrow>
-                    <mn>∞</mn>
-                  </munderover>
-                  <mfrac>
-                    <mn>10</mn>
-                    <msup>
-                      <mi>n</mi>
-                      <mn>4</mn>
-                    </msup>
-                  </mfrac>
-                </mrow>
-              </msqrt>
-              <mo>=</mo>
+      <!-- A text preview like quickBrownFox is not really helpful for
+           mathematical fonts. Not only it's desired to show special math
+           characters but also to demo advanced features involving the
+           OpenType MATH table such as big/stretchy operators or special
+           layout constants. This is what the formula below tries to do. -->
+      <div id="mathFontPreview" class="list-item cr-padded-text"
+          style="
+              font-size:[[prefs.webkit.webprefs.default_font_size.value]]px;
+              font-family:
+                  '[[prefs.webkit.webprefs.fonts.math.Zyyy.value]]';">
+        [[prefs.webkit.webprefs.default_font_size.value]]:
+        <math style="font: inherit;" displaystyle="true">
+          <mrow>
+            <msqrt>
               <mrow>
-                <msubsup>
-                  <mo>∫</mo>
-                  <mn>0</mn>
-                  <mn>∞</mn>
-                </msubsup>
-                <mfrac>
+                <munderover>
+                  <mo>∑</mo>
                   <mrow>
-                    <mn>2</mn>
-                    <mi>x</mi>
-                    <mrow>
-                      <mi>d</mi>
-                      <mi>x</mi>
-                    </mrow>
-                  </mrow>
-                  <mrow>
-                    <msup>
-                      <mi>e</mi>
-                      <mi>x</mi>
-                    </msup>
-                    <mo>−</mo>
+                    <mi>n</mi>
+                    <mo>=</mo>
                     <mn>1</mn>
                   </mrow>
+                  <mn>∞</mn>
+                </munderover>
+                <mfrac>
+                  <mn>10</mn>
+                  <msup>
+                    <mi>n</mi>
+                    <mn>4</mn>
+                  </msup>
                 </mfrac>
               </mrow>
-              <mo>=</mo>
+            </msqrt>
+            <mo>=</mo>
+            <mrow>
+              <msubsup>
+                <mo>∫</mo>
+                <mn>0</mn>
+                <mn>∞</mn>
+              </msubsup>
               <mfrac>
-                <msup>
-                  <mi>π</mi>
+                <mrow>
                   <mn>2</mn>
-                </msup>
-                <mn>3</mn>
+                  <mi>x</mi>
+                  <mrow>
+                    <mi>d</mi>
+                    <mi>x</mi>
+                  </mrow>
+                </mrow>
+                <mrow>
+                  <msup>
+                    <mi>e</mi>
+                    <mi>x</mi>
+                  </msup>
+                  <mo>−</mo>
+                  <mn>1</mn>
+                </mrow>
               </mfrac>
-              <mo>∊</mo>
-              <mi>ℝ</mi>
             </mrow>
-          </math>
-        </div>
+            <mo>=</mo>
+            <mfrac>
+              <msup>
+                <mi>π</mi>
+                <mn>2</mn>
+              </msup>
+              <mn>3</mn>
+            </mfrac>
+            <mo>∊</mo>
+            <mi>ℝ</mi>
+          </mrow>
+        </math>
       </div>
-    </template>
+    </div>
+

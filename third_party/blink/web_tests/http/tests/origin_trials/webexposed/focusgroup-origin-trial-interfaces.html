@@ -10,13 +10,11 @@ generate_token.py http://127.0.0.1:8000 Focusgroup --expire-timestamp=2000000000
 <script src="/resources/origin-trials-helper.js"></script>
 <script>
 test(t => {
-  // We don't test if it works with the MathMLElement because this element is
-  // hidden behind the MathMLCore feature flag and it fails when running the
-  // origin-trials-runtimeflags-disabled virtual test suite.
   OriginTrialsHelper.check_properties_exist(this,
       {
         'HTMLElement': ['focusgroup'],
         'SVGElement': ['focusgroup'],
+        'MathMLElement': ['focusgroup'],
       },
   );
 }, "focusgroup related interfaces in Origin-Trial enabled document.");

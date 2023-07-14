@@ -1476,7 +1476,6 @@
       field_template: "primitive",
       inherited: true,
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
-      runtime_flag: "CSSMathDepth",
       style_builder_custom_functions: ["value"],
       type_name: "short",
       typedom_types: ["Number"],
@@ -3417,7 +3416,6 @@
       keywords: ["normal", "compact"],
       typedom_types: ["Keyword"],
       default_value: "normal",
-      runtime_flag: "CSSMathShift",
     },
     {
       name: "math-style",
@@ -3428,7 +3426,6 @@
       keywords: ["normal", "compact"],
       typedom_types: ["Keyword"],
       default_value: "normal",
-      runtime_flag: "CSSMathStyle",
     },
     {
       name: "max-height",

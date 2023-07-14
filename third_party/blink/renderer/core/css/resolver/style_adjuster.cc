@@ -820,9 +820,6 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
 
   auto* svg_element = DynamicTo<SVGElement>(element);
 
-  bool is_mathml_element = RuntimeEnabledFeatures::MathMLCoreEnabled() &&
-                           IsA<MathMLElement>(element);
-
   if (builder.Display() != EDisplay::kNone) {
     if (svg_element) {
       AdjustStyleForSvgElement(*svg_element, builder);
@@ -867,8 +864,7 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
 
     // math display values on non-MathML elements compute to flow display
     // values.
-    if ((!element || !is_mathml_element) && builder.IsDisplayMathType()) {
-      DCHECK(RuntimeEnabledFeatures::MathMLCoreEnabled());
+    if (!IsA<MathMLElement>(element) && builder.IsDisplayMathType()) {
       builder.SetDisplay(builder.Display() == EDisplay::kBlockMath
                              ? EDisplay::kBlock
                              : EDisplay::kInline);
@@ -1016,7 +1012,7 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
     }
     builder.SetCssDominantBaseline(baseline);
 
-  } else if (is_mathml_element) {
+  } else if (IsA<MathMLElement>(element)) {
     if (builder.Display() == EDisplay::kContents) {
       // https://drafts.csswg.org/css-display/#unbox-mathml
       builder.SetDisplay(EDisplay::kNone);

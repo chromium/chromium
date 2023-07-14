@@ -950,8 +950,7 @@ CSSValueID IdentifierForFamily(const AtomicString& family) {
   if (family == font_family_names::kSystemUi) {
     return CSSValueID::kSystemUi;
   }
-  if (RuntimeEnabledFeatures::CSSFontFamilyMathEnabled() &&
-      family == font_family_names::kMath) {
+  if (family == font_family_names::kMath) {
     return CSSValueID::kMath;
   }
   // If family does not correspond to any of the above, then it was actually

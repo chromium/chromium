@@ -50,8 +50,7 @@ void MathMLTableCellElement::ParseAttribute(
 
 LayoutObject* MathMLTableCellElement::CreateLayoutObject(
     const ComputedStyle& style) {
-  if (RuntimeEnabledFeatures::MathMLCoreEnabled() &&
-      style.Display() == EDisplay::kTableCell) {
+  if (style.Display() == EDisplay::kTableCell) {
     return MakeGarbageCollected<LayoutNGTableCellWithAnonymousMrow>(this);
   }
   return MathMLElement::CreateLayoutObject(style);

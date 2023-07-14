@@ -5280,10 +5280,8 @@ CSSValue* ConsumeFontSize(CSSParserTokenRange& range,
   if (range.Peek().Id() == CSSValueID::kWebkitXxxLarge) {
     context.Count(WebFeature::kFontSizeWebkitXxxLarge);
   }
-  if ((range.Peek().Id() >= CSSValueID::kXxSmall &&
-       range.Peek().Id() <= CSSValueID::kWebkitXxxLarge) ||
-      (RuntimeEnabledFeatures::CSSMathDepthEnabled() &&
-       range.Peek().Id() == CSSValueID::kMath)) {
+  if (range.Peek().Id() >= CSSValueID::kXxSmall &&
+      range.Peek().Id() <= CSSValueID::kMath) {
     return ConsumeIdent(range);
   }
   return ConsumeLengthOrPercent(
@@ -5420,11 +5418,7 @@ CSSValueList* ConsumeFontFamily(CSSParserTokenRange& range) {
 }
 
 CSSValue* ConsumeGenericFamily(CSSParserTokenRange& range) {
-  if (RuntimeEnabledFeatures::CSSFontFamilyMathEnabled() &&
-      range.Peek().Id() == CSSValueID::kMath) {
-    return ConsumeIdent(range);
-  }
-  return ConsumeIdentRange(range, CSSValueID::kSerif, CSSValueID::kWebkitBody);
+  return ConsumeIdentRange(range, CSSValueID::kSerif, CSSValueID::kMath);
 }
 
 CSSValue* ConsumeFamilyName(CSSParserTokenRange& range) {

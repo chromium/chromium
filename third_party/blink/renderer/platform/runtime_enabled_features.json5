@@ -875,12 +875,6 @@
       base_feature: "none",
     },
     {
-      name: "CSSFontFamilyMath",
-      status: "stable",
-      implied_by: ["MathMLCore"],
-      base_feature: "none",
-    },
-    {
       name: "CSSFontSizeAdjust",
       status: "test",
       base_feature: "none",
@@ -938,30 +932,6 @@
     {
       name: "CSSMarkerNestedPseudoElement",
       status: "experimental",
-      base_feature: "none",
-    },
-    {
-      name: "CSSMathDepth",
-      status: "stable",
-      implied_by: ["MathMLCore"],
-      base_feature: "none",
-    },
-    {
-      name: "CSSMathShift",
-      status: "stable",
-      implied_by: ["MathMLCore"],
-      base_feature: "none",
-    },
-    {
-      name: "CSSMathStyle",
-      status: "stable",
-      implied_by: ["MathMLCore"],
-      base_feature: "none",
-    },
-    {
-      name: "CSSMathVariant",
-      status: "stable",
-      implied_by: ["MathMLCore"],
       base_feature: "none",
     },
     {
@@ -2205,10 +2175,6 @@
     },
     {
       name: "ManagedConfiguration",
-      status: "stable",
-    },
-    {
-      name: "MathMLCore",
       status: "stable",
     },
     {
