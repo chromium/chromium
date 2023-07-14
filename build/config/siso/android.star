@@ -45,8 +45,8 @@ def __step_config(ctx, step_config):
             # TODO(crrev.com/c/4596899): Add Java inputs in GN config.
             "inputs": [
                 "third_party/jdk/current/bin/java",
-                "third_party/android_sdk/public/platforms/android-33/android.jar",
-                "third_party/android_sdk/public/platforms/android-33/optional/org.apache.http.legacy.jar",
+                "third_party/android_sdk/public/platforms/android-34/android.jar",
+                "third_party/android_sdk/public/platforms/android-34/optional/org.apache.http.legacy.jar",
             ],
             # TODO(crbug.com/1452038): include only required jar files in GN config.
             "indirect_inputs": {
@@ -62,7 +62,7 @@ def __step_config(ctx, step_config):
             # TODO(crrev.com/c/4596899): Add Java inputs in GN config.
             "inputs": [
                 "third_party/jdk/current/bin/javac",
-                "third_party/android_sdk/public/platforms/android-33/optional/org.apache.http.legacy.jar",
+                "third_party/android_sdk/public/platforms/android-34/optional/org.apache.http.legacy.jar",
             ],
             # TODO(crbug.com/1452038): include only required java, jar files in GN config.
             "indirect_inputs": {
@@ -83,8 +83,8 @@ def __step_config(ctx, step_config):
             # TODO(crrev.com/c/4596899): Add Java inputs in GN config.
             "inputs": [
                 "third_party/jdk/current/bin/java",
-                "third_party/android_sdk/public/platforms/android-33/android.jar",
-                "third_party/android_sdk/public/platforms/android-33/optional/org.apache.http.legacy.jar",
+                "third_party/android_sdk/public/platforms/android-34/android.jar",
+                "third_party/android_sdk/public/platforms/android-34/optional/org.apache.http.legacy.jar",
             ],
             # TODO(crbug.com/1452038): include only required jar, dex files in GN config.
             "indirect_inputs": {
@@ -168,6 +168,7 @@ def __input_deps(ctx, input_deps):
     # TODO(crrev.com/c/4596899): Add Java inputs in GN config.
     input_deps["third_party/jdk/current:current"] = [
         "third_party/jdk/current/bin/java",
+        "third_party/jdk/current/bin/java.orig",
         "third_party/jdk/current/conf/logging.properties",
         "third_party/jdk/current/conf/security/java.security",
         "third_party/jdk/current/lib/ct.sym",
