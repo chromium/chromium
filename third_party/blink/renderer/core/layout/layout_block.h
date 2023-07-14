@@ -180,9 +180,6 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
   LayoutUnit AvailableLogicalHeightForPercentageComputation() const;
   bool HasDefiniteLogicalHeight() const;
 
- protected:
-  void RecalcSelfVisualOverflow();
-
  public:
   void RecalcChildVisualOverflow();
   void RecalcVisualOverflow() override;

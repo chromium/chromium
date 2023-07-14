@@ -856,12 +856,8 @@ void LayoutBlock::RecalcChildVisualOverflow() {
 
 void LayoutBlock::RecalcVisualOverflow() {
   NOT_DESTROYED();
+  DCHECK(!CanUseFragmentsForVisualOverflow());
   RecalcChildVisualOverflow();
-  RecalcSelfVisualOverflow();
-}
-
-void LayoutBlock::RecalcSelfVisualOverflow() {
-  NOT_DESTROYED();
   ComputeVisualOverflow();
 }
 
