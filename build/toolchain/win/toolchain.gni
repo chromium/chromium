@@ -333,7 +333,8 @@ template("single_msvc_toolchain") {
     }
 
     if (toolchain_has_rust) {
-      rustc_wrapper = rebase_path("//build/rust/rustc_wrapper.py")
+      rustc_wrapper =
+          rebase_path("//build/rust/rustc_wrapper.py", root_build_dir)
       rustc = rebase_path("${rust_sysroot}/bin/rustc", root_build_dir)
       rust_sysroot_relative_to_out = rebase_path(rust_sysroot, root_out_dir)
       rustc_windows_args = " -Clinker=$link$rust_linkflags $rustc_common_args"
