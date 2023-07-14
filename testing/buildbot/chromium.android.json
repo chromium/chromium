@@ -34597,7 +34597,8 @@
           "--use-persistent-shell",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_o.services_unittests.filter"
         ],
         "ci_only": true,
         "isolate_profile_data": true,
