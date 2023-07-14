@@ -12633,6 +12633,7 @@
                 {
                     "name": "Enabled_Pinned_Clobber",
                     "params": {
+                        "companion-image-upload-url": "https://lens.google.com/v3/upload",
                         "open-links-in-current-tab": "true"
                     },
                     "enable_features": [
