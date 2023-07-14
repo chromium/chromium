@@ -1336,7 +1336,7 @@ external/wpt/html/canvas/offscreen/text/2d.text.draw.fill.maxWidth.large-manual.
 external/wpt/html/canvas/offscreen/text/2d.text.draw.fill.rtl-manual.worker.js [ Skip ]
 external/wpt/html/canvas/offscreen/text/2d.text.draw.kern.consistent-manual.worker.js [ Skip ]
 external/wpt/html/canvas/offscreen/text/2d.text.draw.stroke.basic-manual.worker.js [ Skip ]
-external/wpt/html/canvas/element/manual/drawing-text-to-the-canvas/canvas.2d.disconnected.html [ Skip ]
+external/wpt/html/canvas/element/manual/text/canvas.2d.disconnected.html [ Skip ]
 
 external/wpt/orientation-event/motion/page-visibility-manual.https.html [ Skip ]
 external/wpt/orientation-event/motion/t025-manual.https.html [ Skip ]

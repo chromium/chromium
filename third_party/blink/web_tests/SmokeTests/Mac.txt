@@ -368,8 +368,8 @@ external/wpt/html/canvas/element/drawing-text-to-the-canvas/2d.text.draw.fill.ma
 external/wpt/html/canvas/element/drawing-text-to-the-canvas/2d.text.draw.fill.maxWidth.negative.html
 external/wpt/html/canvas/element/drawing-text-to-the-canvas/2d.text.draw.fill.maxWidth.small.html
 external/wpt/html/canvas/element/drawing-text-to-the-canvas/2d.text.draw.fill.maxWidth.zero.html
-external/wpt/html/canvas/element/drawing-text-to-the-canvas/direction-inherit-rtl.html
-external/wpt/html/canvas/element/drawing-text-to-the-canvas/direction-rtl.html
+external/wpt/html/canvas/element/text/direction-inherit-rtl.html
+external/wpt/html/canvas/element/text/direction-rtl.html
 external/wpt/html/canvas/element/fill-and-stroke-styles/2d.gradient.interpolate.zerosize.fillText.html
 external/wpt/html/canvas/element/manual/drawing-images-to-the-canvas/image-orientation/drawImage-from-blob.tentative.html
 external/wpt/html/canvas/element/manual/shadows/canvas_shadows_001.htm
