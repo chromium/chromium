@@ -14,7 +14,7 @@ __filegroups = {
 
 def __protoc_wrapper(ctx, cmd):
     inputs = protoc_wrapper.scandeps(ctx, cmd.args)
-    ctx.actions.fix(inputs = cmd.inputs + inputs)
+    ctx.actions.fix(inputs = cmd.expanded_inputs() + inputs)
 
 __handlers = {
     "protoc_wrapper": __protoc_wrapper,
