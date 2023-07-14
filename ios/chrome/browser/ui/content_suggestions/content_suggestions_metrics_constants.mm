@@ -25,3 +25,7 @@ const char kOpenMostRecentTabAction[] = "IOS.StartSurface.OpenMostRecentTab";
 #pragma mark - Histograms
 
 const char kTrendingQueriesHistogram[] = "IOS.TrendingQueries";
+const char kMagicStackTopModuleImpressionHistogram[] =
+    "IOS.MagicStack.Module.TopImpression";
+const char kMagicStackModuleEngagementHistogram[] =
+    "IOS.MagicStack.Module.Click";

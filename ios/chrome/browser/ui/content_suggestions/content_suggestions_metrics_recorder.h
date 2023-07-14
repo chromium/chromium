@@ -16,10 +16,21 @@ class WebState;
 typedef NS_ENUM(NSInteger, NTPCollectionShortcutType);
 
 @class ContentSuggestionsMostVisitedItem;
+enum class ContentSuggestionsModuleType;
 enum class SetUpListItemType;
 
 // Metrics recorder for the content suggestions.
 @interface ContentSuggestionsMetricsRecorder : NSObject
+
+// Logs a metric for when a module of `type` is shown as the first module in the
+// Magic Stack.
+- (void)recordMagicStackTopModuleImpressionForType:
+    (ContentSuggestionsModuleType)type;
+
+// Logs a metric for when the user taps on a module of `type` in the Magic
+// Stack.
+- (void)recordMagicStackModuleEngagementForType:
+    (ContentSuggestionsModuleType)type;
 
 // Logs a metric for the "Return to Recent Tab" tile being shown.
 - (void)recordReturnToRecentTabTileShown;
