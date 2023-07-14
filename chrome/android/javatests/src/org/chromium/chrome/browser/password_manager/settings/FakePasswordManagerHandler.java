@@ -76,6 +76,14 @@ public final class FakePasswordManagerHandler implements PasswordManagerHandler 
         mSerializationInvocationCount = 0;
     }
 
+    /**
+     * A getter for the faked contents of the password store.
+     * @return the faked contents of the password store.
+     */
+    public ArrayList<SavedPasswordEntry> getSavedPasswordEntriesForTesting() {
+        return mSavedPasswords;
+    }
+
     @Override
     public void insertPasswordEntryForTesting(String origin, String username, String password) {
         mSavedPasswords.add(new SavedPasswordEntry(origin, username, password));

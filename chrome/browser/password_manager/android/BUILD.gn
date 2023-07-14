@@ -157,10 +157,14 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/password_manager/PasswordStoreBridge.java",
     "java/src/org/chromium/chrome/browser/password_manager/PasswordStoreCredential.java",
     "java/src/org/chromium/chrome/browser/password_manager/PasswordSyncControllerDelegateBridgeImpl.java",
+    "java/src/org/chromium/chrome/browser/password_manager/settings/CallbackDelayer.java",
+    "java/src/org/chromium/chrome/browser/password_manager/settings/DialogManager.java",
     "java/src/org/chromium/chrome/browser/password_manager/settings/PasswordAccessReauthenticationHelper.java",
     "java/src/org/chromium/chrome/browser/password_manager/settings/PasswordListObserver.java",
     "java/src/org/chromium/chrome/browser/password_manager/settings/PasswordReauthenticationFragment.java",
     "java/src/org/chromium/chrome/browser/password_manager/settings/ReauthenticationManager.java",
+    "java/src/org/chromium/chrome/browser/password_manager/settings/SingleThreadBarrierClosure.java",
+    "java/src/org/chromium/chrome/browser/password_manager/settings/TimedCallbackDelayer.java",
   ]
 
   resources_package = "org.chromium.chrome.browser.password_manager"
@@ -258,6 +262,7 @@ android_resources("java_resources") {
     "java/res/drawable/ic_key_error.xml",
     "java/res/drawable/ic_vpn_key_blue.xml",
     "java/res/layout/confirmation_dialog_view.xml",
+    "java/res/layout/passwords_progress_dialog.xml",
   ]
   deps = [
     "//chrome/browser/ui/android/strings:ui_strings_grd",

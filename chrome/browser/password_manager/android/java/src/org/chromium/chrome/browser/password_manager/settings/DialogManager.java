@@ -68,7 +68,9 @@ public final class DialogManager {
     }
 
     /** Interface to notify, during @{link #hide}, which action was taken. */
-    public interface ActionsConsumer { void consume(@HideActions int action); }
+    public interface ActionsConsumer {
+        void consume(@HideActions int action);
+    }
 
     /** The callback called everytime {@link #hide} is executed. */
     @Nullable

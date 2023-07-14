@@ -20,6 +20,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItem;
+import static org.mockito.Mockito.verify;
 
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_LOCAL_PWD_MIGRATION_WARNING;
 import static org.chromium.chrome.browser.pwd_migration.R.id.password_migration_more_options_button;
@@ -41,6 +42,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.FileUtils;
 import org.chromium.base.test.util.Batch;
@@ -82,9 +85,12 @@ public class PasswordMigrationWarningExportFlowTest {
     private FakePasswordManagerHandler mFakePasswordManagerHandler;
     private PasswordMigrationWarningCoordinator mCoordinator;
     private ExportFlow mExportFlow;
+    @Mock
+    private PasswordStoreBridge mPasswordStoreBridge;
 
     @Before
     public void setUp() {
+        MockitoAnnotations.initMocks(this);
         mChromeActivityRule.startMainActivityOnBlankPage();
         Context context = mChromeActivityRule.getActivity();
         BottomSheetController bottomSheetController = mChromeActivityRule.getActivity()
@@ -102,7 +108,8 @@ public class PasswordMigrationWarningExportFlowTest {
                     SyncConsentActivityLauncherImpl.get(), new SettingsLauncherImpl(),
                     ManageSyncSettings.class, mExportFlow,
                     (PasswordListObserver observer)
-                            -> PasswordManagerHandlerProvider.getInstance().addObserver(observer));
+                            -> PasswordManagerHandlerProvider.getInstance().addObserver(observer),
+                    mPasswordStoreBridge);
             PasswordManagerHandlerProvider.getInstance().passwordListAvailable(1);
             mCoordinator.showWarning();
         });
@@ -168,6 +175,12 @@ public class PasswordMigrationWarningExportFlowTest {
             }
         }
         Intents.release();
+
+        onViewWaiting(
+                allOf(withText(R.string.exported_passwords_delete_button), isCompletelyDisplayed()))
+                .perform(click());
+
+        verify(mPasswordStoreBridge).clearAllPasswords();
     }
 
     /**

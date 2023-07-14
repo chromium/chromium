@@ -49,7 +49,8 @@ class PasswordMigrationWarningBridge {
                         ManageSyncSettings.class, new ExportFlow(),
                         (PasswordListObserver observer)
                                 -> PasswordManagerHandlerProvider.getInstance().addObserver(
-                                        observer));
+                                        observer),
+                        new PasswordStoreBridge());
         passwordMigrationWarningCoordinator.showWarning();
     }
 }

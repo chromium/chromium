@@ -19,7 +19,6 @@ import android.view.View;
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
-import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.FragmentManager;
 import androidx.preference.Preference;
@@ -717,12 +716,10 @@ public class PasswordSettings extends PreferenceFragmentCompat
         mBottomSheetController = bottomSheetController;
     }
 
-    @VisibleForTesting
     Menu getMenuForTesting() {
         return mMenu;
     }
 
-    @VisibleForTesting
     Toolbar getToolbarForTesting() {
         return getActivity().findViewById(R.id.action_bar);
     }

@@ -26,7 +26,6 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
-import org.chromium.components.version_info.VersionInfo;
 
 /**
  * This class is responsible for rendering the bottom sheet that shows the passwords
@@ -134,7 +133,7 @@ public class PasswordMigrationWarningView implements BottomSheetContent {
         if (mScreenType == ScreenType.INTRO_SCREEN) {
             String introScreenSubtitle =
                     mContext.getString(R.string.password_migration_warning_subtitle)
-                            .replace("%1$s", getChannelString());
+                            .replace("%1$s", PasswordMigrationWarningUtil.getChannelString());
             PasswordMigrationWarningIntroFragment introFragment =
                     new PasswordMigrationWarningIntroFragment(introScreenSubtitle,
                             ()
@@ -147,7 +146,7 @@ public class PasswordMigrationWarningView implements BottomSheetContent {
         } else if (mScreenType == ScreenType.OPTIONS_SCREEN) {
             String exportOptionSubtitle =
                     mContext.getString(R.string.password_migration_warning_password_export_subtitle)
-                            .replace("%1$s", getChannelString());
+                            .replace("%1$s", PasswordMigrationWarningUtil.getChannelString());
             PasswordMigrationWarningOptionsFragment optionsFragment =
                     new PasswordMigrationWarningOptionsFragment(exportOptionSubtitle,
                             mShouldOfferSync, mOnClickHandler,
@@ -170,20 +169,6 @@ public class PasswordMigrationWarningView implements BottomSheetContent {
 
     void setAccountDisplayName(String accountDisplayName) {
         mAccountDisplayName = accountDisplayName;
-    }
-
-    private String getChannelString() {
-        if (VersionInfo.isCanaryBuild()) {
-            return "Canary";
-        }
-        if (VersionInfo.isDevBuild()) {
-            return "Dev";
-        }
-        if (VersionInfo.isBetaBuild()) {
-            return "Beta";
-        }
-        assert !VersionInfo.isStableBuild();
-        return "";
     }
 
     private @Px int getDesiredSheetHeightPx() {
