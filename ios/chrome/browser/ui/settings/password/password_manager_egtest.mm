@@ -3315,57 +3315,6 @@ void CopyPasswordDetailWithID(int detail_id) {
 
 @end
 
-// Rerun all the tests in this file but with kPasswordsGrouping disabled. This
-// will be removed once that feature launches fully, but ensures regressions
-// aren't introduced in the meantime.
-@interface PasswordManagerGroupingDisabledTestCase : PasswordManagerTestCase
-
-@end
-
-@implementation PasswordManagerGroupingDisabledTestCase
-
-- (BOOL)groupingEnabled {
-  return NO;
-}
-
-- (GREYElementInteraction*)
-    interactionForSinglePasswordEntryWithDomain:(NSString*)domain
-                                       username:(NSString*)username {
-  // With notes enabled authentication is required before interacting with
-  // password details.
-  if ([self notesEnabled]) {
-    [PasswordSettingsAppInterface
-        setUpMockReauthenticationModuleForPasswordManager];
-    [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
-                                      ReauthenticationResult::kSuccess];
-  }
-
-  NSString* label = [NSString stringWithFormat:@"%@, %@", domain, username];
-  // ID, not label because the latter might contain an extra label for the
-  // "local password icon" and most tests don't care about it.
-  return GetInteractionForListItem(ButtonWithAccessibilityID(label),
-                                   kGREYDirectionDown);
-}
-
-- (id<GREYMatcher>)matcherForPasswordDetailCellWithWebsites:
-    (NSString*)websites {
-  return grey_accessibilityLabel(
-      [NSString stringWithFormat:@"Site, %@", websites]);
-}
-
-- (id<GREYMatcher>)
-    matcherForDeleteButtonInDetailsWithUsername:(NSString*)username
-                                       password:(NSString*)password {
-  return DeleteButton();
-}
-
-// This causes the test case to actually be detected as a test case. The actual
-// tests are all inherited from the parent class.
-- (void)testEmpty {
-}
-
-@end
-
 // Rerun all the tests in this file but with kPasswordNotesWithBackup disabled.
 // This will be removed once that feature launches fully, but ensures
 // regressions aren't introduced in the meantime.
