@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+FAIL Popover focus navigation assert_equals: Shift-tab from the higher scope should return to the lower scope expected Element node <button id="invoker3" popovertarget="popover3" tabindex="... but got Element node <button popovertarget="popover1" id="invoker1" tabindex="...
+PASS Circular reference tab navigation
+PASS Popover focus returns when popover is hidden by invoker
+PASS Popover focus only returns to invoker when focus is within the popover
+Harness: the test ran to completion.
+
