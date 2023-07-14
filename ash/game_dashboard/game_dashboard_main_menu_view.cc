@@ -256,19 +256,49 @@ void GameDashboardMainMenuView::OnScreenshotTilePressed() {
 }
 
 void GameDashboardMainMenuView::OnGameControlsTilePressed() {
-  // TODO(b/275380943): Add support when controls tile is pressed.
+  game_controls_tile_->SetToggled(!game_controls_tile_->IsToggled());
+
+  bool is_toggled = game_controls_tile_->IsToggled();
+  // TODO(b/274690042): Replace the strings with localized strings.
+  game_controls_details_->SetSubtitle(is_toggled ? u"On" : u"Off");
+  game_controls_details_->SetEnabled(is_toggled);
+
+  if (game_controls_setup_button_) {
+    game_controls_setup_button_->SetEnabled(is_toggled);
+  } else {
+    DCHECK(game_controls_hint_switch_);
+    game_controls_hint_switch_->SetEnabled(is_toggled);
+    game_controls_hint_switch_->SetIsOn(is_toggled);
+  }
+
+  auto* game_window = context_->game_window();
+  game_window->SetProperty(
+      kArcGameControlsFlagsKey,
+      game_dashboard_utils::UpdateFlag(
+          game_window->GetProperty(kArcGameControlsFlagsKey),
+          static_cast<ArcGameControlsFlag>(ArcGameControlsFlag::kEnabled |
+                                           ArcGameControlsFlag::kHint),
+          /*enable_flag=*/is_toggled));
 }
 
 void GameDashboardMainMenuView::OnGameControlsDetailsPressed() {
-  // TODO(b/275380943): Implement the function.
+  EnableGameControlsEditMode();
+  GetWidget()->Close();
 }
 
 void GameDashboardMainMenuView::OnGameControlsSetUpButtonPressed() {
-  // TODO(b/275380943): Implement the function.
+  EnableGameControlsEditMode();
+  GetWidget()->Close();
 }
 
 void GameDashboardMainMenuView::OnGameControlsHintSwitchButtonPressed() {
-  // TODO(b/275380943): Implement the function.
+  auto* game_window = context_->game_window();
+  game_window->SetProperty(
+      kArcGameControlsFlagsKey,
+      game_dashboard_utils::UpdateFlag(
+          game_window->GetProperty(kArcGameControlsFlagsKey),
+          ArcGameControlsFlag::kHint,
+          /*enable_flag=*/game_controls_hint_switch_->GetIsOn()));
 }
 
 void GameDashboardMainMenuView::OnScreenSizeSettingsButtonPressed() {
@@ -343,7 +373,7 @@ void GameDashboardMainMenuView::MaybeAddGameControlsTile(
     return;
   }
 
-  auto* controls_tile = container->AddChildView(CreateTile(
+  game_controls_tile_ = container->AddChildView(CreateTile(
       base::BindRepeating(&GameDashboardMainMenuView::OnGameControlsTilePressed,
                           base::Unretained(this)),
       /*is_togglable=*/true, FeatureTile::TileType::kCompact,
@@ -351,10 +381,10 @@ void GameDashboardMainMenuView::MaybeAddGameControlsTile(
       l10n_util::GetStringUTF16(
           IDS_ASH_GAME_DASHBOARD_CONTROLS_TILE_BUTTON_TITLE)));
 
-  controls_tile->SetEnabled(
+  game_controls_tile_->SetEnabled(
       !game_dashboard_utils::IsFlagSet(*flags, ArcGameControlsFlag::kEmpty));
-  if (controls_tile->GetEnabled()) {
-    controls_tile->SetToggled(
+  if (game_controls_tile_->GetEnabled()) {
+    game_controls_tile_->SetToggled(
         game_dashboard_utils::IsFlagSet(*flags, ArcGameControlsFlag::kEnabled));
   }
 }
@@ -367,7 +397,8 @@ void GameDashboardMainMenuView::MaybeAddGameControlsDetailsRow(
     return;
   }
 
-  auto* game_controls_details =
+  DCHECK(game_controls_tile_);
+  game_controls_details_ =
       container->AddChildView(std::make_unique<FeatureDetailsRow>(
           base::BindRepeating(
               &GameDashboardMainMenuView::OnGameControlsDetailsPressed,
@@ -377,32 +408,32 @@ void GameDashboardMainMenuView::MaybeAddGameControlsDetailsRow(
           /*icon=*/kGdGameControlsIcon, /*title=*/
           l10n_util::GetStringUTF16(
               IDS_ASH_GAME_DASHBOARD_CONTROLS_TILE_BUTTON_TITLE)));
-  game_controls_details->SetID(VIEW_ID_GD_CONTROLS_DETAILS_ROW);
+  game_controls_details_->SetID(VIEW_ID_GD_CONTROLS_DETAILS_ROW);
 
   const bool is_enabled =
       game_dashboard_utils::IsFlagSet(*flags, ArcGameControlsFlag::kEnabled);
   // TODO(b/279117180): Include application name in the subtitle.
   // TODO(b/274690042): Replace the strings with localized strings.
-  game_controls_details->SetSubtitle(is_enabled ? u"On" : u"Off");
-  game_controls_details->SetEnabled(is_enabled);
+  game_controls_details_->SetSubtitle(is_enabled ? u"On" : u"Off");
+  game_controls_details_->SetEnabled(is_enabled);
 
   if (game_dashboard_utils::IsFlagSet(*flags, ArcGameControlsFlag::kEmpty)) {
     // Add "Set up" button for empty state.
     // TODO(b/274690042): Replace the strings with localized strings.
-    auto* setup_button = game_controls_details->AddCustomizedTailView(
+    game_controls_setup_button_ = game_controls_details_->AddCustomizedTailView(
         std::make_unique<PillButton>(
             base::BindRepeating(
                 &GameDashboardMainMenuView::OnGameControlsSetUpButtonPressed,
                 base::Unretained(this)),
             u"Set up", PillButton::Type::kPrimaryWithoutIcon,
             /*icon=*/nullptr));
-    setup_button->SetID(VIEW_ID_GD_CONTROLS_SETUP_BUTTON);
-    setup_button->SetProperty(views::kMarginsKey,
-                              gfx::Insets::TLBR(0, 20, 0, 0));
-    setup_button->SetEnabled(is_enabled);
+    game_controls_setup_button_->SetID(VIEW_ID_GD_CONTROLS_SETUP_BUTTON);
+    game_controls_setup_button_->SetProperty(views::kMarginsKey,
+                                             gfx::Insets::TLBR(0, 20, 0, 0));
+    game_controls_setup_button_->SetEnabled(is_enabled);
   } else {
     // Add toggle button and arrow icon for non-empty state.
-    auto* edit_container = game_controls_details->AddCustomizedTailView(
+    auto* edit_container = game_controls_details_->AddCustomizedTailView(
         std::make_unique<views::View>());
     edit_container->SetLayoutManager(std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kHorizontal,
@@ -412,20 +443,21 @@ void GameDashboardMainMenuView::MaybeAddGameControlsDetailsRow(
                                 gfx::Insets::TLBR(0, 8, 0, 0));
 
     // Add switch_button to show or hide input mapping hints.
-    auto* switch_button = edit_container->AddChildView(
+    game_controls_hint_switch_ = edit_container->AddChildView(
         std::make_unique<Switch>(base::BindRepeating(
             &GameDashboardMainMenuView::OnGameControlsHintSwitchButtonPressed,
             base::Unretained(this))));
-    switch_button->SetID(VIEW_ID_GD_CONTROLS_HINT_SWITCH);
+    game_controls_hint_switch_->SetID(VIEW_ID_GD_CONTROLS_HINT_SWITCH);
     // TODO(b/279117180): Update the accessibility name.
-    switch_button->SetAccessibleName(
+    game_controls_hint_switch_->SetAccessibleName(
         l10n_util::GetStringUTF16(IDS_APP_LIST_FOLDER_NAME_PLACEHOLDER));
-    switch_button->SetProperty(views::kMarginsKey,
-                               gfx::Insets::TLBR(0, 0, 0, 18));
-    switch_button->SetEnabled(is_enabled);
-    switch_button->SetIsOn(is_enabled ? game_dashboard_utils::IsFlagSet(
-                                            *flags, ArcGameControlsFlag::kHint)
-                                      : false);
+    game_controls_hint_switch_->SetProperty(views::kMarginsKey,
+                                            gfx::Insets::TLBR(0, 0, 0, 18));
+    game_controls_hint_switch_->SetEnabled(is_enabled);
+    game_controls_hint_switch_->SetIsOn(
+        is_enabled ? game_dashboard_utils::IsFlagSet(*flags,
+                                                     ArcGameControlsFlag::kHint)
+                   : false);
     // Add arrow icon.
     edit_container->AddChildView(
         std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
@@ -479,6 +511,31 @@ void GameDashboardMainMenuView::AddUtilityClusterRow() {
                           base::Unretained(this)),
       VIEW_ID_GD_GENERAL_SETTINGS_BUTTON, kGdSettingsIcon,
       l10n_util::GetStringUTF16(IDS_ASH_GAME_DASHBOARD_SETTINGS_TOOLTIP)));
+}
+
+void GameDashboardMainMenuView::EnableGameControlsEditMode() {
+  auto* game_window = context_->game_window();
+  game_window->SetProperty(
+      kArcGameControlsFlagsKey,
+      game_dashboard_utils::UpdateFlag(
+          game_window->GetProperty(kArcGameControlsFlagsKey),
+          ArcGameControlsFlag::kEdit, /*enable_flag=*/true));
+}
+
+void GameDashboardMainMenuView::VisibilityChanged(views::View* starting_from,
+                                                  bool is_visible) {
+  // When the menu shows up, Game Controls shouldn't rewrite events. So Game
+  // Controls needs to know when the menu is open or closed.
+  auto flags =
+      game_dashboard_utils::GetGameControlsFlag(context_->game_window());
+  if (!flags) {
+    return;
+  }
+
+  context_->game_window()->SetProperty(
+      kArcGameControlsFlagsKey,
+      game_dashboard_utils::UpdateFlag(*flags, ArcGameControlsFlag::kMenu,
+                                       /*enable_flag=*/is_visible));
 }
 
 BEGIN_METADATA(GameDashboardMainMenuView, views::BubbleDialogDelegateView)

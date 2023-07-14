@@ -10,6 +10,7 @@
 #include "ash/game_dashboard/game_dashboard_context.h"
 #include "ash/game_dashboard/game_dashboard_utils.h"
 #include "ash/public/cpp/arc_game_controls_flag.h"
+#include "ash/public/cpp/window_properties.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
@@ -60,7 +61,9 @@ GameDashboardToolbarView::GameDashboardToolbarView(
   AddShortcutTiles();
 }
 
-GameDashboardToolbarView::~GameDashboardToolbarView() = default;
+GameDashboardToolbarView::~GameDashboardToolbarView() {
+  context_->game_window()->RemoveObserver(this);
+}
 
 void GameDashboardToolbarView::OnGamepadButtonPressed() {
   is_expanded_ = !is_expanded_;
@@ -73,7 +76,14 @@ void GameDashboardToolbarView::OnGamepadButtonPressed() {
 }
 
 void GameDashboardToolbarView::OnGameControlsButtonPressed() {
-  // TODO(b/275380943): Disable or enable Game Controls.
+  auto* game_window = context_->game_window();
+  game_window->SetProperty(
+      kArcGameControlsFlagsKey,
+      game_dashboard_utils::UpdateFlag(
+          game_window->GetProperty(kArcGameControlsFlagsKey),
+          static_cast<ArcGameControlsFlag>(ArcGameControlsFlag::kEnabled |
+                                           ArcGameControlsFlag::kHint),
+          /*enable_flag=*/!game_controls_button_->toggled()));
 }
 
 void GameDashboardToolbarView::OnRecordButtonPressed() {
@@ -123,7 +133,10 @@ void GameDashboardToolbarView::MayAddGameControlsTile() {
     return;
   }
 
-  auto* button = AddChildView(CreateIconButton(
+  // Add observer to check window property change on `kArcGameControlsFlagsKey`.
+  context_->game_window()->AddObserver(this);
+
+  game_controls_button_ = AddChildView(CreateIconButton(
       base::BindRepeating(
           &GameDashboardToolbarView::OnGameControlsButtonPressed,
           base::Unretained(this)),
@@ -132,11 +145,37 @@ void GameDashboardToolbarView::MayAddGameControlsTile() {
       l10n_util::GetStringUTF16(
           IDS_ASH_GAME_DASHBOARD_CONTROLS_TILE_BUTTON_TITLE),
       /*is_togglable=*/true));
-  button->SetEnabled(
+  game_controls_button_->SetEnabled(
       !game_dashboard_utils::IsFlagSet(*flags, ArcGameControlsFlag::kEmpty));
-  if (button->GetEnabled()) {
-    button->SetToggled(
+  if (game_controls_button_->GetEnabled()) {
+    game_controls_button_->SetToggled(
         game_dashboard_utils::IsFlagSet(*flags, ArcGameControlsFlag::kEnabled));
+  }
+}
+
+void GameDashboardToolbarView::OnWindowPropertyChanged(aura::Window* window,
+                                                       const void* key,
+                                                       intptr_t old) {
+  // Once the main menu changes Game Controls states, this view should also
+  // reflect the same states.
+  if (key != ash::kArcGameControlsFlagsKey) {
+    return;
+  }
+  CHECK_EQ(window, context_->game_window());
+
+  ArcGameControlsFlag new_flags = window->GetProperty(kArcGameControlsFlagsKey);
+  ArcGameControlsFlag old_flags = static_cast<ash::ArcGameControlsFlag>(old);
+
+  if (game_dashboard_utils::IsFlagChanged(new_flags, old_flags,
+                                          ArcGameControlsFlag::kEmpty)) {
+    game_controls_button_->SetEnabled(!game_dashboard_utils::IsFlagSet(
+        new_flags, ArcGameControlsFlag::kEmpty));
+  }
+
+  if (game_dashboard_utils::IsFlagChanged(new_flags, old_flags,
+                                          ArcGameControlsFlag::kEnabled)) {
+    game_controls_button_->SetToggled(game_dashboard_utils::IsFlagSet(
+        new_flags, ArcGameControlsFlag::kEnabled));
   }
 }
 

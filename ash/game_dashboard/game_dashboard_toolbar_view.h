@@ -5,6 +5,7 @@
 #ifndef ASH_GAME_DASHBOARD_GAME_DASHBOARD_TOOLBAR_VIEW_H_
 #define ASH_GAME_DASHBOARD_GAME_DASHBOARD_TOOLBAR_VIEW_H_
 
+#include "ui/aura/window_observer.h"
 #include "ui/views/layout/box_layout_view.h"
 
 namespace ash {
@@ -15,7 +16,8 @@ class IconButton;
 // GameDashboardToolbarView is the movable toolbar that's attached to the game
 // window. It contains various quick action tiles for users to access without
 // having to open the entire main menu view.
-class GameDashboardToolbarView : public views::BoxLayoutView {
+class GameDashboardToolbarView : public views::BoxLayoutView,
+                                 public aura::WindowObserver {
  public:
   METADATA_HEADER(GameDashboardToolbarView);
 
@@ -52,9 +54,17 @@ class GameDashboardToolbarView : public views::BoxLayoutView {
   // Adds Game Controls button if needed.
   void MayAddGameControlsTile();
 
+  // aura::WindowObserver:
+  void OnWindowPropertyChanged(aura::Window* window,
+                               const void* key,
+                               intptr_t old) override;
+
   // The topmost `IconButton` in the toolbar's collection, which stays visible
   // in both the expanded and collapsed toolbar states.
   raw_ptr<IconButton, ExperimentalAsh> gamepad_button_;
+
+  // Game Controls toggle button for enabling or disabling the feature.
+  raw_ptr<IconButton, ExperimentalAsh> game_controls_button_;
 
   // The current state indicating if the toolbar view is expanded or collapsed.
   bool is_expanded_ = true;

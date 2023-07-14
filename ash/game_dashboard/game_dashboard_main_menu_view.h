@@ -5,14 +5,16 @@
 #ifndef ASH_GAME_DASHBOARD_GAME_DASHBOARD_MAIN_MENU_VIEW_H_
 #define ASH_GAME_DASHBOARD_GAME_DASHBOARD_MAIN_MENU_VIEW_H_
 
-#include "ash/public/cpp/arc_game_controls_flag.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
 namespace ash {
 
+class FeatureTile;
 class GameDashboardContext;
+class PillButton;
+class Switch;
 
 // GameDashboardMainMenuView is the expanded menu view attached to the game
 // dashboard button.
@@ -78,8 +80,19 @@ class GameDashboardMainMenuView : public views::BubbleDialogDelegateView {
   // buttons) to the Game Controls tile view.
   void AddUtilityClusterRow();
 
+  // Enables Game Controls edit mode.
+  void EnableGameControlsEditMode();
+
+  // views::View:
+  void VisibilityChanged(views::View* starting_from, bool is_visible) override;
+
   // Allows this class to access `GameDashboardContext` owned functions/objects.
   const raw_ptr<GameDashboardContext, ExperimentalAsh> context_;
+
+  raw_ptr<FeatureTile> game_controls_tile_ = nullptr;
+  raw_ptr<FeatureDetailsRow> game_controls_details_ = nullptr;
+  raw_ptr<PillButton> game_controls_setup_button_ = nullptr;
+  raw_ptr<Switch> game_controls_hint_switch_ = nullptr;
 };
 
 }  // namespace ash

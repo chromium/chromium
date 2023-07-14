@@ -14,6 +14,19 @@ bool IsFlagSet(ArcGameControlsFlag flags, ArcGameControlsFlag flag) {
   return (flags & flag) != 0;
 }
 
+bool IsFlagChanged(ash::ArcGameControlsFlag new_flags,
+                   ash::ArcGameControlsFlag old_flags,
+                   ash::ArcGameControlsFlag flag) {
+  return ((new_flags ^ old_flags) & flag) != 0;
+}
+
+ArcGameControlsFlag UpdateFlag(ArcGameControlsFlag flags,
+                               ArcGameControlsFlag flag,
+                               bool enable_flag) {
+  return static_cast<ArcGameControlsFlag>(enable_flag ? flags | flag
+                                                      : flags & ~flag);
+}
+
 absl::optional<ArcGameControlsFlag> GetGameControlsFlag(aura::Window* window) {
   if (!IsArcWindow(window)) {
     return absl::nullopt;

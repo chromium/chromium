@@ -12,6 +12,7 @@
 #include "ash/game_dashboard/game_dashboard_controller.h"
 #include "ash/game_dashboard/game_dashboard_test_base.h"
 #include "ash/game_dashboard/game_dashboard_toolbar_view.h"
+#include "ash/game_dashboard/game_dashboard_utils.h"
 #include "ash/game_dashboard/test_game_dashboard_delegate.h"
 #include "ash/public/cpp/ash_view_ids.h"
 #include "ash/public/cpp/capture_mode/capture_mode_test_api.h"
@@ -250,6 +251,105 @@ TEST_F(GameDashboardContextTest, GameControlsMenuState) {
       /*hint_states=*/
       {/*expect_exists=*/true, /*expect_enabled=*/true, /*expect_on=*/false},
       /*setup_states=*/false);
+}
+
+// Verifies Game Controls button logics.
+TEST_F(GameDashboardContextTest, GameControlsMenuFunctions) {
+  CreateGameWindow(/*is_arc_window=*/true);
+  // Game controls is available, not empty, enabled and hint on.
+  game_window_->SetProperty(
+      kArcGameControlsFlagsKey,
+      static_cast<ArcGameControlsFlag>(
+          ArcGameControlsFlag::kKnown | ArcGameControlsFlag::kAvailable |
+          ArcGameControlsFlag::kEnabled | ArcGameControlsFlag::kHint));
+  EXPECT_FALSE(game_dashboard_utils::IsFlagSet(
+      game_window_->GetProperty(kArcGameControlsFlagsKey),
+      ArcGameControlsFlag::kMenu));
+
+  // Open the main menu and disable Game Controls.
+  auto* menu_button = GetMainMenuButtonWidget()->GetContentsView();
+  LeftClickOn(menu_button);
+  EXPECT_TRUE(game_dashboard_utils::IsFlagSet(
+      game_window_->GetProperty(kArcGameControlsFlagsKey),
+      ArcGameControlsFlag::kMenu));
+
+  // Open the quick toolbar.
+  LeftClickOn(GetMainMenuViewById(VIEW_ID_GD_TOOLBAR_TILE));
+  auto* toolbar_button = GetToolbarGameControlsButton();
+
+  auto* tile =
+      static_cast<FeatureTile*>(GetMainMenuViewById(VIEW_ID_GD_CONTROLS_TILE));
+  auto* detail_row = GetMainMenuViewById(VIEW_ID_GD_CONTROLS_DETAILS_ROW);
+  auto* switch_button = static_cast<Switch*>(
+      GetMainMenuViewById(VIEW_ID_GD_CONTROLS_HINT_SWITCH));
+  EXPECT_TRUE(detail_row->GetEnabled());
+  EXPECT_TRUE(switch_button->GetEnabled());
+  EXPECT_TRUE(switch_button->GetIsOn());
+  EXPECT_TRUE(toolbar_button->GetEnabled());
+  EXPECT_TRUE(toolbar_button->toggled());
+  // Disable Game Controls.
+  LeftClickOn(tile);
+  EXPECT_FALSE(detail_row->GetEnabled());
+  EXPECT_FALSE(switch_button->GetEnabled());
+  EXPECT_FALSE(switch_button->GetIsOn());
+  // Toolbar button should also get updated.
+  EXPECT_TRUE(toolbar_button->GetEnabled());
+  EXPECT_FALSE(toolbar_button->toggled());
+
+  EXPECT_FALSE(game_dashboard_utils::IsFlagSet(
+      game_window_->GetProperty(kArcGameControlsFlagsKey),
+      ArcGameControlsFlag::kEnabled));
+
+  // Close the quick toolbar.
+  LeftClickOn(GetMainMenuViewById(VIEW_ID_GD_TOOLBAR_TILE));
+
+  // Close the main menu.
+  LeftClickOn(menu_button);
+  EXPECT_FALSE(game_dashboard_utils::IsFlagSet(
+      game_window_->GetProperty(kArcGameControlsFlagsKey),
+      ArcGameControlsFlag::kMenu));
+
+  // Open the main menu again to check if the states are preserved and close it.
+  OpenMenuCheckGameControlsUIState(
+      /*tile_states=*/{/*expect_exists=*/true, /*expect_enabled=*/true,
+                       /*expect_toggled=*/false},
+      /*details_row_states=*/{/*expect_exists=*/true, /*expect_enabled=*/false},
+      /*hint_states=*/
+      {/*expect_exists=*/true, /*expect_enabled=*/false, /*expect_on=*/false},
+      /*setup_exists=*/false);
+
+  // Open the main menu, enable Game Controls and switch hint button off.
+  LeftClickOn(menu_button);
+  tile =
+      static_cast<FeatureTile*>(GetMainMenuViewById(VIEW_ID_GD_CONTROLS_TILE));
+  detail_row = GetMainMenuViewById(VIEW_ID_GD_CONTROLS_DETAILS_ROW);
+  switch_button = static_cast<Switch*>(
+      GetMainMenuViewById(VIEW_ID_GD_CONTROLS_HINT_SWITCH));
+  // Open the quick toolbar.
+  LeftClickOn(GetMainMenuViewById(VIEW_ID_GD_TOOLBAR_TILE));
+  toolbar_button = GetToolbarGameControlsButton();
+  // Enable Game Controls.
+  LeftClickOn(tile);
+  EXPECT_TRUE(detail_row->GetEnabled());
+  EXPECT_TRUE(switch_button->GetEnabled());
+  EXPECT_TRUE(switch_button->GetIsOn());
+  EXPECT_TRUE(toolbar_button->GetEnabled());
+  EXPECT_TRUE(toolbar_button->toggled());
+  // Switch hint off.
+  LeftClickOn(switch_button);
+  EXPECT_FALSE(switch_button->GetIsOn());
+  // Close the quick toolbar and main menu.
+  LeftClickOn(GetMainMenuViewById(VIEW_ID_GD_TOOLBAR_TILE));
+  LeftClickOn(menu_button);
+
+  // Open the main menu again to check if the states are preserved and close it.
+  OpenMenuCheckGameControlsUIState(
+      /*tile_states=*/{/*expect_exists=*/true, /*expect_enabled=*/true,
+                       /*expect_toggled=*/true},
+      /*details_row_states=*/{/*expect_exists=*/true, /*expect_enabled=*/true},
+      /*hint_states=*/
+      {/*expect_exists=*/true, /*expect_enabled=*/true, /*expect_on=*/false},
+      /*setup_exists=*/false);
 }
 
 // -----------------------------------------------------------------------------
