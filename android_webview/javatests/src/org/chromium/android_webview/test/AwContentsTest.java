@@ -1137,6 +1137,46 @@ public class AwContentsTest {
 
     @Test
     @Feature({"AndroidWebView"})
+    @MediumTest
+    public void testLoadsJsModule() throws Throwable {
+        mActivityTestRule.startBrowserProcess();
+        AwTestContainerView testView =
+                mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient);
+        final AwContents awContents = testView.getAwContents();
+
+        AwSettings awSettings = mActivityTestRule.getAwSettingsOnUiThread(awContents);
+
+        // This test is specifically about relative file urls
+        awSettings.setAllowFileAccess(true);
+        awSettings.setAllowFileAccessFromFileURLs(true);
+
+        // This test runs some javascript to verify if it passes
+        AwActivityTestRule.enableJavaScriptOnUiThread(awContents);
+
+        // Using a future to wait to see if the js module was loaded or not.
+        // The page in the test will expect this object.
+        final SettableFuture<Boolean> fetchResultFuture = SettableFuture.create();
+        Object injectedObject = new Object() {
+            @JavascriptInterface
+            public void success() {
+                fetchResultFuture.set(true);
+            }
+            @JavascriptInterface
+            public void error() {
+                fetchResultFuture.set(false);
+            }
+        };
+        AwActivityTestRule.addJavascriptInterfaceOnUiThread(
+                awContents, injectedObject, "injectedObject");
+
+        final String url = "file:///android_asset/page_with_module.html";
+        mActivityTestRule.loadUrlAsync(awContents, url);
+
+        Assert.assertTrue(AwActivityTestRule.waitForFuture(fetchResultFuture));
+    }
+
+    @Test
+    @Feature({"AndroidWebView"})
     @SmallTest
     public void testLoadUrlRecordsScheme_http() {
         // No need to spin up a web server, since we don't care if the load ever succeeds.

@@ -178,6 +178,8 @@ android_assets("webview_instrumentation_apk_assets") {
     "shell/assets/full_screen_video_test.html",
     "shell/assets/full_screen_video_test_not_preloaded.html",
     "shell/assets/key-system-test.html",
+    "shell/assets/mod.m.js",
+    "shell/assets/page_with_module.html",
     "shell/assets/star.svg",
     "shell/assets/star.svgz",
     "shell/assets/video.webm",

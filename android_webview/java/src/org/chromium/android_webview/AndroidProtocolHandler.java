@@ -226,6 +226,14 @@ public class AndroidProtocolHandler {
             } else if (uri.getScheme().equals(FILE_SCHEME)
                     && path.startsWith(AndroidProtocolHandlerJni.get().getAndroidAssetPath())) {
                 String mimeType = URLConnection.guessContentTypeFromName(path);
+
+                // If the OS didn't find anything we fall back to Chromium's implementation which
+                // should be far more reliable since we can control this.
+                // See crbug.com/1019528
+                if (mimeType == null) {
+                    mimeType = AndroidProtocolHandlerJni.get().getWellKnownMimeType(path);
+                }
+
                 if (mimeType != null) {
                     return mimeType;
                 }
@@ -264,5 +272,6 @@ public class AndroidProtocolHandler {
     interface Natives {
         String getAndroidAssetPath();
         String getAndroidResourcePath();
+        String getWellKnownMimeType(String path);
     }
 }

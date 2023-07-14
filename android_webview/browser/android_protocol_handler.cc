@@ -75,4 +75,22 @@ JNI_AndroidProtocolHandler_GetAndroidResourcePath(JNIEnv* env) {
   return ConvertUTF8ToJavaString(env, android_webview::kAndroidResourcePath);
 }
 
+// returns the mime type, or returns null if a mime type was not found.
+static ScopedJavaLocalRef<jstring>
+JNI_AndroidProtocolHandler_GetWellKnownMimeType(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jstring>& j_path) {
+  std::string mime_type;
+
+  std::string path = base::android::ConvertJavaStringToUTF8(j_path);
+  std::string ext = base::FilePath(path).Extension();
+
+  if (!ext.empty() &&
+      net::GetWellKnownMimeTypeFromExtension(ext.substr(1), &mime_type)) {
+    return ConvertUTF8ToJavaString(env, mime_type);
+  }
+
+  return nullptr;
+}
+
 }  // namespace android_webview

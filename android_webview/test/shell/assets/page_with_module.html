@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+    <body>
+        <script type='module'>
+            import("./mod.m.js").then(({ callMe }) => {
+                if (callMe()) {
+                    injectedObject.success();
+                } else {
+                    injectedObject.error();
+                }
+            }).catch((error) => injectedObject.error());
+        </script>
+    </body>
+</html>
