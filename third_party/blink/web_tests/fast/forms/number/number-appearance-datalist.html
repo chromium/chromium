@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+<script src="../../../resources/run-after-layout-and-paint.js"></script>
 <body>
 <datalist id="dl1">
 <option>1</option>
@@ -7,10 +8,12 @@
 <input type="number" list="dl1"> <input type="number" list="dl1"> <br>
 <input type="number" list="dl1" disabled> <input type="number" list="dl1" readonly>
 <script>
-document.querySelector('input').focus();
-var input = document.querySelectorAll('input')[1];
-if (window.eventSender)
-    eventSender.mouseMoveTo(input.offsetLeft + input.offsetWidth / 2, input.offsetTop + input.offsetHeight / 2);
+runAfterLayoutAndPaint(() => {
+  document.querySelector('input').focus();
+  var input = document.querySelectorAll('input')[1];
+  if (window.eventSender)
+      eventSender.mouseMoveTo(input.offsetLeft + input.offsetWidth / 2, input.offsetTop + input.offsetHeight / 2);
+}, true);
 </script>
 </body>
 </html>
