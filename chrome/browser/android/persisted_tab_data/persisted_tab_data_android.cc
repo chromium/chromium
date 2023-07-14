@@ -9,6 +9,17 @@
 #include "chrome/browser/android/tab_android.h"
 #include "content/public/browser/browser_thread.h"
 
+namespace {
+
+void RunCallbackOnUIThread(
+    PersistedTabDataAndroid::FromCallback from_callback,
+    PersistedTabDataAndroid* persisted_tab_data_android) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  std::move(from_callback).Run(persisted_tab_data_android);
+}
+
+}  // namespace
+
 PersistedTabDataAndroid::PersistedTabDataAndroid(TabAndroid* tab_android,
                                                  const void* user_data_key)
     : persisted_tab_data_storage_android_(
@@ -40,9 +51,11 @@ void PersistedTabDataAndroid::From(TabAndroid* tab_android,
                 [](TabAndroid* tab_android, SupplierCallback supplier_callback,
                    FromCallback from_callback, const void* user_data_key,
                    const std::vector<uint8_t>& data) {
-                  std::unique_ptr<PersistedTabDataAndroid>
-                      persisted_tab_data_android =
-                          std::move(supplier_callback).Run();
+                  tab_android->SetUserData(user_data_key,
+                                           std::move(supplier_callback).Run());
+                  PersistedTabDataAndroid* persisted_tab_data_android =
+                      static_cast<PersistedTabDataAndroid*>(
+                          tab_android->GetUserData(user_data_key));
                   if (data.empty()) {
                     // No PersistedTabData found - use default result of the
                     // supplier (no deserialization) and save for use across
@@ -50,18 +63,27 @@ void PersistedTabDataAndroid::From(TabAndroid* tab_android,
                     persisted_tab_data_android->Save();
                   } else {
                     // Deserialize PersistedTabData found in storage.
-                    // TODO(crbug.com/1458486) move to background thread as an
-                    // optimization.
-                    persisted_tab_data_android->Deserialize(data);
+                    content::GetIOThreadTaskRunner({})
+                        ->PostTaskAndReplyWithResult(
+                            FROM_HERE,
+                            base::BindOnce(
+                                [](PersistedTabDataAndroid*
+                                       persisted_tab_data_android,
+                                   const std::vector<uint8_t>& data) {
+                                  DCHECK_CURRENTLY_ON(
+                                      content::BrowserThread::IO);
+                                  persisted_tab_data_android->Deserialize(data);
+                                  return persisted_tab_data_android;
+                                },
+                                persisted_tab_data_android, data),
+                            base::BindOnce(&RunCallbackOnUIThread,
+                                           std::move(from_callback)));
+                    return;
                   }
-                  tab_android->SetUserData(
-                      user_data_key, std::move(persisted_tab_data_android));
                   content::GetUIThreadTaskRunner({})->PostTask(
-                      FROM_HERE,
-                      base::BindOnce(
-                          std::move(from_callback),
-                          static_cast<PersistedTabDataAndroid*>(
-                              tab_android->GetUserData(user_data_key))));
+                      FROM_HERE, base::BindOnce(&RunCallbackOnUIThread,
+                                                std::move(from_callback),
+                                                persisted_tab_data_android));
                 },
                 tab_android, std::move(supplier_callback),
                 std::move(from_callback), user_data_key));
