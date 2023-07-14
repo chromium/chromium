@@ -59,10 +59,11 @@ message Predictor {
   // ranges. The final result supplied to the client is one of the bin labels or
   // `underflow_label`.
   message BinnedClassifier {
-    // A bin represents a bucket containing entries between the current bin min
-    // range to the next bin min range.
+    // A bin represents a bucket containing entries.
     message Bin {
-      // Minimum range for this bin.
+      // Represents minimum range for this bin. Entries are between the current
+      // bin `min_range` (inclusive) to the next bin `min_range` (exclusive).
+      // Range of bin : [min_range , next-bin min_range)
       optional float min_range = 1;
       // Signify what the bin corresponds to.
       optional string label = 2;
