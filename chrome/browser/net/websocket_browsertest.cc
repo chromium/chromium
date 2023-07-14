@@ -18,7 +18,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/profiles/profile.h"
@@ -51,7 +50,6 @@
 #include "net/test/spawned_test_server/spawned_test_server.h"
 #include "net/test/test_data_directory.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
-#include "services/network/public/cpp/network_switches.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/websocket.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -753,55 +751,6 @@ IN_PROC_BROWSER_TEST_F(WebSocketBrowserTestWithAllowFileAccessFromFiles,
   base::RunLoop run_loop;
   NavigateToPath(base::StringPrintf("check-origin.html?port=%d", port));
   EXPECT_EQ("FILE", WaitAndGetTitle());
-}
-
-// A test fixture that enables First-Party Sets.
-class FirstPartySetsWebSocketBrowserTest
-    : public WebSocketBrowserHTTPSConnectToTest {
- public:
-  FirstPartySetsWebSocketBrowserTest()
-      : WebSocketBrowserHTTPSConnectToTest(SSLOptions::CERT_TEST_NAMES) {}
-
-  void SetUpInProcessBrowserTestFixture() override {
-    feature_list_.InitAndEnableFeature(
-        net::features::kSamePartyAttributeEnabled);
-  }
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    WebSocketBrowserTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitchASCII(
-        network::switches::kUseFirstPartySet,
-        R"({"primary": "https://a.test",)"
-        R"("associatedSites": ["https://b.test","https://c.test"]})");
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(FirstPartySetsWebSocketBrowserTest,
-                       SendsSamePartyCookies) {
-  ASSERT_TRUE(wss_server_.Start());
-
-  ASSERT_TRUE(content::SetCookie(browser()->profile(),
-                                 server().GetURL("a.test", "/"),
-                                 "same-party-cookie=1; SameParty; Secure"));
-  ASSERT_TRUE(content::SetCookie(browser()->profile(),
-                                 server().GetURL("a.test", "/"),
-                                 "same-site-cookie=1; SameSite=Lax; Secure"));
-
-  content::DOMMessageQueue message_queue(
-      browser()->tab_strip_model()->GetActiveWebContents());
-  ConnectTo("b.test", wss_server_.GetURL("a.test", "echo-request-headers"));
-
-  std::string message;
-  EXPECT_TRUE(message_queue.WaitForMessage(&message));
-  // Only the SameParty cookie should have been sent, since it was a cross-site
-  // but same-party connection.
-  EXPECT_THAT(message, testing::HasSubstr("same-party-cookie=1"));
-  EXPECT_THAT(message, testing::Not(testing::HasSubstr("same-site-cookie=1")));
-
-  EXPECT_EQ("PASS", WaitAndGetTitle());
 }
 
 }  // namespace

@@ -130,7 +130,7 @@ TEST_F(GlobalFirstPartySetsTest, FindEntry_Exists) {
               Optional(entry));
 }
 
-TEST_F(GlobalFirstPartySetsTest, FindEntry_ExistsWhenNormalized) {
+TEST_F(GlobalFirstPartySetsTest, FindEntry_NoNormalization) {
   SchemefulSite https_example(GURL("https://example.test"));
   SchemefulSite wss_example(GURL("wss://example.test"));
   FirstPartySetEntry entry(https_example, SiteType::kPrimary, absl::nullopt);
@@ -141,7 +141,7 @@ TEST_F(GlobalFirstPartySetsTest, FindEntry_ExistsWhenNormalized) {
                                    },
                                    {})
                   .FindEntry(wss_example, FirstPartySetsContextConfig()),
-              Optional(entry));
+              absl::nullopt);
 }
 
 TEST_F(GlobalFirstPartySetsTest, FindEntry_ExistsViaOverride) {
@@ -987,8 +987,6 @@ TEST_F(PopulatedGlobalFirstPartySetsTest, ComputeMetadata_ContextMixesSchemes) {
 TEST_F(PopulatedGlobalFirstPartySetsTest, ComputeMetadata) {
   SchemefulSite nonmember(GURL("https://nonmember.test"));
   SchemefulSite nonmember1(GURL("https://nonmember1.test"));
-  SchemefulSite wss_associated1(GURL("wss://associated1.test"));
-  SchemefulSite wss_nonmember(GURL("wss://nonmember.test"));
   FirstPartySetEntry primary_entry(kPrimary, SiteType::kPrimary, absl::nullopt);
   FirstPartySetEntry associated_entry(kPrimary, SiteType::kAssociated, 0);
 
@@ -1024,14 +1022,6 @@ TEST_F(PopulatedGlobalFirstPartySetsTest, ComputeMetadata) {
                 SamePartyContext(SamePartyContext::Type::kSameParty),
                 &associated_entry, &associated_entry));
 
-  // Works if the site is provided with WSS scheme instead of HTTPS.
-  EXPECT_EQ(global_sets().ComputeMetadata(wss_associated1, &kAssociated1,
-                                          {kAssociated1, kPrimary},
-                                          FirstPartySetsContextConfig()),
-            FirstPartySetMetadata(
-                SamePartyContext(SamePartyContext::Type::kSameParty),
-                &associated_entry, &associated_entry));
-
   EXPECT_EQ(
       global_sets().ComputeMetadata(nonmember, &kAssociated1, {kAssociated1},
                                     FirstPartySetsContextConfig()),
@@ -1044,12 +1034,6 @@ TEST_F(PopulatedGlobalFirstPartySetsTest, ComputeMetadata) {
       FirstPartySetMetadata(
           SamePartyContext(SamePartyContext::Type::kCrossParty),
           &associated_entry, nullptr));
-  EXPECT_EQ(global_sets().ComputeMetadata(wss_nonmember, &wss_associated1,
-                                          {kAssociated1, kPrimary},
-                                          FirstPartySetsContextConfig()),
-            FirstPartySetMetadata(
-                SamePartyContext(SamePartyContext::Type::kCrossParty), nullptr,
-                &associated_entry));
 
   EXPECT_EQ(global_sets().ComputeMetadata(nonmember, &nonmember, {nonmember},
                                           FirstPartySetsContextConfig()),

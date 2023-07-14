@@ -30,13 +30,6 @@ namespace {
 using FlattenedSets = base::flat_map<SchemefulSite, FirstPartySetEntry>;
 using SingleSet = base::flat_map<SchemefulSite, FirstPartySetEntry>;
 
-// Converts WS to HTTP, and WSS to HTTPS.
-SchemefulSite NormalizeScheme(const SchemefulSite& site) {
-  SchemefulSite normalized_site = site;
-  normalized_site.ConvertWebSocketToHttp();
-  return normalized_site;
-}
-
 // Converts a list of First-Party Sets from a SingleSet to a FlattenedSet
 // representation.
 FlattenedSets SetListToFlattenedSets(const std::vector<SingleSet>& set_list) {
@@ -140,11 +133,9 @@ absl::optional<FirstPartySetEntry> GlobalFirstPartySets::FindEntry(
 absl::optional<FirstPartySetEntry> GlobalFirstPartySets::FindEntry(
     const SchemefulSite& site,
     const FirstPartySetsContextConfig* config) const {
-  const SchemefulSite normalized_site = NormalizeScheme(site);
-
-  // Check if `normalized_site` can be found in the customizations first.
+  // Check if `site` can be found in the customizations first.
   if (config) {
-    if (const auto override = config->FindOverride(normalized_site);
+    if (const auto override = config->FindOverride(site);
         override.has_value()) {
       return override->IsDeletion() ? absl::nullopt
                                     : absl::make_optional(override->GetEntry());
@@ -152,7 +143,7 @@ absl::optional<FirstPartySetEntry> GlobalFirstPartySets::FindEntry(
   }
 
   // Now see if it's in the manual config (with or without a manual alias).
-  if (const auto manual_override = manual_config_.FindOverride(normalized_site);
+  if (const auto manual_override = manual_config_.FindOverride(site);
       manual_override.has_value()) {
     return manual_override->IsDeletion()
                ? absl::nullopt
@@ -160,9 +151,9 @@ absl::optional<FirstPartySetEntry> GlobalFirstPartySets::FindEntry(
   }
 
   // Finally, look up in `entries_`, applying an alias if applicable.
-  const auto canonical_it = aliases_.find(normalized_site);
+  const auto canonical_it = aliases_.find(site);
   const SchemefulSite& canonical_site =
-      canonical_it == aliases_.end() ? normalized_site : canonical_it->second;
+      canonical_it == aliases_.end() ? site : canonical_it->second;
   if (const auto entry_it = entries_.find(canonical_site);
       entry_it != entries_.end()) {
     return entry_it->second;
