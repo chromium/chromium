@@ -61,4 +61,18 @@ void FormStructureTestApi::SetFieldTypes(
   SetFieldTypes(all_heuristic_types, server_types);
 }
 
+AutofillUploadContents::Field::VoteType
+FormStructureTestApi::get_username_vote_type() {
+  for (size_t i = 0; i < form_structure_->field_count(); ++i) {
+    AutofillField* field = form_structure_->field(i);
+    AutofillUploadContents::Field::VoteType vote_type = field->vote_type();
+    if (vote_type == AutofillUploadContents::Field::USERNAME_OVERWRITTEN ||
+        vote_type == AutofillUploadContents::Field::USERNAME_EDITED ||
+        vote_type == AutofillUploadContents::Field::CREDENTIALS_REUSED) {
+      return vote_type;
+    }
+  }
+  return AutofillUploadContents::Field::NO_INFORMATION;
+}
+
 }  // namespace autofill

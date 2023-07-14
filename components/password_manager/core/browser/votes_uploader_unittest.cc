@@ -242,6 +242,110 @@ TEST_F(VotesUploaderTest, UploadPasswordVoteSave) {
       form_to_upload_, submitted_form_, PASSWORD, login_form_signature_));
 }
 
+// Checks votes uploading when
+// 1. User saves a credential on a sign-up, but Chrome picked the wrong
+// field as username.
+// 2. The user modifies the username on login form before submission.
+// TODO(crbug/1451740): Currently, the test only tests the final call
+// of UploadPasswordVote. It would be good to simulate the whole flow
+// with FindCorrectedUsernameElement (setting username_correction_vote_)
+// and SendVotesOnSave (using username_correction_vote_).
+TEST_F(VotesUploaderTest, UploadUsernameOverwrittenVote) {
+  VotesUploader votes_uploader(&client_, false);
+
+  form_to_upload_.username_element_renderer_id = FieldRendererId(6);
+  form_to_upload_.password_element_renderer_id = FieldRendererId(5);
+
+  std::map<std::u16string, ServerFieldType> expected_types = {
+      {GetFieldNameByIndex(6), autofill::USERNAME},
+      {GetFieldNameByIndex(5), autofill::ACCOUNT_CREATION_PASSWORD}};
+  ServerFieldTypeSet expected_field_types = {
+      autofill::ACCOUNT_CREATION_PASSWORD, autofill::USERNAME};
+
+  EXPECT_CALL(
+      mock_autofill_download_manager_,
+      StartUploadRequest(
+          AllOf(UploadedAutofillTypesAre(expected_types),
+                UsernameVoteTypeIsSameAs(autofill::AutofillUploadContents::
+                                             Field::USERNAME_OVERWRITTEN)),
+          false, expected_field_types, login_form_signature_, true, nullptr,
+          /*observer=*/IsNull()));
+
+  EXPECT_TRUE(votes_uploader.UploadPasswordVote(
+      form_to_upload_, submitted_form_, autofill::USERNAME,
+      login_form_signature_));
+}
+
+// Checks votes uploading when user reuses credentials on login form.
+// TODO(crbug/1451740): Currently, the test only tests the final call
+// of UploadPasswordVote. It would be good to simulate the whole flow
+// with VotesUploader::SendVoteOnCredentialsReuse.
+TEST_F(VotesUploaderTest, UploadCredentialsReusedVote) {
+  VotesUploader votes_uploader(&client_, false);
+
+  form_to_upload_.username_element_renderer_id = FieldRendererId(6);
+  form_to_upload_.password_element_renderer_id = FieldRendererId(5);
+
+  form_to_upload_.username_value = u"username_value";
+  submitted_form_.username_value = u"username_value";
+
+  std::map<std::u16string, ServerFieldType> expected_types = {
+      {GetFieldNameByIndex(6), autofill::USERNAME},
+      {GetFieldNameByIndex(5), autofill::ACCOUNT_CREATION_PASSWORD}};
+  ServerFieldTypeSet expected_field_types = {
+      autofill::ACCOUNT_CREATION_PASSWORD, autofill::USERNAME};
+
+  EXPECT_CALL(
+      mock_autofill_download_manager_,
+      StartUploadRequest(
+          AllOf(
+              UploadedAutofillTypesAre(expected_types),
+              UsernameVoteTypeIsSameAs(
+                  autofill::AutofillUploadContents::Field::CREDENTIALS_REUSED)),
+          false, expected_field_types, login_form_signature_, true, nullptr,
+          /*observer=*/IsNull()));
+
+  EXPECT_TRUE(votes_uploader.UploadPasswordVote(
+      form_to_upload_, submitted_form_, autofill::ACCOUNT_CREATION_PASSWORD,
+      login_form_signature_));
+}
+
+// Checks votes uploading when user modifies the username in a prompt.
+// TODO(crbug/1451740): Currently, the test only tests the final call of
+// UploadPasswordVote. It would be good to simulate the whole flow with
+// UpdatePasswordFormUsernameAndPassword.
+TEST_F(VotesUploaderTest, UploadUsernameEditedVote) {
+  VotesUploader votes_uploader(&client_, false);
+
+  form_to_upload_.username_element_renderer_id = FieldRendererId(6);
+  form_to_upload_.password_element_renderer_id = FieldRendererId(5);
+  form_to_upload_.username_value = u"new_username_value";
+
+  std::map<std::u16string, ServerFieldType> expected_types = {
+      {GetFieldNameByIndex(6), autofill::USERNAME},
+      {GetFieldNameByIndex(5), autofill::PASSWORD}};
+  ServerFieldTypeSet expected_field_types = {autofill::PASSWORD,
+                                             autofill::USERNAME};
+
+  // A user changes the username in a save prompt to the value of
+  // another field of the observed form.
+  votes_uploader.set_username_change_state(
+      VotesUploader::UsernameChangeState::kChangedToKnownValue);
+
+  EXPECT_CALL(
+      mock_autofill_download_manager_,
+      StartUploadRequest(
+          AllOf(UploadedAutofillTypesAre(expected_types),
+                UsernameVoteTypeIsSameAs(
+                    autofill::AutofillUploadContents::Field::USERNAME_EDITED)),
+          false, expected_field_types, login_form_signature_, true, nullptr,
+          /*observer=*/IsNull()));
+
+  EXPECT_TRUE(votes_uploader.UploadPasswordVote(
+      form_to_upload_, submitted_form_, autofill::PASSWORD,
+      login_form_signature_));
+}
+
 TEST_F(VotesUploaderTest, InitialValueDetection) {
   // Tests if the initial value of the (predicted to be the) username field
   // in |form_data| is persistently stored and if it's low-entropy hash is

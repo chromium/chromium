@@ -45,6 +45,14 @@ inline auto SubmissionEventIsSameAs(mojom::SubmissionIndicatorEvent exp) {
   return ResultOf("get_submission_event", get_submission_event, exp);
 }
 
+inline auto UsernameVoteTypeIsSameAs(auto expected_type) {
+  auto get_username_vote_type = [](const FormStructure& form) {
+    return test_api(&form).get_username_vote_type();
+  };
+  return ResultOf("get_username_vote_type", get_username_vote_type,
+                  expected_type);
+}
+
 inline auto UploadedAutofillTypesAre(
     std::map<std::u16string, ServerFieldTypeSet> expected_types) {
   // Normalize the actual and expected sets by removing all UNKNOWN_TYPEs.
