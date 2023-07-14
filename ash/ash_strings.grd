@@ -2497,6 +2497,9 @@ Style notes:
         About <ph name="time_left">$1<ex>40 minutes</ex></ph> left (<ph name="percentage">$2<ex>56%</ex></ph>%).
 Connect your device to power.
       </message>
+      <message name="IDS_ASH_BATTERY_SAVER_DISABLED_TOAST_TEXT" translateable="false" desc="The toast message when battery saver mode is disabled.">
+        Battery Saver has been turned off
+      </message>
       <message name="IDS_ASH_STATUS_TRAY_LOW_BATTERY_BSM_TITLE" translateable="false" desc="The title for the notification displayed when device battery level is low, and battery saver mode is enabled.">
         Low Battery - turning on battery saver
       </message>

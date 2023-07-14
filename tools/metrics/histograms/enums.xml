@@ -103975,6 +103975,7 @@ would be helpful to identify which type is being sent.
   <int value="40" label="Copy to Clipboard Action (deprecated)"/>
   <int value="41" label="Video Conference Tray Speak-On-Mute Detected"/>
   <int value="42" label="Copy Gif To Clipboard Action"/>
+  <int value="44" label="Battery Saver Disabled"/>
 </enum>
 
 <enum name="TokenBinding.KeyMatch">

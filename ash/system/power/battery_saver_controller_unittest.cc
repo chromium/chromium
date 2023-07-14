@@ -7,18 +7,23 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/system/power/power_status.h"
+#include "ash/system/toast/toast_manager_impl.h"
+#include "ash/system/toast/toast_overlay.h"
 #include "ash/test/ash_test_base.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power_manager/power_supply_properties.pb.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace ash {
 
 class BatterySaverControllerTest : public AshTestBase {
  public:
+  // AshTestBase:
   void SetUp() override {
     scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>(
         features::kBatterySaver);
@@ -55,6 +60,10 @@ class BatterySaverControllerTest : public AshTestBase {
     base::RunLoop run_loop;
     chromeos::FakePowerManagerClient::Get()->UpdatePowerProperties(props);
     run_loop.RunUntilIdle();
+  }
+
+  ToastOverlay* GetCurrentToast() {
+    return Shell::Get()->toast_manager()->GetCurrentOverlayForTesting();
   }
 
  private:
@@ -95,5 +104,28 @@ TEST_F(BatterySaverControllerTest, AutoEnableDisable) {
 // And that opting out via the notification turns off battery saver.
 // And that notifications don't appear after they have been declined until
 // charge goes back above activation %.
+
+TEST_F(BatterySaverControllerTest, ShowDisableToast) {
+  // Ensure there is no `ToastOverlay` being displayed at the start of the test.
+  ToastOverlay* current_toast = GetCurrentToast();
+  EXPECT_EQ(current_toast, nullptr);
+
+  // Enable battery saver mode.
+  battery_saver_controller()->SetStateForTesting(true);
+
+  // There should be no `ToastOverlay` displayed when battery saver is enabled.
+  current_toast = GetCurrentToast();
+  EXPECT_EQ(current_toast, nullptr);
+
+  // Disable battery saver mode.
+  battery_saver_controller()->SetStateForTesting(false);
+
+  // Check to see if a `ToastOverlay` was displayed, and that it's accurate.
+  current_toast = GetCurrentToast();
+  EXPECT_NE(current_toast, nullptr);
+  EXPECT_EQ(
+      current_toast->GetText(),
+      l10n_util::GetStringUTF16(IDS_ASH_BATTERY_SAVER_DISABLED_TOAST_TEXT));
+}
 
 }  // namespace ash

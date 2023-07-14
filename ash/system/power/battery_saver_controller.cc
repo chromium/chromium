@@ -6,9 +6,13 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/public/cpp/system/toast_data.h"
+#include "ash/public/cpp/system/toast_manager.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "base/logging.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "components/prefs/pref_service.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/message_center.h"
 
 namespace ash {
@@ -68,14 +72,40 @@ void BatterySaverController::OnSettingsPrefChanged() {
   SetBatterySaverState(local_state_->GetBoolean(prefs::kPowerBatterySaver));
 }
 
+void BatterySaverController::SetStateForTesting(bool active) {
+  SetBatterySaverState(active);
+}
+
+void BatterySaverController::DisplayBatterySaverModeDisabledToast() {
+  ToastManager* toast_manager = ToastManager::Get();
+  // `toast_manager` can be null when this function is called in the unit tests
+  // due to initialization priority.
+  if (toast_manager == nullptr) {
+    return;
+  }
+
+  toast_manager->Show(ToastData(
+      "battery_saver_mode_state_changed",
+      ToastCatalogName::kBatterySaverDisabled,
+      l10n_util::GetStringUTF16(IDS_ASH_BATTERY_SAVER_DISABLED_TOAST_TEXT),
+      ToastData::kDefaultToastDuration, true));
+}
+
 void BatterySaverController::SetBatterySaverState(bool active) {
+  bool changed = false;
   if (active != local_state_->GetBoolean(prefs::kPowerBatterySaver)) {
     local_state_->SetBoolean(prefs::kPowerBatterySaver, active);
+    changed = true;
   }
   if (active != PowerStatus::Get()->IsBatterySaverActive()) {
     power_manager::SetBatterySaverModeStateRequest request;
     request.set_enabled(active);
     chromeos::PowerManagerClient::Get()->SetBatterySaverModeState(request);
+    changed = true;
+  }
+
+  if (changed && !active) {
+    DisplayBatterySaverModeDisabledToast();
   }
 }
 

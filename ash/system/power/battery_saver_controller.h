@@ -36,11 +36,15 @@ class ASH_EXPORT BatterySaverController : public PowerStatus::Observer {
   // Registers local state prefs used in the settings UI.
   static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
+  void SetStateForTesting(bool active);
+
  private:
   // PowerStatus::Observer:
   void OnPowerStatusChanged() override;
 
   void OnSettingsPrefChanged();
+
+  void DisplayBatterySaverModeDisabledToast();
 
   void SetBatterySaverState(bool active);
 
