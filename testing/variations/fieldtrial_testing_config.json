@@ -116,26 +116,6 @@
             ]
         }
     ],
-    "AllowSpeechSynthesisIntoBFCache": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "UnblockSpeechSynthesisForBFCache"
-                    ]
-                }
-            ]
-        }
-    ],
     "AllowUndamagedNonrootRenderPassToSkip": [
         {
             "platforms": [
