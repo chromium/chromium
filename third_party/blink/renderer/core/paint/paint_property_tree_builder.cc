@@ -1836,10 +1836,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateFilter() {
       // the blurred result will be clipped.
       // "B" should be also clipped because a filter always creates a containing
       // block for all descendants.
-      if (!state.filter.IsEmpty() ||
-          (full_context_.direct_compositing_reasons &
-           CompositingReason::kActiveFilterAnimation))
-        state.output_clip = context_.current.clip;
+      state.output_clip = context_.current.clip;
 
       // We may begin to composite our subtree prior to an animation starts,
       // but a compositor element ID is only needed when an animation is
