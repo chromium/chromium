@@ -98,9 +98,16 @@ DisplayScheduler::~DisplayScheduler() {
   StopObservingBeginFrames();
 }
 
+void DisplayScheduler::SetDamageTracker(DisplayDamageTracker* damage_tracker) {
+  DisplaySchedulerBase::SetDamageTracker(damage_tracker);
+  damage_tracker->SetDisplayBeginFrameSourceId(
+      begin_frame_source_->source_id());
+}
+
 void DisplayScheduler::SetVisible(bool visible) {
-  if (visible_ == visible)
+  if (visible_ == visible) {
     return;
+  }
 
   visible_ = visible;
   // If going invisible, we'll stop observing begin frames once we try

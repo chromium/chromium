@@ -50,8 +50,8 @@ class VIZ_SERVICE_EXPORT DisplaySchedulerBase
   ~DisplaySchedulerBase() override;
 
   void SetClient(DisplaySchedulerClient* client);
-  void SetDamageTracker(DisplayDamageTracker* damage_tracker);
 
+  virtual void SetDamageTracker(DisplayDamageTracker* damage_tracker);
   virtual void SetVisible(bool visible) = 0;
   virtual void ForceImmediateSwapIfPossible() = 0;
   virtual void SetNeedsOneBeginFrame(bool needs_draw) = 0;

@@ -44,6 +44,7 @@ class VIZ_SERVICE_EXPORT DisplayScheduler
   ~DisplayScheduler() override;
 
   // DisplaySchedulerBase implementation.
+  void SetDamageTracker(DisplayDamageTracker* damage_tracker) override;
   void SetVisible(bool visible) override;
   void ForceImmediateSwapIfPossible() override;
   void SetNeedsOneBeginFrame(bool needs_draw) override;
