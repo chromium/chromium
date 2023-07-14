@@ -57,17 +57,40 @@ std::u16string GetInfoInOneLine(const AutofillProfile* profile,
 // TODO(crbug.com/1459990): Use this once the delete the new popup with submenus
 // implementation is complete.
 Suggestion GetDeleteAddressProfileSuggestion(Suggestion::BackendId backend_id) {
-  Suggestion delete_address_profile_suggestion(l10n_util::GetStringUTF16(
+  Suggestion sugestion(l10n_util::GetStringUTF16(
       IDS_AUTOFILL_DELETE_ADDRESS_PROFILE_POPUP_OPTION_SELECTED));
-
-  delete_address_profile_suggestion.popup_item_id =
-      PopupItemId::kDeleteAddressProfile;
-  delete_address_profile_suggestion.icon = "deleteIcon";
-  delete_address_profile_suggestion.payload = backend_id;
-  delete_address_profile_suggestion
-      .acceptance_a11y_announcement = l10n_util::GetStringUTF16(
+  sugestion.popup_item_id = PopupItemId::kDeleteAddressProfile;
+  sugestion.icon = "deleteIcon";
+  sugestion.payload = backend_id;
+  sugestion.acceptance_a11y_announcement = l10n_util::GetStringUTF16(
       IDS_AUTOFILL_A11Y_ANNOUNCE_DELETE_ADDRESS_PROFILE_POPUP_OPTION_SELECTED);
-  return delete_address_profile_suggestion;
+  return sugestion;
+}
+
+// Creates the suggestion that will fill all address related fields.
+// TODO(crbug.com/1459990): Use this once the new submenu implementation is
+// complete.
+Suggestion GetFillFullAddressSuggestion(Suggestion::BackendId backend_id) {
+  Suggestion suggestion(l10n_util::GetStringUTF16(
+      IDS_AUTOFILL_FILL_ADDRESS_GROUP_POPUP_OPTION_SELECTED));
+  suggestion.popup_item_id = PopupItemId::kFillFullAddress;
+  suggestion.payload = backend_id;
+  suggestion.acceptance_a11y_announcement = l10n_util::GetStringUTF16(
+      IDS_AUTOFILL_A11Y_ANNOUNCE_FILL_ADDRESS_GROUP_POPUP_OPTION_SELECTED);
+  return suggestion;
+}
+
+// Creates the suggestion that will fill all name related fields.
+// TODO(crbug.com/1459990): Use this once the delete the new popup with submenus
+// implementation is complete.
+Suggestion GetFillFullNameSuggestion(Suggestion::BackendId backend_id) {
+  Suggestion suggestion(l10n_util::GetStringUTF16(
+      IDS_AUTOFILL_FILL_NAME_GROUP_POPUP_OPTION_SELECTED));
+  suggestion.popup_item_id = PopupItemId::kFillFullName;
+  suggestion.payload = backend_id;
+  suggestion.acceptance_a11y_announcement = l10n_util::GetStringUTF16(
+      IDS_AUTOFILL_A11Y_ANNOUNCE_FILL_NAME_GROUP_POPUP_OPTION_SELECTED);
+  return suggestion;
 }
 
 }  // namespace

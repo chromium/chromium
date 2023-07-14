@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/views/autofill/popup/popup_autocomplete_cell_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_base_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_cell_utils.h"
+#include "chrome/browser/ui/views/autofill/popup/popup_view_utils.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/strings/grit/components_strings.h"
@@ -164,10 +165,12 @@ std::unique_ptr<PopupCellView> PopupSuggestionStrategy::CreateContent() {
   if (!GetController()) {
     return nullptr;
   }
+
+  PopupItemId popup_up_item_id =
+      GetController()->GetSuggestionAt(GetLineNumber()).popup_item_id;
   if (base::FeatureList::IsEnabled(
           features::kAutofillShowAutocompleteDeleteButton) &&
-      GetController()->GetSuggestionAt(GetLineNumber()).popup_item_id ==
-          PopupItemId::kAutocompleteEntry) {
+      popup_up_item_id == PopupItemId::kAutocompleteEntry) {
     return CreateDeleteAutocompleteRow();
   }
   const Suggestion& kSuggestion =
@@ -182,9 +185,11 @@ std::unique_ptr<PopupCellView> PopupSuggestionStrategy::CreateContent() {
           .Build();
 
   // Add the actual views.
+  int text_style = IsGroupFillingPopupItemId(popup_up_item_id)
+                       ? views::style::TextStyle::STYLE_SECONDARY
+                       : views::style::TextStyle::STYLE_PRIMARY;
   std::unique_ptr<views::Label> main_text_label =
-      popup_cell_utils::CreateMainTextLabel(
-          kSuggestion.main_text, views::style::TextStyle::STYLE_PRIMARY);
+      popup_cell_utils::CreateMainTextLabel(kSuggestion.main_text, text_style);
   popup_cell_utils::FormatLabel(*main_text_label, kSuggestion.main_text,
                                 GetController());
   popup_cell_utils::AddSuggestionContentToView(

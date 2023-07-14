@@ -12,6 +12,11 @@ namespace autofill {
 enum class PopupItemId : int {
   kCreditCardEntry,
   kAddressEntry,
+  // Fills all address related fields, e.g ADDRESS_HOME_LINE1,
+  // ADDRESS_HOME_HOUSE_NUMBER etc.
+  kFillFullAddress,
+  // Fills all name related fields, e.g NAME_FIRST, NAME_MIDDLE, NAME_LAST etc.
+  kFillFullName,
   kAutocompleteEntry,
   kInsecureContextPaymentDisabledMessage,
   kPasswordEntry,

@@ -278,6 +278,8 @@ FillDataType GetEventTypeFromSingleFieldSuggestionPopupItemId(
     case PopupItemId::kAddressEntry:
     case PopupItemId::kCreditCardEntry:
     case PopupItemId::kDeleteAddressProfile:
+    case PopupItemId::kFillFullAddress:
+    case PopupItemId::kFillFullName:
       NOTREACHED();
   }
   NOTREACHED();

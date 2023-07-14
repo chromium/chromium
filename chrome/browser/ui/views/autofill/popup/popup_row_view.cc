@@ -53,7 +53,7 @@ std::unique_ptr<PopupRowView> PopupRowView::Create(PopupViewViews& popup_view,
                                                                    line_number);
       break;
     default:
-      if (IsFooterFrontendId(popup_item_id)) {
+      if (IsFooterPopupItemId(popup_item_id)) {
         strategy =
             std::make_unique<PopupFooterStrategy>(controller, line_number);
       } else {

@@ -93,7 +93,7 @@ bool IsFooterItem(const std::vector<Suggestion>& suggestions,
   PopupItemId popup_item_id = suggestions[line_number].popup_item_id;
   return popup_item_id == PopupItemId::kSeparator
              ? IsFooterItem(suggestions, line_number + 1)
-             : IsFooterFrontendId(popup_item_id);
+             : IsFooterPopupItemId(popup_item_id);
 }
 
 }  // namespace
