@@ -9,13 +9,8 @@
 
 // All available icons for security states.
 enum LocationBarSecurityIconType {
-  // Don't display an icon.
-  NONE = 0,
-  // Show "Info" icon.
-  INFO,
-  // Show a lock icon.
+  INFO = 0,
   SECURE,
-  // Show a "not secure" warning.
   NOT_SECURE_WARNING,
   LOCATION_BAR_SECURITY_ICON_TYPE_COUNT,
 };

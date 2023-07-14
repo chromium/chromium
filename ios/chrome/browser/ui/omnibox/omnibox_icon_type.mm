@@ -14,8 +14,6 @@
 NSString* GetLocationBarSecuritySymbolName(
     LocationBarSecurityIconType iconType) {
   switch (iconType) {
-    case NONE:
-      return nil;
     case INFO:
       return kInfoCircleSymbol;
     case SECURE:
