@@ -6,7 +6,7 @@ found in the LICENSE file.
 
 <style include="oobe-dialog-host-styles">
   .overview-list-item {
-    border-bottom: 1px solid var(--google-grey-200);
+    border-bottom: 1px solid var(--cros-sys-separator);
     padding: 16px;
   }
 
@@ -21,6 +21,10 @@ found in the LICENSE file.
   .overview-list-item-icon {
     --iron-icon-fill-color: var(--google-blue-600);
     padding-inline-end: 16px;
+  }
+
+  :host-context(.jelly-enabled) .overview-list-item-icon {
+    --iron-icon-fill-color: var(--cros-sys-primary);
   }
 
   .overview-list-item-description {

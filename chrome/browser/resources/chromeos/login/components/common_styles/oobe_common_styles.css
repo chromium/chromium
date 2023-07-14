@@ -55,7 +55,7 @@
       }
 
       .oobe-optin-row {
-        border-top: 1px solid var(--cros-color-primary-inverted);
+        border-top: 1px solid var(--cros-sys-separator);
         font-size: var(--oobe-optin-row-font-size);
         margin-top: 12px;
         padding-top: 12px;

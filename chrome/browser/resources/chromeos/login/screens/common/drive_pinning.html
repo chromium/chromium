@@ -5,7 +5,7 @@ found in the LICENSE file.
 -->
 <style include="oobe-dialog-host-styles">
     #toggleRow {
-        border-top: 1px solid var(--cros-separator-color);
+        border-top: 1px solid var(--cros-sys-separator);
         color: var(--cros-bg-color);
         margin-top: 24px;
     }
@@ -48,7 +48,7 @@ found in the LICENSE file.
                 </div>
                 <div id="spaceInformation" class="toggle-subtitle">
                     [[getSpaceDescription_(locale, requiredSpace_, freeSpace_)]]
-                </div>  
+                </div>
             </div>
             <cr-toggle id="drivePinningToggle"
                     checked="{{enableDrivePinning_}}"
