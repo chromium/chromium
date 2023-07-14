@@ -207,11 +207,11 @@ DEBUG=* npm run server -- --verbose
 
 TODO: verify it works on Windows.
 
-You can also run the server by using script `./runBiDiServer.sh`. It will write
+You can also run the server by using `npm run server`. It will write
 output to the file `log.txt`:
 
 ```sh
-./runBiDiServer.sh --port=8081 --headless=false
+npm run server -- --port=8081 --headless=false
 ```
 
 ## Running
