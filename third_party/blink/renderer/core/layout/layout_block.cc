@@ -630,11 +630,12 @@ absl::optional<LayoutUnit> LayoutBlock::BaselineForEmptyLine() const {
   if (!font_data)
     return absl::nullopt;
   const auto& font_metrics = font_data->GetFontMetrics();
+  const auto baseline_type = style->GetFontBaseline();
   const LayoutUnit line_height = FirstLineHeight();
   const LayoutUnit border_padding = style->IsHorizontalWritingMode()
                                         ? BorderTop() + PaddingTop()
                                         : BorderRight() + PaddingRight();
-  return LayoutUnit((font_metrics.Ascent() +
+  return LayoutUnit((font_metrics.Ascent(baseline_type) +
                      (line_height - font_metrics.Height()) / 2 + border_padding)
                         .ToInt());
 }
