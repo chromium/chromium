@@ -4,10 +4,15 @@
 
 #include "chrome/browser/ash/login/app_mode/test/kiosk_ash_browser_test_starter.h"
 
+#include <memory>
+
 #include "ash/constants/ash_switches.h"
+#include "base/check.h"
 #include "base/command_line.h"
 #include "base/environment.h"
+#include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
+#include "chrome/browser/ash/crosapi/fake_device_ownership_waiter.h"
 #include "chromeos/ash/components/standalone_browser/lacros_availability.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_types.h"
@@ -40,6 +45,12 @@ void KioskAshBrowserTestStarter::SetLacrosAvailabilityPolicy() {
                  ash::standalone_browser::LacrosAvailability::kLacrosOnly)),
              /*external_data_fetcher=*/nullptr);
   crosapi::browser_util::CacheLacrosAvailability(policy);
+}
+
+void KioskAshBrowserTestStarter::SetUpBrowserManager() {
+  DCHECK(HasLacrosArgument());
+  crosapi::BrowserManager::Get()->set_device_ownership_waiter_for_testing(
+      std::make_unique<crosapi::FakeDeviceOwnershipWaiter>());
 }
 
 }  // namespace ash

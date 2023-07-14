@@ -19,6 +19,7 @@ void WebKioskLacrosBaseTest::SetUpOnMainThread() {
   WebKioskBaseTest::SetUpOnMainThread();
   if (kiosk_ash_starter_.HasLacrosArgument()) {
     kiosk_ash_starter_.SetLacrosAvailabilityPolicy();
+    kiosk_ash_starter_.SetUpBrowserManager();
   }
 }
 
