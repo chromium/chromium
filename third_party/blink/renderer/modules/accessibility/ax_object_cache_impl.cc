@@ -1787,11 +1787,12 @@ void AXObjectCacheImpl::RemoveSubtreeWithFlatTraversal(Node* node,
     if (ax_included_child->CachedParentObject() != object) {
       continue;
     }
-    if (IsA<Text>(node)) {
+    if (ui::CanHaveInlineTextBoxChildren(object->RoleValue())) {
       // Just remove child inline textboxes, don't use their node which is the
       // same as that static text's parent and would cause an infinite loop.
       Remove(ax_included_child, /* notify_parent */ false);
     } else if (ax_included_child->GetNode()) {
+      DCHECK(ax_included_child->GetNode() != node);
       RemoveSubtreeWithFlatTraversal(ax_included_child->GetNode(),
                                      /* remove_root */ true,
                                      /* notify_parent */ false);
