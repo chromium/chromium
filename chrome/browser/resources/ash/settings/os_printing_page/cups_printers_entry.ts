@@ -87,6 +87,7 @@ export class SettingsCupsPrintersEntryElement extends
           return loadTimeData.getBoolean('isPrinterSettingsRevampEnabled');
         },
         readOnly: true,
+        reflectToAttribute: true,
       },
 
       /** @protected {boolean} */

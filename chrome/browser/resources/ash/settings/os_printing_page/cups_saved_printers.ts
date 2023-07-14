@@ -175,6 +175,18 @@ export class SettingsCupsSavedPrintersElement extends
         },
         readOnly: true,
       },
+
+      /**
+       * True when the "printer-settings-revamp" feature flag is enabled.
+       */
+      isPrinterSettingsRevampEnabled_: {
+        type: Boolean,
+        value: () => {
+          return loadTimeData.getBoolean('isPrinterSettingsRevampEnabled');
+        },
+        readOnly: true,
+        reflectToAttribute: true,
+      },
     };
   }
 
