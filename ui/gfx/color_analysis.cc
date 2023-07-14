@@ -390,7 +390,7 @@ std::vector<Swatch> CalculateProminentColors(
   return best_colors;
 }
 
-} // namespace
+}  // namespace
 
 KMeanImageSampler::KMeanImageSampler() {
 }
@@ -607,7 +607,7 @@ SkColor CalculateKMeanColorOfBuffer(uint8_t* decoded_data,
              : color;
 }
 
-SkColor CalculateKMeanColorOfPNG(scoped_refptr<base::RefCountedMemory> png,
+SkColor CalculateKMeanColorOfPNG(base::span<const uint8_t> png,
                                  const HSL& lower_bound,
                                  const HSL& upper_bound,
                                  KMeanImageSampler* sampler) {
@@ -616,17 +616,16 @@ SkColor CalculateKMeanColorOfPNG(scoped_refptr<base::RefCountedMemory> png,
   std::vector<uint8_t> decoded_data;
   SkColor color = kDefaultBgColor;
 
-  if (png.get() && png->size() &&
-      gfx::PNGCodec::Decode(png->front(), png->size(),
-                            gfx::PNGCodec::FORMAT_BGRA, &decoded_data,
-                            &img_width, &img_height)) {
+  if (!png.empty() &&
+      gfx::PNGCodec::Decode(png.data(), png.size(), gfx::PNGCodec::FORMAT_BGRA,
+                            &decoded_data, &img_width, &img_height)) {
     return CalculateKMeanColorOfBuffer(&decoded_data[0], img_width, img_height,
                                        lower_bound, upper_bound, sampler, true);
   }
   return color;
 }
 
-SkColor CalculateKMeanColorOfPNG(scoped_refptr<base::RefCountedMemory> png) {
+SkColor CalculateKMeanColorOfPNG(base::span<const uint8_t> png) {
   GridSampler sampler;
   return CalculateKMeanColorOfPNG(
       png, kDefaultLowerHSLBound, kDefaultUpperHSLBound, &sampler);
@@ -818,4 +817,4 @@ std::vector<color_utils::Swatch> CalculateProminentColorsOfBitmap(
       filter.is_null() ? base::BindRepeating(&IsInterestingColor) : filter);
 }
 
-}  // color_utils
+}  // namespace color_utils

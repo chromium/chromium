@@ -87,7 +87,7 @@ void ProcessIconOnBackgroundThread(
   *fallback_icon_style = favicon_base::FallbackIconStyle();
   int fallback_icon_size = 0;
   if (db_result.is_valid()) {
-    favicon_base::SetDominantColorAsBackground(db_result.bitmap_data,
+    favicon_base::SetDominantColorAsBackground(*db_result.bitmap_data,
                                                fallback_icon_style);
     // The size must be positive, we cap to 128 to avoid the sparse histogram
     // to explode (having too many different values, server-side). Size 128

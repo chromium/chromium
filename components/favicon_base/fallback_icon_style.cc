@@ -38,9 +38,8 @@ bool FallbackIconStyle::operator==(const FallbackIconStyle& other) const {
          text_color == other.text_color;
 }
 
-void SetDominantColorAsBackground(
-    const scoped_refptr<base::RefCountedMemory>& bitmap_data,
-    FallbackIconStyle* style) {
+void SetDominantColorAsBackground(base::span<const uint8_t> bitmap_data,
+                                  FallbackIconStyle* style) {
   // Try to ensure color's lightness isn't too large so that light text is
   // visible. Set an upper bound for the dominant color.
   const color_utils::HSL lower_bound{-1.0, -1.0, kMinBackgroundColorLightness};
