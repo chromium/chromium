@@ -1194,6 +1194,106 @@ TEST_F(InterestGroupStorageTest, DBMaintenanceExpiresOldInterestGroups) {
   EXPECT_EQ(0, interest_groups[0].bidding_browser_signals->bid_count);
 }
 
+// Test that when an interest group expires, data about the expired group from
+// the additional tables (`prev_wins`, `join_count`, `num_bids`) is not
+// preserved if the interest group is joined again. This tests both the case
+// where the expired group is destroyed by normal database maintenance, and the
+// case where it's overwritten by a new group with the same name and owner
+// before maintenance can be performed.
+TEST_F(InterestGroupStorageTest, ExpirationDeletesMetadata) {
+  base::HistogramTester histograms;
+
+  enum class TestCase {
+    // The expired group is destroyed by periodic database maintenance.
+    kDestroyedByMaintenance,
+    // The expired group is overwritten by a new group before database
+    // maintenance has had a chance to destroy it.
+    kOverwrittenByNewGroup
+  };
+
+  const url::Origin kOrigin = url::Origin::Create(GURL("https://owner.test"));
+  const char kName[] = "name";
+  const blink::InterestGroupKey kGroupKey(kOrigin, kName);
+  const char kAdJson[] = "{url: 'https://ad.test/'}";
+
+  for (auto test_case :
+       {TestCase::kDestroyedByMaintenance, TestCase::kOverwrittenByNewGroup}) {
+    SCOPED_TRACE(static_cast<int>(test_case));
+    std::unique_ptr<InterestGroupStorage> storage = CreateStorage();
+
+    base::Time start = base::Time::Now();
+    const base::TimeDelta kDelta = base::Seconds(1);
+
+    // Join the group, and record a bid and win.
+    storage->JoinInterestGroup(blink::TestInterestGroupBuilder(kOrigin, kName)
+                                   .SetExpiry(start + kDelta)
+                                   .Build(),
+                               kOrigin.GetURL());
+    storage->RecordInterestGroupBids({kGroupKey});
+    storage->RecordInterestGroupWin(kGroupKey, kAdJson);
+
+    // Check that the interest group can be retrieved, and all relevant fields
+    // are correct.
+    std::vector<StorageInterestGroup> interest_groups =
+        storage->GetInterestGroupsForOwner(kOrigin);
+    ASSERT_EQ(1u, interest_groups.size());
+    EXPECT_EQ(kName, interest_groups[0].interest_group.name);
+    EXPECT_EQ(1, interest_groups[0].bidding_browser_signals->join_count);
+    EXPECT_EQ(1, interest_groups[0].bidding_browser_signals->bid_count);
+    ASSERT_EQ(1u, interest_groups[0].bidding_browser_signals->prev_wins.size());
+    EXPECT_EQ(
+        kAdJson,
+        interest_groups[0].bidding_browser_signals->prev_wins[0]->ad_json);
+
+    switch (test_case) {
+      case TestCase::kDestroyedByMaintenance: {
+        base::Time expected_maintenance_time =
+            base::Time::Now() + InterestGroupStorage::kIdlePeriod;
+        // Enough time to trigger maintenance.
+        task_environment().FastForwardBy(InterestGroupStorage::kIdlePeriod +
+                                         base::Seconds(1));
+        // Verify that maintenance has run.
+        EXPECT_EQ(storage->GetLastMaintenanceTimeForTesting(),
+                  expected_maintenance_time);
+        break;
+      }
+
+      case TestCase::kOverwrittenByNewGroup: {
+        base::Time old_maintenance_time =
+            storage->GetLastMaintenanceTimeForTesting();
+        // Not enough time to trigger maintenance.
+        task_environment().FastForwardBy(base::Seconds(1));
+        // Maintenance should not have been performed.
+        EXPECT_EQ(storage->GetLastMaintenanceTimeForTesting(),
+                  old_maintenance_time);
+        break;
+      }
+    }
+
+    // Whether or not it's still in the database, GetInterestGroupsForOwner()
+    // should not retrieve the expired group.
+    interest_groups = storage->GetInterestGroupsForOwner(kOrigin);
+    EXPECT_EQ(0u, interest_groups.size());
+
+    // Re-join the interest group.
+    storage->JoinInterestGroup(
+        blink::TestInterestGroupBuilder(kOrigin, kName).Build(),
+        kOrigin.GetURL());
+
+    // Retrieve the group. Its `join_count`, `bid_count`, and `prev_wins` should
+    // not reflect data from the first time the group was joined.
+    interest_groups = storage->GetInterestGroupsForOwner(kOrigin);
+    ASSERT_EQ(1u, interest_groups.size());
+    EXPECT_EQ(kName, interest_groups[0].interest_group.name);
+    EXPECT_EQ(1, interest_groups[0].bidding_browser_signals->join_count);
+    EXPECT_EQ(0, interest_groups[0].bidding_browser_signals->bid_count);
+    EXPECT_EQ(0u, interest_groups[0].bidding_browser_signals->prev_wins.size());
+
+    // Leave the interest group so it doesn't affect the next test.
+    storage->LeaveInterestGroup(kGroupKey, kOrigin);
+  }
+}
+
 // Upgrades a v6 database dump to an expected current database.
 // The v6 database dump was extracted from the InterestGroups database in
 // a browser profile by using `sqlite3 dump <path-to-database>` and then

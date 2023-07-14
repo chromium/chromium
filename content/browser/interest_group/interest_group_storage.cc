@@ -962,12 +962,13 @@ bool UpgradeV7SchemaToV8(sql::Database& db, sql::MetaTable& meta_table) {
 bool UpgradeV6SchemaToV7(sql::Database& db, sql::MetaTable& meta_table) {
   // Index on group expiration by owner.
   DCHECK(db.DoesIndexExist("interest_group_owner"));
-  static const char kRemoveInterstGroupOwnerIndexSql[] =
+  static const char kRemoveInterestGroupOwnerIndexSql[] =
       // clang-format off
       "DROP INDEX interest_group_owner";
   // clang-format on
-  if (!db.Execute(kRemoveInterstGroupOwnerIndexSql))
+  if (!db.Execute(kRemoveInterestGroupOwnerIndexSql)) {
     return false;
+  }
   DCHECK(!db.DoesIndexExist("interest_group_owner"));
   static const char kInterestGroupOwnerIndexSql[] =
       // clang-format off
@@ -1265,17 +1266,27 @@ bool DoJoinInterestGroup(sql::Database& db,
 
   blink::InterestGroup old_group;
   url::Origin old_joining_origin;
-  if (DoLoadInterestGroup(db, blink::InterestGroupKey(data.owner, data.name),
-                          old_group, &old_joining_origin,
+  blink::InterestGroupKey interest_group_key(data.owner, data.name);
+  if (DoLoadInterestGroup(db, interest_group_key, old_group,
+                          &old_joining_origin,
                           /*exact_join_time=*/nullptr,
-                          /*last_updated=*/nullptr) &&
-      old_group.execution_mode ==
-          blink::InterestGroup::ExecutionMode::kGroupedByOriginMode &&
-      joining_origin != old_joining_origin) {
-    // Clear all interest groups with same owner and mode GroupedByOriginMode
-    // and same old_joining_origin.
-    if (!DoClearClusteredBiddingGroups(db, data.owner, old_joining_origin))
-      return false;
+                          /*last_updated=*/nullptr)) {
+    if (old_group.expiry <= base::Time::Now()) {
+      // If there's a matching old interest group that's expired but that hasn't
+      // yet been cleaned up, delete it. This removes its associated tables,
+      // which should expire at the same time as the old interest group.
+      if (!DoRemoveInterestGroup(db, interest_group_key)) {
+        return false;
+      }
+    } else if (old_group.execution_mode ==
+                   blink::InterestGroup::ExecutionMode::kGroupedByOriginMode &&
+               joining_origin != old_joining_origin) {
+      // Clear all interest groups with same owner and mode GroupedByOriginMode
+      // and same `old_joining_origin`.
+      if (!DoClearClusteredBiddingGroups(db, data.owner, old_joining_origin)) {
+        return false;
+      }
+    }
   }
 
   // clang-format off
