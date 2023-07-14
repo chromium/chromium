@@ -56,6 +56,19 @@ ParkableStringImpl::Age MakeOlder(ParkableStringImpl::Age age) {
 
 enum class ParkingAction { kParked, kUnparked, kWritten, kRead };
 
+void RecordLatencyHistogram(const char* histogram_name,
+                            base::TimeDelta duration) {
+  // Size is at least 10kB, and at most ~10MB, and throughput ranges from
+  // single-digit MB/s to ~1000MB/s depending on the CPU/disk, hence the ranges.
+  base::UmaHistogramCustomMicrosecondsTimes(
+      histogram_name, duration, base::Microseconds(500), base::Seconds(1), 100);
+}
+
+void RecordThroughputHistogram(const char* histogram_name,
+                               int throughput_mb_s) {
+  base::UmaHistogramCounts1000(histogram_name, throughput_mb_s);
+}
+
 void RecordStatistics(size_t size,
                       base::TimeDelta duration,
                       ParkingAction action) {
@@ -63,39 +76,28 @@ void RecordStatistics(size_t size,
       base::ClampRound(size / duration.InSecondsF() / 1000000);
   int size_kb = static_cast<int>(size / 1000);
 
-  const char *size_histogram, *latency_histogram, *throughput_histogram;
   switch (action) {
     case ParkingAction::kParked:
-      size_histogram = "Memory.ParkableString.Compression.SizeKb";
-      latency_histogram = "Memory.ParkableString.Compression.Latency";
-      throughput_histogram = "Memory.ParkableString.Compression.ThroughputMBps";
+      // Size should be <1MiB in most cases.
+      base::UmaHistogramCounts1000("Memory.ParkableString.Compression.SizeKb",
+                                   size_kb);
+      RecordLatencyHistogram("Memory.ParkableString.Compression.Latency",
+                             duration);
       break;
     case ParkingAction::kUnparked:
-      size_histogram = "Memory.ParkableString.Decompression.SizeKb";
-      latency_histogram = "Memory.ParkableString.Decompression.Latency";
-      throughput_histogram =
-          "Memory.ParkableString.Decompression.ThroughputMBps";
-      break;
-    case ParkingAction::kWritten:
-      size_histogram = "Memory.ParkableString.Write.SizeKb";
-      latency_histogram = "Memory.ParkableString.Write.Latency";
-      throughput_histogram = "Memory.ParkableString.Write.ThroughputMBps";
+      RecordLatencyHistogram("Memory.ParkableString.Decompression.Latency",
+                             duration);
+      RecordThroughputHistogram(
+          "Memory.ParkableString.Decompression.ThroughputMBps",
+          throughput_mb_s);
       break;
     case ParkingAction::kRead:
-      size_histogram = "Memory.ParkableString.Read.SizeKb";
-      latency_histogram = "Memory.ParkableString.Read.Latency";
-      throughput_histogram = "Memory.ParkableString.Read.ThroughputMBps";
+      RecordLatencyHistogram("Memory.ParkableString.Read.Latency", duration);
+      break;
+    case ParkingAction::kWritten:
+      // No metric recorded.
       break;
   }
-
-  // Size should be <1MiB in most cases.
-  base::UmaHistogramCounts1000(size_histogram, size_kb);
-  // Size is at least 10kB, and at most ~10MB, and throughput ranges from
-  // single-digit MB/s to ~1000MB/s depending on the CPU/disk, hence the ranges.
-  base::UmaHistogramCustomMicrosecondsTimes(latency_histogram, duration,
-                                            base::Microseconds(500),
-                                            base::Seconds(1), 100);
-  base::UmaHistogramCounts1000(throughput_histogram, throughput_mb_s);
 }
 
 void AsanPoisonString(const String& string) {
@@ -564,9 +566,6 @@ void ParkableStringImpl::Unpark() {
   if (metadata_->last_disk_parking_time_ != base::TimeTicks()) {
     // Can be quite short, can be multiple hours, hence long times, and 100
     // buckets.
-    base::UmaHistogramLongTimes100(
-        "Memory.ParkableString.Read.SinceLastDiskWrite",
-        base::TimeTicks::Now() - metadata_->last_disk_parking_time_);
     metadata_->last_disk_parking_time_ = base::TimeTicks();
   }
 }
@@ -736,9 +735,6 @@ void ParkableStringImpl::CompressInBackground(
         if (compressed_size > params->size) {
           ok = false;
         }
-
-        base::UmaHistogramBoolean(
-            "Memory.ParkableString.Snappy.CompressedLargerThanOriginal", !ok);
       } else {
         ok = compression::GzipCompress(data, buffer.data(), buffer.size(),
                                        &compressed_size, nullptr, nullptr);

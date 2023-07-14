@@ -200,14 +200,6 @@ TEST_P(ParkableStringTest, DontCompressRandomString) {
   RunPostedTasks();
   // Not parked because the temporary buffer wasn't large enough.
   EXPECT_FALSE(parkable.Impl()->is_parked());
-
-  if (features::ParkableStringsUseSnappy()) {
-    histogram_tester.ExpectUniqueSample(
-        "Memory.ParkableString.Snappy.CompressedLargerThanOriginal", true, 1);
-  } else {
-    histogram_tester.ExpectTotalCount(
-        "Memory.ParkableString.Snappy.CompressedLargerThanOriginal", 0);
-  }
 }
 
 TEST_P(ParkableStringTest, ParkUnparkIdenticalContent) {
@@ -750,11 +742,6 @@ TEST_P(ParkableStringTest, Compression) {
   histogram_tester.ExpectTotalCount("Memory.ParkableString.Compression.Latency",
                                     1);
   histogram_tester.ExpectTotalCount(
-      "Memory.ParkableString.Compression.ThroughputMBps", 1);
-  // |parkable| is decompressed twice.
-  histogram_tester.ExpectUniqueSample(
-      "Memory.ParkableString.Decompression.SizeKb", kSizeKb, 2);
-  histogram_tester.ExpectTotalCount(
       "Memory.ParkableString.Decompression.Latency", 2);
   histogram_tester.ExpectTotalCount(
       "Memory.ParkableString.Decompression.ThroughputMBps", 2);
@@ -773,8 +760,6 @@ TEST_P(ParkableStringTest, SynchronousCompression) {
 }
 
 TEST_P(ParkableStringTest, ToAndFromDisk) {
-  const size_t kCompressedSize = GetExpectedCompressedSize();
-
   base::HistogramTester histogram_tester;
 
   ParkableString parkable(MakeLargeString('a').ReleaseImpl());
@@ -791,24 +776,11 @@ TEST_P(ParkableStringTest, ToAndFromDisk) {
   EXPECT_FALSE(impl->is_on_disk());
   RunPostedTasks();
   EXPECT_TRUE(impl->is_on_disk());
-
-  histogram_tester.ExpectUniqueSample("Memory.ParkableString.Write.SizeKb",
-                                      kCompressedSize / 1000, 1);
-  histogram_tester.ExpectTotalCount("Memory.ParkableString.Write.Latency", 1);
-  histogram_tester.ExpectTotalCount(
-      "Memory.ParkableString.Write.ThroughputMBps", 1);
-
   parkable.ToString();
   EXPECT_FALSE(impl->is_on_disk());
   EXPECT_EQ(ParkableStringImpl::Age::kYoung, impl->age_for_testing());
 
-  histogram_tester.ExpectUniqueSample("Memory.ParkableString.Read.SizeKb",
-                                      kCompressedSize / 1000, 1);
   histogram_tester.ExpectTotalCount("Memory.ParkableString.Read.Latency", 1);
-  histogram_tester.ExpectTotalCount("Memory.ParkableString.Read.ThroughputMBps",
-                                    1);
-  histogram_tester.ExpectTotalCount(
-      "Memory.ParkableString.Read.SinceLastDiskWrite", 1);
 }
 
 TEST_P(ParkableStringTest, UnparkWhileWritingToDisk) {
@@ -835,10 +807,6 @@ TEST_P(ParkableStringTest, UnparkWhileWritingToDisk) {
   EXPECT_FALSE(impl->is_on_disk());
   EXPECT_TRUE(impl->has_on_disk_data());
   EXPECT_EQ(ParkableStringImpl::Age::kYoung, impl->age_for_testing());
-
-  // No data point recorded, since writing to disk was aborted.
-  histogram_tester.ExpectTotalCount(
-      "Memory.ParkableString.Read.SinceLastDiskWrite", 0);
 }
 
 TEST_P(ParkableStringTest, NoCompetingWritingToDisk) {
@@ -891,8 +859,6 @@ TEST_P(ParkableStringTest, SynchronousToDisk) {
 
   parkable.ToString();
   EXPECT_FALSE(impl->is_on_disk());
-  histogram_tester.ExpectTotalCount(
-      "Memory.ParkableString.Read.SinceLastDiskWrite", 1);
 
   impl->MaybeAgeOrParkString();
   impl->MaybeAgeOrParkString();
@@ -903,8 +869,6 @@ TEST_P(ParkableStringTest, SynchronousToDisk) {
   EXPECT_TRUE(impl->is_on_disk());  // Synchronous writing.
 
   parkable.ToString();
-  histogram_tester.ExpectTotalCount(
-      "Memory.ParkableString.Read.SinceLastDiskWrite", 2);
 }
 
 TEST_P(ParkableStringTest, OnPurgeMemory) {
