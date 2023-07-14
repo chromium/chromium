@@ -252,7 +252,7 @@ CGFloat const kCreditCardIconCornerRadius = 5;
 
 // Returns the display description at a given row in the table view.
 - (NSString*)descriptionAtRow:(NSInteger)row {
-  return [_creditCardData[row] expirationDate];
+  return [_creditCardData[row] cardDetails];
 }
 
 // Returns the credit card icon at a given row in the table view.

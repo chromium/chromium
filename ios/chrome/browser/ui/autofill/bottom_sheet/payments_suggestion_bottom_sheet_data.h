@@ -17,8 +17,8 @@ class CreditCard;
 // Will return the credit card's nickname if it has one.
 - (NSString*)cardNameAndLastFourDigits;
 
-// Returns the credit card's expiration date.
-- (NSString*)expirationDate;
+// Returns the credit card's expiration date or type.
+- (NSString*)cardDetails;
 
 // Returns the credit card's backend identifier.
 - (NSString*)backendIdentifier;

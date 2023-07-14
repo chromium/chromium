@@ -39,7 +39,7 @@
                               icon:(UIImage*)icon;
 
 @property(nonatomic, strong) NSString* cardNameAndLastFourDigits;
-@property(nonatomic, strong) NSString* expirationDate;
+@property(nonatomic, strong) NSString* cardDetails;
 @property(nonatomic, strong) NSString* backendIdentifier;
 @property(nonatomic, strong) UIImage* icon;
 
@@ -52,9 +52,12 @@
   if (self = [super init]) {
     self.cardNameAndLastFourDigits =
         base::SysUTF16ToNSString(creditCard->CardNameAndLastFourDigits());
-    self.expirationDate = base::SysUTF16ToNSString(
-        creditCard->AbbreviatedExpirationDateForDisplay(
-            /* with_prefix=*/false));
+    self.cardDetails = base::SysUTF16ToNSString(
+        (creditCard->record_type() == autofill::CreditCard::VIRTUAL_CARD)
+            ? l10n_util::GetStringUTF16(
+                  IDS_AUTOFILL_VIRTUAL_CARD_SUGGESTION_OPTION_VALUE)
+            : creditCard->AbbreviatedExpirationDateForDisplay(
+                  /* with_prefix=*/false));
     self.backendIdentifier = base::SysUTF8ToNSString(creditCard->guid());
     self.icon = icon;
   }
