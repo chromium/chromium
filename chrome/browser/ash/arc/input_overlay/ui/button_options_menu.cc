@@ -5,7 +5,6 @@
 #include "chrome/browser/ash/arc/input_overlay/ui/button_options_menu.h"
 
 #include "ash/bubble/bubble_utils.h"
-#include "ash/components/arc/compat_mode/style/arc_color_provider.h"
 #include "ash/login/ui/views_utils.h"
 #include "ash/public/cpp/ash_view_ids.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -26,7 +25,6 @@
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
-#include "ui/gfx/canvas.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/layout/box_layout.h"
@@ -86,6 +84,7 @@ void ButtonOptionsMenu::Init() {
   AddActionNameLabel();
 
   SizeToPreferredSize();
+  SetArrowVerticalOffset(CalculateActionOffset(GetHeightForWidth(kMenuWidth)));
   CalculatePosition();
 }
 
@@ -264,21 +263,6 @@ void ButtonOptionsMenu::OnButtonLabelAssignmentPressed() {
   controller_->AddButtonLabelList();
 }
 
-void ButtonOptionsMenu::OnPaintBackground(gfx::Canvas* canvas) {
-  int height = GetHeightForWidth(kMenuWidth);
-  ui::ColorProvider* color_provider = GetColorProvider();
-  DrawBackgroundContainerWithArrow(
-      canvas, height, action_->on_left_or_middle_side(),
-      CalculateActionOffset(height),
-      color_provider->GetColor(cros_tokens::kCrosSysBaseElevated),
-      color_provider->GetColor(cros_tokens::kCrosSysSystemBorder1));
-}
-
-gfx::Size ButtonOptionsMenu::CalculatePreferredSize() const {
-  // TODO(b/270969760): Dynamically calculate height based on action selection.
-  return gfx::Size(kMenuWidth, GetHeightForWidth(kMenuWidth));
-}
-
 void ButtonOptionsMenu::OnActionRemoved(const Action& action) {
   DCHECK_EQ(action_, &action);
   controller_->RemoveButtonOptionsMenu();
@@ -294,6 +278,7 @@ void ButtonOptionsMenu::OnActionTypeChanged(Action* action,
       action_edit_container_->AddChildView(EditLabels::CreateEditLabels(
           controller_, action_, key_name_tag_, /*set_title=*/false));
   SizeToPreferredSize();
+  SetArrowVerticalOffset(CalculateActionOffset(GetHeightForWidth(kMenuWidth)));
 }
 
 void ButtonOptionsMenu::OnActionUpdated(const Action& action) {

@@ -139,21 +139,6 @@ void ButtonLabelList::OnBackButtonPressed() {
   display_overlay_controller_->RemoveButtonLabelList();
 }
 
-void ButtonLabelList::OnPaintBackground(gfx::Canvas* canvas) {
-  int height = GetHeightForWidth(kMenuWidth);
-  ui::ColorProvider* color_provider = GetColorProvider();
-  DrawBackgroundContainerWithArrow(
-      canvas, height, button_options_menu_->action()->on_left_or_middle_side(),
-      // TODO(b/289536822): Modify offset calculation.
-      button_options_menu_->CalculateActionOffset(height),
-      color_provider->GetColor(cros_tokens::kCrosSysBaseElevated),
-      color_provider->GetColor(cros_tokens::kCrosSysSystemBorder1));
-}
-
-gfx::Size ButtonLabelList::CalculatePreferredSize() const {
-  return gfx::Size(kMenuWidth, GetHeightForWidth(kMenuWidth));
-}
-
 void ButtonLabelList::CalculatePosition() {
   auto* action = button_options_menu_->action();
   auto* action_view = action->action_view();

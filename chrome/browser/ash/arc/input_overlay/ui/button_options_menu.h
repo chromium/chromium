@@ -8,7 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/arc/input_overlay/db/proto/app_data.pb.h"
 #include "chrome/browser/ash/arc/input_overlay/touch_injector_observer.h"
-#include "ui/views/view.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/arrow_container.h"
 
 namespace ash {
 class FeatureTile;
@@ -42,7 +42,7 @@ class NameTag;
 // ||"Button label"                 > |
 // ||"Unassigned"                     |
 // +----------------------------------+
-class ButtonOptionsMenu : public views::View, public TouchInjectorObserver {
+class ButtonOptionsMenu : public ArrowContainer, public TouchInjectorObserver {
  public:
   static ButtonOptionsMenu* Show(DisplayOverlayController* controller,
                                  Action* action);
@@ -52,10 +52,10 @@ class ButtonOptionsMenu : public views::View, public TouchInjectorObserver {
   ButtonOptionsMenu& operator=(const ButtonOptionsMenu&) = delete;
   ~ButtonOptionsMenu() override;
 
-  Action* action() const { return action_; }
-
   // Calculates triangle wedge offset.
   int CalculateActionOffset(int height);
+
+  Action* action() const { return action_; }
 
  private:
   friend class ButtonOptionsMenuTest;
@@ -77,10 +77,6 @@ class ButtonOptionsMenu : public views::View, public TouchInjectorObserver {
 
   // View position calculation. Make it virtual for unit test.
   virtual void CalculatePosition();
-
-  // views::View:
-  void OnPaintBackground(gfx::Canvas* canvas) override;
-  gfx::Size CalculatePreferredSize() const override;
 
   // TouchInjectorObserver:
   void OnActionRemoved(const Action& action) override;

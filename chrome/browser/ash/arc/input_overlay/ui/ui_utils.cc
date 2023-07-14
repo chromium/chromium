@@ -9,9 +9,7 @@
 #include "chrome/browser/ash/arc/input_overlay/constants.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
-#include "ui/views/background.h"
 
 namespace arc::input_overlay {
 
@@ -43,91 +41,6 @@ constexpr char16_t kAlt[] = u"alt";
 constexpr char16_t kCtrl[] = u"ctrl";
 constexpr char16_t kShift[] = u"shift";
 constexpr char16_t kCap[] = u"cap";
-
-// Specifications for container with arrow background.
-constexpr int kMenuWidth = 316;
-constexpr int kTriangleLength = 20;
-constexpr int kTriangleHeight = 14;
-constexpr int kCornerRadius = 16;
-constexpr int kBorderThickness = 2;
-
-// Draws the dialog shape path with round corner. It starts after the corner
-// radius on line #0 and draws clockwise.
-//
-// draw_triangle_on_left draws the triangle wedge on the left side of the box
-// instead of the right if set to true.
-//
-// action_offset draws the triangle wedge higher or lower if the position of
-// the action is too close to the top or bottom of the window. An offset of
-// zero draws the triangle wedge at the vertical center of the box.
-//  _0>__________
-// |             |
-// |             |
-// |             |
-// |              >
-// |             |
-// |             |
-// |_____________|
-//
-SkPath BackgroundPath(int height,
-                      bool draw_triangle_on_left,
-                      int action_offset) {
-  SkPath path;
-  int short_length = kMenuWidth - kTriangleHeight - 2 * kCornerRadius;
-  int short_height = height - 2 * kCornerRadius;
-  // If the offset is greater than the limit or less than the negative
-  // limit, set it respectively.
-  const int limit = short_height / 2 - kTriangleLength / 2;
-  if (action_offset > limit) {
-    action_offset = limit;
-  } else if (action_offset < -limit) {
-    action_offset = -limit;
-  }
-  if (draw_triangle_on_left) {
-    path.moveTo(kCornerRadius + kTriangleHeight, 0);
-  } else {
-    path.moveTo(kCornerRadius, 0);
-  }
-  // Top left after corner radius to top right corner radius.
-  path.rLineTo(short_length, 0);
-  path.rArcTo(kCornerRadius, kCornerRadius, 0, SkPath::kSmall_ArcSize,
-              SkPathDirection::kCW, +kCornerRadius, +kCornerRadius);
-  if (draw_triangle_on_left) {
-    // Top right after corner radius to bottom right corner radius.
-    path.rLineTo(0, short_height);
-  } else {
-    // Top right after corner radius to midway point.
-    path.rLineTo(0, limit + action_offset);
-    // Triangle shape.
-    path.rLineTo(kTriangleHeight, kTriangleLength / 2);
-    path.rLineTo(-kTriangleHeight, kTriangleLength / 2);
-    // After midway point to bottom right corner radius.
-    path.rLineTo(0, limit - action_offset);
-  }
-  path.rArcTo(kCornerRadius, kCornerRadius, 0, SkPath::kSmall_ArcSize,
-              SkPathDirection::kCW, -kCornerRadius, +kCornerRadius);
-  // Bottom right after corner radius to bottom left corner radius.
-  path.rLineTo(-short_length, 0);
-  path.rArcTo(kCornerRadius, kCornerRadius, 0, SkPath::kSmall_ArcSize,
-              SkPathDirection::kCW, -kCornerRadius, -kCornerRadius);
-  if (draw_triangle_on_left) {
-    // bottom left after corner radius to midway point.
-    path.rLineTo(0, -limit + action_offset);
-    // Triangle shape.
-    path.rLineTo(-kTriangleHeight, -kTriangleLength / 2);
-    path.rLineTo(kTriangleHeight, -kTriangleLength / 2);
-    // After midway point to bottom right corner radius.
-    path.rLineTo(0, -limit - action_offset);
-  } else {
-    // Bottom left after corner radius to top left corner radius.
-    path.rLineTo(0, -short_height);
-  }
-  path.rArcTo(kCornerRadius, kCornerRadius, 0, SkPath::kSmall_ArcSize,
-              SkPathDirection::kCW, +kCornerRadius, -kCornerRadius);
-  // Path finish.
-  path.close();
-  return path;
-}
 
 }  // namespace
 
@@ -214,28 +127,6 @@ std::u16string GetDisplayTextAccessibleName(const std::u16string& text) {
   } else {
     return text;
   }
-}
-
-void DrawBackgroundContainerWithArrow(gfx::Canvas* canvas,
-                                      int height,
-                                      bool arrow_on_left,
-                                      int arrow_height_offset,
-                                      SkColor background_color,
-                                      SkColor border_color) {
-  cc::PaintFlags flags;
-  // Draw the shape.
-  flags.setAntiAlias(true);
-  flags.setStyle(cc::PaintFlags::kFill_Style);
-  flags.setColor(background_color);
-  canvas->DrawPath(BackgroundPath(height, arrow_on_left, arrow_height_offset),
-                   flags);
-  // Draw the border.
-  flags.setStyle(cc::PaintFlags::kStroke_Style);
-  // TODO(b/270969760): Change to "sys.BorderHighlight1" when added.
-  flags.setColor(border_color);
-  flags.setStrokeWidth(kBorderThickness);
-  canvas->DrawPath(BackgroundPath(height, arrow_on_left, arrow_height_offset),
-                   flags);
 }
 
 }  // namespace arc::input_overlay

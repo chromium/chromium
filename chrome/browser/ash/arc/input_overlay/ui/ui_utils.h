@@ -19,15 +19,6 @@ std::u16string GetDisplayText(const ui::DomCode code);
 // Sometimes, |text| is a symbol.
 std::u16string GetDisplayTextAccessibleName(const std::u16string& text);
 
-// Draws the custom background with an arrow, with various parameters adjusting
-// the position of the arrow.
-void DrawBackgroundContainerWithArrow(gfx::Canvas* canvas,
-                                      int height,
-                                      bool arrow_on_left,
-                                      int arrow_height_offset,
-                                      SkColor background_color,
-                                      SkColor border_color);
-
 }  // namespace arc::input_overlay
 
 #endif  // CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_UI_UI_UTILS_H_

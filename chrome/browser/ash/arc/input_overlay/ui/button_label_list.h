@@ -6,15 +6,11 @@
 #define CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_UI_BUTTON_LABEL_LIST_H_
 
 #include "base/memory/raw_ptr.h"
-#include "ui/views/view.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/arrow_container.h"
 
 namespace ash {
 class RadioButtonGroup;
 }  // namespace ash
-
-namespace gfx {
-class Size;
-}  // namespace gfx
 
 namespace arc::input_overlay {
 
@@ -36,7 +32,7 @@ class DisplayOverlayController;
 // |----------------------------------|
 // ||<Action string>|                 |
 // +----------------------------------+
-class ButtonLabelList : public views::View {
+class ButtonLabelList : public ArrowContainer {
  public:
   static ButtonLabelList* Show(DisplayOverlayController* controller,
                                ButtonOptionsMenu* button_options_menu);
@@ -59,10 +55,6 @@ class ButtonLabelList : public views::View {
   // Handle button functions.
   void OnActionLabelPressed();
   void OnBackButtonPressed();
-
-  // views::View:
-  void OnPaintBackground(gfx::Canvas* canvas) override;
-  gfx::Size CalculatePreferredSize() const override;
 
   // DisplayOverlayController owns this class, no need to deallocate.
   const raw_ptr<DisplayOverlayController> display_overlay_controller_ = nullptr;
