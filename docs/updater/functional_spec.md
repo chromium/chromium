@@ -117,7 +117,7 @@ The input files are the following:
   <app appid="${APP_ID}" status="ok">
     <updatecheck status="ok">
       <urls>
-        <url codebase="http://dl.google.com/edgedl/chrome/install/${INSTALLER_VERSION}/"/>
+        <url codebase="https://dl.google.com/edgedl/chrome/install/${INSTALLER_VERSION}/"/>
       </urls>
       <manifest version="${INSTALLER_VERSION}">
         <packages>
@@ -192,7 +192,7 @@ The final manifest looks as follows:
   <app appid="{8237E44A-0054-442C-B6B6-EA0509993955}" status="ok">
     <updatecheck status="ok">
       <urls>
-        <url codebase="http://dl.google.com/edgedl/chrome/install/110.0.5478.0/"/>
+        <url codebase="https://dl.google.com/edgedl/chrome/install/110.0.5478.0/"/>
       </urls>
       <manifest version="110.0.5478.0">
         <packages>
@@ -890,8 +890,8 @@ This is how a JSON response from the update server may look like:
      }],
      "updatecheck":{
      "status":"ok",
-     "urls":{"url":[{"codebase":"http://example.com/"},
-                    {"codebasediff":"http://diff.example.com/"}]},
+     "urls":{"url":[{"codebase":"https://example.com/"},
+                    {"codebasediff":"https://diff.example.com/"}]},
      "manifest":{
       "version":"1.2.3.4",
       "prodversionmin":"2.0.143.0",
