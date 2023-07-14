@@ -1282,9 +1282,44 @@ message MacAUHALStream {
   optional int64 lost_audio_duration_us = 14;
 };
 
+// Debug information for system layer of audio rendering using ALSA on Linux.
+message LinuxAlsaOutput {
+  // The delay between the request for audio from the source and when the audio
+  // is expected to be played out.
+  optional int64 source_request_playout_delay_us = 1;
+  // The number of bytes that are already present in the buffer on a call to
+  // BufferPacket.
+  optional int32 forward_bytes = 2;
+  // Sample rate of the stream.
+  optional int32 sample_rate = 3;
+  // Delay obtained by the OS in frames.
+  optional int32 getcurrentdelay_pcm_delay_frames = 4;
+  // The number of frames in ALSA's buffer.
+  optional int32 getcurrentdelay_alsa_buffer_frames = 5;
+  // The number of frames that can be written to in ALSA's buffer.
+  optional int32 getcurrentdelay_available_frames = 6;
+  // The final delay that GetCurrentDelay arrives on, in frames.
+  optional int32 getcurrentdelay_final_delay_frames = 7;
+};
+
+// Debug information for system layer of audio rendering using Pulse on Linux.
+message LinuxPulseOutput {
+  // The delay between the request for audio from the source and when the audio
+  // is expected to be played out.
+  optional int64 source_request_playout_delay_us = 1;
+  // Sample rate of the stream.
+  optional int32 sample_rate = 2;
+  // The number of frames that the stream requests from the audio source.
+  optional int32 input_buffer_size_frames = 3;
+  // The number of bytes that the OS requests.
+  optional uint32 stream_request_bytes = 4;
+  // The number of bytes in a single frame.
+  optional uint32 frame_size_bytes = 5;
+};
+
 message ChromeTrackEvent {
   // Extension range for Chrome: 1000-1999
-  // Next ID: 1050
+  // Next ID: 1052
   extend TrackEvent {
     optional ChromeAppState chrome_app_state = 1000;
 
@@ -1390,5 +1425,9 @@ message ChromeTrackEvent {
     optional WinRenderAudioFromSource win_render_audio_from_source = 1048;
 
     optional MacAUHALStream mac_auhal_stream = 1049;
+
+    optional LinuxAlsaOutput linux_alsa_output = 1050;
+
+    optional LinuxPulseOutput linux_pulse_output = 1051;
   }
 }
