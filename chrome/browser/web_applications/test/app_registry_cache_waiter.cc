@@ -39,33 +39,18 @@ void AppTypeInitializationWaiter::OnAppRegistryCacheWillBeDestroyed(
   Observe(nullptr);
 }
 
-AppReadinessWaiter::AppReadinessWaiter(
-    Profile* profile,
-    const std::string& app_id,
-    base::RepeatingCallback<bool(apps::Readiness)> readiness_predicate)
-    : app_id_(app_id), readiness_predicate_(std::move(readiness_predicate)) {
+AppReadinessWaiter::AppReadinessWaiter(Profile* profile,
+                                       const std::string& app_id,
+                                       apps::Readiness readiness)
+    : app_id_(app_id), readiness_(readiness) {
   apps::AppRegistryCache& cache =
       apps::AppServiceProxyFactory::GetForProfile(profile)->AppRegistryCache();
   Observe(&cache);
   cache.ForOneApp(app_id, [this](const apps::AppUpdate& update) {
-    if (readiness_predicate_.Run(update.Readiness())) {
+    if (update.Readiness() == readiness_)
       run_loop_.Quit();
-    }
   });
 }
-
-AppReadinessWaiter::AppReadinessWaiter(Profile* profile,
-                                       const std::string& app_id,
-                                       apps::Readiness readiness)
-    : AppReadinessWaiter(profile,
-                         app_id,
-                         base::BindRepeating(
-                             [](apps::Readiness expected_readiness,
-                                apps::Readiness readiness) {
-                               return readiness == expected_readiness;
-                             },
-                             readiness)) {}
-
 AppReadinessWaiter::~AppReadinessWaiter() = default;
 
 void AppReadinessWaiter::Await(const base::Location& location) {
@@ -73,10 +58,8 @@ void AppReadinessWaiter::Await(const base::Location& location) {
 }
 
 void AppReadinessWaiter::OnAppUpdate(const apps::AppUpdate& update) {
-  if (update.AppId() == app_id_ &&
-      readiness_predicate_.Run(update.Readiness())) {
+  if (update.AppId() == app_id_ && update.Readiness() == readiness_)
     run_loop_.Quit();
-  }
 }
 void AppReadinessWaiter::OnAppRegistryCacheWillBeDestroyed(
     apps::AppRegistryCache* cache) {

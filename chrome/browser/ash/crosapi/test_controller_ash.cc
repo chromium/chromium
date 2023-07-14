@@ -33,9 +33,6 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
-#include "chrome/browser/ash/app_list/app_list_model_updater.h"
-#include "chrome/browser/ash/app_list/app_list_syncable_service.h"
-#include "chrome/browser/ash/app_list/app_list_syncable_service_factory.h"
 #include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/ash/crosapi/input_method_test_interface_ash.h"
 #include "chrome/browser/ash/crosapi/vpn_service_ash.h"
@@ -54,7 +51,6 @@
 #include "chromeos/ash/components/dbus/shill/shill_third_party_vpn_driver_client.h"
 #include "chromeos/ash/components/dbus/userdataauth/cryptohome_misc_client.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
-#include "components/sync/model/string_ordinal.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "components/version_info/version_info.h"
@@ -738,41 +734,6 @@ void TestControllerAsh::SetAssistiveTechnologyEnabled(
       LOG(ERROR) << "Cannot enable unknown AssistiveTechnologyType";
       break;
   }
-}
-
-void TestControllerAsh::GetAppListItemAttributes(
-    const std::string& item_id,
-    GetAppListItemAttributesCallback callback) {
-  auto* profile = ProfileManager::GetPrimaryUserProfile();
-  app_list::AppListSyncableService* app_list_syncable_service =
-      app_list::AppListSyncableServiceFactory::GetForProfile(profile);
-
-  auto attributes = mojom::AppListItemAttributes::New();
-  if (const app_list::AppListSyncableService::SyncItem* sync_item =
-          app_list_syncable_service->GetSyncItem(item_id)) {
-    attributes->item_position = sync_item->item_ordinal.ToDebugString();
-    attributes->pin_position = sync_item->item_pin_ordinal.ToDebugString();
-  }
-  std::move(callback).Run(std::move(attributes));
-}
-
-void TestControllerAsh::SetAppListItemAttributes(
-    const std::string& item_id,
-    mojom::AppListItemAttributesPtr attributes,
-    SetAppListItemAttributesCallback callback) {
-  auto* profile = ProfileManager::GetPrimaryUserProfile();
-  app_list::AppListSyncableService* app_list_syncable_service =
-      app_list::AppListSyncableServiceFactory::GetForProfile(profile);
-  AppListModelUpdater* app_list_model_updater =
-      app_list_syncable_service->GetModelUpdater();
-  app_list_model_updater->SetActive(true);
-
-  app_list_model_updater->SetItemPosition(
-      item_id, syncer::StringOrdinal(attributes->item_position));
-  app_list_syncable_service->SetPinPosition(
-      item_id, syncer::StringOrdinal(attributes->pin_position));
-
-  std::move(callback).Run();
 }
 
 void TestControllerAsh::OnAshUtteranceFinished(int utterance_id) {

@@ -40,8 +40,6 @@ class WebAppUninstallAndReplaceJob {
  private:
   void MigrateUiAndUninstallApp(const AppId& from_app,
                                 base::OnceClosure on_complete);
-  void OnMigrateLauncherState(const AppId& from_app,
-                              base::OnceClosure on_complete);
   void OnShortcutInfoReceivedSearchShortcutLocations(
       const AppId& from_app,
       base::OnceClosure on_complete,

@@ -38,10 +38,6 @@ class AppTypeInitializationWaiter : public apps::AppRegistryCache::Observer {
 
 class AppReadinessWaiter : public apps::AppRegistryCache::Observer {
  public:
-  AppReadinessWaiter(
-      Profile* profile,
-      const std::string& app_id,
-      base::RepeatingCallback<bool(apps::Readiness)> readiness_predicate);
   AppReadinessWaiter(Profile* profile,
                      const std::string& app_id,
                      apps::Readiness readiness = apps::Readiness::kReady);
@@ -56,7 +52,7 @@ class AppReadinessWaiter : public apps::AppRegistryCache::Observer {
       apps::AppRegistryCache* cache) override;
 
   const std::string app_id_;
-  const base::RepeatingCallback<bool(apps::Readiness)> readiness_predicate_;
+  const apps::Readiness readiness_;
   base::RunLoop run_loop_;
 };
 

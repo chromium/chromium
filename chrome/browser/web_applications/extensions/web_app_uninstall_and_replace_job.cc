@@ -4,8 +4,6 @@
 
 #include "chrome/browser/web_applications/web_app_uninstall_and_replace_job.h"
 
-#include <utility>
-
 #include "base/functional/callback.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -110,24 +108,7 @@ void WebAppUninstallAndReplaceJob::MigrateUiAndUninstallApp(
     base::OnceClosure on_complete) {
   DCHECK(to_app_lock_);
 
-#if BUILDFLAG(IS_CHROMEOS)
-  to_app_lock_->ui_manager().MigrateLauncherState(
-      from_app, to_app_,
-      base::BindOnce(&WebAppUninstallAndReplaceJob::OnMigrateLauncherState,
-                     weak_ptr_factory_.GetWeakPtr(), from_app,
-                     std::move(on_complete)));
-#else
-  OnMigrateLauncherState(from_app, std::move(on_complete));
-#endif
-}
-
-void WebAppUninstallAndReplaceJob::OnMigrateLauncherState(
-    const AppId& from_app,
-    base::OnceClosure on_complete) {
-  if (!to_app_lock_) {
-    std::move(on_complete).Run();
-    return;
-  }
+  to_app_lock_->ui_manager().MaybeTransferAppAttributes(from_app, to_app_);
 
   // If migration of user/UI data is required for other app types consider
   // generalising this operation to be part of app service.

@@ -122,13 +122,9 @@ base::Value FakeWebAppUiManager::LaunchWebApp(
   return base::Value("FakeWebAppUiManager::LaunchWebApp");
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
-void FakeWebAppUiManager::MigrateLauncherState(const AppId& from_app_id,
-                                               const AppId& to_app_id,
-                                               base::OnceClosure callback) {
-  std::move(callback).Run();
-}
-#endif  // BUILDFLAG(IS_CHROMEOS)
+void FakeWebAppUiManager::MaybeTransferAppAttributes(
+    const AppId& from_extension_or_app,
+    const AppId& to_app) {}
 
 content::WebContents* FakeWebAppUiManager::CreateNewTab() {
   return nullptr;
