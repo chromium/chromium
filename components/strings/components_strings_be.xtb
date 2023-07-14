@@ -1331,7 +1331,6 @@
 <translation id="3848487483475744267"><ph name="CREATE_GOOGLE_DOC_FOCUSED_FRIENDLY_MATCH_TEXT" />. Каб хутка стварыць новы дакумент Google, націсніце Tab, затым Enter</translation>
 <translation id="385051799172605136">Назад</translation>
 <translation id="3851830401766703401">Юрыдычная адукацыя</translation>
-<translation id="3853684360927654006">Калькулятар надзейнасці пароля</translation>
 <translation id="385489333361351399">Абсталяванне для фота- і відэаздымкі</translation>
 <translation id="3858027520442213535">Абнавіць дату і час</translation>
 <translation id="3858860766373142691">Назва</translation>
@@ -1866,6 +1865,7 @@
 <translation id="4995749490935861684"><ph name="CUSTOMIZE_SEARCH_ENGINES_FOCUSED_FRIENDLY_MATCH_TEXT" />. Каб кіраваць пошукам па сайце і стандартнай пошукавай сістэмай, націсніце Tab, затым Enter</translation>
 <translation id="4998950033665438990">Аднабаковы гафрыраваны кардон</translation>
 <translation id="5002932099480077015">Пры ўключэнні гэтага параметра Chrome будзе захоўваць копію вашай карткі на гэтай прыладзе ў мэтах хутчэйшага запаўнення форм.</translation>
+<translation id="5007392906805964215">Праглядзець</translation>
 <translation id="5011561501798487822">Выяўленая мова</translation>
 <translation id="5015510746216210676">Назва прылады:</translation>
 <translation id="5017554619425969104">Скапіраваны вамі тэкст</translation>
@@ -2194,6 +2194,7 @@
 <translation id="571403275720188526">(arm64)</translation>
 <translation id="571510845185711675">Ветэрынары</translation>
 <translation id="5720705177508910913">Бягучы карыстальнік</translation>
+<translation id="572328651809341494">Нядаўнія ўкладкі</translation>
 <translation id="5723287205918986743">Абаронная прамысловасць</translation>
 <translation id="5725567311035061582">Кіраваць файламі сookie і данымі сайтаў</translation>
 <translation id="5730040223043577876">Chrome рэкамендуе скінуць ваш пароль, калі вы карысталіся ім на іншых сайтах.</translation>
@@ -2787,6 +2788,7 @@
 <translation id="6999969238895751684">Індустрыя забаў</translation>
 <translation id="7003278537452757231">Дываны і палавікі</translation>
 <translation id="7003335073762455340">Вы сочыце за гэтым таварам. Гэта старонка захоўваецца ў папцы "<ph name="LAST_BOOKMARKS_FOLDER" />".</translation>
+<translation id="7004499039102548441">Нядаўнія ўкладкі</translation>
 <translation id="7004583254764674281">Выкарыстоўваць Windows Hello для хутчэйшага пацвярджэння картак</translation>
 <translation id="7006930604109697472">Усё роўна адправіць</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
@@ -2914,7 +2916,6 @@
 <ph name="DEBUG_INFO" /></translation>
 <translation id="7256634549594854023">Задні латок</translation>
 <translation id="725866823122871198">Памылка прыватнага падключэння да дамена <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />: дата і час на вашым камп'ютары (<ph name="DATE_AND_TIME" />) няправільныя.</translation>
-<translation id="7260504762447901703">Адклікаць дазвол на доступ</translation>
 <translation id="7265608370113700582">Адрас даступны толькі на гэтай прыладзе</translation>
 <translation id="7275334191706090484">Кіруемыя закладкі</translation>
 <translation id="7277998515889183784">Макіяж і касметыка</translation>

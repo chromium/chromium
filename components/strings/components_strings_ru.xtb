@@ -1331,7 +1331,6 @@
 <translation id="3848487483475744267"><ph name="CREATE_GOOGLE_DOC_FOCUSED_FRIENDLY_MATCH_TEXT" />. Чтобы быстро создать документ Google, нажмите Tab, а затем Ввод.</translation>
 <translation id="385051799172605136">Назад</translation>
 <translation id="3851830401766703401">Юридическое образование</translation>
-<translation id="3853684360927654006">Определитель надежности пароля</translation>
 <translation id="385489333361351399">Фото- и видеооборудование</translation>
 <translation id="3858027520442213535">Обновить дату и время</translation>
 <translation id="3858860766373142691">Название</translation>
@@ -1866,6 +1865,7 @@
 <translation id="4995749490935861684"><ph name="CUSTOMIZE_SEARCH_ENGINES_FOCUSED_FRIENDLY_MATCH_TEXT" />. Нажмите Tab, а затем Ввод, чтобы настроить поиск по сайту и задать поисковую систему по умолчанию.</translation>
 <translation id="4998950033665438990">Картон (односторонний)</translation>
 <translation id="5002932099480077015">Chrome будет хранить на этом устройстве данные карты для быстрого заполнения форм.</translation>
+<translation id="5007392906805964215">Посмотреть</translation>
 <translation id="5011561501798487822">Автоматически определенный язык</translation>
 <translation id="5015510746216210676">Имя компьютера:</translation>
 <translation id="5017554619425969104">Скопированный текст</translation>
@@ -2194,6 +2194,7 @@
 <translation id="571403275720188526">(arm64)</translation>
 <translation id="571510845185711675">Ветеринария</translation>
 <translation id="5720705177508910913">Текущий пользователь</translation>
+<translation id="572328651809341494">Недавние вкладки</translation>
 <translation id="5723287205918986743">Военная промышленность</translation>
 <translation id="5725567311035061582">Управление файлами cookie и данными сайтов</translation>
 <translation id="5730040223043577876">Chrome рекомендует сбросить пароль, если вы использовали его на других сайтах.</translation>
@@ -2787,6 +2788,7 @@
 <translation id="6999969238895751684">Индустрия развлечений</translation>
 <translation id="7003278537452757231">Ковры и коврики</translation>
 <translation id="7003335073762455340">Вы следите за ценой на этот товар. Страница с ним сохранена в папке "<ph name="LAST_BOOKMARKS_FOLDER" />".</translation>
+<translation id="7004499039102548441">Недавние вкладки</translation>
 <translation id="7004583254764674281">Использовать Windows Hello для быстрого подтверждения карт</translation>
 <translation id="7006930604109697472">Все равно отправить</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
@@ -2914,7 +2916,6 @@
 <ph name="DEBUG_INFO" /></translation>
 <translation id="7256634549594854023">Задний лоток</translation>
 <translation id="725866823122871198">Не удалось установить защищенное соединение с доменом <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> из-за неверных настроек системных часов и календаря (<ph name="DATE_AND_TIME" />).</translation>
-<translation id="7260504762447901703">Запретить доступ</translation>
 <translation id="7265608370113700582">Адрес доступен только на этом устройстве</translation>
 <translation id="7275334191706090484">Управляемые закладки</translation>
 <translation id="7277998515889183784">Макияж и косметика</translation>

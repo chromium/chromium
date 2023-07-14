@@ -10,7 +10,6 @@
 <translation id="113122355610423240">Chromium – ваш веб-переглядач за умовчанням</translation>
 <translation id="1131805035311359397">Щоб перевірити, чи відомі порушення безпеки даних або інші проблеми не заторкнули ваші паролі, <ph name="BEGIN_LINK" />увійдіть у Chromium<ph name="END_LINK" />.</translation>
 <translation id="1153368717515616349">Натисніть меню Chromium</translation>
-<translation id="1157106475430165622">{NUM_DEVICES,plural, =0{Розширення Chromium мали доступ до пристроїв HID}=1{Розширення Chromium мають доступ до пристрою HID}one{Розширення Chromium мають доступ до # пристрою HID}few{Розширення Chromium мають доступ до # пристроїв HID}many{Розширення Chromium мають доступ до # пристроїв HID}other{Розширення Chromium мають доступ до # пристрою HID}}</translation>
 <translation id="1185134272377778587">Про Chromium</translation>
 <translation id="1203500561924088507">Дякуємо за встановлення. Щоб почати використовувати пакет <ph name="BUNDLE_NAME" />, потрібно перезапустити веб-переглядач.</translation>
 <translation id="1261119230216066228">Функція заощадження пам’яті пришвидшує роботу Chromium</translation>
@@ -370,7 +369,6 @@ Chromium не може відновити ваші налаштування.</tr
 <translation id="8619360774459241877">Запускається Chromium…</translation>
 <translation id="8621669128220841554">Не вдалося встановити через невизначену помилку. Завантажте Chromium ще раз.</translation>
 <translation id="8648201657708811153">Google Chrome for Testing не можна зробити веб-переглядачем за умовчанням.</translation>
-<translation id="867492205098279939">{NUM_DEVICES,plural, =0{Розширення Chromium мало доступ до пристроїв HID}=1{Розширення Chromium має доступ до 1 пристрою HID}one{Розширення Chromium має доступ до # пристрою HID}few{Розширення Chromium має доступ до # пристроїв HID}many{Розширення Chromium має доступ до # пристроїв HID}other{Розширення Chromium має доступ до # пристрою HID}}</translation>
 <translation id="8697124171261953979">Розширення також змінило сторінку, яка відкривається під час запуску Chromium або пошуку в універсальному вікні пошуку.</translation>
 <translation id="8704119203788522458">Це ваш Chromium</translation>
 <translation id="8796602469536043152">Chromium потрібен дозвіл на використання камери й мікрофона, щоб надати цьому сайту доступ до них</translation>

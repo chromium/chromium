@@ -1332,7 +1332,6 @@
 <translation id="3848487483475744267"><ph name="CREATE_GOOGLE_DOC_FOCUSED_FRIENDLY_MATCH_TEXT" />; натисніть Tab, а потім – Enter, щоб швидко створити новий документ Google</translation>
 <translation id="385051799172605136">Назад</translation>
 <translation id="3851830401766703401">Юридична освіта</translation>
-<translation id="3853684360927654006">Визначник надійності пароля</translation>
 <translation id="385489333361351399">Обладнання для фото- й відеокамер</translation>
 <translation id="3858027520442213535">Оновити дату й час</translation>
 <translation id="3858860766373142691">Назва</translation>
@@ -1867,6 +1866,7 @@
 <translation id="4995749490935861684"><ph name="CUSTOMIZE_SEARCH_ENGINES_FOCUSED_FRIENDLY_MATCH_TEXT" />; натисніть Tab, а потім – Enter, щоб керувати пошуком на сайті та пошуковою системою за умовчанням</translation>
 <translation id="4998950033665438990">Односторонній друк</translation>
 <translation id="5002932099480077015">Коли цю функцію ввімкнено, Chrome зберігає копію даних вашої картки на пристрої, щоб ви могли швидше заповнювати форми.</translation>
+<translation id="5007392906805964215">Переглянути</translation>
 <translation id="5011561501798487822">Визначена мова</translation>
 <translation id="5015510746216210676">Назва пристрою:</translation>
 <translation id="5017554619425969104">Скопійований текст</translation>
@@ -2195,6 +2195,7 @@
 <translation id="571403275720188526">(arm64)</translation>
 <translation id="571510845185711675">Ветеринари</translation>
 <translation id="5720705177508910913">Поточний користувач</translation>
+<translation id="572328651809341494">Останні вкладки</translation>
 <translation id="5723287205918986743">Оборонна промисловість</translation>
 <translation id="5725567311035061582">Керувати файлами cookie й даними сайтів</translation>
 <translation id="5730040223043577876">Chrome радить скинути пароль, якщо ви застосовували його на інших сайтах.</translation>
@@ -2788,6 +2789,7 @@
 <translation id="6999969238895751684">Індустрія розваг</translation>
 <translation id="7003278537452757231">Килими й килимові покриття</translation>
 <translation id="7003335073762455340">Ви відстежуєте цей товар. Його сторінку збережено в папці "<ph name="LAST_BOOKMARKS_FOLDER" />".</translation>
+<translation id="7004499039102548441">Останні вкладки</translation>
 <translation id="7004583254764674281">Використовувати Windows Hello, щоб швидше підтверджувати картки</translation>
 <translation id="7006930604109697472">Усе одно надіслати</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
@@ -2915,7 +2917,6 @@
 <ph name="DEBUG_INFO" /></translation>
 <translation id="7256634549594854023">Задній лоток</translation>
 <translation id="725866823122871198">Не вдається встановити конфіденційне з’єднання з <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />, оскільки на комп’ютері встановлено неправильні дату й час (<ph name="DATE_AND_TIME" />).</translation>
-<translation id="7260504762447901703">Скасувати доступ</translation>
 <translation id="7265608370113700582">Адреса доступна лише на цьому пристрої</translation>
 <translation id="7275334191706090484">Закладки, якими керує адміністратор</translation>
 <translation id="7277998515889183784">Косметичні засоби</translation>

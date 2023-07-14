@@ -160,7 +160,6 @@
 <translation id="1677507110654891115">「<ph name="FEATURE_NAME" />」並未連線。</translation>
 <translation id="1677582821739292812">有人正在望向您的螢幕</translation>
 <translation id="1679841710523778799">調高亮度</translation>
-<translation id="1683399938733266832">CPU 目前使用情況：<ph name="CPU_USEAGE" />%</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" /> 計時器 · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6 位址：<ph name="ADDRESS" /></translation>
@@ -373,7 +372,6 @@
 <translation id="263399434338050016">「全選」</translation>
 <translation id="2644422758626431000">將視窗固定至左邊</translation>
 <translation id="2645435784669275700">Chrome OS</translation>
-<translation id="2647092942972307022">還有 <ph name="USED_MEMORY" /> 可用空間，共 <ph name="TOTAL_MEMORY" /></translation>
 <translation id="2653019840645008922">視窗擷取</translation>
 <translation id="2653659639078652383">提交</translation>
 <translation id="2658778018866295321">按一下並拖曳</translation>
@@ -1456,7 +1454,6 @@
 <translation id="743058460480092004">相機和麥克風正在使用中。</translation>
 <translation id="7452560014878697800">某個應用程式正在使用攝錄機</translation>
 <translation id="7453330308669753048">移除咗搜尋記錄結果</translation>
-<translation id="7455047553373871740"><ph name="BATTERY_PERCENTAGE" />% | 還有 <ph name="TIME" />便完成充電</translation>
 <translation id="7459485586006128091">由於發生內部問題，因此熱點已關閉。請過幾分鐘再重試連線。</translation>
 <translation id="7461924472993315131">Pin</translation>
 <translation id="746232733191930409">螢幕錄影模式</translation>
@@ -1837,7 +1834,6 @@
 <translation id="9178475906033259337">顯示緊 1 個同「<ph name="QUERY" />」有關嘅結果</translation>
 <translation id="9179259655489829027">這項功能讓您可快速登入任何已登入的使用者帳戶，無需使用密碼。建議您只讓信任的帳戶使用此功能。</translation>
 <translation id="9183456764293710005">全螢幕放大鏡</translation>
-<translation id="9186811218777709815"><ph name="BATTERY_PERCENTAGE" />% | 還剩 <ph name="TIME" /></translation>
 <translation id="9193626018745640770">正在投放到不明接收器</translation>
 <translation id="9194617393863864469">登入其他使用者…</translation>
 <translation id="9198992156681343238"><ph name="DISPLAY_NAME" /> 的解像度已變更為 <ph name="RESOLUTION" />。請按一下 [確認] 以保留變更。系統會在 <ph name="TIMEOUT_SECONDS" />後還原先前的設定。</translation>

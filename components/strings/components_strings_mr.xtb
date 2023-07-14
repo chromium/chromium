@@ -1331,7 +1331,6 @@
 <translation id="3848487483475744267"><ph name="CREATE_GOOGLE_DOC_FOCUSED_FRIENDLY_MATCH_TEXT" />, नवीन Google दस्तऐवज झटपट तयार करण्यासाठी टॅब आणि त्यानंतर एंटर प्रेस करा</translation>
 <translation id="385051799172605136">मागील</translation>
 <translation id="3851830401766703401">कायदेशीर शिक्षण</translation>
-<translation id="3853684360927654006">पासवर्डची क्लिष्टता कॅल्क्युलेटर</translation>
 <translation id="385489333361351399">कॅमेरा आणि फोटोची उपकरणे</translation>
 <translation id="3858027520442213535">तारीख आणि वेळ अपडेट करा</translation>
 <translation id="3858860766373142691">नाव</translation>
@@ -1866,6 +1865,7 @@
 <translation id="4995749490935861684"><ph name="CUSTOMIZE_SEARCH_ENGINES_FOCUSED_FRIENDLY_MATCH_TEXT" />, साइट शोध आणि तुमचे डीफॉल्ट शोध इंजिन व्यवस्थापित करण्यासाठी, टॅब प्रेस करून एंटर प्रेस करा</translation>
 <translation id="4998950033665438990">सिंगल फेस</translation>
 <translation id="5002932099480077015">सक्षम केल्‍यास, Chrome जलदपणे फॉर्म भरण्‍यासाठी तुमच्या कार्डची एक प्रत या डिव्‍हाइसवर संग्रहित करेल.</translation>
+<translation id="5007392906805964215">पुनरावलोकन करा</translation>
 <translation id="5011561501798487822">डिटेक्ट केलेली भाषा</translation>
 <translation id="5015510746216210676">मशीन नाव:</translation>
 <translation id="5017554619425969104">तुम्ही कॉपी केलेला मजकूर</translation>
@@ -2194,6 +2194,7 @@
 <translation id="571403275720188526">(arm64)</translation>
 <translation id="571510845185711675">पशुचिकित्‍सक</translation>
 <translation id="5720705177508910913">वर्तमान वापरकर्ता</translation>
+<translation id="572328651809341494">अलीकडील टॅब</translation>
 <translation id="5723287205918986743">संरक्षणाशी संबंधित उद्योग</translation>
 <translation id="5725567311035061582">कुकी आणि साइट डेटा व्यवस्थापित करा</translation>
 <translation id="5730040223043577876">तुम्ही तुमच्या पासवर्डचा इतर साइटवर पुन्हा वापर केला असेल तर Chrome तुम्हाला तो रीसेट करण्याची शिफारस करत आहे.</translation>
@@ -2788,6 +2789,7 @@
 <translation id="6999969238895751684">मनोरंजनाशी संबंधित उद्योग</translation>
 <translation id="7003278537452757231">गालिचे आणि कार्पेट</translation>
 <translation id="7003335073762455340">तुम्ही या उत्पादनाचा माग ठेवत आहात. हे पेज <ph name="LAST_BOOKMARKS_FOLDER" /> मध्ये सेव्ह केले आहे.</translation>
+<translation id="7004499039102548441">अलीकडील टॅब</translation>
 <translation id="7004583254764674281">कार्डांची जलद खात्री करण्यासाठी Windows Hello वापरा</translation>
 <translation id="7006930604109697472">तरीही पाठवा</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
@@ -2915,7 +2917,6 @@
 <ph name="DEBUG_INFO" /></translation>
 <translation id="7256634549594854023">मागील ट्रे</translation>
 <translation id="725866823122871198">तुमच्या कॉंप्युटरची तारीख आणि वेळ <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> चुकीची असल्यामुळे (<ph name="DATE_AND_TIME" />)सह खाजगी कनेक्शन इंस्टॉल केले जाऊ शकत नाही.</translation>
-<translation id="7260504762447901703">ॲक्सेस रद्द करा</translation>
 <translation id="7265608370113700582">पत्ता फक्त या डिव्हाइसवर उपलब्ध आहे</translation>
 <translation id="7275334191706090484">व्यवस्थापित केलेले बुकमार्क</translation>
 <translation id="7277998515889183784">मेक-अप आणि सौंदर्यप्रसाधने</translation>

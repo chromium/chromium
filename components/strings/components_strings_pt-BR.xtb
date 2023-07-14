@@ -1332,7 +1332,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3848487483475744267"><ph name="CREATE_GOOGLE_DOC_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione Tab e depois Enter para criar rapidamente um novo arquivo do Documentos Google</translation>
 <translation id="385051799172605136">Voltar</translation>
 <translation id="3851830401766703401">Ensino de direito</translation>
-<translation id="3853684360927654006">Calculadora de nível de segurança da senha</translation>
 <translation id="385489333361351399">Equipamento de foto e vídeo</translation>
 <translation id="3858027520442213535">Atualizar data e hora</translation>
 <translation id="3858860766373142691">Nome</translation>
@@ -1867,6 +1866,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4995749490935861684"><ph name="CUSTOMIZE_SEARCH_ENGINES_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione Tab e depois Enter para gerenciar a pesquisa no site e o mecanismo de pesquisa padrão</translation>
 <translation id="4998950033665438990">Uma página</translation>
 <translation id="5002932099480077015">Se ativado, o Chrome armazenará uma cópia do seu cartão neste dispositivo para preencher formulários mais rapidamente.</translation>
+<translation id="5007392906805964215">Revisar</translation>
 <translation id="5011561501798487822">Idioma detectado</translation>
 <translation id="5015510746216210676">Nome do computador:</translation>
 <translation id="5017554619425969104">Texto que você copiou</translation>
@@ -2195,6 +2195,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="571403275720188526">(arm64)</translation>
 <translation id="571510845185711675">Veterinários</translation>
 <translation id="5720705177508910913">Usuário atual</translation>
+<translation id="572328651809341494">Guias recentes</translation>
 <translation id="5723287205918986743">Indústria bélica</translation>
 <translation id="5725567311035061582">Gerenciar cookies e dados do site</translation>
 <translation id="5730040223043577876">O Chrome recomenda redefinir sua senha se você a reutilizou em outros sites.</translation>
@@ -2788,6 +2789,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6999969238895751684">Indústria do entretenimento</translation>
 <translation id="7003278537452757231">Tapetes e carpetes</translation>
 <translation id="7003335073762455340">Você está monitorando esse produto. Esta página foi salva em <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
+<translation id="7004499039102548441">Guias recentes</translation>
 <translation id="7004583254764674281">Use o Windows Hello para confirmar o uso de cartões mais rapidamente</translation>
 <translation id="7006930604109697472">Enviar mesmo assim</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
@@ -2915,7 +2917,6 @@ Mais detalhes:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="7256634549594854023">Bandeja traseira</translation>
 <translation id="725866823122871198">Não é possível estabelecer uma conexão privada com <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />, porque a data e a hora do seu computador (<ph name="DATE_AND_TIME" />) estão incorretas.</translation>
-<translation id="7260504762447901703">Revogar acesso</translation>
 <translation id="7265608370113700582">O endereço está disponível somente neste dispositivo</translation>
 <translation id="7275334191706090484">Favoritos gerenciados</translation>
 <translation id="7277998515889183784">Maquiagem e cosméticos</translation>

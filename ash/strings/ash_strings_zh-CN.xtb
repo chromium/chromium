@@ -160,7 +160,6 @@
 <translation id="1677507110654891115">未连接“<ph name="FEATURE_NAME" />”。</translation>
 <translation id="1677582821739292812">有人正在看着您的屏幕</translation>
 <translation id="1679841710523778799">调高亮度</translation>
-<translation id="1683399938733266832">CPU 当前用量：<ph name="CPU_USEAGE" />%</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" />定时器   <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6 地址：<ph name="ADDRESS" /></translation>
@@ -373,7 +372,6 @@
 <translation id="263399434338050016">“全选”</translation>
 <translation id="2644422758626431000">将窗口固定到左侧</translation>
 <translation id="2645435784669275700">Chrome 操作系统</translation>
-<translation id="2647092942972307022">存储空间配额共 <ph name="TOTAL_MEMORY" />，剩余 <ph name="USED_MEMORY" /></translation>
 <translation id="2653019840645008922">窗口截取/录制</translation>
 <translation id="2653659639078652383">提交</translation>
 <translation id="2658778018866295321">点击并拖动</translation>
@@ -1455,7 +1453,6 @@
 <translation id="743058460480092004">摄像头和麦克风处于使用状态。</translation>
 <translation id="7452560014878697800">有一个应用正在使用您的摄像头</translation>
 <translation id="7453330308669753048">已移除搜索记录结果</translation>
-<translation id="7455047553373871740"><ph name="BATTERY_PERCENTAGE" />% | 还需 <ph name="TIME" />才能充满</translation>
 <translation id="7459485586006128091">由于内部错误，热点已关闭。请过几分钟后尝试重新连接。</translation>
 <translation id="7461924472993315131">固定</translation>
 <translation id="746232733191930409">录屏模式</translation>
@@ -1836,7 +1833,6 @@
 <translation id="9178475906033259337">显示了 1 条与“<ph name="QUERY" />”相符的结果</translation>
 <translation id="9179259655489829027">借助此功能，您无需使用密码即可快速访问任何已登录的用户。请仅对您信任的帐号使用此功能。</translation>
 <translation id="9183456764293710005">全屏放大镜</translation>
-<translation id="9186811218777709815"><ph name="BATTERY_PERCENTAGE" />% | 还能维持 <ph name="TIME" /></translation>
 <translation id="9193626018745640770">正在投放至不明接收器</translation>
 <translation id="9194617393863864469">登录其他用户帐号…</translation>
 <translation id="9198992156681343238">“<ph name="DISPLAY_NAME" />”的分辨率已改为 <ph name="RESOLUTION" />。点击“确认”即可保留更改。将在 <ph name="TIMEOUT_SECONDS" />后恢复以前的设置。</translation>

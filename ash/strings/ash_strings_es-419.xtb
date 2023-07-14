@@ -160,7 +160,6 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="1677507110654891115">No se conectó <ph name="FEATURE_NAME" />.</translation>
 <translation id="1677582821739292812">Alguien más está viendo tu pantalla</translation>
 <translation id="1679841710523778799">Aumentar el brillo</translation>
-<translation id="1683399938733266832">Uso actual de la CPU: <ph name="CPU_USEAGE" />%</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1698080062160024910">Temporizador: <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">Dirección IPv6: <ph name="ADDRESS" /></translation>
@@ -373,7 +372,6 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="263399434338050016">"Seleccionar todo"</translation>
 <translation id="2644422758626431000">Fijar ventana a la izquierda</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
-<translation id="2647092942972307022">Memoria disponible: <ph name="USED_MEMORY" /> de <ph name="TOTAL_MEMORY" /></translation>
 <translation id="2653019840645008922">Captura de ventana</translation>
 <translation id="2653659639078652383">Enviar</translation>
 <translation id="2658778018866295321">Hacer clic y arrastrar</translation>
@@ -1459,7 +1457,6 @@ Nueva instalación</translation>
 <translation id="743058460480092004">Cámara y micrófono en uso</translation>
 <translation id="7452560014878697800">Una aplicación está usando la cámara.</translation>
 <translation id="7453330308669753048">Se quitó el resultado del historial de búsqueda</translation>
-<translation id="7455047553373871740"><ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> para completar la carga</translation>
 <translation id="7459485586006128091">Debido a un error interno, se desactivó el hotspot. Intenta volver a conectarte dentro de unos minutos.</translation>
 <translation id="7461924472993315131">Fijar</translation>
 <translation id="746232733191930409">Modo de grabación de pantalla</translation>
@@ -1840,7 +1837,6 @@ Para apagarlo, vuelve a mantener presionado el botón de encendido.</translation
 <translation id="9178475906033259337">Mostrando 1 resultado para <ph name="QUERY" /></translation>
 <translation id="9179259655489829027">Esta función te permite alternar de forma rápida entre los usuarios que hayan accedido a su cuenta, sin necesidad de escribir la contraseña. Usa esta función solo con cuentas de confianza.</translation>
 <translation id="9183456764293710005">Lupa de pantalla completa</translation>
-<translation id="9186811218777709815"><ph name="BATTERY_PERCENTAGE" />% | Tiempo restante: <ph name="TIME" /></translation>
 <translation id="9193626018745640770">Transmitiendo en un receptor desconocido</translation>
 <translation id="9194617393863864469">Acceder con otro usuario…</translation>
 <translation id="9198992156681343238">Se cambió la resolución de <ph name="DISPLAY_NAME" /> a <ph name="RESOLUTION" />. Para mantener este cambio, haz clic en Confirmar. En <ph name="TIMEOUT_SECONDS" />, se restablecerá la configuración anterior.</translation>

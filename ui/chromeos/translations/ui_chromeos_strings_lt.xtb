@@ -425,6 +425,7 @@
 <translation id="4432921877815220091"><ph name="NETWORK_INDEX" /> tinklas iš <ph name="NETWORK_COUNT" />, „<ph name="NETWORK_NAME" />“, aktyvinti nustačius įrenginį, tvarko administratorius</translation>
 <translation id="4439427728133035643"><ph name="NETWORK_INDEX" /> tinklas iš <ph name="NETWORK_COUNT" />, „<ph name="NETWORK_NAME" />“, signalo stiprumas <ph name="SIGNAL_STRENGTH" /> %, prisijungti</translation>
 <translation id="4442424173763614572">Įvyko DNS paieškos klaida</translation>
+<translation id="4445896958353114391">Sinchronizuojami failai</translation>
 <translation id="4462159676511157176">Tinkintų pavadinimų serveriai</translation>
 <translation id="4465725236958772856"><ph name="NETWORK_INDEX" /> tinklas iš <ph name="NETWORK_COUNT" />, „<ph name="NETWORK_NAME" />“, tvarko administratorius, prisijungti</translation>
 <translation id="4470564870223067757">Hangul 2 rinkinys</translation>
@@ -524,6 +525,7 @@
 <translation id="5102922915594634436">Tvarkyti sinchronizuotus aplankus</translation>
 <translation id="5109254780565519649">Įvyko klaida. Gali būti, kad kai kurie elementai nebuvo atkurti.</translation>
 <translation id="5110329002213341433">Anglų k. (Kanada)</translation>
+<translation id="5119780910075847424">Sinchronizavimas pristabdytas</translation>
 <translation id="5123433949759960244">Krepšinis</translation>
 <translation id="5129662217315786329">Lenkų</translation>
 <translation id="5144820558584035333">Hangul 3 rinkinys (390)</translation>
@@ -807,6 +809,7 @@
 <translation id="7256405249507348194">Neatpažinta klaida: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Prieinamos paslaugos</translation>
 <translation id="7291818353625820805">Norite, kad klavišai būtų kartojami? Išjunkite kirčio ženklus klaviatūros nustatymuose</translation>
+<translation id="729236380049459563">Failų sinchronizavimas įjungtas</translation>
 <translation id="7292816689782057017">Pagal administratoriaus politiką neleidžiama išsaugoti kai kurių vietovių.</translation>
 <translation id="7294063083760278948">Telugų k. transliteracija</translation>
 <translation id="7295662345261934369">Bendrinti su kitais žmonėmis</translation>
@@ -920,6 +923,7 @@
 <translation id="8087576439476816834">Atsisiųsti „<ph name="PROFILE_NAME" />“</translation>
 <translation id="8106045200081704138">Bendrinama su manimi</translation>
 <translation id="8116072619078571545">Ledinis vanduo</translation>
+<translation id="8124093710070495550">Sinchronizavimo problema</translation>
 <translation id="8128733386027980860">Anglų k. (JK) su Dvorako klaviatūra</translation>
 <translation id="8137331602592933310">Su jumis buvo bendrintas failas „<ph name="FILENAME" />“. Negalite jo ištrinti, nes jis jums nepriklauso.</translation>
 <translation id="8138705869659070104">Suaktyvinti po įrenginio sąrankos</translation>

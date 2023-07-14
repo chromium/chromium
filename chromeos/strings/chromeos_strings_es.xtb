@@ -170,6 +170,7 @@
 <translation id="2161656808144014275">Texto</translation>
 <translation id="2163937499206714165">Activar modo Oscuro</translation>
 <translation id="2180197493692062006">Algo ha fallado. Prueba a abrir de nuevo la aplicación.</translation>
+<translation id="2189104374785738357">Editar detalles de APN</translation>
 <translation id="2209788852729124853">Restablecer contadores de tráfico</translation>
 <translation id="2212733584906323460">Resolución de nombres</translation>
 <translation id="2217935453350629363">Velocidad actual</translation>
@@ -667,7 +668,6 @@
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">Activar tema oscuro</translation>
-<translation id="6285899124799306373">abrir menú de aplicaciones</translation>
 <translation id="629550705077076970">atenuación de teclado</translation>
 <translation id="6302401976930124515">La prueba <ph name="TEST_NAME" /> se ha cancelado</translation>
 <translation id="631063167932043783">Aplicación Explorar</translation>
@@ -916,7 +916,6 @@
 <translation id="8312330582793120272">reproducir contenido multimedia</translation>
 <translation id="8318753676953949627">Sin imágenes</translation>
 <translation id="8329018942023753850">aplicación Calculadora</translation>
-<translation id="8335869473001018124">abrir búsqueda</translation>
 <translation id="8336739000755212683">Cambiar imagen de cuenta de dispositivo</translation>
 <translation id="8347227221149377169">Trabajos de impresión</translation>
 <translation id="8351855506390808906">Punto táctil de asignación de teclas</translation>

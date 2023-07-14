@@ -120,7 +120,6 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 <translation id="2929907241665500097">Nepavyko atnaujinti „Chrome“, įvyko klaida. <ph name="BEGIN_LINK" />Pašalinkite „Chrome“ naujinimo problemas ir naujinių klaidas.<ph name="END_LINK" /></translation>
 <translation id="2969728957078202736">„<ph name="PAGE_TITLE" />“ – prisijungimas prie tinklo – „Chrome“</translation>
 <translation id="3019382870990049182">Iš naujo paleisti norint atnaujinti &amp;„ChromeOS Flex“</translation>
-<translation id="3033660625209020231">{NUM_DEVICES,plural, =0{„Google Chrome“ plėtiniai pasiekė ŽSĮ įrenginius}=1{„Google Chrome“ plėtiniai pasiekia ŽSĮ įrenginius}one{„Google Chrome“ plėtiniai pasiekia # ŽSĮ įrenginį}few{„Google Chrome“ plėtiniai pasiekia # ŽSĮ įrenginius}many{„Google Chrome“ plėtiniai pasiekia # ŽSĮ įrenginio}other{„Google Chrome“ plėtiniai pasiekia # ŽSĮ įrenginių}}</translation>
 <translation id="303514781271618814">„Chrome“ tyrinėja naujas funkcijas, leidžiančias svetainėms teikti tas pačias naršymo funkcijas, naudojant mažiau jūsų duomenų</translation>
 <translation id="3037838751736561277">„Google Chrome“ veikia fono režimu.</translation>
 <translation id="3038232873781883849">Laukiama, kol bus įdiegta...</translation>
@@ -228,7 +227,6 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 <translation id="4970947549776831107">„Chrome“ užblokavo šį failą, nes šio tipo failai pavojingi</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5003967926796347400">Spustelėkite „Google“ slaptažodžių tvarkyklė“.</translation>
-<translation id="5005958605836556244">{NUM_DEVICES,plural, =0{„Google Chrome“ plėtinys pasiekė ŽSĮ įrenginius}=1{„Google Chrome“ plėtinys pasiekia vieną ŽSĮ įrenginį}one{„Google Chrome“ plėtinys pasiekia # ŽSĮ įrenginį}few{„Google Chrome“ plėtinys pasiekia # ŽSĮ įrenginius}many{„Google Chrome“ plėtinys pasiekia # ŽSĮ įrenginio}other{„Google Chrome“ plėtinys pasiekia # ŽSĮ įrenginių}}</translation>
 <translation id="5098668839038261629">Kai tai bus įjungta, taip pat būsite atjungti nuo „Chrome“</translation>
 <translation id="5132929315877954718">Suraskite puikių „Google Chrome“ programų, žaidimų, plėtinių ir temų.</translation>
 <translation id="5139423532931106058">Tinkinti „Chrome“ profilį</translation>
@@ -248,6 +246,7 @@ Kai kurios funkcijos gali būti nepasiekiamos. Nurodykite kitą profilio katalog
 <translation id="5430073640787465221">Nuostatų failas sugadintas ar netinkamas.
 
 „Google Chrome“ negali atkurti nustatymų.</translation>
+<translation id="5521146392841465297">„Chrome“ rekomenduoja peržiūrėti šį plėtinį.</translation>
 <translation id="5524761631371622910">Naudojant šias bandomąsias versijas ir jei „Chrome“ atsitiktinai parenka jus naudoti bandomąją versiją, jūsų naršymo istorija lemia, kokius skelbimus matysite ir kokie jūsų pomėgiai bus numatomi toliau. Siekiant apsaugoti privatumą, „Chrome“ reguliariai kiekvieną mėnesį ištrina jūsų pomėgius.</translation>
 <translation id="5530733413481476019">Paspartinkite „Chrome“</translation>
 <translation id="5566025111015594046">„Google Chrome“ (mDNS-In)</translation>
@@ -285,6 +284,7 @@ Kai kurios funkcijos gali būti nepasiekiamos. Nurodykite kitą profilio katalog
 <translation id="624230925347970731">„Chrome“ netrukus bus uždaryta</translation>
 <translation id="6247557882553405851">„Google“ slaptažodžių tvarkytuvė</translation>
 <translation id="6273793429163604305">Susikaupkite...</translation>
+<translation id="6277547788421725101">Vienas iš tėvų išjungė svetainių, programų ir plėtinių leidimus sistemoje „Chrome“</translation>
 <translation id="6291089322031436445">„Chrome Dev“ programos</translation>
 <translation id="6291549208091401781">„Google Chrome“ jau įdiegta visiems kompiuterio naudotojams.</translation>
 <translation id="6326175484149238433">Pašalinti iš „Chrome“</translation>

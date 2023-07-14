@@ -12,7 +12,6 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="113122355610423240">Chromium je vaším predvoleným prehliadačom</translation>
 <translation id="1131805035311359397">Ak chcete skontrolovať, či sú vaše heslá chránené pred porušením ochrany údajov a inými bezpečnostnými hrozbami, <ph name="BEGIN_LINK" />prihláste sa do prehliadača Chromium<ph name="END_LINK" />.</translation>
 <translation id="1153368717515616349">Kliknite na ponuku prehliadača Chromium</translation>
-<translation id="1157106475430165622">{NUM_DEVICES,plural, =0{Rozšírenia pre prehliadač Chromium mali prístup k zariadeniam s ľudským rozhraním}=1{Rozšírenia pre prehliadač Chromium majú prístup k zariadeniam s ľudským rozhraním}few{Rozšírenia pre prehliadač Chromium majú prístup k # zariadeniam s ľudským rozhraním}many{Chromium extensions are accessing # HID devices}other{Rozšírenia pre prehliadač Chromium majú prístup k # zariadeniam s ľudským rozhraním}}</translation>
 <translation id="1185134272377778587">Informácie o prehliadači Chromium</translation>
 <translation id="1203500561924088507">Ďakujeme za inštaláciu. Než začnete aplikáciu <ph name="BUNDLE_NAME" /> používať, musíte reštartovať prehliadač.</translation>
 <translation id="1261119230216066228">Šetrič pamäte zrýchlil Chromium</translation>
@@ -372,7 +371,6 @@ Prehliadač Chromium nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="8619360774459241877">Spúšťa sa Chromium…</translation>
 <translation id="8621669128220841554">Inštalácia zlyhala kvôli neznámej chybe. Skúste prehliadač Chromium stiahnuť znova.</translation>
 <translation id="8648201657708811153">Google Chrome for Testing nemôžete nastaviť ako svoj predvolený prehliadač.</translation>
-<translation id="867492205098279939">{NUM_DEVICES,plural, =0{Rozšírenie pre prehliadač Chromium malo prístup k zariadeniam s ľudským rozhraním}=1{Rozšírenie pre prehliadač Chromium má prístup k 1 zariadeniu s ľudským rozhraním}few{Rozšírenie pre prehliadač Chromium má prístup k # zariadeniam s ľudským rozhraním}many{A Chromium extension is accessing # HID devices}other{Rozšírenie pre prehliadač Chromium má prístup k # zariadeniam s ľudským rozhraním}}</translation>
 <translation id="8697124171261953979">Tiež určuje, ktorá stránka sa zobrazí pri spustení prehliadača Chromium alebo pri vyhľadávaní pomocou všeobecného poľa.</translation>
 <translation id="8704119203788522458">Toto je váš prehliadač Chromium</translation>
 <translation id="8796602469536043152">Chromium potrebuje povolenie pre tento web na prístup k fotoaparátu a mikrofónu</translation>

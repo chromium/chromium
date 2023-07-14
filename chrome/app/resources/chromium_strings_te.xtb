@@ -10,7 +10,6 @@
 <translation id="113122355610423240">మీ డిఫాల్ట్ బ్రౌజర్ Chromium</translation>
 <translation id="1131805035311359397">డేటా ఉల్లంఘనల నుండి, ఇతర భద్రతా సమస్యల నుండి మీ పాస్‌వర్డ్‌లు సురక్షితంగా ఉన్నాయో లేదో చెక్ చేయడానికి, <ph name="BEGIN_LINK" />Chromiumకు సైన్ ఇన్ చేయండి<ph name="END_LINK" />.</translation>
 <translation id="1153368717515616349">Chromium మెనూను క్లిక్ చేయండి</translation>
-<translation id="1157106475430165622">{NUM_DEVICES,plural, =0{Chromium ఎక్స్‌టెన్షన్‌లు HID పరికరాలను యాక్సెస్ చేస్తున్నాయి}=1{Chromium ఎక్స్‌టెన్షన్‌లు HID పరికరాలను యాక్సెస్ చేస్తున్నాయి}other{Chromium ఎక్స్‌టెన్షన్‌లు # HID పరికరాలను యాక్సెస్ చేస్తున్నాయి}}</translation>
 <translation id="1185134272377778587">Chromium గురించి</translation>
 <translation id="1203500561924088507">ఇన్‌స్టాల్ చేసినందుకు ధన్యవాదాలు. <ph name="BUNDLE_NAME" />‌ను ఉపయోగించడానికి ముందు మీరు బ్రౌజర్‌ను తప్పకుండా రీస్టార్ట్ చేయాలి.</translation>
 <translation id="1261119230216066228">మెమరీ సేవర్ Chromiumను వేగవంతం చేస్తుంది</translation>
@@ -366,7 +365,6 @@
 <translation id="8619360774459241877">Chromiumని ప్రారంభిస్తోంది...</translation>
 <translation id="8621669128220841554">తెలియ‌ని ఎర్ర‌ర్‌ కారణంగా ఇన‌స్ట‌లేష‌న్‌ విఫలమైంది. దయచేసి Chromiumను మళ్లీ డౌన్‌లోడ్ చేయండి.</translation>
 <translation id="8648201657708811153">Chrome for Testingను మీ ఆటోమేటిక్ బ్రౌజర్‌గా సెట్ చేయడం సాధ్యపడదు.</translation>
-<translation id="867492205098279939">{NUM_DEVICES,plural, =0{Chromium ఎక్స్‌టెన్షన్ HID పరికరాలను యాక్సెస్ చేస్తోంది}=1{Chromium ఎక్స్‌టెన్షన్ 1 HID పరికరాన్ని యాక్సెస్ చేస్తోంది}other{Chromium ఎక్స్‌టెన్షన్ # HID పరికరాలను యాక్సెస్ చేస్తోంది}}</translation>
 <translation id="8697124171261953979">ఇది మీరు Chromiumను ప్రారంభించేటప్పుడు లేదా ఓమ్నిబాక్స్ నుండి వెతికేటప్పుడు చూపబడే పేజీని కూడా నియంత్రిస్తుంది.</translation>
 <translation id="8704119203788522458">ఇది మీ Chromium</translation>
 <translation id="8796602469536043152">ఈ సైట్ కోసం మీ కెమెరా మరియు మైక్రోఫోన్‌ను యాక్సెస్ చేయడానికి Chromiumకు అనుమతి అవసరం</translation>

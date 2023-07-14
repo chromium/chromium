@@ -425,6 +425,7 @@
 <translation id="4432921877815220091">Сетка <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, актываваць пасля наладжвання прылады, знаходзіцца пад кіраваннем адміністратара</translation>
 <translation id="4439427728133035643">Сетка <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, магутнасць сігналу – <ph name="SIGNAL_STRENGTH" />%, падключыцца</translation>
 <translation id="4442424173763614572">Не ўдалося выканаць пошук DNS</translation>
+<translation id="4445896958353114391">Ідзе сінхранізацыя файлаў</translation>
 <translation id="4462159676511157176">Карыстальніцкія серверы даменных імён</translation>
 <translation id="4465725236958772856">Сетка <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, знаходзіцца пад кіраваннем адміністратара, падключыцца</translation>
 <translation id="4470564870223067757">Карэйскі алфавіт (хангыль), рэжым 2 Set</translation>
@@ -524,6 +525,7 @@
 <translation id="5102922915594634436">Кіраваць сінхранізаванымі папкамі</translation>
 <translation id="5109254780565519649">Адбылася памылка. Некаторыя элементы маглі не аднавіцца.</translation>
 <translation id="5110329002213341433">Англійская (Канада)</translation>
+<translation id="5119780910075847424">Сінхранізацыя прыпынена</translation>
 <translation id="5123433949759960244">Баскетбол</translation>
 <translation id="5129662217315786329">Польская</translation>
 <translation id="5144820558584035333">Карэйскі алфавіт (хангыль), рэжым 3 Set (390)</translation>
@@ -806,6 +808,7 @@
 <translation id="7256405249507348194">Невядомая памылка: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Даступныя сэрвісы</translation>
 <translation id="7291818353625820805">Хочаце, каб можна было ўводзіць сімвалы паўторна? Выключыце дыякрытычныя знакі ў наладах клавіятуры.</translation>
+<translation id="729236380049459563">Сінхранізацыя файлаў уключана</translation>
 <translation id="7292816689782057017">Палітыка адміністратара дазваляе захоўваць файлы толькі ў пэўных месцах.</translation>
 <translation id="7294063083760278948">Тэлугу (транслітарацыя)</translation>
 <translation id="7295662345261934369">Абагуліць з іншымі</translation>
@@ -919,6 +922,7 @@
 <translation id="8087576439476816834">Спампаваць, <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">Абагуленае са мной</translation>
 <translation id="8116072619078571545">Ледзяная вада</translation>
+<translation id="8124093710070495550">Праблема з сінхранізацыяй</translation>
 <translation id="8128733386027980860">Англійская (Вялікабрытанія) з раскладкай Дворака</translation>
 <translation id="8137331602592933310">Файл "<ph name="FILENAME" />" абагулены з вамі. Вы не можаце выдаліць гэты файл, бо не з'яўляецеся яго ўладальнікам.</translation>
 <translation id="8138705869659070104">Спачатку наладзьце прыладу</translation>

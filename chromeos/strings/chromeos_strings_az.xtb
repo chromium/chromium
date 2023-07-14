@@ -170,6 +170,7 @@
 <translation id="2161656808144014275">Mətn</translation>
 <translation id="2163937499206714165">Qaranlıq rejimi aktiv edin</translation>
 <translation id="2180197493692062006">Xəta oldu. Tətbiqi yenidən açmağa çalışın.</translation>
+<translation id="2189104374785738357">APN detallarını redaktə edin</translation>
 <translation id="2209788852729124853">Nəqliyyat Sayğaclarını sıfırlayın</translation>
 <translation id="2212733584906323460">Ad Həlli</translation>
 <translation id="2217935453350629363">Cari sürət</translation>
@@ -667,7 +668,6 @@
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">Qaranlıq temanı aktiv edin</translation>
-<translation id="6285899124799306373">başladıcını açın</translation>
 <translation id="629550705077076970">klaviaturanın qaraldılması</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> testi ləğv edilib</translation>
 <translation id="631063167932043783">Tətbiqi araşdırın</translation>
@@ -916,7 +916,6 @@
 <translation id="8312330582793120272">media oxudun</translation>
 <translation id="8318753676953949627">Heç bir şəkil yoxdur</translation>
 <translation id="8329018942023753850">kalkulyator tətbiqi</translation>
-<translation id="8335869473001018124">axtarışı açın</translation>
 <translation id="8336739000755212683">Cihazın hesab şəklini dəyişin</translation>
 <translation id="8347227221149377169">Çap işləri</translation>
 <translation id="8351855506390808906">Düymə uyğunlaşdırması - toxunuş nöqtəsi</translation>

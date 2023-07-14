@@ -37,6 +37,7 @@
 <translation id="1297922636971898492">Google云端硬盘暂时无法使用。Google云端硬盘恢复正常后，系统将自动重新开始上传。</translation>
 <translation id="1307931752636661898">无法查看 Linux 文件</translation>
 <translation id="1313405956111467313">自动配置代理</translation>
+<translation id="134645005685694099">您设备的存储空间不足，无法继续进行文件同步。新文件将不再自动同步。</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />：<ph name="NETWORK_NAME" /></translation>
 <translation id="1358735829858566124">该文件或目录无法使用。</translation>
 <translation id="1363028406613469049">曲目</translation>
@@ -184,6 +185,7 @@
 <translation id="2464089476039395325">HTTP 代理</translation>
 <translation id="2467267713099745100">“<ph name="NETWORK_TYPE" />”类型的网络，已关闭</translation>
 <translation id="2468402215065996499">拓麻歌子</translation>
+<translation id="2468470447085858632">使用文件同步功能离线访问 Google 云端硬盘文件</translation>
 <translation id="2470939964922472929">您输错 PIN 码的次数过多。若要设置一个新 PIN 码，请输入您的运营商提供的 8 位数个人解锁密钥 (PUK)。</translation>
 <translation id="2500392669976258912">古吉拉特语注音</translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -607,6 +609,7 @@
 <translation id="5720028165859493293">“<ph name="FILE_NAME" />”已移至回收站</translation>
 <translation id="5724172041621205163">泰语 Pattachote 键盘</translation>
 <translation id="57383366388012121">上个月</translation>
+<translation id="575175778971367197">暂时无法同步此文件</translation>
 <translation id="5756666464756035725">匈牙利语 QWERTY</translation>
 <translation id="5760252553414789727">已选择 <ph name="SELECTED_FILES_COUNT" /> 项</translation>
 <translation id="5763377084591234761">德语（瑞士）</translation>
@@ -709,6 +712,7 @@
 <translation id="6558280019477628686">出错了。系统可能尚未删除某些项。</translation>
 <translation id="656398493051028875">正在删除“<ph name="FILENAME" />”…</translation>
 <translation id="6581162200855843583">Google 云端硬盘链接</translation>
+<translation id="6588648400954570689">文件同步设置</translation>
 <translation id="6594855146910089723">已与 Linux 和 Parallels Desktop 共享此文件夹</translation>
 <translation id="6607272825297743757">文件信息</translation>
 <translation id="6609332149380188670">已与 Parallels Desktop 共享 <ph name="NUMBER_OF_ITEMS" /> 个文件夹</translation>
@@ -835,6 +839,7 @@
 <translation id="7547811415869834682">荷兰语</translation>
 <translation id="7551643184018910560">固定到任务栏</translation>
 <translation id="7553492409867692754">授权 Linux 应用访问“<ph name="FOLDER_NAME" />”文件夹中的文件</translation>
+<translation id="7555339735447658365">您目前处于离线状态。连接到互联网后，文件同步将继续进行</translation>
 <translation id="7589661784326793847">请稍候</translation>
 <translation id="7592775719802218421">将 <ph name="FILE_NAME" /> 设为“可离线使用”</translation>
 <translation id="7600126690270271294">塞尔维亚语</translation>
@@ -877,6 +882,7 @@
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">配置网络时出错</translation>
+<translation id="7832093238954689746">文件同步完毕。“我的云端硬盘”中存储的文件已可供离线访问。</translation>
 <translation id="7839804798877833423">抓取这些文件将使用约 <ph name="FILE_SIZE" /> 移动数据。</translation>
 <translation id="7846076177841592234">取消选择</translation>
 <translation id="7853966320808728790">法语 BÉPO</translation>
@@ -926,6 +932,7 @@
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">设备型号</translation>
 <translation id="8223479393428528563">要保存这些文件以供离线使用，请恢复联网状态，右键点击文件，然后选择<ph name="OFFLINE_CHECKBOX_NAME" />选项。</translation>
+<translation id="8241139360630443550">查看存储空间</translation>
 <translation id="8249296373107784235">取消</translation>
 <translation id="8250690786522693009">拉丁文</translation>
 <translation id="8250920743982581267">文档</translation>

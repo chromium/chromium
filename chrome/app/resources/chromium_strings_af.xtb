@@ -12,7 +12,6 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="113122355610423240">Chromium is jou verstekblaaier</translation>
 <translation id="1131805035311359397"><ph name="BEGIN_LINK" />Meld by Chromium aan<ph name="END_LINK" /> om te kyk of jou wagwoorde teen dataskendings en ander sekuriteitkwessies beveilig word.</translation>
 <translation id="1153368717515616349">Klik die Chromium-kieslys</translation>
-<translation id="1157106475430165622">{NUM_DEVICES,plural, =0{Chromium-uitbreidings het toegang tot MKT-toestelle gehad}=1{Chromium-uitbreidings het tans toegang tot MKT-toestelle}other{Chromium-uitbreidings het tans toegang tot # MKT-toestelle}}</translation>
 <translation id="1185134272377778587">Meer oor Chromium</translation>
 <translation id="1203500561924088507">Dankie dat jy geïnstalleer het. Jy moet jou blaaier herbegin voordat jy <ph name="BUNDLE_NAME" /> gebruik.</translation>
 <translation id="1261119230216066228">Geheuebespaarder het Chromium vinniger gemaak</translation>
@@ -372,7 +371,6 @@ Chromium kan nie jou instellings herwin nie.</translation>
 <translation id="8619360774459241877">Begin tans Chromium …</translation>
 <translation id="8621669128220841554">Kon weens 'n ongespesifiseerde fout nie installeer nie. Laai Chromium asseblief weer af.</translation>
 <translation id="8648201657708811153">Google Chrome-toetsweergawe kan nie jou verstekblaaier gemaak word nie.</translation>
-<translation id="867492205098279939">{NUM_DEVICES,plural, =0{’n Chromium-uitbreiding het toegang tot MKT-toestelle gehad}=1{’n Chromium-uitbreiding het tans toegang tot 1 MKT-toestel}other{’n Chromium-uitbreiding het tans toegang tot # MKT-toestelle}}</translation>
 <translation id="8697124171261953979">Dit beheer ook watter bladsy gewys word wanneer jy Chromium begin of vanuit die omnikassie soek.</translation>
 <translation id="8704119203788522458">Dit is jou Chromium</translation>
 <translation id="8796602469536043152">Chromium het toestemming nodig om toegang te kry tot jou kamera en mikrofoon vir hierdie werf</translation>

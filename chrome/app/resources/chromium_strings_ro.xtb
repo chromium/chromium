@@ -10,7 +10,6 @@
 <translation id="113122355610423240">Chromium este browserul prestabilit</translation>
 <translation id="1131805035311359397">Ca să verifici dacă parolele sunt protejate împotriva încălcării securității datelor și a altor probleme de securitate, <ph name="BEGIN_LINK" />conectează-te la Chromium<ph name="END_LINK" />.</translation>
 <translation id="1153368717515616349">Dă clic pe meniul Chromium</translation>
-<translation id="1157106475430165622">{NUM_DEVICES,plural, =0{Extensiile Chromium accesau dispozitive HID}=1{Extensiile Chromium accesează dispozitive HID}few{Extensiile Chromium accesează # dispozitive HID}other{Extensiile Chromium accesează # de dispozitive HID}}</translation>
 <translation id="1185134272377778587">Despre Chromium</translation>
 <translation id="1203500561924088507">Mulțumim pentru instalare. Înainte să folosești <ph name="BUNDLE_NAME" /> trebuie să repornești browserul.</translation>
 <translation id="1261119230216066228">Datorită Economisirii memoriei, Chromium este mai rapid</translation>
@@ -369,7 +368,6 @@ Chromium nu poate recupera setările.</translation>
 <translation id="8619360774459241877">Se lansează Chromium...</translation>
 <translation id="8621669128220841554">Instalarea nu a reușit din cauza unei erori neprecizate. Descărcați Chromium din nou.</translation>
 <translation id="8648201657708811153">Google Chrome for Testing nu poate fi setat ca browser prestabilit.</translation>
-<translation id="867492205098279939">{NUM_DEVICES,plural, =0{O extensie Chromium accesa dispozitive HID}=1{O extensie Chromium accesează un dispozitiv HID}few{O extensie Chromium accesează # dispozitive HID}other{O extensie Chromium accesează # de dispozitive HID}}</translation>
 <translation id="8697124171261953979">Stabilește și ce pagină se afișează când porniți Chromium sau când căutați din caseta polivalentă.</translation>
 <translation id="8704119203788522458">Acesta este browserul dvs. Chromium</translation>
 <translation id="8796602469536043152">Chromium are nevoie de permisiune ca să acceseze camera foto și microfonul pentru acest site</translation>

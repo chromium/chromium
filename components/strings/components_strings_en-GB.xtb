@@ -1332,7 +1332,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3848487483475744267"><ph name="CREATE_GOOGLE_DOC_FOCUSED_FRIENDLY_MATCH_TEXT" />: press Tab then Enter to create a new Google Doc quickly</translation>
 <translation id="385051799172605136">Back</translation>
 <translation id="3851830401766703401">Legal Education</translation>
-<translation id="3853684360927654006">Password strength calculator</translation>
 <translation id="385489333361351399">Camera and Photo Equipment</translation>
 <translation id="3858027520442213535">Update date and time</translation>
 <translation id="3858860766373142691">Name</translation>
@@ -1867,6 +1866,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4995749490935861684"><ph name="CUSTOMIZE_SEARCH_ENGINES_FOCUSED_FRIENDLY_MATCH_TEXT" />: press Tab then Enter to manage Site Search and your default search engine</translation>
 <translation id="4998950033665438990">Single face</translation>
 <translation id="5002932099480077015">If enabled, Chrome will store a copy of your card on this device for faster form filling.</translation>
+<translation id="5007392906805964215">Review</translation>
 <translation id="5011561501798487822">Detected language</translation>
 <translation id="5015510746216210676">Machine name:</translation>
 <translation id="5017554619425969104">Text that you copied</translation>
@@ -2195,6 +2195,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="571403275720188526">(arm64)</translation>
 <translation id="571510845185711675">Veterinarians</translation>
 <translation id="5720705177508910913">Current user</translation>
+<translation id="572328651809341494">Recent tabs</translation>
 <translation id="5723287205918986743">Defense industry</translation>
 <translation id="5725567311035061582">Manage cookies and site data</translation>
 <translation id="5730040223043577876">Chrome recommends resetting your password if you reused it on other sites.</translation>
@@ -2788,6 +2789,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6999969238895751684">Entertainment industry</translation>
 <translation id="7003278537452757231">Rugs and Carpets</translation>
 <translation id="7003335073762455340">You’re tracking this product. This page is saved in <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
+<translation id="7004499039102548441">Recent tabs</translation>
 <translation id="7004583254764674281">Use Windows Hello to confirm cards faster</translation>
 <translation id="7006930604109697472">Send anyway</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
@@ -2915,7 +2917,6 @@ Additional details:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="7256634549594854023">Rear tray</translation>
 <translation id="725866823122871198">A private connection to <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> can't be established because your computer's date and time (<ph name="DATE_AND_TIME" />) are incorrect.</translation>
-<translation id="7260504762447901703">Revoke access</translation>
 <translation id="7265608370113700582">Address is only available on this device</translation>
 <translation id="7275334191706090484">Managed Bookmarks</translation>
 <translation id="7277998515889183784">Make-up and cosmetics</translation>

@@ -1328,7 +1328,6 @@
 <translation id="3848487483475744267"><ph name="CREATE_GOOGLE_DOC_FOCUSED_FRIENDLY_MATCH_TEXT" />, புதிய Google ஆவணத்தை விரைவாக உருவாக்க Tab பட்டனை அழுத்திவிட்டு Enter பட்டனை அழுத்துங்கள்</translation>
 <translation id="385051799172605136">திரும்பு</translation>
 <translation id="3851830401766703401">சட்டக் கல்வி</translation>
-<translation id="3853684360927654006">கடவுச்சொல் வலிமை கால்குலேட்டர்</translation>
 <translation id="385489333361351399">கேமரா &amp; பட உபகரணங்கள்</translation>
 <translation id="3858027520442213535">தேதியையும் நேரத்தையும் புதுப்பி</translation>
 <translation id="3858860766373142691">பெயர்</translation>
@@ -1863,6 +1862,7 @@
 <translation id="4995749490935861684"><ph name="CUSTOMIZE_SEARCH_ENGINES_FOCUSED_FRIENDLY_MATCH_TEXT" />, தளத்தில் தேடியவற்றையும் இயல்புத் தேடல் இன்ஜினையும் நிர்வகிக்க, Tab பட்டனை அழுத்திவிட்டு Enter பட்டனை அழுத்துங்கள்</translation>
 <translation id="4998950033665438990">சிங்கிள் ஃபேஸ்</translation>
 <translation id="5002932099480077015">இயக்கப்பட்டால், விரைவாகப் படிவத்தை நிரப்ப உங்கள் கார்டின் நகலை இச்சாதனத்தில் Chrome சேமித்து வைக்கும்.</translation>
+<translation id="5007392906805964215">சரிபார்</translation>
 <translation id="5011561501798487822">கண்டறியப்பட்ட மொழி</translation>
 <translation id="5015510746216210676">சாதனப் பெயர்:</translation>
 <translation id="5017554619425969104">நீங்கள் நகலெடுத்த உரை</translation>
@@ -2191,6 +2191,7 @@
 <translation id="571403275720188526">(arm64)</translation>
 <translation id="571510845185711675">கால்நடை மருத்துவர்கள்</translation>
 <translation id="5720705177508910913">நடப்புப் பயனர்</translation>
+<translation id="572328651809341494">சமீபத்திய தாவல்கள்</translation>
 <translation id="5723287205918986743">பாதுகாப்புத் துறை</translation>
 <translation id="5725567311035061582">குக்கீகளையும் தளத் தரவையும் நிர்வகித்தல்</translation>
 <translation id="5730040223043577876">பிற தளங்களில் உங்கள் கடவுச்சொல்லை மீண்டும் பயன்படுத்தினால், அதை மீட்டமைக்கும்படி Chrome பரிந்துரைக்கிறது.</translation>
@@ -2783,6 +2784,7 @@
 <translation id="6999969238895751684">பொழுதுபோக்குத் துறை</translation>
 <translation id="7003278537452757231">தரைவிரிப்புகள் &amp; கம்பளங்கள்</translation>
 <translation id="7003335073762455340">இந்தத் தயாரிப்பைக் கண்காணிக்கிறீர்கள். <ph name="LAST_BOOKMARKS_FOLDER" /> என்பதில் இந்தப் பக்கம் சேமிக்கப்பட்டுள்ளது.</translation>
+<translation id="7004499039102548441">சமீபத்திய தாவல்கள்</translation>
 <translation id="7004583254764674281">கார்டுகளை மேலும் விரைவாக உறுதிப்படுத்த Windows Helloவைப் பயன்படுத்துங்கள்</translation>
 <translation id="7006930604109697472">பரவாயில்லை அனுப்பு</translation>
 <translation id="7012363358306927923">சீனா UnionPay</translation>
@@ -2910,7 +2912,6 @@
 <ph name="DEBUG_INFO" /></translation>
 <translation id="7256634549594854023">பின்பக்க டிரே</translation>
 <translation id="725866823122871198">உங்கள் கம்ப்யூட்டரின் தேதியும் நேரமும் (<ph name="DATE_AND_TIME" />) தவறாக இருப்பதால் <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> க்கான தனிப்பட்ட இணைப்பை ஏற்படுத்த முடியவில்லை.</translation>
-<translation id="7260504762447901703">அணுகலை ரத்துசெய்</translation>
 <translation id="7265608370113700582">இந்தச் சாதனத்தில் மட்டுமே முகவரி கிடைக்கும்</translation>
 <translation id="7275334191706090484">நிர்வகிக்கப்படும் புக்மார்க்குகள்</translation>
 <translation id="7277998515889183784">மேக்-அப் &amp; அழகுப் பொருட்கள்</translation>

@@ -120,7 +120,6 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="2929907241665500097">Chrome se ni posodobil, prišlo je do napake. <ph name="BEGIN_LINK" />Odpravite težave s posodobitvijo Chroma in neuspelimi posodobitvami Chroma.<ph name="END_LINK" /></translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – Prijava v omrežje – Chrome</translation>
 <translation id="3019382870990049182">Znova zaženi za posodobitev sistema &amp;ChromeOS Flex</translation>
-<translation id="3033660625209020231">{NUM_DEVICES,plural, =0{Razširitve za Google Chrome so dostopale do vnosnih naprav}=1{Razširitve za Google Chrome dostopajo do vnosnih naprav}one{Razširitve za Google Chrome dostopajo do # vnosne naprave}two{Razširitve za Google Chrome dostopajo do # vnosnih naprav}few{Razširitve za Google Chrome dostopajo do # vnosnih naprav}other{Razširitve za Google Chrome dostopajo do # vnosnih naprav}}</translation>
 <translation id="303514781271618814">Chrome raziskuje nove funkcije, ki spletnim mestom omogočajo, da z manjšo količino prenesenih podatkov zagotavljajo isto izkušnjo pri brskanju.</translation>
 <translation id="3037838751736561277">Google Chrome se izvaja v ozadju.</translation>
 <translation id="3038232873781883849">Čakanje na namestitev …</translation>
@@ -228,7 +227,6 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="4970947549776831107">Chrome je blokiral to datoteko, ker gre za nevarno vrsto datoteke.</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5003967926796347400">Kliknite »Googlov upravitelj gesel«</translation>
-<translation id="5005958605836556244">{NUM_DEVICES,plural, =0{Razširitev Google Chrome je dostopala do vnosnih naprav}=1{Razširitev za Google Chrome dostopa do 1 vnosne naprave}one{Razširitev za Google Chrome dostopa do # vnosne naprave}two{Razširitev za Google Chrome dostopa do # vnosnih naprav}few{Razširitev za Google Chrome dostopa do # vnosnih naprav}other{Razširitev za Google Chrome dostopa do # vnosnih naprav}}</translation>
 <translation id="5098668839038261629">Če je to vklopljeno, boste odjavljeni tudi iz Chroma.</translation>
 <translation id="5132929315877954718">Odkrijte zanimive aplikacije, igre, razširitve in teme za Google Chrome.</translation>
 <translation id="5139423532931106058">Prilagajanje profila v Chromu</translation>

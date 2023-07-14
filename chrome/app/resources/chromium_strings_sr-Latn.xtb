@@ -12,7 +12,6 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="113122355610423240">Chromium je podrazumevani pregledač</translation>
 <translation id="1131805035311359397">Da biste proverili da li su lozinke bezbedne od upada u podatke i drugih bezbednosnih problema, <ph name="BEGIN_LINK" />prijavite se u Chromium<ph name="END_LINK" />.</translation>
 <translation id="1153368717515616349">Kliknite na Chromium meni</translation>
-<translation id="1157106475430165622">{NUM_DEVICES,plural, =0{Dodaci za Chromium su pristupali uređajima za ljudski interfejs}=1{Dodaci za Chromium pristupaju uređajima za ljudski interfejs}one{Dodaci za Chromium pristupaju # uređaju za ljudski interfejs}few{Dodaci za Chromium pristupaju uređajima za ljudski interfejs (#)}other{Dodaci za Chromium pristupaju uređajima za ljudski interfejs (#)}}</translation>
 <translation id="1185134272377778587">O Chromium-u</translation>
 <translation id="1203500561924088507">Hvala vam na instalaciji. Potrebno je da restartujete pregledač pre nego što počnete da koristite <ph name="BUNDLE_NAME" />.</translation>
 <translation id="1261119230216066228">Ušteda memorije je ubrzala Chromium</translation>
@@ -372,7 +371,6 @@ Chromium ne može da vrati podešavanja.</translation>
 <translation id="8619360774459241877">Pokreće se Chromium...</translation>
 <translation id="8621669128220841554">Instalacija nije uspela zbog neodređene greške. Preuzmite Chromium ponovo.</translation>
 <translation id="8648201657708811153">Google Chrome for Testing ne može da se postavi za podrazumevani pregledač.</translation>
-<translation id="867492205098279939">{NUM_DEVICES,plural, =0{Dodatak za Chromium je pristupao uređajima za ljudski interfejs}=1{Dodatak za Chromium pristupa 1 uređaju za ljudski interfejs}one{Dodatak za Chromium pristupa # uređaju za ljudski interfejs}few{Dodatak za Chromium pristupa uređajima za ljudski interfejs (#)}other{Dodatak za Chromium pristupa uređajima za ljudski interfejs (#)}}</translation>
 <translation id="8697124171261953979">Kontroliše i stranicu koja se prikazuje kada pokrenete Chromium ili pretražujete iz omniboksa.</translation>
 <translation id="8704119203788522458">Ovo je vaš Chromium</translation>
 <translation id="8796602469536043152">Chromium traži dozvolu da pristupi kameri i mikrofonu za ovaj sajt</translation>

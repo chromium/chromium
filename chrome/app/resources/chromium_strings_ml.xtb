@@ -12,7 +12,6 @@
 <translation id="113122355610423240">Chromium നിങ്ങളുടെ ഡിഫോൾട്ട് ബ്രൗസറാണ്</translation>
 <translation id="1131805035311359397">ഡാറ്റാ ലംഘനങ്ങളിൽ നിന്നും മറ്റ് സുരക്ഷാ പ്രശ്‌നങ്ങളിൽ നിന്നും നിങ്ങളുടെ പാസ്‌വേഡുകൾ സുരക്ഷിതമാണോ എന്ന് പരിശോധിക്കാൻ, <ph name="BEGIN_LINK" />Chromium-ൽ സൈൻ ഇൻ ചെയ്യുക<ph name="END_LINK" />.</translation>
 <translation id="1153368717515616349">Chromium മെനുവിൽ ക്ലിക്ക് ചെയ്യുക</translation>
-<translation id="1157106475430165622">{NUM_DEVICES,plural, =0{Chromium വിപുലീകരണങ്ങൾ, HID ഉപകരണങ്ങൾ ആക്‌സസ് ചെയ്യുകയായിരുന്നു}=1{Chromium വിപുലീകരണങ്ങൾ, HID ഉപകരണങ്ങൾ ആക്‌സസ് ചെയ്യുന്നു}other{Chromium വിപുലീകരണങ്ങൾ, # HID ഉപകരണങ്ങൾ ആക്‌സസ് ചെയ്യുന്നു}}</translation>
 <translation id="1185134272377778587">Chromium-ത്തിനെക്കുറിച്ച്</translation>
 <translation id="1203500561924088507">ഇൻസ്റ്റാൾ ചെയ്തതിന് നന്ദി. <ph name="BUNDLE_NAME" /> ഉപയോഗിക്കും മുമ്പ് നിങ്ങളുടെ ബ്രൗസർ റീസ്റ്റാർട്ട് ചെയ്യേണ്ടതുണ്ട്.</translation>
 <translation id="1261119230216066228">മെമ്മറി സേവർ Chromium-ന്റെ വേഗത വർദ്ധിപ്പിക്കുന്നു</translation>
@@ -372,7 +371,6 @@
 <translation id="8619360774459241877">Chromium സമാരംഭിക്കുന്നു...</translation>
 <translation id="8621669128220841554">അവ്യക്തമായ പിശകിനാൽ ഇൻസ്റ്റാൾ ചെയ്യൽ പരാജയപ്പെട്ടു. Chromium വീണ്ടും ഡൗൺലോഡ് ചെയ്യുക.</translation>
 <translation id="8648201657708811153">Google Chrome for Testing നിങ്ങളുടെ ഡിഫോൾട്ട് ബ്രൗസറാക്കാനാകില്ല.</translation>
-<translation id="867492205098279939">{NUM_DEVICES,plural, =0{ഒരു Chromium വിപുലീകരണം, HID ഉപകരണങ്ങൾ ആക്‌സസ് ചെയ്യുകയായിരുന്നു}=1{ഒരു Chromium വിപുലീകരണം, ഒരു HID ഉപകരണം ആക്‌സസ് ചെയ്യുന്നു}other{ഒരു Chromium വിപുലീകരണം, # HID ഉപകരണങ്ങൾ ആക്‌സസ് ചെയ്യുന്നു}}</translation>
 <translation id="8697124171261953979">നിങ്ങൾ Chromium ആരംഭിക്കുമ്പോൾ അല്ലെങ്കിൽ ഓമ്‌നിബോക്‌സിൽ നിന്ന് തിരയുമ്പോൾ ദൃശ്യമാകുന്ന പേജും അത് നിയന്ത്രിയ്ക്കുന്നു.</translation>
 <translation id="8704119203788522458">ഇത് നിങ്ങളുടെ Chromium ആണ്</translation>
 <translation id="8796602469536043152">ഈ സൈറ്റിനായി, Chromium-ത്തിന് നിങ്ങളുടെ ക്യാമറയും മൈക്രോഫോണും ആക്‌സസ് ചെയ്യാനുള്ള അനുമതി ആവശ്യമാണ്</translation>

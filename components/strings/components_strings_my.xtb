@@ -1332,7 +1332,6 @@
 <translation id="3848487483475744267"><ph name="CREATE_GOOGLE_DOC_FOCUSED_FRIENDLY_MATCH_TEXT" />၊ Google Doc အသစ် အမြန်ပြုလုပ်ရန် ‘တဘ်’ နှိပ်ပြီးနောက် Enter ခလုတ် နှိပ်ပါ</translation>
 <translation id="385051799172605136">နောက်သို့</translation>
 <translation id="3851830401766703401">တရားဝင်ပညာရေး</translation>
-<translation id="3853684360927654006">စကားဝှက်အားကောင်းမှု တွက်ချက်စနစ်</translation>
 <translation id="385489333361351399">ကင်မရာနှင့် ဓာတ်ပုံ စက်ပစ္စည်း</translation>
 <translation id="3858027520442213535">ရက်စွဲ နှင့် အချိန်ကို မွမ်းမံပါ</translation>
 <translation id="3858860766373142691">အမည်</translation>
@@ -1868,6 +1867,7 @@
 <translation id="4995749490935861684"><ph name="CUSTOMIZE_SEARCH_ENGINES_FOCUSED_FRIENDLY_MATCH_TEXT" />၊ site search နှင့် သင့်ပုံသေ ရှာဖွေရေး အင်ဂျင်ကို စီမံရန် ‘တဘ်ခလုတ်’ ပြီးနောက် Enter နှိပ်ပါ</translation>
 <translation id="4998950033665438990">တစ်မျက်နှာ</translation>
 <translation id="5002932099480077015">ဖွင့်ပေးထားလျှင်၊ ပုံစံဖြည့်မှု မြန်လာစေရန် Chrome က သင့်ကဒ်၏ ကော်ပီကို သိမ်းထားပေးမည်။</translation>
+<translation id="5007392906805964215">ပြန်ကြည့်ရန်</translation>
 <translation id="5011561501798487822">တွေ့ရှိသော ဘာသာစကား</translation>
 <translation id="5015510746216210676">စက်ပစ္စည်း အမည်-</translation>
 <translation id="5017554619425969104">သင် မိတ္တူကူးထားသော စာသား</translation>
@@ -2196,6 +2196,7 @@
 <translation id="571403275720188526">(arm64)</translation>
 <translation id="571510845185711675">တိရစ္ဆာန်ကုဆရာဝန်များ</translation>
 <translation id="5720705177508910913">လက်ရှိ အသုံးပြုသူ</translation>
+<translation id="572328651809341494">မကြာမီက တဲဘ်များ</translation>
 <translation id="5723287205918986743">ကာကွယ်ရေးလုပ်ငန်း</translation>
 <translation id="5725567311035061582">ကွတ်ကီးနှင့် ဝဘ်ဆိုက်ဒေတာ စီမံရန်</translation>
 <translation id="5730040223043577876">အခြားဝဘ်ဆိုက်များတွင် သင့်စကားဝှက်ကို ပြန်သုံးထားပါက ၎င်းကို ပြင်ဆင်သတ်မှတ်ရန် Chrome က အကြံပြုပါသည်။</translation>
@@ -2788,6 +2789,7 @@
 <translation id="6999969238895751684">ဖျော်ဖြေရေးလုပ်ငန်း</translation>
 <translation id="7003278537452757231">ကော်ဇော</translation>
 <translation id="7003335073762455340">ဤထုန်ကုန်ကို စောင့်ကြည့်နေပါသည်။ ဤစာမျက်နှာကို <ph name="LAST_BOOKMARKS_FOLDER" /> တွင် သိမ်းသည်။</translation>
+<translation id="7004499039102548441">မကြာမီက တဲဘ်များ</translation>
 <translation id="7004583254764674281">ကတ်များကို ပိုမိုမြန်ဆန်စွာ အတည်ပြုနိုင်ရန် Windows Hello ကို အသုံးပြုပါ</translation>
 <translation id="7006930604109697472">မည်သို့ပင်ဖြစ်စေ ပို့ရန်</translation>
 <translation id="7012363358306927923">တရုတ် UnionPay</translation>
@@ -2916,7 +2918,6 @@
 <translation id="7256634549594854023">အနောက်ဗန်း</translation>
 <translation id="725866823122871198">သင့်ကိရိယာ၏ ရက်စွဲ နှင့် အချိန် (<ph name="DATE_AND_TIME" />)မှာ မမှန်၍ <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> ထံသို့ ကိုယ်ရေး ချိတ်ဆက်မှုကို
 ထူထောင်မရနိုင်ပါ။</translation>
-<translation id="7260504762447901703">အသုံးပြုခွင့် ရုပ်သိမ်းပါ</translation>
 <translation id="7265608370113700582">လိပ်စာကို ဤစက်တွင်သာ ရနိုင်သည်</translation>
 <translation id="7275334191706090484">စီမံကွပ်ကဲထားသည့် စာညှပ်များ</translation>
 <translation id="7277998515889183784">မိတ်ကပ်နှင့် အလှပြင်ပစ္စည်းများ</translation>

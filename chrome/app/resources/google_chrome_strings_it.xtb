@@ -115,7 +115,6 @@
 <translation id="2929907241665500097">Si è verificato un errore: Chrome non si è aggiornato. <ph name="BEGIN_LINK" />Risolvi i problemi di aggiornamento e gli aggiornamenti non riusciti di Chrome.<ph name="END_LINK" /></translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - Accesso rete - Chrome</translation>
 <translation id="3019382870990049182">Riavvia per aggiornare &amp;Chrome OS Flex</translation>
-<translation id="3033660625209020231">{NUM_DEVICES,plural, =0{Le estensioni di Google Chrome accedevano ai dispositivi HID}=1{Le estensioni di Google Chrome accedono ai dispositivi HID}other{Le estensioni di Google Chrome accedono a # dispositivi HID}}</translation>
 <translation id="303514781271618814">Chrome sta esplorando nuove funzionalità che consentono ai siti di offrire la stessa esperienza di navigazione utilizzando meno dati di tua proprietà</translation>
 <translation id="3037838751736561277">Google Chrome è in modalità background.</translation>
 <translation id="3038232873781883849">In attesa dell'installazione…</translation>
@@ -223,7 +222,6 @@
 <translation id="4970947549776831107">Chrome ha bloccato questo file perché è un tipo di file pericoloso</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5003967926796347400">Fai clic su "Gestore delle password di Google"</translation>
-<translation id="5005958605836556244">{NUM_DEVICES,plural, =0{Un'estensione di Google Chrome stava accedendo ai dispositivi HID}=1{Un'estensione di Google Chrome accede a 1 dispositivo HID}other{Un'estensione di Google Chrome sta accedendo a # dispositivi HID}}</translation>
 <translation id="5098668839038261629">Se attivi l'opzione, uscirai anche da Chrome</translation>
 <translation id="5132929315877954718">Scopri applicazioni, giochi, estensioni e temi straordinari per Google Chrome.</translation>
 <translation id="5139423532931106058">Personalizza il tuo profilo Chrome</translation>

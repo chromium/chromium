@@ -433,6 +433,7 @@
           屏蔽名单值“*”表示所有扩展程序都已被屏蔽，除非是许可名单中明确列出的扩展程序。
 
           如果此政策未设置，用户便能在 <ph name="PRODUCT_NAME" /> 中安装任一款扩展程序。</translation>
+<translation id="1392703142209771447">用于匹配打印机 ID 的正则表达式。</translation>
 <translation id="1393485621820363363">已启用企业设备打印机</translation>
 <translation id="1395505489889158859">允许向原生打印机发送用户名和文件名</translation>
 <translation id="1395988776118675626">为 Kerberos 启用“记住密码”功能</translation>
@@ -1680,7 +1681,6 @@
 <translation id="2467181864598429837">默认浏览器行为</translation>
 <translation id="2467896267442150508">持续时间不超过 1 周的间隔时段。如果开始时间晚于结束时间，该间隔时段会跨周。</translation>
 <translation id="2476249479201711962">允许在上下文菜单中使用默认搜索服务提供商</translation>
-<translation id="247658312644322296">“另存为 PDF”目的地</translation>
 <translation id="2478756867046106663">允许那些提供误导性体验的网站打开新的窗口或标签页</translation>
 <translation id="2480971699591919564">启用“点击通话”功能，以允许已登录的 Chrome 用户从桌面设备向 Android 设备发送电话号码。若想了解详情，请参阅这篇帮助中心文章：https://support.google.com/chrome/answer/9430554?hl=zh-CN。
 
@@ -1771,6 +1771,13 @@
 
           指定的政策值应以毫秒为单位，且不得大于闲置延迟时间。</translation>
 <translation id="2548572254685798999">报告安全浏览信息</translation>
+<translation id="2549472870177108435">通过设置此政策，可以设定 <ph name="PRODUCT_NAME" /> 中选择默认打印机的规则，从而覆盖默认的选择规则。用户首次打印时，<ph name="PRODUCT_NAME" /> 会寻找一台与指定属性匹配的打印机。如果没有与指定属性完全匹配的打印机，可以通过设置让 <ph name="PRODUCT_NAME" /> 选择一台与指定属性部分匹配的打印机，具体取决于打印机被发现的顺序。
+
+如果未设置此政策，或没有打印机与所设属性匹配，系统会选择内置的 PDF 打印机作为默认打印机。如果没有 PDF 打印机，<ph name="PRODUCT_NAME" /> 默认不会选择任何打印机。
+
+目前，所有打印机都会归类为<ph name="PRINTER_TYPE_LOCAL" />打印机。连接到 <ph name="CLOUD_PRINT_NAME" />的打印机会被视为<ph name="PRINTER_TYPE_CLOUD" />打印机，但 <ph name="CLOUD_PRINT_NAME" />已不再受支持。
+
+注意：如果您未在某个字段中输入值，则意味着所有打印机都符合此项属性。例如，如果未指定 idPattern 的值，则意味着“打印预览”接受所有打印机 ID。正则表达式的格式必须遵循 JavaScript RegExp 语法，并在匹配时区分大小写。</translation>
 <translation id="2550593661567988768">仅限单面打印</translation>
 <translation id="2552318891854145040">设置此政策可创建一个书签列表，其中的每个书签都是一个包含“<ph name="NAME" />”和“<ph name="URL_LABEL" />”键的字典条目。这些键分别指定书签的名称和目标网址。管理员可以创建一个子文件夹，方法是：定义一个不含“<ph name="URL_LABEL" />”键但含一个额外“<ph name="CHILDREN" />”键的书签。这个额外键也会包含一个书签列表，其中的部分书签也可以是文件夹。Chrome 会修正不完整的网址，就像是修正通过地址栏提交的不完整网址一样。例如，将“<ph name="GOOGLE_COM" />”改为“<ph name="HTTPS_GOOGLE_COM" />”。
 
@@ -7844,7 +7851,6 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 <translation id="8035570672225663428">启用“自适应充电”模式以暂缓充电进程，进而延长电池寿命</translation>
 <translation id="8038007682032315784">禁止在所有网页上使用 <ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /></translation>
 <translation id="8044493735196713914">报告设备引导模式</translation>
-<translation id="8044720778481009876"><ph name="CLOUD_PRINT_NAME" />和“保存到 Google 云端硬盘”目的地（已弃用）</translation>
 <translation id="80453040817068401">启用 <ph name="LACROS_NAME" /> 浏览器</translation>
 <translation id="804619600634661088">允许进行远程调试</translation>
 <translation id="8047600674992048328">该配置对用户可见的名称</translation>

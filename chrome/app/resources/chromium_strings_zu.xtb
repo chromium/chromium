@@ -12,7 +12,6 @@ Ezinye izici kungenzeka zingabi khona futhi izinguquko kokuncamelayo ngeke zize 
 <translation id="113122355610423240">I-Chromium iyisiphequluli sakho esizenzakalelayo</translation>
 <translation id="1131805035311359397">Ukuze uhlole uma ngabe amaphasiwedi akho aphephile yini kusukela ekuphulweni kwedatha nakwezinye izinkinga zokuvikela, <ph name="BEGIN_LINK" />ngena ngemvume ku-Chromium<ph name="END_LINK" />.</translation>
 <translation id="1153368717515616349">Chofoza imenyu ye-Chromium</translation>
-<translation id="1157106475430165622">{NUM_DEVICES,plural, =0{Izandiso ze-Chromium bezifinyelela kumadivayisi e-HID}=1{Izandiso ze-Chromium zifinyelela kumadivayisi e-HID}one{Izandiso ze-Chromium zifinyelela kumadivayisi angu-# e-HID}other{Izandiso ze-Chromium zifinyelela kumadivayisi angu-# e-HID}}</translation>
 <translation id="1185134272377778587">Mayelana ne-Chromium</translation>
 <translation id="1203500561924088507">Siyabonga ngokufaka. Kufanele uqale kabusha ibhrawuza yakho ngaphambi kokusebenzisa i-<ph name="BUNDLE_NAME" />.</translation>
 <translation id="1261119230216066228">Isilondolozi Senkumbulo Senze i-Chromium Yashesha</translation>
@@ -372,7 +371,6 @@ I-Chromium ayikwazi ukubuyisela izilungiselelo zakho.</translation>
 <translation id="8619360774459241877">Iqalisa i-Chromium...</translation>
 <translation id="8621669128220841554">Ukufakwa kuhlulekile ngenxa yephutha elingacacisiwe. Sicela ulande i-Chromium futhi.</translation>
 <translation id="8648201657708811153">I-Google Chrome Yokuhlola ayikwazi ukwenziwa ibhrawuza yakho yokuzenzakalelayo.</translation>
-<translation id="867492205098279939">{NUM_DEVICES,plural, =0{Isandiso se-Chromium sifinyelela kumadivayisi e-HID}=1{Isandiso se-Chromium sifinyelela kudivayisi e-1 ye-HID}one{Isandiso se-Chromium sifinyelela kumadivayisi angu-# e-HID}other{Isandiso se-Chromium sifinyelela kumadivayisi angu-# e-HID}}</translation>
 <translation id="8697124171261953979">Iphinda ilawule ukuthi yiliphi ikhasi eliboniswayo uma uqala i-Chromium noma usesho kusuka ku-Omnibox.</translation>
 <translation id="8704119203788522458">Lena yi-Chromium yakho</translation>
 <translation id="8796602469536043152">I-Chromium idinga imvume ukuze ifinyelele kukhamera yakho nemakrofoni yaleli sayithi</translation>

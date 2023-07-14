@@ -10,7 +10,6 @@
 <translation id="113122355610423240">‏Chromium مرورگر پیش‌فرضتان است</translation>
 <translation id="1131805035311359397">‏برای بررسی اینکه از گذرواژه‌هایتان دربرابر نقض داده یا دیگر مشکلات امنیتی محافظت می‌شود، <ph name="BEGIN_LINK" />به سیستم Chromium وارد شوید<ph name="END_LINK" />.</translation>
 <translation id="1153368717515616349">‏روی منوی Chromium کلیک کنید</translation>
-<translation id="1157106475430165622">{NUM_DEVICES,plural, =0{‏افزونه‌های Chromium به «دستگاه‌های میانای انسانی» دسترسی داشتند}=1{‏افزونه‌های Chromium به «دستگاه‌های میانای انسانی» دسترسی دارند}one{‏افزونه‌های Chromium به # «دستگاه میانای انسانی» دسترسی دارند}other{‏افزونه‌های Chromium به # «دستگاه میانای انسانی» دسترسی دارند}}</translation>
 <translation id="1185134272377778587">‏درباره Chromium</translation>
 <translation id="1203500561924088507">بابت نصب از شما سپاس‌گزاریم. قبل‌از استفاده از <ph name="BUNDLE_NAME" />، باید مرورگر را بازراه‌اندازی کنید.</translation>
 <translation id="1261119230216066228">‏«بهینه‌سازی حافظه» سرعت Chromium را بیشتر کرده است</translation>
@@ -368,7 +367,6 @@ Chromium قادر به بازیابی تنظیمات شما نیست.</translati
 <translation id="8619360774459241877">‏درحال راه‌اندازی Chromium…</translation>
 <translation id="8621669128220841554">‏به دلیل خطای نامشخص، نصب ناموفق بود. لطفاً دوباره Chromium را بارگیری کنید.</translation>
 <translation id="8648201657708811153">‏نمی‌توان Google Chrome for Testing را به‌عنوان مرورگر پیش‌فرض تنظیم کرد.</translation>
-<translation id="867492205098279939">{NUM_DEVICES,plural, =0{‏یک افزونه Chromium به «دستگاه‌های میانای انسانی» دسترسی داشت}=1{‏یک افزونه Chromium به یک «دستگاه میانای انسانی» دسترسی دارد}one{‏یک افزونه Chromium به # «دستگاه میانای انسانی» دسترسی دارد}other{‏یک افزونه Chromium به # «دستگاه میانای انسانی» دسترسی دارد}}</translation>
 <translation id="8697124171261953979">‏این برنامه همچنین صفحه‌ای را که هنگام راه‌اندازی Chromium یا جستجو از Omnibox نشان داده می‌شود، کنترل می‌کند.</translation>
 <translation id="8704119203788522458">‏این Chromium شماست</translation>
 <translation id="8796602469536043152">‏Chromium به مجوز دسترسی به دوربین و میکروفون برای این سایت نیاز دارد</translation>

@@ -120,7 +120,6 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="2929907241665500097">Chrome het nie opgedateer nie; iets het skeefgeloop. <ph name="BEGIN_LINK" />Stel Chrome-opdateringprobleme en mislukte opdaterings reg.<ph name="END_LINK" /></translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – Netwerkaanmelding – Chrome</translation>
 <translation id="3019382870990049182">Herbegin om Chrome OS Flex op te dateer</translation>
-<translation id="3033660625209020231">{NUM_DEVICES,plural, =0{Google Chrome-uitbreidings het toegang tot MKT-toestelle gehad}=1{Google Chrome-uitbreidings het tans toegang tot MKT-toestelle}other{Google Chrome-uitbreidings het tans toegang tot # MKT-toestelle}}</translation>
 <translation id="303514781271618814">Chrome verken tans nuwe kenmerke wat werwe in staat stel om minder van jou data te gebruik om dieselfde blaai-ervaring te lewer</translation>
 <translation id="3037838751736561277">Google Chrome is in agtergrondmodus.</translation>
 <translation id="3038232873781883849">Wag tans om te installeer...</translation>
@@ -228,7 +227,6 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="4970947549776831107">Chrome het hierdie lêer geblokkeer omdat hierdie soort lêer gevaarlik is</translation>
 <translation id="4990567037958725628">Google Chrome Kanarie</translation>
 <translation id="5003967926796347400">Klik “Google Wagwoordbestuurder”</translation>
-<translation id="5005958605836556244">{NUM_DEVICES,plural, =0{’n Google Chrome-uitbreiding het toegang tot MKT-toestelle gehad}=1{’n Google Chrome-uitbreiding het tans toegang tot 1 MKT-toestel}other{’n Google Chrome-uitbreiding het tans toegang tot # MKT-toestelle}}</translation>
 <translation id="5098668839038261629">Wanneer dit aan is, sal jy ook by Chrome afgemeld word</translation>
 <translation id="5132929315877954718">Ontdek wonderlike programme, speletjies, uitbreidings en temas vir Google Chrome.</translation>
 <translation id="5139423532931106058">Pasmaak jou Chrome-profiel</translation>

@@ -1333,7 +1333,6 @@
 <translation id="3848487483475744267"><ph name="CREATE_GOOGLE_DOC_FOCUSED_FRIENDLY_MATCH_TEXT" />, চটপট নতুন Google Doc তৈরি করতে প্রথমে Tab, তারপরে Enter প্রেস করুন</translation>
 <translation id="385051799172605136">ফিরুন</translation>
 <translation id="3851830401766703401">আইন বিষয়ক প্রশিক্ষণ</translation>
-<translation id="3853684360927654006">পাসওয়ার্ডের ক্ষমতা পরিমাপের ক্যালকুলেটর</translation>
 <translation id="385489333361351399">ক্যামেরা ও ফটো সম্পর্কিত সরঞ্জাম</translation>
 <translation id="3858027520442213535">তারিখ এবং সময় আপডেট করুন</translation>
 <translation id="3858860766373142691">নাম</translation>
@@ -1868,6 +1867,7 @@
 <translation id="4995749490935861684"><ph name="CUSTOMIZE_SEARCH_ENGINES_FOCUSED_FRIENDLY_MATCH_TEXT" />, সাইট সার্চ এবং আপনার ডিফল্ট সার্চ ইঞ্জিন ম্যানেজ করতে Tab প্রেস করে Enter প্রেস করুন</translation>
 <translation id="4998950033665438990">সিঙ্গেল ফেস</translation>
 <translation id="5002932099480077015">সক্রিয় করা হলে, ফর্ম পূরণের কাজ দ্রুত করতে Chrome এই ডিভাইসে আপনার কার্ডের একটি কপি স্টোর করবে।</translation>
+<translation id="5007392906805964215">পর্যালোচনা করুন</translation>
 <translation id="5011561501798487822">শনাক্ত করা ভাষা</translation>
 <translation id="5015510746216210676">মেশিনের নাম:</translation>
 <translation id="5017554619425969104">আপনার কপি করা টেক্সট</translation>
@@ -2196,6 +2196,7 @@
 <translation id="571403275720188526">(arm64)</translation>
 <translation id="571510845185711675">পশুচিকিত্সক</translation>
 <translation id="5720705177508910913">বর্তমান ব্যবহারকারী</translation>
+<translation id="572328651809341494">সাম্প্রতিক ট্যাবগুলি</translation>
 <translation id="5723287205918986743">সামরিক শিল্প</translation>
 <translation id="5725567311035061582">কুকি ও সাইট ডেটা ম্যানেজ করুন</translation>
 <translation id="5730040223043577876">Chrome-এর নীতি অনুযায়ী আপনার পাসওয়ার্ড বদলে ফেলা উচিত যদি আপনি সেটি অন্য কোনও সাইটে ব্যবহার করে থাকেন।</translation>
@@ -2788,6 +2789,7 @@
 <translation id="6999969238895751684">বিনোদন শিল্প</translation>
 <translation id="7003278537452757231">কম্বল ও কার্পেট</translation>
 <translation id="7003335073762455340">আপনি এই প্রোডাক্টটি ট্র্যাক করছেন। এই পৃষ্ঠাটি <ph name="LAST_BOOKMARKS_FOLDER" />-এ সেভ করা আছে।</translation>
+<translation id="7004499039102548441">সাম্প্রতিক ট্যাবগুলি</translation>
 <translation id="7004583254764674281">কার্ড আরও দ্রুত কনফার্ম করতে Windows Hello ব্যবহার করুন</translation>
 <translation id="7006930604109697472">নিরাপদ না হলেও পাঠান</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
@@ -2915,7 +2917,6 @@
 <ph name="DEBUG_INFO" /></translation>
 <translation id="7256634549594854023">রিয়ার ট্রে</translation>
 <translation id="725866823122871198"><ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> এ একটি ব্যক্তিগত সংযোগ স্থাপন করা যায়নি কারণ আপনার কম্পিউটারের তারিখ এবং সময় (<ph name="DATE_AND_TIME" />) সঠিক নয়৷</translation>
-<translation id="7260504762447901703">অ্যাক্সেস প্রত্যাহার করুন</translation>
 <translation id="7265608370113700582">শুধু এই ডিভাইসে ঠিকানা উপলভ্য হবে</translation>
 <translation id="7275334191706090484">পরিচালিত বুকমার্কগুলি</translation>
 <translation id="7277998515889183784">মেক-আপ ও প্রসাধন</translation>

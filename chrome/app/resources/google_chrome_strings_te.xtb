@@ -116,7 +116,6 @@
 <translation id="2929907241665500097">Chrome అప్‌డేట్ అవ్వలేదు, ఏదో తప్పు జరిగింది. <ph name="BEGIN_LINK" />Chrome అప్‌డేట్ సమస్యలు, విఫలమైన అప్‌డేట్‌లను పరిష్కరించండి.<ph name="END_LINK" /></translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - నెట్‌వర్క్ సైన్ ఇన్ - Chrome</translation>
 <translation id="3019382870990049182">&amp;ChromeOS Flexను అప్‌డేట్ చేయడానికి రీ-లాంచ్ చేయండి</translation>
-<translation id="3033660625209020231">{NUM_DEVICES,plural, =0{Google Chrome ఎక్స్‌టెన్షన్‌లు HID పరికరాలను యాక్సెస్ చేస్తున్నాయి}=1{Google Chrome ఎక్స్‌టెన్షన్‌లు HID పరికరాలను యాక్సెస్ చేస్తున్నాయి}other{Google Chrome ఎక్స్‌టెన్షన్‌లు # HID పరికరాలను యాక్సెస్ చేస్తున్నాయి}}</translation>
 <translation id="303514781271618814">Chrome మీ డేటాను తక్కువగా ఉపయోగిస్తూ అదే బ్రౌజింగ్ అనుభవాన్ని అందించడానికి సైట్‌లను అనుమతించే కొత్త ఫీచర్‌లను అన్వేషిస్తోంది</translation>
 <translation id="3037838751736561277">Google Chrome నేపథ్య మోడ్‌లో ఉంది.</translation>
 <translation id="3038232873781883849">ఇన్‌స్టాల్ చేయడానికి వేచి ఉంది...</translation>
@@ -224,7 +223,6 @@
 <translation id="4970947549776831107">ఈ ఫైల్ రకం ప్రమాదకరమైనందున Chrome ఈ ఫైల్‌ను బ్లాక్ చేసింది</translation>
 <translation id="4990567037958725628">Google Chrome కేనరీ</translation>
 <translation id="5003967926796347400">“Google Password Manager”ను క్లిక్ చేయండి</translation>
-<translation id="5005958605836556244">{NUM_DEVICES,plural, =0{Google Chrome ఎక్స్‌టెన్షన్ HID పరికరాలను యాక్సెస్ చేస్తోంది}=1{Google Chrome ఎక్స్‌టెన్షన్ 1 HID పరికరాన్ని యాక్సెస్ చేస్తోంది}other{Google Chrome ఎక్స్‌టెన్షన్ # HID పరికరాలను యాక్సెస్ చేస్తోంది}}</translation>
 <translation id="5098668839038261629">దీన్ని ఆన్ చేసినప్పుడు, మీరు Chrome నుండి కూడా సైన్ అవుట్ చేయబడతారు</translation>
 <translation id="5132929315877954718">Google Chrome కోసం గొప్ప యాప్‌లు, ఆటలు, ఎక్స్‌టెన్షన్‌లు మరియు థీమ్‌లను కనుగొనండి.</translation>
 <translation id="5139423532931106058">మీ Chrome ప్రొఫైల్‌ను అనుకూలంగా మార్చండి</translation>

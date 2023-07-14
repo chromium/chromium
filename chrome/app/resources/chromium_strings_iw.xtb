@@ -10,7 +10,6 @@
 <translation id="113122355610423240">‏Chromium מוגדר כדפדפן ברירת המחדל</translation>
 <translation id="1131805035311359397">‏כדי לבדוק אם שאר הסיסמאות מוגנות מפני פרצות באבטחת מידע ובעיות אבטחה אחרות, <ph name="BEGIN_LINK" />יש להיכנס ל-Chromium<ph name="END_LINK" />.</translation>
 <translation id="1153368717515616349">‏לוחצים על תפריט Chromium</translation>
-<translation id="1157106475430165622">{NUM_DEVICES,plural, =0{‏תוספים ל-Chromium ניגשו למכשירי ממשק אנושי (HID)}=1{‏תוספים ל-Chromium ניגשים למכשירי ממשק אנושי (HID)}one{‏תוספים ל-Chromium ניגשים ל-# מכשירי ממשק אנושי (HID)}two{‏תוספים ל-Chromium ניגשים ל-# מכשירי ממשק אנושי (HID)}other{‏תוספים ל-Chromium ניגשים ל-# מכשירי ממשק אנושי (HID)}}</translation>
 <translation id="1185134272377778587">‏על Chromium</translation>
 <translation id="1203500561924088507">תודה שהתקנת. עליך להפעיל מחדש את הדפדפן לפני השימוש ב-<ph name="BUNDLE_NAME" />.</translation>
 <translation id="1261119230216066228">‏Chromium פועל מהר יותר בזכות מצב החיסכון בזיכרון</translation>
@@ -368,7 +367,6 @@ Chromium לא יכול לשחזר את ההגדרות שלך.</translation>
 <translation id="8619360774459241877">‏הפעלת Chromium מתבצעת...</translation>
 <translation id="8621669128220841554">‏ההתקנה נכשלה בשל שגיאה לא מזוהה. יש להוריד שוב את Chromium.</translation>
 <translation id="8648201657708811153">‏לא ניתן להגדיר את Google Chrome for Testing כדפדפן ברירת המחדל.</translation>
-<translation id="867492205098279939">{NUM_DEVICES,plural, =0{‏תוסף ל-Chromium ניגש למכשירי ממשק אנושי (HID)}=1{‏תוסף ל-Chromium ניגש למכשיר ממשק אנושי (HID) אחד}one{‏תוסף ל-Chromium ניגש ל-# מכשירי ממשק אנושי (HID)}two{‏תוסף ל-Chromium ניגש ל-# מכשירי ממשק אנושי (HID)}other{‏תוסף ל-Chromium ניגש ל-# מכשירי ממשק אנושי (HID)}}</translation>
 <translation id="8697124171261953979">‏הגדרה זו גם קובעת איזה דף מוצג כשמפעילים את Chromium או מבצעים חיפוש מסרגל הכתובות.</translation>
 <translation id="8704119203788522458">‏זהו ה-Chromium שלך</translation>
 <translation id="8796602469536043152">‏Chromium זקוק להרשאת גישה אל המצלמה והמיקרופון בשביל האתר הזה</translation>

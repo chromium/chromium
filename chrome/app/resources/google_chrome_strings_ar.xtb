@@ -118,7 +118,6 @@
 <translation id="2929907241665500097">‏تعذّر تحديث Chrome بسبب حدوث خطأ. <ph name="BEGIN_LINK" />حلّ مشاكل تحديث Chrome وتعذُّر التحديثات<ph name="END_LINK" /></translation>
 <translation id="2969728957078202736">‏<ph name="PAGE_TITLE" /> - Chrome - تسجيل الدخول إلى الشبكة</translation>
 <translation id="3019382870990049182">‏إعادة التشغيل لتحديث &amp;ChromeOS Flex</translation>
-<translation id="3033660625209020231">{NUM_DEVICES,plural, =0{‏إضافات Google Chrome كانت لديها إمكانية الوصول إلى أجهزة HID}=1{‏إضافات Google Chrome لديها إمكانية الوصول إلى أجهزة HID}two{‏إضافات Google Chrome لديها إمكانية الوصول إلى جهازَي HID}few{‏إضافات Google Chrome لديها إمكانية الوصول إلى # أجهزة HID}many{‏إضافات Google Chrome لديها إمكانية الوصول إلى # جهاز HID}other{‏إضافات Google Chrome لديها إمكانية الوصول إلى # جهاز HID}}</translation>
 <translation id="303514781271618814">‏يعمل Chrome على استكشاف ميزات جديدة تتيح للمواقع الإلكترونية توفير تجربة التصفّح نفسها باستخدام قدر أقل من البيانات.</translation>
 <translation id="3037838751736561277">‏Google Chrome في وضع الخلفية.</translation>
 <translation id="3038232873781883849">في انتظار التثبيت...</translation>
@@ -226,7 +225,6 @@
 <translation id="4970947549776831107">‏حَظَر Chrome هذا الملف لأنّه ملف خطير.</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5003967926796347400">‏انقر على "مدير كلمات المرور في Google".</translation>
-<translation id="5005958605836556244">{NUM_DEVICES,plural, =0{‏إحدى إضافات Google Chrome كانت لديها إمكانية الوصول إلى أجهزة HID}=1{‏إحدى إضافات Google Chrome لديها إمكانية الوصول إلى جهاز HID واحد}two{‏إحدى إضافات Google Chrome لديها إمكانية الوصول إلى جهازَي HID}few{‏إحدى إضافات Google Chrome لديها إمكانية الوصول إلى # أجهزة HID}many{‏إحدى إضافات Google Chrome لديها إمكانية الوصول إلى # جهاز HID}other{‏إحدى إضافات Google Chrome لديها إمكانية الوصول إلى # جهاز HID}}</translation>
 <translation id="5098668839038261629">‏عند تفعيل هذا الخيار، سيتم تسجيل خروجك أيضًا من Chrome.</translation>
 <translation id="5132929315877954718">‏يمكنك اكتشاف تطبيقات، وألعاب، وإضافات، ومظاهر رائعة لمتصفح Google Chrome.</translation>
 <translation id="5139423532931106058">‏تخصيص ملفك الشخصي في Chrome</translation>

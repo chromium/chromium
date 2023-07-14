@@ -118,7 +118,6 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="2929907241665500097">Chrome sa neaktualizoval. Vyskytol sa problém. <ph name="BEGIN_LINK" />Vyriešiť problémy so sťahovaním aktualizácií Chromu a neúspešnými aktualizáciami<ph name="END_LINK" /></translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – prihlásenie do siete – Chrome</translation>
 <translation id="3019382870990049182">Znova spustiť a aktualizovať &amp;Chrome OS Flex</translation>
-<translation id="3033660625209020231">{NUM_DEVICES,plural, =0{Rozšírenia pre prehliadač Google Chrome mali prístup k zariadeniam s ľudským rozhraním}=1{Rozšírenia pre prehliadač Google Chrome majú prístup k zariadeniam s ľudským rozhraním}few{Rozšírenia pre prehliadač Google Chrome majú prístup k # zariadeniam s ľudským rozhraním}many{Google Chrome extensions are accessing # HID devices}other{Rozšírenia pre prehliadač Google Chrome majú prístup k # zariadeniam s ľudským rozhraním}}</translation>
 <translation id="303514781271618814">Chrome skúma nové funkcie, ktoré umožňujú webom zobraziť rovnaké prostredie prehliadania s využitím menšieho počtu dát.</translation>
 <translation id="3037838751736561277">Google Chrome je v režime na pozadí.</translation>
 <translation id="3038232873781883849">Čaká sa na inštaláciu…</translation>
@@ -226,7 +225,6 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="4970947549776831107">Chrome zablokoval tento súbor, pretože tento typ súboru je nebezpečný</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5003967926796347400">Kliknite na položku Správca hesiel Google</translation>
-<translation id="5005958605836556244">{NUM_DEVICES,plural, =0{Rozšírenie pre prehliadač Google Chrome malo prístup k zariadeniam s ľudským rozhraním}=1{Rozšírenie pre prehliadač Google Chrome má prístup k 1 zariadeniu s ľudským rozhraním}few{Rozšírenie pre prehliadač Google Chrome má prístup k # zariadeniam s ľudským rozhraním}many{A Google Chrome extension is accessing # HID devices}other{Rozšírenie pre prehliadač Google Chrome má prístup k # zariadeniam s ľudským rozhraním}}</translation>
 <translation id="5098668839038261629">Keď zapnete túto možnosť, systém vás odhlási aj z Chromu</translation>
 <translation id="5132929315877954718">Objavte skvelé aplikácie, hry, rozšírenia a motívy pre prehliadač Google Chrome.</translation>
 <translation id="5139423532931106058">Prispôsobiť profil Chromu</translation>

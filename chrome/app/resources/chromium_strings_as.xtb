@@ -12,7 +12,6 @@
 <translation id="113122355610423240">Chromium হৈছে আপোনাৰ ডিফ’ল্ট ব্ৰাউজাৰ</translation>
 <translation id="1131805035311359397">আপোনাৰ পাছৱৰ্ডসমূহ ডেটা উলংঘন আৰু আন সুৰক্ষা সম্পৰ্কীয় সমস্যাৰ পৰা নিৰাপদে আছেনে নাই পৰীক্ষা কৰিবলৈ <ph name="BEGIN_LINK" />Chromiumত ছাইন ইন কৰক<ph name="END_LINK" />।</translation>
 <translation id="1153368717515616349">Chromiumৰ মেনুত ক্লিক কৰক</translation>
-<translation id="1157106475430165622">{NUM_DEVICES,plural, =0{Chromiumৰ এক্সটেনশ্বনসমূহে HID ডিভাইচসমূহ এক্সেছ কৰি আছিল}=1{Chromiumৰ এক্সটেনশ্বনসমূহে HID ডিভাইচসমূহ এক্সেছ কৰি আছে}one{Chromiumৰ এক্সটেনশ্বনসমূহে # টা HID ডিভাইচ এক্সেছ কৰি আছে}other{Chromiumৰ এক্সটেনশ্বনসমূহে # টা HID ডিভাইচ এক্সেছ কৰি আছে}}</translation>
 <translation id="1185134272377778587">Chromiumৰ বিষয়ে</translation>
 <translation id="1203500561924088507">ইনষ্টল কৰাৰ বাবে ধন্যবাদ। আপুনি <ph name="BUNDLE_NAME" /> ব্যৱহাৰ কৰাৰ পূৰ্বে আপোনাৰ ব্ৰাউজাৰটো ৰিষ্টাৰ্ট কৰিবই লাগিব।</translation>
 <translation id="1261119230216066228">মেম’ৰী সঞ্চয়কাৰীয়ে Chromiumক দ্ৰুত কৰি তুলিছে</translation>
@@ -372,7 +371,6 @@ Chromiumএ আপোনাৰ ছেটিংসমূহ পুনৰুদ্
 <translation id="8619360774459241877">Chromium লঞ্চ কৰি থকা হৈছে...</translation>
 <translation id="8621669128220841554">অনির্দিষ্ট আসোঁৱাহৰ বাবে ইনষ্টলেশ্বন কৰিব পৰা নগ’ল। অনুগ্ৰহ কৰি পুনৰ Chromium ডাউনল’ড কৰক।</translation>
 <translation id="8648201657708811153">Google Chrome for Testing আপোনাৰ ডিফ’ল্ট ব্ৰাউজাৰ কৰিব নোৱাৰি।</translation>
-<translation id="867492205098279939">{NUM_DEVICES,plural, =0{এটা Chromiumৰ এক্সটেনশ্বনে HID ডিভাইচসমূহ এক্সেছ কৰি আছিল}=1{এটা Chromiumৰ এক্সটেনশ্বনে ১ টা HID ডিভাইচ এক্সেছ কৰি আছে}one{এটা Chromiumৰ এক্সটেনশ্বনে # টা HID ডিভাইচ এক্সেছ কৰি আছে}other{এটা Chromiumৰ এক্সটেনশ্বনে # টা HID ডিভাইচ এক্সেছ কৰি আছে}}</translation>
 <translation id="8697124171261953979">এইটোৱে আপুনি Chromiumৰ ব্যৱহাৰ আৰম্ভ কৰিলে বা Omniboxৰ পৰা সন্ধান কৰিলে কি পৃষ্ঠা খোল খাব সেয়া নিয়ন্ত্ৰণ কৰে।</translation>
 <translation id="8704119203788522458">এইটো আপোনাৰ Chromium</translation>
 <translation id="8796602469536043152">এই ছাইটটোত আপোনাৰ কেমেৰা আৰু মাইক্ৰ’ফ’ন এক্সেছ কৰিবলৈ Chromiumক অনুমতিৰ আৱশ্যক</translation>

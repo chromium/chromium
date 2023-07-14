@@ -3,13 +3,13 @@
 <translationbundle lang="pt-BR">
 <translation id="1026101648481255140">Retomar instalação</translation>
 <translation id="1029669172902658969">Reinicializar para atualizar o &amp;ChromiumOS</translation>
+<translation id="1040916596585577953">O Chromium recomenda que você revise essa extensão</translation>
 <translation id="1065672644894730302">Não foi possível ler suas preferências. Alguns recursos podem não estar disponíveis e as alterações nas preferências não serão salvas.</translation>
 <translation id="1098170124587656448">O Chromium pode ajudar a proteger você de violações de dados, extensões maliciosas e muito mais</translation>
 <translation id="1104942323762546749">O Chromium quer exportar suas senhas. Digite sua senha do Windows para permitir isso.</translation>
 <translation id="113122355610423240">O Chromium é seu navegador padrão</translation>
 <translation id="1131805035311359397">Para verificar se suas senhas estão protegidas contra violações de dados e outros problemas de segurança, <ph name="BEGIN_LINK" />faça login no Chromium<ph name="END_LINK" />.</translation>
 <translation id="1153368717515616349">Clique no menu do Chromium</translation>
-<translation id="1157106475430165622">{NUM_DEVICES,plural, =0{Extensões do Chromium estavam acessando dispositivos HID}=1{Extensões do Chromium estão acessando 1 dispositivo HID}one{Extensões do Chromium estão acessando # dispositivo HID}other{Extensões do Chromium estão acessando # dispositivos HID}}</translation>
 <translation id="1185134272377778587">Sobre o Chromium</translation>
 <translation id="1203500561924088507">Agradecemos por fazer a instalação. É necessário reiniciar o navegador antes de utilizar o <ph name="BUNDLE_NAME" />.</translation>
 <translation id="1261119230216066228">A Economia de memória tornou o Chromium mais rápido</translation>
@@ -363,7 +363,6 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="8619360774459241877">Iniciando o Chromium…</translation>
 <translation id="8621669128220841554">Falha na instalação devido a um erro não especificado. Faça o download do Chromium novamente.</translation>
 <translation id="8648201657708811153">O Google Chrome for Testing não pode ser definido como seu navegador padrão.</translation>
-<translation id="867492205098279939">{NUM_DEVICES,plural, =0{Uma extensão do Chromium estava acessando dispositivos HID}=1{Uma extensão do Chromium está acessando 1 dispositivo HID}one{Uma extensão do Chromium está acessando # dispositivo HID}other{Uma extensão do Chromium está acessando # dispositivos HID}}</translation>
 <translation id="8697124171261953979">Controla também qual página deve ser exibida quando você inicia o Chromium ou faz uma pesquisa na Omnibox.</translation>
 <translation id="8704119203788522458">Este é seu Chromium</translation>
 <translation id="8796602469536043152">O Chromium precisa de permissão para este site acessar sua câmera e seu microfone</translation>

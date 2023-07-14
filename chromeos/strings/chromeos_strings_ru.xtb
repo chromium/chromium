@@ -170,6 +170,7 @@
 <translation id="2161656808144014275">Текст</translation>
 <translation id="2163937499206714165">Включить тёмную тему</translation>
 <translation id="2180197493692062006">Произошла ошибка. Попробуйте открыть приложение заново.</translation>
+<translation id="2189104374785738357">Изменение данных точки доступа</translation>
 <translation id="2209788852729124853">Сбросить счетчики трафика</translation>
 <translation id="2212733584906323460">Разрешение имен</translation>
 <translation id="2217935453350629363">Текущая частота</translation>
@@ -667,7 +668,6 @@
 <translation id="6278428485366576908">Тема</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">Включить тёмную тему</translation>
-<translation id="6285899124799306373">открыть панель запуска</translation>
 <translation id="629550705077076970">затемнение подсветки клавиатуры</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" />: тестирование отменено.</translation>
 <translation id="631063167932043783">Приложение "Возможности"</translation>
@@ -916,7 +916,6 @@
 <translation id="8312330582793120272">воспроизвести медиаконтент</translation>
 <translation id="8318753676953949627">Нет изображений</translation>
 <translation id="8329018942023753850">приложение "Калькулятор"</translation>
-<translation id="8335869473001018124">открыть поиск</translation>
 <translation id="8336739000755212683">Изменить фото профиля на устройстве</translation>
 <translation id="8347227221149377169">Задания печати</translation>
 <translation id="8351855506390808906">Точка касания для привязки клавиш</translation>

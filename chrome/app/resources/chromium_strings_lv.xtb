@@ -10,7 +10,6 @@
 <translation id="113122355610423240">Jūsu noklusējuma pārlūks ir Chromium.</translation>
 <translation id="1131805035311359397">Lai pārbaudītu, vai jūsu paroles ir aizsargātas pret datu pārkāpumiem un citām drošības problēmām, <ph name="BEGIN_LINK" />pierakstieties pārlūkā Chromium<ph name="END_LINK" />.</translation>
 <translation id="1153368717515616349">Noklikšķiniet uz Chromium izvēlnes</translation>
-<translation id="1157106475430165622">{NUM_DEVICES,plural, =0{Chromium paplašinājumi piekļuva HID ierīcēm}=1{Chromium paplašinājumi piekļūst HID ierīcei}zero{Chromium paplašinājumi piekļūst # HID ierīcēm}one{Chromium paplašinājumi piekļūst # HID ierīcei}other{Chromium paplašinājumi piekļūst # HID ierīcēm}}</translation>
 <translation id="1185134272377778587">Par Chromium</translation>
 <translation id="1203500561924088507">Pateicamies, ka veicāt instalēšanu. Pirms <ph name="BUNDLE_NAME" /> izmantošanas ir jārestartē pārlūkprogramma.</translation>
 <translation id="1261119230216066228">Atmiņas taupīšana nodrošināja ātrāku Chromium darbību</translation>
@@ -367,7 +366,6 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai iz
 <translation id="8619360774459241877">Notiek Chromium palaišana...</translation>
 <translation id="8621669128220841554">Instalēšana neizdevās nenoteiktas kļūdas dēļ. Lejupielādējiet pārlūku Chromium vēlreiz.</translation>
 <translation id="8648201657708811153">Google Chrome for Testing nevar iestatīt kā noklusējuma pārlūku.</translation>
-<translation id="867492205098279939">{NUM_DEVICES,plural, =0{Chromium paplašinājums piekļuva HID ierīcēm}=1{Chromium paplašinājums piekļūst vienai HID ierīcei}zero{Chromium paplašinājums piekļūst # HID ierīcēm}one{Chromium paplašinājums piekļūst # HID ierīcei}other{Chromium paplašinājums piekļūst # HID ierīcēm}}</translation>
 <translation id="8697124171261953979">Tas nosaka arī to, kāda lapa tiks rādīta, kad atvērsiet pārlūku Chromium vai meklēsiet, izmantojot universālo lodziņu.</translation>
 <translation id="8704119203788522458">Šis ir jūsu Chromium</translation>
 <translation id="8796602469536043152">Pārlūkam Chromium ir nepieciešama atļauja piekļūt jūsu kamerai un mikrofonam šajā vietnē.</translation>

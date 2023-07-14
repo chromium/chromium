@@ -187,6 +187,7 @@
 <translation id="2307344026739914387">使用当前密钥对</translation>
 <translation id="2320295602967756579">启用浅色主题</translation>
 <translation id="2323506179655536734">已跳过</translation>
+<translation id="2324354238778375592">悬浮</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">开启蓝牙以发现附近的设备</translation>
 <translation id="2346474577291266260">极佳 (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -335,6 +336,7 @@
 <translation id="3689839747745352263"><ph name="TEST_NAME" />测试</translation>
 <translation id="370665806235115550">正在加载...</translation>
 <translation id="3708186454126126312">曾经连接过</translation>
+<translation id="3715651196924935218">退出悬浮模式</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★（<ph name="AGGREGATED_COUNT" /> 条评价）</translation>
 <translation id="3748026146096797577">未建立连接</translation>
 <translation id="3749289110408117711">文件名</translation>
@@ -391,6 +393,7 @@
 <translation id="4147897805161313378">Google 相册</translation>
 <translation id="4150201353443180367">显示</translation>
 <translation id="4155551848414053977">请确保扫描仪已开机，且已直接或通过网络连接到设备</translation>
+<translation id="4159238217853743776">局部</translation>
 <translation id="4159784952369912983">紫色</translation>
 <translation id="4170180284036919717">拍照</translation>
 <translation id="4170700058716978431">失败</translation>
@@ -500,6 +503,7 @@
 <translation id="4930320165497208503">若要设置或更新连接，请转到<ph name="BEGIN_LINK" />设置<ph name="END_LINK" />。</translation>
 <translation id="4932733599132424254">日期</translation>
 <translation id="4950314376641394653">固件“<ph name="DEVICE_NAME" />”已更新到版本 <ph name="VERSION" /></translation>
+<translation id="4969079779290789265">拆分</translation>
 <translation id="4972592110715526173">更改模式</translation>
 <translation id="498186245079027698">请检查扫描仪，然后重试。另请确保有足够的本地空间来保存扫描版文件。</translation>
 <translation id="4985509611418653372">运行</translation>
@@ -519,6 +523,7 @@
 <translation id="5088172560898466307">服务器主机名</translation>
 <translation id="5089810972385038852">州/省/直辖市/自治区</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
+<translation id="5137451382116112100">全屏</translation>
 <translation id="5142961317498132443">身份验证</translation>
 <translation id="5154917547274118687">内存</translation>
 <translation id="5160857336552977725">登录您的<ph name="DEVICE_TYPE" /></translation>
@@ -531,6 +536,7 @@
 <translation id="5222676887888702881">退出</translation>
 <translation id="522307662484862935">不附加电子邮件地址</translation>
 <translation id="5227902338748591677">深色主题时间表</translation>
+<translation id="5229344016299762883">退出全屏模式</translation>
 <translation id="5234764350956374838">关闭</translation>
 <translation id="5252456968953390977">漫游</translation>
 <translation id="5257811368506016604">启用浅色模式</translation>
@@ -662,7 +668,6 @@
 <translation id="6278428485366576908">主题背景</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">开启深色主题</translation>
-<translation id="6285899124799306373">打开启动器</translation>
 <translation id="629550705077076970">将键盘调暗</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" />测试已被取消</translation>
 <translation id="631063167932043783">“探索”应用</translation>
@@ -710,6 +715,7 @@
 <translation id="6566314079205407217">多页面扫描</translation>
 <translation id="6574762126505704998">填充</translation>
 <translation id="6575134580692778371">未配置</translation>
+<translation id="6576005492601044801">左侧</translation>
 <translation id="6579509898032828423">使用此照片</translation>
 <translation id="6596816719288285829">IP 地址</translation>
 <translation id="6599673642868607614">感谢您提供反馈。您的反馈有助于我们改进 Chromebook 使用体验，会被我们的团队审核。由于举报数量众多，我们无法发送回复。</translation>
@@ -814,6 +820,7 @@
 <translation id="7497215489070763236">服务器 CA 证书</translation>
 <translation id="7501957181231305652">或</translation>
 <translation id="7502658306369382406">IPv6 地址</translation>
+<translation id="7513770521371759388">底部</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7528507600602050979">帮助内容不可用</translation>
 <translation id="7535791657097741517">开启浅色主题</translation>
@@ -909,7 +916,6 @@
 <translation id="8312330582793120272">播放媒体内容</translation>
 <translation id="8318753676953949627">无图片</translation>
 <translation id="8329018942023753850">计算器应用</translation>
-<translation id="8335869473001018124">打开搜索界面</translation>
 <translation id="8336739000755212683">更改设备帐号图片</translation>
 <translation id="8347227221149377169">打印任务</translation>
 <translation id="8351855506390808906">按键映射接触点</translation>
@@ -951,6 +957,7 @@
 <translation id="8655295600908251630">版本</translation>
 <translation id="8655828773034788261">分享网址：</translation>
 <translation id="8660881923941176839">磅</translation>
+<translation id="8670574982334489519">右侧</translation>
 <translation id="8675354002693747642">预共享密钥</translation>
 <translation id="8677859815076891398">无任何影集。请在 <ph name="LINK_BEGIN" />Google 相册<ph name="LINK_END" />中创建一个影集。</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" />使用向左键或向右键即可管理此功能。</translation>
@@ -996,6 +1003,7 @@
 <translation id="8936793075252196307">客户端 IP 地址</translation>
 <translation id="8944651180182756621">启动器颜色</translation>
 <translation id="894617464444543719">设备类型是手机。</translation>
+<translation id="8950424402482976779">顶部</translation>
 <translation id="8968751544471797276">充电速率</translation>
 <translation id="8970109610781093811">重新运行</translation>
 <translation id="8983038754672563810">HSPA</translation>

@@ -115,7 +115,6 @@
 <translation id="2929907241665500097">Coś poszło nie tak i nie udało się zaktualizować Chrome. <ph name="BEGIN_LINK" />Napraw nieudane aktualizacje Chrome i rozwiąż inne problemy z aktualizacjami<ph name="END_LINK" /></translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – logowanie do sieci – Chrome</translation>
 <translation id="3019382870990049182">Uruchom ponownie, aby zaktualizować &amp;ChromeOS Flex</translation>
-<translation id="3033660625209020231">{NUM_DEVICES,plural, =0{Rozszerzenia do Google Chrome miały dostęp do urządzeń HID}=1{Rozszerzenia do Google Chrome mają dostęp do urządzenia HID}few{Rozszerzenia do Google Chrome mają dostęp do # urządzeń HID}many{Rozszerzenia do Google Chrome mają dostęp do # urządzeń HID}other{Rozszerzenia do Google Chrome mają dostęp do # urządzenia HID}}</translation>
 <translation id="303514781271618814">Testujemy nowe funkcje Chrome, dzięki którym witryny będą mogły zapewniać użytkownikom taką samą wygodę przeglądania treści przy wykorzystaniu mniejszej ilości danych</translation>
 <translation id="3037838751736561277">Google Chrome jest w trybie działania w tle</translation>
 <translation id="3038232873781883849">Czekam na instalację…</translation>
@@ -223,7 +222,6 @@
 <translation id="4970947549776831107">Plik został zablokowany przez Chrome, bo ten typ pliku jest niebezpieczny</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5003967926796347400">Kliknij „Menedżer haseł Google”</translation>
-<translation id="5005958605836556244">{NUM_DEVICES,plural, =0{Rozszerzenie do Google Chrome miało dostęp do urządzeń HID}=1{Rozszerzenie do Google Chrome ma dostęp do urządzenia HID}few{Rozszerzenie do Google Chrome ma dostęp do # urządzeń HID}many{Rozszerzenie do Google Chrome ma dostęp do # urządzeń HID}other{Rozszerzenie do Google Chrome ma dostęp do # urządzenia HID}}</translation>
 <translation id="5098668839038261629">Jeśli ta opcja jest włączona, zostaniesz też wylogowany(-a) z Chrome</translation>
 <translation id="5132929315877954718">Odkryj znakomite aplikacje, gry, rozszerzenia i motywy do przeglądarki Google Chrome.</translation>
 <translation id="5139423532931106058">Dostosuj swój profil Chrome</translation>
@@ -277,6 +275,7 @@
 <translation id="624230925347970731">Przeglądarka Chrome zostanie wkrótce zamknięta</translation>
 <translation id="6247557882553405851">Menedżer haseł Google</translation>
 <translation id="6273793429163604305">Na miejsca…</translation>
+<translation id="6277547788421725101">Rodzic wyłączył „Uprawnienia stron, aplikacji i rozszerzeń” w Chrome</translation>
 <translation id="6291089322031436445">Aplikacje do Chrome w wersji deweloperskiej</translation>
 <translation id="6291549208091401781">Google Chrome jest już zainstalowany dla wszystkich użytkowników tego komputera.</translation>
 <translation id="6326175484149238433">Usuń z Chrome</translation>

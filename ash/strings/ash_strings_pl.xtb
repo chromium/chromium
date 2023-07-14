@@ -160,7 +160,6 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1677507110654891115">Funkcja <ph name="FEATURE_NAME" /> nie ma połączenia.</translation>
 <translation id="1677582821739292812">Ktoś patrzy na Twój ekran</translation>
 <translation id="1679841710523778799">Zwiększ jasność</translation>
-<translation id="1683399938733266832">Bieżące wykorzystanie procesora: <ph name="CPU_USEAGE" />%</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1698080062160024910">Minutnik <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">Adres IPv6: <ph name="ADDRESS" /></translation>
@@ -373,7 +372,6 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="263399434338050016">„Wybierz wszystko”</translation>
 <translation id="2644422758626431000">Przypnij okno z lewej strony</translation>
 <translation id="2645435784669275700">Chrome OS</translation>
-<translation id="2647092942972307022">Zostało <ph name="USED_MEMORY" /> z <ph name="TOTAL_MEMORY" /></translation>
 <translation id="2653019840645008922">Przechwytywanie okna</translation>
 <translation id="2653659639078652383">Prześlij</translation>
 <translation id="2658778018866295321">Kliknij i przeciągnij</translation>
@@ -1457,7 +1455,6 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="743058460480092004">Aparat i mikrofon są używane.</translation>
 <translation id="7452560014878697800">Aplikacja używa kamery</translation>
 <translation id="7453330308669753048">Wynik historii wyszukiwania został usunięty</translation>
-<translation id="7455047553373871740"><ph name="BATTERY_PERCENTAGE" />% | Pełne naładowanie za <ph name="TIME" /></translation>
 <translation id="7459485586006128091">Hotspot został wyłączony z powodu błędu wewnętrznego. Za kilka minut spróbuj jeszcze raz nawiązać połączenie.</translation>
 <translation id="7461924472993315131">Przypnij</translation>
 <translation id="746232733191930409">Tryb nagrywania ekranu</translation>
@@ -1838,7 +1835,6 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="9178475906033259337">Wyświetlam 1 wynik dla zapytania <ph name="QUERY" /></translation>
 <translation id="9179259655489829027">Ta funkcja umożliwia szybki dostęp do każdego konta zalogowanego użytkownika bez konieczności podawania hasła. Używaj jej tylko w przypadku kont, którym ufasz.</translation>
 <translation id="9183456764293710005">Lupa pełnego ekranu</translation>
-<translation id="9186811218777709815"><ph name="BATTERY_PERCENTAGE" />% | Pozostało: <ph name="TIME" /></translation>
 <translation id="9193626018745640770">Przesyłam do nieznanego odbiornika</translation>
 <translation id="9194617393863864469">Zaloguj innego użytkownika...</translation>
 <translation id="9198992156681343238">Rozdzielczość ekranu <ph name="DISPLAY_NAME" /> została zmieniona na <ph name="RESOLUTION" />. Kliknij „Potwierdź”, by zachować zmiany. Poprzednie ustawienia zostaną przywrócone za <ph name="TIMEOUT_SECONDS" />.</translation>

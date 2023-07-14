@@ -120,7 +120,6 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="2929907241665500097">Chrome se nije ažurirao. Došlo je do greške. <ph name="BEGIN_LINK" />Otklonite probleme sa ažuriranjem Chrome-a i neuspela ažuriranja.<ph name="END_LINK" /></translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – prijavljivanje na mrežu – Chrome</translation>
 <translation id="3019382870990049182">Ponovo pokreni radi ažuriranja Chrome OS Flex-a</translation>
-<translation id="3033660625209020231">{NUM_DEVICES,plural, =0{Dodaci za Google Chrome su pristupali uređajima za ljudski interfejs}=1{Dodaci za Google Chrome pristupaju uređajima za ljudski interfejs}one{Dodaci za Google Chrome pristupaju # uređaju za ljudski interfejs}few{Dodaci za Google Chrome pristupaju uređajima za ljudski interfejs (#)}other{Dodaci za Google Chrome pristupaju uređajima za ljudski interfejs (#)}}</translation>
 <translation id="303514781271618814">Chrome istražuje nove funkcije koje omogućavaju sajtovima da pružaju isti doživljaj pregledanja, a da koriste manje podataka</translation>
 <translation id="3037838751736561277">Google Chrome je u pozadinskom režimu.</translation>
 <translation id="3038232873781883849">Čeka se instaliranje...</translation>
@@ -228,7 +227,6 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="4970947549776831107">Chrome je blokirao ovaj fajl jer je ovaj tip fajla opasan</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5003967926796347400">Kliknite na Google menadžer lozinki</translation>
-<translation id="5005958605836556244">{NUM_DEVICES,plural, =0{Dodatak za Google Chrome je pristupao uređajima za ljudski interfejs}=1{Dodatak za Google Chrome pristupa 1 uređaju za ljudski interfejs}one{Dodatak za Google Chrome pristupa # uređaju za ljudski interfejs}few{Dodatak za Google Chrome pristupa uređajima za ljudski interfejs (#)}other{Dodatak za Google Chrome pristupa uređajima za ljudski interfejs (#)}}</translation>
 <translation id="5098668839038261629">Kada je ovo uključeno, bićete i odjavljeni iz Chrome-a</translation>
 <translation id="5132929315877954718">Otkrijte odlične aplikacije, igre, dodatke i teme za Google Chrome.</translation>
 <translation id="5139423532931106058">Prilagodite Chrome profil</translation>

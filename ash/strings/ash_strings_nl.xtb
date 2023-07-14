@@ -160,7 +160,6 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> is niet verbonden.</translation>
 <translation id="1677582821739292812">Iemand bekijkt je scherm</translation>
 <translation id="1679841710523778799">Helderheid verhogen</translation>
-<translation id="1683399938733266832">Huidig CPU-gebruik: <ph name="CPU_USEAGE" />%</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1698080062160024910">Timer van <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6-adres: <ph name="ADDRESS" /></translation>
@@ -373,7 +372,6 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="263399434338050016">'Alles selecteren'</translation>
 <translation id="2644422758626431000">Venster links vastzetten</translation>
 <translation id="2645435784669275700">Chrome OS</translation>
-<translation id="2647092942972307022"><ph name="USED_MEMORY" /> van <ph name="TOTAL_MEMORY" /> beschikbaar</translation>
 <translation id="2653019840645008922">Vensteropname</translation>
 <translation id="2653659639078652383">Verzenden</translation>
 <translation id="2658778018866295321">Klikken en slepen</translation>
@@ -1455,7 +1453,6 @@ Nieuwe installatie</translation>
 <translation id="743058460480092004">Camera en microfoon zijn in gebruik.</translation>
 <translation id="7452560014878697800">Een app gebruikt je camera</translation>
 <translation id="7453330308669753048">Zoekgeschiedenisresultaat verwijderd</translation>
-<translation id="7455047553373871740"><ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> tot volledig opgeladen</translation>
 <translation id="7459485586006128091">De hotspot is uitgezet vanwege een interne fout. Probeer over een paar minuten opnieuw verbinding te maken.</translation>
 <translation id="7461924472993315131">Vastzetten</translation>
 <translation id="746232733191930409">Schermopnamemodus</translation>
@@ -1836,7 +1833,6 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="9178475906033259337">1 resultaat bekijken voor <ph name="QUERY" /></translation>
 <translation id="9179259655489829027">Met deze functie kun je snel zonder wachtwoord toegang krijgen tot iedere ingelogde gebruiker. Gebruik deze functie alleen met accounts die je vertrouwt.</translation>
 <translation id="9183456764293710005">Vergrootglas voor volledig scherm</translation>
-<translation id="9186811218777709815"><ph name="BATTERY_PERCENTAGE" />% | Nog <ph name="TIME" /></translation>
 <translation id="9193626018745640770">Casten naar een onbekende ontvanger</translation>
 <translation id="9194617393863864469">Als andere gebruiker inloggen...</translation>
 <translation id="9198992156681343238">De resolutie van <ph name="DISPLAY_NAME" /> is gewijzigd in <ph name="RESOLUTION" />. Klik op 'Bevestigen' om de wijzigingen te behouden. De vorige instellingen worden over <ph name="TIMEOUT_SECONDS" /> hersteld.</translation>

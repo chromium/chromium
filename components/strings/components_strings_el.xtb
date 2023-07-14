@@ -1332,7 +1332,6 @@
 <translation id="3848487483475744267"><ph name="CREATE_GOOGLE_DOC_FOCUSED_FRIENDLY_MATCH_TEXT" />, πατήστε το πλήκτρο Tab και έπειτα το πλήκτρο Enter για να δημιουργήσετε γρήγορα ένα νέο Έγγραφο Google</translation>
 <translation id="385051799172605136">Πίσω</translation>
 <translation id="3851830401766703401">Νομική εκπαίδευση</translation>
-<translation id="3853684360927654006">Υπολογιστής ισχύος κωδικού πρόσβασης</translation>
 <translation id="385489333361351399">Εξοπλισμός Κάμερας και φωτογραφίας</translation>
 <translation id="3858027520442213535">Ενημέρωση ημερομηνίας και ώρας</translation>
 <translation id="3858860766373142691">Όνομα</translation>
@@ -1868,6 +1867,7 @@
 <translation id="4995749490935861684"><ph name="CUSTOMIZE_SEARCH_ENGINES_FOCUSED_FRIENDLY_MATCH_TEXT" />, πατήστε το πλήκτρο Tab και έπειτα το πλήκτρο Enter για να διαχειριστείτε την Αναζήτηση ιστοτόπου και την προεπιλεγμένη μηχανή αναζήτησης.</translation>
 <translation id="4998950033665438990">Μίας όψης</translation>
 <translation id="5002932099480077015">Εάν ενεργοποιηθεί, το Chrome θα αποθηκεύσει ένα αντίγραφο της κάρτας σας σε αυτήν τη συσκευή για ταχύτερη συμπλήρωση φορμών.</translation>
+<translation id="5007392906805964215">Έλεγχος</translation>
 <translation id="5011561501798487822">Εντοπίστηκε γλώσσα</translation>
 <translation id="5015510746216210676">Όνομα συσκευής:</translation>
 <translation id="5017554619425969104">Κείμενο που αντιγράψατε</translation>
@@ -2196,6 +2196,7 @@
 <translation id="571403275720188526">(arm64)</translation>
 <translation id="571510845185711675">Κτηνίατροι</translation>
 <translation id="5720705177508910913">Τρέχων χρήστης</translation>
+<translation id="572328651809341494">Πρόσφατες καρτέλες</translation>
 <translation id="5723287205918986743">Αμυντική βιομηχανία</translation>
 <translation id="5725567311035061582">Διαχείριση cookie και δεδομένων ιστοτόπου</translation>
 <translation id="5730040223043577876">Το Chrome συνιστά την επαναφορά του κωδικού πρόσβασης, εάν τον έχετε χρησιμοποιήσει και σε άλλους ιστοτόπους.</translation>
@@ -2789,6 +2790,7 @@
 <translation id="6999969238895751684">Βιομηχανία ψυχαγωγίας</translation>
 <translation id="7003278537452757231">Χαλιά και χαλάκια</translation>
 <translation id="7003335073762455340">Παρακολουθείτε αυτό το προϊόν. Αυτή η σελίδα έχει αποθηκευτεί στον φάκελο <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
+<translation id="7004499039102548441">Πρόσφατες καρτέλες</translation>
 <translation id="7004583254764674281">Χρησιμοποιήστε το Windows Hello για πιο γρήγορη επιβεβαίωση καρτών</translation>
 <translation id="7006930604109697472">Αποστολή ούτως ή άλλως</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
@@ -2916,7 +2918,6 @@
 <ph name="DEBUG_INFO" /></translation>
 <translation id="7256634549594854023">Πίσω τροφοδότης χαρτιού</translation>
 <translation id="725866823122871198">Δεν είναι δυνατή η επίτευξη ιδιωτικής σύνδεσης με τον τομέα <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> επειδή η ημερομηνία και η ώρα (<ph name="DATE_AND_TIME" />) του υπολογιστή σας είναι λανθασμένες.</translation>
-<translation id="7260504762447901703">Ανάκληση πρόσβασης</translation>
 <translation id="7265608370113700582">Η διεύθυνση είναι διαθέσιμη μόνο σε αυτήν τη συσκευή</translation>
 <translation id="7275334191706090484">Διαχειριζόμενοι σελιδοδείκτες</translation>
 <translation id="7277998515889183784">Μακιγιάζ και καλλυντικά</translation>

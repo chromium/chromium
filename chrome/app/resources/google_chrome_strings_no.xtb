@@ -115,7 +115,6 @@
 <translation id="2929907241665500097">Chrome ble ikke oppdatert. Noe gikk galt. <ph name="BEGIN_LINK" />Løs problemer med Chrome-oppdateringer og mislykkede oppdateringer.<ph name="END_LINK" /></translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – nettverkspålogging – Chrome</translation>
 <translation id="3019382870990049182">Start på nytt for å oppdatere &amp;ChromeOS Flex</translation>
-<translation id="3033660625209020231">{NUM_DEVICES,plural, =0{Google Chrome-utvidelser brukte HID-enheter}=1{Google Chrome-utvidelser bruker HID-enheter}other{Google Chrome-utvidelser bruker # HID-enheter}}</translation>
 <translation id="303514781271618814">Chrome utforsker nye funksjoner som gjør det mulig for nettsteder å bruke mindre av dataene dine og likevel gi deg den samme nettlesingsopplevelsen</translation>
 <translation id="3037838751736561277">Google Chrome er i bakgrunnsmodus.</translation>
 <translation id="3038232873781883849">Venter på installering</translation>
@@ -223,7 +222,6 @@
 <translation id="4970947549776831107">Chrome har blokkert denne filen fordi denne filtypen er farlig</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5003967926796347400">Klikk på «Google Passordlagring»</translation>
-<translation id="5005958605836556244">{NUM_DEVICES,plural, =0{En Google Chrome-utvidelse brukte HID-enheter}=1{En Google Chrome-utvidelse bruker 1 HID-enhet}other{En Google Chrome-utvidelse bruker # HID-enheter}}</translation>
 <translation id="5098668839038261629">Når dette er på, blir du også logget av Chrome</translation>
 <translation id="5132929315877954718">Oppdag flotte apper, spill, utvidelser og temaer for Google Chrome.</translation>
 <translation id="5139423532931106058">Tilpass Chrome-profilen din</translation>

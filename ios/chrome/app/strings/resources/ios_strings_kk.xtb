@@ -206,6 +206,7 @@
 <translation id="2273327106802955778">"Тағы" мәзірі</translation>
 <translation id="2286505070150039482">Ерекшеленген мәтін</translation>
 <translation id="2287614783861766820">{count,plural, =1{Бұл мекенжай осы құрылғыдан жойылады.}other{Бұл мекенжайлар осы құрылғыдан жойылады.}}</translation>
+<translation id="2297822946037605517">Осы бетті бөлісу</translation>
 <translation id="2299218006564889602">Құрылғыдағы құпия сөздер Google Құпия сөздер реттегішіне сақтамас бұрын шифрланады.</translation>
 <translation id="2302742851632557585">Құпия сөзді веб-сайтта өзгерту</translation>
 <translation id="2316709634732130529">Ұсынылған құпия сөзді қолдану</translation>
@@ -575,6 +576,7 @@
 <translation id="4634124774493850572">Құпия сөзді пайдалану</translation>
 <translation id="4636930964841734540">Ақпарат</translation>
 <translation id="4642472735733036929">Бағаны бақылау тоқтатылды</translation>
+<translation id="4645575059429386691">Ата-ана басқарады</translation>
 <translation id="4650125387981512669"><ph name="FIRST_RUN_ACCOUNT_NAME" /> ретінде жалғастыру</translation>
 <translation id="4652817563047461855">Құпия сөздеріңіз қауіпсіз екеніне көз жеткізіңіз, олардың ұрланған-ұрланбағанын біліңіз және өзіңізді онлайн қорғауға көмектесетін кеңес алыңыз. <ph name="BEGIN_LINK" />Толық ақпарат<ph name="END_LINK" /></translation>
 <translation id="4659667755519643272">Tab Switcher енгізу</translation>

@@ -3,13 +3,13 @@
 <translationbundle lang="da">
 <translation id="1026101648481255140">Genoptag installation</translation>
 <translation id="1029669172902658969">Genstart og opdater &amp;Chromium OS</translation>
+<translation id="1040916596585577953">Chromium anbefaler, at du gennemgår denne udvidelse</translation>
 <translation id="1065672644894730302">Dine præferencer kan ikke læses. Visse funktioner er muligvis ikke tilgængelige, og ændringer af præferencer gemmes ikke.</translation>
 <translation id="1098170124587656448">Chromium kan hjælpe med at beskytte dig mod brud på datasikkerheden, farlige udvidelser og meget mere</translation>
 <translation id="1104942323762546749">Chromium anmoder om at eksportere dine adgangskoder. Angiv din Windows-adgangskode for at tillade dette.</translation>
 <translation id="113122355610423240">Chromium er din standardbrowser</translation>
 <translation id="1131805035311359397">Du kan tjekke, om dine adgangskoder er beskyttet mod brud på datasikkerheden og andre sikkerhedsproblemer ved at <ph name="BEGIN_LINK" />logge ind på Chromium<ph name="END_LINK" />.</translation>
 <translation id="1153368717515616349">Klik på Chromium-menuen</translation>
-<translation id="1157106475430165622">{NUM_DEVICES,plural, =0{Chromium-udvidelser havde adgang til HID-enheder}=1{Chromium-udvidelser har adgang 1 HID-enhed}one{Chromium-udvidelser har adgang # HID-enhed}other{Chromium-udvidelser har adgang # HID-enheder}}</translation>
 <translation id="1185134272377778587">Om Chromium</translation>
 <translation id="1203500561924088507">Tak for installationen. Du skal genstarte browseren, før du bruger <ph name="BUNDLE_NAME" />.</translation>
 <translation id="1261119230216066228">Hukommelsessparefunktion har gjort Chromium hurtigere</translation>
@@ -369,7 +369,6 @@ Chromium kan ikke gendanne dine præferencer.</translation>
 <translation id="8619360774459241877">Starter Chromium...</translation>
 <translation id="8621669128220841554">Installationen mislykkedes på grund af en uspecificeret fejl. Download Chromium igen.</translation>
 <translation id="8648201657708811153">Google Chrome for Testing kan ikke angives som din standardbrowser.</translation>
-<translation id="867492205098279939">{NUM_DEVICES,plural, =0{En Chromium-udvidelse havde adgang til HID-enheder}=1{En Chromium-udvidelse har adgang til 1 HID-enhed}one{En Chromium-udvidelse har adgang til # HID-enhed}other{En Chromium-udvidelse har adgang til # HID-enheder}}</translation>
 <translation id="8697124171261953979">Den styrer også, hvilken side der vises, når du åbner Chromium eller søger via omnifeltet.</translation>
 <translation id="8704119203788522458">Dette er din Chromium-browser</translation>
 <translation id="8796602469536043152">Chromium skal have tilladelse til at bruge dit kamera og din mikrofon på dette website</translation>

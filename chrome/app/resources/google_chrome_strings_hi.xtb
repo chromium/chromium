@@ -116,7 +116,6 @@
 <translation id="2929907241665500097">किसी गड़बड़ी की वजह से Chrome अपडेट नहीं हुआ. <ph name="BEGIN_LINK" />Chrome को अपडेट करने से जुड़ी समस्याएं और नहीं हो पाने वाले अपडेट ठीक करें.<ph name="END_LINK" /></translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - नेटवर्क में Chrome से साइन-इन करें</translation>
 <translation id="3019382870990049182">&amp;ChromeOS Flex को अपडेट करने के लिए, इसे फिर से लॉन्च करें</translation>
-<translation id="3033660625209020231">{NUM_DEVICES,plural, =0{Google Chrome एक्सटेंशन, एचआईडी डिवाइस को ऐक्सेस कर रहे थे}=1{Google Chrome एक्सटेंशन, एचआईडी डिवाइस को ऐक्सेस कर रहे हैं}one{Google Chrome एक्सटेंशन, # एचआईडी डिवाइस को ऐक्सेस कर रहे हैं}other{Google Chrome एक्सटेंशन, # एचआईडी डिवाइसों को ऐक्सेस कर रहे हैं}}</translation>
 <translation id="303514781271618814">Chrome पर ऐसी नई सुविधाएं एक्सप्लोर की जा रही हैं जिनसे साइटें, उपयोगकर्ता का कम डेटा इस्तेमाल करके उन्हें पहले जैसा अनुभव दे सकती हैं</translation>
 <translation id="3037838751736561277">Google Chrome पृष्ठभूमि मोड में है.</translation>
 <translation id="3038232873781883849">इंस्टॉल करने की प्रोसेस, कुछ देर में शुरू होगी...</translation>
@@ -224,7 +223,6 @@
 <translation id="4970947549776831107">Chrome ने इस फ़ाइल को ब्लॉक कर दिया है, क्योंकि इस तरह की फ़ाइल खतरनाक हो सकती है</translation>
 <translation id="4990567037958725628">Google Chrome कैनरी</translation>
 <translation id="5003967926796347400">“Google Password Manager” पर क्लिक करें</translation>
-<translation id="5005958605836556244">{NUM_DEVICES,plural, =0{Google Chrome एक्सटेंशन, एचआईडी डिवाइस को ऐक्सेस कर रहा था}=1{Google Chrome एक्सटेंशन, 1 एचआईडी डिवाइस को ऐक्सेस कर रहा है}one{Google Chrome एक्सटेंशन, # एचआईडी डिवाइस को ऐक्सेस कर रहा है}other{Google Chrome एक्सटेंशन, # एचआईडी डिवाइसों को ऐक्सेस कर रहा है}}</translation>
 <translation id="5098668839038261629">इसके चालू होने पर, आपको Chrome से भी साइन आउट कर दिया जाएगा</translation>
 <translation id="5132929315877954718">Google Chrome के लिए बेहतरीन ऐप्स ,गेम, एक्सटेंशन और थीम खोजें.</translation>
 <translation id="5139423532931106058">अपनी Chrome प्रोफ़ाइल को पसंद के मुताबिक बनाएं</translation>

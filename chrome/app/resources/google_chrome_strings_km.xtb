@@ -120,7 +120,6 @@
 <translation id="2929907241665500097">Chrome មិន​បានដំឡើងកំណែទេ មានអ្វីមួយខុសប្រក្រតី។ <ph name="BEGIN_LINK" />សូមដោះស្រាយបញ្ហា​នៃការដំឡើងកំណែ Chrome និងការដំឡើងកំណែដែលមិនបានសម្រេចផ្សេងៗ។<ph name="END_LINK" /></translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - ការចូលបណ្ដាញ - Chrome</translation>
 <translation id="3019382870990049182">ចាប់​ផ្តើមឡើងវិញ ដើម្បីដំឡើងកំណែ &amp;ChromeOS Flex</translation>
-<translation id="3033660625209020231">{NUM_DEVICES,plural, =0{កម្មវិធី​បន្ថែមលើ Google Chrome បានចូលប្រើ​ឧបករណ៍ HID}=1{កម្មវិធី​បន្ថែមលើ Google Chrome កំពុងចូលប្រើ​ឧបករណ៍ HID}other{កម្មវិធី​បន្ថែមលើ Google Chrome កំពុងចូលប្រើ​ឧបករណ៍ HID #}}</translation>
 <translation id="303514781271618814">Chrome កំពុងរុករក​មុខងារថ្មីៗដែលអនុញ្ញាត​ឱ្យគេហទំព័រផ្ដល់​បទពិសោធន៍រុករក​តែមួយ ដោយប្រើ​ទិន្នន័យរបស់អ្នក​កាន់តែតិច</translation>
 <translation id="3037838751736561277">Google Chrome នៅក្នុងរបៀបផ្ទៃខាងក្រោយ។</translation>
 <translation id="3038232873781883849">កំពុងរង់ចាំដំឡើង...</translation>
@@ -228,7 +227,6 @@
 <translation id="4970947549776831107">Chrome បានទប់ស្កាត់ឯកសារនេះ ដោយសារប្រភេទឯកសារនេះមានគ្រោះថ្នាក់</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5003967926796347400">ចុច “កម្មវិធី​គ្រប់គ្រង​ពាក្យសម្ងាត់”</translation>
-<translation id="5005958605836556244">{NUM_DEVICES,plural, =0{កម្មវិធី​បន្ថែមលើ Google Chrome បានចូលប្រើ​ឧបករណ៍ HID}=1{កម្មវិធី​បន្ថែមលើ Google Chrome កំពុងចូលប្រើ​ឧបករណ៍ HID 1}other{កម្មវិធី​បន្ថែមលើ Google Chrome កំពុងចូលប្រើ​ឧបករណ៍ HID #}}</translation>
 <translation id="5098668839038261629">នៅពេលបើក អ្នកក៏នឹងត្រូវចេញពី Chrome ផងដែរ</translation>
 <translation id="5132929315877954718">ស្វែងយល់ពីកម្មវិធី ហ្គេម កម្មវិធីបន្ថែម និងធីមដ៏អស្ចារ្យសម្រាប់ Google Chrome។</translation>
 <translation id="5139423532931106058">ប្ដូរកម្រងព័ត៌មាន Chrome របស់អ្នកតាមបំណង</translation>
@@ -286,6 +284,7 @@ Google Chrome មិនអាចសង្គ្រោះការកំណត់
 <translation id="624230925347970731">Chrome នឹង​បិទ​ក្នុង​ពេល​ឆាប់ៗ​នេះ</translation>
 <translation id="6247557882553405851">កម្មវិធីគ្រប់គ្រង​ពាក្យសម្ងាត់ Google</translation>
 <translation id="6273793429163604305">ទៅកាន់ចំណុចចាប់ផ្តើម...</translation>
+<translation id="6277547788421725101">មាតាបិតា​របស់អ្នក​បានបិទ "ការអនុញ្ញាត​សម្រាប់​គេហទំព័រ កម្មវិធី និង​កម្មវិធី​បន្ថែម" ចំពោះ Chrome</translation>
 <translation id="6291089322031436445">កម្មវិធី Chrome Dev</translation>
 <translation id="6291549208091401781">Google Chrome ត្រូវបានដំឡើងរួចហើយសម្រាប់អ្នកប្រើទាំងអស់នៅលើកុំព្យូទ័ររបស់អ្នក។</translation>
 <translation id="6326175484149238433">ដកចេញពី Chrome</translation>

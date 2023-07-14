@@ -815,7 +815,7 @@
 <translation id="1647408325348388858">要在這個網絡應用程式中開啟並編輯「<ph name="FILE_NAME" />」嗎？</translation>
 <translation id="1648528859488547844">使用 Wi‑Fi 或流動網絡確定位置</translation>
 <translation id="164936512206786300">取消配對藍牙裝置</translation>
-<translation id="1650801028905250434">「我的雲端硬碟」中的檔案會自動同步至 Chromebook，這樣你就能在沒有網際網路連線的情況下存取檔案。你隨時可以依序前往「設定」&gt;「檔案」，變更這項設定。</translation>
+<translation id="1650801028905250434">「我的雲端硬碟」中的檔案會自動同步至 Chromebook，這樣你便可在離線的情況下存取檔案。你你可隨時在「設定」&gt;「檔案」中變更此設定。</translation>
 <translation id="1651008383952180276">您必須輸入兩次相同的密碼短語</translation>
 <translation id="1651609627703324721">此分頁正在向眼罩展示 VR 內容</translation>
 <translation id="1652326691684645429">啟用「咫尺共享」功能</translation>
@@ -3390,7 +3390,6 @@
 <translation id="379082410132524484">您的付款卡已過期</translation>
 <translation id="3792973596468118484"><ph name="NUM_EXTENSIONS" /> 個擴充程式</translation>
 <translation id="3794792524918736965">開啟 Windows Hello</translation>
-<translation id="379500251094592809">如要使用「咫尺共享」功能，請確保兩部裝置都已解鎖並放在一起，且已開啟藍牙功能。如果要與未設定為聯絡人的 Chromebook 分享內容，請確認該裝置已啟用「咫尺共享」分享設定 (按一下電腦右下角的時間欄位即可開啟狀態區，再從中啟用「咫尺共享」分享設定) <ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="379509625511193653">關閉</translation>
 <translation id="3795766489237825963">播放動畫</translation>
 <translation id="3796648294839530037">常用的網絡：</translation>
@@ -4243,7 +4242,7 @@
 <translation id="4515872537870654449">請聯絡 Dell 以取得支援服務。風扇故障時，插座會停止運作。</translation>
 <translation id="4518840066030486079">Shift 鍵模式樣式</translation>
 <translation id="4519331665958994620">網站可要求使用攝錄機</translation>
-<translation id="4519605771716872386">檔案同步處理功能已開啟</translation>
+<translation id="4519605771716872386">已開啟檔案同步處理功能</translation>
 <translation id="4519935350946509010">連線錯誤。</translation>
 <translation id="4520385623207007473">使用中的 Cookie</translation>
 <translation id="452039078290142656">來自 <ph name="VENDOR_NAME" /> 的未知裝置</translation>
@@ -4854,6 +4853,7 @@
 <translation id="504561833207953641">正在現有的瀏覽器工作階段中開啟。</translation>
 <translation id="5049614114599109018">使用輸入記錄功能</translation>
 <translation id="5050063070033073713">{NUM_SITES,plural, =1{此網站最近傳送了很多通知。您可以禁止此網站日後繼續傳送通知。}other{這些網站最近傳送了很多通知。您可以禁止這些網站日後繼續傳送通知。}}</translation>
+<translation id="5050330054928994520">TTS</translation>
 <translation id="5051836348807686060">您所選取的語言不支援拼字檢查功能</translation>
 <translation id="5052499409147950210">編輯網站</translation>
 <translation id="505347685865235222">未命名的群組 - <ph name="GROUP_CONTENT_STRING" /></translation>
@@ -5585,7 +5585,6 @@
 <translation id="5678955352098267522">讀取您在 <ph name="WEBSITE_1" /> 上的資料</translation>
 <translation id="5679785611070310751">此 Chromebook 在 <ph name="MONTH_AND_YEAR" />後不會再收到安全性和軟件更新。請盡快改用新 Chromebook，以獲得最新的安全和軟件更新。須遵守優惠條款。</translation>
 <translation id="5680050361008726776">要移除「<ph name="ESIM_PROFILE_NAME" />」嗎？</translation>
-<translation id="5683806393796685434">請輸入您的確認碼</translation>
 <translation id="5684181005476681636">Wi-Fi 詳情</translation>
 <translation id="5684661240348539843">資產識別碼</translation>
 <translation id="5684950556880280580">您的密碼已更新</translation>
@@ -6402,7 +6401,6 @@
 <translation id="6387674443318562538">垂直分割</translation>
 <translation id="6388429472088318283">搜尋語言</translation>
 <translation id="6388577073199278153">無法存取您的流動裝置帳戶</translation>
-<translation id="639000813364908555">存取遭拒</translation>
 <translation id="6390020764191254941">把分頁移至新視窗</translation>
 <translation id="6391131092053186625">你嘅裝置 IMEI 係 <ph name="IMEI_NUMBER" />。呢個數字可以用嚟啟用服務。</translation>
 <translation id="6393156038355142111">建議安全性強的密碼</translation>
@@ -7284,7 +7282,7 @@
 <translation id="7124712201233930202">不符合您機構的政策規定</translation>
 <translation id="7125029162161377569">透過「私隱沙箱」試用功能，網站可在使用較少資料的情況下，提供相同的瀏覽體驗。這代表您能享有更高私隱度，而且系統會使用較少跨網站追蹤功能。我們將會在更多試用功能準備好進行測試時，新增這些試用功能。</translation>
 <translation id="7125148293026877011">刪除 Crostini</translation>
-<translation id="7125932261198019860">確認印表機已連上 Chromebook 使用的 Wi-Fi 網路，或使用 USB 傳輸線。<ph name="LINK_BEGIN" />進一步瞭解相容性<ph name="LINK_END" /></translation>
+<translation id="7125932261198019860">請確保打印機已連線至 Chromecast 所用的 Wi-Fi 網絡，或使用 USB 連接線。<ph name="LINK_BEGIN" />進一步瞭解兼容性<ph name="LINK_END" /></translation>
 <translation id="7127980134843952133">下載記錄</translation>
 <translation id="7128151990937044829">封鎖通知時，在網址列上顯示圖示</translation>
 <translation id="7131040479572660648">讀取您在 <ph name="WEBSITE_1" />、<ph name="WEBSITE_2" /> 和 <ph name="WEBSITE_3" /> 上的資料</translation>
@@ -7478,7 +7476,7 @@
 <translation id="7307129035224081534">已暫停</translation>
 <translation id="7308643132139167865">網站語言</translation>
 <translation id="7310598146671372464">無法登入。伺服器不支援特定的 Kerberos 加密類型。請聯絡您的管理員。</translation>
-<translation id="7311005168897771689">在離線狀態下存取 Google 雲端硬碟檔案</translation>
+<translation id="7311005168897771689">在離線狀態下存取「Google 雲端硬碟」檔案</translation>
 <translation id="7311244614769792472">找不到任何結果</translation>
 <translation id="7312210124139670355">管理員正在重設您的 eSIM 卡。這項操作可能需時數分鐘。</translation>
 <translation id="7317831949569936035">學校註冊程序</translation>
@@ -9468,7 +9466,6 @@
 <translation id="8962863356073277855">網址格式應為 https://www.example.com</translation>
 <translation id="8962918469425892674">此網站正在使用動作或光線感應器。</translation>
 <translation id="8965037249707889821">輸入舊密碼</translation>
-<translation id="89667524227025535">請使用裝置相機掃瞄 QR 碼，或輸入流動網絡供應商提供的啟動碼</translation>
 <translation id="8966809848145604011">其他個人檔案</translation>
 <translation id="8967427617812342790">加入閱讀清單</translation>
 <translation id="8968527460726243404">Chrome 作業系統圖片撰寫工具</translation>

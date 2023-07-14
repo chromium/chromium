@@ -10,7 +10,6 @@
 <translation id="113122355610423240">Chromium ನಿಮ್ಮ ಡಿಫಾಲ್ಟ್ ಬ್ರೌಸರ್ ಆಗಿದೆ.</translation>
 <translation id="1131805035311359397">ನಿಮ್ಮ ಇತರ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಡೇಟಾ ಉಲ್ಲಂಘನೆ ಮತ್ತು ಭದ್ರತಾ ಸಮಸ್ಯೆಗಳಿಂದ ಸುರಕ್ಷಿತವಾಗಿವೆಯೇ ಎಂದು ಪರಿಶೀಲಿಸಲು, <ph name="BEGIN_LINK" />Chromium ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿ<ph name="END_LINK" />.</translation>
 <translation id="1153368717515616349">Chromium ಮೆನು ಅನ್ನು ಕ್ಲಿಕ್ ಮಾಡಿ</translation>
-<translation id="1157106475430165622">{NUM_DEVICES,plural, =0{Chromium ವಿಸ್ತರಣೆಗಳು HID ಸಾಧನಗಳನ್ನು ಆ್ಯಕ್ಸೆಸ್ ಮಾಡುತ್ತಿದ್ದವು}=1{Chromium ವಿಸ್ತರಣೆಗಳು HID ಸಾಧನಗಳನ್ನು ಆ್ಯಕ್ಸೆಸ್ ಮಾಡುತ್ತಿವೆ}one{Chromium ವಿಸ್ತರಣೆಗಳು # HID ಸಾಧನಗಳನ್ನು ಆ್ಯಕ್ಸೆಸ್ ಮಾಡುತ್ತಿವೆ}other{Chromium ವಿಸ್ತರಣೆಗಳು # HID ಸಾಧನಗಳನ್ನು ಆ್ಯಕ್ಸೆಸ್ ಮಾಡುತ್ತಿವೆ}}</translation>
 <translation id="1185134272377778587">Chromium ಕುರಿತು</translation>
 <translation id="1203500561924088507">ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಿದಕ್ಕಾಗಿ ಧನ್ಯವಾದಗಳು. <ph name="BUNDLE_NAME" /> ಅನ್ನು ಬಳಸುವ ಮೊದಲು ನೀವು ನಿಮ್ಮ ಬ್ರೌಸರ್ ಅನ್ನು ಮರುಪ್ರಾರಂಭಿಸಬೇಕು.</translation>
 <translation id="1261119230216066228">ಮೆಮೊರಿ ಸೇವರ್‌ನಿಂದಾಗಿ Chromium ನ ವೇಗ ಇನ್ನೂ ಹೆಚ್ಚಾಗಿದೆ</translation>
@@ -363,7 +362,6 @@
 <translation id="8619360774459241877">Chromium ಅನ್ನು ಪ್ರಾರಂಭಿಸಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="8621669128220841554">ಅನಿರ್ದಿಷ್ಟ ದೋಷದಿಂದಾಗಿ ಸ್ಥಾಪನೆ ವಿಫಲವಾಗಿದೆ. ದಯವಿಟ್ಟು ಮತ್ತೊಮ್ಮೆ Chromium ಅನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡಿ.</translation>
 <translation id="8648201657708811153">Google Chrome for Testing ಅನ್ನು ನಿಮ್ಮ ಡೀಫಾಲ್ಟ್ ಬ್ರೌಸರ್ ಆಗಿ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ.</translation>
-<translation id="867492205098279939">{NUM_DEVICES,plural, =0{ಒಂದು Chromium ವಿಸ್ತರಣೆ HID ಸಾಧನಗಳನ್ನು ಆ್ಯಕ್ಸೆಸ್ ಮಾಡುತ್ತಿತ್ತು}=1{ಒಂದು Chromium ವಿಸ್ತರಣೆ 1 HID ಸಾಧನವನ್ನು ಆ್ಯಕ್ಸೆಸ್ ಮಾಡುತ್ತಿದೆ}one{ಒಂದು Chromium ವಿಸ್ತರಣೆ # HID ಸಾಧನಗಳನ್ನು ಆ್ಯಕ್ಸೆಸ್ ಮಾಡುತ್ತಿದೆ}other{ಒಂದು Chromium ವಿಸ್ತರಣೆ # HID ಸಾಧನಗಳನ್ನು ಆ್ಯಕ್ಸೆಸ್ ಮಾಡುತ್ತಿದೆ}}</translation>
 <translation id="8697124171261953979">ನೀವು Chromium ಪ್ರಾರಂಭಿಸಿದಾಗ ಅಥವಾ ಓಮ್ನಿಬಾಕ್ಸ್‌ನಿಂದ ಹುಡುಕಿದಾಗ ತೋರಿಸಬೇಕಾದ ಪುಟವನ್ನು ಕೂಡಾ ಇದು ನಿಯಂತ್ರಿಸುತ್ತದೆ.</translation>
 <translation id="8704119203788522458">ಇದು ನಿಮ್ಮ Chromium</translation>
 <translation id="8796602469536043152">ಈ ಸೈಟ್‌ಗಾಗಿ ನಿಮ್ಮ ಕ್ಯಾಮರಾ ಮತ್ತು ಮೈಕ್ರೊಫೋನ್‌ಗೆ ಪ್ರವೇಶಿಸಲು Chromium ಗೆ ಅನುಮತಿಯ ಅಗತ್ಯವಿದೆ</translation>

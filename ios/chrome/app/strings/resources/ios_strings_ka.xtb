@@ -206,6 +206,7 @@
 <translation id="2273327106802955778">ვარიანტების მენიუ</translation>
 <translation id="2286505070150039482">გამოყოფილი ტექსტი</translation>
 <translation id="2287614783861766820">{count,plural, =1{ეს მისამართი წაიშლება ამ მოწყობილობიდან.}other{ეს მისამართები წაიშლება ამ მოწყობილობიდან.}}</translation>
+<translation id="2297822946037605517">ამ გვერდის გაზიარება</translation>
 <translation id="2299218006564889602">Google-ის პაროლების მმართველში შენახვამდე, თქვენი პაროლები თქვენს მოწყობილობაზე დაიშიფრება.</translation>
 <translation id="2302742851632557585">პაროლის შეცვლა ვებსაიტზე</translation>
 <translation id="2316709634732130529">შემოთავაზებული პაროლის გამოყენება</translation>
@@ -575,6 +576,7 @@
 <translation id="4634124774493850572">პაროლის გამოყენება</translation>
 <translation id="4636930964841734540">ინფორმაცია</translation>
 <translation id="4642472735733036929">ფასისთვის თვალის მიდევნება შეწყდა</translation>
+<translation id="4645575059429386691">იმართება თქვენი მშობლის მიერ</translation>
 <translation id="4650125387981512669">გაგრძელება, როგორც <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
 <translation id="4652817563047461855">შეამოწმეთ პაროლების დაცულობის ხარისხი, შეიტყვეთ მათი შესაძლო გატეხის შესახებ და მიიღეთ რჩევები ონლაინუსაფრთხოებასთან დაკავშირებით. <ph name="BEGIN_LINK" />შეიტყვეთ მეტი<ph name="END_LINK" /></translation>
 <translation id="4659667755519643272">ჩანართების გადამრთველში შესვლა</translation>

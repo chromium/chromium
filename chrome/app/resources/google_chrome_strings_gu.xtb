@@ -120,7 +120,6 @@
 <translation id="2929907241665500097">કંઈક ખોટુ થયું હોવાને કારણે Chrome અપડેટ કરી શકાયું નથી. <ph name="BEGIN_LINK" />Chrome અપડેટ કરવામાં આવતી સમસ્યાઓ અને નિષ્ફળ થયેલા અપડેટ સુધારો.<ph name="END_LINK" /></translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - નેટવર્ક સાઇન ઇન - Chrome</translation>
 <translation id="3019382870990049182">&amp;ChromeOS Flex અપડેટ કરવા માટે ફરીથી લૉન્ચ કરો</translation>
-<translation id="3033660625209020231">{NUM_DEVICES,plural, =0{Google Chrome એક્સ્ટેન્શન HID ડિવાઇસ ઍક્સેસ કરી રહ્યાં હતા}=1{Google Chrome એક્સ્ટેન્શન HID ડિવાઇસ ઍક્સેસ કરી રહ્યાં છે}one{Google Chrome એક્સ્ટેન્શન # HID ડિવાઇસ ઍક્સેસ કરી રહ્યાં છે}other{Google Chrome એક્સ્ટેન્શન # HID ડિવાઇસ ઍક્સેસ કરી રહ્યાં છે}}</translation>
 <translation id="303514781271618814">Chrome એવી સુવિધાઓની શોધખોળ કરી રહ્યું છે જે તમારા ડેટાના મર્યાદિત ઉપયોગ વડે પણ સાઇટને બ્રાઉઝિંગનો પહેલાં જેવો જ અનુભવ પ્રદાન કરી શકે</translation>
 <translation id="3037838751736561277">Google Chrome બૅકગ્રાઉન્ડ મોડમાં છે.</translation>
 <translation id="3038232873781883849">ઇન્સ્ટૉલ થવાની રાહ જોઈ રહ્યાં છીએ...</translation>
@@ -228,7 +227,6 @@
 <translation id="4970947549776831107">આ પ્રકારની ફાઇલ જોખમી હોવાને કારણે Chrome દ્વારા આ ફાઇલને બ્લૉક કરવામાં આવી છે</translation>
 <translation id="4990567037958725628">Google Chrome કૅનેરી</translation>
 <translation id="5003967926796347400">“Google Password Manager” પર ક્લિક કરો</translation>
-<translation id="5005958605836556244">{NUM_DEVICES,plural, =0{Google Chrome એક્સ્ટેન્શન HID ડિવાઇસ ઍક્સેસ કરી રહ્યું હતું}=1{Google Chrome એક્સ્ટેન્શન 1 HID ડિવાઇસ ઍક્સેસ કરી રહ્યું છે}one{Google Chrome એક્સ્ટેન્શન # HID ડિવાઇસ ઍક્સેસ કરી રહ્યું છે}other{Google Chrome એક્સ્ટેન્શન # HID ડિવાઇસ ઍક્સેસ કરી રહ્યું છે}}</translation>
 <translation id="5098668839038261629">જ્યારે ચાલુ હોય, ત્યારે તમે Chromeમાંથી પણ સાઇન આઉટ થશો</translation>
 <translation id="5132929315877954718">Google Chrome માટે શ્રેષ્ઠ ઍપ્લિકેશનો, રમતો, એક્સટેન્શન્સ અને થીમ્સ શોધો</translation>
 <translation id="5139423532931106058">તમારી Chrome પ્રોફાઇલને કસ્ટમાઇઝ કરો</translation>
@@ -248,6 +246,7 @@
 <translation id="5430073640787465221">તમારી પસંદગીઓ ફાઇલ દૂષિત અથવા અમાન્ય છે.
 
 Google Chrome તમારા સેટિંગને રિકવર કરી શકતું નથી.</translation>
+<translation id="5521146392841465297">Chrome તમને આ એક્સ્ટેન્શનનો રિવ્યૂ કરવાનો સુઝાવ આપે છે.</translation>
 <translation id="5524761631371622910">જ્યારે અજમાયશો ચાલુ હોય અને જો Chrome કોઈ સક્રિય અજમાયશમાં કોઈપણ ક્રમમાં તમારી ગોઠવણ કરી લે, તો તમારો બ્રાઉઝિંગ ઇતિહાસ તમને દેખાતી જાહેરાતો અને નીચે જણાવેલી અનુમાનિત રુચિઓને અસર કરે છે. તમારી પ્રાઇવસીની સુરક્ષા કરવા માટે Chrome નવા વિષયો આવતા જાય, તેના આધારે દર મહિને તમારી રુચિના વિષયોને ડિલીટ કરે છે.</translation>
 <translation id="5530733413481476019">Chromeને વધુ ઝડપી બનાવો</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>

@@ -12,7 +12,6 @@
 <translation id="113122355610423240">Chromium таны өгөгдмөл хөтөч</translation>
 <translation id="1131805035311359397">Нууц үгнүүддээ өгөгдлийн зөрчил болон аюулгүй байдлын өөр асуудал байхгүй болохыг шалгахын тулд <ph name="BEGIN_LINK" />Chromium-д нэвтэрнэ үү<ph name="END_LINK" />.</translation>
 <translation id="1153368717515616349">Chromium цэсийг товшино уу</translation>
-<translation id="1157106475430165622">{NUM_DEVICES,plural, =0{Chromium өргөтгөлүүд HID төхөөрөмжүүдэд хандаж байсан}=1{Chromium өргөтгөлүүд HID төхөөрөмжүүдэд хандаж байна}other{Chromium өргөтгөлүүд # HID төхөөрөмжид хандаж байна}}</translation>
 <translation id="1185134272377778587">Chromium-ийн тухай</translation>
 <translation id="1203500561924088507">Суулгасанд баярлалаа. Та <ph name="BUNDLE_NAME" />-г ашиглахаасаа өмнө хөтчөө дахин эхлүүлэх ёстой.</translation>
 <translation id="1261119230216066228">Санах ой хэмнэгч нь Chromium-г илүү хурдан болгосон</translation>
@@ -368,7 +367,6 @@
 <translation id="8619360774459241877">Chromium-г эхлүүлж байна...</translation>
 <translation id="8621669128220841554">Гэнэтийн алдаанаас болж суулгах ажиллагаа амжилтгүй боллоо. Chromium-ыг дахин татаж авна уу.</translation>
 <translation id="8648201657708811153">Google Chrome for Testing-г өгөгдмөл хөтчөө болгох боломжгүй.</translation>
-<translation id="867492205098279939">{NUM_DEVICES,plural, =0{Chromium өргөтгөл HID төхөөрөмжүүдэд хандаж байсан}=1{Chromium өргөтгөл 1 HID төхөөрөмжид хандаж байна}other{Chromium өргөтгөл # HID төхөөрөмжид хандаж байна}}</translation>
 <translation id="8697124171261953979">Энэ нь мөн таныг Chromium-ыг эхлүүлж байх үед эсвэл Omnibox-аас хайлт хийж буй үед гарч ирдэг хуудсыг хянаж байдаг.</translation>
 <translation id="8704119203788522458">Энэ бол таны Chromium.</translation>
 <translation id="8796602469536043152">Энэ сайтыг ашиглахын тулд Chromium-д таны камер болон микрофонд хандах зөвшөөрөл шаардлагатай</translation>

@@ -3375,7 +3375,6 @@
 <translation id="379082410132524484">你的卡片已過期</translation>
 <translation id="3792973596468118484"><ph name="NUM_EXTENSIONS" /> 項擴充功能</translation>
 <translation id="3794792524918736965">開啟 Windows Hello</translation>
-<translation id="379500251094592809">如要使用鄰近分享功能，請確認兩部裝置都已解鎖且彼此相鄰，並已開啟藍牙功能。如果要與未設為聯絡人的 Chromebook 分享內容，請確認該裝置已啟用鄰近分享瀏覽權限 (按一下電腦右下角的時間欄位即可開啟狀態區，再從中啟用鄰近分享瀏覽權限)。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="379509625511193653">關閉</translation>
 <translation id="3795766489237825963">播放動畫</translation>
 <translation id="3796648294839530037">慣用的網路：</translation>
@@ -4835,6 +4834,7 @@
 <translation id="504561833207953641">正於現有瀏覽器工作階段中開啟。</translation>
 <translation id="5049614114599109018">使用輸入歷史記錄</translation>
 <translation id="5050063070033073713">{NUM_SITES,plural, =1{這個網站最近傳送了大量通知。你可以禁止這個網站再傳送通知。}other{這些網站最近傳送了大量通知，你可以禁止這些網站再傳送通知。}}</translation>
+<translation id="5050330054928994520">TTS</translation>
 <translation id="5051836348807686060">你選取的語言不支援拼字檢查功能</translation>
 <translation id="5052499409147950210">編輯網站</translation>
 <translation id="505347685865235222">未命名的群組 - <ph name="GROUP_CONTENT_STRING" /></translation>
@@ -5566,7 +5566,6 @@
 <translation id="5678955352098267522">讀取你在 <ph name="WEBSITE_1" /> 上產生的資料</translation>
 <translation id="5679785611070310751">這部 Chromebook 在 <ph name="MONTH_AND_YEAR" />之後就不會再收到安全性更新。如要收到最新的安全性與軟體，請盡快改用新款 Chromebook。適用優惠條款。</translation>
 <translation id="5680050361008726776">要移除「<ph name="ESIM_PROFILE_NAME" />」嗎？</translation>
-<translation id="5683806393796685434">請輸入啟用代碼</translation>
 <translation id="5684181005476681636">Wi-Fi 詳細資料</translation>
 <translation id="5684661240348539843">資產 ID</translation>
 <translation id="5684950556880280580">你的密碼已更新</translation>
@@ -6381,7 +6380,6 @@
 <translation id="6387674443318562538">垂直分割</translation>
 <translation id="6388429472088318283">搜尋語言</translation>
 <translation id="6388577073199278153">無法存取你的行動裝置帳戶</translation>
-<translation id="639000813364908555">存取遭拒</translation>
 <translation id="6390020764191254941">將分頁移到新視窗</translation>
 <translation id="6391131092053186625">你的裝置 IMEI 是 <ph name="IMEI_NUMBER" />。這個編號可用於啟用服務。</translation>
 <translation id="6393156038355142111">建議高強度密碼</translation>
@@ -9446,7 +9444,6 @@
 <translation id="8962863356073277855">網址格式必須是 https://www.example.com</translation>
 <translation id="8962918469425892674">這個網站正在使用動作感應器或光源感應器。</translation>
 <translation id="8965037249707889821">輸入先前的密碼</translation>
-<translation id="89667524227025535">請使用裝置攝影機掃描 QR 圖碼，或是輸入電信業者提供的啟用代碼</translation>
 <translation id="8966809848145604011">其他個人資料</translation>
 <translation id="8967427617812342790">加入閱讀清單</translation>
 <translation id="8968527460726243404">Chrome 作業系統映像檔寫入工具</translation>

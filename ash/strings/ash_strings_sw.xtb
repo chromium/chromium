@@ -160,7 +160,6 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> haijaunganishwa.</translation>
 <translation id="1677582821739292812">Kuna mtu anaangalia skrini yako</translation>
 <translation id="1679841710523778799">Ongeza ung'aavu</translation>
-<translation id="1683399938733266832">Matumizi ya sasa ya kiini cha kompyuta (CPU): <ph name="CPU_USEAGE" />%</translation>
 <translation id="169515659049020177">Hama</translation>
 <translation id="1698080062160024910">Kipima muda cha <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">Anwani ya IPv6: <ph name="ADDRESS" /></translation>
@@ -373,7 +372,6 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="263399434338050016">"Chagua zote"</translation>
 <translation id="2644422758626431000">Bandika dirisha upande wa kushoto</translation>
 <translation id="2645435784669275700">Mfumo wa Uendeshaji wa Chrome</translation>
-<translation id="2647092942972307022"><ph name="USED_MEMORY" /> kati ya <ph name="TOTAL_MEMORY" /> inayopatikana</translation>
 <translation id="2653019840645008922">Kupiga picha ya dirisha</translation>
 <translation id="2653659639078652383">Wasilisha</translation>
 <translation id="2658778018866295321">Bofya na uburute</translation>
@@ -1458,7 +1456,6 @@ Imesakinishwa hivi karibuni</translation>
 <translation id="743058460480092004">Kamera na maikrofoni zinatumiwa.</translation>
 <translation id="7452560014878697800">Kuna proramu inayotumia kamera yako</translation>
 <translation id="7453330308669753048">Matokeo ya historia ya mambo uliyotafuta imeondolewa</translation>
-<translation id="7455047553373871740">Asilimia <ph name="BATTERY_PERCENTAGE" /> | <ph name="TIME" /> hadi ijae</translation>
 <translation id="7459485586006128091">Kutokana na hitilafu ya ndani, mtandao pepe umezimwa. Jaribu kuunganisha tena baada ya dakika chache.</translation>
 <translation id="7461924472993315131">Bana</translation>
 <translation id="746232733191930409">Hali ya kurekodi skrini</translation>
@@ -1840,7 +1837,6 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="9178475906033259337">Inaonyesha matokeo moja ya <ph name="QUERY" /></translation>
 <translation id="9179259655489829027">Kipengele hiki kinakuruhusu ufikie kwa haraka mtumiaji yeyote aliyeingia katika akaunti bila ya kuweka nenosiri. Tumia kipengele hiki katika akaunti unazoamini pekee.</translation>
 <translation id="9183456764293710005">Kikuza Skrini Nzima</translation>
-<translation id="9186811218777709815">Asilimia <ph name="BATTERY_PERCENTAGE" /> | Zimesalia <ph name="TIME" /></translation>
 <translation id="9193626018745640770">Inatuma kwenye kifaa au kwa mpokeaji usiyemjua</translation>
 <translation id="9194617393863864469">Ongeza akaunti nyingine...</translation>
 <translation id="9198992156681343238">Ubora wa <ph name="DISPLAY_NAME" /> umebadilika kuwa <ph name="RESOLUTION" />. Bofya thibitisha ili uhifadhi mabadiliko. Mipangilio ya awali itarejeshwa baada ya <ph name="TIMEOUT_SECONDS" />.</translation>

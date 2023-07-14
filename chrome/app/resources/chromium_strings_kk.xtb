@@ -3,6 +3,7 @@
 <translationbundle lang="kk">
 <translation id="1026101648481255140">Орнатуды жалғастыру</translation>
 <translation id="1029669172902658969">&amp;ChromiumOS жүйесін жаңарту үшін қайта іске қосу</translation>
+<translation id="1040916596585577953">Chromium осы кеңейтімді қарап шығуды ұсынады</translation>
 <translation id="1065672644894730302">Реттеулерді оқу мүмкін емес.
 
 Кейбір мүмкіндіктер қолжетімсіз болуы мүмкін және параметрлерге жасалған өзгертулер сақталмайды.</translation>
@@ -11,7 +12,6 @@
 <translation id="113122355610423240">Chromium әдепкі браузеріңіз болып табылады</translation>
 <translation id="1131805035311359397">Құпия сөздеріңіздің ұрланудан және басқа да қауіпсіздік мәселелерінен қаншалықты қорғалғанын тексеру үшін <ph name="BEGIN_LINK" />Chromium браузеріне кіріңіз<ph name="END_LINK" />.</translation>
 <translation id="1153368717515616349">Chromium мәзірін басыңыз.</translation>
-<translation id="1157106475430165622">{NUM_DEVICES,plural, =0{Chromium кеңейтімдері HID құрылғыларын пайдаланды}=1{Chromium кеңейтімдері HID құрылғыларын пайдаланып жатыр}other{Chromium кеңейтімдері # HID құрылғысын пайдаланып жатыр}}</translation>
 <translation id="1185134272377778587">Chromium туралы ақпарат</translation>
 <translation id="1203500561924088507">Орнатқаныңыз үшін рақмет. <ph name="BUNDLE_NAME" /> пайдаланбас бұрын браузерді жауып, қайта ашуыңыз керек.</translation>
 <translation id="1261119230216066228">Жад үнемдегіш арқылы Chromium жылдамдығы артты</translation>
@@ -370,7 +370,6 @@ Chromium параметрлеріңізді қалпына келтіре алм
 <translation id="8619360774459241877">Chromium іске қосылуда…</translation>
 <translation id="8621669128220841554">Орнату анықталмаған қате себебінен сәтсіз аяқталды. Chromium браузерін қайта жүктеңіз.</translation>
 <translation id="8648201657708811153">Google Chrome for Testing браузерін әдепкі браузер қылу мүмкін емес.</translation>
-<translation id="867492205098279939">{NUM_DEVICES,plural, =0{Chromium кеңейтімі HID құрылғыларын пайдаланды}=1{Chromium кеңейтімі 1 HID құрылғысын пайдаланып жатыр}other{Chromium кеңейтімі # HID құрылғысын пайдаланып жатыр}}</translation>
 <translation id="8697124171261953979">Сонымен қатар ол Chromium іске қосқаныңызда немесе Omnibox ішінен іздегеніңізде қайсы бет көрсетілетінін бақылайды.</translation>
 <translation id="8704119203788522458">Сізге арналған Chromium.</translation>
 <translation id="8796602469536043152">Chromium браузеріне бұл сайтта камераны және микрофонды пайдалану үшін рұқсат керек</translation>

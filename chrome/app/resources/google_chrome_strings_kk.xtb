@@ -119,7 +119,6 @@
 <translation id="2929907241665500097">Chrome жаңартылған жоқ. Бірдеңе дұрыс болмады. <ph name="BEGIN_LINK" />Chrome браузеріндегі жаңартуға қатысты мәселелерді түзетіңіз.<ph name="END_LINK" /></translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – Желіге кіру – Chrome</translation>
 <translation id="3019382870990049182">&amp;ChromeOS Flex жүйесін жаңарту үшін оны қайта іске қосу</translation>
-<translation id="3033660625209020231">{NUM_DEVICES,plural, =0{Google Chrome кеңейтімдері HID құрылғыларын пайдаланды}=1{Google Chrome кеңейтімдері HID құрылғыларын пайдаланып жатыр}other{Google Chrome кеңейтімдері # HID құрылғысын пайдаланып жатыр}}</translation>
 <translation id="303514781271618814">Chrome жаңа функцияларды зерттеп жатыр. Олардың көмегімен сайттарды аз дерекпен де бұрынғыдай пайдалана беруге болады.</translation>
 <translation id="3037838751736561277">Google Chrome фондық режимде.</translation>
 <translation id="3038232873781883849">Сәлден соң орнатыла бастайды…</translation>
@@ -227,7 +226,6 @@
 <translation id="4970947549776831107">Файлдың бұл түрі қауіпті болғандықтан, Chrome оны бөгеді.</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5003967926796347400">"Google Password Manager" түймесін басыңыз.</translation>
-<translation id="5005958605836556244">{NUM_DEVICES,plural, =0{Google Chrome кеңейтімі HID құрылғыларын пайдаланды}=1{Google Chrome кеңейтімі 1 HID құрылғысын пайдаланып жатыр}other{Google Chrome кеңейтімі # HID құрылғысын пайдаланып жатыр}}</translation>
 <translation id="5098668839038261629">Қосылған кезде, Chrome браузерінен шығарыласыз.</translation>
 <translation id="5132929315877954718">Google Chrome браузеріне арналған тамаша қолданбаларды, ойындарды және тақырыптарды табыңыз.</translation>
 <translation id="5139423532931106058">Chrome профилін реттеу</translation>
@@ -247,6 +245,7 @@
 <translation id="5430073640787465221">Реттеулер файлы бұзылған немесе жарамсыз.
 
 Google Chrome параметрлеріңізді қалпына келтіре алмайды.</translation>
+<translation id="5521146392841465297">Chrome осы кеңейтімді қарап шығуды ұсынады.</translation>
 <translation id="5524761631371622910">Сынақ нұсқалары қосылғанда, Chrome сізді белсенді сынақ нұсқасына кездейсоқ орналастырса, браузерді қолдану тарихы төменде берілгендей сіз көретін жарнамалар мен қызығушылықтарға әсер етеді. Құпиялығыңызды сақтау үшін Chrome қызығушылықтарды ай сайын жойып отырады.</translation>
 <translation id="5530733413481476019">Chrome жылдамдығын арттырыңыз</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>

@@ -116,7 +116,6 @@
 <translation id="2929907241665500097">Chrome se nije ažurirao zbog pogreške. <ph name="BEGIN_LINK" />Riješite probleme s ažuriranjem i neuspjela ažuriranja Chromea.<ph name="END_LINK" /></translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – Prijava na mrežu – Chrome</translation>
 <translation id="3019382870990049182">Ponovo pokrenite da biste ažurirali &amp;ChromeOS Flex</translation>
-<translation id="3033660625209020231">{NUM_DEVICES,plural, =0{Proširenja za Google Chrome pristupala su HID uređajima}=1{Proširenja za Google Chrome pristupaju HID uređajima}one{Proširenja za Google Chrome pristupaju # HID uređaju}few{Proširenja za Google Chrome pristupaju # HID uređaja}other{Proširenja za Google Chrome pristupaju # HID uređaja}}</translation>
 <translation id="303514781271618814">Chrome istražuje nove značajke koje web-lokacijama omogućuju pružanje istog doživljaja pregledavanja uz upotrebu manje količine vaših podataka</translation>
 <translation id="3037838751736561277">Google Chrome radi u pozadini.</translation>
 <translation id="3038232873781883849">Čekanje na instaliranje...</translation>
@@ -224,7 +223,6 @@
 <translation id="4970947549776831107">Chrome je blokirao datoteku jer je ta vrsta datoteke opasna</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5003967926796347400">Kliknite Google upravitelj zaporki</translation>
-<translation id="5005958605836556244">{NUM_DEVICES,plural, =0{Proširenje za Google Chrome pristupalo je HID uređajima}=1{Proširenje za Google Chrome pristupa jednom HID uređaju}one{Proširenje za Google Chrome pristupa # HID uređaju}few{Proširenje za Google Chrome pristupa # HID uređaja}other{Proširenje za Google Chrome pristupa # HID uređaja}}</translation>
 <translation id="5098668839038261629">Kad uključite tu opciju, odjavit ćete se i s Chromea</translation>
 <translation id="5132929315877954718">Otkrijte sjajne aplikacije, igre, proširenja i teme za Google Chrome.</translation>
 <translation id="5139423532931106058">Prilagodite profil u Chromeu</translation>

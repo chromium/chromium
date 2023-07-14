@@ -206,6 +206,7 @@
 <translation id="2273327106802955778">Այլ ընտրանքներ</translation>
 <translation id="2286505070150039482">Ընդգծված տեսքտ</translation>
 <translation id="2287614783861766820">{count,plural, =1{Այս հասցեն կհեռացվի այս սարքից։}one{Այս հասցեն կհեռացվի այս սարքից։}other{Այս հասցեները կհեռացվեն այս սարքից։}}</translation>
+<translation id="2297822946037605517">Կիսվել այս էջով</translation>
 <translation id="2299218006564889602">Գաղտնաբառերը գաղտնագրվում են ձեր սարքում, այնուհետև պահվում Google Գաղտնաբառերի կառավարիչում։</translation>
 <translation id="2302742851632557585">Փոխել գաղտնաբառը կայքում</translation>
 <translation id="2316709634732130529">Օգտագործել առաջարկված գաղտնաբառը</translation>
@@ -575,6 +576,7 @@
 <translation id="4634124774493850572">Օգտագործել գաղտնաբառը</translation>
 <translation id="4636930964841734540">Տեղեկություններ</translation>
 <translation id="4642472735733036929">Գների հետագծումը կանգնեցված է</translation>
+<translation id="4645575059429386691">Կառավարվում է ձեր ծնողի կողմից</translation>
 <translation id="4650125387981512669">Շարունակել որպես <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
 <translation id="4652817563047461855">Համոզվեք, որ ձեր գաղտնաբառերը վտանգված չեն, պարզեք՝ արդյոք դրանք չեն կոտրվել, և ստացեք խորհուրդներ, որոնք կօգնեն ձեզ պաշտպանվել համացանցում։ <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
 <translation id="4659667755519643272">Բացել ներդիրների փոխանջատիչը</translation>

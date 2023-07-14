@@ -1332,7 +1332,6 @@
 <translation id="3848487483475744267"><ph name="CREATE_GOOGLE_DOC_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Tab и след това Enter, за да създадете бързо документ в Google Документи</translation>
 <translation id="385051799172605136">Назад</translation>
 <translation id="3851830401766703401">Правно образование</translation>
-<translation id="3853684360927654006">Калкулатор за надеждността на паролата</translation>
 <translation id="385489333361351399">Оборудване за фотоапарати и видеокамери</translation>
 <translation id="3858027520442213535">Актуализиране на датата и часа</translation>
 <translation id="3858860766373142691">Име</translation>
@@ -1867,6 +1866,7 @@
 <translation id="4995749490935861684"><ph name="CUSTOMIZE_SEARCH_ENGINES_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Tab и след това – Enter, за да управлявате настройките за търсене в сайтовете и основната си търсеща машина</translation>
 <translation id="4998950033665438990">Еднолицев картон</translation>
 <translation id="5002932099480077015">Ако настройката е активирана, копие на картата ви ще се съхранява в Chrome на това устройство с цел по-бързо попълване на формуляри.</translation>
+<translation id="5007392906805964215">Преглед</translation>
 <translation id="5011561501798487822">Установен език</translation>
 <translation id="5015510746216210676">Име на компютъра:</translation>
 <translation id="5017554619425969104">Копиран от вас текст</translation>
@@ -2195,6 +2195,7 @@
 <translation id="571403275720188526">(arm64)</translation>
 <translation id="571510845185711675">Ветеринари</translation>
 <translation id="5720705177508910913">Текущият потребител</translation>
+<translation id="572328651809341494">Скорошни раздели</translation>
 <translation id="5723287205918986743">Отбранителна промишленост</translation>
 <translation id="5725567311035061582">Управление на „бисквитките“ и данните за сайтовете</translation>
 <translation id="5730040223043577876">Chrome препоръчва да зададете повторно паролата си, ако сте я използвали и на други сайтове.</translation>
@@ -2788,6 +2789,7 @@
 <translation id="6999969238895751684">Развлекателна индустрия</translation>
 <translation id="7003278537452757231">Килими и мокети</translation>
 <translation id="7003335073762455340">Проследявате този продукт. Съответната страница е запазена в папката „<ph name="LAST_BOOKMARKS_FOLDER" />“.</translation>
+<translation id="7004499039102548441">Скорошни раздели</translation>
 <translation id="7004583254764674281">Използвайте Windows Hello, за да потвърждавате картите по-бързо</translation>
 <translation id="7006930604109697472">Изпращане въпреки това</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
@@ -2915,7 +2917,6 @@
 <ph name="DEBUG_INFO" /></translation>
 <translation id="7256634549594854023">Задна тава</translation>
 <translation id="725866823122871198">Не може да се установи частна връзка с/ъс <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />, тъй като датата и часът на компютъра ви (<ph name="DATE_AND_TIME" />) са неправилни.</translation>
-<translation id="7260504762447901703">Отмяна на достъпа</translation>
 <translation id="7265608370113700582">Адресът е налице само на това устройство</translation>
 <translation id="7275334191706090484">Управлявани отметки</translation>
 <translation id="7277998515889183784">Грим и козметика</translation>

@@ -10,7 +10,6 @@
 <translation id="113122355610423240">既定のブラウザは Chromium です</translation>
 <translation id="1131805035311359397">パスワードにデータ侵害などセキュリティに関する問題がないかどうかを確認するには、<ph name="BEGIN_LINK" />Chromium にログイン<ph name="END_LINK" />してください。</translation>
 <translation id="1153368717515616349">Chromium メニューをクリックする</translation>
-<translation id="1157106475430165622">{NUM_DEVICES,plural, =0{Chromium 拡張機能が HID デバイスにアクセスしていました}=1{Chromium 拡張機能が HID デバイスにアクセスしています}other{Chromium 拡張機能が # 個の HID デバイスにアクセスしています}}</translation>
 <translation id="1185134272377778587">Chromium について</translation>
 <translation id="1203500561924088507">インストールいただきありがとうございます。<ph name="BUNDLE_NAME" /> を使用するにはブラウザを再起動してください。</translation>
 <translation id="1261119230216066228">メモリセーバーで Chromium の速度を向上</translation>
@@ -369,7 +368,6 @@
 <translation id="8619360774459241877">Chromium を起動しています...</translation>
 <translation id="8621669128220841554">原因不明のエラーによりインストールに失敗しました。Chromium をもう一度ダウンロードしてください。</translation>
 <translation id="8648201657708811153">Google Chrome for Testing は、既定のブラウザには設定できません。</translation>
-<translation id="867492205098279939">{NUM_DEVICES,plural, =0{Chromium 拡張機能が HID デバイスにアクセスしていました}=1{Chromium 拡張機能が 1 個の HID デバイスにアクセスしています}other{Chromium 拡張機能が # 個の HID デバイスにアクセスしています}}</translation>
 <translation id="8697124171261953979">この拡張機能では、Chromium の起動時、またはアドレスバーからの検索時に表示されるページも制御されます。</translation>
 <translation id="8704119203788522458">自分好みに設定</translation>
 <translation id="8796602469536043152">このサイトを利用するには、Chromium でカメラとマイクの使用を許可する必要があります</translation>

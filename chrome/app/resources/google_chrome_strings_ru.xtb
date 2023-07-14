@@ -115,7 +115,6 @@
 <translation id="2929907241665500097">Не удалось обновить Chrome. <ph name="BEGIN_LINK" />Выяснить причины неполадок и устранить их<ph name="END_LINK" /></translation>
 <translation id="2969728957078202736">"<ph name="PAGE_TITLE" />" – вход в сеть – Chrome</translation>
 <translation id="3019382870990049182">Перезапустить и обновить &amp;Chrome OS Flex</translation>
-<translation id="3033660625209020231">{NUM_DEVICES,plural, =0{У расширений Chromium был доступ к HID-устройствам}=1{У расширений Chromium есть доступ к HID-устройствам}one{У расширений Chromium есть доступ к # HID-устройству}few{У расширений Chromium есть доступ к # HID-устройствам}many{У расширений Chromium есть доступ к # HID-устройствам}other{У расширений Chromium есть доступ к # HID-устройства}}</translation>
 <translation id="303514781271618814">Chrome представляет новый взгляд на просмотр веб-страниц: сайты функционируют в обычном режиме, собирая меньше данных о вас.</translation>
 <translation id="3037838751736561277">Google Chrome работает в фоновом режиме</translation>
 <translation id="3038232873781883849">Ожидание установки…</translation>
@@ -223,7 +222,6 @@
 <translation id="4970947549776831107">Chrome заблокировал файл с опасным расширением.</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5003967926796347400">Выберите "Google Менеджер паролей".</translation>
-<translation id="5005958605836556244">{NUM_DEVICES,plural, =0{У расширения Google Chrome был доступ к HID-устройствам}=1{У расширения Google Chrome есть доступ к 1 HID-устройству}one{У расширения Google Chrome есть доступ к # HID-устройству}few{У расширения Google Chrome есть доступ к # HID-устройствам}many{У расширения Google Chrome есть доступ к # HID-устройствам}other{У расширения Google Chrome есть доступ к # HID-устройства}}</translation>
 <translation id="5098668839038261629">Также выходить из Chrome</translation>
 <translation id="5132929315877954718">Широкий выбор приложений, игр, расширений и тем для Google Chrome.</translation>
 <translation id="5139423532931106058">Настройте профиль Chrome</translation>
@@ -239,6 +237,7 @@
 <translation id="5394833366792865639">Откройте доступ к вкладке Chrome</translation>
 <translation id="5412485296464121825">Сайты могут хранить в Chrome информацию о ваших интересах. Например, вы перешли на сайт, чтобы купить беговые кроссовки. Он определит, что вам интересны марафоны. Когда вы перейдете на другой сайт, чтобы зарегистрироваться на забег, то увидите рекламу беговых кроссовок.</translation>
 <translation id="5430073640787465221">Файл настроек поврежден или недействителен. Google Chrome не может восстановить ваши параметры.</translation>
+<translation id="5521146392841465297">Chrome рекомендует проверить это расширение.</translation>
 <translation id="5524761631371622910">Если пробные функции включены и Chrome случайным образом выберет вас для их тестирования, то история браузера будет влиять на предложенные интересы, которые представлены ниже, и на то, какую рекламу вы будете видеть. Чтобы обеспечивать вашу конфиденциальность, Chrome каждый месяц удаляет ваши интересы.</translation>
 <translation id="5530733413481476019">Chrome может работать ещё быстрее</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>

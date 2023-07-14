@@ -37,6 +37,7 @@
 <translation id="1297922636971898492">Une honetan, Google Drive ez dago erabilgarri. Erabilgarri dagoenean, automatikoki hasiko da berriro kargatzen.</translation>
 <translation id="1307931752636661898">Ezin dira ikusi Linux fitxategiak</translation>
 <translation id="1313405956111467313">Proxy-konfigurazio automatikoa</translation>
+<translation id="134645005685694099">Gailuak ez dauka biltegian fitxategiak sinkronizatzeko aukera aktibatuta mantentzeko behar adina toki. Hemendik aurrera, fitxategi berriak ez dira automatikoki sinkronizatuko.</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />: <ph name="NETWORK_NAME" /></translation>
 <translation id="1358735829858566124">Ezin da fitxategia edo direktorioa erabili.</translation>
 <translation id="1363028406613469049">Pista</translation>
@@ -184,6 +185,7 @@
 <translation id="2464089476039395325">HTTP proxya</translation>
 <translation id="2467267713099745100"><ph name="NETWORK_TYPE" /> sarea. Desaktibatuta.</translation>
 <translation id="2468402215065996499">Tamagotchi</translation>
+<translation id="2468470447085858632">Google Drive-ko fitxategiak konexiorik gabe atzitzeko, sinkronizatu fitxategiak</translation>
 <translation id="2470939964922472929">PINa gehiegitan idatzi da oker. Beste PIN bat konfiguratzeko, idatzi operadoreak emandako zortzi digituko desblokeatzeko gako pertsonala (PUKa).</translation>
 <translation id="2500392669976258912">Gujaratar fonetikoa</translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -611,6 +613,7 @@
 <translation id="5720028165859493293">Eraman da zaborrontzira <ph name="FILE_NAME" /></translation>
 <translation id="5724172041621205163">Thailandiarra, Pattachote teklatuarekin</translation>
 <translation id="57383366388012121">Aurreko hilabetea</translation>
+<translation id="575175778971367197">Une honetan ezin da sinkronizatu fitxategi hau</translation>
 <translation id="5756666464756035725">QWERTY teklatu hungariarra</translation>
 <translation id="5760252553414789727"><ph name="SELECTED_FILES_COUNT" /> elementu hautatu dira</translation>
 <translation id="5763377084591234761">Alemana (Suitza)</translation>
@@ -713,6 +716,7 @@
 <translation id="6558280019477628686">Errore bat gertatu da. Agian ez dira ezabatu elementu batzuk.</translation>
 <translation id="656398493051028875">"<ph name="FILENAME" />" ezabatzen…</translation>
 <translation id="6581162200855843583">Google Drive esteka</translation>
+<translation id="6588648400954570689">Fitxategiak sinkronizatzeko ezarpenak</translation>
 <translation id="6594855146910089723">Linux eta Parallels Desktop aplikazioarekin partekatuta dago karpeta hau</translation>
 <translation id="6607272825297743757">Fitxategiari buruzko informazioa</translation>
 <translation id="6609332149380188670"><ph name="NUMBER_OF_ITEMS" /> karpeta partekatu dira Parallels Desktop aplikazioarekin</translation>
@@ -839,6 +843,7 @@
 <translation id="7547811415869834682">Nederlandarra</translation>
 <translation id="7551643184018910560">Ainguratu apalean</translation>
 <translation id="7553492409867692754">Eman <ph name="FOLDER_NAME" /> karpetako fitxategiak erabiltzeko baimena Linux-eko aplikazioei</translation>
+<translation id="7555339735447658365">Ez zaude konektatuta. Internetera konektatzen zarenean berrekingo zaio fitxategien sinkronizazioari.</translation>
 <translation id="7589661784326793847">Itxaron unetxo batean</translation>
 <translation id="7592775719802218421"><ph name="FILE_NAME" /> fitxategia konexiorik gabe erabiltzeko deskargatzen</translation>
 <translation id="7600126690270271294">Serbiarra</translation>
@@ -881,6 +886,7 @@
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">Errore bat gertatu da sarea konfiguratzean</translation>
+<translation id="7832093238954689746">Sinkronizatu dira fitxategiak. Nire unitatea karpetako fitxategiak konexiorik gabe erabil ditzakezu.</translation>
 <translation id="7839804798877833423">Fitxategi horiek eskuratzeko, mugikorreko datuen <ph name="FILE_SIZE" /> erabiliko dira.</translation>
 <translation id="7846076177841592234">Utzi hautapena bertan behera</translation>
 <translation id="7853966320808728790">BÉPO teklatu frantsesa</translation>
@@ -930,6 +936,7 @@
 <translation id="8179976553408161302">Sartu</translation>
 <translation id="8193175696669055101">Gailuaren modeloa</translation>
 <translation id="8223479393428528563">Fitxategi horiek gordetzeko eta konexiorik gabe erabili ahal izateko, konekta zaitez berriro, egin klik eskuineko botoiarekin fitxategien gainean eta hautatu <ph name="OFFLINE_CHECKBOX_NAME" /> aukera.</translation>
+<translation id="8241139360630443550">Ikusi biltegia</translation>
 <translation id="8249296373107784235">Utzi bertan behera</translation>
 <translation id="8250690786522693009">Latindarra</translation>
 <translation id="8250920743982581267">Dokumentuak</translation>
