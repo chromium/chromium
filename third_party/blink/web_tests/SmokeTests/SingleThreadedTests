@@ -81,6 +81,7 @@ compositing/perpendicular-layer-sorting.html
 compositing/perspective-interest-rect.html
 compositing/reflections/load-video-in-reflection.html
 compositing/reflections/nested-reflection-anchor-point.html
+compositing/reflections/nested-reflection-transformed.html
 compositing/reflections/nested-reflection-transformed2.html
 compositing/scroll-with-inner-clip.html
 compositing/scrollbars/nested-overlay-scrollbars.html
@@ -207,6 +208,7 @@ fast/borders/border-radius-with-layer.html
 fast/borders/border-styles-split.html
 fast/borders/border-width-below-1.html
 fast/borders/fieldsetBorderRadius.html
+fast/borders/mixed-border-styles-radius.html
 fast/borders/outline-alpha-block.html
 fast/borders/outline-rounded-border.html
 fast/box-shadow/box-shadow-transformed.html
@@ -492,6 +494,7 @@ fast/forms/focus-rect/focus-ring-outline-offset.html
 fast/forms/focus-rect/radio-focus-ring.html
 fast/forms/input-appearance-height.html
 fast/forms/label/hover-on-moving-mouse-checkbox-to-parent-label.html
+fast/forms/month-multiple-fields/month-multiple-fields-ax-value-changed-notification.html
 fast/forms/month-multiple-fields/month-multiple-fields-keyboard-events.html
 fast/forms/month/month-picker-appearance-disabled-today.html
 fast/forms/month/month-picker-appearance-rtl.html
@@ -567,6 +570,7 @@ fast/frames/detach-during-initial-load.html
 fast/frames/frame-limit.html
 fast/frames/frameset-border-inheritance.html
 fast/frames/frameset-bordercolor-inheritance.html
+fast/frames/frameset-dynamic-border.html
 fast/frames/sandboxed-iframe-plugins.html
 fast/harness/perftests/runs-per-second-iterations.html
 fast/harness/perftests/runs-per-second-log.html
@@ -1423,6 +1427,7 @@ http/tests/xmlhttprequest/navigation-abort-detaches-frame.html
 http/tests/xmlhttprequest/redirect-cross-origin-post.html
 http/tests/xmlhttprequest/xmlhttprequest-post-crash.html
 ietestcenter/css3/bordersbackgrounds/background-attachment-local-scrolling.htm
+ietestcenter/css3/bordersbackgrounds/border-radius-applies-to-002.htm
 ietestcenter/css3/bordersbackgrounds/border-radius-applies-to-004.htm
 ietestcenter/css3/bordersbackgrounds/border-radius-applies-to-007.htm
 ietestcenter/css3/bordersbackgrounds/border-radius-clip-001.htm
