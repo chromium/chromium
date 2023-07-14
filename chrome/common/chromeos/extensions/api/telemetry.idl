@@ -8,6 +8,7 @@ namespace os.telemetry {
 // Note: Please update documentation as well when this interface is changed.
 // The documentation lives here: //docs/telemetry_extension/api_overview.md.
 // LINT.IfChange
+
   dictionary AudioInputNodeInfo {
     double? id;
     DOMString? name;
@@ -487,5 +488,9 @@ namespace os.telemetry {
 
     [supportsPromises] static void getDisplayInfo(DisplayInfoCallback callback);
   };
-// LINT.ThenChange(//docs/telemetry_extension/api_overview.md)
+
+  // LINT.ThenChange(//docs/telemetry_extension/api_overview.md)
+  // The following is an empty definition, since the IDL compiler only accepts
+  // comments over valid definitions.
+  callback EOF = void();
 };

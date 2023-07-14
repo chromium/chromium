@@ -8,6 +8,7 @@ namespace os.events {
 // Note: Please update documentation as well when this interface is changed.
 // The documentation lives here: //docs/telemetry_extension/api_overview.md.
 // LINT.IfChange
+
     enum EventCategory {
         audio_jack,
         lid,
@@ -396,5 +397,9 @@ namespace os.events {
         // Informs the extension that a `Stylus Connected` event occured.
         static void onStylusConnectedEvent(StylusConnectedEventInfo event_info);
     };
-// LINT.ThenChange(//docs/telemetry_extension/api_overview.md)
+
+  // LINT.ThenChange(//docs/telemetry_extension/api_overview.md)
+  // The following is an empty definition, since the IDL compiler only accepts
+  // comments over valid definitions.
+  callback EOF = void();
 };
