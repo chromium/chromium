@@ -819,7 +819,8 @@ void EmbeddedWorkerInstance::BindUsbService(
     return;
   }
   if (usb_delegate->IsServiceWorkerAllowedForOrigin(origin)) {
-    WebUsbServiceImpl::Create(context_, origin, std::move(receiver));
+    WebUsbServiceImpl::Create(owner_version_->GetWeakPtr(), origin,
+                              std::move(receiver));
   }
 }
 
