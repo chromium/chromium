@@ -14,8 +14,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import android.content.Context;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -39,6 +37,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModelSelector;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
+
 /** Unit tests for {@link ReadAloudController}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
@@ -48,8 +47,6 @@ public class ReadAloudControllerUnitTest {
     private MockTab mTab;
     private ReadAloudController mController;
 
-    @Mock
-    Context mContext;
     @Rule
     public JniMocker mJniMocker = new JniMocker();
     @Rule
@@ -81,8 +78,8 @@ public class ReadAloudControllerUnitTest {
                 });
         when(mHooksImpl.isEnabled()).thenReturn(true);
         ReadAloudController.setReadabilityHooks(mHooksImpl);
-        mController = new ReadAloudController(
-                mContext, mMockProfileSupplier, mTabModelSelector.getModel(false));
+        mController =
+                new ReadAloudController(mMockProfileSupplier, mTabModelSelector.getModel(false));
 
         mTab = (MockTab) mTabModelSelector.getCurrentTab();
         mTab.setGurlOverrideForTesting(sTestGURL);
