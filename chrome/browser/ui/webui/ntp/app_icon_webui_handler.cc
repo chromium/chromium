@@ -14,15 +14,13 @@
 #include "chrome/common/url_constants.h"
 #include "extensions/browser/extension_registry.h"
 #include "third_party/skia/include/core/SkBitmap.h"
-#include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/color_analysis.h"
 
 namespace {
 
-base::Value GetDominantColorCssString(
-    scoped_refptr<base::RefCountedMemory> png) {
+base::Value GetDominantColorCssString(const SkBitmap& bitmap) {
   color_utils::GridSampler sampler;
-  SkColor color = color_utils::CalculateKMeanColorOfPNG(png);
+  SkColor color = color_utils::CalculateKMeanColorOfBitmap(bitmap);
   return base::Value(base::StringPrintf("rgb(%d, %d, %d)", SkColorGetR(color),
                                         SkColorGetG(color),
                                         SkColorGetB(color)));
@@ -34,7 +32,7 @@ AppIconWebUIHandler::AppIconWebUIHandler() {
   extension_icon_manager_.set_observer(this);
 }
 
-AppIconWebUIHandler::~AppIconWebUIHandler() {}
+AppIconWebUIHandler::~AppIconWebUIHandler() = default;
 
 void AppIconWebUIHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
@@ -59,13 +57,7 @@ void AppIconWebUIHandler::HandleGetAppIconDominantColor(
 
 void AppIconWebUIHandler::OnImageLoaded(const std::string& extension_id) {
   gfx::Image icon = extension_icon_manager_.GetIcon(extension_id);
-  // TODO(estade): would be nice to avoid a round trip through png encoding.
-  std::vector<unsigned char> bits;
-  if (!gfx::PNGCodec::EncodeBGRASkBitmap(*icon.ToSkBitmap(), true, &bits))
-    return;
-  scoped_refptr<base::RefCountedStaticMemory> bits_mem(
-      new base::RefCountedStaticMemory(&bits.front(), bits.size()));
-  base::Value color_value = GetDominantColorCssString(bits_mem);
+  base::Value color_value = GetDominantColorCssString(*icon.ToSkBitmap());
   base::Value id(extension_id);
   web_ui()->CallJavascriptFunctionUnsafe("ntp.setFaviconDominantColor", id,
                                          color_value);
