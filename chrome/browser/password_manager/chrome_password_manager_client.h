@@ -308,6 +308,15 @@ class ChromePasswordManagerClient
   bool has_binding_for_credential_manager() const {
     return content_credential_manager_.HasBinding();
   }
+  base::WeakPtr<PasswordGenerationPopupControllerImpl>
+  generation_popup_controller() {
+    return popup_controller_;
+  }
+  void SetCurrentTargetFrameForTesting(
+      content::RenderFrameHost* render_frame_host) {
+    password_generation_driver_receivers_.SetCurrentTargetFrameForTesting(
+        render_frame_host);
+  }
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
@@ -427,7 +436,7 @@ class ChromePasswordManagerClient
   // Observer for password generation popup.
   raw_ptr<PasswordGenerationPopupObserver> observer_;
 
-  // Controls the popup
+  // Controls the generation popup.
   base::WeakPtr<PasswordGenerationPopupControllerImpl> popup_controller_;
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)

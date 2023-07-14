@@ -8,6 +8,8 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/password_manager/chrome_password_manager_client.h"
+#include "chrome/browser/password_manager/password_manager_test_base.h"
 #include "chrome/browser/password_manager/password_manager_uitest_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -58,12 +60,114 @@ const ui::AXPlatformNodeDelegate* FindNode(
 
 }  // namespace
 
-class PasswordGenerationPopupViewTest : public InProcessBrowserTest {};
+class PasswordGenerationPopupViewTest : public PasswordManagerBrowserTestBase {
+ public:
+  void SetUpOnMainThread() override {
+    PasswordManagerBrowserTestBase::SetUpOnMainThread();
+    NavigateToFile("/password/signup_form_new_password.html");
+  }
+};
+
+// Regression test for crbug.com/400543. Verifying that moving the mouse in the
+// editing dialog doesn't crash.
+IN_PROC_BROWSER_TEST_F(PasswordGenerationPopupViewTest,
+                       MouseMovementInEditingPopup) {
+  auto* client = ChromePasswordManagerClient::FromWebContents(WebContents());
+  client->SetCurrentTargetFrameForTesting(WebContents()->GetPrimaryMainFrame());
+  client->ShowPasswordEditingPopup(gfx::RectF(0, 0, 10, 10), FormData(),
+                                   FieldRendererId(100), u"password123");
+  // Avoid dangling pointers on shutdown.
+  client->SetCurrentTargetFrameForTesting(nullptr);
+  base::WeakPtr<PasswordGenerationPopupControllerImpl> controller =
+      client->generation_popup_controller();
+  ASSERT_TRUE(controller);
+  ASSERT_TRUE(controller->IsVisible());
+
+  PasswordGenerationPopupViewTester::For(controller->view())
+      ->SimulateMouseMovementAt(gfx::Point(1, 1));
+}
+
+// Verify that destroying web contents with visible popup does not crash.
+IN_PROC_BROWSER_TEST_F(PasswordGenerationPopupViewTest,
+                       CloseWebContentsWithVisiblePopup) {
+  auto* client = ChromePasswordManagerClient::FromWebContents(WebContents());
+  client->SetCurrentTargetFrameForTesting(WebContents()->GetPrimaryMainFrame());
+  client->ShowPasswordEditingPopup(gfx::RectF(0, 0, 10, 10), FormData(),
+                                   FieldRendererId(100), u"password123");
+  // Avoid dangling pointers on shutdown.
+  client->SetCurrentTargetFrameForTesting(nullptr);
+  base::WeakPtr<PasswordGenerationPopupControllerImpl> controller =
+      client->generation_popup_controller();
+  ASSERT_TRUE(controller);
+  ASSERT_TRUE(controller->IsVisible());
+
+  WebContents()->Close();
+}
+
+// Verify that controller is not crashed in case of insufficient vertical space
+// for showing popup.
+IN_PROC_BROWSER_TEST_F(PasswordGenerationPopupViewTest,
+                       DoNotCrashInCaseOfInsuffucientVerticalSpace) {
+  auto* client = ChromePasswordManagerClient::FromWebContents(WebContents());
+  client->SetCurrentTargetFrameForTesting(WebContents()->GetPrimaryMainFrame());
+  client->ShowPasswordEditingPopup(gfx::RectF(0, -20, 10, 10), FormData(),
+                                   FieldRendererId(100), u"password123");
+  EXPECT_FALSE(client->generation_popup_controller());
+  // Avoid dangling pointers on shutdown.
+  client->SetCurrentTargetFrameForTesting(nullptr);
+}
+
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+IN_PROC_BROWSER_TEST_F(PasswordGenerationPopupViewTest, PopupInAxTree) {
+  content::BrowserAccessibilityState::GetInstance()->EnableAccessibility();
+
+  views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
+                                       "PasswordGenerationPopupViewViews");
+  content::EvalJs(WebContents(),
+                  "document.getElementById('password_field').focus()");
+  auto* client = ChromePasswordManagerClient::FromWebContents(WebContents());
+  client->GeneratePassword(
+      autofill::password_generation::PasswordGenerationType::kManual);
+  gfx::NativeWindow window;
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  // On Mac and Linux the whole ax tree grows from the main root windows
+  // and the popup node can be found there. This gives more confidence
+  // that it is in the right place than on Windows (see below) where
+  // the popup subtree lives separately.
+  waiter.WaitIfNeededAndGet();
+  window = chrome::FindLastActive()->window()->GetNativeWindow();
+#elif BUILDFLAG(IS_WIN)
+  views::Widget* dialog_widget = waiter.WaitIfNeededAndGet();
+  window = dialog_widget->GetNativeWindow();
+#endif
+  ASSERT_TRUE(client->generation_popup_controller());
+
+  ui::AXPlatformNode* root_node = ui::AXPlatformNode::FromNativeWindow(window);
+  ui::AXPlatformNodeDelegate* root_node_delegate = root_node->GetDelegate();
+  const ui::AXPlatformNodeDelegate* node_delegate =
+      FindNode(root_node_delegate,
+               "PasswordGenerationPopupViewViews::GeneratedPasswordBox");
+
+  ASSERT_THAT(node_delegate, ::testing::NotNull());
+  EXPECT_FALSE(
+      node_delegate->GetBoolAttribute(ax::mojom::BoolAttribute::kSelected));
+
+  // Set the screen reader focus by calling a method on the controller directly,
+  // it normally is triggered by UI events when the screen reader is on,
+  // screen reader presence is hard/expensive to emulate.
+  static_cast<PasswordGenerationPopupController*>(
+      client->generation_popup_controller().get())
+      ->SetSelected();
+
+  EXPECT_TRUE(
+      node_delegate->GetBoolAttribute(ax::mojom::BoolAttribute::kSelected));
+}
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 
 // The test parameter controls the value of kPasswordGenerationExperiment
 // feature param.
 class PasswordGenerationPopupViewWithContentExperimentTest
-    : public InProcessBrowserTest,
+    : public PasswordGenerationPopupViewTest,
       public testing::WithParamInterface<std::string> {
  public:
   PasswordGenerationPopupViewWithContentExperimentTest() {
@@ -79,197 +183,19 @@ class PasswordGenerationPopupViewWithContentExperimentTest
   base::test::ScopedFeatureList feature_list_;
 };
 
-// Regression test for crbug.com/400543. Verifying that moving the mouse in the
-// editing dialog doesn't crash.
-IN_PROC_BROWSER_TEST_F(PasswordGenerationPopupViewTest,
-                       MouseMovementInEditingPopup) {
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  password_generation::PasswordGenerationUIData ui_data(
-      gfx::RectF(web_contents->GetContainerBounds().x(),
-                 web_contents->GetContainerBounds().y(), 10, 10),
-      /*max_length=*/10,
-      /*generation_element=*/std::u16string(), FieldRendererId(100),
-      /*is_generation_element_password_type=*/true, base::i18n::TextDirection(),
-      FormData());
-
-  base::WeakPtr<PasswordGenerationPopupControllerImpl> controller =
-      PasswordGenerationPopupControllerImpl::GetOrCreate(
-          /*previous=*/nullptr, ui_data.bounds, ui_data,
-          password_manager::ContentPasswordManagerDriverFactory::
-              FromWebContents(web_contents)
-                  ->GetDriverForFrame(web_contents->GetPrimaryMainFrame())
-                  ->AsWeakPtr(),
-          /*observer=*/nullptr, web_contents,
-          web_contents->GetPrimaryMainFrame());
-
-  controller->Show(PasswordGenerationPopupController::kEditGeneratedPassword);
-  EXPECT_TRUE(controller->IsVisible());
-
-  PasswordGenerationPopupViewTester::For(controller->view())
-      ->SimulateMouseMovementAt(
-          gfx::Point(web_contents->GetContainerBounds().x() + 1,
-                     web_contents->GetContainerBounds().y() + 1));
-
-  // This hides the popup and destroys the controller.
-  web_contents->Close();
-}
-
-// Verify that destroying web contents with visible popup does not crash.
-IN_PROC_BROWSER_TEST_F(PasswordGenerationPopupViewTest,
-                       CloseWebContentsWithVisiblePopup) {
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  password_generation::PasswordGenerationUIData ui_data(
-      gfx::RectF(web_contents->GetContainerBounds().x(),
-                 web_contents->GetContainerBounds().y(), 10, 10),
-      /*max_length=*/10,
-      /*generation_element=*/std::u16string(), FieldRendererId(100),
-      /*is_generation_element_password_type=*/true, base::i18n::TextDirection(),
-      FormData());
-
-  base::WeakPtr<PasswordGenerationPopupControllerImpl> controller =
-      PasswordGenerationPopupControllerImpl::GetOrCreate(
-          /*previous=*/nullptr, ui_data.bounds, ui_data,
-          password_manager::ContentPasswordManagerDriverFactory::
-              FromWebContents(web_contents)
-                  ->GetDriverForFrame(web_contents->GetPrimaryMainFrame())
-                  ->AsWeakPtr(),
-          /*observer=*/nullptr, web_contents,
-          web_contents->GetPrimaryMainFrame());
-
-  controller->Show(PasswordGenerationPopupController::kEditGeneratedPassword);
-  EXPECT_TRUE(controller->IsVisible());
-
-  web_contents->Close();
-}
-
-// Verify that controller is not crashed in case of insufficient vertical space
-// for showing popup.
-IN_PROC_BROWSER_TEST_F(PasswordGenerationPopupViewTest,
-                       DoNotCrashInCaseOfInsuffucientVerticalSpace) {
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  password_generation::PasswordGenerationUIData ui_data(
-      gfx::RectF(web_contents->GetContainerBounds().x(),
-                 web_contents->GetContainerBounds().y() - 20, 10, 10),
-      /*max_length=*/10,
-      /*generation_element=*/std::u16string(), FieldRendererId(100),
-      /*is_generation_element_password_type=*/true, base::i18n::TextDirection(),
-      FormData());
-
-  base::WeakPtr<PasswordGenerationPopupControllerImpl> controller =
-      PasswordGenerationPopupControllerImpl::GetOrCreate(
-          /*previous=*/nullptr, ui_data.bounds, ui_data,
-          password_manager::ContentPasswordManagerDriverFactory::
-              FromWebContents(web_contents)
-                  ->GetDriverForFrame(web_contents->GetPrimaryMainFrame())
-                  ->AsWeakPtr(),
-          /*observer=*/nullptr, web_contents,
-          web_contents->GetPrimaryMainFrame());
-
-  controller->Show(PasswordGenerationPopupController::kEditGeneratedPassword);
-  // Check that the object `controller` points to was invalidated.
-  EXPECT_FALSE(controller);
-}
-
-using PasswordGenerationPopupViewAxTest = InProcessBrowserTest;
-
-IN_PROC_BROWSER_TEST_F(PasswordGenerationPopupViewAxTest, PopupInAxTree) {
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
-  content::BrowserAccessibilityState::GetInstance()->EnableAccessibility();
-
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-
-  auto container_bounds = web_contents->GetContainerBounds();
-  password_generation::PasswordGenerationUIData ui_data(
-      gfx::RectF(container_bounds.x(), container_bounds.y(), 10, 10),
-      /*max_length=*/10,
-      /*generation_element=*/std::u16string(), FieldRendererId(100),
-      /*is_generation_element_password_type=*/true, base::i18n::TextDirection(),
-      FormData());
-
-  TestGenerationPopupObserver observer;
-  base::WeakPtr<PasswordGenerationPopupControllerImpl> controller =
-      PasswordGenerationPopupControllerImpl::GetOrCreate(
-          /*previous=*/nullptr, ui_data.bounds, ui_data,
-          password_manager::ContentPasswordManagerDriverFactory::
-              FromWebContents(web_contents)
-                  ->GetDriverForFrame(web_contents->GetPrimaryMainFrame())
-                  ->AsWeakPtr(),
-          &observer, web_contents, web_contents->GetPrimaryMainFrame());
-
-  views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
-                                       "PasswordGenerationPopupViewViews");
-  controller->Show(GenerationUIState::kOfferGeneration);
-
-  gfx::NativeWindow window = gfx::NativeWindow();
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-  // On Mac and Linux the whole ax tree grows from the main root windows
-  // and the popup node can be found there. This gives more confidence
-  // that it is in the right place than on Windows (see below) where
-  // the popup subtree lives separately.
-  waiter.WaitIfNeededAndGet();
-  window = chrome::FindLastActive()->window()->GetNativeWindow();
-#elif BUILDFLAG(IS_WIN)
-  views::Widget* dialog_widget = waiter.WaitIfNeededAndGet();
-  window = dialog_widget->GetNativeWindow();
-#endif
-
-  ui::AXPlatformNode* root_node = ui::AXPlatformNode::FromNativeWindow(window);
-  ui::AXPlatformNodeDelegate* root_node_delegate = root_node->GetDelegate();
-  const ui::AXPlatformNodeDelegate* node_delegate =
-      FindNode(root_node_delegate,
-               "PasswordGenerationPopupViewViews::GeneratedPasswordBox");
-
-  ASSERT_THAT(node_delegate, ::testing::NotNull());
-  EXPECT_FALSE(
-      node_delegate->GetBoolAttribute(ax::mojom::BoolAttribute::kSelected));
-
-  // Set the screen reader focus by calling a method on the controller directly,
-  // it normally is triggered by UI events when the screen reader is on,
-  // screen reader presence is hard/expensive to emulate.
-  static_cast<PasswordGenerationPopupController*>(controller.get())
-      ->SetSelected();
-
-  EXPECT_TRUE(
-      node_delegate->GetBoolAttribute(ax::mojom::BoolAttribute::kSelected));
-
-  web_contents->Close();
-  content::BrowserAccessibilityState::GetInstance()->EnableAccessibility();
-#else
-  GTEST_SKIP() << "Accessibility reflection is not supported on this platform.";
-#endif
-}
-
 IN_PROC_BROWSER_TEST_P(PasswordGenerationPopupViewWithContentExperimentTest,
                        DoesNotCrashShowingGenerationOfferWithModifiedContent) {
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  password_generation::PasswordGenerationUIData ui_data(
-      gfx::RectF(web_contents->GetContainerBounds().x(),
-                 web_contents->GetContainerBounds().y(), 10, 10),
-      /*max_length=*/10,
-      /*generation_element=*/std::u16string(), FieldRendererId(100),
-      /*is_generation_element_password_type=*/true, base::i18n::TextDirection(),
-      FormData());
+  views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
+                                       "PasswordGenerationPopupViewViews");
+  content::EvalJs(WebContents(),
+                  "document.getElementById('password_field').focus()");
+  auto* client = ChromePasswordManagerClient::FromWebContents(WebContents());
+  client->GeneratePassword(
+      autofill::password_generation::PasswordGenerationType::kManual);
 
-  base::WeakPtr<PasswordGenerationPopupControllerImpl> controller =
-      PasswordGenerationPopupControllerImpl::GetOrCreate(
-          /*previous=*/nullptr, ui_data.bounds, ui_data,
-          password_manager::ContentPasswordManagerDriverFactory::
-              FromWebContents(web_contents)
-                  ->GetDriverForFrame(web_contents->GetPrimaryMainFrame())
-                  ->AsWeakPtr(),
-          /*observer=*/nullptr, web_contents,
-          web_contents->GetPrimaryMainFrame());
-
-  controller->Show(PasswordGenerationPopupController::kOfferGeneration);
-  EXPECT_TRUE(controller->IsVisible());
-
-  // This hides the popup and destroys the controller.
-  web_contents->Close();
+  waiter.WaitIfNeededAndGet();
+  ASSERT_TRUE(client->generation_popup_controller());
+  EXPECT_TRUE(client->generation_popup_controller()->IsVisible());
 }
 
 INSTANTIATE_TEST_SUITE_P(ContentExperiment,

@@ -302,7 +302,7 @@ bool PasswordGenerationAgent::IsPrerendering() const {
 
 void PasswordGenerationAgent::PreviewGenerationSuggestion(
     const std::u16string& password) {
-  DCHECK(current_generation_item_);
+  CHECK(current_generation_item_);
 
   for (auto& password_field : current_generation_item_->password_elements_) {
     PreviewGeneratedValue(password_field,
