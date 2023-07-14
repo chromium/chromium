@@ -2499,22 +2499,27 @@ TEST_P(AppsGridViewDragTest, MouseDragMovement) {
   AppListItemView* folder_view =
       GetItemViewForPoint(GetItemRectOnCurrentPageAt(0, 0).CenterPoint());
   // Drag the new item to the left so that the grid reorders.
-  InitiateDragForItemAtCurrentPageAt(AppsGridView::MOUSE, 0, 1,
-                                     apps_grid_view_);
-  MaybeCheckHaptickEventsCount(1);
+  StartDragForViewAndFireTimer(
+      AppsGridView::MOUSE, GetItemViewInCurrentPageAt(0, 1, apps_grid_view_));
 
-  gfx::Point to = GetItemRectOnCurrentPageAt(0, 0).bottom_left();
-  to.Offset(0, -1);  // Get a point inside the rect.
-  UpdateDrag(AppsGridView::MOUSE, to, apps_grid_view_, 10 /*steps*/);
-  test_api_->LayoutToIdealBounds();
+  std::list<base::OnceClosure> tasks;
+  tasks.push_back(base::BindLambdaForTesting([&]() {
+    MaybeCheckHaptickEventsCount(1);
 
-  // The grid now looks like | blank | folder |.
-  EXPECT_EQ(nullptr, GetItemViewForPoint(
-                         GetItemRectOnCurrentPageAt(0, 0).CenterPoint()));
-  EXPECT_EQ(folder_view, GetItemViewForPoint(
-                             GetItemRectOnCurrentPageAt(0, 1).CenterPoint()));
+    gfx::Point to = GetItemRectOnCurrentPageAt(0, 0).bottom_left();
+    to.Offset(0, -1);  // Get a point inside the rect.
+    UpdateDrag(AppsGridView::MOUSE, to, apps_grid_view_, 10 /*steps*/);
+    test_api_->LayoutToIdealBounds();
 
-  EndDrag();
+    // The grid now looks like | blank | folder |.
+    EXPECT_EQ(nullptr, GetItemViewForPoint(
+                           GetItemRectOnCurrentPageAt(0, 0).CenterPoint()));
+    EXPECT_EQ(folder_view, GetItemViewForPoint(
+                               GetItemRectOnCurrentPageAt(0, 1).CenterPoint()));
+  }));
+  tasks.push_back(base::BindLambdaForTesting([&]() { EndDrag(); }));
+  MaybeRunDragAndDropSequenceForAppList(&tasks, /*is_touch =*/false);
+
   MaybeCheckHaptickEventsCount(1);
 }
 
@@ -2529,18 +2534,26 @@ TEST_P(AppsGridViewDragTest, MouseDragMaxItemsInFolderWithMovement) {
   GetTestModel()->PopulateAppWithId(kMaxItemsInFolder);
   UpdateLayout();
   // Drag the new item to the left so that the grid reorders.
-  InitiateDragForItemAtCurrentPageAt(AppsGridView::MOUSE, 0, 1,
-                                     apps_grid_view_);
-  MaybeCheckHaptickEventsCount(1);
+  StartDragForViewAndFireTimer(
+      AppsGridView::MOUSE, GetItemViewInCurrentPageAt(0, 1, apps_grid_view_));
 
-  gfx::Point to = GetItemRectOnCurrentPageAt(0, 0).bottom_left();
-  to.Offset(0, -1);  // Get a point inside the rect.
-  UpdateDrag(AppsGridView::MOUSE, to, apps_grid_view_, 10 /*steps*/);
-  gfx::Point folder_in_second_slot =
-      GetItemRectOnCurrentPageAt(0, 1).CenterPoint();
-  UpdateDrag(AppsGridView::MOUSE, folder_in_second_slot, apps_grid_view_,
-             10 /*steps*/);
-  EndDrag();
+  std::list<base::OnceClosure> tasks;
+  tasks.push_back(base::BindLambdaForTesting([&]() {
+    MaybeCheckHaptickEventsCount(1);
+
+    gfx::Point to = GetItemRectOnCurrentPageAt(0, 0).bottom_left();
+    to.Offset(0, -1);  // Get a point inside the rect.
+    UpdateDrag(AppsGridView::MOUSE, to, apps_grid_view_, 10 /*steps*/);
+  }));
+  tasks.push_back(base::BindLambdaForTesting([&]() {
+    gfx::Point folder_in_second_slot =
+        GetItemRectOnCurrentPageAt(0, 1).CenterPoint();
+    UpdateDrag(AppsGridView::MOUSE, folder_in_second_slot, apps_grid_view_,
+               10 /*steps*/);
+  }));
+  tasks.push_back(base::BindLambdaForTesting([&]() { EndDrag(); }));
+  MaybeRunDragAndDropSequenceForAppList(&tasks, /*is_touch =*/false);
+
   MaybeCheckHaptickEventsCount(1);
 
   // The item should not have moved into the folder.
@@ -2554,23 +2567,29 @@ TEST_P(AppsGridViewDragTest, MouseDragMaxItemsInFolderWithMovement) {
 TEST_P(AppsGridViewDragTest, MouseDragItemReorderBeforeFolderDropPoint) {
   GetTestModel()->PopulateApps(2);
   UpdateLayout();
-  InitiateDragForItemAtCurrentPageAt(AppsGridView::MOUSE, 0, 1,
-                                     apps_grid_view_);
-  MaybeCheckHaptickEventsCount(1);
+  StartDragForViewAndFireTimer(
+      AppsGridView::MOUSE, GetItemViewInCurrentPageAt(0, 1, apps_grid_view_));
 
-  gfx::Point to = GetItemRectOnCurrentPageAt(0, 1).CenterPoint();
-  int half_tile_width = std::abs(GetItemRectOnCurrentPageAt(0, 1).x() -
-                                 GetItemRectOnCurrentPageAt(0, 0).x()) /
-                        2;
-  gfx::Vector2d drag_vector(-half_tile_width - 4, 0);
-  // Flip drag vector in rtl.
-  if (is_rtl_)
-    drag_vector.set_x(-drag_vector.x());
+  std::list<base::OnceClosure> tasks;
+  tasks.push_back(base::BindLambdaForTesting([&]() {
+    MaybeCheckHaptickEventsCount(1);
 
-  // Drag left but stop before the folder dropping circle.
-  UpdateDrag(AppsGridView::MOUSE, to + drag_vector, apps_grid_view_,
-             10 /*steps*/);
-  EndDrag();
+    gfx::Point to = GetItemRectOnCurrentPageAt(0, 1).CenterPoint();
+    int half_tile_width = std::abs(GetItemRectOnCurrentPageAt(0, 1).x() -
+                                   GetItemRectOnCurrentPageAt(0, 0).x()) /
+                          2;
+    gfx::Vector2d drag_vector(-half_tile_width - 4, 0);
+    // Flip drag vector in rtl.
+    if (is_rtl_) {
+      drag_vector.set_x(-drag_vector.x());
+    }
+
+    // Drag left but stop before the folder dropping circle.
+    UpdateDrag(AppsGridView::MOUSE, to + drag_vector, apps_grid_view_,
+               10 /*steps*/);
+  }));
+  tasks.push_back(base::BindLambdaForTesting([&]() { EndDrag(); }));
+  MaybeRunDragAndDropSequenceForAppList(&tasks, /*is_touch =*/false);
   MaybeCheckHaptickEventsCount(1);
 
   EXPECT_EQ(std::string("Item 0,Item 1"), GetTestModel()->GetModelContent());
@@ -2580,26 +2599,33 @@ TEST_P(AppsGridViewDragTest, MouseDragItemReorderBeforeFolderDropPoint) {
 TEST_P(AppsGridViewDragTest, MouseDragItemReorderAfterFolderDropPoint) {
   GetTestModel()->PopulateApps(2);
   UpdateLayout();
-  InitiateDragForItemAtCurrentPageAt(AppsGridView::MOUSE, 0, 1,
-                                     apps_grid_view_);
-  MaybeCheckHaptickEventsCount(1);
+  StartDragForViewAndFireTimer(
+      AppsGridView::MOUSE, GetItemViewInCurrentPageAt(0, 1, apps_grid_view_));
 
-  gfx::Point to = GetItemRectOnCurrentPageAt(0, 1).CenterPoint();
-  int half_tile_width = std::abs(GetItemRectOnCurrentPageAt(0, 1).x() -
-                                 GetItemRectOnCurrentPageAt(0, 0).x()) /
-                        2;
-  gfx::Vector2d drag_vector(
-      -2 * half_tile_width -
-          GetAppListConfig()->folder_dropping_circle_radius() - 4,
-      0);
-  // Flip drag vector in rtl.
-  if (is_rtl_)
-    drag_vector.set_x(-drag_vector.x());
+  std::list<base::OnceClosure> tasks;
+  tasks.push_back(base::BindLambdaForTesting([&]() {
+    MaybeCheckHaptickEventsCount(1);
 
-  // Drag left, past the folder dropping circle.
-  UpdateDrag(AppsGridView::MOUSE, to + drag_vector, apps_grid_view_,
-             10 /*steps*/);
-  EndDrag();
+    gfx::Point to = GetItemRectOnCurrentPageAt(0, 1).CenterPoint();
+    int half_tile_width = std::abs(GetItemRectOnCurrentPageAt(0, 1).x() -
+                                   GetItemRectOnCurrentPageAt(0, 0).x()) /
+                          2;
+    gfx::Vector2d drag_vector(
+        -2 * half_tile_width -
+            GetAppListConfig()->folder_dropping_circle_radius() - 4,
+        0);
+    // Flip drag vector in rtl.
+    if (is_rtl_) {
+      drag_vector.set_x(-drag_vector.x());
+    }
+
+    // Drag left, past the folder dropping circle.
+    UpdateDrag(AppsGridView::MOUSE, to + drag_vector, apps_grid_view_,
+               10 /*steps*/);
+  }));
+  tasks.push_back(base::BindLambdaForTesting([&]() { EndDrag(); }));
+  MaybeRunDragAndDropSequenceForAppList(&tasks, /*is_touch =*/false);
+
   MaybeCheckHaptickEventsCount(1);
 
   EXPECT_EQ(std::string("Item 1,Item 0"), GetTestModel()->GetModelContent());
@@ -2611,26 +2637,33 @@ TEST_P(AppsGridViewDragTest, MouseDragItemReorderDragDownOneRow) {
   // test dragging item to second row.
   GetTestModel()->PopulateApps(7);
   UpdateLayout();
-  InitiateDragForItemAtCurrentPageAt(AppsGridView::MOUSE, 0, 1,
-                                     apps_grid_view_);
-  MaybeCheckHaptickEventsCount(1);
+  StartDragForViewAndFireTimer(
+      AppsGridView::MOUSE, GetItemViewInCurrentPageAt(0, 1, apps_grid_view_));
 
-  gfx::Point to = GetItemRectOnCurrentPageAt(0, 1).CenterPoint();
-  int half_tile_width = std::abs(GetItemRectOnCurrentPageAt(0, 1).x() -
-                                 GetItemRectOnCurrentPageAt(0, 0).x()) /
-                        2;
-  int tile_height = GetItemRectOnCurrentPageAt(1, 0).y() -
-                    GetItemRectOnCurrentPageAt(0, 0).y();
-  gfx::Vector2d drag_vector(-half_tile_width, tile_height);
-  // Flip drag vector in rtl.
-  if (is_rtl_)
-    drag_vector.set_x(-drag_vector.x());
+  std::list<base::OnceClosure> tasks;
+  tasks.push_back(base::BindLambdaForTesting([&]() {
+    MaybeCheckHaptickEventsCount(1);
 
-  // Drag down, between apps 5 and 6. The gap should open up, making space for
-  // app 1 in the bottom left.
-  UpdateDrag(AppsGridView::MOUSE, to + drag_vector, apps_grid_view_,
-             10 /*steps*/);
-  EndDrag();
+    gfx::Point to = GetItemRectOnCurrentPageAt(0, 1).CenterPoint();
+    int half_tile_width = std::abs(GetItemRectOnCurrentPageAt(0, 1).x() -
+                                   GetItemRectOnCurrentPageAt(0, 0).x()) /
+                          2;
+    int tile_height = GetItemRectOnCurrentPageAt(1, 0).y() -
+                      GetItemRectOnCurrentPageAt(0, 0).y();
+    gfx::Vector2d drag_vector(-half_tile_width, tile_height);
+    // Flip drag vector in rtl.
+    if (is_rtl_) {
+      drag_vector.set_x(-drag_vector.x());
+    }
+
+    // Drag down, between apps 5 and 6. The gap should open up, making space for
+    // app 1 in the bottom left.
+    UpdateDrag(AppsGridView::MOUSE, to + drag_vector, apps_grid_view_,
+               10 /*steps*/);
+  }));
+  tasks.push_back(base::BindLambdaForTesting([&]() { EndDrag(); }));
+  MaybeRunDragAndDropSequenceForAppList(&tasks, /*is_touch =*/false);
+
   MaybeCheckHaptickEventsCount(1);
 
   EXPECT_EQ(std::string("Item 0,Item 2,Item 3,Item 4,Item 5,Item 1,Item 6"),
@@ -2643,26 +2676,33 @@ TEST_P(AppsGridViewDragTest, MouseDragItemReorderDragUpOneRow) {
   // test dragging item to second row.
   GetTestModel()->PopulateApps(7);
   UpdateLayout();
-  InitiateDragForItemAtCurrentPageAt(AppsGridView::MOUSE, 1, 0,
-                                     apps_grid_view_);
-  MaybeCheckHaptickEventsCount(1);
+  StartDragForViewAndFireTimer(
+      AppsGridView::MOUSE, GetItemViewInCurrentPageAt(1, 0, apps_grid_view_));
 
-  gfx::Point to = GetItemRectOnCurrentPageAt(1, 0).CenterPoint();
-  int half_tile_width = std::abs(GetItemRectOnCurrentPageAt(0, 1).x() -
-                                 GetItemRectOnCurrentPageAt(0, 0).x()) /
-                        2;
-  int tile_height = GetItemRectOnCurrentPageAt(1, 0).y() -
-                    GetItemRectOnCurrentPageAt(0, 0).y();
-  gfx::Vector2d drag_vector(half_tile_width, -tile_height);
-  // Flip drag vector in rtl.
-  if (is_rtl_)
-    drag_vector.set_x(-drag_vector.x());
+  std::list<base::OnceClosure> tasks;
+  tasks.push_back(base::BindLambdaForTesting([&]() {
+    MaybeCheckHaptickEventsCount(1);
 
-  // Drag up, between apps 0 and 2. The gap should open up, making space for app
-  // 1 in the top right.
-  UpdateDrag(AppsGridView::MOUSE, to + drag_vector, apps_grid_view_,
-             10 /*steps*/);
-  EndDrag();
+    gfx::Point to = GetItemRectOnCurrentPageAt(1, 0).CenterPoint();
+    int half_tile_width = std::abs(GetItemRectOnCurrentPageAt(0, 1).x() -
+                                   GetItemRectOnCurrentPageAt(0, 0).x()) /
+                          2;
+    int tile_height = GetItemRectOnCurrentPageAt(1, 0).y() -
+                      GetItemRectOnCurrentPageAt(0, 0).y();
+    gfx::Vector2d drag_vector(half_tile_width, -tile_height);
+    // Flip drag vector in rtl.
+    if (is_rtl_) {
+      drag_vector.set_x(-drag_vector.x());
+    }
+
+    // Drag up, between apps 0 and 2. The gap should open up, making space for
+    // app 1 in the top right.
+    UpdateDrag(AppsGridView::MOUSE, to + drag_vector, apps_grid_view_,
+               10 /*steps*/);
+  }));
+  tasks.push_back(base::BindLambdaForTesting([&]() { EndDrag(); }));
+  MaybeRunDragAndDropSequenceForAppList(&tasks, /*is_touch =*/false);
+
   test_api_->LayoutToIdealBounds();
   MaybeCheckHaptickEventsCount(1);
 
@@ -2676,26 +2716,33 @@ TEST_P(AppsGridViewDragTest, MouseDragItemReorderDragPastLastApp) {
   // test dragging item to second row.
   GetTestModel()->PopulateApps(7);
   UpdateLayout();
-  InitiateDragForItemAtCurrentPageAt(AppsGridView::MOUSE, 0, 1,
-                                     apps_grid_view_);
-  MaybeCheckHaptickEventsCount(1);
+  StartDragForViewAndFireTimer(
+      AppsGridView::MOUSE, GetItemViewInCurrentPageAt(0, 1, apps_grid_view_));
 
-  gfx::Point to = GetItemRectOnCurrentPageAt(0, 1).CenterPoint();
-  int half_tile_width = std::abs(GetItemRectOnCurrentPageAt(0, 1).x() -
-                                 GetItemRectOnCurrentPageAt(0, 0).x()) /
-                        2;
-  int tile_height = GetItemRectOnCurrentPageAt(1, 0).y() -
-                    GetItemRectOnCurrentPageAt(0, 0).y();
-  // Drag over by half a tile and down by one tile. This ends the drag to the
-  // right of the last item.
-  gfx::Vector2d drag_vector(half_tile_width, tile_height);
-  // Flip drag vector in rtl.
-  if (is_rtl_)
-    drag_vector.set_x(-drag_vector.x());
+  std::list<base::OnceClosure> tasks;
+  tasks.push_back(base::BindLambdaForTesting([&]() {
+    MaybeCheckHaptickEventsCount(1);
 
-  UpdateDrag(AppsGridView::MOUSE, to + drag_vector, apps_grid_view_,
-             10 /*steps*/);
-  EndDrag();
+    gfx::Point to = GetItemRectOnCurrentPageAt(0, 1).CenterPoint();
+    int half_tile_width = std::abs(GetItemRectOnCurrentPageAt(0, 1).x() -
+                                   GetItemRectOnCurrentPageAt(0, 0).x()) /
+                          2;
+    int tile_height = GetItemRectOnCurrentPageAt(1, 0).y() -
+                      GetItemRectOnCurrentPageAt(0, 0).y();
+    // Drag over by half a tile and down by one tile. This ends the drag to the
+    // right of the last item.
+    gfx::Vector2d drag_vector(half_tile_width, tile_height);
+    // Flip drag vector in rtl.
+    if (is_rtl_) {
+      drag_vector.set_x(-drag_vector.x());
+    }
+
+    UpdateDrag(AppsGridView::MOUSE, to + drag_vector, apps_grid_view_,
+               10 /*steps*/);
+  }));
+  tasks.push_back(base::BindLambdaForTesting([&]() { EndDrag(); }));
+  MaybeRunDragAndDropSequenceForAppList(&tasks, /*is_touch =*/false);
+
   MaybeCheckHaptickEventsCount(1);
 
   EXPECT_EQ(std::string("Item 0,Item 2,Item 3,Item 4,Item 5,Item 6,Item 1"),
@@ -2710,15 +2757,25 @@ TEST_P(AppsGridViewDragTest, MouseDragFolderOverItemReorder) {
       GetTestModel()->CreateAndPopulateFolderWithApps(kTotalItems);
   GetTestModel()->PopulateAppWithId(kTotalItems);
   UpdateLayout();
-  InitiateDragForItemAtCurrentPageAt(AppsGridView::MOUSE, 0, 0,
-                                     apps_grid_view_);
-  MaybeCheckHaptickEventsCount(1);
-  gfx::Point to = GetItemRectOnCurrentPageAt(0, 1).CenterPoint();
 
-  UpdateDrag(AppsGridView::MOUSE, to, apps_grid_view_);
-  EndDrag();
+  // TODO(anasalazar): Investigate why Mouse pointer does not
+  // ExceedDragThresehold in this case to trigger drag.
+  StartDragForViewAndFireTimer(
+      AppsGridView::TOUCH, GetItemViewInCurrentPageAt(0, 0, apps_grid_view_));
+
+  std::list<base::OnceClosure> tasks;
+  tasks.push_back(base::BindLambdaForTesting([&]() {
+    MaybeCheckHaptickEventsCount(0);
+    gfx::Point to = GetItemRectOnCurrentPageAt(0, 1).CenterPoint();
+
+    UpdateDrag(AppsGridView::TOUCH, to, apps_grid_view_);
+  }));
+  tasks.push_back(
+      base::BindLambdaForTesting([&]() { EndDrag(AppsGridView::TOUCH); }));
+  MaybeRunDragAndDropSequenceForAppList(&tasks, /*is_touch =*/true);
+
   test_api_->LayoutToIdealBounds();
-  MaybeCheckHaptickEventsCount(1);
+  MaybeCheckHaptickEventsCount(0);
 
   EXPECT_EQ(2u, GetTopLevelItemList()->item_count());
   EXPECT_EQ("Item 2", GetTopLevelItemList()->item_at(0)->id());
@@ -2731,17 +2788,27 @@ TEST_P(AppsGridViewDragTest, MouseDragWithCancelKeepsOrder) {
   size_t kTotalItems = 2;
   GetTestModel()->PopulateApps(kTotalItems);
   UpdateLayout();
-  InitiateDragForItemAtCurrentPageAt(AppsGridView::MOUSE, 0, 0,
-                                     apps_grid_view_);
-  MaybeCheckHaptickEventsCount(1);
-  gfx::Point to = GetItemRectOnCurrentPageAt(0, 1).CenterPoint();
+  StartDragForViewAndFireTimer(
+      AppsGridView::MOUSE, GetItemViewInCurrentPageAt(0, 0, apps_grid_view_));
 
-  UpdateDrag(AppsGridView::MOUSE, to, apps_grid_view_, 10 /*steps*/);
+  std::list<base::OnceClosure> tasks;
+  tasks.push_back(base::BindLambdaForTesting([&]() {
+    MaybeCheckHaptickEventsCount(1);
+    gfx::Point to = GetItemRectOnCurrentPageAt(0, 1).CenterPoint();
 
-  // Dismiss the app list to cancel drag.
-  GetAppListTestHelper()->Dismiss();
-  GetAppListTestHelper()->ShowAppList();
-  MaybeCheckHaptickEventsCount(1);
+    UpdateDrag(AppsGridView::MOUSE, to, apps_grid_view_, 10 /*steps*/);
+  }));
+  tasks.push_back(base::BindLambdaForTesting([&]() {
+    // Dismiss the app list to cancel drag.
+    GetAppListTestHelper()->Dismiss();
+    GetAppListTestHelper()->ShowAppList();
+    MaybeCheckHaptickEventsCount(1);
+  }));
+  tasks.push_back(base::BindLambdaForTesting([&]() {
+    // Needed by the controller
+    EndDrag();
+  }));
+  MaybeRunDragAndDropSequenceForAppList(&tasks, /*is_touch =*/false);
 
   EXPECT_EQ(std::string("Item 0,Item 1"), GetTestModel()->GetModelContent());
   test_api_->LayoutToIdealBounds();
