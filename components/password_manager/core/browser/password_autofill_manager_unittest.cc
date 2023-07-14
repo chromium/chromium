@@ -1434,6 +1434,9 @@ TEST_F(PasswordAutofillManagerTest, ShowAllPasswordsOptionOnPasswordField) {
       metrics_util::PasswordDropdownSelectedOption::kShowAll, 1);
   // Trigger UKM reporting, which happens at destruction time.
   ukm::SourceId expected_source_id = client->GetUkmSourceId();
+  // Manually reset the `PasswordAutofillManager`, since it keeps pointers to
+  // manager and client.
+  password_autofill_manager_.reset();
   manager.reset();
   client.reset();
 

@@ -222,11 +222,11 @@ class PasswordAutofillManager : public autofill::AutofillPopupDelegate {
   gfx::Image page_favicon_;
 
   // The driver that owns |this|.
-  raw_ptr<PasswordManagerDriver, DanglingUntriaged> password_manager_driver_;
+  const raw_ptr<PasswordManagerDriver> password_manager_driver_;
 
-  raw_ptr<autofill::AutofillClient> autofill_client_;  // weak
+  raw_ptr<autofill::AutofillClient> autofill_client_;
 
-  raw_ptr<PasswordManagerClient, DanglingUntriaged> password_client_;
+  const raw_ptr<PasswordManagerClient> password_client_;
 
   // If not null then it will be called in destructor.
   base::OnceClosure deletion_callback_;
