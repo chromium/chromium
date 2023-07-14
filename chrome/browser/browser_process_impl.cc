@@ -1222,7 +1222,9 @@ void BrowserProcessImpl::PreMainMessageLoopRun() {
 
   platform_part_->PreMainMessageLoopRun();
 
-  CreateNetworkTimeTracker();
+  if (base::FeatureList::IsEnabled(network_time::kNetworkTimeServiceQuerying)) {
+    CreateNetworkTimeTracker();
+  }
 
   CreateNetworkQualityObserver();
 
