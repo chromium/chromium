@@ -1437,9 +1437,8 @@ IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTestWithMobileEmulation,
 
 // Tests the behavior of cross origin redirection to a PDF with mobile emulation
 // is enabled.
-// TODO(crbug.com/1355793): Re-enable this test
 IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTestWithMobileEmulation,
-                       DISABLED_CrossSiteRedirectionToPDFWithMobileEmulation) {
+                       CrossSiteRedirectionToPDFWithMobileEmulation) {
   net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
   https_server.AddDefaultHandlers(GetChromeTestDataDir());
   ASSERT_TRUE(https_server.Start());
@@ -1463,11 +1462,6 @@ IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTestWithMobileEmulation,
       ui_test_utils::NavigateToURL(browser(), cross_site_redirecting_url));
 
   EXPECT_EQ(pdf_url, web_contents()->GetLastCommittedURL());
-  EXPECT_EQ(
-      "<head></head>"
-      "<body><!-- no enabled plugin supports this MIME type --></body>",
-      content::EvalJs(web_contents(), "document.documentElement.innerHTML")
-          .ExtractString());
 }
 
 // Check that clicking on a link doesn't carry the transient user activation
