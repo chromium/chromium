@@ -38,6 +38,20 @@ posix_bypass_mmap = (is_android && current_cpu != "x86") || is_fuchsia
 
 enable_built_in_dns = use_blink
 
+# TODO(droger): Support client auth on iOS. See http://crbug.com/145954).
+#
+# Historically this was disabled because client auth required
+# platform-specific code deep in //net. Nowadays, this is abstracted away and
+# we could enable the interfaces on iOS for platform-independence. However,
+# merely enabling them changes our behavior from automatically proceeding
+# with no client certificate to raising
+# `URLRequest::Delegate::OnCertificateRequested`. Callers would need to be
+# updated to apply that behavior manually.
+#
+# If fixing this, re-enable the tests in ssl_client_socket_unittest.cc and
+# ssl_server_socket_unittest.cc which are disabled on iOS.
+enable_client_certificates = !is_ios || (use_blink && !is_cronet_build)
+
 # Unix sockets are not supported on iOS.
 enable_unix_sockets = is_posix && !is_ios
 
@@ -82,6 +96,7 @@ buildflag_header("buildflags") {
     "ENABLE_MDNS=$enable_mdns",
     "ENABLE_REPORTING=$enable_reporting",
     "ENABLE_WEBSOCKETS=$enable_websockets",
+    "ENABLE_CLIENT_CERTIFICATES=$enable_client_certificates",
     "INCLUDE_TRANSPORT_SECURITY_STATE_PRELOAD_LIST=$include_transport_security_state_preload_list",
     "USE_KERBEROS=$use_kerberos",
     "USE_EXTERNAL_GSSAPI=$use_external_gssapi",

@@ -86,12 +86,12 @@ namespace net {
 namespace {
 
 // Client certificates are disabled on iOS.
-#if !BUILDFLAG(IS_IOS)
+#if BUILDFLAG(ENABLE_CLIENT_CERTIFICATES)
 const char kClientCertFileName[] = "client_1.pem";
 const char kClientPrivateKeyFileName[] = "client_1.pk8";
 const char kWrongClientCertFileName[] = "client_2.pem";
 const char kWrongClientPrivateKeyFileName[] = "client_2.pk8";
-#endif  // !IS_IOS
+#endif  // BUILDFLAG(ENABLE_CLIENT_CERTIFICATES)
 
 const uint16_t kEcdheCiphers[] = {
     0xc007,  // ECDHE_ECDSA_WITH_RC4_128_SHA
@@ -443,7 +443,7 @@ class SSLServerSocketTest : public PlatformTest, public WithTaskEnvironment {
   }
 
 // Client certificates are disabled on iOS.
-#if !BUILDFLAG(IS_IOS)
+#if BUILDFLAG(ENABLE_CLIENT_CERTIFICATES)
   void ConfigureClientCertsForClient(const char* cert_file_name,
                                      const char* private_key_file_name) {
     scoped_refptr<X509Certificate> client_cert =
@@ -478,7 +478,7 @@ class SSLServerSocketTest : public PlatformTest, public WithTaskEnvironment {
 
     server_ssl_config_.client_cert_verifier = client_cert_verifier_.get();
   }
-#endif  // !IS_IOS
+#endif  // BUILDFLAG(ENABLE_CLIENT_CERTIFICATES)
 
   std::unique_ptr<crypto::RSAPrivateKey> ReadTestKey(base::StringPiece name) {
     base::FilePath certs_dir(GetTestCertsDirectory());
@@ -709,7 +709,7 @@ TEST_F(SSLServerSocketTest, HandshakeCachedContextSwitch) {
 }
 
 // Client certificates are disabled on iOS.
-#if !BUILDFLAG(IS_IOS)
+#if BUILDFLAG(ENABLE_CLIENT_CERTIFICATES)
 // This test executes Connect() on SSLClientSocket and Handshake() on
 // SSLServerSocket to make sure handshaking between the two sockets is
 // completed successfully, using client certificate.
@@ -1011,7 +1011,7 @@ TEST_F(SSLServerSocketTest, HandshakeWithWrongClientCertSuppliedCached) {
   client_ret = read_callback.GetResult(client_ret);
   EXPECT_EQ(ERR_BAD_SSL_CLIENT_AUTH_CERT, client_ret);
 }
-#endif  // !IS_IOS
+#endif  // BUILDFLAG(ENABLE_CLIENT_CERTIFICATES)
 
 TEST_P(SSLServerSocketReadTest, DataTransfer) {
   ASSERT_NO_FATAL_FAILURE(CreateContext());

@@ -1556,7 +1556,7 @@ TEST_P(SSLClientSocketVersionTest, ConnectBadValidityIgnoreCertErrors) {
 }
 
 // Client certificates are disabled on iOS.
-#if !BUILDFLAG(IS_IOS)
+#if BUILDFLAG(ENABLE_CLIENT_CERTIFICATES)
 // Attempt to connect to a page which requests a client certificate. It should
 // return an error code on connect.
 TEST_P(SSLClientSocketVersionTest, ConnectClientAuthCertRequested) {
@@ -1599,7 +1599,7 @@ TEST_P(SSLClientSocketVersionTest, ConnectClientAuthSendNullCert) {
   sock_->Disconnect();
   EXPECT_FALSE(sock_->IsConnected());
 }
-#endif  // !IS_IOS
+#endif  // BUILDFLAG(ENABLE_CLIENT_CERTIFICATES)
 
 // TODO(wtc): Add unit tests for IsConnectedAndIdle:
 //   - Server closes an SSL connection (with a close_notify alert message).
@@ -2668,7 +2668,7 @@ TEST_P(SSLClientSocketVersionTest, VerifyReturnChainProperlyOrdered) {
 }
 
 // Client certificates are disabled on iOS.
-#if !BUILDFLAG(IS_IOS)
+#if BUILDFLAG(ENABLE_CLIENT_CERTIFICATES)
 INSTANTIATE_TEST_SUITE_P(TLSVersion,
                          SSLClientSocketCertRequestInfoTest,
                          ValuesIn(GetTLSVersions()));
@@ -2740,7 +2740,7 @@ TEST_P(SSLClientSocketCertRequestInfoTest, CertKeyTypes) {
   EXPECT_THAT(request_info->signature_algorithms,
               testing::Contains(SSL_SIGN_RSA_PSS_RSAE_SHA256));
 }
-#endif  // !IS_IOS
+#endif  // BUILDFLAG(ENABLE_CLIENT_CERTIFICATES)
 
 // Tests that the Certificate Transparency (RFC 6962) TLS extension is
 // supported.
@@ -3609,7 +3609,7 @@ TEST_F(SSLClientSocketTest, AlpnClientDisabled) {
 }
 
 // Client certificates are disabled on iOS.
-#if !BUILDFLAG(IS_IOS)
+#if BUILDFLAG(ENABLE_CLIENT_CERTIFICATES)
 // Connect to a server requesting client authentication, do not send
 // any client certificates. It should refuse the connection.
 TEST_P(SSLClientSocketVersionTest, NoCert) {
@@ -3854,7 +3854,7 @@ TEST_F(SSLClientSocketTest, DontClearSessionCacheOnServerCertDatabaseChange) {
 
   context_->RemoveObserver(&observer);
 }
-#endif  // !IS_IOS
+#endif  // BUILDFLAG(ENABLE_CLIENT_CERTIFICATES)
 
 HashValueVector MakeHashValueVector(uint8_t value) {
   HashValueVector out;
