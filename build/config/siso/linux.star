@@ -12,7 +12,8 @@ load("./nacl_linux.star", "nacl")
 load("./nasm_linux.star", "nasm")
 load("./proto_linux.star", "proto")
 load("./remote_exec_wrapper.star", "remote_exec_wrapper")
-load("./rewrapper_to_reproxy.star", "rewrapper_to_reproxy")
+load("./reproxy_from_rewrapper.star", "reproxy_from_rewrapper")
+load("./reproxy_linux.star", "reproxy")
 load("./android.star", "android")
 
 __filegroups = {}
@@ -31,7 +32,8 @@ __handlers.update(nacl.handlers)
 __handlers.update(nasm.handlers)
 __handlers.update(proto.handlers)
 __handlers.update(remote_exec_wrapper.handlers)
-__handlers.update(rewrapper_to_reproxy.handlers)
+__handlers.update(reproxy_from_rewrapper.handlers)
+__handlers.update(reproxy.handlers)
 
 def __disable_remote_b281663988(step_config):
     step_config["rules"].extend([
@@ -71,10 +73,11 @@ def __step_config(ctx, step_config):
         },
     }
 
-    # rewrapper_to_reproxy takes precedence over remote exec wrapper handler if enabled.
-    if rewrapper_to_reproxy.enabled(ctx):
+    # reproxy_from_rewrapper takes precedence over remote exec wrapper handler if enabled.
+    if reproxy_from_rewrapper.enabled(ctx):
         __disable_remote_b281663988(step_config)
-        step_config = rewrapper_to_reproxy.step_config(ctx, step_config)
+        step_config = reproxy_from_rewrapper.step_config(ctx, step_config)
+        step_config = reproxy.step_config(ctx, step_config)
     elif remote_exec_wrapper.enabled(ctx):
         __disable_remote_b281663988(step_config)
         step_config = remote_exec_wrapper.step_config(ctx, step_config)

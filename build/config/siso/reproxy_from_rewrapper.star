@@ -196,8 +196,8 @@ def __step_config(ctx, step_config):
     ])
     return step_config
 
-rewrapper_to_reproxy = module(
-    "rewrapper_to_reproxy",
+reproxy_from_rewrapper = module(
+    "reproxy_from_rewrapper",
     enabled = __enabled,
     step_config = __step_config,
     filegroups = __filegroups,

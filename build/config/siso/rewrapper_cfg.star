@@ -10,7 +10,7 @@ def __parse(ctx, cfg_file):
     if not cfg_file:
         fail("cfg file expected but none found")
     if not ctx.fs.exists(cfg_file):
-        fail("cmd specifies rewrapper cfg %s but not found, is download_remoteexec_cfg set in gclient custom_vars?" % cfg_file)
+        fail("looked for rewrapper cfg %s but not found, is download_remoteexec_cfg set in gclient custom_vars?" % cfg_file)
 
     reproxy_config = {}
     for line in str(ctx.fs.read(cfg_file)).splitlines():
