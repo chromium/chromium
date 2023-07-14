@@ -22,31 +22,6 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
-<histogram name="Platform.AnyCrashesDaily" units="count per day"
-    expires_after="2022-04-17">
-  <owner>grundler@chromium.org</owner>
-  <owner>groeck@chromium.org</owner>
-  <owner>sonnyrao@chromium.org</owner>
-  <summary>
-    Count of crashes (user, kernel, and unclean shutdowns) during the previous
-    day, or the most recent day the device was in use. Reported at most once a
-    day.
-  </summary>
-</histogram>
-
-<histogram name="Platform.AnyCrashesWeekly" units="count per week"
-    expires_after="2022-05-01">
-  <owner>grundler@chromium.org</owner>
-  <owner>groeck@chromium.org</owner>
-  <owner>sonnyrao@chromium.org</owner>
-  <summary>
-    Count of crashes (user, kernel, and unclean shutdowns) during the previous
-    epoch-week, or the most recent epoch-week the device was in use. Reported at
-    most once a week. Epoch-weeks divide the time in 7-day intervals starting at
-    the UNIX epoch.
-  </summary>
-</histogram>
-
 <histogram name="Platform.AsvGroup" units="units" expires_after="2018-08-30">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <summary>
@@ -228,19 +203,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Platform.CpuFrequencyThermalScaling" units="%"
-    expires_after="2022-04-17">
-  <owner>sonnyrao@chromium.org</owner>
-  <owner>chromeos-performance@google.com</owner>
-  <summary>
-    CPU frequency as percent of the baseline frequency, sampled every 30s. This
-    may be throttled down from 100% due to power dissipation issues (too high
-    temperature). It may also be throttled up (turbo), but the kernel does not
-    report the actual turbo frequency, so we put such samples in the 101%
-    bucket.
-  </summary>
-</histogram>
-
 <histogram name="Platform.CrOS.CrashSenderRemoveReason"
     enum="CrosCrashSenderRemoveReason" expires_after="2024-07-10">
   <owner>iby@chromium.org</owner>
@@ -271,18 +233,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Platform.Crouton.Started" enum="Platform.Crouton.Started"
-    expires_after="2022-10-04">
-  <owner>drinkcat@chromium.org</owner>
-  <owner>dnschneid@chromium.org</owner>
-  <summary>
-    Detects presence of /run/crouton, indicating that crouton has been started
-    since the previous boot. Value 0/&quot;Total count&quot; is reported on
-    boot, 1/&quot;Started&quot; is reported after the file presence is detected
-    (checked periodically).
-  </summary>
-</histogram>
-
 <histogram name="Platform.CumulativeCpuTime" units="seconds"
     expires_after="M78">
   <owner>semenzato@chromium.org</owner>
@@ -290,16 +240,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Total CPU time accumulated since the last version update. Reported at most
     once a day.
-  </summary>
-</histogram>
-
-<histogram name="Platform.CumulativeUseTime" units="seconds"
-    expires_after="M77">
-  <owner>semenzato@chromium.org</owner>
-  <owner>bsimonnet@chromium.org</owner>
-  <summary>
-    Total use time (device ON and not asleep) since last version update.
-    Reported at most once a day.
   </summary>
 </histogram>
 
@@ -1533,24 +1473,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Platform.PageFaultsLong" units="page faults/second"
-    expires_after="2021-07-02">
-  <owner>sonnyrao@chromium.org</owner>
-  <owner>chromeos-memory@google.com</owner>
-  <summary>
-    Page faults per second averaged over 30s interval, sampled continuously.
-  </summary>
-</histogram>
-
-<histogram name="Platform.PageFaultsShort" units="page faults/second"
-    expires_after="2021-07-02">
-  <owner>sonnyrao@chromium.org</owner>
-  <owner>chromeos-memory@google.com</owner>
-  <summary>
-    Page faults per second averaged over 1s interval, sampled every 30s.
-  </summary>
-</histogram>
-
 <histogram name="Platform.ReadSectorsLong" units="sectors per second"
     expires_after="2023-09-01">
   <owner>gwendal@google.com</owner>
@@ -1772,47 +1694,11 @@ chromium-metrics-reviews@google.com.
   <summary>Number of pages swapped IN over a day, sampled daily.</summary>
 </histogram>
 
-<histogram name="Platform.SwapInLong" units="pages/second"
-    expires_after="2022-04-03">
-  <owner>sonnyrao@chromium.org</owner>
-  <owner>chromeos-memory@google.com</owner>
-  <summary>
-    Average pages/second swapped IN over a 30s interval, sampled every 30s.
-  </summary>
-</histogram>
-
-<histogram name="Platform.SwapInShort" units="pages/second"
-    expires_after="2021-07-02">
-  <owner>sonnyrao@chromium.org</owner>
-  <owner>chromeos-memory@google.com</owner>
-  <summary>
-    Average pages/second swapped IN over a 1s interval, sampled every 30s.
-  </summary>
-</histogram>
-
 <histogram name="Platform.SwapOutDaily" units="pages"
     expires_after="2023-11-12">
   <owner>asavery@chromium.org</owner>
   <owner>chromeos-memory@google.com</owner>
   <summary>Number of pages swapped OUT over a day, sampled daily.</summary>
-</histogram>
-
-<histogram name="Platform.SwapOutLong" units="pages/second"
-    expires_after="2022-04-03">
-  <owner>sonnyrao@chromium.org</owner>
-  <owner>chromeos-memory@google.com</owner>
-  <summary>
-    Average pages/second swapped OUT over a 30s interval, sampled every 30s.
-  </summary>
-</histogram>
-
-<histogram name="Platform.SwapOutShort" units="pages/second"
-    expires_after="2022-04-03">
-  <owner>sonnyrao@chromium.org</owner>
-  <owner>chromeos-memory@google.com</owner>
-  <summary>
-    Average pages/second swapped OUT over a 1s interval, sampled every 30s.
-  </summary>
 </histogram>
 
 <histogram name="Platform.TPM.ApRoVerificationTime" units="ms"
@@ -2269,60 +2155,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Number of incompressible pages stored in zram. A large number suggests lower
     compression effectiveness. Snapshot every 30s.
-  </summary>
-</histogram>
-
-<histogram name="Platform.ZramIncompressibleRatioPercent.PostCompression"
-    units="%" expires_after="2021-03-06">
-  <owner>asavery@chromium.org</owner>
-  <owner>gwendal@chromium.org</owner>
-  <summary>
-    The fraction of compressed memory that consists of incompressible pages. We
-    express this as a percentage (between 0% and 100%). Values close to 100%
-    mean we are not able to effectively benefit from compression. Snapshot every
-    30s.
-  </summary>
-</histogram>
-
-<histogram name="Platform.ZramIncompressibleRatioPercent.PreCompression"
-    units="%" expires_after="2021-03-06">
-  <owner>asavery@chromium.org</owner>
-  <owner>gwendal@chromium.org</owner>
-  <summary>
-    The fraction of the uncompressed memory size that consists of incompressible
-    pages. We express this as a percentage (between 0% and 100%). Values close
-    to 100% mean we are not able to effectively benefit from compression.
-    Snapshot every 30s.
-  </summary>
-</histogram>
-
-<histogram name="Platform.ZramSavings" units="MB" expires_after="2021-07-02">
-  <owner>sonnyrao@google.com</owner>
-  <owner>chromeos-memory@google.com</owner>
-  <summary>
-    RAM savings in megabytes from using memory compression. This is the
-    difference between the RAM size before and after compression. Snapshot every
-    30s.
-  </summary>
-</histogram>
-
-<histogram name="Platform.ZramZeroPages" units="pages"
-    expires_after="2021-07-02">
-  <owner>sonnyrao@google.com</owner>
-  <owner>chromeos-memory@google.com</owner>
-  <summary>
-    Number of zero-filled pages that the OS is compressing. A large number
-    suggests wasteful allocation. Snapshot every 30s.
-  </summary>
-</histogram>
-
-<histogram name="Platform.ZramZeroRatioPercent" units="%"
-    expires_after="2021-07-02">
-  <owner>sonnyrao@google.com</owner>
-  <owner>chromeos-memory@google.com</owner>
-  <summary>
-    The fraction of compressed memory that consists of zero-filled pages.
-    Snapshot every 30s.
   </summary>
 </histogram>
 

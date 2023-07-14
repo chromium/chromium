@@ -84435,11 +84435,6 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="2" label="Error"/>
 </enum>
 
-<enum name="Platform.Crouton.Started">
-  <int value="0" label="Total count"/>
-  <int value="1" label="Started"/>
-</enum>
-
 <enum name="PlatformCellularConnectResult">
   <summary>
     The return status as a result of a call to connect to a cellular device at
