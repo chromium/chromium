@@ -448,6 +448,7 @@ export namespace BrowsingContext {
     z.object({
       type: BrowsingContext.CreateTypeSchema,
       referenceContext: BrowsingContext.BrowsingContextSchema.optional(),
+      background: z.boolean().default(false).optional(),
     })
   );
 }

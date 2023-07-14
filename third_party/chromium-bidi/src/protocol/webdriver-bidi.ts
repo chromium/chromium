@@ -337,6 +337,10 @@ export namespace BrowsingContext {
   export type CreateParameters = {
     type: BrowsingContext.CreateType;
     referenceContext?: BrowsingContext.BrowsingContext;
+    /**
+     * @defaultValue `false`
+     */
+    background?: boolean;
   };
 }
 export namespace BrowsingContext {
