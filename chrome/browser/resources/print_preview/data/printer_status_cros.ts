@@ -217,3 +217,23 @@ function getPrinterStatusIconImproved(
   assert(iconColor);
   return `${printerTypePrefix}${iconColor}${darkModeSuffix}`;
 }
+
+/**
+ * Returns class name matching icon color for the printer's
+ * PrinterStatusReason.
+ */
+export function getStatusTextColorClass(
+    printerStatusReason: PrinterStatusReason|null): string {
+  // TODO(b/289091283): Remove condition when flag is removed.
+  if (!loadTimeData.getBoolean('isPrintPreviewSetupAssistanceEnabled')) {
+    return '';
+  }
+
+  if (printerStatusReason === null) {
+    return '';
+  }
+
+  const color = PRINTER_STATUS_REASON_COLOR_MAP.get(printerStatusReason);
+  assert(color);
+  return `status-${color}`;
+}

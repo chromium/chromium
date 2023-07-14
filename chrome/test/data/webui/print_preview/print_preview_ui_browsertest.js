@@ -1136,6 +1136,20 @@ TEST_F(
       this.runMochaTest(destination_item_test_cros.TestNames
                             .PrinterIconMapsToPrinterStatus_FlagOn);
     });
+
+TEST_F(
+    'PrintPreviewDestinationItemTestCros',
+    'PrinterConnectionStatusClass_FlagOff', function() {
+      this.runMochaTest(destination_item_test_cros.TestNames
+                            .PrinterConnectionStatusClass_FlagOff);
+    });
+
+TEST_F(
+    'PrintPreviewDestinationItemTestCros',
+    'PrinterConnectionStatusClass_FlagOn', function() {
+      this.runMochaTest(destination_item_test_cros.TestNames
+                            .PrinterConnectionStatusClass_FlagOn);
+    });
 GEN('#endif');
 
 var PrintPreviewAdvancedItemTest = class extends PrintPreviewTest {
