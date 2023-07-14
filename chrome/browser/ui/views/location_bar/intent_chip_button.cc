@@ -61,17 +61,6 @@ void IntentChipButton::Update() {
   }
 }
 
-ui::ImageModel IntentChipButton::GetIconImageModel() const {
-  auto icon = GetAppIcon();
-  if (icon.IsEmpty())
-    return OmniboxChipButton::GetIconImageModel();
-  return icon;
-}
-
-const gfx::VectorIcon& IntentChipButton::GetIcon() const {
-  return kOpenInNewIcon;
-}
-
 bool IntentChipButton::GetShowChip() const {
   if (delegate_->ShouldHidePageActionIcons())
     return false;
@@ -112,6 +101,47 @@ IntentPickerTabHelper* IntentChipButton::GetTabHelper() const {
     return nullptr;
 
   return IntentPickerTabHelper::FromWebContents(web_contents);
+}
+
+ui::ImageModel IntentChipButton::GetIconImageModel() const {
+  auto icon = GetAppIcon();
+  if (icon.IsEmpty()) {
+    return OmniboxChipButton::GetIconImageModel();
+  }
+  return icon;
+}
+
+const gfx::VectorIcon& IntentChipButton::GetIcon() const {
+  return kOpenInNewIcon;
+}
+
+SkColor IntentChipButton::GetBackgroundColor() const {
+  DCHECK(GetOmniboxChipTheme() != OmniboxChipTheme::kIconStyle);
+  if (features::IsChromeRefresh2023()) {
+    return GetColorProvider()->GetColor(kColorOmniboxIntentChipBackground);
+  }
+  return GetColorProvider()->GetColor(kColorOmniboxChipBackground);
+}
+
+SkColor IntentChipButton::GetForegroundColor() const {
+  if (features::IsChromeRefresh2023()) {
+    // Use the same color as the content setting icons.
+    if (GetOmniboxChipTheme() == OmniboxChipTheme::kIconStyle) {
+      return GetColorProvider()->GetColor(kColorOmniboxResultsIcon);
+    }
+
+    // The icon and label have the same color.
+    return GetColorProvider()->GetColor(kColorOmniboxIntentChipIcon);
+  }
+
+  if (GetOmniboxChipTheme() == OmniboxChipTheme::kIconStyle) {
+    return GetColorProvider()->GetColor(kColorOmniboxResultsIcon);
+  }
+
+  return GetColorProvider()->GetColor(
+      GetOmniboxChipTheme() == OmniboxChipTheme::kLowVisibility
+          ? kColorOmniboxChipForegroundLowVisibility
+          : kColorOmniboxChipForegroundNormalVisibility);
 }
 
 BEGIN_METADATA(IntentChipButton, OmniboxChipButton)

@@ -44,6 +44,7 @@ class PermissionPromptChipModel {
   OmniboxChipTheme GetChipTheme() { return chip_theme_; }
 
   // Chip behaviour
+  bool ShouldDisplayBlockedIcon() { return should_display_blocked_icon_; }
   bool ShouldBubbleStartOpen() { return should_bubble_start_open_; }
   bool ShouldExpand() { return should_expand_; }
 

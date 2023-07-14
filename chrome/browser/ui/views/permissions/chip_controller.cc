@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_bubble_view_factory.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_chip_model.h"
+#include "chrome/browser/ui/views/permissions/permission_prompt_style.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/permissions/features.h"
@@ -31,6 +32,7 @@
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/visibility.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/button.h"
@@ -613,9 +615,13 @@ void ChipController::OnChipVisibilityChanged(bool is_visible) {
 }
 
 void ChipController::SyncChipWithModel() {
-  chip_->SetChipIcon(permission_prompt_model_->GetIcon());
-  chip_->SetText(permission_prompt_model_->GetChipText());
-  chip_->SetTheme(permission_prompt_model_->GetChipTheme());
+  PermissionPromptChipModel* const model = permission_prompt_model_.get();
+  chip_->SetChipIcon(model->GetIcon());
+  chip_->SetTheme(model->GetChipTheme());
+  chip_->SetMessage(model->GetChipText());
+  chip_->SetUserDecision(model->GetUserDecision());
+  chip_->SetPermissionPromptStyle(model->GetPromptStyle());
+  chip_->SetBlockedIconShowing(model->ShouldDisplayBlockedIcon());
 }
 
 void ChipController::StartCollapseTimer() {
