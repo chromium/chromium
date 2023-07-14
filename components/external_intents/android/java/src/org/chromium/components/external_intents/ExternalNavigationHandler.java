@@ -308,7 +308,7 @@ public class ExternalNavigationHandler {
                                             .PRIMARY_OUTLINE_NEGATIVE_OUTLINE)
                             .build();
 
-            mModalDialogManager.showDialog(mPropertyModel, ModalDialogManager.ModalDialogType.APP);
+            mModalDialogManager.showDialog(mPropertyModel, ModalDialogManager.ModalDialogType.TAB);
         }
 
         /** Browser initiated cancellation. */
