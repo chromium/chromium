@@ -1044,6 +1044,7 @@ public class BidirectionalStreamTest {
             public void onResponseHeadersReceived(
                     BidirectionalStream stream, UrlResponseInfo info) {
                 // Start the write, that will not complete until callback completion.
+                setAutoAdvance(true);
                 startNextWrite(stream);
                 // Start the read. It is allowed with write in flight.
                 super.onResponseHeadersReceived(stream, info);
@@ -1058,9 +1059,6 @@ public class BidirectionalStreamTest {
                         .build();
         stream.start();
         callback.waitForNextWriteStep();
-        callback.waitForNextReadStep();
-        callback.setAutoAdvance(true);
-        callback.startNextRead(stream);
         callback.blockForDone();
         assertThat(stream.isDone()).isTrue();
         assertThat(callback.getResponseInfoWithChecks()).hasHttpStatusCodeThat().isEqualTo(200);
