@@ -7,6 +7,7 @@
 
 #include <vector>
 #include "base/component_export.h"
+#include "build/build_config.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -205,6 +206,12 @@ class COMPONENT_EXPORT(AX_PLATFORM) AutomationTreeManagerOwner
       int32_t node_id,
       const ui::AXRelativeBounds& bounds) override;
   void DispatchActionResult(const ui::AXActionData& data, bool result) override;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  void DispatchGetTextLocationResult(
+      const ui::AXActionData& data,
+      const absl::optional<gfx::Rect>& rect) override;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Mojo receiver to the Automation interface, implemented by this class.
   // Listed as a protected member so that derived classes can reset its status

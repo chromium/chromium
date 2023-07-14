@@ -112,8 +112,6 @@ class AutomationInternalBindings : public ui::AutomationTreeManagerOwner,
       const ui::AXTreeID& tree_id,
       int node_id,
       const ui::AXRelativeBounds& bounds) override;
-  void DispatchGetTextLocationResult(const ax::mojom::AXActionData& data,
-                                     gfx::Rect rect);
 
   // Used during object template creation.
   raw_ptr<v8::Local<v8::ObjectTemplate>, ExperimentalAsh> template_;

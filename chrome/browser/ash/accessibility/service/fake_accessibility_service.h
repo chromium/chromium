@@ -60,6 +60,9 @@ class FakeAccessibilityService
       const ui::AXTreeID& tree_id,
       int node_id,
       const ui::AXRelativeBounds& bounds) override;
+  void DispatchGetTextLocationResult(
+      const ui::AXActionData& data,
+      const absl::optional<gfx::Rect>& rect) override;
 
   // ax::mojom::AssistiveTechnologyController:
   void EnableAssistiveTechnology(

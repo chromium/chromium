@@ -95,6 +95,10 @@ void FakeAccessibilityService::DispatchAccessibilityLocationChange(
     std::move(automation_events_closure_).Run();
 }
 
+void FakeAccessibilityService::DispatchGetTextLocationResult(
+    const ui::AXActionData& data,
+    const absl::optional<gfx::Rect>& rect) {}
+
 void FakeAccessibilityService::EnableAssistiveTechnology(
     const std::vector<ax::mojom::AssistiveTechnologyType>& enabled_features) {
   enabled_ATs_ = std::set(enabled_features.begin(), enabled_features.end());

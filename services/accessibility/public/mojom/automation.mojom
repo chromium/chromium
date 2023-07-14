@@ -40,12 +40,14 @@ interface Automation {
     int32 node_id,
     ax.mojom.AXRelativeBounds bounds);
 
-  // // Dispatches the result of a query for text location.
-  // // Currently supported by ARC++ in response to
-  // // ax::mojom::Action::kGetTextLocation.
-  //  DispatchGetTextLocationResult(
-  //    ax.mojom.ActionData data,
-  //    gfx.mojom.Rect rect);
+  // Dispatches the result of a query for text location.
+  // Currently supported by ARC++ in response to
+  // ax::mojom::Action::kGetTextLocation. Rect may not be present if the
+  // accessibility node no longer exists.
+  [EnableIf=is_chromeos_ash]
+  DispatchGetTextLocationResult(
+    ax.mojom.AXActionData data,
+    gfx.mojom.Rect? rect);
 };
 
 // Implemented outside of the service, e.g. Chrome OS Ash, Chrome browser

@@ -227,12 +227,4 @@ void AutomationInternalBindings::DispatchAccessibilityLocationChange(
   OnAccessibilityLocationChange(tree_id, node_id, bounds);
 }
 
-void AutomationInternalBindings::DispatchGetTextLocationResult(
-    const ax::mojom::AXActionData& data,
-    gfx::Rect rect) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // TODO(crbug.com/1357889): Dispatch to V8 paralleling the implementation
-  // in extensions/browser/api/automation_internal/automation_event_router.cc.
-}
-
 }  // namespace ax
