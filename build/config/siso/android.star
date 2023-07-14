@@ -4,9 +4,25 @@
 # found in the LICENSE file.
 """Siso configuration for Android builds."""
 
+load("@builtin//encoding.star", "json")
 load("@builtin//lib/gn.star", "gn")
 load("@builtin//struct.star", "module")
 load("./config.star", "config")
+
+def __filearg(ctx, arg):
+    fn = ""
+    if arg.startswith("@FileArg("):
+        f = arg.removeprefix("@FileArg(").removesuffix(")").split(":")
+        fn = f[0].removesuffix("[]")  # [] suffix controls expand list?
+        v = json.decode(str(ctx.fs.read(ctx.fs.canonpath(fn))))
+        for k in f[1:]:
+            v = v[k]
+        arg = v
+    if type(arg) == "string":
+        if arg.startswith("["):
+            return fn, json.decode(arg)
+        return fn, [arg]
+    return fn, arg
 
 def __enabled(ctx):
     if "args.gn" in ctx.metadata:
@@ -31,12 +47,14 @@ def __step_config(ctx, step_config):
             },
             "remote": remote_run,
             "canonicalize_dir": True,
+            "timeout": "2m",
         },
         {
             "name": "android/ijar",
             "command_prefix": "python3 ../../build/android/gyp/ijar.py",
             "remote": remote_run,
             "canonicalize_dir": True,
+            "timeout": "2m",
         },
         {
             "name": "android/turbine",
@@ -46,6 +64,7 @@ def __step_config(ctx, step_config):
             "inputs": [
                 "third_party/jdk/current/bin/java",
                 "third_party/android_sdk/public/platforms/android-34/android.jar",
+                "third_party/android_sdk/public/platforms/android-34/optional/android.test.base.jar",
                 "third_party/android_sdk/public/platforms/android-34/optional/org.apache.http.legacy.jar",
             ],
             # TODO(crbug.com/1452038): include only required jar files in GN config.
@@ -54,6 +73,7 @@ def __step_config(ctx, step_config):
             },
             "remote": remote_run,
             "canonicalize_dir": True,
+            "timeout": "2m",
         },
         {
             "name": "android/compile_java",
@@ -62,11 +82,12 @@ def __step_config(ctx, step_config):
             # TODO(crrev.com/c/4596899): Add Java inputs in GN config.
             "inputs": [
                 "third_party/jdk/current/bin/javac",
+                "third_party/android_sdk/public/platforms/android-34/optional/android.test.base.jar",
                 "third_party/android_sdk/public/platforms/android-34/optional/org.apache.http.legacy.jar",
             ],
             # TODO(crbug.com/1452038): include only required java, jar files in GN config.
             "indirect_inputs": {
-                "includes": ["*.java", "*.ijar.jar", "*.turbine.jar"],
+                "includes": ["*.java", "*.ijar.jar", "*.turbine.jar", "*.kt"],
             },
             # Don't include files under --generated-dir.
             # This is probably optimization for local incrmental builds.
@@ -75,6 +96,7 @@ def __step_config(ctx, step_config):
             "ignore_extra_output_pattern": ".*srcjars.*\\.java",
             "remote": remote_run,
             "canonicalize_dir": True,
+            "timeout": "2m",
         },
         {
             "name": "android/dex",
@@ -84,6 +106,7 @@ def __step_config(ctx, step_config):
             "inputs": [
                 "third_party/jdk/current/bin/java",
                 "third_party/android_sdk/public/platforms/android-34/android.jar",
+                "third_party/android_sdk/public/platforms/android-34/optional/android.test.base.jar",
                 "third_party/android_sdk/public/platforms/android-34/optional/org.apache.http.legacy.jar",
             ],
             # TODO(crbug.com/1452038): include only required jar, dex files in GN config.
@@ -96,12 +119,14 @@ def __step_config(ctx, step_config):
             "ignore_extra_output_pattern": ".*\\.dex",
             "remote": remote_run,
             "canonicalize_dir": True,
+            "timeout": "2m",
         },
         {
             "name": "android/filter_zip",
             "command_prefix": "python3 ../../build/android/gyp/filter_zip.py",
             "remote": remote_run,
             "canonicalize_dir": True,
+            "timeout": "2m",
         },
     ])
     return step_config
@@ -111,7 +136,23 @@ def __android_compile_java_handler(ctx, cmd):
     outputs = [
         out + ".md5.stamp",
     ]
-    ctx.actions.fix(outputs = cmd.outputs + outputs)
+
+    inputs = []
+    for i, arg in enumerate(cmd.args):
+        for k in ["--java-srcjars=", "--classpath=", "--bootclasspath=", "--processorpath="]:
+            if arg.startswith(k):
+                arg = arg.removeprefix(k)
+                fn, v = __filearg(ctx, arg)
+                if fn:
+                    inputs.append(ctx.fs.canonpath(fn))
+                for f in v:
+                    f, _, _ = f.partition(":")
+                    inputs.append(ctx.fs.canonpath(f))
+
+    ctx.actions.fix(
+        inputs = cmd.inputs + inputs,
+        outputs = cmd.outputs + outputs,
+    )
 
 def __android_dex_handler(ctx, cmd):
     out = cmd.outputs[0]
@@ -126,6 +167,16 @@ def __android_dex_handler(ctx, cmd):
     for i, arg in enumerate(cmd.args):
         if arg == "--desugar-dependencies":
             outputs.append(ctx.fs.canonpath(cmd.args[i + 1]))
+        for k in ["--class-inputs=", "--bootclasspath=", "--classpath=", "--class-inputs-filearg=", "--dex-inputs=", "--dex-inputs-filearg="]:
+            if arg.startswith(k):
+                arg = arg.removeprefix(k)
+                fn, v = __filearg(ctx, arg)
+                if fn:
+                    inputs.append(ctx.fs.canonpath(fn))
+                for f in v:
+                    f, _, _ = f.partition(":")
+                    f = ctx.fs.canonpath(f)
+                    inputs.append(f)
 
     # TODO: dex.py takes --incremental-dir to reuse the .dex produced in a previous build.
     # Should remote dex action also take this?
@@ -145,6 +196,16 @@ def __android_turbine_handler(ctx, cmd):
             jar_path = ctx.fs.canonpath(arg.removeprefix("--jar-path="))
             if out_fileslist:
                 outputs.append(jar_path + ".java_files_list.txt")
+        for k in ["--classpath=", "--processorpath="]:
+            if arg.startswith(k):
+                arg = arg.removeprefix(k)
+                fn, v = __filearg(ctx, arg)
+                if fn:
+                    inputs.append(ctx.fs.canonpath(fn))
+                for f in v:
+                    f, _, _ = f.partition(":")
+                    inputs.append(ctx.fs.canonpath(f))
+
     ctx.actions.fix(
         inputs = cmd.inputs + inputs,
         outputs = cmd.outputs + outputs,
@@ -153,7 +214,7 @@ def __android_turbine_handler(ctx, cmd):
 def __android_write_build_config_handler(ctx, cmd):
     inputs = []
     for i, arg in enumerate(cmd.args):
-        if arg == "--shared-libraries-runtime-deps":
+        if arg in ["--shared-libraries-runtime-deps", "--secondary-abi-shared-libraries-runtime-deps"]:
             inputs.append(ctx.fs.canonpath(cmd.args[i + 1]))
     ctx.actions.fix(inputs = cmd.inputs + inputs)
 
