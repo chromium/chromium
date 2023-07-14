@@ -31,6 +31,6 @@ public class EmptyTabGroupModelFilterObserver implements TabGroupModelFilter.Obs
     public void didMoveTabOutOfGroup(Tab movedTab, int prevFilterIndex) {}
 
     @Override
-    public void didCreateGroup(
-            List<Tab> tabs, List<Integer> tabOriginalIndex, List<Integer> tabOriginalRootId) {}
+    public void didCreateGroup(List<Tab> tabs, List<Integer> tabOriginalIndex,
+            List<Integer> tabOriginalRootId, String destinationGroupTitle) {}
 }

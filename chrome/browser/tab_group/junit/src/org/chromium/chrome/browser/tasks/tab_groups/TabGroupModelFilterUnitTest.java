@@ -14,6 +14,7 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
@@ -23,6 +24,9 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import android.content.Context;
+import android.content.SharedPreferences;
 
 import androidx.annotation.Nullable;
 
@@ -37,6 +41,7 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.ParameterizedRobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.UserDataHost;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
@@ -87,11 +92,20 @@ public class TabGroupModelFilterUnitTest {
     private static final int NEW_TAB_ID_1 = 160;
     private static final int NEW_TAB_ID_2 = 162;
 
+    private static final String TAB_GROUP_TITLES_FILE_NAME = "tab_group_titles";
+    private static final String TAB_TITLE = "Tab";
+
     @Mock
     TabModel mTabModel;
 
     @Mock
     TabGroupModelFilter.Observer mTabGroupModelFilterObserver;
+
+    @Mock
+    Context mContext;
+
+    @Mock
+    SharedPreferences mSharedPreferences;
 
     @Captor
     ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
@@ -250,6 +264,12 @@ public class TabGroupModelFilterUnitTest {
             mTabGroupModelFilter.restoreCompleted();
             assertTrue(mTabGroupModelFilter.isTabModelRestored());
         }
+
+        doReturn(mSharedPreferences)
+                .when(mContext)
+                .getSharedPreferences(TAB_GROUP_TITLES_FILE_NAME, Context.MODE_PRIVATE);
+        ContextUtils.initApplicationContextForTests(mContext);
+        when(mSharedPreferences.getString(anyString(), any())).thenReturn(TAB_TITLE);
     }
 
     @Before
@@ -1213,7 +1233,7 @@ public class TabGroupModelFilterUnitTest {
 
         mTabGroupModelFilter.mergeTabsToGroup(mTab2.getId(), mTab5.getId(), false);
         verify(mTabGroupModelFilterObserver)
-                .didCreateGroup(expectedSourceTabs, originalIndexes, originalRootIds);
+                .didCreateGroup(expectedSourceTabs, originalIndexes, originalRootIds, TAB_TITLE);
         assertArrayEquals(mTabGroupModelFilter.getRelatedTabList(mTab2.getId()).toArray(),
                 expectedGroup.toArray());
     }
@@ -1233,7 +1253,7 @@ public class TabGroupModelFilterUnitTest {
 
         mTabGroupModelFilter.mergeTabsToGroup(mTab3.getId(), mTab4.getId(), false);
         verify(mTabGroupModelFilterObserver)
-                .didCreateGroup(expectedSourceTabs, originalIndexes, originalRootIds);
+                .didCreateGroup(expectedSourceTabs, originalIndexes, originalRootIds, TAB_TITLE);
         assertArrayEquals(mTabGroupModelFilter.getRelatedTabList(mTab2.getId()).toArray(),
                 expectedGroup.toArray());
     }
@@ -1253,7 +1273,7 @@ public class TabGroupModelFilterUnitTest {
 
         mTabGroupModelFilter.mergeTabsToGroup(mTab1.getId(), mTab4.getId(), false);
         verify(mTabGroupModelFilterObserver)
-                .didCreateGroup(expectedSourceTabs, originalIndexes, originalRootIds);
+                .didCreateGroup(expectedSourceTabs, originalIndexes, originalRootIds, TAB_TITLE);
         assertArrayEquals(mTabGroupModelFilter.getRelatedTabList(mTab1.getId()).toArray(),
                 expectedGroup.toArray());
     }
@@ -1272,6 +1292,6 @@ public class TabGroupModelFilterUnitTest {
 
         mTabGroupModelFilter.mergeTabsToGroup(mTab1.getId(), mTab4.getId(), true);
         verify(mTabGroupModelFilterObserver, never())
-                .didCreateGroup(expectedSourceTabs, originalIndexes, originalRootIds);
+                .didCreateGroup(expectedSourceTabs, originalIndexes, originalRootIds, TAB_TITLE);
     }
 }

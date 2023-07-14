@@ -1035,7 +1035,7 @@ class TabListMediator {
 
                 @Override
                 public void didCreateGroup(List<Tab> tabs, List<Integer> tabOriginalIndex,
-                        List<Integer> tabOriginalRootId) {}
+                        List<Integer> tabOriginalRootId, String destinationGroupTitle) {}
             };
 
             ((TabGroupModelFilter) mTabModelSelector.getTabModelFilterProvider().getTabModelFilter(

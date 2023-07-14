@@ -12,12 +12,14 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
 import org.chromium.chrome.browser.tasks.tab_groups.EmptyTabGroupModelFilterObserver;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
+import org.chromium.chrome.browser.tasks.tab_groups.TabGroupTitleUtils;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 
@@ -42,11 +44,13 @@ public class UndoGroupSnackbarController implements SnackbarManager.SnackbarCont
         public final Tab tab;
         public final int tabOriginalIndex;
         public final int tabOriginalGroupId;
+        public final String destinationGroupTitle;
 
-        TabUndoInfo(Tab tab, int tabIndex, int tabGroupId) {
+        TabUndoInfo(Tab tab, int tabIndex, int tabGroupId, String destinationGroupTitle) {
             this.tab = tab;
             this.tabOriginalIndex = tabIndex;
             this.tabOriginalGroupId = tabGroupId;
+            this.destinationGroupTitle = destinationGroupTitle;
         }
     }
 
@@ -62,8 +66,8 @@ public class UndoGroupSnackbarController implements SnackbarManager.SnackbarCont
         mSnackbarManager = snackbarManager;
         mTabGroupModelFilterObserver = new EmptyTabGroupModelFilterObserver() {
             @Override
-            public void didCreateGroup(
-                    List<Tab> tabs, List<Integer> tabOriginalIndex, List<Integer> originalRootId) {
+            public void didCreateGroup(List<Tab> tabs, List<Integer> tabOriginalIndex,
+                    List<Integer> originalRootId, String destinationGroupTitle) {
                 assert tabs.size() == tabOriginalIndex.size();
 
                 List<TabUndoInfo> tabUndoInfo = new ArrayList<>();
@@ -72,7 +76,7 @@ public class UndoGroupSnackbarController implements SnackbarManager.SnackbarCont
                     int index = tabOriginalIndex.get(i);
                     int groupId = originalRootId.get(i);
 
-                    tabUndoInfo.add(new TabUndoInfo(tab, index, groupId));
+                    tabUndoInfo.add(new TabUndoInfo(tab, index, groupId, destinationGroupTitle));
                 }
                 showUndoGroupSnackbar(tabUndoInfo);
             }
@@ -151,12 +155,31 @@ public class UndoGroupSnackbarController implements SnackbarManager.SnackbarCont
         undo((List<TabUndoInfo>) actionData);
     }
 
+    @Override
+    public void onDismissNoAction(Object actionData) {
+        // Delete the original tab group titles of the merging tabs once the merge is committed.
+        for (TabUndoInfo info : (List<TabUndoInfo>) actionData) {
+            TabGroupTitleUtils.deleteTabGroupTitle(info.tabOriginalGroupId);
+        }
+    }
+
     private void undo(List<TabUndoInfo> data) {
         assert data.size() != 0;
 
         TabGroupModelFilter tabGroupModelFilter =
                 (TabGroupModelFilter) mTabModelSelector.getTabModelFilterProvider()
                         .getCurrentTabModelFilter();
+
+        // The new rootID will be the destination tab group being merged to. If that destination
+        // tab group had no title previously, on undo it may inherit a title from the group that
+        // was merged to it, and persist when merging with other tabs later on. This check deletes
+        // the group title for that rootID on undo since the destination group never had a group
+        // title to begin with, and the merging tabs still have the original group title stored.
+        if (data.get(0).destinationGroupTitle == null) {
+            TabGroupTitleUtils.deleteTabGroupTitle(
+                    CriticalPersistedTabData.from(data.get(0).tab).getRootId());
+        }
+
         for (int i = data.size() - 1; i >= 0; i--) {
             TabUndoInfo info = data.get(i);
             tabGroupModelFilter.undoGroupedTab(
