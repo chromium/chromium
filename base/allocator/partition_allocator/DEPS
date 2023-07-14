@@ -14,7 +14,6 @@ include_rules = [
     "+base/allocator/partition_allocator",
     "+build/build_config.h",
     "+build/buildflag.h",
-    "+third_party/lss/linux_syscall_support.h",
 ]
 
 specific_include_rules = {
