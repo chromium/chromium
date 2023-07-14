@@ -232,7 +232,7 @@ Failing tests are grouped according to the most specific `DIR_METADATA` that
 they roll up to.
 
 Note that we are considering making the notifications opt-out instead of
-opt-in: see https://crbug.com/845232
+opt-in: see https://crbug.com/1454853
 
 ### Skipped tests (and how to re-enable them)
 
