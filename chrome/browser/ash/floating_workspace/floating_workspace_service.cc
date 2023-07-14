@@ -47,12 +47,15 @@
 
 namespace ash {
 
-const char kNotificationForNoNetworkConnection[] =
+constexpr char kNotificationForNoNetworkConnection[] =
     "notification_no_network_connection";
-const char kNotificationForSyncErrorOrTimeOut[] =
+constexpr char kNotificationForSyncErrorOrTimeOut[] =
     "notification_sync_error_or_timeout";
-const char kNotificationForRestoreAfterError[] =
+constexpr char kNotificationForRestoreAfterError[] =
     "notification_restore_after_error";
+// Default time without activity after which a floating workspace template is
+// considered stale and becomes a candidate for garbage collection.
+constexpr base::TimeDelta kStaleFWSThreshold = base::Days(30);
 
 FloatingWorkspaceServiceNotificationType GetNotificationTypeById(
     const std::string& id) {
@@ -362,6 +365,8 @@ FloatingWorkspaceService::GetLatestFloatingWorkspaceTemplate() {
       floating_workspace_template = entry;
     }
   }
+
+  DoGarbageCollection(floating_workspace_template);
   return floating_workspace_template;
 }
 
@@ -394,8 +399,6 @@ void FloatingWorkspaceService::CaptureAndUploadActiveDeskForTest(
   OnTemplateCaptured(absl::nullopt, std::move(desk_template));
 }
 
-// TODO(b/274502821): create garbage collection method for stale floating
-// workspace templates.
 void FloatingWorkspaceService::RestoreFloatingWorkspaceTemplate(
     const DeskTemplate* desk_template) {
   if (desk_template == nullptr) {
@@ -661,6 +664,29 @@ void FloatingWorkspaceService::SendNotification(const std::string& id) {
   notification_display_service->Display(NotificationHandler::Type::TRANSIENT,
                                         *notification_,
                                         /*metadata=*/nullptr);
+}
+
+void FloatingWorkspaceService::DoGarbageCollection(
+    const DeskTemplate* exclude_template) {
+  // Do not delete any floating workspace templates if we have less than 2
+  // templates. We want to keep the latest template. If there's only one
+  // floating workspace template then this is the latest one.
+  std::vector<const DeskTemplate*> fws_entries =
+      GetFloatingWorkspaceTemplateEntries();
+  if (fws_entries.size() < 2) {
+    return;
+  }
+  for (const DeskTemplate* entry : fws_entries) {
+    const base::TimeDelta template_age =
+        base::Time::Now() - entry->GetLastUpdatedTime();
+    if (template_age < kStaleFWSThreshold ||
+        (exclude_template != nullptr &&
+         exclude_template->uuid() == entry->uuid())) {
+      continue;
+    }
+    desk_sync_service_->GetDeskModel()->DeleteEntry(entry->uuid(),
+                                                    base::DoNothing());
+  }
 }
 
 }  // namespace ash
