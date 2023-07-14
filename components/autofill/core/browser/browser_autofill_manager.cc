@@ -631,8 +631,9 @@ void BrowserAutofillManager::ShowAutofillSettings(PopupType popup_type) {
 bool BrowserAutofillManager::ShouldShowScanCreditCard(
     const FormData& form,
     const FormFieldData& field) {
-  if (!client()->HasCreditCardScanFeature())
+  if (!client()->HasCreditCardScanFeature() || !IsAutofillCreditCardEnabled()) {
     return false;
+  }
 
   AutofillField* autofill_field = GetAutofillField(form, field);
   if (!autofill_field)

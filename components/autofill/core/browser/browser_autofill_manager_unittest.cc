@@ -255,6 +255,7 @@ class MockAutofillClient : public TestAutofillClient {
                AutofillTriggerSource trigger_source,
                bool is_refill),
               (override));
+  MOCK_METHOD(bool, HasCreditCardScanFeature, (), (override));
 };
 
 class MockAutofillDownloadManager : public AutofillDownloadManager {
@@ -840,6 +841,10 @@ class BrowserAutofillManagerTest : public testing::Test {
                                     bool use_month_type) {
     form->name = u"MyForm";
     if (is_https) {
+      GURL::Replacements replacements;
+      replacements.SetSchemeStr(url::kHttpsScheme);
+      autofill_client_.set_form_origin(
+          autofill_client_.form_origin().ReplaceComponents(replacements));
       form->url = GURL("https://myform.com/form.html");
       form->action = GURL("https://myform.com/submit.html");
     } else {
@@ -10419,6 +10424,105 @@ TEST_F(BrowserAutofillManagerTest, ShowNothingIfTouchToFillAlreadyShown) {
   EXPECT_CALL(touch_to_fill_delegate(), TryToShowTouchToFill(_, _)).Times(0);
   TryToShowTouchToFill(form, field, /*form_element_was_clicked=*/true);
   EXPECT_FALSE(external_delegate_->on_suggestions_returned_seen());
+}
+
+// Test that 'Scan New Card' suggestion is shown based on whether autofill
+// credit card is enabled or disabled.
+TEST_F(BrowserAutofillManagerTest, ScanCreditCardBasedOnAutofillPreference) {
+  ON_CALL(autofill_client_, HasCreditCardScanFeature())
+      .WillByDefault(Return(true));
+
+  FormData form =
+      CreateTestCreditCardFormData(/*is_https=*/true, /*use_month_type=*/false);
+  FormsSeen({form});
+
+  const FormFieldData& card_number_field = form.fields[1];
+  ASSERT_EQ(card_number_field.name, u"cardnumber");
+
+  // Test case where autofill is enabled.
+  browser_autofill_manager_->SetAutofillCreditCardEnabled(autofill_client_,
+                                                          true);
+  EXPECT_TRUE(browser_autofill_manager_->ShouldShowScanCreditCard(
+      form, card_number_field));
+
+  // Test case where autofill is disabled.
+  browser_autofill_manager_->SetAutofillCreditCardEnabled(autofill_client_,
+                                                          false);
+  EXPECT_FALSE(browser_autofill_manager_->ShouldShowScanCreditCard(
+      form, card_number_field));
+}
+
+// Test that 'Scan New Card' suggestion is shown based on whether platform
+// supports card scanning.
+TEST_F(BrowserAutofillManagerTest, ScanCreditCardBasedOnPlatformSupport) {
+  FormData form =
+      CreateTestCreditCardFormData(/*is_https=*/true, /*use_month_type=*/false);
+  FormsSeen({form});
+
+  const FormFieldData& card_number_field = form.fields[1];
+  ASSERT_EQ(card_number_field.name, u"cardnumber");
+
+  // Test case where device and platform support scanning credit cards.
+  ON_CALL(autofill_client_, HasCreditCardScanFeature())
+      .WillByDefault(Return(true));
+  EXPECT_TRUE(browser_autofill_manager_->ShouldShowScanCreditCard(
+      form, card_number_field));
+
+  // Test case where device and platform do not support scanning credit cards.
+  ON_CALL(autofill_client_, HasCreditCardScanFeature())
+      .WillByDefault(Return(false));
+  EXPECT_FALSE(browser_autofill_manager_->ShouldShowScanCreditCard(
+      form, card_number_field));
+}
+
+// Test that 'Scan New Card' suggestion is shown based on whether form field
+// chosen is a credit card number field.
+TEST_F(BrowserAutofillManagerTest, ScanCreditCardBasedOnCreditCardNumberField) {
+  ON_CALL(autofill_client_, HasCreditCardScanFeature())
+      .WillByDefault(Return(true));
+
+  FormData form =
+      CreateTestCreditCardFormData(/*is_https=*/true, /*use_month_type=*/false);
+  FormsSeen({form});
+
+  // Test case for credit-card-number field.
+  const FormFieldData& card_number_field = form.fields[1];
+  ASSERT_EQ(card_number_field.name, u"cardnumber");
+  EXPECT_TRUE(browser_autofill_manager_->ShouldShowScanCreditCard(
+      form, card_number_field));
+
+  // Test case for non-credit-card-number field.
+  const FormFieldData& cvc_field = form.fields[4];
+  ASSERT_EQ(cvc_field.name, u"cvc");
+  EXPECT_FALSE(
+      browser_autofill_manager_->ShouldShowScanCreditCard(form, cvc_field));
+}
+
+// Test that 'Scan New Card' suggestion is shown based on whether the form is
+// secure.
+TEST_F(BrowserAutofillManagerTest, ScanCreditCardBasedOnIsFormSecure) {
+  ON_CALL(autofill_client_, HasCreditCardScanFeature())
+      .WillByDefault(Return(true));
+
+  // Test case for HTTP form.
+  FormData form_http = CreateTestCreditCardFormData(/*is_https=*/false,
+                                                    /*use_month_type=*/false);
+  FormsSeen({form_http});
+
+  const FormFieldData& card_number_field_http = form_http.fields[1];
+  ASSERT_EQ(card_number_field_http.name, u"cardnumber");
+  EXPECT_FALSE(browser_autofill_manager_->ShouldShowScanCreditCard(
+      form_http, card_number_field_http));
+
+  // Test case for HTTPS form.
+  FormData form_https =
+      CreateTestCreditCardFormData(/*is_https=*/true, /*use_month_type=*/false);
+  FormsSeen({form_https});
+
+  const FormFieldData& card_number_field_https = form_https.fields[1];
+  ASSERT_EQ(card_number_field_https.name, u"cardnumber");
+  EXPECT_TRUE(browser_autofill_manager_->ShouldShowScanCreditCard(
+      form_https, card_number_field_https));
 }
 
 // Test that fields will be assigned with the source profile that was used for
