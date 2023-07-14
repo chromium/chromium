@@ -1151,6 +1151,22 @@
         },
         'os_type': 'android',
       },
+      'android-cronet-mainline-clang-arm-dbg': {
+        'additional_compile_targets': [
+          'cronet_package',
+          'cronet_perf_test_apk',
+          'cronet_sample_test_apk',
+          'cronet_smoketests_missing_native_library_instrumentation_apk',
+          'cronet_smoketests_platform_only_instrumentation_apk',
+          'cronet_test_instrumentation_apk',
+          'cronet_tests_android',
+          'cronet_unittests_android',
+          'net_unittests',
+        ],
+        'test_suites': {
+          'isolated_scripts': 'cronet_dbg_isolated_scripts',
+        },
+      },
       'android-webview-12-x64-dbg-tests': {
         'mixins': [
           '12-x64-emulator',

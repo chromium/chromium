@@ -128,6 +128,39 @@
       "use_thin_lto": false
     }
   },
+  "android-cronet-mainline-clang-arm-dbg": {
+    "gn_args": {
+      "arm_use_neon": false,
+      "clang_base_path": "//third_party/mainline_clang/linux-amd64",
+      "clang_use_chrome_plugins": false,
+      "clang_use_default_sample_profile": false,
+      "debuggable_apks": false,
+      "default_min_sdk_version": 19,
+      "disable_file_support": true,
+      "enable_base_tracing": false,
+      "enable_reporting": true,
+      "enable_resource_allowlist_generation": false,
+      "enable_websockets": false,
+      "ffmpeg_branding": "Chrome",
+      "include_transport_security_state_preload_list": false,
+      "is_component_build": false,
+      "is_cronet_build": true,
+      "is_debug": true,
+      "is_java_debug": false,
+      "media_use_ffmpeg": false,
+      "proprietary_codecs": true,
+      "symbol_level": 1,
+      "target_cpu": "arm",
+      "target_os": "android",
+      "use_crash_key_stubs": true,
+      "use_hashed_jni_names": true,
+      "use_lenient_compiler_flags": true,
+      "use_partition_alloc": false,
+      "use_platform_icu_alternatives": true,
+      "use_remoteexec": true,
+      "use_thin_lto": false
+    }
+  },
   "android-weblayer-with-aosp-webview-x86-fyi-rel": {
     "gn_args": {
       "android_static_analysis": "off",
