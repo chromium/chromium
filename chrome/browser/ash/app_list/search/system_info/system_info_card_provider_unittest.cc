@@ -623,14 +623,18 @@ TEST_F(SystemInfoCardProviderTest, Battery) {
   ASSERT_EQ(results()[0]->title_text_vector().size(), 1u);
   const auto& title = results()[0]->title_text_vector()[0];
   ASSERT_EQ(title.GetType(), ash::SearchResultTextItemType::kString);
-  EXPECT_EQ(title.GetText(), u"Battery 94% | 17 minutes until full");
+  EXPECT_EQ(title.GetText(), u"");
   EXPECT_TRUE(title.GetTextTags().empty());
 
   ASSERT_EQ(results()[0]->details_text_vector().size(), 1u);
   const auto& details = results()[0]->details_text_vector()[0];
   ASSERT_EQ(details.GetType(), ash::SearchResultTextItemType::kString);
-  EXPECT_EQ(details.GetText(), u"Battery health 76% | Cycle count 500");
+  EXPECT_EQ(details.GetText(), u"Battery 94% | 17 minutes until full");
   EXPECT_TRUE(details.GetTextTags().empty());
+
+  EXPECT_EQ(
+      results()[0]->system_info_answer_card_data()->right_hand_description,
+      u"Battery health 76% | Cycle count 500");
 
   const int64_t new_time_to_full_secs = time_to_full_secs - 100;
   const double new_battery_percent = 96.0;
@@ -646,24 +650,53 @@ TEST_F(SystemInfoCardProviderTest, Battery) {
   ASSERT_EQ(results()[0]->title_text_vector().size(), 1u);
   const auto& updated_title = results()[0]->title_text_vector()[0];
   ASSERT_EQ(updated_title.GetType(), ash::SearchResultTextItemType::kString);
-  EXPECT_EQ(updated_title.GetText(), u"Battery 96% | 15 minutes until full");
+  EXPECT_EQ(updated_title.GetText(), u"");
   EXPECT_TRUE(updated_title.GetTextTags().empty());
 
-  SetPowerManagerProperties(power_source, battery_state, true,
-                            time_to_full_secs, time_to_empty_secs,
-                            new_battery_percent);
+  const auto& updated_details = results()[0]->details_text_vector()[0];
+  ASSERT_EQ(updated_details.GetType(), ash::SearchResultTextItemType::kString);
+  EXPECT_EQ(updated_details.GetText(), u"Battery 96% | 15 minutes until full");
+  EXPECT_TRUE(updated_details.GetTextTags().empty());
+}
+
+TEST_F(SystemInfoCardProviderTest, BatteryWhileCalculating) {
+  const double charge_full_now = 20;
+  const double charge_full_design = 26;
+  const int32_t cycle_count = 500;
+
+  SetCrosHealthdBatteryHealthResponse(charge_full_now, charge_full_design,
+                                      cycle_count);
+
+  const auto power_source =
+      power_manager::PowerSupplyProperties_ExternalPower_AC;
+  const auto battery_state =
+      power_manager::PowerSupplyProperties_BatteryState_CHARGING;
+  const bool is_calculating_battery_time = true;
+  const int64_t time_to_full_secs = 1000;
+  const int64_t time_to_empty_secs = 0;
+  const double battery_percent = 94.0;
+
+  SetPowerManagerProperties(power_source, battery_state,
+                            is_calculating_battery_time, time_to_full_secs,
+                            time_to_empty_secs, battery_percent);
   StartSearch(u"battery");
   Wait();
 
   EXPECT_EQ(results()[0]->system_info_answer_card_data()->bar_chart_percentage,
-            96);
+            94);
 
   ASSERT_EQ(results()[0]->title_text_vector().size(), 1u);
   const auto& calculating_title = results()[0]->title_text_vector()[0];
   ASSERT_EQ(calculating_title.GetType(),
             ash::SearchResultTextItemType::kString);
-  EXPECT_EQ(calculating_title.GetText(), u"Battery 96%");
+  EXPECT_EQ(calculating_title.GetText(), u"");
   EXPECT_TRUE(calculating_title.GetTextTags().empty());
+
+  const auto& calculating_details = results()[0]->details_text_vector()[0];
+  ASSERT_EQ(calculating_details.GetType(),
+            ash::SearchResultTextItemType::kString);
+  EXPECT_EQ(calculating_details.GetText(), u"Battery 94%");
+  EXPECT_TRUE(calculating_details.GetTextTags().empty());
 }
 
 TEST_F(SystemInfoCardProviderTest, BatteryProbeError) {

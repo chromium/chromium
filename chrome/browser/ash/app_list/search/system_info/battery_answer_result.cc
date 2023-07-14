@@ -55,7 +55,7 @@ void BatteryAnswerResult::PowerChanged(
   int percent = ash::power_utils::GetRoundedBatteryPercent(
       power_supply_properties.battery_percent());
   AnswerCardInfo answer_card_info(percent);
-  UpdateTitle(power_time);
+  UpdateTitleAndDetails(/*title=*/base::EmptyString16(), power_time);
   SetSystemInfoAnswerCardData(answer_card_info);
 }
 }  // namespace app_list

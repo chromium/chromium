@@ -442,19 +442,6 @@ enum class SearchResultIconShape {
   kCircle,
 };
 
-// The storage types that are available within the System Info Card storage type
-// answer card.
-enum class SearchResultSystemInfoStorageType {
-  kMyFiles,
-  kDriveOfflineFiles,
-  kBrowsingData,
-  kAppsExtensions,
-  kCrostini,
-  kOtherUsers,
-  kSystem,
-  kTotal
-};
-
 // The display type of the answer cards created by the System Info Provider. The
 // Text Card provides a similar UI to the omnibox answer cards while the bar
 // chart and multi element bar chart provide an additional bar chart with system
@@ -496,23 +483,23 @@ struct ASH_PUBLIC_EXPORT SystemInfoAnswerCardData {
   explicit SystemInfoAnswerCardData(
       SystemInfoAnswerCardDisplayType display_type);
   explicit SystemInfoAnswerCardData(double bar_chart_percentage);
-  explicit SystemInfoAnswerCardData(std::map<SearchResultSystemInfoStorageType,
-                                             int64_t> storage_type_to_size);
+
+  void SetDescriptionOnRight(const std::u16string& description_on_right);
 
   SystemInfoAnswerCardData(const SystemInfoAnswerCardData&);
-
   ~SystemInfoAnswerCardData();
 
   SystemInfoAnswerCardDisplayType display_type;
 
   // This stores the percentage of the bar chart to be filled for System Info
   // Answer card results which are a bar chart type. This will be a value
-  // between 0 and 100.
+  // between 0 and 100. This is only set if the answer card is of type bar
+  // chart.
   absl::optional<double> bar_chart_percentage;
 
-  // This stores the amount of space occupied by each storage type if this
-  // answer card is showing storage. All sizes are in bytes.
-  std::map<SearchResultSystemInfoStorageType, int64_t> storage_type_to_size;
+  // This is only set if the description has 2 components to it. This
+  // description will be places on the right hand side of the details container.
+  absl::optional<std::u16string> right_hand_description;
 };
 
 // A tagged range in search result text.
