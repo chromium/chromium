@@ -1343,6 +1343,15 @@
           'shards': 15,
         }
       },
+      'win10-code-coverage': {
+        'swarming': {
+          'shards': 40,
+          'dimensions': {
+            'pool': 'chromium.tests.coverage',
+            'ssd': '1',
+          },
+        }
+      },
       'win10-rel-no-external-ip': {
         # crbug.com/868082
         'args': [
