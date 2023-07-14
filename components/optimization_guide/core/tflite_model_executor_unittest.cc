@@ -13,6 +13,7 @@
 #include "components/optimization_guide/core/test_optimization_guide_model_provider.h"
 #include "components/optimization_guide/core/test_tflite_model_executor.h"
 #include "components/optimization_guide/core/test_tflite_model_handler.h"
+#include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "components/optimization_guide/proto/common_types.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/task_utils.h"
@@ -619,6 +620,8 @@ TEST_F(TFLiteModelExecutorTest, DoNotUnloadAfterExecution) {
       true, 1);
 }
 
+// TODO(b/283522287): Mediapipe does not support cancelling long-running tasks.
+#if !BUILDFLAG(BUILD_WITH_MEDIAPIPE_LIB)
 class CancelledTFLiteModelExecutorTest : public TFLiteModelExecutorTest {
  public:
   CancelledTFLiteModelExecutorTest() {
@@ -716,6 +719,7 @@ TEST_F(CancelledTFLiteModelExecutorTest, BatchRunsTooLong) {
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.ModelExecutor.DidTimeout.PainfulPageLoad", true, 2);
 }
+#endif  // !BUILDFLAG(BUILD_WITH_MEDIAPIPE_LIB)
 
 TEST_F(TFLiteModelExecutorTest, UpdateModelFileWithPreloading) {
   base::HistogramTester histogram_tester;

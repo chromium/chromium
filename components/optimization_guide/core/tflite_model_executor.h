@@ -258,12 +258,7 @@ class TFLiteModelExecutor : public ModelExecutor<OutputType, InputType> {
       // IMPORTANT: Once the arm method is called, disarm must be called when
       // the model execution finishes. Do NOT early-return in this next block.
       if (watchdog_) {
-        // |base::Unretained| is safe here since the watchdog itself guarantees
-        // the lifetime of the stored pointer will not extend beyond when it is
-        // disarmed.
-        watchdog_->ArmWithTask(
-            base::BindOnce(&ModelExecutionTask::Cancel,
-                           base::Unretained(loaded_model_.get())));
+        watchdog_->ArmWithTask(MakeCancelClosure());
       }
       {
         TRACE_EVENT1("browser", "OptGuideModelExecutor::Execute",
@@ -384,6 +379,19 @@ class TFLiteModelExecutor : public ModelExecutor<OutputType, InputType> {
     if (should_unload_model_on_complete_) {
       UnloadModel();
     }
+  }
+
+  base::OnceClosure MakeCancelClosure() {
+#if BUILDFLAG(BUILD_WITH_MEDIAPIPE_LIB)
+    return base::DoNothing();
+#else
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    // |base::Unretained| is safe here since the watchdog itself guarantees the
+    // lifetime of the stored pointer will not extend beyond when it is
+    // disarmed.
+    return base::BindOnce(&ModelExecutionTask::Cancel,
+                          base::Unretained(loaded_model_.get()));
+#endif
   }
 
   proto::OptimizationTarget optimization_target_ =
