@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "build/build_config.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
 #include "content/public/test/browser_test.h"
@@ -12,6 +13,127 @@ class NewTabPageBrowserTest : public WebUIMochaBrowserTest {
     set_test_loader_host(chrome::kChromeUINewTabPageHost);
   }
 };
+
+using NewTabPageTest = NewTabPageBrowserTest;
+
+IN_PROC_BROWSER_TEST_F(NewTabPageTest, CustomizeDialog) {
+  RunTest("new_tab_page/customize_dialog_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(NewTabPageTest, Utils) {
+  RunTest("new_tab_page/utils_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(NewTabPageTest, MetricsUtils) {
+  RunTest("new_tab_page/metrics_utils_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(NewTabPageTest, CustomizeShortcuts) {
+  RunTest("new_tab_page/customize_shortcuts_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(NewTabPageTest, CustomizeModules) {
+  RunTest("new_tab_page/customize_modules_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(NewTabPageTest, CustomizeBackgrounds) {
+  RunTest("new_tab_page/customize_backgrounds_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(NewTabPageTest, VoiceSearchOverlay) {
+  RunTest("new_tab_page/voice_search_overlay_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(NewTabPageTest, LensForm) {
+  RunTest("new_tab_page/lens_form_test.js", "mocha.run()");
+}
+
+// TODO(crbug.com/1431290): Test is flaky across platforms.
+IN_PROC_BROWSER_TEST_F(NewTabPageTest, DISABLED_LensUploadDialog) {
+  RunTest("new_tab_page/lens_upload_dialog_test.js", "mocha.run()");
+}
+
+// TODO(crbug.com/1431290): Test is flaky across platforms.
+IN_PROC_BROWSER_TEST_F(NewTabPageTest, DISABLED_Realbox) {
+  RunTest("new_tab_page/realbox/realbox_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(NewTabPageTest, RealboxLens) {
+  RunTest("new_tab_page/realbox/lens_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(NewTabPageTest, Logo) {
+  RunTest("new_tab_page/logo_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(NewTabPageTest, DoodleShareDialog) {
+  RunTest("new_tab_page/doodle_share_dialog_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(NewTabPageTest, BackgroundManager) {
+  RunTest("new_tab_page/background_manager_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(NewTabPageTest, MiddleSlotPromo) {
+  RunTest("new_tab_page/middle_slot_promo_test.js", "mocha.run()");
+}
+
+using NewTabPageModulesTest = NewTabPageBrowserTest;
+
+IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, ModuleWrapper) {
+  RunTest("new_tab_page/modules/module_wrapper_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, ModulesV2) {
+  RunTest("new_tab_page/modules/v2/modules_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, Modules) {
+  RunTest("new_tab_page/modules/modules_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, ModuleDescriptor) {
+  RunTest("new_tab_page/modules/module_descriptor_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, ModuleRegistry) {
+  RunTest("new_tab_page/modules/module_registry_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, ModuleHeader) {
+  RunTest("new_tab_page/modules/module_header_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, InfoDialog) {
+  RunTest("new_tab_page/modules/info_dialog_test.js", "mocha.run()");
+}
+
+// The dummy module is not available in official builds.
+#if !defined(OFFICIAL_BUILD)
+IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, DummyModule) {
+  RunTest("new_tab_page/modules/v2/dummy/module_test.js", "mocha.run()");
+}
+#endif  // !defined(OFFICIAL_BUILD)
+
+IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, DriveModule) {
+  RunTest("new_tab_page/modules/drive/module_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, DriveV2Module) {
+  RunTest("new_tab_page/modules/v2/drive/module_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, RecipesModule) {
+  RunTest("new_tab_page/modules/recipes/module_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, ChromeCartModule) {
+  RunTest("new_tab_page/modules/cart/module_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, FeedModule) {
+  RunTest("new_tab_page/modules/feed/module_test.js", "mocha.run()");
+}
 
 using NewTabPageAppTest = NewTabPageBrowserTest;
 

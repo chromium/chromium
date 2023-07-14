@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://webui-test/mojo_webui_test_support.js';
 import 'chrome://new-tab-page/new_tab_page.js';
 
 import {BrowserProxyImpl, MetricsReporterImpl, mojoString16, RealboxBrowserProxy, RealboxElement} from 'chrome://new-tab-page/new_tab_page.js';
