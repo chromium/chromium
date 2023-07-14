@@ -715,6 +715,7 @@ fuzzer_test("libwebp_advanced_api_fuzzer") {
   seed_corpus = "fuzzing/fuzz_seed_corpus"
   deps = [
     ":libwebp",
+    ":libwebp_utils",
     ":libwebp_webp",
   ]
   defines = [ "WEBP_MAX_IMAGE_SIZE=838860800" ]
