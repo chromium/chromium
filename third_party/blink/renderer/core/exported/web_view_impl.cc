@@ -403,20 +403,6 @@ ui::mojom::blink::WindowOpenDisposition NavigationPolicyToDisposition(
   return ui::mojom::blink::WindowOpenDisposition::IGNORE_ACTION;
 }
 
-// Records the queuing duration for activation IPC.
-void RecordPrerenderActivationSignalDelay() {
-  auto* task = base::TaskAnnotator::CurrentTaskForThread();
-
-  // It should be a Mojo call, so `RunTask` executes it as a non-delayed task.
-  CHECK(task);
-  CHECK(task->delayed_run_time.is_null());
-  base::TimeDelta queueing_time =
-      !task->queue_time.is_null() ? base::TimeTicks::Now() - task->queue_time
-                                  : base::TimeDelta();
-  base::UmaHistogramTimes("Prerender.Experimental.ActivationIPCDelay",
-                          queueing_time);
-}
-
 #if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_WIN)
 SkFontHinting RendererPreferencesToSkiaHinting(
     const blink::RendererPreferences& prefs) {
@@ -3346,9 +3332,6 @@ void WebViewImpl::ActivatePrerenderedPage(
   Member<Document> main_frame_document;
   if (auto* local_frame = DynamicTo<LocalFrame>(GetPage()->MainFrame())) {
     main_frame_document = local_frame->GetDocument();
-  }
-  if (main_frame_document) {
-    RecordPrerenderActivationSignalDelay();
   }
 
   for (Frame* frame = GetPage()->MainFrame(); frame;
