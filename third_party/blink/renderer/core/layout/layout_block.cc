@@ -857,6 +857,7 @@ void LayoutBlock::RecalcChildVisualOverflow() {
 void LayoutBlock::RecalcVisualOverflow() {
   NOT_DESTROYED();
   DCHECK(!CanUseFragmentsForVisualOverflow());
+  DCHECK(!IsLayoutMultiColumnSet());
   RecalcChildVisualOverflow();
   ComputeVisualOverflow();
 }

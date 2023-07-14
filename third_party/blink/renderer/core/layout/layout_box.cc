@@ -5268,6 +5268,7 @@ LayoutRect LayoutBox::NoOverflowRect() const {
 
 LayoutRect LayoutBox::VisualOverflowRect() const {
   NOT_DESTROYED();
+  DCHECK(!IsLayoutMultiColumnSet());
   if (!VisualOverflowIsSet())
     return BorderBoxRect();
 

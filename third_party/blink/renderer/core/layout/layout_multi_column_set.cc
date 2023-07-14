@@ -406,48 +406,6 @@ PhysicalRect LayoutMultiColumnSet::FragmentsBoundingBox(
   return result;
 }
 
-void LayoutMultiColumnSet::ComputeVisualOverflow() {
-  NOT_DESTROYED();
-  PhysicalRect previous_visual_overflow_rect =
-      PhysicalVisualOverflowRectAllowingUnset();
-  ClearVisualOverflow();
-  AddVisualOverflowFromChildren();
-  AddVisualEffectOverflow();
-
-  if (PhysicalVisualOverflowRect() != previous_visual_overflow_rect) {
-    InvalidateIntersectionObserverCachedRects();
-    SetShouldCheckForPaintInvalidation();
-    GetFrameView()->SetIntersectionObservationState(LocalFrameView::kDesired);
-  }
-}
-
-void LayoutMultiColumnSet::AddVisualOverflowFromChildren() {
-  NOT_DESTROYED();
-  if (ChildLayoutBlockedByDisplayLock())
-    return;
-
-  // It's useless to calculate overflow if we haven't determined the page
-  // logical height yet.
-  if (!IsPageLogicalHeightKnown())
-    return;
-  UpdateGeometryIfNeeded();
-  LogicalRect logical_overflow_rect;
-  for (const auto& group : fragmentainer_groups_) {
-    LogicalRect rect = group.CalculateOverflow();
-    rect.offset += group.OffsetFromColumnSet();
-    logical_overflow_rect.Unite(rect);
-  }
-  LayoutRect overflow_rect = CreateWritingModeConverter()
-                                 .ToPhysical(logical_overflow_rect)
-                                 .ToLayoutRect();
-  // We should apply a flipped block-flow rectangle if 'LayoutNGNoLocation'
-  // flag is disabled.
-  if (!RuntimeEnabledFeatures::LayoutNGNoLocationEnabled()) {
-    overflow_rect = FlipForWritingMode(overflow_rect).ToLayoutRect();
-  }
-  AddContentsVisualOverflow(overflow_rect);
-}
-
 void LayoutMultiColumnSet::InsertedIntoTree() {
   NOT_DESTROYED();
   LayoutBlockFlow::InsertedIntoTree();
