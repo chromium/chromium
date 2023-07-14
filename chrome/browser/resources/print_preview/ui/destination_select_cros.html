@@ -8,6 +8,14 @@
     white-space: nowrap;
   }
 
+  :host([is-current-destination-cros-local_]) #statusText.status-orange {
+    color: var(--error-status-warning);
+  }
+
+  :host([is-current-destination-cros-local_]) #statusText.status-red {
+    color: var(--error-status-alert);
+  }
+
   @media (prefers-color-scheme: dark) {
     :host([is-current-destination-cros-local_]) #statusText {
       color: var(--google-red-300);
@@ -51,7 +59,9 @@
     hidden$="[[hideDestinationAdditionalInfo_(statusText_)]]">
   <div slot="title"></div>
   <div slot="controls">
-    <div id="statusText" class="destination-status" title="[[statusText_]]"
+    <div id="statusText"
+        class$="[[computeStatusClass_(destination.printerStatusReason)]]"
+        title="[[statusText_]]"
         aria-hidden="[[isCurrentDestinationCrosLocal_]]"
         inner-h-t-m-l="[[statusText_]]">
     </div>

@@ -1342,6 +1342,18 @@ TEST_F(
           printer_status_test_cros.TestNames.SuccessfulPrinterStatusAfterRetry);
     });
 
+TEST_F(
+    'PrintPreviewPrinterStatusTestCros', 'StatusTextClass_FlagOff', function() {
+      this.runMochaTest(
+          printer_status_test_cros.TestNames.StatusTextClass_FlagOff);
+    });
+
+TEST_F(
+    'PrintPreviewPrinterStatusTestCros', 'StatusTextClass_FlagOn', function() {
+      this.runMochaTest(
+          printer_status_test_cros.TestNames.StatusTextClass_FlagOn);
+    });
+
 var PrintPreviewDestinationDropdownCrosTest = class extends PrintPreviewTest {
   /** @override */
   get browsePreload() {
