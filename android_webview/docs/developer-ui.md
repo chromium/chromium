@@ -162,7 +162,9 @@ ProductionSupportedFlagList](/android_webview/java/src/org/chromium/android_webv
    sending a Finch change to ensure it's not misspelt.
 2. See
    [this doc](/tools/metrics/histograms/README.md#Flag-Histograms) for more info
-   about flag labels if you want histogram data about usage.
+   about flag labels if you want histogram data about usage. This involves
+   updating the "LoginCustomFlags" field in
+   `/tools/metrics/histograms/enums.xml`.
 
 Exposing your feature this way has several benefits:
 

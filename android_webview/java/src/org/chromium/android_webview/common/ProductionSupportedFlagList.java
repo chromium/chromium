@@ -45,9 +45,14 @@ public final class ProductionSupportedFlagList {
     private ProductionSupportedFlagList() {}
 
     /**
-     * A list of commandline flags supported on user devices. If updating this list, please also
-     * update enums.xml. See android_webview/docs/developer-ui.md
+     * A list of commandline flags supported on user devices.
+     * See android_webview/docs/developer-ui.md for info about how this is used
      * (https://chromium.googlesource.com/chromium/src/+/HEAD/android_webview/docs/developer-ui.md#Adding-your-flags-and-features-to-the-UI).
+     *
+     * <p>See
+     * https://chromium.googlesource.com/chromium/src/+/HEAD/tools/metrics/histograms/README.md#Flag-Histograms
+     * for more info about flag labels if you want histogram data about usage. This involves
+     * updating the "LoginCustomFlags" field in tools/metrics/histograms/enums.xml.
      */
     public static final Flag[] sFlagList = {
             Flag.commandLine(AwSwitches.HIGHLIGHT_ALL_WEBVIEWS,
