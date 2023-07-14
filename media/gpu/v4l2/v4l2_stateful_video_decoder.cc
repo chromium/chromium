@@ -127,8 +127,20 @@ void V4L2StatefulVideoDecoder::Initialize(const VideoDecoderConfig& config,
     return;
   }
 
-  // Our caller VideoDecoderPipeline will make sure that |config| is within
-  // GetSupportedConfigs() beforehand. CHECK()ing it here seems excessive.
+  // Make sure that the |config| requested is supported by the driver,
+  // which must provide such information.
+  const auto supported_configs = GetSupportedConfigs();
+  if (!IsVideoDecoderConfigSupported(supported_configs.has_value()
+                                         ? supported_configs.value()
+                                         : SupportedVideoDecoderConfigs{},
+                                     config)) {
+    VLOGF(1) << "Video configuration is not supported: "
+             << config.AsHumanReadableString();
+    MEDIA_LOG(INFO, media_log_) << "Video configuration is not supported: "
+                                << config.AsHumanReadableString();
+    std::move(init_cb).Run(DecoderStatus::Codes::kUnsupportedConfig);
+    return;
+  }
 
   if (!device_fd_.is_valid()) {
     constexpr char kVideoDeviceDriverPath[] = "/dev/video-dec0";

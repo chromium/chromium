@@ -14,6 +14,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/test/bind.h"
 #include "build/build_config.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/encryption_scheme.h"
@@ -23,6 +24,7 @@
 #include "media/base/video_decoder_config.h"
 #include "media/base/video_transformation.h"
 #include "media/filters/dav1d_video_decoder.h"
+#include "media/gpu/chromeos/platform_video_frame_pool.h"
 #include "media/gpu/test/video_bitstream.h"
 #include "media/gpu/test/video_frame_file_writer.h"
 #include "media/gpu/test/video_frame_validator.h"
@@ -216,6 +218,28 @@ class VideoDecoderTest : public ::testing::Test {
     return video_player;
   }
 
+  bool InitializeDecoderWithConfig(VideoDecoderConfig& decoder_config) {
+    auto frame_pool = std::make_unique<PlatformVideoFramePool>();
+    std::unique_ptr<VideoDecoder> decoder = VideoDecoderPipeline::Create(
+        gpu::GpuDriverBugWorkarounds(),
+        base::SingleThreadTaskRunner::GetCurrentDefault(),
+        std::move(frame_pool),
+        /*frame_converter=*/nullptr,
+        VideoDecoderPipeline::DefaultPreferredRenderableFourccs(),
+        std::make_unique<NullMediaLog>(),
+        /*oop_video_decoder=*/{});
+
+    bool init_result = false;
+    VideoDecoder::InitCB init_cb = base::BindLambdaForTesting(
+        [&init_result](DecoderStatus result) { init_result = result.is_ok(); });
+    decoder->Initialize(decoder_config, /*low_delay=*/false,
+                        /*cdm_context=*/nullptr, std::move(init_cb),
+                        base::BindRepeating(&VideoDecoderTest::AddModelFrame,
+                                            base::Unretained(this)),
+                        /*waiting_cb=*/base::NullCallback());
+    return init_result;
+  }
+
  private:
   bool IsSlowMappingDevice() const {
     static const base::NoDestructor<base::CPU> cpuid;
@@ -287,7 +311,6 @@ class VideoDecoderTest : public ::testing::Test {
 
     return flush_success && model_frames_.size() == video->NumFrames();
   }
-
   void AddModelFrame(scoped_refptr<VideoFrame> frame) {
     model_frames_.push_back(std::move(frame));
   }
@@ -608,6 +631,18 @@ TEST_F(VideoDecoderTest, FlushAtEndOfStream_MultipleConcurrentDecodes) {
     EXPECT_EQ(tvps[i]->GetFrameDecodedCount(), g_env->Video()->NumFrames());
     EXPECT_TRUE(tvps[i]->WaitForFrameProcessors());
   }
+}
+
+TEST_F(VideoDecoderTest, InitializeWithNonSupportedConfig) {
+  const auto* video = g_env->Video();
+  constexpr VideoCodecProfile kProfileNotSupportedByChromeOS =
+      THEORAPROFILE_ANY;
+  VideoDecoderConfig non_supported_decoder_config(
+      video->Codec(), kProfileNotSupportedByChromeOS,
+      VideoDecoderConfig::AlphaMode::kIsOpaque, VideoColorSpace(),
+      kNoTransformation, video->Resolution(), gfx::Rect(video->Resolution()),
+      video->Resolution(), EmptyExtraData(), EncryptionScheme::kUnencrypted);
+  EXPECT_FALSE(InitializeDecoderWithConfig(non_supported_decoder_config));
 }
 
 }  // namespace test
