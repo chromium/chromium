@@ -132,6 +132,7 @@ class CONTENT_EXPORT ServiceWorkerRaceNetworkRequestURLLoaderClient
   DataPipeInfo data_pipe_for_race_network_request_;
   DataPipeInfo data_pipe_for_fetch_handler_;
   absl::optional<network::URLLoaderCompletionStatus> completion_status_;
+  bool redirected_ = false;
 
   base::WeakPtrFactory<ServiceWorkerRaceNetworkRequestURLLoaderClient>
       weak_factory_{this};

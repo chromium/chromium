@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "content/common/service_worker/race_network_request_url_loader_client.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/trace_event/trace_event.h"
 #include "content/common/service_worker/service_worker_resource_loader.h"
 #include "mojo/public/c/system/data_pipe.h"
@@ -141,6 +142,7 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::OnReceiveRedirect(
   // handler completion.
   owner_->SetCommitResponsibility(FetchResponseFrom::kServiceWorker);
   forwarding_client_->OnReceiveRedirect(redirect_info, head->Clone());
+  redirected_ = true;
 }
 
 void ServiceWorkerRaceNetworkRequestURLLoaderClient::OnComplete(
@@ -148,6 +150,16 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::OnComplete(
   if (!owner_) {
     return;
   }
+  if (owner_->IsMainResourceLoader()) {
+    base::UmaHistogramBoolean(
+        "ServiceWorker.FetchEvent.MainResource.RaceNetworkRequest.Redirect",
+        redirected_);
+  } else {
+    base::UmaHistogramBoolean(
+        "ServiceWorker.FetchEvent.Subresource.RaceNetworkRequest.Redirect",
+        redirected_);
+  }
+
   if (owner_->commit_responsibility() == FetchResponseFrom::kServiceWorker) {
     forwarding_client_->OnComplete(status);
     return;

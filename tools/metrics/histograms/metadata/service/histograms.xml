@@ -474,6 +474,23 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram
+    name="ServiceWorker.FetchEvent.{Resource}.RaceNetworkRequest.Redirect"
+    enum="Boolean" expires_after="2024-01-14">
+  <owner>sisidovski@chromium.org</owner>
+  <owner>chrome-worker@google.com</owner>
+  <summary>
+    The result if the RaceNetworkRequest received a redirect response.
+    RaceNetworkRequest runs a race between the network request which bypasses
+    ServiceWorker, and the other request which goes through the fetch handler.
+    This metric is recorded for {Resource}.
+  </summary>
+  <token key="Resource">
+    <variant name="MainResource" summary="main resource"/>
+    <variant name="Subresource" summary="subresource"/>
+  </token>
+</histogram>
+
 <histogram name="ServiceWorker.FetchHandler.SkipReason"
     enum="ServiceWorkerFetchHandlerSkipReason" expires_after="2023-12-04">
   <owner>yyanagisawa@chromium.org</owner>
