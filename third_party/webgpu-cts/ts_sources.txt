@@ -73,6 +73,8 @@ src/webgpu/util/texture.ts
 src/webgpu/util/texture/texture_ok.ts
 src/webgpu/gpu_test.ts
 src/webgpu/api/validation/validation_test.ts
+src/compat/api/validation/encoding/cmds/copyTextureToBuffer.spec.ts
+src/compat/api/validation/render_pipeline/shader_module.spec.ts
 src/compat/api/validation/texture/createTexture.spec.ts
 src/compat/api/validation/texture/cubeArray.spec.ts
 src/unittests/unit_test.ts
