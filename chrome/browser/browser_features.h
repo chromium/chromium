@@ -89,6 +89,10 @@ BASE_DECLARE_FEATURE(kOmniboxTriggerForPrerender2);
 // crbug.com/1422819 for more details of Bookmark triggered prerendering.
 BASE_DECLARE_FEATURE(kBookmarkTriggerForPrerender2);
 
+// This flag is used for enabling New Tab Page triggered prerendering. See
+// crbug.com/1462832 for more details of New Tab Page triggered prerendering.
+BASE_DECLARE_FEATURE(kNewTabPageTriggerForPrerender2);
+
 // This flag controls whether to trigger prerendering when the default search
 // engine suggests to prerender a search result.
 BASE_DECLARE_FEATURE(kSupportSearchSuggestionForPrerender2);

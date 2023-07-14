@@ -255,6 +255,11 @@ BASE_FEATURE(kBookmarkTriggerForPrerender2,
              "BookmarkTriggerForPrerender2",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables New Tab Page trigger prerendering.
+BASE_FEATURE(kNewTabPageTriggerForPrerender2,
+             "NewTabPageTriggerForPrerender2",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kSupportSearchSuggestionForPrerender2,
              "SupportSearchSuggestionForPrerender2",
              base::FEATURE_DISABLED_BY_DEFAULT);
