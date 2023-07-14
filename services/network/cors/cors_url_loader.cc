@@ -326,6 +326,18 @@ CorsURLLoader::CorsURLLoader(
   SetCorsFlagIfNeeded();
 
   if (shared_dictionary_storage_) {
+    if (request_.mode != mojom::RequestMode::kNoCors) {
+      request_.load_flags |= net::LOAD_CAN_USE_SHARED_DICTIONARY;
+    } else if (request_.request_initiator &&
+               request_.request_initiator->IsSameOriginWith(request_.url)) {
+      // For no-cors mode requests, we can use shared dictionaries only for same
+      // origin requests. When redirected to another origin,
+      // net::URLRequest::Redirect() disables the LOAD_CAN_USE_SHARED_DICTIONARY
+      // flag.
+      request_.load_flags |= net::LOAD_CAN_USE_SHARED_DICTIONARY;
+      request_.load_flags |=
+          net::LOAD_DISABLE_SHARED_DICTIONARY_AFTER_CROSS_ORIGIN_REDIRECT;
+    }
     // This is intended to load the dictionary as soon as possible. Without
     // this, the dictionary will be loaded from the disk when
     // `HttpNetworkTransaction` builds the request header just before sending it
@@ -587,6 +599,10 @@ void CorsURLLoader::OnReceiveResponse(
       }
     }
   }
+
+  // Opaque response tainting requests must not use shared dictionary.
+  CHECK(!(response_head->did_use_shared_dictionary &&
+          (response_tainting_ == mojom::FetchResponseType::kOpaque)));
 
   has_forwarded_response_ = true;
   timing_allow_failed_flag_ = !PassesTimingAllowOriginCheck(*response_head);

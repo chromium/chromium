@@ -987,6 +987,13 @@ void URLRequest::Redirect(
   isolation_info_ = isolation_info_.CreateForRedirect(
       url::Origin::Create(redirect_info.new_url));
 
+  if ((load_flags_ & LOAD_CAN_USE_SHARED_DICTIONARY) &&
+      (load_flags_ &
+       LOAD_DISABLE_SHARED_DICTIONARY_AFTER_CROSS_ORIGIN_REDIRECT) &&
+      !url::Origin::Create(url()).IsSameOriginWith(redirect_info.new_url)) {
+    load_flags_ &= ~LOAD_CAN_USE_SHARED_DICTIONARY;
+  }
+
   url_chain_.push_back(redirect_info.new_url);
   --redirect_limit_;
 

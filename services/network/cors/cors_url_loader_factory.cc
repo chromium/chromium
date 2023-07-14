@@ -116,7 +116,7 @@ bool IsTrustedNavigationRequestFromSecureContext(
   // TODO(crbug.com/1129326): Remove this when we set it for top-level
   // navigation requests.
   if (!request.trusted_params->client_security_state) {
-    return request.url.SchemeIsCryptographic();
+    return IsUrlPotentiallyTrustworthy(request.url);
   }
   return request.trusted_params->client_security_state->is_web_secure_context;
 }

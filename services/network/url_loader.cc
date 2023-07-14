@@ -730,12 +730,6 @@ URLLoader::URLLoader(
     }
   }
 
-  // We don't allow using shared dictionary for no-cors requests to avoid
-  // information leak.
-  if (request_mode_ != mojom::RequestMode::kNoCors) {
-    request_load_flags |= net::LOAD_CAN_USE_SHARED_DICTIONARY;
-  }
-
   url_request_->SetLoadFlags(request_load_flags);
   url_request_->SetPriorityIncremental(request.priority_incremental);
   SetRequestCredentials(request.url);
