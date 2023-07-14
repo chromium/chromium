@@ -1816,6 +1816,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Viz.ExternalBeginFrameSourceMac.DisplayLink"
+    enum="DisplayLinkCreateResult" expires_after="2024-01-13">
+  <owner>magchen@chromium.org</owner>
+  <owner>ccameron@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    The result of creating CVDisplaylink in ExternalBeginFrameSourceMac. If
+    successful, BeginFrameSource is driven by HW VSync instead of timer. This
+    histogram does not include the data from DelayBasedBeginFrameSourceMac. It's
+    recorded each time a DisplayLink is created during
+    RootCompositorFrameSinkImpl/ExternalBeginFrameSourceMac creation or during
+    the monitor change in the existing ExternalBeginFrameSourceMac.
+  </summary>
+</histogram>
+
 <histogram name="Viz.FileDescriptorTracking.TimeToCompute" units="microseconds"
     expires_after="2024-06-09">
   <owner>petermcneeley@chromium.org</owner>

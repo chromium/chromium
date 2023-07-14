@@ -28706,6 +28706,13 @@ located in chromeos/ash/components/device_activity/device_activity_client.h -->
   <int value="1" label="kAllowed"/>
 </enum>
 
+<enum name="DisplayLinkCreateResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Failed Invalid Display Id"/>
+  <int value="2" label="Failed Create Displaylink"/>
+  <int value="3" label="Failed Register Callback"/>
+</enum>
+
 <enum name="DisplayLinkInstallationStatus">
   <int value="0" label="DisplayLink not installed"/>
   <int value="1" label="7.1 or earlier"/>
