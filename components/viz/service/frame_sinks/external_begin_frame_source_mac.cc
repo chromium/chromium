@@ -85,6 +85,12 @@ void ExternalBeginFrameSourceMac::SetVSyncDisplayID(int64_t display_id) {
     } else {
       nominal_refresh_period_ = BeginFrameArgs::DefaultInterval();
     }
+
+    if (update_vsync_params_callback_) {
+      update_vsync_params_callback_.Run(display_link_mac_->GetCurrentTime(),
+                                        nominal_refresh_period_);
+    }
+
   } else {
     DLOG(ERROR) << "Fail to create DisplayLinkMac for DisplayID: "
                 << display_id_ << ". Use the timer as BeginFrameSource";
@@ -124,6 +130,7 @@ void ExternalBeginFrameSourceMac::StopBeginFrame() {
     DCHECK(vsync_callback_mac_);
     // Remove and unregister VSyncCallbackMac.
     vsync_callback_mac_.reset();
+    vsyncs_to_skip_ = 0;
     return;
   }
 
