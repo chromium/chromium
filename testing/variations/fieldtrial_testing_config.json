@@ -6189,8 +6189,10 @@
             ],
             "experiments": [
                 {
-                    "name": "WebpQualityBackendV5",
+                    "name": "WebpQualityBackendV6",
                     "params": {
+                        "dismiss-loading-state-on-document-on-load-completed-in-primary-main-frame": "false",
+                        "dismiss-loading-state-on-navigation-entry-committed": "true",
                         "encoding-quality-image-search": "45",
                         "encoding-quality-region-search": "45",
                         "lens-homepage-url": "https://lens.google.com/v3/",
@@ -6205,7 +6207,7 @@
                     ]
                 },
                 {
-                    "name": "WebpBackendOnlyV5",
+                    "name": "WebpBackendOnlyV6",
                     "params": {
                         "encoding-quality-image-search": "90",
                         "encoding-quality-region-search": "90",
@@ -6221,8 +6223,10 @@
                     ]
                 },
                 {
-                    "name": "JpegQualityBackendV5",
+                    "name": "JpegQualityBackendV6",
                     "params": {
+                        "dismiss-loading-state-on-document-on-load-completed-in-primary-main-frame": "false",
+                        "dismiss-loading-state-on-navigation-entry-committed": "true",
                         "encoding-quality-image-search": "40",
                         "encoding-quality-region-search": "40",
                         "lens-homepage-url": "https://lens.google.com/v3/",
@@ -6237,7 +6241,7 @@
                     ]
                 },
                 {
-                    "name": "JpegBackendOnlyV5",
+                    "name": "JpegBackendOnlyV6",
                     "params": {
                         "encoding-quality-image-search": "90",
                         "encoding-quality-region-search": "90",
@@ -6253,7 +6257,7 @@
                     ]
                 },
                 {
-                    "name": "JpegQualityOnlyV5",
+                    "name": "JpegQualityOnlyV6",
                     "params": {
                         "encoding-quality-image-search": "40",
                         "encoding-quality-region-search": "40",
