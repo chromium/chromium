@@ -3046,6 +3046,8 @@ static_library("ui") {
       "webui/ash/power_ui.h",
       "webui/ash/remote_maintenance_curtain_ui.cc",
       "webui/ash/remote_maintenance_curtain_ui.h",
+      "webui/ash/sensor_info/sensor_info_ui.cc",
+      "webui/ash/sensor_info/sensor_info_ui.h",
       "webui/ash/set_time_ui.cc",
       "webui/ash/set_time_ui.h",
       "webui/ash/shimless_rma_dialog.cc",

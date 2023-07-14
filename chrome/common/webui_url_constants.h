@@ -123,6 +123,8 @@ extern const char kChromeUIInvalidationsUrl[];
 extern const char kChromeUIKillHost[];
 extern const char kChromeUILauncherInternalsHost[];
 extern const char kChromeUILauncherInternalsURL[];
+extern const char kChromeUISensorInfoURL[];
+extern const char kChromeUISensorInfoHost[];
 extern const char kChromeUILocalStateHost[];
 extern const char kChromeUILocationInternalsHost[];
 extern const char kChromeUIManagementHost[];
