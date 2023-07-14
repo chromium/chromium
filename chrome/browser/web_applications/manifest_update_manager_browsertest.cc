@@ -825,7 +825,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
 
   base::RunLoop run_loop;
   UpdateCheckResultAwaiter awaiter(url);
-  GetProvider().install_finalizer().UninstallWebApp(
+  GetProvider().scheduler().UninstallWebApp(
       app_id, webapps::WebappUninstallSource::kAppMenu,
       base::BindLambdaForTesting([&](webapps::UninstallResultCode code) {
         EXPECT_EQ(code, webapps::UninstallResultCode::kSuccess);

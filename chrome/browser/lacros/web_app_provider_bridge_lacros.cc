@@ -146,7 +146,7 @@ void WebAppProviderBridgeLacros::WebAppUninstalledInArcImpl(
     Profile* profile) {
   DCHECK(profile);
   auto* provider = web_app::WebAppProvider::GetForWebApps(profile);
-  provider->install_finalizer().UninstallExternalWebApp(
+  provider->scheduler().RemoveInstallSource(
       app_id, web_app::WebAppManagement::kWebAppStore,
       webapps::WebappUninstallSource::kArc, std::move(callback));
 }

@@ -53,7 +53,7 @@
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
-#include "chrome/browser/web_applications/web_app_install_finalizer.h"
+#include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_features.h"
@@ -955,7 +955,7 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest,
     base::RunLoop run_loop;
 
     ASSERT_TRUE(provider->registrar_unsafe().CanUserUninstallWebApp(app_id));
-    provider->install_finalizer().UninstallWebApp(
+    provider->scheduler().UninstallWebApp(
         app_id, webapps::WebappUninstallSource::kAppMenu,
         base::BindLambdaForTesting([&](webapps::UninstallResultCode code) {
           EXPECT_EQ(code, webapps::UninstallResultCode::kSuccess);

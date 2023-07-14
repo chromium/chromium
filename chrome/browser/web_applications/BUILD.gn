@@ -538,8 +538,6 @@ source_set("web_applications_test_support") {
     "test/fake_data_retriever.h",
     "test/fake_externally_managed_app_manager.cc",
     "test/fake_externally_managed_app_manager.h",
-    "test/fake_install_finalizer.cc",
-    "test/fake_install_finalizer.h",
     "test/fake_os_integration_manager.cc",
     "test/fake_os_integration_manager.h",
     "test/fake_url_handler_manager.cc",

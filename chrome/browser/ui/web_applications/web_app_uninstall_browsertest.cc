@@ -4,6 +4,7 @@
 
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -20,8 +21,8 @@
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
+#include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_id.h"
-#include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
@@ -44,17 +45,13 @@ class WebAppUninstallBrowserTest : public WebAppControllerBrowserTest {
 
   void UninstallWebApp(const AppId& app_id) {
     WebAppProvider* const provider = WebAppProvider::GetForTest(profile());
-    base::RunLoop run_loop;
 
+    base::test::TestFuture<webapps::UninstallResultCode> future;
     DCHECK(provider->registrar_unsafe().CanUserUninstallWebApp(app_id));
-    provider->install_finalizer().UninstallWebApp(
-        app_id, webapps::WebappUninstallSource::kAppMenu,
-        base::BindLambdaForTesting([&](webapps::UninstallResultCode code) {
-          EXPECT_EQ(code, webapps::UninstallResultCode::kSuccess);
-          run_loop.Quit();
-        }));
+    provider->scheduler().UninstallWebApp(
+        app_id, webapps::WebappUninstallSource::kAppMenu, future.GetCallback());
+    EXPECT_EQ(future.Get(), webapps::UninstallResultCode::kSuccess);
 
-    run_loop.Run();
     base::RunLoop().RunUntilIdle();
   }
 };
@@ -160,7 +157,7 @@ IN_PROC_BROWSER_TEST_F(WebAppUninstallBrowserTest, TwoUninstallCalls) {
   WebAppProvider* const provider = WebAppProvider::GetForTest(profile());
   EXPECT_TRUE(provider->registrar_unsafe().IsInstalled(app_id));
   DCHECK(provider->registrar_unsafe().CanUserUninstallWebApp(app_id));
-  provider->install_finalizer().UninstallWebApp(
+  provider->scheduler().UninstallWebApp(
       app_id, webapps::WebappUninstallSource::kAppMenu,
       base::BindLambdaForTesting([&](webapps::UninstallResultCode code) {
         if (quit_run_loop)
@@ -171,7 +168,7 @@ IN_PROC_BROWSER_TEST_F(WebAppUninstallBrowserTest, TwoUninstallCalls) {
   EXPECT_EQ(1u, provider->command_manager().GetCommandCountForTesting());
 
   // Trigger second uninstall call and wait for result.
-  provider->install_finalizer().UninstallWebApp(
+  provider->scheduler().UninstallWebApp(
       app_id, webapps::WebappUninstallSource::kAppMenu,
       base::BindLambdaForTesting([&](webapps::UninstallResultCode code) {
         if (quit_run_loop)

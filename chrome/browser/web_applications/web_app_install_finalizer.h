@@ -98,46 +98,23 @@ class WebAppInstallFinalizer {
   WebAppInstallFinalizer& operator=(const WebAppInstallFinalizer&) = delete;
   virtual ~WebAppInstallFinalizer();
 
-  // All methods below are |virtual| for testing.
-
   // Write the WebApp data to disk and register the app.
-  virtual void FinalizeInstall(const WebAppInstallInfo& web_app_info,
-                               const FinalizeOptions& options,
-                               InstallFinalizedCallback callback);
+  void FinalizeInstall(const WebAppInstallInfo& web_app_info,
+                       const FinalizeOptions& options,
+                       InstallFinalizedCallback callback);
 
   // Write the new WebApp data to disk and update the app.
   // TODO(https://crbug.com/1196051): Chrome fails to update the manifest
   // if the app window needing update closes at the same time as Chrome.
   // Therefore, the manifest may not always update as expected.
+  // Virtual for testing.
   virtual void FinalizeUpdate(const WebAppInstallInfo& web_app_info,
                               InstallFinalizedCallback callback);
 
-  // Removes |webapp_uninstall_surface| from |app_id|. If no more interested
-  // sources left, deletes the app from disk and registrar.
-  virtual void UninstallExternalWebApp(
-      const AppId& app_id,
-      WebAppManagement::Type external_install_source,
-      webapps::WebappUninstallSource uninstall_surface,
-      UninstallWebAppCallback callback);
-
-  // Removes the external app for |app_url| from disk and registrar. Fails if
-  // there is no installed external app for |app_url|.
-  virtual void UninstallExternalWebAppByUrl(
-      const GURL& app_url,
-      WebAppManagement::Type external_install_source,
-      webapps::WebappUninstallSource uninstall_surface,
-      UninstallWebAppCallback callback);
-
-  // Removes |webapp_uninstall_surface| from |app_id|, no matter how many
-  // sources are left.
-  virtual void UninstallWebApp(const AppId& app_id,
-                               webapps::WebappUninstallSource uninstall_surface,
-                               UninstallWebAppCallback callback);
-
-  virtual bool CanReparentTab(const AppId& app_id, bool shortcut_created) const;
-  virtual void ReparentTab(const AppId& app_id,
-                           bool shortcut_created,
-                           content::WebContents* web_contents);
+  bool CanReparentTab(const AppId& app_id, bool shortcut_created) const;
+  void ReparentTab(const AppId& app_id,
+                   bool shortcut_created,
+                   content::WebContents* web_contents);
 
   void SetProvider(base::PassKey<WebAppProvider>, WebAppProvider& provider);
   void Start();
@@ -152,15 +129,6 @@ class WebAppInstallFinalizer {
       bool is_placeholder,
       GURL install_url,
       std::vector<std::string> additional_policy_ids);
-
-  // Used to schedule a WebAppUninstallCommand. The |external_install_source|
-  // field is only required for external app uninstalls to verify OS
-  // unregistration, and is not used for sync/manual uninstalls.
-  void ScheduleUninstallCommand(
-      const AppId& app_id,
-      absl::optional<WebAppManagement::Type> external_install_source,
-      webapps::WebappUninstallSource uninstall_source,
-      UninstallWebAppCallback callback);
 
  private:
   using CommitCallback = base::OnceCallback<void(bool success)>;

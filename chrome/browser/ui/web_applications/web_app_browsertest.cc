@@ -1385,14 +1385,10 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, ShortcutIconCorrectColor) {
       << "Actual color (RGB) is: "
       << color_utils::SkColorToRgbString(icon_pixel_color.value());
 
-  base::RunLoop run_loop_uninstall;
-  provider->install_finalizer().UninstallWebApp(
-      app_id, webapps::WebappUninstallSource::kAppMenu,
-      base::BindLambdaForTesting([&](webapps::UninstallResultCode code) {
-        EXPECT_EQ(code, webapps::UninstallResultCode::kSuccess);
-        run_loop_uninstall.Quit();
-      }));
-  run_loop_uninstall.Run();
+  base::test::TestFuture<webapps::UninstallResultCode> future;
+  provider->scheduler().UninstallWebApp(
+      app_id, webapps::WebappUninstallSource::kAppMenu, future.GetCallback());
+  EXPECT_TRUE(UninstallSucceeded(future.Get()));
 }
 #endif
 
@@ -1479,17 +1475,12 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_ShortcutMenu, ShortcutsMenuSuccess) {
           .GetSwitchValueASCII(switches::kAppLaunchUrlForShortcutsMenuItem)
           .find("/banners/launch_url2"));
 
-  base::RunLoop run_loop_uninstall;
-  WebAppProvider::GetForTest(profile())->install_finalizer().UninstallWebApp(
-      app_id, webapps::WebappUninstallSource::kAppMenu,
-      base::BindLambdaForTesting([&](webapps::UninstallResultCode code) {
-        EXPECT_EQ(code, webapps::UninstallResultCode::kSuccess);
-        EXPECT_THAT(
-            tester.GetAllSamples("WebApp.ShortcutsMenuUnregistered.Result"),
-            BucketsAre(base::Bucket(true, 1)));
-        run_loop_uninstall.Quit();
-      }));
-  run_loop_uninstall.Run();
+  base::test::TestFuture<webapps::UninstallResultCode> future;
+  provider().scheduler().UninstallWebApp(
+      app_id, webapps::WebappUninstallSource::kAppMenu, future.GetCallback());
+  EXPECT_TRUE(UninstallSucceeded(future.Get()));
+  EXPECT_THAT(tester.GetAllSamples("WebApp.ShortcutsMenuUnregistered.Result"),
+              BucketsAre(base::Bucket(true, 1)));
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_ShortcutMenu,
@@ -1542,28 +1533,22 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_ShortcutMenu,
   // No shortcuts should be read.
   EXPECT_TRUE(shortcuts_menu_items.empty());
 
-  base::RunLoop run_loop_uninstall;
   bool sub_manager_execute_enabled = AreSubManagersExecuteEnabled();
-  WebAppProvider::GetForTest(profile())->install_finalizer().UninstallWebApp(
-      app_id, webapps::WebappUninstallSource::kAppMenu,
-      base::BindLambdaForTesting([&](webapps::UninstallResultCode code) {
-        EXPECT_EQ(code, webapps::UninstallResultCode::kSuccess);
-        if (sub_manager_execute_enabled) {
-          // TODO(crbug.com/1401125): Sub manager code smartly knows that there
-          // aren't any shortcuts menu data, so doesn't do anything. The old OS
-          // integration code does not read current OS states, so it triggers
-          // the histogram. Clean up once sub managers are released.
-          EXPECT_THAT(
-              tester.GetAllSamples("WebApp.ShortcutsMenuUnregistered.Result"),
-              BucketsAre(base::Bucket(true, 0), base::Bucket(false, 0)));
-        } else {
-          EXPECT_THAT(
-              tester.GetAllSamples("WebApp.ShortcutsMenuUnregistered.Result"),
-              BucketsAre(base::Bucket(true, 1)));
-        }
-        run_loop_uninstall.Quit();
-      }));
-  run_loop_uninstall.Run();
+  base::test::TestFuture<webapps::UninstallResultCode> future;
+  provider().scheduler().UninstallWebApp(
+      app_id, webapps::WebappUninstallSource::kAppMenu, future.GetCallback());
+  EXPECT_TRUE(UninstallSucceeded(future.Get()));
+  if (sub_manager_execute_enabled) {
+    // TODO(crbug.com/1401125): Sub manager code smartly knows that there
+    // aren't any shortcuts menu data, so doesn't do anything. The old OS
+    // integration code does not read current OS states, so it triggers
+    // the histogram. Clean up once sub managers are released.
+    EXPECT_THAT(tester.GetAllSamples("WebApp.ShortcutsMenuUnregistered.Result"),
+                BucketsAre(base::Bucket(true, 0), base::Bucket(false, 0)));
+  } else {
+    EXPECT_THAT(tester.GetAllSamples("WebApp.ShortcutsMenuUnregistered.Result"),
+                BucketsAre(base::Bucket(true, 1)));
+  }
 }
 
 #endif
@@ -1598,15 +1583,11 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, WebAppCreateAndDeleteShortcut) {
   EXPECT_TRUE(registration->test_override->IsShortcutCreated(
       profile(), app_id, provider->registrar_unsafe().GetAppShortName(app_id)));
 
-  // Unistall the web app
-  base::RunLoop run_loop_uninstall;
-  provider->install_finalizer().UninstallWebApp(
-      app_id, webapps::WebappUninstallSource::kAppMenu,
-      base::BindLambdaForTesting([&](webapps::UninstallResultCode code) {
-        EXPECT_EQ(code, webapps::UninstallResultCode::kSuccess);
-        run_loop_uninstall.Quit();
-      }));
-  run_loop_uninstall.Run();
+  // Uninstall the web app
+  base::test::TestFuture<webapps::UninstallResultCode> future;
+  provider->scheduler().UninstallWebApp(
+      app_id, webapps::WebappUninstallSource::kAppMenu, future.GetCallback());
+  EXPECT_TRUE(UninstallSucceeded(future.Get()));
 
 #if BUILDFLAG(IS_WIN)
   base::FilePath desktop_shortcut_path =
@@ -2352,19 +2333,13 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_FileHandler,
   ASSERT_TRUE(registration->test_override->DeleteChromeAppsDir());
 #endif
 
-  // Unistall the web app
-  NavigateToURLAndWait(browser(), GURL(chrome::kChromeUIAppsURL));
-  base::RunLoop run_loop_uninstall;
-  WebAppProvider::GetForTest(profile())->install_finalizer().UninstallWebApp(
-      app_id, webapps::WebappUninstallSource::kAppsPage,
-      base::BindLambdaForTesting([&](webapps::UninstallResultCode code) {
-        EXPECT_THAT(
-            tester.GetAllSamples("WebApp.FileHandlersUnregistration.Result"),
-            BucketsAre(base::Bucket(true, 1)));
-        EXPECT_EQ(code, webapps::UninstallResultCode::kSuccess);
-        run_loop_uninstall.Quit();
-      }));
-  run_loop_uninstall.Run();
+  // Uninstall the web app
+  base::test::TestFuture<webapps::UninstallResultCode> future;
+  provider().scheduler().UninstallWebApp(
+      app_id, webapps::WebappUninstallSource::kAppsPage, future.GetCallback());
+  EXPECT_TRUE(UninstallSucceeded(future.Get()));
+  EXPECT_THAT(tester.GetAllSamples("WebApp.FileHandlersUnregistration.Result"),
+              BucketsAre(base::Bucket(true, 1)));
 
 #if BUILDFLAG(IS_WIN)
   // Check file associations after the web app is uninstalled.
@@ -2431,16 +2406,11 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_FileHandler,
   }
   ASSERT_TRUE(registration->test_override->DeleteChromeAppsDir());
 
-  // Unistall the web app
-  NavigateToURLAndWait(browser(), GURL(chrome::kChromeUIAppsURL));
-  base::RunLoop run_loop_uninstall;
-  WebAppProvider::GetForTest(profile())->install_finalizer().UninstallWebApp(
-      app_id, webapps::WebappUninstallSource::kAppsPage,
-      base::BindLambdaForTesting([&](webapps::UninstallResultCode code) {
-        EXPECT_EQ(code, webapps::UninstallResultCode::kSuccess);
-        run_loop_uninstall.Quit();
-      }));
-  run_loop_uninstall.Run();
+  // Uninstall the web app
+  base::test::TestFuture<webapps::UninstallResultCode> future;
+  provider().scheduler().UninstallWebApp(
+      app_id, webapps::WebappUninstallSource::kAppsPage, future.GetCallback());
+  EXPECT_TRUE(UninstallSucceeded(future.Get()));
 }
 #endif  // BUILDFLAG(IS_MAC)
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)

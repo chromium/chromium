@@ -874,14 +874,11 @@ void WebAppIntegrationTestDriver::TearDownOnMainThread() {
       if (provider->registrar_unsafe().IsInstalled(app_id)) {
         DCHECK(app->CanUserUninstallWebApp());
         UninstallCompleteWaiter uninstall_waiter(profile, app_id);
-        base::RunLoop run_loop;
-        provider->install_finalizer().UninstallWebApp(
+        base::test::TestFuture<webapps::UninstallResultCode> future;
+        provider->scheduler().UninstallWebApp(
             app_id, webapps::WebappUninstallSource::kAppsPage,
-            base::BindLambdaForTesting([&](webapps::UninstallResultCode code) {
-              EXPECT_EQ(code, webapps::UninstallResultCode::kSuccess);
-              run_loop.Quit();
-            }));
-        run_loop.Run();
+            future.GetCallback());
+        EXPECT_TRUE(UninstallSucceeded(future.Get()));
         uninstall_waiter.Wait();
       }
       LOG(INFO) << "TearDownOnMainThread: Uninstall complete.";

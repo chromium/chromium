@@ -329,7 +329,7 @@ void ApkWebAppService::MaybeUninstallWebApp(const web_app::AppId& web_app_id) {
 
   auto* provider = web_app::WebAppProvider::GetForWebApps(profile_);
   DCHECK(provider);
-  provider->install_finalizer().UninstallExternalWebApp(
+  provider->scheduler().RemoveInstallSource(
       web_app_id, web_app::WebAppManagement::kWebAppStore,
       webapps::WebappUninstallSource::kArc, base::DoNothing());
 }

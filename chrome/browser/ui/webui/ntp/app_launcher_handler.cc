@@ -1011,7 +1011,7 @@ void AppLauncherHandler::HandleUninstallApp(const base::Value::List& args) {
           weak_ptr_factory_.GetWeakPtr());
 
       base::AutoReset<bool> auto_reset(&ignore_changes_, true);
-      web_app_provider_->install_finalizer().UninstallWebApp(
+      web_app_provider_->scheduler().UninstallWebApp(
           extension_id_prompting_, webapps::WebappUninstallSource::kAppsPage,
           std::move(uninstall_success_callback));
     } else {

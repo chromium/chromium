@@ -78,7 +78,7 @@ void AndroidSmsAppSetupControllerImpl::PwaDelegate::RemovePwa(
     return;
   }
 
-  provider->install_finalizer().UninstallExternalWebApp(
+  provider->scheduler().RemoveInstallSource(
       app_id, web_app::WebAppManagement::kDefault,
       webapps::WebappUninstallSource::kInternalPreinstalled,
       base::BindOnce(

@@ -18,7 +18,6 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
-#include "chrome/browser/web_applications/test/fake_install_finalizer.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/fake_web_contents_manager.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
@@ -26,6 +25,7 @@
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
+#include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_contents/web_app_url_loader.h"
@@ -357,18 +357,28 @@ TEST_F(IsolatedWebAppApplyUpdateCommandTest, FailsIfIconDownloadFails) {
 }
 
 TEST_F(IsolatedWebAppApplyUpdateCommandTest, FailsIfInstallFinalizerFails) {
-  auto fake_install_finalizer = std::make_unique<FakeInstallFinalizer>();
-  FakeInstallFinalizer* fake_install_finalizer_ptr =
-      fake_install_finalizer.get();
-  fake_provider().SetInstallFinalizer(std::move(fake_install_finalizer));
+  class FailingUpdateFinalizer : public WebAppInstallFinalizer {
+   public:
+    explicit FailingUpdateFinalizer(AppId app_id)
+        : WebAppInstallFinalizer(nullptr), app_id_(std::move(app_id)) {}
+
+    void FinalizeUpdate(const WebAppInstallInfo& web_app_info,
+                        InstallFinalizedCallback callback) override {
+      std::move(callback).Run(app_id_,
+                              webapps::InstallResultCode::kNotInstallable, {});
+    }
+
+   private:
+    AppId app_id_;
+  };
+
+  fake_provider().SetInstallFinalizer(
+      std::make_unique<FailingUpdateFinalizer>(url_info_.app_id()));
   test::AwaitStartWebAppProviderAndSubsystems(profile());
 
   InstallIwa(update_info());
   WriteUpdateBundleToDisk();
   CreateDefaultPageState();
-
-  fake_install_finalizer_ptr->SetNextFinalizeInstallResult(
-      url_info_.app_id(), webapps::InstallResultCode::kNotInstallable);
 
   auto result = ApplyPendingUpdate();
   ASSERT_THAT(result.has_value(), IsFalse());

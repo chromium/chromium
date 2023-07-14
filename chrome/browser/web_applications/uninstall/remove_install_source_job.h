@@ -17,10 +17,7 @@ namespace web_app {
 
 class RemoveWebAppJob;
 
-// Removes an install source from a given web app, will uninstall the web app if
-// no install sources remain.
-// May cause a web app to become user uninstallable, will deploy uninstall OS
-// hooks in that case.
+// See public API WebAppCommandScheduler::RemoveInstallSource() for docs.
 class RemoveInstallSourceJob : public UninstallJob {
  public:
   RemoveInstallSourceJob(webapps::WebappUninstallSource uninstall_source,

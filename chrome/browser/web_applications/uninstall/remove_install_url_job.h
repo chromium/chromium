@@ -26,14 +26,7 @@ namespace web_app {
 
 class RemoveInstallSourceJob;
 
-// Removes `install_source`'s `install_url` from `app_id`, if `app_id` is unset
-// then the first matching web app that has `install_url` for `install_source`
-// will be used.
-// This will remove the install source if there are no remaining install URLs
-// for that install source which in turn will remove the web app if there are no
-// remaining install sources for the web app.
-// TODO(crbug.com/1434692): There could potentially be multiple app matches for
-// `install_source` and `install_url`, handle this case explicitly.
+// See public API WebAppCommandScheduler::RemoveInstallUrl() for docs.
 class RemoveInstallUrlJob : public UninstallJob {
  public:
   RemoveInstallUrlJob(webapps::WebappUninstallSource uninstall_source,

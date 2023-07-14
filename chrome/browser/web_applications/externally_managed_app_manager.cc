@@ -160,8 +160,9 @@ void ExternallyManagedAppManager::UninstallApps(
     ExternalInstallSource install_source,
     const UninstallCallback& callback) {
   for (auto& url : uninstall_urls) {
-    provider_->install_finalizer().UninstallExternalWebAppByUrl(
-        url, ConvertExternalInstallSourceToSource(install_source),
+    provider_->scheduler().RemoveInstallUrl(
+        /*app_id=*/absl::nullopt,
+        ConvertExternalInstallSourceToSource(install_source), url,
         ConvertExternalInstallSourceToUninstallSource(install_source),
         base::BindOnce(
             [](const UninstallCallback& callback, const GURL& app_url,

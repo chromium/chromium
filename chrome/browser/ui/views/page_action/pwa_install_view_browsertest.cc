@@ -261,11 +261,11 @@ class PwaInstallViewBrowserTest : public extensions::ExtensionBrowserTest {
   void UninstallWebApp(const web_app::AppId& app_id) {
     base::RunLoop run_loop;
     web_app::WebAppProvider::GetForTest(browser()->profile())
-        ->install_finalizer()
+        ->scheduler()
         .UninstallWebApp(
             app_id, webapps::WebappUninstallSource::kAppMenu,
             base::BindLambdaForTesting([&](webapps::UninstallResultCode code) {
-              EXPECT_EQ(code, webapps::UninstallResultCode::kSuccess);
+              EXPECT_TRUE(UninstallSucceeded(code));
               run_loop.Quit();
             }));
     run_loop.Run();

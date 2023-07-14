@@ -14,8 +14,8 @@
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/web_apps/web_app_info_image_source.h"
+#include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
-#include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -176,8 +176,8 @@ void WebAppUninstallDialogDelegateView::Uninstall() {
   // WebAppUninstallDialogDelegateView lifetime is controlled by Widget and it
   // is terminiated as soon as dialog is closed regardless of web app
   // uninstallation.
-  provider->install_finalizer().UninstallWebApp(app_id_, uninstall_source_,
-                                                dialog_->UninstallStarted());
+  provider->scheduler().UninstallWebApp(app_id_, uninstall_source_,
+                                        dialog_->UninstallStarted());
   // We successfully call Web App Uninstall routine, then
   // WebAppUninstallDialogDelegateView can be terminated, but can't call the
   // callback of the dialog caller.

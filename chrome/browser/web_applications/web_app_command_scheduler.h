@@ -246,19 +246,44 @@ class WebAppCommandScheduler {
                        OnceInstallCallback callback,
                        const base::Location& location = FROM_HERE);
 
-  // Schedules a command that, if `external_install_source` is set, removes the
-  // install source from a web app, otherwise uninstalls the web app. If the
-  // last install source of a web app is removed the web app will be
-  // uninstalled. If the uninstalled web app has sub apps their parent install
-  // source will be removed, uninstalling them too if they no longer have any
-  // install sources, this process will repeat as many times as needed.
-  // TODO(crbug.com/1427340): Expose this as separate RemoveInstallUrl(),
-  // RemoveInstallSource() and UninstallWebApp() methods.
-  void Uninstall(const AppId& app_id,
-                 absl::optional<WebAppManagement::Type> external_install_source,
-                 webapps::WebappUninstallSource uninstall_source,
-                 UninstallJob::Callback callback,
-                 const base::Location& location = FROM_HERE);
+  // Schedules a command that removes `install_source`'s `install_url` from
+  // `app_id`, if `app_id` is unset then the first matching web app that has
+  // `install_url` for `install_source` will be used.
+  // This will remove the install source if there are no remaining install URLs
+  // for that install source which in turn will remove the web app if there are
+  // no remaining install sources for the web app.
+  // Virtual for testing.
+  // TODO(crbug.com/1434692): There could potentially be multiple app matches
+  // for `install_source` and `install_url` when `app_id` is not provided,
+  // handle this case better than "first matching".
+  virtual void RemoveInstallUrl(absl::optional<AppId> app_id,
+                                WebAppManagement::Type install_source,
+                                const GURL& install_url,
+                                webapps::WebappUninstallSource uninstall_source,
+                                UninstallJob::Callback callback,
+                                const base::Location& location = FROM_HERE);
+
+  // Schedules a command that removes an install source from a given web app,
+  // will uninstall the web app if no install sources remain. May cause a web
+  // app to become user uninstallable, will deploy uninstall OS hooks in that
+  // case.
+  // Virtual for testing.
+  virtual void RemoveInstallSource(
+      const AppId& app_id,
+      WebAppManagement::Type install_source,
+      webapps::WebappUninstallSource uninstall_source,
+      UninstallJob::Callback callback,
+      const base::Location& location = FROM_HERE);
+
+  // Schedules a command that removes a web app from the database and cleans up
+  // all assets and OS integrations. Disconnects it from any of its sub apps and
+  // uninstalls them too if they have no other install sources. Adds the
+  // uninstall web app to `UserUninstalledPreinstalledWebAppPrefs` if it was
+  // default installed.
+  void UninstallWebApp(const AppId& app_id,
+                       webapps::WebappUninstallSource uninstall_source,
+                       UninstallJob::Callback callback,
+                       const base::Location& location = FROM_HERE);
 
   // Schedules a command that uninstalls all user-installed web apps.
   void UninstallAllUserInstalledWebApps(

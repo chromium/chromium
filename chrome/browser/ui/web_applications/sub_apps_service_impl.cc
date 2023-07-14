@@ -407,7 +407,7 @@ void SubAppsServiceImpl::RemoveSubApp(
         manifest_id_path, SubAppsServiceResultCode::kFailure));
   }
 
-  provider->install_finalizer().UninstallExternalWebApp(
+  provider->scheduler().RemoveInstallSource(
       sub_app_id, WebAppManagement::Type::kSubApp,
       webapps::WebappUninstallSource::kSubApp,
       base::BindOnce(

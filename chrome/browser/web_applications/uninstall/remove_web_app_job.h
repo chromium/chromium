@@ -19,11 +19,7 @@ namespace web_app {
 
 class RemoveInstallSourceJob;
 
-// Removes a web app from the database and cleans up all assets and OS
-// integrations. Disconnects it from any of its sub apps and uninstalls them too
-// if they have no other install sources.
-// Adds it to `UserUninstalledPreinstalledWebAppPrefs` if it was default
-// installed and the removal was user initiated.
+// See public API WebAppCommandScheduler::UninstallWebApp() for docs.
 class RemoveWebAppJob : public UninstallJob {
  public:
   // `is_initial_request` indicates that this operation is not a byproduct of

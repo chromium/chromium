@@ -51,6 +51,7 @@
 #include "chrome/browser/web_applications/locks/shared_web_contents_with_app_lock.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_sub_manager.h"
 #include "chrome/browser/web_applications/uninstall/remove_install_source_job.h"
+#include "chrome/browser/web_applications/uninstall/remove_install_url_job.h"
 #include "chrome/browser/web_applications/uninstall/remove_web_app_job.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
@@ -511,9 +512,10 @@ void WebAppCommandScheduler::InstallFromSync(const WebApp& web_app,
       location);
 }
 
-void WebAppCommandScheduler::Uninstall(
-    const AppId& app_id,
-    absl::optional<WebAppManagement::Type> external_install_source,
+void WebAppCommandScheduler::RemoveInstallUrl(
+    absl::optional<AppId> app_id,
+    WebAppManagement::Type install_source,
+    const GURL& install_url,
     webapps::WebappUninstallSource uninstall_source,
     UninstallJob::Callback callback,
     const base::Location& location) {
@@ -523,17 +525,51 @@ void WebAppCommandScheduler::Uninstall(
                                   webapps::UninstallResultCode::kCancelled));
     return;
   }
-  std::unique_ptr<UninstallJob> job;
-  if (external_install_source.has_value()) {
-    job = std::make_unique<RemoveInstallSourceJob>(
-        uninstall_source, *profile_, app_id, external_install_source.value());
-  } else {
-    job =
-        std::make_unique<RemoveWebAppJob>(uninstall_source, *profile_, app_id);
+  provider_->command_manager().ScheduleCommand(
+      std::make_unique<WebAppUninstallCommand>(
+          std::make_unique<RemoveInstallUrlJob>(uninstall_source, *profile_,
+                                                std::move(app_id),
+                                                install_source, install_url),
+          std::move(callback)),
+      location);
+}
+
+void WebAppCommandScheduler::RemoveInstallSource(
+    const AppId& app_id,
+    WebAppManagement::Type install_source,
+    webapps::WebappUninstallSource uninstall_source,
+    UninstallJob::Callback callback,
+    const base::Location& location) {
+  if (IsShuttingDown()) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback),
+                                  webapps::UninstallResultCode::kCancelled));
+    return;
   }
   provider_->command_manager().ScheduleCommand(
-      std::make_unique<WebAppUninstallCommand>(std::move(job),
-                                               std::move(callback)),
+      std::make_unique<WebAppUninstallCommand>(
+          std::make_unique<RemoveInstallSourceJob>(uninstall_source, *profile_,
+                                                   app_id, install_source),
+          std::move(callback)),
+      location);
+}
+
+void WebAppCommandScheduler::UninstallWebApp(
+    const AppId& app_id,
+    webapps::WebappUninstallSource uninstall_source,
+    UninstallJob::Callback callback,
+    const base::Location& location) {
+  if (IsShuttingDown()) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback),
+                                  webapps::UninstallResultCode::kCancelled));
+    return;
+  }
+  provider_->command_manager().ScheduleCommand(
+      std::make_unique<WebAppUninstallCommand>(
+          std::make_unique<RemoveWebAppJob>(uninstall_source, *profile_,
+                                            app_id),
+          std::move(callback)),
       location);
 }
 

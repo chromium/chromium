@@ -246,7 +246,7 @@ void WebAppNavigationBrowserTest::TearDownOnMainThread() {
     AppReadinessWaiter app_readiness_waiter(
         profile(), app_id, apps::Readiness::kUninstalledByUser);
     base::RunLoop run_loop;
-    provider->install_finalizer().UninstallWebApp(
+    provider->scheduler().UninstallWebApp(
         app_id, webapps::WebappUninstallSource::kAppsPage,
         base::BindLambdaForTesting([&](webapps::UninstallResultCode code) {
           EXPECT_EQ(code, webapps::UninstallResultCode::kSuccess);
