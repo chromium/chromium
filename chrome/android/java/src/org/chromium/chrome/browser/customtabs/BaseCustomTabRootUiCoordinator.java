@@ -57,6 +57,7 @@ import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthCoordinatorFa
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthManager;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.page_insights.PageInsightsCoordinator;
+import org.chromium.chrome.browser.page_insights.PageInsightsSwaaChecker;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.reengagement.ReengagementNotificationController;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
@@ -80,6 +81,8 @@ import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.util.TokenHolder;
+import org.chromium.url.GURL;
 
 import java.util.function.BooleanSupplier;
 
@@ -102,7 +105,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
 
     private @Nullable PageInsightsCoordinator mPageInsightsCoordinator;
     private @Nullable ContextualSearchObserver mContextualSearchObserver;
-    private @Nullable SyncService.SyncStateChangedListener mSyncStateChangedListener;
+    private int mSwaaToken;
 
     /**
      * Construct a new BaseCustomTabRootUiCoordinator.
@@ -139,7 +142,6 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
      * @param customTabNavigationController Controls the custom tab navigation.
      * @param intentDataProvider Contains intent information used to start the Activity.
      * @param tabController Activity tab controller.
-     * @param pageInsightsHubEnabledSupplier Supplies whether PageInsights Hub is enabled.
      */
     public BaseCustomTabRootUiCoordinator(@NonNull AppCompatActivity activity,
             @NonNull ObservableSupplier<ShareDelegate> shareDelegateSupplier,
@@ -207,6 +209,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                     activity, packageName, appName, new ChromePureJavaExceptionReporter());
         }
         mTabController = tabController;
+        mSwaaToken = TokenHolder.INVALID_TOKEN;
     }
 
     @Override
@@ -253,7 +256,19 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
     public void onFinishNativeInitialization() {
         super.onFinishNativeInitialization();
 
-        maybeCreatePageInsightsCoordinator();
+        if (isPageInsightsCapable(mIntentDataProvider.get())) {
+            // Start sWAA checking handler while page insight-capable CCT is in use. We give some
+            // delay in starting it to avoid the first call failing, which is observed sometimes.
+            Tab tab = mTabModelSelectorSupplier.get().getCurrentTab();
+            tab.addObserver(new EmptyTabObserver() {
+                @Override
+                public void onPageLoadFinished(Tab tab, GURL url) {
+                    tab.removeObserver(this);
+                    Profile profile = mProfileSupplier.get();
+                    mSwaaToken = PageInsightsSwaaChecker.getForProfile(profile).start();
+                }
+            });
+        }
 
         if (!ReengagementNotificationController.isEnabled()) return;
         new OneShotCallback<>(mProfileSupplier, mCallbackController.makeCancelable(profile -> {
@@ -266,10 +281,8 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
         }));
     }
 
-    private void maybeCreatePageInsightsCoordinator() {
-        if (mPageInsightsCoordinator != null) return;
-
-        if (!isPageInsightsHubEnabledSync(mIntentDataProvider.get())) return;
+    private void maybeCreatePageInsightsComponent() {
+        if (!isPageInsightsHubEnabled()) return;
 
         ViewStub containerStub = mActivity.findViewById(R.id.page_insights_hub_container_stub);
         if (containerStub != null) containerStub.inflate();
@@ -299,21 +312,37 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
         mContextualSearchManagerSupplier.get().addObserver(mContextualSearchObserver);
     }
 
-    static boolean isPageInsightsHubEnabledSync(BrowserServicesIntentDataProvider intentData) {
-        boolean enabled = ChromeFeatureList.isEnabled(ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB)
+    /**
+     * Whether the CCT is meant to open page insights sheet. Dynamic conditions are checked
+     * separately.
+     */
+    private static boolean isPageInsightsCapable(BrowserServicesIntentDataProvider intentData) {
+        return PageInsightsCoordinator.isFeatureEnabled()
                 && CustomTabsConnection.getInstance().shouldEnablePageInsightsForIntent(intentData);
-        if (!enabled) return false;
-        SyncService syncService = SyncServiceFactory.get();
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    static boolean isPageInsightsHubEnabledSync(
+            BrowserServicesIntentDataProvider intentData, Supplier<Profile> profile) {
+        return isPageInsightsCapable(intentData) && isChromeHistorySyncEnabled(profile);
+    }
+
+    private static boolean isChromeHistorySyncEnabled(Supplier<Profile> profile) {
+        SyncService syncService = SyncServiceFactory.getForProfile(profile.get());
         return syncService != null && syncService.isSyncingUnencryptedUrls();
     }
 
     boolean isPageInsightsHubEnabled() {
         // TODO(b/286327847): Add UMA logging for failure cases.
-        // TODO(b/282739536): Add supplemental Web and App activity(sWAA) user setting.
-        return isPageInsightsHubEnabledSync(mIntentDataProvider.get());
+        return isPageInsightsHubEnabledSync(mIntentDataProvider.get(), mProfileSupplier)
+                && PageInsightsSwaaChecker.getForProfile(mProfileSupplier.get())
+                           .isSwaaEnabled()
+                           .orElse(false);
     }
 
     public @Nullable PageInsightsCoordinator getPageInsightsCoordinator() {
+        if (!isPageInsightsHubEnabled()) return null;
+        if (mPageInsightsCoordinator == null) maybeCreatePageInsightsComponent();
         return mPageInsightsCoordinator;
     }
 
@@ -423,15 +452,16 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
             mDesktopSiteSettingsIPHController = null;
         }
 
-        if (mSyncStateChangedListener != null && SyncServiceFactory.get() != null) {
-            SyncServiceFactory.get().removeSyncStateChangedListener(mSyncStateChangedListener);
-        }
-
         mCustomTabHeightStrategy.destroy();
 
         if (mContextualSearchObserver != null && mContextualSearchManagerSupplier.get() != null) {
             mContextualSearchManagerSupplier.get().removeObserver(mContextualSearchObserver);
             mContextualSearchObserver = null;
+        }
+
+        if (isPageInsightsCapable(mIntentDataProvider.get())
+                && mSwaaToken != TokenHolder.INVALID_TOKEN) {
+            PageInsightsSwaaChecker.getForProfile(mProfileSupplier.get()).stop(mSwaaToken);
         }
 
         if (mPageInsightsCoordinator != null) {
@@ -474,15 +504,6 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                         mAppMenuCoordinator.getAppMenuHandler(), getPrimaryDisplaySizeInInches());
             }
         }));
-
-        final SyncService syncService = SyncServiceFactory.get();
-        if (mSyncStateChangedListener == null && syncService != null) {
-            // TODO(b/282739536): See if an open PIH needs to be closed when the option turns off.
-            mSyncStateChangedListener = () -> {
-                if (syncService.isSyncingUnencryptedUrls()) maybeCreatePageInsightsCoordinator();
-            };
-            syncService.addSyncStateChangedListener(mSyncStateChangedListener);
-        }
     }
 
     @VisibleForTesting

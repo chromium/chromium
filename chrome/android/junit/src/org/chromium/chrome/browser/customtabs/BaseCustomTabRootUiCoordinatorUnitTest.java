@@ -38,7 +38,7 @@ public final class BaseCustomTabRootUiCoordinatorUnitTest {
     }
 
     private boolean isPageInsightsEnabledSync() {
-        return BaseCustomTabRootUiCoordinator.isPageInsightsHubEnabledSync(null);
+        return BaseCustomTabRootUiCoordinator.isPageInsightsHubEnabledSync(null, () -> null);
     }
 
     @Test

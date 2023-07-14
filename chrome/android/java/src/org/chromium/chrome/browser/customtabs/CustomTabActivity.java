@@ -250,8 +250,9 @@ public class CustomTabActivity extends BaseCustomTabActivity {
                     .show(tab, ChromePageInfoHighlight.noHighlight());
             return true;
         } else if (id == R.id.page_insights_id) {
-            assert mBaseCustomTabRootUiCoordinator.getPageInsightsCoordinator() != null;
-            mBaseCustomTabRootUiCoordinator.getPageInsightsCoordinator().launch();
+            var pageInsights = mBaseCustomTabRootUiCoordinator.getPageInsightsCoordinator();
+            assert pageInsights != null;
+            pageInsights.launch();
             return true;
         }
         return super.onMenuOrKeyboardAction(id, fromMenu);

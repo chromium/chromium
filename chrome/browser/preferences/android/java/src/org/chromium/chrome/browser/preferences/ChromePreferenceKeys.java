@@ -850,6 +850,10 @@ public final class ChromePreferenceKeys {
 
     public static final String SURVEY_DATE_LAST_ROLLED = "last_rolled_for_chrome_survey_key";
 
+    // sWAA (Supplemental Web and App Activity) user setting.
+    public static final String SWAA_TIMESTAMP = "Chrome.Swaa.Timestamp";
+    public static final String SWAA_STATUS = "Chrome.Swaa.Status";
+
     // The UI used to be an infobar in the past.
     public static final String SYNC_ERROR_MESSAGE_SHOWN_AT_TIME =
             "sync_error_infobar_shown_shown_at_time";
@@ -1087,6 +1091,8 @@ public final class ChromePreferenceKeys {
                 SIGNIN_PROMO_NTP_LAST_SHOWN_TIME,
                 SYNC_PROMO_TOTAL_SHOW_COUNT,
                 SEARCH_RESUMPTION_MODULE_COLLAPSE_ON_NTP,
+                SWAA_TIMESTAMP,
+                SWAA_STATUS,
                 TABBED_ACTIVITY_LAST_VISIBLE_TIME_MS,
                 TWA_DISCLOSURE_SEEN_PACKAGES,
                 UMA_ON_PRECREATE_COUNTER,
