@@ -6,6 +6,7 @@
 
 #include "base/command_line.h"
 #include "base/feature_list.h"
+#include "base/features.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
@@ -1139,6 +1140,15 @@ BASE_FEATURE(kPaintHoldingCrossOrigin,
 BASE_FEATURE(kParkableImagesToDisk,
              "ParkableImagesToDisk",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+#if BUILDFLAG(IS_ANDROID)
+// A parameter to exclude or not exclude CanvasFontCache from
+// PartialLowModeOnMidRangeDevices. This is used to see how
+// CanvasFontCache affects graphics smoothness and renderer memory usage.
+const base::FeatureParam<bool> kPartialLowEndModeExcludeCanvasFontCache{
+    &base::features::kPartialLowEndModeOnMidRangeDevices,
+    "exclude-canvas-font-cache", false};
+#endif  // BUILDFLAG(IS_ANDROID)
 
 // Enables the use of the PaintCache for Path2D objects that are rasterized
 // out of process.  Has no effect when kCanvasOopRasterization is disabled.

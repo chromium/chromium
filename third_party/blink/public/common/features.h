@@ -618,6 +618,11 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kPaintHoldingCrossOrigin);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kParkableImagesToDisk);
 
+#if BUILDFLAG(IS_ANDROID)
+BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
+    kPartialLowEndModeExcludeCanvasFontCache;
+#endif
+
 // Whether the pending beacon API is enabled or not.
 // https://github.com/WICG/pending-beacon/blob/main/README.md
 // - kPendingBeaconAPI = {true: {"requires_origin_trial": false}} to enable the
