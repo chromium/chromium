@@ -25,6 +25,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.search_resumption.SearchResumptionTileBuilder.OnSuggestionClickCallback;
@@ -66,6 +67,7 @@ public class SearchResumptionModuleViewUnitTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/1464905")
     public void testVisibilityAllowInitially() {
         inflateModuleView();
 
@@ -76,6 +78,7 @@ public class SearchResumptionModuleViewUnitTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/1464905")
     public void testVisibilityDisallowInitially() {
         SharedPreferencesManager sharedPreferencesManager = SharedPreferencesManager.getInstance();
         sharedPreferencesManager.writeBoolean(
@@ -92,6 +95,7 @@ public class SearchResumptionModuleViewUnitTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/1464905")
     public void testVisible() {
         inflateModuleView();
         Assert.assertTrue(isViewVisible(mModuleView));
@@ -105,6 +109,7 @@ public class SearchResumptionModuleViewUnitTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/1464905")
     public void testExpandCollapseCallback() {
         inflateModuleView();
         Assert.assertTrue(mTilesView.isExpanded());
@@ -122,6 +127,7 @@ public class SearchResumptionModuleViewUnitTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/1464905")
     public void testDestroy() {
         inflateModuleView();
         Assert.assertTrue(mTilesView.isExpanded());
@@ -135,6 +141,7 @@ public class SearchResumptionModuleViewUnitTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/1464905")
     public void testTileView() {
         SearchResumptionTileView tileView = inflateTileView();
         String text = "foo";
