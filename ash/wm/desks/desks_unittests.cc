@@ -2,12 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <array>
 #include <memory>
 #include <string>
 #include <vector>
 
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/accessibility/sticky_keys/sticky_keys_controller.h"
+#include "ash/accessibility/ui/accessibility_confirmation_dialog.h"
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
@@ -9157,6 +9159,8 @@ class DeskBarTest
     // Wait for the desk model to have completed its initialization. Not doing
     // this would lead to flaky tests.
     ash_test_helper()->saved_desk_test_helper()->WaitForDeskModels();
+
+    SetShowDeskButtonInShelfPref(GetPrimaryUserPrefService(), true);
   }
 
   void TearDown() override {
@@ -10563,6 +10567,21 @@ class DeskButtonTest
     event_generator->MoveMouseTo(0, 0);
   }
 
+  void OpenDeskBar() {
+    DesksController::Get()->desk_bar_controller()->OpenDeskBar(
+        Shell::Get()->GetPrimaryRootWindow());
+  }
+
+  void CloseDeskBar() {
+    DesksController::Get()->desk_bar_controller()->CloseDeskBar(
+        Shell::Get()->GetPrimaryRootWindow());
+  }
+
+  DeskBarViewBase* GetDeskBarView() {
+    return DesksController::Get()->desk_bar_controller()->GetDeskBarView(
+        Shell::Get()->GetPrimaryRootWindow());
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<ShelfViewTestAPI> shelf_test_api_;
@@ -10817,6 +10836,96 @@ TEST_P(DeskButtonTest, PositionInRTL) {
 
   // Recover to default RTL mode.
   base::i18n::SetRTLForTesting(default_rtl);
+}
+
+TEST_P(DeskButtonTest, BarBoundsWithDeviceSacleFactorChange) {
+  // Test both upscaling and downscaling.
+  for (auto key : {ui::VKEY_OEM_MINUS, ui::VKEY_OEM_PLUS}) {
+    OpenDeskBar();
+    SendKey(key, ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN);
+    ASSERT_TRUE(GetDeskBarView());
+    gfx::Rect bounds = GetDeskBarView()->GetWidget()->GetWindowBoundsInScreen();
+    CloseDeskBar();
+    OpenDeskBar();
+    gfx::Rect expected_bounds =
+        GetDeskBarView()->GetWidget()->GetWindowBoundsInScreen();
+    CloseDeskBar();
+    EXPECT_EQ(bounds, expected_bounds);
+  }
+}
+
+TEST_P(DeskButtonTest, BarBoundsWithScreenRotationChange) {
+  const int control_and_shift = ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN;
+
+  // Accept the dialog once so later on it does not pop up.
+  auto* accessibility_controller = Shell::Get()->accessibility_controller();
+  SendKey(ui::VKEY_BROWSER_REFRESH, control_and_shift);
+  if (auto* confirm_dialog =
+          accessibility_controller->GetConfirmationDialogForTest()) {
+    confirm_dialog->AcceptDialog();
+    base::RunLoop().RunUntilIdle();
+  }
+
+  // Test with all four screen rotations.
+  for (int i = 0; i < 4; i++) {
+    OpenDeskBar();
+    SendKey(ui::VKEY_BROWSER_REFRESH, control_and_shift);
+    ASSERT_TRUE(GetDeskBarView());
+    gfx::Rect bounds = GetDeskBarView()->GetWidget()->GetWindowBoundsInScreen();
+    CloseDeskBar();
+    OpenDeskBar();
+    gfx::Rect expected_bounds =
+        GetDeskBarView()->GetWidget()->GetWindowBoundsInScreen();
+    CloseDeskBar();
+    EXPECT_EQ(bounds, expected_bounds);
+  }
+}
+
+TEST_P(DeskButtonTest, BarBoundsWithWorkAreaChangeChromevox) {
+  const int control_and_alt = ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN;
+
+  // Test with chromevox on and off.
+  OpenDeskBar();
+  SendKey(ui::VKEY_Z, control_and_alt);
+  ASSERT_TRUE(GetDeskBarView());
+  gfx::Rect bounds = GetDeskBarView()->GetWidget()->GetWindowBoundsInScreen();
+  CloseDeskBar();
+  OpenDeskBar();
+  gfx::Rect expected_bounds =
+      GetDeskBarView()->GetWidget()->GetWindowBoundsInScreen();
+  CloseDeskBar();
+  SendKey(ui::VKEY_Z, control_and_alt);
+  EXPECT_EQ(bounds, expected_bounds);
+}
+
+TEST_P(DeskButtonTest, BarBoundsWithWorkAreaChangeDockedMagnifier) {
+  // Set the display large enough for the docked magnifier and the desk bar.
+  UpdateDisplay("1024x768");
+
+  const int control_and_search = ui::EF_CONTROL_DOWN | ui::EF_COMMAND_DOWN;
+
+  // Accept the dialog once so later on it does not pop up.
+  auto* accessibility_controller = Shell::Get()->accessibility_controller();
+  SendKey(ui::VKEY_D, control_and_search);
+  if (auto* confirm_dialog =
+          accessibility_controller->GetConfirmationDialogForTest()) {
+    confirm_dialog->AcceptDialog();
+    base::RunLoop().RunUntilIdle();
+  }
+  SendKey(ui::VKEY_D, control_and_search);
+
+  // Test with docked magnifier on and off.
+  OpenDeskBar();
+  SendKey(ui::VKEY_D, control_and_search);
+  ASSERT_TRUE(GetDeskBarView());
+  gfx::Rect bounds = GetDeskBarView()->GetWidget()->GetWindowBoundsInScreen();
+  CloseDeskBar();
+  OpenDeskBar();
+  gfx::Rect expected_bounds =
+      GetDeskBarView()->GetWidget()->GetWindowBoundsInScreen();
+  CloseDeskBar();
+  SendKey(ui::VKEY_D, control_and_search);
+  EXPECT_EQ(bounds, expected_bounds);
 }
 
 // TODO(afakhry): Add more tests:

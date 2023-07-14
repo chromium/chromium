@@ -29,6 +29,7 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/view.h"
 #include "ui/views/view_utils.h"
+#include "ui/views/widget/widget.h"
 #include "ui/wm/core/coordinate_conversion.h"
 #include "ui/wm/public/activation_client.h"
 
@@ -200,6 +201,29 @@ void DeskBarController::OnWindowActivated(ActivationReason reason,
       CloseAllDeskBars();
       DestroyAllDeskBars();
     }
+  }
+}
+
+void DeskBarController::OnDisplayMetricsChanged(const display::Display& display,
+                                                uint32_t changed_metrics) {
+  if (!IsShowingDeskBar()) {
+    return;
+  }
+
+  for (auto* bar_view : desk_bar_views_) {
+    if (!bar_view->GetVisible()) {
+      continue;
+    }
+
+    views::Widget* bar_widget = bar_view->GetWidget();
+    const int64_t display_id = display::Screen::GetScreen()
+                                   ->GetDisplayNearestWindow(bar_view->root())
+                                   .id();
+    if (display.id() != display_id) {
+      continue;
+    }
+
+    bar_widget->SetBounds(GetDeskBarWidgetBounds(bar_view->root()));
   }
 }
 

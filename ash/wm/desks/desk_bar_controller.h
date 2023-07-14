@@ -15,6 +15,7 @@
 #include "ash/wm/desks/desk_button/desk_button.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/overview/overview_observer.h"
+#include "ui/display/display_observer.h"
 #include "ui/events/event_handler.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/widget/widget.h"
@@ -35,7 +36,8 @@ class ASH_EXPORT DeskBarController : public DesksController::Observer,
                                      public OverviewObserver,
                                      public ShellObserver,
                                      public TabletModeObserver,
-                                     public wm::ActivationChangeObserver {
+                                     public wm::ActivationChangeObserver,
+                                     public display::DisplayObserver {
  public:
   DeskBarController();
 
@@ -65,6 +67,10 @@ class ASH_EXPORT DeskBarController : public DesksController::Observer,
   void OnWindowActivated(ActivationReason reason,
                          aura::Window* gained_active,
                          aura::Window* lost_active) override;
+
+  // display::DisplayObserver:
+  void OnDisplayMetricsChanged(const display::Display& display,
+                               uint32_t changed_metrics) override;
 
   // Returns desk bar view in `root`. If there is no such desk bar, nullptr is
   // returned.
@@ -158,6 +164,9 @@ class ASH_EXPORT DeskBarController : public DesksController::Observer,
   // desk button desk bar. Support for overview desk bar will be added later.
   std::vector<std::unique_ptr<views::Widget>> desk_bar_widgets_;
   std::vector<DeskBarViewBase*> desk_bar_views_;
+
+  // Observes display configuration changes.
+  display::ScopedDisplayObserver display_observer_{this};
 
   // Indicates that shell is destroying.
   bool is_shell_destroying = false;
