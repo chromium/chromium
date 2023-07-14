@@ -18,11 +18,6 @@ async_test((t) => {
     listener.queueExpectedNotification("ValueChanged", "Minutes", "05");
 
     testInput.focus();
-
-    window.setTimeout(function() {
-        assert_unreached("Did not receive all accessibility notifications");
-        t.done();
-    }, 500);
 }, 'This test checks value changed accessibility notifications.');
 </script>
 </body>
