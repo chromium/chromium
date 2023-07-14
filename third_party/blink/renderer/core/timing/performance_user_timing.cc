@@ -63,7 +63,12 @@ void UserTiming::AddMarkToPerformanceTimeline(PerformanceMark& mark) {
     ctx.AddDebugAnnotation("data", [&](perfetto::TracedValue trace_context) {
       auto dict = std::move(trace_context).WriteDictionary();
       dict.Add("startTime", mark.startTime());
-      performance_->timing()->WriteInto(dict);
+      // Only set when performance_ is a WindowPerformance.
+      // performance_->timing() returns null when performance_ is a
+      // WorkerPerformance.
+      if (performance_->timing()) {
+        performance_->timing()->WriteInto(dict);
+      }
     });
   };
   TRACE_EVENT_INSTANT("blink.user_timing", nullptr, mark.UnsafeTimeForTraces(),

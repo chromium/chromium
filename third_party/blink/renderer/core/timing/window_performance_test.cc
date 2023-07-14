@@ -1226,6 +1226,45 @@ TEST_P(WindowPerformanceTest, ArtificialPointerupOrClick) {
 }
 #endif  // BUILDFLAG(IS_MAC)
 
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+// The trace_analyzer does not work on platforms on which the migration of
+// tracing into Perfetto has not completed.
+TEST_P(WindowPerformanceTest, PerformanceMarkTraceEvent) {
+  v8::HandleScope handle_scope(GetScriptState()->GetIsolate());
+  v8::Local<v8::Context> context = GetScriptState()->GetContext();
+  v8::Context::Scope context_scope(context);
+  DummyExceptionStateForTesting exception_state;
+
+  using trace_analyzer::Query;
+  trace_analyzer::Start("*");
+
+  performance_->mark(GetScriptState(), AtomicString("test_trace"), nullptr,
+                     exception_state);
+
+  auto analyzer = trace_analyzer::Stop();
+
+  trace_analyzer::TraceEventVector events;
+
+  Query q = Query::EventNameIs("test_trace");
+  analyzer->FindEvents(q, &events);
+  EXPECT_EQ(1u, events.size());
+
+  EXPECT_EQ("blink.user_timing", events[0]->category);
+
+  ASSERT_TRUE(events[0]->HasDictArg("data"));
+
+  base::Value::Dict arg_dict = events[0]->GetKnownArgAsDict("data");
+
+  absl::optional<double> start_time = arg_dict.FindDouble("startTime");
+  ASSERT_TRUE(start_time.has_value());
+
+  // The navigationId should be recorded if performance.mark is executed by a
+  // document.
+  std::string* navigation_id = arg_dict.FindString("navigationId");
+  ASSERT_TRUE(navigation_id);
+}
+#endif  // BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+
 TEST_P(WindowPerformanceTest, ElementTimingTraceEvent) {
   using trace_analyzer::Query;
   trace_analyzer::Start("*");
