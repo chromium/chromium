@@ -152,6 +152,8 @@ const char kPageWithCrossOriginMaliciousIframe[] =
     "/safe_browsing/malware3.html";
 const char kCrossOriginMaliciousIframeHost[] = "malware.test";
 const char kMaliciousIframe[] = "/safe_browsing/malware_iframe.html";
+const char kMaliciousMultipleIframesPage[] =
+    "/safe_browsing/malware_multiple_iframes.html";
 const char kUnrelatedUrl[] = "https://www.google.com";
 const char kEnhancedProtectionUrl[] = "chrome://settings/security?q=enhanced";
 const char kMaliciousJsPage[] = "/safe_browsing/malware_js.html";
@@ -161,6 +163,19 @@ const char kMaliciousFencedFrameOwner[] =
 const char kMaliciousFencedFrame[] = "/safe_browsing/malware_fenced_frame.html";
 
 const char kInterstitialCloseHistogram[] = "interstitial.CloseReason";
+
+std::string GetHistogramPrefix(const SBThreatType& threat_type) {
+  if (threat_type == SB_THREAT_TYPE_URL_MALWARE) {
+    return "malware";
+  } else if (threat_type == SB_THREAT_TYPE_URL_PHISHING) {
+    return "phishing";
+  } else if (threat_type == SB_THREAT_TYPE_URL_UNWANTED) {
+    return "harmful";
+  } else {
+    NOTREACHED();
+    return "";
+  }
+}
 
 }  // namespace
 
@@ -1411,16 +1426,8 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
                 SafeBrowsingMetricsCollector::EventType::
                     SECURITY_SENSITIVE_SAFE_BROWSING_INTERSTITIAL));
   base::HistogramTester histograms;
-  std::string prefix;
   SBThreatType threat_type = GetThreatType();
-  if (threat_type == SB_THREAT_TYPE_URL_MALWARE)
-    prefix = "malware";
-  else if (threat_type == SB_THREAT_TYPE_URL_PHISHING)
-    prefix = "phishing";
-  else if (threat_type == SB_THREAT_TYPE_URL_UNWANTED)
-    prefix = "harmful";
-  else
-    NOTREACHED();
+  std::string prefix = GetHistogramPrefix(threat_type);
   const std::string decision_histogram = "interstitial." + prefix + ".decision";
   const std::string interaction_histogram =
       "interstitial." + prefix + ".interaction";
@@ -1482,16 +1489,8 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
 IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
                        Histograms_Proceed) {
   base::HistogramTester histograms;
-  std::string prefix;
   SBThreatType threat_type = GetThreatType();
-  if (threat_type == SB_THREAT_TYPE_URL_MALWARE)
-    prefix = "malware";
-  else if (threat_type == SB_THREAT_TYPE_URL_PHISHING)
-    prefix = "phishing";
-  else if (threat_type == SB_THREAT_TYPE_URL_UNWANTED)
-    prefix = "harmful";
-  else
-    NOTREACHED();
+  std::string prefix = GetHistogramPrefix(threat_type);
   const std::string decision_histogram = "interstitial." + prefix + ".decision";
   const std::string interaction_histogram =
       "interstitial." + prefix + ".interaction";
@@ -1547,17 +1546,8 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
 IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
                        Histograms_UserMadeNoDecision) {
   base::HistogramTester histograms;
-  std::string prefix;
   SBThreatType threat_type = GetThreatType();
-  if (threat_type == SB_THREAT_TYPE_URL_MALWARE) {
-    prefix = "malware";
-  } else if (threat_type == SB_THREAT_TYPE_URL_PHISHING) {
-    prefix = "phishing";
-  } else if (threat_type == SB_THREAT_TYPE_URL_UNWANTED) {
-    prefix = "harmful";
-  } else {
-    NOTREACHED();
-  }
+  std::string prefix = GetHistogramPrefix(threat_type);
   const std::string interaction_histogram =
       "interstitial." + prefix + ".interaction";
 
@@ -1585,6 +1575,80 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
       security_interstitials::SecurityInterstitialTabHelper::
           InterstitialCloseReason::CLOSE_TAB,
       1);
+}
+
+// Test that ensures the SHOW and DONT_PROCEED buckets are logged correctly if
+// multiple subresources are flagged on the same page. Regression test for
+// https://crbug.com/1195411.
+IN_PROC_BROWSER_TEST_P(
+    SafeBrowsingBlockingPageBrowserTest,
+    Histograms_MultipleDangerousIframesInterstitial_DontProceed) {
+  base::HistogramTester histograms;
+  SBThreatType threat_type = GetThreatType();
+
+  GURL url = embedded_test_server()->GetURL(kMaliciousMultipleIframesPage);
+  GURL iframe_url = embedded_test_server()->GetURL(kMaliciousIframe);
+  SetURLThreatType(iframe_url, threat_type);
+
+  std::string prefix = GetHistogramPrefix(threat_type);
+  const std::string decision_histogram =
+      "interstitial." + prefix + "_subresource.decision";
+  histograms.ExpectTotalCount(decision_histogram, 0);
+
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  EXPECT_TRUE(WaitForReady(browser()));
+
+  histograms.ExpectBucketCount(decision_histogram,
+                               security_interstitials::MetricsHelper::SHOW, 1);
+  histograms.ExpectBucketCount(
+      decision_histogram, security_interstitials::MetricsHelper::DONT_PROCEED,
+      0);
+
+  EXPECT_TRUE(ClickAndWaitForDetach("primary-button"));
+  AssertNoInterstitial(false);  // Assert the interstitial is gone
+  histograms.ExpectBucketCount(decision_histogram,
+                               security_interstitials::MetricsHelper::SHOW, 1);
+  histograms.ExpectBucketCount(
+      decision_histogram, security_interstitials::MetricsHelper::DONT_PROCEED,
+      1);
+  histograms.ExpectBucketCount(
+      decision_histogram, security_interstitials::MetricsHelper::PROCEED, 0);
+}
+
+// Test that ensures the SHOW and PROCEED buckets are logged correctly if
+// multiple subresources are flagged on the same page.
+IN_PROC_BROWSER_TEST_P(
+    SafeBrowsingBlockingPageBrowserTest,
+    Histograms_MultipleDangerousIframesInterstitial_Proceed) {
+  base::HistogramTester histograms;
+  SBThreatType threat_type = GetThreatType();
+
+  GURL url = embedded_test_server()->GetURL(kMaliciousMultipleIframesPage);
+  GURL iframe_url = embedded_test_server()->GetURL(kMaliciousIframe);
+  SetURLThreatType(iframe_url, threat_type);
+
+  std::string prefix = GetHistogramPrefix(threat_type);
+  const std::string decision_histogram =
+      "interstitial." + prefix + "_subresource.decision";
+  histograms.ExpectTotalCount(decision_histogram, 0);
+
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  EXPECT_TRUE(WaitForReady(browser()));
+
+  histograms.ExpectBucketCount(decision_histogram,
+                               security_interstitials::MetricsHelper::SHOW, 1);
+  histograms.ExpectBucketCount(
+      decision_histogram, security_interstitials::MetricsHelper::PROCEED, 0);
+
+  EXPECT_TRUE(ClickAndWaitForDetach("proceed-link"));
+  AssertNoInterstitial(true);  // Assert the interstitial is gone
+  histograms.ExpectBucketCount(decision_histogram,
+                               security_interstitials::MetricsHelper::SHOW, 1);
+  histograms.ExpectBucketCount(
+      decision_histogram, security_interstitials::MetricsHelper::PROCEED, 1);
+  histograms.ExpectBucketCount(
+      decision_histogram, security_interstitials::MetricsHelper::DONT_PROCEED,
+      0);
 }
 
 IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest, AllowlistRevisit) {
