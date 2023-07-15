@@ -2951,6 +2951,7 @@ const char* gReactDevtoolsScript = R""""(
 
 const stubFiberRoots = {};
 const unmountedFibersByRenderer = {};
+const unmountedFiberAlternatesByRenderer = {};
 
 const stubHook = {
   isStub: true,
@@ -2977,6 +2978,14 @@ function getUnmountedFibersSetForRenderer(rendererID) {
   }
 
   return unmountedFibersByRenderer[rendererID];
+}
+
+function getUnmountedFiberAlternatesForRenderer(rendererID) {
+  if (!unmountedFiberAlternatesByRenderer[rendererID]) {
+    unmountedFiberAlternatesByRenderer[rendererID] = new Map();
+  }
+
+  return unmountedFiberAlternatesByRenderer[rendererID];
 }
 
 window.__REACT_DEVTOOLS_SAVED_RENDERERS__ = [];
@@ -3011,6 +3020,12 @@ function onCommitFiberUnmount(rendererID, fiber) {
   const unmountedFibersSet = getUnmountedFibersSetForRenderer(rendererID);
   unmountedFibersSet.add(fiber);
 
+  let unmountedFiberAlternates;
+  if (fiber.alternate) {
+    unmountedFiberAlternates = getUnmountedFiberAlternatesForRenderer(rendererID);
+    unmountedFiberAlternates.set(fiber, fiber.alternate);
+  }
+
   window.__RECORD_REPLAY_ANNOTATION_HOOK__("react-devtools-hook:v1:" + annotationType, "");
 }
 
@@ -3035,9 +3050,13 @@ function onCommitFiberRoot(rendererID, root, priorityLevel) {
 
   // Get these so it's in scope in the routine eval, and we can clear it after the annotation
   const unmountedFibersSet = getUnmountedFibersSetForRenderer(rendererID);
+  const unmountedFiberAlternates = getUnmountedFiberAlternatesForRenderer(rendererID);
   
   window.__RECORD_REPLAY_ANNOTATION_HOOK__("react-devtools-hook:v1:" + annotationType, "");
 
+  for (const fiber of unmountedFibersSet) {
+    unmountedFiberAlternates.delete(fiber);
+  }
   unmountedFibersSet.clear();
 }
 
