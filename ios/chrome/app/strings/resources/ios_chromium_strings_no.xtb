@@ -68,6 +68,7 @@
 <translation id="4985291216379576555">Uten nett – Chromium kan ikke se etter oppdateringer</translation>
 <translation id="4996471330284142407">Få mer gjort med Chromium-nettleseren, som er enkel, sikker og raskere enn noensinne.</translation>
 <translation id="4999538639245140991">Fordi du logger av en konto som er administrert av <ph name="SIGNOUT_MANAGED_DOMAIN" />, blir Chromium-dataene dine slettet fra denne enheten, men de blir værende i Google-kontoen din.</translation>
+<translation id="5042011327527167688">Trykk på «Se med Google Maps i Chromium».</translation>
 <translation id="5048795749726991615">Bruk Chromium for autofyll for å enkelt få tilgang til de lagrede passordene dine i de andre appene dine.</translation>
 <translation id="5171868502429358653">Logg på Chromium</translation>
 <translation id="5224391634244552924">Ingen lagrede passord. Chromium kan sjekke passordene dine når du lagrer dem.</translation>
@@ -112,6 +113,7 @@
 <translation id="7357211569052832586">De valgte dataene er fjernet fra Chromium og alle synkroniserte enheter. Det kan hende Google-kontoen din har andre typer nettleserlogger, for eksempel for søk og aktivitet fra andre Google-tjenester, på history.google.com.</translation>
 <translation id="7395825497086981028">Passordet blir lagret i Passordlagring for <ph name="EMAIL" />.</translation>
 <translation id="7400689562045506105">Bruk Chromium overalt</translation>
+<translation id="7523464085759699266">Slå på «Lås inkognitofaner når du lukker Chromium».</translation>
 <translation id="7674213385180944843">Åpne Innstillinger &gt; Personvern &gt; Kamera &gt; Chromium, og slå på kameraet.</translation>
 <translation id="7746854981345936341">Chromium-tips. Noen knapper, slik som Tilbake, Frem og Søk, er nå nederst på skjermen.</translation>
 <translation id="7763454117143368771">Bruk Chromium som standardnettleser for å holde deg beskyttet mot farlige nettsteder og holde passordene dine trygge</translation>
@@ -123,6 +125,7 @@
 <translation id="7931842119211730154">Lås inkognitofaner når du lukker Chromium</translation>
 <translation id="7980860476903281594">Chromium deler posisjonen din med nettsteder du tillater.</translation>
 <translation id="8013573822802650211">For å se fanene dine overalt hvor du bruker Chromium, logg på alle enhetene dine</translation>
+<translation id="8071041515667087705">Gå til Chromium-innstillingene.</translation>
 <translation id="8073677936375100957">Vil du fjerne Chromium-dataene dine fra denne enheten?</translation>
 <translation id="8235427517854598594">Vil du gjøre Chromium til standardnettleseren din?</translation>
 <translation id="8240981428553046115">Chromium kunne ikke se etter oppdateringer. Prøv på nytt senere.</translation>

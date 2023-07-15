@@ -6,6 +6,7 @@
 <translation id="1352919863522755794">Google Parollar menejeri parollarni tekshira olmadi. Internet aloqasini tekshiring.</translation>
 <translation id="1462727070346936664">Chromening barcha imkoniyatlaridan foydalanish uchun hisobga kiring.</translation>
 <translation id="1479202195792305274">Google hisobingizga kirsangiz, Chrome parollaringizni tekshira oladi.</translation>
+<translation id="1491435845014430217">“Chrome yopilganda Inkognito varaqlar qulflansin” parametrini yoqing.</translation>
 <translation id="1493827051843127077">Chrome brauzerini varaqlar, parollar va toʻlov axborotlarini barcha qurilmalarga sinxronlovchi asosiy ilova sifatida belgilash</translation>
 <translation id="1504372625950710826">Chrome yangilanishlar chiqqanini tekshira olmadi. Internet aloqasini tekshiring.</translation>
 <translation id="1511320244449497906">Siz tizimga kirdingiz va maʼlumotlaringizni <ph name="DOMAIN" /> boshqaradigan hisob bilan sinxronladingiz. Uning administratori endi Chrome funksiyasini oʻzgartirishi mumkin boʻlgan oʻsha hisobga tegishli foydalanuvchi siyosatlarini oʻrnatishi mumkin.</translation>
@@ -80,6 +81,7 @@
 <translation id="5395376160638294582">Chrome maʼlumotlari Google hisobingizga sinxronlanishini tekshiring</translation>
 <translation id="5460571915754665838">4. Chrome brauzerini tanlang</translation>
 <translation id="5492504007368565877">Google Parollar menejeri parollaringizni tekshira olmaydi.</translation>
+<translation id="5527026824954593399">“Chromeda Google Xaritalar bilan ochish” ustiga bosing.</translation>
 <translation id="5552137475244467770">Vaqti-vaqti bilan Chrome internetda oshkor etilgan roʻyxatlarda parolingiz borligini tekshirib turadi. Bunda parolingiz va foydalanuvchi nomingiz shifrlanadi, hatto Google xodimlariga ham koʻrinmaydi.</translation>
 <translation id="5639704535586432836">Kameradan foydalanishga ruxsat berish uchun “Sozlamalar &gt; Maxfiylik &gt; Kamera &gt; Google Chrome” bandini oching.</translation>
 <translation id="5642200033778930880">Google Chrome kamerangizdan Split View rejimida foydalana olmaydi.</translation>
@@ -120,6 +122,7 @@
 <translation id="7501046334262221972">Chrome brauzerini asosiy deb belgilash uchun Sozlamalarni oching. Standart brauzer ilovasi ustiga bosing va Chromeni tanlang.</translation>
 <translation id="756809126120519699">Chrome ma’lumotlari tozalandi</translation>
 <translation id="7662994914830945754">Boshqa qurilmalardagi Chrome varaqlarini koʻrish uchun hisobga kiring va sinxronizatsiyani yoqing</translation>
+<translation id="7669869107155339016">Chrome sozlamalarini oching.</translation>
 <translation id="7693590760643069321">Siz endi Chrome brauzerini har doim xabarlar, hujjatlar va boshqa ilovalardagi havolalar ustiga bosib ishga tushirishingiz mumkin.</translation>
 <translation id="7698568245838009292">Chrome kameradan foydalanmoqchi</translation>
 <translation id="7754633291442704733">Tashkilotingiz (<ph name="DOMAIN" />) hisobingizdagi Chrome maʼlumotlari, bukmarklar, tarix, parollar va boshqa sozlamalaringizni koʻra oladi. Hisobdan chiqsangiz, bu qurilmadagi maʼlumotlaringiz tozalanadi.  Lekin, boshqaruvdagi Google hisobi maʼlumotlari joyida qoladi va tashkilotingiz ularni koʻra oladi. Tashkilotingiz Chrome funksiyasini oʻzgartirish mumkin boʻlgan oʻsha hisobga tegishli foydalanuvchi siyosatlarini oʻrnatishi ham mumkin.</translation>

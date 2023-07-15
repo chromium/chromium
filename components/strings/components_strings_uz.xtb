@@ -318,6 +318,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="160851722280695521">Chromeda Dino oʻyinini boshlash</translation>
 <translation id="161042844686301425">Havorang</translation>
 <translation id="1611101756749861742">Ikkinchi oʻram</translation>
+<translation id="1615178538289490617"><ph name="PORT_NAME" /> ruxsatini bekor qilish</translation>
 <translation id="1615402009686901181">Maxfiy axborotlar koʻrinib turganda administrator ekranni tasvirga olishni taqiqlagan</translation>
 <translation id="1617276713587758852">Krossoverlar</translation>
 <translation id="1618571384971354160">Shatakka olish va yoʻldagi yordam</translation>
@@ -624,6 +625,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="2276057643614339130">Bosma asosi</translation>
 <translation id="2277103315734023688">Oldinga o‘tkazish</translation>
 <translation id="2277753418458118549">Ulanish tafsilotlarini ochish</translation>
+<translation id="22792995594807632">Yuklab olishdan oldin tekshirilishi lozim</translation>
 <translation id="2283340219607151381">Manzillarni saqlash va avtomatik kiritish</translation>
 <translation id="2283447177162560884"><ph name="PAGE_TITLE" /> oʻchirib tashlandi</translation>
 <translation id="2286383991450886080">34 x 44 in</translation>
@@ -1271,6 +1273,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="3736520371357197498">Shaxsiy ma’lumotlaringizga havfli bo‘lishiga qaramay va zararli dasturlar hali olib tashlanmagan bo‘lsa ham bu saytga baribir o‘tishni xohlasangiz, <ph name="BEGIN_LINK" />bu yerni bosing<ph name="END_LINK" />.</translation>
 <translation id="3738166223076830879">Brauzeringiz administrator tomonidan boshqariladi.</translation>
 <translation id="3740319564441798148">Uzoq masofali avtobus va temir yoʻl</translation>
+<translation id="3740447166056383374">Nusxalashdan oldin tekshirilishi lozim</translation>
 <translation id="374325029554577103">Fitnes texnologiyasi mahsulotlari</translation>
 <translation id="3743765582345153106">Avtomatik kiritishda har doim tasdiqlansin</translation>
 <translation id="3744111561329211289">Orqa fonda sinxronlash</translation>
@@ -1791,6 +1794,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="4852429274334674023">Operatsion tizimlar</translation>
 <translation id="4854853140771946034">Google Keepda yangi qaydni tez yaratish</translation>
 <translation id="485902285759009870">Kod tasdiqlanmoqda...</translation>
+<translation id="4862630594858951805">Narx tushganda email orqali xabar kelsinmi?</translation>
 <translation id="486459320933704969">Bu saytga kirishingiz uchun ota-onangiz yoki vasiyingiz ruxsat berishi kerak</translation>
 <translation id="4866506163384898554">Kursorni koʻrish uchun |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| tugmalarini bosing</translation>
 <translation id="4873616204573862158">Koʻzoynaklar</translation>
@@ -1986,6 +1990,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="5255690596502591079">Baribir yozib olish</translation>
 <translation id="5255833070095767006">350 x 460 mm</translation>
 <translation id="5257739419779698609">{0,plural, =1{Administrator bu faylni <ph name="DESTINATION_NAME" />ga nusxalashni tavsiya qilmaydi}other{Administrator bu fayllarni <ph name="DESTINATION_NAME" />ga nusxalashni tavsiya qilmaydi}}</translation>
+<translation id="5263867360296733198">Yuklashdan oldin tekshirilishi lozim</translation>
 <translation id="5266128565379329178">Yuqoridan teshik ochish</translation>
 <translation id="5269225904387178860">Quyidan 4 ta teshik ochish</translation>
 <translation id="5269999699920406580">Tizim funksiyalari faqat qurilma egasi tomonidan sozlanadi: <ph name="OWNER_EMAIL" /></translation>
@@ -2059,6 +2064,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="5412236728747081950">Bu sayt mos reklamalarni chiqarish uchun qiziqishlaringiz haqidagi Chrome maʼlumotlaridan foydalanadi.</translation>
 <translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" /> – <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">Taxlovchi 4</translation>
+<translation id="5414446060143308245">Koʻchirishdan oldin tekshirilishi lozim</translation>
 <translation id="5414511064953050917">Baribir koʻchirilsin</translation>
 <translation id="5421136146218899937">Brauzer tarixini tozalash...</translation>
 <translation id="5423269318075950257">Narxni kuzatish</translation>
@@ -2143,6 +2149,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="5595485650161345191">Manzilni o‘zgartirish</translation>
 <translation id="5596939519753369075">2 x 3.5 in</translation>
 <translation id="560412284261940334">Qurilmalar boshqaruvi qo‘llab-quvvatlanmaydi</translation>
+<translation id="5605249000617390290">Narxlarni kuzatish haqida batafsil</translation>
 <translation id="5605670050355397069">Ledger</translation>
 <translation id="5610142619324316209">Internet aloqasini tekshiring</translation>
 <translation id="5610807607761827392">Karta va manzillarni <ph name="BEGIN_LINK" />Sozlamalar<ph name="END_LINK" /> orqali boshqarish mumkin.</translation>
@@ -2279,6 +2286,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="5921639886840618607">Ushbu karta Google hisobingizda saqlansinmi?</translation>
 <translation id="5922853866070715753">Deyarli tayyor</translation>
 <translation id="5923492272538889093">CVC oʻrniga qurilma kaliti ishlatilsinmi?</translation>
+<translation id="5924510104057992926">Ochishdan oldin tekshirilishi lozim</translation>
 <translation id="5924782825030413055">Oxirgi rozilik yangilanishi manbasi:</translation>
 <translation id="5925040402342933574">Optik disk (yarim yaltiroq)</translation>
 <translation id="5926982310317673627">Sportzal va salomatlik klublari</translation>
@@ -2503,6 +2511,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="6394852772105848029">Bu sayt <ph name="APP_NAME" /> ilovasini ochmoqchi</translation>
 <translation id="6398765197997659313">To‘liq ekran rejimidan chiqish</translation>
 <translation id="6401136357288658127">Bu parametr eskirgan. Oʻrniga <ph name="NEW_POLICY" /> parametridan foydalaning.</translation>
+<translation id="6402537308870515461">Koʻchirishdan oldin tekshirilishi lozim</translation>
 <translation id="6403167778944553">Yotoq va vanna</translation>
 <translation id="6404511346730675251">Xatcho‘pni tahrirlash</translation>
 <translation id="6405181733356710802"><ph name="APP_NAME" /> ochilsinmi?</translation>
@@ -2651,6 +2660,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="6710594484020273272">&lt;Qidiruv so‘rovini kiriting&gt;</translation>
 <translation id="671076103358959139">Qaydnoma tokeni:</translation>
 <translation id="6711464428925977395">Proksi serverda xatolik mavjud yoki manzil noto‘g‘ri kiritildi.</translation>
+<translation id="6716013836112872184">Har qaysi saytda narx tushganda <ph name="EMAIL" /> manziliga xabar qilinsin.</translation>
 <translation id="6716672519412350405"><ph name="URL" /> sayti atrofingiz 3D xaritasini yaratmoqchi va kamera holatini kuzatmoqchi</translation>
 <translation id="6718612893943028815">Kamera ishlatilsinmi?</translation>
 <translation id="6721164594124191969">Yorliqlar (yaltiroq)</translation>
@@ -3181,6 +3191,7 @@ Batafsil axborot:
 <translation id="7767278989746220252">Ayvon, gazon va bogʻ</translation>
 <translation id="776749070095465053">Mato</translation>
 <translation id="7773005668374414287">Bir xil tartibda old tomonida</translation>
+<translation id="7779418012194492374"><ph name="DEVICE_NAME" /> ruxsatini bekor qilish</translation>
 <translation id="7781829728241885113">Kecha</translation>
 <translation id="7785790577395078482">shu planshet</translation>
 <translation id="7786368602962652765">Majburiy maydoncha boʻsh. Saqlashdan oldin uni toʻldiring.</translation>
@@ -3803,6 +3814,7 @@ Batafsil axborot:
 <translation id="9155211586651734179">Audio jihozlar biriktirildi</translation>
 <translation id="9155646082713385498">Jurnallar</translation>
 <translation id="9157595877708044936">Sozlanmoqda...</translation>
+<translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> ta fayl tarkibida maxfiy kontent boʻlishi mumkin}other{<ph name="FILE_COUNT" /> ta fayl tarkibida maxfiy kontent boʻlishi mumkin}}</translation>
 <translation id="9164742147345933553">os://flags</translation>
 <translation id="9165305804774426672">Shuningdek, saytlar ham ularga qilingan tashriflar asosida qiziqishlarni aniqlashi mumkin. Masalan, uzoq masofalarga yugurish oyoq kiyimlarini sotadigan saytga kirsangiz, ushbu sayt sizni marafonlarda yugurishga qiziqadi, deb hisoblashi mumkin.</translation>
 <translation id="9166851138617700776">Saytlar taklif qiladigan reklamalar va reklamalarni baholash haqida batafsil</translation>

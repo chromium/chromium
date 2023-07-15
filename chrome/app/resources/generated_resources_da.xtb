@@ -3123,6 +3123,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3571734092741541777">Konfigurer</translation>
 <translation id="3575121482199441727">Tillad for dette website</translation>
 <translation id="3577473026931028326">Der opstod en fejl. Prøv igen.</translation>
+<translation id="3577487026101678864">Filsynkronisering er aktiveret</translation>
 <translation id="3577745545227000795">Indsamling af hardwaredata for <ph name="DEVICE_OS" /></translation>
 <translation id="3578874072190212775">Hjælp websites med at bekæmpe svindel og skelne mellem bots og mennesker</translation>
 <translation id="3581605050355435601">Konfigurer IP-adressen automatisk</translation>
@@ -3330,6 +3331,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3748706263662799310">Rapporter en fejl</translation>
 <translation id="3749724428455457489">Få flere oplysninger om foreslåede annoncer fra websites</translation>
 <translation id="3750562496035670393">Chrome har gemt din adgangskode på denne enhed, men du kan gemme den på din Google-konto i stedet. Dermed kan alle adgangskoderne på din Google-konto også bruges, når du er logget ind.</translation>
+<translation id="3752115502500640407">Del en kopi af din adgangskode til <ph name="WEBSITE" /></translation>
 <translation id="3752253558646317685">Sørg for, at dit barn bliver ved med at løfte sin finger, så fingeraftrykket kan gemmes</translation>
 <translation id="3753033997400164841">Gem én gang. Brug overalt.</translation>
 <translation id="3753142252662437130">Farvefiltre</translation>
@@ -3627,6 +3629,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="3975201861340929143">Forklaring</translation>
 <translation id="3975565978598857337">Det var ikke muligt at kontakte serveren for domænet</translation>
 <translation id="3976108569178263973">Der er ingen tilgængelige printere.</translation>
+<translation id="3976244126942806443">Websites opretter normalt forbindelse til MIDI-enheder for at kunne skabe og redigere musik</translation>
 <translation id="397703832102027365">Afslutter...</translation>
 <translation id="3977145907578671392">Funktioner på visse websites fungerer muligvis ikke i inkognito</translation>
 <translation id="3977886311744775419">Automatiske opdateringer downloades ikke på denne netværkstype, men du kan kigge efter opdateringer manuelt.</translation>
@@ -4790,6 +4793,7 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="4979510648199782334">Konfigurationen af Microsoft 365 er fuldført</translation>
 <translation id="4980805016576257426">Denne udvidelse indeholder malware.</translation>
 <translation id="4981449534399733132"><ph name="BEGIN_LINK" />Log ind<ph name="END_LINK" /> for at rydde browserdata fra alle dine synkroniserede enheder og din Google-konto.</translation>
+<translation id="4983159853748980742">Din adgangskode blev ikke delt. Tjek din internetforbindelse, og sørg for, at du er logget ind i Chrome. Prøv derefter igen.</translation>
 <translation id="4986706507552097681">Du kan altid vælge, hvad der skal synkroniseres, i indstillingerne. Google kan personligt tilpasse Søgning og andre tjenester baseret på din historik.</translation>
 <translation id="4986728572522335985">Denne handling sletter alle data på sikkerhedsnøglen, bl.a. pinkoden</translation>
 <translation id="4988526792673242964">Sider</translation>
@@ -5449,6 +5453,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="5555363196923735206">Skift kamera</translation>
 <translation id="5555525474779371165">Vælg din beskyttelse i Beskyttet browsing</translation>
 <translation id="5555639311269196631">Deaktiver hotspot</translation>
+<translation id="5555760010546505198">Ombytning af farver, farvekorrigering, lup og skærmindstillinger</translation>
 <translation id="5556459405103347317">Genindlæs</translation>
 <translation id="5558129378926964177">Zoom &amp;ind</translation>
 <translation id="5559311991468302423">Slet adresse</translation>
@@ -8705,6 +8710,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8301242268274839723">Sæt fingeren på fingeraftrykssensoren nederst til venstre på dit tastatur. Dine fingeraftryksdata gemmes sikkert og forlader aldrig din <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8303616404642252802">{COUNT,plural, =1{Adresse}one{# adresse}other{# adresser}}</translation>
 <translation id="8304383784961451596">Du har ikke tilladelse til at bruge denne enhed. Kontakt administratoren for at få tilladelse til at logge ind, eller log ind med en Google-konto, der er konfigureret med forældrestyring i Family Link.</translation>
+<translation id="8306063480506363120">Fjern Drev-adgang</translation>
 <translation id="8306885873692337975">Få de nyeste funktion og sikkerhedsforbedringer.</translation>
 <translation id="8308016398665340540">Du deler dette netværk med andre brugere af enheden</translation>
 <translation id="8308179586020895837">Spørg, om <ph name="HOST" /> vil have adgang til dit kamera</translation>

@@ -6,6 +6,7 @@
 <translation id="1352919863522755794">Google Passordlagring kunne ikke sjekke passordene dine. Se om du er koblet til internett.</translation>
 <translation id="1462727070346936664">Logg på for å få mest mulig ut av Chrome.</translation>
 <translation id="1479202195792305274">Chrome kan sjekke passordene dine når du logger på med Google-kontoen din.</translation>
+<translation id="1491435845014430217">Slå på «Lås inkognitofaner når du lukker Chrome».</translation>
 <translation id="1493827051843127077">Angi Chrome som standard for å synkronisere fanene, passordene og betalingsopplysningene dine på alle enhetene dine</translation>
 <translation id="1504372625950710826">Chrome kunne ikke se etter oppdateringer. Se om du er koblet til internett.</translation>
 <translation id="1511320244449497906">Du er pålogget og synkroniserer dataene dine med en konto som er administrert av <ph name="DOMAIN" />, hvor administratoren nå kan angi brukerinnstillinger spesifikt for denne kontoen for å endre virkemåten til Chrome.</translation>
@@ -80,6 +81,7 @@
 <translation id="5395376160638294582">Sørg for at du alltid kan bruke Chrome-dataene i Google-kontoen din</translation>
 <translation id="5460571915754665838">4. Velg Chrome</translation>
 <translation id="5492504007368565877">Google Passordlagring kan ikke sjekke passordene dine.</translation>
+<translation id="5527026824954593399">Trykk på «Se med Google Maps i Chrome».</translation>
 <translation id="5552137475244467770">Chrome sjekker passordene dine regelmessig mot lister som er lagt ut på nett. Når dette gjøres, er passordene og brukernavnene dine kryptert. Det betyr at ingen kan lese dem, ikke engang Google.</translation>
 <translation id="5639704535586432836">Åpne Innstillinger &gt; Personvern &gt; Kamera &gt; Google Chrome, og slå på kameraet.</translation>
 <translation id="5642200033778930880">Google Chrome kan ikke bruke kameraet i modus for delt visning</translation>
@@ -120,6 +122,7 @@
 <translation id="7501046334262221972">For å gjøre Chrome til standardnettleseren din, åpne Innstillinger. Trykk på Standard nettleserapp, og velg Chrome.</translation>
 <translation id="756809126120519699">Chrome-dataene er slettet</translation>
 <translation id="7662994914830945754">For å se fanene dine overalt hvor du bruker Chrome, logg på og slå på synkronisering</translation>
+<translation id="7669869107155339016">Gå til Chrome-innstillingene.</translation>
 <translation id="7693590760643069321">Nå kan du bruke Chrome hver gang du trykker på linker i meldinger, dokumenter og andre apper.</translation>
 <translation id="7698568245838009292">Chrome vil ha tilgang til kameraet</translation>
 <translation id="7754633291442704733">Organisasjonen din, <ph name="DOMAIN" />, får tilgang til data, bokmerker, logg, passord og andre innstillinger for Chrome som du lagrer i denne kontoen. Når du logger av, slettes dataene dine fra denne enheten.  Dataene forblir imidlertid lagret i den administrerte Google-kontoen og er tilgjengelige for organisasjonen din. Organisasjonen din kan også angi spesifikke brukerinnstillinger for den aktuelle kontoen. Disse kan endre virkemåten til Chrome.</translation>

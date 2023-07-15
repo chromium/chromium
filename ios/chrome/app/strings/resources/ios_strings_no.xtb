@@ -83,6 +83,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="1400642268715879018">De siste 4 ukene</translation>
 <translation id="1404330357948037222">Du er logget av</translation>
 <translation id="1407135791313364759">Åpne alle</translation>
+<translation id="1408847409015257906">Trykk på «Personvern og sikkerhet».</translation>
 <translation id="1430915738399379752">Skriv ut</translation>
 <translation id="1449835205994625556">Skjul passordet</translation>
 <translation id="1450170672351507823">Standardbeskyttelse er på. Bruk økt beskyttelse om du vil ha enda mer sikkerhet.</translation>
@@ -102,6 +103,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="1545749641540134597">Skann en QR-kode</translation>
 <translation id="1552525382687785070">Administratoren din har slått av synkronisering</translation>
 <translation id="1554477036522844996">Nytt vindu</translation>
+<translation id="1563071802032385236">Slå på «Spør om linker fra andre apper skal åpnes i Inkognito».</translation>
 <translation id="1565371473877914088">Ny inkognitofane</translation>
 <translation id="1580715474678097352">Hold deg beskyttet mot farlige nettsteder</translation>
 <translation id="1580783302095112590">E-posten er sendt.</translation>
@@ -112,6 +114,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="1608337082864370066">Søk etter bildet du kopierte</translation>
 <translation id="1612730193129642006">Vis fanerutenett</translation>
 <translation id="1620510694547887537">Kamera</translation>
+<translation id="1622717322707146952">Velg «Legg til i Google Kalender» eller «Legg til i Apple-kalenderen».</translation>
 <translation id="1626771852476987600"><ph name="COUNT" /> gjenbrukte passord</translation>
 <translation id="1641113438599504367">Safe Browsing</translation>
 <translation id="1644574205037202324">Logg</translation>
@@ -157,6 +160,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="1941314575388338491">Dobbelttrykk for å kopiere.</translation>
 <translation id="1943478190258551035">Meny → Innstillinger</translation>
 <translation id="1952172573699511566">Nettsteder viser tekst på språket du foretrekker, der dette er mulig.</translation>
+<translation id="1959441496380398824">Trykk og hold på en dato.</translation>
 <translation id="1959679933317802873">Venter på innhold</translation>
 <translation id="1965935827552890526">Gjør deg ferdig med det du holdt på med i det andre åpne Chrome-vinduet.</translation>
 <translation id="1967461193809857427">{count,plural, =1{Vil du hente fanen du hadde på Android?}other{Vil du hente fanene du hadde på Android?}}</translation>
@@ -230,6 +234,7 @@ Nettsteder kan ikke bruke informasjonskapsler til å se nettleseraktiviteten din
 <translation id="2434405374328098816">Du har allerede lagret et passord for «<ph name="USERNAME" />» på <ph name="WEBSITE" /></translation>
 <translation id="2435457462613246316">Vis passord</translation>
 <translation id="2451654228769116489">Fest fanen</translation>
+<translation id="2459155039684421202">Skriv inn en oppgave i adressefeltet, for eksempel «tøm loggen» eller «rediger passord».</translation>
 <translation id="2461070143328828326">Passordinnstillinger</translation>
 <translation id="2469960372084740698">Vil du slå av Safe Browsing?</translation>
 <translation id="2473876017985765807">Du har allerede lagret et passord for <ph name="WEBSITE" /></translation>
@@ -367,6 +372,7 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="3224641773458703735">For å eksportere passordene må du først angi en adgangskode på enheten din.</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3235063766008841141">Skrevet inn på et villedende nettsted og funnet i et databrudd</translation>
+<translation id="3235242129752692527">Rediger aktivitetsdetaljene, og trykk på «Lagre».</translation>
 <translation id="3240426699337459095">Linken er kopiert</translation>
 <translation id="3244271242291266297">MM</translation>
 <translation id="3245744387817103524">Kunne ikke lagre endringen.</translation>
@@ -537,6 +543,7 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="4375040482473363939">QR-kodesøk</translation>
 <translation id="4378154925671717803">Telefon</translation>
 <translation id="4389019817280890563">Trykk for å bytte språk.</translation>
+<translation id="4405320213589929829">Bruk adresser på nettsider for å få lokal informasjon og veibeskrivelser.</translation>
 <translation id="4420409367264901497">Rediger bokmerke</translation>
 <translation id="4442550905108052454">Åpne <ph name="BEGIN_BOLD" />Innstillinger<ph name="END_BOLD" /></translation>
 <translation id="4454246407045105932">Legg til språk</translation>
@@ -670,6 +677,7 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="5209674813563615506">Åpne en ny fane</translation>
 <translation id="5211488077761630279">Vil du tillate at «<ph name="SITE_NAME" />» bruker <ph name="PERMISSION" />?</translation>
 <translation id="5219295696240154694">Bidra til å gjøre nettet sikrere for alle</translation>
+<translation id="5220945116117011963">Opprett kalenderaktiviteter fra datoer</translation>
 <translation id="5221339005270097309">Sjekker passord …</translation>
 <translation id="5226568866393490213">Avvis varsel</translation>
 <translation id="5228579091201413441">Slå på synkronisering</translation>
@@ -912,6 +920,7 @@ Prøv å bruke unike passord for hvert nettsted.</translation>
 <translation id="6540120577248033958">Besøk et nettsted, og klikk på Følg på Chrome-menyen</translation>
 <translation id="6550675742724504774">Alternativer</translation>
 <translation id="6561262006871132942">Zoom inn</translation>
+<translation id="6579867704846662339">Du kan velge å åpne innkommende nettadresser fra andre apper i Inkognito.</translation>
 <translation id="6583087784430677195">For å slå av funksjonen, åpne <ph name="BEGIN_LINK" />Innstillinger<ph name="END_LINK" /> og gå til Autoutfylling av passord.</translation>
 <translation id="6585618849026997638">Du kan komme tilbake til sider som er viktige for deg, ved å legge til bokmerker</translation>
 <translation id="6596481460663245319">Søk etter bildet med Google</translation>
@@ -940,6 +949,7 @@ Når du er i Inkognito, kan ikke nettsteder bruke informasjonskapsler til å se 
 <translation id="6674571176963658787">For å starte synkroniseringen, skriv inn passordfrasen din</translation>
 <translation id="667999046851023355">Dokument</translation>
 <translation id="6684906340059221832">Sporer prisene</translation>
+<translation id="6685259053455152195">Hurtigtaster for å endre innstillinger raskt og bruke funksjoner fra adressefeltet.</translation>
 <translation id="6710079714193676716">Administreres av organisasjonen din. Noen funksjoner er kanskje ikke tilgjengelige. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="672735642903863329">Få bokmerker, passord med mer på alle enhetene dine.</translation>
@@ -951,6 +961,7 @@ Når du er i Inkognito, kan ikke nettsteder bruke informasjonskapsler til å se 
 <translation id="6762812039470893796">Velg bort alle</translation>
 <translation id="6780034285637185932">Postnummer</translation>
 <translation id="6781260999953472352">Vil du slå på synkronisering?</translation>
+<translation id="6781405765516175232">For å se rutealternativer, trykk på «Få veibeskrivelse».</translation>
 <translation id="6785453220513215166">Sender krasjrapport …</translation>
 <translation id="6790502149545262384">Snart ser du artikler fra <ph name="CHANNEL_NAME" /> når du åpner nye faner.</translation>
 <translation id="6797885426782475225">Talesøk</translation>
@@ -1004,6 +1015,7 @@ Når du er i Inkognito, kan ikke nettsteder bruke informasjonskapsler til å se 
 <translation id="7108762695052995889">Besøk nettstedet</translation>
 <translation id="7133798577887235672">Fullt navn</translation>
 <translation id="7136892417564438900">Kameraet er utilgjengelig</translation>
+<translation id="7154343200458623869">Fullfør oppgaven din.</translation>
 <translation id="7161230316646448869">Synkroniser bokmerker, logg med mer på alle enheter</translation>
 <translation id="7162168282402939716">Lås opp inkognitofaner med <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7172852049901402487">Beskytt passordene dine mot sikkerhetsproblemer</translation>
@@ -1076,6 +1088,7 @@ Når du er i Inkognito, kan ikke nettsteder bruke informasjonskapsler til å se 
 <translation id="7671141431838911305">INSTALLER</translation>
 <translation id="7679915578945954324">Nettadressene er kopiert</translation>
 <translation id="7687508192620387263">En kalenderfil er tilgjengelig</translation>
+<translation id="769104993356536261">Bruk Chrome-handlinger i iOS</translation>
 <translation id="7701040980221191251">Ingen</translation>
 <translation id="7711440461521638739">Du gjenbruker ingen passord</translation>
 <translation id="7719038820139380048">Logg på for å få innhold basert på interessene dine.</translation>
@@ -1217,6 +1230,7 @@ Dataene dine ble kryptert med passordfrasen din <ph name="TIME" />. Skriv den in
 <translation id="850600235656508448">Åpne i inkognitomodus</translation>
 <translation id="8517375800490286174">Lisenser for åpen kildekode</translation>
 <translation id="8524799873541103884"><ph name="INCOGNITO" />fane <ph name="FIRST_VISIBLE_TAB" /> til og med <ph name="LAST_VISIBLE_TAB" /> av <ph name="NUMBER_OF_OPEN_TABS" /></translation>
+<translation id="8528009254289981965">Åpne linker fra andre apper i Inkognito</translation>
 <translation id="8529767659511976195">Ny</translation>
 <translation id="8532105204136943229">Utløpsår</translation>
 <translation id="8533166274275423134">Åpnet et annet sted</translation>

@@ -577,6 +577,7 @@
 <translation id="5422221874247253874">Point d'accès</translation>
 <translation id="5428105026674456456">Espagnol</translation>
 <translation id="5438282218546237410">Aucun résultat pour <ph name="SEARCH_TERM" />.</translation>
+<translation id="5447680084201416734">Espace de stockage insuffisant.</translation>
 <translation id="5449551289610225147">Mot de passe non valide</translation>
 <translation id="5459064203055649751">Un fichier nommé « <ph name="FILENAME" /> » existe déjà. Voulez-vous le remplacer par celui que vous déplacez?</translation>
 <translation id="5463231940765244860">Entrer</translation>
@@ -704,6 +705,7 @@
 <translation id="6423031066725912715">Vietnamien avec clavier TCVN</translation>
 <translation id="6430271654280079150">Il vous reste 1 tentative.</translation>
 <translation id="643243556292470964">Les fichiers supprimés sont maintenant déplacés vers la corbeille</translation>
+<translation id="6438480100790416671">Vérification de l'espace de stockage en cours…</translation>
 <translation id="6485131920355264772">Échec de récupération de l'information sur l'espace</translation>
 <translation id="6495925982925244349">Réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, force du signal : <ph name="SIGNAL_STRENGTH" /> %, géré par votre administrateur, détails</translation>
 <translation id="649877868557234318">Extraction de <ph name="FILE_NAME" /> vers <ph name="FOLDER_NAME" /></translation>
@@ -911,6 +913,7 @@
 <translation id="8000066093800657092">Aucun réseau</translation>
 <translation id="8008366997883261463">Rex</translation>
 <translation id="8028993641010258682">Taille</translation>
+<translation id="8034974485549318493">Pour la configuration initiale, vous devez vous connecter à Internet afin que les fichiers puissent être synchronisés.</translation>
 <translation id="803771048473350947">Fichier</translation>
 <translation id="8038111231936746805">(par défaut)</translation>
 <translation id="8042602468072383151">Audio <ph name="AUDIO_TYPE" /></translation>

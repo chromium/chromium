@@ -80,6 +80,7 @@
 <translation id="235650106824528204">Bu profil ishlatilganda yaratilgan har qanday Chrome maʼlumotlari (bukmarklar, tarix, parollar va boshqa sozlamalar kabi) ish profili administratori tomonidan tozalanishi mumkin. <ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">Davom etish</translation>
 <translation id="2401189691232800402">ChromeOS tizimi</translation>
+<translation id="2409816192575564775">{NUM_DEVICES,plural, =0{1 ta HID qurilmasi kamida bitta Chrome kengaytmasi tomonidan ochilmoqda}=1{1 ta HID qurilmasi kamida bitta Chrome kengaytmasi tomonidan ochilmoqda}other{# ta HID qurilmasi kamida bitta Chrome kengaytmasi tomonidan ochilmoqda}}</translation>
 <translation id="2424440923901031101">Bu kengaytma Chrome Web Store qoidalariga mos emas va xavfli boʻlishi mumkin. Ochilgan saytlarda shaxsiy axborot kabi maʼlumotlarni koʻrishi va oʻzgartirishini tugatish uchun uni Chromedan olib tashlang.</translation>
 <translation id="2467438592969358367">Google Chrome parollaringizni eksport qilmoqchi. Ruxsat berish uchun Windows platformasidagi parolingizni kiriting.</translation>
 <translation id="2472092250898121027">Bu kengaytma tarkibida zararli kod bor va u xavfli boʻlishi mumkin. Ochilgan saytlarda shaxsiy axborot kabi maʼlumotlarni koʻrishi va oʻzgartirishini tugatish uchun uni Chromedan olib tashlang.</translation>
@@ -281,6 +282,7 @@ Google Chrome sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="624230925347970731">Chrome tez orada yopiladi.</translation>
 <translation id="6247557882553405851">Google Parollar menejeri</translation>
 <translation id="6273793429163604305">Boshladik…</translation>
+<translation id="6277547788421725101">Chromedagi “Sayt, ilova va kengaytmalarga ruxsat” ota-onangiz tomonidan faolsizlantirilgan</translation>
 <translation id="6291089322031436445">Chrome Dev ilovalari</translation>
 <translation id="6291549208091401781">Google Chrome allaqachon kompyuterdagi barcha foydalanuvchilar uchun o‘rnatilgan.</translation>
 <translation id="6326175484149238433">Chrome‘dan olib tashlash</translation>
@@ -336,6 +338,7 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="7398801000654795464">Siz Chrome brauzeriga <ph name="USER_EMAIL_ADDRESS" /> hisobi orqali kirgandingiz. O‘sha hisobdan foydalanib yana qaytadan kiring.</translation>
 <translation id="7410958280246779049">Bu fayl xavfli boʻlgani uchun Chrome uni blokladi</translation>
 <translation id="7412494426921990001">Chrome menyusiga bosing</translation>
+<translation id="742463671275348370">{NUM_DEVICES,plural, =0{1 ta USB qurilma kamida bitta Chrome kengaytmasi tomonidan ochilmoqda}=1{1 ta USB qurilma kamida bitta Chrome kengaytmasi tomonidan ochilmoqda}other{# ta USB qurilma kamida bitta Chrome kengaytmasi tomonidan ochilmoqda}}</translation>
 <translation id="7426611252293106642">Google Chrome endi Linux tizimida ishlamay qolishi mumkin, chunki uning yangi versiyalarida bu versiyalar taʼminoti toʻxtatilgan.</translation>
 <translation id="7449333426561673451">{COUNT,plural, =1{Chrome 1 daqiqa ishlatilmasa, tashkilot avtomatik ravishda yopadi.}other{Chrome # daqiqa ishlatilmasa, tashkilot avtomatik ravishda yopadi.}}</translation>
 <translation id="7452987490177144319">{COUNT,plural, =1{Chrome 1 daqiqa ishlatilmasa, tashkilot avtomatik ravishda brauzerning ishlashi haqida axborotni tozalaydi. Bunga tarix, avtomatik kiritish va yuklanmalar kirishi mumkin. Varaqlar ochiq qoladi.}other{Chrome # daqiqa ishlatilmasa, tashkilot avtomatik ravishda brauzerning ishlashi haqida axborotni tozalaydi. Bunga tarix, avtomatik kiritish va yuklanmalar kirishi mumkin. Varaqlar ochiq qoladi.}}</translation>

@@ -3117,6 +3117,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3571734092741541777">Konfigurer</translation>
 <translation id="3575121482199441727">Tillat for dette nettstedet</translation>
 <translation id="3577473026931028326">Noe gikk galt. Prøv på nytt.</translation>
+<translation id="3577487026101678864">Filsynkronisering er på</translation>
 <translation id="3577745545227000795">Innsamling av <ph name="DEVICE_OS" />-maskinvaredata</translation>
 <translation id="3578874072190212775">Hjelp nettsteder med å bekjempe svindel og skille mellom roboter og mennesker</translation>
 <translation id="3581605050355435601">Konfigurer IP-adressen automatisk</translation>
@@ -3324,6 +3325,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3748706263662799310">Rapporter feil</translation>
 <translation id="3749724428455457489">Finn ut mer om annonser som anbefales på nettstedet</translation>
 <translation id="3750562496035670393">Chrome har lagret passordet ditt på denne enheten, men du kan lagre det i Google-kontoen din i stedet. Da blir alle passordene på Google-kontoen din også tilgjengelige mens du er pålogget.</translation>
+<translation id="3752115502500640407">Del en kopi av passordet ditt for <ph name="WEBSITE" /></translation>
 <translation id="3752253558646317685">Få barnet ditt til å løfte fingeren gjentatte ganger for å lagre fingeravtrykket</translation>
 <translation id="3753033997400164841">Lagre én gang. Bruk overalt</translation>
 <translation id="3753142252662437130">Fargefiltre</translation>
@@ -3619,6 +3621,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3975201861340929143">Forklaring</translation>
 <translation id="3975565978598857337">Kunne ikke kontakte tjeneren for området</translation>
 <translation id="3976108569178263973">Det er ingen tilgjengelige skrivere.</translation>
+<translation id="3976244126942806443">Nettsteder kobler vanligvis til MIDI-enheter for å lage og redigere musikk</translation>
 <translation id="397703832102027365">Fullfører …</translation>
 <translation id="3977145907578671392">Det kan hende at funksjoner på enkelte nettsteder ikke fungerer i Inkognito</translation>
 <translation id="3977886311744775419">Automatiske oppdateringer lastes ikke ned på denne nettverkstypen, men du kan se etter oppdateringer manuelt.</translation>
@@ -4781,6 +4784,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="4979510648199782334">Konfigureringen av Microsoft 365 er fullført</translation>
 <translation id="4980805016576257426">Denne utvidelsen inneholder skadelig programvare.</translation>
 <translation id="4981449534399733132">For å slette nettlesingsdata på alle synkroniserte enheter og Google-kontoen din må du <ph name="BEGIN_LINK" />logge på<ph name="END_LINK" />.</translation>
+<translation id="4983159853748980742">Passordet ditt ble ikke delt. Sjekk internettilkoblingen, og sjekk at du er logget på Chrome. Prøv deretter på nytt.</translation>
 <translation id="4986706507552097681">Du kan når som helst velge hva du vil synkronisere, i innstillingene. Google kan gi Søk og andre tjenester personlig preg basert på loggen din.</translation>
 <translation id="4986728572522335985">Dette fører til at alle dataene på sikkerhetsnøkkelen, inkludert PIN-koden, blir slettet</translation>
 <translation id="4988526792673242964">Sider</translation>
@@ -5439,6 +5443,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="5555363196923735206">Vend kameraet</translation>
 <translation id="5555525474779371165">Velg Safe Browsing-beskyttelse</translation>
 <translation id="5555639311269196631">Slå av wifi-sone</translation>
+<translation id="5555760010546505198">Innstillinger for fargeinvertering, fargekorrigering, lupe og skjerm</translation>
 <translation id="5556459405103347317">Last inn på nytt</translation>
 <translation id="5558129378926964177">Zoom &amp;inn</translation>
 <translation id="5559311991468302423">Slett adressen</translation>
@@ -8694,6 +8699,7 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="8301242268274839723">Trykk på fingeravtrykkssensoren nederst til venstre på tastaturet. Fingeravtrykksdataene lagres sikkert og sendes aldri fra <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8303616404642252802">{COUNT,plural, =1{Adresse}other{# adresser}}</translation>
 <translation id="8304383784961451596">Du er ikke autorisert til å bruke denne enheten. Kontakt administratoren for å få tillatelse til å logge på, eller logg på med en Google-konto som er under tilsyn av Family Link.</translation>
+<translation id="8306063480506363120">Fjern Disk-tilgang</translation>
 <translation id="8306885873692337975">Få de nyeste funksjonene og sikkerhetsforbedringene.</translation>
 <translation id="8308016398665340540">Du deler dette nettverket med andre brukere av enheten</translation>
 <translation id="8308179586020895837">Spør om <ph name="HOST" /> vil bruke kameraet ditt</translation>
