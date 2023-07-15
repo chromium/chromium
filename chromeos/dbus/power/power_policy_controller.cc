@@ -574,6 +574,12 @@ void PowerPolicyController::ApplyPrefs(const PrefValues& values) {
           values.adaptive_charging_min_probability);
       prefs_policy_.set_adaptive_charging_hold_percent(
           values.adaptive_charging_hold_percent);
+      prefs_policy_.set_adaptive_charging_max_delay_percentile(
+          values.adaptive_charging_max_delay_percentile);
+      prefs_policy_.set_adaptive_charging_min_days_history(
+          values.adaptive_charging_min_days_history);
+      prefs_policy_.set_adaptive_charging_min_full_on_ac_ratio(
+          values.adaptive_charging_min_full_on_ac_ratio);
     }
   }
 
