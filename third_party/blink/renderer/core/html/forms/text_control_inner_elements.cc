@@ -195,7 +195,7 @@ TextControlInnerEditorElement::CustomStyleForLayoutObject(
 
   // Using StyleAdjuster::adjustComputedStyle updates unwanted style. We'd like
   // to apply only editing-related and alignment-related.
-  StyleAdjuster::AdjustStyleForEditing(style_builder);
+  StyleAdjuster::AdjustStyleForEditing(style_builder, this);
   if (!is_visible_)
     style_builder.SetOpacity(0);
 

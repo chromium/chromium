@@ -244,7 +244,16 @@ static bool LayoutParentStyleForcesZIndexToCreateStackingContext(
   return layout_parent_style.IsDisplayFlexibleOrGridBox();
 }
 
-void StyleAdjuster::AdjustStyleForEditing(ComputedStyleBuilder& builder) {
+void StyleAdjuster::AdjustStyleForEditing(ComputedStyleBuilder& builder,
+                                          Element* element) {
+  if (element && element->editContext()) {
+    // If an element is associated with an EditContext, it should
+    // become editable and should have -webkit-user-modify set to
+    // read-write. This overrides any other values that have been
+    // specified for contenteditable or -webkit-user-modify on that element.
+    builder.SetUserModify(EUserModify::kReadWrite);
+  }
+
   if (builder.UserModify() != EUserModify::kReadWritePlaintextOnly) {
     return;
   }
@@ -962,7 +971,7 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
 
   AdjustStyleForInert(builder, element);
 
-  AdjustStyleForEditing(builder);
+  AdjustStyleForEditing(builder, element);
 
   bool is_svg_root = false;
 
