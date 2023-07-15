@@ -35,18 +35,14 @@ void FakeNearbyPresence::StartScan(
   scan_session_remote_ = std::move(scan_session_remote);
   scan_session_.set_disconnect_handler(base::BindOnce(
       &FakeNearbyPresence::OnDisconnect, weak_ptr_factory_.GetWeakPtr()));
-}
 
-void FakeNearbyPresence::RunStartScanCallback() {
-  // Run the callback to pass the |scan_session_remote| back to the client to
-  // hold on to.
   std::move(start_scan_callback_)
       .Run(std::move(scan_session_remote_),
            /*status=*/ash::nearby::presence::mojom::StatusCode::kOk);
 }
 
 void FakeNearbyPresence::OnDisconnect() {
-  on_disconnect_called_ = true;
+  std::move(on_disconnect_callback_).Run();
 }
 
 void FakeNearbyPresence::UpdateLocalDeviceMetadata(

@@ -35,22 +35,28 @@ class FakeScanDelegate : public NearbyPresenceService::ScanDelegate {
   void OnPresenceDeviceFound(
       const NearbyPresenceService::PresenceDevice& presence_device) override {
     found_called = true;
+    std::move(next_scan_delegate_callback_).Run();
   }
   void OnPresenceDeviceChanged(
       const NearbyPresenceService::PresenceDevice& presence_device) override {
     changed_called = true;
+    std::move(next_scan_delegate_callback_).Run();
   }
   void OnPresenceDeviceLost(
       const NearbyPresenceService::PresenceDevice& presence_device) override {
     lost_called = true;
+    std::move(next_scan_delegate_callback_).Run();
   }
-
   void OnScanSessionInvalidated() override {}
   bool WasOnPresenceDeviceFoundCalled() { return found_called; }
   bool WasOnPresenceDeviceChangedCalled() { return changed_called; }
   bool WasOnPresenceDeviceLostCalled() { return lost_called; }
+  void SetNextScanDelegateCallback(base::OnceClosure callback) {
+    next_scan_delegate_callback_ = std::move(callback);
+  }
 
  private:
+  base::OnceClosure next_scan_delegate_callback_;
   bool found_called = false;
   bool changed_called = false;
   bool lost_called = false;
@@ -76,7 +82,7 @@ class NearbyPresenceServiceImplTest : public testing::Test {
 
           EXPECT_CALL(*(nearby_process_reference_.get()), GetNearbyPresence)
               .WillRepeatedly(
-                  testing::ReturnRef(nearby_presence_.shared_remote()));
+                  testing::ReturnRef(fake_nearby_presence_.shared_remote()));
           return std::move(nearby_process_reference_);
         });
 
@@ -89,23 +95,31 @@ class NearbyPresenceServiceImplTest : public testing::Test {
     NearbyPresenceService::ScanFilter filter(identity_type,
                                              /*actions=*/{});
     FakeScanDelegate scan_delegate;
-    auto run_loop = base::RunLoop();
-    // Call start scan and verify it calls the OnPresenceDeviceFound delegate
-    // function.
-    nearby_presence_service->StartScan(
-        filter, &scan_delegate,
-        base::BindOnce(&NearbyPresenceServiceImplTest::TestOnScanStarted,
-                       weak_ptr_factory_.GetWeakPtr(), run_loop.QuitClosure()));
+    {
+      auto run_loop = base::RunLoop();
 
-    // Allow StartScan() to finish before calling the callback.
-    base::RunLoop().RunUntilIdle();
-    nearby_presence_.RunStartScanCallback();
-    run_loop.Run();
-    nearby_presence_.ReturnScanObserver()->OnDeviceFound(
-        mojom::PresenceDevice::New(kEndpointId, kDeviceName,
-                                   mojom::PresenceDeviceType::kPhone,
-                                   kStableDeviceId));
-    base::RunLoop().RunUntilIdle();
+      // Call start scan and verify it calls the OnPresenceDeviceFound delegate
+      // function.
+      nearby_presence_service->StartScan(
+          filter, &scan_delegate,
+          base::BindOnce(&NearbyPresenceServiceImplTest::TestOnScanStarted,
+                         weak_ptr_factory_.GetWeakPtr(),
+                         run_loop.QuitClosure()));
+
+      run_loop.Run();
+    }
+
+    {
+      auto run_loop = base::RunLoop();
+      scan_delegate.SetNextScanDelegateCallback(run_loop.QuitClosure());
+
+      fake_nearby_presence_.ReturnScanObserver()->OnDeviceFound(
+          mojom::PresenceDevice::New(kEndpointId, kDeviceName,
+                                     mojom::PresenceDeviceType::kPhone,
+                                     kStableDeviceId));
+      run_loop.Run();
+    }
+
     EXPECT_TRUE(scan_delegate.WasOnPresenceDeviceFoundCalled());
     EXPECT_TRUE(IsScanSessionActive());
   }
@@ -124,7 +138,7 @@ class NearbyPresenceServiceImplTest : public testing::Test {
   bool IsScanSessionActive() { return scan_session_ != nullptr; }
 
   content::BrowserTaskEnvironment task_environment_;
-  FakeNearbyPresence nearby_presence_;
+  FakeNearbyPresence fake_nearby_presence_;
   testing::NiceMock<MockNearbyProcessManager> nearby_process_manager_;
   std::unique_ptr<
       ash::nearby::MockNearbyProcessManager::MockNearbyProcessReference>
@@ -157,23 +171,30 @@ TEST_F(NearbyPresenceServiceImplTest, StartScan_DeviceChanged) {
       ash::nearby::presence::NearbyPresenceService::IdentityType::kPrivate,
       /*actions=*/{});
   FakeScanDelegate scan_delegate;
-  auto run_loop = base::RunLoop();
-  // Call start scan and verify it calls the OnPresenceDeviceFound delegate
-  // function.
-  nearby_presence_service->StartScan(
-      filter, &scan_delegate,
-      base::BindOnce(&NearbyPresenceServiceImplTest::TestOnScanStarted,
-                     weak_ptr_factory_.GetWeakPtr(), run_loop.QuitClosure()));
+  {
+    auto run_loop = base::RunLoop();
 
-  // Allow StartScan() to finish before calling the callback.
-  base::RunLoop().RunUntilIdle();
-  nearby_presence_.RunStartScanCallback();
-  run_loop.Run();
-  nearby_presence_.ReturnScanObserver()->OnDeviceChanged(
-      mojom::PresenceDevice::New(kEndpointId, kDeviceName,
-                                 mojom::PresenceDeviceType::kPhone,
-                                 kStableDeviceId));
-  base::RunLoop().RunUntilIdle();
+    // Call start scan and verify it calls the OnPresenceDeviceFound delegate
+    // function.
+    nearby_presence_service->StartScan(
+        filter, &scan_delegate,
+        base::BindOnce(&NearbyPresenceServiceImplTest::TestOnScanStarted,
+                       weak_ptr_factory_.GetWeakPtr(), run_loop.QuitClosure()));
+
+    run_loop.Run();
+  }
+
+  {
+    auto run_loop = base::RunLoop();
+    scan_delegate.SetNextScanDelegateCallback(run_loop.QuitClosure());
+
+    fake_nearby_presence_.ReturnScanObserver()->OnDeviceChanged(
+        mojom::PresenceDevice::New(kEndpointId, kDeviceName,
+                                   mojom::PresenceDeviceType::kPhone,
+                                   kStableDeviceId));
+    run_loop.Run();
+  }
+
   EXPECT_TRUE(scan_delegate.WasOnPresenceDeviceChangedCalled());
   EXPECT_TRUE(IsScanSessionActive());
 }
@@ -183,23 +204,30 @@ TEST_F(NearbyPresenceServiceImplTest, StartScan_DeviceLost) {
       ash::nearby::presence::NearbyPresenceService::IdentityType::kPrivate,
       /*actions=*/{});
   FakeScanDelegate scan_delegate;
-  auto run_loop = base::RunLoop();
-  // Call start scan and verify it calls the OnPresenceDeviceFound delegate
-  // function.
-  nearby_presence_service->StartScan(
-      filter, &scan_delegate,
-      base::BindOnce(&NearbyPresenceServiceImplTest::TestOnScanStarted,
-                     weak_ptr_factory_.GetWeakPtr(), run_loop.QuitClosure()));
+  {
+    auto run_loop = base::RunLoop();
 
-  // Allow StartScan() to finish before calling the callback.
-  base::RunLoop().RunUntilIdle();
-  nearby_presence_.RunStartScanCallback();
-  run_loop.Run();
-  nearby_presence_.ReturnScanObserver()->OnDeviceLost(
-      mojom::PresenceDevice::New(kEndpointId, kDeviceName,
-                                 mojom::PresenceDeviceType::kPhone,
-                                 kStableDeviceId));
-  base::RunLoop().RunUntilIdle();
+    // Call start scan and verify it calls the OnPresenceDeviceFound delegate
+    // function.
+    nearby_presence_service->StartScan(
+        filter, &scan_delegate,
+        base::BindOnce(&NearbyPresenceServiceImplTest::TestOnScanStarted,
+                       weak_ptr_factory_.GetWeakPtr(), run_loop.QuitClosure()));
+
+    run_loop.Run();
+  }
+
+  {
+    auto run_loop = base::RunLoop();
+    scan_delegate.SetNextScanDelegateCallback(run_loop.QuitClosure());
+
+    fake_nearby_presence_.ReturnScanObserver()->OnDeviceLost(
+        mojom::PresenceDevice::New(kEndpointId, kDeviceName,
+                                   mojom::PresenceDeviceType::kPhone,
+                                   kStableDeviceId));
+    run_loop.Run();
+  }
+
   EXPECT_TRUE(scan_delegate.WasOnPresenceDeviceLostCalled());
   EXPECT_TRUE(IsScanSessionActive());
 }
@@ -209,33 +237,44 @@ TEST_F(NearbyPresenceServiceImplTest, EndScan) {
       ash::nearby::presence::NearbyPresenceService::IdentityType::kPrivate,
       /*actions=*/{});
   FakeScanDelegate scan_delegate;
-  auto run_loop = base::RunLoop();
 
-  // Call start scan and verify it calls the OnPresenceDeviceFound delegate
-  // function.
-  nearby_presence_service->StartScan(
-      filter, &scan_delegate,
-      base::BindOnce(&NearbyPresenceServiceImplTest::TestOnScanStarted,
-                     weak_ptr_factory_.GetWeakPtr(), run_loop.QuitClosure()));
+  {
+    auto run_loop = base::RunLoop();
 
-  // Allow StartScan() to finish before calling the callback.
-  base::RunLoop().RunUntilIdle();
-  nearby_presence_.RunStartScanCallback();
-  run_loop.Run();
-  nearby_presence_.ReturnScanObserver()->OnDeviceFound(
-      mojom::PresenceDevice::New(kEndpointId, kDeviceName,
-                                 mojom::PresenceDeviceType::kPhone,
-                                 kStableDeviceId));
+    // Call start scan and verify it calls the OnPresenceDeviceFound delegate
+    // function.
+    nearby_presence_service->StartScan(
+        filter, &scan_delegate,
+        base::BindOnce(&NearbyPresenceServiceImplTest::TestOnScanStarted,
+                       weak_ptr_factory_.GetWeakPtr(), run_loop.QuitClosure()));
 
-  // Allow the ScanObserver function to finish before checking EXPECTs.
-  base::RunLoop().RunUntilIdle();
+    run_loop.Run();
+  }
+
+  {
+    auto run_loop = base::RunLoop();
+    scan_delegate.SetNextScanDelegateCallback(run_loop.QuitClosure());
+
+    fake_nearby_presence_.ReturnScanObserver()->OnDeviceFound(
+        mojom::PresenceDevice::New(kEndpointId, kDeviceName,
+                                   mojom::PresenceDeviceType::kPhone,
+                                   kStableDeviceId));
+
+    // Allow the ScanObserver function to finish before checking EXPECTs.
+    run_loop.Run();
+  }
+
   EXPECT_TRUE(scan_delegate.WasOnPresenceDeviceFoundCalled());
   EXPECT_TRUE(IsScanSessionActive());
 
-  EndScanSession();
-  base::RunLoop().RunUntilIdle();
+  {
+    auto run_loop = base::RunLoop();
+    fake_nearby_presence_.SetOnDisconnectCallback(run_loop.QuitClosure());
+    EndScanSession();
+    run_loop.Run();
+  }
+
   EXPECT_FALSE(IsScanSessionActive());
-  EXPECT_TRUE(nearby_presence_.WasOnDisconnectCalled());
 }
 
 TEST_F(NearbyPresenceServiceImplTest, EndScanBeforeStart) {
@@ -243,22 +282,23 @@ TEST_F(NearbyPresenceServiceImplTest, EndScanBeforeStart) {
       ash::nearby::presence::NearbyPresenceService::IdentityType::kPrivate,
       /*actions=*/{});
   FakeScanDelegate scan_delegate;
-  auto run_loop = base::RunLoop();
 
   EndScanSession();
   EXPECT_FALSE(IsScanSessionActive());
 
-  // Call start scan and verify it calls the OnPresenceDeviceFound delegate
-  // function.
-  nearby_presence_service->StartScan(
-      filter, &scan_delegate,
-      base::BindOnce(&NearbyPresenceServiceImplTest::TestOnScanStarted,
-                     weak_ptr_factory_.GetWeakPtr(), run_loop.QuitClosure()));
+  {
+    auto run_loop = base::RunLoop();
 
-  // Allow StartScan() to finish before calling the callback.
-  base::RunLoop().RunUntilIdle();
-  nearby_presence_.RunStartScanCallback();
-  run_loop.Run();
+    // Call start scan and verify it calls the OnPresenceDeviceFound delegate
+    // function.
+    nearby_presence_service->StartScan(
+        filter, &scan_delegate,
+        base::BindOnce(&NearbyPresenceServiceImplTest::TestOnScanStarted,
+                       weak_ptr_factory_.GetWeakPtr(), run_loop.QuitClosure()));
+
+    run_loop.Run();
+  }
+
   EXPECT_TRUE(IsScanSessionActive());
 }
 
@@ -267,7 +307,6 @@ TEST_F(NearbyPresenceServiceImplTest, NullProcessReference) {
       ash::nearby::presence::NearbyPresenceService::IdentityType::kPrivate,
       /*actions=*/{});
   FakeScanDelegate scan_delegate;
-  auto run_loop = base::RunLoop();
 
   EXPECT_CALL(nearby_process_manager_, GetNearbyProcessReference)
       .WillRepeatedly(
@@ -275,10 +314,14 @@ TEST_F(NearbyPresenceServiceImplTest, NullProcessReference) {
             return nullptr;
           });
 
-  nearby_presence_service->StartScan(
-      filter, &scan_delegate,
-      base::BindOnce(&NearbyPresenceServiceImplTest::TestOnScanStarted,
-                     weak_ptr_factory_.GetWeakPtr(), run_loop.QuitClosure()));
+  {
+    auto run_loop = base::RunLoop();
+    nearby_presence_service->StartScan(
+        filter, &scan_delegate,
+        base::BindOnce(&NearbyPresenceServiceImplTest::TestOnScanStarted,
+                       weak_ptr_factory_.GetWeakPtr(), run_loop.QuitClosure()));
+  }
+
   EXPECT_FALSE(scan_delegate.WasOnPresenceDeviceFoundCalled());
 }
 
