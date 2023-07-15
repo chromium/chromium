@@ -77,13 +77,13 @@ static_library("model_executor") {
 
   public_deps = [
     "//components/optimization_guide:machine_learning_tflite_buildflags",
+    "//components/optimization_guide/proto:optimization_guide_proto",
     "//third_party/re2",
   ]
 
   deps = [
     ":features",
     "//base",
-    "//components/optimization_guide/proto:optimization_guide_proto",
     "//net",
     "//url",
   ]
@@ -250,6 +250,7 @@ static_library("core") {
     "//components/leveldb_proto",
     "//components/optimization_guide:machine_learning_tflite_buildflags",
     "//components/optimization_guide/core:interfaces",
+    "//components/optimization_guide/proto:optimization_guide_proto",
     "//third_party/re2",
   ]
   if (build_with_tflite_lib) {
@@ -267,8 +268,6 @@ static_library("core") {
   deps = [
     ":bloomfilter",
     "//base",
-    "//components/optimization_guide/core:interfaces",
-    "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/prefs",
     "//components/unified_consent",
     "//components/variations",
