@@ -859,9 +859,6 @@ class CTAP2Processor : public Transaction {
               blink::mojom::DevicePublicKeyRequest::New();
         }
 
-        // PRF inputs are already hashed when coming via CTAP.
-        params->extensions->prf_inputs_hashed = true;
-
         if (get_assertion_request.prf_eval_first) {
           params->extensions->prf = true;
           auto values = blink::mojom::PRFValues::New();
@@ -905,6 +902,11 @@ class CTAP2Processor : public Transaction {
             params->extensions->prf_inputs.emplace_back(std::move(values));
           }
         }
+
+        // PRF inputs are already hashed when coming via CTAP so, if there are
+        // any PRF inputs, they're hashed.
+        params->extensions->prf_inputs_hashed =
+            !params->extensions->prf_inputs.empty();
 
         transaction_received_ = true;
         const bool empty_allowlist = params->allow_credentials.empty();

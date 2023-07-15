@@ -442,6 +442,11 @@ class TestPlatform : public authenticator::Platform {
       request.device_public_key.emplace();
     }
     if (params->extensions) {
+      // The PRF inputs are hashed when they are sent over CTAP. So the
+      // `prf_inputs_hashed` flag should be set iff `prf_inputs` is non-empty.
+      CHECK(params->extensions->prf_inputs.empty() !=
+            params->extensions->prf_inputs_hashed);
+
       for (const auto& prf_input_from_request :
            params->extensions->prf_inputs) {
         PRFInput prf_input_to_authenticator;
