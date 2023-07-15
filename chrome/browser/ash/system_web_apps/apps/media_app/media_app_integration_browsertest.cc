@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
 #include <utility>
 
 #include "ash/constants/ash_switches.h"
@@ -9,6 +10,7 @@
 #include "ash/webui/media_app_ui/test/media_app_ui_browsertest.h"
 #include "ash/webui/media_app_ui/url_constants.h"
 #include "ash/webui/system_apps/public/system_web_app_type.h"
+#include "base/check_deref.h"
 #include "base/containers/cxx20_erase_vector.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
@@ -34,6 +36,7 @@
 #include "chrome/browser/ash/hats/hats_config.h"
 #include "chrome/browser/ash/hats/hats_notification_controller.h"
 #include "chrome/browser/ash/login/test/network_portal_detector_mixin.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
@@ -58,7 +61,9 @@
 #include "chromeos/constants/chromeos_features.h"
 #include "components/crash/content/browser/error_reporting/mock_crash_endpoint.h"
 #include "components/services/app_service/public/cpp/intent.h"
+#include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user.h"
+#include "components/user_manager/user_manager.h"
 #include "content/public/browser/media_session_service.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -150,6 +155,14 @@ class MediaAppIntegrationTest : public ash::SystemWebAppIntegrationTest {
         {});
   }
 
+  void SetUp() override {
+    ash::SystemWebAppIntegrationTest::SetUp();
+
+    auto user_manager = std::make_unique<ash::FakeChromeUserManager>();
+    scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
+        std::move(user_manager));
+  }
+
   void SetUpCommandLine(base::CommandLine* command_line) override {
     SystemWebAppIntegrationTest::SetUpCommandLine(command_line);
 
@@ -177,6 +190,10 @@ class MediaAppIntegrationTest : public ash::SystemWebAppIntegrationTest {
   // for the application to finish loading.
   content::WebContents* DirectlyLaunchWithFile(const base::FilePath& file_path);
 
+  ash::FakeChromeUserManager& GetFakeUserManager() {
+    return CHECK_DEREF(static_cast<ash::FakeChromeUserManager*>(
+        user_manager::UserManager::Get()));
+  }
   struct DataArgsHelper {
     const char* const open_image = "0";
     const char* const open_video = "0";
@@ -202,11 +219,11 @@ class MediaAppIntegrationTest : public ash::SystemWebAppIntegrationTest {
 
  protected:
   ash::NetworkPortalDetectorMixin network_portal_detector_{&mixin_host_};
-  ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
 
  private:
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<file_manager::test::FolderInMyFiles> launch_folder_;
+  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
 };
 
 class MediaAppIntegrationWithFilesAppTest : public MediaAppIntegrationTest {
@@ -1648,11 +1665,9 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, MaybeTriggerPhotosHats) {
 // which skips over some important coverage.
 IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, SurveyTriggers) {
   // Surveys only trigger for the device owner. Fake it.
-  scoped_testing_cros_settings_.device_settings()->Set(
-      ash::kDeviceOwner, base::Value(ash::ProfileHelper::Get()
-                                         ->GetUserByProfile(profile())
-                                         ->GetAccountId()
-                                         .GetUserEmail()));
+  auto owner_id =
+      ash::ProfileHelper::Get()->GetUserByProfile(profile())->GetAccountId();
+  GetFakeUserManager().SetOwnerId(owner_id);
 
   // Do some consistency checks. If these fail then the method we want to test
   // will bail out early.
