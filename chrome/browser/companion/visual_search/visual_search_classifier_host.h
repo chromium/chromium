@@ -11,6 +11,7 @@
 #include "chrome/browser/companion/visual_search/visual_search_suggestions_service.h"
 #include "chrome/common/companion/visual_search.mojom.h"
 #include "content/public/browser/render_frame_host.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "url/gurl.h"
 
@@ -44,7 +45,19 @@ enum class InitStatus {
   // request handler not being bound.
   kIpcNotMade = 6,
 
-  kMaxValue = kIpcNotMade,
+  // Failed classification init due to ongoing classification has not finished.
+  kOngoingClassification = 7,
+
+  // Represents that we have successfully sent a model fetch request.
+  kFetchModel = 8,
+
+  // Recorded when the callback is null after model is fetched.
+  kCallbackCancelled = 9,
+
+  // Tracks that the query has been cancelled before model was obtained.
+  kQueryCancelled = 10,
+
+  kMaxValue = kQueryCancelled,
 };
 
 // This class serves as the main orchestator for visual search suggestions
@@ -84,14 +97,11 @@ class VisualSearchClassifierHost : mojom::VisualSuggestionsResultHandler {
  private:
   // This method performs the actual mojom IPC to start classifier agent after
   // we have obtained the model from |visual_search_service_|.
-  void StartClassificationWithModel(content::RenderFrameHost* render_frame_host,
-                                    const GURL validated_url,
-                                    ResultCallback callback,
-                                    base::File file,
-                                    std::string base64_config);
-
-  // Used to track the url that is currently being processed.
-  GURL current_url_;
+  void StartClassificationWithModel(
+      mojo::AssociatedRemote<mojom::VisualSuggestionsRequestHandler>
+          visual_search,
+      base::File file,
+      std::string base64_config);
 
   // Pointer to visual search service which we do not own.
   raw_ptr<VisualSearchSuggestionsService> visual_search_service_ = nullptr;

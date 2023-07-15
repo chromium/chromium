@@ -123,15 +123,11 @@ TEST_F(VisualSearchClassifierHostTest, StartClassification) {
   visual_search_host_->StartClassification(
       web_contents()->GetPrimaryMainFrame(), url_, std::move(callback));
   base::RunLoop().RunUntilIdle();
-  histogram_tester_.ExpectBucketCount("Companion.VisualSearch.ModelFileSuccess",
-                                      true, 1);
   histogram_tester_.ExpectBucketCount(
       "Companion.VisualQuery.ClassifierModelAvailable", true, 1);
   histogram_tester_.ExpectBucketCount(
       "Companion.VisualQuery.ClassificationInitStatus",
       companion::visual_search::InitStatus::kSuccess, 1);
-  histogram_tester_.ExpectBucketCount(
-      "Companion.VisualSearch.StartClassificationSuccess", true, 1);
   histogram_tester_.ExpectTotalCount(
       "Companion.VisualQuery.ClassifierInitializationLatency", 1);
   // ClassificationLatency is not recorded until HandleClassification().
@@ -149,15 +145,11 @@ TEST_F(VisualSearchClassifierHostTest, StartClassification_WithOverride) {
   visual_search_host_->StartClassification(
       web_contents()->GetPrimaryMainFrame(), url_, std::move(callback));
   base::RunLoop().RunUntilIdle();
-  histogram_tester_.ExpectBucketCount("Companion.VisualSearch.ModelFileSuccess",
-                                      true, 1);
   histogram_tester_.ExpectBucketCount(
       "Companion.VisualQuery.ClassifierModelAvailable", true, 1);
   histogram_tester_.ExpectBucketCount(
       "Companion.VisualQuery.ClassificationInitStatus",
       companion::visual_search::InitStatus::kSuccess, 1);
-  histogram_tester_.ExpectBucketCount(
-      "Companion.VisualSearch.StartClassificationSuccess", true, 1);
   histogram_tester_.ExpectTotalCount(
       "Companion.VisualQuery.ClassifierInitializationLatency", 1);
   // ClassificationLatency is not recorded until HandleClassification().
@@ -174,13 +166,10 @@ TEST_F(VisualSearchClassifierHostTest, StartClassification_NoModelSet) {
 
   // ModelFileSuccess is never called because the |OnModelUpdate| is never
   // called by the |service_| since we never setup the model path.
-  histogram_tester_.ExpectTotalCount("Companion.VisualSearch.ModelFileSuccess",
-                                     0);
   // The following calls are not made for the same reason as above.
-  histogram_tester_.ExpectTotalCount(
-      "Companion.VisualQuery.ClassifierModelAvailable", 0);
-  histogram_tester_.ExpectTotalCount(
-      "Companion.VisualQuery.ClassificationInitStatus", 0);
+  histogram_tester_.ExpectBucketCount(
+      "Companion.VisualQuery.ClassificationInitStatus",
+      companion::visual_search::InitStatus::kFetchModel, 1);
   histogram_tester_.ExpectTotalCount(
       "Companion.VisualQuery.ClassifierInitializationLatency", 0);
   histogram_tester_.ExpectTotalCount(
@@ -198,16 +187,10 @@ TEST_F(VisualSearchClassifierHostTest, StartClassification_WithCancellation) {
   base::RunLoop().RunUntilIdle();
 
   histogram_tester_.ExpectBucketCount(
-      "Companion.VisualSearch.ClassificationCancelled", true, 1);
-  histogram_tester_.ExpectBucketCount("Companion.VisualSearch.ModelFileSuccess",
-                                      true, 1);
+      "Companion.VisualQuery.ClassificationInitStatus",
+      companion::visual_search::InitStatus::kQueryCancelled, 1);
   histogram_tester_.ExpectBucketCount(
       "Companion.VisualQuery.ClassifierModelAvailable", true, 1);
-  histogram_tester_.ExpectBucketCount("Companion.VisualSearch.MismatchURL",
-                                      true, 1);
-  histogram_tester_.ExpectBucketCount(
-      "Companion.VisualQuery.ClassificationInitStatus",
-      companion::visual_search::InitStatus::kMismatchedUrl, 1);
   histogram_tester_.ExpectTotalCount(
       "Companion.VisualQuery.ClassifierInitializationLatency", 0);
   histogram_tester_.ExpectTotalCount(
@@ -224,17 +207,15 @@ TEST_F(VisualSearchClassifierHostTest, HandleClassification) {
   SkBitmap result = create_bitmap(1000, 1000, 128, 128, 255);
   results.emplace_back(mojom::VisualSearchSuggestion::New(result));
 
+  base::RunLoop().RunUntilIdle();
   visual_search_host_->HandleClassification(std::move(results));
   base::RunLoop().RunUntilIdle();
-  histogram_tester_.ExpectBucketCount(
-      "Companion.VisualSearch.ClassificationResultsSize", true, 1);
+
   histogram_tester_.ExpectBucketCount(
       "Companion.VisualQuery.ClassifierModelAvailable", true, 1);
   histogram_tester_.ExpectBucketCount(
       "Companion.VisualQuery.ClassificationInitStatus",
       companion::visual_search::InitStatus::kSuccess, 1);
-  histogram_tester_.ExpectTotalCount(
-      "Companion.VisualSearch.EndClassificationSuccess", 0);
   histogram_tester_.ExpectTotalCount(
       "Companion.VisualQuery.ClassifierInitializationLatency", 1);
   histogram_tester_.ExpectTotalCount(

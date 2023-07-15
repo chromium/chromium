@@ -6,7 +6,6 @@
 
 #include "base/base64.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/metrics/histogram_macros_local.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/companion/visual_search/features.h"
@@ -24,6 +23,12 @@
 namespace companion::visual_search {
 
 namespace {
+
+void RecordStatusChange(InitStatus status) {
+  base::UmaHistogramEnumeration(
+      "Companion.VisualQuery.ClassificationInitStatus", status);
+}
+
 absl::optional<std::string> Base64EncodeBitmap(const SkBitmap& bitmap) {
   gfx::BufferWStream stream;
   const bool encoding_succeeded =
@@ -72,9 +77,9 @@ void VisualSearchClassifierHost::HandleClassification(
     }
   }
 
+  LOCAL_HISTOGRAM_BOOLEAN("Companion.VisualSearch.EndClassificationSuccess",
+                          !result_callback_.is_null());
   if (!result_callback_.is_null()) {
-    LOCAL_HISTOGRAM_BOOLEAN("Companion.VisualSearch.EndClassificationSuccess",
-                            !result_callback_.is_null());
     std::move(result_callback_).Run(std::move(data_uris));
   }
   // Log latency from the time the companion page handler called
@@ -97,54 +102,47 @@ void VisualSearchClassifierHost::StartClassification(
   // the overall classification.
   classification_start_time_ = base::TimeTicks::Now();
   if (!render_frame_host) {
-    LOCAL_HISTOGRAM_BOOLEAN("Companion.VisualSearch.EmptyRenderFrame", true);
-    base::UmaHistogramEnumeration(
-        "Companion.VisualQuery.ClassificationInitStatus",
-        InitStatus::kEmptyRenderFrame);
+    RecordStatusChange(InitStatus::kEmptyRenderFrame);
     return;
   }
 
-  if (validated_url == current_url_) {
-    LOCAL_HISTOGRAM_BOOLEAN(
-        "Companion.VisualSearch.ClassificationAlreadyStarted", true);
-    base::UmaHistogramEnumeration(
-        "Companion.VisualQuery.ClassificationInitStatus",
-        InitStatus::kAlreadyStarted);
+  // We check to see if callback is already set signifying an ongoing query.
+  if (!result_callback_.is_null()) {
+    RecordStatusChange(InitStatus::kOngoingClassification);
     return;
   }
 
-  current_url_ = validated_url;
+  // We set the callback so that we know where to send back the results.
+  result_callback_ = std::move(callback);
+
+  // Use |render_frame_host| to get visual search mojom IPC running in renderer.
+  mojo::AssociatedRemote<mojom::VisualSuggestionsRequestHandler> visual_search;
+  render_frame_host->GetRemoteAssociatedInterfaces()->GetInterface(
+      &visual_search);
+
   visual_search_service_->SetModelUpdateCallback(
       base::BindOnce(&VisualSearchClassifierHost::StartClassificationWithModel,
-                     weak_ptr_factory_.GetWeakPtr(), render_frame_host,
-                     validated_url, std::move(callback)));
+                     weak_ptr_factory_.GetWeakPtr(), std::move(visual_search)));
 
-  LOCAL_HISTOGRAM_BOOLEAN("Companion.VisualSearch.StartClassificationBegin",
-                          true);
+  base::UmaHistogramEnumeration(
+      "Companion.VisualQuery.ClassificationInitStatus",
+      InitStatus::kFetchModel);
 }
 
 void VisualSearchClassifierHost::StartClassificationWithModel(
-    content::RenderFrameHost* render_frame_host,
-    const GURL validated_url,
-    ResultCallback callback,
+    mojo::AssociatedRemote<mojom::VisualSuggestionsRequestHandler>
+        visual_search,
     base::File model,
     std::string base64_config) {
-  LOCAL_HISTOGRAM_BOOLEAN("Companion.VisualSearch.ModelFileSuccess",
-                          model.IsValid());
   base::UmaHistogramBoolean("Companion.VisualQuery.ClassifierModelAvailable",
                             model.IsValid());
   if (!model.IsValid()) {
-    base::UmaHistogramEnumeration(
-        "Companion.VisualQuery.ClassificationInitStatus",
-        InitStatus::kModelUnavailable);
+    RecordStatusChange(InitStatus::kModelUnavailable);
     return;
   }
 
-  if (validated_url != current_url_) {
-    LOCAL_HISTOGRAM_BOOLEAN("Companion.VisualSearch.MismatchURL", true);
-    base::UmaHistogramEnumeration(
-        "Companion.VisualQuery.ClassificationInitStatus",
-        InitStatus::kMismatchedUrl);
+  if (result_callback_.is_null()) {
+    RecordStatusChange(InitStatus::kCallbackCancelled);
     return;
   }
 
@@ -156,12 +154,6 @@ void VisualSearchClassifierHost::StartClassificationWithModel(
     base64_config = std::move(config_switch.value());
   }
 
-  // We set the callback so that we know where to send back the results.
-  result_callback_ = std::move(callback);
-
-  mojo::AssociatedRemote<mojom::VisualSuggestionsRequestHandler> visual_search;
-  render_frame_host->GetRemoteAssociatedInterfaces()->GetInterface(
-      &visual_search);
   if (visual_search.is_bound() && !result_handler_.is_bound()) {
     visual_search->StartVisualClassification(
         std::move(model), base64_config,
@@ -173,31 +165,18 @@ void VisualSearchClassifierHost::StartClassificationWithModel(
     base::UmaHistogramTimes(
         "Companion.VisualQuery.ClassifierInitializationLatency",
         base::TimeTicks::Now() - classification_start_time_);
-    LOCAL_HISTOGRAM_BOOLEAN("Companion.VisualSearch.StartClassificationSuccess",
-                            visual_search.is_bound());
-    base::UmaHistogramEnumeration(
-        "Companion.VisualQuery.ClassificationInitStatus", InitStatus::kSuccess);
+    RecordStatusChange(InitStatus::kSuccess);
   } else {
     // Closing file in background thread since we did not make IPC.
     base::ThreadPool::PostTask(
         FROM_HERE, {base::MayBlock()},
         base::BindOnce(&CloseModelFile, std::move(model)));
-    base::UmaHistogramEnumeration(
-        "Companion.VisualQuery.ClassificationInitStatus",
-        InitStatus::kIpcNotMade);
+    RecordStatusChange(InitStatus::kIpcNotMade);
   }
-  // We clear url after processing because we want to allow the current url to
-  // to processed multiple times especially after changes in the viewport.
-  current_url_ = GURL::EmptyGURL();
 }
 
 void VisualSearchClassifierHost::CancelClassification(const GURL& visible_url) {
-  if (visible_url == current_url_) {
-    return;
-  }
   result_callback_.Reset();
-  current_url_ = GURL::EmptyGURL();
-  LOCAL_HISTOGRAM_BOOLEAN("Companion.VisualSearch.ClassificationCancelled",
-                          true);
+  RecordStatusChange(InitStatus::kQueryCancelled);
 }
 }  // namespace companion::visual_search

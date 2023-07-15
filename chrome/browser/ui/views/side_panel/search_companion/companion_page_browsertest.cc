@@ -24,6 +24,7 @@
 #include "chrome/browser/companion/core/mojom/companion.mojom.h"
 #include "chrome/browser/companion/core/proto/companion_url_params.pb.h"
 #include "chrome/browser/companion/visual_search/features.h"
+#include "chrome/browser/companion/visual_search/visual_search_classifier_host.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -921,9 +922,9 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,
   base::File model_file(model_file_path(),
                         base::File::FLAG_OPEN | base::File::FLAG_READ);
   if (base::PathExists(model_file_path()) && model_file.IsValid()) {
-    WaitForHistogram("Companion.VisualSearch.EndClassificationSuccess");
+    WaitForHistogram("Companion.VisualSearch.ClassificationResultsSize");
     histogram_tester.ExpectBucketCount(
-        "Companion.VisualSearch.ModelFileSuccess", true, 1);
+        "Companion.VisualQuery.ClassifierModelAvailable", true, 1);
     histogram_tester.ExpectBucketCount(
         "Companion.VisualSearch.ClassificationResultsSize", 1, 1);
     histogram_tester.ExpectBucketCount(
