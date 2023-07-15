@@ -235,8 +235,6 @@ crbug.com/1453832 [ win nvidia ] OverlayModeTraceTest_DirectComposition_Video_VP
 crbug.com/1453832 [ win nvidia ] OverlayModeTraceTest_DirectComposition_Video_VP9_YUY2 [ RetryOnFailure ]
 crbug.com/1453832 [ no-clang-coverage nvidia release-x64 target-cpu-64 win ] VideoPathTraceTest_DirectComposition_Video_VP9 [ RetryOnFailure ]
 
-crbug.com/1442337 [ chromeos chromeos-board-kevin ] WebGLCanvasCaptureTraceTest_VideoStreamFromWebGLCanvas_OneCopy [ Failure ]
-crbug.com/1442337 [ chromeos chromeos-board-kevin ] WebGLCanvasCaptureTraceTest_VideoStreamFromWebGLCanvas_TwoCopy_Accelerated [ Failure ]
 
 # Win AMD failure since test added
 crbug.com/1446057 [ win10 amd-0x7340 angle-d3d11 ] VideoPathTraceTest_DirectComposition_Video_SW_Decode [ Failure ]
