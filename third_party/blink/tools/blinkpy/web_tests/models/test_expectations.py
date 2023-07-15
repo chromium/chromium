@@ -56,30 +56,6 @@ ResultType = typ_types.ResultType
 _log = logging.getLogger(__name__)
 
 SPECIAL_PREFIXES = ('# tags:', '# results:', '# conflicts_allowed:')
-
-_PLATFORM_TOKENS_LIST = [
-    'Android',
-    'Fuchsia',
-    'Linux',
-    'Mac',
-    'Mac10.15',
-    'Mac11',
-    'Mac11-arm64',
-    'Mac12',
-    'Mac12-arm64',
-    'Mac13',
-    'Mac13-arm64',
-    'Win',
-    'Win10.20h2',
-    'Win11',
-    'Win11-arm64',
-]
-
-_BUILD_TYPE_TOKEN_LIST = [
-    'Release',
-    'Debug',
-]
-
 EXPECTATION_DESCRIPTIONS = {
     ResultType.Skip: 'skipped',
     ResultType.Pass: 'passes',
