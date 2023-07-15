@@ -41,3 +41,9 @@
 -keep,allowobfuscation public class ** extends org.chromium.chrome.browser.base.SplitCompat*$Impl {
   public <init>();
 }
+
+-keep class com.google.android.material.**
+
+-keep class com.google.android.material.appbar.AppBarLayout$* {*;}
+
+ # -keep public class com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior

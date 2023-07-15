@@ -449,6 +449,8 @@ public class ContentSettingsResources {
                 return R.string.website_settings_permissions_allow;
             case ContentSettingValues.BLOCK:
                 return R.string.website_settings_permissions_block;
+            case ContentSettingValues.ASK:
+                return R.string.website_settings_category_ask;
             default:
                 return 0; // We never show Ask as an option on individual permissions.
         }

@@ -7,6 +7,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import androidx.annotation.Keep;
+
 import com.ark.browser.ui.fragment.wallpaper.WallpaperManager;
 import com.ark.browser.ui.widget.CheckBoxItem;
 import com.ark.browser.ui.widget.DrawableTintTextView;
@@ -25,6 +27,7 @@ import com.zpj.widget.setting.SwitchSettingItem;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeApplicationImpl;
 
+@Keep
 public class ArkBrowserApplicationImpl extends ChromeApplicationImpl {
 
     @Override

@@ -15,6 +15,13 @@ import org.chromium.ui.base.WindowAndroid;
  */
 @JNINamespace("messages")
 public class MessageDispatcherBridge {
+
+    private static WindowAndroid sWindowAndroid;
+
+    public static void setWindowAndroid(WindowAndroid windowAndroid) {
+        sWindowAndroid = windowAndroid;
+    }
+
     /**
      * Return false if it fails to enqueue message, which usually happens when
      * activity is being recreated or destroyed; otherwise, return true.
@@ -22,8 +29,11 @@ public class MessageDispatcherBridge {
     @CalledByNative
     private static boolean enqueueMessage(MessageWrapper message, WebContents webContents,
             @MessageScopeType int scopeType, boolean highPriority) {
-        MessageDispatcher messageDispatcher =
-                MessageDispatcherProvider.from(webContents.getTopLevelNativeWindow());
+        WindowAndroid windowAndroid = webContents.getTopLevelNativeWindow();
+        if (windowAndroid == null) {
+            windowAndroid = sWindowAndroid;
+        }
+        MessageDispatcher messageDispatcher = MessageDispatcherProvider.from(windowAndroid);
         if (messageDispatcher == null) return false;
         messageDispatcher.enqueueMessage(
                 message.getMessageProperties(), webContents, scopeType, highPriority);
@@ -33,6 +43,9 @@ public class MessageDispatcherBridge {
     @CalledByNative
     private static boolean enqueueWindowScopedMessage(
             MessageWrapper message, WindowAndroid windowAndroid, boolean highPriority) {
+        if (windowAndroid == null) {
+            windowAndroid = sWindowAndroid;
+        }
         MessageDispatcher messageDispatcher = MessageDispatcherProvider.from(windowAndroid);
         if (messageDispatcher == null) return false;
         messageDispatcher.enqueueWindowScopedMessage(message.getMessageProperties(), highPriority);
@@ -42,6 +55,9 @@ public class MessageDispatcherBridge {
     @CalledByNative
     private static void dismissMessage(
             MessageWrapper message, WindowAndroid windowAndroid, @DismissReason int dismissReason) {
+        if (windowAndroid == null) {
+            windowAndroid = sWindowAndroid;
+        }
         MessageDispatcher messageDispatcher = MessageDispatcherProvider.from(windowAndroid);
         if (messageDispatcher == null) return;
         messageDispatcher.dismissMessage(message.getMessageProperties(), dismissReason);

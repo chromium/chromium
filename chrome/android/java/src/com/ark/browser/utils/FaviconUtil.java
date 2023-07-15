@@ -3,6 +3,7 @@ package com.ark.browser.utils;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -142,6 +143,9 @@ public class FaviconUtil {
                     faviconSizeDp, faviconSizeDp, faviconSizeDp / 2,
                     getRandomColor(), (int) (mTextSize * density));
             bitmap = faviconGenerator.generateIconForUrl(host);
+            if (bitmap == null) {
+                bitmap = BitmapFactory.decodeResource(resources, R.mipmap.app_icon);
+            }
             BITMAP_CACHE.put(host, bitmap);
         }
 

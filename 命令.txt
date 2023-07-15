@@ -14,3 +14,26 @@ build/android/gradle/generate_gradle.py --output-directory out/Default
 java.srcDirs添加
 "../../../..",
 可把src目录添加到gradle源目录中
+
+
+
+
+
+// gn.args
+target_os = "android"
+target_cpu = "arm"
+is_debug = false
+is_official_build = true
+enable_remoting = true
+is_component_build = false
+is_chrome_branded = false
+use_official_google_api_keys = false
+enable_resource_whitelist_generation = true
+enable_nacl = false
+remove_webcore_debug_symbols = true
+proprietary_codecs = true
+ffmpeg_branding = "Chrome"
+android_channel = "stable"
+enable_vr = false
+treat_warnings_as_errors=false
+update_android_aar_prebuilts=true
