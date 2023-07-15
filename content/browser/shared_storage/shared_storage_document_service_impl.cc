@@ -21,6 +21,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/content_client.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
+#include "storage/browser/blob/blob_url_loader_factory.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/shared_storage/shared_storage_utils.h"
@@ -135,8 +136,18 @@ void SharedStorageDocumentServiceImpl::AddModuleOnWorklet(
   // keep-alive phase and won't have access to the `RenderFrameHost`.
   mojo::PendingRemote<network::mojom::URLLoaderFactory>
       frame_url_loader_factory;
-  render_frame_host().CreateNetworkServiceDefaultFactory(
-      frame_url_loader_factory.InitWithNewPipeAndPassReceiver());
+  if (script_source_url.SchemeIsBlob()) {
+    storage::BlobURLLoaderFactory::Create(
+        static_cast<StoragePartitionImpl*>(
+            render_frame_host().GetProcess()->GetStoragePartition())
+            ->GetBlobUrlRegistry()
+            ->GetBlobFromUrl(script_source_url),
+        script_source_url,
+        frame_url_loader_factory.InitWithNewPipeAndPassReceiver());
+  } else {
+    render_frame_host().CreateNetworkServiceDefaultFactory(
+        frame_url_loader_factory.InitWithNewPipeAndPassReceiver());
+  }
 
   GetSharedStorageWorkletHost()->AddModuleOnWorklet(
       std::move(frame_url_loader_factory),
