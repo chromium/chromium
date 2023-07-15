@@ -1,5 +1,5 @@
 <!--
-Copyright 2023 The Chromium Authors
+Copyright 2024 The Chromium Authors
 Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
@@ -9,7 +9,7 @@ found in the LICENSE file.
 <histograms>
 
 <histogram name="StructuredMetrics.InitSequence" enum="UmaInitSequence"
-    expires_after="2023-07-31">
+    expires_after="2024-07-14">
   <owner>andrewbregger@google.com</owner>
   <owner>jongahn@google.com</owner>
   <owner>chromeos-data-eng@google.com</owner>
@@ -24,7 +24,7 @@ found in the LICENSE file.
 </histogram>
 
 <histogram name="StructuredMetrics.LogStore.CompressionRatio" units="%"
-    expires_after="2023-07-31">
+    expires_after="2024-07-14">
   <owner>andrewbregger@google.com</owner>
   <owner>jongahn@google.com</owner>
   <owner>chromeos-data-eng@google.com</owner>
@@ -36,7 +36,7 @@ found in the LICENSE file.
 </histogram>
 
 <histogram name="StructuredMetrics.LogStore.Dropped" units="logs"
-    expires_after="2023-07-31">
+    expires_after="2024-07-14">
   <owner>andrewbregger@google.com</owner>
   <owner>jongahn@google.com</owner>
   <owner>chromeos-data-eng@google.com</owner>
@@ -49,7 +49,7 @@ found in the LICENSE file.
 </histogram>
 
 <histogram name="StructuredMetrics.LogStore.DroppedSize" units="KB"
-    expires_after="2023-07-31">
+    expires_after="2024-07-14">
   <owner>andrewbregger@google.com</owner>
   <owner>jongahn@google.com</owner>
   <owner>chromeos-data-eng@google.com</owner>
@@ -62,7 +62,7 @@ found in the LICENSE file.
 </histogram>
 
 <histogram name="StructuredMetrics.Reporting.ActualUploadInterval"
-    units="minutes" expires_after="2023-07-31">
+    units="minutes" expires_after="2024-07-14">
   <owner>andrewbregger@google.com</owner>
   <owner>jongahn@google.com</owner>
   <owner>chromeos-data-eng@google.com</owner>
@@ -75,7 +75,7 @@ found in the LICENSE file.
 </histogram>
 
 <histogram name="StructuredMetrics.Reporting.HTTPErrorCode"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2023-07-31">
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2024-07-14">
   <owner>andrewbregger@google.com</owner>
   <owner>jongahn@google.com</owner>
   <owner>chromeos-data-eng@google.com</owner>
@@ -87,7 +87,7 @@ found in the LICENSE file.
 </histogram>
 
 <histogram name="StructuredMetrics.Reporting.HTTPResponseCode"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2023-07-31">
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2024-07-14">
   <owner>andrewbregger@google.com</owner>
   <owner>jongahn@google.com</owner>
   <owner>chromeos-data-eng@google.com</owner>
@@ -99,7 +99,7 @@ found in the LICENSE file.
 </histogram>
 
 <histogram name="StructuredMetrics.Reporting.LogSize.OnSuccess" units="KB"
-    expires_after="2023-12-04">
+    expires_after="2024-07-14">
   <owner>andrewbregger@google.com</owner>
   <owner>jongahn@google.com</owner>
   <owner>chromeos-data-eng@google.com</owner>
@@ -111,7 +111,7 @@ found in the LICENSE file.
 </histogram>
 
 <histogram name="StructuredMetrics.Reporting.LogSize.RejectedSize" units="KB"
-    expires_after="2023-07-31">
+    expires_after="2024-07-14">
   <owner>andrewbregger@google.com</owner>
   <owner>jongahn@google.com</owner>
   <owner>chromeos-data-eng@google.com</owner>
