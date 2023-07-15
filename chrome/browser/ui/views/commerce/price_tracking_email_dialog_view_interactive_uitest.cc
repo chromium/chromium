@@ -6,6 +6,7 @@
 
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/commerce/shopping_service_factory.h"
+#include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
@@ -22,6 +23,8 @@
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/mock_shopping_service.h"
 #include "components/commerce/core/test_utils.h"
+#include "components/feature_engagement/public/feature_constants.h"
+#include "components/feature_engagement/test/scoped_iph_feature_list.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -45,6 +48,10 @@ class PriceTrackingEmailDialogConsentViewInteractiveTest
     : public InteractiveBrowserTest {
  public:
   void SetUp() override {
+    test_features_.InitAndEnableFeature(commerce::kShoppingListTrackByDefault);
+    test_iph_features_.InitForDemo(
+        feature_engagement::kIPHPriceTrackingEmailConsentFeature);
+
     set_open_about_blank_on_browser_launch(true);
     ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
     InteractiveBrowserTest::SetUp();
@@ -73,8 +80,8 @@ class PriceTrackingEmailDialogConsentViewInteractiveTest
   }
 
  private:
-  base::test::ScopedFeatureList test_features_{
-      commerce::kShoppingListTrackByDefault};
+  base::test::ScopedFeatureList test_features_;
+  feature_engagement::test::ScopedIphFeatureList test_iph_features_;
 
   void SetUpTabHelperAndShoppingService() {
     // Remove the original tab helper so we don't get into a bad situation when

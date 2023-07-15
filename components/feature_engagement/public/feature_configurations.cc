@@ -242,6 +242,18 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
     return config;
   }
 
+  if (kIPHPriceTrackingEmailConsentFeature.name == feature->name) {
+    absl::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(ANY, 0);
+    config->session_rate_impact.type = SessionRateImpact::Type::NONE;
+    // Show the IPH up to 3 times per month.
+    config->trigger = EventConfig("price_tracking_email_consent_trigger",
+                                  Comparator(LESS_THAN, 3), 30, 360);
+    return config;
+  }
+
   if (kIPHPriceTrackingInSidePanelFeature.name == feature->name) {
     absl::optional<FeatureConfig> config = FeatureConfig();
     config->valid = true;

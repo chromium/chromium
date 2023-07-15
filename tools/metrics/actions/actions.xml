@@ -38592,6 +38592,8 @@ should be able to be added at any place in this file.
       label="For price insights page action icon label triggering."/>
   <suffix name="PriceTrackingChipFeature"
       label="For PriceTrackingChipFeature feature."/>
+  <suffix name="PriceTrackingEmailConsentFeature"
+      label="For price tracking email consent dialog."/>
   <suffix name="PriceTrackingInSidePanel"
       label="For PriceTrackingInSidePanelFeature feature."/>
   <suffix name="PriceTrackingPageActionIconLabel"

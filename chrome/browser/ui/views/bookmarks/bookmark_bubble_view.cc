@@ -126,6 +126,15 @@ base::OnceCallback<void()> CreatePriceTrackingEmailCallback(
     return base::DoNothing();
   }
 
+  // Make sure we don't over-trigger the dialog.
+  auto* tracker =
+      feature_engagement::TrackerFactory::GetForBrowserContext(profile);
+  if (!tracker ||
+      !tracker->ShouldTriggerHelpUI(
+          feature_engagement::kIPHPriceTrackingEmailConsentFeature)) {
+    return base::DoNothing();
+  }
+
   base::OnceCallback<void()> show_dialog_callback = base::BindOnce(
       [](content::WebContents* web_contents, Profile* profile,
          views::View* anchor) {

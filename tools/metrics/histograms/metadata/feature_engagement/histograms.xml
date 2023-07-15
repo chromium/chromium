@@ -258,6 +258,10 @@ chromium-metrics-reviews@google.com.
       summary="price insights page action icon label triggering"/>
   <variant name="IPH_PriceTrackingChipFeature"
       summary="first time user sees the price tracking page action icon"/>
+  <variant name="IPH_PriceTrackingEmailConsentFeature"
+      summary="An email consent dialog shown after saving a product if a
+               decision about receiving email notifications has not been
+               made."/>
   <variant name="IPH_PriceTrackingInSidePanel"
       summary="first time user tracks a product to educate them to see the
                price tracking list in side panel"/>
