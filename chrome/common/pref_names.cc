@@ -3685,6 +3685,7 @@ const char kHttpAllowlist[] = "https_upgrades.policy.http_allowlist";
 const char kHttpsUpgradesEnabled[] = "https_upgrades.policy.upgrades_enabled";
 
 // Whether the hovercard image previews is enabled
-const char kHoverCardImagesEnabled[] = "browser.hovercard_images_enabled";
+const char kHoverCardImagesEnabled[] =
+    "browser.hovercard.image_previews_enabled";
 
 }  // namespace prefs
