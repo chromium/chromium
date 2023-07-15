@@ -179,7 +179,6 @@ public class MostVisitedTilesProcessor extends BaseCarouselSuggestionProcessor {
         }
 
         model.set(BaseCarouselSuggestionViewProperties.TILES, tileList);
-        model.set(BaseCarouselSuggestionViewProperties.SHOW_TITLE, false);
         model.set(BaseCarouselSuggestionViewProperties.RECYCLED_VIEW_POOL,
                 mMostVisitedTilesRecycledViewPool);
     }

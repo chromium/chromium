@@ -6,21 +6,16 @@ package org.chromium.chrome.browser.omnibox.suggestions.carousel;
 
 import android.content.res.Configuration;
 import android.content.res.Resources;
-import android.view.View;
 
 import androidx.annotation.NonNull;
 
 import org.chromium.chrome.browser.omnibox.R;
-import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties.FormFactor;
 import org.chromium.chrome.browser.omnibox.suggestions.base.SpacingRecyclerViewItemDecoration;
-import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
-
-import java.util.List;
 
 /**
  * Binder for the Carousel suggestions.
@@ -29,44 +24,28 @@ public final class BaseCarouselSuggestionViewBinder {
     /** @see PropertyModelChangeProcessor.ViewBinder#bind(Object, Object, Object) */
     public static void bind(PropertyModel model, BaseCarouselSuggestionView view, PropertyKey key) {
         if (key == BaseCarouselSuggestionViewProperties.TILES) {
-            final List<ListItem> items = model.get(BaseCarouselSuggestionViewProperties.TILES);
-            final SimpleRecyclerViewAdapter adapter = view.getAdapter();
+            var items = model.get(BaseCarouselSuggestionViewProperties.TILES);
+            var adapter = (SimpleRecyclerViewAdapter) view.getAdapter();
             if (items != null) {
                 adapter.getModelList().set(items);
             } else {
                 adapter.getModelList().clear();
             }
-        } else if (key == BaseCarouselSuggestionViewProperties.TITLE) {
-            view.getHeaderTextView().setText(model.get(BaseCarouselSuggestionViewProperties.TITLE));
-        } else if (key == BaseCarouselSuggestionViewProperties.SHOW_TITLE) {
-            final boolean showTitle = model.get(BaseCarouselSuggestionViewProperties.SHOW_TITLE);
-            final View headerView = view.getHeaderView();
-            int topPadding = OmniboxResourceProvider.getCarouselTopPadding(view.getContext());
-            final int bottomPadding =
-                    OmniboxResourceProvider.getCarouselBottomPadding(view.getContext());
-            if (showTitle) {
-                headerView.setVisibility(View.VISIBLE);
-                view.setPaddingRelative(0, 0, 0, bottomPadding);
-            } else {
-                headerView.setVisibility(View.GONE);
-                view.setPaddingRelative(0, topPadding, 0, bottomPadding);
-            }
         } else if (key == SuggestionCommonProperties.DEVICE_FORM_FACTOR) {
-            var rv = view.getRecyclerView();
-            int itemDecoration = rv.getItemDecorationCount();
+            int itemDecoration = view.getItemDecorationCount();
             while (itemDecoration > 0) {
                 itemDecoration--;
-                rv.removeItemDecorationAt(itemDecoration);
+                view.removeItemDecorationAt(itemDecoration);
             }
             int spacing = getItemSpacingPx(
                     model.get(SuggestionCommonProperties.DEVICE_FORM_FACTOR), view.getResources());
-            rv.addItemDecoration(new SpacingRecyclerViewItemDecoration(0, spacing / 2));
+            view.addItemDecoration(new SpacingRecyclerViewItemDecoration(0, spacing / 2));
         } else if (key == BaseCarouselSuggestionViewProperties.HORIZONTAL_FADE) {
-            view.setCarouselHorizontalFade(
+            view.setHorizontalFadingEdgeEnabled(
                     model.get(BaseCarouselSuggestionViewProperties.HORIZONTAL_FADE));
         } else if (key == BaseCarouselSuggestionViewProperties.RECYCLED_VIEW_POOL) {
-            view.setCarouselRecycledViewPool(
-                    model.get(BaseCarouselSuggestionViewProperties.RECYCLED_VIEW_POOL));
+            var pool = model.get(BaseCarouselSuggestionViewProperties.RECYCLED_VIEW_POOL);
+            if (pool != null) view.setRecycledViewPool(pool);
         }
     }
 

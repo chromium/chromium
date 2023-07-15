@@ -195,7 +195,7 @@ public class MostVisitedTilesTest {
 
     private void clickTileAtPosition(int position) {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            LayoutManager manager = mCarousel.view.getRecyclerView().getLayoutManager();
+            LayoutManager manager = mCarousel.view.getLayoutManager();
             Assert.assertTrue(position < manager.getItemCount());
             manager.scrollToPosition(position);
             View view = manager.findViewByPosition(position);
@@ -206,7 +206,7 @@ public class MostVisitedTilesTest {
 
     private void longClickTileAtPosition(int position) {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            LayoutManager manager = mCarousel.view.getRecyclerView().getLayoutManager();
+            LayoutManager manager = mCarousel.view.getLayoutManager();
             Assert.assertTrue(position < manager.getItemCount());
             manager.scrollToPosition(position);
             View view = manager.findViewByPosition(position);

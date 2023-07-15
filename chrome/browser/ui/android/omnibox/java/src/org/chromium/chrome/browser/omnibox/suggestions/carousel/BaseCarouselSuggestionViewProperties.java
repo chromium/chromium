@@ -21,13 +21,6 @@ public class BaseCarouselSuggestionViewProperties {
     public static final WritableObjectPropertyKey<List<ListItem>> TILES =
             new WritableObjectPropertyKey<>();
 
-    /** The header title to be applied to the suggestion. */
-    public static final WritableObjectPropertyKey<CharSequence> TITLE =
-            new WritableObjectPropertyKey<>();
-
-    /** Controls whether the Header should be shown. */
-    public static final WritableBooleanPropertyKey SHOW_TITLE = new WritableBooleanPropertyKey();
-
     /** Controls whether the carousel should have horizontal fade effect. */
     public static final WritableBooleanPropertyKey HORIZONTAL_FADE =
             new WritableBooleanPropertyKey();
@@ -37,7 +30,7 @@ public class BaseCarouselSuggestionViewProperties {
             new WritableObjectPropertyKey<>();
 
     public static final PropertyKey[] ALL_UNIQUE_KEYS =
-            new PropertyKey[] {TITLE, SHOW_TITLE, TILES, HORIZONTAL_FADE, RECYCLED_VIEW_POOL};
+            new PropertyKey[] {TILES, HORIZONTAL_FADE, RECYCLED_VIEW_POOL};
 
     public static final PropertyKey[] ALL_KEYS =
             PropertyModel.concatKeys(ALL_UNIQUE_KEYS, SuggestionCommonProperties.ALL_KEYS);
