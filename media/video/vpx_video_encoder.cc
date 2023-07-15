@@ -781,22 +781,33 @@ void VpxVideoEncoder::UpdateEncoderColorSpace() {
   };
 
   if (vpx_cs != VPX_CS_UNKNOWN) {
-    auto vpx_error =
-        vpx_codec_control(codec_.get(), VP9E_SET_COLOR_SPACE, vpx_cs);
-    if (vpx_error != VPX_CODEC_OK)
-      LogVpxErrorMessage(codec_.get(), "Failed to set color space", vpx_error);
+    vpx_image_.cs = vpx_cs;
+    if (profile_ != VP8PROFILE_ANY) {
+      auto vpx_error =
+          vpx_codec_control(codec_.get(), VP9E_SET_COLOR_SPACE, vpx_cs);
+      if (vpx_error != VPX_CODEC_OK) {
+        LogVpxErrorMessage(codec_.get(), "Failed to set color space",
+                           vpx_error);
+      }
+    }
   }
 
   if (last_frame_color_space_.GetRangeID() == gfx::ColorSpace::RangeID::FULL ||
       last_frame_color_space_.GetRangeID() ==
           gfx::ColorSpace::RangeID::LIMITED) {
-    auto vpx_error = vpx_codec_control(
-        codec_.get(), VP9E_SET_COLOR_RANGE,
+    const auto vpx_range =
         last_frame_color_space_.GetRangeID() == gfx::ColorSpace::RangeID::FULL
             ? VPX_CR_FULL_RANGE
-            : VPX_CR_STUDIO_RANGE);
-    if (vpx_error != VPX_CODEC_OK)
-      LogVpxErrorMessage(codec_.get(), "Failed to set color range", vpx_error);
+            : VPX_CR_STUDIO_RANGE;
+    vpx_image_.range = vpx_range;
+    if (profile_ != VP8PROFILE_ANY) {
+      auto vpx_error =
+          vpx_codec_control(codec_.get(), VP9E_SET_COLOR_RANGE, vpx_range);
+      if (vpx_error != VPX_CODEC_OK) {
+        LogVpxErrorMessage(codec_.get(), "Failed to set color range",
+                           vpx_error);
+      }
+    }
   }
 }
 
