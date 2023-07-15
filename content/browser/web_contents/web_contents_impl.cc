@@ -187,9 +187,9 @@
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-#include "content/browser/android/date_time_chooser_android.h"
 #include "content/browser/android/java_interfaces_impl.h"
 #include "content/browser/android/nfc_host.h"
+#include "content/browser/date_time_chooser/date_time_chooser.h"
 #include "content/browser/web_contents/web_contents_android.h"
 #include "services/device/public/mojom/nfc.mojom.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
@@ -3288,7 +3288,7 @@ void WebContentsImpl::Init(const WebContents::CreateParams& params,
       std::make_unique<ScreenOrientationProvider>(this);
 
 #if BUILDFLAG(IS_ANDROID)
-  DateTimeChooserAndroid::CreateForWebContents(this);
+  DateTimeChooser::CreateDateTimeChooser(this);
 #endif
 
   // AttributionHost must be created after `view_->CreateView()` is called as it

@@ -179,8 +179,8 @@
 #include "url/origin.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "content/browser/android/date_time_chooser_android.h"
 #include "content/browser/android/text_suggestion_host_android.h"
+#include "content/browser/date_time_chooser/date_time_chooser.h"
 #include "content/browser/renderer_host/render_widget_host_view_android.h"
 #include "services/device/public/mojom/nfc.mojom.h"
 #include "third_party/blink/public/mojom/hid/hid.mojom.h"
@@ -332,7 +332,7 @@ void BindSharedWorkerConnector(
 void BindDateTimeChooserForFrame(
     RenderFrameHost* host,
     mojo::PendingReceiver<blink::mojom::DateTimeChooser> receiver) {
-  auto* date_time_chooser = DateTimeChooserAndroid::FromWebContents(
+  auto* date_time_chooser = DateTimeChooser::GetDateTimeChooser(
       WebContents::FromRenderFrameHost(host));
   date_time_chooser->OnDateTimeChooserReceiver(std::move(receiver));
 }

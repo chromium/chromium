@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/android/date_time_chooser_android.h"
+#include "content/browser/date_time_chooser/android/date_time_chooser_android.h"
 
 #include <stddef.h>
 
@@ -19,8 +19,8 @@
 
 using base::android::AttachCurrentThread;
 using base::android::ConvertJavaStringToUTF16;
-using base::android::ConvertUTF8ToJavaString;
 using base::android::ConvertUTF16ToJavaString;
+using base::android::ConvertUTF8ToJavaString;
 using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 
@@ -32,8 +32,9 @@ std::u16string SanitizeSuggestionString(const std::u16string& string) {
   for (base::i18n::UTF16CharIterator sanitized_iterator(trimmed);
        !sanitized_iterator.end(); sanitized_iterator.Advance()) {
     UChar c = sanitized_iterator.get();
-    if (u_isprint(c))
+    if (u_isprint(c)) {
       sanitized.append(c);
+    }
   }
   return base::i18n::UnicodeStringToString16(sanitized);
 }
@@ -44,37 +45,19 @@ namespace content {
 
 // DateTimeChooserAndroid implementation
 DateTimeChooserAndroid::DateTimeChooserAndroid(WebContents* web_contents)
-    : WebContentsUserData<DateTimeChooserAndroid>(*web_contents),
-      date_time_chooser_receiver_(this) {}
+    : DateTimeChooser(web_contents) {}
 
 DateTimeChooserAndroid::~DateTimeChooserAndroid() {
   DismissAndDestroyJavaObject();
 }
 
-void DateTimeChooserAndroid::OnDateTimeChooserReceiver(
-    mojo::PendingReceiver<blink::mojom::DateTimeChooser> receiver) {
-  // Disconnect the previous picker first.
-  date_time_chooser_receiver_.reset();
-  date_time_chooser_receiver_.Bind(std::move(receiver));
-  date_time_chooser_receiver_.set_disconnect_handler(base::BindOnce(
-      &DateTimeChooserAndroid::OnDateTimeChooserReceiverConnectionError,
-      base::Unretained(this)));
-}
-
-void DateTimeChooserAndroid::OnDateTimeChooserReceiverConnectionError() {
-  // Close a dialog and reset the Mojo receiver and the callback.
-  CloseDateTimeDialog();
-  open_date_time_response_callback_.Reset();
-  date_time_chooser_receiver_.reset();
-}
-
-void DateTimeChooserAndroid::OpenDateTimeDialog(
+void DateTimeChooserAndroid::OpenPlatformDialog(
     blink::mojom::DateTimeDialogValuePtr value,
     OpenDateTimeDialogCallback callback) {
   JNIEnv* env = AttachCurrentThread();
 
   if (open_date_time_response_callback_) {
-    date_time_chooser_receiver_.ReportBadMessage(
+    ReportBadMessage(
         "DateTimeChooserAndroid: Previous picker's binding isn't closed.");
     return;
   }
@@ -106,11 +89,12 @@ void DateTimeChooserAndroid::OpenDateTimeDialog(
             value->dialog_value, value->minimum, value->maximum, value->step,
             suggestions_array));
   }
-  if (j_date_time_chooser_.is_null())
+  if (j_date_time_chooser_.is_null()) {
     std::move(open_date_time_response_callback_).Run(true, value->dialog_value);
+  }
 }
 
-void DateTimeChooserAndroid::CloseDateTimeDialog() {
+void DateTimeChooserAndroid::ClosePlatformDialog() {
   DismissAndDestroyJavaObject();
 }
 
@@ -133,6 +117,10 @@ void DateTimeChooserAndroid::CancelDialog(JNIEnv* env,
   std::move(open_date_time_response_callback_).Run(false, 0.0);
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(DateTimeChooserAndroid);
+// static
+void DateTimeChooser::CreateDateTimeChooser(WebContents* web_contents) {
+  web_contents->SetUserData(
+      UserDataKey(), std::make_unique<DateTimeChooserAndroid>(web_contents));
+}
 
 }  // namespace content

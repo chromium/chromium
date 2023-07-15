@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/android/date_time_chooser_android.h"
+#include "content/browser/date_time_chooser/android/date_time_chooser_android.h"
 
 #include "base/run_loop.h"
+#include "content/browser/date_time_chooser/date_time_chooser.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/content_browser_test.h"
@@ -50,8 +51,8 @@ IN_PROC_BROWSER_TEST_F(DateTimeChooserBrowserTest,
       )HTML");
   EXPECT_TRUE(NavigateToURL(shell(), test_url));
 
-  auto* date_time_chooser = DateTimeChooserAndroid::FromWebContents(
-      WebContents::FromRenderFrameHost(web_contents()->GetPrimaryMainFrame()));
+  auto* date_time_chooser = static_cast<DateTimeChooserAndroid*>(
+      DateTimeChooser::GetDateTimeChooser(web_contents()));
   ASSERT_TRUE(date_time_chooser);
 
   mojo::Remote<blink::mojom::DateTimeChooser> date_time_chooser_remote;

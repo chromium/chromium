@@ -1956,11 +1956,11 @@ test("content_browsertests") {
     }
     sources += [
       "../browser/accessibility/android_granularity_movement_browsertest.cc",
-      "../browser/android/date_time_chooser_browsertest.cc",
       "../browser/android/nfc_host_browsertest.cc",
       "../browser/android/render_widget_host_connector_browsertest.cc",
       "../browser/android/render_widget_host_connector_browsertest.h",
       "../browser/android/synchronous_compositor_browsertest.cc",
+      "../browser/date_time_chooser/android/date_time_chooser_browsertest.cc",
       "../browser/media/session/audio_focus_delegate_android_browsertest.cc",
       "../browser/network/dns_config_android_browsertest.cc",
       "../browser/renderer_host/compositor_impl_android_browsertest.cc",
