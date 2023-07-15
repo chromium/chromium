@@ -187,38 +187,45 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="Arc.AbiMigration.BootTime" units="ms"
-    expires_after="2022-08-03">
+    expires_after="2024-07-13">
   <owner>vraheja@chromium.org</owner>
   <owner>arc-core@google.com</owner>
-  <summary>Time taken for ARC to boot during an Abi Migration event.</summary>
+  <summary>
+    Time taken for ARC to boot during an Abi Migration event. Warning: this
+    histogram was expired from 08/04/2022 to 07/12/2023; data may be missing.
+  </summary>
 </histogram>
 
 <histogram name="Arc.AbiMigration.DowngradeDelay" units="ms"
-    expires_after="2022-08-03">
+    expires_after="2024-07-13">
   <owner>vraheja@chromium.org</owner>
   <owner>arc-core@google.com</owner>
   <summary>
     Time taken by ArcAbiMigrationService specifically to downgrade system
-    packages.
+    packages. Warning: this histogram was expired from 08/04/2022 to 07/12/2023;
+    data may be missing.
   </summary>
 </histogram>
 
 <histogram name="Arc.AbiMigration.Event" enum="ArcCorePriAbiMigEvent"
-    expires_after="2022-08-24">
+    expires_after="2024-07-13">
   <owner>vraheja@google.com</owner>
   <owner>arc-core@google.com</owner>
   <summary>
-    Records event type for ArcAbiMigrationService during Abi Migration.
+    Records event type for ArcAbiMigrationService during Abi Migration. Warning:
+    this histogram was expired from 08/04/2022 to 07/12/2023; data may be
+    missing.
   </summary>
 </histogram>
 
 <histogram name="Arc.AbiMigration.FailedAttempts" units="units"
-    expires_after="2022-08-24">
+    expires_after="2024-07-13">
   <owner>vraheja@chromium.org</owner>
   <owner>arc-core@google.com</owner>
   <summary>
     Records the number of failed attempts in trying to perform Primary Abi
-    Migration.
+    Migration. Warning: this histogram was expired from 08/04/2022 to
+    07/12/2023; data may be missing.
   </summary>
 </histogram>
 
