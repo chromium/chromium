@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGL_WEBGL2_RENDERING_CONTEXT_BASE_H_
 
 #include <memory>
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_extension.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_rendering_context_base.h"
 
@@ -972,7 +973,8 @@ class WebGL2RenderingContextBase : public WebGLRenderingContextBase {
   void bindBufferBase(GLenum, GLuint, WebGLBuffer*);
   void bindBufferRange(GLenum, GLuint, WebGLBuffer*, int64_t, int64_t);
   virtual ScriptValue getIndexedParameter(ScriptState*, GLenum, GLuint);
-  Vector<GLuint> getUniformIndices(WebGLProgram*, const Vector<String>&);
+  absl::optional<Vector<GLuint>> getUniformIndices(WebGLProgram*,
+                                                   const Vector<String>&);
   ScriptValue getActiveUniforms(ScriptState*,
                                 WebGLProgram*,
                                 const Vector<GLuint>&,

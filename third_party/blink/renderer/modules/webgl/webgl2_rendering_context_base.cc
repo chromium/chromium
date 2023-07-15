@@ -4920,9 +4920,11 @@ ScriptValue WebGL2RenderingContextBase::getIndexedParameter(
   }
 }
 
-Vector<GLuint> WebGL2RenderingContextBase::getUniformIndices(
+absl::optional<Vector<GLuint>> WebGL2RenderingContextBase::getUniformIndices(
     WebGLProgram* program,
     const Vector<String>& uniform_names) {
+  // TODO(https://crbug.com/1465002): This should return absl::nullopt
+  // if there is an error.
   Vector<GLuint> result;
   if (!ValidateWebGLProgramOrShader("getUniformIndices", program))
     return result;
