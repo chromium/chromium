@@ -97,6 +97,10 @@ BLINK_EXPORT void DecommitFreeableMemory();
 BLINK_EXPORT void MemoryPressureNotificationToWorkerThreadIsolates(
     v8::MemoryPressureLevel);
 
+// Send isolate background/foreground notification to worker thread isolates.
+BLINK_EXPORT void IsolateInBackgroundNotification();
+BLINK_EXPORT void IsolateInForegroundNotification();
+
 // Logs stats. Intended to be called during shutdown.
 BLINK_EXPORT void LogStatsDuringShutdown();
 

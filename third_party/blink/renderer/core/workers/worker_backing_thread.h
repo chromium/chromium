@@ -44,8 +44,12 @@ class CORE_EXPORT WorkerBackingThread final {
 
   v8::Isolate* GetIsolate() { return isolate_; }
 
+  void SetForegrounded();
+
   static void MemoryPressureNotificationToWorkerThreadIsolates(
       v8::MemoryPressureLevel);
+  static void IsolateInBackgroundNotificationToWorkerThreadIsolates();
+  static void IsolateInForegroundNotificationToWorkerThreadIsolates();
 
  private:
   std::unique_ptr<blink::NonMainThread> backing_thread_;

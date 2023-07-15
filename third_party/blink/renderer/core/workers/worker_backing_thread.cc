@@ -33,8 +33,15 @@ base::Lock& IsolatesLock() {
 }
 
 HashSet<v8::Isolate*>& Isolates() EXCLUSIVE_LOCKS_REQUIRED(IsolatesLock()) {
-  static HashSet<v8::Isolate*>& isolates = *new HashSet<v8::Isolate*>();
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(HashSet<v8::Isolate*>, isolates, ());
   return isolates;
+}
+
+HashSet<v8::Isolate*>& ForegroundedIsolates()
+    EXCLUSIVE_LOCKS_REQUIRED(IsolatesLock()) {
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(HashSet<v8::Isolate*>, foregrounded_isolates,
+                                  ());
+  return foregrounded_isolates;
 }
 
 void AddWorkerIsolate(v8::Isolate* isolate) {
@@ -47,12 +54,32 @@ void RemoveWorkerIsolate(v8::Isolate* isolate) {
   Isolates().erase(isolate);
 }
 
+void AddForegroundedWorkerIsolate(v8::Isolate* isolate) {
+  base::AutoLock locker(IsolatesLock());
+  ForegroundedIsolates().insert(isolate);
+}
+
+void RemoveForegroundedWorkerIsolate(v8::Isolate* isolate) {
+  base::AutoLock locker(IsolatesLock());
+  ForegroundedIsolates().erase(isolate);
+}
+
 }  // namespace
 
 // Wrapper functions defined in third_party/blink/public/web/blink.h
 void MemoryPressureNotificationToWorkerThreadIsolates(
     v8::MemoryPressureLevel level) {
   WorkerBackingThread::MemoryPressureNotificationToWorkerThreadIsolates(level);
+}
+
+void IsolateInBackgroundNotification() {
+  MainThreadIsolate()->IsolateInBackgroundNotification();
+  WorkerBackingThread::IsolateInBackgroundNotificationToWorkerThreadIsolates();
+}
+
+void IsolateInForegroundNotification() {
+  MainThreadIsolate()->IsolateInForegroundNotification();
+  WorkerBackingThread::IsolateInForegroundNotificationToWorkerThreadIsolates();
 }
 
 WorkerBackingThread::WorkerBackingThread(const ThreadCreationParams& params)
@@ -101,9 +128,15 @@ void WorkerBackingThread::ShutdownOnBackingThread() {
   V8PerIsolateData::WillBeDestroyed(isolate_);
   backing_thread_->ShutdownOnThread();
 
+  RemoveForegroundedWorkerIsolate(isolate_);
   RemoveWorkerIsolate(isolate_);
   V8PerIsolateData::Destroy(isolate_);
   isolate_ = nullptr;
+}
+
+void WorkerBackingThread::SetForegrounded() {
+  AddForegroundedWorkerIsolate(isolate_);
+  isolate_->IsolateInForegroundNotification();
 }
 
 // static
@@ -112,6 +145,28 @@ void WorkerBackingThread::MemoryPressureNotificationToWorkerThreadIsolates(
   base::AutoLock locker(IsolatesLock());
   for (v8::Isolate* isolate : Isolates())
     isolate->MemoryPressureNotification(level);
+}
+
+// static
+void WorkerBackingThread::
+    IsolateInBackgroundNotificationToWorkerThreadIsolates() {
+  base::AutoLock locker(IsolatesLock());
+  for (v8::Isolate* isolate : Isolates()) {
+    if (!ForegroundedIsolates().Contains(isolate)) {
+      isolate->IsolateInBackgroundNotification();
+    }
+  }
+}
+
+// static
+void WorkerBackingThread::
+    IsolateInForegroundNotificationToWorkerThreadIsolates() {
+  base::AutoLock locker(IsolatesLock());
+  for (v8::Isolate* isolate : Isolates()) {
+    if (!ForegroundedIsolates().Contains(isolate)) {
+      isolate->IsolateInForegroundNotification();
+    }
+  }
 }
 
 }  // namespace blink

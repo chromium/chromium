@@ -1724,7 +1724,8 @@ bool RenderThreadImpl::RendererIsHidden() const {
 }
 
 void RenderThreadImpl::OnRendererHidden() {
-  blink::MainThreadIsolate()->IsolateInBackgroundNotification();
+  blink::IsolateInBackgroundNotification();
+
   // TODO(rmcilroy): Remove IdleHandler and replace it with an IdleTask
   // scheduled by the RendererScheduler - http://crbug.com/469210.
   if (!GetContentClient()->renderer()->RunIdleHandlerWhenWidgetsHidden())
@@ -1733,7 +1734,8 @@ void RenderThreadImpl::OnRendererHidden() {
 }
 
 void RenderThreadImpl::OnRendererVisible() {
-  blink::MainThreadIsolate()->IsolateInForegroundNotification();
+  blink::IsolateInForegroundNotification();
+
   if (!GetContentClient()->renderer()->RunIdleHandlerWhenWidgetsHidden())
     return;
   main_thread_scheduler_->SetRendererHidden(false);
