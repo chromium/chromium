@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL Tests that a media file specified with a query url is opened successfully. assert_unreached: Reached unreachable code
-Harness: the test ran to completion.
-
