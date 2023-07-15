@@ -16,6 +16,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
+#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/profiles/profile.h"
@@ -39,9 +40,12 @@
 #include "ui/base/accelerators/menu_label_accelerator_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/models/simple_menu_model.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/base/window_open_disposition_utils.h"
+#include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/text_elider.h"
 
@@ -149,9 +153,13 @@ ui::ImageModel BackForwardMenuModel::GetIconAt(size_t index) const {
 
   // Return icon of "Show Full History" for the last item of the menu.
   if (ShouldShowFullHistoryBeVisible() && index == GetItemCount() - 1) {
-    return ui::ImageModel::FromImage(
-        ui::ResourceBundle::GetSharedInstance().GetNativeImageNamed(
-            IDR_HISTORY_FAVICON));
+    return features::IsChromeRefresh2023()
+               ? ui::ImageModel::FromVectorIcon(
+                     kHistoryIcon, ui::kColorMenuIcon,
+                     ui::SimpleMenuModel::kDefaultIconSize)
+               : ui::ImageModel::FromImage(
+                     ui::ResourceBundle::GetSharedInstance()
+                         .GetNativeImageNamed(IDR_HISTORY_FAVICON));
   }
   NavigationEntry* entry = GetNavigationEntry(index);
   content::FaviconStatus fav_icon = entry->GetFavicon();
