@@ -84,6 +84,13 @@
        {}
       ]
      ],
+     "br-in-changed-subtree.html": [
+      "77c9531650d789ff9e3dcaddfd41e35a92523d17",
+      [
+       null,
+       {}
+      ]
+     ],
      "computed-accessible-child-of-pseudo-element.html": [
       "5bc1249907480d42ab5bc8a8f342eb456895f142",
       [
@@ -106786,7 +106793,7 @@
        ]
       ],
       "content-visibility-075.html": [
-       "665cb923050fe195121e3be9e6b1f8a73bedb4d5",
+       "f7f834a68bbc72d57f46f53812e99c0b1860281c",
        [
         null,
         [
@@ -106799,7 +106806,7 @@
        ]
       ],
       "content-visibility-076.html": [
-       "4ceff631b4ac3990af837cf521f0edcb8d7c36dc",
+       "15d0906f715473036be50e224a4b1ccbd4190a54",
        [
         null,
         [
@@ -148064,7 +148071,7 @@
        ]
       ],
       "clip-path-borderBox-1a.html": [
-       "b7473fd66c0baeb43a1f1765ca1a435cb9eed450",
+       "a15ef09b3bd197b0ee3f43da35486f68ac4de0e0",
        [
         null,
         [
@@ -148084,7 +148091,7 @@
             ],
             [
              0,
-             356
+             400
             ]
            ]
           ]
@@ -150812,7 +150819,7 @@
        ]
       ],
       "clip-path-shape-circle-003.svg": [
-       "0a0432c1166e867d6fdb89ef3567450c992bcc5f",
+       "804e1e920a6930d8383dde596b6834cc31b574cb",
        [
         null,
         [
@@ -150828,11 +150835,11 @@
            [
             [
              0,
-             64
+             70
             ],
             [
              0,
-             184
+             210
             ]
            ]
           ]
@@ -150909,7 +150916,7 @@
        ]
       ],
       "clip-path-shape-inset-001.svg": [
-       "8176766a61e501824cb1dab80bc5620a8945d22a",
+       "20cc2ea9cdef7d646a00d57bd07eefb8335906fe",
        [
         null,
         [
@@ -150922,7 +150929,7 @@
        ]
       ],
       "clip-path-shape-inset-002.svg": [
-       "2793eda89912906f15bab79c5a3a3e35489cadb2",
+       "315c1880290c70a9c0b872e25482fd11f468da1f",
        [
         null,
         [
@@ -275810,16 +275817,6 @@
    }
   },
   "support": {
-   ".cache": {
-    "gitignore2.json": [
-     "84d31399c663bda28b78a26c0ccd438a8b94be6d",
-     []
-    ],
-    "mtime.json": [
-     "ed127fc4e3c3707078474ec6364da39aa0874c6f",
-     []
-    ]
-   },
    ".gitignore": [
     "d93e645d547894b50149d3726de2654957b6e06f",
     []
@@ -297147,28 +297144,12 @@
        "08c4bcc9e8c1e8dfa2352ccebf46477659054186",
        []
       ],
-      "content-visibility-068-expected.txt": [
-       "3e12d3bbbbabfb687e7377c27f128864beb3c806",
-       []
-      ],
-      "content-visibility-068.html.ini": [
-       "105641f6fa1f8138b346f733f22b4ae106f6dee4",
-       []
-      ],
-      "content-visibility-070-expected.txt": [
-       "5f9f7ccc58b9e266dcad907e75e3bc0ade56b37a",
-       []
-      ],
-      "content-visibility-070.html.ini": [
-       "9f1ce4c7bfda40bf53cdaa5b4150ed9f7434cc41",
-       []
-      ],
       "content-visibility-074-ref.html": [
        "82a6c263fa906d70f76dc78fcd6d7b6c3b461b86",
        []
       ],
       "content-visibility-075-ref.html": [
-       "11fbd762525b891a59c8a04f1bb3f6325e3fe7cc",
+       "e0c485c59f3be15b9ad3bffc2658b82a73b0380d",
        []
       ],
       "content-visibility-078-ref.html": [
@@ -321540,24 +321521,12 @@
       "f1822b81844458c30e857599838cace6660ddbef",
       []
      ],
-     "scrollbar-color-007.html.ini": [
-      "48e231ab24e5e1498b5be3872267b5a7471c4c58",
-      []
-     ],
      "scrollbar-color-008-ref.html": [
       "f1822b81844458c30e857599838cace6660ddbef",
       []
      ],
-     "scrollbar-color-008.html.ini": [
-      "46b5fdca65753fac5914fc73beb7b4c16efa9cc5",
-      []
-     ],
      "scrollbar-color-009-ref.html": [
       "890179a21c68bc7051c1db252fb7550468bb952e",
-      []
-     ],
-     "scrollbar-color-009.html.ini": [
-      "dad5955d0aa4a80dbf14462c4f04edc393198267",
       []
      ],
      "scrollbar-color-010-ref.html": [
@@ -323127,14 +323096,6 @@
         []
        ]
       },
-      "auto-013-expected.txt": [
-       "746f3ce56902f7c5ef026015e7a43ca3ac4747ce",
-       []
-      ],
-      "auto-013.html.ini": [
-       "44d19d6a954c0eac95b8d670fc017a1e311ba710",
-       []
-      ],
       "contain-intrinsic-size-001-ref.html": [
        "299930ac35a35a27cbfbe67ebee66c9facb7d2b9",
        []
@@ -346006,6 +345967,12 @@
        []
       ]
      }
+    },
+    "parts": {
+     "basic-dom-part-objects.tentative-expected.txt": [
+      "95715874f9db283221ac37fb9b2dfe2c948cc79e",
+      []
+     ]
     },
     "ranges": {
      "Range-mutations.js": [
@@ -371441,6 +371408,10 @@
        "12efbb6b1e4934de6b32df60304cd40a44548301",
        []
       ],
+      "popover-focus-2-expected.txt": [
+       "425089bea9b44df6452dd7fd2d7ef4e835f3bc93",
+       []
+      ],
       "popover-focus-2.html.ini": [
        "19914c0e76f18e3f19be4dc910793a625116727e",
        []
@@ -371495,7 +371466,7 @@
         []
        ],
        "popover-utils.js": [
-        "4dc4d8138d80c1ee23a1addef0749241ac4f25b8",
+        "bc7643c21ab46d30f61bf5ad5bbffb9b434377bf",
         []
        ]
       }
@@ -393036,7 +393007,7 @@
        []
       ],
       "prefetch_nvs_hint.py": [
-       "09c5d2eb737289ce0349fbefa8120ea4ab6dd26a",
+       "1de33a75d868805645ac5420a0a4a4f1d7538701",
        []
       ],
       "ruleset.py": [
@@ -393048,7 +393019,7 @@
        []
       ],
       "utils.sub.js": [
-       "75cc86c509fbe384d7a1dab29d7bcc9e6bfe58db",
+       "73624c0c25b5d13f3ae116ed3589c1aea30c89c8",
        []
       ]
      }
@@ -400120,6 +400091,10 @@
      []
     ],
     "tests": {
+     "DIR_METADATA": [
+      "6f03308a1ae0de450984d9420a35e50d9c0a50a3",
+      []
+     ],
      "__init__.py": [
       "0ba172ff2e2734e5cbf324e816867be0a26b278e",
       []
@@ -469494,7 +469469,7 @@
       ]
      ],
      "toggle-visibility.tentative.html": [
-      "0a720fd454bd8c74e7f7b5d750416b3fb7be20f1",
+      "0704996e356cb9ffa55322ec02e307f2e39b7697",
       [
        null,
        {}
@@ -485139,7 +485114,7 @@
     },
     "parts": {
      "basic-dom-part-objects.tentative.html": [
-      "db41c9e40eaf9a301324461fed458b8ae81ebe29",
+      "a60ec8b0a161cdef0e449dcad696e6527befbc65",
       [
        null,
        {}
@@ -485983,6 +485958,15 @@
       [
        null,
        {}
+      ]
+     ],
+     "edit-context-inheritability.tentative.html": [
+      "59c553d966f19a3512aba1673f5a4117f2d9e970",
+      [
+       null,
+       {
+        "testdriver": true
+       }
       ]
      ],
      "edit-context-input.tentative.html": [
@@ -565815,7 +565799,16 @@
        ]
       ],
       "popover-focus-2.html": [
-       "2fa1b7a23dee262e19c4c04f7243cecef1c0f0fd",
+       "b5ad7a586ee1c555ae43bcca81cd4ee2c3716edf",
+       [
+        null,
+        {
+         "testdriver": true
+        }
+       ]
+      ],
+      "popover-focus-harness.html": [
+       "a22a68ea2bdf2cc5ded85f93fe451f8d2f418baa",
        [
         null,
         {
@@ -579045,7 +579038,7 @@
      ]
     ],
     "content-visibility-auto-offscreen.html": [
-     "9e4361b38b4c794da56ef631a137c2cc7836fea7",
+     "91dd8348cb6b12c5cf135902d4cd0ca9fddecbd6",
      [
       null,
       {}
@@ -616801,15 +616794,15 @@
       ]
      ],
      "navigation-redirect.https.html": [
-      "d7d3d5259a454d923d1e89004fcf55ce7e2e6bda",
+      "a87de56931638d0939e406aa95146699e5a63603",
       [
-       null,
+       "service-workers/service-worker/navigation-redirect.https.html?client",
        {
         "timeout": "long"
        }
       ],
       [
-       "service-workers/service-worker/navigation-redirect.https.html?client",
+       "service-workers/service-worker/navigation-redirect.https.html?default",
        {
         "timeout": "long"
        }
@@ -619215,6 +619208,20 @@
       {}
      ]
     ],
+    "blob-module-script-url-invalid-mime-type.tentative.https.sub.html": [
+     "116facbcd5f558b3d186878a3247ba81ea9c7c4e",
+     [
+      null,
+      {}
+     ]
+    ],
+    "blob-module-script-url.tentative.https.sub.html": [
+     "53e47a0c8743793788f8ebb406564c068ace2514",
+     [
+      null,
+      {}
+     ]
+    ],
     "combined-setters-and-operations.tentative.https.sub.html": [
      "2c544b9b8e63f7a4c26d36ceea474dc96ac52ca0",
      [
@@ -619334,6 +619341,20 @@
       {}
      ]
     ],
+    "shared-storage-writable-clear.tentative.https.sub.html": [
+     "2d606d6bc17a3340b2124a04d831659e94bb1519",
+     [
+      null,
+      {}
+     ]
+    ],
+    "shared-storage-writable-delete.tentative.https.sub.html": [
+     "fc7f2fb90ee06411f55ecb8c3bf8da976bc4f628",
+     [
+      null,
+      {}
+     ]
+    ],
     "shared-storage-writable-insecure-context.tentative.http.sub.html": [
      "debb6cf9c56fb4cda8e72293e0de4b533648c845",
      [
@@ -619362,8 +619383,8 @@
       {}
      ]
     ],
-    "shared-storage-writable.tentative.https.sub.html": [
-     "8797a801d8d11bf86434051e79e9469d9425f22e",
+    "shared-storage-writable-setters.tentative.https.sub.html": [
+     "066bf174de0a98971c83a0d07ca1f474b35ff39d",
      [
       null,
       {}
@@ -620300,9 +620321,9 @@
       ]
      ],
      "navigation-timing-requestStart-responseStart.https.html": [
-      "9720d35d587d4ed43a1926f9f29fcd3a4eeba802",
+      "9c9371c4c31467cad8e3f1ed6f61685c9d1ed567",
       [
-       null,
+       "speculation-rules/prefetch/navigation-timing-requestStart-responseStart.https.html?default",
        {}
       ],
       [
@@ -620311,13 +620332,13 @@
       ]
      ],
      "navigation-timing-sizes.https.html": [
-      "26316e4ac352d7ba9c4901a2a32ae03720011f95",
+      "b3cca1c22dadf49b0f107c383e173b41c65c873b",
       [
-       null,
+       "speculation-rules/prefetch/navigation-timing-sizes.https.html?bypass_cache=true",
        {}
       ],
       [
-       "speculation-rules/prefetch/navigation-timing-sizes.https.html?bypass_cache=true",
+       "speculation-rules/prefetch/navigation-timing-sizes.https.html?default",
        {}
       ],
       [
@@ -620331,7 +620352,7 @@
      ],
      "no-vary-search": {
       "prefetch-single-with-hint.https.html": [
-       "1c9e5b4173104008cc669393c460f068f8bea1b5",
+       "5dcbef05e4c1d730679658466abb1b6215d60929",
        [
         "speculation-rules/prefetch/no-vary-search/prefetch-single-with-hint.https.html?1-1",
         {}
