@@ -201,7 +201,7 @@ class WEBVIEW_EXPORT WebView : public View,
   // Set to true when |holder_| is letterboxed (scaled to be smaller than this
   // view, to preserve its aspect ratio).
   bool is_letterboxing_ = false;
-  raw_ptr<content::BrowserContext, LeakedDanglingUntriaged> browser_context_;
+  raw_ptr<content::BrowserContext> browser_context_;
   bool allow_accelerators_ = false;
   raw_ptr<View, DanglingUntriaged> crashed_overlay_view_ = nullptr;
   bool is_primary_web_contents_for_window_ = false;

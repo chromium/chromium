@@ -72,6 +72,7 @@ WebView::WebView(content::BrowserContext* browser_context) {
 WebView::~WebView() {
   ui::AXPlatformNode::RemoveAXModeObserver(this);
   SetWebContents(nullptr);  // Make sure all necessary tear-down takes place.
+  browser_context_ = nullptr;
 }
 
 content::WebContents* WebView::GetWebContents(base::Location creator_location) {
