@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash_browser_test_starter.h"
+#include "chrome/test/base/chromeos/ash_browser_test_starter.h"
+
+#include <memory>
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
@@ -18,6 +20,7 @@
 #include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/ash/crosapi/browser_manager_observer.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
+#include "chrome/browser/ash/crosapi/fake_device_ownership_waiter.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/common/chrome_switches.h"
@@ -195,6 +198,9 @@ void WaitForExoStarted(const base::FilePath& xdg_path) {
 
 void AshBrowserTestStarter::StartLacros(InProcessBrowserTest* test_class_obj) {
   DCHECK(HasLacrosArgument());
+
+  crosapi::BrowserManager::Get()->set_device_ownership_waiter_for_testing(
+      std::make_unique<crosapi::FakeDeviceOwnershipWaiter>());
 
   WaitForExoStarted(scoped_temp_dir_xdg_.GetPath());
 
