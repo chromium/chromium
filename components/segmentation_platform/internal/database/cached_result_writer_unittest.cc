@@ -39,12 +39,17 @@ class CachedResultWriterTest : public testing::Test {
         std::make_unique<CachedResultWriter>(std::move(result_prefs_), &clock_);
   }
 
-  proto::ClientResult CreateClientResult(std::vector<float> model_scores,
-                                         base::Time result_timestamp) {
+  proto::ClientResult CreateClientResult(
+      std::vector<float> model_scores,
+      base::Time result_timestamp,
+      int64_t model_version = 1,
+      bool ignore_previous_model_ttl = false) {
     proto::PredictionResult pred_result =
         metadata_utils::CreatePredictionResult(
-            model_scores, test_utils::GetTestOutputConfigForBinaryClassifier(),
-            /*timestamp=*/base::Time::Now());
+            model_scores,
+            test_utils::GetTestOutputConfigForBinaryClassifier(
+                ignore_previous_model_ttl),
+            /*timestamp=*/base::Time::Now(), model_version);
     return metadata_utils::CreateClientResultFromPredResult(pred_result,
                                                             result_timestamp);
   }
@@ -103,6 +108,29 @@ TEST_F(CachedResultWriterTest, UpdatePrefsIfForceRefreshResult) {
   cached_result_writer_->UpdatePrefsIfExpired(config.get(), new_client_result,
                                               PlatformOptions(true));
   client_result =
+      client_result_prefs_->ReadClientResultFromPrefs(config->segmentation_key);
+
+  EXPECT_TRUE(client_result.has_value());
+  EXPECT_EQ(new_client_result.SerializeAsString(),
+            client_result.value().SerializeAsString());
+}
+
+TEST_F(CachedResultWriterTest, UpdatePrefsIfModelIsUpdated) {
+  std::unique_ptr<Config> config = test_utils::CreateTestConfig();
+  // Saving unexpired result for client in prefs.
+  proto::ClientResult unexpired_client_result = CreateClientResult(
+      /*model_scores=*/{0.8}, /*result_timestamp=*/base::Time::Now());
+  client_result_prefs_->SaveClientResultToPrefs(config->segmentation_key,
+                                                unexpired_client_result);
+
+  proto::ClientResult new_client_result = CreateClientResult(
+      /*model_scores=*/{0.4}, /*result_timestamp=*/base::Time::Now(),
+      /*model_version=*/2, /*ignore_previous_model_ttl=*/true);
+
+  // Pref result updated as model is updated.
+  cached_result_writer_->UpdatePrefsIfExpired(config.get(), new_client_result,
+                                              PlatformOptions(false));
+  absl::optional<proto::ClientResult> client_result =
       client_result_prefs_->ReadClientResultFromPrefs(config->segmentation_key);
 
   EXPECT_TRUE(client_result.has_value());

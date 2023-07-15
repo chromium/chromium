@@ -94,7 +94,7 @@ void ModelExecutionSchedulerImpl::OnModelExecutionCompleted(
   if (success) {
     segment_result = metadata_utils::CreatePredictionResult(
         result->scores, segment_info.model_metadata().output_config(),
-        clock_->Now());
+        clock_->Now(), segment_info.model_version());
   }
 
   segment_database_->SaveSegmentResult(

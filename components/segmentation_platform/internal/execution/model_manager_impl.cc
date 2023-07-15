@@ -123,6 +123,15 @@ void ModelManagerImpl::OnSegmentInfoFetchedForModelUpdate(
   proto::SegmentInfo new_segment_info;
   new_segment_info.set_segment_id(segment_id);
   new_segment_info.set_model_source(model_source);
+
+  // Inject the newly updated metadata into the new SegmentInfo.
+  auto* new_metadata = new_segment_info.mutable_model_metadata();
+  new_metadata->CopyFrom(metadata);
+  new_segment_info.set_model_version(model_version);
+
+  int64_t new_model_update_time_s =
+      clock_->Now().ToDeltaSinceWindowsEpoch().InSeconds();
+
   // If we find an existing SegmentInfo in the database, we can verify that it
   // is valid, and we can copy over the PredictionResult to the new version
   // we are creating.
@@ -138,29 +147,24 @@ void ModelManagerImpl::OnSegmentInfoFetchedForModelUpdate(
         new_segment_info.segment_id(),
         new_segment_info.segment_id() == old_segment_info->segment_id());
 
-    if (old_segment_info->has_prediction_result()) {
-      // If we have an old PredictionResult, we need to keep it around in the
-      // new version of the SegmentInfo.
-      auto* prediction_result = new_segment_info.mutable_prediction_result();
-      prediction_result->CopyFrom(old_segment_info->prediction_result());
-    }
-
     if (old_segment_info->has_model_version()) {
       old_model_version = old_segment_info->model_version();
     }
-  }
+    bool is_same_model = old_model_version.has_value() &&
+                         old_model_version.value() == model_version;
 
-  // Inject the newly updated metadata into the new SegmentInfo.
-  auto* new_metadata = new_segment_info.mutable_model_metadata();
-  new_metadata->CopyFrom(metadata);
-  new_segment_info.set_model_version(model_version);
+    if (is_same_model) {
+      if (old_segment_info->has_prediction_result()) {
+        // If we have an old PredictionResult, we need to keep it around in the
+        // new version of the SegmentInfo.
+        auto* prediction_result = new_segment_info.mutable_prediction_result();
+        prediction_result->CopyFrom(old_segment_info->prediction_result());
+      }
 
-  int64_t new_model_update_time_s =
-      clock_->Now().ToDeltaSinceWindowsEpoch().InSeconds();
-  if (old_model_version.has_value() &&
-      old_model_version.value() == model_version &&
-      old_segment_info->has_model_update_time_s()) {
-    new_model_update_time_s = old_segment_info->model_update_time_s();
+      if (old_segment_info->has_model_update_time_s()) {
+        new_model_update_time_s = old_segment_info->model_update_time_s();
+      }
+    }
   }
   new_segment_info.set_model_update_time_s(new_model_update_time_s);
 

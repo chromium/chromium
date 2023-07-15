@@ -175,6 +175,9 @@ class MetadataWriter {
       int64_t default_ttl,
       proto::TimeUnit time_unit);
 
+  // Sets `ignore_previous_model_ttl` as true in `OutputConfig`.
+  void SetIgnorePreviousModelTTLInOutputConfig();
+
   // Append a delay trigger for training data collection.
   void AddDelayTrigger(uint64_t delay_sec);
 

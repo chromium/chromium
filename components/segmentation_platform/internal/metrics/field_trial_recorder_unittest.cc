@@ -87,7 +87,7 @@ TEST_F(FieldTrialRecorderTest, RecordFieldTrial) {
       "test_key", CreateClientResult(metadata_utils::CreatePredictionResult(
                       /*model_scores=*/{0.8},
                       test_utils::GetTestOutputConfigForBinnedClassifier(),
-                      /*timestamp=*/base::Time::Now())));
+                      /*timestamp=*/base::Time::Now(), /*model_version=*/1)));
   cached_result_provider_ = std::make_unique<CachedResultProvider>(
       std::move(result_prefs_), configs_);
 

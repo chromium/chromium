@@ -50,13 +50,18 @@ std::unique_ptr<Config> CreateTestConfig(const std::string& client_key,
   return config;
 }
 
-proto::OutputConfig GetTestOutputConfigForBinaryClassifier() {
+proto::OutputConfig GetTestOutputConfigForBinaryClassifier(
+    bool ignore_previous_model_ttl) {
   proto::SegmentationModelMetadata model_metadata;
   MetadataWriter writer(&model_metadata);
 
   writer.AddOutputConfigForBinaryClassifier(
       /*threshold=*/0.5, /*positive_label=*/kShowShare,
       /*negative_label=*/kNotShowShare);
+
+  if (ignore_previous_model_ttl) {
+    writer.SetIgnorePreviousModelTTLInOutputConfig();
+  }
 
   writer.AddPredictedResultTTLInOutputConfig({{kShowShare, kShowShareTTL}},
                                              kDefaultTTL, proto::TimeUnit::DAY);

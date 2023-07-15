@@ -136,7 +136,7 @@ TEST_F(ResultRefreshManagerTest, TestRefreshModelResultsSuccess) {
       metadata_utils::CreatePredictionResult(
           /*model_scores=*/{0.8},
           test_utils::GetTestOutputConfigForBinaryClassifier(),
-          /*timestamp=*/base::Time::Now());
+          /*timestamp=*/base::Time::Now(), /*model_version=*/1);
 
   ExpectSegmentResult(kSegmentId1, client1_result_provider_.get(),
                       result_from_db_for_client1,
@@ -148,7 +148,7 @@ TEST_F(ResultRefreshManagerTest, TestRefreshModelResultsSuccess) {
       metadata_utils::CreatePredictionResult(
           /*model_scores=*/{0.8},
           test_utils::GetTestOutputConfigForBinaryClassifier(),
-          /*timestamp=*/base::Time::Now());
+          /*timestamp=*/base::Time::Now(), /*model_version=*/1);
 
   ExpectSegmentResult(kSegmentId2, client2_result_provider_.get(),
                       result_from_model_for_client2,
@@ -173,7 +173,7 @@ TEST_F(ResultRefreshManagerTest, TestRefreshModelResultWithNoResult) {
       metadata_utils::CreatePredictionResult(
           /*model_scores=*/{},
           test_utils::GetTestOutputConfigForBinaryClassifier(),
-          /*timestamp=*/base::Time::Now());
+          /*timestamp=*/base::Time::Now(), /*model_version=*/1);
   ExpectSegmentResult(kSegmentId1, client1_result_provider_.get(),
                       result_for_client,
                       SegmentResultProvider::ResultState::kSignalsNotCollected,

@@ -426,7 +426,8 @@ std::vector<proto::UMAFeature> GetAllUmaFeatures(
 proto::PredictionResult CreatePredictionResult(
     const std::vector<float>& model_scores,
     const proto::OutputConfig& output_config,
-    base::Time timestamp) {
+    base::Time timestamp,
+    int64_t model_version) {
   proto::PredictionResult result;
   result.mutable_result()->Add(model_scores.begin(), model_scores.end());
   if (output_config.has_predictor()) {
@@ -434,6 +435,7 @@ proto::PredictionResult CreatePredictionResult(
   }
   result.set_timestamp_us(
       timestamp.ToDeltaSinceWindowsEpoch().InMicroseconds());
+  result.set_model_version(model_version);
   return result;
 }
 

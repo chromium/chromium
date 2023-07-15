@@ -153,6 +153,10 @@ void MetadataWriter::AddOutputConfigForBinaryClassifier(
   binary_classifier->set_negative_label(negative_label);
 }
 
+void MetadataWriter::SetIgnorePreviousModelTTLInOutputConfig() {
+  metadata_->mutable_output_config()->set_ignore_previous_model_ttl(true);
+}
+
 void MetadataWriter::AddOutputConfigForMultiClassClassifier(
     const char* const* class_labels,
     size_t class_labels_length,

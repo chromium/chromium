@@ -50,7 +50,8 @@ proto::ClientResult CreateClientResultForBinaryClassifier(
       PopulateModelScoresForBinaryClassifier(config, old_result);
 
   proto::PredictionResult pred_result = metadata_utils::CreatePredictionResult(
-      model_scores, output_config, /*timestamp=*/base::Time::Now());
+      model_scores, output_config, /*timestamp=*/base::Time::Now(),
+      /*model_version=*/1);
 
   return metadata_utils::CreateClientResultFromPredResult(
       pred_result, old_result.selection_time);

@@ -276,10 +276,8 @@ TEST_F(ModelManagerTest,
             segment_info.model_metadata().features(0).name_hash());
   EXPECT_EQ(proto::Aggregation::BUCKETED_SUM,
             segment_info.model_metadata().features(0).aggregation());
-  EXPECT_THAT(segment_info.prediction_result().result(),
-              testing::ElementsAre(2));
-  EXPECT_EQ(clock_.Now().ToDeltaSinceWindowsEpoch().InMicroseconds(),
-            segment_info.prediction_result().timestamp_us());
+  // The `prediction_result` should be empty.
+  EXPECT_TRUE(segment_info.prediction_result().result().size() == 0);
 
   // Also verify that the database has been updated.
   base::MockCallback<SegmentInfoDatabase::SegmentInfoCallback> db_callback_2;
@@ -304,9 +302,8 @@ TEST_F(ModelManagerTest,
             segment_info_from_db_2->model_metadata().features(0).name_hash());
   EXPECT_EQ(proto::Aggregation::BUCKETED_SUM,
             segment_info_from_db_2->model_metadata().features(0).aggregation());
-  // We shuold have kept the prediction result.
-  EXPECT_THAT(segment_info.prediction_result().result(),
-              testing::ElementsAre(2));
+  // The `prediction_result` should be empty.
+  EXPECT_TRUE(segment_info.prediction_result().result().size() == 0);
 }
 
 // TODO(ritikagup) : Update this test to test the OnSegmentationModelUpdated

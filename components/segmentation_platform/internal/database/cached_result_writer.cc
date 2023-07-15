@@ -23,9 +23,9 @@ CachedResultWriter::~CachedResultWriter() = default;
 
 void CachedResultWriter::UpdatePrefsIfExpired(
     const Config* config,
-    proto::ClientResult client_result,
+    const proto::ClientResult& client_result,
     const PlatformOptions& platform_options) {
-  if (!IsPrefUpdateRequiredForClient(config, platform_options) ||
+  if (!IsPrefUpdateRequiredForClient(config, client_result, platform_options) ||
       config->on_demand_execution) {
     return;
   }
@@ -38,19 +38,38 @@ void CachedResultWriter::UpdatePrefsIfExpired(
 
 bool CachedResultWriter::IsPrefUpdateRequiredForClient(
     const Config* config,
+    const proto::ClientResult& new_client_result,
     const PlatformOptions& platform_options) {
-  absl::optional<proto::ClientResult> client_result =
+  absl::optional<proto::ClientResult> old_client_result =
       result_prefs_->ReadClientResultFromPrefs(config->segmentation_key);
-  if (!client_result.has_value()) {
+  if (!old_client_result.has_value()) {
+    return true;
+  }
+  const proto::PredictionResult& old_pred_result =
+      old_client_result->client_result();
+  const proto::PredictionResult& new_pred_result =
+      new_client_result.client_result();
+
+  // When migrating from legacy, `model_version` would be missing. We consider
+  // model is updated, if old model version is missing or if new model version
+  // is greater than old model version. We also assume model_version is always
+  // increasing monotonically.
+  bool is_model_updated =
+      new_pred_result.has_model_version() &&
+      (!old_pred_result.has_model_version() ||
+       (old_pred_result.has_model_version() &&
+        old_pred_result.model_version() < new_pred_result.model_version()));
+
+  if (is_model_updated &&
+      new_pred_result.output_config().ignore_previous_model_ttl()) {
     return true;
   }
   PostProcessor post_processor;
-  proto::PredictionResult pred_result = client_result->client_result();
   base::TimeDelta ttl_to_use =
-      post_processor.GetTTLForPredictedResult(pred_result);
+      post_processor.GetTTLForPredictedResult(old_pred_result);
   base::Time expiration_time =
       base::Time::FromDeltaSinceWindowsEpoch(
-          base::Microseconds(client_result->timestamp_us())) +
+          base::Microseconds(old_client_result->timestamp_us())) +
       ttl_to_use;
 
   bool force_refresh_results = platform_options.force_refresh_results;

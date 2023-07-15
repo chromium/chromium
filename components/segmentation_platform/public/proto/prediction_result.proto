@@ -23,4 +23,7 @@ message PredictionResult {
 
   // The output config from the metadata.
   optional OutputConfig output_config = 3;
+
+  // The model version from the segment info.
+  optional int64 model_version = 4;
 }

@@ -79,7 +79,8 @@ void DefaultModelTestBase::ExpectClassifierResults(
 
   EXPECT_TRUE(fetched_metadata_->has_output_config());
   auto prediction_result = metadata_utils::CreatePredictionResult(
-      result.value(), fetched_metadata_->output_config(), base::Time::Now());
+      result.value(), fetched_metadata_->output_config(), base::Time::Now(),
+      /*model_version=*/1);
 
   auto winning_labels = PostProcessor().GetClassifierResults(prediction_result);
   EXPECT_EQ(expected_ordered_labels, winning_labels);
