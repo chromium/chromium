@@ -7114,6 +7114,62 @@
             ],
             "experiments": [
                 {
+                    "name": "Enabled_ACR_Only",
+                    "params": {
+                        "EnableFeedAppCloseForegroundRefresh": "true"
+                    },
+                    "enable_features": [
+                        "EnableFeedInvisibleForegroundRefresh"
+                    ]
+                },
+                {
+                    "name": "Enabled_Interactivity_Cache_Only",
+                    "enable_features": [
+                        "FeedUseInteractivityCacheInvalidationStrategy"
+                    ]
+                },
+                {
+                    "name": "Enabled_ACR_Enabled_Interactivity_Cache",
+                    "params": {
+                        "EnableFeedAppCloseForegroundRefresh": "true"
+                    },
+                    "enable_features": [
+                        "EnableFeedInvisibleForegroundRefresh",
+                        "FeedUseInteractivityCacheInvalidationStrategy"
+                    ]
+                },
+                {
+                    "name": "Enabled_ACR_6_Enabled_IC",
+                    "params": {
+                        "EnableFeedAppCloseForegroundRefresh": "true",
+                        "FeedUnseenRefreshThresholdInSeconds": "21600"
+                    },
+                    "enable_features": [
+                        "EnableFeedInvisibleForegroundRefresh",
+                        "FeedUseInteractivityCacheInvalidationStrategy"
+                    ]
+                },
+                {
+                    "name": "Enabled_ACR_6_Only",
+                    "params": {
+                        "EnableFeedAppCloseForegroundRefresh": "true",
+                        "FeedUnseenRefreshThresholdInSeconds": "21600"
+                    },
+                    "enable_features": [
+                        "EnableFeedInvisibleForegroundRefresh"
+                    ]
+                },
+                {
+                    "name": "Enabled_ACR_3_Only",
+                    "params": {
+                        "EnableFeedAppCloseForegroundRefresh": "true",
+                        "FeedUnseenRefreshThresholdInSeconds": "10800"
+                    },
+                    "enable_features": [
+                        "EnableFeedInvisibleForegroundRefresh"
+                    ]
+                },
+                {
                     "name": "Enabled_ACR_6_Disabled_HSR_20230524",
                     "params": {
                         "EnableFeedAppCloseForegroundRefresh": "true",
@@ -7122,16 +7178,6 @@
                     "enable_features": [
                         "EnableFeedInvisibleForegroundRefresh",
                         "FeedDisableHotStartRefresh"
-                    ]
-                },
-                {
-                    "name": "Enabled_ACR_6_20230524",
-                    "params": {
-                        "EnableFeedAppCloseForegroundRefresh": "true",
-                        "FeedUnseenRefreshThresholdInSeconds": "21600"
-                    },
-                    "enable_features": [
-                        "EnableFeedInvisibleForegroundRefresh"
                     ]
                 },
                 {
@@ -7156,28 +7202,6 @@
                         "EnableFeedAppCloseBackgroundRefresh": "false",
                         "EnableFeedAppCloseForegroundRefresh": "true",
                         "EnableFeedSessionCloseForegroundRefresh": "false"
-                    },
-                    "enable_features": [
-                        "EnableFeedInvisibleForegroundRefresh"
-                    ]
-                },
-                {
-                    "name": "Enabled_app_close_background_20230416",
-                    "params": {
-                        "EnableFeedAppCloseBackgroundRefresh": "true",
-                        "EnableFeedAppCloseForegroundRefresh": "false",
-                        "EnableFeedSessionCloseForegroundRefresh": "false"
-                    },
-                    "enable_features": [
-                        "EnableFeedInvisibleForegroundRefresh"
-                    ]
-                },
-                {
-                    "name": "Enabled_session_close_foreground_20230416",
-                    "params": {
-                        "EnableFeedAppCloseBackgroundRefresh": "false",
-                        "EnableFeedAppCloseForegroundRefresh": "false",
-                        "EnableFeedSessionCloseForegroundRefresh": "true"
                     },
                     "enable_features": [
                         "EnableFeedInvisibleForegroundRefresh"
