@@ -14,7 +14,6 @@ namespace autofill::autofill_metrics {
 // autofill/histograms.xml file.
 constexpr char kAmericanExpress[] = "Amex";
 constexpr char kCapitalOne[] = "CapitalOne";
-constexpr char kChase[] = "Chase";
 constexpr char kDiscover[] = "Discover";
 constexpr char kMarqeta[] = "Marqeta";
 

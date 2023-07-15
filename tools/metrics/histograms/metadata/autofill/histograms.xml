@@ -65,7 +65,6 @@ chromium-metrics-reviews@google.com.
 <variants name="Autofill.CreditCardIssuerId">
   <variant name="Amex" summary="card issued by American Express"/>
   <variant name="CapitalOne" summary="card issued by Capital One"/>
-  <variant name="Chase" summary="card issued by Chase"/>
   <variant name="Discover" summary="card issued by Discover"/>
   <variant name="Marqeta" summary="card issued by Marqeta"/>
 </variants>

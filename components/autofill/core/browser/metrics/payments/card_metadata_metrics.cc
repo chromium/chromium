@@ -34,9 +34,6 @@ std::string GetCardIssuerIdSuffix(const std::string& card_issuer_id) {
     if (card_issuer_id == kCapitalOneCardIssuerId) {
       return kCapitalOne;
     }
-    if (card_issuer_id == kChaseCardIssuerId) {
-      return kChase;
-    }
     if (card_issuer_id == kDiscoverCardIssuerId) {
       return kDiscover;
     }
