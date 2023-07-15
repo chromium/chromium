@@ -252,10 +252,9 @@ void RecordRedirectNetworkContextTransition(
       "PrefetchProxy.Redirect.NetworkContextStateTransition", transition);
 }
 
-void OnIsolatedCookieCopyComplete(
-    base::WeakPtr<PrefetchContainer> prefetch_container) {
-  if (prefetch_container) {
-    prefetch_container->GetReader().OnIsolatedCookieCopyComplete();
+void OnIsolatedCookieCopyComplete(PrefetchContainer::Reader reader) {
+  if (reader) {
+    reader.OnIsolatedCookieCopyComplete();
   }
 }
 
@@ -1370,63 +1369,58 @@ void PrefetchService::PrepareToServe(
     // For prefetches that are already servable, start the process of copying
     // cookies from the isolated network context used to make the prefetch to
     // the default network context.
-    CopyIsolatedCookies(prefetch_container);
+    CopyIsolatedCookies(prefetch_container->CreateReader());
   }
 }
 
 void PrefetchService::CopyIsolatedCookies(
-    base::WeakPtr<PrefetchContainer> prefetch_container) {
-  DCHECK(prefetch_container);
+    const PrefetchContainer::Reader& reader) {
+  DCHECK(reader);
 
-  if (!prefetch_container->GetReader().GetCurrentNetworkContextToServe()) {
+  if (!reader.GetCurrentNetworkContextToServe()) {
     // Not set in unit tests.
     return;
   }
 
   // We only need to copy cookies if the prefetch used an isolated network
   // context.
-  if (!prefetch_container->GetReader()
-           .IsIsolatedNetworkContextRequiredToServe()) {
+  if (!reader.IsIsolatedNetworkContextRequiredToServe()) {
     return;
   }
 
-  prefetch_container->GetReader().OnIsolatedCookieCopyStart();
+  reader.OnIsolatedCookieCopyStart();
   net::CookieOptions options = net::CookieOptions::MakeAllInclusive();
-  prefetch_container->GetReader()
-      .GetCurrentNetworkContextToServe()
-      ->GetCookieManager()
-      ->GetCookieList(
-          prefetch_container->GetReader().GetCurrentURLToServe(), options,
-          net::CookiePartitionKeyCollection::Todo(),
-          base::BindOnce(&PrefetchService::OnGotIsolatedCookiesForCopy,
-                         weak_method_factory_.GetWeakPtr(),
-                         prefetch_container));
+  reader.GetCurrentNetworkContextToServe()->GetCookieManager()->GetCookieList(
+      reader.GetCurrentURLToServe(), options,
+      net::CookiePartitionKeyCollection::Todo(),
+      base::BindOnce(&PrefetchService::OnGotIsolatedCookiesForCopy,
+                     weak_method_factory_.GetWeakPtr(), reader.Clone()));
 }
 
 void PrefetchService::OnGotIsolatedCookiesForCopy(
-    base::WeakPtr<PrefetchContainer> prefetch_container,
+    PrefetchContainer::Reader reader,
     const net::CookieAccessResultList& cookie_list,
     const net::CookieAccessResultList& excluded_cookies) {
-  prefetch_container->GetReader().OnIsolatedCookiesReadCompleteAndWriteStart();
+  reader.OnIsolatedCookiesReadCompleteAndWriteStart();
   RecordPrefetchProxyPrefetchMainframeCookiesToCopy(cookie_list.size());
 
   if (cookie_list.empty()) {
-    prefetch_container->GetReader().OnIsolatedCookieCopyComplete();
+    reader.OnIsolatedCookieCopyComplete();
     return;
   }
 
+  const auto current_url = reader.GetCurrentURLToServe();
+
   base::RepeatingClosure barrier = base::BarrierClosure(
       cookie_list.size(),
-      base::BindOnce(&OnIsolatedCookieCopyComplete, prefetch_container));
+      base::BindOnce(&OnIsolatedCookieCopyComplete, std::move(reader)));
 
   net::CookieOptions options = net::CookieOptions::MakeAllInclusive();
   for (const net::CookieWithAccessResult& cookie : cookie_list) {
     browser_context_->GetDefaultStoragePartition()
         ->GetCookieManagerForBrowserProcess()
-        ->SetCanonicalCookie(
-            cookie.cookie,
-            prefetch_container->GetReader().GetCurrentURLToServe(), options,
-            base::BindOnce(&CookieSetHelper, barrier));
+        ->SetCanonicalCookie(cookie.cookie, current_url, options,
+                             base::BindOnce(&CookieSetHelper, barrier));
   }
 }
 
@@ -1499,13 +1493,13 @@ void PrefetchService::GetPrefetchToServe(
     DVLOG(1)
         << "PrefetchService::GetPrefetchToServe(" << url
         << "): PrefetchContainer is null or no matching prefetch was found";
-    std::move(on_prefetch_to_serve_ready).Run(nullptr);
+    std::move(on_prefetch_to_serve_ready).Run({});
     return;
   }
 
   if (prefetch_container->GetRedirectChainSize() > 1 &&
       !base::FeatureList::IsEnabled(features::kPrefetchRedirects)) {
-    std::move(on_prefetch_to_serve_ready).Run(nullptr);
+    std::move(on_prefetch_to_serve_ready).Run({});
     return;
   }
 
@@ -1513,7 +1507,7 @@ void PrefetchService::GetPrefetchToServe(
     DVLOG(1) << "PrefetchService::GetPrefetchToServe(" << url
              << "): PrefetchContainer is servable";
     prefetch_container->OnGetPrefetchToServe(/*blocked_until_head=*/false);
-    ReturnPrefetchToServe(prefetch_container->GetWeakPtr(),
+    ReturnPrefetchToServe(prefetch_container->CreateReader(),
                           std::move(on_prefetch_to_serve_ready));
     return;
   }
@@ -1547,7 +1541,7 @@ void PrefetchService::GetPrefetchToServe(
   DVLOG(1) << "PrefetchService::GetPrefetchToServe(" << url
            << "): PrefetchContainer is not servable";
   prefetch_container->OnReturnPrefetchToServe(/*served=*/false);
-  std::move(on_prefetch_to_serve_ready).Run(nullptr);
+  std::move(on_prefetch_to_serve_ready).Run({});
 }
 
 void PrefetchService::WaitOnPrefetchToServeHead(
@@ -1556,7 +1550,7 @@ void PrefetchService::WaitOnPrefetchToServeHead(
     OnPrefetchToServeReady on_prefetch_to_serve_ready) {
   const GURL& nav_url = key.second;
   if (!prefetch_container) {
-    ReturnPrefetchToServe(nullptr, std::move(on_prefetch_to_serve_ready));
+    ReturnPrefetchToServe({}, std::move(on_prefetch_to_serve_ready));
     return;
   }
 
@@ -1564,7 +1558,7 @@ void PrefetchService::WaitOnPrefetchToServeHead(
 
   if (!prefetch_container->IsPrefetchServable(PrefetchCacheableDuration())) {
     prefetch_container->OnReturnPrefetchToServe(/*served=*/false);
-    ReturnPrefetchToServe(nullptr, std::move(on_prefetch_to_serve_ready));
+    ReturnPrefetchToServe({}, std::move(on_prefetch_to_serve_ready));
     return;
   }
 
@@ -1584,7 +1578,7 @@ void PrefetchService::WaitOnPrefetchToServeHead(
       // to default behavior (exactly match URL - kDefaultValue)
       prefetch_container->OnReturnPrefetchToServe(/*served=*/false);
       prefetch_container->UpdateServingPageMetrics();
-      ReturnPrefetchToServe(nullptr, std::move(on_prefetch_to_serve_ready));
+      ReturnPrefetchToServe({}, std::move(on_prefetch_to_serve_ready));
       return;
     }
     auto no_vary_search_data =
@@ -1595,7 +1589,7 @@ void PrefetchService::WaitOnPrefetchToServeHead(
                                            prefetch_container->GetURL())) {
       prefetch_container->OnReturnPrefetchToServe(/*served=*/false);
       prefetch_container->UpdateServingPageMetrics();
-      ReturnPrefetchToServe(nullptr, std::move(on_prefetch_to_serve_ready));
+      ReturnPrefetchToServe({}, std::move(on_prefetch_to_serve_ready));
       return;
     }
     DVLOG(1) << "PrefetchService::WaitOnPrefetchToServeHead::"
@@ -1620,8 +1614,9 @@ void PrefetchService::WaitOnPrefetchToServeHead(
 }
 
 void PrefetchService::ReturnPrefetchToServe(
-    base::WeakPtr<PrefetchContainer> prefetch_container,
+    PrefetchContainer::Reader reader,
     OnPrefetchToServeReady on_prefetch_to_serve_ready) {
+  PrefetchContainer* prefetch_container = reader.GetPrefetchContainer();
   if (prefetch_container) {
     prefetch_container->UpdateServingPageMetrics();
   }
@@ -1631,25 +1626,25 @@ void PrefetchService::ReturnPrefetchToServe(
     if (prefetch_container) {
       prefetch_container->OnReturnPrefetchToServe(/*served=*/false);
     }
-    std::move(on_prefetch_to_serve_ready).Run(nullptr);
+    std::move(on_prefetch_to_serve_ready).Run({});
     return;
   }
 
-  if (prefetch_container->GetReader().HaveDefaultContextCookiesChanged()) {
+  if (reader.HaveDefaultContextCookiesChanged()) {
     prefetch_container->SetPrefetchStatus(
         PrefetchStatus::kPrefetchNotUsedCookiesChanged);
     prefetch_container->UpdateServingPageMetrics();
     prefetch_container->OnReturnPrefetchToServe(/*served=*/false);
-    std::move(on_prefetch_to_serve_ready).Run(nullptr);
+    std::move(on_prefetch_to_serve_ready).Run({});
     return;
   }
 
-  if (!prefetch_container->GetReader().HasIsolatedCookieCopyStarted()) {
-    CopyIsolatedCookies(prefetch_container);
+  if (!reader.HasIsolatedCookieCopyStarted()) {
+    CopyIsolatedCookies(reader);
   }
 
   prefetch_container->OnReturnPrefetchToServe(/*served=*/true);
-  std::move(on_prefetch_to_serve_ready).Run(prefetch_container);
+  std::move(on_prefetch_to_serve_ready).Run(std::move(reader));
   return;
 }
 

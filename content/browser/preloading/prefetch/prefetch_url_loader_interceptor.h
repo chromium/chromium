@@ -10,6 +10,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "content/browser/loader/navigation_loader_interceptor.h"
+#include "content/browser/preloading/prefetch/prefetch_container.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/global_routing_id.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -55,11 +56,10 @@ class CONTENT_EXPORT PrefetchURLLoaderInterceptor
   // Declared virtual only for testing.
   virtual void GetPrefetch(
       const network::ResourceRequest& tentative_resource_request,
-      base::OnceCallback<void(base::WeakPtr<PrefetchContainer>)>
-          get_prefetch_callback) const;
+      base::OnceCallback<void(PrefetchContainer::Reader)> get_prefetch_callback)
+      const;
 
-  void OnGetPrefetchComplete(
-      base::WeakPtr<PrefetchContainer> prefetch_container);
+  void OnGetPrefetchComplete(PrefetchContainer::Reader reader);
 
   // The frame tree node |this| is associated with, used to retrieve
   // |PrefetchService|.
@@ -79,7 +79,7 @@ class CONTENT_EXPORT PrefetchURLLoaderInterceptor
   // The prefetch container that has already been used to serve a redirect. If
   // another request can be intercepted, this will be checked first to see if
   // its next redirect hop matches the request URL.
-  base::WeakPtr<PrefetchContainer> redirect_prefetch_container_;
+  PrefetchContainer::Reader redirect_reader_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

@@ -199,15 +199,6 @@ class CONTENT_EXPORT PrefetchContainer {
   void TakeStreamingURLLoader(
       std::unique_ptr<PrefetchStreamingURLLoader> streaming_loader);
 
-  // Set up a RequestHandler from the prefetch. After this point,
-  // - The PrefetchResponseReader will manage its own lifetime, and will delete
-  // itself once its serving client is finished.
-  // - If IsReadyToServeLastEvents() is true, the PrefetchStreamingURLLoader
-  // will manage its own lifetime, and will delete itself once its prefetching
-  // request is finished. Otherwise, PrefetchStreamingURLLoader is kept owned by
-  // `streaming_loaders_`.
-  PrefetchResponseReader::RequestHandler CreateRequestHandler();
-
   bool HasStreamingURLLoadersForTest() const;
 
   // Returns the last |PrefetchStreamingURLLoader| from |streaming_loaders_|.
@@ -317,17 +308,43 @@ class CONTENT_EXPORT PrefetchContainer {
   // `SinglePrefetch`, which is the element in |redirect_chain_| at index
   // |index_redirect_chain_to_serve_|.
   //
+  // This works like `base::WeakPtr<PrefetchContainer>` plus additional states,
+  // so check that the reader is valid (e.g. `if (reader)`) before calling other
+  // methods (except for `Clone()`).
+  //
   // TODO(crbug.com/1449360): Allow multiple Readers for a PrefetchContainer.
   // This might need ownership/lifetime changes of `Reader` and further cleaning
   // up the dependencies between `PrefetchContainer` and `Reader`.
   class CONTENT_EXPORT Reader final {
    public:
-    explicit Reader(PrefetchContainer& prefetch_container);
+    Reader();
+
+    Reader(base::WeakPtr<PrefetchContainer> prefetch_container,
+           size_t index_redirect_chain_to_serve);
 
     Reader(const Reader&) = delete;
     Reader& operator=(const Reader&) = delete;
 
-    // Returns whether the Reader reached the end. If true, the other methods
+    Reader(Reader&&);
+    Reader& operator=(Reader&&);
+
+    ~Reader();
+
+    PrefetchContainer* GetPrefetchContainer() const {
+      return prefetch_container_.get();
+    }
+    Reader Clone() const;
+
+    // Returns true if `this` is valid.
+    // Do not call methods below if false.
+    explicit operator bool() const { return GetPrefetchContainer(); }
+
+    // Methods redirecting to `prefetch_container_`.
+    bool IsPrefetchServable(base::TimeDelta cacheable_duration) const;
+    bool HasPrefetchStatus() const;
+    PrefetchStatus GetPrefetchStatus() const;
+
+    // Returns whether the Reader reached the end. If true, the methods below
     // shouldn't be called, because the current `SinglePrefetch` doesn't exist.
     bool IsEnd() const;
 
@@ -344,16 +361,16 @@ class CONTENT_EXPORT PrefetchContainer {
     // well as record metrics about how long this process takes.
     bool HasIsolatedCookieCopyStarted() const;
     bool IsIsolatedCookieCopyInProgress() const;
-    void OnIsolatedCookieCopyStart();
-    void OnIsolatedCookiesReadCompleteAndWriteStart();
-    void OnIsolatedCookieCopyComplete();
-    void OnInterceptorCheckCookieCopy();
-    void SetOnCookieCopyCompleteCallback(base::OnceClosure callback);
+    void OnIsolatedCookieCopyStart() const;
+    void OnIsolatedCookiesReadCompleteAndWriteStart() const;
+    void OnIsolatedCookieCopyComplete() const;
+    void OnInterceptorCheckCookieCopy() const;
+    void SetOnCookieCopyCompleteCallback(base::OnceClosure callback) const;
 
     // Called with the result of the probe. If the probing feature is enabled,
     // then a probe must complete successfully before the prefetch can be
     // served.
-    void OnPrefetchProbeResult(PrefetchProbeResult probe_result);
+    void OnPrefetchProbeResult(PrefetchProbeResult probe_result) const;
 
     // Checks if the given URL matches the the URL that can be served next.
     bool DoesCurrentURLToServeMatch(const GURL& url) const;
@@ -368,24 +385,27 @@ class CONTENT_EXPORT PrefetchContainer {
     // element can now be served.
     void AdvanceCurrentURLToServe() { index_redirect_chain_to_serve_++; }
 
-    void ResetCurrentURLToServeForTesting() {
-      index_redirect_chain_to_serve_ = 0;
-    }
-
     // Returns the `SinglePrefetch` to be served next.
     const SinglePrefetch& GetCurrentSinglePrefetchToServe() const;
 
+    // Set up a RequestHandler from the Reader. After this point,
+    // - The PrefetchResponseReader will manage its own lifetime, and will
+    // delete itself once its serving client is finished.
+    // - If IsReadyToServeLastEvents() is true, the PrefetchStreamingURLLoader
+    // will manage its own lifetime, and will delete itself once its prefetching
+    // request is finished. Otherwise, PrefetchStreamingURLLoader is kept owned
+    // by `streaming_loaders_`.
+    PrefetchResponseReader::RequestHandler CreateRequestHandler();
+
    private:
-    // Currently the lifetime of `Reader` and `PrefetchContainer` are the same
-    // and thus this reference is always valid as long as `Reader` is valid.
-    const raw_ref<PrefetchContainer> prefetch_container_;
+    base::WeakPtr<PrefetchContainer> prefetch_container_;
 
     // The index of the element in |prefetch_container_.redirect_chain_| that
     // can be served.
     size_t index_redirect_chain_to_serve_ = 0;
   };
 
-  Reader& GetReader() { return reader_; }
+  Reader CreateReader();
 
  protected:
   friend class PrefetchContainerTest;
@@ -412,6 +432,9 @@ class CONTENT_EXPORT PrefetchContainer {
   // `GetCurrentSinglePrefetchToPrefetch()`. This must be called only if `this`
   // has redirect(s).
   const SinglePrefetch& GetPreviousSinglePrefetchToPrefetch() const;
+
+  PrefetchResponseReader::RequestHandler CreateRequestHandlerInternal(
+      Reader& reader);
 
   // The ID of the RenderFrameHost that triggered the prefetch.
   GlobalRenderFrameHostId referring_render_frame_host_id_;
@@ -459,8 +482,6 @@ class CONTENT_EXPORT PrefetchContainer {
 
   // The redirect chain resulting from prefetching |prefetch_url_|.
   std::vector<std::unique_ptr<SinglePrefetch>> redirect_chain_;
-
-  Reader reader_{*this};
 
   // The network contexts used for this prefetch. They key corresponds to the
   // |is_isolated_network_context_required| param of the

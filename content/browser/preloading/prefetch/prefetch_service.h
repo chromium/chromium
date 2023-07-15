@@ -105,15 +105,14 @@ class CONTENT_EXPORT PrefetchService {
 
   // Finds the prefetch (if any) that can be used to serve a navigation to
   // |url|, and then calls |on_prefetch_to_serve_ready| with that prefetch.
-  using OnPrefetchToServeReady = base::OnceCallback<void(
-      base::WeakPtr<PrefetchContainer> prefetch_to_serve)>;
+  using OnPrefetchToServeReady =
+      base::OnceCallback<void(PrefetchContainer::Reader prefetch_to_serve)>;
   void GetPrefetchToServe(const PrefetchContainer::Key& key,
                           OnPrefetchToServeReady on_prefetch_to_serve_ready);
 
   // Copies any cookies in the isolated network context associated with
   // |prefetch_container| to the default network context.
-  virtual void CopyIsolatedCookies(
-      base::WeakPtr<PrefetchContainer> prefetch_container);
+  virtual void CopyIsolatedCookies(const PrefetchContainer::Reader& reader);
 
   // Removes the prefetch with the given |prefetch_container_key| from
   // |all_prefetches_|.
@@ -269,16 +268,15 @@ class CONTENT_EXPORT PrefetchService {
   // isolated network context and are ready to be written to the default network
   // context.
   void OnGotIsolatedCookiesForCopy(
-      base::WeakPtr<PrefetchContainer> prefetch_container,
+      PrefetchContainer::Reader reader,
       const net::CookieAccessResultList& cookie_list,
       const net::CookieAccessResultList& excluded_cookies);
 
   // Helper function for |GetPrefetchToServe| to return |prefetch_container| via
   // |on_prefetch_to_serve_ready|. Starts the cookie copy process for the given
   // prefetch if needed, and updates its state.
-  void ReturnPrefetchToServe(
-      base::WeakPtr<PrefetchContainer> prefetch_container,
-      OnPrefetchToServeReady on_prefetch_to_serve_ready);
+  void ReturnPrefetchToServe(PrefetchContainer::Reader reader,
+                             OnPrefetchToServeReady on_prefetch_to_serve_ready);
 
   // Helper function for |GetPrefetchToServe| to wait for head of a
   // potentially matching CL in order to decide if we can use it or not for
