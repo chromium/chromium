@@ -163,7 +163,7 @@ class ChromeAuthenticatorRequestDelegate
       const device::FidoAuthenticator* authenticator,
       bool is_enterprise_attestation,
       base::OnceCallback<void(bool)> callback) override;
-  void ConfigureCable(
+  void ConfigureDiscoveries(
       const url::Origin& origin,
       device::FidoRequestType request_type,
       absl::optional<device::ResidentKeyRequirement> resident_key_requirement,

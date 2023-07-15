@@ -553,7 +553,7 @@ void ChromeAuthenticatorRequestDelegate::ShouldReturnAttestation(
                                               std::move(callback));
 }
 
-void ChromeAuthenticatorRequestDelegate::ConfigureCable(
+void ChromeAuthenticatorRequestDelegate::ConfigureDiscoveries(
     const url::Origin& origin,
     device::FidoRequestType request_type,
     absl::optional<device::ResidentKeyRequirement> resident_key_requirement,

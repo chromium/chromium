@@ -260,14 +260,20 @@ class CONTENT_EXPORT AuthenticatorRequestClientDelegate
       bool is_enterprise_attestation,
       base::OnceCallback<void(bool)> callback);
 
-  // ConfigureCable optionally configures Cloud-assisted Bluetooth Low Energy
-  // transports. |origin| is the origin of the calling site and
-  // |pairings_from_extension| are caBLEv1 pairings that have been provided in
-  // an extension to the WebAuthn get() call. |resident_key_requirement| is only
-  // set when provided (i.e. for makeCredential calls) and reflects the value
-  // requested by the site. If the embedder wishes, it may use this to configure
-  // caBLE on the |FidoDiscoveryFactory| for use in this request.
-  virtual void ConfigureCable(
+  // ConfigureDiscoveries optionally configures |fido_discovery_factory|.
+  //
+  // |origin| is the origin of the calling site, |request_type| is the type of
+  // the request and |resident_key_requirement| (which is only set when
+  // provided, i.e. for makeCredential calls) reflects the value requested by
+  // the site.
+  //
+  // caBLE (also called the "hybrid" transport) must be configured in order to
+  // be functional and |pairings_from_extension| contains any caBLEv1 pairings
+  // that have been provided in an extension to the WebAuthn get() call.
+  //
+  // Other FidoDiscoveryFactory fields (e.g. the `LAContextDropbox`) can also be
+  // configured by this function.
+  virtual void ConfigureDiscoveries(
       const url::Origin& origin,
       device::FidoRequestType request_type,
       absl::optional<device::ResidentKeyRequirement> resident_key_requirement,

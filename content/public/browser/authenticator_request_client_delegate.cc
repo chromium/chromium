@@ -154,7 +154,7 @@ void AuthenticatorRequestClientDelegate::ShouldReturnAttestation(
   std::move(callback).Run(!is_enterprise_attestation);
 }
 
-void AuthenticatorRequestClientDelegate::ConfigureCable(
+void AuthenticatorRequestClientDelegate::ConfigureDiscoveries(
     const url::Origin& origin,
     device::FidoRequestType request_type,
     absl::optional<device::ResidentKeyRequirement> resident_key_requirement,

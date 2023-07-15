@@ -389,9 +389,9 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, CableConfiguration) {
       ChromeAuthenticatorRequestDelegate delegate(main_rfh());
       delegate.SetRelyingPartyId(/*rp_id=*/"example.com");
       delegate.SetPassEmptyUsbDeviceManagerForTesting(true);
-      delegate.ConfigureCable(url::Origin::Create(GURL(test.origin)),
-                              test.request_type, test.resident_key_requirement,
-                              test.extensions, &discovery_factory);
+      delegate.ConfigureDiscoveries(
+          url::Origin::Create(GURL(test.origin)), test.request_type,
+          test.resident_key_requirement, test.extensions, &discovery_factory);
 
       switch (windows_has_hybrid ? test.expected_result_with_system_hybrid
                                  : test.expected_result) {
@@ -544,7 +544,7 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, GPMPasskeys) {
   EXPECT_CALL(observer_, GetCablePairingsFromSyncedDevices)
       .WillOnce(testing::Return(testing::ByMove(std::move(phones))));
   MockCableDiscoveryFactory discovery_factory;
-  delegate.ConfigureCable(
+  delegate.ConfigureDiscoveries(
       url::Origin::Create(url), device::FidoRequestType::kGetAssertion,
       /*resident_key_requirement=*/absl::nullopt,
       /*pairings_from_extension=*/std::vector<device::CableDiscoveryData>(),
@@ -602,7 +602,7 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, GPMPasskeys_NoSyncPairedPhones) {
   // Return an empty list of synced devices.
   EXPECT_CALL(observer_, GetCablePairingsFromSyncedDevices);
   MockCableDiscoveryFactory discovery_factory;
-  delegate.ConfigureCable(
+  delegate.ConfigureDiscoveries(
       url::Origin::Create(url), device::FidoRequestType::kGetAssertion,
       /*resident_key_requirement=*/absl::nullopt,
       /*pairings_from_extension=*/std::vector<device::CableDiscoveryData>(),
