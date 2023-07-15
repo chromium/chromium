@@ -582,13 +582,6 @@ bool KeyboardCapability::IsSixPackKey(const KeyboardCode& key_code) {
   return base::Contains(kSixPackKeyToSystemKeyMap, key_code);
 }
 
-// static
-bool KeyboardCapability::IsReversedSixPackKey(const KeyboardCode& key_code) {
-  // [Back] maps back to both [Delete] and [Insert].
-  return base::Contains(kReversedSixPackKeyToSystemKeyMap, key_code) ||
-         key_code == ui::KeyboardCode::VKEY_BACK;
-}
-
 absl::optional<KeyboardCode> KeyboardCapability::GetMappedFKeyIfExists(
     const KeyboardCode& key_code,
     const KeyboardDevice& keyboard) const {

@@ -308,19 +308,6 @@ TEST_F(KeyboardCapabilityTest, TestIsSixPackKey) {
   EXPECT_FALSE(keyboard_capability_->IsSixPackKey(ui::KeyboardCode::VKEY_A));
 }
 
-TEST_F(KeyboardCapabilityTest, TestIsReversedSixPackKey) {
-  for (const auto& [key_code, _] : ui::kReversedSixPackKeyToSystemKeyMap) {
-    EXPECT_TRUE(keyboard_capability_->IsReversedSixPackKey(key_code));
-  }
-  EXPECT_TRUE(
-      keyboard_capability_->IsReversedSixPackKey(ui::KeyboardCode::VKEY_BACK));
-
-  // A key not in the kReversedSixPackKeyToSystemKeyMap or as [Back] is not a
-  // reversed six pack key.
-  EXPECT_FALSE(
-      keyboard_capability_->IsReversedSixPackKey(ui::KeyboardCode::VKEY_A));
-}
-
 TEST_F(KeyboardCapabilityTest, TestGetMappedFKeyIfExists) {
   ui::KeyboardDevice fake_keyboard(
       /*id=*/1, /*type=*/ui::InputDeviceType::INPUT_DEVICE_INTERNAL,

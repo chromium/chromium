@@ -644,35 +644,7 @@ INSTANTIATE_TEST_SUITE_P(
         // [original_modifiers].
         {ui::Accelerator{ui::VKEY_DELETE, ui::EF_ALT_DOWN},
          ui::Accelerator{ui::VKEY_BACK, ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN}},
-
-        // Below are tests for reversed six pack alias.
-        // [Search] not in modifiers prevents remapping.
-        {ui::Accelerator{ui::VKEY_LEFT, ui::EF_ALT_DOWN}, absl::nullopt},
-        // key_code not as reversed six pack key prevent remapping.
-        {ui::Accelerator{ui::VKEY_ZOOM, ui::EF_COMMAND_DOWN}, absl::nullopt},
-        // [Back] + [Search] -> [Delete]
-        {ui::Accelerator{ui::VKEY_BACK, ui::EF_COMMAND_DOWN},
-         ui::Accelerator{ui::VKEY_DELETE, ui::EF_NONE}},
-        // [Back] + [Shift] + [Search] -> [Insert].
-        {ui::Accelerator{ui::VKEY_BACK,
-                         ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN},
-         ui::Accelerator{ui::VKEY_INSERT, ui::EF_NONE}},
-        // [Back] + [Shift] + [Search] + [Alt] -> [Insert] + [Alt].
-        {ui::Accelerator{ui::VKEY_BACK, ui::EF_COMMAND_DOWN |
-                                            ui::EF_SHIFT_DOWN |
-                                            ui::EF_ALT_DOWN},
-         ui::Accelerator{ui::VKEY_INSERT, ui::EF_ALT_DOWN}},
-        // [Back] + [Search] + [Alt] -> [Delete] + [Alt].
-        {ui::Accelerator{ui::VKEY_BACK, ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN},
-         ui::Accelerator{ui::VKEY_DELETE, ui::EF_ALT_DOWN}},
-        // [Left] + [Search] + [Alt] -> [Home] + [Alt].
-        {ui::Accelerator{ui::VKEY_LEFT, ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN},
-         ui::Accelerator{ui::VKEY_HOME, ui::EF_ALT_DOWN}},
-        // [Left] + [Search] + [Shift] + [Alt] -> [Home] + [Shift] + [Alt].
-        {ui::Accelerator{ui::VKEY_LEFT, ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN |
-                                            ui::EF_SHIFT_DOWN},
-         ui::Accelerator{ui::VKEY_HOME,
-                         ui::EF_ALT_DOWN | ui::EF_SHIFT_DOWN}}}));
+    }));
 
 TEST_P(SixPackAliasTestWithExternalKeyboard, CheckSixPackAlias) {
   fake_keyboard_manager_->RemoveAllDevices();
@@ -722,7 +694,7 @@ INSTANTIATE_TEST_SUITE_P(
     SixPackAliasTestWithInternalKeyboard,
     testing::ValuesIn(std::vector<AcceleratorAliasConverterTestData>{
         // A keyboard without six pack keys should not affect the aliasing of
-        // six pack key, but only affect the aliasing of reversed six pack key.
+        // six pack key.
 
         // [Search] as original modifier prevents remapping.
         {ui::Accelerator{ui::VKEY_ZOOM, ui::EF_COMMAND_DOWN}, absl::nullopt},
@@ -741,31 +713,7 @@ INSTANTIATE_TEST_SUITE_P(
         // [original_modifiers].
         {ui::Accelerator{ui::VKEY_DELETE, ui::EF_ALT_DOWN},
          ui::Accelerator{ui::VKEY_BACK, ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN}},
-
-        // Below are tests for reversed six pack alias.
-        // All reversed six pack aliasing which work with an external
-        // keyboard should stop working with an internal keyboard.
-        // [Back] + [Search] -> None.
-        {ui::Accelerator{ui::VKEY_BACK, ui::EF_COMMAND_DOWN}, absl::nullopt},
-        // [Back] + [Shift] + [Search] -> None.
-        {ui::Accelerator{ui::VKEY_BACK,
-                         ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN},
-         absl::nullopt},
-        // // [Back] + [Shift] + [Search] + [Alt] -> None.
-        {ui::Accelerator{ui::VKEY_BACK, ui::EF_COMMAND_DOWN |
-                                            ui::EF_SHIFT_DOWN |
-                                            ui::EF_ALT_DOWN},
-         absl::nullopt},
-        // [Back] + [Search] + [Alt] -> None.
-        {ui::Accelerator{ui::VKEY_BACK, ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN},
-         absl::nullopt},
-        // [Left] + [Search] + [Alt] -> None.
-        {ui::Accelerator{ui::VKEY_LEFT, ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN},
-         absl::nullopt},
-        // [Left] + [Search] + [Shift] + [Alt] -> None.
-        {ui::Accelerator{ui::VKEY_LEFT, ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN |
-                                            ui::EF_SHIFT_DOWN},
-         absl::nullopt}}));
+    }));
 
 TEST_P(SixPackAliasTestWithInternalKeyboard, CheckSixPackAlias) {
   fake_keyboard_manager_->RemoveAllDevices();

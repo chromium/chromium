@@ -239,17 +239,10 @@ std::vector<ui::Accelerator> AcceleratorAliasConverter::CreateAcceleratorAlias(
     return FilterAliasBySupportedKeys(std::move(aliases_set).extract());
   }
 
-  // For |six_pack_key| and |reversed_six_pack_key|, show both the base
+  // For |six_pack_key|, show both the base
   // accelerator and the remapped accelerator if applicable. Otherwise, only
   // show base accelerator.
   std::vector<ui::Accelerator> aliases = CreateSixPackAliases(accelerator);
-  std::vector<ui::Accelerator> reversed_aliases =
-      CreateReversedSixPackAliases(accelerator);
-  // An accelerator can never have both six pack alias and reversed six
-  // pack alias at the same time. Concatenating two vectors works here. Note
-  // that both vectors could be empty.
-  aliases.insert(aliases.end(), reversed_aliases.begin(),
-                 reversed_aliases.end());
 
   // Add base accelerator.
   aliases.push_back(accelerator);
@@ -408,39 +401,6 @@ std::vector<ui::Accelerator> AcceleratorAliasConverter::CreateSixPackAliases(
   return {
       ui::Accelerator(ui::kSixPackKeyToSystemKeyMap.at(accelerator.key_code()),
                       updated_modifiers, accelerator.key_state())};
-}
-
-std::vector<ui::Accelerator>
-AcceleratorAliasConverter::CreateReversedSixPackAliases(
-    const ui::Accelerator& accelerator) const {
-  // To find the reversed six pack alias, an accelerator must include [Search]
-  // key, and must be one of the reversed six pack keys. And the connected
-  // keyboards must have six pack keys.
-  if (!accelerator.IsCmdDown() ||
-      !::features::IsImprovedKeyboardShortcutsEnabled() ||
-      !ui::KeyboardCapability::IsReversedSixPackKey(accelerator.key_code()) ||
-      !ui::KeyboardCapability::HasSixPackOnAnyKeyboard()) {
-    return std::vector<ui::Accelerator>();
-  }
-
-  int modifiers = accelerator.modifiers() & ~ui::EF_COMMAND_DOWN;
-  // [Back] maps back to [Insert] if modifier contains [Shift]. Otherwise,
-  // it maps back to [Delete].
-  if (accelerator.key_code() == ui::KeyboardCode::VKEY_BACK) {
-    if (!accelerator.IsShiftDown()) {
-      return {ui::Accelerator(ui::KeyboardCode::VKEY_DELETE, modifiers,
-                              accelerator.key_state())};
-    }
-
-    modifiers &= ~ui::EF_SHIFT_DOWN;
-    return {ui::Accelerator(ui::KeyboardCode::VKEY_INSERT, modifiers,
-                            accelerator.key_state())};
-  }
-
-  // Handle modifiers other than [Back].
-  return {ui::Accelerator(
-      ui::kReversedSixPackKeyToSystemKeyMap.at(accelerator.key_code()),
-      modifiers, accelerator.key_state())};
 }
 
 std::vector<ui::Accelerator>

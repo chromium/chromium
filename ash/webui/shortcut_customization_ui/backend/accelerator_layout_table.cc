@@ -385,19 +385,19 @@ const NonConfigurableActionsMap& GetNonConfigurableActionsMap() {
                ui::VKEY_A, ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN)})},
           {NonConfigurableActions::kBrowserBottomPage,
            NonConfigurableAcceleratorDetails(
-               {ui::Accelerator(ui::VKEY_RIGHT, ui::EF_COMMAND_DOWN)})},
+               {ui::Accelerator(ui::VKEY_END, ui::EF_NONE)})},
           {NonConfigurableActions::kBrowserTopPage,
            NonConfigurableAcceleratorDetails(
-               {ui::Accelerator(ui::VKEY_LEFT, ui::EF_COMMAND_DOWN)})},
+               {ui::Accelerator(ui::VKEY_HOME, ui::EF_NONE)})},
           {NonConfigurableActions::kBrowserPageUp,
            NonConfigurableAcceleratorDetails(
-               {ui::Accelerator(ui::VKEY_UP, ui::EF_COMMAND_DOWN)})},
+               {ui::Accelerator(ui::VKEY_PRIOR, ui::EF_NONE)})},
           {NonConfigurableActions::kBrowserPageDown,
            NonConfigurableAcceleratorDetails(
-               {ui::Accelerator(ui::VKEY_DOWN, ui::EF_COMMAND_DOWN)})},
+               {ui::Accelerator(ui::VKEY_NEXT, ui::EF_NONE)})},
           {NonConfigurableActions::kAmbientDeleteNextWord,
            NonConfigurableAcceleratorDetails(
-               {ui::Accelerator(ui::VKEY_BACK, ui::EF_COMMAND_DOWN)})},
+               {ui::Accelerator(ui::VKEY_DELETE, ui::EF_NONE)})},
           // TODO(longbowei): Re-enable these shortcuts. these conflict with
           // kBrowserTopPage(Search + <) and kBrowserBottomPage(Search + >);
           //    {NonConfigurableActions::kAmbientGoToBeginningOfLine,
@@ -458,11 +458,11 @@ const NonConfigurableActionsMap& GetNonConfigurableActionsMap() {
            NonConfigurableAcceleratorDetails(
                {ui::Accelerator(ui::VKEY_A, ui::EF_CONTROL_DOWN)})},
           {NonConfigurableActions::kAmbientSelectTextToBeginning,
-           NonConfigurableAcceleratorDetails({ui::Accelerator(
-               ui::VKEY_LEFT, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN)})},
+           NonConfigurableAcceleratorDetails(
+               {ui::Accelerator(ui::VKEY_HOME, ui::EF_SHIFT_DOWN)})},
           {NonConfigurableActions::kAmbientSelectTextToEndOfLine,
-           NonConfigurableAcceleratorDetails({ui::Accelerator(
-               ui::VKEY_RIGHT, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN)})},
+           NonConfigurableAcceleratorDetails(
+               {ui::Accelerator(ui::VKEY_END, ui::EF_SHIFT_DOWN)})},
           {NonConfigurableActions::kAmbientSelectPreviousWord,
            NonConfigurableAcceleratorDetails({ui::Accelerator(
                ui::VKEY_LEFT, ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN)})},
@@ -470,11 +470,11 @@ const NonConfigurableActionsMap& GetNonConfigurableActionsMap() {
            NonConfigurableAcceleratorDetails({ui::Accelerator(
                ui::VKEY_RIGHT, ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN)})},
           {NonConfigurableActions::kAmbientGoToBeginningOfDocument,
-           NonConfigurableAcceleratorDetails({ui::Accelerator(
-               ui::VKEY_LEFT, ui::EF_CONTROL_DOWN | ui::EF_COMMAND_DOWN)})},
+           NonConfigurableAcceleratorDetails(
+               {ui::Accelerator(ui::VKEY_HOME, ui::EF_CONTROL_DOWN)})},
           {NonConfigurableActions::kAmbientGoToEndOfDocument,
-           NonConfigurableAcceleratorDetails({ui::Accelerator(
-               ui::VKEY_RIGHT, ui::EF_CONTROL_DOWN | ui::EF_COMMAND_DOWN)})},
+           NonConfigurableAcceleratorDetails(
+               {ui::Accelerator(ui::VKEY_END, ui::EF_CONTROL_DOWN)})},
           {NonConfigurableActions::kAmbientMoveStartOfPreviousWord,
            NonConfigurableAcceleratorDetails(
                {ui::Accelerator(ui::VKEY_LEFT, ui::EF_CONTROL_DOWN)})},
