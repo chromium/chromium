@@ -134,13 +134,9 @@ class Interface(UserDefinedType, WithExtendedAttributes, WithCodeGeneratorInfo,
             if self.setlike:
                 list_of_members.append(self.setlike.attributes)
                 list_of_members.append(self.setlike.operations)
-            # self.sync_iterator.operations are not members of this interface.
-            # They're members of an iterator prototype object.
             return itertools.chain(*list_of_members)
 
         def iter_all_overload_groups(self):
-            # Returns all overload groups regardless of whether they're members
-            # of this interface or not.
             list_of_groups = [
                 self.constructor_groups,
                 self.legacy_factory_function_groups,
@@ -152,23 +148,6 @@ class Interface(UserDefinedType, WithExtendedAttributes, WithCodeGeneratorInfo,
                 list_of_groups.append(self.maplike.operation_groups)
             if self.setlike:
                 list_of_groups.append(self.setlike.operation_groups)
-            # self.sync_iterator.operation_groups are not members of this
-            # interface, but we'd like to let IdlCompiler work on all overload
-            # groups in order to minimize the potentially-surprising
-            # differences.
-            #
-            # This method is used by IdlCompiler to propagate IDL extended
-            # attributes from operations to operation groups and also to
-            # determine the exposure of operation groups from the operation's
-            # exposure.
-            #
-            # Exactly and technically speaking, iterator object's "next" is not
-            # an IDL operation (just like iterator objects are not platform
-            # objects), however, we treat them in the same way as much as
-            # possible just because it's implementor-friendly and no observable
-            # side effect.
-            if self.sync_iterator:
-                list_of_groups.append(self.sync_iterator.operation_groups)
             return itertools.chain(*list_of_groups)
 
     def __init__(self, ir):
@@ -265,8 +244,7 @@ class Interface(UserDefinedType, WithExtendedAttributes, WithCodeGeneratorInfo,
                           if ir.iterable else None)
         self._maplike = Maplike(ir.maplike, owner=self) if ir.maplike else None
         self._setlike = Setlike(ir.setlike, owner=self) if ir.setlike else None
-        self._sync_iterator = (SyncIterator(ir.sync_iterator, owner=self)
-                               if ir.sync_iterator else None)
+        self._sync_iterator = ir.sync_iterator
 
     @property
     def is_mixin(self):
@@ -845,11 +823,15 @@ class SyncIterator(UserDefinedType, WithExtendedAttributes,
     [5] https://webidl.spec.whatwg.org/#create-a-set-iterator
     """
 
-    class IR(WithIdentifier, WithCodeGeneratorInfo, WithComponent,
-             WithDebugInfo):
-        def __init__(self, interface_ir, component, debug_info, key_type,
-                     value_type, operations):
-            assert isinstance(interface_ir, Interface.IR)
+    class IR(IRMap.IR, WithExtendedAttributes, WithCodeGeneratorInfo,
+             WithExposure, WithComponent, WithDebugInfo):
+        def __init__(self,
+                     interface,
+                     component,
+                     key_type=None,
+                     value_type=None,
+                     operations=None):
+            assert isinstance(interface, RefById)
             assert key_type is None or isinstance(key_type, IdlType)
             assert isinstance(value_type, IdlType)
             assert isinstance(operations, (list, tuple))
@@ -858,35 +840,43 @@ class SyncIterator(UserDefinedType, WithExtendedAttributes,
                 for operation in operations)
 
             identifier = Identifier('SyncIterator_{}'.format(
-                interface_ir.identifier))
+                interface.identifier))
 
-            WithIdentifier.__init__(self, identifier)
+            IRMap.IR.__init__(self, identifier, IRMap.IR.Kind.SYNC_ITERATOR)
+            WithExtendedAttributes.__init__(self)
             WithCodeGeneratorInfo.__init__(self)
+            WithExposure.__init__(self)
             WithComponent.__init__(self, component)
-            WithDebugInfo.__init__(self, debug_info)
+            WithDebugInfo.__init__(self)
 
-            self.code_generator_info.set_for_testing(
-                interface_ir.code_generator_info.for_testing)
-
+            self.interface = interface
             self.key_type = key_type
             self.value_type = value_type
+            self.constructors = []
+            self.constructor_groups = []
+            self.legacy_factory_functions = []
+            self.legacy_factory_function_groups = []
             self.operations = list(operations)
             self.operation_groups = []
 
-    def __init__(self, ir, owner):
+        def iter_all_members(self):
+            return list(self.operations)
+
+        def iter_all_overload_groups(self):
+            return list(self.operation_groups)
+
+    def __init__(self, ir):
         assert isinstance(ir, SyncIterator.IR)
-        assert isinstance(owner, Interface)
 
+        ir = make_copy(ir)
         UserDefinedType.__init__(self, ir.identifier)
-        WithExtendedAttributes.__init__(self, readonly=True)
-        WithCodeGeneratorInfo.__init__(self,
-                                       ir.code_generator_info,
-                                       readonly=True)
-        WithExposure.__init__(self, readonly=True)
-        WithComponent.__init__(self, ir.components, readonly=True)
-        WithDebugInfo.__init__(self, ir.debug_info)
+        WithExtendedAttributes.__init__(self, ir, readonly=True)
+        WithCodeGeneratorInfo.__init__(self, ir, readonly=True)
+        WithExposure.__init__(self, ir, readonly=True)
+        WithComponent.__init__(self, ir, readonly=True)
+        WithDebugInfo.__init__(self, ir)
 
-        self._interface = owner
+        self._interface = ir.interface
         self._key_type = ir.key_type
         self._value_type = ir.value_type
         self._operations = tuple([

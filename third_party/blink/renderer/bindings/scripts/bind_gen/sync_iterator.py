@@ -117,12 +117,11 @@ def generate_sync_iterator_blink_impl_class(sync_iterator=None,
     source_blink_ns.body.append(EmptyNode())
 
 
-def generate_sync_iterator(interface_identifier):
-    assert isinstance(interface_identifier, web_idl.Identifier)
+def generate_sync_iterator(sync_iterator_identifier):
+    assert isinstance(sync_iterator_identifier, web_idl.Identifier)
 
     web_idl_database = package_initializer().web_idl_database()
-    interface = web_idl_database.find(interface_identifier)
-    sync_iterator = interface.sync_iterator
+    sync_iterator = web_idl_database.find(sync_iterator_identifier)
 
     generate_class_like(sync_iterator,
                         generate_sync_iterator_blink_impl_class_callback=(
@@ -134,7 +133,5 @@ def generate_sync_iterators(task_queue):
 
     web_idl_database = package_initializer().web_idl_database()
 
-    for interface in web_idl_database.interfaces:
-        if not interface.sync_iterator:
-            continue
-        task_queue.post_task(generate_sync_iterator, interface.identifier)
+    for sync_iterator in web_idl_database.sync_iterators:
+        task_queue.post_task(generate_sync_iterator, sync_iterator.identifier)

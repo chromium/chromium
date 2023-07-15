@@ -34,6 +34,7 @@ class DatabaseBody(object):
         INTERFACE_MIXIN = 'interface mixin'
         NAMESPACE = 'namespace'
         OBSERVABLE_ARRAY = 'observable array'
+        SYNC_ITERATOR = 'sync iterator'
         TYPEDEF = 'typedef'
         UNION = 'union'
 
@@ -46,6 +47,7 @@ class DatabaseBody(object):
             INTERFACE_MIXIN,
             NAMESPACE,
             OBSERVABLE_ARRAY,
+            SYNC_ITERATOR,
             TYPEDEF,
             UNION,
         )
@@ -153,6 +155,11 @@ class Database(object):
     def observable_arrays(self):
         """Returns all observable arrays."""
         return self._view_by_kind(Database._Kind.OBSERVABLE_ARRAY)
+
+    @property
+    def sync_iterators(self):
+        """Returns all sync iterators."""
+        return self._view_by_kind(Database._Kind.SYNC_ITERATOR)
 
     @property
     def typedefs(self):

@@ -64,6 +64,7 @@ class IRMap(object):
             PARTIAL_INTERFACE = 'partial interface'
             PARTIAL_INTERFACE_MIXIN = 'partial interface mixin'
             PARTIAL_NAMESPACE = 'partial namespace'
+            SYNC_ITERATOR = 'sync iterator'
             TYPEDEF = 'typedef'
 
             _MULTI_VALUE_KINDS = (
