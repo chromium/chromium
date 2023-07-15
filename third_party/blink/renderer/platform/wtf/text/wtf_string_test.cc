@@ -207,6 +207,16 @@ TEST(WTF, SimplifyWhiteSpace) {
   EXPECT_EQ(
       String("  Hello  world  "),
       extra_spaces_and_tabs.SimplifyWhiteSpace(WTF::kDoNotStripWhiteSpace));
+
+  auto is_space_or_g = [](UChar character) {
+    return character == ' ' || character == 'G';
+  };
+  String extra_spaces_and_gs(" GGG Hello G world G G");
+  EXPECT_EQ(String("Hello world"),
+            extra_spaces_and_gs.SimplifyWhiteSpace(is_space_or_g));
+  EXPECT_EQ(String("     Hello   world    "),
+            extra_spaces_and_gs.SimplifyWhiteSpace(is_space_or_g,
+                                                   WTF::kDoNotStripWhiteSpace));
 }
 
 TEST(StringTest, StartsWithIgnoringUnicodeCase) {

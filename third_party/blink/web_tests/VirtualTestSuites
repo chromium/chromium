@@ -1018,6 +1018,17 @@
     "expires": "Feb 1, 2024"
   },
   {
+    "prefix": "dom-parts-disabled",
+    "owners": ["masonf@chromium.org", "dom-dev@chromium.org"],
+    "platforms": ["Linux"],
+    "bases": [
+      "external/wpt/dom/parts",
+      "fast/parser"
+    ],
+    "args": ["--disable-features=DOMPartsAPI"],
+    "expires": "Feb 1, 2024"
+  },
+  {
     "prefix": "backface-visibility-interop",
     "owners": ["dbaron@chromium.org", "paint-dev@chromium.org"],
     "platforms": ["Linux"],

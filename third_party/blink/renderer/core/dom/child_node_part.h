@@ -62,6 +62,7 @@ class CORE_EXPORT ChildNodePart : public Part, public PartRoot {
   }
   Node* previousSibling() const { return previous_sibling_; }
   Node* nextSibling() const { return next_sibling_; }
+  void setNextSibling(Node& next_sibling) { next_sibling_ = &next_sibling; }
   HeapVector<Member<Node>> children() const;
   void replaceChildren(
       const HeapVector<Member<V8UnionNodeOrStringOrTrustedScript>>& nodes,

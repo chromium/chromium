@@ -28,12 +28,15 @@
 
 #include <limits>
 
+#include "third_party/blink/renderer/core/dom/child_node_part.h"
 #include "third_party/blink/renderer/core/dom/comment.h"
 #include "third_party/blink/renderer/core/dom/document_fragment.h"
+#include "third_party/blink/renderer/core/dom/document_part_root.h"
 #include "third_party/blink/renderer/core/dom/document_type.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/node.h"
+#include "third_party/blink/renderer/core/dom/node_part.h"
 #include "third_party/blink/renderer/core/dom/template_content_document_fragment.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/dom/throw_on_dynamic_markup_insertion_count_incrementer.h"
@@ -69,6 +72,7 @@
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
 #include "third_party/blink/renderer/platform/text/text_break_iterator.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 
@@ -280,11 +284,21 @@ static inline void ExecuteTakeAllChildrenTask(HTMLConstructionSiteTask& task) {
 
 void HTMLConstructionSite::ExecuteTask(HTMLConstructionSiteTask& task) {
   DCHECK(task_queue_.empty());
-  if (task.operation == HTMLConstructionSiteTask::kInsert)
-    return ExecuteInsertTask(task);
+  if (task.operation == HTMLConstructionSiteTask::kInsert) {
+    ExecuteInsertTask(task);
+    if (RuntimeEnabledFeatures::DOMPartsAPIEnabled()) {
+      GetPendingDOMParts().MaybeConstructNodePart(*task.child);
+    }
+    return;
+  }
 
-  if (task.operation == HTMLConstructionSiteTask::kInsertText)
-    return ExecuteInsertTextTask(task);
+  if (task.operation == HTMLConstructionSiteTask::kInsertText) {
+    ExecuteInsertTextTask(task);
+    if (RuntimeEnabledFeatures::DOMPartsAPIEnabled()) {
+      GetPendingDOMParts().MaybeConstructNodePart(*task.child);
+    }
+    return;
+  }
 
   // All the cases below this point are only used by the adoption agency.
 
@@ -503,6 +517,7 @@ void HTMLConstructionSite::Trace(Visitor* visitor) const {
   visitor->Trace(active_formatting_elements_);
   visitor->Trace(task_queue_);
   visitor->Trace(pending_text_);
+  visitor->Trace(pending_dom_parts_);
 }
 
 void HTMLConstructionSite::Detach() {
@@ -758,10 +773,59 @@ void HTMLConstructionSite::InsertDoctype(AtomicHTMLToken* token) {
   }
 }
 
+namespace {
+Vector<String> ParseMetadataString(String metadata_string) {
+  Vector<String> tokens;
+  metadata_string.Split(' ', tokens);
+  return tokens;
+}
+
+// Check whether the comment starts with the given token string, and if so,
+// truncate the comment to the point after the token string.
+bool StartsWithDeclarativeDOMPart(String& trimmed_comment, String token_start) {
+  if (!trimmed_comment.StartsWithIgnoringASCIICase(token_start)) {
+    return false;
+  }
+  // The token must be followed by whitespace, or the end of the string.
+  if (trimmed_comment.length() == token_start.length()) {
+    trimmed_comment = WTF::g_empty_string;
+    return true;
+  }
+  if (IsHTMLSpace<UChar>(trimmed_comment[token_start.length()])) {
+    trimmed_comment = trimmed_comment.Substring(token_start.length() + 1);
+    return true;
+  }
+  return false;
+}
+}  // namespace
+
 void HTMLConstructionSite::InsertComment(AtomicHTMLToken* token) {
   DCHECK_EQ(token->GetType(), HTMLToken::kComment);
-  AttachLater(CurrentNode(),
-              Comment::Create(OwnerDocumentForCurrentNode(), token->Comment()));
+  auto comment = token->Comment();
+  Comment& comment_node =
+      *Comment::Create(OwnerDocumentForCurrentNode(), comment);
+  if (RuntimeEnabledFeatures::DOMPartsAPIEnabled()) {
+    // This strips HTML whitespace from the front and back, and replaces
+    // repeated whitespace with a single ' '.
+    auto trimmed_comment = comment.SimplifyWhiteSpace(IsHTMLSpace<UChar>);
+    if (trimmed_comment.EndsWith("?")) {
+      trimmed_comment.Truncate(trimmed_comment.length() - 1);
+      const String kChildNodePartStart = "?child-node-part";
+      const String kChildNodePartEnd = "?/child-node-part";
+      const String kNodePart = "?node-part";
+      if (StartsWithDeclarativeDOMPart(trimmed_comment, kChildNodePartStart)) {
+        GetPendingDOMParts().AddChildNodePartStart(
+            comment_node, ParseMetadataString(trimmed_comment));
+      } else if (StartsWithDeclarativeDOMPart(trimmed_comment,
+                                              kChildNodePartEnd)) {
+        GetPendingDOMParts().AddChildNodePartEnd(comment_node);
+      } else if (StartsWithDeclarativeDOMPart(trimmed_comment, kNodePart)) {
+        GetPendingDOMParts().AddNodePart(comment_node,
+                                         ParseMetadataString(trimmed_comment));
+      }
+    }
+  }
+  AttachLater(CurrentNode(), &comment_node);
 }
 
 void HTMLConstructionSite::InsertCommentOnDocument(AtomicHTMLToken* token) {
@@ -1305,9 +1369,83 @@ void HTMLConstructionSite::FosterParent(Node* node) {
   QueueTask(task, true);
 }
 
+HTMLConstructionSite::PendingDOMParts::PendingDOMParts(
+    ContainerNode* attachment_root) {
+  CHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled());
+  if (Document* document = DynamicTo<Document>(attachment_root)) {
+    document_part_root_ = &document->getPartRoot();
+  } else {
+    DocumentFragment* fragment = DynamicTo<DocumentFragment>(attachment_root);
+    CHECK(fragment) << "Attachment root should be Document or DocumentFragment";
+    document_part_root_ = &fragment->getPartRoot();
+  }
+}
+
+void HTMLConstructionSite::PendingDOMParts::AddNodePart(
+    Comment& node_part_comment,
+    Vector<String> metadata) {
+  CHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled());
+  pending_node_part_comment_node_ = &node_part_comment;
+  pending_node_part_metadata_ = metadata;
+  // Nothing to construct yet - wait for the next Node.
+}
+void HTMLConstructionSite::PendingDOMParts::AddChildNodePartStart(
+    Node& previous_sibling,
+    Vector<String> metadata) {
+  CHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled());
+  // Note that this ChildNodePart is constructed with both `previous_sibling`
+  // and `next_sibling` pointing to the same node, `previous_sibling`. That's
+  // because at this point we will move on to parse the children of this
+  // ChildNodePart, and at that point, we'll need a constructed PartRoot for
+  // those to attach to. So we build this currently-invalid ChildNodePart, and
+  // then update its `next_sibling` later when we find it, rendering it (and
+  // any dependant Parts) valid.
+  ChildNodePart* new_part = MakeGarbageCollected<ChildNodePart>(
+      *CurrentPartRoot(), previous_sibling, previous_sibling, metadata);
+  child_node_part_stack_.push_back(new_part);
+}
+void HTMLConstructionSite::PendingDOMParts::AddChildNodePartEnd(
+    Node& next_sibling) {
+  CHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled());
+  if (child_node_part_stack_.empty()) {
+    // Mismatched opening/closing child parts.
+    return;
+  }
+  ChildNodePart* last_child_node_part = child_node_part_stack_.back();
+  last_child_node_part->setNextSibling(next_sibling);
+  child_node_part_stack_.pop_back();
+}
+
+void HTMLConstructionSite::PendingDOMParts::MaybeConstructNodePart(
+    Node& last_node) {
+  CHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled());
+  if (!pending_node_part_comment_node_) {
+    return;
+  }
+  if (&last_node != pending_node_part_comment_node_) {
+    MakeGarbageCollected<NodePart>(*CurrentPartRoot(), last_node,
+                                   pending_node_part_metadata_);
+    pending_node_part_comment_node_ = nullptr;
+    pending_node_part_metadata_.clear();
+  }
+}
+
+PartRoot* HTMLConstructionSite::PendingDOMParts::CurrentPartRoot() const {
+  if (child_node_part_stack_.empty()) {
+    return document_part_root_;
+  }
+  return child_node_part_stack_.back().Get();
+}
+
 void HTMLConstructionSite::PendingText::Trace(Visitor* visitor) const {
   visitor->Trace(parent);
   visitor->Trace(next_child);
+}
+
+void HTMLConstructionSite::PendingDOMParts::Trace(Visitor* visitor) const {
+  visitor->Trace(pending_node_part_comment_node_);
+  visitor->Trace(child_node_part_stack_);
+  visitor->Trace(document_part_root_);
 }
 
 }  // namespace blink
