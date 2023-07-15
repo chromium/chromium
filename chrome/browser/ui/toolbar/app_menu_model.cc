@@ -1374,9 +1374,13 @@ void AppMenuModel::Build() {
   if (app_menu_icon_controller_ &&
       app_menu_icon_controller_->GetTypeAndSeverity().type ==
           AppMenuIconController::IconType::UPGRADE_NOTIFICATION) {
-    const auto update_icon = ui::ImageModel::FromVectorIcon(
-        kBrowserToolsUpdateIcon,
-        app_menu_icon_controller_->GetIconColor(absl::nullopt));
+    const auto update_icon =
+        features::IsChromeRefresh2023()
+            ? ui::ImageModel::FromVectorIcon(
+                  kBrowserToolsUpdateIcon, ui::kColorMenuIcon, kDefaultIconSize)
+            : ui::ImageModel::FromVectorIcon(
+                  kBrowserToolsUpdateIcon,
+                  app_menu_icon_controller_->GetIconColor(absl::nullopt));
     if (browser_defaults::kShowUpgradeMenuItem) {
       AddItemWithIcon(IDC_UPGRADE_DIALOG, GetUpgradeDialogMenuItemName(),
                       update_icon);
