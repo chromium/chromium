@@ -13,6 +13,8 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/time/time.h"
+#include "chrome/browser/cart/cart_service.h"
+#include "chrome/browser/cart/cart_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/history_clusters/history_clusters_service_factory.h"
 #include "chrome/browser/new_tab_page/modules/history_clusters/history_clusters_module_service_factory.h"
@@ -43,6 +45,13 @@
 
 namespace {
 
+class MockCartService : public CartService {
+ public:
+  explicit MockCartService(Profile* profile) : CartService(profile) {}
+
+  MOCK_METHOD1(LoadAllActiveCarts, void(CartDB::LoadCallback callback));
+};
+
 class HistoryClustersPageHandlerV2Test : public BrowserWithTestWindowTest {
  public:
   HistoryClustersPageHandlerV2Test() = default;
@@ -60,6 +69,8 @@ class HistoryClustersPageHandlerV2Test : public BrowserWithTestWindowTest {
     mock_history_service_ =
         static_cast<MockHistoryService*>(HistoryServiceFactory::GetForProfile(
             profile(), ServiceAccessType::EXPLICIT_ACCESS));
+    mock_cart_service_ = static_cast<MockCartService*>(
+        CartServiceFactory::GetForProfile(profile()));
     handler_ = std::make_unique<HistoryClustersPageHandlerV2>(
         mojo::PendingReceiver<ntp::history_clusters_v2::mojom::PageHandler>(),
         web_contents_.get());
@@ -81,6 +92,8 @@ class HistoryClustersPageHandlerV2Test : public BrowserWithTestWindowTest {
 
   MockHistoryService& mock_history_service() { return *mock_history_service_; }
 
+  MockCartService& mock_cart_service() { return *mock_cart_service_; }
+
   HistoryClustersPageHandlerV2& handler() { return *handler_; }
 
   ukm::SourceId ukm_source_id() const { return ukm_source_id_; }
@@ -90,27 +103,33 @@ class HistoryClustersPageHandlerV2Test : public BrowserWithTestWindowTest {
  private:
   // BrowserWithTestWindowTest:
   TestingProfile::TestingFactories GetTestingFactories() override {
-    return {
-        {HistoryClustersModuleServiceFactory::GetInstance(),
-         base::BindRepeating([](content::BrowserContext* context)
-                                 -> std::unique_ptr<KeyedService> {
-           return std::make_unique<MockHistoryClustersModuleService>();
-         })},
-        {HistoryServiceFactory::GetInstance(),
-         base::BindRepeating([](content::BrowserContext* context)
-                                 -> std::unique_ptr<KeyedService> {
-           return std::make_unique<MockHistoryService>();
-         })},
-        {TemplateURLServiceFactory::GetInstance(),
-         base::BindRepeating(&TemplateURLServiceFactory::BuildInstanceFor)}};
+    return {{HistoryClustersModuleServiceFactory::GetInstance(),
+             base::BindRepeating([](content::BrowserContext* context)
+                                     -> std::unique_ptr<KeyedService> {
+               return std::make_unique<MockHistoryClustersModuleService>();
+             })},
+            {HistoryServiceFactory::GetInstance(),
+             base::BindRepeating([](content::BrowserContext* context)
+                                     -> std::unique_ptr<KeyedService> {
+               return std::make_unique<MockHistoryService>();
+             })},
+            {TemplateURLServiceFactory::GetInstance(),
+             base::BindRepeating(&TemplateURLServiceFactory::BuildInstanceFor)},
+            {CartServiceFactory::GetInstance(),
+             base::BindRepeating([](content::BrowserContext* context)
+                                     -> std::unique_ptr<KeyedService> {
+               return std::make_unique<MockCartService>(
+                   Profile::FromBrowserContext(context));
+             })}};
   }
 
+  std::unique_ptr<content::WebContents> web_contents_;
   raw_ptr<MockHistoryClustersModuleService, DanglingUntriaged>
       mock_history_clusters_module_service_;
-  std::unique_ptr<content::WebContents> web_contents_;
   raw_ptr<MockHistoryClustersTabHelper, DanglingUntriaged>
       mock_history_clusters_tab_helper_;
   raw_ptr<MockHistoryService, DanglingUntriaged> mock_history_service_;
+  raw_ptr<MockCartService, DanglingUntriaged> mock_cart_service_;
   std::unique_ptr<HistoryClustersPageHandlerV2> handler_;
   ukm::SourceId ukm_source_id_;
 };
@@ -387,6 +406,30 @@ TEST_F(HistoryClustersPageHandlerV2Test, UpdateClusterVisitsInteractionState) {
   for (size_t i = 0; i < visit_ids.size(); i++) {
     ASSERT_EQ(static_cast<history::VisitID>(i), visit_ids[i]);
   }
+}
+
+TEST_F(HistoryClustersPageHandlerV2Test, NotLoadCartWithoutFeature) {
+  history_clusters::mojom::ClusterPtr cluster_mojom;
+  EXPECT_CALL(mock_cart_service(), LoadAllActiveCarts(testing::_)).Times(0);
+  handler().GetCartForCluster(std::move(cluster_mojom), base::DoNothing());
+}
+
+class HistoryClustersPageHandlerV2CartInQuestTest
+    : public HistoryClustersPageHandlerV2Test {
+ public:
+  HistoryClustersPageHandlerV2CartInQuestTest() {
+    features_.InitAndEnableFeature(
+        ntp_features::kNtpChromeCartInHistoryClusterModule);
+  }
+
+ private:
+  base::test::ScopedFeatureList features_;
+};
+
+TEST_F(HistoryClustersPageHandlerV2CartInQuestTest, LoadCartWithFeature) {
+  history_clusters::mojom::ClusterPtr cluster_mojom;
+  EXPECT_CALL(mock_cart_service(), LoadAllActiveCarts(testing::_)).Times(1);
+  handler().GetCartForCluster(std::move(cluster_mojom), base::DoNothing());
 }
 
 }  // namespace

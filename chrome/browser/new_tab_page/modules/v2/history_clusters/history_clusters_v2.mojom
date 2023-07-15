@@ -14,6 +14,10 @@ interface PageHandler {
   // Get a series of relevant history clusters.
   GetClusters() => (array<history_clusters.mojom.Cluster> clusters);
 
+  // Get the most relevant cart for given `cluster`.
+  GetCartForCluster(history_clusters.mojom.Cluster cluster)
+    => (ntp.history_clusters.cart.mojom.Cart? cart);
+
   // Open or make visible the Journeys UI on the Side Panel.
   ShowJourneysSidePanel(string query);
 

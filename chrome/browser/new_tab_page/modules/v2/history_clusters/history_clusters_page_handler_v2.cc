@@ -11,7 +11,9 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/time/time.h"
+#include "chrome/browser/cart/cart_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
+#include "chrome/browser/new_tab_page/modules/history_clusters/cart/cart_processor.h"
 #include "chrome/browser/new_tab_page/modules/history_clusters/history_clusters_module_service.h"
 #include "chrome/browser/new_tab_page/modules/history_clusters/history_clusters_module_service_factory.h"
 #include "chrome/browser/new_tab_page/modules/history_clusters/history_clusters_module_util.h"
@@ -53,7 +55,13 @@ HistoryClustersPageHandlerV2::HistoryClustersPageHandlerV2(
       web_contents_(web_contents),
       ranking_metrics_logger_(
           std::make_unique<HistoryClustersModuleRankingMetricsLogger>(
-              web_contents_->GetPrimaryMainFrame()->GetPageUkmSourceId())) {}
+              web_contents_->GetPrimaryMainFrame()->GetPageUkmSourceId())) {
+  if (base::FeatureList::IsEnabled(
+          ntp_features::kNtpChromeCartInHistoryClusterModule)) {
+    cart_processor_ = std::make_unique<CartProcessor>(
+        CartServiceFactory::GetForProfile(profile_));
+  }
+}
 
 HistoryClustersPageHandlerV2::~HistoryClustersPageHandlerV2() {
   receiver_.reset();
@@ -132,6 +140,18 @@ void HistoryClustersPageHandlerV2::GetClusters(GetClustersCallback callback) {
       filter_params, static_cast<size_t>(kMinRequiredRelatedSearches),
       base::BindOnce(&HistoryClustersPageHandlerV2::CallbackWithClusterData,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void HistoryClustersPageHandlerV2::GetCartForCluster(
+    history_clusters::mojom::ClusterPtr cluster,
+    GetCartForClusterCallback callback) {
+  if (!base::FeatureList::IsEnabled(
+          ntp_features::kNtpChromeCartInHistoryClusterModule)) {
+    std::move(callback).Run(nullptr);
+    return;
+  }
+  DCHECK(cart_processor_);
+  cart_processor_->GetCartForCluster(std::move(cluster), std::move(callback));
 }
 
 void HistoryClustersPageHandlerV2::ShowJourneysSidePanel(

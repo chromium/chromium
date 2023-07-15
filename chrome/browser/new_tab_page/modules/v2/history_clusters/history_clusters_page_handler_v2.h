@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
+#include "chrome/browser/new_tab_page/modules/history_clusters/cart/cart.mojom.h"
 #include "chrome/browser/new_tab_page/modules/history_clusters/history_clusters_layout_type.mojom.h"
 #include "chrome/browser/new_tab_page/modules/v2/history_clusters/history_clusters_v2.mojom.h"
 #include "components/history/core/browser/history_types.h"
@@ -20,6 +21,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
+class CartProcessor;
 class HistoryClustersModuleRankingMetricsLogger;
 class HistoryClustersModuleRankingSignals;
 class Profile;
@@ -42,6 +44,8 @@ class HistoryClustersPageHandlerV2
 
   // mojom::PageHandler:
   void GetClusters(GetClustersCallback callback) override;
+  void GetCartForCluster(history_clusters::mojom::ClusterPtr cluster,
+                         GetCartForClusterCallback callback) override;
   void ShowJourneysSidePanel(const std::string& query) override;
   void RecordClick(int64_t cluster_id) override;
   void RecordLayoutTypeShown(
@@ -64,6 +68,7 @@ class HistoryClustersPageHandlerV2
   raw_ptr<content::WebContents, DanglingUntriaged> web_contents_;
 
   base::CancelableTaskTracker update_visits_task_tracker_;
+  std::unique_ptr<CartProcessor> cart_processor_;
   // The logger used to record metrics related to module ranking scoped to
   // `this`. Will be nullptr until clusters are received and ranking signals are
   // returned in the callback.
