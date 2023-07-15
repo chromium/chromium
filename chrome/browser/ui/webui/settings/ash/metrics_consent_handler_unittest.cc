@@ -260,10 +260,12 @@ class MetricsConsentHandlerTest : public testing::Test {
   std::unique_ptr<content::TestWebUI> web_ui_;
 
   // MetricsService.
-  std::unique_ptr<metrics::MetricsStateManager> test_metrics_state_manager_;
-  std::unique_ptr<TestUserMetricsServiceClient> test_metrics_service_client_;
+  // Dangling Pointer Prevention: test_enabled_state_provider_ must be listed
+  // before test_metrics_state_manager_ to avoid a dangling pointer.
   std::unique_ptr<metrics::TestEnabledStateProvider>
       test_enabled_state_provider_;
+  std::unique_ptr<metrics::MetricsStateManager> test_metrics_state_manager_;
+  std::unique_ptr<TestUserMetricsServiceClient> test_metrics_service_client_;
   std::unique_ptr<metrics::MetricsService> test_metrics_service_;
 
   // Set up stubs for StatsReportingController.
