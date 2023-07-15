@@ -14,6 +14,7 @@ import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties.FormFactor;
+import org.chromium.chrome.browser.omnibox.suggestions.base.SpacingRecyclerViewItemDecoration;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -51,8 +52,15 @@ public final class BaseCarouselSuggestionViewBinder {
                 view.setPaddingRelative(0, topPadding, 0, bottomPadding);
             }
         } else if (key == SuggestionCommonProperties.DEVICE_FORM_FACTOR) {
-            view.setItemSpacingPx(getItemSpacingPx(
-                    model.get(SuggestionCommonProperties.DEVICE_FORM_FACTOR), view.getResources()));
+            var rv = view.getRecyclerView();
+            int itemDecoration = rv.getItemDecorationCount();
+            while (itemDecoration > 0) {
+                itemDecoration--;
+                rv.removeItemDecorationAt(itemDecoration);
+            }
+            int spacing = getItemSpacingPx(
+                    model.get(SuggestionCommonProperties.DEVICE_FORM_FACTOR), view.getResources());
+            rv.addItemDecoration(new SpacingRecyclerViewItemDecoration(0, spacing / 2));
         } else if (key == BaseCarouselSuggestionViewProperties.HORIZONTAL_FADE) {
             view.setCarouselHorizontalFade(
                     model.get(BaseCarouselSuggestionViewProperties.HORIZONTAL_FADE));

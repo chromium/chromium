@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.omnibox.suggestions.carousel;
 
 import android.content.Context;
-import android.graphics.Rect;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -13,7 +12,6 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.recyclerview.widget.RecyclerView.ItemDecoration;
 import androidx.recyclerview.widget.RecyclerView.RecycledViewPool;
 
 import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
@@ -21,7 +19,6 @@ import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.header.HeaderView;
 import org.chromium.chrome.browser.util.KeyNavigationUtil;
-import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
 /**
@@ -31,7 +28,6 @@ public class BaseCarouselSuggestionView extends LinearLayout {
     private final HeaderView mHeader;
     private final RecyclerView mRecyclerView;
     private final BaseCarouselSuggestionSelectionManager mSelectionManager;
-    private int mItemSpacingPx;
 
     /**
      * Constructs a new carousel suggestion view.
@@ -73,15 +69,6 @@ public class BaseCarouselSuggestionView extends LinearLayout {
         mSelectionManager =
                 new BaseCarouselSuggestionSelectionManager(mRecyclerView.getLayoutManager());
         mRecyclerView.addOnChildAttachStateChangeListener(mSelectionManager);
-
-        mRecyclerView.addItemDecoration(new ItemDecoration() {
-            @Override
-            public void getItemOffsets(
-                    Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
-                outRect.left = 0;
-                outRect.right = mItemSpacingPx;
-            }
-        });
 
         mRecyclerView.setAdapter(adapter);
         addView(mRecyclerView);
@@ -127,18 +114,8 @@ public class BaseCarouselSuggestionView extends LinearLayout {
     }
 
     /** @return Recycler view used by the Carousel suggestion. */
-    public RecyclerView getRecyclerViewForTest() {
+    public RecyclerView getRecyclerView() {
         return mRecyclerView;
-    }
-
-    /**
-     * Applies a new item spacing to the carousel.
-     *
-     * @param itemSpacingPx The requested item spacing, expressed in Pixels.
-     */
-    public void setItemSpacingPx(int itemSpacingPx) {
-        mItemSpacingPx = itemSpacingPx;
-        ViewUtils.requestLayout(mRecyclerView, "BaseCarouselSuggestionView.setItemSpacingPx");
     }
 
     /**

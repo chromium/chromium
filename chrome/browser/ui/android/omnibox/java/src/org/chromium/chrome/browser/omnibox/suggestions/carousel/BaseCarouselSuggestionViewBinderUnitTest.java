@@ -20,6 +20,7 @@ import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.TextView;
 
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.RecycledViewPool;
 
 import org.junit.Assert;
@@ -28,6 +29,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
@@ -37,6 +39,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties.FormFactor;
+import org.chromium.chrome.browser.omnibox.suggestions.base.SpacingRecyclerViewItemDecoration;
 import org.chromium.chrome.browser.omnibox.test.R;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
@@ -61,25 +64,14 @@ public class BaseCarouselSuggestionViewBinderUnitTest {
 
     public @Rule TestRule mFeatures = new Features.JUnitProcessor();
 
-    @Mock
-    BaseCarouselSuggestionView mView;
-
-    @Mock
-    TextView mHeaderTextView;
-
-    @Mock
-    View mHeaderView;
-
-    @Mock
-    View mItemView;
-
-    @Mock
-    SimpleRecyclerViewAdapter mAdapter;
-
-    @Mock
-    Resources mResources;
-    @Mock
-    private Context mContext;
+    private @Mock BaseCarouselSuggestionView mView;
+    private @Mock TextView mHeaderTextView;
+    private @Mock View mHeaderView;
+    private @Mock View mItemView;
+    private @Mock RecyclerView mRecyclerView;
+    private @Mock SimpleRecyclerViewAdapter mAdapter;
+    private @Mock Resources mResources;
+    private @Mock Context mContext;
 
     private ModelList mTiles;
     private PropertyModel mModel;
@@ -100,6 +92,7 @@ public class BaseCarouselSuggestionViewBinderUnitTest {
         when(mView.getAdapter()).thenReturn(mAdapter);
         when(mAdapter.getModelList()).thenReturn(mTiles);
         when(mView.getResources()).thenReturn(mResources);
+        when(mView.getRecyclerView()).thenReturn(mRecyclerView);
 
         when(mResources.getDimensionPixelSize(eq(R.dimen.omnibox_carousel_suggestion_padding)))
                 .thenReturn(SUGGESTION_VERTICAL_PADDING);
@@ -266,7 +259,12 @@ public class BaseCarouselSuggestionViewBinderUnitTest {
         Assert.assertEquals(spacingPx,
                 BaseCarouselSuggestionViewBinder.getItemSpacingPx(FormFactor.TABLET, mResources));
         mModel.set(SuggestionCommonProperties.DEVICE_FORM_FACTOR, FormFactor.TABLET);
-        verify(mView, times(1)).setItemSpacingPx(eq(spacingPx));
+        ArgumentCaptor<SpacingRecyclerViewItemDecoration> captor =
+                ArgumentCaptor.forClass(SpacingRecyclerViewItemDecoration.class);
+        verify(mRecyclerView, times(1)).addItemDecoration(captor.capture());
+        var decoration = captor.getValue();
+        Assert.assertEquals(decoration.leadInSpace, 0);
+        Assert.assertEquals(decoration.elementSpace, spacingPx / 2);
     }
 
     @Test

@@ -5,15 +5,12 @@
 package org.chromium.chrome.browser.omnibox.suggestions.base;
 
 import android.content.Context;
-import android.graphics.Rect;
 import android.view.KeyEvent;
-import android.view.View;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.recyclerview.widget.RecyclerView.ItemDecoration;
 
 import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.R;
@@ -41,29 +38,17 @@ public class ActionChipsView extends RecyclerView {
         setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
         setMinimumHeight(getResources().getDimensionPixelSize(
                 R.dimen.omnibox_action_chips_container_height));
+        setPaddingRelative(0, 0, 0,
+                getResources().getDimensionPixelSize(R.dimen.omnibox_suggestion_content_padding));
 
-        final @Px int actionChipSpacing =
+        final @Px int leadInSpace = getResources().getDimensionPixelSize(
+                OmniboxFeatures.shouldShowModernizeVisualUpdate(context)
+                        ? R.dimen.omnibox_suggestion_icon_area_size_modern
+                        : R.dimen.omnibox_suggestion_icon_area_size);
+        final @Px int elementSpace =
                 getResources().getDimensionPixelSize(R.dimen.omnibox_action_chip_spacing);
 
-        boolean showModernizedSuggestionsList =
-                OmniboxFeatures.shouldShowModernizeVisualUpdate(context);
-        setPaddingRelative(getResources().getDimensionPixelSize(showModernizedSuggestionsList
-                                           ? R.dimen.omnibox_suggestion_icon_area_size_modern
-                                           : R.dimen.omnibox_suggestion_icon_area_size)
-                        - actionChipSpacing / 2,
-                0, 0,
-                getResources().getDimensionPixelSize(R.dimen.omnibox_suggestion_content_padding));
-        // Permit Actions to scroll through the padding area (I know, right?).
-        setClipToPadding(false);
-
-        addItemDecoration(new ItemDecoration() {
-            @Override
-            public void getItemOffsets(
-                    Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
-                outRect.right = actionChipSpacing / 2;
-                outRect.left = actionChipSpacing / 2;
-            }
-        });
+        addItemDecoration(new SpacingRecyclerViewItemDecoration(leadInSpace, elementSpace / 2));
     }
 
     @Override
