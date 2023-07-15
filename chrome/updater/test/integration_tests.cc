@@ -52,6 +52,7 @@
 
 #include "base/environment.h"
 #include "base/strings/strcat.h"
+#include "chrome/updater/util/posix_util.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -454,13 +455,7 @@ class IntegrationTest : public ::testing::Test {
 #define MAYBE_OverinstallWorking OverinstallWorking
 #define MAYBE_SelfUpdateFromOldReal SelfUpdateFromOldReal
 #define MAYBE_UninstallIfUnusedSelfAndOldReal UninstallIfUnusedSelfAndOldReal
-// TODO(crbug.com/1456556): enable OverinstallBrokenSameVersion once it works
-// on non-Windows platforms.
-#if !BUILDFLAG(IS_LINUX)
 #define MAYBE_OverinstallBrokenSameVersion OverinstallBrokenSameVersion
-#else
-#define MAYBE_OverinstallBrokenSameVersion DISABLED_OverinstallBrokenSameVersion
-#endif  // BUILDFLAG(IS_WIN)
 #endif  // BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)
 
 // The project's position is that component builds are not portable outside of
@@ -545,6 +540,14 @@ TEST_F(IntegrationTest, MAYBE_OverinstallBrokenSameVersion) {
       GetUpdaterExecutablePath(GetTestScope());
   ASSERT_TRUE(exe_path.has_value());
   ASSERT_NO_FATAL_FAILURE(DeleteFile(*exe_path));
+#if BUILDFLAG(IS_LINUX)
+  // On Linux, a qualified service makes a full copy of itself, so we have to
+  // delete the copy that systemd uses too.
+  absl::optional<base::FilePath> launcher_path =
+      GetUpdateServiceLauncherPath(GetTestScope());
+  ASSERT_TRUE(launcher_path.has_value());
+  ASSERT_NO_FATAL_FAILURE(DeleteFile(*launcher_path));
+#endif  // BUILDFLAG(IS_LINUX)
 
   // Since the existing version is now not working, it should reinstall. This
   // will ultimately result in no visible change to the prefs file since the
