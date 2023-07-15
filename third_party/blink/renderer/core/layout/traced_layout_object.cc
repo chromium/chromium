@@ -61,8 +61,6 @@ void DumpToTracedValue(const LayoutObject& object,
     traced_value->SetBoolean("selfNeeds", object.SelfNeedsLayout());
   if (object.NormalChildNeedsLayout())
     traced_value->SetBoolean("childNeeds", object.NormalChildNeedsLayout());
-  if (object.PosChildNeedsLayout())
-    traced_value->SetBoolean("posChildNeeds", object.PosChildNeedsLayout());
 
   if (object.IsTableCell()) {
     // Table layout might be dirty if traceGeometry is false.

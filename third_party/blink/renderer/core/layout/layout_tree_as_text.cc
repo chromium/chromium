@@ -276,8 +276,7 @@ void LayoutTreeAsText::WriteLayoutObject(WTF::TextStream& ts,
   }
 
   if (behavior & kLayoutAsTextShowLayoutState) {
-    bool needs_layout = o.SelfNeedsLayout() || o.PosChildNeedsLayout() ||
-                        o.NormalChildNeedsLayout();
+    bool needs_layout = o.SelfNeedsLayout() || o.NormalChildNeedsLayout();
     if (needs_layout)
       ts << " (needs layout:";
 
@@ -292,12 +291,6 @@ void LayoutTreeAsText::WriteLayoutObject(WTF::TextStream& ts,
         ts << ",";
       have_previous = true;
       ts << " child";
-    }
-
-    if (o.PosChildNeedsLayout()) {
-      if (have_previous)
-        ts << ",";
-      ts << " positioned child";
     }
 
     if (needs_layout)

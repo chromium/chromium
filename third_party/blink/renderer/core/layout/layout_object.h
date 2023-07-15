@@ -1527,14 +1527,12 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     NOT_DESTROYED();
     return bitfields_.SelfNeedsLayoutForStyle() ||
            bitfields_.NormalChildNeedsLayout() ||
-           bitfields_.PosChildNeedsLayout() ||
            bitfields_.NeedsSimplifiedNormalFlowLayout();
   }
 
   bool NeedsSimplifiedLayoutOnly() const {
     NOT_DESTROYED();
-    return (bitfields_.PosChildNeedsLayout() ||
-            bitfields_.NeedsSimplifiedNormalFlowLayout()) &&
+    return bitfields_.NeedsSimplifiedNormalFlowLayout() &&
            !bitfields_.SelfNeedsLayoutForStyle() &&
            !bitfields_.NormalChildNeedsLayout();
   }
@@ -1542,10 +1540,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   bool SelfNeedsLayout() const {
     NOT_DESTROYED();
     return bitfields_.SelfNeedsLayoutForStyle();
-  }
-  bool PosChildNeedsLayout() const {
-    NOT_DESTROYED();
-    return bitfields_.PosChildNeedsLayout();
   }
   bool NeedsSimplifiedNormalFlowLayout() const {
     NOT_DESTROYED();
@@ -3886,7 +3880,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     LayoutObjectBitfields(Node* node)
         : self_needs_layout_for_style_(false),
           normal_child_needs_layout_(false),
-          pos_child_needs_layout_(false),
           needs_simplified_normal_flow_layout_(false),
           self_needs_layout_overflow_recalc_(false),
           child_needs_layout_overflow_recalc_(false),
@@ -3977,10 +3970,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     // CSS, laying out a child can cause the parent to resize (e.g., if 'height'
     // is auto).
     ADD_BOOLEAN_BITFIELD(normal_child_needs_layout_, NormalChildNeedsLayout);
-
-    // This boolean is set when an out-of-flow positioned ('position' == fixed
-    // || absolute) child requires layout (but this object doesn't).
-    ADD_BOOLEAN_BITFIELD(pos_child_needs_layout_, PosChildNeedsLayout);
 
     // Simplified normal flow layout only relayouts the normal flow children,
     // ignoring the out-of-flow descendants.
@@ -4327,11 +4316,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     if (b)
       bitfields_.SetIsTableColumnsConstraintsDirty(true);
   }
-  void SetPosChildNeedsLayout(bool b) {
-    NOT_DESTROYED();
-    DCHECK(!GetDocument().InPostLifecycleSteps());
-    bitfields_.SetPosChildNeedsLayout(b);
-  }
   void SetNeedsSimplifiedNormalFlowLayout(bool b) {
     NOT_DESTROYED();
     DCHECK(!GetDocument().InPostLifecycleSteps());
@@ -4437,11 +4421,9 @@ inline void LayoutObject::ClearNeedsLayoutWithoutPaintInvalidation() {
   SetSelfNeedsLayoutForStyle(false);
 
   if (!ChildLayoutBlockedByDisplayLock()) {
-    SetPosChildNeedsLayout(false);
     SetNormalChildNeedsLayout(false);
     SetNeedsSimplifiedNormalFlowLayout(false);
-  } else if (!PosChildNeedsLayout() && !NormalChildNeedsLayout() &&
-             !NeedsSimplifiedNormalFlowLayout()) {
+  } else if (!NormalChildNeedsLayout() && !NeedsSimplifiedNormalFlowLayout()) {
     // We aren't clearing the child dirty bits because the node is locked and
     // layout for children is not done. If the children aren't dirty,  we need
     // to notify the display lock that child traversal was blocked so that when

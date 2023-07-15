@@ -88,8 +88,7 @@ const NGLayoutResult* LayoutBox::CachedLayoutResult(
   // re-layout when unlocking.
   bool is_blocked_by_display_lock = ChildLayoutBlockedByDisplayLock();
   bool child_needs_layout_unless_locked =
-      !is_blocked_by_display_lock &&
-      (PosChildNeedsLayout() || NormalChildNeedsLayout());
+      !is_blocked_by_display_lock && NormalChildNeedsLayout();
 
   const NGPhysicalBoxFragment& physical_fragment =
       To<NGPhysicalBoxFragment>(cached_layout_result->PhysicalFragment());

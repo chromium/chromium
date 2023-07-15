@@ -1461,14 +1461,14 @@ void LayoutObject::MarkContainerChainForLayout(bool schedule_relayout) {
     LayoutObject* container = object->Container();
     if (!container && !IsA<LayoutView>(object))
       return;
+
     if (!last->IsTextOrSVGChild() && last->StyleRef().HasOutOfFlowPosition()) {
       object = last->ContainingBlock();
-      if (object->PosChildNeedsLayout())
-        return;
       container = object->Container();
-      object->SetPosChildNeedsLayout(true);
       simplified_normal_flow_layout = true;
-    } else if (simplified_normal_flow_layout) {
+    }
+
+    if (simplified_normal_flow_layout) {
       if (object->NeedsSimplifiedNormalFlowLayout())
         return;
       object->SetNeedsSimplifiedNormalFlowLayout(true);
