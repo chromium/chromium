@@ -57,7 +57,8 @@ class DeviceTrustBrowserTestBase : public MixinBasedInProcessBrowserTest {
   // challenge response has been returned. Verifies that `success_result` was
   // logged properly.
   void VerifyAttestationFlowSuccessful(
-      DTAttestationResult success_result = DTAttestationResult::kSuccess);
+      DTAttestationResult success_result = DTAttestationResult::kSuccess,
+      absl::optional<DTAttestationPolicyLevel> policy_level = absl::nullopt);
 
   // Verifies that an attestation flow was started, but failed early.
   // `expected_challenge_response` will be used to verify what error challenge
@@ -83,11 +84,11 @@ class DeviceTrustBrowserTestBase : public MixinBasedInProcessBrowserTest {
 
   std::string challenge_value_;
   net::test_server::EmbeddedTestServerHandle test_server_handle_;
-  std::unique_ptr<base::HistogramTester> histogram_tester_;
   absl::optional<const net::test_server::HttpRequest>
       initial_attestation_request_;
   absl::optional<const net::test_server::HttpRequest>
       challenge_response_request_;
+  std::unique_ptr<base::HistogramTester> histogram_tester_;
 };
 
 }  // namespace enterprise_connectors::test

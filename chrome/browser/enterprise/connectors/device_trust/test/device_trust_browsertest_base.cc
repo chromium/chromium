@@ -36,6 +36,8 @@ constexpr char kLatencySuccessHistogramName[] =
     "Enterprise.DeviceTrust.Attestation.ResponseLatency.Success";
 constexpr char kLatencyFailureHistogramName[] =
     "Enterprise.DeviceTrust.Attestation.ResponseLatency.Failure";
+constexpr char kAttestationPolicyLevelHistogramName[] =
+    "Enterprise.DeviceTrust.Attestation.PolicyLevel";
 
 constexpr char kChallenge[] =
     "{"
@@ -157,7 +159,8 @@ std::string DeviceTrustBrowserTestBase::GetChallengeResponseHeader() {
 }
 
 void DeviceTrustBrowserTestBase::VerifyAttestationFlowSuccessful(
-    DTAttestationResult success_result) {
+    DTAttestationResult success_result,
+    absl::optional<DTAttestationPolicyLevel> policy_level) {
   std::string challenge_response = GetChallengeResponseHeader();
   // TODO(crbug.com/1241857): Add challenge-response validation.
   EXPECT_TRUE(!challenge_response.empty());
@@ -167,6 +170,11 @@ void DeviceTrustBrowserTestBase::VerifyAttestationFlowSuccessful(
                                         1);
   histogram_tester_->ExpectTotalCount(kLatencySuccessHistogramName, 1);
   histogram_tester_->ExpectTotalCount(kLatencyFailureHistogramName, 0);
+
+  if (policy_level) {
+    histogram_tester_->ExpectUniqueSample(kAttestationPolicyLevelHistogramName,
+                                          policy_level.value(), 1);
+  }
 }
 
 void DeviceTrustBrowserTestBase::VerifyAttestationFlowFailure(
