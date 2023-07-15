@@ -40,12 +40,7 @@ using AssistantOnboardingSuggestionViewTest = AshTestBase;
 
 TEST_F(AssistantOnboardingSuggestionViewTest, DarkAndLightTheme) {
   auto* dark_light_mode_controller = DarkLightModeControllerImpl::Get();
-  dark_light_mode_controller->OnActiveUserPrefServiceChanged(
-      Shell::Get()->session_controller()->GetActivePrefService());
-  Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
-      prefs::kDarkModeEnabled, false);
-  ASSERT_FALSE(dark_light_mode_controller->IsDarkModeEnabled());
-
+  dark_light_mode_controller->SetDarkModeEnabledForTest(false);
   std::unique_ptr<views::Widget> widget = CreateTestWidget();
 
   AssistantOnboardingSuggestionView* suggestion_view_0 =
@@ -91,8 +86,7 @@ TEST_F(AssistantOnboardingSuggestionViewTest, DarkAndLightTheme) {
   EXPECT_EQ(GetLabel(suggestion_view_5)->GetEnabledColor(),
             gfx::kGoogleBlue800);
 
-  Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
-      prefs::kDarkModeEnabled, true);
+  dark_light_mode_controller->SetDarkModeEnabledForTest(true);
   ASSERT_TRUE(DarkLightModeControllerImpl::Get()->IsDarkModeEnabled());
 
   // 0x4c is for 30% alpha. 255*0.3=76.5. 0x4c is 76 in hex.
