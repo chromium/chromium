@@ -80,6 +80,8 @@ if (!is_cronet_build && is_android) {
 if (!is_cronet_build || is_ios) {
   static_library("metrics") {
     sources = [
+      "android_metrics_helper.cc",
+      "android_metrics_helper.h",
       "android_metrics_provider.cc",
       "android_metrics_provider.h",
       "call_stack_profile_metrics_provider.cc",
@@ -489,6 +491,7 @@ if (!is_cronet_build) {
   source_set("unit_tests") {
     testonly = true
     sources = [
+      "android_metrics_helper_unittest.cc",
       "android_metrics_provider_unittest.cc",
       "call_stack_profile_builder_unittest.cc",
       "call_stack_profile_metadata_unittest.cc",

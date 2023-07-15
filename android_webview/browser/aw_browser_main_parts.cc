@@ -4,7 +4,6 @@
 
 #include "android_webview/browser/aw_browser_main_parts.h"
 
-#include <sys/system_properties.h>
 #include <memory>
 #include <set>
 #include <string>
@@ -43,6 +42,7 @@
 #include "components/embedder_support/origin_trials/component_updater_utils.h"
 #include "components/embedder_support/origin_trials/origin_trials_settings_storage.h"
 #include "components/heap_profiling/multi_process/supervisor.h"
+#include "components/metrics/android_metrics_helper.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/metrics/metrics_service.h"
 #include "components/services/heap_profiling/public/cpp/settings.h"
@@ -213,14 +213,11 @@ void AwBrowserMainParts::RegisterSyntheticTrials() {
   //    a particular bitness, thus don't participate in the experiment.
   // TODO(crbug.com/1462131): Implement #2 for WebView.
   size_t ram_mb = base::SysInfo::AmountOfPhysicalMemoryMB();
-  char abilist32[PROP_VALUE_MAX];
-  char abilist64[PROP_VALUE_MAX];
-  bool has_abilist32 =
-      __system_property_get("ro.vendor.product.cpu.abilist32", abilist32) > 0;
-  bool has_abilist64 =
-      __system_property_get("ro.vendor.product.cpu.abilist64", abilist64) > 0;
-  bool is_device_of_interest = (3.2 * 1024 < ram_mb && ram_mb < 6.5 * 1024) &&
-                               (has_abilist32 && has_abilist64);
+  auto abi_bitness_support =
+      metrics::AndroidMetricsHelper::GetInstance()->abi_bitness_support();
+  bool is_device_of_interest =
+      (3.2 * 1024 < ram_mb && ram_mb < 6.5 * 1024) &&
+      (abi_bitness_support == metrics::AbiBitnessSupport::k32And64bit);
   if (is_device_of_interest) {
     std::string trial_group;
     // We can't use defined(ARCH_CPU_64_BITS) on WebView, because bitness of
