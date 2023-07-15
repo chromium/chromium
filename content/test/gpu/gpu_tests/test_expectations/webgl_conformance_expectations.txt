@@ -491,7 +491,6 @@ crbug.com/642822 [ mac amd ] conformance/rendering/clipping-wide-points.html [ F
 crbug.com/1230781 [ mac amd-0x679e ] conformance/canvas/to-data-url-test.html [ Failure ]
 crbug.com/1230781 [ mac amd-0x67ef angle-opengl ] conformance/canvas/to-data-url-test.html [ Failure ]
 
-crbug.com/1276186 [ mac amd-0x679e angle-opengl ] conformance/rendering/clear-default-framebuffer-with-scissor-test.html [ Failure ]
 crbug.com/1276186 [ mac amd-0x67ef angle-opengl ] conformance/rendering/clear-default-framebuffer-with-scissor-test.html [ Failure ]
 
 # TODO(kbr): uncomment the following expectation after test has
@@ -651,20 +650,7 @@ crbug.com/angleproject/5038 [ chromeos passthrough ] conformance/extensions/ext-
 # Failures on validating command decoder only; won't fix.
 crbug.com/angleproject/5038 [ chromeos chromeos-board-amd64-generic mesa_ge_21.0 no-passthrough target-cpu-64 ] conformance/extensions/ext-color-buffer-half-float.html [ Failure ]
 
-crbug.com/1080400 [ chromeos chromeos-board-kevin ] WebglExtension_EXT_color_buffer_half_float [ Failure ]
-crbug.com/1080356 [ chromeos chromeos-board-kevin ] WebglExtension_EXT_frag_depth [ Failure ]
-crbug.com/1080375 [ chromeos chromeos-board-kevin ] WebglExtension_OES_texture_float [ Failure ]
-crbug.com/1080402 [ chromeos chromeos-board-kevin ] WebglExtension_OES_texture_float_linear [ Failure ]
-crbug.com/1080403 [ chromeos chromeos-board-kevin ] WebglExtension_OES_texture_half_float [ Failure ]
-crbug.com/1080404 [ chromeos chromeos-board-kevin ] WebglExtension_OES_texture_half_float_linear [ Failure ]
-crbug.com/1080407 [ chromeos chromeos-board-kevin ] WebglExtension_WEBGL_color_buffer_float [ Failure ]
-crbug.com/1080379 [ chromeos chromeos-board-kevin ] conformance/glsl/bugs/constant-precision-qualifier.html [ Failure ]
-crbug.com/1080380 [ chromeos chromeos-board-kevin ] conformance/offscreencanvas/context-lost-restored-worker.html [ Failure ]
-crbug.com/1080380 [ chromeos chromeos-board-kevin ] conformance/offscreencanvas/context-lost-restored.html [ Failure ]
-crbug.com/1108368 [ chromeos chromeos-board-kevin ] conformance/misc/shader-precision-format.html [ Failure ]
-crbug.com/1357064 [ chromeos chromeos-board-kevin no-passthrough ] conformance/rendering/blending.html [ Failure ]
 
-crbug.com/1441195 [ chromeos chromeos-board-kevin no-passthrough ] conformance/context/context-creation-and-destruction.html [ RetryOnFailure ]
 
 ## VM Issues ##
 
