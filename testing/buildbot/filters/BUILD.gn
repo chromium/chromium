@@ -134,6 +134,7 @@ source_set("content_browsertests_filters") {
     "//testing/buildbot/filters/android.emulator_12l_13.content_browsertests.filter",
     "//testing/buildbot/filters/android.emulator_12.oop_network_service_content_browsertests.filter",
     "//testing/buildbot/filters/android.emulator_n.content_browsertests.filter",
+    "//testing/buildbot/filters/android.emulator_o.content_browsertests.filter",
     "//testing/buildbot/filters/android.emulator_p.content_browsertests.filter",
     "//testing/buildbot/filters/android.pie_arm64.content_browsertests_coverage.filter",
     "//testing/buildbot/filters/cast-linux.content_browsertests.filter",

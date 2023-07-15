@@ -2026,6 +2026,9 @@
         },
       },
       'android-oreo-x86-rel': {
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_o.content_browsertests.filter',
+        ],
         'swarming': {
           'shards': 75,
           'dimension_sets': [
