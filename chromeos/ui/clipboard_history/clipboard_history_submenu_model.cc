@@ -9,9 +9,20 @@
 #include "chromeos/ui/clipboard_history/clipboard_history_util.h"
 #include "ui/base/command_id_constants.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/gfx/text_constants.h"
+#include "ui/gfx/text_elider.h"
 #include "ui/strings/grit/ui_strings.h"
 
 namespace chromeos::clipboard_history {
+
+namespace {
+
+// Indicates the maximum length of clipboard history descriptor text. The
+// original text exceeding this length should be truncated and be appended with
+// "..." to mark the end.
+constexpr int kMaxDescriptorTextLength = 50;
+
+}  // namespace
 
 // static
 std::unique_ptr<ClipboardHistorySubmenuModel>
@@ -73,8 +84,11 @@ ClipboardHistorySubmenuModel::ClipboardHistorySubmenuModel(
     // Use the first unbounded command ID as the start ID so that the command
     // IDs in the submenu do not conflict with those in the parent menu.
     const size_t command_id = COMMAND_ID_FIRST_UNBOUNDED + index;
-    AddItemWithIcon(command_id, item_descriptors[index].display_text,
-                    GetIconForDescriptor(item_descriptors[index]));
+    AddItemWithIcon(
+        command_id,
+        gfx::TruncateString(item_descriptors[index].display_text,
+                            kMaxDescriptorTextLength, gfx::CHARACTER_BREAK),
+        GetIconForDescriptor(item_descriptors[index]));
     item_ids_by_command_ids_.emplace(command_id,
                                      item_descriptors[index].item_id);
   }
