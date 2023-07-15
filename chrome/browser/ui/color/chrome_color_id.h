@@ -278,7 +278,10 @@
   E_CPONLY(kColorOmniboxResultsUrlSelected) \
   E_CPONLY(kColorOmniboxSecurityChipDangerous) \
   E_CPONLY(kColorOmniboxSecurityChipDefault) \
+  E_CPONLY(kColorOmniboxSecurityChipInkDropHover) \
+  E_CPONLY(kColorOmniboxSecurityChipInkDropRipple) \
   E_CPONLY(kColorOmniboxSecurityChipSecure) \
+  E_CPONLY(kColorOmniboxSecurityChipText) \
   E_CPONLY(kColorOmniboxText) \
   E_CPONLY(kColorOmniboxTextDimmed) \
   /* Page Info colors */ \

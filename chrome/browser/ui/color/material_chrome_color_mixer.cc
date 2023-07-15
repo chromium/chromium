@@ -177,6 +177,8 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
       ui::kColorSysStateHoverOnSubtle};
   mixer[kColorNewTabButtonInkDropFrameInactive] = {
       kColorNewTabButtonInkDropFrameActive};
+
+  // Omnibox chip colors.
   mixer[kColorOmniboxChipBackground] = {ui::kColorSysBaseContainerElevated};
   mixer[kColorOmniboxChipForegroundLowVisibility] = {ui::kColorSysOnSurface};
   mixer[kColorOmniboxChipForegroundNormalVisibility] = {ui::kColorSysPrimary};
@@ -184,9 +186,19 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
       ui::kColorSysStateHoverDimBlendProtection};
   mixer[kColorOmniboxChipInkDropRipple] = {
       ui::kColorSysStateRippleNeutralOnSubtle};
+  mixer[kColorOmniboxSecurityChipDangerous] = {ui::kColorSysError};
+  mixer[kColorOmniboxSecurityChipInkDropHover] = {
+      ui::kColorSysStateHoverOnProminent};
+  mixer[kColorOmniboxSecurityChipInkDropRipple] = {
+      ui::kColorSysStateRippleNeutralOnProminent};
+  mixer[kColorOmniboxSecurityChipText] = {ui::kColorSysOnError};
+
+  // Tab alert colors.
   mixer[kColorTabAlertMediaRecordingIcon] = {ui::kColorSysError};
   mixer[kColorTabAlertPipPlayingIcon] = {ui::kColorSysPrimary};
   mixer[kColorTabAlertAudioPlayingIcon] = {ui::kColorSysOnSurfaceSubtle};
+
+  // Toolbar colors.
   mixer[kColorToolbar] = {ui::kColorSysBase};
   mixer[kColorToolbarButtonBackgroundHighlightedDefault] = {
       ui::kColorSysStateHoverOnSubtle};
@@ -214,5 +226,6 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorToolbarTextDefault] = {ui::kColorSysOnSurfaceSecondary};
   mixer[kColorToolbarTextDisabled] = {kColorToolbarTextDisabledDefault};
   mixer[kColorToolbarTextDisabledDefault] = {ui::kColorSysStateDisabled};
+
   mixer[kColorWebAuthnIconColor] = {ui::kColorSysPrimary};
 }

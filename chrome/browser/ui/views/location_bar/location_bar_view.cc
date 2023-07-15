@@ -1494,14 +1494,16 @@ SkColor LocationBarView::GetSecurityChipColor(
   ui::ColorId id = OmniboxFieldTrial::IsChromeRefreshIconsEnabled()
                        ? kColorOmniboxText
                        : kColorOmniboxSecurityChipDefault;
-  if (security_level == security_state::SECURE_WITH_POLICY_INSTALLED_CERT)
+  if (security_level == security_state::SECURE_WITH_POLICY_INSTALLED_CERT) {
     id = kColorOmniboxTextDimmed;
-  else if (security_level == security_state::SECURE)
+  } else if (security_level == security_state::SECURE) {
     id = OmniboxFieldTrial::IsChromeRefreshIconsEnabled()
              ? kColorOmniboxText
              : kColorOmniboxSecurityChipSecure;
-  else if (security_level == security_state::DANGEROUS)
+  } else if (security_level == security_state::DANGEROUS) {
     id = kColorOmniboxSecurityChipDangerous;
+  }
+
   return GetColorProvider()->GetColor(id);
 }
 

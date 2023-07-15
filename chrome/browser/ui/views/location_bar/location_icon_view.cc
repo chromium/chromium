@@ -64,43 +64,8 @@ LocationIconView::LocationIconView(
   SetAccessibleProperties(/*is_initialization*/ true);
 
   if (OmniboxFieldTrial::IsChromeRefreshIconsEnabled()) {
-    // TODO(crbug/1399991): Use the ConfigureInkDropForRefresh2023 method once
-    // you do not need to hardcode color values.
-    views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
-    views::InkDrop::Get(this)->SetLayerRegion(views::LayerRegion::kAbove);
-    views::InkDrop::Get(this)->SetCreateRippleCallback(base::BindRepeating(
-        [](views::View* host) -> std::unique_ptr<views::InkDropRipple> {
-          const auto* color_provider = host->GetColorProvider();
-          const SkColor pressed_color =
-              color_provider
-                  ? color_provider->GetColor(kColorPageInfoIconPressed)
-                  : gfx::kPlaceholderColor;
-          const float pressed_alpha = SkColorGetA(pressed_color);
-
-          return std::make_unique<views::FloodFillInkDropRipple>(
-              views::InkDrop::Get(host), host->size(),
-              host->GetLocalBounds().CenterPoint(),
-              SkColorSetA(pressed_color, SK_AlphaOPAQUE),
-              pressed_alpha / SK_AlphaOPAQUE);
-        },
-        this));
-
-    views::InkDrop::Get(this)->SetCreateHighlightCallback(base::BindRepeating(
-        [](views::View* host) {
-          const auto* color_provider = host->GetColorProvider();
-          const SkColor hover_color =
-              color_provider ? color_provider->GetColor(kColorPageInfoIconHover)
-                             : gfx::kPlaceholderColor;
-          const float hover_alpha = SkColorGetA(hover_color);
-
-          auto ink_drop_highlight = std::make_unique<views::InkDropHighlight>(
-              host->size(), host->height() / 2,
-              gfx::PointF(host->GetLocalBounds().CenterPoint()),
-              SkColorSetA(hover_color, SK_AlphaOPAQUE));
-          ink_drop_highlight->set_visible_opacity(hover_alpha / SK_AlphaOPAQUE);
-          return ink_drop_highlight;
-        },
-        this));
+    ConfigureInkDropForRefresh2023(this, kColorPageInfoIconHover,
+                                   kColorPageInfoIconPressed);
   }
 
   UpdateBorder();
@@ -118,6 +83,15 @@ bool LocationIconView::OnMouseDragged(const ui::MouseEvent& event) {
 }
 
 SkColor LocationIconView::GetForegroundColor() const {
+  const std::u16string& display_text =
+      delegate_->GetLocationBarModel()->GetSecureDisplayText();
+  const bool is_text_dangerous =
+      display_text == l10n_util::GetStringUTF16(IDS_DANGEROUS_VERBOSE_STATE);
+
+  if (OmniboxFieldTrial::IsChromeRefreshIconsEnabled() && is_text_dangerous) {
+    return GetColorProvider()->GetColor(kColorOmniboxSecurityChipText);
+  }
+
   SecurityLevel security_level = SecurityLevel::NONE;
   if (!delegate_->IsEditingOrEmpty())
     security_level = delegate_->GetLocationBarModel()->GetSecurityLevel();
@@ -297,8 +271,24 @@ void LocationIconView::UpdateIcon() {
 void LocationIconView::UpdateBackground() {
   if (OmniboxFieldTrial::IsChromeRefreshIconsEnabled()) {
     CHECK(GetColorProvider());
+    const std::u16string& display_text =
+        delegate_->GetLocationBarModel()->GetSecureDisplayText();
+    const bool is_text_dangerous =
+        display_text == l10n_util::GetStringUTF16(IDS_DANGEROUS_VERBOSE_STATE);
+
+    ui::ColorId id = is_text_dangerous ? kColorOmniboxSecurityChipDangerous
+                                       : kColorPageInfoBackground;
     SetBackground(views::CreateRoundedRectBackground(
-        GetColorProvider()->GetColor(kColorPageInfoBackground), height() / 2));
+        GetColorProvider()->GetColor(id), height() / 2));
+
+    if (is_text_dangerous) {
+      ConfigureInkDropForRefresh2023(this,
+                                     kColorOmniboxSecurityChipInkDropHover,
+                                     kColorOmniboxSecurityChipInkDropRipple);
+    } else {
+      ConfigureInkDropForRefresh2023(this, kColorPageInfoIconHover,
+                                     kColorPageInfoIconPressed);
+    }
   } else {
     IconLabelBubbleView::UpdateBackground();
   }
