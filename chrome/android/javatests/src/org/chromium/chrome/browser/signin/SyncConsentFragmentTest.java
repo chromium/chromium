@@ -1100,7 +1100,7 @@ public class SyncConsentFragmentTest {
     @Test
     @LargeTest
     @DisableFeatures({ChromeFeatureList.TANGIBLE_SYNC})
-    @DisabledTest(message = "crbug.com/1459984")
+    @DisabledTest(message = "crbug.com/1462981")
     public void testAutomotiveDevice_tryNavigateViaClickableSpan_deviceLockCreated() {
         mAutoTestRule.setIsAutomotive(true);
         mChromeActivityTestRule.startMainActivityOnBlankPage();

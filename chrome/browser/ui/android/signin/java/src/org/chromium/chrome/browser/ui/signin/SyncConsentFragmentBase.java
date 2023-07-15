@@ -496,6 +496,11 @@ public abstract class SyncConsentFragmentBase extends Fragment
 
     @Override
     public void onDeviceLockReady() {
+        if (mDeviceLockCoordinator == null) {
+            // `mDeviceLockPageCallback` should not be called more than once, even if
+            // `OnDeviceLockReady` is invoked multiple times.
+            return;
+        }
         mDeviceLockCoordinator.destroy();
         mDeviceLockCoordinator = null;
 
