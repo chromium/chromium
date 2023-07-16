@@ -20,6 +20,7 @@ import androidx.cardview.widget.CardView;
 import androidx.core.view.ViewCompat;
 
 import com.ark.browser.database.SearchHistoryManager;
+import com.ark.browser.event.BundleEvent;
 import com.ark.browser.event.LoadUrlEvent;
 import com.ark.browser.model.SearchHistory;
 import com.ark.browser.settings.AppConfig;
@@ -55,6 +56,7 @@ import com.zpj.utils.KeyboardUtils;
 import com.zpj.utils.ScreenUtils;
 import com.zpj.widget.toolbar.ZSearchBar;
 
+import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.download.DownloadInfo;
@@ -306,9 +308,7 @@ public class SearchFragment extends BaseDialogFragment<SearchFragment>
             holder.setOnItemClickListener(v -> {
                 tab.selectTab();
                 dismiss();
-//                GetLauncherEvent.post(fragment -> {
-//                    fragment.goToBrowser(false);
-//                });
+                BundleEvent.with(BundleEvent.ACTION_GO_TO_BROWSER).post();
             });
         }
 

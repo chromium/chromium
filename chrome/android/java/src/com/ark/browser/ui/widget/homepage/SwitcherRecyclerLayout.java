@@ -140,7 +140,7 @@ public class SwitcherRecyclerLayout extends ViewGroup {
             @Override
             public void didAddTab(ITab tab, @TabSelectionType int type) {
                 Log.d(TAG, "didAddTab state=" + mState);
-                mPosition = TabGroupManager.global().getCurrentTabGroup().getIndex();
+                setPosition(TabGroupManager.global().getCurrentTabGroup().getIndex());
                 mCurrentTouchView = null;
                 initChildren();
             }
@@ -425,8 +425,7 @@ public class SwitcherRecyclerLayout extends ViewGroup {
                                 super.onAnimationEnd(animation);
                                 int pos = mFirstPosition + indexOfChild(mCurrentTouchView);
                                 if (pos == getCount() - 1) {
-                                    mPosition = Math.max(pos - 1, 0);
-                                    savePosition();
+                                    setPosition(Math.max(pos - 1, 0));
                                 }
                                 if (adapter != null) {
                                     adapter.onSwipe(pos);
@@ -752,7 +751,7 @@ public class SwitcherRecyclerLayout extends ViewGroup {
     }
 
     public void goToIdle() {
-        mPosition = TabGroupManager.global().getCurrentTabGroup().getIndex();
+        mPosition = adapter.getPosition();
         selectChildView();
 //        selectCenterChildView();
         Log.d(TAG, "goToIdle index=" + indexOfChild(mCurrentTouchView) + " count=" + getChildCount());
@@ -783,7 +782,10 @@ public class SwitcherRecyclerLayout extends ViewGroup {
     }
 
     public void dragToSwitchTab(float dx, float dy) {
-        mPosition = TabGroupManager.global().getCurrentTabGroup().getIndex();
+
+        Log.e(TAG, "dragToSwitchTab index=" + adapter.getPosition() + " pos=" + getPosition());
+
+        mPosition = adapter.getPosition();
         selectChildView();
 
         int height = mHeight + mTitleHeight - (int) Math.abs(dy) * 3 / 2;
@@ -1271,6 +1273,14 @@ public class SwitcherRecyclerLayout extends ViewGroup {
         PrefsHelper.with().applyInt("tab_index", mPosition);
     }
 
+    private void setPosition(int pos) {
+        if (mPosition == pos) {
+            return;
+        }
+        mPosition = pos;
+        savePosition();
+    }
+
     private void selectCenterChildView() {
         selectCenterPosition();
         selectChildView(mPosition);
@@ -1532,8 +1542,8 @@ public class SwitcherRecyclerLayout extends ViewGroup {
                     }
                     break;
                 case STATE_EXPAND:
-                    mPosition = position;
-                    savePosition();
+//                    mPosition = position;
+//                    savePosition();
                     for (Callback callback : mCallbackList) {
                         callback.onBeforeExpand(position);
                     }
@@ -1793,8 +1803,7 @@ public class SwitcherRecyclerLayout extends ViewGroup {
                 // 第一个view越界回弹
                 if (mFirstPosition == 0 && view.getLeft() > gap) {
                     startSpringAnimation(gap - view.getLeft());
-                    mPosition = 0;
-                    savePosition();
+                    setPosition(0);
                     return;
                 } else {
                     int nextItemIndex = viewList.size() + mFirstPosition;
@@ -1803,8 +1812,7 @@ public class SwitcherRecyclerLayout extends ViewGroup {
                         // 最后一个view越界回弹
                         if (lastChild.getLeft() < gap) {
                             startSpringAnimation(gap - lastChild.getLeft());
-                            mPosition = getCount() - 1;
-                            savePosition();
+                            setPosition(getCount() - 1);
                             return;
                         }
                     }

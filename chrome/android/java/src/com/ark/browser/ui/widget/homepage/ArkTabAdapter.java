@@ -113,12 +113,16 @@ public class ArkTabAdapter implements Adapter {
             FaviconUtil.with(view.getContext(), pageInfo.getUrl())
                     .setCallback(ivIcon::setImageDrawable)
                     .start();
+            if (!(view.getTag() instanceof Integer) || (int) view.getTag() != iTab.getId()) {
+                ivThumbnail.setImageBitmap(null);
+            }
             PageSnapshotManager.getInstance().loadSnapshot(ivThumbnail, pageInfo);
         } else {
             cardView.setCardBackgroundColor(getDefaultThemeColor());
             ivThumbnail.setImageBitmap(null);
         }
 
+        view.setTag(iTab.getId());
     }
 
     public int getDefaultThemeColor() {

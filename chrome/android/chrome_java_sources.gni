@@ -54,6 +54,9 @@ chrome_java_sources = [
 
   "java/src/com/ark/browser/database/SearchHistoryManager.java",
 
+  "java/src/com/ark/browser/event/BaseCallbackEvent.java",
+  "java/src/com/ark/browser/event/BundleEvent.java",
+  "java/src/com/ark/browser/event/GetMainFragmentEvent.java",
   "java/src/com/ark/browser/event/LoadUrlEvent.java",
 
   "java/src/com/ark/browser/model/SearchHistory.java",

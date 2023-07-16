@@ -17,6 +17,16 @@ public class ArkLogger {
         }
     }
 
+    public static void w(Object tag, String messageTemplate, Object... args) {
+        Throwable tr = getThrowableToLog(args);
+        String message = formatLog(messageTemplate, tr, args);
+        if (tr != null) {
+            android.util.Log.w(normalizeTag(tag), message, tr);
+        } else {
+            android.util.Log.w(normalizeTag(tag), message);
+        }
+    }
+
     public static void e(Object tag, String messageTemplate, Object... args) {
         Throwable tr = getThrowableToLog(args);
         String message = formatLog(messageTemplate, tr, args);

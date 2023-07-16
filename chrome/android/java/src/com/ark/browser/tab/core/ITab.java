@@ -235,32 +235,15 @@ public interface ITab {
 //        return page;
 //    }
 
-    default void selectPage(int index) {
-        IPage page = getPageAt(index);
-        if (page == null) {
-            return;
-        }
-        getTabInfo().setCurrentPageId(page.getId());
-        getTabInfo().setPageIndex(index);
-        saveTabInfo();
-    }
-
-    default void selectPage(IPage page) {
-        if (getCurrentPageId() == page.getId()) {
-            return;
-        }
-        selectPage(indexOfPage(page.getId()));
-    }
-
     default ITabGroup getTabGroup() {
         return TabGroupManager.getTabGroup(getGroupId());
     }
 
     default void selectTab() {
-        selectTab(getCurrentPage());
+        selectPage(getCurrentPage());
     }
 
-    default void selectTab(IPage page) {
+    default void selectPage(IPage page) {
         getTabGroup().selectTab(this, page);
     }
 
@@ -270,8 +253,8 @@ public interface ITab {
         PageInfo next = getPageInfoAt(i + 1);
         // 移除当前page，优先显示前一个page
         if (pre != null) {
-            getTabInfo().setCurrentPageId(pre.getId());
             getTabInfo().setPageIndex(getTabInfo().getPageIndex() - 1);
+            getTabInfo().setCurrentPageId(pre.getId());
         } else if (next != null) {
             getTabInfo().setCurrentPageId(next.getId());
         } else {

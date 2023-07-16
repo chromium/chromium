@@ -173,7 +173,7 @@ public class DownloadDialog extends OverDragBottomDialogFragment<DownloadDialog>
         mDangerousLayout = findViewById(R.id.layout_dangerous);
         if (isDangerous) {
             mCheckBox = findViewById(R.id.check_box);
-            mCheckBox.setChecked(false);
+            mCheckBox.setChecked(true);
             mDangerousLayout.setOnClickListener(v -> mCheckBox.performClick());
         } else {
             mDangerousLayout.setVisibility(View.GONE);

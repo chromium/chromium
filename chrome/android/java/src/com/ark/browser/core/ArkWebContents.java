@@ -16,10 +16,8 @@ import com.ark.browser.tab.ArkTabViewAndroidDelegate;
 import com.ark.browser.tab.PageInfo;
 import com.ark.browser.tab.PageSnapshotManager;
 import com.ark.browser.tab.core.IPage;
+import com.ark.browser.utils.ArkLogger;
 
-import org.chromium.base.Callback;
-import org.chromium.base.ContextUtils;
-import org.chromium.base.Log;
 import org.chromium.chrome.browser.WarmupManager;
 import org.chromium.chrome.browser.WebContentsFactory;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
@@ -276,6 +274,7 @@ public class ArkWebContents {
     }
 
     public void attach(ArkTabImpl tab) {
+        ArkLogger.e(this, "attach pageInfo=" + mPageInfo);
         ContentView cv = tab.getContentView();
         ViewAndroidDelegate delegate;
         if (cv == null) {
@@ -295,6 +294,7 @@ public class ArkWebContents {
     }
 
     public void detach(ArkTabImpl tab) {
+        ArkLogger.e(this, "detach pageInfo=" + mPageInfo);
         setImportance(ChildProcessImportance.NORMAL);
         WebContentsAccessibility accessibility = WebContentsAccessibility.get(mWebContents);
         if (accessibility != null) {

@@ -1358,9 +1358,11 @@ void RenderWidgetHostViewAndroid::ResetSynchronousCompositor() {
 
 void RenderWidgetHostViewAndroid::OnOverscrollRefreshHandlerChanged(bool reset) {
   if (reset) {
-    overscroll_controller_.reset();
+    if (overscroll_controller_) {
+      overscroll_controller_.reset();
+    }
   } else {
-    DCHECK(!overscroll_controller_);
+    // DCHECK(!overscroll_controller_);
     CreateOverscrollControllerIfPossible();
   }
 }

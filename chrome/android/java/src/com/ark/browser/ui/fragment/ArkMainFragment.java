@@ -23,6 +23,8 @@ import com.ark.browser.core.ArkWebContents;
 import com.ark.browser.core.ArkWebManager;
 import com.ark.browser.core.ArkWindowAndroid;
 import com.ark.browser.core.utils.NavigationPredictorBridge;
+import com.ark.browser.event.BundleEvent;
+import com.ark.browser.event.GetMainFragmentEvent;
 import com.ark.browser.event.LoadUrlEvent;
 import com.ark.browser.tab.TabCacheManager;
 import com.ark.browser.tab.TabGroupManager;
@@ -185,6 +187,21 @@ public class ArkMainFragment extends BaseFragment implements
         ZBus.with(this)
                 .observe(LoadUrlEvent.class)
                 .doOnChange(this::onSearchEvent)
+                .subscribe();
+
+        ZBus.with(this)
+                .observe(GetMainFragmentEvent.class)
+                .doOnChange(event -> event.onResult(ArkMainFragment.this))
+                .subscribe();
+
+        ZBus.with(this)
+                .observe(BundleEvent.class)
+                .doOnChange(event -> {
+                    int action = event.getAction();
+                    if (action == BundleEvent.ACTION_GO_TO_BROWSER) {
+                        mSwitcherManager.goToBrowser(event.getBoolean("animated", true));
+                    }
+                })
                 .subscribe();
 
         TabGroupManager.global().restore(result -> {
@@ -460,6 +477,9 @@ public class ArkMainFragment extends BaseFragment implements
         tabGroup.openNewTab(loadUrlParams, TabLaunchType.FROM_CHROME_UI);
     }
 
+    public TabSwitcherManager getSwitcherManager() {
+        return mSwitcherManager;
+    }
 
     /**
      * Implementation of {@link MessageAutodismissDurationProvider}.

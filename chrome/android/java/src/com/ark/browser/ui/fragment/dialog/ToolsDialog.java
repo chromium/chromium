@@ -300,6 +300,7 @@ public class ToolsDialog extends OverDragBottomDialogFragment<ToolsDialog> imple
             tvFullscreen.setTint(getResources().getColor(tag ? R.color.colorPrimary : R.color.google_black_400));
 //                GetLauncherEvent.post(launcherFragment -> launcherFragment.getStatusBarView().setVisibility(tag ? View.GONE : View.VISIBLE));
         } else if (id == R.id.tv_page_search) {
+            // TODO
 //            GetLauncherEvent.post(LauncherFragment::showFindInPageToolbar);
         } else if (id == R.id.tv_save_html) {
             Tab tab = TabCacheManager.getInstance().findTab(mArkWeb.getPageInfo().getTabId());

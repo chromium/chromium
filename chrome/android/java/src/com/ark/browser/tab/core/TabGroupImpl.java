@@ -7,6 +7,7 @@ import com.ark.browser.tab.TabInfoObserver;
 import com.ark.browser.tab.dao.ArkTabDao;
 import com.ark.browser.utils.ArkLogger;
 import com.ark.browser.utils.ThreadPool;
+import com.zpj.utils.PrefsHelper;
 
 import org.chromium.base.ObserverList;
 import org.chromium.base.task.AsyncTask;
@@ -382,6 +383,7 @@ public class TabGroupImpl implements ITabGroup {
             return;
         }
         this.mIndex = index;
+        PrefsHelper.with().applyInt("tab_index", index);
         save();
     }
 

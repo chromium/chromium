@@ -179,7 +179,7 @@
             android:id="@+id/check_box"
             android:layout_width="20dp"
             android:layout_height="20dp"
-            app:z_checkbox_checked_color="@color/red5"
+            app:z_checkbox_checked_color="@color/light_red"
             app:z_checkbox_border_size="2dp"
             />
 
@@ -188,7 +188,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:text="无视风险下载"
-            android:textColor="@color/red5"
+            android:textColor="@color/light_red"
             />
 
 

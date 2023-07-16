@@ -187,6 +187,7 @@ public class ArkSwipeRefreshHandler implements OverscrollRefreshHandler {
             mSwipeRefreshLayout.release(allowRefresh);
         } else if (mSwipeType == OverscrollAction.HISTORY_NAVIGATION) {
             // TODO release
+            mSwipeRefreshLayout.release(allowRefresh);
             if (mSwipeRefreshLayout.canBackOrForward()) {
                 if (mNavigateForward) {
                     mTab.goForward2();
@@ -194,7 +195,6 @@ public class ArkSwipeRefreshHandler implements OverscrollRefreshHandler {
                     mTab.goBack2();
                 }
             }
-            mSwipeRefreshLayout.release(allowRefresh);
         }
         TraceEvent.end("SwipeRefreshHandler.release");
     }

@@ -336,7 +336,7 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
                 .build();
         swapWebContents(arkWeb, false, false);
 
-        mTab.selectPage(page);
+        updateSelectPage(page);
 
         @TabLoadStatus int result = arkWeb.loadUrlInternal(params);
         for (TabObserver observer : mObservers) {
@@ -355,7 +355,7 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
                 .build();
         swapWebContents(arkWeb, arkWeb.isStartLoad(), arkWeb.isFinishLoad());
 
-        mTab.selectPage(page);
+        updateSelectPage(page);
         if (createWeb) {
             ThreadPool.execute(() -> {
                 TabState tabState = ArkTabDao.restorePageState(page.getId());
@@ -384,6 +384,15 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
 
             });
         }
+    }
+
+    private void updateSelectPage(IPage page) {
+        if (mTab.getCurrentPageId() == page.getId()) {
+            return;
+        }
+        getTabInfo().setPageIndex(mTab.indexOfPage(page.getId()));
+        getTabInfo().setCurrentPageId(page.getId());
+        mTab.saveTabInfo();
     }
 
     @Override
@@ -760,7 +769,7 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
         }
         IPage page = mTab.getPreviousPage();
         if (page != null) {
-            selectPage(page);
+            ThreadPool.postOnUIThread(() -> mTab.selectPage(page));
         }
     }
 
@@ -772,7 +781,7 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
         }
         IPage page = mTab.getNextPage();
         if (page != null) {
-            selectPage(page);
+            ThreadPool.postOnUIThread(() -> mTab.selectPage(page));
         }
     }
 
@@ -1241,6 +1250,7 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
      */
     @Override
     public void swapWebContents(WebContents webContents, boolean didStartLoad, boolean didFinishLoad) {
+        ArkLogger.e(this, "swapWebContents didStartLoad=" + didStartLoad + " didFinishLoad=" + didFinishLoad);
         ArkWebContents arkWeb = new ArkWebContents(getPageInfo(), webContents);
         swapWebContents(arkWeb, didStartLoad, didFinishLoad);
         ArkWebManager.put(getPageInfo().pageId, arkWeb);

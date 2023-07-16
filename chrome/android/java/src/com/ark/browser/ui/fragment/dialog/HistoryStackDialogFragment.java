@@ -39,7 +39,6 @@ import com.zpj.widget.checkbox.ZCheckBox;
 
 import org.chromium.base.Log;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.ui.base.Clipboard;
 
 import java.util.ArrayList;
@@ -316,7 +315,7 @@ public class HistoryStackDialogFragment extends OverDragBottomDialogFragment<His
 
             @Override
             public void onAnimationStart(Animator animation) {
-                mTab.selectTab(list.get(mSelectPosition));
+                mTab.selectPage(list.get(mSelectPosition));
             }
 
             @Override
