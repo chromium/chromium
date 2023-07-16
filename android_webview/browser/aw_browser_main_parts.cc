@@ -15,6 +15,7 @@
 #include "android_webview/browser/aw_web_ui_controller_factory.h"
 #include "android_webview/browser/metrics/aw_metrics_service_accessor.h"
 #include "android_webview/browser/metrics/aw_metrics_service_client.h"
+#include "android_webview/browser/metrics/system_state_util.h"
 #include "android_webview/browser/network_service/aw_network_change_notifier_factory.h"
 #include "android_webview/browser/tracing/background_tracing_field_trial.h"
 #include "android_webview/common/aw_descriptors.h"
@@ -211,12 +212,13 @@ void AwBrowserMainParts::RegisterSyntheticTrials() {
   //    filter out).
   // 3) Mixed 32-/64-bit devices, as non-mixed devices are forced to use
   //    a particular bitness, thus don't participate in the experiment.
-  // TODO(crbug.com/1462131): Implement #2 for WebView.
   size_t ram_mb = base::SysInfo::AmountOfPhysicalMemoryMB();
   auto abi_bitness_support =
       metrics::AndroidMetricsHelper::GetInstance()->abi_bitness_support();
   bool is_device_of_interest =
       (3.2 * 1024 < ram_mb && ram_mb < 6.5 * 1024) &&
+      (GetMultipleUserProfilesState() ==
+       MultipleUserProfilesState::kSingleProfile) &&
       (abi_bitness_support == metrics::AbiBitnessSupport::k32And64bit);
   if (is_device_of_interest) {
     std::string trial_group;

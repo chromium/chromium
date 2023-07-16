@@ -13,6 +13,7 @@ java_cpp_enum("browser_enums") {
     "aw_renderer_priority.h",
     "aw_settings.h",
     "lifecycle/webview_app_state_observer.h",
+    "metrics/system_state_util.h",
     "permission/aw_permission_request.h",
     "safe_browsing/aw_safe_browsing_blocking_page.h",
     "safe_browsing/aw_url_checker_delegate_impl.h",

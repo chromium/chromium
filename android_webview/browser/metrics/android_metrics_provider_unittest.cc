@@ -25,12 +25,14 @@ TEST_F(AndroidMetricsProviderTest, ProvideCurrentSessionData) {
   metrics_provider_.ProvideCurrentSessionData(&uma_proto_);
   histogram_tester_.ExpectTotalCount("Android.VersionCode", 1);
   histogram_tester_.ExpectTotalCount("Android.AbiBitnessSupport", 1);
+  histogram_tester_.ExpectTotalCount("Android.MultipleUserProfilesState", 1);
 }
 
 TEST_F(AndroidMetricsProviderTest, ProvidePreviousSessionData) {
   metrics_provider_.ProvidePreviousSessionData(&uma_proto_);
   histogram_tester_.ExpectTotalCount("Android.VersionCode", 0);
   histogram_tester_.ExpectTotalCount("Android.AbiBitnessSupport", 1);
+  histogram_tester_.ExpectTotalCount("Android.MultipleUserProfilesState", 1);
 }
 
 }  // namespace android_webview
