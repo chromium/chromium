@@ -13,7 +13,8 @@
 namespace blink {
 
 // Initialize everything that needs to be initialized with every new global window.
-void OnNewWindow(v8::Isolate* isolate, LocalFrame* localFrame);
+// This is the first replay code that we run for a new Window object.
+void OnNewWindow1(v8::Isolate* isolate, LocalFrame* localFrame);
 
 // Initialize command state after the first context is created, but before the
 // first checkpoint in the recording is created.
@@ -21,6 +22,11 @@ void SetupRecordReplayCommands(v8::Isolate* isolate, LocalFrame* localFrame);
 
 // Initialize everything that needs to be initialized with every root frame.
 void OnNewRootFrame(v8::Isolate* isolate, LocalFrame* localFrame);
+
+// Initialize everything that depends on other initialization steps but
+// for all windows.
+// This is the last replay code that we run for a new Window object.
+void OnNewWindow2(v8::Isolate* isolate, LocalFrame* localFrame);
 
 // Notify the driver that we're adding an error to the console.
 void RecordReplayOnErrorEvent(ErrorEvent* error_event);

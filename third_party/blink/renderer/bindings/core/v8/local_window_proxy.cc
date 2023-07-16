@@ -220,9 +220,8 @@ void LocalWindowProxy::Initialize() {
   if (origin &&
       !origin->Host().empty()) {
 
-    // New Window (proxy) init event.
-    OnNewWindow(GetIsolate(), GetFrame());
-
+    // Initialize Replay basics.
+    OnNewWindow1(GetIsolate(), GetFrame());
 
     if (recordreplay::IsRecordingOrReplaying("checkpoints") &&
         !gRecordReplayStateInitialized) {
@@ -240,6 +239,10 @@ void LocalWindowProxy::Initialize() {
       // Root-level navigation event.
       OnNewRootFrame(GetIsolate(), GetFrame());
     }
+
+    // Initialize Replay things that depend on previous Replay initialization 
+    // steps.
+    OnNewWindow2(GetIsolate(), GetFrame());
   }
 
   {

@@ -3290,120 +3290,14 @@ window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ = reduxDevtoolsExtensionCompose;
 
 )"""";
 
-
-
-// Script that copies the React and Redux DevTools global variables into
-// each iframe that gets added to the page.
-// This is primarily to support React DevTools in Cypress tests, as Cypress
-// runs the user's app in an iframe, but it should be a general solution for
-// other iframe usages in any application as well.
-const char* gDevtoolsIframeSetupScript = R""""(
+const char* gOnNewWindowScript = R""""(
 //js
 ;(() => {
-  // TODO This _shouldn't_ be needed now that we allow cross-domain access at the C++ level
-  function canAccessIframe(iframe) {
-    try {
-      if (!iframe.src || iframe.src === 'about:blank') {
-        return false
-      }
-
-      const url = new URL(iframe.src)
-      const sameHost = url.hostname === window?.location?.hostname
-      const contentDocExists = !!iframe.contentDocument
-      return sameHost && contentDocExists
-    } catch (e) {
-      return false
-    }
-  }
-
-  function watchForIframeSrcChanges(iframe) {
-    let oldSrc = iframe.src
-    const iframeSrcObserver = new MutationObserver(function (mutations) {
-      mutations.forEach(function (mutation) {
-        if (mutation.type === 'attributes') {
-          const changedAttrName = mutation.attributeName
-          // Cypress has changed the blank iframe src to the app url.
-          if (changedAttrName === 'src') {
-            const oldLocation = iframe.contentWindow.location.href
-
-            let counter = 0
-
-            // Once the `src` has changed, it still takes time for the browser
-            // to navigate inside the iframe. We need to mutate the iframe's `window`
-            // _after_ it has navigated to the new page, but _before_ any JS starts running
-            // (such as ReactDOM initializing itself).
-            // This `setTimeout` loop is a brute-force hack, but it appears to work consistently.
-            function checkForLocationChange() {
-              try {
-                const newLocation = iframe.contentWindow.location.href
-                if (newLocation !== oldLocation) {
-                  addDevtoolsToIframe(iframe)
-                  return
-                }
-              } catch (err) {
-              }
-
-              counter++
-
-              // Arbitrary limit to prevent infinite loops.
-              if (counter < 100) {
-                setTimeout(checkForLocationChange, 0)
-              }
-            }
-
-            setTimeout(checkForLocationChange, 0)
-
-            oldSrc = iframe.src
-          }
-        }
-      })
-    })
-
-    iframeSrcObserver.observe(iframe, {
-      attributes: true,
-    })
-  }
-
-  function addDevtoolsToIframe(iframe) {
-    // React DevTools especially cannot see React code in an iframe by default.
-    // It needs the main window's "global hook" reference to be copied into an iframe.
-    // That way React in the iframe attaches itself correctly, and the extension code
-    // can see the render updates. Redux likely needs the same kind of setup.
-    if (canAccessIframe(iframe)) {
-      iframe.contentWindow.__REACT_DEVTOOLS_GLOBAL_HOOK__ = window.__REACT_DEVTOOLS_GLOBAL_HOOK__
-      iframe.contentWindow.__REDUX_DEVTOOLS_EXTENSION__ = window.__REDUX_DEVTOOLS_EXTENSION__
-      iframe.contentWindow.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__
-    }
-  }
-
-  document.addEventListener('DOMContentLoaded', (event) => {
-    const initialIframes = document.querySelectorAll('iframe')
-    initialIframes.forEach(function (iframe) {
-      addDevtoolsToIframe(iframe)
-      watchForIframeSrcChanges(iframe)
-    })
-
-    const iframeAddedObserver = new MutationObserver(function (mutations) {
-      mutations.forEach(function (mutation) {
-        ;[].filter
-          .call(mutation.addedNodes, function (node) {
-            return node.nodeName === 'IFRAME'
-          })
-          .forEach(function (iframe) {
-            watchForIframeSrcChanges(iframe)
-          })
-      })
-    })
-    iframeAddedObserver.observe(document.body, {
-      childList: true,
-      subtree: true,
-    })
-  })
+  window.__REACT_DEVTOOLS_GLOBAL_HOOK__ = window.top.__REACT_DEVTOOLS_GLOBAL_HOOK__;
+  window.__REDUX_DEVTOOLS_EXTENSION__ = window.top.__REDUX_DEVTOOLS_EXTENSION__;
+  window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ = window.top.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__;
 })()
-
 )"""";
-
-
 
 static v8::Local<v8::String> ToV8String(v8::Isolate* isolate, const char* value) {
   return v8::String::NewFromUtf8(isolate, value,
@@ -4871,7 +4765,7 @@ static bool TestEnv(const char* env) {
   return v && v[0] && v[0] != '0';
 }
 
-void OnNewWindow(v8::Isolate* isolate, LocalFrame* localFrame) {
+void OnNewWindow1(v8::Isolate* isolate, LocalFrame* localFrame) {
   v8::Local<v8::Context> context = isolate->GetCurrentContext();
 
   // Add __RECORD_REPLAY_ANNOTATION_HOOK__ as a global.
@@ -5007,8 +4901,13 @@ void OnNewRootFrame(v8::Isolate* isolate, LocalFrame* localFrame) {
     // its frames.
     RunScript(isolate, context, gReactDevtoolsScript, "record-replay-react-devtools");
     RunScript(isolate, context, gReduxDevtoolsScript, "record-replay-redux-devtools");
-    RunScript(isolate, context, gDevtoolsIframeSetupScript, "record-replay-devtools-iframes");
   }
+}
+
+void OnNewWindow2(v8::Isolate* isolate, LocalFrame* localFrame) {
+  v8::Local<v8::Context> context = isolate->GetCurrentContext();
+  RunScript(isolate, context, gOnNewWindowScript,
+            "record-replay-devtools-OnNewWindow");
 }
 
 extern "C" void V8RecordReplayOnConsoleMessage(size_t bookmark);
