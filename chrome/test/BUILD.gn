@@ -7260,6 +7260,7 @@ test("unit_tests") {
       "../browser/ui/breadcrumb_manager_browser_agent_unittest.cc",
       "../browser/ui/browser_close_unittest.cc",
       "../browser/ui/browser_command_controller_unittest.cc",
+      "../browser/ui/browser_finder_unittest.cc",
       "../browser/ui/browser_instant_controller_unittest.cc",
       "../browser/ui/browser_list_unittest.cc",
       "../browser/ui/browser_navigator_unittest.cc",

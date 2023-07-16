@@ -414,8 +414,6 @@ class Browser : public TabStripModelObserver,
   }
   CreationSource creation_source() const { return creation_source_; }
 
-  bool is_delete_scheduled() const { return is_delete_scheduled_; }
-
   // |window()| will return NULL if called before |CreateBrowserWindow()|
   // is done.
   BrowserWindow* window() const { return window_; }
@@ -571,7 +569,26 @@ class Browser : public TabStripModelObserver,
   // It starts beforeunload/unload processing as a side-effect.
   bool TabsNeedBeforeUnloadFired();
 
+  // Browser closing consists of the following phases:
+  //
+  // 1. If the browser has WebContents with before unload handlers, then the
+  //    before unload handlers are processed (this is asynchronous). During this
+  //    phase IsAttemptingToCloseBrowser() returns true. When processing
+  //    completes, the WebContents is removed. Once all WebContents are removed,
+  //    the next phase happens. Note that this phase may be aborted.
+  // 2. The Browser window is hidden, and a task is posted that results in
+  //    deleting the Browser (Views is responsible for posting the task). This
+  //    phase can not be stopped. During this phase is_delete_scheduled()
+  //    returns true. IsBrowserClosing() is nearly identical to
+  //    is_delete_scheduled(), it's set just before removing the tabs.
+  //
+  // Note that there are other cases that may delay closing, such as downloads,
+  // but that is done before any of these steps.
+  // TODO(https://crbug.com/1434387): See about unifying IsBrowserClosing() and
+  // is_delete_scheduled().
   bool IsAttemptingToCloseBrowser() const;
+  bool IsBrowserClosing() const;
+  bool is_delete_scheduled() const { return is_delete_scheduled_; }
 
   // Invoked when the window containing us is closing. Performs the necessary
   // cleanup.
@@ -1150,10 +1167,6 @@ class Browser : public TabStripModelObserver,
   bool ShouldShowBookmarkBar() const;
 
   bool ShouldHideUIForFullscreen() const;
-
-  // Indicates if we have called BrowserList::NotifyBrowserCloseStarted for the
-  // browser.
-  bool IsBrowserClosing() const;
 
   // Returns true if we can start the shutdown sequence for the browser, i.e.
   // the last browser window is being closed.
