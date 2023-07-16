@@ -122418,6 +122418,19 @@
       ]
      ],
      "intrinsic-size": {
+      "auto-min-size-001.html": [
+       "a026091aa793af8b664ef4f1c222c9d8d566848c",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "col-wrap-001.html": [
        "45da5123896a7b6ebd430b1ea0b67f1965771ea7",
        [
@@ -150916,7 +150929,7 @@
        ]
       ],
       "clip-path-shape-inset-001.svg": [
-       "20cc2ea9cdef7d646a00d57bd07eefb8335906fe",
+       "bc8a4d810edf35dc37577cfba606ea4e5ab455d2",
        [
         null,
         [
@@ -150925,11 +150938,27 @@
           "=="
          ]
         ],
-        {}
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             50
+            ],
+            [
+             0,
+             200
+            ]
+           ]
+          ]
+         ]
+        }
        ]
       ],
       "clip-path-shape-inset-002.svg": [
-       "315c1880290c70a9c0b872e25482fd11f468da1f",
+       "5e5b18990598e3ee43bad3aefeec57768679a153",
        [
         null,
         [
@@ -150938,7 +150967,23 @@
           "=="
          ]
         ],
-        {}
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             50
+            ],
+            [
+             0,
+             200
+            ]
+           ]
+          ]
+         ]
+        }
        ]
       ],
       "clip-path-shape-polygon-001.svg": [
@@ -581565,7 +581610,7 @@
        ]
       ],
       "display-2.html": [
-       "36a02952eb8f4799f18f270504545aeb76bf503d",
+       "1d0810beadbceb96d6516a394551ea7afca1bf27",
        [
         null,
         {}
