@@ -28,6 +28,7 @@
 #include "ash/wm/window_util.h"
 #include "ash/wm/wm_event.h"
 #include "ash/wm/workspace/backdrop_controller.h"
+#include "base/containers/contains.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window_tracker.h"
 #include "ui/compositor/layer.h"
@@ -271,16 +272,19 @@ void WorkspaceLayoutManager::OnWindowHierarchyChanged(
   // TODO(oshima): Change this to |EnsureWindowState|, then change
   // GetWindowState so that it simply returns the WindowState associated with
   // the window, or nullptr.
-  if (params.new_parent)
+  if (params.new_parent) {
     WindowState::Get(params.target);
+  }
 
-  if (!wm::IsActiveWindow(params.target))
+  if (!wm::IsActiveWindow(params.target)) {
     return;
+  }
   // If the window is already tracked by the workspace this update would be
   // redundant as the fullscreen and shelf state would have been handled in
   // OnWindowAddedToLayout.
-  if (windows_.find(params.target) != windows_.end())
+  if (base::Contains(windows_, params.target)) {
     return;
+  }
 
   // If the active window has moved to this root window then update the
   // fullscreen state.
@@ -352,7 +356,7 @@ void WorkspaceLayoutManager::OnWindowBoundsChanged(
 void WorkspaceLayoutManager::OnWindowActivating(ActivationReason reason,
                                                 aura::Window* gaining_active,
                                                 aura::Window* losing_active) {
-  if (windows_.find(gaining_active) == windows_.end()) {
+  if (!base::Contains(windows_, gaining_active)) {
     return;
   }
 

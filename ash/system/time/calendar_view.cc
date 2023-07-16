@@ -33,6 +33,7 @@
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/system/unified/unified_system_tray_bubble.h"
 #include "base/check.h"
+#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -817,7 +818,7 @@ void CalendarView::UpdateOnScreenMonthMap() {
       calendar_model_->FindFetchingStatus(start_time);
 
   // Checks if `next_month_` is in the visible view. If so, adds it to
-  // `on_screen_month_` if not already presents. Otherwise updates the fetching
+  // `on_screen_month_` if not already present. Otherwise updates the fetching
   // status. This is needed since a refetching request may be sent when this
   // function is called and we need to update the fetching status to toggle the
   // visibility of the loading bar.
@@ -1141,7 +1142,7 @@ void CalendarView::OnEventsFetched(
     const CalendarModel::FetchingStatus status,
     const base::Time start_time,
     const google_apis::calendar::EventList* events) {
-  if (on_screen_month_.find(start_time) != on_screen_month_.end()) {
+  if (base::Contains(on_screen_month_, start_time)) {
     on_screen_month_[start_time] = status;
   }
 
@@ -1155,7 +1156,7 @@ void CalendarView::OnEventsFetched(
 }
 
 void CalendarView::OnTimeout(const base::Time start_time) {
-  if (on_screen_month_.find(start_time) != on_screen_month_.end()) {
+  if (base::Contains(on_screen_month_, start_time)) {
     on_screen_month_[start_time] = CalendarModel::kNever;
   }
 

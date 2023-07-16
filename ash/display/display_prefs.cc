@@ -205,7 +205,7 @@ void LoadDisplayLayouts(PrefService* local_state) {
       continue;
     }
 
-    if (it.first.find(",") != std::string::npos) {
+    if (base::Contains(it.first, ",")) {
       std::vector<std::string> ids_str = base::SplitString(
           it.first, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
       std::vector<int64_t> ids;

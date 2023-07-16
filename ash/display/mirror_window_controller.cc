@@ -188,8 +188,7 @@ void MirrorWindowController::UpdateWindow(
           display::Screen::GetScreen()->GetPrimaryDisplay().bounds(), display);
     }
 
-    if (mirroring_host_info_map_.find(display_info.id()) ==
-        mirroring_host_info_map_.end()) {
+    if (!base::Contains(mirroring_host_info_map_, display_info.id())) {
       AshWindowTreeHostInitParams init_params;
       init_params.initial_bounds = display_info.bounds_in_native();
       init_params.display_id = display_info.id();

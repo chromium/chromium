@@ -14,6 +14,7 @@
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/window_positioner.h"
+#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/ranges/algorithm.h"
 #include "ui/aura/client/aura_constants.h"
@@ -215,8 +216,9 @@ void UserSwitchAnimator::TransitionWindows(AnimationStep animation_step) {
       // Hide the old users.
       for (auto& user_pair : windows_by_account_id_) {
         auto& show_for_account_id = user_pair.first;
-        if (show_for_account_id == new_account_id_)
+        if (show_for_account_id == new_account_id_) {
           continue;
+        }
 
         bool found_foreground_maximized_window = false;
 
@@ -228,7 +230,7 @@ void UserSwitchAnimator::TransitionWindows(AnimationStep animation_step) {
         PutMruWindowLast(&(user_pair.second));
         for (auto* window : user_pair.second) {
           // Minimized visiting windows (minimized windows with an owner
-          // different than that of the for_show_account_id) should retrun to
+          // different than that of the for_show_account_id) should return to
           // their
           // original owners' desktops.
           MultiUserWindowManagerImpl::WindowToEntryMap::const_iterator itr =
@@ -284,13 +286,15 @@ void UserSwitchAnimator::TransitionWindows(AnimationStep animation_step) {
         auto entry = owner_->window_to_entry().find(window);
         DCHECK(entry != owner_->window_to_entry().end());
 
-        if (entry->second->show())
+        if (entry->second->show()) {
           owner_->SetWindowVisibility(window, true, duration);
+        }
       }
       desks_controller->OnNewUserShown();
 
       break;
     }
+
     case ANIMATION_STEP_SHOW_NEW_USER: {
       // In order to make the animation look better, we had to move the code
       // that shows the new user to the previous step. Hence, we do nothing
@@ -308,8 +312,9 @@ void UserSwitchAnimator::TransitionWindows(AnimationStep animation_step) {
           // Several unit tests come here without an activation client.
           wm::ActivationClient* client =
               wm::GetActivationClient(window->GetRootWindow());
-          if (client)
+          if (client) {
             client->ActivateWindow(window);
+          }
         }
       }
 
@@ -357,7 +362,7 @@ void UserSwitchAnimator::BuildUserToWindowsListMap() {
   auto& window_to_entry_map = owner_->window_to_entry();
   for (auto& window_entry_pair : window_to_entry_map) {
     aura::Window* parent_window = window_entry_pair.first->parent();
-    if (parent_windows.find(parent_window) == parent_windows.end()) {
+    if (!base::Contains(parent_windows, parent_window)) {
       parent_windows.insert(parent_window);
       for (auto* child_window : parent_window->children()) {
         auto itr = window_to_entry_map.find(child_window);

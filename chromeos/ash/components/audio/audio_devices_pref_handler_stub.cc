@@ -61,8 +61,7 @@ void AudioDevicesPrefHandlerStub::SetDeviceActive(const AudioDevice& device,
 bool AudioDevicesPrefHandlerStub::GetDeviceActive(const AudioDevice& device,
                                                   bool* active,
                                                   bool* activate_by_user) {
-  if (audio_device_state_map_.find(device.stable_device_id) ==
-      audio_device_state_map_.end()) {
+  if (!base::Contains(audio_device_state_map_, device.stable_device_id)) {
     return false;
   }
   *active = audio_device_state_map_[device.stable_device_id].active;
@@ -109,9 +108,8 @@ void AudioDevicesPrefHandlerStub::SetUserPriorityHigherThan(
 }
 
 int AudioDevicesPrefHandlerStub::GetUserPriority(const AudioDevice& device) {
-  if (auto it = user_priority_map_.find(device.stable_device_id);
-      it != user_priority_map_.end()) {
-    return it->second;
+  if (base::Contains(user_priority_map_, device.stable_device_id)) {
+    return user_priority_map_[device.stable_device_id];
   }
   return kUserPriorityNone;
 }

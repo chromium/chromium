@@ -58,6 +58,7 @@
 #include "ash/wm/window_util.h"
 #include "ash/wm/wm_event.h"
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/json/json_writer.h"
@@ -2152,9 +2153,9 @@ TEST_F(AcceleratorControllerTest, DisallowedAtModalWindow) {
   for (size_t k = 0; k < kActionsAllowedAtModalWindowLength; ++k)
     actionsAllowedAtModalWindow.insert(kActionsAllowedAtModalWindow[k]);
   for (const auto& action : actionsAllowedAtModalWindow) {
-    EXPECT_TRUE(all_actions.find(action) != all_actions.end() ||
-                all_debug_actions.find(action) != all_debug_actions.end() ||
-                all_dev_actions.find(action) != all_dev_actions.end())
+    EXPECT_TRUE(base::Contains(all_actions, action) ||
+                base::Contains(all_debug_actions, action) ||
+                base::Contains(all_dev_actions, action))
         << " action from kActionsAllowedAtModalWindow"
         << " not found in kAcceleratorData, kDebugAcceleratorData or"
         << " kDeveloperAcceleratorData action: " << action;
@@ -2164,8 +2165,7 @@ TEST_F(AcceleratorControllerTest, DisallowedAtModalWindow) {
   wm::ActivateWindow(window.get());
   ShellTestApi().SimulateModalWindowOpenForTest(true);
   for (const auto& action : all_actions) {
-    if (actionsAllowedAtModalWindow.find(action) ==
-        actionsAllowedAtModalWindow.end()) {
+    if (!base::Contains(actionsAllowedAtModalWindow, action)) {
       EXPECT_TRUE(controller_->PerformActionIfEnabled(action, {}))
           << " for action (disallowed at modal window): " << action;
     }
@@ -2267,13 +2267,15 @@ TEST_F(AcceleratorControllerTest, DisallowedWithNoWindow) {
   for (size_t i = 0; i < kAcceleratorDataLength; ++i) {
     const auto& accelerator_data = kAcceleratorData[i];
     auto iter = actions_needing_window.find(accelerator_data.action);
-    if (iter == actions_needing_window.end())
+    if (!base::Contains(actions_needing_window, accelerator_data.action)) {
       continue;
+    }
 
     ui::Accelerator accelerator{accelerator_data.keycode,
                                 accelerator_data.modifiers};
-    if (!accelerator_data.trigger_on_press)
+    if (!accelerator_data.trigger_on_press) {
       accelerator.set_key_state(ui::Accelerator::KeyState::RELEASED);
+    }
     accelerators_needing_window[*iter] = accelerator;
   }
 

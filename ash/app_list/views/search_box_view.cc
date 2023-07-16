@@ -34,6 +34,8 @@
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/typography.h"
 #include "ash/user_education/user_education_class_properties.h"
+#include "base/containers/contains.h"
+#include "base/i18n/case_conversion.h"
 #include "base/i18n/rtl.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -41,6 +43,7 @@
 #include "base/notreached.h"
 #include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/string_util.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "components/vector_icons/vector_icons.h"
@@ -169,11 +172,12 @@ std::u16string GetCategoryName(SearchResult* search_result) {
 bool IsSubstringCaseInsensitive(std::u16string haystack_expr,
                                 std::u16string needle_expr) {
   // Convert complete given String to lower case
-  base::ranges::transform(haystack_expr, haystack_expr.begin(), ::tolower);
+  std::u16string haystack = base::i18n::ToLower(haystack_expr);
   // Convert complete given Sub String to lower case
-  base::ranges::transform(needle_expr, needle_expr.begin(), ::tolower);
-  // Find sub string in given string
-  return haystack_expr.find(needle_expr) != std::string::npos;
+  std::u16string needle = base::i18n::ToLower(needle_expr);
+
+  // Find substring in the given string
+  return base::Contains(haystack, needle);
 }
 
 void RecordAutocompleteMatchMetric(SearchBoxTextMatch match_type) {
