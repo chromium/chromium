@@ -3292,10 +3292,17 @@ window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ = reduxDevtoolsExtensionCompose;
 
 const char* gOnNewWindowScript = R""""(
 //js
-;(() => {
-  window.__REACT_DEVTOOLS_GLOBAL_HOOK__ = window.top.__REACT_DEVTOOLS_GLOBAL_HOOK__;
-  window.__REDUX_DEVTOOLS_EXTENSION__ = window.top.__REDUX_DEVTOOLS_EXTENSION__;
-  window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ = window.top.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__;
+(() => {
+  try {
+    window.__REACT_DEVTOOLS_GLOBAL_HOOK__ = window.top.__REACT_DEVTOOLS_GLOBAL_HOOK__;
+    window.__REDUX_DEVTOOLS_EXTENSION__ = window.top.__REDUX_DEVTOOLS_EXTENSION__;
+    window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ = window.top.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__;
+  }
+  catch (err) {
+    // TODO: RUN-1990
+    // window.top is not always accessible due to cross-origin restrictions.
+    __RECORD_REPLAY_ARGUMENTS__.log(`[RuntimeError] gOnNewWindowScript failed: ${err.stack}`);
+  }
 })()
 )"""";
 
@@ -4719,13 +4726,20 @@ static const std::string V8ToString(v8::Isolate* isolate, v8::Local<v8::Value> s
   return *s;
 }
 
-static std::string GetStackTrace(v8::Isolate* isolate, v8::TryCatch& try_catch_) {
-  if (!try_catch_.HasCaught()) {
+/**
+ * Error reporting utility based on ShellRunner::Run.
+ * WARNING: It does not work very well. For some reason, we have to try/catch
+ * inside the JS code to get a proper error message. Might have to do with the
+ * fact that we are running this before the window and/or other mechanisms have
+ * not fully initialized.
+ */
+static std::string GetStackTrace(v8::Isolate* isolate, v8::TryCatch& try_catch) {
+  if (!try_catch.HasCaught()) {
     return "";
   }
 
   std::stringstream ss;
-  v8::Local<v8::Message> message = try_catch_.Message();
+  v8::Local<v8::Message> message = try_catch.Message();
   ss << V8ToString(isolate, message->Get()) << std::endl
      << V8ToString(isolate, GetSourceLine(isolate, message)) << std::endl;
 
@@ -4753,11 +4767,13 @@ static void RunScript(v8::Isolate* isolate, v8::Local<v8::Context> context, cons
 
   v8::Local<v8::Script> script;
   if (!maybe_script.ToLocal(&script)) {
-    // [RUN-955] Report error if things go wrong.
-    // based on ShellRunner::Run
-    CHECK(false && "Replay RunScript failed") << GetStackTrace(isolate, try_catch);
+    CHECK(false && "Replay RunScript COMPILE failed") << GetStackTrace(isolate, try_catch);
   }
-  script->Run(context).ToLocalChecked();
+  v8::Local<v8::Value> rv;
+  if (!script->Run(context).ToLocal(&rv)) {
+    CHECK(false && "Replay RunScript INIT failed")
+        << GetStackTrace(isolate, try_catch);
+  }
 }
 
 static bool TestEnv(const char* env) {
