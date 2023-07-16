@@ -340,7 +340,9 @@ void OutputPresenterGL::ScheduleOverlayPlane(
       overlay_plane_candidate.edge_aa_mask, overlay_plane_candidate.opacity,
       overlay_plane_candidate.nearest_neighbor_filter,
       overlay_plane_candidate.hdr_metadata,
-      overlay_plane_candidate.protected_video_type));
+      overlay_plane_candidate.protected_video_type,
+      overlay_plane_candidate.is_render_pass_draw_quad));
+
 #endif
 }
 

@@ -240,6 +240,9 @@ class VIZ_SERVICE_EXPORT OverlayCandidate {
 
   // Whether this overlay candidate represents the root render pass.
   bool is_root_render_pass = false;
+
+  // Whether this overlay candidate is a render pass draw quad.
+  bool is_render_pass_draw_quad = false;
 };
 
 using OverlayCandidateList = std::vector<OverlayCandidate>;

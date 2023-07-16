@@ -243,7 +243,9 @@ bool ImageTransportSurfaceOverlayMacEGL::ScheduleOverlayPlane(
       /*opacity=*/1.f,
       /*nearest_neighbor_filter=*/GL_LINEAR,
       /*hdr_metadata=*/gfx::HDRMetadata(),
-      /*protected_video_type=*/gfx::ProtectedVideoType::kClear);
+      /*protected_video_type=*/gfx::ProtectedVideoType::kClear,
+      /*is_render_pass_draw_quad=*/false);
+
   return ca_layer_tree_coordinator_->GetPendingCARendererLayerTree()
       ->ScheduleCALayer(overlay_as_calayer_params);
 }

@@ -240,7 +240,8 @@ class ACCELERATED_WIDGET_MAC_EXPORT CARendererLayerTree {
                  float opacity,
                  bool nearest_neighbor_filter,
                  const gfx::HDRMetadata& hdr_metadata,
-                 gfx::ProtectedVideoType protected_video_type);
+                 gfx::ProtectedVideoType protected_video_type,
+                 bool is_render_pass_draw_quad);
 
     ContentLayer(ContentLayer&& layer) = delete;
     ContentLayer(const ContentLayer&) = delete;
@@ -303,6 +304,8 @@ class ACCELERATED_WIDGET_MAC_EXPORT CARendererLayerTree {
 
     // The status when used as an old layer.
     bool ca_layer_used_ = false;
+
+    bool is_render_pass_draw_quad_ = false;
 
     // Weak pointer to the layer in the old CARendererLayerTree that will be
     // reused by this layer, and the weak factory used to make that pointer.

@@ -46,6 +46,12 @@ BASE_FEATURE(kCALayerTreeOptimization,
              "CALayerTreeOptimization",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Show borders around RenderPassDrawQuad CALayers. which is the output of a
+// non-root render pass.
+BASE_FEATURE(kShowMacRenderPassDrawQuadBorders,
+             "ShowMacRenderPassDrawQuadBorders",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 namespace {
 
 class ComparatorSkColor4f {
@@ -752,7 +758,8 @@ CARendererLayerTree::ContentLayer::ContentLayer(
     float opacity,
     bool nearest_neighbor_filter,
     const gfx::HDRMetadata& hdr_metadata,
-    gfx::ProtectedVideoType protected_video_type)
+    gfx::ProtectedVideoType protected_video_type,
+    bool is_render_pass_draw_quad)
     : parent_layer_(parent_layer),
       io_surface_(io_surface),
       cv_pixel_buffer_(cv_pixel_buffer),
@@ -764,7 +771,8 @@ CARendererLayerTree::ContentLayer::ContentLayer(
       opacity_(opacity),
       ca_filter_(nearest_neighbor_filter ? kCAFilterNearest : kCAFilterLinear),
       hdr_metadata_(hdr_metadata),
-      protected_video_type_(protected_video_type) {
+      protected_video_type_(protected_video_type),
+      is_render_pass_draw_quad_(is_render_pass_draw_quad) {
   // On macOS 10.12, solid color layers are not color converted to the output
   // monitor color space, but IOSurface-backed layers are color converted. Note
   // that this is only the case when the CALayers are shared across processes.
@@ -933,7 +941,7 @@ void CARendererLayerTree::TransformLayer::AddContentLayer(
       params.contents_rect, params.rect, params.background_color,
       params.io_surface_color_space, params.edge_aa_mask, params.opacity,
       params.nearest_neighbor_filter, params.hdr_metadata,
-      params.protected_video_type);
+      params.protected_video_type, params.is_render_pass_draw_quad);
 }
 
 void CARendererLayerTree::RootLayer::CommitToCA(CALayer* superlayer,
@@ -1282,10 +1290,15 @@ void CARendererLayerTree::ContentLayer::CommitToCA(
   }
 
 #if BUILDFLAG(IS_MAC)
-  static bool show_borders = base::CommandLine::ForCurrentProcess()->HasSwitch(
-      switches::kShowMacOverlayBorders);
+  static bool show_overlay_borders =
+      base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kShowMacOverlayBorders);
+  static bool show_rpdq_borders =
+      base::FeatureList::IsEnabled(kShowMacRenderPassDrawQuadBorders);
+
   static bool fill_layers = false;
-  if (show_borders || fill_layers) {
+  if (show_overlay_borders || fill_layers ||
+      (show_rpdq_borders && is_render_pass_draw_quad_)) {
     uint32_t pixel_format =
         io_surface_ ? IOSurfaceGetPixelFormat(io_surface_) : 0;
     float red = 0;
@@ -1335,8 +1348,10 @@ void CARendererLayerTree::ContentLayer::CommitToCA(
 
     // If content did not change this frame, then use 0.5 opacity and a 1 pixel
     // border. If it did change, then use full opacity and a 2 pixel border.
+    // For a RenderPassDrawQuad, use 6 pixel border.
     float alpha = update_anything ? 1.f : 0.5f;
-    ca_layer_.borderWidth = update_anything ? 2 : 1;
+    ca_layer_.borderWidth =
+        is_render_pass_draw_quad_ ? 6 : (update_anything ? 2 : 1);
 
     // Set the layer color based on usage.
     base::ScopedCFTypeRef<CGColorRef> color(
