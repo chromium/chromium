@@ -1049,6 +1049,9 @@ int NO_STACK_PROTECTOR ContentMainRunnerImpl::Run() {
       // Zygotes will run this at a later point in time when the command line
       // has been updated.
       CreateChildThreadPool(process_type);
+      recordreplay::Assert("[RUN-2350-2356] ContentMainRunnerImpl::Run %d",
+                           delegate_->ShouldCreateFeatureList(
+                               ContentMainDelegate::InvokedInChildProcess()));
       if (delegate_->ShouldCreateFeatureList(
               ContentMainDelegate::InvokedInChildProcess())) {
         InitializeFieldTrialAndFeatureList();
