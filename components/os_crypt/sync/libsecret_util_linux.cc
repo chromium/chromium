@@ -185,7 +185,7 @@ LibsecretAttributesBuilder::LibsecretAttributesBuilder() {
 }
 
 LibsecretAttributesBuilder::~LibsecretAttributesBuilder() {
-  g_hash_table_destroy(attrs_);
+  g_hash_table_destroy(attrs_.ExtractAsDangling());
 }
 
 void LibsecretAttributesBuilder::Append(const std::string& name,
