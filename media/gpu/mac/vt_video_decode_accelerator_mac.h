@@ -52,7 +52,7 @@ class VP9ConfigChangeDetector;
 class VP9SuperFrameBitstreamFilter;
 
 // Preload VideoToolbox libraries, needed for sandbox warmup.
-MEDIA_GPU_EXPORT bool InitializeVideoToolbox();
+MEDIA_GPU_EXPORT void InitializeVideoToolbox();
 
 // VideoToolbox.framework implementation of the VideoDecodeAccelerator
 // interface for macOS.

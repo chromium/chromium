@@ -66,11 +66,6 @@ namespace media {
 
 namespace {
 
-// Controls whether InitializeVideoToolboxInternal() does preload or not.
-BASE_FEATURE(kSkipVideoToolboxPreload,
-             "SkipVideoToolboxPreload",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Parameter sets vector contain all PPSs/SPSs(/VPSs)
 using ParameterSets = std::vector<base::span<const uint8_t>>;
 
@@ -345,150 +340,6 @@ bool CreateVideoToolboxSession(
   return true;
 }
 
-// The purpose of this function is to preload the generic and hardware-specific
-// libraries required by VideoToolbox before the GPU sandbox is enabled.
-// VideoToolbox normally loads the hardware-specific libraries lazily, so we
-// must actually create a decompression session. If creating a decompression
-// session fails, hardware decoding will be disabled (Initialize() will always
-// return false).
-bool InitializeVideoToolboxInternal() {
-  if (base::FeatureList::IsEnabled(kSkipVideoToolboxPreload)) {
-    // When skipping preload we still need to register vp9, otherwise it won't
-    // work at all.
-#if BUILDFLAG(IS_MAC)
-    // TODO: Enable VP9 for a iOS platform(https://crbug.com/1449877)
-    if (__builtin_available(macOS 11.0, *)) {
-      VTRegisterSupplementalVideoDecoderIfAvailable(kCMVideoCodecType_VP9);
-    }
-#endif
-    return true;
-  }
-
-  VTDecompressionOutputCallbackRecord callback = {0};
-  base::ScopedCFTypeRef<VTDecompressionSessionRef> session;
-  gfx::Size configured_size;
-
-  // Create a h264 hardware decoding session.
-  // SPS and PPS data are taken from a 480p sample (buck2.mp4).
-  const std::vector<uint8_t> sps_h264_normal = {
-      0x67, 0x64, 0x00, 0x1e, 0xac, 0xd9, 0x80, 0xd4, 0x3d, 0xa1, 0x00, 0x00,
-      0x03, 0x00, 0x01, 0x00, 0x00, 0x03, 0x00, 0x30, 0x8f, 0x16, 0x2d, 0x9a};
-  const std::vector<uint8_t> pps_h264_normal = {0x68, 0xe9, 0x7b, 0xcb};
-  if (!CreateVideoToolboxSession(
-          CreateVideoFormatH264(sps_h264_normal, std::vector<uint8_t>(),
-                                pps_h264_normal),
-          /*require_hardware=*/true, /*is_hbd=*/false, /*has_alpha=*/false,
-          &callback, &session, &configured_size)) {
-    DVLOG(1) << "Hardware H264 decoding with VideoToolbox is not supported";
-    return false;
-  }
-
-  session.reset();
-
-  // Create a h264 software decoding session.
-  // SPS and PPS data are taken from a 18p sample (small2.mp4).
-  const std::vector<uint8_t> sps_h264_small = {
-      0x67, 0x64, 0x00, 0x0a, 0xac, 0xd9, 0x89, 0x7e, 0x22, 0x10, 0x00,
-      0x00, 0x3e, 0x90, 0x00, 0x0e, 0xa6, 0x08, 0xf1, 0x22, 0x59, 0xa0};
-  const std::vector<uint8_t> pps_h264_small = {0x68, 0xe9, 0x79, 0x72, 0xc0};
-  if (!CreateVideoToolboxSession(
-          CreateVideoFormatH264(sps_h264_small, std::vector<uint8_t>(),
-                                pps_h264_small),
-          /*require_hardware=*/false, /*is_hbd=*/false, /*has_alpha=*/false,
-          &callback, &session, &configured_size)) {
-    DVLOG(1) << "Software H264 decoding with VideoToolbox is not supported";
-    return false;
-  }
-
-  session.reset();
-
-#if BUILDFLAG(IS_MAC)
-  // TODO: Enable VP9 for a iOS platform(https://crbug.com/1449877)
-  if (__builtin_available(macOS 11.0, *)) {
-    VTRegisterSupplementalVideoDecoderIfAvailable(kCMVideoCodecType_VP9);
-
-    // Create a VP9 decoding session.
-    if (!CreateVideoToolboxSession(
-            CreateVideoFormatVP9(VideoColorSpace::REC709(), VP9PROFILE_PROFILE0,
-                                 absl::nullopt, gfx::Size(720, 480)),
-            /*require_hardware=*/true, /*is_hbd=*/false, /*has_alpha=*/false,
-            &callback, &session, &configured_size)) {
-      DVLOG(1) << "Hardware VP9 decoding with VideoToolbox is not supported";
-
-      // We don't return false here since VP9 support is optional.
-    }
-  }
-#endif
-
-#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
-  if (base::FeatureList::IsEnabled(media::kPlatformHEVCDecoderSupport)) {
-    // Only macOS >= 11.0 will support hevc if we use
-    // CMVideoFormatDescriptionCreateFromHEVCParameterSets
-    // API to create video format
-    if (__builtin_available(macOS 11.0, *)) {
-      session.reset();
-
-      // Create a hevc hardware decoding session.
-      // VPS, SPS and PPS data are taken from a 720p sample
-      // (bear-1280x720-hevc.mp4).
-      const std::vector<uint8_t> vps_hevc_normal = {
-          0x40, 0x01, 0x0c, 0x01, 0xff, 0xff, 0x01, 0x60,
-          0x00, 0x00, 0x03, 0x00, 0x90, 0x00, 0x00, 0x03,
-          0x00, 0x00, 0x03, 0x00, 0x5d, 0x95, 0x98, 0x09};
-
-      const std::vector<uint8_t> sps_hevc_normal = {
-          0x42, 0x01, 0x01, 0x01, 0x60, 0x00, 0x00, 0x03, 0x00, 0x90, 0x00,
-          0x00, 0x03, 0x00, 0x00, 0x03, 0x00, 0x5d, 0xa0, 0x02, 0x80, 0x80,
-          0x2d, 0x16, 0x59, 0x59, 0xa4, 0x93, 0x2b, 0xc0, 0x5a, 0x70, 0x80,
-          0x00, 0x01, 0xf4, 0x80, 0x00, 0x3a, 0x98, 0x04};
-
-      const std::vector<uint8_t> pps_hevc_normal = {0x44, 0x01, 0xc1, 0x72,
-                                                    0xb4, 0x62, 0x40};
-
-      if (!CreateVideoToolboxSession(
-              CreateVideoFormatHEVC(ParameterSets(
-                  {vps_hevc_normal, sps_hevc_normal, pps_hevc_normal})),
-              /*require_hardware=*/true, /*is_hbd=*/false, /*has_alpha=*/false,
-              &callback, &session, &configured_size)) {
-        DVLOG(1) << "Hardware HEVC decoding with VideoToolbox is not supported";
-
-        // We don't return false here since HEVC support is optional.
-      }
-
-      session.reset();
-
-      // Create a hevc software decoding session.
-      // VPS, SPS and PPS data are taken from a 240p sample
-      // (bear-320x240-v_frag-hevc.mp4).
-      const std::vector<uint8_t> vps_hevc_small = {
-          0x40, 0x01, 0x0c, 0x01, 0xff, 0xff, 0x01, 0x60,
-          0x00, 0x00, 0x03, 0x00, 0x90, 0x00, 0x00, 0x03,
-          0x00, 0x00, 0x03, 0x00, 0x3c, 0x95, 0x98, 0x09};
-
-      const std::vector<uint8_t> sps_hevc_small = {
-          0x42, 0x01, 0x01, 0x01, 0x60, 0x00, 0x00, 0x03, 0x00, 0x90,
-          0x00, 0x00, 0x03, 0x00, 0x00, 0x03, 0x00, 0x3c, 0xa0, 0x0a,
-          0x08, 0x0f, 0x16, 0x59, 0x59, 0xa4, 0x93, 0x2b, 0xc0, 0x40,
-          0x40, 0x00, 0x00, 0xfa, 0x40, 0x00, 0x1d, 0x4c, 0x02};
-
-      const std::vector<uint8_t> pps_hevc_small = {0x44, 0x01, 0xc1, 0x72,
-                                                   0xb4, 0x62, 0x40};
-
-      if (!CreateVideoToolboxSession(
-              CreateVideoFormatHEVC(ParameterSets(
-                  {vps_hevc_small, sps_hevc_small, pps_hevc_small})),
-              /*require_hardware=*/false, /*is_hbd=*/false, /*has_alpha=*/false,
-              &callback, &session, &configured_size)) {
-        DVLOG(1) << "Software HEVC decoding with VideoToolbox is not supported";
-
-        // We don't return false here since HEVC support is optional.
-      }
-    }
-  }
-#endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
-  return true;
-}
-
 // TODO(sandersd): Share this computation with the VAAPI decoder.
 int32_t ComputeH264ReorderWindow(const H264SPS* sps) {
   // When |pic_order_cnt_type| == 2, decode order always matches presentation
@@ -613,13 +464,21 @@ class VP9ConfigChangeDetector {
   Vp9Parser vp9_parser_;
 };
 
-bool InitializeVideoToolbox() {
+void InitializeVideoToolbox() {
   // InitializeVideoToolbox() is called only from the GPU process main thread:
   // once for sandbox warmup, and then once each time a VTVideoDecodeAccelerator
   // is initialized. This ensures that everything is loaded whether or not the
   // sandbox is enabled.
-  static const bool succeeded = InitializeVideoToolboxInternal();
-  return succeeded;
+#if BUILDFLAG(IS_MAC)
+  static const bool unused = []() {
+    // TODO: Enable VP9 for a iOS platform(https://crbug.com/1449877)
+    if (__builtin_available(macOS 11.0, *)) {
+      VTRegisterSupplementalVideoDecoderIfAvailable(kCMVideoCodecType_VP9);
+    }
+    return true;
+  }();
+  std::ignore = unused;
+#endif
 }
 
 VTVideoDecodeAccelerator::Task::Task(TaskType type) : type(type) {}
@@ -765,10 +624,7 @@ bool VTVideoDecodeAccelerator::Initialize(const Config& config,
     return false;
   }
 
-  if (!InitializeVideoToolbox()) {
-    DVLOG(2) << "VideoToolbox is unavailable";
-    return false;
-  }
+  InitializeVideoToolbox();
 
   client_ = client;
   config_ = config;
@@ -2437,8 +2293,7 @@ VideoDecodeAccelerator::SupportedProfiles
 VTVideoDecodeAccelerator::GetSupportedProfiles(
     const gpu::GpuDriverBugWorkarounds& workarounds) {
   SupportedProfiles profiles;
-  if (!InitializeVideoToolbox())
-    return profiles;
+  InitializeVideoToolbox();
 
   for (const auto& supported_profile : kSupportedProfiles) {
     if (supported_profile == VP9PROFILE_PROFILE0 ||
