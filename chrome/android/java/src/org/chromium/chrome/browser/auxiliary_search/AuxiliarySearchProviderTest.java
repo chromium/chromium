@@ -6,10 +6,9 @@ package org.chromium.chrome.browser.auxiliary_search;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doReturn;
-
-import android.util.Pair;
 
 import androidx.test.filters.SmallTest;
 
@@ -38,7 +37,6 @@ import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 import org.chromium.url.GURL;
 
 import java.util.HashSet;
-import java.util.List;
 
 /**
  * Unit tests for {@link AuxiliarySearchProvider}
@@ -72,40 +70,19 @@ public class AuxiliarySearchProviderTest {
 
     @Test
     @SmallTest
-    public void testgetTabsSearchableData() throws InterruptedException {
+    public void testGetTabsSearchableDataProto() throws InterruptedException {
         MockTabModel mockTabModel = new MockTabModel(false, null);
         for (int i = 0; i < 200; i++) {
             MockTab tab = (MockTab) mockTabModel.addTab(i);
             tab.setGurlOverrideForTesting(new GURL(TAB_URL + Integer.toString(i)));
-        }
-
-        doReturn(mockTabModel).when(mTabModelSelector).getModel(false);
-        List<Pair<String, String>> tabsList = mAuxiliarySearchProvider.getTabsSearchableData();
-
-        assertEquals(tabsList.size(), 100);
-        HashSet<Integer> returnedTabsNumbers = new HashSet<Integer>();
-        for (int i = 0; i < tabsList.size(); i++) {
-            int number = Integer.valueOf(tabsList.get(i).second.substring(TAB_URL.length()));
-            assertTrue(number >= 100 && number <= 199);
-            returnedTabsNumbers.add(number);
-        }
-        assertEquals(returnedTabsNumbers.size(), 100);
-    }
-
-    @Test
-    @SmallTest
-    public void testgetTabsSearchableDataProto() throws InterruptedException {
-        MockTabModel mockTabModel = new MockTabModel(false, null);
-        for (int i = 0; i < 200; i++) {
-            MockTab tab = (MockTab) mockTabModel.addTab(i);
-            tab.setGurlOverrideForTesting(new GURL(TAB_URL + Integer.toString(i)));
-            CriticalPersistedTabData.from(tab).setTimestampMillis(System.currentTimeMillis());
+            CriticalPersistedTabData.from(tab).setTimestampMillis(i);
         }
 
         doReturn(mockTabModel).when(mTabModelSelector).getModel(false);
         AuxiliarySearchTabGroup tabGroup = mAuxiliarySearchProvider.getTabsSearchableDataProto();
 
         assertEquals(tabGroup.getTabCount(), 100);
+        HashSet<Integer> returnedTabsNumbers = new HashSet<Integer>();
         for (int i = 0; i < tabGroup.getTabCount(); i++) {
             AuxiliarySearchEntry tab = tabGroup.getTab(i);
             assertTrue(tab.hasTitle());
@@ -113,15 +90,22 @@ public class AuxiliarySearchProviderTest {
             assertTrue(tab.hasLastAccessTimestamp());
             assertFalse(tab.hasCreationTimestamp());
             assertFalse(tab.hasLastModificationTimestamp());
+
+            int number = Integer.valueOf(tab.getUrl().substring(TAB_URL.length()));
+            assertTrue(number >= 100 && number <= 199);
+            assertEquals(number, (int) tab.getLastAccessTimestamp());
+            returnedTabsNumbers.add(number);
         }
+        assertEquals(returnedTabsNumbers.size(), 100);
     }
 
     @Test
     @SmallTest
-    public void testgetBookmarksSearchableData() {
+    public void testGetBookmarksSearchableDataProto() {
         var bookmark = AuxiliarySearchEntry.newBuilder()
                                .setTitle(BOOKMARK_TITLE)
                                .setUrl(BOOKMARK_URL)
+                               .setCreationTimestamp(1)
                                .build();
         var proto = AuxiliarySearchBookmarkGroup.newBuilder().addBookmark(bookmark).build();
 
@@ -129,26 +113,27 @@ public class AuxiliarySearchProviderTest {
                 .when(mMockAuxiliarySearchBridgeJni)
                 .getBookmarksSearchableData(FAKE_NATIVE_PROVIDER);
 
-        List<Pair<String, String>> bookmarksList =
-                mAuxiliarySearchProvider.getBookmarksSearchableData();
+        AuxiliarySearchBookmarkGroup bookmarksList =
+                mAuxiliarySearchProvider.getBookmarksSearchableDataProto();
 
-        assertEquals(bookmarksList.size(), 1);
-        assertEquals(bookmarksList.get(0).first, BOOKMARK_TITLE);
-        assertEquals(bookmarksList.get(0).second, BOOKMARK_URL);
+        assertEquals(bookmarksList.getBookmarkCount(), 1);
+        assertEquals(bookmarksList.getBookmark(0).getTitle(), BOOKMARK_TITLE);
+        assertEquals(bookmarksList.getBookmark(0).getUrl(), BOOKMARK_URL);
+        assertEquals(bookmarksList.getBookmark(0).getCreationTimestamp(), 1);
+        assertFalse(bookmarksList.getBookmark(0).hasLastModificationTimestamp());
+        assertFalse(bookmarksList.getBookmark(0).hasLastAccessTimestamp());
     }
 
     @Test
     @SmallTest
-    public void testgetBookmarksSearchableData_failureToParse() {
+    public void testGetBookmarksSearchableDataProto_failureToParse() {
         // Return a random array which cannot been parsed to proto.
         doReturn(new byte[] {1, 2, 3})
                 .when(mMockAuxiliarySearchBridgeJni)
                 .getBookmarksSearchableData(FAKE_NATIVE_PROVIDER);
 
-        List<Pair<String, String>> bookmarksList =
-                mAuxiliarySearchProvider.getBookmarksSearchableData();
-
-        bookmarksList = mAuxiliarySearchProvider.getBookmarksSearchableData();
-        assertEquals(bookmarksList.size(), 0);
+        AuxiliarySearchBookmarkGroup bookmarksList =
+                mAuxiliarySearchProvider.getBookmarksSearchableDataProto();
+        assertNull(bookmarksList);
     }
 }
