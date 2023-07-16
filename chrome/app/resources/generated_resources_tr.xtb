@@ -3105,6 +3105,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3571734092741541777">Kur</translation>
 <translation id="3575121482199441727">Bu site için izin ver</translation>
 <translation id="3577473026931028326">Bir sorun oldu. Tekrar deneyin.</translation>
+<translation id="3577487026101678864">Dosya senkronizasyonu açık</translation>
 <translation id="3577745545227000795"><ph name="DEVICE_OS" /> donanım verileri toplama</translation>
 <translation id="3578874072190212775">Sitelerin sahtekarlıkla mücadele etmesine ve botları insanlardan ayırt etmesine yardımcı olun</translation>
 <translation id="3581605050355435601">IP adresini otomatik olarak yapılandır</translation>
@@ -3312,6 +3313,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3748706263662799310">Hata bildir</translation>
 <translation id="3749724428455457489">Site tarafından önerilen reklamlar hakkında daha fazla bilgi</translation>
 <translation id="3750562496035670393">Chrome, şifrenizi bu cihaza kaydetti ancak bunun yerine şifrenizi Google Hesabınıza kaydedebilirsiniz. Bu durumda Google Hesabınızdaki tüm şifreler oturumunuz açıkken de kullanılabilir.</translation>
+<translation id="3752115502500640407"><ph name="WEBSITE" /> şifrenizin bir kopyasını paylaşın</translation>
 <translation id="3752253558646317685">Parmak izini kaydetmek için çocuğunuzun parmağını kaldırıp dokundurmaya devam etmesi gerekir</translation>
 <translation id="3753033997400164841">Bir kere depolayın. Her yerde kullanın</translation>
 <translation id="3753142252662437130">Renk filtreleri</translation>
@@ -3609,6 +3611,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3975201861340929143">Açıklama</translation>
 <translation id="3975565978598857337">Alanın sunucusuyla iletişim kurulamadı</translation>
 <translation id="3976108569178263973">Kullanılabilir yazıcı yok.</translation>
+<translation id="3976244126942806443">Müzik üretmek ve düzenlemek için siteler genellikle MIDI cihazlarına bağlanır</translation>
 <translation id="397703832102027365">Sonlandırılıyor...</translation>
 <translation id="3977145907578671392">Bazı sitelerdeki özellikler Gizli modda çalışmayabilir</translation>
 <translation id="3977886311744775419">Otomatik güncellemeler bu ağ türünde indirilmez ancak güncellemeleri manuel olarak kontrol edebilirsiniz.</translation>
@@ -4771,6 +4774,7 @@ Uzaklaştırmak için Ctrl + Alt + Parlaklığı Azalt tuşlarını kullanın.</
 <translation id="4979510648199782334">Microsoft 365 kurulumu tamamlandı</translation>
 <translation id="4980805016576257426">Bu uzantı kötü amaçlı yazılım içeriyor.</translation>
 <translation id="4981449534399733132">Tarama verilerini senkronize edilmiş tüm cihazlarınızdan ve Google Hesabınızdan temizlemek için <ph name="BEGIN_LINK" />oturum açın<ph name="END_LINK" />.</translation>
+<translation id="4983159853748980742">Şifreniz paylaşılamadı. İnternet bağlantınızı kontrol edin ve Chrome'da oturum açtığınızdan emin olun. Daha sonra tekrar deneyin.</translation>
 <translation id="4986706507552097681">Neyin senkronize edileceğini istediğiniz zaman ayarlardan seçebilirsiniz. Google, geçmişinize dayalı olarak Arama'yı ve diğer hizmetleri kişiselleştirebilir.</translation>
 <translation id="4986728572522335985">Bu işlem, PIN'i de dahil olmak üzere güvenlik anahtarındaki tüm verileri silecek.</translation>
 <translation id="4988526792673242964">Sayfalar</translation>
@@ -5430,6 +5434,7 @@ Web sitelerine ve uygulamalara verdiğiniz izinler, bu hesap için geçerli olab
 <translation id="5555363196923735206">Kamerayı çevir</translation>
 <translation id="5555525474779371165">Güvenli Tarama korumanızı seçin</translation>
 <translation id="5555639311269196631">Hotspot'u kapat</translation>
+<translation id="5555760010546505198">Rengi ters çevirme, renk düzeltme, büyüteç ve ekran ayarları</translation>
 <translation id="5556459405103347317">Yeniden Yükle</translation>
 <translation id="5558129378926964177">Yakınlaş&amp;tır</translation>
 <translation id="5559311991468302423">Adresi sil</translation>
@@ -8685,6 +8690,7 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8301242268274839723">Klavyenizin sol alt köşesindeki parmak izi sensörüne dokunun. Parmak izi verileriniz güvenli şekilde depolanır ve her zaman <ph name="DEVICE_TYPE" /> cihazınızda tutulur.</translation>
 <translation id="8303616404642252802">{COUNT,plural, =1{Adres}other{# adres}}</translation>
 <translation id="8304383784961451596">Bu cihazı kullanmak için yetkili değilsiniz. Oturum açma izni için lütfen yöneticinize danışın veya Family Link gözetimindeki bir Google hesabı ile oturum açın.</translation>
+<translation id="8306063480506363120">Drive erişimini kaldır</translation>
 <translation id="8306885873692337975">En son özellikleri ve güvenlik iyileştirmelerini edinin.</translation>
 <translation id="8308016398665340540">Bu ağı, bu cihazın diğer kullanıcılarıyla paylaşıyorsunuz</translation>
 <translation id="8308179586020895837"><ph name="HOST" /> sitesi kamerama erişmek isterse sor</translation>

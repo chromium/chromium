@@ -68,6 +68,7 @@
 <translation id="4985291216379576555">Offline állapotban van, ezért a Chromium nem tud frissítéseket keresni</translation>
 <translation id="4996471330284142407">Még több mindent elvégezhet az egyszerű, biztonságos és minden eddiginél gyorsabb Chromium segítségével.</translation>
 <translation id="4999538639245140991">Mivel kijelentkezik a(z) <ph name="SIGNOUT_MANAGED_DOMAIN" /> által felügyelt fiókból, törli az eszközön található Chromium-adatokat. Ezek az adatok Google-fiókjában továbbra is megmaradnak.</translation>
+<translation id="5042011327527167688">Koppintson a „Megtekintés a Google Térképpel a Chromiumban” lehetőségre.</translation>
 <translation id="5048795749726991615">Használja a Chromium Automatikus kitöltés funkcióját, hogy egyszerűen hozzáférhessen mentett jelszavaihoz a többi alkalmazásában is</translation>
 <translation id="5171868502429358653">Bejelentkezés a Chromiumba</translation>
 <translation id="5224391634244552924">Nincsenek mentett jelszavak. A Chromium képes a jelszavak ellenőrzésére, ha Ön elmenti őket.</translation>
@@ -112,6 +113,7 @@
 <translation id="7357211569052832586">A kiválasztott adatokat eltávolítottuk a Chromiumból és a szinkronizált eszközökről. Előfordulhat, hogy Google-fiókjában (a history.google.com címen) még szerepelnek a böngészési előzmények egyéb formái, így például a keresések és egyéb tevékenységek más Google-szolgáltatásokból.</translation>
 <translation id="7395825497086981028">Jelszavát elmenti a rendszer a fiókhoz (<ph name="EMAIL" />) kapcsolt Jelszókezelőbe.</translation>
 <translation id="7400689562045506105">A Chromium mindenhol használható</translation>
+<translation id="7523464085759699266">Kapcsolja be az „Inkognitó lapok zárolása a Chromium bezárásakor” beállítást.</translation>
 <translation id="7674213385180944843">Nyissa meg a Beállítások &gt; Adatvédelem &gt; Kamera &gt; Chromium elemet, és kapcsolja be a kamerát.</translation>
 <translation id="7746854981345936341">Tipp a Chromium használatához. Egyes gombok (például a Vissza, az Előre vagy a Keresés) mostantól a képernyő alján jelennek meg.</translation>
 <translation id="7763454117143368771">A Chromiumot alapértelmezett böngészőként beállítva biztosíthatja a veszélyes webhelyekkel szembeni védelmét, és gondoskodhat jelszavai biztonságáról is.</translation>
@@ -123,6 +125,7 @@
 <translation id="7931842119211730154">Inkognitó lapok zárolása a Chromium bezárásakor</translation>
 <translation id="7980860476903281594">A Chromium megosztja a tartózkodási helyét az Ön által engedélyezett webhelyekkel.</translation>
 <translation id="8013573822802650211">Jelentkezzen be minden eszközén, hogy bárhol hozzáférhessen a lapjaihoz, ahol a Chromiumot használja.</translation>
+<translation id="8071041515667087705">Lépjen a Chromium beállításaihoz.</translation>
 <translation id="8073677936375100957">Törli Chromium-adatait az eszközről?</translation>
 <translation id="8235427517854598594">A Chromium legyen az alapértelmezett böngésző?</translation>
 <translation id="8240981428553046115">A Chromium nem tudott frissítéseket keresni. Próbálja újra később.</translation>

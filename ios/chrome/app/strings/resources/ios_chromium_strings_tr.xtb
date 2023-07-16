@@ -68,6 +68,7 @@
 <translation id="4985291216379576555">Çevrimdışı, Chromium güncellemeleri denetleyemiyor</translation>
 <translation id="4996471330284142407">Basit, güvenli ve her zamankinden daha hızlı Chromium ile daha fazlasını yapın.</translation>
 <translation id="4999538639245140991"><ph name="SIGNOUT_MANAGED_DOMAIN" /> tarafından yönetilen bir hesabın oturumunu kapattığınız için Chromium verileriniz bu cihazdan silinecek. Ancak verileriniz Google Hesabınızda kalmaya devam edecek.</translation>
+<translation id="5042011327527167688">"Chromium'da Google Haritalar ile görüntüle"ye dokunun.</translation>
 <translation id="5048795749726991615">Kayıtlı şifrelerinizi diğer uygulamalarınızda da kolayca görmek amacıyla Otomatik Doldurma için Chromium'u kullanın</translation>
 <translation id="5171868502429358653">Chromium'da Oturum Açın</translation>
 <translation id="5224391634244552924">Kaydedilen şifre yok. Chromium, kaydetmeniz halinde şifrelerinizi kontrol edebilir.</translation>
@@ -112,6 +113,7 @@
 <translation id="7357211569052832586">Seçilen veriler Chromium'dan ve senkronize edilen cihazlardan kaldırıldı. Google Hesabınızda diğer tarama geçmişi biçimleri (örneğin, history.google.com adresindeki diğer Google hizmetlerine bağlı aramalar ve etkinlikler) bulunabilir.</translation>
 <translation id="7395825497086981028">Şifreniz, <ph name="EMAIL" /> için Şifre Yöneticisi'ne kaydedilir.</translation>
 <translation id="7400689562045506105">Chromium'u Her Yerde Kullanın</translation>
+<translation id="7523464085759699266">"Chromium'u Kapattığınızda Gizli Sekmeleri Kilitleyin" seçeneğini etkinleştirin.</translation>
 <translation id="7674213385180944843">Ayarlar &gt; Gizlilik &gt; Kamera &gt; Chromium'a gidin ve kamerayı açın.</translation>
 <translation id="7746854981345936341">Chromium için ipucu: Geri, İleri ve Ara gibi bazı düğmeler artık ekranınızın alt bölümünde bulunuyor.</translation>
 <translation id="7763454117143368771">Tehlikeli sitelere karşı koruma altında kalmak ve şifrelerinizi güvende tutmak için varsayılan tarayıcınız olarak Chromium'u kullanın</translation>
@@ -123,6 +125,7 @@
 <translation id="7931842119211730154">Chromium'u Kapattığınızda Gizli Sekmeleri Kilitleyin</translation>
 <translation id="7980860476903281594">Chromium, konumunuzu izin verdiğiniz sitelerle paylaşır.</translation>
 <translation id="8013573822802650211">Chromium kullandığınız her yerde sekmelerinizi görmek için tüm cihazlarınızda oturum açın.</translation>
+<translation id="8071041515667087705">Chromium Ayarları'na gidin.</translation>
 <translation id="8073677936375100957">Chromium verileriniz bu cihazdan temizlensin mi?</translation>
 <translation id="8235427517854598594">Chromium varsayılan tarayıcınız yapılsın mı?</translation>
 <translation id="8240981428553046115">Chromium, güncellemeleri denetleyemedi. Daha sonra tekrar deneyin.</translation>
