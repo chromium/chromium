@@ -23,10 +23,13 @@
       </label>
     </button>
     <button id="export-policies-json">$i18n{exportPoliciesJSON}</button>
+    <button id="revert-applied-policies" disabled>
+      $i18n{testRevertAppliedPolicies}
+    </button>
+    <button id="clear-policies">$i18n{testClearPolicies}</button>
   </div>
   <p>$i18n{testDesc}</p>
   <policy-test-table id="policy-test-table"></policy-test-table>
 </body>
-<script type="module" src="/test/policy_test_table.js"></script>
 <script type="module" src="/test/policy_test.js"></script>
 </html>

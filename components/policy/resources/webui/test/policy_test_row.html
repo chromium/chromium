@@ -15,12 +15,12 @@
   }
 </style>
 <div role="cell">
-  <select class="name-select">
+  <select class="name">
     <option selected disabled hidden>$i18n{testNameSelect}</option>
   </select>
 </div>
 <div role="cell">
-  <select class="source-select">
+  <select class="source">
     <option selected disabled hidden>$i18n{testSourceSelect}</option>
     <option title="POLICY_SOURCE_ENTERPRISE_DEFAULT" value="0">
       $i18n{sourceEnterpriseDefault}
@@ -58,7 +58,7 @@
   </select>
 </div>
 <div role="cell">
-  <select class="target-select">
+  <select class="scope">
     <option selected disabled hidden>$i18n{testTargetSelect}</option>
     <option title="POLICY_SCOPE_USER" value="0">$i18n{scopeUser}</option>
     <option title="POLICY_SCOPE_ALL_USERS" value="1">
@@ -68,7 +68,7 @@
   </select>
 </div>
 <div role="cell">
-  <select class="level-select">
+  <select class="level">
     <option selected disabled hidden>$i18n{testLevelSelect}</option>
     <option title="POLICY_LEVEL_RECOMMENDED" value="0">
       $i18n{levelRecommended}
@@ -79,7 +79,7 @@
   </select>
 </div>
 <div role="cell">
-  <input type="text" class="value-input">
+  <input type="text" class="value">
 </div>
 <div role="cell">
   <button class="remove-btn">$i18n{testTableRemove}</button>

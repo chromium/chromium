@@ -2,16 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {PolicyTestTableElement} from './policy_test_table';
+import './policy_test_table.js';
+
+import {sendWithPromise} from 'chrome://resources/js/cr.js';
+import {getRequiredElement} from 'chrome://resources/js/util_ts.js';
+
+import {PolicyTestTableElement} from './policy_test_table.js';
 
 function initialize() {
-  document.querySelector('#import-policies-file-input')!.addEventListener(
-      'change', uploadPoliciesFile);
+  getRequiredElement('import-policies-file-input')
+      .addEventListener('change', uploadPoliciesFile);
+  getRequiredElement('apply-policies').addEventListener('click', applyPolicies);
+  getRequiredElement('revert-applied-policies')
+      .addEventListener('click', resetPolicies);
 }
 
 function uploadPoliciesFile() {
-  const fileInput = document.getElementById('import-policies-file-input')! as
-      HTMLInputElement;
+  const fileInput =
+      getRequiredElement<HTMLInputElement>('import-policies-file-input');
   // Get selected file
   const jsonFile = fileInput.files?.length == 1 ? fileInput.files![0] : null;
   if (jsonFile) {
@@ -28,12 +36,11 @@ function applyPoliciesFromFile(jsonFile: File) {
       'load',
       () => {
         const fileInput =
-            document.getElementById('import-policies-file-input')! as
-            HTMLInputElement;
+            getRequiredElement<HTMLInputElement>('import-policies-file-input');
 
         const policies = JSON.parse(reader.result as string) as object[];
-        const policyTable = document.getElementById('policy-test-table')! as
-            PolicyTestTableElement;
+        const policyTable =
+            getRequiredElement<PolicyTestTableElement>('policy-test-table');
 
         // Empty policy table
         policyTable.clearRows();
@@ -48,6 +55,19 @@ function applyPoliciesFromFile(jsonFile: File) {
       },
       false,
   );
+}
+
+function applyPolicies() {
+  sendWithPromise(
+      'setLocalTestPolicies',
+      (getRequiredElement<PolicyTestTableElement>('policy-test-table'))
+          .getTestPoliciesAsJsonString());
+  getRequiredElement<HTMLButtonElement>('revert-applied-policies').disabled =
+      false;
+}
+
+function resetPolicies(event: Event) {
+  (event.target as HTMLButtonElement).disabled = true;
 }
 
 document.addEventListener('DOMContentLoaded', initialize);

@@ -753,6 +753,9 @@ Additional details:
   <message name="IDS_POLICY_TEST_DESC" desc="Text for the page description.">
     You cannot use this page from a managed acount on this unmanaged device. All managed accounts will be locked if you use this page, except accounts managed by the same entity as this device (affiliated accounts).
   </message>
+  <message name="IDS_POLICY_TEST_REVERT" desc="Text for the Reset policies button.">
+    Revert applied policies
+  </message>
   <message name="IDS_POLICY_TEST_TABLE_TARGET" desc="Text for the column of the policy table for the policy target.">
     Target
   </message>

@@ -174,6 +174,8 @@ void CreateAndAddPolicyUIHtmlSource(Profile* profile) {
         {"testApply", IDS_POLICY_TEST_APPLY},
         {"testImport", IDS_POLICY_TEST_IMPORT},
         {"testDesc", IDS_POLICY_TEST_DESC},
+        {"testRevertAppliedPolicies", IDS_POLICY_TEST_REVERT},
+        {"testClearPolicies", IDS_CLEAR},
         {"testTableName", IDS_POLICY_HEADER_NAME},
         {"testTableSource", IDS_POLICY_HEADER_SOURCE},
         {"testTableTarget", IDS_POLICY_TEST_TABLE_TARGET},

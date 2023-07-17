@@ -40,7 +40,7 @@ export class PolicyTestRowElement extends CustomElement {
   // Function that initializes the policy selection dropdowns and delete
   // button for the current row.
   private initialize() {
-    const policyNameDropdown = this.getRequiredElement('.name-select');
+    const policyNameDropdown = this.getRequiredElement('.name');
 
     // Populate the policy name dropdown with all policy names.
     loadTimeData.getString('policyNames')
@@ -54,6 +54,12 @@ export class PolicyTestRowElement extends CustomElement {
     // Add an event listener for this row's delete button.
     this.getRequiredElement('.remove-btn')
         .addEventListener('click', this.remove.bind(this));
+  }
+
+  // Class method for returning the value of the given attribute in this row.
+  getValue(selector: string): string {
+    return this.getRequiredElement<HTMLSelectElement|HTMLInputElement>(selector)
+        .value;
   }
 }
 
