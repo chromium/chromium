@@ -136,6 +136,10 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameHeader {
 
   void OnFloatStateChanged();
 
+  // Set/Get the radius of top-left and top-right corners of the header.
+  int header_corner_radius() const { return corner_radius_; }
+  void SetHeaderCornerRadius(int radius);
+
   void SetLeftHeaderView(views::View* view);
   void SetBackButton(views::FrameCaptionButton* view);
   void SetCenterButton(chromeos::FrameCenterButton* view);
@@ -226,6 +230,9 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameHeader {
 
   // Whether the header should be painted as active.
   Mode mode_ = MODE_INACTIVE;
+
+  // The radius of the top-left and top-right corners of the header.
+  int corner_radius_ = 0;
 
   std::u16string frame_text_override_;
 };

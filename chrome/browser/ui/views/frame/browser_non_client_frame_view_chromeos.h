@@ -179,6 +179,8 @@ class BrowserNonClientFrameViewChromeOS
   // Updates the icon that indicates a teleported window.
   void UpdateProfileIcons();
 
+  void UpdateFrameRoundedCorners();
+
   void LayoutProfileIndicator();
 
   void UpdateBorderlessModeEnabled();

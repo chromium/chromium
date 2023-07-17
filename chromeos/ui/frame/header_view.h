@@ -144,6 +144,7 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) HeaderView
   void UpdateBackButton();
   void UpdateCenterButton();
   void UpdateCaptionButtonsVisibility();
+  void UpdateHeaderRoundedCorners();
 
   // The widget that the caption buttons act on.
   raw_ptr<views::Widget, ExperimentalAsh> target_widget_;

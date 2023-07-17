@@ -280,6 +280,15 @@ void FrameHeader::OnFloatStateChanged() {
   LayoutHeaderInternal();
 }
 
+void FrameHeader::SetHeaderCornerRadius(int radius) {
+  if (radius == corner_radius_) {
+    return;
+  }
+
+  corner_radius_ = radius;
+  view_->SchedulePaint();
+}
+
 void FrameHeader::SetLeftHeaderView(views::View* left_header_view) {
   left_header_view_ = left_header_view;
 }

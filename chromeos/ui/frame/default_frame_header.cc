@@ -9,7 +9,6 @@
 #include "chromeos/ui/base/chromeos_ui_constants.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
-#include "chromeos/ui/frame/frame_utils.h"
 #include "chromeos/ui/wm/window_util.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/color/color_provider.h"
@@ -104,7 +103,6 @@ void DefaultFrameHeader::UpdateFrameColors() {
 // DefaultFrameHeader, protected:
 
 void DefaultFrameHeader::DoPaintHeader(gfx::Canvas* canvas) {
-  const int corner_radius = GetFrameCornerRadius(GetTargetWindow());
   cc::PaintFlags flags;
 
   if (features::IsJellyrollEnabled() &&
@@ -116,6 +114,7 @@ void DefaultFrameHeader::DoPaintHeader(gfx::Canvas* canvas) {
                                                : inactive_frame_color_);
   }
 
+  const int corner_radius = header_corner_radius();
   flags.setAntiAlias(corner_radius > 0);
   if (width_in_pixels_ > 0) {
     canvas->Save();

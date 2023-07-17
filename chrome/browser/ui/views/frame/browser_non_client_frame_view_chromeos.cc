@@ -6,9 +6,7 @@
 
 #include <algorithm>
 
-#include "base/containers/cxx20_erase.h"
 #include "base/metrics/user_metrics.h"
-#include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/platform_util.h"
@@ -16,7 +14,6 @@
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
-#include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/frame/browser_frame.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
@@ -40,7 +37,6 @@
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/skia/include/core/SkColor.h"
-#include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/env.h"
@@ -49,11 +45,9 @@
 #include "ui/base/models/image_model.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/chromeos/styles/cros_styles.h"
-#include "ui/events/gestures/gesture_recognizer.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/image/image_skia.h"
-#include "ui/gfx/scoped_canvas.h"
 #include "ui/views/animation/animation_builder.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
@@ -182,8 +176,10 @@ void BrowserNonClientFrameViewChromeOS::Init() {
 
   display_observer_.emplace(this);
 
-  if (frame()->ShouldDrawFrameHeader())
+  if (frame()->ShouldDrawFrameHeader()) {
     frame_header_ = CreateFrameHeader();
+    UpdateFrameRoundedCorners();
+  }
 
   if (AppIsBorderlessPwa()) {
     UpdateBorderlessModeEnabled();
@@ -670,6 +666,13 @@ void BrowserNonClientFrameViewChromeOS::OnWindowPropertyChanged(
     aura::Window* window,
     const void* key,
     intptr_t old) {
+  // Frames in chromeOS have rounded frames for certain window states. If these
+  // states changes, we need to update the rounded corners accordingly. See
+  // `chromeos::GetFrameCornerRadius()` for more details.
+  if (chromeos::CanPropertyEffectFrameRadius(key) && frame_header_) {
+    UpdateFrameRoundedCorners();
+  }
+
   if (key == aura::client::kShowStateKey) {
     bool enter_fullscreen = window->GetProperty(aura::client::kShowStateKey) ==
                             ui::SHOW_STATE_FULLSCREEN;
@@ -877,14 +880,6 @@ void BrowserNonClientFrameViewChromeOS::OnAddedToOrRemovedFromOverview() {
   // The WebAppFrameToolbarView is part of the BrowserView, so make sure the
   // BrowserView is re-layed out to take into account these changes.
   browser_view()->InvalidateLayout();
-
-  // In the overview mode, the native frame does not need rounding. (See
-  // `chromeos::GetFrameCornerRadius()` for more details.)
-  // We need to repaint the frame's header to ensure that the change is
-  // reflected.
-  if (frame_header_) {
-    frame_header_->view()->SchedulePaint();
-  }
 }
 
 std::unique_ptr<chromeos::FrameHeader>
@@ -969,6 +964,15 @@ void BrowserNonClientFrameViewChromeOS::UpdateProfileIcons() {
       root_view->Layout();
   }
 #endif
+}
+
+void BrowserNonClientFrameViewChromeOS::UpdateFrameRoundedCorners() {
+  // Currently ChromeOS has only top two corners rounded that are handled
+  // by rounding frame header.
+  if (frame_header_) {
+    frame_header_->SetHeaderCornerRadius(
+        chromeos::GetFrameCornerRadius(frame()->GetNativeWindow()));
+  }
 }
 
 void BrowserNonClientFrameViewChromeOS::LayoutProfileIndicator() {

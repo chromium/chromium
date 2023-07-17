@@ -20,7 +20,6 @@
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/scoped_canvas.h"
 #include "ui/views/view.h"
-#include "ui/views/widget/native_widget_aura.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/window/caption_button_layout_constants.h"
@@ -174,9 +173,7 @@ void BrowserFrameHeaderChromeOS::UpdateFrameColors() {
 
 SkPath BrowserFrameHeaderChromeOS::GetWindowMaskForFrameHeader(
     const gfx::Size& size) {
-  return GetFrameHeaderPath(
-      gfx::Rect(size),
-      chromeos::GetFrameCornerRadius(target_widget()->GetNativeWindow()));
+  return GetFrameHeaderPath(gfx::Rect(size), header_corner_radius());
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -189,12 +186,10 @@ void BrowserFrameHeaderChromeOS::PaintFrameImages(gfx::Canvas* canvas) {
       appearance_provider_->GetFrameHeaderImage(active);
   gfx::ImageSkia frame_overlay_image =
       appearance_provider_->GetFrameHeaderOverlayImage(active);
-  const int corner_radius =
-      chromeos::GetFrameCornerRadius(target_widget()->GetNativeWindow());
 
   PaintFrameImagesInRoundRect(canvas, frame_image, frame_overlay_image,
                               appearance_provider_->GetFrameHeaderColor(active),
                               GetPaintedBounds(), GetThemeBackgroundXInset(),
                               appearance_provider_->GetFrameHeaderImageYInset(),
-                              corner_radius);
+                              header_corner_radius());
 }
