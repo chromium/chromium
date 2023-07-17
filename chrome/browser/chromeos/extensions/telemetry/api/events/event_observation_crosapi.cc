@@ -43,10 +43,9 @@ class DefaultEventDelegate : public EventObservationCrosapi::Delegate {
       case crosapi::internal::TelemetryEventInfo_Data::TelemetryEventInfo_Tag::
           kAudioJackEventInfo: {
         base::Value::List args;
-        args.Append(
-            converters::ConvertStructPtr<api::os_events::AudioJackEventInfo>(
-                std::move(info->get_audio_jack_event_info()))
-                .ToValue());
+        args.Append(converters::ConvertStructPtr(
+                        std::move(info->get_audio_jack_event_info()))
+                        .ToValue());
         event = std::make_unique<extensions::Event>(
             extensions::events::OS_EVENTS_ON_AUDIO_JACK_EVENT,
             api::os_events::OnAudioJackEvent::kEventName, std::move(args),
@@ -56,9 +55,9 @@ class DefaultEventDelegate : public EventObservationCrosapi::Delegate {
       case crosapi::internal::TelemetryEventInfo_Data::TelemetryEventInfo_Tag::
           kLidEventInfo: {
         base::Value::List args;
-        args.Append(converters::ConvertStructPtr<api::os_events::LidEventInfo>(
-                        std::move(info->get_lid_event_info()))
-                        .ToValue());
+        args.Append(
+            converters::ConvertStructPtr(std::move(info->get_lid_event_info()))
+                .ToValue());
         event = std::make_unique<extensions::Event>(
             extensions::events::OS_EVENTS_ON_LID_EVENT,
             api::os_events::OnLidEvent::kEventName, std::move(args),
@@ -68,9 +67,9 @@ class DefaultEventDelegate : public EventObservationCrosapi::Delegate {
       case crosapi::internal::TelemetryEventInfo_Data::TelemetryEventInfo_Tag::
           kUsbEventInfo: {
         base::Value::List args;
-        args.Append(converters::ConvertStructPtr<api::os_events::UsbEventInfo>(
-                        std::move(info->get_usb_event_info()))
-                        .ToValue());
+        args.Append(
+            converters::ConvertStructPtr(std::move(info->get_usb_event_info()))
+                .ToValue());
         event = std::make_unique<extensions::Event>(
             extensions::events::OS_EVENTS_ON_USB_EVENT,
             api::os_events::OnUsbEvent::kEventName, std::move(args),
@@ -80,9 +79,9 @@ class DefaultEventDelegate : public EventObservationCrosapi::Delegate {
       case crosapi::internal::TelemetryEventInfo_Data::TelemetryEventInfo_Tag::
           kHdmiEventInfo: {
         base::Value::List args;
-        args.Append(converters::ConvertStructPtr<api::os_events::HdmiEventInfo>(
-                        std::move(info->get_hdmi_event_info()))
-                        .ToValue());
+        args.Append(
+            converters::ConvertStructPtr(std::move(info->get_hdmi_event_info()))
+                .ToValue());
         event = std::make_unique<extensions::Event>(
             extensions::events::OS_EVENTS_ON_HDMI_EVENT,
             api::os_events::OnHdmiEvent::kEventName, std::move(args),
@@ -92,10 +91,9 @@ class DefaultEventDelegate : public EventObservationCrosapi::Delegate {
       case crosapi::internal::TelemetryEventInfo_Data::TelemetryEventInfo_Tag::
           kSdCardEventInfo: {
         base::Value::List args;
-        args.Append(
-            converters::ConvertStructPtr<api::os_events::SdCardEventInfo>(
-                std::move(info->get_sd_card_event_info()))
-                .ToValue());
+        args.Append(converters::ConvertStructPtr(
+                        std::move(info->get_sd_card_event_info()))
+                        .ToValue());
         event = std::make_unique<extensions::Event>(
             extensions::events::OS_EVENTS_ON_SD_CARD_EVENT,
             api::os_events::OnSdCardEvent::kEventName, std::move(args),
@@ -105,10 +103,9 @@ class DefaultEventDelegate : public EventObservationCrosapi::Delegate {
       case crosapi::internal::TelemetryEventInfo_Data::TelemetryEventInfo_Tag::
           kPowerEventInfo: {
         base::Value::List args;
-        args.Append(
-            converters::ConvertStructPtr<api::os_events::PowerEventInfo>(
-                std::move(info->get_power_event_info()))
-                .ToValue());
+        args.Append(converters::ConvertStructPtr(
+                        std::move(info->get_power_event_info()))
+                        .ToValue());
         event = std::make_unique<extensions::Event>(
             extensions::events::OS_EVENTS_ON_POWER_EVENT,
             api::os_events::OnPowerEvent::kEventName, std::move(args),
@@ -118,8 +115,7 @@ class DefaultEventDelegate : public EventObservationCrosapi::Delegate {
       case crosapi::internal::TelemetryEventInfo_Data::TelemetryEventInfo_Tag::
           kKeyboardDiagnosticEventInfo: {
         base::Value::List args;
-        args.Append(converters::ConvertStructPtr<
-                        api::os_events::KeyboardDiagnosticEventInfo>(
+        args.Append(converters::ConvertStructPtr(
                         std::move(info->get_keyboard_diagnostic_event_info()))
                         .ToValue());
 
@@ -132,10 +128,9 @@ class DefaultEventDelegate : public EventObservationCrosapi::Delegate {
       case crosapi::internal::TelemetryEventInfo_Data::TelemetryEventInfo_Tag::
           kStylusGarageEventInfo: {
         base::Value::List args;
-        args.Append(
-            converters::ConvertStructPtr<api::os_events::StylusGarageEventInfo>(
-                std::move(info->get_stylus_garage_event_info()))
-                .ToValue());
+        args.Append(converters::ConvertStructPtr(
+                        std::move(info->get_stylus_garage_event_info()))
+                        .ToValue());
         event = std::make_unique<extensions::Event>(
             extensions::events::OS_EVENTS_ON_STYLUS_GARAGE_EVENT,
             api::os_events::OnStylusGarageEvent::kEventName, std::move(args),
@@ -145,8 +140,7 @@ class DefaultEventDelegate : public EventObservationCrosapi::Delegate {
       case crosapi::internal::TelemetryEventInfo_Data::TelemetryEventInfo_Tag::
           kTouchpadButtonEventInfo: {
         base::Value::List args;
-        args.Append(converters::ConvertStructPtr<
-                        api::os_events::TouchpadButtonEventInfo>(
+        args.Append(converters::ConvertStructPtr(
                         std::move(info->get_touchpad_button_event_info()))
                         .ToValue());
         event = std::make_unique<extensions::Event>(
@@ -158,8 +152,7 @@ class DefaultEventDelegate : public EventObservationCrosapi::Delegate {
       case crosapi::internal::TelemetryEventInfo_Data::TelemetryEventInfo_Tag::
           kTouchpadTouchEventInfo: {
         base::Value::List args;
-        args.Append(converters::ConvertStructPtr<
-                        api::os_events::TouchpadTouchEventInfo>(
+        args.Append(converters::ConvertStructPtr(
                         std::move(info->get_touchpad_touch_event_info()))
                         .ToValue());
         event = std::make_unique<extensions::Event>(
@@ -171,8 +164,7 @@ class DefaultEventDelegate : public EventObservationCrosapi::Delegate {
       case crosapi::internal::TelemetryEventInfo_Data::TelemetryEventInfo_Tag::
           kTouchpadConnectedEventInfo: {
         base::Value::List args;
-        args.Append(converters::ConvertStructPtr<
-                        api::os_events::TouchpadConnectedEventInfo>(
+        args.Append(converters::ConvertStructPtr(
                         std::move(info->get_touchpad_connected_event_info()))
                         .ToValue());
         event = std::make_unique<extensions::Event>(
@@ -184,10 +176,9 @@ class DefaultEventDelegate : public EventObservationCrosapi::Delegate {
       case crosapi::internal::TelemetryEventInfo_Data::TelemetryEventInfo_Tag::
           kStylusTouchEventInfo: {
         base::Value::List args;
-        args.Append(
-            converters::ConvertStructPtr<api::os_events::StylusTouchEventInfo>(
-                std::move(info->get_stylus_touch_event_info()))
-                .ToValue());
+        args.Append(converters::ConvertStructPtr(
+                        std::move(info->get_stylus_touch_event_info()))
+                        .ToValue());
         event = std::make_unique<extensions::Event>(
             extensions::events::OS_EVENTS_ON_STYLUS_TOUCH_EVENT,
             api::os_events::OnStylusTouchEvent::kEventName, std::move(args),
@@ -197,8 +188,7 @@ class DefaultEventDelegate : public EventObservationCrosapi::Delegate {
       case crosapi::internal::TelemetryEventInfo_Data::TelemetryEventInfo_Tag::
           kStylusConnectedEventInfo: {
         base::Value::List args;
-        args.Append(converters::ConvertStructPtr<
-                        api::os_events::StylusConnectedEventInfo>(
+        args.Append(converters::ConvertStructPtr(
                         std::move(info->get_stylus_connected_event_info()))
                         .ToValue());
         event = std::make_unique<extensions::Event>(
