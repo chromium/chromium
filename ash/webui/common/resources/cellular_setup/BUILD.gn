@@ -18,6 +18,7 @@ js_type_check("closure_compile_module") {
     ":cellular_setup",
     ":cellular_setup_delegate",
     ":cellular_types",
+    ":confirmation_code_page",
     ":confirmation_code_page_legacy",
     ":esim_flow_ui",
     ":esim_manager_listener_behavior",
@@ -72,6 +73,13 @@ js_library("activation_code_page") {
 }
 
 js_library("confirmation_code_page_legacy") {
+  deps = [
+    "//ash/webui/common/resources:i18n_behavior",
+    "//third_party/polymer/v3_0/components-chromium/paper-spinner:paper-spinner-lite",
+  ]
+}
+
+js_library("confirmation_code_page") {
   deps = [
     "//ash/webui/common/resources:i18n_behavior",
     "//third_party/polymer/v3_0/components-chromium/paper-spinner:paper-spinner-lite",
@@ -207,6 +215,7 @@ js_library("esim_flow_ui") {
     ":activation_verification_page",
     ":cellular_setup_delegate",
     ":cellular_types",
+    ":confirmation_code_page",
     ":confirmation_code_page_legacy",
     ":esim_manager_utils",
     ":final_page",

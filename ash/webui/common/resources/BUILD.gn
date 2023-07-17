@@ -42,6 +42,7 @@ web_component_files = [
   "cellular_setup/button_bar.js",
   "cellular_setup/cellular_setup.js",
   "cellular_setup/confirmation_code_page_legacy.js",
+  "cellular_setup/confirmation_code_page.js",
   "cellular_setup/esim_flow_ui.js",
   "cellular_setup/final_page.js",
   "cellular_setup/profile_discovery_list_item_legacy.js",
