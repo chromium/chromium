@@ -19,7 +19,8 @@ found in the LICENSE file.
   }
 
   #relatedInfoImg {
-    height: 288px;
+    height: 100%;
+    width: 100%;
   }
 
   #subtitle-container div:not(:last-child) {
@@ -61,9 +62,8 @@ found in the LICENSE file.
     <div class="example-text" hidden="[[!childName_]]">
       [[i18nDynamic(locale, 'assistantRelatedInfoExampleForChild')]]
     </div>
-    <cr-lottie id="relatedInfoImg"
-        animation-url="[[getAnimationUrl_(isDarkModeActive_)]]">
-    </cr-lottie>
+    <iron-icon id="relatedInfoImg" icon="assistant-illo:related_info">
+    </iron-icon>
   </div>
   <div slot="content" id="content-container" class="landscape-header-aligned"
       hidden$="[[!skipActivityControl_]]">

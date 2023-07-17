@@ -86,15 +86,6 @@ class AssistantVoiceMatch extends AssistantVoiceMatchBase {
       },
 
       /**
-       * Whether the {prefers-color-scheme: dark}
-       * @private {boolean}
-       */
-      isDarkModeActive_: {
-        type: Boolean,
-        value: false,
-      },
-
-      /**
        * @private {boolean}
        */
       isTabletMode_: {
@@ -318,14 +309,9 @@ class AssistantVoiceMatch extends AssistantVoiceMatchBase {
     }
   }
 
-  getReadyImgUrl_(isDarkMode) {
-    return './assistant_optin/assistant_ready_' + (isDarkMode ? 'dm' : 'lm') +
-        '.json';
-  }
-
-  getVoiceMatchAnimationUrl_(isDarkMode, isTabletMode) {
+  getVoiceMatchAnimationUrl_(isTabletMode) {
     return './assistant_optin/voice_' + (isTabletMode ? 'tablet' : 'laptop') +
-        '_' + (isDarkMode ? 'dm' : 'lm') + '.json';
+        '.json';
   }
 }
 
