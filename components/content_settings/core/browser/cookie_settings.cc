@@ -128,7 +128,7 @@ void CookieSettings::ResetCookieSetting(const GURL& primary_url) {
 bool CookieSettings::IsThirdPartyAccessAllowed(
     const GURL& first_party_url,
     content_settings::SettingSource* source,
-    base::Time* expiration) {
+    base::Time* expiration) const {
   // Use GURL() as an opaque primary url to check if any site
   // could access cookies in a 3p context on |first_party_url|.
   return IsAllowed(GetCookieSetting(GURL(), first_party_url,

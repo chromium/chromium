@@ -13944,6 +13944,10 @@ Called by update_bad_message_reasons.py.-->
   <int value="9" label="INTERACTION_COMPLETE"/>
 </enum>
 
+<enum name="BreakageIndicatorType">
+  <int value="0" label="User Reload"/>
+</enum>
+
 <enum name="BreakoutBoxUsage">
   <int value="0" label="ReadableVideo"/>
   <int value="1" label="ReadableVideoWorker"/>
