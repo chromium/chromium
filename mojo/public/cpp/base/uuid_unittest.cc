@@ -12,7 +12,7 @@
 namespace mojo_base {
 namespace {
 
-TEST(UnguessableTokenTest, UnguessableToken) {
+TEST(UuidTest, RandomV4Token) {
   base::Uuid in = base::Uuid::GenerateRandomV4();
   base::Uuid out;
 
