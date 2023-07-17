@@ -5,7 +5,7 @@
 #ifndef GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_OZONE_IMAGE_BACKING_H_
 #define GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_OZONE_IMAGE_BACKING_H_
 
-#include <dawn/webgpu.h>
+#include <dawn/webgpu_cpp.h>
 
 #include <memory>
 
@@ -36,20 +36,18 @@ class VaapiDependencies;
 // aliased by both GL and Vulkan for use in rendering or compositing.
 class OzoneImageBacking final : public ClearTrackingSharedImageBacking {
  public:
-  OzoneImageBacking(
-      const Mailbox& mailbox,
-      viz::SharedImageFormat format,
-      gfx::BufferPlane plane,
-      const gfx::Size& size,
-      const gfx::ColorSpace& color_space,
-      GrSurfaceOrigin surface_origin,
-      SkAlphaType alpha_type,
-      uint32_t usage,
-      scoped_refptr<SharedContextState> context_state,
-      scoped_refptr<gfx::NativePixmap> pixmap,
-      scoped_refptr<base::RefCountedData<DawnProcTable>> dawn_procs,
-      const GpuDriverBugWorkarounds& workarounds,
-      bool use_passthrough);
+  OzoneImageBacking(const Mailbox& mailbox,
+                    viz::SharedImageFormat format,
+                    gfx::BufferPlane plane,
+                    const gfx::Size& size,
+                    const gfx::ColorSpace& color_space,
+                    GrSurfaceOrigin surface_origin,
+                    SkAlphaType alpha_type,
+                    uint32_t usage,
+                    scoped_refptr<SharedContextState> context_state,
+                    scoped_refptr<gfx::NativePixmap> pixmap,
+                    const GpuDriverBugWorkarounds& workarounds,
+                    bool use_passthrough);
 
   OzoneImageBacking(const OzoneImageBacking&) = delete;
   OzoneImageBacking& operator=(const OzoneImageBacking&) = delete;
@@ -119,7 +117,6 @@ class OzoneImageBacking final : public ClearTrackingSharedImageBacking {
   int write_streams_count_;
 
   scoped_refptr<gfx::NativePixmap> pixmap_;
-  scoped_refptr<base::RefCountedData<DawnProcTable>> dawn_procs_;
   std::vector<scoped_refptr<GLOzoneImageRepresentationShared::TextureHolder>>
       cached_texture_holders_;
 

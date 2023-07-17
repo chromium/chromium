@@ -14,8 +14,6 @@
 #include "gpu/config/gpu_preferences.h"
 #include "gpu/gpu_gles2_export.h"
 
-struct DawnProcTable;
-
 namespace gpu {
 class SharedContextState;
 
@@ -90,7 +88,6 @@ class GPU_GLES2_EXPORT OzoneImageBackingFactory
   bool CanImportNativePixmapToWebGPU();
 
   const raw_ptr<SharedContextState> shared_context_state_;
-  scoped_refptr<base::RefCountedData<DawnProcTable>> dawn_procs_;
   const GpuDriverBugWorkarounds workarounds_;
   bool use_passthrough_;
 

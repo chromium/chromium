@@ -75,12 +75,7 @@ OzoneImageBackingFactory::OzoneImageBackingFactory(
       shared_context_state_(shared_context_state),
       workarounds_(workarounds),
       use_passthrough_(gpu_preferences.use_passthrough_cmd_decoder &&
-                       gles2::PassthroughCommandDecoderSupported()) {
-#if BUILDFLAG(USE_DAWN)
-  dawn_procs_ = base::MakeRefCounted<base::RefCountedData<DawnProcTable>>(
-      dawn::native::GetProcs());
-#endif  // BUILDFLAG(USE_DAWN)
-}
+                       gles2::PassthroughCommandDecoderSupported()) {}
 
 OzoneImageBackingFactory::~OzoneImageBackingFactory() = default;
 
@@ -120,7 +115,7 @@ OzoneImageBackingFactory::CreateSharedImageInternal(
   return std::make_unique<OzoneImageBacking>(
       mailbox, format, gfx::BufferPlane::DEFAULT, size, color_space,
       surface_origin, alpha_type, usage, shared_context_state_.get(),
-      std::move(pixmap), dawn_procs_, workarounds_, use_passthrough_);
+      std::move(pixmap), workarounds_, use_passthrough_);
 }
 
 std::unique_ptr<SharedImageBacking> OzoneImageBackingFactory::CreateSharedImage(
@@ -203,7 +198,7 @@ std::unique_ptr<SharedImageBacking> OzoneImageBackingFactory::CreateSharedImage(
   auto backing = std::make_unique<OzoneImageBacking>(
       mailbox, plane_format, plane, plane_size, color_space, surface_origin,
       alpha_type, usage, shared_context_state_.get(), std::move(pixmap),
-      dawn_procs_, workarounds_, use_passthrough_);
+      workarounds_, use_passthrough_);
   backing->SetCleared();
 
   return backing;
@@ -234,7 +229,7 @@ std::unique_ptr<SharedImageBacking> OzoneImageBackingFactory::CreateSharedImage(
   auto backing = std::make_unique<OzoneImageBacking>(
       mailbox, format, gfx::BufferPlane::DEFAULT, size, color_space,
       surface_origin, alpha_type, usage, shared_context_state_.get(),
-      std::move(pixmap), dawn_procs_, workarounds_, use_passthrough_);
+      std::move(pixmap), workarounds_, use_passthrough_);
   backing->SetCleared();
 
   return backing;
