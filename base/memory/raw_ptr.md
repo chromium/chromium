@@ -15,7 +15,7 @@ the case. You must continue to explicitly initialize raw_ptr members to ensure
 consistent behavior across all cases. Because the underlying implementation
 may vary, always use the `raw_ptr<T> member_ = nullptr;` form of
 initialization rather than the so-called uniform initialization form
-(empty braces) `raw_ptr<T> member_{};' whose meaning varies with the
+(empty braces) `raw_ptr<T> member_{};` whose meaning varies with the
 implementation.
 
 Unlike `std::unique_ptr<T>`, `base::scoped_refptr<T>`, etc., `raw_ptr<T>`
