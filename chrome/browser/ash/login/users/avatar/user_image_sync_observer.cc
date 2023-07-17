@@ -48,16 +48,19 @@ UserImageSyncObserver::UserImageSyncObserver(const user_manager::User* user)
   } else {
     auto* session_manager = session_manager::SessionManager::Get();
     // SessionManager might not exist in unit tests.
-    if (session_manager)
+    if (session_manager) {
       session_observation_.Observe(session_manager);
+    }
   }
 }
 
 UserImageSyncObserver::~UserImageSyncObserver() {
-  if (!is_synced_ && prefs_)
+  if (!is_synced_ && prefs_) {
     prefs_->RemoveObserver(this);
-  if (pref_change_registrar_)
+  }
+  if (pref_change_registrar_) {
     pref_change_registrar_->RemoveAll();
+  }
 
   user_manager::UserManager::Get()->RemoveObserver(this);
 }
@@ -107,8 +110,9 @@ void UserImageSyncObserver::OnPreferenceChanged(const std::string& pref_name) {
 }
 
 void UserImageSyncObserver::OnUserProfileLoaded(const AccountId& account_id) {
-  if (user_->GetAccountId() != account_id)
+  if (user_->GetAccountId() != account_id) {
     return;
+  }
 
   Profile* profile = ProfileHelper::Get()->GetProfileByAccountId(account_id);
   DCHECK(profile);
@@ -117,10 +121,11 @@ void UserImageSyncObserver::OnUserProfileLoaded(const AccountId& account_id) {
 }
 
 void UserImageSyncObserver::OnUserImageChanged(const user_manager::User& user) {
-  if (is_synced_)
+  if (is_synced_) {
     UpdateSyncedImageFromLocal();
-  else
+  } else {
     local_image_changed_ = true;
+  }
 }
 
 void UserImageSyncObserver::OnIsSyncingChanged() {
@@ -137,8 +142,9 @@ void UserImageSyncObserver::UpdateSyncedImageFromLocal() {
     local_index = user_manager::User::USER_IMAGE_INVALID;
   }
   int synced_index;
-  if (GetSyncedImageIndex(&synced_index) && (synced_index == local_index))
+  if (GetSyncedImageIndex(&synced_index) && (synced_index == local_index)) {
     return;
+  }
   ScopedDictPrefUpdate update(prefs_, kUserImageInfo);
   base::Value::Dict& dict = update.Get();
   dict.Set(kImageIndex, local_index);
@@ -149,8 +155,9 @@ void UserImageSyncObserver::UpdateLocalImageFromSynced() {
   int synced_index;
   GetSyncedImageIndex(&synced_index);
   int local_index = user_->image_index();
-  if ((synced_index == local_index) || !IsIndexSupported(synced_index))
+  if ((synced_index == local_index) || !IsIndexSupported(synced_index)) {
     return;
+  }
   UserImageManager* image_manager =
       ChromeUserManager::Get()->GetUserImageManager(user_->GetAccountId());
   if (synced_index == user_manager::User::USER_IMAGE_PROFILE) {

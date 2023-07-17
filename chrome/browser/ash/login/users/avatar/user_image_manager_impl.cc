@@ -93,8 +93,9 @@ bool SaveAndDeleteImage(scoped_refptr<base::RefCountedBytes> image_bytes,
 
 // Returns the codec enum for the given image path's extension.
 ImageDecoder::ImageCodec ChooseCodecFromPath(const base::FilePath& image_path) {
-  if (image_path.Extension() == FILE_PATH_LITERAL(".png"))
+  if (image_path.Extension() == FILE_PATH_LITERAL(".png")) {
     return ImageDecoder::PNG_CODEC;
+  }
 
   return ImageDecoder::DEFAULT_CODEC;
 }
@@ -404,8 +405,9 @@ void UserImageManagerImpl::Job::OnLoadImageDone(
 void UserImageManagerImpl::Job::UpdateUser(
     std::unique_ptr<user_manager::UserImage> user_image) {
   user_manager::User* user = parent_->GetUserAndModify();
-  if (!user)
+  if (!user) {
     return;
+  }
   if (!user_image->image().isNull()) {
     user->SetImage(std::move(user_image), image_index_);
   } else {
@@ -425,8 +427,9 @@ void UserImageManagerImpl::Job::UpdateUserAndSaveImage(
   const bool image_is_safe_format = user_image->is_safe_format();
   // Create a reference before user_image is passed.
   scoped_refptr<base::RefCountedBytes> image_bytes;
-  if (image_is_safe_format)
+  if (image_is_safe_format) {
     image_bytes = user_image->image_bytes();
+  }
   const user_manager::UserImage::ImageFormat image_format =
       user_image->image_format();
 
@@ -484,8 +487,9 @@ void UserImageManagerImpl::Job::SaveImageAndUpdateLocalState(
   if (const base::Value::Dict* image_properties =
           parent_->GetImageProperties()) {
     const std::string* value = image_properties->FindString(kImagePathNodeName);
-    if (value)
+    if (value) {
       old_image_path = base::FilePath::FromUTF8Unsafe(*value);
+    }
   }
 
   parent_->background_task_runner_->PostTaskAndReplyWithResult(
@@ -497,16 +501,18 @@ void UserImageManagerImpl::Job::SaveImageAndUpdateLocalState(
 
 void UserImageManagerImpl::Job::OnSaveImageDone(bool success) {
   image_cache_updated_ = success;
-  if (success || image_index_ == user_manager::User::USER_IMAGE_PROFILE)
+  if (success || image_index_ == user_manager::User::USER_IMAGE_PROFILE) {
     UpdateLocalState();
+  }
   NotifyJobDone();
 }
 
 void UserImageManagerImpl::Job::UpdateLocalState() {
   // Ignore if data stored or cached outside the user's cryptohome is to be
   // treated as ephemeral.
-  if (parent_->user_manager_->IsUserNonCryptohomeDataEphemeral(account_id()))
+  if (parent_->user_manager_->IsUserNonCryptohomeDataEphemeral(account_id())) {
     return;
+  }
 
   PrefService* local_state = g_browser_process->local_state();
 
@@ -514,8 +520,9 @@ void UserImageManagerImpl::Job::UpdateLocalState() {
   entry.Set(kImagePathNodeName, image_path_.value());
   entry.Set(kImageIndexNodeName, image_index_);
   entry.Set(kImageCacheUpdated, image_cache_updated_);
-  if (!image_url_.is_empty())
+  if (!image_url_.is_empty()) {
     entry.Set(kImageURLNodeName, image_url_.spec());
+  }
 
   const base::Value::Dict* existing_value =
       local_state->GetDict(kUserImageProperties)
@@ -555,8 +562,9 @@ void UserImageManagerImpl::LoadUserImage() {
   // If the user image for `user_id` is managed by policy and the policy-set
   // image is being loaded and persisted right now, let that job continue. It
   // will update the user image when done.
-  if (IsUserImageManaged() && job_.get())
+  if (IsUserImageManaged() && job_.get()) {
     return;
+  }
 
   const base::Value::Dict* image_properties = GetImageProperties();
   if (!image_properties) {
@@ -653,8 +661,9 @@ void UserImageManagerImpl::UserProfileCreated() {
 
 void UserImageManagerImpl::SaveUserDefaultImageIndex(int default_image_index) {
   is_random_image_set_ = false;
-  if (IsUserImageManaged())
+  if (IsUserImageManaged()) {
     return;
+  }
   job_ = std::make_unique<Job>(this);
   job_->SetToDefaultImage(default_image_index);
 }
@@ -696,8 +705,9 @@ void UserImageManagerImpl::SaveUserImageFromProfileImage() {
                    std::move(user_image));
   // If no profile image has been downloaded yet, ensure that a download is
   // started.
-  if (downloaded_profile_image_.isNull())
+  if (downloaded_profile_image_.isNull()) {
     DownloadProfileData();
+  }
 }
 
 void UserImageManagerImpl::DeleteUserImage() {
@@ -706,8 +716,9 @@ void UserImageManagerImpl::DeleteUserImage() {
 }
 
 void UserImageManagerImpl::DownloadProfileImage() {
-  if (g_skip_profile_download)
+  if (g_skip_profile_download) {
     return;
+  }
   profile_image_requested_ = true;
   DownloadProfileData();
 }
@@ -731,8 +742,9 @@ bool UserImageManagerImpl::IsUserImageManaged() const {
 
 void UserImageManagerImpl::OnExternalDataSet(const std::string& policy) {
   DCHECK_EQ(policy::key::kUserAvatarImage, policy);
-  if (IsUserImageManaged())
+  if (IsUserImageManaged()) {
     return;
+  }
 
   has_managed_image_ = true;
   job_.reset();
@@ -743,8 +755,9 @@ void UserImageManagerImpl::OnExternalDataSet(const std::string& policy) {
   }
   // If the user image for the currently logged-in user became managed, stop the
   // sync observer so that the policy-set image does not get synced out.
-  if (user->is_logged_in())
+  if (user->is_logged_in()) {
     user_image_sync_observer_.reset();
+  }
 
   user_manager_->NotifyUserImageIsEnterpriseManagedChanged(
       *user, /*is_enterprise_managed=*/true);
@@ -752,8 +765,9 @@ void UserImageManagerImpl::OnExternalDataSet(const std::string& policy) {
 
 void UserImageManagerImpl::OnExternalDataCleared(const std::string& policy) {
   DCHECK_EQ(policy::key::kUserAvatarImage, policy);
-  if (!IsUserImageManaged())
+  if (!IsUserImageManaged()) {
     return;
+  }
 
   has_managed_image_ = false;
 
@@ -838,12 +852,14 @@ void UserImageManagerImpl::OnProfileDownloadSuccess(
       user_manager::UserManager::UserAccountData(
           downloader->GetProfileFullName(), downloader->GetProfileGivenName(),
           downloader->GetProfileLocale()));
-  if (!downloading_profile_image_)
+  if (!downloading_profile_image_) {
     return;
+  }
 
   // Ignore the image if it is no longer needed.
-  if (!NeedProfileImage())
+  if (!NeedProfileImage()) {
     return;
+  }
 
   const user_manager::User* const user = GetUser();
 
@@ -856,8 +872,9 @@ void UserImageManagerImpl::OnProfileDownloadSuccess(
 
   // Nothing to do if the picture is cached or is the default avatar.
   if (downloader->GetProfilePictureStatus() !=
-      ProfileDownloader::PICTURE_SUCCESS)
+      ProfileDownloader::PICTURE_SUCCESS) {
     return;
+  }
 
   downloaded_profile_image_ =
       gfx::ImageSkia::CreateFrom1xBitmap(downloader->GetProfilePicture());
@@ -919,8 +936,9 @@ bool UserImageManagerImpl::NeedProfileImage() const {
 }
 
 void UserImageManagerImpl::DownloadProfileData() {
-  if (!IsUserLoggedInAndHasGaiaAccount())
+  if (!IsUserLoggedInAndHasGaiaAccount()) {
     return;
+  }
 
   // If a download is already in progress, allow it to continue, with one
   // exception: If the current download does not include the profile image but
@@ -942,8 +960,9 @@ void UserImageManagerImpl::DeleteUserImageAndLocalStateEntry(
                               prefs_dict_root);
   const base::Value::Dict* image_properties =
       update->FindDict(account_id_.GetUserEmail());
-  if (!image_properties)
+  if (!image_properties) {
     return;
+  }
 
   const std::string* image_path =
       image_properties->FindString(kImagePathNodeName);
@@ -955,18 +974,20 @@ void UserImageManagerImpl::DeleteUserImageAndLocalStateEntry(
 }
 
 void UserImageManagerImpl::OnJobChangedUserImage() {
-  if (GetUser()->is_logged_in())
+  if (GetUser()->is_logged_in()) {
     TryToInitDownloadedProfileImage();
+  }
 
   user_manager_->NotifyUserImageChanged(*GetUser());
 }
 
 void UserImageManagerImpl::OnJobDone() {
-  if (job_.get())
+  if (job_.get()) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(
         FROM_HERE, job_.release());
-  else
+  } else {
     NOTREACHED();
+  }
 }
 
 void UserImageManagerImpl::TryToCreateImageSyncObserver() {
@@ -1000,8 +1021,9 @@ user_manager::User* UserImageManagerImpl::GetUserAndModify() const {
 
 bool UserImageManagerImpl::IsUserLoggedInAndHasGaiaAccount() const {
   const user_manager::User* user = GetUser();
-  if (!user)
+  if (!user) {
     return false;
+  }
   return user->is_logged_in() && user->HasGaiaAccount();
 }
 

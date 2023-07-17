@@ -26,8 +26,9 @@ ChromeUserManager::~ChromeUserManager() = default;
 void ChromeUserManager::UpdateLoginState(const user_manager::User* active_user,
                                          const user_manager::User* primary_user,
                                          bool is_current_user_owner) const {
-  if (!LoginState::IsInitialized())
+  if (!LoginState::IsInitialized()) {
     return;  // LoginState may be uninitialized in tests.
+  }
 
   LoginState::LoggedInState logged_in_state;
   LoginState::LoggedInUserType logged_in_user_type;
@@ -46,8 +47,9 @@ void ChromeUserManager::UpdateLoginState(const user_manager::User* active_user,
 LoginState::LoggedInUserType ChromeUserManager::GetLoggedInUserType(
     const user_manager::User& active_user,
     bool is_current_user_owner) const {
-  if (is_current_user_owner)
+  if (is_current_user_owner) {
     return LoginState::LOGGED_IN_USER_OWNER;
+  }
 
   switch (active_user.GetType()) {
     case user_manager::USER_TYPE_REGULAR:

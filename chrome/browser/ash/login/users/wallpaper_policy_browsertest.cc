@@ -221,8 +221,9 @@ class WallpaperPolicyTest : public LoginManagerTest,
   // WallpaperControllerObserver:
   void OnWallpaperChanged() override {
     ++wallpaper_change_count_;
-    if (run_loop_)
+    if (run_loop_) {
       run_loop_->Quit();
+    }
   }
 
   // Runs the loop until wallpaper has changed to the expected color.

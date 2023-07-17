@@ -153,8 +153,9 @@ bool GetUserLockAttributes(const user_manager::User* user,
                            bool* can_lock,
                            std::string* multi_profile_behavior) {
   Profile* const profile = ProfileHelper::Get()->GetProfileByUser(user);
-  if (!profile)
+  if (!profile) {
     return false;
+  }
   PrefService* const prefs = profile->GetPrefs();
   if (can_lock) {
     *can_lock = user->can_lock() && prefs->GetBoolean(prefs::kAllowScreenLock);
@@ -174,8 +175,9 @@ policy::MinimumVersionPolicyHandler* GetMinimumVersionPolicyHandler() {
 
 // Starts bluetooth logging service for internal accounts and certain devices.
 void MaybeStartBluetoothLogging(const AccountId& account_id) {
-  if (!gaia::IsGoogleInternalAccountEmail(account_id.GetUserEmail()))
+  if (!gaia::IsGoogleInternalAccountEmail(account_id.GetUserEmail())) {
     return;
+  }
 
   UpstartClient::Get()->StartJob(kBluetoothLoggingUpstartJob, {},
                                  base::DoNothing());
@@ -196,8 +198,10 @@ void CheckCryptohomeIsMounted(
 // our profile directory is the one that's mounted, and that it's mounted
 // as the current user.
 void CheckProfileForSanity() {
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(::switches::kTestType))
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          ::switches::kTestType)) {
     return;
+  }
 
   UserDataAuthClient::Get()->IsMounted(
       user_data_auth::IsMountedRequest(),
@@ -287,17 +291,20 @@ ChromeUserManagerImpl::ChromeUserManagerImpl()
 
   // UserManager instance should be used only on UI thread.
   // (or in unit tests)
-  if (base::SingleThreadTaskRunner::HasCurrentDefault())
+  if (base::SingleThreadTaskRunner::HasCurrentDefault()) {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  }
 
   DeviceSettingsService::Get()->AddObserver(this);
-  if (ProfileManager* profile_manager = g_browser_process->profile_manager())
+  if (ProfileManager* profile_manager = g_browser_process->profile_manager()) {
     profile_manager_observation_.Observe(profile_manager);
+  }
 
   auto* session_manager = session_manager::SessionManager::Get();
   // SessionManager might not exist in unit tests.
-  if (session_manager)
+  if (session_manager) {
     session_observation_.Observe(session_manager);
+  }
 
   // Since we're in ctor postpone any actions till this is fully created.
   if (base::SingleThreadTaskRunner::HasCurrentDefault()) {
@@ -368,8 +375,9 @@ ChromeUserManagerImpl::ChromeUserManagerImpl()
           cros_settings_, device_local_account_policy_service));
 
   // Record the stored session length for enrolled device.
-  if (IsEnterpriseManaged())
+  if (IsEnterpriseManaged()) {
     enterprise_user_session_metrics::RecordStoredSessionLength();
+  }
 }
 
 void ChromeUserManagerImpl::UpdateOwnerId() {
@@ -383,8 +391,9 @@ void ChromeUserManagerImpl::UpdateOwnerId() {
 }
 
 ChromeUserManagerImpl::~ChromeUserManagerImpl() {
-  if (DeviceSettingsService::IsInitialized())
+  if (DeviceSettingsService::IsInitialized()) {
     DeviceSettingsService::Get()->RemoveObserver(this);
+  }
 }
 
 void ChromeUserManagerImpl::Shutdown() {
@@ -413,8 +422,9 @@ void ChromeUserManagerImpl::Shutdown() {
   // Stop the session length limiter.
   session_length_limiter_.reset();
 
-  if (device_local_account_policy_service_)
+  if (device_local_account_policy_service_) {
     device_local_account_policy_service_->RemoveObserver(this);
+  }
 
   user_image_manager_registry_.Shutdown();
 
@@ -468,8 +478,9 @@ user_manager::UserList ChromeUserManagerImpl::GetUsersAllowedForMultiProfile()
 
 user_manager::UserList ChromeUserManagerImpl::GetUnlockUsers() const {
   const user_manager::UserList& logged_in_users = GetLoggedInUsers();
-  if (logged_in_users.empty())
+  if (logged_in_users.empty()) {
     return user_manager::UserList();
+  }
 
   bool can_primary_lock = false;
   std::string primary_behavior;
@@ -485,15 +496,17 @@ user_manager::UserList ChromeUserManagerImpl::GetUnlockUsers() const {
   // primary user has primary-only multi-profile policy.
   if (logged_in_users.size() == 1 ||
       primary_behavior == MultiProfileUserController::kBehaviorPrimaryOnly) {
-    if (can_primary_lock)
+    if (can_primary_lock) {
       unlock_users.push_back(primary_user_);
+    }
   } else {
     // Fill list of potential unlock users based on multi-profile policy state.
     for (user_manager::User* user : logged_in_users) {
       bool can_lock = false;
       std::string behavior;
-      if (!GetUserLockAttributes(user, &can_lock, &behavior))
+      if (!GetUserLockAttributes(user, &can_lock, &behavior)) {
         continue;
+      }
       if (behavior == MultiProfileUserController::kBehaviorUnrestricted &&
           can_lock) {
         unlock_users.push_back(user);
@@ -575,8 +588,9 @@ void ChromeUserManagerImpl::OwnershipStatusChanged() {
         g_browser_process->platform_part()->browser_policy_connector_ash();
     device_local_account_policy_service_ =
         connector->GetDeviceLocalAccountPolicyService();
-    if (device_local_account_policy_service_)
+    if (device_local_account_policy_service_) {
       device_local_account_policy_service_->AddObserver(this);
+    }
   }
   RetrieveTrustedDevicePolicies();
 }
@@ -586,8 +600,9 @@ void ChromeUserManagerImpl::OnPolicyUpdated(const std::string& user_id) {
   const AccountId account_id = known_user.GetAccountId(
       user_id, std::string() /* id */, AccountType::UNKNOWN);
   const user_manager::User* user = FindUser(account_id);
-  if (!user || user->GetType() != user_manager::USER_TYPE_PUBLIC_ACCOUNT)
+  if (!user || user->GetType() != user_manager::USER_TYPE_PUBLIC_ACCOUNT) {
     return;
+  }
   UpdatePublicAccountDisplayName(user_id);
 }
 
@@ -601,8 +616,9 @@ bool ChromeUserManagerImpl::CanCurrentUserLock() const {
     return false;
   }
   bool can_lock = false;
-  if (!GetUserLockAttributes(active_user_, &can_lock, nullptr))
+  if (!GetUserLockAttributes(active_user_, &can_lock, nullptr)) {
     return false;
+  }
   return can_lock;
 }
 
@@ -651,8 +667,9 @@ bool ChromeUserManagerImpl::IsDeviceLocalAccountMarkedForRemoval(
 
 void ChromeUserManagerImpl::RetrieveTrustedDevicePolicies() {
   // Local state may not be initialized in unit_tests.
-  if (!GetLocalState())
+  if (!GetLocalState()) {
     return;
+  }
 
   SetEphemeralModeConfig(EphemeralModeConfig());
 
@@ -706,15 +723,17 @@ void ChromeUserManagerImpl::RetrieveTrustedDevicePolicies() {
         it = users_.erase(it);
         changed = true;
       } else {
-        if ((*it)->GetType() != user_manager::USER_TYPE_PUBLIC_ACCOUNT)
+        if ((*it)->GetType() != user_manager::USER_TYPE_PUBLIC_ACCOUNT) {
           prefs_users_update->Append(account_id.GetUserEmail());
+        }
         ++it;
       }
     }
   }
 
-  if (changed)
+  if (changed) {
     NotifyLocalStateChanged();
+  }
 }
 
 void ChromeUserManagerImpl::GuestUserLoggedIn() {
@@ -828,8 +847,9 @@ void ChromeUserManagerImpl::KioskAppLoggedIn(user_manager::User* user) {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   command_line->AppendSwitch(::switches::kForceAppMode);
   // This happens in Web and Arc kiosks.
-  if (!kiosk_app_id.empty())
+  if (!kiosk_app_id.empty()) {
     command_line->AppendSwitchASCII(::switches::kAppId, kiosk_app_id);
+  }
 
   // Disable window animation since kiosk app runs in a single full screen
   // window and window animation causes start-up janks.
@@ -914,8 +934,9 @@ void ChromeUserManagerImpl::CleanUpDeviceLocalAccountNonCryptohomeData(
     const std::vector<std::string>& old_device_local_accounts) {
   std::set<std::string> users;
   for (user_manager::UserList::const_iterator it = users_.begin();
-       it != users_.end(); ++it)
+       it != users_.end(); ++it) {
     users.insert((*it)->GetAccountId().GetUserEmail());
+  }
 
   // If the user is logged into a device local account that has been removed
   // from the user list, mark the account's data as pending removal after
@@ -936,8 +957,9 @@ void ChromeUserManagerImpl::CleanUpDeviceLocalAccountNonCryptohomeData(
   for (std::vector<std::string>::const_iterator it =
            old_device_local_accounts.begin();
        it != old_device_local_accounts.end(); ++it) {
-    if (users.find(*it) == users.end())
+    if (users.find(*it) == users.end()) {
       RemoveNonCryptohomeData(AccountId::FromUserEmail(*it));
+    }
   }
 }
 
@@ -949,8 +971,9 @@ bool ChromeUserManagerImpl::UpdateAndCleanUpDeviceLocalAccounts(
   // Get the current list of device local accounts.
   std::vector<std::string> old_accounts;
   for (auto* user : users_) {
-    if (user->IsDeviceLocalAccount())
+    if (user->IsDeviceLocalAccount()) {
       old_accounts.push_back(user->GetAccountId().GetUserEmail());
+    }
   }
 
   // If the list of device local accounts has not changed, return.
@@ -962,8 +985,9 @@ bool ChromeUserManagerImpl::UpdateAndCleanUpDeviceLocalAccounts(
         break;
       }
     }
-    if (!changed)
+    if (!changed) {
       return false;
+    }
   }
 
   // Persist the new list of device local accounts in a pref. These accounts
@@ -973,15 +997,17 @@ bool ChromeUserManagerImpl::UpdateAndCleanUpDeviceLocalAccounts(
   ScopedListPrefUpdate prefs_device_local_accounts_update(
       GetLocalState(), kDeviceLocalAccountsWithSavedData);
   prefs_device_local_accounts_update->clear();
-  for (const auto& account : device_local_accounts)
+  for (const auto& account : device_local_accounts) {
     prefs_device_local_accounts_update->Append(account.user_id);
+  }
 
   // Remove the old device local accounts from the user list.
   for (user_manager::UserList::iterator it = users_.begin();
        it != users_.end();) {
     if ((*it)->IsDeviceLocalAccount()) {
-      if (*it != GetActiveUser())
+      if (*it != GetActiveUser()) {
         DeleteUser(*it);
+      }
       it = users_.erase(it);
     } else {
       ++it;
@@ -1039,8 +1065,9 @@ void ChromeUserManagerImpl::UpdatePublicAccountDisplayName(
 
 bool ChromeUserManagerImpl::IsGuestSessionAllowed() const {
   // In tests CrosSettings might not be initialized.
-  if (!cros_settings_)
+  if (!cros_settings_) {
     return false;
+  }
 
   bool is_guest_allowed = false;
   cros_settings_->GetBoolean(kAccountsPrefAllowGuest, &is_guest_allowed);
@@ -1131,15 +1158,18 @@ void ChromeUserManagerImpl::UpdateNumberOfUsers() {
 void ChromeUserManagerImpl::UpdateUserTimeZoneRefresher(Profile* profile) {
   const user_manager::User* user =
       ProfileHelper::Get()->GetUserByProfile(profile);
-  if (user == nullptr)
+  if (user == nullptr) {
     return;
+  }
 
   // In Multi-Profile mode only primary user settings are in effect.
-  if (user != user_manager::UserManager::Get()->GetPrimaryUser())
+  if (user != user_manager::UserManager::Get()->GetPrimaryUser()) {
     return;
+  }
 
-  if (!IsUserLoggedIn())
+  if (!IsUserLoggedIn()) {
     return;
+  }
 
   // Timezone auto refresh is disabled for Guest and OffTheRecord
   // users, but enabled for Kiosk mode.
