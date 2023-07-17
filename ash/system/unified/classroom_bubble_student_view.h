@@ -12,6 +12,8 @@ namespace ash {
 // class ClassroomBubbleStudentView : public views::View {
 class ASH_EXPORT ClassroomBubbleStudentView : public ClassroomBubbleBaseView {
  public:
+  METADATA_HEADER(ClassroomBubbleStudentView);
+
   explicit ClassroomBubbleStudentView(DetailedViewDelegate* delegate);
   ClassroomBubbleStudentView(const ClassroomBubbleStudentView&) = delete;
   ClassroomBubbleStudentView& operator=(const ClassroomBubbleStudentView&) =

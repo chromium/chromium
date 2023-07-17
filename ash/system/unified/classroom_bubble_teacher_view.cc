@@ -17,6 +17,7 @@
 #include "base/functional/bind.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/strings/utf_string_conversions.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/controls/combobox/combobox.h"
 #include "url/gurl.h"
 
@@ -136,5 +137,8 @@ void ClassroomBubbleTeacherView::SelectedAssignmentListChanged() {
       return client->GetGradedTeacherAssignments(std::move(callback));
   }
 }
+
+BEGIN_METADATA(ClassroomBubbleTeacherView, views::View)
+END_METADATA
 
 }  // namespace ash

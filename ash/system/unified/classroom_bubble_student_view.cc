@@ -16,6 +16,7 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/strings/string_piece_forward.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/controls/combobox/combobox.h"
 #include "url/gurl.h"
 
@@ -139,5 +140,8 @@ void ClassroomBubbleStudentView::SelectedAssignmentListChanged() {
       return client->GetCompletedStudentAssignments(std::move(callback));
   }
 }
+
+BEGIN_METADATA(ClassroomBubbleStudentView, views::View)
+END_METADATA
 
 }  // namespace ash
