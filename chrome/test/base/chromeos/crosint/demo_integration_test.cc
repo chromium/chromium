@@ -1,0 +1,80 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "base/run_loop.h"
+#include "base/test/test_switches.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/test/base/in_process_browser_test.h"
+#include "content/public/test/browser_test.h"
+#include "net/dns/mock_host_resolver.h"
+#include "url/gurl.h"
+
+// This is a demo to run a browser test on a ChromeOS device or VM.
+// Following the following to run the test:
+// Environment and device setup:
+//   Follow //docs/lacros/build_dut_lacros.md so you can build Lacros
+//   and deploy on a VM or ChromeOS device under test(DUT).
+// 1 Use DUT gn args
+//   Following is an example gn args for Lacros:
+//   '''
+//   import("//build/args/chromeos/amd64-generic-crostoolchain.gni")
+//   chromeos_is_browser_only= true
+//   dcheck_always_on = true
+//   is_chromeos_device= true
+//   is_debug= false
+//   symbol_level= 0
+//   target_os= "chromeos"
+//   use_goma=true
+//   '''
+// 2 Build chromeos_integration_tests target
+//   Example commandline:
+//   $ autoninja -C out/lacrosdut chromeos_integration_tests
+// 3 Run test on DUT/VM
+//   For VM, follow
+//   https://chromium.googlesource.com/chromiumos/docs/+/HEAD/cros_vm.md#run-a-chrome-gtest-binary-in-the-vm
+//   For DUT, example commandline:
+//   $ out/lacros_amd64/bin/run_chromeos_integration_tests --board=<DUT_board> \
+//     --device=<device_ip> --gtest_filter=DemoIntegrationTest.NewTab
+//   This test should pass.
+// 4 Run test in interactive mode
+//   This is helpful if you want to see the browser and interact with it.
+//   First prepare the device to show the main screen, in either guest mode
+//   or signed in.
+//   Then run test in interactive mode:
+//   $ out/lacros_amd64/bin/run_chromeos_integration_tests --board=<DUT_board> \
+//     --device=<device_id> --enable-pixel-output-in-tests \
+//     --test-launcher-interactive
+//   You should see a browser open with tab direct to chrome://version.
+//   You can now interact with the browser freely. There might be some
+//   limitations, like the browser is only allowed to access certain websites.
+class DemoIntegrationTest : public InProcessBrowserTest {
+  void SetUpInProcessBrowserTestFixture() {
+    // You don't need this in your test.
+    // By default, we don't allow any network access in tests to
+    // avoid flakiness. This is just a showcase so people can
+    // interact with the browser try out a few websites.
+    host_resolver()->AllowDirectLookup("*.google.com");
+    host_resolver()->AllowDirectLookup("*.geotrust.com");
+    host_resolver()->AllowDirectLookup("*.gstatic.com");
+    host_resolver()->AllowDirectLookup("*.googleapis.com");
+    host_resolver()->AllowDirectLookup("accounts.google.*");
+    host_resolver()->AllowDirectLookup("*.chromium.org");
+
+    InProcessBrowserTest::SetUpInProcessBrowserTestFixture();
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(DemoIntegrationTest, NewTab) {
+  GURL version_url{"chrome://version"};
+
+  ASSERT_TRUE(AddTabAtIndex(0, version_url, ui::PAGE_TRANSITION_TYPED));
+
+  // You don't need these for your tests. This is just to showcase the browser
+  // when you want to see the test browser and interact with it.
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kTestLauncherInteractive)) {
+    base::RunLoop loop;
+    loop.Run();
+  }
+}

@@ -243,6 +243,15 @@ static_library("test_support") {
     "base/web_feature_histogram_tester.h",
   ]
 
+  if (is_chromeos && is_chromeos_device) {
+    sources += [
+      "base/chromeos/crosint/chromeos_test_launcher.cc",
+      "base/chromeos/crosint/chromeos_test_launcher.h",
+      "base/chromeos/crosint/chromeos_test_suite.cc",
+      "base/chromeos/crosint/chromeos_test_suite.h",
+    ]
+  }
+
   if (enable_extensions) {
     sources += [
       "../browser/apps/platform_apps/app_browsertest_util.cc",
@@ -933,6 +942,21 @@ if (is_win) {
       "//base",
       "//chrome/credential_provider/common:common_constants",
     ]
+  }
+}
+
+if (is_chromeos && is_chromeos_device) {
+  test("chromeos_integration_tests") {
+    configs += [ "//build/config:precompiled_headers" ]
+    defines = [
+      "HAS_OUT_OF_PROC_TEST_RUNNER",
+      "CHROME_VERSION_MAJOR=" + chrome_version_major,
+    ]
+    sources = [
+      "base/chromeos/crosint/chromeos_tests_main.cc",
+      "base/chromeos/crosint/demo_integration_test.cc",
+    ]
+    deps = [ ":test_support" ]
   }
 }
 
