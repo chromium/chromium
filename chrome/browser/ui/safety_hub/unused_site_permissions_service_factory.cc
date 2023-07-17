@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/permissions/unused_site_permissions_service_factory.h"
+#include "chrome/browser/ui/safety_hub/unused_site_permissions_service_factory.h"
 
 #include "base/no_destructor.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/permissions/unused_site_permissions_service.h"
+#include "chrome/browser/ui/safety_hub/unused_site_permissions_service.h"
 
 // static
 UnusedSitePermissionsServiceFactory*
@@ -17,9 +17,9 @@ UnusedSitePermissionsServiceFactory::GetInstance() {
 }
 
 // static
-permissions::UnusedSitePermissionsService*
+UnusedSitePermissionsService*
 UnusedSitePermissionsServiceFactory::GetForProfile(Profile* profile) {
-  return static_cast<permissions::UnusedSitePermissionsService*>(
+  return static_cast<UnusedSitePermissionsService*>(
       GetInstance()->GetServiceForBrowserContext(profile, true));
 }
 
@@ -40,7 +40,7 @@ UnusedSitePermissionsServiceFactory::~UnusedSitePermissionsServiceFactory() =
 
 KeyedService* UnusedSitePermissionsServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
-  auto* service = new permissions::UnusedSitePermissionsService(
+  auto* service = new UnusedSitePermissionsService(
       HostContentSettingsMapFactory::GetForProfile(context));
   service->StartRepeatedUpdates();
   return service;

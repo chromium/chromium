@@ -104,8 +104,6 @@ source_set("permissions") {
     "request_type.h",
     "switches.cc",
     "switches.h",
-    "unused_site_permissions_service.cc",
-    "unused_site_permissions_service.h",
   ]
   deps = [
     "//base",
@@ -276,7 +274,6 @@ source_set("unit_tests") {
     sources += [
       "bluetooth_chooser_controller_unittest.cc",
       "bluetooth_scanning_prompt_controller_unittest.cc",
-      "unused_site_permissions_service_unittest.cc",
     ]
   }
   if (is_android) {

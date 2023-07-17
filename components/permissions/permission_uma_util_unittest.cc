@@ -7,9 +7,11 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_types.h"
@@ -18,7 +20,6 @@
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/permission_util.h"
 #include "components/permissions/test/test_permissions_client.h"
-#include "components/permissions/unused_site_permissions_service.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
@@ -78,6 +79,14 @@ struct PermissionsDelegationTestConfig {
   // Expected resulting permissions policy configuration.
   absl::optional<PermissionHeaderPolicyForUMA> expected_configuration;
 };
+
+#if !BUILDFLAG(IS_ANDROID)
+ContentSettingsForOneType GetRevokedUnusedPermissions(
+    HostContentSettingsMap* hcsm) {
+  return hcsm->GetSettingsForOneType(
+      ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS);
+}
+#endif
 
 // Wrapper class so that we can pass a closure to the PermissionRequest
 // ctor, to handle all dtor paths (avoid crash in dtor of WebContent)
@@ -491,6 +500,71 @@ TEST_F(PermissionUmaUtilTest, RecordPermissionRegrantForUnusedSites) {
       now);
   histograms.ExpectBucketCount(prefix + "Settings." + permission_string, 5, 1);
   histograms.ExpectBucketCount(prefix + "Settings.All", 5, 1);
+}
+
+TEST_F(PermissionUmaUtilTest, GetDaysSinceUnusedSitePermissionRevocation) {
+  base::test::ScopedFeatureList scoped_feature;
+  scoped_feature.InitAndEnableFeature(
+      content_settings::features::kSafetyCheckUnusedSitePermissions);
+
+  content::TestBrowserContext browser_context;
+  base::SimpleTestClock clock;
+  base::Time now(base::Time::Now());
+  clock.SetNow(now);
+  HostContentSettingsMap* hcsm =
+      PermissionsClient::Get()->GetSettingsMap(&browser_context);
+
+  const GURL url = GURL("https://example1.com:443");
+  const ContentSettingsType type = ContentSettingsType::GEOLOCATION;
+  content_settings::ContentSettingConstraints constraint(clock.Now());
+  constraint.set_track_last_visit_for_autoexpiration(true);
+
+  absl::optional<uint32_t> days_since_revocation;
+
+  // Permission has not yet been revoked, so shouldn't return a number of days
+  // since revocation.
+  days_since_revocation =
+      PermissionUmaUtil::GetDaysSinceUnusedSitePermissionRevocation(
+          url, ContentSettingsType::GEOLOCATION, now, hcsm);
+  ASSERT_FALSE(days_since_revocation.has_value());
+
+  hcsm->SetContentSettingDefaultScope(
+      url, url, type, ContentSetting::CONTENT_SETTING_ALLOW, constraint);
+  EXPECT_EQ(GetRevokedUnusedPermissions(hcsm).size(), 0u);
+
+  // Travel 70 days through time such that the granted permission would be
+  // revoked.
+  clock.Advance(base::Days(70));
+  // Revoke permission.
+  content_settings::ContentSettingConstraints expiration_constraint(
+      clock.Now());
+  expiration_constraint.set_lifetime(base::Days(30));
+  base::Value::Dict dict = base::Value::Dict();
+  base::Value::List permissions = base::Value::List();
+  permissions.Append(static_cast<int32_t>(ContentSettingsType::GEOLOCATION));
+  dict.Set(permissions::kRevokedKey, std::move(permissions));
+  hcsm->SetWebsiteSettingCustomScope(
+      ContentSettingsPattern::FromURLNoWildcard(url),
+      ContentSettingsPattern::Wildcard(),
+      ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS,
+      base::Value(std::move(dict)), expiration_constraint);
+  EXPECT_EQ(GetRevokedUnusedPermissions(hcsm).size(), 1u);
+
+  days_since_revocation =
+      PermissionUmaUtil::GetDaysSinceUnusedSitePermissionRevocation(
+          url, ContentSettingsType::GEOLOCATION, clock.Now(), hcsm);
+  ASSERT_TRUE(days_since_revocation.has_value());
+  EXPECT_EQ(days_since_revocation.value(), 0u);
+
+  // Forward the clock for five days, which would be the number of days since
+  // revocation.
+  clock.Advance(base::Days(5));
+
+  days_since_revocation =
+      PermissionUmaUtil::GetDaysSinceUnusedSitePermissionRevocation(
+          url, ContentSettingsType::GEOLOCATION, clock.Now(), hcsm);
+  ASSERT_TRUE(days_since_revocation.has_value());
+  EXPECT_EQ(days_since_revocation.value(), 5u);
 }
 #endif
 

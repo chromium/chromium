@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_PERMISSIONS_UNUSED_SITE_PERMISSIONS_SERVICE_FACTORY_H_
-#define CHROME_BROWSER_PERMISSIONS_UNUSED_SITE_PERMISSIONS_SERVICE_FACTORY_H_
+#ifndef CHROME_BROWSER_UI_SAFETY_HUB_UNUSED_SITE_PERMISSIONS_SERVICE_FACTORY_H_
+#define CHROME_BROWSER_UI_SAFETY_HUB_UNUSED_SITE_PERMISSIONS_SERVICE_FACTORY_H_
 
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class Profile;
+class UnusedSitePermissionsService;
 
 namespace base {
 template <typename T>
@@ -18,16 +19,11 @@ namespace content {
 class BrowserContext;
 }
 
-namespace permissions {
-class UnusedSitePermissionsService;
-}
-
 class UnusedSitePermissionsServiceFactory : public ProfileKeyedServiceFactory {
  public:
   static UnusedSitePermissionsServiceFactory* GetInstance();
 
-  static permissions::UnusedSitePermissionsService* GetForProfile(
-      Profile* profile);
+  static UnusedSitePermissionsService* GetForProfile(Profile* profile);
 
   // Non-copyable, non-moveable.
   UnusedSitePermissionsServiceFactory(
@@ -46,4 +42,4 @@ class UnusedSitePermissionsServiceFactory : public ProfileKeyedServiceFactory {
       content::BrowserContext* context) const override;
 };
 
-#endif  // CHROME_BROWSER_PERMISSIONS_UNUSED_SITE_PERMISSIONS_SERVICE_FACTORY_H_
+#endif  // CHROME_BROWSER_UI_SAFETY_HUB_UNUSED_SITE_PERMISSIONS_SERVICE_FACTORY_H_

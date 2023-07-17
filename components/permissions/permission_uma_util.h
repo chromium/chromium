@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/version.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/permission_request.h"
 #include "components/permissions/permission_result.h"
@@ -617,6 +618,12 @@ class PermissionUmaUtil {
       PermissionSourceUI source_ui,
       content::BrowserContext* browser_context,
       base::Time current_time);
+
+  static absl::optional<uint32_t> GetDaysSinceUnusedSitePermissionRevocation(
+      const GURL& origin,
+      ContentSettingsType content_settings_type,
+      base::Time current_time,
+      HostContentSettingsMap* hcsm);
 
   // A scoped class that will check the current resolved content setting on
   // construction and report a revocation metric accordingly if the revocation

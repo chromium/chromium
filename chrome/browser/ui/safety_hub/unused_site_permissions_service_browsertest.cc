@@ -8,9 +8,10 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
-#include "chrome/browser/permissions/unused_site_permissions_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/safety_hub/unused_site_permissions_service.h"
+#include "chrome/browser/ui/safety_hub/unused_site_permissions_service_factory.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/browser/content_settings_utils.h"
@@ -19,7 +20,6 @@
 #include "components/content_settings/core/common/content_settings_constraints.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/permissions/features.h"
-#include "components/permissions/unused_site_permissions_service.h"
 #include "content/public/test/browser_test.h"
 
 class UnusedSitePermissionsServiceBrowserTest : public InProcessBrowserTest {

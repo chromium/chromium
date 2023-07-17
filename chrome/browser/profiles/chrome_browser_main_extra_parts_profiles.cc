@@ -115,7 +115,6 @@
 #include "chrome/browser/permissions/permission_auditing_service_factory.h"
 #include "chrome/browser/permissions/permission_decision_auto_blocker_factory.h"
 #include "chrome/browser/permissions/prediction_service_factory.h"
-#include "chrome/browser/permissions/unused_site_permissions_service_factory.h"
 #include "chrome/browser/persisted_state_db/session_proto_db_factory.h"
 #include "chrome/browser/plugins/plugin_prefs_factory.h"
 #include "chrome/browser/policy/cloud/user_cloud_policy_invalidator_factory.h"
@@ -436,6 +435,7 @@
 #include "chrome/browser/ui/global_media_controls/media_notification_service_factory.h"
 #include "chrome/browser/ui/performance_controls/performance_controls_hats_service_factory.h"
 #include "chrome/browser/usb/usb_connection_tracker_factory.h"
+#include "chrome/browser/ui/safety_hub/unused_site_permissions_service_factory.h"
 #include "chrome/browser/user_notes/user_note_service_factory.h"
 #endif
 
@@ -1075,7 +1075,9 @@ void ChromeBrowserMainExtraPartsProfiles::
   TurnSyncOnHelper::EnsureFactoryBuilt();
 #endif
   UnifiedConsentServiceFactory::GetInstance();
+#if !BUILDFLAG(IS_ANDROID)
   UnusedSitePermissionsServiceFactory::GetInstance();
+#endif
   UrlLanguageHistogramFactory::GetInstance();
   UsbChooserContextFactory::GetInstance();
 #if !BUILDFLAG(IS_ANDROID)

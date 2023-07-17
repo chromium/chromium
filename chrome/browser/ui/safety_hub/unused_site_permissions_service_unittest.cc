@@ -1,12 +1,14 @@
-// Copyright 2022 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/permissions/unused_site_permissions_service.h"
+#include "chrome/browser/ui/safety_hub/unused_site_permissions_service.h"
+
 #include <cstdint>
 #include <ctime>
 #include <list>
 #include <memory>
+
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
@@ -17,6 +19,7 @@
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/content_settings/core/browser/content_settings_utils.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
@@ -26,15 +29,13 @@
 #include "components/content_settings/core/common/features.h"
 #include "components/permissions/constants.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
-#include "content/test/test_render_view_host.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace permissions {
 class UnusedSitePermissionsServiceTest
-    : public content::RenderViewHostTestHarness {
+    : public ChromeRenderViewHostTestHarness {
  public:
   void SetUp() override {
-    content::RenderViewHostTestHarness::SetUp();
+    ChromeRenderViewHostTestHarness::SetUp();
     base::Time time;
     ASSERT_TRUE(base::Time::FromString("2022-09-07 13:00", &time));
     clock_.SetNow(time);
@@ -50,7 +51,7 @@ class UnusedSitePermissionsServiceTest
   void TearDown() override {
     service_->Shutdown();
     hcsm_->ShutdownOnUIThread();
-    content::RenderViewHostTestHarness::TearDown();
+    ChromeRenderViewHostTestHarness::TearDown();
   }
 
   void OnUpdateAsyncFinished(uint8_t expected_num_callbacks,
@@ -373,7 +374,8 @@ TEST_F(UnusedSitePermissionsServiceTest, RegrantPermissionsForOrigin) {
   base::Value::Dict dict = base::Value::Dict();
   base::Value::List permission_type_list = base::Value::List();
   permission_type_list.Append(static_cast<int32_t>(type));
-  dict.Set(kRevokedKey, base::Value::List(std::move(permission_type_list)));
+  dict.Set(permissions::kRevokedKey,
+           base::Value::List(std::move(permission_type_list)));
 
   // Add `url1` and `url2` to revoked permissions list.
   hcsm()->SetWebsiteSettingDefaultScope(
@@ -538,7 +540,8 @@ TEST_F(UnusedSitePermissionsServiceTest, ClearRevokedPermissionsList) {
   base::Value::Dict dict = base::Value::Dict();
   base::Value::List permission_type_list = base::Value::List();
   permission_type_list.Append(static_cast<int32_t>(type));
-  dict.Set(kRevokedKey, base::Value::List(std::move(permission_type_list)));
+  dict.Set(permissions::kRevokedKey,
+           base::Value::List(std::move(permission_type_list)));
 
   // Add `url1` and `url2` to revoked permissions list.
   hcsm()->SetWebsiteSettingDefaultScope(
@@ -564,61 +567,14 @@ TEST_F(UnusedSitePermissionsServiceTest, ClearRevokedPermissionsList) {
   EXPECT_EQ(revoked_permissions_list.size(), 0U);
 }
 
-TEST_F(UnusedSitePermissionsServiceTest, GetDaysSinceRevocation) {
-  base::test::ScopedFeatureList scoped_feature;
-  scoped_feature.InitAndEnableFeature(
-      content_settings::features::kSafetyCheckUnusedSitePermissions);
-
-  const GURL url = GURL("https://example1.com:443");
-  const ContentSettingsType type = ContentSettingsType::GEOLOCATION;
-  content_settings::ContentSettingConstraints constraint;
-  constraint.set_track_last_visit_for_autoexpiration(true);
-
-  absl::optional<uint32_t> days_since_revocation;
-
-  // Permission has not yet been revoked, so shouldn't return a number of days
-  // since revocation.
-  days_since_revocation = UnusedSitePermissionsService::GetDaysSinceRevocation(
-      url, ContentSettingsType::GEOLOCATION, clock()->Now(), hcsm());
-  ASSERT_FALSE(days_since_revocation.has_value());
-
-  hcsm()->SetContentSettingDefaultScope(
-      url, url, type, ContentSetting::CONTENT_SETTING_ALLOW, constraint);
-  EXPECT_EQ(GetRevokedUnusedPermissions(hcsm()).size(), 0u);
-
-  // Travel 70 days through time so that the granted permission is revoked.
-  clock()->Advance(base::Days(70));
-  service()->UpdateUnusedPermissionsForTesting();
-  EXPECT_EQ(GetRevokedUnusedPermissions(hcsm()).size(), 1u);
-
-  days_since_revocation = UnusedSitePermissionsService::GetDaysSinceRevocation(
-      url, ContentSettingsType::GEOLOCATION, clock()->Now(), hcsm());
-  ASSERT_TRUE(days_since_revocation.has_value());
-  EXPECT_EQ(days_since_revocation.value(), 0u);
-
-  // Forward the clock for five days, which would be the number of days since
-  // revocation.
-  clock()->Advance(base::Days(5));
-
-  days_since_revocation = UnusedSitePermissionsService::GetDaysSinceRevocation(
-      url, ContentSettingsType::GEOLOCATION, clock()->Now(), hcsm());
-  ASSERT_TRUE(days_since_revocation.has_value());
-  EXPECT_EQ(days_since_revocation.value(), 5u);
-
-  // Revoked permission is cleaned up after >30 days.
-  clock()->Advance(base::Days(40));
-  days_since_revocation = UnusedSitePermissionsService::GetDaysSinceRevocation(
-      url, ContentSettingsType::GEOLOCATION, clock()->Now(), hcsm());
-  ASSERT_FALSE(days_since_revocation.has_value());
-}
-
 TEST_F(UnusedSitePermissionsServiceTest, RecordRegrantMetricForAllowAgain) {
   const std::string url = "https://example.com:443";
   base::Value::Dict dict = base::Value::Dict();
   base::Value::List permission_type_list = base::Value::List();
   permission_type_list.Append(
       static_cast<int32_t>(ContentSettingsType::GEOLOCATION));
-  dict.Set(kRevokedKey, base::Value::List(std::move(permission_type_list)));
+  dict.Set(permissions::kRevokedKey,
+           base::Value::List(std::move(permission_type_list)));
 
   auto cleanUpThreshold =
       content_settings::features::
@@ -663,7 +619,8 @@ TEST_F(UnusedSitePermissionsServiceTest,
   base::Value::Dict dict = base::Value::Dict();
   base::Value::List permission_type_list = base::Value::List();
   permission_type_list.Append(static_cast<int32_t>(type));
-  dict.Set(kRevokedKey, base::Value::List(std::move(permission_type_list)));
+  dict.Set(permissions::kRevokedKey,
+           base::Value::List(std::move(permission_type_list)));
 
   // Add url1 and url2 to revoked permissions list.
   hcsm()->SetWebsiteSettingDefaultScope(
@@ -704,5 +661,3 @@ TEST_F(UnusedSitePermissionsServiceTest, UpdateUnusedPermissionsAsync) {
   loop.Run();
   EXPECT_EQ(callback_count(), 2);
 }
-
-}  // namespace permissions

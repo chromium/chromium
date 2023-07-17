@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_PERMISSIONS_UNUSED_SITE_PERMISSIONS_SERVICE_H_
-#define COMPONENTS_PERMISSIONS_UNUSED_SITE_PERMISSIONS_SERVICE_H_
+#ifndef CHROME_BROWSER_UI_SAFETY_HUB_UNUSED_SITE_PERMISSIONS_SERVICE_H_
+#define CHROME_BROWSER_UI_SAFETY_HUB_UNUSED_SITE_PERMISSIONS_SERVICE_H_
 
 #include <list>
 #include <map>
@@ -32,8 +32,6 @@ class Origin;
 namespace content {
 class Page;
 }  // namespace content
-
-namespace permissions {
 
 // This task keeps track of unused permissions, updates their last_visit date
 // on navigations and clears them periodically.
@@ -116,12 +114,6 @@ class UnusedSitePermissionsService
           constraint,
       const url::Origin origin);
 
-  static absl::optional<uint32_t> GetDaysSinceRevocation(
-      const GURL& origin,
-      ContentSettingsType content_settings_type,
-      base::Time current_time,
-      HostContentSettingsMap* hcsm);
-
   // Test support:
   void SetClockForTesting(base::Clock* clock);
   std::vector<ContentSettingEntry> GetTrackedUnusedPermissionsForTesting();
@@ -176,6 +168,4 @@ class UnusedSitePermissionsService
   raw_ptr<base::Clock> clock_;
 };
 
-}  // namespace permissions
-
-#endif  // COMPONENTS_PERMISSIONS_UNUSED_SITE_PERMISSIONS_SERVICE_H_
+#endif  // CHROME_BROWSER_UI_SAFETY_HUB_UNUSED_SITE_PERMISSIONS_SERVICE_H_
