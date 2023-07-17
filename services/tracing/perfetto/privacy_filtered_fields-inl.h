@@ -408,6 +408,14 @@ constexpr int kMacAUHALStreamIndices[] = {1, 2,  3,  4,  5,  6,  7, 8,
                                           9, 10, 11, 12, 13, 14, -1};
 constexpr MessageInfo kMacAUHALStream = {kMacAUHALStreamIndices, nullptr};
 
+// Proto Message: LinuxAlsaOutput
+constexpr int kLinuxAlsaOutputIndices[] = {1, 2, 3, 4, 5, 6, 7, -1};
+constexpr MessageInfo kLinuxAlsaOutput = {kLinuxAlsaOutputIndices, nullptr};
+
+// Proto Message: LinuxPulseOutput
+constexpr int kLinuxPulseOutputIndices[] = {1, 2, 3, 4, 5, -1};
+constexpr MessageInfo kLinuxPulseOutput = {kLinuxPulseOutputIndices, nullptr};
+
 // Proto Message: TrackEvent
 constexpr int kTrackEventIndices[] = {
     1,    2,    3,    5,    6,    9,    10,   11,   12,   16,   17,
@@ -416,7 +424,7 @@ constexpr int kTrackEventIndices[] = {
     48,   1001, 1002, 1003, 1004, 1005, 1006, 1007, 1008, 1009, 1010,
     1011, 1012, 1013, 1014, 1015, 1016, 1017, 1018, 1019, 1020, 1021,
     1022, 1023, 1024, 1025, 1028, 1031, 1032, 1033, 1034, 1036, 1038,
-    1039, 1040, 1041, 1042, 1046, 1047, 1048, 1049, -1};
+    1039, 1040, 1041, 1042, 1046, 1047, 1048, 1049, 1050, 1051, -1};
 constexpr MessageInfo const* kTrackEventComplexMessages[] = {
     nullptr,
     nullptr,
@@ -491,7 +499,9 @@ constexpr MessageInfo const* kTrackEventComplexMessages[] = {
     &kTabSwitchMeasurement,
     &kScrollDeltas,
     &kWinRenderAudioFromSource,
-    &kMacAUHALStream};
+    &kMacAUHALStream,
+    &kLinuxAlsaOutput,
+    &kLinuxPulseOutput};
 constexpr MessageInfo kTrackEvent = {kTrackEventIndices,
                                      kTrackEventComplexMessages};
 
