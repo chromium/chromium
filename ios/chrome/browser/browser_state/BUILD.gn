@@ -151,6 +151,7 @@ source_set("browser_state") {
     "//ios/net",
     "//ios/public/provider/chrome/browser/app_distribution:app_distribution_api",
     "//ios/web/net/cookies",
+    "//ios/web/public/browsing_data",
     "//net",
     "//net:extras",
   ]

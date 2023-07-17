@@ -11,4 +11,6 @@ source_set("browsing_data") {
     "browsing_data_removing_util.h",
     "system_cookie_store_util.h",
   ]
+
+  deps = [ "//base" ]
 }
