@@ -114,10 +114,9 @@ export namespace Session {
       httpProxy?: string;
       noProxy?: [...string[]];
       sslProxy?: string;
-      socksProxy?: string;
-      /**
+      socksProxy?: string /**
        * Must be between `0` and `255`, inclusive.
-       */
+       */;
       socksVersion?: number;
     };
   } & Extensible;
@@ -166,10 +165,9 @@ export namespace Session {
         httpProxy?: string;
         noProxy?: [...string[]];
         sslProxy?: string;
-        socksProxy?: string;
-        /**
+        socksProxy?: string /**
          * Must be between `0` and `255`, inclusive.
-         */
+         */;
         socksVersion?: number;
       };
       setWindowRect: boolean;
@@ -336,10 +334,9 @@ export namespace BrowsingContext {
 export namespace BrowsingContext {
   export type CreateParameters = {
     type: BrowsingContext.CreateType;
-    referenceContext?: BrowsingContext.BrowsingContext;
-    /**
+    referenceContext?: BrowsingContext.BrowsingContext /**
      * @defaultValue `false`
-     */
+     */;
     background?: boolean;
   };
 }
@@ -405,27 +402,23 @@ export namespace BrowsingContext {
 }
 export namespace BrowsingContext {
   export type PrintParameters = {
-    context: BrowsingContext.BrowsingContext;
-    /**
+    context: BrowsingContext.BrowsingContext /**
      * @defaultValue `false`
-     */
+     */;
     background?: boolean;
-    margin?: BrowsingContext.PrintMarginParameters;
-    /**
+    margin?: BrowsingContext.PrintMarginParameters /**
      * @defaultValue `"portrait"`
-     */
+     */;
     orientation?: 'portrait' | 'landscape';
     page?: BrowsingContext.PrintPageParameters;
-    pageRanges?: [...(JsUint | string)[]];
-    /**
+    pageRanges?: [...(JsUint | string)[]] /**
      * Must be between `0.1` and `2`, inclusive.
      *
      * @defaultValue `1`
-     */
-    scale?: number;
-    /**
+     */;
+    scale?: number /**
      * @defaultValue `true`
-     */
+     */;
     shrinkToFit?: boolean;
   };
 }
@@ -436,24 +429,21 @@ export namespace BrowsingContext {
      *
      * @defaultValue `1`
      */
-    bottom?: number;
-    /**
+    bottom?: number /**
      * Must be greater than or equal to `0`.
      *
      * @defaultValue `1`
-     */
-    left?: number;
-    /**
+     */;
+    left?: number /**
      * Must be greater than or equal to `0`.
      *
      * @defaultValue `1`
-     */
-    right?: number;
-    /**
+     */;
+    right?: number /**
      * Must be greater than or equal to `0`.
      *
      * @defaultValue `1`
-     */
+     */;
     top?: number;
   };
 }
@@ -464,12 +454,11 @@ export namespace BrowsingContext {
      *
      * @defaultValue `27.94`
      */
-    height?: number;
-    /**
+    height?: number /**
      * Must be greater than or equal to `0`.
      *
      * @defaultValue `21.59`
-     */
+     */;
     width?: number;
   };
 }
@@ -1228,14 +1217,12 @@ export namespace Script {
     /**
      * @defaultValue `0`
      */
-    maxDomDepth?: JsUint | null;
-    /**
+    maxDomDepth?: JsUint | null /**
      * @defaultValue `null`
-     */
-    maxObjectDepth?: JsUint | null;
-    /**
+     */;
+    maxObjectDepth?: JsUint | null /**
      * @defaultValue `"none"`
-     */
+     */;
     includeShadowTree?: 'none' | 'open' | 'all';
   };
 }
@@ -1577,10 +1564,9 @@ export namespace Input {
     y: JsInt;
     deltaX: JsInt;
     deltaY: JsInt;
-    duration?: JsUint;
-    /**
+    duration?: JsUint /**
      * @defaultValue `"viewport"`
-     */
+     */;
     origin?: Input.Origin;
   };
 }
@@ -1589,24 +1575,20 @@ export namespace Input {
     /**
      * @defaultValue `1`
      */
-    width?: JsUint;
-    /**
+    width?: JsUint /**
      * @defaultValue `1`
-     */
-    height?: JsUint;
-    /**
+     */;
+    height?: JsUint /**
      * @defaultValue `0`
-     */
-    pressure?: number;
-    /**
+     */;
+    pressure?: number /**
      * @defaultValue `0`
-     */
-    tangentialPressure?: number;
-    /**
+     */;
+    tangentialPressure?: number /**
      * Must be between `0` and `359`, inclusive.
      *
      * @defaultValue `0`
-     */
+     */;
     twist?: number;
   } & (Input.TiltProperties | Input.AngleProperties);
 }
@@ -1615,10 +1597,9 @@ export namespace Input {
     /**
      * @defaultValue `0`
      */
-    altitudeAngle?: number;
-    /**
+    altitudeAngle?: number /**
      * @defaultValue `0`
-     */
+     */;
     azimuthAngle?: number;
   };
 }
@@ -1629,12 +1610,11 @@ export namespace Input {
      *
      * @defaultValue `0`
      */
-    tiltX?: number;
-    /**
+    tiltX?: number /**
      * Must be between `-90` and `90`, inclusive.
      *
      * @defaultValue `0`
-     */
+     */;
     tiltY?: number;
   };
 }
