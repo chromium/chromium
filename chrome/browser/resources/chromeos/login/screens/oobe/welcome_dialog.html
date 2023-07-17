@@ -188,6 +188,11 @@ found in the LICENSE file.
   :host-context(.jelly-enabled) oobe-icon-button.bg-transparent {
     --oobe-button-icon-fill-color: var(--cros-sys-primary);
   }
+
+  .illustration-jelly {
+    width: 100%;
+    height: 100%;
+  }
 </style>
 <div id="dialog" class="layout vertical">
   <h1 id="title" class="welcome-header-text">
@@ -262,9 +267,9 @@ found in the LICENSE file.
     <template is="dom-if" if="[[showAnimationSlot()]]">
       <div id="welcomeAnimationSlot">
         <template is="dom-if" if="[[!isMeet_]]">
-          <!-- TODO(b/288071884) - Replace SVG with one that supports dynamic colors -->
-          <img id="welcomeAnimationFirstFrame" src="images/welcome_animation_first_frame.svg"
-            class="oobe-illustration stacked-animations" aria-hidden="true" hidden="[[isOobeLoaded_]]">
+          <iron-icon id="welcomeAnimationFirstFrame" icon="oobe-illos:connect-illo"
+              class="illustration-jelly stacked-animations" hidden="[[isOobeLoaded_]]">
+          </iron-icon>
           <oobe-cr-lottie
             id="welcomeAnimation" preload
             animation-url="animations/welcome_screen_animation.json"

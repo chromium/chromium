@@ -144,7 +144,6 @@ generate_grd("build_oobe_grd") {
     "images/browser_sync.svg",
     "images/error.svg",
     "images/settings_gear.svg",
-    "images/welcome_animation_first_frame.svg",
     "images/cfm/enrollment.svg",
     "images/cfm/welcome.svg",
     "images/1x/verify-account.svg",
