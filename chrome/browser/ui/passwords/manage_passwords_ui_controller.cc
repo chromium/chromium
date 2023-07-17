@@ -301,7 +301,8 @@ void ManagePasswordsUIController::OnPasswordAutofilled(
   const bool has_unnotified_shared_credentials = base::ranges::any_of(
       GetCurrentForms(),
       [](const std::unique_ptr<password_manager::PasswordForm>& form) {
-        return !form->sender_email.empty() &&
+        return form->type ==
+                   password_manager::PasswordForm::Type::kReceivedViaSharing &&
                !form->sharing_notification_displayed;
       });
   if (has_unnotified_shared_credentials &&

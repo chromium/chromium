@@ -2041,7 +2041,6 @@ void ManagePasswordsUIControllerWithBrowserTest::SetUp() {
 TEST_F(ManagePasswordsUIControllerWithBrowserTest,
        OnAutofillingSharedPasswordNotNotifiedYet) {
   // Simulate two candidates in the dropdown menu where one of them is shared.
-  // Shared passwords are identified by a non-empty sender email field.
   PasswordForm non_shared_credentials;
   non_shared_credentials.url = GURL("http://example.com/login");
   non_shared_credentials.signon_realm = non_shared_credentials.url.spec();
@@ -2050,8 +2049,8 @@ TEST_F(ManagePasswordsUIControllerWithBrowserTest,
   non_shared_credentials.match_type = PasswordForm::MatchType::kExact;
 
   PasswordForm shared_credentials = non_shared_credentials;
+  shared_credentials.type = PasswordForm::Type::kReceivedViaSharing;
   non_shared_credentials.username_value = u"username2";
-  shared_credentials.sender_email = u"user@example.com";
   shared_credentials.sharing_notification_displayed = false;
 
   std::vector<const PasswordForm*> forms = {&shared_credentials,
@@ -2068,8 +2067,7 @@ TEST_F(ManagePasswordsUIControllerWithBrowserTest,
 TEST_F(ManagePasswordsUIControllerWithBrowserTest,
        OnAutofillingSharedPasswordNotifiedAlready) {
   // Simulate two candidates in the dropdown menu where one of them is shared,
-  // while the user has been notified about the shared password already. Shared
-  // passwords are identified by a non-empty sender email field.
+  // while the user has been notified about the shared password already.
   PasswordForm non_shared_credentials;
   non_shared_credentials.url = GURL("http://example.com/login");
   non_shared_credentials.signon_realm = non_shared_credentials.url.spec();
@@ -2078,8 +2076,8 @@ TEST_F(ManagePasswordsUIControllerWithBrowserTest,
   non_shared_credentials.match_type = PasswordForm::MatchType::kExact;
 
   PasswordForm shared_credentials = non_shared_credentials;
+  shared_credentials.type = PasswordForm::Type::kReceivedViaSharing;
   non_shared_credentials.username_value = u"username2";
-  shared_credentials.sender_email = u"user@example.com";
   shared_credentials.sharing_notification_displayed = true;
 
   std::vector<const PasswordForm*> forms = {&shared_credentials,
