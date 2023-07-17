@@ -1710,7 +1710,7 @@ IN_PROC_BROWSER_TEST_P(WebAppBrowserTestUpdateShortcutResult, UpdateShortcut) {
             GetInstallableAppName());
 
   {
-    ScopedRegistryUpdate update(&provider->sync_bridge_unsafe());
+    ScopedRegistryUpdate update = provider->sync_bridge_unsafe().BeginUpdate();
     update->UpdateApp(app_id)->SetName("test_app_2");
   }
 
@@ -2434,7 +2434,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, PRE_UninstallIncompleteUninstall) {
   // This does NOT uninstall the web app, it just flags it for uninstall on
   // startup.
   {
-    ScopedRegistryUpdate update(&provider->sync_bridge_unsafe());
+    ScopedRegistryUpdate update = provider->sync_bridge_unsafe().BeginUpdate();
     WebApp* web_app = update->UpdateApp(app_id);
     ASSERT_TRUE(web_app);
     web_app->SetIsUninstalling(true);

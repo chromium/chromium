@@ -200,7 +200,7 @@ class WebAppIconManagerTest : public WebAppTest {
   }
 
   void AddAppToRegistry(std::unique_ptr<WebApp> web_app) {
-    ScopedRegistryUpdate update(&sync_bridge());
+    ScopedRegistryUpdate update = sync_bridge().BeginUpdate();
     update->CreateApp(std::move(web_app));
   }
 
@@ -544,7 +544,7 @@ TEST_F(WebAppIconManagerTest, OverwriteIcons) {
 
     run_loop.Run();
 
-    ScopedRegistryUpdate update(&sync_bridge());
+    ScopedRegistryUpdate update = sync_bridge().BeginUpdate();
     update->UpdateApp(app_id)->SetDownloadedIconSizes(IconPurpose::ANY,
                                                       overwritten_sizes_px);
     update->UpdateApp(app_id)->SetDownloadedIconSizes(IconPurpose::MASKABLE,

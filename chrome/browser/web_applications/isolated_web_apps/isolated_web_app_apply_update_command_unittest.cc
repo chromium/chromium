@@ -110,7 +110,8 @@ class IsolatedWebAppApplyUpdateCommandTest : public WebAppTest {
         installed_location_, installed_version_, {"some-partition"},
         std::move(pending_update_info)));
 
-    ScopedRegistryUpdate update(&fake_provider().sync_bridge_unsafe());
+    ScopedRegistryUpdate update =
+        fake_provider().sync_bridge_unsafe().BeginUpdate();
     update->CreateApp(std::move(isolated_web_app));
   }
 

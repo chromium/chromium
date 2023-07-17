@@ -202,7 +202,7 @@ WebAppFileHandlerManager::GetMatchingFileHandlerUrls(
 void WebAppFileHandlerManager::SetOsIntegrationState(
     const AppId& app_id,
     OsIntegrationState os_state) {
-  ScopedRegistryUpdate update(&provider_->sync_bridge_unsafe());
+  ScopedRegistryUpdate update = provider_->sync_bridge_unsafe().BeginUpdate();
   update->UpdateApp(app_id)->SetFileHandlerOsIntegrationState(os_state);
 }
 

@@ -128,7 +128,7 @@ void RemoveWebAppJob::Start(AllAppsLock& lock, Callback callback) {
   lock_->install_manager().NotifyWebAppWillBeUninstalled(app_id_);
 
   {
-    ScopedRegistryUpdate update(&lock_->sync_bridge());
+    ScopedRegistryUpdate update = lock_->sync_bridge().BeginUpdate();
     WebApp* mutable_app = update->UpdateApp(app_id_);
     CHECK(mutable_app);
     mutable_app->SetIsUninstalling(true);
@@ -258,7 +258,7 @@ void RemoveWebAppJob::MaybeFinishPrimaryRemoval() {
 
   {
     CHECK_NE(lock_->registrar().GetAppById(app_id_), nullptr);
-    ScopedRegistryUpdate update(&lock_->sync_bridge());
+    ScopedRegistryUpdate update = lock_->sync_bridge().BeginUpdate();
     update->DeleteApp(app_id_);
   }
 

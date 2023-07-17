@@ -81,13 +81,13 @@ std::vector<std::unique_ptr<RemoveInstallUrlJob>>
 BuildOperationsToDedupeInstallUrlConfigsIntoSelectedApp(
     Profile& profile,
     const WebAppRegistrar& registrar,
-    WebAppRegistryUpdate& registry_update,
+    ScopedRegistryUpdate& update,
     const GURL& install_url,
     const base::flat_set<AppId>& app_ids_with_common_install_url,
     const AppId& id_to_dedupe_into) {
   std::vector<std::unique_ptr<RemoveInstallUrlJob>> result;
 
-  WebApp& app_to_dedupe_into = *registry_update.UpdateApp(id_to_dedupe_into);
+  WebApp& app_to_dedupe_into = *update->UpdateApp(id_to_dedupe_into);
 
   for (const AppId& id_to_dedupe_out_of : app_ids_with_common_install_url) {
     if (id_to_dedupe_out_of == id_to_dedupe_into) {
@@ -123,7 +123,6 @@ BuildOperationsToDedupeInstallUrlConfigsIntoSelectedApp(
 }
 
 struct DedupeOperations {
-  std::unique_ptr<WebAppRegistryUpdate> registry_update;
   std::vector<std::unique_ptr<RemoveInstallUrlJob>> remove_install_url_jobs;
   base::flat_map<GURL, AppId> dedupe_choices;
 };
@@ -131,11 +130,9 @@ struct DedupeOperations {
 DedupeOperations BuildOperationsToHaveOneAppPerInstallUrl(
     Profile& profile,
     const WebAppRegistrar& registrar,
-    WebAppSyncBridge& sync_bridge,
+    ScopedRegistryUpdate& update,
     base::flat_map<GURL, base::flat_set<AppId>> install_url_to_apps) {
   DedupeOperations result;
-
-  result.registry_update = sync_bridge.BeginUpdate();
 
   for (const auto& [install_url, app_ids] : install_url_to_apps) {
     if (app_ids.size() <= 1) {
@@ -148,8 +145,8 @@ DedupeOperations BuildOperationsToHaveOneAppPerInstallUrl(
 
     base::Extend(result.remove_install_url_jobs,
                  BuildOperationsToDedupeInstallUrlConfigsIntoSelectedApp(
-                     profile, registrar, *result.registry_update, install_url,
-                     app_ids, id_to_dedupe_into));
+                     profile, registrar, update, install_url, app_ids,
+                     id_to_dedupe_into));
   }
 
   return result;
@@ -182,17 +179,17 @@ void DedupeInstallUrlsCommand::StartWithLock(
 
   install_url_to_apps_ = BuildInstallUrlToAppIdsMap(lock_->registrar());
 
-  DedupeOperations pending_dedupe_operations =
-      BuildOperationsToHaveOneAppPerInstallUrl(
-          profile_.get(), lock_->registrar(), lock_->sync_bridge(),
-          install_url_to_apps_);
+  {
+    ScopedRegistryUpdate update = lock_->sync_bridge().BeginUpdate();
+    DedupeOperations pending_dedupe_operations =
+        BuildOperationsToHaveOneAppPerInstallUrl(
+            profile_.get(), lock_->registrar(), update, install_url_to_apps_);
 
-  dedupe_choices_ = std::move(pending_dedupe_operations.dedupe_choices);
+    dedupe_choices_ = std::move(pending_dedupe_operations.dedupe_choices);
+    pending_jobs_ =
+        std::move(pending_dedupe_operations.remove_install_url_jobs);
+  }
 
-  lock_->sync_bridge().CommitUpdate(
-      std::move(pending_dedupe_operations.registry_update));
-
-  pending_jobs_ = std::move(pending_dedupe_operations.remove_install_url_jobs);
   ProcessPendingJobsOrComplete();
 }
 

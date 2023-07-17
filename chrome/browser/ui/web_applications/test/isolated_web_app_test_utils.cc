@@ -258,8 +258,8 @@ AppId AddDummyIsolatedAppToRegistry(
 
   base::test::TestFuture<bool> future;
   {
-    ScopedRegistryUpdate update(&provider->sync_bridge_unsafe(),
-                                future.GetCallback());
+    ScopedRegistryUpdate update =
+        provider->sync_bridge_unsafe().BeginUpdate(future.GetCallback());
     update->CreateApp(std::move(isolated_web_app));
   }
   EXPECT_TRUE(future.Take());

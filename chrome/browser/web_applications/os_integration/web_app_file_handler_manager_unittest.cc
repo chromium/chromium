@@ -176,7 +176,8 @@ class WebAppFileHandlerManagerTest : public WebAppTest {
     auto web_app = test::CreateWebApp();
     app_id_ = web_app->app_id();
     {
-      ScopedRegistryUpdate update(&fake_provider().sync_bridge_unsafe());
+      ScopedRegistryUpdate update =
+          fake_provider().sync_bridge_unsafe().BeginUpdate();
       update->CreateApp(std::move(web_app));
     }
   }

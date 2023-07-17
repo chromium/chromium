@@ -33,6 +33,7 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
+#include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -140,7 +141,8 @@ class FileHandlerLaunchDialogTest : public WebAppControllerBrowserTest {
     // Setting the user display mode is necessary because
     // `test::InstallWebApp()` forces a kBrowser display mode; see
     // `WebAppInstallFinalizer::FinalizeInstall()`.
-    ScopedRegistryUpdate update(&provider()->sync_bridge_unsafe());
+    ScopedRegistryUpdate update =
+        provider()->sync_bridge_unsafe().BeginUpdate();
     update->UpdateApp(app_id_)->SetUserDisplayMode(
         mojom::UserDisplayMode::kStandalone);
   }

@@ -20,6 +20,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/web_applications/commands/run_on_os_login_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
@@ -156,7 +157,7 @@ class WebAppRegistrarTest : public WebAppTest {
   base::flat_set<AppId> RegisterAppsForTesting(Registry registry) {
     base::flat_set<AppId> ids;
 
-    ScopedRegistryUpdate update(&sync_bridge());
+    ScopedRegistryUpdate update = sync_bridge().BeginUpdate();
     for (auto& kv : registry) {
       ids.insert(kv.first);
       update->CreateApp(std::move(kv.second));
@@ -166,19 +167,20 @@ class WebAppRegistrarTest : public WebAppTest {
   }
 
   void RegisterApp(std::unique_ptr<WebApp> web_app) {
-    ScopedRegistryUpdate update(&sync_bridge());
+    ScopedRegistryUpdate update = sync_bridge().BeginUpdate();
     update->CreateApp(std::move(web_app));
   }
 
   void UnregisterApp(const AppId& app_id) {
-    ScopedRegistryUpdate update(&sync_bridge());
+    ScopedRegistryUpdate update = sync_bridge().BeginUpdate();
     update->DeleteApp(app_id);
   }
 
   void UnregisterAll() {
-    ScopedRegistryUpdate update(&sync_bridge());
-    for (const AppId& app_id : registrar().GetAppIds())
+    ScopedRegistryUpdate update = sync_bridge().BeginUpdate();
+    for (const AppId& app_id : registrar().GetAppIds()) {
       update->DeleteApp(app_id);
+    }
   }
 
   AppId InitRegistrarWithApp(std::unique_ptr<WebApp> app) {
@@ -203,24 +205,14 @@ class WebAppRegistrarTest : public WebAppTest {
 
   base::flat_set<AppId> InitRegistrarWithRegistry(const Registry& registry) {
     base::flat_set<AppId> app_ids;
-    for (auto& kv : registry)
+    for (auto& kv : registry) {
       app_ids.insert(kv.second->app_id());
+    }
 
     database_factory().WriteRegistry(registry);
     InitSyncBridge();
 
     return app_ids;
-  }
-
-  void SyncBridgeCommitUpdate(std::unique_ptr<WebAppRegistryUpdate> update) {
-    base::RunLoop run_loop;
-    sync_bridge().CommitUpdate(std::move(update),
-                               base::BindLambdaForTesting([&](bool success) {
-                                 EXPECT_TRUE(success);
-                                 run_loop.Quit();
-                               }));
-
-    run_loop.Run();
   }
 
   void InitSyncBridge() {
@@ -823,22 +815,25 @@ TEST_F(WebAppRegistrarTest, BeginAndCommitUpdate) {
   base::flat_set<AppId> ids =
       InitRegistrarWithApps("https://example.com/path", 10);
 
-  std::unique_ptr<WebAppRegistryUpdate> update = sync_bridge().BeginUpdate();
+  base::test::TestFuture<bool> future;
+  {
+    ScopedRegistryUpdate update =
+        sync_bridge().BeginUpdate(future.GetCallback());
 
-  for (auto& app_id : ids) {
-    WebApp* app = update->UpdateApp(app_id);
-    EXPECT_TRUE(app);
-    app->SetName("New Name");
+    for (auto& app_id : ids) {
+      WebApp* app = update->UpdateApp(app_id);
+      EXPECT_TRUE(app);
+      app->SetName("New Name");
+    }
+
+    // Acquire each app second time to make sure update requests get merged.
+    for (auto& app_id : ids) {
+      WebApp* app = update->UpdateApp(app_id);
+      EXPECT_TRUE(app);
+      app->SetDisplayMode(DisplayMode::kStandalone);
+    }
   }
-
-  // Acquire each app second time to make sure update requests get merged.
-  for (auto& app_id : ids) {
-    WebApp* app = update->UpdateApp(app_id);
-    EXPECT_TRUE(app);
-    app->SetDisplayMode(DisplayMode::kStandalone);
-  }
-
-  SyncBridgeCommitUpdate(std::move(update));
+  EXPECT_TRUE(future.Take());
 
   // Make sure that all app ids were written to the database.
   auto registry_written = database_factory().ReadRegistry();
@@ -858,29 +853,27 @@ TEST_F(WebAppRegistrarTest, CommitEmptyUpdate) {
   const auto initial_registry = database_factory().ReadRegistry();
 
   {
-    std::unique_ptr<WebAppRegistryUpdate> update = sync_bridge().BeginUpdate();
-    SyncBridgeCommitUpdate(std::move(update));
+    base::test::TestFuture<bool> future;
+    {
+      ScopedRegistryUpdate update =
+          sync_bridge().BeginUpdate(future.GetCallback());
+    }
+    EXPECT_TRUE(future.Take());
 
     auto registry = database_factory().ReadRegistry();
     EXPECT_TRUE(IsRegistryEqual(initial_registry, registry));
   }
 
   {
-    std::unique_ptr<WebAppRegistryUpdate> update = sync_bridge().BeginUpdate();
-    update.reset();
-    SyncBridgeCommitUpdate(std::move(update));
+    base::test::TestFuture<bool> future;
+    {
+      ScopedRegistryUpdate update =
+          sync_bridge().BeginUpdate(future.GetCallback());
 
-    auto registry = database_factory().ReadRegistry();
-    EXPECT_TRUE(IsRegistryEqual(initial_registry, registry));
-  }
-
-  {
-    std::unique_ptr<WebAppRegistryUpdate> update = sync_bridge().BeginUpdate();
-
-    WebApp* app = update->UpdateApp("unknown");
-    EXPECT_FALSE(app);
-
-    SyncBridgeCommitUpdate(std::move(update));
+      WebApp* app = update->UpdateApp("unknown");
+      EXPECT_FALSE(app);
+    }
+    EXPECT_TRUE(future.Take());
 
     auto registry = database_factory().ReadRegistry();
     EXPECT_TRUE(IsRegistryEqual(initial_registry, registry));
@@ -893,12 +886,12 @@ TEST_F(WebAppRegistrarTest, ScopedRegistryUpdate) {
   const auto initial_registry = database_factory().ReadRegistry();
 
   // Test empty update first.
-  { ScopedRegistryUpdate update(&sync_bridge()); }
+  { ScopedRegistryUpdate update = sync_bridge().BeginUpdate(); }
   EXPECT_TRUE(
       IsRegistryEqual(initial_registry, database_factory().ReadRegistry()));
 
   {
-    ScopedRegistryUpdate update(&sync_bridge());
+    ScopedRegistryUpdate update = sync_bridge().BeginUpdate();
 
     for (auto& app_id : ids) {
       WebApp* app = update->UpdateApp(app_id);
@@ -931,8 +924,10 @@ TEST_F(WebAppRegistrarTest, CopyOnWrite) {
     RegisterApp(std::move(new_app));
   }
 
+  base::test::TestFuture<bool> future;
   {
-    std::unique_ptr<WebAppRegistryUpdate> update = sync_bridge().BeginUpdate();
+    ScopedRegistryUpdate update =
+        sync_bridge().BeginUpdate(future.GetCallback());
 
     WebApp* app_copy = update->UpdateApp(app_id);
     EXPECT_TRUE(app_copy);
@@ -950,9 +945,8 @@ TEST_F(WebAppRegistrarTest, CopyOnWrite) {
 
     EXPECT_TRUE(app->IsSynced());
     EXPECT_TRUE(app->HasAnySources());
-
-    SyncBridgeCommitUpdate(std::move(update));
   }
+  EXPECT_TRUE(future.Take());
 
   // Pointer value stays the same.
   EXPECT_EQ(app, registrar().GetAppById(app_id));
@@ -1072,17 +1066,19 @@ TEST_F(WebAppRegistrarTest,
   // Tests that GetAppIds() excludes web app in sync install:
   std::vector<AppId> ids = registrar().GetAppIds();
   EXPECT_EQ(100u, ids.size());
-  for (const AppId& app_id : ids)
+  for (const AppId& app_id : ids) {
     EXPECT_NE(app_id, web_app_in_sync_install_id);
+  }
 
   // Tests that GetAppsIncludingStubs() returns a web app which is either in
   // GetAppIds() set or it is the web app in sync install:
   bool web_app_in_sync_install_found = false;
   for (const WebApp& web_app : registrar().GetAppsIncludingStubs()) {
-    if (web_app.app_id() == web_app_in_sync_install_id)
+    if (web_app.app_id() == web_app_in_sync_install_id) {
       web_app_in_sync_install_found = true;
-    else
+    } else {
       EXPECT_TRUE(base::Contains(ids, web_app.app_id()));
+    }
   }
   EXPECT_TRUE(web_app_in_sync_install_found);
 }

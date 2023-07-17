@@ -311,7 +311,8 @@ class TestExternallyManagedAppManager : public ExternallyManagedAppManager {
           auto web_app =
               test::CreateWebApp(install_url, WebAppManagement::kPolicy);
           {
-            ScopedRegistryUpdate update(&provider_->sync_bridge_unsafe());
+            ScopedRegistryUpdate update =
+                provider_->sync_bridge_unsafe().BeginUpdate();
             update->CreateApp(std::move(web_app));
           }
           test::AddInstallUrlAndPlaceholderData(
@@ -604,7 +605,7 @@ class ExternallyManagedAppManagerImplTest : public WebAppTest {
   }
 
   void AddAppToRegistry(std::unique_ptr<WebApp> web_app) {
-    ScopedRegistryUpdate update(&sync_bridge());
+    ScopedRegistryUpdate update = sync_bridge().BeginUpdate();
     update->CreateApp(std::move(web_app));
   }
 
@@ -1511,7 +1512,7 @@ TEST_F(ExternallyManagedAppManagerImplTest, AppUninstalled) {
 
   absl::optional<AppId> app_id = registrar().LookupExternalAppId(kFooWebAppUrl);
   if (app_id.has_value()) {
-    ScopedRegistryUpdate update(&sync_bridge());
+    ScopedRegistryUpdate update = sync_bridge().BeginUpdate();
     update->DeleteApp(app_id.value());
   }
 

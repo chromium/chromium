@@ -72,7 +72,8 @@ class ExternallyManagedAppManagerTest : public WebAppTest {
                 web_app->AddInstallURLToManagementExternalConfigMap(
                     WebAppManagement::kDefault, install_url);
                 {
-                  ScopedRegistryUpdate update(&provider().sync_bridge_unsafe());
+                  ScopedRegistryUpdate update =
+                      provider().sync_bridge_unsafe().BeginUpdate();
                   update->CreateApp(std::move(web_app));
                 }
                 ++deduped_install_count_;
@@ -87,7 +88,8 @@ class ExternallyManagedAppManagerTest : public WebAppTest {
               absl::optional<AppId> app_id =
                   app_registrar().LookupExternalAppId(app_url);
               if (app_id.has_value()) {
-                ScopedRegistryUpdate update(&provider().sync_bridge_unsafe());
+                ScopedRegistryUpdate update =
+                    provider().sync_bridge_unsafe().BeginUpdate();
                 update->DeleteApp(app_id.value());
                 deduped_uninstall_count_++;
               }

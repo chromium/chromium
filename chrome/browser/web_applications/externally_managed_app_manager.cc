@@ -30,6 +30,7 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
+#include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/browser/web_applications/web_contents/web_app_data_retriever.h"
 #include "chrome/browser/web_applications/web_contents/web_app_url_loader.h"
 #include "chrome/browser/web_applications/web_contents/web_contents_manager.h"
@@ -355,7 +356,7 @@ void ExternallyManagedAppManager::MaybeStartNextOnLockAcquired(
         return;
       } else {
         // Add install source before returning the result.
-        ScopedRegistryUpdate update(&lock.sync_bridge());
+        ScopedRegistryUpdate update = lock.sync_bridge().BeginUpdate();
         WebApp* app_to_update = update->UpdateApp(app_id.value());
         app_to_update->AddSource(ConvertExternalInstallSourceToSource(
             install_options.install_source));

@@ -28,7 +28,7 @@ void ClearWebAppBrowsingData(const base::Time& begin_time,
   std::vector<AppId> ids_to_notify_last_launch_time;
   std::vector<AppId> ids_to_notify_last_badging_time;
   {
-    ScopedRegistryUpdate update(sync_bridge);
+    ScopedRegistryUpdate update = sync_bridge->BeginUpdate();
     for (const WebApp& web_app : registrar->GetApps()) {
       // Only update and notify web apps that have the last launch time set.
       if (!web_app.last_launch_time().is_null() &&

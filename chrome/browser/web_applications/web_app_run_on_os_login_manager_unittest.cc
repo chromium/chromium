@@ -154,7 +154,7 @@ class WebAppRunOnOsLoginManagerParameterizedTest
         ->SetNumWindowsForApp(web_app->app_id(), 0);
 
     WebAppSyncBridge& sync_bridge = provider_->sync_bridge_unsafe();
-    ScopedRegistryUpdate update(&sync_bridge);
+    ScopedRegistryUpdate update = sync_bridge.BeginUpdate();
     update->CreateApp(std::move(web_app));
   }
 
@@ -194,7 +194,7 @@ class WebAppRunOnOsLoginManagerSimpleSettingsTest
         ->SetNumWindowsForApp(app_id_, 0);
 
     WebAppSyncBridge& sync_bridge = provider_->sync_bridge_unsafe();
-    ScopedRegistryUpdate update(&sync_bridge);
+    ScopedRegistryUpdate update = sync_bridge.BeginUpdate();
     update->CreateApp(std::move(web_app));
   }
 

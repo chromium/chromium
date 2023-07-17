@@ -245,8 +245,7 @@ void IsolatedWebAppUpdatePrepareAndStoreCommand::
 void IsolatedWebAppUpdatePrepareAndStoreCommand::Finalize(
     WebAppInstallInfo info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  ScopedRegistryUpdate update(
-      &lock_->sync_bridge(),
+  ScopedRegistryUpdate update = lock_->sync_bridge().BeginUpdate(
       base::BindOnce(&IsolatedWebAppUpdatePrepareAndStoreCommand::OnFinalized,
                      weak_factory_.GetWeakPtr()));
 

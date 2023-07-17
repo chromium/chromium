@@ -19,6 +19,7 @@
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
+#include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/common/pref_names.h"
 
 namespace web_app {
@@ -64,7 +65,7 @@ class DedupeInstallUrlsCommandTest : public WebAppTest {
 
   void AddBuggyDefaultInstallToApp(const AppId& app_id,
                                    const GURL& install_url) {
-    ScopedRegistryUpdate update(&provider().sync_bridge_unsafe());
+    ScopedRegistryUpdate update = provider().sync_bridge_unsafe().BeginUpdate();
     WebApp& placeholder_app = *update->UpdateApp(app_id);
     placeholder_app.AddSource(WebAppManagement::Type::kDefault);
     placeholder_app.AddInstallURLToManagementExternalConfigMap(

@@ -83,7 +83,8 @@ TEST_F(WebAppUninstallCommandTest, SimpleUninstallInternal) {
                                     WebAppManagement::kSync);
   AppId app_id = web_app->app_id();
   {
-    ScopedRegistryUpdate update(&provider()->sync_bridge_unsafe());
+    ScopedRegistryUpdate update =
+        provider()->sync_bridge_unsafe().BeginUpdate();
     update->CreateApp(std::move(web_app));
   }
 
@@ -119,7 +120,8 @@ TEST_F(WebAppUninstallCommandTest, SimpleUninstallExternal) {
                                     WebAppManagement::kDefault);
   AppId app_id = web_app->app_id();
   {
-    ScopedRegistryUpdate update(&provider()->sync_bridge_unsafe());
+    ScopedRegistryUpdate update =
+        provider()->sync_bridge_unsafe().BeginUpdate();
     update->CreateApp(std::move(web_app));
   }
 
@@ -156,7 +158,8 @@ TEST_F(WebAppUninstallCommandTest, FailedDataDeletion) {
                                     WebAppManagement::kSync);
   AppId app_id = web_app->app_id();
   {
-    ScopedRegistryUpdate update(&provider()->sync_bridge_unsafe());
+    ScopedRegistryUpdate update =
+        provider()->sync_bridge_unsafe().BeginUpdate();
     update->CreateApp(std::move(web_app));
   }
 
@@ -192,7 +195,8 @@ TEST_F(WebAppUninstallCommandTest, FailedOsHooksSetting) {
                                     WebAppManagement::kSync);
   AppId app_id = web_app->app_id();
   {
-    ScopedRegistryUpdate update(&provider()->sync_bridge_unsafe());
+    ScopedRegistryUpdate update =
+        provider()->sync_bridge_unsafe().BeginUpdate();
     update->CreateApp(std::move(web_app));
   }
 
@@ -260,7 +264,8 @@ TEST_F(WebAppUninstallCommandTest, CommandManagerShutdownThrowsError) {
                                     WebAppManagement::kSync);
   AppId app_id = web_app->app_id();
   {
-    ScopedRegistryUpdate update(&provider()->sync_bridge_unsafe());
+    ScopedRegistryUpdate update =
+        provider()->sync_bridge_unsafe().BeginUpdate();
     update->CreateApp(std::move(web_app));
   }
 
@@ -296,7 +301,8 @@ TEST_F(WebAppUninstallCommandTest, UserUninstalledPrefsFilled) {
   web_app->AddInstallURLToManagementExternalConfigMap(
       WebAppManagement::kDefault, GURL("https://www.example.com/install"));
   {
-    ScopedRegistryUpdate update(&provider()->sync_bridge_unsafe());
+    ScopedRegistryUpdate update =
+        provider()->sync_bridge_unsafe().BeginUpdate();
     update->CreateApp(std::move(web_app));
   }
   EXPECT_FALSE(UserUninstalledPreinstalledWebAppPrefs(profile()->GetPrefs())
@@ -336,7 +342,8 @@ TEST_F(WebAppUninstallCommandTest, ExternalConfigMapMissing) {
                                     WebAppManagement::kDefault);
   AppId app_id = web_app->app_id();
   {
-    ScopedRegistryUpdate update(&provider()->sync_bridge_unsafe());
+    ScopedRegistryUpdate update =
+        provider()->sync_bridge_unsafe().BeginUpdate();
     update->CreateApp(std::move(web_app));
   }
   EXPECT_TRUE(provider()->registrar_unsafe().IsLocallyInstalled(app_id));
@@ -380,7 +387,8 @@ TEST_F(WebAppUninstallCommandTest, RemoveSourceAndTriggerOSUninstallation) {
   EXPECT_FALSE(web_app->CanUserUninstallWebApp());
   AppId app_id = web_app->app_id();
   {
-    ScopedRegistryUpdate update(&provider()->sync_bridge_unsafe());
+    ScopedRegistryUpdate update =
+        provider()->sync_bridge_unsafe().BeginUpdate();
     update->CreateApp(std::move(web_app));
   }
 
@@ -461,7 +469,8 @@ TEST_P(WebAppUninstallCommandSourceTest, RunTestForUninstallSource) {
                                     WebAppManagement::kSync);
   AppId app_id = web_app->app_id();
   {
-    ScopedRegistryUpdate update(&provider()->sync_bridge_unsafe());
+    ScopedRegistryUpdate update =
+        provider()->sync_bridge_unsafe().BeginUpdate();
     update->CreateApp(std::move(web_app));
   }
 

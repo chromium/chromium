@@ -302,7 +302,8 @@ TEST_P(ShortcutMenuHandlingSubManagerConfigureTest, IconsButNoShortcutInfo) {
 
   // Remove the shortcut menu item infos from the DB and sync OS integration.
   {
-    ScopedRegistryUpdate remove_downloaded(&provider().sync_bridge_unsafe());
+    ScopedRegistryUpdate remove_downloaded =
+        provider().sync_bridge_unsafe().BeginUpdate();
     remove_downloaded->UpdateApp(app_id)->SetShortcutsMenuInfo({});
   }
   if (AreOsIntegrationSubManagersEnabled()) {
@@ -369,7 +370,8 @@ TEST_P(ShortcutMenuHandlingSubManagerConfigureTest,
   // Update the shortcut menu item infos in the DB to only match a single icon
   // and rerun OS integration.
   {
-    ScopedRegistryUpdate remove_downloaded(&provider().sync_bridge_unsafe());
+    ScopedRegistryUpdate remove_downloaded =
+        provider().sync_bridge_unsafe().BeginUpdate();
     remove_downloaded->UpdateApp(app_id)->SetShortcutsMenuInfo({shortcut_info});
   }
 
@@ -413,7 +415,8 @@ TEST_P(ShortcutMenuHandlingSubManagerConfigureTest, NoDownloadedIcons_1427444) {
                       num_menu_items));
   // Remove the downloaded icons & resync os integration.
   {
-    ScopedRegistryUpdate remove_downloaded(&provider().sync_bridge_unsafe());
+    ScopedRegistryUpdate remove_downloaded =
+        provider().sync_bridge_unsafe().BeginUpdate();
     remove_downloaded->UpdateApp(app_id)->SetShortcutsMenuInfo({});
   }
   if (AreOsIntegrationSubManagersEnabled()) {

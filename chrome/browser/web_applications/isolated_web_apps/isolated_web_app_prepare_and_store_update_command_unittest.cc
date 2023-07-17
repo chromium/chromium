@@ -109,7 +109,7 @@ class IsolatedWebAppUpdatePrepareAndStoreCommandTest : public WebAppTest {
     isolated_web_app->SetIsolationData(
         WebApp::IsolationData(installed_location_, installed_version_));
 
-    ScopedRegistryUpdate update(&provider->sync_bridge_unsafe());
+    ScopedRegistryUpdate update = provider->sync_bridge_unsafe().BeginUpdate();
     update->CreateApp(std::move(isolated_web_app));
   }
 

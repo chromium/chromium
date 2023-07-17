@@ -242,7 +242,7 @@ void WebAppUninstallAndReplaceJob::InstallOsHooksForReplacementApp(
                                     : RunOnOsLoginMode::kNotRun;
     if (new_mode != run_on_os_login.value) {
       {
-        ScopedRegistryUpdate update(&to_app_lock_->sync_bridge());
+        ScopedRegistryUpdate update = to_app_lock_->sync_bridge().BeginUpdate();
         update->UpdateApp(to_app_)->SetRunOnOsLoginMode(new_mode);
       }
     }

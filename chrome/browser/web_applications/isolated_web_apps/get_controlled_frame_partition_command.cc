@@ -14,6 +14,7 @@
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
+#include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "content/public/browser/storage_partition_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -49,7 +50,7 @@ base::Value GetControlledFramePartitionWithLock(
 
   // Register the StoragePartition with the web_app system.
   {
-    ScopedRegistryUpdate update(&lock.sync_bridge());
+    ScopedRegistryUpdate update = lock.sync_bridge().BeginUpdate();
     WebApp* iwa = update->UpdateApp(url_info.app_id());
     CHECK(iwa && iwa->isolation_data().has_value());
 

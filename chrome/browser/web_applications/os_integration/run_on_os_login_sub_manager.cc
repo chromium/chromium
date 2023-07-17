@@ -153,7 +153,7 @@ void RunOnOsLoginSubManager::StartUnregistration(
   // TODO(crbug.com/1401125): Remove once sub managers have been implemented and
   //  OsIntegrationManager::Synchronize() is running fine.
   if (!desired_state.has_run_on_os_login()) {
-    ScopedRegistryUpdate update(&provider_->sync_bridge_unsafe());
+    ScopedRegistryUpdate update = provider_->sync_bridge_unsafe().BeginUpdate();
     update->UpdateApp(app_id)->SetRunOnOsLoginOsIntegrationState(
         RunOnOsLoginMode::kNotRun);
   }
@@ -205,7 +205,7 @@ void RunOnOsLoginSubManager::OnShortcutInfoCreatedStartRegistration(
   // TODO(crbug.com/1401125): Remove once sub managers have been implemented and
   //  OsIntegrationManager::Synchronize() is running fine.
   {
-    ScopedRegistryUpdate update(&provider_->sync_bridge_unsafe());
+    ScopedRegistryUpdate update = provider_->sync_bridge_unsafe().BeginUpdate();
     update->UpdateApp(app_id)->SetRunOnOsLoginOsIntegrationState(
         RunOnOsLoginMode::kWindowed);
   }

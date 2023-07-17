@@ -540,10 +540,13 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, LaunchWithFiles) {
   launch_params->intent->files = std::move(files);
 
   // Skip past the permission dialog.
-  ScopedRegistryUpdate(
-      &WebAppProvider::GetForTest(profile())->sync_bridge_unsafe())
-      ->UpdateApp(app_id)
-      ->SetFileHandlerApprovalState(ApiApprovalState::kAllowed);
+  {
+    ScopedRegistryUpdate update = WebAppProvider::GetForTest(profile())
+                                      ->sync_bridge_unsafe()
+                                      .BeginUpdate();
+    update->UpdateApp(app_id)->SetFileHandlerApprovalState(
+        ApiApprovalState::kAllowed);
+  }
 
   lacros_web_apps_controller.Launch(std::move(launch_params),
                                     base::DoNothing());

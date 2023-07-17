@@ -39,6 +39,7 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
+#include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/common/chrome_features.h"
 #include "content/public/browser/browser_thread.h"
@@ -999,7 +1000,7 @@ void OsIntegrationManager::WriteStateToDB(
   }
 
   {
-    ScopedRegistryUpdate update(&provider_->sync_bridge_unsafe());
+    ScopedRegistryUpdate update = provider_->sync_bridge_unsafe().BeginUpdate();
     WebApp* web_app = update->UpdateApp(app_id);
     CHECK(web_app);
     web_app->SetCurrentOsIntegrationStates(*desired_states.get());

@@ -443,7 +443,7 @@ void WebAppProvider::CheckIsConnected() const {
 void WebAppProvider::DoMigrateProfilePrefs(Profile* profile) {
   std::map<AppId, int> sources =
       TakeAllWebAppInstallSources(profile->GetPrefs());
-  ScopedRegistryUpdate update(sync_bridge_.get());
+  ScopedRegistryUpdate update = sync_bridge_->BeginUpdate();
   for (const auto& iter : sources) {
     WebApp* web_app = update->UpdateApp(iter.first);
     if (web_app && !web_app->latest_install_source()) {

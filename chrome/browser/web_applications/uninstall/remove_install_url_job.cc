@@ -107,7 +107,7 @@ void RemoveInstallUrlJob::Start(AllAppsLock& lock, Callback callback) {
   }
 
   {
-    ScopedRegistryUpdate update(&lock_->sync_bridge());
+    ScopedRegistryUpdate update = lock_->sync_bridge().BeginUpdate();
     CHECK(update->UpdateApp(app->app_id())
               ->RemoveInstallUrlForSource(install_source_, install_url_));
 

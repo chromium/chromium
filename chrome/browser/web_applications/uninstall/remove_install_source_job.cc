@@ -121,7 +121,7 @@ webapps::WebappUninstallSource RemoveInstallSourceJob::uninstall_source()
 void RemoveInstallSourceJob::RemoveInstallSourceFromDatabase(
     OsHooksErrors os_hooks_errors) {
   {
-    ScopedRegistryUpdate update(&lock_->sync_bridge());
+    ScopedRegistryUpdate update = lock_->sync_bridge().BeginUpdate();
     WebApp* app = update->UpdateApp(app_id_);
     app->RemoveSource(install_source_);
     if (install_source_ == WebAppManagement::kSubApp) {

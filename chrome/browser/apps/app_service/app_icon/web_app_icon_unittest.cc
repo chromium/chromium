@@ -110,10 +110,8 @@ class WebAppIconFactoryTest : public testing::Test {
   }
 
   void RegisterApp(std::unique_ptr<web_app::WebApp> web_app) {
-    std::unique_ptr<web_app::WebAppRegistryUpdate> update =
-        sync_bridge().BeginUpdate();
+    web_app::ScopedRegistryUpdate update = sync_bridge().BeginUpdate();
     update->CreateApp(std::move(web_app));
-    sync_bridge().CommitUpdate(std::move(update), base::DoNothing());
   }
 
   void WriteIcons(const std::string& app_id,

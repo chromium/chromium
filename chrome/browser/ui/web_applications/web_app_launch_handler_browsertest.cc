@@ -23,6 +23,7 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
+#include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/embedder_support/switches.h"
@@ -473,8 +474,9 @@ IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerBrowserTest,
   EXPECT_NE(browser_1, browser_2);
 
   {
-    ScopedRegistryUpdate update(
-        &WebAppProvider::GetForTest(profile())->sync_bridge_unsafe());
+    ScopedRegistryUpdate update = WebAppProvider::GetForTest(profile())
+                                      ->sync_bridge_unsafe()
+                                      .BeginUpdate();
     WebApp* web_app = update->UpdateApp(app_id);
     web_app->SetLaunchHandler(LaunchHandler{ClientMode::kFocusExisting});
   }

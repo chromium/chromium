@@ -181,7 +181,7 @@ void FileHandlingSubManager::Unregister(
   // TODO(https://crbug.com/1295044): remove after fully deprecate old
   // `InstallOsHooks/UninstallOsHooks` paths.
   if (!HasFileHandling(desired_state)) {
-    ScopedRegistryUpdate update(&provider_->sync_bridge_unsafe());
+    ScopedRegistryUpdate update = provider_->sync_bridge_unsafe().BeginUpdate();
     update->UpdateApp(app_id)->SetFileHandlerOsIntegrationState(
         OsIntegrationState::kDisabled);
   }
@@ -208,7 +208,7 @@ void FileHandlingSubManager::Register(
   // TODO(https://crbug.com/1295044): remove after fully deprecate old
   // `InstallOsHooks/UninstallOsHooks` paths.
   {
-    ScopedRegistryUpdate update(&provider_->sync_bridge_unsafe());
+    ScopedRegistryUpdate update = provider_->sync_bridge_unsafe().BeginUpdate();
     update->UpdateApp(app_id)->SetFileHandlerOsIntegrationState(
         OsIntegrationState::kEnabled);
   }

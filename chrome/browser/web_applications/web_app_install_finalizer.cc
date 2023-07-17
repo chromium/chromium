@@ -458,17 +458,14 @@ void WebAppInstallFinalizer::CommitToSyncBridge(std::unique_ptr<WebApp> web_app,
 
   AppId app_id = web_app->app_id();
 
-  std::unique_ptr<WebAppRegistryUpdate> update =
-      provider_->sync_bridge_unsafe().BeginUpdate();
+  ScopedRegistryUpdate update =
+      provider_->sync_bridge_unsafe().BeginUpdate(std::move(commit_callback));
 
   WebApp* app_to_override = update->UpdateApp(app_id);
   if (app_to_override)
     *app_to_override = std::move(*web_app);
   else
     update->CreateApp(std::move(web_app));
-
-  provider_->sync_bridge_unsafe().CommitUpdate(std::move(update),
-                                               std::move(commit_callback));
 }
 
 void WebAppInstallFinalizer::OnDatabaseCommitCompletedForInstall(

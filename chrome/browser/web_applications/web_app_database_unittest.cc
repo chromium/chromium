@@ -15,6 +15,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/proto/web_app.pb.h"
@@ -142,17 +143,17 @@ class WebAppDatabaseTest : public WebAppTest {
   }
 
   void RegisterApp(std::unique_ptr<WebApp> web_app) {
-    ScopedRegistryUpdate update(&sync_bridge());
+    ScopedRegistryUpdate update = sync_bridge().BeginUpdate();
     update->CreateApp(std::move(web_app));
   }
 
   void UnregisterApp(const AppId& app_id) {
-    ScopedRegistryUpdate update(&sync_bridge());
+    ScopedRegistryUpdate update = sync_bridge().BeginUpdate();
     update->DeleteApp(app_id);
   }
 
   void UnregisterAll() {
-    ScopedRegistryUpdate update(&sync_bridge());
+    ScopedRegistryUpdate update = sync_bridge().BeginUpdate();
     for (const AppId& app_id : registrar().GetAppIds())
       update->DeleteApp(app_id);
   }
@@ -217,38 +218,30 @@ TEST_F(WebAppDatabaseTest, WriteAndDeleteAppsWithCallbacks) {
   }
 
   {
-    base::RunLoop run_loop;
-
-    std::unique_ptr<WebAppRegistryUpdate> update = sync_bridge().BeginUpdate();
-
-    for (std::unique_ptr<WebApp>& web_app : apps_to_create)
-      update->CreateApp(std::move(web_app));
-
-    sync_bridge().CommitUpdate(std::move(update),
-                               base::BindLambdaForTesting([&](bool success) {
-                                 EXPECT_TRUE(success);
-                                 run_loop.Quit();
-                               }));
-    run_loop.Run();
+    base::test::TestFuture<bool> future;
+    {
+      ScopedRegistryUpdate update =
+          sync_bridge().BeginUpdate(future.GetCallback());
+      for (std::unique_ptr<WebApp>& web_app : apps_to_create) {
+        update->CreateApp(std::move(web_app));
+      }
+    }
+    EXPECT_TRUE(future.Take());
 
     Registry registry_written = database_factory().ReadRegistry();
     EXPECT_TRUE(IsRegistryEqual(registry_written, expected_registry));
   }
 
   {
-    base::RunLoop run_loop;
-
-    std::unique_ptr<WebAppRegistryUpdate> update = sync_bridge().BeginUpdate();
-
-    for (const AppId& app_id : apps_to_delete)
-      update->DeleteApp(app_id);
-
-    sync_bridge().CommitUpdate(std::move(update),
-                               base::BindLambdaForTesting([&](bool success) {
-                                 EXPECT_TRUE(success);
-                                 run_loop.Quit();
-                               }));
-    run_loop.Run();
+    base::test::TestFuture<bool> future;
+    {
+      ScopedRegistryUpdate update =
+          sync_bridge().BeginUpdate(future.GetCallback());
+      for (const AppId& app_id : apps_to_delete) {
+        update->DeleteApp(app_id);
+      }
+    }
+    EXPECT_TRUE(future.Take());
 
     Registry registry_deleted = database_factory().ReadRegistry();
     EXPECT_TRUE(registry_deleted.empty());

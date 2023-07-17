@@ -44,7 +44,7 @@ void ScheduleRegisterRunOnOsLogin(WebAppSyncBridge* sync_bridge,
   // TODO(crbug.com/1401125): Remove once sub managers have been implemented and
   //  OsIntegrationManager::Synchronize() is running fine.
   if (!AreSubManagersExecuteEnabled()) {
-    ScopedRegistryUpdate update(sync_bridge);
+    ScopedRegistryUpdate update = sync_bridge->BeginUpdate();
     update->UpdateApp(shortcut_info->app_id)
         ->SetRunOnOsLoginOsIntegrationState(RunOnOsLoginMode::kWindowed);
   }
@@ -65,7 +65,7 @@ void ScheduleUnregisterRunOnOsLogin(WebAppProvider& provider,
   //  OsIntegrationManager::Synchronize() is running fine.
   if (!AreSubManagersExecuteEnabled() &&
       provider.registrar_unsafe().IsInstalled(app_id)) {
-    ScopedRegistryUpdate update(&provider.sync_bridge_unsafe());
+    ScopedRegistryUpdate update = provider.sync_bridge_unsafe().BeginUpdate();
     update->UpdateApp(app_id)->SetRunOnOsLoginOsIntegrationState(
         RunOnOsLoginMode::kNotRun);
   }
