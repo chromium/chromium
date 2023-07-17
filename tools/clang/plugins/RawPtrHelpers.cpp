@@ -144,14 +144,14 @@ clang::ast_matchers::internal::Matcher<clang::NamedDecl> PtrAndRefExclusions(
     if (!options.should_exclude_stack_allocated_records) {
       return anyOf(isSpellingInSystemHeader(), isInExternCContext(),
                    isRawPtrExclusionAnnotated(), isInThirdPartyLocation(),
-                   isInGeneratedLocation(),
+                   isInGeneratedLocation(), isNotSpelledInSource(),
                    isInLocationListedInFilterFile(options.paths_to_exclude),
                    isFieldDeclListedInFilterFile(options.fields_to_exclude),
                    ImplicitFieldDeclaration(), isObjCSynthesize());
     } else {
       return anyOf(isSpellingInSystemHeader(), isInExternCContext(),
                    isRawPtrExclusionAnnotated(), isInThirdPartyLocation(),
-                   isInGeneratedLocation(),
+                   isInGeneratedLocation(), isNotSpelledInSource(),
                    isInLocationListedInFilterFile(options.paths_to_exclude),
                    isFieldDeclListedInFilterFile(options.fields_to_exclude),
                    ImplicitFieldDeclaration(), isObjCSynthesize(),
@@ -197,15 +197,23 @@ clang::ast_matchers::internal::Matcher<clang::Decl> AffectedRawPtrFieldDecl(
       fieldDecl(hasType(pointerType(pointee(qualType(allOf(
           isConstQualified(), hasUnqualifiedDesugaredType(anyCharType())))))));
 
-  // TODO(keishi): Skip field declarations in scratch space for now as we can't
-  // tell the correct file path.
-  auto field_decl_matcher =
-      fieldDecl(
-          allOf(hasType(supported_pointer_types_matcher),
-                unless(anyOf(const_char_pointer_matcher, isInScratchSpace(),
-                             PtrAndRefExclusions(options)))))
-          .bind("affectedFieldDecl");
-  return field_decl_matcher;
+  if (!options.fix_crbug_1449812) {
+    auto field_decl_matcher =
+        fieldDecl(allOf(hasType(supported_pointer_types_matcher),
+                        unless(anyOf(const_char_pointer_matcher,
+                                     isBeginInScratchSpace(),
+                                     PtrAndRefExclusions(options)))))
+            .bind("affectedFieldDecl");
+    return field_decl_matcher;
+  } else {
+    // `isBeginInScratchSpace()` check is done inside `PtrAndRefExclusions`.
+    auto field_decl_matcher =
+        fieldDecl(allOf(hasType(supported_pointer_types_matcher),
+                        unless(anyOf(const_char_pointer_matcher,
+                                     PtrAndRefExclusions(options)))))
+            .bind("affectedFieldDecl");
+    return field_decl_matcher;
+  }
 }
 
 clang::ast_matchers::internal::Matcher<clang::Decl> AffectedRawRefFieldDecl(

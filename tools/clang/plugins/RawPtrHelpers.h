@@ -78,12 +78,30 @@ AST_MATCHER(clang::Type, anyCharType) {
   return Node.isAnyCharacterType();
 }
 
-AST_MATCHER(clang::Decl, isInScratchSpace) {
+AST_POLYMORPHIC_MATCHER(isNotSpelledInSource,
+                        AST_POLYMORPHIC_SUPPORTED_TYPES(clang::Decl,
+                                                        clang::Stmt,
+                                                        clang::TypeLoc)) {
+  const clang::SourceManager& source_manager =
+      Finder->getASTContext().getSourceManager();
+  const auto loc = source_manager.getSpellingLoc(Node.getEndLoc());
+  // Returns true if `loc` is inside either one of followings:
+  // - "<built-in>"
+  // - "<command line>"
+  // - "<scratch space>"
+  return source_manager.isWrittenInBuiltinFile(loc) ||
+         source_manager.isWrittenInCommandLineFile(loc) ||
+         source_manager.isWrittenInScratchSpace(loc);
+}
+
+// TODO(mikt): Remove after option `raw-ptr-fix-crbug-1449812` is fully enabled.
+AST_MATCHER(clang::Decl, isBeginInScratchSpace) {
   const clang::SourceManager& source_manager =
       Finder->getASTContext().getSourceManager();
   clang::SourceLocation location = Node.getSourceRange().getBegin();
-  if (location.isInvalid())
+  if (location.isInvalid()) {
     return false;
+  }
   clang::SourceLocation spelling_location =
       source_manager.getSpellingLoc(location);
   return source_manager.isWrittenInScratchSpace(spelling_location);
