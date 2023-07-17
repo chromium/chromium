@@ -336,6 +336,7 @@ public class WebViewLayoutTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1368439")
     public void testRequestMIDIAccessDenyPermission() throws Exception {
         runWebViewLayoutTest("blink-apis/webmidi/requestmidiaccess-permission-denied.html",
                 "blink-apis/webmidi/requestmidiaccess-permission-denied-expected.txt");
