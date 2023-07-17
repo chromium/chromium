@@ -22,6 +22,7 @@ class SharedPasswordsNotificationView : public PasswordBubbleViewBase {
   SharedPasswordsNotificationBubbleController* GetController() override;
   const SharedPasswordsNotificationBubbleController* GetController()
       const override;
+  ui::ImageModel GetWindowIcon() override;
 
   SharedPasswordsNotificationBubbleController controller_;
 };

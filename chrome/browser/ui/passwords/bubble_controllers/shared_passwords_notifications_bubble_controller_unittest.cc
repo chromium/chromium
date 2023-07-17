@@ -18,12 +18,18 @@ class SharedPasswordsNotificationBubbleControllerTest : public ::testing::Test {
   }
   ~SharedPasswordsNotificationBubbleControllerTest() override = default;
 
+  void SetUp() override {
+    ON_CALL(*delegate(), GetCurrentForms)
+        .WillByDefault(testing::ReturnRef(current_forms_));
+  }
+
   PasswordsModelDelegateMock* delegate() { return mock_delegate_.get(); }
   SharedPasswordsNotificationBubbleController* controller() {
     return controller_.get();
   }
 
  private:
+  std::vector<std::unique_ptr<password_manager::PasswordForm>> current_forms_;
   std::unique_ptr<PasswordsModelDelegateMock> mock_delegate_;
   std::unique_ptr<SharedPasswordsNotificationBubbleController> controller_;
 };

@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/passwords/shared_passwords_notification_view.h"
 
 #include "chrome/browser/ui/passwords/passwords_model_delegate.h"
+#include "chrome/browser/ui/passwords/ui_utils.h"
 
 SharedPasswordsNotificationView::SharedPasswordsNotificationView(
     content::WebContents* web_contents,
@@ -12,7 +13,11 @@ SharedPasswordsNotificationView::SharedPasswordsNotificationView(
     : PasswordBubbleViewBase(web_contents,
                              anchor_view,
                              /*easily_dismissable=*/false),
-      controller_(PasswordsModelDelegateFromWebContents(web_contents)) {}
+      controller_(PasswordsModelDelegateFromWebContents(web_contents)) {
+  set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
+      views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
+  SetShowIcon(true);
+}
 
 SharedPasswordsNotificationView::~SharedPasswordsNotificationView() = default;
 
@@ -24,4 +29,9 @@ SharedPasswordsNotificationView::GetController() {
 const SharedPasswordsNotificationBubbleController*
 SharedPasswordsNotificationView::GetController() const {
   return &controller_;
+}
+
+ui::ImageModel SharedPasswordsNotificationView::GetWindowIcon() {
+  return ui::ImageModel::FromVectorIcon(GooglePasswordManagerVectorIcon(),
+                                        ui::kColorIcon);
 }
