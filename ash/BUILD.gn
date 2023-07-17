@@ -4148,6 +4148,8 @@ static_library("test_support") {
     "system/diagnostics/fake_diagnostics_browser_delegate.h",
     "system/diagnostics/log_test_helpers.cc",
     "system/diagnostics/log_test_helpers.h",
+    "system/federated/test_federated_service_controller.cc",
+    "system/federated/test_federated_service_controller.h",
     "system/geolocation/test_geolocation_url_loader_factory.cc",
     "system/geolocation/test_geolocation_url_loader_factory.h",
     "system/media/mock_media_notification_provider.cc",

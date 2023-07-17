@@ -8,7 +8,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_metrics.h"
-#include "ash/system/federated/federated_service_controller.h"
+#include "ash/system/federated/test_federated_service_controller.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -33,21 +33,9 @@ using ash::FederatedClient;
 using ash::federated::FakeServiceConnectionImpl;
 using ash::federated::ScopedFakeServiceConnectionForTest;
 using ash::federated::ServiceConnection;
+using ash::federated::TestFederatedServiceController;
 using federated::FederatedMetricsManager;
 using testing::HasSubstr;
-
-class TestFederatedServiceController
-    : public ash::federated::FederatedServiceController {
- public:
-  TestFederatedServiceController() = default;
-  TestFederatedServiceController(const TestFederatedServiceController&) =
-      delete;
-  TestFederatedServiceController& operator=(
-      const TestFederatedServiceController&) = delete;
-
-  // ash::federated::FederatedServiceController:
-  bool IsServiceAvailable() const override { return true; }
-};
 
 // Parameterized by feature kLauncherQueryFederatedAnalyticsPHH.
 class FederatedMetricsManagerTest : public testing::Test,
