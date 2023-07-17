@@ -16,6 +16,7 @@
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/report_unrecoverable_error.h"
 #include "components/sync/model/client_tag_based_model_type_processor.h"
+#include "components/sync/model/model_type_store_service.h"
 
 // static
 PasswordReceiverServiceFactory* PasswordReceiverServiceFactory::GetInstance() {
@@ -66,7 +67,8 @@ KeyedService* PasswordReceiverServiceFactory::BuildServiceInstanceFor(
                               chrome::GetChannel()));
   auto sync_bridge = std::make_unique<
       password_manager::IncomingPasswordSharingInvitationSyncBridge>(
-      std::move(change_processor));
+      std::move(change_processor),
+      ModelTypeStoreServiceFactory::GetForProfile(profile)->GetStoreFactory());
 
   return new password_manager::PasswordReceiverServiceImpl(
       std::move(sync_bridge), PasswordStoreFactory::GetForProfile(

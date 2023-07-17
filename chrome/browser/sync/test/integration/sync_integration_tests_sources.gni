@@ -12,6 +12,7 @@ sync_integration_tests_sources = [
   "../browser/sync/test/integration/single_client_device_info_sync_test.cc",
   "../browser/sync/test/integration/single_client_history_delete_directives_sync_test.cc",
   "../browser/sync/test/integration/single_client_history_sync_test.cc",
+  "../browser/sync/test/integration/single_client_incoming_password_sharing_invitation_test.cc",
   "../browser/sync/test/integration/single_client_offer_sync_test.cc",
   "../browser/sync/test/integration/single_client_reading_list_sync_test.cc",
   "../browser/sync/test/integration/single_client_sync_invalidations_test.cc",
