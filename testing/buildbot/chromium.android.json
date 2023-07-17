@@ -2135,10 +2135,10 @@
         "swarming": {
           "dimension_sets": [
             {
-              "device_os": "QP1A.190711.020",
+              "device_os": "QQ1A.191205.008",
               "device_os_flavor": "google",
               "device_os_type": "userdebug",
-              "device_type": "marlin",
+              "device_type": "walleye",
               "os": "Android"
             }
           ],
@@ -2190,10 +2190,10 @@
         "swarming": {
           "dimension_sets": [
             {
-              "device_os": "QP1A.190711.020",
+              "device_os": "QQ1A.191205.008",
               "device_os_flavor": "google",
               "device_os_type": "userdebug",
-              "device_type": "marlin",
+              "device_type": "walleye",
               "os": "Android"
             }
           ],
@@ -2241,10 +2241,10 @@
         "swarming": {
           "dimension_sets": [
             {
-              "device_os": "QP1A.190711.020",
+              "device_os": "QQ1A.191205.008",
               "device_os_flavor": "google",
               "device_os_type": "userdebug",
-              "device_type": "marlin",
+              "device_type": "walleye",
               "os": "Android"
             }
           ],
@@ -2284,10 +2284,10 @@
         "swarming": {
           "dimension_sets": [
             {
-              "device_os": "QP1A.190711.020",
+              "device_os": "QQ1A.191205.008",
               "device_os_flavor": "google",
               "device_os_type": "userdebug",
-              "device_type": "marlin",
+              "device_type": "walleye",
               "os": "Android"
             }
           ],
@@ -2327,10 +2327,10 @@
         "swarming": {
           "dimension_sets": [
             {
-              "device_os": "QP1A.190711.020",
+              "device_os": "QQ1A.191205.008",
               "device_os_flavor": "google",
               "device_os_type": "userdebug",
-              "device_type": "marlin",
+              "device_type": "walleye",
               "os": "Android"
             }
           ],
@@ -2370,10 +2370,10 @@
         "swarming": {
           "dimension_sets": [
             {
-              "device_os": "QP1A.190711.020",
+              "device_os": "QQ1A.191205.008",
               "device_os_flavor": "google",
               "device_os_type": "userdebug",
-              "device_type": "marlin",
+              "device_type": "walleye",
               "os": "Android"
             }
           ],

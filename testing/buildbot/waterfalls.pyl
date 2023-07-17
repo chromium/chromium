@@ -652,10 +652,8 @@
         'swarming': {
           'dimension_sets': [
             {
-              'device_os': 'QP1A.190711.020',
+              'device_os': 'QQ1A.191205.008',
               'device_os_flavor': 'google',
-              'device_type': 'marlin',
-              'os': 'Android',
             },
           ],
         },
@@ -667,7 +665,8 @@
         },
         'os_type': 'android',
         'mixins': [
-          'has_native_resultdb_integration'
+          'has_native_resultdb_integration',
+          'walleye',
         ],
       },
       'android-11-x86-rel': {
