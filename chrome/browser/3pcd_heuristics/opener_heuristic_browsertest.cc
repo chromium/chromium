@@ -190,8 +190,15 @@ IN_PROC_BROWSER_TEST_F(OpenerHeuristicBrowserTest,
   ASSERT_FALSE(GetTabHelper()->popup_observer_for_testing());
 }
 
+// TODO(crbug.com/1465642): Test is flaky on Android.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_PopupsWithOpenerHavePopupState \
+  DISABLED_PopupsWithOpenerHavePopupState
+#else
+#define MAYBE_PopupsWithOpenerHavePopupState PopupsWithOpenerHavePopupState
+#endif
 IN_PROC_BROWSER_TEST_F(OpenerHeuristicBrowserTest,
-                       PopupsWithOpenerHavePopupState) {
+                       MAYBE_PopupsWithOpenerHavePopupState) {
   WebContents* web_contents = GetActiveWebContents();
   GURL popup_url = embedded_test_server()->GetURL("a.test", "/title1.html");
 
