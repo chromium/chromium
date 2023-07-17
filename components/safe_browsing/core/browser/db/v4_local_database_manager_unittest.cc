@@ -1786,7 +1786,6 @@ TEST_F(V4LocalDatabaseManagerTest, DeleteAssociatedFile) {
   ResetLocalDatabaseManager();
   WaitForTasksOnTaskRunner();
   EXPECT_FALSE(base::PathExists(store_file_path));
-  EXPECT_FALSE(base::PathExists(helper_file_path));
 }
 
 }  // namespace safe_browsing

@@ -254,9 +254,6 @@ void MaybeDeleteStore(const base::FilePath& path) {
   base::UmaHistogramBoolean(
       "SafeBrowsing.V4UnusedStoreFileExists" + GetUmaSuffixForStore(path),
       path_exists);
-  if (!path_exists) {
-    return;
-  }
 
   // The MmapHashPrefixMap maintains several helper files stored in the same
   // directory as the main store file. These are usually found by looking at the
@@ -277,16 +274,7 @@ void MaybeDeleteStore(const base::FilePath& path) {
   }
 
   for (const base::FilePath& delete_path : paths_to_delete) {
-    if (!base::DeleteFile(delete_path)) {
-      LOG(ERROR) << "Failed to delete unused store file " << delete_path;
-    }
-  }
-
-  // TODO(crbug.com/1444720): Remove this logging. It was only added for
-  // debugging a test failure and is not useful on end users machines.
-  if (enumerator.GetError() != base::File::FILE_OK) {
-    LOG(ERROR) << "Removing store at " << path << " failed with error "
-               << base::File::ErrorToString(enumerator.GetError());
+    base::DeleteFile(delete_path);
   }
 }
 
