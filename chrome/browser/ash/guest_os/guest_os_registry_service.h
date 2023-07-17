@@ -116,6 +116,8 @@ class GuestOsRegistryService : public KeyedService {
     bool IsScaled() const;
     bool CanUninstall() const;
 
+    guest_os::GuestId ToGuestId() const;
+
    private:
     std::string GetString(base::StringPiece key) const;
     bool GetBool(base::StringPiece key) const;

@@ -100,13 +100,7 @@ void LaunchApplication(
   // TODO(b/265601951): Handle window permissions. Crostini uses
   // AppServiceAppWindowCrostiniTracker::OnAppLaunchRequested for this.
 
-  const guest_os::GuestId container_id(registration.VmType(),
-                                       registration.VmName(),
-                                       registration.ContainerName());
-
-  // TODO(b/265601951): Consider factoring SharePath code against
-  // crostini_util.cc LaunchApplication.
-  auto* share_path = guest_os::GuestOsSharePath::GetForProfile(profile);
+  // Get vm_info because we need seneschal_server_handle.
   const std::string& vm_name = registration.VmName();
   auto vm_info =
       guest_os::GuestOsSessionTracker::GetForProfile(profile)->GetVmInfo(
@@ -117,38 +111,24 @@ void LaunchApplication(
     return;
   }
 
-  // Share any paths not in Bruschetta.
-  std::vector<base::FilePath> paths_to_share;
-  std::vector<std::string> launch_args;
-  launch_args.reserve(args.size());
-  for (const auto& arg : args) {
-    if (absl::holds_alternative<std::string>(arg)) {
-      launch_args.push_back(absl::get<std::string>(arg));
-      continue;
-    }
-    const storage::FileSystemURL& url = absl::get<storage::FileSystemURL>(arg);
-    base::FilePath path;
-    if (!file_manager::util::ConvertFileSystemURLToPathInsideVM(
-            profile, url, bruschetta::BruschettaChromeOSBaseDirectory(),
-            /*map_crostini_home=*/false, &path)) {
-      OnLaunchFailed(app_id, std::move(callback),
-                     "Cannot share file with Bruschetta: " + url.DebugString());
-      return;
-    }
-    if (url.mount_filesystem_id() !=
-            file_manager::util::GetGuestOsMountPointName(profile,
-                                                         container_id) &&
-        !share_path->IsPathShared(vm_name, url.path())) {
-      paths_to_share.push_back(url.path());
-    }
-    launch_args.push_back(path.value());
+  const guest_os::GuestId container_id(registration.ToGuestId());
+  auto* share_path = guest_os::GuestOsSharePath::GetForProfile(profile);
+  auto paths_or_error = share_path->ConvertArgsToPathsToShare(
+      registration, args, bruschetta::BruschettaChromeOSBaseDirectory(),
+      /*map_crostini_home=*/false);
+  if (absl::holds_alternative<std::string>(paths_or_error)) {
+    OnLaunchFailed(app_id, std::move(callback),
+                   absl::get<std::string>(paths_or_error));
+    return;
   }
-
+  const auto& paths =
+      absl::get<guest_os::GuestOsSharePath::PathsToShare>(paths_or_error);
   share_path->SharePaths(
-      vm_name, vm_info->seneschal_server_handle(), std::move(paths_to_share),
+      vm_name, vm_info->seneschal_server_handle(),
+      std::move(paths.paths_to_share),
       base::BindOnce(OnSharePathForLaunchApplication, profile, app_id,
                      std::move(registration), std::move(container_id),
-                     std::move(launch_args), std::move(callback)));
+                     std::move(paths.launch_args), std::move(callback)));
 }
 
 }  // namespace

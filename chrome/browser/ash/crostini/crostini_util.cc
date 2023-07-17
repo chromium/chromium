@@ -163,49 +163,37 @@ void LaunchApplication(
 
   crostini_tracker->OnAppLaunchRequested(app_id, display_id);
 
-  auto* share_path = guest_os::GuestOsSharePath::GetForProfile(profile);
-  const auto vm_name = registration.VmName();
+  // Get vm_info because we need seneschal_server_handle.
+  const std::string& vm_name = registration.VmName();
   auto vm_info =
-      crostini::CrostiniManager::GetForProfile(profile)->GetVmInfo(vm_name);
+      guest_os::GuestOsSessionTracker::GetForProfile(profile)->GetVmInfo(
+          vm_name);
   if (!vm_info) {
     return OnLaunchFailed(app_id, std::move(callback),
-                          "VM not running: " + vm_name,
+                          "Crostini VM not running: " + vm_name,
                           CrostiniResult::SHARE_PATHS_FAILED);
   }
 
   // Share any paths not in crostini.  The user will see the spinner while this
   // is happening.
-  std::vector<base::FilePath> paths_to_share;
-  std::vector<std::string> launch_args;
-  launch_args.reserve(args.size());
-  for (const auto& arg : args) {
-    if (absl::holds_alternative<std::string>(arg)) {
-      launch_args.push_back(absl::get<std::string>(arg));
-      continue;
-    }
-    const storage::FileSystemURL& url = absl::get<storage::FileSystemURL>(arg);
-    base::FilePath path;
-    if (!file_manager::util::ConvertFileSystemURLToPathInsideCrostini(
-            profile, url, &path)) {
-      return OnLaunchFailed(
-          app_id, std::move(callback),
-          "Cannot share file with crostini: " + url.DebugString(),
-          CrostiniResult::SHARE_PATHS_FAILED);
-    }
-    if (url.mount_filesystem_id() !=
-            file_manager::util::GetCrostiniMountPointName(profile) &&
-        !share_path->IsPathShared(vm_name, url.path())) {
-      paths_to_share.push_back(url.path());
-    }
-    launch_args.push_back(path.value());
+  auto* share_path = guest_os::GuestOsSharePath::GetForProfile(profile);
+  auto paths_or_error = share_path->ConvertArgsToPathsToShare(
+      registration, args, crostini::ContainerChromeOSBaseDirectory(),
+      /*map_crostini_home=*/true);
+  if (absl::holds_alternative<std::string>(paths_or_error)) {
+    OnLaunchFailed(app_id, std::move(callback),
+                   absl::get<std::string>(paths_or_error),
+                   CrostiniResult::SHARE_PATHS_FAILED);
+    return;
   }
-
+  const auto& paths =
+      absl::get<guest_os::GuestOsSharePath::PathsToShare>(paths_or_error);
   share_path->SharePaths(
-      vm_name, vm_info->info.seneschal_server_handle(),
-      std::move(paths_to_share),
+      vm_name, vm_info->seneschal_server_handle(),
+      std::move(paths.paths_to_share),
       base::BindOnce(OnSharePathForLaunchApplication, profile, app_id,
                      std::move(registration), container_id, display_id,
-                     std::move(launch_args), std::move(callback)));
+                     std::move(paths.launch_args), std::move(callback)));
 }
 
 }  // namespace

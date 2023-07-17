@@ -123,10 +123,14 @@ class GuestOsMountProviderTest : public testing::Test {
     EXPECT_CALL(*volume_manager_observer_, OnVolumeMounted).Times(n);
   }
 
-  // guestos_${UserHash}_${encode(kGuestId.ToString())}. Note that UserHash
-  // is an empty string in these tests.
+  // Use VmType::BRUSCHETTA because TERMINA (Crostini) is special-cased to
+  // use GetCrostiniMountPointName.
+  //
+  // Expect the mount point name to be:
+  //   guestos_${UserHash}_${encode(kGuestId.ToString())}
+  // Note that UserHash is an empty string in these tests.
   const guest_os::GuestId kGuestId =
-      guest_os::GuestId(guest_os::VmType::TERMINA, "cow", "ptery/daccy");
+      guest_os::GuestId(guest_os::VmType::BRUSCHETTA, "cow", "ptery/daccy");
   const std::string kMountName = std::string{"guestos++cow+ptery%2Fdaccy"};
 
   content::BrowserTaskEnvironment task_environment_;

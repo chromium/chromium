@@ -437,6 +437,10 @@ bool GuestOsRegistryService::Registration::CanUninstall() const {
   return false;
 }
 
+guest_os::GuestId GuestOsRegistryService::Registration::ToGuestId() const {
+  return guest_os::GuestId(VmType(), VmName(), ContainerName());
+}
+
 base::Time GuestOsRegistryService::Registration::InstallTime() const {
   return GetTime(guest_os::prefs::kAppInstallTimeKey);
 }
