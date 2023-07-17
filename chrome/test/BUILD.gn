@@ -10219,10 +10219,7 @@ if (!is_android) {
       "//ui/web_dialogs:test_support",
     ]
     if (include_js_tests) {
-      deps += [
-        "//chrome/test/data/webui:interactive_ui_tests_js_mojo_webui",
-        "//chrome/test/data/webui:interactive_ui_tests_js_webui",
-      ]
+      deps += [ "//chrome/test/data/webui:interactive_ui_tests_js_webui" ]
     }
 
     # Runtime dependencies
