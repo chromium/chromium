@@ -485,6 +485,13 @@
           'Release_x64',
         ],
         'swarming': {
+          # blink_web_tests has issues on non-broadwell machines.
+          # see https://crbug.com/1458859
+          'dimension_sets': [
+            {
+              'cpu': 'x86-64-Broadwell_GCE',
+            },
+          ],
           "shards": 12,
         },
       },

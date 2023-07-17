@@ -2051,7 +2051,7 @@
         "swarming": {
           "dimension_sets": [
             {
-              "cpu": "x86-64",
+              "cpu": "x86-64-Broadwell_GCE",
               "os": "Windows-10-19045"
             }
           ],
