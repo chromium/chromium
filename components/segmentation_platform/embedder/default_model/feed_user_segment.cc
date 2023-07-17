@@ -142,7 +142,7 @@ std::string FeedUserSubsegmentToString(FeedUserSubsegment feed_group) {
   }
 }
 
-std::unique_ptr<ModelProvider> GetFeedUserSegmentDefautlModel() {
+std::unique_ptr<DefaultModelProvider> GetFeedUserSegmentDefautlModel() {
   if (!base::GetFieldTrialParamByFeatureAsBool(
           features::kSegmentationPlatformFeedSegmentFeature,
           kDefaultModelEnabledParam, true)) {

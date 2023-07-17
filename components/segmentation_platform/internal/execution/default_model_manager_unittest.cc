@@ -29,7 +29,7 @@ class DefaultModelManagerTest : public testing::Test {
   DefaultModelManagerTest() : model_provider_factory_(&model_provider_data_) {}
   ~DefaultModelManagerTest() override = default;
 
-  MockModelProvider& FindHandler(proto::SegmentId segment_id) {
+  MockDefaultModelProvider& FindHandler(proto::SegmentId segment_id) {
     return *(*model_provider_data_.default_model_providers.find(segment_id))
                 .second;
   }
@@ -60,7 +60,9 @@ TEST_F(DefaultModelManagerTest, BasicTest) {
 
   // Set some model versions.
   const int model_version_db = 4;
-  const int model_version_default = 5;
+  // This version is set by
+  // MockDefaultModelProvider::MockDefaultModelProvider().
+  const int model_version_default = 1;
 
   // Initialize DB and default models with 1 and 2 segments respectively.
   model_provider_data_.segments_supporting_default_model = {segment_1,
@@ -79,13 +81,9 @@ TEST_F(DefaultModelManagerTest, BasicTest) {
 
   // Set up default models 1 and 2.
   proto::SegmentationModelMetadata metadata_1;
-  EXPECT_CALL(FindHandler(segment_1), InitAndFetchModel(_))
-      .WillOnce(
-          RunOnceCallback<0>(segment_1, metadata_1, model_version_default));
   proto::SegmentationModelMetadata metadata_2;
-  EXPECT_CALL(FindHandler(segment_2), InitAndFetchModel(_))
-      .WillOnce(
-          RunOnceCallback<0>(segment_2, metadata_2, model_version_default));
+  model_provider_data_.default_provider_metadata[segment_1] = metadata_1;
+  model_provider_data_.default_provider_metadata[segment_2] = metadata_2;
 
   // Query models.
   default_model_manager_->GetAllSegmentInfoFromBothModels(
@@ -123,9 +121,7 @@ TEST_F(DefaultModelManagerTest, BasicTest) {
   EXPECT_EQ(0u, get_all_segment_result().size());
 
   // Query for a model only available in the default model.
-  EXPECT_CALL(FindHandler(segment_2), InitAndFetchModel(_))
-      .WillOnce(
-          RunOnceCallback<0>(segment_2, metadata_2, model_version_default));
+  model_provider_data_.default_provider_metadata[segment_2] = metadata_2;
   default_model_manager_->GetAllSegmentInfoFromBothModels(
       {segment_2}, &segment_database_,
       base::BindOnce(&DefaultModelManagerTest::OnGetAllSegments,

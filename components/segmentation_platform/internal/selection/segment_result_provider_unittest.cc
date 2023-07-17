@@ -44,20 +44,20 @@ constexpr float kDatabaseScore = 0.6;
 constexpr float kTestRank = 0;
 constexpr int kDatabaseRank = 1;
 
-class TestModelProvider : public ModelProvider {
+class TestModelProvider : public DefaultModelProvider {
  public:
   static constexpr int64_t kVersion = 10;
-  explicit TestModelProvider(SegmentId segment) : ModelProvider(segment) {}
+  explicit TestModelProvider(SegmentId segment)
+      : DefaultModelProvider(segment) {}
 
-  void InitAndFetchModel(
-      const ModelUpdatedCallback& model_updated_callback) override {
+  std::unique_ptr<DefaultModelProvider::ModelConfig> GetModelConfig() override {
     proto::SegmentationModelMetadata metadata;
     MetadataWriter writer(&metadata);
     writer.SetDefaultSegmentationMetadataConfig();
     std::pair<float, int> mapping[] = {{kTestScore + 0.1, kTestRank},
                                        {kDatabaseScore - 0.1, kDatabaseRank}};
     writer.AddDiscreteMappingEntries("test_key", mapping, 2);
-    model_updated_callback.Run(segment_id_, metadata, kVersion);
+    return std::make_unique<ModelConfig>(std::move(metadata), kVersion);
   }
 
   void ExecuteModelWithInput(const ModelProvider::Request& inputs,
@@ -278,7 +278,7 @@ TEST_F(SegmentResultProviderTest, GetFromModel) {
 
 TEST_F(SegmentResultProviderTest, DefaultNeedsSignalIgnoringDbScore) {
   SetSegmentResult(kTestSegment, absl::nullopt);
-  std::map<SegmentId, std::unique_ptr<ModelProvider>> p;
+  std::map<SegmentId, std::unique_ptr<DefaultModelProvider>> p;
   p.emplace(kTestSegment, std::make_unique<TestModelProvider>(kTestSegment));
   default_manager_->SetDefaultProvidersForTesting(std::move(p));
 
@@ -296,7 +296,7 @@ TEST_F(SegmentResultProviderTest, DefaultNeedsSignalIgnoringDbScore) {
 
 TEST_F(SegmentResultProviderTest, DefaultModelFailedExecution) {
   SetSegmentResult(kTestSegment, absl::nullopt);
-  std::map<SegmentId, std::unique_ptr<ModelProvider>> p;
+  std::map<SegmentId, std::unique_ptr<DefaultModelProvider>> p;
   p.emplace(kTestSegment, std::make_unique<TestModelProvider>(kTestSegment));
   default_manager_->SetDefaultProvidersForTesting(std::move(p));
 
@@ -318,7 +318,7 @@ TEST_F(SegmentResultProviderTest, DefaultModelFailedExecution) {
 
 TEST_F(SegmentResultProviderTest, GetFromDefault) {
   SetSegmentResult(kTestSegment, absl::nullopt);
-  std::map<SegmentId, std::unique_ptr<ModelProvider>> p;
+  std::map<SegmentId, std::unique_ptr<DefaultModelProvider>> p;
   p.emplace(kTestSegment, std::make_unique<TestModelProvider>(kTestSegment));
   default_manager_->SetDefaultProvidersForTesting(std::move(p));
 
@@ -336,7 +336,7 @@ TEST_F(SegmentResultProviderTest, GetFromDefault) {
 
 TEST_F(SegmentResultProviderTest, GetFromDefaultIgnoringDb) {
   SetSegmentResult(kTestSegment, absl::nullopt);
-  std::map<SegmentId, std::unique_ptr<ModelProvider>> p;
+  std::map<SegmentId, std::unique_ptr<DefaultModelProvider>> p;
   p.emplace(kTestSegment, std::make_unique<TestModelProvider>(kTestSegment));
   default_manager_->SetDefaultProvidersForTesting(std::move(p));
 
@@ -358,7 +358,7 @@ TEST_F(SegmentResultProviderTest, MultipleRequests) {
   InitializeMetadata(kTestSegment2);
   SetSegmentResult(kTestSegment2, kDatabaseScore);
 
-  std::map<SegmentId, std::unique_ptr<ModelProvider>> p;
+  std::map<SegmentId, std::unique_ptr<DefaultModelProvider>> p;
   p.emplace(kTestSegment, std::make_unique<TestModelProvider>(kTestSegment));
   p.emplace(kTestSegment2, std::make_unique<TestModelProvider>(kTestSegment2));
   default_manager_->SetDefaultProvidersForTesting(std::move(p));

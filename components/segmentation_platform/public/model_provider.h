@@ -108,7 +108,7 @@ class ModelProviderFactory {
   // available.
   // TODO(crbug.com/1346389): This method should be moved to Config after
   // migrating all the tests that use this.
-  virtual std::unique_ptr<ModelProvider> CreateDefaultProvider(
+  virtual std::unique_ptr<DefaultModelProvider> CreateDefaultProvider(
       proto::SegmentId) = 0;
 };
 

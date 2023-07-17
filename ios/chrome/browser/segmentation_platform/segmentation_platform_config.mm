@@ -75,7 +75,7 @@ std::unique_ptr<Config> GetConfigForCrossDeviceSegments() {
   return config;
 }
 
-std::unique_ptr<ModelProvider> GetSearchUserDefaultModel() {
+std::unique_ptr<DefaultModelProvider> GetSearchUserDefaultModel() {
   if (!base::GetFieldTrialParamByFeatureAsBool(
           features::kSegmentationPlatformSearchUser, kDefaultModelEnabledParam,
           true)) {

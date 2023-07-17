@@ -46,7 +46,7 @@ constexpr std::array<MetadataWriter::UMAFeature, 2> kQueryTilesUMAFeatures = {
         "Search.QueryTiles.NTP.Tile.Clicked",
         7)};
 
-std::unique_ptr<ModelProvider> GetQueryTilesDefaultModel() {
+std::unique_ptr<DefaultModelProvider> GetQueryTilesDefaultModel() {
   if (!base::GetFieldTrialParamByFeatureAsBool(
           query_tiles::features::kQueryTilesSegmentation,
           kDefaultModelEnabledParam, true)) {

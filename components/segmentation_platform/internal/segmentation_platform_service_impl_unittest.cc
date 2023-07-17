@@ -111,13 +111,10 @@ class SegmentationPlatformServiceImplTest
               SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHOPPING_USER))
              .second;
 
-    EXPECT_CALL(model_provider, InitAndFetchModel(_))
-        .WillRepeatedly(RunOnceCallback<0>(
-            SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHOPPING_USER, metadata,
-            1));
+    model_provider_data_.default_provider_metadata
+        [SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHOPPING_USER] = metadata;
     EXPECT_CALL(model_provider, ExecuteModelWithInput(_, _))
         .WillRepeatedly(RunOnceCallback<1>(ModelProvider::Response(1, 1)));
-    EXPECT_CALL(model_provider, ModelAvailable()).WillRepeatedly(Return(true));
   }
 
   void OnGetSelectedSegment(base::RepeatingClosure closure,

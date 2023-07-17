@@ -17,7 +17,7 @@ DefaultModelManager::DefaultModelManager(
     const base::flat_set<SegmentId>& segment_ids)
     : model_provider_factory_(model_provider_factory) {
   for (SegmentId segment_id : segment_ids) {
-    std::unique_ptr<ModelProvider> provider =
+    std::unique_ptr<DefaultModelProvider> provider =
         model_provider_factory->CreateDefaultProvider(segment_id);
     if (!provider)
       continue;
@@ -27,7 +27,8 @@ DefaultModelManager::DefaultModelManager(
 
 DefaultModelManager::~DefaultModelManager() = default;
 
-ModelProvider* DefaultModelManager::GetDefaultProvider(SegmentId segment_id) {
+DefaultModelProvider* DefaultModelManager::GetDefaultProvider(
+    SegmentId segment_id) {
   auto it = default_model_providers_.find(segment_id);
   if (it != default_model_providers_.end())
     return it->second.get();
@@ -49,7 +50,7 @@ void DefaultModelManager::GetNextSegmentInfoFromDefaultModel(
     std::deque<SegmentId> remaining_segment_ids,
     MultipleSegmentInfoCallback callback) {
   SegmentId segment_id = SegmentId::OPTIMIZATION_TARGET_UNKNOWN;
-  ModelProvider* default_provider = nullptr;
+  DefaultModelProvider* default_provider = nullptr;
 
   // Find the next available default provider.
   while (!default_provider && !remaining_segment_ids.empty()) {
@@ -68,7 +69,9 @@ void DefaultModelManager::GetNextSegmentInfoFromDefaultModel(
     return;
   }
 
-  default_provider->InitAndFetchModel(base::BindRepeating(
+  // TODO(ritikagup): Change use of InitAndFetch() to GetModelConfig().
+  ModelProvider* base_class = default_provider;
+  base_class->InitAndFetchModel(base::BindRepeating(
       &DefaultModelManager::OnFetchDefaultModel, weak_ptr_factory_.GetWeakPtr(),
       base::Passed(&result), remaining_segment_ids, base::Passed(&callback)));
 }
@@ -135,7 +138,7 @@ void DefaultModelManager::OnGetAllSegmentInfoFromDefaultModel(
 }
 
 void DefaultModelManager::SetDefaultProvidersForTesting(
-    std::map<SegmentId, std::unique_ptr<ModelProvider>>&& providers) {
+    std::map<SegmentId, std::unique_ptr<DefaultModelProvider>>&& providers) {
   default_model_providers_ = std::move(providers);
 }
 

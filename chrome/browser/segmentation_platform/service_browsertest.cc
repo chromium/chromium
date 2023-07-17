@@ -215,8 +215,16 @@ class SegmentationPlatformUkmModelTest : public SegmentationPlatformTest {
 
   void CreatedBrowserMainParts(content::BrowserMainParts* parts) override {
     InProcessBrowserTest::CreatedBrowserMainParts(parts);
+    utils_.PreProfileInit(
+        {{kSegmentId, utils_.GetSamplePageLoadMetadata(kSqlFeatureQuery)}});
 
-    utils_.PreProfileInit({kSegmentId});
+    MockDefaultModelProvider* provider = utils_.GetDefaultOverride(kSegmentId);
+    EXPECT_CALL(*provider, ExecuteModelWithInput(_, _))
+        .WillRepeatedly(Invoke([&](const ModelProvider::Request& inputs,
+                                   ModelProvider::ExecutionCallback callback) {
+          input_feature_in_last_execution_ = inputs;
+          std::move(callback).Run(ModelProvider::Response(1, 0.5));
+        }));
   }
 
   void PreRunTestOnMainThread() override {
@@ -228,6 +236,7 @@ class SegmentationPlatformUkmModelTest : public SegmentationPlatformTest {
  protected:
   ukm::TestUkmRecorder ukm_recorder_;
   UkmDataManagerTestUtils utils_;
+  absl::optional<ModelProvider::Request> input_feature_in_last_execution_;
 };
 
 // This test is disabled in CrOS because CrOS creates a signin profile that uses
@@ -246,20 +255,9 @@ IN_PROC_BROWSER_TEST_F(SegmentationPlatformUkmModelTest,
                        MAYBE_PRE_RunUkmBasedModel) {
   const GURL kUrl1("https://www.url1.com");
 
-  MockModelProvider* provider = utils_.GetDefaultOverride(kSegmentId);
-
-  EXPECT_CALL(*provider, ExecuteModelWithInput(_, _))
-      .WillRepeatedly(Invoke([&](const ModelProvider::Request& inputs,
-                                 ModelProvider::ExecutionCallback callback) {
-        // There are no UKM metrics written to the database, count = 0.
-        EXPECT_EQ(ModelProvider::Request({0}), inputs);
-        std::move(callback).Run(ModelProvider::Response(1, 0.5));
-      }));
-
   WaitForPlatformInit();
 
-  utils_.WaitForModelRequestAndUpdateWith(
-      kSegmentId, utils_.GetSamplePageLoadMetadata(kSqlFeatureQuery));
+  utils_.WaitForUkmObserverRegistration();
 
   // Wait for the default model to run and save results to prefs.
   WaitForPrefUpdate();
@@ -270,22 +268,13 @@ IN_PROC_BROWSER_TEST_F(SegmentationPlatformUkmModelTest,
   while (!utils_.IsUrlInDatabase(kUrl1)) {
     base::RunLoop().RunUntilIdle();
   }
+  // There are no UKM metrics written to the database, count = 0.
+  EXPECT_EQ(ModelProvider::Request({0}), input_feature_in_last_execution_);
 }
 
 IN_PROC_BROWSER_TEST_F(SegmentationPlatformUkmModelTest,
                        MAYBE_RunUkmBasedModel) {
   const GURL kUrl1("https://www.url1.com");
-
-  MockModelProvider* provider = utils_.GetDefaultOverride(kSegmentId);
-
-  EXPECT_CALL(*provider, ExecuteModelWithInput(_, _))
-      .WillRepeatedly(Invoke([](const ModelProvider::Request& inputs,
-                                ModelProvider::ExecutionCallback callback) {
-        // Expected input is 2 since we recorded 2 UKM metrics in the previous
-        // session.
-        EXPECT_EQ(ModelProvider::Request({2}), inputs);
-        std::move(callback).Run(ModelProvider::Response(1, 0.5));
-      }));
 
   WaitForPlatformInit();
 
@@ -296,9 +285,11 @@ IN_PROC_BROWSER_TEST_F(SegmentationPlatformUkmModelTest,
   ExpectSegmentSelectionResult(kChromeLowUserEngagementSegmentationKey,
                                /*result_expected=*/true);
 
-  utils_.WaitForModelRequestAndUpdateWith(
-      kSegmentId, utils_.GetSamplePageLoadMetadata(kSqlFeatureQuery));
+  utils_.WaitForUkmObserverRegistration();
   WaitForPrefUpdate();
+
+  // There are 2 UKM metrics written to the database, count = 2.
+  EXPECT_EQ(ModelProvider::Request({2}), input_feature_in_last_execution_);
 }
 
 }  // namespace segmentation_platform

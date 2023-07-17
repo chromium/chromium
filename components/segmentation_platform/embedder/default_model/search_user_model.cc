@@ -43,7 +43,7 @@ constexpr std::array<MetadataWriter::UMAFeature, 1> kSearchUserUMAFeatures = {
 
 constexpr char kUkmInputEnabled[] = "ukm-input-enabled";
 
-std::unique_ptr<ModelProvider> GetSearchUserDefaultModel() {
+std::unique_ptr<DefaultModelProvider> GetSearchUserDefaultModel() {
   if (!base::GetFieldTrialParamByFeatureAsBool(
           features::kSegmentationPlatformSearchUser, kDefaultModelEnabledParam,
           true)) {

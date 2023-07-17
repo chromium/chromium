@@ -54,11 +54,12 @@ ModelManagerImpl::ModelManagerImpl(
         std::move(provider));
 
     // Default models
-    auto* default_provider =
+    ModelProvider* default_provider =
         default_model_manager_->GetDefaultProvider(segment_id);
     if (!provider) {
       continue;
     }
+    // TODO(ritikagup): Change use of InitAndFetch() to GetModelConfig().
     default_provider->InitAndFetchModel(base::BindRepeating(
         &ModelManagerImpl::OnSegmentationModelUpdated,
         weak_ptr_factory_.GetWeakPtr(), ModelSource::DEFAULT_MODEL_SOURCE));

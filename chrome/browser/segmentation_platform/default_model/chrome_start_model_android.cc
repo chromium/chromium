@@ -52,7 +52,7 @@ constexpr std::array<MetadataWriter::UMAFeature, 8> kChromeStartUMAFeatures = {
                                                   kProfileSigninStatusEnums,
                                                   2)};
 
-std::unique_ptr<ModelProvider> GetChromeStartAndroidModel() {
+std::unique_ptr<DefaultModelProvider> GetChromeStartAndroidModel() {
   if (!base::GetFieldTrialParamByFeatureAsBool(
           chrome::android::kStartSurfaceAndroid, kDefaultModelEnabledParam,
           false)) {

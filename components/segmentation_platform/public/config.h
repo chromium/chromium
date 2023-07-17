@@ -51,7 +51,7 @@ struct Config {
   struct SegmentMetadata {
     explicit SegmentMetadata(const std::string& uma_name);
     SegmentMetadata(const std::string& uma_name,
-                    std::unique_ptr<ModelProvider> default_provider);
+                    std::unique_ptr<DefaultModelProvider> default_provider);
     SegmentMetadata(SegmentMetadata&&);
 
     ~SegmentMetadata();
@@ -63,7 +63,7 @@ struct Config {
 
     // The default model or score used when server provided model is
     // unavailable.
-    std::unique_ptr<ModelProvider> default_provider;
+    std::unique_ptr<DefaultModelProvider> default_provider;
   };
   base::flat_map<proto::SegmentId, std::unique_ptr<SegmentMetadata>> segments;
 
@@ -84,7 +84,7 @@ struct Config {
   // Helper methods to add segments to `segments`:
   void AddSegmentId(proto::SegmentId segment_id);
   void AddSegmentId(proto::SegmentId segment_id,
-                    std::unique_ptr<ModelProvider> default_provider);
+                    std::unique_ptr<DefaultModelProvider> default_provider);
 
   // Returns the filter name that will be shown in the metrics for this
   // segmentation config.

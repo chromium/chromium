@@ -194,6 +194,7 @@ TEST_F(ServiceProxyImplTest, GetSegmentationInfoFromDefaultModel) {
       SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB;
   proto::SegmentationModelMetadata model_metadata;
   model_metadata.set_time_unit(proto::TimeUnit::DAY);
+  data_.default_provider_metadata[segment_id] = model_metadata;
   data_.segments_supporting_default_model = {segment_id};
   configs_.at(0)->segments.insert(
       {segment_id, std::make_unique<Config::SegmentMetadata>("UmaName")});
@@ -201,11 +202,6 @@ TEST_F(ServiceProxyImplTest, GetSegmentationInfoFromDefaultModel) {
   SetUpProxy();
 
   ASSERT_TRUE(data_.default_model_providers[segment_id]);
-  EXPECT_CALL(*data_.default_model_providers[segment_id], InitAndFetchModel(_))
-      .WillOnce(Invoke([&](const ModelProvider::ModelUpdatedCallback&
-                               model_updated_callback) {
-        model_updated_callback.Run(segment_id, model_metadata, 1);
-      }));
 
   service_proxy_impl_->OnServiceStatusChanged(true, 7);
   WaitForClientInfo();
@@ -229,14 +225,10 @@ TEST_F(ServiceProxyImplTest, GetSegmentationInfoFromDB) {
       {segment_id, std::make_unique<Config::SegmentMetadata>("UmaName")});
   auto* info =
       AddSegmentInfo(segment_db_.get(), configs_.at(0).get(), segment_id);
+  data_.default_provider_metadata[segment_id] = info->model_metadata();
   SetUpProxy();
 
   ASSERT_TRUE(data_.default_model_providers[segment_id]);
-  EXPECT_CALL(*data_.default_model_providers[segment_id], InitAndFetchModel(_))
-      .WillOnce(Invoke([&](const ModelProvider::ModelUpdatedCallback&
-                               model_updated_callback) {
-        model_updated_callback.Run(segment_id, info->model_metadata(), 1);
-      }));
 
   service_proxy_impl_->OnServiceStatusChanged(true, 7);
   WaitForClientInfo();

@@ -521,7 +521,8 @@ class RemoveUkmDataTester {
       OPTIMIZATION_TARGET_SEGMENTATION_CHROME_LOW_USER_ENGAGEMENT;
 
   RemoveUkmDataTester() : test_utils_(&ukm_recorder_) {
-    test_utils_.PreProfileInit({kSegmentId});
+    test_utils_.PreProfileInit(
+        {{kSegmentId, test_utils_.GetSamplePageLoadMetadata("SELECT 1")}});
     segmentation_platform::UkmDatabaseClient::GetInstance().PreProfileInit();
   }
 
@@ -549,8 +550,7 @@ class RemoveUkmDataTester {
     test_utils_.set_history_service(history_service_);
 
     // Run model overrides to start storing UKM metrics.
-    test_utils_.WaitForModelRequestAndUpdateWith(
-        kSegmentId, test_utils_.GetSamplePageLoadMetadata("SELECT 1"));
+    test_utils_.WaitForUkmObserverRegistration();
 
     return true;
   }

@@ -17,7 +17,7 @@ Config::SegmentMetadata::SegmentMetadata(const std::string& uma_name)
 
 Config::SegmentMetadata::SegmentMetadata(
     const std::string& uma_name,
-    std::unique_ptr<ModelProvider> default_model)
+    std::unique_ptr<DefaultModelProvider> default_model)
     : uma_name(uma_name), default_provider(std::move(default_model)) {}
 
 Config::SegmentMetadata::SegmentMetadata(SegmentMetadata&& other) = default;
@@ -36,8 +36,9 @@ void Config::AddSegmentId(proto::SegmentId segment_id) {
   AddSegmentId(segment_id, nullptr);
 }
 
-void Config::AddSegmentId(proto::SegmentId segment_id,
-                          std::unique_ptr<ModelProvider> default_provider) {
+void Config::AddSegmentId(
+    proto::SegmentId segment_id,
+    std::unique_ptr<DefaultModelProvider> default_provider) {
   auto it =
       segments.insert({segment_id, std::make_unique<SegmentMetadata>(
                                        SegmentIdToHistogramVariant(segment_id),

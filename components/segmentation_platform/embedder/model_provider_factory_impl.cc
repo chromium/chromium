@@ -65,8 +65,8 @@ std::unique_ptr<ModelProvider> ModelProviderFactoryImpl::CreateProvider(
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 }
 
-std::unique_ptr<ModelProvider> ModelProviderFactoryImpl::CreateDefaultProvider(
-    proto::SegmentId segment_id) {
+std::unique_ptr<DefaultModelProvider>
+ModelProviderFactoryImpl::CreateDefaultProvider(proto::SegmentId segment_id) {
   auto test_override =
       TestDefaultModelOverride::GetInstance().TakeOwnershipOfModelProvider(
           segment_id);
@@ -91,7 +91,7 @@ TestDefaultModelOverride& TestDefaultModelOverride::GetInstance() {
   return *instance;
 }
 
-std::unique_ptr<ModelProvider>
+std::unique_ptr<DefaultModelProvider>
 TestDefaultModelOverride::TakeOwnershipOfModelProvider(
     proto::SegmentId target) {
   auto it = providers_.find(target);
@@ -104,7 +104,7 @@ TestDefaultModelOverride::TakeOwnershipOfModelProvider(
 
 void TestDefaultModelOverride::SetModelForTesting(
     proto::SegmentId target,
-    std::unique_ptr<ModelProvider> provider) {
+    std::unique_ptr<DefaultModelProvider> provider) {
   providers_[target] = std::move(provider);
 }
 

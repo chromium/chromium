@@ -74,49 +74,23 @@ UkmDataManagerTestUtils::UkmDataManagerTestUtils(
 UkmDataManagerTestUtils::~UkmDataManagerTestUtils() = default;
 
 void UkmDataManagerTestUtils::PreProfileInit(
-    const std::set<SegmentId>& default_overrides) {
+    const std::map<SegmentId, proto::SegmentationModelMetadata>&
+        default_overrides) {
   // Set test recorder before UkmObserver is created.
   UkmDatabaseClient::GetInstance().set_ukm_recorder_for_testing(ukm_recorder_);
 
-  for (const auto& segment_id : default_overrides) {
-    auto provider = std::make_unique<MockModelProvider>(
-        segment_id,
-        base::BindRepeating(&UkmDataManagerTestUtils::StoreModelUpdateCallback,
-                            weak_factory_.GetWeakPtr(), segment_id));
-    EXPECT_CALL(*provider, ModelAvailable()).WillRepeatedly(Return(true));
+  for (const auto& segment : default_overrides) {
+    auto provider = std::make_unique<MockDefaultModelProvider>(segment.first,
+                                                               segment.second);
 
-    default_overrides_[segment_id] = provider.get();
+    default_overrides_[segment.first] = provider.get();
     // Default model must be overridden before the platform is created:
     TestDefaultModelOverride::GetInstance().SetModelForTesting(
-        segment_id, std::move(provider));
+        segment.first, std::move(provider));
   }
 }
 
-void UkmDataManagerTestUtils::StoreModelUpdateCallback(
-    SegmentId segment_id,
-    const ModelProvider::ModelUpdatedCallback& callback) {
-  callbacks_[segment_id].push_back(callback);
-}
-
-void UkmDataManagerTestUtils::WaitForModelRequestAndUpdateWith(
-    SegmentId segment_id,
-    const proto::SegmentationModelMetadata& metadata) {
-  // Waits for the platform to fetch the default model metadata. At init time,
-  // the platform fetches metadata from default model for:
-  // 1. Signal filters which store the right signals.
-  // 2. Result provider when the database model score is missing.
-  // 3. Maintenance 30s later for cleaning up unused signals.
-  // So, wait for the first 2 requests and then provide the model.
-  while (callbacks_[segment_id].size() < 2) {
-    base::RunLoop().RunUntilIdle();
-  }
-  EXPECT_GE(callbacks_[segment_id].size(), 2u);
-
-  for (auto& callback : callbacks_[segment_id]) {
-    callback.Run(segment_id, metadata, 0);
-  }
-  // The callback runs signal filter, wait for filter to register observers. The
-  // test writing UKM signals will be recorded in database.
+void UkmDataManagerTestUtils::WaitForUkmObserverRegistration() {
   UkmObserver* observer =
       UkmDatabaseClient::GetInstance().ukm_observer_for_testing();
   while (!observer->is_started_for_testing()) {
@@ -167,7 +141,7 @@ bool UkmDataManagerTestUtils::IsUrlInDatabase(const GURL& url) {
   return !!result;
 }
 
-MockModelProvider* UkmDataManagerTestUtils::GetDefaultOverride(
+MockDefaultModelProvider* UkmDataManagerTestUtils::GetDefaultOverride(
     proto::SegmentId segment_id) {
   return default_overrides_[segment_id];
 }

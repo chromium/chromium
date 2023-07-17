@@ -36,7 +36,7 @@ constexpr std::array<MetadataWriter::UMAFeature, 3> kChromeStartUMAFeatures = {
     MetadataWriter::UMAFeature::FromUserAction("MobileNTPMostVisited", 7),
 };
 
-std::unique_ptr<ModelProvider> GetChromeStartAndroidModelV2() {
+std::unique_ptr<DefaultModelProvider> GetChromeStartAndroidModelV2() {
   if (!base::GetFieldTrialParamByFeatureAsBool(
           chrome::android::kStartSurfaceReturnTime, kDefaultModelEnabledParam,
           true)) {
