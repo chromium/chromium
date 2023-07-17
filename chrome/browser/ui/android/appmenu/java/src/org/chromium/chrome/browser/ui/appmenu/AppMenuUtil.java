@@ -46,7 +46,7 @@ public class AppMenuUtil {
                 ObjectAnimator.ofFloat(view, View.TRANSLATION_Y, offsetYPx, 0.f));
         animation.setStartDelay(startDelay);
         animation.setDuration(ENTER_ITEM_DURATION_MS);
-        animation.setInterpolator(Interpolators.LINEAR_OUT_SLOW_IN_INTERPOLATOR);
+        animation.setInterpolator(Interpolators.EMPHASIZED);
 
         animation.addListener(new AnimatorListenerAdapter() {
             @Override

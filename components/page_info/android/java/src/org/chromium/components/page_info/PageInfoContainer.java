@@ -9,12 +9,11 @@ import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AccelerateInterpolator;
-import android.view.animation.DecelerateInterpolator;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import org.chromium.ui.ElidedUrlTextView;
+import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.widget.ChromeImageButton;
 
 /**
@@ -118,7 +117,7 @@ public class PageInfoContainer extends FrameLayout {
         mWrapper.animate()
                 .setDuration(sOutDuration)
                 .alpha(0)
-                .setInterpolator(new AccelerateInterpolator())
+                .setInterpolator(Interpolators.EMPHASIZED_DECELERATE)
                 .withEndAction(() -> {
                     replaceContentView(view, subPageTitle);
                     mWrapper.setScaleX(sScale);
@@ -129,7 +128,7 @@ public class PageInfoContainer extends FrameLayout {
                             .scaleX(1)
                             .scaleY(1)
                             .alpha(1)
-                            .setInterpolator(new DecelerateInterpolator())
+                            .setInterpolator(Interpolators.EMPHASIZED_DECELERATE)
                             .withEndAction(onPreviousPageRemoved);
                 });
     }

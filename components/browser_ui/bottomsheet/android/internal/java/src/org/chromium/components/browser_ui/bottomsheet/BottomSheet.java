@@ -14,8 +14,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
-import android.view.animation.DecelerateInterpolator;
-import android.view.animation.Interpolator;
 import android.widget.FrameLayout;
 
 import androidx.annotation.Nullable;
@@ -36,6 +34,7 @@ import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.ViewUtils;
+import org.chromium.ui.interpolators.Interpolators;
 
 /**
  * This class defines the bottom sheet that has multiple states and a persistently showing toolbar.
@@ -51,11 +50,11 @@ class BottomSheet extends FrameLayout
         implements BottomSheetSwipeDetector.SwipeableBottomSheet, View.OnLayoutChangeListener {
     private static final String TAG = "BottomSheet";
 
-    /**
-     * The base duration of the settling animation of the sheet. 218 ms is a spec for material
-     * design (this is the minimum time a user is guaranteed to pay attention to something).
-     */
-    private static final int BASE_ANIMATION_DURATION_MS = 218;
+    /** Duration for transition to {@link SheetState#FULL}. */
+    private static final int ANIMATION_DURATION_EXPAND_MS = 350;
+
+    /** Duration for transition from {@link SheetState#FULL}. */
+    private static final int ANIMATION_DURATION_SHRINK_MS = 250;
 
     /**
      * The fraction of the way to the next state the sheet must be swiped to animate there when
@@ -78,9 +77,6 @@ class BottomSheet extends FrameLayout
 
     /** A flag to force the small screen state of the bottom sheet. */
     private static Boolean sIsSmallScreenForTesting;
-
-    /** The interpolator that the height animator uses. */
-    private final Interpolator mInterpolator = new DecelerateInterpolator(1.0f);
 
     /** The list of observers of this sheet. */
     private final ObserverList<BottomSheetObserver> mObservers = new ObserverList<>();
@@ -621,8 +617,10 @@ class BottomSheet extends FrameLayout
         mTargetState = targetState;
         mSettleAnimator =
                 ValueAnimator.ofFloat(getCurrentOffsetPx(), getSheetHeightForState(targetState));
-        mSettleAnimator.setDuration(BASE_ANIMATION_DURATION_MS);
-        mSettleAnimator.setInterpolator(mInterpolator);
+        boolean isExpand = targetState == SheetState.FULL;
+        long duration = isExpand ? ANIMATION_DURATION_EXPAND_MS : ANIMATION_DURATION_SHRINK_MS;
+        mSettleAnimator.setDuration(duration);
+        mSettleAnimator.setInterpolator(Interpolators.EMPHASIZED);
 
         // When the animation is canceled or ends, reset the handle to null.
         mSettleAnimator.addListener(new CancelAwareAnimatorListener() {

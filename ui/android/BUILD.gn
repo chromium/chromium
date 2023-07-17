@@ -154,6 +154,7 @@ java_strings_grd("ui_strings_grd") {
 
 android_resources("ui_java_resources") {
   sources = [
+    "java/res/anim/emphasized.xml",
     "java/res/anim/menu_enter.xml",
     "java/res/anim/menu_enter_from_bottom.xml",
     "java/res/anim/menu_enter_from_bottom_left.xml",

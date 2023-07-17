@@ -11,16 +11,21 @@ import android.view.animation.LinearInterpolator;
 import android.view.animation.OvershootInterpolator;
 
 import androidx.core.view.animation.PathInterpolatorCompat;
+import androidx.interpolator.view.animation.FastOutExtraSlowInInterpolator;
 import androidx.interpolator.view.animation.FastOutLinearInInterpolator;
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator;
 import androidx.interpolator.view.animation.LinearOutSlowInInterpolator;
 
 /** Reference to one of each standard interpolator to avoid allocations. */
 public class Interpolators {
+    public static final Interpolator STANDARD_INTERPOLATOR =
+            PathInterpolatorCompat.create(0.2f, 0f, 0f, 1f);
     public static final AccelerateInterpolator ACCELERATE_INTERPOLATOR =
             new AccelerateInterpolator();
     public static final DecelerateInterpolator DECELERATE_INTERPOLATOR =
             new DecelerateInterpolator();
+
+    public static final Interpolator EMPHASIZED = new FastOutExtraSlowInInterpolator();
     public static final Interpolator EMPHASIZED_ACCELERATE =
             PathInterpolatorCompat.create(0.3f, 0f, 0.8f, 0.15f);
     public static final Interpolator EMPHASIZED_DECELERATE =
