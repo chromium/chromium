@@ -695,7 +695,14 @@ IN_PROC_BROWSER_TEST_F(PDFPluginDisabledTest,
   ValidateSingleSuccessfulDownloadAndNoPDFPluginLaunch();
 }
 
-IN_PROC_BROWSER_TEST_F(PDFPluginDisabledTest, IframePdfPlaceholderWithCSP) {
+#if BUILDFLAG(IS_CHROMEOS)
+// TODO(crbug.com/1465295): Deflake and reenable the test.
+#define MAYBE_IframePdfPlaceholderWithCSP DISABLED_IframePdfPlaceholderWithCSP
+#else
+#define MAYBE_IframePdfPlaceholderWithCSP IframePdfPlaceholderWithCSP
+#endif
+IN_PROC_BROWSER_TEST_F(PDFPluginDisabledTest,
+                       MAYBE_IframePdfPlaceholderWithCSP) {
   // Navigate to a page that uses <iframe> to embed a PDF as a plugin.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("/pdf/pdf_iframe_csp.html")));
