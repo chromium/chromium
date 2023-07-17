@@ -3759,13 +3759,13 @@ Try to use a unique password for every site.
         Tap Add then Enter Your Info
       </message>
       <message name="IDS_IOS_WHATS_NEW_INCOGNITO_TABS_FROM_OTHER_APPS_TITLE" desc="Open in incognito tabs from other apps title displayed in What's New. [iOS only]">
-        Open Incognito tabs from other apps
+        Open links from other apps in Incognito
       </message>
       <message name="IDS_IOS_WHATS_NEW_INCOGNITO_TABS_FROM_OTHER_APPS_SUBTITLE" desc="Open in incognito tabs from other apps subtitle displayed in What's New. [iOS only]">
-        You can choose to open incoming URLs from other apps in Incognito Mode.
+        You can choose to open incoming URLs from other apps in Incognito.
       </message>
-      <message name="IDS_IOS_WHATS_NEW_GOT_TO_SETTINGS_BUTTON_TITLE" desc="Text of the primary button to open the iOS settings page. [iOS only]">
-        Go to Settings
+      <message name="IDS_IOS_WHATS_NEW_GOT_TO_SETTINGS_BUTTON_TITLE" desc="Text of the primary button to open the chrome settings page. [iOS only]">
+        Open Settings
       </message>
       <message name="IDS_IOS_WHATS_NEW_INCOGNITO_TABS_FROM_OTHER_APPS_SCREENSHOT_TEXT_OPEN_IN_INCOGNITO" desc="Text in image asking the user to open a url in incognito. [iOS only]">
         Open in Incognito?
@@ -3774,16 +3774,16 @@ Try to use a unique password for every site.
         https://www.amazon.com/Wife-Gifts/s?k=for+Wife+Gifts
       </message>
       <message name="IDS_IOS_WHATS_NEW_INCOGNITO_TABS_FROM_OTHER_APPS_STEP_2" desc="Text of the row indicating the second step of opening in incognito tabs from other apps. [iOS only]">
-        Tap Privacy &amp; Security
+        Tap “Privacy &amp; Security.”
       </message>
       <message name="IDS_IOS_WHATS_NEW_INCOGNITO_TABS_FROM_OTHER_APPS_STEP_3" desc="Text of the row indicating the third step of opening in incognito tabs from other apps. [iOS only]">
-        Toggle on open links in Incognito
+        Turn on "Ask to Open Links from Other Apps in Incognito."
       </message>
       <message name="IDS_IOS_WHATS_NEW_CHROME_ACTIONS_TITLE" desc="Chrome Actions title displayed in What's New. [iOS only]">
-        Chrome Actions
+        Use Chrome Actions on iOS
       </message>
       <message name="IDS_IOS_WHATS_NEW_CHROME_ACTIONS_SUBTITLE" desc="Chrome Actions subtitle displayed in What's New. [iOS only]">
-        Shortcuts in the Omnibox that enable quick access to helpful settings and actions.
+        Shortcuts to quickly modify settings and use features from the address bar.
       </message>
       <message name="IDS_IOS_WHATS_NEW_CHROME_ACTIONS_SCREENSHOT_TEXT_MANAGE_PASSWORDS" desc="Text in image displaying the result of Chrome Actions query. [iOS only]">
         Manage Passwords
@@ -3798,13 +3798,13 @@ Try to use a unique password for every site.
         Passwords
       </message>
       <message name="IDS_IOS_WHATS_NEW_CHROME_ACTIONS_STEP_1" desc="Text of the row indicating the first step of Chrome Actions. [iOS only]">
-        In the address bar, enter a task like “clear my history” or “edit passwords”.
+        In the address bar, enter a task like “clear my history” or “edit passwords.”
       </message>
       <message name="IDS_IOS_WHATS_NEW_CHROME_ACTIONS_STEP_2" desc="Text of the row indicating the second step of Chrome Actions. [iOS only]">
         Tap the shortcut that appears under the address bar.
       </message>
       <message name="IDS_IOS_WHATS_NEW_CHROME_ACTIONS_STEP_3" desc="Text of the row indicating the third step of Chrome Actions. [iOS only]">
-        Complete your task
+        Complete your task.
       </message>
       <message name="IDS_IOS_WHATS_NEW_INCOGNITO_LOCK_TITLE" desc="Incognito Lock title displayed in What's New. [iOS only]">
         Incognito Lock
@@ -3816,10 +3816,13 @@ Try to use a unique password for every site.
         Unlock With Face ID
       </message>
       <message name="IDS_IOS_WHATS_NEW_INCOGNITO_LOCK_STEP_2" desc="Text of the row indicating the second step to turn on Incognito Lock. [iOS only]">
-        Tap “Privacy and Security”.
+        Tap “Privacy &amp; Security.”
       </message>
       <message name="IDS_IOS_WHATS_NEW_CALENDAR_SUBTITLE" desc="Google calendar subtitle displayed in What's New. [iOS only]">
         Create Calendar events directly by clicking on a date in a web page.
+      </message>
+      <message name="IDS_IOS_WHATS_NEW_CALENDAR_TITLE" desc="Google calendar title displayed in What's New. [iOS only]">
+        Create calendar events from dates
       </message>
       <message name="IDS_IOS_WHATS_NEW_CALENDAR_SCREENSHOT_TEXT_CALENDAR" desc="Text in image displaying Google calendar title. [iOS only]">
         Calendar
@@ -3852,22 +3855,22 @@ Try to use a unique password for every site.
         Events
       </message>
       <message name="IDS_IOS_WHATS_NEW_CALENDAR_STEP_1" desc="Text of the row indicating the first step of creating a Google calandar event. [iOS only]">
-        Long press on a date
+        Touch &amp; hold a date.
       </message>
       <message name="IDS_IOS_WHATS_NEW_CALENDAR_STEP_2" desc="Text of the row indicating the second step of creating a Google calandar event. [iOS only]">
-        Select Google or Apple Calendar
+        Select “Add to Google Calendar“ or “Add to Apple Calendar.“
       </message>
       <message name="IDS_IOS_WHATS_NEW_CALENDAR_STEP_3" desc="Text of the row indicating the third step of creating a Google calandar event. [iOS only]">
-        Complete the event and save
+        Edit the event details and tap “Save.“
       </message>
       <message name="IDS_IOS_WHATS_NEW_MINI_MAPS_SUBTITLE" desc="Mini Maps subtitle displayed in What's New. [iOS only]">
-        Use addresses on webpages to get local info and directions.
+        Use addresses on web pages to get local info and directions.
       </message>
       <message name="IDS_IOS_WHATS_NEW_MINI_MAPS_STEP_1" desc="Text of the row indicating the first step of of the Mini Maps feature. [iOS only]">
         Touch &amp; Hold an address.
       </message>
       <message name="IDS_IOS_WHATS_NEW_MINI_MAPS_STEP_3" desc="Text of the row indicating the third step of of the Mini Maps feature. [iOS only]">
-        For route options, tap “Get Directions”
+        For route options, tap “Get Directions.”
       </message>
       <message name="IDS_IOS_WHATS_NEW_MINI_MAPS_SCREENSHOT_TEXT_MAPS" desc="Text in image displaying Google maps title. [iOS only]">
         Maps

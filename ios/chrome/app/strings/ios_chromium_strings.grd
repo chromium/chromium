@@ -615,13 +615,10 @@ Things to consider:
         Chromium couldn't check all passwords. Try again later.
       </message>
       <message name="IDS_IOS_WHATS_NEW_APP_SETTINGS" desc="Chromium version of Text of the row indicating the step of opening the app settings. [iOS only]">
-        Go to Chromium Settings
+        Go to Chromium Settings.
       </message>
       <message name="IDS_IOS_WHATS_NEW_INCOGNITO_LOCK_STEP_3" desc="Chromium version of Text of the row indicating the third step to turn on Incognito Lock. [iOS only]">
-        Turn on “Lock Incognito Tabs When You Close Chromium”.
-      </message>
-      <message name="IDS_IOS_WHATS_NEW_CALENDAR_TITLE" desc="Chromium version of Google calendar title displayed in What's New. [iOS only]">
-        Create Calendar Events on Chromium
+        Turn on “Lock Incognito Tabs When You Close Chromium.”
       </message>
       <message name="IDS_IOS_WHATS_NEW_INCOGNITO_LOCK_SUBTITLE" desc="Chromium version of Incognito Lock subtitle displayed in What's New. [iOS only]">
         Lock your incognito when you leave Chromium or switch to a different app.
@@ -630,7 +627,7 @@ Things to consider:
         Maps in Chromium
       </message>
       <message name="IDS_IOS_WHATS_NEW_MINI_MAPS_STEP_2" desc="Chromium version of Text of the row indicating the second step of of the Mini Maps feature. [iOS only]">
-        Tap “View with Google Maps on Chromium”
+        Tap “View with Google Maps on Chromium.”
       </message>
       <message name="IDS_IOS_CHANGE_COMPROMISED_PASSWORD_DESCRIPTION_BRANDED" desc="Text inside Password Details screen shown when password was compromised. [iOS only]" meaning="Text which explains the user that current password is compromised and it should be changed.">
         Your password was exposed in a data breach. Password Manager recommends changing it now.
