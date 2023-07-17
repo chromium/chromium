@@ -77,7 +77,7 @@ export namespace Script {
     return parseObject(
       params,
       WebDriverBidi.Script.RemovePreloadScriptParametersSchema
-    ) as Protocol.Script.RemovePreloadScriptParameters;
+    );
   }
 
   export function parseCallFunctionParams(params: unknown) {
@@ -94,7 +94,7 @@ export namespace BrowsingContext {
     return parseObject(
       params,
       WebDriverBidi.BrowsingContext.ActivateParametersSchema
-    ) as Protocol.BrowsingContext.ActivateParameters;
+    );
   }
 
   export function parseGetTreeParams(
@@ -214,7 +214,9 @@ export namespace Cdp {
     context: WebDriverBidi.BrowsingContext.BrowsingContextSchema,
   });
 
-  export function parseSendCommandRequest(params: unknown) {
+  export function parseSendCommandRequest(
+    params: unknown
+  ): Protocol.Cdp.SendCommandParameters {
     return parseObject(
       params,
       SendCommandRequestSchema

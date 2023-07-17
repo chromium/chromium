@@ -33,6 +33,7 @@ import {OutgoingBidiMessage} from './OutgoingBidiMessage.js';
 import {BrowsingContextProcessor} from './domains/context/browsingContextProcessor.js';
 import type {BrowsingContextStorage} from './domains/context/browsingContextStorage.js';
 import type {IEventManager} from './domains/events/EventManager.js';
+import {InputProcessor} from './domains/input/InputProcessor.js';
 import type {RealmStorage} from './domains/script/realmStorage.js';
 
 type CommandProcessorEvents = {
@@ -40,7 +41,9 @@ type CommandProcessorEvents = {
 };
 
 export class CommandProcessor extends EventEmitter<CommandProcessorEvents> {
-  #contextProcessor: BrowsingContextProcessor;
+  #browsingContextProcessor: BrowsingContextProcessor;
+  #inputProcessor: InputProcessor;
+
   #eventManager: IEventManager;
   #parser: IBidiParser;
   #logger?: LoggerFn;
@@ -56,8 +59,9 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEvents> {
   ) {
     super();
     this.#eventManager = eventManager;
+    this.#parser = parser;
     this.#logger = logger;
-    this.#contextProcessor = new BrowsingContextProcessor(
+    this.#browsingContextProcessor = new BrowsingContextProcessor(
       cdpConnection,
       selfTargetId,
       eventManager,
@@ -65,7 +69,7 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEvents> {
       realmStorage,
       logger
     );
-    this.#parser = parser;
+    this.#inputProcessor = InputProcessor.create(browsingContextStorage);
   }
 
   static #process_session_status(): Session.StatusResult {
@@ -109,43 +113,43 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEvents> {
       // Browsing Context domain
       // keep-sorted start block=yes
       case 'browsingContext.activate':
-        return this.#contextProcessor.process_browsingContext_activate(
+        return this.#browsingContextProcessor.process_browsingContext_activate(
           this.#parser.parseActivateParams(command.params)
         );
       case 'browsingContext.captureScreenshot':
-        return this.#contextProcessor.process_browsingContext_captureScreenshot(
+        return this.#browsingContextProcessor.process_browsingContext_captureScreenshot(
           this.#parser.parseCaptureScreenshotParams(command.params)
         );
       case 'browsingContext.close':
-        return this.#contextProcessor.process_browsingContext_close(
+        return this.#browsingContextProcessor.process_browsingContext_close(
           this.#parser.parseCloseParams(command.params)
         );
       case 'browsingContext.create':
-        return this.#contextProcessor.process_browsingContext_create(
+        return this.#browsingContextProcessor.process_browsingContext_create(
           this.#parser.parseCreateParams(command.params)
         );
       case 'browsingContext.getTree':
-        return this.#contextProcessor.process_browsingContext_getTree(
+        return this.#browsingContextProcessor.process_browsingContext_getTree(
           this.#parser.parseGetTreeParams(command.params)
         );
       case 'browsingContext.handleUserPrompt':
-        return this.#contextProcessor.process_browsingContext_handleUserPrompt(
+        return this.#browsingContextProcessor.process_browsingContext_handleUserPrompt(
           this.#parser.parseHandleUserPromptParams(command.params)
         );
       case 'browsingContext.navigate':
-        return this.#contextProcessor.process_browsingContext_navigate(
+        return this.#browsingContextProcessor.process_browsingContext_navigate(
           this.#parser.parseNavigateParams(command.params)
         );
       case 'browsingContext.print':
-        return this.#contextProcessor.process_browsingContext_print(
+        return this.#browsingContextProcessor.process_browsingContext_print(
           this.#parser.parsePrintParams(command.params)
         );
       case 'browsingContext.reload':
-        return this.#contextProcessor.process_browsingContext_reload(
+        return this.#browsingContextProcessor.process_browsingContext_reload(
           this.#parser.parseReloadParams(command.params)
         );
       case 'browsingContext.setViewport':
-        return this.#contextProcessor.process_browsingContext_setViewport(
+        return this.#browsingContextProcessor.process_browsingContext_setViewport(
           this.#parser.parseSetViewportParams(command.params)
         );
       // keep-sorted end
@@ -153,11 +157,11 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEvents> {
       // CDP domain
       // keep-sorted start block=yes
       case 'cdp.getSession':
-        return this.#contextProcessor.process_cdp_getSession(
+        return this.#browsingContextProcessor.process_cdp_getSession(
           this.#parser.parseGetSessionParams(command.params)
         );
       case 'cdp.sendCommand':
-        return this.#contextProcessor.process_cdp_sendCommand(
+        return this.#browsingContextProcessor.process_cdp_sendCommand(
           this.#parser.parseSendCommandParams(command.params)
         );
       // keep-sorted end
@@ -165,11 +169,11 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEvents> {
       // Input domain
       // keep-sorted start block=yes
       case 'input.performActions':
-        return this.#contextProcessor.process_input_performActions(
+        return this.#inputProcessor.performActions(
           this.#parser.parsePerformActionsParams(command.params)
         );
       case 'input.releaseActions':
-        return this.#contextProcessor.process_input_releaseActions(
+        return this.#inputProcessor.releaseActions(
           this.#parser.parseReleaseActionsParams(command.params)
         );
       // keep-sorted end
@@ -177,27 +181,27 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEvents> {
       // Script domain
       // keep-sorted start block=yes
       case 'script.addPreloadScript':
-        return this.#contextProcessor.process_script_addPreloadScript(
+        return this.#browsingContextProcessor.process_script_addPreloadScript(
           this.#parser.parseAddPreloadScriptParams(command.params)
         );
       case 'script.callFunction':
-        return this.#contextProcessor.process_script_callFunction(
+        return this.#browsingContextProcessor.process_script_callFunction(
           this.#parser.parseCallFunctionParams(command.params)
         );
       case 'script.disown':
-        return this.#contextProcessor.process_script_disown(
+        return this.#browsingContextProcessor.process_script_disown(
           this.#parser.parseDisownParams(command.params)
         );
       case 'script.evaluate':
-        return this.#contextProcessor.process_script_evaluate(
+        return this.#browsingContextProcessor.process_script_evaluate(
           this.#parser.parseEvaluateParams(command.params)
         );
       case 'script.getRealms':
-        return this.#contextProcessor.process_script_getRealms(
+        return this.#browsingContextProcessor.process_script_getRealms(
           this.#parser.parseGetRealmsParams(command.params)
         );
       case 'script.removePreloadScript':
-        return this.#contextProcessor.process_script_removePreloadScript(
+        return this.#browsingContextProcessor.process_script_removePreloadScript(
           this.#parser.parseRemovePreloadScriptParams(command.params)
         );
       // keep-sorted end

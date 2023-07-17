@@ -250,7 +250,7 @@ function createBidiServer(selfTargetId: string) {
         }
       }
 
-      return {id, method, params, channel};
+      return {id, method, params, channel} as ChromiumBidi.Command;
     }
   }
 

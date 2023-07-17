@@ -63,7 +63,7 @@ export class BidiParserImpl implements BidiParser {
   ): BrowsingContext.SetViewportParameters {
     return Parser.BrowsingContext.parseSetViewportParams(params);
   }
-  // keep-sorted end block=yes
+  // keep-sorted end
 
   // CDP domain
   // keep-sorted start block=yes
@@ -73,7 +73,7 @@ export class BidiParserImpl implements BidiParser {
   parseSendCommandParams(params: unknown): Cdp.SendCommandParameters {
     return Parser.Cdp.parseSendCommandRequest(params);
   }
-  // keep-sorted end block=yes
+  // keep-sorted end
 
   // Input domain
   // keep-sorted start block=yes
@@ -83,7 +83,7 @@ export class BidiParserImpl implements BidiParser {
   parseReleaseActionsParams(params: unknown): Input.ReleaseActionsParameters {
     return Parser.Input.parseReleaseActionsParams(params);
   }
-  // keep-sorted end block=yes
+  // keep-sorted end
 
   // Script domain
   // keep-sorted start block=yes
@@ -109,12 +109,12 @@ export class BidiParserImpl implements BidiParser {
   ): Script.RemovePreloadScriptParameters {
     return Parser.Script.parseRemovePreloadScriptParams(params);
   }
-  // keep-sorted end block=yes
+  // keep-sorted end
 
   // Session domain
   // keep-sorted start block=yes
   parseSubscribeParams(params: unknown): Session.SubscriptionRequest {
     return Parser.Session.parseSubscribeParams(params);
   }
-  // keep-sorted end block=yes
+  // keep-sorted end
 }

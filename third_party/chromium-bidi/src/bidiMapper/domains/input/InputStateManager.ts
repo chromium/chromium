@@ -20,22 +20,19 @@ import type {BrowsingContextImpl} from '../context/browsingContextImpl.js';
 
 import {InputState} from './InputState.js';
 
-export class InputStateManager {
-  // We use a weak map here as specified here:
-  // https://www.w3.org/TR/webdriver/#dfn-browsing-context-input-state-map
-  #states = new WeakMap<BrowsingContextImpl, InputState>();
-
-  get(context: BrowsingContextImpl) {
+// We use a weak map here as specified here:
+// https://www.w3.org/TR/webdriver/#dfn-browsing-context-input-state-map
+export class InputStateManager extends WeakMap<
+  BrowsingContextImpl,
+  InputState
+> {
+  override get(context: BrowsingContextImpl): InputState {
     assert(context.isTopLevelContext());
-    let state = this.#states.get(context);
-    if (!state) {
-      state = new InputState();
-      this.#states.set(context, state);
-    }
-    return state;
-  }
 
-  dispose(context: BrowsingContextImpl) {
-    this.#states.delete(context);
+    if (!this.has(context)) {
+      this.set(context, new InputState());
+    }
+
+    return super.get(context)!;
   }
 }

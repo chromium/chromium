@@ -54,7 +54,7 @@ export interface IBidiParser {
   // keep-sorted start block=yes
   parsePerformActionsParams(params: unknown): Input.PerformActionsParameters;
   parseReleaseActionsParams(params: unknown): Input.ReleaseActionsParameters;
-  // keep-sorted end block=yes
+  // keep-sorted end
 
   // Script domain
   // keep-sorted start block=yes
