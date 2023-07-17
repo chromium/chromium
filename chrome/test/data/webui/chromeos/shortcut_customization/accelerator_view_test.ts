@@ -488,6 +488,21 @@ suite('acceleratorViewTest', function() {
     assertEquals(
         'shortcut-customization-keys:display-brightness-up',
         keyIconElement2.icon);
+
+    // Simulate SHIFT + MUTE_MICROPHONE.
+    viewElement.dispatchEvent(new KeyboardEvent('keydown', {
+      key: '',
+      code: '',
+      keyCode: 159,
+      shiftKey: true,
+    }));
+    await flush();
+
+    assertEquals('MicrophoneMuteToggle', pendingKey.key);
+    const keyIconElement3 =
+        pendingKey.shadowRoot!.querySelector('#key-icon') as IronIconElement;
+    assertEquals(
+        'shortcut-customization-keys:microphone-mute', keyIconElement3.icon);
   });
 
   test('GetAriaLabels', async () => {

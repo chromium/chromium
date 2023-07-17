@@ -20,7 +20,7 @@ import {getShortcutProvider} from './mojo_interface_provider.js';
 import {mojoString16ToString} from './mojo_utils.js';
 import {ModifierKeyCodes} from './shortcut_input.js';
 import {Accelerator, AcceleratorConfigResult, AcceleratorSource, AcceleratorState, Modifier, ShortcutProviderInterface, StandardAcceleratorInfo} from './shortcut_types.js';
-import {createEmptyAcceleratorInfo, getAccelerator, getModifiersForAcceleratorInfo, isCustomizationDisabled, isFunctionKey, isStandardAcceleratorInfo, keyCodeToModifier, LWIN_KEY, META_KEY} from './shortcut_utils.js';
+import {createEmptyAcceleratorInfo, getAccelerator, getModifiersForAcceleratorInfo, isCustomizationDisabled, isFunctionKey, isStandardAcceleratorInfo, keyCodeToModifier, LWIN_KEY, META_KEY, unidentifiedKeyCodeToKey} from './shortcut_utils.js';
 
 export interface AcceleratorViewElement {
   $: {
@@ -423,6 +423,10 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
                               // 'LaunchApplication1' and will display as
                               // 'overview' icon.
         return 'LaunchApplication1';
+      case '':
+        // If there is no `code`, check the `key`. If the `key` is
+        // `unidentified`, we need to manually lookup the key.
+        return unidentifiedKeyCodeToKey[e.keyCode] || e.key;
       default:  // All other keys: Use the original e.key as keyDisplay.
         return e.key;
     }

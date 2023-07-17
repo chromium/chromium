@@ -29,6 +29,13 @@ export const keyCodeToModifier: {[keyCode: number]: number} = {
   92: Modifier.COMMAND,
 };
 
+export const unidentifiedKeyCodeToKey: {[keyCode: number]: string} = {
+  159: 'MicrophoneMuteToggle',
+  237: 'EmojiPicker',
+  238: 'ToggleDictation',
+  239: 'ViewAllApps',
+};
+
 // Returns true if shortcut customization is disabled via the feature flag.
 export const isCustomizationDisabled = (): boolean => {
   return !loadTimeData.getBoolean('isCustomizationEnabled');
