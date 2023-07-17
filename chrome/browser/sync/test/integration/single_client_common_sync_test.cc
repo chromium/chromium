@@ -116,8 +116,16 @@ IN_PROC_BROWSER_TEST_F(SingleClientCommonSyncTest,
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_LINUX)
+// TODO(crbug.com/1465272): Deflake and reenable the test.
+#define MAYBE_ShouldGetTypesWithUnsyncedDataFromSyncService \
+  DISABLED_ShouldGetTypesWithUnsyncedDataFromSyncService
+#else
+#define MAYBE_ShouldGetTypesWithUnsyncedDataFromSyncService \
+  ShouldGetTypesWithUnsyncedDataFromSyncService
+#endif
 IN_PROC_BROWSER_TEST_F(SingleClientCommonSyncTest,
-                       ShouldGetTypesWithUnsyncedDataFromSyncService) {
+                       MAYBE_ShouldGetTypesWithUnsyncedDataFromSyncService) {
   const std::string kBookmarkFolderTitle = "title1";
 
   ASSERT_TRUE(SetupClients());
