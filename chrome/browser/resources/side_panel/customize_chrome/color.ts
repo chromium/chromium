@@ -34,10 +34,9 @@ export class ColorElement extends PolymerElement {
         value: 0,
         observer: 'onColorChange_',
       },
-      foregroundColor: {
-        type: Object,
-        value: 0,
-        observer: 'onColorChange_',
+      backgroundColorHidden: {
+        type: Boolean,
+        reflectToAttribute: true,
       },
       baseColor: {
         type: Object,
@@ -48,18 +47,25 @@ export class ColorElement extends PolymerElement {
         type: Boolean,
         reflectToAttribute: true,
       },
-      backgroundColorHidden: {
+      checkmarkBorderHidden: {
         type: Boolean,
+        value: false,
         reflectToAttribute: true,
+      },
+      foregroundColor: {
+        type: Object,
+        value: 0,
+        observer: 'onColorChange_',
       },
     };
   }
 
   public backgroundColor: SkColor;
-  public foregroundColor: SkColor;
+  public backgroundColorHidden: boolean;
   public baseColor: SkColor;
   public checked: boolean;
-  public backgroundColorHidden: boolean;
+  public checkmarkBorderHidden: boolean;
+  public foregroundColor: SkColor;
 
   override connectedCallback() {
     super.connectedCallback();

@@ -80,6 +80,7 @@
         aria-label="$i18n{defaultColorName}"
         role="radio"
         checked="[[isDefaultColorSelected_]]"
+        checkmark-border-hidden="[[isChromeRefresh2023_]]"
         aria-checked$="[[boolToString_(isDefaultColorSelected_)]]"
         tabindex$="[[tabIndex_(isDefaultColorSelected_)]]"
         on-click="onDefaultColorClick_"
@@ -96,6 +97,7 @@
         aria-label="$i18n{greyDefaultColorName}"
         role="radio"
         checked="[[isGreyDefaultColorSelected_]]"
+        checkmark-border-hidden="[[isChromeRefresh2023_]]"
         aria-checked$="[[boolToString_(isGreyDefaultColorSelected_)]]"
         tabindex$="[[tabIndex_(isGreyDefaultColorSelected_)]]"
         on-click="onGreyDefaultColorClick_"
@@ -111,6 +113,7 @@
         aria-label="$i18n{mainColorName}"
         role="radio"
         checked="[[isMainColorSelected_]]"
+        checkmark-border-hidden="[[isChromeRefresh2023_]]"
         aria-checked$="[[boolToString_(isMainColorSelected_)]]"
         tabindex$="[[tabIndex_(isMainColorSelected_)]]"
         on-click="onMainColorClick_"
@@ -128,6 +131,7 @@
         aria-label$="[[item.name]]"
         role="radio"
         checked="[[isChromeColorSelected_(item.seed, item.variant, selectedColor_)]]"
+        checkmark-border-hidden="[[isChromeRefresh2023_]]"
         aria-checked$=
             "[[getChromeColorCheckedStatus_(item.seed, item.variant, selectedColor_)]]"
         tabindex$="[[chromeColorTabIndex_(item.seed, item.variant, selectedColor_)]]"
@@ -148,6 +152,7 @@
         foreground-color="[[customColor_.foreground]]"
         background-color-hidden="[[!showCustomColorBackgroundColor_]]"
         checked="[[isCustomColorSelected_]]"
+        checkmark-border-hidden="[[isChromeRefresh2023_]]"
         basic-color>
     </customize-chrome-color>
     <div id="colorPickerIcon"></div>
