@@ -4381,8 +4381,10 @@ base::TimeDelta RenderProcessHostImpl::GetChildProcessIdleTime() {
   return base::TimeTicks::Now() - child_process_activity_time_;
 }
 
-void RenderProcessHostImpl::FilterURL(bool empty_allowed, GURL* url) {
-  FilterURL(this, empty_allowed, url);
+RenderProcessHost::FilterURLResult RenderProcessHostImpl::FilterURL(
+    bool empty_allowed,
+    GURL* url) {
+  return FilterURL(this, empty_allowed, url);
 }
 
 void RenderProcessHostImpl::EnableAudioDebugRecordings(
@@ -4479,11 +4481,13 @@ void RenderProcessHostImpl::UnregisterCreationObserver(
 }
 
 // static
-void RenderProcessHostImpl::FilterURL(RenderProcessHost* rph,
-                                      bool empty_allowed,
-                                      GURL* url) {
-  if (empty_allowed && url->is_empty())
-    return;
+RenderProcessHost::FilterURLResult RenderProcessHostImpl::FilterURL(
+    RenderProcessHost* rph,
+    bool empty_allowed,
+    GURL* url) {
+  if (empty_allowed && url->is_empty()) {
+    return FilterURLResult::kAllowed;
+  }
 
   if (!url->is_valid()) {
     // Have to use about:blank for the denied case, instead of an empty GURL.
@@ -4497,7 +4501,7 @@ void RenderProcessHostImpl::FilterURL(RenderProcessHost* rph,
                                   BlockedURLReason::kInvalidURL);
 
     *url = GURL(kBlockedURL);
-    return;
+    return FilterURLResult::kBlocked;
   }
 
   ChildProcessSecurityPolicyImpl* policy =
@@ -4514,7 +4518,9 @@ void RenderProcessHostImpl::FilterURL(RenderProcessHost* rph,
                                   BlockedURLReason::kFailedCanRequestURLCheck);
 
     *url = GURL(kBlockedURL);
+    return FilterURLResult::kBlocked;
   }
+  return FilterURLResult::kAllowed;
 }
 
 // static

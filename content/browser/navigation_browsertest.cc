@@ -3531,6 +3531,112 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
+                       SameDocumentLongURLHashNavigation) {
+  const GURL url(embedded_test_server()->GetURL("/empty.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  std::string long_url = "#";
+  long_url.append(2 * url::kMaxURLChars, 'a');
+  EXPECT_TRUE(ExecJs(shell(), JsReplace("location = $1", long_url)));
+
+  // If the browser process receives a request to same-document navigate to a
+  // too long URL (>2 MB), it simply pretends that the renderer performed a
+  // same-document navigation to the currently committed URL (previously, it was
+  // mapped to about:blank#blocked, which could be confusing).
+  // TODO(crbug.com/1464018): Ideally this would be blocked in the renderer
+  // instead of having special browser-side handling.
+  EXPECT_EQ(url, web_contents()->GetLastCommittedURL());
+  // The renderer process enforces no such limit and should consider the
+  // same-document navigation to have successfully completed.
+  EXPECT_EQ(long_url, EvalJs(web_contents(), "location.hash"));
+}
+
+IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, SameDocumentLongURLPushState) {
+  const GURL url(embedded_test_server()->GetURL("/empty.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  std::string long_url = "#";
+  long_url.append(2 * url::kMaxURLChars, 'a');
+  EXPECT_TRUE(ExecJs(
+      shell(), JsReplace("history.pushState('state', '', $1)", long_url)));
+
+  // If the browser process receives a request to same-document navigate to a
+  // too long URL (>2 MB), it simply pretends that the renderer performed a
+  // same-document navigation to the currently committed URL (previously, it was
+  // mapped to about:blank#blocked, which could be confusing).
+  // TODO(crbug.com/1464018): Ideally this would be blocked in the renderer
+  // instead of having special browser-side handling.
+  EXPECT_EQ(url, web_contents()->GetLastCommittedURL());
+  // The renderer process enforces no such limit and should consider the
+  // same-document navigation to have successfully completed.
+  EXPECT_EQ(long_url, EvalJs(web_contents(), "location.hash"));
+}
+
+IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
+                       SameDocumentLongURL204PopupHashNavigation) {
+  const GURL url(embedded_test_server()->GetURL("/empty.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  // Open a popup window with a navigation that will result in a 204. This will
+  // result in a WebContents where the last committed URL is the empty URL.
+  const GURL nocontent_url(embedded_test_server()->GetURL("/nocontent"));
+  ShellAddedObserver new_shell_observer;
+  EXPECT_TRUE(ExecJs(shell(), JsReplace("window.open($1);", nocontent_url)));
+  Shell* opened_shell = new_shell_observer.GetShell();
+  EXPECT_TRUE(WaitForLoadStop(opened_shell->web_contents()));
+
+  std::string long_url = "#";
+  long_url.append(2 * url::kMaxURLChars, 'a');
+  EXPECT_TRUE(ExecJs(opened_shell, JsReplace("location = $1", long_url)));
+
+  // Hash navigations in a popup in this state (incorrectly) perform a
+  // cross-document navigation. This is because the check for whether or not to
+  // perform a same-document navigation uses the initial empty Document's actual
+  // URL (which is, surprisingly enough, the empty URL) rather than URL the web
+  // platform generally sees (which is about:blank). As a result, the check ends
+  // up comparing the empty URL against the completed URL of about:blank#...,
+  // which means the URLs are not equal ignoring fragments, and Blink performs a
+  // cross-document navigation instead.
+  //
+  // TODO(crbug.com/1464443): This probably should be fixed to be treated as a
+  // same-document navigation.
+  EXPECT_TRUE(WaitForLoadStop(opened_shell->web_contents()));
+  EXPECT_EQ(GURL(kBlockedURL),
+            opened_shell->web_contents()->GetLastCommittedURL());
+  EXPECT_EQ(kBlockedURL, EvalJs(opened_shell->web_contents(), "location.href"));
+}
+
+IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
+                       SameDocumentLongURL204PopupPushState) {
+  const GURL url(embedded_test_server()->GetURL("/empty.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  // Open a popup window with a navigation that will result in a 204. This will
+  // result in a WebContents where the last committed URL is the empty URL.
+  const GURL nocontent_url(embedded_test_server()->GetURL("/nocontent"));
+  ShellAddedObserver new_shell_observer;
+  EXPECT_TRUE(ExecJs(shell(), JsReplace("window.open($1);", nocontent_url)));
+  Shell* opened_shell = new_shell_observer.GetShell();
+  EXPECT_TRUE(WaitForLoadStop(opened_shell->web_contents()));
+
+  std::string long_url = "#";
+  long_url.append(2 * url::kMaxURLChars, 'a');
+  // Blink incorrectly disallows pushState() because the security check is
+  // broken, since the security check uses the initial empty Document's actual
+  // URL (which is, surprisingly enough, the empty URL) rather than the URL the
+  // web platform generally sees (which is about:blank).
+  //
+  // TODO(crbug.com/1464443): This pushState() should probably be allowed.
+  EXPECT_EQ(
+      "SecurityError",
+      EvalJs(
+          opened_shell,
+          JsReplace(
+              "try { history.pushState('state', '', $1) } catch (e) { e.name }",
+              long_url)));
+}
+
+IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
                        NonDeterministicUrlRewritesUseLastUrl) {
   // Lambda expressions cannot be assigned to function pointers if they use
   // captures, so track how many times the handler is called using a non-const

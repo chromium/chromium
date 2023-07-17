@@ -361,10 +361,23 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
   // 10 milliseconds.
   virtual base::TimeDelta GetChildProcessIdleTime() = 0;
 
-  // Checks that the given renderer can request |url|, if not it sets it to
-  // about:blank.
-  // |empty_allowed| must be set to false for navigations for security reasons.
-  virtual void FilterURL(bool empty_allowed, GURL* url) = 0;
+  // Checks that the given renderer is allowed to request `url`; if not, `url`
+  // will be set to "about:blank#blocked".
+  //
+  // `empty_allowed` must be `false` when filtering URLs for navigations. The
+  // browser typically treats a navigation to an empty URL as a navigation to
+  // the home page, but this is often a privileged page, e.g. chrome://newtab/,
+  // which is a security problem that this method is specifically trying to
+  // block.
+  //
+  // This method return whether or not the URL was blocked so that callers can
+  // distinguish between the blocked case and a literal request to navigate to
+  // "about:blank#blocked".
+  enum class FilterURLResult {
+    kAllowed,
+    kBlocked,
+  };
+  virtual FilterURLResult FilterURL(bool empty_allowed, GURL* url) = 0;
 
   virtual void EnableAudioDebugRecordings(const base::FilePath& file) = 0;
   virtual void DisableAudioDebugRecordings() = 0;

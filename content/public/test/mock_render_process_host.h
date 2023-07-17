@@ -159,7 +159,7 @@ class MockRenderProcessHost : public RenderProcessHost {
   IPC::ChannelProxy* GetChannel() override;
   void AddFilter(BrowserMessageFilter* filter) override;
   base::TimeDelta GetChildProcessIdleTime() override;
-  void FilterURL(bool empty_allowed, GURL* url) override;
+  FilterURLResult FilterURL(bool empty_allowed, GURL* url) override;
   void EnableAudioDebugRecordings(const base::FilePath& file) override;
   void DisableAudioDebugRecordings() override;
   WebRtcStopRtpDumpCallback StartRtpDump(

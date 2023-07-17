@@ -5619,9 +5619,8 @@ void RenderFrameHostImpl::MaybeStartOutermostMainFrameNavigation(
   for (const auto& url : urls) {
     GURL filtered_url(url);
 
-    GetProcess()->FilterURL(/*empty_allowed=*/false, &filtered_url);
-
-    if (filtered_url.spec() == kBlockedURL) {
+    if (GetProcess()->FilterURL(/*empty_allowed=*/false, &filtered_url) ==
+        RenderProcessHost::FilterURLResult::kBlocked) {
       continue;
     }
 
@@ -12232,8 +12231,27 @@ bool RenderFrameHostImpl::ValidateDidCommitParams(
   // renderer to load the URL and grant the renderer the privileges to request
   // the URL.  To prevent this attack, we block the renderer from inserting
   // banned URLs into the navigation controller in the first place.
-  process->FilterURL(false, &params->url);
+  const RenderProcessHost::FilterURLResult url_filter_result =
+      process->FilterURL(false, &params->url);
   process->FilterURL(true, &params->referrer->url);
+
+  if (is_same_document_navigation &&
+      url_filter_result == RenderProcessHost::FilterURLResult::kBlocked) {
+    // For same-document navigations, keeping about:blank#blocked can lead to
+    // some really strange results with navigating back/forward and session
+    // restore. So if the URL was filtered, replace it with the current URL:
+    // this still ends up not quite matching the state in the renderer, but at
+    // least the current URL is in the current origin, and will result in less
+    // confusion in the browser process.
+    //
+    // Note that this would be unsafe for cross-document navigations, which can
+    // be cross-origin.
+    //
+    // TODO(crbug.com/1464018): It would be nice to catch and block this in the
+    // renderer process, so the browser process could just treat this as a 'bad
+    // message received' situation.
+    params->url = GetLastCommittedURL();
+  }
 
   // Without this check, the renderer can trick the browser into using
   // filenames it can't access in a future session restore.
