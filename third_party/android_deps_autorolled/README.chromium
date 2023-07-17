@@ -3,8 +3,8 @@ Short Name: android_deps_autorolled
 Version: 1
 License: Refer to additional_readme_paths.json
 License Android Compatible: yes
-License File: NOT_SHIPPED
 Security Critical: no
+Shipped: no
 
 Description:
 A gradle-specified repository for autorolled Android and java dependencies.
