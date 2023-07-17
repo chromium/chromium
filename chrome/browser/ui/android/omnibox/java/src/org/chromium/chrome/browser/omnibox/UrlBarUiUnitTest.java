@@ -164,6 +164,30 @@ public class UrlBarUiUnitTest {
     @Test
     @SmallTest
     @Feature("Omnibox")
+    public void testVisibleTextPrefixHint_ShortTld_LongPath_WithRtl() throws Exception {
+        final String domain = "www.test.com";
+        final String path = "/" + TextUtils.join("", Collections.nCopies(500, "ت"));
+        updateUrlBarText(domain + path, UrlBar.ScrollType.SCROLL_TO_TLD, domain.length());
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            float scrollXPosForEndOfUrlText =
+                    mUrlBar.getLayout().getPrimaryHorizontal(mUrlBar.getText().length());
+            assertThat(scrollXPosForEndOfUrlText,
+                    Matchers.greaterThan((float) mUrlBar.getMeasuredWidth()));
+        });
+
+        final CharSequence prefixHint = getVisibleTextPrefixHint();
+        Assert.assertNull(prefixHint);
+
+        // Append a string to the already long initial text and validate the prefix doesn't change.
+        updateUrlBarText(getUrlText() + "bbbbbbbbbbbbbbbbbbbbbbb", UrlBar.ScrollType.SCROLL_TO_TLD,
+                domain.length());
+        Assert.assertNull(prefixHint);
+    }
+
+    @Test
+    @SmallTest
+    @Feature("Omnibox")
     public void testVisibleTextPrefixHint_LongTld() throws Exception {
         final String domain = "www." + TextUtils.join("", Collections.nCopies(500, "a")) + ".com";
         updateUrlBarText(domain, UrlBar.ScrollType.SCROLL_TO_TLD, domain.length());
