@@ -586,7 +586,7 @@ class BookmarkManagerMediator
 
     @Override
     public void notifyStateChange(BookmarkUiObserver observer) {
-        int state = getCurrentUiMode();
+        final @BookmarkUiMode int state = getCurrentUiMode();
         observer.onUiModeChanged(state);
         switch (state) {
             case BookmarkUiMode.LOADING:
