@@ -575,7 +575,6 @@ chrome_java_resources = [
   "java/res/layout/password_manager_dialog_with_help_button.xml",
   "java/res/layout/password_no_result.xml",
   "java/res/layout/passwords_error_dialog.xml",
-  "java/res/layout/passwords_progress_dialog.xml",
   "java/res/layout/power_bookmark_tag_chip_list.xml",
   "java/res/layout/powered_by_chrome_footer.xml",
   "java/res/layout/radio_button_group_homepage_preference.xml",

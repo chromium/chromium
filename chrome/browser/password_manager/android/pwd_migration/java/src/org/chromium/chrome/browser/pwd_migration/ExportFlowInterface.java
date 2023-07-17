@@ -39,6 +39,11 @@ public interface ExportFlowInterface {
          * @param intent The intent to start an activity.
          */
         void runCreateFileOnDiskIntent(Intent intent);
+
+        /**
+         * Performs the actions that should happen after the export flow has successfully finished.
+         */
+        default void onExportFlowSucceeded(){};
     }
 
     /**

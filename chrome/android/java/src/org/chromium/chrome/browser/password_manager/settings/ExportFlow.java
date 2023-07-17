@@ -564,6 +564,7 @@ public class ExportFlow implements ExportFlowInterface {
                             HistogramExportResult.WRITE_FAILED);
                 }
                 mExportFileUri = null;
+                mDelegate.onExportFlowSucceeded();
             }
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
