@@ -26,7 +26,7 @@ using ServerPredictionOverrides = base::flat_map<
 // `ServerPredictionOverrides`.
 //
 // These overrides can be specified as follows:
-// chrome --enables-feature=AutofillOverridePredictions:spec/SPECIFICATION
+// chrome --enable-features=AutofillOverridePredictions:spec/SPECIFICATION
 //
 // Here SPECIFICATION is a string of the following format:
 // override1-override2-override3-...

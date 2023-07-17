@@ -380,7 +380,7 @@ BASE_FEATURE(kAutofillLabelAffixRemoval,
 
 // Allows passing a set of overrides for Autofill server predictions.
 // Example command line to override server predictions manually:
-// chrome --enables-feature=AutofillOverridePredictions:spec/1_2_4-7_8_9
+// chrome --enable-features=AutofillOverridePredictions:spec/1_2_4-7_8_9
 // This creates two manual overrides that supersede server predictions as
 // follows:
 // * The server prediction for the field with signature 2 in the form with
