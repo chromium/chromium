@@ -1075,13 +1075,14 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
   };
 
   if (newModule) {
-    // Replace currently visible module.
+    // Replace last Set Up List item with "All Set" hero cell.
     NSUInteger moduleIndexToReplace =
-        [self indexForMagicStackModule:[self currentlyShownModule]];
+        [[viewIndicesToRemove lastObject] integerValue];
+    // Do not remove the replaced module.
+    [viewIndicesToRemove removeObjectAtIndex:moduleIndexToReplace];
     [self replaceModuleAtIndex:moduleIndexToReplace
                     withModule:newModule
                     completion:removeRemainingModules];
-    [viewIndicesToRemove removeObjectAtIndex:moduleIndexToReplace];
   } else {
     removeRemainingModules();
   }

@@ -38,6 +38,7 @@
 #import "net/test/embedded_test_server/embedded_test_server.h"
 #import "net/test/embedded_test_server/http_request.h"
 #import "net/test/embedded_test_server/http_response.h"
+#import "ui/base/l10n/l10n_util.h"
 #import "ui/strings/grit/ui_strings.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -155,9 +156,13 @@ void TapMoreButtonIfVisible() {
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
-  config.features_disabled.push_back(kMagicStack);
   config.features_enabled.push_back(kEnableFeedAblation);
   config.features_enabled.push_back(kIOSSetUpList);
+  if ([self isRunningTest:@selector(testMagicStackSetUpListCompleteAllItems)]) {
+    config.features_enabled.push_back(kMagicStack);
+  } else {
+    config.features_disabled.push_back(kMagicStack);
+  }
   return config;
 }
 
@@ -483,6 +488,102 @@ void TapMoreButtonIfVisible() {
   [[EarlGrey selectElementWithMatcher:syncView] assertWithMatcher:grey_nil()];
 }
 
+- (void)testMagicStackSetUpListCompleteAllItems {
+  [self prepareToTestSetUpListInMagicStack];
+
+  // Tap the signin item.
+  TapView(set_up_list::kSignInItemID);
+  [ChromeEarlGreyUI waitForAppToIdle];
+  TapPromoStyleSecondaryActionButton();
+
+  ConditionBlock condition = ^{
+    NSError* error = nil;
+    [[EarlGrey
+        selectElementWithMatcher:grey_allOf(
+                                     grey_accessibilityID(
+                                         set_up_list::kDefaultBrowserItemID),
+                                     grey_sufficientlyVisible(), nil)]
+        assertWithMatcher:grey_notNil()
+                    error:&error];
+    return error == nil;
+  };
+  GREYAssert(
+      base::test::ios::WaitUntilConditionOrTimeout(base::Seconds(1), condition),
+      @"Timeout waiting for Default Browser Set Up List Item expired.");
+  // Tap the default browser item.
+  TapView(set_up_list::kDefaultBrowserItemID);
+  // Ensure the Default Browser Promo is displayed.
+  id<GREYMatcher> defaultBrowserView = grey_accessibilityID(
+      first_run::kFirstRunDefaultBrowserScreenAccessibilityIdentifier);
+  [[EarlGrey selectElementWithMatcher:defaultBrowserView]
+      assertWithMatcher:grey_notNil()];
+  // Dismiss Default Browser Promo.
+  TapPromoStyleSecondaryActionButton();
+
+  condition = ^{
+    NSError* error = nil;
+    [[EarlGrey
+        selectElementWithMatcher:grey_allOf(grey_accessibilityID(
+                                                set_up_list::kAutofillItemID),
+                                            grey_sufficientlyVisible(), nil)]
+        assertWithMatcher:grey_notNil()
+                    error:&error];
+    return error == nil;
+  };
+  GREYAssert(
+      base::test::ios::WaitUntilConditionOrTimeout(base::Seconds(1), condition),
+      @"Timeout waiting for Autofill Set Up List Item expired.");
+  // Tap the autofill item.
+  TapView(set_up_list::kAutofillItemID);
+  // TODO - verify the CPE promo is displayed.
+  id<GREYMatcher> CPEPromoView =
+      grey_accessibilityID(@"kCredentialProviderPromoAccessibilityId");
+  [[EarlGrey selectElementWithMatcher:CPEPromoView]
+      assertWithMatcher:grey_notNil()];
+  // Dismiss the CPE promo.
+  TapSecondaryActionButton();
+  // Verify the All Set item is complete.
+  condition = ^{
+    NSError* error = nil;
+    [[EarlGrey
+        selectElementWithMatcher:
+            grey_allOf(grey_accessibilityID(l10n_util::GetNSString(
+                           IDS_IOS_CONTENT_SUGGESTIONS_SHORTCUTS_MODULE_TITLE)),
+                       grey_sufficientlyVisible(), nil)]
+        assertWithMatcher:grey_sufficientlyVisible()
+                    error:&error];
+    return error == nil;
+  };
+  GREYAssert(
+      base::test::ios::WaitUntilConditionOrTimeout(base::Seconds(1), condition),
+      @"Timeout waiting for the Magic Stack to scroll to next module expired.");
+
+  if (![ChromeEarlGrey isIPadIdiom]) {
+    // Rotate so Magic Stack on iphone so underlying UIScrollView is reachable
+    // for scrolling.
+    [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationLandscapeLeft
+                                  error:nil];
+    // Bring Magic Stack into view
+    [[[EarlGrey
+        selectElementWithMatcher:
+            grey_allOf(grey_accessibilityID(
+                           kMagicStackScrollViewAccessibilityIdentifier),
+                       grey_sufficientlyVisible(), nil)]
+           usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 200)
+        onElementWithMatcher:chrome_test_util::NTPCollectionView()]
+        assertWithMatcher:grey_notNil()];
+  }
+
+  [[[EarlGrey
+      selectElementWithMatcher:grey_allOf(grey_accessibilityID(
+                                              set_up_list::kAllSetItemID),
+                                          grey_sufficientlyVisible(), nil)]
+         usingSearchAction:grey_scrollInDirection(kGREYDirectionLeft, 200)
+      onElementWithMatcher:grey_accessibilityID(
+                               kMagicStackScrollViewAccessibilityIdentifier)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
 #pragma mark - Test utils
 
 // Sets up the test case to test SetUpList.
@@ -499,6 +600,16 @@ void TapMoreButtonIfVisible() {
   // SetUpList is visible
   [[EarlGrey selectElementWithMatcher:SetUpList()]
       assertWithMatcher:grey_notNil()];
+}
+
+- (void)prepareToTestSetUpListInMagicStack {
+  [ChromeEarlGreyAppInterface writeFirstRunSentinel];
+  [ChromeEarlGreyAppInterface clearDefaultBrowserPromoData];
+  [ChromeEarlGrey resetDataForLocalStatePref:
+                      prefs::kIosCredentialProviderPromoLastActionTaken];
+  [NewTabPageAppInterface resetSetUpListPrefs];
+  [ChromeEarlGrey closeAllTabs];
+  [ChromeEarlGrey openNewTab];
 }
 
 // Setup a most visited tile, and open the context menu by long pressing on it.
