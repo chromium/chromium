@@ -380,6 +380,12 @@ ci.builder(
                 "device_os": "PQ3A.190801.002",
                 "max_uid_threshold": 18000,
             },
+            {
+                "pool": "chromium.tests",
+                "device_type": "walleye",
+                "device_os": "QQ1A.191205.008",
+                "max_uid_threshold": 18000,
+            },
             # Used by GPU team
             {
                 "pool": "chromium.tests.gpu",
