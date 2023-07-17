@@ -26,6 +26,7 @@
 #include "base/i18n/time_formatting.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "third_party/icu/source/i18n/unicode/datefmt.h"
 #include "third_party/icu/source/i18n/unicode/dtptngen.h"
 #include "third_party/icu/source/i18n/unicode/smpdtfmt.h"
@@ -33,6 +34,7 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
 #include "ui/events/event.h"
 #include "ui/events/types/event_type.h"
@@ -108,12 +110,20 @@ VerticalDateView::VerticalDateView()
   UpdateText();
   text_label_->SetBorder(views::CreateEmptyBorder(
       gfx::Insets::TLBR(kVerticalDateVerticalPadding, 0, 0, 0)));
+  UpdateIconAndLabelColorId(cros_tokens::kCrosSysOnSurface);
 }
 
 VerticalDateView::~VerticalDateView() = default;
 
 void VerticalDateView::OnThemeChanged() {
   views::View::OnThemeChanged();
+
+  // For Jelly: color ids are already set and theme change will be handled
+  // automatically.
+  if (chromeos::features::IsJellyEnabled()) {
+    return;
+  }
+
   text_label_->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
       AshColorProvider::ContentLayerType::kTextColorPrimary));
   icon_->SetImage(gfx::CreateVectorIcon(
@@ -130,6 +140,16 @@ void VerticalDateView::UpdateText() {
     return;
   text_label_->SetText(new_text);
   text_label_->SetTooltipText(base::TimeFormatFriendlyDate(time_to_show));
+}
+
+void VerticalDateView::UpdateIconAndLabelColorId(ui::ColorId color_id) {
+  if (!chromeos::features::IsJellyEnabled()) {
+    return;
+  }
+
+  text_label_->SetEnabledColorId(color_id);
+  icon_->SetImage(
+      ui::ImageModel::FromVectorIcon(kCalendarBackgroundIcon, color_id));
 }
 
 TimeView::TimeView(ClockLayout clock_layout, ClockModel* model, Type type)
@@ -251,6 +271,12 @@ void TimeView::SetTextShadowValues(const gfx::ShadowValues& shadows) {
       return;
     case kDate:
       horizontal_label_date_->SetShadows(shadows);
+  }
+}
+
+void TimeView::SetDateViewColorId(ui::ColorId color_id) {
+  if (chromeos::features::IsJellyEnabled() && date_view_) {
+    date_view_->UpdateIconAndLabelColorId(color_id);
   }
 }
 
