@@ -132,7 +132,9 @@ namespace ash {
   /* Color for the background of the phantom window */ \
   E_CPONLY(kColorAshPhantomWindowBackgroundColor) \
   /* Color for the stroke on the window header view */ \
-  E_CPONLY(kColorAshWindowHeaderStrokeColor)
+  E_CPONLY(kColorAshWindowHeaderStrokeColor) \
+  /* Color for the 6+ scrollable list view on the login screen */ \
+  E_CPONLY(kColorAshLoginScrollableUserListBackground)
 
 #include "ui/color/color_id_macros.inc"
 

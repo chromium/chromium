@@ -715,6 +715,11 @@ void AddAshColorMixer(ui::ColorProvider* provider,
   mixer[kColorAshWindowHeaderStrokeColor] =
       ui::SetAlpha(cros_tokens::kCrosRefNeutral0, kAlpha8);
 
+  // Color for the scrollable user view on login.
+  mixer[kColorAshLoginScrollableUserListBackground] = {
+      use_dark_color ? cros_tokens::kCrosRefNeutral20
+                     : cros_tokens::kCrosRefNeutral80};
+
   if (is_jelly_enabled) {
     mixer[ui::kColorRadioButtonForegroundChecked] = {
         cros_tokens::kCrosSysPrimary};
