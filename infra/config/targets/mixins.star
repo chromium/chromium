@@ -685,6 +685,15 @@ targets.mixin(
     ),
 )
 
+targets.mixin(
+    name = "linux-jammy-or-focal",
+    swarming = targets.swarming(
+        dimensions = {
+            "os": "Ubuntu-22.04|Ubuntu-20.04",
+        },
+    ),
+)
+
 # TODO(crbug.com/1260217): Remove the xenial mixin once the MSAN bots have
 # migrated to focal.
 targets.mixin(

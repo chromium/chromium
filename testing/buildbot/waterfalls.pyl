@@ -1773,7 +1773,7 @@
         'mixins': [
           'arm64',
           'docker',
-          'linux-focal',
+          'linux-jammy-or-focal',
         ],
       },
       'ToTLinux': {
@@ -2796,7 +2796,7 @@
         'mixins': [
           'arm64',
           'docker',
-          'linux-focal',
+          'linux-jammy-or-focal',
         ],
       },
       'fuchsia-arm64-rel': {
@@ -2810,7 +2810,7 @@
         'mixins': [
           'arm64',
           'docker',
-          'linux-focal',
+          'linux-jammy-or-focal',
         ],
       },
       'fuchsia-x64-cast-receiver-rel': {
@@ -2880,7 +2880,7 @@
         'mixins': [
           'arm64',
           'docker',
-          'linux-focal',
+          'linux-jammy-or-focal',
         ],
       },
       'fuchsia-fyi-x64-asan': {

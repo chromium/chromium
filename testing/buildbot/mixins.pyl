@@ -569,6 +569,13 @@
       },
     },
   },
+  'linux-jammy-or-focal': {
+    'swarming': {
+      'dimensions': {
+        'os': 'Ubuntu-22.04|Ubuntu-20.04',
+      },
+    },
+  },
   'linux-xenial': {
     'swarming': {
       'dimensions': {
