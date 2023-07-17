@@ -656,12 +656,9 @@ TEST_F(AffiliationServiceImplTestWithFetcherFactory,
   testing::Mock::VerifyAndClearExpectations(mock_consumer());
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 TEST_F(AffiliationServiceImplTestWithFetcherFactory,
        KeepPrefetchForFacetsUpdatesPref) {
-  base::test::ScopedFeatureList featureList;
-  featureList.InitAndEnableFeature(
-      password_manager::features::kPasswordsGrouping);
-
   pref_service().SetBoolean(prefs::kPasswordsGroupingInfoRequested, false);
 
   service()->KeepPrefetchForFacets(
@@ -675,13 +672,10 @@ TEST_F(AffiliationServiceImplTestWithFetcherFactory,
   EXPECT_TRUE(
       pref_service().GetBoolean(prefs::kPasswordsGroupingInfoRequested));
 }
+#endif
 
 TEST_F(AffiliationServiceImplTestWithFetcherFactory,
        GetGroupingInfoFetchesGroups) {
-  base::test::ScopedFeatureList featureList;
-  featureList.InitAndEnableFeature(
-      password_manager::features::kPasswordsGrouping);
-
   pref_service().SetBoolean(prefs::kPasswordsGroupingInfoRequested, false);
 
   base::MockCallback<AffiliationService::GroupsCallback> completion_callback;
@@ -716,10 +710,6 @@ TEST_F(AffiliationServiceImplTestWithFetcherFactory,
 
 TEST_F(AffiliationServiceImplTestWithFetcherFactory,
        GetGroupingInfoUsesCacheIfGroupsWereRequested) {
-  base::test::ScopedFeatureList featureList;
-  featureList.InitAndEnableFeature(
-      password_manager::features::kPasswordsGrouping);
-
   pref_service().SetBoolean(prefs::kPasswordsGroupingInfoRequested, true);
 
   base::MockCallback<AffiliationService::GroupsCallback> completion_callback;

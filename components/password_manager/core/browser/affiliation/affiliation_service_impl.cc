@@ -19,7 +19,6 @@
 #include "components/password_manager/core/browser/affiliation/affiliation_backend.h"
 #include "components/password_manager/core/browser/affiliation/affiliation_fetcher_interface.h"
 #include "components/password_manager/core/browser/password_store_factory_util.h"
-#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
@@ -265,10 +264,11 @@ void AffiliationServiceImpl::KeepPrefetchForFacets(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(backend_);
 
-  if (base::FeatureList::IsEnabled(features::kPasswordsGrouping)) {
-    // Update pref to indicate grouping info was requested.
-    pref_service_->SetBoolean(prefs::kPasswordsGroupingInfoRequested, true);
-  }
+#if !BUILDFLAG(IS_ANDROID)
+  // TODO(crbug.com/1420597) Remove this pref.
+  // Update pref to indicate grouping info was requested.
+  pref_service_->SetBoolean(prefs::kPasswordsGroupingInfoRequested, true);
+#endif
 
   backend_task_runner_->PostTask(
       FROM_HERE,
@@ -297,7 +297,6 @@ void AffiliationServiceImpl::GetGroupingInfo(std::vector<FacetURI> facet_uris,
                                              GroupsCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(backend_);
-  DCHECK(base::FeatureList::IsEnabled(features::kPasswordsGrouping));
 
   // If grouping info was requested before, simply return groups from the cache.
   if (pref_service_->GetBoolean(prefs::kPasswordsGroupingInfoRequested)) {

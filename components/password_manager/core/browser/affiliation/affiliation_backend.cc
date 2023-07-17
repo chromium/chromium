@@ -24,12 +24,19 @@
 #include "components/password_manager/core/browser/affiliation/affiliation_fetcher_factory_impl.h"
 #include "components/password_manager/core/browser/affiliation/affiliation_fetcher_interface.h"
 #include "components/password_manager/core/browser/affiliation/facet_manager.h"
-#include "components/password_manager/core/common/password_manager_features.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace password_manager {
 
 namespace {
+
+#if BUILDFLAG(IS_ANDROID)
+// TODO(crbug.com/1450848): Use PSL - extension list to determine PSL matches on
+// Android.
+constexpr bool kRequestPSLExtension = false;
+#else
+constexpr bool kRequestPSLExtension = true;
+#endif
 
 void IgnoreResult(base::OnceClosure callback, const AffiliatedFacets&, bool) {
   std::move(callback).Run();
@@ -335,8 +342,7 @@ void AffiliationBackend::OnFetchSucceeded(
     affiliation.last_update_time = clock_->Now();
     std::vector<AffiliatedFacetsWithUpdateTime> obsoleted_affiliations;
     GroupedFacets group;
-    if (base::FeatureList::IsEnabled(features::kPasswordsGrouping) &&
-        map_facet_to_group.count(affiliated_facets[0].uri.canonical_spec())) {
+    if (map_facet_to_group.count(affiliated_facets[0].uri.canonical_spec())) {
       // Affiliations are subset of group. So |map_facet_to_group| must hold a
       // vector to the whole group.
       group = *map_facet_to_group[affiliated_facets[0].uri.canonical_spec()];
@@ -415,13 +421,12 @@ bool AffiliationBackend::OnCanSendNetworkRequest() {
     return false;
 
   fetcher_ = fetcher_factory_->CreateInstance(url_loader_factory_, this);
+
   // TODO(crbug.com/1354196): There is no need to request psl extension every
   // time, find a better way of caching it.
-  const bool psl_extension_list =
-      base::FeatureList::IsEnabled(features::kPasswordsGrouping);
   fetcher_->StartRequest(
       requested_facet_uris,
-      {.branding_info = true, .psl_extension_list = psl_extension_list});
+      {.branding_info = true, .psl_extension_list = kRequestPSLExtension});
   ReportStatistics(requested_facet_uris.size());
   return true;
 }

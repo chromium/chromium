@@ -27,11 +27,13 @@ constexpr base::TimeDelta kInitializationDelayOnStartup = base::Seconds(30);
 
 bool IsFacetValidForAffiliation(const FacetURI& facet) {
   return facet.IsValidAndroidFacetURI() ||
+#if BUILDFLAG(IS_ANDROID)
          (facet.IsValidWebFacetURI() &&
           (base::FeatureList::IsEnabled(
-               features::kFillingAcrossAffiliatedWebsites) ||
-           base::FeatureList::IsEnabled(features::kPasswordsGrouping) ||
-           base::FeatureList::IsEnabled(features::kFillingAcrossGroupedSites)));
+              features::kFillingAcrossAffiliatedWebsites)));
+#else
+         facet.IsValidWebFacetURI();
+#endif
 }
 
 }  // namespace
