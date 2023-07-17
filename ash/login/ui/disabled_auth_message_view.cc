@@ -11,13 +11,13 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
-#include "ash/style/ash_color_provider.h"
 #include "base/i18n/time_formatting.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/time_format.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/canvas.h"
+#include "ui/views/background.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
@@ -44,7 +44,7 @@ constexpr int kRoundedCornerRadiusDp = 8;
 struct LockScreenMessage {
   std::u16string title;
   std::u16string content;
-  raw_ptr<const gfx::VectorIcon, ExperimentalAsh> icon;
+  ui::ImageModel icon;
 };
 
 // Returns the message used when the device was locked due to a time window
@@ -79,7 +79,8 @@ LockScreenMessage GetWindowLimitMessage(const base::Time& unlock_time,
         base::TimeFormatWithPattern(unlock_time, kDayOfWeekOnlyTimeFormat),
         time_to_display);
   }
-  message.icon = &kLockScreenTimeLimitMoonIcon;
+  message.icon = ui::ImageModel::FromVectorIcon(
+      kLockScreenTimeLimitMoonIcon, kColorAshIconColorPrimary, kIconSizeDp);
   return message;
 }
 
@@ -105,7 +106,8 @@ LockScreenMessage GetUsageLimitMessage(const base::TimeDelta& used_time) {
     message.content = l10n_util::GetStringFUTF16(
         IDS_ASH_LOGIN_SCREEN_TIME_USED_MESSAGE, used_time_string);
   }
-  message.icon = &kLockScreenTimeLimitTimerIcon;
+  message.icon = ui::ImageModel::FromVectorIcon(
+      kLockScreenTimeLimitTimerIcon, kColorAshIconColorPrimary, kIconSizeDp);
   return message;
 }
 
@@ -117,7 +119,8 @@ LockScreenMessage GetOverrideMessage() {
       l10n_util::GetStringUTF16(IDS_ASH_LOGIN_TIME_FOR_A_BREAK_MESSAGE);
   message.content =
       l10n_util::GetStringUTF16(IDS_ASH_LOGIN_MANUAL_LOCK_MESSAGE);
-  message.icon = &kLockScreenTimeLimitLockIcon;
+  message.icon = ui::ImageModel::FromVectorIcon(
+      kLockScreenTimeLimitLockIcon, kColorAshIconColorPrimary, kIconSizeDp);
   return message;
 }
 
@@ -157,6 +160,8 @@ DisabledAuthMessageView::DisabledAuthMessageView() {
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
   SetFocusBehavior(FocusBehavior::ALWAYS);
+  SetBackground(views::CreateThemedRoundedRectBackground(
+      kColorAshShieldAndBaseOpaque, kRoundedCornerRadiusDp));
 
   // The icon size has to be defined later if the image will be visible.
   message_icon_ = AddChildView(std::make_unique<views::ImageView>());
@@ -173,6 +178,7 @@ DisabledAuthMessageView::DisabledAuthMessageView() {
   message_title_->SetFontList(gfx::FontList().Derive(
       kTitleFontSizeDeltaDp, gfx::Font::NORMAL, gfx::Font::Weight::MEDIUM));
   decorate_label(message_title_);
+  message_title_->SetEnabledColorId(kColorAshTextColorPrimary);
 
   message_contents_ = AddChildView(std::make_unique<views::Label>(
       std::u16string(), views::style::CONTEXT_LABEL,
@@ -181,6 +187,7 @@ DisabledAuthMessageView::DisabledAuthMessageView() {
       kContentsFontSizeDeltaDp, gfx::Font::NORMAL, gfx::Font::Weight::NORMAL));
   decorate_label(message_contents_);
   message_contents_->SetMultiLine(true);
+  message_contents_->SetEnabledColorId(kColorAshTextColorPrimary);
 }
 
 DisabledAuthMessageView::~DisabledAuthMessageView() = default;
@@ -193,10 +200,12 @@ void DisabledAuthMessageView::SetAuthDisabledMessage(
       auth_disabled_data.device_used_time, use_24hour_clock);
   SetPreferredSize(gfx::Size(kTimeWidthDp, kHeightDp));
   message_icon_->SetVisible(true);
-  message_vector_icon_ = message.icon;
+  CHECK(!message.icon.IsEmpty());
+  message_icon_->SetImage(message.icon);
   message_title_->SetText(message.title);
+  message_title_->SetEnabledColorId(kColorAshTextColorPrimary);
   message_contents_->SetText(message.content);
-  UpdateColors();
+  message_contents_->SetEnabledColorId(kColorAshTextColorPrimary);
 }
 
 void DisabledAuthMessageView::SetAuthDisabledMessage(
@@ -206,17 +215,6 @@ void DisabledAuthMessageView::SetAuthDisabledMessage(
   message_icon_->SetVisible(false);
   message_title_->SetText(title);
   message_contents_->SetText(content);
-  UpdateColors();
-}
-
-void DisabledAuthMessageView::OnPaint(gfx::Canvas* canvas) {
-  views::View::OnPaint(canvas);
-
-  cc::PaintFlags flags;
-  flags.setStyle(cc::PaintFlags::kFill_Style);
-  flags.setColor(AshColorProvider::Get()->GetBaseLayerColor(
-      AshColorProvider::BaseLayerType::kOpaque));
-  canvas->DrawRoundRect(GetContentsBounds(), kRoundedCornerRadiusDp, flags);
 }
 
 void DisabledAuthMessageView::RequestFocus() {
@@ -238,15 +236,6 @@ void DisabledAuthMessageView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
     node_data->SetNameExplicitlyEmpty();
   } else {
     node_data->SetNameChecked(message_title_->GetText());
-  }
-}
-
-void DisabledAuthMessageView::UpdateColors() {
-  message_title_->SetEnabledColorId(kColorAshTextColorPrimary);
-  message_contents_->SetEnabledColorId(kColorAshTextColorPrimary);
-  if (message_vector_icon_) {
-    message_icon_->SetImage(ui::ImageModel::FromVectorIcon(
-        *message_vector_icon_, kColorAshIconColorPrimary, kIconSizeDp));
   }
 }
 

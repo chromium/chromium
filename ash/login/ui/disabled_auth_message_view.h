@@ -12,7 +12,6 @@
 #include "base/memory/raw_ptr.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/gfx/canvas.h"
-#include "ui/gfx/vector_icon_types.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/view.h"
@@ -51,18 +50,13 @@ class DisabledAuthMessageView : public views::View {
                               const std::u16string& content);
 
   // views::View:
-  void OnPaint(gfx::Canvas* canvas) override;
   void RequestFocus() override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
  private:
-  void UpdateColors();
-
   raw_ptr<views::Label, ExperimentalAsh> message_title_;
   raw_ptr<views::Label, ExperimentalAsh> message_contents_;
   raw_ptr<views::ImageView, ExperimentalAsh> message_icon_;
-  raw_ptr<const gfx::VectorIcon, ExperimentalAsh> message_vector_icon_ =
-      nullptr;
 };
 
 }  // namespace ash
