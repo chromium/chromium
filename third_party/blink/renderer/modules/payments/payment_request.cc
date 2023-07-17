@@ -23,6 +23,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_string_resource.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_address_errors.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_android_pay_method_data.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_google_play_billing_method_data.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_payer_errors.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_payment_details_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_payment_details_modifier.h"
@@ -416,6 +417,27 @@ void SetAndroidPayMethodData(v8::Isolate* isolate,
   }
 }
 
+void MeasureGooglePlayBillingPriceChangeConfirmation(
+    ExecutionContext& execution_context,
+    const ScriptValue& input,
+    ExceptionState& exception_state) {
+  DCHECK(!exception_state.HadException());
+
+  GooglePlayBillingMethodData* google_play_billing =
+      NativeValueTraits<GooglePlayBillingMethodData>::NativeValue(
+          execution_context.GetIsolate(), input.V8Value(), exception_state);
+  if (exception_state.HadException()) {
+    // No need to report this exception, because this function is
+    // only for measuring usage of a deprecated field.
+    exception_state.ClearException();
+    return;
+  }
+
+  if (google_play_billing->hasPriceChangeConfirmation()) {
+    UseCounter::Count(&execution_context, WebFeature::kPriceChangeConfirmation);
+  }
+}
+
 void StringifyAndParseMethodSpecificData(ExecutionContext& execution_context,
                                          const String& supported_method,
                                          const ScriptValue& input,
@@ -426,6 +448,11 @@ void StringifyAndParseMethodSpecificData(ExecutionContext& execution_context,
       exception_state);
   if (exception_state.HadException()) {
     return;
+  }
+
+  if (supported_method == kGooglePlayBillingMethod) {
+    MeasureGooglePlayBillingPriceChangeConfirmation(execution_context, input,
+                                                    exception_state);
   }
 
   // Serialize payment method specific data to be sent to the payment apps. The

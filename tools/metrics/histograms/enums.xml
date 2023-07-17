@@ -42179,8 +42179,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3363" label="HtmlClipboardApiWrite"/>
   <int value="3364" label="OBSOLETE_CSSSystemColorComputeToSelf"/>
   <int value="3365" label="ConversionAPIAll"/>
-  <int value="3366" label="OBSOLETE_ImpressionRegistration"/>
-  <int value="3367" label="OBSOLETE_ConversionRegistration"/>
+  <int value="3366" label="ImpressionRegistration"/>
+  <int value="3367" label="ConversionRegistration"/>
   <int value="3368" label="WebSharePolicyAllow"/>
   <int value="3369" label="WebSharePolicyDisallow"/>
   <int value="3370" label="FormAssociatedCustomElement"/>
@@ -43476,6 +43476,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4603" label="SharedDictionaryUsedForMainFrameNavigation"/>
   <int value="4604" label="SharedDictionaryUsedForSubFrameNavigation"/>
   <int value="4605" label="SharedDictionaryUsedForSubresource"/>
+  <int value="4606" label="PriceChangeConfirmation"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

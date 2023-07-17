@@ -503,6 +503,7 @@ static_idl_files_in_modules = get_path_info(
           "//third_party/blink/renderer/modules/payments/address_errors.idl",
           "//third_party/blink/renderer/modules/payments/address_init.idl",
           "//third_party/blink/renderer/modules/payments/android_pay_method_data.idl",
+          "//third_party/blink/renderer/modules/payments/google_play_billing_method_data.idl",
           "//third_party/blink/renderer/modules/payments/can_make_payment_event.idl",
           "//third_party/blink/renderer/modules/payments/can_make_payment_event_init.idl",
           "//third_party/blink/renderer/modules/payments/goods/digital_goods_service.idl",
