@@ -668,15 +668,16 @@ public class TabContentManager {
      *                     the priority list.
      */
     public void updateVisibleIds(List<Integer> priority, int primaryTabId) {
-        if (mNativeTabContentManager != 0) {
-            int idsSize = min(mFullResThumbnailsMaxSize, priority.size());
-            int[] priorityIds = new int[idsSize];
-            for (int i = 0; i < idsSize; i++) {
-                priorityIds[i] = priority.get(i);
-            }
-            TabContentManagerJni.get().updateVisibleIds(
-                    mNativeTabContentManager, priorityIds, primaryTabId);
+        if (mNativeTabContentManager == 0) return;
+
+        int idsSize = min(mFullResThumbnailsMaxSize, priority.size());
+        int[] priorityIds = new int[idsSize];
+        for (int i = 0; i < idsSize; i++) {
+            priorityIds[i] = priority.get(i);
         }
+
+        TabContentManagerJni.get().updateVisibleIds(
+                mNativeTabContentManager, priorityIds, primaryTabId);
     }
 
     /**

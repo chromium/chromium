@@ -69,7 +69,8 @@ public class ScreenshotTabObserverTest {
         int count = callbackHelper.getCallCount();
 
         mObserver.onScreenshotTaken();
-        TestThreadUtils.runOnUiThreadBlocking(mTab::destroy);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { mActivityTestRule.getActivity().getTabModelSelector().closeTab(mTab); });
         callbackHelper.waitForCallback(count);
 
         histogramWatcher.assertExpected("Should be one page with one snapshot reported.");
@@ -86,7 +87,8 @@ public class ScreenshotTabObserverTest {
 
         mObserver.onScreenshotTaken();
         mObserver.onScreenshotTaken();
-        TestThreadUtils.runOnUiThreadBlocking(mTab::destroy);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { mActivityTestRule.getActivity().getTabModelSelector().closeTab(mTab); });
         callbackHelper.waitForCallback(count);
 
         histogramWatcher.assertExpected("Should be one page with two snapshots reported.");
@@ -102,7 +104,8 @@ public class ScreenshotTabObserverTest {
 
         mObserver.onScreenshotTaken();
         mObserver.onActionPerformedAfterScreenshot(ScreenshotTabObserver.SCREENSHOT_ACTION_SHARE);
-        TestThreadUtils.runOnUiThreadBlocking(mTab::destroy);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { mActivityTestRule.getActivity().getTabModelSelector().closeTab(mTab); });
         callbackHelper.waitForCallback(count);
 
         histogramWatcher.assertExpected(

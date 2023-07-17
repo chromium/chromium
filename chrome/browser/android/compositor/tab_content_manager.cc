@@ -17,6 +17,7 @@
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/containers/contains.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -181,12 +182,9 @@ ThumbnailLayer* TabContentManager::GetStaticLayer(int tab_id) {
   }
   auto it = static_layer_cache_.find(tab_id);
   if (base::FeatureList::IsEnabled(thumbnail::kThumbnailCacheRefactor)) {
-    // Use a DCHECK to try to prevent this from happening during development,
-    // but it is not guranteed that every possible failure case was eliminated
-    // when adding this CHECK so leave as a DCHECK of now.
     DCHECK(it != static_layer_cache_.end())
-        << "Static layer should be created with UpdateVisibleIds before being"
-           "requested";
+        << "Missing " << tab_id << " in static_layer_cache_. "
+        << "Call UpdateVisibleIds before using a static layer.";
   }
   return it == static_layer_cache_.end() ? nullptr : it->second.get();
 }
@@ -216,6 +214,33 @@ ThumbnailLayer* TabContentManager::GetOrCreateStaticLayer(
 
   static_layer->SetThumbnail(thumbnail);
   return static_layer.get();
+}
+
+void TabContentManager::UpdateVisibleIds(const std::vector<int>& priority_ids,
+                                         int primary_tab_id) {
+  thumbnail_cache_->UpdateVisibleIds(priority_ids, primary_tab_id);
+  if (!base::FeatureList::IsEnabled(thumbnail::kThumbnailCacheRefactor)) {
+    return;
+  }
+  base::EraseIf(static_layer_cache_, [&priority_ids](const auto& pair) {
+    bool not_priority = !base::Contains(priority_ids, pair.first);
+    if (not_priority && pair.second) {
+      pair.second->layer()->RemoveFromParent();
+    }
+    return not_priority;
+  });
+  for (int tab_id : priority_ids) {
+    auto static_layer = static_layer_cache_[tab_id];
+    if (!static_layer) {
+      static_layer = ThumbnailLayer::Create();
+      static_layer_cache_[tab_id] = static_layer;
+    }
+    thumbnail::Thumbnail* thumbnail =
+        thumbnail_cache_->Get(tab_id, false, false);
+    if (thumbnail) {
+      static_layer->SetThumbnail(thumbnail);
+    }
+  }
 }
 
 void TabContentManager::AttachTab(JNIEnv* env,
@@ -378,29 +403,7 @@ void TabContentManager::UpdateVisibleIds(
     jint primary_tab_id) {
   std::vector<int> priority_ids;
   base::android::JavaIntArrayToIntVector(env, priority, &priority_ids);
-  thumbnail_cache_->UpdateVisibleIds(priority_ids, primary_tab_id);
-  if (!base::FeatureList::IsEnabled(thumbnail::kThumbnailCacheRefactor)) {
-    return;
-  }
-  std::erase_if(static_layer_cache_, [&priority_ids](const auto& pair) {
-    bool not_priority = !base::Contains(priority_ids, pair.first);
-    if (not_priority && pair.second) {
-      pair.second->layer()->RemoveFromParent();
-    }
-    return not_priority;
-  });
-  for (int tab_id : priority_ids) {
-    auto static_layer = static_layer_cache_[tab_id];
-    if (!static_layer) {
-      static_layer = ThumbnailLayer::Create();
-      static_layer_cache_[tab_id] = static_layer;
-    }
-    thumbnail::Thumbnail* thumbnail =
-        thumbnail_cache_->Get(tab_id, false, false);
-    if (thumbnail) {
-      static_layer->SetThumbnail(thumbnail);
-    }
-  }
+  UpdateVisibleIds(priority_ids, primary_tab_id);
 }
 
 void TabContentManager::NativeRemoveTabThumbnail(int tab_id) {

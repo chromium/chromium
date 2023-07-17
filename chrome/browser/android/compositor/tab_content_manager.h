@@ -73,6 +73,10 @@ class TabContentManager : public thumbnail::ThumbnailCacheObserver {
   ThumbnailLayer* GetOrCreateStaticLayer(int tab_id, bool force_disk_read);
   // JNI methods.
 
+  // Updates visible tab ids to page into the thumbnail cache.
+  void UpdateVisibleIds(const std::vector<int>& priority_ids,
+                        int primary_tab_id);
+
   // Should be called when a tab gets a new live layer that should be served
   // by the cache to the CompositorView.
   void AttachTab(JNIEnv* env,
