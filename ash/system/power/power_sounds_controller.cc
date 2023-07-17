@@ -49,20 +49,6 @@ Sound GetSoundKeyForBatteryLevel(int level) {
                                             : Sound::kChargeLowBattery;
 }
 
-PrefService* GetActivePrefService() {
-  return Shell::Get()->session_controller()->GetActivePrefService();
-}
-
-bool GetChargingSoundsEnabled() {
-  PrefService* prefs = GetActivePrefService();
-  return prefs && prefs->GetBoolean(prefs::kChargingSoundsEnabled);
-}
-
-bool GetLowBatterySoundEnabled() {
-  PrefService* prefs = GetActivePrefService();
-  return prefs && prefs->GetBoolean(prefs::kLowBatterySoundEnabled);
-}
-
 }  // namespace
 
 // static
@@ -88,6 +74,10 @@ PowerSoundsController::PowerSoundsController() {
 
   battery_level_ = power_status->GetRoundedBatteryPercent();
   is_ac_charger_connected_ = power_status->IsMainsChargerConnected();
+
+  PrefService* local_state = Shell::Get()->local_state();
+  low_battery_sound_enabled_.Init(prefs::kLowBatterySoundEnabled, local_state);
+  charging_sounds_enabled_.Init(prefs::kChargingSoundsEnabled, local_state);
 }
 
 PowerSoundsController::~PowerSoundsController() {
@@ -95,11 +85,12 @@ PowerSoundsController::~PowerSoundsController() {
   chromeos::PowerManagerClient::Get()->RemoveObserver(this);
 }
 
-void PowerSoundsController::RegisterPrefs(PrefRegistrySimple* registry) {
+void PowerSoundsController::RegisterLocalStatePrefs(
+    PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kChargingSoundsEnabled,
                                 /*default_value=*/false);
   registry->RegisterBooleanPref(prefs::kLowBatterySoundEnabled,
-                                /*default_value=*/true);
+                                /*default_value=*/false);
 }
 
 void PowerSoundsController::OnPowerStatusChanged() {
@@ -160,7 +151,7 @@ void PowerSoundsController::MaybePlaySoundsForCharging(
     bool old_ac_charger_connected) {
   // Don't play the charging sound if the toggle button is disabled by user in
   // the Settings UI.
-  if (!GetChargingSoundsEnabled() || !CanPlaySounds()) {
+  if (!charging_sounds_enabled_.GetValue() || !CanPlaySounds()) {
     return;
   }
 
@@ -174,7 +165,7 @@ void PowerSoundsController::MaybePlaySoundsForCharging(
 }
 
 bool PowerSoundsController::ShouldPlayLowBatterySound() const {
-  if (!GetLowBatterySoundEnabled() || !CanPlaySounds()) {
+  if (!low_battery_sound_enabled_.GetValue() || !CanPlaySounds()) {
     return false;
   }
 

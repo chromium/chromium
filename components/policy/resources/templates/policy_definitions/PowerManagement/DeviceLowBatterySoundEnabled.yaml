@@ -1,28 +1,30 @@
-caption: Enable Charging Sounds
-default_for_enterprise_users: false
+caption: Enable Low Battery Sound
+default: false
 desc: |-
-  Enable the charging sounds feature.
+  Enable the low battery sound feature.
 
-            This feature is responsible to play the charging sounds.
+            This feature is responsible to play the low battery sound.
 
-            If this policy is set to enabled, the charging sounds will be played when the device is connected to an AC charger.
+            If this policy is set to enabled, the low battery sound will be played when the battery level or the remaining time drops below a threshold.
 
-            If this policy is set to disabled, no charging sound will be played.
+            If this policy is set to disabled, no low battery sound will be played.
 
             If you set this policy, users cannot change or override it.
 
             If this policy is left unset, this feature is disabled on the managed <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> devices, but enabled under other circumstances.
+device_only: true
 example_value: false
 features:
   dynamic_refresh: true
   per_profile: false
 items:
-- caption: Enable charging sounds
+- caption: Enable low battery sound
   value: true
-- caption: Disable charging sounds
+- caption: Disable low battery sound
   value: false
 owners:
 - hongyulong@chromium.org
+- bicioglu@google.com
 - chromeos-wms@google.com
 schema:
   type: boolean

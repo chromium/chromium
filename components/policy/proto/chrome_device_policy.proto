@@ -1806,6 +1806,14 @@ message DeviceReportXDREventsProto {
   optional bool enabled = 1 [default = false];
 }
 
+message DeviceLowBatterySoundProto {
+  optional bool enabled = 1;
+}
+
+message DeviceChargingSoundsProto {
+  optional bool enabled = 1;
+}
+
 message ChromeDeviceSettingsProto {
   reserved 61, 71, 90;
   optional DevicePolicyRefreshRateProto device_policy_refresh_rate = 1;
@@ -2006,4 +2014,6 @@ message ChromeDeviceSettingsProto {
       device_login_screen_geolocation_access_level = 147;
   optional StringPolicyProto device_login_screen_webhid_allow_devices_for_urls =
       148;
+  optional DeviceLowBatterySoundProto device_low_battery_sound = 149;
+  optional DeviceChargingSoundsProto device_charging_sounds = 150;
 }

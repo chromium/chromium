@@ -2196,6 +2196,28 @@ void DecodeGenericPolicies(const em::ChromeDeviceSettingsProto& policy,
                     base::Value(container.enabled()), nullptr);
     }
   }
+
+  if (policy.has_device_low_battery_sound()) {
+    const em::DeviceLowBatterySoundProto& container(
+        policy.device_low_battery_sound());
+    if (container.has_enabled()) {
+      policies->Set(policy::key::kDeviceLowBatterySoundEnabled,
+                    POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
+                    POLICY_SOURCE_CLOUD, base::Value(container.enabled()),
+                    nullptr);
+    }
+  }
+
+  if (policy.has_device_charging_sounds()) {
+    const em::DeviceChargingSoundsProto& container(
+        policy.device_charging_sounds());
+    if (container.has_enabled()) {
+      policies->Set(policy::key::kDeviceChargingSoundsEnabled,
+                    POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
+                    POLICY_SOURCE_CLOUD, base::Value(container.enabled()),
+                    nullptr);
+    }
+  }
 }
 
 }  // namespace

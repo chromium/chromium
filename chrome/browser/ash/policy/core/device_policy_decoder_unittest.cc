@@ -577,4 +577,33 @@ TEST_F(DevicePolicyDecoderTest,
                        DeviceLocalAccount::EphemeralMode::kDisable)))));
 }
 
+TEST_F(DevicePolicyDecoderTest, DeviceLowBatterySoundEnabled) {
+  em::ChromeDeviceSettingsProto device_policy;
+
+  DecodeUnsetDevicePolicyTestHelper(device_policy,
+                                    key::kDeviceLowBatterySoundEnabled);
+
+  base::Value device_low_battery_sound_enabled_value(true);
+  device_policy.mutable_device_low_battery_sound()->set_enabled(
+      device_low_battery_sound_enabled_value.GetBool());
+
+  DecodeDevicePolicyTestHelper(
+      device_policy, key::kDeviceLowBatterySoundEnabled,
+      std::move(device_low_battery_sound_enabled_value));
+}
+
+TEST_F(DevicePolicyDecoderTest, DeviceChargingSoundsEnabled) {
+  em::ChromeDeviceSettingsProto device_policy;
+
+  DecodeUnsetDevicePolicyTestHelper(device_policy,
+                                    key::kDeviceChargingSoundsEnabled);
+
+  base::Value device_charging_sounds_enabled_value(true);
+  device_policy.mutable_device_charging_sounds()->set_enabled(
+      device_charging_sounds_enabled_value.GetBool());
+
+  DecodeDevicePolicyTestHelper(device_policy, key::kDeviceChargingSoundsEnabled,
+                               std::move(device_charging_sounds_enabled_value));
+}
+
 }  // namespace policy

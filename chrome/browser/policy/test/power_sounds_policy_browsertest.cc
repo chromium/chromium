@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 #include "ash/constants/ash_pref_names.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_constants.h"
@@ -18,7 +18,7 @@ class PowerSoundsPolicyTest : public PolicyTest {};
 
 IN_PROC_BROWSER_TEST_F(PowerSoundsPolicyTest, ChargingSoundsEnabled) {
   // Verify the pref behavior before policy.
-  PrefService* prefs = browser()->profile()->GetPrefs();
+  PrefService* prefs = g_browser_process->local_state();
   EXPECT_FALSE(prefs->IsManagedPreference(ash::prefs::kChargingSoundsEnabled));
   EXPECT_FALSE(prefs->GetBoolean(ash::prefs::kChargingSoundsEnabled));
   prefs->SetBoolean(ash::prefs::kChargingSoundsEnabled, true);
@@ -26,8 +26,8 @@ IN_PROC_BROWSER_TEST_F(PowerSoundsPolicyTest, ChargingSoundsEnabled) {
 
   // Verify the pref can be force disabled.
   PolicyMap policies;
-  policies.Set(key::kChargingSoundsEnabled, POLICY_LEVEL_MANDATORY,
-               POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, base::Value(false),
+  policies.Set(key::kDeviceChargingSoundsEnabled, POLICY_LEVEL_MANDATORY,
+               POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD, base::Value(false),
                nullptr);
   UpdateProviderPolicy(policies);
   EXPECT_TRUE(prefs->IsManagedPreference(ash::prefs::kChargingSoundsEnabled));
@@ -36,8 +36,8 @@ IN_PROC_BROWSER_TEST_F(PowerSoundsPolicyTest, ChargingSoundsEnabled) {
   EXPECT_FALSE(prefs->GetBoolean(ash::prefs::kChargingSoundsEnabled));
 
   // Verify the pref can be force enabled.
-  policies.Set(key::kChargingSoundsEnabled, POLICY_LEVEL_MANDATORY,
-               POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, base::Value(true),
+  policies.Set(key::kDeviceChargingSoundsEnabled, POLICY_LEVEL_MANDATORY,
+               POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD, base::Value(true),
                nullptr);
   UpdateProviderPolicy(policies);
   EXPECT_TRUE(prefs->IsManagedPreference(ash::prefs::kChargingSoundsEnabled));
@@ -48,16 +48,16 @@ IN_PROC_BROWSER_TEST_F(PowerSoundsPolicyTest, ChargingSoundsEnabled) {
 
 IN_PROC_BROWSER_TEST_F(PowerSoundsPolicyTest, LowBatterySoundEnabled) {
   // Verify the pref behavior before policy.
-  PrefService* prefs = browser()->profile()->GetPrefs();
+  PrefService* prefs = g_browser_process->local_state();
   EXPECT_FALSE(prefs->IsManagedPreference(ash::prefs::kLowBatterySoundEnabled));
-  EXPECT_TRUE(prefs->GetBoolean(ash::prefs::kLowBatterySoundEnabled));
-  prefs->SetBoolean(ash::prefs::kLowBatterySoundEnabled, false);
   EXPECT_FALSE(prefs->GetBoolean(ash::prefs::kLowBatterySoundEnabled));
+  prefs->SetBoolean(ash::prefs::kLowBatterySoundEnabled, true);
+  EXPECT_TRUE(prefs->GetBoolean(ash::prefs::kLowBatterySoundEnabled));
 
   // Verify the pref can be force disabled.
   PolicyMap policies;
-  policies.Set(key::kLowBatterySoundEnabled, POLICY_LEVEL_MANDATORY,
-               POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, base::Value(false),
+  policies.Set(key::kDeviceLowBatterySoundEnabled, POLICY_LEVEL_MANDATORY,
+               POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD, base::Value(false),
                nullptr);
   UpdateProviderPolicy(policies);
   EXPECT_TRUE(prefs->IsManagedPreference(ash::prefs::kLowBatterySoundEnabled));
@@ -66,8 +66,8 @@ IN_PROC_BROWSER_TEST_F(PowerSoundsPolicyTest, LowBatterySoundEnabled) {
   EXPECT_FALSE(prefs->GetBoolean(ash::prefs::kLowBatterySoundEnabled));
 
   // Verify the pref can be force enabled.
-  policies.Set(key::kLowBatterySoundEnabled, POLICY_LEVEL_MANDATORY,
-               POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, base::Value(true),
+  policies.Set(key::kDeviceLowBatterySoundEnabled, POLICY_LEVEL_MANDATORY,
+               POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD, base::Value(true),
                nullptr);
   UpdateProviderPolicy(policies);
   EXPECT_TRUE(prefs->IsManagedPreference(ash::prefs::kLowBatterySoundEnabled));

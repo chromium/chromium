@@ -7,6 +7,7 @@
 
 #include "ash/system/power/power_status.h"
 #include "chromeos/dbus/power/power_manager_client.h"
+#include "components/prefs/pref_member.h"
 
 class PrefRegistrySimple;
 
@@ -31,7 +32,7 @@ class ASH_EXPORT PowerSoundsController
   PowerSoundsController& operator=(const PowerSoundsController&) = delete;
   ~PowerSoundsController() override;
 
-  static void RegisterPrefs(PrefRegistrySimple* registry);
+  static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
   // PowerStatus::Observer:
   void OnPowerStatusChanged() override;
@@ -102,6 +103,12 @@ class ASH_EXPORT PowerSoundsController
 
   chromeos::PowerManagerClient::LidState lid_state_ =
       chromeos::PowerManagerClient::LidState::OPEN;
+
+  // An observer to listen for changes to prefs::kLowBatterySoundEnabled.
+  BooleanPrefMember low_battery_sound_enabled_;
+
+  // An observer to listen for changes to prefs::kChargingSoundsEnabled.
+  BooleanPrefMember charging_sounds_enabled_;
 
   base::WeakPtrFactory<PowerSoundsController> weak_factory_{this};
 };

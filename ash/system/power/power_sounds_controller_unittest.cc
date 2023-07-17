@@ -116,10 +116,10 @@ class PowerSoundsControllerTest : public AshTestBase {
   }
 
   void SetInitialPowerStatus() {
-    // The charging sounds toggle button is disabled as default, to test our
-    // charging sounds features, we will initialize it as enabled.
-    Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
-        prefs::kChargingSoundsEnabled, true);
+    // The two toggle buttons are disabled as default, to test features, we will
+    // initialize it as enabled.
+    local_state()->SetBoolean(prefs::kChargingSoundsEnabled, true);
+    local_state()->SetBoolean(prefs::kLowBatterySoundEnabled, true);
 
     // The default status for power is connected with a charger and the battery
     // level is 1%. We set the initial power status for each unit test to
@@ -187,11 +187,8 @@ TEST_F(PowerSoundsControllerTest, PlaySoundsForCharging) {
 // Tests that when the user disables the toggle button for charging sounds, when
 // plugging in a charger, the device won't play any charging sound.
 TEST_F(PowerSoundsControllerTest, NoChargingSoundPlayedIfToggleButtonDisabled) {
-  PrefService* pref =
-      Shell::Get()->session_controller()->GetActivePrefService();
-
-  pref->SetBoolean(prefs::kChargingSoundsEnabled, false);
-  ASSERT_FALSE(pref->GetBoolean(prefs::kChargingSoundsEnabled));
+  local_state()->SetBoolean(prefs::kChargingSoundsEnabled, false);
+  ASSERT_FALSE(local_state()->GetBoolean(prefs::kChargingSoundsEnabled));
 
   // Charge the device after disabling the button, and no sounds will be played.
   SetPowerStatus(5, kAcPower);
@@ -250,11 +247,8 @@ TEST_F(PowerSoundsControllerTest, PlayLowBatterySoundForRemainingTime) {
 // charger.
 TEST_F(PowerSoundsControllerTest,
        NoLowBatterySoundPlayedIfToggleButtonDisabled) {
-  PrefService* pref =
-      Shell::Get()->session_controller()->GetActivePrefService();
-
-  pref->SetBoolean(prefs::kLowBatterySoundEnabled, false);
-  ASSERT_FALSE(pref->GetBoolean(prefs::kLowBatterySoundEnabled));
+  local_state()->SetBoolean(prefs::kLowBatterySoundEnabled, false);
+  ASSERT_FALSE(local_state()->GetBoolean(prefs::kLowBatterySoundEnabled));
 
   // Don't play warning sound if the battery level is no less than 15% when
   // connecting with a low-power charger.

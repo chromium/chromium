@@ -1121,8 +1121,8 @@ policies:
   1120: ColorCorrectionEnabled
   1121: NativeClientForceAllowed
   1122: EmojiPickerGifSupportEnabled
-  1123: ChargingSoundsEnabled
-  1124: LowBatterySoundEnabled
+  1123: DeviceChargingSoundsEnabled
+  1124: DeviceLowBatterySoundEnabled
   1125: ArcVmDataMigrationStrategy
   1126: AccessibilityPerformanceFilteringAllowed
   1127: RemoteAccessHostAllowEnterpriseFileTransfer

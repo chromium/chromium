@@ -130,7 +130,6 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry, bool for_test) {
   PaletteTray::RegisterProfilePrefs(registry);
   PaletteWelcomeBubble::RegisterProfilePrefs(registry);
   PciePeripheralNotificationController::RegisterProfilePrefs(registry);
-  PowerSoundsController::RegisterPrefs(registry);
   PrivacyHubController::RegisterProfilePrefs(registry);
   PrivacyScreenController::RegisterProfilePrefs(registry);
   ProjectorControllerImpl::RegisterProfilePrefs(registry);
@@ -193,6 +192,7 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry, bool for_test) {
   }
   KeyboardBacklightColorController::RegisterPrefs(registry);
   BatterySaverController::RegisterLocalStatePrefs(registry);
+  PowerSoundsController::RegisterLocalStatePrefs(registry);
 
   if (for_test) {
     registry->RegisterBooleanPref(prefs::kOwnerPrimaryMouseButtonRight, false);

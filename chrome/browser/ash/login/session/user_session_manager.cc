@@ -884,6 +884,14 @@ void UserSessionManager::SetFirstLoginPrefs(
   VLOG(1) << "Setting first login prefs";
   InitLocaleAndInputMethodsForNewUser(this, profile, public_session_locale,
                                       public_session_input_method);
+
+  // Turn on the feature of the low battery sound for all users on the device
+  // when a new user login.
+  if (!g_browser_process->local_state()->IsManagedPreference(
+          prefs::kLowBatterySoundEnabled)) {
+    g_browser_process->local_state()->SetBoolean(prefs::kLowBatterySoundEnabled,
+                                                 true);
+  }
 }
 
 void UserSessionManager::DoBrowserLaunch(Profile* profile) {

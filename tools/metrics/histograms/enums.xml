@@ -33810,8 +33810,8 @@ Called by update_document_policy_enum.py.-->
   <int value="1120" label="ColorCorrectionEnabled"/>
   <int value="1121" label="NativeClientForceAllowed"/>
   <int value="1122" label="EmojiPickerGifSupportEnabled"/>
-  <int value="1123" label="ChargingSoundsEnabled"/>
-  <int value="1124" label="LowBatterySoundEnabled"/>
+  <int value="1123" label="DeviceChargingSoundsEnabled"/>
+  <int value="1124" label="DeviceLowBatterySoundEnabled"/>
   <int value="1125" label="ArcVmDataMigrationStrategy"/>
   <int value="1126" label="AccessibilityPerformanceFilteringAllowed"/>
   <int value="1127" label="RemoteAccessHostAllowEnterpriseFileTransfer"/>
