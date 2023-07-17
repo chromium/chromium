@@ -18,7 +18,7 @@ class OneShotTimer;
 namespace password_manager {
 
 // Filling timeout for waiting for asynchronous predictions.
-constexpr base::TimeDelta kMaxFillingDelayForAsyncPredictions =
+inline constexpr base::TimeDelta kMaxFillingDelayForAsyncPredictions =
     base::Milliseconds(500);
 
 // Helper class for PasswordFormManager to manage outstanding asynchronous

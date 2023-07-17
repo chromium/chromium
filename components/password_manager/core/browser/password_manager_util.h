@@ -217,7 +217,7 @@ std::string GetExtendedTopLevelDomain(
     const base::flat_set<std::string>& psl_extensions);
 
 // Contains all special symbols considered for password-generation.
-constexpr char kSpecialSymbols[] = "!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~";
+inline constexpr char kSpecialSymbols[] = "!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~";
 
 // Helper functions for character type classification. The built-in functions
 // depend on locale, platform and other stuff. To make the output more
