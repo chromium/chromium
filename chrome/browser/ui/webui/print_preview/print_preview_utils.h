@@ -10,6 +10,8 @@
 #include "base/values.h"
 #include "chrome/browser/ui/webui/print_preview/printer_handler.h"
 #include "printing/backend/print_backend.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace content {
 class WebContents;
@@ -56,13 +58,22 @@ void StartLocalPrint(base::Value::Dict job_settings,
                      content::WebContents* preview_web_contents,
                      PrinterHandler::PrintCallback callback);
 
-// Parses print job settings. Returns `true` on success.
-// This is used by extension printers.
-bool ParseSettings(const base::Value::Dict& settings,
-                   std::string* out_destination_id,
-                   std::string* out_capabilities,
-                   gfx::Size* out_page_size,
-                   base::Value::Dict* out_ticket);
+struct ExtensionPrinterSettings {
+  ExtensionPrinterSettings();
+  ExtensionPrinterSettings(ExtensionPrinterSettings&&) noexcept;
+  ExtensionPrinterSettings& operator=(ExtensionPrinterSettings&&) noexcept;
+  ~ExtensionPrinterSettings();
+
+  std::string destination_id;
+  std::string capabilities;
+  gfx::Size page_size;
+  base::Value::Dict ticket;
+};
+
+// Parses print job `settings` for an extension printer and returns the parsed
+// output, or returns `absl::nullopt` on failure.
+absl::optional<ExtensionPrinterSettings> ParseExtensionPrinterSettings(
+    const base::Value::Dict& settings);
 
 }  // namespace printing
 

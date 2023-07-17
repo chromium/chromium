@@ -259,30 +259,38 @@ void StartLocalPrint(base::Value::Dict job_settings,
       preview_web_contents->GetPrimaryMainFrame(), std::move(callback));
 }
 
-bool ParseSettings(const base::Value::Dict& settings,
-                   std::string* out_destination_id,
-                   std::string* out_capabilities,
-                   gfx::Size* out_page_size,
-                   base::Value::Dict* out_ticket) {
-  const std::string* ticket_opt = settings.FindString(kSettingTicket);
-  const std::string* capabilities_opt =
-      settings.FindString(kSettingCapabilities);
-  out_page_size->SetSize(settings.FindInt(kSettingPageWidth).value_or(0),
-                         settings.FindInt(kSettingPageHeight).value_or(0));
-  if (!ticket_opt || !capabilities_opt || out_page_size->IsEmpty()) {
+ExtensionPrinterSettings::ExtensionPrinterSettings() = default;
+
+ExtensionPrinterSettings::ExtensionPrinterSettings(
+    ExtensionPrinterSettings&&) noexcept = default;
+
+ExtensionPrinterSettings& ExtensionPrinterSettings::operator=(
+    ExtensionPrinterSettings&&) noexcept = default;
+
+ExtensionPrinterSettings::~ExtensionPrinterSettings() = default;
+
+absl::optional<ExtensionPrinterSettings> ParseExtensionPrinterSettings(
+    const base::Value::Dict& settings) {
+  ExtensionPrinterSettings parsed_settings;
+
+  const std::string* ticket = settings.FindString(kSettingTicket);
+  const std::string* capabilities = settings.FindString(kSettingCapabilities);
+  parsed_settings.page_size.SetSize(
+      settings.FindInt(kSettingPageWidth).value_or(0),
+      settings.FindInt(kSettingPageHeight).value_or(0));
+  if (!ticket || !capabilities || parsed_settings.page_size.IsEmpty()) {
     NOTREACHED();
-    return false;
+    return absl::nullopt;
   }
-  absl::optional<base::Value> ticket_value =
-      base::JSONReader::Read(*ticket_opt);
+  absl::optional<base::Value> ticket_value = base::JSONReader::Read(*ticket);
   if (!ticket_value || !ticket_value->is_dict()) {
-    return false;
+    return absl::nullopt;
   }
 
-  *out_destination_id = *settings.FindString(kSettingDeviceName);
-  *out_capabilities = *capabilities_opt;
-  *out_ticket = std::move(*ticket_value).TakeDict();
-  return true;
+  parsed_settings.destination_id = *settings.FindString(kSettingDeviceName);
+  parsed_settings.capabilities = *capabilities;
+  parsed_settings.ticket = std::move(*ticket_value).TakeDict();
+  return parsed_settings;
 }
 
 }  // namespace printing

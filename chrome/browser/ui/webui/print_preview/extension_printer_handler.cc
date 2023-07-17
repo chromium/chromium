@@ -167,18 +167,20 @@ void ExtensionPrinterHandler::StartPrint(
     base::Value::Dict settings,
     scoped_refptr<base::RefCountedMemory> print_data,
     PrintCallback callback) {
-  auto print_job = std::make_unique<extensions::PrinterProviderPrintJob>();
-  print_job->job_title = job_title;
-  std::string capabilities;
-  gfx::Size page_size;
-  if (!ParseSettings(settings, &print_job->printer_id, &capabilities,
-                     &page_size, &print_job->ticket)) {
+  absl::optional<ExtensionPrinterSettings> parsed_settings =
+      ParseExtensionPrinterSettings(settings);
+  if (!parsed_settings.has_value()) {
     std::move(callback).Run(base::Value("Invalid settings"));
     return;
   }
 
+  auto print_job = std::make_unique<extensions::PrinterProviderPrintJob>();
+  print_job->printer_id = std::move(parsed_settings.value().destination_id);
+  print_job->job_title = job_title;
+  print_job->ticket = std::move(parsed_settings.value().ticket);
+
   cloud_devices::CloudDeviceDescription printer_description;
-  printer_description.InitFromString(capabilities);
+  printer_description.InitFromString(parsed_settings.value().capabilities);
 
   cloud_devices::printer::ContentTypesCapability content_types;
   content_types.LoadFrom(printer_description);
@@ -201,7 +203,8 @@ void ExtensionPrinterHandler::StartPrint(
 
   print_job->content_type = kContentTypePWGRaster;
   ConvertToPWGRaster(
-      print_data, printer_description, ticket, page_size, std::move(print_job),
+      print_data, printer_description, ticket,
+      parsed_settings.value().page_size, std::move(print_job),
       base::BindOnce(&ExtensionPrinterHandler::DispatchPrintJob,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
