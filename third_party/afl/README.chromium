@@ -6,6 +6,7 @@ Date: August 17, 2018
 License: Apache 2.0
 License File: src/docs/COPYING
 Security Critical: no
+Shipped: no
 
 Description:
 Tool for in-process and out-of-process (fork) coverage-guided fuzz testing
