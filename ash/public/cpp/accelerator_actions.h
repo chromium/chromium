@@ -46,7 +46,6 @@ namespace ash {
   ACCELERATOR_ACTION_ENTRY(DesksActivate7)                              \
   ACCELERATOR_ACTION_ENTRY(DesksToggleAssignToAllDesks)                 \
   ACCELERATOR_ACTION_ENTRY(DisableCapsLock)                             \
-  ACCELERATOR_ACTION_ENTRY(EnableOrToggleDictation)                     \
   ACCELERATOR_ACTION_ENTRY(Exit)                                        \
   ACCELERATOR_ACTION_ENTRY(FocusCameraPreview)                          \
   ACCELERATOR_ACTION_ENTRY(FocusNextPane)                               \
@@ -124,6 +123,7 @@ namespace ash {
   ACCELERATOR_ACTION_ENTRY(ToggleCalendar)                              \
   ACCELERATOR_ACTION_ENTRY(ToggleCapsLock)                              \
   ACCELERATOR_ACTION_ENTRY(ToggleClipboardHistory)                      \
+  ACCELERATOR_ACTION_ENTRY(ToggleDictation)                             \
   ACCELERATOR_ACTION_ENTRY(ToggleDockedMagnifier)                       \
   ACCELERATOR_ACTION_ENTRY(ToggleFloating)                              \
   ACCELERATOR_ACTION_ENTRY(ToggleFullscreen)                            \

@@ -671,7 +671,6 @@ class AccessibilityManager
   friend class AccessibilityManagerDlcTest;
   friend class AccessibilityManagerDictationDialogTest;
   friend class AccessibilityManagerNoOnDeviceSpeechRecognitionTest;
-  friend class AccessibilityManagerDictationKeyboardImprovementsTest;
 };
 
 }  // namespace ash
