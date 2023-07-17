@@ -20,6 +20,7 @@
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
+#include "chrome/browser/chrome_for_testing/buildflags.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/file_system_access/chrome_file_system_access_permission_context.h"
 #include "chrome/browser/net/system_network_context_manager.h"
@@ -372,7 +373,8 @@ void AddAboutStrings(content::WebUIDataSource* html_source, Profile* profile) {
   html_source->AddString("aboutObsoleteSystemURL",
                          ObsoleteSystem::GetLinkURL());
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING) || \
+    BUILDFLAG(GOOGLE_CHROME_FOR_TESTING_BRANDING)
   html_source->AddString("aboutTermsURL", chrome::kChromeUITermsURL);
   html_source->AddLocalizedString("aboutProductTos",
                                   IDS_ABOUT_TERMS_OF_SERVICE);
