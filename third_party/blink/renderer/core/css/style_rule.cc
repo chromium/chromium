@@ -267,8 +267,7 @@ StyleRuleBase* StyleRuleBase::Copy() const {
     case kStartingStyle:
       return To<StyleRuleStartingStyle>(this)->Copy();
     case kTry:
-      NOTREACHED();
-      return nullptr;
+      return To<StyleRuleTry>(this)->Copy();
   }
   NOTREACHED();
   return nullptr;

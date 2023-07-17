@@ -15,7 +15,12 @@ class StyleRuleCSSStyleDeclaration;
 class StyleRuleTry final : public StyleRuleBase {
  public:
   explicit StyleRuleTry(CSSPropertyValueSet*);
+  StyleRuleTry(const StyleRuleTry&) = default;
   ~StyleRuleTry();
+
+  StyleRuleTry* Copy() const {
+    return MakeGarbageCollected<StyleRuleTry>(*this);
+  }
 
   const CSSPropertyValueSet& Properties() const { return *properties_; }
   MutableCSSPropertyValueSet& MutableProperties();
