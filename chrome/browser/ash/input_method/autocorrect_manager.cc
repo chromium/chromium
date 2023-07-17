@@ -26,6 +26,7 @@
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/components/kiosk/kiosk_utils.h"
 #include "components/strings/grit/components_strings.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "ui/base/ime/ash/extension_ime_util.h"
@@ -1239,7 +1240,8 @@ void AutocorrectManager::AcceptOrClearPendingAutocorrect() {
 
 void AutocorrectManager::OnTextFieldContextualInfoChanged(
     const TextFieldContextualInfo& info) {
-  disabled_by_rule_ = denylist_.Contains(info.tab_url);
+  disabled_by_rule_ =
+      denylist_.Contains(info.tab_url) || chromeos::IsKioskSession();
   if (disabled_by_rule_) {
     LogAssistiveAutocorrectInternalState(
         AutocorrectInternalStates::kAppIsInDenylist);
