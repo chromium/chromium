@@ -480,8 +480,14 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 getMultiWindowModeStateDispatcher(), getLifecycleDispatcher(),
                 getModalDialogManagerSupplier(), this);
         StartSurfaceUserData.reset();
-        mBackPressManager.setFallbackOnBackPressed(
-                () -> { minimizeAppAndCloseTabOnBackPress(getActivityTab()); });
+        mBackPressManager.setFallbackOnBackPressed(() -> {
+            if (BackPressManager.correctTabNavigationOnFallback()) {
+                if (getToolbarManager() != null && getToolbarManager().back()) {
+                    return;
+                }
+            }
+            minimizeAppAndCloseTabOnBackPress(getActivityTab());
+        });
     }
 
     @Override

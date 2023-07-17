@@ -139,6 +139,9 @@ public class MinimizeAppAndCloseTabBackPressHandler implements BackPressHandler,
             // minimizing app and closing tab.
             assert !currentTab.canGoBack()
                 : "Tab should be navigated back before closing or exiting app";
+            if (currentTab.canGoBack() && BackPressManager.correctTabNavigationOnFallback()) {
+                return BackPressResult.FAILURE;
+            }
             // At this point we know either the tab will close or the app will minimize.
             NativePage nativePage = currentTab.getNativePage();
             if (nativePage != null) {

@@ -440,6 +440,11 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
 
     @Override
     protected boolean handleBackPressed() {
+        if (BackPressManager.correctTabNavigationOnFallback()) {
+            if (getToolbarManager() != null && getToolbarManager().back()) {
+                return true;
+            }
+        }
         return mNavigationController.navigateOnBack();
     }
 
