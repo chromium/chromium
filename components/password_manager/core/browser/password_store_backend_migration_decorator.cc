@@ -7,7 +7,6 @@
 #include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/password_manager/core/browser/built_in_backend_to_android_backend_migrator.h"
-#include "components/password_manager/core/browser/field_info_table.h"
 #include "components/password_manager/core/browser/password_store_proxy_backend.h"
 #include "components/password_manager/core/browser/password_sync_util.h"
 #include "components/password_manager/core/common/password_manager_features.h"
@@ -15,7 +14,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/sync/model/proxy_model_type_controller_delegate.h"
 #include "components/sync/service/sync_service.h"
-#include "google_apis/gaia/google_service_auth_error.h"
 
 namespace password_manager {
 

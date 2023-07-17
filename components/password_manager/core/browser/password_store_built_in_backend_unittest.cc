@@ -14,9 +14,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
-#include "base/run_loop.h"
-#include "base/strings/string_util.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
@@ -36,10 +33,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using testing::_;
 using testing::ElementsAre;
-using testing::ElementsAreArray;
-using testing::IsEmpty;
 using testing::Optional;
 using testing::VariantWith;
 
@@ -281,8 +275,6 @@ TEST_F(PasswordStoreBuiltInBackendTest, GetAllLoginsAsync) {
   EXPECT_CALL(reply, Run).Times(6);
   for (const auto& test_credential : kTestCredentials) {
     all_credentials.push_back(FillPasswordFormWithData(test_credential));
-    // TODO(crbug.com/1217071): Call AddLoginAsync once it is implemented.
-    // store()->AddLogin(*all_credentials.back());
     backend->AddLoginAsync(*all_credentials.back(), reply.Get());
   }
   RunUntilIdle();
