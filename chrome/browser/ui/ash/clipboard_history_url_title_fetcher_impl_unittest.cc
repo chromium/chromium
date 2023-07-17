@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/history/history_service_factory.h"
@@ -28,6 +29,8 @@ using ::testing::_;
 using ::testing::Optional;
 
 const std::u16string kUrlTitle = u"Title";
+constexpr char kIsPrimaryProfileActiveHistogramName[] =
+    "Ash.ClipboardHistory.UrlTitleFetcher.IsPrimaryProfileActive";
 
 // MockHistoryService ----------------------------------------------------------
 
@@ -82,6 +85,15 @@ class ClipboardHistoryUrlTitleFetcherTest : public BrowserWithTestWindowTest {
   }
 
  protected:
+  void SwitchToSecondaryProfile() {
+    const std::string kSecondaryProfileName = "secondary_profile@test";
+    const AccountId account_id(AccountId::FromUserEmail(kSecondaryProfileName));
+
+    fake_user_manager_->AddUser(account_id);
+    fake_user_manager_->LoginUser(account_id);
+    fake_user_manager_->SwitchActiveUser(account_id);
+  }
+
   ClipboardHistoryUrlTitleFetcherImpl& fetcher() { return fetcher_; }
   MockHistoryService* history_service() { return history_service_; }
 
@@ -151,6 +163,36 @@ TEST_F(ClipboardHistoryUrlTitleFetcherTest,
 
     fetcher().QueryHistory(kTestUrl, title_future.GetRepeatingCallback());
     EXPECT_FALSE(title_future.Take());
+  }
+}
+
+TEST_F(ClipboardHistoryUrlTitleFetcherTest, IsPrimaryProfileActiveRecorded) {
+  base::HistogramTester histogram_tester;
+  const GURL kTestUrl("https://www.url.com");
+  EXPECT_CALL(*history_service(), QueryURL(kTestUrl, false, _, _))
+      .WillRepeatedly(&RunHistoryEntryFoundCallback);
+  base::test::TestFuture<absl::optional<std::u16string>> title_future;
+
+  {
+    SCOPED_TRACE("Query a title while the primary profile is active.");
+    fetcher().QueryHistory(kTestUrl, title_future.GetRepeatingCallback());
+    EXPECT_THAT(title_future.Take(), Optional(kUrlTitle));
+    histogram_tester.ExpectTotalCount(kIsPrimaryProfileActiveHistogramName,
+                                      /*expected_count=*/1);
+    histogram_tester.ExpectBucketCount(kIsPrimaryProfileActiveHistogramName,
+                                       true, /*expected_count=*/1);
+  }
+
+  SwitchToSecondaryProfile();
+
+  {
+    SCOPED_TRACE("Query a title while the primary profile is not active.");
+    fetcher().QueryHistory(kTestUrl, title_future.GetRepeatingCallback());
+    EXPECT_THAT(title_future.Take(), Optional(kUrlTitle));
+    histogram_tester.ExpectTotalCount(kIsPrimaryProfileActiveHistogramName,
+                                      /*expected_count=*/2);
+    histogram_tester.ExpectBucketCount(kIsPrimaryProfileActiveHistogramName,
+                                       false, /*expected_count=*/1);
   }
 }
 

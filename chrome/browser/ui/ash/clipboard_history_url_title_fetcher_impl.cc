@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -21,13 +22,13 @@ namespace {
 // may change in the future.
 history::HistoryService* GetHistoryService() {
   auto* const profile = ProfileManager::GetPrimaryUserProfile();
-
-  // TODO(http://b/267694762): Record whether the primary profile matches the
-  // active profile in a histogram.
-
   if (!profile) {
     return nullptr;
   }
+
+  base::UmaHistogramBoolean(
+      "Ash.ClipboardHistory.UrlTitleFetcher.IsPrimaryProfileActive",
+      profile == ProfileManager::GetActiveUserProfile());
 
   // TODO(http://b/267694762): Enforce the constraint that the primary profile's
   // browsing history can only be queried if the session has just one profile.
