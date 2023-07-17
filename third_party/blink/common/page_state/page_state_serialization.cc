@@ -477,7 +477,8 @@ void WriteHttpBody(const ExplodedHttpBody& http_body, SerializeObject* obj) {
   WriteBoolean(http_body.contains_passwords, obj);
 }
 
-void ReadFrameState(
+// This is only used for versions < 26. Later versions use ReadMojoFrameState.
+void ReadLegacyFrameState(
     SerializeObject* obj,
     bool is_top,
     std::vector<UniqueNameHelper::Replacement>* unique_name_replacements,
@@ -595,17 +596,19 @@ void ReadFrameState(
   size_t num_children =
       ReadAndValidateVectorSize(obj, sizeof(ExplodedFrameState));
   state->children.resize(num_children);
-  for (size_t i = 0; i < num_children; ++i)
-    ReadFrameState(obj, false, unique_name_replacements, &state->children[i]);
+  for (size_t i = 0; i < num_children; ++i) {
+    ReadLegacyFrameState(obj, false, unique_name_replacements,
+                         &state->children[i]);
+  }
 }
 
 // Writes the ExplodedFrameState data into the SerializeObject object for
 // serialization. This uses the custom, legacy format, and its implementation
 // should remain frozen in order to preserve this format.
 // TODO(pnoland, dcheng) Move the legacy write methods into a test-only helper.
-void WriteFrameState(const ExplodedFrameState& state,
-                     SerializeObject* obj,
-                     bool is_top) {
+void WriteLegacyFrameState(const ExplodedFrameState& state,
+                           SerializeObject* obj,
+                           bool is_top) {
   // WARNING: This data may be persisted for later use. As such, care must be
   // taken when changing the serialized format. If a new field needs to be
   // written, only adding at the end will make it easier to deal with loading
@@ -655,13 +658,14 @@ void WriteFrameState(const ExplodedFrameState& state,
   const std::vector<ExplodedFrameState>& children = state.children;
   WriteAndValidateVectorSize(children, obj);
   for (size_t i = 0; i < children.size(); ++i)
-    WriteFrameState(children[i], obj, false);
+    WriteLegacyFrameState(children[i], obj, false);
 }
 
-void WritePageState(const ExplodedPageState& state, SerializeObject* obj) {
+void WriteLegacyPageState(const ExplodedPageState& state,
+                          SerializeObject* obj) {
   WriteInteger(obj->version, obj);
   WriteStringVector(state.referenced_files, obj);
-  WriteFrameState(state.top, obj, true);
+  WriteLegacyFrameState(state.top, obj, true);
 }
 
 // Legacy read/write functions above this line. Don't change these.
@@ -754,8 +758,8 @@ void ReadHttpBody(mojom::HttpBody* mojo_body, ExplodedHttpBody* http_body) {
 // Do not depend on feature state when writing data to frame, so that the
 // contents of persisted history do not depend on whether a feature is enabled
 // or not.
-void WriteFrameState(const ExplodedFrameState& state,
-                     mojom::FrameState* frame) {
+void WriteMojoFrameState(const ExplodedFrameState& state,
+                         mojom::FrameState* frame) {
   frame->url_string = state.url_string;
   frame->referrer = state.referrer;
   if (state.initiator_origin.has_value())
@@ -805,12 +809,13 @@ void WriteFrameState(const ExplodedFrameState& state,
   const std::vector<ExplodedFrameState>& children = state.children;
   for (const auto& child : children) {
     mojom::FrameStatePtr child_frame = mojom::FrameState::New();
-    WriteFrameState(child, child_frame.get());
+    WriteMojoFrameState(child, child_frame.get());
     frame->children.push_back(std::move(child_frame));
   }
 }
 
-void ReadFrameState(mojom::FrameState* frame, ExplodedFrameState* state) {
+// This is used for versions >= 26.
+void ReadMojoFrameState(mojom::FrameState* frame, ExplodedFrameState* state) {
   state->url_string = frame->url_string;
   state->referrer = frame->referrer;
   if (frame->initiator_origin.has_value()) {
@@ -862,7 +867,7 @@ void ReadFrameState(mojom::FrameState* frame, ExplodedFrameState* state) {
   state->children.resize(frame->children.size());
   int i = 0;
   for (const auto& child : frame->children)
-    ReadFrameState(child.get(), &state->children[i++]);
+    ReadMojoFrameState(child.get(), &state->children[i++]);
 }
 
 void ReadMojoPageState(SerializeObject* obj, ExplodedPageState* state) {
@@ -882,7 +887,7 @@ void ReadMojoPageState(SerializeObject* obj, ExplodedPageState* state) {
     state->referenced_files.push_back(referenced_file);
   }
 
-  ReadFrameState(page->top.get(), &state->top);
+  ReadMojoFrameState(page->top.get(), &state->top);
 
   state->referenced_files.erase(std::unique(state->referenced_files.begin(),
                                             state->referenced_files.end()),
@@ -898,7 +903,7 @@ void WriteMojoPageState(const ExplodedPageState& state, SerializeObject* obj) {
   }
 
   page->top = mojom::FrameState::New();
-  WriteFrameState(state.top, page->top.get());
+  WriteMojoFrameState(state.top, page->top.get());
 
   std::vector<uint8_t> page_bytes = mojom::PageState::Serialize(&page);
   obj->pickle.WriteData(reinterpret_cast<char*>(page_bytes.data()),
@@ -929,7 +934,7 @@ void ReadPageState(SerializeObject* obj, ExplodedPageState* state) {
     ReadStringVector(obj, &state->referenced_files);
 
   std::vector<UniqueNameHelper::Replacement> unique_name_replacements;
-  ReadFrameState(obj, true, &unique_name_replacements, &state->top);
+  ReadLegacyFrameState(obj, true, &unique_name_replacements, &state->top);
 
   if (obj->version < 14)
     RecursivelyAppendReferencedFiles(state->top, &state->referenced_files);
@@ -1025,7 +1030,7 @@ void LegacyEncodePageStateForTesting(const ExplodedPageState& exploded,
                                      std::string* encoded) {
   SerializeObject obj;
   obj.version = version;
-  WritePageState(exploded, &obj);
+  WriteLegacyPageState(exploded, &obj);
   *encoded = obj.GetAsString();
 }
 
