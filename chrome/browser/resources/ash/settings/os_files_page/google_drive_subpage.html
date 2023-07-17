@@ -5,7 +5,7 @@
     deep-link-focus-id$="[[Setting.kGoogleDriveConnection]]">
   <template is="dom-if" if="[[driveDisabled_]]" restamp>
     <div class="start">
-      $i18nRaw{googleDriveDisconnectedFrom}
+      $i18nRaw{googleDriveReconnectAs}
     </div>
   </template>
   <template is="dom-if" if="[[!driveDisabled_]]" restamp>
@@ -98,24 +98,25 @@
     <div class="start">
       $i18n{googleDriveOfflineStorageTitle}
       <div class="secondary">
-        [[i18n('googleDriveOfflineStorageSpaceTaken', totalPinnedSize_)]]
+        [[getPinnedSizeLabel_(totalPinnedSize_)]]
       </div>
     </div>
     <div id="cleanUpStorageButtonWrapper">
       <cr-button role="button"
           on-click="onCleanUpStorage_"
-          disabled="[[shouldEnableCleanUpStorageButton_(bulkPinningStatus_)]]"
+          disabled="[[!shouldEnableCleanUpStorageButton_(bulkPinningStatus_, totalPinnedSize_)]]"
           on-focus="onShowTooltip_"
           on-mouseenter="onShowTooltip_">
         $i18n{googleDriveCleanUpStorageAction}
       </cr-button>
     </div>
     <template is="dom-if"
-        if="[[shouldEnableCleanUpStorageButton_(bulkPinningStatus_)]]" restamp>
+        if="[[!shouldEnableCleanUpStorageButton_(bulkPinningStatus_, totalPinnedSize_)]]"
+        restamp>
       <paper-tooltip id="cleanUpStorageTooltip"
           for="cleanUpStorageButtonWrapper"
           fit-to-visible-bounds part="tooltip">
-          $i18n{googleDriveCleanUpStorageDisabledTooltip}
+        [[getCleanUpStorageDisabledTooltipText_(totalPinnedSize_)]]
       </paper-tooltip>
     </template>
   </div>

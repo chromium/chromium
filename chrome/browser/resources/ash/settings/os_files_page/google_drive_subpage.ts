@@ -51,6 +51,14 @@ export enum ConfirmationDialogType {
   NONE = 'none',
 }
 
+/**
+ * When the pinned size is not still calculating or unknown.
+ */
+enum PinnedSizeType {
+  UNKNOWN = 'unknown',
+  CALCULATING = 'calculating',
+}
+
 export class SettingsGoogleDriveSubpageElement extends
     SettingsGoogleDriveSubpageElementBase {
   constructor() {
@@ -133,7 +141,7 @@ export class SettingsGoogleDriveSubpageElement extends
   /**
    * Keeps track of the last requested total pinned size.
    */
-  private totalPinnedSize_: string|null = null;
+  private totalPinnedSize_: string|PinnedSizeType = PinnedSizeType.CALCULATING;
 
   /**
    * Whether to show the spinner in the top right of the settings page.
@@ -233,15 +241,14 @@ export class SettingsGoogleDriveSubpageElement extends
   private async updateTotalPinnedSize_() {
     if (!this.totalPinnedSize_) {
       // Only set the total pinned size to calculating on the first update.
-      this.totalPinnedSize_ =
-          this.i18n('googleDriveOfflineClearCalculatingSubtitle');
+      this.totalPinnedSize_ = PinnedSizeType.CALCULATING;
     }
     const {size} = await this.pageHandler.getTotalPinnedSize();
     if (size) {
       this.totalPinnedSize_ = size;
       return;
     }
-    this.totalPinnedSize_ = this.i18n('googleDriveOfflineClearErrorSubtitle');
+    this.totalPinnedSize_ = PinnedSizeType.UNKNOWN;
   }
 
   /**
@@ -285,6 +292,34 @@ export class SettingsGoogleDriveSubpageElement extends
     return this.driveDisabled_ ?
         this.i18n('googleDriveConnectLabel') :
         this.i18n('googleDriveRemoveDriveAccessButtonText');
+  }
+
+  /**
+   * Returns the text representation of the total pinned size.
+   */
+  private getPinnedSizeLabel_(): string {
+    if (this.totalPinnedSize_ === PinnedSizeType.CALCULATING) {
+      return this.i18n('googleDriveOfflineClearCalculatingSubtitle');
+    } else if (this.totalPinnedSize_ === PinnedSizeType.UNKNOWN) {
+      return this.i18n('googleDriveOfflineClearErrorSubtitle');
+    }
+
+    return this.i18n(
+        'googleDriveOfflineStorageSpaceTaken', this.totalPinnedSize_);
+  }
+
+  /**
+   * Returns the text representation of the tooltip text when the "Clean up
+   * storage" button is disabled.
+   */
+  private getCleanUpStorageDisabledTooltipText_(): string {
+    if (this.totalPinnedSize_ === PinnedSizeType.UNKNOWN ||
+        this.totalPinnedSize_ === PinnedSizeType.CALCULATING) {
+      return this.i18n(
+          'googleDriveCleanUpStorageDisabledUnknownStorageTooltip');
+    }
+
+    return this.i18n('googleDriveCleanUpStorageDisabledTooltip');
   }
 
   /**
@@ -409,7 +444,9 @@ export class SettingsGoogleDriveSubpageElement extends
    * Returns true if the bulk pinning preference is disabled.
    */
   private shouldEnableCleanUpStorageButton_() {
-    return this.getPref(GOOGLE_DRIVE_BULK_PINNING_PREF).value;
+    return !this.getPref(GOOGLE_DRIVE_BULK_PINNING_PREF).value &&
+        this.totalPinnedSize_ !== PinnedSizeType.UNKNOWN &&
+        this.totalPinnedSize_ !== PinnedSizeType.CALCULATING;
   }
 
   /**

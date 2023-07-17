@@ -106,8 +106,6 @@ void FilesSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"disconnectGoogleDriveAccount", IDS_SETTINGS_DISCONNECT_GOOGLE_DRIVE},
       {"googleDriveLabel", IDS_SETTINGS_GOOGLE_DRIVE},
-      {"googleDriveDisabledLabel", IDS_SETTINGS_GOOGLE_DRIVE_DISABLED},
-      {"googleDriveDisconnectLabel", IDS_SETTINGS_GOOGLE_DRIVE_DISCONNECT},
       {"googleDriveConnectLabel", IDS_SETTINGS_GOOGLE_DRIVE_CONNECT},
       {"googleDriveRemoveAccessDialogTitle",
        IDS_SETTINGS_GOOGLE_DRIVE_REMOVE_ACCESS_DIALOG_TITLE},
@@ -138,6 +136,8 @@ void FilesSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_GOOGLE_DRIVE_OFFLINE_CLEAN_UP_STORAGE_BODY},
       {"googleDriveCleanUpStorageDisabledTooltip",
        IDS_SETTINGS_GOOGLE_DRIVE_OFFLINE_CLEAN_UP_STORAGE_DISABLED_TOOLTIP},
+      {"googleDriveCleanUpStorageDisabledUnknownStorageTooltip",
+       IDS_SETTINGS_GOOGLE_DRIVE_OFFLINE_CLEAN_UP_STORAGE_DISABLED_UNKNOWN_STORAGE_TOOLTIP},
       {"googleDriveTurnOffLabel",
        IDS_SETTINGS_GOOGLE_DRIVE_TURN_OFF_BUTTON_LABEL},
       {"googleDriveFileSyncTurnOffTitle",
@@ -231,9 +231,9 @@ void FilesSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
             IDS_SETTINGS_GOOGLE_DRIVE_SIGNED_IN_AS,
             base::ASCIIToUTF16(user->GetAccountId().GetUserEmail())));
     html_source->AddString(
-        "googleDriveDisconnectedFrom",
+        "googleDriveReconnectAs",
         l10n_util::GetStringFUTF16(
-            IDS_SETTINGS_GOOGLE_DRIVE_DISCONNECTED_FROM,
+            IDS_SETTINGS_GOOGLE_DRIVE_RECONNECT_AS,
             base::ASCIIToUTF16(user->GetAccountId().GetUserEmail())));
   }
 

@@ -117,8 +117,7 @@ suite('<settings-google-drive-subpage>', function() {
     // account".
     page.setPrefValue('gdata.disabled', true);
     flush();
-    assertEquals(
-        'Connect account', connectDisconnectButton!.textContent!.trim());
+    assertEquals('Connect', connectDisconnectButton!.textContent!.trim());
 
     // Update the preference and ensure the text has the value "Remove Drive
     // access".
@@ -375,14 +374,16 @@ suite('<settings-google-drive-subpage>', function() {
     // Mock an empty pinned size (size is there but an empty string).
     testBrowserProxy.handler.setResultFor('getTotalPinnedSize', {size: ''});
     page.onNavigated();
-    await assertAsync(
-        () => offlineStorageSubtitle.innerText === 'Using Unknown');
+    await assertAsync(() => offlineStorageSubtitle.innerText === 'Unknown');
   });
 
   test(
       'clear offline files disabled when bulk pinning enabled',
       async function() {
         page.setPrefValue('drivefs.bulk_pinning_enabled', false);
+        testBrowserProxy.handler.setResultFor(
+            'getTotalPinnedSize', {size: '100 MB'});
+        page.onNavigated();
         testBrowserProxy.observerRemote.onProgress({
           freeSpace: 'x',
           requiredSpace: 'y',
@@ -393,6 +394,9 @@ suite('<settings-google-drive-subpage>', function() {
         await assertAsync(() => !clearOfflineStorageButton.disabled);
 
         page.setPrefValue('drivefs.bulk_pinning_enabled', true);
+        testBrowserProxy.handler.setResultFor(
+            'getTotalPinnedSize', {size: '100 MB'});
+        page.onNavigated();
         testBrowserProxy.observerRemote.onProgress({
           freeSpace: 'x',
           requiredSpace: 'y',
@@ -405,6 +409,10 @@ suite('<settings-google-drive-subpage>', function() {
 
   test('when clear offline files clicked show dialog', async function() {
     page.setPrefValue('drivefs.bulk_pinning_enabled', false);
+    testBrowserProxy.handler.setResultFor(
+        'getTotalPinnedSize', {size: '100 MB'});
+    page.onNavigated();
+    await assertAsync(() => !clearOfflineStorageButton.disabled);
 
     clearOfflineStorageButton.click();
     await assertAsync(
@@ -413,9 +421,6 @@ suite('<settings-google-drive-subpage>', function() {
         5000);
     await clickConfirmationDialogButton('.cancel-button');
     assertEquals(testBrowserProxy.handler.getCallCount('clearPinnedFiles'), 0);
-
-    testBrowserProxy.handler.setResultFor(
-        'getTotalPinnedSize', {size: '100 MB'});
 
     clearOfflineStorageButton.click();
     await assertAsync(

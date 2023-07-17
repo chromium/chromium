@@ -159,14 +159,13 @@ IN_PROC_BROWSER_TEST_F(GoogleDriveHandlerTest,
   google_drive_settings.AssertBulkPinningSpace(required_space, remaining_space);
 }
 
-// Failing reliably in M117: crbug.com/1456602
 IN_PROC_BROWSER_TEST_F(GoogleDriveHandlerTest,
-                       DISABLED_OnlyUnpinnedResultsUpdateTheSpaceRequirements) {
+                       OnlyUnpinnedResultsUpdateTheSpaceRequirements) {
   SetUpSearchResultExpectations();
 
   auto* fake_drivefs = GetFakeDriveFsForProfile(browser()->profile());
   EXPECT_CALL(*fake_drivefs, GetOfflineFilesSpaceUsage(_))
-      .WillOnce(RunOnceCallback<0>(drive::FILE_ERROR_OK, 1));
+      .WillRepeatedly(RunOnceCallback<0>(drive::FILE_ERROR_OK, 1));
 
   // Each item is 125 MB in size, total required space should be 500 MB.
   int64_t file_size = 125 * 1024 * 1024;
@@ -176,13 +175,13 @@ IN_PROC_BROWSER_TEST_F(GoogleDriveHandlerTest,
       {{.size = file_size}, {.size = file_size}});
   fake_search_query_.SetSearchResults({});
 
-  int64_t free_space = 1024 * 1024 * 1024;
+  int64_t free_space = int64_t(3) << 30;  // 3 GB.
   auto required_space = FormatBytesToString(file_size * 4);
-  auto remaining_space = FormatBytesToString(free_space - (file_size * 4));
+  auto free_space_str = FormatBytesToString(free_space);
 
   ash::FakeSpacedClient::Get()->set_free_disk_space(free_space);
   auto google_drive_settings = OpenGoogleDriveSettings();
-  google_drive_settings.AssertBulkPinningSpace(required_space, remaining_space);
+  google_drive_settings.AssertBulkPinningSpace(required_space, free_space_str);
 }
 
 IN_PROC_BROWSER_TEST_F(GoogleDriveHandlerTest,
@@ -218,7 +217,7 @@ IN_PROC_BROWSER_TEST_F(GoogleDriveHandlerTest,
       .WillRepeatedly(RunOnceCallback<0>(drive::FILE_ERROR_OK, -1));
 
   auto google_drive_settings = OpenGoogleDriveSettings();
-  google_drive_settings.AssertBulkPinningPinnedSize("Unknown");
+  google_drive_settings.AssertBulkPinningPinnedSize("unknown");
 }
 
 IN_PROC_BROWSER_TEST_F(GoogleDriveHandlerTest,
