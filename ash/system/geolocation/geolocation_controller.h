@@ -29,6 +29,8 @@ class Clock;
 
 namespace ash {
 
+class LocalTimeConverter;
+
 // Represents a geolocation position fix. It's "simple" because it doesn't
 // expose all the parameters of the position interface as defined by the
 // Geolocation API Specification:
@@ -119,6 +121,8 @@ class ASH_EXPORT GeolocationController
   void SetTimerForTesting(std::unique_ptr<base::OneShotTimer> timer);
 
   void SetClockForTesting(base::Clock* clock);
+  void SetLocalTimeConverterForTesting(
+      const LocalTimeConverter* local_time_converter);
 
   void SetCurrentTimezoneIdForTesting(const std::u16string& timezone_id);
 
@@ -179,6 +183,10 @@ class ASH_EXPORT GeolocationController
 
   // Optional Used in tests to override the time of "Now".
   raw_ptr<base::Clock, ExperimentalAsh> clock_ = nullptr;  // Not owned.
+
+  // Optional Used in tests to override all local time operations.
+  raw_ptr<const LocalTimeConverter, ExperimentalAsh> local_time_converter_ =
+      nullptr;  // Not owned.
 
   // The ID of the current timezone in the format similar to "America/Chicago".
   std::u16string current_timezone_id_;

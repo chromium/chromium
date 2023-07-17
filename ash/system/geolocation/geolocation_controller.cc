@@ -149,6 +149,11 @@ void GeolocationController::SetClockForTesting(base::Clock* clock) {
   clock_ = clock;
 }
 
+void GeolocationController::SetLocalTimeConverterForTesting(
+    const LocalTimeConverter* local_time_converter) {
+  local_time_converter_ = local_time_converter;
+}
+
 void GeolocationController::SetCurrentTimezoneIdForTesting(
     const std::u16string& timezone_id) {
   current_timezone_id_ = timezone_id;
@@ -234,6 +239,7 @@ base::Time GeolocationController::GetSunRiseSet(bool sunrise) const {
     return TimeOfDay(sunrise ? kDefaultSunriseTimeOffsetMinutes
                              : kDefaultSunsetTimeOffsetMinutes)
         .SetClock(clock_)
+        .SetLocalTimeConverter(local_time_converter_)
         .ToTimeToday();
   }
 
@@ -246,7 +252,11 @@ base::Time GeolocationController::GetSunRiseSet(bool sunrise) const {
   // Note that the icu calendar works with milliseconds since epoch, and
   // base::Time::FromDoubleT() / ToDoubleT() work with seconds since epoch.
   const double midday_today_sec =
-      TimeOfDay(12 * 60).SetClock(clock_).ToTimeToday().ToDoubleT();
+      TimeOfDay(12 * 60)
+          .SetClock(clock_)
+          .SetLocalTimeConverter(local_time_converter_)
+          .ToTimeToday()
+          .ToDoubleT();
   astro.setTime(midday_today_sec * 1000.0);
   const double sun_rise_set_ms = astro.getSunRiseSet(sunrise);
   // If there is 24 hours of daylight or darkness, `CalendarAstronomer` returns
