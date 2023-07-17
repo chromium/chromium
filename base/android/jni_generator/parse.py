@@ -219,8 +219,7 @@ def _parse_proxy_natives(type_resolver, contents):
             native_class_name=annotations.get('NativeClassQualifiedName')))
   if not ret.methods:
     raise SyntaxError('Found no methods within @NativeMethod interface.')
-  # TODO(agrieve): Enable sorting.
-  # ret.methods.sort()
+  ret.methods.sort()
   return ret
 
 

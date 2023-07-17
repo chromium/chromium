@@ -13,44 +13,16 @@ public class GEN_JNI {
     public static final boolean REQUIRE_MOCK = false;
 
 
-    public static void org_chromium_example_jni_1generator_SampleForAnnotationProcessor_foo() {
-        J.N.MygCV2jQ();
-    }
-
     public static Object org_chromium_example_jni_1generator_SampleForAnnotationProcessor_bar(Object sample) {
         return J.N.MHuqnmXT(sample);
     }
 
-    public static String org_chromium_example_jni_1generator_SampleForAnnotationProcessor_revString(String stringToReverse) {
-        return J.N.MM5Xkwyy(stringToReverse);
-    }
-
-    public static String[] org_chromium_example_jni_1generator_SampleForAnnotationProcessor_sendToNative(String[] strs) {
-        return J.N.MAC2QhR9(strs);
-    }
-
-    public static Object[] org_chromium_example_jni_1generator_SampleForAnnotationProcessor_sendSamplesToNative(Object[] strs) {
-        return J.N.MGhRh4Nd(strs);
+    public static void org_chromium_example_jni_1generator_SampleForAnnotationProcessor_foo() {
+        J.N.MygCV2jQ();
     }
 
     public static boolean org_chromium_example_jni_1generator_SampleForAnnotationProcessor_hasPhalange() {
         return J.N.MW0aEs4h();
-    }
-
-    public static int[] org_chromium_example_jni_1generator_SampleForAnnotationProcessor_testAllPrimitives(int zint, int[] ints, long zlong, long[] longs, short zshort, short[] shorts, char zchar, char[] chars, byte zbyte, byte[] bytes, double zdouble, double[] doubles, float zfloat, float[] floats, boolean zbool, boolean[] bools) {
-        return J.N.MlVFI4RX(zint, ints, zlong, longs, zshort, shorts, zchar, chars, zbyte, bytes, zdouble, doubles, zfloat, floats, zbool, bools);
-    }
-
-    public static void org_chromium_example_jni_1generator_SampleForAnnotationProcessor_testSpecialTypes(Class clazz, Class[] classes, Throwable throwable, Throwable[] throwables, String string, String[] strings, Object tStruct, Object[] structs, Object obj, Object[] objects) {
-        J.N.MqOnlud7(clazz, classes, throwable, throwables, string, strings, tStruct, structs, obj, objects);
-    }
-
-    public static Throwable org_chromium_example_jni_1generator_SampleForAnnotationProcessor_returnThrowable() {
-        return J.N.MuZc76Vt();
-    }
-
-    public static Throwable[] org_chromium_example_jni_1generator_SampleForAnnotationProcessor_returnThrowables() {
-        return J.N.MAD53J7V();
     }
 
     public static Class org_chromium_example_jni_1generator_SampleForAnnotationProcessor_returnClass() {
@@ -59,6 +31,14 @@ public class GEN_JNI {
 
     public static Class[] org_chromium_example_jni_1generator_SampleForAnnotationProcessor_returnClasses() {
         return J.N.M$hL1577();
+    }
+
+    public static Object org_chromium_example_jni_1generator_SampleForAnnotationProcessor_returnObject() {
+        return J.N.M$hPywjv();
+    }
+
+    public static Object[] org_chromium_example_jni_1generator_SampleForAnnotationProcessor_returnObjects() {
+        return J.N.MPpCU1l5();
     }
 
     public static String org_chromium_example_jni_1generator_SampleForAnnotationProcessor_returnString() {
@@ -77,11 +57,31 @@ public class GEN_JNI {
         return J.N.MIBrQLK4();
     }
 
-    public static Object org_chromium_example_jni_1generator_SampleForAnnotationProcessor_returnObject() {
-        return J.N.M$hPywjv();
+    public static Throwable org_chromium_example_jni_1generator_SampleForAnnotationProcessor_returnThrowable() {
+        return J.N.MuZc76Vt();
     }
 
-    public static Object[] org_chromium_example_jni_1generator_SampleForAnnotationProcessor_returnObjects() {
-        return J.N.MPpCU1l5();
+    public static Throwable[] org_chromium_example_jni_1generator_SampleForAnnotationProcessor_returnThrowables() {
+        return J.N.MAD53J7V();
+    }
+
+    public static String org_chromium_example_jni_1generator_SampleForAnnotationProcessor_revString(String stringToReverse) {
+        return J.N.MM5Xkwyy(stringToReverse);
+    }
+
+    public static Object[] org_chromium_example_jni_1generator_SampleForAnnotationProcessor_sendSamplesToNative(Object[] strs) {
+        return J.N.MGhRh4Nd(strs);
+    }
+
+    public static String[] org_chromium_example_jni_1generator_SampleForAnnotationProcessor_sendToNative(String[] strs) {
+        return J.N.MAC2QhR9(strs);
+    }
+
+    public static int[] org_chromium_example_jni_1generator_SampleForAnnotationProcessor_testAllPrimitives(int zint, int[] ints, long zlong, long[] longs, short zshort, short[] shorts, char zchar, char[] chars, byte zbyte, byte[] bytes, double zdouble, double[] doubles, float zfloat, float[] floats, boolean zbool, boolean[] bools) {
+        return J.N.MlVFI4RX(zint, ints, zlong, longs, zshort, shorts, zchar, chars, zbyte, bytes, zdouble, doubles, zfloat, floats, zbool, bools);
+    }
+
+    public static void org_chromium_example_jni_1generator_SampleForAnnotationProcessor_testSpecialTypes(Class clazz, Class[] classes, Throwable throwable, Throwable[] throwables, String string, String[] strings, Object tStruct, Object[] structs, Object obj, Object[] objects) {
+        J.N.MqOnlud7(clazz, classes, throwable, throwables, string, strings, tStruct, structs, obj, objects);
     }
 }

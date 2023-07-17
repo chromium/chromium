@@ -245,8 +245,7 @@ def ExtractNatives(type_resolver, contents, ptr_type):
                           name=match.group('name').replace('native', ''),
                           ptr_type=ptr_type)
     natives.append(native)
-  # TODO(agrieve): Enable sorting.
-  #natives.sort(key=lambda x: (x.name, x.signature))
+  natives.sort(key=lambda x: (x.name, x.signature))
   return natives
 
 
@@ -385,9 +384,7 @@ def ExtractCalledByNatives(type_resolver, contents):
     if '@CalledByNative' in line1:
       raise ParseError('could not parse @CalledByNative method signature',
                        line1, line2)
-  # TODO(agrieve): Enable sorting.
-  # called_by_natives.sort(
-  #     key=lambda x: (x.java_class_name, x.name, x.signature))
+  called_by_natives.sort(key=lambda x: (x.java_class_name, x.name, x.signature))
   return MangleCalledByNatives(called_by_natives)
 
 

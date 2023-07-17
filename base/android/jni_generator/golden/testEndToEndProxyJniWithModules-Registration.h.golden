@@ -23,13 +23,13 @@
 
 // Step 2: Forward declarations (methods).
 
-JNI_GENERATOR_EXPORT void Java_J_module_1N_M_00024_00024EIl9t(
-    JNIEnv* env,
-    jclass jcaller);
 JNI_GENERATOR_EXPORT jboolean Java_J_module_1N_Mc2WZLnF(
     JNIEnv* env,
     jclass jcaller,
     jint a);
+JNI_GENERATOR_EXPORT void Java_J_module_1N_M_00024_00024EIl9t(
+    JNIEnv* env,
+    jclass jcaller);
 
 
 

@@ -25,13 +25,13 @@ class SampleUniqueAnnotationsJni implements SampleUniqueAnnotations.Natives {
   };
 
   @Override
-  public void foo(long nativePtr) {
-    GEN_JNI.org_chromium_example_jni_1generator_SampleUniqueAnnotations_foo(nativePtr);
+  public int bar(int x, int y) {
+    return (int) GEN_JNI.org_chromium_example_jni_1generator_SampleUniqueAnnotations_bar(x, y);
   }
 
   @Override
-  public int bar(int x, int y) {
-    return (int) GEN_JNI.org_chromium_example_jni_1generator_SampleUniqueAnnotations_bar(x, y);
+  public void foo(long nativePtr) {
+    GEN_JNI.org_chromium_example_jni_1generator_SampleUniqueAnnotations_foo(nativePtr);
   }
 
   public static SampleUniqueAnnotations.Natives get() {

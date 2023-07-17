@@ -23,28 +23,58 @@
 
 // Step 2: Forward declarations (methods).
 
-JNI_GENERATOR_EXPORT void Java_J_N_MygCV2jQ(
-    JNIEnv* env,
-    jclass jcaller);
 JNI_GENERATOR_EXPORT jobject Java_J_N_MHuqnmXT(
     JNIEnv* env,
     jclass jcaller,
     jobject sample);
+JNI_GENERATOR_EXPORT void Java_J_N_MygCV2jQ(
+    JNIEnv* env,
+    jclass jcaller);
+JNI_GENERATOR_EXPORT jboolean Java_J_N_MW0aEs4h(
+    JNIEnv* env,
+    jclass jcaller);
+JNI_GENERATOR_EXPORT jclass Java_J_N_M_00024ZgOi4g(
+    JNIEnv* env,
+    jclass jcaller);
+JNI_GENERATOR_EXPORT jobjectArray Java_J_N_M_00024hL1577(
+    JNIEnv* env,
+    jclass jcaller);
+JNI_GENERATOR_EXPORT jobject Java_J_N_M_00024hPywjv(
+    JNIEnv* env,
+    jclass jcaller);
+JNI_GENERATOR_EXPORT jobjectArray Java_J_N_MPpCU1l5(
+    JNIEnv* env,
+    jclass jcaller);
+JNI_GENERATOR_EXPORT jstring Java_J_N_M0k1OjBK(
+    JNIEnv* env,
+    jclass jcaller);
+JNI_GENERATOR_EXPORT jobjectArray Java_J_N_Mssfs54E(
+    JNIEnv* env,
+    jclass jcaller);
+JNI_GENERATOR_EXPORT jobject Java_J_N_MSzcel_1H(
+    JNIEnv* env,
+    jclass jcaller);
+JNI_GENERATOR_EXPORT jobjectArray Java_J_N_MIBrQLK4(
+    JNIEnv* env,
+    jclass jcaller);
+JNI_GENERATOR_EXPORT jthrowable Java_J_N_MuZc76Vt(
+    JNIEnv* env,
+    jclass jcaller);
+JNI_GENERATOR_EXPORT jobjectArray Java_J_N_MAD53J7V(
+    JNIEnv* env,
+    jclass jcaller);
 JNI_GENERATOR_EXPORT jstring Java_J_N_MM5Xkwyy(
     JNIEnv* env,
     jclass jcaller,
     jstring stringToReverse);
-JNI_GENERATOR_EXPORT jobjectArray Java_J_N_MAC2QhR9(
-    JNIEnv* env,
-    jclass jcaller,
-    jobjectArray strs);
 JNI_GENERATOR_EXPORT jobjectArray Java_J_N_MGhRh4Nd(
     JNIEnv* env,
     jclass jcaller,
     jobjectArray strs);
-JNI_GENERATOR_EXPORT jboolean Java_J_N_MW0aEs4h(
+JNI_GENERATOR_EXPORT jobjectArray Java_J_N_MAC2QhR9(
     JNIEnv* env,
-    jclass jcaller);
+    jclass jcaller,
+    jobjectArray strs);
 JNI_GENERATOR_EXPORT jintArray Java_J_N_MlVFI4RX(
     JNIEnv* env,
     jclass jcaller,
@@ -77,36 +107,6 @@ JNI_GENERATOR_EXPORT void Java_J_N_MqOnlud7(
     jobjectArray structs,
     jobject obj,
     jobjectArray objects);
-JNI_GENERATOR_EXPORT jthrowable Java_J_N_MuZc76Vt(
-    JNIEnv* env,
-    jclass jcaller);
-JNI_GENERATOR_EXPORT jobjectArray Java_J_N_MAD53J7V(
-    JNIEnv* env,
-    jclass jcaller);
-JNI_GENERATOR_EXPORT jclass Java_J_N_M_00024ZgOi4g(
-    JNIEnv* env,
-    jclass jcaller);
-JNI_GENERATOR_EXPORT jobjectArray Java_J_N_M_00024hL1577(
-    JNIEnv* env,
-    jclass jcaller);
-JNI_GENERATOR_EXPORT jstring Java_J_N_M0k1OjBK(
-    JNIEnv* env,
-    jclass jcaller);
-JNI_GENERATOR_EXPORT jobjectArray Java_J_N_Mssfs54E(
-    JNIEnv* env,
-    jclass jcaller);
-JNI_GENERATOR_EXPORT jobject Java_J_N_MSzcel_1H(
-    JNIEnv* env,
-    jclass jcaller);
-JNI_GENERATOR_EXPORT jobjectArray Java_J_N_MIBrQLK4(
-    JNIEnv* env,
-    jclass jcaller);
-JNI_GENERATOR_EXPORT jobject Java_J_N_M_00024hPywjv(
-    JNIEnv* env,
-    jclass jcaller);
-JNI_GENERATOR_EXPORT jobjectArray Java_J_N_MPpCU1l5(
-    JNIEnv* env,
-    jclass jcaller);
 
 
 

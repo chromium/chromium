@@ -23,34 +23,74 @@
 
 // Step 2: Forward declarations (methods).
 
-JNI_GENERATOR_EXPORT void
-    Java_org_chromium_base_natives_GEN_1JNI_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1foo(
-    JNIEnv* env,
-    jclass jcaller);
 JNI_GENERATOR_EXPORT jobject
     Java_org_chromium_base_natives_GEN_1JNI_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1bar(
     JNIEnv* env,
     jclass jcaller,
     jobject sample);
+JNI_GENERATOR_EXPORT void
+    Java_org_chromium_base_natives_GEN_1JNI_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1foo(
+    JNIEnv* env,
+    jclass jcaller);
+JNI_GENERATOR_EXPORT jboolean
+    Java_org_chromium_base_natives_GEN_1JNI_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1hasPhalange(
+    JNIEnv* env,
+    jclass jcaller);
+JNI_GENERATOR_EXPORT jclass
+    Java_org_chromium_base_natives_GEN_1JNI_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1returnClass(
+    JNIEnv* env,
+    jclass jcaller);
+JNI_GENERATOR_EXPORT jobjectArray
+    Java_org_chromium_base_natives_GEN_1JNI_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1returnClasses(
+    JNIEnv* env,
+    jclass jcaller);
+JNI_GENERATOR_EXPORT jobject
+    Java_org_chromium_base_natives_GEN_1JNI_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1returnObject(
+    JNIEnv* env,
+    jclass jcaller);
+JNI_GENERATOR_EXPORT jobjectArray
+    Java_org_chromium_base_natives_GEN_1JNI_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1returnObjects(
+    JNIEnv* env,
+    jclass jcaller);
+JNI_GENERATOR_EXPORT jstring
+    Java_org_chromium_base_natives_GEN_1JNI_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1returnString(
+    JNIEnv* env,
+    jclass jcaller);
+JNI_GENERATOR_EXPORT jobjectArray
+    Java_org_chromium_base_natives_GEN_1JNI_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1returnStrings(
+    JNIEnv* env,
+    jclass jcaller);
+JNI_GENERATOR_EXPORT jobject
+    Java_org_chromium_base_natives_GEN_1JNI_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1returnStruct(
+    JNIEnv* env,
+    jclass jcaller);
+JNI_GENERATOR_EXPORT jobjectArray
+    Java_org_chromium_base_natives_GEN_1JNI_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1returnStructs(
+    JNIEnv* env,
+    jclass jcaller);
+JNI_GENERATOR_EXPORT jthrowable
+    Java_org_chromium_base_natives_GEN_1JNI_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1returnThrowable(
+    JNIEnv* env,
+    jclass jcaller);
+JNI_GENERATOR_EXPORT jobjectArray
+    Java_org_chromium_base_natives_GEN_1JNI_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1returnThrowables(
+    JNIEnv* env,
+    jclass jcaller);
 JNI_GENERATOR_EXPORT jstring
     Java_org_chromium_base_natives_GEN_1JNI_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1revString(
     JNIEnv* env,
     jclass jcaller,
     jstring stringToReverse);
 JNI_GENERATOR_EXPORT jobjectArray
-    Java_org_chromium_base_natives_GEN_1JNI_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1sendToNative(
-    JNIEnv* env,
-    jclass jcaller,
-    jobjectArray strs);
-JNI_GENERATOR_EXPORT jobjectArray
     Java_org_chromium_base_natives_GEN_1JNI_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1sendSamplesToNative(
     JNIEnv* env,
     jclass jcaller,
     jobjectArray strs);
-JNI_GENERATOR_EXPORT jboolean
-    Java_org_chromium_base_natives_GEN_1JNI_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1hasPhalange(
+JNI_GENERATOR_EXPORT jobjectArray
+    Java_org_chromium_base_natives_GEN_1JNI_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1sendToNative(
     JNIEnv* env,
-    jclass jcaller);
+    jclass jcaller,
+    jobjectArray strs);
 JNI_GENERATOR_EXPORT jintArray
     Java_org_chromium_base_natives_GEN_1JNI_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1testAllPrimitives(
     JNIEnv* env,
@@ -85,89 +125,21 @@ JNI_GENERATOR_EXPORT void
     jobjectArray structs,
     jobject obj,
     jobjectArray objects);
-JNI_GENERATOR_EXPORT jthrowable
-    Java_org_chromium_base_natives_GEN_1JNI_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1returnThrowable(
-    JNIEnv* env,
-    jclass jcaller);
-JNI_GENERATOR_EXPORT jobjectArray
-    Java_org_chromium_base_natives_GEN_1JNI_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1returnThrowables(
-    JNIEnv* env,
-    jclass jcaller);
-JNI_GENERATOR_EXPORT jclass
-    Java_org_chromium_base_natives_GEN_1JNI_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1returnClass(
-    JNIEnv* env,
-    jclass jcaller);
-JNI_GENERATOR_EXPORT jobjectArray
-    Java_org_chromium_base_natives_GEN_1JNI_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1returnClasses(
-    JNIEnv* env,
-    jclass jcaller);
-JNI_GENERATOR_EXPORT jstring
-    Java_org_chromium_base_natives_GEN_1JNI_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1returnString(
-    JNIEnv* env,
-    jclass jcaller);
-JNI_GENERATOR_EXPORT jobjectArray
-    Java_org_chromium_base_natives_GEN_1JNI_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1returnStrings(
-    JNIEnv* env,
-    jclass jcaller);
-JNI_GENERATOR_EXPORT jobject
-    Java_org_chromium_base_natives_GEN_1JNI_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1returnStruct(
-    JNIEnv* env,
-    jclass jcaller);
-JNI_GENERATOR_EXPORT jobjectArray
-    Java_org_chromium_base_natives_GEN_1JNI_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1returnStructs(
-    JNIEnv* env,
-    jclass jcaller);
-JNI_GENERATOR_EXPORT jobject
-    Java_org_chromium_base_natives_GEN_1JNI_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1returnObject(
-    JNIEnv* env,
-    jclass jcaller);
-JNI_GENERATOR_EXPORT jobjectArray
-    Java_org_chromium_base_natives_GEN_1JNI_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1returnObjects(
-    JNIEnv* env,
-    jclass jcaller);
 
 
 // Step 3: Method declarations.
 
 
 static const JNINativeMethod kMethods_org_chromium_base_natives_GEN_1JNI[] = {
-    { "org_chromium_example_jni_1generator_SampleForAnnotationProcessor_foo", "()V",
-        reinterpret_cast<void*>(Java_org_chromium_base_natives_GEN_1JNI_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1foo)
-        },
     { "org_chromium_example_jni_1generator_SampleForAnnotationProcessor_bar",
         "(Ljava/lang/Object;)Ljava/lang/Object;",
         reinterpret_cast<void*>(Java_org_chromium_base_natives_GEN_1JNI_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1bar)
         },
-    { "org_chromium_example_jni_1generator_SampleForAnnotationProcessor_revString",
-        "(Ljava/lang/String;)Ljava/lang/String;",
-        reinterpret_cast<void*>(Java_org_chromium_base_natives_GEN_1JNI_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1revString)
-        },
-    { "org_chromium_example_jni_1generator_SampleForAnnotationProcessor_sendToNative",
-        "([Ljava/lang/String;)[Ljava/lang/String;",
-        reinterpret_cast<void*>(Java_org_chromium_base_natives_GEN_1JNI_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1sendToNative)
-        },
-    { "org_chromium_example_jni_1generator_SampleForAnnotationProcessor_sendSamplesToNative",
-        "([Ljava/lang/Object;)[Ljava/lang/Object;",
-        reinterpret_cast<void*>(Java_org_chromium_base_natives_GEN_1JNI_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1sendSamplesToNative)
+    { "org_chromium_example_jni_1generator_SampleForAnnotationProcessor_foo", "()V",
+        reinterpret_cast<void*>(Java_org_chromium_base_natives_GEN_1JNI_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1foo)
         },
     { "org_chromium_example_jni_1generator_SampleForAnnotationProcessor_hasPhalange", "()Z",
         reinterpret_cast<void*>(Java_org_chromium_base_natives_GEN_1JNI_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1hasPhalange)
-        },
-    { "org_chromium_example_jni_1generator_SampleForAnnotationProcessor_testAllPrimitives",
-        "(I[IJ[JS[SC[CB[BD[DF[FZ[Z)[I",
-        reinterpret_cast<void*>(Java_org_chromium_base_natives_GEN_1JNI_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1testAllPrimitives)
-        },
-    { "org_chromium_example_jni_1generator_SampleForAnnotationProcessor_testSpecialTypes",
-        "(Ljava/lang/Class;[Ljava/lang/Class;Ljava/lang/Throwable;[Ljava/lang/Throwable;Ljava/lang/String;[Ljava/lang/String;Ljava/lang/Object;[Ljava/lang/Object;Ljava/lang/Object;[Ljava/lang/Object;)V",
-        reinterpret_cast<void*>(Java_org_chromium_base_natives_GEN_1JNI_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1testSpecialTypes)
-        },
-    { "org_chromium_example_jni_1generator_SampleForAnnotationProcessor_returnThrowable",
-        "()Ljava/lang/Throwable;",
-        reinterpret_cast<void*>(Java_org_chromium_base_natives_GEN_1JNI_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1returnThrowable)
-        },
-    { "org_chromium_example_jni_1generator_SampleForAnnotationProcessor_returnThrowables",
-        "()[Ljava/lang/Throwable;",
-        reinterpret_cast<void*>(Java_org_chromium_base_natives_GEN_1JNI_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1returnThrowables)
         },
     { "org_chromium_example_jni_1generator_SampleForAnnotationProcessor_returnClass",
         "()Ljava/lang/Class;",
@@ -176,6 +148,14 @@ static const JNINativeMethod kMethods_org_chromium_base_natives_GEN_1JNI[] = {
     { "org_chromium_example_jni_1generator_SampleForAnnotationProcessor_returnClasses",
         "()[Ljava/lang/Class;",
         reinterpret_cast<void*>(Java_org_chromium_base_natives_GEN_1JNI_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1returnClasses)
+        },
+    { "org_chromium_example_jni_1generator_SampleForAnnotationProcessor_returnObject",
+        "()Ljava/lang/Object;",
+        reinterpret_cast<void*>(Java_org_chromium_base_natives_GEN_1JNI_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1returnObject)
+        },
+    { "org_chromium_example_jni_1generator_SampleForAnnotationProcessor_returnObjects",
+        "()[Ljava/lang/Object;",
+        reinterpret_cast<void*>(Java_org_chromium_base_natives_GEN_1JNI_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1returnObjects)
         },
     { "org_chromium_example_jni_1generator_SampleForAnnotationProcessor_returnString",
         "()Ljava/lang/String;",
@@ -193,13 +173,33 @@ static const JNINativeMethod kMethods_org_chromium_base_natives_GEN_1JNI[] = {
         "()[Ljava/lang/Object;",
         reinterpret_cast<void*>(Java_org_chromium_base_natives_GEN_1JNI_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1returnStructs)
         },
-    { "org_chromium_example_jni_1generator_SampleForAnnotationProcessor_returnObject",
-        "()Ljava/lang/Object;",
-        reinterpret_cast<void*>(Java_org_chromium_base_natives_GEN_1JNI_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1returnObject)
+    { "org_chromium_example_jni_1generator_SampleForAnnotationProcessor_returnThrowable",
+        "()Ljava/lang/Throwable;",
+        reinterpret_cast<void*>(Java_org_chromium_base_natives_GEN_1JNI_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1returnThrowable)
         },
-    { "org_chromium_example_jni_1generator_SampleForAnnotationProcessor_returnObjects",
-        "()[Ljava/lang/Object;",
-        reinterpret_cast<void*>(Java_org_chromium_base_natives_GEN_1JNI_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1returnObjects)
+    { "org_chromium_example_jni_1generator_SampleForAnnotationProcessor_returnThrowables",
+        "()[Ljava/lang/Throwable;",
+        reinterpret_cast<void*>(Java_org_chromium_base_natives_GEN_1JNI_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1returnThrowables)
+        },
+    { "org_chromium_example_jni_1generator_SampleForAnnotationProcessor_revString",
+        "(Ljava/lang/String;)Ljava/lang/String;",
+        reinterpret_cast<void*>(Java_org_chromium_base_natives_GEN_1JNI_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1revString)
+        },
+    { "org_chromium_example_jni_1generator_SampleForAnnotationProcessor_sendSamplesToNative",
+        "([Ljava/lang/Object;)[Ljava/lang/Object;",
+        reinterpret_cast<void*>(Java_org_chromium_base_natives_GEN_1JNI_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1sendSamplesToNative)
+        },
+    { "org_chromium_example_jni_1generator_SampleForAnnotationProcessor_sendToNative",
+        "([Ljava/lang/String;)[Ljava/lang/String;",
+        reinterpret_cast<void*>(Java_org_chromium_base_natives_GEN_1JNI_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1sendToNative)
+        },
+    { "org_chromium_example_jni_1generator_SampleForAnnotationProcessor_testAllPrimitives",
+        "(I[IJ[JS[SC[CB[BD[DF[FZ[Z)[I",
+        reinterpret_cast<void*>(Java_org_chromium_base_natives_GEN_1JNI_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1testAllPrimitives)
+        },
+    { "org_chromium_example_jni_1generator_SampleForAnnotationProcessor_testSpecialTypes",
+        "(Ljava/lang/Class;[Ljava/lang/Class;Ljava/lang/Throwable;[Ljava/lang/Throwable;Ljava/lang/String;[Ljava/lang/String;Ljava/lang/Object;[Ljava/lang/Object;Ljava/lang/Object;[Ljava/lang/Object;)V",
+        reinterpret_cast<void*>(Java_org_chromium_base_natives_GEN_1JNI_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1testSpecialTypes)
         },
 
 };

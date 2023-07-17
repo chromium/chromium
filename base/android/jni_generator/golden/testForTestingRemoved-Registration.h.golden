@@ -34,9 +34,11 @@ inline jclass org_chromium_example_jni_1generator_SampleProxyEdgeCases_clazz(JNI
 
 // Step 2: Forward declarations (methods).
 
-JNI_GENERATOR_EXPORT void Java_J_N_MV9YSTxh(
+JNI_GENERATOR_EXPORT jint Java_J_N_MyOkSBQ0(
     JNIEnv* env,
-    jclass jcaller);
+    jclass jcaller,
+    jobject caller,
+    jobject b);
 JNI_GENERATOR_EXPORT jobjectArray Java_J_N_MrisBOFT(
     JNIEnv* env,
     jclass jcaller,
@@ -53,24 +55,22 @@ JNI_GENERATOR_EXPORT void Java_J_N_M3dXOemX_1ForTesting(
 JNI_GENERATOR_EXPORT void Java_J_N_MCNruAwI_1ForTesting(
     JNIEnv* env,
     jclass jcaller);
+JNI_GENERATOR_EXPORT void Java_J_N_MV9YSTxh(
+    JNIEnv* env,
+    jclass jcaller);
 JNI_GENERATOR_EXPORT jobjectArray Java_J_N_MfODWEgT(
     JNIEnv* env,
     jclass jcaller,
     jobjectArray arg);
-JNI_GENERATOR_EXPORT jint Java_J_N_MyOkSBQ0(
-    JNIEnv* env,
-    jclass jcaller,
-    jobject caller,
-    jobject b);
-JNI_GENERATOR_EXPORT jboolean Java_J_N_MD8PmkAP(
-    JNIEnv* env,
-    jclass jcaller,
-    jobject sb);
 JNI_GENERATOR_EXPORT void Java_J_N_MPgXV_00024mN(
     JNIEnv* env,
     jclass jcaller,
     jobject b,
     jobject i);
+JNI_GENERATOR_EXPORT jboolean Java_J_N_MD8PmkAP(
+    JNIEnv* env,
+    jclass jcaller,
+    jobject sb);
 JNI_GENERATOR_EXPORT jint Java_J_N_MD8PmkAP(
     JNIEnv* env,
     jclass jcaller,

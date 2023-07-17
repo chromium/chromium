@@ -8,6 +8,6 @@ public class GEN_JNI {
   public static boolean TESTING_ENABLED;
   public static boolean REQUIRE_MOCK;
 
-  public static native void org_chromium_example_jni_1generator_SampleUniqueAnnotations_foo(long nativePtr);
   public static native int org_chromium_example_jni_1generator_SampleUniqueAnnotations_bar(int x, int y);
+  public static native void org_chromium_example_jni_1generator_SampleUniqueAnnotations_foo(long nativePtr);
 }

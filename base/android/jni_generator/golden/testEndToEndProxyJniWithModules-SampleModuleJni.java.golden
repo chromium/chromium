@@ -26,13 +26,13 @@ class SampleModuleJni implements SampleModule.Natives {
   };
 
   @Override
-  public void foo() {
-    module_GEN_JNI.org_chromium_example_jni_1generator_SampleModule_foo();
+  public boolean bar(int a) {
+    return (boolean) module_GEN_JNI.org_chromium_example_jni_1generator_SampleModule_bar(a);
   }
 
   @Override
-  public boolean bar(int a) {
-    return (boolean) module_GEN_JNI.org_chromium_example_jni_1generator_SampleModule_bar(a);
+  public void foo() {
+    module_GEN_JNI.org_chromium_example_jni_1generator_SampleModule_foo();
   }
 
   public static SampleModule.Natives get() {

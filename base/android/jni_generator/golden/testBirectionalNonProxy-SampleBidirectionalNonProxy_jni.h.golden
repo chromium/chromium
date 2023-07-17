@@ -39,15 +39,26 @@ inline jclass org_chromium_example_jni_1generator_SampleBidirectionalNonProxy_cl
 
 
 // Step 3: Method stubs.
+static jint JNI_SampleBidirectionalNonProxy_Init(JNIEnv* env, const
+    base::android::JavaParamRef<jobject>& jcaller);
+
 JNI_GENERATOR_EXPORT jint
-    Java_org_chromium_example_jni_1generator_SampleBidirectionalNonProxy_nativeStaticMethod(
+    Java_org_chromium_example_jni_1generator_SampleBidirectionalNonProxy_nativeInit(
     JNIEnv* env,
-    jclass jcaller,
-    jlong nativeTest,
-    jint arg1) {
-  Test* native = reinterpret_cast<Test*>(nativeTest);
-  CHECK_NATIVE_PTR(env, jcaller, native, "StaticMethod", 0);
-  return native->StaticMethod(env, arg1);
+    jobject jcaller) {
+  return JNI_SampleBidirectionalNonProxy_Init(env, base::android::JavaParamRef<jobject>(env,
+      jcaller));
+}
+
+static jint JNI_SampleBidirectionalNonProxy_Init(JNIEnv* env, const
+    base::android::JavaParamRef<jobject>& jcaller);
+
+JNI_GENERATOR_EXPORT jint
+    Java_org_chromium_example_jni_1generator_SampleBidirectionalNonProxy_nativeInit(
+    JNIEnv* env,
+    jobject jcaller) {
+  return JNI_SampleBidirectionalNonProxy_Init(env, base::android::JavaParamRef<jobject>(env,
+      jcaller));
 }
 
 JNI_GENERATOR_EXPORT jint
@@ -61,28 +72,104 @@ JNI_GENERATOR_EXPORT jint
   return native->Method(env, base::android::JavaParamRef<jobject>(env, jcaller), arg1);
 }
 
-static jint JNI_SampleBidirectionalNonProxy_Init(JNIEnv* env, const
-    base::android::JavaParamRef<jobject>& jcaller);
-
 JNI_GENERATOR_EXPORT jint
-    Java_org_chromium_example_jni_1generator_SampleBidirectionalNonProxy_nativeInit(
+    Java_org_chromium_example_jni_1generator_SampleBidirectionalNonProxy_nativeStaticMethod(
     JNIEnv* env,
-    jobject jcaller) {
-  return JNI_SampleBidirectionalNonProxy_Init(env, base::android::JavaParamRef<jobject>(env,
-      jcaller));
+    jclass jcaller,
+    jlong nativeTest,
+    jint arg1) {
+  Test* native = reinterpret_cast<Test*>(nativeTest);
+  CHECK_NATIVE_PTR(env, jcaller, native, "StaticMethod", 0);
+  return native->StaticMethod(env, arg1);
 }
 
-static jint JNI_SampleBidirectionalNonProxy_Init(JNIEnv* env, const
-    base::android::JavaParamRef<jobject>& jcaller);
 
-JNI_GENERATOR_EXPORT jint
-    Java_org_chromium_example_jni_1generator_SampleBidirectionalNonProxy_nativeInit(
-    JNIEnv* env,
-    jobject jcaller) {
-  return JNI_SampleBidirectionalNonProxy_Init(env, base::android::JavaParamRef<jobject>(env,
-      jcaller));
+static std::atomic<jmethodID>
+    g_org_chromium_example_jni_1generator_SampleBidirectionalNonProxy_addStructB(nullptr);
+static void Java_SampleBidirectionalNonProxy_addStructB(JNIEnv* env, const
+    base::android::JavaRef<jobject>& obj, const base::android::JavaRef<jobject>& caller,
+    const base::android::JavaRef<jobject>& b) {
+  jclass clazz = org_chromium_example_jni_1generator_SampleBidirectionalNonProxy_clazz(env);
+  CHECK_CLAZZ(env, obj.obj(),
+      org_chromium_example_jni_1generator_SampleBidirectionalNonProxy_clazz(env));
+
+  jni_generator::JniJavaCallContextChecked call_context;
+  call_context.Init<
+      base::android::MethodID::TYPE_INSTANCE>(
+          env,
+          clazz,
+          "addStructB",
+"(Lorg/chromium/example/jni_generator/SampleForTests;Lorg/chromium/example/jni_generator/SampleForTests$InnerStructB;)V",
+          &g_org_chromium_example_jni_1generator_SampleBidirectionalNonProxy_addStructB);
+
+     env->CallVoidMethod(obj.obj(),
+          call_context.base.method_id, caller.obj(), b.obj());
 }
 
+static std::atomic<jmethodID>
+    g_org_chromium_example_jni_1generator_SampleBidirectionalNonProxy_setBool(nullptr);
+static void Java_SampleBidirectionalNonProxy_setBool(JNIEnv* env, const
+    base::android::JavaRef<jobject>& obj, const base::android::JavaRef<jobject>& b,
+    const base::android::JavaRef<jobject>& i) {
+  jclass clazz = org_chromium_example_jni_1generator_SampleBidirectionalNonProxy_clazz(env);
+  CHECK_CLAZZ(env, obj.obj(),
+      org_chromium_example_jni_1generator_SampleBidirectionalNonProxy_clazz(env));
+
+  jni_generator::JniJavaCallContextChecked call_context;
+  call_context.Init<
+      base::android::MethodID::TYPE_INSTANCE>(
+          env,
+          clazz,
+          "setBool",
+          "(Lorg/chromium/example/jni_generator/Boolean;Ljava/lang/Integer;)V",
+          &g_org_chromium_example_jni_1generator_SampleBidirectionalNonProxy_setBool);
+
+     env->CallVoidMethod(obj.obj(),
+          call_context.base.method_id, b.obj(), i.obj());
+}
+
+static std::atomic<jmethodID>
+    g_org_chromium_example_jni_1generator_SampleBidirectionalNonProxy_setStringBuilder(nullptr);
+static void Java_SampleBidirectionalNonProxy_setStringBuilder(JNIEnv* env, const
+    base::android::JavaRef<jobject>& obj, const base::android::JavaRef<jobject>& sb) {
+  jclass clazz = org_chromium_example_jni_1generator_SampleBidirectionalNonProxy_clazz(env);
+  CHECK_CLAZZ(env, obj.obj(),
+      org_chromium_example_jni_1generator_SampleBidirectionalNonProxy_clazz(env));
+
+  jni_generator::JniJavaCallContextChecked call_context;
+  call_context.Init<
+      base::android::MethodID::TYPE_INSTANCE>(
+          env,
+          clazz,
+          "setStringBuilder",
+          "(Ljava/lang/StringBuilder;)V",
+          &g_org_chromium_example_jni_1generator_SampleBidirectionalNonProxy_setStringBuilder);
+
+     env->CallVoidMethod(obj.obj(),
+          call_context.base.method_id, sb.obj());
+}
+
+static std::atomic<jmethodID>
+    g_org_chromium_example_jni_1generator_SampleBidirectionalNonProxy_testMethodWithNoParam(nullptr);
+static jdouble Java_SampleBidirectionalNonProxy_testMethodWithNoParam(JNIEnv* env) {
+  jclass clazz = org_chromium_example_jni_1generator_SampleBidirectionalNonProxy_clazz(env);
+  CHECK_CLAZZ(env, clazz,
+      org_chromium_example_jni_1generator_SampleBidirectionalNonProxy_clazz(env), 0);
+
+  jni_generator::JniJavaCallContextChecked call_context;
+  call_context.Init<
+      base::android::MethodID::TYPE_STATIC>(
+          env,
+          clazz,
+          "testMethodWithNoParam",
+          "()D",
+          &g_org_chromium_example_jni_1generator_SampleBidirectionalNonProxy_testMethodWithNoParam);
+
+  jdouble ret =
+      env->CallStaticDoubleMethod(clazz,
+          call_context.base.method_id);
+  return ret;
+}
 
 static std::atomic<jmethodID>
     g_org_chromium_example_jni_1generator_SampleBidirectionalNonProxy_testMethodWithParam(nullptr);
@@ -130,51 +217,6 @@ static base::android::ScopedJavaLocalRef<jstring>
 }
 
 static std::atomic<jmethodID>
-    g_org_chromium_example_jni_1generator_SampleBidirectionalNonProxy_testStaticMethodWithParam(nullptr);
-static jint Java_SampleBidirectionalNonProxy_testStaticMethodWithParam(JNIEnv* env, JniIntWrapper
-    iParam) {
-  jclass clazz = org_chromium_example_jni_1generator_SampleBidirectionalNonProxy_clazz(env);
-  CHECK_CLAZZ(env, clazz,
-      org_chromium_example_jni_1generator_SampleBidirectionalNonProxy_clazz(env), 0);
-
-  jni_generator::JniJavaCallContextChecked call_context;
-  call_context.Init<
-      base::android::MethodID::TYPE_STATIC>(
-          env,
-          clazz,
-          "testStaticMethodWithParam",
-          "(I)I",
-&g_org_chromium_example_jni_1generator_SampleBidirectionalNonProxy_testStaticMethodWithParam);
-
-  jint ret =
-      env->CallStaticIntMethod(clazz,
-          call_context.base.method_id, as_jint(iParam));
-  return ret;
-}
-
-static std::atomic<jmethodID>
-    g_org_chromium_example_jni_1generator_SampleBidirectionalNonProxy_testMethodWithNoParam(nullptr);
-static jdouble Java_SampleBidirectionalNonProxy_testMethodWithNoParam(JNIEnv* env) {
-  jclass clazz = org_chromium_example_jni_1generator_SampleBidirectionalNonProxy_clazz(env);
-  CHECK_CLAZZ(env, clazz,
-      org_chromium_example_jni_1generator_SampleBidirectionalNonProxy_clazz(env), 0);
-
-  jni_generator::JniJavaCallContextChecked call_context;
-  call_context.Init<
-      base::android::MethodID::TYPE_STATIC>(
-          env,
-          clazz,
-          "testMethodWithNoParam",
-          "()D",
-          &g_org_chromium_example_jni_1generator_SampleBidirectionalNonProxy_testMethodWithNoParam);
-
-  jdouble ret =
-      env->CallStaticDoubleMethod(clazz,
-          call_context.base.method_id);
-  return ret;
-}
-
-static std::atomic<jmethodID>
     g_org_chromium_example_jni_1generator_SampleBidirectionalNonProxy_testStaticMethodWithNoParam(nullptr);
 static base::android::ScopedJavaLocalRef<jstring>
     Java_SampleBidirectionalNonProxy_testStaticMethodWithNoParam(JNIEnv* env) {
@@ -198,68 +240,26 @@ static base::android::ScopedJavaLocalRef<jstring>
 }
 
 static std::atomic<jmethodID>
-    g_org_chromium_example_jni_1generator_SampleBidirectionalNonProxy_addStructB(nullptr);
-static void Java_SampleBidirectionalNonProxy_addStructB(JNIEnv* env, const
-    base::android::JavaRef<jobject>& obj, const base::android::JavaRef<jobject>& caller,
-    const base::android::JavaRef<jobject>& b) {
+    g_org_chromium_example_jni_1generator_SampleBidirectionalNonProxy_testStaticMethodWithParam(nullptr);
+static jint Java_SampleBidirectionalNonProxy_testStaticMethodWithParam(JNIEnv* env, JniIntWrapper
+    iParam) {
   jclass clazz = org_chromium_example_jni_1generator_SampleBidirectionalNonProxy_clazz(env);
-  CHECK_CLAZZ(env, obj.obj(),
-      org_chromium_example_jni_1generator_SampleBidirectionalNonProxy_clazz(env));
+  CHECK_CLAZZ(env, clazz,
+      org_chromium_example_jni_1generator_SampleBidirectionalNonProxy_clazz(env), 0);
 
   jni_generator::JniJavaCallContextChecked call_context;
   call_context.Init<
-      base::android::MethodID::TYPE_INSTANCE>(
+      base::android::MethodID::TYPE_STATIC>(
           env,
           clazz,
-          "addStructB",
-"(Lorg/chromium/example/jni_generator/SampleForTests;Lorg/chromium/example/jni_generator/SampleForTests$InnerStructB;)V",
-          &g_org_chromium_example_jni_1generator_SampleBidirectionalNonProxy_addStructB);
+          "testStaticMethodWithParam",
+          "(I)I",
+&g_org_chromium_example_jni_1generator_SampleBidirectionalNonProxy_testStaticMethodWithParam);
 
-     env->CallVoidMethod(obj.obj(),
-          call_context.base.method_id, caller.obj(), b.obj());
-}
-
-static std::atomic<jmethodID>
-    g_org_chromium_example_jni_1generator_SampleBidirectionalNonProxy_setStringBuilder(nullptr);
-static void Java_SampleBidirectionalNonProxy_setStringBuilder(JNIEnv* env, const
-    base::android::JavaRef<jobject>& obj, const base::android::JavaRef<jobject>& sb) {
-  jclass clazz = org_chromium_example_jni_1generator_SampleBidirectionalNonProxy_clazz(env);
-  CHECK_CLAZZ(env, obj.obj(),
-      org_chromium_example_jni_1generator_SampleBidirectionalNonProxy_clazz(env));
-
-  jni_generator::JniJavaCallContextChecked call_context;
-  call_context.Init<
-      base::android::MethodID::TYPE_INSTANCE>(
-          env,
-          clazz,
-          "setStringBuilder",
-          "(Ljava/lang/StringBuilder;)V",
-          &g_org_chromium_example_jni_1generator_SampleBidirectionalNonProxy_setStringBuilder);
-
-     env->CallVoidMethod(obj.obj(),
-          call_context.base.method_id, sb.obj());
-}
-
-static std::atomic<jmethodID>
-    g_org_chromium_example_jni_1generator_SampleBidirectionalNonProxy_setBool(nullptr);
-static void Java_SampleBidirectionalNonProxy_setBool(JNIEnv* env, const
-    base::android::JavaRef<jobject>& obj, const base::android::JavaRef<jobject>& b,
-    const base::android::JavaRef<jobject>& i) {
-  jclass clazz = org_chromium_example_jni_1generator_SampleBidirectionalNonProxy_clazz(env);
-  CHECK_CLAZZ(env, obj.obj(),
-      org_chromium_example_jni_1generator_SampleBidirectionalNonProxy_clazz(env));
-
-  jni_generator::JniJavaCallContextChecked call_context;
-  call_context.Init<
-      base::android::MethodID::TYPE_INSTANCE>(
-          env,
-          clazz,
-          "setBool",
-          "(Lorg/chromium/example/jni_generator/Boolean;Ljava/lang/Integer;)V",
-          &g_org_chromium_example_jni_1generator_SampleBidirectionalNonProxy_setBool);
-
-     env->CallVoidMethod(obj.obj(),
-          call_context.base.method_id, b.obj(), i.obj());
+  jint ret =
+      env->CallStaticIntMethod(clazz,
+          call_context.base.method_id, as_jint(iParam));
+  return ret;
 }
 
 #endif  // org_chromium_example_jni_generator_SampleBidirectionalNonProxy_JNI

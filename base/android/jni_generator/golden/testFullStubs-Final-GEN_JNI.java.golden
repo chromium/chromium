@@ -14,11 +14,11 @@ public class GEN_JNI {
 
 
 
-    public static void org_chromium_example_jni_1generator_TinySample_foo() {
+    public static boolean org_chromium_example_jni_1generator_TinySample_bar(int a) {
         throw new RuntimeException("Stub - not implemented!");
     }
 
-    public static boolean org_chromium_example_jni_1generator_TinySample_bar(int a) {
+    public static void org_chromium_example_jni_1generator_TinySample_foo() {
         throw new RuntimeException("Stub - not implemented!");
     }
 }

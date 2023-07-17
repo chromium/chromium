@@ -37,13 +37,18 @@ public class SampleForTestsJni implements SampleForTests.Natives {
   };
 
   @Override
-  public long init(SampleForTests caller, String param) {
-    return (long) GEN_JNI.org_chromium_example_jni_1generator_SampleForTests_init(caller, param);
+  public void addStructB(long nativeCPPClass, SampleForTests caller, SampleForTests.InnerStructB b) {
+    GEN_JNI.org_chromium_example_jni_1generator_SampleForTests_addStructB(nativeCPPClass, caller, b);
   }
 
   @Override
   public void destroy(long nativeCPPClass, SampleForTests caller) {
     GEN_JNI.org_chromium_example_jni_1generator_SampleForTests_destroy(nativeCPPClass, caller);
+  }
+
+  @Override
+  public Class getClass(Class arg0) {
+    return (Class) GEN_JNI.org_chromium_example_jni_1generator_SampleForTests_getClass(arg0);
   }
 
   @Override
@@ -57,23 +62,23 @@ public class SampleForTestsJni implements SampleForTests.Natives {
   }
 
   @Override
-  public void setNonPODDatatype(SampleForTests caller, Rect rect) {
-    GEN_JNI.org_chromium_example_jni_1generator_SampleForTests_setNonPODDatatype(caller, rect);
-  }
-
-  @Override
   public Object getNonPODDatatype(SampleForTests caller) {
     return (Object) GEN_JNI.org_chromium_example_jni_1generator_SampleForTests_getNonPODDatatype(caller);
   }
 
   @Override
-  public Class getClass(Class arg0) {
-    return (Class) GEN_JNI.org_chromium_example_jni_1generator_SampleForTests_getClass(arg0);
+  public Throwable getThrowable(Throwable arg0) {
+    return (Throwable) GEN_JNI.org_chromium_example_jni_1generator_SampleForTests_getThrowable(arg0);
   }
 
   @Override
-  public Throwable getThrowable(Throwable arg0) {
-    return (Throwable) GEN_JNI.org_chromium_example_jni_1generator_SampleForTests_getThrowable(arg0);
+  public long init(SampleForTests caller, String param) {
+    return (long) GEN_JNI.org_chromium_example_jni_1generator_SampleForTests_init(caller, param);
+  }
+
+  @Override
+  public void iterateAndDoSomethingWithStructB(long nativeCPPClass, SampleForTests caller) {
+    GEN_JNI.org_chromium_example_jni_1generator_SampleForTests_iterateAndDoSomethingWithStructB(nativeCPPClass, caller);
   }
 
   @Override
@@ -87,18 +92,13 @@ public class SampleForTestsJni implements SampleForTests.Natives {
   }
 
   @Override
-  public void addStructB(long nativeCPPClass, SampleForTests caller, SampleForTests.InnerStructB b) {
-    GEN_JNI.org_chromium_example_jni_1generator_SampleForTests_addStructB(nativeCPPClass, caller, b);
-  }
-
-  @Override
-  public void iterateAndDoSomethingWithStructB(long nativeCPPClass, SampleForTests caller) {
-    GEN_JNI.org_chromium_example_jni_1generator_SampleForTests_iterateAndDoSomethingWithStructB(nativeCPPClass, caller);
-  }
-
-  @Override
   public String returnAString(long nativeCPPClass, SampleForTests caller) {
     return (String) GEN_JNI.org_chromium_example_jni_1generator_SampleForTests_returnAString(nativeCPPClass, caller);
+  }
+
+  @Override
+  public void setNonPODDatatype(SampleForTests caller, Rect rect) {
+    GEN_JNI.org_chromium_example_jni_1generator_SampleForTests_setNonPODDatatype(caller, rect);
   }
 
   public static SampleForTests.Natives get() {
