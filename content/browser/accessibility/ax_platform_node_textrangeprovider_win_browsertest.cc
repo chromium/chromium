@@ -304,9 +304,9 @@ class AXPlatformNodeTextRangeProviderWinBrowserTest
         ToBrowserAccessibilityWin(browser_accessibility_start)->GetCOM();
     ASSERT_NE(nullptr, start_browser_accessibility_com_win);
 
-    ComPtr<ITextRangeProvider> text_range_provider =
-        ui::AXPlatformNodeTextRangeProviderWin::CreateTextRangeProvider(
-            std::move(start), std::move(end));
+    ComPtr<ITextRangeProvider> text_range_provider;
+    ui::AXPlatformNodeTextRangeProviderWin::CreateTextRangeProvider(
+        std::move(start), std::move(end), &text_range_provider);
     ASSERT_NE(nullptr, text_range_provider);
 
     gfx::Rect previous_range_bounds =

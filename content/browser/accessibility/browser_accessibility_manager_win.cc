@@ -708,9 +708,9 @@ void BrowserAccessibilityManagerWin::FireUiaActiveTextPositionChangedEvent(
 
   // Create the text range contained by the target node.
   auto* target_node = ToBrowserAccessibilityWin(node)->GetCOM();
-  Microsoft::WRL::ComPtr<ITextRangeProvider> text_range =
-      ui::AXPlatformNodeTextProviderWin::CreateDegenerateRangeAtStart(
-          target_node);
+  Microsoft::WRL::ComPtr<ITextRangeProvider> text_range;
+  ui::AXPlatformNodeTextProviderWin::CreateDegenerateRangeAtStart(target_node,
+                                                                  &text_range);
 
   // Fire the UiaRaiseActiveTextPositionChangedEvent.
   active_text_position_changed_func(target_node, text_range.Get());

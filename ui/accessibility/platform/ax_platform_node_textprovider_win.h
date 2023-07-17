@@ -59,13 +59,13 @@ class COMPONENT_EXPORT(AX_PLATFORM) __declspec(
 
   // ITextProvider supporting methods.
 
-  static ITextRangeProvider* GetRangeFromChild(
-      ui::AXPlatformNodeWin* ancestor,
-      ui::AXPlatformNodeWin* descendant);
+  static void GetRangeFromChild(ui::AXPlatformNodeWin* ancestor,
+                                ui::AXPlatformNodeWin* descendant,
+                                ITextRangeProvider** range);
 
   // Create a dengerate text range at the start of the specified node.
-  static ITextRangeProvider* CreateDegenerateRangeAtStart(
-      ui::AXPlatformNodeWin* node);
+  static void CreateDegenerateRangeAtStart(ui::AXPlatformNodeWin* node,
+                                           ITextRangeProvider** range);
 
  private:
   friend class AXPlatformNodeTextProviderTest;

@@ -99,43 +99,38 @@ AXPlatformNodeTextRangeProviderWin::AXPlatformNodeTextRangeProviderWin() {
 
 AXPlatformNodeTextRangeProviderWin::~AXPlatformNodeTextRangeProviderWin() {}
 
-ITextRangeProvider* AXPlatformNodeTextRangeProviderWin::CreateTextRangeProvider(
+void AXPlatformNodeTextRangeProviderWin::CreateTextRangeProvider(
     AXPositionInstance start,
     AXPositionInstance end,
-    bool add_ref) {
-  CComObject<AXPlatformNodeTextRangeProviderWin>* text_range_provider = nullptr;
-  if (SUCCEEDED(CComObject<AXPlatformNodeTextRangeProviderWin>::CreateInstance(
-          &text_range_provider))) {
-    DCHECK(text_range_provider);
-    text_range_provider->SetStart(std::move(start));
-    text_range_provider->SetEnd(std::move(end));
-    if (add_ref) {
-      // Some callers will be in situations where they pass the `ITextRangeProvider` into a
-      // method that automatically calls `AddRef`. Adding another here would lead to a leak.
-      text_range_provider->AddRef();
-    }
-    return text_range_provider;
-  }
+    ITextRangeProvider** text_range_provider) {
+  DCHECK(text_range_provider);
+  DCHECK_EQ(*text_range_provider, nullptr);
+  *text_range_provider = nullptr;
 
-  return nullptr;
+  CComObject<AXPlatformNodeTextRangeProviderWin>* text_range_provider_win =
+      nullptr;
+  if (SUCCEEDED(CComObject<AXPlatformNodeTextRangeProviderWin>::CreateInstance(
+          &text_range_provider_win))) {
+    DCHECK(text_range_provider_win);
+    text_range_provider_win->SetStart(std::move(start));
+    text_range_provider_win->SetEnd(std::move(end));
+    text_range_provider_win->AddRef();
+    *text_range_provider = text_range_provider_win;
+  }
 }
 
-ITextRangeProvider*
-AXPlatformNodeTextRangeProviderWin::CreateTextRangeProviderForTesting(
+void AXPlatformNodeTextRangeProviderWin::CreateTextRangeProviderForTesting(
     AXPlatformNodeWin* owner,
     AXPositionInstance start,
-    AXPositionInstance end) {
-  Microsoft::WRL::ComPtr<ITextRangeProvider> text_range_provider =
-      CreateTextRangeProvider(start->Clone(), end->Clone());
+    AXPositionInstance end,
+    ITextRangeProvider** text_range_provider) {
+  CreateTextRangeProvider(start->Clone(), end->Clone(), text_range_provider);
   Microsoft::WRL::ComPtr<AXPlatformNodeTextRangeProviderWin>
       text_range_provider_win;
-  if (SUCCEEDED(text_range_provider->QueryInterface(
-          IID_PPV_ARGS(&text_range_provider_win)))) {
+  if (SUCCEEDED((*text_range_provider)
+                    ->QueryInterface(IID_PPV_ARGS(&text_range_provider_win)))) {
     text_range_provider_win->SetOwnerForTesting(owner);  // IN-TEST
-    return text_range_provider_win.Get();
   }
-
-  return nullptr;
 }
 
 //
@@ -145,7 +140,7 @@ HRESULT AXPlatformNodeTextRangeProviderWin::Clone(ITextRangeProvider** clone) {
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_TEXTRANGE_CLONE);
   UIA_VALIDATE_TEXTRANGEPROVIDER_CALL_1_OUT(clone);
 
-  *clone = CreateTextRangeProvider(start()->Clone(), end()->Clone());
+  CreateTextRangeProvider(start()->Clone(), end()->Clone(), clone);
   return S_OK;
 }
 
@@ -423,9 +418,10 @@ HRESULT AXPlatformNodeTextRangeProviderWin::FindAttribute(
   if (FAILED(hr_result))
     return E_FAIL;
 
-  if (matched_range_start != nullptr && matched_range_end != nullptr)
-    *result = CreateTextRangeProvider(std::move(matched_range_start),
-                                      std::move(matched_range_end));
+  if (matched_range_start != nullptr && matched_range_end != nullptr) {
+    CreateTextRangeProvider(std::move(matched_range_start),
+                            std::move(matched_range_end), result);
+  }
   return S_OK;
 }
 
@@ -555,7 +551,7 @@ HRESULT AXPlatformNodeTextRangeProviderWin::FindText(
             *anchor, end_offset, ax::mojom::TextAffinity::kDownstream)
             ->AsLeafTextPosition();
 
-    *result = CreateTextRangeProvider(start->Clone(), end->Clone());
+    CreateTextRangeProvider(start->Clone(), end->Clone(), result);
   }
   return S_OK;
 }

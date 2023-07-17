@@ -292,11 +292,12 @@ class AXPlatformNodeTextRangeProviderTest : public ui::AXPlatformNodeWinTest {
     AXNodePosition::AXPositionInstance range_end =
         CreateTextPosition(*end_anchor, end_offset, end_affinity);
 
-    ComPtr<ITextRangeProvider> text_range_provider =
-        AXPlatformNodeTextRangeProviderWin::CreateTextRangeProviderForTesting(
-            owner, std::move(range_start), std::move(range_end));
+    ComPtr<ITextRangeProvider> text_range_provider;
+    AXPlatformNodeTextRangeProviderWin::CreateTextRangeProviderForTesting(
+        owner, std::move(range_start), std::move(range_end),
+        &text_range_provider);
 
-    text_range_provider->QueryInterface(IID_PPV_ARGS(&text_range_provider_win));
+    EXPECT_HRESULT_SUCCEEDED(text_range_provider.As(&text_range_provider_win));
   }
 
   void ComputeWordBoundariesOffsets(const std::string& text,
@@ -1065,10 +1066,10 @@ TEST_F(AXPlatformNodeTextRangeProviderTest, CompareWithInvalidatedPositions) {
       CreateTextPosition(/* anchor */ *st_node, /* text_offset*/ 3,
                          /* affinity*/ ax::mojom::TextAffinity::kDownstream);
 
-  ComPtr<ITextRangeProvider> text_range_provider_b =
-      AXPlatformNodeTextRangeProviderWin::CreateTextRangeProviderForTesting(
-          static_cast<AXPlatformNodeWin*>(AXPlatformNodeFromNode(st_node)),
-          std::move(range_start), std::move(range_end));
+  ComPtr<ITextRangeProvider> text_range_provider_b;
+  AXPlatformNodeTextRangeProviderWin::CreateTextRangeProviderForTesting(
+      static_cast<AXPlatformNodeWin*>(AXPlatformNodeFromNode(st_node)),
+      std::move(range_start), std::move(range_end), &text_range_provider_b);
 
   BOOL are_same;
   text_range_provider_a->Compare(text_range_provider_b.Get(), &are_same);
@@ -1100,10 +1101,10 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
       CreateTextPosition(/* anchor */ *st_node, /* text_offset*/ 3,
                          /* affinity*/ ax::mojom::TextAffinity::kDownstream);
 
-  ComPtr<ITextRangeProvider> text_range_provider_b =
-      AXPlatformNodeTextRangeProviderWin::CreateTextRangeProviderForTesting(
-          static_cast<AXPlatformNodeWin*>(AXPlatformNodeFromNode(st_node)),
-          std::move(range_start), std::move(range_end));
+  ComPtr<ITextRangeProvider> text_range_provider_b;
+  AXPlatformNodeTextRangeProviderWin::CreateTextRangeProviderForTesting(
+      static_cast<AXPlatformNodeWin*>(AXPlatformNodeFromNode(st_node)),
+      std::move(range_start), std::move(range_end), &text_range_provider_b);
 
   int result;
   text_range_provider_a->CompareEndpoints(
@@ -1136,10 +1137,10 @@ TEST_F(AXPlatformNodeTextRangeProviderTest, MoveByRangeInvalidatedPositions) {
       CreateTextPosition(/* anchor */ *st_node, /* text_offset*/ 3,
                          /* affinity*/ ax::mojom::TextAffinity::kDownstream);
 
-  ComPtr<ITextRangeProvider> text_range_provider_b =
-      AXPlatformNodeTextRangeProviderWin::CreateTextRangeProviderForTesting(
-          static_cast<AXPlatformNodeWin*>(AXPlatformNodeFromNode(st_node)),
-          std::move(range_start), std::move(range_end));
+  ComPtr<ITextRangeProvider> text_range_provider_b;
+  AXPlatformNodeTextRangeProviderWin::CreateTextRangeProviderForTesting(
+      static_cast<AXPlatformNodeWin*>(AXPlatformNodeFromNode(st_node)),
+      std::move(range_start), std::move(range_end), &text_range_provider_b);
 
   text_range_provider_a->MoveEndpointByRange(TextPatternRangeEndpoint_End,
                                              text_range_provider_b.Get(),
@@ -5173,8 +5174,6 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   EXPECT_EQ(start_offset, selection.anchor_offset);
   EXPECT_EQ(end_offset, selection.focus_offset);
 
-  range->Release();
-
   // Now testing where start anchor is in shadow DOM and end anchor is outside.
   // Selection should bubble up to the text field in this case.
 
@@ -5192,8 +5191,6 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   EXPECT_EQ(text_field->id(), selection.focus_object_id);
   EXPECT_EQ(start_offset, selection.anchor_offset);
   EXPECT_EQ(end_offset, selection.focus_offset);
-
-  range->Release();
 
   // Now testing where both start and end anchors are in shadow DOM but
   // different elements. Selection should NOT bubble up to the text field in
@@ -5213,8 +5210,6 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   EXPECT_EQ(static_text->id(), selection.focus_object_id);
   EXPECT_EQ(start_offset, selection.anchor_offset);
   EXPECT_EQ(end_offset, selection.focus_offset);
-
-  range->Release();
 
   // Now testing where both start and end anchors are in shadow DOM but same
   // elements. Selection should NOT bubble up to the text field in this case.
@@ -7259,9 +7254,10 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
 
   AXPlatformNodeWin* owner =
       static_cast<AXPlatformNodeWin*>(AXPlatformNodeFromNode(root_node));
-  ComPtr<ITextRangeProvider> text_range_provider =
-      AXPlatformNodeTextRangeProviderWin::CreateTextRangeProviderForTesting(
-          owner, std::move(range_start), std::move(range_end));
+  ComPtr<ITextRangeProvider> text_range_provider;
+  AXPlatformNodeTextRangeProviderWin::CreateTextRangeProviderForTesting(
+      owner, std::move(range_start), std::move(range_end),
+      &text_range_provider);
   EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, L"");
 
   generic_container_2.child_ids = {heading_3.id, button_7.id};

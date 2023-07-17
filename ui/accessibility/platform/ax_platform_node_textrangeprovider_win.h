@@ -33,17 +33,17 @@ class COMPONENT_EXPORT(AX_PLATFORM) __declspec(uuid(
   ~AXPlatformNodeTextRangeProviderWin();
 
   // Creates an instance of the class.
-  static ITextRangeProvider* CreateTextRangeProvider(
-      AXNodePosition::AXPositionInstance start,
-      AXNodePosition::AXPositionInstance end,
-      bool add_ref = true);
+  static void CreateTextRangeProvider(AXNodePosition::AXPositionInstance start,
+                                      AXNodePosition::AXPositionInstance end,
+                                      ITextRangeProvider** text_range_provider);
 
   // Creates an instance of the class for unit tests, where AXPlatformNodes
   // cannot be queried automatically from endpoints.
-  static ITextRangeProvider* CreateTextRangeProviderForTesting(
+  static void CreateTextRangeProviderForTesting(
       AXPlatformNodeWin* owner,
       AXNodePosition::AXPositionInstance start,
-      AXNodePosition::AXPositionInstance end);
+      AXNodePosition::AXPositionInstance end,
+      ITextRangeProvider** text_range_provider_out);
 
   //
   // ITextRangeProvider methods.
