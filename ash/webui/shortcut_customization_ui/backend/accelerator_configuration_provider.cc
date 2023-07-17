@@ -296,7 +296,11 @@ absl::optional<AcceleratorConfigResult> ValidateAccelerator(
   }
 
   // Case: Top-row action keys cannot be part of the accelerator.
-  if (ui::KeyboardCapability::IsTopRowActionKey(accelerator.key_code())) {
+  absl::optional<ui::TopRowActionKey> top_row_action_key =
+      ui::KeyboardCapability::ConvertToTopRowActionKey(accelerator.key_code());
+  if (top_row_action_key.has_value() &&
+      Shell::Get()->keyboard_capability()->HasTopRowActionKeyOnAnyKeyboard(
+          top_row_action_key.value())) {
     VLOG(1) << "Failed to validate accelerator: "
             << accelerator.GetShortcutText() << " with error: "
             << static_cast<int>(AcceleratorConfigResult::kKeyNotAllowed)

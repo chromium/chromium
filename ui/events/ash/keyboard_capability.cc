@@ -682,30 +682,8 @@ bool KeyboardCapability::HasLauncherButtonOnAnyKeyboard() const {
 // static
 bool KeyboardCapability::IsTopRowKey(const KeyboardCode& key_code) {
   // A set that includes all top row keys from different keyboards.
-  static const base::NoDestructor<base::flat_set<KeyboardCode>>
-      top_row_action_keys({
-          KeyboardCode::VKEY_BROWSER_BACK,
-          KeyboardCode::VKEY_BROWSER_FORWARD,
-          KeyboardCode::VKEY_BROWSER_REFRESH,
-          KeyboardCode::VKEY_ZOOM,
-          KeyboardCode::VKEY_MEDIA_LAUNCH_APP1,
-          KeyboardCode::VKEY_ALL_APPLICATIONS,
-          KeyboardCode::VKEY_SNAPSHOT,
-          KeyboardCode::VKEY_BRIGHTNESS_DOWN,
-          KeyboardCode::VKEY_BRIGHTNESS_UP,
-          KeyboardCode::VKEY_PRIVACY_SCREEN_TOGGLE,
-          KeyboardCode::VKEY_MICROPHONE_MUTE_TOGGLE,
-          KeyboardCode::VKEY_MEDIA_PLAY_PAUSE,
-          KeyboardCode::VKEY_VOLUME_MUTE,
-          KeyboardCode::VKEY_VOLUME_DOWN,
-          KeyboardCode::VKEY_VOLUME_UP,
-          KeyboardCode::VKEY_KBD_BACKLIGHT_TOGGLE,
-          KeyboardCode::VKEY_KBD_BRIGHTNESS_DOWN,
-          KeyboardCode::VKEY_KBD_BRIGHTNESS_UP,
-          KeyboardCode::VKEY_MEDIA_NEXT_TRACK,
-          KeyboardCode::VKEY_MEDIA_PREV_TRACK,
-      });
-  return base::Contains(*top_row_action_keys, key_code);
+  const auto* action = kVKeyToTopRowActionKeyMap.find(key_code);
+  return action != kVKeyToTopRowActionKeyMap.end();
 }
 
 // static
@@ -732,30 +710,6 @@ bool KeyboardCapability::HasSixPackOnAnyKeyboard() {
 bool KeyboardCapability::IsFunctionKey(ui::KeyboardCode code) {
   return ui::KeyboardCode::VKEY_F1 <= code &&
          code <= ui::KeyboardCode::VKEY_F24;
-}
-
-bool KeyboardCapability::IsTopRowActionKey(ui::KeyboardCode code) {
-  // TODO(jimmyxgong): This is based off of the Layout1, Layout2, Wilco/Drallion
-  // mappings with some additional keys. This is not a complete list.
-  static constexpr auto kTopRowKeys = base::MakeFixedFlatSet<ui::KeyboardCode>({
-      ui::KeyboardCode::VKEY_BROWSER_BACK,
-      ui::KeyboardCode::VKEY_BROWSER_FORWARD,
-      ui::KeyboardCode::VKEY_BROWSER_REFRESH,
-      ui::KeyboardCode::VKEY_ZOOM,
-      ui::KeyboardCode::VKEY_MEDIA_LAUNCH_APP1,
-      ui::KeyboardCode::VKEY_BRIGHTNESS_DOWN,
-      ui::KeyboardCode::VKEY_BRIGHTNESS_UP,
-      ui::KeyboardCode::VKEY_VOLUME_MUTE,
-      ui::KeyboardCode::VKEY_VOLUME_UP,
-      ui::KeyboardCode::VKEY_VOLUME_DOWN,
-      ui::KeyboardCode::VKEY_MICROPHONE_MUTE_TOGGLE,
-      ui::KeyboardCode::VKEY_PRIVACY_SCREEN_TOGGLE,
-      ui::KeyboardCode::VKEY_SNAPSHOT,
-      ui::KeyboardCode::VKEY_MEDIA_PLAY_PAUSE,
-      ui::KeyboardCode::VKEY_KBD_BRIGHTNESS_DOWN,
-      ui::KeyboardCode::VKEY_KBD_BRIGHTNESS_UP,
-  });
-  return base::Contains(kTopRowKeys, code);
 }
 
 std::vector<mojom::ModifierKey> KeyboardCapability::GetModifierKeys(
@@ -1060,20 +1014,10 @@ void KeyboardCapability::TrimKeyboardInfoMap() {
 bool KeyboardCapability::HasKeyEvent(const KeyboardCode& key_code,
                                      const KeyboardDevice& keyboard) const {
   // Handle top row keys.
-  if (IsTopRowKey(key_code)) {
-    KeyboardTopRowLayout layout = GetTopRowLayout(keyboard);
-    switch (layout) {
-      case KeyboardTopRowLayout::kKbdTopRowLayout1:
-        return kLayout1TopRowKeyToFKeyMap.contains(key_code);
-      case KeyboardTopRowLayout::kKbdTopRowLayout2:
-        return kLayout2TopRowKeyToFKeyMap.contains(key_code);
-      case KeyboardTopRowLayout::kKbdTopRowLayoutWilco:
-      case KeyboardTopRowLayout::kKbdTopRowLayoutDrallion:
-        return kLayoutWilcoDrallionTopRowKeyToFKeyMap.contains(key_code);
-      case KeyboardTopRowLayout::kKbdTopRowLayoutCustom:
-        // TODO(zhangwenyu): Handle custom vivaldi layout.
-        return true;
-    }
+  absl::optional<TopRowActionKey> top_row_action_key =
+      ConvertToTopRowActionKey(key_code);
+  if (top_row_action_key.has_value()) {
+    return HasTopRowActionKey(keyboard, top_row_action_key.value());
   }
 
   // Handle six pack keys.

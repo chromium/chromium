@@ -299,9 +299,6 @@ class KeyboardCapability : public InputDeviceEventObserver {
   // Check if the keycode is a function key.
   static bool IsFunctionKey(ui::KeyboardCode code);
 
-  // Check if the keycode is a top-row action key.
-  static bool IsTopRowActionKey(ui::KeyboardCode code);
-
   // Returns the set of modifier keys present on the given keyboard.
   std::vector<mojom::ModifierKey> GetModifierKeys(
       const KeyboardDevice& keyboard) const;
