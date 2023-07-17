@@ -11937,6 +11937,24 @@
             ]
         }
     ],
+    "RustyQrCodeGenerator": [
+        {
+            "platforms": [
+                "android",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "RustyQrCodeGenerator"
+                    ]
+                }
+            ]
+        }
+    ],
     "SafeBrowsingCSDAndroid": [
         {
             "platforms": [
