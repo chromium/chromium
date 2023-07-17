@@ -7,8 +7,6 @@
 #include <algorithm>
 #include <vector>
 
-#include <dawn/dawn_proc.h>
-
 #include "base/numerics/checked_math.h"
 #include "base/run_loop.h"
 #include "base/trace_event/trace_event.h"
@@ -138,11 +136,6 @@ gpu::ContextResult WebGPUImplementation::Initialize(
 #if BUILDFLAG(USE_DAWN)
   dawn_wire_ = base::MakeRefCounted<DawnWireServices>(
       this, helper_, mapped_memory_.get(), std::move(transfer_buffer));
-
-  // TODO(senorblanco): Do this only once per process. Doing it once per
-  // WebGPUImplementation is non-optimal but valid, since the returned
-  // procs are always the same.
-  dawnProcSetProcs(&dawn::wire::client::GetProcs());
 #endif
 
   return gpu::ContextResult::kSuccess;
