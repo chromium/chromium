@@ -7,4 +7,11 @@ declare_args() {
   # components/cronet/tools/cr_cronet.py as cronet requires specific
   # gn args to build correctly).
   is_cronet_build = false
+
+  # Control whether lenient compiler flags should be used. To ensure that minor
+  # failures in the AOSP Cronet builders do not block Chromium CLs, we will make
+  # these builders as lenient as possible by not treating some warnings as
+  # errors. Please refer to go/cronet-builders-with-mainline-clang-design for
+  # more information.
+  use_lenient_compiler_flags = false
 }
