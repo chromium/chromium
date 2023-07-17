@@ -85,7 +85,7 @@ class AppPublisher {
                         apps::IconType icon_type,
                         int32_t size_hint_in_dip,
                         bool allow_placeholder_icon,
-                        LoadIconCallback callback) = 0;
+                        LoadIconCallback callback);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Returns the default icon if a valid icon can't be loaded, e.g. because an

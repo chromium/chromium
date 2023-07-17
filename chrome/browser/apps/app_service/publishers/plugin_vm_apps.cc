@@ -192,17 +192,6 @@ void PluginVmApps::Initialize() {
                         /*should_notify_initialized=*/true);
 }
 
-void PluginVmApps::LoadIcon(const std::string& app_id,
-                            const IconKey& icon_key,
-                            IconType icon_type,
-                            int32_t size_hint_in_dip,
-                            bool allow_placeholder_icon,
-                            apps::LoadIconCallback callback) {
-  registry_->LoadIcon(app_id, icon_key, icon_type, size_hint_in_dip,
-                      allow_placeholder_icon, IconKey::kInvalidResourceId,
-                      std::move(callback));
-}
-
 void PluginVmApps::GetCompressedIconData(const std::string& app_id,
                                          int32_t size_in_dip,
                                          ui::ResourceScaleFactor scale_factor,

@@ -69,17 +69,6 @@ int CrostiniApps::DefaultIconResourceId() const {
   return IDR_LOGO_CROSTINI_DEFAULT;
 }
 
-void CrostiniApps::LoadIcon(const std::string& app_id,
-                            const IconKey& icon_key,
-                            IconType icon_type,
-                            int32_t size_hint_in_dip,
-                            bool allow_placeholder_icon,
-                            apps::LoadIconCallback callback) {
-  registry()->LoadIcon(app_id, icon_key, icon_type, size_hint_in_dip,
-                       allow_placeholder_icon, IDR_LOGO_CROSTINI_DEFAULT,
-                       std::move(callback));
-}
-
 void CrostiniApps::Launch(const std::string& app_id,
                           int32_t event_flags,
                           LaunchSource launch_source,

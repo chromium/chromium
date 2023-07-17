@@ -52,6 +52,15 @@ void AppPublisher::RegisterPublisher(AppType app_type) {
 }
 #endif
 
+void AppPublisher::LoadIcon(const std::string& app_id,
+                            const IconKey& icon_key,
+                            apps::IconType icon_type,
+                            int32_t size_hint_in_dip,
+                            bool allow_placeholder_icon,
+                            LoadIconCallback callback) {
+  std::move(callback).Run(std::make_unique<IconValue>());
+}
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 int AppPublisher::DefaultIconResourceId() const {
   return IDR_APP_DEFAULT_ICON;

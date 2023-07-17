@@ -146,19 +146,6 @@ guest_os::VmType BruschettaApps::VmType() const {
   return guest_os::VmType::BRUSCHETTA;
 }
 
-void BruschettaApps::LoadIcon(const std::string& app_id,
-                              const IconKey& icon_key,
-                              IconType icon_type,
-                              int32_t size_hint_in_dip,
-                              bool allow_placeholder_icon,
-                              apps::LoadIconCallback callback) {
-  // TODO(b/247636749): Consider creating IDR_LOGO_BRUSCHETTA_DEFAULT
-  // to replace IconKey::kInvalidResourceId.
-  registry()->LoadIcon(app_id, icon_key, icon_type, size_hint_in_dip,
-                       allow_placeholder_icon, IconKey::kInvalidResourceId,
-                       std::move(callback));
-}
-
 void BruschettaApps::Launch(const std::string& app_id,
                             int32_t event_flags,
                             LaunchSource launch_source,

@@ -210,17 +210,6 @@ void BorealisApps::CreateAppOverrides(
   }
 }
 
-void BorealisApps::LoadIcon(const std::string& app_id,
-                            const IconKey& icon_key,
-                            IconType icon_type,
-                            int32_t size_hint_in_dip,
-                            bool allow_placeholder_icon,
-                            apps::LoadIconCallback callback) {
-  registry()->LoadIcon(app_id, icon_key, icon_type, size_hint_in_dip,
-                       allow_placeholder_icon, IconKey::kInvalidResourceId,
-                       std::move(callback));
-}
-
 void BorealisApps::Launch(const std::string& app_id,
                           int32_t event_flags,
                           LaunchSource launch_source,
