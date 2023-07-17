@@ -6112,6 +6112,7 @@ test("unit_tests") {
       "../browser/metrics/chrome_metrics_service_client_ash_unittest.cc",
       "../browser/policy/messaging_layer/upload/file_upload_impl_unittest.cc",
       "../browser/ui/ash/arc_vm_data_migration_confirmation_dialog_unittest.cc",
+      "../browser/ui/ash/clipboard_history_url_title_fetcher_impl_unittest.cc",
     ]
   }
 
