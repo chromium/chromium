@@ -164,7 +164,7 @@ bool ChildNodePart::IsValid() const {
 }
 
 Node* ChildNodePart::NodeToSortBy() const {
-  return parentElement();
+  return previous_sibling_;
 }
 
 ContainerNode* ChildNodePart::rootContainer() const {

@@ -125,8 +125,8 @@ function addCleanup(t, part) {
     const childNodePart2 = addCleanup(t,new ChildNodePart(childNodePart,target.children[1].firstElementChild,target.children[1].firstElementChild.nextSibling,{metadata: ['childnodepart2']}));
     let rootExpectations = [{type:'NodePart',metadata:['node1']},{type:'ChildNodePart',metadata:['child']}];
     assertEqualParts(root.getParts(),rootExpectations,[nodePart,childNodePart],'setup');
-    let childExpectations = [{type:'ChildNodePart',metadata:['childnodepart2']},{type:'NodePart',metadata:['node 3']},{type:'NodePart',metadata:['node 2']}];
-    assertEqualParts(childNodePart.getParts(),childExpectations,[childNodePart2,nodePart3,nodePart2],'setup');
+    let childExpectations = [{type:'NodePart',metadata:['node 3']},{type:'NodePart',metadata:['node 2']},{type:'ChildNodePart',metadata:['childnodepart2']}];
+    assertEqualParts(childNodePart.getParts(),childExpectations,[nodePart3,nodePart2,childNodePart2],'setup');
     assert_array_equals(childNodePart2.getParts(),[]);
 
     // Test cloning of the entire DocumentPartRoot.
