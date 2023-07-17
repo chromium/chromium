@@ -68,8 +68,11 @@ constexpr VideoCodecProfile kSupportedProfiles[] = {
 bool IsSVCSupported(const VideoCodec& codec) {
 #if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER) && defined(ARCH_CPU_ARM_FAMILY)
   // macOS 14.0+ support SVC HEVC encoding for Apple Silicon chips only.
-  if (codec == VideoCodec::kHEVC && base::mac::IsAtLeastOS14()) {
-    return true;
+  if (codec == VideoCodec::kHEVC) {
+    if (__builtin_available(macOS 14.0, iOS 17.0, *)) {
+      return true;
+    }
+    return false;
   }
 #endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER) &&
         // defined(ARCH_CPU_ARM_FAMILY)
