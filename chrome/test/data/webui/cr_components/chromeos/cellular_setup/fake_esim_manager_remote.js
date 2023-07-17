@@ -204,6 +204,21 @@ class FakeEuicc {
 
   /**
    * @override
+   * @return {!Promise<{result:ESimOperationResult,
+   *     profiles:Array<!ESimProfileProperties>,}}
+   *
+   */
+  requestAvailableProfiles() {
+    return Promise.resolve({
+      result: this.requestPendingProfilesResult_,
+      profiles: this.profiles_.map(profile => {
+        return profile.properties;
+      }),
+    });
+  }
+
+  /**
+   * @override
    * @return {!Promise<{profiles: Array<!ESimProfile>,}>}
    */
   getProfileList() {

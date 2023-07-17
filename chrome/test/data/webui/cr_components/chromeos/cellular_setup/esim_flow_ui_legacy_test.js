@@ -22,8 +22,6 @@ import {FakeCellularSetupDelegate} from './fake_cellular_setup_delegate.js';
 import {FakeESimManagerRemote} from './fake_esim_manager_remote.js';
 import {MockMetricsPrivate} from './mock_metrics_private.js';
 
-// TODO(michaelrygiel): update this to enabled when subpages are
-// updated to use new mojo api
 const suiteSuffix = 'smdsSupportDisabled';
 
 suite(`CrComponentsEsimFlowUiTest${suiteSuffix}`, function() {
@@ -94,6 +92,18 @@ suite(`CrComponentsEsimFlowUiTest${suiteSuffix}`, function() {
         wifiGuidPrefix + '_guid', ConnectionStateType.kNotConnected);
   }
 
+  test('Error fetching profiles', async function() {
+    eSimManagerRemote.addEuiccForTest(0);
+    const availableEuiccs = await eSimManagerRemote.getAvailableEuiccs();
+    const euicc = availableEuiccs.euiccs[0];
+
+    euicc.setRequestPendingProfilesResult(ESimOperationResult.kFailure);
+    eSimPage.initSubflow();
+
+    await flushAsync();
+    endFlowAndVerifyResult(ESimSetupFlowResult.ERROR_FETCHING_PROFILES);
+  });
+
   function setSmdsSupportEnabled(value) {
     eSimPage.smdsSupportEnabled_ = value;
   }
@@ -114,8 +124,6 @@ suite(`CrComponentsEsimFlowUiTest${suiteSuffix}`, function() {
     eSimPage = document.createElement('esim-flow-ui');
     eSimPage.delegate = new FakeCellularSetupDelegate();
     document.body.appendChild(eSimPage);
-    // TODO(michaelrygiel): update this to true when subpages are updated
-    // to use new mojo api
     setSmdsSupportEnabled(false);
     flush();
 
@@ -276,18 +284,6 @@ suite(`CrComponentsEsimFlowUiTest${suiteSuffix}`, function() {
     assertButtonState(forwardButtonShouldBeEnabled, backButtonState);
   }
 
-  test('Error fetching profiles', async function() {
-    eSimManagerRemote.addEuiccForTest(0);
-    const availableEuiccs = await eSimManagerRemote.getAvailableEuiccs();
-    const euicc = availableEuiccs.euiccs[0];
-
-    euicc.setRequestPendingProfilesResult(ESimOperationResult.kFailure);
-    eSimPage.initSubflow();
-
-    await flushAsync();
-    endFlowAndVerifyResult(ESimSetupFlowResult.ERROR_FETCHING_PROFILES);
-  });
-
   suite('Add eSIM flow with zero pending profiles', function() {
     let euicc;
 
@@ -307,6 +303,7 @@ suite(`CrComponentsEsimFlowUiTest${suiteSuffix}`, function() {
           /*backButtonState*/ ButtonState.HIDDEN);
       // Insert an activation code.
       activationCodePage.$$('#activationCode').value = ACTIVATION_CODE_VALID;
+
       // Forward button should now be enabled.
       assertActivationCodePage(
           /*forwardButtonShouldBeEnabled*/ true,
