@@ -447,6 +447,30 @@ source_set("analytics_event_logger") {
   configs += [ "//build/config/compiler:no_chromium_code" ]
 }
 
+# src/internal/crypto
+# NOTE: This does not include any of the classes found in //cyrpto
+source_set("nearby_crypto") {
+  public_configs = [
+    ":nearby_include_config",
+    ":nearby_defines",
+  ]
+  sources = [
+    "src/internal/crypto/ed25519.cc",
+    "src/internal/crypto/nearby_base.cc",
+  ]
+  public = [
+    "src/internal/crypto/ed25519.h",
+    "src/internal/crypto/nearby_base.h",
+  ]
+  public_deps = [
+    ":platform_base_logging",
+    "//third_party/abseil-cpp:absl",
+    "//third_party/boringssl:boringssl",
+  ]
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+}
+
 # src/internal/flags
 source_set("flags") {
   public_configs = [
@@ -943,6 +967,7 @@ source_set("presence_internal") {
     "src/presence/implementation/advertisement_factory.cc",
     "src/presence/implementation/base_broadcast_request.cc",
     "src/presence/implementation/broadcast_manager.cc",
+    "src/presence/implementation/connection_authenticator.cc",
     "src/presence/implementation/credential_manager_impl.cc",
     "src/presence/implementation/ldt.cc",
     "src/presence/implementation/scan_manager.cc",
@@ -954,6 +979,7 @@ source_set("presence_internal") {
     "src/presence/implementation/advertisement_factory.h",
     "src/presence/implementation/base_broadcast_request.h",
     "src/presence/implementation/broadcast_manager.h",
+    "src/presence/implementation/connection_authenticator.h",
     "src/presence/implementation/credential_manager.h",
     "src/presence/implementation/credential_manager_impl.h",
     "src/presence/implementation/ldt.h",
@@ -965,6 +991,7 @@ source_set("presence_internal") {
     ":connections_enums_proto",
     ":connections_local_credential_proto",
     ":connections_metadata_proto",
+    ":nearby_crypto",
     ":platform_base",
     ":platform_base_uuid",
     ":platform_public_comm",
