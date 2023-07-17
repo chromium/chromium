@@ -618,7 +618,6 @@ bool RenderAccessibilityImpl::IsImmediateProcessingRequiredForEvent(
     case ax::mojom::Event::kTreeChanged:
       return serialize_post_lifecycle_;
 
-    case ax::mojom::Event::kAriaAttributeChanged:
     case ax::mojom::Event::kDocumentTitleChanged:
     case ax::mojom::Event::kExpandedChanged:
     case ax::mojom::Event::kHide:
@@ -638,6 +637,7 @@ bool RenderAccessibilityImpl::IsImmediateProcessingRequiredForEvent(
     // These events are not fired from Blink.
     // This list is duplicated in WebFrameTestProxy::PostAccessibilityEvent().
     case ax::mojom::Event::kAlert:
+    case ax::mojom::Event::kAriaAttributeChanged:
     case ax::mojom::Event::kAutocorrectionOccured:
     case ax::mojom::Event::kChildrenChanged:
     case ax::mojom::Event::kControlsChanged:

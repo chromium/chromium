@@ -9,3 +9,7 @@ rootWebArea
 ++++++++genericContainer
 ++++++++++staticText name='done'
 ++++++++++++inlineTextBox name='done'
+++++++group
+++++++++mark
+++++++++++staticText name='text'
+++++++++++++inlineTextBox name='text'
