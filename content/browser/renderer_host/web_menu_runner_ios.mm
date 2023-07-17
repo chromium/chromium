@@ -52,7 +52,6 @@
     DCHECK_GE(index, 0);
     _selectedIndex = static_cast<size_t>(index);
 
-    // TODO(crbug.com/1434872): Apply fontSize and rightAligned to the menu.
     [self createMenu:items];
   }
   return self;
