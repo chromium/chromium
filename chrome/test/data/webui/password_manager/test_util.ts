@@ -20,6 +20,15 @@ export function makePasswordCheckStatus(params: PasswordCheckParams):
     elapsedTimeSinceLastCheck: params.lastCheck,
   };
 }
+export function makeFamilyFetchResults(
+    status?: chrome.passwordsPrivate.FamilyFetchStatus,
+    members?: chrome.passwordsPrivate.RecipientInfo[]):
+    chrome.passwordsPrivate.FamilyFetchResults {
+  return {
+    status: status || chrome.passwordsPrivate.FamilyFetchStatus.SUCCESS,
+    members: members || [],
+  };
+}
 
 export interface PasswordEntryParams {
   isPasskey?: boolean;

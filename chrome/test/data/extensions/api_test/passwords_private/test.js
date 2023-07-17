@@ -343,6 +343,18 @@ var availableTests = [
     chrome.passwordsPrivate.getPasswordExceptionList(callback);
   },
 
+  function fetchFamilyMembers() {
+    let callback = function(familyFetchResults) {
+      chrome.test.assertNoLastError();
+      chrome.test.assertTrue(!!familyFetchResults);
+      chrome.test.assertEq(
+          chrome.passwordsPrivate.FamilyFetchStatus.SUCCESS,
+          familyFetchResults.status);
+      chrome.test.succeed();
+    };
+    chrome.passwordsPrivate.fetchFamilyMembers(callback);
+  },
+
   function importPasswords() {
     let callback = function(importResults) {
       chrome.test.assertNoLastError();

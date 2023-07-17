@@ -233,6 +233,15 @@ void TestPasswordsPrivateDelegate::ContinueImport(
   std::move(results_callback).Run(import_results_);
 }
 
+void TestPasswordsPrivateDelegate::FetchFamilyMembers(
+    FetchFamilyResultsCallback callback) {
+  fetch_family_members_triggered_ = true;
+
+  family_fetch_results_.status =
+      api::passwords_private::FamilyFetchStatus::FAMILY_FETCH_STATUS_SUCCESS;
+  std::move(callback).Run(family_fetch_results_);
+}
+
 void TestPasswordsPrivateDelegate::ResetImporter(bool delete_file) {
   reset_importer_triggered_ = true;
 }

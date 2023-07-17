@@ -201,6 +201,12 @@ export interface PasswordManagerProxy {
       Promise<void>;
 
   /**
+   * Fetches family members (password share recipients).
+   * @return A promise that resolves the FamilyFetchResults.
+   */
+  fetchFamilyMembers(): Promise<chrome.passwordsPrivate.FamilyFetchResults>;
+
+  /**
    * Updates the given credential. Not all parameters can be updated.
    * @param credential the credential to update.
    * @return A promise that resolves if the credential was found and updated,
@@ -496,6 +502,10 @@ export class PasswordManagerImpl implements PasswordManagerProxy {
 
   undoRemoveSavedPasswordOrException() {
     chrome.passwordsPrivate.undoRemoveSavedPasswordOrException();
+  }
+
+  fetchFamilyMembers() {
+    return chrome.passwordsPrivate.fetchFamilyMembers();
   }
 
   importPasswords(toStore: chrome.passwordsPrivate.PasswordStoreSet) {

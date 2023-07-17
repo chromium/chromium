@@ -10,10 +10,12 @@ import './share_password_error_dialog.js';
 import './share_password_no_members_dialog.js';
 
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {getTemplate} from './share_password_flow.html.js';
+import {PasswordManagerImpl, PasswordManagerProxy} from '../password_manager_proxy.js';
 
+import {getTemplate} from './share_password_flow.html.js';
 
 export enum ShareFlowState {
   NO_DIALOG,
@@ -49,6 +51,8 @@ export class SharePasswordFlowElement extends SharePasswordFlowElementBase {
 
   passwordName: string;
   flowState: ShareFlowState = ShareFlowState.NO_DIALOG;
+  private passwordManager_: PasswordManagerProxy =
+      PasswordManagerImpl.getInstance();
 
   override connectedCallback() {
     super.connectedCallback();
@@ -56,9 +60,24 @@ export class SharePasswordFlowElement extends SharePasswordFlowElementBase {
     this.startSharing_();
   }
 
-  private startSharing_() {
+  private async startSharing_() {
+    // TODO(crbug/1445526): Add timeout to avoid flickering.
     this.flowState = ShareFlowState.FETCHING;
-    // TODO(1445526): Fetch recipients.
+
+    const results = await this.passwordManager_.fetchFamilyMembers();
+    switch (results.status) {
+      case chrome.passwordsPrivate.FamilyFetchStatus.UNKNOWN_ERROR:
+        this.flowState = ShareFlowState.ERROR;
+        break;
+      case chrome.passwordsPrivate.FamilyFetchStatus.NO_MEMBERS:
+        this.flowState = ShareFlowState.NO_MEMBERS;
+        break;
+      case chrome.passwordsPrivate.FamilyFetchStatus.SUCCESS:
+        // TODO(crbug/1445526): Implement and show family picker dialog.
+        break;
+      default:
+        assertNotReached();
+    }
   }
 
   private isState_(state: ShareFlowState): boolean {

@@ -367,6 +367,7 @@ suite('PasswordDetailsCardTest', function() {
 
     // Share flow should become available after the button click.
     shareButton.click();
+    await passwordManager.whenCalled('fetchFamilyMembers');
     await flushTasks();
 
     const shareFlow = card.shadowRoot!.querySelector('share-password-flow');

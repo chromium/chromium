@@ -38,6 +38,9 @@ class PasswordsPrivateDelegate
   using ImportResultsCallback =
       base::OnceCallback<void(const api::passwords_private::ImportResults&)>;
 
+  using FetchFamilyResultsCallback = base::OnceCallback<void(
+      const api::passwords_private::FamilyFetchResults&)>;
+
   using PlaintextPasswordCallback =
       base::OnceCallback<void(absl::optional<std::u16string>)>;
 
@@ -153,6 +156,11 @@ class PasswordsPrivateDelegate
   // account-scoped password storage.
   virtual void MovePasswordsToAccount(const std::vector<int>& ids,
                                       content::WebContents* web_contents) = 0;
+
+  // Fetches family members of the current user for the password sharing flow.
+  // |callback|: Used to communicate the status of a request to fetch family
+  //  members, as well as the data returned in the response.
+  virtual void FetchFamilyMembers(FetchFamilyResultsCallback callback) = 0;
 
   // Trigger the password import procedure, allowing the user to select a file
   // containing passwords to import.

@@ -282,6 +282,27 @@ ResponseAction PasswordsPrivateMovePasswordsToAccountFunction::Run() {
   return RespondNow(NoArguments());
 }
 
+// PasswordsPrivateFetchFamilyMembersFunction
+ResponseAction PasswordsPrivateFetchFamilyMembersFunction::Run() {
+  if (!GetDelegate(browser_context())) {
+    return RespondNow(Error(kNoDelegateError));
+  }
+
+  GetDelegate(browser_context())
+      ->FetchFamilyMembers(base::BindOnce(
+          &PasswordsPrivateFetchFamilyMembersFunction::FamilyFetchCompleted,
+          this));
+
+  // `FamilyFetchCompleted()` might respond before we reach this point.
+  return did_respond() ? AlreadyResponded() : RespondLater();
+}
+
+void PasswordsPrivateFetchFamilyMembersFunction::FamilyFetchCompleted(
+    const api::passwords_private::FamilyFetchResults& result) {
+  Respond(ArgumentList(
+      api::passwords_private::FetchFamilyMembers::Results::Create(result)));
+}
+
 // PasswordsPrivateImportPasswordsFunction
 ResponseAction PasswordsPrivateImportPasswordsFunction::Run() {
   if (!GetDelegate(browser_context())) {

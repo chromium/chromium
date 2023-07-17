@@ -76,6 +76,25 @@ declare global {
         VALID = 'VALID',
       }
 
+      export enum FamilyFetchStatus {
+        UNKNOWN_ERROR = 'UNKNOWN_ERROR',
+        NO_MEMBERS = 'NO_MEMBERS',
+        SUCCESS = 'SUCCESS',
+      }
+
+      export interface RecipientInfo {
+        userId: string;
+        email: string;
+        displayName: string;
+        profileImageUrl: string;
+        isEligible: boolean;
+      }
+
+      export interface FamilyFetchResults {
+        status: FamilyFetchStatus;
+        members: RecipientInfo[];
+      }
+
       export interface ImportEntry {
         status: ImportEntryStatus;
         url: string;
@@ -186,6 +205,7 @@ declare global {
       export function getCredentialGroups(): Promise<CredentialGroup[]>;
       export function getPasswordExceptionList(): Promise<ExceptionEntry[]>;
       export function movePasswordsToAccount(ids: number[]): void;
+      export function fetchFamilyMembers(): Promise<FamilyFetchResults>;
       export function importPasswords(toStore: PasswordStoreSet):
           Promise<ImportResults>;
       export function continueImport(selectedIds: number[]):

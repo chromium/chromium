@@ -80,6 +80,10 @@ class PasswordsPrivateApiTest : public ExtensionApiTest {
     return test_delegate_->ImportPasswordsTriggered();
   }
 
+  bool fetch_family_members_was_triggered() {
+    return test_delegate_->FetchFamilyMembersTriggered();
+  }
+
   bool continue_import_was_triggered() {
     return test_delegate_->ContinueImportTriggered();
   }
@@ -265,6 +269,12 @@ IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest, GetSavedPasswordList) {
 
 IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest, GetPasswordExceptionList) {
   EXPECT_TRUE(RunPasswordsSubtest("getPasswordExceptionList")) << message_;
+}
+
+IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest, FetchFamilyMembers) {
+  EXPECT_FALSE(fetch_family_members_was_triggered());
+  EXPECT_TRUE(RunPasswordsSubtest("fetchFamilyMembers")) << message_;
+  EXPECT_TRUE(fetch_family_members_was_triggered());
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest, ImportPasswords) {

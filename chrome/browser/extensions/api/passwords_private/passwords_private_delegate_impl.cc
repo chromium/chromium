@@ -675,6 +675,15 @@ void PasswordsPrivateDelegateImpl::MovePasswordsToAccount(
           kExplicitlyTriggeredForMultiplePasswordsInSettings);
 }
 
+void PasswordsPrivateDelegateImpl::FetchFamilyMembers(
+    FetchFamilyResultsCallback callback) {
+  // TODO(crbug/1445526): Call family fetcher service.
+  api::passwords_private::FamilyFetchResults results;
+  results.status = api::passwords_private::FamilyFetchStatus::
+      FAMILY_FETCH_STATUS_UNKNOWN_ERROR;
+  std::move(callback).Run(results);
+}
+
 void PasswordsPrivateDelegateImpl::ImportPasswords(
     api::passwords_private::PasswordStoreSet to_store,
     ImportResultsCallback results_callback,

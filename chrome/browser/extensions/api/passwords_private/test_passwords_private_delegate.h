@@ -62,6 +62,7 @@ class TestPasswordsPrivateDelegate : public PasswordsPrivateDelegate {
                                  content::WebContents* web_contents) override;
   void MovePasswordsToAccount(const std::vector<int>& ids,
                               content::WebContents* web_contents) override;
+  void FetchFamilyMembers(FetchFamilyResultsCallback callback) override;
   void ImportPasswords(api::passwords_private::PasswordStoreSet to_store,
                        ImportResultsCallback results_callback,
                        content::WebContents* web_contents) override;
@@ -119,6 +120,9 @@ class TestPasswordsPrivateDelegate : public PasswordsPrivateDelegate {
   bool CancelExportPasswordsTriggered() const {
     return cancel_export_passwords_triggered_;
   }
+  bool FetchFamilyMembersTriggered() const {
+    return fetch_family_members_triggered_;
+  }
   bool StartPasswordCheckTriggered() const {
     return start_password_check_triggered_;
   }
@@ -173,12 +177,17 @@ class TestPasswordsPrivateDelegate : public PasswordsPrivateDelegate {
 
   api::passwords_private::ImportResults import_results_;
 
+  api::passwords_private::FamilyFetchResults family_fetch_results_;
+
   // List of insecure credentials.
   std::vector<api::passwords_private::PasswordUiEntry> insecure_credentials_;
   raw_ptr<Profile, DanglingUntriaged> profile_ = nullptr;
 
   bool is_opted_in_for_account_storage_ = false;
   bool is_account_store_default_ = false;
+
+  // Flags for detecting whether password sharing operations have been invoked.
+  bool fetch_family_members_triggered_ = false;
 
   // Flags for detecting whether import/export operations have been invoked.
   bool import_passwords_triggered_ = false;

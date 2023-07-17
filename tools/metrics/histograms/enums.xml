@@ -37165,6 +37165,7 @@ Called by update_extension_histograms.py.-->
   <int value="1803" label="OS_DIAGNOSTICS_RUNAUDIODRIVERROUTINE"/>
   <int value="1804" label="READINGLIST_ADDENTRY"/>
   <int value="1805" label="READINGLIST_REMOVEENTRY"/>
+  <int value="1806" label="PASSWORDSPRIVATE_FETCHFAMILYMEMBERS"/>
 </enum>
 
 <enum name="ExtensionIconState">

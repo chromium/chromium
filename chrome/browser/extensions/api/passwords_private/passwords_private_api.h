@@ -182,6 +182,22 @@ class PasswordsPrivateMovePasswordsToAccountFunction
   ResponseAction Run() override;
 };
 
+class PasswordsPrivateFetchFamilyMembersFunction : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("passwordsPrivate.fetchFamilyMembers",
+                             PASSWORDSPRIVATE_FETCHFAMILYMEMBERS)
+
+ protected:
+  ~PasswordsPrivateFetchFamilyMembersFunction() override = default;
+
+  // ExtensionFunction overrides.
+  ResponseAction Run() override;
+
+ private:
+  void FamilyFetchCompleted(
+      const api::passwords_private::FamilyFetchResults& results);
+};
+
 class PasswordsPrivateImportPasswordsFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("passwordsPrivate.importPasswords",
