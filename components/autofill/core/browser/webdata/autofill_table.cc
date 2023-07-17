@@ -2913,6 +2913,16 @@ bool AutofillTable::RemoveAutofillDataModifiedBetween(
   if (!s_credit_cards.Run())
     return false;
 
+  // Remove credit card cvcs in the time range.
+  sql::Statement s_cvc;
+  DeleteBuilder(db_, s_cvc, kLocalStoredCvcTable,
+                "last_updated_timestamp >= ? AND last_updated_timestamp < ?");
+  s_cvc.BindInt64(0, delete_begin_t);
+  s_cvc.BindInt64(1, delete_end_t);
+  if (!s_cvc.Run()) {
+    return false;
+  }
+
   // Remove unmasked credit cards in the time range.
   sql::Statement s_unmasked_cards;
   DeleteBuilder(db_, s_unmasked_cards, kUnmaskedCreditCardsTable,

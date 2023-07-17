@@ -1601,16 +1601,34 @@ TEST_F(AutofillTableTest, RemoveAutofillDataModifiedBetween) {
       "VALUES('00000000-0000-0000-0000-000000000005', 3, 'first name5');"
       "INSERT INTO credit_cards (guid, date_modified) "
       "VALUES('00000000-0000-0000-0000-000000000006', 17);"
+      "INSERT INTO local_stored_cvc (guid, value_encrypted, "
+      "last_updated_timestamp) "
+      "VALUES('00000000-0000-0000-0000-000000000006', '', 17);"
       "INSERT INTO credit_cards (guid, date_modified) "
       "VALUES('00000000-0000-0000-0000-000000000007', 27);"
+      "INSERT INTO local_stored_cvc (guid, value_encrypted, "
+      "last_updated_timestamp) "
+      "VALUES('00000000-0000-0000-0000-000000000007', '', 27);"
       "INSERT INTO credit_cards (guid, date_modified) "
       "VALUES('00000000-0000-0000-0000-000000000008', 37);"
+      "INSERT INTO local_stored_cvc (guid, value_encrypted, "
+      "last_updated_timestamp) "
+      "VALUES('00000000-0000-0000-0000-000000000008', '', 37);"
       "INSERT INTO credit_cards (guid, date_modified) "
       "VALUES('00000000-0000-0000-0000-000000000009', 47);"
+      "INSERT INTO local_stored_cvc (guid, value_encrypted, "
+      "last_updated_timestamp) "
+      "VALUES('00000000-0000-0000-0000-000000000009', '', 47);"
       "INSERT INTO credit_cards (guid, date_modified) "
       "VALUES('00000000-0000-0000-0000-000000000010', 57);"
+      "INSERT INTO local_stored_cvc (guid, value_encrypted, "
+      "last_updated_timestamp) "
+      "VALUES('00000000-0000-0000-0000-000000000010', '', 57);"
       "INSERT INTO credit_cards (guid, date_modified) "
-      "VALUES('00000000-0000-0000-0000-000000000011', 67);"));
+      "VALUES('00000000-0000-0000-0000-000000000011', 67);"
+      "INSERT INTO local_stored_cvc (guid, value_encrypted, "
+      "last_updated_timestamp) "
+      "VALUES('00000000-0000-0000-0000-000000000011', '', 67);"));
 
   // Remove all entries modified in the bounded time range [17,41).
   std::vector<std::unique_ptr<AutofillProfile>> profiles;
@@ -1672,6 +1690,18 @@ TEST_F(AutofillTableTest, RemoveAutofillDataModifiedBetween) {
   EXPECT_EQ(67, s_credit_cards_bounded.ColumnInt64(0));
   EXPECT_FALSE(s_credit_cards_bounded.Step());
 
+  // Make sure the expected card cvcs are still present.
+  sql::Statement s_cvc_bounded(db_->GetSQLConnection()->GetUniqueStatement(
+      "SELECT last_updated_timestamp FROM local_stored_cvc ORDER BY guid"));
+  ASSERT_TRUE(s_cvc_bounded.is_valid());
+  ASSERT_TRUE(s_cvc_bounded.Step());
+  EXPECT_EQ(47, s_cvc_bounded.ColumnInt64(0));
+  ASSERT_TRUE(s_cvc_bounded.Step());
+  EXPECT_EQ(57, s_cvc_bounded.ColumnInt64(0));
+  ASSERT_TRUE(s_cvc_bounded.Step());
+  EXPECT_EQ(67, s_cvc_bounded.ColumnInt64(0));
+  EXPECT_FALSE(s_cvc_bounded.Step());
+
   // Remove all entries modified on or after time 51 (unbounded range).
   table_->RemoveAutofillDataModifiedBetween(Time::FromTimeT(51), Time(),
                                             &profiles, &credit_cards);
@@ -1715,6 +1745,14 @@ TEST_F(AutofillTableTest, RemoveAutofillDataModifiedBetween) {
   EXPECT_EQ(47, s_credit_cards_unbounded.ColumnInt64(0));
   EXPECT_FALSE(s_credit_cards_unbounded.Step());
 
+  // Make sure the remaining card cvc is the expected one.
+  sql::Statement s_cvc_unbounded(db_->GetSQLConnection()->GetUniqueStatement(
+      "SELECT last_updated_timestamp FROM local_stored_cvc"));
+  ASSERT_TRUE(s_cvc_unbounded.is_valid());
+  ASSERT_TRUE(s_cvc_unbounded.Step());
+  EXPECT_EQ(47, s_cvc_unbounded.ColumnInt64(0));
+  EXPECT_FALSE(s_cvc_unbounded.Step());
+
   // Remove all remaining entries.
   table_->RemoveAutofillDataModifiedBetween(Time(), Time(), &profiles,
                                             &credit_cards);
@@ -1748,6 +1786,12 @@ TEST_F(AutofillTableTest, RemoveAutofillDataModifiedBetween) {
           "SELECT date_modified FROM credit_cards"));
   ASSERT_TRUE(s_credit_cards_empty.is_valid());
   EXPECT_FALSE(s_credit_cards_empty.Step());
+
+  // There should be no card cvcs left.
+  sql::Statement s_cvc_empty(db_->GetSQLConnection()->GetUniqueStatement(
+      "SELECT last_updated_timestamp FROM local_stored_cvc"));
+  ASSERT_TRUE(s_cvc_empty.is_valid());
+  EXPECT_FALSE(s_cvc_empty.Step());
 }
 
 TEST_F(AutofillTableTest, RemoveOriginURLsModifiedBetween) {
