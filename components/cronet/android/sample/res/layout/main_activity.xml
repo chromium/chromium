@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/fragment_container"
+        android:name="org.chromium.cronet_sample_apk.OptionsFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <!-- bottom navigation bar -->
+    <LinearLayout
+        android:id="@+id/nav_view"
+        android:padding="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_alignParentBottom="true"
+        android:background="?android:attr/windowBackground">
+        <!--suppress HardcodedText -->
+        <TextView
+            android:id="@+id/navigation_home"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:drawableTop="@drawable/ic_action_home"
+            android:text="Home"
+            android:gravity="center_horizontal"
+            android:layout_weight="1">
+        </TextView>
+        <!--suppress HardcodedText -->
+        <TextView
+            android:id="@+id/navigation_options_ui"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:drawableTop="@drawable/ic_flag"
+            android:text="Options"
+            android:gravity="center_horizontal"
+            android:layout_weight="1">
+        </TextView>
+    </LinearLayout>
+</RelativeLayout>

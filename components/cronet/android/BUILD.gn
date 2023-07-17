@@ -461,10 +461,16 @@ java_group("cronet_impl_all_java") {
 
 android_resources("cronet_sample_apk_resources") {
   sources = [
-    "sample/res/layout/activity_main.xml",
-    "sample/res/layout/dialog_url.xml",
+    "sample/res/drawable/ic_action_home.xml",
+    "sample/res/drawable/ic_flag.xml",
+    "sample/res/layout/main_activity.xml",
+    "sample/res/layout/main_fragment.xml",
+    "sample/res/layout/options_fragment.xml",
+    "sample/res/layout/toggle_view.xml",
+    "sample/res/values/colors.xml",
     "sample/res/values/dimens.xml",
     "sample/res/values/strings.xml",
+    "sample/res/values/styles.xml",
   ]
   android_manifest = "sample/AndroidManifest.xml"
   deps = [
@@ -481,8 +487,15 @@ android_resources("cronet_sample_apk_resources") {
 
 android_library("cronet_sample_apk_java") {
   sources = [
+    "sample/src/org/chromium/cronet_sample_apk/Action.java",
+    "sample/src/org/chromium/cronet_sample_apk/ActionData.java",
     "sample/src/org/chromium/cronet_sample_apk/CronetSampleActivity.java",
     "sample/src/org/chromium/cronet_sample_apk/CronetSampleApplication.java",
+    "sample/src/org/chromium/cronet_sample_apk/MainFragment.java",
+    "sample/src/org/chromium/cronet_sample_apk/Options.java",
+    "sample/src/org/chromium/cronet_sample_apk/OptionsFragment.java",
+    "sample/src/org/chromium/cronet_sample_apk/OptionsRecyclerViewAdapter.java",
+    "sample/src/org/chromium/cronet_sample_apk/SampleActivityViewModel.java",
   ]
 
   resources_package = "org.chromium.cronet_sample_apk"
@@ -490,10 +503,14 @@ android_library("cronet_sample_apk_java") {
     ":cronet_sample_apk_resources",
     ":package_api_java",
     ":package_impl_native_java",
+    "//third_party/androidx:androidx_annotation_annotation_experimental_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_java",
+    "//third_party/androidx:androidx_fragment_fragment_java",
     "//third_party/androidx:androidx_lifecycle_lifecycle_viewmodel_java",
     "//third_party/androidx:androidx_multidex_multidex_java",
+    "//third_party/androidx:androidx_preference_preference_java",
+    "//third_party/androidx:androidx_recyclerview_recyclerview_java",
   ]
 }
 
@@ -1422,16 +1439,26 @@ repackage_jars("repackage_test_jars") {
 zip("jar_cronet_sample_source") {
   inputs = [
     "sample/AndroidManifest.xml",
-    "sample/javatests/AndroidManifest.xml",
-    "sample/javatests/proguard.cfg",
-    "sample/javatests/src/org/chromium/cronet_sample_apk/CronetSampleTest.java",
     "sample/README",
-    "sample/res/layout/activity_main.xml",
-    "sample/res/layout/dialog_url.xml",
+    "sample/res/drawable/ic_action_home.xml",
+    "sample/res/drawable/ic_flag.xml",
+    "sample/res/layout/main_activity.xml",
+    "sample/res/layout/main_fragment.xml",
+    "sample/res/layout/options_fragment.xml",
+    "sample/res/layout/toggle_view.xml",
+    "sample/res/values/colors.xml",
     "sample/res/values/dimens.xml",
     "sample/res/values/strings.xml",
+    "sample/res/values/styles.xml",
+    "sample/src/org/chromium/cronet_sample_apk/Action.java",
+    "sample/src/org/chromium/cronet_sample_apk/ActionData.java",
     "sample/src/org/chromium/cronet_sample_apk/CronetSampleActivity.java",
     "sample/src/org/chromium/cronet_sample_apk/CronetSampleApplication.java",
+    "sample/src/org/chromium/cronet_sample_apk/MainFragment.java",
+    "sample/src/org/chromium/cronet_sample_apk/Options.java",
+    "sample/src/org/chromium/cronet_sample_apk/OptionsFragment.java",
+    "sample/src/org/chromium/cronet_sample_apk/OptionsRecyclerViewAdapter.java",
+    "sample/src/org/chromium/cronet_sample_apk/SampleActivityViewModel.java",
   ]
   output = "$_package_dir/cronet-sample-src.jar"
   base_dir = "sample"

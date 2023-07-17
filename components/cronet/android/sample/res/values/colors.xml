@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Copyright 2019 The Chromium Authors
+  Use of this source code is governed by a BSD-style license that can be
+  found in the LICENSE file.
+-->
+
+<resources>
+    <color name="navigation_selected">#000000</color>
+    <color name="navigation_unselected">#888888</color>
+    <color name="medium_text_color">#202124</color>
+</resources>
