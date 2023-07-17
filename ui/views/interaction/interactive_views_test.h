@@ -774,10 +774,10 @@ InteractiveViewsTestApi::WaitForViewPropertyCallback(
 #define WaitForViewProperty(view, Class, Property, matcher)                    \
   []() {                                                                       \
     DEFINE_MACRO_CUSTOM_ELEMENT_EVENT_TYPE(__FILE__, __LINE__,                 \
-                                           kWaitFor##Class##Property##Event);  \
-    return WaitForViewPropertyCallback(                                        \
-        (view), &Class::Get##Property, &Class::Add##Property##ChangedCallback, \
-        (matcher), kWaitFor##Class##Property##Event);                          \
+                                           kWaitFor##Property##Event);         \
+    return WaitForViewPropertyCallback((view), &Class::Get##Property,          \
+                                       &Class::Add##Property##ChangedCallback, \
+                                       (matcher), kWaitFor##Property##Event);  \
   }()
 
 }  // namespace views::test

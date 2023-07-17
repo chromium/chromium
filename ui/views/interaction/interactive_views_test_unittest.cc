@@ -478,3 +478,17 @@ TEST_F(InteractiveViewsTestTest, ScrollIntoView) {
 }
 
 }  // namespace views::test
+
+// Verifies that WaitForViewProperty() compiles outside of the views namespace
+// (this was a problem previously).
+class InteractiveViewsTestCompileTest
+    : public views::test::InteractiveViewsTestTest {
+ public:
+  InteractiveViewsTestCompileTest() = default;
+  ~InteractiveViewsTestCompileTest() override = default;
+
+  void WaitForViewPropertyCompileOutsideViews() {
+    (void)WaitForViewProperty(views::test::kButton1Id, views::View, Enabled,
+                              true);
+  }
+};
