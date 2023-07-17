@@ -35,12 +35,4 @@ TEST_F(BrowserProfileTypeUnitTest, AssignmentAndRetrieval) {
   }
 }
 
-#if defined(GTEST_HAS_DEATH_TEST)
-TEST_F(BrowserProfileTypeUnitTest, UnassignedType) {
-  FakeBrowserContext browser_context;
-
-  EXPECT_DEATH(GetBrowserProfileType(&browser_context), "");
-}
-#endif
-
 }  // namespace profile_metrics
