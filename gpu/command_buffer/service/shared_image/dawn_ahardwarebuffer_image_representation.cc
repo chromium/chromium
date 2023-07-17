@@ -14,29 +14,21 @@ DawnAHardwareBufferImageRepresentation::DawnAHardwareBufferImageRepresentation(
     SharedImageManager* manager,
     AndroidImageBacking* backing,
     MemoryTypeTracker* tracker,
-    WGPUDevice device,
-    WGPUTextureFormat format,
-    std::vector<WGPUTextureFormat> view_formats,
-    AHardwareBuffer* buffer,
-    scoped_refptr<base::RefCountedData<DawnProcTable>> dawn_procs)
+    wgpu::Device device,
+    wgpu::TextureFormat format,
+    std::vector<wgpu::TextureFormat> view_formats,
+    AHardwareBuffer* buffer)
     : DawnImageRepresentation(manager, backing, tracker),
-      device_(device),
+      device_(std::move(device)),
       format_(format),
-      view_formats_(std::move(view_formats)),
-      dawn_procs_(dawn_procs) {
+      view_formats_(std::move(view_formats)) {
   DCHECK(device_);
-
-  // Keep a reference to the device so that it stays valid (it might become
-  // lost in which case operations will be noops).
-  dawn_procs_->data.deviceReference(device_);
-
   handle_ = base::android::ScopedHardwareBufferHandle::Create(buffer);
 }
 
 DawnAHardwareBufferImageRepresentation::
     ~DawnAHardwareBufferImageRepresentation() {
   EndAccess();
-  dawn_procs_->data.deviceRelease(device_);
 }
 
 WGPUTexture DawnAHardwareBufferImageRepresentation::BeginAccess(
@@ -48,10 +40,10 @@ WGPUTexture DawnAHardwareBufferImageRepresentation::BeginAccess(
     return nullptr;
   }
 
-  WGPUTextureDescriptor texture_descriptor = {};
+  wgpu::TextureDescriptor texture_descriptor;
   texture_descriptor.format = format_;
-  texture_descriptor.usage = usage;
-  texture_descriptor.dimension = WGPUTextureDimension_2D;
+  texture_descriptor.usage = static_cast<wgpu::TextureUsage>(usage);
+  texture_descriptor.dimension = wgpu::TextureDimension::e2D;
   texture_descriptor.size = {static_cast<uint32_t>(size().width()),
                              static_cast<uint32_t>(size().height()), 1};
   texture_descriptor.mipLevelCount = 1;
@@ -61,17 +53,16 @@ WGPUTexture DawnAHardwareBufferImageRepresentation::BeginAccess(
 
   // We need to have internal usages of CopySrc for copies,
   // RenderAttachment for clears, and TextureBinding for copyTextureForBrowser.
-  WGPUDawnTextureInternalUsageDescriptor internalDesc = {};
-  internalDesc.chain.sType = WGPUSType_DawnTextureInternalUsageDescriptor;
-  internalDesc.internalUsage = WGPUTextureUsage_CopySrc |
-                               WGPUTextureUsage_RenderAttachment |
-                               WGPUTextureUsage_TextureBinding;
+  wgpu::DawnTextureInternalUsageDescriptor internalDesc;
+  internalDesc.internalUsage = wgpu::TextureUsage::CopySrc |
+                               wgpu::TextureUsage::RenderAttachment |
+                               wgpu::TextureUsage::TextureBinding;
 
-  texture_descriptor.nextInChain =
-      reinterpret_cast<WGPUChainedStruct*>(&internalDesc);
+  texture_descriptor.nextInChain = &internalDesc;
 
   dawn::native::vulkan::ExternalImageDescriptorAHardwareBuffer descriptor = {};
-  descriptor.cTextureDescriptor = &texture_descriptor;
+  descriptor.cTextureDescriptor =
+      reinterpret_cast<WGPUTextureDescriptor*>(&texture_descriptor);
   descriptor.isInitialized = IsCleared();
   descriptor.handle = handle_.get();
   descriptor.waitFDs = {};
@@ -84,14 +75,15 @@ WGPUTexture DawnAHardwareBufferImageRepresentation::BeginAccess(
   if (sync_fd.is_valid())
     descriptor.waitFDs.push_back(sync_fd.release());
 
-  texture_ = dawn::native::vulkan::WrapVulkanImage(device_, &descriptor);
+  texture_ = wgpu::Texture::Acquire(
+      dawn::native::vulkan::WrapVulkanImage(device_.Get(), &descriptor));
 
   if (!texture_) {
     LOG(ERROR) << "Failed to wrap AHardwareBuffer as a Dawn texture.";
     android_backing()->EndWrite(base::ScopedFD());
   }
 
-  return texture_;
+  return texture_.Get();
 }
 
 void DawnAHardwareBufferImageRepresentation::EndAccess() {
@@ -101,7 +93,7 @@ void DawnAHardwareBufferImageRepresentation::EndAccess() {
 
   dawn::native::vulkan::ExternalImageExportInfoAHardwareBuffer export_info;
   if (!dawn::native::vulkan::ExportVulkanImage(
-          texture_, VK_IMAGE_LAYOUT_UNDEFINED, &export_info)) {
+          texture_.Get(), VK_IMAGE_LAYOUT_UNDEFINED, &export_info)) {
     DLOG(ERROR) << "Failed to export Dawn Vulkan image.";
   } else {
     if (export_info.isInitialized)
@@ -113,8 +105,7 @@ void DawnAHardwareBufferImageRepresentation::EndAccess() {
     android_backing()->EndWrite(std::move(sync_fd));
   }
 
-  dawn_procs_->data.textureDestroy(texture_);
-  dawn_procs_->data.textureRelease(texture_);
+  texture_.Destroy();
   texture_ = nullptr;
 }
 
