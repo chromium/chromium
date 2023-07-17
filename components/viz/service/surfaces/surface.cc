@@ -101,6 +101,10 @@ Surface::~Surface() {
 
   surface_manager_->SurfaceDestroyed(this);
 
+  for (auto& frame : uncommitted_frames_) {
+    UnrefFrameResourcesAndRunCallbacks(std::move(frame));
+  }
+
   UnrefFrameResourcesAndRunCallbacks(std::move(pending_frame_data_));
   UnrefFrameResourcesAndRunCallbacks(std::move(active_frame_data_));
 
