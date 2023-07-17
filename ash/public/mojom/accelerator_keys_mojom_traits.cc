@@ -383,6 +383,8 @@ mojom_vkey EnumTraits<mojom_vkey, ui::KeyboardCode>::ToMojom(
       return mojom_vkey::kBrightnessDown;
     case ui::KeyboardCode::VKEY_BRIGHTNESS_UP:
       return mojom_vkey::kBrightnessUp;
+    case ui::KeyboardCode::VKEY_KBD_BACKLIGHT_TOGGLE:
+      return mojom_vkey::kKbdBrightnessToggle;
     case ui::KeyboardCode::VKEY_KBD_BRIGHTNESS_DOWN:
       return mojom_vkey::kKbdBrightnessDown;
     case ui::KeyboardCode::VKEY_KBD_BRIGHTNESS_UP:
@@ -395,10 +397,20 @@ mojom_vkey EnumTraits<mojom_vkey, ui::KeyboardCode>::ToMojom(
       return mojom_vkey::kMediaPlay;
     case ui::KeyboardCode::VKEY_MEDIA_PAUSE:
       return mojom_vkey::kMediaPause;
-    default:
-      NOTREACHED();
-      return mojom_vkey::kUnknown;
+    case ui::KeyboardCode::VKEY_NEW:
+      return mojom_vkey::kNew;
+    case ui::KeyboardCode::VKEY_CLOSE:
+      return mojom_vkey::kClose;
+    case ui::KeyboardCode::VKEY_EMOJI_PICKER:
+      return mojom_vkey::kEmojiPicker;
+    case ui::KeyboardCode::VKEY_DICTATE:
+      return mojom_vkey::kDictate;
+    case ui::KeyboardCode::VKEY_ALL_APPLICATIONS:
+      return mojom_vkey::kAllApplications;
   }
+
+  NOTREACHED();
+  return mojom_vkey::kUnknown;
 }
 
 bool EnumTraits<mojom_vkey, ui::KeyboardCode>::FromMojom(
@@ -957,6 +969,9 @@ bool EnumTraits<mojom_vkey, ui::KeyboardCode>::FromMojom(
     case mojom_vkey::kBrightnessUp:
       *out = ui::KeyboardCode::VKEY_BRIGHTNESS_UP;
       return true;
+    case mojom_vkey::kKbdBrightnessToggle:
+      *out = ui::KeyboardCode::VKEY_KBD_BACKLIGHT_TOGGLE;
+      return true;
     case mojom_vkey::kKbdBrightnessDown:
       *out = ui::KeyboardCode::VKEY_KBD_BRIGHTNESS_DOWN;
       return true;
@@ -975,11 +990,24 @@ bool EnumTraits<mojom_vkey, ui::KeyboardCode>::FromMojom(
     case mojom_vkey::kMediaPause:
       *out = ui::KeyboardCode::VKEY_MEDIA_PAUSE;
       return true;
-    default:
-      NOTREACHED();
-      *out = ui::KeyboardCode::VKEY_UNKNOWN;
+    case mojom_vkey::kNew:
+      *out = ui::KeyboardCode::VKEY_NEW;
+      return true;
+    case mojom_vkey::kClose:
+      *out = ui::KeyboardCode::VKEY_CLOSE;
+      return true;
+    case mojom_vkey::kEmojiPicker:
+      *out = ui::KeyboardCode::VKEY_EMOJI_PICKER;
+      return true;
+    case mojom_vkey::kDictate:
+      *out = ui::KeyboardCode::VKEY_DICTATE;
+      return true;
+    case mojom_vkey::kAllApplications:
+      *out = ui::KeyboardCode::VKEY_ALL_APPLICATIONS;
       return true;
   }
+  NOTREACHED();
+  return false;
 }
 
 }  // namespace mojo

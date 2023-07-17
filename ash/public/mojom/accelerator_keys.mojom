@@ -197,6 +197,7 @@ enum VKey {
   kMicrophoneMuteToggle = 0x9F,
   kBrightnessDown = 0xD8,
   kBrightnessUp = 0xD9,
+  kKbdBrightnessToggle = 0xB8,
   kKbdBrightnessDown = 0xDA,
   kKbdBrightnessUp = 0xE8,
 
