@@ -7544,21 +7544,6 @@
             ]
         }
     ],
-    "IOSShareChrome": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "kNewOverflowMenuShareChromeAction"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSSharedHighlightingColorChange": [
         {
             "platforms": [

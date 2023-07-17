@@ -419,7 +419,7 @@ TEST_F(OverflowMenuMediatorTest, TestMenuItemsCount) {
     number_of_tab_actions++;
   }
 
-  NSUInteger number_of_help_items = 1;
+  NSUInteger number_of_help_items = 2;
 
   if (ios::provider::IsUserFeedbackSupported()) {
     number_of_help_items++;

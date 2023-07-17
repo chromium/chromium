@@ -33,14 +33,6 @@
 
 @implementation ActivityServiceControllerTestCase
 
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config;
-  if (@available(iOS 15.0, *)) {
-    config.features_enabled.push_back(kNewOverflowMenuShareChromeAction);
-  }
-  return config;
-}
-
 - (void)testOpenActivityServiceControllerAndCopy {
   // Set up mock http server.
   std::map<GURL, std::string> responses;
