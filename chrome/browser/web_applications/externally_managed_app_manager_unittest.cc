@@ -820,7 +820,6 @@ TEST_F(ExternallyAppManagerTest, PlaceholderResolvedFromSynchronize) {
       GURL(), mojom::UserDisplayMode::kStandalone,
       ExternalInstallSource::kExternalPolicy);
   template_options.install_placeholder = true;
-  template_options.reinstall_placeholder = true;
 
   auto& page_state = web_contents_manager().GetOrCreatePageState(kInstallUrl);
   page_state.redirection_url = kRedirectToUrl;
@@ -844,8 +843,7 @@ TEST_F(ExternallyAppManagerTest, PlaceholderResolvedFromSynchronize) {
   AppId app_id = web_contents_manager().CreateBasicInstallPageState(
       kInstallUrl, kManifestUrl, kStartUrl);
 
-  // `reinstall_placeholder` option should cause the placeholder app to be
-  // uninstalled & the real one to work.
+  // The placeholder app should be uninstalled & the real one installed.
   {
     SynchronizeFuture result;
     provider().externally_managed_app_manager().SynchronizeInstalledApps(
@@ -898,7 +896,6 @@ TEST_F(ExternallyAppManagerTest, PlaceholderResolvedFromInstallNow) {
   ExternalInstallOptions options = template_options;
   options.install_url = kInstallUrl;
   options.wait_for_windows_closed = false;
-  options.reinstall_placeholder = true;
   InstallNowFuture install_future;
   provider().externally_managed_app_manager().InstallNow(
       std::move(options), install_future.GetCallback());
@@ -1205,7 +1202,6 @@ TEST_F(ExternallyAppManagerTest, PlaceholderFullInstallConflictCanUpdate) {
       GURL(), mojom::UserDisplayMode::kStandalone,
       ExternalInstallSource::kExternalPolicy);
   template_options.install_placeholder = true;
-  template_options.reinstall_placeholder = true;
 
   // Phase 1 state
   auto& page_state = web_contents_manager().GetOrCreatePageState(kInstallUrl1);

@@ -118,7 +118,6 @@ ExternalInstallOptions GetWindowedInstallOptions(
   options.add_to_desktop = false;
   options.add_to_quick_launch_bar = false;
   options.install_placeholder = true;
-  options.reinstall_placeholder = true;
   options.wait_for_windows_closed = wait_for_windows_closed;
   return options;
 }
@@ -138,7 +137,6 @@ ExternalInstallOptions GetTabbedInstallOptions(
   options.add_to_desktop = false;
   options.add_to_quick_launch_bar = false;
   options.install_placeholder = true;
-  options.reinstall_placeholder = true;
   options.wait_for_windows_closed = wait_for_windows_closed;
   return options;
 }
@@ -156,7 +154,6 @@ ExternalInstallOptions GetNoContainerInstallOptions(
   options.add_to_desktop = false;
   options.add_to_quick_launch_bar = false;
   options.install_placeholder = true;
-  options.reinstall_placeholder = true;
   options.wait_for_windows_closed = wait_for_windows_closed;
   return options;
 }
@@ -174,7 +171,6 @@ ExternalInstallOptions GetCreateDesktopShortcutDefaultInstallOptions(
   options.add_to_desktop = false;
   options.add_to_quick_launch_bar = false;
   options.install_placeholder = true;
-  options.reinstall_placeholder = true;
   options.wait_for_windows_closed = wait_for_windows_closed;
   return options;
 }
@@ -194,7 +190,6 @@ ExternalInstallOptions GetCreateDesktopShortcutFalseInstallOptions(
   options.add_to_desktop = false;
   options.add_to_quick_launch_bar = false;
   options.install_placeholder = true;
-  options.reinstall_placeholder = true;
   options.wait_for_windows_closed = wait_for_windows_closed;
   return options;
 }
@@ -214,7 +209,6 @@ ExternalInstallOptions GetCreateDesktopShortcutTrueInstallOptions(
   options.add_to_desktop = true;
   options.add_to_quick_launch_bar = false;
   options.install_placeholder = true;
-  options.reinstall_placeholder = true;
   options.wait_for_windows_closed = wait_for_windows_closed;
   return options;
 }
@@ -251,7 +245,6 @@ ExternalInstallOptions GetFallbackAppNameInstallOptions(
   options.add_to_desktop = false;
   options.add_to_quick_launch_bar = false;
   options.install_placeholder = true;
-  options.reinstall_placeholder = true;
   options.wait_for_windows_closed = wait_for_windows_closed;
   options.fallback_app_name = kDefaultFallbackAppName;
   return options;
@@ -274,7 +267,6 @@ ExternalInstallOptions GetCustomAppNameInstallOptions(
   options.add_to_desktop = false;
   options.add_to_quick_launch_bar = false;
   options.install_placeholder = true;
-  options.reinstall_placeholder = true;
   options.wait_for_windows_closed = wait_for_windows_closed;
   options.override_name = std::move(name);
   return options;
@@ -300,7 +292,6 @@ ExternalInstallOptions GetCustomAppIconInstallOptions(
   options.add_to_desktop = false;
   options.add_to_quick_launch_bar = false;
   options.install_placeholder = true;
-  options.reinstall_placeholder = true;
   options.wait_for_windows_closed = wait_for_windows_closed;
   options.override_icon_url = GURL(kDefaultCustomIconUrl);
   return options;
@@ -1067,7 +1058,6 @@ TEST_P(WebAppPolicyManagerTest, ReinstallPlaceholderAppSuccess) {
   auto reinstall_options =
       GetWindowedInstallOptions(/*wait_for_windows_closed=*/true);
   reinstall_options.install_placeholder = false;
-  reinstall_options.reinstall_placeholder = true;
   expected_options_list.push_back(std::move(reinstall_options));
 
   EXPECT_EQ(expected_options_list, install_options_list);
@@ -1137,7 +1127,6 @@ TEST_P(WebAppPolicyManagerTest, ReinstallPlaceholderAppWithFallbackAppName) {
   auto reinstall_options =
       GetFallbackAppNameInstallOptions(/*wait_for_windows_closed=*/true);
   reinstall_options.install_placeholder = false;
-  reinstall_options.reinstall_placeholder = true;
   expected_options_list.push_back(std::move(reinstall_options));
 
   EXPECT_EQ(expected_options_list, install_options_list);

@@ -31,8 +31,6 @@ web_app::ExternalInstallOptions GetInstallOptions(GURL install_url) {
   // When the install URL redirects to another URL a placeholder will be
   // installed. This happens if a web app requires authentication.
   options.install_placeholder = true;
-  // If there is a placeholder app installed, try to reinstall it.
-  options.reinstall_placeholder = true;
   return options;
 }
 

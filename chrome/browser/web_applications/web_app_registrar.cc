@@ -92,8 +92,6 @@ blink::ParsedPermissionsPolicy WebAppRegistrar::GetPermissionsPolicy(
 bool WebAppRegistrar::IsPlaceholderApp(
     const AppId& app_id,
     const WebAppManagement::Type source_type) const {
-  CHECK(source_type == WebAppManagement::kPolicy ||
-        source_type == WebAppManagement::kKiosk);
   const WebApp* web_app = GetAppById(app_id);
   if (!web_app)
     return false;
@@ -105,6 +103,10 @@ bool WebAppRegistrar::IsPlaceholderApp(
   if (it == config_map.end()) {
     return false;
   }
+  // Only kiosk and policy sources currently have placeholder apps.
+  CHECK(!it->second.is_placeholder ||
+        (source_type == WebAppManagement::kPolicy ||
+         source_type == WebAppManagement::kKiosk));
   return it->second.is_placeholder;
 }
 
@@ -114,8 +116,6 @@ bool WebAppRegistrar::IsPlaceholderApp(
 absl::optional<AppId> WebAppRegistrar::LookupPlaceholderAppId(
     const GURL& install_url,
     const WebAppManagement::Type source_type) const {
-  CHECK(source_type == WebAppManagement::kPolicy ||
-        source_type == WebAppManagement::kKiosk);
   for (const WebApp& web_app : GetApps()) {
     const WebApp::ExternalConfigMap& config_map =
         web_app.management_to_external_config_map();

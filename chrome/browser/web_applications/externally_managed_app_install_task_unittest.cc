@@ -386,7 +386,6 @@ TEST_F(ExternallyManagedAppInstallTaskTest, ReinstallPlaceholderSucceeds) {
   }
 
   // Replace the placeholder with a real app.
-  options.reinstall_placeholder = true;
   auto task_holder = GetInstallationTaskAndSetPageState(options);
 
   base::test::TestFuture<ExternallyManagedAppManager::InstallResult> future;
@@ -439,7 +438,6 @@ TEST_F(ExternallyManagedAppInstallTaskTest, ReinstallPlaceholderFails) {
   }
 
   // Replace the placeholder with a real app.
-  options.reinstall_placeholder = true;
   auto task_holder = GetInstallationTaskAndSetPageState(options);
 
   // Simulate disk failure to uninstall the placeholder.

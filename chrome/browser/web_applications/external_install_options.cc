@@ -70,7 +70,6 @@ bool ExternalInstallOptions::operator==(
         options.force_reinstall_for_milestone,
         options.wait_for_windows_closed,
         options.install_placeholder,
-        options.reinstall_placeholder,
         options.launch_query_params,
         options.load_and_await_service_worker_registration,
         options.service_worker_registration_url,
@@ -143,7 +142,6 @@ base::Value ExternalInstallOptions::AsDebugValue() const {
   root.Set("only_use_app_info_factory", only_use_app_info_factory);
   root.Set("override_previous_user_uninstall",
            override_previous_user_uninstall);
-  root.Set("reinstall_placeholder", reinstall_placeholder);
   root.Set("require_manifest", require_manifest);
   root.Set("install_as_shortcut", install_as_shortcut);
   root.Set("service_worker_registration_url",

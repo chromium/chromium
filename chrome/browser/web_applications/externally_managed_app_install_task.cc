@@ -91,12 +91,6 @@ void ExternallyManagedAppInstallTask::OnUrlLoaded(
       weak_ptr_factory_.GetWeakPtr(), std::move(result_callback));
 
   if (load_url_result == WebAppUrlLoader::Result::kUrlLoaded) {
-    // If we are not re-installing a placeholder, then no need to uninstall
-    // anything.
-    if (!install_options_.reinstall_placeholder) {
-      ContinueWebAppInstall(web_contents, std::move(retry_on_failure));
-      return;
-    }
     // Calling InstallWebAppWithOptions with the same URL used to install a
     // placeholder won't necessarily replace the placeholder app, because the
     // new app might be installed with a new AppId. To avoid this, always

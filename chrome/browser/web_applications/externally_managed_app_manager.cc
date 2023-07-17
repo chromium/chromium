@@ -337,8 +337,7 @@ void ExternallyManagedAppManager::MaybeStartNextOnLockAcquired(
 
       // If the app is already installed, only reinstall it if the app is a
       // placeholder app and the client asked for it to be reinstalled.
-      if (install_options.reinstall_placeholder &&
-          lock.registrar().IsPlaceholderApp(
+      if (lock.registrar().IsPlaceholderApp(
               app_id.value(), ConvertExternalInstallSourceToSource(
                                   install_options.install_source))) {
         StartInstallationTask(std::move(front));

@@ -186,7 +186,6 @@ void WebAppPolicyManager::ReinstallPlaceholderAppIfNecessary(
 
   // No need to install a placeholder because there should be one already.
   install_options.wait_for_windows_closed = true;
-  install_options.reinstall_placeholder = true;
 
   // If the app is not a placeholder app, ExternallyManagedAppManager will
   // ignore the request.
@@ -328,7 +327,6 @@ void WebAppPolicyManager::RefreshPolicyInstalledApps() {
             .LookupPlaceholderAppId(install_options.install_url,
                                     WebAppManagement::kPolicy)
             .has_value();
-    install_options.reinstall_placeholder = true;
 
     absl::optional<AppId> app_id =
         provider_->registrar_unsafe().LookupExternalAppId(

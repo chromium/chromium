@@ -167,10 +167,6 @@ struct ExternalInstallOptions {
   //  - |url| as the app name (unless fallback_app_name has been specified)
   bool install_placeholder = false;
 
-  // Whether we should try to reinstall the app if there is a placeholder for
-  // it.
-  bool reinstall_placeholder = false;
-
   // Optional query parameters to add to the start_url when launching the app.
   absl::optional<std::string> launch_query_params;
 

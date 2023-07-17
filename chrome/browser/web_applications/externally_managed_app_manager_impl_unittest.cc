@@ -1633,7 +1633,6 @@ TEST_F(ExternallyManagedAppManagerImplTest, ReinstallPlaceholderApp_Success) {
 
   // Reinstall placeholder
   {
-    install_options.reinstall_placeholder = true;
     externally_managed_app_manager_impl().SetNextInstallationTaskResult(
         kFooWebAppUrl, webapps::InstallResultCode::kSuccessNewInstall,
         /*did_install_placeholder=*/false);
@@ -1668,7 +1667,6 @@ TEST_F(ExternallyManagedAppManagerImplTest,
 
   // Try to reinstall placeholder
   {
-    install_options.reinstall_placeholder = true;
     externally_managed_app_manager_impl().SetNextInstallationTaskResult(
         kFooWebAppUrl, webapps::InstallResultCode::kSuccessNewInstall,
         /*did_install_placeholder=*/true);
@@ -1707,7 +1705,6 @@ TEST_F(ExternallyManagedAppManagerImplTest,
 
   // Reinstall placeholder
   {
-    install_options.reinstall_placeholder = true;
     install_options.wait_for_windows_closed = true;
     externally_managed_app_manager_impl().SetNextInstallationTaskResult(
         kFooWebAppUrl, webapps::InstallResultCode::kSuccessNewInstall,
@@ -1746,7 +1743,6 @@ TEST_F(ExternallyManagedAppManagerImplTest,
 
   // Reinstall placeholder
   {
-    install_options.reinstall_placeholder = true;
     install_options.wait_for_windows_closed = true;
     externally_managed_app_manager_impl().SetNextInstallationTaskResult(
         kFooWebAppUrl, webapps::InstallResultCode::kSuccessNewInstall,
