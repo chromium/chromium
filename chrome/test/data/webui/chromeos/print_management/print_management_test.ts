@@ -1013,9 +1013,9 @@ suite('PrintManagementTest', () => {
     const managePrintersButton: CrButtonElement =
         querySelector<CrButtonElement>(page!, '#managePrinters')!;
     assertTrue(isVisible(managePrintersButton));
-    assertTrue(page!.i18nExists('headerManagePrintersButtonLabel'));
+    assertTrue(page!.i18nExists('managePrintersButtonLabel'));
     assertEquals(
-        page!.i18n('headerManagePrintersButtonLabel'),
+        page!.i18n('managePrintersButtonLabel'),
         managePrintersButton.textContent!.trim());
   });
 

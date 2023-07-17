@@ -123,9 +123,7 @@ void AddPrintManagementStrings(content::WebUIDataSource* html_source) {
       {"emptyStatePrinterSettingsMessage",
        IDS_PRINT_MANAGEMENT_EMPTY_STATE_PRINTER_SETTINGS_MESSAGE},
       {"managePrintersButtonLabel",
-       IDS_PRINT_MANAGEMENT_EMPTY_STATE_MANAGE_PRINTERS_LABEL},
-      {"headerManagePrintersButtonLabel",
-       IDS_PRINT_MANAGEMENT_HEADER_MANAGE_PRINTERS_LABEL}};
+       IDS_PRINT_MANAGEMENT_EMPTY_STATE_MANAGE_PRINTERS_LABEL}};
 
   html_source->AddLocalizedStrings(kLocalizedStrings);
   html_source->UseStringsJs();
