@@ -204,6 +204,10 @@ class BrowserManagerTest : public testing::Test {
 
   void TearDown() override {
     shelf_controller_.reset();
+    version_service_delegate_ = nullptr;
+    browser_loader_ = nullptr;
+    fake_user_manager_ = nullptr;
+    fake_browser_manager_.reset();
     scoped_user_manager_.reset();
     testing_profile_manager_.reset();
 

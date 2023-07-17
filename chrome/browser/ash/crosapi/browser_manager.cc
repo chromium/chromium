@@ -86,6 +86,7 @@
 #include "chromeos/startup/startup_switches.h"
 #include "components/account_id/account_id.h"
 #include "components/crash/core/app/crashpad.h"
+#include "components/crash/core/common/crash_key.h"
 #include "components/nacl/common/buildflags.h"
 #include "components/nacl/common/nacl_switches.h"
 #include "components/policy/core/common/cloud/cloud_policy_core.h"
@@ -630,6 +631,10 @@ BrowserManager::BrowserManager(
         ->AddObserver(this);
   } else {
     CHECK_IS_TEST();
+  }
+
+  if (user_manager::UserManager::IsInitialized()) {
+    user_manager_observation_.Observe(user_manager::UserManager::Get());
   }
 
   std::string socket_path =
@@ -1574,6 +1579,19 @@ void BrowserManager::OnFetchAttempt(
 void BrowserManager::OnRefreshSchedulerDestruction(
     policy::CloudPolicyRefreshScheduler* scheduler) {
   scheduler->RemoveObserver(this);
+}
+
+void BrowserManager::OnUserProfileCreated(const user_manager::User& user) {
+  if (!user_manager::UserManager::Get()->IsPrimaryUser(&user)) {
+    return;
+  }
+
+  // Check if Lacros is enabled for crash reporting. This must happen after the
+  // primary user has been set as priamry user state is used in when evaluating
+  // the correct value for IsLacrosEnabled().
+  constexpr char kLacrosEnabledDataKey[] = "lacros-enabled";
+  static crash_reporter::CrashKeyString<4> key(kLacrosEnabledDataKey);
+  key.Set(crosapi::browser_util::IsLacrosEnabled() ? "yes" : "no");
 }
 
 void BrowserManager::OnLoadComplete(bool launching_at_login_screen,
