@@ -6,10 +6,7 @@
 #define ASH_SYSTEM_UNIFIED_GLANCEABLE_TRAY_BUBBLE_VIEW_H_
 
 #include "ash/system/tray/tray_bubble_view.h"
-
-namespace views {
-class Label;
-}
+#include "base/memory/weak_ptr.h"
 
 namespace ash {
 class CalendarView;
@@ -36,12 +33,15 @@ class GlanceableTrayBubbleView : public TrayBubbleView {
   bool CanActivate() const override;
 
  private:
+  // Creates classroom student or teacher view if needed (if the corresponding
+  // role is active) and stores the pointer in `view`.
+  // NOTE: in the rare case, when a single user has both student and teacher
+  // roles in different courses, the order of the two bubbles is not guaranteed.
+  template <typename T>
+  void AddClassroomBubbleViewIfNeeded(T* view, bool is_role_active);
+
   const raw_ptr<Shelf, ExperimentalAsh> shelf_;
   const std::unique_ptr<DetailedViewDelegate> detailed_view_delegate_;
-
-  // Stand-in title label for glanceables_view_.
-  // TODO(b:277268122): Remove and replace with actual glanceable content.
-  raw_ptr<views::Label, ExperimentalAsh> title_label_ = nullptr;
 
   // A scrollable view which contains the individual glanceables.
   raw_ptr<views::ScrollView, ExperimentalAsh> scroll_view_ = nullptr;
@@ -63,6 +63,8 @@ class GlanceableTrayBubbleView : public TrayBubbleView {
   raw_ptr<CalendarView, ExperimentalAsh> calendar_view_ = nullptr;
 
   base::CallbackListSubscription on_contents_scrolled_subscription_;
+
+  base::WeakPtrFactory<GlanceableTrayBubbleView> weak_ptr_factory_{this};
 };
 
 }  // namespace ash
