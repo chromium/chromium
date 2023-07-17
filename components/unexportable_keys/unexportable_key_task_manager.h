@@ -17,6 +17,10 @@
 #include "components/unexportable_keys/unexportable_key_id.h"
 #include "crypto/signature_verifier.h"
 
+namespace crypto {
+class UnexportableKeyProvider;
+}
+
 namespace unexportable_keys {
 
 // `UnexportableKeyTaskManager` helps efficiently schedule tasks to generate
@@ -45,6 +49,11 @@ class UnexportableKeyTaskManager {
   UnexportableKeyTaskManager(const UnexportableKeyTaskManager&) = delete;
   UnexportableKeyTaskManager& operator=(const UnexportableKeyTaskManager&) =
       delete;
+
+  // Returns a `crypto::UnexportableKeyProvider` that will be used by the
+  // `UnexportableKeyTaskManager`.
+  static std::unique_ptr<crypto::UnexportableKeyProvider>
+  GetUnexportableKeyProvider();
 
   // Generates a new signing key asynchronously.
   // The first supported value of `acceptable_algorithms` determines the type of

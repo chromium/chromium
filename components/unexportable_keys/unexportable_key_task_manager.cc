@@ -7,12 +7,12 @@
 #include <memory>
 
 #include "base/containers/span.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner_thread_mode.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "base/token.h"
 #include "base/types/expected.h"
 #include "components/unexportable_keys/background_long_task_scheduler.h"
 #include "components/unexportable_keys/background_task_priority.h"
@@ -58,6 +58,21 @@ UnexportableKeyTaskManager::UnexportableKeyTaskManager()
 
 UnexportableKeyTaskManager::~UnexportableKeyTaskManager() = default;
 
+// static
+std::unique_ptr<crypto::UnexportableKeyProvider>
+UnexportableKeyTaskManager::GetUnexportableKeyProvider() {
+  static BASE_FEATURE(
+      kEnableBoundSessionCredentialsSoftwareKeysForManualTesting,
+      "EnableBoundSessionCredentialsSoftwareKeysForManualTesting",
+      base::FEATURE_DISABLED_BY_DEFAULT);
+  if (base::FeatureList::IsEnabled(
+          kEnableBoundSessionCredentialsSoftwareKeysForManualTesting)) {
+    return crypto::GetSoftwareUnsecureUnexportableKeyProvider();
+  }
+
+  return crypto::GetUnexportableKeyProvider();
+}
+
 void UnexportableKeyTaskManager::GenerateSigningKeySlowlyAsync(
     base::span<const crypto::SignatureVerifier::SignatureAlgorithm>
         acceptable_algorithms,
@@ -66,7 +81,7 @@ void UnexportableKeyTaskManager::GenerateSigningKeySlowlyAsync(
         void(ServiceErrorOr<scoped_refptr<RefCountedUnexportableSigningKey>>)>
         callback) {
   std::unique_ptr<crypto::UnexportableKeyProvider> key_provider =
-      crypto::GetUnexportableKeyProvider();
+      GetUnexportableKeyProvider();
 
   if (!key_provider) {
     std::move(callback).Run(base::unexpected(ServiceError::kNoKeyProvider));
@@ -92,7 +107,7 @@ void UnexportableKeyTaskManager::FromWrappedSigningKeySlowlyAsync(
         void(ServiceErrorOr<scoped_refptr<RefCountedUnexportableSigningKey>>)>
         callback) {
   std::unique_ptr<crypto::UnexportableKeyProvider> key_provider =
-      crypto::GetUnexportableKeyProvider();
+      GetUnexportableKeyProvider();
 
   if (!key_provider) {
     std::move(callback).Run(base::unexpected(ServiceError::kNoKeyProvider));
