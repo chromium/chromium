@@ -113,7 +113,6 @@ TEST_F(GetLoginsWithAffiliationsRequestHandlerTest, ExactAndPslMatchesTest) {
   expected_forms.push_back(CreateForm(kTestWebURL, u"username1", u"password"));
   expected_forms.back()->match_type = PasswordForm::MatchType::kExact;
   expected_forms.push_back(CreateForm(kTestPSLURL, u"username2", u"password"));
-  expected_forms.back()->is_public_suffix_match = true;
   expected_forms.back()->match_type = PasswordForm::MatchType::kPSL;
 
   EXPECT_CALL(result_callback, Run(LoginsResultsOrErrorAre(&expected_forms)));
@@ -184,7 +183,6 @@ TEST_F(GetLoginsWithAffiliationsRequestHandlerTest,
   expected_forms.push_back(CreateForm(kTestWebURL, u"username1", u"password"));
   expected_forms.back()->match_type = PasswordForm::MatchType::kExact;
   expected_forms.push_back(CreateForm(kTestPSLURL, u"username2", u"password"));
-  expected_forms.back()->is_public_suffix_match = true;
   expected_forms.back()->match_type = PasswordForm::MatchType::kPSL;
   expected_forms.push_back(
       CreateForm(kAffiliatedWebURL, u"username3", u"password"));
@@ -220,7 +218,6 @@ TEST_F(GetLoginsWithAffiliationsRequestHandlerTest, AffiliationsArePSLTest) {
   expected_forms.push_back(CreateForm(kTestWebURL, u"username1", u"password"));
   expected_forms.back()->match_type = PasswordForm::MatchType::kExact;
   expected_forms.push_back(CreateForm(kTestPSLURL, u"username2", u"password"));
-  expected_forms.back()->is_public_suffix_match = true;
   expected_forms.back()->match_type =
       PasswordForm::MatchType::kAffiliated | PasswordForm::MatchType::kPSL;
 
@@ -322,7 +319,6 @@ TEST_F(GetLoginsWithAffiliationsRequestHandlerTest, AffiliatedMatchHelperNull) {
   expected_forms.push_back(CreateForm(kTestWebURL, u"username1", u"password"));
   expected_forms.back()->match_type = PasswordForm::MatchType::kExact;
   expected_forms.push_back(CreateForm(kTestPSLURL, u"username2", u"password"));
-  expected_forms.back()->is_public_suffix_match = true;
   expected_forms.back()->match_type = PasswordForm::MatchType::kPSL;
 
   EXPECT_CALL(result_callback, Run(LoginsResultsOrErrorAre(&expected_forms)));

@@ -17,6 +17,7 @@
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/psl_matching_helper.h"
 #include "components/sync/model/proxy_model_type_controller_delegate.h"
+#include "password_form.h"
 
 namespace password_manager {
 
@@ -246,7 +247,9 @@ LoginsResult FakePasswordStoreBackend::FillMatchingLoginsHelper(
              password_manager::IsFederatedRealm(stored_form.signon_realm,
                                                 form.url))) {
           matched_forms.push_back(std::make_unique<PasswordForm>(stored_form));
-          matched_forms.back()->is_public_suffix_match = is_psl;
+          matched_forms.back()->match_type =
+              is_psl ? PasswordForm::MatchType::kPSL
+                     : PasswordForm::MatchType::kExact;
         }
       }
     }

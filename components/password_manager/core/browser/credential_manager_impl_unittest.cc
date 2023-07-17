@@ -929,7 +929,6 @@ TEST_P(CredentialManagerImplTest,
 TEST_P(CredentialManagerImplTest,
        CredentialManagerOnRequestCredentialWithPSLCredential) {
   store_->AddLogin(subdomain_form_);
-  subdomain_form_.is_public_suffix_match = true;
   subdomain_form_.match_type = PasswordForm::MatchType::kPSL;
   EXPECT_CALL(*client_, PromptUserToChooseCredentialsPtr(
                             UnorderedElementsAre(Pointee(

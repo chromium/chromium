@@ -62,7 +62,6 @@ LoginsResultOrError ProccessExactAndPSLForms(
         break;
       case MatchResult::PSL_MATCH:
       case MatchResult::FEDERATED_PSL_MATCH:
-        form->is_public_suffix_match = true;
         form->match_type = PasswordForm::MatchType::kPSL;
         break;
     }

@@ -17,6 +17,7 @@
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "components/password_manager/core/browser/stub_password_manager_driver.h"
 #include "components/password_manager/core/common/password_manager_features.h"
+#include "password_form.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -64,7 +65,7 @@ PasswordForm CreateSavedPSL() {
   form.action = GURL("https://login.example.org");
   form.username_value = u"old_username2";
   form.password_value = u"passw0rd";
-  form.is_public_suffix_match = true;
+  form.match_type = PasswordForm::MatchType::kPSL;
   return form;
 }
 

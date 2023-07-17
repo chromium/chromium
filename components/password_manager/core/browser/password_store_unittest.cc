@@ -630,9 +630,7 @@ TEST_F(PasswordStoreTest, GetLoginsWithPSL) {
   expected_results.push_back(
       std::make_unique<PasswordForm>(*all_credentials[2]));
   expected_results[0]->match_type = PasswordForm::MatchType::kExact;
-  expected_results[1]->is_public_suffix_match = true;
   expected_results[1]->match_type = PasswordForm::MatchType::kPSL;
-  expected_results[2]->is_public_suffix_match = true;
   expected_results[2]->match_type = PasswordForm::MatchType::kPSL;
 
   MockPasswordStoreConsumer mock_consumer;
@@ -736,7 +734,6 @@ TEST_F(PasswordStoreTest, GetLoginsWithoutAffiliations) {
       std::make_unique<PasswordForm>(*all_credentials[1]));
   for (const auto& result : expected_results) {
     if (result->signon_realm != observed_form.signon_realm) {
-      result->is_public_suffix_match = true;
       result->match_type = PasswordForm::MatchType::kPSL;
     } else {
       result->match_type = PasswordForm::MatchType::kExact;
@@ -855,7 +852,6 @@ TEST_F(PasswordStoreTest, GetLoginsWithAffiliations) {
       if (IsValidAndroidFacetURI(result->signon_realm)) {
         result->match_type = PasswordForm::MatchType::kAffiliated;
       } else {
-        result->is_public_suffix_match = true;
         result->match_type = PasswordForm::MatchType::kPSL;
       }
     } else {
@@ -1051,9 +1047,7 @@ TEST_P(PasswordStoreFederationTest, GetLoginsWithWebAffiliations) {
       std::make_unique<PasswordForm>(*all_credentials[3]));
 
   expected_results[0]->match_type = PasswordForm::MatchType::kExact;
-  expected_results[1]->is_public_suffix_match = true;
   expected_results[1]->match_type = PasswordForm::MatchType::kPSL;
-  expected_results[2]->is_public_suffix_match = true;
   expected_results[2]->match_type =
       PasswordForm::MatchType::kAffiliated | PasswordForm::MatchType::kPSL;
   expected_results[3]->match_type = PasswordForm::MatchType::kAffiliated;
@@ -1172,13 +1166,11 @@ TEST_P(PasswordStoreGroupsTest, GetLoginsWithWebGroup) {
   // Credential that is a PSL, non affiliated match of the observed form.
   expected_results.push_back(
       std::make_unique<PasswordForm>(*all_credentials[1]));
-  expected_results.back()->is_public_suffix_match = true;
   expected_results.back()->match_type = PasswordForm::MatchType::kPSL;
 
   // Credential that is a PSL and affiliated match of the observed form.
   expected_results.push_back(
       std::make_unique<PasswordForm>(*all_credentials[2]));
-  expected_results.back()->is_public_suffix_match = true;
   expected_results.back()->match_type =
       PasswordForm::MatchType::kAffiliated | PasswordForm::MatchType::kPSL;
 

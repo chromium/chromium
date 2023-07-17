@@ -1507,7 +1507,6 @@ TEST_F(PasswordStoreAndroidBackendTest, GetGroupedMatchingLoginsAsync) {
   expected_logins.push_back(std::make_unique<PasswordForm>(exact_match));
   expected_logins.back()->match_type = PasswordForm::MatchType::kExact;
   expected_logins.push_back(std::make_unique<PasswordForm>(psl_match));
-  expected_logins.back()->is_public_suffix_match = true;
   expected_logins.back()->match_type = PasswordForm::MatchType::kPSL;
   expected_logins.push_back(std::make_unique<PasswordForm>(android_match));
   expected_logins.back()->match_type = PasswordForm::MatchType::kAffiliated;
