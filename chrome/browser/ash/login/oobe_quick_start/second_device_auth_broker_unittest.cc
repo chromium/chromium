@@ -88,10 +88,10 @@ constexpr char kOAuthRefreshTokenSuccessBody[] = R"({
       "access_token": "fake-access-token",
       "expires_in": 99999
     })";
-constexpr char kFidoCredentialId[] = "fido_credential_id";
-constexpr char kCertificate[] = "fake_certificate";
-constexpr char kFakeDeviceId[] = "fake_device_id";
-constexpr char kTargetDeviceType[] = "target_device_type";
+constexpr char kFidoCredentialId[] = "fake-fido-credential-id";
+constexpr char kCertificate[] = "fake-certificate";
+constexpr char kFakeDeviceId[] = "fake-device-id";
+constexpr char kTargetDeviceType[] = "targetDeviceType";
 constexpr char kChromeOS[] = "CHROME_OS";
 
 MATCHER_P(ProtoBufContentBindingEq, expected, "") {
@@ -468,7 +468,7 @@ TEST_F(SecondDeviceAuthBrokerTest,
        FetchRefreshTokenReturnsUnknownErrorResponseForUnknownErrors) {
   AddFakeResponse(kStartSessionUrl, std::string(R"(
       {
-        "session_status": "UNKNOWN_SESSION_STATUS"
+        "sessionStatus": "UNKNOWN_SESSION_STATUS"
       }
     )"));
   SecondDeviceAuthBroker::RefreshTokenResponse response =
@@ -491,9 +491,9 @@ TEST_F(
     FetchRefreshTokenReturnsAdditionalChallengesOnSourceResponseForSourceChallenges) {
   AddFakeResponse(kStartSessionUrl, std::string(R"(
       {
-        "session_status": "PENDING",
-        "target_session_identifier": "fake-target-session",
-        "source_device_fallback_url": "https://example.com",
+        "sessionStatus": "PENDING",
+        "targetSessionIdentifier": "fake-target-session",
+        "sourceDeviceFallbackUrl": "https://example.com",
         "email": "fake-user@example.com"
       }
     )"));
@@ -516,8 +516,8 @@ TEST_F(
     FetchRefreshTokenReturnsAdditionalChallengesOnTargetResponseForTargetChallenges) {
   AddFakeResponse(kStartSessionUrl, std::string(R"(
       {
-        "session_status": "CONTINUE_ON_TARGET",
-        "target_fallback_url": "https://example.com",
+        "sessionStatus": "CONTINUE_ON_TARGET",
+        "targetFallbackUrl": "https://example.com",
         "email": "fake-user@example.com"
       }
     )"));
@@ -537,9 +537,9 @@ TEST_F(
 TEST_F(SecondDeviceAuthBrokerTest, FetchRefreshTokenReturnsARefreshToken) {
   AddFakeResponse(kStartSessionUrl, std::string(R"(
       {
-        "session_status": "AUTHENTICATED",
-        "credential_data": {
-            "oauth_token": "fake-auth-code"
+        "sessionStatus": "AUTHENTICATED",
+        "credentialData": {
+            "oauthToken": "fake-auth-code"
         },
         "email": "fake-user@example.com"
       }
@@ -560,9 +560,9 @@ TEST_F(SecondDeviceAuthBrokerTest,
        FetchRefreshTokenReturnsAnErrorForInvalidAuthorizationCode) {
   AddFakeResponse(kStartSessionUrl, std::string(R"(
       {
-        "session_status": "AUTHENTICATED",
-        "credential_data": {
-            "oauth_token": "fake-auth-code"
+        "sessionStatus": "AUTHENTICATED",
+        "credentialData": {
+            "oauthToken": "fake-auth-code"
         },
         "email": "fake-user@example.com"
       }
