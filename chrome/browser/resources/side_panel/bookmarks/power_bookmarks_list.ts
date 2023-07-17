@@ -85,6 +85,7 @@ export interface PowerBookmarksListElement {
     searchField: CrToolbarSearchFieldElement,
     shownBookmarksIronList: IronListElement,
     sortMenu: CrActionMenuElement,
+    editMenu: CrActionMenuElement,
     editDialog: PowerBookmarksEditDialogElement,
     disabledFeatureDialog: CrDialogElement,
     topLevelEmptyState: SpEmptyStateElement,
@@ -100,7 +101,6 @@ interface SectionVisibility {
   filterChips?: boolean;
   heading?: boolean;
   folderEmptyState?: boolean;
-  newFolderButton?: boolean;
   bookmarksList?: boolean;
   topLevelEmptyState?: boolean;
   footer?: boolean;
@@ -125,7 +125,6 @@ export class PowerBookmarksListElement extends PolymerElement {
       compact_: {
         type: Boolean,
         value: () => loadTimeData.getInteger('viewType') === 0,
-        observer: 'updateListScrollOffset_',
       },
 
       activeFolderPath_: {
@@ -314,8 +313,6 @@ export class PowerBookmarksListElement extends PolymerElement {
           new ResizeObserver(this.onShownBookmarksResize_.bind(this));
       this.shownBookmarksResizeObserver_.observe(this.$.bookmarks);
     }
-
-    this.updateListScrollOffset_();
 
     this.bookmarksDragManager_.startObserving();
     this.recordMetricsOnConnected_();
@@ -599,15 +596,6 @@ export class PowerBookmarksListElement extends PolymerElement {
     }
   }
 
-  private getViewButtonIcon_() {
-    return this.compact_ ? 'bookmarks:compact-view' : 'bookmarks:visual-view';
-  }
-
-  private getViewButtonTooltip_() {
-    return this.compact_ ? loadTimeData.getString('compactView') :
-                           loadTimeData.getString('visualView');
-  }
-
   private getBookmarkMenuA11yLabel_(url: string, title: string): string {
     if (url) {
       return loadTimeData.getStringF('bookmarkMenuLabel', title);
@@ -724,15 +712,6 @@ export class PowerBookmarksListElement extends PolymerElement {
         this.getActiveFolder_(), this.activeSortIndex_, this.searchQuery_,
         this.labels_);
     this.bookmarksService_.refreshDataForBookmarks(this.shownBookmarks_);
-  }
-
-  private updateListScrollOffset_() {
-    // Set scrollOffset so the iron-list scrolling accounts for the space the
-    // new folder button takes.
-    afterNextRender(this, () => {
-      this.$.shownBookmarksIronList.scrollOffset =
-          this.$.shownBookmarksIronList.offsetTop;
-    });
   }
 
   private onCanDragChange_() {
@@ -944,6 +923,12 @@ export class PowerBookmarksListElement extends PolymerElement {
     this.$.sortMenu.showAt(event.target as HTMLElement);
   }
 
+  private onShowEditMenuClicked_(event: MouseEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+    this.$.editMenu.showAt(event.target as HTMLElement);
+  }
+
   private onAddNewFolderClicked_(event: MouseEvent) {
     event.preventDefault();
     event.stopPropagation();
@@ -963,6 +948,7 @@ export class PowerBookmarksListElement extends PolymerElement {
   private onBulkEditClicked_(event: MouseEvent) {
     event.preventDefault();
     event.stopPropagation();
+    this.$.editMenu.close();
     this.editing_ = !this.editing_;
     if (!this.editing_) {
       this.selectedBookmarks_ = [];
@@ -1072,15 +1058,28 @@ export class PowerBookmarksListElement extends PolymerElement {
         SortOrder.kCount);
   }
 
-  private onViewToggleClicked_(event: MouseEvent) {
+  private onVisualViewClicked_(event: MouseEvent) {
     event.preventDefault();
     event.stopPropagation();
-    this.compact_ = !this.compact_;
+    this.$.editMenu.close();
+    this.compact_ = false;
     this.$.shownBookmarksIronList.notifyResize();
-    const viewType = this.compact_ ? ViewType.kCompact : ViewType.kExpanded;
-    this.bookmarksApi_.setViewType(viewType);
+    this.bookmarksApi_.setViewType(ViewType.kExpanded);
     chrome.metricsPrivate.recordEnumerationValue(
-        'PowerBookmarks.SidePanel.ViewTypeShown', viewType, ViewType.kCount);
+        'PowerBookmarks.SidePanel.ViewTypeShown', ViewType.kExpanded,
+        ViewType.kCount);
+  }
+
+  private onCompactViewClicked_(event: MouseEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+    this.$.editMenu.close();
+    this.compact_ = true;
+    this.$.shownBookmarksIronList.notifyResize();
+    this.bookmarksApi_.setViewType(ViewType.kCompact);
+    chrome.metricsPrivate.recordEnumerationValue(
+        'PowerBookmarks.SidePanel.ViewTypeShown', ViewType.kCompact,
+        ViewType.kCount);
   }
 
   private onAddTabClicked_() {
@@ -1152,7 +1151,6 @@ export class PowerBookmarksListElement extends PolymerElement {
       heading: !hasSomeActiveFilter && (hasActiveFolder || hasShownBookmarks),
       folderEmptyState:
           !hasShownBookmarks && !hasSomeActiveFilter && hasActiveFolder,
-      newFolderButton: !hasShownBookmarks,
       bookmarksList: hasShownBookmarks,
       topLevelEmptyState:
           !hasShownBookmarks && (hasSomeActiveFilter || !hasActiveFolder),

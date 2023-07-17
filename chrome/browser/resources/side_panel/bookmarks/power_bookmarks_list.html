@@ -152,81 +152,6 @@
     margin: 4px var(--sp-body-padding) var(--sp-card-gap);
   }
 
-  .new-folder-icon-container {
-    align-items: center;
-    background-color: var(--google-grey-50);
-    border-radius: 4px;
-    display: flex;
-    height: 100%;
-    justify-content: center;
-    width: 56px;
-  }
-
-  .new-folder-row[compact] > .new-folder-icon-container {
-    background-color: transparent;
-    height: 16px;
-    width: 16px;
-  }
-
-  :host-context([chrome-refresh-2023])
-  .new-folder-row > .new-folder-icon-container {
-    background-color: var(--color-list-item-url-favicon-background);
-  }
-
-  :host-context([chrome-refresh-2023])
-  .new-folder-row[compact] > .new-folder-icon-container {
-    height: 24px;
-    width: 24px;
-  }
-
-  @media (prefers-color-scheme: dark) {
-    .new-folder-icon-container {
-      background-color: var(--google-grey-800);
-    }
-  }
-
-  .new-folder-row {
-    align-items: center;
-    background: none;
-    border: none;
-    color: var(--cr-primary-text-color);
-    display: flex;
-    font-family: inherit;
-    gap: 16px;
-    height: 41px;
-    padding: 6px 16px;
-    width: 100%;
-  }
-
-  .new-folder-row[compact] {
-    gap: 12px;
-    height: 32px;
-    padding: 6px 14px;
-  }
-
-  .new-folder-row[disabled] {
-    color: var(--google-grey-400);
-  }
-
-  :host-context([chrome-refresh-2023]) .new-folder-row {
-    font-size: 12px;
-    font-weight: 500;
-  }
-
-  :host-context([chrome-refresh-2023]) .new-folder-row[compact] {
-    gap: 8px;
-  }
-
-  .new-folder-row:not([disabled]):hover {
-    background-color: var(--cr-hover-background-color);
-  }
-
-  .new-folder-row:not([disabled]):active,
-  .new-folder-row:not([disabled]):focus {
-    background-color: var(--cr-active-background-color);
-    outline: none;
-  }
-
   cr-toolbar-selection-overlay {
     --cr-toolbar-selection-overlay-padding: 16px;
     background: var(--edit-footer-background);
@@ -305,34 +230,19 @@
           aria-description="[[getSortLabel_(activeSortIndex_)]]"
           on-click="onShowSortMenuClicked_">
       </cr-icon-button>
-      <cr-icon-button id="viewButton" slot="buttons"
-          iron-icon="[[getViewButtonIcon_(compact_)]]"
-          title="[[getViewButtonTooltip_(compact_)]]"
-          aria-label="[[getViewButtonTooltip_(compact_)]]"
-          on-click="onViewToggleClicked_"></cr-icon-button>
-      <cr-icon-button slot="buttons" class="icon-edit"
+      <cr-icon-button slot="buttons" iron-icon="bookmarks:create-new-folder"
+          disabled="[[editing_]]"
+          title="$i18n{tooltipNewFolder}"
+          aria-label="$i18n{createNewFolderA11yLabel}"
+          on-click="onAddNewFolderClicked_"></cr-icon-button>
+      <cr-icon-button slot="buttons" iron-icon="cr:more-vert"
           disabled="[[!shownBookmarks_.length]]"
-          title="$i18n{tooltipEdit}"
-          aria-label="$i18n{editBookmarkListA11yLabel}"
-          aria-pressed="[[editing_]]"
+          title="$i18n{tooltipMore}"
+          aria-label="$i18n{tooltipMore}"
           aria-disabled="[[!shownBookmarks_.length]]"
-          on-click="onBulkEditClicked_"></cr-icon-button>
+          on-click="onShowEditMenuClicked_">
       </cr-icon-button>
     </sp-heading>
-  </div>
-
-  <div class="sp-card card-top card-bottom"
-      hidden="[[!sectionVisibility_.newFolderButton]]">
-    <button class="new-folder-row"
-        disabled="[[editing_]]"
-        compact$="[[compact_]]"
-        aria-label="$i18n{createNewFolderA11yLabel}"
-        on-click="onAddNewFolderClicked_">
-      <div class="new-folder-icon-container">
-        <iron-icon icon="cr:add"></iron-icon>
-      </div>
-      $i18n{tooltipNewFolder}
-    </button>
   </div>
 
   <div class="sp-scroller"
@@ -353,16 +263,6 @@
       aria-multiselectable="[[editing_]]" scrollable>
     <div class="sp-card card-bottom"
         is-full-card$="[[!sectionVisibility_.heading]]">
-      <button class="new-folder-row"
-          disabled="[[editing_]]"
-          compact$="[[compact_]]"
-          aria-label="$i18n{createNewFolderA11yLabel}"
-          on-click="onAddNewFolderClicked_">
-        <div class="new-folder-icon-container">
-          <iron-icon icon="cr:add"></iron-icon>
-        </div>
-        $i18n{tooltipNewFolder}
-      </button>
       <iron-list id="shownBookmarksIronList"
           items="[[shownBookmarks_]]" scroll-target="bookmarks">
         <template>
@@ -467,6 +367,22 @@
       [[getSortMenuItemLowerLabel_(item)]]
     </button>
   </template>
+</cr-action-menu>
+
+<cr-action-menu id="editMenu">
+  <button class="dropdown-item" on-click="onBulkEditClicked_">
+    <iron-icon icon="bookmarks:edit"></iron-icon>
+    $i18n{tooltipEdit}
+  </button>
+  <hr>
+  <button id="visualView" class="dropdown-item" on-click="onVisualViewClicked_">
+    <iron-icon icon="cr:check" invisible$="[[compact_]]"></iron-icon>
+    $i18n{visualView}
+  </button>
+  <button class="dropdown-item" on-click="onCompactViewClicked_">
+    <iron-icon icon="cr:check" invisible$="[[!compact_]]"></iron-icon>
+    $i18n{compactView}
+  </button>
 </cr-action-menu>
 
 <power-bookmarks-edit-dialog id="editDialog"
