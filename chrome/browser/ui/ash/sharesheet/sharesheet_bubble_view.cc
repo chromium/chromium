@@ -400,9 +400,6 @@ void SharesheetBubbleView::PopulateLayoutsWithTargets(
 }
 
 void SharesheetBubbleView::ShowActionView() {
-  // TODO(melzhang) This should be a separate function on sharesheet controller
-  // called by Nearby. Disable close when clicking outside bubble for Nearby
-  // Share.
   close_on_deactivate_ = false;
   constexpr float kShareActionScaleUpFactor = 0.9f;
 
