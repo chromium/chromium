@@ -174,7 +174,7 @@ BASE_FEATURE(kAssistantNativeIcons,
 // Enables warning in the quick settings when NBS device is in use.
 BASE_FEATURE(kAudioHFPNbsWarning,
              "AudioHFPNbsWarning",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables Peripheral volume change by hardware reported steps
 BASE_FEATURE(kAudioPeripheralVolumeGranularity,
