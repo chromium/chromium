@@ -53,6 +53,14 @@ TEST_F(SharedPasswordsNotificationViewTest, HasTwoButtons) {
 }
 
 TEST_F(SharedPasswordsNotificationViewTest,
+       ShouldCloseBubbleUponClickOnGotItButton) {
+  CreateViewAndShow();
+  EXPECT_CALL(*model_delegate_mock(), OnBubbleHidden);
+  views::test::ButtonTestApi(view_->GetOkButton())
+      .NotifyClick(ui::test::TestEvent());
+}
+
+TEST_F(SharedPasswordsNotificationViewTest,
        ShouldNavigateToSettingsUponClickOnManagePasswordsButton) {
   CreateViewAndShow();
   EXPECT_CALL(*model_delegate_mock(),

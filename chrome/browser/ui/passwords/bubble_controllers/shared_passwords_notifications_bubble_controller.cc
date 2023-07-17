@@ -28,6 +28,10 @@ SharedPasswordsNotificationBubbleController::
   OnBubbleClosing();
 }
 
+void SharedPasswordsNotificationBubbleController::OnAcknowledgeClicked() {
+  // TODO(crbug.com/1464209): Mark the shared password as acknowledged.
+}
+
 void SharedPasswordsNotificationBubbleController::OnManagePasswordsClicked() {
   delegate_->NavigateToPasswordManagerSettingsPage(
       password_manager::ManagePasswordsReferrer::

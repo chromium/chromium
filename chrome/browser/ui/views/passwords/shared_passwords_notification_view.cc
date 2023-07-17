@@ -21,6 +21,13 @@ SharedPasswordsNotificationView::SharedPasswordsNotificationView(
       views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
   SetShowIcon(true);
 
+  SetButtonLabel(ui::DIALOG_BUTTON_OK,
+                 l10n_util::GetStringUTF16(
+                     IDS_SHARED_PASSWORDS_NOTIFICATION_GOT_IT_BUTTON));
+  SetAcceptCallback(base::BindOnce(
+      &SharedPasswordsNotificationBubbleController::OnAcknowledgeClicked,
+      base::Unretained(&controller_)));
+
   SetButtonLabel(
       ui::DIALOG_BUTTON_CANCEL,
       l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_MANAGE_PASSWORDS_BUTTON));
