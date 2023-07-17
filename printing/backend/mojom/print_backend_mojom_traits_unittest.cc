@@ -91,6 +91,32 @@ TEST(PrintBackendMojomTraitsTest, TestSerializeAndDeserializePaper) {
   }
 }
 
+TEST(PrintBackendMojomTraitsTest, TestPaperCtors) {
+  // All constructors should be able to generate valid papers.
+  constexpr gfx::Size kNonEmptySize(100, 200);
+  constexpr gfx::Rect kNonEmptyPrintableArea(kNonEmptySize);
+  PrinterSemanticCapsAndDefaults::Paper output;
+
+  PrinterSemanticCapsAndDefaults::Paper input;
+  EXPECT_TRUE(mojo::test::SerializeAndDeserialize<mojom::Paper>(input, output));
+
+  // TODO(crbug.com/1464376):  Update expectation to true once constructor is
+  // corrected.
+  input = PrinterSemanticCapsAndDefaults::Paper("display_name", "vendor_id",
+                                                kNonEmptySize);
+  EXPECT_FALSE(
+      mojo::test::SerializeAndDeserialize<mojom::Paper>(input, output));
+
+  input = PrinterSemanticCapsAndDefaults::Paper(
+      "display_name", "vendor_id", kNonEmptySize, kNonEmptyPrintableArea);
+  EXPECT_TRUE(mojo::test::SerializeAndDeserialize<mojom::Paper>(input, output));
+
+  input = PrinterSemanticCapsAndDefaults::Paper(
+      "display_name", "vendor_id", kNonEmptySize, kNonEmptyPrintableArea,
+      /*max_height_um=*/200);
+  EXPECT_TRUE(mojo::test::SerializeAndDeserialize<mojom::Paper>(input, output));
+}
+
 TEST(PrintBackendMojomTraitsTest, TestPaperEmpty) {
   // Empty Papers should be valid.
   PrinterSemanticCapsAndDefaults::Paper input;
