@@ -346,6 +346,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1275718070701477396">Selected</translation>
 <translation id="1276994519141842946">Couldn't uninstall <ph name="APP_NAME" /></translation>
 <translation id="1277020343994096713">Create a new PIN that's different from your current PIN</translation>
+<translation id="1277597051786235230">&amp;Search <ph name="SEARCH_ENGINE" /> for '<ph name="SEARCH_TERMS" />' in new tab</translation>
 <translation id="1278859221870828664">Review Google Play apps and services</translation>
 <translation id="127946606521051357">Device nearby is sharing</translation>
 <translation id="1280965841156951489">Edit files</translation>
@@ -2675,6 +2676,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="32101887417650595">Can’t connect to printer</translation>
 <translation id="3210736980143419785">Couldn’t finish download</translation>
 <translation id="321084946921799184">Yellow and white</translation>
+<translation id="3211126692872351610">&amp;Search <ph name="SEARCH_ENGINE" /> for '<ph name="SEARCH_TERMS" />' in new tab</translation>
 <translation id="321356136776075234">Device OU (e.g. OU=Chromebooks,DC=example,DC=com)</translation>
 <translation id="321367297115597343">Add a bookmark to this folder</translation>
 <translation id="3214531106883826119"><ph name="BEGIN_BOLD" />Note:<ph name="END_BOLD" /> A similar voice or recording might be able to access <ph name="SUPERVISED_USER_NAME" />’s personal results.</translation>

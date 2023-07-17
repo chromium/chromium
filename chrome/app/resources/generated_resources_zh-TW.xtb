@@ -344,6 +344,7 @@
 <translation id="1275718070701477396">已選取</translation>
 <translation id="1276994519141842946">無法解除安裝「<ph name="APP_NAME" />」</translation>
 <translation id="1277020343994096713">新設定的 PIN 碼不能與目前的 PIN 碼相同</translation>
+<translation id="1277597051786235230">開啟新分頁並使用「<ph name="SEARCH_ENGINE" />」搜尋「<ph name="SEARCH_TERMS" />」(&amp;S)</translation>
 <translation id="1278859221870828664">檢查 Google Play 應用程式和服務</translation>
 <translation id="127946606521051357">附近的裝置正在分享資料</translation>
 <translation id="1280965841156951489">編輯檔案</translation>
@@ -2660,6 +2661,7 @@
 <translation id="32101887417650595">無法連線到印表機</translation>
 <translation id="3210736980143419785">無法完成下載作業</translation>
 <translation id="321084946921799184">黃色與白色</translation>
+<translation id="3211126692872351610">開啟新分頁並使用「<ph name="SEARCH_ENGINE" />」搜尋「<ph name="SEARCH_TERMS" />」(&amp;S)</translation>
 <translation id="321356136776075234">裝置機構單位 (例如 OU=Chromebooks,DC=example,DC=com)</translation>
 <translation id="321367297115597343">將書籤加入這個資料夾</translation>
 <translation id="3214531106883826119"><ph name="BEGIN_BOLD" />注意：<ph name="END_BOLD" />如果有人聲音與<ph name="SUPERVISED_USER_NAME" />相似或擁有其聲音錄音檔，或許就能存取孩子的個人化搜尋結果。</translation>
