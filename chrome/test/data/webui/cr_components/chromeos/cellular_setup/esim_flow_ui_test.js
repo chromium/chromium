@@ -121,9 +121,11 @@ suite(`CrComponentsEsimFlowUiTest${suiteSuffix}`, function() {
 
     ironPages = eSimPage.$$('iron-pages');
     profileLoadingPage = eSimPage.$$('#profileLoadingPage');
-    profileDiscoveryPage = eSimPage.$$('#profileDiscoveryPage');
+    // TODO(michaelrygiel): update this to non legacy page when added.
+    profileDiscoveryPage = eSimPage.$$('#profileDiscoveryPageLegacy');
     activationCodePage = eSimPage.$$('#activationCodePage');
-    confirmationCodePage = eSimPage.$$('#confirmationCodePage');
+    // TODO(michaelrygiel): update this to non legacy page when added.
+    confirmationCodePage = eSimPage.$$('#confirmationCodePageLegacy');
     finalPage = eSimPage.$$('#finalPage');
 
     // Captures the function that is called every time the interval timer
@@ -250,7 +252,9 @@ suite(`CrComponentsEsimFlowUiTest${suiteSuffix}`, function() {
   }
 
   function assertProfileDiscoveryPage() {
-    assertSelectedPage(ESimPageName.PROFILE_DISCOVERY, profileDiscoveryPage);
+    // TODO(michaelrygiel): update this to non legacy page when added.
+    assertSelectedPage(
+        ESimPageName.PROFILE_DISCOVERY_LEGACY, profileDiscoveryPage);
     assertButtonState(
         /*forwardButtonShouldBeEnabled*/ true,
         /*backButtonState*/ ButtonState.HIDDEN);
@@ -272,7 +276,9 @@ suite(`CrComponentsEsimFlowUiTest${suiteSuffix}`, function() {
       // In the initial state, input should be cleared.
       assertEquals(confirmationCodePage.$$('#confirmationCode').value, '');
     }
-    assertSelectedPage(ESimPageName.CONFIRMATION_CODE, confirmationCodePage);
+    // TODO(michaelrygiel): update this to non legacy page when added.
+    assertSelectedPage(
+        ESimPageName.CONFIRMATION_CODE_LEGACY, confirmationCodePage);
     assertButtonState(forwardButtonShouldBeEnabled, backButtonState);
   }
 

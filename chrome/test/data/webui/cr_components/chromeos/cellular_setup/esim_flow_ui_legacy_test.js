@@ -32,9 +32,9 @@ suite(`CrComponentsEsimFlowUiTest${suiteSuffix}`, function() {
   let eSimManagerRemote;
   let ironPages;
   let profileLoadingPage;
-  let profileDiscoveryPage;
+  let profileDiscoveryPageLegacy;
   let activationCodePage;
-  let confirmationCodePage;
+  let confirmationCodePageLegacy;
   let finalPage;
   let networkConfigRemote;
 
@@ -129,9 +129,9 @@ suite(`CrComponentsEsimFlowUiTest${suiteSuffix}`, function() {
 
     ironPages = eSimPage.$$('iron-pages');
     profileLoadingPage = eSimPage.$$('#profileLoadingPage');
-    profileDiscoveryPage = eSimPage.$$('#profileDiscoveryPage');
+    profileDiscoveryPageLegacy = eSimPage.$$('#profileDiscoveryPageLegacy');
     activationCodePage = eSimPage.$$('#activationCodePage');
-    confirmationCodePage = eSimPage.$$('#confirmationCodePage');
+    confirmationCodePageLegacy = eSimPage.$$('#confirmationCodePageLegacy');
     finalPage = eSimPage.$$('#finalPage');
 
     // Captures the function that is called every time the interval timer
@@ -151,9 +151,9 @@ suite(`CrComponentsEsimFlowUiTest${suiteSuffix}`, function() {
         playVideoFunction, stopStreamFunction);
 
     assertTrue(!!profileLoadingPage);
-    assertTrue(!!profileDiscoveryPage);
+    assertTrue(!!profileDiscoveryPageLegacy);
     assertTrue(!!activationCodePage);
-    assertTrue(!!confirmationCodePage);
+    assertTrue(!!confirmationCodePageLegacy);
     assertTrue(!!finalPage);
   });
 
@@ -172,7 +172,7 @@ suite(`CrComponentsEsimFlowUiTest${suiteSuffix}`, function() {
    */
   async function navigateForwardForInstall(page, previousBackButtonState) {
     const checkShowBusyState =
-        (page !== profileDiscoveryPage && page !== finalPage);
+        (page !== profileDiscoveryPageLegacy && page !== finalPage);
     assertEquals(eSimPage.buttonState.forward, ButtonState.ENABLED);
     assertEquals(eSimPage.buttonState.backward, previousBackButtonState);
     if (checkShowBusyState) {
@@ -199,17 +199,18 @@ suite(`CrComponentsEsimFlowUiTest${suiteSuffix}`, function() {
   }
 
   async function enterConfirmationCode(backButtonState) {
-    const confirmationCodeInput = confirmationCodePage.$$('#confirmationCode');
+    const confirmationCodeInput =
+        confirmationCodePageLegacy.$$('#confirmationCode');
     confirmationCodeInput.value = 'CONFIRMATION_CODE';
     assertFalse(confirmationCodeInput.invalid);
 
     // Forward button should now be enabled.
-    assertConfirmationCodePage(
+    assertConfirmationCodePageLegacy(
         /*forwardButtonShouldBeEnabled=*/ true,
         /*backButtonState*/ backButtonState);
 
     await navigateForwardForInstall(
-        confirmationCodePage, /*backButtonState*/ backButtonState);
+        confirmationCodePageLegacy, /*backButtonState*/ backButtonState);
     return confirmationCodeInput;
   }
 
@@ -257,8 +258,9 @@ suite(`CrComponentsEsimFlowUiTest${suiteSuffix}`, function() {
     await flushAsync();
   }
 
-  function assertProfileDiscoveryPage() {
-    assertSelectedPage(ESimPageName.PROFILE_DISCOVERY, profileDiscoveryPage);
+  function assertProfileDiscoveryPageLegacy() {
+    assertSelectedPage(
+        ESimPageName.PROFILE_DISCOVERY_LEGACY, profileDiscoveryPageLegacy);
     assertButtonState(
         /*forwardButtonShouldBeEnabled*/ true,
         /*backButtonState*/ ButtonState.HIDDEN);
@@ -274,13 +276,15 @@ suite(`CrComponentsEsimFlowUiTest${suiteSuffix}`, function() {
     assertButtonState(forwardButtonShouldBeEnabled, backButtonState);
   }
 
-  function assertConfirmationCodePage(
+  function assertConfirmationCodePageLegacy(
       forwardButtonShouldBeEnabled, backButtonState) {
     if (!forwardButtonShouldBeEnabled) {
       // In the initial state, input should be cleared.
-      assertEquals(confirmationCodePage.$$('#confirmationCode').value, '');
+      assertEquals(
+          confirmationCodePageLegacy.$$('#confirmationCode').value, '');
     }
-    assertSelectedPage(ESimPageName.CONFIRMATION_CODE, confirmationCodePage);
+    assertSelectedPage(
+        ESimPageName.CONFIRMATION_CODE_LEGACY, confirmationCodePageLegacy);
     assertButtonState(forwardButtonShouldBeEnabled, backButtonState);
   }
 
@@ -348,7 +352,7 @@ suite(`CrComponentsEsimFlowUiTest${suiteSuffix}`, function() {
           /*backButtonState*/ ButtonState.HIDDEN);
 
       // Confirmation code page should be showing.
-      assertConfirmationCodePage(
+      assertConfirmationCodePageLegacy(
           /*forwardButtonShouldBeEnabled*/ false,
           /*backButtonState*/ ButtonState.ENABLED);
 
@@ -371,7 +375,7 @@ suite(`CrComponentsEsimFlowUiTest${suiteSuffix}`, function() {
           /*backButtonState*/ ButtonState.HIDDEN);
 
       // Confirmation code page should be showing.
-      assertConfirmationCodePage(
+      assertConfirmationCodePageLegacy(
           /*forwardButtonShouldBeEnabled*/ false,
           /*backButtonState*/ ButtonState.ENABLED);
 
@@ -380,7 +384,7 @@ suite(`CrComponentsEsimFlowUiTest${suiteSuffix}`, function() {
           /*backButtonState*/ ButtonState.ENABLED);
 
       // Should still be at confirmation code page with input showing error.
-      assertConfirmationCodePage(
+      assertConfirmationCodePageLegacy(
           /*forwardButtonShouldBeEnabled*/ true,
           /*backButtonState*/ ButtonState.ENABLED);
       assertTrue(confirmationCodeInput.invalid);
@@ -397,10 +401,11 @@ suite(`CrComponentsEsimFlowUiTest${suiteSuffix}`, function() {
           /*backButtonState*/ ButtonState.HIDDEN);
 
       // Confirmation code page should be showing.
-      assertConfirmationCodePage(
+      assertConfirmationCodePageLegacy(
           /*forwardButtonShouldBeEnabled*/ false,
           /*backButtonState*/ ButtonState.ENABLED);
-      confirmationCodePage.$$('#confirmationCode').value = 'CONFIRMATION_CODE';
+      confirmationCodePageLegacy.$$('#confirmationCode').value =
+          'CONFIRMATION_CODE';
 
       eSimPage.navigateBackward();
       await flushAsync();
@@ -445,7 +450,7 @@ suite(`CrComponentsEsimFlowUiTest${suiteSuffix}`, function() {
       await assertProfileLoadingPageAndContinue();
 
       // Should go to profile discovery page.
-      assertProfileDiscoveryPage();
+      assertProfileDiscoveryPageLegacy();
       assertFocusDefaultButtonEventFired();
     }
 
@@ -503,11 +508,11 @@ suite(`CrComponentsEsimFlowUiTest${suiteSuffix}`, function() {
                 /*backButtonState*/ ButtonState.ENABLED);
 
             // Confirmation code page should be showing.
-            assertConfirmationCodePage(
+            assertConfirmationCodePageLegacy(
                 /*forwardButtonShouldBeEnabled*/ false,
                 /*backButtonState*/ ButtonState.ENABLED);
             assertFocusDefaultButtonEventFired();
-            confirmationCodePage.$$('#confirmationCode').value =
+            confirmationCodePageLegacy.$$('#confirmationCode').value =
                 'CONFIRMATION_CODE';
             assertFalse(focusDefaultButtonEventFired);
 
@@ -526,7 +531,7 @@ suite(`CrComponentsEsimFlowUiTest${suiteSuffix}`, function() {
             eSimPage.navigateBackward();
             await flushAsync();
 
-            assertProfileDiscoveryPage();
+            assertProfileDiscoveryPageLegacy();
             assertFocusDefaultButtonEventFired();
             assertEquals(
                 eSimPage.forwardButtonLabel, 'Skip & Set up new profile');
@@ -538,7 +543,7 @@ suite(`CrComponentsEsimFlowUiTest${suiteSuffix}`, function() {
 
     async function selectProfile() {
       // Select the first profile on the list.
-      const profileList = profileDiscoveryPage.$$('#profileList');
+      const profileList = profileDiscoveryPageLegacy.$$('#profileList');
       profileList.selectItem(profileList.items[0]);
       flush();
 
@@ -547,7 +552,7 @@ suite(`CrComponentsEsimFlowUiTest${suiteSuffix}`, function() {
 
       // Simulate pressing 'Forward'.
       await navigateForwardForInstall(
-          profileDiscoveryPage,
+          profileDiscoveryPageLegacy,
           /*backButtonState*/ ButtonState.HIDDEN);
     }
 
@@ -580,7 +585,7 @@ suite(`CrComponentsEsimFlowUiTest${suiteSuffix}`, function() {
             await selectProfile();
 
             // Confirmation code page should be showing.
-            assertConfirmationCodePage(
+            assertConfirmationCodePageLegacy(
                 /*forwardButtonShouldBeEnabled*/ false,
                 /*backButtonState*/ ButtonState.ENABLED);
             assertFocusDefaultButtonEventFired();
@@ -615,16 +620,16 @@ suite(`CrComponentsEsimFlowUiTest${suiteSuffix}`, function() {
             await flushAsync();
 
             // Confirmation code page should be showing.
-            assertConfirmationCodePage(
+            assertConfirmationCodePageLegacy(
                 /*forwardButtonShouldBeEnabled*/ false,
                 /*backButtonState*/ ButtonState.ENABLED);
-            confirmationCodePage.$$('#confirmationCode').value =
+            confirmationCodePageLegacy.$$('#confirmationCode').value =
                 'CONFIRMATION_CODE';
 
             eSimPage.navigateBackward();
             await flushAsync();
 
-            assertProfileDiscoveryPage();
+            assertProfileDiscoveryPageLegacy();
             assertEquals(eSimPage.forwardButtonLabel, 'Next');
 
             endFlowAndVerifyResult(

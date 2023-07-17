@@ -18,14 +18,14 @@ js_type_check("closure_compile_module") {
     ":cellular_setup",
     ":cellular_setup_delegate",
     ":cellular_types",
-    ":confirmation_code_page",
+    ":confirmation_code_page_legacy",
     ":esim_flow_ui",
     ":esim_manager_listener_behavior",
     ":esim_manager_utils",
     ":final_page",
     ":mojo_interface_provider",
-    ":profile_discovery_list_item",
-    ":profile_discovery_list_page",
+    ":profile_discovery_list_item_legacy",
+    ":profile_discovery_list_page_legacy",
     ":provisioning_page",
     ":psim_flow_ui",
     ":setup_loading_page",
@@ -69,14 +69,14 @@ js_library("activation_code_page") {
   ]
 }
 
-js_library("confirmation_code_page") {
+js_library("confirmation_code_page_legacy") {
   deps = [
     "//ash/webui/common/resources:i18n_behavior",
     "//third_party/polymer/v3_0/components-chromium/paper-spinner:paper-spinner-lite",
   ]
 }
 
-js_library("profile_discovery_list_item") {
+js_library("profile_discovery_list_item_legacy") {
   deps = [
     "//ash/webui/common/resources:i18n_behavior",
     "//chromeos/ash/services/cellular_setup/public/mojom:mojom_webui_js",
@@ -84,7 +84,7 @@ js_library("profile_discovery_list_item") {
   ]
 }
 
-js_library("profile_discovery_list_page") {
+js_library("profile_discovery_list_page_legacy") {
   deps = [
     "//ash/webui/common/resources:i18n_behavior",
     "//chromeos/ash/services/cellular_setup/public/mojom:mojom_webui_js",
@@ -189,12 +189,12 @@ js_library("esim_flow_ui") {
     ":activation_verification_page",
     ":cellular_setup_delegate",
     ":cellular_types",
-    ":confirmation_code_page",
+    ":confirmation_code_page_legacy",
     ":esim_manager_utils",
     ":final_page",
     ":mojo_interface_provider",
-    ":profile_discovery_list_item",
-    ":profile_discovery_list_page",
+    ":profile_discovery_list_item_legacy",
+    ":profile_discovery_list_page_legacy",
     ":subflow_behavior",
     "//ash/webui/common/resources:assert",
     "//ash/webui/common/resources:i18n_behavior",

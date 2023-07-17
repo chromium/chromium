@@ -7,8 +7,8 @@ import './setup_loading_page.js';
 import './activation_code_page.js';
 import './activation_verification_page.js';
 import './final_page.js';
-import './profile_discovery_list_page.js';
-import './confirmation_code_page.js';
+import './profile_discovery_list_page_legacy.js';
+import './confirmation_code_page_legacy.js';
 
 import {assert, assertNotReached} from '//resources/ash/common/assert.js';
 import {I18nBehavior} from '//resources/ash/common/i18n_behavior.js';
@@ -31,10 +31,10 @@ import {SubflowBehavior} from './subflow_behavior.js';
 /** @enum {string} */
 export const ESimPageName = {
   PROFILE_LOADING: 'profileLoadingPage',
-  PROFILE_DISCOVERY: 'profileDiscoveryPage',
+  PROFILE_DISCOVERY_LEGACY: 'profileDiscoveryPageLegacy',
   ACTIVATION_CODE: 'activationCodePage',
   ACTIVATION_VERIFCATION: 'activationVerificationPage',
-  CONFIRMATION_CODE: 'confirmationCodePage',
+  CONFIRMATION_CODE_LEGACY: 'confirmationCodePageLegacy',
   FINAL: 'finalPage',
 };
 
@@ -445,11 +445,11 @@ Polymer({
       case ESimUiState.CONFIRMATION_CODE_ENTRY:
       case ESimUiState.CONFIRMATION_CODE_ENTRY_READY:
       case ESimUiState.CONFIRMATION_CODE_ENTRY_INSTALLING:
-        this.selectedESimPageName_ = ESimPageName.CONFIRMATION_CODE;
+        this.selectedESimPageName_ = ESimPageName.CONFIRMATION_CODE_LEGACY;
         break;
       case ESimUiState.PROFILE_SELECTION:
       case ESimUiState.PROFILE_SELECTION_INSTALLING:
-        this.selectedESimPageName_ = ESimPageName.PROFILE_DISCOVERY;
+        this.selectedESimPageName_ = ESimPageName.PROFILE_DISCOVERY_LEGACY;
         break;
       case ESimUiState.SETUP_FINISH:
         this.selectedESimPageName_ = ESimPageName.FINAL;

@@ -84,7 +84,7 @@ GEN('#include "content/public/test/browser_test.h"');
  ['BasePage', 'cellular_setup/base_page_test.js'],
  ['ButtonBar', 'cellular_setup/button_bar_test.js'],
  ['CellularSetup', 'cellular_setup/cellular_setup_test.js'],
- ['ConfirmationCodePage', 'cellular_setup/confirmation_code_page_test.js'],
+ ['ConfirmationCodePageLegacy', 'cellular_setup/confirmation_code_page_legacy_test.js'],
  ['EsimFlowUiLegacy', 'cellular_setup/esim_flow_ui_legacy_test.js'],
  ['EsimFlowUi', 'cellular_setup/esim_flow_ui_test.js'],
  ['FinalPage', 'cellular_setup/final_page_test.js'],

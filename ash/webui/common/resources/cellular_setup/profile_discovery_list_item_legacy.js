@@ -4,8 +4,8 @@
 
 /**
  * @fileoverview
- * Item in the profile-discovery-list-page list displaying details of an eSIM
- * profile.
+ * Item in the profile-discovery-list-page-legacy list displaying details of
+ * an eSIM profile.
  */
 
 import '//resources/cr_elements/cr_shared_vars.css.js';
@@ -19,11 +19,11 @@ import {I18nBehavior} from '//resources/ash/common/i18n_behavior.js';
 import {Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {ESimProfileProperties, ESimProfileRemote} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js';
 
-import {getTemplate} from './profile_discovery_list_item.html.js';
+import {getTemplate} from './profile_discovery_list_item_legacy.html.js';
 
 Polymer({
   _template: getTemplate(),
-  is: 'profile-discovery-list-item',
+  is: 'profile-discovery-list-item-legacy',
 
   behaviors: [I18nBehavior],
 

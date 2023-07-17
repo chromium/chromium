@@ -30,13 +30,13 @@
           selected-item="{{selectedProfile}}"
           role="listbox">
         <template>
-          <profile-discovery-list-item profile="[[item]]"
+          <profile-discovery-list-item-legacy profile="[[item]]"
               selected="[[isProfileSelected_(item, selectedProfile)]]"
               tabindex="0"
               role="option"
               aria-selected="[[isProfileSelected_(item, selectedProfile)]]"
               show-loading-indicator="[[showBusy]]">
-          </profile-discovery-list-item>
+          </profile-discovery-list-item-legacy>
         </template>
       </iron-list>
     </div>

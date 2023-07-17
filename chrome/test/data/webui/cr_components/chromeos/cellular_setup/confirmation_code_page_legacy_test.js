@@ -3,14 +3,14 @@
 // found in the LICENSE file.
 
 import 'chrome://os-settings/strings.m.js';
-import 'chrome://resources/ash/common/cellular_setup/confirmation_code_page.js';
+import 'chrome://resources/ash/common/cellular_setup/confirmation_code_page_legacy.js';
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {assertTrue} from '../../../chromeos/chai_assert.js';
 
-suite('CrComponentsConfirmationCodePageTest', function() {
-  let confirmationCodePage;
+suite('CrComponentsConfirmationCodePageLegacyTest', function() {
+  let confirmationCodePageLegacy;
 
   function flushAsync() {
     flush();
@@ -19,19 +19,20 @@ suite('CrComponentsConfirmationCodePageTest', function() {
   }
 
   setup(function() {
-    confirmationCodePage = document.createElement('confirmation-code-page');
-    document.body.appendChild(confirmationCodePage);
+    confirmationCodePageLegacy =
+        document.createElement('confirmation-code-page-legacy');
+    document.body.appendChild(confirmationCodePageLegacy);
     flush();
   });
 
   test('Event is fired when enter is pressed on input', async function() {
     await flushAsync();
     let eventFired = false;
-    confirmationCodePage.addEventListener(
+    confirmationCodePageLegacy.addEventListener(
         'forward-navigation-requested', () => {
           eventFired = true;
         });
-    const input = confirmationCodePage.$$('#confirmationCode');
+    const input = confirmationCodePageLegacy.$$('#confirmationCode');
     input.dispatchEvent(new KeyboardEvent('keydown', {key: 'Enter'}));
 
     await flushAsync();
