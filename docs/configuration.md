@@ -107,7 +107,7 @@ Flags:
 
 * *Are* directly surfaced to the user
 * *Are not* localized into the user's language
-* *Are* configurable via enterprise policy
+* *Are not* configurable via enterprise policy
 * *Are* reported via UMA when in use (via Launch.FlagsAtStartup)
 * *Are not* included in chrome://version
 * *Are* automatically persistent across restarts
@@ -142,7 +142,7 @@ someone who can't read or write code want to change this?"
 | :-                                           | :-          | :-             | :--:     | :--:                                | :-                                |
 | Directly surfaced to the user                | ❌          | ❌            | ❌       | ✅                                  | ✅                                |
 | Localized into the user's language           | ❌          | ❌            | ❌       | ❌                                  | ✅                                |
-| Configurable via enterprise policy           | ✅          | ❌            | ❌ except on ChromeOS | ✅                                  | ❌ but their backing prefs may be |
+| Configurable via enterprise policy           | ✅          | ❌            | ❌ except on ChromeOS | ❌                                  | ❌ but their backing prefs may be |
 | Reported when in use                         | ❌          | via UMA/crash |  ❌      | via UMA<br> `Launch.FlagsAtStartup` | ❌                                |
 | Included in chrome://version                 | ❌          | ✅            | ✅       | ❌                                  | ❌                                |
 | Automatically persistent<br> across restarts | ✅ usually  | ❌            | ❌       | ✅                                  | ✅ via backing prefs              |
