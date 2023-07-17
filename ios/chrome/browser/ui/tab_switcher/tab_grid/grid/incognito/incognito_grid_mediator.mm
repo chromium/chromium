@@ -4,6 +4,9 @@
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/incognito/incognito_grid_mediator.h"
 
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
+
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
@@ -13,6 +16,8 @@
 #pragma mark - TabGridPageMutator
 
 - (void)currentlySelectedGrid:(BOOL)selected {
+  base::RecordAction(
+      base::UserMetricsAction("MobileTabGridSelectIncognitoPanel"));
   // TODO(crbug.com/1457146): Implement.
 }
 

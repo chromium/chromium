@@ -5,6 +5,8 @@
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_mediator.h"
 
 #import "base/debug/dump_without_crashing.h"
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
 #import "base/notreached.h"
 #import "components/sessions/core/tab_restore_service.h"
 #import "components/sync/service/sync_service.h"
@@ -12,6 +14,7 @@
 #import "components/sync_sessions/open_tabs_ui_delegate.h"
 #import "components/sync_sessions/session_sync_service.h"
 #import "components/sync_sessions/synced_session.h"
+#import "ios/chrome/browser/default_browser/utils.h"
 #import "ios/chrome/browser/favicon/favicon_loader.h"
 #import "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/net/crurl.h"
@@ -282,6 +285,8 @@ bool UserActionIsRequiredToHaveTabSyncWork(syncer::SyncService* sync_service) {
 #pragma mark - TabGridPageMutator
 
 - (void)currentlySelectedGrid:(BOOL)selected {
+  base::RecordAction(base::UserMetricsAction("MobileTabGridSelectRemotePanel"));
+  LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeAllTabs);
   // TODO(crbug.com/1457146): Implement.
 }
 
