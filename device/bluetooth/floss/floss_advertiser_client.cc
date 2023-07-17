@@ -136,6 +136,22 @@ AdvertiseData::~AdvertiseData() = default;
 FlossAdvertiserClient::FlossAdvertiserClient() = default;
 
 FlossAdvertiserClient::~FlossAdvertiserClient() {
+  for (auto& [_, callbacks] : start_advertising_set_callbacks_) {
+    std::move(callbacks.second)
+        .Run(device::BluetoothAdvertisement::ERROR_STARTING_ADVERTISEMENT);
+  }
+  start_advertising_set_callbacks_.clear();
+  for (auto& [_, callbacks] : stop_advertising_set_callbacks_) {
+    std::move(callbacks.second)
+        .Run(device::BluetoothAdvertisement::ERROR_RESET_ADVERTISING);
+  }
+  stop_advertising_set_callbacks_.clear();
+  for (auto& [_, callbacks] : set_advertising_params_callbacks_) {
+    std::move(callbacks.second)
+        .Run(device::BluetoothAdvertisement::ERROR_STARTING_ADVERTISEMENT);
+  }
+  set_advertising_params_callbacks_.clear();
+
   if (bus_) {
     exported_callback_manager_.UnexportCallback(
         dbus::ObjectPath(kAdvertisingSetCallbackPath));
