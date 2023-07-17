@@ -248,15 +248,13 @@ TEST_F(PageSpecificContentSettingsTest, BlockedFileSystems) {
 
   // Access a file system.
   content_settings->OnStorageAccessed(StorageType::FILE_SYSTEM,
-                                      GURL("http://google.com"), false,
-                                      web_contents()->GetPrimaryMainFrame());
+                                      GURL("http://google.com"), false);
   EXPECT_FALSE(
       content_settings->IsContentBlocked(ContentSettingsType::COOKIES));
 
   // Block access to a file system.
   content_settings->OnStorageAccessed(StorageType::FILE_SYSTEM,
-                                      GURL("http://google.com"), true,
-                                      web_contents()->GetPrimaryMainFrame());
+                                      GURL("http://google.com"), true);
   EXPECT_TRUE(content_settings->IsContentBlocked(ContentSettingsType::COOKIES));
 }
 
@@ -365,15 +363,15 @@ TEST_F(PageSpecificContentSettingsTest, SiteDataObserver) {
        GURL("http://google.com"), cookie_list, blocked_by_policy});
   content_settings->OnStorageAccessed(StorageType::FILE_SYSTEM,
                                       GURL("http://google.com"),
-                                      blocked_by_policy, rfh);
+                                      blocked_by_policy);
   content_settings->OnStorageAccessed(StorageType::INDEXED_DB,
                                       GURL("http://google.com"),
-                                      blocked_by_policy, rfh);
+                                      blocked_by_policy);
   content_settings->OnStorageAccessed(StorageType::LOCAL_STORAGE,
                                       GURL("http://google.com"),
-                                      blocked_by_policy, rfh);
+                                      blocked_by_policy);
   content_settings->OnStorageAccessed(
-      StorageType::DATABASE, GURL("http://google.com"), blocked_by_policy, rfh);
+      StorageType::DATABASE, GURL("http://google.com"), blocked_by_policy);
 }
 
 TEST_F(PageSpecificContentSettingsTest, LocalSharedObjectsContainer) {
@@ -394,19 +392,19 @@ TEST_F(PageSpecificContentSettingsTest, LocalSharedObjectsContainer) {
                                   blocked_by_policy});
   content_settings->OnStorageAccessed(StorageType::FILE_SYSTEM,
                                       GURL("https://www.google.com"),
-                                      blocked_by_policy, rfh);
+                                      blocked_by_policy);
   content_settings->OnStorageAccessed(StorageType::INDEXED_DB,
                                       GURL("https://localhost"),
-                                      blocked_by_policy, rfh);
+                                      blocked_by_policy);
   content_settings->OnStorageAccessed(StorageType::LOCAL_STORAGE,
                                       GURL("http://maps.google.com:8080"),
-                                      blocked_by_policy, rfh);
+                                      blocked_by_policy);
   content_settings->OnStorageAccessed(StorageType::LOCAL_STORAGE,
                                       GURL("http://example.com"),
-                                      blocked_by_policy, rfh);
+                                      blocked_by_policy);
   content_settings->OnStorageAccessed(StorageType::DATABASE,
                                       GURL("http://192.168.0.1"),
-                                      blocked_by_policy, rfh);
+                                      blocked_by_policy);
   content_settings->OnSharedWorkerAccessed(
       GURL("http://youtube.com/worker.js"), "worker",
       blink::StorageKey::CreateFromStringForTesting("https://youtube.com"),
@@ -585,19 +583,15 @@ TEST_F(PageSpecificContentSettingsTest, LocalSharedObjectsContainerHostsCount) {
                                   blocked_by_policy});
   content_settings->OnStorageAccessed(
       StorageType::FILE_SYSTEM, GURL("https://www.google.com"),
-      blocked_by_policy, web_contents()->GetPrimaryMainFrame());
+      blocked_by_policy);
   content_settings->OnStorageAccessed(
-      StorageType::INDEXED_DB, GURL("https://localhost"), blocked_by_policy,
-      web_contents()->GetPrimaryMainFrame());
+      StorageType::INDEXED_DB, GURL("https://localhost"), blocked_by_policy);
   content_settings->OnStorageAccessed(
-      StorageType::LOCAL_STORAGE, GURL("http://maps.google.com:8080"),
-      blocked_by_policy, web_contents()->GetPrimaryMainFrame());
+      StorageType::LOCAL_STORAGE, GURL("http://maps.google.com:8080"), blocked_by_policy);
   content_settings->OnStorageAccessed(
-      StorageType::LOCAL_STORAGE, GURL("http://example.com"), blocked_by_policy,
-      web_contents()->GetPrimaryMainFrame());
+      StorageType::LOCAL_STORAGE, GURL("http://example.com"), blocked_by_policy);
   content_settings->OnStorageAccessed(
-      StorageType::DATABASE, GURL("http://192.168.0.1"), blocked_by_policy,
-      web_contents()->GetPrimaryMainFrame());
+      StorageType::DATABASE, GURL("http://192.168.0.1"), blocked_by_policy);
   content_settings->OnSharedWorkerAccessed(
       GURL("http://youtube.com/worker.js"), "worker",
       blink::StorageKey::CreateFromStringForTesting("https://youtube.com"),
@@ -786,7 +780,7 @@ TEST_F(PageSpecificContentSettingsWithPrerenderTest,
                            {*cookie},
                            /*blocked_by_policy=*/false});
   pscs->OnStorageAccessed(StorageType::INDEXED_DB, url,
-                          /*blocked_by_policy=*/true, prerender_frame);
+                          /*blocked_by_policy=*/true);
 
   EXPECT_CALL(*mock_delegate, OnContentAllowed(ContentSettingsType::COOKIES))
       .Times(1);
@@ -959,7 +953,7 @@ TEST_F(PageSpecificContentSettingsWithFencedFrameTest, DelegateUpdatesSent) {
                               {*cookie},
                               /*blocked_by_policy=*/false});
   ff_pscs->OnStorageAccessed(StorageType::INDEXED_DB, ff_url,
-                             /*blocked_by_policy=*/true, fenced_frame_root);
+                             /*blocked_by_policy=*/true);
 }
 
 TEST_F(PageSpecificContentSettingsWithFencedFrameTest,
