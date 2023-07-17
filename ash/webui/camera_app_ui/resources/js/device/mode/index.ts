@@ -37,15 +37,11 @@ import {
   VideoHandler,
 } from './video.js';
 
-export {PhotoHandler, PhotoResult} from './photo.js';
-export {getDefaultScanCorners, ScanHandler} from './scan.js';
-export {
-  GifResult,
-  setAvc1Parameters,
-  Video,
-  VideoHandler,
-  VideoResult,
-} from './video.js';
+export type{PhotoHandler, PhotoResult} from './photo.js';
+export {getDefaultScanCorners} from './scan.js';
+export type{ScanHandler} from './scan.js';
+export {setAvc1Parameters, Video} from './video.js';
+export type{GifResult, VideoHandler, VideoResult} from './video.js';
 
 /**
  * Callback to trigger mode switching. Should return whether mode switching

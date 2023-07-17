@@ -91,12 +91,8 @@ export function setGaHelper(newGaHelper: Promise<Comlink.Remote<GaHelper>>):
 /**
  * Types of event parameters and dimensions for GA and GA4.
  */
-export {
-  Ga4EventParams,
-  Ga4MetricDimension,
-  GaBaseEvent,
-  GaMetricDimension,
-};
+export {Ga4MetricDimension, GaMetricDimension};
+export type{Ga4EventParams, GaBaseEvent};
 
 /**
  * Gets the singleton VideoProcessorHelper instance that is located in an
