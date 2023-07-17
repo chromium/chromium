@@ -5281,6 +5281,10 @@ const char kAshEnableUnifiedDesktopDescription[] =
     "Enable unified desktop mode which allows a window to span multiple "
     "displays.";
 
+const char kAudioA2DPAdvancedCodecsName[] = "BT A2DP advanced codecs support";
+const char kAudioA2DPAdvancedCodecsDescription[] =
+    "Enable BT A2DP advanced codecs support";
+
 const char kAudioAPNoiseCancellationName[] = "Audio noise cancellation on AP";
 const char kAudioAPNoiseCancellationDescription[] =
     "Enable noise cancellation on AP";

@@ -3047,6 +3047,9 @@ extern const char kArcExternalStorageAccessDescription[];
 extern const char kAshEnableUnifiedDesktopName[];
 extern const char kAshEnableUnifiedDesktopDescription[];
 
+extern const char kAudioA2DPAdvancedCodecsName[];
+extern const char kAudioA2DPAdvancedCodecsDescription[];
+
 extern const char kAudioAPNoiseCancellationName[];
 extern const char kAudioAPNoiseCancellationDescription[];
 

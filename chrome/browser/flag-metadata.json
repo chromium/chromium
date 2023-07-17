@@ -405,6 +405,11 @@
     "expiry_milestone": 117
   },
   {
+    "name": "audio-a2dp-advanced-codecs",
+    "owners": ["jrwu", "chromeos-audio@google.com" ],
+    "expiry_milestone": 130
+  },
+  {
     "name": "audio-ap-noise-cancellation",
     "owners": ["aaronyu", "hunghsienchen", "chromeos-audio@google.com" ],
     "expiry_milestone": 120

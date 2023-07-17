@@ -64308,6 +64308,7 @@ from previous Chrome versions.
   <int value="236412875" label="PreinstalledWebAppWindowExperiment:disabled"/>
   <int value="236498704" label="ArcFixupWindowFeature:disabled"/>
   <int value="237066116" label="PageInfoV2:disabled"/>
+  <int value="237088339" label="CrOSLateBootAudioA2DPAdvancedCodecs:disabled"/>
   <int value="237570976" label="CommandLineOnNonRooted:disabled"/>
   <int value="237964589"
       label="enable-manual-fallback-for-password-saving:disabled"/>
@@ -65446,6 +65447,7 @@ from previous Chrome versions.
   <int value="812710781" label="SyncUSSBookmarks:disabled"/>
   <int value="813211869" label="ScrollCapture:disabled"/>
   <int value="813302293" label="RemoveStatusBarInWebApps:disabled"/>
+  <int value="813466537" label="CrOSLateBootAudioA2DPAdvancedCodecs:enabled"/>
   <int value="813999334" label="HistoryManipulationIntervention:enabled"/>
   <int value="816369907" label="SharingHubDesktopAppMenu:disabled"/>
   <int value="816907702" label="GlobalMediaControlsSeamlessTransfer:disabled"/>
