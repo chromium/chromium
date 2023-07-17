@@ -91,7 +91,7 @@ void TokenBindingHelper::GenerateBindingKeyAssertion(
   // `UnexportableKeyLoader`.
   binding_key_data.key_loader->InvokeCallbackAfterKeyLoaded(base::BindOnce(
       &TokenBindingHelper::SignAssertionToken, base::Unretained(this),
-      challenge, destination_url, std::move(callback)));
+      std::string(challenge), destination_url, std::move(callback)));
 }
 
 std::vector<uint8_t> TokenBindingHelper::GetWrappedBindingKey(
