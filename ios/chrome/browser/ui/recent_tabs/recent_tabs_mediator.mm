@@ -279,4 +279,10 @@ bool UserActionIsRequiredToHaveTabSyncWork(syncer::SyncService* sync_service) {
   [self.consumer refreshUserState:[self userSignedInState]];
 }
 
+#pragma mark - TabGridPageMutator
+
+- (void)currentlySelectedGrid:(BOOL)selected {
+  // TODO(crbug.com/1457146): Implement.
+}
+
 @end

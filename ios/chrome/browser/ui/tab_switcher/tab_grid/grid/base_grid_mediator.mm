@@ -54,6 +54,7 @@
 #import "ios/chrome/browser/ui/menu/action_factory.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_collection_consumer.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_collection_drag_drop_metrics.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_mediator_delegate.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_context_menu/tab_item.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_metrics.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_utils.h"
@@ -1179,6 +1180,12 @@ void RecordTabGridCloseTabsCount(int count) {
     return YES;
   }
   return NO;
+}
+
+#pragma mark - TabGridPageMutator
+
+- (void)currentlySelectedGrid:(BOOL)selected {
+  NOTREACHED_NORETURN() << "Should be implemented in a subclass.";
 }
 
 @end

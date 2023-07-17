@@ -104,7 +104,7 @@ enum class TabGridPageConfiguration {
 @property(nonatomic, weak) id<TabGridViewControllerDelegate> delegate;
 
 // Mutator to apply all user change in the model.
-@property(nonatomic, strong) id<TabGridMutator> mutator;
+@property(nonatomic, weak) id<TabGridMutator> mutator;
 
 // Consumers send updates from the model layer to the UI layer.
 @property(nonatomic, readonly)

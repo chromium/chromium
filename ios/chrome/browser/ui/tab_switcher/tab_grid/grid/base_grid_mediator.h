@@ -10,45 +10,21 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_collection_drag_drop_handler.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_commands.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_shareable_items_provider.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_page_mutator.h"
 
 class Browser;
+@protocol GridMediatorDelegate;
 @protocol TabCollectionConsumer;
-@class BaseGridMediator;
-@class URLWithTitle;
 
 namespace sessions {
 class TabRestoreService;
 }  // namespace sessions
 
-// Delegate protocol for an object that can handle the action sheet that asks
-// for confirmation from the tab grid.
-@protocol GridMediatorDelegate <NSObject>
-
-// Displays an action sheet at `anchor` confirming that selected `items` are
-// going to be closed.
-- (void)
-    showCloseItemsConfirmationActionSheetWithBaseGridMediator:
-        (BaseGridMediator*)baseGridMediator
-                                                        items:(NSArray<
-                                                                  NSString*>*)
-                                                                  items
-                                                       anchor:(UIBarButtonItem*)
-                                                                  buttonAnchor;
-
-// Displays a share menu for `items` at `anchor`.
-- (void)baseGridMediator:(BaseGridMediator*)baseGridMediator
-               shareURLs:(NSArray<URLWithTitle*>*)items
-                  anchor:(UIBarButtonItem*)buttonAnchor;
-
-// Dismissed presented popovers, if any.
-- (void)dismissPopovers;
-
-@end
-
 // Mediates between model layer and tab grid UI layer.
 @interface BaseGridMediator : NSObject <GridCommands,
                                         GridShareableItemsProvider,
-                                        TabCollectionDragDropHandler>
+                                        TabCollectionDragDropHandler,
+                                        TabGridPageMutator>
 
 // The source browser.
 @property(nonatomic, assign) Browser* browser;

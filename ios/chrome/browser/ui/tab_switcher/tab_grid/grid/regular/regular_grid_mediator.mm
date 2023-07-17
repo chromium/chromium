@@ -10,4 +10,10 @@
 
 @implementation RegularGridMediator
 
+#pragma mark - TabGridPageMutator
+
+- (void)currentlySelectedGrid:(BOOL)selected {
+  // TODO(crbug.com/1457146): Implement.
+}
+
 @end

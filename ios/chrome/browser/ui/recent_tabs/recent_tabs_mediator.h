@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/synced_sessions/synced_sessions_bridge.h"
 #import "ios/chrome/browser/ui/recent_tabs/closed_tabs_observer_bridge.h"
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_table_view_controller_delegate.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_page_mutator.h"
 
 class BrowserList;
 class FaviconLoader;
@@ -39,6 +40,7 @@ class TabRestoreService;
 // ChromeToDevice and changes/updates the RecentTabsConsumer accordingly.
 @interface RecentTabsMediator : NSObject <ClosedTabsObserving,
                                           RecentTabsTableViewControllerDelegate,
+                                          TabGridPageMutator,
                                           TableViewFaviconDataSource>
 
 // The consumer for this object. This can change during the lifetime of this

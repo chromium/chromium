@@ -78,6 +78,7 @@
 #import "ios/chrome/browser/ui/sharing/sharing_params.h"
 #import "ios/chrome/browser/ui/snackbar/snackbar_coordinator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_commands.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_mediator_delegate.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/incognito/incognito_grid_mediator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/regular/regular_grid_mediator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/inactive_tabs_button_mediator.h"
@@ -161,6 +162,9 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 
   // Coordinator for the toolbars.
   TabGridToolbarsCoordinator* _toolbarsCoordinator;
+
+  // Mediator of the tab grid.
+  TabGridMediator* _mediator;
 }
 
 // Browser that contain tabs from the main pane (i.e. non-incognito).
@@ -340,6 +344,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 - (void)setActivePage:(TabGridPage)page {
   DCHECK(page != TabGridPageRemoteTabs);
   self.baseViewController.activePage = page;
+  [_mediator setPage:page];
 }
 
 - (void)setActiveMode:(TabGridMode)mode {
@@ -626,8 +631,9 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   [self.dispatcher startDispatchingToTarget:reauthAgent
                                 forProtocol:@protocol(IncognitoReauthCommands)];
 
-  TabGridViewController* baseViewController;
-  baseViewController = [[TabGridViewController alloc]
+  _mediator = [[TabGridMediator alloc] init];
+
+  TabGridViewController* baseViewController = [[TabGridViewController alloc]
       initWithPageConfiguration:_pageConfiguration];
   baseViewController.handler =
       HandlerForProtocol(self.dispatcher, ApplicationCommands);
@@ -637,7 +643,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   baseViewController.tabPresentationDelegate = self;
   baseViewController.layoutGuideCenter = LayoutGuideCenterForBrowser(nil);
   baseViewController.delegate = self;
-  baseViewController.mutator = [[TabGridMediator alloc] init];
+  baseViewController.mutator = _mediator;
   _baseViewController = baseViewController;
 
   _toolbarsCoordinator =
@@ -786,6 +792,10 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
     [self.remoteTabsMediator initObservers];
     [self.remoteTabsMediator refreshSessionsView];
   }
+
+  _mediator.regularPageMutator = self.regularTabsMediator;
+  _mediator.incognitoPageMutator = self.incognitoTabsMediator;
+  _mediator.remotePageMutator = self.remoteTabsMediator;
 
   self.snackbarCoordinator =
       [[SnackbarCoordinator alloc] initWithBaseViewController:baseViewController
