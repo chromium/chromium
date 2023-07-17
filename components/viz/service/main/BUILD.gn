@@ -4,7 +4,9 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/ui.gni")
+import("//skia/features.gni")
 import("//testing/test.gni")
+import("//ui/gl/features.gni")
 
 source_set("main") {
   output_name = "viz_main_impl"
@@ -41,6 +43,13 @@ source_set("main") {
 
   if (use_ozone) {
     deps += [ "//ui/ozone:ozone" ]
+  }
+
+  if (use_dawn || skia_use_dawn) {
+    deps += [
+      "//third_party/dawn/src/dawn:proc",
+      "//third_party/dawn/src/dawn/native",
+    ]
   }
 
   if (is_chromeos_ash) {

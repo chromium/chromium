@@ -5,6 +5,8 @@
 #include "gpu/command_buffer/tests/webgpu_test.h"
 
 #include <dawn/dawn_proc.h>
+#include <dawn/dawn_thread_dispatch_proc.h>
+#include <dawn/native/DawnNative.h>
 #include <dawn/webgpu.h>
 
 #include "base/command_line.h"
@@ -90,6 +92,16 @@ void WebGPUTest::Initialize(const Options& options) {
     return;
   }
 
+  // The test will run both service and client in the same process, so we need
+  // to set dawn procs for both.
+  dawnProcSetProcs(&dawnThreadDispatchProcTable);
+
+  {
+    // Use the native procs as default procs for all threads. It will be used
+    // for GPU service side threads.
+    dawnProcSetDefaultThreadProcs(&dawn::native::GetProcs());
+  }
+
   gpu::GpuPreferences gpu_preferences;
   gpu_preferences.enable_webgpu = true;
   gpu_preferences.use_passthrough_cmd_decoder =
@@ -126,8 +138,12 @@ void WebGPUTest::Initialize(const Options& options) {
   webgpu_impl()->SetLostContextCallback(base::BindLambdaForTesting(
       []() { GTEST_FAIL() << "Context lost unexpectedly."; }));
 
-  DawnProcTable procs = webgpu()->GetAPIChannel()->GetProcs();
-  dawnProcSetProcs(&procs);
+  {
+    // Use the wire procs for the test main thread.
+    DawnProcTable procs = webgpu()->GetAPIChannel()->GetProcs();
+    dawnProcSetPerThreadProcs(&procs);
+  }
+
   instance_ = wgpu::Instance(webgpu()->GetAPIChannel()->GetWGPUInstance());
 
   wgpu::RequestAdapterOptions ra_options = {};

@@ -321,7 +321,10 @@ target(link_target_type, "gles2_sources") {
   }
 
   if (use_dawn) {
-    deps += [ "//gpu/webgpu:common" ]
+    deps += [
+      "//gpu/webgpu:common",
+      "//third_party/dawn/src/dawn:cpp",
+    ]
     sources += [
       "dawn_caching_interface.cc",
       "dawn_caching_interface.h",
@@ -516,10 +519,7 @@ target(link_target_type, "gles2_sources") {
       "shared_image/skia_graphite_dawn_image_representation.cc",
       "shared_image/skia_graphite_dawn_image_representation.h",
     ]
-    deps += [
-      "//third_party/dawn/src/dawn:cpp",
-      "//third_party/dawn/src/dawn:proc",
-    ]
+    deps += [ "//third_party/dawn/src/dawn:cpp" ]
   }
 
   if (is_android) {

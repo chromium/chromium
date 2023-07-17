@@ -16,6 +16,7 @@ include_rules = [
   "+services/network/public/mojom",
   "+services/service_manager/public/cpp",
   "+services/viz/privileged/mojom",
+  "+third_party/dawn/include",
 ]
 
 specific_include_rules = {

@@ -38,6 +38,11 @@
 #include "components/viz/common/gpu/metal_context_provider.h"
 #endif
 
+#if BUILDFLAG(SKIA_USE_DAWN) || BUILDFLAG(USE_DAWN)
+#include "third_party/dawn/include/dawn/dawn_proc.h"          // nogncheck
+#include "third_party/dawn/include/dawn/native/DawnNative.h"  // nogncheck
+#endif
+
 namespace {
 
 struct ReadPixelsContext {
@@ -140,6 +145,9 @@ GrContextType SharedImageTestBase::gr_context_type() {
 
 void SharedImageTestBase::InitializeContext(GrContextType context_type) {
   gpu_preferences_.gr_context_type = context_type;
+#if BUILDFLAG(SKIA_USE_DAWN) || BUILDFLAG(USE_DAWN)
+  dawnProcSetProcs(&dawn::native::GetProcs());
+#endif
 
   if (context_type == GrContextType::kGraphiteDawn) {
 #if BUILDFLAG(SKIA_USE_DAWN)

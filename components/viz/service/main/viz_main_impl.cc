@@ -29,6 +29,11 @@
 #include "services/metrics/public/cpp/mojo_ukm_recorder.h"
 #include "skia/ext/legacy_display_globals.h"
 
+#if BUILDFLAG(USE_DAWN) || BUILDFLAG(SKIA_USE_DAWN)
+#include "third_party/dawn/include/dawn/dawn_proc.h"          // nogncheck
+#include "third_party/dawn/include/dawn/native/DawnNative.h"  // nogncheck
+#endif
+
 namespace {
 
 std::unique_ptr<base::Thread> CreateAndStartIOThread() {
@@ -96,6 +101,11 @@ VizMainImpl::VizMainImpl(Delegate* delegate,
     ukm::DelegatingUkmRecorder::Get()->AddDelegate(
         dependencies_.ukm_recorder->GetWeakPtr());
   }
+
+#if BUILDFLAG(USE_DAWN) || BUILDFLAG(SKIA_USE_DAWN)
+  // Setup the global procs table for GPU process.
+  dawnProcSetProcs(&dawn::native::GetProcs());
+#endif  // BUILDFLAG(USE_DAWN) || BUILDFLAG(SKIA_USE_DAWN)
 
   gpu_service_ = std::make_unique<GpuServiceImpl>(
       gpu_init_->gpu_info(), gpu_init_->TakeWatchdogThread(), io_task_runner(),

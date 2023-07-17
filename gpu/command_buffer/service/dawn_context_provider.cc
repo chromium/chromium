@@ -19,7 +19,6 @@
 #include "gpu/command_buffer/service/dawn_platform.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "gpu/config/gpu_preferences.h"
-#include "third_party/dawn/include/dawn/dawn_proc.h"
 #include "third_party/skia/include/gpu/graphite/Context.h"
 #include "third_party/skia/include/gpu/graphite/dawn/DawnBackendContext.h"
 #include "third_party/skia/include/gpu/graphite/dawn/DawnUtils.h"
@@ -116,9 +115,6 @@ bool DawnContextProvider::Initialize(CacheBlobCallback callback) {
 
   instance_ = webgpu::DawnInstance::Create(platform_.get(), preferences);
   instance_->DiscoverDefaultPhysicalDevices();
-
-  DawnProcTable backend_procs = dawn::native::GetProcs();
-  dawnProcSetProcs(&backend_procs);
 
   // If a new toggle is added here, ForceDawnTogglesForSkia() which collects
   // info for about:gpu should be updated as well.
