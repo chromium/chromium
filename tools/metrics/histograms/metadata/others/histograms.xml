@@ -817,21 +817,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Ads.InterestGroup.Net.DeprecatedBiddingSignalsFormatReceived"
-    enum="Boolean" expires_after="2024-06-20">
-  <owner>mmenke@chromium.org</owner>
-  <owner>morlovich@chromium.org</owner>
-  <owner>privacy-sandbox-dev@chromium.org</owner>
-  <summary>
-    True if the trustedBiddingSignals fetched for use in a FLEDGE auction was
-    received in the deprecated format. Recorded whenever there's a network fetch
-    for trustedBiddingSignals, and they're successfully decoded.
-
-    See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
-    version of the FLEDGE explainer.
-  </summary>
-</histogram>
-
 <histogram name="Ads.InterestGroup.Net.DownloadTime.{Type}" units="ms"
     expires_after="2024-06-20">
   <owner>pauljensen@chromium.org</owner>
@@ -875,6 +860,21 @@ chromium-metrics-reviews@google.com.
     version of the FLEDGE explainer.
   </summary>
   <token key="Type" variants="InterestGroupRequestType"/>
+</histogram>
+
+<histogram name="Ads.InterestGroup.ReceivedDeprecatedBiddingSignalsFormat"
+    enum="Boolean" expires_after="2024-06-20">
+  <owner>mmenke@chromium.org</owner>
+  <owner>morlovich@chromium.org</owner>
+  <owner>privacy-sandbox-dev@chromium.org</owner>
+  <summary>
+    True if the trustedBiddingSignals fetched for use in a FLEDGE auction was
+    received in the deprecated format. Recorded whenever there's a network fetch
+    for trustedBiddingSignals, and they're successfully decoded.
+
+    See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
+    version of the FLEDGE explainer.
+  </summary>
 </histogram>
 
 <histogram name="Ads.Media.Duration" units="ms" expires_after="2022-10-30">
