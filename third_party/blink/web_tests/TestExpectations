@@ -2770,7 +2770,6 @@ crbug.com/626703 external/wpt/service-workers/service-worker/navigation-timing-e
 crbug.com/626703 virtual/plz-dedicated-worker/external/wpt/service-workers/service-worker/navigation-timing-extended.https.html [ Failure ]
 crbug.com/626703 external/wpt/preload/preload-resource-match.https.html [ Failure ]
 crbug.com/1359555 external/wpt/speculation-rules/prerender/workers.html [ Failure Timeout ]
-crbug.com/626703 [ Win ] virtual/partitioned-cookies/http/tests/inspector-protocol/network/disabled-cache-navigation.js [ Failure ]
 
 # Note: This test only crashes on CQ builders, not `*-blink-rel` ones, because
 # it fails a DCHECK:
@@ -4936,7 +4935,6 @@ crbug.com/626703 http/tests/security/cross-frame-access-put.html [ Failure Pass 
 crbug.com/1215390 [ Linux ] external/wpt/pointerevents/pointerevent_pointerId_scope.html [ Failure Pass ]
 
 # Sheriff 2021-08-12
-crbug.com/1237640 http/tests/inspector-protocol/network/disabled-cache-navigation.js [ Pass Timeout ]
 crbug.com/1239175 http/tests/navigation/same-and-different-back.html [ Failure Pass ]
 crbug.com/1239164 http/tests/inspector-protocol/network/navigate-iframe-in2in.js [ Failure Pass ]
 
