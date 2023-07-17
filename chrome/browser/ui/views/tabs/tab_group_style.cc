@@ -38,6 +38,7 @@ constexpr int kChromeRefreshEmptyChipSize = 20;
 constexpr int kChromeRefreshSyncIconWidth = 16;
 constexpr int kChromeRefreshCornerRadius = 6;
 constexpr int kTabGroupRefreshBottomMargin = 10;
+constexpr int kTabGroupOverlapAdjustment = 2;
 
 }  // namespace
 
@@ -78,18 +79,21 @@ SkPath TabGroupStyle::GetUnderlinePath(const gfx::Rect local_bounds) const {
 
 gfx::Rect TabGroupStyle::GetEmptyTitleChipBounds(
     const TabGroupHeader* const header) const {
-  const int y = GetTitleChipTopOffset(absl::nullopt);
-  return gfx::Rect(TabGroupUnderline::GetStrokeInset(), y, GetEmptyChipSize(),
+  return gfx::Rect(GetTitleChipOffset(absl::nullopt).x(),
+                   GetTitleChipOffset(absl::nullopt).y(), GetEmptyChipSize(),
                    GetEmptyChipSize());
 }
 
-int TabGroupStyle::GetTitleChipTopOffset(
+gfx::Point TabGroupStyle::GetTitleChipOffset(
     absl::optional<int> text_height) const {
   if (text_height.has_value()) {
-    return ((GetLayoutConstant(TAB_HEIGHT) - text_height.value()) / 2 -
-            GetInsetsForHeaderChip().top());
+    return gfx::Point(
+        TabGroupUnderline::GetStrokeInset(),
+        ((GetLayoutConstant(TAB_HEIGHT) - text_height.value()) / 2 -
+         GetInsetsForHeaderChip().top()));
   } else {
-    return (GetLayoutConstant(TAB_HEIGHT) - GetEmptyChipSize()) / 2;
+    return gfx::Point(TabGroupUnderline::GetStrokeInset(),
+                      (GetLayoutConstant(TAB_HEIGHT) - GetEmptyChipSize()) / 2);
   }
 }
 
@@ -129,6 +133,10 @@ float TabGroupStyle::GetSyncIconWidth() const {
 int TabGroupStyle::GetChipCornerRadius() const {
   return TabStyle::Get()->GetBottomCornerRadius() -
          TabGroupUnderline::kStrokeThickness;
+}
+
+int TabGroupStyle::GetTabGroupViewOverlap() const {
+  return TabStyle::Get()->GetTabOverlap();
 }
 
 ChromeRefresh2023TabGroupStyle::ChromeRefresh2023TabGroupStyle(
@@ -173,16 +181,17 @@ SkPath ChromeRefresh2023TabGroupStyle::GetUnderlinePath(
 
 gfx::Rect ChromeRefresh2023TabGroupStyle::GetEmptyTitleChipBounds(
     const TabGroupHeader* const header) const {
-  const int y = GetTitleChipTopOffset(absl::nullopt);
-  return gfx::Rect(TabGroupUnderline::GetStrokeInset(), y, GetEmptyChipSize(),
+  return gfx::Rect(GetTitleChipOffset(absl::nullopt).x(),
+                   GetTitleChipOffset(absl::nullopt).y(), GetEmptyChipSize(),
                    GetEmptyChipSize());
 }
 
-int ChromeRefresh2023TabGroupStyle::GetTitleChipTopOffset(
+gfx::Point ChromeRefresh2023TabGroupStyle::GetTitleChipOffset(
     absl::optional<int> text_height) const {
-  return GetLayoutConstant(TAB_HEIGHT) -
-         GetLayoutConstant(TABSTRIP_TOOLBAR_OVERLAP) -
-         kTabGroupRefreshBottomMargin - GetEmptyChipSize();
+  return gfx::Point(TabStyle::Get()->GetTabOverlap() - 2,
+                    GetLayoutConstant(TAB_HEIGHT) -
+                        GetLayoutConstant(TABSTRIP_TOOLBAR_OVERLAP) -
+                        kTabGroupRefreshBottomMargin - GetEmptyChipSize());
 }
 
 gfx::Insets ChromeRefresh2023TabGroupStyle::GetInsetsForHeaderChip() const {
@@ -220,4 +229,15 @@ float ChromeRefresh2023TabGroupStyle::GetSyncIconWidth() const {
 
 int ChromeRefresh2023TabGroupStyle::GetChipCornerRadius() const {
   return kChromeRefreshCornerRadius;
+}
+
+int ChromeRefresh2023TabGroupStyle::GetTabGroupViewOverlap() const {
+  // For refresh the tab has an overlap value is 18. Inorder to have a margin of
+  // 10 from the neighbor tabs this is required.
+  return TabStyle::Get()->GetTabOverlap() - GetTabGroupOverlapAdjustment();
+}
+
+// static
+int ChromeRefresh2023TabGroupStyle::GetTabGroupOverlapAdjustment() {
+  return kTabGroupOverlapAdjustment;
 }
