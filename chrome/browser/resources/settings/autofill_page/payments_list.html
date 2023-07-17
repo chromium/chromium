@@ -12,19 +12,6 @@
       }
     </style>
     <div role="table">
-      <div role="rowgroup">
-        <div id="creditCardsHeading" class="list-item column-header"
-            hidden$="[[shouldHideExpirationAndTypeTitles_(
-                removeCardExpirationAndTypeTitlesEnabled_,
-                    creditCards, enableUpiIds_, upiIds)]]" role="row">
-          <div class="type-column" role="columnheader">
-            $i18n{creditCardType}
-          </div>
-          <div class="expiration-column" role="columnheader">
-            $i18n{creditCardExpiration}
-          </div>
-        </div>
-      </div>
       <div class="vertical-list list-with-header" role="rowgroup">
         <template is="dom-repeat" items="[[creditCards]]">
           <settings-credit-card-list-entry id="[[getCreditCardId_(index)]]"

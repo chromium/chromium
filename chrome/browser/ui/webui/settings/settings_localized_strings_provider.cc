@@ -1035,7 +1035,6 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
     {"editAddressRequiredFieldsError",
      IDS_AUTOFILL_EDIT_ADDRESS_REQUIRED_FIELDS_FORM_ERROR},
     {"clearCreditCard", IDS_SETTINGS_CREDIT_CARD_CLEAR},
-    {"creditCardType", IDS_SETTINGS_AUTOFILL_CREDIT_CARD_TYPE_COLUMN_LABEL},
     {"creditCardExpiration", IDS_SETTINGS_CREDIT_CARD_EXPIRATION_DATE},
     {"creditCardName", IDS_SETTINGS_NAME_ON_CREDIT_CARD},
     {"creditCardNickname", IDS_SETTINGS_CREDIT_CARD_NICKNAME},
@@ -1265,7 +1264,6 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
     {"addVirtualCard", IDS_AUTOFILL_ADD_VIRTUAL_CARD},
     {"removeVirtualCard", IDS_AUTOFILL_REMOVE_VIRTUAL_CARD},
     {"editServerCard", IDS_AUTOFILL_EDIT_SERVER_CREDIT_CARD},
-    {"virtualCardEnabled", IDS_AUTOFILL_VIRTUAL_CARD_ENABLED_LABEL},
     {"virtualCardTurnedOn", IDS_AUTOFILL_VIRTUAL_CARD_TURNED_ON_LABEL},
     {"unenrollVirtualCardDialogTitle",
      IDS_AUTOFILL_VIRTUAL_CARD_UNENROLL_DIALOG_TITLE},
@@ -1393,11 +1391,6 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
       "undoDescription",
       l10n_util::GetStringFUTF16(IDS_UNDO_DESCRIPTION,
                                  undo_accelerator.GetShortcutText()));
-
-  html_source->AddBoolean(
-      "removeCardExpirationAndTypeTitles",
-      base::FeatureList::IsEnabled(
-          autofill::features::kAutofillRemoveCardExpirationAndTypeTitles));
 
   html_source->AddBoolean("showUpiIdSettings",
                           base::FeatureList::IsEnabled(

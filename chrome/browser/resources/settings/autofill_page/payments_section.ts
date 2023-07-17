@@ -160,18 +160,6 @@ export class SettingsPaymentsSectionElement extends
       },
 
       /**
-       * Whether the removal of Expiration and Type titles on settings page
-       * is enabled.
-       */
-      removeCardExpirationAndTypeTitlesEnabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('removeCardExpirationAndTypeTitles');
-        },
-        readOnly: true,
-      },
-
-      /**
        * Whether virtual card enroll management on settings page is enabled.
        */
       virtualCardEnrollmentEnabled_: {
@@ -211,7 +199,6 @@ export class SettingsPaymentsSectionElement extends
   private showVirtualCardUnenrollDialog_: boolean;
   private migratableCreditCardsInfo_: string;
   private migrationEnabled_: boolean;
-  private removeCardExpirationAndTypeTitlesEnabled_: boolean;
   private virtualCardEnrollmentEnabled_: boolean;
   private deviceAuthAvailable_: boolean;
   private paymentsManager_: PaymentsManagerProxy =
@@ -274,15 +261,6 @@ export class SettingsPaymentsSectionElement extends
     this.paymentsManager_.removePersonalDataManagerListener(
         this.setPersonalDataListener_!);
     this.setPersonalDataListener_ = null;
-  }
-
-  /**
-   * Calculate the class style for `paymentsList` based on flags.
-   */
-  private computeCssClass_(): string {
-    return this.removeCardExpirationAndTypeTitlesEnabled_ ?
-        'payment-list-margin-start' :
-        '';
   }
 
   /**

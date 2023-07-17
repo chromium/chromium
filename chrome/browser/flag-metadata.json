@@ -678,11 +678,6 @@
     "expiry_milestone": 120
   },
   {
-    "name": "autofill-remove-card-expiration-and-type-titles",
-    "owners": [ "qihuizhao@google.com", "jsaul@google.com" ],
-    "expiry_milestone": 120
-  },
-  {
     "name": "autofill-show-autocomplete-delete-button",
     "owners": [ "jkeitel@google.com", "autofill-squad-muc@google.com"],
     "expiry_milestone": 124

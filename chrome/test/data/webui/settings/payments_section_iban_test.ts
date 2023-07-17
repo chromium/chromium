@@ -31,7 +31,6 @@ suite('PaymentsSectionIban', function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     loadTimeData.overrideValues({
       migrationEnabled: true,
-      removeCardExpirationAndTypeTitles: true,
       virtualCardEnrollmentEnabled: true,
       showIbansSettings: true,
     });

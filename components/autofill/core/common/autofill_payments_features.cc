@@ -221,12 +221,6 @@ BASE_FEATURE(kAutofillParseVcnCardOnFileStandaloneCvcFields,
              "AutofillParseVcnCardOnFileStandaloneCvcFields",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When enabled, Expiration and Type titles will be removed from Chrome
-// payment settings page.
-BASE_FEATURE(kAutofillRemoveCardExpirationAndTypeTitles,
-             "AutofillRemoveCardExpirationAndTypeTitles_LAUNCHED",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // When enabled, the Save Card infobar supports editing before submitting.
 BASE_FEATURE(kAutofillSaveCardInfobarEditSupport,
              "AutofillSaveCardInfobarEditSupport_LAUNCHED",
