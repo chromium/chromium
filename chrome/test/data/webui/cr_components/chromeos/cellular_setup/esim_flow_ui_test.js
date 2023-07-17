@@ -22,9 +22,7 @@ import {FakeCellularSetupDelegate} from './fake_cellular_setup_delegate.js';
 import {FakeESimManagerRemote} from './fake_esim_manager_remote.js';
 import {MockMetricsPrivate} from './mock_metrics_private.js';
 
-// TODO(michaelrygiel): update this to enabled when subpages are
-// updated to use new mojo api
-const suiteSuffix = 'smdsSupportDisabled';
+const suiteSuffix = 'smdsSupportEnabled';
 
 suite(`CrComponentsEsimFlowUiTest${suiteSuffix}`, function() {
   /** @type {string} */
@@ -114,18 +112,14 @@ suite(`CrComponentsEsimFlowUiTest${suiteSuffix}`, function() {
     eSimPage = document.createElement('esim-flow-ui');
     eSimPage.delegate = new FakeCellularSetupDelegate();
     document.body.appendChild(eSimPage);
-    // TODO(michaelrygiel): update this to true when subpages are updated
-    // to use new mojo api
-    setSmdsSupportEnabled(false);
+    setSmdsSupportEnabled(true);
     flush();
 
     ironPages = eSimPage.$$('iron-pages');
     profileLoadingPage = eSimPage.$$('#profileLoadingPage');
-    // TODO(michaelrygiel): update this to non legacy page when added.
-    profileDiscoveryPage = eSimPage.$$('#profileDiscoveryPageLegacy');
+    profileDiscoveryPage = eSimPage.$$('#profileDiscoveryPage');
     activationCodePage = eSimPage.$$('#activationCodePage');
-    // TODO(michaelrygiel): update this to non legacy page when added.
-    confirmationCodePage = eSimPage.$$('#confirmationCodePageLegacy');
+    confirmationCodePage = eSimPage.$$('#confirmationCodePage');
     finalPage = eSimPage.$$('#finalPage');
 
     // Captures the function that is called every time the interval timer
@@ -252,9 +246,7 @@ suite(`CrComponentsEsimFlowUiTest${suiteSuffix}`, function() {
   }
 
   function assertProfileDiscoveryPage() {
-    // TODO(michaelrygiel): update this to non legacy page when added.
-    assertSelectedPage(
-        ESimPageName.PROFILE_DISCOVERY_LEGACY, profileDiscoveryPage);
+    assertSelectedPage(ESimPageName.PROFILE_DISCOVERY, profileDiscoveryPage);
     assertButtonState(
         /*forwardButtonShouldBeEnabled*/ true,
         /*backButtonState*/ ButtonState.HIDDEN);
@@ -276,9 +268,7 @@ suite(`CrComponentsEsimFlowUiTest${suiteSuffix}`, function() {
       // In the initial state, input should be cleared.
       assertEquals(confirmationCodePage.$$('#confirmationCode').value, '');
     }
-    // TODO(michaelrygiel): update this to non legacy page when added.
-    assertSelectedPage(
-        ESimPageName.CONFIRMATION_CODE_LEGACY, confirmationCodePage);
+    assertSelectedPage(ESimPageName.CONFIRMATION_CODE, confirmationCodePage);
     assertButtonState(forwardButtonShouldBeEnabled, backButtonState);
   }
 
@@ -581,9 +571,8 @@ suite(`CrComponentsEsimFlowUiTest${suiteSuffix}`, function() {
 
             const availableEuiccs =
                 await eSimManagerRemote.getAvailableEuiccs();
-            const profileList =
-                await availableEuiccs.euiccs[0].getProfileList();
-            profileList.profiles[0].setProfileInstallResultForTest(
+            const euicc = availableEuiccs.euiccs[0];
+            euicc.setProfileInstallResultForTest(
                 ProfileInstallResult.kErrorNeedsConfirmationCode);
 
             await selectProfile();
@@ -594,8 +583,7 @@ suite(`CrComponentsEsimFlowUiTest${suiteSuffix}`, function() {
                 /*backButtonState*/ ButtonState.ENABLED);
             assertFocusDefaultButtonEventFired();
 
-            profileList.profiles[0].setProfileInstallResultForTest(
-                ProfileInstallResult.kSuccess);
+            euicc.setProfileInstallResultForTest(ProfileInstallResult.kSuccess);
             await enterConfirmationCode(
                 /*backButtonState*/ ButtonState.ENABLED);
 
@@ -615,9 +603,8 @@ suite(`CrComponentsEsimFlowUiTest${suiteSuffix}`, function() {
 
             const availableEuiccs =
                 await eSimManagerRemote.getAvailableEuiccs();
-            const profileList =
-                await availableEuiccs.euiccs[0].getProfileList();
-            profileList.profiles[0].setProfileInstallResultForTest(
+            const euicc = availableEuiccs.euiccs[0];
+            euicc.setProfileInstallResultForTest(
                 ProfileInstallResult.kErrorNeedsConfirmationCode);
 
             await selectProfile();
