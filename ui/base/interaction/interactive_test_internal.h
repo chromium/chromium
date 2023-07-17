@@ -174,10 +174,10 @@ using ElementSpecifier = absl::variant<ElementIdentifier, base::StringPiece>;
 //
 // Steps which use this method will fail if it returns false, printing out the
 // details of the step in the usual way.
-template <typename T>
+template <typename T, typename V = std::remove_cvref_t<T>>
 bool MatchAndExplain(const base::StringPiece& test_name,
-                     testing::Matcher<T>& matcher,
-                     T&& value) {
+                     testing::Matcher<V>& matcher,
+                     const T& value) {
   if (matcher.Matches(value))
     return true;
   std::ostringstream oss;

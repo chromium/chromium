@@ -310,10 +310,17 @@ class COMPONENT_EXPORT(UI_BASE) SafeElementReference {
 #define DEFINE_CLASS_CUSTOM_ELEMENT_EVENT_TYPE(ClassName, EventName) \
   DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ClassName, EventName)
 
+// This produces a unique, mangled name that can safely be used in macros called
+// by tests without having to worry about global name collisions. For production
+// code, use DECLARE/DEFINE above instead. You should pass __FILE__ and __LINE__
+// for `File`, and `Line`, respectively.
+#define DEFINE_MACRO_CUSTOM_ELEMENT_EVENT_TYPE(File, Line, EventName) \
+  DEFINE_MACRO_ELEMENT_IDENTIFIER_VALUE(File, Line, EventName)
+
 // This produces a unique, mangled name that can safely be used in tests
 // without having to worry about global name collisions. For production code,
 // use DECLARE/DEFINE above instead.
 #define DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(EventName) \
-  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(EventName)
+  DEFINE_MACRO_ELEMENT_IDENTIFIER_VALUE(__FILE__, __LINE__, EventName)
 
 #endif  // UI_BASE_INTERACTION_ELEMENT_TRACKER_H_

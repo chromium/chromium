@@ -99,6 +99,8 @@ Verbs fall into a number of different categories:
     - `WaitForHide()`
     - `WaitForActivated()`
     - `WaitForEvent()`
+    - `WaitForViewProperty()` [Views]
+    - `WaitForViewPropertyCallback()` [Views]
 - **After** verbs allow you to take some action when a given event takes place
   or condition becomes true. The action can be a full
   `InteractionSequence::StepStartCallback` or it can omit any number of leading
