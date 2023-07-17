@@ -3472,6 +3472,13 @@ Diese Richtlinie hat keine Auswirkungen darauf, ob die lokalen Nutzerdaten auf d
 <translation id="402759845255257575">Ausführung von JavaScript für keine Website zulassen</translation>
 <translation id="4027608872760987929">Standardsuchmaschine aktivieren</translation>
 <translation id="4030152268425532846">Umgehung der automatischen Anmeldung deaktivieren</translation>
+<translation id="4039065751874009354">Diese Richtlinie bietet vorübergehend die Möglichkeit, zwei zusammenhängende Korrekturen für das Verhalten des Bestätigungsdialogfelds, das vom „beforeunload“-Ereignis angezeigt wird, zu deaktivieren.
+Wenn die Richtlinie aktiviert ist, wird das neue und korrekte Verhalten verwendet. Ist sie deaktiviert, kommt das alte Verhalten zum Einsatz. Wenn die Richtlinie nicht konfiguriert ist, wird das Standardverhalten verwendet.
+Diese Richtlinie ist eine vorübergehende Behelfslösung und wird bald entfernt.
+
+Neues und korrektes Verhalten: Wenn in „beforeunload“ ein Aufruf von „event.preventDefault()“ erfolgt, wird das Bestätigungsdialogfeld ausgelöst. Wird „event.returnValue“ auf den leeren String festgelegt, erfolgt keine Auslösung des Bestätigungsdialogfelds.
+
+Altes Verhalten: Wenn in „beforeunload“ ein Aufruf von „event.preventDefault()“ erfolgt, wird das Bestätigungsdialogfeld nicht ausgelöst. Wird „event.returnValue“ auf den leeren String festgelegt, erfolgt eine Auslösung des Bestätigungsdialogfelds.</translation>
 <translation id="4043796890723386527">Diese Einstellung hindert Nutzer daran, sekundäre Profile zu erstellen oder zu verwenden und den Gastmodus im <ph name="LACROS_NAME" />-Browser zu verwenden</translation>
 <translation id="4051723201852944592">Fenster-Okklusion aktivieren</translation>
 <translation id="4052529125939620019">Komponentenerweiterung „CryptoToken“ beim Start laden</translation>
@@ -4813,6 +4820,7 @@ Hinweis: Diese Richtlinie gilt nicht für HSTS-Umstellungen.</translation>
       Genaue Informationen zu gültigen <ph name="URL_LABEL" />-Mustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.  Diese Richtlinie gleicht nur anhand des Ursprungs ab, daher werden alle Pfade des URL-Musters ignoriert.</translation>
 <translation id="5318185076587284965">Verwendung von Relayservern durch den Host für den Remotezugriff gestatten</translation>
 <translation id="5323200200131319468">Gesprochenes Feedback auf dem Anmeldebildschirm aktivieren</translation>
+<translation id="5323271643727095577">Dialogfeld zum Abbrechen nicht anzeigen, wenn „event.preventDefault()“ für ein „beforeunload“-Ereignis aufgerufen wird. Dialogfeld zum Abbrechen anzeigen, wenn „beforeunload event.returnValue“ der leere String für ein „beforeunload“-Ereignis ist.</translation>
 <translation id="5323355956693037267">Bildschirmtastatur auf dem Anmeldebildschirm aktivieren</translation>
 <translation id="532848608876725157">DoH-Modus mit unsicherem Fallback-Verhalten aktivieren</translation>
 <translation id="5328965694451556034">Anmeldung/Abmeldung melden</translation>
@@ -5503,6 +5511,7 @@ Wenn der Wert für <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> bei keinem Eintr
 <translation id="5979376378555121803">Gehostete App</translation>
 <translation id="5984099692320899605">Keine NTLM-Authentifizierung verwenden</translation>
 <translation id="5984237109586500246">Webinhalte akzeptieren, die als Signed HTTP Exchanges implementiert sind</translation>
+<translation id="5991707691018985057">Dialogfeld zum Abbrechen anzeigen, wenn „event.preventDefault()“ für ein „beforeunload“-Ereignis aufgerufen wird. Dialogfeld zum Abbrechen nicht anzeigen, wenn „event.returnValue“ der leere String für ein „beforeunload“-Ereignis ist.</translation>
 <translation id="5997543603646547632">Standardmäßig 24-Stunden-Uhr verwenden</translation>
 <translation id="5997846976342452720">Angeben, ob Plug-in-Suchfunktion deaktiviert werden soll (eingestellt)</translation>
 <translation id="5998198091336830580">Diese Richtlinie ist Teil der folgenden atomischen Gruppe (nur Richtlinien aus der Quelle mit der höchsten Priorität in der Gruppe werden angewendet):</translation>
@@ -5632,6 +5641,7 @@ HINWEIS: Während der Browser ausgeführt wird, werden Änderungen an dieser Ric
 
       Die Richtlinie kann auf einen der folgenden Werte eingestellt werden: „tls1.2“ oder „tls1.3“. Wenn sie konfiguriert ist, verwendet <ph name="PRODUCT_NAME" /> keine SSL- oder TLS-Versionen, die neuer als die festgelegte Version sind. Ein unbekannter Wert wird ignoriert.</translation>
 <translation id="6123052603197028610">Anfragen an Google-Server dürfen keine Zeitstempel abrufen</translation>
+<translation id="6130360423841559818">Neues Verhalten für das Dialogfeld zum Abbrechen konfigurieren, das durch das „beforeunload“-Ereignis ausgelöst wird</translation>
 <translation id="6131803221304830537">Renderer-Codeintegrität deaktivieren</translation>
 <translation id="6132506775968708399">Drittanbieter-Cookies blockieren</translation>
 <translation id="6133088669883929098">Schlüsselgenerierung für alle Websites zulassen</translation>

@@ -68,6 +68,7 @@
 <translation id="4985291216379576555">Võrguühenduseta, Chromium ei saa värskendusi otsida</translation>
 <translation id="4996471330284142407">Chromium on nüüd lihtsam, turvalisem ja kiirem kui kunagi varem ning aitab teil veelgi rohkem toiminguid teha.</translation>
 <translation id="4999538639245140991">Kuna logite välja kontolt, mida haldab <ph name="SIGNOUT_MANAGED_DOMAIN" />, kustutatakse selles seadmes teie Chromiumi andmed. Google'i kontole jäävad teie andmed alles.</translation>
+<translation id="5042011327527167688">Puudutage valikut „Kuva Google Mapsi abil Chromiumis“.</translation>
 <translation id="5048795749726991615">Selleks et muudes rakendustes hõlpsasti oma salvestatud paroolidele juurde pääseda, kasutage funktsiooni Chromium automaattäite jaoks</translation>
 <translation id="5171868502429358653">Logige Chromiumi sisse</translation>
 <translation id="5224391634244552924">Salvestatud paroole ei ole. Chromium saab teie paroole kontrollida, kui olete need salvestanud.</translation>
@@ -112,6 +113,7 @@
 <translation id="7357211569052832586">Valitud andmed eemaldati Chromiumist ja sünkroonitud seadmetest. Aadressil history.google.com võib teie Google'i kontol olla muus vormis sirvimisajalugu, nagu otsingud ja tegevused muudes Google'i teenustes.</translation>
 <translation id="7395825497086981028">Teie parool salvestatakse konto <ph name="EMAIL" /> paroolihaldurisse.</translation>
 <translation id="7400689562045506105">Kasutage Chromiumit kõikjal</translation>
+<translation id="7523464085759699266">Lülitage sisse valik „Lukusta Chromiumi sulgemisel inkognito vahelehed“.</translation>
 <translation id="7674213385180944843">Avage menüü Seaded &gt; Privaatsus &gt; Kaamera &gt; Chromium ja lülitage kaamera sisse.</translation>
 <translation id="7746854981345936341">Chromiumi nõuanne. Mõned nupud, näiteks Tagasi, Edasi ja Otsing, asuvad nüüd ekraani alaosas.</translation>
 <translation id="7763454117143368771">Kasutage Chromiumi vaikebrauserina, et ohtlike saitide eest kaitstud olla ja oma paroole turvalisena hoida</translation>
@@ -123,6 +125,7 @@
 <translation id="7931842119211730154">Lukusta Chromiumi sulgemisel inkognito vahelehed</translation>
 <translation id="7980860476903281594">Chromium jagab teie asukohateavet saitidega, millele olete loa andnud.</translation>
 <translation id="8013573822802650211">Selleks et näha vahelehti kõikjalt, kus Chromiumi kasutate, logige kõigisse oma seadmetesse sisse</translation>
+<translation id="8071041515667087705">Avage Chromiumi seaded.</translation>
 <translation id="8073677936375100957">Kas kustutada sellest seadmest Chromiumi andmed?</translation>
 <translation id="8235427517854598594">Kas soovite Chromiumi vaikebrauseriks määrata?</translation>
 <translation id="8240981428553046115">Chromium ei saanud värskendusi otsida. Proovige hiljem uuesti.</translation>

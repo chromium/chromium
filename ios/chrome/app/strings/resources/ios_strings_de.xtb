@@ -83,6 +83,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="1400642268715879018">Letzte 4 Wochen</translation>
 <translation id="1404330357948037222">Du bist abgemeldet</translation>
 <translation id="1407135791313364759">Alle öffnen</translation>
+<translation id="1408847409015257906">Tippe auf „Datenschutz und Sicherheit“.</translation>
 <translation id="1430915738399379752">Drucken</translation>
 <translation id="1449835205994625556">Passwort ausblenden</translation>
 <translation id="1450170672351507823">Standardschutz ist aktiviert. Der erweiterte Schutz bietet noch mehr Sicherheit.</translation>
@@ -102,6 +103,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="1545749641540134597">QR-Code scannen</translation>
 <translation id="1552525382687785070">Die Synchronisierung wurde von deinem Administrator deaktiviert</translation>
 <translation id="1554477036522844996">Neues Fenster</translation>
+<translation id="1563071802032385236">Aktiviere „Nachfragen, ob Links aus anderen Apps im Inkognitomodus geöffnet werden sollen“.</translation>
 <translation id="1565371473877914088">Neuer Inkognitotab</translation>
 <translation id="1580715474678097352">Schutz vor gefährlichen Websites</translation>
 <translation id="1580783302095112590">E-Mail gesendet</translation>
@@ -112,6 +114,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="1608337082864370066">Nach kopiertem Bild suchen</translation>
 <translation id="1612730193129642006">Tab-Raster anzeigen</translation>
 <translation id="1620510694547887537">Kamera</translation>
+<translation id="1622717322707146952">Wähle „Zu Google Kalender hinzufügen“ oder „Zu Apple Kalender hinzufügen“ aus.</translation>
 <translation id="1626771852476987600"><ph name="COUNT" /> wiederverwendete Passwörter</translation>
 <translation id="1641113438599504367">Safe Browsing</translation>
 <translation id="1644574205037202324">Verlauf</translation>
@@ -157,6 +160,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="1941314575388338491">Tippe zum Kopieren hier doppelt.</translation>
 <translation id="1943478190258551035">Menü → Einstellungen</translation>
 <translation id="1952172573699511566">Sofern dies möglich ist, wird Text auf Websites in deiner bevorzugten Sprache angezeigt.</translation>
+<translation id="1959441496380398824">Halte ein Datum gedrückt.</translation>
 <translation id="1959679933317802873">Inhalte werden abgerufen</translation>
 <translation id="1965935827552890526">Du kannst zu deinem offenen Chrome-Fenster zurückkehren, um dein vorherige Aktion abzuschließen.</translation>
 <translation id="1967461193809857427">{count,plural, =1{Möchtest du den Tab auf deinem Android-Gerät aufrufen?}other{Möchtest du die Tabs auf deinem Android-Gerät aufrufen?}}</translation>
@@ -230,6 +234,7 @@ Websites können Cookies nicht verwenden, um deine Browseraktivitäten auf ander
 <translation id="2434405374328098816">Du hast für „<ph name="USERNAME" />“ schon ein Passwort bei <ph name="WEBSITE" /> gespeichert</translation>
 <translation id="2435457462613246316">Passwort anzeigen</translation>
 <translation id="2451654228769116489">Tab anpinnen</translation>
+<translation id="2459155039684421202">Gib in die Adressleiste eine Aufgabe wie „Meinen Verlauf löschen“ oder „Passwörter bearbeiten“ ein.</translation>
 <translation id="2461070143328828326">Passworteinstellungen</translation>
 <translation id="2469960372084740698">Safe Browsing deaktivieren?</translation>
 <translation id="2473876017985765807">Du hast bereits ein Passwort für <ph name="WEBSITE" /> gespeichert</translation>
@@ -366,6 +371,7 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="3224641773458703735">Um Passwörter zu exportieren, musst du zuerst einen Passcode auf deinem Gerät einrichten.</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3235063766008841141">Auf einer verdächtigen Website eingegeben und in einer Datenpanne gefunden</translation>
+<translation id="3235242129752692527">Bearbeite die Termindetails und tippe auf „Speichern“.</translation>
 <translation id="3240426699337459095">Link wurde kopiert.</translation>
 <translation id="3244271242291266297">MM</translation>
 <translation id="3245744387817103524">Deine Änderung konnte nicht gespeichert werden.</translation>
@@ -535,6 +541,7 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="4375040482473363939">QR-Code-Suche</translation>
 <translation id="4378154925671717803">Telefon</translation>
 <translation id="4389019817280890563">Zum Ändern der Sprache hier tippen.</translation>
+<translation id="4405320213589929829">Du kannst Adressen auf Webseiten verwenden, um lokale Informationen und Wegbeschreibungen zu erhalten.</translation>
 <translation id="4420409367264901497">Lesezeichen bearbeiten</translation>
 <translation id="4442550905108052454">Öffne die <ph name="BEGIN_BOLD" />Einstellungen<ph name="END_BOLD" /></translation>
 <translation id="4454246407045105932">Sprache hinzufügen</translation>
@@ -668,6 +675,7 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="5209674813563615506">Neuen Tab öffnen</translation>
 <translation id="5211488077761630279">Zulassen, dass „<ph name="SITE_NAME" />“ <ph name="PERMISSION" /> verwendet?</translation>
 <translation id="5219295696240154694">Dabei helfen, das Web für alle sicherer zu machen</translation>
+<translation id="5220945116117011963">Kalendertermine anhand von Datumsangaben erstellen</translation>
 <translation id="5221339005270097309">Passwörter werden geprüft…</translation>
 <translation id="5226568866393490213">Warnung schließen</translation>
 <translation id="5228579091201413441">Synchronisierung aktivieren</translation>
@@ -910,6 +918,7 @@ Es empfiehlt sich aber, für jede Website ein eigenes Passwort zu verwenden.</tr
 <translation id="6540120577248033958">Ruf eine Seite auf und klicke im Chrome-Menü auf „Folgen“</translation>
 <translation id="6550675742724504774">Optionen</translation>
 <translation id="6561262006871132942">Heranzoomen</translation>
+<translation id="6579867704846662339">Du kannst eingehende URLs aus anderen Apps inkognito öffnen.</translation>
 <translation id="6583087784430677195">Öffne zum Deaktivieren die <ph name="BEGIN_LINK" />Einstellungen<ph name="END_LINK" /> und gehe zu „Passwörter automatisch ausfüllen“.</translation>
 <translation id="6585618849026997638">Du kannst Lesezeichen setzen, damit du zu Seiten zurückfindest, die für dich interessant sind</translation>
 <translation id="6596481460663245319">Google-Suche anhand des Bildes</translation>
@@ -938,6 +947,7 @@ Wenn der Inkognitomodus aktiviert ist, können Websites keine Cookies verwenden,
 <translation id="6674571176963658787">Gib deine Passphrase ein, um die Synchronisierung zu starten</translation>
 <translation id="667999046851023355">Dokument</translation>
 <translation id="6684906340059221832">Preise beobachten</translation>
+<translation id="6685259053455152195">Verknüpfungen zum schnellen Anpassen der Einstellungen oder Zugreifen auf Funktionen über die Adressleiste.</translation>
 <translation id="6710079714193676716">Von deiner Organisation verwaltet. Einige Funktionen sind möglicherweise nicht verfügbar. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="672735642903863329">Lesezeichen, Passwörter und andere Daten auf allen deinen Geräten aufrufen.</translation>
@@ -949,6 +959,7 @@ Wenn der Inkognitomodus aktiviert ist, können Websites keine Cookies verwenden,
 <translation id="6762812039470893796">Auswahl für alle aufheben</translation>
 <translation id="6780034285637185932">Postleitzahl</translation>
 <translation id="6781260999953472352">Synchronisierung aktivieren?</translation>
+<translation id="6781405765516175232">Tippe für Routenoptionen auf „Route berechnen“.</translation>
 <translation id="6785453220513215166">Absturzbericht wird gesendet…</translation>
 <translation id="6790502149545262384">Bald wirst du beim Öffnen eines neuen Tabs „<ph name="CHANNEL_NAME" />“-Artikel sehen.</translation>
 <translation id="6797885426782475225">Sprachsuche</translation>
@@ -1002,6 +1013,7 @@ Wenn der Inkognitomodus aktiviert ist, können Websites keine Cookies verwenden,
 <translation id="7108762695052995889">Zur Website</translation>
 <translation id="7133798577887235672">Voller Name</translation>
 <translation id="7136892417564438900">Kamera ist nicht verfügbar</translation>
+<translation id="7154343200458623869">Schließe die Aufgabe ab.</translation>
 <translation id="7161230316646448869">Lesezeichen, Verlauf und mehr auf allen Geräten synchronisieren</translation>
 <translation id="7162168282402939716">Inkognitotabs mit <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> entsperren</translation>
 <translation id="7172852049901402487">Schütze deine Passwörter vor Sicherheitsproblemen</translation>
@@ -1074,6 +1086,7 @@ Wenn der Inkognitomodus aktiviert ist, können Websites keine Cookies verwenden,
 <translation id="7671141431838911305">Installieren</translation>
 <translation id="7679915578945954324">Webadressen kopiert</translation>
 <translation id="7687508192620387263">Kalenderdatei verfügbar</translation>
+<translation id="769104993356536261">Chrome Aktionen unter iOS verwenden</translation>
 <translation id="7701040980221191251">Keine</translation>
 <translation id="7711440461521638739">Du verwendest keine Passwörter mehrfach</translation>
 <translation id="7719038820139380048">Melde dich an, um Inhalte zu erhalten, die deinen Interessen entsprechen.</translation>
@@ -1215,6 +1228,7 @@ Deine Daten wurden am <ph name="TIME" /> mit deiner Passphrase verschlüsselt. G
 <translation id="850600235656508448">Im Inkognitomodus öffnen</translation>
 <translation id="8517375800490286174">Open Source-Lizenzen</translation>
 <translation id="8524799873541103884"><ph name="INCOGNITO" />-Tabs <ph name="FIRST_VISIBLE_TAB" /> bis <ph name="LAST_VISIBLE_TAB" /> von <ph name="NUMBER_OF_OPEN_TABS" /></translation>
+<translation id="8528009254289981965">Links aus anderen Apps inkognito öffnen</translation>
 <translation id="8529767659511976195">Neu</translation>
 <translation id="8532105204136943229">Ablaufjahr</translation>
 <translation id="8533166274275423134">Woanders geöffnet</translation>

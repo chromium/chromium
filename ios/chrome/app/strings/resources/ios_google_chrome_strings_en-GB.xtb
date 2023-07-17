@@ -6,6 +6,7 @@
 <translation id="1352919863522755794">Google Password Manager couldn't check your passwords. Try checking your Internet connection.</translation>
 <translation id="1462727070346936664">Sign in to get the most out of Chrome.</translation>
 <translation id="1479202195792305274">Chrome can check your passwords when you sign in with your Google Account.</translation>
+<translation id="1491435845014430217">Turn on 'Lock Incognito tabs when you close Chrome'.</translation>
 <translation id="1493827051843127077">Set Chrome as default to sync your tabs, passwords and payment info on all your devices</translation>
 <translation id="1504372625950710826">Chrome couldn't check for updates. Try checking your Internet connection.</translation>
 <translation id="1511320244449497906">You are signed in and syncing your data with an account managed by <ph name="DOMAIN" /> where its administrator can now set user policies specific to that account that can change the behaviour of Chrome.</translation>
@@ -80,6 +81,7 @@
 <translation id="5395376160638294582">Make sure that you can always use the Chrome data in your Google Account</translation>
 <translation id="5460571915754665838">4. Select Chrome</translation>
 <translation id="5492504007368565877">Google Password Manager can’t check your passwords.</translation>
+<translation id="5527026824954593399">Tap 'View with Google Maps on Chrome'</translation>
 <translation id="5552137475244467770">Chrome periodically checks your passwords against lists that have been published online. When doing this, your passwords and usernames are encrypted, so they can’t be read by anyone, including Google.</translation>
 <translation id="5639704535586432836">Open Settings &gt; Privacy &gt; Camera &gt; Google Chrome and turn on the camera.</translation>
 <translation id="5642200033778930880">Google Chrome can't use your camera in Split View mode</translation>
@@ -120,6 +122,7 @@
 <translation id="7501046334262221972">To make Chrome your default browser, open Settings. Tap 'Default browser app', and then select Chrome.</translation>
 <translation id="756809126120519699">Cleared Chrome data</translation>
 <translation id="7662994914830945754">To see your tabs from wherever you use Chrome, sign in and turn on sync</translation>
+<translation id="7669869107155339016">Go to Chrome settings</translation>
 <translation id="7693590760643069321">You can now use Chrome any time that you tap links in messages, documents and other apps.</translation>
 <translation id="7698568245838009292">Chrome would like to access the camera</translation>
 <translation id="7754633291442704733">Your organisation <ph name="DOMAIN" /> will have access to your Chrome data, bookmarks, history, passwords and other settings that you store in this account. When you sign out, your data will be cleared from this device.  However, your data will remain stored in your managed Google Account and be available to your organisation. Your organisation can also set user policies specific to that account that can change the behaviour of Chrome.</translation>

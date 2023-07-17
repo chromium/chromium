@@ -201,7 +201,6 @@
 <translation id="1823873187264960516">イーサネット: <ph name="ADDRESS" /></translation>
 <translation id="1824922790784036530">位置情報へのアクセスをオンにする</translation>
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> の固定を解除しました</translation>
-<translation id="183465528887726323">アクセス ポイントを使用するには、モバイルデータに接続してください</translation>
 <translation id="1838895407229022812">夜間モードはオフです。</translation>
 <translation id="1854180393107901205">キャストを停止</translation>
 <translation id="1862380676329487333">更新してログアウト</translation>
@@ -225,7 +224,6 @@
 <translation id="1961239773406905488">カメラ プレビューが非表示になっています</translation>
 <translation id="1961832440516943645"><ph name="DATE" />、<ph name="TIME" /></translation>
 <translation id="1962969542251276847">画面をロック</translation>
-<translation id="1962972976741217487">1 台のデバイスが <ph name="DEVICE_NAME" /> のアクセス ポイントに接続されています</translation>
 <translation id="1967970931040389207">アクセス ポイントをオンにする</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" />（USB）</translation>
 <translation id="1972950159383891558"><ph name="USERNAME" /> さん、こんにちは</translation>
@@ -595,7 +593,6 @@
 <translation id="3621202678540785336">入力</translation>
 <translation id="3621712662352432595">オーディオ設定</translation>
 <translation id="3626281679859535460">輝度</translation>
-<translation id="3629640897379005903">アクセス ポイントの詳細を表示します。アクセス ポイントは無効になっています。</translation>
 <translation id="3630697955794050612">オフ</translation>
 <translation id="3631369015426612114">以下からの通知を許可</translation>
 <translation id="3633097874324966332">デバイスをペア設定するには、Bluetooth 設定を開いてください</translation>
@@ -734,7 +731,6 @@
 <translation id="423685346499232137">現時点では、コンテンツのコピーや貼り付けはできません</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">複数画面モード</translation>
-<translation id="4240756737570479726">無効にしています…</translation>
 <translation id="4242533952199664413">設定を開く</translation>
 <translation id="4247123849143712100">更新してシャットダウン</translation>
 <translation id="4250229828105606438">スクリーンショット</translation>
@@ -927,7 +923,6 @@
 <translation id="5034421018520995080">ページの一番上に移動する</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> が新しいスマートフォンに接続されました</translation>
 <translation id="5035389544768382859">ディスプレイ設定の確定</translation>
-<translation id="5038863510258510803">有効にしています...</translation>
 <translation id="5042305953558921026">概要モード キー</translation>
 <translation id="5043679421800073804">シェルフで最後のアイコンをクリックまたはタップします</translation>
 <translation id="504465286040788597">前の段落</translation>
@@ -983,7 +978,6 @@
 <translation id="5297704307811127955">オフ</translation>
 <translation id="5300589172476337783">表示</translation>
 <translation id="5302048478445481009">言語</translation>
-<translation id="5303783651764314393"><ph name="DEVICECOUNT" /> 台のデバイスが <ph name="DEVICE_NAME" /> のアクセス ポイントに接続されています</translation>
 <translation id="5308380583665731573">接続</translation>
 <translation id="5313326810920013265">Bluetooth 設定</translation>
 <translation id="5314219114274263156">画面を録画しました</translation>
@@ -1319,7 +1313,6 @@
 <translation id="6752912906630585008">デスク <ph name="REMOVED_DESK" /> が削除されデスク <ph name="RECEIVE_DESK" /> に統合されました</translation>
 <translation id="6753390234084146956">タブ</translation>
 <translation id="6757237461819837179">再生中のメディアはありません</translation>
-<translation id="6759628406555734414">アクセス ポイントの詳細を表示します。アクセス ポイントは有効になっています。</translation>
 <translation id="6768043681523654438">ストレージ</translation>
 <translation id="6777216307882431711">接続された USB-C デバイスを充電中</translation>
 <translation id="6781002679438061620">デスク 9</translation>
@@ -1407,7 +1400,6 @@
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7168224885072002358"><ph name="TIMEOUT_SECONDS" /> 秒後に元の解像度に戻ります</translation>
 <translation id="7180611975245234373">更新</translation>
-<translation id="7187711731540696127"><ph name="DEVICE_NAME" /> のアクセス ポイントはオンです。デバイスが接続されていません</translation>
 <translation id="7188494361780961876">メニューは画面左上に移動しました。</translation>
 <translation id="7189412385142492784">金星までの距離は</translation>
 <translation id="7198435252016571249">カメラは右下にスナップされています。システムのサーフェスと競合しています。</translation>
@@ -1581,6 +1573,7 @@
 <translation id="797512352675305461">全画面拡大鏡をオンまたはオフにします</translation>
 <translation id="7977927628060636163">モバイル ネットワークを検索しています...</translation>
 <translation id="7982789257301363584">ネットワーク</translation>
+<translation id="7982878511129296052">オフにしています...</translation>
 <translation id="7984197416080286869">指紋認証の試行回数が上限を超えています</translation>
 <translation id="798779949890829624">この設定は管理者によって管理されています</translation>
 <translation id="799296642788192631">重要なファイルを固定できます。固定するには、該当のファイルにカーソルを合わせるか、ファイルアプリで該当のファイルを右クリックします。</translation>

@@ -83,6 +83,7 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />borra os da
 <translation id="1400642268715879018">As últimas 4 semanas</translation>
 <translation id="1404330357948037222">Non tes a sesión iniciada</translation>
 <translation id="1407135791313364759">Abrir todo</translation>
+<translation id="1408847409015257906">Toca Privacidade e seguranza.</translation>
 <translation id="1430915738399379752">Imprimir</translation>
 <translation id="1449835205994625556">Ocultar contrasinal</translation>
 <translation id="1450170672351507823">A protección estándar está activada. Se queres unha seguranza aínda maior, utiliza a protección mellorada.</translation>
@@ -102,6 +103,7 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />borra os da
 <translation id="1545749641540134597">Escanear código QR</translation>
 <translation id="1552525382687785070">O teu administrador desactivou a sincronización</translation>
 <translation id="1554477036522844996">Nova ventá</translation>
+<translation id="1563071802032385236">Activa Preguntar para abrir ligazóns doutras aplicacións no modo de incógnito.</translation>
 <translation id="1565371473877914088">Nova pestana do modo de incógnito</translation>
 <translation id="1580715474678097352">Protéxete contra sitios web perigosos</translation>
 <translation id="1580783302095112590">Correo enviado.</translation>
@@ -112,6 +114,7 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />borra os da
 <translation id="1608337082864370066">Buscar imaxe copiada</translation>
 <translation id="1612730193129642006">Mostrar grade de pestanas</translation>
 <translation id="1620510694547887537">Cámara</translation>
+<translation id="1622717322707146952">Selecciona Engadir a Google Calendar ou Engadir a Apple Calendar.</translation>
 <translation id="1626771852476987600"><ph name="COUNT" /> contrasinais reutilizados</translation>
 <translation id="1641113438599504367">Navegación segura</translation>
 <translation id="1644574205037202324">Historial</translation>
@@ -157,6 +160,7 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />borra os da
 <translation id="1941314575388338491">Toca dúas veces para copiar.</translation>
 <translation id="1943478190258551035">Menú → Configuración</translation>
 <translation id="1952172573699511566">Os sitios web mostrarán o texto no teu idioma preferido, sempre que sexa posible.</translation>
+<translation id="1959441496380398824">Mantén premida unha data.</translation>
 <translation id="1959679933317802873">Á espera de contido</translation>
 <translation id="1965935827552890526">Acaba o que estabas facendo na outra ventá de Chrome que tiñas aberta.</translation>
 <translation id="1967461193809857427">{count,plural, =1{Queres seguir usando a pestana que deixaches en Android?}other{Queres seguir usando as pestanas que deixaches en Android?}}</translation>
@@ -230,6 +234,7 @@ Tampouco poden utilizalas para ver a túa actividade de navegación en distintos
 <translation id="2434405374328098816">Xa gardaches un contrasinal de <ph name="USERNAME" /> para <ph name="WEBSITE" /></translation>
 <translation id="2435457462613246316">Mostrar contrasinal</translation>
 <translation id="2451654228769116489">Fixar pestana</translation>
+<translation id="2459155039684421202">Na barra de enderezos, indica unha tarefa como, por exemplo, "borrar o meu historial" ou "editar contrasinais".</translation>
 <translation id="2461070143328828326">Configuración dos contrasinais</translation>
 <translation id="2469960372084740698">Queres desactivar a función Navegación segura?</translation>
 <translation id="2473876017985765807">Xa gardaches un contrasinal para <ph name="WEBSITE" /></translation>
@@ -367,6 +372,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="3224641773458703735">Para exportar os contrasinais, en primeiro lugar debes definir un código de desbloqueo no teu dispositivo.</translation>
 <translation id="3227137524299004712">Micrófono</translation>
 <translation id="3235063766008841141">A credencial escribiuse nun sitio enganoso e viuse afectada por unha violación da seguranza dos datos</translation>
+<translation id="3235242129752692527">Edita os detalles do evento e toca Gardar.</translation>
 <translation id="3240426699337459095">Copiouse a ligazón</translation>
 <translation id="3244271242291266297">MM</translation>
 <translation id="3245744387817103524">Non se puido gardar o cambio.</translation>
@@ -537,6 +543,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="4375040482473363939">Busca de códigos QR</translation>
 <translation id="4378154925671717803">Teléfono</translation>
 <translation id="4389019817280890563">Toca para cambiar de idioma.</translation>
+<translation id="4405320213589929829">Usa os enderezos das páxinas web para obter información local e indicacións.</translation>
 <translation id="4420409367264901497">Editar marcador</translation>
 <translation id="4442550905108052454">Abre <ph name="BEGIN_BOLD" />Settings<ph name="END_BOLD" /> (Configuración)</translation>
 <translation id="4454246407045105932">Engadir idioma</translation>
@@ -670,6 +677,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="5209674813563615506">Abrir unha nova pestana</translation>
 <translation id="5211488077761630279">Queres permitir que "<ph name="SITE_NAME" />" utilice a túa <ph name="PERMISSION" />?</translation>
 <translation id="5219295696240154694">Axudar a mellorar a seguranza na Web para todos</translation>
+<translation id="5220945116117011963">Crea eventos do calendario a partir de datas</translation>
 <translation id="5221339005270097309">Comprobando contrasinais…</translation>
 <translation id="5226568866393490213">Ignorar advertencia</translation>
 <translation id="5228579091201413441">Activar sincronización</translation>
@@ -912,6 +920,7 @@ Tenta usar un contrasinal distinto para cada sitio.</translation>
 <translation id="6540120577248033958">Visita un sitio e, no menú de Chrome, fai clic en Seguir</translation>
 <translation id="6550675742724504774">Opcións</translation>
 <translation id="6561262006871132942">Achegar</translation>
+<translation id="6579867704846662339">Podes decidir abrir os URL entrantes desde outras aplicacións no modo de incógnito.</translation>
 <translation id="6583087784430677195">Para desactivar esta función, abre <ph name="BEGIN_LINK" />Settings<ph name="END_LINK" /> (Configuración) e vai a AutoFill Passwords (Autocompletar contrasinais).</translation>
 <translation id="6585618849026997638">Engade un marcador para volver acceder a unha páxina que consideres importante</translation>
 <translation id="6596481460663245319">Buscar imaxe con Google</translation>
@@ -940,6 +949,7 @@ Co modo de incógnito activado, non poden utilizalas para ver a túa actividade 
 <translation id="6674571176963658787">Para comezar a sincronizar datos, escribe a túa frase de acceso</translation>
 <translation id="667999046851023355">Documento</translation>
 <translation id="6684906340059221832">Seguimento de prezos</translation>
+<translation id="6685259053455152195">Atallos para modificar rapidamente a configuración e usar funcións desde a barra de enderezos.</translation>
 <translation id="6710079714193676716">Xestionado pola túa organización. É posible que algunhas funcións non estean dispoñibles. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="672735642903863329">Accede aos teus marcadores, contrasinais e moito máis en todos os dispositivos.</translation>
@@ -951,6 +961,7 @@ Co modo de incógnito activado, non poden utilizalas para ver a túa actividade 
 <translation id="6762812039470893796">Anular toda a selección</translation>
 <translation id="6780034285637185932">Código postal</translation>
 <translation id="6781260999953472352">Queres activar a sincronización?</translation>
+<translation id="6781405765516175232">Para consultar as opcións de ruta, toca Obter indicacións.</translation>
 <translation id="6785453220513215166">Enviando informe de erros...</translation>
 <translation id="6790502149545262384">Dentro de pouco verás as historias de <ph name="CHANNEL_NAME" /> cando abras unha pestana nova.</translation>
 <translation id="6797885426782475225">Busca por voz</translation>
@@ -1004,6 +1015,7 @@ Co modo de incógnito activado, non poden utilizalas para ver a túa actividade 
 <translation id="7108762695052995889">Visitar sitio</translation>
 <translation id="7133798577887235672">Nome completo</translation>
 <translation id="7136892417564438900">A cámara non está dispoñible</translation>
+<translation id="7154343200458623869">Completa a tarefa.</translation>
 <translation id="7161230316646448869">Sincroniza os teus marcadores e o historial, entre outras cousas, en todos os dispositivos</translation>
 <translation id="7162168282402939716">Desbloquear pestanas do modo de incógnito con <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7172852049901402487">Protexe os teus contrasinais fronte a problemas de seguranza</translation>
@@ -1076,6 +1088,7 @@ Co modo de incógnito activado, non poden utilizalas para ver a túa actividade 
 <translation id="7671141431838911305">INSTALAR</translation>
 <translation id="7679915578945954324">Copiáronse os enderezos dos sitios</translation>
 <translation id="7687508192620387263">Hai un ficheiro de calendario dispoñible</translation>
+<translation id="769104993356536261">Usa Accións de Chrome en iOS</translation>
 <translation id="7701040980221191251">Ningunha</translation>
 <translation id="7711440461521638739">Non estás reutilizando ningún contrasinal</translation>
 <translation id="7719038820139380048">Inicia sesión para desfrutar de contido en función dos teus intereses.</translation>
@@ -1217,6 +1230,7 @@ Os teus datos encriptáronse coa túa frase de acceso o <ph name="TIME" />. Intr
 <translation id="850600235656508448">Abrir marcador no modo de incógnito</translation>
 <translation id="8517375800490286174">Licenzas de código aberto</translation>
 <translation id="8524799873541103884">Etiquetas de <ph name="INCOGNITO" /> <ph name="FIRST_VISIBLE_TAB" /> a <ph name="LAST_VISIBLE_TAB" /> de <ph name="NUMBER_OF_OPEN_TABS" /></translation>
+<translation id="8528009254289981965">Abre ligazóns desde outras aplicacións no modo de incógnito</translation>
 <translation id="8529767659511976195">Novidade</translation>
 <translation id="8532105204136943229">Ano caducidade</translation>
 <translation id="8533166274275423134">Opción aberta noutro lugar</translation>

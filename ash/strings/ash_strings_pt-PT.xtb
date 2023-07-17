@@ -201,7 +201,6 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
 <translation id="1824922790784036530">Ativar acesso à localização</translation>
 <translation id="1830308660060964064">O item <ph name="ITEM_TITLE" /> foi solto.</translation>
-<translation id="183465528887726323">Ligue-se aos dados móveis para usar a zona Wi-Fi</translation>
 <translation id="1838895407229022812">A Luz noturna está desativada.</translation>
 <translation id="1854180393107901205">Parar de transmitir</translation>
 <translation id="1862380676329487333">Atualizar e terminar sessão</translation>
@@ -225,7 +224,6 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="1961239773406905488">Pré-visualização da câmara oculta</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="1962969542251276847">Bloqueio de Ecrã</translation>
-<translation id="1962972976741217487">1 dispositivo ligado à zona Wi-Fi do dispositivo <ph name="DEVICE_NAME" /></translation>
 <translation id="1967970931040389207">Ativar zona Wi-Fi</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">Olá, <ph name="USERNAME" /></translation>
@@ -595,7 +593,6 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="3621202678540785336">Entrada</translation>
 <translation id="3621712662352432595">Definições de Áudio</translation>
 <translation id="3626281679859535460">Brilho</translation>
-<translation id="3629640897379005903">Veja os detalhes da zona Wi-Fi. A zona Wi-Fi está a ser desativada.</translation>
 <translation id="3630697955794050612">desativado</translation>
 <translation id="3631369015426612114">Permitir notificações das seguintes fontes:</translation>
 <translation id="3633097874324966332">Abra as definições do Bluetooth para sincronizar o seu dispositivo</translation>
@@ -734,7 +731,6 @@ Ligue o dispositivo à corrente.</translation>
 <translation id="423685346499232137">Não é possível copiar ou colar conteúdo neste momento</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Modo de vista geral</translation>
-<translation id="4240756737570479726">A desativar…</translation>
 <translation id="4242533952199664413">Abrir definições</translation>
 <translation id="4247123849143712100">Atualizar e encerrar</translation>
 <translation id="4250229828105606438">Captura de ecrã</translation>
@@ -927,7 +923,6 @@ Ligue o dispositivo à corrente.</translation>
 <translation id="5034421018520995080">Ir para a parte superior da página</translation>
 <translation id="5035236842988137213">O dispositivo <ph name="DEVICE_NAME" /> estabeleceu ligação a um novo telemóvel.</translation>
 <translation id="5035389544768382859">Confirme a configuração do ecrã</translation>
-<translation id="5038863510258510803">A ativar...</translation>
 <translation id="5042305953558921026">Tecla de Modo de vista geral</translation>
 <translation id="5043679421800073804">Clicar ou tocar no último ícone na prateleira</translation>
 <translation id="504465286040788597">Parágrafo anterior</translation>
@@ -983,7 +978,6 @@ Ligue o dispositivo à corrente.</translation>
 <translation id="5297704307811127955">Desativada</translation>
 <translation id="5300589172476337783">Mostrar</translation>
 <translation id="5302048478445481009">Idioma</translation>
-<translation id="5303783651764314393"><ph name="DEVICECOUNT" /> dispositivos ligados à zona Wi-Fi do dispositivo <ph name="DEVICE_NAME" /></translation>
 <translation id="5308380583665731573">Ligar</translation>
 <translation id="5313326810920013265">Definições de Bluetooth</translation>
 <translation id="5314219114274263156">Gravação de ecrã captada</translation>
@@ -1319,7 +1313,6 @@ Nova instalação</translation>
 <translation id="6752912906630585008">O espaço de trabalho <ph name="REMOVED_DESK" /> foi removido e unido ao espaço de trabalho <ph name="RECEIVE_DESK" /></translation>
 <translation id="6753390234084146956">separadores</translation>
 <translation id="6757237461819837179">Sem multimédia em reprodução</translation>
-<translation id="6759628406555734414">Veja os detalhes da zona Wi-Fi. A zona Wi-Fi está a ser ativada.</translation>
 <translation id="6768043681523654438">armazenamento</translation>
 <translation id="6777216307882431711">Ligar os dispositivos USB-C ligados</translation>
 <translation id="6781002679438061620">Espaço de trabalho 9</translation>
@@ -1407,7 +1400,6 @@ Nova instalação</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7168224885072002358">A reverter para a resolução antiga dentro de <ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="7180611975245234373">Atualizar</translation>
-<translation id="7187711731540696127">A zona Wi-Fi do dispositivo <ph name="DEVICE_NAME" /> está ativada, sem dispositivos ligados</translation>
 <translation id="7188494361780961876">O menu foi movido para o canto superior esquerdo do ecrã.</translation>
 <translation id="7189412385142492784">Qual é a distância para Vénus?</translation>
 <translation id="7198435252016571249">Câmara ajustada ao canto inferior direito. Há um conflito com a superfície do sistema.</translation>
@@ -1580,6 +1572,7 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="797512352675305461">Ativar ou desativar a lupa de ecrã inteiro</translation>
 <translation id="7977927628060636163">A pesquisar redes móveis...</translation>
 <translation id="7982789257301363584">Rede</translation>
+<translation id="7982878511129296052">A desativar…</translation>
 <translation id="7984197416080286869">Demasiadas tentativas de introdução da impressão digital</translation>
 <translation id="798779949890829624">Esta definição é gerida pelo seu administrador</translation>
 <translation id="799296642788192631">Pode afixar ficheiros importantes. Para afixar, passe o cursor do rato sobre um item ou abra o Files e clique com o botão direito do rato num item.</translation>

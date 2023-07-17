@@ -3122,6 +3122,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3571734092741541777">Stel op</translation>
 <translation id="3575121482199441727">Laat vir hierdie werf toe</translation>
 <translation id="3577473026931028326">Iets was fout. Probeer weer.</translation>
+<translation id="3577487026101678864">Lêersinkronisering is aan</translation>
 <translation id="3577745545227000795"><ph name="DEVICE_OS" />-hardewaredata-insameling</translation>
 <translation id="3578874072190212775">Help werwe om bedrog te bekamp en bots van mense te onderskei</translation>
 <translation id="3581605050355435601">Stel IP-adres outomaties op</translation>
@@ -3329,6 +3330,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3748706263662799310">Gee 'n fout aan</translation>
 <translation id="3749724428455457489">Kom meer te wete oor werfvoorgestelde advertensies</translation>
 <translation id="3750562496035670393">Chrome het jou wagwoord op hierdie toestel gestoor, maar jy kan pleks daarvan dit in jou Google-rekening stoor. Alle wagwoorde sal dan ook in jou Google-rekening beskikbaar wees terwyl jy aangemeld is</translation>
+<translation id="3752115502500640407">Deel ’n kopie van jou wagwoord vir <ph name="WEBSITE" /></translation>
 <translation id="3752253558646317685">Laat jou kind hul vinger oplig om die vingerafdruk te stoor</translation>
 <translation id="3753033997400164841">Berg een keer. Gebruik oral</translation>
 <translation id="3753142252662437130">Kleurfilters</translation>
@@ -3626,6 +3628,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3975201861340929143">Verduideliking</translation>
 <translation id="3975565978598857337">Kon nie bediener vir domein kontak nie</translation>
 <translation id="3976108569178263973">Daar is geen drukkers beskikbaar nie.</translation>
+<translation id="3976244126942806443">Werwe koppel gewoonlik aan MIDI-toestelle om musiek te skep en te redigeer</translation>
 <translation id="397703832102027365">Finaliseer tans …</translation>
 <translation id="3977145907578671392">Kenmerke op sommige werwe sal dalk nie in Incognitomodus werk nie</translation>
 <translation id="3977886311744775419">Outomatiese opdaterings laai nie op hierdie netwerktipe af nie, maar jy kan self vir opdaterings kyk.</translation>
@@ -4789,6 +4792,7 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="4979510648199782334">Microsoft 365-opstelling is voltooi</translation>
 <translation id="4980805016576257426">Hierdie uitbreiding bevat wanware.</translation>
 <translation id="4981449534399733132"><ph name="BEGIN_LINK" />Meld aan<ph name="END_LINK" /> om jou blaaierdata van al jou gesinkroniseerde toestelle en jou Google-rekening af uit te vee.</translation>
+<translation id="4983159853748980742">Jou wagwoord is nie gedeel nie. Gaan jou internetverbinding na en maak seker dat jy by Chrome aangemeld is. Probeer dan weer.</translation>
 <translation id="4986706507552097681">Jy kan altyd in instellings kies wat om te sinkroniseer. Google kan Search en ander dienste op grond van jou geskiedenis personaliseer.</translation>
 <translation id="4986728572522335985">Dit sal alle data op die sekuriteitsleutel, insluitend sy PIN, uitvee</translation>
 <translation id="4988526792673242964">Bladsye</translation>
@@ -5448,6 +5452,7 @@ Toestemmings wat jy reeds aan webwerwe en apps gegee het, kan op hierdie rekenin
 <translation id="5555363196923735206">Draai kamera</translation>
 <translation id="5555525474779371165">Kies jou Veiligblaai-beskerming</translation>
 <translation id="5555639311269196631">Skakel warmkol af</translation>
+<translation id="5555760010546505198">Kleuromkering, kleurregstelling, vergrootglas en skerminstellings</translation>
 <translation id="5556459405103347317">Herlaai</translation>
 <translation id="5558129378926964177">Zoem in</translation>
 <translation id="5559311991468302423">Vee adres uit</translation>
@@ -8703,6 +8708,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8301242268274839723">Raak die vingerafdruksensor links onder op jou sleutelbord. Jou vingerafdrukdata word veilig geberg en verlaat nooit jou <ph name="DEVICE_TYPE" /> nie.</translation>
 <translation id="8303616404642252802">{COUNT,plural, =1{Adres}other{# adresse}}</translation>
 <translation id="8304383784961451596">Jy is nie gemagtig om hierdie toestel te gebruik nie. Kontak asseblief die administrateur vir aanmeldtoestemming of meld aan met 'n Google-rekening wat onder Family Link-toesig is.</translation>
+<translation id="8306063480506363120">Verwyder toegang tot Drive</translation>
 <translation id="8306885873692337975">Kry die jongste kenmerke en veiligheidverbeterings.</translation>
 <translation id="8308016398665340540">Jy deel hierdie netwerk tans met ander gebruikers van hierdie toestel</translation>
 <translation id="8308179586020895837">Vra of <ph name="HOST" /> by jou kamera wil ingaan</translation>

@@ -201,7 +201,6 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
 <translation id="1824922790784036530">Skakel liggingtoegang aan</translation>
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> is ontspeld</translation>
-<translation id="183465528887726323">Koppel aan mobiele data om warmkol te gebruik</translation>
 <translation id="1838895407229022812">Aandbeligting is af.</translation>
 <translation id="1854180393107901205">Hou op uitsaai</translation>
 <translation id="1862380676329487333">Dateer op en meld af</translation>
@@ -225,7 +224,6 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="1961239773406905488">Kameravoorskou is versteek</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="1962969542251276847">Sluitskerm</translation>
-<translation id="1962972976741217487">Daar is 1 toestel aan jou <ph name="DEVICE_NAME" />-warmkol gekoppel</translation>
 <translation id="1967970931040389207">Skakel warmkol aan</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">Hallo, <ph name="USERNAME" /></translation>
@@ -595,7 +593,6 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="3621202678540785336">Invoer</translation>
 <translation id="3621712662352432595">Oudio-instellings</translation>
 <translation id="3626281679859535460">Helderheid</translation>
-<translation id="3629640897379005903">Wys warmkolbesonderhede. Warmkol tans gedeaktiveer.</translation>
 <translation id="3630697955794050612">af</translation>
 <translation id="3631369015426612114">Laat kennisgewings van die volgende af toe</translation>
 <translation id="3633097874324966332">Maak Bluetooth-instellings oop om jou toestel saam te bind</translation>
@@ -735,7 +732,6 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="423685346499232137">Kan nie op die oomblik inhoud kopieer of plak nie</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Oorsigmodus</translation>
-<translation id="4240756737570479726">Deaktiveer tans …</translation>
 <translation id="4242533952199664413">Maak instellings oop</translation>
 <translation id="4247123849143712100">Dateer op en skakel af</translation>
 <translation id="4250229828105606438">Skermkiekie</translation>
@@ -928,7 +924,6 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="5034421018520995080">Gaan na bokant van bladsy</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> het aan 'n nuwe foon gekoppel</translation>
 <translation id="5035389544768382859">Bevestig vertoonskermopstelling</translation>
-<translation id="5038863510258510803">Aktiveer tans …</translation>
 <translation id="5042305953558921026">Oorsigmodus-sleutel</translation>
 <translation id="5043679421800073804">Klik of tik op laaste ikoon op rak</translation>
 <translation id="504465286040788597">Vorige paragraaf</translation>
@@ -984,7 +979,6 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="5297704307811127955">Af</translation>
 <translation id="5300589172476337783">Wys</translation>
 <translation id="5302048478445481009">Taal</translation>
-<translation id="5303783651764314393">Daar is <ph name="DEVICECOUNT" /> toestelle aan jou <ph name="DEVICE_NAME" />-warmkol gekoppel</translation>
 <translation id="5308380583665731573">Koppel</translation>
 <translation id="5313326810920013265">Bluetooth-instellings</translation>
 <translation id="5314219114274263156">Skermopname is geneem</translation>
@@ -1320,7 +1314,6 @@ Nuwe installasie</translation>
 <translation id="6752912906630585008">Lessenaar <ph name="REMOVED_DESK" /> is verwyder en met lessenaar <ph name="RECEIVE_DESK" /> saamgevoeg</translation>
 <translation id="6753390234084146956">oortjies</translation>
 <translation id="6757237461819837179">Geen media speel tans nie</translation>
-<translation id="6759628406555734414">Wys warmkolbesonderhede. Aktiveer tans warmkol.</translation>
 <translation id="6768043681523654438">berging</translation>
 <translation id="6777216307882431711">Gee tans krag aan gekoppelde USB-C-toestelle</translation>
 <translation id="6781002679438061620">Lessenaar 9</translation>
@@ -1408,7 +1401,6 @@ Nuwe installasie</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7168224885072002358">Stel oor <ph name="TIMEOUT_SECONDS" /> terug na ou resolusie</translation>
 <translation id="7180611975245234373">Herlaai</translation>
-<translation id="7187711731540696127">Jou <ph name="DEVICE_NAME" />-warmkol is aan; daar is geen toestelle gekoppel nie</translation>
 <translation id="7188494361780961876">Kieslys is na die skerm se hoek links onder geskuif.</translation>
 <translation id="7189412385142492784">Hoe ver is Venus</translation>
 <translation id="7198435252016571249">Kamera is geglip na hoek onder regs. Konflik met stelseloppervlak.</translation>
@@ -1581,6 +1573,7 @@ Druk en hou weer die aan/af-skakelaar op die toestel om dit af te skakel.</trans
 <translation id="797512352675305461">Skakel volskermvergrootglas aan of af</translation>
 <translation id="7977927628060636163">Soek tans selnetwerke …</translation>
 <translation id="7982789257301363584">Netwerk</translation>
+<translation id="7982878511129296052">Skakel tans af …</translation>
 <translation id="7984197416080286869">Te veel vingerafdrukpogings</translation>
 <translation id="798779949890829624">Jou administrateur bestuur hierdie instelling</translation>
 <translation id="799296642788192631">Jy kan belangrike lêers vasspeld. Hou oor ’n item of maak Lêers oop en regsklik ’n item om dit vas te speld.</translation>

@@ -6,6 +6,7 @@
 <translation id="1352919863522755794">Google upravitelj zaporki nije uspio provjeriti vaše zaporke. Provjerite internetsku vezu.</translation>
 <translation id="1462727070346936664">Prijavite se da biste iskoristili sve prednosti Chromea.</translation>
 <translation id="1479202195792305274">Chrome može provjeriti vaše zaporke kad se prijavite Google računom.</translation>
+<translation id="1491435845014430217">Uključite opciju "Zaključajte anonimne kartice pri zatvaranju Chromea".</translation>
 <translation id="1493827051843127077">Postavite Chrome kao zadani preglednik da biste sinkronizirali kartice, zaporke i podatke o plaćanju na svim svojim uređajima</translation>
 <translation id="1504372625950710826">Chrome nije uspio provjeriti ima li ažuriranja. Provjerite internetsku vezu.</translation>
 <translation id="1511320244449497906">Prijavljeni ste i vaši se podaci sinkroniziraju s računom kojim upravlja web-lokacija <ph name="DOMAIN" />. Administrator sada može postaviti korisnička pravila koja se odnose na taj račun i koja mogu promijeniti ponašanje Chromea.</translation>
@@ -80,6 +81,7 @@
 <translation id="5395376160638294582">Provjerite možete li uvijek upotrebljavati podatke iz Chromea na svom Google računu</translation>
 <translation id="5460571915754665838">4. Odaberite Chrome</translation>
 <translation id="5492504007368565877">Google upravitelj zaporki ne može provjeriti vaše zaporke.</translation>
+<translation id="5527026824954593399">Dodirnite "Prikaži putem Google karata u Chromeu".</translation>
 <translation id="5552137475244467770">Chrome povremeno uspoređuje vaše zaporke s javno objavljenim popisima. Tom su prilikom vaše zaporke i korisnička imena kriptirani, tako da ih nitko ne može pročitati, uključujući Google.</translation>
 <translation id="5639704535586432836">Otvorite Postavke &gt; Privatnost &gt; Fotoaparat &gt; Google Chrome i uključite fotoaparat.</translation>
 <translation id="5642200033778930880">Google Chrome ne može upotrebljavati vaš fotoaparat u načinu podijeljenog prikaza</translation>
@@ -120,6 +122,7 @@
 <translation id="7501046334262221972">Da biste postavili Chrome kao svoj zadani preglednik, otvorite postavke. Dodirnite opciju Zadana aplikacija preglednika i odaberite Chrome.</translation>
 <translation id="756809126120519699">Chromeovi su podaci izbrisani</translation>
 <translation id="7662994914830945754">Da biste vidjeli svoje kartice bez obzira na to gdje koristite Chrome, prijavite se i uključite sinkronizaciju</translation>
+<translation id="7669869107155339016">Otvorite postavke Chromea.</translation>
 <translation id="7693590760643069321">Sad možete koristiti Chrome svaki put kad dodirnete veze u porukama, dokumentima i drugim aplikacijama.</translation>
 <translation id="7698568245838009292">Chrome želi pristupiti kameri</translation>
 <translation id="7754633291442704733">Vaša organizacija <ph name="DOMAIN" /> imat će pristup vašim podacima, oznakama, povijesti, zaporkama i drugim postavkama Chromea koje pohranjujete na ovom računu. Kad se odjavite, vaši će se podaci izbrisati s ovog uređaja.  No vaši će podaci ostati pohranjeni na vašem upravljanom Google računu i bit će dostupni vašoj organizaciji. Vaša organizacija može postaviti i korisnička pravila koja se odnose na taj račun i koja mogu promijeniti Chromeovo ponašanje.</translation>

@@ -201,7 +201,6 @@
 <translation id="1823873187264960516">ඊතර්නෙට්: <ph name="ADDRESS" /></translation>
 <translation id="1824922790784036530">ස්ථාන ප්‍රවේශය ක්‍රියාත්මක කරන්න</translation>
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> නො-අමුණා ඇත</translation>
-<translation id="183465528887726323">හොට්ස්පොට් භාවිත කිරීමට ජංගම දත්ත වෙත සම්බන්ධ කරන්න</translation>
 <translation id="1838895407229022812">රාත්‍රී ආලෝකය අක්‍රියයි.</translation>
 <translation id="1854180393107901205">Cast කිරීම නවත්වන්න</translation>
 <translation id="1862380676329487333">යාවත්කාලීන කර වරන්න</translation>
@@ -225,7 +224,6 @@
 <translation id="1961239773406905488">කැමරා පෙරදසුන සඟවා ඇත</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="1962969542251276847">අගුලු තිරය</translation>
-<translation id="1962972976741217487">ඔබේ <ph name="DEVICE_NAME" /> හොට්ස්පොට් වෙත 1 උපාංගයක් සම්බන්ධ කර ඇත</translation>
 <translation id="1967970931040389207">හොට්ස්පොට් ක්‍රියාත්මක කරන්න</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">ආයුබෝවන්, <ph name="USERNAME" /></translation>
@@ -595,7 +593,6 @@
 <translation id="3621202678540785336">ආදානය</translation>
 <translation id="3621712662352432595">ශ්‍රව්‍ය සැකසුම්</translation>
 <translation id="3626281679859535460">දීප්තිය</translation>
-<translation id="3629640897379005903">හොට්ස්පොට් විස්තර පෙන්වන්න. හොට්ස්පොට් අබල කරයි.</translation>
 <translation id="3630697955794050612">ක්‍රියාවිරහිතයි</translation>
 <translation id="3631369015426612114">පහත ඒවායින් දැනුම්දීම්වලට ඉඩ දෙන්න</translation>
 <translation id="3633097874324966332">ඔබගේ උපාංගය යුගල කිරීමට බ්ලූටූත් සැකසීම් විවෘත කරන්න</translation>
@@ -734,7 +731,6 @@
 <translation id="423685346499232137">මෙම අවස්ථාවේදී අන්තර්ගතය පිටපත් කිරීමට හෝ ඇලවීමට නොහැකිය</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">දළ විශ්ලේෂණ ආකාරය</translation>
-<translation id="4240756737570479726">අබල කරමින්...</translation>
 <translation id="4242533952199664413">සැකසීම් විවෘත කරන්න</translation>
 <translation id="4247123849143712100">යාවත්කාලීන කර වසා දමන්න</translation>
 <translation id="4250229828105606438">තිරරූපය</translation>
@@ -927,7 +923,6 @@
 <translation id="5034421018520995080">පිටුවේ ඉහළට යන්න</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> නව දුරකථනයකට සම්බන්ධයි</translation>
 <translation id="5035389544768382859">සංදර්ශක වින්‍යාසය තහවුරු කරන්න</translation>
-<translation id="5038863510258510803">සක්‍රිය කෙරෙමින්...</translation>
 <translation id="5042305953558921026">දළ විශ්ලේෂණ ප්‍රකාර යතුර</translation>
 <translation id="5043679421800073804">රාක්කයේ අවසන් නිරූපකය ක්ලික් කරන්න හෝ තට්ටු කරන්න</translation>
 <translation id="504465286040788597">පෙර ඡේදය</translation>
@@ -983,7 +978,6 @@
 <translation id="5297704307811127955">අක්‍රියයි</translation>
 <translation id="5300589172476337783">පෙන්වන්න</translation>
 <translation id="5302048478445481009">භාෂාව</translation>
-<translation id="5303783651764314393">ඔබේ <ph name="DEVICE_NAME" /> හොට්ස්පොට් වෙත උපාංග <ph name="DEVICECOUNT" />ක් සම්බන්ධ කර ඇත</translation>
 <translation id="5308380583665731573">සම්බන්ධ කරන්න</translation>
 <translation id="5313326810920013265">බ්ලූටූත් සැකසීම්</translation>
 <translation id="5314219114274263156">තිර පිටපත් කිරීමක් ගන්නා ලදි</translation>
@@ -1319,7 +1313,6 @@
 <translation id="6752912906630585008"><ph name="REMOVED_DESK" /> මේසය ඉවත් කර <ph name="RECEIVE_DESK" /> මේසය සමඟ ඒකාබද්ධ කෙරිණි</translation>
 <translation id="6753390234084146956">ටැබ</translation>
 <translation id="6757237461819837179">මාධ්‍ය වාදනය නොවේ</translation>
-<translation id="6759628406555734414">හොට්ස්පොට් විස්තර පෙන්වන්න. හොට්ස්පොට් සබල කරයි.</translation>
 <translation id="6768043681523654438">ආචයනය</translation>
 <translation id="6777216307882431711">සම්බන්ධිත USB-C උපාංග බල ගැන්වේ</translation>
 <translation id="6781002679438061620">9 වෙනි මේසය</translation>
@@ -1407,7 +1400,6 @@
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7168224885072002358"><ph name="TIMEOUT_SECONDS" /> තුළ පැරණි විභේදනයට හරවනු ඇත</translation>
 <translation id="7180611975245234373">නැවුම් කරන්න</translation>
-<translation id="7187711731540696127">ඔබේ <ph name="DEVICE_NAME" /> හොට්ස්පොට් ක්‍රියාත්මකයි, උපාංග කිසිවක් සම්බන්ධ නැත</translation>
 <translation id="7188494361780961876">මෙනුව තිරයේ ඉහළ වම් කොණට ගෙන ගියා.</translation>
 <translation id="7189412385142492784">සිකුරු කොතරම් දුරද?</translation>
 <translation id="7198435252016571249">කැමරාව පහළ දකුණු කෙළවරට සවි කර ඇත. පද්ධති මතුපිට සමග ගැටුම.</translation>
@@ -1580,6 +1572,7 @@
 <translation id="797512352675305461">පූර්ණ තිර විශාලකය සක්‍රීය හෝ අක්‍රිය කරන්න</translation>
 <translation id="7977927628060636163">ජංගම ජාල සඳහා සොයමින්...</translation>
 <translation id="7982789257301363584">ජාලය</translation>
+<translation id="7982878511129296052">ක්‍රියාවිරහිත කරමින්...</translation>
 <translation id="7984197416080286869">ඇඟිලි සලකුණු ප්‍රයත්න ඉතා වැඩියි</translation>
 <translation id="798779949890829624">මෙම සැකසීම ඔබගේ පරිපාලක විසින් කළමනාකරණය කෙරේ</translation>
 <translation id="799296642788192631">ඔබට වැදගත් ගොනු ඇමිණිය හැක. ඇමිණීමට, අයිතමයක් මත සැරිසැරීමට හෝ ගොනු විවෘත කර අයිතමයක් දකුණු-ක්ලික් කරන්න.</translation>

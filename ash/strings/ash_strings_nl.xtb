@@ -201,7 +201,6 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
 <translation id="1824922790784036530">Locatietoegang aanzetten</translation>
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> is losgemaakt</translation>
-<translation id="183465528887726323">Maak verbinding met mobiele data om hotspot te gebruiken</translation>
 <translation id="1838895407229022812">Nachtverlichting staat uit.</translation>
 <translation id="1854180393107901205">Casten stoppen</translation>
 <translation id="1862380676329487333">Updaten en uitloggen</translation>
@@ -225,7 +224,6 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="1961239773406905488">Het cameravoorbeeld is verborgen</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="1962969542251276847">Vergrendelscherm</translation>
-<translation id="1962972976741217487">1 apparaat verbonden met je <ph name="DEVICE_NAME" />-hotspot</translation>
 <translation id="1967970931040389207">Hotspot aanzetten</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">Hallo, <ph name="USERNAME" /></translation>
@@ -595,7 +593,6 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="3621202678540785336">Ingang</translation>
 <translation id="3621712662352432595">Audio-instellingen</translation>
 <translation id="3626281679859535460">Helderheid</translation>
-<translation id="3629640897379005903">Toon de hotspotdetails. Hotspot wordt uitgezet.</translation>
 <translation id="3630697955794050612">uit</translation>
 <translation id="3631369015426612114">Meldingen toestaan van het volgende</translation>
 <translation id="3633097874324966332">Open de bluetooth-instellingen om je apparaat te koppelen</translation>
@@ -734,7 +731,6 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="423685346499232137">Kan momenteel geen content kopiëren of plakken</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Overzichtsmodus</translation>
-<translation id="4240756737570479726">Uitzetten…</translation>
 <translation id="4242533952199664413">Instellingen openen</translation>
 <translation id="4247123849143712100">Updaten en uitzetten</translation>
 <translation id="4250229828105606438">Screenshot</translation>
@@ -927,7 +923,6 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="5034421018520995080">Naar bovenkant van pagina gaan</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> verbonden met nieuwe telefoon</translation>
 <translation id="5035389544768382859">Schermconfiguratie bevestigen</translation>
-<translation id="5038863510258510803">Aanzetten...</translation>
 <translation id="5042305953558921026">Toets voor de overzichtsmodus</translation>
 <translation id="5043679421800073804">Op het laatste icoon op de plank klikken of tikken</translation>
 <translation id="504465286040788597">Vorige alinea</translation>
@@ -983,7 +978,6 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="5297704307811127955">Uit</translation>
 <translation id="5300589172476337783">Tonen</translation>
 <translation id="5302048478445481009">Taal</translation>
-<translation id="5303783651764314393"><ph name="DEVICECOUNT" /> apparaten verbonden met je <ph name="DEVICE_NAME" />-hotspot</translation>
 <translation id="5308380583665731573">Verbinding maken</translation>
 <translation id="5313326810920013265">Bluetooth-instellingen</translation>
 <translation id="5314219114274263156">Schermopname gemaakt</translation>
@@ -1319,7 +1313,6 @@ Nieuwe installatie</translation>
 <translation id="6752912906630585008">Bureaublad <ph name="REMOVED_DESK" /> verwijderd en samengevoegd met bureaublad <ph name="RECEIVE_DESK" /></translation>
 <translation id="6753390234084146956">tabbladen</translation>
 <translation id="6757237461819837179">Er wordt geen media afgespeeld</translation>
-<translation id="6759628406555734414">Toon de hotspotdetails. Hotspot wordt aangezet.</translation>
 <translation id="6768043681523654438">opslag</translation>
 <translation id="6777216307882431711">De aangesloten USB-C-apparaten worden van stroom voorzien</translation>
 <translation id="6781002679438061620">Bureau 9</translation>
@@ -1407,7 +1400,6 @@ Nieuwe installatie</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7168224885072002358">Terugzetten naar oude resolutie over <ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="7180611975245234373">Vernieuwen</translation>
-<translation id="7187711731540696127">Je <ph name="DEVICE_NAME" />-hotspot staat aan, geen apparaten verbonden</translation>
 <translation id="7188494361780961876">Menu verplaatst naar linksboven in het scherm.</translation>
 <translation id="7189412385142492784">Hoe ver weg is Venus</translation>
 <translation id="7198435252016571249">Camera uitgelijnd op de rechterbenedenhoek. Conflict met systeemoppervlak.</translation>
@@ -1577,6 +1569,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="797512352675305461">Vergrootglas op volledig scherm aan- of uitzetten</translation>
 <translation id="7977927628060636163">Mobiele netwerken zoeken…</translation>
 <translation id="7982789257301363584">Netwerk</translation>
+<translation id="7982878511129296052">Uitzetten...</translation>
 <translation id="7984197416080286869">Te veel vingerafdrukpogingen</translation>
 <translation id="798779949890829624">Deze instelling wordt beheerd door je beheerder</translation>
 <translation id="799296642788192631">Je kunt belangrijke bestanden vastzetten. Als je een item wilt vastzetten, plaats je de muisaanwijzer op het item of open je Bestanden en klik je met de rechtermuisknop op het item.</translation>

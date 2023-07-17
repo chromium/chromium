@@ -201,7 +201,6 @@ Nazi ezinye zezinto ongazama ukuziqalisa.</translation>
 <translation id="1823873187264960516">I-Ethernet: <ph name="ADDRESS" /></translation>
 <translation id="1824922790784036530">Vula ukufinyelela kwendawo</translation>
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> isuswe ukuphina</translation>
-<translation id="183465528887726323">Xhuma kudatha yeselula ukuze usebenzise i-hotspot</translation>
 <translation id="1838895407229022812">Isibani sasebusuku sivaliwe.</translation>
 <translation id="1854180393107901205">Misa ukusakaza</translation>
 <translation id="1862380676329487333">Buyekeza bese uyaphuma ngemvume</translation>
@@ -225,7 +224,6 @@ Nazi ezinye zezinto ongazama ukuziqalisa.</translation>
 <translation id="1961239773406905488">Ukuhlola kuqala kwekhamera kufihliwe</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="1962969542251276847">Khiya isikrini</translation>
-<translation id="1962972976741217487">Idivayisi e-1 exhunywe ku-hotspot yakho ye-<ph name="DEVICE_NAME" /></translation>
 <translation id="1967970931040389207">Vula i-hotspot</translation>
 <translation id="1969011864782743497">I-<ph name="DEVICE_NAME" /> (i-USB)</translation>
 <translation id="1972950159383891558">Sawubona, <ph name="USERNAME" /></translation>
@@ -595,7 +593,6 @@ Nazi ezinye zezinto ongazama ukuziqalisa.</translation>
 <translation id="3621202678540785336">Okokufaka</translation>
 <translation id="3621712662352432595">Izilungiselelo zomsindo</translation>
 <translation id="3626281679859535460">Ukukhanya</translation>
-<translation id="3629640897379005903">Bonisa imininingwane ye-hotspot. I-hotspot iyakhutshazwa.</translation>
 <translation id="3630697955794050612">valiwe</translation>
 <translation id="3631369015426612114">Vumela izaziso kusukela kokulandelayo</translation>
 <translation id="3633097874324966332">Vula amasethingi we-Bluetooth ukuze ubhanqe idivayisi yakho</translation>
@@ -734,7 +731,6 @@ Xhuma idivayisi yakho emandleni.</translation>
 <translation id="423685346499232137">Ayikwazi ukukopisha noma ukunamathisela okuqukethwe ngalesi sikhathi</translation>
 <translation id="4239069858505860023">I-GPRS</translation>
 <translation id="4240486403425279990">Imodi yokubuka konke</translation>
-<translation id="4240756737570479726">Iyakhubaza...</translation>
 <translation id="4242533952199664413">Vula izilungiselelo</translation>
 <translation id="4247123849143712100">Buyekeza bese uyacisha</translation>
 <translation id="4250229828105606438">Isithombe-skrini</translation>
@@ -927,7 +923,6 @@ Xhuma idivayisi yakho emandleni.</translation>
 <translation id="5034421018520995080">Hamba phezulu kwekhasi</translation>
 <translation id="5035236842988137213">I-<ph name="DEVICE_NAME" /> ixhumeke kufoni entsha</translation>
 <translation id="5035389544768382859">Qinisekisa Ukulungiselelwa Kwesibonisi</translation>
-<translation id="5038863510258510803">Inika amandla...</translation>
 <translation id="5042305953558921026">Ukhiye wemodi yokubuka konke</translation>
 <translation id="5043679421800073804">Chofoza noma thepha isithonjana sokugcina eshalofini</translation>
 <translation id="504465286040788597">Ipharagrafu yangaphambilini</translation>
@@ -983,7 +978,6 @@ Xhuma idivayisi yakho emandleni.</translation>
 <translation id="5297704307811127955">Valiwe</translation>
 <translation id="5300589172476337783">Bonisa</translation>
 <translation id="5302048478445481009">Ulimi</translation>
-<translation id="5303783651764314393">Amadivayisi angu-<ph name="DEVICECOUNT" /> axhume ku-hotspot yakho ye-<ph name="DEVICE_NAME" /></translation>
 <translation id="5308380583665731573">Xhuma</translation>
 <translation id="5313326810920013265">Izilungiselelo ze-Bluetooth</translation>
 <translation id="5314219114274263156">Okokuqopha iskrini kuthathiwe</translation>
@@ -1319,7 +1313,6 @@ Ukufaka okusha</translation>
 <translation id="6752912906630585008">Ideski <ph name="REMOVED_DESK" /> lisusiwe futhi lahlanganiswa nedeski <ph name="RECEIVE_DESK" /></translation>
 <translation id="6753390234084146956">amathebhu</translation>
 <translation id="6757237461819837179">Ayikho imidiya edlalayo</translation>
-<translation id="6759628406555734414">Bonisa imininingwane ye-hotspot. I-hotspot inikwa amandla.</translation>
 <translation id="6768043681523654438">isitoreji</translation>
 <translation id="6777216307882431711">Inika amandla amadivayisi axhunyiwe e-USB-C</translation>
 <translation id="6781002679438061620">Itafula 9</translation>
@@ -1407,7 +1400,6 @@ Ukufaka okusha</translation>
 <translation id="7165278925115064263">I-Alt+Shift+K</translation>
 <translation id="7168224885072002358">Ibuyela ekulungisweni okudala ngo-<ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="7180611975245234373">Qala kabusha</translation>
-<translation id="7187711731540696127">I-hotspot yakho ye-<ph name="DEVICE_NAME" /> ivuliwe, awekho amadivayisi axhunyiwe,</translation>
 <translation id="7188494361780961876">Imenyu iyiswe phezulu ekhoneni elingakwesobunxele sesikrini.</translation>
 <translation id="7189412385142492784">Ikude kangakanani i-Venus</translation>
 <translation id="7198435252016571249">Ikhamera iqondaniswe ekhoneni elingezansi ngakwesokudla. Ukungqubuzana nendawo yesistimu.</translation>
@@ -1580,6 +1572,7 @@ Ukuze uvale idivayisi, cindezela futhi ubambe inkinobho yamandla kudivayisi futh
 <translation id="797512352675305461">Vula noma uvale isikhulisi sesikrini esigcwele</translation>
 <translation id="7977927628060636163">Isesha amanethiwekhi eselula...</translation>
 <translation id="7982789257301363584">Inethiwekhi</translation>
+<translation id="7982878511129296052">Iyavala…</translation>
 <translation id="7984197416080286869">Imizano yesigxivizo somunwe eminingi kakhulu</translation>
 <translation id="798779949890829624">Leli sethingi liphethwe umlawuli wakho</translation>
 <translation id="799296642788192631">Ungaphina amafayela abalulekile. Ukuze uphine, hambisa phezu kwento noma uvule i-Files bese uchofoza kwesokudla kuleyo nto.</translation>

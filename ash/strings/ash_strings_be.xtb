@@ -201,7 +201,6 @@
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
 <translation id="1824922790784036530">Уключыць доступ да геаданых</translation>
 <translation id="1830308660060964064">Элемент "<ph name="ITEM_TITLE" />" адмацаваны</translation>
-<translation id="183465528887726323">Каб выкарыстоўваць хот-спот, падключыце мабільны інтэрнэт</translation>
 <translation id="1838895407229022812">Начная падсветка выключана.</translation>
 <translation id="1854180393107901205">Спыніць трансляцыю</translation>
 <translation id="1862380676329487333">Абнавіць і выйсці</translation>
@@ -225,7 +224,6 @@
 <translation id="1961239773406905488">Папярэдні прагляд для камеры схаваны</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="1962969542251276847">Экран блакіроўкі</translation>
-<translation id="1962972976741217487">Да хот-спота <ph name="DEVICE_NAME" /> падключана адна прылада</translation>
 <translation id="1967970931040389207">Уключыць хот-спот</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">Вітаем, <ph name="USERNAME" />!</translation>
@@ -595,7 +593,6 @@
 <translation id="3621202678540785336">Увод</translation>
 <translation id="3621712662352432595">Налады аўдыя</translation>
 <translation id="3626281679859535460">Яркасць</translation>
-<translation id="3629640897379005903">Паказаць падрабязныя звесткі пра хот-спот. Хот-спот адключаецца.</translation>
 <translation id="3630697955794050612">выключаны</translation>
 <translation id="3631369015426612114">Дазволіць апавяшчэнні з наступных крыніц</translation>
 <translation id="3633097874324966332">Каб спалучыць прыладу, адкрыйце налады Bluetooth</translation>
@@ -734,7 +731,6 @@
 <translation id="423685346499232137">Не ўдалося скапіраваць або ўставіць змесціва</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Рэжым агляду</translation>
-<translation id="4240756737570479726">Ідзе адключэнне...</translation>
 <translation id="4242533952199664413">Адкрыць налады</translation>
 <translation id="4247123849143712100">Абнавіць і завяршыць працу</translation>
 <translation id="4250229828105606438">Здымак экрана</translation>
@@ -927,7 +923,6 @@
 <translation id="5034421018520995080">Перайсці ўверх старонкі</translation>
 <translation id="5035236842988137213">Прылада <ph name="DEVICE_NAME" /> падключана да новага тэлефона</translation>
 <translation id="5035389544768382859">Пацвярджэнне канфігурацыі дысплэя</translation>
-<translation id="5038863510258510803">Уключаецца...</translation>
 <translation id="5042305953558921026">Клавіша рэжыму агляду</translation>
 <translation id="5043679421800073804">Націснуць апошні значок на панэлі доступу</translation>
 <translation id="504465286040788597">Папярэдні абзац</translation>
@@ -983,7 +978,6 @@
 <translation id="5297704307811127955">Выключана</translation>
 <translation id="5300589172476337783">Паказаць</translation>
 <translation id="5302048478445481009">Мова</translation>
-<translation id="5303783651764314393">Да хот-спота <ph name="DEVICE_NAME" /> падключаны прылады (<ph name="DEVICECOUNT" />)</translation>
 <translation id="5308380583665731573">Падключыцца</translation>
 <translation id="5313326810920013265">Налады Bluetooth</translation>
 <translation id="5314219114274263156">Запіс экрана зроблены</translation>
@@ -1319,7 +1313,6 @@
 <translation id="6752912906630585008">Стол <ph name="REMOVED_DESK" /> быў выдалены і аб'яднаны са Сталом <ph name="RECEIVE_DESK" /></translation>
 <translation id="6753390234084146956">укладкі</translation>
 <translation id="6757237461819837179">Медыяфайлы не прайграюцца</translation>
-<translation id="6759628406555734414">Паказаць падрабязныя звесткі пра хот-спот. Хот-спот уключаецца.</translation>
 <translation id="6768043681523654438">сховішча</translation>
 <translation id="6777216307882431711">Сілкуе падключаныя прылады USB-C</translation>
 <translation id="6781002679438061620">Працоўны стол 9</translation>
@@ -1407,7 +1400,6 @@
 <translation id="7165278925115064263">Alt + Shift + K</translation>
 <translation id="7168224885072002358">Вяртанне да старой раздзяляльнасці праз <ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="7180611975245234373">Абнавіць</translation>
-<translation id="7187711731540696127">Хот-спот прылады <ph name="DEVICE_NAME" /> уключаны, няма падключаных прылад</translation>
 <translation id="7188494361780961876">Меню перамешчана ў левы верхні вугал экрана.</translation>
 <translation id="7189412385142492784">Якая адлегласць да Венеры</translation>
 <translation id="7198435252016571249">Акно перадпрагляду камеры прывязана да правага ніжняга вугла, бо яно перакрывала інтэрфейс сістэмы.</translation>
@@ -1580,6 +1572,7 @@
 <translation id="797512352675305461">Уключыць або выключыць поўнаэкранную лупу</translation>
 <translation id="7977927628060636163">Ідзе пошук мабільных сетак...</translation>
 <translation id="7982789257301363584">Сетка</translation>
+<translation id="7982878511129296052">Выключаецца...</translation>
 <translation id="7984197416080286869">Зашмат спроб разблакіроўкі адбіткам</translation>
 <translation id="798779949890829624">Гэта налада знаходзіцца пад кіраваннем адміністратара</translation>
 <translation id="799296642788192631">Важныя файлы можна замацоўваць. Навядзіце ўказальнік на элемент або адкрыйце Файлы і націсніце на элемент правай кнопкай мышы.</translation>

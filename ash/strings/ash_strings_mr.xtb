@@ -201,7 +201,6 @@
 <translation id="1823873187264960516">इथरनेट: <ph name="ADDRESS" /></translation>
 <translation id="1824922790784036530">स्थान ॲक्सेस सुरू करा</translation>
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> अनपिन केला गेला</translation>
-<translation id="183465528887726323">हॉटस्पॉट वापरण्यासाठी मोबाइल डेटाशी कनेक्ट करा</translation>
 <translation id="1838895407229022812">रात्रीचा प्रकाश बंद आहे.</translation>
 <translation id="1854180393107901205">कास्ट करणे थांबवा</translation>
 <translation id="1862380676329487333">अपडेट करून साइन आउट करा</translation>
@@ -225,7 +224,6 @@
 <translation id="1961239773406905488">कॅमेराचे पूर्वावलोकन लपवले आहे</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="1962969542251276847">लॉक स्क्रीन</translation>
-<translation id="1962972976741217487">तुमच्या <ph name="DEVICE_NAME" /> च्या हॉटस्पॉटला १ डिव्हाइस कनेक्ट केलेले आहे</translation>
 <translation id="1967970931040389207">हॉटस्पॉट सुरू करा</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">हाय, <ph name="USERNAME" /></translation>
@@ -595,7 +593,6 @@
 <translation id="3621202678540785336">इनपुट</translation>
 <translation id="3621712662352432595">ऑडिओ सेटिंग्ज</translation>
 <translation id="3626281679859535460">ब्राइटनेस</translation>
-<translation id="3629640897379005903">हॉटस्पॉटचे तपशील दाखवा. हॉटस्पॉट बंद होत आहे.</translation>
 <translation id="3630697955794050612">बंद</translation>
 <translation id="3631369015426612114">यांना सूचना पाठवू द्या</translation>
 <translation id="3633097874324966332">तुमचे डिव्हाइस पेअर करण्यासाठी ब्लूटूथ सेटिंग्ज उघडा</translation>
@@ -734,7 +731,6 @@
 <translation id="423685346499232137">यावेळी आशय कॉपी किंवा पेस्ट करू शकत नाही</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">अवलोकन मोड</translation>
-<translation id="4240756737570479726">बंद करत आहे...</translation>
 <translation id="4242533952199664413">सेटिंग्ज उघडा</translation>
 <translation id="4247123849143712100">अपडेट करून बंद करा</translation>
 <translation id="4250229828105606438">स्क्रीनशॉट</translation>
@@ -927,7 +923,6 @@
 <translation id="5034421018520995080">पेजच्या सर्वात वर जा</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> नवीन फोनशी कनेक्ट केले</translation>
 <translation id="5035389544768382859">डिस्प्ले कॉंफिगरेशन निश्चित करा</translation>
-<translation id="5038863510258510803">सक्षम करत आहे...</translation>
 <translation id="5042305953558921026">पूर्वावलोकन मोड की</translation>
 <translation id="5043679421800073804">शेल्फवरील शेवटच्या आयकनवर क्लिक किंवा टॅप करा</translation>
 <translation id="504465286040788597">मागील परिच्छेद</translation>
@@ -983,7 +978,6 @@
 <translation id="5297704307811127955">बंद</translation>
 <translation id="5300589172476337783">दर्शवा</translation>
 <translation id="5302048478445481009">भाषा</translation>
-<translation id="5303783651764314393">तुमच्या <ph name="DEVICE_NAME" /> च्या हॉटस्पॉटला <ph name="DEVICECOUNT" /> डिव्हाइस कनेक्ट केलेली आहेत</translation>
 <translation id="5308380583665731573">कनेक्‍ट करा</translation>
 <translation id="5313326810920013265">ब्लूटूथ सेटिंग्ज</translation>
 <translation id="5314219114274263156">स्क्रीन रेकॉर्डिंग घेतले</translation>
@@ -1319,7 +1313,6 @@
 <translation id="6752912906630585008"><ph name="REMOVED_DESK" /> डेस्क काढून टाकले आणि डेस्क <ph name="RECEIVE_DESK" /> साेबत मर्ज केले</translation>
 <translation id="6753390234084146956">टॅब</translation>
 <translation id="6757237461819837179">कोणताही मीडिया प्‍ले होत नाही</translation>
-<translation id="6759628406555734414">हॉटस्पॉटचे तपशील दाखवा. हॉटस्पॉट सुरू होत आहे.</translation>
 <translation id="6768043681523654438">स्टोरेज</translation>
 <translation id="6777216307882431711">कनेक्ट केलेल्या USB-C डिव्‍हाइसना चार्ज करत आहे</translation>
 <translation id="6781002679438061620">डेस्‍क ९</translation>
@@ -1407,7 +1400,6 @@
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7168224885072002358"><ph name="TIMEOUT_SECONDS" /> मध्ये जुन्या रिझोल्युशनवर परत करत आहे</translation>
 <translation id="7180611975245234373">रिफ्रेश करा</translation>
-<translation id="7187711731540696127">तुमच्या <ph name="DEVICE_NAME" /> चा हॉटस्पॉट सुरू आहे, कोणतेही डिव्हाइस कनेक्ट केलेले नाही</translation>
 <translation id="7188494361780961876">मेनू स्क्रीनच्या वरच्या डाव्या कोपर्‍यात हलवला.</translation>
 <translation id="7189412385142492784">शुक्र किती दूर आहे</translation>
 <translation id="7198435252016571249">कॅमेरा सर्वात खालच्या उजव्या कोपऱ्यात स्नॅप केला आहे. सिस्टीम सर्फेसवरील इतर ॲपवर ओव्‍हरलॅप होत आहे.</translation>
@@ -1580,6 +1572,7 @@
 <translation id="797512352675305461">फुलस्क्रीन मॅग्निफायर सुरू किंवा बंद करा</translation>
 <translation id="7977927628060636163">मोबाइल नेटवर्क शोधत आहे...</translation>
 <translation id="7982789257301363584">नेटवर्क</translation>
+<translation id="7982878511129296052">बंद करत आहे...</translation>
 <translation id="7984197416080286869">खूप जास्त फिंगरप्रिंट प्रयत्न</translation>
 <translation id="798779949890829624">हे सेटिंग तुमच्या अ‍ॅडमिनिस्ट्रेटरद्वारे व्यवस्थापित केले जाते</translation>
 <translation id="799296642788192631">तुम्ही महत्त्वाच्या फाइल पिन करू शकता. पिन करण्यासाठी, आयटमवर कर्सर फिरवा किंवा Files उघडा आणि आयटमवर राइट-क्लिक करा.</translation>

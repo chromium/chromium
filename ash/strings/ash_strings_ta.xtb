@@ -201,7 +201,6 @@
 <translation id="1823873187264960516">ஈதர்நெட்: <ph name="ADDRESS" /></translation>
 <translation id="1824922790784036530">இருப்பிட அணுகலை இயக்கு</translation>
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> ஷெல்ஃபிலிருந்து அகற்றப்பட்டது</translation>
-<translation id="183465528887726323">ஹாட்ஸ்பாட்டைப் பயன்படுத்த மொபைல் டேட்டா உடன் இணைக்கவும்</translation>
 <translation id="1838895407229022812">நைட் லைட் ஆஃப் செய்யப்பட்டுள்ளது.</translation>
 <translation id="1854180393107901205">அனுப்புவதை நிறுத்து</translation>
 <translation id="1862380676329487333">புதுப்பித்து வெளியேறு</translation>
@@ -225,7 +224,6 @@
 <translation id="1961239773406905488">கேமரா மாதிரிக்காட்சி மறைக்கப்பட்டுள்ளது</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="1962969542251276847">லாக் ஸ்கிரீன்</translation>
-<translation id="1962972976741217487">உங்கள் <ph name="DEVICE_NAME" /> சாதனத்தின் ஹாட்ஸ்பாட்டில் 1 சாதனம் இணைந்துள்ளது</translation>
 <translation id="1967970931040389207">ஹாட்ஸ்பாட்டை இயக்குதல்</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">ஹாய் <ph name="USERNAME" /></translation>
@@ -595,7 +593,6 @@
 <translation id="3621202678540785336">உள்ளீடு</translation>
 <translation id="3621712662352432595">ஆடியோ அமைப்புகள்</translation>
 <translation id="3626281679859535460">ஒளிர்வு</translation>
-<translation id="3629640897379005903">ஹாட்ஸ்பாட் விவரங்களைக் காட்டும். ஹாட்ஸ்பாட் முடக்கப்படுகிறது.</translation>
 <translation id="3630697955794050612">முடக்கப்பட்டுள்ளது</translation>
 <translation id="3631369015426612114">பின்வருவனவற்றிலிருந்து வரும் அறிவிப்புகளை அனுமதி:</translation>
 <translation id="3633097874324966332">உங்கள் சாதனத்தை இணைக்க, புளூடூத் அமைப்புகளைத் திறக்கவும்</translation>
@@ -734,7 +731,6 @@
 <translation id="423685346499232137">தற்சமயம் உள்ளடக்கத்தை நகலெடுக்கவோ ஒட்டவோ முடியாது</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">மேலோட்டப் பயன்முறை</translation>
-<translation id="4240756737570479726">முடக்குகிறது...</translation>
 <translation id="4242533952199664413">அமைப்புகளைத் திற</translation>
 <translation id="4247123849143712100">புதுப்பித்து ஷட் டவுன் செய்</translation>
 <translation id="4250229828105606438">ஸ்கிரீன்ஷாட்</translation>
@@ -927,7 +923,6 @@
 <translation id="5034421018520995080">பக்கத்தின் மேல்பக்கத்திற்குச் செல்லும்</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> ஒரு புதிய ஃபோனுடன் இணைக்கப்பட்டுள்ளது</translation>
 <translation id="5035389544768382859">திரை உள்ளமைவை உறுதிசெய்யுங்கள்</translation>
-<translation id="5038863510258510803">இயக்குகிறது...</translation>
 <translation id="5042305953558921026">மேலோட்டப் பயன்முறை விசை</translation>
 <translation id="5043679421800073804">ஷெல்ஃப்பில் கடைசி ஐகானைக் கிளிக் செய் அல்லது தட்டு</translation>
 <translation id="504465286040788597">முந்தைய பத்தி</translation>
@@ -983,7 +978,6 @@
 <translation id="5297704307811127955">முடக்கப்பட்டுள்ளது</translation>
 <translation id="5300589172476337783">காண்பி</translation>
 <translation id="5302048478445481009">மொழி</translation>
-<translation id="5303783651764314393">உங்கள் <ph name="DEVICE_NAME" /> சாதனத்தின் ஹாட்ஸ்பாட்டில் <ph name="DEVICECOUNT" /> சாதனங்கள் இணைந்துள்ளன</translation>
 <translation id="5308380583665731573">இணை</translation>
 <translation id="5313326810920013265">புளூடூத் அமைப்புகள்</translation>
 <translation id="5314219114274263156">ஸ்கிரீன் ரெக்கார்டு செய்யப்பட்டது</translation>
@@ -1319,7 +1313,6 @@
 <translation id="6752912906630585008">டெஸ்க் <ph name="REMOVED_DESK" /> அகற்றப்பட்டு டெஸ்க் <ph name="RECEIVE_DESK" /> உடன் சேர்க்கப்பட்டது</translation>
 <translation id="6753390234084146956">பக்கங்கள்</translation>
 <translation id="6757237461819837179">மீடியா எதுவும் பிளேயாகவில்லை</translation>
-<translation id="6759628406555734414">ஹாட்ஸ்பாட் விவரங்களைக் காட்டும். ஹாட்ஸ்பாட் இயக்கப்படுகிறது.</translation>
 <translation id="6768043681523654438">சேமிப்பகம்</translation>
 <translation id="6777216307882431711">இணைக்கப்பட்ட USB-C சாதனங்களுக்கு சார்ஜ் ஏற்றப்படுகிறது</translation>
 <translation id="6781002679438061620">டெஸ்க் 9</translation>
@@ -1407,7 +1400,6 @@
 <translation id="7165278925115064263">ஆல்ட்+ஷிஃப்ட்+K</translation>
 <translation id="7168224885072002358"><ph name="TIMEOUT_SECONDS" /> வினாடிகளில் பழைய தெளிவுதிறனுக்கு மாற்றியமைக்கப்படும்</translation>
 <translation id="7180611975245234373">புதுப்பி</translation>
-<translation id="7187711731540696127">உங்கள் <ph name="DEVICE_NAME" /> சாதனத்தின் ஹாட்ஸ்பாட் இயக்கத்தில் உள்ளது, சாதனம் எதுவும் இணைக்கப்படவில்லை</translation>
 <translation id="7188494361780961876">திரையின் மேல் இடது மூலைக்கு மெனு நகர்த்தப்பட்டது.</translation>
 <translation id="7189412385142492784">வெள்ளி கிரகம் எவ்வளவு தொலைவில் உள்ளது?</translation>
 <translation id="7198435252016571249">கேமரா மாதிரிக்காட்சி கீழ் வலது மூலையில் பொருத்தப்பட்டது. ஏனெனில் சிஸ்டத்தின் காட்சியை இது மறைக்கும்.</translation>
@@ -1580,6 +1572,7 @@
 <translation id="797512352675305461">முழுத்திரை மேக்னிஃபயரை இயக்கு அல்லது முடக்கு</translation>
 <translation id="7977927628060636163">மொபைல் நெட்வொர்க்குகளைத் தேடுகிறது...</translation>
 <translation id="7982789257301363584">நெட்வொர்க்</translation>
+<translation id="7982878511129296052">முடக்குகிறது...</translation>
 <translation id="7984197416080286869">கைரேகையை அதிகபட்சம் முயன்றுவிட்டீர்கள்</translation>
 <translation id="798779949890829624">உங்கள் நிர்வாகி இந்த அமைப்பை நிர்வகிக்கிறார்</translation>
 <translation id="799296642788192631">முக்கியமான ஃபைல்களைப் பின் செய்யலாம். பின் செய்ய, ஃபைலின் மேலே கர்சரைக் கொண்டுசெல்லவும் அல்லது Filesஸைத் திறந்து ஒரு ஃபைலில் வலது கிளிக் செய்யவும்.</translation>

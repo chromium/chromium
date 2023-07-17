@@ -3091,6 +3091,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3571734092741541777">Einrichten</translation>
 <translation id="3575121482199441727">Für diese Website zulassen</translation>
 <translation id="3577473026931028326">Ein Fehler ist aufgetreten. Versuche es noch einmal.</translation>
+<translation id="3577487026101678864">Dateisynchronisierung an</translation>
 <translation id="3577745545227000795">Erhebung von Hardwaredaten durch <ph name="DEVICE_OS" /></translation>
 <translation id="3578874072190212775">Hilf Websites, Betrug zu bekämpfen und Bots von Personen zu unterscheiden</translation>
 <translation id="3581605050355435601">IP-Adresse automatisch konfigurieren</translation>
@@ -3298,6 +3299,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3748706263662799310">Programmfehler melden</translation>
 <translation id="3749724428455457489">Weitere Informationen zu von Websites vorgeschlagener Werbung</translation>
 <translation id="3750562496035670393">Chrome hat dein Passwort auf diesem Gerät gespeichert, du kannst es aber stattdessen auch in deinem Google-Konto speichern lassen. Alle Passwörter in deinem Google-Konto sind verfügbar, solange du angemeldet bist.</translation>
+<translation id="3752115502500640407">Kopie deines Passworts für <ph name="WEBSITE" /> teilen</translation>
 <translation id="3752253558646317685">Bitte dein Kind, den Finger zu heben und wieder abzulegen, um den Fingerabdruck zu speichern</translation>
 <translation id="3753033997400164841">Einmal speichern. Überall verwenden.</translation>
 <translation id="3753142252662437130">Farbfilter</translation>
@@ -3593,6 +3595,7 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="3975201861340929143">Erklärung</translation>
 <translation id="3975565978598857337">Fehler bei Verbindungsaufbau mit Server für diesen Bereich</translation>
 <translation id="3976108569178263973">Es sind keine Drucker verfügbar.</translation>
+<translation id="3976244126942806443">Websites stellen normalerweise zum Komponieren oder Bearbeiten von Musik eine Verbindung mit MIDI-Geräten her</translation>
 <translation id="397703832102027365">Aktualisierung wird abgeschlossen...</translation>
 <translation id="3977145907578671392">Einige Websites funktionieren im Inkognitomodus möglicherweise nicht richtig</translation>
 <translation id="3977886311744775419">Bei diesem Netzwerktyp werden keine automatischen Updates heruntergeladen. Du kannst aber manuell nach Updates suchen.</translation>
@@ -4752,6 +4755,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="4979510648199782334">Einrichtung von Microsoft 365 abgeschlossen</translation>
 <translation id="4980805016576257426">Diese Erweiterung enthält Malware.</translation>
 <translation id="4981449534399733132">Wenn du Browserdaten von allen deinen synchronisierten Geräten und aus deinem Google-Konto löschen möchtest, <ph name="BEGIN_LINK" />melde dich an<ph name="END_LINK" />.</translation>
+<translation id="4983159853748980742">Dein Passwort wurde nicht geteilt. Prüfe deine Internetverbindung und achte darauf, dass du in Chrome angemeldet bist. Versuch es dann noch einmal.</translation>
 <translation id="4986706507552097681">In den Einstellungen kannst du auswählen, was synchronisiert werden soll. Google kann die Google Suche und andere Dienste auf der Grundlage deines Verlaufs personalisieren.</translation>
 <translation id="4986728572522335985">Damit werden alle Daten auf dem Sicherheitsschlüssel und die dazugehörige PIN gelöscht</translation>
 <translation id="4988526792673242964">Seiten</translation>
@@ -5407,6 +5411,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="5555363196923735206">Kamera umschalten</translation>
 <translation id="5555525474779371165">Safe Browsing-Schutz auswählen</translation>
 <translation id="5555639311269196631">Hotspot deaktivieren</translation>
+<translation id="5555760010546505198">Farbumkehr, Farbkorrektur, Lupe und Anzeigeeinstellungen</translation>
 <translation id="5556459405103347317">Neu laden</translation>
 <translation id="5558129378926964177">Ver&amp;größern</translation>
 <translation id="5559311991468302423">Adresse löschen</translation>
@@ -8644,6 +8649,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8301242268274839723">Lege einen Finger auf den Fingerabdrucksensor links unten an deiner Tastatur. Dein Fingerabdruck wird sicher gespeichert und verlässt dein <ph name="DEVICE_TYPE" /> nie.</translation>
 <translation id="8303616404642252802">{COUNT,plural, =1{Adresse}other{# Adressen}}</translation>
 <translation id="8304383784961451596">Du bist nicht zur Verwendung dieses Geräts berechtigt. Bitte den Administrator um eine Anmeldeberechtigung oder melde dich mit einem Google-Konto an, das über Family Link beaufsichtigt wird.</translation>
+<translation id="8306063480506363120">Drive-Zugriff entfernen</translation>
 <translation id="8306885873692337975">Hole dir die neuesten Funktionen und Sicherheitsoptimierungen.</translation>
 <translation id="8308016398665340540">Dieses Netzwerk ist für andere Nutzer dieses Geräts freigegeben</translation>
 <translation id="8308179586020895837">Nachfragen, wenn <ph name="HOST" /> auf deine Kamera zugreifen möchte</translation>

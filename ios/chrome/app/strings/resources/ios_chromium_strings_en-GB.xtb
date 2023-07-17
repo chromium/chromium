@@ -68,6 +68,7 @@
 <translation id="4985291216379576555">Offline, Chromium can't check for updates</translation>
 <translation id="4996471330284142407">Get more done with a simple, secure and faster-than-ever Chromium.</translation>
 <translation id="4999538639245140991">Because you're signing out of an account managed by <ph name="SIGNOUT_MANAGED_DOMAIN" />, your Chromium data will be deleted from this device. Your data will remain in your Google Account.</translation>
+<translation id="5042011327527167688">Tap 'View with Google Maps on Chrome'</translation>
 <translation id="5048795749726991615">To get your saved passwords in your other apps easily, use Chromium for auto-fill</translation>
 <translation id="5171868502429358653">Sign In to Chromium</translation>
 <translation id="5224391634244552924">No saved passwords. Chromium can check your passwords when you save them.</translation>
@@ -112,6 +113,7 @@
 <translation id="7357211569052832586">The selected data has been removed from Chromium and synced devices. Your Google Account may have other forms of browsing history such as searches and activity from other Google services at history.google.com.</translation>
 <translation id="7395825497086981028">Your password will be saved to Password Manager for <ph name="EMAIL" />.</translation>
 <translation id="7400689562045506105">Use Chromium Everywhere</translation>
+<translation id="7523464085759699266">Turn on 'Lock Incognito tabs when you close Chrome'.</translation>
 <translation id="7674213385180944843">Open Settings &gt; Privacy &gt; Camera &gt; Chromium and turn on the camera.</translation>
 <translation id="7746854981345936341">Chromium tip. Some buttons are now at the bottom of your screen, such as Back, Forward and Search.</translation>
 <translation id="7763454117143368771">Use Chromium as your default browser to stay protected from dangerous sites and keep your passwords safe</translation>
@@ -123,6 +125,7 @@
 <translation id="7931842119211730154">Lock incognito tabs when you close Chromium</translation>
 <translation id="7980860476903281594">Chromium shares your location with sites that you allow.</translation>
 <translation id="8013573822802650211">To see your tabs from wherever you use Chromium, sign in on all your devices</translation>
+<translation id="8071041515667087705">Go to Chrome settings</translation>
 <translation id="8073677936375100957">Clear your Chromium data from this device?</translation>
 <translation id="8235427517854598594">Make Chromium your default browser?</translation>
 <translation id="8240981428553046115">Chromium couldn't check for updates. Try again later.</translation>

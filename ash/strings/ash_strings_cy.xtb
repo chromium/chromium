@@ -201,7 +201,6 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="1823873187264960516">Ether-rwyd: <ph name="ADDRESS" /></translation>
 <translation id="1824922790784036530">Troi mynediad lleoliad ymlaen</translation>
 <translation id="1830308660060964064">Cafodd <ph name="ITEM_TITLE" /> ei ddadbinio</translation>
-<translation id="183465528887726323">Cysylltwch â data symudol er mwyn defnyddio poethfan</translation>
 <translation id="1838895407229022812">Mae Golau Nos wedi'i ddiffodd.</translation>
 <translation id="1854180393107901205">Stopio castio</translation>
 <translation id="1862380676329487333">Diweddaru ac allgofnodi</translation>
@@ -225,7 +224,6 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="1961239773406905488">Rhagolwg camera wedi'i guddio</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="1962969542251276847">Clo Sgrîn</translation>
-<translation id="1962972976741217487">Mae 1 ddyfais wedi'i chysylltu â'ch poethfan <ph name="DEVICE_NAME" /></translation>
 <translation id="1967970931040389207">Troi'r poethfan ymlaen</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">Shw'mae, <ph name="USERNAME" /></translation>
@@ -595,7 +593,6 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="3621202678540785336">Mewnbwn</translation>
 <translation id="3621712662352432595">Gosodiadau Sain</translation>
 <translation id="3626281679859535460">Disgleirdeb</translation>
-<translation id="3629640897379005903">Dangos manylion y boethfan. Wrthi'n analluogi'r boethfan.</translation>
 <translation id="3630697955794050612">wedi diffodd</translation>
 <translation id="3631369015426612114">Caniatáu hysbysiadau o'r ffynonellau canlynol</translation>
 <translation id="3633097874324966332">Agorwch y gosodiadau Bluetooth i baru'ch dyfais</translation>
@@ -734,7 +731,6 @@ Cysylltwch eich dyfais â phŵer.</translation>
 <translation id="423685346499232137">Methu â chopïo na gludo cynnwys ar hyn o bryd</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Modd trosolwg</translation>
-<translation id="4240756737570479726">Wrthi'n analluogi...</translation>
 <translation id="4242533952199664413">Agor y gosodiadau</translation>
 <translation id="4247123849143712100">Diweddaru a diffodd</translation>
 <translation id="4250229828105606438">Sgrinlun</translation>
@@ -927,7 +923,6 @@ Cysylltwch eich dyfais â phŵer.</translation>
 <translation id="5034421018520995080">Mynd i frig y dudalen</translation>
 <translation id="5035236842988137213">Mae <ph name="DEVICE_NAME" /> wedi cysylltu â ffôn newydd</translation>
 <translation id="5035389544768382859">Cadarnhau Ffurfweddiad y sgrîn</translation>
-<translation id="5038863510258510803">Wrthi'n galluogi…</translation>
 <translation id="5042305953558921026">Bysell modd trosolwg</translation>
 <translation id="5043679421800073804">Clicio neu dapio'r eicon olaf ar y silff</translation>
 <translation id="504465286040788597">Paragraff blaenorol</translation>
@@ -983,7 +978,6 @@ Cysylltwch eich dyfais â phŵer.</translation>
 <translation id="5297704307811127955">Diffodd</translation>
 <translation id="5300589172476337783">Arddangos</translation>
 <translation id="5302048478445481009">Iaith</translation>
-<translation id="5303783651764314393">Mae <ph name="DEVICECOUNT" /> o ddyfeisiau wedi'u cysylltu â'ch poethfan <ph name="DEVICE_NAME" /></translation>
 <translation id="5308380583665731573">Cysylltu</translation>
 <translation id="5313326810920013265">Gosodiadau Bluetooth</translation>
 <translation id="5314219114274263156">Wedi recordio'r sgrîn</translation>
@@ -1319,7 +1313,6 @@ Gosodiad newydd</translation>
 <translation id="6752912906630585008">Cafodd Desg <ph name="REMOVED_DESK" /> ei thynnu a'i chyfuno â Desg <ph name="RECEIVE_DESK" /></translation>
 <translation id="6753390234084146956">tabiau</translation>
 <translation id="6757237461819837179">Nid oes unrhyw gyfryngau yn chwarae</translation>
-<translation id="6759628406555734414">Dangos manylion y boethfan. Mae'r boethfan wrthi'n galluogi.</translation>
 <translation id="6768043681523654438">storfa</translation>
 <translation id="6777216307882431711">Wrthi'n rhoi pŵer i ddyfeisiau USB-C</translation>
 <translation id="6781002679438061620">Desg 9</translation>
@@ -1407,7 +1400,6 @@ Gosodiad newydd</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7168224885072002358">Wrthi'n dychwelyd i'r hen gyfraniad yn <ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="7180611975245234373">Ail-lwytho</translation>
-<translation id="7187711731540696127">Mae eich poethfan <ph name="DEVICE_NAME" /> ymlaen, dim dyfeisiau wedi'u cysylltu</translation>
 <translation id="7188494361780961876">Cafodd y ddewislen ei symud i gornel chwith uchaf y sgrîn.</translation>
 <translation id="7189412385142492784">Pa mor bell yw'r blaned Gwener</translation>
 <translation id="7198435252016571249">Mae'r camera wedi'i snapio i'r gornel dde isaf. Gwrthdaro ag arwyneb y system.</translation>
@@ -1580,6 +1572,7 @@ I ddiffodd y ddyfais, pwyswch a daliwch y botwm pŵer ar y ddyfais eto.</transla
 <translation id="797512352675305461">Troi chwyddwydr sgrîn lawn ymlaen neu ei ddiffodd</translation>
 <translation id="7977927628060636163">Wrthi'n chwilio am rwydweithiau symudol...</translation>
 <translation id="7982789257301363584">Rhwydwaith</translation>
+<translation id="7982878511129296052">Wrthi'n diffodd...</translation>
 <translation id="7984197416080286869">Gormod o ymgeisiau olion bysedd</translation>
 <translation id="798779949890829624">Mae'r gosodiad hwn yn cael ei reoli gan eich gweinyddwr</translation>
 <translation id="799296642788192631">Gallwch binio ffeiliau pwysig. I binio, hofran dros eitem neu agor Ffeiliau a de-glicio ar eitem.</translation>

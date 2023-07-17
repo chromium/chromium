@@ -201,7 +201,6 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
 <translation id="1824922790784036530">Uključi pristup lokaciji</translation>
 <translation id="1830308660060964064">Stavka <ph name="ITEM_TITLE" /> je otkačena</translation>
-<translation id="183465528887726323">Povežite se s prijenosom podataka na mobilnoj mreži da koristite pristupnu tačku</translation>
 <translation id="1838895407229022812">Noćno svjetlo je isključeno.</translation>
 <translation id="1854180393107901205">Zaustavi emitiranje</translation>
 <translation id="1862380676329487333">Ažuriraj i odjavi</translation>
@@ -225,7 +224,6 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="1961239773406905488">Pregled kamere je skriven</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="1962969542251276847">Zaključavanje ekrana</translation>
-<translation id="1962972976741217487">1 uređaj je povezan s pristupnom tačkom na uređaju <ph name="DEVICE_NAME" /></translation>
 <translation id="1967970931040389207">Uključi pristupnu tačku</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">Zdravo, <ph name="USERNAME" /></translation>
@@ -595,7 +593,6 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="3621202678540785336">Ulaz</translation>
 <translation id="3621712662352432595">Postavke zvuka</translation>
 <translation id="3626281679859535460">Osvjetljenje</translation>
-<translation id="3629640897379005903">Pogledajte detalje pristupne tačke. Pristupna tačka se onemogućava.</translation>
 <translation id="3630697955794050612">isključeno</translation>
 <translation id="3631369015426612114">Omogućite obavještenja iz sljedećih izvora</translation>
 <translation id="3633097874324966332">Otvorite postavke Bluetootha da uparite uređaj</translation>
@@ -734,7 +731,6 @@ Povežite uređaj na napajanje.</translation>
 <translation id="423685346499232137">Trenutno nije moguće kopirati i zalijepiti sadržaj</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Način rada za pregled</translation>
-<translation id="4240756737570479726">Onemogućavanje…</translation>
 <translation id="4242533952199664413">Otvori postavke</translation>
 <translation id="4247123849143712100">Ažuriraj i isključi</translation>
 <translation id="4250229828105606438">Snimak ekrana</translation>
@@ -927,7 +923,6 @@ Povežite uređaj na napajanje.</translation>
 <translation id="5034421018520995080">Idi na vrh stranice</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> je povezan na novi telefon</translation>
 <translation id="5035389544768382859">Potvrdite konfiguraciju ekrana</translation>
-<translation id="5038863510258510803">Omogućavanje…</translation>
 <translation id="5042305953558921026">Tipka za pregled</translation>
 <translation id="5043679421800073804">Kliknite ili dodirnite posljednju ikonu na polici</translation>
 <translation id="504465286040788597">Prethodni pasus</translation>
@@ -983,7 +978,6 @@ Povežite uređaj na napajanje.</translation>
 <translation id="5297704307811127955">Isključeno</translation>
 <translation id="5300589172476337783">Prikaži</translation>
 <translation id="5302048478445481009">Jezik</translation>
-<translation id="5303783651764314393">Uređaji (ukupno <ph name="DEVICECOUNT" />) koji su povezani s pristupnom tačkom na uređaju <ph name="DEVICE_NAME" /></translation>
 <translation id="5308380583665731573">Poveži</translation>
 <translation id="5313326810920013265">Bluetooth postavke</translation>
 <translation id="5314219114274263156">Snimak ekrana je napravljen</translation>
@@ -1319,7 +1313,6 @@ Nova instalacija</translation>
 <translation id="6752912906630585008">Radna površina <ph name="REMOVED_DESK" /> je uklonjena i spojena s radnom površinom <ph name="RECEIVE_DESK" /></translation>
 <translation id="6753390234084146956">kartice</translation>
 <translation id="6757237461819837179">Medijski fajlovi se ne reproduciraju</translation>
-<translation id="6759628406555734414">Pogledajte detalje pristupne tačke. Pristupna tačka se omogućava.</translation>
 <translation id="6768043681523654438">pohrana</translation>
 <translation id="6777216307882431711">Napajanje povezanih uređaja s priključkom USB-C</translation>
 <translation id="6781002679438061620">9. radna površina</translation>
@@ -1407,7 +1400,6 @@ Nova instalacija</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7168224885072002358">Vraćanje na staru rezoluciju za <ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="7180611975245234373">Osvježi</translation>
-<translation id="7187711731540696127">Pristupna tačka na uređaju <ph name="DEVICE_NAME" /> je uključena, a nijedan uređaj nije povezan</translation>
 <translation id="7188494361780961876">Meni je pomjeren u gornji lijevi ugao ekrana.</translation>
 <translation id="7189412385142492784">Koliko je udaljena Venera</translation>
 <translation id="7198435252016571249">Kamera se uklopila u donji desni ugao. Došlo je do konflikta s površinom sistema.</translation>
@@ -1580,6 +1572,7 @@ Da isključite uređaj, ponovo pritisnite i zadržite dugme za uključivanje na 
 <translation id="797512352675305461">Uključite ili isključite povećalo preko cijelog ekrana</translation>
 <translation id="7977927628060636163">Traženje mobilnih mreža...</translation>
 <translation id="7982789257301363584">Mreža</translation>
+<translation id="7982878511129296052">Isključivanje…</translation>
 <translation id="7984197416080286869">Previše pokušaja otključavanja otiskom prsta</translation>
 <translation id="798779949890829624">Ovom postavkom upravlja vaš administrator</translation>
 <translation id="799296642788192631">Možete zakačiti važne fajlove. Da zakačite, postaviti pokazivač miša iznad stavke ili otvorite Fajlove i desnim klikom odaberite stavku.</translation>

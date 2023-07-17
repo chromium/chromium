@@ -319,6 +319,7 @@
 <translation id="160851722280695521">Chrome တွင် Dino Run ဂိမ်းကစားရန်</translation>
 <translation id="161042844686301425">Cyan</translation>
 <translation id="1611101756749861742">နှစ်ခုမြောက်အလိပ်</translation>
+<translation id="1615178538289490617"><ph name="PORT_NAME" /> အတွက် သုံးခွင့်ကို ရုပ်သိမ်းရန်</translation>
 <translation id="1615402009686901181">လျှို့ဝှက်အကြောင်းအရာများကို မြင်နိုင်ချိန်တွင် ဖန်သားပြင်ပုံဖမ်းခြင်းကို စီမံခန့်ခွဲသူမူဝါဒက ပိတ်ထားသည်</translation>
 <translation id="1617276713587758852">ပုံပြောင်းကားများ</translation>
 <translation id="1618571384971354160">ကားဆွဲခြင်းနှင့် လမ်းဘေးအကူအညီ</translation>
@@ -626,6 +627,7 @@
 <translation id="2276057643614339130">ပုံနှိပ်စက်အောက်ခြေ</translation>
 <translation id="2277103315734023688">အရှေ့သို့ ရစ်ရန်</translation>
 <translation id="2277753418458118549">ချိတ်ဆက်မှု အသေးစိတ် ပြပါ</translation>
+<translation id="22792995594807632">ဒေါင်းလုဒ်လုပ်ခြင်းမပြုမီ စိစစ်ရန်လိုအပ်သည်</translation>
 <translation id="2283340219607151381">လိပ်စာများကို သိမ်းပြီး ဖြည့်ရန်</translation>
 <translation id="2283447177162560884">‘<ph name="PAGE_TITLE" />’ ကို ဖျက်လိုက်သည်</translation>
 <translation id="2286383991450886080">၃၄ x ၄၄ လက်မ</translation>
@@ -1276,6 +1278,7 @@
 <translation id="3736520371357197498">သင်က သင့်အတွက် ရှိနိုင်သည့် အန္တရာယ်များကို နားလည် ဆိုလျှင်၊ သင်သည် <ph name="BEGIN_LINK" />မလုံခြုံသော ဆိုက်ကို<ph name="END_LINK" /> အန္တရာယ် ရှိကြသည့် ပရိုဂရမ်များကို ဖယ်ရှားပေးမှု မတိုင်ခင် ဝင်ကြည့်နိုင်ပါသည်။</translation>
 <translation id="3738166223076830879">သင်၏ ဘရောင်ဇာကို သင့်ကြီးကြပ်သူက စီမံခန့်ခွဲထားပါသည်။</translation>
 <translation id="3740319564441798148">အဝေးပြေး ဘတ်စ်ကားနှင့် ရထား</translation>
+<translation id="3740447166056383374">မိတ္တူမကူးမီ စိစစ်ရန်လိုအပ်သည်</translation>
 <translation id="374325029554577103">ကြံ့ခိုင်ရေးဆိုင်ရာ နည်းပညာထုတ်ကုန်</translation>
 <translation id="3743765582345153106">အော်တိုဖြည့်သုံးသောအခါ အမြဲတမ်း အတည်ပြုရန်</translation>
 <translation id="3744111561329211289">နောက်ခံတွင် စင့်ခ်လုပ်ခြင်း</translation>
@@ -1797,6 +1800,7 @@
 <translation id="4852429274334674023">လည်ပတ်သည့်စနစ်များ</translation>
 <translation id="4854853140771946034">Google Keep တွင် မှတ်စုအသစ် အမြန်ပြုလုပ်ရန်</translation>
 <translation id="485902285759009870">ကုဒ်ကို စိစစ်နေသည်...</translation>
+<translation id="4862630594858951805">ဈေးကျချိန်၌ အီးမေးလ်ရယူလိုပါသလား။</translation>
 <translation id="486459320933704969">ဤဝဘ်ဆိုက်သို့ ဝင်ကြည့်ရန် မိဘ (သို့) အုပ်ထိန်းသူက OK ဟု ပြောရန်လိုအပ်သည်</translation>
 <translation id="4866506163384898554">သင်၏ကာဆာကို ပြရန် |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| နှိပ်ပါ</translation>
 <translation id="4873616204573862158">မျက်မှန်</translation>
@@ -1992,6 +1996,7 @@
 <translation id="5255690596502591079">မည်သို့ပင်ဖြစ်စေ ဖမ်းယူရန်</translation>
 <translation id="5255833070095767006">၃၅၀ x ၄၆၀ မီလီမီတာ</translation>
 <translation id="5257739419779698609">{0,plural, =1{ဤဖိုင်အား <ph name="DESTINATION_NAME" /> သို့ မိတ္တူကူးခြင်းကို စီမံခန့်ခွဲသူ မူဝါဒက အကြံမပြုပါ}other{ဤဖိုင်များအား <ph name="DESTINATION_NAME" /> သို့ မိတ္တူကူးခြင်းကို စီမံခန့်ခွဲသူ မူဝါဒက အကြံမပြုပါ}}</translation>
+<translation id="5263867360296733198">အပ်လုဒ်လုပ်ခြင်းမပြုမီ စိစစ်ရန်လိုအပ်သည်</translation>
 <translation id="5266128565379329178">ထိပ်တွင် တွဲချုပ်ရန်</translation>
 <translation id="5269225904387178860">အောက်ခြေတွင် လေးချက်ဖောက်ရန်</translation>
 <translation id="5269999699920406580">စနစ်တွင်ကျင့်သုံးသော ဝန်ဆောင်မှုများကို ပိုင်ရှင်ကသာလျှင် သတ်မှတ်ပေးနိုင်သည်− <ph name="OWNER_EMAIL" /></translation>
@@ -2065,6 +2070,7 @@
 <translation id="5412236728747081950">နောက်ထပ်သက်ဆိုင်ရာ ကြော်ငြာများ ပြရန် Chrome မှ သင့်စိတ်ဝင်စားမှုများကို ဤဝဘ်ဆိုက်က ရယူပါသည်</translation>
 <translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" /> - <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">စီထည့်သည့်ပုံး ၄</translation>
+<translation id="5414446060143308245">လွှဲပြောင်းခြင်းမပြုမီ စိစစ်ရန်လိုအပ်သည်</translation>
 <translation id="5414511064953050917">မည်သို့ပင်ဖြစ်စေ ရွှေ့ရန်</translation>
 <translation id="5421136146218899937">ဘရောင်ဇာ ဒေတာကို ရှင်းရန်...</translation>
 <translation id="5423269318075950257">ဈေးနှုန်း စောင့်ကြည့်ခြင်း</translation>
@@ -2149,6 +2155,7 @@
 <translation id="5595485650161345191">လိပ်စာ တည်းဖြတ်ရန်</translation>
 <translation id="5596939519753369075">၂ x ၃.၅ လက်မ</translation>
 <translation id="560412284261940334">စီမံရေးရာမှ အကူအညီမရနိုင်ပါ။</translation>
+<translation id="5605249000617390290">ဈေးနှုန်းခြေရာခံခြင်းအကြောင်း ပိုမိုလေ့လာရန်</translation>
 <translation id="5605670050355397069">လယ်ဂျာ</translation>
 <translation id="5610142619324316209">ချိတ်ဆက်မှုကို စစ်ဆေးနေသည်</translation>
 <translation id="5610807607761827392">ကတ်နှင့် လိပ်စာများကို <ph name="BEGIN_LINK" />ဆက်တင်များ<ph name="END_LINK" /> တွင် စီမံနိုင်သည်။</translation>
@@ -2285,6 +2292,7 @@
 <translation id="5921639886840618607">ကတ်ကို Google အကောင့်သို့ သိမ်းလိုပါသလား။</translation>
 <translation id="5922853866070715753">ပြီးလုနီးပါပြီ</translation>
 <translation id="5923492272538889093">CVC နံပါတ်အစား စက်လော့ခ်ဖွင့်ခြင်းကို သုံးမလား။</translation>
+<translation id="5924510104057992926">မဖွင့်မီ စိစစ်ရန်လိုအပ်သည်</translation>
 <translation id="5924782825030413055">နောက်ဆုံးသဘောတူညီချက် အပ်ဒိတ်၏ရင်းမြစ်-</translation>
 <translation id="5925040402342933574">ဒစ်ခွေ (အနည်းငယ် တောက်ပ)</translation>
 <translation id="5926982310317673627">အားကစားရုံနှင့် ကျန်းမာရေးအသင်း</translation>
@@ -2509,6 +2517,7 @@
 <translation id="6394852772105848029">ဤဝဘ်ဆိုက်က <ph name="APP_NAME" /> အက်ပ်ကို ဖွင့်လိုသည်</translation>
 <translation id="6398765197997659313">မျက်နှာပြင် အပြည့်မှ ထွက်ရန်</translation>
 <translation id="6401136357288658127">ဤမူဝါဒကို ဆက်မသုံးတော့ပါ။ ၎င်းအစား <ph name="NEW_POLICY" /> မူဝါဒကို အသုံးပြုရပါမည်။</translation>
+<translation id="6402537308870515461">မရွှေ့မီ စိစစ်ရန်လိုအပ်သည်</translation>
 <translation id="6403167778944553">အိပ်ခန်းနှင့် ရေချိုးခန်းသုံး ပစ္စည်း</translation>
 <translation id="6404511346730675251">စာညှပ် တည်းဖြတ်ရန်</translation>
 <translation id="6405181733356710802"><ph name="APP_NAME" /> သို့ ရှေ့ဆက်မလား။</translation>
@@ -2657,6 +2666,7 @@
 <translation id="6710594484020273272">&lt;ရှာဖွေရန် အကြောင်းအရာကို ရိုက်ထည့်ပါ&gt;</translation>
 <translation id="671076103358959139">စာရင်းသွင်းရန် တိုကင်နံပါတ်-</translation>
 <translation id="6711464428925977395">ပရော့စီဆာဗာ တစ်စုံတစ်ခုမှားယွင်းနေပါသည် သို့မဟုတ် လိပ်စာမမှန်ကန်ပါ။</translation>
+<translation id="6716013836112872184">ဝဘ်ဆိုက်များတွင် ဈေးကျသောအခါ <ph name="EMAIL" /> တွင် အီးမေးလ်ရယူနိုင်သည်။</translation>
 <translation id="6716672519412350405"><ph name="URL" /> က သင့်ပတ်ဝန်းကျင်၏ 3D မြေပုံဆွဲခြင်း သို့မဟုတ် ကင်မရာအနေအထား ခြေရာခံခြင်းတို့ ပြုလုပ်လိုသည်</translation>
 <translation id="6718612893943028815">ကင်မရာ အသုံးပြုမလား။</translation>
 <translation id="6721164594124191969">လေဘယ်လ် (တောက်ပြောင်)</translation>
@@ -3188,6 +3198,7 @@
 <translation id="7767278989746220252">အိမ်ကပြင်၊ မြက်ခင်းနှင့် ဥယျာဉ်</translation>
 <translation id="776749070095465053">အထည်</translation>
 <translation id="7773005668374414287">တူညီသည့်အစဉ်ဖြင့် အပေါ်လှန်ထားရန်</translation>
+<translation id="7779418012194492374"><ph name="DEVICE_NAME" /> အတွက် သုံးခွင့်ကို ရုပ်သိမ်းရန်</translation>
 <translation id="7781829728241885113">မနေ့က</translation>
 <translation id="7785790577395078482">ဤတက်ဘလက်</translation>
 <translation id="7786368602962652765">လိုအပ်သောအကွက် အလွတ်ဖြစ်နေသည်။ မသိမ်းမီ ၎င်းကို ဖြည့်ပါ။</translation>
@@ -3811,6 +3822,7 @@
 <translation id="9155211586651734179">တွဲချိတ်ထားသည့် အသံဆိုင်ရာချိတ်ဆက်ပစ္စည်းများ</translation>
 <translation id="9155646082713385498">မဂ္ဂဇင်း</translation>
 <translation id="9157595877708044936">စဖွင့်သတ်မှတ်နေ...</translation>
+<translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> တွင် သတိထားရမည့်အကြောင်းအရာ ပါဝင်နိုင်သည်}other{ဖိုင် <ph name="FILE_COUNT" /> ဖိုင်တွင် သတိထားရမည့်အကြောင်းအရာ ပါဝင်နိုင်သည်}}</translation>
 <translation id="9164742147345933553">os://flags</translation>
 <translation id="9165305804774426672">သင်ဝင်ကြည့်သည့်ဝဘ်ဆိုက်များက ဝဘ်ဆိုက်ပေါ်တွင် သင်၏လုပ်ဆောင်ချက်ပေါ် အခြေခံပြီး သင်နှစ်သက်သည့်အရာကိုလည်း ဆုံးဖြတ်နိုင်သည်။ ဥပမာ တာဝေးပြေးဖိနပ်များရောင်းသည့် ဝဘ်ဆိုက်သို့ ဝင်ကြည့်ပါက မာရသွန်ပြေးခြင်းကို သင်စိတ်ဝင်စားသည်ဟု ယင်းဝဘ်ဆိုက်က ဆုံးဖြတ်နိုင်သည်။</translation>
 <translation id="9166851138617700776">ဝဘ်ဆိုက်အကြံပြု ကြော်ငြာများနှင့် ကြော်ငြာ တိုင်းတာအကဲဖြတ်ခြင်းအကြောင်း ပိုမိုသိရှိရန်</translation>

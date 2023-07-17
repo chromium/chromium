@@ -201,7 +201,6 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="1823873187264960516">Eternet: <ph name="ADDRESS" /></translation>
 <translation id="1824922790784036530">Aktivizo qasjen te vendndodhja</translation>
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> u zhgozhdua</translation>
-<translation id="183465528887726323">Lidhu me të dhënat celulare për të përdorur zonën e qasjes për internet</translation>
 <translation id="1838895407229022812">"Drita e natës" është joaktive.</translation>
 <translation id="1854180393107901205">Ndalo transmetimin</translation>
 <translation id="1862380676329487333">Përditëso dhe dil</translation>
@@ -225,7 +224,6 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="1961239773406905488">Pamja paraprake e kamerës e fshehur</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="1962969542251276847">Ekrani i kyçjes</translation>
-<translation id="1962972976741217487">1 pajisje e lidhur me zonën e qasjes për internet të <ph name="DEVICE_NAME" /></translation>
 <translation id="1967970931040389207">Aktivizo zonën e qasjes për internet</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">Përshëndetje, <ph name="USERNAME" /></translation>
@@ -595,7 +593,6 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="3621202678540785336">Hyrje</translation>
 <translation id="3621712662352432595">Cilësimet e audios</translation>
 <translation id="3626281679859535460">Ndriçimi</translation>
-<translation id="3629640897379005903">Shfaq detajet e zonës së qasjes për internet. Zona e qasjes për internet po çaktivizohet.</translation>
 <translation id="3630697955794050612">çaktivizuar</translation>
 <translation id="3631369015426612114">Lejo njoftimet nga më poshtë</translation>
 <translation id="3633097874324966332">Hap cilësimet e Bluetooth-it për të çiftuar pajisjen</translation>
@@ -734,7 +731,6 @@ Lidhe pajisjen me një burim të energjisë elektrike.</translation>
 <translation id="423685346499232137">Nuk mund të kopjohen ose të ngjiten përmbajtje në këtë moment</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Modaliteti "Përmbledhja"</translation>
-<translation id="4240756737570479726">Po çaktivizohet...</translation>
 <translation id="4242533952199664413">Hap cilësimet</translation>
 <translation id="4247123849143712100">Përditëso dhe fike</translation>
 <translation id="4250229828105606438">Pamje e ekranit</translation>
@@ -927,7 +923,6 @@ Lidhe pajisjen me një burim të energjisë elektrike.</translation>
 <translation id="5034421018520995080">Shko në krye të faqes</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> u lidh me një telefon të ri</translation>
 <translation id="5035389544768382859">Konfirmo konfigurimin e ekranit</translation>
-<translation id="5038863510258510803">Po aktivizohet...</translation>
 <translation id="5042305953558921026">Tasti i modalitetit "Përmbledhja"</translation>
 <translation id="5043679421800073804">Kliko ose trokit tek ikona e fundit në raft</translation>
 <translation id="504465286040788597">Paragrafi i mëparshëm</translation>
@@ -983,7 +978,6 @@ Lidhe pajisjen me një burim të energjisë elektrike.</translation>
 <translation id="5297704307811127955">Joaktiv</translation>
 <translation id="5300589172476337783">Shfaq</translation>
 <translation id="5302048478445481009">Gjuha</translation>
-<translation id="5303783651764314393"><ph name="DEVICECOUNT" /> pajisje të lidhura me zonën e qasjes për internet të <ph name="DEVICE_NAME" /></translation>
 <translation id="5308380583665731573">Lidh</translation>
 <translation id="5313326810920013265">Cilësimet e Bluetooth-it</translation>
 <translation id="5314219114274263156">Regjistrimi i ekranit përfundoi</translation>
@@ -1319,7 +1313,6 @@ Instalim i ri</translation>
 <translation id="6752912906630585008">Tavolina e punës <ph name="REMOVED_DESK" /> u hoq dhe u shkri me tavolinën e punës <ph name="RECEIVE_DESK" /></translation>
 <translation id="6753390234084146956">skedat</translation>
 <translation id="6757237461819837179">Nuk po luhet asnjë media</translation>
-<translation id="6759628406555734414">Shfaq detajet e zonës së qasjes për internet. Zona e qasjes për internet po aktivizohet.</translation>
 <translation id="6768043681523654438">hapësira ruajtëse</translation>
 <translation id="6777216307882431711">Po furnizon me energji pajisjet e lidhura USB-C</translation>
 <translation id="6781002679438061620">Tavolina e punës 9</translation>
@@ -1407,7 +1400,6 @@ Instalim i ri</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7168224885072002358">Po rikthehet te rezolucioni i vjetër për <ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="7180611975245234373">Rifresko</translation>
-<translation id="7187711731540696127">Zona e qasjes për internet e <ph name="DEVICE_NAME" /> është aktive, asnjë pajisje e lidhur</translation>
 <translation id="7188494361780961876">Menyja u zhvendos në këndin lart majtas të ekranit.</translation>
 <translation id="7189412385142492784">Sa larg është Afërdita</translation>
 <translation id="7198435252016571249">Pamja paraprake e kamerës ka kaluar në këndin e poshtëm djathtas. Në konflikt me sipërfaqen e sistemit.</translation>
@@ -1580,6 +1572,7 @@ Për ta fikur pajisjen, shtyp dhe mbaj shtypur përsëri butonin e energjisë n�
 <translation id="797512352675305461">Aktivizo ose çaktivizo zmadhuesin në ekran të plotë</translation>
 <translation id="7977927628060636163">Po kërkon për rrjete celulare...</translation>
 <translation id="7982789257301363584">Rrjeti</translation>
+<translation id="7982878511129296052">Po çaktivizohet...</translation>
 <translation id="7984197416080286869">Shumë përpjekje të gjurmës së gishtit</translation>
 <translation id="798779949890829624">Ky cilësim menaxhohet nga administratori yt</translation>
 <translation id="799296642788192631">Mund t'i gozhdosh skedarët e rëndësishëm. Për ta gozhduar një artikull, mbaje kursorin mbi artikull ose hap Files dhe kliko me butonin djathtas tek artikulli.</translation>

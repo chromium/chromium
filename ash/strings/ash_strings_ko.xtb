@@ -201,7 +201,6 @@
 <translation id="1823873187264960516">이더넷: <ph name="ADDRESS" /></translation>
 <translation id="1824922790784036530">위치 액세스 사용 설정</translation>
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> 고정 취소됨</translation>
-<translation id="183465528887726323">핫스팟을 사용하려면 모바일 데이터에 연결하세요.</translation>
 <translation id="1838895407229022812">야간 조명이 꺼졌습니다.</translation>
 <translation id="1854180393107901205">전송 중지</translation>
 <translation id="1862380676329487333">업데이트 및 로그아웃</translation>
@@ -225,7 +224,6 @@
 <translation id="1961239773406905488">동영상 카메라 미리보기 숨겨짐</translation>
 <translation id="1961832440516943645"><ph name="DATE" /> <ph name="TIME" /></translation>
 <translation id="1962969542251276847">잠금 화면</translation>
-<translation id="1962972976741217487">1대의 기기가 <ph name="DEVICE_NAME" /> 핫스팟에 연결됨</translation>
 <translation id="1967970931040389207">핫스팟 사용 설정</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" />(USB)</translation>
 <translation id="1972950159383891558"><ph name="USERNAME" />님, 안녕하세요.</translation>
@@ -595,7 +593,6 @@
 <translation id="3621202678540785336">입력</translation>
 <translation id="3621712662352432595">오디오 설정</translation>
 <translation id="3626281679859535460">밝기</translation>
-<translation id="3629640897379005903">핫스팟 세부정보를 표시합니다. 핫스팟을 사용 중지하는 중입니다.</translation>
 <translation id="3630697955794050612">사용 안함</translation>
 <translation id="3631369015426612114">다음 항목에 알림 허용:</translation>
 <translation id="3633097874324966332">기기를 페어링하려면 블루투스 설정을 여세요.</translation>
@@ -734,7 +731,6 @@
 <translation id="423685346499232137">현재 콘텐츠를 복사하거나 붙여넣을 수 없습니다.</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">전체보기 모드</translation>
-<translation id="4240756737570479726">사용 중지 중…</translation>
 <translation id="4242533952199664413">설정 열기</translation>
 <translation id="4247123849143712100">업데이트 및 종료</translation>
 <translation id="4250229828105606438">스크린샷</translation>
@@ -927,7 +923,6 @@
 <translation id="5034421018520995080">페이지 맨 위로 이동</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" />이(가) 새 휴대전화에 연결되었습니다.</translation>
 <translation id="5035389544768382859">화면 구성 확인</translation>
-<translation id="5038863510258510803">사용 설정 중...</translation>
 <translation id="5042305953558921026">전체보기 모드 키</translation>
 <translation id="5043679421800073804">앱 표시줄의 마지막 아이콘 클릭 또는 탭</translation>
 <translation id="504465286040788597">이전 단락</translation>
@@ -983,7 +978,6 @@
 <translation id="5297704307811127955">사용 안함</translation>
 <translation id="5300589172476337783">표시</translation>
 <translation id="5302048478445481009">언어</translation>
-<translation id="5303783651764314393"><ph name="DEVICECOUNT" />대의 기기가 <ph name="DEVICE_NAME" /> 핫스팟에 연결됨</translation>
 <translation id="5308380583665731573">연결</translation>
 <translation id="5313326810920013265">블루투스 설정</translation>
 <translation id="5314219114274263156">화면 녹화됨</translation>
@@ -1319,7 +1313,6 @@
 <translation id="6752912906630585008"><ph name="REMOVED_DESK" /> 데스크가 삭제되고 <ph name="RECEIVE_DESK" /> 데스크와 병합되었습니다.</translation>
 <translation id="6753390234084146956">탭</translation>
 <translation id="6757237461819837179">재생 중인 미디어 없음</translation>
-<translation id="6759628406555734414">핫스팟 세부정보를 표시합니다. 핫스팟을 사용 설정하는 중입니다.</translation>
 <translation id="6768043681523654438">저장용량</translation>
 <translation id="6777216307882431711">연결된 USB-C 기기 전원 공급 중</translation>
 <translation id="6781002679438061620">데스크 9</translation>
@@ -1407,7 +1400,6 @@
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7168224885072002358"><ph name="TIMEOUT_SECONDS" />초 후 기존 해상도로 돌아갑니다.</translation>
 <translation id="7180611975245234373">새로고침</translation>
-<translation id="7187711731540696127"><ph name="DEVICE_NAME" /> 핫스팟이 켜져 있으며 연결된 기기가 없음</translation>
 <translation id="7188494361780961876">메뉴가 화면 왼쪽 상단으로 이동했습니다.</translation>
 <translation id="7189412385142492784">금성까지의 거리</translation>
 <translation id="7198435252016571249">카메라 미리보기가 오른쪽 하단으로 맞춰졌습니다. 시스템 표시 경로와 충돌합니다.</translation>
@@ -1580,6 +1572,7 @@
 <translation id="797512352675305461">전체 화면 돋보기 사용 설정 또는 사용 중지</translation>
 <translation id="7977927628060636163">모바일 네트워크 검색 중...</translation>
 <translation id="7982789257301363584">네트워크</translation>
+<translation id="7982878511129296052">끄는 중…</translation>
 <translation id="7984197416080286869">지문 인식을 너무 많이 시도함</translation>
 <translation id="798779949890829624">관리자가 관리하는 설정입니다</translation>
 <translation id="799296642788192631">중요한 파일을 고정할 수 있습니다. 항목을 고정하려면 항목 위로 마우스를 가져가거나 Files를 열고 고정할 항목을 마우스 오른쪽 버튼으로 클릭합니다.</translation>

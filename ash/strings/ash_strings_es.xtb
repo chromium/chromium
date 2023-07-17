@@ -201,7 +201,6 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
 <translation id="1824922790784036530">Activar acceso a la ubicación</translation>
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> ya no está fijado</translation>
-<translation id="183465528887726323">Conéctate a los datos móviles para usar el punto de acceso</translation>
 <translation id="1838895407229022812">Luz nocturna desactivada.</translation>
 <translation id="1854180393107901205">Detener el envío</translation>
 <translation id="1862380676329487333">Actualizar y cerrar sesión</translation>
@@ -225,7 +224,6 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="1961239773406905488">Vista previa de cámara ocultada</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="1962969542251276847">Bloquear pantalla</translation>
-<translation id="1962972976741217487">1 dispositivo conectado a tu punto de acceso <ph name="DEVICE_NAME" /></translation>
 <translation id="1967970931040389207">Activar punto de acceso</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">Hola, <ph name="USERNAME" />:</translation>
@@ -595,7 +593,6 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="3621202678540785336">Entrada</translation>
 <translation id="3621712662352432595">Configuración de audio</translation>
 <translation id="3626281679859535460">Brillo</translation>
-<translation id="3629640897379005903">Mostrar detalles del punto de acceso. Inhabilitando punto de acceso.</translation>
 <translation id="3630697955794050612">desactivado</translation>
 <translation id="3631369015426612114">Permitir notificaciones de:</translation>
 <translation id="3633097874324966332">Abre los ajustes de Bluetooth para emparejar tu dispositivo</translation>
@@ -735,7 +732,6 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="423685346499232137">No se puede copiar ni pegar contenido en este momento</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Modo de vista general</translation>
-<translation id="4240756737570479726">Inhabilitando...</translation>
 <translation id="4242533952199664413">Abrir Configuración</translation>
 <translation id="4247123849143712100">Actualizar y apagar</translation>
 <translation id="4250229828105606438">Captura de pantalla</translation>
@@ -928,7 +924,6 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="5034421018520995080">Ir a la parte superior de la página</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> está conectado a un nuevo teléfono</translation>
 <translation id="5035389544768382859">Confirma la configuración de la pantalla</translation>
-<translation id="5038863510258510803">Habilitando...</translation>
 <translation id="5042305953558921026">Tecla del modo de vista general</translation>
 <translation id="5043679421800073804">Tocar o hacer clic en el último icono de la estantería</translation>
 <translation id="504465286040788597">Párrafo anterior</translation>
@@ -984,7 +979,6 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="5297704307811127955">Desactivada</translation>
 <translation id="5300589172476337783">Mostrar</translation>
 <translation id="5302048478445481009">Idioma</translation>
-<translation id="5303783651764314393"><ph name="DEVICECOUNT" /> dispositivos conectados a tu punto de acceso <ph name="DEVICE_NAME" /></translation>
 <translation id="5308380583665731573">Conectar</translation>
 <translation id="5313326810920013265">Configuración de Bluetooth</translation>
 <translation id="5314219114274263156">Grabación de pantalla realizada</translation>
@@ -1320,7 +1314,6 @@ Nueva instalación</translation>
 <translation id="6752912906630585008">Se ha quitado el escritorio <ph name="REMOVED_DESK" /> y se ha combinado con el escritorio <ph name="RECEIVE_DESK" /></translation>
 <translation id="6753390234084146956">pestañas</translation>
 <translation id="6757237461819837179">No se está reproduciendo nada</translation>
-<translation id="6759628406555734414">Mostrar detalles del punto de acceso. Habilitando punto de acceso.</translation>
 <translation id="6768043681523654438">almacenamiento</translation>
 <translation id="6777216307882431711">Alimentando dispositivos USB‑C conectados</translation>
 <translation id="6781002679438061620">Escritorio 9</translation>
@@ -1408,7 +1401,6 @@ Nueva instalación</translation>
 <translation id="7165278925115064263">Alt + Mayús + K</translation>
 <translation id="7168224885072002358">Restableciendo la resolución anterior en <ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="7180611975245234373">Actualizar</translation>
-<translation id="7187711731540696127">Tu punto de acceso <ph name="DEVICE_NAME" /> está activado, pero no hay dispositivos conectados</translation>
 <translation id="7188494361780961876">Se ha movido el menú a la esquina superior izquierda de la pantalla.</translation>
 <translation id="7189412385142492784">¿A qué distancia está Venus?</translation>
 <translation id="7198435252016571249">Cámara ajustada a la esquina inferior derecha. Conflicto con la superficie del sistema.</translation>
@@ -1581,6 +1573,7 @@ Para apagarlo, mantén pulsado de nuevo el botón de encendido del dispositivo.<
 <translation id="797512352675305461">Activar o desactivar lupa a pantalla completa</translation>
 <translation id="7977927628060636163">Buscando redes móviles…</translation>
 <translation id="7982789257301363584">Red</translation>
+<translation id="7982878511129296052">Desactivando...</translation>
 <translation id="7984197416080286869">Demasiados intentos con huella digital</translation>
 <translation id="798779949890829624">Este ajuste lo gestiona tu administrador</translation>
 <translation id="799296642788192631">Puedes fijar archivos importantes. Para fijar un elemento, coloca el cursor sobre él o abre la aplicación Archivos y haz clic con el botón derecho en el elemento.</translation>

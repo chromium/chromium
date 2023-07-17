@@ -201,7 +201,6 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="1823873187264960516">Ethernet : <ph name="ADDRESS" /></translation>
 <translation id="1824922790784036530">Activer l'accès aux données de localisation</translation>
 <translation id="1830308660060964064">L'épinglage de <ph name="ITEM_TITLE" /> été annulé</translation>
-<translation id="183465528887726323">Connectez-vous aux données cellulaires pour utiliser le point d'accès sans fil</translation>
 <translation id="1838895407229022812">Le mode Éclairage nocturne est désactivé.</translation>
 <translation id="1854180393107901205">Arrêter l'envoi de contenu</translation>
 <translation id="1862380676329487333">Mettre à jour et se déconnecter</translation>
@@ -225,7 +224,6 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="1961239773406905488">Aperçu de la caméra masqué</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="1962969542251276847">Écran de verrouillage</translation>
-<translation id="1962972976741217487">1 appareil connecté à votre point d'accès sans fil <ph name="DEVICE_NAME" /></translation>
 <translation id="1967970931040389207">Activer le point d'accès sans fil</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">Bonjour, <ph name="USERNAME" /></translation>
@@ -595,7 +593,6 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="3621202678540785336">Entrée</translation>
 <translation id="3621712662352432595">Paramètres audio</translation>
 <translation id="3626281679859535460">Luminosité</translation>
-<translation id="3629640897379005903">Afficher les détails du point d'accès sans fil. Le point d'accès sans fil est désactivé.</translation>
 <translation id="3630697955794050612">désactivé</translation>
 <translation id="3631369015426612114">Autoriser les notifications de :</translation>
 <translation id="3633097874324966332">Ouvrez les paramètres Bluetooth pour associer votre appareil</translation>
@@ -734,7 +731,6 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="423685346499232137">Impossible de copier ni de coller du contenu pour le moment</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Mode Aperçu</translation>
-<translation id="4240756737570479726">Désactivation…</translation>
 <translation id="4242533952199664413">Ouvrir les paramètres</translation>
 <translation id="4247123849143712100">Mettre à jour et éteindre</translation>
 <translation id="4250229828105606438">Saisie d'écran</translation>
@@ -927,7 +923,6 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="5034421018520995080">Aller au début de la page</translation>
 <translation id="5035236842988137213">L'appareil <ph name="DEVICE_NAME" /> est connecté à un nouveau téléphone</translation>
 <translation id="5035389544768382859">Confirmer la configuration de l'écran</translation>
-<translation id="5038863510258510803">Activation en cours…</translation>
 <translation id="5042305953558921026">Clé du mode Aperçu</translation>
 <translation id="5043679421800073804">Cliquer sur la dernière icône sur l'étagère ou la toucher</translation>
 <translation id="504465286040788597">Paragraphe précédent</translation>
@@ -983,7 +978,6 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="5297704307811127955">Désactivé</translation>
 <translation id="5300589172476337783">Afficher</translation>
 <translation id="5302048478445481009">Langue</translation>
-<translation id="5303783651764314393"><ph name="DEVICECOUNT" /> appareils connectés à votre point d'accès sans fil <ph name="DEVICE_NAME" /></translation>
 <translation id="5308380583665731573">Connecter</translation>
 <translation id="5313326810920013265">Paramètres Bluetooth</translation>
 <translation id="5314219114274263156">Enregistrement de l'écran effectué</translation>
@@ -1319,7 +1313,6 @@ Nouvelle installation</translation>
 <translation id="6752912906630585008">Le bureau <ph name="REMOVED_DESK" /> a été supprimé et fusionné avec le bureau <ph name="RECEIVE_DESK" /></translation>
 <translation id="6753390234084146956">onglets</translation>
 <translation id="6757237461819837179">Aucun élément multimédia en cours de lecture</translation>
-<translation id="6759628406555734414">Afficher les détails du point d'accès sans fil. Le point d'accès sans fil est activé.</translation>
 <translation id="6768043681523654438">stockage</translation>
 <translation id="6777216307882431711">Alimente des appareils connectés par USB-C</translation>
 <translation id="6781002679438061620">Bureau 9</translation>
@@ -1407,7 +1400,6 @@ Nouvelle installation</translation>
 <translation id="7165278925115064263">Alt+Maj+K</translation>
 <translation id="7168224885072002358">Rétablissement de la résolution précédente dans <ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="7180611975245234373">Actualiser</translation>
-<translation id="7187711731540696127">Votre point d'accès sans fil <ph name="DEVICE_NAME" /> est activé, aucun appareil connecté</translation>
 <translation id="7188494361780961876">Le menu a été déplacé vers le coin supérieur gauche de l'écran.</translation>
 <translation id="7189412385142492784">À quelle distance se trouve Vénus?</translation>
 <translation id="7198435252016571249">Caméra alignée sur le coin inférieur droit. Conflit avec la surface du système.</translation>
@@ -1580,6 +1572,7 @@ Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'
 <translation id="797512352675305461">Activer ou désactiver la loupe plein écran</translation>
 <translation id="7977927628060636163">Recherche de réseaux mobiles en cours...</translation>
 <translation id="7982789257301363584">Réseau</translation>
+<translation id="7982878511129296052">Désactivation en cours…</translation>
 <translation id="7984197416080286869">Trop de tentatives de déverrouillage avec empreinte digitale</translation>
 <translation id="798779949890829624">Ce paramètre est géré par votre administrateur</translation>
 <translation id="799296642788192631">Vous pouvez épingler des fichiers importants. Pour épingler, pointez un élément ou ouvrez Fichiers et faites un clic droit sur un élément.</translation>

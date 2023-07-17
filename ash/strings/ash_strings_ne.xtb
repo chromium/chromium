@@ -201,7 +201,6 @@
 <translation id="1823873187264960516">इथरनेट: <ph name="ADDRESS" /></translation>
 <translation id="1824922790784036530">लोकेसन प्रयोग गर्ने अनुमति दिनुहोस्</translation>
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> अनपिन गरिएको थियो</translation>
-<translation id="183465528887726323">हटस्पट प्रयोग गर्न मोबाइल डेटामा कनेक्ट गर्नुहोस्</translation>
 <translation id="1838895407229022812">रात्रि प्रकाश निष्क्रिय छ।</translation>
 <translation id="1854180393107901205">Cast गर्न रोक्नुहोस्</translation>
 <translation id="1862380676329487333">अपडेट गर्नुहोस् अनि साइन आउट गर्नुहोस्</translation>
@@ -225,7 +224,6 @@
 <translation id="1961239773406905488">क्यामेरामा फोटोको प्रिभ्यू लुकाइएको छ</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="1962969542251276847">लक स्क्रिन</translation>
-<translation id="1962972976741217487">तपाईंको <ph name="DEVICE_NAME" /> को हटस्पटमा एउटा डिभाइस कनेक्ट गरिएको छ</translation>
 <translation id="1967970931040389207">हटस्पट अन गर्नुहोस्</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">नमस्कार, <ph name="USERNAME" /></translation>
@@ -595,7 +593,6 @@
 <translation id="3621202678540785336">आगत</translation>
 <translation id="3621712662352432595">अडियो सेटिङहरू</translation>
 <translation id="3626281679859535460">चम्किलोपना</translation>
-<translation id="3629640897379005903">हटस्पटसम्बन्धी विवरणहरू देखाइऊन्। हटस्पट अफ गरिँदै छ।</translation>
 <translation id="3630697955794050612">अफ छ</translation>
 <translation id="3631369015426612114">निम्न स्रोतहरूबाट सूचनाहरूलाई अनुमति दिनुहोस्</translation>
 <translation id="3633097874324966332">आफ्नो डिभाइस कनेक्ट गर्न ब्लुटुथका सेटिङ खोल्नुहोस्</translation>
@@ -734,7 +731,6 @@
 <translation id="423685346499232137">यस बखत सामग्री कपी वा पेस्ट गर्न सकिँदैन</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">परिदृश्य मोड</translation>
-<translation id="4240756737570479726">अफ गरिँदै छ…</translation>
 <translation id="4242533952199664413">सेटिङहरू खोल्नुहोस्</translation>
 <translation id="4247123849143712100">अपडेट गर्नुहोस् अनि सट डाउन गर्नुहोस्</translation>
 <translation id="4250229828105606438">स्क्रिसट</translation>
@@ -927,7 +923,6 @@
 <translation id="5034421018520995080">पृष्ठको शीर्षभागमा जानुहोस्</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> कुनै नयाँ फोनसँग जोडियो</translation>
 <translation id="5035389544768382859">डिस्प्ले कन्फिगुरेसन पुष्टि गर्नुहोस्</translation>
-<translation id="5038863510258510803">सक्षम गर्दै...</translation>
 <translation id="5042305953558921026">परिदृश्य मोडको साँचो</translation>
 <translation id="5043679421800073804">सेल्फमा भएको अन्तिम वस्तुमा क्लिक वा ट्याप गर्नुहोस्</translation>
 <translation id="504465286040788597">अघिल्लो अनुच्छेद</translation>
@@ -983,7 +978,6 @@
 <translation id="5297704307811127955">अफ</translation>
 <translation id="5300589172476337783">देखाउनुहोस्</translation>
 <translation id="5302048478445481009">भाषा</translation>
-<translation id="5303783651764314393">तपाईंको <ph name="DEVICE_NAME" /> को हटस्पटमा <ph name="DEVICECOUNT" /> वटा डिभाइस कनेक्ट गरिएका छन्</translation>
 <translation id="5308380583665731573">कनेक्ट गर्नुहोस्</translation>
 <translation id="5313326810920013265">ब्लुटुथ सम्बन्धी सेटिङहरू</translation>
 <translation id="5314219114274263156">स्क्रिन रेकर्डिङ गरियो</translation>
@@ -1319,7 +1313,6 @@
 <translation id="6752912906630585008">डेस्क <ph name="REMOVED_DESK" /> हटाइयो र डेस्क <ph name="RECEIVE_DESK" /> मा गाभियो</translation>
 <translation id="6753390234084146956">ट्याब</translation>
 <translation id="6757237461819837179">कुनै मिडिया प्ले भइरहेको छैन</translation>
-<translation id="6759628406555734414">हटस्पटसम्बन्धी विवरणहरू देखाइऊन्। हटस्पट अन गरिँदै छ।</translation>
 <translation id="6768043681523654438">भण्डारण</translation>
 <translation id="6777216307882431711">जडान गरिएका USB-C यन्त्रहरू चार्ज गर्दै</translation>
 <translation id="6781002679438061620">डेस्क ९</translation>
@@ -1407,7 +1400,6 @@
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7168224885072002358"><ph name="TIMEOUT_SECONDS" /> सेकेन्डमा पुरानो रिजोल्युसनमा फिर्ता जाँदै</translation>
 <translation id="7180611975245234373">ताजा गर्नुहोस्</translation>
-<translation id="7187711731540696127">तपाईंको <ph name="DEVICE_NAME" /> को हटस्पट अन छ, कुनै पनि डिभाइस कनेक्ट गरिएको छैन</translation>
 <translation id="7188494361780961876">मेनु सारेर स्क्रिनको सिरानको बायाँ कुनामा लगियो।</translation>
 <translation id="7189412385142492784">शुक्र ग्रह पृथ्वीबाट कति टाढा छ</translation>
 <translation id="7198435252016571249">क्यामेरा पुछारको दायाँ कुनामा स्न्याप गरियो। सिस्टमको सतहसँग बाझियो।</translation>
@@ -1580,6 +1572,7 @@
 <translation id="797512352675305461">फुल स्क्रिन म्याग्निफायर अन वा अफ गर्नुहोस्</translation>
 <translation id="7977927628060636163">मोबाइल नेटवर्कहरू खोज्दै...</translation>
 <translation id="7982789257301363584">सञ्जाल</translation>
+<translation id="7982878511129296052">अफ गरिँदै छ...</translation>
 <translation id="7984197416080286869">फिंगरप्रिन्टमार्फत अनलक गर्ने अत्यधिक प्रयासहरू गरिए</translation>
 <translation id="798779949890829624">तपाईंका प्रशासक यो सेटिङ व्यवस्थापन गर्नुहुन्छ</translation>
 <translation id="799296642788192631">तपाईं महत्त्वपूर्ण फाइलहरू पिन गर्न सक्नुहुन्छ। पिन गर्न कुनै फाइलमाथि होभर गर्नुहोस् वा "फाइलहरू" खोल्नुहोस् र कुनै फाइलमा दायाँ क्लिक गर्नुहोस्।</translation>

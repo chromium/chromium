@@ -201,7 +201,6 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
 <translation id="1824922790784036530">Activează accesul la locație</translation>
 <translation id="1830308660060964064">Fixarea pentru <ph name="ITEM_TITLE" /> a fost anulată</translation>
-<translation id="183465528887726323">Conectează-te la datele mobile pentru a folosi hotspotul</translation>
 <translation id="1838895407229022812">Lumina de noapte este dezactivată.</translation>
 <translation id="1854180393107901205">Nu mai trimite</translation>
 <translation id="1862380676329487333">Actualizează și deconectează-te</translation>
@@ -225,7 +224,6 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="1961239773406905488">Previzualizarea camerei este ascunsă</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="1962969542251276847">Ecran de blocare</translation>
-<translation id="1962972976741217487">Un dispozitiv conectat la hotspotul <ph name="DEVICE_NAME" /></translation>
 <translation id="1967970931040389207">Activează hotspotul</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">Bună ziua, <ph name="USERNAME" /></translation>
@@ -595,7 +593,6 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="3621202678540785336">Intrări</translation>
 <translation id="3621712662352432595">Setări audio</translation>
 <translation id="3626281679859535460">Luminozitate</translation>
-<translation id="3629640897379005903">Afișează detaliile despre hotspot. Se dezactivează hotspotul.</translation>
 <translation id="3630697955794050612">dezactivată</translation>
 <translation id="3631369015426612114">Permite notificările de la</translation>
 <translation id="3633097874324966332">Deschide setările Bluetooth pentru a asocia dispozitivul</translation>
@@ -734,7 +731,6 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="423685346499232137">Nu se poate copia sau insera conținut în acest moment</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Modul de prezentare generală</translation>
-<translation id="4240756737570479726">Se dezactivează...</translation>
 <translation id="4242533952199664413">Deschide setările</translation>
 <translation id="4247123849143712100">Actualizează și închide</translation>
 <translation id="4250229828105606438">Captură de ecran</translation>
@@ -927,7 +923,6 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="5034421018520995080">Navighează la începutul paginii</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> conectat la un telefon nou</translation>
 <translation id="5035389544768382859">Confirmă configurația afișajului</translation>
-<translation id="5038863510258510803">Se activează...</translation>
 <translation id="5042305953558921026">Tasta pentru modul de prezentare generală</translation>
 <translation id="5043679421800073804">Dă clic pe sau atinge ultima pictogramă de pe raft</translation>
 <translation id="504465286040788597">Paragraful anterior</translation>
@@ -983,7 +978,6 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="5297704307811127955">Dezactivată</translation>
 <translation id="5300589172476337783">Afișează</translation>
 <translation id="5302048478445481009">Limbă</translation>
-<translation id="5303783651764314393"><ph name="DEVICECOUNT" /> dispozitive conectate la hotspotul <ph name="DEVICE_NAME" /></translation>
 <translation id="5308380583665731573">Conectează-te</translation>
 <translation id="5313326810920013265">Setări Bluetooth</translation>
 <translation id="5314219114274263156">S-a înregistrat ecranul</translation>
@@ -1319,7 +1313,6 @@ Instalare nouă</translation>
 <translation id="6752912906630585008">Desktopul <ph name="REMOVED_DESK" /> a fost eliminat și îmbinat cu desktopul <ph name="RECEIVE_DESK" /></translation>
 <translation id="6753390234084146956">file</translation>
 <translation id="6757237461819837179">Nu se redă conținut media</translation>
-<translation id="6759628406555734414">Afișează detaliile despre hotspot. Se activează hotspotul.</translation>
 <translation id="6768043681523654438">stocare</translation>
 <translation id="6777216307882431711">Se încarcă dispozitivele USB-C conectate</translation>
 <translation id="6781002679438061620">Biroul 9</translation>
@@ -1407,7 +1400,6 @@ Instalare nouă</translation>
 <translation id="7165278925115064263">Alt + Shift + K</translation>
 <translation id="7168224885072002358">Se revine la rezoluția anterioară în <ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="7180611975245234373">Actualizați</translation>
-<translation id="7187711731540696127">Hotspotul <ph name="DEVICE_NAME" /> este activat. Nu s-a conectat niciun dispozitiv.</translation>
 <translation id="7188494361780961876">Meniul a fost mutat în colțul din stânga sus al ecranului.</translation>
 <translation id="7189412385142492784">Cât de departe este Venus</translation>
 <translation id="7198435252016571249">Camera foto este aliniată cu colțul din dreapta jos. Conflict cu platforma de sistem.</translation>
@@ -1580,6 +1572,7 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="797512352675305461">Activează sau dezactivează lupa de ecran complet</translation>
 <translation id="7977927628060636163">Se caută rețele mobile…</translation>
 <translation id="7982789257301363584">Rețea</translation>
+<translation id="7982878511129296052">Se dezactivează...</translation>
 <translation id="7984197416080286869">Prea multe încercări de deblocare cu amprenta</translation>
 <translation id="798779949890829624">Această setare este gestionată de administrator</translation>
 <translation id="799296642788192631">Poți fixa fișiere importante. Pentru a fixa un element, plasează cursorul pe el sau deschide Fișiere și dă clic dreapta pe un element.</translation>

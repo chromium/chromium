@@ -83,6 +83,7 @@
 <translation id="1400642268715879018">۴ هفته گذشته</translation>
 <translation id="1404330357948037222">از سیستم خارج شده‌اید</translation>
 <translation id="1407135791313364759">باز کردن همه</translation>
+<translation id="1408847409015257906">روی «حریم خصوصی و امنیت» ضربه بزنید.</translation>
 <translation id="1430915738399379752">چاپ</translation>
 <translation id="1449835205994625556">پنهان کردن گذرواژه</translation>
 <translation id="1450170672351507823">«محافظت استاندارد» روشن است. برای امنیت بیشتر، از «محافظت پیشرفته» استفاده کنید.</translation>
@@ -102,6 +103,7 @@
 <translation id="1545749641540134597">اسکن رمزینه پاسخ‌سریع</translation>
 <translation id="1552525382687785070">سرپرستتان همگام‌سازی را غیرفعال کرده است</translation>
 <translation id="1554477036522844996">پنجره جدید</translation>
+<translation id="1563071802032385236">گزینه «درخواست باز کردن پیوندهای دیگر برنامه‌ها در حالت ناشناس» را روشن کنید.</translation>
 <translation id="1565371473877914088">برگه ناشناس جدید</translation>
 <translation id="1580715474678097352">ایمن ماندن دربرابر وب‌سایت‌های خطرناک</translation>
 <translation id="1580783302095112590">نامه ارسال شد.</translation>
@@ -112,6 +114,7 @@
 <translation id="1608337082864370066">جستجوی تصویر کپی‌شده</translation>
 <translation id="1612730193129642006">نمایش شبکه برگه</translation>
 <translation id="1620510694547887537">دوربین</translation>
+<translation id="1622717322707146952">‏«افزودن به تقویم Google» یا «افزودن به تقویم Apple» را انتخاب کنید.</translation>
 <translation id="1626771852476987600"><ph name="COUNT" /> گذرواژه دوباره‌استفاده‌شده</translation>
 <translation id="1641113438599504367">مرور ایمن</translation>
 <translation id="1644574205037202324">سابقه</translation>
@@ -157,6 +160,7 @@
 <translation id="1941314575388338491">برای کپی کردن دو ضربه سریع بزنید.</translation>
 <translation id="1943478190258551035">تنظیمات ← منو</translation>
 <translation id="1952172573699511566">درصورت امکان، وب‌سایت‌ها نوشتار را به زبان ترجیحی شما نمایش می‌دهند.</translation>
+<translation id="1959441496380398824">تاریخی را لمس کنید و نگه دارید.</translation>
 <translation id="1959679933317802873">درانتظار محتوا</translation>
 <translation id="1965935827552890526">‏کاری را که در پنجره باز Chrome دیگر انجام می‌دادید تمام کنید.</translation>
 <translation id="1967461193809857427">{count,plural, =1{‏می‌خواهید ادامه کار ناتمامتان در برگه Android را انجام دهید؟}one{‏می‌خواهید ادامه کار ناتمامتان در برگه‌های Android را انجام دهید؟}other{‏می‌خواهید ادامه کار ناتمامتان در برگه‌های Android را انجام دهید؟}}</translation>
@@ -230,6 +234,7 @@
 <translation id="2434405374328098816">قبلاً گذرواژه‌ای برای «<ph name="USERNAME" />» در <ph name="WEBSITE" /> ذخیره کرده‌اید</translation>
 <translation id="2435457462613246316">نمایش گذرواژه</translation>
 <translation id="2451654228769116489">سنجاق کردن برگه</translation>
+<translation id="2459155039684421202">در نوار نشانی، کاری مثل «پاک کردن سابقه من» یا «ویرایش گذرواژه‌ها» را وارد کنید.</translation>
 <translation id="2461070143328828326">تنظیمات رمز عبور</translation>
 <translation id="2469960372084740698">«مرور ایمن» خاموش شود؟</translation>
 <translation id="2473876017985765807">قبلاً گذرواژه‌ای برای <ph name="WEBSITE" /> ذخیره کرده‌اید</translation>
@@ -367,6 +372,7 @@
 <translation id="3224641773458703735">برای صادر کردن گذرواژه‌ها، ابتدا باید گذرنویسه‌ای برای دستگاه تنظیم کنید.</translation>
 <translation id="3227137524299004712">میکروفن</translation>
 <translation id="3235063766008841141">به سایت فریب‌دهنده‌ای وارد شد و درمعرض نقض داده قرار گرفت</translation>
+<translation id="3235242129752692527">جزئیات رویداد را ویرایش کنید و روی «ذخیره» ضربه بزنید.</translation>
 <translation id="3240426699337459095">پیوند کپی شد</translation>
 <translation id="3244271242291266297">ماه</translation>
 <translation id="3245744387817103524">تغییر ذخیره نشد.</translation>
@@ -537,6 +543,7 @@
 <translation id="4375040482473363939">جستجوی رمزینه پاسخ‌سریع</translation>
 <translation id="4378154925671717803">تلفن</translation>
 <translation id="4389019817280890563">برای تغییر زبان، ضربه بزنید.</translation>
+<translation id="4405320213589929829">برای دریافت اطلاعات محلی و مسیرها، از نشانی‌های موجود در صفحه‌های وب استفاده کنید.</translation>
 <translation id="4420409367264901497">ویرایش نشانک</translation>
 <translation id="4442550905108052454"><ph name="BEGIN_BOLD" />تنظیمات<ph name="END_BOLD" /> را باز کنید</translation>
 <translation id="4454246407045105932">افزودن زبان</translation>
@@ -670,6 +677,7 @@
 <translation id="5209674813563615506">باز کردن برگه جدید</translation>
 <translation id="5211488077761630279">«<ph name="SITE_NAME" />» مجاز باشد از <ph name="PERMISSION" /> استفاده کند؟</translation>
 <translation id="5219295696240154694">به بهبود امنیت برای همه کاربران وب کمک کنید</translation>
+<translation id="5220945116117011963">ایجاد «رویداد تقویم» از تاریخ‌ها</translation>
 <translation id="5221339005270097309">درحال بررسی گذرواژه‌ها…</translation>
 <translation id="5226568866393490213">رد کردن هشدار</translation>
 <translation id="5228579091201413441">فعال کردن همگام‌سازی</translation>
@@ -912,6 +920,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="6540120577248033958">‏از سایتی بازدید کنید و روی «دنبال کردن» در منوی Chrome کلیک کنید</translation>
 <translation id="6550675742724504774">گزینه‌ها</translation>
 <translation id="6561262006871132942">بزرگ کردن</translation>
+<translation id="6579867704846662339">می‌توانید انتخاب کنید که نشانی‌های وب ورودی از برنامه‌های دیگر در «حالت ناشناس» باز شود.</translation>
 <translation id="6583087784430677195">برای خاموش کردن، <ph name="BEGIN_LINK" />تنظیمات<ph name="END_LINK" /> را باز کنید و به «تکمیل خودکار گذرواژه‌ها» بروید.</translation>
 <translation id="6585618849026997638">با اضافه کردن نشانک، می‌توانید به صفحه‌ای که برایتان مهم است برگردید</translation>
 <translation id="6596481460663245319">‏جستجوی تصویر با Google</translation>
@@ -940,6 +949,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="6674571176963658787">برای شروع همگام‌سازی، گذرعبارت را وارد کنید</translation>
 <translation id="667999046851023355">سند</translation>
 <translation id="6684906340059221832">قیمت‌های درحال پیگیری</translation>
+<translation id="6685259053455152195">میان‌برهایی برای تغییر سریع تنظیمات و استفاده از ویژگی‌ها از نوار نشانی.</translation>
 <translation id="6710079714193676716">توسط سازمانتان مدیریت می‌شود. ممکن است برخی از ویژگی‌ها دردسترس نباشد. <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="672735642903863329">نشانک‌ها، گذرواژه‌ها، و موارد دیگر را در همه دستگاه‌هایتان دریافت کنید.</translation>
@@ -951,6 +961,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="6762812039470893796">لغو انتخاب همه</translation>
 <translation id="6780034285637185932">کد پستی</translation>
 <translation id="6781260999953472352">«همگام‌سازی» روشن شود؟</translation>
+<translation id="6781405765516175232">برای گزینه‌های مسیر، روی «دریافت مسیر» ضربه بزنید.</translation>
 <translation id="6785453220513215166">در حال ارسال گزارش خرابی...</translation>
 <translation id="6790502149545262384">به‌زودی وقتی برگه جدیدی باز می‌کنید، داستان‌هایی از <ph name="CHANNEL_NAME" /> خواهید دید.</translation>
 <translation id="6797885426782475225">جستجوی گفتاری</translation>
@@ -1004,6 +1015,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="7108762695052995889">مشاهده سایت</translation>
 <translation id="7133798577887235672">نام کامل</translation>
 <translation id="7136892417564438900">دوربین غیرقابل‌ دسترسی است</translation>
+<translation id="7154343200458623869">تکلیف را کامل کنید</translation>
 <translation id="7161230316646448869">همگام‌سازی نشانک‌ها، سابقه، و موارد دیگر در همه دستگاه‌ها</translation>
 <translation id="7162168282402939716">باز کردن قفل «برگه‌های ناشناس» با <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7172852049901402487">ایمن نگه‌داشتن گذرواژه‌ها دربرابر مشکلات امنیتی</translation>
@@ -1076,6 +1088,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="7671141431838911305">نصب</translation>
 <translation id="7679915578945954324">نشانی‌های سایت کپی شد</translation>
 <translation id="7687508192620387263">فایل تقویم دردسترس است</translation>
+<translation id="769104993356536261">‏استفاده از «کنش‌های Chrome» در iOS</translation>
 <translation id="7701040980221191251">هیچ‌کدام</translation>
 <translation id="7711440461521638739">از هیچ‌کدام از گذرواژه‌هایتان دوباره استفاده نکرده‌اید</translation>
 <translation id="7719038820139380048">برای دریافت محتوا براساس علایقتان، به سیستم وارد شوید.</translation>
@@ -1217,6 +1230,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="850600235656508448">باز کردن در حالت ناشناس</translation>
 <translation id="8517375800490286174">مجوزهای منبع باز</translation>
 <translation id="8524799873541103884">برگه‌های <ph name="INCOGNITO" />،‏ <ph name="FIRST_VISIBLE_TAB" /> تا <ph name="LAST_VISIBLE_TAB" /> از <ph name="NUMBER_OF_OPEN_TABS" /> برگه</translation>
+<translation id="8528009254289981965">باز کردن پیوندهای دیگر برنامه‌ها در حالت ناشناس</translation>
 <translation id="8529767659511976195">جدید</translation>
 <translation id="8532105204136943229">سال انقضا</translation>
 <translation id="8533166274275423134">جای دیگری باز است</translation>

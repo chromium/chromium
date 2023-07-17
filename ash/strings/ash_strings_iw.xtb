@@ -201,7 +201,6 @@
 <translation id="1823873187264960516">אתרנט: <ph name="ADDRESS" /></translation>
 <translation id="1824922790784036530">הפעלת הגישה למיקום</translation>
 <translation id="1830308660060964064">ההצמדה של <ph name="ITEM_TITLE" /> בוטלה</translation>
-<translation id="183465528887726323">כדי להשתמש בנקודה לשיתוף אינטרנט, צריך להפעיל את חבילת הגלישה</translation>
 <translation id="1838895407229022812">תאורת הלילה כבויה.</translation>
 <translation id="1854180393107901205">הפסקת ההעברה</translation>
 <translation id="1862380676329487333">עדכון ויציאה מהחשבון</translation>
@@ -225,7 +224,6 @@
 <translation id="1961239773406905488">התצוגה המקדימה של המצלמה מוסתרת</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="1962969542251276847">נעילת מסך</translation>
-<translation id="1962972976741217487">מכשיר אחד מחובר לנקודה לשיתוף אינטרנט של <ph name="DEVICE_NAME" /></translation>
 <translation id="1967970931040389207">הפעלת הנקודה לשיתוף אינטרנט</translation>
 <translation id="1969011864782743497">‏<ph name="DEVICE_NAME" />‏ (USB)</translation>
 <translation id="1972950159383891558">שלום, <ph name="USERNAME" /></translation>
@@ -595,7 +593,6 @@
 <translation id="3621202678540785336">קלט</translation>
 <translation id="3621712662352432595">הגדרות אודיו</translation>
 <translation id="3626281679859535460">בהירות</translation>
-<translation id="3629640897379005903">‏הצגת פרטי הנקודה לשיתוף אינטרנט (Hotspot). נקודת האינטרנט מושבתת.</translation>
 <translation id="3630697955794050612">כבויה</translation>
 <translation id="3631369015426612114">המקורות הבאים יכולים להציג התראות</translation>
 <translation id="3633097874324966332">‏צריך לפתוח את הגדרות Bluetooth כדי להתאים את המכשיר</translation>
@@ -734,7 +731,6 @@
 <translation id="423685346499232137">לא ניתן להעתיק או להדביק תוכן כרגע</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">מצב סקירה כללית</translation>
-<translation id="4240756737570479726">נקודת האינטרנט תושבת בקרוב…</translation>
 <translation id="4242533952199664413">פתיחת ההגדרות</translation>
 <translation id="4247123849143712100">עדכון וכיבוי</translation>
 <translation id="4250229828105606438">צילום מסך</translation>
@@ -927,7 +923,6 @@
 <translation id="5034421018520995080">מעבר אל ראש הדף</translation>
 <translation id="5035236842988137213">מכשיר <ph name="DEVICE_NAME" /> התחבר לטלפון חדש</translation>
 <translation id="5035389544768382859">אישור הגדרת המסך</translation>
-<translation id="5038863510258510803">מתבצעת הפעלה...</translation>
 <translation id="5042305953558921026">מקש של מצב סקירה כללית</translation>
 <translation id="5043679421800073804">לחיצה או הקשה על הסמל האחרון במדף</translation>
 <translation id="504465286040788597">הפיסקה הקודמת</translation>
@@ -983,7 +978,6 @@
 <translation id="5297704307811127955">כבויה</translation>
 <translation id="5300589172476337783">הצגה</translation>
 <translation id="5302048478445481009">שפה</translation>
-<translation id="5303783651764314393"><ph name="DEVICECOUNT" /> מכשירים מחוברים לנקודה לשיתוף אינטרנט של <ph name="DEVICE_NAME" /></translation>
 <translation id="5308380583665731573">התחברות</translation>
 <translation id="5313326810920013265">‏הגדרות Bluetooth</translation>
 <translation id="5314219114274263156">התבצעה הקלטת מסך</translation>
@@ -1319,7 +1313,6 @@
 <translation id="6752912906630585008">שולחן העבודה <ph name="REMOVED_DESK" /> הוסר ושולב עם שולחן העבודה <ph name="RECEIVE_DESK" /></translation>
 <translation id="6753390234084146956">כרטיסיות</translation>
 <translation id="6757237461819837179">מדיה לא מופעלת</translation>
-<translation id="6759628406555734414">‏הצגת פרטי הנקודה לשיתוף אינטרנט (Hotspot). ניתן להתחבר לנקודת האינטרנט.</translation>
 <translation id="6768043681523654438">אחסון</translation>
 <translation id="6777216307882431711">‏אספקת חשמל למכשירים המחוברים ב-USB-C</translation>
 <translation id="6781002679438061620">שולחן עבודה וירטואלי מספר 9</translation>
@@ -1407,7 +1400,6 @@
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7168224885072002358">תבוצע חזרה לרזולוציה הקודמת בעוד <ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="7180611975245234373">רענון</translation>
-<translation id="7187711731540696127">הנקודה לשיתוף אינטרנט של <ph name="DEVICE_NAME" /> פועלת, אין מכשירים מחוברים</translation>
 <translation id="7188494361780961876">התפריט הועבר לפינה הימנית העליונה של המסך.</translation>
 <translation id="7189412385142492784">מה המרחק בין כדור הארץ לנוגה</translation>
 <translation id="7198435252016571249">המצלמה מוצמדת לפינה השמאלית התחתונה. התנגשות עם תצוגת המערכת.</translation>
@@ -1582,6 +1574,7 @@
 <translation id="797512352675305461">הפעלה או השבתה של הזכוכית המגדלת במסך מלא</translation>
 <translation id="7977927628060636163">המערכת מחפשת רשתות סלולריות...</translation>
 <translation id="7982789257301363584">רשת</translation>
+<translation id="7982878511129296052">מתבצע כיבוי…</translation>
 <translation id="7984197416080286869">יותר מדי ניסיונות טביעת אצבע</translation>
 <translation id="798779949890829624">ההגדרה הזו מנוהלת על-ידי האדמין</translation>
 <translation id="799296642788192631">ניתן להצמיד קבצים חשובים. כדי להצמיד, מעבירים את העכבר מעל פריט או פותחים את 'קבצים' ולוחצים לחיצה ימנית על פריט.</translation>

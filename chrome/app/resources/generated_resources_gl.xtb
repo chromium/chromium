@@ -3106,6 +3106,7 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="3571734092741541777">Configurar</translation>
 <translation id="3575121482199441727">Permitir para este sitio</translation>
 <translation id="3577473026931028326">Produciuse un erro. Téntao de novo.</translation>
+<translation id="3577487026101678864">Sincronización de ficheiros activada</translation>
 <translation id="3577745545227000795">Recompilación de datos de hardware por parte de <ph name="DEVICE_OS" /></translation>
 <translation id="3578874072190212775">Axúdalles aos sitios a loitar contra a fraude, así como a distinguir entre os bots e as persoas</translation>
 <translation id="3581605050355435601">Configurar enderezo IP de forma automática</translation>
@@ -3313,6 +3314,7 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="3748706263662799310">Informar dun erro</translation>
 <translation id="3749724428455457489">Máis información sobre os anuncios suxeridos do sitio</translation>
 <translation id="3750562496035670393">Chrome gardou o teu contrasinal neste dispositivo, pero, se o prefires, podes almacenalo na túa Conta de Google. Todos os contrasinais da túa Conta de Google estarán dispoñibles sempre que teñas a sesión iniciada.</translation>
+<translation id="3752115502500640407">Compartir unha copia do teu contrasinal de <ph name="WEBSITE" /></translation>
 <translation id="3752253558646317685">Dille ao teu fillo ou filla que levante o dedo e o volva a poñer para gardar a impresión dixital</translation>
 <translation id="3753033997400164841">Garda os contrasinais unha vez e utilízaos en todas partes</translation>
 <translation id="3753142252662437130">Filtros de cores</translation>
@@ -3610,6 +3612,7 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="3975201861340929143">Explicación</translation>
 <translation id="3975565978598857337">Produciuse un erro durante o contacto co servidor do dominio</translation>
 <translation id="3976108569178263973">Non hai impresoras dispoñibles.</translation>
+<translation id="3976244126942806443">Os sitios adoitan conectarse aos dispositivos MIDI para crear e editar música</translation>
 <translation id="397703832102027365">Finalizando...</translation>
 <translation id="3977145907578671392">É posible que as funcións dalgúns sitios non estean dispoñibles no modo de incógnito</translation>
 <translation id="3977886311744775419">As actualizacións automáticas non se descargan neste tipo de rede, pero podes buscar actualizacións manualmente.</translation>
@@ -4772,6 +4775,7 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="4979510648199782334">Completouse a configuración de Microsoft 365</translation>
 <translation id="4980805016576257426">Esta extensión contén software malicioso.</translation>
 <translation id="4981449534399733132">Para borrar os datos de navegación de todos os dispositivos sincronizados e da túa Conta de Google, tes que <ph name="BEGIN_LINK" />iniciar sesión<ph name="END_LINK" />.</translation>
+<translation id="4983159853748980742">Non se compartiu o teu contrasinal. Comproba a conexión a Internet e asegúrate de que tes a sesión iniciada en Chrome. Despois, téntao de novo.</translation>
 <translation id="4986706507552097681">Sempre podes escoller na configuración o contido que queres sincronizar. Google pode personalizar a Busca e outros servizos en función do teu historial.</translation>
 <translation id="4986728572522335985">Con esta opción, eliminaranse todos os datos almacenados na chave de seguranza, incluídos os PIN</translation>
 <translation id="4988526792673242964">Páxinas</translation>
@@ -5431,6 +5435,7 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="5555363196923735206">Voltear a cámara</translation>
 <translation id="5555525474779371165">Escolle a protección da función Navegación segura</translation>
 <translation id="5555639311269196631">Desactivar zona wifi</translation>
+<translation id="5555760010546505198">Configuración de pantalla, lupa, corrección da cor e inversión da cor</translation>
 <translation id="5556459405103347317">Volver cargar</translation>
 <translation id="5558129378926964177">Achegar</translation>
 <translation id="5559311991468302423">Eliminar o enderezo</translation>
@@ -8682,6 +8687,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8301242268274839723">Toca o sensor de impresión dixital situado na esquina inferior esquerda do teclado. Os datos da túa impresión dixital almacenaranse de maneira segura no teu dispositivo (<ph name="DEVICE_TYPE" />) e nunca sairán del.</translation>
 <translation id="8303616404642252802">{COUNT,plural, =1{Enderezo}other{# enderezos}}</translation>
 <translation id="8304383784961451596">Non tes autorización para usar este dispositivo. Se queres obter permiso para iniciar sesión, ponte en contacto co administrador. Tamén podes iniciar sesión cunha conta de Google supervisada por Family Link.</translation>
+<translation id="8306063480506363120">Quitar acceso a Drive</translation>
 <translation id="8306885873692337975">Goza das últimas funcións e melloras de seguranza.</translation>
 <translation id="8308016398665340540">Estás compartindo esta rede con outros usuarios deste dispositivo</translation>
 <translation id="8308179586020895837">Preguntar se <ph name="HOST" /> quere acceder á túa cámara</translation>

@@ -3110,6 +3110,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3571734092741541777">Postavi</translation>
 <translation id="3575121482199441727">Dopusti za ovu web-lokaciju</translation>
 <translation id="3577473026931028326">Nešto nije u redu. Pokušajte ponovo.</translation>
+<translation id="3577487026101678864">Sinkronizacija datoteka je uključena</translation>
 <translation id="3577745545227000795"><ph name="DEVICE_OS" /> – prikupljanje podataka o hardveru</translation>
 <translation id="3578874072190212775">Pomozite web-lokacijama da se bore protiv prijevare i razlikuju botove od osoba</translation>
 <translation id="3581605050355435601">Automatsko konfiguriranje IP adrese</translation>
@@ -3317,6 +3318,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3748706263662799310">Prijava programske pogreške</translation>
 <translation id="3749724428455457489">Saznajte više o oglasima koje predlaže web-lokacija</translation>
 <translation id="3750562496035670393">Chrome je spremio vašu zaporku na ovaj uređaj, no možete je spremiti na svoj Google račun. Tada će i sve zaporke na vašem Google računu biti dostupne dok ste prijavljeni.</translation>
+<translation id="3752115502500640407">Podijelite kopiju svoje zaporke za <ph name="WEBSITE" /></translation>
 <translation id="3752253558646317685">Neka dijete nastavi podizati prst kako bi se spremio otisak prsta</translation>
 <translation id="3753033997400164841">Pohranite jedanput. Upotrebljavajte svugdje</translation>
 <translation id="3753142252662437130">Filtri boja</translation>
@@ -3614,6 +3616,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3975201861340929143">Objašnjenje</translation>
 <translation id="3975565978598857337">Kontaktiranje poslužitelja za domenu nije uspjelo</translation>
 <translation id="3976108569178263973">Nema dostupnih pisača.</translation>
+<translation id="3976244126942806443">Web-lokacije se obično povezuju s MIDI uređajima radi stvaranja i uređivanja glazbe</translation>
 <translation id="397703832102027365">Dovršavanje...</translation>
 <translation id="3977145907578671392">Značajke na nekim web-lokacijama možda neće funkcionirati u anonimnom načinu rada</translation>
 <translation id="3977886311744775419">Na ovoj vrsti mreže ne preuzimaju se automatska ažuriranja, no možete ih potražiti ručno.</translation>
@@ -4776,6 +4779,7 @@ Upotrijebite Ctrl + Alt + Smanjivanje svjetline za smanjivanje prikaza.</transla
 <translation id="4979510648199782334">Postavljanje Microsofta 365 dovršeno</translation>
 <translation id="4980805016576257426">Proširenje sadrži zlonamjerni softver.</translation>
 <translation id="4981449534399733132">Da biste izbrisali podatke o pregledavanju sa svih svojih sinkroniziranih uređaja i svojeg Google računa, <ph name="BEGIN_LINK" />prijavite se<ph name="END_LINK" />.</translation>
+<translation id="4983159853748980742">Zaporka nije podijeljena. Provjerite internetsku vezu i prijavite se na Chrome. Zatim pokušajte ponovo.</translation>
 <translation id="4986706507552097681">U postavkama možete odabrati što će se sinkronizirati. Google može personalizirati Pretraživanje i druge usluge na temelju vaše povijesti.</translation>
 <translation id="4986728572522335985">Time će se izbrisati svi podaci na sigurnosnom ključu, uključujući PIN</translation>
 <translation id="4988526792673242964">Stranice</translation>
@@ -5435,6 +5439,7 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="5555363196923735206">Promjena fotoaparata</translation>
 <translation id="5555525474779371165">Odaberite svoju zaštitu sigurnog pregledavanja</translation>
 <translation id="5555639311269196631">Isključi žarišnu točku</translation>
+<translation id="5555760010546505198">Postavke inverzije boja, korekcije boja, povećala i prikaza</translation>
 <translation id="5556459405103347317">Ponovno učitaj</translation>
 <translation id="5558129378926964177">Zoom &amp;In (Povećaj)</translation>
 <translation id="5559311991468302423">Brisanje adrese</translation>
@@ -8691,6 +8696,7 @@ Ključnu datoteku čuvajte na sigurnom mjestu. Trebat će vam za stvaranje novih
 <translation id="8301242268274839723">Dodirnite senzor otiska prsta u donjem lijevom kutu tipkovnice. Podaci o otisku prsta sigurno se pohranjuju i nikamo se ne šalju s uređaja <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8303616404642252802">{COUNT,plural, =1{Adresa}one{# adresa}few{# adrese}other{# adresa}}</translation>
 <translation id="8304383784961451596">Niste ovlašteni za upotrebu ovog uređaja. Zatražite da vam administrator dopusti prijavu ili se prijavite Google računom nadziranim putem Family Linka.</translation>
+<translation id="8306063480506363120">Ukloni pristup Disku</translation>
 <translation id="8306885873692337975">Preuzmite najnovije značajke i sigurnosna poboljšanja.</translation>
 <translation id="8308016398665340540">Dijelite tu mrežu s drugim korisnicima ovog uređaja</translation>
 <translation id="8308179586020895837">Pitaj ako <ph name="HOST" /> želi pristupiti kameri</translation>

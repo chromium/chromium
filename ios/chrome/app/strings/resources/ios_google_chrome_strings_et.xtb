@@ -6,6 +6,7 @@
 <translation id="1352919863522755794">Google'i paroolihalduril ei õnnestunud teie paroole kontrollida. Kontrollige internetiühendust.</translation>
 <translation id="1462727070346936664">Chrome'i parimal moel kasutamiseks logige sisse.</translation>
 <translation id="1479202195792305274">Chrome saab teie paroole kontrollida siis, kui logite sisse oma Google'i kontoga.</translation>
+<translation id="1491435845014430217">Lülitage sisse valik „Lukusta Chrome'i sulgemisel inkognito vahelehed“.</translation>
 <translation id="1493827051843127077">Määrake Chrome vaikebrauseriks, et sünkroonida kõikides oma seadetes vahelehti, paroole ja makseteavet</translation>
 <translation id="1504372625950710826">Chrome ei saanud värskendusi otsida. Kontrollige internetiühendust.</translation>
 <translation id="1511320244449497906">Olete sisse logitud ja andmed sünkroonitakse kontoga, mida haldab <ph name="DOMAIN" />, kus selle administraator saab nüüd määrata konto kasutajareegleid, millega saab Chrome'i käitumist muuta.</translation>
@@ -80,6 +81,7 @@
 <translation id="5395376160638294582">Veenduge, et saaksite alati kasutada oma Google'i kontol Chrome'i andmeid</translation>
 <translation id="5460571915754665838">4. Valige Chrome</translation>
 <translation id="5492504007368565877">Google'i paroolihaldur ei saa teie paroole kontrollida.</translation>
+<translation id="5527026824954593399">Puudutage valikut „Kuva Google Mapsi abil Chrome'is“.</translation>
 <translation id="5552137475244467770">Chrome võrdleb teie paroole regulaarselt veebis avaldatud loenditega. Selle käigus on teie paroolid ja kasutajanimed krüpteeritud, et mitte keegi (sh Google) ei saaks neid lugeda.</translation>
 <translation id="5639704535586432836">Tehke valikud Seaded &gt; Privaatsus &gt; Kaamera &gt; Google Chrome ja lülitage kaamera sisse.</translation>
 <translation id="5642200033778930880">Google Chrome ei saa kaamerat poolitatud vaate režiimis kasutada</translation>
@@ -120,6 +122,7 @@
 <translation id="7501046334262221972">Chrome'i vaikebrauseriks määramiseks avage jaotis Seaded. Puudutage valikut Vaikebrauserirakendus ja seejärel valige Chrome.</translation>
 <translation id="756809126120519699">Chrome'i andmed kustutati</translation>
 <translation id="7662994914830945754">Selleks et näha vahelehti kõikjalt, kus Chrome'i kasutate, logige sisse ja lülitage sisse sünkroonimine</translation>
+<translation id="7669869107155339016">Avage Chrome'i seaded.</translation>
 <translation id="7693590760643069321">Nüüd saate kasutada Chrome'i iga kord, kui puudutate linke sõnumites, dokumentides ja muudes rakendustes.</translation>
 <translation id="7698568245838009292">Chrome soovib juurdepääsu kaamerale</translation>
 <translation id="7754633291442704733">Teie organisatsioon <ph name="DOMAIN" /> saab juurdepääsu teie Chrome'i andmetele, järjehoidjatele, ajaloole, paroolidele ja muudele seadetele, mille sellele kontole salvestate. Kui välja logite, kustutatakse teie andmed sellest seadmest.  Teie andmed jäävad teie hallatud Google'i kontole siiski alles ja need on teie organisatsiooni jaoks saadaval. Teie organisatsioon saab määrata ka konto kasutajareegleid, millega saab Chrome'i käitumist muuta.</translation>

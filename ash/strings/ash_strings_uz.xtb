@@ -205,7 +205,6 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
 <translation id="1824922790784036530">Joylashuv axborotiga ruxsatni yoqish</translation>
 <translation id="1830308660060964064">Yechib olindi: <ph name="ITEM_TITLE" /></translation>
-<translation id="183465528887726323">Hotspot ishlatish uchun mobil internetga ulaning</translation>
 <translation id="1838895407229022812">Tungi rejim oʻchiq.</translation>
 <translation id="1854180393107901205">Translatsiyani to‘xtatish</translation>
 <translation id="1862380676329487333">Yangilash va hisobdan chiqish</translation>
@@ -229,7 +228,6 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="1961239773406905488">Kamera orqali razm solish berkitilgan</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="1962969542251276847">Ekran qulfi</translation>
-<translation id="1962972976741217487">1 ta qurilma <ph name="DEVICE_NAME" /> hotspotiga ulangan</translation>
 <translation id="1967970931040389207">Hotspotni yoqish</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">Salom <ph name="USERNAME" /></translation>
@@ -600,7 +598,6 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="3621202678540785336">Kirish</translation>
 <translation id="3621712662352432595">Audio sozlamalari</translation>
 <translation id="3626281679859535460">Yorqinlik</translation>
-<translation id="3629640897379005903">Hotspot axborotini ochish. Hotspot oʻchirilmoqda.</translation>
 <translation id="3630697955794050612">oʻchiq</translation>
 <translation id="3631369015426612114">Quyidagilardan bildirishnomalar ko‘rsatilsin</translation>
 <translation id="3633097874324966332">Qurilmangizni ulash uchun Bluetooth sozlamalarini oching</translation>
@@ -741,7 +738,6 @@ Qurilmani quvvat manbaiga ulang.</translation>
 <translation id="423685346499232137">Ayni vaqtda kontentni nusxalash yoki joylash imkonsiz</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Umumiy axborot rejimi</translation>
-<translation id="4240756737570479726">Oʻchirilmoqda…</translation>
 <translation id="4242533952199664413">Sozlamalarni ochish</translation>
 <translation id="4247123849143712100">Yangilash va ishni yakunlash</translation>
 <translation id="4250229828105606438">Skrinshot</translation>
@@ -936,7 +932,6 @@ Qurilmani quvvat manbaiga ulang.</translation>
 <translation id="5034421018520995080">Sahifaning boshiga qaytish</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> yangi telefonga ulandi</translation>
 <translation id="5035389544768382859">Displey sozlamalarini tasdiqlash</translation>
-<translation id="5038863510258510803">Yoqilmoqda...</translation>
 <translation id="5042305953558921026">Umumiy rejim tugmasi</translation>
 <translation id="5043679421800073804">Paneldagi oxirgi belgi ustiga bosish</translation>
 <translation id="504465286040788597">Avvalgi xatboshi</translation>
@@ -992,7 +987,6 @@ Qurilmani quvvat manbaiga ulang.</translation>
 <translation id="5297704307811127955">Oʻchiq</translation>
 <translation id="5300589172476337783">Ko‘rsatish</translation>
 <translation id="5302048478445481009">Til</translation>
-<translation id="5303783651764314393"><ph name="DEVICECOUNT" /> ta qurilma <ph name="DEVICE_NAME" /> hotspotiga ulangan</translation>
 <translation id="5308380583665731573">Ulanish</translation>
 <translation id="5313326810920013265">Bluetooth sozlamalari</translation>
 <translation id="5314219114274263156">Ekran yozib olindi</translation>
@@ -1330,7 +1324,6 @@ yangi oʻrnatilgan</translation>
 <translation id="6752912906630585008"><ph name="REMOVED_DESK" /> ish stoli olib tashlandi va oynalari <ph name="RECEIVE_DESK" /> ish stoliga birlashtirildi</translation>
 <translation id="6753390234084146956">varaqlar</translation>
 <translation id="6757237461819837179">Hech narsa ijro qilinmayapti</translation>
-<translation id="6759628406555734414">Hotspot axborotini ochish. Hotspot yoqilmoqda.</translation>
 <translation id="6768043681523654438">xotira</translation>
 <translation id="6777216307882431711">Ulangan USB-C qurilmalar quvvatlanmoqda</translation>
 <translation id="6781002679438061620">Desk 9</translation>
@@ -1418,7 +1411,6 @@ yangi oʻrnatilgan</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7168224885072002358">Avvalgi ekran hajmiga qaytishga <ph name="TIMEOUT_SECONDS" /> qoldi.</translation>
 <translation id="7180611975245234373">Yangilash</translation>
-<translation id="7187711731540696127"><ph name="DEVICE_NAME" /> hotspoti yoniq, hech qanday qurilma ulanmagan</translation>
 <translation id="7188494361780961876">Menyu ekranning yuqori chap burchagiga surildi.</translation>
 <translation id="7189412385142492784">Venera qanchalik uzoq</translation>
 <translation id="7198435252016571249">Kamera pastki oʻng burchakka joylandi. Tizim platfromasi bilan muammo chiqdi.</translation>
@@ -1592,6 +1584,7 @@ Qurilmani oʻchirish uchun uning quvvat tugmasini biroz bosib turing.</translati
 <translation id="797512352675305461">Butun ekran lupasini yoqish yoki oʻchirish</translation>
 <translation id="7977927628060636163">Mobil tarmoqlar qidirilmoqda...</translation>
 <translation id="7982789257301363584">Tarmoq</translation>
+<translation id="7982878511129296052">Oʻchirilmoqda...</translation>
 <translation id="7984197416080286869">Siz juda koʻp marta urindingiz</translation>
 <translation id="798779949890829624">Bu sozlama administrator tomonidan boshqariladi</translation>
 <translation id="799296642788192631">Muhim fayllarni mahkamlash mumkin. Mahkamlash uchun sichqonchani fayl ustiga suring yoki Fayllar ilovasini ochib, unga oʻng klik bosing.</translation>

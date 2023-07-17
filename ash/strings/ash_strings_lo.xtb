@@ -201,7 +201,6 @@
 <translation id="1823873187264960516">ອີເທີເນັດ: <ph name="ADDRESS" /></translation>
 <translation id="1824922790784036530">ເປີດສິດເຂົ້າເຖິງສະຖານທີ່</translation>
 <translation id="1830308660060964064">ຖອນປັກໝຸດ <ph name="ITEM_TITLE" /> ແລ້ວ</translation>
-<translation id="183465528887726323">ເຊື່ອມຕໍ່ອິນເຕີເນັດມືຖືເພື່ອໃຊ້ຮັອດສະປອດ</translation>
 <translation id="1838895407229022812">ແສງກາງຄືນປິດຢູ່.</translation>
 <translation id="1854180393107901205">ຢຸດ​ການ​ຄາສທ໌</translation>
 <translation id="1862380676329487333">ອັບເດດ ແລະ ອອກຈາກລະບົບ</translation>
@@ -225,7 +224,6 @@
 <translation id="1961239773406905488">ເຊື່ອງຕົວຢ່າງກ້ອງຖ່າຍຮູບແລ້ວ</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="1962969542251276847">ຫນ້າຈໍລັອກ</translation>
-<translation id="1962972976741217487">ມີ 1 ອຸປະກອນເຊື່ອມຕໍ່ກັບຮັອດສະປອດ <ph name="DEVICE_NAME" /> ຂອງທ່ານ</translation>
 <translation id="1967970931040389207">ເປີດຮັອດສະປອດ</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">ສະບາຍດີ, <ph name="USERNAME" /></translation>
@@ -595,7 +593,6 @@
 <translation id="3621202678540785336">ການປ້ອນເຂົ້າ</translation>
 <translation id="3621712662352432595">ການຕັ້ງ​ຄ່າສຽງ</translation>
 <translation id="3626281679859535460">ຄວາມແຈ້ງ</translation>
-<translation id="3629640897379005903">ສະແດງລາຍລະອຽດຮັອດສະປອດ. ຮັອດສະປອດປິດການນຳໃຊ້ຢູ່.</translation>
 <translation id="3630697955794050612">ປິດ</translation>
 <translation id="3631369015426612114">ອະ​ນຸ​ຍາດ​ການແຈ້ງ​ເຕືອນຈາກ​ສິ່ງຕໍ່​ໄປ​ນີ້​</translation>
 <translation id="3633097874324966332">ເປີດການຕັ້ງຄ່າ Bluetooth ເພື່ອຈັບຄູ່ອຸປະກອນຂອງທ່ານ</translation>
@@ -734,7 +731,6 @@
 <translation id="423685346499232137">ບໍ່ສາມາດສຳເນົາ ຫຼື ວາງເນື້ອຫາໄດ້ໃນຕອນນີ້</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">ໂໝດພາບຮວມ</translation>
-<translation id="4240756737570479726">ກຳລັງປິດການນຳໃຊ້...</translation>
 <translation id="4242533952199664413">ເປີດ​ການ​ຕັ້ງ​ຄ່າ</translation>
 <translation id="4247123849143712100">ອັບເດດ ແລະ ປິດເຄື່ອງ</translation>
 <translation id="4250229828105606438">ຮູບຖ່າຍໜ້າຈໍ</translation>
@@ -927,7 +923,6 @@
 <translation id="5034421018520995080">ໄປຫາສ່ວນເທິງຂອງໜ້າ</translation>
 <translation id="5035236842988137213">ເຊື່ອມຕໍ່ <ph name="DEVICE_NAME" />ກັບໂທລະສັບໃໝ່ແລ້ວ</translation>
 <translation id="5035389544768382859">ຢືນຢັນການຕັ້ງຄ່າຈໍສະແດງຜົນ</translation>
-<translation id="5038863510258510803">ກຳລັງເປີດນຳໃຊ້...</translation>
 <translation id="5042305953558921026">ປຸ່ມໂໝດພາບຮວມ</translation>
 <translation id="5043679421800073804">ຄລິກ ຫຼື ແຕະໄອຄອນຫຼ້າສຸດຢູ່ຖ້ານ</translation>
 <translation id="504465286040788597">ຫຍໍ້ໜ້າກ່ອນໜ້າ</translation>
@@ -983,7 +978,6 @@
 <translation id="5297704307811127955">ປິດ</translation>
 <translation id="5300589172476337783">ສະ​ແດງ​</translation>
 <translation id="5302048478445481009">ພາ​ສາ</translation>
-<translation id="5303783651764314393">ມີ <ph name="DEVICECOUNT" /> ອຸປະກອນເຊື່ອມຕໍ່ກັບຮັອດສະປອດ <ph name="DEVICE_NAME" /> ຂອງທ່ານ</translation>
 <translation id="5308380583665731573">​ເຊື່ອມ​ຕໍ່</translation>
 <translation id="5313326810920013265">ຕັ້ງຄ່າ Bluetooth</translation>
 <translation id="5314219114274263156">ເຮັດການບັນທຶກໜ້າຈໍແລ້ວ</translation>
@@ -1319,7 +1313,6 @@
 <translation id="6752912906630585008">ລຶບເດັສ <ph name="REMOVED_DESK" /> ອອກ ແລະ ຮວມກັບເດັສ <ph name="RECEIVE_DESK" /> ແລ້ວ</translation>
 <translation id="6753390234084146956">ແຖບ</translation>
 <translation id="6757237461819837179">ບໍ່ມີການຫຼິ້ນມີເດຍ</translation>
-<translation id="6759628406555734414">ສະແດງລາຍລະອຽດຮັອດສະປອດ. ຮັອດສະປອດເປີດການນຳໃຊ້ຢູ່.</translation>
 <translation id="6768043681523654438">ບ່ອນຈັດເກັບຂໍ້ມູນ</translation>
 <translation id="6777216307882431711">ກຳລັງສາກອຸປະກອນ USB-C ທີ່ເຊື່ອມຕໍ່ແລ້ວ</translation>
 <translation id="6781002679438061620">ໂຕະ 9</translation>
@@ -1407,7 +1400,6 @@
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7168224885072002358">ການກັບໄປຫາຄວາມລະອຽດເກົ່າໃນ <ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="7180611975245234373">ຣີເຟຣຊ</translation>
-<translation id="7187711731540696127">ຮັອດສະປອດ <ph name="DEVICE_NAME" /> ຂອງທ່ານເປີດຢູ່, ບໍ່ມີອຸປະກອນເຊື່ອມຕໍ່</translation>
 <translation id="7188494361780961876">ຍ້າຍເມນູໄປແຈເທິງສຸດເບື້ອງຊ້າຍຂອງໜ້າຈໍ.</translation>
 <translation id="7189412385142492784">ດາວສຸກຢູ່ໄກເທົ່າໃດ</translation>
 <translation id="7198435252016571249">ແນບກ້ອງຖ່າຍຮູບໄປໃສ່ມຸມຂວາລຸ່ມແລ້ວ. ຂັດແຍ້ງກັບພື້ນຜິວຂອງລະບົບ.</translation>
@@ -1580,6 +1572,7 @@
 <translation id="797512352675305461">ເປີດ ຫຼື ປິດແວ່ນຂະຫຍາຍເຕັມຈໍ</translation>
 <translation id="7977927628060636163">ກຳລັງຊອກຫາເຄືອຂ່າຍມືຖື...</translation>
 <translation id="7982789257301363584">ເຄືອ​ຂ່າຍ</translation>
+<translation id="7982878511129296052">ກຳລັງປິດ...</translation>
 <translation id="7984197416080286869">ພະຍາຍາມປ້ອນລາຍນິ້ວມືຫຼາຍຄັ້ງເກີນໄປແລ້ວ</translation>
 <translation id="798779949890829624">ການຕັ້ງຄ່ານີ້ຈັດການໂດຍຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ</translation>
 <translation id="799296642788192631">ທ່ານສາມາດປັກໝຸດໄຟລ໌ສຳຄັນໄດ້. ເພື່ອປັດໝຸດ, ໃຫ້ເລື່ອນໄປໃສ່ລາຍການໃດໜຶ່ງ ຫຼື ເປີດໄຟລ໌ແລ້ວຄລິກຂວາໃສ່ລາຍການໃດໜຶ່ງ.</translation>

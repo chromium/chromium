@@ -83,6 +83,7 @@ Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />izbrišite podatke Chr
 <translation id="1400642268715879018">Protekla 4 tjedna</translation>
 <translation id="1404330357948037222">Odjavljeni ste</translation>
 <translation id="1407135791313364759">Otvori sve</translation>
+<translation id="1408847409015257906">Dodirnite Privatnost i sigurnost.</translation>
 <translation id="1430915738399379752">Ispis</translation>
 <translation id="1449835205994625556">Sakrijte zaporku</translation>
 <translation id="1450170672351507823">Uključena je standardna zaštita. Za još veću sigurnost koristite poboljšanu zaštitu.</translation>
@@ -102,6 +103,7 @@ Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />izbrišite podatke Chr
 <translation id="1545749641540134597">Skeniranje QR koda</translation>
 <translation id="1552525382687785070">Administrator je onemogućio sinkronizaciju</translation>
 <translation id="1554477036522844996">Novi prozor</translation>
+<translation id="1563071802032385236">Uključite opciju Postavi upit za otvaranje veza iz drugih aplikacija u anonimnom načinu.</translation>
 <translation id="1565371473877914088">Nova anonimna kartica</translation>
 <translation id="1580715474678097352">Zaštitite se od opasnih web-lokacija</translation>
 <translation id="1580783302095112590">Poruka je poslana.</translation>
@@ -112,6 +114,7 @@ Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />izbrišite podatke Chr
 <translation id="1608337082864370066">Pretraživanje slike koju ste kopirali</translation>
 <translation id="1612730193129642006">Prikaz rešetke kartice</translation>
 <translation id="1620510694547887537">Fotoaparat</translation>
+<translation id="1622717322707146952">Odaberite "Dodaj u Google kalendar" ili "Dodaj u Apple kalendar".</translation>
 <translation id="1626771852476987600">Višestruko korištene zaporke: <ph name="COUNT" /></translation>
 <translation id="1641113438599504367">Sigurno pregledavanje</translation>
 <translation id="1644574205037202324">Povijest</translation>
@@ -157,6 +160,7 @@ Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />izbrišite podatke Chr
 <translation id="1941314575388338491">Dodirnite dvaput da biste kopirali.</translation>
 <translation id="1943478190258551035">Izbornik → Postavke</translation>
 <translation id="1952172573699511566">Web-lokacije prikazivat će tekst na željenom jeziku kad god je to moguće.</translation>
+<translation id="1959441496380398824">Dodirnite i zadržite datum.</translation>
 <translation id="1959679933317802873">Čekanje sadržaja</translation>
 <translation id="1965935827552890526">Dovršite ono što ste radili u drugom otvorenom Chromeovom prozoru.</translation>
 <translation id="1967461193809857427">{count,plural, =1{Želite li nastaviti na kartici na kojoj ste stali na Androidu?}one{Želite li nastaviti na karticama na kojima ste stali na Androidu?}few{Želite li nastaviti na karticama na kojima ste stali na Androidu?}other{Želite li nastaviti na karticama na kojima ste stali na Androidu?}}</translation>
@@ -230,6 +234,7 @@ Web-lokacije ne mogu upotrebljavati kolačiće za uvid u vašu aktivnost pregled
 <translation id="2434405374328098816">Već ste spremili zaporku za korisničko ime <ph name="USERNAME" /> na web-lokaciji <ph name="WEBSITE" /></translation>
 <translation id="2435457462613246316">Pokaži zaporku</translation>
 <translation id="2451654228769116489">Prikvači karticu</translation>
+<translation id="2459155039684421202">U adresnu traku unesite zadatak kao što je "izbriši moju povijest" ili "uredi zaporke".</translation>
 <translation id="2461070143328828326">Postavke zaporke</translation>
 <translation id="2469960372084740698">Želite li isključiti sigurno pregledavanje?</translation>
 <translation id="2473876017985765807">Već ste spremili zaporku za web-lokaciju <ph name="WEBSITE" /></translation>
@@ -367,6 +372,7 @@ Potražite upute za svoju tražilicu da biste saznali kako izbrisati svoju povij
 <translation id="3224641773458703735">Da biste izvezli zaporke, najprije morate postaviti šifru zaporke na uređaju.</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3235063766008841141">Unesena na obmanjujućoj web-lokaciji i pronađena među zaporkama otkrivenim u povredi podataka</translation>
+<translation id="3235242129752692527">Uredite pojedinosti događaja i dodirnite Spremi.</translation>
 <translation id="3240426699337459095">Veza je kopirana</translation>
 <translation id="3244271242291266297">MM</translation>
 <translation id="3245744387817103524">Izmjena nije spremljena.</translation>
@@ -537,6 +543,7 @@ Potražite upute za svoju tražilicu da biste saznali kako izbrisati svoju povij
 <translation id="4375040482473363939">Pretraživanje QR kodova</translation>
 <translation id="4378154925671717803">Telefon</translation>
 <translation id="4389019817280890563">Dodirnite da biste promijenili jezik.</translation>
+<translation id="4405320213589929829">Upotrijebite adrese na web-stranicama da biste dobili lokalne informacije i upute.</translation>
 <translation id="4420409367264901497">Uređivanje oznake</translation>
 <translation id="4442550905108052454">Otvorite <ph name="BEGIN_BOLD" />Postavke<ph name="END_BOLD" /></translation>
 <translation id="4454246407045105932">Dodaj jezik</translation>
@@ -670,6 +677,7 @@ Potražite upute za svoju tražilicu da biste saznali kako izbrisati svoju povij
 <translation id="5209674813563615506">Otvorite novu karticu</translation>
 <translation id="5211488077761630279">Želite li dopustiti web-lokaciji <ph name="SITE_NAME" /> da upotrebljava vašu <ph name="PERMISSION" />?</translation>
 <translation id="5219295696240154694">Pomozite poboljšati sigurnost na webu za sve korisnike</translation>
+<translation id="5220945116117011963">Izrada događaja iz kalendara na temelju datuma</translation>
 <translation id="5221339005270097309">Provjera zaporki…</translation>
 <translation id="5226568866393490213">Odbaci upozorenje</translation>
 <translation id="5228579091201413441">Omogući sinkronizaciju</translation>
@@ -912,6 +920,7 @@ Pokušajte koristiti jedinstvenu zaporku za svaku web-lokaciju.</translation>
 <translation id="6540120577248033958">Posjetite web-lokaciju i kliknite Prati u izborniku preglednika Chrome</translation>
 <translation id="6550675742724504774">Opcije</translation>
 <translation id="6561262006871132942">Povećaj</translation>
+<translation id="6579867704846662339">U anonimnom načinu možete otvoriti dolazne URL-ove iz drugih aplikacija.</translation>
 <translation id="6583087784430677195">Da biste isključili značajku, otvorite <ph name="BEGIN_LINK" />Postavke<ph name="END_LINK" />, a zatim Automatsko popunjavanje zaporki.</translation>
 <translation id="6585618849026997638">Dodavanjem oznake možete se vratiti na stranicu koja vam je važna</translation>
 <translation id="6596481460663245319">Pretraži sliku na Googleu</translation>
@@ -940,6 +949,7 @@ Dok ste u anonimnom načinu, web-lokacije ne mogu upotrebljavati kolačiće za u
 <translation id="6674571176963658787">Za pokretanje sinkronizacije unesite šifru</translation>
 <translation id="667999046851023355">Dokument</translation>
 <translation id="6684906340059221832">Praćenje cijena</translation>
+<translation id="6685259053455152195">Prečaci za brzu izmjenu postavki i upotrebu značajki iz adresne trake.</translation>
 <translation id="6710079714193676716">Pod upravljanjem vaše organizacije. Neke značajke možda nisu dostupne. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="672735642903863329">Pristupajte svojim oznakama, zaporkama i drugim značajkama na svim svojim uređajima.</translation>
@@ -951,6 +961,7 @@ Dok ste u anonimnom načinu, web-lokacije ne mogu upotrebljavati kolačiće za u
 <translation id="6762812039470893796">Poništi sve</translation>
 <translation id="6780034285637185932">Poštanski broj</translation>
 <translation id="6781260999953472352">Uključiti sinkronizaciju?</translation>
+<translation id="6781405765516175232">Za opcije rute dodirnite Preuzmi upute.</translation>
 <translation id="6785453220513215166">Slanje izvješća o rušenju programa...</translation>
 <translation id="6790502149545262384">Prilikom otvaranja nove kartice uskoro će se prikazivati članci s web-lokacije <ph name="CHANNEL_NAME" />.</translation>
 <translation id="6797885426782475225">Glasovno pretraživanje</translation>
@@ -1004,6 +1015,7 @@ Dok ste u anonimnom načinu, web-lokacije ne mogu upotrebljavati kolačiće za u
 <translation id="7108762695052995889">Otvori web-lokaciju</translation>
 <translation id="7133798577887235672">Ime i prezime</translation>
 <translation id="7136892417564438900">Fotoaparat nije dostupan</translation>
+<translation id="7154343200458623869">Dovršite zadatak.</translation>
 <translation id="7161230316646448869">Sinkronizirajte svoje oznake, povijest i drugo na svim uređajima</translation>
 <translation id="7162168282402939716">Otključajte anonimne kartice pomoću opcije <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7172852049901402487">Osigurajte svoje zaporke od sigurnosnih problema</translation>
@@ -1076,6 +1088,7 @@ Dok ste u anonimnom načinu, web-lokacije ne mogu upotrebljavati kolačiće za u
 <translation id="7671141431838911305">INSTALIRANJE</translation>
 <translation id="7679915578945954324">Adrese web-lokacija su kopirane</translation>
 <translation id="7687508192620387263">Datoteka kalendara dostupna</translation>
+<translation id="769104993356536261">Upotreba radnji u Chromeu na iOS-u</translation>
 <translation id="7701040980221191251">Nema ih</translation>
 <translation id="7711440461521638739">Ne upotrebljavate stare zaporke</translation>
 <translation id="7719038820139380048">Prijavite se da biste dobivali sadržaj na temelju svojih interesa.</translation>
@@ -1217,6 +1230,7 @@ Vaši su podaci šifrirani vašom šifrom <ph name="TIME" /> Unesite je da biste
 <translation id="850600235656508448">Otvori u anonimnom načinu</translation>
 <translation id="8517375800490286174">Licence otvorenog koda</translation>
 <translation id="8524799873541103884">Kartice <ph name="INCOGNITO" /> od <ph name="FIRST_VISIBLE_TAB" /> do <ph name="LAST_VISIBLE_TAB" /> od ukupno <ph name="NUMBER_OF_OPEN_TABS" /></translation>
+<translation id="8528009254289981965">Otvaranje veza iz drugih aplikacija u anonimnom načinu</translation>
 <translation id="8529767659511976195">Novo</translation>
 <translation id="8532105204136943229">Godina isteka</translation>
 <translation id="8533166274275423134">Otvoreno negdje drugdje</translation>

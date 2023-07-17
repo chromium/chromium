@@ -82,6 +82,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="235650106824528204">Any Chrome data that is generated during the use of this profile (such as the creation of bookmarks, history, passwords and other settings) can be removed by the work profile administrator. <ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">Continue</translation>
 <translation id="2401189691232800402">Chrome OS system</translation>
+<translation id="2409816192575564775">{NUM_DEVICES,plural, =0{1 HID device was being accessed by one or more Chrome extensions}=1{1 HID device is being accessed by one or more Chrome extensions}other{# HID devices are being accessed by one or more Chrome extensions}}</translation>
 <translation id="2424440923901031101">This extension violates the Chrome Web Store policy and might be unsafe. Remove it from Chrome so that it can no longer see and change your data on sites that you visit, including your personal info.</translation>
 <translation id="2467438592969358367">Google Chrome wants to export your passwords. Type your Windows password to allow this.</translation>
 <translation id="2472092250898121027">This extension contains malware and is unsafe. Remove it from Chrome so that it can no longer see and change your data on sites that you visit, including your personal info.</translation>
@@ -283,6 +284,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="624230925347970731">Chrome will soon close</translation>
 <translation id="6247557882553405851">Google Password Manager</translation>
 <translation id="6273793429163604305">On your marks…</translation>
+<translation id="6277547788421725101">Your parent has turned off 'Permissions for sites, apps and extensions' for Chrome.</translation>
 <translation id="6291089322031436445">Chrome Dev Apps</translation>
 <translation id="6291549208091401781">Google Chrome is already installed for all users on your computer.</translation>
 <translation id="6326175484149238433">Remove from Chrome</translation>
@@ -338,6 +340,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="7398801000654795464">You were signed in to Chrome as <ph name="USER_EMAIL_ADDRESS" />. Please use the same account to sign in again.</translation>
 <translation id="7410958280246779049">Chrome blocked this file because it is dangerous</translation>
 <translation id="7412494426921990001">Click the Chrome menu</translation>
+<translation id="742463671275348370">{NUM_DEVICES,plural, =0{1 USB device was being accessed by one or more Chrome extensions}=1{1 USB device is being accessed by one or more Chrome extensions}other{# USB devices are being accessed by one or more Chrome extensions}}</translation>
 <translation id="7426611252293106642">Google Chrome may not function correctly because it is no longer supported on this Linux distribution</translation>
 <translation id="7449333426561673451">{COUNT,plural, =1{Your organisation closes Chrome automatically when it isn't used for one minute.}other{Your organisation closes Chrome automatically when it isn't used for # minutes.}}</translation>
 <translation id="7452987490177144319">{COUNT,plural, =1{Your organisation deletes browsing data automatically when Chrome isn't used for one minute. This could include history, autofill and downloads. Your tabs will stay open.}other{Your organisation deletes browsing data automatically when Chrome isn't used for # minutes. This could include history, autofill and downloads. Your tabs will stay open.}}</translation>

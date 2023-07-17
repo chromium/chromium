@@ -201,7 +201,6 @@
 <translation id="1823873187264960516">Ethernet՝ <ph name="ADDRESS" /></translation>
 <translation id="1824922790784036530">Միացնել տեղորոշման թույլտվությունը</translation>
 <translation id="1830308660060964064">«<ph name="ITEM_TITLE" />» տարրն ապամրացվեց</translation>
-<translation id="183465528887726323">Միացեք բջջային ինտերնետին՝ թեժ կետն օգտագործելու համար</translation>
 <translation id="1838895407229022812">Գիշերային ռեժիմն անջատված է</translation>
 <translation id="1854180393107901205">Դադարեցնել հեռարձակումը</translation>
 <translation id="1862380676329487333">Թարմացնել և դուրս գալ</translation>
@@ -225,7 +224,6 @@
 <translation id="1961239773406905488">Տեսախցիկի նախադիտումը թաքցված է</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="1962969542251276847">Կողպել էկրանը</translation>
-<translation id="1962972976741217487">1 սարք միացած է ձեր <ph name="DEVICE_NAME" />-ի թեժ կետին</translation>
 <translation id="1967970931040389207">Միացնել թեժ կետը</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">Ողջույն, <ph name="USERNAME" /></translation>
@@ -594,7 +592,6 @@
 <translation id="3621202678540785336">Ներածում</translation>
 <translation id="3621712662352432595">Ձայնի կարգավորումներ</translation>
 <translation id="3626281679859535460">Պայծառություն</translation>
-<translation id="3629640897379005903">Ցույց տալ թեժ կետի մանրամասները։ Թեժ կետն անջատվում է։</translation>
 <translation id="3630697955794050612">անջատված է</translation>
 <translation id="3631369015426612114">Թույլ տալ ծանուցումները հետևյալ կայքերից</translation>
 <translation id="3633097874324966332">Բացեք Bluetooth-ի կարգավորումները՝ սարքը զուգակցելու համար</translation>
@@ -733,7 +730,6 @@
 <translation id="423685346499232137">Այս պահին հնարավոր չէ բովանդակություն պատճենել կամ տեղադրել</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Համատեսքի ռեժիմ</translation>
-<translation id="4240756737570479726">Անջատվում է…</translation>
 <translation id="4242533952199664413">Բացել կարգավորումները</translation>
 <translation id="4247123849143712100">Թարմացնել և անջատել</translation>
 <translation id="4250229828105606438">Սքրինշոթ</translation>
@@ -926,7 +922,6 @@
 <translation id="5034421018520995080">Անցնել էջի սկիզբ</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> սարքը կապվեց նոր հեռախոսի հետ</translation>
 <translation id="5035389544768382859">Հաստատեք էկրանի կազմաձևումը</translation>
-<translation id="5038863510258510803">Միացում…</translation>
 <translation id="5042305953558921026">Համատեսքի ռեժիմի ստեղն</translation>
 <translation id="5043679421800073804">Ընտրել վերջին պատկերակը դարակում</translation>
 <translation id="504465286040788597">Նախորդ պարբերությունը</translation>
@@ -982,7 +977,6 @@
 <translation id="5297704307811127955">Անջատված է</translation>
 <translation id="5300589172476337783">Ցույց տալ</translation>
 <translation id="5302048478445481009">Լեզու</translation>
-<translation id="5303783651764314393"><ph name="DEVICECOUNT" /> սարք միացած է ձեր <ph name="DEVICE_NAME" />-ի թեժ կետին</translation>
 <translation id="5308380583665731573">Կապակցվել</translation>
 <translation id="5313326810920013265">Bluetooth-ի կարգավորումներ</translation>
 <translation id="5314219114274263156">Էկրանը տեսագրվել է</translation>
@@ -1318,7 +1312,6 @@
 <translation id="6752912906630585008">Աշխատասեղան <ph name="REMOVED_DESK" />-ը հեռացվել է և միացվել է աշխատասեղան <ph name="RECEIVE_DESK" />-ի հետ</translation>
 <translation id="6753390234084146956">ներդիրներ</translation>
 <translation id="6757237461819837179">Մեդիա բովանդակություն չի նվագարկվում</translation>
-<translation id="6759628406555734414">Ցույց տալ թեժ կետի մանրամասները։ Թեժ կետը միանում է։</translation>
 <translation id="6768043681523654438">տարածք</translation>
 <translation id="6777216307882431711">Լիցքավորում է միացված USB-C սարքերը</translation>
 <translation id="6781002679438061620">Աշխատասեղան 9</translation>
@@ -1406,7 +1399,6 @@
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7168224885072002358">Վերադարձ նախորդ լուծաչափին <ph name="TIMEOUT_SECONDS" /> վայրկյանից</translation>
 <translation id="7180611975245234373">Թարմացնել</translation>
-<translation id="7187711731540696127"><ph name="DEVICE_NAME" /> սարքի թեժ կետը միացված է, որևէ սարք դրան չի միացել</translation>
 <translation id="7188494361780961876">Ընտրացանկը տեղափոխվեց էկրանի վերևի ձախ անկյուն։</translation>
 <translation id="7189412385142492784">Որքան հեռու է Վեներան</translation>
 <translation id="7198435252016571249">Տեսախցիկի պատկերն ամրացված է ներքևի աջ անկյունում, քանի որ ծածկում էր համակարգի միջերեսի տարրերը։</translation>
@@ -1578,6 +1570,7 @@
 <translation id="797512352675305461">Միացնել կամ անջատել լիաէկրան խոշորացույցը</translation>
 <translation id="7977927628060636163">Բջջային ցանցերի որոնում...</translation>
 <translation id="7982789257301363584">Ցանց</translation>
+<translation id="7982878511129296052">Անջատվում է…</translation>
 <translation id="7984197416080286869">Մատնահետքով ապակողպման փորձերը չափից շատ են</translation>
 <translation id="798779949890829624">Այս կարգավորումը կառավարվում է ձեր ադմինիստրատորի կողմից</translation>
 <translation id="799296642788192631">Դուք կարող եք ամրացնել կարևոր ֆայլերը։ Ամրացնելու համար պահեք մկնիկի նշորդը տարրի վրա կամ բացեք «Ֆայլեր» հավելվածը և սեղմեք մկնիկի աջ կոճակը տարրի վրա։</translation>

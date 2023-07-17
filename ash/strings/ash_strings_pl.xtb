@@ -201,7 +201,6 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
 <translation id="1824922790784036530">Włącz dostęp do lokalizacji</translation>
 <translation id="1830308660060964064">Element <ph name="ITEM_TITLE" /> został odpięty</translation>
-<translation id="183465528887726323">Aby używać hotspota, nawiąż połączenie z mobilną transmisją danych</translation>
 <translation id="1838895407229022812">Podświetlenie nocne jest wyłączone.</translation>
 <translation id="1854180393107901205">Zatrzymaj przesyłanie</translation>
 <translation id="1862380676329487333">Zaktualizuj i wyloguj się</translation>
@@ -225,7 +224,6 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1961239773406905488">Podgląd z aparatu jest ukryty</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="1962969542251276847">Zablokuj ekran</translation>
-<translation id="1962972976741217487">1 urządzenie połączone z hotspotem <ph name="DEVICE_NAME" /></translation>
 <translation id="1967970931040389207">Włączanie hotspota</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">Cześć <ph name="USERNAME" />,</translation>
@@ -595,7 +593,6 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="3621202678540785336">Urządzenie wejściowe</translation>
 <translation id="3621712662352432595">Ustawienia audio</translation>
 <translation id="3626281679859535460">Jasność</translation>
-<translation id="3629640897379005903">Pokaż szczegóły hotspota. Hotspot się wyłącza.</translation>
 <translation id="3630697955794050612">wyłączono</translation>
 <translation id="3631369015426612114">Zezwalaj na powiadomienia z tych źródeł</translation>
 <translation id="3633097874324966332">Otwórz ustawienia Bluetooth, aby sparować urządzenie</translation>
@@ -734,7 +731,6 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="423685346499232137">W tej chwili nie można kopiować ani wklejać treści</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Tryb przeglądu</translation>
-<translation id="4240756737570479726">Wyłączam…</translation>
 <translation id="4242533952199664413">Otwórz ustawienia</translation>
 <translation id="4247123849143712100">Zaktualizuj i wyłącz</translation>
 <translation id="4250229828105606438">Zrzut ekranu</translation>
@@ -927,7 +923,6 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="5034421018520995080">Przejdź na górę strony</translation>
 <translation id="5035236842988137213">Urządzenie <ph name="DEVICE_NAME" /> zostało połączone z nowym telefonem</translation>
 <translation id="5035389544768382859">Potwierdź konfigurację wyświetlacza</translation>
-<translation id="5038863510258510803">Uruchamiam...</translation>
 <translation id="5042305953558921026">Klawisz trybu przeglądu</translation>
 <translation id="5043679421800073804">Kliknij ostatnią ikonę na półce</translation>
 <translation id="504465286040788597">Poprzedni akapit</translation>
@@ -983,7 +978,6 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="5297704307811127955">Wyłączono</translation>
 <translation id="5300589172476337783">Pokaż</translation>
 <translation id="5302048478445481009">Język</translation>
-<translation id="5303783651764314393">Urządzenia połączone z hotspotem <ph name="DEVICE_NAME" />: <ph name="DEVICECOUNT" /></translation>
 <translation id="5308380583665731573">Połącz</translation>
 <translation id="5313326810920013265">Ustawienia Bluetooth</translation>
 <translation id="5314219114274263156">Nagrano ekran</translation>
@@ -1318,7 +1312,6 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="6752912906630585008">Biurko <ph name="REMOVED_DESK" /> zostało usunięte i połączone z biurkiem <ph name="RECEIVE_DESK" /></translation>
 <translation id="6753390234084146956">karty</translation>
 <translation id="6757237461819837179">Multimedia nie są odtwarzane</translation>
-<translation id="6759628406555734414">Pokaż szczegóły hotspota. Hotspot się włącza.</translation>
 <translation id="6768043681523654438">miejsce na dane</translation>
 <translation id="6777216307882431711">Zasilanie podłączonych urządzeń USB-C</translation>
 <translation id="6781002679438061620">Biurko 9</translation>
@@ -1406,7 +1399,6 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="7165278925115064263">Alt + Shift + K</translation>
 <translation id="7168224885072002358">Powrót do wcześniejszej rozdzielczości za <ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="7180611975245234373">Odśwież</translation>
-<translation id="7187711731540696127">Hotspot <ph name="DEVICE_NAME" /> jest włączony. Brak połączonych urządzeń.</translation>
 <translation id="7188494361780961876">Menu zostało przeniesione w lewy górny róg ekranu.</translation>
 <translation id="7189412385142492784">Jak daleko jest Wenus</translation>
 <translation id="7198435252016571249">Podgląd z kamery został przyciągnięty do prawego dolnego rogu. Konflikt z obszarem systemowym.</translation>
@@ -1579,6 +1571,7 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="797512352675305461">Włącz lub wyłącz lupę pełnego ekranu</translation>
 <translation id="7977927628060636163">Szukam sieci komórkowych…</translation>
 <translation id="7982789257301363584">Sieć</translation>
+<translation id="7982878511129296052">Wyłączam…</translation>
 <translation id="7984197416080286869">Zbyt wiele prób odblokowania odciskiem palca</translation>
 <translation id="798779949890829624">Tym ustawieniem zarządza Twój administrator</translation>
 <translation id="799296642788192631">Możesz przypiąć ważne pliki. Aby przypiąć element, najedź na niego kursorem lub otwórz Pliki i kliknij go prawym przyciskiem myszy.</translation>

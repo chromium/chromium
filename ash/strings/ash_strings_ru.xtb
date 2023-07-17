@@ -201,7 +201,6 @@
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
 <translation id="1824922790784036530">Открыть доступ к геоданным</translation>
 <translation id="1830308660060964064">Объект "<ph name="ITEM_TITLE" />" откреплен</translation>
-<translation id="183465528887726323">Чтобы использовать устройство как точку доступа, подключитесь к мобильному интернету.</translation>
 <translation id="1838895407229022812">Ночная подсветка отключена</translation>
 <translation id="1854180393107901205">Прекратить трансляцию</translation>
 <translation id="1862380676329487333">Обновить и выйти</translation>
@@ -225,7 +224,6 @@
 <translation id="1961239773406905488">Предварительный просмотр для камеры выключен</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="1962969542251276847">Блокировать экран</translation>
-<translation id="1962972976741217487">К точке доступа вашего устройства <ph name="DEVICE_NAME" /> подключено 1 устройство</translation>
 <translation id="1967970931040389207">Включить точку доступа</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">Здравствуйте, <ph name="USERNAME" />!</translation>
@@ -595,7 +593,6 @@
 <translation id="3621202678540785336">Вход</translation>
 <translation id="3621712662352432595">Настройки звука</translation>
 <translation id="3626281679859535460">Яркость</translation>
-<translation id="3629640897379005903">Показать сведения о точке доступа. Точка доступа отключается.</translation>
 <translation id="3630697955794050612">выключена</translation>
 <translation id="3631369015426612114">Разрешить уведомления из следующих источников</translation>
 <translation id="3633097874324966332">Чтобы подключить устройство, откройте настройки Bluetooth.</translation>
@@ -734,7 +731,6 @@
 <translation id="423685346499232137">В настоящий момент нельзя копировать или вставлять содержимое.</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Режим обзора</translation>
-<translation id="4240756737570479726">Отключение…</translation>
 <translation id="4242533952199664413">Открыть настройки</translation>
 <translation id="4247123849143712100">Обновить и завершить работу</translation>
 <translation id="4250229828105606438">Скриншот</translation>
@@ -927,7 +923,6 @@
 <translation id="5034421018520995080">Перейти к верхней части экрана</translation>
 <translation id="5035236842988137213">Устройство <ph name="DEVICE_NAME" /> подключено к новому телефону</translation>
 <translation id="5035389544768382859">Подтвердите конфигурацию экрана</translation>
-<translation id="5038863510258510803">Активация...</translation>
 <translation id="5042305953558921026">Клавиша режима обзора</translation>
 <translation id="5043679421800073804">Выбрать последний значок на панели запуска</translation>
 <translation id="504465286040788597">Предыдущий абзац</translation>
@@ -983,7 +978,6 @@
 <translation id="5297704307811127955">Отключено</translation>
 <translation id="5300589172476337783">Показать</translation>
 <translation id="5302048478445481009">Язык</translation>
-<translation id="5303783651764314393">Сколько устройств подключено к точке доступа вашего устройства <ph name="DEVICE_NAME" />: <ph name="DEVICECOUNT" /></translation>
 <translation id="5308380583665731573">Подключение</translation>
 <translation id="5313326810920013265">Настройки Bluetooth</translation>
 <translation id="5314219114274263156">Видео с экрана записано</translation>
@@ -1319,7 +1313,6 @@
 <translation id="6752912906630585008">Рабочий стол "<ph name="REMOVED_DESK" />" удален и объединен с рабочим столом "<ph name="RECEIVE_DESK" />".</translation>
 <translation id="6753390234084146956">вкладки</translation>
 <translation id="6757237461819837179">Контент не воспроизводится</translation>
-<translation id="6759628406555734414">Показать сведения о точке доступа. Точка доступа включается.</translation>
 <translation id="6768043681523654438">хранилище</translation>
 <translation id="6777216307882431711">Питание подключенных устройств USB-C</translation>
 <translation id="6781002679438061620">Рабочий стол 9</translation>
@@ -1407,7 +1400,6 @@
 <translation id="7165278925115064263">Alt + Shift + K</translation>
 <translation id="7168224885072002358">Возврат к предыдущему разрешению через <ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="7180611975245234373">Обновить</translation>
-<translation id="7187711731540696127">Точка доступа вашего устройства <ph name="DEVICE_NAME" /> сейчас работает. К ней не подключено ни одно устройство.</translation>
 <translation id="7188494361780961876">Меню перемещено в левый верхний угол экрана.</translation>
 <translation id="7189412385142492784">Расстояние до Венеры</translation>
 <translation id="7198435252016571249">Окно предварительного просмотра камеры привязано к правому нижнему углу, так как перекрывало элементы системного интерфейса</translation>
@@ -1580,6 +1572,7 @@
 <translation id="797512352675305461">Включить или отключить полноэкранную лупу</translation>
 <translation id="7977927628060636163">Поиск мобильных сетей...</translation>
 <translation id="7982789257301363584">Сеть</translation>
+<translation id="7982878511129296052">Отключение…</translation>
 <translation id="7984197416080286869">Вы сделали слишком много попыток</translation>
 <translation id="798779949890829624">Этим параметром управляет администратор</translation>
 <translation id="799296642788192631">Вы можете закреплять важные файлы. Чтобы это сделать, наведите указатель на нужный объект или откройте приложение "Файлы", найдите объект и нажмите на него правой кнопкой мыши.</translation>

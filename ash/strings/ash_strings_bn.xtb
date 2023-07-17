@@ -201,7 +201,6 @@
 <translation id="1823873187264960516">ইথারনেট: <ph name="ADDRESS" /></translation>
 <translation id="1824922790784036530">লোকেশন অ্যাক্সেস চালু করুন</translation>
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> আনপিন করা হয়েছে</translation>
-<translation id="183465528887726323">হটস্পট ব্যবহার করতে মোবাইল ডেটার সাথে কানেক্ট করুন</translation>
 <translation id="1838895407229022812">নাইট লাইট ফিচার বন্ধ করা আছে।</translation>
 <translation id="1854180393107901205">কাস্ট করা বন্ধ করুন</translation>
 <translation id="1862380676329487333">আপডেট করে সাইন-আউট করুন</translation>
@@ -225,7 +224,6 @@
 <translation id="1961239773406905488">ক্যামেরা প্রিভিউ লুকানো আছে</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="1962969542251276847">স্ক্রিন লক করুন</translation>
-<translation id="1962972976741217487">১টি ডিভাইস আপনার <ph name="DEVICE_NAME" />-এর হটস্পটে কানেক্ট করা আছে</translation>
 <translation id="1967970931040389207">হটস্পট চালু করুন</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">হাই, <ph name="USERNAME" /></translation>
@@ -595,7 +593,6 @@
 <translation id="3621202678540785336">ইনপুট</translation>
 <translation id="3621712662352432595">অডিও সেটিংস</translation>
 <translation id="3626281679859535460">উজ্জ্বলতা</translation>
-<translation id="3629640897379005903">হটস্পটের বিবরণ দেখুন। হটস্পট বন্ধ করা হচ্ছে।</translation>
 <translation id="3630697955794050612">বন্ধ</translation>
 <translation id="3631369015426612114">নিম্নলিখিত থেকে বিজ্ঞপ্তি অনুমতি দিন</translation>
 <translation id="3633097874324966332">আপনার ডিভাইস পেয়ার করতে ব্লুটুথ সেটিংস খুলুন</translation>
@@ -734,7 +731,6 @@
 <translation id="423685346499232137">এই মুহূর্তে কন্টেন্ট কপি বা পেস্ট করা যাচ্ছে না</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">এক নজরে দেখার মোড</translation>
-<translation id="4240756737570479726">বন্ধ করা হচ্ছে…</translation>
 <translation id="4242533952199664413">সেটিংস খুলুন</translation>
 <translation id="4247123849143712100">আপডেট করে বন্ধ করুন</translation>
 <translation id="4250229828105606438">স্ক্রিনশট</translation>
@@ -927,7 +923,6 @@
 <translation id="5034421018520995080">পৃষ্ঠার উপরে যান</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" />টি নতুন ফোনে কানেক্ট করা হয়েছে</translation>
 <translation id="5035389544768382859">ডিসপ্লে কনফিগারেশন কনফার্ম করুন</translation>
-<translation id="5038863510258510803">সক্ষম হচ্ছে...</translation>
 <translation id="5042305953558921026">এক নজরে দেখার বোতাম</translation>
 <translation id="5043679421800073804">শেল্ফের শেষ আইকনে ক্লিক করুন বা ট্যাপ করুন</translation>
 <translation id="504465286040788597">পূর্ববর্তী অনুচ্ছেদ</translation>
@@ -983,7 +978,6 @@
 <translation id="5297704307811127955">বন্ধ করা আছে</translation>
 <translation id="5300589172476337783">দেখান</translation>
 <translation id="5302048478445481009">ভাষা</translation>
-<translation id="5303783651764314393"><ph name="DEVICECOUNT" />টি ডিভাইস আপনার <ph name="DEVICE_NAME" />-এর হটস্পটে কানেক্ট করা আছে</translation>
 <translation id="5308380583665731573">কানেক্ট করুন</translation>
 <translation id="5313326810920013265">ব্লুটুথ সেটিংস</translation>
 <translation id="5314219114274263156">স্ক্রিন রেকর্ডিং করা হয়েছে</translation>
@@ -1319,7 +1313,6 @@
 <translation id="6752912906630585008">ডেস্ক <ph name="REMOVED_DESK" />-কে সরিয়ে দিয়ে <ph name="RECEIVE_DESK" />-এর সাথে মার্জ করা হয়েছে</translation>
 <translation id="6753390234084146956">ট্যাব</translation>
 <translation id="6757237461819837179">কোনও মিডিয়া চলছে না</translation>
-<translation id="6759628406555734414">হটস্পটের বিবরণ দেখুন। হটস্পট চালু করা হচ্ছে।</translation>
 <translation id="6768043681523654438">স্টোরেজ</translation>
 <translation id="6777216307882431711">কানেক্ট করা USB-C ডিভাইসগুলি চার্জ করা হচ্ছে</translation>
 <translation id="6781002679438061620">ডেস্ক ৯</translation>
@@ -1407,7 +1400,6 @@
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7168224885072002358"><ph name="TIMEOUT_SECONDS" /> -এ পুরনো রেজোলিউশানে ফেরানো হচ্ছে</translation>
 <translation id="7180611975245234373">রিফ্রেশ করুন</translation>
-<translation id="7187711731540696127">আপনার <ph name="DEVICE_NAME" />-এর হটস্পট চালু আছে, কিন্তু কোনও ডিভাইস কানেক্ট করা নেই</translation>
 <translation id="7188494361780961876">স্ক্রিনের উপরে বাঁদিকের কোণায় মেনু সরে গেছে।</translation>
 <translation id="7189412385142492784">পৃথিবী থেকে শুক্র গ্রহের দুরত্ব কত</translation>
 <translation id="7198435252016571249">ক্যামেরাটি নিচে ডানদিকের কোণে স্ন্যাপ করা হয়েছে। সিস্টেমের সারফেসে ছবির কিছুটা ঢাকা পড়ছে।</translation>
@@ -1580,6 +1572,7 @@
 <translation id="797512352675305461">ফুলস্ক্রিন ম্যাগনিফার চালু বা বন্ধ করুন</translation>
 <translation id="7977927628060636163">মোবাইল নেটওয়ার্কগুলির জন্য সার্চ করছে...</translation>
 <translation id="7982789257301363584">নেটওয়ার্ক</translation>
+<translation id="7982878511129296052">বন্ধ করা হচ্ছে...</translation>
 <translation id="7984197416080286869">অনেকবার আঙ্গুলের ছাপ দিয়ে আনলক করার চেষ্টা করা হয়েছে</translation>
 <translation id="798779949890829624">এই সেটিং আপনার অ্যাডমিনিস্ট্রেটর ম্যানেজ করে থাকে</translation>
 <translation id="799296642788192631">আপনি গুরুত্বপূর্ণ ফাইল পিন করতে পারেন। পিন করার জন্য, আইটেমের উপর নিয়ে যান বা ফাইল খুলে আইটেমের উপর ডানদিকের বোতামে ক্লিক করুন।</translation>

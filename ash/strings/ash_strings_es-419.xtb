@@ -201,7 +201,6 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
 <translation id="1824922790784036530">Activar el acceso a la ubicación</translation>
 <translation id="1830308660060964064">Se dejó de fijar <ph name="ITEM_TITLE" /></translation>
-<translation id="183465528887726323">Conéctate a los datos móviles para usar el hotspot</translation>
 <translation id="1838895407229022812">La luz nocturna está apagada.</translation>
 <translation id="1854180393107901205">Detener transmisión</translation>
 <translation id="1862380676329487333">Actualizar y salir</translation>
@@ -225,7 +224,6 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="1961239773406905488">La vista previa de la cámara esta oculta</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="1962969542251276847">Bloquear pantalla</translation>
-<translation id="1962972976741217487">Hay 1 dispositivo conectado al hotspot de tu <ph name="DEVICE_NAME" /></translation>
 <translation id="1967970931040389207">Activa el hotspot</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">Hola, <ph name="USERNAME" /></translation>
@@ -595,7 +593,6 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="3621202678540785336">Entrada</translation>
 <translation id="3621712662352432595">Configuración de audio</translation>
 <translation id="3626281679859535460">Brillo</translation>
-<translation id="3629640897379005903">Mostrar detalles del hotspot. El hotspot se está inhabilitando.</translation>
 <translation id="3630697955794050612">desactivado</translation>
 <translation id="3631369015426612114">Permitir notificaciones de las siguientes fuentes</translation>
 <translation id="3633097874324966332">Abre la configuración de la conexión Bluetooth para vincular el dispositivo</translation>
@@ -735,7 +732,6 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="423685346499232137">En este momento no se puede copiar ni pegar contenido</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Modo de vista Recientes</translation>
-<translation id="4240756737570479726">Se está inhabilitando…</translation>
 <translation id="4242533952199664413">Abrir la configuración</translation>
 <translation id="4247123849143712100">Actualizar y apagar</translation>
 <translation id="4250229828105606438">Captura de pantalla</translation>
@@ -928,7 +924,6 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="5034421018520995080">Ir a la parte superior de la página</translation>
 <translation id="5035236842988137213">Se conectó el dispositivo <ph name="DEVICE_NAME" /> a un teléfono nuevo</translation>
 <translation id="5035389544768382859">Confirma la configuración de la pantalla</translation>
-<translation id="5038863510258510803">Habilitando...</translation>
 <translation id="5042305953558921026">Tecla del modo de vista Recientes</translation>
 <translation id="5043679421800073804">Hacer clic o presionar el último ícono de la barra</translation>
 <translation id="504465286040788597">Párrafo anterior</translation>
@@ -984,7 +979,6 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="5297704307811127955">No</translation>
 <translation id="5300589172476337783">Mostrar</translation>
 <translation id="5302048478445481009">Idioma</translation>
-<translation id="5303783651764314393">Hay <ph name="DEVICECOUNT" /> dispositivos conectados al hotspot de tu <ph name="DEVICE_NAME" /></translation>
 <translation id="5308380583665731573">Conectar</translation>
 <translation id="5313326810920013265">Configuración de Bluetooth</translation>
 <translation id="5314219114274263156">Se registró una grabación de pantalla</translation>
@@ -1320,7 +1314,6 @@ Nueva instalación</translation>
 <translation id="6752912906630585008">Se quitó el escritorio <ph name="REMOVED_DESK" /> y se combinó con el <ph name="RECEIVE_DESK" /></translation>
 <translation id="6753390234084146956">pestañas</translation>
 <translation id="6757237461819837179">No se está reproduciendo nada</translation>
-<translation id="6759628406555734414">Mostrar detalles del hotspot. El hotspot se está habilitando.</translation>
 <translation id="6768043681523654438">almacenamiento</translation>
 <translation id="6777216307882431711">Se están cargando los dispositivos USB-C conectados</translation>
 <translation id="6781002679438061620">Escritorio 9</translation>
@@ -1408,7 +1401,6 @@ Nueva instalación</translation>
 <translation id="7165278925115064263">Alt+mayúscula+K</translation>
 <translation id="7168224885072002358">Se revertirá a la resolución anterior en <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="7180611975245234373">Actualizar</translation>
-<translation id="7187711731540696127">El hotspot de tu <ph name="DEVICE_NAME" /> está activado y no hay dispositivos conectados</translation>
 <translation id="7188494361780961876">El menú se movió a la esquina superior izquierda de la pantalla.</translation>
 <translation id="7189412385142492784">A qué distancia está Venus</translation>
 <translation id="7198435252016571249">Se ajustó la cámara a la esquina inferior derecha. Entra en conflicto con la superficie del sistema.</translation>
@@ -1581,6 +1573,7 @@ Para apagarlo, vuelve a mantener presionado el botón de encendido.</translation
 <translation id="797512352675305461">Activar o desactivar la lupa de pantalla completa</translation>
 <translation id="7977927628060636163">Buscando redes móviles…</translation>
 <translation id="7982789257301363584">Red</translation>
+<translation id="7982878511129296052">Apagando…</translation>
 <translation id="7984197416080286869">Demasiados intentos con la huella dactilar</translation>
 <translation id="798779949890829624">El administrador controla este parámetro de configuración.</translation>
 <translation id="799296642788192631">Puedes fijar archivos importantes. Para fijar un elemento, coloca el cursor sobre él o abre Archivos y haz clic con el botón derecho en él.</translation>

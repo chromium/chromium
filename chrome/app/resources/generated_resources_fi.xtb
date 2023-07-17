@@ -3121,6 +3121,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3571734092741541777">Ota käyttöön</translation>
 <translation id="3575121482199441727">Salli tällä sivustolla</translation>
 <translation id="3577473026931028326">Jotain meni pieleen. Yritä uudelleen.</translation>
+<translation id="3577487026101678864">Tiedoston synkronointi päällä</translation>
 <translation id="3577745545227000795">Laitedatan kerääminen: <ph name="DEVICE_OS" /></translation>
 <translation id="3578874072190212775">Auta sivustoja estämään petoksia ja erottamaan botit ihmisistä</translation>
 <translation id="3581605050355435601">Määritä IP-osoite automaattisesti</translation>
@@ -3328,6 +3329,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3748706263662799310">Ilmoita virheestä</translation>
 <translation id="3749724428455457489">Lue lisää sivustojen ehdottamista mainoksista</translation>
 <translation id="3750562496035670393">Chrome tallensi salasanasi tälle laitteelle, mutta voit halutessasi tallentaa sen Google-tilillesi. Kaikki Google-tilillä olevat salasanat ovat käytettävissä, kun olet sisäänkirjautuneena.</translation>
+<translation id="3752115502500640407">Jaa kopio sivuston <ph name="WEBSITE" /> salasanasta</translation>
 <translation id="3752253558646317685">Pyydä lasta nostamaan sormea toistuvasti, jotta sormenjälki tallennetaan</translation>
 <translation id="3753033997400164841">Tallenna kerran. Käytä kaikkialla.</translation>
 <translation id="3753142252662437130">Värisuodattimet</translation>
@@ -3622,6 +3624,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3975201861340929143">Selitys</translation>
 <translation id="3975565978598857337">Alueen hakeminen palvelimelta epäonnistui</translation>
 <translation id="3976108569178263973">Tulostimia ei ole saatavilla.</translation>
+<translation id="3976244126942806443">Sivustot yhdistävät yleensä MIDI-laitteisiin musiikin luomista ja muokkaamista varten</translation>
 <translation id="397703832102027365">Viimeistellään...</translation>
 <translation id="3977145907578671392">Joidenkin sivustojen ominaisuudet eivät välttämättä toimi incognito-tilassa</translation>
 <translation id="3977886311744775419">Automaattisia päivityksiä ei ladata tässä verkkotyypissä, mutta voit tarkistaa päivitykset manuaalisesti.</translation>
@@ -4785,6 +4788,7 @@ Loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="4979510648199782334">Microsoft 365:n käyttöönotto on valmis</translation>
 <translation id="4980805016576257426">Tämä laajennus sisältää haittaohjelmia.</translation>
 <translation id="4981449534399733132">Jos haluat poistaa selailutiedot kaikilta synkronoiduilta laitteiltasi ja Google-tililtäsi, <ph name="BEGIN_LINK" />kirjaudu sisään<ph name="END_LINK" />.</translation>
+<translation id="4983159853748980742">Salasanaasi ei jaettu. Tarkista internetyhteytesi ja varmista, että olet kirjautunut Chromeen. Yritä sitten uudelleen.</translation>
 <translation id="4986706507552097681">Voit valita synkronoitavan sisällön asetuksissa. Google voi personoida Hakua ja muita palveluita historiasi perusteella.</translation>
 <translation id="4986728572522335985">Tämä poistaa kaiken suojausavaimen datan, mukaan lukien sen PIN-koodin</translation>
 <translation id="4988526792673242964">Sivut</translation>
@@ -5444,6 +5448,7 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="5555363196923735206">Vaihda kameraa</translation>
 <translation id="5555525474779371165">Valitse haluamasi Selaussuoja</translation>
 <translation id="5555639311269196631">Laita hotspot pois päältä</translation>
+<translation id="5555760010546505198">Käänteiset värit, värinkorjaus, suurennus ja näytön asetukset</translation>
 <translation id="5556459405103347317">Lataa uudelleen</translation>
 <translation id="5558129378926964177">&amp;Lähennä</translation>
 <translation id="5559311991468302423">Osoitteen poistaminen</translation>
@@ -8698,6 +8703,7 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8301242268274839723">Kosketa sormenjälkitunnistinta, joka on näppäimistön vasemmassa alakulmassa. Sormenjälkidata tallennetaan turvallisesti vain laitteellesi (<ph name="DEVICE_TYPE" />).</translation>
 <translation id="8303616404642252802">{COUNT,plural, =1{Osoite}other{# osoitetta}}</translation>
 <translation id="8304383784961451596">Sinulla ei ole tämän laitteen käyttölupaa. Pyydä kirjautumislupaa järjestelmänvalvojalta tai kirjaudu sisään Google-tilillä, jota valvotaan Family Linkillä.</translation>
+<translation id="8306063480506363120">Poista pääsy Driveen</translation>
 <translation id="8306885873692337975">Lataa uusimmat ominaisuudet ja tietoturvaparannukset.</translation>
 <translation id="8308016398665340540">Jaat tämä verkon muiden laitteen käyttäjien kanssa</translation>
 <translation id="8308179586020895837">Kysy, jos <ph name="HOST" /> haluaa käyttää kameraasi</translation>

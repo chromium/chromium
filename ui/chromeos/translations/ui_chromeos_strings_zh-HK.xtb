@@ -185,7 +185,7 @@
 <translation id="2464089476039395325">HTTP Proxy</translation>
 <translation id="2467267713099745100"><ph name="NETWORK_TYPE" />網絡，離線</translation>
 <translation id="2468402215065996499">他媽哥池</translation>
-<translation id="2468470447085858632">使用檔案同步功能在離線時存取 Google 雲端硬碟檔案</translation>
+<translation id="2468470447085858632">使用檔案同步功能，在離線時存取「Google 雲端硬碟」檔案</translation>
 <translation id="2470939964922472929">您輸入錯誤 PIN 的次數過多。如要設定新 PIN，請輸入流動網絡供應商提供的 8 位數個人解鎖金鑰(PUK)。</translation>
 <translation id="2500392669976258912">古吉拉特文 (拼音)</translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -614,7 +614,7 @@
 <translation id="5720028165859493293">「<ph name="FILE_NAME" />」已移到至垃圾桶</translation>
 <translation id="5724172041621205163">泰文 (Pattachote 鍵盤)</translation>
 <translation id="57383366388012121">上個月</translation>
-<translation id="575175778971367197">目前無法同步這個檔案</translation>
+<translation id="575175778971367197">目前無法同步此檔案</translation>
 <translation id="5756666464756035725">匈牙利文 QWERTY</translation>
 <translation id="5760252553414789727">已選取 <ph name="SELECTED_FILES_COUNT" /> 個項目</translation>
 <translation id="5763377084591234761">德文 (瑞士)</translation>
@@ -844,7 +844,7 @@
 <translation id="7547811415869834682">荷蘭文</translation>
 <translation id="7551643184018910560">固定至捷徑列</translation>
 <translation id="7553492409867692754">允許 Linux 應用程式存取「<ph name="FOLDER_NAME" />」資料夾中的檔案</translation>
-<translation id="7555339735447658365">目前為離線狀態，系統會在連上網際網路後繼續同步檔案</translation>
+<translation id="7555339735447658365">目前為離線狀態，系統會在連接互聯網後繼續同步檔案</translation>
 <translation id="7589661784326793847">請稍候片刻</translation>
 <translation id="7592775719802218421">正在將「<ph name="FILE_NAME" />」設定為可離線使用</translation>
 <translation id="7600126690270271294">塞爾維亞文</translation>
@@ -887,7 +887,6 @@
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">設定網絡時發生錯誤</translation>
-<translation id="7832093238954689746">檔案同步完成，你可以在離線時存取「我的雲端硬碟」檔案。</translation>
 <translation id="7839804798877833423">擷取這些檔案大約會使用 <ph name="FILE_SIZE" /> 流動數據流量。</translation>
 <translation id="7846076177841592234">取消選取</translation>
 <translation id="7853966320808728790">法文 BÉPO</translation>
