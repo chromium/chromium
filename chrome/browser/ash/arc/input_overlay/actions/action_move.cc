@@ -221,8 +221,8 @@ bool ActionMove::ParseFromJson(const base::Value::Dict& value) {
   }
 }
 
-bool ActionMove::InitFromEditor() {
-  if (!Action::InitFromEditor()) {
+bool ActionMove::InitByAddingNewAction() {
+  if (!Action::InitByAddingNewAction()) {
     return false;
   }
 
@@ -233,14 +233,13 @@ bool ActionMove::InitFromEditor() {
   return true;
 }
 
-void ActionMove::InitFromAction(Action* action) {
-  Action::InitFromAction(action);
+void ActionMove::InitByChangingActionType(Action* action) {
+  Action::InitByChangingActionType(action);
   auto keys = action->current_input()->keys();
   auto dom_code = keys.size() > 0 ? keys[0] : ui::DomCode::NONE;
   std::vector<ui::DomCode> keycodes{dom_code, ui::DomCode::NONE,
                                     ui::DomCode::NONE, ui::DomCode::NONE};
   current_input_ = InputElement::CreateActionMoveKeyElement(keycodes);
-  original_input_ = InputElement::CreateActionMoveKeyElement(keycodes);
 }
 
 bool ActionMove::ParseJsonFromKeyboard(const base::Value::Dict& value) {

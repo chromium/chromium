@@ -582,8 +582,14 @@ void DisplayOverlayController::ChangeActionName(Action* action,
   touch_injector_->ChangeActionName(action, name);
 }
 
-int DisplayOverlayController::GetTouchInjectorActionsSize() {
-  return touch_injector_->actions().size();
+size_t DisplayOverlayController::GetActiveActionsSize() {
+  size_t active_size = 0;
+  for (auto& action : touch_injector_->actions()) {
+    if (!action->IsDeleted()) {
+      active_size++;
+    }
+  }
+  return active_size;
 }
 
 void DisplayOverlayController::AddTouchInjectorObserver(

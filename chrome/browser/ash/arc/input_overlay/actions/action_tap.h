@@ -21,10 +21,10 @@ class ActionTap : public Action {
   ActionTap& operator=(const ActionTap&) = delete;
   ~ActionTap() override;
 
-  // Override from Action.
+  // Action:
   bool ParseFromJson(const base::Value::Dict& value) override;
-  bool InitFromEditor() override;
-  void InitFromAction(Action* action) override;
+  bool InitByAddingNewAction() override;
+  void InitByChangingActionType(Action* action) override;
   bool RewriteEvent(const ui::Event& origin,
                     const bool is_mouse_locked,
                     const gfx::Transform* rotation_transform,

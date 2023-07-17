@@ -66,19 +66,16 @@ class ActionTap::ActionTapView : public ActionView {
       return;
     }
 
+    DCHECK(IsInputBound(*input_binding));
     if (labels_.empty()) {
       // Create new action label when initializing.
       labels_ = ActionLabel::Show(this, ActionType::TAP, *input_binding,
                                   TapLabelPosition::kNone);
-    } else if (!IsInputBound(*input_binding)) {
-      // Action label exists but without any bindings.
-      labels_[0]->SetTextActionLabel(
-          std::move(GetDisplayText(ui::DomCode::NONE)));
     } else if (IsKeyboardBound(*input_binding)) {
       // Action label is bound to keyboard key.
       labels_[0]->SetTextActionLabel(
           std::move(GetDisplayText(input_binding->keys()[0])));
-    } else {
+    } else if (IsMouseBound(*input_binding)) {
       // Action label is bound to mouse.
       labels_[0]->SetImageActionLabel(input_binding->mouse_action());
     }
@@ -96,13 +93,12 @@ class ActionTap::ActionTapView : public ActionView {
   }
 
   void OnBindingToKeyboard() override {
-    const auto& input_binding = action_->GetCurrentDisplayedInput();
-    if (!IsMouseBound(input_binding)) {
+    if (!IsMouseBound(action_->GetCurrentDisplayedInput())) {
       return;
     }
 
-    auto input_element = std::make_unique<InputElement>();
-    action_->set_pending_input(std::move(input_element));
+    action_->set_pending_input(
+        InputElement::CreateActionTapKeyElement(ui::DomCode::NONE));
     SetViewContent(BindingOption::kPending);
   }
 
@@ -192,8 +188,8 @@ bool ActionTap::ParseFromJson(const base::Value::Dict& value) {
              : ParseJsonFromMouse(value);
 }
 
-bool ActionTap::InitFromEditor() {
-  if (!Action::InitFromEditor()) {
+bool ActionTap::InitByAddingNewAction() {
+  if (!Action::InitByAddingNewAction()) {
     return false;
   }
 
@@ -202,11 +198,10 @@ bool ActionTap::InitFromEditor() {
   return true;
 }
 
-void ActionTap::InitFromAction(Action* action) {
-  Action::InitFromAction(action);
+void ActionTap::InitByChangingActionType(Action* action) {
+  Action::InitByChangingActionType(action);
   auto dom_code = action->current_input()->keys()[0];
   current_input_ = InputElement::CreateActionTapKeyElement(dom_code);
-  original_input_ = InputElement::CreateActionTapKeyElement(dom_code);
 }
 
 bool ActionTap::ParseJsonFromKeyboard(const base::Value::Dict& value) {
@@ -288,7 +283,7 @@ void ActionTap::UnbindInput(const InputElement& input_element) {
   if (pending_input_) {
     pending_input_.reset();
   }
-  pending_input_ = std::make_unique<InputElement>();
+  pending_input_ = InputElement::CreateActionTapKeyElement(ui::DomCode::NONE);
   if (!IsBeta() && action_view_) {
     action_view_->set_unbind_label_index(0);
   }

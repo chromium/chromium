@@ -83,6 +83,7 @@ std::vector<std::unique_ptr<Action>> ParseJsonToActions(
         continue;
       }
       auto action = std::make_unique<ActionTap>(touch_injector);
+      action->set_original_type(ActionType::TAP);
       bool succeed = action->ParseFromJson(*val_dict);
       if (succeed) {
         actions.emplace_back(std::move(action));
@@ -100,6 +101,7 @@ std::vector<std::unique_ptr<Action>> ParseJsonToActions(
         continue;
       }
       auto action = std::make_unique<ActionMove>(touch_injector);
+      action->set_original_type(ActionType::MOVE);
       bool succeed = action->ParseFromJson(*val_dict);
       if (succeed) {
         actions.emplace_back(std::move(action));
@@ -384,16 +386,11 @@ void TouchInjector::OnProtoDataAvailable(AppDataProto& proto) {
       if (!action) {
         continue;
       }
-
-      action->OverwriteFromProto(action_proto);
+      OverwriteDefaultAction(action_proto, action);
     } else if (beta_) {
-      auto action = CreateRawAction(action_proto.action_type(), this);
-      if (!action) {
-        continue;
-      }
-
-      action->ParseFromProto(action_proto);
-      actions_.emplace_back(std::move(action));
+      AddUserAddedActionFromProto(action_proto);
+    } else {
+      // Disregard the user-added actions if they system is pre-beta version.
     }
   }
 }
@@ -928,10 +925,11 @@ int TouchInjector::GetNextNewActionID() {
 void TouchInjector::AddNewAction(ActionType action_type) {
   DCHECK(IsBeta());
   auto action = CreateRawAction(action_type, this);
-  if (!action) {
+
+  // Check whether the action size extends the maximum.
+  if (!action->InitByAddingNewAction()) {
     return;
   }
-  action->InitFromEditor();
 
   // Apply the change right away for beta.
   NotifyActionAdded(*actions_.emplace_back(std::move(action)));
@@ -942,26 +940,25 @@ void TouchInjector::RemoveAction(Action* action) {
       actions_.begin(), actions_.end(),
       [&](const std::unique_ptr<Action>& p) { return action == p.get(); });
   DCHECK(it != actions_.end());
-  actions_.erase(it);
+  if (it->get()->IsDefaultAction()) {
+    // Default action is from JSON. Since it reads mapping data from JSON first
+    // and then from proto, only deleting the default action from `action_`
+    // won't actually delete when launching app next time. So here it marks the
+    // default action deleted.
+    it->get()->RemoveDefaultAction();
+  } else {
+    actions_.erase(it);
+  }
 
   NotifyActionRemoved(*action);
 }
 
 void TouchInjector::ChangeActionType(Action* action, ActionType action_type) {
   auto new_action = CreateRawAction(action_type, this);
-  if (!new_action) {
-    return;
-  }
-
-  new_action->InitFromAction(action);
+  new_action->InitByChangingActionType(action);
   auto* new_action_raw = new_action.get();
 
-  auto it = std::find_if(
-      actions_.begin(), actions_.end(),
-      [&](const std::unique_ptr<Action>& p) { return action == p.get(); });
-  DCHECK(it != actions_.end());
-  actions_.erase(it);
-  actions_.emplace_back(std::move(new_action));
+  ReplaceActionInternal(action, std::move(new_action));
   NotifyActionTypeChanged(action, new_action_raw);
 }
 
@@ -970,6 +967,36 @@ void TouchInjector::ChangeActionName(Action* action, std::u16string name) {
   action->set_name_label(name);
 
   NotifyActionNameUpdated(*action);
+}
+
+void TouchInjector::OverwriteDefaultAction(const ActionProto& proto,
+                                           Action* action) {
+  DCHECK(action);
+  DCHECK_LE(proto.id(), kMaxDefaultActionID);
+  DCHECK_EQ(proto.id(), action->id());
+  if (beta_ && action->GetType() != proto.action_type()) {
+    auto new_action = CreateRawAction(proto.action_type(), this);
+    new_action->InitByChangingActionType(action);
+    new_action->OverwriteDefaultActionFromProto(proto);
+    ReplaceActionInternal(action, std::move(new_action));
+  } else {
+    action->OverwriteDefaultActionFromProto(proto);
+  }
+}
+
+void TouchInjector::AddUserAddedActionFromProto(const ActionProto& proto) {
+  auto action = CreateRawAction(proto.action_type(), this);
+  action->ParseUserAddedActionFromProto(proto);
+  actions_.emplace_back(std::move(action));
+}
+
+void TouchInjector::ReplaceActionInternal(Action* action,
+                                          std::unique_ptr<Action> new_action) {
+  auto it = std::find_if(
+      actions_.begin(), actions_.end(),
+      [&](const std::unique_ptr<Action>& p) { return action == p.get(); });
+  DCHECK(it != actions_.end());
+  actions_[it - actions_.begin()] = std::move(new_action);
 }
 
 void TouchInjector::NotifyActionAdded(Action& action) {

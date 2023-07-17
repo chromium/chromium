@@ -242,6 +242,17 @@ class TouchInjector : public ui::EventRewriter {
   void AddSystemVersionToProto(AppDataProto& proto);
   void LoadSystemVersionFromProto(AppDataProto& proto);
 
+  // Overwrite the default `action` from `proto`.
+  void OverwriteDefaultAction(const ActionProto& proto, Action* action);
+  // Add an action from proto if the default action has type changed or it is a
+  // user-added action.
+  void AddUserAddedActionFromProto(const ActionProto& proto);
+  // Find `action` in `actions_`, and then replace it by `new_action`. This is
+  // called when changing action type from UI or overwriting the default action
+  // with a different action type from proto.
+  void ReplaceActionInternal(Action* action,
+                             std::unique_ptr<Action> new_action);
+
   // For observers.
   void NotifyActionAdded(Action& action);
   void NotifyActionRemoved(Action& action);

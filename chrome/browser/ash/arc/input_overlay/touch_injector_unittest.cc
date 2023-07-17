@@ -317,6 +317,177 @@ class TouchInjectorTest : public views::ViewsTestBase {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+TEST_F(TouchInjectorTest, TestAddRemoveActionWithProtoConversion) {
+  InitWithFeature(ash::features::kArcInputOverlayBeta);
+  auto json_value =
+      base::JSONReader::ReadAndReturnValueWithError(kValidJsonActionTapKey);
+  injector_->ParseActions(json_value->GetDict());
+  CheckActions(injector_.get(), /*expect_size=*/2u,
+               /*expect_types=*/{ActionType::TAP, ActionType::TAP},
+               /*expect_ids=*/{0, 1});
+
+  // Step 1: Add a new action move.
+  injector_->AddNewAction(ActionType::MOVE);
+  CheckActions(
+      injector_.get(), /*expect_size=*/3u,
+      /*expect_types=*/{ActionType::TAP, ActionType::TAP, ActionType::MOVE},
+      /*expect_ids=*/{0, 1, kMaxDefaultActionID + 1});
+
+  // Step 2: Add a new action tap.
+  injector_->AddNewAction(ActionType::TAP);
+  CheckActions(
+      injector_.get(), /*expect_size=*/4u,
+      /*expect_types=*/
+      {ActionType::TAP, ActionType::TAP, ActionType::MOVE, ActionType::TAP},
+      /*expect_ids=*/{0, 1, kMaxDefaultActionID + 1, kMaxDefaultActionID + 2});
+
+  // Step 3: Remove the action added at step 1.
+  injector_->RemoveAction(injector_->actions()[2].get());
+  CheckActions(
+      injector_.get(), /*expect_size=*/3u,
+      /*expect_types=*/{ActionType::TAP, ActionType::TAP, ActionType::TAP},
+      /*expect_ids=*/{0, 1, kMaxDefaultActionID + 2});
+
+  // Step 4: Add a new action tap.
+  injector_->AddNewAction(ActionType::TAP);
+  // Re-use the minimum new user-added ID which is removed at step 3.
+  CheckActions(
+      injector_.get(), /*expect_size=*/4u,
+      /*expect_types=*/
+      {ActionType::TAP, ActionType::TAP, ActionType::TAP, ActionType::TAP},
+      /*expect_ids=*/{0, 1, kMaxDefaultActionID + 2, kMaxDefaultActionID + 1});
+
+  // Step 5: Remove a default action.
+  EXPECT_FALSE(injector_->actions()[0]->IsDeleted());
+  EXPECT_FALSE(injector_->actions()[1]->IsDeleted());
+  injector_->RemoveAction(injector_->actions()[0].get());
+  // The action size doesn't change when removing a default action.
+  CheckActions(
+      injector_.get(), /*expect_size=*/4u,
+      /*expect_types=*/
+      {ActionType::TAP, ActionType::TAP, ActionType::TAP, ActionType::TAP},
+      /*expect_ids=*/{0, 1, kMaxDefaultActionID + 2, kMaxDefaultActionID + 1});
+  EXPECT_TRUE(injector_->actions()[0]->IsDeleted());
+  EXPECT_FALSE(injector_->actions()[1]->IsDeleted());
+
+  // Step 6: Add two more actions, remove the first added action in this
+  // step and then add a new action again. This is to test it gets the right
+  // action ID in the middle. Add two new actions.
+  injector_->AddNewAction(ActionType::TAP);
+  injector_->AddNewAction(ActionType::MOVE);
+  CheckActions(injector_.get(), /*expect_size=*/6u,
+               /*expect_types=*/
+               {ActionType::TAP, ActionType::TAP, ActionType::TAP,
+                ActionType::TAP, ActionType::TAP, ActionType::MOVE},
+               /*expect_ids=*/
+               {0, 1, kMaxDefaultActionID + 2, kMaxDefaultActionID + 1,
+                kMaxDefaultActionID + 3, kMaxDefaultActionID + 4});
+  EXPECT_TRUE(injector_->actions()[0]->IsDeleted());
+  EXPECT_FALSE(injector_->actions()[1]->IsDeleted());
+  // Remove the first action.
+  injector_->RemoveAction(injector_->actions()[4].get());
+  CheckActions(injector_.get(), /*expect_size=*/5u,
+               /*expect_types=*/
+               {ActionType::TAP, ActionType::TAP, ActionType::TAP,
+                ActionType::TAP, ActionType::MOVE},
+               /*expect_ids=*/
+               {0, 1, kMaxDefaultActionID + 2, kMaxDefaultActionID + 1,
+                kMaxDefaultActionID + 4});
+  EXPECT_TRUE(injector_->actions()[0]->IsDeleted());
+  EXPECT_FALSE(injector_->actions()[1]->IsDeleted());
+  // Add a new action.
+  injector_->AddNewAction(ActionType::TAP);
+  CheckActions(injector_.get(), /*expect_size=*/6u,
+               /*expect_types=*/
+               {ActionType::TAP, ActionType::TAP, ActionType::TAP,
+                ActionType::TAP, ActionType::MOVE, ActionType::TAP},
+               /*expect_ids=*/
+               {0, 1, kMaxDefaultActionID + 2, kMaxDefaultActionID + 1,
+                kMaxDefaultActionID + 4, kMaxDefaultActionID + 3});
+  EXPECT_TRUE(injector_->actions()[0]->IsDeleted());
+  EXPECT_FALSE(injector_->actions()[1]->IsDeleted());
+
+  // Convert it to proto and parse the proto and check if the proto conversion
+  // is correct.
+  auto proto = ConvertToProto();
+  auto injector = std::make_unique<TouchInjector>(
+      widget_->GetNativeWindow(),
+      *widget_->GetNativeWindow()->GetProperty(ash::kArcPackageNameKey),
+      base::BindLambdaForTesting(
+          [&](std::unique_ptr<AppDataProto>, std::string) {}));
+  injector->ParseActions(json_value->GetDict());
+  injector->OnProtoDataAvailable(*proto);
+  CheckActions(injector.get(), /*expect_size=*/6u,
+               /*expect_types=*/
+               {ActionType::TAP, ActionType::TAP, ActionType::TAP,
+                ActionType::TAP, ActionType::MOVE, ActionType::TAP},
+               /*expect_ids=*/
+               {0, 1, kMaxDefaultActionID + 2, kMaxDefaultActionID + 1,
+                kMaxDefaultActionID + 4, kMaxDefaultActionID + 3});
+  EXPECT_TRUE(injector->actions()[0]->IsDeleted());
+  EXPECT_FALSE(injector->actions()[1]->IsDeleted());
+}
+
+TEST_F(TouchInjectorTest, TestActionTypeChangeWithProtoConversion) {
+  InitWithFeature(ash::features::kArcInputOverlayBeta);
+  auto json_value =
+      base::JSONReader::ReadAndReturnValueWithError(kValidJsonActionTapKey);
+  injector_->ParseActions(json_value->GetDict());
+  EXPECT_EQ(2u, injector_->actions().size());
+  EXPECT_EQ(0, injector_->actions()[0]->id());
+  EXPECT_EQ(1, injector_->actions()[1]->id());
+
+  // Step 1: Add a new action.
+  injector_->AddNewAction(ActionType::TAP);
+  EXPECT_EQ(3u, injector_->actions().size());
+  EXPECT_EQ(kMaxDefaultActionID + 1, injector_->actions()[2]->id());
+
+  // Step 2: Change the type of the action with ID 0 which is at index 0.
+  auto* action = injector_->actions()[0].get();
+  EXPECT_EQ(ActionType::TAP, action->GetType());
+  injector_->ChangeActionType(action, ActionType::MOVE);
+  EXPECT_EQ(3u, injector_->actions().size());
+  // Check the new action type at index 0.
+  action = injector_->actions()[0].get();
+  EXPECT_EQ(ActionType::MOVE, action->GetType());
+  EXPECT_EQ(0, action->id());
+  // Action with ID 1 on index 1 is not changed.
+  action = injector_->actions()[1].get();
+  EXPECT_EQ(ActionType::TAP, action->GetType());
+  EXPECT_EQ(1, action->id());
+
+  // Step 3: Change the action type which is added in step 1.
+  injector_->ChangeActionType(injector_->actions()[2].get(), ActionType::MOVE);
+  // Check the new action type at index 2.
+  action = injector_->actions()[2].get();
+  EXPECT_EQ(ActionType::MOVE, action->GetType());
+  EXPECT_EQ(kMaxDefaultActionID + 1, action->id());
+
+  // Convert it to proto and parse the proto and check if the proto conversion
+  // is correct.
+  auto proto = ConvertToProto();
+  auto injector = std::make_unique<TouchInjector>(
+      widget_->GetNativeWindow(),
+      *widget_->GetNativeWindow()->GetProperty(ash::kArcPackageNameKey),
+      base::BindLambdaForTesting(
+          [&](std::unique_ptr<AppDataProto>, std::string) {}));
+  injector->ParseActions(json_value->GetDict());
+  injector->OnProtoDataAvailable(*proto);
+  EXPECT_EQ(3u, injector->actions().size());
+  // Action with ID 0 at index 0 has type changed.
+  action = injector->actions()[0].get();
+  EXPECT_EQ(ActionType::MOVE, action->GetType());
+  EXPECT_EQ(0, action->id());
+  // Action with ID 1 at index 1 is not changed.
+  action = injector->actions()[1].get();
+  EXPECT_EQ(ActionType::TAP, action->GetType());
+  EXPECT_EQ(1, action->id());
+  // Check action with ID kMaxDefaultActionID+1 at index 2.
+  action = injector->actions()[2].get();
+  EXPECT_EQ(ActionType::MOVE, action->GetType());
+  EXPECT_EQ(kMaxDefaultActionID + 1, action->id());
+}
+
 // -----------------------------------------------------------------------------
 // VersionTouchInjectorTest:
 // Test fixture to test both pre-beta and beta version depending on the test

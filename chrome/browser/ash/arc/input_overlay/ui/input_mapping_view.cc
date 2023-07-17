@@ -36,10 +36,12 @@ InputMappingView::InputMappingView(
     DisplayOverlayController* display_overlay_controller)
     : controller_(display_overlay_controller) {
   auto content_bounds = controller_->touch_injector()->content_bounds();
-  auto& actions = controller_->touch_injector()->actions();
   SetBounds(content_bounds.x(), content_bounds.y(), content_bounds.width(),
             content_bounds.height());
-  for (auto& action : actions) {
+  for (auto& action : controller_->touch_injector()->actions()) {
+    if (action->IsDeleted()) {
+      continue;
+    }
     auto view = action->CreateView(controller_);
     if (view) {
       AddChildView(std::move(view));

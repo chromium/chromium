@@ -91,7 +91,7 @@ void EditingList::Init() {
 
 bool EditingList::HasControls() const {
   DCHECK(controller_);
-  return controller_->GetTouchInjectorActionsSize() != 0;
+  return controller_->GetActiveActionsSize() != 0;
 }
 
 void EditingList::AddHeader(views::View* container) {
@@ -175,6 +175,9 @@ void EditingList::AddControlListContent() {
   DCHECK(controller_);
   DCHECK(scroll_content_);
   for (const auto& action : controller_->touch_injector()->actions()) {
+    if (action->IsDeleted()) {
+      continue;
+    }
     scroll_content_->AddChildView(
         std::make_unique<ActionViewListItem>(controller_, action.get()));
   }
@@ -196,7 +199,7 @@ gfx::Size EditingList::CalculatePreferredSize() const {
 
 void EditingList::OnActionAdded(Action& action) {
   DCHECK(scroll_content_);
-  if (controller_->GetTouchInjectorActionsSize() == 1u) {
+  if (controller_->GetActiveActionsSize() == 1u) {
     // Clear the zero-state.
     scroll_content_->RemoveAllChildViews();
   }
@@ -217,7 +220,7 @@ void EditingList::OnActionRemoved(const Action& action) {
     }
   }
   // Set to zero-state if it is empty.
-  if (controller_->GetTouchInjectorActionsSize() == 0u) {
+  if (controller_->GetActiveActionsSize() == 0u) {
     AddZeroStateContent();
   }
 

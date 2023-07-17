@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/arc/input_overlay/actions/action.h"
 
+#include <memory>
+
 #include "base/check_op.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/position.h"
 #include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
@@ -216,7 +218,7 @@ bool Action::ParseFromJson(const base::Value::Dict& value) {
   return true;
 }
 
-bool Action::ParseFromProto(const ActionProto& proto) {
+bool Action::ParseUserAddedActionFromProto(const ActionProto& proto) {
   id_ = proto.id();
   if (!proto.has_input_element()) {
     return false;
@@ -240,28 +242,23 @@ bool Action::ParseFromProto(const ActionProto& proto) {
   return true;
 }
 
-void Action::OverwriteFromProto(const ActionProto& proto) {
+void Action::OverwriteDefaultActionFromProto(const ActionProto& proto) {
+  DCHECK(IsDefaultAction());
   if (proto.has_input_element()) {
     auto input_element = InputElement::ConvertFromProto(proto.input_element());
     DCHECK(input_element);
-    if (input_element) {
-      current_input_ = std::move(input_element);
-    }
+    current_input_ = std::move(input_element);
   }
   if (!proto.positions().empty()) {
     auto position = Position::ConvertFromProto(proto.positions()[0]);
     DCHECK(position);
-    if (position) {
-      current_positions_[0] = *position;
-    }
+    current_positions_[0] = *position;
     position.reset();
   }
 }
 
-bool Action::InitFromEditor() {
-  if (!touch_injector_) {
-    return false;
-  }
+bool Action::InitByAddingNewAction() {
+  DCHECK(touch_injector_);
   id_ = touch_injector_->GetNextNewActionID();
 
   InitPositions(original_positions_);
@@ -270,14 +267,16 @@ bool Action::InitFromEditor() {
   return true;
 }
 
-void Action::InitFromAction(Action* action) {
+void Action::InitByChangingActionType(Action* action) {
   id_ = action->id();
   name_ = action->name();
+  original_type_ = action->original_type();
+  original_input_ = std::make_unique<InputElement>(*action->original_input());
+
   original_positions_ = action->original_positions();
   current_positions_ = action->current_positions();
-  current_position_idx_ = action->current_position_idx();
-  pending_position_ = std::move(action->pending_position_);
   touch_down_positions_ = action->touch_down_positions();
+  current_position_idx_ = action->current_position_idx();
 }
 
 bool IsInputBound(const InputElement& input_element) {
@@ -458,6 +457,16 @@ bool Action::IsDefaultAction() const {
   return id_ <= kMaxDefaultActionID;
 }
 
+void Action::RemoveDefaultAction() {
+  if (IsDefaultAction()) {
+    current_input_ = std::make_unique<InputElement>();
+  }
+}
+
+bool Action::IsDeleted() {
+  return IsDefaultAction() && !IsInputBound(*current_input_);
+}
+
 bool Action::CreateTouchPressedEvent(const base::TimeTicks& time_stamp,
                                      std::list<ui::TouchEvent>& touch_events) {
   if (touch_id_) {
@@ -537,6 +546,14 @@ std::unique_ptr<ActionProto> Action::ConvertToProtoIfCustomized() const {
   if (IsDefaultAction()) {
     // Check if the default action is customized.
     bool customized = false;
+
+    if (beta_) {
+      DCHECK(original_type_);
+      if (*original_type_ != GetType()) {
+        customized = true;
+      }
+    }
+
     if (*original_input_ != *current_input_) {
       proto->set_allocated_input_element(
           current_input_->ConvertToProto().release());
@@ -562,8 +579,7 @@ std::unique_ptr<ActionProto> Action::ConvertToProtoIfCustomized() const {
     *proto->add_positions() = *pos_proto;
     pos_proto.reset();
   } else {
-    // There shouldn't be user-added action for beta flag off.
-    NOTREACHED();
+    // Disregard the user-added actions if the beta flag is off.
   }
 
   return proto;

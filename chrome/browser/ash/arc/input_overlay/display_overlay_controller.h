@@ -83,7 +83,9 @@ class DisplayOverlayController : public ui::EventHandler,
   void ChangeActionType(Action* reference_action_, ActionType type);
   void ChangeActionName(Action* action, std::u16string name);
 
-  int GetTouchInjectorActionsSize();
+  // Returns the size of active actions which include the deleted default
+  // actions.
+  size_t GetActiveActionsSize();
 
   // For menu entry hover state:
   void SetMenuEntryHoverState(bool curr_hover_state);

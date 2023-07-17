@@ -9,6 +9,7 @@
 #include "ash/constants/ash_features.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/action.h"
 #include "chrome/browser/ash/arc/input_overlay/db/proto/app_data.pb.h"
+#include "chrome/browser/ash/arc/input_overlay/test/test_utils.h"
 #include "chrome/browser/ash/arc/input_overlay/test/view_test_base.h"
 #include "chrome/browser/ash/arc/input_overlay/touch_injector.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/action_type_button_group.h"
@@ -150,18 +151,36 @@ class ButtonOptionsMenuTest : public ViewTestBase {
 };
 
 TEST_F(ButtonOptionsMenuTest, TestRemoveAction) {
+  CheckActions(touch_injector_.get(), /*expect_size=*/2u, /*expect_types=*/
+               {ActionType::TAP, ActionType::MOVE}, /*expect_ids=*/{1, 0});
   EXPECT_EQ(2u, GetActionListItemsSize());
   EXPECT_EQ(2u, GetActionViewSize());
+  EXPECT_FALSE(touch_injector_->actions()[0]->IsDeleted());
+  EXPECT_FALSE(touch_injector_->actions()[1]->IsDeleted());
+
   // Remove Action Tap.
   ShowButtonOptionsMenu(ActionType::TAP);
   PressTrashButton(tap_action_menu_.get());
   tap_action_menu_.reset();
+  // Default action is still in the list even it is deleted and it is marked as
+  // deleted. But it doesn't show up visually.
+  CheckActions(touch_injector_.get(), /*expect_size=*/2u, /*expect_types=*/
+               {ActionType::TAP, ActionType::MOVE}, /*expect_ids=*/{1, 0});
+  EXPECT_TRUE(touch_injector_->actions()[0]->IsDeleted());
+  EXPECT_FALSE(touch_injector_->actions()[1]->IsDeleted());
   EXPECT_EQ(1u, GetActionListItemsSize());
   EXPECT_EQ(1u, GetActionViewSize());
+
   // Remove Action Move.
   ShowButtonOptionsMenu(ActionType::MOVE);
   PressTrashButton(move_action_menu_.get());
   move_action_menu_.reset();
+  // Default action is still in the list even it is deleted and it is marked as
+  // deleted. But it doesn't show up visually.
+  CheckActions(touch_injector_.get(), /*expect_size=*/2u, /*expect_types=*/
+               {ActionType::TAP, ActionType::MOVE}, /*expect_ids=*/{1, 0});
+  EXPECT_TRUE(touch_injector_->actions()[0]->IsDeleted());
+  EXPECT_TRUE(touch_injector_->actions()[1]->IsDeleted());
   EXPECT_TRUE(IsEditingListInZeroState());
   EXPECT_EQ(0u, GetActionViewSize());
 }

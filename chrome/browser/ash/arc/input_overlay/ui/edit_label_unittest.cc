@@ -13,6 +13,7 @@
 #include "chrome/browser/ash/arc/input_overlay/db/proto/app_data.pb.h"
 #include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
 #include "chrome/browser/ash/arc/input_overlay/test/view_test_base.h"
+#include "chrome/browser/ash/arc/input_overlay/touch_injector.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/action_view.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/action_view_list_item.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/button_options_menu.h"
@@ -201,6 +202,8 @@ TEST_F(EditLabelTest, TestEditingListLabelEditing) {
   CheckAction(ActionType::TAP, {ui::DomCode::US_M}, {u"m"});
   CheckErrorState(ActionType::TAP, /*menu_has_error=*/false,
                   /*list_item_has_error=*/false);
+  EXPECT_FALSE(touch_injector_->actions()[0]->IsDeleted());
+  EXPECT_FALSE(touch_injector_->actions()[1]->IsDeleted());
 
   // Modify the label for ActionMove and nothing is conflicted.
   // ActionMove: wasd -> lasd.
@@ -210,6 +213,8 @@ TEST_F(EditLabelTest, TestEditingListLabelEditing) {
               {u"w", u"a", u"s", u"d"});
   CheckErrorState(ActionType::MOVE, /*menu_has_error=*/false,
                   /*list_item_has_error=*/false);
+  EXPECT_FALSE(touch_injector_->actions()[0]->IsDeleted());
+  EXPECT_FALSE(touch_injector_->actions()[1]->IsDeleted());
 
   TapKeyboardKeyOnEditLabel(GetEditLabel(move_action_list_item_, /*index=*/0),
                             ui::VKEY_L);
@@ -219,6 +224,8 @@ TEST_F(EditLabelTest, TestEditingListLabelEditing) {
               {u"l", u"a", u"s", u"d"});
   CheckErrorState(ActionType::MOVE, /*menu_has_error=*/false,
                   /*list_item_has_error=*/false);
+  EXPECT_FALSE(touch_injector_->actions()[0]->IsDeleted());
+  EXPECT_FALSE(touch_injector_->actions()[1]->IsDeleted());
 
   // Modify the label for ActionMove and it is conflicted inside.
   // ActionMove: lasd -> ?ald.
@@ -230,13 +237,15 @@ TEST_F(EditLabelTest, TestEditingListLabelEditing) {
               {u"?", u"a", u"l", u"d"});
   CheckErrorState(ActionType::MOVE, /*menu_has_error=*/true,
                   /*list_item_has_error=*/true);
+  EXPECT_FALSE(touch_injector_->actions()[0]->IsDeleted());
+  EXPECT_FALSE(touch_injector_->actions()[1]->IsDeleted());
 
   // Modify the label for ActionMove and it is conflicted outside.
   // ActionTap: m -> ?
   // ActionMove: ?ald -> mald.
   TapKeyboardKeyOnEditLabel(GetEditLabel(move_action_list_item_, /*index=*/0),
                             ui::VKEY_M);
-  CheckAction(ActionType::TAP, {}, {u"?"});
+  CheckAction(ActionType::TAP, {ui::DomCode::NONE}, {u"?"});
   CheckErrorState(ActionType::TAP, /*menu_has_error=*/true,
                   /*list_item_has_error=*/true);
   CheckAction(ActionType::MOVE,
@@ -245,6 +254,8 @@ TEST_F(EditLabelTest, TestEditingListLabelEditing) {
               {u"m", u"a", u"l", u"d"});
   CheckErrorState(ActionType::MOVE, /*menu_has_error=*/false,
                   /*list_item_has_error=*/false);
+  EXPECT_FALSE(touch_injector_->actions()[0]->IsDeleted());
+  EXPECT_FALSE(touch_injector_->actions()[1]->IsDeleted());
 
   // Modify the label for ActionTap and it is conflicted outside.
   // ActionTap: ? -> d.
@@ -260,6 +271,8 @@ TEST_F(EditLabelTest, TestEditingListLabelEditing) {
               {u"m", u"a", u"l", u"?"});
   CheckErrorState(ActionType::MOVE, /*menu_has_error=*/true,
                   /*list_item_has_error=*/true);
+  EXPECT_FALSE(touch_injector_->actions()[0]->IsDeleted());
+  EXPECT_FALSE(touch_injector_->actions()[1]->IsDeleted());
 }
 
 TEST_F(EditLabelTest, TestEditingListLabelReservedKey) {
