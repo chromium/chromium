@@ -1041,18 +1041,28 @@ void FrameLoader::CommitNavigation(
   if (!CancelProvisionalLoaderForNewNavigation())
     return;
 
+  // Dispatch the "navigate" event on the previous document if needed. Note that
+  // when the navigation is going to do a LocalFrame <-> LocalFrame swap, the
+  // event should be dispatched on the previous LocalFrame's document, instead
+  // of the new provisional LocalFrame's initial empty document.
+  LocalFrame* frame_for_navigate_event = frame_;
+  if (frame_->IsProvisional() && frame_->GetPreviousLocalFrameForLocalSwap()) {
+    frame_for_navigate_event = frame_->GetPreviousLocalFrameForLocalSwap();
+  }
   auto url_origin = SecurityOrigin::Create(navigation_params->url);
   if (navigation_params->frame_load_type == WebFrameLoadType::kBackForward &&
-      frame_->DomWindow()->GetSecurityOrigin()->IsSameOriginWith(
-          url_origin.get())) {
+      frame_for_navigate_event->DomWindow()
+          ->GetSecurityOrigin()
+          ->IsSameOriginWith(url_origin.get())) {
     auto* params = MakeGarbageCollected<NavigateEventDispatchParams>(
         navigation_params->url, NavigateEventType::kCrossDocument,
         WebFrameLoadType::kBackForward);
     if (navigation_params->is_browser_initiated)
       params->involvement = UserNavigationInvolvement::kBrowserUI;
     params->destination_item = navigation_params->history_item;
-    auto result =
-        frame_->DomWindow()->navigation()->DispatchNavigateEvent(params);
+    auto result = frame_for_navigate_event->DomWindow()
+                      ->navigation()
+                      ->DispatchNavigateEvent(params);
     DCHECK_EQ(result, NavigationApi::DispatchResult::kContinue);
     if (!document_loader_)
       return;

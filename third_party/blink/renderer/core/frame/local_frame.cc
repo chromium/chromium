@@ -2706,6 +2706,15 @@ void LocalFrame::SetContextPaused(bool is_paused) {
   GetFrameScheduler()->SetPaused(is_paused);
 }
 
+LocalFrame* LocalFrame::GetPreviousLocalFrameForLocalSwap() {
+  CHECK(IsProvisional());
+  if (auto* previous_main_frame =
+          GetPage()->GetPreviousMainFrameForLocalSwap()) {
+    return previous_main_frame;
+  }
+  return DynamicTo<LocalFrame>(GetProvisionalOwnerFrame());
+}
+
 bool LocalFrame::SwapIn() {
   DCHECK(IsProvisional());
   WebLocalFrameClient* client = Client()->GetWebFrame()->Client();
@@ -2715,7 +2724,7 @@ bool LocalFrame::SwapIn() {
   // First, check if there's a previous main frame to be used for a main frame
   // LocalFrame <-> LocalFrame swap.
   Frame* previous_local_main_frame =
-      GetPage()->TakePreviousMainFrameForLocalSwap();
+      GetPage()->GetPreviousMainFrameForLocalSwap();
   if (previous_local_main_frame && !previous_local_main_frame->IsDetached()) {
     // We're about to do a LocalFrame <-> LocalFrame swap for a provisional
     // main frame, where the previous main frame and the provisional main frame
@@ -2736,6 +2745,7 @@ bool LocalFrame::SwapIn() {
     CHECK(provisional_owner_frame->IsRemoteFrame());
     CHECK(!DynamicTo<RemoteFrame>(provisional_owner_frame)
                ->IsRemoteFrameHostRemoteBound());
+    GetPage()->SetPreviousMainFrameForLocalSwap(nullptr);
     return client->SwapIn(WebFrame::FromCoreFrame(previous_local_main_frame));
   }
 

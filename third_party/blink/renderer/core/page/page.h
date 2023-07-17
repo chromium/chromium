@@ -177,7 +177,10 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
       LocalFrame* previous_main_frame_for_local_swap) {
     previous_main_frame_for_local_swap_ = previous_main_frame_for_local_swap;
   }
-  Frame* TakePreviousMainFrameForLocalSwap();
+
+  LocalFrame* GetPreviousMainFrameForLocalSwap() {
+    return previous_main_frame_for_local_swap_;
+  }
 
   // Escape hatch for existing code that assumes that the root frame is
   // always a LocalFrame. With OOPI, this is not always the case. Code that
