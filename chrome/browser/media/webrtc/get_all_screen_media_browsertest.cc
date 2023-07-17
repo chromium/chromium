@@ -44,16 +44,16 @@ std::string ExtractError(const std::string& message) {
              : "";
 }
 
-bool RunGetAllScreensMedia(content::WebContents* tab,
-                           std::set<std::string>& stream_ids,
-                           std::set<std::string>& track_ids,
-                           std::string* error_name_out = nullptr) {
+bool RunGetAllScreensMediaAndGetIds(content::WebContents* tab,
+                                    std::set<std::string>& stream_ids,
+                                    std::set<std::string>& track_ids,
+                                    std::string* error_name_out = nullptr) {
   EXPECT_TRUE(stream_ids.empty());
   EXPECT_TRUE(track_ids.empty());
 
-  std::string result =
-      content::EvalJs(tab->GetPrimaryMainFrame(), "runGetAllScreensMedia();")
-          .ExtractString();
+  std::string result = content::EvalJs(tab->GetPrimaryMainFrame(),
+                                       "runGetAllScreensMediaAndGetIds();")
+                           .ExtractString();
 
   const std::vector<std::string> split_id_components = base::SplitString(
       result, ":", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
@@ -162,7 +162,7 @@ IN_PROC_BROWSER_TEST_F(GetAllScreensMediaBrowserTest,
   SetScreens(/*screen_count=*/1u);
   std::set<std::string> stream_ids;
   std::set<std::string> track_ids;
-  EXPECT_TRUE(RunGetAllScreensMedia(contents_, stream_ids, track_ids));
+  EXPECT_TRUE(RunGetAllScreensMediaAndGetIds(contents_, stream_ids, track_ids));
   EXPECT_EQ(1u, track_ids.size());
 }
 
@@ -171,7 +171,7 @@ IN_PROC_BROWSER_TEST_F(GetAllScreensMediaBrowserTest,
   SetScreens(/*screen_count=*/0u);
   std::set<std::string> stream_ids;
   std::set<std::string> track_ids;
-  EXPECT_TRUE(RunGetAllScreensMedia(contents_, stream_ids, track_ids));
+  EXPECT_TRUE(RunGetAllScreensMediaAndGetIds(contents_, stream_ids, track_ids));
   // If no screen is attached to a device, the |DisplayManager| will add a
   // default device. This same behavior is used in other places in Chrome that
   // handle multiple screens (e.g. in JS window.getScreenDetails() API) and
@@ -187,7 +187,7 @@ IN_PROC_BROWSER_TEST_F(GetAllScreensMediaBrowserTest,
   SetScreens(/*screen_count=*/5u);
   std::set<std::string> stream_ids;
   std::set<std::string> track_ids;
-  EXPECT_TRUE(RunGetAllScreensMedia(contents_, stream_ids, track_ids));
+  EXPECT_TRUE(RunGetAllScreensMediaAndGetIds(contents_, stream_ids, track_ids));
   // TODO(crbug.com/1404274): Adapt this test if a decision is made on whether
   // stream ids shall be shared or unique.
   EXPECT_EQ(1u, stream_ids.size());
@@ -199,7 +199,7 @@ IN_PROC_BROWSER_TEST_F(GetAllScreensMediaBrowserTest,
   SetScreens(/*screen_count=*/1u);
   std::set<std::string> stream_ids;
   std::set<std::string> track_ids;
-  EXPECT_TRUE(RunGetAllScreensMedia(contents_, stream_ids, track_ids));
+  EXPECT_TRUE(RunGetAllScreensMediaAndGetIds(contents_, stream_ids, track_ids));
   ASSERT_EQ(1u, stream_ids.size());
   ASSERT_EQ(1u, track_ids.size());
 
@@ -211,7 +211,7 @@ IN_PROC_BROWSER_TEST_F(GetAllScreensMediaBrowserTest,
   SetScreens(/*screen_count=*/5u);
   std::set<std::string> stream_ids;
   std::set<std::string> track_ids;
-  EXPECT_TRUE(RunGetAllScreensMedia(contents_, stream_ids, track_ids));
+  EXPECT_TRUE(RunGetAllScreensMediaAndGetIds(contents_, stream_ids, track_ids));
   EXPECT_EQ(1u, stream_ids.size());
   EXPECT_EQ(5u, track_ids.size());
 
@@ -229,16 +229,21 @@ IN_PROC_BROWSER_TEST_F(GetAllScreensMediaBrowserTest,
   std::set<std::string> stream_ids;
   std::set<std::string> track_ids;
   std::string error_name;
-  EXPECT_FALSE(
-      RunGetAllScreensMedia(contents_, stream_ids, track_ids, &error_name));
+  EXPECT_FALSE(RunGetAllScreensMediaAndGetIds(contents_, stream_ids, track_ids,
+                                              &error_name));
   EXPECT_EQ("NotAllowedError", error_name);
 }
 
 // Test that getDisplayMedia and getAllScreensMedia are independent,
 // so stopping one will not stop the other.
 class InteractionBetweenGetAllScreensMediaAndGetDisplayMediaTest
-    : public GetAllScreensMediaBrowserTest {
+    : public GetAllScreensMediaBrowserTest,
+      public ::testing::WithParamInterface<bool> {
  public:
+  InteractionBetweenGetAllScreensMediaAndGetDisplayMediaTest()
+      : method1_(GetParam() ? "getDisplayMedia" : "getAllScreensMedia"),
+        method2_(GetParam() ? "getAllScreensMedia" : "getDisplayMedia") {}
+
   void SetUpCommandLine(base::CommandLine* command_line) override {
     // Flags use to automatically select the right desktop source and get
     // around security restrictions.
@@ -251,122 +256,82 @@ class InteractionBetweenGetAllScreensMediaAndGetDisplayMediaTest
                                     "Entire screen");
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   }
+
+  content::EvalJsResult Run(const std::string& method) {
+    return content::EvalJs(contents_,
+                           base::StringPrintf("run(\"%s\");", method.c_str()));
+  }
+
+  content::EvalJsResult ProgrammaticallyStop(const std::string& method) {
+    return content::EvalJs(contents_,
+                           base::StringPrintf("stop(\"%s\");", method.c_str()));
+  }
+
+  content::EvalJsResult AreAllTracksLive(const std::string& method) {
+    return content::EvalJs(
+        contents_,
+        base::StringPrintf("areAllTracksLive(\"%s\");", method.c_str()));
+  }
+
+  const std::string method1_;
+  const std::string method2_;
 };
 
-IN_PROC_BROWSER_TEST_F(
+INSTANTIATE_TEST_SUITE_P(
+    ,
     InteractionBetweenGetAllScreensMediaAndGetDisplayMediaTest,
-    StartDisplayMediaThenAllScreenMediaThenCloseDisplayMedia) {
+    ::testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(
+    InteractionBetweenGetAllScreensMediaAndGetDisplayMediaTest,
+    ProgrammaticallyStoppingOneDoesNotStopTheOther) {
   SetScreens(/*screen_count=*/1u);
 
-  // Start DisplayMedia.
-  EXPECT_EQ(true, content::EvalJs(contents_, "startDisplayMedia();"));
+  ASSERT_EQ(true, Run(method1_));
+  ASSERT_EQ(true, Run(method2_));
+  ASSERT_EQ(true, ProgrammaticallyStop(method1_));
 
-  // Start AllScreensMedia.
-  EXPECT_EQ(true, content::EvalJs(contents_, "startAllScreensMedia();"));
-
-  // Stop DisplayMedia.
-  EXPECT_EQ(true, content::EvalJs(contents_, "stopDisplayMedia();"));
-
-  // AllScreensMedia should be still running.
-  EXPECT_EQ(true, content::EvalJs(contents_, "checkAllScreensMediaRunning();"));
+  EXPECT_EQ(false, AreAllTracksLive(method1_));
+  EXPECT_EQ(true, AreAllTracksLive(method2_));
 }
 
-IN_PROC_BROWSER_TEST_F(
+// Identical to StoppingOneDoesNotStopTheOther other than that this following
+// test stops the second-started method first.
+IN_PROC_BROWSER_TEST_P(
     InteractionBetweenGetAllScreensMediaAndGetDisplayMediaTest,
-    StartAllScreenMediaThenDisplayMediaThenCloseDisplayMedia) {
+    ProgrammaticallyStoppingOneDoesNotStopTheOtherInverseOrder) {
   SetScreens(/*screen_count=*/1u);
 
-  // Start AllScreensMedia.
-  EXPECT_EQ(true, content::EvalJs(contents_, "startAllScreensMedia();"));
+  ASSERT_EQ(true, Run(method1_));
+  ASSERT_EQ(true, Run(method2_));
+  ASSERT_EQ(true, ProgrammaticallyStop(method2_));
 
-  // Start DisplayMedia.
-  EXPECT_EQ(true, content::EvalJs(contents_, "startDisplayMedia();"));
-
-  // Stop DisplayMedia.
-  EXPECT_EQ(true, content::EvalJs(contents_, "stopDisplayMedia();"));
-
-  // AllScreensMedia should be still running.
-  EXPECT_EQ(true, content::EvalJs(contents_, "checkAllScreensMediaRunning();"));
+  EXPECT_EQ(true, AreAllTracksLive(method1_));
+  EXPECT_EQ(false, AreAllTracksLive(method2_));
 }
 
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     InteractionBetweenGetAllScreensMediaAndGetDisplayMediaTest,
-    StartDisplayMediaThenAllScreenMediaThenStopAllScreensMedia) {
+    UserStoppingGetDisplayMediaDoesNotStopGetAllScreensMedia) {
   SetScreens(/*screen_count=*/1u);
 
-  // Start DisplayMedia.
-  EXPECT_EQ(true, content::EvalJs(contents_, "startDisplayMedia();"));
+  ASSERT_EQ(true, Run(method1_));
+  ASSERT_EQ(true, Run(method2_));
 
-  // Start AllScreensMedia.
-  EXPECT_EQ(true, content::EvalJs(contents_, "startAllScreensMedia();"));
-
-  // Stop AllScreensMedia.
-  EXPECT_EQ(true, content::EvalJs(contents_, "stopAllScreensMedia();"));
-
-  // AllScreensMedia should be still running.
-  EXPECT_EQ(true, content::EvalJs(contents_, "checkDisplayMediaRunning();"));
-}
-
-IN_PROC_BROWSER_TEST_F(
-    InteractionBetweenGetAllScreensMediaAndGetDisplayMediaTest,
-    StartAllScreenMediaThenDisplayMediaThenStopAllScreensMedia) {
-  SetScreens(/*screen_count=*/1u);
-
-  // Start AllScreensMedia.
-  EXPECT_EQ(true, content::EvalJs(contents_, "startAllScreensMedia();"));
-
-  // Start DisplayMedia.
-  EXPECT_EQ(true, content::EvalJs(contents_, "startDisplayMedia();"));
-
-  // Stop AllScreensMedia.
-  EXPECT_EQ(true, content::EvalJs(contents_, "stopAllScreensMedia();"));
-
-  // AllScreensMedia should be still running.
-  EXPECT_EQ(true, content::EvalJs(contents_, "checkDisplayMediaRunning();"));
-}
-
-IN_PROC_BROWSER_TEST_F(
-    InteractionBetweenGetAllScreensMediaAndGetDisplayMediaTest,
-    StartDisplayMediaThenAllScreenMediaThenStopMediaCapturing) {
-  SetScreens(/*screen_count=*/1u);
-
-  // Start DisplayMedia.
-  EXPECT_EQ(true, content::EvalJs(contents_, "startDisplayMedia();"));
-
-  // Start AllScreensMedia.
-  EXPECT_EQ(true, content::EvalJs(contents_, "startAllScreensMedia();"));
-
-  // StopScreenShare.
+  // The capture which was started via getDisplayMedia() caused the
+  // browser to show the user UX for stopping that capture. Simlate a user
+  // interaction with that UX.
   MediaCaptureDevicesDispatcher::GetInstance()
       ->GetMediaStreamCaptureIndicator()
       ->StopMediaCapturing(
           contents_, MediaStreamCaptureIndicator::MediaType::kDisplayMedia);
-  EXPECT_EQ(true, content::EvalJs(contents_, "waitForDisplayMediaToStop();"));
+  EXPECT_EQ(true,
+            content::EvalJs(contents_,
+                            "waitUntilStoppedByUser(\"getDisplayMedia\");"));
 
-  // AllScreensMedia should be still running.
-  EXPECT_EQ(true, content::EvalJs(contents_, "checkAllScreensMediaRunning();"));
-}
-
-IN_PROC_BROWSER_TEST_F(
-    InteractionBetweenGetAllScreensMediaAndGetDisplayMediaTest,
-    StartAllScreenMediaThenDisplayMediaThenStopMediaCapturing) {
-  SetScreens(/*screen_count=*/1u);
-
-  // Start AllScreensMedia.
-  EXPECT_EQ(true, content::EvalJs(contents_, "startAllScreensMedia();"));
-
-  // Start DisplayMedia.
-  EXPECT_EQ(true, content::EvalJs(contents_, "startDisplayMedia();"));
-
-  // StopScreenShare.
-  MediaCaptureDevicesDispatcher::GetInstance()
-      ->GetMediaStreamCaptureIndicator()
-      ->StopMediaCapturing(
-          contents_, MediaStreamCaptureIndicator::MediaType::kDisplayMedia);
-  EXPECT_EQ(true, content::EvalJs(contents_, "waitForDisplayMediaToStop();"));
-
-  // AllScreensMedia should be still running.
-  EXPECT_EQ(true, content::EvalJs(contents_, "checkAllScreensMediaRunning();"));
+  // Test-focus - the capture started through gASM was not affected
+  // by the user's interaction with the capture started via gDM.
+  EXPECT_EQ(true, AreAllTracksLive("getAllScreensMedia"));
 }
 
 #endif  // #if BUILDFLAG(IS_CHROMEOS)
