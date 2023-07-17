@@ -6419,6 +6419,35 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Commerce.PriceInsights.HistoryGraphInteraction">
+  <owner>zhiyuancai@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <description>
+    Records when users interact with the history graph shown in the shopping
+    insights side panel.
+  </description>
+</action>
+
+<action name="Commerce.PriceInsights.InlineFeedbackLinkClicked">
+  <owner>zhiyuancai@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <description>
+    Records when users click the feedback link shown in the shopping insights
+    side panel to pop up the feedback dialog.
+  </description>
+</action>
+
+<action name="Commerce.PriceInsights.NavigationClosedSidePanel"
+    not_user_triggered="true">
+  <owner>zhiyuancai@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <description>
+    Records when the shopping insights side panel is currently showing and the
+    user navigates away from the current tab, in which case the side panel will
+    be automatically closed.
+  </description>
+</action>
+
 <action name="Commerce.PriceTracking.BookmarkDialogPriceTrackViewShown">
   <owner>meiliang@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>

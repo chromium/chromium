@@ -470,6 +470,51 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
   <token key="TabUsageStatus" variants="TabUsageStatuses"/>
 </histogram>
 
+<histogram name="Commerce.PriceInsights.BuyingOptionsClicked"
+    enum="PriceInsightsPriceBucket" expires_after="2024-01-03">
+  <owner>zhiyuancai@chromium.org</owner>
+  <owner>ayman@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <summary>
+    Records the current price bucket of the product when the user clicks
+    &quot;Buying Options&quot; in the price insights side panel.
+  </summary>
+</histogram>
+
+<histogram name="Commerce.PriceInsights.OmniboxIconClickedAfterLabelShown"
+    enum="PriceInsightsIconLabelType" expires_after="2024-01-03">
+  <owner>zhiyuancai@chromium.org</owner>
+  <owner>ayman@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <summary>
+    Records the initial label of the price insights omnibox icon shown when the
+    user clicks on it. If a label shows initially then collapses to an icon
+    only, on user click, we still record the initial label.
+  </summary>
+</histogram>
+
+<histogram name="Commerce.PriceInsights.OmniboxIconShownLabel"
+    enum="PriceInsightsIconLabelType" expires_after="2024-01-03">
+  <owner>zhiyuancai@chromium.org</owner>
+  <owner>ayman@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <summary>
+    Records the initial label of the price insights omnibox icon when it is
+    shown to the user.
+  </summary>
+</histogram>
+
+<histogram name="Commerce.PriceInsights.SidePanelOpenWithMultipleCatalogs"
+    enum="Boolean" expires_after="2024-01-03">
+  <owner>zhiyuancai@chromium.org</owner>
+  <owner>ayman@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <summary>
+    Records whether the product that the price insights side panel was opened
+    for has multiple catalogs.
+  </summary>
+</histogram>
+
 <histogram name="Commerce.PriceTracking.EmailNotificationsEnabled"
     enum="PriceNotificationEmailState" expires_after="2023-12-04">
   <owner>ayman@chromium.org</owner>

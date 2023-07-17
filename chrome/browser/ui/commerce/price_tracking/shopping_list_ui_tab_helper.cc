@@ -6,6 +6,9 @@
 
 #include "base/check_is_test.h"
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -372,6 +375,11 @@ void ShoppingListUiTabHelper::ShowShoppingInsightsSidePanel() {
                               SidePanelEntry::Id::kShoppingInsights)));
 
   side_panel_ui->Show(SidePanelEntryId::kShoppingInsights);
+  if (price_insights_info_.has_value()) {
+    base::UmaHistogramBoolean(
+        "Commerce.PriceInsights.SidePanelOpenWithMultipleCatalogs",
+        price_insights_info_->has_multiple_catalogs);
+  }
 }
 
 void ShoppingListUiTabHelper::UpdatePriceTrackingStateFromSubscriptions() {
@@ -452,6 +460,8 @@ void ShoppingListUiTabHelper::MakeShoppingInsightsSidePanelUnavailable() {
       side_panel_ui->GetCurrentEntryId() ==
           SidePanelEntry::Id::kShoppingInsights) {
     side_panel_ui->Close();
+    base::RecordAction(base::UserMetricsAction(
+        "Commerce.PriceInsights.NavigationClosedSidePanel"));
   }
 
   auto* registry = SidePanelRegistry::Get(web_contents());

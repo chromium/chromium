@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/commerce/price_insights_icon_view.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -57,8 +58,20 @@ void PriceInsightsIconView::UpdateImpl() {
   bool should_show = ShouldShow();
 
   if (should_show) {
-    if (!GetVisible() && QualifiesForPageActionLabel()) {
-      MaybeShowPageActionLabel();
+    if (!GetVisible()) {
+      // Reset the last_shown_label_type_ first.
+      last_shown_label_type_ =
+          PriceInsightsIconView::PriceInsightsIconLabelType::kNone;
+
+      auto label_to_be_shown = GetPriceInsightsIconLabelType();
+      if (label_to_be_shown !=
+              PriceInsightsIconView::PriceInsightsIconLabelType::kNone &&
+          MaybeShowPageActionLabel()) {
+        last_shown_label_type_ = label_to_be_shown;
+      }
+      base::UmaHistogramEnumeration(
+          "Commerce.PriceInsights.OmniboxIconShownLabel",
+          last_shown_label_type_);
     }
   } else {
     HidePageActionLabel();
@@ -72,14 +85,14 @@ void PriceInsightsIconView::HidePageActionLabel() {
   ResetSlideAnimation(false);
 }
 
-void PriceInsightsIconView::MaybeShowPageActionLabel() {
+bool PriceInsightsIconView::MaybeShowPageActionLabel() {
   auto* tracker =
       feature_engagement::TrackerFactory::GetForBrowserContext(profile_);
 
   if (!tracker ||
       !tracker->ShouldTriggerHelpUI(
           feature_engagement::kIPHPriceInsightsPageActionIconLabelFeature)) {
-    return;
+    return false;
   }
 
   should_extend_label_shown_duration_ = true;
@@ -90,13 +103,16 @@ void PriceInsightsIconView::MaybeShowPageActionLabel() {
   // the label should not block other promos from displaying.
   tracker->Dismissed(
       feature_engagement::kIPHPriceInsightsPageActionIconLabelFeature);
+
+  return true;
 }
 
-bool PriceInsightsIconView::QualifiesForPageActionLabel() {
+PriceInsightsIconView::PriceInsightsIconLabelType
+PriceInsightsIconView::GetPriceInsightsIconLabelType() {
   auto* web_contents = GetWebContents();
 
   if (!web_contents) {
-    return false;
+    return PriceInsightsIconView::PriceInsightsIconLabelType::kNone;
   }
   auto* tab_helper =
       commerce::ShoppingListUiTabHelper::FromWebContents(web_contents);
@@ -104,25 +120,25 @@ bool PriceInsightsIconView::QualifiesForPageActionLabel() {
 
   auto& price_insights_info = tab_helper->GetPriceInsightsInfo();
 
-  if (!price_insights_info.has_value()) {
-    return false;
-  }
-
-  if (price_insights_info->price_bucket == commerce::PriceBucket::kLowPrice) {
+  if (!price_insights_info.has_value() ||
+      !price_insights_info->typical_low_price_micros.has_value() ||
+      !price_insights_info->typical_high_price_micros.has_value() ||
+      price_insights_info->catalog_history_prices.empty()) {
+    return PriceInsightsIconView::PriceInsightsIconLabelType::kNone;
+  } else if (price_insights_info->price_bucket ==
+             commerce::PriceBucket::kLowPrice) {
     SetLabel(l10n_util::GetStringUTF16(
         IDS_SHOPPING_INSIGHTS_ICON_EXPANDED_TEXT_LOW_PRICE));
+    return PriceInsightsIconView::PriceInsightsIconLabelType::kPriceIsLow;
   } else if (price_insights_info->price_bucket ==
                  commerce::PriceBucket::kHighPrice &&
              commerce::kPriceInsightsChipLabelExpandOnHighPrice.Get()) {
     SetLabel(l10n_util::GetStringUTF16(
         IDS_SHOPPING_INSIGHTS_ICON_EXPANDED_TEXT_HIGH_PRICE));
+    return PriceInsightsIconView::PriceInsightsIconLabelType::kPriceIsHigh;
   } else {
-    return false;
+    return PriceInsightsIconView::PriceInsightsIconLabelType::kNone;
   }
-
-  return price_insights_info->typical_low_price_micros.has_value() &&
-         price_insights_info->typical_high_price_micros.has_value() &&
-         !price_insights_info->catalog_history_prices.empty();
 }
 
 void PriceInsightsIconView::AnimationProgressed(
@@ -159,6 +175,9 @@ void PriceInsightsIconView::OnExecuting(
   CHECK(tab_helper);
 
   tab_helper->ShowShoppingInsightsSidePanel();
+  base::UmaHistogramEnumeration(
+      "Commerce.PriceInsights.OmniboxIconClickedAfterLabelShown",
+      last_shown_label_type_);
 }
 
 bool PriceInsightsIconView::ShouldShow() const {
