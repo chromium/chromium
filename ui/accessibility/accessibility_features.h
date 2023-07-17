@@ -218,6 +218,11 @@ AX_BASE_EXPORT bool IsReadAnythingWithScreen2xEnabled();
 // If enabled, ScreenAI library writes some debug data in /tmp.
 AX_BASE_EXPORT bool IsScreenAIDebugModeEnabled();
 
+AX_BASE_EXPORT BASE_DECLARE_FEATURE(kReadAnythingWebUIToolbar);
+
+// If enabled, use the WebUI toolbar in Read Anything.
+AX_BASE_EXPORT bool IsReadAnythingWebUIToolbarEnabled();
+
 // Enables a feature whereby inaccessible (i.e. untagged) PDFs are made
 // accessible using an optical character recognition service. Due to the size of
 // the OCR component, this feature targets desktop versions of Chrome for now.
