@@ -152,6 +152,9 @@ gfx::Insets GetLayoutInsets(LayoutInset inset) {
     case DOWNLOAD_ROW:
       return gfx::Insets::VH(8, features::IsChromeRefresh2023() ? 20 : 16);
     case LOCATION_BAR_ICON_INTERIOR_PADDING:
+      if (features::IsChromeRefresh2023()) {
+        return gfx::Insets::VH(2, 2);
+      }
       return touch_ui ? gfx::Insets::VH(5, 10) : gfx::Insets::VH(4, 8);
 
     case LOCATION_BAR_PAGE_INFO_ICON_PADDING:

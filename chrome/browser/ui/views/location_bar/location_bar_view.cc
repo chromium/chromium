@@ -160,6 +160,9 @@ bool OmniboxPrefixRichAutocompletionEnabled() {
 // The padding between the intent chip and the other trailing decorations.
 constexpr int kIntentChipIntraItemPadding = 12;
 
+// The padding between the content setting icons and other trailing decorations.
+constexpr int kContentSettingIntraItemPadding = 8;
+
 }  // namespace
 
 using content::WebContents;
@@ -738,7 +741,9 @@ void LocationBarView::Layout() {
   add_trailing_decoration(page_action_icon_container_,
                           /*intra_item_padding=*/0);
   for (ContentSettingImageView* view : base::Reversed(content_setting_views_)) {
-    add_trailing_decoration(view, /*intra_item_padding=*/0);
+    int intra_item_padding =
+        features::IsChromeRefresh2023() ? kContentSettingIntraItemPadding : 0;
+    add_trailing_decoration(view, intra_item_padding);
   }
 
   if (intent_chip_) {
