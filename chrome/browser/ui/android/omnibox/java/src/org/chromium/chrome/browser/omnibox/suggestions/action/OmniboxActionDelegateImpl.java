@@ -70,13 +70,14 @@ public class OmniboxActionDelegateImpl implements OmniboxActionDelegate {
 
     @Override
     public boolean isIncognito() {
-        return mTabSupplier.get().isIncognito();
+        var tab = mTabSupplier.get();
+        return (tab != null && tab.isIncognito());
     }
 
     @Override
     public void loadPageInCurrentTab(String url) {
         var tab = mTabSupplier.get();
-        if (tab.isUserInteractable()) {
+        if (tab != null && tab.isUserInteractable()) {
             tab.loadUrl(new LoadUrlParams(url));
         } else {
             mOpenUrlInExistingTabElseNewTabCb.accept(url);
