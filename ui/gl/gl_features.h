@@ -28,6 +28,10 @@ GL_EXPORT BASE_DECLARE_FEATURE(kWriteMetalShaderCacheToDisk);
 GL_EXPORT BASE_DECLARE_FEATURE(kUseBuiltInMetalShaderCache);
 #endif
 
+#if BUILDFLAG(IS_WIN)
+GL_EXPORT BASE_DECLARE_FEATURE(kUsePrimaryMonitorVSyncIntervalOnSV3);
+#endif  // BUILDFLAG(IS_WIN)
+
 GL_EXPORT bool IsAndroidFrameDeadlineEnabled();
 
 GL_EXPORT bool UsePassthroughCommandDecoder();

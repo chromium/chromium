@@ -107,6 +107,14 @@ BASE_FEATURE(kUseBuiltInMetalShaderCache,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
+#if BUILDFLAG(IS_WIN)
+// If true, VSyncThreadWin will use the primary monitor's
+// refresh rate as the vsync interval.
+BASE_FEATURE(kUsePrimaryMonitorVSyncIntervalOnSV3,
+             "UsePrimaryMonitorVSyncIntervalOnSV3",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_WIN)
+
 bool UseGpuVsync() {
   return !base::CommandLine::ForCurrentProcess()->HasSwitch(
              switches::kDisableGpuVsync) &&
