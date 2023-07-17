@@ -196,6 +196,10 @@ void BorealisApps::CreateAppOverrides(
 
   // Borealis apps don't handle intents (like "open with").
   app->handles_intents = false;
+  // Borealis apps are normal apps per apps-management.
+  app->show_in_management = true;
+  // Borealis supports uninstall per-app
+  app->allow_uninstall = true;
 
   // Hide some known spurious "apps" from the user.
   if (borealis::ShouldHideIrrelevantApp(registration.Name())) {
