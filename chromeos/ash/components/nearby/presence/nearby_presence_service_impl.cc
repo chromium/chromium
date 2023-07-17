@@ -8,10 +8,13 @@
 
 #include "base/check.h"
 #include "base/logging.h"
+#include "chromeos/ash/components/nearby/presence/credentials/nearby_presence_credential_manager_impl.h"
 #include "chromeos/ash/components/nearby/presence/nearby_presence_service_enum_coversions.h"
 #include "chromeos/ash/components/nearby/presence/prefs/nearby_presence_prefs.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_presence.mojom.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace {
 
@@ -88,10 +91,17 @@ namespace ash::nearby::presence {
 
 NearbyPresenceServiceImpl::NearbyPresenceServiceImpl(
     PrefService* pref_service,
-    ash::nearby::NearbyProcessManager* process_manager)
-    : pref_service_(pref_service), process_manager_(process_manager) {
+    ash::nearby::NearbyProcessManager* process_manager,
+    signin::IdentityManager* identity_manager,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
+    : pref_service_(pref_service),
+      identity_manager_(identity_manager),
+      url_loader_factory_(url_loader_factory),
+      process_manager_(process_manager) {
   CHECK(pref_service_);
   CHECK(process_manager_);
+  CHECK(identity_manager_);
+  CHECK(url_loader_factory_);
 }
 
 NearbyPresenceServiceImpl::~NearbyPresenceServiceImpl() = default;
@@ -127,6 +137,22 @@ void NearbyPresenceServiceImpl::StartScan(
       base::BindOnce(&NearbyPresenceServiceImpl::OnScanStarted,
                      weak_ptr_factory_.GetWeakPtr(), scan_delegate,
                      std::move(on_start_scan_callback)));
+}
+
+void NearbyPresenceServiceImpl::Initialize() {
+  if (!SetProcessReference()) {
+    LOG(ERROR) << "Failed to create process reference.";
+    return;
+  }
+
+  CHECK(process_reference_);
+  CHECK(process_reference_->GetNearbyPresence());
+  CHECK(NearbyPresenceCredentialManagerImpl::Creator::Get());
+  NearbyPresenceCredentialManagerImpl::Creator::Get()->Create(
+      pref_service_, identity_manager_, url_loader_factory_,
+      process_reference_->GetNearbyPresence(),
+      base::BindOnce(&NearbyPresenceServiceImpl::OnCredentialManagerInitialized,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void NearbyPresenceServiceImpl::OnScanStarted(
@@ -206,6 +232,12 @@ void NearbyPresenceServiceImpl::OnDeviceLost(mojom::PresenceDevicePtr device) {
   for (auto* delegate : scan_delegate_set_) {
     delegate->OnPresenceDeviceLost(build_device);
   }
+}
+
+void NearbyPresenceServiceImpl::OnCredentialManagerInitialized(
+    std::unique_ptr<NearbyPresenceCredentialManager>
+        initialized_credential_manager) {
+  credential_manager_ = std::move(initialized_credential_manager);
 }
 
 }  // namespace ash::nearby::presence

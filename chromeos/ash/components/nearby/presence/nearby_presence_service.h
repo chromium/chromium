@@ -120,6 +120,8 @@ class NearbyPresenceService {
       ScanDelegate* scan_delegate,
       base::OnceCallback<void(std::unique_ptr<ScanSession>, PresenceStatus)>
           on_start_scan_callback) = 0;
+
+  virtual void Initialize() = 0;
 };
 
 }  // namespace ash::nearby::presence

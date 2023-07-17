@@ -4,11 +4,14 @@
 
 #include "chromeos/ash/components/nearby/presence/prefs/nearby_presence_prefs.h"
 
+#include "chromeos/ash/components/nearby/presence/credentials/prefs.h"
 #include "components/prefs/pref_registry.h"
 #include "components/prefs/pref_registry_simple.h"
 
 namespace ash::nearby::presence {
 
-void RegisterNearbyPresencePrefs(PrefRegistrySimple* registry) {}
+void RegisterNearbyPresencePrefs(PrefRegistrySimple* registry) {
+  RegisterNearbyPresenceCredentialPrefs(registry);
+}
 
 }  // namespace ash::nearby::presence

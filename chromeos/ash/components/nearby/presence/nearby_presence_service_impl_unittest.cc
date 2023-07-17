@@ -6,12 +6,18 @@
 
 #include "base/run_loop.h"
 #include "base/test/mock_callback.h"
+#include "chromeos/ash/components/nearby/presence/credentials/fake_nearby_presence_credential_manager.h"
+#include "chromeos/ash/components/nearby/presence/credentials/nearby_presence_credential_manager_impl.h"
 #include "chromeos/ash/services/nearby/public/cpp/fake_nearby_presence.h"
 #include "chromeos/ash/services/nearby/public/cpp/mock_nearby_process_manager.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "content/public/test/browser_task_environment.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -69,7 +75,15 @@ class FakeScanDelegate : public NearbyPresenceService::ScanDelegate {
 
 class NearbyPresenceServiceImplTest : public testing::Test {
  public:
-  NearbyPresenceServiceImplTest() = default;
+  NearbyPresenceServiceImplTest() {
+    shared_factory_ =
+        base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+            base::BindOnce([]() -> network::mojom::URLLoaderFactory* {
+              ADD_FAILURE() << "Did not expect this to actually be used";
+              return nullptr;
+            }));
+  }
+
   ~NearbyPresenceServiceImplTest() override = default;
 
   // testing::Test:
@@ -89,8 +103,11 @@ class NearbyPresenceServiceImplTest : public testing::Test {
           return std::move(nearby_process_reference_);
         });
 
-    nearby_presence_service = std::make_unique<NearbyPresenceServiceImpl>(
-        pref_service_.get(), &nearby_process_manager_);
+    nearby_presence_service_ = std::make_unique<NearbyPresenceServiceImpl>(
+        pref_service_.get(), &nearby_process_manager_,
+        identity_test_env_.identity_manager(),
+        base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+            &test_url_loader_factory_));
   }
 
   void TestStartScan(ash::nearby::presence::NearbyPresenceService::IdentityType
@@ -103,7 +120,7 @@ class NearbyPresenceServiceImplTest : public testing::Test {
 
       // Call start scan and verify it calls the OnPresenceDeviceFound delegate
       // function.
-      nearby_presence_service->StartScan(
+      nearby_presence_service_->StartScan(
           filter, &scan_delegate,
           base::BindOnce(&NearbyPresenceServiceImplTest::TestOnScanStarted,
                          weak_ptr_factory_.GetWeakPtr(),
@@ -117,7 +134,7 @@ class NearbyPresenceServiceImplTest : public testing::Test {
       scan_delegate.SetNextScanDelegateCallback(run_loop.QuitClosure());
 
       std::vector<mojom::ActionType> actions;
-      ;
+
       actions.push_back(kAction1);
       actions.push_back(kAction2);
       actions.push_back(kAction3);
@@ -152,8 +169,11 @@ class NearbyPresenceServiceImplTest : public testing::Test {
       ash::nearby::MockNearbyProcessManager::MockNearbyProcessReference>
       nearby_process_reference_;
 
-  std::unique_ptr<NearbyPresenceServiceImpl> nearby_presence_service;
   std::unique_ptr<TestingPrefServiceSimple> pref_service_;
+  signin::IdentityTestEnvironment identity_test_env_;
+  scoped_refptr<network::SharedURLLoaderFactory> shared_factory_;
+  network::TestURLLoaderFactory test_url_loader_factory_;
+  std::unique_ptr<NearbyPresenceService> nearby_presence_service_;
   std::unique_ptr<ash::nearby::presence::NearbyPresenceService::ScanSession>
       scan_session_;
   base::WeakPtrFactory<NearbyPresenceServiceImplTest> weak_ptr_factory_{this};
@@ -184,7 +204,7 @@ TEST_F(NearbyPresenceServiceImplTest, StartScan_DeviceChanged) {
 
     // Call start scan and verify it calls the OnPresenceDeviceFound delegate
     // function.
-    nearby_presence_service->StartScan(
+    nearby_presence_service_->StartScan(
         filter, &scan_delegate,
         base::BindOnce(&NearbyPresenceServiceImplTest::TestOnScanStarted,
                        weak_ptr_factory_.GetWeakPtr(), run_loop.QuitClosure()));
@@ -221,7 +241,7 @@ TEST_F(NearbyPresenceServiceImplTest, StartScan_DeviceLost) {
 
     // Call start scan and verify it calls the OnPresenceDeviceFound delegate
     // function.
-    nearby_presence_service->StartScan(
+    nearby_presence_service_->StartScan(
         filter, &scan_delegate,
         base::BindOnce(&NearbyPresenceServiceImplTest::TestOnScanStarted,
                        weak_ptr_factory_.GetWeakPtr(), run_loop.QuitClosure()));
@@ -257,7 +277,7 @@ TEST_F(NearbyPresenceServiceImplTest, EndScan) {
 
     // Call start scan and verify it calls the OnPresenceDeviceFound delegate
     // function.
-    nearby_presence_service->StartScan(
+    nearby_presence_service_->StartScan(
         filter, &scan_delegate,
         base::BindOnce(&NearbyPresenceServiceImplTest::TestOnScanStarted,
                        weak_ptr_factory_.GetWeakPtr(), run_loop.QuitClosure()));
@@ -307,7 +327,7 @@ TEST_F(NearbyPresenceServiceImplTest, EndScanBeforeStart) {
 
     // Call start scan and verify it calls the OnPresenceDeviceFound delegate
     // function.
-    nearby_presence_service->StartScan(
+    nearby_presence_service_->StartScan(
         filter, &scan_delegate,
         base::BindOnce(&NearbyPresenceServiceImplTest::TestOnScanStarted,
                        weak_ptr_factory_.GetWeakPtr(), run_loop.QuitClosure()));
@@ -316,6 +336,18 @@ TEST_F(NearbyPresenceServiceImplTest, EndScanBeforeStart) {
   }
 
   EXPECT_TRUE(IsScanSessionActive());
+}
+
+TEST_F(NearbyPresenceServiceImplTest, Initialize) {
+  auto credential_manager =
+      std::make_unique<FakeNearbyPresenceCredentialManager>();
+  NearbyPresenceCredentialManagerImpl::Creator::SetCredentialManagerForTesting(
+      std::move(credential_manager));
+  nearby_presence_service_->Initialize();
+
+  // TODO(b/4641058): Verify the correct calls are triggered on
+  // |fake_credential_manager| once `CredentialManager::UpdateCredentials()`
+  // is implemented and plumbed to NPS.
 }
 
 TEST_F(NearbyPresenceServiceImplTest, NullProcessReference) {
@@ -332,7 +364,7 @@ TEST_F(NearbyPresenceServiceImplTest, NullProcessReference) {
 
   {
     auto run_loop = base::RunLoop();
-    nearby_presence_service->StartScan(
+    nearby_presence_service_->StartScan(
         filter, &scan_delegate,
         base::BindOnce(&NearbyPresenceServiceImplTest::TestOnScanStarted,
                        weak_ptr_factory_.GetWeakPtr(), run_loop.QuitClosure()));
