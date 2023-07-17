@@ -24,7 +24,6 @@ found in the LICENSE file.
       android:layout_width="wrap_content"
       android:layout_height="wrap_content" />
 
-  <!-- TODO(crbugs/1439882) Replace the type style when '18pt Google Sans with 24pt leading' become available in Clank -->
   <org.chromium.ui.widget.TextViewWithLeading
       android:id="@+id/empty_state_text_title"
       android:maxWidth="@dimen/empty_state_text_width"
@@ -32,8 +31,8 @@ found in the LICENSE file.
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:textAlignment="center"
-      android:textAppearance="@style/TextAppearance.TextLarge.Secondary"
-      app:leading="@dimen/text_size_large_leading"/>
+      android:textAppearance="@style/TextAppearance.Headline2Thick.Secondary"
+      app:leading="@dimen/headline2_size_leading"/>
 
   <org.chromium.ui.widget.TextViewWithLeading
       android:id="@+id/empty_state_text_description"

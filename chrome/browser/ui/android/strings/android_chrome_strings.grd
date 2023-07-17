@@ -2143,7 +2143,12 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_NTP_RECENT_TABS_SYNC_PROMO_INSTRUCTIONS" desc="Information about sync displayed on the NTP when the user has signed in on mobile but not on desktop">
         Tabs that you've opened in Chrome on your other devices will appear here.
       </message>
-
+      <message name="IDS_RECENT_TABS_NO_TABS_EMPTY_STATE" desc="Text appearing on an empty recent tab page that indicates that recently closed tabs will appear here">
+        You’ll find your recent tabs here
+      </message>
+      <message name="IDS_RECENT_TABS_SIGN_IN_ON_OTHER_DEVICES" desc="Text appearing on an empty recent tab page that indicates user can see tabs from other devices here">
+        To see your tabs from wherever you use Chrome, sign in on all your devices
+      </message>
       <message name="IDS_SEARCH_AND_BROWSE_CATEGORY" desc="Category to show the search and browse improvement toggle. [CHAR_LIMIT=32]">
         Search and browse
       </message>

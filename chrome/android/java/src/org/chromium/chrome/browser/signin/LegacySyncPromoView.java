@@ -9,16 +9,20 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewStub;
 import android.widget.Button;
-import android.widget.LinearLayout;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.sync.settings.ManageSyncSettings;
 import org.chromium.chrome.browser.ui.signin.SyncConsentActivityLauncher.AccessPoint;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
+import org.chromium.components.browser_ui.widget.MaterialCardViewNoShadow;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.sync.SyncService;
 
@@ -31,13 +35,18 @@ import org.chromium.components.sync.SyncService;
  * attaching this View to a ViewGroup.
  */
 public class LegacySyncPromoView
-        extends LinearLayout implements SyncService.SyncStateChangedListener {
+        extends FrameLayout implements SyncService.SyncStateChangedListener {
     private @AccessPoint int mAccessPoint;
     private boolean mInitialized;
 
     private TextView mTitle;
     private TextView mDescription;
+    private View mEmptyView;
+    private TextView mEmptyStateTitle;
+    private TextView mEmptyStateDescription;
+    private ImageView mEmptyStateImage;
     private Button mPositiveButton;
+    private MaterialCardViewNoShadow mOldEmptyCardView;
 
     /**
      * A convenience method to inflate and initialize a LegacySyncPromoView.
@@ -69,6 +78,17 @@ public class LegacySyncPromoView
     protected void onFinishInflate() {
         super.onFinishInflate();
 
+        // @Todo(crbug.com/1465523) Refactor Recent Tabs Empty States implementation. We don't want
+        // this implementation to live in this class and we can add another subclass of PromoGroup
+        // similar to the one used for LegacySyncPromoView.
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.EMPTY_STATES)) {
+            ViewStub emptyViewStub = findViewById(R.id.recent_tab_empty_state_view_stub);
+            mEmptyView = emptyViewStub.inflate();
+            mEmptyStateTitle = findViewById(R.id.empty_state_text_title);
+            mEmptyStateDescription = findViewById(R.id.empty_state_text_description);
+            mEmptyStateImage = findViewById(R.id.empty_state_icon);
+        }
+        mOldEmptyCardView = findViewById(R.id.card_view);
         mTitle = findViewById(R.id.title);
         mDescription = findViewById(R.id.description);
         mPositiveButton = findViewById(R.id.sign_in);
@@ -102,10 +122,17 @@ public class LegacySyncPromoView
         if (!SyncServiceFactory.get().hasSyncConsent()
                 || SyncServiceFactory.get().getSelectedTypes().isEmpty()) {
             viewState = getStateForEnableChromeSync();
+            viewState.apply(mDescription, mPositiveButton, mEmptyView, mOldEmptyCardView);
         } else {
             viewState = getStateForStartUsing();
+            if (!ChromeFeatureList.isEnabled(ChromeFeatureList.EMPTY_STATES)
+                    || mAccessPoint == SigninAccessPoint.BOOKMARK_MANAGER) {
+                viewState.apply(mDescription, mPositiveButton, mEmptyView, mOldEmptyCardView);
+            } else {
+                viewState.applyEmptyView(mEmptyStateTitle, mEmptyStateDescription, mEmptyStateImage,
+                        mOldEmptyCardView, mEmptyView);
+            }
         }
-        viewState.apply(mDescription, mPositiveButton);
     }
 
     /**
@@ -114,17 +141,44 @@ public class LegacySyncPromoView
      * explicitly touches each UI element.
      */
     private static class ViewState {
-        private final int mDescriptionText;
-        private final ButtonState mPositiveButtonState;
+        private int mDescriptionText;
+        private ButtonState mPositiveButtonState;
+        private int mEmptyStateTitleText;
+        private int mEmptyStateDescriptionText;
+        private int mEmptyStateImageResource;
 
         public ViewState(int mDescriptionText, ButtonState mPositiveButtonState) {
             this.mDescriptionText = mDescriptionText;
             this.mPositiveButtonState = mPositiveButtonState;
         }
 
-        public void apply(TextView description, Button positiveButton) {
+        // Initialize empty State view resources.
+        public ViewState(int mEmptyStateTitleText, int mEmptyStateDescriptionText,
+                int mEmptyStateImageResource) {
+            this.mEmptyStateTitleText = mEmptyStateTitleText;
+            this.mEmptyStateDescriptionText = mEmptyStateDescriptionText;
+            this.mEmptyStateImageResource = mEmptyStateImageResource;
+        }
+
+        // Apply empty state view resources.
+        public void applyEmptyView(TextView emptyStateTitle, TextView emptyStateDescription,
+                ImageView emptyStateImageView, MaterialCardViewNoShadow oldEmptyCardView,
+                View emptyStateView) {
+            emptyStateTitle.setText(mEmptyStateTitleText);
+            emptyStateDescription.setText(mEmptyStateDescriptionText);
+            emptyStateImageView.setImageResource(mEmptyStateImageResource);
+            oldEmptyCardView.setVisibility(View.GONE);
+            emptyStateView.setVisibility(View.VISIBLE);
+        }
+
+        public void apply(TextView description, Button positiveButton, View emptyStateView,
+                MaterialCardViewNoShadow oldEmptyCardView) {
             description.setText(mDescriptionText);
             mPositiveButtonState.apply(positiveButton);
+            oldEmptyCardView.setVisibility(View.VISIBLE);
+            if (emptyStateView != null) {
+                emptyStateView.setVisibility(View.GONE);
+            }
         }
     }
 
@@ -181,8 +235,14 @@ public class LegacySyncPromoView
         // State is updated before this view is removed, so this invalid state happens, but is not
         // visible. I want there to be a guarantee that this state is never seen, but to do so would
         // require some code restructuring.
-
-        return new ViewState(R.string.ntp_recent_tabs_sync_promo_instructions, new ButtonAbsent());
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.EMPTY_STATES)) {
+            return new ViewState(R.string.recent_tabs_no_tabs_empty_state,
+                    R.string.recent_tabs_sign_in_on_other_devices,
+                    R.drawable.recent_tab_empty_state_illustration);
+        } else {
+            return new ViewState(
+                    R.string.ntp_recent_tabs_sync_promo_instructions, new ButtonAbsent());
+        }
     }
 
     @Override
