@@ -273,6 +273,32 @@ void StyleSheetHandler::EndRuleBody(unsigned offset) {
 }
 
 void StyleSheetHandler::AddNewRuleToSourceTree(CSSRuleSourceData* rule) {
+  // After a rule is parsed, if it doesn't have a header range
+  // and if it is a style rule it means that this is a "nested group
+  // rule"[1][2]. When there are property declarations in this rule there is an
+  // implicit nested rule is created for this to hold these declarations[3].
+  // However, when there aren't any property declarations in this rule
+  // there won't be an implicit nested rule for it and it will only
+  // contain parsed child rules[3].
+  // So, for that case, we are not adding the source data for the non
+  // existent implicit nested rule since it won't exist in the parsed
+  // CSS rules from the parser itself.
+  //
+  // [1]: https://drafts.csswg.org/css-nesting-1/#nested-group-rules
+  // [2]:
+  // https://source.chromium.org/chromium/chromium/src/+/refs/heads/main:third_party/blink/renderer/core/css/parser/css_parser_impl.cc;l=2122;drc=255b4e7036f1326f2219bd547d3d6dcf76064870
+  // [3]:
+  // https://source.chromium.org/chromium/chromium/src/+/refs/heads/main:third_party/blink/renderer/core/css/parser/css_parser_impl.cc;l=2131;drc=255b4e7036f1326f2219bd547d3d6dcf76064870
+  if (rule->rule_header_range.length() == 0 &&
+      (rule->type == StyleRule::RuleType::kStyle && rule->property_data.empty())) {
+    // Add the source data for the child rules since they exist in the
+    // rule data coming from the parser.
+    for (auto& child_rule : rule->child_rules) {
+      AddNewRuleToSourceTree(child_rule);
+    }
+    return;
+  }
+
   if (current_rule_data_stack_.empty())
     result_->push_back(rule);
   else
@@ -1704,6 +1730,7 @@ void InspectorStyleSheet::ParseText(const String& text) {
 
   source_data_ = MakeGarbageCollected<CSSRuleSourceDataList>();
   FlattenSourceData(*rule_tree, source_data_.Get());
+
   // The number of rules parsed should be equal to the number of source data
   // entries:
   DCHECK_EQ(parsed_flat_rules_.size(), source_data_->size());
