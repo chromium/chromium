@@ -3112,4 +3112,8 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
             }
         }
     }
+
+    View getToolbarContainerView() {
+        return mToolbarContainerView;
+    }
 }

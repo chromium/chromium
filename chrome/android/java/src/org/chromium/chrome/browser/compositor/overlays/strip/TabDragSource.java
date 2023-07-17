@@ -48,6 +48,7 @@ public class TabDragSource {
     private boolean mAcceptNextDrop;
     private OnDragListenerImpl mOnDragListenerImpl;
     private View.DragShadowBuilder mTabDragShadowBuilder;
+    private PointF mStartPointOnScreen;
 
     private float mPxToDp;
 
@@ -121,9 +122,14 @@ public class TabDragSource {
         private float mLastXPosition;
         private float mLastYPosition;
         private boolean mPointerInView;
+        private boolean mDragShadowVisible;
 
         @Override
         public boolean onDrag(View view, DragEvent dragEvent) {
+            // Since drag events are over Chrome window hence set the appropriate drag shadow, if
+            // required.
+            setDragShadow(view, dragEvent);
+
             // Check if the events are being received in the possible drop targets.
             if (canAcceptTabDrop(view, dragEvent)) return false;
 
@@ -201,6 +207,66 @@ public class TabDragSource {
             mLastXPosition = 0.0f;
             mLastYPosition = 0.0f;
         }
+
+        @VisibleForTesting
+        boolean canAcceptTabDrop(View view, DragEvent dragEvent) {
+            // If the event is received by a non source chrome window then mark to accept the drop
+            // in the destination chrome window only if drop is within the tabs strip area.
+            if (System.identityHashCode(view) != getDragSourceTabsToolbarHashCode()) {
+                // Check if the drop is in the tabs strip area of the toolbar container.
+                // The container has two toolbars strips stacked on each other. The top one is the
+                // tabs strip layout and lower is for omnibox and navigation buttons. The tab drop
+                // is accepted only in the top tabs toolbar area only.
+                if ((dragEvent.getAction() == DragEvent.ACTION_DROP)
+                        // TODO(b/288959915): Exactly determine the tabs toolbar area rather than
+                        // using the approximate top half height of the toolbar container.
+                        && (dragEvent.getY() < view.getHeight() / 2.0f)) {
+                    mAcceptNextDrop = true;
+                }
+                return true;
+            }
+            return false;
+        }
+
+        private void showDragShadow(boolean show) {
+            View dragSourceView = mSourceStripLayoutHelper.getToolbarContainerView();
+            mTabDragShadowBuilder =
+                    new TabDragShadowBuilder(show ? getDragShadowView(dragSourceView)
+                                                  : getEmptyDragShadowView(dragSourceView),
+                            mStartPointOnScreen);
+            dragSourceView.updateDragShadow(mTabDragShadowBuilder);
+            mDragShadowVisible = show;
+        }
+
+        private void setDragShadow(View view, DragEvent dragEvent) {
+            switch (dragEvent.getAction()) {
+                case DragEvent.ACTION_DRAG_LOCATION:
+                    boolean inTabsStripArea = dragEvent.getY() <= view.getHeight() / 2.0f;
+                    if (inTabsStripArea && mDragShadowVisible) {
+                        showDragShadow(false);
+                    }
+                    if (!inTabsStripArea && !mDragShadowVisible) {
+                        showDragShadow(true);
+                    }
+                    break;
+                case DragEvent.ACTION_DROP:
+                    showDragShadow(false);
+                    break;
+                case DragEvent.ACTION_DRAG_ENDED:
+                    showDragShadow(false);
+                    break;
+                case DragEvent.ACTION_DRAG_ENTERED:
+                    // No action here as the location is not specified. During the first
+                    // ACTION_DRAG_LOCATION event the correct drag shadow will be set.
+                    mDragShadowVisible = true;
+                    break;
+                case DragEvent.ACTION_DRAG_EXITED:
+                    showDragShadow(true);
+                    break;
+                default:
+                    break;
+            }
+        }
     }
 
     @VisibleForTesting
@@ -212,9 +278,10 @@ public class TabDragSource {
     }
 
     private void initiateTabDragAndDrop(View view, ClipData dragData, PointF startPointInView) {
+        mStartPointOnScreen = getPositionOnScreen(view, startPointInView);
         // Instantiate the drag shadow builder.
-        mTabDragShadowBuilder = new TabDragShadowBuilder(
-                getDragShadowView(view), getPositionOnScreen(view, startPointInView));
+        mTabDragShadowBuilder =
+                new TabDragShadowBuilder(getEmptyDragShadowView(view), mStartPointOnScreen);
 
         // Start the drag.
         int flags = View.DRAG_FLAG_GLOBAL;
@@ -269,6 +336,8 @@ public class TabDragSource {
             // Get Chrome window dimensions.
             int shadowWidth = ((Activity) context).getWindow().getDecorView().getWidth();
             int shadowHeight = ((Activity) context).getWindow().getDecorView().getHeight();
+
+            // Add app icon in the center of the drag shadow.
             int iconWidth = icon.getIntrinsicWidth();
             int iconHeight = icon.getIntrinsicHeight();
             int paddingHorizontal = (shadowWidth - iconWidth) / 2;
@@ -279,6 +348,17 @@ public class TabDragSource {
         } catch (Exception e) {
             Log.e(TAG, "DnD Failed to create drag shadow image view: " + e.getMessage());
         }
+        return imageView;
+    }
+
+    private View getEmptyDragShadowView(View view) {
+        Context context = view.getContext();
+        ImageView imageView = new ImageView(context);
+        // View is empty and nothing is shown for now.
+        // Get Chrome window dimensions and set the view to that size.
+        int shadowWidth = ((Activity) context).getWindow().getDecorView().getWidth();
+        int shadowHeight = ((Activity) context).getWindow().getDecorView().getHeight();
+        imageView.layout(0, 0, shadowWidth, shadowHeight);
         return imageView;
     }
 
@@ -372,26 +452,6 @@ public class TabDragSource {
         mTabBeingDragged = null;
         mOnDragListenerImpl = null;
         mPxToDp = 0.0f;
-    }
-
-    @VisibleForTesting
-    boolean canAcceptTabDrop(View view, DragEvent dragEvent) {
-        // If the event is received by a non source chrome window then mark to accept the drop in
-        // the destination chrome window only if drop is within the tabs strip area.
-        if (System.identityHashCode(view) != getDragSourceTabsToolbarHashCode()) {
-            // Check if the drop is in the tabs strip area of the toolbar container.
-            // The container has two toolbars strips stacked on each other. The top one is the tabs
-            // strip layout and lower is for omnibox and navigation buttons. The tab drop is
-            // accepted only in the top tabs toolbar area only.
-            if ((dragEvent.getAction() == DragEvent.ACTION_DROP)
-                    // TODO(b/288959915): Exactly determine the tabs toolbar area rather than using
-                    // the approximate top half height of the toolbar container.
-                    && (dragEvent.getY() < view.getHeight() / 2.0f)) {
-                mAcceptNextDrop = true;
-            }
-            return true;
-        }
-        return false;
     }
 
     private ClipData createClipDataFromTab(Tab tabBeingDragged, View view) {
