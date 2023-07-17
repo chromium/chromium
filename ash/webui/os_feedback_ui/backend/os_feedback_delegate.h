@@ -28,6 +28,8 @@ class OsFeedbackDelegate {
   // Gets the application locale so that suggested help contents can display
   // localized titles when available.
   virtual std::string GetApplicationLocale() = 0;
+  // Gets the mac address associated with the current device.
+  virtual absl::optional<std::string> GetLinkedPhoneMacAddress() = 0;
   // Returns the last active page url before the feedback tool is opened if any.
   virtual absl::optional<GURL> GetLastActivePageUrl() = 0;
   // Returns the normalized email address of the signed-in user associated with

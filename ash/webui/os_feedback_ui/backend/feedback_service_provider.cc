@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "ash/webui/os_feedback_ui/backend/histogram_util.h"
 #include "ash/webui/os_feedback_ui/backend/os_feedback_delegate.h"
 #include "ash/webui/os_feedback_ui/mojom/os_feedback_ui.mojom.h"
@@ -72,7 +73,11 @@ void FeedbackServiceProvider::GetFeedbackContext(
   feedback_context->page_url = feedback_delegate_->GetLastActivePageUrl();
   feedback_context->email = feedback_delegate_->GetSignedInUserEmail();
   feedback_context->trace_id = feedback_delegate_->GetPerformanceTraceId();
-  feedback_context->has_linked_cross_device_phone = false;
+  if (features::IsLinkCrossDeviceDogfoodFeedbackEnabled()) {
+    feedback_context->has_linked_cross_device_phone =
+        feedback_delegate_->GetLinkedPhoneMacAddress().has_value();
+  }
+
   feedback_context->is_internal_account =
       IsInternalAccount(feedback_context->email);
   std::move(callback).Run(std::move(feedback_context));

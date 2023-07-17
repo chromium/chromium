@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "ash/shell.h"
 #include "ash/webui/os_feedback_ui/backend/histogram_util.h"
 #include "ash/webui/os_feedback_ui/mojom/os_feedback_ui.mojom.h"
@@ -19,6 +20,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/multidevice_setup/multidevice_setup_client_factory.h"
 #include "chrome/browser/ash/os_feedback/os_feedback_screenshot_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/feedback/feedback_dialog_utils.h"
@@ -32,6 +34,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/webui/feedback/child_web_dialog.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chromeos/ash/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
 #include "components/feedback/content/content_tracing_manager.h"
 #include "components/feedback/feedback_common.h"
 #include "components/feedback/feedback_data.h"
@@ -160,6 +163,24 @@ absl::optional<std::string> ChromeOsFeedbackDelegate::GetSignedInUserEmail()
   // Browser sync consent is not required to use feedback.
   return identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
       .email;
+}
+
+absl::optional<std::string>
+ChromeOsFeedbackDelegate::GetLinkedPhoneMacAddress() {
+  CHECK(features::IsLinkCrossDeviceDogfoodFeedbackEnabled());
+
+  auto* multidevice_setup_client =
+      ash::multidevice_setup::MultiDeviceSetupClientFactory::GetForProfile(
+          profile_);
+  if (!multidevice_setup_client) {
+    return absl::nullopt;
+  }
+  absl::optional<multidevice::RemoteDeviceRef> remote_device_ref =
+      multidevice_setup_client->GetHostStatus().second;
+  if (!remote_device_ref.has_value()) {
+    return absl::nullopt;
+  }
+  return remote_device_ref.value().bluetooth_public_address();
 }
 
 int ChromeOsFeedbackDelegate::GetPerformanceTraceId() {
