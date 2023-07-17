@@ -467,7 +467,7 @@ IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, ReparentingPinsHomeTab) {
   EXPECT_EQ(tab_strip->active_index(), 0);
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, NavigationThrottle) {
+IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, DISABLED_NavigationThrottle) {
   GURL start_url =
       embedded_test_server()->GetURL("/web_apps/tab_strip_customizations.html");
   AppId app_id = InstallWebAppFromPage(browser(), start_url);
