@@ -186,9 +186,7 @@ void WebContentsViewMac::StartDragging(
   // TODO(crbug.com/1302094): The param `drag_obj_rect` is unused.
 
   if (remote_ns_view_) {
-    // TODO(https://crbug.com/898608): Non-trivial gfx::ImageSkias fail to
-    // serialize.
-    remote_ns_view_->StartDrag(drop_data, mask, gfx::ImageSkia(), cursor_offset,
+    remote_ns_view_->StartDrag(drop_data, mask, image, cursor_offset,
                                is_privileged);
   } else {
     in_process_ns_view_bridge_->StartDrag(drop_data, mask, image, cursor_offset,
