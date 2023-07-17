@@ -200,6 +200,7 @@ build_webui("build") {
     "os_apps_page/app_management_page/chrome_app_detail_view.ts",
     "os_apps_page/app_management_page/dom_switch.ts",
     "os_apps_page/app_management_page/main_view.ts",
+    "os_apps_page/app_management_page/permission_heading.ts",
     "os_apps_page/app_management_page/pin_to_shelf_item.ts",
     "os_apps_page/app_management_page/pwa_detail_view.ts",
     "os_apps_page/app_management_page/read_only_permission_item.ts",

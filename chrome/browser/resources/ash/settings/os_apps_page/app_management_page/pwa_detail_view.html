@@ -13,9 +13,10 @@
       permission-type="kNotifications">
   </app-management-permission-item>
   <div id="permissionsCard" class="permission-card-row">
-    <div class="permission-section-header">
-      <div class="header-text">$i18n{appManagementPermissionsLabel}</div>
-    </div>
+    <app-management-permission-heading
+        id="permissionHeading"
+        app="[[app_]]">
+    </app-management-permission-heading>
     <div class="permission-list indented-permission-block">
       <app-management-permission-item id="location"
           class="subpermission-row" icon="app-management:location"

@@ -272,6 +272,8 @@ void AddAppManagementStrings(content::WebUIDataSource* html_source) {
       {"appManagementNoPermissions",
        IDS_APPLICATION_INFO_APP_NO_PERMISSIONS_TEXT},
       {"appManagementNotificationsLabel", IDS_APP_MANAGEMENT_NOTIFICATIONS},
+      {"appManagementParentAppPermissionExplanation",
+       IDS_APP_MANAGEMENT_PARENT_APP_PERMISSION_EXPLANATION},
       {"appManagementPermissionAllowed", IDS_APP_MANAGEMENT_PERMISSION_ALLOWED},
       {"appManagementPermissionAllowedWithDetails",
        IDS_APP_MANAGEMENT_PERMISSION_ALLOWED_WITH_DETAILS},

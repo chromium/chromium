@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 import './app_details_item.js';
+import './permission_heading.js';
 import './pin_to_shelf_item.js';
 import './supported_links_item.js';
 import './sub_apps_item.js';

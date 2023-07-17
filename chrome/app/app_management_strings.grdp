@@ -203,7 +203,14 @@
       other {Supported file types: <ph name="FILE_TYPE1">{FILE_TYPE1}<ex>TXT</ex></ph>, <ph name="FILE_TYPE2">{FILE_TYPE2}<ex>CSV</ex></ph>, <ph name="FILE_TYPE3">{FILE_TYPE3}<ex>DOC</ex></ph>, <ph name="FILE_TYPE4">{FILE_TYPE4}<ex>DOCX</ex></ph> (<ph name="LINK">&lt;a href="{LINK}"&gt;</ph>and {OVERFLOW_COUNT} more<ph name="END_LINK">&lt;/a&gt;</ph>)}
     }
   </message>
+
+  <!-- Multi Apps API -->
   <message name="IDS_APP_MANAGEMENT_SUB_APPS_LIST_HEADING" desc="Label for the sub-app section in an app's settings page. The section lists all sub-applications that got installed by the current app. These sub-applications might be installed locally, or streamed from a remote location via the parent app.">
     Installed and streamed applications from <ph name="APP_NAME">$1<ex>Citrix</ex></ph>
   </message>
+
+  <message name="IDS_APP_MANAGEMENT_PARENT_APP_PERMISSION_EXPLANATION" desc="Explanation text that appears underneath the Permission header on an app's settings page. Any changes the user makes to this app's permissions also apply to any installed ('sub') apps.">
+    Permissions that you allow for <ph name="APP_NAME">$1<ex>Citrix</ex></ph> will also be allowed for its installed and streamed apps.
+  </message>
+
 </grit-part>
