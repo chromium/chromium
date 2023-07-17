@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "chrome/browser/search/background/ntp_background_data.h"
 #include "chrome/browser/search/background/ntp_background_service_observer.h"
@@ -144,16 +145,16 @@ class NtpBackgroundService : public KeyedService {
   GURL collection_images_api_url_;
   GURL next_image_api_url_;
 
+  using URLLoaderList = std::list<std::unique_ptr<network::SimpleURLLoader>>;
+
   // Used to download the proto from the Backdrop service.
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   std::unique_ptr<network::SimpleURLLoader> collections_loader_;
-  std::unique_ptr<network::SimpleURLLoader> collections_image_info_loader_;
+  URLLoaderList pending_collection_image_info_loaders_;
   std::unique_ptr<network::SimpleURLLoader> next_image_loader_;
 
   // Used to download the headers of an image in a collection.
-  using ImageURLHeaderLoaderList =
-      std::list<std::unique_ptr<network::SimpleURLLoader>>;
-  ImageURLHeaderLoaderList pending_image_url_header_loaders_;
+  URLLoaderList pending_image_url_header_loaders_;
 
   base::ObserverList<NtpBackgroundServiceObserver, true>::Unchecked observers_;
 
@@ -166,14 +167,16 @@ class NtpBackgroundService : public KeyedService {
   // request, refreshing the contents of collection_images_ with
   // server-provided data.
   void OnCollectionImageInfoFetchComplete(
-      const std::unique_ptr<std::string> response_body);
+      const ntp::background::GetImagesInCollectionResponse images_response,
+      const ErrorType);
 
   // Callback that processes the response from VerifyCollectionImageURL request.
   void OnImageURLHeadersFetchComplete(
-      ImageURLHeaderLoaderList::iterator it,
+      URLLoaderList::iterator it,
       base::OnceCallback<void(int)> image_url_headers_received_callback,
       base::TimeTicks request_start,
       scoped_refptr<net::HttpResponseHeaders> headers);
+
   // Callback that refreshes the contents of collection_images_ with images
   // whose resources could be reached.
   void OnCollectionImageURLHeadersReceived(
@@ -187,6 +190,13 @@ class NtpBackgroundService : public KeyedService {
   // next_resume_token_ with server-provided data.
   void OnNextImageInfoFetchComplete(
       const std::unique_ptr<std::string> response_body);
+
+  // Requests an asynchronous fetch of metadata about images in the specified
+  // collection.
+  void FetchCollectionImageInfoInternal(
+      const std::string& collection_id,
+      base::OnceCallback<void(ntp::background::GetImagesInCollectionResponse,
+                              ErrorType)> collection_images_received_callback);
 
   enum class FetchComplete {
     // Indicates that asynchronous fetch of CollectionInfo has completed.

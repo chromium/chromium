@@ -16,6 +16,7 @@
 #include "base/test/task_environment.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/search/background/ntp_background_data.h"
+#include "chrome/browser/search/background/ntp_background_service_observer.h"
 #include "components/search/ntp_features.h"
 #include "components/version_info/version_info.h"
 #include "content/public/test/browser_task_environment.h"
@@ -32,6 +33,17 @@ using testing::StartsWith;
 const char kTestImageUrl[] = "https://wallpapers.co/some_image";
 const char kTestActionUrl[] = "https://wallpapers.co/some_image/learn_more";
 
+namespace {
+
+class MockNtpBackgroundServiceObserver : public NtpBackgroundServiceObserver {
+ public:
+  MOCK_METHOD0(OnCollectionInfoAvailable, void());
+  MOCK_METHOD0(OnCollectionImagesAvailable, void());
+  MOCK_METHOD0(OnNextCollectionImageAvailable, void());
+};
+
+}  // namespace
+
 class NtpBackgroundServiceTest : public testing::Test,
                                  public ::testing::WithParamInterface<bool> {
  public:
@@ -45,7 +57,11 @@ class NtpBackgroundServiceTest : public testing::Test,
         BackgroundImageErrorDetectionEnabled());
   }
 
-  ~NtpBackgroundServiceTest() override {}
+  void TearDown() override {
+    if (service_) {
+      service_->RemoveObserver(&observer_);
+    }
+  }
 
   void SetUpResponseWithNetworkSuccess(
       const GURL& load_url,
@@ -69,6 +85,7 @@ class NtpBackgroundServiceTest : public testing::Test,
     if (!service_) {
       service_ =
           std::make_unique<NtpBackgroundService>(test_shared_loader_factory_);
+      service_->AddObserver(&observer_);
     }
     return service_.get();
   }
@@ -80,10 +97,12 @@ class NtpBackgroundServiceTest : public testing::Test,
   bool BackgroundImageErrorDetectionEnabled() const { return GetParam(); }
 
  protected:
-  content::BrowserTaskEnvironment
-      task_environment_;  // Required to run tests from UI and threads.
+  // Required to run tests from UI and threads.
+  content::BrowserTaskEnvironment task_environment_;
+
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
+  MockNtpBackgroundServiceObserver observer_;
   base::test::ScopedFeatureList feature_list_;
   base::HistogramTester histogram_tester_;
   std::unique_ptr<NtpBackgroundService> service_;
@@ -120,6 +139,7 @@ TEST_P(NtpBackgroundServiceTest, CollectionInfoNetworkError) {
 
   ASSERT_TRUE(service()->collection_info().empty());
 
+  EXPECT_CALL(observer_, OnCollectionInfoAvailable).Times(1);
   service()->FetchCollectionInfo();
   base::RunLoop().RunUntilIdle();
 
@@ -134,6 +154,7 @@ TEST_P(NtpBackgroundServiceTest, BadCollectionsResponse) {
 
   ASSERT_TRUE(service()->collection_info().empty());
 
+  EXPECT_CALL(observer_, OnCollectionInfoAvailable).Times(1);
   service()->FetchCollectionInfo();
   base::RunLoop().RunUntilIdle();
 
@@ -157,6 +178,7 @@ TEST_P(NtpBackgroundServiceTest, GoodCollectionsResponse) {
 
   ASSERT_TRUE(service()->collection_info().empty());
 
+  EXPECT_CALL(observer_, OnCollectionInfoAvailable).Times(1);
   service()->FetchCollectionInfo();
   base::RunLoop().RunUntilIdle();
 
@@ -176,6 +198,7 @@ TEST_P(NtpBackgroundServiceTest, CollectionImagesNetworkError) {
 
   ASSERT_TRUE(service()->collection_images().empty());
 
+  EXPECT_CALL(observer_, OnCollectionImagesAvailable).Times(1);
   service()->FetchCollectionImageInfo("shapes");
   base::RunLoop().RunUntilIdle();
 
@@ -194,6 +217,7 @@ TEST_P(NtpBackgroundServiceTest, BadCollectionImagesResponse) {
 
   ASSERT_TRUE(service()->collection_images().empty());
 
+  EXPECT_CALL(observer_, OnCollectionImagesAvailable).Times(1);
   service()->FetchCollectionImageInfo("shapes");
   base::RunLoop().RunUntilIdle();
 
@@ -229,6 +253,7 @@ TEST_P(NtpBackgroundServiceTest, ImageInCollectionHasNetworkError) {
 
   ASSERT_TRUE(service()->collection_images().empty());
 
+  EXPECT_CALL(observer_, OnCollectionImagesAvailable).Times(1);
   service()->FetchCollectionImageInfo("shapes");
   base::RunLoop().RunUntilIdle();
 
@@ -280,6 +305,7 @@ TEST_P(NtpBackgroundServiceTest, GoodCollectionImagesResponse) {
 
   ASSERT_TRUE(service()->collection_images().empty());
 
+  EXPECT_CALL(observer_, OnCollectionImagesAvailable).Times(1);
   service()->FetchCollectionImageInfo("shapes");
   base::RunLoop().RunUntilIdle();
 
@@ -334,6 +360,8 @@ TEST_P(NtpBackgroundServiceTest, MultipleRequests) {
   ASSERT_TRUE(service()->collection_info().empty());
   ASSERT_TRUE(service()->collection_images().empty());
 
+  EXPECT_CALL(observer_, OnCollectionInfoAvailable).Times(1);
+  EXPECT_CALL(observer_, OnCollectionImagesAvailable).Times(1);
   service()->FetchCollectionInfo();
   service()->FetchCollectionImageInfo("shapes");
   // Subsequent requests are ignored while the loader is in use.
@@ -440,6 +468,7 @@ TEST_P(NtpBackgroundServiceTest, MultipleRequestsNextImage) {
 
   // NOTE: the effect of the resume token in the request (i.e. prevent images
   // from being repeated) cannot be verified in a unit test.
+  EXPECT_CALL(observer_, OnNextCollectionImageAvailable).Times(1);
   service()->FetchNextCollectionImage("shapes", absl::nullopt);
   // Subsequent requests are ignored while the loader is in use.
   service()->FetchNextCollectionImage("shapes", "resume0");
@@ -481,6 +510,7 @@ TEST_P(NtpBackgroundServiceTest, CheckValidAndInvalidBackdropUrls) {
 
   ASSERT_TRUE(service()->collection_images().empty());
 
+  EXPECT_CALL(observer_, OnCollectionImagesAvailable).Times(1);
   service()->FetchCollectionImageInfo("shapes");
   base::RunLoop().RunUntilIdle();
 
