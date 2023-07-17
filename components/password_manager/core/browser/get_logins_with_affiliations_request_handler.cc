@@ -220,7 +220,6 @@ LoginsResultOrError GetLoginsHelper::MergeResults(
           form->match_type |= PasswordForm::MatchType::kAffiliated;
         }
         if (base::Contains(group_, signon_realm)) {
-          form->is_grouped_match = true;
           form->match_type |= PasswordForm::MatchType::kGrouped;
           // TODO(crbug.com/1432264): Delete after proper handling of
           // affiliated groups filling is implemented.

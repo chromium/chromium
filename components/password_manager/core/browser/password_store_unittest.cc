@@ -1192,7 +1192,6 @@ TEST_P(PasswordStoreGroupsTest, GetLoginsWithWebGroup) {
     expected_results.push_back(
         std::make_unique<PasswordForm>(*all_credentials[3]));
     expected_results.back()->is_affiliation_based_match = true;
-    expected_results.back()->is_grouped_match = true;
     expected_results.back()->match_type = PasswordForm::MatchType::kAffiliated |
                                           PasswordForm::MatchType::kGrouped;
   }
