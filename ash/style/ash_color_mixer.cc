@@ -512,6 +512,9 @@ void ReverseMapSysColors(ui::ColorMixer& mixer, bool dark_mode) {
       dark_mode ? ui::ColorTransform(cros_tokens::kCrosSysHighlightShape)
                 : ui::SetAlpha(gfx::kGoogleBlue600, 31);  // 12% opacity
 
+  // Remap the base color used in illustrations.
+  mixer[cros_tokens::kCrosSysAppBaseShaded] = {cros_tokens::kBgColor};
+
   // Remap illo tokens to GM2 equivilants so GM3 assets will render reasonably
   // if the jelly flag is flipped off for launch.
   mixer[cros_tokens::kCrosSysIlloColor1] = {cros_tokens::kIllustrationColor1};
