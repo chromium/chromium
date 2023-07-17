@@ -41,6 +41,12 @@ class DawnPlatform : public dawn::platform::Platform {
                              int max,
                              int bucketCount) override;
 
+  void HistogramCustomCountsHPC(const char* name,
+                                int sample,
+                                int min,
+                                int max,
+                                int bucketCount) override;
+
   void HistogramEnumeration(const char* name,
                             int sample,
                             int boundaryValue) override;

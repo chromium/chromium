@@ -8,6 +8,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/thread_pool.h"
+#include "base/time/time.h"
 #include "base/trace_event/trace_arguments.h"
 #include "base/trace_event/trace_event.h"
 #include "gpu/command_buffer/service/dawn_caching_interface.h"
@@ -78,6 +79,8 @@ class AsyncWorkerTaskPool : public dawn::platform::WorkerTaskPool {
   }
 };
 
+constexpr const char* kUmaPrefix = "GPU.WebGPU.";
+
 }  // anonymous namespace
 
 DawnPlatform::DawnPlatform(
@@ -134,31 +137,34 @@ void DawnPlatform::HistogramCustomCounts(const char* name,
                                          int min,
                                          int max,
                                          int bucketCount) {
-  // Copied from histogram macro, but without the static variable caching
-  // the histogram because name is dynamic.
-  base::HistogramBase* counter = base::Histogram::FactoryGet(
-      name, min, max, bucketCount,
-      base::HistogramBase::kUmaTargetedHistogramFlag);
-  counter->Add(sample);
+  base::UmaHistogramCustomCounts(std::string{kUmaPrefix} + name, sample, min,
+                                 max, bucketCount);
+}
+
+void DawnPlatform::HistogramCustomCountsHPC(const char* name,
+                                            int sample,
+                                            int min,
+                                            int max,
+                                            int bucketCount) {
+  if (base::TimeTicks::IsHighResolution()) {
+    base::UmaHistogramCustomCounts(std::string{kUmaPrefix} + name, sample, min,
+                                   max, bucketCount);
+  }
 }
 
 void DawnPlatform::HistogramEnumeration(const char* name,
                                         int sample,
                                         int boundaryValue) {
-  // Copied from histogram macro, but without the static variable caching
-  // the histogram because name is dynamic.
-  base::HistogramBase* counter = base::LinearHistogram::FactoryGet(
-      name, 1, boundaryValue, boundaryValue + 1,
-      base::HistogramBase::kUmaTargetedHistogramFlag);
-  counter->Add(sample);
+  base::UmaHistogramExactLinear(std::string{kUmaPrefix} + name, sample,
+                                boundaryValue);
 }
 
 void DawnPlatform::HistogramSparse(const char* name, int sample) {
-  base::UmaHistogramSparse(name, sample);
+  base::UmaHistogramSparse(std::string{kUmaPrefix} + name, sample);
 }
 
 void DawnPlatform::HistogramBoolean(const char* name, bool sample) {
-  HistogramEnumeration(name, sample ? 1 : 0, 2);
+  base::UmaHistogramBoolean(std::string{kUmaPrefix} + name, sample);
 }
 
 dawn::platform::CachingInterface* DawnPlatform::GetCachingInterface() {
