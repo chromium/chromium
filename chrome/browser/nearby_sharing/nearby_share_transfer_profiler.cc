@@ -6,6 +6,7 @@
 
 #include "base/time/time.h"
 #include "chrome/browser/nearby_sharing/logging/logging.h"
+#include "chrome/browser/nearby_sharing/nearby_share_metrics.h"
 
 base::TimeDelta ComputeDelta(const base::TimeTicks& start,
                              const base::TimeTicks& end) {
@@ -98,7 +99,7 @@ void NearbyShareTransferProfiler::OnConnectionEstablished(
     base::TimeDelta discovery_delta = ComputeDelta(
         sender_data_[endpoint_id].discovered_time.value(),
         sender_data_[endpoint_id].connection_established_time.value());
-    // TODO(b/279464086): Log `DiscoveredToConnectionEstablished` in UMA.
+    RecordNearbyShareDiscoveredToConnectionEstablishedDuration(discovery_delta);
     NS_LOG(INFO) << "Endpoint [" << endpoint_id
                  << "] discovery to first connection established: "
                  << discovery_delta;
@@ -125,14 +126,15 @@ void NearbyShareTransferProfiler::OnIntroductionFrameSent(
   // without rediscovery could dramatically pollute these metrics.
   if (is_first_introduction) {
     // Compute and log the time delta between when the outgoing endpoint was
-    // decoded and when the introduction frame was sent. Note: this delta
-    // includes user interaction, so it may vary significantly for each
-    // transfer.
-    // TODO(b/279464086): Document what kind of insights this provides.
+    // decoded and when the introduction frame was sent. This provides insight
+    // into how long it takes to notify the receiver that it has been selected.
+    // Note: this delta includes user interaction, so it may vary significantly
+    // for each transfer.
     base::TimeDelta introduction_delta =
         ComputeDelta(sender_data_[endpoint_id].endpoint_decoded_time.value(),
                      sender_data_[endpoint_id].introduction_sent_time.value());
-    // TODO(b/279464086): Log `EndpointDecodedToSentIntroductionFrame` in UMA.
+    // We do not log this to UMA currently, since the user interaction timing
+    // will make it unacceptably noisy.
     NS_LOG(INFO) << "Endpoint [" << endpoint_id
                  << "] decode to introduction sent: " << introduction_delta;
   }
@@ -143,7 +145,7 @@ void NearbyShareTransferProfiler::OnIntroductionFrameSent(
   base::TimeDelta selection_delta =
       ComputeDelta(sender_data_[endpoint_id].share_target_selected_time.value(),
                    sender_data_[endpoint_id].introduction_sent_time.value());
-  // TODO(b/279464086): Log `InitiatedToSentIntroductionFrame` in UMA.
+  RecordNearbyShareInitiatedToSentIntroductionFrameDuration(selection_delta);
   NS_LOG(INFO) << "Endpoint [" << endpoint_id
                << "] share target selected to introduction sent: "
                << selection_delta;
@@ -195,7 +197,8 @@ void NearbyShareTransferProfiler::OnSendComplete(
       // long the transfer takes to complete for a given transfer medium.
       base::TimeDelta upgrade_delta = ComputeDelta(
           sender_data_[endpoint_id].bandwidth_upgrade_time.value(), now);
-      // TODO(b/279464086): Log `BandwidthUpgradeToAllFilesSent` in UMA.
+      RecordNearbyShareBandwidthUpgradeToAllFilesSentDuration(
+          sender_data_[endpoint_id].upgraded_medium.value(), upgrade_delta);
       NS_LOG(INFO) << "Endpoint [" << endpoint_id << "] bandwidth upgrade ("
                    << sender_data_[endpoint_id].upgraded_medium.value()
                    << ") to transfer complete: " << upgrade_delta;
@@ -206,7 +209,7 @@ void NearbyShareTransferProfiler::OnSendComplete(
     // transfer takes to complete.
     base::TimeDelta completion_delta =
         ComputeDelta(sender_data_[endpoint_id].send_start_time.value(), now);
-    // TODO(b/279464086): Log `StartSendFilesToAllFilesSent` in UMA.
+    RecordNearbyShareStartSendFilesToAllFilesSentDuration(completion_delta);
     NS_LOG(INFO) << "Endpoint [" << endpoint_id
                  << "] file sent to transfer complete: " << completion_delta;
 
@@ -217,7 +220,7 @@ void NearbyShareTransferProfiler::OnSendComplete(
     // accept the transfer), so it may vary significantly for each transfer.
     base::TimeDelta total_delta = ComputeDelta(
         sender_data_[endpoint_id].share_target_selected_time.value(), now);
-    // TODO(b/279464086): Log `InitiatedToAllFilesSent` in UMA.
+    RecordNearbyShareInitiatedToAllFilesSentDuration(total_delta);
     NS_LOG(INFO) << "Endpoint [" << endpoint_id
                  << "] share target selected to transfer complete: "
                  << total_delta;
@@ -283,7 +286,8 @@ void NearbyShareTransferProfiler::OnIntroductionFrameReceived(
   base::TimeDelta introduction_delta = ComputeDelta(
       receiver_data_[endpoint_id].endpoint_decoded_time.value(),
       receiver_data_[endpoint_id].introduction_received_time.value());
-  // TODO(b/279464086): Log `EndpointDecodedToReceivedIntroductionFrame` in UMA.
+  RecordNearbyShareEndpointDecodedToReceivedIntroductionFrameDuration(
+      introduction_delta);
   NS_LOG(INFO) << "Endpoint [" << endpoint_id
                << "] decode to introduction received: " << introduction_delta;
 }
@@ -327,7 +331,8 @@ void NearbyShareTransferProfiler::OnReceiveComplete(
       // how long the transfer takes to complete for a given transfer medium.
       base::TimeDelta upgrade_delta = ComputeDelta(
           receiver_data_[endpoint_id].bandwidth_upgrade_time.value(), now);
-      // TODO(b/279464086): Log `BandwidthUpgradeToAllFilesReceived` in UMA.
+      RecordNearbyShareBandwidthUpgradeToAllFilesReceivedDuration(
+          receiver_data_[endpoint_id].upgraded_medium.value(), upgrade_delta);
       NS_LOG(INFO) << "Endpoint [" << endpoint_id << "] bandwidth upgrade ("
                    << receiver_data_[endpoint_id].upgraded_medium.value()
                    << ") to transfer complete: " << upgrade_delta;
@@ -338,7 +343,8 @@ void NearbyShareTransferProfiler::OnReceiveComplete(
     // transfer takes to complete.
     base::TimeDelta completion_delta = ComputeDelta(
         receiver_data_[endpoint_id].accept_transfer_time.value(), now);
-    // TODO(b/279464086): Log `AcceptedTransferToAllFilesReceived` in UMA.
+    RecordNearbyShareAcceptedTransferToAllFilesReceivedDuration(
+        completion_delta);
     NS_LOG(INFO) << "Endpoint [" << endpoint_id
                  << "] transfer accepted to transfer complete: "
                  << completion_delta;
@@ -349,8 +355,8 @@ void NearbyShareTransferProfiler::OnReceiveComplete(
     // the receiver.
     base::TimeDelta total_delta = ComputeDelta(
         receiver_data_[endpoint_id].introduction_received_time.value(), now);
-    // TODO(b/279464086): Log `ReceivedIntroductionFrameToAllFilesReceived` in
-    // UMA.
+    RecordNearbyShareReceivedIntroductionFrameToAllFilesReceivedDuration(
+        total_delta);
     NS_LOG(INFO) << "Endpoint [" << endpoint_id
                  << "] introduction to transfer complete: " << total_delta;
   }
@@ -392,8 +398,8 @@ void NearbyShareTransferProfiler::OnBandwidthUpgrade(
       base::TimeDelta upgrade_delta = ComputeDelta(
           sender_data_[endpoint_id].connection_established_time.value(),
           sender_data_[endpoint_id].bandwidth_upgrade_time.value());
-      // TODO(b/279464086): Log `ConnectionEstablishedToBandwidthUpgrade` in
-      // UMA.
+      RecordNearbyShareConnectionEstablishedToBandwidthUpgradeDuration(
+          medium, upgrade_delta);
       NS_LOG(INFO) << "Endpoint [" << endpoint_id
                    << "] connection to bandwidth upgrade (" << medium
                    << "): " << upgrade_delta;
@@ -427,8 +433,8 @@ void NearbyShareTransferProfiler::OnBandwidthUpgrade(
         base::TimeDelta upgrade_delta = ComputeDelta(
             receiver_data_[endpoint_id].endpoint_decoded_time.value(),
             receiver_data_[endpoint_id].bandwidth_upgrade_time.value());
-        // TODO(b/279464086): Log
-        // `HighVisibilityEndpointDecodedToBandwidthUpgrade` in UMA.
+        RecordNearbyShareHighVisibilityEndpointDecodedToBandwidthUpgradeDuration(
+            medium, upgrade_delta);
         NS_LOG(INFO) << "Endpoint [" << endpoint_id
                      << "] decode to bandwidth upgrade (" << medium
                      << "): " << upgrade_delta;
@@ -444,9 +450,8 @@ void NearbyShareTransferProfiler::OnBandwidthUpgrade(
         base::TimeDelta handshake_delta = ComputeDelta(
             receiver_data_[endpoint_id].paired_key_handshake_time.value(),
             receiver_data_[endpoint_id].bandwidth_upgrade_time.value());
-        // TODO(b/279464086): Log
-        // `NonHighVisibilityPairedKeyCompleteToBandwidthUpgrade`
-        // in UMA.
+        RecordNearbyShareNonHighVisibilityPairedKeyCompleteToBandwidthUpgradeDuration(
+            medium, handshake_delta);
         NS_LOG(INFO) << "Endpoint [" << endpoint_id
                      << "] handshake complete to bandwidth upgrade (" << medium
                      << "): " << handshake_delta;

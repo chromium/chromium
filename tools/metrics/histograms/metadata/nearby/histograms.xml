@@ -22,6 +22,22 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="Mediums">
+  <variant name="" summary="all mediums"/>
+  <variant name=".Ble" summary="BLE"/>
+  <variant name=".BleL2Cap" summary="BLE L2CAP"/>
+  <variant name=".Bluetooth" summary="Bluetooth"/>
+  <variant name=".Mdns" summary="mDNS"/>
+  <variant name=".Nfc" summary="NFC"/>
+  <variant name=".Unknown" summary="unknown medium"/>
+  <variant name=".Usb" summary="USB"/>
+  <variant name=".WebRtc" summary="WebRTC"/>
+  <variant name=".WifiAware" summary="Wi-Fi Aware"/>
+  <variant name=".WifiDirect" summary="Wi-Fi Direct"/>
+  <variant name=".WifiHotspot" summary="Wi-Fi Hotspot"/>
+  <variant name=".WifiLan" summary="Wi-Fi LAN"/>
+</variants>
+
 <histogram name="Nearby.Connections.Bluetooth.Adapter.SetName.Result"
     enum="BooleanSuccess" expires_after="2023-12-10">
   <owner>hansenmichael@google.com</owner>
@@ -1210,6 +1226,161 @@ chromium-metrics-reviews@google.com.
     <variant name="Contact" summary="contact-based sharing"/>
     <variant name="NonContact" summary="non-contact-based sharing"/>
   </token>
+</histogram>
+
+<histogram
+    name="Nearby.Share.TransferDuration.Receiver.AcceptedTransferToAllFilesReceived"
+    units="ms" expires_after="2024-07-10">
+  <owner>jackshira@google.com</owner>
+  <owner>dclasson@google.com</owner>
+  <owner>nearby-share-chromeos-eng@google.com</owner>
+  <summary>
+    Records the time between when receiver accepts the transfer to when all
+    files are successfully transferred.
+  </summary>
+</histogram>
+
+<histogram
+    name="Nearby.Share.TransferDuration.Receiver.BandwidthUpgradeToAllFilesReceived{Medium}"
+    units="ms" expires_after="2024-07-10">
+  <owner>jackshira@google.com</owner>
+  <owner>dclasson@google.com</owner>
+  <owner>nearby-share-chromeos-eng@google.com</owner>
+  <summary>
+    Records the time between when the first bandwidth upgrade occurs to when all
+    files are successfully transferred for {Medium}.
+  </summary>
+  <token key="Medium" variants="Mediums"/>
+</histogram>
+
+<histogram
+    name="Nearby.Share.TransferDuration.Receiver.EndpointDecodedToReceivedIntroductionFrame"
+    units="ms" expires_after="2024-07-10">
+  <owner>jackshira@google.com</owner>
+  <owner>dclasson@google.com</owner>
+  <owner>nearby-share-chromeos-eng@google.com</owner>
+  <summary>
+    Records the time between when the receiver decodes the incoming endpoint to
+    when the introduction frame is received.
+  </summary>
+</histogram>
+
+<histogram
+    name="Nearby.Share.TransferDuration.Receiver.HighVisibilityEndpointDecodedToBandwidthUpgrade{Medium}"
+    units="ms" expires_after="2024-07-10">
+  <owner>jackshira@google.com</owner>
+  <owner>dclasson@google.com</owner>
+  <owner>nearby-share-chromeos-eng@google.com</owner>
+  <summary>
+    Records the time between when a high-visibility receiver decodes an endpoint
+    to when the first bandwidth upgrade occurs for {Medium}. In high-visibility
+    mode, the receiver will attempt a bandwidth upgrade immediately upon
+    decoding the endpoint.
+  </summary>
+  <token key="Medium" variants="Mediums"/>
+</histogram>
+
+<histogram
+    name="Nearby.Share.TransferDuration.Receiver.NonHighVisibilityPairedKeyCompleteToBandwidthUpgrade{Medium}"
+    units="ms" expires_after="2024-07-10">
+  <owner>jackshira@google.com</owner>
+  <owner>dclasson@google.com</owner>
+  <owner>nearby-share-chromeos-eng@google.com</owner>
+  <summary>
+    Records the time between when a non-high-visibility receiver completes the
+    paired key handshake to when the first bandwidth upgrade occurs for
+    {Medium}. In non-high-visibility mode, the receiver will attempt a bandwidth
+    upgrade after a successful paired key handshake. This metric captures how
+    long it takes to successfully complete that bandwidth upgrade.
+  </summary>
+  <token key="Medium" variants="Mediums"/>
+</histogram>
+
+<histogram
+    name="Nearby.Share.TransferDuration.Receiver.ReceivedIntroductionFrameToAllFilesReceived"
+    units="ms" expires_after="2024-07-10">
+  <owner>jackshira@google.com</owner>
+  <owner>dclasson@google.com</owner>
+  <owner>nearby-share-chromeos-eng@google.com</owner>
+  <summary>
+    Records the time between when receiver receives the introduction frame to
+    when all files are successfully transferred.
+  </summary>
+</histogram>
+
+<histogram
+    name="Nearby.Share.TransferDuration.Sender.BandwidthUpgradeToAllFilesSent{Medium}"
+    units="ms" expires_after="2024-07-10">
+  <owner>jackshira@google.com</owner>
+  <owner>dclasson@google.com</owner>
+  <owner>nearby-share-chromeos-eng@google.com</owner>
+  <summary>
+    Records the time between when the first bandwidth upgrade occurs to when all
+    files are successfully transferred for {Medium}.
+  </summary>
+  <token key="Medium" variants="Mediums"/>
+</histogram>
+
+<histogram
+    name="Nearby.Share.TransferDuration.Sender.ConnectionEstablishedToBandwidthUpgrade{Medium}"
+    units="ms" expires_after="2024-07-10">
+  <owner>jackshira@google.com</owner>
+  <owner>dclasson@google.com</owner>
+  <owner>nearby-share-chromeos-eng@google.com</owner>
+  <summary>
+    Records the time between when the sender establishes a connection to when
+    the first bandwidth upgrade occurs for {Medium}.
+  </summary>
+  <token key="Medium" variants="Mediums"/>
+</histogram>
+
+<histogram
+    name="Nearby.Share.TransferDuration.Sender.DiscoveredToConnectionEstablished"
+    units="ms" expires_after="2024-07-10">
+  <owner>jackshira@google.com</owner>
+  <owner>dclasson@google.com</owner>
+  <owner>nearby-share-chromeos-eng@google.com</owner>
+  <summary>
+    Records the time between when a sender discovers an endpoint to when the
+    connection was successfully established. Note: This contains user
+    interaction so it may vary significantly.
+  </summary>
+</histogram>
+
+<histogram name="Nearby.Share.TransferDuration.Sender.InitiatedToAllFilesSent"
+    units="ms" expires_after="2024-07-10">
+  <owner>jackshira@google.com</owner>
+  <owner>dclasson@google.com</owner>
+  <owner>nearby-share-chromeos-eng@google.com</owner>
+  <summary>
+    Records the time between when user selects the receiver to when all files
+    are successfully transferred. Note: This contains user interaction so it may
+    vary significantly.
+  </summary>
+</histogram>
+
+<histogram
+    name="Nearby.Share.TransferDuration.Sender.InitiatedToSentIntroductionFrame"
+    units="ms" expires_after="2024-07-10">
+  <owner>jackshira@google.com</owner>
+  <owner>dclasson@google.com</owner>
+  <owner>nearby-share-chromeos-eng@google.com</owner>
+  <summary>
+    Records the time between when user selected the outgoing endpoint to when
+    the introduction frame was sent to the receiving endpoint.
+  </summary>
+</histogram>
+
+<histogram
+    name="Nearby.Share.TransferDuration.Sender.StartSendFilesToAllFilesSent"
+    units="ms" expires_after="2024-07-10">
+  <owner>jackshira@google.com</owner>
+  <owner>dclasson@google.com</owner>
+  <owner>nearby-share-chromeos-eng@google.com</owner>
+  <summary>
+    Records the time between when sender starts to transfer files to when all
+    files are successfully transferred.
+  </summary>
 </histogram>
 
 <histogram name="Nearby.Share.VisibilityChoice" enum="NearbyShareVisibility"

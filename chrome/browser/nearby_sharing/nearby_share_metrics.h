@@ -11,6 +11,7 @@
 #include "chrome/browser/nearby_sharing/share_target.h"
 #include "chrome/browser/nearby_sharing/transfer_metadata.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/services/nearby/public/mojom/nearby_connections_types.mojom-shared.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_connections_types.mojom.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_decoder_types.mojom.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_share_target_types.mojom.h"
@@ -139,5 +140,45 @@ void RecordNearbyShareSetupNotificationFlowEvent(
 void RecordNearbyShareSetupNotificationTimeToAction(base::TimeDelta time);
 
 void RecordNearbyShareWifiConfigurationResultMetric(bool success);
+
+void RecordNearbyShareDiscoveredToConnectionEstablishedDuration(
+    base::TimeDelta delta);
+
+void RecordNearbyShareInitiatedToSentIntroductionFrameDuration(
+    base::TimeDelta delta);
+
+void RecordNearbyShareEndpointDecodedToReceivedIntroductionFrameDuration(
+    base::TimeDelta delta);
+
+void RecordNearbyShareConnectionEstablishedToBandwidthUpgradeDuration(
+    nearby::connections::mojom::Medium medium,
+    base::TimeDelta delta);
+
+void RecordNearbyShareHighVisibilityEndpointDecodedToBandwidthUpgradeDuration(
+    nearby::connections::mojom::Medium medium,
+    base::TimeDelta delta);
+
+void RecordNearbyShareNonHighVisibilityPairedKeyCompleteToBandwidthUpgradeDuration(
+    nearby::connections::mojom::Medium medium,
+    base::TimeDelta delta);
+
+void RecordNearbyShareBandwidthUpgradeToAllFilesReceivedDuration(
+    nearby::connections::mojom::Medium medium,
+    base::TimeDelta delta);
+
+void RecordNearbyShareAcceptedTransferToAllFilesReceivedDuration(
+    base::TimeDelta delta);
+
+void RecordNearbyShareReceivedIntroductionFrameToAllFilesReceivedDuration(
+    base::TimeDelta delta);
+
+void RecordNearbyShareBandwidthUpgradeToAllFilesSentDuration(
+    nearby::connections::mojom::Medium medium,
+    base::TimeDelta delta);
+
+void RecordNearbyShareStartSendFilesToAllFilesSentDuration(
+    base::TimeDelta delta);
+
+void RecordNearbyShareInitiatedToAllFilesSentDuration(base::TimeDelta delta);
 
 #endif  // CHROME_BROWSER_NEARBY_SHARING_NEARBY_SHARE_METRICS_H_
