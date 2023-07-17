@@ -10,6 +10,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
@@ -300,14 +301,14 @@ class DeferredFetcherImpl final : public DeferredProtoFetcher<Response> {
 
   void Start(Callback callback) override {
     fetcher_ = std::make_unique<FetcherImpl<Response>>(
-        identity_manager_, url_loader_factory_, payload_, config_,
+        identity_manager_.get(), url_loader_factory_, payload_, config_,
         std::move(callback));
   }
 
  private:
   std::unique_ptr<FetcherImpl<Response>> fetcher_;
   std::string payload_;
-  IdentityManager& identity_manager_;
+  const raw_ref<IdentityManager, LeakedDanglingUntriaged> identity_manager_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   const FetcherConfig config_;
 };

@@ -21,7 +21,7 @@ MessagePortTlsConnection::~MessagePortTlsConnection() = default;
 
 // TlsConnection overrides.
 void MessagePortTlsConnection::SetClient(TlsConnection::Client* client) {
-  DCHECK(task_runner_.IsRunningOnTaskRunner());
+  DCHECK(task_runner_->IsRunningOnTaskRunner());
   client_ = client;
 }
 
@@ -40,8 +40,8 @@ bool MessagePortTlsConnection::OnMessage(
   DCHECK(ports.empty());
 
   if (client_) {
-    if (!task_runner_.IsRunningOnTaskRunner()) {
-      task_runner_.PostTask([ptr = AsWeakPtr(), m = std::move(message)]() {
+    if (!task_runner_->IsRunningOnTaskRunner()) {
+      task_runner_->PostTask([ptr = AsWeakPtr(), m = std::move(message)]() {
         if (ptr) {
           ptr->OnMessage(
               std::move(m),
@@ -60,8 +60,8 @@ bool MessagePortTlsConnection::OnMessage(
 
 void MessagePortTlsConnection::OnPipeError() {
   if (client_) {
-    if (!task_runner_.IsRunningOnTaskRunner()) {
-      task_runner_.PostTask([ptr = AsWeakPtr()]() {
+    if (!task_runner_->IsRunningOnTaskRunner()) {
+      task_runner_->PostTask([ptr = AsWeakPtr()]() {
         if (ptr) {
           ptr->OnPipeError();
         }
