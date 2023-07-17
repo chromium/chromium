@@ -133,6 +133,7 @@ void AddUiColorMixer(ColorProvider* provider, const ColorProviderKey& key) {
       kColorMenuItemBackgroundSelected};
   mixer[kColorMenuDropmarker] = {kColorPrimaryForeground};
   mixer[kColorMenuIcon] = {kColorIcon};
+  mixer[kColorMenuIconDisabled] = {kColorIconDisabled};
   mixer[kColorMenuItemBackgroundAlertedInitial] =
       SetAlpha(kColorAccentWithGuaranteedContrastAtopPrimaryBackground, 0x4D);
   mixer[kColorMenuItemBackgroundAlertedTarget] =

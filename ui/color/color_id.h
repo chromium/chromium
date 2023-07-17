@@ -329,6 +329,7 @@
   E_CPONLY(kColorMenuButtonBackgroundSelected) \
   E_CPONLY(kColorMenuDropmarker) \
   E_CPONLY(kColorMenuIcon) \
+  E_CPONLY(kColorMenuIconDisabled) \
   E_CPONLY(kColorMenuItemBackgroundAlertedInitial) \
   E_CPONLY(kColorMenuItemBackgroundAlertedTarget) \
   E_CPONLY(kColorMenuItemBackgroundHighlighted) \

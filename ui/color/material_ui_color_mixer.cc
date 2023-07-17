@@ -81,6 +81,7 @@ void AddMaterialUiColorMixer(ColorProvider* provider,
   mixer[kColorMenuButtonBackgroundSelected] = {GetResultingPaintColor(
       {kColorSysStateHoverOnSubtle}, {kColorMenuButtonBackground})};
   mixer[kColorMenuIcon] = {kColorSysOnSurfaceSubtle};
+  mixer[kColorMenuIconDisabled] = {kColorSysStateDisabled};
   mixer[kColorMenuItemForegroundSecondary] = {kColorSysOnSurfaceSubtle};
   mixer[kColorMenuItemForeground] = {kColorSysOnSurface};
   mixer[kColorMenuSelectionBackground] = {GetResultingPaintColor(

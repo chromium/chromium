@@ -1503,14 +1503,19 @@ void MenuItemView::UpdateSelectionBasedState(bool paint_as_selected) {
         radio_icon, radio_icon_color, kMenuCheckSize));
   }
 
-  // Update any vector icons if a custom color is used.
-  if (foreground_color_id_.has_value() && icon_view_) {
+  // Update any vector icons if a custom color is used or if the icon is
+  // disabled.
+  if ((!GetEnabled() || foreground_color_id_.has_value()) && icon_view_) {
     ui::ImageModel icon_model = icon_view_->GetImageModel();
     if (!icon_model.IsEmpty() && icon_model.IsVectorIcon()) {
       ui::VectorIconModel model = icon_model.GetVectorIcon();
       const gfx::VectorIcon* icon = model.vector_icon();
       const ui::ImageModel& image_model = ui::ImageModel::FromVectorIcon(
-          *icon, colors.fg_color, model.icon_size());
+          *icon,
+          GetEnabled()
+              ? GetColorProvider()->GetColor(foreground_color_id_.value())
+              : GetColorProvider()->GetColor(ui::kColorMenuIconDisabled),
+          model.icon_size());
       icon_view_->SetImage(image_model);
     }
   }
