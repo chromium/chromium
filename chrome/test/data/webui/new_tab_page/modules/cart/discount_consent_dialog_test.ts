@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import 'chrome://new-tab-page/lazy_load.js';
-import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {DiscountConsentDialog} from 'chrome://new-tab-page/lazy_load.js';
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';

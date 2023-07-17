@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://webui-test/mojo_webui_test_support.js';
-
 import {Cart} from 'chrome://new-tab-page/cart.mojom-webui.js';
 import {Cluster, URLVisit} from 'chrome://new-tab-page/history_cluster_types.mojom-webui.js';
 import {PageHandlerRemote} from 'chrome://new-tab-page/history_clusters.mojom-webui.js';
@@ -100,7 +98,7 @@ suite('NewTabPageModulesHistoryClustersModuleTest', () => {
     return moduleElement;
   }
 
-  suite('core', () => {
+  suite('Core', () => {
     test('No module created if no history cluster data', async () => {
       // Arrange.
       const moduleElement = await initializeModule([]);
@@ -267,7 +265,7 @@ suite('NewTabPageModulesHistoryClustersModuleTest', () => {
     });
   });
 
-  suite('layouts', () => {
+  suite('Layouts', () => {
     function removeHrefAndClick(element: HTMLElement) {
       element.removeAttribute('href');
       element.click();
@@ -404,7 +402,7 @@ suite('NewTabPageModulesHistoryClustersModuleTest', () => {
         });
   });
 
-  suite('unload metric no images', () => {
+  suite('UnloadMetricNoImages', () => {
     test('Module records no images state metric on unload', async () => {
       imageServiceHandler.setResultFor(
           'getPageImageUrl', Promise.resolve(null));
@@ -430,7 +428,7 @@ suite('NewTabPageModulesHistoryClustersModuleTest', () => {
     });
   });
 
-  suite('unload metric all images', () => {
+  suite('UnloadMetricAllImages', () => {
     test('Module records all images state metric on unload', async () => {
       imageServiceHandler.setResultFor('getPageImageUrl', Promise.resolve({
         result: {imageUrl: {url: 'https://example.com/image.png'}},
@@ -457,7 +455,7 @@ suite('NewTabPageModulesHistoryClustersModuleTest', () => {
     });
   });
 
-  suite('cart tile rendering', () => {
+  suite('CartTileRendering', () => {
     test('Cart tile is not rendererd when feature is disabled', async () => {
       loadTimeData.overrideValues({
         modulesChromeCartInHistoryClustersModuleEnabled: false,

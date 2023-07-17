@@ -304,7 +304,6 @@ if (include_js_tests) {
       "media/media_engagement_browsertest.js",
       "media/media_history_webui_browsertest.js",
       "metrics_reporter/metrics_reporter_browsertest.js",
-      "new_tab_page/new_tab_page_browsertest.js",
       "usb_internals/usb_internals_browsertest.js",
     ]
     if (is_chromeos_ash) {

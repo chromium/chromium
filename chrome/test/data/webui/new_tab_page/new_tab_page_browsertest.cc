@@ -5,6 +5,7 @@
 #include "build/build_config.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
+#include "components/search/ntp_features.h"
 #include "content/public/test/browser_test.h"
 
 class NewTabPageBrowserTest : public WebUIMochaBrowserTest {
@@ -108,10 +109,14 @@ IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, InfoDialog) {
   RunTest("new_tab_page/modules/info_dialog_test.js", "mocha.run()");
 }
 
-// The dummy module is not available in official builds.
 #if !defined(OFFICIAL_BUILD)
+// The dummy module is not available in official builds.
 IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, DummyModule) {
   RunTest("new_tab_page/modules/v2/dummy/module_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, PhotosModule) {
+  RunTest("new_tab_page/modules/photos/module_test.js", "mocha.run()");
 }
 #endif  // !defined(OFFICIAL_BUILD)
 
@@ -133,6 +138,16 @@ IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, ChromeCartModule) {
 
 IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, FeedModule) {
   RunTest("new_tab_page/modules/feed/module_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, DiscountConsentCard) {
+  RunTest("new_tab_page/modules/cart/discount_consent_card_test.js",
+          "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, DiscountConsentDialog) {
+  RunTest("new_tab_page/modules/cart/discount_consent_dialog_test.js",
+          "mocha.run()");
 }
 
 using NewTabPageAppTest = NewTabPageBrowserTest;
@@ -200,4 +215,63 @@ IN_PROC_BROWSER_TEST_F(NewTabPageAppTest, CustomizeChromeSidePanel) {
 IN_PROC_BROWSER_TEST_F(NewTabPageAppTest, LensUploadDialog) {
   RunTest("new_tab_page/app_test.js",
           "runMochaSuite('NewTabPageAppTest LensUploadDialog')");
+}
+
+class NewTabPageModulesHistoryClustersModuleTest
+    : public NewTabPageBrowserTest {
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      ntp_features::kNtpHistoryClustersModule};
+};
+
+IN_PROC_BROWSER_TEST_F(NewTabPageModulesHistoryClustersModuleTest, Core) {
+  RunTest("new_tab_page/modules/history_clusters/module_test.js",
+          "runMochaSuite('NewTabPageModulesHistoryClustersModuleTest Core')");
+}
+
+IN_PROC_BROWSER_TEST_F(NewTabPageModulesHistoryClustersModuleTest, CoreV2) {
+  RunTest("new_tab_page/modules/v2/history_clusters/module_test.js",
+          "runMochaSuite('NewTabPageModulesHistoryClustersV2ModuleTest Core')");
+}
+
+IN_PROC_BROWSER_TEST_F(NewTabPageModulesHistoryClustersModuleTest, Layouts) {
+  RunTest(
+      "new_tab_page/modules/history_clusters/module_test.js",
+      "runMochaSuite('NewTabPageModulesHistoryClustersModuleTest Layouts')");
+}
+
+IN_PROC_BROWSER_TEST_F(NewTabPageModulesHistoryClustersModuleTest,
+                       UnloadMetricImageDisplayStateNone) {
+  RunTest("new_tab_page/modules/history_clusters/module_test.js",
+          "runMochaSuite('NewTabPageModulesHistoryClustersModuleTest "
+          "UnloadMetricNoImages')");
+}
+
+IN_PROC_BROWSER_TEST_F(NewTabPageModulesHistoryClustersModuleTest,
+                       UnloadMetricImageDisplayStateAll) {
+  RunTest("new_tab_page/modules/history_clusters/module_test.js",
+          "runMochaSuite('NewTabPageModulesHistoryClustersModuleTest "
+          "UnloadMetricAllImages')");
+}
+
+IN_PROC_BROWSER_TEST_F(NewTabPageModulesHistoryClustersModuleTest,
+                       CartTileRendering) {
+  RunTest("new_tab_page/modules/history_clusters/module_test.js",
+          "runMochaSuite('NewTabPageModulesHistoryClustersModuleTest "
+          "CartTileRendering')");
+}
+
+IN_PROC_BROWSER_TEST_F(NewTabPageModulesHistoryClustersModuleTest, Tile) {
+  RunTest("new_tab_page/modules/history_clusters/tile_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(NewTabPageModulesHistoryClustersModuleTest,
+                       SuggestTile) {
+  RunTest("new_tab_page/modules/history_clusters/suggest_tile_test.js",
+          "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(NewTabPageModulesHistoryClustersModuleTest, CartTile) {
+  RunTest("new_tab_page/modules/history_clusters/cart/cart_tile_test.js",
+          "mocha.run()");
 }

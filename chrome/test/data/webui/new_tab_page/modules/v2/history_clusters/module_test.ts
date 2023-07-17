@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://webui-test/mojo_webui_test_support.js';
-
 import {Cluster, InteractionState, URLVisit} from 'chrome://new-tab-page/history_cluster_types.mojom-webui.js';
 import {PageHandlerRemote} from 'chrome://new-tab-page/history_clusters_v2.mojom-webui.js';
 import {DismissModuleInstanceEvent, HistoryClustersProxyImplV2, historyClustersV2Descriptor, HistoryClustersV2ModuleElement} from 'chrome://new-tab-page/lazy_load.js';
@@ -68,7 +66,7 @@ suite('NewTabPageModulesHistoryClustersV2ModuleTest', () => {
     return moduleElements;
   }
 
-  suite('core', () => {
+  suite('Core', () => {
     test('No module created if no history cluster data', async () => {
       // Arrange.
       const moduleElements = await initializeModule([]);
