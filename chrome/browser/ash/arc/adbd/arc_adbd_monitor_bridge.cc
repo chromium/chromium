@@ -43,8 +43,6 @@ constexpr const char kCrosDebug[] = "cros_debug";
 constexpr const char kCrosUdcEnabled[] = "dev_enable_udc";
 // adbd.json
 constexpr const char kAdbdJson[] = "/etc/arc/adbd.json";
-// dbc path
-constexpr const char kDbcPath[] = "/dev/ttyDBC0";
 
 bool g_enable_adb_over_usb_for_testing = false;
 constexpr const char kSerialNumberInTesting[] = "AAAABBBBCCCCDDDD1234";
@@ -73,12 +71,7 @@ class ArcAdbdMonitorBridgeFactory
 bool ShouldStartAdbd(bool is_dev_mode,
                      bool is_host_on_vm,
                      bool has_adbd_json,
-                     bool is_adb_over_udc_disabled,
-                     bool is_adb_over_dbc_disabled) {
-
-  // Check if adb functionality over USB is supported for udc/dbc modes.
-  bool is_adb_over_usb_disabled = is_adb_over_udc_disabled && is_adb_over_dbc_disabled;
-
+                     bool is_adb_over_usb_disabled) {
   // Do the same check as ArcSetup::MaybeStartAdbdProxy().
   return is_dev_mode && !is_host_on_vm && has_adbd_json &&
          !is_adb_over_usb_disabled;
@@ -92,13 +85,11 @@ bool IsAdbOverUsbEnabled() {
   bool udc_disabled = GetSystemPropertyInt(kCrosUdcEnabled) == 0;
   // True when adbd json is established. Required for adb-over-usb feature.
   bool has_adbd_json = base::PathExists(base::FilePath(kAdbdJson));
-  // True when dbc is disabled.
-  bool dbc_disabled = base::PathExists(base::FilePath(kDbcPath)) == 0;
   // True when the *host* is running on a VM.
   bool is_host_on_vm =
       ash::system::StatisticsProvider::GetInstance()->IsRunningOnVm();
   bool is_adb_over_usb_enabled =
-      ShouldStartAdbd(is_dev_mode, is_host_on_vm, has_adbd_json, udc_disabled, dbc_disabled);
+      ShouldStartAdbd(is_dev_mode, is_host_on_vm, has_adbd_json, udc_disabled);
   return g_enable_adb_over_usb_for_testing || is_adb_over_usb_enabled;
 }
 
@@ -135,8 +126,7 @@ absl::optional<std::vector<std::string>> CreateAndGetAdbdUpstartEnvironment() {
 
   std::vector<std::string> environment = {
       "SERIALNUMBER=" + serial_number,
-      base::StringPrintf("ARCVM_CID=%" PRId64, cid.value()),
-      base::StringPrintf("ARCVM_DBC=%d", base::PathExists(base::FilePath(kDbcPath)))};
+      base::StringPrintf("ARCVM_CID=%" PRId64, cid.value())};
   return environment;
 }
 
