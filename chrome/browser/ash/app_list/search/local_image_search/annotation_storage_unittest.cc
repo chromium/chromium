@@ -138,8 +138,9 @@ TEST_F(AnnotationStorageTest, LinearSearchAnnotations) {
   storage_->Initialize();
   task_environment_.RunUntilIdle();
 
-  ImageInfo bar_image({"test", "bar"}, test_directory_.AppendASCII("bar.jpg"),
-                      base::Time::Now(), /*is_ignored=*/false);
+  ImageInfo bar_image({"test", "bar", "test1"},
+                      test_directory_.AppendASCII("bar.jpg"), base::Time::Now(),
+                      /*is_ignored=*/false);
   ImageInfo foo_image({"test1"}, test_directory_.AppendASCII("foo.png"),
                       base::Time::Now(), /*is_ignored=*/false);
   ImageInfo ignore_image({"test2"}, test_directory_.AppendASCII("remove.png"),
@@ -148,16 +149,13 @@ TEST_F(AnnotationStorageTest, LinearSearchAnnotations) {
   storage_->Insert(foo_image);
   storage_->Insert(ignore_image);
 
-  auto images =
-      storage_->LinearSearchAnnotations(base::UTF8ToUTF16(std::string("test")));
+  auto images = storage_->Search(base::UTF8ToUTF16(std::string("test")));
 
-  EXPECT_THAT(
-      images,
-      testing::UnorderedElementsAre(
-          testing::Pair(bar_image.path,
-                        FileSearchResult(bar_image.last_modified, 1)),
-          testing::Pair(foo_image.path,
-                        FileSearchResult(foo_image.last_modified, 0.909375))));
+  EXPECT_THAT(images,
+              testing::UnorderedElementsAreArray(
+                  {FileSearchResult(bar_image.path, bar_image.last_modified, 1),
+                   FileSearchResult(foo_image.path, foo_image.last_modified,
+                                    0.909375)}));
 
   task_environment_.RunUntilIdle();
 }

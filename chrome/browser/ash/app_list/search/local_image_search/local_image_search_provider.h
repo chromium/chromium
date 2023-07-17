@@ -39,9 +39,8 @@ class LocalImageSearchProvider : public SearchProvider {
 
  private:
   void OnSearchComplete(
-      const std::map<base::FilePath, FileSearchResult>& file_search_results);
-  std::unique_ptr<FileResult> MakeResult(const FileSearchResult& search_result,
-                                         const base::FilePath& path);
+      const std::vector<FileSearchResult>& file_search_results);
+  std::unique_ptr<FileResult> MakeResult(const FileSearchResult& search_result);
 
   base::TimeTicks query_start_time_;
   std::u16string last_query_;

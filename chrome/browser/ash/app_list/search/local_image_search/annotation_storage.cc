@@ -25,7 +25,7 @@
 namespace app_list {
 namespace {
 
-constexpr double kRelevanceThreshold = 0.6;
+constexpr double kRelevanceThreshold = 0.79;
 constexpr int kVersionNumber = 3;
 
 // Initializes a new annotation table, returning a schema version number
@@ -95,9 +95,12 @@ ImageInfo::ImageInfo(const std::set<std::string>& annotations,
 ImageInfo::~ImageInfo() = default;
 ImageInfo::ImageInfo(const ImageInfo&) = default;
 
-FileSearchResult::FileSearchResult(const base::Time& last_modified,
+FileSearchResult::FileSearchResult(const base::FilePath& file_path,
+                                   const base::Time& last_modified,
                                    double relevance)
-    : last_modified(last_modified), relevance(relevance) {}
+    : file_path(file_path),
+      last_modified(last_modified),
+      relevance(relevance) {}
 
 FileSearchResult::~FileSearchResult() = default;
 FileSearchResult::FileSearchResult(const FileSearchResult&) = default;
@@ -244,30 +247,30 @@ std::vector<ImageInfo> AnnotationStorage::FindImagePath(
   return matched_paths;
 }
 
-std::map<base::FilePath, FileSearchResult>
-AnnotationStorage::LinearSearchAnnotations(const std::u16string& query) {
+std::vector<FileSearchResult> AnnotationStorage::Search(
+    const std::u16string& query) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DVLOG(1) << "LinearSearchAnnotationsAsync";
+  DVLOG(1) << "Search";
   using TokenizedString = ash::string_matching::TokenizedString;
 
+  // LIKE is 10 times faster than the linear search.
   static constexpr char kQuery[] =
       // clang-format off
       "SELECT label,image_path,last_modified_time,is_ignored "
           "FROM annotations "
-          "ORDER BY label";
+          "WHERE is_ignored=0 "
+          "AND label LIKE ? "
+          "ORDER BY image_path";
   // clang-format on
 
   sql::Statement statement =
       sql_database_->GetStatementForQuery(SQL_FROM_HERE, kQuery);
+  statement.BindString(0, base::StrCat({"%", base::UTF16ToUTF8(query), "%"}));
 
-  std::map<base::FilePath, FileSearchResult> matched_paths;
+  std::vector<FileSearchResult> matched_paths;
   TokenizedString tokenized_query(query);
   ash::string_matching::FuzzyTokenizedStringMatch fuzzy_match;
   while (statement.Step()) {
-    // Skip ignored images.
-    if (statement.ColumnBool(3)) {
-      continue;
-    }
     double relevance = fuzzy_match.Relevance(
         tokenized_query,
         TokenizedString(base::UTF8ToUTF16(statement.ColumnString(0))),
@@ -281,13 +284,12 @@ AnnotationStorage::LinearSearchAnnotations(const std::u16string& query) {
     DVLOG(1) << "Select: " << statement.ColumnString(0) << ", " << path << ", "
              << time << " rl: " << relevance;
 
-    if (!matched_paths.contains(path)) {
-      matched_paths.insert({path, {std::move(time), relevance}});
-    } else if (matched_paths.at(path).relevance < relevance) {
-      matched_paths.at(path).relevance = relevance;
+    if (matched_paths.empty() || matched_paths.back().file_path != path) {
+      matched_paths.push_back({path, std::move(time), relevance});
+    } else if (matched_paths.back().relevance < relevance) {
+      matched_paths.back().relevance = relevance;
     }
   }
-
   return matched_paths;
 }
 

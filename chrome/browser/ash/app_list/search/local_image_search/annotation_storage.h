@@ -46,13 +46,17 @@ struct ImageInfo {
 
 // A search result with `relevance` to the supplied query.
 struct FileSearchResult {
+  // The full path to the file.
+  base::FilePath file_path;
   // The file's last modified time.
   base::Time last_modified;
   // The file's relevance on the scale from 0-1. It represents how closely a
   // query matches the file's annotation.
   double relevance;
 
-  FileSearchResult(const base::Time& last_modified, double relevance);
+  FileSearchResult(const base::FilePath& file_path,
+                   const base::Time& last_modified,
+                   double relevance);
 
   ~FileSearchResult();
   FileSearchResult(const FileSearchResult&);
@@ -87,10 +91,9 @@ class AnnotationStorage {
   // Searches the database for a desired `image_path`.
   std::vector<ImageInfo> FindImagePath(const base::FilePath& image_path);
 
-  // Searches for annotations using FuzzyTokenizedStringMatch with relevance to
-  // `query` above a fixed threshold.
-  std::map<base::FilePath, FileSearchResult> LinearSearchAnnotations(
-      const std::u16string& query);
+  // Regex search for annotations using FuzzyTokenizedStringMatch to obtain
+  // relevance for the `query`.
+  std::vector<FileSearchResult> Search(const std::u16string& query);
 
  private:
   AnnotationStorage(const base::FilePath& path_to_db,

@@ -11,10 +11,8 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/ash/app_list/search/local_image_search/annotation_storage.h"
-#include "chrome/browser/ash/app_list/search/local_image_search/local_image_search_provider.h"
 #include "chrome/browser/ash/app_list/search/local_image_search/local_image_search_test_util.h"
 #include "chromeos/dbus/machine_learning/machine_learning_client.h"
-#include "chromeos/services/machine_learning/public/cpp/fake_service_connection.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

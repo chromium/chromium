@@ -66,7 +66,7 @@ void LocalImageSearchProvider::Start(const std::u16string& query) {
   query_start_time_ = base::TimeTicks::Now();
   last_query_ = query;
 
-  annotation_storage_.AsyncCall(&AnnotationStorage::LinearSearchAnnotations)
+  annotation_storage_.AsyncCall(&AnnotationStorage::Search)
       .WithArgs(query)
       .Then(base::BindOnce(&LocalImageSearchProvider::OnSearchComplete,
                            weak_factory_.GetWeakPtr()));
@@ -78,15 +78,15 @@ void LocalImageSearchProvider::StopQuery() {
 }
 
 void LocalImageSearchProvider::OnSearchComplete(
-    const std::map<base::FilePath, FileSearchResult>& file_search_results) {
+    const std::vector<FileSearchResult>& file_search_results) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOG(1) << "OnSearchComplete";
 
   SearchProvider::Results results;
-  for (const auto& [path, search_result] : file_search_results) {
+  for (const auto& search_result : file_search_results) {
     DCHECK(search_result.relevance >= 0.0 && search_result.relevance <= 1.0);
-    DVLOG(1) << path;
-    results.push_back(MakeResult(search_result, path));
+    DVLOG(1) << search_result.file_path;
+    results.push_back(MakeResult(search_result));
   }
 
   SwapResults(&results);
@@ -94,20 +94,20 @@ void LocalImageSearchProvider::OnSearchComplete(
 }
 
 std::unique_ptr<FileResult> LocalImageSearchProvider::MakeResult(
-    const FileSearchResult& search_result,
-    const base::FilePath& path) {
+    const FileSearchResult& search_result) {
   // Use the parent directory name as details text. Take care to remove newlines
   // and handle RTL as this is displayed directly.
   std::u16string parent_dir_name = base::CollapseWhitespace(
-      path.DirName().BaseName().LossyDisplayName(), true);
+      search_result.file_path.DirName().BaseName().LossyDisplayName(), true);
   base::i18n::SanitizeUserSuppliedString(&parent_dir_name);
 
-  DVLOG(1) << "id: " << kFileSearchSchema + path.value() << " "
-           << parent_dir_name << " " << last_query_
+  DVLOG(1) << "id: " << kFileSearchSchema + search_result.file_path.value()
+           << " " << parent_dir_name << " " << last_query_
            << " rl: " << search_result.relevance;
 
   auto result = std::make_unique<FileResult>(
-      /*id=*/kFileSearchSchema + path.value(), path, parent_dir_name,
+      /*id=*/kFileSearchSchema + search_result.file_path.value(),
+      search_result.file_path, parent_dir_name,
       ash::AppListSearchResultType::kImageSearch,
       ash::SearchResultDisplayType::kImage, search_result.relevance,
       last_query_, FileResult::Type::kFile, profile_);
