@@ -139,6 +139,11 @@ found in the LICENSE file.
   <div slot="bottom-buttons" hidden$="[[navigationHidden]]">
     <div hidden="[[!isDefaultNavigationShown_(canGoBack,
         gaiaDialogButtonsType)]]">
+      <oobe-text-button id="quick-start-button"
+          on-click="onQuickStartClicked_"
+          hidden="[[!isQuickStartEnabled_]]"
+          text-key="signinScreenQuickStart">
+      </oobe-text-button>
       <oobe-text-button id="secondary-action-button"
           label-for-aria="[[secondaryActionButtonLabel_]]"
           on-click="onSecondaryActionButtonClicked_"

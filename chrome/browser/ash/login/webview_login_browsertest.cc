@@ -29,6 +29,7 @@
 #include "base/values.h"
 #include "chrome/browser/ash/login/helper.h"
 #include "chrome/browser/ash/login/lock/screen_locker_tester.h"
+#include "chrome/browser/ash/login/oobe_quick_start/connectivity/fake_target_device_connection_broker.h"
 #include "chrome/browser/ash/login/saml/lockscreen_reauth_dialog_test_helper.h"
 #include "chrome/browser/ash/login/signin/token_handle_util.h"
 #include "chrome/browser/ash/login/signin_partition_manager.h"
@@ -64,6 +65,7 @@
 #include "chrome/browser/ui/webui/ash/login/error_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/marketing_opt_in_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/quick_start_screen_handler.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
@@ -150,6 +152,8 @@ constexpr test::UIPath kPrimaryButton = {"gaia-signin", "signin-frame-dialog",
                                          "primary-action-button"};
 constexpr test::UIPath kSecondaryButton = {"gaia-signin", "signin-frame-dialog",
                                            "secondary-action-button"};
+constexpr test::UIPath kQuickStartButton = {
+    "gaia-signin", "signin-frame-dialog", "quick-start-button"};
 
 // UMA names for better test reading.
 const char kLoginRequests[] = "OOBE.GaiaScreen.LoginRequests";
@@ -2307,6 +2311,68 @@ IN_PROC_BROWSER_TEST_F(WebviewLoginEnrolledTest, GaiaLoginVariantMetrics) {
                                        GaiaView::GaiaLoginVariant::kAddUser, 1);
   histogram_tester_.ExpectUniqueSample(kSuccessLoginRequests,
                                        GaiaView::GaiaLoginVariant::kAddUser, 1);
+}
+
+// This class is a subclass of WebviewLoginTest with the addition of the
+// abillity to enable Quick Start feature in order to test Quick Start
+// functionality in the Gaia signin screen
+class WebviewLoginQuickStartTest : public WebviewLoginTest {
+ public:
+  WebviewLoginQuickStartTest() {
+    scoped_feature_list_.Reset();
+    scoped_feature_list_.InitAndEnableFeature(features::kOobeQuickStart);
+    connection_broker_factory_.set_initial_feature_support_status(
+        quick_start::TargetDeviceConnectionBroker::FeatureSupportStatus::
+            kUndetermined);
+  }
+
+  void SetUpInProcessBrowserTestFixture() override {
+    OobeBaseTest::SetUpInProcessBrowserTestFixture();
+    quick_start::TargetDeviceConnectionBrokerFactory::SetFactoryForTesting(
+        &connection_broker_factory_);
+  }
+
+  void TearDownInProcessBrowserTestFixture() override {
+    quick_start::TargetDeviceConnectionBrokerFactory::SetFactoryForTesting(
+        nullptr);
+    OobeBaseTest::TearDownInProcessBrowserTestFixture();
+  }
+
+  quick_start::FakeTargetDeviceConnectionBroker::Factory
+      connection_broker_factory_;
+};
+
+IN_PROC_BROWSER_TEST_F(WebviewLoginQuickStartTest,
+                       QuickStartButtonNotShownWhenFeatureSupportUndetermined) {
+  WaitForSigninScreen();
+  test::WaitForOobeJSReady();
+
+  // Check that QuickStart button is hidden since QuickStart feature is not
+  // enabled
+  test::OobeJS().ExpectHiddenPath(kQuickStartButton);
+}
+
+IN_PROC_BROWSER_TEST_F(WebviewLoginQuickStartTest,
+                       QuickStartButtonFunctionalWhenFeatureEnabled) {
+  WaitForSigninScreen();
+  test::WaitForOobeJSReady();
+
+  test::OobeJS().ExpectHiddenPath(kQuickStartButton);
+
+  // Enable Quick Start
+  connection_broker_factory_.instances().front()->set_feature_support_status(
+      quick_start::TargetDeviceConnectionBroker::FeatureSupportStatus::
+          kSupported);
+
+  // Check that QuickStart button is visible since QuickStart feature is enabled
+  test::OobeJS()
+      .CreateVisibilityWaiter(/*visibility=*/true, kQuickStartButton)
+      ->Wait();
+
+  test::OobeJS().ClickOnPath(kQuickStartButton);
+
+  // Wait for Quick Start screen to show
+  OobeScreenWaiter(QuickStartView::kScreenId).Wait();
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

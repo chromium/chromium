@@ -106,6 +106,8 @@ class GaiaView : public base::SupportsWeakPtr<GaiaView> {
   virtual void ShowSigninScreenForTest(const std::string& username,
                                        const std::string& password,
                                        const std::string& services) = 0;
+  virtual void SetQuickStartEnabled() = 0;
+
   // Reset authenticator.
   virtual void Reset() = 0;
 };
@@ -161,6 +163,9 @@ class GaiaScreenHandler
   void ShowSigninScreenForTest(const std::string& username,
                                const std::string& password,
                                const std::string& services) override;
+
+  void SetQuickStartEnabled() override;
+
   void Reset() override;
 
   // SecurityTokenPinDialogHost:

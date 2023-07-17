@@ -371,6 +371,7 @@ class GaiaSigninElement extends GaiaSigninElementBase {
       'onBeforeLoad',
       'reset',
       'toggleLoadingUI',
+      'setQuickStartEnabled',
     ];
   }
 
@@ -1154,6 +1155,19 @@ class GaiaSigninElement extends GaiaSigninElementBase {
 
   onAllowlistErrorLinkClick_() {
     chrome.send('launchHelpApp', [HELP_CANT_ACCESS_ACCOUNT]);
+  }
+
+  /**
+   * Handle "Quick Start" button for "Signin" screen.
+   *
+   * @private
+   */
+  onQuickStartButtonClicked_() {
+    this.userActed('activateQuickStart');
+  }
+
+  setQuickStartEnabled() {
+    this.$['signin-frame-dialog'].isQuickStartEnabled_ = true;
   }
 }
 

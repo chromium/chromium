@@ -11,6 +11,8 @@
 #include "base/containers/contains.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
+#include "chrome/browser/ash/login/demo_mode/demo_setup_controller.h"
+#include "chrome/browser/ash/login/oobe_quick_start/target_device_bootstrap_controller.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
@@ -34,6 +36,7 @@ constexpr char kUserActionStartEnrollment[] = "startEnrollment";
 constexpr char kUserActionReloadDefault[] = "reloadDefault";
 constexpr char kUserActionRetry[] = "retry";
 constexpr char kUserActionEnterIdentifier[] = "identifierEntered";
+constexpr char kUserActionQuickStartButtonClicked[] = "activateQuickStart";
 
 bool ShouldPrepareForRecovery(const AccountId& account_id) {
   if (!features::IsCryptohomeRecoveryEnabled() || !account_id.is_valid()) {
@@ -87,6 +90,8 @@ std::string GaiaScreen::GetResultString(Result result) {
       return "EnterpriseEnroll";
     case Result::START_CONSUMER_KIOSK:
       return "StartConsumerKiosk";
+    case Result::QUICK_START:
+      return "QuickStart";
   }
 }
 
@@ -168,6 +173,7 @@ void GaiaScreen::ReloadGaiaAuthenticator() {
 void GaiaScreen::ShowImpl() {
   if (!view_)
     return;
+
   if (!backlights_forced_off_observation_.IsObserving()) {
     backlights_forced_off_observation_.Observe(
         Shell::Get()->backlights_forced_off_setter());
@@ -175,6 +181,16 @@ void GaiaScreen::ShowImpl() {
   // Landed on the login screen. No longer skipping enrollment for tests.
   context()->skip_to_login_for_tests = false;
   view_->Show();
+
+  // Quick Start can be enabled either by feature flag or by keyboard shortcut.
+  // The shortcut method enables a simpler workflow for testers, while the
+  // feature flag will enable us to perform a first run field trial.
+  // QuickStart should not be enabled for Demo mode or OS Install flows
+  if (features::IsOobeQuickStartEnabled() &&
+      !DemoSetupController::IsOobeDemoSetupFlowInProgress() &&
+      !switches::IsOsInstallAllowed()) {
+    EnableQuickStart();
+  }
 }
 
 void GaiaScreen::HideImpl() {
@@ -183,6 +199,9 @@ void GaiaScreen::HideImpl() {
   view_->SetGaiaPath(GaiaView::GaiaPath::kDefault);
   view_->Hide();
   backlights_forced_off_observation_.Reset();
+  if (context()->quick_start_enabled) {
+    bootstrap_controller_.reset();
+  }
 }
 
 void GaiaScreen::OnUserAction(const base::Value::List& args) {
@@ -208,6 +227,8 @@ void GaiaScreen::OnUserAction(const base::Value::List& args) {
     CHECK_EQ(2u, args.size());
     const std::string& email = args[1].GetString();
     HandleIdentifierEntered(email);
+  } else if (action_id == kUserActionQuickStartButtonClicked) {
+    OnQuickStartButtonClicked();
   } else {
     BaseScreen::OnUserAction(args);
   }
@@ -222,6 +243,7 @@ bool GaiaScreen::HandleAccelerator(LoginAcceleratorAction action) {
     exit_callback_.Run(Result::START_CONSUMER_KIOSK);
     return true;
   }
+
   return false;
 }
 
@@ -332,6 +354,34 @@ bool GaiaScreen::ShouldFetchEnrollmentNudgePolicy(
       chrome::enterprise_util::GetDomainFromEmail(user_email);
   // Enrollment nudging can't apply to users not belonging to a managed domain
   return !chrome::enterprise_util::IsKnownConsumerDomain(email_domain);
+}
+
+void GaiaScreen::OnQuickStartButtonClicked() {
+  CHECK(context()->quick_start_enabled);
+  exit_callback_.Run(Result::QUICK_START);
+}
+
+void GaiaScreen::EnableQuickStart() {
+  context()->quick_start_enabled = true;
+  bootstrap_controller_ =
+      LoginDisplayHost::default_host()->GetQuickStartBootstrapController();
+
+  bootstrap_controller_->GetFeatureSupportStatusAsync(
+      base::BindOnce(&GaiaScreen::OnGetQuickStartFeatureSupportStatus,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void GaiaScreen::OnGetQuickStartFeatureSupportStatus(
+    quick_start::TargetDeviceConnectionBroker::FeatureSupportStatus status) {
+  if (status != quick_start::TargetDeviceConnectionBroker::
+                    FeatureSupportStatus::kSupported) {
+    return;
+  }
+
+  if (!view_) {
+    return;
+  }
+  view_->SetQuickStartEnabled();
 }
 
 }  // namespace ash

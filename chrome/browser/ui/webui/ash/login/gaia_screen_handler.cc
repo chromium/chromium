@@ -623,6 +623,9 @@ void GaiaScreenHandler::DeclareLocalizedValues(
                IDS_ENROLLMENT_NUDGE_ENROLL_BUTTON);
   builder->Add("enrollmentNudgeUseAnotherAccountButton",
                IDS_ENROLLMENT_NUDGE_USE_ANOTHER_ACCOUNT_BUTTON);
+
+  builder->Add("signinScreenQuickStart",
+               IDS_LOGIN_QUICK_START_SETUP_SIGNIN_SCREEN_ENTRY_POINT);
 }
 
 void GaiaScreenHandler::InitAfterJavascriptAllowed() {
@@ -1604,6 +1607,10 @@ void GaiaScreenHandler::CheckIfAllowlisted(const std::string& user_email) {
 
 void GaiaScreenHandler::ToggleLoadingUI(bool is_shown) {
   CallExternalAPI("toggleLoadingUI", is_shown);
+}
+
+void GaiaScreenHandler::SetQuickStartEnabled() {
+  CallExternalAPI("setQuickStartEnabled");
 }
 
 }  // namespace ash

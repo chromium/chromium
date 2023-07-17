@@ -1309,6 +1309,9 @@ void WizardController::OnGaiaScreenExit(GaiaScreen::Result result) {
     case GaiaScreen::Result::START_CONSUMER_KIOSK:
       LoginDisplayHost::default_host()->AttemptShowEnableConsumerKioskScreen();
       break;
+    case GaiaScreen::Result::QUICK_START:
+      ShowQuickStartScreen();
+      break;
   }
 }
 

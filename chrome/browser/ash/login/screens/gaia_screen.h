@@ -15,6 +15,7 @@
 #include "base/scoped_observation.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/gaia_reauth_token_fetcher.h"
+#include "chrome/browser/ash/login/oobe_quick_start/target_device_bootstrap_controller.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chromeos/ash/components/login/auth/auth_factor_editor.h"
 #include "chromeos/ash/components/login/auth/public/authentication_error.h"
@@ -45,6 +46,7 @@ class GaiaScreen : public BaseScreen, public ScreenBacklightObserver {
     CANCEL,
     ENTERPRISE_ENROLL,
     START_CONSUMER_KIOSK,
+    QUICK_START,
   };
 
   static std::string GetResultString(Result result);
@@ -96,6 +98,14 @@ class GaiaScreen : public BaseScreen, public ScreenBacklightObserver {
   // met, otherwise does nothing and returns false.
   bool ShouldFetchEnrollmentNudgePolicy(const std::string& user_email);
 
+  // Called when quick start button is clicked.
+  void OnQuickStartButtonClicked();
+
+  void EnableQuickStart();
+
+  void OnGetQuickStartFeatureSupportStatus(
+      quick_start::TargetDeviceConnectionBroker::FeatureSupportStatus status);
+
   AuthFactorEditor auth_factor_editor_;
   std::unique_ptr<GaiaReauthTokenFetcher> gaia_reauth_token_fetcher_;
   std::unique_ptr<policy::AccountStatusCheckFetcher> account_status_fetcher_;
@@ -106,6 +116,9 @@ class GaiaScreen : public BaseScreen, public ScreenBacklightObserver {
 
   base::ScopedObservation<BacklightsForcedOffSetter, ScreenBacklightObserver>
       backlights_forced_off_observation_{this};
+
+  base::WeakPtr<quick_start::TargetDeviceBootstrapController>
+      bootstrap_controller_;
 
   base::WeakPtrFactory<GaiaScreen> weak_ptr_factory_{this};
 };
