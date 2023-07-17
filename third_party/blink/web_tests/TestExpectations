@@ -3696,7 +3696,7 @@ crbug.com/900060 editing/selection/mixed-editability-8.html [ Failure ]
 crbug.com/388976 external/wpt/css/cssom/caretPositionFromPoint-with-transformation.html [ Timeout ]
 
 # Sheriff failure 2017-09-18
-crbug.com/766404 [ Mac ] plugins/keyboard-events.html [ Failure Pass ]
+crbug.com/766404 [ Debug Mac13 ] plugins/keyboard-events.html [ Failure Pass ]
 
 # Sheriff failures 2017-09-21
 crbug.com/767469 http/tests/navigation/start-load-during-provisional-loader-detach.html [ Failure Pass ]
