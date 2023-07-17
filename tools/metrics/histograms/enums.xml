@@ -68854,6 +68854,7 @@ from previous Chrome versions.
              change"/>
   <int value="15" label="Biometric Authentication before filling"/>
   <int value="16" label="Chrome menu item"/>
+  <int value="17" label="Shared Passwords Notification Bubble"/>
 </enum>
 
 <enum name="MandatoryReauthOptInBubbleOffer">

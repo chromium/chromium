@@ -5,6 +5,9 @@
 #include "chrome/browser/ui/views/passwords/shared_passwords_notification_view.h"
 
 #include "chrome/browser/ui/views/passwords/password_bubble_view_test_base.h"
+#include "components/password_manager/core/common/password_manager_ui.h"
+#include "ui/events/test/test_event.h"
+#include "ui/views/test/button_test_api.h"
 
 class SharedPasswordsNotificationViewTest : public PasswordBubbleViewTestBase {
  public:
@@ -47,4 +50,15 @@ TEST_F(SharedPasswordsNotificationViewTest, HasTwoButtons) {
   CreateViewAndShow();
   EXPECT_TRUE(view_->GetOkButton());
   EXPECT_TRUE(view_->GetCancelButton());
+}
+
+TEST_F(SharedPasswordsNotificationViewTest,
+       ShouldNavigateToSettingsUponClickOnManagePasswordsButton) {
+  CreateViewAndShow();
+  EXPECT_CALL(*model_delegate_mock(),
+              NavigateToPasswordManagerSettingsPage(
+                  password_manager::ManagePasswordsReferrer::
+                      kSharedPasswordsNotificationBubble));
+  views::test::ButtonTestApi(view_->GetCancelButton())
+      .NotifyClick(ui::test::TestEvent());
 }

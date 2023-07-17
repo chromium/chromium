@@ -223,11 +223,11 @@ GURL GetGooglePasswordManagerURL(ManagePasswordsReferrer referrer) {
       case ManagePasswordsReferrer::kSafetyCheck:
       case ManagePasswordsReferrer::kBiometricAuthenticationBeforeFillingDialog:
       case ManagePasswordsReferrer::kChromeMenuItem:
-        NOTREACHED();
+      case ManagePasswordsReferrer::kSharedPasswordsNotificationBubble:
+        NOTREACHED_NORETURN();
     }
 
-    NOTREACHED();
-    return "";
+    NOTREACHED_NORETURN();
   }();
 
   return net::AppendQueryParameter(url, "utm_campaign", campaign);

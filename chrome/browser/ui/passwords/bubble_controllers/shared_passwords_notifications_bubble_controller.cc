@@ -6,6 +6,7 @@
 
 #include "chrome/browser/ui/passwords/passwords_model_delegate.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/password_manager/core/browser/manage_passwords_referrer.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -25,6 +26,12 @@ SharedPasswordsNotificationBubbleController::
   // Make sure the interactions are reported even if Views didn't notify the
   // controller about the bubble being closed.
   OnBubbleClosing();
+}
+
+void SharedPasswordsNotificationBubbleController::OnManagePasswordsClicked() {
+  delegate_->NavigateToPasswordManagerSettingsPage(
+      password_manager::ManagePasswordsReferrer::
+          kSharedPasswordsNotificationBubble);
 }
 
 std::u16string SharedPasswordsNotificationBubbleController::GetTitle() const {

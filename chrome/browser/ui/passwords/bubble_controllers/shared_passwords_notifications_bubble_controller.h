@@ -20,6 +20,10 @@ class SharedPasswordsNotificationBubbleController
       base::WeakPtr<PasswordsModelDelegate> delegate);
   ~SharedPasswordsNotificationBubbleController() override;
 
+  // Called by the view code when the "Manage Passwords" button is clicked
+  // by the user.
+  void OnManagePasswordsClicked();
+
   // PasswordBubbleControllerBase:
   std::u16string GetTitle() const override;
   void ReportInteractions() override;
