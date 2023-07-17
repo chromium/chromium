@@ -27,30 +27,17 @@ std::string GetMetadataAvailabilitySuffix(
 }
 
 std::string GetCardIssuerIdSuffix(const std::string& card_issuer_id) {
-  if (!card_issuer_id.empty()) {
-    if (card_issuer_id == kAmexCardIssuerId) {
-      return kAmericanExpress;
-    }
-    if (card_issuer_id == kCapitalOneCardIssuerId) {
-      return kCapitalOne;
-    }
-    if (card_issuer_id == kDiscoverCardIssuerId) {
-      return kDiscover;
-    }
-    if (card_issuer_id == kMarqetaCardIssuerId) {
-      return kMarqeta;
-    }
-
-    // Found an unknown issuer id.
-    DLOG(WARNING) << "It seems a new issuer was added, but the suggestion "
-                     "acceptance latency logging logic was not updated. Please "
-                     "update this logging if this issuer should be included in "
-                     "this logging. Ignore if you have already updated it and "
-                     "this is from older versions or you don't care about the "
-                     "newly added issuer.";
+  if (card_issuer_id == kAmexCardIssuerId) {
+    return kAmericanExpress;
+  } else if (card_issuer_id == kCapitalOneCardIssuerId) {
+    return kCapitalOne;
+  } else if (card_issuer_id == kDiscoverCardIssuerId) {
+    return kDiscover;
+  } else if (card_issuer_id == kMarqetaCardIssuerId) {
+    return kMarqeta;
+  } else {
+    return std::string();
   }
-
-  return std::string();
 }
 
 // Returns true when the card has rich card art, excluding any static card art
@@ -117,6 +104,10 @@ void LogCardWithMetadataFormEventMetric(
     HasBeenLogged has_been_logged) {
   for (const auto& [issuer, has_metadata] :
        context.issuer_to_metadata_availability) {
+    if (GetCardIssuerIdSuffix(issuer) == std::string()) {
+      continue;
+    }
+
     switch (event) {
       case CardMetadataLoggingEvent::kShown:
         base::UmaHistogramBoolean("Autofill.CreditCard." +
