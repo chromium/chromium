@@ -892,16 +892,6 @@ constexpr CGFloat kErrorSymbolPointSize = 22.;
           return;
 
         self.syncSetupService->SetSyncEverythingEnabled(value);
-        if (value) {
-          // When sync everything is turned on, the autocomplete wallet
-          // should be turned on. This code can be removed once
-          // crbug.com/937234 is fixed.
-          // TODO(crbug.com/1459963): Consider removing this, since
-          // SetSyncEverythingEnabled() should be sufficient to enable
-          // UserSelectableType::kPayments.
-          _syncService->GetUserSettings()->SetSelectedType(
-              syncer::UserSelectableType::kPayments, true);
-        }
         break;
       case HistoryDataTypeItemType: {
         DCHECK(syncSwitchItem);
