@@ -6616,6 +6616,17 @@
     'name': 'internal.chromeos.fyi',
     'mixins': ['chrome-tester-service-account'],
     'machines': {
+      'chromeos-betty-pi-arc-chrome-accessibility-fyi': {
+        'additional_compile_targets': [
+          'chromiumos_preflight',
+        ],
+        'mixins': [
+          'chromeos-betty',
+        ],
+        'test_suites': {
+          'gtest_tests': 'chromeos_browser_all_tast_tests',
+        },
+      },
       'chromeos-betty-pi-arc-chrome-dchecks': {
         'additional_compile_targets': [
           'chromiumos_preflight',
