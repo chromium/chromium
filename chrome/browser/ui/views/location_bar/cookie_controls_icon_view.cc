@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/views/location_bar/old_cookie_controls_bubble_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/content_settings/browser/ui/cookie_controls_controller.h"
+#include "components/content_settings/core/common/cookie_controls_breakage_confidence_level.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/vector_icons.h"
@@ -37,7 +38,7 @@ CookieControlsIconView::CookieControlsIconView(
                          icon_label_bubble_delegate,
                          page_action_icon_delegate,
                          "CookieControls") {
-  SetVisible(false);
+  SetUpForInOutAnimation(/*duration=*/base::Seconds(12));
   SetAccessibilityProperties(
       /*role*/ absl::nullopt,
       l10n_util::GetStringUTF16(IDS_COOKIE_CONTROLS_TOOLTIP));
@@ -68,9 +69,14 @@ void CookieControlsIconView::UpdateImpl() {
     }
     controller_->Update(web_contents);
   }
-  SetVisible(ShouldBeVisible());
+  if (base::FeatureList::IsEnabled(content_settings::features::kUserBypassUI)) {
+    UpdateIconView();
+  } else {
+    SetVisible(ShouldBeVisible());
+  }
 }
 
+// Called by Chrome Guard, not User Bypass.
 void CookieControlsIconView::OnStatusChanged(
     CookieControlsStatus status,
     CookieControlsEnforcement enforcement,
@@ -81,9 +87,45 @@ void CookieControlsIconView::OnStatusChanged(
     SetVisible(ShouldBeVisible());
     UpdateIconImage();
   }
+
   OnCookiesCountChanged(allowed_cookies, blocked_cookies);
 }
 
+void CookieControlsIconView::UpdateIconView(bool confidence_changed) {
+  UpdateIconImage();
+
+  // TODO(crbug.com/1446230): Update visibility logic for User Bypass.
+  bool should_show = ShouldBeVisible();
+  if (should_show) {
+    if (!GetVisible() || confidence_changed) {
+      if (confidence_ == CookieControlsBreakageConfidenceLevel::kHigh) {
+        AnimateIn(GetLabelForStatus());
+      }
+    }
+  } else {
+    UnpauseAnimation();
+    ResetSlideAnimation(false);
+  }
+  SetVisible(should_show);
+  SetTooltipText(l10n_util::GetStringUTF16(
+      GetLabelForStatus().value_or(IDS_COOKIE_CONTROLS_TOOLTIP)));
+}
+
+absl::optional<int> CookieControlsIconView::GetLabelForStatus() const {
+  switch (status_) {
+    case CookieControlsStatus::kDisabledForSite:
+      ABSL_FALLTHROUGH_INTENDED;
+    case CookieControlsStatus::kDisabled:  // Cookies are not blocked
+      return IDS_COOKIE_CONTROLS_PAGE_ACTION_COOKIES_ALLOWED_LABEL;
+    case CookieControlsStatus::kEnabled:  // Cookies are blocked
+      return IDS_COOKIE_CONTROLS_PAGE_ACTION_COOKIES_BLOCKED_LABEL;
+    case CookieControlsStatus::kUninitialized:
+      DLOG(ERROR) << "CookieControl status is not initialized";
+      return absl::nullopt;
+  }
+}
+
+// Called by Chrome Guard, not User Bypass.
 void CookieControlsIconView::OnCookiesCountChanged(int allowed_cookies,
                                                    int blocked_cookies) {
   // The blocked cookie count changes quite frequently, so avoid unnecessary
@@ -94,6 +136,7 @@ void CookieControlsIconView::OnCookiesCountChanged(int allowed_cookies,
   }
 }
 
+// Called by Chrome Guard, not User Bypass.
 void CookieControlsIconView::OnStatefulBounceCountChanged(int bounce_count) {
   if (bounce_count > 0) {
     has_blocked_cookies_ = true;
@@ -107,22 +150,26 @@ void CookieControlsIconView::OnStatusChanged(
     base::Time expiration) {
   if (status_ != status) {
     status_ = status;
-    SetVisible(ShouldBeVisible());
-    UpdateIconImage();
+    UpdateIconView();
   }
 }
 
+// Called by User Bypass, not Chrome Guard.
 void CookieControlsIconView::OnSitesCountChanged(int allowed_sites,
                                                  int blocked_sites) {
   if (has_blocked_sites_ != blocked_sites > 0) {
     has_blocked_sites_ = blocked_sites > 0;
-    SetVisible(ShouldBeVisible());
+    UpdateIconView();
   }
 }
 
 void CookieControlsIconView::OnBreakageConfidenceLevelChanged(
     CookieControlsBreakageConfidenceLevel level) {
   // TODO(1446230): Implement OnBreakageConfidenceLevelChanged.
+  if (confidence_ != level) {
+    confidence_ = level;
+    UpdateIconView(/*confidence_changed=*/true);
+  }
 }
 
 bool CookieControlsIconView::ShouldBeVisible() const {

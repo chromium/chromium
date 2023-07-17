@@ -3750,6 +3750,12 @@ are declared in tools/grit/grit_rule.gni.
       <message name="IDS_COOKIE_CONTROLS_BUBBLE_SEND_FEEDBACK_FORM_PLACEHOLDER" translateable="false"  desc="">
         Tell us why you allowed third-party cookies on this site
       </message>
+      <message name="IDS_COOKIE_CONTROLS_PAGE_ACTION_COOKIES_ALLOWED_LABEL" translateable="false"  desc="">
+        Third-party cookies allowed
+      </message>
+      <message name="IDS_COOKIE_CONTROLS_PAGE_ACTION_COOKIES_BLOCKED_LABEL" translateable="false"  desc="">
+        Third-party cookies blocked
+      </message>
 
       <!-- Win certificate selector dialog strings.  -->
       <if expr="toolkit_views">

@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "components/content_settings/browser/ui/cookie_controls_controller.h"
 #include "components/content_settings/browser/ui/cookie_controls_view.h"
+#include "components/content_settings/core/common/cookie_controls_breakage_confidence_level.h"
 #include "components/content_settings/core/common/cookie_controls_status.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
@@ -58,9 +59,17 @@ class CookieControlsIconView
   bool GetAssociatedBubble() const;
   bool ShouldBeVisible() const;
 
+  // Set confidence_changed = true to animate if the confidence level changed
+  // even if the icon is already visible.
+  void UpdateIconView(bool confidence_changed = false);
+  absl::optional<int> GetLabelForStatus() const;
+
   CookieControlsStatus status_ = CookieControlsStatus::kUninitialized;
   bool has_blocked_cookies_ = false;
   bool has_blocked_sites_ = false;
+
+  CookieControlsBreakageConfidenceLevel confidence_ =
+      CookieControlsBreakageConfidenceLevel::kUninitialized;
 
   std::unique_ptr<content_settings::CookieControlsController> controller_;
   std::unique_ptr<CookieControlsBubbleCoordinator> bubble_coordinator_ =
