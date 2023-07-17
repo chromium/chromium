@@ -3,84 +3,30 @@
 // found in the LICENSE file.
 
 import {PrivacyHubBrowserProxyImpl} from 'chrome://os-settings/lazy_load.js';
-import {PeripheralDataAccessBrowserProxyImpl, Router, routes, SecureDnsMode} from 'chrome://os-settings/os_settings.js';
-import {assert} from 'chrome://resources/ash/common/assert.js';
-import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
-import {getDeepActiveElement} from 'chrome://resources/ash/common/util.js';
+import {CrDialogElement, OsSettingsPrivacyPageElement, PeripheralDataAccessBrowserProxyImpl, Router, routes, SecureDnsMode, settingMojom, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {getDeepActiveElement} from 'chrome://resources/js/util_ts.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertNotEquals, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
-import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 import {FakeMetricsPrivate} from '../fake_metrics_private.js';
 import {FakeQuickUnlockPrivate} from '../fake_quick_unlock_private.js';
 
+import {TestPeripheralDataAccessBrowserProxy} from './test_peripheral_data_access_browser_proxy.js';
 import {TestPrivacyHubBrowserProxy} from './test_privacy_hub_browser_proxy.js';
 
-const crosSettingPrefName = 'cros.device.peripheral_data_access_enabled';
-const localStatePrefName =
+const CROS_SETTING_PREF_NAME = 'cros.device.peripheral_data_access_enabled';
+const LOCAL_STATE_PREF_NAME =
     'settings.local_state_device_pci_data_access_enabled';
 
-/**
- * @implements {PeripheralDataAccessBrowserProxy}
- */
-class TestPeripheralDataAccessBrowserProxy extends TestBrowserProxy {
-  constructor() {
-    super([
-      'isThunderboltSupported',
-      'getPolicyState',
-    ]);
-
-    /** @type {DataAccessPolicyState} */
-    this.policy_state_ = {
-      prefName: crosSettingPrefName,
-      isUserConfigurable: false,
-    };
-  }
-
-  /** @override */
-  isThunderboltSupported() {
-    this.methodCalled('isThunderboltSupported');
-    return Promise.resolve(/*supported=*/ true);
-  }
-
-  /** @override */
-  getPolicyState() {
-    this.methodCalled('getPolicyState');
-    return Promise.resolve(this.policy_state_);
-  }
-
-  /**
-   * @param {String} pref_name
-   * @param {Boolean} is_user_configurable
-   */
-  setPolicyState(pref_name, is_user_configurable) {
-    this.policy_state_.prefName = pref_name;
-    this.policy_state_.isUserConfigurable = is_user_configurable;
-  }
-}
-
-suite('PrivacyPageTests', function() {
-  /** @type {SettingsPrivacyPageElement} */
-  let privacyPage = null;
-
-  const prefs_ = {
-    'cros': {
-      'device': {
-        'peripheral_data_access_enabled': {
-          value: true,
-        },
-      },
-    },
-  };
-
-  /** @type {?TestPeripheralDataAccessBrowserProxy} */
-  let browserProxy = null;
+suite('<os-settings-privacy-page>', () => {
+  let privacyPage: OsSettingsPrivacyPageElement;
+  let browserProxy: TestPeripheralDataAccessBrowserProxy;
 
   setup(async () => {
     browserProxy = new TestPeripheralDataAccessBrowserProxy();
     PeripheralDataAccessBrowserProxyImpl.setInstanceForTesting(browserProxy);
-    PolymerTest.clearBody();
     privacyPage = document.createElement('os-settings-privacy-page');
     document.body.appendChild(privacyPage);
     flush();
@@ -88,7 +34,7 @@ suite('PrivacyPageTests', function() {
     await browserProxy.whenCalled('isThunderboltSupported');
   });
 
-  teardown(function() {
+  teardown(() => {
     privacyPage.remove();
     Router.getInstance().resetRouteForTesting();
   });
@@ -96,19 +42,18 @@ suite('PrivacyPageTests', function() {
   /**
    * Returns true if the element exists and has not been 'removed' by the
    * Polymer template system.
-   * @param {string} selector The ID of the element about which to query.
-   * @return {boolean} Whether or not the element has been masked by the
+   * @param selector The ID of the element about which to query.
+   * @return Whether or not the element has been masked by the
    *                   template system.
-   * @private
    */
-  function elementExists(selector) {
-    const el = privacyPage.shadowRoot.querySelector(selector);
+  function elementExists(selector: string): boolean {
+    const el = privacyPage.shadowRoot!.querySelector<HTMLElement>(selector);
     return (el !== null) && (el.style.display !== 'none');
   }
 
   test(
       'Suggested content, hidden when privacy hub feature flag is enabled',
-      async () => {
+      () => {
         loadTimeData.overrideValues({
           showPrivacyHubPage: true,
         });
@@ -120,7 +65,7 @@ suite('PrivacyPageTests', function() {
         assertFalse(elementExists('#suggested-content'));
       });
 
-  test('Suggested content, pref disabled', async () => {
+  test('Suggested content, pref disabled', () => {
     loadTimeData.overrideValues({
       showPrivacyHubPage: false,
     });
@@ -131,11 +76,13 @@ suite('PrivacyPageTests', function() {
 
     // The default state of the pref is disabled.
     const suggestedContent =
-        assert(privacyPage.shadowRoot.querySelector('#suggested-content'));
+        privacyPage.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            '#suggested-content');
+    assertTrue(!!suggestedContent);
     assertFalse(suggestedContent.checked);
   });
 
-  test('Suggested content, pref enabled', async () => {
+  test('Suggested content, pref enabled', () => {
     loadTimeData.overrideValues({
       showPrivacyHubPage: false,
     });
@@ -168,20 +115,24 @@ suite('PrivacyPageTests', function() {
 
     // The checkbox reflects the updated pref state.
     const suggestedContent =
-        assert(privacyPage.shadowRoot.querySelector('#suggested-content'));
+        privacyPage.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            '#suggested-content');
+    assertTrue(!!suggestedContent);
     assertTrue(suggestedContent.checked);
   });
 
   test('Deep link to verified access', async () => {
     const params = new URLSearchParams();
-    params.append('settingId', '1101');
+    params.append('settingId', settingMojom.Setting.kVerifiedAccess.toString());
     Router.getInstance().navigateTo(routes.OS_PRIVACY, params);
 
     flush();
 
-    const deepLinkElement =
-        privacyPage.shadowRoot.querySelector('#verifiedAccessToggle')
-            .shadowRoot.querySelector('cr-toggle');
+    const toggle =
+        privacyPage.shadowRoot!.querySelector('#verifiedAccessToggle');
+    assertTrue(!!toggle);
+    const deepLinkElement = toggle.shadowRoot!.querySelector('cr-toggle');
+    assertTrue(!!deepLinkElement);
     await waitAfterNextRender(deepLinkElement);
     assertEquals(
         deepLinkElement, getDeepActiveElement(),
@@ -190,15 +141,19 @@ suite('PrivacyPageTests', function() {
 
   test('Deep link to guest browsing on users page', async () => {
     const params = new URLSearchParams();
-    params.append('settingId', '1104');
+    params.append(
+        'settingId', settingMojom.Setting.kGuestBrowsingV2.toString());
     Router.getInstance().navigateTo(routes.ACCOUNTS, params);
 
     flush();
 
-    const deepLinkElement =
-        privacyPage.shadowRoot.querySelector('settings-manage-users-subpage')
-            .shadowRoot.querySelector('#allowGuestBrowsing')
-            .shadowRoot.querySelector('cr-toggle');
+    const element =
+        privacyPage.shadowRoot!.querySelector('settings-manage-users-subpage');
+    assertTrue(!!element);
+    const toggle = element.shadowRoot!.querySelector('#allowGuestBrowsing');
+    assertTrue(!!toggle);
+    const deepLinkElement = toggle.shadowRoot!.querySelector('cr-toggle');
+    assertTrue(!!deepLinkElement);
     await waitAfterNextRender(deepLinkElement);
     assertEquals(
         deepLinkElement, getDeepActiveElement(),
@@ -207,15 +162,20 @@ suite('PrivacyPageTests', function() {
 
   test('Deep link to show usernames on sign in on users page', async () => {
     const params = new URLSearchParams();
-    params.append('settingId', '1105');
+    params.append(
+        'settingId',
+        settingMojom.Setting.kShowUsernamesAndPhotosAtSignInV2.toString());
     Router.getInstance().navigateTo(routes.ACCOUNTS, params);
 
     flush();
 
-    const deepLinkElement =
-        privacyPage.shadowRoot.querySelector('settings-manage-users-subpage')
-            .shadowRoot.querySelector('#showUserNamesOnSignIn')
-            .shadowRoot.querySelector('cr-toggle');
+    const element =
+        privacyPage.shadowRoot!.querySelector('settings-manage-users-subpage');
+    assertTrue(!!element);
+    const toggle = element.shadowRoot!.querySelector('#showUserNamesOnSignIn');
+    assertTrue(!!toggle);
+    const deepLinkElement = toggle.shadowRoot!.querySelector('cr-toggle');
+    assertTrue(!!deepLinkElement);
     await waitAfterNextRender(deepLinkElement);
     assertEquals(
         deepLinkElement, getDeepActiveElement(),
@@ -228,15 +188,20 @@ suite('PrivacyPageTests', function() {
     });
 
     const params = new URLSearchParams();
-    params.append('settingId', '1114');
+    params.append(
+        'settingId', settingMojom.Setting.kSnoopingProtection.toString());
     Router.getInstance().navigateTo(routes.SMART_PRIVACY, params);
 
     flush();
 
-    const deepLinkElement =
-        privacyPage.shadowRoot.querySelector('settings-smart-privacy-subpage')
-            .shadowRoot.querySelector('#snoopingProtectionToggle')
-            .shadowRoot.querySelector('cr-toggle');
+    const element =
+        privacyPage.shadowRoot!.querySelector('settings-smart-privacy-subpage');
+    assertTrue(!!element);
+    const toggle =
+        element.shadowRoot!.querySelector('#snoopingProtectionToggle');
+    assertTrue(!!toggle);
+    const deepLinkElement = toggle.shadowRoot!.querySelector('cr-toggle');
+    assertTrue(!!deepLinkElement);
     await waitAfterNextRender(deepLinkElement);
     assertEquals(
         deepLinkElement, getDeepActiveElement(),
@@ -249,15 +214,19 @@ suite('PrivacyPageTests', function() {
     });
 
     const params = new URLSearchParams();
-    params.append('settingId', '1115');
+    params.append('settingId', settingMojom.Setting.kQuickDim.toString());
     Router.getInstance().navigateTo(routes.SMART_PRIVACY, params);
 
     flush();
 
+    const element =
+        privacyPage.shadowRoot!.querySelector('settings-smart-privacy-subpage');
+    assertTrue(!!element);
+    const quickDimToggle = element.shadowRoot!.querySelector('#quickDimToggle');
+    assertTrue(!!quickDimToggle);
     const deepLinkElement =
-        privacyPage.shadowRoot.querySelector('settings-smart-privacy-subpage')
-            .shadowRoot.querySelector('#quickDimToggle')
-            .shadowRoot.querySelector('cr-toggle');
+        quickDimToggle.shadowRoot!.querySelector('cr-toggle');
+    assertTrue(!!deepLinkElement);
     await waitAfterNextRender(deepLinkElement);
     assertEquals(
         deepLinkElement, getDeepActiveElement(),
@@ -275,45 +244,51 @@ suite('PrivacyPageTests', function() {
     await waitAfterNextRender(privacyPage);
 
     const quickUnlockPrivateApi = new FakeQuickUnlockPrivate();
-    privacyPage.authTokenInfo_ = quickUnlockPrivateApi.getFakeToken();
+    privacyPage['authTokenInfo_'] = quickUnlockPrivateApi.getFakeToken();
 
     Router.getInstance().navigateTo(routes.LOCK_SCREEN);
     flush();
 
     const subpageTrigger =
-        privacyPage.shadowRoot.querySelector('#lockScreenSubpageTrigger');
+        privacyPage.shadowRoot!.querySelector<HTMLButtonElement>(
+            '#lockScreenSubpageTrigger');
+    assertTrue(!!subpageTrigger);
     // Sub-page trigger navigates to the lock screen page.
     subpageTrigger.click();
     flush();
 
-    assertEquals(Router.getInstance().currentRoute, routes.LOCK_SCREEN);
-    const lockScreenPage =
-        assert(privacyPage.shadowRoot.querySelector('#lockScreen'));
+    assertEquals(routes.LOCK_SCREEN, Router.getInstance().currentRoute);
+    const lockScreenPage = privacyPage.shadowRoot!.querySelector('#lockScreen');
+    assertTrue(!!lockScreenPage);
 
     // Password dialog should not open because the authTokenInfo_ is set.
-    assertFalse(privacyPage.showPasswordPromptDialog_);
+    assertFalse(privacyPage.get('showPasswordPromptDialog_'));
 
     const editFingerprintsTrigger =
-        lockScreenPage.shadowRoot.querySelector('#editFingerprints');
+        lockScreenPage.shadowRoot!.querySelector<HTMLButtonElement>(
+            '#editFingerprints');
+    assertTrue(!!editFingerprintsTrigger);
     editFingerprintsTrigger.click();
     flush();
 
-    assertEquals(Router.getInstance().currentRoute, routes.FINGERPRINT);
-    assertFalse(privacyPage.showPasswordPromptDialog_);
+    assertEquals(routes.FINGERPRINT, Router.getInstance().currentRoute);
+    assertFalse(privacyPage.get('showPasswordPromptDialog_'));
 
+    const element = privacyPage.shadowRoot!.querySelector('#fingerprint-list');
+    assertTrue(!!element);
     const fingerprintTrigger =
-        privacyPage.shadowRoot.querySelector('#fingerprint-list')
-            .shadowRoot.querySelector('#addFingerprint');
+        element.shadowRoot!.querySelector<HTMLButtonElement>('#addFingerprint');
+    assertTrue(!!fingerprintTrigger);
     fingerprintTrigger.click();
 
     // Invalidate the auth token by firing an event.
-    assertFalse(privacyPage.authTokenInfo_ === undefined);
+    assertNotEquals(undefined, privacyPage.get('authTokenInfo_'));
     const event = new CustomEvent('invalidate-auth-token-requested');
     lockScreenPage.dispatchEvent(event);
-    assertTrue(privacyPage.authTokenInfo_ === undefined);
+    assertEquals(undefined, privacyPage.get('authTokenInfo_'));
 
-    assertEquals(Router.getInstance().currentRoute, routes.FINGERPRINT);
-    assertTrue(privacyPage.showPasswordPromptDialog_);
+    assertEquals(routes.FINGERPRINT, Router.getInstance().currentRoute);
+    assertTrue(privacyPage.get('showPasswordPromptDialog_'));
   });
 
   test('Smart privacy hidden when both features disabled', async () => {
@@ -367,26 +342,29 @@ suite('PrivacyPageTests', function() {
     PrivacyHubBrowserProxyImpl.setInstanceForTesting(privacyHubBrowserProxy);
 
     const fakeMetricsPrivate = new FakeMetricsPrivate();
-    chrome.metricsPrivate = fakeMetricsPrivate;
+    chrome.metricsPrivate =
+        fakeMetricsPrivate as unknown as typeof chrome.metricsPrivate;
     privacyPage = document.createElement('os-settings-privacy-page');
     document.body.appendChild(privacyPage);
 
     await waitAfterNextRender(privacyPage);
 
-    const privacyHubPageRow = assert(
-        privacyPage.shadowRoot.querySelector('#privacyHubSubpageTrigger'));
+    const privacyHubPageRow =
+        privacyPage.shadowRoot!.querySelector<HTMLButtonElement>(
+            '#privacyHubSubpageTrigger');
+    assertTrue(!!privacyHubPageRow);
 
     assertEquals(
-        fakeMetricsPrivate.countMetricValue('ChromeOS.PrivacyHub.Opened', 0),
-        0);
+        0,
+        fakeMetricsPrivate.countMetricValue('ChromeOS.PrivacyHub.Opened', 0));
 
     privacyHubPageRow.click();
     flush();
-    waitAfterNextRender();
+    await waitAfterNextRender(privacyPage);
 
     assertEquals(
-        fakeMetricsPrivate.countMetricValue('ChromeOS.PrivacyHub.Opened', 0),
-        1);
+        1,
+        fakeMetricsPrivate.countMetricValue('ChromeOS.PrivacyHub.Opened', 0));
   });
 
   test('Send HaTS messages', async () => {
@@ -408,7 +386,7 @@ suite('PrivacyPageTests', function() {
         1, privacyHubBrowserProxy.getCallCount('sendLeftOsPrivacyPage'));
 
     const params = new URLSearchParams();
-    params.append('settingId', '1101');
+    params.append('settingId', settingMojom.Setting.kVerifiedAccess.toString());
     Router.getInstance().navigateTo(routes.OS_PRIVACY, params);
 
     flush();
@@ -418,7 +396,9 @@ suite('PrivacyPageTests', function() {
     assertEquals(
         1, privacyHubBrowserProxy.getCallCount('sendLeftOsPrivacyPage'));
 
-    params.set('settingId', '1105');
+    params.set(
+        'settingId',
+        settingMojom.Setting.kShowUsernamesAndPhotosAtSignInV2.toString());
     Router.getInstance().navigateTo(routes.ACCOUNTS, params);
 
     flush();
@@ -433,11 +413,10 @@ suite('PrivacyPageTests', function() {
   //                          once it has been added.
 });
 
-suite('PeripheralDataAccessTest', function() {
-  /** @type {SettingsPrivacyPageElement} */
-  let privacyPage = null;
+suite('PeripheralDataAccessTest', () => {
+  let privacyPage: OsSettingsPrivacyPageElement;
+  let browserProxy: TestPeripheralDataAccessBrowserProxy;
 
-  /** @type {Object} */
   const prefs_ = {
     'cros': {
       'device': {
@@ -451,37 +430,34 @@ suite('PeripheralDataAccessTest', function() {
         {'mode': {value: SecureDnsMode.AUTOMATIC}, 'templates': {value: ''}},
   };
 
-  /** @type {?TestPeripheralDataAccessBrowserProxy} */
-  let browserProxy = null;
-
-  setup(async () => {
+  setup(() => {
     browserProxy = new TestPeripheralDataAccessBrowserProxy();
     PeripheralDataAccessBrowserProxyImpl.setInstanceForTesting(browserProxy);
-    PolymerTest.clearBody();
   });
 
-  teardown(function() {
+  teardown(() => {
     privacyPage.remove();
     Router.getInstance().resetRouteForTesting();
   });
 
-  async function setUpPage(pref_name, is_user_configurable) {
-    browserProxy.setPolicyState(pref_name, is_user_configurable);
+  async function setUpPage(prefName: string, isUserConfigurable: boolean) {
+    browserProxy.setPolicyState(prefName, isUserConfigurable);
     privacyPage = document.createElement('os-settings-privacy-page');
     privacyPage.prefs = Object.assign({}, prefs_);
     document.body.appendChild(privacyPage);
     flush();
 
     await browserProxy.whenCalled('getPolicyState');
-    await waitAfterNextRender();
+    await waitAfterNextRender(privacyPage);
     flush();
   }
 
   test('DialogOpensOnToggle', async () => {
-    await setUpPage(crosSettingPrefName, /**is_user_configurable=*/ true);
+    await setUpPage(CROS_SETTING_PREF_NAME, /**isUserConfigurable=*/ true);
     // The default state is checked.
     const toggle =
-        privacyPage.shadowRoot.querySelector('#crosSettingDataAccessToggle');
+        privacyPage.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            '#crosSettingDataAccessToggle');
     assertTrue(!!toggle);
     assertTrue(toggle.checked);
 
@@ -492,8 +468,12 @@ suite('PeripheralDataAccessTest', function() {
 
     await waitAfterNextRender(privacyPage);
 
-    const dialog = privacyPage.shadowRoot.querySelector('#protectionDialog')
-                       .$.warningDialog;
+    const protectionDialog =
+        privacyPage.shadowRoot!.querySelector('#protectionDialog');
+    assertTrue(!!protectionDialog);
+    const dialog = protectionDialog.shadowRoot!.querySelector<CrDialogElement>(
+        '#warningDialog');
+    assertTrue(!!dialog);
     assertTrue(dialog.open);
 
     // Ensure that the toggle is still checked.
@@ -501,7 +481,9 @@ suite('PeripheralDataAccessTest', function() {
 
     // Click on the dialog's cancel button and expect the toggle to switch back
     // to enabled.
-    const cancelButton = dialog.querySelector('#cancelButton');
+    const cancelButton =
+        dialog.querySelector<HTMLButtonElement>('#cancelButton');
+    assertTrue(!!cancelButton);
     cancelButton.click();
     flush();
     assertFalse(dialog.open);
@@ -511,10 +493,11 @@ suite('PeripheralDataAccessTest', function() {
   });
 
   test('DisableClicked', async () => {
-    await setUpPage(crosSettingPrefName, /**is_user_configurable=*/ true);
+    await setUpPage(CROS_SETTING_PREF_NAME, /**isUserConfigurable=*/ true);
     // The default state is checked.
     const toggle =
-        privacyPage.shadowRoot.querySelector('#crosSettingDataAccessToggle');
+        privacyPage.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            '#crosSettingDataAccessToggle');
     assertTrue(!!toggle);
     assertTrue(toggle.checked);
 
@@ -525,12 +508,18 @@ suite('PeripheralDataAccessTest', function() {
 
     await waitAfterNextRender(privacyPage);
 
-    const dialog = privacyPage.shadowRoot.querySelector('#protectionDialog')
-                       .$.warningDialog;
+    const protectionDialog =
+        privacyPage.shadowRoot!.querySelector('#protectionDialog');
+    assertTrue(!!protectionDialog);
+    const dialog = protectionDialog.shadowRoot!.querySelector<CrDialogElement>(
+        '#warningDialog');
+    assertTrue(!!dialog);
     assertTrue(dialog.open);
 
     // Advance the dialog and move onto the next dialog.
-    const disableButton = dialog.querySelector('#disableConfirmation');
+    const disableButton =
+        dialog.querySelector<HTMLButtonElement>('#disableConfirmation');
+    assertTrue(!!disableButton);
     disableButton.click();
     flush();
 
@@ -539,17 +528,20 @@ suite('PeripheralDataAccessTest', function() {
   });
 
   test('managedAndConfigurablePrefIsToggleable', async () => {
-    await setUpPage(localStatePrefName, /**is_user_configurable=*/ true);
+    await setUpPage(LOCAL_STATE_PREF_NAME, /**isUserConfigurable=*/ true);
     flush();
 
     // Ensure only the local state toggle appears.
-    assertTrue(
-        privacyPage.shadowRoot.querySelector('#crosSettingDataAccessToggle')
-            .hidden);
+    const crosSettingDataAccessToggle =
+        privacyPage.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            '#crosSettingDataAccessToggle');
+    assertTrue(!!crosSettingDataAccessToggle);
+    assertTrue(crosSettingDataAccessToggle.hidden);
 
     // The default state is checked.
     const toggle =
-        privacyPage.shadowRoot.querySelector('#localStateDataAccessToggle');
+        privacyPage.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            '#localStateDataAccessToggle');
 
     // The default state is checked.
     assertTrue(!!toggle);
@@ -562,8 +554,12 @@ suite('PeripheralDataAccessTest', function() {
 
     await waitAfterNextRender(privacyPage);
 
-    const dialog = privacyPage.shadowRoot.querySelector('#protectionDialog')
-                       .$.warningDialog;
+    const protectionDialog =
+        privacyPage.shadowRoot!.querySelector('#protectionDialog');
+    assertTrue(!!protectionDialog);
+    const dialog = protectionDialog.shadowRoot!.querySelector<CrDialogElement>(
+        '#warningDialog');
+    assertTrue(!!dialog);
     assertTrue(dialog.open);
 
     // Ensure that the toggle is still checked.
@@ -571,7 +567,9 @@ suite('PeripheralDataAccessTest', function() {
 
     // Click on the dialog's cancel button and expect the toggle to switch back
     // to enabled.
-    const cancelButton = dialog.querySelector('#cancelButton');
+    const cancelButton =
+        dialog.querySelector<HTMLButtonElement>('#cancelButton');
+    assertTrue(!!cancelButton);
     cancelButton.click();
     flush();
     assertFalse(dialog.open);
@@ -581,17 +579,20 @@ suite('PeripheralDataAccessTest', function() {
   });
 
   test('managedAndNonConfigurablePrefIsNotToggleable', async () => {
-    await setUpPage(localStatePrefName, /**is_user_configurable=*/ false);
+    await setUpPage(LOCAL_STATE_PREF_NAME, /**isUserConfigurable=*/ false);
     flush();
 
     // Ensure only the local state toggle appears.
-    assertTrue(
-        privacyPage.shadowRoot.querySelector('#crosSettingDataAccessToggle')
-            .hidden);
+    const crosSettingDataAccessToggle =
+        privacyPage.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            '#crosSettingDataAccessToggle');
+    assertTrue(!!crosSettingDataAccessToggle);
+    assertTrue(crosSettingDataAccessToggle.hidden);
 
     // The default state is checked.
     const toggle =
-        privacyPage.shadowRoot.querySelector('#localStateDataAccessToggle');
+        privacyPage.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            '#localStateDataAccessToggle');
 
     // The default state is checked.
     assertTrue(!!toggle);
@@ -605,7 +606,7 @@ suite('PeripheralDataAccessTest', function() {
     await waitAfterNextRender(privacyPage);
 
     // Dialog should not appear since the toggle is disabled.
-    const dialog = privacyPage.shadowRoot.querySelector('#protectionDialog');
-    assertFalse(!!dialog);
+    const dialog = privacyPage.shadowRoot!.querySelector('#protectionDialog');
+    assertNull(dialog);
   });
 });
