@@ -112,7 +112,8 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
     virtual void DrawingBufferClientRestorePixelPackBufferBinding() = 0;
     virtual bool
     DrawingBufferClientUserAllocatedMultisampledRenderbuffers() = 0;
-    virtual void DrawingBufferClientForceLostContextWithAutoRecovery() = 0;
+    virtual void DrawingBufferClientForceLostContextWithAutoRecovery(
+        const char* reason) = 0;
   };
 
   enum PreserveDrawingBuffer {

@@ -1620,7 +1620,9 @@ void DrawingBuffer::ResolveIfNeeded() {
         // content the application expects to be preserved, but which can not
         // be. Forcing a lost context is the only option to keep applications
         // rendering correctly.
-        client_->DrawingBufferClientForceLostContextWithAutoRecovery();
+        client_->DrawingBufferClientForceLostContextWithAutoRecovery(
+            "Losing WebGL context because multisampled renderbuffers were "
+            "allocated, to work around macOS OpenGL driver bugs");
       } else if (WantExplicitResolve()) {
         ReallocateMultisampleRenderbuffer(size_);
 

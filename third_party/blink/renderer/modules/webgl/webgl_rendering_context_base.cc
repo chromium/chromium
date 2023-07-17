@@ -7529,9 +7529,12 @@ bool WebGLRenderingContextBase::
 }
 
 void WebGLRenderingContextBase::
-    DrawingBufferClientForceLostContextWithAutoRecovery() {
+    DrawingBufferClientForceLostContextWithAutoRecovery(const char* reason) {
   ForceLostContext(WebGLRenderingContextBase::kSyntheticLostContext,
                    WebGLRenderingContextBase::kAuto);
+  if (reason) {
+    PrintWarningToConsole(reason);
+  }
 }
 
 ScriptValue WebGLRenderingContextBase::GetBooleanParameter(

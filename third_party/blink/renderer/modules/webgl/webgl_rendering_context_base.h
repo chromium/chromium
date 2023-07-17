@@ -770,7 +770,8 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
   void DrawingBufferClientRestorePixelUnpackBufferBinding() override;
   void DrawingBufferClientRestorePixelPackBufferBinding() override;
   bool DrawingBufferClientUserAllocatedMultisampledRenderbuffers() override;
-  void DrawingBufferClientForceLostContextWithAutoRecovery() override;
+  void DrawingBufferClientForceLostContextWithAutoRecovery(
+      const char* reason) override;
 
   // All draw calls should go through this wrapper so that various
   // bookkeeping related to compositing and preserveDrawingBuffer

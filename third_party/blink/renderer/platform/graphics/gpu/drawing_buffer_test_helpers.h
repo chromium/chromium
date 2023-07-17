@@ -310,7 +310,8 @@ class GLES2InterfaceForTests : public gpu::gles2::GLES2InterfaceStub,
     // Not unit tested yet. Tested with end-to-end tests.
     return false;
   }
-  void DrawingBufferClientForceLostContextWithAutoRecovery() override {
+  void DrawingBufferClientForceLostContextWithAutoRecovery(
+      const char* reason) override {
     // Not unit tested yet. Tested with end-to-end tests.
   }
   void DrawingBufferClientInterruptPixelLocalStorage() override {
