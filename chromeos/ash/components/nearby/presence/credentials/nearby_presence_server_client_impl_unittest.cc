@@ -223,8 +223,8 @@ TEST_F(NearbyPresenceServerClientImplTest, UpdateDeviceSuccess) {
       .WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
           kAccessToken, base::Time::Max());
   EXPECT_EQ(kPatch, http_method());
-  EXPECT_EQ(request_url(), GURL(std::string(kTestGoogleApisUrl) + "/v1/" +
-                                std::string(kDeviceIdPath)));
+  EXPECT_EQ(request_url(), GURL(std::string(kTestGoogleApisUrl) +
+                                "/v1/presence/" + std::string(kDeviceIdPath)));
 
   ash::nearby::proto::UpdateDeviceRequest expected_request;
   EXPECT_TRUE(expected_request.ParseFromString(serialized_request()));
@@ -256,8 +256,8 @@ TEST_F(NearbyPresenceServerClientImplTest, UpdateDeviceFailure) {
           kAccessToken, base::Time::Max());
 
   EXPECT_EQ(kPatch, http_method());
-  EXPECT_EQ(request_url(), GURL(std::string(kTestGoogleApisUrl) + "/v1/" +
-                                std::string(kDeviceIdPath)));
+  EXPECT_EQ(request_url(), GURL(std::string(kTestGoogleApisUrl) +
+                                "/v1/presence/" + std::string(kDeviceIdPath)));
 
   FailApiCallFlow(NearbyHttpError::kInternalServerError);
   EXPECT_EQ(NearbyHttpError::kInternalServerError, future.Get());
@@ -283,7 +283,7 @@ TEST_F(NearbyPresenceServerClientImplTest, ListPublicCertificatesSuccess) {
           kAccessToken, base::Time::Max());
 
   EXPECT_EQ(kGet, http_method());
-  EXPECT_EQ(request_url(), std::string(kTestGoogleApisUrl) + "/v1/" +
+  EXPECT_EQ(request_url(), std::string(kTestGoogleApisUrl) + "/v1/presence/" +
                                std::string(kDeviceIdPath) +
                                "/publicCertificates");
 
@@ -359,7 +359,7 @@ TEST_F(NearbyPresenceServerClientImplTest, ParseResponseProtoFailure) {
           kAccessToken, base::Time::Max());
 
   EXPECT_EQ(kPatch, http_method());
-  EXPECT_EQ(request_url(), std::string(kTestGoogleApisUrl) + "/v1/" +
+  EXPECT_EQ(request_url(), std::string(kTestGoogleApisUrl) + "/v1/presence/" +
                                std::string(kDeviceIdPath));
 
   FinishApiCallFlowRaw("Not a valid serialized response message.");
@@ -381,7 +381,7 @@ TEST_F(NearbyPresenceServerClientImplTest,
           kAccessToken, base::Time::Max());
 
   EXPECT_EQ(kPatch, http_method());
-  EXPECT_EQ(request_url(), std::string(kTestGoogleApisUrl) + "/v1/" +
+  EXPECT_EQ(request_url(), std::string(kTestGoogleApisUrl) + "/v1/presence/" +
                                std::string(kDeviceIdPath));
 
   // With request pending, make second request.
@@ -421,7 +421,7 @@ TEST_F(NearbyPresenceServerClientImplTest,
             kAccessToken, base::Time::Max());
 
     EXPECT_EQ(kPatch, http_method());
-    EXPECT_EQ(request_url(), std::string(kTestGoogleApisUrl) + "/v1/" +
+    EXPECT_EQ(request_url(), std::string(kTestGoogleApisUrl) + "/v1/presence/" +
                                  std::string(kDeviceIdPath));
 
     ash::nearby::proto::UpdateDeviceResponse response_proto;
@@ -457,7 +457,7 @@ TEST_F(NearbyPresenceServerClientImplTest, GetAccessTokenUsed) {
           kAccessToken, base::Time::Max());
 
   EXPECT_EQ(kPatch, http_method());
-  EXPECT_EQ(request_url(), std::string(kTestGoogleApisUrl) + "/v1/" +
+  EXPECT_EQ(request_url(), std::string(kTestGoogleApisUrl) + "/v1/presence/" +
                                std::string(kDeviceIdPath));
 
   EXPECT_EQ(kAccessToken, client_->GetAccessTokenUsed());

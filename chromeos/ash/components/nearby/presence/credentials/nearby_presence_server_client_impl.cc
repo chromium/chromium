@@ -30,7 +30,7 @@ namespace {
 const char kDefaultNearbyPresenceV1HTTPHost[] =
     "https://nearbypresence-pa.googleapis.com";
 
-const char kNearbyPresenceV1Path[] = "v1/";
+const char kNearbyPresenceV1Path[] = "v1/presence/";
 
 const char kListPublicCertificatesPath[] = "publicCertificates";
 
