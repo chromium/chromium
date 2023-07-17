@@ -374,21 +374,11 @@ void SystemWebAppManager::Start() {
 
   // In tests, only install System Web Apps if `InstallSystemAppsForTesting()`
   // or `SetSystemAppsForTesting()` has been called.
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kTestType) &&
-      skip_app_installation_in_test_) {
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            &SystemWebAppManager::OnAppsSynchronized,
-            weak_ptr_factory_.GetWeakPtr(), should_force_install_apps,
-            install_start_time,
-            /*install_results=*/
-            std::map<GURL,
-                     web_app::ExternallyManagedAppManager::InstallResult>(),
-            /*uninstall_results=*/std::map<GURL, bool>()));
-
-    return;
+  if (skip_app_installation_in_test_ &&
+      base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kTestType)) {
+    install_options_list.clear();
   }
+
   provider_->externally_managed_app_manager().SynchronizeInstalledApps(
       std::move(install_options_list),
       web_app::ExternalInstallSource::kSystemInstalled,
@@ -406,9 +396,32 @@ void SystemWebAppManager::Shutdown() {
 }
 
 void SystemWebAppManager::InstallSystemAppsForTesting() {
-  on_apps_synchronized_ = std::make_unique<base::OneShotEvent>();
-  on_tasks_started_ = std::make_unique<base::OneShotEvent>();
-  on_icon_check_completed_ = std::make_unique<base::OneShotEvent>();
+  {
+    // If system web app manager is still starting (explained below), we need
+    // to wait until it finishes before we can reset the states. This is to
+    // ensure the app synchronization request to web app system is complete
+    // before issuing another one in Start().
+    //
+    // In browser tests, SystemWebAppManager starts immediately after
+    // WebAppProvider is ready and calls SynchronizeInstalledApps.
+    //
+    // SynchronizeInstalledApps asynchronously handles the install request
+    // (awaits on web app system lock). If this operation isn't complete before
+    // test body starts, we'll issue a second SynchronizeInstalledApps request
+    // and violates the expectation (in web app system) that there can be only
+    // one in-flight synchronize request for each app install source.
+    //
+    // TODO(https://crbug.com/1400853): Ensure browsertests sets up system apps
+    // before SystemWebAppManager::Start(). Then, remove this method (or
+    // restrict its use to system web app feature test that needs to simulate
+    // system restart).
+    base::RunLoop run_loop;
+    on_apps_synchronized().Post(FROM_HERE, run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
+  ResetForTesting();  // IN-TEST
+
   skip_app_installation_in_test_ = false;
   Start();
 
@@ -557,10 +570,13 @@ void SystemWebAppManager::SetUpdatePolicyForTesting(UpdatePolicy policy) {
 }
 
 void SystemWebAppManager::ResetForTesting() {
+  CHECK_IS_TEST();
   StopBackgroundTasks();
+  tasks_.clear();
   icon_checker_ = SystemWebAppIconChecker::Create(profile_);
   on_apps_synchronized_ = std::make_unique<base::OneShotEvent>();
   on_icon_check_completed_ = std::make_unique<base::OneShotEvent>();
+  on_tasks_started_ = std::make_unique<base::OneShotEvent>();
 }
 
 const base::Version& SystemWebAppManager::CurrentVersion() const {
