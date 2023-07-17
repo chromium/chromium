@@ -84,5 +84,9 @@ PASS Join and leave interest group: Oversized interest group dictionary
 PASS Join same interest group overwrites old matching group.
 PASS Leaving interest group actually leaves interest group.
 PASS Leave an interest group that was never joined.
+PASS Interest group duration.
+PASS Interest group duration of -600.
+PASS Interest group test with overwritten duration.
+PASS Interest group test with overwritten duration of -600.
 Harness: the test ran to completion.
 
