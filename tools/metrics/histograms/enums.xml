@@ -11470,6 +11470,16 @@ Called by update_bad_message_reasons.py.-->
   <int value="4" label="Failed writing to file"/>
 </enum>
 
+<enum name="BlockStateMetric">
+  <int value="0" label="Denied by Default"/>
+  <int value="1" label="mailto: Allowed by Default"/>
+  <int value="2" label="news:/snews: Allowed by Default"/>
+  <int value="3" label="news:/snews: Not a Default"/>
+  <int value="4" label="Allowed by Enterprise Policy"/>
+  <int value="5" label="Allowed by User Preference"/>
+  <int value="6" label="Prompt"/>
+</enum>
+
 <enum name="BlockStatusForClient3DAPIs">
   <summary>The reason WebGL / Pepper3D were blocked, or not.</summary>
   <int value="0" label="BLOCK_STATUS_NOT_BLOCKED"/>

@@ -92,6 +92,22 @@ chromium-metrics-reviews@google.com.
   <variant name="Notifications"/>
 </variants>
 
+<histogram name="BrowserDialogs.ExternalProtocol.BlockState"
+    enum="BlockStateMetric" expires_after="2024-04-12">
+  <owner>rsesek@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    The observance of external protocol schemes that are denied or allowed by
+    default built-in lists, enterprise policy, or user preference.
+
+    The kAllowedDefaultNews and kNewsNotDefault values are influenced by the
+    PromptForExternalNewsSchemes feature. When enabled, kNewsNotDefault will be
+    emtited with another histogram value to indicate whether it was allowed by
+    policy, preference, or prompt. When disabled, the kAllowedDefaultNews sample
+    will not be emitted.
+  </summary>
+</histogram>
+
 <histogram name="BrowserDialogs.ExternalProtocol.HandleState"
     enum="HandleStateType" expires_after="2023-05-01">
   <owner>engedy@chromium.org</owner>
