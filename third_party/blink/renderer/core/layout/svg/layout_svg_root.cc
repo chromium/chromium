@@ -90,12 +90,6 @@ void LayoutSVGRoot::UnscaledIntrinsicSizingInfo(
       intrinsic_sizing_info.aspect_ratio = view_box_size;
     }
   }
-  EAspectRatioType ar_type = StyleRef().AspectRatio().GetType();
-  if (ar_type == EAspectRatioType::kRatio ||
-      (ar_type == EAspectRatioType::kAutoAndRatio &&
-       intrinsic_sizing_info.aspect_ratio.IsEmpty())) {
-    intrinsic_sizing_info.aspect_ratio = StyleRef().AspectRatio().GetRatio();
-  }
 
   if (!IsHorizontalWritingMode())
     intrinsic_sizing_info.Transpose();
