@@ -1972,14 +1972,6 @@ CrFullscreenState CrFullscreenStateFromWKFullscreenState(
   [self didStartLoading];
 }
 
-- (void)webRequestControllerDisableNavigationGesturesUntilFinishNavigation:
-    (CRWWebRequestController*)requestController {
-  // Disable `allowsBackForwardNavigationGestures` during restore. Otherwise,
-  // WebKit will trigger a snapshot for each (blank) page, and quickly
-  // overload system memory.
-  self.webView.allowsBackForwardNavigationGestures = NO;
-}
-
 - (CRWWKNavigationHandler*)webRequestControllerNavigationHandler:
     (CRWWebRequestController*)requestController {
   return self.navigationHandler;

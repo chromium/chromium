@@ -513,14 +513,8 @@ void NavigationManagerImpl::SetWKWebViewNextPendingUrlNotSerializable(
   next_pending_url_should_skip_serialization_ = url;
 }
 
-bool NavigationManagerImpl::RestoreNativeSession(const GURL& url) {
+void NavigationManagerImpl::RestoreNativeSession() {
   DCHECK(is_restore_session_in_progress_);
-
-  GURL targetURL;
-  if (!web::wk_navigation_util::IsRestoreSessionUrl(url) ||
-      web::wk_navigation_util::ExtractTargetURL(url, &targetURL)) {
-    return false;
-  }
 
   // Try to load session data blob from each registered source in order,
   // stopping at the first that is successfully loaded.
@@ -537,7 +531,8 @@ bool NavigationManagerImpl::RestoreNativeSession(const GURL& url) {
   }
 
   if (!success) {
-    return false;
+    DUMP_WILL_BE_CHECK(false);
+    return;
   }
 
   // Native restore worked, abort unsafe restore.
@@ -554,7 +549,6 @@ bool NavigationManagerImpl::RestoreNativeSession(const GURL& url) {
   }
   restored_visible_item_.reset();
   FinalizeSessionRestore();
-  return true;
 }
 
 void NavigationManagerImpl::RemoveTransientURLRewriters() {

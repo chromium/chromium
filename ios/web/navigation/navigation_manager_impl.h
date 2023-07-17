@@ -185,8 +185,9 @@ class NavigationManagerImpl final : public NavigationManager {
   // matches `url`.  Applies the workaround for crbug.com/997182
   void SetWKWebViewNextPendingUrlNotSerializable(const GURL& url);
 
-  // Returns true if URL was restored via the native WKWebView API.
-  bool RestoreNativeSession(const GURL& url);
+  // Restores the session using the native WKWebView API from the sources
+  // appended with `AppendSessionDataBlobFetcher`.
+  void RestoreNativeSession();
 
   // Resets the transient url rewriter list.
   void RemoveTransientURLRewriters();

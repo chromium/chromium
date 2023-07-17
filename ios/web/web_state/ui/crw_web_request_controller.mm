@@ -499,13 +499,8 @@ enum class BackForwardNavigationType {
                     rendererInitiated:NO];
 
   if (self.navigationManagerImpl->IsRestoreSessionInProgress()) {
-    if (self.navigationManagerImpl->RestoreNativeSession(navigationURL)) {
-      // Return early if the session was restored via native API.
-      return;
-    }
-    [self.delegate
-        webRequestControllerDisableNavigationGesturesUntilFinishNavigation:
-            self];
+    self.navigationManagerImpl->RestoreNativeSession();
+    return;
   }
 
   WKNavigation* navigation = nil;
