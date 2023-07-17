@@ -110,13 +110,7 @@ class GlanceablesClassroomClientImpl : public GlanceablesClassroomClient {
 
   using CourseWorkInfo =
       base::flat_map<std::string, GlanceablesClassroomCourseWorkItem>;
-  // Done callback for fetching all course work items in a course.
-  using FetchCourseWorkCallback =
-      base::OnceCallback<void(const CourseWorkInfo& course_work)>;
-
-  // Done callback for fetching all student submissions in a course.
-  using FetchStudentSubmissionsCallback =
-      base::OnceCallback<void(const CourseWorkInfo& student_submissions)>;
+  using CourseWorkPerCourse = base::flat_map<std::string, CourseWorkInfo>;
 
   enum class FetchStatus { kNotFetched, kFetching, kFetched };
 
@@ -130,7 +124,7 @@ class GlanceablesClassroomClientImpl : public GlanceablesClassroomClient {
   // means that handling of different course work pages may overlap.
   class CourseWorkRequest {
    public:
-    explicit CourseWorkRequest(FetchCourseWorkCallback callback);
+    explicit CourseWorkRequest(base::OnceClosure callback);
     CourseWorkRequest(const CourseWorkRequest&) = delete;
     CourseWorkRequest& operator=(const CourseWorkRequest&) = delete;
     ~CourseWorkRequest();
@@ -148,10 +142,10 @@ class GlanceablesClassroomClientImpl : public GlanceablesClassroomClient {
     // Returns whether the callback was run. If the callback is run, the object
     // can be discarded. and `RespondIfComplete()` should not be called any
     // longer.
-    bool RespondIfComplete(const CourseWorkInfo& course_work);
+    bool RespondIfComplete();
 
    private:
-    FetchCourseWorkCallback callback_;
+    base::OnceClosure callback_;
     int pending_page_requests_ = 0;
   };
 
@@ -161,18 +155,22 @@ class GlanceablesClassroomClientImpl : public GlanceablesClassroomClient {
   void FetchTeacherCourses(FetchCoursesCallback callback);
 
   // Fetches all course work items for the specified `course_id` and invokes
-  // `callback` when done.
+  // `callback` when done. The course work information is saved in
+  // `course_work`.
   void FetchCourseWork(const std::string& course_id,
                        bool fetch_submissions,
-                       FetchCourseWorkCallback callback);
+                       CourseWorkPerCourse& course_work,
+                       base::OnceClosure callback);
 
   // Fetches all student submissions for the specified `course_id` and
   // `course_work_id` and invokes `callback` when done.
   // To requests student submissions for all course work item in the course,
   // pass in `course_work_id` value "-".
+  // The fetched student submissions get added to `course_work` map.
   void FetchStudentSubmissions(const std::string& course_id,
                                const std::string& course_work_id,
-                               FetchStudentSubmissionsCallback callback);
+                               CourseWorkPerCourse& course_work,
+                               base::OnceClosure callback);
 
   // Delays executing `callback` until all student data are fetched.
   void InvokeOnceStudentDataFetched(base::OnceClosure callback);
@@ -217,8 +215,11 @@ class GlanceablesClassroomClientImpl : public GlanceablesClassroomClient {
   // Callback for `FetchStudentCourses()` or `FetchTeacherCourses()`. Triggers
   // fetching course work and student submissions for fetched `courses` and
   // invokes `on_course_work_and_student_submissions_fetched` when done.
+  // `course_work` is the map where course work and student submissions whose
+  // fetch gets requested should be saved.
   void OnCoursesFetched(
       bool fetch_submissions_per_course_work,
+      CourseWorkPerCourse& course_work,
       base::OnceClosure on_course_work_and_student_submissions_fetched,
       const CourseList& courses);
 
@@ -234,10 +235,12 @@ class GlanceablesClassroomClientImpl : public GlanceablesClassroomClient {
   //                       each course work item. For student glanceables,
   //                       student submissions will be fetched independently
   //                       all at once.
+  // `course_work` - The map where fetched course work info is to be saved.
   void FetchCourseWorkPage(int request_id,
                            const std::string& course_id,
                            const std::string& page_token,
-                           bool fetch_submissions);
+                           bool fetch_submissions,
+                           CourseWorkPerCourse& course_work);
 
   // Callback for `FetchCourseWorkPage()`. If `next_page_token()` in the
   // `result` is not empty - calls another `FetchCourseWorkPage()`, otherwise
@@ -246,6 +249,7 @@ class GlanceablesClassroomClientImpl : public GlanceablesClassroomClient {
       int request_id,
       const std::string& course_id,
       bool fetch_submissions,
+      CourseWorkPerCourse& course_work,
       const base::Time& request_start_time,
       base::expected<std::unique_ptr<google_apis::classroom::CourseWork>,
                      google_apis::ApiErrorCode> result);
@@ -256,9 +260,10 @@ class GlanceablesClassroomClientImpl : public GlanceablesClassroomClient {
   //                    request student submissions for all course work in the
   //                    course.
   // `page_token`     - token specifying the result page to return, comes from
-  // the
-  //                    previous fetch request. Use an empty string to fetch the
-  //                    first page.
+  //                    the previous fetch request. Use an empty string to fetch
+  //                    the first page.
+  // `course_work`    - the map where fetched student submissions information
+  //                    gets saved.
   // `callback`       - a callback that runs when all student submissions in a
   //                    course have been fetched. This may require multiple
   //                    fetch requests, in this case `callback` gets called when
@@ -266,7 +271,8 @@ class GlanceablesClassroomClientImpl : public GlanceablesClassroomClient {
   void FetchStudentSubmissionsPage(const std::string& course_id,
                                    const std::string& course_work_id,
                                    const std::string& page_token,
-                                   FetchStudentSubmissionsCallback callback);
+                                   CourseWorkPerCourse& course_work,
+                                   base::OnceClosure callback);
 
   // Callback for `FetchStudentSubmissionsPage()`. If `next_page_token()` in the
   // `result` is not empty - calls another `FetchStudentSubmissionsPage()`,
@@ -274,8 +280,9 @@ class GlanceablesClassroomClientImpl : public GlanceablesClassroomClient {
   void OnStudentSubmissionsPageFetched(
       const std::string& course_id,
       const std::string& course_work_id,
+      CourseWorkPerCourse& course_work,
       const base::Time& request_start_time,
-      FetchStudentSubmissionsCallback callback,
+      base::OnceClosure callback,
       base::expected<
           std::unique_ptr<google_apis::classroom::StudentSubmissions>,
           google_apis::ApiErrorCode> result);
@@ -326,9 +333,10 @@ class GlanceablesClassroomClientImpl : public GlanceablesClassroomClient {
           submission_state_predicate,
       GetAssignmentsCallback callback);
 
-  // Removes all invalid course work items from `course_work_` for courses in
+  // Removes all invalid course work items from `course_work` for courses in
   // the course list.
-  void PruneInvalidCourseWork(const CourseList& courses);
+  void PruneInvalidCourseWork(const CourseList& courses,
+                              CourseWorkPerCourse& course_work);
 
   // Returns lazily initialized `request_sender_`.
   google_apis::RequestSender* GetRequestSender();
@@ -348,7 +356,8 @@ class GlanceablesClassroomClientImpl : public GlanceablesClassroomClient {
   CourseList teacher_courses_;
 
   // All course work information grouped by course id.
-  base::flat_map<std::string, CourseWorkInfo> course_work_;
+  CourseWorkPerCourse student_course_work_;
+  CourseWorkPerCourse teacher_course_work_;
 
   // Fetch status of all student data.
   FetchStatus student_data_fetch_status_ = FetchStatus::kNotFetched;
