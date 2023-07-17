@@ -2685,6 +2685,27 @@
             ]
         }
     ],
+    "Canvas2DAutoFlushParams": [
+        {
+            "platforms": [
+                "mac",
+                "windows",
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Candidate",
+                    "params": {
+                        "max_pinned_image_kb": "32768",
+                        "max_recorded_op_kb": "2048"
+                    },
+                    "enable_features": [
+                        "Canvas2DAutoFlushParams"
+                    ]
+                }
+            ]
+        }
+    ],
     "Canvas2DHibernationMac": [
         {
             "platforms": [
