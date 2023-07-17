@@ -28,32 +28,23 @@ ENUM(PermissionType,
      kPrinting,
      kFileHandling)
 
-ENUM(TriState, kAllow, kBlock, kAsk)
-
-// The permission value could be a TriState or a bool
-struct COMPONENT_EXPORT(APP_TYPES) PermissionValue {
-  explicit PermissionValue(bool bool_value);
-  explicit PermissionValue(TriState tristate_value);
-  PermissionValue(const PermissionValue&) = delete;
-  PermissionValue& operator=(const PermissionValue&) = delete;
-  ~PermissionValue();
-
-  bool operator==(const PermissionValue& other) const;
-
-  std::unique_ptr<PermissionValue> Clone() const;
-
-  // Checks whether this is equal to permission enabled. If it is TriState, only
-  // Allow represent permission enabled.
-  bool IsPermissionEnabled() const;
-
-  absl::variant<bool, TriState> value;
-};
-
-using PermissionValuePtr = std::unique_ptr<PermissionValue>;
+ENUM(TriState,
+     // Access to the permission is allowed.
+     kAllow,
+     // Access to the permission is blocked.
+     kBlock,
+     // The app can ask the user whether to allow the permission. Some
+     // Publishers may allow temporary permission access while in the kAsk state
+     // (e.g. "Only this time" for ARC apps).
+     kAsk)
 
 struct COMPONENT_EXPORT(APP_TYPES) Permission {
+  // The value of a permission can be a TriState or a bool, depending on how the
+  // publisher represents permissions.
+  using PermissionValue = absl::variant<bool, TriState>;
+
   Permission(PermissionType permission_type,
-             PermissionValuePtr value,
+             PermissionValue value,
              bool is_managed,
              absl::optional<std::string> details = absl::nullopt);
   Permission(const Permission&) = delete;
@@ -72,10 +63,9 @@ struct COMPONENT_EXPORT(APP_TYPES) Permission {
   std::string ToString() const;
 
   PermissionType permission_type;
-  std::unique_ptr<PermissionValue> value;
+  PermissionValue value;
   // If the permission is managed by an enterprise policy.
   bool is_managed;
-
   // Human-readable string to provide more detail about the state of a
   // permission. May be displayed next to the permission value in UI surfaces.
   // e.g. a kLocation permission might have `details` of "While in use" or

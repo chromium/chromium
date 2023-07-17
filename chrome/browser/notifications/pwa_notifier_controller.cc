@@ -47,8 +47,7 @@ std::vector<ash::NotifierMetadata> PwaNotifierController::GetNotifierList(
               apps::PermissionType::kNotifications) {
             continue;
           }
-          DCHECK(absl::holds_alternative<apps::TriState>(
-              permission->value->value));
+          DCHECK(absl::holds_alternative<apps::TriState>(permission->value));
           // Do not include notifier metadata for system apps.
           if (update.InstallReason() == apps::InstallReason::kSystem) {
             return;
@@ -94,8 +93,7 @@ void PwaNotifierController::SetNotifierEnabled(
 
   auto permission = std::make_unique<apps::Permission>(
       apps::PermissionType::kNotifications,
-      enabled ? std::make_unique<apps::PermissionValue>(apps::TriState::kAllow)
-              : std::make_unique<apps::PermissionValue>(apps::TriState::kBlock),
+      enabled ? apps::TriState::kAllow : apps::TriState::kBlock,
       /*is_managed=*/false);
   apps::AppServiceProxy* service =
       apps::AppServiceProxyFactory::GetForProfile(profile);

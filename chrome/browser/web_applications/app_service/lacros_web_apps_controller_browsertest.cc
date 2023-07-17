@@ -420,9 +420,9 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, ContentSettings) {
       base::ranges::find(permissions, apps::PermissionType::kCamera,
                          &apps::Permission::permission_type);
   ASSERT_TRUE(camera_permission != permissions.end());
-  EXPECT_TRUE(absl::holds_alternative<apps::TriState>(
-      (*camera_permission)->value->value));
-  EXPECT_EQ(absl::get<apps::TriState>((*camera_permission)->value->value),
+  EXPECT_TRUE(
+      absl::holds_alternative<apps::TriState>((*camera_permission)->value));
+  EXPECT_EQ(absl::get<apps::TriState>((*camera_permission)->value),
             apps::TriState::kAllow);
 }
 

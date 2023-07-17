@@ -192,8 +192,7 @@ apps::Permissions CreatePermissions(
     }
 
     permissions.push_back(std::make_unique<apps::Permission>(
-        GetPermissionType(arc_permission_type),
-        std::make_unique<apps::PermissionValue>(value),
+        GetPermissionType(arc_permission_type), value,
         arc_permission_state->managed, arc_permission_state->details));
   }
   return permissions;

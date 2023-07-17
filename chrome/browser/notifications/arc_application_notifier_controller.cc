@@ -97,8 +97,7 @@ void ArcApplicationNotifierController::SetNotifierEnabled(
 
   last_used_profile_ = profile;
   auto permission = std::make_unique<apps::Permission>(
-      apps::PermissionType::kNotifications,
-      std::make_unique<apps::PermissionValue>(enabled),
+      apps::PermissionType::kNotifications, enabled,
       /*is_managed=*/false);
   apps::AppServiceProxy* service =
       apps::AppServiceProxyFactory::GetForProfile(profile);

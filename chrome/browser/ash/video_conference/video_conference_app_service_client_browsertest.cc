@@ -72,12 +72,10 @@ apps::AppPtr MakeApp(const AppIdString& app_id,
   app->publisher_id = app_id;
 
   app->permissions.push_back(std::make_unique<apps::Permission>(
-      apps::PermissionType::kCamera,
-      std::make_unique<apps::PermissionValue>(has_camera_permission),
+      apps::PermissionType::kCamera, has_camera_permission,
       /*is_managed=*/false));
   app->permissions.push_back(std::make_unique<apps::Permission>(
-      apps::PermissionType::kMicrophone,
-      std::make_unique<apps::PermissionValue>(has_microphone_permission),
+      apps::PermissionType::kMicrophone, has_microphone_permission,
       /*is_managed=*/false));
   return app;
 }

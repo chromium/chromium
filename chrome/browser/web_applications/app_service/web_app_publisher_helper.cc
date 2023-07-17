@@ -589,8 +589,7 @@ apps::Permissions WebAppPublisherHelper::CreatePermissions(
     host_content_settings_map->GetWebsiteSetting(url, url, type, &setting_info);
 
     permissions.push_back(std::make_unique<apps::Permission>(
-        GetPermissionType(type),
-        std::make_unique<apps::PermissionValue>(setting_val),
+        GetPermissionType(type), setting_val,
         /*is_managed=*/setting_info.source ==
             content_settings::SETTING_SOURCE_POLICY));
   }
@@ -598,8 +597,7 @@ apps::Permissions WebAppPublisherHelper::CreatePermissions(
   // File handling permission.
   permissions.push_back(std::make_unique<apps::Permission>(
       apps::PermissionType::kFileHandling,
-      std::make_unique<apps::PermissionValue>(
-          !registrar().IsAppFileHandlerPermissionBlocked(web_app->app_id())),
+      !registrar().IsAppFileHandlerPermissionBlocked(web_app->app_id()),
       /*is_managed=*/false));
 
   return permissions;
@@ -1105,10 +1103,9 @@ void WebAppPublisherHelper::SetPermission(const std::string& app_id,
   }
 
   if (permission->permission_type == apps::PermissionType::kFileHandling) {
-    if (permission->value &&
-        absl::holds_alternative<bool>(permission->value->value)) {
+    if (absl::holds_alternative<bool>(permission->value)) {
       provider_->scheduler().PersistFileHandlersUserChoice(
-          app_id, absl::get<bool>(permission->value->value), base::DoNothing());
+          app_id, absl::get<bool>(permission->value), base::DoNothing());
     }
     return;
   }
@@ -1125,10 +1122,9 @@ void WebAppPublisherHelper::SetPermission(const std::string& app_id,
     return;
   }
 
-  DCHECK(permission->value);
-  DCHECK(absl::holds_alternative<apps::TriState>(permission->value->value));
+  DCHECK(absl::holds_alternative<apps::TriState>(permission->value));
   ContentSetting permission_value = CONTENT_SETTING_DEFAULT;
-  switch (absl::get<apps::TriState>(permission->value->value)) {
+  switch (absl::get<apps::TriState>(permission->value)) {
     case apps::TriState::kAllow:
       permission_value = CONTENT_SETTING_ALLOW;
       break;

@@ -21,17 +21,13 @@ const char test_name_1[] = "Dread Pirate Roberts";
 PermissionPtr MakePermission(PermissionType permission_type,
                              TriState tri_state,
                              bool is_managed) {
-  return std::make_unique<Permission>(
-      permission_type, std::make_unique<PermissionValue>(tri_state),
-      is_managed);
+  return std::make_unique<Permission>(permission_type, tri_state, is_managed);
 }
 
 PermissionPtr MakePermission(PermissionType permission_type,
                              bool bool_value,
                              bool is_managed) {
-  return std::make_unique<Permission>(
-      permission_type, std::make_unique<PermissionValue>(bool_value),
-      is_managed);
+  return std::make_unique<Permission>(permission_type, bool_value, is_managed);
 }
 
 }  // namespace

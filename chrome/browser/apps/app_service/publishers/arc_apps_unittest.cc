@@ -445,13 +445,12 @@ TEST_F(ArcAppsPublisherTest, PublishPermission) {
   base::ranges::sort(result, std::less<>(), &apps::Permission::permission_type);
 
   EXPECT_EQ(result[0]->permission_type, apps::PermissionType::kCamera);
-  EXPECT_EQ(absl::get<apps::TriState>(result[0]->value->value),
-            apps::TriState::kAsk);
+  EXPECT_EQ(absl::get<apps::TriState>(result[0]->value), apps::TriState::kAsk);
   EXPECT_FALSE(result[0]->is_managed);
   EXPECT_EQ(result[0]->details, absl::nullopt);
 
   EXPECT_EQ(result[1]->permission_type, apps::PermissionType::kLocation);
-  EXPECT_TRUE(result[1]->value->IsPermissionEnabled());
+  EXPECT_TRUE(result[1]->IsPermissionEnabled());
   EXPECT_TRUE(result[1]->is_managed);
   EXPECT_EQ(result[1]->details, "While in use");
 }

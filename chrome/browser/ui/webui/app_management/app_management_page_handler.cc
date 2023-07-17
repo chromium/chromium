@@ -418,8 +418,7 @@ void AppManagementPageHandler::SetRunOnOsLoginMode(
 void AppManagementPageHandler::SetFileHandlingEnabled(const std::string& app_id,
                                                       bool enabled) {
   auto permission = std::make_unique<apps::Permission>(
-      apps::PermissionType::kFileHandling,
-      std::make_unique<apps::PermissionValue>(enabled),
+      apps::PermissionType::kFileHandling, enabled,
       /*is_managed=*/false);
   apps::AppServiceProxyFactory::GetForProfile(profile_)->SetPermission(
       app_id, std::move(permission));

@@ -63,9 +63,7 @@ apps::Permissions CreatePermissions(Profile* profile) {
   apps::Permissions permissions;
   for (const PermissionInfo& info : permission_infos) {
     permissions.push_back(std::make_unique<apps::Permission>(
-        info.permission,
-        std::make_unique<apps::PermissionValue>(
-            profile->GetPrefs()->GetBoolean(info.pref_name)),
+        info.permission, profile->GetPrefs()->GetBoolean(info.pref_name),
         /*is_managed=*/false));
   }
   return permissions;
