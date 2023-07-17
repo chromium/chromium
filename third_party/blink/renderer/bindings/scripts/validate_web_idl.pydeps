@@ -54,6 +54,7 @@ web_idl/observable_array.py
 web_idl/operation.py
 web_idl/reference.py
 web_idl/runtime_enabled_features.py
+web_idl/sync_iterator.py
 web_idl/typedef.py
 web_idl/union.py
 web_idl/user_defined_type.py

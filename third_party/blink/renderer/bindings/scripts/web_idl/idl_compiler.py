@@ -28,7 +28,6 @@ from .idl_type import IdlType
 from .idl_type import IdlTypeFactory
 from .interface import Interface
 from .interface import LegacyWindowAlias
-from .interface import SyncIterator
 from .ir_map import IRMap
 from .make_copy import make_copy
 from .namespace import Namespace
@@ -36,6 +35,7 @@ from .observable_array import ObservableArray
 from .operation import Operation
 from .operation import OperationGroup
 from .reference import RefByIdFactory
+from .sync_iterator import SyncIterator
 from .typedef import Typedef
 from .union import Union
 from .user_defined_type import StubUserDefinedType
