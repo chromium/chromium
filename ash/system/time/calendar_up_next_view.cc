@@ -312,6 +312,7 @@ void CalendarUpNextView::UpdateEvents(
             /*event=*/event, /*ui_params=*/
             UIParams{/*round_top_corners=*/true,
                      /*round_bottom_corners=*/true,
+                     /*is_up_next_event_list_item=*/true,
                      /*show_event_list_dot=*/false,
                      /*fixed_width=*/kLabelFullWidth},
             /*event_list_item_index=*/
@@ -343,6 +344,7 @@ void CalendarUpNextView::UpdateEvents(
             /*event=*/*it,
             /*ui_params=*/
             UIParams{/*round_top_corners=*/true, /*round_bottom_corners=*/true,
+                     /*is_up_next_event_list_item=*/true,
                      /*show_event_list_dot=*/false,
                      /*fixed_width=*/kLabelCappedWidth},
             /*event_list_item_index=*/

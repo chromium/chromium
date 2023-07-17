@@ -249,6 +249,7 @@ std::unique_ptr<views::View> CalendarEventListView::CreateChildEventListView(
         /*ui_params=*/
         UIParams{/*round_top_corners=*/it == events.begin(),
                  /*round_bottom_corners=*/it->id() == events.rbegin()->id(),
+                 /*is_up_next_event_list_item=*/false,
                  /*show_event_list_dot=*/true,
                  /*fixed_width=*/0},
         /*event_list_item_index=*/
