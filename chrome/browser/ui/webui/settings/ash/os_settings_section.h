@@ -12,7 +12,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
-#include "chrome/browser/ui/webui/settings/ash/search/search.mojom.h"
+#include "chrome/browser/ui/webui/settings/ash/search/mojom/search.mojom.h"
 #include "chrome/browser/ui/webui/settings/ash/search/search_concept.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/setting.mojom.h"

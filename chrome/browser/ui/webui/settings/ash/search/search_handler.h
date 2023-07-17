@@ -9,7 +9,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ui/webui/settings/ash/search/search.mojom.h"
+#include "chrome/browser/ui/webui/settings/ash/search/mojom/search.mojom.h"
 #include "chrome/browser/ui/webui/settings/ash/search/search_tag_registry.h"
 #include "chromeos/ash/components/local_search_service/public/cpp/local_search_service_proxy.h"
 #include "chromeos/ash/components/local_search_service/public/mojom/index.mojom.h"

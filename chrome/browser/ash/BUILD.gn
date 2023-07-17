@@ -5894,7 +5894,7 @@ source_set("unit_tests") {
     "//chrome/browser/ui/ash/holding_space:test_support",
     "//chrome/browser/ui/webui/settings/ash/input_device_settings:mojom",
     "//chrome/browser/ui/webui/settings/ash/os_apps_page/mojom",
-    "//chrome/browser/ui/webui/settings/ash/search:mojo_bindings",
+    "//chrome/browser/ui/webui/settings/ash/search/mojom",
     "//chrome/browser/ui/webui/settings/chromeos/constants:mojom",
     "//chrome/browser/web_applications",
     "//chrome/browser/web_applications:web_applications_test_support",

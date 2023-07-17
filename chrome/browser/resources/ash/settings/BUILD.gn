@@ -438,7 +438,7 @@ build_webui("build") {
     "//chrome/browser/ui/webui/settings/ash/files_page/mojom:mojom_ts__generator",
     "//chrome/browser/ui/webui/settings/ash/input_device_settings:mojom_ts__generator",
     "//chrome/browser/ui/webui/settings/ash/os_apps_page/mojom:mojom_ts__generator",
-    "//chrome/browser/ui/webui/settings/ash/search:mojo_bindings_ts__generator",
+    "//chrome/browser/ui/webui/settings/ash/search/mojom:mojom_ts__generator",
     "//chrome/browser/ui/webui/settings/chromeos/constants:mojom_ts__generator",
     "//chromeos/ash/components/audio/public/mojom:mojom_ts__generator",
     "//chromeos/ash/components/drivefs/mojom:pin_manager_types_ts__generator",
@@ -450,9 +450,9 @@ build_webui("build") {
     "$root_gen_dir/chrome/browser/ui/webui/settings/ash/files_page/mojom/one_drive_handler.mojom-webui.ts",
     "$root_gen_dir/chrome/browser/ui/webui/settings/ash/input_device_settings/input_device_settings_provider.mojom-webui.ts",
     "$root_gen_dir/chrome/browser/ui/webui/settings/ash/os_apps_page/mojom/app_notification_handler.mojom-webui.ts",
-    "$root_gen_dir/chrome/browser/ui/webui/settings/ash/search/search.mojom-webui.ts",
-    "$root_gen_dir/chrome/browser/ui/webui/settings/ash/search/search_result_icon.mojom-webui.ts",
-    "$root_gen_dir/chrome/browser/ui/webui/settings/ash/search/user_action_recorder.mojom-webui.ts",
+    "$root_gen_dir/chrome/browser/ui/webui/settings/ash/search/mojom/search.mojom-webui.ts",
+    "$root_gen_dir/chrome/browser/ui/webui/settings/ash/search/mojom/search_result_icon.mojom-webui.ts",
+    "$root_gen_dir/chrome/browser/ui/webui/settings/ash/search/mojom/user_action_recorder.mojom-webui.ts",
     "$root_gen_dir/chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom-webui.ts",
     "$root_gen_dir/chrome/browser/ui/webui/settings/chromeos/constants/setting.mojom-webui.ts",
     "$root_gen_dir/chromeos/ash/components/audio/public/mojom/cros_audio_config.mojom-webui.ts",
@@ -548,9 +548,9 @@ build_webui("build") {
 
 # Need to rename gen/ash/webui/personalization_app/search/search.mojom-webui.ts
 # to personalization_search.mojom-webui.ts to avoid a naming collision with
-# gen/chrome/browser/ui/webui/settings/ash/search/search.mojom-webui.ts", before
-# passing it to build_webui(), since the latter places all Mojo files in the
-# same folder, and expects all Mojo files to have unique names.
+# gen/chrome/browser/ui/webui/settings/ash/search/mojom/search.mojom-webui.ts",
+# before passing it to build_webui(), since the latter places all Mojo files in
+# the same folder, and expects all Mojo files to have unique names.
 copy("rename_personalization_search_mojom") {
   deps =
       [ "//ash/webui/personalization_app/search:mojo_bindings_ts__generator" ]

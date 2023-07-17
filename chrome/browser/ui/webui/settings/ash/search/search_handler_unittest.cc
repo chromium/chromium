@@ -9,7 +9,7 @@
 #include "base/test/task_environment.h"
 #include "chrome/browser/ui/webui/settings/ash/fake_hierarchy.h"
 #include "chrome/browser/ui/webui/settings/ash/fake_os_settings_sections.h"
-#include "chrome/browser/ui/webui/settings/ash/search/search.mojom-test-utils.h"
+#include "chrome/browser/ui/webui/settings/ash/search/mojom/search.mojom-test-utils.h"
 #include "chrome/browser/ui/webui/settings/ash/search/search_tag_registry.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
 #include "chrome/grit/generated_resources.h"
