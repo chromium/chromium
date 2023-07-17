@@ -17,6 +17,9 @@ namespace ash {
 DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(ASH_EXPORT,
                                           kAppListBubbleViewElementId);
 
+DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(ASH_EXPORT,
+                                          kBluetoothFeatureTileToggleElementId);
+
 // Uniquely identifies an element corresponding to the Explore app. Note that
 // this may be used in multiple contexts (e.g. app window, launcher, shelf,
 // etc.), so care must be taken to use the desired context when looking up the
@@ -29,6 +32,9 @@ DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(ASH_EXPORT,
 
 // Uniquely identifies the home (launcher) button.
 DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(ASH_EXPORT, kHomeButtonElementId);
+
+DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(ASH_EXPORT,
+                                          kQuickSettingsViewElementId);
 
 // Uniquely identifies the `SearchBoxView`.
 DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(ASH_EXPORT, kSearchBoxViewElementId);

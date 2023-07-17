@@ -957,6 +957,9 @@ if (is_chromeos && is_chromeos_device) {
       "base/chromeos/crosint/demo_integration_test.cc",
     ]
     deps = [ ":test_support" ]
+    if (is_chromeos_ash) {
+      sources += [ "../browser/ash/bluetooth/bluetooth_integration_test.cc" ]
+    }
   }
 }
 
@@ -10424,6 +10427,7 @@ if (!is_android) {
       }
       if (is_chromeos_ash) {
         sources += [
+          "../browser/ash/bluetooth/bluetooth_integration_test.cc",
           "../browser/ui/ash/app_list/app_list_interactive_uitest.cc",
           "../browser/ui/ash/user_education/welcome_tour/welcome_tour_interactive_uitest.cc",
           "../browser/ui/web_applications/test/system_web_app_interactive_uitest.cc",
