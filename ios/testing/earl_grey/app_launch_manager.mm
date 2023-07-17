@@ -149,8 +149,6 @@ bool LaunchArgumentsAreEqual(NSArray<NSString*>* args1,
   }
 
   if (appIsRunning) {
-    [CoverageUtils writeClangCoverageProfile];
-
     if (gracefullyKill) {
       GREYAssertTrue([self backgroundApplication],
                      @"Failed to background application.");

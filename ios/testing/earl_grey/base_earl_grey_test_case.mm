@@ -91,10 +91,6 @@ bool g_needs_set_up_for_test_case = true;
     DCHECK(!screen->HasDisplayObservers());
   }
 #endif
-  if ([[AppLaunchManager sharedManager] appIsLaunched]) {
-    [CoverageUtils writeClangCoverageProfile];
-    [CoverageUtils resetCoverageProfileCounters];
-  }
   g_needs_set_up_for_test_case = true;
   [super tearDown];
 }
