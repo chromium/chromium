@@ -740,7 +740,6 @@ component("views") {
       "accessibility/ax_window_obj_wrapper.h",
       "controls/native/native_view_host_aura.h",
       "corewm/tooltip.h",
-      "corewm/tooltip_aura.h",
       "corewm/tooltip_controller.h",
       "corewm/tooltip_state_manager.h",
       "corewm/tooltip_view_aura.h",
@@ -771,7 +770,6 @@ component("views") {
       "controls/menu/menu_pre_target_handler_aura.cc",
       "controls/menu/menu_pre_target_handler_aura.h",
       "controls/native/native_view_host_aura.cc",
-      "corewm/tooltip_aura.cc",
       "corewm/tooltip_controller.cc",
       "corewm/tooltip_state_manager.cc",
       "corewm/tooltip_view_aura.cc",
@@ -798,8 +796,10 @@ component("views") {
     }
     if (is_chromeos_lacros) {
       public += [ "corewm/tooltip_lacros.h" ]
-
       sources += [ "corewm/tooltip_lacros.cc" ]
+    } else {
+      public += [ "corewm/tooltip_aura.h" ]
+      sources += [ "corewm/tooltip_aura.cc" ]
     }
     deps += [
       "//ui/aura",

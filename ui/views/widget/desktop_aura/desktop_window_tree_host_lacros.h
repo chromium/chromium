@@ -71,7 +71,6 @@ class VIEWS_EXPORT DesktopWindowTreeHostLacros
   void AddAdditionalInitProperties(
       const Widget::InitParams& params,
       ui::PlatformWindowInitProperties* properties) override;
-  std::unique_ptr<corewm::Tooltip> CreateTooltip() override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(DesktopWindowTreeHostPlatformImplTestWithTouch,

@@ -19,9 +19,7 @@
 #include "ui/platform_window/platform_window.h"
 #include "ui/platform_window/platform_window_init_properties.h"
 #include "ui/platform_window/wm/wm_move_resize_handler.h"
-#include "ui/views/corewm/tooltip_aura.h"
 #include "ui/views/corewm/tooltip_controller.h"
-#include "ui/views/corewm/tooltip_lacros.h"
 #include "ui/views/views_delegate.h"
 #include "ui/views/widget/desktop_aura/desktop_native_widget_aura.h"
 #include "ui/views/widget/desktop_aura/window_event_filter_lacros.h"
@@ -138,18 +136,6 @@ void DesktopWindowTreeHostLacros::AddAdditionalInitProperties(
     ui::PlatformWindowInitProperties* properties) {
   properties->icon = ViewsDelegate::GetInstance()->GetDefaultWindowIcon();
   properties->wayland_app_id = params.wayland_app_id;
-}
-
-std::unique_ptr<corewm::Tooltip> DesktopWindowTreeHostLacros::CreateTooltip() {
-  // TODO(crbug.com/1338597): Remove TooltipAura from Lacros when Ash is new
-  // enough.
-  if (ui::OzonePlatform::GetInstance()
-          ->GetPlatformRuntimeProperties()
-          .supports_tooltip) {
-    return std::make_unique<views::corewm::TooltipLacros>();
-  }
-  // Fallback to TooltipAura if wayland version is not new enough.
-  return std::make_unique<views::corewm::TooltipAura>();
 }
 
 void DesktopWindowTreeHostLacros::CreateNonClientEventFilter() {
