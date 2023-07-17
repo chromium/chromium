@@ -18376,6 +18376,16 @@ Called by update_net_error_codes.py.-->
   <int value="3" label="Clicked"/>
 </enum>
 
+<enum name="Companion.VisualQuery.InitStatus">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Success"/>
+  <int value="2" label="Empty render frame"/>
+  <int value="3" label="Already started"/>
+  <int value="4" label="Model unavailable"/>
+  <int value="5" label="Mismatched URL"/>
+  <int value="6" label="IPC not made"/>
+</enum>
+
 <enum name="CompanionLibraryApisList">
 <!-- Value from components/arc/mojom/metrics.mojom -->
 

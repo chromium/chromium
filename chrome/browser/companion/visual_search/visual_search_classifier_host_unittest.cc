@@ -16,6 +16,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/time/time.h"
 #include "chrome/browser/companion/visual_search/features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -28,6 +29,7 @@
 #include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
+#include "services/metrics/public/cpp/ukm_source.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -47,6 +49,12 @@ base::FilePath model_file_path() {
       .AppendASCII("test-model-quantized.tflite");
 }
 
+const SkBitmap create_bitmap(int width, int height, int r, int g, int b) {
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(width, height);
+  bitmap.eraseARGB(255, r, g, b);
+  return bitmap;
+}
 }  // namespace
 
 class VisualSearchClassifierHostTest : public ChromeRenderViewHostTestHarness {
@@ -117,7 +125,17 @@ TEST_F(VisualSearchClassifierHostTest, StartClassification) {
   histogram_tester_.ExpectBucketCount("Companion.VisualSearch.ModelFileSuccess",
                                       true, 1);
   histogram_tester_.ExpectBucketCount(
+      "Companion.VisualQuery.ClassifierModelAvailable", true, 1);
+  histogram_tester_.ExpectBucketCount(
+      "Companion.VisualQuery.ClassificationInitStatus",
+      companion::visual_search::InitStatus::kSuccess, 1);
+  histogram_tester_.ExpectBucketCount(
       "Companion.VisualSearch.StartClassificationSuccess", true, 1);
+  histogram_tester_.ExpectTotalCount(
+      "Companion.VisualQuery.ClassifierInitializationLatency", 1);
+  // ClassificationLatency is not recorded until HandleClassification().
+  histogram_tester_.ExpectTotalCount(
+      "Companion.VisualQuery.ClassificationLatency", 0);
 }
 
 TEST_F(VisualSearchClassifierHostTest, StartClassification_WithOverride) {
@@ -133,7 +151,17 @@ TEST_F(VisualSearchClassifierHostTest, StartClassification_WithOverride) {
   histogram_tester_.ExpectBucketCount("Companion.VisualSearch.ModelFileSuccess",
                                       true, 1);
   histogram_tester_.ExpectBucketCount(
+      "Companion.VisualQuery.ClassifierModelAvailable", true, 1);
+  histogram_tester_.ExpectBucketCount(
+      "Companion.VisualQuery.ClassificationInitStatus",
+      companion::visual_search::InitStatus::kSuccess, 1);
+  histogram_tester_.ExpectBucketCount(
       "Companion.VisualSearch.StartClassificationSuccess", true, 1);
+  histogram_tester_.ExpectTotalCount(
+      "Companion.VisualQuery.ClassifierInitializationLatency", 1);
+  // ClassificationLatency is not recorded until HandleClassification().
+  histogram_tester_.ExpectTotalCount(
+      "Companion.VisualQuery.ClassificationLatency", 0);
 }
 
 TEST_F(VisualSearchClassifierHostTest, StartClassification_NoModelSet) {
@@ -147,6 +175,15 @@ TEST_F(VisualSearchClassifierHostTest, StartClassification_NoModelSet) {
   // called by the |service_| since we never setup the model path.
   histogram_tester_.ExpectTotalCount("Companion.VisualSearch.ModelFileSuccess",
                                      0);
+  // The following calls are not made for the same reason as above.
+  histogram_tester_.ExpectTotalCount(
+      "Companion.VisualQuery.ClassifierModelAvailable", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Companion.VisualQuery.ClassificationInitStatus", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Companion.VisualQuery.ClassifierInitializationLatency", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Companion.VisualQuery.ClassificationLatency", 0);
 }
 
 TEST_F(VisualSearchClassifierHostTest, StartClassification_WithCancellation) {
@@ -158,12 +195,49 @@ TEST_F(VisualSearchClassifierHostTest, StartClassification_WithCancellation) {
   GURL url("https://foo.bar");
   visual_search_host_->CancelClassification(url);
   base::RunLoop().RunUntilIdle();
+
   histogram_tester_.ExpectBucketCount(
       "Companion.VisualSearch.ClassificationCancelled", true, 1);
   histogram_tester_.ExpectBucketCount("Companion.VisualSearch.ModelFileSuccess",
                                       true, 1);
+  histogram_tester_.ExpectBucketCount(
+      "Companion.VisualQuery.ClassifierModelAvailable", true, 1);
   histogram_tester_.ExpectBucketCount("Companion.VisualSearch.MismatchURL",
                                       true, 1);
+  histogram_tester_.ExpectBucketCount(
+      "Companion.VisualQuery.ClassificationInitStatus",
+      companion::visual_search::InitStatus::kMismatchedUrl, 1);
+  histogram_tester_.ExpectTotalCount(
+      "Companion.VisualQuery.ClassifierInitializationLatency", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Companion.VisualQuery.ClassificationLatency", 0);
+}
+
+TEST_F(VisualSearchClassifierHostTest, HandleClassification) {
+  SetModelPath();
+  VisualSearchClassifierHost::ResultCallback callback = base::BindOnce(
+      [](std::vector<std::string> results) { EXPECT_EQ(results.size(), 1U); });
+  visual_search_host_->StartClassification(
+      web_contents()->GetPrimaryMainFrame(), url_, std::move(callback));
+  std::vector<mojom::VisualSearchSuggestionPtr> results;
+  SkBitmap result = create_bitmap(1000, 1000, 128, 128, 255);
+  results.emplace_back(mojom::VisualSearchSuggestion::New(result));
+
+  visual_search_host_->HandleClassification(std::move(results));
+  base::RunLoop().RunUntilIdle();
+  histogram_tester_.ExpectBucketCount(
+      "Companion.VisualSearch.ClassificationResultsSize", true, 1);
+  histogram_tester_.ExpectBucketCount(
+      "Companion.VisualQuery.ClassifierModelAvailable", true, 1);
+  histogram_tester_.ExpectBucketCount(
+      "Companion.VisualQuery.ClassificationInitStatus",
+      companion::visual_search::InitStatus::kSuccess, 1);
+  histogram_tester_.ExpectTotalCount(
+      "Companion.VisualSearch.EndClassificationSuccess", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Companion.VisualQuery.ClassifierInitializationLatency", 1);
+  histogram_tester_.ExpectTotalCount(
+      "Companion.VisualQuery.ClassificationLatency", 1);
 }
 
 }  // namespace companion::visual_search

@@ -5,6 +5,8 @@
 #include "chrome/browser/companion/visual_search/visual_search_classifier_host.h"
 
 #include "base/base64.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/metrics/histogram_macros_local.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/companion/visual_search/features.h"
@@ -75,6 +77,14 @@ void VisualSearchClassifierHost::HandleClassification(
                             !result_callback_.is_null());
     std::move(result_callback_).Run(std::move(data_uris));
   }
+  // Log latency from the time the companion page handler called
+  // StartClassification to now, after the classification results have been
+  // passed to the callback.
+  base::UmaHistogramTimes("Companion.VisualQuery.ClassificationLatency",
+                          base::TimeTicks::Now() - classification_start_time_);
+  // Reset the start time tracker. It will be set again the next time
+  // StartClassification is run.
+  classification_start_time_ = base::TimeTicks();
   result_callback_.Reset();
   result_handler_.reset();
 }
@@ -83,8 +93,23 @@ void VisualSearchClassifierHost::StartClassification(
     content::RenderFrameHost* render_frame_host,
     const GURL& validated_url,
     ResultCallback callback) {
+  // Start time is used to compute duration of classifier init and of
+  // the overall classification.
+  classification_start_time_ = base::TimeTicks::Now();
   if (!render_frame_host) {
     LOCAL_HISTOGRAM_BOOLEAN("Companion.VisualSearch.EmptyRenderFrame", true);
+    base::UmaHistogramEnumeration(
+        "Companion.VisualQuery.ClassificationInitStatus",
+        InitStatus::kEmptyRenderFrame);
+    return;
+  }
+
+  if (validated_url == current_url_) {
+    LOCAL_HISTOGRAM_BOOLEAN(
+        "Companion.VisualSearch.ClassificationAlreadyStarted", true);
+    base::UmaHistogramEnumeration(
+        "Companion.VisualQuery.ClassificationInitStatus",
+        InitStatus::kAlreadyStarted);
     return;
   }
 
@@ -103,12 +128,20 @@ void VisualSearchClassifierHost::StartClassificationWithModel(
     std::string base64_config) {
   LOCAL_HISTOGRAM_BOOLEAN("Companion.VisualSearch.ModelFileSuccess",
                           model.IsValid());
+  base::UmaHistogramBoolean("Companion.VisualQuery.ClassifierModelAvailable",
+                            model.IsValid());
   if (!model.IsValid()) {
+    base::UmaHistogramEnumeration(
+        "Companion.VisualQuery.ClassificationInitStatus",
+        InitStatus::kModelUnavailable);
     return;
   }
 
   if (validated_url != current_url_) {
     LOCAL_HISTOGRAM_BOOLEAN("Companion.VisualSearch.MismatchURL", true);
+    base::UmaHistogramEnumeration(
+        "Companion.VisualQuery.ClassificationInitStatus",
+        InitStatus::kMismatchedUrl);
     return;
   }
 
@@ -130,13 +163,25 @@ void VisualSearchClassifierHost::StartClassificationWithModel(
     visual_search->StartVisualClassification(
         std::move(model), base64_config,
         result_handler_.BindNewPipeAndPassRemote());
+
+    // Log latency from the time the companion page handler called
+    // StartClassification to now, after the proper checks and sets have
+    // completed and classification has actually started.
+    base::UmaHistogramTimes(
+        "Companion.VisualQuery.ClassifierInitializationLatency",
+        base::TimeTicks::Now() - classification_start_time_);
     LOCAL_HISTOGRAM_BOOLEAN("Companion.VisualSearch.StartClassificationSuccess",
                             visual_search.is_bound());
+    base::UmaHistogramEnumeration(
+        "Companion.VisualQuery.ClassificationInitStatus", InitStatus::kSuccess);
   } else {
     // Closing file in background thread since we did not make IPC.
     base::ThreadPool::PostTask(
         FROM_HERE, {base::MayBlock()},
         base::BindOnce(&CloseModelFile, std::move(model)));
+    base::UmaHistogramEnumeration(
+        "Companion.VisualQuery.ClassificationInitStatus",
+        InitStatus::kIpcNotMade);
   }
   // We clear url after processing because we want to allow the current url to
   // to processed multiple times especially after changes in the viewport.

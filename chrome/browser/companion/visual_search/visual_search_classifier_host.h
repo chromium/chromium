@@ -7,6 +7,7 @@
 
 #include <memory>
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "chrome/browser/companion/visual_search/visual_search_suggestions_service.h"
 #include "chrome/common/companion/visual_search.mojom.h"
 #include "content/public/browser/render_frame_host.h"
@@ -14,6 +15,37 @@
 #include "url/gurl.h"
 
 namespace companion::visual_search {
+
+// Used to record classification initialization success or one of the various
+// causes for initialization failure.
+// Note: Must be kept in sync with //tools/metrics/histograms/enums.xml.
+enum class InitStatus {
+  // Catch-all bucket in the event that none of the below are applicable.
+  kUnknown = 0,
+
+  // Successful classification init.
+  kSuccess = 1,
+
+  // Failed classification init due to a null render frame host.
+  kEmptyRenderFrame = 2,
+
+  // Failed classification init due to classfication already running on the
+  // current URL.
+  kAlreadyStarted = 3,
+
+  // Failed classification init due to an invalid classifier model.
+  kModelUnavailable = 4,
+
+  // Failed classification init due to the validated URL not matching the
+  // current URL.
+  kMismatchedUrl = 5,
+
+  // Failed classification init due to the associated remote interface or the
+  // request handler not being bound.
+  kIpcNotMade = 6,
+
+  kMaxValue = kIpcNotMade,
+};
 
 // This class serves as the main orchestator for visual search suggestions
 // components. It handles mojom IPC with both main renderer and side panel.
@@ -69,6 +101,9 @@ class VisualSearchClassifierHost : mojom::VisualSuggestionsResultHandler {
 
   // This reference binds this class to the result handler for the mojom IPC.
   mojo::Receiver<mojom::VisualSuggestionsResultHandler> result_handler_{this};
+
+  // Used to track the time at which StartClassification was invoked.
+  base::TimeTicks classification_start_time_;
 
   // Pointer factory necessary for scheduling tasks on different threads.
   base::WeakPtrFactory<VisualSearchClassifierHost> weak_ptr_factory_{this};

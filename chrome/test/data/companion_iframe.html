@@ -25,6 +25,8 @@
       promiseResolve(event.data['companionUpdateParams']);
     } else if (event.data['type'] == 32) { // `MethodType.kOnCqFindTextResultsAvailable`
       promiseResolve(event.data['cqTextFindResults']);
+    } else if (event.data['type'] == 33) { // `MethodType.kOnDeviceVisualClassificationResult`
+      promiseResolve(event.data['visualSearchParams']);
     } else if (event.data['type'] == 34) { // `MethodType.kNotifyLinkOpen`
       window.lastReceivedLinkOpenedUrl = event.data['openedUrl'];
       promiseResolve(event.data['openedUrl']);
