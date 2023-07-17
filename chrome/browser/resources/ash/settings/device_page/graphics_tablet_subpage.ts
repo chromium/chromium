@@ -57,20 +57,27 @@ export class SettingsGraphicsTabletSubpageElement extends
   }
 
   private onCustomizeTabletButtonsClick(e: PointerEvent): void {
+    Router.getInstance().navigateTo(
+        routes.CUSTOMIZE_TABLET_BUTTONS,
+        /* dynamicParams= */ this.getSelectedGraphicsTabletUrl(e),
+        /* removeSearch= */ true);
+  }
+
+  private onCustomizePenButtonsClick(e: PointerEvent): void {
+    Router.getInstance().navigateTo(
+        routes.CUSTOMIZE_PEN_BUTTONS,
+        /* dynamicParams= */ this.getSelectedGraphicsTabletUrl(e),
+        /* removeSearch= */ true);
+  }
+
+  private getSelectedGraphicsTabletUrl(e: PointerEvent): URLSearchParams {
     const customizeTabletButton = cast(e.target, CrLinkRowElement);
     const closestTablet: HTMLDivElement|null =
         castExists(customizeTabletButton.closest('.device'));
-    const url = new URLSearchParams(`graphicsTabletId=${
-        encodeURIComponent(closestTablet.getAttribute('data-evdev-id')!)}`);
-
-    Router.getInstance().navigateTo(
-        routes.CUSTOMIZE_TABLET_BUTTONS,
-        /* dynamicParams= */ url, /* removeSearch= */ true);
-  }
-
-  private onCustomizePenButtonsClick(): void {
-    // TODO(yyhyyh@): Implement the function to redirect to the customize
-    // graphics pen subpage with the clicked graphicsTabletId.
+    return new URLSearchParams({
+      'graphicsTabletId':
+          encodeURIComponent(closestTablet.getAttribute('data-evdev-id')!),
+    });
   }
 }
 

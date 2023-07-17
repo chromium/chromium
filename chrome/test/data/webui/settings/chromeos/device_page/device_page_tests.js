@@ -2111,12 +2111,8 @@ suite('SettingsDevicePage', function() {
       const customizeTabletButtons =
           graphicsTabletPage.shadowRoot.querySelector(
               '#customizeTabletButtons');
-      const customizePenButtons =
-          graphicsTabletPage.shadowRoot.querySelector('#customizePenButtons');
       assert(customizeTabletButtons);
-      assert(customizePenButtons);
       assertTrue(isVisible(customizeTabletButtons));
-      assertTrue(isVisible(customizePenButtons));
 
       // Verify clicking the customize table buttons row will be redirecting
       // to the customize table buttons subpage.
@@ -2131,6 +2127,23 @@ suite('SettingsDevicePage', function() {
       const graphicsTabletId = Number(urlSearchQuery);
       assertFalse(isNaN(graphicsTabletId));
       assertEquals(fakeGraphicsTablets[0].id, graphicsTabletId);
+
+      // Verify clicking the customize pen buttons row will be redirected
+      // to the customize table buttons subpage.
+      Router.getInstance().navigateTo(routes.GRAPHICS_TABLET);
+      assertEquals(routes.GRAPHICS_TABLET, Router.getInstance().currentRoute);
+      const customizePenButtons =
+          graphicsTabletPage.shadowRoot.querySelector('#customizePenButtons');
+
+      assertTrue(isVisible(customizePenButtons));
+      customizePenButtons.click();
+      await flushTasks();
+      assertEquals(
+          routes.CUSTOMIZE_PEN_BUTTONS, Router.getInstance().currentRoute);
+      const graphicsTabletPenId = Number(
+          Router.getInstance().getQueryParameters().get('graphicsTabletId'));
+      assertFalse(isNaN(graphicsTabletPenId));
+      assertEquals(fakeGraphicsTablets[0].id, graphicsTabletPenId);
     });
   });
 

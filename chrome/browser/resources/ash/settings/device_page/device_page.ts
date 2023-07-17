@@ -201,7 +201,10 @@ class SettingsDevicePageElement extends SettingsDevicePageElementBase {
           }
           if (routes.CUSTOMIZE_TABLET_BUTTONS) {
             map.set(
-                routes.CUSTOMIZE_TABLET_BUTTONS, '#customizeTabletButtonsRow');
+                routes.CUSTOMIZE_TABLET_BUTTONS,
+                '#customizeTabletButtonsSubpage');
+            map.set(
+                routes.CUSTOMIZE_PEN_BUTTONS, '#customizePenButtonsSubpage');
           }
           return map;
         },

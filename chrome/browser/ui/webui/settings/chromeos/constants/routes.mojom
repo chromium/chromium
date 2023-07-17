@@ -90,6 +90,7 @@ enum Subpage {
   kGraphicsTablet = 414,
   kCustomizeMouseButtons = 415,
   kCustomizeTabletButtons = 416,
+  kCustomizePenButtons = 417,
 
   // Personalization section.
   // 500 was used for kChangePicture. Do not reuse.
@@ -236,6 +237,8 @@ const string kPowerSubpagePath = "power";
 const string kGraphicsTabletSubpagePath = "graphics-tablet";
 const string kCustomizeTabletButtonsSubpagePath =
     "graphics-tablet/customizeTabletButtons";
+const string kCustomizePenButtonsSubpagePath =
+    "graphics-tablet/customizePenButtons";
 
 // Personalization section.
 const string kPersonalizationSectionPath = "personalization";

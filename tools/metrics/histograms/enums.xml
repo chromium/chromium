@@ -79707,6 +79707,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="414" label="Graphics Tablet"/>
   <int value="415" label="Customize Mouse Buttons"/>
   <int value="416" label="Customize Tablet Buttons"/>
+  <int value="417" label="Customize Pen Buttons"/>
   <int value="500" label="Change Picture"/>
   <int value="501" label="Ambient Mode"/>
   <int value="502" label="Ambient Mode Photos (Deprecated)"/>
