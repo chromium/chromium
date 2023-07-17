@@ -17,6 +17,7 @@
 #include "chrome/browser/signin/bound_session_credentials/bound_session_refresh_cookie_fetcher.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_test_cookie_manager.h"
 #include "chrome/browser/signin/bound_session_credentials/fake_bound_session_refresh_cookie_fetcher.h"
+#include "chrome/browser/signin/bound_session_credentials/session_binding_helper.h"
 #include "components/signin/public/base/test_signin_client.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/unexportable_keys/service_error.h"
@@ -192,7 +193,8 @@ class BoundSessionCookieControllerImplTest
   }
 
   unexportable_keys::UnexportableKeyLoader* key_loader() {
-    return bound_session_cookie_controller()->key_loader_.get();
+    return bound_session_cookie_controller()
+        ->session_binding_helper_->key_loader_.get();
   }
 
   const UnexportableKeyId& key_id() { return key_id_; }

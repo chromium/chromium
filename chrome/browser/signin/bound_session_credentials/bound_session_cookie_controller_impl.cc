@@ -11,9 +11,8 @@
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_observer.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_refresh_cookie_fetcher.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_refresh_cookie_fetcher_impl.h"
+#include "chrome/browser/signin/bound_session_credentials/session_binding_helper.h"
 #include "components/signin/public/base/signin_client.h"
-#include "components/unexportable_keys/background_task_priority.h"
-#include "components/unexportable_keys/unexportable_key_loader.h"
 
 namespace {
 using Result = BoundSessionRefreshCookieFetcher::Result;
@@ -33,10 +32,11 @@ BoundSessionCookieControllerImpl::BoundSessionCookieControllerImpl(
   // `BoundSessionCookieRefreshServiceImpl` uses only
   // explicitly registered sessions.
   if (!wrapped_key.empty()) {
-    key_loader_ =
-        unexportable_keys::UnexportableKeyLoader::CreateFromWrappedKey(
-            key_service_.get(), wrapped_key,
-            unexportable_keys::BackgroundTaskPriority::kUserBlocking);
+    session_binding_helper_ = std::make_unique<SessionBindingHelper>(
+        key_service_.get(), wrapped_key, /*session_id=*/"");
+    // Preemptively load the binding key to speed up the generation of binding
+    // key assertion.
+    session_binding_helper_->MaybeLoadBindingKey();
   }
 }
 

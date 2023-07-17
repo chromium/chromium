@@ -10,23 +10,19 @@
 #include <memory>
 
 #include "base/containers/span.h"
-#include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_observer.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_refresh_cookie_fetcher.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace unexportable_keys {
-class UnexportableKeyLoader;
 class UnexportableKeyService;
 }  // namespace unexportable_keys
 
 class SigninClient;
-class BoundSessionCookieFetcher;
 class BoundSessionCookieObserver;
+class SessionBindingHelper;
 
 class BoundSessionCookieControllerImpl : public BoundSessionCookieController {
  public:
@@ -89,7 +85,7 @@ class BoundSessionCookieControllerImpl : public BoundSessionCookieController {
   // Used to schedule preemptive cookie refresh.
   base::OneShotTimer cookie_refresh_timer_;
 
-  std::unique_ptr<unexportable_keys::UnexportableKeyLoader> key_loader_;
+  std::unique_ptr<SessionBindingHelper> session_binding_helper_;
 
   RefreshCookieFetcherFactoryForTesting
       refresh_cookie_fetcher_factory_for_testing_;
