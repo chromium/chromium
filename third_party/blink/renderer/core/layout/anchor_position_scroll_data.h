@@ -57,6 +57,9 @@ class AnchorPositionScrollData
 
     // Sum of the scroll origins of the above scroll containers.
     gfx::Vector2d accumulated_scroll_origin;
+
+    // Whether viewport is in `scroll_container_ids`.
+    bool scroll_containers_include_viewport = false;
   };
 
   Element* OwnerElement() const { return owner_; }
@@ -73,6 +76,12 @@ class AnchorPositionScrollData
   }
   gfx::Vector2dF AdditionalBoundsScrollOffset() const {
     return additional_bounds_scroll_offset_;
+  }
+
+  // Returns true if the snapshotted scroll offset is affected by viewport's
+  // scroll offset.
+  bool IsAffectedByViewportScrolling() const {
+    return is_affected_by_viewport_scrolling_;
   }
 
   // Utility function that returns accumulated_scroll_offset_ rounded as a
@@ -129,6 +138,8 @@ class AnchorPositionScrollData
 
   // The scroll offset applied to the additional fallback-bounds rect.
   gfx::Vector2dF additional_bounds_scroll_offset_;
+
+  bool is_affected_by_viewport_scrolling_ = false;
 };
 
 template <>

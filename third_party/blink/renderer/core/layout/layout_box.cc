@@ -5815,6 +5815,17 @@ bool LayoutBox::HasAnchorPositionScrollTranslation() const {
   return false;
 }
 
+bool LayoutBox::HasAnchorPositionScrollTranslationAffectedByViewportScrolling()
+    const {
+  if (Element* element = DynamicTo<Element>(GetNode())) {
+    if (AnchorPositionScrollData* data =
+            element->GetAnchorPositionScrollData()) {
+      return data->HasTranslation() && data->IsAffectedByViewportScrolling();
+    }
+  }
+  return false;
+}
+
 PhysicalOffset LayoutBox::AnchorPositionScrollTranslationOffset() const {
   if (Element* element = DynamicTo<Element>(GetNode())) {
     if (AnchorPositionScrollData* data =

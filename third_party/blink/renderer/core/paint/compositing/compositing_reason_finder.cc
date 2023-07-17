@@ -225,8 +225,11 @@ CompositingReasons CompositingReasonsForViewportScrollEffect(
   if (RuntimeEnabledFeatures::FixedElementsDontOverscrollEnabled() &&
       frame->GetPage()->GetVisualViewport().GetOverscrollType() ==
           OverscrollType::kTransform) {
-    reasons |=
-        CompositingReason::kFixedPosition | CompositingReason::kUndoOverscroll;
+    reasons |= CompositingReason::kFixedPosition;
+    if (!To<LayoutBox>(layout_object)
+             .HasAnchorPositionScrollTranslationAffectedByViewportScrolling()) {
+      reasons |= CompositingReason::kUndoOverscroll;
+    }
   }
 
   if (layout_object.StyleRef().IsFixedToBottom()) {

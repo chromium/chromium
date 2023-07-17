@@ -1656,6 +1656,8 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   bool HasAnchorPositionScrollTranslation() const;
   PhysicalOffset AnchorPositionScrollTranslationOffset() const;
 
+  bool HasAnchorPositionScrollTranslationAffectedByViewportScrolling() const;
+
   bool HasScrollbarGutters(ScrollbarOrientation orientation) const;
 
   // This should be called when the border-box size of this box is changed.

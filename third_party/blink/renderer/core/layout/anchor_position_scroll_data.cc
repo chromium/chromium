@@ -84,6 +84,9 @@ AnchorPositionScrollData::ScrollContainersData GetScrollContainersData(
     result.accumulated_scroll_offset += scrollable_area->GetScrollOffset();
     result.accumulated_scroll_origin +=
         scrollable_area->ScrollOrigin().OffsetFromOrigin();
+    if (scrollable_area->GetLayoutBox()->IsLayoutView()) {
+      result.scroll_containers_include_viewport = true;
+    }
   }
   return result;
 }
@@ -145,6 +148,8 @@ AnchorPositionScrollData::TakeAndCompareSnapshot(bool update) {
     accumulated_scroll_offset_ = new_scrollers_data.accumulated_scroll_offset;
     accumulated_scroll_origin_ = new_scrollers_data.accumulated_scroll_origin;
     additional_bounds_scroll_offset_ = new_additional_bounds_scroll_offset;
+    is_affected_by_viewport_scrolling_ =
+        new_scrollers_data.scroll_containers_include_viewport;
   }
 
   return diff;
