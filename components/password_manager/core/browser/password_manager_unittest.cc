@@ -579,7 +579,6 @@ class PasswordManagerTest : public testing::Test {
     android_form.signon_realm = "android://hash@google.com";
     android_form.username_value = u"google";
     android_form.password_value = u"password";
-    android_form.is_affiliation_based_match = true;
     android_form.in_store = PasswordForm::Store::kProfileStore;
     android_form.match_type = PasswordForm::MatchType::kAffiliated;
     return android_form;

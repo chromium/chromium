@@ -216,14 +216,12 @@ LoginsResultOrError GetLoginsHelper::MergeResults(
           signon_realm = url::Origin::Create(form->url).GetURL().spec();
         }
         if (base::Contains(affiliations_, signon_realm)) {
-          form->is_affiliation_based_match = true;
           form->match_type |= PasswordForm::MatchType::kAffiliated;
         }
         if (base::Contains(group_, signon_realm)) {
           form->match_type |= PasswordForm::MatchType::kGrouped;
           // TODO(crbug.com/1432264): Delete after proper handling of
           // affiliated groups filling is implemented.
-          form->is_affiliation_based_match = true;
           form->match_type |= PasswordForm::MatchType::kAffiliated;
         }
         break;

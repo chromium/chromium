@@ -778,7 +778,6 @@ TEST_F(PasswordStoreBuiltInBackendTest, GetLoginsWithAffiliations) {
   std::vector<std::unique_ptr<PasswordForm>> expected_results;
   expected_results.push_back(
       std::make_unique<PasswordForm>(*all_credentials[0]));
-  expected_results.back()->is_affiliation_based_match = true;
   expected_results.back()->match_type = PasswordForm::MatchType::kAffiliated;
   expected_results.push_back(
       std::make_unique<PasswordForm>(*all_credentials[3]));
@@ -790,7 +789,6 @@ TEST_F(PasswordStoreBuiltInBackendTest, GetLoginsWithAffiliations) {
   expected_results.push_back(
       std::make_unique<PasswordForm>(*all_credentials[5]));
   expected_results.back()->is_public_suffix_match = true;
-  expected_results.back()->is_affiliation_based_match = true;
   expected_results.back()->match_type = PasswordForm::MatchType::kAffiliated |
                                         PasswordForm::MatchType::kPSL |
                                         PasswordForm::MatchType::kGrouped;

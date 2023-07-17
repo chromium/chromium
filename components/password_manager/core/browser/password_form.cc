@@ -125,7 +125,6 @@ void PasswordFormToJSON(const PasswordForm& form, base::Value::Dict& target) {
   target.Set("scheme", ToString(form.scheme));
   target.Set("signon_realm", form.signon_realm);
   target.Set("is_public_suffix_match", form.is_public_suffix_match);
-  target.Set("is_affiliation_based_match", form.is_affiliation_based_match);
   target.Set("match_type", form.match_type.has_value()
                                ? base::NumberToString(
                                      static_cast<int>(form.match_type.value()))
@@ -441,7 +440,6 @@ bool operator==(const PasswordForm& lhs, const PasswordForm& rhs) {
          lhs.was_parsed_using_autofill_predictions ==
              rhs.was_parsed_using_autofill_predictions &&
          lhs.is_public_suffix_match == rhs.is_public_suffix_match &&
-         lhs.is_affiliation_based_match == rhs.is_affiliation_based_match &&
          lhs.match_type == rhs.match_type &&
          lhs.affiliated_web_realm == rhs.affiliated_web_realm &&
          lhs.app_display_name == rhs.app_display_name &&

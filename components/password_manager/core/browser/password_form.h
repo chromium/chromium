@@ -423,10 +423,6 @@ struct PasswordForm {
   // TODO(crbug.com/1428539): Remove after match_type is adopted.
   bool is_public_suffix_match = false;
 
-  // If true, this is a credential found using affiliation-based match.
-  // TODO(crbug.com/1428539): Remove after match_type is adopted.
-  bool is_affiliation_based_match = false;
-
   // Only available when PasswordForm was requested though
   // PasswordStoreInterface::GetLogins(), empty otherwise.
   absl::optional<MatchType> match_type;

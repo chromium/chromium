@@ -436,7 +436,6 @@ TEST_F(PasswordFormFillingTest, AutofillAffiliatedWebMatch) {
   affiliated_match.username_value = u"test@gmail.com";
   affiliated_match.password_value = u"test1";
   affiliated_match.signon_realm = "https://fooo.com/";
-  affiliated_match.is_affiliation_based_match = true;
   affiliated_match.match_type = PasswordForm::MatchType::kAffiliated;
 
   std::vector<const PasswordForm*> best_matches = {&affiliated_match};
@@ -681,8 +680,7 @@ TEST(PasswordFormFillDataTest, TestAffiliationMatch) {
   preferred_match.signon_realm = "android://hash@foo.com/";
   preferred_match.match_type = PasswordForm::MatchType::kAffiliated;
 
-  // Create a match that matches exactly, so |is_affiliation_based_match| has a
-  // default value false.
+  // Create a match that matches exactly.
   PasswordForm exact_match;
   exact_match.url = GURL("https://foo.com/");
   exact_match.action = GURL("https://foo.com/login");
@@ -818,8 +816,7 @@ TEST(PasswordFormFillDataTest, TestAffiliationWithAppName) {
   form_on_page.scheme = PasswordForm::Scheme::kHtml;
   form_on_page.match_type = PasswordForm::MatchType::kExact;
 
-  // Create a match that was matched using affiliation matching, so
-  // |is_affiliation_based_match| == true.
+  // Create a match that was matched using affiliation matching.
   PasswordForm affiliated_match;
   affiliated_match.url = GURL("android://hash@foo1.com/");
   affiliated_match.username_value = u"test2@gmail.com";
