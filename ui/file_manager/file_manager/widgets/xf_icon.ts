@@ -116,6 +116,8 @@ function getCSS() {
       --xf-icon-color: var(--cros-sys-on_surface);
       --xf-icon-base-color: var(--cros-sys-app_base);
       --xf-icon-positive-color: var(--cros-sys-positive);
+      --xf-icon-error-color: var(--cros-sys-error);
+      --xf-icon-progress-color: var(--cros-sys-progress);
       display: inline-block;
     }
 
