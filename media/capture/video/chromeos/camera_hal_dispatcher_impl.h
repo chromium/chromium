@@ -117,6 +117,8 @@ class FailedCameraHalServerCallbacks final
   void CameraSWPrivacySwitchStateChange(
       cros::mojom::CameraPrivacySwitchState state) override;
 
+  void Reset();
+
   mojo::Receiver<cros::mojom::CameraHalServerCallbacks> callbacks_;
 };
 

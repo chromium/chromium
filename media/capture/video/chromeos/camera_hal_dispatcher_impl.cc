@@ -197,6 +197,10 @@ void FailedCameraHalServerCallbacks::CameraPrivacySwitchStateChange(
 void FailedCameraHalServerCallbacks::CameraSWPrivacySwitchStateChange(
     cros::mojom::CameraPrivacySwitchState state) {}
 
+void FailedCameraHalServerCallbacks::Reset() {
+  callbacks_.reset();
+}
+
 // static
 CameraHalDispatcherImpl* CameraHalDispatcherImpl::GetInstance() {
   return base::Singleton<CameraHalDispatcherImpl>::get();
@@ -996,6 +1000,7 @@ void CameraHalDispatcherImpl::StopOnProxyThread() {
   camera_hal_server_callbacks_.reset();
   camera_hal_server_.reset();
   receiver_set_.Clear();
+  failed_camera_hal_server_callbacks_.Reset();
   {
     base::AutoLock lock(device_id_to_hw_privacy_switch_state_lock_);
     device_id_to_hw_privacy_switch_state_.clear();
