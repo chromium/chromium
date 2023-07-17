@@ -426,7 +426,7 @@ export class FeedbackFlowElement extends PolymerElement {
         categoryTag ? decodeURIComponent(categoryTag) : '';
     const pageUrl = params.get(AdditionalContextQueryParam.PAGE_URL);
     if (pageUrl) {
-      this.feedbackContext_.pageUrl = {url: pageUrl};
+      this.set('feedbackContext_.pageUrl', {url: pageUrl});
     }
     const fromAssistant =
         params.get(AdditionalContextQueryParam.FROM_ASSISTANT);
