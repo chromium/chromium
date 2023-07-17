@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/anchor_element_metrics.h"
 #include "third_party/blink/renderer/core/html/html_anchor_element.h"
+#include "third_party/blink/renderer/core/html/html_area_element.h"
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observer.h"
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observer_entry.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
@@ -169,7 +170,9 @@ void AnchorElementMetricsSender::UpdateVisibleAnchors(
 
   for (auto entry : entries) {
     Element* element = entry->target();
-    const auto& anchor_element = To<HTMLAnchorElement>(*element);
+    const HTMLAnchorElement& anchor_element =
+        IsA<HTMLAreaElement>(*element) ? To<HTMLAreaElement>(*element)
+                                       : To<HTMLAnchorElement>(*element);
     if (!entry->isIntersecting()) {
       // The anchor is leaving the viewport.
       EnqueueLeftViewport(anchor_element);
