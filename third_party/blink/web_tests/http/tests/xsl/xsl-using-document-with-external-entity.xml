@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl"?>
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+  <xsl:output method="html" encoding="UTF-8"/>
+  <xsl:template match="/">
+    <html>
+      <body>
+        <script>if (testRunner) testRunner.dumpAsText();</script>
+        <p>
+          Test that loading external entities from an XML document created by
+          the XSL document() function are denied. On success, there will be
+          two console errors that the load attempt was denied.
+        </p>
+        <xsl:value-of select="document('resources/xsl-using-document-with-external-entity-target-document.xml')"/>
+      </body>
+    </html>
+  </xsl:template>
+</xsl:stylesheet>
