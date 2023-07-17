@@ -100,14 +100,9 @@ top of the same revision specified in the DEPS file to avoid this.
 
 ## Bugs? Feature requests? Questions?
 
-[File a trooper bug.][3]
-
-## Legacy documentation
-
--   [Design doc][4]
+[File a trooper bug.]
 
 [1]: /docs/infra/cq.md
 [2]: /docs/contributing.md#cl-footer-reference
 [3]: https://www.chromium.org/getting-involved/become-a-committer#TOC-Try-job-access
-[4]: https://g.co/bugatrooper
-[5]: https://www.chromium.org/developers/testing/try-server-usage/design
+[File a trooper bug.]: https://g.co/bugatrooper
