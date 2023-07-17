@@ -29,6 +29,7 @@
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
 #include "components/policy/core/common/cloud/machine_level_user_cloud_policy_manager.h"
 #include "components/policy/core/common/configuration_policy_provider.h"
+#include "components/policy/core/common/local_test_policy_provider.h"
 #include "components/policy/core/common/policy_bundle.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_namespace.h"
@@ -530,6 +531,8 @@ void ProfilePolicyConnector::RevertUseLocalTestPolicyProvider() {
   }
 
   local_test_policy_provider_->set_active(false);
+  static_cast<LocalTestPolicyProvider*>(local_test_policy_provider_)
+      ->ClearPolicies();
   policy_service()->RefreshPolicies(base::DoNothing());
 }
 

@@ -32,6 +32,8 @@ class POLICY_EXPORT PolicyLoaderLocalTest {
 
   void VerifyJsonContents(base::Value::Dict* policy_dict);
 
+  void ClearPolicies();
+
  private:
   PolicyBundle bundle_;
 };

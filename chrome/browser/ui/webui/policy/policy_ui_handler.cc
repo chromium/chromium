@@ -185,6 +185,10 @@ void PolicyUIHandler::RegisterMessages() {
       "setLocalTestPolicies",
       base::BindRepeating(&PolicyUIHandler::HandleSetLocalTestPolicies,
                           base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "revertLocalTestPolicies",
+      base::BindRepeating(&PolicyUIHandler::HandleRevertLocalTestPolicies,
+                          base::Unretained(this)));
 
   web_ui()->RegisterMessageCallback(
       "getPolicyLogs",
@@ -330,6 +334,13 @@ void PolicyUIHandler::HandleSetLocalTestPolicies(
 
   local_test_provider->LoadJsonPolicies(json_policies_string);
   AddInfobarForActiveLocalTestPolicies();
+}
+
+void PolicyUIHandler::HandleRevertLocalTestPolicies(
+    const base::Value::List& args) {
+  Profile::FromWebUI(web_ui())
+      ->GetProfilePolicyConnector()
+      ->RevertUseLocalTestPolicyProvider();
 }
 
 void PolicyUIHandler::HandleGetPolicyLogs(const base::Value::List& args) {

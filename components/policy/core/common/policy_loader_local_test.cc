@@ -77,4 +77,8 @@ void PolicyLoaderLocalTest::VerifyJsonContents(base::Value::Dict* policy_dict) {
   CHECK(policy_dict->contains("value")) << "Invalid value found";
 }
 
+void PolicyLoaderLocalTest::ClearPolicies() {
+  bundle_.Clear();
+}
+
 }  // namespace policy

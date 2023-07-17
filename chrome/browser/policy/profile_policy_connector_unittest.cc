@@ -25,6 +25,7 @@
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_manager.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_store.h"
+#include "components/policy/core/common/local_test_policy_provider.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/core/common/mock_policy_service.h"
 #include "components/policy/core/common/policy_bundle.h"
@@ -397,10 +398,10 @@ TEST_F(ProfilePolicyConnectorTest, InitializationDurationUma) {
 
 TEST_F(ProfilePolicyConnectorTest, LocalTestProviderUseAndRevert) {
   const PolicyNamespace chrome_namespace(POLICY_DOMAIN_CHROME, std::string());
-  // Set up connector
-  std::unique_ptr<MockConfigurationPolicyProvider> local_test_policy_provider =
-      std::make_unique<MockConfigurationPolicyProvider>();
 
+  // Set up connector
+  std::unique_ptr<LocalTestPolicyProvider> local_test_policy_provider =
+      LocalTestPolicyProvider::CreateIfAllowed(version_info::Channel::DEFAULT);
   g_browser_process->browser_policy_connector()
       ->SetLocalTestPolicyProviderForTesting(local_test_policy_provider.get());
 
@@ -411,14 +412,10 @@ TEST_F(ProfilePolicyConnectorTest, LocalTestProviderUseAndRevert) {
                  /*force_immediate_load=*/false);
 
   // Set policy to local test policy provider.
-  PolicyBundle policy_bundle;
-  PolicyMap& policy_map = policy_bundle.Get(chrome_namespace);
-
-  policy_map.Set(key::kCloudReportingEnabled, POLICY_LEVEL_MANDATORY,
-                 POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, base::Value(false),
-                 nullptr);
-
-  local_test_policy_provider->UpdatePolicy(std::move(policy_bundle));
+  local_test_policy_provider->LoadJsonPolicies(R"([
+      {"level": 1,"scope": 0,"source": 2,
+      "name": "CloudReportingEnabled","value": false}
+      ])");
 
   // Set the policy at the cloud provider.
   cloud_policy_store_.policy_map_.Set(

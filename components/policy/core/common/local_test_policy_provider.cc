@@ -40,6 +40,11 @@ void LocalTestPolicyProvider::LoadJsonPolicies(
   RefreshPolicies();
 }
 
+void LocalTestPolicyProvider::ClearPolicies() {
+  loader_.ClearPolicies();
+  RefreshPolicies();
+}
+
 void LocalTestPolicyProvider::RefreshPolicies() {
   PolicyBundle bundle = loader_.Load();
   first_policies_loaded_ = true;

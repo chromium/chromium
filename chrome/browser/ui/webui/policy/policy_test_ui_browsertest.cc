@@ -5,6 +5,8 @@
 #include <stddef.h>
 
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/policy/chrome_browser_policy_connector.h"
+#include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/policy/profile_policy_connector_builder.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/policy/policy_ui_handler.h"
@@ -12,6 +14,7 @@
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
+#include "components/policy/core/common/configuration_policy_provider.h"
 #include "components/policy/core/common/features.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/core/common/policy_map.h"
@@ -157,10 +160,9 @@ class PolicyTestHandlerTest : public PlatformBrowserTest {
 };
 }  // namespace
 
-IN_PROC_BROWSER_TEST_F(PolicyTestHandlerTest, HandleSetLocalTestPolicies) {
+IN_PROC_BROWSER_TEST_F(PolicyTestHandlerTest,
+                       HandleSetAndRevertLocalTestPolicies) {
   std::unique_ptr<PolicyUIHandler> handler = SetUpHandler();
-
-  // Send policies through front-end.
   const std::string jsonString =
       R"([
       {"level": 0,"scope": 0,"source": 0,
@@ -178,12 +180,16 @@ IN_PROC_BROWSER_TEST_F(PolicyTestHandlerTest, HandleSetLocalTestPolicies) {
 
   base::RunLoop().RunUntilIdle();
 
-  // Check correct policies applied
   const policy::PolicyNamespace chrome_namespace(policy::POLICY_DOMAIN_CHROME,
                                                  std::string());
-  policy::PolicyService* policy_service = g_browser_process->policy_service();
+  Profile* profile = chrome_test_utils::GetProfile(this);
+  policy::PolicyService* policy_service =
+      profile->GetProfilePolicyConnector()->policy_service();
+
+  // Check correct policies applied
   const policy::PolicyMap* policy_map =
       &policy_service->GetPolicies(chrome_namespace);
+  ASSERT_TRUE(policy_map);
 
   {
     const policy::PolicyMap::Entry* entry =
@@ -207,6 +213,29 @@ IN_PROC_BROWSER_TEST_F(PolicyTestHandlerTest, HandleSetLocalTestPolicies) {
     EXPECT_EQ(entry->level, policy::POLICY_LEVEL_MANDATORY);
     EXPECT_EQ(entry->scope, policy::POLICY_SCOPE_MACHINE);
     EXPECT_EQ(entry->source, policy::POLICY_SOURCE_CLOUD);
+  }
+
+  list_args.clear();
+  list_args.Append("revertLocalTestPolicies");
+
+  web_ui()->HandleReceivedMessage("revertLocalTestPolicies", list_args);
+
+  base::RunLoop().RunUntilIdle();
+
+  policy_map = &policy_service->GetPolicies(chrome_namespace);
+  ASSERT_TRUE(policy_map);
+
+  // Verify local test policies are no longer applied
+  {
+    const policy::PolicyMap::Entry* entry =
+        policy_map->Get(policy::key::kAutofillAddressEnabled);
+    EXPECT_FALSE(entry);
+  }
+
+  {
+    const policy::PolicyMap::Entry* entry =
+        policy_map->Get(policy::key::kCloudReportingEnabled);
+    EXPECT_FALSE(entry);
   }
 
   handler.reset();
