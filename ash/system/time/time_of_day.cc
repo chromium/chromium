@@ -4,6 +4,7 @@
 
 #include "ash/system/time/time_of_day.h"
 
+#include "ash/system/time/local_time_converter.h"
 #include "base/i18n/time_formatting.h"
 #include "base/strings/utf_string_conversions.h"
 
@@ -37,16 +38,23 @@ TimeOfDay& TimeOfDay::SetClock(const base::Clock* clock) {
   return *this;
 }
 
+TimeOfDay& TimeOfDay::SetLocalTimeConverter(
+    const LocalTimeConverter* local_time_converter) {
+  local_time_converter_ = local_time_converter;
+  return *this;
+}
+
 base::Time TimeOfDay::ToTimeToday() const {
   base::Time::Exploded now;
-  GetNow().LocalExplode(&now);
+  GetLocalTimeConverter().LocalExplode(GetNow(), &now);
   now.hour = (offset_minutes_from_zero_hour_ / 60) % 24;
   now.minute = offset_minutes_from_zero_hour_ % 60;
   now.second = 0;
   now.millisecond = 0;
   base::Time result;
-  if (base::Time::FromLocalExploded(now, &result))
+  if (GetLocalTimeConverter().FromLocalExploded(now, &result)) {
     return result;
+  }
 
   // Daylight saving time can cause FromLocalExploded() to fail on the
   // transition day in the spring when TimeOfDay == 2:30 AM, and the time goes
@@ -61,6 +69,11 @@ std::string TimeOfDay::ToString() const {
 
 base::Time TimeOfDay::GetNow() const {
   return clock_ ? clock_->Now() : base::Time::Now();
+}
+
+const LocalTimeConverter& TimeOfDay::GetLocalTimeConverter() const {
+  return local_time_converter_ ? *local_time_converter_
+                               : LocalTimeConverter::GetDefaultInstance();
 }
 
 std::ostream& operator<<(std::ostream& os, const TimeOfDay& time_of_day) {

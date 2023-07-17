@@ -9,10 +9,13 @@
 #include <string>
 
 #include "ash/ash_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
 
 namespace ash {
+
+class LocalTimeConverter;
 
 // Represents the time of the day as a simple number of minutes since 00:00
 // regardless of the date or the timezone. This makes it simple to persist this
@@ -42,6 +45,13 @@ class ASH_EXPORT TimeOfDay {
   // The clock is used to determine current time in `GetNow()`.
   TimeOfDay& SetClock(const base::Clock* clock);
 
+  // Sets a custom `LocalTimeConverter` for tests to simulate failed local time
+  // operations (i.e. `ToTimeToday()` returns a null `base::Time`). May be
+  // called multiple times, or set to `nullptr` for the default local time
+  // implementations to be used.
+  TimeOfDay& SetLocalTimeConverter(
+      const LocalTimeConverter* local_time_converter);
+
   // Converts to an actual point in time today. If this fail for some reason,
   // base::Time() will be returned.
   base::Time ToTimeToday() const;
@@ -54,10 +64,17 @@ class ASH_EXPORT TimeOfDay {
   // if `clock_` does not exist.
   base::Time GetNow() const;
 
+  const LocalTimeConverter& GetLocalTimeConverter() const;
+
   int offset_minutes_from_zero_hour_;
 
   // Optional Used in tests to override the time of "Now".
   const base::Clock* clock_ = nullptr;  // Not owned.
+
+  // May be null, in which case `GetLocalTimeConverter()` returns the default
+  // implementation.
+  base::raw_ptr<const LocalTimeConverter, ExperimentalAsh>
+      local_time_converter_ = nullptr;
 };
 
 ASH_EXPORT std::ostream& operator<<(std::ostream& os,

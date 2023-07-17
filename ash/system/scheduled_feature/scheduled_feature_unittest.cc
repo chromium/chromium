@@ -26,6 +26,7 @@
 #include "ash/system/time/time_of_day.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_helper.h"
+#include "ash/test/failing_local_time_converter.h"
 #include "ash/test_shell_delegate.h"
 #include "base/command_line.h"
 #include "base/memory/ptr_util.h"
@@ -50,6 +51,7 @@ namespace {
 
 using ::testing::_;
 using ::testing::ElementsAre;
+using ::testing::IsEmpty;
 using ::testing::Pair;
 
 constexpr char kUser1Email[] = "user1@featuredschedule";
@@ -67,6 +69,10 @@ constexpr char kTestCustomEndTimePref[] =
 constexpr int kTestCustomStartTimeOffsetMinutes = 18 * 60;
 // 6:00 AM
 constexpr int kTestCustomEndTimeOffsetMinutes = 6 * 60;
+
+// Maximum backoff time for refreshing the schedule when failures are
+// encountered.
+constexpr base::TimeDelta kMaxRefreshBackoff = base::Minutes(1);
 
 enum AmPm { kAM, kPM };
 
@@ -362,6 +368,17 @@ class ScheduledFeatureTest : public NoSessionAshTestBase,
   void SetWallClockOrigin(const std::string& utc_time_str) {
     ASSERT_TRUE(
         base::Time::FromUTCString(utc_time_str.c_str(), &wall_clock_origin_));
+  }
+
+  // Simulates scenarios where the code is receiving valid `base::Time` values
+  // from the clock, but converting them to/from local time is failing.
+  void SetLocalTimeConverter(const LocalTimeConverter* local_time_converter) {
+    geolocation_controller()->SetLocalTimeConverterForTesting(
+        local_time_converter);
+    ash::Shell::Get()
+        ->dark_light_mode_controller()
+        ->SetLocalTimeConverterForTesting(local_time_converter);
+    feature_->SetLocalTimeConverterForTesting(local_time_converter);
   }
 
  private:
@@ -1114,6 +1131,133 @@ TEST_F(ScheduledFeatureTest, CurrentCheckpointForSwitchingScheduleTypes) {
                   Pair(MakeTimeOfDay(10, kAM), ScheduleCheckpoint::kDisabled),
                   Pair(MakeTimeOfDay(12, kAM), ScheduleCheckpoint::kSunset),
                   Pair(MakeTimeOfDay(12, kAM), ScheduleCheckpoint::kSunrise)));
+}
+
+// Tests that the feature gracefully handles failures to get local time:
+// b/285187343
+TEST_F(ScheduledFeatureTest, HandlesLocalTimeFailuresSunsetToSunrise) {
+  // Give test initial start time of 9:00 AM.
+  FastForwardTo(MakeTimeOfDay(9, AmPm::kAM));
+
+  const CheckpointObserver checkpoint_observer(feature(), this);
+  const PrefChangeObserver pref_change_log(user1_pref_service(), this);
+
+  const FailingLocalTimeConverter failing_local_time_converter;
+  SetLocalTimeConverter(&failing_local_time_converter);
+  ASSERT_EQ(geolocation_controller()->GetSunsetTime(), base::Time());
+  ASSERT_EQ(geolocation_controller()->GetSunriseTime(), base::Time());
+
+  // Normally, this would retrieve a default sunrise/sunset of 6 AM/PM. But
+  // due to local time failure, this should keep the current state (disabled)
+  // and started scheduling retries with backoff.
+  ASSERT_FALSE(GetEnabled());
+  feature()->SetScheduleType(ScheduleType::kSunsetToSunrise);
+  EXPECT_FALSE(GetEnabled());
+
+  // Fast forward to 8:00 PM. Normally, sunset is 6:00 PM, so the feature should
+  // be enabled now, but since local time is still failing, current state
+  // should still be maintained.
+  FastForwardTo(MakeTimeOfDay(8, AmPm::kPM));
+  EXPECT_FALSE(GetEnabled());
+
+  // Now local time comes back and starts working again.
+  SetLocalTimeConverter(nullptr);
+
+  // At the next refresh retry, the schedule should resume normally.
+  FastForwardBy(kMaxRefreshBackoff);
+  EXPECT_TRUE(GetEnabled());
+
+  // Test a full day of the schedule (24 hours)to make sure schedule resumed
+  // normally.
+  FastForwardBy(base::Days(1));
+
+  EXPECT_THAT(pref_change_log.changes(),
+              // When local time starts working again, we know that it is
+              // somewhere between 8:00 PM and 8:00 PM + `kMaxRefreshBackoff`.
+              // Due to backoff jitter and other variables, it is difficult to
+              // pinpoint the exact timestamp for a test expectation, but that's
+              // not critical here. The important thing is that it ultimately
+              // updates to the correct state gracefully.
+              ElementsAre(Pair(_, true), Pair(MakeTimeOfDay(6, kAM), false),
+                          Pair(MakeTimeOfDay(6, kPM), true)));
+  EXPECT_THAT(
+      checkpoint_observer.changes(),
+      // 9 AM: Change to `kSunsetToSunrise` schedule type. Feature is disabled,
+      // which defaults to sunrise.
+      ElementsAre(
+          Pair(MakeTimeOfDay(9, kAM), ScheduleCheckpoint::kSunrise),
+          // Timestamp of initial change (when local time starts working
+          // again) is not precise. See comment above.
+          Pair(_, ScheduleCheckpoint::kSunset),
+          Pair(MakeTimeOfDay(6, kAM), ScheduleCheckpoint::kSunrise),
+          Pair(MakeTimeOfDay(10, kAM), ScheduleCheckpoint::kMorning),
+          Pair(MakeTimeOfDay(4, kPM), ScheduleCheckpoint::kLateAfternoon),
+          Pair(MakeTimeOfDay(6, kPM), ScheduleCheckpoint::kSunset)));
+}
+
+// Tests that the feature gracefully handles failures to get local time:
+// b/285187343
+TEST_F(ScheduledFeatureTest, HandlesLocalTimeFailuresCustom) {
+  // Start time is at 9:00 AM and end time is at 9:00 PM.
+  feature()->SetCustomStartTime(MakeTimeOfDay(9, AmPm::kAM));
+  feature()->SetCustomEndTime(MakeTimeOfDay(9, AmPm::kPM));
+  // Give test initial start time of 9:00 AM.
+  FastForwardTo(MakeTimeOfDay(9, AmPm::kAM));
+
+  const CheckpointObserver checkpoint_observer(feature(), this);
+  const PrefChangeObserver pref_change_log(user1_pref_service(), this);
+
+  // Feature should be enabled immediately since it's 9:00 AM.
+  feature()->SetScheduleType(ScheduleType::kCustom);
+  EXPECT_TRUE(GetEnabled());
+
+  const FailingLocalTimeConverter failing_local_time_converter;
+  SetLocalTimeConverter(&failing_local_time_converter);
+
+  // At 9 PM, we switch the feature off as previously scheduled, but local time
+  // has started failing. Thus, the feature switches state correctly, but the
+  // next refresh (which should come at 9 AM tomorrow) is not scheduled
+  // correctly. Retries start.
+  FastForwardTo(MakeTimeOfDay(9, AmPm::kPM));
+  EXPECT_FALSE(GetEnabled());
+
+  // 9 AM tomorrow. Feature is still disabled due to local time failure.
+  FastForwardTo(MakeTimeOfDay(9, AmPm::kAM));
+  EXPECT_FALSE(GetEnabled());
+
+  // Local time starts working again. Next refresh should return the schedule to
+  // normal.
+  SetLocalTimeConverter(nullptr);
+  FastForwardBy(kMaxRefreshBackoff);
+  EXPECT_TRUE(GetEnabled());
+
+  // Test a full day of the schedule (24 hours) to make sure schedule resumed
+  // normally.
+  FastForwardBy(base::Days(1));
+
+  EXPECT_THAT(pref_change_log.changes(),
+              ElementsAre(Pair(MakeTimeOfDay(9, kAM), true),
+                          Pair(MakeTimeOfDay(9, kPM), false),
+                          // Local time starts working slightly after 9 AM. See
+                          // comments in
+                          // `HandlesLocalTimeFailuresSunsetToSunrise` for why
+                          // an exact timestamp is not specified.
+                          Pair(_, true),
+                          // Schedule resumes like normal:
+                          Pair(MakeTimeOfDay(9, kPM), false),
+                          Pair(MakeTimeOfDay(9, kAM), true)));
+  EXPECT_THAT(
+      checkpoint_observer.changes(),
+      ElementsAre(Pair(MakeTimeOfDay(9, kAM), ScheduleCheckpoint::kEnabled),
+                  Pair(MakeTimeOfDay(9, kPM), ScheduleCheckpoint::kDisabled),
+                  // Local time starts working slightly after 9 AM. See
+                  // comments in
+                  // `HandlesLocalTimeFailuresSunsetToSunrise` for why
+                  // an exact timestamp is not specified.
+                  Pair(_, ScheduleCheckpoint::kEnabled),
+                  // Schedule resumes like normal:
+                  Pair(MakeTimeOfDay(9, kPM), ScheduleCheckpoint::kDisabled),
+                  Pair(MakeTimeOfDay(9, kAM), ScheduleCheckpoint::kEnabled)));
 }
 
 }  // namespace

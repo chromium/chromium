@@ -25,6 +25,7 @@
 #include "base/timer/timer.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "net/base/backoff_entry.h"
 #include "ui/aura/env_observer.h"
 
 class PrefService;
@@ -34,6 +35,8 @@ class SequencedTaskRunner;
 }  // namespace base
 
 namespace ash {
+
+class LocalTimeConverter;
 
 // ScheduledFeature represents a feature that can be automatically scheduled to
 // be on and off at a specific time. By default, it supports no scheduler and
@@ -118,6 +121,8 @@ class ASH_EXPORT ScheduledFeature
   void SuspendDone(base::TimeDelta sleep_duration) override;
 
   void SetClockForTesting(const Clock* clock);
+  void SetLocalTimeConverterForTesting(
+      const LocalTimeConverter* local_time_converter);
   void SetTaskRunnerForTesting(
       scoped_refptr<base::SequencedTaskRunner> task_runner);
 
@@ -200,6 +205,10 @@ class ASH_EXPORT ScheduledFeature
   void ScheduleNextRefresh(const ScheduleSnapshot& current_snapshot,
                            base::Time now);
 
+  // Schedules the next call to retry a `Refresh()` operation after a failure.
+  // Note this is for failure and `ScheduleNextRefresh()` is for success.
+  void ScheduleNextRefreshRetry(bool keep_manual_toggles_during_schedules);
+
   void SetCurrentCheckpoint(ScheduleCheckpoint new_checkpoint);
 
   // The pref service of the currently active user. Can be null in
@@ -241,11 +250,18 @@ class ASH_EXPORT ScheduledFeature
   // `default_clock_`. Should never be null.
   raw_ptr<const Clock, ExperimentalAsh> clock_ = nullptr;  // Not owned.
 
+  // Optional Used in tests to override all local time operations.
+  raw_ptr<const LocalTimeConverter, ExperimentalAsh> local_time_converter_ =
+      nullptr;  // Not owned.
+
   // Never persisted anywhere. Must stay in sync with the feature's current
   // "enabled" state.
   ScheduleCheckpoint current_checkpoint_ = ScheduleCheckpoint::kDisabled;
 
   base::ObserverList<CheckpointObserver> checkpoint_observers_;
+
+  // When a call to `Refresh()` fails, retry with exponential backoff.
+  net::BackoffEntry refresh_failure_backoff_;
 };
 
 }  // namespace ash
