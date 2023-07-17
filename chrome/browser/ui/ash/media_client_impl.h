@@ -93,6 +93,13 @@ class MediaClientImpl : public ash::MediaClient,
  private:
   friend class MediaClientAppUsingCameraTest;
 
+  using GetSourceCallback = base::OnceCallback<void(
+      const std::vector<media::VideoCaptureDeviceInfo>&)>;
+
+  // Passes a given callback to the GetSourcesInfos() method of the video source
+  // provider
+  void ProcessSourceInfos(GetSourceCallback callback);
+
   // Sets |is_forcing_media_client_key_handling_| to true if
   // |GetCurrentMediaKeyDelegate| returns a delegate. This will also mirror the
   // value of |is_forcing_media_client_key_handling_| to Ash.
@@ -188,6 +195,9 @@ class MediaClientImpl : public ash::MediaClient,
       cros::mojom::CameraPrivacySwitchState::UNKNOWN;
 
   ash::PrivacyHubNotification notification_;
+
+  // Can be used to disable/enable the display of HW switch toasts.
+  bool hw_switch_toasts_disabled_ = false;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

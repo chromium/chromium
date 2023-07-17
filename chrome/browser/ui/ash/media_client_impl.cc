@@ -18,6 +18,7 @@
 #include "ash/system/privacy_hub/privacy_hub_notification.h"
 #include "ash/system/privacy_hub/privacy_hub_notification_controller.h"
 #include "base/check_op.h"
+#include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -444,9 +445,32 @@ void MediaClientImpl::OnActiveClientChange(
 
   devices_used_by_client_.insert_or_assign(type, active_device_ids);
 
-  video_source_provider_remote_->GetSourceInfos(
+  GetSourceCallback callback =
       base::BindOnce(&MediaClientImpl::OnGetSourceInfosByActiveClientChanged,
-                     weak_ptr_factory_.GetWeakPtr(), active_device_ids));
+                     weak_ptr_factory_.GetWeakPtr(), active_device_ids);
+
+  auto task =
+      base::BindOnce(&MediaClientImpl::ProcessSourceInfos,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback));
+
+  constexpr char kDelaySwitch[] =
+      "delay_on_active_camera_client_change_for_notification";
+  // The flag should be set on Jinlon to avoid the Jinlon specific issue with
+  // flickering notifications and toasts (b/288882973).
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(kDelaySwitch)) {
+    // Disabling toasts until the delayed OnActiveClientChange is processed to
+    // avoid flickering toasts.
+    hw_switch_toasts_disabled_ = true;
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE, std::move(task), base::Milliseconds(1000));
+  } else {
+    std::move(task).Run();
+  }
+}
+
+void MediaClientImpl::ProcessSourceInfos(GetSourceCallback callback) {
+  hw_switch_toasts_disabled_ = false;
+  video_source_provider_remote_->GetSourceInfos(std::move(callback));
 }
 
 void MediaClientImpl::EnableCustomMediaKeyHandler(
@@ -546,9 +570,12 @@ void MediaClientImpl::ShowCameraOffNotification(const std::string& device_id,
     return;
   }
 
+  // Device is active and switch state is ON
+
   if (ash::features::IsCrosPrivacyHubEnabled() &&
       camera_sw_privacy_switch_state_ ==
           cros::mojom::CameraPrivacySwitchState::ON) {
+    // SW switch disables the camera as well, hence no notification.
     return;
   }
 
@@ -561,9 +588,13 @@ void MediaClientImpl::ShowCameraOffNotification(const std::string& device_id,
   const std::u16string device_name_u16 = base::UTF8ToUTF16(device_name);
 
   if (resurface) {
+    // We are going to create a new notification (that will pop up visibly)
+    // instead of updating the old one. Hence we are removing the old
+    // notification here first.
     RemoveCameraOffNotificationForDevice(device_id);
   }
 
+  // Creating/updating the notification.
   SystemNotificationHelper::GetInstance()->Display(
       notification_.builder()
           .SetId(PrivacySwitchOnNotificationIdForDevice(device_id))
@@ -615,16 +646,10 @@ void MediaClientImpl::OnGetSourceInfosByCameraHWPrivacySwitchStateChanged(
         base::UmaHistogramEnumeration(kCameraPrivacySwitchEventsHistogramName,
                                       CameraPrivacySwitchEvent::kSwitchOn);
       }
-      // On some devices, the camera privacy switch state can only be detected
-      // while the camera is active. In that case the privacy switch state will
-      // become known as the camera becomes active, in which case showing a
-      // notification is preferred to showing a toast.
-      if (active_camera_client_count_ > 0 &&
-          old_state == cros::mojom::CameraPrivacySwitchState::UNKNOWN) {
-        ShowCameraOffNotification(device_id, device_name);
+
+      if (hw_switch_toasts_disabled_) {
         break;
       }
-
       ash::ToastManager::Get()->Cancel(kCameraPrivacySwitchOffToastId);
       ash::ToastData toast(
           kCameraPrivacySwitchOnToastId,
@@ -658,6 +683,9 @@ void MediaClientImpl::OnGetSourceInfosByCameraHWPrivacySwitchStateChanged(
       // Only show the "Camera is on" toast if the privacy switch state changed
       // from ON (avoiding the toast when the state changes from UNKNOWN).
       if (old_state != cros::mojom::CameraPrivacySwitchState::ON) {
+        break;
+      }
+      if (hw_switch_toasts_disabled_) {
         break;
       }
       ash::ToastManager::Get()->Cancel(kCameraPrivacySwitchOnToastId);
