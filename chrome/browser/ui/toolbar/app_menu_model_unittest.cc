@@ -429,7 +429,12 @@ INSTANTIATE_TEST_SUITE_P(All,
                                          IDC_TURN_ON_SYNC,
                                          IDC_OPEN_GUEST_PROFILE,
                                          IDC_ADD_NEW_PROFILE,
-                                         IDC_MANAGE_CHROME_PROFILES));
+                                         IDC_MANAGE_CHROME_PROFILES,
+                                         IDC_READING_LIST_MENU_ADD_TAB,
+                                         IDC_READING_LIST_MENU_SHOW_UI,
+                                         IDC_SHOW_PASSWORD_MANAGER,
+                                         IDC_SHOW_PAYMENT_METHODS,
+                                         IDC_SHOW_ADDRESSES));
 
 TEST_F(TestAppMenuModelCR2023, ProfileSyncOnTest) {
   signin::IdentityManager* identity_manager =

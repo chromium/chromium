@@ -116311,6 +116311,11 @@ Called by update_scheduler_enums.py.-->
   <int value="72" label="Add new profile"/>
   <int value="73" label="Manage Chrome profiles"/>
   <int value="74" label="Open recent tabs login for device tabs"/>
+  <int value="75" label="Add tab to reading list"/>
+  <int value="76" label="Show reading list"/>
+  <int value="77" label="Password Manager (submenu)"/>
+  <int value="78" label="Payment methods"/>
+  <int value="79" label="Addresses and more"/>
 </enum>
 
 <enum name="WrongConfigurationMetric">

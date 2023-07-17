@@ -1294,6 +1294,45 @@ void AppMenuModel::LogMenuMetrics(int command_id) {
       LogMenuAction(MENU_ACTION_MANAGE_CHROME_PROFILES);
       break;
 #endif
+
+    // Reading list submenu.
+    case IDC_READING_LIST_MENU_ADD_TAB:
+      if (!uma_action_recorded_) {
+        UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.ReadingListAddTab",
+                                   delta);
+      }
+      LogMenuAction(MENU_ACTION_READING_LIST_ADD_TAB);
+      break;
+    case IDC_READING_LIST_MENU_SHOW_UI:
+      if (!uma_action_recorded_) {
+        UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.ReadingListShowUi",
+                                   delta);
+      }
+      LogMenuAction(MENU_ACTION_READING_LIST_SHOW_UI);
+      break;
+
+    // Password autofill submenu.
+    case IDC_SHOW_PASSWORD_MANAGER:
+      if (!uma_action_recorded_) {
+        UMA_HISTOGRAM_MEDIUM_TIMES(
+            "WrenchMenu.TimeToAction.ShowPasswordManager", delta);
+      }
+      LogMenuAction(MENU_ACTION_SHOW_PASSWORD_MANAGER);
+      break;
+    case IDC_SHOW_PAYMENT_METHODS:
+      if (!uma_action_recorded_) {
+        UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.ShowPaymentMethods",
+                                   delta);
+      }
+      LogMenuAction(MENU_ACTION_SHOW_PAYMENT_METHODS);
+      break;
+    case IDC_SHOW_ADDRESSES:
+      if (!uma_action_recorded_) {
+        UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.ShowAddresses",
+                                   delta);
+      }
+      LogMenuAction(MENU_ACTION_SHOW_ADDRESSES);
+      break;
   }
 
   if (!uma_action_recorded_) {
