@@ -91,15 +91,6 @@ PredictionBasedPermissionUiSelector::PredictionBasedPermissionUiSelector(
     if (mock_likelihood.has_value())
       set_likelihood_override(mock_likelihood.value());
   }
-
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-  if (base::FeatureList::IsEnabled(
-          permissions::features::kPermissionOnDeviceNotificationPredictions) ||
-      base::FeatureList::IsEnabled(
-          permissions::features::kPermissionOnDeviceGeolocationPredictions)) {
-    PredictionModelHandlerProviderFactory::GetForBrowserContext(profile);
-  }
-#endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 }
 
 PredictionBasedPermissionUiSelector::~PredictionBasedPermissionUiSelector() =
