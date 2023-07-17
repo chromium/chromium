@@ -545,4 +545,25 @@ public class PrivacyGuideMetricsDelegateTest {
                 PrivacyGuideFragment.FragmentType.COOKIES);
         assertTrue(mActionTester.getActions().contains("Settings.PrivacyGuide.BackClickCookies"));
     }
+
+    @Test
+    public void testDone_backClickUserAction() {
+        PrivacyGuideMetricsDelegate.recordMetricsOnBackForCard(
+                PrivacyGuideFragment.FragmentType.DONE);
+        assertTrue(
+                mActionTester.getActions().contains("Settings.PrivacyGuide.BackClickCompletion"));
+    }
+
+    @Test
+    public void testMSBB_backClickUserAction() {
+        PrivacyGuideMetricsDelegate.recordMetricsOnBackForCard(
+                PrivacyGuideFragment.FragmentType.MSBB);
+        assertTrue(mActionTester.getActions().contains("Settings.PrivacyGuide.BackClickMSBB"));
+    }
+
+    @Test(expected = AssertionError.class)
+    public void testWelcome_backClickUserAction() {
+        PrivacyGuideMetricsDelegate.recordMetricsOnBackForCard(
+                PrivacyGuideFragment.FragmentType.WELCOME);
+    }
 }
