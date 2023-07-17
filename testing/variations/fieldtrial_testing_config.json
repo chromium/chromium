@@ -2700,30 +2700,6 @@
             ]
         }
     ],
-    "CanvasColorCache": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledCacheSize8_20230120",
-                    "params": {
-                        "cache-size": "8"
-                    },
-                    "enable_features": [
-                        "CanvasColorCache"
-                    ]
-                }
-            ]
-        }
-    ],
     "CanvasOutOfProcessRasterization": [
         {
             "platforms": [
