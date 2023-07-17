@@ -100,7 +100,7 @@ std::string SerializeAndEncode(const AutofillQueryResponse& response) {
 struct ManualOverride {
   FormSignature form_signature;
   FieldSignature field_signature;
-  const std::vector<ServerFieldType>& field_types;
+  const std::vector<ServerFieldType> field_types;
 };
 
 // Creates the override specification passed as a parameter to
