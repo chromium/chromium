@@ -863,7 +863,11 @@
 
     'chromium_dev_desktop_gtests': {
       'base_unittests': {},
-      'content_browsertests': {},
+      'content_browsertests': {
+        'swarming': {
+          'shards': 4,
+        }
+      },
       'content_unittests': {},
       'interactive_ui_tests': {},
       'net_unittests': {},

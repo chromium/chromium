@@ -346,7 +346,8 @@
               "os": "Mac-13"
             }
           ],
-          "service_account": "chromium-tester-dev@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester-dev@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 4
         },
         "test": "content_browsertests",
         "test_id_prefix": "ninja://content/test:content_browsertests/"
@@ -463,7 +464,8 @@
               "os": "Mac-12"
             }
           ],
-          "service_account": "chromium-tester-dev@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester-dev@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 4
         },
         "test": "content_browsertests",
         "test_id_prefix": "ninja://content/test:content_browsertests/"
@@ -577,7 +579,8 @@
               "os": "Windows-10-19045"
             }
           ],
-          "service_account": "chromium-tester-dev@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester-dev@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 4
         },
         "test": "content_browsertests",
         "test_id_prefix": "ninja://content/test:content_browsertests/"
@@ -686,7 +689,8 @@
               "os": "Windows-11-22000"
             }
           ],
-          "service_account": "chromium-tester-dev@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester-dev@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 4
         },
         "test": "content_browsertests",
         "test_id_prefix": "ninja://content/test:content_browsertests/"
