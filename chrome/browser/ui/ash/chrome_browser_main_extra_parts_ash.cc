@@ -35,6 +35,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/chromeos/tablet_mode/tablet_mode_page_behavior.h"
+#include "chrome/browser/enterprise/connectors/device_trust/attestation/ash/ash_attestation_cleanup_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/accessibility/accessibility_controller_client.h"
 #include "chrome/browser/ui/ash/ambient/ambient_client_impl.h"
@@ -268,6 +269,9 @@ void ChromeBrowserMainExtraPartsAsh::PreProfileInit() {
 
   desks_client_ = std::make_unique<DesksClient>();
 
+  attestation_cleanup_manager_ =
+      std::make_unique<enterprise_connectors::AshAttestationCleanupManager>();
+
   ash::bluetooth_config::FastPairDelegate* delegate =
       ash::features::IsFastPairEnabled()
           ? ash::Shell::Get()->quick_pair_mediator()->GetFastPairDelegate()
@@ -353,6 +357,7 @@ void ChromeBrowserMainExtraPartsAsh::PostMainMessageLoopRun() {
   night_light_client_.reset();
   mobile_data_notifications_.reset();
   chrome_shelf_controller_initializer_.reset();
+  attestation_cleanup_manager_.reset();
   desks_client_.reset();
 
   projector_client_.reset();

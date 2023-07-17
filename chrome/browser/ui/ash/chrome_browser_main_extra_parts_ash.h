@@ -19,6 +19,10 @@ class NightLightClient;
 class VideoConferenceTrayController;
 }  // namespace ash
 
+namespace enterprise_connectors {
+class AshAttestationCleanupManager;
+}
+
 namespace game_mode {
 class GameModeController;
 }
@@ -122,6 +126,8 @@ class ChromeBrowserMainExtraPartsAsh : public ChromeBrowserMainExtraParts {
       network_portal_notification_controller_;
   std::unique_ptr<ash::VideoConferenceTrayController>
       video_conference_tray_controller_;
+  std::unique_ptr<enterprise_connectors::AshAttestationCleanupManager>
+      attestation_cleanup_manager_;
 
   std::unique_ptr<internal::ChromeShelfControllerInitializer>
       chrome_shelf_controller_initializer_;
