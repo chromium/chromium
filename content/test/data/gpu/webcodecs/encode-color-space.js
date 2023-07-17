@@ -67,8 +67,12 @@ async function main(arg) {
   };
 
   TEST.log('Starting test with arguments: ' + JSON.stringify(arg));
-  let support = await VideoEncoder.isConfigSupported(encoderConfig);
-  if (!support.supported) {
+  let supported = false;
+  try {
+    supported = (await VideoEncoder.isConfigSupported(encoderConfig)).supported;
+  } catch (e) {
+  }
+  if (!supported) {
     TEST.skip('Unsupported codec: ' + arg.codec);
     return;
   }
