@@ -214,7 +214,7 @@ public class ContextualSearchTriggerTest extends ContextualSearchInstrumentation
     }
 
     /**
-     * Tests a "retap" -- that sequential Tap gestures nearby keep selecting.
+     * Tests a "tap-near" -- that sequential Tap gestures nearby keep selecting.
      */
     @Test
     @SmallTest

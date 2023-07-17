@@ -23,8 +23,10 @@
   <div>United <span id="states">States</span> Intelligence</div>
   <div>United <span id="states-near">StatesNear</span> <span id="intelligence-logged-event-id">Intelligence</span></div>
   <!-- These three spans should be close to each other so that taps from one to
-       to the next are within our "near" threshold. -->
-  <div><span id="search">Search</span> <span id="term">Term</span> <span id="resolution">Resolution</span></div>
+       to the next are within our "near" threshold (RETAP_DISTANCE_SQUARED_DP)
+       to enable retap. -->
+  <div><span id="search">Search</span> <span id="term">Term</span><br/>
+    <span id="resolution">Resolution</span></div>
   <!-- This element is used to trigger language translation. -->
   <div><span id="german">Deutsche</span></div>
   <form action="demo_form.asp">
