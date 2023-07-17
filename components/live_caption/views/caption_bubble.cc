@@ -556,7 +556,7 @@ void CaptionBubble::Init() {
   auto label = std::make_unique<CaptionBubbleLabel>();
   label->SetMultiLine(true);
   label->SetBackgroundColor(SK_ColorTRANSPARENT);
-  label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_RIGHT);
+  label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
   label->SetVerticalAlignment(gfx::VerticalAlignment::ALIGN_TOP);
   label->SetTooltipText(std::u16string());
   // Render text truncates the end of text that is greater than 10000 chars.
