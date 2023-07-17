@@ -24,7 +24,9 @@ js_type_check("closure_compile_module") {
     ":esim_manager_utils",
     ":final_page",
     ":mojo_interface_provider",
+    ":profile_discovery_list_item",
     ":profile_discovery_list_item_legacy",
+    ":profile_discovery_list_page",
     ":profile_discovery_list_page_legacy",
     ":provisioning_page",
     ":psim_flow_ui",
@@ -84,7 +86,23 @@ js_library("profile_discovery_list_item_legacy") {
   ]
 }
 
+js_library("profile_discovery_list_item") {
+  deps = [
+    "//ash/webui/common/resources:i18n_behavior",
+    "//chromeos/ash/services/cellular_setup/public/mojom:mojom_webui_js",
+    "//third_party/polymer/v3_0/components-chromium/paper-spinner:paper-spinner-lite",
+  ]
+}
+
 js_library("profile_discovery_list_page_legacy") {
+  deps = [
+    "//ash/webui/common/resources:i18n_behavior",
+    "//chromeos/ash/services/cellular_setup/public/mojom:mojom_webui_js",
+    "//third_party/polymer/v3_0/components-chromium/iron-list:iron-list",
+  ]
+}
+
+js_library("profile_discovery_list_page") {
   deps = [
     "//ash/webui/common/resources:i18n_behavior",
     "//chromeos/ash/services/cellular_setup/public/mojom:mojom_webui_js",
@@ -193,7 +211,9 @@ js_library("esim_flow_ui") {
     ":esim_manager_utils",
     ":final_page",
     ":mojo_interface_provider",
+    ":profile_discovery_list_item",
     ":profile_discovery_list_item_legacy",
+    ":profile_discovery_list_page",
     ":profile_discovery_list_page_legacy",
     ":subflow_behavior",
     "//ash/webui/common/resources:assert",
