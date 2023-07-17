@@ -5,6 +5,7 @@ Version: 0.1
 License: Apache 2.0
 License File: LICENSE
 Security Critical: no
+Shipped: yes
 
 Description:
 A set of web components designed for use in chromeOS web UI. This code has no
