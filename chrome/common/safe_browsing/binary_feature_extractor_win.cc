@@ -12,6 +12,7 @@
 
 #include "base/files/file_path.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/threading/scoped_thread_priority.h"
 #include "base/win/pe_image_reader.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
@@ -19,6 +20,9 @@
 namespace safe_browsing {
 
 namespace {
+
+// Conservatively set at 1 MB.
+constexpr size_t kMaxDebugDataBytes = 1 * 1024 * 1024;
 
 // An EnumCertificatesCallback that collects each SignedData blob.
 bool OnCertificateEntry(uint16_t revision,
@@ -162,8 +166,12 @@ bool BinaryFeatureExtractor::ExtractImageFeaturesFromData(
           pe_headers->add_debug_data();
       debug_data->set_directory_entry(directory_entry,
                                       sizeof(*directory_entry));
-      if (raw_data)
+      if (raw_data) {
+        base::UmaHistogramMemoryKB("SBClientDownload.ImageDebugEntrySize",
+                                   raw_data_size / 1024);
+        raw_data_size = std::min(raw_data_size, kMaxDebugDataBytes);
         debug_data->set_raw_data(raw_data, raw_data_size);
+      }
     }
   }
 
