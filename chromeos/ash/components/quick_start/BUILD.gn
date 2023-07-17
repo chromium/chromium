@@ -19,6 +19,8 @@ static_library("quick_start") {
     "quick_start_requests.h",
     "quick_start_response_type.cc",
     "quick_start_response_type.h",
+    "types.cc",
+    "types.h",
   ]
   deps = [
     "//base",
@@ -56,6 +58,7 @@ source_set("unit_tests") {
     "logging_unittest.cc",
     "quick_start_message_unittest.cc",
     "quick_start_requests_unittest.cc",
+    "types_unittest.cc",
   ]
 
   deps = [
