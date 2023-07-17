@@ -82,6 +82,19 @@ Instances of the updater are installed in one of the following ways:
     macOS.)
 *   The updater downloads an update for itself and installs it.
 
+The updater installer calls GetVersion to discover the active version. If it
+gets no response or the response indicates the installed updater is a lower
+version, it installs the updater. If it had gotten no GetVersion response
+at all, it immediately wakes it.
+
+Each updater instance is unpacked into a version-specific subdirectory of the
+main updater installation path. If the installer discovers it is about to
+install into a versioned directory that already exists, it deletes everything
+except the `Crashpad/` subtree (if any) in that directory before unpacking
+the new installation. This clears out any "broken" prior installation while
+preserving crash reports and updater-specific crash-reporting opt-in flags.
+
+
 #### Updater States
 ![Updater state flowchart](images/updater_states.svg)
 
@@ -94,11 +107,6 @@ prefs" file. Access to the global prefs file is protected by a global
 
 Each instance of the updater also has its own separate local prefs file. Local
 prefs store information specific to the instance that owns them.
-
-When a new version of the updater installs, it will call GetVersion to discover
-the active version of the server. If the active version does not respond, the
-installer will assume it is broken and activate the version of the updater that
-has just been installed.
 
 ##### Qualification
 Instances are installed in the `Unqualified` state. Unqualified instances of
