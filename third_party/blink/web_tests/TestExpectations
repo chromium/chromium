@@ -5680,6 +5680,8 @@ crbug.com/1445674 [ Linux ] webaudio/internals/audioworkletprocessor-gc.https.ht
 crbug.com/1463024 [ Debug Linux ] fast/forms/date/date-input-vertical-lr.html [ Failure ]
 crbug.com/1463024 [ Debug Linux ] fast/forms/date/date-input-vertical-rl.html [ Failure ]
 crbug.com/1407279 external/wpt/fullscreen/api/element-request-fullscreen-cross-origin.sub.html [ Failure ]
+crbug.com/1454956 [ Linux ] external/wpt/mediacapture-record/MediaRecorder-canvas-media-source.https.html [ Failure ]
+crbug.com/1454956 [ Mac ] virtual/gpu/external/wpt/mediacapture-record/MediaRecorder-canvas-media-source.https.html [ Failure ]
 
 # Suppress http/tests/inspector-protocol/network/navigate-iframe-in2out.js test cluster
 crbug.com/1395412 [ Mac ] virtual/partitioned-cookies/http/tests/inspector-protocol/network/navigate-iframe-in2out.js [ Failure ]
