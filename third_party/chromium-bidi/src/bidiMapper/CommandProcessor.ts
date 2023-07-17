@@ -100,6 +100,12 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEvents> {
     command: ChromiumBidi.Command
   ): Promise<ChromiumBidi.ResultData> {
     switch (command.method) {
+      case 'browser.close':
+      case 'session.end':
+      case 'session.new':
+        // TODO: Implement.
+        break;
+
       // Browsing Context domain
       // keep-sorted start block=yes
       case 'browsingContext.activate':
@@ -216,9 +222,7 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEvents> {
     // Intentionally kept outside of the switch statement to ensure that
     // ESLint @typescript-eslint/switch-exhaustiveness-check triggers if a new
     // command is added.
-    throw new UnknownCommandException(
-      `Unknown command '${command.method as string}'.`
-    );
+    throw new UnknownCommandException(`Unknown command '${command.method}'.`);
   }
 
   async processCommand(command: ChromiumBidi.Command): Promise<void> {
