@@ -56,7 +56,7 @@ using chrome_test_util::ReadingListMarkAsReadButton;
 using chrome_test_util::ReadingListMarkAsUnreadButton;
 using reading_list_test_utils::AddedToLocalReadingListSnackbar;
 using reading_list_test_utils::OpenReadingList;
-using reading_list_test_utils::ReadingListItem;
+using reading_list_test_utils::VisibleReadingListItem;
 
 namespace {
 const char kContentToRemove[] = "Text that distillation should remove.";
@@ -161,9 +161,7 @@ void TapContextMenuButtonWithA11yLabelID(int a11y_label_id) {
 // scrolled down to find the entry.
 void PerformActionOnEntry(NSString* entryTitle, id<GREYAction> action) {
   ScrollToTop();
-  id<GREYMatcher> matcher =
-      grey_allOf(ReadingListItem(entryTitle), grey_sufficientlyVisible(), nil);
-  [[[EarlGrey selectElementWithMatcher:matcher]
+  [[[EarlGrey selectElementWithMatcher:VisibleReadingListItem(entryTitle)]
          usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 100)
       onElementWithMatcher:grey_accessibilityID(kReadingListViewID)]
       performAction:action];
@@ -183,9 +181,7 @@ void LongPressEntry(NSString* entryTitle) {
 // Asserts that the entry with the title `entryTitle` is visible.
 void AssertEntryVisible(NSString* entryTitle) {
   ScrollToTop();
-  [[[EarlGrey
-      selectElementWithMatcher:grey_allOf(ReadingListItem(entryTitle),
-                                          grey_sufficientlyVisible(), nil)]
+  [[[EarlGrey selectElementWithMatcher:VisibleReadingListItem(entryTitle)]
          usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 100)
       onElementWithMatcher:grey_accessibilityID(kReadingListViewID)]
       assertWithMatcher:grey_notNil()];
@@ -211,9 +207,7 @@ void AssertEntryNotVisible(NSString* title) {
   ScrollToTop();
   NSError* error;
 
-  [[[EarlGrey
-      selectElementWithMatcher:grey_allOf(ReadingListItem(title),
-                                          grey_sufficientlyVisible(), nil)]
+  [[[EarlGrey selectElementWithMatcher:VisibleReadingListItem(title)]
          usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 100)
       onElementWithMatcher:grey_accessibilityID(kReadingListViewID)]
       assertWithMatcher:grey_notNil()
@@ -831,9 +825,7 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
 - (void)testVisibleButtonsAfterSwipeDeletion {
   AddEntriesAndOpenReadingList();
 
-  [[[EarlGrey
-      selectElementWithMatcher:grey_allOf(ReadingListItem(kReadTitle),
-                                          grey_sufficientlyVisible(), nil)]
+  [[[EarlGrey selectElementWithMatcher:VisibleReadingListItem(kReadTitle)]
          usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 100)
       onElementWithMatcher:grey_accessibilityID(kReadingListViewID)]
       performAction:grey_swipeFastInDirection(kGREYDirectionLeft)];

@@ -12,11 +12,13 @@
 #import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller_constants.h"
 #import "ios/chrome/browser/signin/fake_system_identity.h"
 #import "ios/chrome/browser/ui/authentication/authentication_constants.h"
+#import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/authentication/signin_matchers.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_app_interface.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_egtest_utils.h"
+#import "ios/chrome/browser/ui/settings/settings_table_view_controller_constants.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -34,10 +36,12 @@
 using chrome_test_util::IdentityCellMatcherForEmail;
 using chrome_test_util::PrimarySignInButton;
 using chrome_test_util::SecondarySignInButton;
+using chrome_test_util::SettingsDoneButton;
 using reading_list_test_utils::AddedToLocalReadingListSnackbar;
 using reading_list_test_utils::AddURLToReadingList;
 using reading_list_test_utils::OpenReadingList;
 using reading_list_test_utils::ReadingListItem;
+using reading_list_test_utils::VisibleReadingListItem;
 
 namespace {
 
@@ -76,10 +80,10 @@ id<GREYMatcher> AddedToAccountReadingListSnackbarUndoButton() {
 
 // The cloud slash icon that appears for Reading List items that are only stored
 // in the local storage. Shown only for signed-in users.
-id<GREYMatcher> LocalItemIcon(NSString* title) {
+id<GREYMatcher> VisibleLocalItemIcon(NSString* title) {
   return grey_allOf(grey_ancestor(ReadingListItem(title)),
                     grey_accessibilityID(kTableViewURLCellMetadataImageID),
-                    nil);
+                    grey_sufficientlyVisible(), nil);
 }
 
 // Provides responses containing a custom title for fake URLs.
@@ -132,7 +136,9 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   [ChromeEarlGrey signOutAndClearIdentitiesAndWaitForCompletion];
   [ChromeEarlGrey waitForSyncEngineInitialized:NO
                                    syncTimeout:kSyncInitializedTimeout];
-
+  // Shutdown network process after tests run to avoid hanging from
+  // clearing browsing history.
+  [ChromeEarlGrey killWebKitNetworkProcess];
   [super tearDown];
 }
 
@@ -383,9 +389,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
       assertWithMatcher:grey_nil()];
   // Verify there's no cloud icon on the new item in the Reading List.
   OpenReadingList();
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(LocalItemIcon(kPage1Title),
-                                          grey_sufficientlyVisible(), nil)]
+  [[EarlGrey selectElementWithMatcher:VisibleLocalItemIcon(kPage1Title)]
       assertWithMatcher:grey_nil()];
 }
 
@@ -407,21 +411,13 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   // Verify that the new items are shown, and there's no cloud icon on the them
   // in the Reading List.
   OpenReadingList();
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(ReadingListItem(kPage1Title),
-                                          grey_sufficientlyVisible(), nil)]
+  [[EarlGrey selectElementWithMatcher:VisibleReadingListItem(kPage1Title)]
       assertWithMatcher:grey_notNil()];
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(ReadingListItem(kPage2Title),
-                                          grey_sufficientlyVisible(), nil)]
+  [[EarlGrey selectElementWithMatcher:VisibleReadingListItem(kPage2Title)]
       assertWithMatcher:grey_notNil()];
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(LocalItemIcon(kPage1Title),
-                                          grey_sufficientlyVisible(), nil)]
+  [[EarlGrey selectElementWithMatcher:VisibleLocalItemIcon(kPage1Title)]
       assertWithMatcher:grey_nil()];
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(LocalItemIcon(kPage2Title),
-                                          grey_sufficientlyVisible(), nil)]
+  [[EarlGrey selectElementWithMatcher:VisibleLocalItemIcon(kPage2Title)]
       assertWithMatcher:grey_nil()];
 }
 
@@ -442,9 +438,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
                               grey_sufficientlyVisible(), nil)];
   // Verify that Page 1 is not in the Reading List.
   OpenReadingList();
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(ReadingListItem(kPage1Title),
-                                          grey_sufficientlyVisible(), nil)]
+  [[EarlGrey selectElementWithMatcher:VisibleReadingListItem(kPage1Title)]
       assertWithMatcher:grey_nil()];
 }
 
@@ -465,9 +459,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   [ChromeEarlGrey
       waitForSyncTransportStateActiveWithTimeout:kSyncInitializedTimeout];
   // Verify that the cloud icon is shown on the first item.
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(LocalItemIcon(kPage1Title),
-                                          grey_sufficientlyVisible(), nil)]
+  [[EarlGrey selectElementWithMatcher:VisibleLocalItemIcon(kPage1Title)]
       assertWithMatcher:grey_notNil()];
   // Close the Reading List.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
@@ -482,21 +474,13 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   // Verify that both items are visible in the Reading List, and that there's
   // one cloud icon on the first item, but none on the second.
   OpenReadingList();
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(ReadingListItem(kPage1Title),
-                                          grey_sufficientlyVisible(), nil)]
+  [[EarlGrey selectElementWithMatcher:VisibleReadingListItem(kPage1Title)]
       assertWithMatcher:grey_notNil()];
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(ReadingListItem(kPage2Title),
-                                          grey_sufficientlyVisible(), nil)]
+  [[EarlGrey selectElementWithMatcher:VisibleReadingListItem(kPage2Title)]
       assertWithMatcher:grey_notNil()];
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(LocalItemIcon(kPage1Title),
-                                          grey_sufficientlyVisible(), nil)]
+  [[EarlGrey selectElementWithMatcher:VisibleLocalItemIcon(kPage1Title)]
       assertWithMatcher:grey_notNil()];
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(LocalItemIcon(kPage2Title),
-                                          grey_sufficientlyVisible(), nil)]
+  [[EarlGrey selectElementWithMatcher:VisibleLocalItemIcon(kPage2Title)]
       assertWithMatcher:grey_nil()];
 }
 
@@ -526,9 +510,107 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
                               grey_sufficientlyVisible(), nil)];
   // Verify that Page 1 is not in the Reading List.
   OpenReadingList();
+  [[EarlGrey selectElementWithMatcher:VisibleReadingListItem(kPage1Title)]
+      assertWithMatcher:grey_nil()];
+}
+
+// Test that the item added to account Reading List disappears when signed-out.
+- (void)testAddAccountItemThenSignOut {
+  AddURLToReadingList(self.testServer->GetURL(kPage1URL));
+  // Sign-in with fakeIdentity in the Reading List.
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+  OpenReadingList();
   [[EarlGrey
-      selectElementWithMatcher:grey_allOf(ReadingListItem(kPage1Title),
+      selectElementWithMatcher:grey_allOf(PrimarySignInButton(),
                                           grey_sufficientlyVisible(), nil)]
+      performAction:grey_tap()];
+  [ChromeEarlGrey
+      waitForSyncTransportStateActiveWithTimeout:kSyncInitializedTimeout];
+  // Close the Reading List.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kTableViewNavigationDismissButtonId)]
+      performAction:grey_tap()];
+  // Add Page 2 to the Reading List.
+  AddURLToReadingList(self.testServer->GetURL(kPage2URL));
+  // Sign-out.
+  [SigninEarlGrey signOut];
+  [ChromeEarlGrey waitForSyncEngineInitialized:NO
+                                   syncTimeout:kSyncInitializedTimeout];
+  // Verify that only Page 1 is visible with no cloud icon.
+  OpenReadingList();
+  [[EarlGrey selectElementWithMatcher:VisibleReadingListItem(kPage1Title)]
+      assertWithMatcher:grey_notNil()];
+  [[EarlGrey selectElementWithMatcher:VisibleReadingListItem(kPage2Title)]
+      assertWithMatcher:grey_nil()];
+  [[EarlGrey selectElementWithMatcher:VisibleLocalItemIcon(kPage1Title)]
+      assertWithMatcher:grey_nil()];
+  [[EarlGrey selectElementWithMatcher:VisibleLocalItemIcon(kPage2Title)]
+      assertWithMatcher:grey_nil()];
+}
+
+// Test that if an item is added before sign-in and another is added after
+// account storage sign-in, then the user upgrades to full sync, both items are
+// visible and do not have the cloud icon.
+- (void)testAddAccountItemThenUpgradeToFullSync {
+  AddURLToReadingList(self.testServer->GetURL(kPage1URL));
+  // Sign-in with fakeIdentity in the Reading List.
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+  OpenReadingList();
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(PrimarySignInButton(),
+                                          grey_sufficientlyVisible(), nil)]
+      performAction:grey_tap()];
+  [ChromeEarlGrey
+      waitForSyncTransportStateActiveWithTimeout:kSyncInitializedTimeout];
+  // Dismiss the Reading List.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kTableViewNavigationDismissButtonId)]
+      performAction:grey_tap()];
+  // Add Page 2 to the Reading List.
+  AddURLToReadingList(self.testServer->GetURL(kPage2URL));
+  // Upgrade to full sync.
+  [ChromeEarlGreyUI openSettingsMenu];
+  id<GREYMatcher> syncCell =
+      grey_allOf(grey_accessibilityID(kSettingsGoogleSyncAndServicesCellId),
+                 grey_sufficientlyVisible(), nil);
+  [[EarlGrey selectElementWithMatcher:syncCell] performAction:grey_tap()];
+  [ChromeEarlGreyUI waitForAppToIdle];
+  id<GREYMatcher> confirmSyncButton =
+      grey_allOf(grey_accessibilityID(kConfirmationAccessibilityIdentifier),
+                 grey_sufficientlyVisible(), nil);
+  [[EarlGrey selectElementWithMatcher:confirmSyncButton]
+      performAction:grey_tap()];
+  [ChromeEarlGrey waitForSyncFeatureEnabled:YES
+                                syncTimeout:kSyncInitializedTimeout];
+  // Dismiss Settings.
+  [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
+      performAction:grey_tap()];
+  // Verify that both items are shown without cloud icon.
+  OpenReadingList();
+  [[EarlGrey selectElementWithMatcher:VisibleReadingListItem(kPage1Title)]
+      assertWithMatcher:grey_notNil()];
+  [[EarlGrey selectElementWithMatcher:VisibleReadingListItem(kPage2Title)]
+      assertWithMatcher:grey_notNil()];
+  [[EarlGrey selectElementWithMatcher:VisibleLocalItemIcon(kPage1Title)]
+      assertWithMatcher:grey_nil()];
+  [[EarlGrey selectElementWithMatcher:VisibleLocalItemIcon(kPage2Title)]
+      assertWithMatcher:grey_nil()];
+  // Dismiss the Reading List.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kTableViewNavigationDismissButtonId)]
+      performAction:grey_tap()];
+  // Sign-out and clear data.
+  [SigninEarlGreyUI
+      signOutWithConfirmationChoice:SignOutConfirmationChoiceClearData];
+  [ChromeEarlGrey waitForSyncEngineInitialized:NO
+                                   syncTimeout:kSyncInitializedTimeout];
+  // Verify that no item is in the Reading List.
+  OpenReadingList();
+  [[EarlGrey selectElementWithMatcher:VisibleReadingListItem(kPage1Title)]
+      assertWithMatcher:grey_nil()];
+  [[EarlGrey selectElementWithMatcher:VisibleReadingListItem(kPage2Title)]
       assertWithMatcher:grey_nil()];
 }
 

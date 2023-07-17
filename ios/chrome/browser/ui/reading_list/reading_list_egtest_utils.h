@@ -19,6 +19,9 @@ id<GREYMatcher> AddedToLocalReadingListSnackbar();
 // Matcher for the Reading List item cell with a given title.
 id<GREYMatcher> ReadingListItem(NSString* entryTitle);
 
+// Matcher for the currently visible Reading List item cell with a given title.
+id<GREYMatcher> VisibleReadingListItem(NSString* entryTitle);
+
 // Opens the reading list.
 void OpenReadingList();
 

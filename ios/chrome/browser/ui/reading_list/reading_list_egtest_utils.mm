@@ -32,6 +32,12 @@ id<GREYMatcher> ReadingListItem(NSString* entryTitle) {
                     grey_kindOfClassName(@"TableViewURLCell"), nil);
 }
 
+id<GREYMatcher> VisibleReadingListItem(NSString* entryTitle) {
+  return grey_allOf(grey_accessibilityID(entryTitle),
+                    grey_kindOfClassName(@"TableViewURLCell"),
+                    grey_sufficientlyVisible(), nil);
+}
+
 // Opens the reading list menu.
 void OpenReadingList() {
   [ChromeEarlGreyUI openToolsMenu];
