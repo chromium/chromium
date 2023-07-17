@@ -27,6 +27,7 @@ public class SafeBrowsingFragment extends Fragment
     private RadioButtonWithDescriptionAndAuxButton mStandardProtection;
     private RadioButtonWithDescriptionAndAuxButton mEnhancedProtection;
     private BottomSheetController mBottomSheetController;
+    private PrivacyGuideBottomSheetView mBottomSheetView;
 
     @Override
     public View onCreateView(
@@ -95,10 +96,16 @@ public class SafeBrowsingFragment extends Fragment
     }
 
     private void displayBottomSheet(View sheetContent) {
-        PrivacyGuideBottomSheetView bottomSheet = new PrivacyGuideBottomSheetView(sheetContent);
+        mBottomSheetView = new PrivacyGuideBottomSheetView(sheetContent, this::closeBottomSheet);
         // TODO(crbug.com/1287979): Re-enable animation once bug is fixed
         if (mBottomSheetController != null) {
-            mBottomSheetController.requestShowContent(bottomSheet, false);
+            mBottomSheetController.requestShowContent(mBottomSheetView, false);
+        }
+    }
+
+    private void closeBottomSheet() {
+        if (mBottomSheetController != null && mBottomSheetView != null) {
+            mBottomSheetController.hideContent(mBottomSheetView, true);
         }
     }
 
