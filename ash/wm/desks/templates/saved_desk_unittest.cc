@@ -66,6 +66,7 @@
 #include "base/time/time.h"
 #include "base/uuid.h"
 #include "cc/test/pixel_comparator.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/app_constants/constants.h"
 #include "components/app_restore/app_launch_info.h"
 #include "components/app_restore/window_info.h"
@@ -421,7 +422,10 @@ class SavedDeskTest : public OverviewTestBase {
 
   // OverviewTestBase:
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures({features::kDesksTemplates}, {});
+    // TOOD(b/289462121): Remove Jelly from disbled features when the library
+    // button code is updated to find the right element.
+    scoped_feature_list_.InitWithFeatures({features::kDesksTemplates},
+                                          {chromeos::features::kJelly});
     OverviewTestBase::SetUp();
 
     // The `FullRestoreSaveHandler` isn't setup during tests so every window we
