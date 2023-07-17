@@ -8,20 +8,15 @@
 #include <vector>
 
 #include "ash/public/cpp/app_menu_constants.h"
-#include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
-#include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/apps/app_service/menu_util.h"
 #include "chrome/browser/ash/crostini/crostini_features.h"
 #include "chrome/browser/ash/crostini/crostini_package_service.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
-#include "chrome/browser/ash/file_manager/fileapi_util.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/intent.h"
-#include "storage/browser/file_system/file_system_context.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/strings/grit/ui_strings.h"
@@ -101,20 +96,11 @@ void CrostiniApps::LaunchAppWithIntent(const std::string& app_id,
                                        WindowInfoPtr window_info,
                                        LaunchCallback callback) {
   // Retrieve URLs from the files in the intent.
-  std::vector<crostini::LaunchArg> args;
-  if (intent && intent->files.size() > 0) {
-    args.reserve(intent->files.size());
-    storage::FileSystemContext* file_system_context =
-        file_manager::util::GetFileManagerFileSystemContext(profile());
-    for (auto& file : intent->files) {
-      args.emplace_back(
-          file_system_context->CrackURLInFirstPartyContext(file->url));
-    }
-  }
+  auto args = ArgsFromIntent(intent.get());
   crostini::LaunchCrostiniAppWithIntent(
       profile(), app_id,
       window_info ? window_info->display_id : display::kInvalidDisplayId,
-      std::move(intent), args,
+      std::move(intent), std::move(args),
       base::BindOnce(
           [](LaunchCallback callback, bool success,
              const std::string& failure_reason) {

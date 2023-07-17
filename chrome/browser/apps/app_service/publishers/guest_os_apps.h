@@ -13,6 +13,7 @@
 #include "chrome/browser/apps/app_service/app_icon/icon_key_util.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
 #include "chrome/browser/apps/app_service/publishers/app_publisher.h"
+#include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_mime_types_service.h"
 #include "chrome/browser/ash/guest_os/guest_os_mime_types_service_factory.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
@@ -50,6 +51,9 @@ class GuestOSApps : public KeyedService,
   virtual guest_os::VmType VmType() const = 0;
 
   virtual void Initialize();
+
+  // Returns launch args where files in the intent are converted to URLs.
+  std::vector<crostini::LaunchArg> ArgsFromIntent(const apps::Intent* intent);
 
   // CreateApp calls this to override App defaults with per-OS values.
   virtual void CreateAppOverrides(

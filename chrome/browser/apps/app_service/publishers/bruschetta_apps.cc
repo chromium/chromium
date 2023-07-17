@@ -32,7 +32,6 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/intent.h"
-#include "storage/browser/file_system/file_system_context.h"
 
 namespace apps {
 
@@ -174,24 +173,8 @@ void BruschettaApps::LaunchAppWithIntent(const std::string& app_id,
                                          LaunchSource launch_source,
                                          WindowInfoPtr window_info,
                                          LaunchCallback callback) {
-  // TODO(b/265601951): Consider factoring args code against
-  // CrostiniApps::LaunchAppWithIntent.
-
-  // Retrieve URLs from the files in the intent.
-  std::vector<crostini::LaunchArg> args;
-  if (intent && intent->files.size() > 0) {
-    args.reserve(intent->files.size());
-    storage::FileSystemContext* file_system_context =
-        file_manager::util::GetFileManagerFileSystemContext(profile());
-    for (auto& file : intent->files) {
-      args.emplace_back(
-          file_system_context->CrackURLInFirstPartyContext(file->url));
-    }
-  }
-
   const int64_t display_id =
       window_info ? window_info->display_id : display::kInvalidDisplayId;
-
   absl::optional<guest_os::GuestOsRegistryService::Registration> registration =
       registry()->GetRegistration(app_id);
   if (!registration) {
@@ -218,6 +201,7 @@ void BruschettaApps::LaunchAppWithIntent(const std::string& app_id,
                    "Unknown Bruschetta VM name: " + vm_name);
     return;
   }
+  auto args = ArgsFromIntent(intent.get());
   AddSpinner(app_id);
   launcher->EnsureRunning(base::BindOnce(
       [](Profile* profile, const std::string& app_id,

@@ -7,7 +7,6 @@
 #include <utility>
 #include <vector>
 
-#include "ash/constants/ash_features.h"
 #include "base/check_is_test.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -15,10 +14,11 @@
 #include "chrome/browser/apps/app_service/intent_util.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/ash/crostini/crostini_features.h"
+#include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
-#include "chrome/browser/profiles/profile.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
+#include "storage/browser/file_system/file_system_context.h"
 
 namespace apps {
 
@@ -52,6 +52,22 @@ void GuestOSApps::Initialize() {
   }
   AppPublisher::Publish(std::move(apps), AppType(),
                         /*should_notify_initialized=*/true);
+}
+
+std::vector<crostini::LaunchArg> GuestOSApps::ArgsFromIntent(
+    const apps::Intent* intent) {
+  std::vector<crostini::LaunchArg> args;
+  if (!intent || intent->files.empty()) {
+    return args;
+  }
+  args.reserve(intent->files.size());
+  storage::FileSystemContext* file_system_context =
+      file_manager::util::GetFileManagerFileSystemContext(profile());
+  for (auto& file : intent->files) {
+    args.emplace_back(
+        file_system_context->CrackURLInFirstPartyContext(file->url));
+  }
+  return args;
 }
 
 void GuestOSApps::GetCompressedIconData(const std::string& app_id,
