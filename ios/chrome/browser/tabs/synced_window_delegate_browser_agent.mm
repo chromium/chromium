@@ -61,11 +61,6 @@ int SyncedWindowDelegateBrowserAgent::GetTabCount() const {
   return web_state_list_->count();
 }
 
-int SyncedWindowDelegateBrowserAgent::GetActiveIndex() const {
-  DCHECK_NE(web_state_list_->active_index(), WebStateList::kInvalidIndex);
-  return web_state_list_->active_index();
-}
-
 bool SyncedWindowDelegateBrowserAgent::IsTypeNormal() const {
   return true;
 }
