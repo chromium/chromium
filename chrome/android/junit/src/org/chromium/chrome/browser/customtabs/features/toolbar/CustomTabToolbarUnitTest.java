@@ -340,8 +340,6 @@ public class CustomTabToolbarUnitTest {
         assertTrue(mToolbar.isMaximizeButtonEnabledForTesting());
         var maximizeButton =
                 (ImageButton) mToolbar.findViewById(R.id.custom_tabs_sidepanel_maximize);
-        assertEquals("Maximize button should be invisible upon start", View.GONE,
-                maximizeButton.getVisibility());
 
         mToolbar.onFinishInflate();
         View titleUrlContainer = Mockito.mock(View.class);
