@@ -250,6 +250,9 @@ export class SettingsGoogleDriveSubpageElement extends
   private updateDriveDisabled_() {
     const disabled = this.getPref(GOOGLE_DRIVE_DISABLED_PREF).value;
     this.driveDisabled_ = disabled;
+    if (disabled) {
+      this.showSpinner = false;
+    }
   }
 
   override currentRouteChanged(route: Route, _oldRoute?: Route) {
