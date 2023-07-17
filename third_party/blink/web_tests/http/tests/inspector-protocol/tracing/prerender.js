@@ -1,34 +1,37 @@
 (async function(testRunner) {
   const pageUrl =
       'http://127.0.0.1:8000/inspector-protocol/prerender/resources/inspector-protocol-page.html';
-  const {tabTargetSession} = await testRunner.startBlankWithTabTarget(
-      'Test that prerender page is included in the trace events');
+  const {page, session, dp} = await testRunner.startURL(
+      pageUrl, 'Test that prerender page is included in the trace events');
 
-  const tp = tabTargetSession.protocol;
+  const bp = testRunner.browserP();
+  const tabs = (await bp.Target.getTargets({
+                 filter: [{type: 'tab'}]
+               })).result.targetInfos;
+  const tabUnderTest = tabs.find(target => target.url === pageUrl);
+
+  const tabSessionId = (await bp.Target.attachToTarget({
+                         targetId: tabUnderTest.targetId,
+                         flatten: true
+                       })).result.sessionId;
+  const tabSession = testRunner.browserSession().createChild(tabSessionId);
+  const tp = tabSession.protocol;
 
   const TracingHelper =
       await testRunner.loadScript('../resources/tracing-test.js');
-  const tracingHelper = new TracingHelper(testRunner, tabTargetSession);
-
-  const childTargetManager =
-      new TestRunner.ChildTargetManager(testRunner, tabTargetSession);
-  await childTargetManager.startAutoAttach();
-  const primarySession =
-      childTargetManager.findAttachedSessionPrimaryMainFrame();
-  const dp = primarySession.protocol;
-
-  primarySession.navigate(pageUrl);
+  const tracingHelper = new TracingHelper(testRunner, tabSession);
 
   await dp.Preload.enable();
   await tracingHelper.startTracing();
 
   const prerenderReadyPromise = dp.Preload.oncePrerenderStatusUpdated(e => e.params.status == 'Ready');
-  await primarySession.navigate('../prerender/resources/simple-prerender.html');
-  const prerenderSession = childTargetManager.findAttachedSessionPrerender();
-  const pp = prerenderSession.protocol;
-  await pp.Preload.enable();
-  await prerenderReadyPromise;
-  primarySession.evaluate(`document.getElementById('link').click()`);
+  tp.Target.setAutoAttach({autoAttach: true, flatten: true, waitForDebuggerOnStart: false});
+  page.navigate('../prerender/resources/simple-prerender.html');
+  const prerenderSessionId = (await tp.Target.onceAttachedToTarget(
+      e => e.params.targetInfo.subtype === 'prerender')).params.sessionId;
+  const pp = session.createChild(prerenderSessionId).protocol;
+  await Promise.all([pp.Preload.enable(), prerenderReadyPromise]);
+  session.evaluate(`document.getElementById('link').click()`);
 
   await pp.Preload.oncePrerenderAttemptCompleted();
 
