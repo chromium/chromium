@@ -6,6 +6,7 @@ Date: 2012-03-13
 License: MIT
 License File: src/COPYING
 Security Critical: yes
+Shipped: yes
 
 Description:
 Contains support for applying an ICC color profile to an image.  The code is
