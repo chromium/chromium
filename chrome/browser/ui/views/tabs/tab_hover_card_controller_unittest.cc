@@ -13,7 +13,15 @@
 
 // These are regression tests for possible crashes.
 
-class TabHoverCardControllerTest : public TestWithBrowserView {};
+class TabHoverCardControllerTest : public TestWithBrowserView {
+ public:
+  TabHoverCardControllerTest() {
+    feature_list_.InitAndEnableFeature(features::kTabHoverCardImages);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
 
 TEST_F(TabHoverCardControllerTest, ShowWrongTabDoesntCrash) {
   auto controller =

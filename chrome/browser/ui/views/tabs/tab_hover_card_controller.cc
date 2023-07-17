@@ -284,8 +284,12 @@ TabHoverCardController::~TabHoverCardController() = default;
 
 // static
 bool TabHoverCardController::AreHoverCardImagesEnabled() {
-  PrefService* pref_service = g_browser_process->local_state();
-  return pref_service->GetBoolean(prefs::kHoverCardImagesEnabled);
+  if (base::FeatureList::IsEnabled(features::kTabHoverCardImages) ||
+      base::FeatureList::IsEnabled(features::kTabHoverCardImageSettings)) {
+    PrefService* pref_service = g_browser_process->local_state();
+    return pref_service->GetBoolean(prefs::kHoverCardImagesEnabled);
+  }
+  return false;
 }
 
 // static
