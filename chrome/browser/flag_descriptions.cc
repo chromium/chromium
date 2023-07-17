@@ -40,6 +40,10 @@ const char kAccessiblePDFFormName[] = "Accessible PDF Forms";
 const char kAccessiblePDFFormDescription[] =
     "Enables accessibility support for PDF forms.";
 
+const char kPdfOopifName[] = "OOPIF for PDF Viewer";
+const char kPdfOopifDescription[] =
+    "Use an OOPIF for the PDF Viewer, instead of a GuestView.";
+
 const char kPdfPortfolioName[] = "PDF portfolio";
 const char kPdfPortfolioDescription[] = "Enable PDF portfolio feature.";
 

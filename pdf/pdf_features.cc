@@ -17,6 +17,8 @@ BASE_FEATURE(kPdfIncrementalLoading,
              "PdfIncrementalLoading",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kPdfOopif, "PdfOopif", base::FEATURE_DISABLED_BY_DEFAULT);
+
 // "Partial loading" refers to loading only specific parts of the PDF.
 // TODO(crbug.com/1064175): Remove this once partial loading is fixed.
 BASE_FEATURE(kPdfPartialLoading,

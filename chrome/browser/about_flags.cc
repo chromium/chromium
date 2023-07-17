@@ -6782,6 +6782,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAccessiblePDFFormDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(chrome_pdf::features::kAccessiblePDFForm)},
 
+    {"pdf-oopif", flag_descriptions::kPdfOopifName,
+     flag_descriptions::kPdfOopifDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(chrome_pdf::features::kPdfOopif)},
+
     {"pdf-portfolio", flag_descriptions::kPdfPortfolioName,
      flag_descriptions::kPdfPortfolioDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(chrome_pdf::features::kPdfPortfolio)},

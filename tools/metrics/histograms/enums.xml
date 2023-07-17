@@ -65606,6 +65606,7 @@ from previous Chrome versions.
       label="ThreadedScrollPreventRenderingStarvation:enabled"/>
   <int value="896506516"
       label="enable-canvas-context-lost-in-background (obsolete)"/>
+  <int value="896603699" label="PdfOopif:enabled"/>
   <int value="897179602" label="OmniboxSquareIcons:disabled"/>
   <int value="897457037" label="AutocorrectByDefault:enabled"/>
   <int value="897695337" label="TabStripRedesign:enabled"/>
@@ -67072,6 +67073,7 @@ from previous Chrome versions.
   <int value="1661965147" label="NtpWideModules:disabled"/>
   <int value="1662277267" label="DecodeScriptSourceOffThread:disabled"/>
   <int value="1662466302" label="NtpRealboxUseGoogleGIcon:enabled"/>
+  <int value="1662543761" label="PdfOopif:disabled"/>
   <int value="1663574600" label="WebViewDisplayCutout:enabled"/>
   <int value="1664401033" label="ColorCorrectRendering:enabled"/>
   <int value="1664463407" label="FirstPartySets:enabled"/>
