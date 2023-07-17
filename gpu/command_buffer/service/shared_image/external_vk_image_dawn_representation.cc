@@ -21,27 +21,21 @@ ExternalVkImageDawnImageRepresentation::ExternalVkImageDawnImageRepresentation(
     SharedImageManager* manager,
     SharedImageBacking* backing,
     MemoryTypeTracker* tracker,
-    WGPUDevice device,
-    WGPUTextureFormat wgpu_format,
-    std::vector<WGPUTextureFormat> view_formats,
+    wgpu::Device device,
+    wgpu::TextureFormat wgpu_format,
+    std::vector<wgpu::TextureFormat> view_formats,
     base::ScopedFD memory_fd)
     : DawnImageRepresentation(manager, backing, tracker),
-      device_(device),
+      device_(std::move(device)),
       wgpu_format_(wgpu_format),
       view_formats_(std::move(view_formats)),
-      memory_fd_(std::move(memory_fd)),
-      dawn_procs_(dawn::native::GetProcs()) {
+      memory_fd_(std::move(memory_fd)) {
   DCHECK(device_);
-
-  // Keep a reference to the device so that it stays valid (it might become
-  // lost in which case operations will be noops).
-  dawn_procs_.deviceReference(device_);
 }
 
 ExternalVkImageDawnImageRepresentation::
     ~ExternalVkImageDawnImageRepresentation() {
   EndAccess();
-  dawn_procs_.deviceRelease(device_);
 }
 
 WGPUTexture ExternalVkImageDawnImageRepresentation::BeginAccess(
@@ -52,10 +46,10 @@ WGPUTexture ExternalVkImageDawnImageRepresentation::BeginAccess(
     return nullptr;
   }
 
-  WGPUTextureDescriptor texture_descriptor = {};
+  wgpu::TextureDescriptor texture_descriptor;
   texture_descriptor.format = wgpu_format_;
-  texture_descriptor.usage = usage;
-  texture_descriptor.dimension = WGPUTextureDimension_2D;
+  texture_descriptor.usage = static_cast<wgpu::TextureUsage>(usage);
+  texture_descriptor.dimension = wgpu::TextureDimension::e2D;
   texture_descriptor.size = {static_cast<uint32_t>(size().width()),
                              static_cast<uint32_t>(size().height()), 1};
   texture_descriptor.mipLevelCount = 1;
@@ -65,16 +59,15 @@ WGPUTexture ExternalVkImageDawnImageRepresentation::BeginAccess(
 
   // We need to have internal usages of CopySrc for copies,
   // RenderAttachment for clears, and TextureBinding for copyTextureForBrowser.
-  WGPUDawnTextureInternalUsageDescriptor internalDesc = {};
-  internalDesc.chain.sType = WGPUSType_DawnTextureInternalUsageDescriptor;
-  internalDesc.internalUsage = WGPUTextureUsage_CopySrc |
-                               WGPUTextureUsage_RenderAttachment |
-                               WGPUTextureUsage_TextureBinding;
-  texture_descriptor.nextInChain =
-      reinterpret_cast<WGPUChainedStruct*>(&internalDesc);
+  wgpu::DawnTextureInternalUsageDescriptor internalDesc;
+  internalDesc.internalUsage = wgpu::TextureUsage::CopySrc |
+                               wgpu::TextureUsage::RenderAttachment |
+                               wgpu::TextureUsage::TextureBinding;
+  texture_descriptor.nextInChain = &internalDesc;
 
   dawn::native::vulkan::ExternalImageDescriptorOpaqueFD descriptor = {};
-  descriptor.cTextureDescriptor = &texture_descriptor;
+  descriptor.cTextureDescriptor =
+      reinterpret_cast<WGPUTextureDescriptor*>(&texture_descriptor);
   descriptor.isInitialized = IsCleared();
   descriptor.allocationSize = backing_impl()->image()->device_size();
   descriptor.memoryTypeIndex = backing_impl()->image()->memory_type_index();
@@ -99,8 +92,9 @@ WGPUTexture ExternalVkImageDawnImageRepresentation::BeginAccess(
         external_semaphore.handle().TakeHandle().release());
   }
 
-  texture_ = dawn::native::vulkan::WrapVulkanImage(device_, &descriptor);
-  return texture_;
+  texture_ = wgpu::Texture::Acquire(
+      dawn::native::vulkan::WrapVulkanImage(device_.Get(), &descriptor));
+  return texture_.Get();
 }
 
 void ExternalVkImageDawnImageRepresentation::EndAccess() {
@@ -111,7 +105,7 @@ void ExternalVkImageDawnImageRepresentation::EndAccess() {
   // Grab the signal semaphore from dawn
   dawn::native::vulkan::ExternalImageExportInfoOpaqueFD export_info;
   if (!dawn::native::vulkan::ExportVulkanImage(
-          texture_, VK_IMAGE_LAYOUT_UNDEFINED, &export_info)) {
+          texture_.Get(), VK_IMAGE_LAYOUT_UNDEFINED, &export_info)) {
     DLOG(ERROR) << "Failed to export Dawn Vulkan image.";
   } else {
     if (export_info.isInitialized) {
@@ -142,8 +136,7 @@ void ExternalVkImageDawnImageRepresentation::EndAccess() {
   }
 
   // Destroy the texture, signaling the semaphore in dawn
-  dawn_procs_.textureDestroy(texture_);
-  dawn_procs_.textureRelease(texture_);
+  texture_.Destroy();
   texture_ = nullptr;
 
   // We have done with |begin_access_semaphores_|. They should have been waited.

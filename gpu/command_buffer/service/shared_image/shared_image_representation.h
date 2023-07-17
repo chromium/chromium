@@ -6,7 +6,8 @@
 #define GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_SHARED_IMAGE_REPRESENTATION_H_
 
 #include <dawn/dawn_proc_table.h>
-#include <dawn/webgpu.h>
+#include <dawn/webgpu_cpp.h>
+
 #include <memory>
 
 #include "base/functional/callback_helpers.h"
