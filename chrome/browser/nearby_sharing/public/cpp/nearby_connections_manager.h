@@ -85,6 +85,20 @@ class NearbyConnectionsManager {
     base::WeakPtrFactory<PayloadStatusListener> weak_ptr_factory_{this};
   };
 
+  // An optional callback to be notified when bandwidth upgrades complete
+  // successfully.
+  class BandwidthUpgradeListener {
+   public:
+    using Medium = nearby::connections::mojom::Medium;
+
+    virtual ~BandwidthUpgradeListener() = default;
+
+    // Called for each successful bandwidth upgrade for the associated
+    // |endpoint_id|.
+    virtual void OnBandwidthUpgrade(const std::string& endpoint_id,
+                                    const Medium medium) = 0;
+  };
+
   // Converts the status to a logging-friendly string.
   static std::string ConnectionsStatusToString(ConnectionsStatus status);
 
@@ -157,6 +171,10 @@ class NearbyConnectionsManager {
   // Gets the raw authentication token for the |endpoint_id|.
   virtual absl::optional<std::vector<uint8_t>> GetRawAuthenticationToken(
       const std::string& endpoint_id) = 0;
+
+  // Register a |listener| with for bandwidth upgrades.
+  virtual void RegisterBandwidthUpgradeListener(
+      base::WeakPtr<BandwidthUpgradeListener> listener) = 0;
 
   // Initiates bandwidth upgrade for |endpoint_id|.
   virtual void UpgradeBandwidth(const std::string& endpoint_id) = 0;

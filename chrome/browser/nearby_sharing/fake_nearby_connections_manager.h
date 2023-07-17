@@ -62,6 +62,8 @@ class FakeNearbyConnectionsManager
       const std::string& endpoint_id) override;
   absl::optional<std::vector<uint8_t>> GetRawAuthenticationToken(
       const std::string& endpoint_id) override;
+  void RegisterBandwidthUpgradeListener(
+      base::WeakPtr<BandwidthUpgradeListener> listener) override;
   void UpgradeBandwidth(const std::string& endpoint_id) override;
   base::WeakPtr<NearbyConnectionsManager> GetWeakPtr() override;
 
@@ -130,6 +132,7 @@ class FakeNearbyConnectionsManager
   raw_ptr<IncomingConnectionListener, ExperimentalAsh> advertising_listener_ =
       nullptr;
   raw_ptr<DiscoveryListener, ExperimentalAsh> discovery_listener_ = nullptr;
+  base::WeakPtr<BandwidthUpgradeListener> bandwidth_upgrade_listener_;
   bool is_shutdown_ = false;
   DataUsage advertising_data_usage_ = DataUsage::kUnknown;
   PowerLevel advertising_power_level_ = PowerLevel::kUnknown;

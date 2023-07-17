@@ -4897,6 +4897,8 @@ static_library("browser") {
       "nearby_sharing/nearby_share_profile_info_provider_impl.h",
       "nearby_sharing/nearby_share_settings.cc",
       "nearby_sharing/nearby_share_settings.h",
+      "nearby_sharing/nearby_share_transfer_profiler.cc",
+      "nearby_sharing/nearby_share_transfer_profiler.h",
       "nearby_sharing/nearby_sharing_service.h",
       "nearby_sharing/nearby_sharing_service_factory.cc",
       "nearby_sharing/nearby_sharing_service_factory.h",

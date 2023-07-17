@@ -204,6 +204,11 @@ void FakeNearbyConnectionsManager::SetRawAuthenticationToken(
   endpoint_raw_auth_tokens_[endpoint_id] = std::move(token);
 }
 
+void FakeNearbyConnectionsManager::RegisterBandwidthUpgradeListener(
+    base::WeakPtr<BandwidthUpgradeListener> listener) {
+  bandwidth_upgrade_listener_ = listener;
+}
+
 void FakeNearbyConnectionsManager::UpgradeBandwidth(
     const std::string& endpoint_id) {
   upgrade_bandwidth_endpoint_ids_.insert(endpoint_id);

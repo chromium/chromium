@@ -489,6 +489,11 @@ NearbyConnectionsManagerImpl::GetRawAuthenticationToken(
 
   return it->second->raw_authentication_token;
 }
+void NearbyConnectionsManagerImpl::RegisterBandwidthUpgradeListener(
+    base::WeakPtr<BandwidthUpgradeListener> listener) {
+  CHECK(!bandwidth_upgrade_listener_);
+  bandwidth_upgrade_listener_ = listener;
+}
 
 void NearbyConnectionsManagerImpl::UpgradeBandwidth(
     const std::string& endpoint_id) {
@@ -706,6 +711,10 @@ void NearbyConnectionsManagerImpl::OnBandwidthChanged(
     base::UmaHistogramEnumeration("Nearby.Share.Medium.ChangedToMedium",
                                   medium);
     current_upgraded_mediums_.insert_or_assign(endpoint_id, medium);
+    // Only propagate this event on actual bandwidth upgrades.
+    if (bandwidth_upgrade_listener_) {
+      bandwidth_upgrade_listener_->OnBandwidthUpgrade(endpoint_id, medium);
+    }
   }
   // TODO(crbug/1111458): Support TransferManager.
 }
