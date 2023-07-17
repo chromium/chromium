@@ -189,6 +189,7 @@
 #include "chrome/common/google_url_loader_throttle.h"
 #include "chrome/common/logging_chrome.h"
 #include "chrome/common/pdf_util.h"
+#include "chrome/common/ppapi_utils.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/profiler/thread_profiler_configuration.h"
 #include "chrome/common/renderer_configuration.mojom.h"
@@ -1921,8 +1922,10 @@ void ChromeContentBrowserClient::RenderProcessWillLaunch(
           audio_debug_recordings_handler));
 
 #if BUILDFLAG(ENABLE_NACL)
-  host->AddFilter(new nacl::NaClHostMessageFilter(
-      host->GetID(), profile->IsOffTheRecord(), profile->GetPath()));
+  if (IsNaclAllowed()) {
+    host->AddFilter(new nacl::NaClHostMessageFilter(
+        host->GetID(), profile->IsOffTheRecord(), profile->GetPath()));
+  }
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
