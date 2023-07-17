@@ -52,10 +52,6 @@ class ScopedAllowRendererCrashes {
 
 // Helper that BrowserTestBase can use to start monitoring for renderer crashes
 // (triggering a test failure when a renderer crash happens).
-//
-// TODO(lukasza): https://crbug.com/972220: Actually start using this class,
-// by constructing it from BrowserTestBase::ProxyRunTestOnMainThreadLoop
-// (before calling PreRunTestOnMainThread).
 class NoRendererCrashesAssertion : public RenderProcessHostCreationObserver,
                                    public RenderProcessHostObserver {
  public:
