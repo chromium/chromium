@@ -19,6 +19,9 @@
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/supervised_user/core/browser/supervised_user_preferences.h"
+#import "components/sync/base/user_selectable_type.h"
+#import "components/sync/service/sync_service.h"
+#import "components/sync/service/sync_user_settings.h"
 #import "ios/chrome/browser/bookmarks/bookmarks_utils.h"
 #import "ios/chrome/browser/bookmarks/local_or_syncable_bookmark_model_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_controller.h"
@@ -33,6 +36,7 @@
 #import "ios/chrome/browser/signin/fake_system_identity_interaction_manager.h"
 #import "ios/chrome/browser/signin/fake_system_identity_manager.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
+#import "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/browser/ui/authentication/cells/table_view_identity_cell.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 #import "ios/testing/earl_grey/earl_grey_app.h"
@@ -180,6 +184,16 @@
   AccountCapabilitiesTestMutator* mutator =
       systemIdentityManager->GetCapabilitiesMutator(fakeIdentity);
   mutator->set_can_offer_extended_chrome_sync_promos(value);
+}
+
++ (void)setSelectedType:(syncer::UserSelectableType)type enabled:(BOOL)enabled {
+  syncer::SyncUserSettings* settings =
+      SyncServiceFactory::GetForBrowserState(
+          chrome_test_util::GetOriginalBrowserState())
+          ->GetUserSettings();
+  settings->SetSelectedTypes(/*sync_everything=*/false,
+                             settings->GetSelectedTypes());
+  settings->SetSelectedType(type, enabled);
 }
 
 @end

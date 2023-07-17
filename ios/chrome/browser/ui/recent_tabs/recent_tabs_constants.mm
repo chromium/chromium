@@ -15,3 +15,5 @@ NSString* const kRecentTabsShowFullHistoryCellAccessibilityIdentifier =
     @"kRecentTabsShowFullHistoryCellAccessibilityIdentifier";
 NSString* const kRecentTabsOtherDevicesIllustratedCellAccessibilityIdentifier =
     @"kRecentTabsOtherDevicesIllustratedCellAccessibilityIdentifier";
+NSString* const kRecentTabsTabSyncOffButtonAccessibilityIdentifier =
+    @"kRecentTabsTabSyncOffButtonAccessibilityIdentifier";

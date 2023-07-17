@@ -10,6 +10,7 @@
 #import "components/policy/core/common/policy_loader_ios_constants.h"
 #import "components/policy/policy_constants.h"
 #import "components/strings/grit/components_strings.h"
+#import "components/sync/base/user_selectable_type.h"
 #import "ios/chrome/browser/policy/policy_app_interface.h"
 #import "ios/chrome/browser/policy/policy_earl_grey_utils.h"
 #import "ios/chrome/browser/policy/policy_util.h"
@@ -18,7 +19,9 @@
 #import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller_constants.h"
 #import "ios/chrome/browser/signin/fake_system_identity.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_constants.h"
+#import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
+#import "ios/chrome/browser/ui/authentication/signin_earl_grey_app_interface.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/history/history_ui_constants.h"
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_app_interface.h"
@@ -40,6 +43,7 @@
 #error "This file requires ARC support."
 #endif
 
+using chrome_test_util::PrimarySignInButton;
 using chrome_test_util::RecentTabsDestinationButton;
 
 namespace {
@@ -202,6 +206,157 @@ GURL TestPageURL() {
 
   // Close tab.
   [ChromeEarlGrey closeCurrentTab];
+}
+
+// Tests that a promo to sign in + sync is shown to a signed out user.
+- (void)testShowPromoIfSignedOut {
+  [SigninEarlGrey addFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+
+  OpenRecentTabsPanel();
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(RecentTabsTable(),
+                                          grey_sufficientlyVisible(), nil)]
+      performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
+
+  [SigninEarlGreyUI
+      verifySigninPromoVisibleWithMode:SigninPromoViewModeSigninWithAccount
+                           closeButton:NO];
+
+  // Accept the promo.
+  [[EarlGrey selectElementWithMatcher:PrimarySignInButton()]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kConfirmationAccessibilityIdentifier)]
+      performAction:grey_tap()];
+  [ChromeEarlGreyUI waitForAppToIdle];
+
+  [SigninEarlGreyUI verifySigninPromoNotVisible];
+}
+
+// Tests that no promo to sign-in + sync is shown to a user who is signed out
+// but has sign-in disabled by policy.
+- (void)testNoPromoIfSignedOutAndSigninDisabledByPolicy {
+  policy_test_utils::SetPolicy(static_cast<int>(BrowserSigninMode::kDisabled),
+                               policy::key::kBrowserSignin);
+
+  OpenRecentTabsPanel();
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(RecentTabsTable(),
+                                          grey_sufficientlyVisible(), nil)]
+      performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
+
+  [SigninEarlGreyUI verifySigninPromoNotVisible];
+}
+
+// Tests that no promo to sign-in + sync is shown to a signed-out user if sync
+// is disabled by policy.
+- (void)testNoPromoIfSignedOutAndSyncDisabledByPolicy {
+  // Set the policy and dismiss the bottom sheet that it causes.
+  policy_test_utils::SetPolicy(true, policy::key::kSyncDisabled);
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
+                                   IDS_IOS_SYNC_SYNC_DISABLED_CONTINUE))]
+      performAction:grey_tap()];
+
+  OpenRecentTabsPanel();
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(RecentTabsTable(),
+                                          grey_sufficientlyVisible(), nil)]
+      performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
+
+  [SigninEarlGreyUI verifySigninPromoNotVisible];
+}
+
+// Tests that a promo to sync is shown to a signed-in non-syncing user.
+- (void)testShowPromoIfSignedIn {
+  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
+                                enableSync:NO];
+
+  OpenRecentTabsPanel();
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(RecentTabsTable(),
+                                          grey_sufficientlyVisible(), nil)]
+      performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
+
+  [SigninEarlGreyUI
+      verifySigninPromoVisibleWithMode:SigninPromoViewModeSyncWithPrimaryAccount
+                           closeButton:NO];
+
+  // Accept the promo.
+  [[EarlGrey selectElementWithMatcher:PrimarySignInButton()]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kConfirmationAccessibilityIdentifier)]
+      performAction:grey_tap()];
+  [ChromeEarlGreyUI waitForAppToIdle];
+
+  [SigninEarlGreyUI verifySigninPromoNotVisible];
+}
+
+// Tests no promo to sync is shown to a signed-in non-syncing user if sync is
+// disabled by policy.
+- (void)testNoPromoIfSignedInAndSyncDisabledByPolicy {
+  // Set the policy and dismiss the bottom sheet that it causes.
+  policy_test_utils::SetPolicy(true, policy::key::kSyncDisabled);
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
+                                   IDS_IOS_SYNC_SYNC_DISABLED_CONTINUE))]
+      performAction:grey_tap()];
+
+  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
+                                enableSync:NO];
+
+  OpenRecentTabsPanel();
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(RecentTabsTable(),
+                                          grey_sufficientlyVisible(), nil)]
+      performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
+
+  [SigninEarlGreyUI verifySigninPromoNotVisible];
+}
+
+// Tests no promo is shown to a syncing user with tab sync enabled.
+- (void)testNoPromoIfSyncing {
+  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
+                                enableSync:YES];
+
+  OpenRecentTabsPanel();
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(RecentTabsTable(),
+                                          grey_sufficientlyVisible(), nil)]
+      performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
+
+  [SigninEarlGreyUI verifySigninPromoNotVisible];
+}
+
+// Tests a promo is shown to a syncing user who disabled the tab sync toggle.
+// Tapping the promo opens the page to re-enable the toggle.
+- (void)testShowPromoIfSyncingAndDisabledTabs {
+  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
+                                enableSync:YES];
+  [SigninEarlGreyAppInterface
+      setSelectedType:(syncer::UserSelectableType::kTabs)
+              enabled:NO];
+
+  OpenRecentTabsPanel();
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(RecentTabsTable(),
+                                          grey_sufficientlyVisible(), nil)]
+      performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
+
+  id<GREYMatcher> promoButtonMatcher = grey_allOf(
+      grey_accessibilityID(kRecentTabsTabSyncOffButtonAccessibilityIdentifier),
+      grey_accessibilityTrait(UIAccessibilityTraitButton), nil);
+  [[EarlGrey selectElementWithMatcher:promoButtonMatcher]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  [[EarlGrey selectElementWithMatcher:promoButtonMatcher]
+      performAction:grey_tap()];
+
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
+                                   IDS_IOS_MANAGE_SYNC_SETTINGS_TITLE))]
+      assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 // Tests that the sign-in promo can be reloaded correctly.

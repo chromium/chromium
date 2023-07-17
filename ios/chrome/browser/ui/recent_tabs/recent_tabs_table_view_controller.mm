@@ -1209,6 +1209,8 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
       [illustratedCell.button addTarget:self
                                  action:@selector(updateSyncState)
                        forControlEvents:UIControlEventTouchUpInside];
+      illustratedCell.button.accessibilityIdentifier =
+          kRecentTabsTabSyncOffButtonAccessibilityIdentifier;
   }
   // Hide the separator between this cell and the SignIn Promo.
   if (itemTypeSelected == ItemTypeOtherDevicesSignedOut) {

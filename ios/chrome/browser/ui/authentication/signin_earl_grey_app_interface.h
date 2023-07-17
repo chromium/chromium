@@ -17,6 +17,10 @@ namespace signin {
 enum class ConsentLevel;
 }
 
+namespace syncer {
+enum class UserSelectableType;
+}
+
 // SigninEarlGreyAppInterface contains the app-side implementation for
 // helpers that primarily work via direct model access. These helpers are
 // compiled into the app binary and can be called from either app or test code.
@@ -77,6 +81,8 @@ enum class ConsentLevel;
                             forIdentity:(FakeSystemIdentity*)fakeIdentity;
 + (void)setCanOfferExtendedChromeSyncPromos:(BOOL)value
                                 forIdentity:(FakeSystemIdentity*)fakeIdentity;
+
++ (void)setSelectedType:(syncer::UserSelectableType)type enabled:(BOOL)enabled;
 
 @end
 
