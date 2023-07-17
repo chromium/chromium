@@ -9,7 +9,8 @@ import sys
 
 from typing import Iterable
 
-from common import read_package_paths, register_common_args, run_ffx_command
+from common import make_clean_directory, read_package_paths, \
+                   register_common_args, run_ffx_command
 
 
 def publish_packages(packages: Iterable[str],
@@ -36,6 +37,9 @@ def register_package_args(parser: argparse.ArgumentParser,
                               help='Paths of the package archives to install')
     package_args.add_argument('--repo',
                               help='Directory packages will be published to.')
+    package_args.add_argument('--purge-repo',
+                              action='store_true',
+                              help='If clear the content in the repo.')
     if allow_temp_repo:
         package_args.add_argument(
             '--no-repo-init',
@@ -60,6 +64,8 @@ def main():
             package_paths.extend(read_package_paths(args.out_dir, package))
     else:
         package_paths = args.packages
+    if args.purge_repo:
+        make_clean_directory(args.repo)
     publish_packages(package_paths, args.repo)
 
 

@@ -99,6 +99,20 @@ class PublishPackageTest(unittest.TestCase):
             publish_package.main()
             self.assertEqual(self._ffx_mock.call_count, 1)
 
+    @mock.patch('publish_package.read_package_paths')
+    @mock.patch('publish_package.make_clean_directory')
+    def test_purge_repo(self, read_mock, make_clean_directory_mock) -> None:
+        """Tests purge_repo flag."""
+
+        read_mock.return_value = ['out/test/package/path']
+        with mock.patch('sys.argv', [
+                'publish_package.py', '--packages', _PACKAGES[0], '--repo',
+                _REPO, '--out-dir', 'out/test', '--purge-repo'
+        ]):
+            publish_package.main()
+            self.assertEqual(self._ffx_mock.call_count, 1)
+            self.assertEqual(make_clean_directory_mock.call_count, 1)
+
 
 if __name__ == '__main__':
     unittest.main()
