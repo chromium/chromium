@@ -5457,8 +5457,11 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "controlled_degradation": "true"
+                    },
                     "enable_features": [
-                        "EnableReportingStorageControlledDegradation"
+                        "CrOSLateBootMissiveStorage"
                     ]
                 }
             ]
