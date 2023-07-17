@@ -14,6 +14,7 @@
 #include "base/command_line.h"
 #include "base/containers/span.h"
 #include "base/debug/alias.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/hash/hash.h"
 #include "base/logging.h"
@@ -2181,8 +2182,11 @@ void GpuImageDecodeCache::OwnershipChanged(const DrawImage& draw_image,
   const bool has_cpu_data = image_data->decode.HasData() ||
                             (image_data->is_bitmap_backed &&
                              image_data->decode.image(0, AuxImage::kDefault));
-  if (!has_any_refs && !image_data->HasUploadedData() && !has_cpu_data &&
-      !image_data->is_orphaned) {
+  bool is_empty = !has_any_refs && !image_data->HasUploadedData() &&
+                  !has_cpu_data && !image_data->is_orphaned;
+  if (is_empty ||
+      (draw_image.paint_image().no_cache() &&
+       base::FeatureList::IsEnabled(features::kImageCacheNoCache))) {
     auto found_persistent = persistent_cache_.Peek(draw_image.frame_key());
     if (found_persistent != persistent_cache_.end())
       RemoveFromPersistentCache(found_persistent);

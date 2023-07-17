@@ -18,6 +18,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/test/test_mock_time_task_runner.h"
+#include "cc/base/features.h"
 #include "cc/base/switches.h"
 #include "cc/paint/color_filter.h"
 #include "cc/paint/draw_image.h"
@@ -4822,6 +4823,58 @@ TEST_P(GpuImageDecodeCachePurgeOnTimerTest, MultipleImagesWithTimeGap) {
   // Cache has been emptied
   EXPECT_EQ(cache_->GetNumCacheEntriesForTesting(), 0u);
   EXPECT_FALSE(cache_->HasPendingPurgeTaskForTesting());
+}
+
+TEST_P(GpuImageDecodeCachePurgeOnTimerTest, NoCache) {
+  base::test::ScopedFeatureList fl{features::kImageCacheNoCache};
+
+  const uint32_t client_id = cache_->GenerateClientId();
+  PaintImage image = CreatePaintImageInternal(GetNormalImageSize());
+  image.set_no_cache(true);
+  DrawImage draw_image = CreateDrawImageInternal(image);
+
+  ImageDecodeCache::TaskResult result = cache_->GetTaskForImageAndRef(
+      client_id, draw_image, ImageDecodeCache::TracingInfo());
+  EXPECT_TRUE(result.need_unref);
+  EXPECT_TRUE(result.task);
+  TestTileTaskRunner::ProcessTask(result.task->dependencies()[0].get());
+  TestTileTaskRunner::ProcessTask(result.task.get());
+
+  // Data, because it's in the in-use cache.
+  EXPECT_GT(cache_->GetWorkingSetBytesForTesting(), 0u);
+  // But the num (persistent) entries should be 0.
+  EXPECT_EQ(cache_->GetNumCacheEntriesForTesting(), 0u);
+
+  // Not in use, freed right away.
+  cache_->UnrefImage(draw_image);
+  EXPECT_EQ(cache_->GetWorkingSetBytesForTesting(), 0u);
+  EXPECT_EQ(cache_->GetNumCacheEntriesForTesting(), 0u);
+}
+
+TEST_P(GpuImageDecodeCachePurgeOnTimerTest, NoCacheIsNoopWithoutFeature) {
+  base::test::ScopedFeatureList fl;
+  fl.InitAndDisableFeature(features::kImageCacheNoCache);
+
+  const uint32_t client_id = cache_->GenerateClientId();
+  PaintImage image = CreatePaintImageInternal(GetNormalImageSize());
+  image.set_no_cache(true);
+  DrawImage draw_image = CreateDrawImageInternal(image);
+
+  ImageDecodeCache::TaskResult result = cache_->GetTaskForImageAndRef(
+      client_id, draw_image, ImageDecodeCache::TracingInfo());
+  EXPECT_TRUE(result.need_unref);
+  EXPECT_TRUE(result.task);
+  TestTileTaskRunner::ProcessTask(result.task->dependencies()[0].get());
+  TestTileTaskRunner::ProcessTask(result.task.get());
+
+  // Cached and in-use.
+  EXPECT_GT(cache_->GetWorkingSetBytesForTesting(), 0u);
+  EXPECT_EQ(cache_->GetNumCacheEntriesForTesting(), 1u);
+
+  cache_->UnrefImage(draw_image);
+  // Not in use, but stll cached.
+  EXPECT_EQ(cache_->GetWorkingSetBytesForTesting(), 0u);
+  EXPECT_EQ(cache_->GetNumCacheEntriesForTesting(), 1u);
 }
 
 INSTANTIATE_TEST_SUITE_P(

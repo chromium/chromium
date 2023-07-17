@@ -279,6 +279,8 @@ class CC_PAINT_EXPORT PaintImage {
   bool is_multipart() const { return is_multipart_; }
   bool is_high_bit_depth() const { return is_high_bit_depth_; }
   bool may_be_lcp_candidate() const { return may_be_lcp_candidate_; }
+  bool no_cache() const { return no_cache_; }
+  void set_no_cache(bool no_cache) { no_cache_ = no_cache; }
   int repetition_count() const { return repetition_count_; }
   bool ShouldAnimate() const;
   AnimationSequenceId reset_animation_sequence_id() const {
@@ -419,6 +421,11 @@ class CC_PAINT_EXPORT PaintImage {
   // it, but this flag is intended for metrics on when we do not present the
   // image when the system claims.
   bool may_be_lcp_candidate_ = false;
+
+  // Indicates that the image is unlikely to be re-used past the first frame it
+  // appears in. Used as a hint to avoid caching it downstream, but is not a
+  // mandate.
+  bool no_cache_ = false;
 
   // An incrementing sequence number maintained by the painter to indicate if
   // this animation should be reset in the compositor. Incrementing this number
