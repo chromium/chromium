@@ -169,7 +169,6 @@ source_set("prerequisites") {
     "//third_party/libxml",
     "//third_party/libxslt",
     "//third_party/ots",
-    "//third_party/snappy",
     "//third_party/zlib",
     "//ui/accessibility/mojom:mojom_blink",
     "//ui/base:features",
