@@ -334,6 +334,10 @@ bool SharedStorageWorkletGlobalScope::FeatureEnabled(
     return true;
   }
 
+  if (feature == OriginTrialFeature::kJavaScriptCompileHintsMagicRuntime) {
+    return false;
+  }
+
   NOTREACHED_NORETURN() << "Attempted to check OriginTrialFeature: "
                         << static_cast<int32_t>(feature);
 }
