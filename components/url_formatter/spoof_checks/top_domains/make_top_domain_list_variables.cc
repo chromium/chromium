@@ -5,10 +5,10 @@
 // This binary generates two C arrays of useful information related to top
 // domains, which we embed directly into
 // the final Chrome binary.  The input is a list of the top domains. The first
-// output is named kTop500EditDistanceSkeletons,
-// containing the skeletons of the top 500 domains suitable for use in the edit
-// distance heuristic. The second output is named kTopKeywords,
-// containing the top 500 keywords suitable for use with the keyword matching
+// output is named kTopBucketEditDistanceSkeletons,
+// containing the skeletons of the top bucket domains suitable for use in the
+// edit distance heuristic. The second output is named kTopKeywords,
+// containing the top bucket keywords suitable for use with the keyword matching
 // heuristic (for instance, www.google.com -> google). Both outputs are written
 // to the same file, which will be formatted as c++ source file with valid
 // syntax.
@@ -44,9 +44,9 @@
 
 namespace {
 
-// The size of the top domain array generated in top500-domains-inc.cc. Must
-// match that in top500_domains.h. If the file has fewer than kMaxDomains
-// eligible top-500 domains marked (e.g. because some are too short), the
+// The size of the top domain array generated in top-bucket-domains-inc.cc. Must
+// match that in top_bucket_domains.h. If the file has fewer than kMaxDomains
+// eligible top bucket domains marked (e.g. because some are too short), the
 // generated array may be padded with blank entries up to kMaxDomains.
 const size_t kMaxDomains = 500;
 const char* kTopBucketSeparator = "###END_TOP_BUCKET###";
@@ -185,7 +185,7 @@ int main(int argc, char* argv[]) {
       << namespace_str << R"(.h"
 namespace )"
       << namespace_str << R"( {
-const char* const kTop500EditDistanceSkeletons[] = {
+const char* const kTopBucketEditDistanceSkeletons[] = {
 )";
 
   for (const std::string& skeleton : sorted_skeletons) {
@@ -193,7 +193,7 @@ const char* const kTop500EditDistanceSkeletons[] = {
     output_stream << ",\n";
   }
   output_stream << R"(};
-  constexpr size_t kNumTop500EditDistanceSkeletons = )"
+  constexpr size_t kNumTopBucketEditDistanceSkeletons = )"
                 << sorted_skeletons.size() << R"(;
 
 const char* const kTopKeywords[] = {

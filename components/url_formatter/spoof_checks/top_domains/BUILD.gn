@@ -124,8 +124,8 @@ compiled_action("generate_top_domain_list_variables_file") {
   # Inputs in order expected by the command line of the tool.
   inputs =
       [ "//components/url_formatter/spoof_checks/top_domains/domains.list" ]
-  outputs = [ "$target_gen_dir/top500-domains-inc.cc" ]
-  args = rebase_path(inputs, root_build_dir) + [ "top500_domains" ] +
+  outputs = [ "$target_gen_dir/top-bucket-domains-inc.cc" ]
+  args = rebase_path(inputs, root_build_dir) + [ "top_bucket_domains" ] +
          rebase_path(outputs, root_build_dir)
 }
 
@@ -136,42 +136,42 @@ compiled_action("generate_browsertest_top_domain_list_variables_file") {
 
   # Inputs in order expected by the command line of the tool.
   inputs = [ "//components/url_formatter/spoof_checks/top_domains/browsertest_domains.list" ]
-  outputs = [ "$target_gen_dir/browsertest-top500-domains-inc.cc" ]
-  args = rebase_path(inputs, root_build_dir) + [ "test_top500_domains" ] +
+  outputs = [ "$target_gen_dir/browsertest-top-bucket-domains-inc.cc" ]
+  args = rebase_path(inputs, root_build_dir) + [ "test_top_bucket_domains" ] +
          rebase_path(outputs, root_build_dir)
 }
 
-# top500_domains and top500_domains_header are intentionally separated to remove
+# top_bucket_domains and top_bucket_domains_header are intentionally separated to remove
 # serialized build dependency from some targets to
 # generate_top_domain_list_variables action target.
-source_set("top500_domains") {
+source_set("top_bucket_domains") {
   # This empty public is intentional to remove unnecessary build dependency.
   public = []
 
-  sources = [ "$target_gen_dir/top500-domains-inc.cc" ]
+  sources = [ "$target_gen_dir/top-bucket-domains-inc.cc" ]
 
   deps = [
     ":generate_top_domain_list_variables_file",
-    ":top500_domains_header",
+    ":top_bucket_domains_header",
   ]
 }
 
-source_set("top500_domains_header") {
-  sources = [ "top500_domains.h" ]
+source_set("top_bucket_domains_header") {
+  sources = [ "top_bucket_domains.h" ]
 }
 
-source_set("browsertest_top500_domains") {
+source_set("browsertest_top_bucket_domains") {
   # This empty public is intentional to remove unnecessary build dependency.
   public = []
 
-  sources = [ "$target_gen_dir/browsertest-top500-domains-inc.cc" ]
+  sources = [ "$target_gen_dir/browsertest-top-bucket-domains-inc.cc" ]
 
   deps = [
-    ":browsertest_top500_domains_header",
+    ":browsertest_top_bucket_domains_header",
     ":generate_browsertest_top_domain_list_variables_file",
   ]
 }
 
-source_set("browsertest_top500_domains_header") {
-  sources = [ "test_top500_domains.h" ]
+source_set("browsertest_top_bucket_domains_header") {
+  sources = [ "test_top_bucket_domains.h" ]
 }
