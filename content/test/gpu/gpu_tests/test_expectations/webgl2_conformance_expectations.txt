@@ -338,7 +338,6 @@ crbug.com/angleproject/6358 [ no-passthrough ] conformance/programs/program-test
 
 # Flaky on multiple platforms
 crbug.com/1462694 deqp/functional/gles3/vertexarrays/multiple_attributes.stride.html [ RetryOnFailure ]
-crbug.com/1462694 deqp/functional/gles3/vertexarrays/single_attribute.first.html [ RetryOnFailure ]
 
 
 ####################
