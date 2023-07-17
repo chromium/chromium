@@ -12,11 +12,10 @@ import {PowerBookmarksListElement} from 'chrome://bookmarks-side-panel.top-chrom
 import {ShoppingListApiProxyImpl} from 'chrome://bookmarks-side-panel.top-chrome/shared/commerce/shopping_list_api_proxy.js';
 import {PageImageServiceBrowserProxy} from 'chrome://resources/cr_components/page_image_service/browser_proxy.js';
 import {PageImageServiceHandlerRemote} from 'chrome://resources/cr_components/page_image_service/page_image_service.mojom-webui.js';
-import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 
 import {TestShoppingListApiProxy} from './commerce/test_shopping_list_api_proxy.js';
@@ -111,10 +110,16 @@ suite('SidePanelPowerBookmarksListTest', () => {
     });
 
     powerBookmarksList = document.createElement('power-bookmarks-list');
-    document.body.appendChild(powerBookmarksList);
+
+    // Ensure the PowerBookmarksListElement is given a fixed height to expand
+    // to.
+    const parentElement = document.createElement('div');
+    parentElement.style.height = '500px';
+    parentElement.appendChild(powerBookmarksList);
+    document.body.appendChild(parentElement);
 
     await bookmarksApi.whenCalled('getFolders');
-    await flushTasks();
+    await waitAfterNextRender(powerBookmarksList);
   });
 
   test('GetsAndShowsTopLevelBookmarks', () => {
@@ -258,12 +263,9 @@ suite('SidePanelPowerBookmarksListTest', () => {
   });
 
   test('SetsExpandedDescription', () => {
-    const menu =
-        powerBookmarksList.shadowRoot!.querySelector<CrActionMenuElement>(
-            '#editMenu')!;
-    menu.showAt(powerBookmarksList);
-    const visualViewButton: HTMLElement = menu.querySelector('#visualView')!;
-    visualViewButton.click();
+    const viewButton: HTMLElement =
+        powerBookmarksList.shadowRoot!.querySelector('#viewButton')!;
+    viewButton.click();
 
     const bookmarkElements = getBookmarkElements(powerBookmarksList);
     assertEquals(4, bookmarkElements.length);
@@ -276,13 +278,10 @@ suite('SidePanelPowerBookmarksListTest', () => {
     assertTrue(urlListItemElement!.description!.includes(expandedDescription));
   });
 
-  test('SetsExpandedSearchResultDescription', () => {
-    const menu =
-        powerBookmarksList.shadowRoot!.querySelector<CrActionMenuElement>(
-            '#editMenu')!;
-    menu.showAt(powerBookmarksList);
-    const visualViewButton: HTMLElement = menu.querySelector('#visualView')!;
-    visualViewButton.click();
+  test('SetsExpandedSearchResultDescription', async () => {
+    const viewButton: HTMLElement =
+        powerBookmarksList.shadowRoot!.querySelector('#viewButton')!;
+    viewButton.click();
 
     const searchField = powerBookmarksList.shadowRoot!.querySelector(
         'cr-toolbar-search-field')!;
@@ -290,7 +289,7 @@ suite('SidePanelPowerBookmarksListTest', () => {
     searchField.onSearchTermInput();
     searchField.onSearchTermSearch();
 
-    flush();
+    await flushTasks();
 
     const bookmarkElements = getBookmarkElements(powerBookmarksList);
     assertEquals(4, bookmarkElements.length);
@@ -304,12 +303,9 @@ suite('SidePanelPowerBookmarksListTest', () => {
   });
 
   test('ShowsFolderImages', () => {
-    const menu =
-        powerBookmarksList.shadowRoot!.querySelector<CrActionMenuElement>(
-            '#editMenu')!;
-    menu.showAt(powerBookmarksList);
-    const visualViewButton: HTMLElement = menu.querySelector('#visualView')!;
-    visualViewButton.click();
+    const viewButton: HTMLElement =
+        powerBookmarksList.shadowRoot!.querySelector('#viewButton')!;
+    viewButton.click();
 
     flush();
 
