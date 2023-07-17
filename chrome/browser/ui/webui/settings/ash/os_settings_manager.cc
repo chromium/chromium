@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/settings/ash/os_settings_manager.h"
 
 #include "ash/public/cpp/input_device_settings_controller.h"
+#include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/settings/ash/hierarchy.h"
 #include "chrome/browser/ui/webui/settings/ash/input_device_settings/input_device_settings_provider.h"
@@ -67,6 +68,7 @@ void OsSettingsManager::AddLoadTimeData(content::WebUIDataSource* html_source) {
     section->AddLoadTimeData(html_source);
   html_source->AddBoolean("isJellyEnabled",
                           chromeos::features::IsJellyEnabled());
+  html_source->AddBoolean("isSelfShareEnabled", features::IsSelfShareEnabled());
   html_source->UseStringsJs();
 }
 

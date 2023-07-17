@@ -292,6 +292,8 @@ class SettingsNearbyShareSubpageElement extends
         return this.i18n('nearbyShareContactVisibilityNone');
       case Visibility.kUnknown:
         return this.i18n('nearbyShareContactVisibilityUnknown');
+      case Visibility.kYourDevices:
+        return this.i18n('nearbyShareContactVisibilityYourDevices');
       default:
         assertNotReached();
     }
@@ -310,6 +312,8 @@ class SettingsNearbyShareSubpageElement extends
         return this.i18n('nearbyShareContactVisibilityNoneDescription');
       case Visibility.kUnknown:
         return this.i18n('nearbyShareContactVisibilityUnknownDescription');
+      case Visibility.kYourDevices:
+        return this.i18n('nearbyShareContactVisibilityYourDevicesDescription');
       default:
         assertNotReached();
     }
