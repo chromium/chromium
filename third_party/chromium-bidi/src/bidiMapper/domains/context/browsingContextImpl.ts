@@ -67,8 +67,7 @@ export class BrowsingContextImpl {
   readonly #realmStorage: RealmStorage;
   #loaderId?: Protocol.Network.LoaderId;
   #cdpTarget: CdpTarget;
-  #maybeDefaultRealm: Realm | undefined;
-  #isNavigating = false;
+  #maybeDefaultRealm?: Realm;
   readonly #logger?: LoggerFn;
 
   private constructor(
@@ -298,25 +297,6 @@ export class BrowsingContextImpl {
 
   onTargetInfoChanged(params: Protocol.Target.TargetInfoChangedEvent) {
     this.#url = params.targetInfo.url;
-
-    if (this.#isNavigating) {
-      this.#eventManager.registerEvent(
-        {
-          type: 'event',
-          method: ChromiumBidi.BrowsingContext.EventNames.NavigationStarted,
-          params: {
-            context: this.id,
-            // TODO: The navigation event is sent before CDP Page.frameStartedLoading.
-            // It theory there should be a way to get the data.
-            navigation: null,
-            timestamp: BrowsingContextImpl.getTimestamp(),
-            url: this.#url,
-          },
-        },
-        this.id
-      );
-      this.#isNavigating = false;
-    }
   }
 
   #initListeners() {
@@ -367,17 +347,19 @@ export class BrowsingContextImpl {
         if (this.id !== params.frameId) {
           return;
         }
-        this.#isNavigating = true;
-      }
-    );
-
-    this.#cdpTarget.cdpClient.on(
-      'Page.frameStoppedLoading',
-      (params: Protocol.Page.FrameStoppedLoadingEvent) => {
-        if (this.id !== params.frameId) {
-          return;
-        }
-        this.#isNavigating = false;
+        this.#eventManager.registerEvent(
+          {
+            type: 'event',
+            method: ChromiumBidi.BrowsingContext.EventNames.NavigationStarted,
+            params: {
+              context: this.id,
+              navigation: null,
+              timestamp: BrowsingContextImpl.getTimestamp(),
+              url: '',
+            },
+          },
+          this.id
+        );
       }
     );
 

@@ -995,8 +995,47 @@ async def test_browsingContext_fragmentNavigated_event(websocket, context_id,
 
 
 @pytest.mark.asyncio
-async def test_browsingContext_navigationStarted_event(websocket, context_id,
-                                                       html):
+@pytest.mark.parametrize("url", ["https://example.com/", "data:text/html,"])
+async def test_browsingContext_navigationStartedEvent_viaScript(
+        websocket, context_id, url):
+    if url == "data:text/html,":
+        pytest.xfail(
+            reason="TODO: Page.frameStartedLoading not emitted for data url")
+    serialized_url = {"type": "string", "value": url}
+
+    await subscribe(websocket, ["browsingContext.navigationStarted"])
+    await send_JSON_command(
+        websocket, {
+            "method": "script.callFunction",
+            "params": {
+                "functionDeclaration": """(url) => {
+                    location.href = url;
+                }""",
+                "arguments": [serialized_url],
+                "target": {
+                    "context": context_id
+                },
+                "awaitPromise": True
+            }
+        })
+
+    response = await read_JSON_message(websocket)
+    assert response == {
+        'type': 'event',
+        "method": "browsingContext.navigationStarted",
+        "params": {
+            "context": context_id,
+            "navigation": None,
+            "timestamp": ANY_TIMESTAMP,
+            # TODO: Should report correct string
+            "url": ANY_STR,
+        }
+    }
+
+
+@pytest.mark.asyncio
+async def test_browsingContext_navigationStartedEvent_viaCommand(
+        websocket, context_id, html):
     url = html()
 
     await subscribe(websocket, ["browsingContext.navigationStarted"])
@@ -1019,7 +1058,8 @@ async def test_browsingContext_navigationStarted_event(websocket, context_id,
             "context": context_id,
             "navigation": None,
             "timestamp": ANY_TIMESTAMP,
-            "url": url,
+            # TODO: Should report correct string
+            "url": ANY_STR,
         }
     }
 
