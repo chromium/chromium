@@ -15,10 +15,12 @@
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_split.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/timer/elapsed_timer.h"
 #include "components/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations_parser.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "content/public/browser/browser_thread.h"
@@ -208,6 +210,7 @@ void PrivacySandboxAttestations::LoadAttestationsInternal(
     return;
   }
 
+  base::ElapsedTimer parsing_timer;
   absl::optional<PrivacySandboxAttestationsMap> attestations_map =
       ParseAttestationsFromStream(stream);
   if (!attestations_map.has_value()) {
@@ -215,6 +218,10 @@ void PrivacySandboxAttestations::LoadAttestationsInternal(
     RunLoadAttestationsDoneCallbackForTesting();  // IN-TEST
     return;
   }
+  // For an attestations file with 10,000 entries, the average parsing time is
+  // around 150 microsecond.
+  base::UmaHistogramMicrosecondsTimes(kAttestationsFileParsingUMA,
+                                      parsing_timer.Elapsed());
 
   // Queries on Privacy Sandbox APIs attestation status may happen on the UI
   // thread. The final assignment of the attestations map and its version is

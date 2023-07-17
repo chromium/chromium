@@ -26,6 +26,9 @@ class FilePath;
 
 namespace privacy_sandbox {
 
+constexpr char kAttestationsFileParsingUMA[] =
+    "PrivacySandbox.Attestations.InitializationDuration.Parsing";
+
 using PrivacySandboxAttestationsGatedAPISet =
     base::EnumSet<PrivacySandboxAttestationsGatedAPI,
                   PrivacySandboxAttestationsGatedAPI::kTopics,
