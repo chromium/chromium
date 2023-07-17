@@ -31,6 +31,7 @@
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
@@ -158,7 +159,9 @@ class BookmarkDragImageSource : public gfx::CanvasImageSource {
 
     // Draw bookmark title.
     gfx::FontList font_list = views::style::GetFont(
-        views::style::CONTEXT_LABEL, views::style::STYLE_PRIMARY);
+        views::style::CONTEXT_LABEL, features::IsChromeRefresh2023()
+                                         ? views::style::STYLE_BODY_4_EMPHASIS
+                                         : views::style::STYLE_PRIMARY);
     gfx::Rect text_rect(kBookmarkDragImageSize);
     text_rect.Inset(gfx::Insets::TLBR(
         kCountContainerRadius,
