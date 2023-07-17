@@ -58,7 +58,8 @@ enum class Action {
 // IDs for the views used by the clipboard history menu.
 enum MenuViewID {
   // We start at 1 because 0 is not a valid view ID.
-  kCtrlVLabelID = 1,
+  kContentsViewID = 1,
+  kCtrlVLabelID,
   kDeleteButtonViewID,
 };
 

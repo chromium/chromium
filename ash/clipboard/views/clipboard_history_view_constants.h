@@ -42,10 +42,10 @@ constexpr int kLabelPreferredHeight = 20;
 constexpr int kImageViewPreferredHeight = 72;
 
 // The radius of the image view's rounded corners when offset by a background.
-constexpr int kImageBackgroundCornerRadius = 12;
+constexpr float kImageBackgroundCornerRadius = 12.f;
 
 // The radius of the image view's rounded corners when surrounded by a border.
-constexpr int kImageBorderCornerRadius = 4;
+constexpr float kImageBorderCornerRadius = 4.f;
 
 // The preferred size for an item's icon.
 constexpr gfx::Size kIconSize(20, 20);

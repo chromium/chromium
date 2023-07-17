@@ -8,12 +8,12 @@
 #include "ash/clipboard/views/clipboard_history_view_constants.h"
 #include "ash/style/ash_color_id.h"
 #include "base/callback_list.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "chromeos/constants/chromeos_features.h"
-#include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkPathBuilder.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
@@ -153,7 +153,8 @@ class FadeImageView : public views::ImageView,
 ////////////////////////////////////////////////////////////////////////////////
 // ClipboardHistoryBitmapItemView::BitmapContentsView
 
-class ClipboardHistoryBitmapItemView::BitmapContentsView : public views::View {
+class ClipboardHistoryBitmapItemView::BitmapContentsView
+    : public ClipboardHistoryBitmapItemView::ContentsView {
  public:
   METADATA_HEADER(BitmapContentsView);
   explicit BitmapContentsView(ClipboardHistoryBitmapItemView* container)
@@ -189,20 +190,60 @@ class ClipboardHistoryBitmapItemView::BitmapContentsView : public views::View {
 
  private:
   // ContentsView:
-  void OnBoundsChanged(const gfx::Rect& previous_bounds) override {
-    // Create rounded corners around the contents area through the clip path
-    // instead of layer clip. Because we have to avoid using any layer here.
-    // Note that the menu's container does not cut the children's layers outside
-    // of the container's bounds. As a result, if menu items have their own
-    // layers, the part beyond the container's bounds is still visible when the
-    // context menu is in overflow.
+  SkPath GetClipPath() override {
     const SkRect local_bounds = gfx::RectToSkRect(GetContentsBounds());
-    const SkScalar radius =
-        SkIntToScalar(chromeos::features::IsClipboardHistoryRefreshEnabled()
-                          ? ClipboardHistoryViews::kImageBackgroundCornerRadius
-                          : ClipboardHistoryViews::kImageBorderCornerRadius);
-    SetClipPath(SkPath::RRect(local_bounds, radius, radius));
+    if (!chromeos::features::IsClipboardHistoryRefreshEnabled() ||
+        !is_delete_button_visible()) {
+      // Create rounded corners around the contents area. Because the menu's
+      // container does not cut the children's layers outside of the container's
+      // bounds, we use a clip path rather than creating a layer and masking it.
+      // Otherwise, it would be possible to see contents that overflowed past
+      // the menu item's bounds.
+      const SkScalar radius = SkIntToScalar(
+          chromeos::features::IsClipboardHistoryRefreshEnabled()
+              ? ClipboardHistoryViews::kImageBackgroundCornerRadius
+              : ClipboardHistoryViews::kImageBorderCornerRadius);
+      return SkPath::RRect(local_bounds, radius, radius);
+    }
 
+    const auto width = local_bounds.width();
+    const auto height = local_bounds.height();
+    const auto radius = ClipboardHistoryViews::kImageBackgroundCornerRadius;
+
+    const auto top_left = SkPoint::Make(0.f, 0.f);
+    const auto bottom_left = SkPoint::Make(0.f, height);
+    const auto bottom_right = SkPoint::Make(width, height);
+
+    const auto horizontal_offset = SkPoint::Make(radius, 0.f);
+    const auto vertical_offset = SkPoint::Make(0.f, radius);
+
+    return SkPathBuilder()
+        // Start just before the curve of the top-left corner.
+        .moveTo(radius, 0.f)
+        // Draw the top-left rounded corner.
+        .arcTo(top_left, top_left + vertical_offset, radius)
+        // Draw the bottom-left rounded corner and the vertical line connecting
+        // it to the top-left corner.
+        .arcTo(bottom_left, bottom_left + horizontal_offset, radius)
+        // Draw the bottom-right rounded corner and the horizontal line
+        // connecting it to the bottom-left corner.
+        .arcTo(bottom_right, bottom_right - vertical_offset, radius)
+        // Draw a vertical line to the start of the top-right corner's cutout.
+        .lineTo(width, 38.f)
+        // Draw the top-right corner's cutout.
+        .rCubicTo(0.f, -radius, -6.7f, -10.f, -10.f, -10.f)
+        .rLineTo(-4.f, 0.f)
+        .rCubicTo(-7.7f, 0.f, -14.f, -6.3f, -14.f, -14.f)
+        .rLineTo(0.f, -4.f)
+        .rCubicTo(0.f, -3.3f, -2.f, -10.f, -10.f, -10.f)
+        // Draw a horizontal line back to the starting point.
+        .lineTo(radius, 0.f)
+        .close()
+        .detach();
+  }
+
+  void OnBoundsChanged(const gfx::Rect& previous_bounds) override {
+    SetClipPath(GetClipPath());
     UpdateImageViewSize();
   }
 
@@ -268,7 +309,7 @@ class ClipboardHistoryBitmapItemView::BitmapContentsView : public views::View {
   raw_ptr<views::ImageView, ExperimentalAsh> image_view_ = nullptr;
 };
 
-BEGIN_METADATA(ClipboardHistoryBitmapItemView, BitmapContentsView, views::View)
+BEGIN_METADATA(ClipboardHistoryBitmapItemView, BitmapContentsView, ContentsView)
 END_METADATA
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -296,7 +337,7 @@ ClipboardHistoryBitmapItemView::ClipboardHistoryBitmapItemView(
 
 ClipboardHistoryBitmapItemView::~ClipboardHistoryBitmapItemView() = default;
 
-std::unique_ptr<views::View>
+std::unique_ptr<ClipboardHistoryBitmapItemView::ContentsView>
 ClipboardHistoryBitmapItemView::CreateContentsView() {
   return std::make_unique<BitmapContentsView>(this);
 }

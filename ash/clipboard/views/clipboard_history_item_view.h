@@ -11,6 +11,7 @@
 #include "base/unguessable_token.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
+#include "ui/views/view_observer.h"
 
 namespace views {
 class MenuItemView;
@@ -69,12 +70,39 @@ class ASH_EXPORT ClipboardHistoryItemView : public views::View {
   clipboard_history_util::Action action() const { return action_; }
 
  protected:
+  // Used by subclasses to draw contents, such as text or bitmaps. When the
+  // clipboard history refresh is enabled, a `ContentsView` observes its sibling
+  // `ClipboardHistoryDeleteButton` so that it knows when to clip its contents.
+  class ContentsView : public views::View, public views::ViewObserver {
+   public:
+    METADATA_HEADER(ContentsView);
+    ContentsView();
+    ContentsView(const ContentsView& rhs) = delete;
+    ContentsView& operator=(const ContentsView& rhs) = delete;
+    ~ContentsView() override;
+
+   protected:
+    // Returns the region to which this view's contents should be constrained.
+    virtual SkPath GetClipPath() = 0;
+
+    bool is_delete_button_visible() { return is_delete_button_visible_; }
+
+   private:
+    // views::ViewObserver:
+    void OnViewVisibilityChanged(views::View* observed_view,
+                                 views::View* starting_view) override;
+
+    // Determines whether the contents need to be clipped to avoid overlapping
+    // with the delete button.
+    bool is_delete_button_visible_ = false;
+  };
+
   ClipboardHistoryItemView(const base::UnguessableToken& item_id,
                            const ClipboardHistory* clipboard_history,
                            views::MenuItemView* container);
 
   // Creates the contents view.
-  virtual std::unique_ptr<views::View> CreateContentsView() = 0;
+  virtual std::unique_ptr<ContentsView> CreateContentsView() = 0;
 
   const ClipboardHistoryItem* GetClipboardHistoryItem() const;
 
