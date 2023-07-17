@@ -85,8 +85,8 @@ TEST_F(FontDescriptionTest, VariationSettingsIdenticalCacheKey) {
   ASSERT_EQ(a, b);
 
   FontFaceCreationParams test_creation_params;
-  FontCacheKey cache_key_a = a.CacheKey(test_creation_params, false, false);
-  FontCacheKey cache_key_b = b.CacheKey(test_creation_params, false, false);
+  FontCacheKey cache_key_a = a.CacheKey(test_creation_params, false);
+  FontCacheKey cache_key_b = b.CacheKey(test_creation_params, false);
 
   ASSERT_EQ(cache_key_a, cache_key_b);
 }
@@ -112,8 +112,8 @@ TEST_F(FontDescriptionTest, VariationSettingsDifferentCacheKey) {
 
   FontFaceCreationParams test_creation_params;
 
-  FontCacheKey cache_key_a = a.CacheKey(test_creation_params, false, false);
-  FontCacheKey cache_key_b = b.CacheKey(test_creation_params, false, false);
+  FontCacheKey cache_key_a = a.CacheKey(test_creation_params, false);
+  FontCacheKey cache_key_b = b.CacheKey(test_creation_params, false);
 
   ASSERT_NE(cache_key_a, cache_key_b);
 
@@ -131,10 +131,8 @@ TEST_F(FontDescriptionTest, VariationSettingsDifferentCacheKey) {
 
   ASSERT_NE(a, b);
 
-  FontCacheKey second_cache_key_a =
-      a.CacheKey(test_creation_params, false, false);
-  FontCacheKey second_cache_key_b =
-      b.CacheKey(test_creation_params, false, false);
+  FontCacheKey second_cache_key_a = a.CacheKey(test_creation_params, false);
+  FontCacheKey second_cache_key_b = b.CacheKey(test_creation_params, false);
 
   ASSERT_NE(second_cache_key_a, second_cache_key_b);
 }
@@ -158,8 +156,8 @@ TEST_F(FontDescriptionTest, PaletteDifferentCacheKey) {
 
   FontFaceCreationParams test_creation_params;
 
-  FontCacheKey cache_key_a = a.CacheKey(test_creation_params, false, false);
-  FontCacheKey cache_key_b = b.CacheKey(test_creation_params, false, false);
+  FontCacheKey cache_key_a = a.CacheKey(test_creation_params, false);
+  FontCacheKey cache_key_b = b.CacheKey(test_creation_params, false);
 
   ASSERT_NE(cache_key_a, cache_key_b);
 }
@@ -184,8 +182,8 @@ TEST_F(FontDescriptionTest, VariantAlternatesDifferentCacheKey) {
   ASSERT_NE(a, b);
 
   FontFaceCreationParams test_creation_params;
-  FontCacheKey key_a = a.CacheKey(test_creation_params, false, false);
-  FontCacheKey key_b = b.CacheKey(test_creation_params, false, false);
+  FontCacheKey key_a = a.CacheKey(test_creation_params, false);
+  FontCacheKey key_b = b.CacheKey(test_creation_params, false);
 
   ASSERT_NE(key_a, key_b);
 }

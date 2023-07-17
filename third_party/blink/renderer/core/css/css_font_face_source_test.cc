@@ -44,9 +44,7 @@ unsigned SimulateHashCalculation(float size) {
   FontDescription font_description;
   font_description.SetComputedSize(size);
   bool is_unique_match = false;
-  bool is_generic_family = false;
-  return font_description
-      .CacheKey(FontFaceCreationParams(), is_unique_match, is_generic_family)
+  return font_description.CacheKey(FontFaceCreationParams(), is_unique_match)
       .GetHash();
 }
 }  // namespace

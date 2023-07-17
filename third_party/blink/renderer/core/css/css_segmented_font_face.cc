@@ -113,9 +113,8 @@ scoped_refptr<FontData> CSSSegmentedFontFace::GetFontData(
   }
 
   bool is_unique_match = false;
-  bool is_generic_family = false;
-  FontCacheKey key = font_description.CacheKey(
-      FontFaceCreationParams(), is_unique_match, is_generic_family);
+  FontCacheKey key =
+      font_description.CacheKey(FontFaceCreationParams(), is_unique_match);
 
   // font_data_table_ caches FontData and SegmentedFontData instances, which
   // provide SimpleFontData objects containing FontPlatformData objects. In the
