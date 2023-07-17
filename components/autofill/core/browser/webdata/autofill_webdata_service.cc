@@ -241,6 +241,13 @@ void AutofillWebDataService::RemoveIBAN(const std::string& guid) {
                                        autofill_backend_, guid));
 }
 
+void AutofillWebDataService::AddServerCvc(int64_t instrument_id,
+                                          const std::u16string& cvc) {
+  wdbs_->ScheduleDBTask(
+      FROM_HERE, base::BindOnce(&AutofillWebDataBackendImpl::AddServerCvc,
+                                autofill_backend_, instrument_id, cvc));
+}
+
 WebDataServiceBase::Handle AutofillWebDataService::GetCreditCards(
     WebDataServiceConsumer* consumer) {
   return wdbs_->ScheduleDBTaskWithResult(

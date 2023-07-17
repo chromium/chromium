@@ -94,7 +94,9 @@ enum class Result {
   kRemoveAutofillDataModifiedBetween_Failure = 211,
   kRemoveOriginURLsModifiedBetween_Success = 220,
   kRemoveOriginURLsModifiedBetween_Failure = 221,
-  kMaxValue = kRemoveOriginURLsModifiedBetween_Failure,
+  kAddServerCvc_Success = 230,
+  kAddServerCvc_Failure = 231,
+  kMaxValue = kAddServerCvc_Failure,
 };
 
 // Reports the success or failure of various operations on the database via UMA.
@@ -712,6 +714,19 @@ WebDatabase::State AutofillWebDataBackendImpl::UpdateServerAddressMetadata(
   }
 
   ReportResult(Result::kUpdateServerAddressMetadata_Success);
+  return WebDatabase::COMMIT_NEEDED;
+}
+
+WebDatabase::State AutofillWebDataBackendImpl::AddServerCvc(
+    int64_t instrument_id,
+    const std::u16string& cvc,
+    WebDatabase* db) {
+  DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
+  if (!AutofillTable::FromWebDatabase(db)->AddServerCvc(instrument_id, cvc)) {
+    ReportResult(Result::kAddServerCvc_Failure);
+    return WebDatabase::COMMIT_NOT_NEEDED;
+  }
+  ReportResult(Result::kAddServerCvc_Success);
   return WebDatabase::COMMIT_NEEDED;
 }
 

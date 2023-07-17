@@ -1288,6 +1288,22 @@ TEST_F(PersonalDataManagerTest, AddUpdateRemoveCreditCards) {
   ExpectSameElements(cards, personal_data_->GetCreditCards());
 }
 
+// Test that verify add server cvc function working as expected.
+TEST_F(PersonalDataManagerTest, ServerCvc) {
+  std::u16string kCvc = u"111";
+  CreditCard credit_card = test::GetMaskedServerCard();
+  SetServerCards({credit_card});
+
+  // Add an empty cvc will fail a CHECK().
+  EXPECT_DEATH_IF_SUPPORTED(personal_data_->AddServerCvc(1, u""), "");
+
+  personal_data_->AddServerCvc(credit_card.instrument_id(), kCvc);
+  PersonalDataProfileTaskWaiter(*personal_data_).Wait();
+
+  ASSERT_EQ(personal_data_->GetCreditCards().size(), 1U);
+  EXPECT_EQ(personal_data_->GetCreditCards()[0]->cvc(), kCvc);
+}
+
 // Test that a new credit card has its basic information set.
 TEST_F(PersonalDataManagerTest, AddCreditCard_BasicInformation) {
   // Create the test clock and set the time to a specific value.

@@ -1114,6 +1114,26 @@ void PersonalDataManager::UpdateServerCardsMetadata(
   Refresh();
 }
 
+void PersonalDataManager::AddServerCvc(int64_t instrument_id,
+                                       const std::u16string& cvc) {
+  // We don't check for the validity of the instrument_id.
+  // When a user saves a new card along with the CVC, we first save the card and
+  // wait for the instrument id passed back from the UploadResponse. Then this
+  // function is triggered to save server cvc. At this time, a new card should
+  // theoretically be synced down via Chrome Sync but it can be delayed. As a
+  // result, this Chrome client does not have the instrument id yet in the card
+  // table but it should invoke the AddServerCvc.
+  CHECK(!cvc.empty());
+  CHECK(database_helper_->GetServerDatabase())
+      << "Adding Server cvc without server storage.";
+
+  // Add the new server cvc to the web database.
+  database_helper_->GetServerDatabase()->AddServerCvc(instrument_id, cvc);
+
+  // Refresh our local cache and send notifications to observers.
+  Refresh();
+}
+
 void PersonalDataManager::ResetFullServerCard(const std::string& guid) {
   for (const auto& card : server_credit_cards_) {
     if (card->guid() == guid) {

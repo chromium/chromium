@@ -10112,6 +10112,8 @@ others/histograms.xml -->
   <int value="211" label="RemoveAutofillDataModifiedBetween: Failure"/>
   <int value="220" label="RemoveOriginURLsModifiedBetween: Success"/>
   <int value="221" label="RemoveOriginURLsModifiedBetween: Failure"/>
+  <int value="230" label="AddServerCvc: Success"/>
+  <int value="231" label="AddServerCvc: Failure"/>
 </enum>
 
 <enum name="AutoFramingError">
