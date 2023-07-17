@@ -3592,7 +3592,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Survey.DownloadAttemptsBeforeAccepted" units="units"
-    expires_after="2023-08-27">
+    expires_after="2024-01-27">
   <owner>skym@chromium.org</owner>
   <owner>wenyufu@chromium.org</owner>
   <owner>clank-app-team@google.com</owner>
@@ -3613,7 +3613,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Survey.DownloadRequested2" enum="BooleanRequested"
-    expires_after="2023-08-27">
+    expires_after="2024-01-27">
   <owner>twellington@chromium.org</owner>
   <owner>wenyufu@chromium.org</owner>
   <owner>clank-app-team@google.com</owner>
@@ -3625,7 +3625,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Survey.DownloadResponseCode2"
-    enum="SurveyDownloadResponseCodes2" expires_after="2023-08-27">
+    enum="SurveyDownloadResponseCodes2" expires_after="2024-01-27">
   <owner>skym@chromium.org</owner>
   <owner>wenyufu@chromium.org</owner>
   <owner>clank-app-team@google.com</owner>
@@ -3638,7 +3638,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Survey.ShowSurveyStatus"
-    enum="SurveyPresentationStatusCode" expires_after="2023-08-27">
+    enum="SurveyPresentationStatusCode" expires_after="2024-01-27">
   <owner>aishwaryarj@google.com</owner>
   <owner>twellington@chromium.org</owner>
   <owner>wenyufu@chromium.org</owner>
@@ -3653,7 +3653,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Survey.SurveyCompleted" enum="BooleanCompleted"
-    expires_after="2023-08-27">
+    expires_after="2024-01-27">
   <owner>skym@chromium.org</owner>
   <owner>wenyufu@chromium.org</owner>
   <owner>clank-app-team@google.com</owner>
@@ -3665,7 +3665,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Survey.SurveyFilteringResults"
-    enum="SurveyFilteringResult" expires_after="2023-08-27">
+    enum="SurveyFilteringResult" expires_after="2024-01-27">
   <owner>twellington@chromium.org</owner>
   <owner>wenyufu@chromium.org</owner>
   <owner>clank-app-team@google.com</owner>
