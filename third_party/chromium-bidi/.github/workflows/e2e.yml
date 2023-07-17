@@ -29,7 +29,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
+        # TODO(#876): Add Windows CI.
+        os: [ubuntu-latest, macos-latest]
         head: [headful, headless]
     runs-on: ${{ matrix.os }}
     steps:
