@@ -1242,7 +1242,7 @@ deps = {
     Var('chromium_git') + '/external/github.com/google/cpu_features.git' + '@' + '936b9ab5515dead115606559502e3864958f7f6e',
 
   'src/third_party/cpuinfo/src':
-    Var('chromium_git') + '/external/github.com/pytorch/cpuinfo.git' + '@' + '512e9d0258212d6759729330b445fa41f4fa0a49',
+    Var('chromium_git') + '/external/github.com/pytorch/cpuinfo.git' + '@' + '87d8234510367db49a65535021af5e1838a65ac2',
 
   'src/third_party/crc32c/src':
     Var('chromium_git') + '/external/github.com/google/crc32c.git' + '@' + 'fa5ade41ee480003d9c5af6f43567ba22e4e17e6',
@@ -1870,7 +1870,7 @@ deps = {
     Var('chromium_git') + '/external/github.com/GoogleChromeLabs/text-fragments-polyfill.git' + '@' + 'c036420683f672d685e27415de0a5f5e85bdc23f',
 
   'src/third_party/tflite/src':
-    Var('chromium_git') + '/external/github.com/tensorflow/tensorflow.git' + '@' + '883928088216e29e34ba42ddc40acff646a76198',
+    Var('chromium_git') + '/external/github.com/tensorflow/tensorflow.git' + '@' + '8c1827c1a7a3048599d3606b9f4bee8c8a1c808b',
 
   'src/third_party/turbine': {
       'packages': [
