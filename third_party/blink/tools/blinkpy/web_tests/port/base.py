@@ -1984,11 +1984,10 @@ class Port(object):
             return expectations
 
         for (_, _, filenames) in self._filesystem.walk(flag_path):
-            if 'README.txt' in filenames:
-                filenames.remove('README.txt')
-            if 'PRESUBMIT.py' in filenames:
-                filenames.remove('PRESUBMIT.py')
             for filename in filenames:
+                if (filename.startswith('README') or filename.endswith('~')
+                        or filename == 'PRESUBMIT.py'):
+                    continue
                 path = self._filesystem.join(flag_path, filename)
                 try:
                     expectations[path] = self._filesystem.read_text_file(path)
