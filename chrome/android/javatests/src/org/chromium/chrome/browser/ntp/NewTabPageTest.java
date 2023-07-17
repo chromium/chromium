@@ -21,10 +21,16 @@ import static org.mockito.Mockito.when;
 import static org.chromium.ui.test.util.ViewUtils.waitForView;
 
 import android.content.ComponentCallbacks2;
+import android.content.res.Resources;
 import android.graphics.Canvas;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewGroup.MarginLayoutParams;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.test.core.app.ApplicationProvider;
@@ -95,11 +101,14 @@ import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.NewTabPageTestUtils;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestUtil;
 import org.chromium.chrome.test.util.browser.suggestions.SuggestionsDependenciesRule;
 import org.chromium.chrome.test.util.browser.suggestions.mostvisited.FakeMostVisitedSites;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
+import org.chromium.components.browser_ui.widget.tile.TileView;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.components.search_engines.TemplateUrlService;
@@ -1071,6 +1080,104 @@ public class NewTabPageTest {
         assertEquals("The single tab card is still visible after updating with the new tab "
                         + "page information.",
                 View.GONE, singleTabCardView.getVisibility());
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"NewTabPage"})
+    @EnableFeatures({ChromeFeatureList.SURFACE_POLISH,
+            ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID})
+    // clang-format off
+    public void test1RowMvtOnNtpAfterPolish() {
+        // clang-format on
+        verifyMostVisitedTileMarginPolish();
+
+        Resources res = mActivityTestRule.getActivity().getResources();
+        NewTabPageLayout ntpLayout = mNtp.getNewTabPageLayout();
+        View mvTilesLayout = ntpLayout.findViewById(org.chromium.chrome.test.R.id.mv_tiles_layout);
+
+        int expectedTitleTopMargin =
+                res.getDimensionPixelSize(R.dimen.tile_view_title_margin_top_modern_polish);
+        TileView suggestionsTileElement = (TileView) ((LinearLayout) mvTilesLayout).getChildAt(0);
+        Assert.assertEquals("The top margin of the tile element's title is wrong.",
+                expectedTitleTopMargin,
+                ((MarginLayoutParams) suggestionsTileElement.getTitleView().getLayoutParams())
+                        .topMargin);
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"NewTabPage"})
+    @EnableFeatures({ChromeFeatureList.SURFACE_POLISH})
+    @DisableFeatures({ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID,
+            ChromeFeatureList.FEED_POSITION_ANDROID})
+    // clang-format off
+    public void test2RowMvtOnNtpAfterPolish() {
+        // clang-format on
+        verifyMostVisitedTileMarginPolish();
+
+        Resources res = mActivityTestRule.getActivity().getResources();
+        NewTabPageLayout ntpLayout = mNtp.getNewTabPageLayout();
+        View mvTilesLayout = ntpLayout.findViewById(org.chromium.chrome.test.R.id.mv_tiles_layout);
+
+        int expectedTitleTopMargin =
+                res.getDimensionPixelSize(R.dimen.tile_view_title_margin_top_modern_polish);
+        TileView suggestionsTileElement = (TileView) ((FrameLayout) mvTilesLayout).getChildAt(0);
+        Assert.assertEquals("The top margin of the tile element's title is wrong.",
+                expectedTitleTopMargin,
+                ((MarginLayoutParams) suggestionsTileElement.getTitleView().getLayoutParams())
+                        .topMargin);
+
+        int expectedMvtVerticalSpacing =
+                res.getDimensionPixelSize(R.dimen.tile_grid_layout_vertical_spacing_polish);
+        Assert.assertEquals(
+                "The vertical spacing between the 2 rows of the most visited tiles is wrong.",
+                expectedMvtVerticalSpacing,
+                mvTilesLayout.getHeight() - suggestionsTileElement.getHeight() * 2, 1);
+    }
+
+    private void verifyMostVisitedTileMarginPolish() {
+        Resources res = mActivityTestRule.getActivity().getResources();
+        NewTabPageLayout ntpLayout = mNtp.getNewTabPageLayout();
+        View mvTilesContainer =
+                ntpLayout.findViewById(org.chromium.chrome.test.R.id.mv_tiles_container);
+
+        int expectedMvtLateralMargin =
+                res.getDimensionPixelSize(R.dimen.mvt_container_lateral_margin_ntp_polish);
+        Assert.assertEquals("The left margin of the most visited tiles container is wrong.",
+                expectedMvtLateralMargin,
+                ((MarginLayoutParams) mvTilesContainer.getLayoutParams()).leftMargin);
+        Assert.assertEquals("The right margin of the most visited tiles container is wrong.",
+                expectedMvtLateralMargin,
+                ((MarginLayoutParams) mvTilesContainer.getLayoutParams()).rightMargin);
+        Assert.assertEquals("The width of the most visited tiles container is wrong.",
+                expectedMvtLateralMargin * 2, ntpLayout.getWidth() - mvTilesContainer.getWidth());
+
+        int expectedMvtTopMargin =
+                res.getDimensionPixelSize(R.dimen.mvt_container_top_margin_polish);
+        int expectedMvtBottomMargin =
+                res.getDimensionPixelSize(R.dimen.mvt_container_bottom_margin_polish);
+        Assert.assertEquals("The top margin of the most visited tiles container is wrong.",
+                expectedMvtTopMargin,
+                ((MarginLayoutParams) mvTilesContainer.getLayoutParams()).topMargin, 1);
+        Assert.assertEquals("The bottom margin of the most visited tiles container is wrong.",
+                expectedMvtBottomMargin,
+                ((MarginLayoutParams) mvTilesContainer.getLayoutParams()).bottomMargin);
+
+        int expectedMvtTopPadding =
+                res.getDimensionPixelSize(R.dimen.mvt_container_top_padding_polish);
+        int expectedMvtBottomPadding =
+                res.getDimensionPixelSize(R.dimen.mvt_container_bottom_padding_polish);
+        Assert.assertEquals("The top padding of the most visited tiles container is wrong.",
+                expectedMvtTopPadding, mvTilesContainer.getPaddingTop());
+        Assert.assertEquals("The bottom padding of the most visited tiles container is wrong.",
+                expectedMvtBottomPadding, mvTilesContainer.getPaddingBottom());
+
+        Drawable mvTilesContainerBackground = mvTilesContainer.getBackground();
+        Assert.assertEquals(
+                "The shape of the background of the most visited tiles container is wrong.",
+                GradientDrawable.RECTANGLE,
+                ((GradientDrawable) mvTilesContainerBackground).getShape());
     }
 
     private void captureThumbnail() {

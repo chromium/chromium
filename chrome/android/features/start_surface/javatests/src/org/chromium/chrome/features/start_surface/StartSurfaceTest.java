@@ -1122,7 +1122,7 @@ public class StartSurfaceTest {
         onViewWaiting(withId(R.id.mv_tiles_container)).check(matches(isDisplayed()));
         onViewWaiting(withId(R.id.tab_switcher_title)).check(matches(isDisplayed()));
         onViewWaiting(withId(R.id.tab_switcher_module_container)).check(matches(isDisplayed()));
-        onView(withId(R.id.tasks_surface_body)).check(matches(isDisplayed()));
+        onViewWaiting(withId(R.id.tasks_surface_body));
 
         View startSurfaceView =
                 cta.findViewById(org.chromium.chrome.test.R.id.primary_tasks_surface_view);

@@ -1345,8 +1345,6 @@ public class StartSurfaceMediatorUnitTest {
         Resources resources = ContextUtils.getApplicationContext().getResources();
         int tasksSurfaceBodyTopMarginPolished =
                 resources.getDimensionPixelSize(R.dimen.tasks_surface_body_top_margin_polished);
-        int mvTilesContainerTopMargin =
-                resources.getDimensionPixelSize(R.dimen.mv_tiles_container_top_margin);
         int tabSwitcherTitleTopMargin =
                 resources.getDimensionPixelSize(R.dimen.tab_switcher_title_top_margin);
 
@@ -1355,8 +1353,7 @@ public class StartSurfaceMediatorUnitTest {
                 /* useMagicSpace*/ false);
         assertThat(mPropertyModel.get(TASKS_SURFACE_BODY_TOP_MARGIN),
                 equalTo(tasksSurfaceBodyTopMarginPolished));
-        assertThat(mPropertyModel.get(MV_TILES_CONTAINER_TOP_MARGIN),
-                equalTo(mvTilesContainerTopMargin));
+        assertThat(mPropertyModel.get(MV_TILES_CONTAINER_TOP_MARGIN), equalTo(0));
         assertThat(mPropertyModel.get(TAB_SWITCHER_TITLE_TOP_MARGIN),
                 equalTo(tabSwitcherTitleTopMargin));
 

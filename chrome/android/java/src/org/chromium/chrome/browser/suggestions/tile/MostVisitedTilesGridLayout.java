@@ -19,6 +19,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.MathUtils;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ntp.FeedPositionUtils;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
 
@@ -38,6 +39,7 @@ public class MostVisitedTilesGridLayout extends FrameLayout implements MostVisit
     private final int mMvtContainer2SidesMarginTablet;
     private final int mTileViewLandscapeEdgePaddingTablet;
     private final int mTileViewPortraitEdgePaddingTablet;
+    private boolean mIsSurfacePolishEnabled;
 
     /**
      * Constructor for inflating from XML.
@@ -49,6 +51,7 @@ public class MostVisitedTilesGridLayout extends FrameLayout implements MostVisit
         super(context, attrs);
 
         Resources res = getResources();
+        mIsSurfacePolishEnabled = ChromeFeatureList.sSurfacePolish.isEnabled();
         mVerticalSpacing =
                 getResources().getDimensionPixelOffset(getGridMVTVerticalSpacingResourcesId());
         TypedArray styledAttrs =
@@ -227,7 +230,8 @@ public class MostVisitedTilesGridLayout extends FrameLayout implements MostVisit
     // TODO(crbug.com/1329288): Remove this method when the Feed position experiment is cleaned up.
     private int getGridMVTVerticalSpacingResourcesId() {
         if (!LibraryLoader.getInstance().isInitialized() || !mSearchProviderHasLogo) {
-            return R.dimen.tile_grid_layout_vertical_spacing;
+            return mIsSurfacePolishEnabled ? R.dimen.tile_grid_layout_vertical_spacing_polish
+                                           : R.dimen.tile_grid_layout_vertical_spacing;
         }
 
         if (FeedPositionUtils.isFeedPushDownLargeEnabled()) {
@@ -238,6 +242,7 @@ public class MostVisitedTilesGridLayout extends FrameLayout implements MostVisit
             return R.dimen.tile_grid_layout_vertical_spacing_push_down_small;
         }
 
-        return R.dimen.tile_grid_layout_vertical_spacing;
+        return mIsSurfacePolishEnabled ? R.dimen.tile_grid_layout_vertical_spacing_polish
+                                       : R.dimen.tile_grid_layout_vertical_spacing;
     }
 }

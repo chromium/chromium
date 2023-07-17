@@ -126,7 +126,7 @@ public class TileView extends FrameLayout {
         return mRoundingOutline.getRadiusForTesting();
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     public @NonNull TextView getTitleView() {
         return mTitleView;
     }

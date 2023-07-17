@@ -171,7 +171,7 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
     private final HomeSurfaceTracker mHomeSurfaceTracker;
     private final boolean mIsNtpAsHomeSurfaceEnabled;
     private boolean mSnapshotSingleTabCardChanged;
-    private final boolean mIsSurfacePolished;
+    private final boolean mIsSurfacePolishEnabled;
 
     @Nullable
     private SearchResumptionModuleCoordinator mSearchResumptionModuleCoordinator;
@@ -380,8 +380,8 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
         mContext = activity;
         mTitle = activity.getResources().getString(R.string.new_tab_title);
 
-        mIsSurfacePolished = ChromeFeatureList.sSurfacePolish.isEnabled();
-        if (mIsSurfacePolished) {
+        mIsSurfacePolishEnabled = ChromeFeatureList.sSurfacePolish.isEnabled();
+        if (mIsSurfacePolishEnabled) {
             mBackgroundColor = ChromeColors.getSurfaceColor(
                     mContext, R.dimen.home_surface_background_color_elevation);
         } else {
@@ -485,7 +485,7 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
                 mFeedSurfaceProvider.getTouchEnabledDelegate(), mFeedSurfaceProvider.getUiConfig(),
                 lifecycleDispatcher, uma, mTab.isIncognito(), windowAndroid,
                 mIsNtpAsHomeSurfaceEnabled, FeedFeatures.isMultiColumnFeedEnabled(mContext),
-                mIsSurfacePolished);
+                mIsSurfacePolishEnabled);
 
         // If new NewTabPage is created via back operations, re-show the single Tab card with the
         // previously tracked Tab.

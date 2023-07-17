@@ -20,6 +20,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.Log;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.native_page.ContextMenuManager;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -55,6 +56,7 @@ public class MostVisitedTilesMediator implements TileGroup.Observer, TemplateUrl
     private final boolean mIsScrollableMVTEnabled;
     private final boolean mIsTablet;
     private final boolean mIsMultiColumnFeedOnTabletEnabled;
+    private final boolean mIsSurfacePolishEnabled;
     private final int mTileViewLandscapePadding;
     private final int mTileViewPortraitEdgePadding;
     private final Runnable mSnapshotTileGridChangedRunnable;
@@ -66,6 +68,8 @@ public class MostVisitedTilesMediator implements TileGroup.Observer, TemplateUrl
     private boolean mInitializationComplete;
     private boolean mSearchProviderHasLogo = true;
     private TemplateUrlService mTemplateUrlService;
+
+    private int mTileCarouselLayoutLateralMarginSumForPolish;
 
     public MostVisitedTilesMediator(Resources resources, UiConfig uiConfig, ViewGroup mvTilesLayout,
             ViewStub noMvPlaceholderStub, TileRenderer renderer, PropertyModel propertyModel,
@@ -82,11 +86,16 @@ public class MostVisitedTilesMediator implements TileGroup.Observer, TemplateUrl
         mTileCountChangedRunnable = tileCountChangedRunnable;
         mMvTilesLayout = mvTilesLayout;
         mNoMvPlaceholderStub = noMvPlaceholderStub;
+        mIsSurfacePolishEnabled = ChromeFeatureList.sSurfacePolish.isEnabled();
 
         mTileViewLandscapePadding =
                 mResources.getDimensionPixelSize(R.dimen.tile_view_padding_landscape);
         mTileViewPortraitEdgePadding =
                 mResources.getDimensionPixelSize(R.dimen.tile_view_padding_edge_portrait);
+        mTileCarouselLayoutLateralMarginSumForPolish =
+                mResources.getDimensionPixelSize(
+                        R.dimen.tile_carousel_layout_lateral_margin_start_surface_polish)
+                * 2;
 
         maybeSetPortraitIntervalPaddingsForCarousel();
 
@@ -230,6 +239,9 @@ public class MostVisitedTilesMediator implements TileGroup.Observer, TemplateUrl
         } else {
             boolean isSmallDevice = mUiConfig.getCurrentDisplayStyle().isSmall();
             int screenWidth = mResources.getDisplayMetrics().widthPixels;
+            if (mIsSurfacePolishEnabled) {
+                screenWidth -= mTileCarouselLayoutLateralMarginSumForPolish;
+            }
             int tileViewWidth = mResources.getDimensionPixelOffset(
                     isSmallDevice ? R.dimen.tile_view_width_condensed : R.dimen.tile_view_width);
             // We want to show four and a half tile view to make users know the MV tiles are

@@ -238,8 +238,6 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
     private OnClickListener mTabSwitcherClickHandler;
     private ObservableSupplier<Profile> mProfileSupplier;
 
-    private final boolean mIsSurfacePolished;
-
     // TODO(crbug.com/1315676): Clean up TabSwitcher#Controller once the start surface refactoring
     // is done.
     StartSurfaceMediator(@Nullable Controller controller, ViewGroup tabSwitcherContainer,
@@ -293,7 +291,6 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
         mTabSwitcherClickHandler = tabSwitcherClickHandler;
         mProfileSupplier = profileSupplier;
         mProfileSupplier.addObserver(this::onProfileAvailable);
-        mIsSurfacePolished = mIsStartSurfaceEnabled && ChromeFeatureList.sSurfacePolish.isEnabled();
 
         if (mPropertyModel != null) {
             assert mIsStartSurfaceEnabled;
@@ -1674,10 +1671,14 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
             mPropertyModel.set(TASKS_SURFACE_BODY_TOP_MARGIN,
                     resources.getDimensionPixelSize(R.dimen.tasks_surface_body_top_margin));
         }
-        mPropertyModel.set(MV_TILES_CONTAINER_TOP_MARGIN,
-                resources.getDimensionPixelSize(R.dimen.mv_tiles_container_top_margin));
         mPropertyModel.set(TAB_SWITCHER_TITLE_TOP_MARGIN,
                 resources.getDimensionPixelSize(R.dimen.tab_switcher_title_top_margin));
+
+        if (mIsSurfacePolishEnabled && !mIsFeedGoneImprovementEnabled) return;
+
+        // TODO(crbug.com/1315676): Clean up this code when the refactor is enabled.
+        mPropertyModel.set(MV_TILES_CONTAINER_TOP_MARGIN,
+                resources.getDimensionPixelSize(R.dimen.mv_tiles_container_top_margin));
 
         // If improving Start surface when Feed is disabled is needed, mvt grid layout (two row) is
         // shown.
@@ -1777,7 +1778,7 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
     void updateBackgroundColor(PropertyModel propertyModel) {
         @ColorInt
         int surfaceBackgroundColor;
-        if (mIsSurfacePolished && !mIsIncognito) {
+        if (mIsSurfacePolishEnabled && !mIsIncognito) {
             surfaceBackgroundColor = ChromeColors.getSurfaceColor(
                     mContext, R.dimen.home_surface_background_color_elevation);
         } else {

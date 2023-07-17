@@ -52,7 +52,14 @@ found in the LICENSE file.
             app:layout_scrollFlags="scroll">
             <include layout="@layout/query_tiles_layout" />
         </FrameLayout>
-        <include layout="@layout/mv_tiles_container" />
+        <!-- Middle spacer -->
+        <View
+            android:id="@+id/start_surface_middle_spacer"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="0"
+            android:visibility="gone"
+            app:layout_scrollFlags="scroll"/>
         <LinearLayout
             android:id="@+id/tab_switcher_title"
             android:layout_width="match_parent"

@@ -554,6 +554,7 @@ chrome_java_resources = [
   "java/res/layout/multiline_spinner_item.xml",
   "java/res/layout/mv_tiles_carousel.xml",
   "java/res/layout/mv_tiles_container.xml",
+  "java/res/layout/mv_tiles_container_polish.xml",
   "java/res/layout/mv_tiles_grid.xml",
   "java/res/layout/navigation_bubble.xml",
   "java/res/layout/navigation_sheet.xml",

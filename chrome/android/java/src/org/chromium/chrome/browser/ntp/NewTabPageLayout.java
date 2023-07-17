@@ -19,6 +19,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
 import android.view.ViewGroup.MarginLayoutParams;
 import android.view.ViewStub;
 import android.widget.ImageView;
@@ -146,7 +147,7 @@ public class NewTabPageLayout extends LinearLayout {
     private Integer mInitialTileNum;
     private Boolean mIsHalfMvtLandscape;
     private Boolean mIsHalfMvtPortrait;
-    private boolean mIsSurfacePolished;
+    private boolean mIsSurfacePolishEnabled;
 
     /**
      * Constructor for inflating from XML.
@@ -192,14 +193,14 @@ public class NewTabPageLayout extends LinearLayout {
      * @param windowAndroid An instance of a {@link WindowAndroid}
      * @param isNtpAsHomeSurfaceEnabled {@code true} if the NTP is showing as the home surface.
      * @param isMultiColumnFeedEnabled {@code true} if the number of feed columns is 2.
-     * @param isSurfacePolished {@code true} if the NTP surface is polished.
+     * @param isSurfacePolishEnabled {@code true} if the NTP surface is polished.
      */
     public void initialize(NewTabPageManager manager, Activity activity, Delegate tileGroupDelegate,
             boolean searchProviderHasLogo, boolean searchProviderIsGoogle,
             FeedSurfaceScrollDelegate scrollDelegate, TouchEnabledDelegate touchEnabledDelegate,
             UiConfig uiConfig, ActivityLifecycleDispatcher lifecycleDispatcher, NewTabPageUma uma,
             boolean isIncognito, WindowAndroid windowAndroid, boolean isNtpAsHomeSurfaceEnabled,
-            boolean isMultiColumnFeedEnabled, boolean isSurfacePolished) {
+            boolean isMultiColumnFeedEnabled, boolean isSurfacePolishEnabled) {
         TraceEvent.begin(TAG + ".initialize()");
         mScrollDelegate = scrollDelegate;
         mManager = manager;
@@ -210,7 +211,7 @@ public class NewTabPageLayout extends LinearLayout {
         mWindowAndroid = windowAndroid;
         mIsNtpAsHomeSurfaceEnabled = isNtpAsHomeSurfaceEnabled;
         mIsMultiColumnFeedEnabled = isMultiColumnFeedEnabled;
-        mIsSurfacePolished = isSurfacePolished;
+        mIsSurfacePolishEnabled = isSurfacePolishEnabled;
         Profile profile = Profile.getLastUsedRegularProfile();
 
         mSearchBoxCoordinator = new SearchBoxCoordinator(getContext(), this);
@@ -246,7 +247,7 @@ public class NewTabPageLayout extends LinearLayout {
 
         TraceEvent.end(TAG + ".initialize()");
 
-        if (mIsSurfacePolished) {
+        if (mIsSurfacePolishEnabled) {
             setBackground(
                     AppCompatResources.getDrawable(mContext, R.drawable.home_surface_background));
         }
@@ -447,8 +448,14 @@ public class NewTabPageLayout extends LinearLayout {
     private void insertSiteSectionView() {
         int insertionPoint = indexOfChild(mMiddleSpacer) + 1;
 
-        mMvTilesContainerLayout = (ViewGroup) LayoutInflater.from(this.getContext())
-                                          .inflate(R.layout.mv_tiles_container, this, false);
+        if (ChromeFeatureList.sSurfacePolish.isEnabled()) {
+            mMvTilesContainerLayout =
+                    (ViewGroup) LayoutInflater.from(getContext())
+                            .inflate(R.layout.mv_tiles_container_polish, this, false);
+        } else {
+            mMvTilesContainerLayout = (ViewGroup) LayoutInflater.from(getContext())
+                                              .inflate(R.layout.mv_tiles_container, this, false);
+        }
         mMvTilesContainerLayout.setVisibility(View.VISIBLE);
         addView(mMvTilesContainerLayout, insertionPoint);
         // The page contents are initially hidden; otherwise they'll be drawn centered on the
@@ -576,22 +583,39 @@ public class NewTabPageLayout extends LinearLayout {
             if (mIsNtpAsHomeSurfaceEnabled && mIsMultiColumnFeedEnabled) {
                 updateTilesLayoutLeftAndRightMarginsOnTablet(marginLayoutParams);
             } else {
-                int lateralPaddingsForNTP = -getResources().getDimensionPixelSize(
-                        R.dimen.ntp_header_lateral_paddings_v2);
+                int lateralPaddingsForNTP = mIsSurfacePolishEnabled
+                        ? getResources().getDimensionPixelSize(
+                                R.dimen.mvt_container_lateral_margin_ntp_polish)
+                        : -getResources().getDimensionPixelSize(
+                                R.dimen.ntp_header_lateral_paddings_v2);
                 marginLayoutParams.leftMargin = lateralPaddingsForNTP;
                 marginLayoutParams.rightMargin = lateralPaddingsForNTP;
             }
-            marginLayoutParams.topMargin = getResources().getDimensionPixelSize(shouldShowLogo()
-                            ? R.dimen.tile_grid_layout_top_margin
-                            : R.dimen.tile_grid_layout_no_logo_top_margin);
-            marginLayoutParams.bottomMargin = getResources().getDimensionPixelOffset(
-                    R.dimen.tile_carousel_layout_bottom_margin);
+            if (mIsSurfacePolishEnabled) {
+                marginLayoutParams.bottomMargin = getResources().getDimensionPixelOffset(
+                        R.dimen.mvt_container_bottom_margin_polish);
+            } else {
+                marginLayoutParams.topMargin = getResources().getDimensionPixelSize(shouldShowLogo()
+                                ? R.dimen.tile_grid_layout_top_margin
+                                : R.dimen.tile_grid_layout_no_logo_top_margin);
+                marginLayoutParams.bottomMargin = getResources().getDimensionPixelOffset(
+                        R.dimen.tile_carousel_layout_bottom_margin);
+            }
         } else {
             // Set a bit more top padding on the tile grid if there is no logo.
             ViewGroup.LayoutParams layoutParams = mMvTilesContainerLayout.getLayoutParams();
             layoutParams.width = ViewGroup.LayoutParams.WRAP_CONTENT;
-            marginLayoutParams.topMargin = getGridMvtTopMargin();
-            marginLayoutParams.bottomMargin = getGridMvtBottomMargin();
+            if (mIsSurfacePolishEnabled) {
+                int lateralPaddingsForNTP = getResources().getDimensionPixelSize(
+                        R.dimen.mvt_container_lateral_margin_ntp_polish);
+                marginLayoutParams.leftMargin = lateralPaddingsForNTP;
+                marginLayoutParams.rightMargin = lateralPaddingsForNTP;
+                marginLayoutParams.bottomMargin = getResources().getDimensionPixelOffset(
+                        R.dimen.mvt_container_bottom_margin_polish);
+            } else {
+                marginLayoutParams.topMargin = getGridMvtTopMargin();
+                marginLayoutParams.bottomMargin = getGridMvtBottomMargin();
+            }
         }
         if (mIsNtpAsHomeSurfaceEnabled) {
             marginLayoutParams.bottomMargin = getResources().getDimensionPixelOffset(

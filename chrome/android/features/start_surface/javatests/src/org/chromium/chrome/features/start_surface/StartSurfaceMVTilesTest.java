@@ -16,8 +16,12 @@ import static org.chromium.chrome.features.start_surface.StartSurfaceTestUtils.S
 import static org.chromium.chrome.features.start_surface.StartSurfaceTestUtils.sClassParamsForStartSurfaceTest;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
+import android.content.res.Resources;
+import android.graphics.drawable.GradientDrawable;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewGroup.MarginLayoutParams;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.test.filters.MediumTest;
@@ -61,6 +65,7 @@ import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.suggestions.SuggestionsDependenciesRule;
 import org.chromium.chrome.test.util.browser.suggestions.mostvisited.FakeMostVisitedSites;
+import org.chromium.components.browser_ui.widget.tile.TileView;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TestTouchUtils;
 import org.chromium.ui.test.util.UiRestriction;
@@ -342,5 +347,66 @@ public class StartSurfaceMVTilesTest {
         });
 
         return cta.findViewById(R.id.snackbar_button);
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"StartSurface"})
+    @CommandLineFlags.Add({START_SURFACE_TEST_SINGLE_ENABLED_PARAMS})
+    @EnableFeatures({ChromeFeatureList.SURFACE_POLISH})
+    public void test1RowMvtOnStartSurfaceAfterPolish() {
+        if (!mImmediateReturn) {
+            StartSurfaceTestUtils.pressHomePageButton(mActivityTestRule.getActivity());
+        }
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        StartSurfaceTestUtils.waitForStartSurfaceVisible(
+                mLayoutChangedCallbackHelper, mCurrentlyActiveLayout, cta);
+        Resources res = cta.getResources();
+        View startSurfaceView = cta.findViewById(R.id.primary_tasks_surface_view);
+        View mvTilesContainer = cta.findViewById(org.chromium.chrome.test.R.id.mv_tiles_container);
+        View mvTilesLayout = cta.findViewById(org.chromium.chrome.test.R.id.mv_tiles_layout);
+
+        int expectedMvtLateralMargin = res.getDimensionPixelSize(
+                R.dimen.tile_carousel_layout_lateral_margin_start_surface_polish);
+        Assert.assertEquals("The left margin of the most visited tiles container is wrong.",
+                expectedMvtLateralMargin,
+                ((MarginLayoutParams) mvTilesContainer.getLayoutParams()).leftMargin);
+        Assert.assertEquals("The right margin of the most visited tiles container is wrong.",
+                expectedMvtLateralMargin,
+                ((MarginLayoutParams) mvTilesContainer.getLayoutParams()).rightMargin);
+        Assert.assertEquals("The width of the most visited tiles container is wrong.",
+                expectedMvtLateralMargin * 2,
+                startSurfaceView.getWidth() - mvTilesContainer.getWidth());
+
+        int expectedMvtTopMargin =
+                res.getDimensionPixelSize(R.dimen.mvt_container_top_margin_polish);
+        Assert.assertEquals("The top margin of the most visited tiles container is wrong.",
+                expectedMvtTopMargin,
+                ((MarginLayoutParams) mvTilesContainer.getLayoutParams()).topMargin);
+        Assert.assertEquals("The bottom margin of the most visited tiles container is wrong.", 0,
+                ((MarginLayoutParams) mvTilesContainer.getLayoutParams()).bottomMargin);
+
+        int expectedMvtTopPadding =
+                res.getDimensionPixelSize(R.dimen.mvt_container_top_padding_polish);
+        int expectedMvtBottomPadding =
+                res.getDimensionPixelSize(R.dimen.mvt_container_bottom_padding_polish);
+        Assert.assertEquals("The top padding of the most visited tiles container is wrong.",
+                expectedMvtTopPadding, mvTilesContainer.getPaddingTop());
+        Assert.assertEquals("The bottom padding of the most visited tiles container is wrong.",
+                expectedMvtBottomPadding, mvTilesContainer.getPaddingBottom());
+
+        int expectedTitleTopMargin =
+                res.getDimensionPixelSize(R.dimen.tile_view_title_margin_top_modern_polish);
+        TileView suggestionsTileElement = (TileView) ((LinearLayout) mvTilesLayout).getChildAt(0);
+        Assert.assertEquals("The top margin of the tile element's title is wrong.",
+                expectedTitleTopMargin,
+                ((MarginLayoutParams) suggestionsTileElement.getTitleView().getLayoutParams())
+                        .topMargin);
+
+        GradientDrawable mvTilesContainerBackground =
+                (GradientDrawable) mvTilesContainer.getBackground();
+        Assert.assertEquals(
+                "The shape of the background of the most visited tiles container is wrong.",
+                GradientDrawable.RECTANGLE, mvTilesContainerBackground.getShape());
     }
 }
