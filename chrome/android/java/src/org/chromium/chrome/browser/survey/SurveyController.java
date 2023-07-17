@@ -8,8 +8,8 @@ import android.app.Activity;
 import android.content.Context;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.ResettersForTesting;
 import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 
@@ -31,9 +31,10 @@ public class SurveyController {
         return sInstance;
     }
 
-    @VisibleForTesting
+    /** Set the instance to use for survey related tests. Reset back to null after tests. */
     public static void setInstanceForTesting(SurveyController testInstance) {
         sInstance = testInstance;
+        ResettersForTesting.register(() -> sInstance = null);
     }
 
     /**

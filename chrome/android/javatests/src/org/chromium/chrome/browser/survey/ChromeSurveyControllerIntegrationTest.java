@@ -96,9 +96,7 @@ public class ChromeSurveyControllerIntegrationTest {
 
     @After
     public void tearDown() {
-        SurveyController.setInstanceForTesting(null);
         mSharedPreferenceManager.removeKey(mPrefKey);
-        ChromeSurveyController.forceIsUMAEnabledForTesting(false);
         ChromeSurveyController.resetMessageShownForTesting();
     }
 

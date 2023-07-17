@@ -18,6 +18,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.AsyncTask;
@@ -517,12 +518,6 @@ public class ChromeSurveyController {
         }
     }
 
-    // Force enable UMA testing for testing.
-    @VisibleForTesting
-    public static void forceIsUMAEnabledForTesting(boolean forcedUMAStatus) {
-        sForceUmaEnabledForTesting = forcedUMAStatus;
-    }
-
     /** @return If the survey is enabled by finch flag or commandline switch. */
     @VisibleForTesting
     static boolean isSurveyEnabled() {
@@ -564,8 +559,13 @@ public class ChromeSurveyController {
         return sMessageShown;
     }
 
-    // Reset sMessageShown for testing.
-    @VisibleForTesting
+    /** Set whether UMA consent is granted during tests. Reset to "false" after tests. */
+    public static void forceIsUMAEnabledForTesting(boolean forcedUMAStatus) {
+        sForceUmaEnabledForTesting = forcedUMAStatus;
+        ResettersForTesting.register(() -> sForceUmaEnabledForTesting = false);
+    }
+
+    /** Reset the tracker whether HaTS messages has shown during tests. */
     public static void resetMessageShownForTesting() {
         sMessageShown = false;
     }

@@ -81,7 +81,6 @@ public class ChromeSurveyControllerTest {
 
     @After
     public void after() {
-        ChromeSurveyController.forceIsUMAEnabledForTesting(false);
         FirstRunStatus.setFirstRunTriggered(false);
     }
 
