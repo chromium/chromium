@@ -242,6 +242,9 @@ public class KeyboardShortcuts {
                 } else {
                     break;
                 }
+            case CTRL | KeyEvent.KEYCODE_S:
+                menuOrKeyboardActionController.onMenuOrKeyboardAction(R.id.offline_page_id, false);
+                return true;
             case CTRL | SHIFT | KeyEvent.KEYCODE_N:
                 menuOrKeyboardActionController.onMenuOrKeyboardAction(
                         R.id.new_incognito_tab_menu_id, false);
