@@ -2543,9 +2543,6 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageDelayedWarningBrowserTest,
                 ->tab_strip_model()
                 ->GetActiveWebContents()
                 ->GetLastCommittedURL());
-
-  histograms.ExpectUniqueTimeSample(kDelayedWarningsTimeOnPageHistogram,
-                                    base::Seconds(kTimeOnPage), 1);
 }
 
 // Same as KeyPress_WarningShown, but user disabled URL elision by enabling
@@ -2578,10 +2575,6 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageDelayedWarningBrowserTest,
   AssertNoInterstitial(browser(), false);  // Assert the interstitial is gone
   EXPECT_EQ(GURL(url::kAboutBlankURL),     // Back to "about:blank"
             web_contents->GetLastCommittedURL());
-
-  histograms.ExpectUniqueTimeSample(
-      kDelayedWarningsTimeOnPageWithElisionDisabledHistogram,
-      base::Seconds(kTimeOnPage), 1);
 }
 
 // Same as KeyPress_WarningShown_UrlElisionDisabled, but user disabled URL

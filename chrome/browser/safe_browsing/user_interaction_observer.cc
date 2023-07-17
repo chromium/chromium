@@ -7,7 +7,6 @@
 #include <string>
 
 #include "base/metrics/field_trial_params.h"
-#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/prefs/pref_service.h"
@@ -32,12 +31,6 @@ const char kPreventElisionExtensionId[] = "jknemblkbdhdcpllfgbfekkdciegfboi";
 }  // namespace
 
 namespace safe_browsing {
-
-const char kDelayedWarningsTimeOnPageHistogram[] =
-    "SafeBrowsing.DelayedWarnings.TimeOnPage";
-
-const char kDelayedWarningsTimeOnPageWithElisionDisabledHistogram[] =
-    "SafeBrowsing.DelayedWarnings.TimeOnPage_UrlElisionDisabled";
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(SafeBrowsingUserInteractionObserver);
 
@@ -203,16 +196,6 @@ void SafeBrowsingUserInteractionObserver::DidFinishNavigation(
 }
 
 void SafeBrowsingUserInteractionObserver::Detach() {
-  base::TimeDelta time_on_page = clock_->Now() - creation_time_;
-  if (IsUrlElisionDisabled(
-          Profile::FromBrowserContext(web_contents()->GetBrowserContext()),
-          suspicious_site_reporter_extension_id_)) {
-    base::UmaHistogramLongTimes(
-        kDelayedWarningsTimeOnPageWithElisionDisabledHistogram, time_on_page);
-  } else {
-    base::UmaHistogramLongTimes(kDelayedWarningsTimeOnPageHistogram,
-                                time_on_page);
-  }
   web_contents()->RemoveUserData(UserDataKey());
   // DO NOT add code past this point. |this| is destroyed.
 }
