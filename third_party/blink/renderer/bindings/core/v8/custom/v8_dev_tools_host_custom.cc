@@ -65,8 +65,13 @@ static bool PopulateContextMenuItems(v8::Isolate* isolate,
                                      std::vector<MenuItemInfo>& items) {
   v8::Local<v8::Context> context = isolate->GetCurrentContext();
   for (uint32_t i = 0; i < item_array->Length(); ++i) {
-    v8::Local<v8::Object> item =
-        item_array->Get(context, i).ToLocalChecked().As<v8::Object>();
+    v8::Local<v8::Value> item_value =
+        item_array->Get(context, i).ToLocalChecked();
+    if (!item_value->IsObject()) {
+      return false;
+    }
+    v8::Local<v8::Object> item = item_value.As<v8::Object>();
+
     v8::Local<v8::Value> type;
     v8::Local<v8::Value> id;
     v8::Local<v8::Value> label;
