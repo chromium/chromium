@@ -110,7 +110,6 @@ component("cast_browser") {
 group("internal_android_deps") {
   testonly = true
   public_deps = [
-    "//third_party/android_deps:com_android_support_design_java",
     "//third_party/android_deps:protobuf_lite_runtime_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_core_core_java",
