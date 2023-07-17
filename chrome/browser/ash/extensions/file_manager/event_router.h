@@ -18,6 +18,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
+#include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ash/extensions/file_manager/device_event_router.h"
 #include "chrome/browser/ash/extensions/file_manager/drivefs_event_router.h"
 #include "chrome/browser/ash/extensions/file_manager/system_notification_manager.h"
@@ -38,7 +39,6 @@
 #include "components/arc/intent_helper/arc_intent_helper_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "extensions/browser/extension_registry_observer.h"
-#include "services/network/public/cpp/network_connection_tracker.h"
 #include "storage/browser/file_system/file_system_operation.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
@@ -59,19 +59,17 @@ class RecalculateTasksObserver;
 
 // Monitors changes in disk mounts, network connection state and preferences
 // affecting File Manager. Dispatches appropriate File Browser events.
-class EventRouter
-    : public KeyedService,
-      public network::NetworkConnectionTracker::NetworkConnectionObserver,
-      public extensions::ExtensionRegistryObserver,
-      public ash::system::TimezoneSettings::Observer,
-      public VolumeManagerObserver,
-      public arc::ArcIntentHelperObserver,
-      public drive::DriveIntegrationServiceObserver,
-      public guest_os::GuestOsSharePath::Observer,
-      public ash::TabletModeObserver,
-      public file_manager::io_task::IOTaskController::Observer,
-      public guest_os::GuestOsMountProviderRegistry::Observer,
-      public chromeos::DlpClient::Observer {
+class EventRouter : public KeyedService,
+                    public extensions::ExtensionRegistryObserver,
+                    public ash::system::TimezoneSettings::Observer,
+                    public VolumeManagerObserver,
+                    public arc::ArcIntentHelperObserver,
+                    public drive::DriveIntegrationServiceObserver,
+                    public guest_os::GuestOsSharePath::Observer,
+                    public ash::TabletModeObserver,
+                    public file_manager::io_task::IOTaskController::Observer,
+                    public guest_os::GuestOsMountProviderRegistry::Observer,
+                    public chromeos::DlpClient::Observer {
  public:
   using DispatchDirectoryChangeEventImplCallback =
       base::RepeatingCallback<void(const base::FilePath& virtual_path,
@@ -120,9 +118,6 @@ class EventRouter
       const url::Origin& listener_origin,
       storage::WatcherManager::ChangeType change_type);
 
-  // network::NetworkConnectionTracker::NetworkConnectionObserver overrides.
-  void OnConnectionChanged(network::mojom::ConnectionType type) override;
-
   // extensions::ExtensionRegistryObserver overrides
   void OnExtensionLoaded(content::BrowserContext* browser_context,
                          const extensions::Extension* extension) override;
@@ -166,6 +161,8 @@ class EventRouter
 
   // DriveIntegrationServiceObserver override.
   void OnFileSystemMountFailed() override;
+  void OnDriveConnectionStatusChanged(
+      drive::util::ConnectionStatusType status) override;
 
   // guest_os::GuestOsSharePath::Observer overrides.
   void OnPersistedPathRegistered(const std::string& vm_name,

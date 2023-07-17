@@ -516,9 +516,7 @@ class DriveIntegrationService::PreferenceWatcher
     VLOG(1) << "OnConnectionChanged: {type: " << type << ", online: " << online
             << ", pause_syncing: " << pause_syncing << "}";
 
-    if (DriveFs* const drivefs = integration_service_->GetDriveFsInterface()) {
-      drivefs->UpdateNetworkState(pause_syncing, !online);
-    }
+    integration_service_->UpdateNetworkState(pause_syncing, !online);
   }
 
   const raw_ptr<const Profile, ExperimentalAsh> profile_;
@@ -1798,6 +1796,19 @@ void DriveIntegrationService::GetDocsOfflineStats(
   }
 
   GetDriveFsInterface()->GetDocsOfflineStats(std::move(callback));
+}
+
+void DriveIntegrationService::UpdateNetworkState(bool pause_syncing,
+                                                 bool is_offline) {
+  if (DriveFs* const drivefs = GetDriveFsInterface()) {
+    drivefs->UpdateNetworkState(pause_syncing, is_offline);
+  }
+
+  util::ConnectionStatusType connection_status =
+      util::GetDriveConnectionStatus(profile_);
+  for (auto& observer : observers_) {
+    observer.OnDriveConnectionStatusChanged(connection_status);
+  }
 }
 
 //===================== DriveIntegrationServiceFactory =======================

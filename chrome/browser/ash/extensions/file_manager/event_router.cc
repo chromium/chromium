@@ -71,7 +71,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/storage_partition.h"
 #include "extensions/browser/event_router.h"
@@ -659,8 +658,6 @@ void EventRouter::Shutdown() {
 
   pref_change_registrar_->RemoveAll();
 
-  content::GetNetworkConnectionTracker()->RemoveNetworkConnectionObserver(this);
-
   extensions::ExtensionRegistry::Get(profile_)->RemoveObserver(this);
 
   DriveIntegrationService* const integration_service =
@@ -749,8 +746,6 @@ void EventRouter::ObserveEvents() {
         base::BindRepeating(&EventRouter::DisplayDriveConfirmDialog,
                             weak_factory_.GetWeakPtr()));
   }
-
-  content::GetNetworkConnectionTracker()->AddNetworkConnectionObserver(this);
 
   extensions::ExtensionRegistry::Get(profile_)->AddObserver(this);
 
@@ -876,10 +871,6 @@ void EventRouter::OnWatcherManagerNotification(
 
   DispatchDirectoryChangeEvent(file_system_url.virtual_path(),
                                false /* error */, listeners);
-}
-
-void EventRouter::OnConnectionChanged(network::mojom::ConnectionType type) {
-  NotifyDriveConnectionStatusChanged();
 }
 
 void EventRouter::OnExtensionLoaded(content::BrowserContext* browser_context,
@@ -1105,6 +1096,11 @@ void EventRouter::SetDispatchDirectoryChangeEventImplForTesting(
 
 void EventRouter::OnFileSystemMountFailed() {
   OnFileManagerPrefsChanged();
+}
+
+void EventRouter::OnDriveConnectionStatusChanged(
+    drive::util::ConnectionStatusType status) {
+  NotifyDriveConnectionStatusChanged();
 }
 
 // Send crostini share, unshare event.

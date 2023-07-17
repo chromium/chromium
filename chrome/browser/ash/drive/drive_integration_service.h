@@ -19,6 +19,7 @@
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "chromeos/ash/components/drivefs/drivefs_host.h"
 #include "chromeos/ash/components/drivefs/drivefs_pin_manager.h"
@@ -98,6 +99,10 @@ class DriveIntegrationServiceObserver : public base::CheckedObserver {
 
   // Triggered when the bulk pinning manager reports progress.
   virtual void OnBulkPinProgress(const drivefs::pinning::Progress& progress) {}
+
+  // Triggered when the network connection to Drive could have changed.
+  virtual void OnDriveConnectionStatusChanged(
+      util::ConnectionStatusType status) {}
 };
 
 // DriveIntegrationService is used to integrate Drive to Chrome. This class
@@ -328,6 +333,8 @@ class DriveIntegrationService : public KeyedService,
   // Gets counts of files in docs offline extension.
   void GetDocsOfflineStats(
       drivefs::mojom::DriveFs::GetDocsOfflineStatsCallback callback);
+
+  void UpdateNetworkState(bool pause_syncing, bool is_offline);
 
  private:
   enum State {
