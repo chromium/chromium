@@ -30,6 +30,9 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /** The coordinator of the password migration warning. */
 public class PasswordMigrationWarningCoordinator implements MigrationWarningOptionsHandler {
+    // The prefix for the histograms, which will be used log the export flow metrics.
+    private static final String EXPORT_METRICS_ID =
+            "PasswordManager.PasswordMigrationWarning.Export";
     private final PasswordMigrationWarningMediator mMediator;
     private final SyncConsentActivityLauncher mSyncConsentActivityLauncher;
     private final SettingsLauncher mSettingsLauncher;
@@ -120,8 +123,7 @@ public class PasswordMigrationWarningCoordinator implements MigrationWarningOpti
                 }, mPasswordStoreBridge);
                 deletionDialogFragment.show(mFragmentManager, null);
             }
-
-        });
+        }, EXPORT_METRICS_ID);
         mExportFlow.startExporting();
     }
 

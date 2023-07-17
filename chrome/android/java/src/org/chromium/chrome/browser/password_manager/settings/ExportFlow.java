@@ -94,7 +94,8 @@ public class ExportFlow implements ExportFlowInterface {
     // ExportPasswordsResult from
     // //components/password_manager/core/browser/password_manager_metrics_util.h.
     @IntDef({HistogramExportResult.SUCCESS, HistogramExportResult.USER_ABORTED,
-            HistogramExportResult.WRITE_FAILED, HistogramExportResult.NO_CONSUMER})
+            HistogramExportResult.WRITE_FAILED, HistogramExportResult.NO_CONSUMER,
+            HistogramExportResult.NUM_ENTRIES})
     @Retention(RetentionPolicy.SOURCE)
     @VisibleForTesting
     public @interface HistogramExportResult {
@@ -197,12 +198,26 @@ public class ExportFlow implements ExportFlowInterface {
     /** The concrete delegate instance. It is (re)set in {@link #onCreate}. */
     private Delegate mDelegate;
 
+    /** Histogram names for metrics logging. */
+    private String mExportEventHistogramName;
+    private String mExportResultHistogramName;
+
     private boolean mPasswordSerializationStarted;
 
+    public String getExportEventHistogramName() {
+        return mExportEventHistogramName;
+    }
+
+    public String getExportResultHistogramNameForTesting() {
+        return mExportResultHistogramName;
+    }
+
     @Override
-    public void onCreate(Bundle savedInstanceState, Delegate delegate) {
+    public void onCreate(Bundle savedInstanceState, Delegate delegate, String callerMetricsId) {
         mDelegate = delegate;
         mPasswordSerializationStarted = false;
+        mExportEventHistogramName = callerMetricsId + ".Event";
+        mExportResultHistogramName = callerMetricsId + ".Result";
 
         if (savedInstanceState == null) return;
 
@@ -340,14 +355,15 @@ public class ExportFlow implements ExportFlowInterface {
         mExportWarningDialogFragment = new ExportWarningDialogFragment();
         mExportWarningDialogFragment.setExportWarningHandler(
                 new ExportWarningDialogFragment.Handler() {
+                    private boolean mConfirmed;
                     /**
                      * On positive button response asks the parent to continue with the export flow.
                      */
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         if (which == AlertDialog.BUTTON_POSITIVE) {
-                            RecordHistogram.recordEnumeratedHistogram(
-                                    PasswordSettings.PASSWORD_EXPORT_EVENT_HISTOGRAM,
+                            mConfirmed = true;
+                            RecordHistogram.recordEnumeratedHistogram(mExportEventHistogramName,
                                     PasswordExportEvent.EXPORT_CONFIRMED,
                                     PasswordExportEvent.COUNT);
                             mExportState = ExportState.CONFIRMED;
@@ -370,11 +386,17 @@ public class ExportFlow implements ExportFlowInterface {
                         // Unless the positive button action moved the exporting state forward,
                         // cancel the export. This happens both when the user taps the negative
                         // button or when they tap outside of the dialog to dismiss it.
-                        if (mExportState != ExportState.CONFIRMED) {
-                            RecordHistogram.recordEnumeratedHistogram(
-                                    PasswordSettings.PASSWORD_EXPORT_EVENT_HISTOGRAM,
+                        if (!mConfirmed) {
+                            RecordHistogram.recordEnumeratedHistogram(mExportEventHistogramName,
                                     PasswordExportEvent.EXPORT_DISMISSED,
                                     PasswordExportEvent.COUNT);
+                            if (ChromeFeatureList.isEnabled(
+                                        UNIFIED_PASSWORD_MANAGER_LOCAL_PWD_MIGRATION_WARNING)) {
+                                RecordHistogram.recordEnumeratedHistogram(
+                                        mExportResultHistogramName,
+                                        HistogramExportResult.USER_ABORTED,
+                                        HistogramExportResult.NUM_ENTRIES);
+                            }
                             mExportState = ExportState.INACTIVE;
                         }
 
@@ -439,6 +461,11 @@ public class ExportFlow implements ExportFlowInterface {
     public void showExportErrorAndAbortImmediately(int descriptionId,
             @Nullable String detailedDescription, int positiveButtonLabelId,
             @HistogramExportResult int histogramExportResult) {
+        if (ChromeFeatureList.isEnabled(UNIFIED_PASSWORD_MANAGER_LOCAL_PWD_MIGRATION_WARNING)) {
+            RecordHistogram.recordEnumeratedHistogram(mExportResultHistogramName,
+                    histogramExportResult, HistogramExportResult.NUM_ENTRIES);
+        }
+
         mErrorDialogParams = new ExportErrorDialogFragment.ErrorDialogParams();
         mErrorDialogParams.positiveButtonLabelId = positiveButtonLabelId;
         mErrorDialogParams.description =
@@ -562,6 +589,9 @@ public class ExportFlow implements ExportFlowInterface {
                     showExportErrorAndAbort(R.string.password_settings_export_tips,
                             exceptionMessage, R.string.try_again,
                             HistogramExportResult.WRITE_FAILED);
+                } else {
+                    RecordHistogram.recordEnumeratedHistogram(mExportResultHistogramName,
+                            HistogramExportResult.SUCCESS, HistogramExportResult.NUM_ENTRIES);
                 }
                 mExportFileUri = null;
                 mDelegate.onExportFlowSucceeded();
