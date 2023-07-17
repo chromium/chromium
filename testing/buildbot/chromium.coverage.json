@@ -25948,13 +25948,11 @@
         "swarming": {
           "dimension_sets": [
             {
-              "os": "Windows-10-19045"
+              "os": "Windows-10-19045",
+              "pool": "chromium.tests.coverage",
+              "ssd": "1"
             }
           ],
-          "dimensions": {
-            "pool": "chromium.tests.coverage",
-            "ssd": "1"
-          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 40
         },

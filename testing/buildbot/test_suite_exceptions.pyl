@@ -1346,10 +1346,10 @@
       'win10-code-coverage': {
         'swarming': {
           'shards': 40,
-          'dimensions': {
+          'dimension_sets': [{
             'pool': 'chromium.tests.coverage',
             'ssd': '1',
-          },
+          }],
         }
       },
       'win10-rel-no-external-ip': {
