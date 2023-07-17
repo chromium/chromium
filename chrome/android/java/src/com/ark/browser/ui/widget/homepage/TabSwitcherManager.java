@@ -16,7 +16,11 @@ import com.android.launcher3.ItemInfoWithIcon;
 import com.android.launcher3.LauncherLayout;
 import com.android.launcher3.TabItemInfo;
 import com.ark.browser.core.ArkCompositorViewHolder;
+import com.ark.browser.core.ArkWebContents;
+import com.ark.browser.core.ArkWebManager;
 import com.ark.browser.settings.AppConfig;
+import com.ark.browser.tab.PageInfo;
+import com.ark.browser.tab.PageSnapshotManager;
 import com.ark.browser.tab.TabGroupManager;
 import com.ark.browser.tab.core.ITabGroup;
 import com.ark.browser.ui.fragment.collection.CollectionFragment;
@@ -58,7 +62,7 @@ public class TabSwitcherManager implements SwitcherRecyclerLayout.Callback {
         mTabSwitcherLayout = view.findViewById(R.id.tab_switcher_layout);
         mSwitcher = mTabSwitcherLayout.getSwitcher();
         mSwitcher.addCallback(this);
-        mSwitcher.setAdapter(new ArkTabAdapter());
+        mSwitcher.setAdapter(new ArkTabAdapter(mViewHolder.getTabContentManager()));
 
         BottomControlBar bottomControlBar = view.findViewById(R.id.bottom_control_bar);
         bottomControlBar.setSwitcherManager(this);
@@ -309,6 +313,7 @@ public class TabSwitcherManager implements SwitcherRecyclerLayout.Callback {
     }
 
     public void goToTabSwitcher() {
+        cacheCurrentPage();
         mTabSwitcherLayout.showSwitcher();
         mTabSwitcherLayout.open();
     }
@@ -415,6 +420,17 @@ public class TabSwitcherManager implements SwitcherRecyclerLayout.Callback {
 
     public void onSaveInstanceState(Bundle outState) {
         mLauncherLayout.onSaveInstanceState(outState);
+    }
+
+    public void cacheCurrentPage() {
+        PageInfo pageInfo = TabGroupManager.global().getCurrentPageInfo();
+        PageSnapshotManager.getInstance().cachePage(pageInfo);
+        if (pageInfo != null) {
+            ArkWebContents arkWeb = ArkWebManager.get(pageInfo.getId());
+            if (arkWeb != null) {
+                mViewHolder.getTabContentManager().cacheThumbnail(arkWeb.getWebContents(), arkWeb.getId());
+            }
+        }
     }
 
 

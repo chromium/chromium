@@ -250,6 +250,30 @@ content::RenderWidgetHostView* TabContentManager::GetRwhvForTab(
   return rwhv;
 }
 
+content::RenderWidgetHostView* TabContentManager::GetRwhvForWeb(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& obj,
+    const JavaParamRef<jobject>& web,
+    const int page_id) {
+  if (pending_tab_readbacks_.find(page_id) != pending_tab_readbacks_.end()) {
+    return nullptr;
+  }
+
+  content::WebContents* web_contents = content::WebContents::FromJavaWebContents(web);
+  DCHECK(web_contents);
+
+  content::RenderViewHost* rvh = web_contents->GetRenderViewHost();
+  if (!rvh)
+    return nullptr;
+
+  content::RenderWidgetHost* rwh = rvh->GetWidget();
+  content::RenderWidgetHostView* rwhv = rwh ? rwh->GetView() : nullptr;
+  if (!rwhv || !rwhv->IsSurfaceAvailableForCopy())
+    return nullptr;
+
+  return rwhv;
+}
+
 void TabContentManager::CaptureThumbnail(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,
@@ -277,6 +301,37 @@ void TabContentManager::CaptureThumbnail(
       base::android::ScopedJavaGlobalRef<jobject>(j_callback), write_to_cache,
       aspect_ratio);
   pending_tab_readbacks_[tab_id] = std::make_unique<TabReadbackRequest>(
+      rwhv, thumbnail_scale, aspect_ratio, !write_to_cache,
+      std::move(readback_done_callback));
+}
+
+void TabContentManager::CaptureThumbnailForWeb(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& obj,
+    const JavaParamRef<jobject>& web,
+    jint page_id,
+    jfloat thumbnail_scale,
+    jboolean write_to_cache,
+    jdouble aspect_ratio,
+    const base::android::JavaParamRef<jobject>& j_callback) {
+  content::WebContents* web_contents = content::WebContents::FromJavaWebContents(web);
+  DCHECK(web_contents);
+
+  content::RenderWidgetHostView* rwhv = GetRwhvForWeb(env, obj, web, page_id);
+  if (!rwhv) {
+    if (j_callback)
+      RunObjectCallbackAndroid(j_callback, nullptr);
+    return;
+  }
+  if (write_to_cache && !thumbnail_cache_->CheckAndUpdateThumbnailMetaData(
+                            page_id, web_contents->GetURL())) {
+    return;
+  }
+  TabReadbackCallback readback_done_callback = base::BindOnce(
+      &TabContentManager::OnTabReadback, weak_factory_.GetWeakPtr(), page_id,
+      base::android::ScopedJavaGlobalRef<jobject>(j_callback), write_to_cache,
+      aspect_ratio);
+  pending_tab_readbacks_[page_id] = std::make_unique<TabReadbackRequest>(
       rwhv, thumbnail_scale, aspect_ratio, !write_to_cache,
       std::move(readback_done_callback));
 }

@@ -139,7 +139,7 @@ public class ArkCompositorViewHolder extends FrameLayout
     protected ArkWindowAndroid mWindowAndroid;
 
     protected ArkLayoutManager mLayoutManager;
-    protected TabContentManager mTabContentManager;
+    protected final TabContentManager mTabContentManager = new TabContentManager();
 
     protected Callback mCallback;
 
@@ -666,7 +666,6 @@ public class ArkCompositorViewHolder extends FrameLayout
 
         if (mTabContentManager != null) {
             mTabContentManager.destroy();
-            mTabContentManager = null;
         }
 
         mSwipeRefreshHandler.destroy();
@@ -1298,6 +1297,7 @@ public class ArkCompositorViewHolder extends FrameLayout
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         mIsKeyboardShowing =
                 KeyboardVisibilityDelegate.getInstance().isKeyboardShowing(getContext(), this);
+        mTabContentManager.setThumbnailRatio((float) getMeasuredWidth() / getMeasuredHeight());
     }
 
     @Override
@@ -1411,7 +1411,6 @@ public class ArkCompositorViewHolder extends FrameLayout
         Activity activity = window.getActivity().get();
         ((FragmentActivity) activity).getOnBackPressedDispatcher()
                 .addCallback((FragmentActivity) activity, onBackPressedCallback);
-        mTabContentManager = new TabContentManager(activity);
         mTabContentManager.initWithNative();
 
         mCompositorView.initNativeCompositor(

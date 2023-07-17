@@ -1,5 +1,6 @@
 package com.ark.browser.ui.widget.homepage;
 
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,13 +20,20 @@ import com.ark.browser.ui.fragment.dialog.TabActionDialog;
 import com.ark.browser.ui.widget.FitWidthImageView;
 import com.ark.browser.utils.FaviconUtil;
 
+import org.chromium.base.Callback;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 
 import java.util.List;
 
 public class ArkTabAdapter implements Adapter {
 
+    private final TabContentManager mTabContentManager;
     final List<ITab> tabList = TabGroupManager.global().getCurrentTabGroup().getTabList();
+
+    public ArkTabAdapter(TabContentManager tabContentManager) {
+        this.mTabContentManager = tabContentManager;
+    }
 
     @Override
     public View onCreateViewHolder(ViewGroup parent, int position) {
@@ -116,7 +124,16 @@ public class ArkTabAdapter implements Adapter {
             if (!(view.getTag() instanceof Integer) || (int) view.getTag() != iTab.getId()) {
                 ivThumbnail.setImageBitmap(null);
             }
-            PageSnapshotManager.getInstance().loadSnapshot(ivThumbnail, pageInfo);
+            mTabContentManager.getTabThumbnailWithCallback(null, pageInfo.getId(), new Callback<Bitmap>() {
+                @Override
+                public void onResult(Bitmap result) {
+                    if (result == null) {
+                        PageSnapshotManager.getInstance().loadSnapshot(ivThumbnail, pageInfo);
+                    } else {
+                        ivThumbnail.setImageBitmap(result);
+                    }
+                }
+            }, false, false);
         } else {
             cardView.setCardBackgroundColor(getDefaultThemeColor());
             ivThumbnail.setImageBitmap(null);

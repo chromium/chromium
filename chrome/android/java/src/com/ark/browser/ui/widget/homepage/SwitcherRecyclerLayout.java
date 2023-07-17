@@ -28,6 +28,7 @@ import com.ark.browser.tab.EmptyTabInfoObserver;
 import com.ark.browser.tab.TabGroupManager;
 import com.ark.browser.tab.core.ITab;
 import com.ark.browser.ui.fragment.dialog.TabActionDialog;
+import com.ark.browser.utils.ThreadPool;
 import com.zpj.utils.ColorUtils;
 import com.zpj.utils.PrefsHelper;
 
@@ -1611,6 +1612,7 @@ public class SwitcherRecyclerLayout extends ViewGroup {
                             for (Callback callback : mCallbackList) {
                                 callback.onHide(position);
                             }
+                            ThreadPool.postOnUIThread(() -> selectCenterPosition());
                             break;
                         case STATE_IDLE:
                             for (Callback callback : mCallbackList) {
@@ -1630,6 +1632,7 @@ public class SwitcherRecyclerLayout extends ViewGroup {
                             for (Callback callback : mCallbackList) {
                                 callback.onExpand(position);
                             }
+                            ThreadPool.postOnUIThread(() -> selectCenterPosition());
                             break;
                     }
                     if (mTransitionCallback != null) {

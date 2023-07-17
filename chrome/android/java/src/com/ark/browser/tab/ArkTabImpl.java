@@ -7,6 +7,7 @@ package com.ark.browser.tab;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.text.TextUtils;
 import android.util.Pair;
@@ -1577,6 +1578,13 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
     @Override
     public void cacheThumbnail() {
         PageSnapshotManager.getInstance().cachePage(getPageInfo());
+
+        if (mWindowAndroid != null) {
+            mWindowAndroid.getCompositorViewHolder()
+                    .getTabContentManager()
+                    .cacheThumbnail(getWebContents(), getArkWeb().getId());
+        }
+
     }
 
 }

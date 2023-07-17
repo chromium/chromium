@@ -424,7 +424,7 @@ public abstract class ChromeActivity
 
             initializeTabModels();
             TabModelSelector tabModelSelector = mTabModelOrchestrator.getTabModelSelector();
-            setTabContentManager(new TabContentManager(this, getContentOffsetProvider(),
+            setTabContentManager(new TabContentManager(getContentOffsetProvider(),
                     !SysUtils.isLowEndDevice(),
                     tabModelSelector != null ? tabModelSelector::getTabById : null));
 

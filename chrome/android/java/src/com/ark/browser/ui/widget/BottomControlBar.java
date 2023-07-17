@@ -80,7 +80,8 @@ public class BottomControlBar extends FrameLayout {
 
                 mDownX = event.getRawX();
                 mDownY = event.getRawY();
-                PageSnapshotManager.getInstance().cachePage(TabGroupManager.global().getCurrentPageInfo());
+
+                mSwitcherManager.cacheCurrentPage();
                 break;
             case MotionEvent.ACTION_MOVE:
                 if (isMoved) {

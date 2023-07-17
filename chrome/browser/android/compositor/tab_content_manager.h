@@ -92,6 +92,14 @@ class TabContentManager : public ThumbnailCacheObserver {
                         jboolean write_to_cache,
                         jdouble aspect_ratio,
                         const base::android::JavaParamRef<jobject>& j_callback);
+  void CaptureThumbnailForWeb(JNIEnv* env,
+                        const base::android::JavaParamRef<jobject>& obj,
+                        const base::android::JavaParamRef<jobject>& web,
+                        jint page_id,
+                        jfloat thumbnail_scale,
+                        jboolean write_to_cache,
+                        jdouble aspect_ratio,
+                        const base::android::JavaParamRef<jobject>& j_callback);
   void CacheTabWithBitmap(JNIEnv* env,
                           const base::android::JavaParamRef<jobject>& obj,
                           const base::android::JavaParamRef<jobject>& tab,
@@ -141,6 +149,13 @@ class TabContentManager : public ThumbnailCacheObserver {
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj,
       const base::android::JavaParamRef<jobject>& tab);
+
+  content::RenderWidgetHostView* GetRwhvForWeb(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& obj,
+      const base::android::JavaParamRef<jobject>& web,
+      int page_id);
+
   void OnTabReadback(int tab_id,
                      base::android::ScopedJavaGlobalRef<jobject> j_callback,
                      bool write_to_cache,

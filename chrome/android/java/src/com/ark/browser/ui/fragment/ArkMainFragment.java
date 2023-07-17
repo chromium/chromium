@@ -474,7 +474,12 @@ public class ArkMainFragment extends BaseFragment implements
             return;
         }
 
-        tabGroup.openNewTab(loadUrlParams, TabLaunchType.FROM_CHROME_UI);
+        if (mSwitcherManager.isInBrowser() && tabGroup.getCurrentTab() != null) {
+            // TODO new tab or new page?
+            tabGroup.openNewTab(loadUrlParams, TabLaunchType.FROM_CHROME_UI);
+        } else {
+            tabGroup.openNewTab(event.getPageInfo(), loadUrlParams, TabLaunchType.FROM_CHROME_UI);
+        }
     }
 
     public TabSwitcherManager getSwitcherManager() {

@@ -296,7 +296,6 @@ public class TabSwitcherLayout extends FrameLayout {
     }
 
     public void open() {
-        PageSnapshotManager.getInstance().cachePage(TabGroupManager.global().getCurrentPageInfo());
         post(mSwitcher::goToIdle);
     }
 

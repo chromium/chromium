@@ -730,15 +730,15 @@ void ThumbnailCache::JpegProcessingTask(
   // portrait mode, or it would be shown in the wrong aspect ratio in
   // landscape mode.
   int scale = 2;
-  double aspect_ratio = base::clamp(jpeg_aspect_ratio, 0.5, 2.0);
 
-  int width = std::min(bitmap.width() / scale,
-                       (int)(bitmap.height() * aspect_ratio / scale));
-  int height = std::min(bitmap.height() / scale,
-                        (int)(bitmap.width() / aspect_ratio / scale));
+  // TODO remove aspect_ratio
+
+  int width = bitmap.width() / scale;
+  int height = bitmap.height() / scale;
+
   // When cropping the thumbnails, we want to keep the top center portion.
-  int begin_x = (bitmap.width() / scale - width) / 2;
-  int end_x = begin_x + width;
+  int begin_x = 0;
+  int end_x = width;
   SkIRect dest_subset = {begin_x, 0, end_x, height};
 
   SkBitmap result_bitmap = skia::ImageOperations::Resize(
