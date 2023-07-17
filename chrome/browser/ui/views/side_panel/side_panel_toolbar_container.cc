@@ -30,6 +30,8 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model_menu_model_adapter.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/animation/ink_drop.h"
+#include "ui/views/animation/ink_drop_state.h"
 #include "ui/views/controls/button/button_controller.h"
 #include "ui/views/layout/animating_layout_manager.h"
 #include "ui/views/layout/flex_layout.h"
@@ -267,7 +269,14 @@ void SidePanelToolbarContainer::UpdateSidePanelContainerButtonsState() {
       pinned_button->SetHighlighted(true);
       side_panel_button_highlighted = false;
     } else {
-      pinned_button->SetHighlighted(false);
+      // We cannot use pinned_button->SetHighlighted(false) here because that
+      // sets the ink drop to a deactivated state and AnimateToState may restart
+      // animations for non hidden->hidden same state transitions which could
+      // cause GetHighlighted to return true when animating from deactivated ->
+      // deactivated.
+      views::InkDrop::Get(pinned_button)
+          ->GetInkDrop()
+          ->AnimateToState(views::InkDropState::HIDDEN);
     }
   }
   GetSidePanelButton()->SetHighlighted(side_panel_button_highlighted);
