@@ -9,9 +9,7 @@ import android.util.Log;
 
 import org.chromium.base.annotations.CalledByNative;
 
-/**
- * Simple object representing the bookmark id.
- */
+/** Simple object representing the bookmark id. */
 public class BookmarkId {
     public static final int INVALID_FOLDER_ID = -2;
     public static final int INVALID_ID = -1;
@@ -25,9 +23,10 @@ public class BookmarkId {
     private static final int ROOT_FOLDER_ID = -1;
 
     private final long mId;
-    private final int mType;
+    private final @BookmarkType int mType;
 
-    public BookmarkId(long id, int type) {
+    public BookmarkId(long id, @BookmarkType int type) {
+        assert BookmarkType.NORMAL <= type && type <= BookmarkType.LAST;
         mId = id;
         mType = type;
     }
@@ -36,7 +35,7 @@ public class BookmarkId {
      * @param c The char representing the type.
      * @return The Bookmark type from a char representing the type.
      */
-    private static int getBookmarkTypeFromChar(char c) {
+    private static @BookmarkType int getBookmarkTypeFromChar(char c) {
         switch (c) {
             case TYPE_PARTNER:
                 return BookmarkType.PARTNER;
@@ -62,6 +61,7 @@ public class BookmarkId {
      */
     public static BookmarkId getBookmarkIdFromString(String s) {
         long id = ROOT_FOLDER_ID;
+        @BookmarkType
         int type = BookmarkType.NORMAL;
         if (TextUtils.isEmpty(s)) return new BookmarkId(id, type);
         char folderTypeChar = s.charAt(0);
@@ -99,7 +99,7 @@ public class BookmarkId {
      * @return The BookmarkId Object.
      */
     @CalledByNative
-    private static BookmarkId createBookmarkId(long id, int type) {
+    private static BookmarkId createBookmarkId(long id, @BookmarkType int type) {
         return new BookmarkId(id, type);
     }
 

@@ -895,9 +895,9 @@ class BookmarkBridge {
     }
 
     @CalledByNative
-    private static BookmarkItem createBookmarkItem(long id, int type, String title, GURL url,
-            boolean isFolder, long parentId, int parentIdType, boolean isEditable,
-            boolean isManaged, long dateAdded, boolean read) {
+    private static BookmarkItem createBookmarkItem(long id, @BookmarkType int type, String title,
+            GURL url, boolean isFolder, long parentId, @BookmarkType int parentIdType,
+            boolean isEditable, boolean isManaged, long dateAdded, boolean read) {
         return new BookmarkItem(new BookmarkId(id, type), title, url, isFolder,
                 new BookmarkId(parentId, parentIdType), isEditable, isManaged, dateAdded, read);
     }
@@ -908,13 +908,14 @@ class BookmarkBridge {
     }
 
     @CalledByNative
-    private static void addToBookmarkIdList(List<BookmarkId> bookmarkIdList, long id, int type) {
+    private static void addToBookmarkIdList(
+            List<BookmarkId> bookmarkIdList, long id, @BookmarkType int type) {
         bookmarkIdList.add(new BookmarkId(id, type));
     }
 
     @CalledByNative
     private static void addToBookmarkIdListWithDepth(List<BookmarkId> folderList, long id,
-            int type, List<Integer> depthList, int depth) {
+            @BookmarkType int type, List<Integer> depthList, int depth) {
         folderList.add(new BookmarkId(id, type));
         depthList.add(depth);
     }
