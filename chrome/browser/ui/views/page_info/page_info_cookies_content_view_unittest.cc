@@ -13,6 +13,7 @@
 #include "components/content_settings/core/common/features.h"
 #include "components/page_info/page_info.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/web_contents.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -32,6 +33,10 @@ std::u16string GetManageButtonSubtitle(views::View* content_view) {
   auto* managed_button_subtitle =
       static_cast<RichHoverButton*>(manage_button)->GetSubTitleViewForTesting();
   return managed_button_subtitle->GetText();
+}
+
+const char* GetVectorIconName(NonAccessibleImageView* image_view) {
+  return image_view->GetImageModel().GetVectorIcon().vector_icon()->name;
 }
 
 }  // namespace
@@ -87,6 +92,30 @@ class PageInfoCookiesContentViewTest
 
   PageInfoCookiesContentView* content_view() { return content_view_.get(); }
 
+  views::BoxLayoutView* third_party_cookies_container() {
+    return content_view_->third_party_cookies_container_;
+  }
+
+  views::BoxLayoutView* third_party_cookies_label_wrapper() {
+    return content_view_->third_party_cookies_label_wrapper_;
+  }
+
+  views::Label* third_party_cookies_title() {
+    return content_view_->third_party_cookies_title_;
+  }
+
+  views::Label* third_party_cookies_description() {
+    return content_view_->third_party_cookies_description_;
+  }
+
+  views::ToggleButton* third_party_cookies_toggle() {
+    return content_view_->third_party_cookies_toggle_;
+  }
+
+  NonAccessibleImageView* third_party_cookies_enforced_icon() {
+    return content_view_->third_party_cookies_enforced_icon_;
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<PageInfo> presenter_;
@@ -110,9 +139,7 @@ TEST_P(PageInfoCookiesContentViewTest, ThirdPartyCookiesAllowedByDefault) {
   content_view()->SetCookieInfo(cookie_info);
 
   // Third-party cookies section:
-  EXPECT_FALSE(content_view()
-                   ->third_party_cookies_container_for_testing()
-                   ->GetVisible());
+  EXPECT_FALSE(third_party_cookies_container()->GetVisible());
 
   // Manage cookies button:
   auto subtitle = GetManageButtonSubtitle(content_view());
@@ -133,23 +160,22 @@ TEST_P(PageInfoCookiesContentViewTest, ThirdPartyCookiesBlocked) {
   content_view()->SetCookieInfo(cookie_info);
 
   // Third-party cookies section:
-  EXPECT_TRUE(content_view()
-                  ->third_party_cookies_container_for_testing()
-                  ->GetVisible());
-
-  auto* title_label = content_view()->third_party_cookies_title_for_testing();
-  auto* description_label =
-      content_view()->third_party_cookies_description_for_testing();
+  EXPECT_TRUE(third_party_cookies_container()->GetVisible());
 
   EXPECT_EQ(
-      title_label->GetText(),
+      third_party_cookies_title()->GetText(),
       l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES_SITE_NOT_WORKING_TITLE));
   EXPECT_EQ(
-      description_label->GetText(),
+      third_party_cookies_description()->GetText(),
       l10n_util::GetStringUTF16(
           GetParam()
               ? IDS_PAGE_INFO_COOKIES_SITE_NOT_WORKING_DESCRIPTION_TEMPORARY
               : IDS_PAGE_INFO_COOKIES_SITE_NOT_WORKING_DESCRIPTION_PERMANENT));
+  EXPECT_TRUE(third_party_cookies_label_wrapper()->GetVisible());
+  // TODO(crbug.com/1446230): Verify the toggle row icon and subtitle.
+  EXPECT_TRUE(third_party_cookies_toggle()->GetVisible());
+  EXPECT_FALSE(third_party_cookies_toggle()->GetIsOn());
+  EXPECT_FALSE(third_party_cookies_enforced_icon()->GetVisible());
 
   // Manage cookies button:
   EXPECT_EQ(GetManageButtonSubtitle(content_view()),
@@ -170,20 +196,19 @@ TEST_P(PageInfoCookiesContentViewTest, ThirdPartyCookiesAllowedPermanent) {
   content_view()->SetCookieInfo(cookie_info);
 
   // Third-party cookies section:
-  EXPECT_TRUE(content_view()
-                  ->third_party_cookies_container_for_testing()
-                  ->GetVisible());
-
-  auto* title_label = content_view()->third_party_cookies_title_for_testing();
-  auto* description_label =
-      content_view()->third_party_cookies_description_for_testing();
+  EXPECT_TRUE(third_party_cookies_container()->GetVisible());
 
   EXPECT_EQ(
-      title_label->GetText(),
+      third_party_cookies_title()->GetText(),
       l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES_PERMANENT_ALLOWED_TITLE));
-  EXPECT_EQ(description_label->GetText(),
+  EXPECT_EQ(third_party_cookies_description()->GetText(),
             l10n_util::GetStringUTF16(
                 IDS_PAGE_INFO_COOKIES_PERMANENT_ALLOWED_DESCRIPTION));
+  EXPECT_TRUE(third_party_cookies_label_wrapper()->GetVisible());
+  // TODO(crbug.com/1446230): Verify the toggle row icon and subtitle.
+  EXPECT_TRUE(third_party_cookies_toggle()->GetVisible());
+  EXPECT_TRUE(third_party_cookies_toggle()->GetIsOn());
+  EXPECT_FALSE(third_party_cookies_enforced_icon()->GetVisible());
 
   // Manage cookies button:
   EXPECT_EQ(GetManageButtonSubtitle(content_view()),
@@ -206,21 +231,20 @@ TEST_P(PageInfoCookiesContentViewTest, ThirdPartyCookiesAllowedTemporary) {
   content_view()->SetCookieInfo(cookie_info);
 
   // Third-party cookies section:
-  EXPECT_TRUE(content_view()
-                  ->third_party_cookies_container_for_testing()
-                  ->GetVisible());
-
-  auto* title_label = content_view()->third_party_cookies_title_for_testing();
-  auto* description_label =
-      content_view()->third_party_cookies_description_for_testing();
+  EXPECT_TRUE(third_party_cookies_container()->GetVisible());
 
   EXPECT_EQ(
-      title_label->GetText(),
+      third_party_cookies_title()->GetText(),
       l10n_util::GetPluralStringFUTF16(
           IDS_PAGE_INFO_COOKIES_BLOCKING_RESTART_TITLE, kDaysToExpiration));
-  EXPECT_EQ(description_label->GetText(),
+  EXPECT_EQ(third_party_cookies_description()->GetText(),
             l10n_util::GetStringUTF16(
                 IDS_PAGE_INFO_COOKIES_BLOCKING_RESTART_DESCRIPTION_TODAY));
+  EXPECT_TRUE(third_party_cookies_label_wrapper()->GetVisible());
+  // TODO(crbug.com/1446230): Verify the toggle row icon and subtitle.
+  EXPECT_TRUE(third_party_cookies_toggle()->GetVisible());
+  EXPECT_TRUE(third_party_cookies_toggle()->GetIsOn());
+  EXPECT_FALSE(third_party_cookies_enforced_icon()->GetVisible());
 
   // Manage cookies button:
   EXPECT_EQ(GetManageButtonSubtitle(content_view()),
@@ -229,7 +253,207 @@ TEST_P(PageInfoCookiesContentViewTest, ThirdPartyCookiesAllowedTemporary) {
                 cookie_info.allowed_sites_count));
 }
 
-// TODO(crbug.com/1446230): Add tests for enforced cases.
+TEST_P(PageInfoCookiesContentViewTest, ThirdPartyCookiesBlockedByPolicy) {
+  PageInfoCookiesContentView::CookiesNewInfo cookie_info;
+  cookie_info.blocked_sites_count = 3;
+  cookie_info.allowed_sites_count = 10;
+  cookie_info.status = CookieControlsStatus::kEnabled;
+  cookie_info.enforcement = CookieControlsEnforcement::kEnforcedByPolicy;
+  cookie_info.expiration = base::Time();
+  cookie_info.confidence = CookieControlsBreakageConfidenceLevel::kMedium;
+
+  content_view()->SetCookieInfo(cookie_info);
+
+  // Third-party cookies section:
+  EXPECT_TRUE(third_party_cookies_container()->GetVisible());
+
+  // TODO(crbug.com/1446230): Verify the toggle row icon and subtitle.
+  EXPECT_FALSE(third_party_cookies_label_wrapper()->GetVisible());
+  EXPECT_FALSE(third_party_cookies_toggle()->GetVisible());
+  EXPECT_FALSE(third_party_cookies_toggle()->GetIsOn());
+
+  EXPECT_TRUE(third_party_cookies_enforced_icon()->GetVisible());
+  EXPECT_STREQ(GetVectorIconName(third_party_cookies_enforced_icon()),
+               vector_icons::kBusinessIcon.name);
+  EXPECT_EQ(
+      third_party_cookies_enforced_icon()->GetTooltipText(),
+      l10n_util::GetStringUTF16(IDS_PAGE_INFO_PERMISSION_MANAGED_BY_POLICY));
+
+  // Manage cookies button:
+  EXPECT_EQ(GetManageButtonSubtitle(content_view()),
+            l10n_util::GetPluralStringFUTF16(
+                IDS_PAGE_INFO_COOKIES_ALLOWED_SITES_COUNT,
+                cookie_info.allowed_sites_count));
+}
+
+TEST_P(PageInfoCookiesContentViewTest, ThirdPartyCookiesAllowedByPolicy) {
+  PageInfoCookiesContentView::CookiesNewInfo cookie_info;
+  cookie_info.blocked_sites_count = 3;
+  cookie_info.allowed_sites_count = 10;
+  cookie_info.status = CookieControlsStatus::kDisabledForSite;
+  cookie_info.enforcement = CookieControlsEnforcement::kEnforcedByPolicy;
+  cookie_info.expiration = base::Time();
+  cookie_info.confidence = CookieControlsBreakageConfidenceLevel::kMedium;
+
+  content_view()->SetCookieInfo(cookie_info);
+
+  // Third-party cookies section:
+  EXPECT_TRUE(third_party_cookies_container()->GetVisible());
+
+  // TODO(crbug.com/1446230): Verify that the toggle row has correct subtitle.
+  EXPECT_FALSE(third_party_cookies_label_wrapper()->GetVisible());
+  EXPECT_FALSE(third_party_cookies_toggle()->GetVisible());
+  EXPECT_TRUE(third_party_cookies_toggle()->GetIsOn());
+
+  EXPECT_TRUE(third_party_cookies_enforced_icon()->GetVisible());
+  EXPECT_STREQ(GetVectorIconName(third_party_cookies_enforced_icon()),
+               vector_icons::kBusinessIcon.name);
+  EXPECT_EQ(
+      third_party_cookies_enforced_icon()->GetTooltipText(),
+      l10n_util::GetStringUTF16(IDS_PAGE_INFO_PERMISSION_MANAGED_BY_POLICY));
+
+  // Manage cookies button:
+  EXPECT_EQ(GetManageButtonSubtitle(content_view()),
+            l10n_util::GetPluralStringFUTF16(
+                IDS_PAGE_INFO_COOKIES_ALLOWED_SITES_COUNT,
+                cookie_info.allowed_sites_count));
+}
+
+TEST_P(PageInfoCookiesContentViewTest, ThirdPartyCookiesBlockedByExtension) {
+  PageInfoCookiesContentView::CookiesNewInfo cookie_info;
+  cookie_info.blocked_sites_count = 3;
+  cookie_info.allowed_sites_count = 10;
+  cookie_info.status = CookieControlsStatus::kEnabled;
+  cookie_info.enforcement = CookieControlsEnforcement::kEnforcedByExtension;
+  cookie_info.expiration = base::Time();
+  cookie_info.confidence = CookieControlsBreakageConfidenceLevel::kMedium;
+
+  content_view()->SetCookieInfo(cookie_info);
+
+  // Third-party cookies section:
+  EXPECT_TRUE(third_party_cookies_container()->GetVisible());
+
+  // TODO(crbug.com/1446230): Verify the toggle row icon and subtitle.
+  EXPECT_FALSE(third_party_cookies_label_wrapper()->GetVisible());
+  EXPECT_FALSE(third_party_cookies_toggle()->GetVisible());
+  EXPECT_FALSE(third_party_cookies_toggle()->GetIsOn());
+
+  EXPECT_TRUE(third_party_cookies_enforced_icon()->GetVisible());
+  EXPECT_STREQ(GetVectorIconName(third_party_cookies_enforced_icon()),
+               vector_icons::kExtensionIcon.name);
+  EXPECT_EQ(
+      third_party_cookies_enforced_icon()->GetTooltipText(),
+      l10n_util::GetStringUTF16(IDS_PAGE_INFO_PERMISSION_MANAGED_BY_EXTENSION));
+
+  // Manage cookies button:
+  EXPECT_EQ(GetManageButtonSubtitle(content_view()),
+            l10n_util::GetPluralStringFUTF16(
+                IDS_PAGE_INFO_COOKIES_ALLOWED_SITES_COUNT,
+                cookie_info.allowed_sites_count));
+}
+
+TEST_P(PageInfoCookiesContentViewTest, ThirdPartyCookiesAllowedByExtension) {
+  PageInfoCookiesContentView::CookiesNewInfo cookie_info;
+  cookie_info.blocked_sites_count = 3;
+  cookie_info.allowed_sites_count = 10;
+  cookie_info.status = CookieControlsStatus::kDisabledForSite;
+  cookie_info.enforcement = CookieControlsEnforcement::kEnforcedByExtension;
+  cookie_info.expiration = base::Time();
+  cookie_info.confidence = CookieControlsBreakageConfidenceLevel::kMedium;
+
+  content_view()->SetCookieInfo(cookie_info);
+
+  // Third-party cookies section:
+  EXPECT_TRUE(third_party_cookies_container()->GetVisible());
+
+  // TODO(crbug.com/1446230): Verify the toggle row icon and subtitle.
+  EXPECT_FALSE(third_party_cookies_label_wrapper()->GetVisible());
+  EXPECT_FALSE(third_party_cookies_toggle()->GetVisible());
+  EXPECT_TRUE(third_party_cookies_toggle()->GetIsOn());
+
+  EXPECT_TRUE(third_party_cookies_enforced_icon()->GetVisible());
+  EXPECT_STREQ(GetVectorIconName(third_party_cookies_enforced_icon()),
+               vector_icons::kExtensionIcon.name);
+  EXPECT_EQ(
+      third_party_cookies_enforced_icon()->GetTooltipText(),
+      l10n_util::GetStringUTF16(IDS_PAGE_INFO_PERMISSION_MANAGED_BY_EXTENSION));
+
+  // Manage cookies button:
+  EXPECT_EQ(GetManageButtonSubtitle(content_view()),
+            l10n_util::GetPluralStringFUTF16(
+                IDS_PAGE_INFO_COOKIES_ALLOWED_SITES_COUNT,
+                cookie_info.allowed_sites_count));
+}
+
+TEST_P(PageInfoCookiesContentViewTest, ThirdPartyCookiesBlockedBySetting) {
+  // This is not be possible, but the UI still should be able to handle this
+  // state correctly.
+  PageInfoCookiesContentView::CookiesNewInfo cookie_info;
+  cookie_info.blocked_sites_count = 3;
+  cookie_info.allowed_sites_count = 10;
+  cookie_info.status = CookieControlsStatus::kEnabled;
+  cookie_info.enforcement = CookieControlsEnforcement::kEnforcedByCookieSetting;
+  cookie_info.expiration = base::Time();
+  cookie_info.confidence = CookieControlsBreakageConfidenceLevel::kMedium;
+
+  content_view()->SetCookieInfo(cookie_info);
+
+  // Third-party cookies section:
+  EXPECT_TRUE(third_party_cookies_container()->GetVisible());
+
+  // TODO(crbug.com/1446230): Verify the toggle row icon and subtitle.
+  EXPECT_FALSE(third_party_cookies_label_wrapper()->GetVisible());
+  EXPECT_FALSE(third_party_cookies_toggle()->GetVisible());
+  EXPECT_FALSE(third_party_cookies_toggle()->GetIsOn());
+
+  EXPECT_TRUE(third_party_cookies_enforced_icon()->GetVisible());
+  EXPECT_STREQ(GetVectorIconName(third_party_cookies_enforced_icon()),
+               vector_icons::kSettingsIcon.name);
+  EXPECT_EQ(
+      third_party_cookies_enforced_icon()->GetTooltipText(),
+      l10n_util::GetStringUTF16(
+          IDS_PAGE_INFO_BLOCK_THIRD_PARTY_COOKIES_MANAGED_BY_SETTINGS_TOOLTIP));
+
+  // Manage cookies button:
+  EXPECT_EQ(GetManageButtonSubtitle(content_view()),
+            l10n_util::GetPluralStringFUTF16(
+                IDS_PAGE_INFO_COOKIES_ALLOWED_SITES_COUNT,
+                cookie_info.allowed_sites_count));
+}
+
+TEST_P(PageInfoCookiesContentViewTest, ThirdPartyCookiesAllowedBySetting) {
+  PageInfoCookiesContentView::CookiesNewInfo cookie_info;
+  cookie_info.blocked_sites_count = 3;
+  cookie_info.allowed_sites_count = 10;
+  cookie_info.status = CookieControlsStatus::kDisabledForSite;
+  cookie_info.enforcement = CookieControlsEnforcement::kEnforcedByCookieSetting;
+  cookie_info.expiration = base::Time();
+  cookie_info.confidence = CookieControlsBreakageConfidenceLevel::kMedium;
+
+  content_view()->SetCookieInfo(cookie_info);
+
+  // Third-party cookies section:
+  EXPECT_TRUE(third_party_cookies_container()->GetVisible());
+
+  // TODO(crbug.com/1446230): Verify the toggle row icon and subtitle.
+  EXPECT_FALSE(third_party_cookies_label_wrapper()->GetVisible());
+  EXPECT_FALSE(third_party_cookies_toggle()->GetVisible());
+  EXPECT_TRUE(third_party_cookies_toggle()->GetIsOn());
+
+  EXPECT_TRUE(third_party_cookies_enforced_icon()->GetVisible());
+  EXPECT_STREQ(GetVectorIconName(third_party_cookies_enforced_icon()),
+               vector_icons::kSettingsIcon.name);
+  EXPECT_EQ(
+      third_party_cookies_enforced_icon()->GetTooltipText(),
+      l10n_util::GetStringUTF16(
+          IDS_PAGE_INFO_BLOCK_THIRD_PARTY_COOKIES_MANAGED_BY_SETTINGS_TOOLTIP));
+
+  // Manage cookies button:
+  EXPECT_EQ(GetManageButtonSubtitle(content_view()),
+            l10n_util::GetPluralStringFUTF16(
+                IDS_PAGE_INFO_COOKIES_ALLOWED_SITES_COUNT,
+                cookie_info.allowed_sites_count));
+}
 
 // Runs all tests with two versions of user bypass - one that creates temporary
 // exceptions and one that creates permanent exceptions.
