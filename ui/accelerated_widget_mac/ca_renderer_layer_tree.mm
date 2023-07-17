@@ -46,11 +46,13 @@ BASE_FEATURE(kCALayerTreeOptimization,
              "CALayerTreeOptimization",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+#if BUILDFLAG(IS_MAC)
 // Show borders around RenderPassDrawQuad CALayers. which is the output of a
 // non-root render pass.
 BASE_FEATURE(kShowMacRenderPassDrawQuadBorders,
              "ShowMacRenderPassDrawQuadBorders",
              base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
 
 namespace {
 
