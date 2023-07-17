@@ -89,20 +89,6 @@ class PinSetup extends PinSetupBase {
       quickUnlockPrivate_: {type: Object, value: chrome.quickUnlockPrivate},
 
       /**
-       * writeUma is a function that handles writing uma stats. It may be
-       * overridden for tests.
-       *
-       * @type {Function}
-       * @private
-       */
-      writeUma_: {
-        type: Object,
-        value() {
-          return recordLockScreenProgress;
-        },
-      },
-
-      /**
        * Should be true when device has support for PIN login.
        * @private
        */

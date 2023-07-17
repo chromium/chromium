@@ -79,11 +79,9 @@ IN_PROC_BROWSER_TEST_F(OSSettingsPinSetupTest, SetRemove) {
       EXPECT_EQ(true, cryptohome_.HasPinFactor(GetAccountId()));
       histograms.ExpectBucketCount(kPinUnlockUmaHistogramName,
                                    kChoosePinOrPassword, 1);
-      // TODO(b/270962495): kEnterPin and kConfirmPin are currently not
-      // recorded in the os-settings page, but this is likely a bug.
-      histograms.ExpectBucketCount(kPinUnlockUmaHistogramName, kEnterPin, 0);
-      histograms.ExpectBucketCount(kPinUnlockUmaHistogramName, kConfirmPin, 0);
-      histograms.ExpectTotalCount(kPinUnlockUmaHistogramName, 1);
+      histograms.ExpectBucketCount(kPinUnlockUmaHistogramName, kEnterPin, 1);
+      histograms.ExpectBucketCount(kPinUnlockUmaHistogramName, kConfirmPin, 1);
+      histograms.ExpectTotalCount(kPinUnlockUmaHistogramName, 3);
     }
     // TODO(b/243696986): Lock the screen or sign out and check that the PIN
     // works.
@@ -155,10 +153,8 @@ IN_PROC_BROWSER_TEST_F(OSSettingsPinSetupTest, SetPinButCancelConfirmation) {
   EXPECT_EQ(false, cryptohome_.HasPinFactor(GetAccountId()));
   histograms.ExpectBucketCount(kPinUnlockUmaHistogramName, kChoosePinOrPassword,
                                1);
-  // TODO(b/270962495): kEnterPin and kConfirmPin are currently not
-  // recorded in the os-settings page, but this is likely a bug.
-  histograms.ExpectBucketCount(kPinUnlockUmaHistogramName, kEnterPin, 0);
-  histograms.ExpectTotalCount(kPinUnlockUmaHistogramName, 1);
+  histograms.ExpectBucketCount(kPinUnlockUmaHistogramName, kEnterPin, 1);
+  histograms.ExpectTotalCount(kPinUnlockUmaHistogramName, 2);
 }
 
 // Tests that nothing is persisted during setup when the PIN that is entered
@@ -176,10 +172,8 @@ IN_PROC_BROWSER_TEST_F(OSSettingsPinSetupTest, SetPinButFailConfirmation) {
   EXPECT_EQ(false, cryptohome_.HasPinFactor(GetAccountId()));
   histograms.ExpectBucketCount(kPinUnlockUmaHistogramName, kChoosePinOrPassword,
                                1);
-  // TODO(b/270962495): kEnterPin and kConfirmPin are currently not
-  // recorded in the os-settings page, but this is likely a bug.
-  histograms.ExpectBucketCount(kPinUnlockUmaHistogramName, kEnterPin, 0);
-  histograms.ExpectTotalCount(kPinUnlockUmaHistogramName, 1);
+  histograms.ExpectBucketCount(kPinUnlockUmaHistogramName, kEnterPin, 1);
+  histograms.ExpectTotalCount(kPinUnlockUmaHistogramName, 2);
 }
 
 // Tests that PIN setup UI validates minimal pin lengths.

@@ -18,7 +18,7 @@ import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {ConfigureResult, PinFactorEditor} from 'chrome://resources/mojo/chromeos/ash/services/auth_factor_config/public/mojom/auth_factor_config.mojom-webui.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {LockScreenProgress} from './lock_screen_constants.js';
+import {LockScreenProgress, recordLockScreenProgress} from './lock_screen_constants.js';
 import {PinKeyboardElement} from './pin_keyboard.js';
 import {getTemplate} from './setup_pin_keyboard.html.js';
 import {fireAuthTokenInvalidEvent} from './utils.js';
@@ -338,7 +338,7 @@ export class SetupPinKeyboardElement extends SetupPinKeyboardElementBase {
       this.onPinChange_(new CustomEvent(
           'pin-change', {detail: {pin: this.pinKeyboardValue_}}));
       this.$.pinKeyboard.focusInput();
-      this.writeUma(LockScreenProgress.ENTER_PIN);
+      recordLockScreenProgress(LockScreenProgress.ENTER_PIN);
       return;
     }
     // onPinSubmit gets called if the user hits enter on the PIN keyboard.
@@ -377,7 +377,7 @@ export class SetupPinKeyboardElement extends SetupPinKeyboardElementBase {
 
     this.resetState();
     this.dispatchEvent(new Event('set-pin-done'));
-    this.writeUma(LockScreenProgress.CONFIRM_PIN);
+    recordLockScreenProgress(LockScreenProgress.CONFIRM_PIN);
   }
 
   private hasError_(problemMessageId: string, problemClass: ProblemType):

@@ -74,17 +74,6 @@ export class SettingsLockScreenElement extends SettingsLockScreenElementBase {
       },
 
       /**
-       * writeUma_ is a function that handles writing uma stats. It may be
-       * overridden for tests.
-       */
-      writeUma_: {
-        type: Object,
-        value() {
-          return recordLockScreenProgress;
-        },
-      },
-
-      /**
        * True if quick unlock settings should be displayed on this machine.
        */
       quickUnlockEnabled_: {
@@ -227,7 +216,6 @@ export class SettingsLockScreenElement extends SettingsLockScreenElementBase {
 
   prefs: Object;
   authToken: string|undefined;
-  private writeUma_: Function;
   private quickUnlockEnabled_: boolean;
   private quickUnlockDisabledByPolicy_: boolean;
   private fingerprintUnlockEnabled_: boolean;
@@ -421,7 +409,7 @@ export class SettingsLockScreenElement extends SettingsLockScreenElementBase {
 
   private onConfigurePin_(e: Event): void {
     e.preventDefault();
-    this.writeUma_(LockScreenProgress.CHOOSE_PIN_OR_PASSWORD);
+    recordLockScreenProgress(LockScreenProgress.CHOOSE_PIN_OR_PASSWORD);
     this.showSetupPinDialog_ = true;
   }
 

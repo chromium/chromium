@@ -64,24 +64,12 @@ class SettingsSetupPinDialogElement extends SettingsSetupPinDialogElementBase {
        * tests.
        */
       quickUnlockPrivate: {type: Object, value: chrome.quickUnlockPrivate},
-
-      /**
-       * writeUma is a function that handles writing uma stats. It may be
-       * overridden for tests.
-       */
-      writeUma_: {
-        type: Object,
-        value() {
-          return () => {};
-        },
-      },
     };
   }
 
   private enableSubmit_: boolean;
   private isConfirmStep_: boolean;
   private quickUnlockPrivate: Object;
-  private writeUma_: Function;
 
   override connectedCallback() {
     super.connectedCallback();

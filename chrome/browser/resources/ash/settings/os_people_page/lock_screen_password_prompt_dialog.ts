@@ -39,32 +39,19 @@ class SettingsLockScreenPasswordPromptDialogElement extends
   }
 
   static get properties() {
-    return {
-      /**
-       * writeUma_ is a function that handles writing uma stats. It may be
-       * overridden for tests.
-       */
-      writeUma_: {
-        type: Object,
-        value() {
-          return recordLockScreenProgress;
-        },
-      },
-    };
+    return {};
   }
-
-  private writeUma_: Function;
 
   override connectedCallback() {
     super.connectedCallback();
 
-    this.writeUma_(LockScreenProgress.START_SCREEN_LOCK);
+    recordLockScreenProgress(LockScreenProgress.START_SCREEN_LOCK);
   }
 
   private onTokenObtained_(
       {detail}: CustomEvent<chrome.quickUnlockPrivate.TokenInfo>): void {
     // The user successfully authenticated.
-    this.writeUma_(LockScreenProgress.ENTER_PASSWORD_CORRECTLY);
+    recordLockScreenProgress(LockScreenProgress.ENTER_PASSWORD_CORRECTLY);
     const authTokenObtainedEvent = new CustomEvent(
         'auth-token-obtained', {bubbles: true, composed: true, detail});
     this.dispatchEvent(authTokenObtainedEvent);
