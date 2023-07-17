@@ -335,15 +335,21 @@ TEST_F(AutofillContextMenuManagerTest,
                               form.fields[0].unique_renderer_id));
   autofill_context_menu_manager()->AppendItems();
 
-  // Expect to find the fallback entry at the end (after the manual fallback and
-  // feedback entries).
-  ASSERT_GE(menu_model()->GetItemCount(), 2u);
-  const size_t fallback_index = menu_model()->GetItemCount() - 2;
+  // Expect to find the fallback entries at the end (after the manual fallback
+  // and feedback entries).
+  ASSERT_GE(menu_model()->GetItemCount(), 3u);
+  const size_t fallback_index = menu_model()->GetItemCount() - 3;
+  EXPECT_EQ(menu_model()->GetTypeAt(fallback_index),
+            ui::MenuModel::ItemType::TYPE_TITLE);
   EXPECT_EQ(
       menu_model()->GetLabelAt(fallback_index),
       l10n_util::GetStringUTF16(
+          IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_AUTOCOMPLETE_UNRECOGNIZED_TITLE));
+  EXPECT_EQ(
+      menu_model()->GetLabelAt(fallback_index + 1),
+      l10n_util::GetStringUTF16(
           IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_AUTOCOMPLETE_UNRECOGNIZED));
-  EXPECT_EQ(menu_model()->GetTypeAt(fallback_index + 1),
+  EXPECT_EQ(menu_model()->GetTypeAt(fallback_index + 2),
             ui::MenuModel::ItemType::TYPE_SEPARATOR);
 }
 

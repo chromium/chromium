@@ -6,6 +6,7 @@
 
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/image/image_unittest_util.h"
@@ -63,6 +64,11 @@ class DelegateBase : public SimpleMenuModel::Delegate {
 
  private:
   absl::optional<int> item_with_icon_;
+};
+
+class MockDelegate : public DelegateBase {
+ public:
+  MOCK_METHOD(bool, IsCommandIdEnabled, (int command_id), (const override));
 };
 
 TEST(SimpleMenuModelTest, AddSeparatorPreventsEmptySections) {
@@ -151,6 +157,17 @@ TEST(SimpleMenuModelTest, IsEnabledAtWithDelegateAndCommandNotEnabled) {
   simple_menu_model.SetEnabledAt(/*index*/ 0, true);
 
   // Should return false since the command_id 108 is disabled.
+  ASSERT_FALSE(simple_menu_model.IsEnabledAt(0));
+}
+
+TEST(SimpleMenuModelTest, IsEnabledAtWithDelegateTitle) {
+  MockDelegate delegate;
+  SimpleMenuModel simple_menu_model(&delegate);
+  simple_menu_model.AddTitle(u"title");
+
+  // Expect that for title elements the `delegate` is not queried. They are
+  // always considered disabled.
+  EXPECT_CALL(delegate, IsCommandIdEnabled).Times(0);
   ASSERT_FALSE(simple_menu_model.IsEnabledAt(0));
 }
 

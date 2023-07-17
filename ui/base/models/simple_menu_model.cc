@@ -470,8 +470,10 @@ ButtonMenuItemModel* SimpleMenuModel::GetButtonMenuItemAt(size_t index) const {
 bool SimpleMenuModel::IsEnabledAt(size_t index) const {
   int command_id = GetCommandIdAt(index);
 
-  if (!delegate_ || command_id == kSeparatorId || GetButtonMenuItemAt(index))
+  if (!delegate_ || command_id == kSeparatorId || command_id == kTitleId ||
+      GetButtonMenuItemAt(index)) {
     return items_[ValidateItemIndex(index)].enabled;
+  }
 
   return delegate_->IsCommandIdEnabled(command_id) &&
          items_[ValidateItemIndex(index)].enabled;

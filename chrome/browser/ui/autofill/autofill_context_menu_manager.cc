@@ -29,6 +29,7 @@
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/vector_icons/vector_icons.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/menu_model.h"
 #include "ui/gfx/favicon_size.h"
 
@@ -578,9 +579,12 @@ void AutofillContextMenuManager::
     return;
   }
 
-  menu_model_->AddItemWithStringId(
+  menu_model_->AddTitle(l10n_util::GetStringUTF16(
+      IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_AUTOCOMPLETE_UNRECOGNIZED_TITLE));
+  menu_model_->AddItemWithStringIdAndIcon(
       kAutofillFallbackForAutocompleteUnrecognized,
-      IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_AUTOCOMPLETE_UNRECOGNIZED);
+      IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_AUTOCOMPLETE_UNRECOGNIZED,
+      ui::ImageModel::FromVectorIcon(vector_icons::kLocationOnIcon));
   menu_model_->AddSeparator(ui::NORMAL_SEPARATOR);
 }
 

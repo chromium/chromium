@@ -545,6 +545,12 @@ are declared in tools/grit/grit_rule.gni.
         <message name="IDS_CONTENT_CONTEXT_LIVE_CAPTION_DISABLE" desc="The name of the Live Caption command in the content area context menu to disable Live Caption">
           &amp;Disable Live Caption
         </message>
+        <message name="IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_AUTOCOMPLETE_UNRECOGNIZED_TITLE" desc="The title of the Autofill manual fallback for unrecognized autocomplete attribute command in the content area context menu.">
+         Fill in form
+        </message>
+        <message name="IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_AUTOCOMPLETE_UNRECOGNIZED" desc="The name of the Autofill manual fallback for unrecognized autocomplete attribute command in the content area context menu.">
+         Addresses and more
+        </message>
         <if expr="not use_titlecase">
           <message name="IDS_CONTENT_CONTEXT_BACK" desc="The name of the Back command in the content area context menu">
             &amp;Back
@@ -819,9 +825,6 @@ are declared in tools/grit/grit_rule.gni.
           </message>
           <message name="IDS_CONTENT_CONTEXT_AUTOFILL_FEEDBACK" desc="The name of the Autofill Feedback command in the content area context menu">
            Help improve autofill
-          </message>
-          <message name="IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_AUTOCOMPLETE_UNRECOGNIZED" desc="The name of the Autofill manual fallback for unrecognized autocomplete attribute command in the content area context menu.">
-           Addresses and more
           </message>
         </if>
         <if expr="use_titlecase">
@@ -1103,9 +1106,6 @@ are declared in tools/grit/grit_rule.gni.
           </message>
           <message name="IDS_CONTENT_CONTEXT_AUTOFILL_FEEDBACK" desc="The name of the Autofill Feedback command in the content area context menu">
            Help Improve Autofill
-          </message>
-          <message name="IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_AUTOCOMPLETE_UNRECOGNIZED" desc="The name of the Autofill manual fallback for unrecognized autocomplete attribute command in the content area context menu.">
-           Addresses and more
           </message>
         </if>
 
