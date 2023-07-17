@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/sync/ios_trusted_vault_client.h"
+#import "ios/chrome/browser/trusted_vault/ios_trusted_vault_client.h"
 
 #import "base/feature_list.h"
 #import "base/functional/callback_helpers.h"

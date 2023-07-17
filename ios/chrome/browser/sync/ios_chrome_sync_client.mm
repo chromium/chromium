@@ -35,6 +35,7 @@
 #import "components/sync/service/sync_service.h"
 #import "components/sync_sessions/session_sync_service.h"
 #import "components/sync_user_events/user_event_service.h"
+#import "components/trusted_vault/trusted_vault_service.h"
 #import "components/variations/service/google_groups_updater_service.h"
 #import "ios/chrome/browser/bookmarks/account_bookmark_sync_service_factory.h"
 #import "ios/chrome/browser/bookmarks/local_or_syncable_bookmark_sync_service_factory.h"
@@ -52,14 +53,13 @@
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
-#import "ios/chrome/browser/signin/trusted_vault_client_backend_factory.h"
 #import "ios/chrome/browser/sync/device_info_sync_service_factory.h"
-#import "ios/chrome/browser/sync/ios_trusted_vault_client.h"
 #import "ios/chrome/browser/sync/ios_user_event_service_factory.h"
 #import "ios/chrome/browser/sync/model_type_store_service_factory.h"
 #import "ios/chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
 #import "ios/chrome/browser/sync/session_sync_service_factory.h"
 #import "ios/chrome/browser/sync/sync_invalidations_service_factory.h"
+#import "ios/chrome/browser/trusted_vault/ios_trusted_vault_service_factory.h"
 #import "ios/chrome/browser/webdata_services/web_data_service_factory.h"
 #import "ios/chrome/common/channel_info.h"
 #import "ios/web/public/thread/web_task_traits.h"
@@ -98,14 +98,6 @@ IOSChromeSyncClient::IOSChromeSyncClient(ChromeBrowserState* browser_state)
           ios::AccountBookmarkSyncServiceFactory::GetForBrowserState(
               browser_state_),
           PowerBookmarkServiceFactory::GetForBrowserState(browser_state_));
-
-  // TODO(crbug.com/1434661): introduce ios version of
-  // TrustedVaultServiceFactory.
-  trusted_vault_client_ = std::make_unique<IOSTrustedVaultClient>(
-      ChromeAccountManagerServiceFactory::GetForBrowserState(browser_state_),
-      GetIdentityManager(),
-      TrustedVaultClientBackendFactory::GetForBrowserState(browser_state_),
-      browser_state_->GetSharedURLLoaderFactory());
 }
 
 IOSChromeSyncClient::~IOSChromeSyncClient() {}
@@ -208,7 +200,8 @@ IOSChromeSyncClient::GetSyncInvalidationsService() {
 
 trusted_vault::TrustedVaultClient*
 IOSChromeSyncClient::GetTrustedVaultClient() {
-  return trusted_vault_client_.get();
+  return IOSTrustedVaultServiceFactory::GetForBrowserState(browser_state_)
+      ->GetTrustedVaultClient();
 }
 
 scoped_refptr<syncer::ExtensionsActivity>

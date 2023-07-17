@@ -70,8 +70,6 @@ class IOSChromeSyncClient : public browser_sync::BrowserSyncClient {
   // The sync api component factory in use by this client.
   std::unique_ptr<browser_sync::SyncApiComponentFactoryImpl> component_factory_;
 
-  std::unique_ptr<trusted_vault::TrustedVaultClient> trusted_vault_client_;
-
   // Members that must be fetched on the UI thread but accessed on their
   // respective backend threads.
   scoped_refptr<autofill::AutofillWebDataService> profile_web_data_service_;

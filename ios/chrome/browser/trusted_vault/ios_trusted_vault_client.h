@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_SYNC_IOS_TRUSTED_VAULT_CLIENT_H_
-#define IOS_CHROME_BROWSER_SYNC_IOS_TRUSTED_VAULT_CLIENT_H_
+#ifndef IOS_CHROME_BROWSER_TRUSTED_VAULT_IOS_TRUSTED_VAULT_CLIENT_H_
+#define IOS_CHROME_BROWSER_TRUSTED_VAULT_IOS_TRUSTED_VAULT_CLIENT_H_
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -76,4 +76,4 @@ class IOSTrustedVaultClient : public trusted_vault::TrustedVaultClient {
   base::WeakPtrFactory<IOSTrustedVaultClient> weak_ptr_factory_{this};
 };
 
-#endif  // IOS_CHROME_BROWSER_SYNC_IOS_TRUSTED_VAULT_CLIENT_H_
+#endif  // IOS_CHROME_BROWSER_TRUSTED_VAULT_IOS_TRUSTED_VAULT_CLIENT_H_

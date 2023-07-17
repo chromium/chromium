@@ -140,6 +140,7 @@ source_set("browser_state") {
     "//ios/chrome/browser/tabs_search:tabs_search_factory",
     "//ios/chrome/browser/text_selection",
     "//ios/chrome/browser/translate",
+    "//ios/chrome/browser/trusted_vault",
     "//ios/chrome/browser/ui/fullscreen",
     "//ios/chrome/browser/ui/voice",
     "//ios/chrome/browser/unified_consent",
