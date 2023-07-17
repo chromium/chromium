@@ -8,6 +8,7 @@ assert(is_chromeos_ash)
 
 source_set("shared") {
   sources = [
+    "ble_constants.h",
     "connection_medium.cc",
     "connection_medium.h",
     "connection_priority.cc",

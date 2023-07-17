@@ -203,6 +203,7 @@ component("bluetooth") {
     deps += [
       "//ash/constants",
       "//chromeos/ash/services/nearby/public/cpp/",
+      "//chromeos/ash/services/secure_channel/public/cpp/shared",
     ]
   }
 

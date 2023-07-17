@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_ASH_SERVICES_SECURE_CHANNEL_BLE_CONSTANTS_H_
-#define CHROMEOS_ASH_SERVICES_SECURE_CHANNEL_BLE_CONSTANTS_H_
+#ifndef CHROMEOS_ASH_SERVICES_SECURE_CHANNEL_PUBLIC_CPP_SHARED_BLE_CONSTANTS_H_
+#define CHROMEOS_ASH_SERVICES_SECURE_CHANNEL_PUBLIC_CPP_SHARED_BLE_CONSTANTS_H_
 
 namespace ash::secure_channel {
 
@@ -26,4 +26,4 @@ constexpr const char kGattServerUuid[] = "b3b7e28e-a000-3e17-bd86-6e97b9e28c11";
 
 }  // namespace ash::secure_channel
 
-#endif  // CHROMEOS_ASH_SERVICES_SECURE_CHANNEL_BLE_CONSTANTS_H_
+#endif  // CHROMEOS_ASH_SERVICES_SECURE_CHANNEL_PUBLIC_CPP_SHARED_BLE_CONSTANTS_H_

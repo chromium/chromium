@@ -32,7 +32,6 @@ static_library("secure_channel") {
     "ble_connection_manager.h",
     "ble_connection_manager_impl.cc",
     "ble_connection_manager_impl.h",
-    "ble_constants.h",
     "ble_initiator_connection_attempt.cc",
     "ble_initiator_connection_attempt.h",
     "ble_initiator_failure_type.cc",

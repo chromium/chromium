@@ -267,7 +267,11 @@ test("device_unittests") {
     ]
     deps += [ "//chromeos/constants" ]
     if (is_chromeos_ash) {
-      deps += [ "//ash/constants" ]
+      deps += [
+        "//ash/constants",
+        "//chromeos/ash/services/nearby/public/cpp/",
+        "//chromeos/ash/services/secure_channel/public/cpp/shared",
+      ]
     }
     if (is_chromeos_lacros) {
       deps += [ "//chromeos/lacros:test_support" ]

@@ -22,6 +22,8 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
+#include "chromeos/ash/services/nearby/public/cpp/nearby_client_uuids.h"
+#include "chromeos/ash/services/secure_channel/public/cpp/shared/ble_constants.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -242,6 +244,23 @@ bool IsUnsupportedDevice(const device::BluetoothDevice* device) {
       device->GetDeviceType() == BluetoothDeviceType::PHONE) {
     return true;
   }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  const BluetoothDevice::UUIDSet& uuids = device->GetUUIDs();
+
+  // These UUIDs are specific to Nearby Share and Phone Hub and are used to
+  // identify devices that should be filtered from the UI that otherwise would
+  // not have been correctly identified. These devices should always be filtered
+  // from the UI. For more information see b/219627324.
+  for (const auto& uuid : ash::nearby::GetNearbyClientUuids()) {
+    if (uuids.contains(uuid)) {
+      return true;
+    }
+  }
+  if (uuids.contains(BluetoothUUID(ash::secure_channel::kGattServerUuid))) {
+    return true;
+  }
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS)
   // Allow bonded devices which are not filtered above to appear in the UI.

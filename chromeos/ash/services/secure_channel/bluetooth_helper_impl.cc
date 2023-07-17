@@ -14,8 +14,8 @@
 #include "chromeos/ash/components/multidevice/remote_device_ref.h"
 #include "chromeos/ash/services/secure_channel/background_eid_generator.h"
 #include "chromeos/ash/services/secure_channel/ble_advertisement_generator.h"
-#include "chromeos/ash/services/secure_channel/ble_constants.h"
 #include "chromeos/ash/services/secure_channel/foreground_eid_generator.h"
+#include "chromeos/ash/services/secure_channel/public/cpp/shared/ble_constants.h"
 
 namespace ash::secure_channel {
 
