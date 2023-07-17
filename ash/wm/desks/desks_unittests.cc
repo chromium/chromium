@@ -9624,12 +9624,21 @@ TEST_P(DeskBarTest, HoverBasic) {
   for (int i = 0; i < desks_controller->GetNumberOfDesks(); i++) {
     auto* event_generator = GetEventGenerator();
     auto* mini_view = GetDeskBarView()->mini_views()[i];
+
+    EXPECT_FALSE(DesksTestApi::IsDeskShortcutViewVisible(mini_view));
     event_generator->MoveMouseTo(
         mini_view->desk_preview()->GetBoundsInScreen().CenterPoint());
     EXPECT_TRUE(
         mini_view->desk_action_view()->combine_desks_button()->GetVisible());
     EXPECT_TRUE(
         mini_view->desk_action_view()->close_all_button()->GetVisible());
+
+    // The shortcut view only appears on the first 8 desks in the desk button
+    // desk bar.
+    const bool expected_visibility =
+        i <= 7 && bar_type_ == DeskBarViewBase::Type::kDeskButton;
+    EXPECT_EQ(DesksTestApi::IsDeskShortcutViewVisible(mini_view),
+              expected_visibility);
   }
 
   CloseDeskBar();
@@ -10056,6 +10065,12 @@ TEST_P(DeskBarTest, ForwardTabbing) {
     SendKey(ui::VKEY_TAB);
     CheckHighlight(mini_view->desk_preview(), true);
     CheckFocus(mini_view->desk_preview(), true);
+    // The shortcut view only appears on the first 8 desks in the desk button
+    // desk bar.
+    const bool expected_visibility =
+        i <= 7 && bar_type_ == DeskBarViewBase::Type::kDeskButton;
+    EXPECT_EQ(DesksTestApi::IsDeskShortcutViewVisible(mini_view),
+              expected_visibility);
 
     if (bar_type_ == DeskBarViewBase::Type::kDeskButton) {
       if (i == 0) {
@@ -10065,11 +10080,17 @@ TEST_P(DeskBarTest, ForwardTabbing) {
 
       SendKey(ui::VKEY_TAB);
       CheckFocus(mini_view->desk_action_view()->close_all_button(), true);
+      // The shortcut view only appears on the first 8 desks in the desk button
+      // desk bar.
+      EXPECT_EQ(DesksTestApi::IsDeskShortcutViewVisible(mini_view),
+                expected_visibility);
     }
 
     SendKey(ui::VKEY_TAB);
     CheckHighlight(mini_view->desk_name_view(), true);
     CheckFocus(mini_view->desk_name_view(), true);
+    EXPECT_FALSE(DesksTestApi::IsDeskShortcutViewVisible(
+        desk_bar_view->mini_views()[i]));
   }
 
   // Tab through new desk button.
@@ -10159,6 +10180,8 @@ TEST_P(DeskBarTest, ReverseTabbing) {
     SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
     CheckHighlight(mini_view->desk_name_view(), true);
     CheckFocus(mini_view->desk_name_view(), true);
+    EXPECT_FALSE(DesksTestApi::IsDeskShortcutViewVisible(
+        desk_bar_view->mini_views()[i]));
 
     if (bar_type_ == DeskBarViewBase::Type::kDeskButton) {
       SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
@@ -10168,11 +10191,23 @@ TEST_P(DeskBarTest, ReverseTabbing) {
         SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
         CheckFocus(mini_view->desk_action_view()->combine_desks_button(), true);
       }
+      // The shortcut view only appears on the first 8 desks in the desk button
+      // desk bar.
+      const bool expected_visibility =
+          i <= 7 && bar_type_ == DeskBarViewBase::Type::kDeskButton;
+      EXPECT_EQ(DesksTestApi::IsDeskShortcutViewVisible(mini_view),
+                expected_visibility);
     }
 
     SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
     CheckHighlight(mini_view->desk_preview(), true);
     CheckFocus(mini_view->desk_preview(), true);
+    // The shortcut view only appears on the first 8 desks in the desk button
+    // desk bar.
+    const bool expected_visibility =
+        i <= 7 && bar_type_ == DeskBarViewBase::Type::kDeskButton;
+    EXPECT_EQ(DesksTestApi::IsDeskShortcutViewVisible(mini_view),
+              expected_visibility);
   }
 
   CloseDeskBar();

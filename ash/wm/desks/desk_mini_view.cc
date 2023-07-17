@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
@@ -37,6 +38,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/views/background.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/view_utils.h"
@@ -47,12 +49,14 @@ namespace ash {
 namespace {
 
 constexpr int kLabelPreviewSpacing = 8;
-
 constexpr int kCloseButtonMargin = 4;
-
 constexpr int kMinDeskNameViewWidth = 56;
-
 constexpr int kPreviewFocusRingRadiusOld = 6;
+constexpr int kShortcutViewBorderWidth = 6;
+constexpr int kShortcutViewBorderHeight = 3;
+constexpr int kShortcutViewHeight = 20;
+constexpr int kShortcutViewIconSize = 14;
+constexpr int kShortcutViewDistanceFromBottom = 4;
 
 // TODO(conniekxu): After CrOS Next is launched, remove
 // `kPreviewFocusRingRadiusOld`.
@@ -189,6 +193,44 @@ DeskMiniView::DeskMiniView(DeskBarViewBase* owner_bar,
 
   desk_name_view_ = AddChildView(std::move(desk_name_view));
 
+  if (owner_bar_->type() == DeskBarViewBase::Type::kDeskButton) {
+    desk_shortcut_view_ =
+        AddChildView(std::make_unique<views::BoxLayoutView>());
+    desk_shortcut_view_->SetOrientation(
+        views::BoxLayout::Orientation::kHorizontal);
+    desk_shortcut_view_->SetMainAxisAlignment(
+        views::BoxLayout::MainAxisAlignment::kCenter);
+    desk_shortcut_view_->SetCrossAxisAlignment(
+        views::BoxLayout::CrossAxisAlignment::kCenter);
+    desk_shortcut_view_->SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
+        kShortcutViewBorderHeight, kShortcutViewBorderWidth,
+        kShortcutViewBorderHeight, kShortcutViewBorderWidth)));
+    desk_shortcut_view_->SetBetweenChildSpacing(3);
+    desk_shortcut_view_->SetBackground(
+        views::CreateThemedSolidBackground(kColorAshShieldAndBase80));
+
+    desk_shortcut_view_->AddChildView(
+        std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
+            kDeskBarShiftIcon, cros_tokens::kIconColorPrimary,
+            kShortcutViewIconSize)));
+    desk_shortcut_view_->AddChildView(std::make_unique<views::Label>(u"+"));
+    desk_shortcut_view_->AddChildView(
+        std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
+            kDeskBarSearchIcon, cros_tokens::kIconColorPrimary,
+            kShortcutViewIconSize)));
+    desk_shortcut_label_ =
+        desk_shortcut_view_->AddChildView(std::make_unique<views::Label>());
+
+    desk_shortcut_view_->SetPaintToLayer();
+    desk_shortcut_view_->layer()->SetFillsBoundsOpaquely(false);
+    desk_shortcut_view_->layer()->SetBackgroundBlur(
+        ColorProvider::kBackgroundBlurSigma);
+    desk_shortcut_view_->layer()->SetRoundedCornerRadius(
+        gfx::RoundedCornersF(kShortcutViewHeight));
+    desk_shortcut_view_->SetVisible(false);
+    desk_shortcut_view_->SetCanProcessEventsWithinSubtree(false);
+  }
+
   context_menu_ = std::make_unique<DeskActionContextMenu>(
       initial_combine_desks_target_name,
       /*combine_desks_callback=*/
@@ -244,6 +286,16 @@ void DeskMiniView::UpdateDeskButtonVisibility() {
   // all desks.
   desk_action_view_->SetCombineDesksButtonVisibility(ContainsAppWindows(desk_));
   desk_action_view_->SetVisible(visible && !is_context_menu_open_);
+
+  // Only show the shortcut view on the first 8 desks in the desk button desk
+  // bar. Update the shortcut label to show the desk number for the shortcut.
+  if (!desk_->is_desk_being_removed() &&
+      owner_bar_->type() == DeskBarViewBase::Type::kDeskButton) {
+    const int desk_index = controller->GetDeskIndex(desk_);
+    desk_shortcut_view_->SetVisible(visible && desk_index <= 7);
+    desk_shortcut_label_->SetText(u"+ " +
+                                  base::NumberToString16(desk_index + 1));
+  }
 }
 
 void DeskMiniView::OnWidgetGestureTap(const gfx::Rect& screen_rect,
@@ -404,6 +456,16 @@ void DeskMiniView::Layout() {
           kCloseButtonMargin,
       kCloseButtonMargin, desk_action_view_size.width(),
       desk_action_view_size.height());
+
+  if (owner_bar_->type() == DeskBarViewBase::Type::kDeskButton) {
+    const int desk_shortcut_view_width =
+        desk_shortcut_view_->GetPreferredSize().width();
+    desk_shortcut_view_->SetBounds(
+        (preview_bounds.width() - desk_shortcut_view_width) / 2,
+        preview_bounds.height() - kShortcutViewHeight -
+            kShortcutViewDistanceFromBottom,
+        desk_shortcut_view_width, kShortcutViewHeight);
+  }
 }
 
 gfx::Size DeskMiniView::CalculatePreferredSize() const {

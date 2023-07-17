@@ -118,6 +118,14 @@ ui::LayerTreeOwner* DesksTestApi::GetMirroredContentsLayerTreeForRootAndDesk(
 }
 
 // static
+bool DesksTestApi::IsDeskShortcutViewVisible(DeskMiniView* mini_view) {
+  // If the mini_view is in the overview desk bar desk_shortcut_view_ will be
+  // nullptr.
+  return mini_view->desk_shortcut_view_ &&
+         mini_view->desk_shortcut_view_->GetVisible();
+}
+
+// static
 bool DesksTestApi::DesksControllerHasDesk(Desk* desk) {
   return DesksController::Get()->HasDesk(desk);
 }
