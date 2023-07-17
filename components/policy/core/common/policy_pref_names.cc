@@ -151,5 +151,8 @@ const char kPolicyTestPageEnabled[] = "policy_test_page_enabled";
 const char kAllowBackForwardCacheForCacheControlNoStorePageEnabled[] =
     "policy.allow_back_forward_cache_for_cache_control_no_store_page_enabled";
 
+const char kLocalTestPoliciesForNextStartup[] =
+    "local_test_policies_for_next_startup";
+
 }  // namespace policy_prefs
 }  // namespace policy

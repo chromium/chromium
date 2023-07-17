@@ -69,6 +69,7 @@ extern const char kIncognitoModeAvailability[];
 extern const char kBeforeunloadEventCancelByPreventDefaultEnabled[];
 extern const char kPolicyTestPageEnabled[];
 extern const char kAllowBackForwardCacheForCacheControlNoStorePageEnabled[];
+extern const char kLocalTestPoliciesForNextStartup[];
 
 }  // namespace policy_prefs
 }  // namespace policy
