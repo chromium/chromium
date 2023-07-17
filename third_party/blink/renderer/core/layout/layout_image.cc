@@ -341,9 +341,6 @@ bool LayoutImage::OverrideIntrinsicSizingInfo(
   gfx::SizeF overridden_intrinsic_size(kDefaultWidth, kDefaultHeight);
   intrinsic_sizing_info.size = overridden_intrinsic_size;
   intrinsic_sizing_info.aspect_ratio = intrinsic_sizing_info.size;
-  if (!IsHorizontalWritingMode())
-    intrinsic_sizing_info.Transpose();
-
   return true;
 }
 
@@ -381,9 +378,6 @@ void LayoutImage::ComputeIntrinsicSizingInfo(
       // doesn't know about them.
       if (StyleRef().GetObjectFit() != EObjectFit::kScaleDown)
         intrinsic_sizing_info.size.Scale(ImageDevicePixelRatio());
-
-      if (!IsHorizontalWritingMode())
-        intrinsic_sizing_info.Transpose();
       return;
     }
 

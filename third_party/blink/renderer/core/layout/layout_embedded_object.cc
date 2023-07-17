@@ -112,11 +112,8 @@ void LayoutEmbeddedObject::ComputeIntrinsicSizingInfo(
   DCHECK(!ShouldApplySizeContainment());
   FrameView* frame_view = ChildFrameView();
   if (frame_view && frame_view->GetIntrinsicSizingInfo(intrinsic_sizing_info)) {
-    // Handle zoom & vertical writing modes here, as the embedded document
-    // doesn't know about them.
+    // Scale based on our zoom as the embedded document doesn't have that info.
     intrinsic_sizing_info.size.Scale(StyleRef().EffectiveZoom());
-    if (!IsHorizontalWritingMode())
-      intrinsic_sizing_info.Transpose();
     return;
   }
 

@@ -415,11 +415,8 @@ void LayoutReplaced::ComputeIntrinsicSizingInfo(
 
   if (auto view_box_size = ComputeObjectViewBoxSizeForIntrinsicSizing()) {
     intrinsic_sizing_info.size = *view_box_size;
-    if (!IsHorizontalWritingMode())
-      intrinsic_sizing_info.size.Transpose();
   } else {
-    intrinsic_sizing_info.size = gfx::SizeF(IntrinsicLogicalWidth().ToFloat(),
-                                            IntrinsicLogicalHeight().ToFloat());
+    intrinsic_sizing_info.size = gfx::SizeF(IntrinsicSize());
   }
 
   // Figure out if we need to compute an intrinsic ratio.

@@ -90,9 +90,6 @@ void LayoutSVGRoot::UnscaledIntrinsicSizingInfo(
       intrinsic_sizing_info.aspect_ratio = view_box_size;
     }
   }
-
-  if (!IsHorizontalWritingMode())
-    intrinsic_sizing_info.Transpose();
 }
 
 void LayoutSVGRoot::ComputeIntrinsicSizingInfo(

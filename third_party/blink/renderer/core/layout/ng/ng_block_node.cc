@@ -1658,23 +1658,26 @@ bool NGBlockNode::HasAspectRatio() const {
 LogicalSize NGBlockNode::GetAspectRatio() const {
   // The CSS parser will ensure that this will only be set if the feature
   // is enabled.
-  const StyleAspectRatio& ratio = Style().AspectRatio();
-  if (ratio.GetType() == EAspectRatioType::kRatio ||
-      (ratio.GetType() == EAspectRatioType::kAutoAndRatio && !IsReplaced()))
+  const EAspectRatioType ar_type = Style().AspectRatio().GetType();
+  if (ar_type == EAspectRatioType::kRatio ||
+      (ar_type == EAspectRatioType::kAutoAndRatio && !IsReplaced())) {
     return Style().LogicalAspectRatio();
+  }
 
   if (!ShouldApplySizeContainment()) {
     IntrinsicSizingInfo legacy_sizing_info;
     To<LayoutReplaced>(box_.Get())
         ->ComputeIntrinsicSizingInfo(legacy_sizing_info);
     if (!legacy_sizing_info.aspect_ratio.IsEmpty()) {
-      PhysicalSize layout_ratio = StyleAspectRatio::LayoutRatioFromSizeF(
-          legacy_sizing_info.aspect_ratio);
-      return {layout_ratio.width, layout_ratio.height};
+      return StyleAspectRatio::LayoutRatioFromSizeF(
+                 legacy_sizing_info.aspect_ratio)
+          .ConvertToLogical(Style().GetWritingMode());
     }
   }
-  if (ratio.GetType() == EAspectRatioType::kAutoAndRatio)
+
+  if (ar_type == EAspectRatioType::kAutoAndRatio) {
     return Style().LogicalAspectRatio();
+  }
   return LogicalSize();
 }
 
