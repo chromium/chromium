@@ -489,6 +489,10 @@ TEST_F(
                             .ZeroDefaultMarginsClearsHeaderFooter);
     });
 
+TEST_F('PrintPreviewPreviewGenerationTest', 'PageSizeCalculation', function() {
+  this.runMochaTest(preview_generation_test.TestNames.PageSizeCalculation);
+});
+
 GEN('#if !BUILDFLAG(IS_CHROMEOS)');
 var PrintPreviewLinkContainerTest = class extends PrintPreviewTest {
   /** @override */
