@@ -31,8 +31,8 @@ class CookieControlsContentView : public views::View {
   virtual void UpdateContentLabels(const std::u16string& title,
                                    const std::u16string& description);
 
-  void SetToggleIsOn(bool is_on);
-  void SetToggleIcon(const gfx::VectorIcon& icon);
+  virtual void SetToggleIsOn(bool is_on);
+  virtual void SetToggleIcon(const gfx::VectorIcon& icon);
 
   virtual void SetFeedbackSectionVisibility(bool visible);
 

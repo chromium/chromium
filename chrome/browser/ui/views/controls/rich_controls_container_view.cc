@@ -35,6 +35,8 @@ std::unique_ptr<views::View> CreateLabelWrapper() {
 }
 }  // namespace
 
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(RichControlsContainerView, kIcon);
+
 RichControlsContainerView::RichControlsContainerView() {
   auto button_insets = ChromeLayoutProvider::Get()->GetInsetsMetric(
       ChromeInsetsMetric::INSETS_PAGE_INFO_HOVER_BUTTON);
@@ -44,6 +46,7 @@ RichControlsContainerView::RichControlsContainerView() {
   icon_ = AddChildView(std::make_unique<views::ImageView>());
   const int icon_size = GetLayoutConstant(PAGE_INFO_ICON_SIZE);
   icon_->SetImageSize({icon_size, icon_size});
+  icon_->SetProperty(views::kElementIdentifierKey, kIcon);
 
   labels_wrapper_ = AddChildView(CreateLabelWrapper());
   title_ = labels_wrapper_->AddChildView(std::make_unique<views::Label>(

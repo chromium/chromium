@@ -7,6 +7,7 @@
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/views/controls/rich_controls_container_view.h"
 #include "chrome/browser/ui/views/location_bar/cookie_controls/cookie_controls_bubble_view.h"
 #include "chrome/browser/ui/views/location_bar/cookie_controls/cookie_controls_content_view.h"
 #include "chrome/browser/ui/views/location_bar/cookie_controls_icon_view.h"
@@ -20,8 +21,10 @@
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "ui/base/interaction/interaction_sequence.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/controls/button/toggle_button.h"
+#include "ui/views/vector_icons.h"
 
 namespace {
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsElementId);
@@ -83,8 +86,30 @@ class CookieControlsInteractiveUiTest : public InteractiveBrowserTest {
     }));
   }
 
-  // TODO(crbug.com/1445230): Also check the state of the icon. This requires
-  // the RichControlsContainerView to expose it.
+  auto CheckIcon(ElementSpecifier view,
+                 const gfx::VectorIcon& icon_pre_2023_refresh,
+                 const gfx::VectorIcon& icon_post_2023_refresh) {
+    std::string expected_name = features::IsChromeRefresh2023()
+                                    ? icon_post_2023_refresh.name
+                                    : icon_pre_2023_refresh.name;
+    StepBuilder builder;
+    builder.SetDescription("CheckIcon()");
+    ui::test::internal::SpecifyElement(builder, view);
+    builder.SetStartCallback(base::BindOnce(
+        [](std::string expected_name, ui::InteractionSequence* sequence,
+           ui::TrackedElement* element) {
+          auto* vector_icon = AsView<views::ImageView>(element)
+                                  ->GetImageModel()
+                                  .GetVectorIcon()
+                                  .vector_icon();
+          if (vector_icon->name != expected_name) {
+            sequence->FailForTesting();
+          }
+        },
+        expected_name));
+    return builder;
+  }
+
   auto CheckStateForTemporaryException() {
     return Steps(
         CheckException(third_party_cookie_page_url(), /*should_exist=*/true),
@@ -98,7 +123,9 @@ class CookieControlsInteractiveUiTest : public InteractiveBrowserTest {
             l10n_util::GetStringUTF16(
                 IDS_COOKIE_CONTROLS_BUBBLE_BLOCKING_RESTART_DESCRIPTION_TODAY)),
         CheckViewProperty(CookieControlsContentView::kToggleButton,
-                          &views::ToggleButton::GetIsOn, true));
+                          &views::ToggleButton::GetIsOn, true),
+        CheckIcon(RichControlsContainerView::kIcon, views::kEyeIcon,
+                  views::kEyeRefreshIcon));
   }
 
   auto CheckStateForNoException() {
@@ -113,9 +140,9 @@ class CookieControlsInteractiveUiTest : public InteractiveBrowserTest {
         CheckViewProperty(
             CookieControlsContentView::kDescription, &views::Label::GetText,
             l10n_util::GetStringUTF16(
-                IDS_COOKIE_CONTROLS_BUBBLE_SITE_NOT_WORKING_DESCRIPTION_TEMPORARY))
-
-    );
+                IDS_COOKIE_CONTROLS_BUBBLE_SITE_NOT_WORKING_DESCRIPTION_TEMPORARY)),
+        CheckIcon(RichControlsContainerView::kIcon, views::kEyeCrossedIcon,
+                  views::kEyeCrossedRefreshIcon));
   }
 
   int ExceptionDurationInDays() {

@@ -16,7 +16,9 @@
 #include "content/public/browser/web_contents.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/views/test/widget_test.h"
+#include "ui/views/vector_icons.h"
 
 class MockCookieControlsBubbleView : public CookieControlsBubbleView {
  public:
@@ -49,8 +51,10 @@ class MockCookieControlsContentView : public CookieControlsContentView {
   MOCK_METHOD(void,
               UpdateContentLabels,
               (const std::u16string&, const std::u16string&),
-              ());
-  MOCK_METHOD(void, SetFeedbackSectionVisibility, (bool), ());
+              (override));
+  MOCK_METHOD(void, SetToggleIsOn, (bool), (override));
+  MOCK_METHOD(void, SetToggleIcon, (const gfx::VectorIcon&), (override));
+  MOCK_METHOD(void, SetFeedbackSectionVisibility, (bool), (override));
 };
 
 class CookieControlsBubbleCoordinatorTest : public TestWithBrowserView {
@@ -170,6 +174,12 @@ TEST_F(CookieControlsBubbleViewControllerTest, ThirdPartyCookiesBlocked) {
           l10n_util::GetStringUTF16(
               IDS_COOKIE_CONTROLS_BUBBLE_SITE_NOT_WORKING_DESCRIPTION_TEMPORARY)));
   EXPECT_CALL(*mock_content_view(), SetFeedbackSectionVisibility(false));
+  EXPECT_CALL(*mock_content_view(), SetToggleIsOn(false));
+  EXPECT_CALL(*mock_content_view(), SetToggleIcon(testing::Field(
+                                        &gfx::VectorIcon::name,
+                                        features::IsChromeRefresh2023()
+                                            ? views::kEyeCrossedRefreshIcon.name
+                                            : views::kEyeCrossedIcon.name)));
 
   view_controller()->OnStatusChanged(CookieControlsStatus::kEnabled,
                                      CookieControlsEnforcement::kNoEnforcement,
@@ -189,6 +199,12 @@ TEST_F(CookieControlsBubbleViewControllerTest,
           l10n_util::GetStringUTF16(
               IDS_COOKIE_CONTROLS_BUBBLE_PERMANENT_ALLOWED_DESCRIPTION)));
   EXPECT_CALL(*mock_content_view(), SetFeedbackSectionVisibility(true));
+  EXPECT_CALL(*mock_content_view(), SetToggleIsOn(true));
+  EXPECT_CALL(*mock_content_view(),
+              SetToggleIcon(testing::Field(&gfx::VectorIcon::name,
+                                           features::IsChromeRefresh2023()
+                                               ? views::kEyeRefreshIcon.name
+                                               : views::kEyeIcon.name)));
 
   view_controller()->OnStatusChanged(CookieControlsStatus::kDisabledForSite,
                                      CookieControlsEnforcement::kNoEnforcement,
@@ -210,6 +226,12 @@ TEST_F(CookieControlsBubbleViewControllerTest,
           l10n_util::GetStringUTF16(
               IDS_COOKIE_CONTROLS_BUBBLE_BLOCKING_RESTART_DESCRIPTION_TODAY)));
   EXPECT_CALL(*mock_content_view(), SetFeedbackSectionVisibility(true));
+  EXPECT_CALL(*mock_content_view(), SetToggleIsOn(true));
+  EXPECT_CALL(*mock_content_view(),
+              SetToggleIcon(testing::Field(&gfx::VectorIcon::name,
+                                           features::IsChromeRefresh2023()
+                                               ? views::kEyeRefreshIcon.name
+                                               : views::kEyeIcon.name)));
 
   view_controller()->OnStatusChanged(
       CookieControlsStatus::kDisabledForSite,

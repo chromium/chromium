@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_CONTROLS_RICH_CONTROLS_CONTAINER_VIEW_H_
 
 #include "base/memory/raw_ptr.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/models/image_model.h"
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/layout/flex_layout_view.h"
@@ -24,6 +25,8 @@ class Label;
 // *-------------------------------------------------------------------------*
 class RichControlsContainerView : public views::FlexLayoutView {
  public:
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kIcon);
+
   RichControlsContainerView();
 
   void SetIcon(const ui::ImageModel image);
