@@ -303,6 +303,9 @@ suite('AmbientSubpageTest', function() {
 
   test(
       'sets animation theme when animation theme item is clicked', async () => {
+        // See "shows video animation theme on supported devices" for expected
+        // behavior when `isTimeOfDayScreenSaverEnabled` is true.
+        loadTimeData.overrideValues({'isTimeOfDayScreenSaverEnabled': false});
         ambientSubpageElement = await displayMainSettings(
             TopicSource.kArtGallery, TemperatureUnit.kFahrenheit,
             /*ambientModeEnabled=*/ true);

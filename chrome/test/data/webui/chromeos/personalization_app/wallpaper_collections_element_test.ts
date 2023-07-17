@@ -257,6 +257,11 @@ suite('WallpaperCollectionsTest', function() {
   });
 
   test('sets collection description text', async () => {
+    // The mock set of collections created for this test does not contain the
+    // time of day collection. If time of day wallpaper happens to be enabled,
+    // the test will fail because the time of day collection is missing, which
+    // is irrelevant for this test case. It must explicitly be disabled here.
+    loadTimeData.overrideValues({isTimeOfDayWallpaperEnabled: false});
     wallpaperProvider.setCollections([
       {
         id: 'asdf',
