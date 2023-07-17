@@ -73,6 +73,8 @@ class WebAppsCrosapi : public KeyedService,
                            WebAppsNotInitializedIfRegisterFirst);
   FRIEND_TEST_ALL_PREFIXES(StandaloneBrowserPublisherTest,
                            WebAppsInitializedForEmptyList);
+  FRIEND_TEST_ALL_PREFIXES(StandaloneBrowserPublisherTest,
+                           WebAppsCrosapiCapabilityReset);
 
   // apps::AppPublisher overrides.
   void LoadIcon(const std::string& app_id,

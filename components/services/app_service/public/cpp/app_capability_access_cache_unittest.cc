@@ -405,3 +405,24 @@ TEST_F(AppCapabilityAccessCacheTest, SuperRecursive) {
   EXPECT_EQ(cache.GetAppsAccessingMicrophone(),
             observer.accessing_microphone_apps());
 }
+
+TEST_F(AppCapabilityAccessCacheTest, GetAppsAccessingCapabilities_Empty) {
+  apps::AppCapabilityAccessCache cache;
+  cache.SetAccountId(account_id());
+
+  EXPECT_THAT(cache.GetAppsAccessingCapabilities(), testing::IsEmpty());
+}
+
+TEST_F(AppCapabilityAccessCacheTest,
+       GetAppsAccessingCapabilities_CameraAndMicrophone) {
+  apps::AppCapabilityAccessCache cache;
+  cache.SetAccountId(account_id());
+
+  std::vector<apps::CapabilityAccessPtr> deltas;
+  deltas.push_back(MakeCapabilityAccess("a", true, false));
+  deltas.push_back(MakeCapabilityAccess("b", false, true));
+  cache.OnCapabilityAccesses(std::move(deltas));
+
+  EXPECT_THAT(cache.GetAppsAccessingCapabilities(),
+              testing::UnorderedElementsAre("a", "b"));
+}

@@ -181,6 +181,22 @@ void AppPublisher::ModifyCapabilityAccess(
   capability_accesses.push_back(std::move(capability_access));
   proxy_->OnCapabilityAccesses(std::move(capability_accesses));
 }
+
+void AppPublisher::ResetCapabilityAccess(AppType app_type) {
+  std::set<std::string> apps =
+      proxy()->AppCapabilityAccessCache().GetAppsAccessingCapabilities();
+
+  std::vector<CapabilityAccessPtr> capability_accesses;
+  for (const std::string& app_id : apps) {
+    if (proxy()->AppRegistryCache().GetAppType(app_id) == app_type) {
+      auto capability_access = std::make_unique<CapabilityAccess>(app_id);
+      capability_access->camera = false;
+      capability_access->microphone = false;
+      capability_accesses.push_back(std::move(capability_access));
+    }
+  }
+  proxy()->OnCapabilityAccesses(std::move(capability_accesses));
+}
 #endif
 
 }  // namespace apps

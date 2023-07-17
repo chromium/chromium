@@ -247,6 +247,10 @@ class AppPublisher {
   void ModifyCapabilityAccess(const std::string& app_id,
                               absl::optional<bool> accessing_camera,
                               absl::optional<bool> accessing_microphone);
+
+  // Resets all tracked capabilities for apps of type `app_type`. Should be
+  // called when the publisher stops running apps (e.g. when a VM shuts down).
+  void ResetCapabilityAccess(AppType app_type);
 #endif
 
   AppServiceProxy* proxy() { return proxy_; }

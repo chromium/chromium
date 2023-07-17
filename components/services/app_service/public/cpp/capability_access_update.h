@@ -65,6 +65,10 @@ class COMPONENT_EXPORT(APP_UPDATE) CapabilityAccessUpdate {
 
   const ::AccountId& AccountId() const;
 
+  // Returns true if this update is accessing any capability (i.e. Camera() or
+  // Microphone() returns true).
+  bool IsAccessingAnyCapability() const;
+
  private:
   raw_ptr<const CapabilityAccess> state_ = nullptr;
   raw_ptr<const CapabilityAccess, DanglingUntriaged> delta_ = nullptr;

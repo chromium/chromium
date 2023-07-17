@@ -71,6 +71,10 @@ const ::AccountId& CapabilityAccessUpdate::AccountId() const {
   return *account_id_;
 }
 
+bool CapabilityAccessUpdate::IsAccessingAnyCapability() const {
+  return Camera().value_or(false) || Microphone().value_or(false);
+}
+
 std::ostream& operator<<(std::ostream& out,
                          const CapabilityAccessUpdate& update) {
   out << "AppId: " << update.AppId() << std::endl;

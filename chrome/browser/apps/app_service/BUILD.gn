@@ -435,6 +435,8 @@ source_set("unit_tests") {
 
   if (is_chromeos_lacros) {
     sources += [ "app_service_proxy_lacros_unittest.cc" ]
+  } else {
+    sources += [ "publishers/app_publisher_unittest.cc" ]
   }
 }
 

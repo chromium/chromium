@@ -402,6 +402,10 @@ void WebAppsCrosapi::OnCrosapiDisconnected() {
 
 void WebAppsCrosapi::OnControllerDisconnected() {
   controller_.reset();
+
+  // If Lacros stops running (e.g. due to a crash/update), all apps will no
+  // longer be accessing capabilities.
+  ResetCapabilityAccess(AppType::kWeb);
 }
 
 void WebAppsCrosapi::OnLoadIcon(IconType icon_type,

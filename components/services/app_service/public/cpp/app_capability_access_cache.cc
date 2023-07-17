@@ -57,6 +57,16 @@ std::set<std::string> AppCapabilityAccessCache::GetAppsAccessingMicrophone() {
   return app_ids;
 }
 
+std::set<std::string> AppCapabilityAccessCache::GetAppsAccessingCapabilities() {
+  std::set<std::string> app_ids;
+  ForEachApp([&app_ids](const apps::CapabilityAccessUpdate& update) {
+    if (update.IsAccessingAnyCapability()) {
+      app_ids.insert(update.AppId());
+    }
+  });
+  return app_ids;
+}
+
 void AppCapabilityAccessCache::OnCapabilityAccesses(
     std::vector<CapabilityAccessPtr> deltas) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(my_sequence_checker_);

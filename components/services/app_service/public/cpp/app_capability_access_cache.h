@@ -70,6 +70,9 @@ class COMPONENT_EXPORT(APP_UPDATE) AppCapabilityAccessCache {
   // Returns app ids which are accessing the microphone.
   std::set<std::string> GetAppsAccessingMicrophone();
 
+  // Returns app ids which are accessing any capability.
+  std::set<std::string> GetAppsAccessingCapabilities();
+
   // Notifies all observers of state-and-delta CapabilityAccessUpdate's (the
   // state comes from the internal cache, the delta comes from the argument) and
   // then merges the cached states with the deltas.

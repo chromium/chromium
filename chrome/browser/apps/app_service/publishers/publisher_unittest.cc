@@ -1231,6 +1231,51 @@ TEST_F(StandaloneBrowserPublisherTest, WebAppsCrosapiUpdatedCapability) {
   web_apps_crosapi->OnControllerDisconnected();
 }
 
+TEST_F(StandaloneBrowserPublisherTest, WebAppsCrosapiCapabilityReset) {
+  WebAppsCrosapi* web_apps_crosapi =
+      WebAppsCrosapiFactory::GetForProfile(profile());
+
+  mojo::PendingReceiver<crosapi::mojom::AppController> pending_receiver1;
+  mojo::PendingRemote<crosapi::mojom::AppController> pending_remote1 =
+      pending_receiver1.InitWithNewPipeAndPassRemote();
+  web_apps_crosapi->RegisterAppController(std::move(pending_remote1));
+
+  std::string app_id1 = "a";
+  std::string app_id2 = "b";
+
+  // Publish apps to both AppRegistryCache and AppCapabilityAccessCache.
+  std::vector<AppPtr> apps1;
+  apps1.push_back(MakeApp(AppType::kWeb, app_id1,
+                          /*name=*/"TestApp", Readiness::kReady));
+  apps1.push_back(MakeApp(AppType::kWeb, app_id2,
+                          /*name=*/"TestApp", Readiness::kReady));
+  web_apps_crosapi->OnApps(std::move(apps1));
+
+  std::vector<CapabilityAccessPtr> capability_access;
+  capability_access.push_back(MakeCapabilityAccess(app_id1,
+                                                   /*camera=*/absl::nullopt,
+                                                   /*microphone=*/true));
+  capability_access.push_back(
+      MakeCapabilityAccess(app_id2,
+                           /*camera=*/true,
+                           /*microphone=*/absl::nullopt));
+  web_apps_crosapi->OnCapabilityAccesses(std::move(capability_access));
+
+  VerifyCapabilityAccess(app_id1,
+                         /*accessing_camera=*/absl::nullopt,
+                         /*accessing_microphone=*/true);
+  VerifyCapabilityAccess(app_id2,
+                         /*accessing_camera=*/true,
+                         /*accessing_microphone=*/absl::nullopt);
+
+  // Disconnect crosapi.
+  web_apps_crosapi->OnControllerDisconnected();
+
+  // All apps should have their capability access reset.
+  VerifyCapabilityAccess(app_id1, false, false);
+  VerifyCapabilityAccess(app_id2, false, false);
+}
+
 // Verify if OnApps was never called, the registration of AppController will not
 // initialize the web app type.
 TEST_F(StandaloneBrowserPublisherTest, WebAppsNotInitializedIfRegisterFirst) {

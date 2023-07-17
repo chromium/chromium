@@ -4,6 +4,7 @@
 
 #include "components/services/app_service/public/cpp/capability_access_update.h"
 
+#include "components/services/app_service/public/cpp/capability_access.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -108,4 +109,40 @@ TEST_F(CapabilityAccessUpdateTest, BothAreNonNull) {
   apps::CapabilityAccessPtr delta =
       std::make_unique<apps::CapabilityAccess>(app_id);
   TestCapabilityAccessUpdate(state.get(), delta.get());
+}
+
+TEST_F(CapabilityAccessUpdateTest, IsAccessingAnyCapability_Empty) {
+  apps::CapabilityAccess state(app_id);
+  apps::CapabilityAccessUpdate update(&state, nullptr, account_id_);
+
+  ASSERT_FALSE(update.IsAccessingAnyCapability());
+}
+
+TEST_F(CapabilityAccessUpdateTest,
+       IsAccessingAnyCapability_StateAccessingMicrophone) {
+  apps::CapabilityAccess state(app_id);
+  state.microphone = true;
+  apps::CapabilityAccessUpdate update(&state, nullptr, account_id_);
+
+  ASSERT_TRUE(update.IsAccessingAnyCapability());
+}
+
+TEST_F(CapabilityAccessUpdateTest,
+       IsAccessingAnyCapability_StateAccessingCamera) {
+  apps::CapabilityAccess state(app_id);
+  state.camera = true;
+  apps::CapabilityAccessUpdate update(&state, nullptr, account_id_);
+
+  ASSERT_TRUE(update.IsAccessingAnyCapability());
+}
+
+TEST_F(CapabilityAccessUpdateTest, IsAccessingAnyCapability_DeltaNoMicrophone) {
+  apps::CapabilityAccess state(app_id);
+  state.microphone = true;
+  apps::CapabilityAccess delta(app_id);
+  delta.microphone = false;
+
+  apps::CapabilityAccessUpdate update(&state, &delta, account_id_);
+
+  ASSERT_FALSE(update.IsAccessingAnyCapability());
 }
