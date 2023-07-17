@@ -41,11 +41,13 @@ int AccountSelectionView::GetBrandIconIdealSize() {
 FedCmAccountSelectionView::FedCmAccountSelectionView(
     AccountSelectionView::Delegate* delegate)
     : AccountSelectionView(delegate),
-      content::WebContentsObserver(delegate->GetWebContents()) {}
+      content::WebContentsObserver(delegate->GetWebContents()),
+      is_web_contents_visible_(delegate->GetWebContents()->GetVisibility() ==
+                               content::Visibility::VISIBLE) {}
 
 FedCmAccountSelectionView::~FedCmAccountSelectionView() {
   notify_delegate_of_dismiss_ = false;
-  should_show_bubble_widget_ = false;
+  is_modal_closed_but_accounts_fetch_pending_ = false;
   should_destroy_bubble_widget_ = false;
   Close();
 
@@ -136,10 +138,12 @@ void FedCmAccountSelectionView::Show(
     GetBubbleView()->ShowMultiAccountPicker(idp_display_data_list_);
   }
 
-  if (create_bubble || should_show_bubble_widget_) {
-    input_protector_->VisibilityChanged(true);
-    bubble_widget_->Show();
-    should_show_bubble_widget_ = false;
+  if (create_bubble || is_modal_closed_but_accounts_fetch_pending_) {
+    is_modal_closed_but_accounts_fetch_pending_ = false;
+    if (is_web_contents_visible_) {
+      input_protector_->VisibilityChanged(true);
+      bubble_widget_->Show();
+    }
   }
   // Else:
   // Do not force show the bubble. The bubble may be purposefully hidden if the
@@ -191,7 +195,8 @@ void FedCmAccountSelectionView::ShowFailureDialog(
       base::UTF8ToUTF16(top_frame_etld_plus_one), iframe_etld_plus_one_u16,
       base::UTF8ToUTF16(idp_etld_plus_one), idp_metadata);
 
-  if (create_bubble || should_show_bubble_widget_) {
+  if ((create_bubble || is_modal_closed_but_accounts_fetch_pending_) &&
+      is_web_contents_visible_) {
     bubble_widget_->Show();
     input_protector_->VisibilityChanged(true);
   }
@@ -212,11 +217,12 @@ absl::optional<std::string> FedCmAccountSelectionView::GetSubtitle() const {
 
 void FedCmAccountSelectionView::OnVisibilityChanged(
     content::Visibility visibility) {
+  is_web_contents_visible_ = visibility == content::Visibility::VISIBLE;
   if (!bubble_widget_ || idp_signin_modal_dialog_) {
     return;
   }
 
-  if (visibility == content::Visibility::VISIBLE) {
+  if (is_web_contents_visible_) {
     bubble_widget_->Show();
     bubble_widget_->widget_delegate()->SetCanActivate(true);
     // This will protect against potentially unintentional inputs that happen
@@ -428,7 +434,7 @@ void FedCmAccountSelectionView::CloseModalDialog() {
   if (idp_signin_modal_dialog_) {
     idp_signin_modal_dialog_->ClosePopupWindow();
     idp_signin_modal_dialog_.reset();
-    should_show_bubble_widget_ = true;
+    is_modal_closed_but_accounts_fetch_pending_ = true;
     idp_close_popup_time_ = base::TimeTicks::Now();
     popup_window_state_ =
         PopupWindowResult::kAccountsNotReceivedAndPopupClosedByIdp;
@@ -436,8 +442,10 @@ void FedCmAccountSelectionView::CloseModalDialog() {
 
   if (show_accounts_dialog_callback_) {
     std::move(show_accounts_dialog_callback_).Run();
-    input_protector_->VisibilityChanged(true);
-    bubble_widget_->Show();
+    if (is_web_contents_visible_) {
+      input_protector_->VisibilityChanged(true);
+      bubble_widget_->Show();
+    }
   }
 }
 
