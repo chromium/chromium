@@ -2136,7 +2136,8 @@ class SearchByRegionWithUnifiedSidePanelBrowserTest
     ExpectThatRequestContainsImageData(contents);
   }
 
-  void SimulateDragAndVerifyNonGoogleUrl(RenderViewContextMenu* menu) {
+  void SimulateDragAndVerifyNonGoogleUrlForSidePanel(
+      RenderViewContextMenu* menu) {
     SearchByRegionBrowserBaseTest::SimulateDragAndVerifyOverlayUI(menu);
     content::WebContents* contents =
         GetLensUnifiedSidePanelWebContentsAfterNavigation();
@@ -2150,7 +2151,7 @@ class SearchByRegionWithUnifiedSidePanelBrowserTest
     EXPECT_THAT(
         side_panel_content,
         testing::MatchesRegex(expected_content.substr(0, query_start_pos) +
-                              ".*sideimagesearch=1"));
+                              ".*sideimagesearch=1&vpw=\\d+&vph=\\d+"));
     ExpectThatRequestContainsImageData(contents);
     quit_closure_.Run();
   }
@@ -2187,7 +2188,7 @@ class SearchByRegionWithUnifiedSidePanelBrowserTest
     menu_observer_ = std::make_unique<ContextMenuNotificationObserver>(
         IDC_CONTENT_CONTEXT_WEB_REGION_SEARCH, ui::EF_MOUSE_BUTTON,
         base::BindOnce(&SearchByRegionWithUnifiedSidePanelBrowserTest::
-                           SimulateDragAndVerifyNonGoogleUrl,
+                           SimulateDragAndVerifyNonGoogleUrlForSidePanel,
                        base::Unretained(this)));
     RightClickToOpenContextMenu();
   }
