@@ -12,6 +12,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/apps/app_service/promise_apps/promise_app.h"
+#include "extensions/grit/extensions_browser_resources.h"
 #endif
 
 namespace apps {
@@ -52,6 +53,10 @@ void AppPublisher::RegisterPublisher(AppType app_type) {
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+int AppPublisher::DefaultIconResourceId() const {
+  return IDR_APP_DEFAULT_ICON;
+}
+
 void AppPublisher::GetCompressedIconData(const std::string& app_id,
                                          int32_t size_in_dip,
                                          ui::ResourceScaleFactor scale_factor,

@@ -88,6 +88,10 @@ class AppPublisher {
                         LoadIconCallback callback) = 0;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Returns the default icon if a valid icon can't be loaded, e.g. because an
+  // app didn't supply an icon.
+  virtual int DefaultIconResourceId() const;
+
   // Requests a compressed icon data for an app identified by `app_id`. The icon
   // is identified by `size_in_dip` and `scale_factor`. Calls `callback` with
   // the result.

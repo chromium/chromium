@@ -310,6 +310,7 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
                        int32_t size_in_dip,
                        IconEffects icon_effects,
                        IconType icon_type,
+                       int default_icon_resource_id,
                        LoadIconCallback callback,
                        bool install_success);
 

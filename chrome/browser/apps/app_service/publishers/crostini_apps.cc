@@ -70,6 +70,10 @@ guest_os::VmType CrostiniApps::VmType() const {
   return guest_os::VmType::TERMINA;
 }
 
+int CrostiniApps::DefaultIconResourceId() const {
+  return IDR_LOGO_CROSTINI_DEFAULT;
+}
+
 void CrostiniApps::LoadIcon(const std::string& app_id,
                             const IconKey& icon_key,
                             IconType icon_type,

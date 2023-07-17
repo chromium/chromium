@@ -35,6 +35,7 @@ class CrostiniApps : public GuestOSApps {
   guest_os::VmType VmType() const override;
 
   // apps::AppPublisher overrides.
+  int DefaultIconResourceId() const override;
   void LoadIcon(const std::string& app_id,
                 const IconKey& icon_key,
                 IconType icon_type,
