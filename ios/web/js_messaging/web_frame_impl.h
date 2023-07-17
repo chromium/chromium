@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/cancelable_callback.h"
-#include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "ios/web/js_messaging/web_frame_internal.h"
 #include "ios/web/public/js_messaging/web_frame.h"
@@ -160,8 +159,6 @@ class WebFrameImpl : public WebFrame,
   GURL security_origin_;
   // The associated web state.
   web::WebState* web_state_ = nullptr;
-
-  base::WeakPtrFactory<WebFrameImpl> weak_ptr_factory_;
 };
 
 }  // namespace web

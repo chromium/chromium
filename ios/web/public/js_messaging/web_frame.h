@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/weak_ptr.h"
 #include "base/supports_user_data.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -23,7 +24,8 @@ class WebFrameInternal;
 // Default timeout in milliseconds for `CallJavaScriptFunction`.
 extern const double kJavaScriptFunctionCallDefaultTimeout;
 
-class WebFrame : public base::SupportsUserData {
+class WebFrame : public base::SupportsUserData,
+                 public base::SupportsWeakPtr<WebFrame> {
  public:
   // The frame identifier which uniquely identifies this frame across the
   // application's lifetime.
