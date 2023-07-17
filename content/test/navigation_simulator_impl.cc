@@ -32,6 +32,7 @@
 #include "net/url_request/redirect_info.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/common/chrome_debug_urls.h"
 #include "third_party/blink/public/common/navigation/navigation_params.h"
 #include "third_party/blink/public/mojom/loader/mixed_content.mojom.h"
@@ -612,12 +613,18 @@ void NavigationSimulatorImpl::ReadyToCommit() {
       url_loader->SimulateEarlyHintsPreloadLinkHeaderReceived();
     }
 
+    auto response = network::mojom::URLResponseHead::New();
+    response->remote_endpoint = remote_endpoint_;
+    response->was_fetched_via_cache = was_fetched_via_cache_;
+    response->is_signed_exchange_inner_response =
+        is_signed_exchange_inner_response_;
+    response->connection_info = http_connection_info_;
+    response->ssl_info = ssl_info_;
+    response->headers = response_headers_;
+    response->dns_aliases = response_dns_aliases_;
     static_cast<TestRenderFrameHost*>(frame_tree_node_->current_frame_host())
         ->PrepareForCommitDeprecatedForNavigationSimulator(
-            remote_endpoint_, was_fetched_via_cache_,
-            is_signed_exchange_inner_response_, http_connection_info_,
-            ssl_info_, response_headers_, std::move(response_body_),
-            response_dns_aliases_);
+            std::move(response), std::move(response_body_));
   }
 
   // Synchronous failure can cause the navigation to finish here.

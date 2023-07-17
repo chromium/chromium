@@ -36,10 +36,6 @@
 #include "third_party/blink/public/mojom/hid/hid.mojom-forward.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-namespace net {
-class IPEndPoint;
-}
-
 namespace content {
 
 class TestRenderFrameHostCreationObserver : public WebContentsObserver {
@@ -192,14 +188,8 @@ class TestRenderFrameHost : public RenderFrameHostImpl,
   // TODO(clamy): Have NavigationSimulator make the relevant calls directly and
   // remove this function.
   void PrepareForCommitDeprecatedForNavigationSimulator(
-      const net::IPEndPoint& remote_endpoint,
-      bool was_fetched_via_cache,
-      bool is_signed_exchange_inner_response,
-      net::HttpResponseInfo::ConnectionInfo connection_info,
-      absl::optional<net::SSLInfo> ssl_info,
-      scoped_refptr<net::HttpResponseHeaders> response_headers,
-      mojo::ScopedDataPipeConsumerHandle response_body,
-      const std::vector<std::string>& dns_aliases);
+      network::mojom::URLResponseHeadPtr response,
+      mojo::ScopedDataPipeConsumerHandle response_body);
 
   // Used to simulate the commit of a navigation having been processed in the
   // renderer. If parameters required to commit are not provided, they will be
@@ -311,14 +301,8 @@ class TestRenderFrameHost : public RenderFrameHostImpl,
                                   int response_code);
 
   void PrepareForCommitInternal(
-      const net::IPEndPoint& remote_endpoint,
-      bool was_fetched_via_cache,
-      bool is_signed_exchange_inner_response,
-      net::HttpResponseInfo::ConnectionInfo connection_info,
-      absl::optional<net::SSLInfo> ssl_info,
-      scoped_refptr<net::HttpResponseHeaders> response_headers,
-      mojo::ScopedDataPipeConsumerHandle response_body,
-      const std::vector<std::string>& dns_aliases);
+      network::mojom::URLResponseHeadPtr response,
+      mojo::ScopedDataPipeConsumerHandle response_body);
 
   // Computes the page ID for a pending navigation in this RenderFrameHost;
   int32_t ComputeNextPageID();
