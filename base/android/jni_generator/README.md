@@ -23,15 +23,14 @@ the class to be disabled.
 
 ### Exposing Native Methods
 
-There are two ways to have native methods be found by Java:
-1) Explicitly register the name -> function pointer mapping using JNI's
-   `RegisterNatives()` function.
-2) Export the symbols from the shared library, and let the runtime resolve them
-   on-demand (using `dlsym()`) the first time a native method is called.
+Generally Java->Native calls are exported from the shared library and lazily
+resolved by the runtime (via `dlsym()`). There are a number of notable
+exceptions to this. See usage of `jni_registration_generator.py` in the
+codebase.
 
-2) Is generally preferred due to a smaller code size and less up-front work, but
-1) is sometimes required (e.g. when OS bugs prevent `dlsym()` from working).
-Both ways are supported by this tool.
+The `jni_registration_generator.py` exposes a registration function when using
+manual registation:
+* `RegisterNatives` - Registers all native functions.
 
 ### Exposing Java Methods
 
@@ -275,5 +274,5 @@ for more about the GN templates.
 
 ## Changing `jni_generator`
 
- * Python tests live in `integration_tests.py`
+ * Python unit tests live in `jni_generator_tests.py`
  * A working demo app exists as `//base/android/jni_generator:sample_jni_apk`

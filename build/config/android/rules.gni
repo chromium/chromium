@@ -35,8 +35,6 @@ if (use_cfi_diag || is_ubsan || is_ubsan_security || is_ubsan_vptr) {
 _BUNDLETOOL_JAR_PATH =
     "//third_party/android_build_tools/bundletool/bundletool.jar"
 
-_JAVAP_PATH = "//third_party/jdk/current/bin/javap"
-
 # Creates a dist directory for a native executable.
 #
 # Running a native executable on a device requires all the shared library
@@ -165,7 +163,7 @@ if (enable_java_templates) {
 
         # The sources aren't compiled so don't check their dependencies.
         check_includes = false
-        script = "//base/android/jni_generator/jni_zero.py"
+        script = "//base/android/jni_generator/jni_generator.py"
         forward_variables_from(invoker,
                                [
                                  "deps",
@@ -186,10 +184,10 @@ if (enable_java_templates) {
         inputs = []
         outputs = []
         args = [
-          "generate-library",
-          "--output-dir",
+          "--ptr_type=long",
+          "--output_dir",
           rebase_path(_jni_output_dir, root_build_dir),
-          "--extra-include",
+          "--includes",
           rebase_path(_jni_generator_include, _jni_output_dir),
         ]
 
@@ -202,22 +200,17 @@ if (enable_java_templates) {
             } else {
               _jar_file = android_sdk_jar
             }
-            inputs += [
-              _jar_file,
-              _JAVAP_PATH,
-            ]
+            inputs += [ _jar_file ]
             args += [
-              "--jar-file",
+              "--jar_file",
               rebase_path(_jar_file, root_build_dir),
-              "--javap",
-              rebase_path(_JAVAP_PATH, root_build_dir),
             ]
           }
           _input_args = invoker.classes
           _input_names = invoker.classes
           if (defined(invoker.unchecked_exceptions) &&
               invoker.unchecked_exceptions) {
-            args += [ "--unchecked-exceptions" ]
+            args += [ "--unchecked_exceptions" ]
           }
         } else {
           assert(defined(invoker.sources))
@@ -231,19 +224,19 @@ if (enable_java_templates) {
           _input_args = rebase_path(invoker.sources, root_build_dir)
           _input_names = invoker.sources
           if (use_hashed_jni_names) {
-            args += [ "--use-proxy-hash" ]
+            args += [ "--use_proxy_hash" ]
           }
 
           if (defined(invoker.enable_jni_multiplexing) &&
               invoker.enable_jni_multiplexing) {
-            args += [ "--enable-jni-multiplexing" ]
+            args += [ "--enable_jni_multiplexing" ]
           }
           if (defined(invoker.namespace)) {
-            args += [ "--namespace=${invoker.namespace}" ]
+            args += [ "-n ${invoker.namespace}" ]
           }
         }
         if (defined(invoker.split_name)) {
-          args += [ "--split-name=${invoker.split_name}" ]
+          args += [ "--split_name=${invoker.split_name}" ]
         }
 
         foreach(_name, _input_names) {
@@ -252,13 +245,13 @@ if (enable_java_templates) {
 
           # Avoid passing GN lists because not all webrtc embedders use //build.
           args += [
-            "--output-name",
+            "--output_name",
             _name,
           ]
         }
 
         foreach(_input, _input_args) {
-          args += [ "--input-file=$_input" ]
+          args += [ "--input_file=$_input" ]
         }
 
         if (enable_profiling) {
