@@ -1314,12 +1314,10 @@ export class EmojiPicker extends PolymerElement {
     const categoryTabs =
         this.allCategoryTabs.filter(tab => tab.category === newCategoryName);
     this.set('emojiGroupTabs', categoryTabs);
-    afterNextRender(this, () => {
-      this.updateActiveGroup();
-      this.updateHistoryTabDisabledProperty();
-      this.$.tabs.scrollLeft =
-          this.calculateTabScrollLeftPosition(this.pagination);
-    });
+    this.updateActiveGroup();
+    this.updateHistoryTabDisabledProperty();
+    this.$.tabs.scrollLeft =
+        this.calculateTabScrollLeftPosition(this.pagination);
   }
 
   private async onCategoryButtonClick(newCategory: CategoryEnum) {
