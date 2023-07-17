@@ -9,6 +9,7 @@
 
 #include "base/barrier_closure.h"
 #include "base/check.h"
+#include "base/containers/contains.h"
 #include "base/containers/enum_set.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -16,15 +17,16 @@
 #include "base/functional/overloaded.h"
 #include "base/memory/weak_ptr.h"
 #include "components/browsing_data/content/browsing_data_quota_helper.h"
-#include "components/browsing_data/content/local_storage_helper.h"
 #include "components/browsing_data/core/features.h"
 #include "components/services/storage/public/mojom/storage_usage_info.mojom.h"
 #include "components/services/storage/shared_storage/shared_storage_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/dom_storage_context.h"
 #include "content/public/browser/private_aggregation_data_model.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/storage_partition_config.h"
+#include "content/public/browser/storage_usage_info.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "services/network/network_context.h"
 #include "services/network/public/cpp/features.h"
@@ -36,6 +38,7 @@
 #include "third_party/blink/public/common/interest_group/interest_group.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/origin.h"
+#include "url/url_util.h"
 
 namespace {
 
@@ -141,13 +144,11 @@ struct StorageRemoverHelper {
   explicit StorageRemoverHelper(
       content::StoragePartition* storage_partition,
       scoped_refptr<BrowsingDataQuotaHelper> quota_helper,
-      scoped_refptr<browsing_data::LocalStorageHelper> local_storage_helper,
       BrowsingDataModel::Delegate* delegate
       // TODO(crbug.com/1271155): Inject other dependencies.
       )
       : storage_partition_(storage_partition),
         quota_helper_(quota_helper),
-        local_storage_helper_(local_storage_helper),
         delegate_(delegate) {}
 
   void RemoveDataKeyEntries(
@@ -178,7 +179,6 @@ struct StorageRemoverHelper {
 
   raw_ptr<content::StoragePartition> storage_partition_;
   scoped_refptr<BrowsingDataQuotaHelper> quota_helper_;
-  scoped_refptr<browsing_data::LocalStorageHelper> local_storage_helper_;
   raw_ptr<BrowsingDataModel::Delegate, DanglingAcrossTasks> delegate_;
   base::WeakPtrFactory<StorageRemoverHelper> weak_ptr_factory_{this};
 };
@@ -247,7 +247,7 @@ void StorageRemoverHelper::Visitor::operator()<blink::StorageKey>(
   }
 
   if (types.Has(BrowsingDataModel::StorageType::kLocalStorage)) {
-    helper->local_storage_helper_->DeleteStorageKey(
+    helper->storage_partition_->GetDOMStorageContext()->DeleteLocalStorage(
         storage_key, helper->GetCompleteCallback());
   }
 }
@@ -325,6 +325,11 @@ void StorageRemoverHelper::BackendFinished() {
 
   if (callbacks_seen_ == callbacks_expected_)
     std::move(completed_).Run();
+}
+
+// Only websafe state is considered browsing data.
+bool HasStorageScheme(const url::Origin& origin) {
+  return base::Contains(url::GetWebStorageSchemes(), origin.scheme());
 }
 
 void OnTrustTokenIssuanceInfoLoaded(
@@ -411,11 +416,13 @@ void OnQuotaManagedDataLoaded(
 void OnLocalStorageLoaded(
     BrowsingDataModel* model,
     base::OnceClosure loaded_callback,
-    const std::list<content::StorageUsageInfo>& storage_usage_info) {
+    const std::vector<content::StorageUsageInfo>& storage_usage_info) {
   for (const auto& info : storage_usage_info) {
-    model->AddBrowsingData(info.storage_key,
-                           BrowsingDataModel::StorageType::kLocalStorage,
-                           info.total_size_bytes);
+    if (HasStorageScheme(info.storage_key.origin())) {
+      model->AddBrowsingData(info.storage_key,
+                             BrowsingDataModel::StorageType::kLocalStorage,
+                             info.total_size_bytes);
+    }
   }
   std::move(loaded_callback).Run();
 }
@@ -606,8 +613,7 @@ void BrowsingDataModel::RemoveBrowsingData(const DataOwner& data_owner,
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   auto helper = std::make_unique<StorageRemoverHelper>(
-      storage_partition_, quota_helper_, local_storage_helper_,
-      delegate_.get());
+      storage_partition_, quota_helper_, delegate_.get());
   RemoveBrowsingDataEntries(browsing_data_entries_[data_owner],
                             std::move(helper), std::move(completed));
 
@@ -640,8 +646,7 @@ void BrowsingDataModel::RemovePartitionedBrowsingData(
   }
 
   auto helper = std::make_unique<StorageRemoverHelper>(
-      storage_partition_, quota_helper_, local_storage_helper_,
-      delegate_.get());
+      storage_partition_, quota_helper_, delegate_.get());
   RemoveBrowsingDataEntries(affected_data_key_entries, std::move(helper),
                             std::move(completed));
 
@@ -716,7 +721,7 @@ void BrowsingDataModel::PopulateFromDisk(base::OnceClosure finished_callback) {
   if (is_migrate_storage_to_bdm_enabled) {
     quota_helper_->StartFetching(
         base::BindOnce(&OnQuotaManagedDataLoaded, this, completion));
-    local_storage_helper_->StartFetching(
+    storage_partition_->GetDOMStorageContext()->GetLocalStorageUsage(
         base::BindOnce(&OnLocalStorageLoaded, this, completion));
   }
 
@@ -733,8 +738,5 @@ BrowsingDataModel::BrowsingDataModel(
     : storage_partition_(storage_partition), delegate_(std::move(delegate)) {
   if (storage_partition_) {
     quota_helper_ = BrowsingDataQuotaHelper::Create(storage_partition_);
-    local_storage_helper_ =
-        base::MakeRefCounted<browsing_data::LocalStorageHelper>(
-            storage_partition_);
   }
 }

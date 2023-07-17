@@ -12,7 +12,6 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ref.h"
 #include "components/browsing_data/content/browsing_data_quota_helper.h"
-#include "components/browsing_data/content/local_storage_helper.h"
 #include "content/public/browser/attribution_data_model.h"
 #include "content/public/browser/interest_group_manager.h"
 #include "content/public/browser/private_aggregation_data_model.h"
@@ -278,8 +277,6 @@ class BrowsingDataModel {
 
   // Used to handle quota managed data on IO thread.
   scoped_refptr<BrowsingDataQuotaHelper> quota_helper_;
-  // Used to handle local storage fetch and deletion.
-  scoped_refptr<browsing_data::LocalStorageHelper> local_storage_helper_;
 
   // Owning pointer to the delegate responsible for non components/ data
   // retrieval and removal.
