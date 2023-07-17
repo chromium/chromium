@@ -425,14 +425,6 @@ bool DemoSession::ShouldShowAndroidOrChromeAppInShelf(
 void DemoSession::SetExtensionsExternalLoader(
     scoped_refptr<DemoExtensionsExternalLoader> extensions_external_loader) {
   extensions_external_loader_ = extensions_external_loader;
-  if (!chromeos::features::IsDemoModeSWAEnabled() ||
-      extension_misc::IsDemoModeChromeApp(GetScreensaverAppId())) {
-    // Do app installation when one of the following condition holds:
-    // 1. Demo Mode SWA is NOT enabled, OR
-    // 2. Demo Mode SWA is enabled but the app ID to be installed is NOT
-    // one of the Demo Mode app IDs.
-    InstallAppFromUpdateUrl(GetScreensaverAppId());
-  }
 }
 
 void DemoSession::OverrideIgnorePinPolicyAppsForTesting(
@@ -507,29 +499,6 @@ void DemoSession::InstallDemoResources() {
       FROM_HERE, {base::TaskPriority::USER_VISIBLE, base::MayBlock()},
       base::BindOnce(&InstallDemoMedia, components_->resources_component_path(),
                      downloads));
-}
-
-void DemoSession::InstallAppFromUpdateUrl(const std::string& id) {
-  if (!extensions_external_loader_)
-    return;
-  auto* user = user_manager::UserManager::Get()->GetActiveUser();
-  if (!user->is_profile_created()) {
-    user->AddProfileCreatedObserver(
-        base::BindOnce(&DemoSession::InstallAppFromUpdateUrl,
-                       weak_ptr_factory_.GetWeakPtr(), id));
-    return;
-  }
-  Profile* profile = ProfileManager::GetActiveUserProfile();
-  DCHECK(profile);
-  extensions::AppWindowRegistry* app_window_registry =
-      extensions::AppWindowRegistry::Get(profile);
-  if (!app_window_registry_observations_.IsObservingSource(app_window_registry))
-    app_window_registry_observations_.AddObservation(app_window_registry);
-  auto& app_registry_cache =
-      apps::AppServiceProxyFactory::GetForProfile(profile)->AppRegistryCache();
-  if (!app_registry_cache_observation_.IsObservingSource(&app_registry_cache))
-    app_registry_cache_observation_.AddObservation(&app_registry_cache);
-  extensions_external_loader_->LoadApp(id);
 }
 
 void DemoSession::SetKeyboardBrightnessToOneHundredPercentFromCurrentLevel(
@@ -609,15 +578,6 @@ void DemoSession::OnSessionStateChanged() {
                 &DemoSession::
                     SetKeyboardBrightnessToOneHundredPercentFromCurrentLevel,
                 weak_ptr_factory_.GetWeakPtr()));
-      }
-
-      if (!chromeos::features::IsDemoModeSWAEnabled() ||
-          extension_misc::IsDemoModeChromeApp(GetHighlightsAppId())) {
-        // Do app installation when one of the following condition holds:
-        // 1. Demo Mode SWA is NOT enabled, OR
-        // 2. Demo Mode SWA is enabled but the app ID to be installed is NOT
-        // one of the Demo Mode app IDs.
-        InstallAppFromUpdateUrl(GetHighlightsAppId());
       }
 
       // Download/update the Demo app component during session startup
@@ -719,32 +679,14 @@ bool DemoSession::ShouldRemoveSplashScreen() {
          screensaver_activated_;
 }
 
+// TODO(b/250637035): Either delete this code or fix it to work with the Demo
+// Mode SWA
 void DemoSession::OnAppWindowActivated(extensions::AppWindow* app_window) {
   if (app_window->extension_id() != GetScreensaverAppId())
     return;
   screensaver_activated_ = true;
   if (ShouldRemoveSplashScreen())
     RemoveSplashScreen();
-}
-
-void DemoSession::OnAppUpdate(const apps::AppUpdate& update) {
-  if (update.AppId() != GetHighlightsAppId() ||
-      !(update.PriorReadiness() == apps::Readiness::kUnknown &&
-        update.Readiness() == apps::Readiness::kReady)) {
-    return;
-  }
-  Profile* profile = ProfileManager::GetActiveUserProfile();
-  DCHECK(profile);
-  apps::AppServiceProxyFactory::GetForProfile(profile)->LaunchAppWithParams(
-      apps::AppLaunchParams(update.AppId(),
-                            apps::LaunchContainer::kLaunchContainerWindow,
-                            WindowOpenDisposition::NEW_WINDOW,
-                            apps::LaunchSource::kFromChromeInternal));
-}
-
-void DemoSession::OnAppRegistryCacheWillBeDestroyed(
-    apps::AppRegistryCache* cache) {
-  app_registry_cache_observation_.RemoveObservation(cache);
 }
 
 }  // namespace ash
