@@ -1259,3 +1259,52 @@ IN_PROC_BROWSER_TEST_F(HttpsOnlyModeTestSubresourceNotifications,
       tab->GetPrimaryMainFrame()->GetStoragePartition()));
   EXPECT_FALSE(tab->GetSendSubresourceNotification());
 }
+
+// Tests the clickjacking delay for proceed buttons on HTTPS-Only interstitials.
+// This tests specifically for a failed click that occured before the delay passed.
+IN_PROC_BROWSER_TEST_F(HttpsOnlyModeBrowserTest,
+                       InterstitialClickjacking_FailedClick) {
+  GURL http_url = http_server()->GetURL("bad-https.test", "/simple.html");
+
+  auto* tab = browser()->tab_strip_model()->GetActiveWebContents();
+  EXPECT_FALSE(content::NavigateToURL(tab, http_url));
+  EXPECT_TRUE(chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
+      tab));
+
+  std::string SIMULATED_CLICK_EVENT = "document.getElementById('proceed-button').click();";
+
+  // Send a simulated 'click' event to the proceed button on the interstitial.
+  // The interstitial page should still be loaded as the click occured before the delay
+  // has passed.
+  EXPECT_EQ(true, content::ExecJs(tab, SIMULATED_CLICK_EVENT));
+  EXPECT_TRUE(chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
+      tab));
+}
+
+// Tests the clickjacking delay for proceed buttons on HTTPS-Only interstitials.
+// This tests specifically for a successful click that passed the delay.
+IN_PROC_BROWSER_TEST_F(HttpsOnlyModeBrowserTest,
+                       InterstitialClickjacking_SuccessfulClick) {
+  GURL http_url = http_server()->GetURL("bad-https.test", "/simple.html");
+
+  auto* tab = browser()->tab_strip_model()->GetActiveWebContents();
+  EXPECT_FALSE(content::NavigateToURL(tab, http_url));
+  EXPECT_TRUE(chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
+      tab));
+
+  std::string SIMULATED_CLICK_EVENT = "document.getElementById('proceed-button').click();";
+
+  // Send a delayed simulated 'click' event to the proceed button on the interstitial.
+  // The interstitial page should successfully proceed.
+  content::TestNavigationObserver nav_observer(tab, 1);
+  // Use setInterval instead of setTimeout so that test can retry the click
+  // and prevent flakiness if test runner loses focus.
+  EXPECT_EQ(true, content::ExecJs(tab,
+      "setInterval(() => {" +
+      SIMULATED_CLICK_EVENT +
+      "}, 550);"));
+  nav_observer.Wait();
+  EXPECT_EQ(http_url, tab->GetLastCommittedURL());
+}
+
+
