@@ -295,6 +295,16 @@ void RecordNegotiatedHttpDatagramSupport(quic::HttpDatagramSupport support) {
       "Net.WebTransport.NegotiatedHttpDatagramVersion", negotiated);
 }
 
+const char* WebTransportHttp3VersionString(
+    quic::WebTransportHttp3Version version) {
+  switch (version) {
+    case quic::WebTransportHttp3Version::kDraft02:
+      return "draft-02";
+    case quic::WebTransportHttp3Version::kDraft07:
+      return "draft-07";
+  }
+}
+
 }  // namespace
 
 DedicatedWebTransportHttp3Client::DedicatedWebTransportHttp3Client(
@@ -776,6 +786,19 @@ void DedicatedWebTransportHttp3Client::SetErrorIfNecessary(
 void DedicatedWebTransportHttp3Client::OnSessionReady() {
   session_ready_ = true;
   RecordNegotiatedHttpDatagramSupport(session_->http_datagram_support());
+
+  CHECK(session_->SupportsWebTransport());
+  net_log_.AddEvent(NetLogEventType::QUIC_SESSION_WEBTRANSPORT_SESSION_READY,
+                    [&] {
+                      base::Value::Dict dict;
+                      dict.Set("http_datagram_version",
+                               quic::HttpDatagramSupportToString(
+                                   session_->http_datagram_support()));
+                      dict.Set("webtransport_http3_version",
+                               WebTransportHttp3VersionString(
+                                   *session_->SupportedWebTransportVersion()));
+                      return dict;
+                    });
 }
 
 void DedicatedWebTransportHttp3Client::OnSessionClosed(

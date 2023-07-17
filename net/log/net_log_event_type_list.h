@@ -2167,6 +2167,14 @@ EVENT_TYPE(QUIC_SESSION_WEBTRANSPORT_CLIENT_ALIVE)
 //   }
 EVENT_TYPE(QUIC_SESSION_WEBTRANSPORT_CLIENT_STATE_CHANGED)
 
+// A WebTransport session is ready.
+//   {
+//     "http_datagram_version": <Negotiated HTTP Datagram version>,
+//     "webtransport_http3_version": <Negotiated WebTransport over HTTP/3
+//      version>
+//   }
+EVENT_TYPE(QUIC_SESSION_WEBTRANSPORT_SESSION_READY)
+
 // QUIC with TLS gets 0-RTT rejected.
 EVENT_TYPE(QUIC_SESSION_ZERO_RTT_REJECTED)
 
