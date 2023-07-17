@@ -45,7 +45,8 @@ OmniboxPopupViewWebUI::OmniboxPopupViewWebUI(OmniboxViewViews* omnibox_view,
     : OmniboxPopupView(controller),
       omnibox_view_(omnibox_view),
       location_bar_view_(location_bar_view),
-      presenter_(nullptr) {
+      presenter_(std::make_unique<OmniboxPopupPresenter>(location_bar_view,
+                                                         controller)) {
   model()->set_popup_view(this);
 }
 
@@ -54,7 +55,7 @@ OmniboxPopupViewWebUI::~OmniboxPopupViewWebUI() {
 }
 
 bool OmniboxPopupViewWebUI::IsOpen() const {
-  return !!presenter_;
+  return presenter_->IsShown();
 }
 
 void OmniboxPopupViewWebUI::InvalidateLine(size_t line) {}
@@ -62,20 +63,15 @@ void OmniboxPopupViewWebUI::InvalidateLine(size_t line) {}
 void OmniboxPopupViewWebUI::OnSelectionChanged(
     OmniboxPopupSelection old_selection,
     OmniboxPopupSelection new_selection) {
-  if (presenter_) {
+  if (presenter_->IsHandlerReady()) {
     handler()->UpdateSelection(new_selection);
   }
 }
 
 void OmniboxPopupViewWebUI::UpdatePopupAppearance() {
   if (controller()->result().empty() || omnibox_view_->IsImeShowingPopup()) {
-    if (presenter_) {
-      presenter_->Hide();
-    }
+    presenter_->Hide();
   } else {
-    if (!presenter_) {
-      presenter_ = std::make_unique<OmniboxPopupPresenter>(location_bar_view_);
-    }
     presenter_->Show();
   }
 }
@@ -104,5 +100,5 @@ std::u16string OmniboxPopupViewWebUI::GetAccessibleButtonTextForResult(
 }
 
 RealboxHandler* OmniboxPopupViewWebUI::handler() const {
-  return presenter_->GetWebUIHandler();
+  return presenter_->GetHandler();
 }

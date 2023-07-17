@@ -64,7 +64,7 @@ WEB_UI_CONTROLLER_TYPE_IMPL(OmniboxPopupUI)
 void OmniboxPopupUI::BindInterface(
     mojo::PendingReceiver<omnibox::mojom::PageHandler> pending_page_handler) {
   CHECK(g_omnibox_controller);
-  webui_handler_ = std::make_unique<RealboxHandler>(
+  handler_ = std::make_unique<RealboxHandler>(
       std::move(pending_page_handler), Profile::FromWebUI(web_ui()),
       web_ui()->GetWebContents(), &metrics_reporter_, g_omnibox_controller);
   g_omnibox_controller = nullptr;
