@@ -335,12 +335,18 @@ class InMenuImageButton : public ImageButton {
   void Init(InMenuButtonBackground::ButtonType type,
             InMenuButtonBackground::ButtonShape shape,
             const ui::ImageModel& image_model) {
+    SetFocusBehavior(FocusBehavior::ALWAYS);
     SetImageModel(views::Button::STATE_NORMAL, image_model);
     SetImageHorizontalAlignment(ImageButton::ALIGN_CENTER);
     SetImageVerticalAlignment(ImageButton::ALIGN_MIDDLE);
     SetBackground(std::make_unique<InMenuButtonBackground>(type, shape));
     SetBorder(views::CreateEmptyBorder(
         gfx::Insets::TLBR(0, kHorizontalPadding, 0, kHorizontalPadding)));
+  }
+
+  void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
+    ImageButton::GetAccessibleNodeData(node_data);
+    node_data->role = ax::mojom::Role::kMenuItem;
   }
 };
 
