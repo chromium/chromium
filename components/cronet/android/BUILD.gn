@@ -820,20 +820,6 @@ repackage_jars("repackage_common") {
 
 _cronet_shared_lib_file_name = "lib" + _cronet_shared_lib_name + ".so"
 
-# cronet_sample_test_apk_resources is identical to
-# cronet_sample_apk_resources. The two have to be different targets because
-# targets which are common between the "instrumentation test apk" and the
-# "tested apk" are removed from the "instrumentation test apk".
-android_resources("cronet_sample_test_apk_resources") {
-  sources = [
-    "sample/res/layout/activity_main.xml",
-    "sample/res/layout/dialog_url.xml",
-    "sample/res/values/dimens.xml",
-    "sample/res/values/strings.xml",
-  ]
-  android_manifest = "sample/javatests/AndroidManifest.xml"
-}
-
 instrumentation_test_apk("cronet_sample_test_apk") {
   apk_name = "CronetSampleTest"
   apk_under_test = ":cronet_sample_apk"
