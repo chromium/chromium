@@ -122,6 +122,9 @@ const char kArcUseDevCaches[] = "arc-use-dev-caches";
 // Flag that indicates ARC images are formatted with EROFS (go/arcvm-erofs).
 const char kArcErofs[] = "arc-erofs";
 
+// If set, forces ARC apk cache to be enabled for testing.
+const char kArcForceEnableApkCache[] = "arc-force-enable-apk-cache";
+
 // Flag that forces the OptIn ui to be shown. Used in tests.
 const char kArcForceShowOptInUi[] = "arc-force-show-optin-ui";
 

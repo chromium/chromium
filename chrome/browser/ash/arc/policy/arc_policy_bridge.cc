@@ -11,6 +11,7 @@
 #include "ash/components/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "ash/components/arc/arc_prefs.h"
 #include "ash/components/arc/session/arc_bridge_service.h"
+#include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -391,9 +392,12 @@ void OverrideArcPolicies(base::Value::Dict& filtered_policies,
   }
 
   // Always enable APK Cache for affiliated users, and always disable it for
-  // not affiliated ones.
+  // not affiliated ones, unless kArcForceEnableApkCache is set.
+  bool apk_cache_enabled =
+      is_affiliated || base::CommandLine::ForCurrentProcess()->HasSwitch(
+                           ash::switches::kArcForceEnableApkCache);
   filtered_policies.Set(policy_util::kArcPolicyKeyApkCacheEnabled,
-                        is_affiliated);
+                        apk_cache_enabled);
 
   filtered_policies.Set(policy_util::kArcPolicyKeyGuid, guid);
 
