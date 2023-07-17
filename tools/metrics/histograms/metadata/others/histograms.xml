@@ -719,6 +719,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ads.InterestGroup.Auction.ParseBaServerResponseDuration"
+    units="ms" expires_after="M120">
+  <owner>behamilton@google.com</owner>
+  <owner>pauljensen@chromium.org</owner>
+  <owner>privacy-sandbox-dev@chromium.org</owner>
+  <summary>
+    The length of time it took to decrypt, decompress, and parse a the Response
+    from a FLEDGE server-based auction (using the Bidding and Auction API). Only
+    the times for responses that are successful decoded are recorded.
+  </summary>
+</histogram>
+
 <histogram name="Ads.InterestGroup.Auction.PercentAuctionsSuccessfulPerPage"
     units="%" expires_after="2024-06-20">
   <owner>caraitto@chromium.org</owner>
@@ -788,6 +800,36 @@ chromium-metrics-reviews@google.com.
 
     See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
     version of the FLEDGE explainer.
+  </summary>
+</histogram>
+
+<histogram name="Ads.InterestGroup.BaDataConstructionTime" units="ms"
+    expires_after="M120">
+  <owner>behamilton@google.com</owner>
+  <owner>pauljensen@chromium.org</owner>
+  <owner>privacy-sandbox-dev@chromium.org</owner>
+  <summary>
+    The amount of time spent constructing the Bidding and Auction data blob
+    produced in response to the getInterestGroupAdAuctionData() call to the
+    Bidding and Auction API. This time includes loading interest groups from the
+    database, fetching the Bidding and Auction server key (if not cached),
+    serializing and compressing the interest group data and encryting the
+    message.
+
+    Only the times for blobs that are constructed successfully are recorded.
+  </summary>
+</histogram>
+
+<histogram name="Ads.InterestGroup.BaDataSize" units="bytes"
+    expires_after="M120">
+  <owner>behamilton@google.com</owner>
+  <owner>pauljensen@chromium.org</owner>
+  <owner>privacy-sandbox-dev@chromium.org</owner>
+  <summary>
+    The unencrypted size of Bidding and Auction data blob produced in response
+    to the getInterestGroupAdAuctionData() call to the Bidding and Auction API.
+
+    Only the sizes of blobs that are constructed successfully are recorded.
   </summary>
 </histogram>
 

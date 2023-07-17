@@ -229,7 +229,8 @@ class CONTENT_EXPORT AuctionRunner : public blink::mojom::AbortableAdAuction {
   // `OnBidsGeneratedAndScored()` but also provides reporting information from
   // the server response to the `InterestGroupAuctionReporter`, so that the
   // reporter skips running the worklets and uses the results from the server.
-  void OnServerResponseAuctionComplete(bool success);
+  void OnServerResponseAuctionComplete(base::TimeTicks start_time,
+                                       bool success);
 
   // Invoked asynchronously by `auction_` once the reporting phase has
   // completed. Records `interest_groups_that_bid`. If `success` is false, fails

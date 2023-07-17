@@ -111,6 +111,7 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
         BiddingAndAuctionDataConstructionState&& other);
     ~BiddingAndAuctionDataConstructionState();
 
+    base::TimeTicks start_time;
     BiddingAndAuctionData data;
     base::Uuid request_id;
     url::Origin seller;

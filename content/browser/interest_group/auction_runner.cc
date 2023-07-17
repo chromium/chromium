@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "base/types/optional_ref.h"
@@ -301,7 +302,7 @@ void AuctionRunner::ResolvedAuctionAdResponsePromise(
   auction_.StartFromServerResponse(
       std::move(response), page_data,
       base::BindOnce(&AuctionRunner::OnServerResponseAuctionComplete,
-                     base::Unretained(this)));
+                     base::Unretained(this), base::TimeTicks::Now()));
 }
 
 void AuctionRunner::Abort() {
@@ -460,7 +461,8 @@ void AuctionRunner::OnBidsGeneratedAndScored(bool success) {
       std::move(reporter));
 }
 
-void AuctionRunner::OnServerResponseAuctionComplete(bool success) {
+void AuctionRunner::OnServerResponseAuctionComplete(base::TimeTicks start_time,
+                                                    bool success) {
   DCHECK(callback_);
 
   blink::InterestGroupSet interest_groups_that_bid;
@@ -470,6 +472,9 @@ void AuctionRunner::OnServerResponseAuctionComplete(bool success) {
                 std::move(interest_groups_that_bid));
     return;
   }
+  base::UmaHistogramTimes(
+      "Ads.InterestGroup.Auction.ParseBaServerResponseDuration",
+      base::TimeTicks::Now() - start_time);
 
   DCHECK(auction_.top_bid()->bid->interest_group);
   const blink::InterestGroup& winning_group =

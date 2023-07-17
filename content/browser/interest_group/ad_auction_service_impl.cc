@@ -14,6 +14,7 @@
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
@@ -89,7 +90,8 @@ bool IsAdRequestValid(const blink::mojom::AdRequestConfig& config) {
 
 AdAuctionServiceImpl::BiddingAndAuctionDataConstructionState::
     BiddingAndAuctionDataConstructionState()
-    : request_id(base::Uuid::GenerateRandomV4()) {}
+    : start_time(base::TimeTicks::Now()),
+      request_id(base::Uuid::GenerateRandomV4()) {}
 AdAuctionServiceImpl::BiddingAndAuctionDataConstructionState::
     BiddingAndAuctionDataConstructionState(
         BiddingAndAuctionDataConstructionState&& other) = default;
@@ -780,6 +782,14 @@ void AdAuctionServiceImpl::OnGotBiddingAndAuctionServerKey(
       .Run(mojo_base::BigBuffer(
                base::make_span(bytes, data.size() * sizeof(char))),
            state.request_id);
+  // Request sizes only increase by factors of two so we only need to sample
+  // the powers of two. The maximum of 1 GB size is much larger than it should
+  // ever be.
+  base::UmaHistogramCustomCounts(/*name=*/"Ads.InterestGroup.BaDataSize",
+                                 /*sample=*/data.size(), /*min=*/1,
+                                 /*exclusive_max=*/1 << 30, /*buckets=*/30);
+  base::UmaHistogramTimes(/*name=*/"Ads.InterestGroup.BaDataConstructionTime",
+                          /*sample=*/base::TimeTicks::Now() - state.start_time);
 }
 
 InterestGroupManagerImpl& AdAuctionServiceImpl::GetInterestGroupManager()

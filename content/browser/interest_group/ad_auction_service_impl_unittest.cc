@@ -8273,6 +8273,7 @@ TEST_F(AdAuctionServiceImplBAndATest, EncryptsPayload) {
 }
 
 TEST_F(AdAuctionServiceImplBAndATest, OriginNotAllowed) {
+  base::HistogramTester hist;
   ProvideKeys();
   NavigateAndCommit(GURL("https://not.allowed.test/"));
   url::Origin test_origin = url::Origin::Create(GURL(kOriginStringA));
@@ -8299,9 +8300,13 @@ TEST_F(AdAuctionServiceImplBAndATest, OriginNotAllowed) {
       GetAdAuctionDataAndFlushForFrame(test_origin);
   EXPECT_TRUE(result.has_value());
   EXPECT_EQ("", result.value().request);
+
+  hist.ExpectTotalCount("Ads.InterestGroup.BaDataSize", 0);
+  hist.ExpectTotalCount("Ads.InterestGroup.BaDataConstructionTime", 0);
 }
 
 TEST_F(AdAuctionServiceImplBAndATest, RunBAndAAuction) {
+  base::HistogramTester hist;
   ProvideKeys();
   NavigateAndCommit(kUrlA);
   manager_->JoinInterestGroup(
@@ -8416,6 +8421,86 @@ TEST_F(AdAuctionServiceImplBAndATest, RunBAndAAuction) {
           testing::Pair(
               blink::FencedFrame::ReportingDestination::kComponentSeller,
               testing::ElementsAre())));
+
+  // Request should be padded to 256 bytes with 7 byte encryption header.
+  const size_t expected_ba_data_size = 256 + 7;
+  hist.ExpectUniqueSample("Ads.InterestGroup.BaDataSize", expected_ba_data_size,
+                          1);
+  hist.ExpectTotalCount("Ads.InterestGroup.BaDataConstructionTime", 1);
+  hist.ExpectTotalCount(
+      "Ads.InterestGroup.Auction.ParseBaServerResponseDuration", 1);
+}
+
+TEST_F(AdAuctionServiceImplBAndATest, HandlesBadResponseForBAndAAuction) {
+  base::HistogramTester hist;
+  ProvideKeys();
+  NavigateAndCommit(kUrlA);
+  manager_->JoinInterestGroup(
+      blink::TestInterestGroupBuilder(kOriginA, "cars")
+          .SetAds({{{GURL("https://c.test/ad.html"), /*metadata=*/absl::nullopt,
+                     /*size_group=*/absl::nullopt,
+                     /*buyer_reporting_id=*/absl::nullopt,
+                     /*buyer_and_seller_reporting_id=*/absl::nullopt, "1234"}}})
+          .SetBiddingUrl(kBiddingLogicUrlA)
+          .Build(),
+      GURL("https://a.test/example.html"));
+  task_environment()->FastForwardBy(base::Seconds(1));
+
+  absl::optional<AdAuctionDataAndId> auction_data =
+      GetAdAuctionDataAndFlushForFrame(kOriginA);
+  EXPECT_TRUE(auction_data.has_value());
+
+  AdAuctionPageData* page_data = PageUserData<AdAuctionPageData>::GetForPage(
+      static_cast<RenderFrameHostImpl*>(main_rfh())->GetPage());
+  ASSERT_TRUE(page_data);
+  ASSERT_TRUE(auction_data->request_id);
+  AdAuctionRequestContext* request_context =
+      page_data->GetContextForAdAuctionRequest(*auction_data->request_id);
+
+  std::string response = "Invalid Response: Is not CBOR!";
+
+  network_responder_->RegisterReportResponse("/buyerReporting",
+                                             /*response=*/"");
+  network_responder_->RegisterReportResponse("/sellerReporting",
+                                             /*response=*/"");
+
+  std::string encrypted_response =
+      quiche::ObliviousHttpResponse::CreateServerObliviousResponse(
+          response, request_context->context)
+          ->EncapsulateAndSerialize();
+
+  page_data->AddAuctionResultWitnessForOrigin(
+      kOriginA, crypto::SHA256HashString(encrypted_response));
+
+  blink::AuctionConfig auction_config;
+  auction_config.seller = kOriginA;
+  auction_config.non_shared_params.interest_group_buyers = {kOriginA};
+  auction_config.server_response.emplace();
+  auction_config.server_response->request_id = *auction_data->request_id;
+  absl::optional<GURL> result = RunAdAuctionWithPromiseAndFlushForFrame(
+      auction_config,
+      base::BindLambdaForTesting(
+          [&](mojo::Remote<blink::mojom::AbortableAdAuction>& runner) {
+            runner->ResolvedAuctionAdResponsePromise(
+                blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0),
+                mojo_base::BigBuffer(
+                    base::as_bytes(base::make_span(encrypted_response))));
+          }),
+      main_rfh());
+  EXPECT_FALSE(result);
+
+  // Fast forward enough for all reports to be sent.
+  task_environment()->FastForwardBy(base::Hours(1));
+
+  EXPECT_EQ(network_responder_->ReportCount(), 0u);
+
+  // Request should be padded to 256 bytes with 7 byte encryption header.
+  const size_t expected_ba_data_size = 256 + 7;
+  hist.ExpectUniqueSample("Ads.InterestGroup.BaDataSize", expected_ba_data_size,
+                          1);
+  hist.ExpectTotalCount("Ads.InterestGroup.BaDataConstructionTime", 1);
+  hist.ExpectTotalCount(
+      "Ads.InterestGroup.Auction.ParseBaServerResponseDuration", 0);
 }
 
 }  // namespace content
