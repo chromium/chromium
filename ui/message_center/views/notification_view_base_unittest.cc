@@ -27,6 +27,7 @@
 #include "ui/message_center/public/cpp/message_center_constants.h"
 #include "ui/message_center/views/notification_control_buttons_view.h"
 #include "ui/message_center/views/notification_header_view.h"
+#include "ui/message_center/views/notification_view_base.h"
 #include "ui/message_center/views/padded_button.h"
 #include "ui/message_center/views/proportional_image_view.h"
 #include "ui/native_theme/native_theme.h"
@@ -179,6 +180,10 @@ class NotificationViewBaseTest : public views::ViewsTestBase,
     delete_on_preferred_size_changed_ = delete_on_preferred_size_changed;
   }
 
+  void SetHasMessageCenterView(bool has_message_center_view) {
+    MessageCenter::Get()->SetHasMessageCenterView(has_message_center_view);
+  }
+
   void ToggleExpanded() {
     notification_view_->SetExpanded(!notification_view_->IsExpanded());
   }
@@ -194,6 +199,7 @@ class NotificationViewBaseTest : public views::ViewsTestBase,
   void UpdateNotificationViews(const Notification& notification);
   float GetNotificationSlideAmount() const;
   bool IsRemovedAfterIdle(const std::string& notification_id) const;
+  bool IsPopupRemovedAfterIdle(const std::string& notification_id) const;
   void DispatchGesture(const ui::GestureEventDetails& details);
   void BeginScroll();
   void EndScroll();
@@ -321,6 +327,12 @@ bool NotificationViewBaseTest::IsRemovedAfterIdle(
     const std::string& notification_id) const {
   base::RunLoop().RunUntilIdle();
   return !MessageCenter::Get()->FindVisibleNotificationById(notification_id);
+}
+
+bool NotificationViewBaseTest::IsPopupRemovedAfterIdle(
+    const std::string& notification_id) const {
+  base::RunLoop().RunUntilIdle();
+  return !MessageCenter::Get()->FindPopupNotificationById(notification_id);
 }
 
 void NotificationViewBaseTest::DispatchGesture(
@@ -681,6 +693,8 @@ TEST_F(NotificationViewBaseTest, TestInlineReplyActivateWithKeyPress) {
 #define MAYBE_SlideOut SlideOut
 #endif
 TEST_F(NotificationViewBaseTest, MAYBE_SlideOut) {
+  SetHasMessageCenterView(/*has_message_center_view=*/false);
+
   ui::ScopedAnimationDurationScaleMode zero_duration_scope(
       ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
 
@@ -703,11 +717,47 @@ TEST_F(NotificationViewBaseTest, MAYBE_SlideOut) {
 }
 
 #if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_SlideOutWithMessageCenterView \
+  DISABLED_SlideOutWithMessageCenterView
+#else
+#define MAYBE_SlideOutWithMessageCenterView SlideOutWithMessageCenterView
+#endif
+// Tests slide out behavior when the `MessageCenterView` exists. The
+// notification's popup should be dismissed but the notification should not be
+// removed.
+TEST_F(NotificationViewBaseTest, MAYBE_SlideOutWithMessageCenterView) {
+  SetHasMessageCenterView(/*has_message_center_view=*/true);
+
+  ui::ScopedAnimationDurationScaleMode zero_duration_scope(
+      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+
+  EXPECT_FALSE(IsPopupRemovedAfterIdle(kDefaultNotificationId));
+
+  BeginScroll();
+  ScrollBy(-10);
+  EXPECT_FALSE(IsPopupRemovedAfterIdle(kDefaultNotificationId));
+  EXPECT_EQ(-10.f, GetNotificationSlideAmount());
+  EndScroll();
+  EXPECT_FALSE(IsPopupRemovedAfterIdle(kDefaultNotificationId));
+  EXPECT_EQ(0.f, GetNotificationSlideAmount());
+
+  BeginScroll();
+  ScrollBy(-200);
+  EXPECT_FALSE(IsPopupRemovedAfterIdle(kDefaultNotificationId));
+  EXPECT_EQ(-200.f, GetNotificationSlideAmount());
+  EndScroll();
+  EXPECT_TRUE(IsPopupRemovedAfterIdle(kDefaultNotificationId));
+  EXPECT_FALSE(IsRemovedAfterIdle(kDefaultNotificationId));
+}
+
+#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_FUCHSIA)
 #define MAYBE_SlideOutNested DISABLED_SlideOutNested
 #else
 #define MAYBE_SlideOutNested SlideOutNested
 #endif
 TEST_F(NotificationViewBaseTest, MAYBE_SlideOutNested) {
+  SetHasMessageCenterView(/*has_message_center_view=*/false);
+
   notification_view()->SetIsNested();
   ui::ScopedAnimationDurationScaleMode zero_duration_scope(
       ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);

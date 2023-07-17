@@ -403,7 +403,7 @@ void MessageView::OnSlideOut() {
   if (ShouldParentHandleSlide() && parent_message_view_)
     return parent_message_view_->OnSlideOut();
 
-  // The notification will be deleted after slide out, so give observers a
+  // The notification may be deleted after slide out, so give observers a
   // chance to handle the notification before fulling sliding out.
   for (auto& observer : observers_)
     observer.OnPreSlideOut(notification_id_);
@@ -416,8 +416,13 @@ void MessageView::OnSlideOut() {
   for (auto& observer : observers_)
     observer.OnSlideOut(notification_id_);
 
-  MessageCenter::Get()->RemoveNotification(notification_id_copy,
-                                           true /* by_user */);
+  auto* message_center = MessageCenter::Get();
+  if (message_center->FindPopupNotificationById(notification_id_)) {
+    message_center->MarkSinglePopupAsShown(notification_id_,
+                                           /*mark_notification_as_read=*/true);
+    return;
+  }
+  message_center->RemoveNotification(notification_id_copy, /*by_user=*/true);
 }
 
 void MessageView::OnWillChangeFocus(views::View* before, views::View* now) {}
