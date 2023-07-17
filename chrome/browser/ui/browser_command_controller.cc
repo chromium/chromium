@@ -1279,9 +1279,7 @@ void BrowserCommandController::InitCommandState() {
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   command_updater_.UpdateCommandEnabled(IDC_CUSTOMIZE_CHROME, true);
   command_updater_.UpdateCommandEnabled(IDC_CLOSE_PROFILE, true);
-  command_updater_.UpdateCommandEnabled(
-      IDC_MANAGE_GOOGLE_ACCOUNT,
-      HasUnconstentedProfile(profile()) && !IsSyncPaused(profile()));
+  command_updater_.UpdateCommandEnabled(IDC_MANAGE_GOOGLE_ACCOUNT, true);
   command_updater_.UpdateCommandEnabled(IDC_OPEN_GUEST_PROFILE, true);
   command_updater_.UpdateCommandEnabled(IDC_ADD_NEW_PROFILE, true);
   command_updater_.UpdateCommandEnabled(IDC_MANAGE_CHROME_PROFILES, true);
