@@ -154,31 +154,6 @@ constexpr bool AreValid(RawPtrTraits traits) {
          RawPtrTraits::kEmpty;
 }
 
-}  // namespace raw_ptr_traits
-
-struct RawPtrGlobalSettings {
-  static void EnableExperimentalAsh() {
-#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
-    internal::BackupRefPtrGlobalSettings::EnableExperimentalAsh();
-#endif
-  }
-
-  static void DisableExperimentalAshForTest() {
-#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
-    internal::BackupRefPtrGlobalSettings::DisableExperimentalAshForTest();
-#endif
-  }
-};
-
-namespace test {
-
-template <RawPtrTraits Traits>
-struct RawPtrCountingImplWrapperForTest;
-
-}  // namespace test
-
-namespace raw_ptr_traits {
-
 // IsSupportedType<T>::value answers whether raw_ptr<T> 1) compiles and 2) is
 // always safe at runtime.  Templates that may end up using `raw_ptr<T>` should
 // use IsSupportedType to ensure that raw_ptr is not used with unsupported
@@ -252,42 +227,50 @@ struct IsSupportedType<T,
 #undef PA_WINDOWS_HANDLE_TYPE
 #endif
 
-template <RawPtrTraits Traits>
-struct TraitsToImpl {
-  static_assert(AreValid(Traits), "Unknown raw_ptr trait(s)");
-
- private:
-  // UnderlyingImpl is the struct that provides the implementation of the
-  // protections related to raw_ptr.
 #if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
-  using UnderlyingImpl = internal::RawPtrBackupRefImpl<
-      /*AllowDangling=*/Contains(Traits, RawPtrTraits::kMayDangle),
-      /*ExperimentalAsh=*/Contains(Traits, RawPtrTraits::kExperimentalAsh)>;
+template <RawPtrTraits Traits>
+using UnderlyingImplForTraits = internal::RawPtrBackupRefImpl<
+    /*AllowDangling=*/Contains(Traits, RawPtrTraits::kMayDangle),
+    /*ExperimentalAsh=*/Contains(Traits, RawPtrTraits::kExperimentalAsh)>;
 
 #elif BUILDFLAG(USE_ASAN_UNOWNED_PTR)
-  using UnderlyingImpl = internal::RawPtrAsanUnownedImpl<
-      Contains(Traits, RawPtrTraits::kAllowPtrArithmetic),
-      Contains(Traits, RawPtrTraits::kMayDangle)>;
+template <RawPtrTraits Traits>
+using UnderlyingImplForTraits =
+    internal::RawPtrAsanUnownedImpl<Contains(Traits,
+                                             RawPtrTraits::kAllowPtrArithmetic),
+                                    Contains(Traits, RawPtrTraits::kMayDangle)>;
 
 #elif BUILDFLAG(USE_HOOKABLE_RAW_PTR)
-  using UnderlyingImpl = internal::RawPtrHookableImpl<
-      /*EnableHooks=*/!Contains(Traits, RawPtrTraits::kDisableHooks)>;
+template <RawPtrTraits Traits>
+using UnderlyingImplForTraits = internal::RawPtrHookableImpl<
+    /*EnableHooks=*/!Contains(Traits, RawPtrTraits::kDisableHooks)>;
 
 #else
-  using UnderlyingImpl = internal::RawPtrNoOpImpl;
+template <RawPtrTraits Traits>
+using UnderlyingImplForTraits = internal::RawPtrNoOpImpl;
 #endif
 
- public:
-  // Impl is the struct that implements raw_ptr functions. Think of raw_ptr as a
-  // thin wrapper, that directs calls to Impl.
-  // Impl may be different from UnderlyingImpl, because it may include a
-  // wrapper.
-  using Impl = std::conditional_t<
-      Contains(Traits, RawPtrTraits::kUseCountingWrapperForTest),
-      test::RawPtrCountingImplWrapperForTest<
-          Remove(Traits, RawPtrTraits::kUseCountingWrapperForTest)>,
-      UnderlyingImpl>;
-};
+}  // namespace raw_ptr_traits
+
+namespace test {
+
+template <RawPtrTraits Traits>
+struct RawPtrCountingImplWrapperForTest;
+
+}  // namespace test
+
+namespace raw_ptr_traits {
+
+// ImplForTraits is the struct that implements raw_ptr functions. Think of
+// raw_ptr as a thin wrapper, that directs calls to ImplForTraits. ImplForTraits
+// may be different from UnderlyingImplForTraits, because it may include a
+// wrapper.
+template <RawPtrTraits Traits>
+using ImplForTraits = std::conditional_t<
+    Contains(Traits, RawPtrTraits::kUseCountingWrapperForTest),
+    test::RawPtrCountingImplWrapperForTest<
+        Remove(Traits, RawPtrTraits::kUseCountingWrapperForTest)>,
+    UnderlyingImplForTraits<Traits>>;
 
 }  // namespace raw_ptr_traits
 
@@ -320,7 +303,7 @@ struct TraitsToImpl {
 template <typename T, RawPtrTraits Traits = RawPtrTraits::kEmpty>
 class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
  public:
-  using Impl = typename raw_ptr_traits::TraitsToImpl<Traits>::Impl;
+  using Impl = typename raw_ptr_traits::ImplForTraits<Traits>;
   // Needed to make gtest Pointee matcher work with raw_ptr.
   using element_type = T;
   using DanglingType = raw_ptr<T, Traits | RawPtrTraits::kMayDangle>;
@@ -330,6 +313,7 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
   static_assert(std::is_same_v<Impl, internal::RawPtrNoOpImpl>);
 #endif  // !BUILDFLAG(USE_PARTITION_ALLOC)
 
+  static_assert(raw_ptr_traits::AreValid(Traits), "Unknown raw_ptr trait(s)");
   static_assert(raw_ptr_traits::IsSupportedType<T>::value,
                 "raw_ptr<T> doesn't work with this kind of pointee type T");
 
@@ -442,7 +426,7 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
   PA_ALWAYS_INLINE constexpr explicit raw_ptr(
       const raw_ptr<T, PassedTraits>& p) noexcept
       : wrapped_ptr_(Impl::WrapRawPtrForDuplication(
-            raw_ptr_traits::TraitsToImpl<PassedTraits>::Impl::
+            raw_ptr_traits::ImplForTraits<PassedTraits>::
                 UnsafelyUnwrapPtrForDuplication(p.wrapped_ptr_))) {
     // Limit cross-kind conversions only to cases where kMayDangle gets added,
     // because that's needed for Unretained(Ref)Wrapper. Use a static_assert,
@@ -468,8 +452,8 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
 
     Impl::ReleaseWrappedPtr(wrapped_ptr_);
     wrapped_ptr_ = Impl::WrapRawPtrForDuplication(
-        raw_ptr_traits::TraitsToImpl<PassedTraits>::Impl::
-            UnsafelyUnwrapPtrForDuplication(p.wrapped_ptr_));
+        raw_ptr_traits::ImplForTraits<
+            PassedTraits>::UnsafelyUnwrapPtrForDuplication(p.wrapped_ptr_));
     return *this;
   }
 
@@ -916,6 +900,20 @@ struct RemovePointer<raw_ptr<T, Traits>> {
 
 template <typename T>
 using RemovePointerT = typename RemovePointer<T>::type;
+
+struct RawPtrGlobalSettings {
+  static void EnableExperimentalAsh() {
+#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+    internal::BackupRefPtrGlobalSettings::EnableExperimentalAsh();
+#endif
+  }
+
+  static void DisableExperimentalAshForTest() {
+#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+    internal::BackupRefPtrGlobalSettings::DisableExperimentalAshForTest();
+#endif
+  }
+};
 
 }  // namespace base
 

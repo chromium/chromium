@@ -19,12 +19,12 @@ namespace base::test {
 // Test only.
 template <RawPtrTraits Traits>
 struct RawPtrCountingImplWrapperForTest
-    : public raw_ptr_traits::TraitsToImpl<Traits>::Impl {
+    : public raw_ptr_traits::ImplForTraits<Traits> {
   static_assert(
       !raw_ptr_traits::Contains(Traits,
                                 RawPtrTraits::kUseCountingWrapperForTest));
 
-  using SuperImpl = typename raw_ptr_traits::TraitsToImpl<Traits>::Impl;
+  using SuperImpl = typename raw_ptr_traits::ImplForTraits<Traits>;
 
   static constexpr bool kMustZeroOnInit = SuperImpl::kMustZeroOnInit;
   static constexpr bool kMustZeroOnMove = SuperImpl::kMustZeroOnMove;
