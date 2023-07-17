@@ -537,6 +537,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         if (!isNativeInitialized()) return;
         ContextUtils.getApplicationContext().unregisterReceiver(mBroadcastReceiver);
         mHistogramRecorder.recordHistograms();
+        mAutoDisableAccessibilityHandler.cancelDisableTimer();
     }
 
     @Override
@@ -595,6 +596,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         TraceEvent.begin("WebContentsAccessibilityImpl.destroy");
         mNodeInfoCache.clear();
         mEventDispatcher.clearQueue();
+        mAutoDisableAccessibilityHandler.cancelDisableTimer();
         if (mDelegate.getWebContents() == null) {
             deleteEarly();
         } else {
