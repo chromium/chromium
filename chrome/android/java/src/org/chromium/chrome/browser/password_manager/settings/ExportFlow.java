@@ -215,7 +215,6 @@ public class ExportFlow implements ExportFlowInterface {
     @Override
     public void onCreate(Bundle savedInstanceState, Delegate delegate, String callerMetricsId) {
         mDelegate = delegate;
-        mPasswordSerializationStarted = false;
         mExportEventHistogramName = callerMetricsId + ".Event";
         mExportResultHistogramName = callerMetricsId + ".Result";
 
@@ -289,6 +288,7 @@ public class ExportFlow implements ExportFlowInterface {
     @Override
     public void startExporting() {
         assert mExportState == ExportState.INACTIVE;
+        mPasswordSerializationStarted = false;
         // Disable re-triggering exporting until the current exporting finishes.
         mExportState = ExportState.REQUESTED;
 
