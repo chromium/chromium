@@ -15,7 +15,7 @@ import {DomRepeat, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer
 import {ColorElement} from './color.js';
 import {Color, ColorType, DARK_BASELINE_BLUE_COLOR, DARK_BASELINE_GREY_COLOR, DARK_DEFAULT_COLOR, LIGHT_BASELINE_BLUE_COLOR, LIGHT_BASELINE_GREY_COLOR, LIGHT_DEFAULT_COLOR, SelectedColor} from './color_utils.js';
 import {getTemplate} from './colors.html.js';
-import {ChromeColor, Theme} from './customize_chrome.mojom-webui.js';
+import {BrowserColorVariant, ChromeColor, Theme} from './customize_chrome.mojom-webui.js';
 import {CustomizeChromeApiProxy} from './customize_chrome_api_proxy.js';
 
 export interface ColorsElement {
@@ -167,10 +167,12 @@ export class ColorsElement extends PolymerElement {
     }
     if (this.colors_.find(
             (color: ChromeColor) =>
-                color.seed.value === this.theme_.seedColor.value)) {
+                color.seed.value === this.theme_.seedColor.value &&
+                color.variant === this.theme_.browserColorVariant)) {
       return {
         type: ColorType.CHROME,
         chromeColor: this.theme_.seedColor,
+        variant: this.theme_.browserColorVariant,
       };
     }
     return {type: ColorType.CUSTOM};
@@ -192,26 +194,31 @@ export class ColorsElement extends PolymerElement {
     return this.selectedColor_.type === ColorType.CUSTOM;
   }
 
-  private isChromeColorSelected_(color: SkColor): boolean {
+  private isChromeColorSelected_(color: SkColor, variant: BrowserColorVariant):
+      boolean {
     return this.selectedColor_.type === ColorType.CHROME &&
-        this.selectedColor_.chromeColor!.value === color.value;
+        this.selectedColor_.chromeColor!.value === color.value &&
+        this.selectedColor_.variant === variant;
   }
 
   private boolToString_(value: boolean): string {
     return value ? 'true' : 'false';
   }
 
-  private getChromeColorCheckedStatus_(color: SkColor): string {
-    return this.boolToString_(this.isChromeColorSelected_(color));
+  private getChromeColorCheckedStatus_(
+      color: SkColor, variant: BrowserColorVariant): string {
+    return this.boolToString_(this.isChromeColorSelected_(color, variant));
   }
 
   private tabIndex_(selected: boolean): string {
     return selected ? '0' : '-1';
   }
 
-  private chromeColorTabIndex_(color: SkColor): string {
+  private chromeColorTabIndex_(color: SkColor, variant: BrowserColorVariant):
+      string {
     return this.selectedColor_.type === ColorType.CHROME &&
-            this.selectedColor_.chromeColor!.value === color.value ?
+            this.selectedColor_.chromeColor!.value === color.value &&
+            this.selectedColor_.variant === variant ?
         '0' :
         '-1';
   }
@@ -252,15 +259,17 @@ export class ColorsElement extends PolymerElement {
       return;
     }
     CustomizeChromeApiProxy.getInstance().handler.setSeedColor(
-        this.theme_!.backgroundImage!.mainColor!);
+        this.theme_!.backgroundImage!.mainColor!,
+        BrowserColorVariant.kTonalSpot);
   }
 
   private onChromeColorClick_(e: Event) {
     if (this.handleClickForManagedColors_()) {
       return;
     }
+    const color = this.$.chromeColors.itemForElement(e.target as HTMLElement);
     CustomizeChromeApiProxy.getInstance().handler.setSeedColor(
-        this.$.chromeColors.itemForElement(e.target as HTMLElement).seed);
+        color.seed, color.variant);
   }
 
   private onCustomColorClick_() {
@@ -273,7 +282,8 @@ export class ColorsElement extends PolymerElement {
 
   private onCustomColorChange_(e: Event) {
     CustomizeChromeApiProxy.getInstance().handler.setSeedColor(
-        hexColorToSkColor((e.target as HTMLInputElement).value));
+        hexColorToSkColor((e.target as HTMLInputElement).value),
+        BrowserColorVariant.kTonalSpot);
   }
 
   private updateCustomColor_() {

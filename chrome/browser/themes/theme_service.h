@@ -207,12 +207,13 @@ class ThemeService : public KeyedService, public BrowserThemeProviderDelegate {
 
   // Sets/gets the browser kSchemeVariant preference.
   void SetBrowserColorVariant(BrowserColorVariant color_variant);
-  BrowserColorVariant GetBrowserColorVariant() const;
+  virtual BrowserColorVariant GetBrowserColorVariant() const;
 
   // Convenience method that allows setting both the kUserColor and
   // kSchemeVariant before propagating theme update notifications.
-  void SetUserColorAndBrowserColorVariant(SkColor user_color,
-                                          BrowserColorVariant color_variant);
+  virtual void SetUserColorAndBrowserColorVariant(
+      SkColor user_color,
+      BrowserColorVariant color_variant);
 
   // Sets/gets the browser grayscale theme preference.
   virtual void SetIsGrayscale(bool is_grayscale);

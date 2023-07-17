@@ -69,7 +69,8 @@ class CustomizeChromePageHandler
   // side_panel::mojom::CustomizeChromePageHandler:
   void SetDefaultColor() override;
   void SetGreyDefaultColor() override;
-  void SetSeedColor(SkColor seed_color) override;
+  void SetSeedColor(SkColor seed_color,
+                    ThemeService::BrowserColorVariant variant) override;
   void GetOverviewChromeColors(
       bool is_dark_mode,
       GetOverviewChromeColorsCallback callback) override;

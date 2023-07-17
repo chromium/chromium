@@ -19,7 +19,7 @@ import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/po
 import {getTemplate} from './chrome_colors.html.js';
 import {ColorElement} from './color.js';
 import {Color, ColorType, DARK_DEFAULT_COLOR, LIGHT_DEFAULT_COLOR, SelectedColor} from './color_utils.js';
-import {ChromeColor, CustomizeChromePageHandlerInterface, Theme} from './customize_chrome.mojom-webui.js';
+import {BrowserColorVariant, ChromeColor, CustomizeChromePageHandlerInterface, Theme} from './customize_chrome.mojom-webui.js';
 import {CustomizeChromeApiProxy} from './customize_chrome_api_proxy.js';
 
 export interface ChromeColorsElement {
@@ -171,7 +171,8 @@ export class ChromeColorsElement extends PolymerElement {
   }
 
   private onChromeColorClick_(e: DomRepeatEvent<ChromeColor>) {
-    this.pageHandler_.setSeedColor(e.model.item.seed);
+    this.pageHandler_.setSeedColor(
+        e.model.item.seed, BrowserColorVariant.kTonalSpot);
     this.pageHandler_.removeBackgroundImage();
   }
 
@@ -182,7 +183,8 @@ export class ChromeColorsElement extends PolymerElement {
 
   private onCustomColorChange_(e: Event) {
     this.pageHandler_.setSeedColor(
-        hexColorToSkColor((e.target as HTMLInputElement).value));
+        hexColorToSkColor((e.target as HTMLInputElement).value),
+        BrowserColorVariant.kTonalSpot);
     this.pageHandler_.removeBackgroundImage();
   }
 

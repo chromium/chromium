@@ -5,12 +5,12 @@
 import {ColorElement} from 'chrome://customize-chrome-side-panel.top-chrome/color.js';
 import {Color, DARK_BASELINE_BLUE_COLOR, DARK_BASELINE_GREY_COLOR, DARK_DEFAULT_COLOR, LIGHT_BASELINE_BLUE_COLOR, LIGHT_BASELINE_GREY_COLOR, LIGHT_DEFAULT_COLOR} from 'chrome://customize-chrome-side-panel.top-chrome/color_utils.js';
 import {ColorsElement} from 'chrome://customize-chrome-side-panel.top-chrome/colors.js';
-import {ChromeColor, CustomizeChromePageCallbackRouter, CustomizeChromePageHandlerRemote, CustomizeChromePageRemote, Theme} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome.mojom-webui.js';
+import {BrowserColorVariant, ChromeColor, CustomizeChromePageCallbackRouter, CustomizeChromePageHandlerRemote, CustomizeChromePageRemote, Theme} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome.mojom-webui.js';
 import {CustomizeChromeApiProxy} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome_api_proxy.js';
 import {ManagedDialogElement} from 'chrome://resources/cr_components/managed_dialog/managed_dialog.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
-import {assertDeepEquals, assertEquals, assertFalse, assertGE, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 
@@ -178,8 +178,10 @@ suite('ColorsTest', () => {
 
     $$<HTMLElement>(colorsElement, '#mainColor')!.click();
 
+    const args = handler.getArgs('setSeedColor')[0];
     assertEquals(1, handler.getCallCount('setSeedColor'));
-    assertEquals(7, handler.getArgs('setSeedColor')[0].value);
+    assertEquals(7, args[0].value);
+    assertEquals(BrowserColorVariant.kTonalSpot, args[1]);
   });
 
   test('renders chrome colors', async () => {
@@ -195,6 +197,7 @@ suite('ColorsTest', () => {
           background: {value: 1},
           foreground: {value: 2},
           base: {value: 3},
+          variant: BrowserColorVariant.kTonalSpot,
         },
         {
           id: 2,
@@ -203,6 +206,7 @@ suite('ColorsTest', () => {
           background: {value: 3},
           foreground: {value: 4},
           base: {value: 5},
+          variant: BrowserColorVariant.kNeutral,
         },
       ],
     };
@@ -237,6 +241,7 @@ suite('ColorsTest', () => {
           background: {value: 1},
           foreground: {value: 2},
           base: {value: 4},
+          variant: BrowserColorVariant.kNeutral,
         },
       ],
     };
@@ -246,8 +251,10 @@ suite('ColorsTest', () => {
     colorsElement.shadowRoot!.querySelector<ColorElement>(
                                  '.chrome-color')!.click();
 
+    const args = handler.getArgs('setSeedColor')[0];
     assertEquals(1, handler.getCallCount('setSeedColor'));
-    assertEquals(3, handler.getArgs('setSeedColor')[0].value);
+    assertEquals(3, args[0].value);
+    assertEquals(BrowserColorVariant.kNeutral, args[1]);
   });
 
   test('sets custom color', () => {
@@ -255,9 +262,10 @@ suite('ColorsTest', () => {
     colorsElement.$.colorPicker.value = '#ff0000';
     colorsElement.$.colorPicker.dispatchEvent(new Event('change'));
 
-    const args = handler.getArgs('setSeedColor');
-    assertGE(1, args.length);
-    assertEquals(0xffff0000, args.at(-1).value);
+    const args = handler.getArgs('setSeedColor')[0];
+    assertEquals(2, args.length);
+    assertEquals(0xffff0000, args[0].value);
+    assertEquals(BrowserColorVariant.kTonalSpot, args[1]);
   });
 
   test('updates custom color for theme', async () => {
@@ -271,6 +279,7 @@ suite('ColorsTest', () => {
           background: {value: 1},
           foreground: {value: 2},
           base: {value: 3},
+          variant: BrowserColorVariant.kTonalSpot,
         },
       ],
     };
@@ -316,6 +325,7 @@ suite('ColorsTest', () => {
           background: {value: 1},
           foreground: {value: 2},
           base: {value: 3},
+          variant: BrowserColorVariant.kTonalSpot,
         },
         {
           id: 2,
@@ -324,6 +334,7 @@ suite('ColorsTest', () => {
           background: {value: 3},
           foreground: {value: 4},
           base: {value: 5},
+          variant: BrowserColorVariant.kNeutral,
         },
       ],
     };
@@ -466,6 +477,7 @@ suite('ColorsTest', () => {
                 background: {value: 1},
                 foreground: {value: 2},
                 base: {value: 3},
+                variant: BrowserColorVariant.kTonalSpot,
               },
             ],
           };

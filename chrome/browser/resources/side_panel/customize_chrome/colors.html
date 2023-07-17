@@ -127,10 +127,10 @@
         title="[[item.name]]"
         aria-label$="[[item.name]]"
         role="radio"
-        checked="[[isChromeColorSelected_(item.seed, selectedColor_)]]"
+        checked="[[isChromeColorSelected_(item.seed, item.variant, selectedColor_)]]"
         aria-checked$=
-            "[[getChromeColorCheckedStatus_(item.seed, selectedColor_)]]"
-        tabindex$="[[chromeColorTabIndex_(item.seed, selectedColor_)]]"
+            "[[getChromeColorCheckedStatus_(item.seed, item.variant, selectedColor_)]]"
+        tabindex$="[[chromeColorTabIndex_(item.seed, item.variant, selectedColor_)]]"
         on-click="onChromeColorClick_"
         basic-color>
     </customize-chrome-color>
