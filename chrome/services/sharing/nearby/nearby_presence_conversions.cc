@@ -5,6 +5,7 @@
 #include "chrome/services/sharing/nearby/nearby_presence_conversions.h"
 
 #include "chromeos/ash/services/nearby/public/mojom/nearby_presence.mojom.h"
+#include "third_party/nearby/src/presence/data_element.h"
 
 namespace ash::nearby::presence {
 
@@ -115,6 +116,29 @@ mojom::IdentityType ConvertIdentityTypeToMojom(
   }
 }
 
+mojom::ActionType ConvertActionTypeToMojom(uint32_t action) {
+  switch (::nearby::presence::ActionBit(action)) {
+    case ::nearby::presence::ActionBit::kActiveUnlockAction:
+      return mojom::ActionType::kActiveUnlockAction;
+    case ::nearby::presence::ActionBit::kNearbyShareAction:
+      return mojom::ActionType::kNearbyShareAction;
+    case ::nearby::presence::ActionBit::kInstantTetheringAction:
+      return mojom::ActionType::kInstantTetheringAction;
+    case ::nearby::presence::ActionBit::kPhoneHubAction:
+      return mojom::ActionType::kPhoneHubAction;
+    case ::nearby::presence::ActionBit::kPresenceManagerAction:
+      return mojom::ActionType::kPresenceManagerAction;
+    case ::nearby::presence::ActionBit::kFinderAction:
+      return mojom::ActionType::kFinderAction;
+    case ::nearby::presence::ActionBit::kFastPairSassAction:
+      return mojom::ActionType::kFastPairSassAction;
+    case ::nearby::presence::ActionBit::kTapToTransferAction:
+      return mojom::ActionType::kTapToTransferAction;
+    case ::nearby::presence::ActionBit::kLastAction:
+      return mojom::ActionType::kLastAction;
+  }
+}
+
 mojom::SharedCredentialPtr SharedCredentialToMojom(
     ::nearby::internal::SharedCredential shared_credential) {
   return mojom::SharedCredential::New(
@@ -167,6 +191,20 @@ mojom::SharedCredentialPtr SharedCredentialToMojom(
   proto.set_version(std::string(shared_credential->version.begin(),
                                 shared_credential->version.end()));
   return proto;
+}
+
+mojom::PresenceDevicePtr BuildPresenceMojomDevice(
+    ::nearby::presence::PresenceDevice device) {
+  std::vector<mojom::ActionType> actions;
+  for (auto action : device.GetActions()) {
+    actions.push_back(ConvertActionTypeToMojom(action.GetActionIdentifier()));
+  }
+
+  // TODO(b/276642472): Properly plumb type and stable_device_id.
+  return mojom::PresenceDevice::New(
+      device.GetEndpointId(), device.GetMetadata().device_name(),
+      mojom::PresenceDeviceType::kPhone, std::move(actions),
+      /*stable_device_id=*/absl::nullopt);
 }
 
 }  // namespace ash::nearby::presence

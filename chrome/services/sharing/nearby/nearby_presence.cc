@@ -98,27 +98,18 @@ void NearbyPresence::StartScan(mojom::ScanRequestPtr scan_request,
            },
        .on_discovered_cb =
            [this](::nearby::presence::PresenceDevice device) {
-             // TODO(b/276642472): Properly plumb type and stable_device_id.
-             scan_observer_remote_->OnDeviceFound(mojom::PresenceDevice::New(
-                 device.GetEndpointId(), device.GetMetadata().device_name(),
-                 mojom::PresenceDeviceType::kPhone,
-                 /*stable_device_id=*/absl::nullopt));
+             scan_observer_remote_->OnDeviceFound(
+                 BuildPresenceMojomDevice(device));
            },
        .on_updated_cb =
            [this](::nearby::presence::PresenceDevice device) {
-             // TODO(b/276642472): Properly plumb type and stable_device_id.
-             scan_observer_remote_->OnDeviceChanged(mojom::PresenceDevice::New(
-                 device.GetEndpointId(), device.GetMetadata().device_name(),
-                 mojom::PresenceDeviceType::kPhone,
-                 /*stable_device_id=*/absl::nullopt));
+             scan_observer_remote_->OnDeviceChanged(
+                 BuildPresenceMojomDevice(device));
            },
        .on_lost_cb =
            [this](::nearby::presence::PresenceDevice device) {
-             // TODO(b/276642472): Properly plumb type and stable_device_id.
-             scan_observer_remote_->OnDeviceLost(mojom::PresenceDevice::New(
-                 device.GetEndpointId(), device.GetMetadata().device_name(),
-                 mojom::PresenceDeviceType::kPhone,
-                 /*stable_device_id=*/absl::nullopt));
+             scan_observer_remote_->OnDeviceLost(
+                 BuildPresenceMojomDevice(device));
            }});
 
   if (session_id_or_status.ok()) {

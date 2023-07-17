@@ -11,7 +11,7 @@ NearbyPresenceService::~NearbyPresenceService() = default;
 
 NearbyPresenceService::ScanFilter::ScanFilter(
     IdentityType identity_type,
-    const std::vector<ActionType>& actions)
+    const std::vector<Action>& actions)
     : identity_type_(identity_type), actions_(actions) {}
 
 NearbyPresenceService::ScanFilter::~ScanFilter() = default;
@@ -29,7 +29,7 @@ NearbyPresenceService::PresenceDevice::PresenceDevice(
     absl::optional<std::string> stable_device_id,
     std::string endpoint_id,
     std::string device_name,
-    std::vector<ActionType> actions,
+    std::vector<Action> actions,
     int rssi)
     : device_type_(device_type),
       stable_device_id_(stable_device_id),

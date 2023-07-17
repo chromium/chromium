@@ -35,10 +35,16 @@ class NearbyPresenceService {
     kProvisioned
   };
 
-  // TODO(b/276642472): Include real NearbyPresence ActionType.
-  enum class ActionType {
-    action_1,
-    action_2,
+  enum class Action {
+    kActiveUnlock = 8,
+    kNearbyShare = 9,
+    kInstantTethering = 10,
+    kPhoneHub = 11,
+    kPresenceManager = 12,
+    kFinder = 13,
+    kFastPairSass = 14,
+    kTapToTransfer = 15,
+    kLast
   };
 
   // TODO(b/276642472): Move PresenceDevice into its own class and file, to
@@ -49,7 +55,7 @@ class NearbyPresenceService {
                    absl::optional<std::string> stable_device_id,
                    std::string endpoint_id,
                    std::string device_name,
-                   std::vector<ActionType> actions,
+                   std::vector<Action> actions,
                    int rssi);
     PresenceDevice(const PresenceDevice&) = delete;
     PresenceDevice& operator=(const PresenceDevice&) = delete;
@@ -62,7 +68,7 @@ class NearbyPresenceService {
     }
     const std::string& GetEndpointId() const { return endpoint_id_; }
     const std::string& GetName() const { return device_name_; }
-    const std::vector<ActionType> GetActions() const { return actions_; }
+    const std::vector<Action> GetActions() const { return actions_; }
     int GetRssi() const { return rssi_; }
 
    private:
@@ -70,18 +76,17 @@ class NearbyPresenceService {
     absl::optional<std::string> stable_device_id_;
     std::string endpoint_id_;
     std::string device_name_;
-    std::vector<ActionType> actions_;
+    std::vector<Action> actions_;
     int rssi_;
   };
 
   struct ScanFilter {
-    ScanFilter(IdentityType identity_type,
-               const std::vector<ActionType>& actions);
+    ScanFilter(IdentityType identity_type, const std::vector<Action>& actions);
     ScanFilter(const ScanFilter&);
     ~ScanFilter();
 
     IdentityType identity_type_;
-    std::vector<ActionType> actions_;
+    std::vector<Action> actions_;
   };
 
   class ScanDelegate {

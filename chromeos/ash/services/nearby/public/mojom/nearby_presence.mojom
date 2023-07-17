@@ -52,12 +52,28 @@ enum PresenceDeviceType {
   kFoldable = 8,
 };
 
+// ActionTypes are defined in //third_party/nearby/src/presence/data_element.h
+// and this enum should be kept consistent with the action types defined there
+// and in //chromeos/ash/components/nearby/presence/nearby_presence_service.h.
+enum ActionType {
+  kActiveUnlockAction = 8,
+  kNearbyShareAction = 9,
+  kInstantTetheringAction = 10,
+  kPhoneHubAction = 11,
+  kPresenceManagerAction = 12,
+  kFinderAction = 13,
+  kFastPairSassAction = 14,
+  kTapToTransferAction = 15,
+  kLastAction,
+};
+
 // Presence Device information to specify the device information when a device
 // is found/lost/changed during a scan.
 struct PresenceDevice {
   string endpoint_id;
   string device_name;
   PresenceDeviceType device_type;
+  array<ActionType> actions;
   string? stable_device_id;
 };
 

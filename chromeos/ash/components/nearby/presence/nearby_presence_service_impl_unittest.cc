@@ -22,6 +22,9 @@ namespace ash::nearby::presence {
 const char kDeviceName[] = "Pepper's Request";
 const char kEndpointId[] = "00000001";
 const char kStableDeviceId[] = "00000002";
+const mojom::ActionType kAction1 = mojom::ActionType::kInstantTetheringAction;
+const mojom::ActionType kAction2 = mojom::ActionType::kActiveUnlockAction;
+const mojom::ActionType kAction3 = mojom::ActionType::kPhoneHubAction;
 
 namespace {
 
@@ -113,9 +116,14 @@ class NearbyPresenceServiceImplTest : public testing::Test {
       auto run_loop = base::RunLoop();
       scan_delegate.SetNextScanDelegateCallback(run_loop.QuitClosure());
 
+      std::vector<mojom::ActionType> actions;
+      ;
+      actions.push_back(kAction1);
+      actions.push_back(kAction2);
+      actions.push_back(kAction3);
       fake_nearby_presence_.ReturnScanObserver()->OnDeviceFound(
           mojom::PresenceDevice::New(kEndpointId, kDeviceName,
-                                     mojom::PresenceDeviceType::kPhone,
+                                     mojom::PresenceDeviceType::kPhone, actions,
                                      kStableDeviceId));
       run_loop.Run();
     }
@@ -188,9 +196,13 @@ TEST_F(NearbyPresenceServiceImplTest, StartScan_DeviceChanged) {
     auto run_loop = base::RunLoop();
     scan_delegate.SetNextScanDelegateCallback(run_loop.QuitClosure());
 
+    std::vector<mojom::ActionType> actions;
+    ;
+    actions.push_back(kAction1);
+    actions.push_back(kAction2);
     fake_nearby_presence_.ReturnScanObserver()->OnDeviceChanged(
         mojom::PresenceDevice::New(kEndpointId, kDeviceName,
-                                   mojom::PresenceDeviceType::kPhone,
+                                   mojom::PresenceDeviceType::kPhone, actions,
                                    kStableDeviceId));
     run_loop.Run();
   }
@@ -221,9 +233,11 @@ TEST_F(NearbyPresenceServiceImplTest, StartScan_DeviceLost) {
     auto run_loop = base::RunLoop();
     scan_delegate.SetNextScanDelegateCallback(run_loop.QuitClosure());
 
+    std::vector<mojom::ActionType> actions;
+    ;
     fake_nearby_presence_.ReturnScanObserver()->OnDeviceLost(
         mojom::PresenceDevice::New(kEndpointId, kDeviceName,
-                                   mojom::PresenceDeviceType::kPhone,
+                                   mojom::PresenceDeviceType::kPhone, actions,
                                    kStableDeviceId));
     run_loop.Run();
   }
@@ -255,9 +269,11 @@ TEST_F(NearbyPresenceServiceImplTest, EndScan) {
     auto run_loop = base::RunLoop();
     scan_delegate.SetNextScanDelegateCallback(run_loop.QuitClosure());
 
+    std::vector<mojom::ActionType> actions;
+    actions.push_back(kAction1);
     fake_nearby_presence_.ReturnScanObserver()->OnDeviceFound(
         mojom::PresenceDevice::New(kEndpointId, kDeviceName,
-                                   mojom::PresenceDeviceType::kPhone,
+                                   mojom::PresenceDeviceType::kPhone, actions,
                                    kStableDeviceId));
 
     // Allow the ScanObserver function to finish before checking EXPECTs.
