@@ -14,7 +14,7 @@
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_mac.h"
-#include "content/browser/renderer_host/webmenurunner_mac.h"
+#include "content/browser/renderer_host/web_menu_runner_mac.h"
 #import "ui/base/cocoa/base_view.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

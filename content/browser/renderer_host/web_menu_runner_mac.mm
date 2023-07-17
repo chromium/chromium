@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/renderer_host/webmenurunner_mac.h"
+#include "content/browser/renderer_host/web_menu_runner_mac.h"
 
 #include <stddef.h>
 
