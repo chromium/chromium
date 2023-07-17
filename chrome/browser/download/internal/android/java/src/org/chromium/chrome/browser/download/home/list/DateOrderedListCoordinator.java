@@ -152,6 +152,21 @@ public class DateOrderedListCoordinator implements ToolbarCoordinator.ToolbarLis
         emptyViewParams = new FrameLayout.LayoutParams(
                 FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT);
         emptyViewParams.gravity = Gravity.CENTER;
+
+        // download_storage_summary height = text height(16) + text leading(16) + top padding(8) +
+        // bottom padding(8) = 48 dp
+        int downloadStorageSummaryHeightPx =
+                (int) (48 * context.getResources().getDisplayMetrics().density);
+
+        int bottomMargin = mContext.getResources().getDimensionPixelSize(
+                                   R.dimen.selectable_list_toolbar_height)
+                / 2;
+
+        // Adding margin to make sure empty view is centered from top of toolbar and not overlap
+        // with download storage when screen size become small.
+        emptyViewParams.bottomMargin = bottomMargin + (downloadStorageSummaryHeightPx / 2);
+        emptyViewParams.topMargin = downloadStorageSummaryHeightPx / 2;
+
         mMainView.addView(mEmptyCoordinator.getView(), emptyViewParams);
 
         FrameLayout.LayoutParams listParams = new FrameLayout.LayoutParams(
