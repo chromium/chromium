@@ -1971,14 +1971,14 @@ TEST(CookieUtilTest, GetSamePartyStatus_SamePartySemantics) {
 
           options.set_same_party_context(
               SamePartyContext(SamePartyContext::Type::kCrossParty));
-          EXPECT_EQ(CookieSamePartyStatus::kEnforceSamePartyExclude,
+          EXPECT_EQ(CookieSamePartyStatus::kNoSamePartyEnforcement,
                     cookie_util::GetSamePartyStatus(
                         *cookie, options,
                         /*same_party_attribute_enabled=*/true));
 
           options.set_same_party_context(
               SamePartyContext(SamePartyContext::Type::kSameParty));
-          EXPECT_EQ(CookieSamePartyStatus::kEnforceSamePartyInclude,
+          EXPECT_EQ(CookieSamePartyStatus::kNoSamePartyEnforcement,
                     cookie_util::GetSamePartyStatus(
                         *cookie, options,
                         /*same_party_attribute_enabled=*/true));

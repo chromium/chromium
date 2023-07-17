@@ -944,17 +944,7 @@ CookieSamePartyStatus GetSamePartyStatus(
     const CanonicalCookie& cookie,
     const CookieOptions& options,
     const bool same_party_attribute_enabled) {
-  if (!same_party_attribute_enabled || !cookie.IsSameParty() ||
-      !options.is_in_nontrivial_first_party_set()) {
-    return CookieSamePartyStatus::kNoSamePartyEnforcement;
-  }
-
-  switch (options.same_party_context().context_type()) {
-    case SamePartyContext::Type::kCrossParty:
-      return CookieSamePartyStatus::kEnforceSamePartyExclude;
-    case SamePartyContext::Type::kSameParty:
-      return CookieSamePartyStatus::kEnforceSamePartyInclude;
-  };
+  return CookieSamePartyStatus::kNoSamePartyEnforcement;
 }
 
 bool IsCookieAccessResultInclude(CookieAccessResult cookie_access_result) {
