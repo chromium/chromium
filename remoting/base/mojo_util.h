@@ -9,6 +9,11 @@
 
 namespace remoting {
 
+// Indicates whether the ipcz-based Mojo implementation is or will be enabled.
+// Use this instead of mojo::core::IsMojoIpczEnabled(), since we have disabled
+// MojoIpcz on some platforms.
+bool IsMojoIpczEnabled();
+
 // Calls mojo::core::Init() with the right configuration for the current
 // platform.
 void InitializeMojo(const mojo::core::Configuration& config = {});

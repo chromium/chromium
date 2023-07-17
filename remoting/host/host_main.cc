@@ -247,7 +247,13 @@ int HostMain(int argc, char** argv) {
 
   remoting::LoadResources("");
 
-  InitializeMojo({.is_broker_process = main_routine == &HostProcessMain});
+  InitializeMojo({
+#if BUILDFLAG(IS_WIN)
+    .is_broker_process = main_routine == &DaemonProcessMain
+#else
+    .is_broker_process = main_routine == &HostProcessMain
+#endif
+  });
 
   // Invoke the entry point.
   int exit_code = main_routine();

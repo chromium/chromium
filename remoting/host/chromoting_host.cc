@@ -128,46 +128,23 @@ void ChromotingHost::Start(const std::string& host_owner_email) {
       &ChromotingHost::OnIncomingSession, base::Unretained(this)));
 }
 
+#if BUILDFLAG(IS_LINUX)
 void ChromotingHost::StartChromotingHostServices() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!ipc_server_);
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
-  named_mojo_ipc_server::EndpointOptions options;
-  options.server_name = GetChromotingHostServicesServerName();
-#if BUILDFLAG(IS_WIN)
-  // TODO(crbug.com/1378803): Make Windows hosts work with non-isolated
-  // connections.
-  options.message_pipe_id =
-      named_mojo_ipc_server::EndpointOptions::kUseIsolatedConnection;
-
-  // Create a named pipe owned by the current user (the LocalService account
-  // (SID: S-1-5-19) when running in the network process) which is available
-  // to all authenticated users.
-  // presubmit: allow wstring
-  std::wstring user_sid;
-  if (!base::win::GetUserSidString(&user_sid)) {
-    LOG(ERROR) << "Failed to get user SID string.";
-    return;
-  }
-  options.security_descriptor = base::StringPrintf(
-      L"O:%lsG:%lsD:(A;;GA;;;AU)", user_sid.c_str(), user_sid.c_str());
-#else
-  options.message_pipe_id = kChromotingHostServicesMessagePipeId;
-#endif
-  ipc_server_ = std::make_unique<
-      named_mojo_ipc_server::NamedMojoIpcServer<mojom::ChromotingHostServices>>(
-      options, base::BindRepeating(&IsTrustedMojoEndpoint)
-                   .Then(base::BindRepeating(
-                       [](mojom::ChromotingHostServices* impl, bool trusted) {
-                         return trusted ? impl : nullptr;
-                       },
-                       base::Unretained(this))));
+  ipc_server_ =
+      std::make_unique<ChromotingHostServicesServer>(base::BindRepeating(
+          &ChromotingHost::BindChromotingHostServices, base::Unretained(this)));
   ipc_server_->StartServer();
   HOST_LOG << "ChromotingHostServices IPC server has been started.";
-#else
-  NOTIMPLEMENTED();
+}
 #endif
+
+void ChromotingHost::BindChromotingHostServices(
+    mojo::PendingReceiver<mojom::ChromotingHostServices> receiver,
+    base::ProcessId peer_pid) {
+  receivers_.Add(this, std::move(receiver), peer_pid);
 }
 
 void ChromotingHost::AddExtension(std::unique_ptr<HostExtension> extension) {
@@ -287,8 +264,7 @@ void ChromotingHost::BindSessionServices(
   }
 #if BUILDFLAG(IS_WIN)
   DWORD peer_session_id;
-  if (!ProcessIdToSessionId(ipc_server_->current_peer_pid(),
-                            &peer_session_id)) {
+  if (!ProcessIdToSessionId(receivers_.current_context(), &peer_session_id)) {
     PLOG(ERROR) << "Session services bind request rejected: "
                    "ProcessIdToSessionId failed";
     return;
@@ -302,7 +278,7 @@ void ChromotingHost::BindSessionServices(
 #endif
   connected_client->BindReceiver(std::move(receiver));
   VLOG(1) << "Session services bound for receiver ID: "
-          << ipc_server_->current_receiver();
+          << receivers_.current_receiver();
 }
 
 void ChromotingHost::OnIncomingSession(

@@ -17,7 +17,6 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
-#include "components/named_mojo_ipc_server/fake_ipc_server.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/network_change_notifier.h"
 #include "remoting/base/auto_thread_task_runner.h"
@@ -221,10 +220,15 @@ class ChromotingHostTest : public testing::Test {
         .RetiresOnSaturation();
   }
 
-  void StartFakeIpcServer() {
-    host_->ipc_server_ = std::make_unique<named_mojo_ipc_server::FakeIpcServer>(
-        &ipc_server_test_state_);
-    host_->ipc_server_->StartServer();
+  mojo::Remote<mojom::ChromotingHostServices> BindChromotingHostServices() {
+    mojo::Remote<mojom::ChromotingHostServices> remote;
+    // ChromotingHost::BindSessionServices calls ProcessIdToSessionId() on the
+    // IPC client's PID. The PID we know that always works is the current
+    // process' PID.
+    auto current_pid = base::GetCurrentProcId();
+    host_->BindChromotingHostServices(remote.BindNewPipeAndPassReceiver(),
+                                      current_pid);
+    return remote;
   }
 
 #if BUILDFLAG(IS_WIN)
@@ -240,7 +244,6 @@ class ChromotingHostTest : public testing::Test {
     // IPC client's PID. The PID we know that always works is the current
     // process' PID.
     auto current_pid = base::GetCurrentProcId();
-    ipc_server_test_state_.current_peer_pid = current_pid;
     DWORD current_session_id;
     bool success = ProcessIdToSessionId(current_pid, &current_session_id);
     ASSERT_TRUE(success);
@@ -299,7 +302,6 @@ class ChromotingHostTest : public testing::Test {
   // #addr-of
   RAW_PTR_EXCLUSION protocol::Session::EventHandler*
       session_unowned2_event_handler_;
-  named_mojo_ipc_server::FakeIpcServer::TestState ipc_server_test_state_;
 
   // Returns the cached client pointers client1_ or client2_.
   ClientSession*& get_client(int connection_index) {
@@ -505,7 +507,7 @@ TEST_F(ChromotingHostTest, BindSessionServicesWithNoConnectedSession_Rejected) {
 
 TEST_F(ChromotingHostTest, BindSessionServicesWithConnectedSession_Accepted) {
   StartHost();
-  StartFakeIpcServer();
+  auto host_services_remote = BindChromotingHostServices();
 #if BUILDFLAG(IS_WIN)
   SimulateIpcClientSessionId(/* is_remote_desktop_session_id= */ true);
 #endif
@@ -524,14 +526,16 @@ TEST_F(ChromotingHostTest, BindSessionServicesWithConnectedSession_Accepted) {
   // handler will be called instead.
   remote.QueryVersion(base::BindLambdaForTesting(
       [&](uint32_t version) { wait_for_version_run_loop.Quit(); }));
-  host_->BindSessionServices(std::move(receiver));
+  // Note that we can't just call host_->BindSessionServices(), since that
+  // doesn't have the peer PID context.
+  host_services_remote->BindSessionServices(std::move(receiver));
   wait_for_version_run_loop.Run();
 }
 
 #if BUILDFLAG(IS_WIN)
 TEST_F(ChromotingHostTest, BindSessionServicesWithWrongSession_Rejected) {
   StartHost();
-  StartFakeIpcServer();
+  auto host_services_remote = BindChromotingHostServices();
   SimulateIpcClientSessionId(/* is_remote_desktop_session_id= */ false);
   ExpectClientConnected(0);
   SimulateClientConnection(0, true, false);
@@ -540,7 +544,9 @@ TEST_F(ChromotingHostTest, BindSessionServicesWithWrongSession_Rejected) {
   auto receiver = remote.BindNewPipeAndPassReceiver();
   base::RunLoop wait_for_disconnect_run_loop;
   remote.set_disconnect_handler(wait_for_disconnect_run_loop.QuitClosure());
-  host_->BindSessionServices(std::move(receiver));
+  // Note that we can't just call host_->BindSessionServices(), since that
+  // doesn't have the peer PID context.
+  host_services_remote->BindSessionServices(std::move(receiver));
   wait_for_disconnect_run_loop.Run();
 }
 #endif

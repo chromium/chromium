@@ -8,20 +8,12 @@ import "remoting/host/mojom/webauthn_proxy.mojom";
 import "remoting/host/mojom/remote_security_key.mojom";
 import "remoting/host/mojom/remote_url_opener.mojom";
 
-// ChromotingHostServices defines the APIs that live in the Chromoting host
-// process and are accessed from isolated client applications (such as the
-// WebAuthn native messaging host).
-// Note that IPCs will be made over an isolated connection (using a
-// NamedPlatformChannel with remoting::GetChromotingHostServicesServerName() as
-// the server name), so pending remotes/receivers/message pipes can't be passed
-// outside of the connection.
-// DO NOT use this interface for communication between two processes in the same
-// mojo network (e.g. between the daemon process and the network process). Use
-// standard (non-isolated) connection in that case.
-// TODO(yuweih): See if we need to make IPCs without a connected client session,
-// e.g. reporting remote state. If that's not the case then we may get rid of
-// this interface and start the connection on ChromotingSessionServices
-// directly.
+// ChromotingHostServices defines the APIs that live in the Chromoting
+// network/host process and are accessed from user-launched client applications
+// (e.g. remote_open_url and the WebAuthn native messaging host). The calling
+// processes run in the user context. On Linux, the network/host process also
+// runs in the user context, while on Windows, the network/host process runs as
+// LOCAL_SERVICE in a low-integrity sandbox.
 interface ChromotingHostServices {
   // Binds the ChromotingSessionServices interface which allows accessing APIs
   // that are scoped to the current remote desktop session.
@@ -32,8 +24,7 @@ interface ChromotingHostServices {
 
 // ChromotingHostServices defines APIs that are scoped to an active remote
 // session. The interface is brokered by ChromotingHostServices, so it has the
-// same host-client pair, and the limitation of isolated connections still
-// applies.
+// same host-client pair.
 interface ChromotingSessionServices {
   // Binds the WebAuthnProxy interface which allows the WebAuthn native
   // messaging host to send remote WebAuthn requests to the remote client.

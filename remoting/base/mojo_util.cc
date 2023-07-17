@@ -10,19 +10,25 @@
 
 namespace remoting {
 
+bool IsMojoIpczEnabled() {
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+  // MojoIpcz has only been tested and verified on Linux and Windows.
+  // TODO(crbug.com/1378803): Verify that enabling MojoIpcz doesn't break Mac
+  // and ChromeOS, then remove helpers in this file.
+  return mojo::core::IsMojoIpczEnabled();
+#else
+  return false;
+#endif
+}
+
 void InitializeMojo(const mojo::core::Configuration& config) {
   mojo::core::Configuration new_config = config;
-#if !BUILDFLAG(IS_LINUX)
-  // MojoIpcz has only been tested and verified on Linux. The Windows
-  // multi-process architecture doesn't support MojoIpcz yet.
-  new_config.disable_ipcz = true;
-
-  // Also, disable |is_broker_process|. Legacy mojo core does not require having
-  // broker processes in the process graph. The Windows process graph needs to
-  // be fixed to support broker processes, since a broker client cannot connect
-  // to a non-broker server.
-  new_config.is_broker_process = false;
-#endif
+  if (!IsMojoIpczEnabled()) {
+    new_config.disable_ipcz = true;
+    // Disable |is_broker_process|. Legacy mojo core does not require having
+    // broker processes in the process graph.
+    new_config.is_broker_process = false;
+  }
   mojo::core::Init(new_config);
 }
 

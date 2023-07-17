@@ -39,6 +39,7 @@
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "mojo/public/cpp/system/invitation.h"
 #include "mojo/public/cpp/system/message_pipe.h"
@@ -79,6 +80,7 @@
 #include "remoting/host/ipc_desktop_environment.h"
 #include "remoting/host/ipc_host_event_logger.h"
 #include "remoting/host/me2me_desktop_environment.h"
+#include "remoting/host/mojom/chromoting_host_services.mojom.h"
 #include "remoting/host/mojom/desktop_session.mojom.h"
 #include "remoting/host/mojom/remoting_host.mojom.h"
 #include "remoting/host/pairing_registry_delegate.h"
@@ -388,6 +390,9 @@ class HostProcess : public ConfigWatcher::Delegate,
   void InitializePairingRegistry(
       ::mojo::PlatformHandle privileged_handle,
       ::mojo::PlatformHandle unprivileged_handle) override;
+  void BindChromotingHostServices(
+      mojo::PendingReceiver<mojom::ChromotingHostServices> receiver,
+      int peer_pid) override;
 #endif
 
   std::unique_ptr<ChromotingHostContext> context_;
@@ -1106,6 +1111,26 @@ void HostProcess::InitializePairingRegistry(
   // initialized.
   CreateAuthenticatorFactory();
 }
+
+void HostProcess::BindChromotingHostServices(
+    mojo::PendingReceiver<mojom::ChromotingHostServices> receiver,
+    int peer_pid) {
+  if (context_->ui_task_runner()->BelongsToCurrentThread()) {
+    context_->network_task_runner()->PostTask(
+        FROM_HERE, base::BindOnce(&HostProcess::BindChromotingHostServices,
+                                  this, std::move(receiver), peer_pid));
+    return;
+  }
+  // This IPC is handled on the UI thread and bounced over to the network thread
+  // so being called on any other thread is unexpected.
+  DCHECK(context_->network_task_runner()->BelongsToCurrentThread());
+  if (!host_) {
+    LOG(ERROR) << "Binding rejected. Host has not started.";
+    return;
+  }
+  host_->BindChromotingHostServices(std::move(receiver), peer_pid);
+}
+
 #endif  // BUILDFLAG(IS_WIN)
 
 // Applies the host config, returning true if successful.
@@ -1840,7 +1865,12 @@ void HostProcess::StartHost() {
 #endif  // !defined(REMOTING_MULTI_PROCESS)
 
   host_->Start(host_owner_);
+
+#if BUILDFLAG(IS_LINUX)
+  // For Windows, ChromotingHostServices connections are handled by the daemon
+  // process, then the message pipe is forwarded to the network process.
   host_->StartChromotingHostServices();
+#endif
 
   CreateAuthenticatorFactory();
 

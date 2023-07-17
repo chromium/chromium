@@ -5,6 +5,7 @@
 module remoting.mojom;
 
 import "mojo/public/mojom/base/values.mojom";
+import "remoting/host/mojom/chromoting_host_services.mojom";
 import "services/network/public/mojom/ip_endpoint.mojom";
 
 // Provides a set of methods to allow the Daemon process to initialize and
@@ -27,6 +28,15 @@ interface RemotingHostControl {
   [EnableIf=is_win]
   InitializePairingRegistry(handle<platform> privileged_handle,
                             handle<platform> unprivileged_handle);
+
+  // Requests the network process to bind a pending receiver of
+  // ChromotingHostServices coming from a user-launched process. On Windows, the
+  // daemon process is responsible for brokering all mojo IPCs, but it doesn't
+  // affect where the receivers and remotes are bound. Please see comments on
+  // the ChromotingHostServices interface.
+  [EnableIf=is_win]
+  BindChromotingHostServices(pending_receiver<ChromotingHostServices> receiver,
+                             int32 peer_pid);
 };
 
 // Provides a set of methods to allow the Daemon process to notify the network
