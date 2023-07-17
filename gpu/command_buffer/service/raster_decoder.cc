@@ -65,6 +65,7 @@
 #include "gpu/vulkan/buildflags.h"
 #include "skia/ext/legacy_display_globals.h"
 #include "skia/ext/rgba_to_yuva.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "third_party/libyuv/include/libyuv/planar_functions.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
@@ -2623,6 +2624,12 @@ void RasterDecoderImpl::DoReadbackYUVImagePixelsINTERNAL(
                        "Source shared image is not accessible");
     return;
   }
+
+  // Perform ApplyBackendSurfaceEndState() on the ScopedReadAccess before
+  // exiting.
+  absl::Cleanup cleanup = [&]() {
+    source_scoped_access->ApplyBackendSurfaceEndState();
+  };
 
   auto sk_image =
       source_scoped_access->CreateSkImage(shared_context_state_.get());

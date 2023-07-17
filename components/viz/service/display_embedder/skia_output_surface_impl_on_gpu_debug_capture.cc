@@ -25,6 +25,7 @@
 #include "gpu/command_buffer/common/mailbox_holder.h"
 #include "gpu/vulkan/buildflags.h"
 #include "skia/buildflags.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/libyuv/include/libyuv/planar_functions.h"
 #include "third_party/skia/include/gpu/graphite/Context.h"
@@ -111,6 +112,9 @@ void AttemptDebuggerBufferCapture(
     DLOG(ERROR) << "Failed to make begin read from representation";
     return;
   }
+  // Perform ApplyBackendSurfaceEndState() on the ScopedReadAccess before
+  // exiting.
+  absl::Cleanup cleanup = [&]() { scoped_read->ApplyBackendSurfaceEndState(); };
 
   if (!begin_semaphores_readback.empty()) {
     bool result = context_state->gr_context()->wait(

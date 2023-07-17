@@ -374,6 +374,14 @@ base::expected<void, GLError> CopySharedImageHelper::ConvertRGBAToYUVAMailboxes(
                                     "glConvertYUVAMailboxesToRGB",
                                     "RGBA shared image is not readable"));
   }
+  // Perform ApplyBackendSurfaceEndState() on the ScopedReadAccess before
+  // exiting.
+  absl::Cleanup cleanup = [&]() {
+    rgba_scoped_access->ApplyBackendSurfaceEndState();
+    SubmitIfNecessary(std::move(end_semaphores), shared_context_state_,
+                      is_drdc_enabled_);
+  };
+
   auto rgba_sk_image = rgba_scoped_access->CreateSkImage(shared_context_state_);
   if (!rgba_sk_image) {
     return base::unexpected(GLError(GL_INVALID_OPERATION,
@@ -418,9 +426,6 @@ base::expected<void, GLError> CopySharedImageHelper::ConvertRGBAToYUVAMailboxes(
       yuva_images[i]->SetCleared();
     }
   }
-  rgba_scoped_access->ApplyBackendSurfaceEndState();
-  SubmitIfNecessary(std::move(end_semaphores), shared_context_state_,
-                    is_drdc_enabled_);
   return base::ok();
 }
 
