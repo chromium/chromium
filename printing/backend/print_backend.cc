@@ -159,7 +159,7 @@ PrinterSemanticCapsAndDefaults::Paper::Paper() = default;
 PrinterSemanticCapsAndDefaults::Paper::Paper(const std::string& display_name,
                                              const std::string& vendor_id,
                                              const gfx::Size& size_um)
-    : Paper(display_name, vendor_id, size_um, gfx::Rect()) {}
+    : Paper(display_name, vendor_id, size_um, gfx::Rect(size_um)) {}
 
 PrinterSemanticCapsAndDefaults::Paper::Paper(const std::string& display_name,
                                              const std::string& vendor_id,

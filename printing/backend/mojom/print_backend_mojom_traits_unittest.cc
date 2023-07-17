@@ -100,12 +100,9 @@ TEST(PrintBackendMojomTraitsTest, TestPaperCtors) {
   PrinterSemanticCapsAndDefaults::Paper input;
   EXPECT_TRUE(mojo::test::SerializeAndDeserialize<mojom::Paper>(input, output));
 
-  // TODO(crbug.com/1464376):  Update expectation to true once constructor is
-  // corrected.
   input = PrinterSemanticCapsAndDefaults::Paper("display_name", "vendor_id",
                                                 kNonEmptySize);
-  EXPECT_FALSE(
-      mojo::test::SerializeAndDeserialize<mojom::Paper>(input, output));
+  EXPECT_TRUE(mojo::test::SerializeAndDeserialize<mojom::Paper>(input, output));
 
   input = PrinterSemanticCapsAndDefaults::Paper(
       "display_name", "vendor_id", kNonEmptySize, kNonEmptyPrintableArea);
