@@ -123,6 +123,11 @@ void TouchToFillController::OnHybridSignInSelected() {
 
 void TouchToFillController::OnDismiss() {
   view_.reset();
+  if (!delegate_) {
+    // TODO(crbug/1462532): Remove this check when
+    // PasswordSuggestionBottomSheetV2 is launched
+    return;
+  }
   // Unretained is safe here because TouchToFillController owns the delegate.
   delegate_->OnDismiss(base::BindOnce(&TouchToFillController::ActionCompleted,
                                       base::Unretained(this)));
