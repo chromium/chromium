@@ -302,13 +302,9 @@ class ChromePasswordManagerClientTest : public ChromeRenderViewHostTestHarness {
   void SetUp() override;
   void TearDown() override;
 
-  // Caller does not own the returned pointer.
-  syncer::TestSyncService* SetupBasicTestSync() {
-    syncer::TestSyncService* sync_service =
-        static_cast<syncer::TestSyncService*>(
-            SyncServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-                profile(), base::BindRepeating(&CreateTestSyncService)));
-    return sync_service;
+  void SetupBasicTestSync() {
+    SyncServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+        profile(), base::BindRepeating(&CreateTestSyncService));
   }
 
   void SetupSettingsServiceFactory() {
@@ -321,13 +317,17 @@ class ChromePasswordManagerClientTest : public ChromeRenderViewHostTestHarness {
 
   // Make a navigation entry that will accept an annotation.
   void SetupNavigationForAnnotation() {
-    sync_service_->SetIsUsingExplicitPassphrase(false);
+    sync_service()->SetIsUsingExplicitPassphrase(false);
     metrics_enabled_ = true;
     NavigateAndCommit(GURL("about:blank"));
   }
 
  protected:
   ChromePasswordManagerClient* GetClient();
+  syncer::TestSyncService* sync_service() {
+    return static_cast<syncer::TestSyncService*>(
+        SyncServiceFactory::GetInstance()->GetForProfile(profile()));
+  }
 
   // If autofill::mojom::PasswordAutofillAgent::SetLoggingState() got called,
   // copies its argument into |activation_flag| and returns true. Otherwise
@@ -337,8 +337,6 @@ class ChromePasswordManagerClientTest : public ChromeRenderViewHostTestHarness {
   FakePasswordAutofillAgent fake_agent_;
 
   bool metrics_enabled_ = false;
-
-  raw_ptr<syncer::TestSyncService, DanglingUntriaged> sync_service_ = nullptr;
 
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -361,7 +359,7 @@ void ChromePasswordManagerClientTest::SetUp() {
 
   // In order for the |PasswordFeatureManager| to be initialized correctly
   // the testing sync service must be set up before the client.
-  sync_service_ = SetupBasicTestSync();
+  SetupBasicTestSync();
   ChromePasswordManagerClient::CreateForWebContentsWithAutofillClient(
       web_contents(), nullptr);
 
@@ -418,10 +416,10 @@ TEST_F(ChromePasswordManagerClientTest, LogEntryNotifyRenderer) {
 }
 
 TEST_F(ChromePasswordManagerClientTest, GetPasswordSyncState) {
-  sync_service_->GetUserSettings()->SetSelectedTypes(
+  sync_service()->GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/false,
       /*types=*/{syncer::UserSelectableType::kPasswords});
-  sync_service_->SetIsUsingExplicitPassphrase(false);
+  sync_service()->SetIsUsingExplicitPassphrase(false);
 
   ChromePasswordManagerClient* client = GetClient();
 
@@ -430,19 +428,19 @@ TEST_F(ChromePasswordManagerClientTest, GetPasswordSyncState) {
             client->GetPasswordSyncState());
 
   // Sync paused due to a persistent auth error.
-  sync_service_->SetPersistentAuthError();
+  sync_service()->SetPersistentAuthError();
   EXPECT_EQ(password_manager::SyncState::kNotSyncing,
             client->GetPasswordSyncState());
 
   // Again, using a custom passphrase.
-  sync_service_->ClearAuthError();
-  sync_service_->SetIsUsingExplicitPassphrase(true);
+  sync_service()->ClearAuthError();
+  sync_service()->SetIsUsingExplicitPassphrase(true);
 
   EXPECT_EQ(password_manager::SyncState::kSyncingWithCustomPassphrase,
             client->GetPasswordSyncState());
 
   // Report correctly if we aren't syncing passwords.
-  sync_service_->GetUserSettings()->SetSelectedTypes(
+  sync_service()->GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/false,
       /*types=*/{syncer::UserSelectableType::kBookmarks});
 
@@ -450,7 +448,7 @@ TEST_F(ChromePasswordManagerClientTest, GetPasswordSyncState) {
             client->GetPasswordSyncState());
 
   // Again, without a custom passphrase.
-  sync_service_->SetIsUsingExplicitPassphrase(false);
+  sync_service()->SetIsUsingExplicitPassphrase(false);
 
   EXPECT_EQ(password_manager::SyncState::kNotSyncing,
             client->GetPasswordSyncState());
@@ -742,7 +740,7 @@ TEST_F(ChromePasswordManagerClientTest, WebUINoLogging) {
 // Metrics enabled, syncing with non-custom passphrase: Do not annotate.
 TEST_F(ChromePasswordManagerClientTest,
        AnnotateNavigationEntryWithMetricsNoCustom) {
-  sync_service_->SetIsUsingExplicitPassphrase(false);
+  sync_service()->SetIsUsingExplicitPassphrase(false);
   metrics_enabled_ = true;
 
   NavigateAndCommit(GURL("about:blank"));
@@ -756,7 +754,7 @@ TEST_F(ChromePasswordManagerClientTest,
 // Metrics disabled, syncing with non-custom passphrase: Do not annotate.
 TEST_F(ChromePasswordManagerClientTest,
        AnnotateNavigationEntryNoMetricsNoCustom) {
-  sync_service_->SetIsUsingExplicitPassphrase(false);
+  sync_service()->SetIsUsingExplicitPassphrase(false);
   metrics_enabled_ = false;
 
   NavigateAndCommit(GURL("about:blank"));
@@ -770,7 +768,7 @@ TEST_F(ChromePasswordManagerClientTest,
 // Metrics enabled, syncing with custom passphrase: Do not annotate.
 TEST_F(ChromePasswordManagerClientTest,
        AnnotateNavigationEntryWithMetricsWithCustom) {
-  sync_service_->SetIsUsingExplicitPassphrase(true);
+  sync_service()->SetIsUsingExplicitPassphrase(true);
   metrics_enabled_ = true;
 
   NavigateAndCommit(GURL("about:blank"));
@@ -784,7 +782,7 @@ TEST_F(ChromePasswordManagerClientTest,
 // Metrics disabled, syncing with custom passphrase: Do not annotate.
 TEST_F(ChromePasswordManagerClientTest,
        AnnotateNavigationEntryNoMetricsWithCustom) {
-  sync_service_->SetIsUsingExplicitPassphrase(true);
+  sync_service()->SetIsUsingExplicitPassphrase(true);
   metrics_enabled_ = false;
 
   NavigateAndCommit(GURL("about:blank"));
@@ -971,8 +969,6 @@ class ChromePasswordManagerClientAndroidTest
   void SetUpGenerationPreconditions(const GURL& url);
   MockPasswordAccessoryControllerImpl* SetUpMockPwdAccessoryForClientUse(
       password_manager::PasswordManagerDriver* driver);
-
-  syncer::TestSyncService* sync_service() { return sync_service_; }
 
   ManualFillingControllerImpl* controller() {
     return ManualFillingControllerImpl::FromWebContents(web_contents());
