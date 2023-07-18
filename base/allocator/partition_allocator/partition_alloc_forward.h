@@ -52,11 +52,6 @@ class PartitionStatsDumper;
 
 struct PartitionRoot;
 
-// TODO(787153): third_party/pdfium depends on ThreadSafePartitionRoot.
-//  After replacing the ThreadSafePartitionRoot with PartitionRoot, remove
-// ThreadSafePartitionRoot from partition_alloc_forward.h.
-using ThreadSafePartitionRoot = PartitionRoot;
-
 namespace internal {
 // Declare PartitionRootLock() for thread analysis. Its implementation
 // is defined in partition_root.h.
