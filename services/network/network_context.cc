@@ -96,6 +96,7 @@
 #include "services/network/http_auth_cache_copier.h"
 #include "services/network/http_server_properties_pref_delegate.h"
 #include "services/network/ignore_errors_cert_verifier.h"
+#include "services/network/ip_protection_auth_token_cache_impl.h"
 #include "services/network/is_browser_initiated.h"
 #include "services/network/net_log_exporter.h"
 #include "services/network/network_service.h"
@@ -1971,6 +1972,32 @@ void NetworkContext::VerifyCertificateForTesting(
       request, net::NetLogWithSource());
 }
 
+void NetworkContext::VerifyIpProtectionAuthTokenGetterForTesting(
+    VerifyIpProtectionAuthTokenGetterForTestingCallback callback) {
+  // This method assumes that the proxy delegate and auth token cache have been
+  // initialized.
+  CHECK(proxy_delegate_);
+
+  auto* auth_token_cache_impl = static_cast<IpProtectionAuthTokenCacheImpl*>(
+      proxy_delegate_->GetAuthTokenCacheForTesting());  // IN-TEST
+  CHECK(auth_token_cache_impl);
+
+  auth_token_cache_impl->FillCacheForTesting(base::BindOnce(  // IN-TEST
+      &NetworkContext::OnIpProtectionAuthTokenAvailableForTesting,
+      weak_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void NetworkContext::OnIpProtectionAuthTokenAvailableForTesting(
+    VerifyIpProtectionAuthTokenGetterForTestingCallback callback) {
+  auto* auth_token_cache =
+      proxy_delegate_->GetAuthTokenCacheForTesting();  // IN-TEST
+
+  absl::optional<network::mojom::BlindSignedAuthTokenPtr> result =
+      auth_token_cache->GetAuthToken();
+  CHECK(result.has_value());
+  std::move(callback).Run(std::move(result).value());
+}
+
 void NetworkContext::PreconnectSockets(
     uint32_t num_streams,
     const GURL& original_url,
@@ -2711,6 +2738,12 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
   if (proxy_delegate_) {
     proxy_delegate_->SetProxyResolutionService(
         result.url_request_context->proxy_resolution_service());
+
+    if (params_->ip_protection_auth_token_getter) {
+      proxy_delegate_->SetIpProtectionAuthTokenCache(
+          std::make_unique<IpProtectionAuthTokenCacheImpl>(
+              std::move(params_->ip_protection_auth_token_getter)));
+    }
   }
 
   return result;

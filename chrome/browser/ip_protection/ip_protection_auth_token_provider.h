@@ -89,6 +89,15 @@ class IpProtectionAuthTokenProvider
 
   static IpProtectionAuthTokenProvider* Get(Profile* profile);
 
+  void SetReceiver(
+      mojo::PendingReceiver<network::mojom::IpProtectionAuthTokenGetter>
+          pending_receiver);
+
+  mojo::Receiver<network::mojom::IpProtectionAuthTokenGetter>&
+  receiver_for_testing() {
+    return receiver_;
+  }
+
  private:
   // Calls the IdentityManager asynchronously to request the OAuth token for the
   // logged in user.
@@ -137,6 +146,14 @@ class IpProtectionAuthTokenProvider
 
   // Time that the current operation began, for measurement.
   base::TimeTicks start_time_;
+
+  // Whether `Shutdown()` has been called.
+  bool is_shutting_down_ = false;
+
+  // The `mojo::Receiver` object corresponding to the `mojo::PendingRemote` that
+  // gets passed to the per-profile NetworkContexts in the network service for
+  // requesting blind-signed auth tokens.
+  mojo::Receiver<network::mojom::IpProtectionAuthTokenGetter> receiver_{this};
 };
 
 #endif  // CHROME_BROWSER_IP_PROTECTION_IP_PROTECTION_AUTH_TOKEN_PROVIDER_H_

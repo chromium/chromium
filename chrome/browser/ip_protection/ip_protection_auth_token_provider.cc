@@ -177,11 +177,32 @@ void IpProtectionAuthTokenProvider::TryGetAuthTokensComplete(
 }
 
 void IpProtectionAuthTokenProvider::Shutdown() {
+  is_shutting_down_ = true;
   identity_manager_ = nullptr;
+  receiver_.reset();
 }
 
 /*static*/
 IpProtectionAuthTokenProvider* IpProtectionAuthTokenProvider::Get(
     Profile* profile) {
   return IpProtectionAuthTokenProviderFactory::GetForProfile(profile);
+}
+
+void IpProtectionAuthTokenProvider::SetReceiver(
+    mojo::PendingReceiver<network::mojom::IpProtectionAuthTokenGetter>
+        pending_receiver) {
+  if (is_shutting_down_) {
+    return;
+  }
+  if (receiver_.is_bound()) {
+    // TODO(awillia): I'm not sure if this case is possible since a receiver
+    // should only be added when a NetworkContext is created, but maybe this can
+    // occur if the network service crashes and is restarted? If this can't
+    // happen, just replace this if statement with a CHECK.
+    receiver_.reset();
+    // Reset any pending callbacks as well since this class only expects to have
+    // only one pending call to `TryGetAuthTokens()` at any given time.
+    try_get_auth_token_callback_.Reset();
+  }
+  receiver_.Bind(std::move(pending_receiver));
 }

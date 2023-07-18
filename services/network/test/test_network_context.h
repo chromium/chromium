@@ -335,6 +335,8 @@ class TestNetworkContext : public mojom::NetworkContext {
   void ResourceSchedulerClientVisibilityChanged(
       const base::UnguessableToken& client_token,
       bool visible) override {}
+  void VerifyIpProtectionAuthTokenGetterForTesting(
+      VerifyIpProtectionAuthTokenGetterForTestingCallback callback) override {}
 };
 
 }  // namespace network

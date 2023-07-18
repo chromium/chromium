@@ -29,6 +29,7 @@
 #include "chrome/browser/domain_reliability/service_factory.h"
 #include "chrome/browser/first_party_sets/first_party_sets_policy_service.h"
 #include "chrome/browser/first_party_sets/first_party_sets_policy_service_factory.h"
+#include "chrome/browser/ip_protection/ip_protection_auth_token_provider.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -1025,6 +1026,14 @@ void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
   network_context_params->acam_preflight_spec_conformant =
       profile_->GetPrefs()->GetBoolean(
           prefs::kAccessControlAllowMethodsInCORSPreflightSpecConformant);
+
+  IpProtectionAuthTokenProvider* ip_protection_auth_token_getter =
+      IpProtectionAuthTokenProvider::Get(profile_);
+  if (ip_protection_auth_token_getter) {
+    ip_protection_auth_token_getter->SetReceiver(
+        network_context_params->ip_protection_auth_token_getter
+            .InitWithNewPipeAndPassReceiver());
+  }
 }
 
 base::FilePath ProfileNetworkContextService::GetPartitionPath(

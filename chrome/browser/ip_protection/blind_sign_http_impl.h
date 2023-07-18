@@ -5,17 +5,13 @@
 #ifndef CHROME_BROWSER_IP_PROTECTION_BLIND_SIGN_HTTP_IMPL_H_
 #define CHROME_BROWSER_IP_PROTECTION_BLIND_SIGN_HTTP_IMPL_H_
 
-#include <functional>
 #include <string>
 
-#include "base/functional/callback.h"
-#include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "net/third_party/quiche/src/quiche/blind_sign_auth/blind_sign_http_interface.h"
-#include "net/third_party/quiche/src/quiche/blind_sign_auth/blind_sign_http_response.h"
-#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "services/network/public/cpp/simple_url_loader.h"
-#include "services/network/public/mojom/url_response_head.mojom.h"
+#include "url/gurl.h"
 
 namespace network {
 class SimpleURLLoader;

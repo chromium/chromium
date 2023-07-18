@@ -527,6 +527,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   void ResourceSchedulerClientVisibilityChanged(
       const base::UnguessableToken& client_token,
       bool visible) override;
+  void VerifyIpProtectionAuthTokenGetterForTesting(
+      VerifyIpProtectionAuthTokenGetterForTestingCallback callback) override;
 
   // Destroys |request| when a proxy lookup completes.
   void OnProxyLookupComplete(ProxyLookupRequest* proxy_lookup_request);
@@ -747,6 +749,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
 
   bool IsAllowedToUseAllHttpAuthSchemes(
       const url::SchemeHostPort& scheme_host_port);
+
+  void OnIpProtectionAuthTokenAvailableForTesting(
+      VerifyIpProtectionAuthTokenGetterForTestingCallback callback);
 
   const raw_ptr<NetworkService> network_service_;
 

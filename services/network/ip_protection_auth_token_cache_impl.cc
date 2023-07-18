@@ -96,4 +96,27 @@ void IpProtectionAuthTokenCacheImpl::RemoveExpiredTokens() {
       cache_.end());
 }
 
+void IpProtectionAuthTokenCacheImpl::FillCacheForTesting(
+    base::OnceCallback<void()> on_cache_refilled) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(auth_token_getter_);
+  auth_token_getter_->TryGetAuthTokens(
+      kBatchSize,
+      base::BindOnce(&IpProtectionAuthTokenCacheImpl::OnFilledCacheForTesting,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(on_cache_refilled)));
+}
+
+void IpProtectionAuthTokenCacheImpl::OnFilledCacheForTesting(
+    base::OnceCallback<void()> on_cache_refilled,
+    absl::optional<std::vector<network::mojom::BlindSignedAuthTokenPtr>>
+        tokens) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (tokens) {
+    cache_.insert(cache_.end(), std::make_move_iterator(tokens->begin()),
+                  std::make_move_iterator(tokens->end()));
+  }
+  std::move(on_cache_refilled).Run();
+}
+
 }  // namespace network

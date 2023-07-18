@@ -66,6 +66,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceProxyDelegate
       const net::ProxyServer& proxy_server,
       const net::HttpResponseHeaders& response_headers) override;
 
+  IpProtectionAuthTokenCache* GetAuthTokenCacheForTesting() {
+    return auth_token_cache_.get();
+  }
+
  private:
   // Checks if this CustomProxyConfig is supporting IP Protection.
   bool IsForIpProtection();

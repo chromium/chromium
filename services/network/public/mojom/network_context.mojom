@@ -1479,6 +1479,10 @@ interface NetworkContext {
                                                    bool pkp_bypassed,
                                                    string pinning_failure_log);
 
+  // Initiates an IP Protection token request to the browser process and
+  // returns a received token, for testing.
+  VerifyIpProtectionAuthTokenGetterForTesting() => (BlindSignedAuthToken token);
+
   // Adds explicitly-specified data as if it was processed from an
   // HSTS header. Used by tests and implementation of chrome://net-internals.
   AddHSTS(string host, mojo_base.mojom.Time expiry,

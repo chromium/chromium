@@ -4,15 +4,15 @@
 
 #include "chrome/browser/ip_protection/blind_sign_http_impl.h"
 
-#include <stdio.h>
-#include <functional>
 #include <string>
 
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "url/gurl.h"
+#include "services/network/public/cpp/simple_url_loader.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 
 namespace {
 constexpr net::NetworkTrafficAnnotationTag kIpProtectionTrafficAnnotation =
@@ -69,6 +69,9 @@ void BlindSignHttpImpl::DoRequest(const std::string& path_and_query,
                                   quiche::BlindSignHttpCallback callback) {
   callback_ = std::move(callback);
 
+  // Note that the `path_and_query` we parse here comes from the BlindSignAuth
+  // library, which is maintained by Google. Thus, this can be considered
+  // trustworthy input.
   std::vector<base::StringPiece> split_path_and_query = base::SplitStringPiece(
       path_and_query, "?", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
   // We assume there will always be a non-empty path component.

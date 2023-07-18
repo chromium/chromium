@@ -1714,6 +1714,7 @@ if (!is_android) {
       "//net",
       "//net:extras",
       "//net:test_support",
+      "//net/third_party/quiche:blind_sign_auth",
       "//pdf:buildflags",
       "//ppapi/buildflags",
       "//printing/buildflags",
@@ -1723,6 +1724,7 @@ if (!is_android) {
       "//services/device/public/mojom",
       "//services/image_annotation/public/cpp",
       "//services/network/public/cpp",
+      "//services/network/public/mojom",
       "//services/network/public/proto:sct_audit_report_proto",
       "//services/preferences/public/cpp",
       "//services/preferences/public/cpp/tracked",
@@ -2019,6 +2021,7 @@ if (!is_android) {
       "../browser/installable/ml_promotion_browsertest.cc",
       "../browser/interest_group/interest_group_permissions_browsertest.cc",
       "../browser/invalidation/profile_invalidation_provider_factory_browsertest.cc",
+      "../browser/ip_protection/ip_protection_auth_token_provider_browsertest.cc",
       "../browser/l10n_util_browsertest.cc",
       "../browser/launch_time_navigation_signal/launch_time_navigation_signal_browsertest.cc",
       "../browser/lifetime/browser_close_manager_browsertest.cc",
@@ -4722,7 +4725,6 @@ if (!is_android) {
         "//services/audio/public/cpp",
         "//services/audio/public/cpp:test_support",
         "//services/media_session/public/mojom",
-        "//services/network/public/mojom",
         "//services/preferences/public/cpp",
         "//services/preferences/public/mojom",
         "//services/service_manager/public/cpp",
@@ -8647,7 +8649,6 @@ test("unit_tests") {
       "//google_apis/common",
       "//google_apis/drive",
       "//media/cast:test_support",
-      "//services/network/public/mojom",
 
       # This will add all of the unit tests for the schema compiler to this
       # target.
