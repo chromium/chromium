@@ -334,12 +334,7 @@ TEST_P(ReportingServiceTest,
       context()->cache()->GetExpiredSources().contains(kReportingSource_));
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_ProcessReportingEndpointsHeaderPathAbsolute DISABLED_ProcessReportingEndpointsHeaderPathAbsolute
-#else
-#define MAYBE_ProcessReportingEndpointsHeaderPathAbsolute ProcessReportingEndpointsHeaderPathAbsolute
-#endif
-TEST_P(ReportingServiceTest, MAYBE_ProcessReportingEndpointsHeaderPathAbsolute) {
+TEST_P(ReportingServiceTest, ProcessReportingEndpointsHeaderPathAbsolute) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(net::features::kDocumentReporting);
   auto parsed_header = ParseReportingEndpoints(kGroup_ + "=\"/path-absolute\"");
