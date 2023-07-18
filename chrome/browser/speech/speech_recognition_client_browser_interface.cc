@@ -43,6 +43,11 @@ SpeechRecognitionClientBrowserInterface::
       base::BindRepeating(&SpeechRecognitionClientBrowserInterface::
                               OnSpeechRecognitionLanguageChanged,
                           base::Unretained(this)));
+  pref_change_registrar_->Add(
+      prefs::kLiveCaptionMaskOffensiveWords,
+      base::BindRepeating(&SpeechRecognitionClientBrowserInterface::
+                              OnSpeechRecognitionMaskOffensiveWordsChanged,
+                          base::Unretained(this)));
   speech::SodaInstaller::GetInstance()->AddObserver(this);
 }
 
@@ -116,6 +121,14 @@ void SpeechRecognitionClientBrowserInterface::
   for (auto& observer : speech_recognition_availibility_observers_) {
     observer->SpeechRecognitionLanguageChanged(
         prefs::GetLiveCaptionLanguageCode(profile_prefs_));
+  }
+}
+
+void SpeechRecognitionClientBrowserInterface::
+    OnSpeechRecognitionMaskOffensiveWordsChanged() {
+  for (auto& observer : speech_recognition_availibility_observers_) {
+    observer->SpeechRecognitionMaskOffensiveWordsChanged(
+        profile_prefs_->GetBoolean(prefs::kLiveCaptionMaskOffensiveWords));
   }
 }
 

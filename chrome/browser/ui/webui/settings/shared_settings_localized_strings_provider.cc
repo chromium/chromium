@@ -140,6 +140,9 @@ void AddLiveCaptionSectionStrings(content::WebUIDataSource* html_source) {
   html_source->AddLocalizedString(
       "captionsEnableLiveTranslateSubtitle",
       IDS_SETTINGS_CAPTIONS_ENABLE_LIVE_TRANSLATE_SUBTITLE);
+  html_source->AddLocalizedString(
+      "captionsMaskOffensiveWordsTitle",
+      IDS_SETTINGS_CAPTIONS_MASK_OFFENSIVE_WORDS_TITLE);
 
   const bool liveCaptionMultiLanguageEnabled =
       base::FeatureList::IsEnabled(media::kLiveCaptionMultiLanguage);

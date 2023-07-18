@@ -269,6 +269,7 @@ enum {
   kSixPackKeyPageUpNotificationsRemaining = 100214,
   kSixPackKeyPageDownNotificationsRemaining = 100215,
   kSixPackKeyInsertNotificationsRemaining = 100216,
+  kLiveCaptionMaskOffensiveWords = 100217,
   // See components/sync_preferences/README.md about adding new entries here.
   // vvvvv IMPORTANT! vvvvv
   // Note to the reviewer: IT IS YOUR RESPONSIBILITY to ensure that new syncable
@@ -342,6 +343,9 @@ const auto& SyncablePreferences() {
           false}},
         {prefs::kLiveCaptionMediaFoundationRendererErrorSilenced,
          {syncable_prefs_ids::kLiveCaptionMediaFoundationRendererErrorSilenced,
+          syncer::PREFERENCES, false}},
+        {prefs::kLiveCaptionMaskOffensiveWords,
+         {syncable_prefs_ids::kLiveCaptionMaskOffensiveWords,
           syncer::PREFERENCES, false}},
         {prefs::kShowHomeButton,
          {syncable_prefs_ids::kShowHomeButton, syncer::PREFERENCES, false}},

@@ -143,6 +143,14 @@ void ChromeSpeechRecognitionClient::SpeechRecognitionLanguageChanged(
   }
 }
 
+void ChromeSpeechRecognitionClient::SpeechRecognitionMaskOffensiveWordsChanged(
+    bool mask_offensive_words) {
+  if (speech_recognition_recognizer_.is_bound()) {
+    speech_recognition_recognizer_->OnMaskOffensiveWordsChanged(
+        mask_offensive_words);
+  }
+}
+
 void ChromeSpeechRecognitionClient::OnDestruct() {
   // Do nothing. The lifetime of the ChromeSpeechRecognitionClient is managed by
   // the owner of the object. However, the ChromeSpeechRecognitionClient will

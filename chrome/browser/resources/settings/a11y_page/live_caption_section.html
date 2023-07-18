@@ -34,6 +34,15 @@
         sub-label="[[enableLiveCaptionSubtitle_]]">
     </settings-toggle-button>
   </div>
+  <iron-collapse
+      opened="[[prefs.accessibility.captions.live_caption_enabled.value]]">
+    <settings-toggle-button id="maskOffensiveWordsToggleButton"
+        pref=
+            "{{prefs.accessibility.captions.live_caption_mask_offensive_words}}"
+        on-change="onLiveCaptionMaskOffensiveWordsChanged_"
+        label="$i18n{captionsMaskOffensiveWordsTitle}">
+    </settings-toggle-button>
+  </iron-collapse>
 </template>
 <if expr="not is_chromeos">
 <template is="dom-if" if="[[enableLiveCaptionMultiLanguage_]]">
@@ -84,6 +93,12 @@
         </template>
       </div>
     </div>
+    <settings-toggle-button id="maskOffensiveWordsToggleButton"
+        pref=
+            "{{prefs.accessibility.captions.live_caption_mask_offensive_words}}"
+        on-change="onLiveCaptionMaskOffensiveWordsChanged_"
+        label="$i18n{captionsMaskOffensiveWordsTitle}">
+    </settings-toggle-button>
     <template is="dom-if" if="[[enableLiveTranslate_]]">
       <settings-live-translate prefs="{{prefs}}"
           languages="{{languages}}"

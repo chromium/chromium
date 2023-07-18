@@ -360,6 +360,12 @@ void SpeechRecognitionRecognizerImpl::OnLanguageChanged(
                      language_component_config.value().language_name));
 }
 
+void SpeechRecognitionRecognizerImpl::OnMaskOffensiveWordsChanged(
+    bool mask_offensive_words) {
+  mask_offensive_words_ = mask_offensive_words;
+  ResetSoda();
+}
+
 void SpeechRecognitionRecognizerImpl::ResetSodaWithNewLanguage(
     base::FilePath config_path,
     std::string language_name,
@@ -414,6 +420,7 @@ void SpeechRecognitionRecognizerImpl::ResetSoda() {
   config_msg.set_enable_formatting(options_->enable_formatting);
   config_msg.set_enable_speaker_change_detection(
       base::FeatureList::IsEnabled(media::kSpeakerChangeDetection));
+  config_msg.set_mask_offensive_words(mask_offensive_words_);
   if (base::FeatureList::IsEnabled(media::kLiveCaptionMultiLanguage) &&
       config_paths_.size() > 0) {
     auto* multilang_config = config_msg.mutable_multilang_config();

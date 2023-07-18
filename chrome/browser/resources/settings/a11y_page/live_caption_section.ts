@@ -191,6 +191,14 @@ export class SettingsLiveCaptionElement extends SettingsLiveCaptionElementBase {
     // </if>
   }
 
+  private onLiveCaptionMaskOffensiveWordsChanged_(event: Event) {
+    const liveCaptionMaskOffensiveWords =
+        (event.target as SettingsToggleButtonElement).checked;
+    chrome.metricsPrivate.recordBoolean(
+        'Accessibility.LiveCaption.MaskOffensiveWords',
+        liveCaptionMaskOffensiveWords);
+  }
+
   // <if expr="not is_chromeos">
   private onAddLanguagesClick_(e: Event) {
     e.preventDefault();

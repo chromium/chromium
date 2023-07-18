@@ -36,6 +36,10 @@ inline constexpr char kLiveCaptionEnabled[] =
 inline constexpr char kLiveCaptionLanguageCode[] =
     "accessibility.captions.live_caption_language";
 
+// Whether offensive words are masked.
+inline constexpr char kLiveCaptionMaskOffensiveWords[] =
+    "accessibility.captions.live_caption_mask_offensive_words";
+
 // The list of origins that should not display an error message when using the
 // Media Foundation renderer.
 inline constexpr char kLiveCaptionMediaFoundationRendererErrorSilenced[] =
