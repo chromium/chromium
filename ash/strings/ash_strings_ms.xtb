@@ -513,6 +513,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="3294437725009624529">Tetamu</translation>
 <translation id="3298690094479023523">PIN atau kata laluan anda masih tidak dapat disahkan. Cuba lagi.</translation>
 <translation id="3300193645498960160">Anda akan diberitahu jika anda bercakap semasa diredam. Peranti anda tidak menghasilkan audio.</translation>
+<translation id="3306386552969601301"><ph name="DEVICECOUNT" /> peranti disambungkan kepada tempat liputan <ph name="DEVICE_NAME" /></translation>
 <translation id="3307642347673023554">Bertukar kepada mod komputer riba</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> masih dapat log masuk nanti.</translation>
 <translation id="3321628682574733415">Kod ibu bapa salah</translation>
@@ -552,6 +553,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="3445925074670675829">Peranti USB-C</translation>
 <translation id="3455468639467374593">Templat, <ph name="TEMPLATE_NAME" /></translation>
+<translation id="3456931972722214204">1 peranti disambung kepada tempat liputan <ph name="DEVICE_NAME" /></translation>
 <translation id="346243998268439747">Tetapkan semula paras zum</translation>
 <translation id="3465223694362104965">Papan kekunci lain telah disambungkan ke peranti ini sejak kali terakhir anda log masuk. Pastikan anda mempercayai papan kekunci ini sebelum anda menggunakannya.</translation>
 <translation id="3465356146291925647">Diurus oleh Pentadbir anda</translation>
@@ -765,6 +767,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="4324840740119394760">Ini membenarkan akses kamera untuk <ph name="APP_NAME" /> dan semua apl serta laman web dengan kebenaran kamera</translation>
 <translation id="4333628967105022692">Lacros tidak disokong semasa berbilang pengguna dilog masuk.</translation>
 <translation id="4338109981321384717">Kanta pembesar</translation>
+<translation id="4356872429719185452">Tunjukkan butiran tempat liputan. Tempat liputan sedang dihidupkan.</translation>
 <translation id="4371348193907997655">Tetapan Cast</translation>
 <translation id="4375482231364171368">Buat carian dalam bar alamat</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, kekuatan isyarat <ph name="SIGNAL_STRENGTH" /> peratus</translation>
@@ -1112,6 +1115,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="5825969630400862129">Tetapan peranti yang bersambung</translation>
 <translation id="5837036133683224804">Hentikan <ph name="ROUTE_TITLE" /> pada <ph name="RECEIVER_NAME" /></translation>
 <translation id="5841296711770970362">Akses runut seterusnya</translation>
+<translation id="5842553299352339114">Tempat liputan <ph name="DEVICE_NAME" /> dihidupkan, tiada peranti disambungkan</translation>
 <translation id="584525477304726060">Tahan untuk maksimumkan</translation>
 <translation id="5856638668464565213"><ph name="NETWORK_NAME" /> tidak diaktifkan.</translation>
 <translation id="5860033963881614850">Dimatikan</translation>
@@ -1374,6 +1378,7 @@ Pemasangan baharu</translation>
 <translation id="6981291220124935078">Hidupkan akses</translation>
 <translation id="6981982820502123353">Kebolehcapaian</translation>
 <translation id="698231206551913481">Semua fail dan data yang berkaitan dengan pengguna ini akan dipadamkan secara kekal selepas pengguna ini dialih keluar.</translation>
+<translation id="7004910047186208204">Sambungkan kepada data mudah alih</translation>
 <translation id="7005239792648594238">Buka apl untuk bermula</translation>
 <translation id="7007983414944123363">PIN atau kata laluan anda tidak dapat disahkan. Cuba lagi.</translation>
 <translation id="7014684956566476813">Disambungkan kepada peranti yang bernama <ph name="DEVICE_NAME" /></translation>
@@ -1528,6 +1533,7 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 pemberitahuan}other{# pemberitahuan}}</translation>
 <translation id="7723703419796509666">Tunjukkan atau sembunyikan konsol Alatan Pembangun</translation>
 <translation id="7724603315864178912">Potong</translation>
+<translation id="7725108879223146004">Tunjukkan butiran tempat liputan. Tempat liputan sedang dimatikan.</translation>
 <translation id="7727952505535211425">Buka laman web dalam bar alamat pada tab baharu</translation>
 <translation id="77365090426890123">penggunaan memori</translation>
 <translation id="7742327441377685481">Tiada pemberitahuan</translation>
@@ -1663,6 +1669,7 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="8308637677604853869">Menu sebelumnya</translation>
 <translation id="830868413617744215">Beta</translation>
 <translation id="8314772463905284467">Caps Lock dihidupkan</translation>
+<translation id="8315514906653279104">Menghidupkan...</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="8345019317483336363"><ph name="WINDOW_TITLE" /> tetingkap dipilih</translation>
 <translation id="8349964124165471584">Buka pautan dalam tetingkap baharu</translation>

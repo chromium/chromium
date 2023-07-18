@@ -37,6 +37,7 @@
 <translation id="1297922636971898492">Google Drive ist momentan nicht verfügbar. Das Hochladen deiner Dateien wird automatisch fortgesetzt, sobald Google Drive wieder verfügbar ist.</translation>
 <translation id="1307931752636661898">Linux-Dateien können nicht angezeigt werden</translation>
 <translation id="1313405956111467313">Automatische Proxy-Konfiguration</translation>
+<translation id="134645005685694099">Auf deinem Gerät ist nicht genügend Speicherplatz vorhanden, um die Dateisynchronisierung aktiviert zu lassen. Neue Dateien werden nicht mehr automatisch synchronisiert.</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />: <ph name="NETWORK_NAME" /></translation>
 <translation id="1358735829858566124">Die Datei oder das Verzeichnis kann nicht verwendet werden.</translation>
 <translation id="1363028406613469049">Titel</translation>
@@ -184,6 +185,7 @@
 <translation id="2464089476039395325">HTTP-Proxy</translation>
 <translation id="2467267713099745100">Netzwerk: <ph name="NETWORK_TYPE" />, deaktiviert</translation>
 <translation id="2468402215065996499">Tamagotchi</translation>
+<translation id="2468470447085858632">Offlinezugriff auf Google Drive-Dateien mit der Dateisynchronisierung</translation>
 <translation id="2470939964922472929">Es wurde zu oft die falsche PIN eingegeben. Gib zum Festlegen einer neuen PIN den achtstelligen PIN-Entsperrschlüssel (PUK) ein, den du von deinem Mobilfunkanbieter erhalten hast.</translation>
 <translation id="2500392669976258912">Gujarati (phonetisch)</translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -612,6 +614,7 @@
 <translation id="5720028165859493293">„<ph name="FILE_NAME" />“ in Papierkorb verschoben</translation>
 <translation id="5724172041621205163">Thai mit Pattachote-Tastatur</translation>
 <translation id="57383366388012121">Letzter Monat</translation>
+<translation id="575175778971367197">Diese Datei kann momentan nicht synchronisiert werden</translation>
 <translation id="5756666464756035725">Ungarisch – QWERTY</translation>
 <translation id="5760252553414789727"><ph name="SELECTED_FILES_COUNT" /> Elemente ausgewählt</translation>
 <translation id="5763377084591234761">Deutsch (Schweiz)</translation>
@@ -714,6 +717,7 @@
 <translation id="6558280019477628686">Ein Fehler ist aufgetreten. Einige Elemente wurden möglicherweise nicht gelöscht.</translation>
 <translation id="656398493051028875">"<ph name="FILENAME" />" wird gelöscht...</translation>
 <translation id="6581162200855843583">Google Drive-Link</translation>
+<translation id="6588648400954570689">Einstellungen für die Dateisynchronisierung</translation>
 <translation id="6594855146910089723">Dieser Ordner ist für Linux und Parallels Desktop freigegeben</translation>
 <translation id="6607272825297743757">Dateiinformationen</translation>
 <translation id="6609332149380188670"><ph name="NUMBER_OF_ITEMS" /> Ordner für Parallels Desktop freigegeben</translation>
@@ -840,6 +844,7 @@
 <translation id="7547811415869834682">Niederländisch</translation>
 <translation id="7551643184018910560">An Ablage anpinnen</translation>
 <translation id="7553492409867692754">Du gibst Linux-Apps die Berechtigung, auf Dateien im Ordner „<ph name="FOLDER_NAME" />“ zuzugreifen</translation>
+<translation id="7555339735447658365">Du bist momentan offline. Die Dateisynchronisierung wird fortgesetzt, wenn du mit dem Internet verbunden bist</translation>
 <translation id="7589661784326793847">Einen Moment bitte</translation>
 <translation id="7592775719802218421"><ph name="FILE_NAME" /> wird offline bereitgestellt</translation>
 <translation id="7600126690270271294">Serbisch</translation>
@@ -931,6 +936,7 @@
 <translation id="8179976553408161302">Eingabetaste</translation>
 <translation id="8193175696669055101">Gerätemodell</translation>
 <translation id="8223479393428528563">Wenn du diese Dateien zur Offline-Nutzung speichern möchtest, gehe online, klicke mit der rechten Maustaste auf die Dateien und wähle die Option „<ph name="OFFLINE_CHECKBOX_NAME" />“ aus.</translation>
+<translation id="8241139360630443550">Speicher anzeigen</translation>
 <translation id="8249296373107784235">Abbrechen</translation>
 <translation id="8250690786522693009">Latein</translation>
 <translation id="8250920743982581267">Dokumente</translation>

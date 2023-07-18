@@ -83,6 +83,7 @@
 <translation id="1400642268715879018">Последните 4 седмици</translation>
 <translation id="1404330357948037222">Не сте в профила си</translation>
 <translation id="1407135791313364759">Отваряне на всички</translation>
+<translation id="1408847409015257906">Докоснете „Поверителност и сигурност“.</translation>
 <translation id="1430915738399379752">Печат</translation>
 <translation id="1449835205994625556">Скриване на паролата</translation>
 <translation id="1450170672351507823">Режимът за стандартна защита е включен. За още по-голяма сигурност използвайте подобрената защита.</translation>
@@ -102,6 +103,7 @@
 <translation id="1545749641540134597">Сканирайте код за бърза реакция</translation>
 <translation id="1552525382687785070">Синхронизирането е деактивирано от администратора ви</translation>
 <translation id="1554477036522844996">Нов прозорец</translation>
+<translation id="1563071802032385236">Включете „Запитване за отваряне на връзки от други приложения в режим „инкогнито“.</translation>
 <translation id="1565371473877914088">Нов раздел в режим „инкогнито“</translation>
 <translation id="1580715474678097352">Защита от опасни сайтове</translation>
 <translation id="1580783302095112590">Пощата е изпратена.</translation>
@@ -112,6 +114,7 @@
 <translation id="1608337082864370066">Търсене на копираното изображение</translation>
 <translation id="1612730193129642006">Показване на мрежа с раздели</translation>
 <translation id="1620510694547887537">Камера</translation>
+<translation id="1622717322707146952">Изберете „Добавяне към Google Календар“ или „Добавяне към Apple Calendar“.</translation>
 <translation id="1626771852476987600"><ph name="COUNT" /> повторно използвани пароли</translation>
 <translation id="1641113438599504367">Безопасно сърфиране</translation>
 <translation id="1644574205037202324">История</translation>
@@ -157,6 +160,7 @@
 <translation id="1941314575388338491">Докоснете двукратно, за да копирате.</translation>
 <translation id="1943478190258551035">„Меню → Настройки“</translation>
 <translation id="1952172573699511566">Когато е възможно, текстът на уебсайтовете ще се показва на предпочитания от вас език.</translation>
+<translation id="1959441496380398824">Докоснете и задръжте дата.</translation>
 <translation id="1959679933317802873">Изчаква се съдържание</translation>
 <translation id="1965935827552890526">Довършете действията си в другия отворен прозорец на Chrome.</translation>
 <translation id="1967461193809857427">{count,plural, =1{Да се продължи ли от раздела, в който сте прекъснали на устройството си с Android?}other{Да се продължи ли от разделите, в които сте прекъснали на устройството си с Android?}}</translation>
@@ -230,6 +234,7 @@
 <translation id="2434405374328098816">Вече запазихте парола за <ph name="USERNAME" /> за <ph name="WEBSITE" /></translation>
 <translation id="2435457462613246316">Показване на паролата</translation>
 <translation id="2451654228769116489">Фиксиране на раздела</translation>
+<translation id="2459155039684421202">В адресната лента въведете задача, като например „Изчистване на историята ми“ или „Редактиране на паролите“.</translation>
 <translation id="2461070143328828326">Настройки за паролите</translation>
 <translation id="2469960372084740698">Да се изключи ли „Безопасно сърфиране“?</translation>
 <translation id="2473876017985765807">Вече запазихте парола за <ph name="WEBSITE" /></translation>
@@ -367,6 +372,7 @@
 <translation id="3224641773458703735">За да експортирате паролите, трябва първо да зададете код за достъп на устройството си.</translation>
 <translation id="3227137524299004712">Микрофон</translation>
 <translation id="3235063766008841141">Въведена в измамнически сайт и разкрита при нарушение на сигурността на данните</translation>
+<translation id="3235242129752692527">Редактирайте подробностите за събитието и докоснете „Запазване“.</translation>
 <translation id="3240426699337459095">Връзката е копирана</translation>
 <translation id="3244271242291266297">ММ</translation>
 <translation id="3245744387817103524">Промяната ви не бе запазена.</translation>
@@ -537,6 +543,7 @@
 <translation id="4375040482473363939">Търсене по код за бърза реакция</translation>
 <translation id="4378154925671717803">Телефон</translation>
 <translation id="4389019817280890563">Докоснете за смяна на езика.</translation>
+<translation id="4405320213589929829">Използвайте адресите в уеб страници, за да получавате местна информация и упътвания.</translation>
 <translation id="4420409367264901497">Редактиране на отметката</translation>
 <translation id="4442550905108052454">Отворете <ph name="BEGIN_BOLD" />настройките<ph name="END_BOLD" /></translation>
 <translation id="4454246407045105932">Добавяне на език</translation>
@@ -670,6 +677,7 @@
 <translation id="5209674813563615506">Отваряне на нов раздел</translation>
 <translation id="5211488077761630279">Да се разреши ли на <ph name="SITE_NAME" /> да използва <ph name="PERMISSION" />?</translation>
 <translation id="5219295696240154694">Помогнете за всеобщото подобряване на сигурността в мрежата</translation>
+<translation id="5220945116117011963">Създаване на събития в календара от дати</translation>
 <translation id="5221339005270097309">Паролите се проверяват…</translation>
 <translation id="5226568866393490213">Отхвърляне на предупреждението</translation>
 <translation id="5228579091201413441">Активиране на синхронизирането</translation>
@@ -912,6 +920,7 @@
 <translation id="6540120577248033958">Посетете сайт и кликнете върху „Следване“ в менюто на Chrome</translation>
 <translation id="6550675742724504774">Опции</translation>
 <translation id="6561262006871132942">Приближаване</translation>
+<translation id="6579867704846662339">Можете да изберете входящите URL адреси от други приложения да се отварят в режим „инкогнито“.</translation>
 <translation id="6583087784430677195">За да изключите функцията, отворете <ph name="BEGIN_LINK" />Settings<ph name="END_LINK" /> и след това AutoFill Passwords.</translation>
 <translation id="6585618849026997638">Можете да се върнете на важна за вас страница, като добавите отметка</translation>
 <translation id="6596481460663245319">Търсене на изобр. с Google</translation>
@@ -940,6 +949,7 @@
 <translation id="6674571176963658787">За да стартирате синхронизирането, въведете пропуска си</translation>
 <translation id="667999046851023355">Документ</translation>
 <translation id="6684906340059221832">Следени цени</translation>
+<translation id="6685259053455152195">Преки пътища за бърза промяна на настройките и за използване на функции от адресната лента.</translation>
 <translation id="6710079714193676716">Управлява се от организацията ви. Някои функции може да не са достъпни. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="672735642903863329">Получавайте своите отметки, пароли и др. на всичките си устройства.</translation>
@@ -951,6 +961,7 @@
 <translation id="6762812039470893796">Премахване на избора от всички</translation>
 <translation id="6780034285637185932">Пощенски код</translation>
 <translation id="6781260999953472352">Да се включи ли синхронизирането?</translation>
+<translation id="6781405765516175232">За опции за маршрута докоснете „Получаване на упътвания“.</translation>
 <translation id="6785453220513215166">Сигналите за сривове се изпращат...</translation>
 <translation id="6790502149545262384">Скоро ще виждате материали от <ph name="CHANNEL_NAME" />, когато отворите нов раздел.</translation>
 <translation id="6797885426782475225">Гласово търсене</translation>
@@ -1004,6 +1015,7 @@
 <translation id="7108762695052995889">Към сайта</translation>
 <translation id="7133798577887235672">Име и фамилия</translation>
 <translation id="7136892417564438900">Няма достъп до камерата</translation>
+<translation id="7154343200458623869">Завършете задачата си.</translation>
 <translation id="7161230316646448869">Синхронизиране на отметките, историята ви и др. на всички устройства</translation>
 <translation id="7162168282402939716">Отключване на разделите в режим „инкогнито“ с <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7172852049901402487">Защитете паролите си от проблеми със сигурността</translation>
@@ -1076,6 +1088,7 @@
 <translation id="7671141431838911305">INSTALL</translation>
 <translation id="7679915578945954324">Адресите на сайтовете са копирани</translation>
 <translation id="7687508192620387263">Налице е файл за календара</translation>
+<translation id="769104993356536261">Използване на „Действия от Chrome“ под iOS</translation>
 <translation id="7701040980221191251">Няма</translation>
 <translation id="7711440461521638739">Не използвате повторно нито една парола</translation>
 <translation id="7719038820139380048">Влезте в профила си, за да получавате съдържание въз основа на интересите си.</translation>
@@ -1217,6 +1230,7 @@
 <translation id="850600235656508448">Отваряне в режим „инкогнито“</translation>
 <translation id="8517375800490286174">Лицензи за отворен код</translation>
 <translation id="8524799873541103884">Раздели в режим „<ph name="INCOGNITO" />“: <ph name="FIRST_VISIBLE_TAB" /> до <ph name="LAST_VISIBLE_TAB" /> от общо <ph name="NUMBER_OF_OPEN_TABS" /></translation>
+<translation id="8528009254289981965">Отваряне на връзки от други приложения в режим „инкогнито“</translation>
 <translation id="8529767659511976195">Ново</translation>
 <translation id="8532105204136943229">Година на валидност</translation>
 <translation id="8533166274275423134">Отворено другаде</translation>

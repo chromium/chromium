@@ -2869,7 +2869,6 @@
 <translation id="3354972872297836698">同裝置 <ph name="DEVICE_NAME" /> 配對唔到；請揀裝置之後再試一次</translation>
 <translation id="335581015389089642">語音</translation>
 <translation id="3355936511340229503">連線錯誤</translation>
-<translation id="3356469410714175391">(已啟用虛擬卡)</translation>
 <translation id="3356580349448036450">完成</translation>
 <translation id="3359256513598016054">憑證政策限制</translation>
 <translation id="3360297538363969800">列印失敗。請檢查您的打印機，然後再試一次。</translation>
@@ -3128,6 +3127,7 @@
 <translation id="3571734092741541777">設定</translation>
 <translation id="3575121482199441727">允許此網站的通知</translation>
 <translation id="3577473026931028326">發生錯誤，請再試一次。</translation>
+<translation id="3577487026101678864">開啟檔案同步功能</translation>
 <translation id="3577745545227000795"><ph name="DEVICE_OS" /> 硬件資料收集聲明</translation>
 <translation id="3578874072190212775">協助網站對抗欺詐，以及分辨機器人和人類</translation>
 <translation id="3581605050355435601">自動設定 IP 位址</translation>
@@ -3336,6 +3336,7 @@
 <translation id="3748706263662799310">報告錯誤</translation>
 <translation id="3749724428455457489">進一步了解網站建議嘅廣告</translation>
 <translation id="3750562496035670393">Chrome 已將密碼儲存至此裝置，不過您亦可改為將密碼儲存至 Google 帳戶。然後，當您登入後，您亦可在查看所有儲存在 Google 帳戶中的密碼。</translation>
+<translation id="3752115502500640407">分享 <ph name="WEBSITE" /> 的密碼副本</translation>
 <translation id="3752253558646317685">讓子女重覆按壓手指，以便儲存指紋</translation>
 <translation id="3753033997400164841">只需儲存一次，即可在所有裝置上使用</translation>
 <translation id="3753142252662437130">顏色濾鏡</translation>
@@ -3634,6 +3635,7 @@
 <translation id="3975201861340929143">說明</translation>
 <translation id="3975565978598857337">無法連線至指定的伺服器領域</translation>
 <translation id="3976108569178263973">沒有可用的打印機。</translation>
+<translation id="3976244126942806443">網站通常會連接 MIDI 裝置以創作或編輯音樂</translation>
 <translation id="397703832102027365">即將完成…</translation>
 <translation id="3977145907578671392">部分網站的功能可能無法在無痕模式中正常運作</translation>
 <translation id="3977886311744775419">此網絡類型無法下載自動更新，但您可以手動檢查更新。</translation>
@@ -4800,6 +4802,7 @@
 <translation id="4979510648199782334">Microsoft 365 設定完成</translation>
 <translation id="4980805016576257426">這個擴充程式含有惡意軟件。</translation>
 <translation id="4981449534399733132">如要從所有已同步的裝置和 Google 帳戶中清除瀏覽資料，請<ph name="BEGIN_LINK" />登入<ph name="END_LINK" />。</translation>
+<translation id="4983159853748980742">系統沒有分享你的密碼。請檢查互聯網連線並確保你已登入 Chrome，然後再試一次。</translation>
 <translation id="4986706507552097681">您隨時可在設定中選擇要同步的資料。Google 可能會根據您的記錄，提供個人化「搜尋」和其他服務。</translation>
 <translation id="4986728572522335985">此操作將刪除這個安全密鑰上的所有資料，包括 PIN</translation>
 <translation id="4988526792673242964">網頁</translation>
@@ -5459,6 +5462,7 @@
 <translation id="5555363196923735206">切換相機</translation>
 <translation id="5555525474779371165">選取您的「安全瀏覽」功能</translation>
 <translation id="5555639311269196631">關閉熱點</translation>
+<translation id="5555760010546505198">色彩反轉、色彩校正、放大鏡和顯示設定</translation>
 <translation id="5556459405103347317">重新載入</translation>
 <translation id="5558129378926964177">放大(&amp;I)</translation>
 <translation id="5559311991468302423">刪除地址</translation>
@@ -8713,6 +8717,7 @@
 <translation id="8301242268274839723">請輕觸鍵盤左下角的指紋感應器。系統會妥善地將您的指紋資料儲存在 <ph name="DEVICE_TYPE" /> 上，絕不會外洩。</translation>
 <translation id="8303616404642252802">{COUNT,plural, =1{地址}other{# 個地址}}</translation>
 <translation id="8304383784961451596">您無權使用此裝置。請與管理員聯絡，要求對方授予登入權限，或使用 Family Link 監管的 Google 帳戶登入。</translation>
+<translation id="8306063480506363120">移除「雲端硬碟」存取權</translation>
 <translation id="8306885873692337975">取得最新功能和改善安全性的資訊。</translation>
 <translation id="8308016398665340540">您正在與此裝置的其他使用者共用此網絡</translation>
 <translation id="8308179586020895837">當 <ph name="HOST" /> 要求存取相機時詢問我。</translation>

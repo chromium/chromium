@@ -2869,7 +2869,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3354972872297836698">Couldn't pair to device <ph name="DEVICE_NAME" />; select device to try again</translation>
 <translation id="335581015389089642">Speech</translation>
 <translation id="3355936511340229503">Connection error</translation>
-<translation id="3356469410714175391">(Virtual card enabled)</translation>
 <translation id="3356580349448036450">Complete</translation>
 <translation id="3359256513598016054">Certificate Policy Constraints</translation>
 <translation id="3360297538363969800">Printing failed. Please check your printer and try again.</translation>
@@ -3306,6 +3305,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3721119614952978349">You and Google</translation>
 <translation id="3722108462506185496">Error starting the virtual machine service. Please try again.</translation>
 <translation id="3722624153992426516"><ph name="IMPORT_CERTIFICATE__INSTRUCTION_NAME" /> instruction received</translation>
+<translation id="3724897774652282549">Fill in form</translation>
 <translation id="3726965532284929944">QT</translation>
 <translation id="3727144509609414201">Available Wi-Fi networks</translation>
 <translation id="3727187387656390258">Inspect pop-up</translation>
@@ -7242,6 +7242,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7067396782363924830">Ambient colours</translation>
 <translation id="7067725467529581407">Never show this again.</translation>
 <translation id="7068279399556423026">Sign in to see tabs from other devices</translation>
+<translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{New password for this site}other{New passwords for this site}}</translation>
 <translation id="7070484045139057854">This Can Read and Change Site Data</translation>
 <translation id="7072010813301522126">Shortcut name</translation>
 <translation id="7074066049407662839">Sign in to save passwords</translation>

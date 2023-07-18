@@ -83,6 +83,7 @@
 <translation id="1400642268715879018">Минатите 4 седмици</translation>
 <translation id="1404330357948037222">Одјавени сте</translation>
 <translation id="1407135791313364759">Отвори ги сите</translation>
+<translation id="1408847409015257906">Допрете „Приватност и безбедност“.</translation>
 <translation id="1430915738399379752">Печати</translation>
 <translation id="1449835205994625556">Сокријте ја лозинката</translation>
 <translation id="1450170672351507823">Вклучена е „Стандардната заштита“. За уште поголема безбедност, користете ја „Подобрената заштита“.</translation>
@@ -102,6 +103,7 @@
 <translation id="1545749641540134597">Скенирајте QR код</translation>
 <translation id="1552525382687785070">Администраторот ја оневозможил синхронизацијата</translation>
 <translation id="1554477036522844996">Нов прозорец</translation>
+<translation id="1563071802032385236">Вклучете „Прашувај дали во „Инкогнито“ да се отвораат линкови од други апликации“</translation>
 <translation id="1565371473877914088">Нова инкогнито картичка</translation>
 <translation id="1580715474678097352">Заштитете се од опасни веб-сајтови</translation>
 <translation id="1580783302095112590">Поштата е испратена.</translation>
@@ -112,6 +114,7 @@
 <translation id="1608337082864370066">Пребарувајте ја копираната слика</translation>
 <translation id="1612730193129642006">Прикажи решетка од картички</translation>
 <translation id="1620510694547887537">Камера</translation>
+<translation id="1622717322707146952">Изберете „Додај во „Календар“ на Google“ или „Додај во „Календар“ на Apple“.</translation>
 <translation id="1626771852476987600"><ph name="COUNT" /> повторно употребени лозинки</translation>
 <translation id="1641113438599504367">Безбедно прелистување</translation>
 <translation id="1644574205037202324">Историја</translation>
@@ -157,6 +160,7 @@
 <translation id="1941314575388338491">Допрете двапати за да копирате.</translation>
 <translation id="1943478190258551035">Мени → Поставки</translation>
 <translation id="1952172573699511566">Кога е можно, веб-сајтовите ќе прикажуваат текст на вашиот претпочитан јазик.</translation>
+<translation id="1959441496380398824">Допрете и задржете датум.</translation>
 <translation id="1959679933317802873">Се чекаат содржини</translation>
 <translation id="1965935827552890526">Завршете го тоа што сте го започнале во другиот отворен прозорец на Chrome.</translation>
 <translation id="1967461193809857427">{count,plural, =1{Дали ќе ја прегледате картичката што ја оставивте на Android?}one{Дали ќе ги прегледате картичките што ги оставивте на Android?}other{Дали ќе ги прегледате картичките што ги оставивте на Android?}}</translation>
@@ -230,6 +234,7 @@
 <translation id="2434405374328098816">Веќе зачувавте лозинка за „<ph name="USERNAME" />“ на <ph name="WEBSITE" /></translation>
 <translation id="2435457462613246316">Прикажи ја лозинката</translation>
 <translation id="2451654228769116489">Прикачи картичка</translation>
+<translation id="2459155039684421202">Во лентата за адреси, внесете задача како „избриши ја мојата историја“ или „измени ги лозинките“.</translation>
 <translation id="2461070143328828326">Поставки за лозинка</translation>
 <translation id="2469960372084740698">Да се исклучи „Безбедно прелистување“?</translation>
 <translation id="2473876017985765807">Веќе зачувавте лозинка за <ph name="WEBSITE" /></translation>
@@ -367,6 +372,7 @@
 <translation id="3224641773458703735">За да ги извезете лозинките, прво мора да поставите лозинка на вашиот уред.</translation>
 <translation id="3227137524299004712">Микрофон</translation>
 <translation id="3235063766008841141">Внесено на лажен сајт и забележано при упад во податоци</translation>
+<translation id="3235242129752692527">Изменете ги деталите за настанот, па допрете „Зачувај“.</translation>
 <translation id="3240426699337459095">Врската е копирана</translation>
 <translation id="3244271242291266297">MM</translation>
 <translation id="3245744387817103524">Промената не можеше да се зачува.</translation>
@@ -537,6 +543,7 @@
 <translation id="4375040482473363939">Пребарување QR-кодови</translation>
 <translation id="4378154925671717803">Телефон</translation>
 <translation id="4389019817280890563">Допрете за да го смените јазикот.</translation>
+<translation id="4405320213589929829">Користете адреси на веб-страници за да добивате локални информации и насоки.</translation>
 <translation id="4420409367264901497">Измени го обележувачот</translation>
 <translation id="4442550905108052454">Отворете <ph name="BEGIN_BOLD" />Поставки<ph name="END_BOLD" /></translation>
 <translation id="4454246407045105932">Додајте јазик</translation>
@@ -670,6 +677,7 @@
 <translation id="5209674813563615506">Отворете нова картичка</translation>
 <translation id="5211488077761630279">Дозволувате „<ph name="SITE_NAME" />“ да користи <ph name="PERMISSION" />?</translation>
 <translation id="5219295696240154694">Помогнете да се подобри безбедноста на интернет за сите</translation>
+<translation id="5220945116117011963">Создајте настани во календар од датуми</translation>
 <translation id="5221339005270097309">Се проверуваат лозинките…</translation>
 <translation id="5226568866393490213">Отфрли предупредување</translation>
 <translation id="5228579091201413441">Овозможи синхронизација</translation>
@@ -912,6 +920,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="6540120577248033958">Посетете сајт и кликнете „Следи“ во менито на Chrome</translation>
 <translation id="6550675742724504774">Опции</translation>
 <translation id="6561262006871132942">Зумирај</translation>
+<translation id="6579867704846662339">Може да изберете да се отвораат дојдовните URL-адреси од други апликации во „Инкогнито“.</translation>
 <translation id="6583087784430677195">За да го исклучите, отворете ги <ph name="BEGIN_LINK" />Поставките<ph name="END_LINK" /> и одете на „Автоматско пополнување лозинки“.</translation>
 <translation id="6585618849026997638">Може да се навратите на страница што ви е важна со додавање обележувач</translation>
 <translation id="6596481460663245319">Пребарајте слика со Google</translation>
@@ -940,6 +949,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="6674571176963658787">За да започне синхронизацијата, внесете ја лозинката</translation>
 <translation id="667999046851023355">Документ</translation>
 <translation id="6684906340059221832">Цените се следат</translation>
+<translation id="6685259053455152195">Кратенки за брзо менување поставки и користење функции од лентата за адреси.</translation>
 <translation id="6710079714193676716">Управувано од вашата организација. Некои функции можеби се недостапни. <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Апликации на Google</translation>
 <translation id="672735642903863329">Добијте ги обележувачите, лозинките и друго на сите ваши уреди.</translation>
@@ -951,6 +961,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="6762812039470893796">Отштиклирај ги сите</translation>
 <translation id="6780034285637185932">Поштенски број</translation>
 <translation id="6781260999953472352">Да се вклучи синхронизација?</translation>
+<translation id="6781405765516175232">За опции за маршрути, допрете „Добијте насоки“.</translation>
 <translation id="6785453220513215166">Извештајот за пад се испраќа...</translation>
 <translation id="6790502149545262384">Наскоро ќе гледате стории од <ph name="CHANNEL_NAME" /> при отворање нова картичка.</translation>
 <translation id="6797885426782475225">Гласовно пребарување</translation>
@@ -1004,6 +1015,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="7108762695052995889">Посетете го сајтот</translation>
 <translation id="7133798577887235672">Целосно име</translation>
 <translation id="7136892417564438900">Камерата е недостапна</translation>
+<translation id="7154343200458623869">Завршете ја вашата задача.</translation>
 <translation id="7161230316646448869">Синхронизација на обележувачите, историјата и друго на сите уреди</translation>
 <translation id="7162168282402939716">Отклучете ги картичките „Инкогнито“ со <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7172852049901402487">Заштитете ги лозинките од безбедносни проблеми</translation>
@@ -1076,6 +1088,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="7671141431838911305">ИНСТАЛИРАЈ</translation>
 <translation id="7679915578945954324">Адресата на сајтот е копирана</translation>
 <translation id="7687508192620387263">Достапна е датотека за календарот</translation>
+<translation id="769104993356536261">Користете „Дејства во Chrome“ на iOS</translation>
 <translation id="7701040980221191251">Нема</translation>
 <translation id="7711440461521638739">Не користите исти лозинки на повеќе места</translation>
 <translation id="7719038820139380048">Најавете се за да добивате содржини согласно со вашите интереси.</translation>
@@ -1217,6 +1230,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="850600235656508448">Отвори во инкогнито</translation>
 <translation id="8517375800490286174">Лиценци со отворен код</translation>
 <translation id="8524799873541103884"><ph name="INCOGNITO" /> Картички <ph name="FIRST_VISIBLE_TAB" /> до <ph name="LAST_VISIBLE_TAB" /> од <ph name="NUMBER_OF_OPEN_TABS" /></translation>
+<translation id="8528009254289981965">Отворај линкови од други апликации во „Инкогнито“</translation>
 <translation id="8529767659511976195">Ново</translation>
 <translation id="8532105204136943229">Година на истекување</translation>
 <translation id="8533166274275423134">Отворено на друго место</translation>

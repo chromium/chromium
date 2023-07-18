@@ -187,6 +187,7 @@
 <translation id="2307344026739914387">Aktuelles Schlüsselpaar verwenden</translation>
 <translation id="2320295602967756579">Helles Design aktivieren</translation>
 <translation id="2323506179655536734">ÜBERSPRUNGEN</translation>
+<translation id="2324354238778375592">Unverankert</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Aktiviere Bluetooth, damit Geräte in der Nähe gefunden werden</translation>
 <translation id="2346474577291266260">Sehr gut (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -335,6 +336,7 @@
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> – Test</translation>
 <translation id="370665806235115550">Wird geladen...</translation>
 <translation id="3708186454126126312">Zuletzt verbundene Geräte</translation>
+<translation id="3715651196924935218">Status „Unverankert“ beenden</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> Rezensionen)</translation>
 <translation id="3748026146096797577">Nicht verbunden</translation>
 <translation id="3749289110408117711">Dateiname</translation>
@@ -391,6 +393,7 @@
 <translation id="4147897805161313378">Google Fotos</translation>
 <translation id="4150201353443180367">Display</translation>
 <translation id="4155551848414053977">Achte darauf, dass der Scanner eingeschaltet und entweder über das Netzwerk oder direkt verbunden ist</translation>
+<translation id="4159238217853743776">Teilweise</translation>
 <translation id="4159784952369912983">Violett</translation>
 <translation id="4170180284036919717">Foto aufnehmen</translation>
 <translation id="4170700058716978431">FEHLGESCHLAGEN</translation>
@@ -500,6 +503,7 @@
 <translation id="4930320165497208503">Gehe zum Einrichten oder Aktualisieren einer Verbindung zu den <ph name="BEGIN_LINK" />Einstellungen<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Datum</translation>
 <translation id="4950314376641394653">Firmware deines Geräts (<ph name="DEVICE_NAME" />) wurde auf Version <ph name="VERSION" /> aktualisiert</translation>
+<translation id="4969079779290789265">Aufteilen</translation>
 <translation id="4972592110715526173">Modusänderung</translation>
 <translation id="498186245079027698">Prüfe den Scanner und versuche es noch einmal. Sieh nach, ob ausreichend lokaler Speicherplatz vorhanden ist, um die gescannten Dateien zu speichern.</translation>
 <translation id="4985509611418653372">Ausführen</translation>
@@ -519,6 +523,7 @@
 <translation id="5088172560898466307">Hostname des Servers</translation>
 <translation id="5089810972385038852">Bundesstaat</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
+<translation id="5137451382116112100">Voll</translation>
 <translation id="5142961317498132443">Authentifizierung</translation>
 <translation id="5154917547274118687">Speicher</translation>
 <translation id="5160857336552977725">Auf deinem <ph name="DEVICE_TYPE" /> anmelden</translation>
@@ -531,6 +536,7 @@
 <translation id="5222676887888702881">Abmelden</translation>
 <translation id="522307662484862935">E-Mail-Adresse nicht einfügen</translation>
 <translation id="5227902338748591677">Zeitplan für dunkles Design</translation>
+<translation id="5229344016299762883">Status „Vollbild“ beenden</translation>
 <translation id="5234764350956374838">Schließen</translation>
 <translation id="5252456968953390977">Roaming</translation>
 <translation id="5257811368506016604">Hellen Farbmodus aktivieren</translation>
@@ -709,6 +715,7 @@
 <translation id="6566314079205407217">Mehrseitiger Scan</translation>
 <translation id="6574762126505704998">Ausfüllen</translation>
 <translation id="6575134580692778371">Nicht konfiguriert</translation>
+<translation id="6576005492601044801">links</translation>
 <translation id="6579509898032828423">Dieses Foto verwenden</translation>
 <translation id="6596816719288285829">IP-Adresse</translation>
 <translation id="6599673642868607614">Vielen Dank für das Feedback! Dein Feedback wird von unserem Team gelesen und hilft uns dabei, Chromebooks noch weiter zu verbessern. Da wir sehr viele Rückmeldungen erhalten, können wir dir nicht persönlich antworten.</translation>
@@ -789,6 +796,7 @@
 <translation id="7297226631177386107">Eine Verbindung zu HTTPS-Websites durch eine Firewall ist nicht möglich</translation>
 <translation id="7297726121602187087">Dunkelgrün</translation>
 <translation id="7302860742311162920">ICCID</translation>
+<translation id="7305236594389852547">Diktierfunktion ein- oder ausschalten</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7308203371573257315">Experten im Chromebook-Hilfeforum fragen</translation>
 <translation id="7311368985037279727">Tastaturfarbe</translation>
@@ -812,6 +820,7 @@
 <translation id="7497215489070763236">CA-Serverzertifikat</translation>
 <translation id="7501957181231305652">oder</translation>
 <translation id="7502658306369382406">IPv6-Adresse</translation>
+<translation id="7513770521371759388">unten</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7528507600602050979">Hilfeinhalte nicht verfügbar</translation>
 <translation id="7535791657097741517">Helles Design einschalten</translation>
@@ -948,6 +957,7 @@
 <translation id="8655295600908251630">Kanal</translation>
 <translation id="8655828773034788261">URL teilen:</translation>
 <translation id="8660881923941176839">Pfund</translation>
+<translation id="8670574982334489519">rechts</translation>
 <translation id="8675354002693747642">Vorinstallierter Schlüssel</translation>
 <translation id="8677859815076891398">Keine Alben. Ein Album in <ph name="LINK_BEGIN" />Google Fotos<ph name="LINK_END" /> erstellen.</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Verwende zum Verwalten dieser Funktion den Rechts- und Linkspfeil.</translation>
@@ -993,6 +1003,7 @@
 <translation id="8936793075252196307">IP-Adresse des Clients</translation>
 <translation id="8944651180182756621">Launcher-Farbe</translation>
 <translation id="894617464444543719">Das Gerät ist ein Smartphone.</translation>
+<translation id="8950424402482976779">oben</translation>
 <translation id="8968751544471797276">Ladestrom</translation>
 <translation id="8970109610781093811">Erneut ausführen</translation>
 <translation id="8983038754672563810">HSPA</translation>

@@ -3484,6 +3484,13 @@ Desde la versión 117, en el campo <ph name="PREVENT_CLOSE_FIELD" /> se especifi
 <translation id="402759845255257575">No permitir que ningún sitio ejecute JavaScript</translation>
 <translation id="4027608872760987929">Habilitar proveedor de búsquedas predeterminadas</translation>
 <translation id="4030152268425532846">Inhabilitar la anulación de inicio de sesión automático</translation>
+<translation id="4039065751874009354">Esta política proporciona un mecanismo temporal para inhabilitar dos correcciones relacionadas con el comportamiento del cuadro de diálogo de confirmación que se muestra en el evento beforeunload.
+Si se habilita esta política, se usará el comportamiento nuevo y correcto. Si se inhabilita esta política, se usará el comportamiento antiguo. Si no se define esta política, se usará el comportamiento predeterminado.
+Esta política es una solución temporal y se eliminará pronto.
+
+Comportamiento nuevo y correcto: en beforeunload, si se llama a event.preventDefault(), se activará el cuadro de diálogo de confirmación. Si se define event.returnValue en la cadena vacía, no se activará el cuadro de diálogo de confirmación.
+
+Comportamiento antiguo: en beforeunload, si se llama a event.preventDefault(), no se activará el cuadro de diálogo de confirmación. Si se define event.returnValue en la cadena vacía, se activará el cuadro de diálogo de confirmación.</translation>
 <translation id="4043796890723386527">Evita que los usuarios creen y utilicen perfiles secundarios, y que usen el modo Invitado en el navegador <ph name="LACROS_NAME" />.</translation>
 <translation id="4051723201852944592">Habilitar la oclusión de ventana</translation>
 <translation id="4052529125939620019">Cargar la extensión del componente CryptoToken al iniciar el navegador</translation>
@@ -4839,6 +4846,7 @@ Nota: Esta política no se aplica a las actualizaciones de HSTS.</translation>
       Para obtener información detallada sobre los patrones de <ph name="URL_LABEL" /> válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.  Esta política solo detecta coincidencias basadas en el origen, así que se ignora cualquier ruta del patrón de URL.</translation>
 <translation id="5318185076587284965">Habilita el uso de servidores de retransmisión por parte del host de acceso remoto</translation>
 <translation id="5323200200131319468">Habilitar los mensajes de voz en la pantalla de inicio de sesión</translation>
+<translation id="5323271643727095577">No mostrar el cuadro de diálogo de cancelación cuando se llame a event.preventDefault() para el evento beforeunload. Mostrar el cuadro de diálogo de cancelación cuando beforeunload event.returnValue sea la cadena vacía del evento beforeunload.</translation>
 <translation id="5323355956693037267">Habilitar el teclado en pantalla en la pantalla de inicio de sesión</translation>
 <translation id="532848608876725157">Habilitar DNS-over-HTTPS con alternativa no segura</translation>
 <translation id="5328965694451556034">Informar de inicio o cierre de sesión</translation>
@@ -5542,6 +5550,7 @@ Si se inhabilita esta política, se inhabilitará la protección de extensiones 
 <translation id="5979376378555121803">Aplicación alojada</translation>
 <translation id="5984099692320899605">No utilizar NTLM para la autenticación</translation>
 <translation id="5984237109586500246">Aceptar contenido web presentado como Signed HTTP Exchange</translation>
+<translation id="5991707691018985057">Mostrar el cuadro de diálogo de cancelación cuando se llame a event.preventDefault() para el evento beforeunload. No mostrar el cuadro de diálogo de cancelación cuando event.returnValue sea la cadena vacía del evento beforeunload.</translation>
 <translation id="5997543603646547632">Utilizar reloj de formato de 24 horas de forma predeterminada</translation>
 <translation id="5997846976342452720">Especificar si se debe inhabilitar el buscador de complementos (obsoleta)</translation>
 <translation id="5998198091336830580">Esta política forma parte del siguiente grupo atómico (solo se aplicarán las políticas de la fuente que tenga mayor prioridad del grupo):</translation>
@@ -5671,6 +5680,7 @@ NOTA: Solo los procesos de renderizado que se hayan iniciado recientemente refle
 
       Si no, se le podrá asignar uno de estos valores: "tls1.2" o "tls1.3". Si se define esta política, <ph name="PRODUCT_NAME" /> no usará versiones de SSL/TLS posteriores a la versión especificada. Los valores que no se reconozcan se ignorarán.</translation>
 <translation id="6123052603197028610">No permitir que las consultas a los servidores de Google obtengan marcas de tiempo</translation>
+<translation id="6130360423841559818">Controlar el nuevo comportamiento del cuadro de diálogo de cancelación producido por el evento beforeunload</translation>
 <translation id="6131803221304830537">Inhabilitar la integridad del código del renderizador</translation>
 <translation id="6132506775968708399">Bloquear cookies de terceros</translation>
 <translation id="6133088669883929098">Permitir que todos los sitios utilicen la generación de claves</translation>

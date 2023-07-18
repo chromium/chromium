@@ -3374,6 +3374,13 @@ URL は「http://example.com」、「https://example.com」のような標準的
 <translation id="402759845255257575">すべてのサイトに対して JavaScript の実行を許可しない</translation>
 <translation id="4027608872760987929">デフォルトの検索プロバイダを有効にする</translation>
 <translation id="4030152268425532846">自動ログインの回避を無効にする</translation>
+<translation id="4039065751874009354">このポリシーでは、beforeunload イベントによって表示される確認ダイアログの動作について、関連する 2 つの修正を一時的にオプトアウトします。
+このポリシーを有効に設定した場合、新しい適切な動作が使用されます。このポリシーを無効に設定した場合、従来の動作が使用されます。このポリシーを設定しない場合、デフォルトの動作が使用されます。
+このポリシーは一時的な回避策で、まもなく削除される予定です。
+
+新しい適切な動作: 「beforeunload」で「event.preventDefault()」を呼び出すと、確認ダイアログがトリガーされます。「event.returnValue」を空の文字列に設定しても、確認ダイアログはトリガーされません。
+
+従来の動作: 「beforeunload」で「event.preventDefault()」を呼び出しても、確認ダイアログはトリガーされません。「event.returnValue」を空の文字列に設定すると、確認ダイアログがトリガーされます。</translation>
 <translation id="4043796890723386527">ユーザーに <ph name="LACROS_NAME" /> ブラウザでの予備のプロフィールの作成と使用、およびゲストモードの使用を許可しない</translation>
 <translation id="4051723201852944592">ウィンドウ オクルージョンを有効にします</translation>
 <translation id="4052529125939620019">起動時に CryptoToken コンポーネント拡張機能を読み込む</translation>
@@ -4640,6 +4647,7 @@ Android アプリの場合はパッケージ名（「com.google.android.gm」な
       有効な <ph name="URL_LABEL" /> パターンについて詳しくは、https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns をご覧ください。  このポリシーでは、オリジンのみが照合されるため、URL パターンのパスは無視されます。</translation>
 <translation id="5318185076587284965">リモート アクセス ホストで中継サーバーを使用できるようにする</translation>
 <translation id="5323200200131319468">ログイン画面で音声フィードバックを有効にする</translation>
+<translation id="5323271643727095577">beforeunload イベントで event.preventDefault() が呼び出されたときにキャンセル ダイアログを表示しない。beforeunload イベントで beforeunload event.returnValue が空の文字列のときにキャンセル ダイアログを表示する。</translation>
 <translation id="5323355956693037267">ログイン画面で画面キーボードを有効にする</translation>
 <translation id="532848608876725157">DNS-over-HTTPS を有効にする（安全でないフォールバックあり）</translation>
 <translation id="5328965694451556034">ログイン / ログアウトを報告する</translation>
@@ -5302,6 +5310,7 @@ Android アプリの場合はパッケージ名（「com.google.android.gm」な
 <translation id="5979376378555121803">ホストされるアプリ</translation>
 <translation id="5984099692320899605">NTLM 認証を使用しない</translation>
 <translation id="5984237109586500246">Signed HTTP Exchange として配信されるウェブ コンテンツを許可する</translation>
+<translation id="5991707691018985057">beforeunload イベントで event.preventDefault() が呼び出されたときにキャンセル ダイアログを表示する。beforeunload イベントで event.returnValue が空の文字列のときにキャンセル ダイアログを表示しない。</translation>
 <translation id="5997543603646547632">デフォルトで 24 時間表示を使用</translation>
 <translation id="5997846976342452720">プラグイン ファインダーを無効にするかどうかを指定する（サポート終了）</translation>
 <translation id="5998198091336830580">このポリシーは、次の最小単位グループの一部です（グループ内にある優先度の最も高いソースのポリシーのみが適用されます）。</translation>
@@ -5429,6 +5438,7 @@ Android アプリの場合はパッケージ名（「com.google.android.gm」な
 
       このポリシーを設定する場合は、値として「tls1.2」または「tls1.3」を指定できます。このポリシーが設定されている場合、<ph name="PRODUCT_NAME" /> では、指定されたバージョンより大きい SSL / TLS バージョンは使用されません。また、認識できない値は無視されます。</translation>
 <translation id="6123052603197028610">タイムスタンプを取得するために Google サーバーへクエリを送信することを許可しない</translation>
+<translation id="6130360423841559818">beforeunload イベントによって生成されるキャンセル ダイアログの新しい動作を制御する</translation>
 <translation id="6131803221304830537">レンダラコードの整合性チェックを無効にする</translation>
 <translation id="6132506775968708399">サードパーティ Cookie をブロックする</translation>
 <translation id="6133088669883929098">すべてのサイトにキー生成の使用を許可する</translation>

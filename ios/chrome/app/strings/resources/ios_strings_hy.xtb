@@ -83,6 +83,7 @@
 <translation id="1400642268715879018">Վերջին 4 շաբաթվա</translation>
 <translation id="1404330357948037222">Դուք դուրս եք եկել հաշվից</translation>
 <translation id="1407135791313364759">Բացել բոլորը</translation>
+<translation id="1408847409015257906">Հպեք «Գաղտնիություն և անվտանգություն»։</translation>
 <translation id="1430915738399379752">Տպում</translation>
 <translation id="1449835205994625556">Թաքցնել գաղտնաբառը</translation>
 <translation id="1450170672351507823">Սովորական պաշտպանությունը միացված է։ Ավելի շատ ապահովության համար օգտագործեք լրացուցիչ պաշտպանությունը։</translation>
@@ -102,6 +103,7 @@
 <translation id="1545749641540134597">Սկանավորեք QR-կոդը</translation>
 <translation id="1552525382687785070">Ձեր ադմինիստրատորն անջատել է համաժամացումը</translation>
 <translation id="1554477036522844996">Նոր պատուհան</translation>
+<translation id="1563071802032385236">Միացրեք «Հարցնել՝ հղումները այլ հավելվածներից ինկոգնիտո ռեժիմում բացելու համար» պարամետրը</translation>
 <translation id="1565371473877914088">Նոր ինկոգնիտո ներդիր</translation>
 <translation id="1580715474678097352">Եղեք պաշտպանված վտանգավոր կայքերից</translation>
 <translation id="1580783302095112590">Նամակն ուղարկվեց:</translation>
@@ -112,6 +114,7 @@
 <translation id="1608337082864370066">Որոնել պատճենված պատկերը</translation>
 <translation id="1612730193129642006">Ցուցադրել ներդիրի ցանցը</translation>
 <translation id="1620510694547887537">Տեսախցիկ</translation>
+<translation id="1622717322707146952">Ընտրեք «Ավելացնել Google Օրացույցում» կամ «Ավելացնել Apple Calendar-ում»։</translation>
 <translation id="1626771852476987600"><ph name="COUNT" /> կրկնվող գաղտնաբառ</translation>
 <translation id="1641113438599504367">Անվտանգ դիտարկում</translation>
 <translation id="1644574205037202324">Պատմություն</translation>
@@ -157,6 +160,7 @@
 <translation id="1941314575388338491">Կրկնակի հպեք՝ պատճենելու համար:</translation>
 <translation id="1943478190258551035">Ընտրացանկ → Կարգավորումներ</translation>
 <translation id="1952172573699511566">Կայքերի տեքստը հնարավորության դեպքում կցուցադրվի ձեր ընտրած լեզվով։</translation>
+<translation id="1959441496380398824">Հպեք և պահեք որևէ ամսաթիվ։</translation>
 <translation id="1959679933317802873">Բովանդակության սպասում</translation>
 <translation id="1965935827552890526">Ավարտեք աշխատանքը Chrome-ի մյուս բացված պատուհանում։</translation>
 <translation id="1967461193809857427">{count,plural, =1{Բացե՞լ նույն ներդիրը, որը վերջերս օգտագործել եք Android սարքում}one{Բացե՞լ նույն ներդիրը, որը վերջերս օգտագործել եք Android սարքում}other{Բացե՞լ նույն ներդիրները, որոնք վերջերս օգտագործել եք Android սարքում}}</translation>
@@ -230,6 +234,7 @@
 <translation id="2434405374328098816">Դուք <ph name="WEBSITE" /> կայքում «<ph name="USERNAME" />» օգտատիրոջ համար արդեն գաղտնաբառ պահել եք։</translation>
 <translation id="2435457462613246316">Ցույց տալ գաղտնաբառը</translation>
 <translation id="2451654228769116489">Ամրացնել ներդիրը</translation>
+<translation id="2459155039684421202">Հասցեագոտում մուտքագրեք որևէ առաջադրանք, օրինակ՝ «մաքրել իմ պատմությունը» կամ «փոփոխել գաղտնաբառերը»։</translation>
 <translation id="2461070143328828326">Գաղտնաբառերի կարգավորումներ</translation>
 <translation id="2469960372084740698">Անջատե՞լ ապահով դիտարկումը</translation>
 <translation id="2473876017985765807">Դուք <ph name="WEBSITE" /> կայքի համար արդեն պահել եք գաղտնաբառ։</translation>
@@ -367,6 +372,7 @@
 <translation id="3224641773458703735">Գաղտնաբառերն արտահանելու համար ձեր սարքում նախ պետք է անցակոդ սահմանեք:</translation>
 <translation id="3227137524299004712">Խոսափող</translation>
 <translation id="3235063766008841141">Մուտքագրվել է կասկածելի կայքում և հայտնաբերվել տվյալների արտահոսքում</translation>
+<translation id="3235242129752692527">Փոփոխեք միջոցառման մանրամասները և հպեք «Պահել»։</translation>
 <translation id="3240426699337459095">Հղումը պատճենվեց</translation>
 <translation id="3244271242291266297">ամիս</translation>
 <translation id="3245744387817103524">Փոփոխությունը չհաջողվեց պահել։</translation>
@@ -537,6 +543,7 @@
 <translation id="4375040482473363939">Սկանավորել QR կոդը</translation>
 <translation id="4378154925671717803">Հեռախոս</translation>
 <translation id="4389019817280890563">Հպեք՝ լեզուն փոխելու համար։</translation>
+<translation id="4405320213589929829">Օգտագործեք վեբ էջերում նշված հասցեները՝ տեղական վայրերի մասին տեղեկություններ և երթուղիներ ստանալու համար։</translation>
 <translation id="4420409367264901497">Փոփոխել էջանիշը</translation>
 <translation id="4442550905108052454">Բացեք <ph name="BEGIN_BOLD" />Կարգավորումները<ph name="END_BOLD" />։</translation>
 <translation id="4454246407045105932">Ավելացնել լեզու</translation>
@@ -670,6 +677,7 @@
 <translation id="5209674813563615506">Բացել նոր ներդիր</translation>
 <translation id="5211488077761630279">Թույլատրե՞լ «<ph name="SITE_NAME" />» կայքին օգտագործել ձեր <ph name="PERMISSION" />։</translation>
 <translation id="5219295696240154694">Օգնեք բարելավել համացանցի օգտատերերի անվտանգությունը</translation>
+<translation id="5220945116117011963">Օրացույցի միջոցառումներ ստեղծել ամսաթվերից</translation>
 <translation id="5221339005270097309">Գաղտնաբառերի ստուգում…</translation>
 <translation id="5226568866393490213">Անտեսել նախազգուշացումը</translation>
 <translation id="5228579091201413441">Միացնել համաժամացումը</translation>
@@ -912,6 +920,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="6540120577248033958">Բացեք կայքը և Chrome-ի ընտրացանկում սեղմեք «Հետևել»</translation>
 <translation id="6550675742724504774">Ընտրանքներ</translation>
 <translation id="6561262006871132942">Մեծացնել</translation>
+<translation id="6579867704846662339">Դուք կարող եք ընտրել, որ ինկոգնիտո ռեժիմում հնարավոր լինի բացել մուտքային URL-ներն այլ հավելվածներից։</translation>
 <translation id="6583087784430677195">Անջատելու համար բացեք <ph name="BEGIN_LINK" />Կարգավորումները<ph name="END_LINK" /> և անցեք «Գաղտնաբառերի ինքնալրացում»։</translation>
 <translation id="6585618849026997638">Էջանշեք կարևոր էջերը, որպեսզի կարողանաք վերադառնալ դրանց</translation>
 <translation id="6596481460663245319">Որոնել պատկեր Google-ում</translation>
@@ -940,6 +949,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="6674571176963658787">Համաժամացումը սկսելու համար մուտքագրեք ձեր անցաբառը</translation>
 <translation id="667999046851023355">Փաստաթուղթ</translation>
 <translation id="6684906340059221832">Գների հետագծում</translation>
+<translation id="6685259053455152195">Դյուրանցումներ՝ կարգավորումներն արագ փոփոխելու և գործառույթները հասցեագոտուց օգտագործելու համար։</translation>
 <translation id="6710079714193676716">Կառավարվում է ձեր կազմակերպության կողմից։ Որոշ գործառույթներ կարող են հասանելի չլինել։ <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="672735642903863329">Օգտագործեք ձեր էջանիշները, գաղտնաբառերը և մյուս տվյալները ձեր բոլոր սարքերում։</translation>
@@ -951,6 +961,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="6762812039470893796">Ապանշել բոլորը</translation>
 <translation id="6780034285637185932">Փոստային դասիչ</translation>
 <translation id="6781260999953472352">Միացնե՞լ համաժամացումը</translation>
+<translation id="6781405765516175232">Հնարավոր երթուղիները տեսնելու համար հպեք «Ստանալ երթուղիներ»։</translation>
 <translation id="6785453220513215166">Խափանման հաշվետվության ուղարկում…</translation>
 <translation id="6790502149545262384">Շուտով, երբ նոր ներդիր բացեք, կտեսնեք նորություններ <ph name="CHANNEL_NAME" /> կայքից։</translation>
 <translation id="6797885426782475225">Ձայնային որոնում</translation>
@@ -1004,6 +1015,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="7108762695052995889">Անցեք կայք</translation>
 <translation id="7133798577887235672">Անուն, ազգանուն</translation>
 <translation id="7136892417564438900">Ֆոտոխցիկն անհասանելի է</translation>
+<translation id="7154343200458623869">Ավարտեք ձեր առաջադրանքը։</translation>
 <translation id="7161230316646448869">Համաժամացրեք ձեր էջանիշները, պատմությունն ու մյուս կարգավորումները բոլոր սարքերում</translation>
 <translation id="7162168282402939716">Ապակողպեք ինկոգնիտո ներդիրները՝ օգտագործելով <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7172852049901402487">Պաշտպանեք ձեր գաղտնաբառերը անվտանգության հետ կապված խնդիրներից</translation>
@@ -1076,6 +1088,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="7671141431838911305">ՏԵՂԱԴՐԵԼ</translation>
 <translation id="7679915578945954324">Կայքի հասցեները պատճենվեցին</translation>
 <translation id="7687508192620387263">Հասանելի է օրացույցի ֆայլ</translation>
+<translation id="769104993356536261">iOS սարքում ընտրեք «Գործողություններ Chrome-ում»</translation>
 <translation id="7701040980221191251">Չկա</translation>
 <translation id="7711440461521638739">Դուք կրկնվող գաղտնաբառեր չունեք</translation>
 <translation id="7719038820139380048">Մուտք գործեք՝ ձեր հետաքրքրությունների հիման վրա բովանդակություն ստանալու համար։</translation>
@@ -1217,6 +1230,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="850600235656508448">Բացել ինկոգնիտո ռեժիմում</translation>
 <translation id="8517375800490286174">Բաց կոդով հավելվածների լիցենզիաներ</translation>
 <translation id="8524799873541103884"><ph name="INCOGNITO" /> Ներդիրներ <ph name="FIRST_VISIBLE_TAB" /> – <ph name="LAST_VISIBLE_TAB" />՝ <ph name="NUMBER_OF_OPEN_TABS" />-ից</translation>
+<translation id="8528009254289981965">Այլ հավելվածներից հղումներ բացեք ինկոգնիտո ռեժիմում</translation>
 <translation id="8529767659511976195">Նոր</translation>
 <translation id="8532105204136943229">Ժամկետի սպառման տարեթիվը</translation>
 <translation id="8533166274275423134">Բացված է մեկ այլ պատուհանում</translation>

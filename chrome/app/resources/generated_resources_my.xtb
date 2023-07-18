@@ -2867,7 +2867,6 @@
 <translation id="3354972872297836698">စက် <ph name="DEVICE_NAME" /> ကိုတွဲချိတ်၍ မရပါ။ ထပ်စမ်းကြည့်ရန် စက်ပစ္စည်းကိုရွေးပါ</translation>
 <translation id="335581015389089642">စကားပြောမှု</translation>
 <translation id="3355936511340229503">ချိတ်ဆက်မှု မှားယွင်းခြင်း</translation>
-<translation id="3356469410714175391">(ပကတိအသွင်ကတ် သုံးထားသည်)</translation>
 <translation id="3356580349448036450">ပြီးဆုံးပြီ</translation>
 <translation id="3359256513598016054">အသိမှတ်ပြုလက်မှတ် ပေါ်လစီကန့်သတ်ချက်များ</translation>
 <translation id="3360297538363969800">ပရင့်ထုတ် မရခဲ့ပါ။ ကျေးဇူးပြုပြီး သင်၏ ပရင်တာကို စစ်ကြည့်ပြီး ထပ် စမ်းပါ။</translation>
@@ -3304,6 +3303,7 @@
 <translation id="3721119614952978349">သင်နှင့် Google</translation>
 <translation id="3722108462506185496">ပကတိအသွင်စက် ဝန်ဆောင်မှု စတင်၍မရပါ။ ထပ်စမ်းကြည့်ပါ။</translation>
 <translation id="3722624153992426516"><ph name="IMPORT_CERTIFICATE__INSTRUCTION_NAME" /> ညွှန်ကြားချက် ရရှိထားသည်</translation>
+<translation id="3724897774652282549">ဖောင်ဖြည့်ခြင်း</translation>
 <translation id="3726965532284929944">QT</translation>
 <translation id="3727144509609414201">ရနိုင်သော WiFi ကွန်ရက်များ</translation>
 <translation id="3727187387656390258">ပေါ့အာပ်ကို စစ်ဆေးရန်</translation>
@@ -7237,6 +7237,7 @@
 <translation id="7067396782363924830">ဝန်းကျင်အရောင်များ</translation>
 <translation id="7067725467529581407">၎င်းကိုဘယ်တော့မှ ထပ်မံမပြပါနှင့်။</translation>
 <translation id="7068279399556423026">အခြားစက်များမှ တဘ်များကြည့်ရန် လက်မှတ်ထိုးဝင်ပါ</translation>
+<translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{ဤဝဘ်ဆိုက်အတွက် စကားဝှက်အသစ်}other{ဤဝဘ်ဆိုက်အတွက် စကားဝှက်အသစ်များ}}</translation>
 <translation id="7070484045139057854">၎င်းသည် ဝဘ်ဆိုက်ဒေတာများကို ကြည့်ရှု၍ ပြောင်းလဲနိုင်သည်</translation>
 <translation id="7072010813301522126">အတိုကောက် အမည်</translation>
 <translation id="7074066049407662839">စကားဝှက်များသိမ်းရန် လက်မှတ်ထိုးဝင်ပါ</translation>

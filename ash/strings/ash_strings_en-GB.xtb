@@ -513,6 +513,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="3294437725009624529">Guest</translation>
 <translation id="3298690094479023523">Your PIN or password still couldn't be verified. Try again.</translation>
 <translation id="3300193645498960160">You’ll be notified if you talk while muted. Audio never leaves your device.</translation>
+<translation id="3306386552969601301"><ph name="DEVICECOUNT" /> devices connected to <ph name="DEVICE_NAME" /> hotspot</translation>
 <translation id="3307642347673023554">Switched to laptop mode</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> can still sign in later.</translation>
 <translation id="3321628682574733415">Incorrect parent code</translation>
@@ -552,6 +553,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="3445925074670675829">USB-C device</translation>
 <translation id="3455468639467374593">Template, <ph name="TEMPLATE_NAME" /></translation>
+<translation id="3456931972722214204">1 device connected to <ph name="DEVICE_NAME" /> hotspot</translation>
 <translation id="346243998268439747">Reset zoom level</translation>
 <translation id="3465223694362104965">Another keyboard has connected to this device since you last signed in. Make sure that you trust this keyboard before you use it.</translation>
 <translation id="3465356146291925647">Managed by your administrator</translation>
@@ -764,6 +766,7 @@ Connect your device to power.</translation>
 <translation id="4324840740119394760">This allows camera access for <ph name="APP_NAME" /> and all apps and websites with the camera permission</translation>
 <translation id="4333628967105022692">Lacros is not supported while multiple users are signed in.</translation>
 <translation id="4338109981321384717">Magnifying glass</translation>
+<translation id="4356872429719185452">Show hotspot details. Hotspot is turning on.</translation>
 <translation id="4371348193907997655">Cast settings</translation>
 <translation id="4375482231364171368">Search in address bar</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, signal strength <ph name="SIGNAL_STRENGTH" /> per cent.</translation>
@@ -1111,6 +1114,7 @@ Connect your device to power.</translation>
 <translation id="5825969630400862129">Connected devices settings</translation>
 <translation id="5837036133683224804">Stop <ph name="ROUTE_TITLE" /> on <ph name="RECEIVER_NAME" /></translation>
 <translation id="5841296711770970362">Go to next track</translation>
+<translation id="5842553299352339114"><ph name="DEVICE_NAME" /> hotspot is on, no devices connected</translation>
 <translation id="584525477304726060">Hold to maximise</translation>
 <translation id="5856638668464565213"><ph name="NETWORK_NAME" /> is not activated.</translation>
 <translation id="5860033963881614850">Off</translation>
@@ -1373,6 +1377,7 @@ New install</translation>
 <translation id="6981291220124935078">Turn on access</translation>
 <translation id="6981982820502123353">Accessibility</translation>
 <translation id="698231206551913481">All files and local data associated with this user will be permanently deleted once this user is removed.</translation>
+<translation id="7004910047186208204">Connect to mobile data</translation>
 <translation id="7005239792648594238">Open an app to get started</translation>
 <translation id="7007983414944123363">Your PIN or password couldn't be verified. Try again.</translation>
 <translation id="7014684956566476813">Connected to a device named <ph name="DEVICE_NAME" /></translation>
@@ -1527,6 +1532,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 notification}other{# notifications}}</translation>
 <translation id="7723703419796509666">Show or hide Developer tools console</translation>
 <translation id="7724603315864178912">Cut</translation>
+<translation id="7725108879223146004">Show hotspot details. Hotspot is turning off.</translation>
 <translation id="7727952505535211425">Open the website in the address bar in a new tab</translation>
 <translation id="77365090426890123">memory usage</translation>
 <translation id="7742327441377685481">No notifications</translation>
@@ -1662,6 +1668,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="8308637677604853869">Previous menu</translation>
 <translation id="830868413617744215">Beta</translation>
 <translation id="8314772463905284467">Caps Lock is on</translation>
+<translation id="8315514906653279104">Turning on…</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="8345019317483336363"><ph name="WINDOW_TITLE" /> window selected</translation>
 <translation id="8349964124165471584">Open link in new window</translation>

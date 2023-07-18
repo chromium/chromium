@@ -32,6 +32,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1117719261843403176">Przełącz mobilną transmisję danych. <ph name="STATE" /></translation>
 <translation id="112308213915226829">Autoukrywanie półki</translation>
 <translation id="1142002900084379065">Najnowsze zdjęcia</translation>
+<translation id="114221662579355151">Zezwala na dostęp do kamery aplikacjom <ph name="APP1_NAME" /> i <ph name="APP2_NAME" /> oraz wszystkim aplikacjom i stronom internetowym, które mają uprawnienia do korzystania z kamery. Konieczne może być odświeżenie strony lub ponowne uruchomienie aplikacji.</translation>
 <translation id="1148499908455722006">Otwórz okno informacyjne dla konta <ph name="USER_NAME" /></translation>
 <translation id="1150989369772528668">Kalendarz</translation>
 <translation id="1153356358378277386">Sparowane urządzenia</translation>
@@ -118,6 +119,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="14648076227129703">Spowoduje to przyznanie dostępu do aparatu aplikacjom <ph name="APP1_NAME" /> i <ph name="APP2_NAME" /> oraz wszystkim aplikacjom i stronom internetowym, które mają uprawnienia do korzystania z niego</translation>
 <translation id="1467432559032391204">W lewo</translation>
 <translation id="146902737843070955">Administrator poprosił o tę zmianę</translation>
+<translation id="1469148162491666137">Zezwala na dostęp aplikacjom <ph name="APP1_NAME" /> i <ph name="APP2_NAME" /> oraz wszystkim aplikacjom i stronom internetowym, które mają uprawnienia do korzystania z kamery i mikrofonu. Konieczne może być odświeżenie strony lub ponowne uruchomienie aplikacji.</translation>
 <translation id="147310119694673958">Bateria telefonu: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1479909375538722835">Pływające menu ułatwień dostępu</translation>
 <translation id="1480845547124508962"><ph name="CURRENT_TIME" />, Aby otworzyć widok kalendarza, naciśnij klawisz Enter</translation>
@@ -128,6 +130,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1510238584712386396">Menu z aplikacjami</translation>
 <translation id="1516740043221086139">Tryb Nie przeszkadzać jest włączony.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Pokaż ustawienia powiadomień. Jedna aplikacja ma wyłączone powiadomienia.}few{Pokaż ustawienia powiadomień. # aplikacje mają wyłączone powiadomienia.}many{Pokaż ustawienia powiadomień. # aplikacji ma wyłączone powiadomienia.}other{Pokaż ustawienia powiadomień. # aplikacji ma wyłączone powiadomienia.}}</translation>
+<translation id="1523032696246003">Bateria: <ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> do pełnego naładowania</translation>
 <translation id="1525508553941733066">ZAMKNIJ</translation>
 <translation id="1526448108126799339">Otwórz nową kartę w nowym oknie</translation>
 <translation id="1528259147807435347">Edytowane w zeszłym tygodniu</translation>
@@ -140,6 +143,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1550523713251050646">Kliknij, by wyświetlić więcej opcji</translation>
 <translation id="1555130319947370107">Niebieski</translation>
 <translation id="1557622599341396706">Pokaż nazwę biurka</translation>
+<translation id="1569384531973824928">Zezwala na dostęp wszystkim aplikacjom i stronom internetowym, które mają uprawnienia do korzystania z kamery i mikrofonu. Konieczne może być odświeżenie strony lub ponowne uruchomienie aplikacji.</translation>
 <translation id="1576623706766186887">Pomniejsz, gdy lupa jest włączona</translation>
 <translation id="1586324912145647027">Przejdź do biurka z zakresu od 1 do 8</translation>
 <translation id="1589090746204042747">uzyskiwać dostęp do całej Twojej aktywności w tej sesji;</translation>
@@ -312,6 +316,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="2369165858548251131">„Cześć” po chińsku</translation>
 <translation id="2382875860893882175">Przesyłanie jest obecnie wstrzymane. W każdej chwili możesz je wznowić lub zakończyć.</translation>
 <translation id="2386292613071805067">Zaznacz wszystko na stronie</translation>
+<translation id="2396594569364254378">Pamięć: <ph name="USED_MEMORY" /> | Łącznie: <ph name="TOTAL_MEMORY" /></translation>
 <translation id="2397416548179033562">Pokaż menu Chrome</translation>
 <translation id="240006516586367791">Sterowanie multimediami</translation>
 <translation id="2402411679569069051">Aby odblokować Chromebooka, użyj odcisku palca lub odblokuj swój telefon</translation>
@@ -640,6 +645,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="3799080171973636491">Naciśnięto skrót klawiszowy lupy pełnoekranowej. Czy chcesz ją włączyć?</translation>
 <translation id="380165613292957338">Cześć, w czym mogę pomóc?</translation>
 <translation id="3804737937830804242">Zamknij aparat</translation>
+<translation id="3824784079442479685">Zezwala na dostęp do kamery aplikacji <ph name="APP_NAME" /> oraz wszystkim aplikacjom i stronom internetowym, które mają uprawnienia do korzystania z kamery. Konieczne może być odświeżenie strony lub ponowne uruchomienie aplikacji.</translation>
 <translation id="3826099427150913765">Zmień na hasło</translation>
 <translation id="383058930331066723">Włączone jest oszczędzanie baterii.</translation>
 <translation id="383629559565718788">Pokaż ustawienia klawiatury</translation>
@@ -695,6 +701,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="4066027111132117168">Włączone. Pozostały czas: <ph name="REMAINING_TIME" />.</translation>
 <translation id="4069532248403319695">Otwórz stronę Pobrane</translation>
 <translation id="4072264167173457037">średni sygnał</translation>
+<translation id="4076455981957565732">Oddane: <ph name="NUM_TURNED_IN" />/<ph name="TOTAL_NUM_OF_SUBMISSIONS" /> • Ocenione: <ph name="NUM_GRADED" /></translation>
 <translation id="4086921558679520050">Włącz fizyczny przełącznik mikrofonu na urządzeniu</translation>
 <translation id="4101772068965291327">Otwórz stronę główną</translation>
 <translation id="4112140312785995938">Przewiń do tyłu</translation>
@@ -853,6 +860,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="4752784485658729358">Zapisać można tylko 6 biurek. Usuń biurko, aby zapisać nowe.</translation>
 <translation id="4759238208242260848">Pobrane pliki</translation>
 <translation id="4762573482154983647">Ukrywaj aplikacje</translation>
+<translation id="4763885921995354846">Zezwala na dostęp do kamery wszystkim aplikacjom i stronom internetowym, które mają uprawnienia do korzystania z kamery. Konieczne może być odświeżenie strony lub ponowne uruchomienie aplikacji.</translation>
 <translation id="4774338217796918551">Możesz wrócić jutro o <ph name="COME_BACK_TIME" />.</translation>
 <translation id="4776584068981882959">Nadal nie udało się zweryfikować Twojego hasła. Spróbuj ponownie.</translation>
 <translation id="4776917500594043016">Hasło dla <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -880,6 +888,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="4871905435473761992">Pokaż szczegóły hotspota. Twoja sieć komórkowa go nie obsługuje.</translation>
 <translation id="4872237917498892622">Alt+Szukaj lub Shift</translation>
 <translation id="4872852897273142380">Przenieś zaznaczenie na pasek zakładek (jeśli jest widoczny)</translation>
+<translation id="4881323000405981760">Efekty nie są obsługiwane w aplikacjach na Linuksa</translation>
 <translation id="4881695831933465202">Otwórz</translation>
 <translation id="4889868803215848840">Podaj opcjonalną opinię, żeby ulepszyć sugestie:</translation>
 <translation id="4890187583552566966">Asystenta Google wyłączył administrator.</translation>
@@ -1054,6 +1063,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5618148318840095371">Przełączyliśmy Cię do lepszej sieci</translation>
 <translation id="5619862035903135339">Możliwość robienia zrzutów ekranu jest wyłączona przez zasadę administratora</translation>
+<translation id="5620979661744857819">Zezwala na dostęp aplikacji <ph name="APP_NAME" /> oraz wszystkim aplikacjom i stronom internetowym, które mają uprawnienia do korzystania z kamery i mikrofonu. Konieczne może być odświeżenie strony lub ponowne uruchomienie aplikacji.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">Nie udało się zweryfikować Twojego hasła. Spróbuj ponownie.</translation>
 <translation id="5646376287012673985">Lokalizacja</translation>
@@ -1105,6 +1115,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="5856638668464565213">Sieć <ph name="NETWORK_NAME" /> nie została aktywowana.</translation>
 <translation id="5860033963881614850">Wyłączone</translation>
 <translation id="5860491529813859533">Włącz</translation>
+<translation id="5864748620896638071">Bateria: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5867217927013474703">Zbieram informacje o sieci</translation>
 <translation id="5867606971598166637">Administrator systemu monitoruje Twoje ekrany</translation>
 <translation id="5876666360658629066">Wpisz kod rodzica</translation>
@@ -1477,6 +1488,7 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="7561982940498449837">Zamknij menu</translation>
 <translation id="7564874036684306347">Przenoszenie okien na inny pulpit może spowodować nieoczekiwane zachowanie. Kolejne powiadomienia, okna i okna dialogowe mogą pojawiać się na różnych pulpitach.</translation>
 <translation id="7569509451529460200">Włączono Braille'a i ChromeVox</translation>
+<translation id="7571361473021531288">Bateria: <ph name="BATTERY_PERCENTAGE" />% | Zostało: <ph name="TIME" /></translation>
 <translation id="7573585051776738856">Aktywne okno zadokowano po prawej.</translation>
 <translation id="7579778809502851308">Zrzut ekranu</translation>
 <translation id="7593891976182323525">Szukaj lub Shift</translation>
@@ -1799,6 +1811,7 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="9024331582947483881">pełny ekran</translation>
 <translation id="9029736946581028033">Urządzenie wkrótce straci zasilanie</translation>
 <translation id="9030319654231318877">Wyłączony do zachodu słońca</translation>
+<translation id="9030665205623277906">Podsumowanie wykorzystania procesora: <ph name="CPU_USEAGE" />%</translation>
 <translation id="9034924485347205037">Pliki Linuksa</translation>
 <translation id="9047624247355796468">Otwórz ustawienia sieci <ph name="NETWORK_NAME" /></translation>
 <translation id="9059834730836941392">Zwiń powiadomienie</translation>

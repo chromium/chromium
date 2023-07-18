@@ -508,6 +508,7 @@
 <translation id="3294437725009624529">ភ្ញៀវ</translation>
 <translation id="3298690094479023523">នៅតែមិនអាច​ផ្ទៀងផ្ទាត់​កូដ PIN ឬពាក្យសម្ងាត់របស់អ្នក​បានដដែល។ សូមព្យាយាមម្ដងទៀត។</translation>
 <translation id="3300193645498960160">អ្នកនឹង​ទទួលបាន​ការជូនដំណឹង ប្រសិនបើ​អ្នកនិយាយ នៅពេល​បិទសំឡេង។ សំឡេង​មិនចាកចេញ​ពីឧបករណ៍​របស់អ្នកឡើយ។</translation>
+<translation id="3306386552969601301">ឧបករណ៍ <ph name="DEVICECOUNT" /> គ្រឿង​ត្រូវបាន​ភ្ជាប់​ទៅ​ហតស្ប៉តរបស់ <ph name="DEVICE_NAME" /></translation>
 <translation id="3307642347673023554">បានប្ដូរទៅ​មុខងារកុំព្យូទ័រយួរដៃ</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> នៅតែអាចចូល​នៅពេល​ក្រោយបាន​ដដែល។</translation>
 <translation id="3321628682574733415">លេខកូដមាតាបិតា​មិនត្រឹមត្រូវទេ</translation>
@@ -547,6 +548,7 @@
 <translation id="3445288400492335833"><ph name="MINUTES" /> នាទី</translation>
 <translation id="3445925074670675829">ឧបករណ៍ USB-C</translation>
 <translation id="3455468639467374593">ទម្រង់គំរូ, <ph name="TEMPLATE_NAME" /></translation>
+<translation id="3456931972722214204">ឧបករណ៍ 1 ត្រូវបាន​ភ្ជាប់​ទៅ​ហតស្ប៉ត​របស់ <ph name="DEVICE_NAME" /></translation>
 <translation id="346243998268439747">កំណត់​កម្រិត​ពង្រីកបង្រួមឡើងវិញ</translation>
 <translation id="3465223694362104965">ចាប់តាំងពី​អ្នកបានចូល​លើកចុងក្រោយ ក្ដារចុច​ផ្សេងទៀត​បានភ្ជាប់ទៅ​ឧបករណ៍នេះ។ សូមប្រាកដថា អ្នកជឿទុកចិត្ត​ក្ដារចុចនេះ មុនពេលដែល​អ្នកប្រើវា។</translation>
 <translation id="3465356146291925647">គ្រប់គ្រង​ដោយ​អ្នកគ្រប់គ្រង​របស់អ្នក</translation>
@@ -757,6 +759,7 @@
 <translation id="4324840740119394760">ការ​ធ្វើ​បែបនេះ​ផ្ដល់​សិទ្ធិ​ចូលប្រើប្រាស់​កាមេរ៉ា​ដល់ <ph name="APP_NAME" /> ព្រមទាំង​គ្រប់កម្មវិធី និង​គេហទំព័រ​ដែលមាន​ការ​អនុញ្ញាត​ឱ្យ​ប្រើ​កាមេរ៉ា</translation>
 <translation id="4333628967105022692">មិនអាចប្រើ Lacros បានទេ នៅពេលមានអ្នកប្រើប្រាស់ច្រើនចូល។</translation>
 <translation id="4338109981321384717">កែវពង្រីក</translation>
+<translation id="4356872429719185452">បង្ហាញ​ព័ត៌មាន​លម្អិតអំពី​ហតស្ប៉ត។ ហតស្ប៉ត​កំពុង​បើក។</translation>
 <translation id="4371348193907997655">ការកំណត់ការបញ្ជូន</translation>
 <translation id="4375482231364171368">ស្វែងរក​នៅ​ក្នុង​របារអាសយដ្ឋាន</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, កម្លាំងរលកសញ្ញា <ph name="SIGNAL_STRENGTH" /> ភាគរយ</translation>
@@ -1101,6 +1104,7 @@
 <translation id="5825969630400862129">ការកំណត់​ឧបករណ៍ដែល​បានភ្ជាប់</translation>
 <translation id="5837036133683224804">បញ្ឈប់ <ph name="ROUTE_TITLE" /> នៅលើ <ph name="RECEIVER_NAME" /></translation>
 <translation id="5841296711770970362">ទៅកាន់​​ភ្លេង​បន្ទាប់</translation>
+<translation id="5842553299352339114">ហតស្ប៉តរបស់ <ph name="DEVICE_NAME" /> ត្រូវបានបើក, មិនបាន​ភ្ជាប់ជាមួយ​ឧបករណ៍​ណាមួយទេ</translation>
 <translation id="584525477304726060">សង្កត់ឱ្យជាប់​ដើម្បីពង្រីក</translation>
 <translation id="5856638668464565213"><ph name="NETWORK_NAME" /> មិនត្រូវបានបើកដំណើរការទេ។</translation>
 <translation id="5860033963881614850">បិទ</translation>
@@ -1362,6 +1366,7 @@
 <translation id="6981291220124935078">បើកការចូលប្រើប្រាស់</translation>
 <translation id="6981982820502123353">លទ្ធភាពប្រើប្រាស់</translation>
 <translation id="698231206551913481">ឯកសារ និងទិន្នន័យមូលដ្ឋានទាំងអស់ដែលប្រើជាមួយអ្នកប្រើនេះនឹងត្រូវបានលុបជាអចិន្ត្រៃយ៍ បន្ទាប់ពីអ្នកប្រើនេះត្រូវបានលុប។</translation>
+<translation id="7004910047186208204">ភ្ជាប់​ទៅ​ទិន្នន័យទូរសព្ទចល័ត</translation>
 <translation id="7005239792648594238">បើកកម្មវិធី ដើម្បី​ចាប់ផ្ដើម</translation>
 <translation id="7007983414944123363">មិនអាចផ្ទៀងផ្ទាត់កូដ PIN ឬពាក្យសម្ងាត់​របស់អ្នក​បានទេ។ សូមព្យាយាមម្ដងទៀត។</translation>
 <translation id="7014684956566476813">បានភ្ជាប់ជាមួយ​ឧបករណ៍ដែលមាន​ឈ្មោះថា <ph name="DEVICE_NAME" /></translation>
@@ -1515,6 +1520,7 @@
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{ការ​ជូនដំណឹង 1}other{ការ​ជូន​ដំណឹង #}}</translation>
 <translation id="7723703419796509666">បង្ហាញ ឬ​លាក់កុងសូល​ឧបករណ៍អ្នក​អភិវឌ្ឍន៍</translation>
 <translation id="7724603315864178912">កាត់</translation>
+<translation id="7725108879223146004">បង្ហាញ​ព័ត៌មាន​លម្អិតអំពី​ហតស្ប៉ត។ ហតស្ប៉ត​កំពុង​បិទ។</translation>
 <translation id="7727952505535211425">បើក​គេហទំព័រ​នៅ​ក្នុង​របារអាសយដ្ឋាន​នៅ​ក្នុង​ផ្ទាំង​ថ្មី</translation>
 <translation id="77365090426890123">ការប្រើប្រាស់​អង្គចងចាំ</translation>
 <translation id="7742327441377685481">គ្មាន​ការជូន​ដំណឹងទេ</translation>
@@ -1650,6 +1656,7 @@
 <translation id="8308637677604853869">ម៉ឺនុយពីមុន</translation>
 <translation id="830868413617744215">បែតា</translation>
 <translation id="8314772463905284467">Caps Lock ត្រូវបានបើក</translation>
+<translation id="8315514906653279104">កំពុង​បើក...</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="8345019317483336363">បានជ្រើសរើស​វិនដូ <ph name="WINDOW_TITLE" /></translation>
 <translation id="8349964124165471584">បើក​តំណ​ក្នុង​​វិនដូថ្មី</translation>

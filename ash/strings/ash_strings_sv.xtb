@@ -508,6 +508,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="3294437725009624529">Gäst</translation>
 <translation id="3298690094479023523">Det gick fortfarande inte att verifiera pinkoden eller lösenordet. Försök igen.</translation>
 <translation id="3300193645498960160">Du får en avisering om du pratar när ljudet är av. Ljudet lämnar aldrig enheten.</translation>
+<translation id="3306386552969601301"><ph name="DEVICECOUNT" /> enheter är anslutna till <ph name="DEVICE_NAME" />-surfzonen</translation>
 <translation id="3307642347673023554">Bytte till laptopläge</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> kan ändå logga in igen senare.</translation>
 <translation id="3321628682574733415">Felaktig föräldrakod</translation>
@@ -547,6 +548,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="3445925074670675829">USB-C-enhet</translation>
 <translation id="3455468639467374593">Mall: <ph name="TEMPLATE_NAME" /></translation>
+<translation id="3456931972722214204">En enhet är ansluten till <ph name="DEVICE_NAME" />-surfzonen</translation>
 <translation id="346243998268439747">Återställ zoomnivån</translation>
 <translation id="3465223694362104965">Ett annat tangentbord har anslutits till den här enheten sedan du loggade in senast. Försäkra dig om att det är ett tangentbord du litar på innan du använder det.</translation>
 <translation id="3465356146291925647">Hanteras av administratören</translation>
@@ -757,6 +759,7 @@ Anslut enheten till en strömkälla.</translation>
 <translation id="4324840740119394760">Detta ger kameraåtkomst för <ph name="APP_NAME" /> och alla appar och webbplatser med kamerabehörighet</translation>
 <translation id="4333628967105022692">Det finns inget stöd för Lacros när flera användare är inloggade.</translation>
 <translation id="4338109981321384717">Förstoringsglas</translation>
+<translation id="4356872429719185452">Visa information om surfzon. Surfzonen aktiveras.</translation>
 <translation id="4371348193907997655">Inställningar för att casta</translation>
 <translation id="4375482231364171368">Sök i adressfältet</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, signalstyrka <ph name="SIGNAL_STRENGTH" /> procent</translation>
@@ -1101,6 +1104,7 @@ Anslut enheten till en strömkälla.</translation>
 <translation id="5825969630400862129">Inställningar för anslutna enheter</translation>
 <translation id="5837036133683224804">Sluta casta <ph name="ROUTE_TITLE" /> till <ph name="RECEIVER_NAME" /></translation>
 <translation id="5841296711770970362">Öppna nästa spår</translation>
+<translation id="5842553299352339114"><ph name="DEVICE_NAME" />-surfzonen är aktiverad men inga enheter är anslutna</translation>
 <translation id="584525477304726060">Tryck och håll kvar för att maximera</translation>
 <translation id="5856638668464565213"><ph name="NETWORK_NAME" /> har inte aktiverats.</translation>
 <translation id="5860033963881614850">Av</translation>
@@ -1362,6 +1366,7 @@ Nyligen installerad</translation>
 <translation id="6981291220124935078">Aktivera åtkomst</translation>
 <translation id="6981982820502123353">Tillgänglighet</translation>
 <translation id="698231206551913481">Alla filer inklusive lokal data som tillhör den här användaren tas bort permanent när användaren tas bort.</translation>
+<translation id="7004910047186208204">Anslut till mobildata</translation>
 <translation id="7005239792648594238">Öppna en app för att komma igång</translation>
 <translation id="7007983414944123363">Det gick inte att verifiera pinkoden eller lösenordet. Försök igen.</translation>
 <translation id="7014684956566476813">Ansluten till enheten <ph name="DEVICE_NAME" /></translation>
@@ -1515,6 +1520,7 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 avisering}other{# aviseringar}}</translation>
 <translation id="7723703419796509666">Visa eller dölj konsolen för utvecklarverktyg</translation>
 <translation id="7724603315864178912">Klipp ut</translation>
+<translation id="7725108879223146004">Visa information om surfzon. Surfzonen inaktiveras.</translation>
 <translation id="7727952505535211425">Öppna webbplatsen i adressfältet i en ny flik</translation>
 <translation id="77365090426890123">minnesanvändning</translation>
 <translation id="7742327441377685481">Inga aviseringar</translation>
@@ -1650,6 +1656,7 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="8308637677604853869">Föregående meny</translation>
 <translation id="830868413617744215">Beta</translation>
 <translation id="8314772463905284467">Caps Lock är på</translation>
+<translation id="8315514906653279104">Aktiverar …</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="8345019317483336363">Fönstret <ph name="WINDOW_TITLE" /> har valts</translation>
 <translation id="8349964124165471584">Öppna länken i ett nytt fönster</translation>
