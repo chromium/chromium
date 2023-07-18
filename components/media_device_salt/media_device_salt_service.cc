@@ -111,7 +111,7 @@ void MediaDeviceSaltService::DeleteSalts(
       ResetGlobalSalt();
     }
     if (!base::FeatureList::IsEnabled(kMediaDeviceIdPartitioning)) {
-      std::move(done_closure).Run();
+      FinalizeDeleteSalts(std::move(done_closure));
       return;
     }
 

@@ -154,6 +154,24 @@ TEST_P(MediaDeviceSaltServiceTest, GetAndResetGlobalSalt) {
                        media_device_salt::prefs::kMediaDeviceIdSalt));
 }
 
+TEST_P(MediaDeviceSaltServiceTest, ResetGlobalSaltFiresDeviceChange) {
+  feature_list().Reset();
+  feature_list().InitAndDisableFeature(kMediaDeviceIdPartitioning);
+  base::SystemMonitor monitor;
+  ASSERT_EQ(base::SystemMonitor::Get(), &monitor);
+  testing::StrictMock<base::MockDevicesChangedObserver> observer;
+  monitor.AddDevicesChangedObserver(&observer);
+
+  EXPECT_CALL(observer, OnDevicesChanged(base::SystemMonitor::DEVTYPE_AUDIO));
+  EXPECT_CALL(observer,
+              OnDevicesChanged(base::SystemMonitor::DEVTYPE_VIDEO_CAPTURE));
+  service()->DeleteSalts(base::Time::Min(), base::Time::Max(),
+                         StorageKeyMatcher(), base::DoNothing());
+  task_environment().RunUntilIdle();
+
+  monitor.RemoveDevicesChangedObserver(&observer);
+}
+
 TEST_P(MediaDeviceSaltServiceTest, DeleteSingleSalt) {
   // Deletion of individual salts is not supported when using the global salt.
   std::string salt1 = GetSalt(StorageKey1());
@@ -277,7 +295,7 @@ TEST_P(MediaDeviceSaltServiceTest, ManyGetSalts) {
 TEST_P(MediaDeviceSaltServiceTest, DeviceChangeEvent) {
   base::SystemMonitor monitor;
   ASSERT_EQ(base::SystemMonitor::Get(), &monitor);
-  base::MockDevicesChangedObserver observer;
+  testing::StrictMock<base::MockDevicesChangedObserver> observer;
   monitor.AddDevicesChangedObserver(&observer);
   GetSalt(StorageKey1());
   GetSalt(StorageKey2());
