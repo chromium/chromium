@@ -5464,25 +5464,6 @@
             ]
         }
     ],
-    "EnableReportingStorageControlledDegradation": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "controlled_degradation": "true"
-                    },
-                    "enable_features": [
-                        "CrOSLateBootMissiveStorage"
-                    ]
-                }
-            ]
-        }
-    ],
     "EnableShoppingListDesktop": [
         {
             "platforms": [
@@ -11859,6 +11840,24 @@
                     "params": {
                         "sendingThreshold": "1.0"
                     }
+                }
+            ]
+        }
+    ],
+    "ReportingStorageControlledDegradation": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "ReportingStorageControlledDegradation",
+                    "params": {
+                        "controlled_degradation": "true"
+                    },
+                    "enable_features": [
+                        "CrOSLateBootMissiveStorage"
+                    ]
                 }
             ]
         }
