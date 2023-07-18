@@ -231,15 +231,16 @@
         outline-offset: 2px;
       }
 
-      :host-context([chrome-refresh-2023]) #stateBackground {
+      :host-context([chrome-refresh-2023]):host(:not([narrow]))
+          #stateBackground {
         display: block;
         inset: 0;
         pointer-events: none;
         position: absolute;
       }
 
-      :host-context([chrome-refresh-2023]):host(:hover:not([search-focused_]))
-          #stateBackground {
+      :host-context([chrome-refresh-2023]):host(
+          :hover:not([search-focused_], [narrow])) #stateBackground {
         background: var(--color-toolbar-search-field-background-hover,
             var(--cr-hover-background-color));
         z-index: 1;
@@ -286,7 +287,7 @@
         display: none;
       }
 
-      :host-context([chrome-refresh-2023]):host paper-ripple {
+      :host-context([chrome-refresh-2023]):host(:not([narrow])) paper-ripple {
         color: var(--color-toolbar-search-field-background-pressed,
             var(--cr-active-background-color));
         display: block;
