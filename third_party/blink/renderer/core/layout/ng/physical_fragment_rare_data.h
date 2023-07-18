@@ -86,14 +86,18 @@ class PhysicalFragmentRareData
     ~RareField();
   };
 
-  ALWAYS_INLINE static RareBitFieldType FieldIdBit(FieldId field_id) {
+  constexpr static RareBitFieldType FieldIdBit(FieldId field_id) {
     return static_cast<RareBitFieldType>(1) << static_cast<unsigned>(field_id);
+  }
+
+  constexpr static RareBitFieldType FieldIdLowerMask(FieldId field_id) {
+    return ~(~static_cast<RareBitFieldType>(0)
+             << static_cast<unsigned>(field_id));
   }
 
   ALWAYS_INLINE wtf_size_t GetFieldIndex(FieldId field_id) const {
     DCHECK(bit_field_ & FieldIdBit(field_id));
-    return std::popcount(bit_field_ & ~(~static_cast<RareBitFieldType>(0)
-                                        << static_cast<unsigned>(field_id)));
+    return std::popcount(bit_field_ & FieldIdLowerMask(field_id));
   }
 
   ALWAYS_INLINE const RareField* GetField(FieldId field_id) const {
