@@ -155,6 +155,8 @@ const base::TimeDelta kPopUIDelay = base::Seconds(0.3);
 
   // The navigation controller for inactive tabs settings.
   SettingsNavigationController* _settingsController;
+
+  ActionSheetCoordinator* _actionSheetCoordinator;
 }
 
 #pragma mark - Public
@@ -287,6 +289,8 @@ const base::TimeDelta kPopUIDelay = base::Seconds(0.3);
 
   [self.userEducationCoordinator stop];
   self.userEducationCoordinator = nil;
+  [_actionSheetCoordinator stop];
+  _actionSheetCoordinator = nil;
 
   [self.mediator disconnect];
   self.mediator = nil;
@@ -457,18 +461,18 @@ const base::TimeDelta kPopUIDelay = base::Seconds(0.3);
   NSString* message = l10n_util::GetNSString(
       IDS_IOS_INACTIVE_TABS_CLOSE_ALL_CONFIRMATION_MESSAGE);
 
-  ActionSheetCoordinator* actionSheetCoordinator =
-      [[ActionSheetCoordinator alloc]
-          initWithBaseViewController:self.baseViewController
-                             browser:self.browser
-                               title:title
-                             message:message
-                       barButtonItem:barButtonItem];
+  [_actionSheetCoordinator stop];
+  _actionSheetCoordinator = [[ActionSheetCoordinator alloc]
+      initWithBaseViewController:self.baseViewController
+                         browser:self.browser
+                           title:title
+                         message:message
+                   barButtonItem:barButtonItem];
 
   __weak __typeof(self) weakSelf = self;
   NSString* closeAllActionTitle = l10n_util::GetNSString(
       IDS_IOS_INACTIVE_TABS_CLOSE_ALL_CONFIRMATION_OPTION);
-  [actionSheetCoordinator
+  [_actionSheetCoordinator
       addItemWithTitle:closeAllActionTitle
                 action:^{
                   base::RecordAction(base::UserMetricsAction(
@@ -476,8 +480,7 @@ const base::TimeDelta kPopUIDelay = base::Seconds(0.3);
                   [weakSelf closeAllInactiveTabs];
                 }
                  style:UIAlertActionStyleDestructive];
-
-  [actionSheetCoordinator start];
+  [_actionSheetCoordinator start];
 }
 
 #pragma mark - SettingsNavigationControllerDelegate
