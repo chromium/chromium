@@ -79,6 +79,12 @@ class SingleClientReadingListSyncTest : public SyncTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+// TODO(crbug.com/1455032): The following ifdef should be removed.
+// Currently Android explicitly enables Sync-the-feature upon
+// `SignInPrimaryAccount()` while the following tests are expecting the sync
+// feature to be disabled.
+#if !BUILDFLAG(IS_ANDROID)
+
 IN_PROC_BROWSER_TEST_F(SingleClientReadingListSyncTest,
                        ShouldDownloadAccountDataUponSignin) {
   const GURL kUrl("http://url.com/");
@@ -90,11 +96,41 @@ IN_PROC_BROWSER_TEST_F(SingleClientReadingListSyncTest,
 
   ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
   ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
+  ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureEnabled());
   EXPECT_TRUE(
       GetSyncService(0)->GetActiveDataTypes().Has(syncer::READING_LIST));
 
-  EXPECT_EQ(1ul, model()->size());
+  EXPECT_THAT(model()->size(), Eq(1ul));
   EXPECT_FALSE(model()->NeedsExplicitUploadToSyncServer(kUrl));
 }
+
+// ChromeOS doesn't have the concept of sign-out, so this only exists on other
+// platforms.
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+
+IN_PROC_BROWSER_TEST_F(SingleClientReadingListSyncTest,
+                       ShouldDeleteAccountDataUponSignout) {
+  const GURL kUrl("http://url.com/");
+  fake_server_->InjectEntity(CreateTestReadingListEntity(kUrl, "entry_title"));
+
+  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+
+  ASSERT_THAT(model()->size(), Eq(0ul));
+
+  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
+  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
+  ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureEnabled());
+  ASSERT_TRUE(
+      GetSyncService(0)->GetActiveDataTypes().Has(syncer::READING_LIST));
+
+  ASSERT_THAT(model()->size(), Eq(1ul));
+
+  GetClient(0)->SignOutPrimaryAccount();
+  EXPECT_THAT(model()->size(), Eq(0ul));
+}
+
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace
