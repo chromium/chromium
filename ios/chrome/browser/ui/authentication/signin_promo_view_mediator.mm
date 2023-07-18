@@ -6,10 +6,12 @@
 
 #import <memory>
 
+#import "base/feature_list.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
+#import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/base/signin_metrics.h"
@@ -19,6 +21,7 @@
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service.h"
@@ -539,7 +542,7 @@ const char* AlreadySeenSigninViewPreferenceKey(
   Browser* _browser;
   // View used to present sign-in UI.
   UIViewController* _baseViewController;
-  // Sign-in flow, used only when `self.signInOnly` is `YES`.
+  // Sign-in flow, used only when `self.signinPromoAction` is `kInstantSignin`.
   AuthenticationFlow* _authenticationFlow;
   // Sync service.
   syncer::SyncService* _syncService;
@@ -550,7 +553,7 @@ const char* AlreadySeenSigninViewPreferenceKey(
   // Coordinator to add an account.
   SigninCoordinator* _signinCoordinator;
   // TODO(crbug.com/1448830): This class should not need to block the UI.
-  // The UI blocker is only used in sign-in only cases.
+  // The UI blocker is only used in kInstantSignin cases.
   std::unique_ptr<ScopedUIBlocker> _uiBlocker;
   // The type of data that should be synced before the sign-in completes.
   syncer::ModelType _dataTypeToWaitForInitialSync;
@@ -719,9 +722,14 @@ const char* AlreadySeenSigninViewPreferenceKey(
                             userImage:nil
                        hasCloseButton:hasCloseButton
                      hasSignInSpinner:self.signinInProgress];
-  if (self.signInOnly) {
-    configurator.primaryButtonTitleNoAccountsModeOverride =
-        l10n_util::GetNSString(IDS_IOS_CONSISTENCY_PROMO_SIGN_IN);
+  switch (self.signinPromoAction) {
+    case SigninPromoAction::kSync:
+      break;
+    case SigninPromoAction::kSigninSheet:
+    case SigninPromoAction::kInstantSignin:
+      configurator.primaryButtonTitleNoAccountsModeOverride =
+          l10n_util::GetNSString(IDS_IOS_CONSISTENCY_PROMO_SIGN_IN);
+      break;
   }
   return configurator;
 }
@@ -857,11 +865,11 @@ const char* AlreadySeenSigninViewPreferenceKey(
                                       identityChanged:NO];
 }
 
-- (void)setSignInInOnly:(BOOL)signInOnly {
-  if (_signInOnly == signInOnly) {
+- (void)setSigninPromoAction:(SigninPromoAction)signinPromoAction {
+  if (_signinPromoAction == signinPromoAction) {
     return;
   }
-  _signInOnly = signInOnly;
+  _signinPromoAction = signinPromoAction;
   SigninPromoViewConfigurator* configurator = [self createConfigurator];
   [self.consumer configureSigninPromoWithConfigurator:configurator
                                       identityChanged:NO];
@@ -898,7 +906,10 @@ const char* AlreadySeenSigninViewPreferenceKey(
 
 // Starts sign-in process with the Chrome identity from `identity`.
 - (void)showSigninWithIdentity:(id<SystemIdentity>)identity
+                     operation:(AuthenticationOperation)operation
                    promoAction:(signin_metrics::PromoAction)promoAction {
+  DCHECK_NE(self.signinPromoAction, SigninPromoAction::kInstantSignin);
+
   self.signinPromoViewState = ios::SigninPromoViewState::UsedAtLeastOnce;
   self.signinInProgress = YES;
   __weak SigninPromoViewMediator* weakSelf = self;
@@ -915,37 +926,41 @@ const char* AlreadySeenSigninViewPreferenceKey(
   if ([self.consumer respondsToSelector:@selector
                      (signinPromoViewMediator:shouldOpenSigninWithIdentity
                                                 :promoAction:completion:)]) {
+    CHECK(!base::FeatureList::IsEnabled(kHideSettingsSyncPromo));
     [self.consumer signinPromoViewMediator:self
               shouldOpenSigninWithIdentity:identity
                                promoAction:promoAction
                                 completion:completion];
   } else {
-    ShowSigninCommand* command = [[ShowSigninCommand alloc]
-        initWithOperation:AuthenticationOperationSigninAndSync
-                 identity:identity
-              accessPoint:self.accessPoint
-              promoAction:promoAction
-                 callback:completion];
+    ShowSigninCommand* command =
+        [[ShowSigninCommand alloc] initWithOperation:operation
+                                            identity:identity
+                                         accessPoint:self.accessPoint
+                                         promoAction:promoAction
+                                            callback:completion];
     [self.presenter showSignin:command];
   }
 }
 
-// Triggers the primary action when `signInOnly` is at YES: starts sign-in flow.
-- (void)primaryActionForSignInOnly {
-  DCHECK(self.signInOnly) << base::SysNSStringToUTF8([self description]);
+// Triggers the primary action when `signinPromoAction` is at kInstantSignin:
+// starts sign-in flow.
+- (void)primaryActionForInstantSignin {
+  DCHECK_EQ(self.signinPromoAction, SigninPromoAction::kInstantSignin)
+      << base::SysNSStringToUTF8([self description]);
   SceneState* sceneState =
       SceneStateBrowserAgent::FromBrowser(_browser)->GetSceneState();
   _uiBlocker = std::make_unique<ScopedUIBlocker>(sceneState);
   signin_metrics::RecordSigninUserActionForAccessPoint(self.accessPoint);
   self.signinPromoViewState = ios::SigninPromoViewState::UsedAtLeastOnce;
   self.signinInProgress = YES;
-  [self startSignInOnlyFlow];
+  [self startInstantSignInFlow];
 }
 
-// Triggers the secondary action when `signInOnly` is at YES: starts the
-// add account dialog.
-- (void)secondaryActionForSignInOnly {
-  DCHECK(self.signInOnly) << base::SysNSStringToUTF8([self description]);
+// Triggers the secondary action when `signinPromoAction` is at kInstantSignin:
+// starts the add account dialog.
+- (void)secondaryActionForInstantSignin {
+  DCHECK_EQ(self.signinPromoAction, SigninPromoAction::kInstantSignin)
+      << base::SysNSStringToUTF8([self description]);
   SceneState* sceneState =
       SceneStateBrowserAgent::FromBrowser(_browser)->GetSceneState();
   _uiBlocker = std::make_unique<ScopedUIBlocker>(sceneState);
@@ -959,8 +974,8 @@ const char* AlreadySeenSigninViewPreferenceKey(
   [_identityChooserCoordinator start];
 }
 
-// Starts the sign-in only flow.
-- (void)startSignInOnlyFlow {
+// Starts the instant sign-in flow.
+- (void)startInstantSignInFlow {
   signin_metrics::RecordSigninUserActionForAccessPoint(self.accessPoint);
   _authenticationFlow = [[AuthenticationFlow alloc]
                initWithBrowser:_browser
@@ -972,7 +987,7 @@ const char* AlreadySeenSigninViewPreferenceKey(
   __weak id<SigninPromoViewConsumer> weakConsumer = self.consumer;
   __weak __typeof(self) weakSelf = self;
   [_authenticationFlow startSignInWithCompletion:^(BOOL success) {
-    [weakSelf signInFlowCompletedForSignInOnly];
+    [weakSelf signInFlowCompletedForInstantSignin];
     if ([weakSelf shouldWaitForInitialSync]) {
       return;
     }
@@ -984,17 +999,19 @@ const char* AlreadySeenSigninViewPreferenceKey(
 }
 
 // Called when the sign-in flow is over. This method should only be called
-// when this is a sign-in only flow.
-- (void)signInFlowCompletedForSignInOnly {
-  DCHECK(self.signInOnly) << base::SysNSStringToUTF8([self description]);
+// when this is an instant sign-in flow.
+- (void)signInFlowCompletedForInstantSignin {
+  DCHECK_EQ(self.signinPromoAction, SigninPromoAction::kInstantSignin)
+      << base::SysNSStringToUTF8([self description]);
   _uiBlocker.reset();
 }
 
-- (void)startAddAccountForSignInOnly {
+- (void)startAddAccountForInstantSignin {
   DCHECK(!_signinCoordinator)
       << base::SysNSStringToUTF8([_signinCoordinator description]) << " "
       << base::SysNSStringToUTF8([self description]);
-  DCHECK(self.signInOnly) << base::SysNSStringToUTF8([self description]);
+  DCHECK_EQ(self.signinPromoAction, SigninPromoAction::kInstantSignin)
+      << base::SysNSStringToUTF8([self description]);
   SceneState* sceneState =
       SceneStateBrowserAgent::FromBrowser(_browser)->GetSceneState();
   _uiBlocker = std::make_unique<ScopedUIBlocker>(sceneState);
@@ -1019,7 +1036,7 @@ const char* AlreadySeenSigninViewPreferenceKey(
   switch (result) {
     case SigninCoordinatorResultSuccess:
       self.identity = info.identity;
-      [self startSignInOnlyFlow];
+      [self startInstantSignInFlow];
       break;
     case SigninCoordinatorResultInterrupted:
     case SigninCoordinatorResultCanceledByUser:
@@ -1117,14 +1134,24 @@ const char* AlreadySeenSigninViewPreferenceKey(
   // On iOS, the promo does not have a button to add and account when there is
   // already an account on the device. That flow goes through the NOT_DEFAULT
   // promo instead. Always use the NO_EXISTING_ACCOUNT variant.
-  signin_metrics::PromoAction promo_action =
+  signin_metrics::PromoAction promoAction =
       signin_metrics::PromoAction::PROMO_ACTION_NEW_ACCOUNT_NO_EXISTING_ACCOUNT;
   signin_metrics::RecordSigninUserActionForAccessPoint(self.accessPoint);
-  if (self.signInOnly) {
-    [self startAddAccountForSignInOnly];
-    return;
+  switch (self.signinPromoAction) {
+    case SigninPromoAction::kInstantSignin:
+      [self startAddAccountForInstantSignin];
+      return;
+    case SigninPromoAction::kSync:
+      [self showSigninWithIdentity:nil
+                         operation:AuthenticationOperationSigninAndSync
+                       promoAction:promoAction];
+      return;
+    case SigninPromoAction::kSigninSheet:
+      [self showSigninWithIdentity:nil
+                         operation:AuthenticationOperationSigninOnly
+                       promoAction:promoAction];
+      return;
   }
-  [self showSigninWithIdentity:nil promoAction:promo_action];
 }
 
 - (void)signinPromoViewDidTapSigninWithDefaultAccount:
@@ -1135,13 +1162,23 @@ const char* AlreadySeenSigninViewPreferenceKey(
   DCHECK(!self.invalidClosedOrNeverVisible)
       << base::SysNSStringToUTF8([self description]);
   [self sendImpressionsTillSigninButtonsHistogram];
-  if (self.signInOnly) {
-    [self primaryActionForSignInOnly];
-    return;
+  switch (self.signinPromoAction) {
+    case SigninPromoAction::kInstantSignin:
+      [self primaryActionForInstantSignin];
+      return;
+    case SigninPromoAction::kSync:
+      [self showSigninWithIdentity:self.identity
+                         operation:AuthenticationOperationSigninAndSync
+                       promoAction:signin_metrics::PromoAction::
+                                       PROMO_ACTION_WITH_DEFAULT];
+      return;
+    case SigninPromoAction::kSigninSheet:
+      [self showSigninWithIdentity:nil
+                         operation:AuthenticationOperationSigninOnly
+                       promoAction:signin_metrics::PromoAction::
+                                       PROMO_ACTION_WITH_DEFAULT];
+      return;
   }
-  [self showSigninWithIdentity:self.identity
-                   promoAction:signin_metrics::PromoAction::
-                                   PROMO_ACTION_WITH_DEFAULT];
 }
 
 - (void)signinPromoViewDidTapSigninWithOtherAccount:
@@ -1153,13 +1190,24 @@ const char* AlreadySeenSigninViewPreferenceKey(
       << base::SysNSStringToUTF8([self description]);
   [self sendImpressionsTillSigninButtonsHistogram];
   signin_metrics::RecordSigninUserActionForAccessPoint(self.accessPoint);
-  if (self.signInOnly) {
-    [self secondaryActionForSignInOnly];
-    return;
+
+  switch (self.signinPromoAction) {
+    case SigninPromoAction::kInstantSignin:
+      [self secondaryActionForInstantSignin];
+      return;
+    case SigninPromoAction::kSync:
+      [self showSigninWithIdentity:nil
+                         operation:AuthenticationOperationSigninAndSync
+                       promoAction:signin_metrics::PromoAction::
+                                       PROMO_ACTION_NOT_DEFAULT];
+      return;
+    case SigninPromoAction::kSigninSheet:
+      [self showSigninWithIdentity:nil
+                         operation:AuthenticationOperationSigninOnly
+                       promoAction:signin_metrics::PromoAction::
+                                       PROMO_ACTION_NOT_DEFAULT];
+      return;
   }
-  [self showSigninWithIdentity:nil
-                   promoAction:signin_metrics::PromoAction::
-                                   PROMO_ACTION_NOT_DEFAULT];
 }
 
 - (void)signinPromoViewCloseButtonWasTapped:(SigninPromoView*)view {
@@ -1208,7 +1256,7 @@ const char* AlreadySeenSigninViewPreferenceKey(
   _identityChooserCoordinator.delegate = nil;
   [_identityChooserCoordinator stop];
   _identityChooserCoordinator = nil;
-  [self startAddAccountForSignInOnly];
+  [self startAddAccountForInstantSignin];
 }
 
 - (void)identityChooserCoordinator:(IdentityChooserCoordinator*)coordinator
@@ -1226,7 +1274,7 @@ const char* AlreadySeenSigninViewPreferenceKey(
   self.identity = identity;
   [_identityChooserCoordinator stop];
   _identityChooserCoordinator = nil;
-  [self startSignInOnlyFlow];
+  [self startInstantSignInFlow];
 }
 
 #pragma mark - SyncObserverModelBridge

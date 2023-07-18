@@ -211,7 +211,8 @@
                                 ACCESS_POINT_READING_LIST
                   presenter:self
          baseViewController:self.tableViewController];
-  _signinPromoViewMediator.signInOnly = YES;
+  _signinPromoViewMediator.signinPromoAction =
+      SigninPromoAction::kInstantSignin;
   _signinPromoViewMediator.consumer = self;
   [_signinPromoViewMediator
       setDataTypeToWaitForInitialSync:syncer::ModelType::READING_LIST];

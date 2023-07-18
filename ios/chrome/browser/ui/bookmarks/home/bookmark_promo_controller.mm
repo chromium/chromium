@@ -129,14 +129,15 @@
       // show the signin promo.
       if (lastSignedInGaiaId.empty()) {
         self.shouldShowSigninPromo = YES;
-        _signinPromoViewMediator.signInOnly = YES;
+        _signinPromoViewMediator.signinPromoAction =
+            SigninPromoAction::kInstantSignin;
       } else {
         self.shouldShowSigninPromo = NO;
       }
     } else {
       // If the user is not signed in, the promo should be visible.
       self.shouldShowSigninPromo = YES;
-      _signinPromoViewMediator.signInOnly = NO;
+      _signinPromoViewMediator.signinPromoAction = SigninPromoAction::kSync;
     }
     return;
   }
@@ -154,7 +155,7 @@
     // The user signed in, but not opted into syncing bookmarks - show sync
     // promo.
     self.shouldShowSigninPromo = YES;
-    _signinPromoViewMediator.signInOnly = NO;
+    _signinPromoViewMediator.signinPromoAction = SigninPromoAction::kSync;
     return;
   }
 
@@ -162,7 +163,8 @@
     // The user is opted into syncing bookmarks, but the first sync is not
     // finished yet - keep the promo visible to show the spinner.
     self.shouldShowSigninPromo = YES;
-    _signinPromoViewMediator.signInOnly = YES;
+    _signinPromoViewMediator.signinPromoAction =
+        SigninPromoAction::kInstantSignin;
     return;
   }
   // The user is opted into syncing bookmarks and the first sync is done - hide

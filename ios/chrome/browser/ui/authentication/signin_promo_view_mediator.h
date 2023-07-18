@@ -28,7 +28,12 @@ namespace syncer {
 class SyncService;
 }
 
+namespace user_prefs {
+class PrefRegistrySyncable;
+}  // namespace user_prefs
+
 namespace ios {
+// TODO(crbug.com/1447012): Remove from ios namespace.
 // Enums for the sign-in promo view state. Those states are sequential, with no
 // way to go backwards. All states can be skipped except `NeverVisible` and
 // `Invalid`.
@@ -47,9 +52,18 @@ enum class SigninPromoViewState {
 };
 }  // namespace ios
 
-namespace user_prefs {
-class PrefRegistrySyncable;
-}  // namespace user_prefs
+// The action performed when accepting the promo.
+enum class SigninPromoAction {
+  // Performs AuthenticationOperationSigninAndSync.
+  kSync = 0,
+  // Primary button signs the user in instantly.
+  // Secondary button opens a floating dialog with the available accounts. When
+  // an account is tapped, it is signed in instantly.
+  kInstantSignin,
+  // Performs AuthenticationOperationSigninOnly.
+  // TODO(crbug.com/1447012): secondary button should auto-open account chooser.
+  kSigninSheet,
+};
 
 // Class that monitors the available identities and creates
 // SigninPromoViewConfigurator. This class makes the link between the model and
@@ -78,10 +92,8 @@ class PrefRegistrySyncable;
 @property(nonatomic, assign, readonly, getter=isInvalidClosedOrNeverVisible)
     BOOL invalidClosedOrNeverVisible;
 
-// If YES, SigninPromoViewMediator will trigger the sign-in flow with sign-in
-// only. Otherwise, SigninPromoViewMediator will trigger a command for sign-in
-// and sync.
-@property(nonatomic, assign) BOOL signInOnly;
+// The action performed when accepting the promo.
+@property(nonatomic, assign) SigninPromoAction signinPromoAction;
 
 // Registers the feature preferences.
 + (void)registerBrowserStatePrefs:(user_prefs::PrefRegistrySyncable*)registry;
