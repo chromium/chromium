@@ -125,7 +125,6 @@ class BookmarkBridge {
      * Load an empty partner bookmark shim for testing. The root node for bookmark will be an
      * empty node.
      */
-    @VisibleForTesting
     public void loadEmptyPartnerBookmarkShimForTesting() {
         BookmarkBridgeJni.get().loadEmptyPartnerBookmarkShimForTesting(
                 mNativeBookmarkBridge, BookmarkBridge.this);
@@ -135,7 +134,6 @@ class BookmarkBridge {
      * Load a fake partner bookmark shim for testing. To see (or edit) the titles and URLs of the
      * partner bookmarks, go to bookmark_bridge.cc.
      */
-    @VisibleForTesting
     public void loadFakePartnerBookmarkShimForTesting() {
         BookmarkBridgeJni.get().loadFakePartnerBookmarkShimForTesting(
                 mNativeBookmarkBridge, BookmarkBridge.this);
@@ -369,7 +367,6 @@ class BookmarkBridge {
      *
      * @return Bookmark GUID of the given node.
      */
-    @VisibleForTesting
     public String getBookmarkGuidByIdForTesting(BookmarkId id) {
         ThreadUtils.assertOnUiThread();
         if (mNativeBookmarkBridge == 0) return null;
