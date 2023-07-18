@@ -765,7 +765,7 @@ FlexLayoutAlgorithm::ContentAlignmentNormalBehavior() {
 
 bool FlexLayoutAlgorithm::ShouldApplyMinSizeAutoForChild(
     const LayoutBox& child) const {
-  // css-flexbox section 4.5
+  // See: https://drafts.csswg.org/css-flexbox/#min-size-auto
   const Length& min = IsHorizontalFlow() ? child.StyleRef().UsedMinWidth()
                                          : child.StyleRef().UsedMinHeight();
   bool main_axis_is_childs_block_axis =
@@ -784,20 +784,9 @@ bool FlexLayoutAlgorithm::ShouldApplyMinSizeAutoForChild(
   if (child.ShouldApplySizeContainment())
     return false;
 
-  // All replaced elements (except SVG) use a default value of 'visible' for
-  // overflow. This feature switches this to 'clip' via UA stylesheet. In order
-  // to ensure backwards compatibility with the existing behaviour, 'clip' is
-  // treated similar to 'visible' for deciding whether 'auto' applies to compute
-  // the minimum bounds for these elements.
-  //
-  // The above is also consistent with the spec:
-  // https://drafts.csswg.org/css-flexbox/#min-size-auto
-  bool is_replaced_element_respecting_overflow =
-      RuntimeEnabledFeatures::CSSOverflowForReplacedElementsEnabled() &&
-      child.IsLayoutReplaced();
-
+  // For replaced elements treat 'clip' similar to 'visible'.
   return MainAxisOverflowForChild(child) == EOverflow::kVisible ||
-         (is_replaced_element_respecting_overflow &&
+         (child.IsLayoutReplaced() &&
           MainAxisOverflowForChild(child) == EOverflow::kClip);
 }
 

@@ -512,11 +512,9 @@ PaintLayerType LayoutBox::LayerTypeRequired() const {
       (StyleRef().SpecifiesColumns() && !IsLayoutNGObject()))
     return kNormalPaintLayer;
 
-  const bool is_replaced_element_respecting_overflow =
-      RuntimeEnabledFeatures::CSSOverflowForReplacedElementsEnabled() &&
-      IsLayoutReplaced();
-  if (HasNonVisibleOverflow() && !is_replaced_element_respecting_overflow)
+  if (HasNonVisibleOverflow() && !IsLayoutReplaced()) {
     return kOverflowClipPaintLayer;
+  }
 
   return kNoPaintLayer;
 }

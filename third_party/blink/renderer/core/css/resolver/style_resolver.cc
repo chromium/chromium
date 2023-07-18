@@ -124,10 +124,6 @@ namespace {
 
 scoped_refptr<const ComputedStyle> BuildInitialStyleForImg(
     const scoped_refptr<const ComputedStyle>& initial_style) {
-  if (!RuntimeEnabledFeatures::CSSOverflowForReplacedElementsEnabled()) {
-    return initial_style;
-  }
-
   // This matches the img {} declarations in html.css to avoid copy-on-write
   // when only UA styles apply for these properties. See crbug.com/1369454
   // for details.

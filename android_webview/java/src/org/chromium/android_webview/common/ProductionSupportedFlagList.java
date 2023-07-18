@@ -310,9 +310,6 @@ public final class ProductionSupportedFlagList {
             Flag.baseFeature(BlinkFeatures.VIEW_TRANSITION_ON_NAVIGATION,
                     "Enables the experimental View Transitions API for navigations."
                             + " See https://github.com/WICG/view-transitions/blob/main/explainer.md."),
-            Flag.baseFeature(BlinkFeatures.CSS_OVERFLOW_FOR_REPLACED_ELEMENTS,
-                    "Enables respecting the CSS overflow property on replaced elements."
-                            + " See https://chromestatus.com/feature/5137515594383360."),
             Flag.baseFeature(GpuFeatures.INCREASED_CMD_BUFFER_PARSE_SLICE,
                     "Enable the use of an increased parse slice size per command buffer before"
                             + " each forced context switch."),

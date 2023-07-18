@@ -8768,10 +8768,6 @@ bool Element::IsReplacedElementRespectingCSSOverflow() const {
     return true;
   }
 
-  if (!RuntimeEnabledFeatures::CSSOverflowForReplacedElementsEnabled()) {
-    return false;
-  }
-
   return IsA<HTMLVideoElement>(this) || IsA<HTMLCanvasElement>(this) ||
          IsA<HTMLImageElement>(this) ||
          (IsA<SVGSVGElement>(this) &&

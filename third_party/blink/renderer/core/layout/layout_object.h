@@ -626,11 +626,10 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     }
 
     // Replaced elements have a used value of 'clip' for all overflow values
-    // except visible. See discussion at
-    // https://github.com/w3c/csswg-drafts/issues/7714#issuecomment-1248761712.
+    // except visible. See discussion at:
+    // https://github.com/w3c/csswg-drafts/issues/7714#issuecomment-1248761712
     bool is_overflow_clip = false;
-    if (IsLayoutReplaced() &&
-        RuntimeEnabledFeatures::CSSOverflowForReplacedElementsEnabled()) {
+    if (IsLayoutReplaced()) {
       is_overflow_clip = style.OverflowX() != EOverflow::kVisible &&
                          style.OverflowY() != EOverflow::kVisible;
     } else {
@@ -1634,14 +1633,14 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   bool HasClipRelatedProperty() const;
   bool IsScrollContainer() const {
     NOT_DESTROYED();
+    // Replaced elements don't support scrolling. If overflow is non visible,
+    // the behaviour applied is equivalent to `clip`. See:
+    // https://github.com/w3c/csswg-drafts/issues/7435
+    if (IsLayoutReplaced()) {
+      return false;
+    }
     // Always check HasNonVisibleOverflow() in case the object is not allowed to
     // have non-visible overflow.
-    // Replaced elements don't support scrolling. If overflow is non visible,
-    // the behaviour applied is equivalent to `clip`. See discussion at:
-    // https://github.com/w3c/csswg-drafts/issues/7435.
-    if (IsLayoutReplaced() &&
-        RuntimeEnabledFeatures::CSSOverflowForReplacedElementsEnabled())
-      return false;
     return HasNonVisibleOverflow() && StyleRef().IsScrollContainer();
   }
 

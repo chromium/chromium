@@ -151,6 +151,16 @@ audio {
   height: 54px;
 }
 
+video, canvas, img {
+  overflow: clip;
+  overflow-clip-margin: content-box;
+}
+
+iframe, embed, object, fencedframe, portal {
+   overflow: clip !important;
+   overflow-clip-margin: content-box !important;
+}
+
 /* heading elements */
 
 h1 {
