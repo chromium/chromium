@@ -946,7 +946,8 @@ TEST_F(PageInfoBubbleViewTest, UpdatingSiteDataRetainsLayout) {
   // Create a fake cookies info.
   PageInfoUI::CookiesNewInfo cookies;
   cookies.allowed_sites_count = 10;
-  cookies.blocked_sites_count = 32;
+  cookies.allowed_third_party_sites_count = 8;
+  cookies.blocked_third_party_sites_count = 32;
   cookies.status = CookieControlsStatus::kDisabled;
   cookies.enforcement = CookieControlsEnforcement::kNoEnforcement;
 
@@ -1147,7 +1148,8 @@ TEST_F(PageInfoBubbleViewCookiesSubpageTest, TextsOnButtonsAreCorrect) {
   base::HistogramTester histogram_tester;
   // Create fake cookie information.
   PageInfoUI::CookiesNewInfo cookie_info;
-  cookie_info.blocked_sites_count = 10;
+  cookie_info.blocked_third_party_sites_count = 10;
+  cookie_info.allowed_third_party_sites_count = 1;
   cookie_info.allowed_sites_count = 3;
   cookie_info.status = CookieControlsStatus::kEnabled;
   cookie_info.enforcement = CookieControlsEnforcement::kNoEnforcement;
@@ -1182,7 +1184,7 @@ TEST_F(PageInfoBubbleViewCookiesSubpageTest, TextsOnButtonsAreCorrect) {
   ExpectViewContainsText(api_->blocking_third_party_cookies_subtitle(),
                          l10n_util::GetPluralStringFUTF16(
                              IDS_PAGE_INFO_COOKIES_BLOCKED_SITES_COUNT,
-                             cookie_info.blocked_sites_count));
+                             cookie_info.blocked_third_party_sites_count));
 
   EXPECT_TRUE(blocking_third_party_cookies_row->GetVisible());
   EXPECT_TRUE(fps_button->GetVisible());

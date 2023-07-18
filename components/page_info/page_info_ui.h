@@ -92,7 +92,10 @@ class PageInfoUI {
     ~CookiesNewInfo();
 
     // The number of third-party sites blocked.
-    int blocked_sites_count = -1;
+    int blocked_third_party_sites_count = -1;
+
+    // The number of third-party sites allowed.
+    int allowed_third_party_sites_count = -1;
 
     // The number of sites allowed to access cookies.
     int allowed_sites_count = -1;

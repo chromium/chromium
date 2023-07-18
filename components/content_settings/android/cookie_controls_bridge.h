@@ -53,7 +53,8 @@ class CookieControlsBridge : public OldCookieControlsObserver,
   void OnStatusChanged(CookieControlsStatus status,
                        CookieControlsEnforcement enforcement,
                        base::Time expiration) override;
-  void OnSitesCountChanged(int allowed_sites, int blocked_sites) override;
+  void OnSitesCountChanged(int allowed_third_party_sites_count,
+                           int blocked_third_party_sites_count) override;
   void OnBreakageConfidenceLevelChanged(
       CookieControlsBreakageConfidenceLevel level) override;
 
@@ -67,8 +68,8 @@ class CookieControlsBridge : public OldCookieControlsObserver,
   absl::optional<base::Time> expiration_;
   absl::optional<int> blocked_cookies_;
   absl::optional<int> allowed_cookies_;
-  absl::optional<int> blocked_sites_;
-  absl::optional<int> allowed_sites_;
+  absl::optional<int> blocked_third_party_sites_count_;
+  absl::optional<int> allowed_third_party_sites_count_;
   std::unique_ptr<CookieControlsController> controller_;
   base::ScopedObservation<CookieControlsController, OldCookieControlsObserver>
       old_observation_{this};

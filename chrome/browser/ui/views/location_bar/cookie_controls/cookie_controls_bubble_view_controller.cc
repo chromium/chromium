@@ -156,8 +156,8 @@ void CookieControlsBubbleViewController::OnStatusChanged(
 }
 
 void CookieControlsBubbleViewController::OnSitesCountChanged(
-    int allowed_sites,
-    int blocked_sites) {
+    int allowed_third_party_sites_count,
+    int blocked_third_party_sites_count) {
   // TODO(1446230): Implement OnSitesCountChanged
 }
 

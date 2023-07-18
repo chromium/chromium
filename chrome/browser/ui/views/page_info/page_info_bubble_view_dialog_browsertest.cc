@@ -710,13 +710,12 @@ class PageInfoBubbleViewCookiesSubpageBrowserTest : public DialogBrowserTest {
     constexpr char kCookiesSubpageFpsManaged3pcAllowed[] =
         "CookiesSubpageFpsManaged3pcAllowed";
 
-    const int blocked_sites_count = 8;
-    const int allowed_sites_count = 9;
     const std::u16string kSiteOrigin = u"example.com";
 
     PageInfoUI::CookiesNewInfo cookie_info;
-    cookie_info.allowed_sites_count = allowed_sites_count;
-    cookie_info.blocked_sites_count = blocked_sites_count;
+    cookie_info.allowed_sites_count = 9;
+    cookie_info.allowed_third_party_sites_count = 5;
+    cookie_info.blocked_third_party_sites_count = 8;
     cookie_info.enforcement = CookieControlsEnforcement::kNoEnforcement;
     cookie_info.status = CookieControlsStatus::kEnabled;
     // TODO(crbug.com/1346305): Add fps enforcement info when finished

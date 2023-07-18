@@ -155,10 +155,11 @@ void CookieControlsIconView::OnStatusChanged(
 }
 
 // Called by User Bypass, not Chrome Guard.
-void CookieControlsIconView::OnSitesCountChanged(int allowed_sites,
-                                                 int blocked_sites) {
-  if (has_blocked_sites_ != blocked_sites > 0) {
-    has_blocked_sites_ = blocked_sites > 0;
+void CookieControlsIconView::OnSitesCountChanged(
+    int allowed_third_party_sites_count,
+    int blocked_third_party_sites_count) {
+  if (has_blocked_sites_ != blocked_third_party_sites_count > 0) {
+    has_blocked_sites_ = blocked_third_party_sites_count > 0;
     UpdateIconView();
   }
 }

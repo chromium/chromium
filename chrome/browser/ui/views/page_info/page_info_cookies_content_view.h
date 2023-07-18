@@ -127,6 +127,7 @@ class PageInfoCookiesContentView : public views::View, public PageInfoUI {
   raw_ptr<RichControlsContainerView> third_party_cookies_row_ = nullptr;
   raw_ptr<views::ToggleButton> third_party_cookies_toggle_ = nullptr;
   raw_ptr<NonAccessibleImageView> third_party_cookies_enforced_icon_ = nullptr;
+  raw_ptr<views::Label> third_party_cookies_toggle_subtitle_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PAGE_INFO_PAGE_INFO_COOKIES_CONTENT_VIEW_H_

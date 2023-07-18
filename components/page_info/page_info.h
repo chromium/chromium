@@ -362,7 +362,8 @@ class PageInfo : private content_settings::CookieControlsObserver,
   void OnStatusChanged(CookieControlsStatus status,
                        CookieControlsEnforcement enforcement,
                        base::Time expiration) override;
-  void OnSitesCountChanged(int allowed_sites, int blocked_sites) override;
+  void OnSitesCountChanged(int allowed_third_party_sites_count,
+                           int blocked_third_party_sites_count) override;
   void OnBreakageConfidenceLevelChanged(
       CookieControlsBreakageConfidenceLevel level) override;
 
@@ -437,8 +438,6 @@ class PageInfo : private content_settings::CookieControlsObserver,
   // Get counts of allowed and blocked cookies.
   int GetFirstPartyAllowedCookiesCount(const GURL& site_url);
   int GetFirstPartyBlockedCookiesCount(const GURL& site_url);
-  int GetThirdPartyAllowedCookiesCount(const GURL& site_url);
-  int GetThirdPartyBlockedCookiesCount(const GURL& site_url);
 
   // Get the count of blocked and allowed sites.
   int GetSitesWithAllowedCookiesAccessCount();
@@ -553,6 +552,12 @@ class PageInfo : private content_settings::CookieControlsObserver,
 
   CookieControlsBreakageConfidenceLevel cookie_controls_confidence_ =
       CookieControlsBreakageConfidenceLevel::kUninitialized;
+
+  // The number of third-party sites blocked from accessing storage.
+  absl::optional<int> blocked_third_party_sites_count_;
+
+  // The number of third-party sites allowed to access storage.
+  absl::optional<int> allowed_third_party_sites_count_;
 
   bool is_subscribed_to_permission_change_for_testing = false;
 

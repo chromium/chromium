@@ -350,8 +350,14 @@ void PageInfo::OnStatusChanged(CookieControlsStatus status,
   }
 }
 
-void PageInfo::OnSitesCountChanged(int allowed_sites, int blocked_sites) {
-  // TODO(crbug.com/1446230): Implement OnSitesCountChanged.
+void PageInfo::OnSitesCountChanged(int allowed_third_party_sites_count,
+                                   int blocked_third_party_sites_count) {
+  if (allowed_third_party_sites_count_ != allowed_third_party_sites_count ||
+      blocked_third_party_sites_count_ != blocked_third_party_sites_count) {
+    allowed_third_party_sites_count_ = allowed_third_party_sites_count;
+    blocked_third_party_sites_count_ = blocked_third_party_sites_count;
+    PresentSiteData(base::DoNothing());
+  }
 }
 
 void PageInfo::OnBreakageConfidenceLevelChanged(
@@ -1389,11 +1395,16 @@ void PageInfo::PresentSiteDataInternal(base::OnceClosure done) {
   if (!web_contents_ || web_contents_->IsBeingDestroyed())
     return;
 
-  // Add allowed sites count.
   PageInfoUI::CookiesNewInfo cookies_info;
   cookies_info.allowed_sites_count = GetSitesWithAllowedCookiesAccessCount();
-  cookies_info.blocked_sites_count =
-      GetThirdPartySitesWithBlockedCookiesAccessCount(site_url_);
+  // TODO(crbug.com/1446230): Clean up and remove the fallback after the feature
+  // was launched. If blocked_third_party_sites_count_ isn't set, use fallback
+  // and count the sites.
+  cookies_info.blocked_third_party_sites_count =
+      blocked_third_party_sites_count_.value_or(
+          GetThirdPartySitesWithBlockedCookiesAccessCount(site_url_));
+  cookies_info.allowed_third_party_sites_count =
+      allowed_third_party_sites_count_.value_or(0);
 
 #if !BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(
@@ -1632,24 +1643,6 @@ int PageInfo::GetFirstPartyBlockedCookiesCount(const GURL& site_url) {
 
   return settings->blocked_local_shared_objects().GetObjectCountForDomain(
       site_url);
-}
-
-int PageInfo::GetThirdPartyAllowedCookiesCount(const GURL& site_url) {
-  auto* settings = GetPageSpecificContentSettings();
-  if (!settings)
-    return 0;
-
-  return settings->allowed_local_shared_objects().GetObjectCount() -
-         GetFirstPartyAllowedCookiesCount(site_url);
-}
-
-int PageInfo::GetThirdPartyBlockedCookiesCount(const GURL& site_url) {
-  auto* settings = GetPageSpecificContentSettings();
-  if (!settings)
-    return 0;
-
-  return settings->blocked_local_shared_objects().GetObjectCount() -
-         GetFirstPartyBlockedCookiesCount(site_url);
 }
 
 bool PageInfo::IsIsolatedWebApp() const {

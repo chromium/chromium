@@ -208,8 +208,9 @@ void PageInfoCookiesContentView::SetBlockingThirdPartyCookiesInfo(
       const auto blocked_sites_count_message_id =
           IDS_PAGE_INFO_COOKIES_BLOCKED_SITES_COUNT;
       const std::u16string num_blocked_sites_text =
-          l10n_util::GetPluralStringFUTF16(blocked_sites_count_message_id,
-                                           cookie_info.blocked_sites_count);
+          l10n_util::GetPluralStringFUTF16(
+              blocked_sites_count_message_id,
+              cookie_info.blocked_third_party_sites_count);
 
       // Update the text displaying the number of blocked sites.
       blocking_third_party_cookies_subtitle_label_->SetText(
@@ -270,11 +271,20 @@ void PageInfoCookiesContentView::SetThirdPartyCookiesInfo(
   third_party_cookies_title_->SetText(title);
   third_party_cookies_description_->SetText(description);
 
-  // TODO(crbug.com/1446230): Update the toggle row subtitle.
   third_party_cookies_row_->SetIcon(
       PageInfoViewFactory::GetThirdPartyCookiesIcon(
           are_third_party_cookies_blocked));
   third_party_cookies_toggle_->SetIsOn(!are_third_party_cookies_blocked);
+
+  const std::u16string toggle_subtitle =
+      are_third_party_cookies_blocked
+          ? l10n_util::GetPluralStringFUTF16(
+                IDS_PAGE_INFO_COOKIES_BLOCKED_SITES_COUNT,
+                cookie_info.blocked_third_party_sites_count)
+          : l10n_util::GetPluralStringFUTF16(
+                IDS_PAGE_INFO_COOKIES_ALLOWED_SITES_COUNT,
+                cookie_info.allowed_third_party_sites_count);
+  third_party_cookies_toggle_subtitle_->SetText(toggle_subtitle);
 
   // In the enforced state, the toggle buttons and labels are hidden; enforced
   // icon is shown instead of the toggle button.
@@ -512,8 +522,8 @@ void PageInfoCookiesContentView::AddThirdPartyCookiesContainer() {
   third_party_cookies_row_->SetIcon(
       PageInfoViewFactory::GetBlockingThirdPartyCookiesIcon());
 
-  // TODO(crbug.com/1446230): Use the actual subtitle with site counts.
-  third_party_cookies_row_->AddSecondaryLabel(u"1234 sites blocked");
+  third_party_cookies_toggle_subtitle_ =
+      third_party_cookies_row_->AddSecondaryLabel(std::u16string());
 
   third_party_cookies_toggle_ = third_party_cookies_row_->AddControl(
       std::make_unique<views::ToggleButton>(base::BindRepeating(
