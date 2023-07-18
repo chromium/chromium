@@ -19,6 +19,7 @@
 namespace media {
 
 // Important events happened to the CDM.
+#if BUILDFLAG(IS_WIN)
 enum class CdmEvent {
   // Significant (e.g. played >1 minute) successful playback happened using the
   // CDM.
@@ -33,6 +34,7 @@ enum class CdmEvent {
   // Hardware context reset happened.
   kHardwareContextReset,
 };
+#endif  // BUILDFLAG(IS_WIN)
 
 class MEDIA_EXPORT CdmDocumentService {
  public:

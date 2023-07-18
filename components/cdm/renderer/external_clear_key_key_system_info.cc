@@ -21,12 +21,17 @@ ExternalClearKeyKeySystemInfo::ExternalClearKeyKeySystemInfo()
           media::kExternalClearKeyKeySystem,
           // Excludes kMediaFoundationClearKeyKeySystem to treat MediaFoundation
           // Clear Key key system as a separate one.
-          {media::kExternalClearKeyInvalidKeySystem,
-           media::kMediaFoundationClearKeyKeySystem},
+          {
+            media::kExternalClearKeyInvalidKeySystem,
+#if BUILDFLAG(IS_WIN)
+            media::kMediaFoundationClearKeyKeySystem
+#endif  // BUILDFLAG(IS_WIN)
+          },
           media::EME_CODEC_MP4_ALL | media::EME_CODEC_WEBM_ALL,
           absl::nullopt,
           media::EmeFeatureSupport::REQUESTABLE,
-          media::EmeFeatureSupport::NOT_SUPPORTED) {}
+          media::EmeFeatureSupport::NOT_SUPPORTED) {
+}
 
 ExternalClearKeyKeySystemInfo::ExternalClearKeyKeySystemInfo(
     const std::string& key_system,

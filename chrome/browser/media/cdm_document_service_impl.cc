@@ -12,7 +12,6 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
-#include "media/cdm/media_foundation_cdm_data.h"
 #include "media/media_buildflags.h"
 
 #if BUILDFLAG(ENABLE_CDM_STORAGE_ID)
@@ -53,6 +52,7 @@
 #include "base/win/sid.h"
 #include "chrome/browser/media/cdm_pref_service_helper.h"
 #include "chrome/browser/media/media_foundation_service_monitor.h"
+#include "media/cdm/media_foundation_cdm_data.h"
 #include "media/cdm/win/media_foundation_cdm.h"
 #include "sandbox/policy/win/lpac_capability.h"
 #endif  // BUILDFLAG(IS_WIN)

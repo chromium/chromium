@@ -106,9 +106,11 @@ class EncryptedMediaTestBase : public MediaBrowserTest {
     }
     // Treat `media::kMediaFoundationClearKeyKeySystem` as a separate key system
     // only for Windows
+#if BUILDFLAG(IS_WIN)
     if (key_system == media::kMediaFoundationClearKeyKeySystem) {
       return false;
     }
+#endif  // BUILDFLAG(IS_WIN)
     std::string prefix = std::string(media::kExternalClearKeyKeySystem) + '.';
     return key_system.substr(0, prefix.size()) == prefix;
   }

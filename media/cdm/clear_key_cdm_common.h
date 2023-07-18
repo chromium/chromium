@@ -35,12 +35,14 @@ inline constexpr char kExternalClearKeyKeySystem[] =
 // - media/test/data/eme_player_js/player_utils.js
 // - CreateCdmInstance() in clear_key_cdm.cc
 
+#if BUILDFLAG(IS_WIN)
 // MediaFoundation Clear Key key system only for testing.
 inline constexpr char kMediaFoundationClearKeyKeySystem[] =
     "org.chromium.externalclearkey.mediafoundation";
 
 inline constexpr wchar_t kMediaFoundationClearKeyKeySystemWideString[] =
     L"org.chromium.externalclearkey.mediafoundation";
+#endif  // BUILDFLAG(IS_WIN)
 
 // A sub key system that is invalid for testing purpose.
 inline constexpr char kExternalClearKeyInvalidKeySystem[] =
