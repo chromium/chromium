@@ -165,7 +165,10 @@ H265Decoder::DecodeResult H265Decoder::Decode() {
             CHECK(ProcessPPS(curr_slice_hdr_->slice_pic_parameter_set_id,
                              &need_new_buffers))
                 << "Processing PPS Unit Failed.";
-            // TODO(b/261127809): handle when |need_new_buffers| is true
+            if (need_new_buffers) {
+              curr_pic_ = nullptr;
+              return kConfigChange;
+            }
           }
         }
 
@@ -174,10 +177,18 @@ H265Decoder::DecodeResult H265Decoder::Decode() {
           state_ = kEnsurePicture;
         }
 
-        // TODO(b/261127809): implement change to create a picture after parsing
-        // PPS and SPS when |state_| = kEnsurePicture
         if (state_ == kEnsurePicture) {
-          NOTIMPLEMENTED();
+          if (curr_pic_) {
+            // |curr_pic_| already exists, so skip to ProcessCurrentSlice().
+            state_ = kTryCurrentSlice;
+          } else {
+            curr_pic_ = new H265Picture();
+            CHECK(curr_pic_) << "Ran out of surfaces.";
+
+            curr_pic_->first_picture_ = first_picture_;
+            first_picture_ = false;
+            state_ = kTryNewFrame;
+          }
         }
 
         if (state_ == kTryNewFrame) {
@@ -216,7 +227,7 @@ H265Decoder::DecodeResult H265Decoder::Decode() {
 
         break;
       case H265NALU::EOS_NUT:
-        // TODO(b/261127809): identify first picture that follows an EOS NALU
+        first_picture_ = true;
         [[fallthrough]];
       case H265NALU::EOB_NUT:  // fallthrough
       case H265NALU::AUD_NUT:

@@ -8,6 +8,7 @@
 
 #include "media/gpu/v4l2/test/video_decoder.h"
 
+#include "media/gpu/v4l2/test/h265_dpb.h"
 #include "media/video/h265_parser.h"
 
 namespace media {
@@ -93,6 +94,13 @@ class H265Decoder : public VideoDecoder {
   State state_ = kAfterReset;
 
   std::unique_ptr<H265Parser> parser_;
+
+  // Picture currently being processed/decoded.
+  scoped_refptr<H265Picture> curr_pic_;
+
+  // Used to identify first picture in decoding order
+  // or first picture that follows an EOS NALU.
+  bool first_picture_ = true;
 
   const base::MemoryMappedFile& data_stream_;
 
