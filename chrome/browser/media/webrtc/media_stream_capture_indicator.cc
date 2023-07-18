@@ -343,15 +343,14 @@ void MediaStreamCaptureIndicator::WebContentsDeviceUsage::AddDevices(
   if (type == MediaType::kUserMedia) {
     user_media_stop_callbacks_[device_id] = std::move(stop_callback);
   } else if (type == MediaType::kDisplayMedia) {
-    { display_media_stop_callbacks_[device_id] = std::move(stop_callback); }
-
-    if (web_contents()) {
-      web_contents()->NotifyNavigationStateChanged(
-          content::INVALIDATE_TYPE_TAB);
-    }
-
-    indicator_->UpdateNotificationUserInterface();
+    display_media_stop_callbacks_[device_id] = std::move(stop_callback);
   }
+
+  if (web_contents()) {
+    web_contents()->NotifyNavigationStateChanged(content::INVALIDATE_TYPE_TAB);
+  }
+
+  indicator_->UpdateNotificationUserInterface();
 }
 
 void MediaStreamCaptureIndicator::WebContentsDeviceUsage::RemoveDevices(
