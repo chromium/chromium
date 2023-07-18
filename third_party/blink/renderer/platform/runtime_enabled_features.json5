@@ -1010,6 +1010,11 @@
       base_feature: "CssPaintingForSpellingGrammarErrors",
     },
     {
+      // crbug.com/1443291: Phrase Line Breaking
+      name: "CSSPhraseLineBreak",
+      status: "test",
+    },
+    {
       name: "CSSPictureInPicture",
       status: "stable",
       base_feature: "none",
@@ -1223,10 +1228,6 @@
       name: "CSSWhiteSpaceShorthand",
       status: "stable",
       depends_on: ["CSSTextWrap"],
-    },
-    {
-      name: "CSSWordBoundaryDetection",
-      status: "test",
     },
     {
       name: "CSSZoom",
