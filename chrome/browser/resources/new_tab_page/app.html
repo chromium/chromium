@@ -183,6 +183,8 @@
     box-shadow: 0 3px 6px rgba(0, 0, 0, .16), 0 1px 2px rgba(0, 0, 0, .23);
     font-weight: 400;
     min-width: 32px;
+    padding-inline-start: 16px;
+    padding-inline-end: 16px;
   }
 
   :host([show-background-image_]) #customizeButton {
@@ -200,18 +202,11 @@
     -webkit-mask-size: 100%;
     background-color: var(--text-color);
     height: 16px;
-    margin-inline-end: 8px;
     width: 16px;
   }
 
   :host-context([chrome-refresh-2023]) #customizeButton {
     --cr-button-height: 32px;
-  }
-
-  :host-context([chrome-refresh-2023]) #customizeIcon,
-  :host-context([chrome-refresh-2023]) #customizeText {
-    display: inline-block;
-    vertical-align: middle;
   }
 
   :host([show-background-image_]) #customizeIcon {
@@ -221,11 +216,8 @@
 
   @media (max-width: 550px) {
     #customizeButton {
-      padding: 0;
-    }
-
-    #customizeIcon {
-      margin: 0;
+      padding-inline-start: 8px;
+      padding-inline-end: 0;
     }
 
     #customizeText {
@@ -235,11 +227,8 @@
 
   @media (max-width: 970px) {
     :host([modules-shown-to-user]) #customizeButton {
-      padding: 0;
-    }
-
-    :host([modules-shown-to-user]) #customizeIcon {
-      margin: 0;
+      padding-inline-start: 8px;
+      padding-inline-end: 0;
     }
 
     :host([modules-shown-to-user]) #customizeText {
@@ -249,11 +238,8 @@
 
   @media (max-width: 1020px) {
     :host([modules-fre-shown]) #customizeButton {
-      padding: 0;
-    }
-
-    :host([modules-fre-shown]) #customizeIcon {
-      margin: 0;
+      padding-inline-start: 8px;
+      padding-inline-end: 0;
     }
 
     :host([modules-fre-shown]) #customizeText {
@@ -437,7 +423,7 @@
       <div id="customizeButtonContainer">
         <cr-button id="customizeButton" on-click="onCustomizeClick_"
             title="$i18n{customizeThisPage}" aria-pressed="[[showCustomize_]]">
-          <div id="customizeIcon"></div>
+          <div id="customizeIcon" slot="prefix-icon"></div>
           <div id="customizeText" hidden$="[[showBackgroundImage_]]">
             $i18n{customizeButton}
           </div>
