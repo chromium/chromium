@@ -271,7 +271,7 @@ void RunAttestationCertificateCallback(
             SecondDeviceAuthBroker::AttestationErrorType::kPermanentError));
         return;
       }
-      std::move(callback).Run(pem_certificate_chain);
+      std::move(callback).Run(PEMCertChain(pem_certificate_chain));
       return;
     case attestation::ATTESTATION_UNSPECIFIED_FAILURE:
       // TODO(b/259021973): Is it safe to consider
@@ -289,7 +289,7 @@ void RunAttestationCertificateCallback(
 
 std::string CreateStartSessionRequestData(
     const FidoAssertionInfo& fido_assertion_info,
-    const std::string& certificate) {
+    const PEMCertChain& certificate) {
   std::string request_string;
 
   // This is the request format:
@@ -348,7 +348,14 @@ std::string CreateStartSessionRequestData(
   // taking user's consent. Also change the network annotation after adding
   // this.
   base::Value::Dict chrome_os_device_info;
-  chrome_os_device_info.Set(kDeviceAttestationCertificateKey, certificate);
+  // Gaia expects a byte array of cert chain in their request proto (see request
+  // format above). We need to Base64 encode the cert chain on top of the PEM
+  // encoding. Gaia will then do a double decoding - one at the proto level
+  // (Base64), and one at the PEM level (Base64) - to get the actual certificate
+  // bytes.
+  chrome_os_device_info.Set(
+      kDeviceAttestationCertificateKey,
+      base::Base64Encode(base::as_bytes(base::make_span((*certificate)))));
   chrome_os_device_info.Set(
       kClientIdKey,
       google_apis::GetOAuth2ClientID(google_apis::OAuth2Client::CLIENT_MAIN));
@@ -661,7 +668,7 @@ void SecondDeviceAuthBroker::FetchAttestationCertificate(
 
 void SecondDeviceAuthBroker::FetchRefreshToken(
     const FidoAssertionInfo& fido_assertion_info,
-    const std::string& certificate,
+    const PEMCertChain& certificate,
     RefreshTokenCallback refresh_token_callback) {
   DCHECK(!endpoint_fetcher_)
       << "This class can handle only one request at a time";

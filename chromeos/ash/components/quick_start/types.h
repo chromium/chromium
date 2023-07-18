@@ -25,6 +25,9 @@ using Base64String = base::StrongAlias<class Base64StringTag, std::string>;
 using Base64UrlString =
     base::StrongAlias<class Base64UrlStringTag, std::string>;
 
+// A PEM encoded certificate chain.
+using PEMCertChain = base::StrongAlias<class PEMCertChainTag, std::string>;
+
 // Encodes a byte array to a Base64Url encoded string. Omits padding characters
 // in the output.
 Base64UrlString Base64UrlEncode(const std::vector<uint8_t>& data);

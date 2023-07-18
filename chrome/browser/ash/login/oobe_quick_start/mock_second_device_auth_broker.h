@@ -7,6 +7,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "chrome/browser/ash/login/oobe_quick_start/second_device_auth_broker.h"
+#include "chromeos/ash/components/quick_start/types.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace network {
@@ -28,7 +29,7 @@ class MockSecondDeviceAuthBroker : public SecondDeviceAuthBroker {
   MOCK_METHOD(void,
               FetchRefreshToken,
               (const FidoAssertionInfo&,
-               const std::string&,
+               const PEMCertChain&,
                RefreshTokenCallback),
               (override));
   MOCK_METHOD(void,

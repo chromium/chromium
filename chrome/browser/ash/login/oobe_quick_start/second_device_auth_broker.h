@@ -116,7 +116,7 @@ class SecondDeviceAuthBroker : public GaiaAuthConsumer {
   using ChallengeBytesCallback =
       base::OnceCallback<void(ChallengeBytesOrError)>;
   using AttestationCertificateOrError =
-      const base::expected<std::string, AttestationErrorType>&;
+      const base::expected<PEMCertChain, AttestationErrorType>&;
   using AttestationCertificateCallback =
       base::OnceCallback<void(AttestationCertificateOrError)>;
   using RefreshTokenOrError =
@@ -169,7 +169,7 @@ class SecondDeviceAuthBroker : public GaiaAuthConsumer {
   // types. See the type definition of `RefreshTokenResponse` for reference.
   // Virtual for testing.
   virtual void FetchRefreshToken(const FidoAssertionInfo& fido_assertion_info,
-                                 const std::string& certificate,
+                                 const PEMCertChain& certificate,
                                  RefreshTokenCallback refresh_token_callback);
 
  private:
