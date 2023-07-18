@@ -6,9 +6,6 @@
 
 #include <string>
 
-#include "ash/wm/window_state.h"
-#include "ash/wm/window_util.h"
-#include "base/base64.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/logging.h"
@@ -29,8 +26,6 @@
 namespace borealis {
 
 const char kBorealisWindowPrefix[] = "org.chromium.guest_os.borealis.";
-const char kFullscreenClientShellId[] =
-    "org.chromium.guest_os.borealis.wmclass.steam";
 const char kBorealisClientSuffix[] = "wmclass.Steam";
 const char kBorealisAnonymousPrefix[] = "borealis_anon:";
 const int kSteamClientGameId = 769;
@@ -126,38 +121,6 @@ bool BorealisWindowManager::IsSteamGameWindow(Profile* profile,
 
   // Every other Borealis window with the STEAM_GAME property is a game.
   return SteamGameId(window).has_value();
-}
-
-// static
-bool BorealisWindowManager::ShouldNewWindowBeMinimized(
-    const std::string& window_id) {
-  // Only borealis client windows should be minimized.
-  if (!base::EndsWith(window_id, borealis::kBorealisClientSuffix,
-                      base::CompareCase::SENSITIVE)) {
-    return false;
-  }
-
-  // We only need to create windows as minimized when the active window is a
-  // borealis window in fullscreen.
-  aura::Window* active_window = ash::window_util::GetActiveWindow();
-  if (!active_window || !IsBorealisWindow(active_window))
-    return false;
-
-  const std::string* active_window_id = WaylandWindowId(active_window);
-  if (!active_window_id)
-    return false;
-
-  auto* window_state = ash::WindowState::Get(active_window);
-  if (!window_state || !window_state->IsFullscreen())
-    return false;
-
-  // If the fullscreen window is the borealis client, then we allow windows to
-  // take focus.
-  if (*active_window_id == borealis::kFullscreenClientShellId) {
-    return false;
-  }
-
-  return true;
 }
 
 // static

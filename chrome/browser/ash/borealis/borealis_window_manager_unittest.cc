@@ -225,59 +225,6 @@ TEST_F(BorealisWindowManagerTest, AnonymousObserverNotCalledForKnownApp) {
   window_manager.RemoveObserver(&observer);
 }
 
-TEST_F(BorealisWindowManagerTest, DontMinimizeWhenWindowIsntBorealisClient) {
-  std::unique_ptr<views::Widget> active_widget =
-      SetupMinimizeTest((std::string(kBorealisWindowPrefix) + "foo.bar"));
-
-  std::string new_window_id = std::string(kBorealisWindowPrefix) + "foo.bar";
-
-  EXPECT_FALSE(
-      BorealisWindowManager::ShouldNewWindowBeMinimized(new_window_id));
-}
-
-TEST_F(BorealisWindowManagerTest, DontMinimizeWhenActiveWindowIsNotBorealis) {
-  std::unique_ptr<views::Widget> active_widget =
-      SetupMinimizeTest("not.borealis.foo.bar");
-
-  std::string new_window_id = GetBorealisClientId();
-
-  EXPECT_FALSE(
-      BorealisWindowManager::ShouldNewWindowBeMinimized(new_window_id));
-}
-
-TEST_F(BorealisWindowManagerTest, DontMinimizeWhenActiveWindowIsNotFullscreen) {
-  std::unique_ptr<views::Widget> active_widget =
-      SetupMinimizeTest(std::string(kBorealisWindowPrefix) + "foo.bar2");
-  active_widget->SetFullscreen(false);
-
-  std::string new_window_id = GetBorealisClientId();
-
-  EXPECT_FALSE(
-      BorealisWindowManager::ShouldNewWindowBeMinimized(new_window_id));
-}
-
-TEST_F(BorealisWindowManagerTest,
-       DontMinimizeWhenActiveWindowIsBorealisClient) {
-  std::unique_ptr<views::Widget> active_widget =
-      SetupMinimizeTest(kFullscreenClientShellId);
-
-  std::string new_window_id = GetBorealisClientId();
-
-  EXPECT_FALSE(
-      BorealisWindowManager::ShouldNewWindowBeMinimized(new_window_id));
-}
-
-TEST_F(
-    BorealisWindowManagerTest,
-    MinimizeWhenActiveBorealisWindowIsFullscreenAndNewWindowIsBorealisClient) {
-  std::unique_ptr<views::Widget> active_widget =
-      SetupMinimizeTest(std::string(kBorealisWindowPrefix) + "foo.bar");
-
-  std::string new_window_id = GetBorealisClientId();
-
-  EXPECT_TRUE(BorealisWindowManager::ShouldNewWindowBeMinimized(new_window_id));
-}
-
 TEST_F(BorealisWindowManagerTest, SteamClientIsNonGameBorealisWindow) {
   std::unique_ptr<aura::Window> window = MakeWindow(GetBorealisClientId());
 
