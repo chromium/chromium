@@ -135,6 +135,11 @@
     Fill full name
   </message>
 
+  <!--TODO(crbug.com/1459990): Align with writers about this string and remove translateable=false-->
+  <message name="IDS_AUTOFILL_A11Y_ANNOUNCE_FILL_EVERYTHING_FROM_ADDRESS_PROFILE_POPUP_OPTION_SELECTED" desc="Screen reader announcement indicating that the fill everything option was selected." translateable="false">
+    The fill everything option was selected
+  </message>
+
   <message name="IDS_AUTOFILL_HIDE_SUGGESTIONS" desc="The text displayed at the Autofill popup to allow the user to hide the suggestions menu." meaning="Hides the suggestion list.">
     Hide suggestions
   </message>
@@ -145,6 +150,10 @@
 
   <message name="IDS_AUTOFILL_DELETE_ADDRESS_PROFILE_POPUP_OPTION_SELECTED" desc="The text displayed at the bottom of the Autofill sub menu to open the delete address profile dialog." meaning="Entry point to address profile deletion." translateable="false">
     Delete address
+  </message>
+
+  <message name="IDS_AUTOFILL_FILL_EVERYTHING_FROM_ADDRESS_PROFILE_POPUP_OPTION_SELECTED" desc="The text displayed at the footer of the Autofill sub menu to fill everything from the address profile." meaning="Fill every available information from the address profile." translateable="false">
+    Fill everything
   </message>
 
   <if expr="not use_titlecase">

@@ -35,6 +35,7 @@ constexpr PopupItemId kItemTypesUsingLeadingIcons[] = {
     PopupItemId::kAutofillOptions,
     PopupItemId::kDeleteAddressProfile,
     PopupItemId::kAllSavedPasswordsEntry,
+    PopupItemId::kFillEverythingFromAddressProfile,
     PopupItemId::kPasswordAccountStorageEmpty,
     PopupItemId::kPasswordAccountStorageOptIn,
     PopupItemId::kPasswordAccountStorageReSignin,

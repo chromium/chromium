@@ -693,13 +693,27 @@ TEST_F(AutofillExternalDelegateUnitTest,
        ExternalDelegateAcceptAutofillSuggestion) {
   EXPECT_CALL(autofill_client_,
               HideAutofillPopup(PopupHidingReason::kAcceptSuggestion));
-  std::u16string dummy_string(u"John Legend");
   EXPECT_CALL(
       *browser_autofill_manager_,
       FillOrPreviewForm(mojom::RendererFormDataAction::kFill, _, _, _, _));
 
   external_delegate_->DidAcceptSuggestion(
-      test::CreateAutofillSuggestion(PopupItemId::kAddressEntry, dummy_string),
+      test::CreateAutofillSuggestion(PopupItemId::kAddressEntry,
+                                     u"John Legend"),
+      2, kDefaultTriggerSource);  // Row 2
+}
+
+TEST_F(AutofillExternalDelegateUnitTest,
+       ExternalDelegateAcceptFillEverythingSuggestion) {
+  EXPECT_CALL(autofill_client_,
+              HideAutofillPopup(PopupHidingReason::kAcceptSuggestion));
+  EXPECT_CALL(
+      *browser_autofill_manager_,
+      FillOrPreviewForm(mojom::RendererFormDataAction::kFill, _, _, _, _));
+
+  external_delegate_->DidAcceptSuggestion(
+      test::CreateAutofillSuggestion(
+          PopupItemId::kFillEverythingFromAddressProfile, u"John Legend"),
       2, kDefaultTriggerSource);  // Row 2
 }
 

@@ -280,6 +280,7 @@ FillDataType GetEventTypeFromSingleFieldSuggestionPopupItemId(
     case PopupItemId::kDeleteAddressProfile:
     case PopupItemId::kFillFullAddress:
     case PopupItemId::kFillFullName:
+    case PopupItemId::kFillEverythingFromAddressProfile:
       NOTREACHED();
   }
   NOTREACHED();

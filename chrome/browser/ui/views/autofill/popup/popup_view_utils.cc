@@ -553,6 +553,7 @@ bool IsFooterPopupItemId(PopupItemId popup_item_id) {
     case PopupItemId::kShowAccountCards:
     case PopupItemId::kUseVirtualCard:
     case PopupItemId::kAllSavedPasswordsEntry:
+    case PopupItemId::kFillEverythingFromAddressProfile:
     case PopupItemId::kClearForm:
     case PopupItemId::kAutofillOptions:
     case PopupItemId::kSeePromoCodeDetails:

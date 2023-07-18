@@ -54,7 +54,7 @@ std::u16string GetInfoInOneLine(const AutofillProfile* profile,
 }
 
 // Creates the suggestion that will open the delete address profile dialog.
-// TODO(crbug.com/1459990): Use this once the delete the new popup with submenus
+// TODO(crbug.com/1459990): Use this once the new popup with submenus
 // implementation is complete.
 Suggestion GetDeleteAddressProfileSuggestion(Suggestion::BackendId backend_id) {
   Suggestion sugestion(l10n_util::GetStringUTF16(
@@ -90,9 +90,27 @@ Suggestion GetFillFullNameSuggestion(Suggestion::BackendId backend_id) {
   suggestion.payload = backend_id;
   suggestion.acceptance_a11y_announcement = l10n_util::GetStringUTF16(
       IDS_AUTOFILL_A11Y_ANNOUNCE_FILL_NAME_GROUP_POPUP_OPTION_SELECTED);
+
   return suggestion;
 }
 
+// Creates the suggestion that will fill the whole form for the profile. This
+// suggestion is displayed once the users is on group filling level or field by
+// field level. It is used as a way to allow users to go back to filling the
+// whole form.
+// TODO(crbug.com/1459990): Use this once the new popup with submenus
+// implementation is complete.
+Suggestion GetFillEverythingFromAddressProfileSuggestion(
+    Suggestion::BackendId backend_id) {
+  Suggestion suggestion(l10n_util::GetStringUTF16(
+      IDS_AUTOFILL_FILL_EVERYTHING_FROM_ADDRESS_PROFILE_POPUP_OPTION_SELECTED));
+  suggestion.popup_item_id = PopupItemId::kFillEverythingFromAddressProfile;
+  suggestion.icon = "magicIcon";
+  suggestion.payload = backend_id;
+  suggestion.acceptance_a11y_announcement = l10n_util::GetStringUTF16(
+      IDS_AUTOFILL_A11Y_ANNOUNCE_FILL_EVERYTHING_FROM_ADDRESS_PROFILE_POPUP_OPTION_SELECTED);
+  return suggestion;
+}
 }  // namespace
 
 // As of November 2018, 50 profiles should be more than enough to cover at least

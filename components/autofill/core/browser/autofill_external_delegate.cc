@@ -250,6 +250,7 @@ void AutofillExternalDelegate::DidSelectSuggestion(
       break;
     case PopupItemId::kAddressEntry:
     case PopupItemId::kCreditCardEntry:
+    case PopupItemId::kFillEverythingFromAddressProfile:
       FillAutofillFormData(
           suggestion.popup_item_id, backend_id, true,
           TriggerSourceFromSuggestionTriggerSource(trigger_source));
@@ -360,7 +361,9 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
       break;
     default:
       if (suggestion.popup_item_id == PopupItemId::kAddressEntry ||
-          suggestion.popup_item_id == PopupItemId::kCreditCardEntry) {
+          suggestion.popup_item_id == PopupItemId::kCreditCardEntry ||
+          suggestion.popup_item_id ==
+              PopupItemId::kFillEverythingFromAddressProfile) {
         autofill_metrics::LogAutofillSuggestionAcceptedIndex(
             position, popup_type_, manager_->client()->IsOffTheRecord());
       }
