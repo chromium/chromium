@@ -184,8 +184,47 @@ android_library("payments_autofill_java") {
   sources = [
     "java/src/org/chromium/components/autofill/Completable.java",
     "java/src/org/chromium/components/autofill/EditableOption.java",
+    "java/src/org/chromium/components/autofill/payments/CardDetail.java",
+    "java/src/org/chromium/components/autofill/payments/LegalMessageLine.java",
   ]
-  deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
+  deps = [
+    "//base:jni_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+  ]
+}
+
+robolectric_library("payments_autofill_junit_tests") {
+  sources = [
+    "javatests/src/org/chromium/components/autofill/payments/CardDetailTest.java",
+    "javatests/src/org/chromium/components/autofill/payments/LegalMessageLineTest.java",
+  ]
+  deps = [
+    ":payments_autofill_java",
+    "//base:base_java_test_support",
+    "//base:base_junit_test_support",
+    "//third_party/hamcrest:hamcrest_core_java",
+    "//third_party/hamcrest:hamcrest_library_java",
+    "//third_party/junit:junit",
+  ]
+}
+
+generate_jni("payments_jni_headers") {
+  sources = [
+    "java/src/org/chromium/components/autofill/payments/LegalMessageLine.java",
+  ]
+  deps = [ "//base:jni_java" ]
+}
+
+static_library("payments_autofill_cc") {
+  sources = [
+    "payments/legal_message_line_android.cc",
+    "payments/legal_message_line_android.h",
+  ]
+  deps = [
+    ":payments_jni_headers",
+    "//base",
+    "//components/autofill/core/browser:legal_message_line",
+  ]
 }
 
 java_group("autofill_java") {

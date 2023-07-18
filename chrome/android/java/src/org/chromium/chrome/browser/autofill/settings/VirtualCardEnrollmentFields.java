@@ -8,7 +8,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
-import org.chromium.chrome.browser.autofill.LegalMessageLine;
+import org.chromium.components.autofill.payments.LegalMessageLine;
 import org.chromium.url.GURL;
 
 import java.util.LinkedList;

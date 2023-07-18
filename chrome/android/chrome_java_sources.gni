@@ -694,7 +694,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/infobar/AutofillOfferNotificationInfoBar.java",
   "java/src/org/chromium/chrome/browser/infobar/AutofillSaveCardInfoBar.java",
   "java/src/org/chromium/chrome/browser/infobar/AutofillVirtualCardEnrollmentInfoBar.java",
-  "java/src/org/chromium/chrome/browser/infobar/CardDetail.java",
   "java/src/org/chromium/chrome/browser/infobar/DuplicateDownloadInfoBar.java",
   "java/src/org/chromium/chrome/browser/infobar/FramebustBlockInfoBar.java",
   "java/src/org/chromium/chrome/browser/infobar/IPHBubbleDelegateImpl.java",

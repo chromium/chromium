@@ -2,16 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.infobar;
+package org.chromium.components.autofill.payments;
+
+import androidx.annotation.DrawableRes;
 
 /**
- * Detailed card information to show in the various Autofill infobars.
+ * Detailed card information to show in the various Autofill views.
  */
 public class CardDetail {
     /**
      * The identifier of the drawable of the card issuer icon.
      */
-    public int issuerIconDrawableId;
+    public @DrawableRes int issuerIconDrawableId;
 
     /**
      * The label for the card.
@@ -30,7 +32,7 @@ public class CardDetail {
      * @param label The credit card label, for example "***1234".
      * @param subLabel The credit card sub-label, for example "Exp: 06/17".
      */
-    public CardDetail(int iconId, String label, String subLabel) {
+    public CardDetail(@DrawableRes int iconId, String label, String subLabel) {
         this.issuerIconDrawableId = iconId;
         this.label = label;
         this.subLabel = subLabel;

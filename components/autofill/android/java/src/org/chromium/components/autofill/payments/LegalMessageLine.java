@@ -2,7 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.autofill;
+package org.chromium.components.autofill.payments;
+
+import org.chromium.base.annotations.CalledByNative;
+import org.chromium.base.annotations.JNINamespace;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -10,6 +13,7 @@ import java.util.List;
 /**
  * Legal message line with links to show in the autofill ui.
  */
+@JNINamespace("autofill")
 public class LegalMessageLine {
     /**
      * A link in the legal message line.
@@ -37,6 +41,7 @@ public class LegalMessageLine {
          * @param end The ending exclusive index of the link position in the text.
          * @param url The URL of the link.
          */
+        @CalledByNative("Link")
         public Link(int start, int end, String url) {
             this.start = start;
             this.end = end;
@@ -59,7 +64,13 @@ public class LegalMessageLine {
      *
      * @param text The plain text legal message.
      */
+    @CalledByNative
     public LegalMessageLine(String text) {
         this.text = text;
+    }
+
+    @CalledByNative
+    /*package*/ void addLink(Link link) {
+        links.add(link);
     }
 }

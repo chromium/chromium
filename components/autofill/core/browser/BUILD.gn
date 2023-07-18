@@ -341,8 +341,6 @@ static_library("browser") {
     "payments/full_card_request.h",
     "payments/iban_save_manager.cc",
     "payments/iban_save_manager.h",
-    "payments/legal_message_line.cc",
-    "payments/legal_message_line.h",
     "payments/mandatory_reauth_manager.cc",
     "payments/mandatory_reauth_manager.h",
     "payments/offer_notification_handler.cc",
@@ -570,6 +568,7 @@ static_library("browser") {
   configs += [ "//build/config:precompiled_headers" ]
 
   public_deps = [
+    ":legal_message_line",
     "//components/autofill/core/browser/proto",
     "//components/autofill/core/common",
     "//components/autofill/core/common/mojom:mojo_types",
@@ -644,7 +643,10 @@ static_library("browser") {
   }
 
   if (is_android) {
-    deps += [ "//components/messages/android:feature_flags" ]
+    deps += [
+      "//components/autofill/android:payments_jni_headers",
+      "//components/messages/android:feature_flags",
+    ]
   }
 
   if (is_ios || is_android) {
@@ -669,6 +671,19 @@ static_library("browser") {
       "//ui/native_theme:native_theme_browser",
     ]
   }
+}
+
+static_library("legal_message_line") {
+  sources = [
+    "payments/legal_message_line.cc",
+    "payments/legal_message_line.h",
+  ]
+  deps = [
+    "//base",
+    "//base:i18n",
+    "//ui/gfx/range:range",
+    "//url:url",
+  ]
 }
 
 static_library("test_support") {
