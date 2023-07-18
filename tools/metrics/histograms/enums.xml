@@ -65578,6 +65578,7 @@ from previous Chrome versions.
   <int value="854730848" label="disable-app-info-dialog-mac"/>
   <int value="855746780" label="disable-physical-keyboard-autocorrect"/>
   <int value="855981832" label="BatchFetchRequests:enabled"/>
+  <int value="856250802" label="webtransport-developer-mode"/>
   <int value="857391671" label="BluetoothNextHandsfreeProfile:disabled"/>
   <int value="857445869" label="enable-captive-portal-bypass-proxy"/>
   <int value="857716462" label="FeedInteractiveRefresh:enabled"/>

@@ -2041,6 +2041,9 @@ extern const char kWebRtcRemoteEventLogDescription[];
 extern const char kWebrtcUseMinMaxVEADimensionsName[];
 extern const char kWebrtcUseMinMaxVEADimensionsDescription[];
 
+extern const char kWebTransportDeveloperModeName[];
+extern const char kWebTransportDeveloperModeDescription[];
+
 extern const char kWebUsbDeviceDetectionName[];
 extern const char kWebUsbDeviceDetectionDescription[];
 

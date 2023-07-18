@@ -135,6 +135,7 @@
   "wait-threshold-seconds-for-capabilities-api",
   "wallet-service-use-sandbox",
   "web-authentication-permit-enterprise-attestation",
+  "webtransport-developer-mode",
   "webxr-runtime",
   "webxr-shared-buffers"
 ]

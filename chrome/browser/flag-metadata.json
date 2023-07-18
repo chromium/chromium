@@ -8107,6 +8107,13 @@
     "expiry_milestone": 120
   },
   {
+    "name": "webtransport-developer-mode",
+    "owners": [ "//net/quic/OWNERS" ],
+    // This flag is used by developers to debug applications
+    // using WebTransport locally.
+    "expiry_milestone": -1
+  },
+  {
     "name": "webui-omnibox-popup",
     "owners": [ "mahmadi", "chrome-desktop-search@google.com" ],
     "expiry_milestone": 120

@@ -3534,6 +3534,11 @@ const char kWebrtcUseMinMaxVEADimensionsDescription[] =
     "When enabled, WebRTC will only use the Video Encode Accelerator for "
     "video resolutions inside those published as supported.";
 
+const char kWebTransportDeveloperModeName[] = "WebTransport Developer Mode";
+const char kWebTransportDeveloperModeDescription[] =
+    "When enabled, removes the requirement that all certificates used for "
+    "WebTransport over HTTP/3 are issued by a known certificate root.";
+
 const char kWebUsbDeviceDetectionName[] =
     "Automatic detection of WebUSB-compatible devices";
 const char kWebUsbDeviceDetectionDescription[] =
