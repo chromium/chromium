@@ -1,6 +1,0 @@
-This is a testharness.js-based test.
-PASS Test we can construct an EncodedVideoChunk.
-PASS Test copyTo() exception if destiation invalid
-FAIL Test we can construct an zero-sized EncodedVideoChunk. Failed to execute 'copyTo' on 'EncodedVideoChunk': destination is detached.
-Harness: the test ran to completion.
-
