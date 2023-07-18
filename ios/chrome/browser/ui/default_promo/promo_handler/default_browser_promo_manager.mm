@@ -99,8 +99,25 @@
 
   // Tailored promos take priority over general promo.
   if (IsTailoredPromoEligibleUser(isSignedIn)) {
+    // Show the generic default browser promo when the default browser promo
+    // generic and tailored train experiment is enabled with the only-generic
+    // arm.
+    if (IsDefaultBrowserPromoGenericTailoredTrainEnabled() &&
+        IsDefaultBrowserPromoOnlyGenericArmTrain()) {
+      [self showPromo:DefaultPromoTypeGeneral];
+      return;
+    }
+
     // Should only show tailored promos
     [self showPromo:MostRecentInterestDefaultPromoType(!isSignedIn)];
+    return;
+  }
+
+  // When the default browser promo generic and tailored train experiment is
+  // enabled, the generic default browser promo will only be shown when the user
+  // is eligible for a tailored promo.
+  if (IsDefaultBrowserPromoGenericTailoredTrainEnabled()) {
+    [self hidePromo];
     return;
   }
 

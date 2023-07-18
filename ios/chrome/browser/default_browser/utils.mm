@@ -84,6 +84,15 @@ NSString* const kUserInteractedWithNonModalPromoCount =
 // promo has been displayed.
 NSString* const kDisplayedFullscreenPromoCount = @"displayedPromoCount";
 
+// Key in storage containing an int indicating the number of times a generic
+// promo has been displayed.
+NSString* const kGenericPromoInteractionCount = @"genericPromoInteractionCount";
+
+// Key in storage containing an int indicating the number of times a tailored
+// promo has been displayed.
+NSString* const kTailoredPromoInteractionCount =
+    @"tailoredPromoInteractionCount";
+
 // TODO(crbug.com/1445218): Remove in M116+.
 // Key in storage containing an NSDate indicating the last time a user
 // interacted with the "remind me later" panel.
@@ -411,6 +420,22 @@ NSInteger DisplayedFullscreenPromoCount() {
   return number.integerValue;
 }
 
+// Returns the number of time the fullscreen default browser promo has been
+// displayed.
+NSInteger GenericPromoInteractionCount() {
+  NSNumber* number =
+      GetObjectFromStorageForKey<NSNumber>(kGenericPromoInteractionCount);
+  return number.integerValue;
+}
+
+// Returns the number of time the tailored default browser promo has been
+// displayed.
+NSInteger TailoredPromoInteractionCount() {
+  NSNumber* number =
+      GetObjectFromStorageForKey<NSNumber>(kTailoredPromoInteractionCount);
+  return number.integerValue;
+}
+
 // Computes cooldown between fullscreen promos.
 base::TimeDelta ComputeCooldown() {
   // `true` if the user is in the short delay group experiment and tap on the
@@ -613,6 +638,15 @@ bool IsDefaultBrowserTriggerCriteraExperimentEnabled() {
   return base::FeatureList::IsEnabled(kDefaultBrowserTriggerCriteriaExperiment);
 }
 
+bool IsDefaultBrowserPromoGenericTailoredTrainEnabled() {
+  return base::FeatureList::IsEnabled(kDefaultBrowserGenericTailoredPromoTrain);
+}
+
+bool IsDefaultBrowserPromoOnlyGenericArmTrain() {
+  return kDefaultBrowserPromoGenericTailoredParam.Get() ==
+         DefaultBrowserPromoGenericTailoredArm::kOnlyGeneric;
+}
+
 bool ShouldTriggerDefaultBrowserPromoOnOmniboxCopyPaste() {
   return base::GetFieldTrialParamByFeatureAsBool(
       kDefaultBrowserTriggerCriteriaExperiment,
@@ -658,18 +692,24 @@ void LogFullscreenDefaultBrowserPromoDisplayed() {
 }
 
 void LogUserInteractionWithFullscreenPromo() {
+  const NSInteger generic_promo_interaction_count =
+      GenericPromoInteractionCount();
   NSDictionary<NSString*, NSObject*>* update = @{
     kUserHasInteractedWithFullscreenPromo : @YES,
     kLastTimeUserInteractedWithFullscreenPromo : [NSDate date],
+    kGenericPromoInteractionCount : @(generic_promo_interaction_count + 1),
   };
 
   UpdateStorageWithDictionary(update);
 }
 
 void LogUserInteractionWithTailoredFullscreenPromo() {
+  const NSInteger tailored_promo_interaction_count =
+      TailoredPromoInteractionCount();
   UpdateStorageWithDictionary(@{
     kUserHasInteractedWithTailoredFullscreenPromo : @YES,
     kLastTimeUserInteractedWithFullscreenPromo : [NSDate date],
+    kTailoredPromoInteractionCount : @(tailored_promo_interaction_count + 1),
   });
 }
 
@@ -842,6 +882,8 @@ const NSArray<NSString*>* DefaultBrowserUtilsLegacyKeysForTesting() {
     kUserHasInteractedWithFirstRunPromo,
     kUserInteractedWithNonModalPromoCount,
     kDisplayedFullscreenPromoCount,
+    kTailoredPromoInteractionCount,
+    kGenericPromoInteractionCount,
     kRemindMeLaterPromoActionInteraction,
     // clang-format on
   ];
@@ -905,19 +947,36 @@ bool ShouldRegisterPromoWithPromoManager(bool is_signed_in,
 }
 
 bool IsTailoredPromoEligibleUser(bool is_signed_in) {
-  bool is_made_for_ios_promo_eligible =
-      IsLikelyInterestedDefaultBrowserUser(DefaultPromoTypeMadeForIOS);
   bool is_all_tabs_promo_eligible =
       IsLikelyInterestedDefaultBrowserUser(DefaultPromoTypeAllTabs) &&
       is_signed_in;
-  bool is_stay_safe_promo_eligible =
+  bool is_eligible =
+      IsLikelyInterestedDefaultBrowserUser(DefaultPromoTypeMadeForIOS) ||
+      is_all_tabs_promo_eligible ||
       IsLikelyInterestedDefaultBrowserUser(DefaultPromoTypeStaySafe);
-  return !HasUserInteractedWithTailoredFullscreenPromoBefore() &&
-         (is_made_for_ios_promo_eligible || is_all_tabs_promo_eligible ||
-          is_stay_safe_promo_eligible);
+
+  if (!is_eligible) {
+    return false;
+  }
+
+  // When the default browser promo generic and tailored train experiment is
+  // enabled, allow the generic and tailored promos to be shown at least twice.
+  if (IsDefaultBrowserPromoGenericTailoredTrainEnabled()) {
+    return TailoredPromoInteractionCount() < 2 &&
+           GenericPromoInteractionCount() < 2;
+  }
+
+  return !HasUserInteractedWithTailoredFullscreenPromoBefore();
 }
 
 bool IsGeneralPromoEligibleUser(bool is_signed_in) {
+  // When the default browser promo generic and tailored train experiment is
+  // enabled, the generic default browser promo will only be shown when the user
+  // is eligible for a tailored promo.
+  if (IsDefaultBrowserPromoGenericTailoredTrainEnabled()) {
+    return false;
+  }
+
   return !HasUserInteractedWithFullscreenPromoBefore() &&
          (IsLikelyInterestedDefaultBrowserUser(DefaultPromoTypeGeneral) ||
           is_signed_in);

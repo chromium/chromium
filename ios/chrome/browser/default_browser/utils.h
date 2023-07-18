@@ -153,6 +153,14 @@ DefaultPromoType ForceDefaultPromoType();
 // experiment.
 bool IsDefaultBrowserTriggerCriteraExperimentEnabled();
 
+// Returns true if the default browser promo generic tailored experiment is
+// enabled.
+bool IsDefaultBrowserPromoGenericTailoredTrainEnabled();
+
+// Returns true if the only-generic arm of the default browser promo generic
+// tailored experiment is enabled.
+bool IsDefaultBrowserPromoOnlyGenericArmTrain();
+
 // Returns true if Default Browser promo should be triggered on omnibox
 // copy-paste.
 bool ShouldTriggerDefaultBrowserPromoOnOmniboxCopyPaste();
