@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/views/location_bar/cookie_controls/cookie_controls_content_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/content_settings/core/common/features.h"
 #include "components/favicon/core/favicon_service.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
@@ -114,13 +115,17 @@ void CookieControlsBubbleViewController::ApplyThirdPartyCookiesAllowedState(
 }
 
 void CookieControlsBubbleViewController::ApplyThirdPartyCookiesBlockedState() {
+  auto default_exception_expiration =
+      content_settings::features::kUserBypassUIExceptionExpiration.Get();
   bubble_view_->UpdateTitle(l10n_util::GetStringUTF16(
       IDS_COOKIE_CONTROLS_BUBBLE_COOKIES_BLOCKED_TITLE));
   bubble_view_->GetContentView()->UpdateContentLabels(
       l10n_util::GetStringUTF16(
           IDS_COOKIE_CONTROLS_BUBBLE_SITE_NOT_WORKING_TITLE),
       l10n_util::GetStringUTF16(
-          IDS_COOKIE_CONTROLS_BUBBLE_SITE_NOT_WORKING_DESCRIPTION_TEMPORARY));
+          default_exception_expiration.is_zero()
+              ? IDS_COOKIE_CONTROLS_BUBBLE_SITE_NOT_WORKING_DESCRIPTION_PERMANENT
+              : IDS_COOKIE_CONTROLS_BUBBLE_SITE_NOT_WORKING_DESCRIPTION_TEMPORARY));
   bubble_view_->GetContentView()->SetFeedbackSectionVisibility(false);
   bubble_view_->GetContentView()->SetToggleIsOn(false);
   bubble_view_->GetContentView()->SetToggleIcon(GetToggleIcon(false));

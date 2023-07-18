@@ -5,6 +5,8 @@
 #include "chrome/browser/ui/views/location_bar/cookie_controls/cookie_controls_bubble_coordinator.h"
 
 #include <memory>
+#include "base/feature_list.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
@@ -13,6 +15,7 @@
 #include "chrome/browser/ui/views/location_bar/cookie_controls/cookie_controls_content_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/content_settings/core/common/features.h"
 #include "content/public/browser/web_contents.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -107,9 +110,16 @@ TEST_F(CookieControlsBubbleCoordinatorTest, ShowBubbleTest) {
   EXPECT_EQ(coordinator_->GetBubble(), nullptr);
 }
 
-class CookieControlsBubbleViewControllerTest : public TestWithBrowserView {
+class CookieControlsBubbleViewControllerTest
+    : public TestWithBrowserView,
+      public testing::WithParamInterface<bool> {
  public:
   void SetUp() override {
+    std::string expiration = GetParam() ? "30d" : "0d";
+    feature_list_.InitWithFeaturesAndParameters(
+        {{content_settings::features::kUserBypassUI,
+          {{"expiration", expiration}}}},
+        {});
     TestWithBrowserView::SetUp();
 
     const GURL url = GURL("http://a.com");
@@ -155,24 +165,26 @@ class CookieControlsBubbleViewControllerTest : public TestWithBrowserView {
   }
 
  private:
+  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<content_settings::CookieControlsController> controller_;
   std::unique_ptr<MockCookieControlsContentView> mock_content_view_;
   std::unique_ptr<MockCookieControlsBubbleView> mock_bubble_view_;
   std::unique_ptr<CookieControlsBubbleViewController> view_controller_;
 };
 
-TEST_F(CookieControlsBubbleViewControllerTest, ThirdPartyCookiesBlocked) {
+TEST_P(CookieControlsBubbleViewControllerTest, ThirdPartyCookiesBlocked) {
   EXPECT_CALL(*mock_bubble_view(),
               UpdateTitle(l10n_util::GetStringUTF16(
                   IDS_COOKIE_CONTROLS_BUBBLE_COOKIES_BLOCKED_TITLE)));
-  // TODO(crbug.com/1446230): Add tests for permanent exceptions.
   EXPECT_CALL(
       *mock_content_view(),
       UpdateContentLabels(
           l10n_util::GetStringUTF16(
               IDS_COOKIE_CONTROLS_BUBBLE_SITE_NOT_WORKING_TITLE),
           l10n_util::GetStringUTF16(
-              IDS_COOKIE_CONTROLS_BUBBLE_SITE_NOT_WORKING_DESCRIPTION_TEMPORARY)));
+              GetParam()
+                  ? IDS_COOKIE_CONTROLS_BUBBLE_SITE_NOT_WORKING_DESCRIPTION_TEMPORARY
+                  : IDS_COOKIE_CONTROLS_BUBBLE_SITE_NOT_WORKING_DESCRIPTION_PERMANENT)));
   EXPECT_CALL(*mock_content_view(), SetFeedbackSectionVisibility(false));
   EXPECT_CALL(*mock_content_view(), SetToggleIsOn(false));
   EXPECT_CALL(*mock_content_view(), SetToggleIcon(testing::Field(
@@ -186,7 +198,7 @@ TEST_F(CookieControlsBubbleViewControllerTest, ThirdPartyCookiesBlocked) {
                                      base::Time());
 }
 
-TEST_F(CookieControlsBubbleViewControllerTest,
+TEST_P(CookieControlsBubbleViewControllerTest,
        ThirdPartyCookiesAllowedPermanent) {
   EXPECT_CALL(*mock_bubble_view(),
               UpdateTitle(l10n_util::GetStringUTF16(
@@ -211,7 +223,7 @@ TEST_F(CookieControlsBubbleViewControllerTest,
                                      base::Time());
 }
 
-TEST_F(CookieControlsBubbleViewControllerTest,
+TEST_P(CookieControlsBubbleViewControllerTest,
        ThirdPartyCookiesAllowedTemporary) {
   const int kDaysToExpiration = 30;
   EXPECT_CALL(*mock_bubble_view(),
@@ -301,3 +313,9 @@ TEST_F(CookieControlsBubbleViewImplTest, BubbleWidth) {
   EXPECT_GE(bubble_view()->GetPreferredSize().width(), kMinWidth);
   EXPECT_LE(bubble_view()->GetPreferredSize().width(), kMaxWidth);
 }
+
+// Runs all tests with two versions of user bypass - one that creates temporary
+// exceptions and one that creates permanent exceptions.
+INSTANTIATE_TEST_SUITE_P(All,
+                         CookieControlsBubbleViewControllerTest,
+                         testing::Bool());

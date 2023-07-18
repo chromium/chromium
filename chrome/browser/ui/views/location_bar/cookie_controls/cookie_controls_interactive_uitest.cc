@@ -140,7 +140,9 @@ class CookieControlsInteractiveUiTest : public InteractiveBrowserTest {
         CheckViewProperty(
             CookieControlsContentView::kDescription, &views::Label::GetText,
             l10n_util::GetStringUTF16(
-                IDS_COOKIE_CONTROLS_BUBBLE_SITE_NOT_WORKING_DESCRIPTION_TEMPORARY)),
+                ExceptionDurationInDays() == 0
+                    ? IDS_COOKIE_CONTROLS_BUBBLE_SITE_NOT_WORKING_DESCRIPTION_PERMANENT
+                    : IDS_COOKIE_CONTROLS_BUBBLE_SITE_NOT_WORKING_DESCRIPTION_TEMPORARY)),
         CheckIcon(RichControlsContainerView::kIcon, views::kEyeCrossedIcon,
                   views::kEyeCrossedRefreshIcon));
   }

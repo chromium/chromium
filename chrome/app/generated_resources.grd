@@ -3721,6 +3721,9 @@ are declared in tools/grit/grit_rule.gni.
       <message name="IDS_COOKIE_CONTROLS_BUBBLE_SITE_NOT_WORKING_DESCRIPTION_TEMPORARY" translateable="false"  desc="">
         Try temporarily allowing third-party cookies, which means less protection but site features are more likely to work
       </message>
+      <message name="IDS_COOKIE_CONTROLS_BUBBLE_SITE_NOT_WORKING_DESCRIPTION_PERMANENT" translateable="false" desc="">
+        Try allowing third-party cookies, which means less protection but site features are more likely to work
+      </message>
       <message name="IDS_COOKIE_CONTROLS_BUBBLE_BLOCKING_RESTART_TITLE" translateable="false"  desc="">
         {COUNT, plural,
               =1 {1 day until Chrome starts blocking cookies again}
