@@ -233,6 +233,7 @@ class UserCreation extends UserCreationScreenElementBase {
     if (this.uiStep === UserCreationUIState.ENROLL_TRIAGE ||
         this.uiStep === UserCreationUIState.CHILD_SETUP) {
       this.setUIStep(UserCreationUIState.CREATE);
+      Oobe.getInstance().setOobeUIState(OOBE_UI_STATE.USER_CREATION);
     } else {
       this.userActed(UserAction.CANCEL);
     }
@@ -268,6 +269,7 @@ class UserCreation extends UserCreationScreenElementBase {
 
   setChildSetupStep() {
     this.setUIStep(UserCreationUIState.CHILD_SETUP);
+    Oobe.getInstance().setOobeUIState(OOBE_UI_STATE.SETUP_CHILD);
   }
 
   onTriageNextClicked_() {

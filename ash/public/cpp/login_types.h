@@ -91,6 +91,9 @@ enum class OobeDialogState {
 
   // CHOOBE and Optional Screens.
   CHOOBE = 22,
+
+  // CHILD SETUP step for user creation screen.
+  SETUP_CHILD = 23,
 };
 
 // Modes of the managed device, which is used to update the visibility of
