@@ -26,9 +26,7 @@ BorealisServiceFactory::BorealisServiceFactory()
           "BorealisService",
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kRedirectedToOriginal)
-              // Required by BorealisApps for tests
-              // TODO(b/288985423) Change this to kNone
-              .WithGuest(ProfileSelection::kRedirectedToOriginal)
+              .WithGuest(ProfileSelection::kNone)
               .WithAshInternals(ProfileSelection::kNone)
               .WithSystem(ProfileSelection::kNone)
               .Build()) {}
