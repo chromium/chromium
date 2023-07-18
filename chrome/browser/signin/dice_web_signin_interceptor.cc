@@ -56,6 +56,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/signin/public/base/signin_metrics.h"
+#include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/account_managed_status_finder.h"
 #include "components/signin/public/identity_manager/accounts_mutator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -118,6 +119,8 @@ void DiceWebSigninInterceptor::RegisterProfilePrefs(
   registry->RegisterDictionaryPref(kProfileCreationInterceptionDeclinedPref);
   registry->RegisterBooleanPref(prefs::kSigninInterceptionEnabled, true);
   registry->RegisterStringPref(prefs::kManagedAccountsSigninRestriction,
+                               std::string());
+  registry->RegisterStringPref(prefs::kSigninInterceptionIDPCookiesUrl,
                                std::string());
   registry->RegisterBooleanPref(
       prefs::kManagedAccountsSigninRestrictionScopeMachine, false);

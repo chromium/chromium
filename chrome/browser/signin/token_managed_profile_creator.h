@@ -16,6 +16,10 @@
 #include "google_apis/gaia/core_account_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+namespace signin_util {
+class CookiesMover;
+}
+
 // Extracts an account from an existing profile and moves it to a new profile.
 class TokenManagedProfileCreator : public ProfileAttributesStorageObserver {
  public:
@@ -26,16 +30,20 @@ class TokenManagedProfileCreator : public ProfileAttributesStorageObserver {
   // If |local_profile_name| is not empty, it will be set as local name for the
   // new profile.
   // If |icon_index| is nullopt, a random icon will be selected.
-  TokenManagedProfileCreator(const std::string& id,
-                             const std::string& enrollment_token,
-                             const std::u16string& local_profile_name,
-                             base::OnceCallback<void(Profile*)> callback);
+  TokenManagedProfileCreator(
+      Profile* source_profile,
+      const std::string& id,
+      const std::string& enrollment_token,
+      const std::u16string& local_profile_name,
+      base::OnceCallback<void(base::WeakPtr<Profile>)> callback);
 
   // Uses this version when the profile already exists at `target_profile_path`
   // but may not be loaded in memory. The profile is loaded if necessary, and
   // the account is moved.
-  TokenManagedProfileCreator(const base::FilePath& target_profile_path,
-                             base::OnceCallback<void(Profile*)> callback);
+  TokenManagedProfileCreator(
+      Profile* source_profile,
+      const base::FilePath& target_profile_path,
+      base::OnceCallback<void(base::WeakPtr<Profile>)> callback);
 
   ~TokenManagedProfileCreator() override;
 
@@ -56,10 +64,12 @@ class TokenManagedProfileCreator : public ProfileAttributesStorageObserver {
   // Callback invoked once the token service is ready for the new profile.
   void OnNewProfileTokensLoaded(Profile* new_profile);
 
+  base::raw_ptr<Profile> source_profile_;
   const std::string id_;
   const std::string enrollment_token_;
   base::FilePath expected_profile_path_;
-  base::OnceCallback<void(Profile*)> callback_;
+  base::OnceCallback<void(base::WeakPtr<Profile>)> callback_;
+  std::unique_ptr<signin_util::CookiesMover> cookies_mover_;
   base::ScopedObservation<ProfileAttributesStorage,
                           ProfileAttributesStorage::Observer>
       profile_observation_{this};
