@@ -346,6 +346,12 @@ tast_disabled_tests_from_chrome_all = [
   # delaying. We can remove this once the roll happens.
   "lacros.ShelfLaunch.primary",
 
+  # b/291642520
+  "inputs.VirtualKeyboardTypingApps",
+
+  # b/259700180
+  "inputs.VirtualKeyboardGlideTyping.clamshell_a11y_docked",
+
   # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
 ]
 
@@ -394,4 +400,6 @@ tast_disabled_tests_from_lacros_all = [
 
   # https://crbug.com/1446233
   "tast.arc.IntentForward.lacros_vm",
+
+  # THIS IS THE LACROS LIST, SCROLL UP FOR CHROME/CHROMEOS.
 ]
