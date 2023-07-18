@@ -165,10 +165,7 @@ void PresentationRequestNotificationProducer::OnPresentationsChanged(
   // If there is a presentation, there would already be an item associated with
   // that, so `this` doesn't have to provide another item.
   if (has_presentation && provider_.is_bound()) {
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-    // TODO(crbug.com/1454595): Fix it for chrome OS ash media UI.
     provider_->HideMediaUI();
-#endif
     provider_->HideItem();
   }
 }
