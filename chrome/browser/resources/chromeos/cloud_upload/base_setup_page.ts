@@ -9,6 +9,8 @@
  * to switch pages or exit.
  */
 
+import {assert} from 'chrome://resources/js/assert_ts.js';
+
 import {getTemplate} from './base_setup_page.html.js';
 
 /**
@@ -33,6 +35,10 @@ declare global {
  * layout via a common shadow DOM.
  */
 export class BaseSetupPageElement extends HTMLElement {
+  static get observedAttributes() {
+    return ['page-number', 'total-pages'];
+  }
+
   constructor() {
     super();
 
@@ -54,6 +60,25 @@ export class BaseSetupPageElement extends HTMLElement {
         {passive: true});
     // Focus the dialog so that the screen reader reads the title.
     this.shadowRoot!.querySelector<HTMLElement>('#dialog')!.focus();
+  }
+
+  attributeChangedCallback(name: string, _oldValue: string, _newValue: string) {
+    assert(name === 'page-number' || name === 'total-pages');
+
+    const dotsElement =
+        this.shadowRoot?.querySelector('#dots') as HTMLDivElement;
+    assert(window.trustedTypes);
+    dotsElement.innerHTML = window.trustedTypes.emptyHTML;
+    const pages = parseInt(this.getAttribute('total-pages')!) || 0;
+    const curPage = parseInt(this.getAttribute('page-number')!) || 0;
+
+    for (let i = 0; i < pages; i++) {
+      const dot = document.createElement('div');
+      if (i === curPage) {
+        dot.classList.add('active');
+      }
+      dotsElement.appendChild(dot);
+    }
   }
 
   updateContentFade(contentElement: HTMLElement) {

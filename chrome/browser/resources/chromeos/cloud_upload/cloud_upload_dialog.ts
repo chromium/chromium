@@ -86,10 +86,12 @@ export class CloudUploadElement extends HTMLElement {
         this.setOfficeAsDefaultHandler);
     this.pages.push(officeSetupCompletePage);
 
-    for (const page of this.pages) {
+    this.pages.forEach((page, index) => {
+      page.setAttribute('total-pages', String(this.pages.length));
+      page.setAttribute('page-number', String(index));
       page.addEventListener(NEXT_PAGE_EVENT, () => this.goNextPage());
       page.addEventListener(CANCEL_SETUP_EVENT, () => this.cancelSetup());
-    }
+    });
 
     this.switchPage(0);
   }
