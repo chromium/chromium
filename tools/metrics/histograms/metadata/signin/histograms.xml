@@ -98,7 +98,7 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-signin-team@google.com</owner>
   <summary>
     This histogram records the action taken by user after receiving the header
-    from Gaia in the web sign-in flow. Currently only recorded on Android.
+    from Gaia in the web sign-in flow. Currently only recorded on mobile.
   </summary>
 </histogram>
 

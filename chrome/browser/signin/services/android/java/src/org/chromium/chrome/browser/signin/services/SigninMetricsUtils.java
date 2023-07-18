@@ -34,12 +34,13 @@ public class SigninMetricsUtils {
     }
 
     /**
-     * Logs Signin.AccountConsistencyPromoAction histogram.
+     * Logs Signin.AccountConsistencyPromoAction.* histograms.
+     * @param promoAction {@link AccountConsistencyPromoAction} for this sign-in flow.
+     * @param accessPoint {@link SigninAccessPoint} that initiated the sign-in flow.
      */
     public static void logAccountConsistencyPromoAction(
-            @AccountConsistencyPromoAction int promoAction) {
-        RecordHistogram.recordEnumeratedHistogram("Signin.AccountConsistencyPromoAction",
-                promoAction, AccountConsistencyPromoAction.MAX_VALUE + 1);
+            @AccountConsistencyPromoAction int promoAction, @SigninAccessPoint int accessPoint) {
+        SigninMetricsUtilsJni.get().logAccountConsistencyPromoAction(promoAction, accessPoint);
     }
 
     /**
@@ -74,6 +75,7 @@ public class SigninMetricsUtils {
     @NativeMethods
     public interface Natives {
         void logSigninUserActionForAccessPoint(int accessPoint);
+        void logAccountConsistencyPromoAction(int promoAction, int accessPoint);
     }
 
     private SigninMetricsUtils() {}

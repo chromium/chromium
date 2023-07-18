@@ -583,11 +583,11 @@ void RecordSignoutUserAction(bool force_clear_data);
 // Records |Signin_Impression_From*| user action.
 void RecordSigninImpressionUserActionForAccessPoint(AccessPoint access_point);
 
-#if BUILDFLAG(IS_IOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 // Records |Signin.AccountConsistencyPromoAction.{PromoEvent}| histogram.
 void RecordConsistencyPromoUserAction(AccountConsistencyPromoAction action,
                                       AccessPoint access_point);
-#endif  // BUILDFLAG(IS_IOS)
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
 }  // namespace signin_metrics
 

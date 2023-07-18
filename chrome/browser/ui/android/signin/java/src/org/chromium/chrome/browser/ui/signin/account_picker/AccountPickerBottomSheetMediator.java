@@ -29,6 +29,7 @@ import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.base.GoogleServiceAuthError;
 import org.chromium.components.signin.base.GoogleServiceAuthError.State;
 import org.chromium.components.signin.metrics.AccountConsistencyPromoAction;
+import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -112,15 +113,13 @@ class AccountPickerBottomSheetMediator implements AccountPickerCoordinator.Liste
      */
     @Override
     public void addAccount() {
-        SigninMetricsUtils.logAccountConsistencyPromoAction(
-                AccountConsistencyPromoAction.ADD_ACCOUNT_STARTED);
+        logAccountConsistencyPromoAction(AccountConsistencyPromoAction.ADD_ACCOUNT_STARTED);
         final WindowAndroid.IntentCallback onAddAccountCompleted =
                 (int resultCode, Intent data) -> {
             if (resultCode != Activity.RESULT_OK) {
                 return;
             }
-            SigninMetricsUtils.logAccountConsistencyPromoAction(
-                    AccountConsistencyPromoAction.ADD_ACCOUNT_COMPLETED);
+            logAccountConsistencyPromoAction(AccountConsistencyPromoAction.ADD_ACCOUNT_COMPLETED);
             mAddedAccountEmail = data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
             onAccountSelected(mAddedAccountEmail);
         };
@@ -274,13 +273,13 @@ class AccountPickerBottomSheetMediator implements AccountPickerCoordinator.Liste
     private void signIn() {
         mModel.set(AccountPickerBottomSheetProperties.VIEW_STATE, ViewState.SIGNIN_IN_PROGRESS);
         if (TextUtils.equals(mSelectedAccountEmail, mAddedAccountEmail)) {
-            SigninMetricsUtils.logAccountConsistencyPromoAction(
+            logAccountConsistencyPromoAction(
                     AccountConsistencyPromoAction.SIGNED_IN_WITH_ADDED_ACCOUNT);
         } else if (TextUtils.equals(mSelectedAccountEmail, mDefaultAccountEmail)) {
-            SigninMetricsUtils.logAccountConsistencyPromoAction(
+            logAccountConsistencyPromoAction(
                     AccountConsistencyPromoAction.SIGNED_IN_WITH_DEFAULT_ACCOUNT);
         } else {
-            SigninMetricsUtils.logAccountConsistencyPromoAction(
+            logAccountConsistencyPromoAction(
                     AccountConsistencyPromoAction.SIGNED_IN_WITH_NON_DEFAULT_ACCOUNT);
         }
 
@@ -302,7 +301,7 @@ class AccountPickerBottomSheetMediator implements AccountPickerCoordinator.Liste
             promoAction = AccountConsistencyPromoAction.GENERIC_ERROR_SHOWN;
             newViewState = ViewState.SIGNIN_GENERAL_ERROR;
         }
-        SigninMetricsUtils.logAccountConsistencyPromoAction(promoAction);
+        logAccountConsistencyPromoAction(promoAction);
         mModel.set(AccountPickerBottomSheetProperties.VIEW_STATE, newViewState);
     }
 
@@ -316,5 +315,25 @@ class AccountPickerBottomSheetMediator implements AccountPickerCoordinator.Liste
         mAccountManagerFacade.updateCredentials(
                 AccountUtils.createAccountFromName(mSelectedAccountEmail), mActivity,
                 onUpdateCredentialsCompleted);
+    }
+
+    private void logAccountConsistencyPromoAction(@AccountConsistencyPromoAction int promoAction) {
+        switch (mAccountPickerDelegate.getEntryPoint()) {
+            case EntryPoint.WEB_SIGNIN:
+                SigninMetricsUtils.logAccountConsistencyPromoAction(
+                        promoAction, SigninAccessPoint.WEB_SIGNIN);
+                break;
+            case EntryPoint.SEND_TAB_TO_SELF:
+                SigninMetricsUtils.logAccountConsistencyPromoAction(
+                        promoAction, SigninAccessPoint.SEND_TAB_TO_SELF_PROMO);
+                break;
+            case EntryPoint.FEED_ACTION:
+                SigninMetricsUtils.logAccountConsistencyPromoAction(
+                        promoAction, SigninAccessPoint.NTP_FEED_CARD_MENU_PROMO);
+                break;
+            default:
+                assert false;
+                break;
+        }
     }
 }

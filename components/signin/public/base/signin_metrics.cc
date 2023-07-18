@@ -636,68 +636,10 @@ void RecordSigninImpressionUserActionForAccessPoint(AccessPoint access_point) {
   }
 }
 
-#if BUILDFLAG(IS_IOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 void RecordConsistencyPromoUserAction(AccountConsistencyPromoAction action,
                                       AccessPoint access_point) {
-  switch (access_point) {
-    // The histogram is recorded for these access points.
-    case AccessPoint::ACCESS_POINT_SEND_TAB_TO_SELF_PROMO:
-    case AccessPoint::ACCESS_POINT_NTP_FEED_CARD_MENU_PROMO:
-    case AccessPoint::ACCESS_POINT_WEB_SIGNIN:
-    case AccessPoint::ACCESS_POINT_SETTINGS:
-    case AccessPoint::ACCESS_POINT_NTP_SIGNED_OUT_ICON:
-    case AccessPoint::ACCESS_POINT_NTP_FEED_TOP_PROMO:
-    case AccessPoint::ACCESS_POINT_NTP_FEED_BOTTOM_PROMO:
-    case AccessPoint::ACCESS_POINT_SET_UP_LIST:
-      break;
-
-    // But not these access points.
-    case AccessPoint::ACCESS_POINT_START_PAGE:
-    case AccessPoint::ACCESS_POINT_NTP_LINK:
-    case AccessPoint::ACCESS_POINT_MENU:
-    case AccessPoint::ACCESS_POINT_SUPERVISED_USER:
-    case AccessPoint::ACCESS_POINT_EXTENSION_INSTALL_BUBBLE:
-    case AccessPoint::ACCESS_POINT_EXTENSIONS:
-    case AccessPoint::ACCESS_POINT_BOOKMARK_BUBBLE:
-    case AccessPoint::ACCESS_POINT_BOOKMARK_MANAGER:
-    case AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN:
-    case AccessPoint::ACCESS_POINT_USER_MANAGER:
-    case AccessPoint::ACCESS_POINT_DEVICES_PAGE:
-    case AccessPoint::ACCESS_POINT_CLOUD_PRINT:
-    case AccessPoint::ACCESS_POINT_SIGNIN_PROMO:
-    case AccessPoint::ACCESS_POINT_RECENT_TABS:
-    case AccessPoint::ACCESS_POINT_UNKNOWN:
-    case AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE:
-    case AccessPoint::ACCESS_POINT_AUTOFILL_DROPDOWN:
-    case AccessPoint::ACCESS_POINT_NTP_CONTENT_SUGGESTIONS:
-    case AccessPoint::ACCESS_POINT_RESIGNIN_INFOBAR:
-    case AccessPoint::ACCESS_POINT_TAB_SWITCHER:
-    case AccessPoint::ACCESS_POINT_MACHINE_LOGON:
-    case AccessPoint::ACCESS_POINT_GOOGLE_SERVICES_SETTINGS:
-    case AccessPoint::ACCESS_POINT_SYNC_ERROR_CARD:
-    case AccessPoint::ACCESS_POINT_FORCED_SIGNIN:
-    case AccessPoint::ACCESS_POINT_ACCOUNT_RENAMED:
-    case AccessPoint::ACCESS_POINT_SAFETY_CHECK:
-    case AccessPoint::ACCESS_POINT_KALEIDOSCOPE:
-    case AccessPoint::ACCESS_POINT_ENTERPRISE_SIGNOUT_COORDINATOR:
-    case AccessPoint::ACCESS_POINT_SIGNIN_INTERCEPT_FIRST_RUN_EXPERIENCE:
-    case AccessPoint::ACCESS_POINT_SETTINGS_SYNC_OFF_ROW:
-    case AccessPoint::ACCESS_POINT_POST_DEVICE_RESTORE_SIGNIN_PROMO:
-    case AccessPoint::ACCESS_POINT_POST_DEVICE_RESTORE_BACKGROUND_SIGNIN:
-    case AccessPoint::ACCESS_POINT_DESKTOP_SIGNIN_MANAGER:
-    case AccessPoint::ACCESS_POINT_FOR_YOU_FRE:
-    case AccessPoint::ACCESS_POINT_CREATOR_FEED_FOLLOW:
-    case AccessPoint::ACCESS_POINT_READING_LIST:
-    case AccessPoint::ACCESS_POINT_REAUTH_INFO_BAR:
-    case AccessPoint::ACCESS_POINT_ACCOUNT_CONSISTENCY_SERVICE:
-    case AccessPoint::ACCESS_POINT_SEARCH_COMPANION:
-    case AccessPoint::ACCESS_POINT_PASSWORD_MIGRATION_WARNING_ANDROID:
-    case AccessPoint::ACCESS_POINT_MAX:
-      NOTREACHED() << "Signin.AccountConsistencyPromoAction histogram is not"
-                   << "recorded for access point "
-                   << static_cast<int>(access_point);
-      break;
-  }
+  base::UmaHistogramEnumeration("Signin.AccountConsistencyPromoAction", action);
 
   // Log to the appropriate histogram given the action.
   std::string histogram;
@@ -791,6 +733,6 @@ void RecordConsistencyPromoUserAction(AccountConsistencyPromoAction action,
   base::UmaHistogramEnumeration(histogram, access_point,
                                 AccessPoint::ACCESS_POINT_MAX);
 }
-#endif  // BUILDFLAG(IS_IOS)
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
 }  // namespace signin_metrics
