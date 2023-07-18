@@ -3117,6 +3117,21 @@
             ]
         }
     ],
+    "ChromeOSIgnoreUiGainsOnAGC": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "IgnoreUiGains"
+                    ]
+                }
+            ]
+        }
+    ],
     "ChromeOSLruTtlVariables": [
         {
             "platforms": [
