@@ -1357,10 +1357,10 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Search.DefaultSearchProviderType2"
-    enum="OmniboxSearchEngineType" expires_after="2024-01-14">
+<histogram name="Search.DefaultSearchProviderType2{Population}"
+    enum="OmniboxSearchEngineType" expires_after="2024-07-18">
   <owner>mpearson@chromium.org</owner>
-  <owner>csharp@chromium.org</owner>
+  <owner>ftirelo@chromium.org</owner>
   <summary>
     The type of the default search engine that is loaded when a regular, guest,
     or ChromeOS sign-in screen profile is opened or after a profile reset. (A
@@ -1376,7 +1376,14 @@ chromium-metrics-reviews@google.com.
     people cannot search / browse the web using this profile. As such, the
     default search engine setting for this profile does not have any practical
     meaning.
+
+    {Population}
   </summary>
+  <token key="Population">
+    <variant name="" summary="Reported for all users."/>
+    <variant name=".SetByEnterprisePolicy"
+        summary="Reported for users with DSP set by Enterprise policy."/>
+  </token>
 </histogram>
 
 <histogram name="Search.GsaAccountChangeNotificationSource"

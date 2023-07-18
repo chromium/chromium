@@ -27,6 +27,7 @@
 #include "build/build_config.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
+#include "components/search_engines/search_engine_type.h"
 #include "components/search_engines/search_engines_pref_names.h"
 #include "components/search_engines/search_terms_data.h"
 #include "components/search_engines/template_url_prepopulate_data.h"
@@ -1061,10 +1062,15 @@ void TemplateURLService::OnWebDataServiceRequestDone(
   }
 
   if (default_search_provider_) {
-    base::UmaHistogramEnumeration(
-        "Search.DefaultSearchProviderType2",
-        default_search_provider_->GetEngineType(search_terms_data()),
-        SEARCH_ENGINE_MAX);
+    SearchEngineType engine_type =
+        default_search_provider_->GetEngineType(search_terms_data());
+    base::UmaHistogramEnumeration("Search.DefaultSearchProviderType2",
+                                  engine_type, SEARCH_ENGINE_MAX);
+    if (default_search_provider_->created_by_policy()) {
+      base::UmaHistogramEnumeration(
+          "Search.DefaultSearchProviderType2.SetByEnterprisePolicy",
+          engine_type, SEARCH_ENGINE_MAX);
+    }
   }
 }
 
