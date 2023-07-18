@@ -295,6 +295,8 @@ class CONTENT_EXPORT ServiceWorkerProviderContext
 
   absl::optional<blink::ServiceWorkerRouterRules> router_rules_;
 
+  blink::EmbeddedWorkerStatus initial_running_status_;
+
   // Tracks feature usage for UseCounter.
   std::set<blink::mojom::WebFeature> used_features_;
 

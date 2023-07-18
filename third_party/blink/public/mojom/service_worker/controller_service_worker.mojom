@@ -8,6 +8,7 @@ import "mojo/public/mojom/base/unguessable_token.mojom";
 import "services/network/public/mojom/cross_origin_embedder_policy.mojom";
 import "third_party/blink/public/mojom/service_worker/controller_service_worker_mode.mojom";
 import "third_party/blink/public/mojom/service_worker/dispatch_fetch_event_params.mojom";
+import "third_party/blink/public/mojom/service_worker/service_worker_embedded_worker_status.mojom";
 import "third_party/blink/public/mojom/service_worker/service_worker_event_status.mojom";
 import "third_party/blink/public/mojom/service_worker/service_worker_fetch_handler_bypass_option.mojom";
 import "third_party/blink/public/mojom/service_worker/service_worker_fetch_handler_type.mojom";
@@ -98,6 +99,8 @@ struct ControllerServiceWorkerInfo {
   // info to commit a navigation; the static rules here will be used to route
   // subresource requests in the newly-committed Document.
   ServiceWorkerRouterRules? router_rules;
+  // ServiceWorker running status at initialization time.
+  ServiceWorkerEmbeddedWorkerStatus initial_running_status;
 
   // Non-null iff there is a controller and it has a fetch event handler.
   pending_remote<ControllerServiceWorker>? remote_controller;

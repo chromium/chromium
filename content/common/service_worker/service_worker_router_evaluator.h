@@ -11,6 +11,7 @@
 #include "base/values.h"
 #include "content/common/content_export.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "third_party/blink/public/common/service_worker/embedded_worker_status.h"
 #include "third_party/blink/public/common/service_worker/service_worker_router_rule.h"
 
 namespace content {

@@ -145,6 +145,7 @@ class CONTENT_EXPORT ServiceWorkerContainerHost final
   void EnsureFileAccess(const std::vector<base::FilePath>& file_paths,
                         EnsureFileAccessCallback callback) override;
   void OnExecutionReady() override;
+  void GetRunningStatus(GetRunningStatusCallback callback) override;
 
   // ServiceWorkerRegistration::Listener overrides.
   void OnVersionAttributesChanged(

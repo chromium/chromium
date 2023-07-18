@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "content/browser/service_worker/embedded_worker_status.h"
 #include "content/browser/service_worker/service_worker_context_core_observer.h"
 #include "content/browser/service_worker/service_worker_info.h"
 #include "content/common/content_export.h"
@@ -24,7 +25,6 @@ class StorageKey;
 namespace content {
 
 class ServiceWorkerContextWrapper;
-enum class EmbeddedWorkerStatus;
 
 // Used to monitor the status change of the ServiceWorker registrations and
 // versions in the ServiceWorkerContext from UI thread.

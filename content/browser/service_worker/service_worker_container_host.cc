@@ -438,6 +438,13 @@ void ServiceWorkerContainerHost::OnExecutionReady() {
   SetExecutionReady();
 }
 
+void ServiceWorkerContainerHost::GetRunningStatus(
+    GetRunningStatusCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(controller_);
+  std::move(callback).Run(controller_->running_status());
+}
+
 void ServiceWorkerContainerHost::OnVersionAttributesChanged(
     ServiceWorkerRegistration* registration,
     blink::mojom::ChangedServiceWorkerObjectsMaskPtr changed_mask) {

@@ -856,7 +856,7 @@ void RendererBlinkPlatformImpl::CreateServiceWorkerSubresourceLoaderFactory(
           std::move(service_worker_container_host),
           /*remote_controller=*/mojo::NullRemote(), client_id.Utf8(),
           blink::mojom::ServiceWorkerFetchHandlerBypassOption::kDefault,
-          /*router_rules=*/absl::nullopt),
+          /*router_rules=*/absl::nullopt, blink::EmbeddedWorkerStatus::STOPPED),
       network::SharedURLLoaderFactory::Create(std::move(fallback_factory)),
       std::move(receiver), std::move(task_runner));
 }

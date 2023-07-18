@@ -12,6 +12,7 @@
 
 #include "base/functional/callback.h"
 #include "base/time/time.h"
+#include "content/browser/service_worker/embedded_worker_status.h"
 #include "content/browser/service_worker/service_worker_version.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/service_worker_version_base_info.h"
@@ -27,7 +28,6 @@ class StorageKey;
 namespace content {
 
 class ServiceWorkerClientInfo;
-enum class EmbeddedWorkerStatus;
 
 struct CONTENT_EXPORT ServiceWorkerVersionInfo
     : public ServiceWorkerVersionBaseInfo {

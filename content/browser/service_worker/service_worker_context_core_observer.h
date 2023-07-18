@@ -10,6 +10,7 @@
 
 #include "base/functional/callback.h"
 #include "base/time/time.h"
+#include "content/browser/service_worker/embedded_worker_status.h"
 #include "content/browser/service_worker/service_worker_info.h"
 #include "content/browser/service_worker/service_worker_version.h"
 #include "content/public/browser/global_routing_id.h"
@@ -24,8 +25,6 @@ class StorageKey;
 }  // namespace blink
 
 namespace content {
-
-enum class EmbeddedWorkerStatus;
 
 struct ConsoleMessage;
 
