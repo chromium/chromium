@@ -1,8 +1,16 @@
-// Copyright 2015 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {getTemplate} from './files_tooltip.html.js';
+
+export interface FilesTooltip {
+  $: {label: HTMLDivElement, link: HTMLAnchorElement};
+  showTimeout: number;
+  hideTimeout: number;
+}
 
 /**
  * Files Tooltip.
@@ -14,119 +22,91 @@ import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bun
  * document.querySelector('files-tooltip').addTargets(
  *     document.querySelectorAll('[has-tooltip]'))
  */
-export const FilesTooltip = Polymer({
-  _template: html`{__html_template__}`,
+export class FilesTooltip extends PolymerElement {
+  static get is() {
+    return 'files-tooltip';
+  }
 
-  is: 'files-tooltip',
+  static get template() {
+    return getTemplate();
+  }
 
-  properties: {
-    /**
-     * Delay for showing the tooltip in milliseconds.
-     */
-    showTimeout: {
-      type: Number,
-      value: 500,  // ms
-      readOnly: true,
-    },
+  static get properties() {
+    return {
+      /**
+       * Delay for showing the tooltip in milliseconds.
+       */
+      showTimeout: {
+        type: Number,
+        value: 500,  // ms
+        readOnly: true,
+      },
 
-    /**
-     * Delay for hiding the tooltip in milliseconds.
-     */
-    hideTimeout: {
-      type: Number,
-      value: 500,  // ms
-      readOnly: true,
-    },
-  },
+      /**
+       * Delay for hiding the tooltip in milliseconds.
+       */
+      hideTimeout: {
+        type: Number,
+        value: 500,  // ms
+        readOnly: true,
+      },
+    };
+  }
 
-  /**
-   * Initializes member variables.
-   */
-  created: function() {
-    /**
-     * @private {HTMLElement}
-     */
-    this.visibleTooltipTarget_ = null;
+  private visibleTooltipTarget_?: HTMLElement;
+  private upcomingTooltipTarget_?: HTMLElement;
+  private showTooltipTimerId_: number = 0;
+  private hideTooltipTimerId_: number = 0;
 
-    /**
-     * @private {HTMLElement}
-     */
-    this.upcomingTooltipTarget_ = null;
-
-    /**
-     * @private {number}
-     */
-    this.showTooltipTimerId_ = 0;
-
-    /**
-     * @private {number}
-     */
-    this.hideTooltipTimerId_ = 0;
-  },
-
-  /**
-   * Adds an event listener to the body.
-   */
-  attached: function() {
-    const closeTooltipHandler = this.onDocumentMouseDown_.bind(this);
-    const cleanupTooltipHandler = this.onTransitionEnd_.bind(this);
-    const mouseoverHandler = this.onMouseOver_.bind(this, null);
-    const mouseoutHandler = this.onMouseOut_.bind(this, null);
-    document.body.addEventListener('mousedown', closeTooltipHandler);
-    this.addEventListener('transitionend', cleanupTooltipHandler);
-    window.addEventListener('resize', closeTooltipHandler);
-    this.addEventListener('mouseover', mouseoverHandler);
-    this.addEventListener('mouseout', mouseoutHandler);
-  },
+  override connectedCallback() {
+    super.connectedCallback();
+    document.body.addEventListener('mousedown', this.onDocumentMouseDown_);
+    window.addEventListener('resize', this.onDocumentMouseDown_);
+    this.addEventListener('transitionend', this.onTransitionEnd_);
+    this.addEventListener('mouseover', this.onMouseOver_);
+    this.addEventListener('mouseout', this.onMouseOut_);
+  }
 
   /**
    * Adds targets to tooltip.
-   * @param {!NodeList} targets
    */
-  addTargets: function(targets) {
+  addTargets(targets: NodeList) {
     for (let i = 0; i < targets.length; i++) {
-      this.addTarget(targets[i]);
+      this.addTarget(targets[i]!);
     }
-  },
+  }
 
   /**
    * Adds a target to tooltip.
-   * @param {!HTMLElement} target
    */
-  addTarget: function(target) {
-    target.addEventListener('mouseover', this.onMouseOver_.bind(this));
-    target.addEventListener('mouseout', this.onMouseOut_.bind(this));
-    target.addEventListener('focus', this.onFocus_.bind(this));
-    target.addEventListener('blur', this.onBlur_.bind(this));
-  },
+  addTarget(target: HTMLElement|Node) {
+    target.addEventListener('mouseover', this.onMouseOver_);
+    target.addEventListener('mouseout', this.onMouseOut_);
+    target.addEventListener('focus', this.onFocus_);
+    target.addEventListener('blur', this.onBlur_);
+  }
 
   /**
    * Hides currently visible tooltip if there is. In some cases, mouseout event
    * is not dispatched. This method is used to handle these cases manually.
    */
-  hideTooltip: function() {
+  hideTooltip() {
     if (this.showTooltipTimerId_) {
       clearTimeout(this.showTooltipTimerId_);
     }
     if (this.visibleTooltipTarget_) {
       this.initHidingTooltip_(this.visibleTooltipTarget_);
     }
-  },
+  }
 
   /**
    * Update the tooltip text with the passed-in target.
-   *
-   * @param {!HTMLElement} target
    */
-  updateTooltipText: function(target) {
+  updateTooltipText(target: HTMLElement) {
     this.initShowingTooltip_(target);
-  },
+  }
 
-  /**
-   * @param {!HTMLElement} target
-   * @private
-   */
-  initShowingTooltip_: function(target) {
+  private initShowingTooltip_(target: HTMLElement) {
     // Some tooltip is already visible.
     if (this.visibleTooltipTarget_) {
       if (this.hideTooltipTimerId_) {
@@ -151,13 +131,9 @@ export const FilesTooltip = Polymer({
     this.showTooltipTimerId_ = setTimeout(
         this.showTooltip_.bind(this, target),
         this.visibleTooltipTarget_ ? 0 : this.showTimeout);
-  },
+  }
 
-  /**
-   * @param {!HTMLElement} target
-   * @private
-   */
-  initHidingTooltip_: function(target) {
+  private initHidingTooltip_(target: HTMLElement) {
     // The tooltip is not visible.
     if (this.visibleTooltipTarget_ !== target) {
       if (this.upcomingTooltipTarget_ === target) {
@@ -172,13 +148,9 @@ export const FilesTooltip = Polymer({
     }
     this.hideTooltipTimerId_ =
         setTimeout(this.hideTooltip_.bind(this), this.hideTimeout);
-  },
+  }
 
-  /**
-   * @param {!HTMLElement} target
-   * @private
-   */
-  showTooltip_: function(target) {
+  private showTooltip_(target: HTMLElement) {
     if (this.showTooltipTimerId_) {
       clearTimeout(this.showTooltipTimerId_);
       this.showTooltipTimerId_ = 0;
@@ -201,10 +173,10 @@ export const FilesTooltip = Polymer({
     this.$.label.textContent = label;
     if (useLinkTooltip) {
       this.classList.add('link-tooltip');
-      this.$.link.setAttribute('href', target.dataset['tooltipLinkHref']);
+      this.$.link.setAttribute('href', target.dataset['tooltipLinkHref']!);
       this.$.link.setAttribute(
-          'aria-label', target.dataset['tooltipLinkAriaLabel']);
-      this.$.link.textContent = target.dataset['tooltipLinkText'];
+          'aria-label', target.dataset['tooltipLinkAriaLabel']!);
+      this.$.link.textContent = target.dataset['tooltipLinkText']!;
       this.$.link.setAttribute('aria-hidden', 'false');
       this.$.link.classList.add('link-label');
     } else {
@@ -271,66 +243,43 @@ export const FilesTooltip = Polymer({
     this.style.left = `${left}px`;
 
     this.setAttribute('aria-hidden', 'false');
-    this.setAttribute('visible', true);
-  },
+    this.setAttribute('visible', 'true');
+  }
 
-  /**
-   * @private
-   */
-  hideTooltip_: function() {
+  private hideTooltip_() {
     if (this.hideTooltipTimerId_) {
       clearTimeout(this.hideTooltipTimerId_);
       this.hideTooltipTimerId_ = 0;
     }
 
-    this.visibleTooltipTarget_ = null;
+    this.visibleTooltipTarget_ = undefined;
     this.removeAttribute('visible');
     this.setAttribute('aria-hidden', 'true');
-  },
+  }
 
-  /**
-   * @param {Event} event The event that triggered this handler.
-   * @private
-   */
-  onMouseOver_: function(event) {
+  private onMouseOver_ = (event: Event) => {
     const actualTarget = event?.currentTarget || this.visibleTooltipTarget_;
     if (actualTarget) {
-      this.initShowingTooltip_(/** @type {!HTMLElement} */ (actualTarget));
+      this.initShowingTooltip_(actualTarget as HTMLElement);
     }
-  },
+  };
 
-  /**
-   * @param {Event} event The event that triggered this handler.
-   * @private
-   */
-  onMouseOut_: function(event) {
+  private onMouseOut_ = (event: Event) => {
     const actualTarget = event?.currentTarget || this.visibleTooltipTarget_;
     if (actualTarget) {
-      this.initHidingTooltip_(/** @type {!HTMLElement} */ (actualTarget));
+      this.initHidingTooltip_(actualTarget as HTMLElement);
     }
-  },
+  };
 
-  /**
-   * @param {Event} event
-   * @private
-   */
-  onFocus_: function(event) {
-    this.initShowingTooltip_(/** @type {!HTMLElement} */ (event.currentTarget));
-  },
+  private onFocus_ = (event: Event) => {
+    this.initShowingTooltip_(event.currentTarget as HTMLElement);
+  };
 
-  /**
-   * @param {Event} event
-   * @private
-   */
-  onBlur_: function(event) {
-    this.initHidingTooltip_(/** @type {!HTMLElement} */ (event.currentTarget));
-  },
+  private onBlur_ = (event: Event) => {
+    this.initHidingTooltip_(event.currentTarget as HTMLElement);
+  };
 
-  /**
-   * @param {Event} event
-   * @private
-   */
-  onDocumentMouseDown_: function(event) {
+  private onDocumentMouseDown_ = () => {
     this.hideTooltip_();
 
     // Additionally prevent any scheduled tooltips from showing up.
@@ -338,42 +287,44 @@ export const FilesTooltip = Polymer({
       clearTimeout(this.showTooltipTimerId_);
       this.showTooltipTimerId_ = 0;
     }
-  },
+  };
 
-  /**
-   * @param {Event} event
-   * @private
-   */
-  onTransitionEnd_: function(event) {
+  private onTransitionEnd_ = () => {
     // Clear card and link tooltip.
     if (!this.hasAttribute('visible')) {
       this.cleanupLinkTooltip_();
       this.cleanupCardTooltip_();
     }
-  },
+  };
 
   /**
    * Clear card tooltip styles to prevent overwriting normal tooltip rules.
-   * @private
    */
-  cleanupCardTooltip_: function() {
+  private cleanupCardTooltip_() {
     this.classList.remove('card-tooltip');
     this.$.label.className = '';
-  },
+  }
 
   /**
    * Clear link tooltip styles to prevent overwriting normal tooltip rules.
-   * @private
    */
-  cleanupLinkTooltip_: function() {
+  private cleanupLinkTooltip_() {
     this.$.link.setAttribute('href', '#');
     this.$.link.removeAttribute('aria-label');
     this.$.link.setAttribute('aria-hidden', 'true');
     this.$.link.textContent = '';
     this.$.link.classList.remove('link-label');
     this.classList.remove('link-tooltip');
-  },
-});
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'files-tooltip': FilesTooltip;
+  }
+}
+
+customElements.define(FilesTooltip.is, FilesTooltip);
 
 // #
-// sourceURL=//ui/file_manager/file_manager/foreground/elements/files_tooltip.js
+// sourceURL=//ui/file_manager/file_manager/foreground/elements/files_tooltip.ts

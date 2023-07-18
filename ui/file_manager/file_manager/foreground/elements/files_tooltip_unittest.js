@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import './files_tooltip.js';
+
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {reportPromise} from '../../common/js/test_error_reporting.js';
-
-import {FilesTooltip} from './files_tooltip.js';
 
 /** @type {Element} */
 let chocolateButton;

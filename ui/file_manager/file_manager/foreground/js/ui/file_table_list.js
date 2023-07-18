@@ -10,7 +10,6 @@ import {str, strf, util} from '../../../common/js/util.js';
 import {EntryLocation} from '../../../externs/entry_location.js';
 import {FilesAppEntry} from '../../../externs/files_app_entry_interfaces.js';
 import {VolumeManager} from '../../../externs/volume_manager.js';
-import {FilesTooltip} from '../../elements/files_tooltip.js';
 import {FileListModel} from '../file_list_model.js';
 import {MetadataItem} from '../metadata/metadata_item.js';
 import {MetadataModel} from '../metadata/metadata_model.js';

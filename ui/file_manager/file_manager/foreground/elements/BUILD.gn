@@ -41,7 +41,6 @@ js_type_check("closure_compile_jsmodules") {
     ":files_quick_view",
     ":files_safe_media",
     ":files_spinner",
-    ":files_tooltip",
     ":xf_button",
     ":xf_circular_progress",
     ":xf_display_panel",
@@ -59,7 +58,6 @@ html_to_js("web_components") {
     "files_quick_view.js",
     "files_safe_media.js",
     "files_spinner.js",
-    "files_tooltip.js",
     "icons.js",
     "xf_button.js",
     "xf_circular_progress.js",
@@ -125,11 +123,13 @@ js_library("files_quick_view") {
   deps = [
     ":files_metadata_box",
     ":files_safe_media",
-    ":files_tooltip",
     "//ash/webui/common/resources:assert",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
-  externs_list = [ "$externs_path/chrome_extensions.js" ]
+  externs_list = [
+    "$externs_path/chrome_extensions.js",
+    "//ui/file_manager/file_manager/externs/polymer_elements/files_tooltip.js",
+  ]
 }
 
 js_library("files_safe_media") {
@@ -145,7 +145,10 @@ js_library("files_spinner") {
 
 html_to_wrapper("polymer_elements") {
   visibility += [ "//ui/file_manager/*" ]
-  in_files = [ "files_toast.html" ]
+  in_files = [
+    "files_toast.html",
+    "files_tooltip.html",
+  ]
   scheme = "relative"
   minify = true
 }
@@ -153,15 +156,11 @@ html_to_wrapper("polymer_elements") {
 # TODO(tapted): Move this to //ui/file_manager/base.
 js_unittest("files_tooltip_unittest") {
   deps = [
-    ":files_tooltip",
     "//chrome/test/data/webui/chromeos:chai_assert",
     "//ui/file_manager/file_manager/common/js:test_error_reporting",
   ]
-}
-
-js_library("files_tooltip") {
-  deps = [
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  externs_list = [
+    "//ui/file_manager/file_manager/externs/polymer_elements/files_tooltip.js",
   ]
 }
 
