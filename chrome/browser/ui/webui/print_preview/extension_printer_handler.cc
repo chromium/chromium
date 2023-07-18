@@ -119,28 +119,20 @@ struct ExtensionPrinterSettings {
 };
 
 // Parses print job `settings` for an extension printer and returns the parsed
-// output, or returns `absl::nullopt` on failure.
-absl::optional<ExtensionPrinterSettings> ParseExtensionPrinterSettings(
+// output. Note that `settings` is created by the Print Preview TS code, so if
+// this function triggers a crash, that means the TS code and the C++ code are
+// out of sync.
+ExtensionPrinterSettings ParseExtensionPrinterSettings(
     const base::Value::Dict& settings) {
   ExtensionPrinterSettings parsed_settings;
-
-  const std::string* ticket = settings.FindString(kSettingTicket);
-  const std::string* capabilities = settings.FindString(kSettingCapabilities);
+  parsed_settings.destination_id = *settings.FindString(kSettingDeviceName);
+  parsed_settings.capabilities = *settings.FindString(kSettingCapabilities);
   parsed_settings.page_size.SetSize(
       settings.FindInt(kSettingPageWidth).value_or(0),
       settings.FindInt(kSettingPageHeight).value_or(0));
-  if (!ticket || !capabilities || parsed_settings.page_size.IsEmpty()) {
-    NOTREACHED();
-    return absl::nullopt;
-  }
-  absl::optional<base::Value> ticket_value = base::JSONReader::Read(*ticket);
-  if (!ticket_value || !ticket_value->is_dict()) {
-    return absl::nullopt;
-  }
-
-  parsed_settings.destination_id = *settings.FindString(kSettingDeviceName);
-  parsed_settings.capabilities = *capabilities;
-  parsed_settings.ticket = std::move(*ticket_value).TakeDict();
+  CHECK(!parsed_settings.page_size.IsEmpty());
+  parsed_settings.ticket =
+      *base::JSONReader::ReadDict(*settings.FindString(kSettingTicket));
   return parsed_settings;
 }
 
@@ -208,20 +200,16 @@ void ExtensionPrinterHandler::StartPrint(
     base::Value::Dict settings,
     scoped_refptr<base::RefCountedMemory> print_data,
     PrintCallback callback) {
-  absl::optional<ExtensionPrinterSettings> parsed_settings =
+  ExtensionPrinterSettings parsed_settings =
       ParseExtensionPrinterSettings(settings);
-  if (!parsed_settings.has_value()) {
-    std::move(callback).Run(base::Value("Invalid settings"));
-    return;
-  }
 
   auto print_job = std::make_unique<extensions::PrinterProviderPrintJob>();
-  print_job->printer_id = std::move(parsed_settings.value().destination_id);
+  print_job->printer_id = std::move(parsed_settings.destination_id);
   print_job->job_title = job_title;
-  print_job->ticket = std::move(parsed_settings.value().ticket);
+  print_job->ticket = std::move(parsed_settings.ticket);
 
   cloud_devices::CloudDeviceDescription printer_description;
-  printer_description.InitFromString(parsed_settings.value().capabilities);
+  printer_description.InitFromString(parsed_settings.capabilities);
 
   cloud_devices::printer::ContentTypesCapability content_types;
   content_types.LoadFrom(printer_description);
@@ -244,8 +232,8 @@ void ExtensionPrinterHandler::StartPrint(
 
   print_job->content_type = kContentTypePWGRaster;
   ConvertToPWGRaster(
-      print_data, printer_description, ticket,
-      parsed_settings.value().page_size, std::move(print_job),
+      print_data, printer_description, ticket, parsed_settings.page_size,
+      std::move(print_job),
       base::BindOnce(&ExtensionPrinterHandler::DispatchPrintJob,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
