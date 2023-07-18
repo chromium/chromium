@@ -33836,8 +33836,6 @@ Called by update_document_policy_enum.py.-->
   <int value="1128" label="DefaultMidiSetting"/>
   <int value="1129" label="MidiAllowedForUrls"/>
   <int value="1130" label="MidiBlockedForUrls"/>
-  <int value="1131" label="DeviceAuthenticationURLBlocklist"/>
-  <int value="1132" label="DeviceAuthenticationURLAllowlist"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

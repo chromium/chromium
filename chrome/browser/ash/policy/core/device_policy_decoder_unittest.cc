@@ -15,7 +15,6 @@
 #include "components/policy/policy_constants.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/strings/grit/components_strings.h"
-#include "policy_common_definitions.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -605,51 +604,6 @@ TEST_F(DevicePolicyDecoderTest, DeviceChargingSoundsEnabled) {
 
   DecodeDevicePolicyTestHelper(device_policy, key::kDeviceChargingSoundsEnabled,
                                std::move(device_charging_sounds_enabled_value));
-}
-
-TEST_F(DevicePolicyDecoderTest, DecodeDeviceAuthenticationURLBlocklist) {
-  em::ChromeDeviceSettingsProto device_policy;
-
-  DecodeUnsetDevicePolicyTestHelper(device_policy,
-                                    key::kDeviceAuthenticationURLBlocklist);
-
-  em::StringList* blocklist =
-      device_policy.mutable_device_authentication_url_blocklist()
-          ->mutable_value();
-
-  base::Value::List blocklist_items =
-      base::Value::List().Append("example.com").Append("*.example.com");
-
-  for (auto& item : blocklist_items) {
-    blocklist->add_entries(item.GetString());
-  }
-
-  DecodeDevicePolicyTestHelper(device_policy,
-                               key::kDeviceAuthenticationURLBlocklist,
-                               base::Value(std::move(blocklist_items)));
-}
-
-TEST_F(DevicePolicyDecoderTest, DecodeDeviceAuthenticationURLAllowlist) {
-  em::ChromeDeviceSettingsProto device_policy;
-
-  DecodeUnsetDevicePolicyTestHelper(device_policy,
-                                    key::kDeviceAuthenticationURLAllowlist);
-
-  em::StringList* allowlist =
-      device_policy.mutable_device_authentication_url_allowlist()
-          ->mutable_value();
-
-  base::Value::List allowlist_items = base::Value::List()
-                                          .Append("allow.example.com")
-                                          .Append("*.allow.example.com");
-
-  for (auto& item : allowlist_items) {
-    allowlist->add_entries(item.GetString());
-  }
-
-  DecodeDevicePolicyTestHelper(device_policy,
-                               key::kDeviceAuthenticationURLAllowlist,
-                               base::Value(std::move(allowlist_items)));
 }
 
 }  // namespace policy

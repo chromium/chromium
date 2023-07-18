@@ -2016,6 +2016,4 @@ message ChromeDeviceSettingsProto {
       148;
   optional DeviceLowBatterySoundProto device_low_battery_sound = 149;
   optional DeviceChargingSoundsProto device_charging_sounds = 150;
-  optional StringListPolicyProto device_authentication_url_blocklist = 151;
-  optional StringListPolicyProto device_authentication_url_allowlist = 152;
 }
