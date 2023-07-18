@@ -285,6 +285,10 @@ const base::FeatureParam<SearchPreloadShareableCacheType>
         SearchPreloadShareableCacheType::kEnabled,
         &search_preload_shareable_cache_types};
 
+BASE_FEATURE(kPrerenderDSEHoldback,
+             "PrerenderDSEHoldback",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kAutocompleteActionPredictorConfidenceCutoff,
              "AutocompleteActionPredictorConfidenceCutoff",
              base::FEATURE_DISABLED_BY_DEFAULT);

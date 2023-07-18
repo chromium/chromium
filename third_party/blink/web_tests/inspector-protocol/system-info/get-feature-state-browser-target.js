@@ -3,7 +3,7 @@
       'Tests SystemInfo.getFeatureState() from browser target');
 
   const response = await testRunner.browserP().SystemInfo.getFeatureState(
-      {featureState: 'PrerenderHoldback'});
+      {featureState: 'PreloadingHoldback'});
   testRunner.log(response);
 
   testRunner.completeTest();

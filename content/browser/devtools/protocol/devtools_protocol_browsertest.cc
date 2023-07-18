@@ -251,17 +251,6 @@ class PrerenderDevToolsProtocolTest : public DevToolsProtocolTest {
   std::unique_ptr<test::PrerenderTestHelper> prerender_helper_;
 };
 
-class PrerenderHoldbackDevToolsProtocolTest
-    : public PrerenderDevToolsProtocolTest {
- public:
-  PrerenderHoldbackDevToolsProtocolTest() {
-    feature_list_.InitAndEnableFeature(features::kPrerender2Holdback);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
 class PreloadingHoldbackDevToolsProtocolTest
     : public PrerenderDevToolsProtocolTest {
  public:
@@ -3860,29 +3849,13 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 IN_PROC_BROWSER_TEST_F(PrerenderDevToolsProtocolTest,
-                       CheckReportedPrerenderFeatures) {
+                       CheckReportedPreloadingFeatures) {
   AttachToBrowserTarget();
-  base::Value::Dict paramsPrerenderHoldback;
-  paramsPrerenderHoldback.Set("featureState", "PrerenderHoldback");
-  const base::Value::Dict* result = SendCommand(
-      "SystemInfo.getFeatureState", std::move(paramsPrerenderHoldback));
-  EXPECT_THAT(result->FindBool("featureEnabled"), false);
-
   base::Value::Dict paramsPreloadingHolback;
   paramsPreloadingHolback.Set("featureState", "PreloadingHoldback");
-  result = SendCommand("SystemInfo.getFeatureState",
-                       std::move(paramsPreloadingHolback));
+  const base::Value::Dict* result = SendCommand(
+      "SystemInfo.getFeatureState", std::move(paramsPreloadingHolback));
   EXPECT_THAT(result->FindBool("featureEnabled"), false);
-}
-
-IN_PROC_BROWSER_TEST_F(PrerenderHoldbackDevToolsProtocolTest,
-                       CheckReportedPrerenderFeatures) {
-  AttachToBrowserTarget();
-  base::Value::Dict params;
-  params.Set("featureState", "PrerenderHoldback");
-  const base::Value::Dict* result =
-      SendCommand("SystemInfo.getFeatureState", std::move(params));
-  EXPECT_THAT(result->FindBool("featureEnabled"), true);
 }
 
 IN_PROC_BROWSER_TEST_F(PreloadingHoldbackDevToolsProtocolTest,
@@ -3964,29 +3937,6 @@ IN_PROC_BROWSER_TEST_F(MultiplePrerendersDevToolsProtocolTest,
   // properly when crbug/1350676 is ready. kPrerenderingUrl2 should be canceled
   // as navigating to kPrerenderingUrl2.
   result = WaitForNotification("Preload.prerenderAttemptCompleted", true);
-  EXPECT_THAT(*result.FindString("finalStatus"), Eq("Activated"));
-}
-
-IN_PROC_BROWSER_TEST_F(PrerenderHoldbackDevToolsProtocolTest,
-                       PrerenderActivation) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-  const GURL kInitialUrl = GetUrl("/empty.html");
-  const GURL kPrerenderingUrl = GetUrl("/empty.html?prerender1");
-
-  // Navigate to an initial page.
-  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
-
-  Attach();
-  SendCommandSync("Preload.enable");
-  SendCommandSync("Runtime.enable");
-
-  AddPrerender(kPrerenderingUrl);
-
-  EXPECT_TRUE(HasHostForUrl(kPrerenderingUrl));
-
-  NavigatePrimaryPage(kPrerenderingUrl);
-  base::Value::Dict result =
-      WaitForNotification("Preload.prerenderAttemptCompleted", true);
   EXPECT_THAT(*result.FindString("finalStatus"), Eq("Activated"));
 }
 

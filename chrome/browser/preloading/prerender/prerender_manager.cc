@@ -12,6 +12,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "chrome/browser/browser_features.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/preloading/chrome_preloading.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/field_trial_settings.h"
@@ -37,9 +38,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
-#include "content/public/common/content_features.h"
 #include "net/base/url_util.h"
-#include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
 
 namespace internal {
@@ -93,17 +92,9 @@ GURL RemoveParameterFromUrl(const GURL& url) {
 
 void MarkPreloadingAttemptAsDuplicate(
     content::PreloadingAttempt* preloading_attempt) {
-  // In addition to the globally-controlled preloading config, check for the
-  // feature-specific holdback. We disable the feature if the user is in either
-  // of those holdbacks.
-  if (base::FeatureList::IsEnabled(features::kPrerender2Holdback)) {
-    preloading_attempt->SetHoldbackStatus(
-        content::PreloadingHoldbackStatus::kHoldback);
-  }
-  if (!preloading_attempt->ShouldHoldback()) {
-    preloading_attempt->SetTriggeringOutcome(
-        PreloadingTriggeringOutcome::kDuplicate);
-  }
+  CHECK(!preloading_attempt->ShouldHoldback());
+  preloading_attempt->SetTriggeringOutcome(
+      PreloadingTriggeringOutcome::kDuplicate);
 }
 
 content::PreloadingFailureReason ToPreloadingFailureReason(
@@ -632,13 +623,19 @@ void PrerenderManager::StartPrerenderSearchResultInternal(
       base::BindRepeating(&IsSearchDestinationMatch, canonical_search_url,
                           web_contents()->GetBrowserContext());
 
+  content::PreloadingHoldbackStatus holdback_status_override =
+      content::PreloadingHoldbackStatus::kUnspecified;
+  if (base::FeatureList::IsEnabled(features::kPrerenderDSEHoldback)) {
+    holdback_status_override = content::PreloadingHoldbackStatus::kHoldback;
+  }
+
   std::unique_ptr<content::PrerenderHandle> prerender_handle =
       web_contents()->StartPrerendering(
           prerendering_url, content::PrerenderTriggerType::kEmbedder,
           prerender_utils::kDefaultSearchEngineMetricSuffix,
           ui::PageTransitionFromInt(ui::PAGE_TRANSITION_GENERATED |
                                     ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
-          content::PreloadingHoldbackStatus::kUnspecified,
+          holdback_status_override,
           /*preloading_attempt=*/attempt.get(), std::move(url_match_predicate));
 
   if (prerender_handle) {

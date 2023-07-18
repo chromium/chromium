@@ -649,10 +649,6 @@ int PrerenderHostRegistry::CreateAndStartHost(
       // Never holdback when DevTools is opened, to avoid web developer
       // frustration.
       builder.SetHoldbackOverride(PreloadingHoldbackStatus::kAllowed);
-    } else if (base::FeatureList::IsEnabled(features::kPrerender2Holdback)) {
-      // The Prerender2Holdback feature overrides the PreloadingConfig logic.
-      // TODO(https://crbug.com/1464173): remove this.
-      builder.SetHoldbackOverride(PreloadingHoldbackStatus::kHoldback);
     } else if (attributes.holdback_status_override !=
                PreloadingHoldbackStatus::kUnspecified) {
       // The caller (e.g. from chrome/) is allowed to specify a holdback that

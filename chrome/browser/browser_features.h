@@ -113,6 +113,13 @@ enum class SearchPreloadShareableCacheType {
 extern const base::FeatureParam<SearchPreloadShareableCacheType>
     kSearchPreloadShareableCacheTypeParam;
 
+// Disables prerendering on the default search engine predictor. This is useful
+// in comparing the impact of the SupportSearchSuggestionForPrerender2 feature
+// during its rollout. Once that rollout is complete, this feature should be
+// removed and instead we should add a new long-term holdback to
+// PreloadingConfig.
+BASE_DECLARE_FEATURE(kPrerenderDSEHoldback);
+
 // This is used to enable an experiment for modifying confidence cutoff of
 // prerender and preconnect for autocomplete action predictor.
 BASE_DECLARE_FEATURE(kAutocompleteActionPredictorConfidenceCutoff);

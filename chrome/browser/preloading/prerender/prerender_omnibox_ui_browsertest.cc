@@ -507,10 +507,14 @@ class PrerenderPreloaderHoldbackBrowserTest
     : public PrerenderOmniboxUIBrowserTest {
  public:
   PrerenderPreloaderHoldbackBrowserTest() {
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kPrerender2Holdback},
-        /* disabled_features=*/{
-            kSearchPrefetchOnlyAllowDefaultMatchPreloading});
+    feature_list_.InitAndEnableFeatureWithParameters(
+        features::kPreloadingConfig, {{"preloading_config", R"(
+  [{
+    "preloading_type": "Prerender",
+    "preloading_predictor": "OmniboxDirectURLInput",
+    "holdback": true
+  }]
+  )"}});
   }
   ~PrerenderPreloaderHoldbackBrowserTest() override = default;
 

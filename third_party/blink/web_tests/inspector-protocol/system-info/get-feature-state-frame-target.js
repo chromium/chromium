@@ -3,7 +3,7 @@
       'Tests SystemInfo.getFeatureState() from frame target');
 
   const response =
-      await dp.SystemInfo.getFeatureState({featureState: 'PrerenderHoldback'});
+      await dp.SystemInfo.getFeatureState({featureState: 'PreloadingHoldback'});
   testRunner.log(response);
 
   testRunner.completeTest();
