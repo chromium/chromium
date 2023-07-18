@@ -2335,6 +2335,21 @@
             ]
         }
     ],
+    "BrowserLockdownModeIOS": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "BrowserLockdownModeAvailable"
+                    ]
+                }
+            ]
+        }
+    ],
     "BrowserPeriodicYieldingToNative": [
         {
             "platforms": [
