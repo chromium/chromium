@@ -272,7 +272,7 @@
     ID
   </message>
   <message name="IDS_EXTENSIONS_EXTENSION_ENABLED" desc="The label for the toggle that enables an extension.">
-    Extension Enabled
+    On, extension enabled
   </message>
   <message name="IDS_EXTENSIONS_APP_ENABLED" desc="The label for the toggle that enables an app.">
     App Enabled

@@ -23,13 +23,13 @@ import 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
 import {ChromeEvent} from '/tools/typescript/definitions/chrome_event.js';
 import {getToastManager} from 'chrome://resources/cr_elements/cr_toast/cr_toast_manager.js';
 import {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
-import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {flush, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './item.html.js';
 import {ItemMixin} from './item_mixin.js';
-import {computeInspectableViewLabel, EnableControl, getEnableControl, getItemSource, getItemSourceString, isEnabled, sortViews, SourceType, userCanChangeEnablement} from './item_util.js';
+import {computeInspectableViewLabel, EnableControl, getEnableControl, getEnableToggleAriaLabel, getItemSource, getItemSourceString, isEnabled, sortViews, SourceType, userCanChangeEnablement} from './item_util.js';
 import {navigation, Page} from './navigation_helper.js';
 
 export interface ItemDelegate {
@@ -140,6 +140,12 @@ export class ExtensionsItemElement extends ExtensionsItemElementBase {
   /** @return The "Errors" button, if it exists. */
   getErrorsButton(): HTMLElement|null {
     return this.shadowRoot!.querySelector('#errors-button');
+  }
+
+  private getEnableToggleAriaLabel_(): string {
+    return getEnableToggleAriaLabel(
+        this.isEnabled_(), this.data.type, this.i18n('appEnabled'),
+        this.i18n('extensionEnabled'), this.i18n('itemOff'));
   }
 
   private observeIdVisibility_() {

@@ -26,6 +26,7 @@ import './toggle_row.js';
 
 import {CrLinkRowElement} from 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {CrTooltipIconElement} from 'chrome://resources/cr_elements/policy/cr_tooltip_icon.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
@@ -35,7 +36,7 @@ import {afterNextRender, DomRepeatEvent, PolymerElement} from 'chrome://resource
 import {getTemplate} from './detail_view.html.js';
 import {ItemDelegate} from './item.js';
 import {ItemMixin} from './item_mixin.js';
-import {computeInspectableViewLabel, EnableControl, getEnableControl, getItemSource, getItemSourceString, isEnabled, sortViews, userCanChangeEnablement} from './item_util.js';
+import {computeInspectableViewLabel, EnableControl, getEnableControl, getEnableToggleAriaLabel, getItemSource, getItemSourceString, isEnabled, sortViews, userCanChangeEnablement} from './item_util.js';
 import {navigation, Page} from './navigation_helper.js';
 import {ExtensionsToggleRowElement} from './toggle_row.js';
 
@@ -52,7 +53,7 @@ export interface ExtensionsDetailViewElement {
   };
 }
 
-const ExtensionsDetailViewElementBase = ItemMixin(PolymerElement);
+const ExtensionsDetailViewElementBase = I18nMixin(ItemMixin(PolymerElement));
 
 export class ExtensionsDetailViewElement extends
     ExtensionsDetailViewElementBase {
@@ -181,6 +182,12 @@ export class ExtensionsDetailViewElement extends
   private getBackButtonAriaRoleDescription_(): string {
     return loadTimeData.getStringF(
         'itemDetailsBackButtonRoleDescription', this.data.name);
+  }
+
+  private getEnableToggleAriaLabel_(): string {
+    return getEnableToggleAriaLabel(
+        this.isEnabled_(), this.data.type, this.i18n('appEnabled'),
+        this.i18n('extensionEnabled'), this.i18n('itemOff'));
   }
 
   private onCloseButtonClick_() {
