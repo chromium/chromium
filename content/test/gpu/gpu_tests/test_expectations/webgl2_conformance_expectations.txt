@@ -449,6 +449,16 @@ crbug.com/angleproject/6430 [ mac passthrough angle-metal apple ] deqp/functiona
 crbug.com/angleproject/6430 [ mac passthrough angle-metal apple ] deqp/functional/gles3/texturefiltering/cube_sizes_03.html [ Failure ]
 crbug.com/angleproject/6430 [ mac passthrough angle-metal apple ] deqp/functional/gles3/texturefiltering/cube_sizes_04.html [ Failure ]
 crbug.com/1298619 [ mac passthrough angle-metal apple ] deqp/functional/gles3/occlusionquery_strict.html [ Failure ]
+crbug.com/1465035 [ mac passthrough angle-metal apple ] deqp/functional/gles3/fboinvalidate/default.html [ Failure ]
+crbug.com/1465035 [ mac passthrough angle-metal apple mac-arm64 ] deqp/functional/gles3/fboinvalidate/whole.html [ Failure ]
+crbug.com/1465035 [ mac passthrough angle-metal apple ] deqp/functional/gles3/transformfeedback/basic_types_interleaved_points.html [ Failure ]
+crbug.com/1465035 [ mac passthrough angle-metal apple ] deqp/functional/gles3/transformfeedback/basic_types_separate_points.html [ Failure ]
+crbug.com/1465035 [ mac passthrough angle-metal apple ] deqp/functional/gles3/transformfeedback/interpolation_centroid.html [ Failure ]
+crbug.com/1465035 [ mac passthrough angle-metal apple ] deqp/functional/gles3/transformfeedback/interpolation_flat.html [ Failure ]
+crbug.com/1465035 [ mac passthrough angle-metal apple ] deqp/functional/gles3/transformfeedback/interpolation_smooth.html [ Failure ]
+crbug.com/1465035 [ mac passthrough angle-metal apple ] deqp/functional/gles3/transformfeedback/point_size.html [ Failure ]
+crbug.com/1465035 [ mac passthrough angle-metal apple ] deqp/functional/gles3/transformfeedback/random_interleaved_points.html [ Failure ]
+crbug.com/1465035 [ mac passthrough angle-metal apple ] deqp/functional/gles3/transformfeedback/random_separate_points.html [ Failure ]
 
 ######################################################################
 # Mac failures (mainly OpenGL; some need to be reevaluated on Metal) #

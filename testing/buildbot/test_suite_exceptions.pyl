@@ -4643,19 +4643,6 @@
         ],
       },
     },
-    'replacements': {
-      # TODO(crbug.com/1465035): Enable Metal debug layers on Apple silicon.
-      'Mac FYI Release (Apple M1)': {
-        'args': {
-          '--enable-metal-debug-layers': None,
-        },
-      },
-      'Mac FYI Retina Release (Apple M2)': {
-        'args': {
-          '--enable-metal-debug-layers': None,
-        },
-      },
-    },
   },
   'webgl2_conformance_validating_tests': {
     'remove_from': [
