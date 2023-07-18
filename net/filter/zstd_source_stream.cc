@@ -29,6 +29,11 @@ class ZstdSourceStream : public FilterSourceStream {
   explicit ZstdSourceStream(std::unique_ptr<SourceStream> upstream)
       : FilterSourceStream(SourceStream::TYPE_ZSTD, std::move(upstream)) {
     dctx_.reset(ZSTD_createDCtx());
+    CHECK(dctx_);
+    // Following RFC 8878 recommendation (see section 3.1.1.1.2 Window
+    // Descriptor) of using a maximum 8MB memory buffer to decompress frames
+    // to '... protect decoders from unreasonable memory requirements'.
+    ZSTD_DCtx_setParameter(dctx_.get(), ZSTD_d_windowLogMax, 23);
   }
 
   ZstdSourceStream(const ZstdSourceStream&) = delete;
