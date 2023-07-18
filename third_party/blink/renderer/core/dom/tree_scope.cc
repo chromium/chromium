@@ -491,12 +491,15 @@ Node* TreeScope::FindAnchor(const String& fragment) {
 }
 
 void TreeScope::AdoptIfNeeded(Node& node) {
+  DCHECK(!node.IsDocumentNode());
+  if (LIKELY(&node.GetTreeScope() == this)) {
+    return;
+  }
+
   // Script is forbidden to protect against event handlers firing in the middle
   // of rescoping in |didMoveToNewDocument| callbacks. See
   // https://crbug.com/605766 and https://crbug.com/606651.
   ScriptForbiddenScope forbid_script;
-  DCHECK(this);
-  DCHECK(!node.IsDocumentNode());
   TreeScopeAdopter adopter(node, *this);
   if (adopter.NeedsScopeChange())
     adopter.Execute();
