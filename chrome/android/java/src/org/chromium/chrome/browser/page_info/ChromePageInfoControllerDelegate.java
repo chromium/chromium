@@ -13,7 +13,6 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 
@@ -302,11 +301,6 @@ public class ChromePageInfoControllerDelegate extends PageInfoControllerDelegate
     @Override
     public boolean isAccessibilityEnabled() {
         return ChromeAccessibilityUtil.get().isAccessibilityEnabled();
-    }
-
-    @VisibleForTesting
-    void setOfflinePageStateForTesting(@OfflinePageState int offlinePageState) {
-        mOfflinePageState = offlinePageState;
     }
 
     @Override

@@ -18,7 +18,6 @@ import android.widget.LinearLayout;
 
 import androidx.test.filters.SmallTest;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.ClassRule;
@@ -106,14 +105,6 @@ public class ThemeSettingsFragmentTest {
                 .when(mMockWebsitePreferenceBridgeJni)
                 .setContentSettingEnabled(
                         any(), eq(ContentSettingsType.AUTO_DARK_WEB_CONTENT), anyBoolean());
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            SharedPreferencesManager.getInstance().removeKey(UI_THEME_SETTING);
-            TrackerFactory.setTrackerForTests(null);
-        });
     }
 
     @Test

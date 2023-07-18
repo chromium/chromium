@@ -123,7 +123,7 @@ public class WebApkUpdateIntegrationTest {
         mTestMetaData = defaultMetaData();
 
         WebApkValidator.setDisableValidationForTesting(true);
-        WebApkUpdateManager.setUpdatesEnabledForTesting(true);
+        WebApkUpdateManager.setUpdatesDisabledForTesting(false);
     }
 
     @After

@@ -104,7 +104,6 @@ public class AdaptiveToolbarButtonControllerTest {
         SharedPreferencesManager.getInstance().removeKey(
                 ChromePreferenceKeys.ADAPTIVE_TOOLBAR_CUSTOMIZATION_ENABLED);
         SharedPreferencesManager.getInstance().removeKey(ADAPTIVE_TOOLBAR_CUSTOMIZATION_SETTINGS);
-        VoiceRecognitionUtil.setIsVoiceSearchEnabledForTesting(null);
     }
 
     @Test

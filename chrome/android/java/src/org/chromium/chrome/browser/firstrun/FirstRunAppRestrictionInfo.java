@@ -15,6 +15,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.TaskTraits;
@@ -198,6 +199,8 @@ class FirstRunAppRestrictionInfo {
     @VisibleForTesting
     static void setInitializedInstanceForTest(
             FirstRunAppRestrictionInfo firstRunAppRestrictionInfo) {
+        var oldValue = sInitializedInstance;
         sInitializedInstance = firstRunAppRestrictionInfo;
+        ResettersForTesting.register(() -> sInitializedInstance = oldValue);
     }
 }

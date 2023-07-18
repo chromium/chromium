@@ -69,7 +69,6 @@ public class ReaderModeActionProviderTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         initializeReaderModeBackend();
-        DomDistillerTabUtils.setDistillerHeuristicsForTesting(null);
 
         mMockTab.getUserDataHost().setUserData(
                 ReaderModeManager.USER_DATA_KEY, mMockReaderModeManager);

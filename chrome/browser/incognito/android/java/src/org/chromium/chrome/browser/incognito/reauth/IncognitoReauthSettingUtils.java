@@ -15,6 +15,7 @@ import android.text.style.ForegroundColorSpan;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.chrome.browser.incognito.R;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.text.SpanApplier;
@@ -67,6 +68,7 @@ public class IncognitoReauthSettingUtils {
     @VisibleForTesting
     public static void setIsDeviceScreenLockEnabledForTesting(boolean value) {
         sIsDeviceScreenLockEnabledForTesting = value;
+        ResettersForTesting.register(() -> sIsDeviceScreenLockEnabledForTesting = null);
     }
 
     // TODO(crbug.com/1249473): Use NoUnderlineClickableSpan here to build the

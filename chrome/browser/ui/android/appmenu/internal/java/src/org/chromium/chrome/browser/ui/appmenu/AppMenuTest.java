@@ -86,9 +86,7 @@ public class AppMenuTest extends BlankUiTestActivityTestCase {
     }
 
     @AfterClass
-    public static void tearDownAfterActivityDestroyed() {
-        AppMenuCoordinatorImpl.setHasPermanentMenuKeyForTesting(null);
-    }
+    public static void tearDownAfterActivityDestroyed() {}
 
     private void setUpTestOnUiThread() {
         mLifecycleDispatcher = new TestActivityLifecycleDispatcher();
@@ -163,8 +161,6 @@ public class AppMenuTest extends BlankUiTestActivityTestCase {
         Assert.assertEquals("Popup should be aligned with right of anchor. Anchor rect: " + viewRect
                         + ", popup rect: " + popupRect,
                 viewRect.right, popupRect.right);
-
-        AppMenuCoordinatorImpl.setHasPermanentMenuKeyForTesting(null);
     }
 
     @Test
@@ -181,7 +177,6 @@ public class AppMenuTest extends BlankUiTestActivityTestCase {
         Assert.assertNotEquals("Popup should be offset from right of anchor."
                         + "Anchor rect: " + viewRect + ", popup rect: " + popupRect,
                 viewRect.right, popupRect.right);
-        AppMenuCoordinatorImpl.setHasPermanentMenuKeyForTesting(null);
     }
 
     @Test

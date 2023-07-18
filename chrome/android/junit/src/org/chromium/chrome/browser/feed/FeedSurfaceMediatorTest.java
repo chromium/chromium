@@ -171,11 +171,6 @@ public class FeedSurfaceMediatorTest {
     public void tearDown() {
         if (mFeedSurfaceMediator != null) mFeedSurfaceMediator.destroy();
         FeedSurfaceMediator.setPrefForTest(null, null);
-        FeedFeatures.setFakePrefsForTest(null);
-        Profile.setLastUsedProfileForTesting(null);
-        IdentityServicesProvider.setInstanceForTests(null);
-        TemplateUrlServiceFactory.setInstanceForTesting(null);
-        SignInPromo.setDisablePromoForTesting(false);
     }
 
     @Test

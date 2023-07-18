@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.ResettersForTesting;
 import org.chromium.chrome.browser.privacy_sandbox.v4.PrivacySandboxDialogConsentEEAV4;
 import org.chromium.chrome.browser.privacy_sandbox.v4.PrivacySandboxDialogNoticeEEAV4;
 import org.chromium.chrome.browser.privacy_sandbox.v4.PrivacySandboxDialogNoticeROWV4;
@@ -112,7 +113,9 @@ public class PrivacySandboxDialogController {
 
     @VisibleForTesting
     static void setShowNewNoticeForTesting(boolean showNew) {
+        var oldValue = sShowNew;
         sShowNew = showNew;
+        ResettersForTesting.register(() -> sShowNew = oldValue);
     }
 
     @VisibleForTesting

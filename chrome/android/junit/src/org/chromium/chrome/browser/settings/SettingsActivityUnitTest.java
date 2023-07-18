@@ -81,8 +81,6 @@ public class SettingsActivityUnitTest {
             mActivityScenario.close();
             mActivityScenario = null;
         }
-        ChromeBrowserInitializer.setForTesting(null);
-        Profile.setLastUsedProfileForTesting(null);
     }
 
     @Test

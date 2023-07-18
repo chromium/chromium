@@ -289,7 +289,6 @@ public class PrivacySettingsFragmentTest {
     @Feature({"RenderTest"})
     public void testRenderIncognitoLockView_DeviceScreenLockDisabled() throws IOException {
         IncognitoReauthManager.setIsIncognitoReauthFeatureAvailableForTesting(true);
-        IncognitoReauthSettingUtils.setIsDeviceScreenLockEnabledForTesting(false);
 
         mSettingsActivityTestRule.startSettingsActivity();
         waitForOptionsMenu();

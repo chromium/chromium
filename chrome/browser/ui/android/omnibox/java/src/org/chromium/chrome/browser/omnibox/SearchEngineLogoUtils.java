@@ -16,6 +16,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
 import org.chromium.base.Promise;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.locale.LocaleManager;
@@ -346,17 +347,23 @@ public class SearchEngineLogoUtils {
 
     /** Set the favicon helper for testing. */
     void setFaviconHelperForTesting(FaviconHelper faviconHelper) {
+        var oldValue = mFaviconHelper;
         mFaviconHelper = faviconHelper;
+        ResettersForTesting.register(() -> mFaviconHelper = oldValue);
     }
 
     /** Set the RoundedIconGenerator for testing. */
     void setRoundedIconGeneratorForTesting(RoundedIconGenerator roundedIconGenerator) {
+        var oldValue = mRoundedIconGenerator;
         mRoundedIconGenerator = roundedIconGenerator;
+        ResettersForTesting.register(() -> mRoundedIconGenerator = oldValue);
     }
 
     /** Set the instance for testing. */
     static void setInstanceForTesting(SearchEngineLogoUtils instance) {
+        var oldValue = sInstance;
         sInstance = instance;
+        ResettersForTesting.register(() -> sInstance = oldValue);
     }
 
     /** Reset the cache values for testing. */

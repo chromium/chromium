@@ -27,6 +27,7 @@ android_library_factory("public_factory_java") {
 android_library("internal_factory_java") {
   deps = [
     ":internal_java",
+    "//base:base_java",
     "//chrome/browser/flags:java",
     "//chrome/browser/settings:java",
     "//components/browser_ui/settings/android:java",

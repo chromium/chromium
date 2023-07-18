@@ -149,11 +149,6 @@ public class PowerBookmarkShoppingItemRowTest extends BlankUiTestActivityTestCas
         });
     }
 
-    @Override
-    public void tearDownTest() throws Exception {
-        ShoppingFeatures.setShoppingListEligibleForTesting(null);
-    }
-
     @Test
     @SmallTest
     public void initPriceTrackingUI_NullImage() {

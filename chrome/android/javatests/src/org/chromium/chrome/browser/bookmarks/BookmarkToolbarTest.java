@@ -150,8 +150,6 @@ public class BookmarkToolbarTest extends BlankUiTestActivityTestCase {
 
     @After
     public void tearDown() {
-        IncognitoUtils.setEnabledForTesting(null);
-
         // Since these monitors block the creation of activities, it is crucial that they're removed
         // so that when batching tests the subsequent cases actually see their activities.
         for (ActivityMonitor activityMonitor : mActivityMonitorList) {

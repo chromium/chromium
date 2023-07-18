@@ -17,7 +17,6 @@ import android.view.View;
 
 import androidx.test.filters.LargeTest;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -90,11 +89,6 @@ public class ClearBrowsingDataFragmentBasicTest {
         SyncServiceFactory.setInstanceForTesting(mMockSyncService);
         setSyncable(false);
         mActivityTestRule.startMainActivityOnBlankPage();
-    }
-
-    @After
-    public void tearDown() {
-        TemplateUrlServiceFactory.setInstanceForTesting(null);
     }
 
     private void setSyncable(boolean syncable) {

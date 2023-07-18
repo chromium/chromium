@@ -109,7 +109,6 @@ public class RecentTabsPageTest {
     @After
     public void tearDown() {
         leaveRecentTabsPage();
-        RecentTabsManager.setRecentlyClosedTabManagerForTests(null);
         SharedPreferencesManager.getInstance().removeKey(
                 ChromePreferenceKeys.SYNC_PROMO_TOTAL_SHOW_COUNT);
     }

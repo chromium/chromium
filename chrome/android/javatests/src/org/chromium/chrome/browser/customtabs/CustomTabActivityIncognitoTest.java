@@ -612,7 +612,6 @@ public class CustomTabActivityIncognitoTest {
                     .setBoolean(Pref.INCOGNITO_REAUTHENTICATION_FOR_ANDROID, false);
         });
 
-        IncognitoReauthSettingUtils.setIsDeviceScreenLockEnabledForTesting(false);
         IncognitoReauthManager.setIsIncognitoReauthFeatureAvailableForTesting(false);
     }
 }

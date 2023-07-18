@@ -15,6 +15,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.CommandLine;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -134,7 +135,7 @@ import java.util.function.Function;
  * A {@link RootUiCoordinator} variant that controls tabbed-mode specific UI.
  */
 public class TabbedRootUiCoordinator extends RootUiCoordinator {
-    private static boolean sDisableStatusIndicatorAnimations;
+    private static boolean sDisableStatusIndicatorAnimationsForTesting;
     private final RootUiTabObserver mRootUiTabObserver;
     private TabbedSystemUiCoordinator mSystemUiCoordinator;
 
@@ -860,7 +861,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             @Override
             public void onStatusIndicatorHeightChanged(int indicatorHeight) {
                 mStatusIndicatorHeight = indicatorHeight;
-                boolean animate = !sDisableStatusIndicatorAnimations;
+                boolean animate = !sDisableStatusIndicatorAnimationsForTesting;
                 updateTopControlsHeight(animate);
             }
         };
@@ -973,6 +974,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
     @VisibleForTesting
     public static void setDisableStatusIndicatorAnimationsForTesting(boolean disable) {
-        sDisableStatusIndicatorAnimations = disable;
+        sDisableStatusIndicatorAnimationsForTesting = disable;
+        ResettersForTesting.register(() -> sDisableStatusIndicatorAnimationsForTesting = false);
     }
 }

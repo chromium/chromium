@@ -12,7 +12,6 @@ import android.os.UserManager;
 
 import androidx.test.filters.SmallTest;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -67,11 +66,6 @@ public class FirstRunAppRestrictionInfoTest {
         UserManager userManager = (UserManager) context.getSystemService(Context.USER_SERVICE);
         ShadowUserManager shadowUserManager = shadowOf(userManager);
         shadowUserManager.setApplicationRestrictions(context.getPackageName(), mMockBundle);
-    }
-
-    @After
-    public void tearDown() {
-        FirstRunAppRestrictionInfo.setInitializedInstanceForTest(null);
     }
 
     @Test

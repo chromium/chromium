@@ -8,6 +8,7 @@ import androidx.annotation.MainThread;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -32,7 +33,9 @@ public class IdentityServicesProvider {
 
     @VisibleForTesting
     public static void setInstanceForTests(IdentityServicesProvider provider) {
+        var oldValue = sIdentityServicesProvider;
         sIdentityServicesProvider = provider;
+        ResettersForTesting.register(() -> sIdentityServicesProvider = oldValue);
     }
 
     /**

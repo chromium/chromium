@@ -11,6 +11,7 @@ import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.metrics.RecordHistogram;
@@ -208,6 +209,7 @@ public class MinimizeAppAndCloseTabBackPressHandler implements BackPressHandler,
 
     static void setVersionForTesting(Integer version) {
         sVersionForTesting = version;
+        ResettersForTesting.register(() -> sVersionForTesting = null);
     }
 
     public static String getHistogramNameForTesting() {

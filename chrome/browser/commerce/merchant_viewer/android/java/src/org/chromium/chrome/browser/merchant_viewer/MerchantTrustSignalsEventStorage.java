@@ -8,6 +8,7 @@ import androidx.annotation.MainThread;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -117,6 +118,7 @@ public class MerchantTrustSignalsEventStorage {
     @VisibleForTesting
     static void setSkipNativeAssertionsForTesting(boolean skipNativeAssertionsForTesting) {
         sSkipNativeAssertionsForTesting = skipNativeAssertionsForTesting;
+        ResettersForTesting.register(() -> sSkipNativeAssertionsForTesting = false);
     }
 
     @NativeMethods

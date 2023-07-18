@@ -916,7 +916,6 @@ public class ContextMenuTest implements DownloadTestRule.CustomMainActivityStart
                 Assert.assertEquals(1,
                         RecordHistogram.getHistogramTotalCountForTesting(
                                 "ContextMenu.Shown.SharedHighlightingInteraction"));
-                ContextMenuHelper.setMenuShownCallbackForTests(null);
             });
             contextMenuHelper.showContextMenuForTesting(
                     populatorFactory, params, null, tab.getView(), 0);

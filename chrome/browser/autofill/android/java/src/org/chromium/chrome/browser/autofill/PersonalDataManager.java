@@ -12,6 +12,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
@@ -721,7 +722,9 @@ public class PersonalDataManager {
 
     @VisibleForTesting
     public static void setInstanceForTesting(PersonalDataManager manager) {
+        var oldValue = sManager;
         sManager = manager;
+        ResettersForTesting.register(() -> sManager = oldValue);
     }
 
     /**
@@ -916,7 +919,9 @@ public class PersonalDataManager {
 
     @VisibleForTesting
     public static void setRequestTimeoutForTesting(int timeout) {
+        var oldValue = sRequestTimeoutSeconds;
         sRequestTimeoutSeconds = timeout;
+        ResettersForTesting.register(() -> sRequestTimeoutSeconds = oldValue);
     }
 
     @VisibleForTesting
@@ -989,7 +994,9 @@ public class PersonalDataManager {
 
     @VisibleForTesting
     public void setImageFetcherForTesting(ImageFetcher imageFetcher) {
+        var oldValue = this.mImageFetcher;
         this.mImageFetcher = imageFetcher;
+        ResettersForTesting.register(() -> this.mImageFetcher = oldValue);
     }
 
     private void fetchImage(GURL customImageUrl, Callback<Bitmap> callback) {

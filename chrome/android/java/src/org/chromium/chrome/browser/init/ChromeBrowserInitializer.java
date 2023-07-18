@@ -15,6 +15,7 @@ import org.chromium.base.CommandLine;
 import org.chromium.base.ContentUriUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.SysUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
@@ -469,14 +470,18 @@ public class ChromeBrowserInitializer {
      * @param initializer The (dummy or mocked) initializer to use.
      */
     public static void setForTesting(ChromeBrowserInitializer initializer) {
+        var oldValue = sChromeBrowserInitializer;
         sChromeBrowserInitializer = initializer;
+        ResettersForTesting.register(() -> sChromeBrowserInitializer = oldValue);
     }
 
     /**
-     * Set {@link BrowserStartupController) to use for unit testing.
+     * Set {@link BrowserStartupController ) to use for unit testing.
      * @param controller The (dummy or mocked) {@link BrowserStartupController) instance.
      */
     public static void setBrowserStartupControllerForTesting(BrowserStartupController controller) {
+        var oldValue = sBrowserStartupController;
         sBrowserStartupController = controller;
+        ResettersForTesting.register(() -> sBrowserStartupController = oldValue);
     }
 }

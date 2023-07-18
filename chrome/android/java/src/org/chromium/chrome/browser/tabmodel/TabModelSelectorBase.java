@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.tabmodel;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.ObserverList;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
@@ -25,7 +26,7 @@ public abstract class TabModelSelectorBase
         implements TabModelSelector, IncognitoTabModelObserver, TabModelDelegate {
     private static final int MODEL_NOT_FOUND = -1;
 
-    private static TabModelSelectorObserver sObserver;
+    private static TabModelSelectorObserver sObserverForTesting;
 
     private List<TabModel> mTabModels = new ArrayList<>();
     private IncognitoTabModel mIncognitoTabModel;
@@ -92,8 +93,8 @@ public abstract class TabModelSelectorBase
 
         mTabModelFilterProvider.addTabModelFilterObserver(tabModelObserver);
 
-        if (sObserver != null) {
-            addObserver(sObserver);
+        if (sObserverForTesting != null) {
+            addObserver(sObserverForTesting);
         }
 
         mIncognitoTabModel.addIncognitoObserver(this);
@@ -105,7 +106,8 @@ public abstract class TabModelSelectorBase
     }
 
     public static void setObserverForTests(TabModelSelectorObserver observer) {
-        sObserver = observer;
+        sObserverForTesting = observer;
+        ResettersForTesting.register(() -> sObserverForTesting = null);
     }
 
     /**

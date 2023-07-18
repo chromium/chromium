@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.query_tiles;
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
@@ -203,10 +204,9 @@ public class QueryTileUtils {
                 });
     }
 
-    /** For testing only. */
-    @VisibleForTesting
     public static void setSegmentationResultsForTesting(int result) {
         sSegmentationResultsForTesting = result;
+        ResettersForTesting.register(() -> sSegmentationResultsForTesting = -1);
     }
 
     @NativeMethods

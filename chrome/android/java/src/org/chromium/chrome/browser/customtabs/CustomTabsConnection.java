@@ -38,6 +38,7 @@ import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.SysUtils;
 import org.chromium.base.ThreadUtils;
@@ -1818,9 +1819,10 @@ public class CustomTabsConnection {
             CustomTabsSessionToken session, String stateKey, ArrayList<String> foundTextFragments) {
     }
 
-    @VisibleForTesting
     public static void setInstanceForTesting(CustomTabsConnection connection) {
+        var oldValue = sInstance;
         sInstance = connection;
+        ResettersForTesting.register(() -> sInstance = oldValue);
     }
 
     @NativeMethods

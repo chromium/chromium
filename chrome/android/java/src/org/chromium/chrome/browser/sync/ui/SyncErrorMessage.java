@@ -16,6 +16,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.UnownedUserData;
 import org.chromium.base.UnownedUserDataHost;
@@ -370,6 +371,7 @@ public class SyncErrorMessage implements SyncService.SyncStateChangedListener, U
     @VisibleForTesting
     public static void setMessageDispatcherForTesting(MessageDispatcher dispatcherForTesting) {
         sMessageDispatcherForTesting = dispatcherForTesting;
+        ResettersForTesting.register(() -> sMessageDispatcherForTesting = null);
     }
 
     @VisibleForTesting

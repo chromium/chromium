@@ -117,7 +117,6 @@ public class TabbedAppMenuTest {
         ActivityTestUtils.clearActivityOrientation(mActivityTestRule.getActivity());
 
         CompositorAnimationHandler.setTestingMode(false);
-        ShoppingFeatures.setShoppingListEligibleForTesting(null);
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             WebsitePreferenceBridge.setCategoryEnabled(Profile.getLastUsedRegularProfile(),
@@ -285,8 +284,6 @@ public class TabbedAppMenuTest {
                 bookmarkStarPropertyModel.get(AppMenuItemProperties.TITLE_CONDENSED));
         mRenderTestRule.render(
                 getListView().getChildAt(0), "rounded_corner_icon_row_page_bookmarked");
-
-        AppMenuPropertiesDelegateImpl.setPageBookmarkedForTesting(null);
     }
 
     @Test
@@ -447,8 +444,6 @@ public class TabbedAppMenuTest {
         Assert.assertNotEquals("No add bookmark menu item found.", -1, editBookmarkMenuItemIndex);
         mRenderTestRule.render(
                 getListView().getChildAt(editBookmarkMenuItemIndex), "edit_bookmark_list_item");
-
-        AppMenuPropertiesDelegateImpl.setPageBookmarkedForTesting(null);
     }
 
     @Test

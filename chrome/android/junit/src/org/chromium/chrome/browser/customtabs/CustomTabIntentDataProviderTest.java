@@ -43,7 +43,6 @@ import androidx.browser.trusted.ScreenOrientation;
 import androidx.browser.trusted.TrustedWebActivityIntentBuilder;
 import androidx.test.core.app.ApplicationProvider;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -84,11 +83,6 @@ public class CustomTabIntentDataProviderTest {
     public void setUp() {
         mContext = new ContextThemeWrapper(
                 ApplicationProvider.getApplicationContext(), R.style.Theme_BrowserUI_DayNight);
-    }
-
-    @After
-    public void tearDown() {
-        CustomTabsConnection.setInstanceForTesting(null);
     }
 
     @Test

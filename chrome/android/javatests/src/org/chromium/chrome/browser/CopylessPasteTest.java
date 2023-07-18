@@ -7,7 +7,6 @@ package org.chromium.chrome.browser;
 import androidx.test.filters.LargeTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -65,11 +64,6 @@ public class CopylessPasteTest {
 
         AppIndexingUtil.setCallbackForTesting(webpage -> mCallbackHelper.notifyCalled(webpage));
         mActivityTestRule.startMainActivityOnBlankPage();
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        AppIndexingUtil.setCallbackForTesting(null);
     }
 
     private static class CopylessHelper extends CallbackHelper {

@@ -133,8 +133,6 @@ public class HomepageSettingsUnitTest {
     @After
     public void tearDown() {
         mActivityScenario.close();
-        PartnerBrowserCustomizations.setInstanceForTesting(null);
-        HomepagePolicyManager.setInstanceForTests(null);
         mActionTester.tearDown();
     }
 

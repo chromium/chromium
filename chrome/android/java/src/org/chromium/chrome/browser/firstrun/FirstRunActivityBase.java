@@ -16,6 +16,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
@@ -59,7 +60,7 @@ public abstract class FirstRunActivityBase
 
     public static final boolean DEFAULT_METRICS_AND_CRASH_REPORTING = true;
 
-    private static PolicyLoadListenerFactory sPolicyLoadListenerFactory;
+    private static PolicyLoadListenerFactory sPolicyLoadListenerFactoryForTesting;
 
     private boolean mNativeInitialized;
 
@@ -82,9 +83,9 @@ public abstract class FirstRunActivityBase
         mFirstRunAppRestrictionInfo = FirstRunAppRestrictionInfo.takeMaybeInitialized();
         mProfileSupplier = new OneshotSupplierImpl<>();
         mPolicyServiceSupplier = new OneshotSupplierImpl<>();
-        mPolicyLoadListener = sPolicyLoadListenerFactory == null
+        mPolicyLoadListener = sPolicyLoadListenerFactoryForTesting == null
                 ? new PolicyLoadListener(mFirstRunAppRestrictionInfo, mPolicyServiceSupplier)
-                : sPolicyLoadListenerFactory.inject(
+                : sPolicyLoadListenerFactoryForTesting.inject(
                         mFirstRunAppRestrictionInfo, mPolicyServiceSupplier);
         mStartTime = SystemClock.elapsedRealtime();
         mPolicyLoadListener.onAvailable(this::onPolicyLoadListenerAvailable);
@@ -287,6 +288,7 @@ public abstract class FirstRunActivityBase
     @VisibleForTesting
     public static void setPolicyLoadListenerFactoryForTesting(
             PolicyLoadListenerFactory policyLoadListenerFactory) {
-        sPolicyLoadListenerFactory = policyLoadListenerFactory;
+        sPolicyLoadListenerFactoryForTesting = policyLoadListenerFactory;
+        ResettersForTesting.register(() -> sPolicyLoadListenerFactoryForTesting = null);
     }
 }

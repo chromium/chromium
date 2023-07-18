@@ -14,6 +14,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.core.content.ContextCompat;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
@@ -122,6 +123,7 @@ public class HomeButton extends ListMenuButton {
     @VisibleForTesting
     public static void setSaveContextMenuForTests(boolean saveContextMenuForTests) {
         sSaveContextMenuForTests = saveContextMenuForTests;
+        ResettersForTesting.register(() -> sSaveContextMenuForTests = false);
     }
 
     /**

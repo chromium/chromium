@@ -172,7 +172,6 @@ public class DesktopSiteSettingsIPHControllerUnitTest {
 
     @After
     public void tearDown() {
-        TrackerFactory.setTrackerForTests(null);
         FeatureList.setTestValues(null);
         ShadowSysUtils.setMemoryInMB(0);
         ShadowUrlUtilities.reset();

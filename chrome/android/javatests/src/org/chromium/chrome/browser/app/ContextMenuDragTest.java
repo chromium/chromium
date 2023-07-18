@@ -121,7 +121,6 @@ public class ContextMenuDragTest {
 
     @AfterClass
     public static void tearDownAfterClass() {
-        ViewAndroidDelegate.setDragAndDropDelegateForTest(null);
         TestThreadUtils.runOnUiThreadBlocking(() -> FirstRunStatus.setFirstRunFlowComplete(false));
     }
 

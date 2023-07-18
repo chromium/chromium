@@ -16,7 +16,6 @@ import android.view.ContextThemeWrapper;
 import androidx.annotation.Nullable;
 import androidx.test.filters.MediumTest;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -137,12 +136,6 @@ public class LocationBarModelUnitTest {
                 .thenReturn(mPrimaryOTRProfileMock);
         when(mIncognitoTabMock.getWindowAndroid()).thenReturn(mWindowAndroidMock);
         when(mIncognitoTabMock.isIncognito()).thenReturn(true);
-    }
-
-    @After
-    public void tearDown() {
-        Profile.setLastUsedProfileForTesting(null);
-        IncognitoCctProfileManager.setIncognitoCctProfileManagerForTesting(null);
     }
 
     public static final LocationBarModel.OfflineStatus OFFLINE_STATUS =

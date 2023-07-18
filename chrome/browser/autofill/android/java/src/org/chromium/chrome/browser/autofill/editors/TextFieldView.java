@@ -31,6 +31,7 @@ import androidx.core.view.ViewCompat;
 
 import com.google.android.material.textfield.TextInputLayout;
 
+import org.chromium.base.ResettersForTesting;
 import org.chromium.chrome.browser.autofill.R;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.text.EmptyTextWatcher;
@@ -259,5 +260,6 @@ class TextFieldView extends FrameLayout implements FieldView {
     @VisibleForTesting
     public static void setEditorObserverForTest(EditorObserverForTest observerForTest) {
         sObserverForTest = observerForTest;
+        ResettersForTesting.register(() -> sObserverForTest = null);
     }
 }

@@ -21,7 +21,6 @@ import android.widget.TextView;
 
 import androidx.test.filters.SmallTest;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -136,12 +135,6 @@ public final class WebFeedSnackbarControllerTest {
 
         mWebFeedSnackbarController = new WebFeedSnackbarController(
                 RuntimeEnvironment.application, mFeedLauncher, mDialogManager, mSnackbarManager);
-    }
-
-    @After
-    public void tearDown() {
-        TrackerFactory.setTrackerForTests(null);
-        Profile.setLastUsedProfileForTesting(null);
     }
 
     @Test

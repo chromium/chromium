@@ -96,7 +96,6 @@ public class StripLayoutHelperManagerTest {
     @After
     public void tearDown() {
         TabStripSceneLayer.setTestFlag(false);
-        LocalizationUtils.setRtlForTesting(false);
     }
 
     private void initializeTest() {

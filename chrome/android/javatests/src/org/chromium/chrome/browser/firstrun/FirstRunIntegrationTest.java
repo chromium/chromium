@@ -153,7 +153,6 @@ public class FirstRunIntegrationTest {
         FirstRunStatus.setFirstRunSkippedByPolicy(false);
         FirstRunUtils.setDisableDelayOnExitFreForTest(true);
         FirstRunActivity.setObserverForTest(mTestObserver);
-        FirstRunActivityBase.setPolicyLoadListenerFactoryForTesting(null);
 
         mInstrumentation = InstrumentationRegistry.getInstrumentation();
         mContext = mInstrumentation.getTargetContext();
@@ -182,9 +181,6 @@ public class FirstRunIntegrationTest {
         });
 
         FirstRunStatus.setFirstRunSkippedByPolicy(false);
-        FirstRunUtils.setDisableDelayOnExitFreForTest(false);
-        FirstRunAppRestrictionInfo.setInitializedInstanceForTest(null);
-        EnterpriseInfo.setInstanceForTest(null);
         AccountManagerFacadeProvider.resetInstanceForTests();
     }
 

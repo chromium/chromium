@@ -13,7 +13,6 @@ import android.view.View;
 
 import androidx.test.filters.SmallTest;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -75,11 +74,6 @@ public final class WebFeedFollowIntroViewTest {
         mWebFeedFollowIntroView =
                 new WebFeedFollowIntroView(mActivity, null, mMenuButtonAnchorView, mTracker,
                         /*introDismissedCallback=*/noOp);
-    }
-
-    @After
-    public void tearDown() {
-        TrackerFactory.setTrackerForTests(null);
     }
 
     @Test

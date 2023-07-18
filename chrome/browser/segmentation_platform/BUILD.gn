@@ -13,6 +13,7 @@ if (is_android) {
     sources = [ "android/java/src/org/chromium/chrome/browser/segmentation_platform/SegmentationPlatformServiceFactory.java" ]
 
     deps = [
+      "//base:base_java",
       "//base:jni_java",
       "//build/android:build_java",
       "//chrome/browser/profiles/android:java",

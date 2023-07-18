@@ -19,7 +19,6 @@ import android.widget.LinearLayout;
 
 import androidx.test.filters.SmallTest;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -146,12 +145,6 @@ public class TileRendererTest {
                 .when(mTileSetupDelegate)
                 .createInteractionDelegate(any());
         doReturn(mBitmap).when(mIconGenerator).generateIconForUrl(any(GURL.class));
-    }
-
-    @After
-    public void tearDown() {
-        Profile.setLastUsedProfileForTesting(null);
-        TemplateUrlServiceFactory.setInstanceForTesting(null);
     }
 
     private SuggestionsTileView buildTileView(@TileStyle int style, int titleLines) {

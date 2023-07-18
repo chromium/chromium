@@ -11,6 +11,7 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsUtils;
@@ -302,15 +303,18 @@ public class TopToolbarOverlayMediator {
     @VisibleForTesting
     static void setIsTabletForTesting(Boolean isTablet) {
         sIsTabletForTesting = isTablet;
+        ResettersForTesting.register(() -> sIsTabletForTesting = null);
     }
 
     @VisibleForTesting
     static void setToolbarBackgroundColorForTesting(@ColorInt int color) {
         sToolbarBackgroundColorForTesting = color;
+        ResettersForTesting.register(() -> sToolbarBackgroundColorForTesting = null);
     }
 
     @VisibleForTesting
     static void setUrlBarColorForTesting(@ColorInt int color) {
         sUrlBarColorForTesting = color;
+        ResettersForTesting.register(() -> sUrlBarColorForTesting = null);
     }
 }

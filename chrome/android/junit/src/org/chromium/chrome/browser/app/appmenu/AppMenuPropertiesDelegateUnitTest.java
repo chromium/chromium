@@ -76,7 +76,6 @@ import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.omaha.UpdateMenuItemHelper;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.read_later.ReadingListUtils;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -251,11 +250,8 @@ public class AppMenuPropertiesDelegateUnitTest {
 
     @After
     public void tearDown() {
-        ThreadUtils.setThreadAssertsDisabledForTesting(false);
         ChromeAccessibilityUtil.get().setAccessibilityEnabledForTesting(false);
         ChromeAccessibilityUtil.get().setTouchExplorationEnabledForTesting(false);
-        ReadingListUtils.setReadingListSupportedForTesting(null);
-        ShoppingFeatures.setShoppingListEligibleForTesting(null);
     }
 
     private void setupFeatureDefaults() {

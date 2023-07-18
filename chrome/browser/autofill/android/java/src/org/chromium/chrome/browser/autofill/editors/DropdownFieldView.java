@@ -29,6 +29,7 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.ResettersForTesting;
 import org.chromium.chrome.browser.autofill.R;
 import org.chromium.components.browser_ui.util.TraceEventVectorDrawableCompat;
 import org.chromium.ui.KeyboardVisibilityDelegate;
@@ -242,5 +243,6 @@ class DropdownFieldView implements FieldView {
     @VisibleForTesting
     public static void setEditorObserverForTest(EditorObserverForTest observerForTest) {
         sObserverForTest = observerForTest;
+        ResettersForTesting.register(() -> sObserverForTest = null);
     }
 }

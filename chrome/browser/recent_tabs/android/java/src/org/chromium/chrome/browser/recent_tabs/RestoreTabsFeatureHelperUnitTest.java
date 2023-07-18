@@ -14,7 +14,6 @@ import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -81,12 +80,6 @@ public class RestoreTabsFeatureHelperUnitTest {
         mActivity = Robolectric.buildActivity(Activity.class).setup().get();
         mHelper = new RestoreTabsFeatureHelper();
         mHelper.setRestoreTabsControllerDelegateForTesting(mDelegate);
-    }
-
-    @After
-    public void tearDown() {
-        mHelper.setRestoreTabsControllerDelegateForTesting(null);
-        TrackerFactory.setTrackerForTests(null);
     }
 
     @Test

@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.password_manager;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.ResettersForTesting;
+
 /**
  * Helper class to check PasswordManager backend availability.
  */
@@ -43,6 +45,8 @@ public abstract class PasswordManagerBackendSupportHelper {
     @VisibleForTesting
     public static void setInstanceForTesting(
             PasswordManagerBackendSupportHelper backendSupportHelper) {
+        var oldValue = sInstance;
         sInstance = backendSupportHelper;
+        ResettersForTesting.register(() -> sInstance = oldValue);
     }
 }

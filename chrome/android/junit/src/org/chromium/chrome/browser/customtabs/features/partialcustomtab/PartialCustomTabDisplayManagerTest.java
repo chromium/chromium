@@ -537,7 +537,6 @@ public class PartialCustomTabDisplayManagerTest {
         Activity act = mPCCTTestRule.mActivity;
         when(provider.getSideSheetSlideInBehavior())
                 .thenReturn(ACTIVITY_SIDE_SHEET_SLIDE_IN_FROM_SIDE);
-        LocalizationUtils.setRtlForTesting(false);
         assertEquals(R.anim.slide_in_right,
                 PartialCustomTabDisplayManager.getStartAnimationOverride(act, provider, defId));
 

@@ -26,7 +26,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStub;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -135,12 +134,6 @@ public class MostVisitedMediatorUnitTest {
         Profile.setLastUsedProfileForTesting(mProfile);
         TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
         when(mTemplateUrlService.doesDefaultSearchEngineHaveLogo()).thenReturn(true);
-    }
-
-    @After
-    public void tearDown() {
-        Profile.setLastUsedProfileForTesting(null);
-        TemplateUrlServiceFactory.setInstanceForTesting(null);
     }
 
     @Test

@@ -25,7 +25,6 @@ import androidx.test.filters.MediumTest;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -120,11 +119,6 @@ public final class ShareSheetBottomSheetContentTest {
 
         mShareSheetBottomSheetContent = new ShareSheetBottomSheetContent(mActivity,
                 new MockLargeIconBridge(), null, mShareParams, mFeatureEngagementTracker);
-    }
-
-    @After
-    public void tearDown() {
-        TrackerFactory.setTrackerForTests(null);
     }
 
     @Test

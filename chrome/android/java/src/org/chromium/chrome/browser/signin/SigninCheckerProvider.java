@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.signin;
 
 import androidx.annotation.MainThread;
 
+import org.chromium.base.ResettersForTesting;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninChecker;
@@ -37,7 +38,9 @@ public final class SigninCheckerProvider {
 
     @MainThread
     public static void setForTests(SigninChecker signinChecker) {
+        var oldValue = sInstance;
         sInstance = signinChecker;
+        ResettersForTesting.register(() -> sInstance = oldValue);
     }
 
     private SigninCheckerProvider() {}

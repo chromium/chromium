@@ -16,6 +16,7 @@ import androidx.core.util.AtomicFile;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.StreamUtil;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.metrics.RecordHistogram;
@@ -173,7 +174,9 @@ public class FilePersistedTabDataStorage implements PersistedTabDataStorage {
 
     @VisibleForTesting
     protected void setExecutingSaveRequestForTesting(FileSaveRequest fileSaveRequest) {
+        var oldValue = mExecutingSaveRequest;
         mExecutingSaveRequest = fileSaveRequest;
+        ResettersForTesting.register(() -> mExecutingSaveRequest = oldValue);
     }
 
     /**

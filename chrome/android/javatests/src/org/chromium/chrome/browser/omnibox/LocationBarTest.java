@@ -29,7 +29,6 @@ import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
 
 import org.hamcrest.Matchers;
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -132,14 +131,6 @@ public class LocationBarTest {
                     .getSearchEngineLogo(any(), anyInt(), any(), any());
         });
         UmaRecorderHolder.resetForTesting();
-    }
-
-    @After
-    public void tearDown() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            TemplateUrlServiceFactory.setInstanceForTesting(null);
-            SearchEngineLogoUtils.setInstanceForTesting(null);
-        });
     }
 
     private void startActivityNormally() {

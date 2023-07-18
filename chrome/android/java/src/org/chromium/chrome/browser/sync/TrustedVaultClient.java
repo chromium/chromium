@@ -9,6 +9,7 @@ import android.app.PendingIntent;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Promise;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.metrics.RecordHistogram;
@@ -159,7 +160,9 @@ public class TrustedVaultClient {
 
     @VisibleForTesting
     public static void setInstanceForTesting(TrustedVaultClient instance) {
+        var oldValue = sInstance;
         sInstance = instance;
+        ResettersForTesting.register(() -> sInstance = oldValue);
     }
 
     /**

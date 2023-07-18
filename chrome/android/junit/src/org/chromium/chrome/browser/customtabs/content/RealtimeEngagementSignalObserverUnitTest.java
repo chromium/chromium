@@ -118,10 +118,6 @@ public class RealtimeEngagementSignalObserverUnitTest {
 
     @After
     public void tearDown() {
-        RenderCoordinatesImpl.setInstanceForTesting(null);
-        GestureListenerManagerImpl.setInstanceForTesting(null);
-        PrivacyPreferencesManagerImpl.setInstanceForTesting(null);
-        TabInteractionRecorder.setInstanceForTesting(null);
         RealtimeEngagementSignalObserver.ScrollState.setInstanceForTesting(null);
         FeatureList.setTestValues(null);
     }

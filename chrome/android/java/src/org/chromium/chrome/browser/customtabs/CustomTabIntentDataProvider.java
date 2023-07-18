@@ -45,6 +45,7 @@ import androidx.browser.trusted.sharing.ShareTarget;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
@@ -359,8 +360,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     private int[] mClickableViewIds;
     private PendingIntent mRemoteViewsPendingIntent;
     private PendingIntent mSecondaryToolbarSwipeUpPendingIntent;
-    // OnFinished listener for PendingIntents. Used for testing only.
-    private PendingIntent.OnFinished mOnFinished;
+    private PendingIntent.OnFinished mOnFinishedForTesting;
 
     /** Whether this CustomTabActivity was explicitly started by another Chrome Activity. */
     private final boolean mIsOpenedByChrome;
@@ -689,8 +689,8 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
             PendingIntent pendingIntent = mMenuEntries.get(menuIndex).second;
             ActivityOptions options = ActivityOptions.makeBasic();
             ApiCompatibilityUtils.setActivityOptionsBackgroundActivityStartMode(options);
-            pendingIntent.send(activity, 0, isMediaViewer() ? null : addedIntent, mOnFinished, null,
-                    null, options.toBundle());
+            pendingIntent.send(activity, 0, isMediaViewer() ? null : addedIntent,
+                    mOnFinishedForTesting, null, null, options.toBundle());
             if (shouldEnableEmbeddedMediaExperience()
                     && TextUtils.equals(
                             menuTitle, activity.getString(R.string.download_manager_open_with))) {
@@ -1166,7 +1166,8 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
      */
     @VisibleForTesting
     void setPendingIntentOnFinishedForTesting(PendingIntent.OnFinished onFinished) {
-        mOnFinished = onFinished;
+        mOnFinishedForTesting = onFinished;
+        ResettersForTesting.register(() -> mOnFinishedForTesting = null);
     }
 
     @Override

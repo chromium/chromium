@@ -25,7 +25,6 @@ import android.view.ViewTreeObserver.OnPreDrawListener;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.SmallTest;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -142,11 +141,6 @@ public class AppLaunchDrawBlockerUnitTest {
         validateConstructorAndCaptureObservers();
         UmaRecorderHolder.resetForTesting();
         SystemClock.setCurrentTimeMillis(INITIAL_TIME);
-    }
-
-    @After
-    public void tearDown() {
-        TemplateUrlServiceFactory.setInstanceForTesting(null);
     }
 
     @Test

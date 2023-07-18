@@ -15,6 +15,7 @@ import com.google.flatbuffers.FlatBufferBuilder;
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.metrics.RecordHistogram;
@@ -853,6 +854,7 @@ public class CriticalPersistedTabData extends PersistedTabData {
     @VisibleForTesting
     public void setShouldSaveForTesting(boolean shouldSaveForTesting) {
         mShouldSaveForTesting = shouldSaveForTesting;
+        ResettersForTesting.register(() -> mShouldSaveForTesting = false);
     }
 
     /**

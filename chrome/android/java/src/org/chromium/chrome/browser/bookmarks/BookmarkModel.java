@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.bookmarks;
 import androidx.annotation.NonNull;
 
 import org.chromium.base.ObserverList;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.bookmarks.BookmarkId;
@@ -29,6 +30,7 @@ public class BookmarkModel extends BookmarkBridge {
     /** Set an instance for testing. */
     public static void setInstanceForTesting(BookmarkModel bookmarkModel) {
         sInstanceForTesting = bookmarkModel;
+        ResettersForTesting.register(() -> sInstanceForTesting = null);
     }
 
     /**

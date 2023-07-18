@@ -16,6 +16,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.PackageUtils;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
@@ -175,7 +176,9 @@ public class WebappDataStorage {
      */
     @VisibleForTesting
     public static void setClockForTests(Clock clock) {
+        var oldValue = sClock;
         sClock = clock;
+        ResettersForTesting.register(() -> sClock = oldValue);
     }
 
     /**
@@ -183,7 +186,9 @@ public class WebappDataStorage {
      */
     @VisibleForTesting
     public static void setFactoryForTests(Factory factory) {
+        var oldValue = sFactory;
         sFactory = factory;
+        ResettersForTesting.register(() -> sFactory = oldValue);
     }
 
     /**

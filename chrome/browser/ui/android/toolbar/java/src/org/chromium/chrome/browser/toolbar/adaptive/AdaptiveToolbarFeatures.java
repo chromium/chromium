@@ -8,6 +8,7 @@ import android.text.TextUtils;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.ResettersForTesting;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 
 /**
@@ -276,27 +277,26 @@ public class AdaptiveToolbarFeatures {
                 VARIATION_PARAM_SHOW_UI_ONLY_AFTER_READY, true);
     }
 
-    @VisibleForTesting
     static void setDefaultSegmentForTesting(String defaultSegment) {
         sDefaultSegmentForTesting = defaultSegment;
+        ResettersForTesting.register(() -> sDefaultSegmentForTesting = null);
     }
 
-    @VisibleForTesting
     static void setIgnoreSegmentationResultsForTesting(boolean ignoreSegmentationResults) {
         sIgnoreSegmentationResultsForTesting = ignoreSegmentationResults;
+        ResettersForTesting.register(() -> sIgnoreSegmentationResultsForTesting = null);
     }
 
-    @VisibleForTesting
     static void setDisableUiForTesting(boolean disableUi) {
         sDisableUiForTesting = disableUi;
+        ResettersForTesting.register(() -> sDisableUiForTesting = null);
     }
 
-    @VisibleForTesting
     static void setShowUiOnlyAfterReadyForTesting(boolean showUiOnlyAfterReady) {
         sShowUiOnlyAfterReadyForTesting = showUiOnlyAfterReady;
+        ResettersForTesting.register(() -> sShowUiOnlyAfterReadyForTesting = null);
     }
 
-    @VisibleForTesting
     public static void clearParsedParamsForTesting() {
         sButtonVariant = null;
         sDefaultSegmentForTesting = null;

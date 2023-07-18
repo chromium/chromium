@@ -12,7 +12,6 @@ import android.content.Context;
 import android.graphics.Color;
 import android.view.View;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -123,12 +122,6 @@ public class TopToolbarOverlayMediatorTest {
     private void setTabSupplierTab(Tab tab) {
         when(mTabSupplier.get()).thenReturn(tab);
         mActivityTabObserverCaptor.getValue().onResult(tab);
-    }
-
-    @After
-    public void afterTest() {
-        // Unset any testing state the tests may have set.
-        TopToolbarOverlayMediator.setIsTabletForTesting(null);
     }
 
     @Test

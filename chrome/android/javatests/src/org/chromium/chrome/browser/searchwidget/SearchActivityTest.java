@@ -27,7 +27,6 @@ import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.runner.lifecycle.Stage;
 
 import org.hamcrest.Matchers;
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -212,12 +211,7 @@ public class SearchActivityTest {
 
         mTestDelegate = new TestDelegate();
         SearchActivity.setDelegateForTests(mTestDelegate);
-        DefaultSearchEnginePromoDialog.setObserverForTests2(mTestDelegate);
-    }
-
-    @After
-    public void tearDown() {
-        SearchActivity.setDelegateForTests(null);
+        DefaultSearchEnginePromoDialog.setObserverForTests(mTestDelegate);
     }
 
     private AutocompleteMatch buildDummyAutocompleteMatch(String url) {

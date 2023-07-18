@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.back_press;
 
 import androidx.test.filters.SmallTest;
 
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -49,6 +51,16 @@ public class BackPressManagerTest {
         public @BackPressResult int handleBackPress() {
             return BackPressResult.FAILURE;
         }
+    }
+
+    @BeforeClass
+    public static void setUpClass() {
+        ObservableSupplierImpl.setIgnoreThreadChecksForTesting(true);
+    }
+
+    @AfterClass
+    public static void afterClass() {
+        ObservableSupplierImpl.setIgnoreThreadChecksForTesting(false);
     }
 
     @Test

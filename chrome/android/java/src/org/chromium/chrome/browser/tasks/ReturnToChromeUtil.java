@@ -20,6 +20,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.IntentUtils;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.library_loader.LibraryLoader;
@@ -832,6 +833,7 @@ public final class ReturnToChromeUtil {
 
     public static void setSkipInitializationCheckForTesting(boolean skipInitializationCheck) {
         sSkipInitializationCheckForTesting = skipInitializationCheck;
+        ResettersForTesting.register(() -> sSkipInitializationCheckForTesting = false);
     }
 
     /**

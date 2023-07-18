@@ -357,9 +357,6 @@ public class PageInfoViewTest {
 
         setThirdPartyCookieBlocking(CookieControlsMode.INCOGNITO_ONLY);
         clearPermissions();
-        HistoryContentManager.setProviderForTests(null);
-        PageInfoHistoryController.setProviderForTests(null);
-        PageInfoAdPersonalizationController.setTopicsForTesting(null);
     }
 
     /**

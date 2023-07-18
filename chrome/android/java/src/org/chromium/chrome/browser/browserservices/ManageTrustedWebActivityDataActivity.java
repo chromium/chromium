@@ -12,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.browser.customtabs.CustomTabsSessionToken;
 
 import org.chromium.base.Log;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.chrome.browser.ChromeApplicationImpl;
 import org.chromium.chrome.browser.browserservices.metrics.TrustedWebActivityUmaRecorder;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
@@ -28,7 +29,7 @@ public class ManageTrustedWebActivityDataActivity extends AppCompatActivity {
 
     private static final String TAG = "TwaDataActivity";
 
-    private static String sMockCallingPackage;
+    private static String sCallingPackageForTesting;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,12 +67,14 @@ public class ManageTrustedWebActivityDataActivity extends AppCompatActivity {
 
     @VisibleForTesting
     public static void setCallingPackageForTesting(String packageName) {
-        sMockCallingPackage = packageName;
+        sCallingPackageForTesting = packageName;
+        ResettersForTesting.register(() -> sCallingPackageForTesting = null);
     }
 
     private @Nullable String getClientPackageName(boolean isWebApk) {
         if (isWebApk) {
-            return sMockCallingPackage != null ? sMockCallingPackage : getCallingPackage();
+            return sCallingPackageForTesting != null ? sCallingPackageForTesting
+                                                     : getCallingPackage();
         }
 
         CustomTabsSessionToken session =

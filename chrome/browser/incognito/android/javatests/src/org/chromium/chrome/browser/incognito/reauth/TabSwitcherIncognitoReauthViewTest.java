@@ -84,9 +84,6 @@ public class TabSwitcherIncognitoReauthViewTest {
 
     @After
     public void tearDown() {
-        IncognitoReauthManager.setIsIncognitoReauthFeatureAvailableForTesting(null);
-        IncognitoReauthSettingUtils.setIsDeviceScreenLockEnabledForTesting(false);
-
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             UserPrefs.get(Profile.getLastUsedRegularProfile())
                     .setBoolean(Pref.INCOGNITO_REAUTHENTICATION_FOR_ANDROID, false);

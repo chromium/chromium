@@ -638,7 +638,6 @@ public class PartialCustomTabSideSheetStrategyTest {
         assertPosition(RIGHT, LTR, ACTIVITY_SIDE_SHEET_POSITION_DEFAULT);
         assertPosition(RIGHT, LTR, ACTIVITY_SIDE_SHEET_POSITION_END);
         assertPosition(LEFT, LTR, ACTIVITY_SIDE_SHEET_POSITION_START);
-        LocalizationUtils.setRtlForTesting(false);
     }
 
     @Test

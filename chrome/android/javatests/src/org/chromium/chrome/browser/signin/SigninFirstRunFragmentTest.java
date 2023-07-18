@@ -40,7 +40,6 @@ import androidx.appcompat.app.AppCompatDelegate;
 import androidx.test.espresso.ViewAction;
 import androidx.test.filters.MediumTest;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -233,12 +232,6 @@ public class SigninFirstRunFragmentTest {
         mActivityTestRule.launchActivity(null);
         mFragment = new CustomSigninFirstRunFragment();
         mFragment.setPageDelegate(mFirstRunPageDelegateMock);
-    }
-
-    @After
-    public void tearDown() {
-        FirstRunUtils.setDisableDelayOnExitFreForTest(false);
-        EnterpriseInfo.setInstanceForTest(null);
     }
 
     @Test
@@ -804,8 +797,6 @@ public class SigninFirstRunFragmentTest {
         onView(withText(continueAsText)).check(matches(not(isDisplayed())));
         onView(withText(R.string.signin_fre_dismiss_button)).check(matches(not(isDisplayed())));
         onView(withId(R.id.signin_fre_footer)).check(matches(not(isDisplayed())));
-
-        IdentityServicesProvider.setInstanceForTests(null);
     }
 
     @Test

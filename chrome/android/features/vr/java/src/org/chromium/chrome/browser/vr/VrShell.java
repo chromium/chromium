@@ -21,6 +21,7 @@ import com.google.vr.ndk.base.AndroidCompat;
 import com.google.vr.ndk.base.GvrLayout;
 
 import org.chromium.base.Log;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
@@ -284,6 +285,7 @@ public class VrShell extends GvrLayout implements SurfaceHolder.Callback {
     @VisibleForTesting
     public void setOnDispatchTouchEventForTesting(OnDispatchTouchEventCallback callback) {
         mOnDispatchTouchEventForTesting = callback;
+        ResettersForTesting.register(() -> mOnDispatchTouchEventForTesting = null);
     }
 
     /**
@@ -294,6 +296,7 @@ public class VrShell extends GvrLayout implements SurfaceHolder.Callback {
     @VisibleForTesting
     public void setOnVSyncPausedForTesting(Runnable callback) {
         mOnVSyncPausedForTesting = callback;
+        ResettersForTesting.register(() -> mOnVSyncPausedForTesting = null);
     }
 
     @VisibleForTesting

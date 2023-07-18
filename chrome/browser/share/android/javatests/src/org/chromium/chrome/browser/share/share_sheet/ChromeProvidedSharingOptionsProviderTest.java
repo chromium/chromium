@@ -145,7 +145,6 @@ public class ChromeProvidedSharingOptionsProviderTest {
 
     @After
     public void tearDown() throws Exception {
-        TrackerFactory.setTrackerForTests(null);
         if (mActionTester != null) mActionTester.tearDown();
     }
 

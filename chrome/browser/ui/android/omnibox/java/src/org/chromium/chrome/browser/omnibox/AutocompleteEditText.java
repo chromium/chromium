@@ -47,8 +47,6 @@ public class AutocompleteEditText
      */
     private boolean mDisableTextScrollingFromAutocomplete;
 
-    private boolean mIgnoreImeForTest;
-
     /** Local copy of the OnKeyListener. */
     private @Nullable OnKeyListener mOnKeyListener;
 
@@ -272,11 +270,6 @@ public class AutocompleteEditText
         return mModel.getInputConnection();
     }
 
-    @VisibleForTesting
-    public void setIgnoreImeForTest(boolean ignore) {
-        mIgnoreImeForTest = ignore;
-    }
-
     @Override
     public InputConnection onCreateInputConnection(EditorInfo outAttrs) {
         InputConnection target = super.onCreateInputConnection(outAttrs);
@@ -288,7 +281,6 @@ public class AutocompleteEditText
         if (DEBUG) Log.i(TAG, "onCreateInputConnection: " + target);
         ensureModel();
         InputConnection retVal = mModel.onCreateInputConnection(target);
-        if (mIgnoreImeForTest) return null;
         return retVal;
     }
 
@@ -301,7 +293,6 @@ public class AutocompleteEditText
                 return true;
             }
 
-            if (mIgnoreImeForTest) return true;
             if (mModel == null) return super.dispatchKeyEvent(event);
             return mModel.dispatchKeyEvent(event);
         } finally {

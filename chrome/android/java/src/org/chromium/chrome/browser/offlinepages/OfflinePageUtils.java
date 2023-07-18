@@ -19,6 +19,7 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Callback;
 import org.chromium.base.ContentUriUtils;
 import org.chromium.base.Log;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.PostTask;
@@ -907,11 +908,15 @@ public class OfflinePageUtils {
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     public static void setInstanceForTesting(Internal instance) {
+        var oldValue = sInstance;
         sInstance = instance;
+        ResettersForTesting.register(() -> sInstance = oldValue);
     }
 
     @VisibleForTesting
     public static void setSnackbarDurationForTesting(int durationMs) {
+        var oldValue = sSnackbarDurationMs;
         sSnackbarDurationMs = durationMs;
+        ResettersForTesting.register(() -> sSnackbarDurationMs = oldValue);
     }
 }

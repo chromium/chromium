@@ -22,6 +22,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
@@ -800,6 +801,7 @@ public class TabSwitcherAndStartSurfaceLayout extends Layout {
     @VisibleForTesting
     public void setPerfListenerForTesting(PerfListener perfListener) {
         mPerfListenerForTesting = perfListener;
+        ResettersForTesting.register(() -> mPerfListenerForTesting = null);
     }
 
     @VisibleForTesting

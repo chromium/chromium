@@ -16,7 +16,6 @@ import androidx.test.filters.SmallTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.runner.lifecycle.Stage;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -96,11 +95,6 @@ public class LauncherShortcutTest {
             };
             mTabModelSelector.addObserver(tabModelSelectorObserver);
         });
-    }
-
-    @After
-    public void tearDown() {
-        LauncherShortcutActivity.setDynamicShortcutStringForTesting(null);
     }
 
     @Test

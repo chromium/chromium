@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.share;
 
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.UnownedUserDataKey;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.UnownedUserDataSupplier;
@@ -32,5 +33,6 @@ public class ShareDelegateSupplier extends UnownedUserDataSupplier<ShareDelegate
 
     static void setInstanceForTesting(ShareDelegateSupplier instanceForTesting) {
         sInstanceForTesting = instanceForTesting;
+        ResettersForTesting.register(() -> sInstanceForTesting = null);
     }
 }

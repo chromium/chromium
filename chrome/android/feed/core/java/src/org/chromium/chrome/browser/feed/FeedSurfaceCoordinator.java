@@ -27,6 +27,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.CommandLine;
 import org.chromium.base.ObserverList;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
@@ -1097,7 +1098,9 @@ public class FeedSurfaceCoordinator
 
     @VisibleForTesting
     public void setReliabilityLoggerForTesting(FeedReliabilityLogger logger) {
+        var oldValue = mReliabilityLogger;
         mReliabilityLogger = logger;
+        ResettersForTesting.register(() -> mReliabilityLogger = oldValue);
     }
 
     @VisibleForTesting

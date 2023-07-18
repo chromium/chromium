@@ -14,6 +14,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ObserverList;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.policy.PolicyServiceFactory;
@@ -56,7 +57,9 @@ public class PrivacyPreferencesManagerImpl implements PrivacyPreferencesManager 
 
     @VisibleForTesting
     public static void setInstanceForTesting(PrivacyPreferencesManagerImpl instance) {
+        var oldValue = sInstance;
         sInstance = instance;
+        ResettersForTesting.register(() -> sInstance = oldValue);
     }
 
     public void onNativeInitialized() {

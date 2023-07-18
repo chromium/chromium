@@ -21,6 +21,7 @@ import org.chromium.base.ActivityState;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.CommandLine;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -547,7 +548,9 @@ public class MultiInstanceManager
 
     @VisibleForTesting
     public void setCurrentDisplayIdForTesting(int displayId) {
+        var oldValue = mDisplayId;
         mDisplayId = displayId;
+        ResettersForTesting.register(() -> mDisplayId = oldValue);
     }
 
     @VisibleForTesting

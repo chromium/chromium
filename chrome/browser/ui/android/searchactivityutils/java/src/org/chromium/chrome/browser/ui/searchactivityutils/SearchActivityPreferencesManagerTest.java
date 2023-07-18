@@ -21,7 +21,6 @@ import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.SEARC
 
 import androidx.test.filters.SmallTest;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -101,11 +100,6 @@ public class SearchActivityPreferencesManagerTest {
         // Make sure there were no premature attempts to register observers.
         Assert.assertNull(mTemplateUrlServiceLoadListener);
         Assert.assertNull(mTemplateUrlServiceObserver);
-    }
-
-    @After
-    public void tearDown() {
-        Profile.setLastUsedProfileForTesting(null);
     }
 
     @Test

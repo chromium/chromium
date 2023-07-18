@@ -172,13 +172,6 @@ public class StatusMediator implements PermissionDialogController.Observer,
     }
 
     /**
-     * Override the LocationBarDataProvider for this class for testing purposes.
-     */
-    void setLocationBarDataProviderForTesting(LocationBarDataProvider locationBarDataProvider) {
-        mLocationBarDataProvider = locationBarDataProvider;
-    }
-
-    /**
      * Toggle animations of icon changes.
      */
     void setAnimationsEnabled(boolean enabled) {

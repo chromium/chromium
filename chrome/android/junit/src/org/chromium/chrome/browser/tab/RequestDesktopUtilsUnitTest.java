@@ -292,7 +292,6 @@ public class RequestDesktopUtilsUnitTest {
                             .USER_ENABLED_DESKTOP_SITE_GLOBAL_SETTING_PREFERENCE_KEY);
         }
         RequestDesktopUtils.sDefaultEnabledManufacturerAllowlist = null;
-        TrackerFactory.setTrackerForTests(null);
     }
 
     @Test

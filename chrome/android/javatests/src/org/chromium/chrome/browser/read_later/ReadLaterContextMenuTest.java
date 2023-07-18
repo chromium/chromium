@@ -31,7 +31,6 @@ import androidx.test.filters.MediumTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.hamcrest.Matcher;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -101,11 +100,6 @@ public class ReadLaterContextMenuTest {
                 .thenReturn(new TriggerDetails(false, false));
         mActivityTestRule.startMainActivityOnBlankPage();
         mocker.mock(RequestCoordinatorBridgeJni.TEST_HOOKS, mRequestCoordinatorBridgeJniMock);
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        TrackerFactory.setTrackerForTests(null);
     }
 
     @Test

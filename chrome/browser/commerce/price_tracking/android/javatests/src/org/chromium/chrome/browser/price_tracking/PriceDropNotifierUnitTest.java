@@ -18,7 +18,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -129,12 +128,6 @@ public class PriceDropNotifierUnitTest {
         doReturn(mIntent)
                 .when(mPriceDropNotificationManager)
                 .getNotificationActionClickIntent(any(), any(), any(), any(), anyInt());
-    }
-
-    @After
-    public void tearDown() {
-        mPriceDropNotifier = null;
-        ChromeBrowserInitializer.setForTesting(null);
     }
 
     private void showNotification() {

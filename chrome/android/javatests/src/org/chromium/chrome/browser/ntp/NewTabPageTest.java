@@ -257,7 +257,6 @@ public class NewTabPageTest {
         if (mTestServer != null) {
             mTestServer.stopAndDestroyServer();
         }
-        TemplateUrlServiceFactory.setInstanceForTesting(null);
     }
 
     @Test

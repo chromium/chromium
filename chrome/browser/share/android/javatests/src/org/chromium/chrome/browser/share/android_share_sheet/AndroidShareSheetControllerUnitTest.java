@@ -214,7 +214,6 @@ public class AndroidShareSheetControllerUnitTest {
         ShadowLinkToTextCoordinator.setForceToFail(null);
         ShadowQrCodeDialog.sLastUrl = null;
         mWindow.destroy();
-        TrackerFactory.setTrackerForTests(null);
     }
 
     /**

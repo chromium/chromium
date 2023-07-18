@@ -19,6 +19,7 @@ import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.PackageManagerUtils;
 import org.chromium.base.PackageUtils;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -286,6 +287,8 @@ public class GSAState {
      * @param gsaState The instance to set for testing.
      */
     public static void setInstanceForTesting(GSAState gsaState) {
+        var oldValue = sGSAState;
         sGSAState = gsaState;
+        ResettersForTesting.register(() -> sGSAState = oldValue);
     }
 }

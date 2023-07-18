@@ -14,6 +14,7 @@ import android.os.SystemClock;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.IntentUtils;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.TimeUtils;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 
@@ -122,5 +123,6 @@ public class DragAndDropLauncherActivity extends Activity {
     @VisibleForTesting
     static void setLinkDropTimeoutMsForTesting(Long timeout) {
         sLinkDropTimeoutForTesting = timeout;
+        ResettersForTesting.register(() -> sLinkDropTimeoutForTesting = null);
     }
 }

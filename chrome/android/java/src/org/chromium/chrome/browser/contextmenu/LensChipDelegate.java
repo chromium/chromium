@@ -9,6 +9,7 @@ import android.net.Uri;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.chrome.browser.lens.LensController;
 import org.chromium.chrome.browser.lens.LensEntryPoint;
 import org.chromium.chrome.browser.lens.LensQueryParams;
@@ -39,6 +40,7 @@ public class LensChipDelegate implements ChipDelegate {
     @VisibleForTesting
     protected static void setShouldSkipIsEnabledCheckForTesting(boolean shouldSkipIsEnabledCheck) {
         sShouldSkipIsEnabledCheckForTesting = shouldSkipIsEnabledCheck;
+        ResettersForTesting.register(() -> sShouldSkipIsEnabledCheckForTesting = false);
     }
 
     public LensChipDelegate(String pageUrl, String titleOrAltText, String srcUrl, String pageTitle,

@@ -23,6 +23,7 @@ import androidx.viewpager2.widget.ViewPager2;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
@@ -280,6 +281,8 @@ public class PrivacyGuideFragment
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     void setPrivacyGuideMetricsDelegateForTesting(
             @Nullable PrivacyGuideMetricsDelegate privacyGuideMetricsDelegate) {
+        var oldValue = mPrivacyGuideMetricsDelegate;
         mPrivacyGuideMetricsDelegate = privacyGuideMetricsDelegate;
+        ResettersForTesting.register(() -> mPrivacyGuideMetricsDelegate = oldValue);
     }
 }

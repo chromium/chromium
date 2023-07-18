@@ -137,7 +137,6 @@ public class AutofillPaymentMethodsFragmentTest {
     @After
     public void tearDown() throws TimeoutException {
         mAutofillTestHelper.clearAllDataForTesting();
-        ReauthenticatorBridge.setInstanceForTesting(null);
     }
 
     @Test

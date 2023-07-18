@@ -30,6 +30,7 @@ import com.google.android.material.appbar.AppBarLayout;
 
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -2263,5 +2264,6 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
     @VisibleForTesting
     public static void setSkipRecreateForTesting(boolean skipRecreating) {
         sSkipRecreateForTesting = skipRecreating;
+        ResettersForTesting.register(() -> sSkipRecreateForTesting = false);
     }
 }

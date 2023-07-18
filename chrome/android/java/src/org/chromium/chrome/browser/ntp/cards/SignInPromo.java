@@ -10,6 +10,7 @@ import android.text.format.DateUtils;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.signin.SyncConsentActivityLauncherImpl;
@@ -145,6 +146,7 @@ public abstract class SignInPromo {
 
     public static void setDisablePromoForTesting(boolean disable) {
         sDisablePromoForTests = disable;
+        ResettersForTesting.register(() -> sDisablePromoForTests = false);
     }
 
     public SigninObserver getSigninObserverForTesting() {

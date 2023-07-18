@@ -12,7 +12,6 @@ import androidx.annotation.RequiresApi;
 import androidx.test.filters.LargeTest;
 import androidx.test.runner.lifecycle.Stage;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -64,11 +63,6 @@ public class DragAndDropLauncherActivityTest {
         mActivityTestRule.startMainActivityOnBlankPage();
         mContext = ContextUtils.getApplicationContext();
         mLinkUrl = JUnitTestGURLs.HTTP_URL;
-    }
-
-    @After
-    public void tearDown() {
-        DragAndDropLauncherActivity.setLinkDropTimeoutMsForTesting(null);
     }
 
     /**

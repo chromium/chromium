@@ -94,7 +94,7 @@ public abstract class PartialCustomTabBaseStrategy
     private ValueAnimator mAnimator;
     private Runnable mPostAnimationRunnable;
 
-    private BooleanSupplier mIsFullscreen;
+    private BooleanSupplier mIsFullscreenForTesting;
 
     // These values are persisted to logs. Entries should not be renumbered and
     // numeric values should never be reused.
@@ -155,7 +155,6 @@ public abstract class PartialCustomTabBaseStrategy
         mIsInMultiWindowMode = MultiWindowUtils.getInstance().isInMultiWindowMode(mActivity);
 
         mHandleStrategyFactory = handleStrategyFactory;
-        mIsFullscreen = fullscreenManager::getPersistentFullscreenMode;
 
         // Initialize size info used for resize callback to skip the very first one that settles
         // down to the initial height/width.
@@ -494,7 +493,8 @@ public abstract class PartialCustomTabBaseStrategy
     }
 
     protected boolean isFullscreen() {
-        return mIsFullscreen.getAsBoolean();
+        return mIsFullscreenForTesting != null ? mIsFullscreenForTesting.getAsBoolean()
+                                               : mFullscreenManager.getPersistentFullscreenMode();
     }
 
     protected void setupAnimator() {
@@ -594,7 +594,7 @@ public abstract class PartialCustomTabBaseStrategy
 
     @VisibleForTesting
     void setFullscreenSupplierForTesting(BooleanSupplier fullscreen) {
-        mIsFullscreen = fullscreen;
+        mIsFullscreenForTesting = fullscreen;
     }
 
     @VisibleForTesting

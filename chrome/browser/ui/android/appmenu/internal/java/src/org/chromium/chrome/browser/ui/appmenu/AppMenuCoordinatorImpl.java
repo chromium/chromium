@@ -12,6 +12,7 @@ import android.view.ViewConfiguration;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 
@@ -127,6 +128,7 @@ class AppMenuCoordinatorImpl implements AppMenuCoordinator {
     @VisibleForTesting
     static void setHasPermanentMenuKeyForTesting(Boolean hasPermanentMenuKey) {
         sHasPermanentMenuKeyForTesting = hasPermanentMenuKey;
+        ResettersForTesting.register(() -> sHasPermanentMenuKeyForTesting = null);
     }
 
     /** @param reporter A means of reporting an exception without crashing. */

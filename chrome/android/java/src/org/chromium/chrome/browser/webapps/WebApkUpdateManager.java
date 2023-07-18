@@ -22,6 +22,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
@@ -85,7 +86,7 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
     private final ActivityTabProvider mTabProvider;
 
     /** Whether updates are enabled. Some tests disable updates. */
-    private static boolean sUpdatesEnabled = true;
+    private static boolean sUpdatesDisabledForTesting;
 
     /** The activity context to use. */
     private Context mContext;
@@ -162,8 +163,9 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
         }
     }
 
-    public static void setUpdatesEnabledForTesting(boolean enabled) {
-        sUpdatesEnabled = enabled;
+    public static void setUpdatesDisabledForTesting(boolean value) {
+        sUpdatesDisabledForTesting = value;
+        ResettersForTesting.register(() -> sUpdatesDisabledForTesting = false);
     }
 
     /**
@@ -569,7 +571,7 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
      * True if there has not been any update attempts.
      */
     private boolean shouldCheckIfWebManifestUpdated(WebappInfo info) {
-        if (!sUpdatesEnabled) return false;
+        if (sUpdatesDisabledForTesting) return false;
 
         if (CommandLine.getInstance().hasSwitch(
                     ChromeSwitches.CHECK_FOR_WEB_MANIFEST_UPDATE_ON_STARTUP)) {

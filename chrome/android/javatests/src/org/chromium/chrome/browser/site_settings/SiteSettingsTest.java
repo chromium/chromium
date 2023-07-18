@@ -221,7 +221,6 @@ public class SiteSettingsTest {
         });
         LocationUtils.setFactory(null);
         LocationProviderOverrider.setLocationProviderImpl(null);
-        IncognitoUtils.setEnabledForTesting(null);
         ContextUtils.getAppSharedPreferences()
                 .edit()
                 .remove(SingleCategorySettingsConstants
@@ -1462,7 +1461,6 @@ public class SiteSettingsTest {
         NfcSystemLevelSetting.setNfcSettingForTesting(false);
         checkPreferencesForCategory(
                 SiteSettingsCategory.Type.NFC, BINARY_TOGGLE_WITH_OS_WARNING_EXTRA);
-        NfcSystemLevelSetting.setNfcSettingForTesting(null);
     }
 
     @Test

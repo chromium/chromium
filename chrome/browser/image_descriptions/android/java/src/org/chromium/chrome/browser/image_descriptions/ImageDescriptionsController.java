@@ -8,6 +8,7 @@ import android.content.Context;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.device.DeviceConditions;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -99,7 +100,9 @@ public class ImageDescriptionsController {
      */
     @VisibleForTesting
     public void setDelegateForTesting(ImageDescriptionsControllerDelegate delegate) {
+        var oldValue = this.mDelegate;
         this.mDelegate = delegate;
+        ResettersForTesting.register(() -> this.mDelegate = oldValue);
     }
 
     /**

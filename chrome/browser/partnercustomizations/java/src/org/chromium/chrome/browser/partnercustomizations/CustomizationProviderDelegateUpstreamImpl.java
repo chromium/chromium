@@ -15,6 +15,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.chrome.browser.partnercustomizations.PartnerCustomizationsUma.DelegateUnusedReason;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.version_info.VersionInfo;
@@ -173,7 +174,9 @@ public class CustomizationProviderDelegateUpstreamImpl implements CustomizationP
 
     @VisibleForTesting
     static void setProviderAuthorityForTesting(String providerAuthority) {
+        var oldValue = sProviderAuthority;
         sProviderAuthority = providerAuthority;
+        ResettersForTesting.register(() -> sProviderAuthority = oldValue);
     }
 
     /**

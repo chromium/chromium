@@ -177,7 +177,6 @@ public class SearchResumptionModuleMediatorUnitTest {
 
     @After
     public void tearDown() {
-        IdentityServicesProvider.setInstanceForTests(null);
         ShadowChromeFeatureList.sEnableSearchResumptionModule = false;
         ShadowChromeFeatureList.sParamValues.clear();
         mActionTester.tearDown();

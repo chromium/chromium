@@ -8,6 +8,7 @@ import android.content.Context;
 import android.util.DisplayMetrics;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeClassQualifiedName;
@@ -69,7 +70,9 @@ public final class FeedServiceBridge {
     }
 
     public static void setProcessScopeForTesting(ProcessScope processScope) {
+        var oldValue = sXSurfaceProcessScope;
         sXSurfaceProcessScope = processScope;
+        ResettersForTesting.register(() -> sXSurfaceProcessScope = oldValue);
     }
 
     private static FeedServiceUtil sFeedServiceUtil;

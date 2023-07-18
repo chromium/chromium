@@ -677,7 +677,6 @@ public class HistoryUITest {
     @Test
     @SmallTest
     public void testScrollToLoadEnabled() {
-        HistoryContentManager.setScrollToLoadDisabledForTesting(false);
         // Reduce the height available to the recycler view to less than it needs so that scrolling
         // has an effect.
         mHeight--;

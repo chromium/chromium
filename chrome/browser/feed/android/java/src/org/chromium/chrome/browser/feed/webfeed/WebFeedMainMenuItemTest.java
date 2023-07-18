@@ -27,7 +27,6 @@ import android.widget.TextView;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.filters.SmallTest;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -150,11 +149,6 @@ public final class WebFeedMainMenuItemTest {
                 R.layout.web_feed_main_menu_item, null));
 
         LoadingView.setDisableAnimationForTest(true);
-    }
-
-    @After
-    public void tearDown() {
-        LoadingView.setDisableAnimationForTest(false);
     }
 
     @Test

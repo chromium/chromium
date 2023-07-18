@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.password_check;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.ResettersForTesting;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 
 /**
@@ -45,7 +46,9 @@ public class PasswordCheckFactory {
 
     @VisibleForTesting
     public static void setPasswordCheckForTesting(PasswordCheck passwordCheck) {
+        var oldValue = sPasswordCheck;
         sPasswordCheck = passwordCheck;
+        ResettersForTesting.register(() -> sPasswordCheck = oldValue);
     }
 
     /**

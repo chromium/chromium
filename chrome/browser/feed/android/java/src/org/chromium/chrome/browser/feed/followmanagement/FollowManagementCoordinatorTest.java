@@ -10,7 +10,6 @@ import static org.mockito.Mockito.verify;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -64,11 +63,6 @@ public class FollowManagementCoordinatorTest {
         // WebFeedBridge.refreshFollowedWebFeeds() gets called once with non-null pointer to a
         // callback.
         verify(mWebFeedBridgeJni).refreshSubscriptions(notNull());
-    }
-
-    @After
-    public void tearDown() {
-        Profile.setLastUsedProfileForTesting(null);
     }
 
     @Test

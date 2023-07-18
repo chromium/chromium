@@ -146,9 +146,7 @@ public class OmahaBaseTest {
         }
 
         @Override
-        public void close() throws Exception {
-            ThreadUtils.setThreadAssertsDisabledForTesting(false);
-        }
+        public void close() throws Exception {}
     }
 
     @IntDef({InstallSource.SYSTEM_IMAGE, InstallSource.ORGANIC})
@@ -191,7 +189,6 @@ public class OmahaBaseTest {
 
     @Before
     public void setUp() {
-        OmahaBase.setIsDisabledForTesting(false);
         mDelegate = new MockOmahaDelegate(DeviceType.HANDSET, InstallSource.ORGANIC);
     }
 

@@ -184,7 +184,6 @@ public class AddressEditorTest {
     public void tearDown() {
         // Reset default values to avoid changing them for other batched tests.
         Locale.setDefault(DEFAULT_LOCALE);
-        PersonalDataManager.setInstanceForTesting(null);
     }
 
     private void setUpSupportedCountries(List<DropdownKeyValue> supportedCountries) {

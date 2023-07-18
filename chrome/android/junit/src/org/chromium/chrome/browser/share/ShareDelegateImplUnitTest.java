@@ -116,8 +116,6 @@ public class ShareDelegateImplUnitTest {
 
     @After
     public void tearDown() {
-        AppHooks.setInstanceForTesting(null);
-        TrackerFactory.setTrackerForTests(null);
         ShadowBuildCompatForU.sIsAtLeastU = false;
         ShadowShareSheetCoordinator.reset();
         ShadowShareHelper.reset();

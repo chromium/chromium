@@ -13,6 +13,7 @@ import androidx.annotation.Nullable;
 import com.google.common.primitives.UnsignedLongs;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.commerce.PriceTrackingUtils;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
@@ -185,10 +186,12 @@ public class PowerBookmarkUtils {
     /** Sets the price-tracking eligibility to the test value given. */
     public static void setPriceTrackingEligibleForTesting(@Nullable Boolean enabled) {
         sPriceTrackingEligibleForTesting = enabled;
+        ResettersForTesting.register(() -> sPriceTrackingEligibleForTesting = null);
     }
 
     /** Sets the current page meta to the test value given. */
     public static void setPowerBookmarkMetaForTesting(@Nullable PowerBookmarkMeta meta) {
         sPowerBookmarkMetaForTesting = meta;
+        ResettersForTesting.register(() -> sPowerBookmarkMetaForTesting = null);
     }
 }

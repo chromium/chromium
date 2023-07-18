@@ -68,7 +68,6 @@ public class IncognitoReauthSettingTest {
     @LargeTest
     public void testIncognitoReauthSetting_WhenDisabled_AndOnClickSummary() {
         IncognitoReauthManager.setIsIncognitoReauthFeatureAvailableForTesting(true);
-        IncognitoReauthSettingUtils.setIsDeviceScreenLockEnabledForTesting(false);
         launchSettingsActivity();
         Intent intent = new Intent();
         Instrumentation.ActivityResult result =

@@ -11,6 +11,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -196,7 +197,9 @@ public class OptimizationGuidePushNotificationManager {
 
     @VisibleForTesting
     public static void setNativeIsInitializedForTesting(Boolean nativeIsInitialized) {
+        var oldValue = sNativeIsInitialized;
         sNativeIsInitialized = nativeIsInitialized;
+        ResettersForTesting.register(() -> sNativeIsInitialized = oldValue);
     }
 
     private static boolean nativeIsInitialized() {

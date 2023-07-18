@@ -12,7 +12,6 @@ import static org.mockito.Mockito.when;
 
 import android.content.Context;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -58,13 +57,6 @@ public class SyncConsentActivityLauncherImplTest {
         IdentityServicesProvider.setInstanceForTests(mock(IdentityServicesProvider.class));
         Profile.setLastUsedProfileForTesting(mProfile);
         when(IdentityServicesProvider.get().getSigninManager(any())).thenReturn(mSigninManagerMock);
-    }
-
-    @After
-    public void tearDown() {
-        SyncConsentActivityLauncherImpl.setLauncherForTest(null);
-        Profile.setLastUsedProfileForTesting(null);
-        IdentityServicesProvider.setInstanceForTests(null);
     }
 
     @Test

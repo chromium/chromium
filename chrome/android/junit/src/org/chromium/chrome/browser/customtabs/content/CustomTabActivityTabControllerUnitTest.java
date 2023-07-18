@@ -26,7 +26,6 @@ import static org.mockito.Mockito.when;
 import android.content.Intent;
 import android.os.Bundle;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -74,12 +73,6 @@ public class CustomTabActivityTabControllerUnitTest {
         Profile.setLastUsedProfileForTesting(mProfile);
         mTabController = env.createTabController();
         PrivacyPreferencesManagerImpl.setInstanceForTesting(mPrivacyPreferencesManager);
-    }
-
-    @After
-    public void tearDown() {
-        Profile.setLastUsedProfileForTesting(null);
-        PrivacyPreferencesManagerImpl.setInstanceForTesting(null);
     }
 
     @Test

@@ -9,7 +9,6 @@ import static org.junit.Assert.assertTrue;
 
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.UI_THEME_SETTING;
 
-import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
@@ -23,13 +22,6 @@ import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class GlobalNightModeStateProviderHolderTest {
-    @After
-    public void tearDown() {
-        GlobalNightModeStateProviderHolder.setInstanceForTesting(null);
-        NightModeUtils.setNightModeSupportedForTesting(null);
-        SharedPreferencesManager.getInstance().removeKey(UI_THEME_SETTING);
-    }
-
     @Test
     public void testNightModeNotAvailable() {
         NightModeUtils.setNightModeSupportedForTesting(false);

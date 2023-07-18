@@ -301,11 +301,7 @@ public class FeedSurfaceCoordinatorTest {
     public void tearDown() {
         mCoordinator.destroy();
         FeedSurfaceTracker.getInstance().resetForTest();
-        IdentityServicesProvider.setInstanceForTests(null);
-        FeedFeatures.setFakePrefsForTest(null);
         FeedSurfaceMediator.setPrefForTest(null, null);
-        TemplateUrlServiceFactory.setInstanceForTesting(null);
-        FeedServiceBridge.setProcessScopeForTesting(null);
     }
 
     @Test

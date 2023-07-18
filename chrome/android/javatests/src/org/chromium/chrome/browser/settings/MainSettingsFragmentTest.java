@@ -171,14 +171,10 @@ public class MainSettingsFragmentTest {
 
     @After
     public void tearDown() {
-        DeveloperSettings.setIsEnabledForTests(null);
-        NightModeUtils.setNightModeSupportedForTesting(null);
-        TemplateUrlServiceFactory.setInstanceForTesting(null);
         SharedPreferencesManager.getInstance().removeKey(
                 SyncPromoController.getPromoShowCountPreferenceName(SigninAccessPoint.SETTINGS));
         SharedPreferencesManager.getInstance().removeKey(
                 ChromePreferenceKeys.SYNC_PROMO_TOTAL_SHOW_COUNT);
-        SyncConsentActivityLauncherImpl.setLauncherForTest(null);
     }
 
     @Test

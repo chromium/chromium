@@ -18,7 +18,6 @@ import android.content.Intent;
 
 import androidx.test.filters.SmallTest;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -99,12 +98,6 @@ public final class SearchEngineChoiceNotificationTest {
         doReturn(mInitialSearchEngine)
                 .when(mTemplateUrlService)
                 .getDefaultSearchEngineTemplateUrl();
-    }
-
-    @After
-    public void tearDown() {
-        Profile.setLastUsedProfileForTesting(null);
-        TemplateUrlServiceFactory.setInstanceForTesting(null);
     }
 
     @Test

@@ -16,6 +16,7 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.chrome.browser.ActivityUtils;
@@ -49,6 +50,7 @@ public class WebApkDataProvider {
 
     public static void setWebappInfoForTesting(WebappInfo webappInfo) {
         sWebappInfoForTesting = webappInfo;
+        ResettersForTesting.register(() -> sWebappInfoForTesting = null);
     }
 
     /**

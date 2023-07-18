@@ -11,6 +11,7 @@ import android.view.View;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.metrics.RecordHistogram;
@@ -28,7 +29,7 @@ import java.util.List;
  * A helper class that handles generating and dismissing context menus for {@link WebContents}.
  */
 public class ContextMenuHelper {
-    private static Callback<ContextMenuCoordinator> sMenuShownCallbackForTests;
+    private static Callback<ContextMenuCoordinator> sMenuShownCallbackForTesting;
 
     private final WebContents mWebContents;
     private long mNativeContextMenuHelper;
@@ -114,8 +115,8 @@ public class ContextMenuHelper {
             mMenuShownTimeMs = SystemClock.uptimeMillis();
             RecordHistogram.recordBooleanHistogram("ContextMenu.Shown", mWebContents != null);
             recordContextMenuShownType(params);
-            if (sMenuShownCallbackForTests != null) {
-                sMenuShownCallbackForTests.onResult((ContextMenuCoordinator) mCurrentContextMenu);
+            if (sMenuShownCallbackForTesting != null) {
+                sMenuShownCallbackForTesting.onResult((ContextMenuCoordinator) mCurrentContextMenu);
             }
         };
         mOnMenuClosed = () -> {
@@ -165,8 +166,8 @@ public class ContextMenuHelper {
         if (items.isEmpty()) {
             PostTask.postTask(TaskTraits.UI_DEFAULT, mOnMenuClosed);
             // Only call if no items are populated. Otherwise call in mOnMenuShown callback.
-            if (sMenuShownCallbackForTests != null) {
-                sMenuShownCallbackForTests.onResult(null);
+            if (sMenuShownCallbackForTesting != null) {
+                sMenuShownCallbackForTesting.onResult(null);
             }
             return;
         }
@@ -194,7 +195,8 @@ public class ContextMenuHelper {
 
     @VisibleForTesting
     public static void setMenuShownCallbackForTests(Callback<ContextMenuCoordinator> callback) {
-        sMenuShownCallbackForTests = callback;
+        sMenuShownCallbackForTesting = callback;
+        ResettersForTesting.register(() -> sMenuShownCallbackForTesting = null);
     }
 
     @VisibleForTesting

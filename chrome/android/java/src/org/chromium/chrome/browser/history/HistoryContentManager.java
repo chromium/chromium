@@ -25,6 +25,7 @@ import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
@@ -548,11 +549,13 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
     @VisibleForTesting
     public static void setProviderForTests(HistoryProvider provider) {
         sProviderForTests = provider;
+        ResettersForTesting.register(() -> sProviderForTests = null);
     }
 
     /** @param isScrollToLoadDisabled Whether scrolling to load is disabled for tests. */
     @VisibleForTesting
     public static void setScrollToLoadDisabledForTesting(boolean isScrollToLoadDisabled) {
         sIsScrollToLoadDisabledForTests = isScrollToLoadDisabled;
+        ResettersForTesting.register(() -> sIsScrollToLoadDisabledForTests = null);
     }
 }

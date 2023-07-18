@@ -12,6 +12,7 @@ import com.google.android.gms.common.GoogleApiAvailability;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.PackageUtils;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.directactions.DirectActionCoordinator;
 import org.chromium.chrome.browser.feedback.FeedbackReporter;
@@ -62,6 +63,7 @@ public abstract class AppHooks {
     @VisibleForTesting
     public static void setInstanceForTesting(AppHooksImpl instance) {
         sInstanceForTesting = instance;
+        ResettersForTesting.register(() -> sInstanceForTesting = null);
     }
 
     public static AppHooks get() {

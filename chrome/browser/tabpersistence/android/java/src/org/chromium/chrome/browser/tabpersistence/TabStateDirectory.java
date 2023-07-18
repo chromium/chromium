@@ -10,6 +10,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.StrictModeContext;
 
 import java.io.File;
@@ -107,7 +108,9 @@ public class TabStateDirectory {
      */
     @VisibleForTesting
     public static void setBaseStateDirectoryForTests(File directory) {
+        var oldValue = BaseStateDirectoryHolder.sDirectory;
         BaseStateDirectoryHolder.sDirectory = directory;
+        ResettersForTesting.register(() -> BaseStateDirectoryHolder.sDirectory = oldValue);
     }
 
     @VisibleForTesting

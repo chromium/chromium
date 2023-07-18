@@ -53,7 +53,6 @@ public class AdaptiveToolbarStatePredictorTest {
     @After
     public void tearDown() {
         AdaptiveToolbarFeatures.clearParsedParamsForTesting();
-        VoiceRecognitionUtil.setIsVoiceSearchEnabledForTesting(null);
     }
 
     @Test

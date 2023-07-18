@@ -101,6 +101,7 @@ public class CustomTabsConnectionUnitTest {
                 task.run();
             }
         });
+        CustomTabsConnection.setInstanceForTesting(null);
         mConnection = CustomTabsConnection.getInstance();
         mConnection.setIsDynamicFeaturesEnabled(true);
         when(mSession.getCallback()).thenReturn(mCallback);
@@ -112,11 +113,9 @@ public class CustomTabsConnectionUnitTest {
 
     @After
     public void tearDown() {
-        CustomTabsConnection.setInstanceForTesting(null);
         ChromeApplicationImpl.getComponent().resolveSessionDataHolder().removeActiveHandler(
                 mSessionHandler);
         ShadowPostTask.reset();
-        PrivacyPreferencesManagerImpl.setInstanceForTesting(null);
     }
     @Test
     public void areExperimentsSupported_NullInputs() {

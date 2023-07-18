@@ -27,7 +27,6 @@ import android.util.Pair;
 
 import androidx.annotation.Nullable;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -283,11 +282,6 @@ public class ChromeFeedbackCollectorUnitTest {
         when(IdentityServicesProvider.get().getIdentityManager(any()).getPrimaryAccountInfo(
                      anyInt()))
                 .thenReturn(mAccountInfo);
-    }
-
-    @After
-    public void tearDown() {
-        IdentityServicesProvider.setInstanceForTests(null);
     }
 
     @Test

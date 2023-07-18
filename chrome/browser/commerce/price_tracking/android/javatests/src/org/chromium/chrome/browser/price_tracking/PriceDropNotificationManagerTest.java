@@ -123,8 +123,6 @@ public class PriceDropNotificationManagerTest {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             mPriceDropNotificationManager.deleteChannelForTesting();
         }
-        PriceDropNotificationManagerImpl.setNotificationManagerForTesting(null);
-        ShoppingFeatures.setShoppingListEligibleForTesting(null);
     }
 
     private void verifyClickIntent(Intent intent) {

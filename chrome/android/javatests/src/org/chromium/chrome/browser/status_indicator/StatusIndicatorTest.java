@@ -24,7 +24,6 @@ import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 import org.hamcrest.TypeSafeMatcher;
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -82,11 +81,6 @@ public class StatusIndicatorTest {
         mStatusIndicatorSceneLayer = mStatusIndicatorCoordinator.getSceneLayer();
         mControlContainer = mActivityTestRule.getActivity().findViewById(R.id.control_container);
         mBrowserControlsStateProvider = mActivityTestRule.getActivity().getBrowserControlsManager();
-    }
-
-    @After
-    public void tearDown() {
-        TabbedRootUiCoordinator.setDisableStatusIndicatorAnimationsForTesting(false);
     }
 
     @Test

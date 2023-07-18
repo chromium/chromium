@@ -142,20 +142,15 @@ public class VoiceRecognitionHandlerUnitTest {
 
     @After
     public void tearDown() {
-        AutocompleteControllerProvider.setControllerForTesting(null);
         mWindowAndroid.destroy();
         // Make sure destroy() propagates.
         // Any cleanup code scheduled for execution via the means of a Handler or PostTask
         // will be taken care of here.
         ShadowLooper.shadowMainLooper().idle();
         mHandler.removeObserver(mObserver);
-        VoiceRecognitionHandler.setIsRecognitionIntentPresentForTesting(null);
         FeatureList.setTestValues(null);
-        VoiceRecognitionUtil.setIsVoiceSearchEnabledForTesting(null);
         mProfileSupplier.set(null);
-        TemplateUrlServiceFactory.setInstanceForTesting(null);
         ProfileManager.onProfileAdded(null);
-        Profile.setLastUsedProfileForTesting(null);
     }
 
     /**

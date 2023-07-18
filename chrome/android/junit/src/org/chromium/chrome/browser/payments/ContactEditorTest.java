@@ -24,7 +24,6 @@ import android.app.Activity;
 
 import androidx.test.filters.SmallTest;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -77,11 +76,6 @@ public class ContactEditorTest {
         mActivity = Robolectric.setupActivity(TestActivity.class);
 
         when(mEditorDialog.getContext()).thenReturn(mActivity);
-    }
-
-    @After
-    public void tearDown() {
-        PersonalDataManager.setInstanceForTesting(null);
     }
 
     private static void validateTextField(

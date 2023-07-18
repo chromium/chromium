@@ -66,7 +66,6 @@ public class AdaptiveToolbarPreferenceFragmentTest {
     @After
     public void tearDownTest() throws Exception {
         AdaptiveToolbarStatePredictor.setSegmentationResultsForTesting(null);
-        VoiceRecognitionUtil.setIsVoiceSearchEnabledForTesting(null);
         SharedPreferencesManager.getInstance().removeKey(ADAPTIVE_TOOLBAR_CUSTOMIZATION_ENABLED);
         SharedPreferencesManager.getInstance().removeKey(ADAPTIVE_TOOLBAR_CUSTOMIZATION_SETTINGS);
     }

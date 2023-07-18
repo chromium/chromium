@@ -27,6 +27,7 @@ import org.chromium.base.ContentUriUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
@@ -264,7 +265,9 @@ public class DownloadManagerService implements DownloadController.Observer,
 
     /** For testing only. */
     public void setInfoBarControllerForTesting(DownloadMessageUiController infoBarController) {
+        var oldValue = mMessageUiController;
         mMessageUiController = infoBarController;
+        ResettersForTesting.register(() -> mMessageUiController = oldValue);
     }
 
     // Deprecated after new download backend.
@@ -1176,7 +1179,9 @@ public class DownloadManagerService implements DownloadController.Observer,
      */
     @VisibleForTesting
     static void setIsNetworkMeteredForTest(boolean isNetworkMetered) {
+        var oldValue = sIsNetworkMetered;
         sIsNetworkMetered = isNetworkMetered;
+        ResettersForTesting.register(() -> sIsNetworkMetered = oldValue);
     }
 
     /**
