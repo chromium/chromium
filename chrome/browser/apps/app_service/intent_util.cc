@@ -188,6 +188,16 @@ apps::ConditionValuePtr ConvertArcPatternMatcherToConditionValue(
             apps::PatternMatchType::kPrefix);
       }
       break;
+    // TODO(crbug.com/1463908): support the new pattern types.
+    case arc::mojom::PatternType::PATTERN_ADVANCED_GLOB:
+    case arc::mojom::PatternType::PATTERN_SUFFIX:
+    case arc::mojom::PatternType::kUnknown:
+      LOG(ERROR)
+          << " Received an ARC intent filter with unsupported PatternType: "
+          << path.match_type()
+          << " for the filter path. Need to update code to support new pattern "
+             "types.";
+      return nullptr;
   }
 
   return std::make_unique<apps::ConditionValue>(path.pattern(), match_type);

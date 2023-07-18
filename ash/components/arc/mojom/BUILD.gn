@@ -414,6 +414,7 @@ mojom("protected_buffer_manager") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "//ash/components/arc/intent_helper/intent_filter_mojom_traits_unittest.cc",
     "ime_mojom_traits_unittest.cc",
     "video_accelerator_mojom_traits_unittest.cc",
     "video_encode_accelerator_mojom_traits_unittest.cc",
@@ -421,6 +422,7 @@ source_set("unit_tests") {
 
   deps = [
     ":mojom",
+    "//components/arc",
     "//media",
     "//mojo/public/cpp/test_support:test_utils",
     "//testing/gtest",

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Next MinVersion: 51
+// Next MinVersion: 52
 
 module arc.mojom;
 
@@ -16,9 +16,12 @@ import "url/mojom/url.mojom";
 
 [Extensible]
 enum PatternType {
-  PATTERN_LITERAL,
-  PATTERN_PREFIX,
-  PATTERN_SIMPLE_GLOB,
+  PATTERN_LITERAL = 0,
+  PATTERN_PREFIX = 1,
+  PATTERN_SIMPLE_GLOB = 2,
+  [MinVersion=51] PATTERN_ADVANCED_GLOB = 3,
+  [MinVersion=51] PATTERN_SUFFIX = 4,
+  [MinVersion=51, Default] kUnknown = -1,
 };
 
 [Extensible]
