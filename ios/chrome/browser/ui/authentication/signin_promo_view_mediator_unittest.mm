@@ -101,7 +101,6 @@ class SigninPromoViewMediatorTest : public PlatformTest {
     EXPECT_OCMOCK_VERIFY((id)primary_button_);
     EXPECT_OCMOCK_VERIFY((id)secondary_button_);
     EXPECT_OCMOCK_VERIFY((id)close_button_);
-    EXPECT_OCMOCK_VERIFY((id)title_label_);
   }
 
   void CreateMediator(signin_metrics::AccessPoint access_point) {
@@ -126,8 +125,6 @@ class SigninPromoViewMediatorTest : public PlatformTest {
     OCMStub([signin_promo_view_ secondaryButton]).andReturn(secondary_button_);
     close_button_ = OCMStrictClassMock([UIButton class]);
     OCMStub([signin_promo_view_ closeButton]).andReturn(close_button_);
-    title_label_ = OCMStrictClassMock([UILabel class]);
-    OCMStub([signin_promo_view_ titleLabel]).andReturn(title_label_);
   }
 
   std::unique_ptr<PrefServiceSyncable> CreatePrefService() {
@@ -209,7 +206,6 @@ class SigninPromoViewMediatorTest : public PlatformTest {
     EXPECT_NE(nil, configurator);
     ExpectNoAccountsConfiguration(style);
     OCMExpect([close_button_ setHidden:close_button_hidden_]);
-    OCMExpect([title_label_ setHidden:YES]);
     OCMExpect([signin_promo_view_ setPromoViewStyle:style]);
     OCMExpect([signin_promo_view_ stopSignInSpinner]);
     if (style == SigninPromoViewStyleCompactVertical ||
@@ -268,7 +264,6 @@ class SigninPromoViewMediatorTest : public PlatformTest {
     EXPECT_NE(nil, configurator);
     ExpectSigninWithAccountConfiguration(style);
     OCMExpect([close_button_ setHidden:close_button_hidden_]);
-    OCMExpect([title_label_ setHidden:YES]);
     OCMExpect([signin_promo_view_ setPromoViewStyle:style]);
     OCMExpect([signin_promo_view_ stopSignInSpinner]);
     [configurator configureSigninPromoView:signin_promo_view_ withStyle:style];
@@ -300,7 +295,6 @@ class SigninPromoViewMediatorTest : public PlatformTest {
     EXPECT_NE(nil, configurator);
     ExpectSyncPromoConfiguration();
     OCMExpect([close_button_ setHidden:close_button_hidden_]);
-    OCMExpect([title_label_ setHidden:YES]);
     OCMExpect([signin_promo_view_ setPromoViewStyle:style]);
     OCMExpect([signin_promo_view_ stopSignInSpinner]);
     [configurator configureSigninPromoView:signin_promo_view_ withStyle:style];
@@ -344,7 +338,6 @@ class SigninPromoViewMediatorTest : public PlatformTest {
   UIButton* primary_button_;
   UIButton* secondary_button_;
   UIButton* close_button_;
-  UILabel* title_label_;
 
   // Value set by -[SigninPromoView setProfileImage:].
   UIImage* image_view_profile_image_;

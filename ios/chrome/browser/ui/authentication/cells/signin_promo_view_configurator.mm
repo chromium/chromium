@@ -98,8 +98,6 @@ using l10n_util::GetNSStringF;
 // Configures the view elements of the `signinPromoView` to conform to the
 // `SigninPromoViewStyleStandard` style.
 - (void)configureStandardSigninPromoView:(SigninPromoView*)signinPromoView {
-  signinPromoView.titleLabel.hidden = YES;
-  //  signinPromoView.secondaryButton.hidden = NO;
   NSString* name =
       self.userGivenName.length ? self.userGivenName : self.userEmail;
   std::u16string name16 = SysNSStringToUTF16(name);
@@ -146,7 +144,6 @@ using l10n_util::GetNSStringF;
       break;
     case SigninPromoViewStyleCompactVertical:
     case SigninPromoViewStyleCompactHorizontal:
-      signinPromoView.titleLabel.hidden = YES;
       [signinPromoView configurePrimaryButtonWithTitle:
                            GetNSString(IDS_IOS_NTP_FEED_SIGNIN_PROMO_CONTINUE)];
       switch (self.signinPromoViewMode) {

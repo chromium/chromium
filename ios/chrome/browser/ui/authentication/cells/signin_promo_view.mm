@@ -118,7 +118,6 @@ constexpr CGFloat kCompactStyleTextSize = 15.0;
 @interface SigninPromoView ()
 // Re-declare as readwrite.
 @property(nonatomic, strong, readwrite) UIImageView* imageView;
-@property(nonatomic, strong, readwrite) UILabel* titleLabel;
 @property(nonatomic, strong, readwrite) UILabel* textLabel;
 @property(nonatomic, strong, readwrite) UIButton* primaryButton;
 @property(nonatomic, strong, readwrite) UIButton* secondaryButton;
@@ -168,15 +167,6 @@ constexpr CGFloat kCompactStyleTextSize = 15.0;
     _imageView.layer.masksToBounds = YES;
     _imageView.contentMode = UIViewContentModeScaleAspectFit;
 
-    // Create and setup title label.
-    _titleLabel = [[UILabel alloc] init];
-    _titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
-    _titleLabel.numberOfLines = 0;
-    _titleLabel.textAlignment = NSTextAlignmentCenter;
-    _titleLabel.lineBreakMode = NSLineBreakByWordWrapping;
-    // Title is hidden by default.
-    _titleLabel.hidden = YES;
-
     // Create and setup informative text label.
     _textLabel = [[UILabel alloc] init];
     _textLabel.translatesAutoresizingMaskIntoConstraints = NO;
@@ -222,7 +212,6 @@ constexpr CGFloat kCompactStyleTextSize = 15.0;
     _secondaryButton.pointerInteractionEnabled = YES;
 
     _textVerticalStackView = [[UIStackView alloc] initWithArrangedSubviews:@[
-      _titleLabel,
       _textLabel,
     ]];
 
@@ -439,16 +428,10 @@ constexpr CGFloat kCompactStyleTextSize = 15.0;
 }
 
 - (NSString*)accessibilityLabel {
-  return self.titleLabel.hidden
-             ? [NSString
-                   stringWithFormat:@"%@ %@", self.textLabel.text,
-                                    [self.primaryButton
-                                        titleForState:UIControlStateNormal]]
-             : [NSString
-                   stringWithFormat:@"%@. %@ %@", self.titleLabel.text,
-                                    self.textLabel.text,
-                                    [self.primaryButton
-                                        titleForState:UIControlStateNormal]];
+  return [NSString
+      stringWithFormat:@"%@ %@", self.textLabel.text,
+                       [self.primaryButton titleForState:UIControlStateNormal]];
+  ;
 }
 
 - (BOOL)accessibilityActivate {
@@ -625,9 +608,6 @@ constexpr CGFloat kCompactStyleTextSize = 15.0;
       self.secondaryButton.hidden = NO;
 
       // Configures fonts for standard layout.
-      self.titleLabel.font =
-          [UIFont preferredFontForTextStyle:UIFontTextStyleTitle3];
-      self.titleLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
       self.textLabel.font =
           [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
       self.textLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];

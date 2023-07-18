@@ -188,9 +188,6 @@ NSArray<NSLayoutConstraint*>* SameConstraintsWithInsets(
   SigninPromoViewStyle promoViewStyle = GetTopOfFeedPromoStyle();
   [configurator configureSigninPromoView:promoView withStyle:promoViewStyle];
 
-  // Override promo text for top of feed.
-  promoView.titleLabel.text =
-      l10n_util::GetNSString(IDS_IOS_NTP_FEED_SIGNIN_PROMO_TITLE);
   promoView.textLabel.text =
       l10n_util::GetNSString(IDS_IOS_NTP_FEED_SIGNIN_COMPACT_PROMO_BODY);
   return promoView;
