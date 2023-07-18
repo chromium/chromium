@@ -477,6 +477,10 @@ template("chrome_common_apk_or_module_tmpl") {
           # are needed by the base module.
           "//components/language/android:ulp_delegate_public_java",
         ]
+        if (_is_monochrome) {
+          # WebView needs this in the base module.
+          deps += [ "//components/environment_integrity/android:integrity_service_bridge_public_impl_java" ]
+        }
       } else {
         deps += [
           "//chrome/android:chrome_all_java",
