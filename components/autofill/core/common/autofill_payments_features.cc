@@ -53,7 +53,7 @@ BASE_FEATURE(kAutofillEnableCvcStorageAndFilling,
 // challenge options.
 BASE_FEATURE(kAutofillEnableEmailOtpForVcnYellowPath,
              "AutofillEnableEmailOtpForVcnYellowPath",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, user's will see network card art images and network icons which
 // are larger, having a white border, and don't have the standard grey overlay
