@@ -582,7 +582,10 @@ class ResourceScheduler::Client
 
   void OnVisibilityChanged(bool visible) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    CHECK_NE(visible, visible_);
+    if (visible == visible_) {
+      return;
+    }
+
     visible_ = visible;
 
     if (!base::FeatureList::IsEnabled(
