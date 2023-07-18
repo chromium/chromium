@@ -27,10 +27,6 @@ class MessagePump;
 class TaskObserver;
 
 namespace sequence_manager {
-namespace internal {
-class TestTaskQueue;
-}  // namespace internal
-
 class TimeDomain;
 
 // SequenceManager manages TaskQueues which have different properties
@@ -314,8 +310,6 @@ class BASE_EXPORT SequenceManager {
   virtual void RemoveTaskObserver(TaskObserver* task_observer) = 0;
 
  protected:
-  friend class internal::TestTaskQueue;  // For CreateTaskQueueImpl().
-
   virtual std::unique_ptr<internal::TaskQueueImpl> CreateTaskQueueImpl(
       const TaskQueue::Spec& spec) = 0;
 };

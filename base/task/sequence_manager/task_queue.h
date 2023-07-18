@@ -11,7 +11,6 @@
 
 #include "base/base_export.h"
 #include "base/check.h"
-#include "base/memory/weak_ptr.h"
 #include "base/task/common/checked_lock.h"
 #include "base/task/common/lazy_now.h"
 #include "base/task/sequence_manager/tasks.h"
@@ -448,12 +447,10 @@ class BASE_EXPORT TaskQueue {
   // execution.
   void SetTaskExecutionTraceLogger(TaskExecutionTraceLogger logger);
 
-  base::WeakPtr<TaskQueue> AsWeakPtr() {
-    return weak_ptr_factory_.GetWeakPtr();
+  // TODO(crbug.com/1143007): Remove this once TaskQueueImpl inherits TaskQueue.
+  internal::TaskQueueImpl* GetTaskQueueImplForTest() const {
+    return impl_.get();
   }
-
- protected:
-  internal::TaskQueueImpl* GetTaskQueueImpl() const { return impl_.get(); }
 
  private:
   friend class RefCountedThreadSafe<TaskQueue>;
@@ -483,8 +480,6 @@ class BASE_EXPORT TaskQueue {
   const scoped_refptr<SingleThreadTaskRunner> default_task_runner_;
 
   QueueName name_;
-
-  base::WeakPtrFactory<TaskQueue> weak_ptr_factory_{this};
 };
 
 }  // namespace sequence_manager
