@@ -162,6 +162,7 @@ const base::TimeDelta kCloseLensViewTimeout = base::Seconds(10);
   lensQuery.image = command.image;
   lensQuery.isIncognito = isIncognito;
   lensQuery.entrypoint = command.entryPoint;
+  lensQuery.webviewSize = [self webContentFrame].size;
   ios::provider::GenerateLensLoadParamsAsync(
       lensQuery,
       base::BindOnce(^(const web::NavigationManager::WebLoadParams params) {
