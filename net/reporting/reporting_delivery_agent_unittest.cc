@@ -562,16 +562,7 @@ TEST_F(ReportingDeliveryAgentTest, ConcurrentRemove) {
   EXPECT_TRUE(reports.empty());
 }
 
-// Flaky on ChromeOS: https://crbug.com/1348434
-#if defined(CHROMEOS)
-#define MAYBE_ConcurrentRemoveDuringPermissionsCheck \
-  DISABLED_ConcurrentRemoveDuringPermissionsCheck
-#else
-#define MAYBE_ConcurrentRemoveDuringPermissionsCheck \
-  ConcurrentRemoveDuringPermissionsCheck
-#endif
-TEST_F(ReportingDeliveryAgentTest,
-       MAYBE_ConcurrentRemoveDuringPermissionsCheck) {
+TEST_F(ReportingDeliveryAgentTest, ConcurrentRemoveDuringPermissionsCheck) {
   // Pause the permissions check, so that we can try to remove some reports
   // while we're in the middle of verifying that we can upload them.  (This is
   // similar to the previous test, but removes the reports during a different
