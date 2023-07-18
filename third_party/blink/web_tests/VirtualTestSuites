@@ -2215,5 +2215,15 @@
     "args": ["--enable-features=ClearSiteDataClientHintsSupport,ClearSiteDataWildcardSupport"],
     "expires": "Jun 28, 2024",
     "owners": ["arichiv@chromium.org"]
+  },
+  {
+    "prefix": "static-routing-api",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": [
+      "external/wpt/service-workers/service-worker/tentative/static-router"
+    ],
+    "args": ["--enable-features=ServiceWorkerStaticRouter"],
+    "expires": "Jul 14, 2024",
+    "owners": ["yyanagisawa@chromium.org", "sisidovski@chromium.org"]
   }
 ]
