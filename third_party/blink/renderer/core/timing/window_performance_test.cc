@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/timing/window_performance.h"
 #include <cstdint>
 
+#include "base/numerics/safe_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_mock_time_task_runner.h"
@@ -1337,29 +1338,26 @@ TEST_P(WindowPerformanceTest, EventTimingTraceEvents) {
 
   // Only the longer event should have been reported.
   auto analyzer = trace_analyzer::Stop();
+  analyzer->AssociateAsyncBeginEndEvents();
   trace_analyzer::TraceEventVector events;
-  Query q = Query::EventNameIs("EventTiming");
+  Query q = Query::EventNameIs("EventTiming") &&
+            Query::EventPhaseIs(TRACE_EVENT_PHASE_NESTABLE_ASYNC_BEGIN);
   analyzer->FindEvents(q, &events);
-  EXPECT_EQ(6u, events.size());
-  for (int i = 0; i < 6; i++)
+  EXPECT_EQ(3u, events.size());
+  for (int i = 0; i < 3; i++) {
     EXPECT_EQ("devtools.timeline", events[i]->category);
+  }
 
   // Items in the trace events list is ordered chronologically, that is -- trace
-  // event with smaller timestamp comes eairlier.
+  // event with smaller timestamp comes earlier.
   //
   // --Timestamps--
-  // pointerdown_begin: 1000ms
+  // pointerdown_begin: 1000ms (pointerdown end: 1025ms)
   const trace_analyzer::TraceEvent* pointerdown_begin = events[0];
-  // pointerdown_end: 1025ms
-  const trace_analyzer::TraceEvent* pointerdown_end = events[1];
-  // pointerup_begin: 1100ms
-  const trace_analyzer::TraceEvent* pointerup_begin = events[2];
-  // click_begin: 1100ms
-  const trace_analyzer::TraceEvent* click_begin = events[3];
-  // pointerup_end: 1130ms
-  const trace_analyzer::TraceEvent* pointerup_end = events[4];
-  // click_end: 1130ms
-  const trace_analyzer::TraceEvent* click_end = events[5];
+  // pointerup_begin: 1100ms (pointerup end: 1130ms)
+  const trace_analyzer::TraceEvent* pointerup_begin = events[1];
+  // click_begin: 1100ms (click end 1130ms)
+  const trace_analyzer::TraceEvent* click_begin = events[2];
 
   // pointerdown
   ASSERT_TRUE(pointerdown_begin->HasDictArg("data"));
@@ -1372,9 +1370,10 @@ TEST_P(WindowPerformanceTest, EventTimingTraceEvents) {
   EXPECT_EQ(*frame_trace_value, GetFrameIdForTracing(GetFrame()));
   EXPECT_EQ(arg_dict.FindInt("nodeId"),
             DOMNodeIds::IdForNode(GetWindow()->document()));
-  EXPECT_EQ(pointerdown_begin->id, pointerdown_end->id);
-  EXPECT_LT(pointerdown_begin->timestamp, pointerdown_end->timestamp);
-  ASSERT_FALSE(pointerdown_end->HasDictArg("data"));
+  ASSERT_TRUE(pointerdown_begin->has_other_event());
+  EXPECT_EQ(base::ClampRound(pointerdown_begin->GetAbsTimeToOtherEvent()),
+            25000);
+  EXPECT_FALSE(pointerdown_begin->other_event->HasDictArg("data"));
 
   // pointerup
   ASSERT_TRUE(pointerup_begin->HasDictArg("data"));
@@ -1387,9 +1386,9 @@ TEST_P(WindowPerformanceTest, EventTimingTraceEvents) {
   EXPECT_EQ(*frame_trace_value, GetFrameIdForTracing(GetFrame()));
   EXPECT_EQ(arg_dict.FindInt("nodeId"),
             DOMNodeIds::IdForNode(GetWindow()->document()));
-  EXPECT_EQ(pointerup_begin->id, pointerup_end->id);
-  EXPECT_LT(pointerup_begin->timestamp, pointerup_end->timestamp);
-  ASSERT_FALSE(pointerup_end->HasDictArg("data"));
+  ASSERT_TRUE(pointerup_begin->has_other_event());
+  EXPECT_EQ(base::ClampRound(pointerup_begin->GetAbsTimeToOtherEvent()), 30000);
+  EXPECT_FALSE(pointerup_begin->other_event->HasDictArg("data"));
 
   // click
   ASSERT_TRUE(click_begin->HasDictArg("data"));
@@ -1402,9 +1401,127 @@ TEST_P(WindowPerformanceTest, EventTimingTraceEvents) {
   EXPECT_EQ(*frame_trace_value, GetFrameIdForTracing(GetFrame()));
   EXPECT_EQ(arg_dict.FindInt("nodeId"),
             DOMNodeIds::IdForNode(GetWindow()->document()));
-  EXPECT_EQ(click_begin->id, click_end->id);
-  EXPECT_LT(click_begin->timestamp, click_end->timestamp);
-  ASSERT_FALSE(click_end->HasDictArg("data"));
+  ASSERT_TRUE(click_begin->has_other_event());
+  EXPECT_EQ(base::ClampRound(click_begin->GetAbsTimeToOtherEvent()), 30000);
+  EXPECT_FALSE(click_begin->other_event->HasDictArg("data"));
+}
+
+TEST_P(WindowPerformanceTest, SlowInteractionToNextPaintTraceEvents) {
+  using trace_analyzer::Query;
+  trace_analyzer::Start("*");
+
+  constexpr int kKeyCode = 2;
+
+  // Short, untraced keyboard event.
+  {
+    // Keydown.
+    base::TimeTicks keydown_timestamp = GetTimeStamp(0);
+    base::TimeTicks processing_start_keydown = GetTimeStamp(1);
+    base::TimeTicks processing_end_keydown = GetTimeStamp(2);
+    base::TimeTicks swap_time_keydown = GetTimeStamp(20);
+    RegisterKeyboardEvent(event_type_names::kKeydown, keydown_timestamp,
+                          processing_start_keydown, processing_end_keydown,
+                          kKeyCode);
+    SimulatePaintAndResolvePresentationPromise(swap_time_keydown);
+
+    // Keyup.
+    base::TimeTicks keyup_timestamp = GetTimeStamp(10);
+    base::TimeTicks processing_start_keyup = GetTimeStamp(15);
+    base::TimeTicks processing_end_keyup = GetTimeStamp(50);
+    base::TimeTicks swap_time_keyup = GetTimeStamp(110);
+    RegisterKeyboardEvent(event_type_names::kKeyup, keyup_timestamp,
+                          processing_start_keyup, processing_end_keyup,
+                          kKeyCode);
+    SimulatePaintAndResolvePresentationPromise(swap_time_keyup);
+  }
+
+  // Single long event.
+  {
+    // Keydown (quick).
+    base::TimeTicks keydown_timestamp = GetTimeStamp(200);
+    base::TimeTicks processing_start_keydown = GetTimeStamp(201);
+    base::TimeTicks processing_end_keydown = GetTimeStamp(202);
+    base::TimeTicks swap_time_keydown = GetTimeStamp(220);
+    RegisterKeyboardEvent(event_type_names::kKeydown, keydown_timestamp,
+                          processing_start_keydown, processing_end_keydown,
+                          kKeyCode);
+    SimulatePaintAndResolvePresentationPromise(swap_time_keydown);
+
+    // Keyup (start = 210, dur = 101ms).
+    base::TimeTicks keyup_timestamp = GetTimeStamp(210);
+    base::TimeTicks processing_start_keyup = GetTimeStamp(215);
+    base::TimeTicks processing_end_keyup = GetTimeStamp(250);
+    base::TimeTicks swap_time_keyup = GetTimeStamp(311);
+    RegisterKeyboardEvent(event_type_names::kKeyup, keyup_timestamp,
+                          processing_start_keyup, processing_end_keyup,
+                          kKeyCode);
+    SimulatePaintAndResolvePresentationPromise(swap_time_keyup);
+  }
+
+  // Overlapping events.
+  {
+    // Keydown (quick).
+    base::TimeTicks keydown_timestamp = GetTimeStamp(1000);
+    base::TimeTicks processing_start_keydown = GetTimeStamp(1001);
+    base::TimeTicks processing_end_keydown = GetTimeStamp(1002);
+    base::TimeTicks swap_time_keydown = GetTimeStamp(1010);
+    RegisterKeyboardEvent(event_type_names::kKeydown, keydown_timestamp,
+                          processing_start_keydown, processing_end_keydown,
+                          kKeyCode);
+    SimulatePaintAndResolvePresentationPromise(swap_time_keydown);
+
+    // Keyup (start = 1020, dur = 1000ms).
+    base::TimeTicks keyup_timestamp = GetTimeStamp(1020);
+    base::TimeTicks processing_start_keyup = GetTimeStamp(1030);
+    base::TimeTicks processing_end_keyup = GetTimeStamp(1040);
+    base::TimeTicks swap_time_keyup = GetTimeStamp(2020);
+    RegisterKeyboardEvent(event_type_names::kKeyup, keyup_timestamp,
+                          processing_start_keyup, processing_end_keyup,
+                          kKeyCode);
+    SimulatePaintAndResolvePresentationPromise(swap_time_keyup);
+
+    // Keydown (quick).
+    base::TimeTicks keydown_timestamp2 = GetTimeStamp(1000);
+    base::TimeTicks processing_start_keydown2 = GetTimeStamp(1001);
+    base::TimeTicks processing_end_keydown2 = GetTimeStamp(1002);
+    base::TimeTicks swap_time_keydown2 = GetTimeStamp(1010);
+    RegisterKeyboardEvent(event_type_names::kKeydown, keydown_timestamp2,
+                          processing_start_keydown2, processing_end_keydown2,
+                          kKeyCode);
+    SimulatePaintAndResolvePresentationPromise(swap_time_keydown2);
+
+    // Keyup (start = 1800, dur = 600ms).
+    base::TimeTicks keyup_timestamp2 = GetTimeStamp(1800);
+    base::TimeTicks processing_start_keyup2 = GetTimeStamp(1802);
+    base::TimeTicks processing_end_keyup2 = GetTimeStamp(1810);
+    base::TimeTicks swap_time_keyup2 = GetTimeStamp(2400);
+    RegisterKeyboardEvent(event_type_names::kKeyup, keyup_timestamp2,
+                          processing_start_keyup2, processing_end_keyup2,
+                          kKeyCode);
+    SimulatePaintAndResolvePresentationPromise(swap_time_keyup2);
+  }
+
+  auto analyzer = trace_analyzer::Stop();
+  analyzer->AssociateAsyncBeginEndEvents();
+
+  trace_analyzer::TraceEventVector events;
+  Query q = Query::EventNameIs("SlowInteractionToNextPaint") &&
+            Query::EventPhaseIs(TRACE_EVENT_PHASE_NESTABLE_ASYNC_BEGIN);
+  analyzer->FindEvents(q, &events);
+
+  ASSERT_EQ(3u, events.size());
+
+  ASSERT_TRUE(events[0]->has_other_event());
+  EXPECT_EQ(events[0]->category, "latency");
+  EXPECT_EQ(base::ClampRound(events[0]->GetAbsTimeToOtherEvent()), 101000);
+
+  ASSERT_TRUE(events[1]->has_other_event());
+  EXPECT_EQ(events[1]->category, "latency");
+  EXPECT_EQ(base::ClampRound(events[1]->GetAbsTimeToOtherEvent()), 1000000);
+
+  ASSERT_TRUE(events[2]->has_other_event());
+  EXPECT_EQ(events[2]->category, "latency");
+  EXPECT_EQ(base::ClampRound(events[2]->GetAbsTimeToOtherEvent()), 600000);
 }
 
 TEST_P(WindowPerformanceTest, InteractionID) {

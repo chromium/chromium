@@ -9,6 +9,7 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted_memory.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/platform_thread.h"
 #include "base/trace_event/trace_buffer.h"
@@ -956,6 +957,35 @@ TEST_F(TraceEventAnalyzerTest, ComplexArgument) {
   base::Value::Dict arg = events[0]->GetKnownArgAsDict("arg");
   EXPECT_EQ(absl::optional<std::string>("value"),
             base::OptionalFromPtr(arg.FindString("property")));
+}
+
+TEST_F(TraceEventAnalyzerTest, AssociateNestableAsyncEvents) {
+  ManualSetUp();
+
+  BeginTracing();
+  {
+    TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
+        "cat", "name", 0xA, base::TimeTicks() + base::Milliseconds(100));
+    TRACE_EVENT_BEGIN0("noise", "name2");  // not searched for, just noise
+    TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
+        "cat", "name", 0xA, base::TimeTicks() + base::Milliseconds(200));
+  }
+  EndTracing();
+
+  std::unique_ptr<TraceAnalyzer> analyzer(
+      TraceAnalyzer::Create(output_.json_output));
+  ASSERT_TRUE(analyzer.get());
+  analyzer->AssociateAsyncBeginEndEvents();
+
+  TraceEventVector found;
+  analyzer->FindEvents(
+      Query::EventName() == Query::String("name") &&
+          Query::EventPhaseIs(TRACE_EVENT_PHASE_NESTABLE_ASYNC_BEGIN),
+      &found);
+  ASSERT_EQ(1u, found.size());
+  EXPECT_STREQ("name", found[0]->name.c_str());
+  ASSERT_TRUE(found[0]->has_other_event());
+  EXPECT_EQ(100000, base::ClampRound(found[0]->GetAbsTimeToOtherEvent()));
 }
 
 }  // namespace trace_analyzer
