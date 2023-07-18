@@ -155,10 +155,6 @@ SystemNudgeController::GetNudgeRegistry() {
 }
 
 void SystemNudgeController::StartFadeAnimation(bool show) {
-  hide_nudge_timer_.reset();
-  // Clean any pending animation observer.
-  hide_nudge_animation_observer_.reset();
-
   // `nudge_` may not exist if `StartFadeAnimation(false)` has been called
   // before a new nudge has been created.
   if (!nudge_ || !nudge_->widget()) {
@@ -169,6 +165,11 @@ void SystemNudgeController::StartFadeAnimation(bool show) {
   if (layer->GetAnimator()->is_animating()) {
     return;
   }
+
+  hide_nudge_timer_.reset();
+  // Clean any pending animation observer.
+  hide_nudge_animation_observer_.reset();
+
   gfx::Rect widget_bounds = layer->bounds();
 
   gfx::Transform scaled_nudge_transform;

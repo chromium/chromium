@@ -14,6 +14,9 @@
 #include "ash/test/ash_test_base.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
+#include "ui/compositor/layer.h"
+#include "ui/compositor/layer_animator.h"
+#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/gfx/vector_icon_types.h"
 
 namespace ash {
@@ -38,6 +41,9 @@ constexpr char kNudgeTimeToActionWithin1h[] =
     "Ash.NotifierFramework.Nudge.TimeToAction.Within1h";
 constexpr char kNudgeTimeToActionWithinSession[] =
     "Ash.NotifierFramework.Nudge.TimeToAction.WithinSession";
+
+constexpr base::TimeDelta kNudgeFadeAnimationTime = base::Milliseconds(250);
+constexpr base::TimeDelta kNudgeShowTime = base::Seconds(10);
 
 gfx::VectorIcon kEmptyIcon;
 
@@ -246,6 +252,34 @@ TEST_F(SystemNudgeTest, NudgePositionWithBottomLocked) {
   nudge_bounds.Outset(kNudgeMargin);
   EXPECT_EQ(nudge_bounds.x(), display_bounds.x());
   EXPECT_EQ(nudge_bounds.bottom(), display_bounds.bottom());
+}
+
+TEST_F(SystemNudgeTest, DismissTimer) {
+  ui::ScopedAnimationDurationScaleMode test_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  auto nudge_controller = std::make_unique<TestSystemNudgeController>();
+
+  // Show a nudge.
+  EXPECT_FALSE(nudge_controller->GetSystemNudgeForTesting());
+  nudge_controller->ShowNudge();
+  auto* nudge = nudge_controller->GetSystemNudgeForTesting();
+  ASSERT_TRUE(nudge);
+
+  // Attempt hiding the nudge while it's animating in, the hide request should
+  // be ignored.
+  EXPECT_TRUE(nudge->widget()->GetLayer()->GetAnimator()->is_animating());
+  nudge_controller->HideNudge();
+  EXPECT_TRUE(nudge->widget());
+
+  // Fast forward the animation time, the nudge should have finished animating.
+  task_environment()->FastForwardBy(kNudgeFadeAnimationTime +
+                                    (kNudgeShowTime / 2));
+  EXPECT_FALSE(nudge->widget()->GetLayer()->GetAnimator()->is_animating());
+
+  // Fast forward nudge's default duration, the nudge should have been
+  // dismissed.
+  task_environment()->FastForwardBy(kNudgeShowTime + (kNudgeShowTime / 2));
+  EXPECT_FALSE(nudge_controller->GetSystemNudgeForTesting());
 }
 
 }  // namespace ash
