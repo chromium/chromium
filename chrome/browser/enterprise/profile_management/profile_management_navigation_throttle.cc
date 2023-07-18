@@ -21,8 +21,6 @@
 #include "chrome/browser/signin/profile_token_web_signin_interceptor.h"
 #include "chrome/browser/signin/profile_token_web_signin_interceptor_factory.h"
 #include "components/account_id/account_id.h"
-#include "components/prefs/pref_service.h"
-#include "components/signin/public/base/signin_pref_names.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_throttle.h"
@@ -260,12 +258,6 @@ void ProfileManagementNavigationThrottle::RegisterWithDomain(
   absl::optional<std::string> management_domain =
       GetDomainFromAttributeValue(domain);
   if (management_domain) {
-    auto* prefs =
-        Profile::FromBrowserContext(
-            navigation_handle()->GetWebContents()->GetBrowserContext())
-            ->GetPrefs();
-    prefs->SetString(prefs::kSigninInterceptionIDPCookiesUrl,
-                     navigation_handle()->GetURL().spec());
     PostNavigateTo(GURL(base::StringPrintf(kGoogleServiceLoginUrl,
                                            management_domain.value().c_str())));
     return;
@@ -287,11 +279,6 @@ void ProfileManagementNavigationThrottle::RegisterWithToken(
     PostNavigateTo(GURL(token_url_for_testing_));
     return;
   }
-  auto* prefs = Profile::FromBrowserContext(
-                    navigation_handle()->GetWebContents()->GetBrowserContext())
-                    ->GetPrefs();
-  prefs->SetString(prefs::kSigninInterceptionIDPCookiesUrl,
-                   navigation_handle()->GetURL().spec());
 
   auto* interceptor = ProfileTokenWebSigninInterceptorFactory::GetForProfile(
       Profile::FromBrowserContext(
