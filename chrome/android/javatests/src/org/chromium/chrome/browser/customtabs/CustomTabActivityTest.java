@@ -118,12 +118,12 @@ import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntent
 import org.chromium.chrome.browser.browserservices.verification.ChromeOriginVerifier;
 import org.chromium.chrome.browser.compositor.layouts.Layout;
 import org.chromium.chrome.browser.contextmenu.ContextMenuCoordinator;
+import org.chromium.chrome.browser.customtabs.CustomTabActivityLifecycleUmaTracker.ClientIdentifierType;
 import org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils.OnFinishedForTest;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigationController.FinishReason;
 import org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabBaseStrategy;
 import org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabBottomSheetStrategy;
 import org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabDisplayManager;
-import org.chromium.chrome.browser.customtabs.features.sessionrestore.SessionRestoreUtils.ClientIdentifierType;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;

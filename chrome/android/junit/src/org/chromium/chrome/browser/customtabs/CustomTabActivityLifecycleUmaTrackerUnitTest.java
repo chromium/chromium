@@ -25,7 +25,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.IntentHandler;
-import org.chromium.chrome.browser.customtabs.features.sessionrestore.SessionRestoreUtils.ClientIdentifierType;
+import org.chromium.chrome.browser.customtabs.CustomTabActivityLifecycleUmaTracker.ClientIdentifierType;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 
@@ -208,5 +208,61 @@ public class CustomTabActivityLifecycleUmaTrackerUnitTest {
         doReturn(extraReferrerName).when(intent).getStringExtra(Intent.EXTRA_REFERRER_NAME);
 
         return activity;
+    }
+
+    @Test
+    public void testClientId_SamePackageName() {
+        Assert.assertEquals("ClientIdentifierType mismatch.",
+                CustomTabActivityLifecycleUmaTracker.ClientIdentifierType.PACKAGE_NAME,
+                CustomTabActivityLifecycleUmaTracker.getClientIdentifierType(
+                        PACKAGE_A, PACKAGE_A, REFERRER_A, null, TASK_ID_123, 99));
+    }
+
+    @Test
+    public void testClientId_DiffPackageName() {
+        Assert.assertEquals("ClientIdentifierType mismatch.",
+                CustomTabActivityLifecycleUmaTracker.ClientIdentifierType.DIFFERENT,
+                CustomTabActivityLifecycleUmaTracker.getClientIdentifierType(
+                        PACKAGE_A, PACKAGE_B, REFERRER_B, null, TASK_ID_123, TASK_ID_123));
+    }
+
+    @Test
+    public void testClientId_SameReferrer() {
+        Assert.assertEquals("ClientIdentifierType mismatch.",
+                CustomTabActivityLifecycleUmaTracker.ClientIdentifierType.REFERRER,
+                CustomTabActivityLifecycleUmaTracker.getClientIdentifierType(
+                        null, null, REFERRER_A, REFERRER_A, TASK_ID_123, TASK_ID_123));
+    }
+
+    @Test
+    public void testClientId_DiffReferrer() {
+        Assert.assertEquals("ClientIdentifierType mismatch.",
+                CustomTabActivityLifecycleUmaTracker.ClientIdentifierType.DIFFERENT,
+                CustomTabActivityLifecycleUmaTracker.getClientIdentifierType(
+                        null, null, REFERRER_A, REFERRER_B, TASK_ID_123, TASK_ID_123));
+    }
+
+    @Test
+    public void testClientId_Mixed_ReferrerThenPackage() {
+        Assert.assertEquals("ClientIdentifierType mismatch.",
+                CustomTabActivityLifecycleUmaTracker.ClientIdentifierType.MIXED,
+                CustomTabActivityLifecycleUmaTracker.getClientIdentifierType(
+                        PACKAGE_A, null, "Random referral", REFERRER_A, TASK_ID_123, TASK_ID_123));
+    }
+
+    @Test
+    public void testClientId_Mixed_PackageThenReferrer() {
+        Assert.assertEquals("ClientIdentifierType mismatch.",
+                CustomTabActivityLifecycleUmaTracker.ClientIdentifierType.MIXED,
+                CustomTabActivityLifecycleUmaTracker.getClientIdentifierType(
+                        null, PACKAGE_A, REFERRER_A, null, TASK_ID_123, TASK_ID_123));
+    }
+
+    @Test
+    public void testClientId_DiffTaskId() {
+        Assert.assertEquals("ClientIdentifierType mismatch.",
+                CustomTabActivityLifecycleUmaTracker.ClientIdentifierType.PACKAGE_NAME,
+                CustomTabActivityLifecycleUmaTracker.getClientIdentifierType(
+                        PACKAGE_A, PACKAGE_A, REFERRER_A, null, 99, TASK_ID_123));
     }
 }

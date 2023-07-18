@@ -71262,8 +71262,8 @@ Called by update_use_counter_css.py.-->
   <int value="34" label="DesktopSiteGlobalOptIn"/>
   <int value="35" label="PasswordManagerError"/>
   <int value="36" label="DownloadIncognitoWarning"/>
-  <int value="37" label="RestoreCustomTab"/>
-  <int value="38" label="UndoCustomTabRestoration"/>
+  <int value="37" label="DEPRECATED: RestoreCustomTab"/>
+  <int value="38" label="DEPRECATED: UndoCustomTabRestoration"/>
 </enum>
 
 <enum name="MessageLoopProblems">

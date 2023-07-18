@@ -256,10 +256,6 @@ public class MessagesMetrics {
                 return "DesktopSiteGlobalOptIn";
             case MessageIdentifier.DOWNLOAD_INCOGNITO_WARNING:
                 return "DownloadIncognitoWarning";
-            case MessageIdentifier.RESTORE_CUSTOM_TAB:
-                return "RestoreCustomTab";
-            case MessageIdentifier.UNDO_CUSTOM_TAB_RESTORATION:
-                return "UndoCustomTabRestoration";
             default:
                 return "Unknown";
         }

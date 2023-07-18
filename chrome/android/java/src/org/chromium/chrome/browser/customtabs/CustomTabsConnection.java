@@ -61,8 +61,6 @@ import org.chromium.chrome.browser.browserservices.SessionHandler;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.ActivityLayoutState;
 import org.chromium.chrome.browser.customtabs.content.EngagementSignalsHandler;
-import org.chromium.chrome.browser.customtabs.features.sessionrestore.SessionRestoreManager;
-import org.chromium.chrome.browser.customtabs.features.sessionrestore.SessionRestoreManagerImpl;
 import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.MutableFlagWithSafeDefault;
@@ -233,8 +231,6 @@ public class CustomTabsConnection {
 
     @Nullable
     private Callback<CustomTabsSessionToken> mDisconnectCallback;
-    @Nullable
-    private SessionRestoreManager mSessionRestoreManager;
 
     private volatile ChainedTasks mWarmupTasks;
 
@@ -554,17 +550,6 @@ public class CustomTabsConnection {
     @VisibleForTesting
     public Tab getHiddenTab() {
         return mHiddenTabHolder != null ? mHiddenTabHolder.getHiddenTab() : null;
-    }
-
-    /* Return the SessionRestoreManager for session restore. */
-    public @Nullable SessionRestoreManager getSessionRestoreManager() {
-        if (!ChromeFeatureList.sCctRetainableStateInMemory.isEnabled()) {
-            return null;
-        }
-        if (mSessionRestoreManager == null) {
-            mSessionRestoreManager = new SessionRestoreManagerImpl();
-        }
-        return mSessionRestoreManager;
     }
 
     private boolean preconnectUrls(List<Bundle> likelyBundles) {
