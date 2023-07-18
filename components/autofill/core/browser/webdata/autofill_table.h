@@ -722,9 +722,12 @@ class AutofillTable : public WebDatabaseTable,
   bool RemoveServerCvc(int64_t instrument_id);
   // This will clear all server cvcs.
   bool ClearServerCvcs();
-  // When server cards are synced (triggered in wallet_sync_bridge),
-  // this function will be called to reconcile CVC. If the corresponding card
-  // doesn't exist anymore, remove it's cvc from `server_stored_cvc` table.
+  // When a server card is deleted on payment side (i.e. pay.google.com), sync
+  // notifies Chrome about the card deletion, not the CVC deletion, as Payment
+  // server does not have access to the CVC storage on the Sync server side, so
+  // Payment cannot delete the CVC from server side directly, and this has to be
+  // done on the Chrome side. So this ReconcileServerCvc will be invoked when
+  // card sync happens and will remove orphaned CVC from the current client.
   bool ReconcileServerCvcs();
   // Methods for getting cvc from server_stored_cvc. For testing purpose only
   // because CVC is populated to CreditCard via GetServerCreditCards.
