@@ -6582,3 +6582,7 @@ crbug.com/1465321 [ Mac ] external/wpt/pointerevents/compat/pointerevent_mouse-p
 # Slightly flaky on individual builders
 crbug.com/1465321 [ Mac10.15 ] external/wpt/scroll-to-text-fragment/redirects.html [ Failure Pass ]
 crbug.com/1459304 [ Mac11 ] virtual/coop-restrict-properties/external/wpt/html/cross-origin-opener-policy/tentative/restrict-properties/iframe-popup-to-un.https.html?7-8 [ Failure Pass ]
+
+# Gardener 2023-07-18
+# flaky on Mac builders
+crbug.com/1465723 [ Mac ] virtual/prefetch-no-vary-search/wpt_internal/speculation-rules/prefetch/no-vary-search/prefetch-single-non-eager-with-hint.https.html [ Failure Pass ]
