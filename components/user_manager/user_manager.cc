@@ -54,6 +54,10 @@ void UserManager::UserSessionStateObserver::ActiveUserChanged(
 void UserManager::UserSessionStateObserver::UserAddedToSession(
     const User* active_user) {}
 
+void UserManager::UserSessionStateObserver::OnLoginStateUpdated(
+    const User* active_user,
+    bool is_current_user_owner) {}
+
 UserManager::UserSessionStateObserver::~UserSessionStateObserver() {}
 
 UserManager::UserAccountData::UserAccountData(

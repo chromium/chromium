@@ -364,10 +364,6 @@ bool FakeUserManager::IsDeviceLocalAccountMarkedForRemoval(
   return false;
 }
 
-void FakeUserManager::UpdateLoginState(const User* active_user,
-                                       const User* primary_user,
-                                       bool is_current_user_owner) const {}
-
 const AccountId& FakeUserManager::GetGuestAccountId() const {
   return GuestAccountId();
 }

@@ -110,6 +110,12 @@ class USER_MANAGER_EXPORT UserManager {
     // Called when active user has changed.
     virtual void ActiveUserChanged(User* active_user);
 
+    // Called when login state is updated.
+    // This looks very similar to ActiveUserChanged, so consider to merge
+    // in the future.
+    virtual void OnLoginStateUpdated(const User* active_user,
+                                     bool is_current_user_owner);
+
     // Called when another user got added to the existing session.
     virtual void UserAddedToSession(const User* added_user);
 

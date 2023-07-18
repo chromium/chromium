@@ -23,60 +23,6 @@ ChromeUserManager::ChromeUserManager(
 
 ChromeUserManager::~ChromeUserManager() = default;
 
-void ChromeUserManager::UpdateLoginState(const user_manager::User* active_user,
-                                         const user_manager::User* primary_user,
-                                         bool is_current_user_owner) const {
-  if (!LoginState::IsInitialized()) {
-    return;  // LoginState may be uninitialized in tests.
-  }
-
-  LoginState::LoggedInState logged_in_state;
-  LoginState::LoggedInUserType logged_in_user_type;
-  if (active_user) {
-    logged_in_state = LoginState::LOGGED_IN_ACTIVE;
-    logged_in_user_type =
-        GetLoggedInUserType(*active_user, is_current_user_owner);
-  } else {
-    logged_in_state = LoginState::LOGGED_IN_NONE;
-    logged_in_user_type = LoginState::LOGGED_IN_USER_NONE;
-  }
-
-  LoginState::Get()->SetLoggedInState(logged_in_state, logged_in_user_type);
-}
-
-LoginState::LoggedInUserType ChromeUserManager::GetLoggedInUserType(
-    const user_manager::User& active_user,
-    bool is_current_user_owner) const {
-  if (is_current_user_owner) {
-    return LoginState::LOGGED_IN_USER_OWNER;
-  }
-
-  switch (active_user.GetType()) {
-    case user_manager::USER_TYPE_REGULAR:
-      return LoginState::LOGGED_IN_USER_REGULAR;
-    case user_manager::USER_TYPE_GUEST:
-      return LoginState::LOGGED_IN_USER_GUEST;
-    case user_manager::USER_TYPE_PUBLIC_ACCOUNT:
-      return LoginState::LOGGED_IN_USER_PUBLIC_ACCOUNT;
-    case user_manager::USER_TYPE_KIOSK_APP:
-      return LoginState::LOGGED_IN_USER_KIOSK;
-    case user_manager::USER_TYPE_CHILD:
-      return LoginState::LOGGED_IN_USER_CHILD;
-    case user_manager::USER_TYPE_ARC_KIOSK_APP:
-      return LoginState::LOGGED_IN_USER_KIOSK;
-    case user_manager::USER_TYPE_ACTIVE_DIRECTORY:
-      // NOTE(olsen) There's no LOGGED_IN_USER_ACTIVE_DIRECTORY - is it needed?
-      return LoginState::LOGGED_IN_USER_REGULAR;
-    case user_manager::USER_TYPE_WEB_KIOSK_APP:
-      return LoginState::LOGGED_IN_USER_KIOSK;
-    case user_manager::NUM_USER_TYPES:
-      break;  // Go to invalid-type handling code.
-      // Since there is no default, the compiler warns about unhandled types.
-  }
-  NOTREACHED() << "Invalid type for active user: " << active_user.GetType();
-  return LoginState::LOGGED_IN_USER_REGULAR;
-}
-
 // static
 ChromeUserManager* ChromeUserManager::Get() {
   user_manager::UserManager* user_manager = user_manager::UserManager::Get();

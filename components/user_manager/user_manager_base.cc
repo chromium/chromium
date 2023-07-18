@@ -342,7 +342,7 @@ void UserManagerBase::SwitchActiveUser(const AccountId& account_id) {
   SetLRUUser(active_user_);
 
   NotifyActiveUserChanged(active_user_);
-  CallUpdateLoginState();
+  NotifyLoginStateUpdated();
 }
 
 void UserManagerBase::SwitchToLastActiveUser() {
@@ -361,7 +361,7 @@ void UserManagerBase::SwitchToLastActiveUser() {
 void UserManagerBase::OnSessionStarted() {
   DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
 
-  CallUpdateLoginState();
+  NotifyLoginStateUpdated();
   local_state_->CommitPendingWrite();
 }
 
@@ -967,7 +967,7 @@ void UserManagerBase::ResetOwnerId() {
 void UserManagerBase::SetOwnerId(const AccountId& owner_account_id) {
   owner_account_id_ = owner_account_id;
   pending_owner_callbacks_.Notify(owner_account_id);
-  CallUpdateLoginState();
+  NotifyLoginStateUpdated();
 }
 
 const AccountId& UserManagerBase::GetPendingUserSwitchID() const {
@@ -1161,6 +1161,14 @@ void UserManagerBase::NotifyActiveUserChanged(User* active_user) {
     observer.ActiveUserChanged(active_user);
 }
 
+void UserManagerBase::NotifyLoginStateUpdated() {
+  DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
+  bool is_current_user_owner = IsCurrentUserOwner();
+  for (auto& observer : session_state_observer_list_) {
+    observer.OnLoginStateUpdated(active_user_, is_current_user_owner);
+  }
+}
+
 void UserManagerBase::NotifyOnLogin() {
   DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
   DCHECK(active_user_);
@@ -1168,7 +1176,7 @@ void UserManagerBase::NotifyOnLogin() {
   // TODO(b/278643115): Call Observer::OnUserLoggedIn() from here.
 
   NotifyActiveUserChanged(active_user_);
-  CallUpdateLoginState();
+  NotifyLoginStateUpdated();
 }
 
 User::OAuthTokenStatus UserManagerBase::LoadUserOAuthStatus(
@@ -1277,11 +1285,7 @@ void UserManagerBase::Initialize() {
       known_user.CleanObsoletePrefs();
     }
   }
-  CallUpdateLoginState();
-}
-
-void UserManagerBase::CallUpdateLoginState() {
-  UpdateLoginState(active_user_, primary_user_, IsCurrentUserOwner());
+  NotifyLoginStateUpdated();
 }
 
 void UserManagerBase::SetLRUUser(User* user) {
