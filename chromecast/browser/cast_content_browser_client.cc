@@ -568,11 +568,18 @@ void CastContentBrowserClient::AllowCertificateError(
 }
 
 base::OnceClosure CastContentBrowserClient::SelectClientCertificate(
+    content::BrowserContext* browser_context,
     content::WebContents* web_contents,
     net::SSLCertRequestInfo* cert_request_info,
     net::ClientCertIdentityList client_certs,
     std::unique_ptr<content::ClientCertificateDelegate> delegate) {
   GURL requesting_url("https://" + cert_request_info->host_and_port.ToString());
+
+  if (!web_contents) {
+    LOG(ERROR) << "Invalid requestor.";
+    delegate->ContinueWithCertificate(nullptr, nullptr);
+    return base::OnceClosure();
+  }
 
   if (!requesting_url.is_valid()) {
     LOG(ERROR) << "Invalid URL string: "

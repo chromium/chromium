@@ -3752,21 +3752,23 @@ bool ShouldPromptOnMultipleMatchingCertificates(const Profile* profile) {
 }  // namespace
 
 base::OnceClosure ChromeContentBrowserClient::SelectClientCertificate(
+    content::BrowserContext* browser_context,
     content::WebContents* web_contents,
     net::SSLCertRequestInfo* cert_request_info,
     net::ClientCertIdentityList client_certs,
     std::unique_ptr<content::ClientCertificateDelegate> delegate) {
   prerender::NoStatePrefetchContents* no_state_prefetch_contents =
-      prerender::ChromeNoStatePrefetchContentsDelegate::FromWebContents(
-          web_contents);
+      web_contents
+          ? prerender::ChromeNoStatePrefetchContentsDelegate::FromWebContents(
+                web_contents)
+          : nullptr;
   if (no_state_prefetch_contents) {
     no_state_prefetch_contents->Destroy(
         prerender::FINAL_STATUS_SSL_CLIENT_CERTIFICATE_REQUESTED);
     return base::OnceClosure();
   }
 
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+  Profile* profile = Profile::FromBrowserContext(browser_context);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // On the sign-in or lock screen profile, only allow client certs in the
   // context of the sign-in frame.
@@ -3777,6 +3779,18 @@ base::OnceClosure ChromeContentBrowserClient::SelectClientCertificate(
     const char* profile_name = ash::ProfileHelper::IsSigninProfile(profile)
                                    ? "sign-in"
                                    : "lock screen";
+
+    // TODO(b/290262513): See also comment below -- if the continuation should
+    // be a cancelation, this check is unnecessary and we can just fall-through
+    // without treating signin profiles differently for service workers.
+    if (!web_contents) {
+      LOG(WARNING) << "Client cert requested in " << profile_name
+                   << " profile from service worker. This is not supported.";
+      // Return without calling anything on `delegate`. This results in the
+      // `delegate` being deleted, which implicitly calls to cancel the request.
+      return base::OnceClosure();
+    }
+
     content::StoragePartition* storage_partition =
         profile->GetStoragePartition(web_contents->GetSiteInstance());
     auto* signin_partition_manager =
@@ -3788,6 +3802,8 @@ base::OnceClosure ChromeContentBrowserClient::SelectClientCertificate(
                    << " profile in wrong context.";
       // Continue without client certificate. We do this to mimic the case of no
       // client certificate being present in the profile's certificate store.
+      // TODO(b/290262513): Should this be a cancel? Selecting "no certificate"
+      // is a sticky decision.
       delegate->ContinueWithCertificate(nullptr, nullptr);
       return base::OnceClosure();
     }
@@ -3825,6 +3841,19 @@ base::OnceClosure ChromeContentBrowserClient::SelectClientCertificate(
     return base::OnceClosure();
   }
 
+  // At this point, we're going to either a) continue without a valid
+  // certificate (if we're not allowed to prompt) or b) show the picker for the
+  // user to select a valid cert. Only do this if the requestor has a valid
+  // WebContents. In the case of a), we want to preserve consistency (so that
+  // requests always fail or succeed across different platforms and contexts),
+  // and for b), we don't want to pop up UI for background requests like
+  // service workers (where there's no visual context to the user).
+  if (!web_contents) {
+    // Return without calling anything on `delegate`. This results in the
+    // `delegate` being deleted, which implicitly calls to cancel the request.
+    return base::OnceClosure();
+  }
+
   if (matching_certificates.empty() &&
       !CanPromptWithNonmatchingCertificates(profile)) {
     LOG(WARNING) << "No client cert matched by policy and user selection is "
@@ -3842,6 +3871,7 @@ base::OnceClosure ChromeContentBrowserClient::SelectClientCertificate(
   net::ClientCertIdentityList client_cert_choices =
       !matching_certificates.empty() ? std::move(matching_certificates)
                                      : std::move(nonmatching_certificates);
+
   return chrome::ShowSSLClientCertificateSelector(
       web_contents, cert_request_info, std::move(client_cert_choices),
       std::move(delegate));

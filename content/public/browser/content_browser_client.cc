@@ -609,6 +609,7 @@ bool ContentBrowserClient::ShouldDenyRequestOnCertificateError(
 }
 
 base::OnceClosure ContentBrowserClient::SelectClientCertificate(
+    BrowserContext* browser_context,
     WebContents* web_contents,
     net::SSLCertRequestInfo* cert_request_info,
     net::ClientCertIdentityList client_certs,

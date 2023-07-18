@@ -265,6 +265,7 @@ void HeadlessContentBrowserClient::AllowCertificateError(
 }
 
 base::OnceClosure HeadlessContentBrowserClient::SelectClientCertificate(
+    content::BrowserContext* browser_context,
     content::WebContents* web_contents,
     net::SSLCertRequestInfo* cert_request_info,
     net::ClientCertIdentityList client_certs,

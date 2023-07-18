@@ -2012,6 +2012,74 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, TestBrowserUseClientCertStore) {
   EXPECT_EQ("pass", tab->GetLastCommittedURL().ref());
 }
 
+// Tests that requests from service workers can also use certificates
+// auto-selected by policy.
+// https://crbug.com/1417601.
+IN_PROC_BROWSER_TEST_F(SSLUITest, TestServiceWorkerRequestsUseClientCertStore) {
+  // Make the browser use the ClientCertStoreStub instead of the regular one.
+  ProfileNetworkContextServiceFactory::GetForContext(browser()->profile())
+      ->set_client_cert_store_factory_for_testing(
+          base::BindRepeating(&CreateCertStore));
+
+  net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
+  {
+    net::SSLServerConfig ssl_config;
+    ssl_config.client_cert_type =
+        net::SSLServerConfig::ClientCertType::REQUIRE_CLIENT_CERT;
+    https_server.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES,
+                              ssl_config);
+  }
+  https_server.ServeFilesFromSourceDirectory("chrome/test/data");
+
+  ASSERT_TRUE(https_server.Start());
+
+  // We set up a page that installs a service worker to perform a fetch to
+  // a separate, cross-origin resource. We need this to be a cross-origin
+  // because visiting the first site (to install the service worker) requires
+  // a cert to be present, so subsequent fetches to that site will succeed
+  // without a separate certificate prompt.
+
+  // Note: These domain names need to match those in
+  // //net/data/ssl/certificates/test_names.pem.
+  GURL requestor_url =
+      https_server.GetURL("a.test", "/ssl/service_worker_fetch/page.html");
+  GURL target_url =
+      https_server.GetURL("b.test", "/ssl/service_worker_fetch/target.txt");
+
+  // Add an entry into AutoSelectCertificateForUrls policy for automatic client
+  // cert selection for both the requestor and target URLs.
+  WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
+  Profile* profile = Profile::FromBrowserContext(tab->GetBrowserContext());
+  DCHECK(profile);
+  base::Value::List filters;
+  filters.Append(base::Value::Dict());
+  base::Value::Dict setting;
+  setting.Set("filters", std::move(filters));
+  HostContentSettingsMapFactory::GetForProfile(profile)
+      ->SetWebsiteSettingDefaultScope(
+          requestor_url, GURL(), ContentSettingsType::AUTO_SELECT_CERTIFICATE,
+          base::Value(setting.Clone()));
+  HostContentSettingsMapFactory::GetForProfile(profile)
+      ->SetWebsiteSettingDefaultScope(
+          target_url, GURL(), ContentSettingsType::AUTO_SELECT_CERTIFICATE,
+          base::Value(std::move(setting)));
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), requestor_url));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  // Check the navigation succeeded. The title check verifies we didn't e.g.
+  // get a privacy error.
+  EXPECT_EQ(requestor_url, web_contents->GetLastCommittedURL());
+  EXPECT_EQ(u"My Title", web_contents->GetTitle());
+
+  // Perform a fetch from a worker and validate that it succeeds.
+  EXPECT_EQ(
+      "text content\n",
+      content::EvalJs(web_contents,
+                      content::JsReplace("doFetchInWorker($1);", target_url)));
+}
+
 IN_PROC_BROWSER_TEST_F(SSLUITest, TestClientAuthSigningFails) {
   // Make the browser use the ClientCertStoreStub instead of the regular one.
   ProfileNetworkContextServiceFactory::GetForContext(browser()->profile())

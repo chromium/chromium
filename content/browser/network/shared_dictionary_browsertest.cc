@@ -404,6 +404,7 @@ class DummyClientCertStoreContentBrowserClient
         std::move(cert_identity_list));
   }
   base::OnceClosure SelectClientCertificate(
+      BrowserContext* browser_context,
       WebContents* web_contents,
       net::SSLCertRequestInfo* cert_request_info,
       net::ClientCertIdentityList client_certs,

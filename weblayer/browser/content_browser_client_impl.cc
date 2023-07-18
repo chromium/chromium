@@ -676,17 +676,20 @@ void ContentBrowserClientImpl::PersistIsolatedOrigin(
 }
 
 base::OnceClosure ContentBrowserClientImpl::SelectClientCertificate(
+    content::BrowserContext* browser_context,
     content::WebContents* web_contents,
     net::SSLCertRequestInfo* cert_request_info,
     net::ClientCertIdentityList client_certs,
     std::unique_ptr<content::ClientCertificateDelegate> delegate) {
 #if BUILDFLAG(IS_ANDROID)
-  return browser_ui::ShowSSLClientCertificateSelector(
-      web_contents, cert_request_info, std::move(delegate));
-#else
+  if (web_contents) {
+    return browser_ui::ShowSSLClientCertificateSelector(
+        web_contents, cert_request_info, std::move(delegate));
+  }
+  // Otherwise, fall through to continuing without a certificate.
+#endif
   delegate->ContinueWithCertificate(nullptr, nullptr);
   return base::OnceClosure();
-#endif
 }
 
 bool ContentBrowserClientImpl::CanCreateWindow(

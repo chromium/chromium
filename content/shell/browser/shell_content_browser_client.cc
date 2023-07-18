@@ -491,14 +491,16 @@ ShellContentBrowserClient::GetGeneratedCodeCacheSettings(
 }
 
 base::OnceClosure ShellContentBrowserClient::SelectClientCertificate(
+    BrowserContext* browser_context,
     WebContents* web_contents,
     net::SSLCertRequestInfo* cert_request_info,
     net::ClientCertIdentityList client_certs,
     std::unique_ptr<ClientCertificateDelegate> delegate) {
-  if (select_client_certificate_callback_)
+  if (select_client_certificate_callback_ && web_contents) {
     return std::move(select_client_certificate_callback_)
         .Run(web_contents, cert_request_info, std::move(client_certs),
              std::move(delegate));
+  }
   return base::OnceClosure();
 }
 

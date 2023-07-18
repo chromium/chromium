@@ -196,6 +196,7 @@ class CastContentBrowserClient
       base::OnceCallback<void(content::CertificateRequestResultType)> callback)
       override;
   base::OnceClosure SelectClientCertificate(
+      content::BrowserContext* browser_context,
       content::WebContents* web_contents,
       net::SSLCertRequestInfo* cert_request_info,
       net::ClientCertIdentityList client_certs,

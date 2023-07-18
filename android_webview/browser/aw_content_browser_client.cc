@@ -424,12 +424,14 @@ void AwContentBrowserClient::AllowCertificateError(
 }
 
 base::OnceClosure AwContentBrowserClient::SelectClientCertificate(
+    content::BrowserContext* browser_context,
     content::WebContents* web_contents,
     net::SSLCertRequestInfo* cert_request_info,
     net::ClientCertIdentityList client_certs,
     std::unique_ptr<content::ClientCertificateDelegate> delegate) {
   AwContentsClientBridge* client =
-      AwContentsClientBridge::FromWebContents(web_contents);
+      web_contents ? AwContentsClientBridge::FromWebContents(web_contents)
+                   : nullptr;
   if (client) {
     client->SelectClientCertificate(cert_request_info, std::move(delegate));
   }

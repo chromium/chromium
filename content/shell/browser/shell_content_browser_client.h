@@ -78,6 +78,7 @@ class ShellContentBrowserClient : public ContentBrowserClient {
   GeneratedCodeCacheSettings GetGeneratedCodeCacheSettings(
       content::BrowserContext* context) override;
   base::OnceClosure SelectClientCertificate(
+      BrowserContext* browser_context,
       WebContents* web_contents,
       net::SSLCertRequestInfo* cert_request_info,
       net::ClientCertIdentityList client_certs,

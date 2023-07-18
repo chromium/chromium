@@ -454,6 +454,34 @@ WebContents* GetWebContents(
   return context.navigation_or_document()->GetWebContents();
 }
 
+// A getter for the context required for the SSLClientAuthHandler. If
+// `BrowserContext` is null, it indicates the calling context is no longer
+// valid. This assumes that if the WebContents goes away, the caller is no
+// longer valid.
+std::pair<BrowserContext*, WebContents*> GetContextFromNetworkContext(
+    StoragePartitionImpl::URLLoaderNetworkContext context) {
+  WebContents* web_contents = GetWebContents(context);
+  if (!web_contents) {
+    return std::make_pair(nullptr, nullptr);
+  }
+  return std::make_pair(web_contents->GetBrowserContext(), web_contents);
+}
+
+// A getter for the context required for the SSLClientAuthHandler. If
+// `BrowserContext` is null, it indicates the calling context is no longer
+// valid. This version allows for a null WebContents and is used in cases when
+// the context is not associated with a document.
+// TODO(devlin): This is used as a proxy for if a service worker requestor is
+// still alive, but it's a pretty sorry excuse. The StoragePartition is owned by
+// the BrowserContext, and can definitely outlive service workers.
+// This seems to be okay, since in the request sites its used, we also have
+// checks for if the mojo receiver goes away, but... eww.
+std::pair<BrowserContext*, WebContents*> GetContextFromStoragePartition(
+    base::WeakPtr<StoragePartitionImpl> storage_partition) {
+  return std::make_pair(
+      GetBrowserContextFromStoragePartition(storage_partition), nullptr);
+}
+
 // LoginHandlerDelegate manages HTTP auth. It is self-owning and deletes itself
 // when the credentials are resolved or the AuthChallengeResponder is cancelled.
 class LoginHandlerDelegate {
@@ -592,14 +620,14 @@ class SSLClientAuthDelegate : public SSLClientAuthHandler::Delegate {
   SSLClientAuthDelegate(
       mojo::PendingRemote<network::mojom::ClientCertificateResponder>
           client_cert_responder_remote,
-      content::BrowserContext* browser_context,
-      WebContents::Getter web_contents_getter,
+      BrowserContext* browser_context,
+      SSLClientAuthHandler::ContextGetter context_getter,
       const scoped_refptr<net::SSLCertRequestInfo>& cert_info)
       : client_cert_responder_(std::move(client_cert_responder_remote)),
         ssl_client_auth_handler_(std::make_unique<SSLClientAuthHandler>(
             GetContentClient()->browser()->CreateClientCertStore(
                 browser_context),
-            std::move(web_contents_getter),
+            std::move(context_getter),
             std::move(cert_info.get()),
             this)) {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -683,27 +711,6 @@ bool CancelIfPrerendering(NavigationOrDocumentHandle* navigation_or_document,
 
   auto* web_contents = WebContentsImpl::FromFrameTreeNode(frame_tree_node);
   return web_contents->CancelPrerendering(frame_tree_node, final_status);
-}
-
-void OnCertificateRequestedContinuation(
-    const scoped_refptr<net::SSLCertRequestInfo>& cert_info,
-    mojo::PendingRemote<network::mojom::ClientCertificateResponder>
-        client_cert_responder_remote,
-    base::RepeatingCallback<WebContents*(void)> web_contents_getter) {
-  WebContents* web_contents = nullptr;
-  if (web_contents_getter) {
-    web_contents = web_contents_getter.Run();
-  }
-
-  if (!web_contents) {
-    CallCancelRequest(std::move(client_cert_responder_remote));
-    return;
-  }
-
-  new SSLClientAuthDelegate(std::move(client_cert_responder_remote),
-                            web_contents->GetBrowserContext(),
-                            std::move(web_contents_getter),
-                            cert_info);  // deletes self
 }
 
 class SSLErrorDelegate : public SSLErrorHandler::Delegate {
@@ -2197,9 +2204,23 @@ void StoragePartitionImpl::OnCertificateRequested(
     return;
   }
 
-  auto web_contents_getter = base::BindRepeating(GetWebContents, context);
-  OnCertificateRequestedContinuation(cert_info, std::move(cert_responder),
-                                     std::move(web_contents_getter));
+  SSLClientAuthHandler::ContextGetter context_getter;
+
+  if (context.type() == URLLoaderNetworkContext::Type::kServiceWorkerContext) {
+    context_getter = base::BindRepeating(GetContextFromStoragePartition,
+                                         weak_factory_.GetWeakPtr());
+  } else {
+    context_getter = base::BindRepeating(GetContextFromNetworkContext, context);
+    // The WebContents is already invalid. Bail.
+    if (!GetWebContents(context)) {
+      CallCancelRequest(std::move(cert_responder));
+      return;
+    }
+  }
+
+  // SSLClientAuthDelegate handles its own lifetime.
+  new SSLClientAuthDelegate(std::move(cert_responder), browser_context(),
+                            std::move(context_getter), cert_info);
 }
 
 void StoragePartitionImpl::OnSSLCertificateError(

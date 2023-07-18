@@ -296,6 +296,7 @@ std::string WebEngineContentBrowserClient::GetAcceptLangs(
 }
 
 base::OnceClosure WebEngineContentBrowserClient::SelectClientCertificate(
+    content::BrowserContext* browser_context,
     content::WebContents* web_contents,
     net::SSLCertRequestInfo* cert_request_info,
     net::ClientCertIdentityList client_certs,
