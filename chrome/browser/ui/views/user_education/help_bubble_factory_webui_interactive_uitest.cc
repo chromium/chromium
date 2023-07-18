@@ -177,8 +177,8 @@ IN_PROC_BROWSER_TEST_F(HelpBubbleFactoryWebUIInteractiveUiTest,
                                   base::UTF16ToUTF8(kBubbleBodyText)));
 }
 
-// TODO(crbug.com/1462896): Re-enable this test
-#if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
+// TODO(crbug.com/1465747): Re-enable this test
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_FloatingHelpBubbleHiddenOnWebUiHidden \
   DISABLED_FloatingHelpBubbleHiddenOnWebUiHidden
 #else
