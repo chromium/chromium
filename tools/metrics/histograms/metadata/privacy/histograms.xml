@@ -282,15 +282,17 @@ reviewer.
   </summary>
 </histogram>
 
-<histogram name="Privacy.DIPS.DeletionLatency" units="ms"
+<histogram name="Privacy.DIPS.DeletionLatency2" units="ms"
     expires_after="2023-12-31">
   <owner>wanderview@chromium.org</owner>
   <owner>src/chrome/browser/dips/OWNERS</owner>
   <summary>
     The amount of time it takes to complete the DIPS deletion process.
 
-    This is recorded each time after the DIPS timer fires and triggers deletion
-    of DIPS-eligible sites. This metric will be the result of |time when DIPS
+    This is recorded each time the deletion of DIPS-eligible sites begins. For
+    the case where the deletion is posted to the UI thread, this is the creation
+    time of the StateClearer; otherwise, it is before the call to
+    DIPSStorage::RemoveRows. This metric will be the result of |time when DIPS
     deletion completed - time when DIPS deletion begins|.
   </summary>
 </histogram>

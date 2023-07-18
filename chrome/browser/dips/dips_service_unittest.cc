@@ -800,7 +800,7 @@ TEST_F(DIPSServiceHistogramTest, DeletionLatency) {
       dips::kFeature, {{"delete", "false"}, {"triggering_action", "bounce"}});
 
   // Verify the histogram starts empty
-  histograms().ExpectTotalCount("Privacy.DIPS.DeletionLatency", 0);
+  histograms().ExpectTotalCount("Privacy.DIPS.DeletionLatency2", 0);
 
   // Record a bounce.
   GURL url("https://example.com");
@@ -817,7 +817,7 @@ TEST_F(DIPSServiceHistogramTest, DeletionLatency) {
 
   // Verify deletion latency metrics were NOT emitted and the DIPS entry was NOT
   // removed.
-  histograms().ExpectTotalCount("Privacy.DIPS.DeletionLatency", 0);
+  histograms().ExpectTotalCount("Privacy.DIPS.DeletionLatency2", 0);
   EXPECT_TRUE(GetDIPSState(GetService(), url).has_value());
 
   // Time-travel to after the grace period has ended for the bounce.
@@ -827,7 +827,7 @@ TEST_F(DIPSServiceHistogramTest, DeletionLatency) {
 
   // Verify a deletion latency metric was emitted and the DIPS entry was
   // removed.
-  histograms().ExpectTotalCount("Privacy.DIPS.DeletionLatency", 1);
+  histograms().ExpectTotalCount("Privacy.DIPS.DeletionLatency2", 1);
   EXPECT_FALSE(GetDIPSState(GetService(), url).has_value());
 }
 

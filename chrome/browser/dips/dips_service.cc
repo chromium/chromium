@@ -99,7 +99,7 @@ inline void UmaHistogramBounceCategory(RedirectCategory category,
 }
 
 inline void UmaHistogramDeletionLatency(base::Time deletion_start) {
-  base::UmaHistogramLongTimes100("Privacy.DIPS.DeletionLatency",
+  base::UmaHistogramLongTimes100("Privacy.DIPS.DeletionLatency2",
                                  base::Time::Now() - deletion_start);
 }
 
@@ -144,7 +144,10 @@ class StateClearer : public content::BrowsingDataRemover::Observer {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
     // StateClearer manages its own lifetime and deletes itself when finished.
-    auto* state_clearer = new StateClearer(remover, std::move(callback));
+    base::Time deletion_start = base::Time::Now();
+    auto* state_clearer = new StateClearer(
+        remover, base::BindOnce(&OnDeletionFinished, std::move(callback),
+                                deletion_start));
 
     remover->AddObserver(state_clearer);
     remover->RemoveWithFilterAndReply(
@@ -453,29 +456,24 @@ void DIPSService::HandleRedirect(
 }
 
 void DIPSService::OnTimerFired() {
-  base::Time start = base::Time::Now();
   // Storage init should be finished by now, so no need to delay until then.
   storage_.AsyncCall(&DIPSStorage::GetSitesToClear)
       .WithArgs(absl::nullopt)
       .Then(base::BindOnce(&DIPSService::DeleteDIPSEligibleState,
-                           weak_factory_.GetWeakPtr(), base::DoNothing(),
-                           start));
+                           weak_factory_.GetWeakPtr(), base::DoNothing()));
 }
 
 void DIPSService::DeleteEligibleSitesImmediately(
     DeletedSitesCallback callback) {
-  base::Time start = base::Time::Now();
   // Storage init should be finished by now, so no need to delay until then.
   storage_.AsyncCall(&DIPSStorage::GetSitesToClear)
       .WithArgs(base::Seconds(0))
       .Then(base::BindOnce(&DIPSService::DeleteDIPSEligibleState,
-                           weak_factory_.GetWeakPtr(), std::move(callback),
-                           start));
+                           weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void DIPSService::DeleteDIPSEligibleState(
     DeletedSitesCallback callback,
-    base::Time deletion_start,
     std::vector<std::string> sites_to_clear) {
   // Do not clear sites from currently open tabs.
   for (const std::pair<std::string, int> site_ctr : open_sites_) {
@@ -540,7 +538,7 @@ void DIPSService::DeleteDIPSEligibleState(
     }
 
     // Perform state deletion on the filtered list of sites.
-    PostDeletionTaskToUIThread(std::move(finish_callback), deletion_start,
+    PostDeletionTaskToUIThread(std::move(finish_callback),
                                std::move(filtered_sites_to_clear));
   } else {
     for (auto it = sites_to_clear.begin(); it != sites_to_clear.end(); it++) {
@@ -554,6 +552,7 @@ void DIPSService::DeleteDIPSEligibleState(
       UmaHistogramDeletion(GetCookieMode(), DIPSDeletionAction::kDisallowed);
     }
 
+    base::Time deletion_start = base::Time::Now();
     // Storage init should be finished by now, so no need to delay until then.
     storage_.AsyncCall(&DIPSStorage::RemoveRows)
         .WithArgs(std::move(sites_to_clear))
@@ -565,7 +564,6 @@ void DIPSService::DeleteDIPSEligibleState(
 }
 
 void DIPSService::PostDeletionTaskToUIThread(base::OnceClosure callback,
-                                             base::Time deletion_start,
                                              std::vector<std::string> sites) {
   std::unique_ptr<content::BrowsingDataFilterBuilder> filter =
       content::BrowsingDataFilterBuilder::Create(
@@ -575,11 +573,9 @@ void DIPSService::PostDeletionTaskToUIThread(base::OnceClosure callback,
   }
 
   content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&DIPSService::RunDeletionTaskOnUIThread,
-                     weak_factory_.GetWeakPtr(), std::move(filter),
-                     base::BindOnce(&OnDeletionFinished, std::move(callback),
-                                    deletion_start)));
+      FROM_HERE, base::BindOnce(&DIPSService::RunDeletionTaskOnUIThread,
+                                weak_factory_.GetWeakPtr(), std::move(filter),
+                                std::move(callback)));
 }
 
 void DIPSService::RunDeletionTaskOnUIThread(

@@ -166,10 +166,8 @@ class DIPSService : public KeyedService {
   void OnStorageInitialized();
   void OnTimerFired();
   void DeleteDIPSEligibleState(DeletedSitesCallback callback,
-                               base::Time deletion_start,
                                std::vector<std::string> sites_to_clear);
   void PostDeletionTaskToUIThread(base::OnceClosure callback,
-                                  base::Time deletion_start,
                                   std::vector<std::string> sites_to_clear);
   void RunDeletionTaskOnUIThread(
       std::unique_ptr<content::BrowsingDataFilterBuilder> filter,
