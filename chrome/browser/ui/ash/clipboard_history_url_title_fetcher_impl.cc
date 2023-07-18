@@ -8,30 +8,48 @@
 
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
-// Returns the history service for the primary user profile. Note that the logic
-// of which profile(s) to query for browsing history, and under what conditions,
-// may change in the future.
+// Arbitrarily chosen threshold after which we do not care to know the granular
+// number of profiles added to a session.
+constexpr int kMaxNumProfiles = 10;
+
+// Returns the history service for the primary user profile iff the session has
+// exactly one profile. Note that the logic of which profile(s) to query for
+// browsing history, and under what conditions, may change in the future.
 history::HistoryService* GetHistoryService() {
+  int num_profiles = 0;
+  for (auto* const profile :
+       g_browser_process->profile_manager()->GetLoadedProfiles()) {
+    // Exclude non-user profiles, such as sign-in and lockscreen profiles, which
+    // do not indicate use of multi-profile browsing.
+    if (ash::IsUserBrowserContext(profile)) {
+      ++num_profiles;
+    }
+  }
+  base::UmaHistogramExactLinear(
+      "Ash.ClipboardHistory.UrlTitleFetcher.NumProfiles", num_profiles,
+      /*exclusive_max=*/kMaxNumProfiles + 1);
+
   auto* const profile = ProfileManager::GetPrimaryUserProfile();
-  if (!profile) {
-    return nullptr;
+  if (profile) {
+    base::UmaHistogramBoolean(
+        "Ash.ClipboardHistory.UrlTitleFetcher.IsPrimaryProfileActive",
+        profile == ProfileManager::GetActiveUserProfile());
   }
 
-  base::UmaHistogramBoolean(
-      "Ash.ClipboardHistory.UrlTitleFetcher.IsPrimaryProfileActive",
-      profile == ProfileManager::GetActiveUserProfile());
-
-  // TODO(http://b/267694762): Enforce the constraint that the primary profile's
-  // browsing history can only be queried if the session has just one profile.
+  if (num_profiles != 1 || !profile) {
+    return nullptr;
+  }
 
   return HistoryServiceFactory::GetForProfile(
       profile, ServiceAccessType::EXPLICIT_ACCESS);
