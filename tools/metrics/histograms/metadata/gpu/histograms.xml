@@ -22,6 +22,12 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="WebGPUModule">
+  <variant name="ComputePipeline"/>
+  <variant name="RenderPipeline"/>
+  <variant name="ShaderModule"/>
+</variants>
+
 <histogram name="ConfigureDisplays.External.Modeset.AttemptSucceeded"
     enum="BooleanSuccess" expires_after="2024-04-01">
   <owner>gildekel@chromium.org</owner>
@@ -1627,6 +1633,29 @@ chromium-metrics-reviews@google.com.
     Types of EGL displays used to back large (area &gt;= 128*128) WebGL
     contexts. Recorded at context creation time in the GPU process.
   </summary>
+</histogram>
+
+<histogram name="GPU.WebGPU.Create{Module}Success" enum="Boolean"
+    expires_after="2023-10-20">
+  <owner>enga@chromium.org</owner>
+  <owner>mdb.webgpu-dev-team@google.com</owner>
+  <summary>
+    Tracks whether a call to Create{Module} was successful, excluding when the
+    result is found in frontend cache.
+  </summary>
+  <token key="Module" variants="WebGPUModule"/>
+</histogram>
+
+<histogram name="GPU.WebGPU.Create{Module}US" units="microseconds"
+    expires_after="2023-10-20">
+  <owner>enga@chromium.org</owner>
+  <owner>mdb.webgpu-dev-team@google.com</owner>
+  <summary>
+    Tracks the amount of time in microseconds it takes for a call to
+    Create{Module} to complete, excluding when the result is found in frontend
+    cache. Recorded only for clients that support high-resolution clocks.
+  </summary>
+  <token key="Module" variants="WebGPUModule"/>
 </histogram>
 
 <histogram name="GPU.WebGPU.Support" enum="WebGPUSupport"
