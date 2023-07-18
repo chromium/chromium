@@ -192,7 +192,7 @@ void EolNotification::CreateNotification(base::Time eol_date, base::Time now) {
           .SetDelegate(
               base::MakeRefCounted<message_center::ThunkNotificationDelegate>(
                   weak_ptr_factory_.GetWeakPtr()))
-          .Build(),
+          .Build(false),
       /*metadata=*/nullptr);
 
   eol_incentive_util::RecordShowSourceHistogram(
@@ -441,7 +441,7 @@ void EolNotification::ShowIncentiveNotification(
           .SetDelegate(
               base::MakeRefCounted<message_center::ThunkNotificationDelegate>(
                   weak_ptr_factory_.GetWeakPtr()))
-          .Build(),
+          .Build(false),
       /*metadata=*/nullptr);
 
   if (incentive_type == eol_incentive_util::EolIncentiveType::kEolApproaching) {

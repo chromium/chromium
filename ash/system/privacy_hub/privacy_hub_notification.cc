@@ -181,10 +181,11 @@ void PrivacyHubNotification::Show() {
     // The notification is already in the message center. Update the content and
     // pop it up again.
     message_center::MessageCenter::Get()->UpdateNotification(
-        id_, builder_.BuildPtr());
+        id_, builder_.BuildPtr(false));
     message_center::MessageCenter::Get()->ResetSinglePopup(id_);
   } else {
-    message_center::MessageCenter::Get()->AddNotification(builder_.BuildPtr());
+    message_center::MessageCenter::Get()->AddNotification(
+        builder_.BuildPtr(false));
   }
 }
 
@@ -201,7 +202,7 @@ void PrivacyHubNotification::Update() {
   if (IsShown()) {
     SetNotificationContent();
     message_center::MessageCenter::Get()->UpdateNotification(
-        id_, builder_.BuildPtr());
+        id_, builder_.BuildPtr(true));
   }
 }
 

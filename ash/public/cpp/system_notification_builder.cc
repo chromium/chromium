@@ -126,18 +126,22 @@ SystemNotificationBuilder& SystemNotificationBuilder::SetWarningLevel(
   return *this;
 }
 
-message_center::Notification SystemNotificationBuilder::Build() const {
+message_center::Notification SystemNotificationBuilder::Build(
+    bool keep_timestamp) {
   DCHECK(!id_.empty());
   const message_center::NotifierId notifier_id = GetNotifierId();
   DCHECK(notifier_id.type == message_center::NotifierType::SYSTEM_COMPONENT);
+  if (!keep_timestamp) {
+    optional_fields_.timestamp = base::Time::Now();
+  }
   return CreateSystemNotification(type_, id_, title_, message_, display_source_,
                                   origin_url_, notifier_id, optional_fields_,
                                   delegate_, *small_image_, warning_level_);
 }
 
 std::unique_ptr<message_center::Notification>
-SystemNotificationBuilder::BuildPtr() const {
-  return std::make_unique<message_center::Notification>(Build());
+SystemNotificationBuilder::BuildPtr(bool keep_timestamp) {
+  return std::make_unique<message_center::Notification>(Build(keep_timestamp));
 }
 
 message_center::NotifierId SystemNotificationBuilder::GetNotifierId() const {

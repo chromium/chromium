@@ -602,7 +602,7 @@ void MediaClientImpl::ShowCameraOffNotification(const std::string& device_id,
                             {device_name_u16})
           .SetMessageWithArgs(IDS_CAMERA_PRIVACY_SWITCH_ON_NOTIFICATION_MESSAGE,
                               {device_name_u16})
-          .Build());
+          .Build(false));
   devices_having_visible_notification_.insert(device_id);
 }
 

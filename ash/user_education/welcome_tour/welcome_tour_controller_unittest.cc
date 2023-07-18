@@ -155,7 +155,7 @@ void AddNotification(const std::string& id, bool is_system_priority = false) {
           .SetCatalogName(NotificationCatalogName::kTestCatalogName)
           .SetDelegate(
               base::MakeRefCounted<message_center::NotificationDelegate>())
-          .BuildPtr();
+          .BuildPtr(false);
   if (is_system_priority) {
     notification->SetSystemPriority();
   }
