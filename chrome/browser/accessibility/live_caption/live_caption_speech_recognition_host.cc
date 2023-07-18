@@ -33,6 +33,7 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "third_party/icu/source/common/unicode/brkiter.h"
 #include "third_party/icu/source/common/unicode/unistr.h"
+#include "third_party/re2/src/re2/re2.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace {
@@ -89,10 +90,17 @@ std::string RemoveTrailingSpace(const std::string& str) {
   return str;
 }
 
+std::string RemovePunctuationToLower(std::string str) {
+  re2::RE2::GlobalReplace(&str, "[[:punct:]]", "");
+
+  return base::ToLowerASCII(str);
+}
+
 std::string GetTranslationCacheKey(const std::string& source_language,
                                    const std::string& target_language,
                                    const std::string& transcription) {
-  return base::StrCat({source_language, target_language, "|", transcription});
+  return base::StrCat({source_language, target_language, "|",
+                       RemovePunctuationToLower(transcription)});
 }
 
 }  // namespace

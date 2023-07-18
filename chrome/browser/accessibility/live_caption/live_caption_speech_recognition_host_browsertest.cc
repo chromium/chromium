@@ -330,7 +330,7 @@ IN_PROC_BROWSER_TEST_F(LiveCaptionSpeechRecognitionHostTest, TranslationCache) {
   ASSERT_EQ(1u, GetTranslationRequests().size());
   ASSERT_EQ(
       "Pomeranians come in 23 different color combinations. Some Pomeranians",
-      GetTranslationRequests()[0]);
+      GetTranslationRequests().back());
 
   OnSpeechRecognitionRecognitionEvent(
       frame_host,
@@ -338,7 +338,7 @@ IN_PROC_BROWSER_TEST_F(LiveCaptionSpeechRecognitionHostTest, TranslationCache) {
       /* expected_success= */ true, /* is_final= */ false);
   base::RunLoop().RunUntilIdle();
   ASSERT_EQ(2u, GetTranslationRequests().size());
-  ASSERT_EQ("Some Pomeranians", GetTranslationRequests()[1]);
+  ASSERT_EQ("Some Pomeranians", GetTranslationRequests().back());
 
   OnSpeechRecognitionRecognitionEvent(
       frame_host,
@@ -348,7 +348,7 @@ IN_PROC_BROWSER_TEST_F(LiveCaptionSpeechRecognitionHostTest, TranslationCache) {
   base::RunLoop().RunUntilIdle();
   ASSERT_EQ(3u, GetTranslationRequests().size());
   ASSERT_EQ("Some Pomeranians are even tricolored! Are",
-            GetTranslationRequests()[2]);
+            GetTranslationRequests().back());
 
   OnSpeechRecognitionRecognitionEvent(
       frame_host,
@@ -358,7 +358,7 @@ IN_PROC_BROWSER_TEST_F(LiveCaptionSpeechRecognitionHostTest, TranslationCache) {
   base::RunLoop().RunUntilIdle();
   ASSERT_EQ(4u, GetTranslationRequests().size());
   ASSERT_EQ("Are they the cutest dog breed in the",
-            GetTranslationRequests()[3]);
+            GetTranslationRequests().back());
 
   OnSpeechRecognitionRecognitionEvent(
       frame_host,
@@ -369,7 +369,7 @@ IN_PROC_BROWSER_TEST_F(LiveCaptionSpeechRecognitionHostTest, TranslationCache) {
   base::RunLoop().RunUntilIdle();
   ASSERT_EQ(5u, GetTranslationRequests().size());
   ASSERT_EQ("Are they the cutest dog breed in the world? Absolutely.",
-            GetTranslationRequests()[4]);
+            GetTranslationRequests().back());
 
   // The previous final event clears the translation cache.
   OnSpeechRecognitionRecognitionEvent(
@@ -378,7 +378,7 @@ IN_PROC_BROWSER_TEST_F(LiveCaptionSpeechRecognitionHostTest, TranslationCache) {
   base::RunLoop().RunUntilIdle();
   ASSERT_EQ(6u, GetTranslationRequests().size());
   ASSERT_EQ("Pomeranians come in 23 different color combinations.",
-            GetTranslationRequests()[5]);
+            GetTranslationRequests().back());
 
   // Ensure that cached strings aren't retrieved out of order.
   OnSpeechRecognitionRecognitionEvent(frame_host, "First sentence. Second",
@@ -394,7 +394,8 @@ IN_PROC_BROWSER_TEST_F(LiveCaptionSpeechRecognitionHostTest, TranslationCache) {
       /* expected_success= */ true, /* is_final= */ false);
   base::RunLoop().RunUntilIdle();
   ASSERT_EQ(9u, GetTranslationRequests().size());
-  ASSERT_EQ("Second sentence. Third sentence.", GetTranslationRequests()[8]);
+  ASSERT_EQ("Second sentence. Third sentence.",
+            GetTranslationRequests().back());
 
   // Ensure that partial sentences aren't cached.
   OnSpeechRecognitionRecognitionEvent(frame_host, "Fourth sentence",
@@ -405,6 +406,29 @@ IN_PROC_BROWSER_TEST_F(LiveCaptionSpeechRecognitionHostTest, TranslationCache) {
                                       /* is_final= */ false);
   base::RunLoop().RunUntilIdle();
   ASSERT_EQ(11u, GetTranslationRequests().size());
+
+  // Ensure that punctuation marks aren't cached.
+  OnSpeechRecognitionRecognitionEvent(frame_host, "Possums can play dead! Wow",
+                                      /* expected_success= */ true,
+                                      /* is_final= */ false);
+  base::RunLoop().RunUntilIdle();
+  ASSERT_EQ(12u, GetTranslationRequests().size());
+  ASSERT_EQ("Possums can play dead! Wow", GetTranslationRequests().back());
+
+  OnSpeechRecognitionRecognitionEvent(frame_host, "Possums can play dead? Wow",
+                                      /* expected_success= */ true,
+                                      /* is_final= */ false);
+  base::RunLoop().RunUntilIdle();
+  ASSERT_EQ(13u, GetTranslationRequests().size());
+  ASSERT_EQ("Wow", GetTranslationRequests().back());
+
+  // Ensure that phrases are cached without capitalization.
+  OnSpeechRecognitionRecognitionEvent(
+      frame_host, "Possums can play DEAD? Amazing",
+      /* expected_success= */ true, /* is_final= */ false);
+  base::RunLoop().RunUntilIdle();
+  ASSERT_EQ(14u, GetTranslationRequests().size());
+  ASSERT_EQ("Amazing", GetTranslationRequests().back());
 }
 
 }  // namespace captions
