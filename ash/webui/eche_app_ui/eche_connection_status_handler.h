@@ -88,6 +88,9 @@ class EcheConnectionStatusHandler : public mojom::ConnectionStatusObserver {
   void set_feature_status_for_test(FeatureStatus feature_status) {
     feature_status_ = feature_status;
   }
+  bool is_connecting_or_connected_for_test() {
+    return is_connecting_or_connected_;
+  }
 
   mojom::ConnectionStatus connection_status_for_ui_ =
       mojom::ConnectionStatus::kConnectionStatusDisconnected;

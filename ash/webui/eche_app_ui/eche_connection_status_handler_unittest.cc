@@ -112,6 +112,10 @@ class EcheConnectionStatusHandlerTest : public testing::Test {
     handler_->set_feature_status_for_test(feature_status);
   }
 
+  bool GetIsConnectingOrConnectedStatus() const {
+    return handler_->is_connecting_or_connected_for_test();
+  }
+
   size_t GetNumConnectionStatusChangedCalls() const {
     return fake_observer_.num_connection_status_changed_calls();
   }
@@ -154,6 +158,7 @@ TEST_F(EcheConnectionStatusHandlerTest, OnConnectionStatusChanged) {
   EXPECT_EQ(GetLastConnectionChangedStatus(),
             mojom::ConnectionStatus::kConnectionStatusDisconnected);
   EXPECT_EQ(GetNumConnectionStatusChangedCalls(), 0u);
+  EXPECT_FALSE(GetIsConnectingOrConnectedStatus());
 
   NotifyConnectionStatusChanged(
       mojom::ConnectionStatus::kConnectionStatusConnecting);
@@ -161,6 +166,7 @@ TEST_F(EcheConnectionStatusHandlerTest, OnConnectionStatusChanged) {
   EXPECT_EQ(GetLastConnectionChangedStatus(),
             mojom::ConnectionStatus::kConnectionStatusConnecting);
   EXPECT_EQ(GetNumConnectionStatusChangedCalls(), 1u);
+  EXPECT_TRUE(GetIsConnectingOrConnectedStatus());
 
   NotifyConnectionStatusChanged(
       mojom::ConnectionStatus::kConnectionStatusConnected);
@@ -168,6 +174,7 @@ TEST_F(EcheConnectionStatusHandlerTest, OnConnectionStatusChanged) {
   EXPECT_EQ(GetLastConnectionChangedStatus(),
             mojom::ConnectionStatus::kConnectionStatusConnected);
   EXPECT_EQ(GetNumConnectionStatusChangedCalls(), 2u);
+  EXPECT_TRUE(GetIsConnectingOrConnectedStatus());
 
   NotifyConnectionStatusChanged(
       mojom::ConnectionStatus::kConnectionStatusFailed);
@@ -175,6 +182,7 @@ TEST_F(EcheConnectionStatusHandlerTest, OnConnectionStatusChanged) {
   EXPECT_EQ(GetLastConnectionChangedStatus(),
             mojom::ConnectionStatus::kConnectionStatusFailed);
   EXPECT_EQ(GetNumConnectionStatusChangedCalls(), 3u);
+  EXPECT_FALSE(GetIsConnectingOrConnectedStatus());
 
   NotifyConnectionStatusChanged(
       mojom::ConnectionStatus::kConnectionStatusDisconnected);
@@ -182,6 +190,7 @@ TEST_F(EcheConnectionStatusHandlerTest, OnConnectionStatusChanged) {
   EXPECT_EQ(GetLastConnectionChangedStatus(),
             mojom::ConnectionStatus::kConnectionStatusDisconnected);
   EXPECT_EQ(GetNumConnectionStatusChangedCalls(), 4u);
+  EXPECT_FALSE(GetIsConnectingOrConnectedStatus());
 }
 
 TEST_F(EcheConnectionStatusHandlerTest, OnConnectionStatusChangedFlagDisabled) {
@@ -193,6 +202,7 @@ TEST_F(EcheConnectionStatusHandlerTest, OnConnectionStatusChangedFlagDisabled) {
   EXPECT_EQ(GetLastConnectionChangedStatus(),
             mojom::ConnectionStatus::kConnectionStatusDisconnected);
   EXPECT_EQ(GetNumConnectionStatusChangedCalls(), 0u);
+  EXPECT_FALSE(GetIsConnectingOrConnectedStatus());
 
   NotifyConnectionStatusChanged(
       mojom::ConnectionStatus::kConnectionStatusConnecting);
@@ -200,6 +210,7 @@ TEST_F(EcheConnectionStatusHandlerTest, OnConnectionStatusChangedFlagDisabled) {
   EXPECT_EQ(GetLastConnectionChangedStatus(),
             mojom::ConnectionStatus::kConnectionStatusDisconnected);
   EXPECT_EQ(GetNumConnectionStatusChangedCalls(), 0u);
+  EXPECT_FALSE(GetIsConnectingOrConnectedStatus());
 
   NotifyConnectionStatusChanged(
       mojom::ConnectionStatus::kConnectionStatusConnected);
@@ -207,6 +218,7 @@ TEST_F(EcheConnectionStatusHandlerTest, OnConnectionStatusChangedFlagDisabled) {
   EXPECT_EQ(GetLastConnectionChangedStatus(),
             mojom::ConnectionStatus::kConnectionStatusDisconnected);
   EXPECT_EQ(GetNumConnectionStatusChangedCalls(), 0u);
+  EXPECT_FALSE(GetIsConnectingOrConnectedStatus());
 
   NotifyConnectionStatusChanged(
       mojom::ConnectionStatus::kConnectionStatusFailed);
@@ -214,6 +226,7 @@ TEST_F(EcheConnectionStatusHandlerTest, OnConnectionStatusChangedFlagDisabled) {
   EXPECT_EQ(GetLastConnectionChangedStatus(),
             mojom::ConnectionStatus::kConnectionStatusDisconnected);
   EXPECT_EQ(GetNumConnectionStatusChangedCalls(), 0u);
+  EXPECT_FALSE(GetIsConnectingOrConnectedStatus());
 }
 
 TEST_F(EcheConnectionStatusHandlerTest, CheckConnectionStatusForUi) {
@@ -222,6 +235,7 @@ TEST_F(EcheConnectionStatusHandlerTest, CheckConnectionStatusForUi) {
   EXPECT_EQ(GetLastConnectionForUiChangedStatus(),
             mojom::ConnectionStatus::kConnectionStatusDisconnected);
   EXPECT_EQ(GetNumConnectionStatusForUiChangedCalls(), 0u);
+  EXPECT_FALSE(GetIsConnectingOrConnectedStatus());
 
   NotifyConnectionStatusChanged(
       mojom::ConnectionStatus::kConnectionStatusConnecting);
@@ -230,18 +244,21 @@ TEST_F(EcheConnectionStatusHandlerTest, CheckConnectionStatusForUi) {
             mojom::ConnectionStatus::kConnectionStatusDisconnected);
   EXPECT_EQ(GetNumConnectionStatusForUiChangedCalls(), 0u);
   EXPECT_EQ(GetNumConnectionStatusChangedCalls(), 1u);
+  EXPECT_TRUE(GetIsConnectingOrConnectedStatus());
 
   handler().CheckConnectionStatusForUi();
 
   EXPECT_EQ(GetLastConnectionForUiChangedStatus(),
             mojom::ConnectionStatus::kConnectionStatusDisconnected);
   EXPECT_EQ(GetNumConnectionStatusForUiChangedCalls(), 0u);
+  EXPECT_TRUE(GetIsConnectingOrConnectedStatus());
 
   NotifyConnectionStatusChanged(
       mojom::ConnectionStatus::kConnectionStatusConnected);
   EXPECT_EQ(GetLastConnectionForUiChangedStatus(),
             mojom::ConnectionStatus::kConnectionStatusConnected);
   EXPECT_EQ(GetNumConnectionStatusForUiChangedCalls(), 1u);
+  EXPECT_TRUE(GetIsConnectingOrConnectedStatus());
 
   SetFeatureStatus(FeatureStatus::kConnected);
   handler().CheckConnectionStatusForUi();
@@ -249,6 +266,7 @@ TEST_F(EcheConnectionStatusHandlerTest, CheckConnectionStatusForUi) {
   EXPECT_EQ(GetLastConnectionChangedStatus(),
             mojom::ConnectionStatus::kConnectionStatusConnected);
   EXPECT_EQ(GetNumConnectionStatusChangedCalls(), 2u);
+  EXPECT_TRUE(GetIsConnectingOrConnectedStatus());
 }
 
 TEST_F(EcheConnectionStatusHandlerTest,
@@ -260,12 +278,14 @@ TEST_F(EcheConnectionStatusHandlerTest,
             mojom::ConnectionStatus::kConnectionStatusDisconnected);
   EXPECT_EQ(GetNumConnectionStatusForUiChangedCalls(), 0u);
   EXPECT_EQ(GetNumRequestBackgroundConnectionAttemptCalls(), 0u);
+  EXPECT_FALSE(GetIsConnectingOrConnectedStatus());
 
   NotifyConnectionStatusChanged(
       mojom::ConnectionStatus::kConnectionStatusConnected);
   EXPECT_EQ(GetLastConnectionForUiChangedStatus(),
             mojom::ConnectionStatus::kConnectionStatusConnected);
   EXPECT_EQ(GetNumConnectionStatusForUiChangedCalls(), 1u);
+  EXPECT_TRUE(GetIsConnectingOrConnectedStatus());
 
   // After more than 10 seconds pass, extra calls should happen when there is no
   // active stream.
@@ -279,6 +299,7 @@ TEST_F(EcheConnectionStatusHandlerTest,
             mojom::ConnectionStatus::kConnectionStatusConnected);
   EXPECT_EQ(GetNumConnectionStatusForUiChangedCalls(), 2u);
   EXPECT_EQ(GetNumRequestBackgroundConnectionAttemptCalls(), 1u);
+  EXPECT_FALSE(GetIsConnectingOrConnectedStatus());
 
   // After more than 10 seconds pass, no extra calls should happen if there's an
   // active stream.
@@ -291,6 +312,7 @@ TEST_F(EcheConnectionStatusHandlerTest,
             mojom::ConnectionStatus::kConnectionStatusConnected);
   EXPECT_EQ(GetNumConnectionStatusForUiChangedCalls(), 2u);        // no change
   EXPECT_EQ(GetNumRequestBackgroundConnectionAttemptCalls(), 1u);  // no change
+  EXPECT_TRUE(GetIsConnectingOrConnectedStatus());                 // no change
 
   // Reset to Disconnected
   handler().SetConnectionStatusForUi(
@@ -299,11 +321,13 @@ TEST_F(EcheConnectionStatusHandlerTest,
   EXPECT_EQ(GetNumRequestBackgroundConnectionAttemptCalls(), 1u);
   EXPECT_EQ(GetLastConnectionForUiChangedStatus(),
             mojom::ConnectionStatus::kConnectionStatusDisconnected);
+  EXPECT_TRUE(GetIsConnectingOrConnectedStatus());
 
   // After more than 10 minutes pass, state should go back to Connecting.
   handler().SetConnectionStatusForUi(
       mojom::ConnectionStatus::kConnectionStatusConnected);
   EXPECT_EQ(GetNumConnectionStatusForUiChangedCalls(), 4u);
+  EXPECT_TRUE(GetIsConnectingOrConnectedStatus());
 
   NotifyConnectionStatusChanged(
       mojom::ConnectionStatus::kConnectionStatusDisconnected);
@@ -314,6 +338,7 @@ TEST_F(EcheConnectionStatusHandlerTest,
             mojom::ConnectionStatus::kConnectionStatusConnecting);
   EXPECT_EQ(GetNumConnectionStatusForUiChangedCalls(), 5u);
   EXPECT_EQ(GetNumRequestBackgroundConnectionAttemptCalls(), 2u);
+  EXPECT_FALSE(GetIsConnectingOrConnectedStatus());
 }
 
 TEST_F(EcheConnectionStatusHandlerTest, SetConnectionStatusForUi) {
@@ -322,30 +347,35 @@ TEST_F(EcheConnectionStatusHandlerTest, SetConnectionStatusForUi) {
   EXPECT_EQ(GetLastConnectionForUiChangedStatus(),
             mojom::ConnectionStatus::kConnectionStatusDisconnected);
   EXPECT_EQ(GetNumConnectionStatusForUiChangedCalls(), 0u);
+  EXPECT_FALSE(GetIsConnectingOrConnectedStatus());
 
   handler().SetConnectionStatusForUi(
       mojom::ConnectionStatus::kConnectionStatusConnecting);
   EXPECT_EQ(GetLastConnectionForUiChangedStatus(),
             mojom::ConnectionStatus::kConnectionStatusConnecting);
   EXPECT_EQ(GetNumConnectionStatusForUiChangedCalls(), 1u);
+  EXPECT_FALSE(GetIsConnectingOrConnectedStatus());
 
   handler().SetConnectionStatusForUi(
       mojom::ConnectionStatus::kConnectionStatusConnected);
   EXPECT_EQ(GetLastConnectionForUiChangedStatus(),
             mojom::ConnectionStatus::kConnectionStatusConnected);
   EXPECT_EQ(GetNumConnectionStatusForUiChangedCalls(), 2u);
+  EXPECT_FALSE(GetIsConnectingOrConnectedStatus());
 
   handler().SetConnectionStatusForUi(
       mojom::ConnectionStatus::kConnectionStatusFailed);
   EXPECT_EQ(GetLastConnectionForUiChangedStatus(),
             mojom::ConnectionStatus::kConnectionStatusFailed);
   EXPECT_EQ(GetNumConnectionStatusForUiChangedCalls(), 3u);
+  EXPECT_FALSE(GetIsConnectingOrConnectedStatus());
 
   handler().SetConnectionStatusForUi(
       mojom::ConnectionStatus::kConnectionStatusDisconnected);
   EXPECT_EQ(GetLastConnectionForUiChangedStatus(),
             mojom::ConnectionStatus::kConnectionStatusDisconnected);
   EXPECT_EQ(GetNumConnectionStatusForUiChangedCalls(), 4u);
+  EXPECT_FALSE(GetIsConnectingOrConnectedStatus());
 }
 
 TEST_F(EcheConnectionStatusHandlerTest, OnFeatureStatusChanged) {
@@ -354,6 +384,7 @@ TEST_F(EcheConnectionStatusHandlerTest, OnFeatureStatusChanged) {
   EXPECT_EQ(GetLastConnectionForUiChangedStatus(),
             mojom::ConnectionStatus::kConnectionStatusConnecting);
   EXPECT_EQ(GetNumConnectionStatusForUiChangedCalls(), 1u);
+  EXPECT_FALSE(GetIsConnectingOrConnectedStatus());
 
   handler().SetConnectionStatusForUi(
       mojom::ConnectionStatus::kConnectionStatusConnected);
@@ -361,6 +392,7 @@ TEST_F(EcheConnectionStatusHandlerTest, OnFeatureStatusChanged) {
   EXPECT_EQ(GetLastConnectionForUiChangedStatus(),
             mojom::ConnectionStatus::kConnectionStatusConnected);
   EXPECT_EQ(GetNumConnectionStatusForUiChangedCalls(), 2u);
+  EXPECT_FALSE(GetIsConnectingOrConnectedStatus());
 
   handler().OnFeatureStatusChanged(FeatureStatus::kConnected);
 
@@ -369,6 +401,7 @@ TEST_F(EcheConnectionStatusHandlerTest, OnFeatureStatusChanged) {
   EXPECT_EQ(GetLastConnectionForUiChangedStatus(),
             mojom::ConnectionStatus::kConnectionStatusConnected);
   EXPECT_EQ(GetNumConnectionStatusForUiChangedCalls(), 3u);
+  EXPECT_FALSE(GetIsConnectingOrConnectedStatus());
 }
 
 }  // namespace ash::eche_app
