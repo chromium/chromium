@@ -20,6 +20,7 @@
 #include "build/chromecast_buildflags.h"
 #include "build/chromeos_buildflags.h"
 #include "gpu/command_buffer/service/gpu_switches.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "gpu/config/gpu_switches.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_fence.h"
@@ -278,6 +279,14 @@ bool IsGL_REDSupportedOnFBOs() {
   // really needed to workaround a Mesa issue. See https://crbug.com/1158744.
   return true;
 #else
+
+#if BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(
+          features::kCmdDecoderSkipGLRedMesaWorkaroundOnAndroid)) {
+    return true;
+  }
+#endif
+
   DCHECK(glGetError() == GL_NO_ERROR);
   // Skia uses GL_RED with frame buffers, unfortunately, Mesa claims to support
   // GL_EXT_texture_rg, but it doesn't support it on frame buffers.  To fix

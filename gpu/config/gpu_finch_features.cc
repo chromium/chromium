@@ -419,6 +419,14 @@ BASE_FEATURE(kGpuCleanupInBackground,
              "GpuCleanupInBackground",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+#if BUILDFLAG(IS_ANDROID)
+// When enabled, the validating command decoder always returns true
+// from IsGL_REDSupportedOnFBOs in feature_info.cc on Android.
+BASE_FEATURE(kCmdDecoderSkipGLRedMesaWorkaroundOnAndroid,
+             "CmdDecoderSkipGLRedMesaWorkaroundOnAndroid",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
+
 bool UseGles2ForOopR() {
 #if BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_X86_FAMILY)
   // GLES3 is not supported on emulators with passthrough. crbug.com/1423712
