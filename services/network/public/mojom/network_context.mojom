@@ -565,8 +565,6 @@ struct NetworkContextParams {
   bool block_trust_tokens;
 
   // Whether "Compression dictionary transport" feature should be enabled.
-  // This feature is under construction. TODO(crbug.com/1413922): Update this
-  // comment when we finish the implementation.
   bool shared_dictionary_enabled = false;
 
   // Maximum size of the shared dictionary cache. If this value is 0, the max
