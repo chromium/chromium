@@ -1922,7 +1922,7 @@ void ChromeContentBrowserClient::RenderProcessWillLaunch(
           audio_debug_recordings_handler));
 
 #if BUILDFLAG(ENABLE_NACL)
-  if (IsNaclAllowed()) {
+  if (IsNaclAllowed() && !profile->IsSystemProfile()) {
     host->AddFilter(new nacl::NaClHostMessageFilter(
         host->GetID(), profile->IsOffTheRecord(), profile->GetPath()));
   }
