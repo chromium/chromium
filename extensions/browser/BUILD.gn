@@ -198,6 +198,8 @@ source_set("browser_sources") {
     "api/usb/usb_device_resource.h",
     "api/web_contents_capture_client.cc",
     "api/web_contents_capture_client.h",
+    "api/web_request/extension_web_request_event_router.cc",
+    "api/web_request/extension_web_request_event_router.h",
     "api/web_request/form_data_parser.cc",
     "api/web_request/form_data_parser.h",
     "api/web_request/permission_helper.cc",

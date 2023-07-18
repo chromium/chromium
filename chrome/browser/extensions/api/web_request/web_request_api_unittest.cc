@@ -39,6 +39,7 @@
 #include "content/public/common/url_constants.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/api/declarative_net_request/test_utils.h"
+#include "extensions/browser/api/web_request/extension_web_request_event_router.h"
 #include "extensions/browser/api/web_request/upload_data_presenter.h"
 #include "extensions/browser/api/web_request/web_request_api.h"
 #include "extensions/browser/api/web_request/web_request_api_constants.h"
@@ -151,12 +152,12 @@ TEST_F(ExtensionWebRequestTest, AddAndRemoveListeners) {
 
   // Add two listeners.
   ExtensionWebRequestEventRouter::GetInstance()->AddEventListener(
-      &profile_, ext_id, ext_id, events::FOR_TEST, kEventName, kSubEventName1,
+      &profile_, ext_id, ext_id, kEventName, kSubEventName1,
       ExtensionWebRequestEventRouter::RequestFilter(), 0,
       1 /* render_process_id */, 0, extensions::kMainThreadId,
       blink::mojom::kInvalidServiceWorkerVersionId);
   ExtensionWebRequestEventRouter::GetInstance()->AddEventListener(
-      &profile_, ext_id, ext_id, events::FOR_TEST, kEventName, kSubEventName2,
+      &profile_, ext_id, ext_id, kEventName, kSubEventName2,
       ExtensionWebRequestEventRouter::RequestFilter(), 0,
       1 /* render_process_id */, 0, extensions::kMainThreadId,
       blink::mojom::kInvalidServiceWorkerVersionId);
@@ -204,12 +205,12 @@ TEST_F(ExtensionWebRequestTest, BrowserContextShutdown) {
 
   // Add two listeners for the main profile.
   event_router->AddEventListener(
-      &profile_, ext_id, ext_id, events::FOR_TEST, kEventName, kSubEventName,
+      &profile_, ext_id, ext_id, kEventName, kSubEventName,
       ExtensionWebRequestEventRouter::RequestFilter(), 0,
       1 /* render_process_id */, 0, extensions::kMainThreadId,
       blink::mojom::kInvalidServiceWorkerVersionId);
   event_router->AddEventListener(
-      &profile_, ext_id, ext_id, events::FOR_TEST, kEventName, kSubEventName,
+      &profile_, ext_id, ext_id, kEventName, kSubEventName,
       ExtensionWebRequestEventRouter::RequestFilter(), 0,
       2 /* render_process_id */, 0, extensions::kMainThreadId,
       blink::mojom::kInvalidServiceWorkerVersionId);
@@ -236,12 +237,12 @@ TEST_F(ExtensionWebRequestTest, BrowserContextShutdown) {
 
   // Add two listeners for the otr profile.
   event_router->AddEventListener(
-      otr_profile, ext_id, ext_id, events::FOR_TEST, kEventName, kSubEventName,
+      otr_profile, ext_id, ext_id, kEventName, kSubEventName,
       ExtensionWebRequestEventRouter::RequestFilter(), 0,
       1 /* render_process_id */, 0, extensions::kMainThreadId,
       blink::mojom::kInvalidServiceWorkerVersionId);
   event_router->AddEventListener(
-      otr_profile, ext_id, ext_id, events::FOR_TEST, kEventName, kSubEventName,
+      otr_profile, ext_id, ext_id, kEventName, kSubEventName,
       ExtensionWebRequestEventRouter::RequestFilter(), 0,
       2 /* render_process_id */, 0, extensions::kMainThreadId,
       blink::mojom::kInvalidServiceWorkerVersionId);
