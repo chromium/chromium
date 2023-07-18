@@ -23,12 +23,12 @@ class TestEncryptionModuleStrict : public EncryptionModuleInterface {
 
   MOCK_METHOD(void,
               EncryptRecordImpl,
-              (base::StringPiece record,
+              (std::string_view record,
                base::OnceCallback<void(StatusOr<EncryptedRecord>)> cb),
               (const override));
 
   void UpdateAsymmetricKeyImpl(
-      base::StringPiece new_public_key,
+      std::string_view new_public_key,
       PublicKeyId new_public_key_id,
       base::OnceCallback<void(Status)> response_cb) override;
 

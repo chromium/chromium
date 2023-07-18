@@ -17,7 +17,7 @@ const size_t kRepeatedPtrFieldOverhead = 2;
 HealthModuleDelegateImpl::HealthModuleDelegateImpl(
     const base::FilePath& directory,
     size_t max_history_storage,
-    base::StringPiece file_base_name)
+    std::string_view file_base_name)
     : directory_(directory),
       file_base_name_(file_base_name),
       max_history_storage_(max_history_storage) {}

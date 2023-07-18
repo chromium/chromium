@@ -66,7 +66,7 @@ bool ProduceSymmetricKey(const uint8_t shared_secret[kKeySize],
 }
 
 bool PerformSymmetricEncryption(const uint8_t symmetric_key[kKeySize],
-                                base::StringPiece input_data,
+                                std::string_view input_data,
                                 std::string* output_data) {
   // Make sure OpenSSL is initialized, in order to avoid data races later.
   crypto::EnsureOpenSSLInit();
@@ -95,7 +95,7 @@ bool PerformSymmetricEncryption(const uint8_t symmetric_key[kKeySize],
 }
 
 bool VerifySignature(const uint8_t verification_key[kKeySize],
-                     base::StringPiece message,
+                     std::string_view message,
                      const uint8_t signature[kSignatureSize]) {
   // Make sure OpenSSL is initialized, in order to avoid data races later.
   crypto::EnsureOpenSSLInit();

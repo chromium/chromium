@@ -26,7 +26,7 @@ void RestoreSharedSecret(const uint8_t private_key[kKeySize],
 
 // Performs AEAD decryption with Chacha20Poly1305 key.
 void PerformSymmetricDecryption(const uint8_t symmetric_key[kKeySize],
-                                base::StringPiece input_data,
+                                std::string_view input_data,
                                 std::string* output_data);
 
 // Generates new pair of signing private key and public value.
@@ -35,7 +35,7 @@ void GenerateSigningKeyPair(uint8_t private_key[kSignKeySize],
 
 // Signs the |message| producing ED25519 |signature|.
 void SignMessage(const uint8_t signing_key[kSignKeySize],
-                 base::StringPiece message,
+                 std::string_view message,
                  uint8_t signature[kSignatureSize]);
 
 }  // namespace test

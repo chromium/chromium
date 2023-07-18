@@ -59,7 +59,7 @@ class ReportQueueConfiguration {
     // Modifiers for non-trivial fields.
     Builder SetPolicyCheckCallback(PolicyCheckCallback policy_check_callback);
     Builder SetRateLimiter(std::unique_ptr<RateLimiterInterface> rate_limiter);
-    Builder SetDMToken(base::StringPiece dm_token);
+    Builder SetDMToken(std::string_view dm_token);
     Builder SetSourceInfo(absl::optional<SourceInfo> source_info);
 
     // Finalizes the builder (no modifications are accepted after that) and
@@ -106,7 +106,7 @@ class ReportQueueConfiguration {
   // request if after it remaining amount of disk space will not drop below
   // `reserved_space`. Intended for use by opportunistic queue.
   static StatusOr<std::unique_ptr<ReportQueueConfiguration>> Create(
-      base::StringPiece dm_token,
+      std::string_view dm_token,
       Destination destination,
       PolicyCheckCallback policy_check_callback,
       std::unique_ptr<RateLimiterInterface> rate_limiter = nullptr,
@@ -150,7 +150,7 @@ class ReportQueueConfiguration {
 
   absl::optional<SourceInfo> source_info() const { return source_info_; }
 
-  Status SetDMToken(base::StringPiece dm_token);
+  Status SetDMToken(std::string_view dm_token);
 
   Status CheckPolicy() const;
 

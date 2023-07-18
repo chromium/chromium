@@ -36,7 +36,7 @@ class CompressionModule : public base::RefCountedThreadSafe<CompressionModule> {
   // with the callback. On success the returned std::string sink will
   // contain a compressed WrappedRecord string. The sink string then can be
   // further updated by the caller. std::string is used instead of
-  // base::StringPiece because ownership is taken of |record| through
+  // std::string_view because ownership is taken of |record| through
   // std::move(record).
   void CompressRecord(
       std::string record,

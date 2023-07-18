@@ -25,22 +25,22 @@ constexpr uint8_t kDevVerificationKey[kKeySize] = {
 }  // namespace
 
 // static
-base::StringPiece SignatureVerifier::VerificationKey() {
-  return base::StringPiece(reinterpret_cast<const char*>(kProdVerificationKey),
-                           kKeySize);
+std::string_view SignatureVerifier::VerificationKey() {
+  return std::string_view(reinterpret_cast<const char*>(kProdVerificationKey),
+                          kKeySize);
 }
 
 // static
-base::StringPiece SignatureVerifier::VerificationKeyDev() {
-  return base::StringPiece(reinterpret_cast<const char*>(kDevVerificationKey),
-                           kKeySize);
+std::string_view SignatureVerifier::VerificationKeyDev() {
+  return std::string_view(reinterpret_cast<const char*>(kDevVerificationKey),
+                          kKeySize);
 }
 
-SignatureVerifier::SignatureVerifier(base::StringPiece verification_public_key)
+SignatureVerifier::SignatureVerifier(std::string_view verification_public_key)
     : verification_public_key_(verification_public_key) {}
 
-Status SignatureVerifier::Verify(base::StringPiece message,
-                                 base::StringPiece signature) {
+Status SignatureVerifier::Verify(std::string_view message,
+                                 std::string_view signature) {
   if (signature.size() != kSignatureSize) {
     return Status{error::FAILED_PRECONDITION, "Wrong signature size"};
   }

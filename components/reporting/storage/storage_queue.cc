@@ -118,7 +118,7 @@ struct RecordHeader {
   // Construct from a serialized string. This does not guarantee same results
   // across devices, but on the same device the result should always be
   // consistent even compiler behavior changes.
-  [[nodiscard]] static StatusOr<RecordHeader> FromString(base::StringPiece s) {
+  [[nodiscard]] static StatusOr<RecordHeader> FromString(std::string_view s) {
     if (s.size() < kSize) {
       return Status(error::INTERNAL, "header is corrupt");
     }
@@ -599,8 +599,8 @@ StorageQueue::OpenNewWriteableFile() {
 }
 
 Status StorageQueue::WriteHeaderAndBlock(
-    base::StringPiece data,
-    base::StringPiece current_record_digest,
+    std::string_view data,
+    std::string_view current_record_digest,
     scoped_refptr<StorageQueue::SingleFile> file) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(storage_queue_sequence_checker_);
 
@@ -658,7 +658,7 @@ Status StorageQueue::WriteHeaderAndBlock(
     const size_t pad_size = total_size - (RecordHeader::kSize + data.size());
     char junk_bytes[FRAME_SIZE];
     crypto::RandBytes(junk_bytes, pad_size);
-    write_status = file->Append(base::StringPiece(&junk_bytes[0], pad_size));
+    write_status = file->Append(std::string_view(&junk_bytes[0], pad_size));
     if (!write_status.ok()) {
       return Status(error::RESOURCE_EXHAUSTED,
                     base::StrCat({"Cannot pad file=", file->name(), " status=",
@@ -668,7 +668,7 @@ Status StorageQueue::WriteHeaderAndBlock(
   return Status::StatusOK();
 }
 
-Status StorageQueue::WriteMetadata(base::StringPiece current_record_digest) {
+Status StorageQueue::WriteMetadata(std::string_view current_record_digest) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(storage_queue_sequence_checker_);
 
   // Test only: Simulate failure if requested
@@ -704,7 +704,7 @@ Status StorageQueue::WriteMetadata(base::StringPiece current_record_digest) {
   // - generation id (8 bytes)
   // - last record digest (crypto::kSHA256Length bytes)
   // Write generation id.
-  auto append_result = meta_file->Append(base::StringPiece(
+  auto append_result = meta_file->Append(std::string_view(
       reinterpret_cast<const char*>(&generation_id_), sizeof(generation_id_)));
   if (!append_result.ok()) {
     return Status(
@@ -1127,7 +1127,7 @@ class StorageQueue::ReadContext : public TaskRunnerContext<Status> {
   }
 
   // Prepares the |blob| for uploading.
-  void CallCurrentRecord(base::StringPiece blob) {
+  void CallCurrentRecord(std::string_view blob) {
     if (!storage_queue_) {
       Response(Status(error::UNAVAILABLE, "StorageQueue shut down"));
       return;
@@ -1242,7 +1242,7 @@ class StorageQueue::ReadContext : public TaskRunnerContext<Status> {
   // the buffer remains intact until the next call to SingleFile::Read.
   // If anything goes wrong (file is shorter than expected, or record hash does
   // not match), returns error.
-  StatusOr<base::StringPiece> EnsureBlob(int64_t sequencing_id) {
+  StatusOr<std::string_view> EnsureBlob(int64_t sequencing_id) {
     if (!storage_queue_) {
       return Status(error::UNAVAILABLE, "StorageQueue shut down");
     }
@@ -2287,7 +2287,7 @@ void StorageQueue::SingleFile::DeleteWarnIfFailed() {
   DeleteFileWarnIfFailed(filename_);
 }
 
-StatusOr<base::StringPiece> StorageQueue::SingleFile::Read(
+StatusOr<std::string_view> StorageQueue::SingleFile::Read(
     uint32_t pos,
     uint32_t size,
     size_t max_buffer_size,
@@ -2367,7 +2367,7 @@ StatusOr<base::StringPiece> StorageQueue::SingleFile::Read(
     return Status(error::OUT_OF_RANGE, "End of file");
   }
   // Prepare reference to actually loaded data.
-  auto read_data = base::StringPiece(buffer_.at(data_start_), actual_size);
+  auto read_data = std::string_view(buffer_.at(data_start_), actual_size);
   // Move start and file position to after that data.
   data_start_ += actual_size;
   file_position_ += actual_size;
@@ -2376,7 +2376,7 @@ StatusOr<base::StringPiece> StorageQueue::SingleFile::Read(
   return read_data;
 }
 
-StatusOr<uint32_t> StorageQueue::SingleFile::Append(base::StringPiece data) {
+StatusOr<uint32_t> StorageQueue::SingleFile::Append(std::string_view data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!handle_) {
     return Status(error::UNAVAILABLE, base::StrCat({"File not open ", name()}));

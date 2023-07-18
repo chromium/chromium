@@ -74,7 +74,7 @@ ReportQueueConfiguration::Builder::SetRateLimiter(
 }
 
 ReportQueueConfiguration::Builder ReportQueueConfiguration::Builder::SetDMToken(
-    base::StringPiece dm_token) {
+    std::string_view dm_token) {
   if (final_value_.ok()) {
     auto status = final_value_.ValueOrDie()->SetDMToken(dm_token);
     if (!status.ok()) {
@@ -133,7 +133,7 @@ ReportQueueConfiguration::Create(
 // static
 StatusOr<std::unique_ptr<ReportQueueConfiguration>>
 ReportQueueConfiguration::Create(
-    base::StringPiece dm_token,
+    std::string_view dm_token,
     Destination destination,
     PolicyCheckCallback policy_check_callback,
     std::unique_ptr<RateLimiterInterface> rate_limiter,
@@ -172,7 +172,7 @@ Status ReportQueueConfiguration::CheckPolicy() const {
   return policy_check_callback_.Run();
 }
 
-Status ReportQueueConfiguration::SetDMToken(base::StringPiece dm_token) {
+Status ReportQueueConfiguration::SetDMToken(std::string_view dm_token) {
   dm_token_ = std::string(dm_token);
   return Status::StatusOK();
 }

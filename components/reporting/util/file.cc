@@ -90,7 +90,7 @@ StatusOr<std::string> MaybeReadFile(const base::FilePath& file_path,
 }
 
 Status AppendLine(const base::FilePath& file_path,
-                  const base::StringPiece& data) {
+                  const std::string_view& data) {
   base::File file(file_path,
                   base::File::FLAG_OPEN_ALWAYS | base::File::FLAG_APPEND);
   if (!file.IsValid()) {
@@ -140,7 +140,7 @@ StatusOr<uint32_t> RemoveAndTruncateLine(const base::FilePath& file_path,
 }
 
 Status MaybeWriteFile(const base::FilePath& file_path,
-                      const base::StringPiece& data) {
+                      const std::string_view& data) {
   base::File file(file_path,
                   base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
   if (!file.IsValid()) {

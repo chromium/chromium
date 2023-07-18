@@ -223,7 +223,7 @@ class Storage::KeyDelivery {
 
 class Storage::KeyInStorage {
  public:
-  KeyInStorage(base::StringPiece signature_verification_public_key,
+  KeyInStorage(std::string_view signature_verification_public_key,
                const base::FilePath& directory)
       : verifier_(signature_verification_public_key), directory_(directory) {}
   ~KeyInStorage() = default;

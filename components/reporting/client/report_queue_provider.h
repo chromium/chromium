@@ -60,7 +60,7 @@ BASE_DECLARE_FEATURE(kEncryptedReportingPipeline);
 //             reporting::ReportQueueProvider::CreateQueue(
 //                 std::move(config),
 //                 base::BindOnce(
-//                     [](base::StringPiece data,
+//                     [](std::string_view data,
 //                        reporting::ReportQueue::EnqueueCallback
 //                        done_cb, reporting::StatusOr<std::unique_ptr<
 //                            reporting::ReportQueue>>

@@ -35,13 +35,13 @@ bool ProduceSymmetricKey(const uint8_t shared_secret[kKeySize],
 // Returns true and filled in encrypted |output_data|, if successful.
 // Otherwise returns false.
 bool PerformSymmetricEncryption(const uint8_t symmetric_key[kKeySize],
-                                base::StringPiece input_data,
+                                std::string_view input_data,
                                 std::string* output_data);
 
 // Verifies ED25519 |signature| of the |message|. Returns true if successful,
 // false otherwise.
 bool VerifySignature(const uint8_t verification_key[kKeySize],
-                     base::StringPiece message,
+                     std::string_view message,
                      const uint8_t signature[kSignatureSize]);
 
 }  // namespace reporting

@@ -124,7 +124,7 @@ class StorageQueueTest
                 (const));
     MOCK_METHOD(bool,
                 UploadRecord,
-                (int64_t /*uploader_id*/, int64_t, base::StringPiece),
+                (int64_t /*uploader_id*/, int64_t, std::string_view),
                 (const));
     MOCK_METHOD(bool,
                 UploadRecordFailure,
@@ -136,7 +136,7 @@ class StorageQueueTest
                 (const));
     MOCK_METHOD(void,
                 HasUnencryptedCopy,
-                (int64_t /*uploader_id*/, Destination, base::StringPiece),
+                (int64_t /*uploader_id*/, Destination, std::string_view),
                 (const));
     MOCK_METHOD(void,
                 UploadComplete,
@@ -301,7 +301,7 @@ class StorageQueueTest
         return std::move(uploader_);
       }
 
-      SetUp& Required(int64_t sequencing_id, base::StringPiece value) {
+      SetUp& Required(int64_t sequencing_id, std::string_view value) {
         CHECK(uploader_) << "'Complete' already called";
         EXPECT_CALL(*uploader_->mock_upload_,
                     UploadRecord(Eq(uploader_id_), Eq(sequencing_id),
@@ -311,7 +311,7 @@ class StorageQueueTest
         return *this;
       }
 
-      SetUp& Possible(int64_t sequencing_id, base::StringPiece value) {
+      SetUp& Possible(int64_t sequencing_id, std::string_view value) {
         CHECK(uploader_) << "'Complete' already called";
         EXPECT_CALL(*uploader_->mock_upload_,
                     UploadRecord(Eq(uploader_id_), Eq(sequencing_id),
@@ -343,7 +343,7 @@ class StorageQueueTest
 
       SetUp& HasUnencryptedCopy(int64_t sequencing_id,
                                 Destination destination,
-                                base::StringPiece value) {
+                                std::string_view value) {
         CHECK(uploader_) << "'Complete' already called";
         EXPECT_CALL(*uploader_->mock_upload_,
                     HasUnencryptedCopy(Eq(uploader_id_), Eq(destination),
@@ -747,7 +747,7 @@ class StorageQueueTest
             reason, std::move(start_uploader_cb), base::Unretained(this)));
   }
 
-  Status WriteString(base::StringPiece data) {
+  Status WriteString(std::string_view data) {
     Record record;
     record.set_data(std::string(data));
     record.set_destination(UPLOAD_EVENTS);
@@ -766,7 +766,7 @@ class StorageQueueTest
     return write_event.result();
   }
 
-  void WriteStringOrDie(base::StringPiece data) {
+  void WriteStringOrDie(std::string_view data) {
     const Status write_result = WriteString(data);
     ASSERT_OK(write_result) << write_result;
   }

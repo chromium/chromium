@@ -57,7 +57,7 @@ TEST_F(MetricReportQueueTest, ManualUpload) {
 
   MetricReportQueue metric_report_queue(std::move(mock_queue), priority_);
   EXPECT_CALL(*mock_queue_ptr, AddRecord(_, _, _))
-      .WillOnce([&record, this](base::StringPiece record_string,
+      .WillOnce([&record, this](std::string_view record_string,
                                 Priority actual_priority,
                                 ReportQueue::EnqueueCallback cb) {
         std::move(cb).Run(Status());
