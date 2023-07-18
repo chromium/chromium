@@ -142,10 +142,10 @@ TEST_F(AccountsMutatorTest, UpdateAccountInfo) {
   identity_manager_observer()->SetOnRefreshTokenUpdatedCallback(
       run_loop.QuitClosure());
 
-  CoreAccountId account_id =
-      identity_test_env()
-          ->MakePrimaryAccountAvailable(kTestEmail, signin::ConsentLevel::kSync)
-          .account_id;
+  CoreAccountId account_id = identity_test_env()
+                                 ->MakePrimaryAccountAvailable(
+                                     kTestEmail, signin::ConsentLevel::kSignin)
+                                 .account_id;
   run_loop.Run();
 
   EXPECT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 1U);
@@ -328,7 +328,7 @@ TEST_F(AccountsMutatorTest,
   // Set up the primary account.
   std::string primary_account_email("primary.account@example.com");
   AccountInfo primary_account_info = MakePrimaryAccountAvailable(
-      identity_manager(), primary_account_email, signin::ConsentLevel::kSync);
+      identity_manager(), primary_account_email, signin::ConsentLevel::kSignin);
 
   // Now try invalidating the primary account, and check that it gets updated.
   base::RunLoop run_loop;
@@ -366,7 +366,7 @@ TEST_F(
   // Set up the primary account.
   std::string primary_account_email("primary.account@example.com");
   AccountInfo primary_account_info = MakePrimaryAccountAvailable(
-      identity_manager(), primary_account_email, signin::ConsentLevel::kSync);
+      identity_manager(), primary_account_email, signin::ConsentLevel::kSignin);
 
   // Next, add a secondary account.
   base::RunLoop run_loop;
@@ -428,7 +428,7 @@ TEST_F(AccountsMutatorTest,
     return;
 
   EXPECT_FALSE(
-      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
 
   // Now try invalidating the primary account, and make sure the test
   // expectedly fails, since the primary account is not set.
