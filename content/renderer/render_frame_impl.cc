@@ -1492,7 +1492,7 @@ RenderFrameImpl* RenderFrameImpl::CreateMainFrame(
 
   CHECK(!render_frame->in_frame_tree_);
   render_frame->in_frame_tree_ = true;
-#if !((BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_ARM32)) || \
+#if !((BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_32_BITS)) || \
       (BUILDFLAG(IS_CHROMEOS) && defined(ARCH_CPU_ARM64)))
   render_frame->added_to_frame_tree_stack_trace_.emplace();
 #endif
@@ -1605,7 +1605,7 @@ void RenderFrameImpl::CreateFrame(
     // call to createLocalChild.
     CHECK(!render_frame->in_frame_tree_);
     render_frame->in_frame_tree_ = true;
-#if !((BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_ARM32)) || \
+#if !((BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_32_BITS)) || \
       (BUILDFLAG(IS_CHROMEOS) && defined(ARCH_CPU_ARM64)))
     render_frame->added_to_frame_tree_stack_trace_.emplace();
 #endif
@@ -3569,7 +3569,7 @@ blink::WebLocalFrame* RenderFrameImpl::CreateChildFrame(
 
   CHECK(!child_render_frame->in_frame_tree_);
   child_render_frame->in_frame_tree_ = true;
-#if !((BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_ARM32)) || \
+#if !((BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_32_BITS)) || \
       (BUILDFLAG(IS_CHROMEOS) && defined(ARCH_CPU_ARM64)))
   child_render_frame->added_to_frame_tree_stack_trace_.emplace();
 #endif
@@ -5077,7 +5077,7 @@ bool RenderFrameImpl::SwapIn(WebFrame* previous_web_frame) {
 
   CHECK(!in_frame_tree_);
   in_frame_tree_ = true;
-#if !((BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_ARM32)) || \
+#if !((BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_32_BITS)) || \
       (BUILDFLAG(IS_CHROMEOS) && defined(ARCH_CPU_ARM64)))
   added_to_frame_tree_stack_trace_.emplace();
 #endif
