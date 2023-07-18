@@ -112,9 +112,6 @@ class BoxLayoutOverflowModel {
   BoxLayoutOverflowModel& operator=(const BoxLayoutOverflowModel&) = delete;
 
   const LayoutRect& LayoutOverflowRect() const { return layout_overflow_; }
-  void AddLayoutOverflow(const LayoutRect& rect) {
-    UniteLayoutOverflowRect(layout_overflow_, rect);
-  }
 
  private:
   LayoutRect layout_overflow_;

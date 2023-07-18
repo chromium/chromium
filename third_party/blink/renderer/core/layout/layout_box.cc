@@ -4914,55 +4914,6 @@ RecalcLayoutOverflowResult LayoutBox::RecalcChildLayoutOverflowNG() {
   return result;
 }
 
-DISABLE_CFI_PERF
-void LayoutBox::AddLayoutOverflow(const LayoutRect& rect) {
-  NOT_DESTROYED();
-  if (rect.IsEmpty())
-    return;
-
-  LayoutRect client_box = NoOverflowRect();
-  if (client_box.Contains(rect))
-    return;
-
-  // For overflow clip objects, we don't want to propagate overflow into
-  // unreachable areas.
-  LayoutRect overflow_rect(rect);
-  if (IsScrollContainer() || IsA<LayoutView>(this)) {
-    // Overflow is in the block's coordinate space and thus is flipped for
-    // vertical-rl writing
-    // mode.  At this stage that is actually a simplification, since we can
-    // treat vertical-lr/rl
-    // as the same.
-    if (HasTopOverflow()) {
-      overflow_rect.ShiftMaxYEdgeTo(
-          std::min(overflow_rect.MaxY(), client_box.MaxY()));
-    } else {
-      overflow_rect.ShiftYEdgeTo(std::max(overflow_rect.Y(), client_box.Y()));
-    }
-    if (HasLeftOverflow() !=
-        IsFlippedBlocksWritingMode(StyleRef().GetWritingMode())) {
-      overflow_rect.ShiftMaxXEdgeTo(
-          std::min(overflow_rect.MaxX(), client_box.MaxX()));
-    } else {
-      overflow_rect.ShiftXEdgeTo(std::max(overflow_rect.X(), client_box.X()));
-    }
-
-    // Now re-test with the adjusted rectangle and see if it has become
-    // unreachable or fully
-    // contained.
-    if (client_box.Contains(overflow_rect) || overflow_rect.IsEmpty())
-      return;
-  }
-
-  if (!LayoutOverflowIsSet()) {
-    if (!overflow_)
-      overflow_ = std::make_unique<BoxOverflowModel>();
-    overflow_->layout_overflow.emplace(client_box);
-  }
-
-  overflow_->layout_overflow->AddLayoutOverflow(overflow_rect);
-}
-
 void LayoutBox::AddSelfVisualOverflow(const LayoutRect& rect) {
   NOT_DESTROYED();
   if (rect.IsEmpty())

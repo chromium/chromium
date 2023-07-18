@@ -3292,8 +3292,6 @@ void LocalFrameView::ForceLayoutForPagination(const gfx::SizeF& page_size,
                           page_size.height() * maximum_shrink_factor));
       gfx::SizeF max_page_size = frame_->ResizePageRectsKeepingRatio(
           /* aspect_ratio */ page_size, expected_page_size);
-      page_logical_width = horizontal_writing_mode ? max_page_size.width()
-                                                   : max_page_size.height();
       layout_view->SetPageSize({LayoutUnit(max_page_size.width()),
                                 LayoutUnit(max_page_size.height())});
       layout_view
@@ -3302,27 +3300,8 @@ void LocalFrameView::ForceLayoutForPagination(const gfx::SizeF& page_size,
       frame_->GetDocument()->UpdateStyleAndLayout(
           DocumentUpdateReason::kPrinting);
 
-      WritingModeConverter converter(
-          layout_view->StyleRef().GetWritingDirection(),
-          PhysicalSize(layout_view->Size()));
-      LogicalRect logical_rect =
-          converter.ToLogical(layout_view->DocumentRect());
-      LayoutUnit clipped_logical_left;
-      if (!layout_view->StyleRef().IsLeftToRightDirection()) {
-        clipped_logical_left =
-            LayoutUnit(logical_rect.InlineEndOffset() - page_logical_width);
-      }
-      logical_rect.offset.inline_offset = clipped_logical_left;
-      logical_rect.size.inline_size = LayoutUnit(page_logical_width);
-
       AdjustViewSize();
       UpdateStyleAndLayout();
-      // This is how we clip in case we overflow again.
-      layout_view->ClearLayoutOverflow();
-      layout_view->AddLayoutOverflow(
-          converter.ToPhysical(logical_rect)
-              .ToLayoutFlippedRect(layout_view->StyleRef(),
-                                   PhysicalSize(layout_view->Size())));
       return;
     }
   }
