@@ -321,7 +321,8 @@ class DeskBarScrollViewLayout : public views::LayoutManager {
     auto* library_button = bar_view_->library_button();
     const bool library_button_visible =
         library_button && library_button->GetVisible();
-    gfx::Size library_button_size = library_button->GetPreferredSize();
+    gfx::Size library_button_size =
+        library_button ? library_button->GetPreferredSize() : gfx::Size();
 
     gfx::Size mini_view_size = mini_views[0]->GetPreferredSize();
 

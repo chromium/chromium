@@ -7867,13 +7867,35 @@ TEST_P(DesksTest, TestCustomDeskNameMetricsRecording) {
   }
 }
 
-// Tests that no crash when entering overview in guest mode. This is a
-// regression test for b/287376870.
-TEST_P(DesksTest, EnterOverviewInGuestMode) {
+// Tests that no crash when entering overview  and clicking on the new desk
+// button in guest mode. This is a regression test for b/287376870 and
+// b/291718574.
+TEST_P(DesksTest, EnterOverviewAndAddDeskInGuestMode) {
   // Simulate a guest user logging in, where the session is ephemeral.
   SimulateGuestLogin();
 
+  // Verify no crash while entering overview mode.
   EnterOverview();
+
+  auto* overview_controller = Shell::Get()->overview_controller();
+  ASSERT_TRUE(overview_controller->InOverviewSession());
+  auto* overview_grid = GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());
+  const auto* desks_bar_view = overview_grid->desks_bar_view();
+
+  auto* event_generator = GetEventGenerator();
+  auto* new_desk_button = GetZeroStateNewDeskButton(desks_bar_view);
+  // Verify no crash while clicking on the new desk button.
+  ClickOnView(new_desk_button, event_generator);
+
+  // Verify that desk bar is transformed to the expanded state from zero state.
+  ASSERT_FALSE(desks_bar_view->IsZeroState());
+  new_desk_button = GetExpandedStateInnerNewDeskButton(desks_bar_view);
+  // Click on the expanded new desk button to add one more desk, verify no
+  // crash.
+  ClickOnView(new_desk_button, event_generator);
+
+  // Verify that there're 3 desks in total now.
+  EXPECT_EQ(3u, DesksController::Get()->desks().size());
 }
 
 // A test class that uses a mock time test environment.
