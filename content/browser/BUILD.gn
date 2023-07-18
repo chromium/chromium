@@ -2653,6 +2653,8 @@ source_set("browser") {
   } else if (is_ios) {
     sources += [
       "child_process_launcher_helper_ios.cc",
+      "date_time_chooser/ios/date_time_chooser_ios.h",
+      "date_time_chooser/ios/date_time_chooser_ios.mm",
       "devtools/protocol/native_input_event_builder_ios.mm",
       "renderer_host/browser_compositor_ios.h",
       "renderer_host/browser_compositor_ios.mm",
@@ -2968,6 +2970,13 @@ source_set("browser") {
     configs += [ "//build/config/linux/pangocairo" ]
   }
 
+  if (is_android || is_ios) {
+    sources += [
+      "date_time_chooser/date_time_chooser.cc",
+      "date_time_chooser/date_time_chooser.h",
+    ]
+  }
+
   if (is_android) {
     sources += [
       "accessibility/accessibility_tree_formatter_android.cc",
@@ -3087,8 +3096,6 @@ source_set("browser") {
       "contacts/contacts_provider_android.h",
       "date_time_chooser/android/date_time_chooser_android.cc",
       "date_time_chooser/android/date_time_chooser_android.h",
-      "date_time_chooser/date_time_chooser.cc",
-      "date_time_chooser/date_time_chooser.h",
       "font_unique_name_lookup/font_unique_name_lookup.cc",
       "font_unique_name_lookup/font_unique_name_lookup.h",
       "font_unique_name_lookup/font_unique_name_lookup_service.cc",
