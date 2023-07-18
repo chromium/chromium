@@ -114,12 +114,9 @@ bool DawnContextProvider::Initialize(CacheBlobCallback callback) {
 #endif
 
   instance_ = webgpu::DawnInstance::Create(platform_.get(), preferences);
-  instance_->DiscoverDefaultPhysicalDevices();
 
   // If a new toggle is added here, ForceDawnTogglesForSkia() which collects
   // info for about:gpu should be updated as well.
-  wgpu::DeviceDescriptor descriptor;
-
   wgpu::DawnTogglesDescriptor toggles_desc;
   std::vector<const char*> enabled_toggles;
 #if DCHECK_IS_ON()
@@ -132,6 +129,8 @@ bool DawnContextProvider::Initialize(CacheBlobCallback callback) {
 #endif
   toggles_desc.enabledToggles = enabled_toggles.data();
   toggles_desc.enabledTogglesCount = enabled_toggles.size();
+
+  wgpu::DeviceDescriptor descriptor;
   descriptor.nextInChain = &toggles_desc;
 
   // TODO(crbug.com/1456492): verify the required features.
