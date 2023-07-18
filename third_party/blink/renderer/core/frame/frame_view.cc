@@ -58,16 +58,20 @@ bool FrameView::DisplayLockedInParentFrame() {
   return DisplayLockUtilities::LockedInclusiveAncestorPreventingPaint(*owner);
 }
 
-void FrameView::UpdateViewportIntersection(unsigned flags,
-                                           bool needs_occlusion_tracking) {
-  if (!(flags & IntersectionObservation::kImplicitRootObserversNeedUpdate))
-    return;
+gfx::Vector2dF FrameView::UpdateViewportIntersection(
+    unsigned flags,
+    bool needs_occlusion_tracking) {
+  if (!(flags &
+        IntersectionObservation::kFrameViewportIntersectionNeedsUpdate)) {
+    return min_scroll_delta_to_update_viewport_intersection_;
+  }
 
   // This should only run in child frames.
   Frame& frame = GetFrame();
   HTMLFrameOwnerElement* owner_element = frame.DeprecatedLocalOwner();
-  if (!owner_element)
-    return;
+  if (!owner_element) {
+    return gfx::Vector2dF();
+  }
 
   Document& owner_document = owner_element->GetDocument();
   gfx::Rect viewport_intersection, mainframe_intersection;
@@ -92,11 +96,13 @@ void FrameView::UpdateViewportIntersection(unsigned flags,
     // zero size, or it's display locked in parent frame; leave
     // viewport_intersection empty, and signal the frame as occluded if
     // necessary.
+    min_scroll_delta_to_update_viewport_intersection_ =
+        IntersectionGeometry::kInfiniteScrollDelta;
     occlusion_state = mojom::blink::FrameOcclusionState::kPossiblyOccluded;
   } else if (parent_lifecycle_state >= DocumentLifecycle::kLayoutClean &&
              !owner_document.View()->NeedsLayout()) {
     unsigned geometry_flags =
-        IntersectionGeometry::kShouldUseReplacedContentRect;
+        IntersectionGeometry::kForFrameViewportIntersection;
     if (should_compute_occlusion)
       geometry_flags |= IntersectionGeometry::kShouldComputeVisibility;
 
@@ -104,6 +110,8 @@ void FrameView::UpdateViewportIntersection(unsigned flags,
                                   {IntersectionObserver::kMinimumThreshold},
                                   {} /* target_margin */, geometry_flags);
     PhysicalRect new_rect_in_parent = geometry.IntersectionRect();
+    min_scroll_delta_to_update_viewport_intersection_ =
+        geometry.MinScrollDeltaToUpdate();
     if (new_rect_in_parent.size != rect_in_parent_.size ||
         ((new_rect_in_parent.X() - rect_in_parent_.X()).Abs() +
              (new_rect_in_parent.Y() - rect_in_parent_.Y()).Abs() >
@@ -150,7 +158,7 @@ void FrameView::UpdateViewportIntersection(unsigned flags,
       // intersection rect that is bigger than the rect we started with. Clamp
       // the size of the viewport intersection to the bounds of the iframe's
       // content rect.
-      // TODO(crbug.com/1266532): This should be
+      // TODO(crbug.com/1266676): This should be
       //   viewport_intersection.Intersect(gfx::Rect(gfx::Point(),
       //       owner_layout_object->ContentSize()));
       // but it exposes a bug of incorrect origin of viewport_intersection in
@@ -177,7 +185,7 @@ void FrameView::UpdateViewportIntersection(unsigned flags,
       } else {
         mainframe_intersection = ToEnclosingRect(mainframe_intersection_rect);
       }
-      // TODO(crbug.com/1266532): This should be
+      // TODO(crbug.com/1266676): This should be
       //   mainframe_intersection.Intersect(gfx::Rect(gfx::Point(),
       //       owner_layout_object->ContentSize()));
       // but it exposes a bug of incorrect origin of mainframe_intersection in
@@ -259,6 +267,7 @@ void FrameView::UpdateViewportIntersection(unsigned flags,
   }
   UpdateRenderThrottlingStatus(should_throttle, subtree_throttled,
                                display_locked_in_parent_frame);
+  return min_scroll_delta_to_update_viewport_intersection_;
 }
 
 void FrameView::UpdateFrameVisibility(bool intersects_viewport) {

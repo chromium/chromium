@@ -17,6 +17,7 @@
 namespace blink {
 
 class Frame;
+struct IntersectionUpdateResult;
 struct IntrinsicSizingInfo;
 
 class CORE_EXPORT FrameView : public EmbeddedContentView {
@@ -27,7 +28,7 @@ class CORE_EXPORT FrameView : public EmbeddedContentView {
   // parent_flags is the result of calling GetIntersectionObservationFlags on
   // the LocalFrameView parent of this FrameView (if any). It contains dirty
   // bits based on whether geometry may have changed in the parent frame.
-  virtual bool UpdateViewportIntersectionsForSubtree(
+  virtual IntersectionUpdateResult UpdateViewportIntersectionsForSubtree(
       unsigned parent_flags,
       absl::optional<base::TimeTicks>& monotonic_time) = 0;
 
@@ -74,7 +75,18 @@ class CORE_EXPORT FrameView : public EmbeddedContentView {
       const mojom::blink::ViewportIntersectionState& intersection_state) = 0;
   virtual void VisibilityForThrottlingChanged() = 0;
   virtual bool LifecycleUpdatesThrottled() const { return false; }
-  void UpdateViewportIntersection(unsigned, bool);
+
+  // Returns the minimum scroll delta in the parent frame to update
+  // implicit-root intersection observers in this frame. This only affects
+  // when the parent frame propagates the kImplicitRootObserversNeedUpdate flag
+  // to this frame during UpdateViewportIntersectionForSubtree(), but doesn't
+  // affect the kFrameViewportIntersectionNeedsUpdate flag. The return value
+  // is only based on the intersection relationship between this frame's
+  // content rect and the viewport. The caller may disregard the result due to
+  // other constraints.
+  gfx::Vector2dF UpdateViewportIntersection(unsigned flags,
+                                            bool needs_occlusion_tracking);
+
   // FrameVisibility is tracked by the browser process, which may suppress
   // lifecycle updates for a frame outside the viewport.
   void UpdateFrameVisibility(bool);
@@ -87,6 +99,8 @@ class CORE_EXPORT FrameView : public EmbeddedContentView {
   PhysicalRect rect_in_parent_;
   base::TimeTicks rect_in_parent_stable_since_;
   blink::mojom::FrameVisibility frame_visibility_;
+  // Caches the result of UpdateVIewportIntersection().
+  gfx::Vector2dF min_scroll_delta_to_update_viewport_intersection_;
   bool hidden_for_throttling_ = false;
   bool subtree_throttled_ = false;
   bool display_locked_ = false;

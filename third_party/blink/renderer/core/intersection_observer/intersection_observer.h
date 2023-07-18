@@ -168,6 +168,7 @@ class CORE_EXPORT IntersectionObserver final
   Vector<Length> TargetMargin() const {
     return margin_target_ == kApplyMarginToTarget ? margin_ : Vector<Length>();
   }
+  bool HasRootMargin() const;
 
   // Returns the number of IntersectionObservations that recomputed geometry.
   int64_t ComputeIntersections(unsigned flags,

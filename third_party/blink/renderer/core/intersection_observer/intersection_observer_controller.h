@@ -18,6 +18,18 @@ namespace blink {
 
 class ExecutionContext;
 
+struct IntersectionUpdateResult {
+  // True if trackVisibility() is true for any tracked observer.
+  bool needs_occlusion_tracking = false;
+  // If this is true, the parent frame will use zero min_scroll_delta_to_update,
+  // i.e. will update intersection on every scroll.
+  bool has_implicit_root_observer_with_margin = false;
+  // We only need to update intersection if the accumulated scroll delta in the
+  // frame exceeds this value in either direction.
+  gfx::Vector2dF min_scroll_delta_to_update =
+      IntersectionGeometry::kInfiniteScrollDelta;
+};
+
 class IntersectionObserverController
     : public GarbageCollected<IntersectionObserverController>,
       public ExecutionContextClient,
@@ -34,14 +46,11 @@ class IntersectionObserverController
 
   // The flags argument is composed of values from
   // IntersectionObservation::ComputeFlags. They are dirty bits that control
-  // whether an IntersectionObserver needs to do any work. The return value
-  // communicates whether observer->trackVisibility() is true for any tracked
-  // observer.
-  bool ComputeIntersections(unsigned flags,
-                            LocalFrameUkmAggregator* metrics_aggregator,
-                            absl::optional<base::TimeTicks>& monotonic_time);
-
-  gfx::Vector2dF MinScrollDeltaToUpdate() const;
+  // whether an IntersectionObserver needs to do any work.
+  IntersectionUpdateResult ComputeIntersections(
+      unsigned flags,
+      LocalFrameUkmAggregator* metrics_aggregator,
+      absl::optional<base::TimeTicks>& monotonic_time);
 
   // The second argument indicates whether the Element is a target of any
   // observers for which observer->trackVisibility() is true.

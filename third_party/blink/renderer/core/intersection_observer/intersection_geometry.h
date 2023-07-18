@@ -39,7 +39,7 @@ class CORE_EXPORT IntersectionGeometry {
     kShouldReportRootBounds = 1 << 0,
     kShouldComputeVisibility = 1 << 1,
     kShouldTrackFractionOfRoot = 1 << 2,
-    kShouldUseReplacedContentRect = 1 << 3,
+    kForFrameViewportIntersection = 1 << 3,
     kShouldConvertToCSSPixels = 1 << 4,
     // Applies to boxes. If true, OverflowClipRect() is used if necessary
     // instead of BorderBoundingBox().
@@ -135,11 +135,18 @@ class CORE_EXPORT IntersectionGeometry {
   bool IsIntersecting() const { return threshold_index_ > 0; }
   bool IsVisible() const { return flags_ & kIsVisible; }
 
+  gfx::Vector2dF MinScrollDeltaToUpdate() const {
+    return min_scroll_delta_to_update_;
+  }
+
   bool CanUseCachedRectsForTesting() const { return ShouldUseCachedRects(); }
 
  private:
   bool RootIsImplicit() const { return flags_ & kRootIsImplicit; }
   bool ShouldUseCachedRects() const { return flags_ & kShouldUseCachedRects; }
+  bool IsForFrameViewportIntersection() const {
+    return flags_ & kForFrameViewportIntersection;
+  }
 
   struct RootAndTarget {
     STACK_ALLOCATED();
@@ -199,6 +206,7 @@ class CORE_EXPORT IntersectionGeometry {
   PhysicalRect intersection_rect_;
   PhysicalRect unclipped_intersection_rect_;
   PhysicalRect root_rect_;
+  gfx::Vector2dF min_scroll_delta_to_update_;
   unsigned flags_;
   double intersection_ratio_ = 0;
   unsigned threshold_index_ = 0;

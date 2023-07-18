@@ -470,6 +470,15 @@ DOMHighResTimeStamp IntersectionObserver::GetTimeStamp(
       ->MonotonicTimeToDOMHighResTimeStamp(monotonic_time);
 }
 
+bool IntersectionObserver::HasRootMargin() const {
+  if (margin_target_ == kApplyMarginToTarget) {
+    return false;
+  }
+  CHECK_EQ(margin_.size(), 4u);
+  return !margin_[0].IsZero() || !margin_[1].IsZero() || !margin_[2].IsZero() ||
+         !margin_[3].IsZero();
+}
+
 int64_t IntersectionObserver::ComputeIntersections(
     unsigned flags,
     absl::optional<base::TimeTicks>& monotonic_time) {

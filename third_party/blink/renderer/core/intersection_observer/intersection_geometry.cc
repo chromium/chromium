@@ -105,8 +105,7 @@ std::pair<PhysicalRect, bool> InitializeTargetRect(const LayoutObject* target,
                                                    const Vector<Length>& margin,
                                                    const LayoutObject* root) {
   std::pair<PhysicalRect, bool> result;
-  if ((flags & IntersectionGeometry::kShouldUseReplacedContentRect) &&
-      target->IsLayoutEmbeddedContent()) {
+  if (flags & IntersectionGeometry::kForFrameViewportIntersection) {
     result.first = To<LayoutEmbeddedContent>(target)->ReplacedContentRect();
   } else if (target->IsBox()) {
     result.first =
@@ -162,7 +161,7 @@ static const unsigned kConstructorFlagsMask =
     IntersectionGeometry::kShouldReportRootBounds |
     IntersectionGeometry::kShouldComputeVisibility |
     IntersectionGeometry::kShouldTrackFractionOfRoot |
-    IntersectionGeometry::kShouldUseReplacedContentRect |
+    IntersectionGeometry::kForFrameViewportIntersection |
     IntersectionGeometry::kShouldConvertToCSSPixels |
     IntersectionGeometry::kUseOverflowClipEdge;
 
@@ -560,10 +559,12 @@ void IntersectionGeometry::ComputeGeometry(const RootGeometry& root_geometry,
     root_rect_ = PhysicalRect::EnclosingRect(root_float_rect);
   }
 
+  min_scroll_delta_to_update_ = ComputeMinScrollDeltaToUpdate(
+      root_and_target, target_to_document_transform,
+      root_geometry.root_to_document_transform, thresholds);
+
   if (cached_rects) {
-    cached_rects->min_scroll_delta_to_update = ComputeMinScrollDeltaToUpdate(
-        root_and_target, target_to_document_transform,
-        root_geometry.root_to_document_transform, thresholds);
+    cached_rects->min_scroll_delta_to_update = min_scroll_delta_to_update_;
     cached_rects->valid = true;
   }
 }
@@ -742,7 +743,8 @@ gfx::Vector2dF IntersectionGeometry::ComputeMinScrollDeltaToUpdate(
   if (root_rect_.IntersectsInclusively(target_rect_) &&
       (thresholds.size() != 1 || thresholds[0] > kMinimumThreshold ||
        root_and_target.relationship ==
-           RootAndTarget::kScrollableWithIntermediateClippers)) {
+           RootAndTarget::kScrollableWithIntermediateClippers ||
+       IsForFrameViewportIntersection())) {
     return gfx::Vector2dF();
   }
   // Otherwise we can skip update until root_rect_ and target_rect_ is about

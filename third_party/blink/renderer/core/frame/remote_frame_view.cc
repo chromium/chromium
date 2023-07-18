@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/frame/remote_frame.h"
 #include "third_party/blink/renderer/core/frame/remote_frame_client.h"
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
+#include "third_party/blink/renderer/core/intersection_observer/intersection_observer_controller.h"
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/page/page.h"
@@ -98,11 +99,11 @@ void RemoteFrameView::DetachFromLayout() {
   SetAttached(false);
 }
 
-bool RemoteFrameView::UpdateViewportIntersectionsForSubtree(
+IntersectionUpdateResult RemoteFrameView::UpdateViewportIntersectionsForSubtree(
     unsigned parent_flags,
     absl::optional<base::TimeTicks>&) {
   UpdateViewportIntersection(parent_flags, needs_occlusion_tracking_);
-  return needs_occlusion_tracking_;
+  return IntersectionUpdateResult{needs_occlusion_tracking_};
 }
 
 void RemoteFrameView::SetViewportIntersection(
