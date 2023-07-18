@@ -31,6 +31,7 @@
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/frame.mojom.h"
+#include "content/public/browser/preloading.h"
 #include "content/public/browser/preloading_data.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/visibility.h"
@@ -320,7 +321,7 @@ class PrerenderHostBuilder {
                        PrerenderFinalStatus status);
   void RejectDueToHoldback();
 
-  void SetHoldback(bool holdback);
+  void SetHoldbackOverride(PreloadingHoldbackStatus status);
   bool CheckIfShouldHoldback();
 
   // Public only for exceptional case.
@@ -413,15 +414,12 @@ void PrerenderHostBuilder::RejectAsDuplicate() {
   Drop();
 }
 
-void PrerenderHostBuilder::SetHoldback(bool holdback) {
+void PrerenderHostBuilder::SetHoldbackOverride(
+    PreloadingHoldbackStatus status) {
   if (!attempt_) {
     return;
   }
-  if (holdback) {
-    attempt_->SetHoldbackStatus(PreloadingHoldbackStatus::kHoldback);
-  } else {
-    attempt_->SetHoldbackStatus(PreloadingHoldbackStatus::kAllowed);
-  }
+  attempt_->SetHoldbackStatus(status);
 }
 
 void PrerenderHostBuilder::RejectAsFailure(
@@ -640,17 +638,28 @@ int PrerenderHostRegistry::CreateAndStartHost(
     if (attempt)
       attempt->SetEligibility(PreloadingEligibility::kEligible);
 
-    // Check for the HoldbackStatus after checking the eligibility. Override
-    // preloading holdbacks rules when DevTools is opened to mitigate the cases
-    // in which developers are affected by holdbacks.
-    bool should_holdbacks_be_overridden =
+    // Normally CheckIfShouldHoldback() computes the holdback status based on
+    // PreloadingConfig. In special cases, we call SetHoldbackOverride() to
+    // override that processing.
+    bool has_devtools_open =
         initiator_rfh &&
         RenderFrameDevToolsAgentHost::GetFor(initiator_rfh) != nullptr;
-    if (should_holdbacks_be_overridden) {
-      builder.SetHoldback(false);
+
+    if (has_devtools_open) {
+      // Never holdback when DevTools is opened, to avoid web developer
+      // frustration.
+      builder.SetHoldbackOverride(PreloadingHoldbackStatus::kAllowed);
     } else if (base::FeatureList::IsEnabled(features::kPrerender2Holdback)) {
-      builder.SetHoldback(true);
+      // The Prerender2Holdback feature overrides the PreloadingConfig logic.
+      // TODO(https://crbug.com/1464173): remove this.
+      builder.SetHoldbackOverride(PreloadingHoldbackStatus::kHoldback);
+    } else if (attributes.holdback_status_override !=
+               PreloadingHoldbackStatus::kUnspecified) {
+      // The caller (e.g. from chrome/) is allowed to specify a holdback that
+      // overrides the default logic.
+      builder.SetHoldbackOverride(attributes.holdback_status_override);
     }
+
     // Check if the attempt is held back either due to the check above or via
     // PreloadingConfig.
     if (builder.CheckIfShouldHoldback()) {

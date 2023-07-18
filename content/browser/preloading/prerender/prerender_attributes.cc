@@ -65,6 +65,7 @@ PrerenderAttributes::PrerenderAttributes(PrerenderAttributes&& attributes)
       initiator_frame_tree_node_id(attributes.initiator_frame_tree_node_id),
       initiator_ukm_id(attributes.initiator_ukm_id),
       transition_type(attributes.transition_type),
+      holdback_status_override(attributes.holdback_status_override),
       url_match_predicate(attributes.url_match_predicate),
       initiator_devtools_navigation_token(
           attributes.initiator_devtools_navigation_token) {}

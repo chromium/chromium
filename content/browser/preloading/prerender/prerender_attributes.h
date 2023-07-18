@@ -8,6 +8,7 @@
 #include <string>
 
 #include "content/common/content_export.h"
+#include "content/public/browser/preloading.h"
 #include "content/public/browser/prerender_trigger_type.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/referrer.h"
@@ -79,6 +80,12 @@ struct CONTENT_EXPORT PrerenderAttributes {
   ukm::SourceId initiator_ukm_id;
 
   ui::PageTransition transition_type;
+
+  // If the caller wants to override the default holdback processing, they can
+  // set this. Otherwise, it will be computed as part of
+  // PrerenderHostRegistry::CreateAndStartHost.
+  PreloadingHoldbackStatus holdback_status_override =
+      PreloadingHoldbackStatus::kUnspecified;
 
   // Triggers can specify their own predicate judging whether two URLs are
   // considered as pointing to the same destination. The URLs must be in

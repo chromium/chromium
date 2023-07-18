@@ -30,6 +30,7 @@
 #include "components/search_engines/template_url_service.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/preloading.h"
 #include "content/public/browser/preloading_data.h"
 #include "content/public/browser/prerender_handle.h"
 #include "content/public/browser/replaced_navigation_entry_data.h"
@@ -369,7 +370,7 @@ PrerenderManager::StartPrerenderBookmark(
       prerendering_url, content::PrerenderTriggerType::kEmbedder,
       prerender_utils::kBookmarkBarMetricSuffix,
       ui::PageTransitionFromInt(ui::PAGE_TRANSITION_AUTO_BOOKMARK),
-      preloading_attempt);
+      content::PreloadingHoldbackStatus::kUnspecified, preloading_attempt);
 
   return bookmark_prerender_handle_ ? bookmark_prerender_handle_->GetWeakPtr()
                                     : nullptr;
@@ -415,7 +416,7 @@ PrerenderManager::StartPrerenderDirectUrlInput(
       prerender_utils::kDirectUrlInputMetricSuffix,
       ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
                                 ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
-      &preloading_attempt);
+      content::PreloadingHoldbackStatus::kUnspecified, &preloading_attempt);
 
   if (direct_url_input_prerender_handle_) {
     return direct_url_input_prerender_handle_->GetWeakPtr();
@@ -637,6 +638,7 @@ void PrerenderManager::StartPrerenderSearchResultInternal(
           prerender_utils::kDefaultSearchEngineMetricSuffix,
           ui::PageTransitionFromInt(ui::PAGE_TRANSITION_GENERATED |
                                     ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
+          content::PreloadingHoldbackStatus::kUnspecified,
           /*preloading_attempt=*/attempt.get(), std::move(url_match_predicate));
 
   if (prerender_handle) {

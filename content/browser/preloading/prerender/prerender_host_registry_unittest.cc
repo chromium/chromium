@@ -325,7 +325,69 @@ TEST_F(PrerenderHostRegistryTest, CreateAndStartHost_PreloadingConfigHoldback) {
                                   PrerenderTriggerType::kSpeculationRule, "",
                                   contents()->GetPrimaryMainFrame()),
       preloading_attempt);
-  ASSERT_EQ(prerender_frame_tree_node_id, kNoFrameTreeNodeId);
+  EXPECT_EQ(prerender_frame_tree_node_id, kNoFrameTreeNodeId);
+}
+
+TEST_F(PrerenderHostRegistryTest,
+       CreateAndStartHost_HoldbackOverride_Holdback) {
+  const GURL kPrerenderingUrl("https://example.com/next");
+  auto* preloading_data = PreloadingData::GetOrCreateForWebContents(contents());
+  PreloadingURLMatchCallback same_url_matcher =
+      PreloadingData::GetSameURLMatcher(kPrerenderingUrl);
+  PreloadingAttempt* preloading_attempt = preloading_data->AddPreloadingAttempt(
+      content_preloading_predictor::kSpeculationRules,
+      PreloadingType::kPrerender, std::move(same_url_matcher));
+
+  auto attributes = GeneratePrerenderAttributes(
+      kPrerenderingUrl, PrerenderTriggerType::kSpeculationRule, "",
+      contents()->GetPrimaryMainFrame());
+  attributes.holdback_status_override = PreloadingHoldbackStatus::kHoldback;
+
+  const int prerender_frame_tree_node_id =
+      registry().CreateAndStartHost(attributes, preloading_attempt);
+
+  EXPECT_EQ(prerender_frame_tree_node_id, kNoFrameTreeNodeId);
+}
+
+TEST_F(PrerenderHostRegistryTest, CreateAndStartHost_HoldbackOverride_Allowed) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeatureWithParameters(features::kPreloadingConfig,
+                                              {{"preloading_config", R"(
+  [{
+    "preloading_type": "Prerender",
+    "preloading_predictor": "SpeculationRules",
+    "holdback": true
+  }]
+  )"}});
+  PreloadingConfig& config = PreloadingConfig::GetInstance();
+  config.ParseConfig();
+  const GURL kPrerenderingUrl("https://example.com/next");
+  auto* preloading_data = PreloadingData::GetOrCreateForWebContents(contents());
+  PreloadingURLMatchCallback same_url_matcher =
+      PreloadingData::GetSameURLMatcher(kPrerenderingUrl);
+  PreloadingAttempt* preloading_attempt = preloading_data->AddPreloadingAttempt(
+      content_preloading_predictor::kSpeculationRules,
+      PreloadingType::kPrerender, std::move(same_url_matcher));
+
+  auto attributes = GeneratePrerenderAttributes(
+      kPrerenderingUrl, PrerenderTriggerType::kSpeculationRule, "",
+      contents()->GetPrimaryMainFrame());
+  attributes.holdback_status_override = PreloadingHoldbackStatus::kAllowed;
+
+  const int prerender_frame_tree_node_id =
+      registry().CreateAndStartHost(attributes, preloading_attempt);
+
+  ASSERT_NE(prerender_frame_tree_node_id, kNoFrameTreeNodeId);
+  PrerenderHost* prerender_host =
+      registry().FindHostByUrlForTesting(kPrerenderingUrl);
+  CommitPrerenderNavigation(*prerender_host);
+
+  contents()->ActivatePrerenderedPage(kPrerenderingUrl);
+
+  // "Navigation.TimeToActivatePrerender.SpeculationRule" histogram should be
+  // recorded on every prerender activation.
+  histogram_tester().ExpectTotalCount(
+      "Navigation.TimeToActivatePrerender.SpeculationRule", 1u);
 }
 
 TEST_F(PrerenderHostRegistryTest, CreateAndStartHostForSameURL) {
