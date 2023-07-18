@@ -77,8 +77,8 @@ source_set("unit_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
+    "bookmark_spotlight_manager_unittest.mm",
     "reading_list_spotlight_manager_unittest.mm",
-    "spotlight_manager_unittest.mm",
   ]
   deps = [
     ":spotlight",
