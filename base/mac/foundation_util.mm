@@ -93,8 +93,10 @@ bool IsBackgroundOnlyProcess() {
   // This function really does want to examine NSBundle's idea of the main
   // bundle dictionary.  It needs to look at the actual running .app's
   // Info.plist to access its LSUIElement property.
-  NSDictionary* info_dictionary = [apple::MainBundle() infoDictionary];
-  return [info_dictionary[@"LSUIElement"] boolValue] != NO;
+  @autoreleasepool {
+    NSDictionary* info_dictionary = [apple::MainBundle() infoDictionary];
+    return [info_dictionary[@"LSUIElement"] boolValue] != NO;
+  }
 }
 
 FilePath PathForFrameworkBundleResource(const char* resource_name) {

@@ -50,12 +50,14 @@ void InitThreading() {
   static BOOL multithreaded = [NSThread isMultiThreaded];
   if (!multithreaded) {
     // +[NSObject class] is idempotent.
-    [NSThread detachNewThreadSelector:@selector(class)
-                             toTarget:[NSObject class]
-                           withObject:nil];
-    multithreaded = YES;
+    @autoreleasepool {
+      [NSThread detachNewThreadSelector:@selector(class)
+                               toTarget:[NSObject class]
+                             withObject:nil];
+      multithreaded = YES;
 
-    DCHECK([NSThread isMultiThreaded]);
+      DCHECK([NSThread isMultiThreaded]);
+    }
   }
 }
 
