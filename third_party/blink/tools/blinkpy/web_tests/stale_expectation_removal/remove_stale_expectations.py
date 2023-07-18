@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import argparse
+import datetime
 import sys
 
 assert sys.version_info[0] == 3
@@ -46,7 +47,7 @@ def main() -> int:
 
     test_expectation_map = expectations_instance.CreateTestExpectationMap(
         expectations_instance.GetExpectationFilepaths(), None,
-        args.expectation_grace_period)
+        datetime.timedelta(days=args.expectation_grace_period))
     ci_builders = builders_instance.GetCiBuilders()
 
     querier = queries.WebTestBigQueryQuerier(None, args.project,

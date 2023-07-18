@@ -5,6 +5,7 @@
 
 from __future__ import print_function
 
+import datetime
 import unittest
 from unittest import mock
 
@@ -42,7 +43,8 @@ class CreateTestExpectationMapUnittest(unittest.TestCase):
 [ linux nvidia ] foo/test [ Slow ]
 [ linux intel ] foo/test [ Failure ]
 """
-    expectation_map = self.instance.CreateTestExpectationMap(filename, None, 0)
+    expectation_map = self.instance.CreateTestExpectationMap(
+        filename, None, datetime.timedelta(days=0))
     # The Slow expectations should be omitted.
     expected_expectation_map = {
         filename: {

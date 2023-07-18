@@ -160,7 +160,7 @@ class Expectations(object):
   def CreateTestExpectationMap(
       self, expectation_files: Optional[Union[str, List[str]]],
       tests: Optional[Iterable[str]],
-      grace_period: int) -> data_types.TestExpectationMap:
+      grace_period: datetime.timedelta) -> data_types.TestExpectationMap:
     """Creates an expectation map based off a file or list of tests.
 
     Args:
@@ -168,9 +168,9 @@ class Expectations(object):
           read from, or None. If a filepath is specified, |tests| must be None.
       tests: An iterable of strings containing test names to check. If
           specified, |expectation_file| must be None.
-      grace_period: An int specifying how many days old an expectation must
-          be in order to be parsed, i.e. how many days old an expectation must
-          be before it is a candidate for removal/modification.
+      grace_period: A datetime.timedelta specifying how many days old an
+          expectation must be in order to be parsed, i.e. how many days old an
+          expectation must be before it is a candidate for removal/modification.
 
     Returns:
       A data_types.TestExpectationMap, although all its BuilderStepMap contents
@@ -221,20 +221,19 @@ class Expectations(object):
     return expectation_map
 
   def _GetNonRecentExpectationContent(self, expectation_file_path: str,
-                                      num_days: int) -> str:
+                                      num_days: datetime.timedelta) -> str:
     """Gets content from |expectation_file_path| older than |num_days| days.
 
     Args:
       expectation_file_path: A string containing a filepath pointing to an
           expectation file.
-      num_days: An int containing how old an expectation in the given
-          expectation file must be to be included.
+      num_days: A datetime.timedelta containing how old an expectation in the
+          given expectation file must be to be included.
 
     Returns:
       The contents of the expectation file located at |expectation_file_path|
       as a string with any recent expectations removed.
     """
-    num_days = datetime.timedelta(days=num_days)
     content = ''
     # `git blame` output is normally in the format:
     # revision optional_filename (author date time timezone lineno) line_content

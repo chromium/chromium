@@ -35,6 +35,7 @@ via `finder:disable-stale` and `finder:enable-stale`.
 """
 
 import argparse
+import datetime
 import os
 
 from gpu_path_util import setup_telemetry_paths  # pylint: disable=unused-import
@@ -120,7 +121,8 @@ def main() -> None:
   expectations.RegisterInstance(expectations_instance)
 
   test_expectation_map = expectations_instance.CreateTestExpectationMap(
-      args.expectation_file, args.tests, args.expectation_grace_period)
+      args.expectation_file, args.tests,
+      datetime.timedelta(days=args.expectation_grace_period))
   ci_builders = builders_instance.GetCiBuilders()
 
   querier = gpu_queries.GpuBigQueryQuerier(args.suite, args.project,
