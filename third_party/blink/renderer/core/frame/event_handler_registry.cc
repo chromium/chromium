@@ -113,13 +113,25 @@ void EventHandlerRegistry::UpdateEventHandlerTargets(
   switch (op) {
     case kAdd:
       targets->insert(target);
+      if (recordreplay::IsRecordingOrReplaying("avoid-weak-pointers",
+                                               "EventHandlerRegistry")) {
+        replay_strong_targets_.insert(target);
+      }
       return;
     case kRemove:
       DCHECK(targets->Contains(target));
       targets->erase(target);
+      if (recordreplay::IsRecordingOrReplaying("avoid-weak-pointers",
+                                               "EventHandlerRegistry")) {
+        replay_strong_targets_.erase(target);
+      }
       return;
     case kRemoveAll:
       targets->RemoveAll(target);
+      if (recordreplay::IsRecordingOrReplaying("avoid-weak-pointers",
+                                               "EventHandlerRegistry")) {
+        replay_strong_targets_.RemoveAll(target);
+      }
       return;
   }
   NOTREACHED();
@@ -336,6 +348,7 @@ void EventHandlerRegistry::Trace(Visitor* visitor) const {
   visitor->Trace(frame_);
   visitor->template RegisterWeakCallbackMethod<
       EventHandlerRegistry, &EventHandlerRegistry::ProcessCustomWeakness>(this);
+  visitor->Trace(replay_strong_targets_);
 }
 
 void EventHandlerRegistry::ProcessCustomWeakness(const LivenessBroker& info) {
