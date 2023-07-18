@@ -3,21 +3,29 @@
 // found in the LICENSE file.
 
 #include "base/base64.h"
+#include "base/base_paths.h"
 #include "base/feature_list.h"
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_samples.h"
 #include "base/metrics/statistics_recorder.h"
+#include "base/path_service.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/threading/thread_restrictions.h"
 #include "build/buildflag.h"
 #include "chrome/browser/companion/core/companion_metrics_logger.h"
 #include "chrome/browser/companion/core/constants.h"
 #include "chrome/browser/companion/core/features.h"
 #include "chrome/browser/companion/core/mojom/companion.mojom.h"
 #include "chrome/browser/companion/core/proto/companion_url_params.pb.h"
+#include "chrome/browser/companion/visual_search/features.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
@@ -37,6 +45,9 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/feature_engagement/public/feature_constants.h"
+#include "components/optimization_guide/core/test_model_info_builder.h"
+#include "components/optimization_guide/core/test_optimization_guide_model_provider.h"
+#include "components/optimization_guide/proto/visual_search_model_metadata.pb.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
@@ -47,6 +58,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "content/public/test/test_utils.h"
 #include "net/base/url_util.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -63,6 +75,12 @@ using side_panel::mojom::PromoAction;
 using side_panel::mojom::PromoType;
 using side_panel::mojom::UiSurface;
 
+using optimization_guide::proto::Any;
+using optimization_guide::proto::EligibilitySpec;
+using optimization_guide::proto::FeatureLibrary;
+using optimization_guide::proto::OrOfThresholdingRules;
+using optimization_guide::proto::ThresholdingRule;
+
 namespace {
 
 const char kRelativeUrl1[] = "/english_page.html";
@@ -75,6 +93,42 @@ const char kSearchQueryUrl[] = "https://www.google.com/search?q=xyz";
 const char kExpectedExpsPromoUrl[] = "https://foobar.com/";
 const char kPhReportingUrl[] = "https://foobar.com/";
 const char kExpsRegistrationSuccessUrl[] = "https://foobar.com/experiments";
+
+const char kRelativeVisualSearchUrl[] = "/test_visual.html";
+
+base::FilePath model_file_path() {
+  base::FilePath source_root_dir;
+  base::PathService::Get(base::DIR_SOURCE_ROOT, &source_root_dir);
+  return source_root_dir.AppendASCII("chrome")
+      .AppendASCII("test")
+      .AppendASCII("data")
+      .AppendASCII("companion_visual_search")
+      .AppendASCII("test-model-quantized.tflite");
+}
+
+optimization_guide::proto::Any model_metadata() {
+  EligibilitySpec eligibility_spec;
+  auto* new_rule = eligibility_spec.add_cheap_pruning_rules()->add_rules();
+  new_rule->set_feature_name(FeatureLibrary::IMAGE_VISIBLE_AREA);
+  new_rule->set_normalizing_op(FeatureLibrary::BY_VIEWPORT_AREA);
+  new_rule->set_thresholding_op(FeatureLibrary::GT);
+  new_rule->set_threshold(0.01);
+  auto* shopping_rule =
+      eligibility_spec.add_classifier_score_rules()->add_rules();
+  shopping_rule->set_feature_name(FeatureLibrary::SHOPPING_CLASSIFIER_SCORE);
+  shopping_rule->set_thresholding_op(FeatureLibrary::GT);
+  shopping_rule->set_threshold(0.5);
+
+  optimization_guide::proto::Any any_metadata;
+  any_metadata.set_type_url(
+      "type.googleapis.com/com.foo.VisualSearchModelMetadata");
+  optimization_guide::proto::VisualSearchModelMetadata
+      visual_search_model_metadata;
+  visual_search_model_metadata.mutable_eligibility_spec()->MergeFrom(
+      eligibility_spec);
+  visual_search_model_metadata.SerializeToString(any_metadata.mutable_value());
+  return any_metadata;
+}
 
 }  // namespace
 
@@ -206,6 +260,7 @@ class CompanionPageBrowserTest : public InProcessBrowserTest {
   void SetUp() override {
     page_url_server_.ServeFilesFromSourceDirectory(GetChromeTestDataDir());
     companion_server_.ServeFilesFromSourceDirectory(GetChromeTestDataDir());
+    vss_url_server_.ServeFilesFromSourceDirectory(GetChromeTestDataDir());
 
     // Register a handler to inspect the URL and examine the proto.
     // Nevertheless, it returns null which causes the default handler to be
@@ -215,6 +270,7 @@ class CompanionPageBrowserTest : public InProcessBrowserTest {
 
     ASSERT_TRUE(page_url_server_.Start());
     ASSERT_TRUE(companion_server_.Start());
+    ASSERT_TRUE(vss_url_server_.Start());
     SetUpFeatureList();
     histogram_tester_ = std::make_unique<base::HistogramTester>();
     InProcessBrowserTest::SetUp();
@@ -432,6 +488,12 @@ class CompanionPageBrowserTest : public InProcessBrowserTest {
       enabled_features.emplace_back(
           companion::features::internal::kSidePanelCompanion, params);
     }
+
+    if (enable_feature_visual_search_) {
+      enabled_features.emplace_back(base::test::FeatureRefAndParams(
+          companion::visual_search::features::kVisualSearchSuggestions,
+          /*params*/ {}));
+    }
     enabled_features.emplace_back(
         companion::features::internal::
             kCompanionEnabledByObservingExpsNavigations,
@@ -510,8 +572,8 @@ class CompanionPageBrowserTest : public InProcessBrowserTest {
   feature_engagement::test::ScopedIphFeatureList iph_feature_list_;
   base::test::ScopedFeatureList feature_list_;
   net::EmbeddedTestServer page_url_server_{net::EmbeddedTestServer::TYPE_HTTPS};
-  net::EmbeddedTestServer companion_server_{
-      net::EmbeddedTestServer::TYPE_HTTPS};
+  net::EmbeddedTestServer companion_server_{net::EmbeddedTestServer::TYPE_HTTP};
+  net::EmbeddedTestServer vss_url_server_{net::EmbeddedTestServer::TYPE_HTTP};
   std::unique_ptr<base::HistogramTester> histogram_tester_;
   absl::optional<companion::proto::CompanionUrlParams>
       last_proto_from_url_load_;
@@ -519,6 +581,7 @@ class CompanionPageBrowserTest : public InProcessBrowserTest {
   std::string last_sourcelang_;
   std::string last_targetlang_;
   bool enable_feature_side_panel_companion_ = true;
+  bool enable_feature_visual_search_ = true;
 };
 
 IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest, InitialNavigationWithoutMsbb) {
@@ -827,6 +890,48 @@ IN_PROC_BROWSER_TEST_F(
 
   // Ensure browser sent post message
   EXPECT_EQ(clicked_url, GetLastLinkOpenedUrlFromPostMessage());
+}
+
+IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,
+                       OpenCompanionPageWithVssEnabled) {
+  base::HistogramTester histogram_tester;
+  OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
+      ->OverrideTargetModelForTesting(
+          optimization_guide::proto::
+              OPTIMIZATION_TARGET_VISUAL_SEARCH_CLASSIFICATION,
+          optimization_guide::TestModelInfoBuilder()
+              .SetModelFilePath(model_file_path())
+              .SetModelMetadata(model_metadata())
+              .Build());
+
+  EnableSignInMsbbExps(/*signed_in=*/true, /*msbb=*/true, /*exps=*/true);
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), vss_url_server_.GetURL(kHost, kRelativeVisualSearchUrl)));
+
+  side_panel_coordinator()->Show(SidePanelEntry::Id::kSearchCompanion);
+  WaitForCompanionToBeLoaded();
+  EXPECT_EQ(side_panel_coordinator()->GetCurrentEntryId(),
+            SidePanelEntry::Id::kSearchCompanion);
+
+  // TODO(b/289113873) - Fix model flakiness for all platforms.
+  // Reading models is flaky on certain platform, using this temporary path
+  // check as a proxy; however, this should be done in a better way long-term.
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::File model_file(model_file_path(),
+                        base::File::FLAG_OPEN | base::File::FLAG_READ);
+  if (base::PathExists(model_file_path()) && model_file.IsValid()) {
+    WaitForHistogram("Companion.VisualSearch.EndClassificationSuccess");
+    histogram_tester.ExpectBucketCount(
+        "Companion.VisualSearch.ModelFileSuccess", true, 1);
+    histogram_tester.ExpectBucketCount(
+        "Companion.VisualSearch.ClassificationResultsSize", 1, 1);
+    histogram_tester.ExpectBucketCount(
+        "Companion.VisualSearch.EndClassificationSuccess", true, 1);
+  }
+
+  side_panel_coordinator()->Close();
+  // TODO(b/289113873) - Update iFrame to show UI and verify image bytes.
 }
 
 IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest, AutoRefreshOnMsbb) {

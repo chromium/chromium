@@ -113,11 +113,20 @@ void VisualSearchClassifierHost::StartClassification(
     return;
   }
 
+  if (validated_url == current_url_) {
+    LOCAL_HISTOGRAM_BOOLEAN(
+        "Companion.VisualSearch.ClassificationAlreadyStarted", true);
+    return;
+  }
+
   current_url_ = validated_url;
   visual_search_service_->SetModelUpdateCallback(
       base::BindOnce(&VisualSearchClassifierHost::StartClassificationWithModel,
                      weak_ptr_factory_.GetWeakPtr(), render_frame_host,
                      validated_url, std::move(callback)));
+
+  LOCAL_HISTOGRAM_BOOLEAN("Companion.VisualSearch.StartClassificationBegin",
+                          true);
 }
 
 void VisualSearchClassifierHost::StartClassificationWithModel(
