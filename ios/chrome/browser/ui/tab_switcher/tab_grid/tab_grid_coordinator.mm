@@ -428,11 +428,19 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
       return;
     }
 
-    [strongSelf
-        performBrowserToTabGridTransitionWithActivePage:currentActivePage
-                                       animationEnabled:animated
-                                             completion:
-                                                 transitionCompletionBlock];
+    if (IsNewTabGridTransitionsEnabled()) {
+      [self
+          performBrowserToTabGridTransitionWithAnimationEnabled:animated
+                                                     completion:
+                                                         transitionCompletionBlock];
+    } else {
+      [strongSelf
+          performLegacyBrowserToTabGridTransitionWithActivePage:
+              currentActivePage
+                                               animationEnabled:animated
+                                                     completion:
+                                                         transitionCompletionBlock];
+    }
     // On iOS 15+, snapshotting views with afterScreenUpdates:YES waits 0.5s
     // for the status bar style to update. Work around that delay by taking
     // the snapshot first (during
@@ -529,10 +537,17 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 
   [self.baseViewController contentWillDisappearAnimated:animated];
 
-  [self performTabGridToBrowserTransitionWithActivePage:self.baseViewController
-                                                            .activePage
-                                       animationEnabled:animated
-                                             completion:extendedCompletion];
+  if (IsNewTabGridTransitionsEnabled()) {
+    [self performTabGridToBrowserTransitionWithAnimationEnabled:animated
+                                                     completion:
+                                                         extendedCompletion];
+  } else {
+    [self performLegacyTabGridToBrowserTransitionWithActivePage:
+              self.baseViewController.activePage
+                                               animationEnabled:animated
+                                                     completion:
+                                                         extendedCompletion];
+  }
 
   // On iOS 15+, snapshotting views with afterScreenUpdates:YES waits 0.5s for
   // the status bar style to update. Work around that delay by taking the
@@ -582,11 +597,31 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   }
 }
 
-// Performs the Browser to Tab Grid transition.
-- (void)performBrowserToTabGridTransitionWithActivePage:(TabGridPage)activePage
-                                       animationEnabled:(BOOL)animationEnabled
-                                             completion:
-                                                 (ProceduralBlock)completion {
+// Performs the new Browser to Tab Grid transition.
+- (void)performBrowserToTabGridTransitionWithAnimationEnabled:
+            (BOOL)animationEnabled
+                                                   completion:
+                                                       (ProceduralBlock)
+                                                           completionHandler {
+  // TODO(crbug.com/1459937): Implement new transition method.
+}
+
+// Performs the new Tab Grid to Browser transition.
+- (void)performTabGridToBrowserTransitionWithAnimationEnabled:
+            (BOOL)animationEnabled
+                                                   completion:
+                                                       (ProceduralBlock)
+                                                           completionHandler {
+  // TODO(crbug.com/1459937): Implement new transition method.
+}
+
+// Performs the legacy Browser to Tab Grid transition.
+- (void)
+    performLegacyBrowserToTabGridTransitionWithActivePage:
+        (TabGridPage)activePage
+                                         animationEnabled:(BOOL)animationEnabled
+                                               completion:
+                                                   (ProceduralBlock)completion {
   self.legacyTransitionHandler =
       [self createTransitionHanlderWithAnimationEnabled:animationEnabled];
   [self.legacyTransitionHandler transitionFromBrowser:self.bvcContainer
@@ -595,11 +630,13 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
                                        withCompletion:completion];
 }
 
-// Performs the Tab Grid to Browser transition.
-- (void)performTabGridToBrowserTransitionWithActivePage:(TabGridPage)activePage
-                                       animationEnabled:(BOOL)animationEnabled
-                                             completion:
-                                                 (ProceduralBlock)completion {
+// Performs the legacy Tab Grid to Browser transition.
+- (void)
+    performLegacyTabGridToBrowserTransitionWithActivePage:
+        (TabGridPage)activePage
+                                         animationEnabled:(BOOL)animationEnabled
+                                               completion:
+                                                   (ProceduralBlock)completion {
   self.legacyTransitionHandler =
       [self createTransitionHanlderWithAnimationEnabled:animationEnabled];
   [self.legacyTransitionHandler transitionFromTabGrid:self.baseViewController
