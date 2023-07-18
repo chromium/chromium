@@ -98,9 +98,6 @@ void ChromeHelpAppUIDelegate::TriggerWelcomeTipCallToAction(
     return;
   }
 
-  CHECK(false) << "Removing this check requires a review from IPC reviewer. "
-                  "See https://crrev.com/c/4646287 for details";
-
   scalable_iph->PerformAction(
       static_cast<scalable_iph::ActionType>(action_type_id));
 }
