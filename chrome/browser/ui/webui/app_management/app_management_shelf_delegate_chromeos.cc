@@ -73,8 +73,8 @@ bool AppManagementShelfDelegate::IsPolicyPinned(
   }
   // The app doesn't exist on the shelf - check launcher prefs instead.
   std::vector<std::string> policy_pinned_apps =
-      shelf_controller->shelf_prefs()->GetAppsPinnedByPolicy(
-          shelf_controller_helper_.get());
+      ChromeShelfPrefs::GetAppsPinnedByPolicy(
+          shelf_controller_helper_->profile());
   return base::Contains(policy_pinned_apps, app_id);
 }
 

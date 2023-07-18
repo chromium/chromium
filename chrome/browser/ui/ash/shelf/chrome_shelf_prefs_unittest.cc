@@ -10,21 +10,21 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/containers/contains.h"
-#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/values.h"
 #include "chrome/browser/ash/app_list/app_list_syncable_service.h"
+#include "chrome/browser/ash/app_list/app_list_syncable_service_factory.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/browser/ui/ash/shelf/shelf_controller_helper.h"
-#include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/pref_names.h"
 #include "components/app_constants/constants.h"
-#include "components/prefs/pref_registry_simple.h"
-#include "components/prefs/testing_pref_service.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/sync/model/string_ordinal.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/user_manager.h"
+#include "content/public/test/browser_task_environment.h"
 #include "extensions/common/constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -43,8 +43,9 @@ std::unique_ptr<SyncItem> MakeSyncItem(
 
 class ShelfControllerHelperFake : public ShelfControllerHelper {
  public:
-  ShelfControllerHelperFake() : ShelfControllerHelper(/*profile=*/nullptr) {}
-  ~ShelfControllerHelperFake() override {}
+  explicit ShelfControllerHelperFake(Profile* profile)
+      : ShelfControllerHelper(profile) {}
+  ~ShelfControllerHelperFake() override = default;
   ShelfControllerHelperFake(const ShelfControllerHelperFake&) = delete;
   ShelfControllerHelperFake& operator=(const ShelfControllerHelperFake&) =
       delete;
@@ -59,8 +60,9 @@ class ShelfControllerHelperFake : public ShelfControllerHelper {
 // A fake for AppListSyncableService that allows easy modifications.
 class AppListSyncableServiceFake : public app_list::AppListSyncableService {
  public:
-  AppListSyncableServiceFake() {}
-  ~AppListSyncableServiceFake() override {}
+  explicit AppListSyncableServiceFake(Profile* profile)
+      : app_list::AppListSyncableService(profile) {}
+  ~AppListSyncableServiceFake() override = default;
   AppListSyncableServiceFake(const AppListSyncableServiceFake&) = delete;
   AppListSyncableServiceFake& operator=(const AppListSyncableServiceFake&) =
       delete;
@@ -99,21 +101,10 @@ class AppListSyncableServiceFake : public app_list::AppListSyncableService {
 // A fake that stubs in functionality for testing.
 class ChromeShelfPrefsFake : public ChromeShelfPrefs {
  public:
-  ChromeShelfPrefsFake(Profile* profile,
-                       AppListSyncableServiceFake* syncable_service,
-                       TestingPrefServiceSimple* pref_service)
-      : ChromeShelfPrefs(profile),
-        pref_service_(pref_service),
-        syncable_service_(syncable_service) {}
+  explicit ChromeShelfPrefsFake(Profile* profile) : ChromeShelfPrefs(profile) {}
   ~ChromeShelfPrefsFake() override {}
   ChromeShelfPrefsFake(const ChromeShelfPrefsFake&) = delete;
   ChromeShelfPrefsFake& operator=(const ChromeShelfPrefsFake&) = delete;
-
-  app_list::AppListSyncableService* GetSyncableService() override {
-    return syncable_service_;
-  }
-
-  PrefService* GetPrefs() override { return pref_service_; }
 
   bool ShouldAddDefaultApps(PrefService* pref_service) override { return true; }
 
@@ -130,10 +121,6 @@ class ChromeShelfPrefsFake : public ChromeShelfPrefs {
   }
   bool IsAshKeepListApp(const std::string& app_id) override { return false; }
 
-  void ObserveSyncService() override {}
-
-  const raw_ptr<TestingPrefServiceSimple, ExperimentalAsh> pref_service_;
-  const raw_ptr<AppListSyncableServiceFake, ExperimentalAsh> syncable_service_;
   bool standalone_browser_publishing_chrome_apps_ = false;
 
   // A map that returns the app type for a given app id.
@@ -144,28 +131,40 @@ class ChromeShelfPrefsFake : public ChromeShelfPrefs {
 class ChromeShelfPrefsTest : public testing::Test {
  public:
   ChromeShelfPrefsTest() = default;
-  ~ChromeShelfPrefsTest() override {}
+  ~ChromeShelfPrefsTest() override = default;
   ChromeShelfPrefsTest(const ChromeShelfPrefsTest&) = delete;
   ChromeShelfPrefsTest& operator=(const ChromeShelfPrefsTest&) = delete;
 
   void SetUp() override {
-    shelf_prefs_ = std::make_unique<ChromeShelfPrefsFake>(
-        nullptr, &syncable_service_, &pref_service_);
-    pref_service_.registry()->RegisterListPref(
-        prefs::kShelfDefaultPinLayoutRolls);
-    pref_service_.registry()->RegisterListPref(
-        prefs::kPolicyPinnedLauncherApps);
-    pref_service_.registry()->RegisterBooleanPref(
-        ash::prefs::kFilesAppUIPrefsMigrated, true);
-    pref_service_.registry()->RegisterBooleanPref(
-        ash::prefs::kProjectorSWAUIPrefsMigrated, true);
-    fake_user_manager_ = new ash::FakeChromeUserManager;
+    auto prefs =
+        std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
+    auto* registry = prefs->registry();
+    RegisterUserProfilePrefs(registry);
+    prefs->SetBoolean(ash::prefs::kFilesAppUIPrefsMigrated, true);
+    prefs->SetBoolean(ash::prefs::kProjectorSWAUIPrefsMigrated, true);
+    profile_ =
+        TestingProfile::Builder()
+            .SetProfileName("Test")
+            .SetPrefService(std::move(prefs))
+            .AddTestingFactory(
+                app_list::AppListSyncableServiceFactory::GetInstance(),
+                base::BindRepeating([](content::BrowserContext* browser_context)
+                                        -> std::unique_ptr<KeyedService> {
+                  return std::make_unique<AppListSyncableServiceFake>(
+                      Profile::FromBrowserContext(browser_context));
+                }))
+            .Build();
+    shelf_prefs_ = std::make_unique<ChromeShelfPrefsFake>(profile_.get());
     scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
-        base::WrapUnique(fake_user_manager_.get()));
-    helper_ = std::make_unique<ShelfControllerHelperFake>();
+        std::make_unique<ash::FakeChromeUserManager>());
+    helper_ = std::make_unique<ShelfControllerHelperFake>(profile_.get());
   }
 
-  void TearDown() override { shelf_prefs_.reset(); }
+  void TearDown() override {
+    shelf_prefs_.reset();
+    scoped_user_manager_.reset();
+    profile_.reset();
+  }
 
   std::vector<std::string> StringsFromShelfIds(
       const std::vector<ash::ShelfID>& shelf_ids) {
@@ -178,27 +177,34 @@ class ChromeShelfPrefsTest : public testing::Test {
 
   void AddRegularUser(const std::string& email) {
     AccountId account_id = AccountId::FromUserEmail(email);
-    const user_manager::User* user = fake_user_manager_->AddUser(account_id);
-    fake_user_manager_->UserLoggedIn(account_id, user->username_hash(),
-                                     /*browser_restart=*/false,
-                                     /*is_child=*/false);
+    auto* fake_user_manager = static_cast<ash::FakeChromeUserManager*>(
+        user_manager::UserManager::Get());
+    const user_manager::User* user = fake_user_manager->AddUser(account_id);
+    fake_user_manager->UserLoggedIn(account_id, user->username_hash(),
+                                    /*browser_restart=*/false,
+                                    /*is_child=*/false);
+  }
+
+  AppListSyncableServiceFake& syncable_service() {
+    return *static_cast<AppListSyncableServiceFake*>(
+        app_list::AppListSyncableServiceFactory::GetForProfile(profile_.get()));
   }
 
  protected:
-  raw_ptr<ash::FakeChromeUserManager, ExperimentalAsh> fake_user_manager_ =
-      nullptr;
+  content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
-  TestingPrefServiceSimple pref_service_;
-  AppListSyncableServiceFake syncable_service_;
   std::unique_ptr<ChromeShelfPrefsFake> shelf_prefs_;
   std::unique_ptr<ShelfControllerHelperFake> helper_;
+
+  std::unique_ptr<Profile> profile_;
 };
 
 TEST_F(ChromeShelfPrefsTest, AddChromePinNoExistingOrdinal) {
-  shelf_prefs_->EnsureChromePinned(&syncable_service_);
+  shelf_prefs_->EnsureChromePinned(&syncable_service());
 
   // Check that chrome now has a valid ordinal.
-  EXPECT_TRUE(syncable_service_.item_map_[app_constants::kChromeAppId]
+  EXPECT_TRUE(syncable_service()
+                  .item_map_[app_constants::kChromeAppId]
                   ->item_pin_ordinal.IsValid());
 }
 
@@ -206,28 +212,32 @@ TEST_F(ChromeShelfPrefsTest, AddChromePinExistingOrdinal) {
   // Set up the initial ordinals.
   syncer::StringOrdinal initial_ordinal =
       syncer::StringOrdinal::CreateInitialOrdinal();
-  syncable_service_.item_map_[app_constants::kChromeAppId] =
+  syncable_service().item_map_[app_constants::kChromeAppId] =
       MakeSyncItem(app_constants::kChromeAppId, initial_ordinal);
 
-  shelf_prefs_->EnsureChromePinned(&syncable_service_);
+  shelf_prefs_->EnsureChromePinned(&syncable_service());
 
   // Check that the chrome ordinal did not change.
-  ASSERT_TRUE(syncable_service_.item_map_[app_constants::kChromeAppId]
+  ASSERT_TRUE(syncable_service()
+                  .item_map_[app_constants::kChromeAppId]
                   ->item_pin_ordinal.IsValid());
-  auto& pin_ordinal = syncable_service_.item_map_[app_constants::kChromeAppId]
+  auto& pin_ordinal = syncable_service()
+                          .item_map_[app_constants::kChromeAppId]
                           ->item_pin_ordinal;
   EXPECT_TRUE(pin_ordinal.Equals(initial_ordinal));
 }
 
 TEST_F(ChromeShelfPrefsTest, AddDefaultApps) {
-  shelf_prefs_->EnsureChromePinned(&syncable_service_);
-  shelf_prefs_->AddDefaultApps(&pref_service_, &syncable_service_);
+  shelf_prefs_->EnsureChromePinned(&syncable_service());
+  shelf_prefs_->AddDefaultApps(profile_->GetPrefs(), &syncable_service());
 
-  ASSERT_TRUE(syncable_service_.item_map_[app_constants::kChromeAppId]
+  ASSERT_TRUE(syncable_service()
+                  .item_map_[app_constants::kChromeAppId]
                   ->item_pin_ordinal.IsValid());
 
   // Check that a pin was added for the gmail app.
-  ASSERT_TRUE(syncable_service_.item_map_[extension_misc::kGmailAppId]
+  ASSERT_TRUE(syncable_service()
+                  .item_map_[extension_misc::kGmailAppId]
                   ->item_pin_ordinal.IsValid());
 }
 
@@ -274,11 +284,11 @@ TEST_F(ChromeShelfPrefsTest, TransformationForStandaloneBrowserChromeApps) {
   syncer::StringOrdinal ordinal2 = ordinal1.CreateAfter();
   syncer::StringOrdinal ordinal3 = ordinal2.CreateAfter();
 
-  syncable_service_.item_map_[kAshChromeAppId] =
+  syncable_service().item_map_[kAshChromeAppId] =
       MakeSyncItem(kAshChromeAppId, ordinal1);
-  syncable_service_.item_map_[kLacrosChromeAppId] =
+  syncable_service().item_map_[kLacrosChromeAppId] =
       MakeSyncItem(kLacrosChromeAppId, ordinal2);
-  syncable_service_.item_map_[kNeitherId] = MakeSyncItem(kNeitherId, ordinal3);
+  syncable_service().item_map_[kNeitherId] = MakeSyncItem(kNeitherId, ordinal3);
 
   shelf_prefs_->app_type_map_[kAshChromeAppId] = apps::AppType::kChromeApp;
   shelf_prefs_->app_type_map_[kLacrosChromeAppIdWithUsualPrefix] =
@@ -353,10 +363,10 @@ TEST_F(ChromeShelfPrefsTest, ShelfPositionAfterLacrosMigration) {
   syncer::StringOrdinal ordinal2 = ordinal1.CreateAfter();
   syncer::StringOrdinal ordinal3 = ordinal2.CreateAfter();
 
-  syncable_service_.item_map_["dummy1"] = MakeSyncItem("dummy1", ordinal1);
-  syncable_service_.item_map_[app_constants::kChromeAppId] =
+  syncable_service().item_map_["dummy1"] = MakeSyncItem("dummy1", ordinal1);
+  syncable_service().item_map_[app_constants::kChromeAppId] =
       MakeSyncItem(app_constants::kChromeAppId, ordinal2);
-  syncable_service_.item_map_["dummy2"] = MakeSyncItem("dummy2", ordinal3);
+  syncable_service().item_map_["dummy2"] = MakeSyncItem("dummy2", ordinal3);
 
   // Enable lacros-only.
   base::test::ScopedFeatureList feature_list;
@@ -388,9 +398,9 @@ TEST_F(ChromeShelfPrefsTest, EnableSideBySideLacrosDisable) {
       syncer::StringOrdinal::CreateInitialOrdinal();
   syncer::StringOrdinal ordinal2 = ordinal1.CreateAfter();
 
-  syncable_service_.item_map_[app_constants::kLacrosAppId] =
+  syncable_service().item_map_[app_constants::kLacrosAppId] =
       MakeSyncItem(app_constants::kLacrosAppId, ordinal1);
-  syncable_service_.item_map_[app_constants::kChromeAppId] =
+  syncable_service().item_map_[app_constants::kChromeAppId] =
       MakeSyncItem(app_constants::kChromeAppId, ordinal2);
 
   // Disable lacros.
