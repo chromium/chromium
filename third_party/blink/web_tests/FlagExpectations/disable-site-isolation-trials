@@ -104,7 +104,6 @@ crbug.com/626703 external/wpt/html/browsers/browsing-the-web/overlapping-navigat
 crbug.com/626703 external/wpt/html/browsers/browsing-the-web/overlapping-navigations-and-traversals/same-document-traversal-same-document-traversal-pushstate.html [ Timeout ]
 crbug.com/626703 external/wpt/screen-orientation/non-fully-active.html [ Timeout ]
 crbug.com/626703 external/wpt/fetch/api/abort/serviceworker-intercepted.https.html [ Timeout ]
-crbug.com/626703 virtual/orb-v01/external/wpt/fetch/api/abort/serviceworker-intercepted.https.html [ Timeout ]
 crbug.com/626703 external/wpt/encoding/unsupported-labels.window.html [ Failure Timeout ]
 crbug.com/626703 external/wpt/mathml/relations/css-styling/mathvariant-double-struck-font-style-font-weight.html [ Failure ]
 crbug.com/626703 external/wpt/dom/nodes/NodeList-static-length-getter-tampered-3.html [ Failure Timeout ]

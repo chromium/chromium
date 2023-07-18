@@ -1881,24 +1881,14 @@
     "expires": "Jul 1, 2023"
   },
   {
-    "prefix": "orb-v01",
-    "platforms": ["Linux"],
-    "bases": [
-      "external/wpt/fetch/orb",
-      "external/wpt/fetch/corb",
-      "external/wpt/fetch/api",
-      "external/wpt/fetch/nosniff"
-    ],
-    "args": ["--enable-features=OpaqueResponseBlockingV01"],
-    "expires": "Jul 1, 2024"
-  },
-  {
     "prefix": "orb-v02",
     "platforms": ["Linux"],
     "args": ["--enable-features=OpaqueResponseBlockingV01,OpaqueResponseBlockingV02", "--disable-features=OpaqueResponseBlockingErrorsForAllFetches"],
     "bases": [
       "external/wpt/fetch/orb",
-      "external/wpt/fetch/corb"
+      "external/wpt/fetch/corb",
+      "external/wpt/fetch/api",
+      "external/wpt/fetch/nosniff"
     ],
     "expires": "Jul 1, 2024"
   },

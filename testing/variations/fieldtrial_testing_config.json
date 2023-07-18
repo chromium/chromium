@@ -9670,7 +9670,7 @@
             ]
         }
     ],
-    "OpaqueResponseBlockingV01": [
+    "OpaqueResponseBlockingV02": [
         {
             "platforms": [
                 "android",
@@ -9685,13 +9685,13 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "OpaqueResponseBlockingV01"
+                        "OpaqueResponseBlockingV02"
                     ]
                 },
                 {
                     "name": "Control",
                     "disable_features": [
-                        "OpaqueResponseBlockingV01"
+                        "OpaqueResponseBlockingV02"
                     ]
                 }
             ]
