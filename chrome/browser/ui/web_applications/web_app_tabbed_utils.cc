@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/web_applications/web_app_tabbed_utils.h"
 
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
+#include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace web_app {
@@ -23,6 +24,12 @@ bool IsPinnedHomeTab(const TabStripModel* tab_strip_model, int index) {
 bool IsTabClosable(const TabStripModel* tab_strip_model, int index) {
   return !IsPinnedHomeTab(tab_strip_model, index) ||
          tab_strip_model->count() == 1;
+}
+
+bool IsHomeTabUrl(const Browser* browser, const GURL& url) {
+  return browser && browser->app_controller() &&
+         HasPinnedHomeTab(browser->tab_strip_model()) &&
+         browser->app_controller()->IsUrlInHomeTabScope(url);
 }
 
 }  // namespace web_app

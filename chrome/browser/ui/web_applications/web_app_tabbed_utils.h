@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEB_APPLICATIONS_WEB_APP_TABBED_UTILS_H_
 #define CHROME_BROWSER_UI_WEB_APPLICATIONS_WEB_APP_TABBED_UTILS_H_
 
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -20,6 +21,10 @@ bool IsPinnedHomeTab(const TabStripModel* tab_strip_model, int index);
 
 // Returns whether a tab is closable for tabbed apps.
 bool IsTabClosable(const TabStripModel* tab_strip_model, int index);
+
+// Returns whether the browser has a home tab and the given URL is within the
+// home tab scope.
+bool IsHomeTabUrl(const Browser* browser, const GURL& url);
 
 }  // namespace web_app
 

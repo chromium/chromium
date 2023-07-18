@@ -40,6 +40,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
+#include "chrome/browser/ui/web_applications/web_app_tabbed_utils.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/common/url_constants.h"
 #include "components/captive_portal/core/buildflags.h"
@@ -638,6 +639,20 @@ base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
       !(source_browser->app_controller() &&
         source_browser->app_controller()->has_tab_strip())) {
     params->disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  }
+
+  // Middle clicking a link to the home tab in a tabbed web app should open the
+  // link in the home tab.
+  if (web_app::IsHomeTabUrl(source_browser, params->url)) {
+    source_browser->tab_strip_model()->ActivateTabAt(0);
+    // If the navigation URL is the same as the current home tab URL, skip the
+    // navigation.
+    if (source_browser->tab_strip_model()
+            ->GetActiveWebContents()
+            ->GetLastCommittedURL() == params->url) {
+      return nullptr;
+    }
+    params->disposition = WindowOpenDisposition::CURRENT_TAB;
   }
 
   // Picture-in-picture browser windows must have a source contents in order for

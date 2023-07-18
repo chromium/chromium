@@ -51,6 +51,9 @@
 #include "content/public/test/test_utils.h"
 #include "third_party/blink/public/common/features.h"
 
+using content::OpenURLParams;
+using content::Referrer;
+
 namespace {
 
 constexpr SkColor kAppBackgroundColor = SK_ColorBLUE;
@@ -626,7 +629,9 @@ IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest,
   EXPECT_EQ(tab_strip->active_index(), 1);
 
   // Navigate to home tab using the same URL.
-  OpenUrlAndWait(app_browser, start_url);
+  app_browser->OpenURL(OpenURLParams(start_url, content::Referrer(),
+                                     WindowOpenDisposition::CURRENT_TAB,
+                                     ui::PAGE_TRANSITION_TYPED, false));
 
   // Expect the JS variable to still be set, meaning the page was not navigated.
   EXPECT_EQ(true, EvalJs(tab_strip->GetWebContentsAt(0), "test == 5"));
@@ -1061,6 +1066,48 @@ IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest,
   EXPECT_TRUE(registrar().IsTabbedWindowModeEnabled(app_id));
 
   EXPECT_TRUE(app_browser->app_controller()->ShouldHideNewTabButton());
+}
+
+// Tests that middle clicking links to the home tab, opens the link in the home
+// tab.
+IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, MiddleClickHomeTabLink) {
+  GURL start_url =
+      embedded_test_server()->GetURL("/web_apps/tab_strip_customizations.html");
+  AppId app_id = InstallWebAppFromPage(browser(), start_url);
+  Browser* app_browser = FindWebAppBrowser(browser()->profile(), app_id);
+  TabStripModel* tab_strip = app_browser->tab_strip_model();
+
+  EXPECT_TRUE(registrar().IsTabbedWindowModeEnabled(app_id));
+
+  // Expect app opened with pinned home tab.
+  EXPECT_EQ(tab_strip->count(), 1);
+  EXPECT_TRUE(tab_strip->IsTabPinned(0));
+  EXPECT_EQ(tab_strip->GetWebContentsAt(0)->GetVisibleURL(), start_url);
+  EXPECT_EQ(tab_strip->active_index(), 0);
+
+  // Middle click home tab link from the home tab.
+  app_browser->OpenURL(OpenURLParams(start_url, content::Referrer(),
+                                     WindowOpenDisposition::NEW_BACKGROUND_TAB,
+                                     ui::PAGE_TRANSITION_TYPED, false));
+
+  // Check we stayed in the home tab.
+  EXPECT_EQ(tab_strip->count(), 1);
+  EXPECT_TRUE(tab_strip->IsTabPinned(0));
+  EXPECT_EQ(tab_strip->GetWebContentsAt(0)->GetVisibleURL(), start_url);
+  EXPECT_EQ(tab_strip->active_index(), 0);
+
+  chrome::NewTab(app_browser);
+
+  // Middle click home tab link from a different tab.
+  app_browser->OpenURL(OpenURLParams(start_url, content::Referrer(),
+                                     WindowOpenDisposition::NEW_BACKGROUND_TAB,
+                                     ui::PAGE_TRANSITION_TYPED, false));
+
+  // Check it was opened in the home tab.
+  EXPECT_EQ(tab_strip->count(), 2);
+  EXPECT_TRUE(tab_strip->IsTabPinned(0));
+  EXPECT_EQ(tab_strip->GetWebContentsAt(0)->GetVisibleURL(), start_url);
+  EXPECT_EQ(tab_strip->active_index(), 0);
 }
 
 }  // namespace web_app
