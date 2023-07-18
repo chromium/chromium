@@ -835,6 +835,7 @@ VISIT_PROTO_FIELDS(const sync_pb::WebauthnCredentialSpecifics& proto) {
   VISIT(user_display_name);
   VISIT(third_party_payments_support);
   VISIT(last_used_time_windows_epoch_micros);
+  VISIT(key_version);
   VISIT_SECRET(private_key);
   VISIT_SECRET(encrypted);
 }
