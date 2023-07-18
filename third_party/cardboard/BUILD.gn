@@ -69,7 +69,6 @@ android_library("cardboard_java") {
 
 static_library("cardboard") {
   sources = [
-    "src/sdk/cardboard.cc",
     "src/sdk/device_params/android/device_params.cc",
     "src/sdk/device_params/android/device_params.h",
     "src/sdk/distortion_mesh.cc",
@@ -132,6 +131,7 @@ static_library("cardboard") {
     "src/sdk/util/vector.h",
     "src/sdk/util/vectorutils.cc",
     "src/sdk/util/vectorutils.h",
+    "src_overrides/sdk/cardboard.cc",
     "src_overrides/sdk/jni_utils/android/jni_utils.cc",
   ]
 

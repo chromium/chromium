@@ -15,3 +15,4 @@ Local Modifications:
 * Created local top-level BUILD.gn based on src/sdk/build.gradle
 * Created local proguard-rules.pro to remove proto-specific rule
 * Created local override for LoadJClass in jni_utils to leaverage //base JNI loading due to splits.
+* Created local override for CardboardQrCode_getSavedDeviceParams function in cardboard.cc to prevent undefined behavior.
