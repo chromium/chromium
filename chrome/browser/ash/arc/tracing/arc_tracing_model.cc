@@ -4,6 +4,7 @@
 
 #include <inttypes.h>
 
+#include "base/strings/string_piece_forward.h"
 #include "chrome/browser/ash/arc/tracing/arc_tracing_model.h"
 
 #include "base/json/json_reader.h"
@@ -540,9 +541,15 @@ bool ArcTracingModel::ConvertSysTraces(const std::string& sys_traces) {
   //            TASK-PID    TGID   CPU#  ||||    TIMESTAMP  FUNCTION
   //               | |        |      |   ||||       |         |
   //           <...>-32043 (-----) [000] ...1 14196.099290: tracing_mark_write
+  //
+  // From kernel 5.15, there is a fifth 1-character value "migrate-disable,"
+  // right after preempt-depth.
   constexpr int kPidPosition = 16;
+
+  // Position of the '[' before the CPU#
   size_t cpu_pos = 0;
   bool cpu_pos_found = false;
+
   while (true) {
     // Get end of line.
     size_t end_line_pos = sys_traces.find('\n', new_line_pos);
@@ -570,11 +577,20 @@ bool ArcTracingModel::ConvertSysTraces(const std::string& sys_traces) {
       cpu_pos_found = true;
     }
 
-    // From CPU# to the TIMESTAMP marker, we have fixed positions for elements.
+    // CPU# is always in the form [###] (3 digits) followed by a space followed
+    // by the start of the flags (irqs-off etc).
+    size_t space_before_flags = cpu_pos + 5;
     if (line.length() < (cpu_pos + 12) || line[kPidPosition] != '-' ||
         line[cpu_pos - 1] != ' ' || line[cpu_pos + 4] != ']' ||
-        line[cpu_pos + 5] != ' ' || line[cpu_pos + 10] != ' ') {
+        line[space_before_flags] != ' ') {
       LOG(ERROR) << "Cannot recognize trace event: " << line;
+      return false;
+    }
+    size_t space_after_flags = line.find(' ', space_before_flags + 1);
+    // Expect at least 4 flags (kernel <= 5.10), so 5 slots from preceding
+    // space to following space.
+    if (space_after_flags - space_before_flags < 5) {
+      LOG(ERROR) << "Fewer than 4 flags after CPU#: " << line;
       return false;
     }
 
@@ -604,7 +620,7 @@ bool ArcTracingModel::ConvertSysTraces(const std::string& sys_traces) {
     uint32_t timestamp_high;
     uint32_t timestamp_low;
     const size_t pos_dot =
-        ParseUint32(line, cpu_pos + 11, '.', &timestamp_high);
+        ParseUint32(line, space_after_flags + 1, '.', &timestamp_high);
     if (pos_dot == std::string::npos) {
       LOG(ERROR) << "Cannot parse timestamp in trace event: " << line;
       return false;
