@@ -259,7 +259,33 @@ This is the order of the import groups:
 1. java
 1. javax
 
-## Test-only Code
+## Testing
+
+Googlers, see [go/clank-test-strategy](http://go/clank-test-strategy).
+
+In summary:
+
+* Use real dependencies when feasible and fast. Use Mockito’s `@Mock` most
+  of the time, but write fakes for frequently used dependencies.
+
+* Do not use Robolectric Shadows for Chromium code. Instead, use
+  `setForTesting()` methods so that it is clear that test hooks exist.
+  * When `setForTesting()` methods alter global state, use
+    [`ResettersForTesting.register()`] to ensure that the state is reset
+    between tests. Omit resetting them via `@After` methods.
+
+* Use Robolectric when possible (when tests do not require native). Other
+  times, use on-device tests with one of the following annotations:
+  * [`@Batch(UNIT_TESTS)`] for unit tests
+  * [`@Batch(PER_CLASS)`] for integration tests
+  * [`@DoNotBatch`] for when each test method requires an app restart
+
+[`ResettersForTesting.register()`]: https://source.chromium.org/search?q=symbol:ResettersForTesting.register
+[`@Batch(UNIT_TESTS)`]: https://source.chromium.org/search?q=symbol:Batch.UNIT_TESTS
+[`@Batch(PER_CLASS)`]: https://source.chromium.org/search?q=symbol:Batch.PER_CLASS
+[`@DoNotBatch`]: https://source.chromium.org/search?q=symbol:DoNotBatch
+
+### Test-only Code
 
 Functions and fields used only for testing should have `ForTesting` as a
 suffix so that:
