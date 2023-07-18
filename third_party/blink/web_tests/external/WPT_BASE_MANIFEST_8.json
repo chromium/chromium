@@ -1542,6 +1542,13 @@
         {}
        ]
       ],
+      "content-visibility-with-float-crash.html": [
+       "22f86775a3ab6b30943c79c4c8fc615b18f1922c",
+       [
+        null,
+        {}
+       ]
+      ],
       "contentvisibility-nestedslot-crash.html": [
        "fe6d79a694b530cf005f62f79ea4d971290bc887",
        [
@@ -275902,16 +275909,6 @@
    }
   },
   "support": {
-   ".cache": {
-    "gitignore2.json": [
-     "7465ae917ff835fe20f2cf297423021e20f874bc",
-     []
-    ],
-    "mtime.json": [
-     "2e492c9fa121895d4c1152c48897ec5beb8e8a1f",
-     []
-    ]
-   },
    ".gitignore": [
     "d93e645d547894b50149d3726de2654957b6e06f",
     []
@@ -502058,7 +502055,7 @@
      ]
     ],
     "event-click-visibilitychange.html": [
-     "beb3ba3512d6e0ad800c8be041d0014a80ba375c",
+     "988be3623eea127ff7221ceca85281581c596ca3",
      [
       null,
       {
@@ -590663,7 +590660,7 @@
      ]
     ],
     "payment-request-disallowed-when-hidden.https.html": [
-     "aa59cde2ef0d579cbcc1e205b3d15f5b7c809c66",
+     "3a5eb010157c38fb16a33dbf504481991726a81d",
      [
       null,
       {
