@@ -39,6 +39,8 @@ class PasswordDetailsCoordinatorTest : public PlatformTest {
                                  context:DetailsContext::kPasswordSettings];
   }
 
+  ~PasswordDetailsCoordinatorTest() override { [coordinator_ stop]; }
+
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   std::unique_ptr<Browser> browser_;

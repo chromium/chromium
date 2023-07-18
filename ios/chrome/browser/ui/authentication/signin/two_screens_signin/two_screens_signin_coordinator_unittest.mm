@@ -61,6 +61,8 @@ class TwoScreensSigninCoordinatorTest : public PlatformTest {
                                        PROMO_ACTION_NO_SIGNIN_PROMO];
   }
 
+  ~TwoScreensSigninCoordinatorTest() override { [coordinator_ stop]; }
+
   // Returns the presentedViewController.
   UIViewController* PresentedViewController() {
     return window_.rootViewController.presentedViewController;

@@ -125,6 +125,7 @@ TEST_F(TrustedVaultReauthenticationCoordinatorTest, TestCancel) {
       base::test::ios::kWaitForUIElementTimeout, ^bool() {
         return signin_completion_called;
       }));
+  [signinCoordinator stop];
 }
 
 // Opens the trusted vault reauth dialog, and simulate a user cancel.
@@ -171,6 +172,7 @@ TEST_F(TrustedVaultReauthenticationCoordinatorTest, TestInterruptWithDismiss) {
       base::test::ios::kWaitForUIElementTimeout, ^bool() {
         return interrupt_completion_called;
       }));
+  [signinCoordinator stop];
 }
 
 // Opens the trusted vault reauth dialog, and interrupt it with
@@ -213,4 +215,5 @@ TEST_F(TrustedVaultReauthenticationCoordinatorTest,
   // Sign-in and interrupt completion blocks should be called synchronously.
   EXPECT_TRUE(signin_completion_called);
   EXPECT_TRUE(interrupt_completion_called);
+  [signinCoordinator stop];
 }

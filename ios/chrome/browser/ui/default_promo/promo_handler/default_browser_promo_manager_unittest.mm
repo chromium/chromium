@@ -70,6 +70,7 @@ class DefaultBrowserPromoManagerTest : public PlatformTest {
   }
 
   void TearDown() override {
+    [default_browser_promo_manager_ stop];
     browser_state_.reset();
     TestingApplicationContext::GetGlobal()->SetLocalState(nullptr);
     TestingApplicationContext::GetGlobal()->SetLastShutdownClean(false);

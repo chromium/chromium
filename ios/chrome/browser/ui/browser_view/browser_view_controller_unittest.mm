@@ -340,6 +340,9 @@ class BrowserViewControllerTest : public BlockCleanupTest {
     [[bvc_ view] removeFromSuperview];
     [bvc_ shutdown];
     [bookmarks_coordinator_ stop];
+    [tab_strip_coordinator_ stop];
+    [popup_menu_coordinator_ stop];
+    [NTPCoordinator_ stop];
 
     BlockCleanupTest::TearDown();
   }

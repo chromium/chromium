@@ -152,6 +152,7 @@ TEST_F(ActionSheetCoordinatorTest, Start_AddCancel) {
   UIAlertAction* cancelAction = alertController.actions[1];
   EXPECT_NSEQ(l10n_util::GetNSString(IDS_APP_CANCEL), cancelAction.title);
   EXPECT_EQ(UIAlertActionStyleCancel, cancelAction.style);
+  [coordinator stop];
 }
 
 // Tests that a Cancel action is not added upon starting when another Cancel
@@ -180,4 +181,5 @@ TEST_F(ActionSheetCoordinatorTest, Start_SkipCancel_IfAdded) {
   UIAlertAction* cancelAction = alertController.actions[0];
   EXPECT_EQ(cancelActionTitle, cancelAction.title);
   EXPECT_EQ(UIAlertActionStyleCancel, cancelAction.style);
+  [coordinator stop];
 }

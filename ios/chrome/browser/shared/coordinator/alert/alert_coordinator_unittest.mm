@@ -53,6 +53,11 @@ class AlertCoordinatorTest : public PlatformTest {
     return alert_coordinator_;
   }
 
+  void TearDown() override {
+    [alert_coordinator_ stop];
+    PlatformTest::TearDown();
+  }
+
  private:
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;

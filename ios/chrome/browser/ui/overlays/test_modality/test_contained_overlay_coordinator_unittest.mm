@@ -33,6 +33,8 @@ class TestContainedOverlayCoordinatorTest : public PlatformTest {
     scoped_window_.Get().rootViewController = root_view_controller_;
   }
 
+  ~TestContainedOverlayCoordinatorTest() override { [coordinator_ stop]; }
+
  protected:
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;

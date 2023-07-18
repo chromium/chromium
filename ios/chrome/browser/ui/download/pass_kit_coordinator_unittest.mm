@@ -64,6 +64,8 @@ class PassKitCoordinatorTest : public PlatformTest {
     [scoped_key_window_.Get() setRootViewController:base_view_controller_];
   }
 
+  ~PassKitCoordinatorTest() override { [coordinator_ stop]; }
+
   PassKitTabHelper* tab_helper() {
     return PassKitTabHelper::FromWebState(web_state_);
   }

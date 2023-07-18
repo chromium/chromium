@@ -109,4 +109,5 @@ TEST_F(BrowserContainerCoordinatorTest,
   EXPECT_TRUE([l10n_util::GetNSString(IDS_IOS_SHARE_PAGE_BUTTON_LABEL)
       isEqualToString:share_action.title]);
   EXPECT_EQ(UIAlertActionStyleDefault, share_action.style);
+  [coordinator stop];
 }
