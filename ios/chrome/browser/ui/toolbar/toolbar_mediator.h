@@ -22,6 +22,10 @@ class WebStateList;
 /// Transitions the omnibox position to the toolbar of type `toolbarType`.
 - (void)transitionOmniboxToToolbarType:(ToolbarType)toolbarType;
 
+/// Transitions the steady state omnibox position to the toolbar of type
+/// `toolbarType`. The steady state omnibox is when the omnibox is not focused.
+- (void)transitionSteadyStateOmniboxToToolbarType:(ToolbarType)toolbarType;
+
 @end
 
 @interface ToolbarMediator : NSObject

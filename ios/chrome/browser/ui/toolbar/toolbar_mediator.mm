@@ -21,6 +21,15 @@
 
 @interface ToolbarMediator () <BooleanObserver, CRWWebStateObserver>
 
+/// Type of toolbar containing the omnibox. Unlike
+/// `steadyStateOmniboxPosition`, this tracks the omnibox position at all
+/// time.
+@property(nonatomic, assign) ToolbarType omniboxPosition;
+/// Type of the toolbar that contains the omnibox when it's not focused. The
+/// animation of focusing/defocusing the omnibox changes depending on this
+/// position.
+@property(nonatomic, assign) ToolbarType steadyStateOmniboxPosition;
+
 @end
 
 @implementation ToolbarMediator {
@@ -44,8 +53,6 @@
   BOOL _isNTP;
   /// Last trait collection of the toolbars.
   UITraitCollection* _toolbarTraitCollection;
-  /// Current toolbar containing the omnibox.
-  ToolbarType _omniboxPosition;
   /// Preferred toolbar to contain the omnibox.
   ToolbarType _preferredOmniboxPosition;
 }
@@ -87,25 +94,45 @@
 - (void)locationBarFocusChangedTo:(BOOL)focused {
   _locationBarFocused = focused;
   if (IsBottomOmniboxSteadyStateEnabled()) {
-    [self updateOmniboxPositionWithFirstUpdate:NO];
+    [self updateOmniboxPosition];
   }
 }
 
 - (void)toolbarTraitCollectionChangedTo:(UITraitCollection*)traitCollection {
   _toolbarTraitCollection = traitCollection;
   if (IsBottomOmniboxSteadyStateEnabled()) {
-    [self updateOmniboxPositionWithFirstUpdate:NO];
+    [self updateOmniboxPosition];
   }
 }
 
 - (void)setInitialOmniboxPosition {
-  [self updateOmniboxPositionWithFirstUpdate:YES];
+  [self updateOmniboxPosition];
+  [self.delegate transitionOmniboxToToolbarType:self.omniboxPosition];
+  [self.delegate transitionSteadyStateOmniboxToToolbarType:
+                     self.steadyStateOmniboxPosition];
 }
 
 - (void)didNavigateToNTPOnActiveWebState {
   _isNTP = YES;
   if (IsBottomOmniboxSteadyStateEnabled()) {
-    [self updateOmniboxPositionWithFirstUpdate:NO];
+    [self updateOmniboxPosition];
+  }
+}
+
+#pragma mark - Setters
+
+- (void)setOmniboxPosition:(ToolbarType)omniboxPosition {
+  if (_omniboxPosition != omniboxPosition) {
+    _omniboxPosition = omniboxPosition;
+    [self.delegate transitionOmniboxToToolbarType:omniboxPosition];
+  }
+}
+
+- (void)setSteadyStateOmniboxPosition:(ToolbarType)steadyStateOmniboxPosition {
+  if (_steadyStateOmniboxPosition != steadyStateOmniboxPosition) {
+    _steadyStateOmniboxPosition = steadyStateOmniboxPosition;
+    [self.delegate
+        transitionSteadyStateOmniboxToToolbarType:steadyStateOmniboxPosition];
   }
 }
 
@@ -116,7 +143,7 @@
     _preferredOmniboxPosition = _bottomOmniboxEnabled.value
                                     ? ToolbarType::kSecondary
                                     : ToolbarType::kPrimary;
-    [self updateOmniboxPositionWithFirstUpdate:NO];
+    [self updateOmniboxPosition];
   }
 }
 
@@ -139,15 +166,16 @@
   NewTabPageTabHelper* NTPHelper = NewTabPageTabHelper::FromWebState(webState);
   _isNTP = NTPHelper && NTPHelper->IsActive();
   if (IsBottomOmniboxSteadyStateEnabled()) {
-    [self updateOmniboxPositionWithFirstUpdate:NO];
+    [self updateOmniboxPosition];
   }
 }
 
-/// Computes the correct toolbar for the omnibox in the current state.
-- (ToolbarType)correctOmniboxPosition {
+/// Computes the toolbar that should contain the unfocused omnibox in the
+/// current state.
+- (ToolbarType)steadyStateOmniboxPositionInCurrentState {
   CHECK(IsBottomOmniboxSteadyStateEnabled());
   if (_preferredOmniboxPosition == ToolbarType::kPrimary ||
-      !IsSplitToolbarMode(_toolbarTraitCollection) || _locationBarFocused) {
+      !IsSplitToolbarMode(_toolbarTraitCollection)) {
     return ToolbarType::kPrimary;
   }
   if (_isNTP && !_isIncognito) {
@@ -156,18 +184,26 @@
   return _preferredOmniboxPosition;
 }
 
-/// Updates the omnibox position to the correct toolbar. Forces the update when
-/// `isFirstUpdate`.
-- (void)updateOmniboxPositionWithFirstUpdate:(BOOL)isFirstUpdate {
+/// Computes the toolbar that should contain the omnibox in the current state.
+- (ToolbarType)omniboxPositionInCurrentState {
+  CHECK(IsBottomOmniboxSteadyStateEnabled());
+  if (_locationBarFocused) {
+    return ToolbarType::kPrimary;
+  } else {
+    return [self steadyStateOmniboxPositionInCurrentState];
+  }
+}
+
+/// Updates the omnibox position to the correct toolbar.
+- (void)updateOmniboxPosition {
   if (!IsBottomOmniboxSteadyStateEnabled()) {
     [self.delegate transitionOmniboxToToolbarType:ToolbarType::kPrimary];
     return;
   }
-  ToolbarType correctPosition = [self correctOmniboxPosition];
-  if (isFirstUpdate || _omniboxPosition != correctPosition) {
-    _omniboxPosition = correctPosition;
-    [self.delegate transitionOmniboxToToolbarType:correctPosition];
-  }
+
+  self.omniboxPosition = [self omniboxPositionInCurrentState];
+  self.steadyStateOmniboxPosition =
+      [self steadyStateOmniboxPositionInCurrentState];
 }
 
 @end

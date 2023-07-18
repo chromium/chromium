@@ -67,8 +67,14 @@
 @end
 
 @implementation ToolbarCoordinator {
-  /// Type of toolbar containing the omnibox.
+  /// Type of toolbar containing the omnibox. Unlike
+  /// `_steadyStateOmniboxPosition`, this tracks the omnibox position at all
+  /// time.
   ToolbarType _omniboxPosition;
+  /// Type of the toolbar that contains the omnibox when it's not focused. The
+  /// animation of focusing/defocusing the omnibox changes depending on this
+  /// position. TODO(crbug.com/1462889): Use this in focus animation.
+  ToolbarType _steadyStateOmniboxPosition;
 }
 
 - (instancetype)initWithBrowser:(Browser*)browser {
@@ -473,6 +479,10 @@
       break;
   }
   [self.toolbarHeightDelegate toolbarsHeightChanged];
+}
+
+- (void)transitionSteadyStateOmniboxToToolbarType:(ToolbarType)toolbarType {
+  _steadyStateOmniboxPosition = toolbarType;
 }
 
 #pragma mark - Private
