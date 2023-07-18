@@ -115,6 +115,7 @@ source_set("unit_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
+    "authentication_flow_performer_unittest.mm",
     "authentication_flow_unittest.mm",
     "authentication_ui_util_unittest.mm",
     "re_signin_infobar_delegate_unittest.mm",

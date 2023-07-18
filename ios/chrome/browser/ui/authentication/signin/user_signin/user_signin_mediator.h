@@ -91,8 +91,8 @@ class UnifiedConsentService;
 
 // Cancels and dismisses with animation if `animated` the authentication flow
 // when sign-in is in progress.
-- (void)cancelAndDismissAuthenticationFlowAnimated:(BOOL)animated
-                                        completion:(ProceduralBlock)completion;
+- (void)interruptWithAction:(SigninCoordinatorInterrupt)action
+                 completion:(ProceduralBlock)completion;
 
 // Called when signin is finished and advanced settings link was tapped.
 - (void)onAccountSigninCompletionForAdvancedSettingsWithSuccess:(BOOL)success;

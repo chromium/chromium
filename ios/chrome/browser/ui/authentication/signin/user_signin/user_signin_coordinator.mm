@@ -482,7 +482,9 @@ using signin_metrics::PromoAction;
       // See crbug.com/1126170
       ProceduralBlock interruptCallback = weakSelf.interruptCallback;
       weakSelf.interruptCallback = nil;
-      interruptCallback();
+      if (interruptCallback) {
+        interruptCallback();
+      }
     }
   };
   [self.baseViewController presentViewController:self.viewController
@@ -529,9 +531,8 @@ using signin_metrics::PromoAction;
   };
   switch (action) {
     case SigninCoordinatorInterrupt::UIShutdownNoDismiss: {
-      [self.mediator
-          cancelAndDismissAuthenticationFlowAnimated:NO
-                                          completion:runCompletionCallback];
+      [self.mediator interruptWithAction:action
+                              completion:runCompletionCallback];
       break;
     }
     case SigninCoordinatorInterrupt::DismissWithAnimation: {
@@ -540,9 +541,8 @@ using signin_metrics::PromoAction;
             dismissViewControllerAnimated:YES
                                completion:runCompletionCallback];
       };
-      [self.mediator
-          cancelAndDismissAuthenticationFlowAnimated:YES
-                                          completion:dismissViewController];
+      [self.mediator interruptWithAction:action
+                              completion:dismissViewController];
       break;
     }
     case SigninCoordinatorInterrupt::DismissWithoutAnimation: {
@@ -551,9 +551,8 @@ using signin_metrics::PromoAction;
             dismissViewControllerAnimated:NO
                                completion:runCompletionCallback];
       };
-      [self.mediator
-          cancelAndDismissAuthenticationFlowAnimated:NO
-                                          completion:dismissViewController];
+      [self.mediator interruptWithAction:action
+                              completion:dismissViewController];
       break;
     }
   }

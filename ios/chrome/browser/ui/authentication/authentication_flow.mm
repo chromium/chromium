@@ -177,18 +177,24 @@ enum AuthenticationState {
   });
 }
 
-- (void)cancelAndDismissAnimated:(BOOL)animated {
-  if (_state == DONE)
+- (void)interruptWithAction:(SigninCoordinatorInterrupt)action {
+  if (_state == DONE) {
     return;
+  }
+  __weak __typeof(self) weakSelf = self;
+  [_performer interruptWithAction:action
+                       completion:^() {
+                         [weakSelf performerInterrupted];
+                       }];
+}
 
-  [_performer cancelAndDismissAnimated:animated];
+- (void)performerInterrupted {
   if (_state != DONE) {
     // The performer might not have been able to continue the flow if it was
     // waiting for a callback (e.g. waiting for AccountReconcilor). In this
     // case, we force the flow to finish synchronously.
     [self cancelFlow];
   }
-
   DCHECK_EQ(DONE, _state);
 }
 

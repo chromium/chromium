@@ -131,22 +131,34 @@
                              SigninCoordinatorResultCanceledByUser];
     }
   };
-  [self cancelAndDismissAuthenticationFlowAnimated:NO completion:completion];
+  [self interruptWithAction:SigninCoordinatorInterrupt::DismissWithoutAnimation
+                 completion:completion];
 }
 
-- (void)cancelAndDismissAuthenticationFlowAnimated:(BOOL)animated
-                                        completion:(ProceduralBlock)completion {
-  [self.authenticationFlow cancelAndDismissAnimated:animated];
-
+- (void)interruptWithAction:(SigninCoordinatorInterrupt)action
+                 completion:(ProceduralBlock)completion {
+  [self.authenticationFlow interruptWithAction:action];
   DCHECK(self.delegate);
   switch (self.delegate.signinStateOnStart) {
-    case IdentitySigninStateSignedOut: {
-      self.authenticationService->SignOut(
-          signin_metrics::ProfileSignout::kAbortSignin,
-          /*force_clear_browsing_data=*/false, completion);
+    case IdentitySigninStateSignedOut:
+      switch (action) {
+        case SigninCoordinatorInterrupt::UIShutdownNoDismiss:
+          self.authenticationService->SignOut(
+              signin_metrics::ProfileSignout::kAbortSignin,
+              /*force_clear_browsing_data=*/false, nil);
+          if (completion) {
+            completion();
+          }
+          break;
+        case SigninCoordinatorInterrupt::DismissWithoutAnimation:
+        case SigninCoordinatorInterrupt::DismissWithAnimation:
+          self.authenticationService->SignOut(
+              signin_metrics::ProfileSignout::kAbortSignin,
+              /*force_clear_browsing_data=*/false, completion);
+          break;
+      }
       break;
-    }
-    case IdentitySigninStateSignedInWithSyncDisabled: {
+    case IdentitySigninStateSignedInWithSyncDisabled:
       DCHECK(!self.authenticationService->GetPrimaryIdentity(
           signin::ConsentLevel::kSync));
       if ([self.authenticationService->GetPrimaryIdentity(
@@ -156,23 +168,39 @@
           completion();
       } else {
         __weak __typeof(self) weakSelf = self;
-        self.authenticationService->SignOut(
-            signin_metrics::ProfileSignout::kAbortSignin,
-            /*force_clear_browsing_data=*/false, ^() {
-              [weakSelf signinWithIdentityOnStartAfterSignout];
-              if (completion)
-                completion();
-            });
+        switch (action) {
+          case SigninCoordinatorInterrupt::UIShutdownNoDismiss:
+            // NoDismiss action is called during a shutdown. Unfortunately,
+            // the completion block has to be called synchronously. We can't
+            // wait for the sign-out completion block.
+            // See crbug.com/1455216.
+            self.authenticationService->SignOut(
+                signin_metrics::ProfileSignout::kAbortSignin,
+                /*force_clear_browsing_data=*/false, nil);
+            if (completion) {
+              completion();
+            }
+            break;
+          case SigninCoordinatorInterrupt::DismissWithoutAnimation:
+          case SigninCoordinatorInterrupt::DismissWithAnimation:
+            self.authenticationService->SignOut(
+                signin_metrics::ProfileSignout::kAbortSignin,
+                /*force_clear_browsing_data=*/false, ^() {
+                  [weakSelf signinWithIdentityOnStartAfterSignout];
+                  if (completion) {
+                    completion();
+                  }
+                });
+            break;
+        }
       }
       break;
-    }
-    case IdentitySigninStateSignedInWithSyncEnabled: {
+    case IdentitySigninStateSignedInWithSyncEnabled:
       // Switching accounts is not possible without sign-out.
       // TODO(crbug.com/1410747): DCHECK failures are reported for this
       // codepath that requires more investigation.
       NOTREACHED();
       break;
-    }
   }
 }
 

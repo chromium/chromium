@@ -171,8 +171,7 @@ TEST_F(AuthenticationFlowTest, TestSignInSimple) {
 
   [[[performer_ expect] andDo:^(NSInvocation*) {
     [authentication_flow_ didFetchManagedStatus:nil];
-  }] fetchManagedStatus:browser_state_.get()
-             forIdentity:identity1_];
+  }] fetchManagedStatus:browser_state_.get() forIdentity:identity1_];
 
   [[[performer_ expect] andReturnBool:NO]
       shouldHandleMergeCaseForIdentity:identity1_
@@ -272,32 +271,46 @@ TEST_F(AuthenticationFlowTest, TestSignOutUserChoice) {
       signin_metrics::SigninAccountType::kRegular, 1);
 }
 
-// Tests the cancelling of a Sign In.
-TEST_F(AuthenticationFlowTest, TestCancel) {
+// Tests interrupting the Sign In flow. When AuthenticationFlow is interrupted
+// with UIShutdownNoDismiss, the sign-in completion block needs to be called
+// before -[AuthenticationFlow interruptWithAction:] ends.
+TEST_F(AuthenticationFlowTest, TestInterruptWithoutDismiss) {
   CreateAuthenticationFlow(
       PostSignInAction::kCommitSync, identity1_,
       signin_metrics::AccessPoint::ACCESS_POINT_START_PAGE);
 
   [[[performer_ expect] andDo:^(NSInvocation*) {
     [authentication_flow_ didFetchManagedStatus:nil];
-  }] fetchManagedStatus:browser_state_.get()
-             forIdentity:identity1_];
+  }] fetchManagedStatus:browser_state_.get() forIdentity:identity1_];
 
   [[[performer_ expect] andReturnBool:YES]
       shouldHandleMergeCaseForIdentity:identity1_
                      browserStatePrefs:browser_state_->GetPrefs()];
 
   [[[performer_ expect] andDo:^(NSInvocation*) {
-    [authentication_flow_ cancelAndDismissAnimated:NO];
+    run_loop_.Quit();
   }] promptMergeCaseForIdentity:identity1_
                         browser:browser_.get()
                  viewController:view_controller_];
 
-  [[performer_ expect] cancelAndDismissAnimated:NO];
+  [[performer_ expect]
+      interruptWithAction:SigninCoordinatorInterrupt::UIShutdownNoDismiss
+               completion:[OCMArg
+                              checkWithBlock:^BOOL(ProceduralBlock callback) {
+                                callback();
+                                return YES;
+                              }]];
 
   [authentication_flow_ startSignInWithCompletion:sign_in_completion_];
-
-  CheckSignInCompletion(/*expected_signed_in=*/false);
+  EXPECT_EQ(signin::Tribool::kUnknown, signin_result_);
+  run_loop_.Run();
+  EXPECT_EQ(signin::Tribool::kUnknown, signin_result_);
+  [authentication_flow_
+      interruptWithAction:SigninCoordinatorInterrupt::UIShutdownNoDismiss];
+  // The sign-in completion needs to be called synchronously in the interrupt
+  // method.
+  EXPECT_EQ(signin::Tribool::kFalse, signin_result_);
+  [performer_ verify];
   histogram_tester_.ExpectTotalCount("Signin.AccountType.SigninConsent", 0);
   histogram_tester_.ExpectTotalCount("Signin.AccountType.SyncConsent", 0);
 }
