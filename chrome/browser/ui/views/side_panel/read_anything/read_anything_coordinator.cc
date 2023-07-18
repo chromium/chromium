@@ -177,14 +177,8 @@ void ReadAnythingCoordinator::OnEntryHidden(SidePanelEntry* entry) {
 }
 
 std::unique_ptr<views::View> ReadAnythingCoordinator::CreateContainerView() {
-  // Create the views.
-  auto toolbar = std::make_unique<ReadAnythingToolbarView>(
-      this,
-      /* ReadAnythingToolbarView::Delegate* = */ controller_.get(),
-      /* ReadAnythingFontCombobox::Delegate* = */ controller_.get());
-
   Browser* browser = &GetBrowser();
-  auto content_web_view = std::make_unique<SidePanelWebUIViewT<ReadAnythingUI>>(
+  auto web_view = std::make_unique<SidePanelWebUIViewT<ReadAnythingUI>>(
       /* on_show_cb= */ base::RepeatingClosure(),
       /* close_cb= */ base::RepeatingClosure(),
       /* contents_wrapper= */
@@ -196,11 +190,21 @@ std::unique_ptr<views::View> ReadAnythingCoordinator::CreateContainerView() {
           /* webui_resizes_host= */ false,
           /* esc_closes_ui= */ false));
 
+  if (features::IsReadAnythingWebUIToolbarEnabled()) {
+    return std::move(web_view);
+  }
+
+  // Create the views.
+  auto toolbar = std::make_unique<ReadAnythingToolbarView>(
+      this,
+      /* ReadAnythingToolbarView::Delegate* = */ controller_.get(),
+      /* ReadAnythingFontCombobox::Delegate* = */ controller_.get());
+
   // Create the component.
   // Note that a coordinator would normally maintain ownership of these objects,
   // but objects extending {ui/views/view.h} prefer ownership over raw pointers.
   auto container_view = std::make_unique<ReadAnythingContainerView>(
-      this, std::move(toolbar), std::move(content_web_view));
+      this, std::move(toolbar), std::move(web_view));
 
   return std::move(container_view);
 }
