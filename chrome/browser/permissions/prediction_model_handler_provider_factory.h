@@ -27,6 +27,8 @@ class PredictionModelHandlerProviderFactory
   static permissions::PredictionModelHandlerProvider* GetForBrowserContext(
       content::BrowserContext* context);
 
+  bool ServiceIsCreatedWithBrowserContext() const override;
+
  private:
   PredictionModelHandlerProviderFactory();
   ~PredictionModelHandlerProviderFactory() override;

@@ -53,3 +53,8 @@ KeyedService* PredictionModelHandlerProviderFactory::BuildServiceInstanceFor(
     return nullptr;
   return new permissions::PredictionModelHandlerProvider(optimization_guide);
 }
+
+bool PredictionModelHandlerProviderFactory::ServiceIsCreatedWithBrowserContext()
+    const {
+  return true;
+}
