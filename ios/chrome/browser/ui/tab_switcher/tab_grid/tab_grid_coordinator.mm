@@ -94,6 +94,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_view_controller.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_coordinator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/legacy_tab_grid_transition_handler.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/tab_grid_transition_handler.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_utils.h"
 #import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/url_loading_params.h"
@@ -180,6 +181,8 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 // Handler for the transitions between the TabGrid and the Browser.
 @property(nonatomic, strong)
     LegacyTabGridTransitionHandler* legacyTransitionHandler;
+// New handler for the transitions between the TabGrid and the Browser.
+@property(nonatomic, strong) TabGridTransitionHandler* transitionHandler;
 // Mediator for regular Tabs.
 @property(nonatomic, strong) RegularGridMediator* regularTabsMediator;
 // Mediator for incognito Tabs.
@@ -603,7 +606,17 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
                                                    completion:
                                                        (ProceduralBlock)
                                                            completionHandler {
-  // TODO(crbug.com/1459937): Implement new transition method.
+  TabGridTransitionDirection direction =
+      TabGridTransitionDirection::kFromBrowserToTabGrid;
+  TabGridTransitionType transitionType = [self
+      determineTabGridTransitionTypeWithAnimationEnabled:animationEnabled];
+
+  self.transitionHandler = [[TabGridTransitionHandler alloc]
+          initWithTransitionType:transitionType
+                       direction:direction
+           tabGridViewController:self.baseViewController
+      bvcContainerViewController:self.bvcContainer];
+  [self.transitionHandler performTransitionWithCompletion:completionHandler];
 }
 
 // Performs the new Tab Grid to Browser transition.
@@ -612,7 +625,17 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
                                                    completion:
                                                        (ProceduralBlock)
                                                            completionHandler {
-  // TODO(crbug.com/1459937): Implement new transition method.
+  TabGridTransitionDirection direction =
+      TabGridTransitionDirection::kFromTabGridToBrowser;
+  TabGridTransitionType transitionType = [self
+      determineTabGridTransitionTypeWithAnimationEnabled:animationEnabled];
+
+  self.transitionHandler = [[TabGridTransitionHandler alloc]
+          initWithTransitionType:transitionType
+                       direction:direction
+           tabGridViewController:self.baseViewController
+      bvcContainerViewController:self.bvcContainer];
+  [self.transitionHandler performTransitionWithCompletion:completionHandler];
 }
 
 // Performs the legacy Browser to Tab Grid transition.
@@ -654,6 +677,18 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   transitionHandler.animationDisabled = !animationEnabled;
 
   return transitionHandler;
+}
+
+// Determines the transion type to be used in the transition.
+- (TabGridTransitionType)determineTabGridTransitionTypeWithAnimationEnabled:
+    (BOOL)animationEnabled {
+  if (!animationEnabled) {
+    return TabGridTransitionType::kAnimationDisabled;
+  } else if (UIAccessibilityIsReduceMotionEnabled()) {
+    return TabGridTransitionType::kReducedMotion;
+  }
+
+  return TabGridTransitionType::kNormal;
 }
 
 #pragma mark - ChromeCoordinator
