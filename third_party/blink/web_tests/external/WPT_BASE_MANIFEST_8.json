@@ -391976,6 +391976,32 @@
       "60d8ef3905a722151a2df2e72c1f9cbdb125518e",
       []
      ],
+     "tentative": {
+      "static-router": {
+       "README.md": [
+        "8826b3c78276fbf8c7f2ebee0498f40d817a30e9",
+        []
+       ],
+       "resources": {
+        "direct.txt": [
+         "f3d9861c137b2ddfdeff1690c544f57328df7447",
+         []
+        ],
+        "simple.html": [
+         "0c3e3e78707b14dcca98bf1a435a34f402b3dadd",
+         []
+        ],
+        "static-router-sw.js": [
+         "deb7a3e0b47c58f4ec292ce12a27850d28b1f956",
+         []
+        ],
+        "test-helpers.sub.js": [
+         "64a7f7d24fd2d36dcc914bb321538f576267f010",
+         []
+        ]
+       }
+      }
+     },
      "unregister-immediately-during-extendable-events.https.html.ini": [
       "0f2204cc829bab1ce95e8ac9ee827d992dc061ea",
       []
@@ -617418,6 +617444,17 @@
        {}
       ]
      ],
+     "tentative": {
+      "static-router": {
+       "static-router-subresource.https.html": [
+        "721c2797603bb568172c6804b07e195d14d2018e",
+        [
+         null,
+         {}
+        ]
+       ]
+      }
+     },
      "uncontrolled-page.https.html": [
       "e22ca8f0a91adf9fbcf64c77cd3d1d4df27956f3",
       [

@@ -1,5 +1,5 @@
 // Copied from
-// third_party/blink/web_tests/external/wpt/service-workers/service-worker/resources/testharness-helpers.js to be used under tentative.
+// service-workers/service-worker/resources/testharness-helpers.js to be used under tentative.
 
 // Adapter for testharness.js-style tests with Service Workers
 
