@@ -3,3 +3,6 @@
 
 # TODO(crbug/1345504)
 -org.chromium.chrome.browser.shape_detection.ShapeDetectionTest.testTextDetection
+
+# TODO(crbug/1465894)
+-org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.PasswordAccessoryIntegrationTest.testPasswordSheetDisplaysProvidedItems
