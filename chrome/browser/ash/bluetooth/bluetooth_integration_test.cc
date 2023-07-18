@@ -99,21 +99,6 @@ class BluetoothIntegrationTest : public InteractiveBrowserTest {
     views::ElementTrackerViews::SetContextOverrideCallback({});
   }
 
-  // Waits for a button to be enabled. Returns immediately if the button is
-  // already enabled.
-  // TODO(crbug.com/1464750): After crrev.com/c/4687159 lands replace with
-  // WaitForViewProperty(element, views::View, views::Enabled, true).
-  auto WaitForEnabled(ElementSpecifier element) {
-    return WithView(element, [](views::Button* button) {
-      if (button->GetEnabled()) {
-        return;
-      }
-      base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
-      auto sub = button->AddEnabledChangedCallback(run_loop.QuitClosure());
-      run_loop.Run();
-    });
-  }
-
   // A more readable way to wait for the bluetooth adapter to be powered on.
   auto WaitForBluetoothPoweredOn() {
     return WaitForShow(kBluetoothPoweredElementId);
@@ -170,7 +155,8 @@ IN_PROC_BROWSER_TEST_F(BluetoothIntegrationTest,
       // The bluetooth toggle button may take time to enable because the UI
       // queries the bluetooth adapter state asynchronously.
       Log("Waiting for bluetooth toggle button to enable"),
-      WaitForEnabled(kBluetoothFeatureTileToggleElementId),
+      WaitForViewProperty(kBluetoothFeatureTileToggleElementId, views::View,
+                          Enabled, true),
 
       Log("Pressing bluetooth toggle button"),
       PressButton(kBluetoothFeatureTileToggleElementId),
