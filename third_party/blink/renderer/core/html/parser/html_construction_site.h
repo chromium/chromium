@@ -108,13 +108,13 @@ class HTMLConstructionSite final {
 
   HTMLConstructionSite(HTMLParserReentryPermit*,
                        Document&,
-                       ParserContentPolicy);
+                       ParserContentPolicy,
+                       DocumentFragment*,
+                       Element*);
   HTMLConstructionSite(const HTMLConstructionSite&) = delete;
   HTMLConstructionSite& operator=(const HTMLConstructionSite&) = delete;
   ~HTMLConstructionSite();
   void Trace(Visitor*) const;
-
-  void InitFragmentParsing(DocumentFragment*, Element* context_element);
 
   void Detach();
 
@@ -353,15 +353,7 @@ class HTMLConstructionSite final {
     Member<DocumentPartRoot> document_part_root_;
   };
 
-  PendingDOMParts& GetPendingDOMParts() {
-    CHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled());
-    if (!pending_dom_parts_) {
-      pending_dom_parts_ =
-          MakeGarbageCollected<PendingDOMParts>(attachment_root_);
-    }
-    return *pending_dom_parts_;
-  }
-
+  // Only non-nullptr if RuntimeEnabledFeatures::DOMPartsAPIEnabled().
   Member<PendingDOMParts> pending_dom_parts_;
 
   const ParserContentPolicy parser_content_policy_;

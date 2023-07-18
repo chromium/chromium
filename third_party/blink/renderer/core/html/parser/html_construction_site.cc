@@ -286,16 +286,16 @@ void HTMLConstructionSite::ExecuteTask(HTMLConstructionSiteTask& task) {
   DCHECK(task_queue_.empty());
   if (task.operation == HTMLConstructionSiteTask::kInsert) {
     ExecuteInsertTask(task);
-    if (RuntimeEnabledFeatures::DOMPartsAPIEnabled()) {
-      GetPendingDOMParts().MaybeConstructNodePart(*task.child);
+    if (pending_dom_parts_) {
+      pending_dom_parts_->MaybeConstructNodePart(*task.child);
     }
     return;
   }
 
   if (task.operation == HTMLConstructionSiteTask::kInsertText) {
     ExecuteInsertTextTask(task);
-    if (RuntimeEnabledFeatures::DOMPartsAPIEnabled()) {
-      GetPendingDOMParts().MaybeConstructNodePart(*task.child);
+    if (pending_dom_parts_) {
+      pending_dom_parts_->MaybeConstructNodePart(*task.child);
     }
     return;
   }
@@ -468,34 +468,35 @@ void HTMLConstructionSite::ExecuteQueuedTasks() {
 HTMLConstructionSite::HTMLConstructionSite(
     HTMLParserReentryPermit* reentry_permit,
     Document& document,
-    ParserContentPolicy parser_content_policy)
+    ParserContentPolicy parser_content_policy,
+    DocumentFragment* fragment,
+    Element* context_element)
     : reentry_permit_(reentry_permit),
       document_(&document),
-      attachment_root_(document),
+      attachment_root_(fragment ? fragment
+                                : static_cast<ContainerNode*>(&document)),
+      pending_dom_parts_(
+          RuntimeEnabledFeatures::DOMPartsAPIEnabled()
+              ? MakeGarbageCollected<PendingDOMParts>(attachment_root_)
+              : nullptr),
       parser_content_policy_(parser_content_policy),
       is_scripting_content_allowed_(
           ScriptingContentIsAllowed(parser_content_policy)),
-      is_parsing_fragment_(false),
+      is_parsing_fragment_(fragment),
       redirect_attach_to_foster_parent_(false),
       in_quirks_mode_(document.InQuirksMode()),
       canonicalize_whitespace_strings_(
           RuntimeEnabledFeatures::CanonicalizeWhitespaceStringsEnabled()) {
   DCHECK(document_->IsHTMLDocument() || document_->IsXHTMLDocument());
-}
 
-void HTMLConstructionSite::InitFragmentParsing(DocumentFragment* fragment,
-                                               Element* context_element) {
-  DCHECK(context_element);
-  DCHECK_EQ(document_, &fragment->GetDocument());
-  DCHECK_EQ(in_quirks_mode_, fragment->GetDocument().InQuirksMode());
-  DCHECK(!is_parsing_fragment_);
-  DCHECK(!form_);
-
-  attachment_root_ = fragment;
-  is_parsing_fragment_ = true;
-
-  if (!context_element->GetDocument().IsTemplateDocument())
-    form_ = Traversal<HTMLFormElement>::FirstAncestorOrSelf(*context_element);
+  DCHECK_EQ(!fragment, !context_element);
+  if (fragment) {
+    DCHECK_EQ(document_, &fragment->GetDocument());
+    DCHECK_EQ(in_quirks_mode_, fragment->GetDocument().InQuirksMode());
+    if (!context_element->GetDocument().IsTemplateDocument()) {
+      form_ = Traversal<HTMLFormElement>::FirstAncestorOrSelf(*context_element);
+    }
+  }
 }
 
 HTMLConstructionSite::~HTMLConstructionSite() {
@@ -804,7 +805,8 @@ void HTMLConstructionSite::InsertComment(AtomicHTMLToken* token) {
   auto comment = token->Comment();
   Comment& comment_node =
       *Comment::Create(OwnerDocumentForCurrentNode(), comment);
-  if (RuntimeEnabledFeatures::DOMPartsAPIEnabled()) {
+  if (pending_dom_parts_) {
+    DCHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled());
     // This strips HTML whitespace from the front and back, and replaces
     // repeated whitespace with a single ' '.
     auto trimmed_comment = comment.SimplifyWhiteSpace(IsHTMLSpace<UChar>);
@@ -814,14 +816,14 @@ void HTMLConstructionSite::InsertComment(AtomicHTMLToken* token) {
       const String kChildNodePartEnd = "?/child-node-part";
       const String kNodePart = "?node-part";
       if (StartsWithDeclarativeDOMPart(trimmed_comment, kChildNodePartStart)) {
-        GetPendingDOMParts().AddChildNodePartStart(
+        pending_dom_parts_->AddChildNodePartStart(
             comment_node, ParseMetadataString(trimmed_comment));
       } else if (StartsWithDeclarativeDOMPart(trimmed_comment,
                                               kChildNodePartEnd)) {
-        GetPendingDOMParts().AddChildNodePartEnd(comment_node);
+        pending_dom_parts_->AddChildNodePartEnd(comment_node);
       } else if (StartsWithDeclarativeDOMPart(trimmed_comment, kNodePart)) {
-        GetPendingDOMParts().AddNodePart(comment_node,
-                                         ParseMetadataString(trimmed_comment));
+        pending_dom_parts_->AddNodePart(comment_node,
+                                        ParseMetadataString(trimmed_comment));
       }
     }
   }
@@ -1371,7 +1373,7 @@ void HTMLConstructionSite::FosterParent(Node* node) {
 
 HTMLConstructionSite::PendingDOMParts::PendingDOMParts(
     ContainerNode* attachment_root) {
-  CHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled());
+  DCHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled());
   if (Document* document = DynamicTo<Document>(attachment_root)) {
     document_part_root_ = &document->getPartRoot();
   } else {
@@ -1384,7 +1386,7 @@ HTMLConstructionSite::PendingDOMParts::PendingDOMParts(
 void HTMLConstructionSite::PendingDOMParts::AddNodePart(
     Comment& node_part_comment,
     Vector<String> metadata) {
-  CHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled());
+  DCHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled());
   pending_node_part_comment_node_ = &node_part_comment;
   pending_node_part_metadata_ = metadata;
   // Nothing to construct yet - wait for the next Node.
@@ -1392,7 +1394,7 @@ void HTMLConstructionSite::PendingDOMParts::AddNodePart(
 void HTMLConstructionSite::PendingDOMParts::AddChildNodePartStart(
     Node& previous_sibling,
     Vector<String> metadata) {
-  CHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled());
+  DCHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled());
   // Note that this ChildNodePart is constructed with both `previous_sibling`
   // and `next_sibling` pointing to the same node, `previous_sibling`. That's
   // because at this point we will move on to parse the children of this
@@ -1406,7 +1408,7 @@ void HTMLConstructionSite::PendingDOMParts::AddChildNodePartStart(
 }
 void HTMLConstructionSite::PendingDOMParts::AddChildNodePartEnd(
     Node& next_sibling) {
-  CHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled());
+  DCHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled());
   if (child_node_part_stack_.empty()) {
     // Mismatched opening/closing child parts.
     return;
@@ -1418,7 +1420,7 @@ void HTMLConstructionSite::PendingDOMParts::AddChildNodePartEnd(
 
 void HTMLConstructionSite::PendingDOMParts::MaybeConstructNodePart(
     Node& last_node) {
-  CHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled());
+  DCHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled());
   if (!pending_node_part_comment_node_) {
     return;
   }

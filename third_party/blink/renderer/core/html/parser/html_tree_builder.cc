@@ -281,8 +281,14 @@ HTMLTreeBuilder::HTMLTreeBuilder(HTMLDocumentParser* parser,
                                  Document& document,
                                  ParserContentPolicy parser_content_policy,
                                  const HTMLParserOptions& options,
-                                 bool include_shadow_roots)
-    : tree_(parser->ReentryPermit(), document, parser_content_policy),
+                                 bool include_shadow_roots,
+                                 DocumentFragment* for_fragment,
+                                 Element* fragment_context_element)
+    : tree_(parser->ReentryPermit(),
+            document,
+            parser_content_policy,
+            for_fragment,
+            fragment_context_element),
       insertion_mode_(kInitialMode),
       original_insertion_mode_(kInitialMode),
       should_skip_leading_newline_(false),
@@ -291,7 +297,18 @@ HTMLTreeBuilder::HTMLTreeBuilder(HTMLDocumentParser* parser,
       parser_(parser),
       script_to_process_start_position_(UninitializedPositionValue1()),
       options_(options) {}
-
+HTMLTreeBuilder::HTMLTreeBuilder(HTMLDocumentParser* parser,
+                                 Document& document,
+                                 ParserContentPolicy parser_content_policy,
+                                 const HTMLParserOptions& options,
+                                 bool include_shadow_roots)
+    : HTMLTreeBuilder(parser,
+                      document,
+                      parser_content_policy,
+                      options,
+                      include_shadow_roots,
+                      nullptr,
+                      nullptr) {}
 HTMLTreeBuilder::HTMLTreeBuilder(HTMLDocumentParser* parser,
                                  DocumentFragment* fragment,
                                  Element* context_element,
@@ -302,10 +319,10 @@ HTMLTreeBuilder::HTMLTreeBuilder(HTMLDocumentParser* parser,
                       fragment->GetDocument(),
                       parser_content_policy,
                       options,
-                      include_shadow_roots) {
+                      include_shadow_roots,
+                      fragment,
+                      context_element) {
   DCHECK(IsMainThread());
-  DCHECK(context_element);
-  tree_.InitFragmentParsing(fragment, context_element);
   fragment_context_.Init(fragment, context_element);
 
   // Steps 4.2-4.6 of the HTML5 Fragment Case parsing algorithm:
