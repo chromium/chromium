@@ -354,6 +354,7 @@ tast_disabled_tests_from_chrome_all = [
 
   # b/290443902
   "inputs.VirtualKeyboardTypingOmnibox.a11y",
+  "inputs.VirtualKeyboardTypingOmnibox.a11y_lacros",
 
   # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
 ]
