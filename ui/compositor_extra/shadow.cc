@@ -38,7 +38,7 @@ void Shadow::SetContentBounds(const gfx::Rect& content_bounds) {
     return;
 
   content_bounds_ = content_bounds;
-  UpdateLayerBounds();
+  UpdateShadowAppearance();
 }
 
 void Shadow::SetElevation(int elevation) {
@@ -81,7 +81,7 @@ void Shadow::SetRoundedCornerRadius(int rounded_corner_radius) {
     return;
 
   rounded_corner_radius_ = rounded_corner_radius;
-  UpdateLayerBounds();
+  UpdateShadowAppearance();
 }
 
 void Shadow::SetShadowStyle(gfx::ShadowStyle style) {
@@ -89,19 +89,19 @@ void Shadow::SetShadowStyle(gfx::ShadowStyle style) {
     return;
 
   style_ = style;
-  UpdateLayerBounds();
+  UpdateShadowAppearance();
 }
 
 void Shadow::SetElevationToColorsMap(const ElevationToColorsMap& color_map) {
   color_map_ = color_map;
-  UpdateLayerBounds();
+  UpdateShadowAppearance();
 }
 
 void Shadow::OnImplicitAnimationsCompleted() {
   std::unique_ptr<ui::Layer> to_be_deleted = fading_layer_owner_.ReleaseLayer();
   // The size needed for layer() may be smaller now that |fading_layer()| is
   // removed.
-  UpdateLayerBounds();
+  UpdateShadowAppearance();
 }
 
 // -----------------------------------------------------------------------------
@@ -118,7 +118,7 @@ std::unique_ptr<Layer> Shadow::ShadowLayerOwner::RecreateLayer() {
   // Now update the newly recreated shadow layer with the correct nine patch
   // image details.
   owner_shadow_->details_ = nullptr;
-  owner_shadow_->UpdateLayerBounds();
+  owner_shadow_->UpdateShadowAppearance();
   return result;
 }
 
@@ -133,10 +133,10 @@ void Shadow::RecreateShadowLayer() {
   layer()->Add(shadow_layer());
 
   details_ = nullptr;
-  UpdateLayerBounds();
+  UpdateShadowAppearance();
 }
 
-void Shadow::UpdateLayerBounds() {
+void Shadow::UpdateShadowAppearance() {
   if (content_bounds_.IsEmpty())
     return;
 

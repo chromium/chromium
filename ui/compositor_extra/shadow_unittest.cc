@@ -5,6 +5,7 @@
 #include "ui/compositor_extra/shadow.h"
 
 #include "base/test/test_discardable_memory_allocator.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
@@ -14,6 +15,8 @@
 
 namespace ui {
 namespace {
+
+using ::testing::FieldsAre;
 
 constexpr int kElevationLarge = 24;
 constexpr int kElevationSmall = 6;
@@ -251,26 +254,28 @@ TEST_P(ShadowColorTest, ElevationToColorsMap) {
       std::make_pair(large_key_color, large_ambient_color);
   shadow.SetElevationToColorsMap(color_map);
 
-  // A lambda to check if current shadow colors are as expected.
-  auto check_color = [&shadow](SkColor expect_key_color,
-                               SkColor expect_ambient_color) {
+  // A lambda to get key and ambient shadow colors.
+  auto get_colors =
+      [](const ui::Shadow& shadow) -> std::pair<SkColor, SkColor> {
     const auto& values = shadow.details_for_testing()->values;
-    EXPECT_EQ(values[0].color(), expect_key_color);
-    EXPECT_EQ(values[1].color(), expect_ambient_color);
+    return std::make_pair(values[0].color(), values[1].color());
   };
 
   // Check if shadow colors are updated.
-  check_color(small_key_color, small_ambient_color);
+  EXPECT_THAT(get_colors(shadow),
+              FieldsAre(small_key_color, small_ambient_color));
 
   // Check if shadow colors are updated when the shadow changes to another
   // specified elevation.
   shadow.SetElevation(kElevationLarge);
-  check_color(large_key_color, large_ambient_color);
+  EXPECT_THAT(get_colors(shadow),
+              FieldsAre(large_key_color, large_ambient_color));
 
   // Check if the shadow colors change back to default colors when the shadow
   // changes to a non-specified elevation.
   shadow.SetElevation(kElevationSmall + 1);
-  check_color(default_key_color, default_ambient_color);
+  EXPECT_THAT(get_colors(shadow),
+              FieldsAre(default_key_color, default_ambient_color));
 }
 
 }  // namespace

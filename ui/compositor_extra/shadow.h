@@ -19,7 +19,8 @@ class Layer;
 // Simple class that draws a drop shadow around content at given bounds.
 class Shadow : public ui::ImplicitAnimationObserver, public ui::LayerOwner {
  public:
-  // Mapping from elevation to key and ambient shadow colors.
+  // Mapping from elevation to key and ambient shadow colors. The first color is
+  // the key shadow color and the second is the ambient shadow color.
   using ElevationToColorsMap = base::flat_map<int, std::pair<SkColor, SkColor>>;
 
   Shadow();
@@ -90,9 +91,9 @@ class Shadow : public ui::ImplicitAnimationObserver, public ui::LayerOwner {
   // Updates the shadow layer and its image to reflect |desired_elevation_|.
   void RecreateShadowLayer();
 
-  // Updates the shadow layer bounds based on the inteior inset and the current
-  // |content_bounds_|.
-  void UpdateLayerBounds();
+  // Updates the shadow appearance based on the inteior inset, the current
+  // |content_bounds_|, shadow style, and colors.
+  void UpdateShadowAppearance();
 
   // The goal elevation, set when the transition animation starts. The elevation
   // dictates the shadow's display characteristics and is proportional to the
