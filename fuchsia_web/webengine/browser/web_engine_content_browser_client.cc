@@ -260,8 +260,7 @@ void WebEngineContentBrowserClient::AppendExtraCommandLineSwitches(
       *base::CommandLine::ForCurrentProcess();
 
   command_line->CopySwitchesFrom(browser_command_line,
-                                 kAllProcessSwitchesToCopy,
-                                 std::size(kAllProcessSwitchesToCopy));
+                                 kAllProcessSwitchesToCopy);
 
   std::string process_type =
       command_line->GetSwitchValueASCII(switches::kProcessType);

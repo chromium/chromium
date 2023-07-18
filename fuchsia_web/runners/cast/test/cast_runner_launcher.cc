@@ -96,9 +96,9 @@ CastRunnerLauncher::CastRunnerLauncher(CastRunnerFeatures runner_features) {
   realm_builder.AddChild(kCastRunnerComponentName, "#meta/cast_runner.cm");
 
   base::CommandLine command_line = CommandLineFromFeatures(runner_features);
-  constexpr char const* kSwitchesToCopy[] = {"ozone-platform"};
+  static constexpr char const* kSwitchesToCopy[] = {"ozone-platform"};
   command_line.CopySwitchesFrom(*base::CommandLine::ForCurrentProcess(),
-                                kSwitchesToCopy, std::size(kSwitchesToCopy));
+                                kSwitchesToCopy);
   AppendCommandLineArguments(realm_builder, kCastRunnerComponentName,
                              command_line);
 
