@@ -4,10 +4,15 @@
 
 module tracing.mojom;
 
+// Identifies a rule used in BackgroundTracingAgent.
+struct BackgroundTracingRule {
+  string rule_id;
+};
+
 // This interface is used to receive callbacks from BackgroundTracingAgent.
 interface BackgroundTracingAgentClient {
   OnInitialized();
-  OnTriggerBackgroundTrace(string histogram_name);
+  OnTriggerBackgroundTrace(BackgroundTracingRule rule);
 };
 
 // This interface is used to allow clients (the browser process) to monitor for
@@ -17,13 +22,12 @@ interface BackgroundTracingAgent {
   // Call this method to begin reporting metrics corresponding to the named
   // histogram. Lower and upper bound values constrain what data is reported.
   // This results in OnTriggerBackgroundTrace callbacks.
-  SetUMACallback(string histogram_name,
+  SetUMACallback(BackgroundTracingRule rule, string histogram_name,
                  int32 histogram_lower_value,
                  int32 histogram_upper_value);
 
-  // Call this method to stop reporting metrics corresponding to the named
-  // histogram.
-  ClearUMACallback(string histogram_name);
+  // Call this method to stop reporting metrics corresponding to |rule|.
+  ClearUMACallback(BackgroundTracingRule rule);
 };
 
 // This interface is used to construct a BackgroundTracingAgent.

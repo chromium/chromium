@@ -14,11 +14,6 @@
 #include "third_party/perfetto/protos/perfetto/trace/track_event/chrome_histogram_sample.pbzero.h"
 
 namespace tracing {
-namespace {
-
-constexpr base::TimeDelta kMinTimeBetweenHistogramChanges = base::Seconds(10);
-
-}  // namespace
 
 BackgroundTracingAgentImpl::BackgroundTracingAgentImpl(
     mojo::PendingRemote<mojom::BackgroundTracingAgentClient> client)
@@ -29,64 +24,29 @@ BackgroundTracingAgentImpl::BackgroundTracingAgentImpl(
 BackgroundTracingAgentImpl::~BackgroundTracingAgentImpl() = default;
 
 void BackgroundTracingAgentImpl::SetUMACallback(
+    tracing::mojom::BackgroundTracingRulePtr rule,
     const std::string& histogram_name,
     int32_t histogram_lower_value,
     int32_t histogram_upper_value) {
-  histogram_last_changed_ = base::Time();
-
-  base::WeakPtr<BackgroundTracingAgentImpl> weak_self =
-      weak_factory_.GetWeakPtr();
-
   // This callback will run on a random thread, so we need to proxy back to the
   // current sequence before touching |this|.
   auto histogram_observer =
       std::make_unique<base::StatisticsRecorder::ScopedHistogramSampleObserver>(
           histogram_name,
           base::BindRepeating(&BackgroundTracingAgentImpl::OnHistogramChanged,
-                              weak_self, histogram_lower_value,
-                              histogram_upper_value));
+                              weak_factory_.GetWeakPtr(), rule->rule_id,
+                              histogram_lower_value, histogram_upper_value));
   histogram_callback_map_.insert(
-      {histogram_name, std::move(histogram_observer)});
-
-  base::HistogramBase* existing_histogram =
-      base::StatisticsRecorder::FindHistogram(histogram_name);
-  if (!existing_histogram)
-    return;
-
-  std::unique_ptr<base::HistogramSamples> samples =
-      existing_histogram->SnapshotSamples();
-  if (!samples)
-    return;
-
-  std::unique_ptr<base::SampleCountIterator> sample_iterator =
-      samples->Iterator();
-  if (!sample_iterator)
-    return;
-
-  while (!sample_iterator->Done()) {
-    base::HistogramBase::Sample min;
-    int64_t max;
-    base::HistogramBase::Count count;
-    sample_iterator->Get(&min, &max, &count);
-
-    if (min >= histogram_lower_value && max <= histogram_upper_value) {
-      SendTriggerMessage(histogram_name);
-      break;
-    }
-
-    sample_iterator->Next();
-  }
+      {rule->rule_id, std::move(histogram_observer)});
 }
 
 void BackgroundTracingAgentImpl::ClearUMACallback(
-    const std::string& histogram_name) {
-  histogram_last_changed_ = base::Time();
-  histogram_callback_map_.erase(histogram_name);
+    tracing::mojom::BackgroundTracingRulePtr rule) {
+  histogram_callback_map_.erase(rule->rule_id);
 }
 
-// static
 void BackgroundTracingAgentImpl::OnHistogramChanged(
-    base::WeakPtr<BackgroundTracingAgentImpl> weak_self,
+    const std::string& rule_id,
     base::Histogram::Sample histogram_lower_value,
     base::Histogram::Sample histogram_upper_value,
     const char* histogram_name,
@@ -104,23 +64,8 @@ void BackgroundTracingAgentImpl::OnHistogramChanged(
                 new_sample->set_sample(actual_value);
               });
 
-  if (weak_self)
-    weak_self->SendTriggerMessage(histogram_name);
-}
-
-void BackgroundTracingAgentImpl::SendTriggerMessage(
-    const std::string& histogram_name) {
-  base::Time now = TRACE_TIME_NOW();
-
-  if (!histogram_last_changed_.is_null()) {
-    base::Time computed_next_allowed_time =
-        histogram_last_changed_ + kMinTimeBetweenHistogramChanges;
-    if (computed_next_allowed_time > now)
-      return;
-  }
-  histogram_last_changed_ = now;
-
-  client_->OnTriggerBackgroundTrace(histogram_name);
+  client_->OnTriggerBackgroundTrace(
+      tracing::mojom::BackgroundTracingRule::New(rule_id));
 }
 
 }  // namespace tracing

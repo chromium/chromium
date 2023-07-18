@@ -21,9 +21,10 @@ class BackgroundTracingAgentClientRecorder
  public:
   void OnInitialized() override { ++on_initialized_count_; }
 
-  void OnTriggerBackgroundTrace(const std::string& histogram_name) override {
+  void OnTriggerBackgroundTrace(
+      tracing::mojom::BackgroundTracingRulePtr rule) override {
     ++on_trigger_background_trace_count_;
-    on_trigger_background_trace_histogram_name_ = histogram_name;
+    on_trigger_background_trace_rule_id_ = rule->rule_id;
   }
 
   int on_initialized_count() const { return on_initialized_count_; }
@@ -31,14 +32,14 @@ class BackgroundTracingAgentClientRecorder
     return on_trigger_background_trace_count_;
   }
 
-  const std::string& on_trigger_background_trace_histogram_name() const {
-    return on_trigger_background_trace_histogram_name_;
+  const std::string& on_trigger_background_trace_rule_id() const {
+    return on_trigger_background_trace_rule_id_;
   }
 
  private:
   int on_initialized_count_ = 0;
   int on_trigger_background_trace_count_ = 0;
-  std::string on_trigger_background_trace_histogram_name_;
+  std::string on_trigger_background_trace_rule_id_;
 };
 
 class BackgroundTracingAgentImplTest : public testing::Test {
@@ -84,7 +85,8 @@ TEST_F(BackgroundTracingAgentImplTest, TestInitialize) {
 TEST_F(BackgroundTracingAgentImplTest, TestHistogramDoesNotTrigger) {
   LOCAL_HISTOGRAM_COUNTS("foo1", 10);
 
-  agent()->SetUMACallback("foo1", 20000, 25000);
+  agent()->SetUMACallback(tracing::mojom::BackgroundTracingRule::New("rule1"),
+                          "foo1", 20000, 25000);
 
   RunUntilIdle();
 
@@ -93,22 +95,24 @@ TEST_F(BackgroundTracingAgentImplTest, TestHistogramDoesNotTrigger) {
 }
 
 TEST_F(BackgroundTracingAgentImplTest, TestHistogramTriggers_ExistingSample) {
-  // Ensure that a sample exists by the time SetUMACallback is processed.
+  // Ensure that a sample exists by the time SetUMACallback isn't
+  // processed.
   LOCAL_HISTOGRAM_COUNTS("foo2", 2);
 
-  agent()->SetUMACallback("foo2", 1, 3);
+  agent()->SetUMACallback(tracing::mojom::BackgroundTracingRule::New("rule2"),
+                          "foo2", 1, 3);
 
   // RunLoop ensures that SetUMACallback and OnTriggerBackgroundTrace mojo
   // messages are processed.
   RunUntilIdle();
 
   EXPECT_EQ(1, recorder()->on_initialized_count());
-  EXPECT_EQ(1, recorder()->on_trigger_background_trace_count());
-  EXPECT_EQ("foo2", recorder()->on_trigger_background_trace_histogram_name());
+  EXPECT_EQ(0, recorder()->on_trigger_background_trace_count());
 }
 
 TEST_F(BackgroundTracingAgentImplTest, TestHistogramTriggers_SameThread) {
-  agent()->SetUMACallback("foo2", 1, 3);
+  agent()->SetUMACallback(tracing::mojom::BackgroundTracingRule::New("rule2"),
+                          "foo2", 1, 3);
   // RunLoop ensures that SetUMACallback mojo message is processed.
   RunUntilIdle();
 
@@ -119,11 +123,12 @@ TEST_F(BackgroundTracingAgentImplTest, TestHistogramTriggers_SameThread) {
 
   EXPECT_EQ(1, recorder()->on_initialized_count());
   EXPECT_EQ(1, recorder()->on_trigger_background_trace_count());
-  EXPECT_EQ("foo2", recorder()->on_trigger_background_trace_histogram_name());
+  EXPECT_EQ("rule2", recorder()->on_trigger_background_trace_rule_id());
 }
 
 TEST_F(BackgroundTracingAgentImplTest, TestHistogramTriggers_CrossThread) {
-  agent()->SetUMACallback("foo2", 1, 3);
+  agent()->SetUMACallback(tracing::mojom::BackgroundTracingRule::New("rule2"),
+                          "foo2", 1, 3);
   // RunLoop ensures that SetUMACallback mojo message is processed.
   RunUntilIdle();
 
@@ -136,7 +141,7 @@ TEST_F(BackgroundTracingAgentImplTest, TestHistogramTriggers_CrossThread) {
 
   EXPECT_EQ(1, recorder()->on_initialized_count());
   EXPECT_EQ(1, recorder()->on_trigger_background_trace_count());
-  EXPECT_EQ("foo2", recorder()->on_trigger_background_trace_histogram_name());
+  EXPECT_EQ("rule2", recorder()->on_trigger_background_trace_rule_id());
 }
 
 }  // namespace tracing
