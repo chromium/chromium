@@ -9,8 +9,8 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ash/app_mode/cancellable_job.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launch_error.h"
-#include "chrome/browser/ash/app_mode/retry_runner.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chromeos/ash/components/login/auth/login_performer.h"
 #include "components/account_id/account_id.h"
@@ -22,9 +22,6 @@ namespace ash {
 class AuthFailure;
 enum class KioskAppType;
 class UserContext;
-
-enum class MountedState { kMounted, kNotMounted };
-using CryptohomeMountStateChecker = RetryRunner<MountedState>;
 
 // KioskProfileLoader loads a special profile for a given app. It first
 // attempts to login for the app's generated user id. If the login is
@@ -72,8 +69,8 @@ class KioskProfileLoader : public LoginPerformer::Delegate,
   const KioskAppType app_type_;
   raw_ptr<Delegate, ExperimentalAsh> delegate_;
   int failed_mount_attempts_;
-  std::unique_ptr<CryptohomeMountStateChecker> cryptohome_checker_;
   std::unique_ptr<LoginPerformer> login_performer_;
+  std::unique_ptr<CancellableJob> current_step_;
 };
 
 }  // namespace ash

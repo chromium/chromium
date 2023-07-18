@@ -12,6 +12,7 @@
 #include "base/notreached.h"
 #include "base/syslog_logging.h"
 #include "base/system/sys_info.h"
+#include "chrome/browser/ash/app_mode/cancellable_job.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/ash/app_mode/retry_runner.h"
@@ -31,6 +32,8 @@ namespace ash {
 namespace {
 
 using ::content::BrowserThread;
+
+enum class MountedState { kMounted, kNotMounted };
 
 using CryptohomeMountStateCallback =
     base::OnceCallback<void(absl::optional<MountedState> result)>;
@@ -90,7 +93,7 @@ void CheckCryptohomeMountState(CryptohomeMountStateCallback on_done) {
 
 // Checks the mount state of cryptohome and retries if the cryptohome service is
 // not yet available.
-std::unique_ptr<CryptohomeMountStateChecker> CheckCryptohome(
+std::unique_ptr<CancellableJob> CheckCryptohome(
     CryptohomeMountStateCallback on_done) {
   return RunUpToNTimes<MountedState>(
       /*n=*/5,
@@ -113,10 +116,10 @@ KioskProfileLoader::~KioskProfileLoader() = default;
 void KioskProfileLoader::Start() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   login_performer_.reset();
-  cryptohome_checker_ = CheckCryptohome(base::BindOnce(
+  current_step_ = CheckCryptohome(base::BindOnce(
       [](KioskProfileLoader* self, absl::optional<MountedState> result) {
-        // Reset `cryptohome_checker_` to free resources now the job is done.
-        self->cryptohome_checker_.reset();
+        // Reset `current_step_` to free resources now the job is done.
+        self->current_step_.reset();
         if (!result.has_value()) {
           return self->ReportLaunchResult(
               KioskAppLaunchError::Error::kCryptohomedNotRunning);
@@ -129,7 +132,7 @@ void KioskProfileLoader::Start() {
                 KioskAppLaunchError::Error::kAlreadyMounted);
         }
       },
-      // Safe because `this` owns `cryptohome_checker_`
+      // Safe because `this` owns `current_step_`
       base::Unretained(this)));
 }
 

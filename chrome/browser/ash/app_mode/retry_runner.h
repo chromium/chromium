@@ -12,6 +12,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/app_mode/cancellable_job.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
@@ -28,24 +29,23 @@ void PostDelayedTask(base::OnceClosure task, base::TimeDelta delay);
 
 // Helper to retry tasks that can fail.
 template <typename Result>
-class RetryRunner {
+class RetryRunner : public CancellableJob {
  public:
   using ResultCallback =
       base::OnceCallback<void(absl::optional<Result> result)>;
   using Job = base::RepeatingCallback<void(ResultCallback on_result)>;
 
-  static std::unique_ptr<RetryRunner> Run(int max_attempts,
-                                          Job job,
-                                          ResultCallback on_done) {
-    auto checker = base::WrapUnique(
+  [[nodiscard]] static std::unique_ptr<CancellableJob>
+  Run(int max_attempts, Job job, ResultCallback on_done) {
+    auto handle = base::WrapUnique(
         new RetryRunner<Result>(max_attempts, job, std::move(on_done)));
-    checker->RunAndRetryOnFailure();
-    return checker;
+    handle->RunAndRetryOnFailure();
+    return handle;
   }
 
   RetryRunner(const RetryRunner&) = delete;
   RetryRunner& operator=(const RetryRunner&) = delete;
-  ~RetryRunner() = default;
+  ~RetryRunner() override = default;
 
  private:
   RetryRunner(int max_attempts, Job job, ResultCallback on_done)
@@ -59,7 +59,7 @@ class RetryRunner {
             return;
           }
           if (result.has_value() || attempt_count >= self->max_attempts_) {
-            return std::move(self->on_done_).Run(result);
+            return std::move(self->on_done_).Run(std::move(result));
           }
 
           internal::PostDelayedTask(
@@ -86,7 +86,7 @@ class RetryRunner {
 // Destroying the returned `std::unique_ptr` cancels this task. In that case
 // `on_done` will not be called.
 template <typename Result>
-std::unique_ptr<RetryRunner<Result>> RunUpToNTimes(
+[[nodiscard]] std::unique_ptr<CancellableJob> RunUpToNTimes(
     int n,
     typename RetryRunner<Result>::Job job,
     typename RetryRunner<Result>::ResultCallback on_done) {
