@@ -1458,6 +1458,10 @@ void CrasAudioHandler::InitializeAudioAfterCrasServiceAvailable(
   // Sets speak-on-mute detection enabled based on local variable, it re-applies
   // the previous state if CRAS restarts.
   CrasAudioClient::Get()->SetSpeakOnMuteDetection(speak_on_mute_detection_on_);
+
+  // Sets force respect ui gains enabled based on audio pref, it re-applies the
+  // previous state if CRAS restarts.
+  CrasAudioClient::Get()->SetForceRespectUiGains(GetForceRespectUiGainsState());
 }
 
 void CrasAudioHandler::ApplyAudioPolicy() {
