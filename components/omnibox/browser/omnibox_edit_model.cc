@@ -1863,20 +1863,17 @@ void OmniboxEditModel::SetPopupSelection(OmniboxPopupSelection new_selection,
                                          bool force_update_ui) {
   DCHECK(popup_view_);
 
-  // `force_update_ui` is precautionary to be sure the UI updates but
-  // omitting it doesn't necessarily mean a bug will appear. We have
-  // seen bugs in the past, though, and it seems to help.
-  if (controller_->result().empty() && !force_update_ui) {
+  if (controller_->result().empty()) {
     return;
   }
 
   // Cancel the query so the matches don't change on the user.
   controller_->autocomplete_controller()->Stop(false);
 
-  // This occurs when e.g. pressing tab to select an action chip or the x delete
-  // icon.
   if (new_selection == popup_selection_ && !force_update_ui) {
-    return;  // Nothing else to do.
+    // This occurs when e.g. pressing tab to select an action chip or the x
+    // delete icon. Nothing else to do.
+    return;
   }
 
   // We need to update selection before notifying any views, as they will query
