@@ -26,6 +26,7 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chromeos/components/kiosk/kiosk_utils.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/base/chromeos_ui_constants.h"
 #include "chromeos/ui/base/tablet_state.h"
 #include "chromeos/ui/base/window_properties.h"
@@ -178,7 +179,6 @@ void BrowserNonClientFrameViewChromeOS::Init() {
 
   if (frame()->ShouldDrawFrameHeader()) {
     frame_header_ = CreateFrameHeader();
-    UpdateFrameRoundedCorners();
   }
 
   if (AppIsBorderlessPwa()) {
@@ -327,6 +327,13 @@ void BrowserNonClientFrameViewChromeOS::UpdateMinimumSize() {
 
   last_minimum_size_ = current_min_size;
   GetWidget()->OnSizeConstraintsChanged();
+}
+
+void BrowserNonClientFrameViewChromeOS::OnBrowserViewInitViewsComplete() {
+  // We need to wait till browser views are fully initialized to apply rounded
+  // corners on the frame. This ensure that NativeViewHosts hosting browser's
+  // web contents are initialized.
+  UpdateFrameRoundedCorners();
 }
 
 gfx::Rect BrowserNonClientFrameViewChromeOS::GetBoundsForClientView() const {
@@ -967,11 +974,24 @@ void BrowserNonClientFrameViewChromeOS::UpdateProfileIcons() {
 }
 
 void BrowserNonClientFrameViewChromeOS::UpdateFrameRoundedCorners() {
-  // Currently ChromeOS has only top two corners rounded that are handled
-  // by rounding frame header.
+  const int corner_radius =
+      chromeos::GetFrameCornerRadius(frame()->GetNativeWindow());
+
   if (frame_header_) {
-    frame_header_->SetHeaderCornerRadius(
-        chromeos::GetFrameCornerRadius(frame()->GetNativeWindow()));
+    frame_header_->SetHeaderCornerRadius(corner_radius);
+  }
+
+  if (!chromeos::features::IsRoundedWindowsEnabled()) {
+    return;
+  }
+
+  // TODO(zoraiznaeem): Apply rounded corners to the web_view of dev_tools.
+  ContentsWebView* web_view = browser_view()->contents_web_view();
+  if (web_view && web_view->holder()) {
+    web_view->SetBackgroundRadii(
+        gfx::RoundedCornersF(0, 0, corner_radius, corner_radius));
+    web_view->holder()->SetCornerRadii(
+        gfx::RoundedCornersF(0, 0, corner_radius, corner_radius));
   }
 }
 
