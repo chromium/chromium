@@ -15,62 +15,209 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/system/phonehub/phone_hub_tray.h"
 #include "ash/system/phonehub/phone_hub_ui_controller.h"
 #include "ash/system/toast/anchored_nudge_manager_impl.h"
+#include "base/time/clock.h"
+#include "chromeos/ash/components/multidevice/logging/logging.h"
+#include "chromeos/ash/components/multidevice/remote_device_ref.h"
+#include "chromeos/ash/components/phonehub/pref_names.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/pref_service.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace ash {
 namespace {
 const std::string kPhoneHubNudgeId = "PhoneHubNudge";
 
-bool IsInUserSession() {
-  SessionControllerImpl* session_controller =
-      Shell::Get()->session_controller();
-  return session_controller->GetSessionState() ==
-             session_manager::SessionState::ACTIVE &&
-         !session_controller->IsRunningInAppMode();
+PrefService* GetPrefService() {
+  return Shell::Get()->session_controller()->GetActivePrefService();
+}
+}  // namespace
+
+// static
+void OnboardingNudgeController::RegisterProfilePrefs(
+    PrefRegistrySimple* registry) {
+  registry->RegisterTimePref(kPhoneHubNudgeLastShownTime, base::Time());
+  registry->RegisterIntegerPref(kPhoneHubNudgeTotalAppearances, 0);
+  registry->RegisterTimePref(kPhoneHubNudgeLastActionTime, base::Time());
+  registry->RegisterTimePref(kPhoneHubNudgeLastClickTime, base::Time());
+  registry->RegisterListPref(kSyncedDevices);
 }
 
-}  // namespace
 OnboardingNudgeController::OnboardingNudgeController(
-    PhoneHubTray* phone_hub_tray,
+    views::View* anchored_view,
     base::RepeatingClosure stop_animation_callback,
-    base::RepeatingClosure start_animation_callback)
-    : phone_hub_tray_(phone_hub_tray),
+    base::RepeatingClosure start_animation_callback,
+    base::Clock* clock)
+    : anchored_view_(anchored_view),
       stop_animation_callback_(std::move(stop_animation_callback)),
-      start_animation_callback_(std::move(start_animation_callback)) {}
+      start_animation_callback_(std::move(start_animation_callback)),
+      clock_(clock) {}
 
 OnboardingNudgeController::~OnboardingNudgeController() = default;
 
 void OnboardingNudgeController::ShowNudgeIfNeeded() {
-  if (!features::IsPhoneHubNudgeEnabled() ||
-      phone_hub_tray_->ui_controller()->ui_state() !=
-          PhoneHubUiController::UiState::kOnboardingWithoutPhone ||
-      !IsInUserSession()) {
+  if (!IsInPhoneHubNudgeExperimentGroup()) {
     return;
   }
+
+  if (!ShouldShowNudge()) {
+    return;
+  }
+  PA_LOG(INFO)
+      << "Phone Hub onboarding nudge is being shown for text experiment group "
+      << (features::kPhoneHubNotifierParam.Get() ==
+                  features::PhoneHubNotifierParam::kNudgeWithTextA
+              ? "A."
+              : "B.");
   // TODO(b/282057052): update text based on different groups.
   std::u16string nudge_text = l10n_util::GetStringUTF16(
       IDS_ASH_MULTI_DEVICE_SETUP_NOTIFIER_TEXT_WITH_PHONE_HUB);
   AnchoredNudgeData nudge_data = {kPhoneHubNudgeId, NudgeCatalogName::kPhoneHub,
-                                  nudge_text, phone_hub_tray_};
+                                  nudge_text, anchored_view_};
   nudge_data.anchored_to_shelf = true;
-  nudge_data.dismiss_callback = stop_animation_callback_;
+  nudge_data.hover_state_change_callback =
+      base::BindRepeating(&OnboardingNudgeController::OnNudgeHoverStateChanged,
+                          base::Unretained(this));
+  nudge_data.click_callback = base::BindRepeating(
+      &OnboardingNudgeController::OnNudgeClicked, base::Unretained(this));
+  nudge_data.dismiss_callback = stop_animation_callback_.Then(
+      base::BindRepeating(&OnboardingNudgeController::OnNudgeDismissed,
+                          base::Unretained(this)));
   AnchoredNudgeManager::Get()->Show(nudge_data);
   start_animation_callback_.Run();
+  PrefService* pref_service = GetPrefService();
+  pref_service->SetTime(kPhoneHubNudgeLastShownTime, clock_->Now());
+  pref_service->SetInteger(
+      kPhoneHubNudgeTotalAppearances,
+      pref_service->GetInteger(kPhoneHubNudgeTotalAppearances) + 1);
 }
 
 void OnboardingNudgeController::HideNudge() {
-  if (!features::IsPhoneHubNudgeEnabled()) {
+  if (!IsInPhoneHubNudgeExperimentGroup()) {
     return;
   }
   AnchoredNudgeManager::Get()->Cancel(kPhoneHubNudgeId);
 }
 
 void OnboardingNudgeController::MaybeRecordNudgeAction() {
+  if (!IsInPhoneHubNudgeExperimentGroup()) {
+    return;
+  }
   AnchoredNudgeManager::Get()->MaybeRecordNudgeAction(
       NudgeCatalogName::kPhoneHub);
 }
 
+void OnboardingNudgeController::OnNudgeHoverStateChanged(bool is_hovering) {
+  if (!IsInPhoneHubNudgeExperimentGroup()) {
+    return;
+  }
+
+  if (is_hovering) {
+    PrefService* pref_service = GetPrefService();
+    pref_service->SetTime(kPhoneHubNudgeLastActionTime, clock_->Now());
+  }
+}
+
+void OnboardingNudgeController::OnNudgeClicked() {
+  if (!IsInPhoneHubNudgeExperimentGroup()) {
+    return;
+  }
+
+  // Action can be click or hover so define `kPhoneHubNudgeLastActionTime` on
+  // click, but `kPhoneHubNudgeLastClickTime` should be set separately.
+  PrefService* pref_service = GetPrefService();
+  base::Time time = clock_->Now();
+  pref_service->SetTime(kPhoneHubNudgeLastActionTime, time);
+  pref_service->SetTime(kPhoneHubNudgeLastClickTime, time);
+}
+
+void OnboardingNudgeController::OnNudgeDismissed() {
+  if (!IsInPhoneHubNudgeExperimentGroup()) {
+    return;
+  }
+
+  // TODO (b/267809132): Create a histogram whether nudge was autodismissed
+  // or nudge was acted on.
+}
+
+void OnboardingNudgeController::OnEligiblePhoneHubHostFound(
+    const multidevice::RemoteDeviceRefList eligible_devices) {
+  bool new_host_found = false;
+  for (const multidevice::RemoteDeviceRef& device : eligible_devices) {
+    if (!IsDeviceStoredInPref(device)) {
+      AddToEligibleDevicesPref(device);
+      new_host_found = true;
+    }
+  }
+  if (new_host_found) {
+    // Rest pref values to show the nudge again when user gets a new eligible
+    // phone.
+    ResetNudgePrefs();
+  }
+}
+
+void OnboardingNudgeController::AddToEligibleDevicesPref(
+    const multidevice::RemoteDeviceRef& device) {
+  PrefService* pref_service = GetPrefService();
+  const base::Value::List& devices_in_pref =
+      pref_service->GetList(kSyncedDevices);
+  base::Value::List updated_device_list = devices_in_pref.Clone();
+  updated_device_list.Append(device.instance_id());
+  pref_service->SetList(kSyncedDevices, updated_device_list.Clone());
+}
+
+void OnboardingNudgeController::ResetNudgePrefs() {
+  PrefService* pref_service = GetPrefService();
+  if (pref_service->FindPreference(phonehub::prefs::kHideOnboardingUi)) {
+    pref_service->SetBoolean(phonehub::prefs::kHideOnboardingUi, false);
+  }
+  pref_service->SetInteger(kPhoneHubNudgeTotalAppearances, 0);
+  pref_service->SetTime(kPhoneHubNudgeLastShownTime, base::Time());
+  pref_service->SetTime(kPhoneHubNudgeLastActionTime, base::Time());
+  pref_service->SetTime(kPhoneHubNudgeLastClickTime, base::Time());
+}
+
+bool OnboardingNudgeController::IsDeviceStoredInPref(
+    const multidevice::RemoteDeviceRef& device) {
+  PrefService* pref_service = GetPrefService();
+  const base::Value::List& devices_in_pref =
+      pref_service->GetList(kSyncedDevices);
+  return base::Contains(devices_in_pref, base::Value(device.instance_id()));
+}
+
+bool OnboardingNudgeController::IsInPhoneHubNudgeExperimentGroup() {
+  if (!features::IsPhoneHubNudgeEnabled()) {
+    return false;
+  }
+
+  return features::kPhoneHubNotifierParam.Get() ==
+             features::PhoneHubNotifierParam::kNudgeWithTextA ||
+         features::kPhoneHubNotifierParam.Get() ==
+             features::PhoneHubNotifierParam::kNudgeWithTextB;
+}
+
+bool OnboardingNudgeController::ShouldShowNudge() {
+  PrefService* pref_service = GetPrefService();
+  if (pref_service->GetInteger(kPhoneHubNudgeTotalAppearances) >=
+      features::kPhoneHubNudgeTotalAppearancesAllowed.Get()) {
+    PA_LOG(INFO) << "Nudge has been shown "
+                 << features::kPhoneHubNudgeTotalAppearancesAllowed.Get()
+                 << " times. Do not show again.";
+    return false;
+  }
+  // Nudge has not been shown before.
+  if (pref_service->GetTime(kPhoneHubNudgeLastShownTime).is_null()) {
+    return true;
+  }
+
+  if ((clock_->Now() - pref_service->GetTime(kPhoneHubNudgeLastShownTime)) >=
+      features::kPhoneHubNudgeDelay.Get()) {
+    return true;
+  }
+  PA_LOG(INFO) << "Nudge was shown less than "
+               << features::kPhoneHubNudgeDelay.Get()
+               << " hours ago. Not being shown this time.";
+  return false;
+}
 }  // namespace ash

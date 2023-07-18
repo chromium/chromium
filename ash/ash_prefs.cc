@@ -55,6 +55,7 @@
 #include "ash/system/palette/palette_tray.h"
 #include "ash/system/palette/palette_welcome_bubble.h"
 #include "ash/system/pcie_peripheral/pcie_peripheral_notification_controller.h"
+#include "ash/system/phonehub/onboarding_nudge_controller.h"
 #include "ash/system/power/battery_saver_controller.h"
 #include "ash/system/power/power_prefs.h"
 #include "ash/system/power/power_sounds_controller.h"
@@ -127,6 +128,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry, bool for_test) {
   MediaControllerImpl::RegisterProfilePrefs(registry);
   MessageCenterController::RegisterProfilePrefs(registry);
   NightLightControllerImpl::RegisterProfilePrefs(registry);
+  OnboardingNudgeController::RegisterProfilePrefs(registry);
   PaletteTray::RegisterProfilePrefs(registry);
   PaletteWelcomeBubble::RegisterProfilePrefs(registry);
   PciePeripheralNotificationController::RegisterProfilePrefs(registry);

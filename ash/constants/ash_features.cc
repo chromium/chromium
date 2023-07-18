@@ -1916,6 +1916,14 @@ const base::FeatureParam<PhoneHubNotifierParam> kPhoneHubNotifierParam{
     &kPhoneHubNudge, "notifier_type", PhoneHubNotifierParam::kNudgeWithTextA,
     &phone_hub_notifier_options};
 
+// The length of time passing till we display nudge to users again
+const base::FeatureParam<base::TimeDelta> kPhoneHubNudgeDelay{
+    &kPhoneHubNudge, "nudge_delay", base::Hours(24)};
+
+// Number of times nudge should be shown to user.
+const base::FeatureParam<int> kPhoneHubNudgeTotalAppearancesAllowed{
+    &kPhoneHubNudge, "nudge_total_appearances_allowed", 3};
+
 // Determines up to how many minutes into user session multdevice setup
 // notification can be shown.
 const base::FeatureParam<base::TimeDelta>

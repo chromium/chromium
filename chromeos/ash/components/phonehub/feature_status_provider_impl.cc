@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/task_traits.h"
@@ -172,6 +173,10 @@ void FeatureStatusProviderImpl::OnReady() {
 }
 
 void FeatureStatusProviderImpl::OnNewDevicesSynced() {
+  if (features::IsPhoneHubNudgeEnabled() &&
+      ComputeStatus() == FeatureStatus::kEligiblePhoneButNotSetUp) {
+    CheckEligibleDevicesForNudge();
+  }
   UpdateStatus();
 }
 
@@ -296,6 +301,17 @@ void FeatureStatusProviderImpl::SuspendDone(base::TimeDelta sleep_duration) {
   PA_LOG(INFO) << "Device has stopped suspending";
   is_suspended_ = false;
   UpdateStatus();
+}
+
+void FeatureStatusProviderImpl::CheckEligibleDevicesForNudge() {
+  RemoteDeviceRefList eligible_devices;
+  for (const RemoteDeviceRef& device :
+       device_sync_client_->GetSyncedDevices()) {
+    if (IsEligiblePhoneHubHost(device)) {
+      eligible_devices.push_back(device);
+    }
+  }
+  NotifyEligibleDevicesFound(eligible_devices);
 }
 
 }  // namespace ash::phonehub

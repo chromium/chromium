@@ -565,6 +565,10 @@ enum class PhoneHubNotifierParam {
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::FeatureParam<PhoneHubNotifierParam> kPhoneHubNotifierParam;
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::FeatureParam<base::TimeDelta> kPhoneHubNudgeDelay;
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::FeatureParam<int> kPhoneHubNudgeTotalAppearancesAllowed;
+COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kPhoneHubPingOnBubbleOpen);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::FeatureParam<base::TimeDelta> kPhoneHubPingTimeout;

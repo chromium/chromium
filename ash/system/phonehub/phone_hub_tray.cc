@@ -39,6 +39,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/power_monitor/power_monitor.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/time/default_clock.h"
 #include "chromeos/ash/components/phonehub/icon_decoder.h"
 #include "chromeos/ash/components/phonehub/phone_hub_manager.h"
 #include "chromeos/ash/components/phonehub/phone_model.h"
@@ -133,7 +134,8 @@ PhoneHubTray::PhoneHubTray(Shelf* shelf)
                                     weak_factory_.GetWeakPtr()),
                 /*start_animation_callback=*/
                 base::BindRepeating(&PhoneHubTray::StartPulseAnimation,
-                                    weak_factory_.GetWeakPtr()))
+                                    weak_factory_.GetWeakPtr()),
+                base::DefaultClock::GetInstance())
           : nullptr;
 
   Shell::Get()->window_tree_host_manager()->AddObserver(this);
@@ -144,6 +146,11 @@ PhoneHubTray::~PhoneHubTray() {
     bubble_->bubble_view()->ResetDelegate();
   if (phone_hub_manager_) {
     phone_hub_manager_->GetAppStreamManager()->RemoveObserver(this);
+  }
+  if (phone_hub_manager_ && IsInPhoneHubNudgeExperimentGroup() &&
+      onboarding_nudge_controller_) {
+    phone_hub_manager_->GetFeatureStatusProvider()->RemoveObserver(
+        onboarding_nudge_controller_.get());
   }
   Shell::Get()->window_tree_host_manager()->RemoveObserver(this);
 }
@@ -158,6 +165,11 @@ void PhoneHubTray::SetPhoneHubManager(
     phone_hub_manager->GetAppStreamManager()->AddObserver(this);
   }
   phone_hub_manager_ = phone_hub_manager;
+  if (phone_hub_manager_ && IsInPhoneHubNudgeExperimentGroup() &&
+      onboarding_nudge_controller_) {
+    phone_hub_manager_->GetFeatureStatusProvider()->AddObserver(
+        onboarding_nudge_controller_.get());
+  }
 }
 
 void PhoneHubTray::ClickedOutsideBubble() {
@@ -255,7 +267,9 @@ void PhoneHubTray::OnVisibilityAnimationFinished(
     bool aborted) {
   TrayBackgroundView::OnVisibilityAnimationFinished(
       should_log_visible_pod_count, aborted);
-  if (IsInPhoneHubNudgeExperimentGroup()) {
+  if (IsInPhoneHubNudgeExperimentGroup() &&
+      ui_controller_->ui_state() ==
+          PhoneHubUiController::UiState::kOnboardingWithoutPhone) {
     onboarding_nudge_controller_->ShowNudgeIfNeeded();
   }
 }

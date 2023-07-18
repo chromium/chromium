@@ -8,6 +8,7 @@
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "chromeos/ash/components/phonehub/feature_status.h"
+#include "chromeos/ash/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
 
 namespace ash::phonehub {
 
@@ -21,6 +22,10 @@ class FeatureStatusProvider {
 
     // Called when the status has changed; use GetStatus() for the new status.
     virtual void OnFeatureStatusChanged() = 0;
+
+    // Called when there are eligible Phone Hub Hosts
+    virtual void OnEligiblePhoneHubHostFound(
+        multidevice::RemoteDeviceRefList device) {}
   };
 
   FeatureStatusProvider(const FeatureStatusProvider&) = delete;
@@ -36,6 +41,9 @@ class FeatureStatusProvider {
   FeatureStatusProvider();
 
   void NotifyStatusChanged();
+
+  void NotifyEligibleDevicesFound(
+      const multidevice::RemoteDeviceRefList device);
 
  private:
   base::ObserverList<Observer> observer_list_;

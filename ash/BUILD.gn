@@ -4306,6 +4306,7 @@ static_library("test_support") {
 
   public_deps = [
     "//ash",
+    "//chromeos/ash/components/multidevice:test_support",
     "//chromeos/ash/services/assistant/public/mojom",
     "//chromeos/ash/services/network_config/public/cpp:test_support",
     "//dbus",
