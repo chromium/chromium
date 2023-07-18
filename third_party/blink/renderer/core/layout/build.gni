@@ -499,6 +499,8 @@ blink_core_sources_layout = [
   "ng/ng_text_decoration_offset.h",
   "ng/ng_unpositioned_float.h",
   "ng/non_overflowing_scroll_range.h",
+  "ng/physical_fragment_rare_data.cc",
+  "ng/physical_fragment_rare_data.h",
   "ng/svg/layout_ng_svg_foreign_object.cc",
   "ng/svg/layout_ng_svg_foreign_object.h",
   "ng/svg/layout_ng_svg_text.cc",

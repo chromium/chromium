@@ -1,0 +1,125 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_PHYSICAL_FRAGMENT_RARE_DATA_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_PHYSICAL_FRAGMENT_RARE_DATA_H_
+
+#include <climits>
+
+#include "third_party/blink/renderer/core/layout/geometry/logical_rect.h"
+#include "third_party/blink/renderer/core/layout/ng/table/ng_table_fragment_data.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+
+namespace blink {
+
+class NGTableBorders;
+struct FrameSetLayoutData;
+struct NGMathMLPaintInfo;
+
+// This class manages rare data of NGPhysicalBoxFragment.
+// Only NGPhysicalBoxFragment should use this class.
+//
+// How to add a new field:
+//  * Add a new enum member to FieldId.
+//    If the new one has the maximum value, update kMaxValue too.
+//  * Add a new union member of RareField.
+//    The size of a member should be smaller than or same as LayoutUnit[4].
+//    If it's larger, it should be pointed by a pointer such as
+//    std::unique_ptr<>.
+//
+//  * Add field initialization code to two PhysicalFragmentRareData constructors
+//  * Update DISPATCH_BY_MEMBER_TYPE macro.
+class PhysicalFragmentRareData
+    : public GarbageCollected<PhysicalFragmentRareData> {
+ public:
+  PhysicalFragmentRareData(NGBoxFragmentBuilder& builder,
+                           wtf_size_t num_fields);
+  PhysicalFragmentRareData(const PhysicalFragmentRareData& other);
+  ~PhysicalFragmentRareData();
+
+  void Trace(Visitor* visitor) const {
+    visitor->Trace(table_column_geometries_);
+  }
+
+ private:
+  friend NGPhysicalBoxFragment;
+
+  using RareBitFieldType = uint32_t;
+
+  // In ARM, the size of a shift amount operand of shift instructions is same
+  // as the size of shifted data. So FieldId should be RareBitFieldType.
+  enum class FieldId : RareBitFieldType {
+    kFrameSetLayoutData = 0,
+    kMathMLPaintInfo,
+    kTableGridRect,
+    kTableCollapsedBorders,
+    kTableCollapsedBordersGeometry,
+    kTableCellColumnIndex,
+    kTableSectionStartRowIndex,
+    kTableSectionRowOffsets,
+    kPageName,
+
+    kMaxValue = kPageName,
+  };
+  static_assert(sizeof(RareBitFieldType) * CHAR_BIT >
+                    static_cast<unsigned>(FieldId::kMaxValue),
+                "RareBitFieldType is not big enough for FieldId.");
+
+  struct RareField {
+    union {
+      std::unique_ptr<const FrameSetLayoutData> frame_set_layout_data;
+      std::unique_ptr<const NGMathMLPaintInfo> mathml_paint_info;
+      LogicalRect table_grid_rect;
+      scoped_refptr<const NGTableBorders> table_collapsed_borders;
+      std::unique_ptr<NGTableFragmentData::CollapsedBordersGeometry>
+          table_collapsed_borders_geometry;
+      wtf_size_t table_cell_column_index;
+      wtf_size_t table_section_start_row_index;
+      Vector<LayoutUnit> table_section_row_offsets;
+      AtomicString page_name;
+    };
+    const FieldId type;
+
+    explicit RareField(FieldId field_id);
+    RareField(RareField&& other);
+    ~RareField();
+  };
+
+  ALWAYS_INLINE static RareBitFieldType FieldIdBit(FieldId field_id) {
+    return static_cast<RareBitFieldType>(1) << static_cast<unsigned>(field_id);
+  }
+
+  ALWAYS_INLINE wtf_size_t GetFieldIndex(FieldId field_id) const {
+    DCHECK(bit_field_ & FieldIdBit(field_id));
+    return std::popcount(bit_field_ & ~(~static_cast<RareBitFieldType>(0)
+                                        << static_cast<unsigned>(field_id)));
+  }
+
+  ALWAYS_INLINE const RareField* GetField(FieldId field_id) const {
+    if (bit_field_ & FieldIdBit(field_id)) {
+      return &field_list_[GetFieldIndex(field_id)];
+    }
+    return nullptr;
+  }
+
+  RareField& SetField(FieldId field_id) {
+    RareBitFieldType field_id_bit = FieldIdBit(field_id);
+    // SetField() should be called only once for the specified field_id.
+    DCHECK(!(bit_field_ & field_id_bit));
+    bit_field_ = bit_field_ | field_id_bit;
+    wtf_size_t index = GetFieldIndex(field_id);
+    field_list_.insert(index, RareField(field_id));
+    return field_list_[index];
+  }
+
+  Vector<RareField> field_list_;
+  RareBitFieldType bit_field_;
+  // A garbage-collected field is not stored in the Vector in order to avoid
+  // troublesome conditional tracing.
+  Member<NGTableFragmentData::ColumnGeometries> table_column_geometries_;
+};
+
+}  // namespace blink
+
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_PHYSICAL_FRAGMENT_RARE_DATA_H_

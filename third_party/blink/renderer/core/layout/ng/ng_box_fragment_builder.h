@@ -762,6 +762,7 @@ class CORE_EXPORT NGBoxFragmentBuilder final : public NGFragmentBuilder {
   friend class NGBlockBreakToken;
   friend class NGPhysicalBoxFragment;
   friend class NGLayoutResult;
+  friend class PhysicalFragmentRareData;
 };
 
 }  // namespace blink
