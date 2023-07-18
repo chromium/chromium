@@ -39,8 +39,6 @@
 #endif
 
 #if BUILDFLAG(USE_DAWN)
-#include <dawn/dawn_proc.h>
-#include <dawn/native/DawnNative.h>
 #include <dawn/webgpu_cpp.h>
 #endif  // BUILDFLAG(USE_DAWN)
 
@@ -193,8 +191,6 @@ TEST_F(IOSurfaceImageBackingFactoryTest, Dawn_SkiaGL) {
 
   wgpu::Device device =
       wgpu::Device::Acquire(adapter_it->CreateDevice(&device_descriptor));
-  DawnProcTable procs = dawn::native::GetProcs();
-  dawnProcSetProcs(&procs);
 
   // Create a backing using mailbox.
   auto mailbox = Mailbox::GenerateForSharedImage();
@@ -251,7 +247,6 @@ TEST_F(IOSurfaceImageBackingFactoryTest, Dawn_SkiaGL) {
 
   // Shut down Dawn
   device = wgpu::Device();
-  dawnProcSetProcs(nullptr);
 
   factory_ref.reset();
 }
@@ -337,8 +332,6 @@ TEST_F(IOSurfaceImageBackingFactoryTest, GL_Dawn_Skia_UnclearTexture) {
 
   wgpu::Device device =
       wgpu::Device::Acquire(adapter_it->CreateDevice(&device_descriptor));
-  DawnProcTable procs = dawn::native::GetProcs();
-  dawnProcSetProcs(&procs);
   {
     auto dawn_representation = shared_image_representation_factory_.ProduceDawn(
         mailbox, device.Get(), WGPUBackendType_Metal, {});
@@ -376,7 +369,6 @@ TEST_F(IOSurfaceImageBackingFactoryTest, GL_Dawn_Skia_UnclearTexture) {
 
   // Shut down Dawn
   device = wgpu::Device();
-  dawnProcSetProcs(nullptr);
 
   factory_ref.reset();
 }
@@ -427,8 +419,6 @@ TEST_F(IOSurfaceImageBackingFactoryTest, UnclearDawn_SkiaFails) {
 
   wgpu::Device device =
       wgpu::Device::Acquire(adapter_it->CreateDevice(&device_descriptor));
-  DawnProcTable procs = dawn::native::GetProcs();
-  dawnProcSetProcs(&procs);
   {
     auto dawn_representation = shared_image_representation_factory_.ProduceDawn(
         mailbox, device.Get(), WGPUBackendType_Metal, {});
@@ -463,7 +453,6 @@ TEST_F(IOSurfaceImageBackingFactoryTest, UnclearDawn_SkiaFails) {
 
   // Shut down Dawn
   device = wgpu::Device();
-  dawnProcSetProcs(nullptr);
 
   EXPECT_FALSE(factory_ref->IsCleared());
 

@@ -184,28 +184,23 @@ class DawnIOSurfaceRepresentation : public DawnImageRepresentation {
   DawnIOSurfaceRepresentation(SharedImageManager* manager,
                               SharedImageBacking* backing,
                               MemoryTypeTracker* tracker,
-                              WGPUDevice device,
+                              wgpu::Device device,
                               gfx::ScopedIOSurface io_surface,
                               const gfx::Size& io_surface_size,
-                              WGPUTextureFormat wgpu_format,
-                              std::vector<WGPUTextureFormat> view_formats);
+                              wgpu::TextureFormat wgpu_format,
+                              std::vector<wgpu::TextureFormat> view_formats);
   ~DawnIOSurfaceRepresentation() override;
 
   WGPUTexture BeginAccess(WGPUTextureUsage usage) final;
   void EndAccess() final;
 
  private:
-  const WGPUDevice device_;
+  const wgpu::Device device_;
   const gfx::ScopedIOSurface io_surface_;
   const gfx::Size io_surface_size_;
-  const WGPUTextureFormat wgpu_format_;
-  const std::vector<WGPUTextureFormat> view_formats_;
-
-  WGPUTexture texture_ = nullptr;
-
-  // TODO(cwallez@chromium.org): Load procs only once when the factory is
-  // created and pass a pointer to them around?
-  DawnProcTable dawn_procs_;
+  const wgpu::TextureFormat wgpu_format_;
+  const std::vector<wgpu::TextureFormat> view_formats_;
+  wgpu::Texture texture_;
 };
 #endif  // BUILDFLAG(USE_DAWN)
 
