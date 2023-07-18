@@ -512,11 +512,6 @@ void InterceptAllocationsMac() {
     PA_CHECK(g_old_cfallocator_malloc_zone)
         << "Failed to get kCFAllocatorMallocZone allocation function.";
     context->allocate = oom_killer_cfallocator_malloc_zone;
-  } else {
-    PA_DLOG(WARNING) << "Internals of CFAllocator not known; out-of-memory "
-                        "failures via CFAllocator will not result in "
-                        "termination. "
-                        "http://crbug.com/45650";
   }
 #endif
 
