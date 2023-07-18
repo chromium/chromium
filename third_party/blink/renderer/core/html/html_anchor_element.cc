@@ -265,13 +265,18 @@ void HTMLAnchorElement::AttributeChanged(
 void HTMLAnchorElement::ParseAttribute(
     const AttributeModificationParams& params) {
   if (params.name == html_names::kHrefAttr) {
+    if (params.old_value == params.new_value) {
+      return;
+    }
     bool was_link = IsLink();
     SetIsLink(!params.new_value.IsNull());
     if (was_link || IsLink()) {
       PseudoStateChanged(CSSSelector::kPseudoLink);
       PseudoStateChanged(CSSSelector::kPseudoVisited);
-      PseudoStateChanged(CSSSelector::kPseudoWebkitAnyLink);
-      PseudoStateChanged(CSSSelector::kPseudoAnyLink);
+      if (was_link != IsLink()) {
+        PseudoStateChanged(CSSSelector::kPseudoWebkitAnyLink);
+        PseudoStateChanged(CSSSelector::kPseudoAnyLink);
+      }
     }
     if (isConnected() && params.old_value != params.new_value) {
       if (auto* document_rules =
