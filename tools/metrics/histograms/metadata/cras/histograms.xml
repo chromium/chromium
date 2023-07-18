@@ -168,6 +168,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Cras.DeviceOpenStatus" enum="CrasDeviceOpenStatus"
+    expires_after="2024-07-10">
+<!-- Name completed by histogram_suffixes
+     name="Cras.DeviceType" and
+     name="Cras.Direction" -->
+
+  <owner>yuhsuan@chromium.org</owner>
+  <owner>chromeos-audio@google.com</owner>
+  <summary>Log the result every time CRAS tries to open a device.</summary>
+</histogram>
+
 <histogram
     name="Cras.DeviceRuntime{Direction}{Device}{HostCapability}{PeripheralCapability}"
     units="seconds" expires_after="2024-03-17">

@@ -1210,6 +1210,8 @@ chromium-metrics-reviews@google.com.
   <suffix name="USB" label="USB device."/>
   <affected-histogram name="Cras.DeviceGain"/>
   <affected-histogram name="Cras.DeviceNoiseCancellationStatus"/>
+  <affected-histogram name="Cras.DeviceOpenStatus.Input"/>
+  <affected-histogram name="Cras.DeviceOpenStatus.Output"/>
   <affected-histogram name="Cras.DeviceSampleRate.Input"/>
   <affected-histogram name="Cras.DeviceSampleRate.Output"/>
   <affected-histogram name="Cras.DeviceVolume"/>
@@ -1218,6 +1220,7 @@ chromium-metrics-reviews@google.com.
 <histogram_suffixes name="Cras_Direction" separator=".">
   <suffix name="Input" label="Capture"/>
   <suffix name="Output" label="Playback"/>
+  <affected-histogram name="Cras.DeviceOpenStatus"/>
   <affected-histogram name="Cras.DeviceSampleRate"/>
   <affected-histogram name="Cras.StreamCallbackThreshold"/>
   <affected-histogram name="Cras.StreamChannelCount"/>

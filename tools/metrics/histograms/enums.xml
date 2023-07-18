@@ -21022,6 +21022,18 @@ Called by update_net_error_codes.py.-->
   <int value="12" label="CRAS_CLIENT_TYPE_SOUND_CARD_INIT"/>
 </enum>
 
+<enum name="CrasDeviceOpenStatus">
+  <summary>
+    List of the device open status of CRAS. The list can be found in
+    https://chromium.googlesource.com/chromiumos/third_party/adhd/+/main/cras/src/server/cras_server_metrics.h
+    (enum CRAS_DEVICE_OPEN_STATUS).
+  </summary>
+  <int value="0" label="CRAS_DEVICE_OPEN_SUCCESS"/>
+  <int value="1" label="CRAS_DEVICE_OPEN_ERROR_OPEN"/>
+  <int value="2" label="CRAS_DEVICE_OPEN_ERROR_SET_FORMAT"/>
+  <int value="3" label="CRAS_DEVICE_OPEN_ERROR_CONFIGURE"/>
+</enum>
+
 <enum name="CrasDevicePair">
   <summary>
     List of the device pair of CRAS. The value is combined from two device
