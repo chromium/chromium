@@ -5,6 +5,7 @@
 import("//build/config/features.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//components/optimization_guide/features.gni")
+import("//device/vr/buildflags/buildflags.gni")
 import("//ui/gl/features.gni")
 
 # The monochrome_static_initializers target will cause release bots to fail if
@@ -36,8 +37,10 @@ if (current_toolchain == default_toolchain &&
   # v8/src/parsing/token.cc: _GLOBAL__sub_I_token.cc
   _chrome_count += 1
 
-  # From //third_party/gvr-android-sdk: _GLOBAL__sub_I_base_logging.cc
-  _chrome_count += 1
+  if (enable_gvr_services) {
+    # From //third_party/gvr-android-sdk: _GLOBAL__sub_I_base_logging.cc
+    _chrome_count += 1
+  }
 
   if (use_clang_coverage) {
     # InstrProfilingRuntime.cpp, Only in coverage builds, not production.
