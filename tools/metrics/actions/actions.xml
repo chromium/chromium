@@ -26696,6 +26696,11 @@ should be able to be added at any place in this file.
   <description>Change password pressed in PageInfo.</description>
 </action>
 
+<action name="PageInfo.Closed">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <description>Please enter the description of the metric.</description>
+</action>
+
 <action name="PageInfo.Cookies.Allowed">
   <owner>olesiamarukhno@google.com</owner>
   <owner>dullweber@chromium.org</owner>

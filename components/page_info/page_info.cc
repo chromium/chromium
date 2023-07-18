@@ -318,6 +318,8 @@ PageInfo::~PageInfo() {
                                                   safety_tip_info_.status),
         start_time_);
   }
+
+  base::RecordAction(base::UserMetricsAction("PageInfo.Closed"));
 }
 
 void PageInfo::OnStatusChanged(CookieControlsStatus status,
