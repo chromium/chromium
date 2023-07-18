@@ -100,6 +100,7 @@ source_set("chrome_public_unit_test_apk_filters") {
     "//testing/buildbot/filters/android.emulator_12l.chrome_public_unit_test_apk.filter",
     "//testing/buildbot/filters/android.emulator_13.chrome_public_unit_test_apk.filter",
     "//testing/buildbot/filters/android.emulator_n.chrome_public_unit_test_apk.filter",
+    "//testing/buildbot/filters/android.emulator_o.chrome_public_unit_test_apk.filter",
   ]
 }
 

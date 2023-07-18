@@ -1,0 +1,5 @@
+# TODO(crbug.com/1465672)
+-org.chromium.components.browser_ui.photo_picker.DecoderServiceHostTest.testDecodingSizes
+
+# TODO(crbug.com/1465678)
+-org.chromium.components.browser_ui.photo_picker.ImageDecoderTest.testServiceDecodeSimple
