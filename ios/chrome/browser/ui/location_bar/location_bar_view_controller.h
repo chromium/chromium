@@ -8,13 +8,10 @@
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
-#import "ios/chrome/browser/ui/badges/badge_consumer.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_ui_element.h"
 #import "ios/chrome/browser/ui/orchestrator/location_bar_animatee.h"
 
-@class InfobarMetricsRecorder;
 @class LayoutGuideCenter;
-@class OmniboxTextFieldIOS;
 @protocol ActivityServiceCommands;
 @protocol ApplicationCommands;
 @protocol LocationBarOffsetProvider;
