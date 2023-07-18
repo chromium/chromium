@@ -4,12 +4,15 @@
 
 #import "ios/chrome/browser/ui/authentication/history_sync/history_sync_coordinator.h"
 
+#import "components/sync/service/sync_service.h"
+#import "components/sync/service/sync_user_settings.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
+#import "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/browser/ui/authentication/history_sync/history_sync_mediator.h"
 #import "ios/chrome/browser/ui/authentication/history_sync/history_sync_view_controller.h"
 #import "ios/chrome/common/ui/promo_style/promo_style_view_controller.h"
@@ -18,8 +21,8 @@
 #error "This file requires ARC support."
 #endif
 
-@interface HistorySyncCoordinator () <PromoStyleViewControllerDelegate,
-                                      HistorySyncMediatorDelegate>
+@interface HistorySyncCoordinator () <HistorySyncMediatorDelegate,
+                                      PromoStyleViewControllerDelegate>
 @end
 
 @implementation HistorySyncCoordinator {
@@ -29,11 +32,9 @@
   HistorySyncViewController* _viewController;
   // `YES` if coordinator used during the first run.
   BOOL _firstRun;
-  // Delegate for the history sync coordinator
+  // Delegate for the history sync coordinator.
   __weak id<HistorySyncCoordinatorDelegate> _delegate;
 }
-
-@synthesize baseNavigationController = _baseNavigationController;
 
 - (instancetype)initWithBaseNavigationController:
                     (UINavigationController*)navigationController
@@ -45,7 +46,6 @@
   self = [super initWithBaseViewController:navigationController
                                    browser:browser];
   if (self) {
-    _baseNavigationController = navigationController;
     _firstRun = firstRun;
     _delegate = delegate;
   }
@@ -57,19 +57,34 @@
   _viewController = [[HistorySyncViewController alloc] init];
   _viewController.delegate = self;
   ChromeBrowserState* browserState = self.browser->GetBrowserState();
+  CHECK_EQ(browserState, browserState->GetOriginalChromeBrowserState());
   AuthenticationService* authenticationService =
       AuthenticationServiceFactory::GetForBrowserState(browserState);
   ChromeAccountManagerService* chromeAccountManagerService =
       ChromeAccountManagerServiceFactory::GetForBrowserState(browserState);
+  signin::IdentityManager* identityManager =
+      IdentityManagerFactory::GetForBrowserState(browserState);
+  syncer::SyncService* syncService =
+      SyncServiceFactory::GetForBrowserState(browserState);
   _mediator = [[HistorySyncMediator alloc]
       initWithAuthenticationService:authenticationService
         chromeAccountManagerService:chromeAccountManagerService
-                    identityManager:IdentityManagerFactory::GetForBrowserState(
-                                        browserState)
-                           consumer:_viewController
-                           delegate:self];
+                    identityManager:identityManager
+                        syncService:syncService];
+  _mediator.consumer = _viewController;
+  _mediator.delegate = self;
   if (_firstRun) {
     _viewController.modalInPresentation = YES;
+  }
+  syncer::SyncUserSettings* syncUserSettings = syncService->GetUserSettings();
+  if (syncUserSettings->GetSelectedTypes().Has(
+          syncer::UserSelectableType::kHistory)) {
+    // This should possible only when Chrome FRE is forced while being already
+    // signed-in with History opt-in enabled. In this case the FRE History
+    // opt-in should be skipped.
+    CHECK(_firstRun);
+    [_delegate closeHistorySyncCoordinator:self];
+    return;
   }
   BOOL animated = self.baseNavigationController.topViewController != nil;
   [self.baseNavigationController setViewControllers:@[ _viewController ]
@@ -78,9 +93,12 @@
 
 - (void)stop {
   [super stop];
-  [_mediator disconnect];
   _delegate = nil;
+  [_mediator disconnect];
+  _mediator.consumer = nil;
+  _mediator.delegate = nil;
   _mediator = nil;
+  _viewController.delegate = nil;
   _viewController = nil;
 }
 
@@ -95,9 +113,10 @@
   [_delegate closeHistorySyncCoordinator:self];
 }
 
-#pragma mark - HistorySyncViewControllerDelegate
+#pragma mark - PromoStyleViewControllerDelegate
 
 - (void)didTapPrimaryActionButton {
+  [_mediator enableHistorySyncOptin];
   [_delegate closeHistorySyncCoordinator:self];
 }
 

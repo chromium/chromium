@@ -16,11 +16,13 @@ source_set("history_sync") {
     ":ui",
     "//base",
     "//components/signin/public/identity_manager/objc",
+    "//components/sync/service",
     "//components/unified_consent",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/signin:constants",
+    "//ios/chrome/browser/sync",
     "//ios/chrome/common/ui/promo_style",
   ]
   public_deps =

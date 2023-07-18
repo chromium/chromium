@@ -10,10 +10,10 @@
 
 @class HistorySyncCoordinator;
 
-// Delegate for the history sync coordinator
+// Delegate for the history sync coordinator.
 @protocol HistorySyncCoordinatorDelegate <NSObject>
 
-// Called once the dialog can be closed
+// Called once the dialog can be closed.
 - (void)closeHistorySyncCoordinator:
     (HistorySyncCoordinator*)historySyncCoordinator;
 

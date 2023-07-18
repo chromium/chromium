@@ -7,6 +7,8 @@
 #import "base/check.h"
 #import "base/check_op.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
+#import "components/sync/service/sync_service.h"
+#import "components/sync/service/sync_user_settings.h"
 #import "components/unified_consent/unified_consent_service.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service.h"
@@ -22,15 +24,11 @@
 @implementation HistorySyncMediator {
   AuthenticationService* _authenticationService;
   ChromeAccountManagerService* _accountManagerService;
-  // Manager for user's Google identities.
-  signin::IdentityManager* _identityManager;
   // Observer for `IdentityManager`.
   std::unique_ptr<signin::IdentityManagerObserverBridge>
       _identityManagerObserver;
-  // Consumer for this mediator
-  id<HistorySyncConsumer> _consumer;
-  // Delegate
-  id<HistorySyncMediatorDelegate> _delegate;
+  // Sync service.
+  syncer::SyncService* _syncService;
 }
 
 - (instancetype)
@@ -38,27 +36,17 @@
       chromeAccountManagerService:
           (ChromeAccountManagerService*)chromeAccountManagerService
                   identityManager:(signin::IdentityManager*)identityManager
-                         consumer:(id<HistorySyncConsumer>)consumer
-                         delegate:(id<HistorySyncMediatorDelegate>)delegate {
+                      syncService:(syncer::SyncService*)syncService {
   self = [super init];
   if (self) {
     _authenticationService = authenticationService;
     _accountManagerService = chromeAccountManagerService;
-    _identityManager = identityManager;
     _identityManagerObserver =
-        std::make_unique<signin::IdentityManagerObserverBridge>(
-            _identityManager, self);
-    _delegate = delegate;
-    [self setConsumer:consumer];
+        std::make_unique<signin::IdentityManagerObserverBridge>(identityManager,
+                                                                self);
+    _syncService = syncService;
   }
   return self;
-}
-
-- (void)disconnect {
-  _identityManagerObserver.reset();
-  _authenticationService = nil;
-  _accountManagerService = nil;
-  _identityManager = nil;
 }
 
 - (void)dealloc {
@@ -66,17 +54,24 @@
   DUMP_WILL_BE_CHECK(!_accountManagerService);
 }
 
-#pragma mark - IdentityManagerObserverBridgeDelegate
-
-- (void)onPrimaryAccountChanged:
-    (const signin::PrimaryAccountChangeEvent&)event {
-  if (event.GetEventTypeFor(signin::ConsentLevel::kSignin) ==
-      signin::PrimaryAccountChangeEvent::Type::kCleared) {
-    [_delegate historySyncMediatorPrimaryAccountCleared:self];
-  }
+- (void)disconnect {
+  _identityManagerObserver.reset();
+  _authenticationService = nullptr;
+  _accountManagerService = nullptr;
+  _syncService = nullptr;
 }
 
-#pragma mark - Private
+- (void)enableHistorySyncOptin {
+  id<SystemIdentity> identity =
+      _authenticationService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
+  CHECK(identity);
+  // TODO(crbug.com/1447014): Should we record the history sync opt-in?
+  syncer::SyncUserSettings* syncUserSettings = _syncService->GetUserSettings();
+  syncUserSettings->SetSelectedType(syncer::UserSelectableType::kHistory, true);
+  syncUserSettings->SetSelectedType(syncer::UserSelectableType::kTabs, true);
+}
+
+#pragma mark - Properties
 
 - (void)setConsumer:(id<HistorySyncConsumer>)consumer {
   _consumer = consumer;
@@ -94,11 +89,23 @@
   [self updateAvatarImageWithIdentity:identity];
 }
 
+#pragma mark - IdentityManagerObserverBridgeDelegate
+
+- (void)onPrimaryAccountChanged:
+    (const signin::PrimaryAccountChangeEvent&)event {
+  if (event.GetEventTypeFor(signin::ConsentLevel::kSignin) ==
+      signin::PrimaryAccountChangeEvent::Type::kCleared) {
+    [self.delegate historySyncMediatorPrimaryAccountCleared:self];
+  }
+}
+
+#pragma mark - Private
+
 // Updates the avatar image for the consumer from `identity`.
 - (void)updateAvatarImageWithIdentity:(id<SystemIdentity>)identity {
   UIImage* image = _accountManagerService->GetIdentityAvatarWithIdentity(
       identity, IdentityAvatarSize::Large);
-  [_consumer setPrimaryIdentityAvatarImage:image];
+  [self.consumer setPrimaryIdentityAvatarImage:image];
 
   NSString* accessibilityLabel = nil;
   if (identity.userFullName.length == 0) {
@@ -107,7 +114,7 @@
     accessibilityLabel = [NSString
         stringWithFormat:@"%@ %@", identity.userFullName, identity.userEmail];
   }
-  [_consumer setPrimaryIdentityAvatarAccessibilityLabel:accessibilityLabel];
+  [self.consumer setPrimaryIdentityAvatarAccessibilityLabel:accessibilityLabel];
 }
 
 @end
