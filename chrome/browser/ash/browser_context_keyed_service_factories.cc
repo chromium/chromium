@@ -16,6 +16,7 @@
 #include "chrome/browser/ash/android_sms/android_sms_service_factory.h"
 #include "chrome/browser/ash/app_list/app_sync_ui_state_factory.h"
 #include "chrome/browser/ash/app_list/arc/arc_vpn_provider_manager_factory.h"
+#include "chrome/browser/ash/app_list/search/local_image_search/local_image_search_service_factory.h"
 #include "chrome/browser/ash/app_mode/arc/arc_kiosk_app_service_factory.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_update_service.h"
 #include "chrome/browser/ash/app_restore/app_restore_arc_task_handler_factory.h"
@@ -133,6 +134,7 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   android_sms::AndroidSmsServiceFactory::GetInstance();
   ApkWebAppServiceFactory::GetInstance();
   app_list::ArcVpnProviderManagerFactory::GetInstance();
+  app_list::LocalImageSearchServiceFactory::GetInstance();
   app_restore::AppRestoreArcTaskHandlerFactory::GetInstance();
   apps::AppDiscoveryServiceFactory::GetInstance();
   apps::ArcAppsFactory::GetInstance();
