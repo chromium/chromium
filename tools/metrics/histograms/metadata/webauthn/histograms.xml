@@ -106,6 +106,17 @@ chromium-metrics-reviews@google.com.
   <summary>Records the outcome of caBLEv2 transactions.</summary>
 </histogram>
 
+<histogram name="WebAuthentication.CableV2.PrelinkDataAgeDays" units="days"
+    expires_after="2024-03-01">
+  <owner>agl@chromium.org</owner>
+  <owner>nsatragno@google.com</owner>
+  <summary>
+    The age, in days, of the caBLE prelink information published by Android
+    devices at the time when they upload it to sync. This measurement saturates
+    at 31 days and the value 32 indicates that the calculated age was negative.
+  </summary>
+</histogram>
+
 <histogram name="WebAuthentication.CableV2.RendezvousTime" units="ms"
     expires_after="2024-03-01">
   <owner>agl@chromium.org</owner>
@@ -118,7 +129,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAuthentication.CableV2.TunnelEvent"
-    enum="WebAuthenticationCableV2TunnelEvent" expires_after="2024-03-01">
+    enum="WebAuthenticationCableV2TunnelEvent" expires_after="2023-10-01">
   <owner>agl@chromium.org</owner>
   <owner>martinkr@google.com</owner>
   <summary>
