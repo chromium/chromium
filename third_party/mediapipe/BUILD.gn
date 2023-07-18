@@ -5,6 +5,7 @@
 import("//third_party/flatbuffers/flatbuffer.gni")
 import("//third_party/protobuf/proto_library.gni")
 import("//third_party/tflite/features.gni")
+import("//third_party/tflite/tflite_target.gni")
 
 config("mediapipe_config") {
   include_dirs = [
@@ -138,7 +139,7 @@ source_set("mediapipe_shims") {
 # These calculators are found at runtime and must be linked in, despite not
 # being explicitly referenced.
 # See src/docs/getting_started/troubleshooting.md
-source_set("mediapipe_tasks_always_link") {
+tflite_source_set("mediapipe_tasks_always_link") {
   sources = [
     "src/mediapipe/calculators/tensor/bert_preprocessor_calculator.cc",
     "src/mediapipe/calculators/tensor/inference_calculator.cc",
@@ -161,34 +162,37 @@ source_set("mediapipe_tasks_always_link") {
   }
 
   deps = [
-    ":mediapipe_core",
-    ":mediapipe_core_api2",
     ":mediapipe_flatbuffer_schema",
     ":mediapipe_proto",
     ":mediapipe_shims",
-    ":mediapipe_tasks",
     "//third_party/abseil-cpp:absl",
     "//third_party/gemmlowp",
     "//third_party/protobuf:protobuf_lite",
     "//third_party/re2",
     "//third_party/tensorflow-text",
-    "//third_party/tflite",
-    "//third_party/tflite:tflite_builtin_op_resolver",
     "//third_party/zlib",
   ]
 
-  configs -= [ "//build/config/compiler:chromium_code" ]
-  configs += [
+  configs_to_remove = [ "//build/config/compiler:chromium_code" ]
+  configs_to_add = [
     "//build/config/compiler:no_chromium_code",
     ":mediapipe_flags",
     ":mediapipe_config",
+  ]
+
+  conditional_deps = [
+    ":mediapipe_core",
+    ":mediapipe_core_api2",
+    ":mediapipe_tasks",
+    "//third_party/tflite:tflite",
+    "//third_party/tflite:tflite_builtin_op_resolver",
   ]
 }
 
 # These framework pieces are found at runtime and must be linked in, despite not
 # being explicitly referenced.
 # See src/docs/getting_started/troubleshooting.md
-source_set("mediapipe_core_always_link") {
+tflite_source_set("mediapipe_core_always_link") {
   sources = [
     "src/mediapipe/framework/stream_handler/default_input_stream_handler.cc",
     "src/mediapipe/framework/stream_handler/default_input_stream_handler.h",
@@ -197,7 +201,6 @@ source_set("mediapipe_core_always_link") {
   ]
 
   deps = [
-    ":mediapipe_core",
     ":mediapipe_flatbuffer_schema",
     ":mediapipe_proto",
     ":mediapipe_shims",
@@ -206,20 +209,24 @@ source_set("mediapipe_core_always_link") {
     "//third_party/protobuf:protobuf_lite",
     "//third_party/re2",
     "//third_party/tensorflow-text",
-    "//third_party/tflite",
-    "//third_party/tflite:tflite_builtin_op_resolver",
     "//third_party/zlib",
   ]
 
-  configs -= [ "//build/config/compiler:chromium_code" ]
-  configs += [
+  configs_to_remove = [ "//build/config/compiler:chromium_code" ]
+  configs_to_add = [
     "//build/config/compiler:no_chromium_code",
     ":mediapipe_flags",
     ":mediapipe_config",
   ]
+
+  conditional_deps = [
+    ":mediapipe_core",
+    "//third_party/tflite:tflite",
+    "//third_party/tflite:tflite_builtin_op_resolver",
+  ]
 }
 
-static_library("mediapipe_core") {
+tflite_static_library("mediapipe_core") {
   sources = [
     "src/mediapipe/framework/calculator_base.cc",
     "src/mediapipe/framework/calculator_base.h",
@@ -422,8 +429,6 @@ static_library("mediapipe_core") {
     "//third_party/protobuf:protobuf_lite",
     "//third_party/re2",
     "//third_party/tensorflow-text",
-    "//third_party/tflite",
-    "//third_party/tflite:tflite_builtin_op_resolver",
     "//third_party/zlib",
     "//third_party/zlib:minizip",
   ]
@@ -432,15 +437,20 @@ static_library("mediapipe_core") {
     deps += [ "//third_party/cpu_features:ndk_compat" ]
   }
 
-  configs -= [ "//build/config/compiler:chromium_code" ]
-  configs += [
+  configs_to_remove = [ "//build/config/compiler:chromium_code" ]
+  configs_to_add = [
     "//build/config/compiler:no_chromium_code",
     ":mediapipe_flags",
     ":mediapipe_config",
   ]
+
+  conditional_deps = [
+    "//third_party/tflite:tflite",
+    "//third_party/tflite:tflite_builtin_op_resolver",
+  ]
 }
 
-static_library("mediapipe_core_api2") {
+tflite_static_library("mediapipe_core_api2") {
   sources = [
     "src/mediapipe/framework/api2/node.cc",
     "src/mediapipe/framework/api2/node.h",
@@ -449,7 +459,6 @@ static_library("mediapipe_core_api2") {
   ]
 
   deps = [
-    ":mediapipe_core",
     ":mediapipe_flatbuffer_schema",
     ":mediapipe_proto",
     ":mediapipe_shims",
@@ -458,21 +467,25 @@ static_library("mediapipe_core_api2") {
     "//third_party/protobuf:protobuf_lite",
     "//third_party/re2",
     "//third_party/tensorflow-text",
-    "//third_party/tflite",
-    "//third_party/tflite:tflite_builtin_op_resolver",
     "//third_party/zlib",
     "//third_party/zlib:minizip",
   ]
 
-  configs -= [ "//build/config/compiler:chromium_code" ]
-  configs += [
+  configs_to_remove = [ "//build/config/compiler:chromium_code" ]
+  configs_to_add = [
     "//build/config/compiler:no_chromium_code",
     ":mediapipe_flags",
     ":mediapipe_config",
   ]
+
+  conditional_deps = [
+    ":mediapipe_core",
+    "//third_party/tflite:tflite",
+    "//third_party/tflite:tflite_builtin_op_resolver",
+  ]
 }
 
-static_library("mediapipe_tasks") {
+tflite_static_library("mediapipe_tasks") {
   sources = [
     "src/mediapipe/calculators/tensor/regex_preprocessor_calculator.cc",
     "src/mediapipe/tasks/cc/common.cc",
@@ -531,8 +544,6 @@ static_library("mediapipe_tasks") {
   ]
 
   deps = [
-    ":mediapipe_core",
-    ":mediapipe_core_api2",
     ":mediapipe_flatbuffer_schema",
     ":mediapipe_proto",
     ":mediapipe_shims",
@@ -544,30 +555,30 @@ static_library("mediapipe_tasks") {
     "//third_party/re2",
     "//third_party/sentencepiece",
     "//third_party/tensorflow-text",
-    "//third_party/tflite:tflite_builtin_op_resolver",
     "//third_party/zlib",
     "//third_party/zlib:minizip",
   ]
 
-  public_deps = [ "//third_party/tflite" ]
-
-  configs -= [ "//build/config/compiler:chromium_code" ]
-  configs += [
+  configs_to_remove = [ "//build/config/compiler:chromium_code" ]
+  configs_to_add = [
     "//build/config/compiler:no_chromium_code",
     ":mediapipe_flags",
     ":mediapipe_config",
   ]
+
+  conditional_deps = [
+    ":mediapipe_core",
+    ":mediapipe_core_api2",
+    "//third_party/tflite:tflite_builtin_op_resolver",
+  ]
+
+  conditional_public_deps = [ "//third_party/tflite:tflite" ]
 }
 
-group("mediapipe") {
+tflite_group("mediapipe") {
   public_deps = [
-    ":mediapipe_core",
-    ":mediapipe_core_always_link",
-    ":mediapipe_core_api2",
     ":mediapipe_flatbuffer_schema",
     ":mediapipe_proto",
-    ":mediapipe_tasks",
-    ":mediapipe_tasks_always_link",
   ]
 
   public_configs = [
@@ -576,5 +587,13 @@ group("mediapipe") {
 
     # TODO(b/283522287): Remove this.
     ":mediapipe_header_flags_need_to_upstream",
+  ]
+
+  conditional_public_deps = [
+    ":mediapipe_core",
+    ":mediapipe_core_always_link",
+    ":mediapipe_core_api2",
+    ":mediapipe_tasks",
+    ":mediapipe_tasks_always_link",
   ]
 }
