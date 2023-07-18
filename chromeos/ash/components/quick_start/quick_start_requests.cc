@@ -2,11 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "quick_start_requests.h"
+#include "chromeos/ash/components/quick_start/quick_start_requests.h"
+
 #include "base/base64.h"
 #include "base/json/json_writer.h"
 #include "chromeos/ash/components/quick_start/quick_start_message.h"
 #include "chromeos/ash/components/quick_start/quick_start_message_type.h"
+#include "chromeos/ash/components/quick_start/types.h"
 #include "components/cbor/values.h"
 #include "components/cbor/writer.h"
 #include "crypto/aead.h"
@@ -88,8 +90,8 @@ std::unique_ptr<QuickStartMessage> BuildBootstrapOptionsRequest() {
 }
 
 std::unique_ptr<QuickStartMessage> BuildAssertionRequestMessage(
-    const std::string& challenge_b64url) {
-  cbor::Value request = GenerateGetAssertionRequest(challenge_b64url);
+    const Base64UrlString& challenge) {
+  cbor::Value request = GenerateGetAssertionRequest(challenge);
   std::vector<uint8_t> ctap_request_command =
       CBOREncodeGetAssertionRequest(std::move(request));
 
@@ -129,10 +131,10 @@ std::unique_ptr<QuickStartMessage> BuildRequestWifiCredentialsMessage(
 }
 
 std::string CreateFidoClientDataJson(const url::Origin& origin,
-                                     const std::string& challenge_b64url) {
+                                     const Base64UrlString& challenge) {
   base::Value::Dict fido_collected_client_data;
   fido_collected_client_data.Set("type", kCtapRequestType);
-  fido_collected_client_data.Set("challenge", challenge_b64url);
+  fido_collected_client_data.Set("challenge", *challenge);
   fido_collected_client_data.Set("origin", origin.Serialize());
   fido_collected_client_data.Set("crossOrigin", false);
   std::string fido_client_data_json;
@@ -140,10 +142,9 @@ std::string CreateFidoClientDataJson(const url::Origin& origin,
   return fido_client_data_json;
 }
 
-cbor::Value GenerateGetAssertionRequest(const std::string& challenge_b64url) {
+cbor::Value GenerateGetAssertionRequest(const Base64UrlString& challenge) {
   url::Origin origin = url::Origin::Create(GURL(kOrigin));
-  std::string client_data_json =
-      CreateFidoClientDataJson(origin, challenge_b64url);
+  std::string client_data_json = CreateFidoClientDataJson(origin, challenge);
   cbor::Value::MapValue cbor_map;
   cbor_map.insert_or_assign(cbor::Value(0x01), cbor::Value(kRelyingPartyId));
   std::array<uint8_t, crypto::kSHA256Length> client_data_hash;

@@ -27,6 +27,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/quick_start/fake_quick_start_decoder.h"
 #include "chromeos/ash/components/quick_start/quick_start_metrics.h"
+#include "chromeos/ash/components/quick_start/types.h"
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder.mojom.h"
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom-shared.h"
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom.h"
@@ -73,7 +74,7 @@ class FakeObserver : public Observer {
   Status last_status;
 };
 
-constexpr char kFakeChallengeBytes[] =
+constexpr char kFakeChallengeBytesBase64[] =
     "ABz12ClFhY8/D89zWFB+KTHgUwJ5T3Avco/1IQuu+K/"
     "65KlsmB7o0+UyPde8ZW+b33aeJ9uyST8EMzS6WhK60e/VDjug+7LLK4YzDz1nNw==";
 
@@ -168,6 +169,8 @@ class TargetDeviceBootstrapControllerTest : public testing::Test {
   std::unique_ptr<TargetDeviceBootstrapController> bootstrap_controller_;
   ScopedTestingLocalState local_state_;
   base::HistogramTester histogram_tester_;
+  const Base64UrlString kFakeChallengeBytes_ =
+      *Base64UrlTranscode(Base64String(kFakeChallengeBytesBase64));
 };
 
 TEST_F(TargetDeviceBootstrapControllerTest, StartAdvertisingAndMaybeGetQRCode) {
@@ -497,7 +500,7 @@ TEST_F(TargetDeviceBootstrapControllerTest,
   fake_target_device_connection_broker_->AuthenticateConnection(
       kSourceDeviceId);
 
-  auth_broker_->SetupChallengeBytesResponse(kFakeChallengeBytes);
+  auth_broker_->SetupChallengeBytesResponse(kFakeChallengeBytes_);
   bootstrap_controller_->AttemptGoogleAccountTransfer();
 
   EXPECT_EQ(fake_observer_->last_status.step,
@@ -506,8 +509,8 @@ TEST_F(TargetDeviceBootstrapControllerTest,
       fake_observer_->last_status.payload));
 
   EXPECT_EQ(fake_target_device_connection_broker_->GetFakeConnection()
-                ->get_challenge_bytes(),
-            kFakeChallengeBytes);
+                ->get_challenge(),
+            kFakeChallengeBytes_);
 }
 
 TEST_F(TargetDeviceBootstrapControllerTest,
@@ -540,7 +543,7 @@ TEST_F(TargetDeviceBootstrapControllerTest,
   fake_target_device_connection_broker_->AuthenticateConnection(
       kSourceDeviceId);
 
-  auth_broker_->SetupChallengeBytesResponse(kFakeChallengeBytes);
+  auth_broker_->SetupChallengeBytesResponse(kFakeChallengeBytes_);
   bootstrap_controller_->AttemptGoogleAccountTransfer();
 
   EXPECT_EQ(fake_observer_->last_status.step,
@@ -566,7 +569,7 @@ TEST_F(TargetDeviceBootstrapControllerTest,
   fake_target_device_connection_broker_->AuthenticateConnection(
       kSourceDeviceId);
 
-  auth_broker_->SetupChallengeBytesResponse(kFakeChallengeBytes);
+  auth_broker_->SetupChallengeBytesResponse(kFakeChallengeBytes_);
   bootstrap_controller_->AttemptGoogleAccountTransfer();
 
   EXPECT_EQ(fake_observer_->last_status.step,

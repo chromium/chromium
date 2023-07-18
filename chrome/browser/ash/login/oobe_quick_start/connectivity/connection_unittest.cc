@@ -25,6 +25,7 @@
 #include "chromeos/ash/components/quick_start/fake_quick_start_decoder.h"
 #include "chromeos/ash/components/quick_start/quick_start_message.h"
 #include "chromeos/ash/components/quick_start/quick_start_requests.h"
+#include "chromeos/ash/components/quick_start/types.h"
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder.mojom.h"
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom-forward.h"
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom-shared.h"
@@ -50,7 +51,7 @@ const int kAccountRequirementSingle = 2;
 const int kFlowTypeTargetChallenge = 2;
 const int kDeviceTypeChrome = 7;
 
-const char kChallengeBase64Url[] = "testchallenge";
+const char kChallengeBase64[] = "aQ==";
 
 const std::vector<uint8_t> kTestBytes = {0x00, 0x01, 0x02};
 const std::vector<uint8_t> kExpectedGetInfoRequest = {0x04};
@@ -160,6 +161,8 @@ class ConnectionTest : public testing::Test {
       authenticated_connection_;
   std::unique_ptr<FakeQuickStartDecoder> fake_quick_start_decoder_;
   absl::optional<FidoAssertionInfo> assertion_info_;
+  const Base64UrlString kChallenge_ =
+      *Base64UrlTranscode(Base64String(kChallengeBase64));
 };
 
 TEST_F(ConnectionTest, RequestWifiCredentials) {
@@ -246,8 +249,8 @@ TEST_F(ConnectionTest, RequestAccountTransferAssertion) {
   // Start the Quick Start account transfer flow by initially sending
   // BootstrapOptions.
   authenticated_connection_->RequestAccountTransferAssertion(
-      kChallengeBase64Url, base::BindOnce(&ConnectionTest::VerifyAssertionInfo,
-                                          base::Unretained(this)));
+      kChallenge_, base::BindOnce(&ConnectionTest::VerifyAssertionInfo,
+                                  base::Unretained(this)));
 
   std::vector<uint8_t> bootstrap_options_data =
       fake_nearby_connection_->GetWrittenData();
@@ -309,8 +312,7 @@ TEST_F(ConnectionTest, RequestAccountTransferAssertion) {
   absl::optional<std::vector<uint8_t>> get_assertion_command =
       base::Base64Decode(get_assertion_message_payload);
   EXPECT_TRUE(get_assertion_command);
-  cbor::Value request =
-      requests::GenerateGetAssertionRequest(kChallengeBase64Url);
+  cbor::Value request = requests::GenerateGetAssertionRequest(kChallenge_);
   std::vector<uint8_t> cbor_encoded_request =
       requests::CBOREncodeGetAssertionRequest(std::move(request));
   EXPECT_EQ(*get_assertion_command, cbor_encoded_request);

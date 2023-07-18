@@ -20,6 +20,7 @@
 #include "chromeos/ash/components/attestation/attestation_flow.h"
 #include "chromeos/ash/components/attestation/mock_attestation_flow.h"
 #include "chromeos/ash/components/dbus/constants/attestation_constants.h"
+#include "chromeos/ash/components/quick_start/types.h"
 #include "components/account_id/account_id.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -191,9 +192,9 @@ class SecondDeviceAuthBrokerTest : public ::testing::Test {
   ~SecondDeviceAuthBrokerTest() override = default;
 
  protected:
-  base::expected<std::string, GoogleServiceAuthError> GetChallengeBytes() {
+  base::expected<Base64UrlString, GoogleServiceAuthError> GetChallengeBytes() {
     base::test::TestFuture<
-        const base::expected<std::string, GoogleServiceAuthError>&>
+        const base::expected<Base64UrlString, GoogleServiceAuthError>&>
         future;
     second_device_auth_broker_.GetChallengeBytes(future.GetCallback());
     return future.Get();
@@ -294,7 +295,7 @@ TEST_F(SecondDeviceAuthBrokerDeathTest,
 TEST_F(SecondDeviceAuthBrokerTest,
        GetChallengeBytesReturnsAnErrorForAuthErrors) {
   SimulateAuthError(kGetChallengeDataUrl);
-  base::expected<std::string, GoogleServiceAuthError> response =
+  base::expected<Base64UrlString, GoogleServiceAuthError> response =
       GetChallengeBytes();
   ASSERT_FALSE(response.has_value());
   EXPECT_THAT(response.error(), Property(&GoogleServiceAuthError::state,
@@ -304,7 +305,7 @@ TEST_F(SecondDeviceAuthBrokerTest,
 TEST_F(SecondDeviceAuthBrokerTest,
        GetChallengeBytesReturnsAnErrorForMalformedResponse) {
   AddFakeResponse(kGetChallengeDataUrl, "");
-  base::expected<std::string, GoogleServiceAuthError> response =
+  base::expected<Base64UrlString, GoogleServiceAuthError> response =
       GetChallengeBytes();
   ASSERT_FALSE(response.has_value());
   EXPECT_THAT(response.error(),
@@ -329,7 +330,7 @@ TEST_F(SecondDeviceAuthBrokerTest,
 TEST_F(SecondDeviceAuthBrokerTest,
        GetChallengeBytesReturnsAnErrorForBase64ParsingError) {
   AddFakeResponse(kGetChallengeDataUrl, kInvalidBase64ChallengeDataResponse);
-  base::expected<std::string, GoogleServiceAuthError> response =
+  base::expected<Base64UrlString, GoogleServiceAuthError> response =
       GetChallengeBytes();
   ASSERT_FALSE(response.has_value());
   EXPECT_THAT(response.error(),
@@ -373,10 +374,10 @@ TEST_F(SecondDeviceAuthBrokerTest, GetChallengeBytesReturnsChallengeBytes) {
         AddFakeResponse(kGetChallengeDataUrl, kFakeChallengeDataResponse);
       }));
 
-  base::expected<std::string, GoogleServiceAuthError> response =
+  base::expected<Base64UrlString, GoogleServiceAuthError> response =
       GetChallengeBytes();
   ASSERT_TRUE(response.has_value());
-  EXPECT_THAT(response.value(), Property(&std::string::size, Gt(0UL)));
+  EXPECT_THAT(*response.value(), Property(&std::string::size, Gt(0UL)));
 }
 
 TEST_F(

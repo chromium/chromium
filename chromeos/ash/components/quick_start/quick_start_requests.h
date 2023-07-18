@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/values.h"
+#include "chromeos/ash/components/quick_start/types.h"
 #include "components/cbor/values.h"
 #include "quick_start_message.h"
 #include "url/origin.h"
@@ -18,7 +19,7 @@ namespace ash::quick_start::requests {
 std::unique_ptr<QuickStartMessage> BuildBootstrapOptionsRequest();
 
 std::unique_ptr<QuickStartMessage> BuildAssertionRequestMessage(
-    const std::string& challenge_b64url);
+    const Base64UrlString& challenge);
 
 std::unique_ptr<QuickStartMessage> BuildGetInfoRequestMessage();
 
@@ -29,9 +30,9 @@ std::unique_ptr<QuickStartMessage> BuildRequestWifiCredentialsMessage(
 std::vector<uint8_t> CBOREncodeGetAssertionRequest(const cbor::Value& request);
 
 std::string CreateFidoClientDataJson(const url::Origin& origin,
-                                     const std::string& challenge_b64url);
+                                     const Base64UrlString& challenge);
 
-cbor::Value GenerateGetAssertionRequest(const std::string& challenge_b64url);
+cbor::Value GenerateGetAssertionRequest(const Base64UrlString& challenge);
 
 std::unique_ptr<QuickStartMessage> BuildNotifySourceOfUpdateMessage(
     int32_t session_id,

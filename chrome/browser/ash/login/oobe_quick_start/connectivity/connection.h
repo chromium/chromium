@@ -19,6 +19,7 @@
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker.h"
 #include "chrome/browser/nearby_sharing/public/cpp/nearby_connection.h"
 #include "chromeos/ash/components/quick_start/quick_start_response_type.h"
+#include "chromeos/ash/components/quick_start/types.h"
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder.mojom.h"
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom-shared.h"
 #include "components/cbor/values.h"
@@ -113,7 +114,7 @@ class Connection
   void NotifySourceOfUpdate(int32_t session_id,
                             NotifySourceOfUpdateCallback callback) override;
   void RequestAccountTransferAssertion(
-      const std::string& challenge_b64url,
+      const Base64UrlString& challenge,
       RequestAccountTransferAssertionCallback callback) override;
   void WaitForUserVerification(AwaitUserVerificationCallback callback) override;
   base::Value::Dict GetPrepareForUpdateInfo() override;

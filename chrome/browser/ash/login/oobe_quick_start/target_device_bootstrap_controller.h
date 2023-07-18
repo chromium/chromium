@@ -20,6 +20,7 @@
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker.h"
 #include "chrome/browser/ash/login/oobe_quick_start/second_device_auth_broker.h"
 #include "chrome/browser/nearby_sharing/public/cpp/nearby_connections_manager.h"
+#include "chromeos/ash/components/quick_start/types.h"
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder.mojom.h"
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
@@ -188,7 +189,7 @@ class TargetDeviceBootstrapController
   int32_t session_id_;
 
   // Challenge bytes to be sent to the Android device for the FIDO assertion.
-  std::string challenge_bytes_ = "";
+  Base64UrlString challenge_bytes_;
 
   std::unique_ptr<quick_start::SecondDeviceAuthBroker> auth_broker_;
   SessionContext session_context_;

@@ -9,6 +9,7 @@
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/connection.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/fido_assertion_info.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/session_context.h"
+#include "chromeos/ash/components/quick_start/types.h"
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom.h"
 
 namespace ash::quick_start {
@@ -47,7 +48,7 @@ class FakeConnection : public Connection {
                               RequestWifiCredentialsCallback callback) override;
   void WaitForUserVerification(AwaitUserVerificationCallback callback) override;
   void RequestAccountTransferAssertion(
-      const std::string& challenge_b64url,
+      const Base64UrlString& challenge,
       RequestAccountTransferAssertionCallback callback) override;
 
   bool WasHandshakeInitiated();
@@ -61,10 +62,10 @@ class FakeConnection : public Connection {
     phone_instance_id_ = phone_instance_id;
   }
 
-  std::string get_challenge_bytes() { return challenge_bytes_; }
+  Base64UrlString get_challenge() const { return challenge_; }
 
  private:
-  std::string challenge_bytes_ = "";
+  Base64UrlString challenge_;
   bool handshake_initiated_ = false;
   HandshakeSuccessCallback handshake_success_callback_;
   RequestWifiCredentialsCallback wifi_credentials_callback_;

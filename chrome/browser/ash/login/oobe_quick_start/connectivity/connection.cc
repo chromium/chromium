@@ -140,7 +140,7 @@ void Connection::NotifySourceOfUpdate(int32_t session_id,
 }
 
 void Connection::RequestAccountTransferAssertion(
-    const std::string& challenge_b64url,
+    const Base64UrlString& challenge,
     RequestAccountTransferAssertionCallback callback) {
   auto parse_assertion_response =
       base::BindOnce(&Connection::OnRequestAccountTransferAssertionResponse,
@@ -150,7 +150,7 @@ void Connection::RequestAccountTransferAssertion(
       base::IgnoreArgs<absl::optional<std::vector<uint8_t>>>(base::BindOnce(
           &Connection::SendMessageAndReadResponse,
           weak_ptr_factory_.GetWeakPtr(),
-          requests::BuildAssertionRequestMessage(challenge_b64url),
+          requests::BuildAssertionRequestMessage(challenge),
           QuickStartResponseType::kAssertion,
           std::move(parse_assertion_response), kDefaultRoundTripTimeout));
 

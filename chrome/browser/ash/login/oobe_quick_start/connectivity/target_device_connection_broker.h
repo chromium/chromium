@@ -12,6 +12,7 @@
 #include "base/values.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/random_session_id.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/session_context.h"
+#include "chromeos/ash/components/quick_start/types.h"
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom-shared.h"
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -88,7 +89,7 @@ class TargetDeviceConnectionBroker {
     // This object's client must provide a "challenge" to be sent to the remote
     // source device.
     virtual void RequestAccountTransferAssertion(
-        const std::string& challenge_b64url,
+        const Base64UrlString& challenge,
         RequestAccountTransferAssertionCallback callback) = 0;
 
     // Wait for the user to perform verification, and return if it succeeded

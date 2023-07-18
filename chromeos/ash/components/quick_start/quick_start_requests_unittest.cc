@@ -2,8 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "quick_start_requests.h"
+#include "chromeos/ash/components/quick_start/quick_start_requests.h"
+
 #include "base/json/json_reader.h"
+#include "chromeos/ash/components/quick_start/types.h"
 #include "components/cbor/reader.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -14,7 +16,7 @@ using ash::quick_start::requests::CreateFidoClientDataJson;
 using ash::quick_start::requests::GenerateGetAssertionRequest;
 
 namespace {
-const char kChallengeBase64Url[] = "testchallenge";
+const char kChallengeBase64[] = "aQ==";
 const char kTestOrigin[] = "https://google.com";
 const char kCtapRequestType[] = "webauthn.get";
 }  // namespace
@@ -28,25 +30,29 @@ class QuickStartRequestTest : public testing::Test {
 
  protected:
   void SetUp() override {}
+
+  const ash::quick_start::Base64UrlString kChallenge_ =
+      *ash::quick_start::Base64UrlTranscode(
+          ash::quick_start::Base64String(kChallengeBase64));
 };
 
 TEST_F(QuickStartRequestTest, CreateFidoClientDataJson) {
   url::Origin test_origin = url::Origin::Create(GURL(kTestOrigin));
   std::string client_data_json =
-      CreateFidoClientDataJson(test_origin, kChallengeBase64Url);
+      CreateFidoClientDataJson(test_origin, kChallenge_);
   absl::optional<base::Value> parsed_json =
       base::JSONReader::Read(client_data_json);
   ASSERT_TRUE(parsed_json);
   ASSERT_TRUE(parsed_json->is_dict());
   base::Value::Dict& parsed_json_dict = parsed_json.value().GetDict();
   EXPECT_EQ(*parsed_json_dict.FindString("type"), kCtapRequestType);
-  EXPECT_EQ(*parsed_json_dict.FindString("challenge"), kChallengeBase64Url);
+  EXPECT_EQ(*parsed_json_dict.FindString("challenge"), *kChallenge_);
   EXPECT_EQ(*parsed_json_dict.FindString("origin"), kTestOrigin);
   EXPECT_FALSE(parsed_json_dict.FindBool("crossOrigin").value());
 }
 
 TEST_F(QuickStartRequestTest, GenerateGetAssertionRequest_ValidChallenge) {
-  cbor::Value request = GenerateGetAssertionRequest(kChallengeBase64Url);
+  cbor::Value request = GenerateGetAssertionRequest(kChallenge_);
   ASSERT_TRUE(request.is_map());
   const cbor::Value::MapValue& request_map = request.GetMap();
   // CBOR Index 0x01 stores the relying_party_id for the GetAssertionRequest.
@@ -59,12 +65,12 @@ TEST_F(QuickStartRequestTest, GenerateGetAssertionRequest_ValidChallenge) {
   EXPECT_TRUE(options_map.find(cbor::Value("uv"))->second.GetBool());
   // CBOR key "up" stores the userPresence bit for the options.
   EXPECT_TRUE(options_map.find(cbor::Value("up"))->second.GetBool());
-  EXPECT_TRUE(
-      request_map.find(cbor::Value(0x02))->second.GetBytestring().size() > 0);
+  EXPECT_GT(request_map.find(cbor::Value(0x02))->second.GetBytestring().size(),
+            0UL);
 }
 
 TEST_F(QuickStartRequestTest, CBOREncodeGetAssertionRequest) {
-  cbor::Value request = GenerateGetAssertionRequest(kChallengeBase64Url);
+  cbor::Value request = GenerateGetAssertionRequest(kChallenge_);
   std::vector<uint8_t> cbor_encoded_request =
       CBOREncodeGetAssertionRequest(std::move(request));
   absl::optional<cbor::Value> cbor;

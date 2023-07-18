@@ -25,6 +25,7 @@
 #include "chromeos/ash/components/attestation/attestation_flow.h"
 #include "chromeos/ash/components/dbus/attestation/keystore.pb.h"
 #include "chromeos/ash/components/dbus/constants/attestation_constants.h"
+#include "chromeos/ash/components/quick_start/types.h"
 #include "components/account_id/account_id.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
 #include "components/version_info/channel.h"
@@ -167,42 +168,44 @@ constexpr net::NetworkTrafficAnnotationTag kStartSessionAnnotation =
         }
       )");
 
-bool AreChallengeBytesValid(const std::string& challenge_bytes) {
-  return base::Base64Decode(challenge_bytes).has_value();
-}
-
-// Extracts challenge bytes from the parsed JSON `response` from Gaia. Produces
-// an empty string in case of a parsing error. This is how the the response JSON
-// is supposed to look like:
+// Extracts challenge bytes from the parsed JSON `response` from Gaia and
+// returns a Base64Url representation. Produces an empty string in case of a
+// parsing error. This is how the the response JSON is supposed to look like:
 // {
 //   "challengeData": {
 //     "challenge": "<Base64 encoded challenge bytes>"
 //   }
 // }
-std::string GetChallengeBytesFromParsedResponse(
+Base64UrlString GetChallengeBytesFromParsedResponse(
     data_decoder::DataDecoder::ValueOrError response) {
   if (!response.has_value() || !response->is_dict()) {
-    return std::string();
+    return Base64UrlString();
   }
 
   base::Value::Dict* challenge_dict =
       response->GetDict().FindDict(kChallengeDataKey);
   if (!challenge_dict) {
-    return std::string();
+    return Base64UrlString();
   }
 
-  std::string* challenge_bytes = challenge_dict->FindString(kChallengeKey);
-  if (!challenge_bytes || !AreChallengeBytesValid(*challenge_bytes)) {
-    return std::string();
+  std::string* challenge_base64 = challenge_dict->FindString(kChallengeKey);
+  if (!challenge_base64) {
+    return Base64UrlString();
   }
 
-  return *challenge_bytes;
+  // We need to convert the Base64 encoded challenge bytes from Gaia to
+  // Base64Url encoded challenge bytes to send to Android. Android doesn't
+  // handle the standard Base64 encoding.
+  absl::optional<Base64UrlString> challenge =
+      Base64UrlTranscode(Base64String(*challenge_base64));
+
+  return challenge ? *challenge : Base64UrlString();
 }
 
 void RunChallengeBytesCallback(
     SecondDeviceAuthBroker::ChallengeBytesCallback challenge_callback,
-    const std::string& challenge_bytes) {
-  if (challenge_bytes.empty()) {
+    const Base64UrlString& challenge) {
+  if (challenge->empty()) {
     std::move(challenge_callback)
         .Run(base::unexpected(
             GoogleServiceAuthError::FromUnexpectedServiceResponse(
@@ -210,7 +213,7 @@ void RunChallengeBytesCallback(
     return;
   }
 
-  std::move(challenge_callback).Run(base::ok(challenge_bytes));
+  std::move(challenge_callback).Run(challenge);
 }
 
 void HandleGetChallengeBytesErrorResponse(
@@ -268,7 +271,7 @@ void RunAttestationCertificateCallback(
             SecondDeviceAuthBroker::AttestationErrorType::kPermanentError));
         return;
       }
-      std::move(callback).Run(base::ok(pem_certificate_chain));
+      std::move(callback).Run(pem_certificate_chain);
       return;
     case attestation::ATTESTATION_UNSPECIFIED_FAILURE:
       // TODO(b/259021973): Is it safe to consider
@@ -723,8 +726,7 @@ void SecondDeviceAuthBroker::OnClientOAuthSuccess(
     const ClientOAuthResult& result) {
   DCHECK(refresh_token_internal_callback_)
       << "Received an unexpected callback for refresh token";
-  std::move(refresh_token_internal_callback_)
-      .Run(base::ok(result.refresh_token));
+  std::move(refresh_token_internal_callback_).Run(result.refresh_token);
 }
 
 void SecondDeviceAuthBroker::OnClientOAuthFailure(

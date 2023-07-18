@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
 #include "chromeos/ash/components/attestation/attestation_flow.h"
+#include "chromeos/ash/components/quick_start/types.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
 #include "google_apis/gaia/gaia_auth_consumer.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -111,7 +112,7 @@ class SecondDeviceAuthBroker : public GaiaAuthConsumer {
   };
 
   using ChallengeBytesOrError =
-      const base::expected<std::string, GoogleServiceAuthError>&;
+      const base::expected<Base64UrlString, GoogleServiceAuthError>&;
   using ChallengeBytesCallback =
       base::OnceCallback<void(ChallengeBytesOrError)>;
   using AttestationCertificateOrError =
@@ -144,7 +145,7 @@ class SecondDeviceAuthBroker : public GaiaAuthConsumer {
   SecondDeviceAuthBroker& operator=(const SecondDeviceAuthBroker&) = delete;
   ~SecondDeviceAuthBroker() override;
 
-  // Gets Base64 encoded nonce challenge bytes from Gaia SecondDeviceAuth
+  // Gets Base64Url encoded nonce challenge bytes from Gaia SecondDeviceAuth
   // service.
   // The callback is completed with either the challenge bytes - for successful
   // execution, or with a `GoogleServiceAuthError` - for a failed execution.
