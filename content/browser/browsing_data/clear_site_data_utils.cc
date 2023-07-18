@@ -16,7 +16,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
 #include "content/public/browser/browsing_data_remover.h"
-#include "content/public/browser/client_hints_controller_delegate.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
@@ -68,8 +67,7 @@ class SiteDataClearer : public BrowsingDataRemover::Observer {
     DCHECK(!callback_);
   }
 
-  void RunAndDestroySelfWhenDone(
-      ClientHintsControllerDelegate* client_hints_controller_delegate) {
+  void RunAndDestroySelfWhenDone() {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     // Cookies and channel IDs are scoped to
     // a) eTLD+1 of |origin|'s host if |origin|'s host is a registrable domain
@@ -150,21 +148,19 @@ class SiteDataClearer : public BrowsingDataRemover::Observer {
     }
 
     // We clear client hints for both cookie and cache clears.
-    if (client_hints_controller_delegate &&
-        base::FeatureList::IsEnabled(
+    if (base::FeatureList::IsEnabled(
             features::kClearSiteDataClientHintsSupport) &&
         clear_site_data_types_.HasAny({ClearSiteDataType::kCookies,
                                        ClearSiteDataType::kCache,
                                        ClearSiteDataType::kClientHints})) {
       pending_task_count_++;
-      // TODO(crbug.com/1458394): Migrate into BrowsingDataRemover.
-      client_hints_controller_delegate->PersistClientHints(
-          origin_,
-          /*parent_rfh=*/nullptr,
-          /*client_hints=*/{});
-      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE, base::BindOnce(&SiteDataClearer::OnBrowsingDataRemoverDone,
-                                    weak_factory_.GetWeakPtr(), 0));
+
+      // For client hints, no mask is being passed per se. Therefore, when
+      // the client hints are successfully removed, the `failed_data_types`
+      // arg should be set to 0 to align with existing behaviour in this class.
+      remover_->ClearClientHintCacheAndReply(
+          origin_, base::BindOnce(&SiteDataClearer::OnBrowsingDataRemoverDone,
+                                  weak_factory_.GetWeakPtr(), 0));
     }
 
     DCHECK_GT(pending_task_count_, 0);
@@ -223,8 +219,7 @@ void ClearSiteData(
                        storage_buckets_to_remove, avoid_closing_connections,
                        cookie_partition_key, storage_key,
                        partitioned_state_allowed_only, std::move(callback)))
-      ->RunAndDestroySelfWhenDone(
-          browser_context->GetClientHintsControllerDelegate());
+      ->RunAndDestroySelfWhenDone();
 }
 
 }  // namespace content

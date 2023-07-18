@@ -93,6 +93,9 @@ class CONTENT_EXPORT BrowsingDataRemoverImpl
   uint64_t GetLastUsedRemovalMaskForTesting() override;
   uint64_t GetLastUsedOriginTypeMaskForTesting() override;
 
+  void ClearClientHintCacheAndReply(const url::Origin& origin,
+                                    base::OnceClosure callback);
+
   // Used for testing.
   void OverrideStoragePartitionForTesting(
       const StoragePartitionConfig& storage_partition_config,
@@ -220,6 +223,11 @@ class CONTENT_EXPORT BrowsingDataRemoverImpl
 
   StoragePartition* GetStoragePartition(
       absl::optional<StoragePartitionConfig> storage_partition_config);
+
+  // This does the actual clearing of the client hint cache for the provided
+  // origin. It should be invoked only via ClearClientHintCacheAndReply.
+  void ClearClientHintCacheAndReplyImpl(const url::Origin& origin,
+                                        base::OnceClosure callback);
 
   // Like GetWeakPtr(), but returns a weak pointer to BrowsingDataRemoverImpl
   // for internal purposes.

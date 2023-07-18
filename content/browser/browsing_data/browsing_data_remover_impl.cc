@@ -35,6 +35,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
 #include "content/public/browser/browsing_data_remover_delegate.h"
+#include "content/public/browser/client_hints_controller_delegate.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/download_manager.h"
 #include "content/public/browser/notification_service.h"
@@ -952,6 +953,30 @@ void BrowsingDataRemoverImpl::RecordUnfinishedSubTasks() {
     UMA_HISTOGRAM_ENUMERATION(
         "History.ClearBrowsingData.Duration.SlowTasks180s", task);
   }
+}
+
+void BrowsingDataRemoverImpl::ClearClientHintCacheAndReply(
+    const url::Origin& origin,
+    base::OnceClosure callback) {
+  GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(&BrowsingDataRemoverImpl::ClearClientHintCacheAndReplyImpl,
+                     GetWeakPtr(), origin, std::move(callback)));
+}
+
+void BrowsingDataRemoverImpl::ClearClientHintCacheAndReplyImpl(
+    const url::Origin& origin,
+    base::OnceClosure callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK(callback);
+  ClientHintsControllerDelegate* delegate =
+      browser_context_->GetClientHintsControllerDelegate();
+  if (delegate) {
+    delegate->PersistClientHints(origin,
+                                 /*parent_rfh=*/nullptr,
+                                 /*client_hints=*/{});
+  }
+  std::move(callback).Run();
 }
 
 base::WeakPtr<BrowsingDataRemoverImpl> BrowsingDataRemoverImpl::GetWeakPtr() {
