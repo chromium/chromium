@@ -257,13 +257,11 @@ std::u16string DeskButton::GetTitleForView(const views::View* view) {
   }
 
   DesksController* desks_controller = DesksController::Get();
-  const size_t active_desk_index = desks_controller->GetActiveDeskIndex();
-
-  return view == prev_desk_button_
-             ? desks_controller->GetDeskAtIndex(active_desk_index - 1)->name()
-         : view == next_desk_button_
-             ? desks_controller->GetDeskAtIndex(active_desk_index + 1)->name()
-             : std::u16string();
+  Desk* target_desk =
+      view == prev_desk_button_   ? desks_controller->GetPreviousDesk()
+      : view == next_desk_button_ ? desks_controller->GetNextDesk()
+                                  : nullptr;
+  return target_desk ? target_desk->name() : std::u16string();
 }
 
 const std::u16string& DeskButton::GetTextForTest() const {
