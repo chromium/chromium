@@ -97,7 +97,7 @@ class GuestOsSharePath : public KeyedService,
   // instead.
   absl::variant<PathsToShare, std::string> ConvertArgsToPathsToShare(
       const guest_os::GuestOsRegistryService::Registration& registration,
-      const std::vector<crostini::LaunchArg>& args,
+      const std::vector<guest_os::LaunchArg>& args,
       const base::FilePath& vm_mount,
       bool map_crostini_home);
 

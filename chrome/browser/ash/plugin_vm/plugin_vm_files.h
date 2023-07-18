@@ -7,8 +7,7 @@
 
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
-#include "storage/browser/file_system/file_system_url.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
+#include "chrome/browser/ash/guest_os/public/types.h"
 
 class Profile;
 
@@ -29,8 +28,6 @@ enum class LaunchPluginVmAppResult {
   FAILED_DIRECTORY_NOT_SHARED,
 };
 
-using LaunchArg = absl::variant<storage::FileSystemURL, std::string>;
-
 using LaunchPluginVmAppCallback =
     base::OnceCallback<void(LaunchPluginVmAppResult result,
                             const std::string& failure_reason)>;
@@ -39,7 +36,7 @@ using LaunchPluginVmAppCallback =
 // the VM. Will start Plugin VM if it is not already running.
 void LaunchPluginVmApp(Profile* profile,
                        std::string app_id,
-                       const std::vector<LaunchArg>& files,
+                       const std::vector<guest_os::LaunchArg>& files,
                        LaunchPluginVmAppCallback callback);
 
 }  // namespace plugin_vm

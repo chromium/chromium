@@ -53,7 +53,7 @@ class GuestOSApps : public KeyedService,
   virtual void Initialize();
 
   // Returns launch args where files in the intent are converted to URLs.
-  std::vector<crostini::LaunchArg> ArgsFromIntent(const apps::Intent* intent);
+  std::vector<guest_os::LaunchArg> ArgsFromIntent(const apps::Intent* intent);
 
   // CreateApp calls this to override App defaults with per-OS values.
   virtual void CreateAppOverrides(

@@ -37,7 +37,7 @@ void crostini::ShowCrostiniRecoveryView(
     crostini::CrostiniUISurface ui_surface,
     const std::string& app_id,
     int64_t display_id,
-    const std::vector<crostini::LaunchArg>& args,
+    const std::vector<guest_os::LaunchArg>& args,
     crostini::CrostiniSuccessCallback callback) {
   CrostiniRecoveryView::Show(profile, app_id, display_id, args,
                              std::move(callback));
@@ -48,7 +48,7 @@ void crostini::ShowCrostiniRecoveryView(
 void CrostiniRecoveryView::Show(Profile* profile,
                                 const std::string& app_id,
                                 int64_t display_id,
-                                const std::vector<crostini::LaunchArg>& args,
+                                const std::vector<guest_os::LaunchArg>& args,
                                 crostini::CrostiniSuccessCallback callback) {
   if (!crostini::CrostiniFeatures::Get()->IsAllowedNow(profile)) {
     std::move(callback).Run(false, "crostini is not allowed");
@@ -108,7 +108,7 @@ CrostiniRecoveryView::CrostiniRecoveryView(
     Profile* profile,
     const std::string& app_id,
     int64_t display_id,
-    const std::vector<crostini::LaunchArg>& args,
+    const std::vector<guest_os::LaunchArg>& args,
     crostini::CrostiniSuccessCallback callback)
     : profile_(profile),
       app_id_(app_id),

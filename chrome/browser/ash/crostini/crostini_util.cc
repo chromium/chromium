@@ -11,8 +11,6 @@
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback.h"
-#include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
@@ -31,6 +29,7 @@
 #include "chrome/browser/ash/guest_os/guest_os_session_tracker.h"
 #include "chrome/browser/ash/guest_os/guest_os_share_path.h"
 #include "chrome/browser/ash/guest_os/guest_os_terminal.h"
+#include "chrome/browser/ash/guest_os/public/types.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/shelf/app_service/app_service_app_window_crostini_tracker.h"
@@ -147,7 +146,7 @@ void LaunchApplication(
     guest_os::GuestOsRegistryService::Registration registration,
     const guest_os::GuestId& container_id,
     int64_t display_id,
-    const std::vector<LaunchArg>& args,
+    const std::vector<guest_os::LaunchArg>& args,
     crostini::CrostiniSuccessCallback callback) {
   ChromeShelfController* chrome_shelf_controller =
       ChromeShelfController::instance();
@@ -250,7 +249,7 @@ void LaunchCrostiniAppImpl(
     guest_os::GuestOsRegistryService::Registration registration,
     const guest_os::GuestId& container_id,
     int64_t display_id,
-    const std::vector<LaunchArg>& args,
+    const std::vector<guest_os::LaunchArg>& args,
     CrostiniSuccessCallback callback) {
   auto* crostini_manager = crostini::CrostiniManager::GetForProfile(profile);
   auto* registry_service =
@@ -269,7 +268,7 @@ void LaunchCrostiniAppImpl(
           [](Profile* profile, const std::string& app_id,
              guest_os::GuestOsRegistryService::Registration registration,
              const guest_os::GuestId& container_id, int64_t display_id,
-             const std::vector<LaunchArg> args,
+             const std::vector<guest_os::LaunchArg> args,
              crostini::CrostiniSuccessCallback callback,
              crostini::CrostiniResult result) {
             if (result != crostini::CrostiniResult::SUCCESS) {
@@ -298,7 +297,7 @@ void LaunchCrostiniAppWithIntent(Profile* profile,
                                  const std::string& app_id,
                                  int64_t display_id,
                                  apps::IntentPtr intent,
-                                 const std::vector<LaunchArg>& args,
+                                 const std::vector<guest_os::LaunchArg>& args,
                                  CrostiniSuccessCallback callback) {
   // Policies can change under us, and crostini may now be forbidden.
   std::string reason;
@@ -348,7 +347,7 @@ void LaunchCrostiniAppWithIntent(Profile* profile,
 void LaunchCrostiniApp(Profile* profile,
                        const std::string& app_id,
                        int64_t display_id,
-                       const std::vector<LaunchArg>& args,
+                       const std::vector<guest_os::LaunchArg>& args,
                        CrostiniSuccessCallback callback) {
   LaunchCrostiniAppWithIntent(profile, app_id, display_id, nullptr, args,
                               std::move(callback));

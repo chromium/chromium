@@ -54,9 +54,9 @@ void GuestOSApps::Initialize() {
                         /*should_notify_initialized=*/true);
 }
 
-std::vector<crostini::LaunchArg> GuestOSApps::ArgsFromIntent(
+std::vector<guest_os::LaunchArg> GuestOSApps::ArgsFromIntent(
     const apps::Intent* intent) {
-  std::vector<crostini::LaunchArg> args;
+  std::vector<guest_os::LaunchArg> args;
   if (!intent || intent->files.empty()) {
     return args;
   }

@@ -94,7 +94,7 @@ void LaunchApplication(
     const std::string& app_id,
     guest_os::GuestOsRegistryService::Registration registration,
     int64_t display_id,
-    const std::vector<crostini::LaunchArg> args,
+    const std::vector<guest_os::LaunchArg> args,
     LaunchCallback callback) {
   // TODO(b/265601951): Handle window permissions. Crostini uses
   // AppServiceAppWindowCrostiniTracker::OnAppLaunchRequested for this.
@@ -193,7 +193,7 @@ void BruschettaApps::LaunchAppWithIntent(const std::string& app_id,
   launcher->EnsureRunning(base::BindOnce(
       [](Profile* profile, const std::string& app_id,
          guest_os::GuestOsRegistryService::Registration registration,
-         int64_t display_id, const std::vector<crostini::LaunchArg> args,
+         int64_t display_id, const std::vector<guest_os::LaunchArg> args,
          const std::string& vm_name, LaunchCallback callback,
          bruschetta::BruschettaResult result) {
         if (result != bruschetta::BruschettaResult::kSuccess) {

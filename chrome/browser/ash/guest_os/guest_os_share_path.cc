@@ -792,7 +792,7 @@ const base::flat_set<GuestId>& GuestOsSharePath::ListGuests() {
 absl::variant<GuestOsSharePath::PathsToShare, std::string>
 GuestOsSharePath::ConvertArgsToPathsToShare(
     const guest_os::GuestOsRegistryService::Registration& registration,
-    const std::vector<crostini::LaunchArg>& args,
+    const std::vector<guest_os::LaunchArg>& args,
     const base::FilePath& vm_mount,
     bool map_crostini_home) {
   PathsToShare out;
