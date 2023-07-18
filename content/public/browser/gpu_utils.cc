@@ -194,8 +194,13 @@ void DumpGpuProfilingData(base::OnceClosure callback) {
       FROM_HERE, content::GPU_PROCESS_KIND_SANDBOXED, false /* force_create */,
       base::BindOnce(
           [](base::OnceClosure callback, content::GpuProcessHost* host) {
-            host->gpu_service()->WriteClangProfilingProfile(
-                std::move(callback));
+            if (host) {
+              host->gpu_service()->WriteClangProfilingProfile(
+                  std::move(callback));
+            } else {
+              LOG(ERROR) << "DumpGpuProfilingData() failed to dump.";
+              std::move(callback).Run();
+            }
           },
           std::move(callback)));
 }
