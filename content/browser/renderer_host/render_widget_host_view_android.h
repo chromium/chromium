@@ -190,7 +190,8 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
   bool CanSynchronizeVisualProperties() override;
   std::unique_ptr<SyntheticGestureTarget> CreateSyntheticGestureTarget()
       override;
-  void OnDidNavigateMainFrameToNewPage() override;
+  void DidNavigateMainFramePreCommit() override;
+  void DidEnterBackForwardCache() override;
   const viz::FrameSinkId& GetFrameSinkId() const override;
   viz::FrameSinkId GetRootFrameSinkId() override;
   viz::SurfaceId GetCurrentSurfaceId() const override;

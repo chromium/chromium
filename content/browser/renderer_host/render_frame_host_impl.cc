@@ -48,6 +48,7 @@
 #include "base/types/optional_util.h"
 #include "build/build_config.h"
 #include "components/download/public/common/download_url_parameters.h"
+#include "components/viz/common/features.h"
 #include "content/browser/about_url_loader_factory.h"
 #include "content/browser/accessibility/browser_accessibility_manager.h"
 #include "content/browser/accessibility/render_accessibility_host.h"
@@ -1900,6 +1901,16 @@ void RenderFrameHostImpl::DidEnterBackForwardCache() {
   TRACE_EVENT0("navigation", "RenderFrameHostImpl::EnterBackForwardCache");
   DCHECK(IsBackForwardCacheEnabled());
   DCHECK(IsInPrimaryMainFrame());
+
+  if (base::FeatureList::IsEnabled(
+          features::kInvalidateLocalSurfaceIdPreCommit)) {
+    // Notifies the View that the page is stored in the `BackForwardCache`.
+    //
+    // We shouldn't BFCache a renderer without a View.
+    CHECK(GetView());
+    static_cast<RenderWidgetHostViewBase*>(GetView())
+        ->DidEnterBackForwardCache();
+  }
 
   DidEnterBackForwardCacheInternal();
   // Pages in the back-forward cache are automatically evicted after a certain

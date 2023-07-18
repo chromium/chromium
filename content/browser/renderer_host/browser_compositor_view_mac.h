@@ -127,6 +127,14 @@ class CONTENT_EXPORT BrowserCompositorMac : public DelegatedFrameHostClient,
     return weak_factory_.GetWeakPtr();
   }
 
+  // Dispatched when the page is being navigated to a different document. The
+  // new page hasn't been marked as active yet.
+  void DidNavigateMainFramePreCommit();
+
+  // Dispatched after the old page has been unloaded and has entered the
+  // `BackForwardCache`.
+  void DidEnterBackForwardCache();
+
   void DidNavigate();
 
   void ForceNewSurfaceForTesting();

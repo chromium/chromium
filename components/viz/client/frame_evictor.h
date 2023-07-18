@@ -49,7 +49,7 @@ class VIZ_CLIENT_EXPORT FrameEvictor : public FrameEvictionManagerClient {
 
   bool visible() const { return visible_; }
 
-  // Return the collection of SurfaceIds that should be evicted.
+  // Returns an ordered collection of `SurfaceIds` that should be evicted.
   std::vector<SurfaceId> CollectSurfaceIdsForEviction() const;
 
  private:

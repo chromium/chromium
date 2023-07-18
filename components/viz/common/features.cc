@@ -292,6 +292,13 @@ BASE_FEATURE(kEnableADPFRendererMain,
              "EnableADPFRendererMain",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Invalidate the `viz::LocalSurfaceId` on the browser side when the page is
+// navigated away. This flag serves as the kill-switch for the uncaught edge
+// cases in production.
+BASE_FEATURE(kInvalidateLocalSurfaceIdPreCommit,
+             "InvalidateLocalSurfaceIdPreCommit",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 bool IsDelegatedCompositingEnabled() {
   return base::FeatureList::IsEnabled(kDelegatedCompositing);
 }
