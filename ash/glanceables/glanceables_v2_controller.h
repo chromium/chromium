@@ -53,6 +53,10 @@ class ASH_EXPORT GlanceablesV2Controller : public SessionObserver {
   // Could return `nullptr`.
   GlanceablesTasksClient* GetTasksClient() const;
 
+  // Informs registered glanceables clients that the glanceables bubble UI has
+  // been closed.
+  void NotifyGlanceablesBubbleClosed();
+
  private:
   // The currently active user account id.
   AccountId active_account_id_;

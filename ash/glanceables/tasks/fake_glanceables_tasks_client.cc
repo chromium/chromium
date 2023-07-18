@@ -37,6 +37,15 @@ void FakeGlanceablesTasksClient::MarkAsCompleted(
   std::move(callback).Run(/*success=*/true);
 }
 
+void FakeGlanceablesTasksClient::OnGlanceablesBubbleClosed() {
+  ++bubble_closed_count_;
+}
+
+int FakeGlanceablesTasksClient::GetAndResetBubbleClosedCount() {
+  int result = bubble_closed_count_;
+  bubble_closed_count_ = 0;
+  return result;
+}
 void FakeGlanceablesTasksClient::PopulateTasks() {
   task_lists_ = std::make_unique<ui::ListModel<GlanceablesTaskList>>();
 

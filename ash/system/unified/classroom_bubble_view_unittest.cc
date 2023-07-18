@@ -85,6 +85,7 @@ class TestClient : public GlanceablesClassroomClient {
               (override));
 
   MOCK_METHOD(void, OpenUrl, (const GURL&), (const override));
+  MOCK_METHOD(void, OnGlanceablesBubbleClosed, (), (override));
 };
 
 }  // namespace

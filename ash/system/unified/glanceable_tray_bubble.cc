@@ -4,7 +4,9 @@
 
 #include "ash/system/unified/glanceable_tray_bubble.h"
 
+#include "ash/glanceables/glanceables_v2_controller.h"
 #include "ash/shelf/shelf.h"
+#include "ash/shell.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_event_filter.h"
 #include "ash/system/tray/tray_utils.h"
@@ -41,6 +43,8 @@ GlanceableTrayBubble::~GlanceableTrayBubble() {
     bubble_widget_->RemoveObserver(this);
     bubble_widget_->Close();
   }
+
+  Shell::Get()->glanceables_v2_controller()->NotifyGlanceablesBubbleClosed();
 }
 
 void GlanceableTrayBubble::OnWidgetDestroying(views::Widget* widget) {

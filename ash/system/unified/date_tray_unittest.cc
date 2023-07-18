@@ -95,6 +95,14 @@ class TestGlanceablesClassroomClient : public GlanceablesClassroomClient {
     std::move(cb).Run({});
   }
   void OpenUrl(const GURL& url) const override {}
+  void OnGlanceablesBubbleClosed() override { ++bubble_closed_count_; }
+
+  // Returns `bubble_closed_count_`, while also resetting the counter.
+  int GetAndResetBubbleClosedCount() {
+    int result = bubble_closed_count_;
+    bubble_closed_count_ = 0;
+    return result;
+  }
 
   void RespondToPendingIsStudentRoleEnabledCallbacks(bool is_active) {
     for (auto& cb : pending_is_student_role_enabled_callbacks_) {
@@ -115,6 +123,9 @@ class TestGlanceablesClassroomClient : public GlanceablesClassroomClient {
       pending_is_student_role_enabled_callbacks_;
   std::vector<GlanceablesClassroomClient::IsRoleEnabledCallback>
       pending_is_teacher_role_enabled_callbacks_;
+
+  // Number of times `OnGlanceablesBubbleClosed()` has been called.
+  int bubble_closed_count_ = 0;
 };
 
 class MockNewWindowDelegate : public testing::NiceMock<TestNewWindowDelegate> {
@@ -189,6 +200,11 @@ class DateTrayTest
   }
 
   void TearDown() override {
+    if (AreGlanceablesV2Enabled()) {
+      Shell::Get()->glanceables_v2_controller()->UpdateClientsRegistration(
+          account_id_, GlanceablesV2Controller::ClientsRegistration{});
+    }
+
     widget_.reset();
     date_tray_ = nullptr;
     if (observering_activation_changes_) {
@@ -300,6 +316,12 @@ TEST_P(DateTrayTest, InitialState) {
   // Initial state: not showing the calendar bubble.
   EXPECT_FALSE(IsBubbleShown());
   EXPECT_FALSE(AreContentsViewShown());
+  if (AreGlanceablesV2Enabled()) {
+    EXPECT_EQ(0,
+              fake_glanceables_tasks_client()->GetAndResetBubbleClosedCount());
+    EXPECT_EQ(0,
+              glanceables_classroom_client()->GetAndResetBubbleClosedCount());
+  }
 }
 
 TEST_P(DateTrayTest, ShowTasksComboModel) {
@@ -413,6 +435,12 @@ TEST_P(DateTrayTest, ShowCalendarBubble) {
   EXPECT_FALSE(AreContentsViewShown());
   EXPECT_FALSE(GetUnifiedSystemTray()->is_active());
   EXPECT_FALSE(GetDateTray()->is_active());
+  if (AreGlanceablesV2Enabled()) {
+    EXPECT_EQ(1,
+              fake_glanceables_tasks_client()->GetAndResetBubbleClosedCount());
+    EXPECT_EQ(1,
+              glanceables_classroom_client()->GetAndResetBubbleClosedCount());
+  }
 
   // Tapping on the `DateTray` again -> open the calendar bubble.
   GestureTapOn(GetDateTray());
@@ -432,6 +460,12 @@ TEST_P(DateTrayTest, ShowCalendarBubble) {
   EXPECT_FALSE(AreContentsViewShown());
   EXPECT_FALSE(GetUnifiedSystemTray()->is_active());
   EXPECT_FALSE(GetDateTray()->is_active());
+  if (AreGlanceablesV2Enabled()) {
+    EXPECT_EQ(1,
+              fake_glanceables_tasks_client()->GetAndResetBubbleClosedCount());
+    EXPECT_EQ(1,
+              glanceables_classroom_client()->GetAndResetBubbleClosedCount());
+  }
 }
 
 // Tests the behavior when clicking on different areas.
@@ -456,6 +490,12 @@ TEST_P(DateTrayTest, ClickingArea) {
   EXPECT_TRUE(GetUnifiedSystemTray()->IsBubbleShown());
   EXPECT_TRUE(GetUnifiedSystemTray()->is_active());
   EXPECT_FALSE(GetDateTray()->is_active());
+  if (AreGlanceablesV2Enabled()) {
+    EXPECT_EQ(1,
+              fake_glanceables_tasks_client()->GetAndResetBubbleClosedCount());
+    EXPECT_EQ(1,
+              glanceables_classroom_client()->GetAndResetBubbleClosedCount());
+  }
 
   // Clicking on the `DateTray` -> switch to the calendar bubble.
   LeftClickOn(GetDateTray());
@@ -471,6 +511,12 @@ TEST_P(DateTrayTest, ClickingArea) {
   EXPECT_FALSE(GetUnifiedSystemTray()->IsBubbleShown());
   EXPECT_FALSE(GetUnifiedSystemTray()->is_active());
   EXPECT_FALSE(GetDateTray()->is_active());
+  if (AreGlanceablesV2Enabled()) {
+    EXPECT_EQ(1,
+              fake_glanceables_tasks_client()->GetAndResetBubbleClosedCount());
+    EXPECT_EQ(1,
+              glanceables_classroom_client()->GetAndResetBubbleClosedCount());
+  }
 }
 
 TEST_P(DateTrayTest, EscapeKeyForClose) {
@@ -492,6 +538,12 @@ TEST_P(DateTrayTest, EscapeKeyForClose) {
   EXPECT_FALSE(AreContentsViewShown());
   EXPECT_FALSE(GetUnifiedSystemTray()->is_active());
   EXPECT_FALSE(GetDateTray()->is_active());
+  if (AreGlanceablesV2Enabled()) {
+    EXPECT_EQ(1,
+              fake_glanceables_tasks_client()->GetAndResetBubbleClosedCount());
+    EXPECT_EQ(1,
+              glanceables_classroom_client()->GetAndResetBubbleClosedCount());
+  }
 }
 
 // Tests that calling `DateTray::CloseBubble()` actually closes the bubble.
@@ -509,6 +561,12 @@ TEST_P(DateTrayTest, CloseBubble) {
   EXPECT_FALSE(IsBubbleShown());
   EXPECT_FALSE(GetUnifiedSystemTray()->is_active());
   EXPECT_FALSE(GetDateTray()->is_active());
+  if (AreGlanceablesV2Enabled()) {
+    EXPECT_EQ(1,
+              fake_glanceables_tasks_client()->GetAndResetBubbleClosedCount());
+    EXPECT_EQ(1,
+              glanceables_classroom_client()->GetAndResetBubbleClosedCount());
+  }
 
   // Calling `DateTray::CloseBubble()` on an already-closed bubble should do
   // nothing.
@@ -516,6 +574,12 @@ TEST_P(DateTrayTest, CloseBubble) {
   EXPECT_FALSE(IsBubbleShown());
   EXPECT_FALSE(GetUnifiedSystemTray()->is_active());
   EXPECT_FALSE(GetDateTray()->is_active());
+  if (AreGlanceablesV2Enabled()) {
+    EXPECT_EQ(0,
+              fake_glanceables_tasks_client()->GetAndResetBubbleClosedCount());
+    EXPECT_EQ(0,
+              glanceables_classroom_client()->GetAndResetBubbleClosedCount());
+  }
 }
 
 TEST_P(DateTrayTest, DoesNotRenderClassroomBubblesForInactiveRoles) {

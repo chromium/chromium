@@ -55,4 +55,15 @@ GlanceablesTasksClient* GlanceablesV2Controller::GetTasksClient() const {
                                          : nullptr;
 }
 
+void GlanceablesV2Controller::NotifyGlanceablesBubbleClosed() {
+  for (auto& clients : clients_registry_) {
+    if (clients.second.classroom_client) {
+      clients.second.classroom_client->OnGlanceablesBubbleClosed();
+    }
+    if (clients.second.tasks_client) {
+      clients.second.tasks_client->OnGlanceablesBubbleClosed();
+    }
+  }
+}
+
 }  // namespace ash

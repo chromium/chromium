@@ -320,6 +320,27 @@ void GlanceablesClassroomClientImpl::OpenUrl(const GURL& url) const {
   ShowSingletonTabOverwritingNTP(profile_, url);
 }
 
+void GlanceablesClassroomClientImpl::OnGlanceablesBubbleClosed() {
+  for (FetchStatus* fetch_status :
+       {&student_data_fetch_status_, &teacher_data_fetch_status_}) {
+    switch (*fetch_status) {
+      case FetchStatus::kNotFetched:
+        break;
+      case FetchStatus::kFetched:
+        *fetch_status = FetchStatus::kNotFetched;
+        break;
+      case FetchStatus::kFetching:
+        *fetch_status = FetchStatus::kFetchingInvalidated;
+        break;
+      case FetchStatus::kFetchingInvalidated:
+        // Do no restart fetch if it's still in progress, which could happen if
+        // the user toggles glanceables bubble in quick succession.
+        *fetch_status = FetchStatus::kFetching;
+        break;
+    }
+  }
+}
+
 void GlanceablesClassroomClientImpl::FetchStudentCourses(
     FetchCoursesCallback callback) {
   CHECK(callback);
@@ -391,8 +412,12 @@ void GlanceablesClassroomClientImpl::InvokeOnceStudentDataFetched(
 
   callbacks_waiting_for_student_data_.push_back(std::move(callback));
 
-  if (student_data_fetch_status_ == FetchStatus::kNotFetched) {
-    student_data_fetch_status_ = FetchStatus::kFetching;
+  const bool needs_fetch =
+      student_data_fetch_status_ != FetchStatus::kFetching &&
+      student_data_fetch_status_ != FetchStatus::kFetchingInvalidated;
+  student_data_fetch_status_ = FetchStatus::kFetching;
+
+  if (needs_fetch) {
     FetchStudentCourses(base::BindOnce(
         &GlanceablesClassroomClientImpl::OnCoursesFetched,
         weak_factory_.GetWeakPtr(),
@@ -414,8 +439,12 @@ void GlanceablesClassroomClientImpl::InvokeOnceTeacherDataFetched(
 
   callbacks_waiting_for_teacher_data_.push_back(std::move(callback));
 
-  if (teacher_data_fetch_status_ == FetchStatus::kNotFetched) {
-    teacher_data_fetch_status_ = FetchStatus::kFetching;
+  const bool needs_fetch =
+      teacher_data_fetch_status_ != FetchStatus::kFetching &&
+      teacher_data_fetch_status_ != FetchStatus::kFetchingInvalidated;
+  teacher_data_fetch_status_ = FetchStatus::kFetching;
+
+  if (needs_fetch) {
     FetchTeacherCourses(base::BindOnce(
         &GlanceablesClassroomClientImpl::OnCoursesFetched,
         weak_factory_.GetWeakPtr(),
@@ -692,15 +721,45 @@ void GlanceablesClassroomClientImpl::OnStudentSubmissionsPageFetched(
 }
 
 void GlanceablesClassroomClientImpl::OnStudentDataFetched() {
-  student_data_fetch_status_ = FetchStatus::kFetched;
-  for (auto& cb : callbacks_waiting_for_student_data_) {
+  switch (student_data_fetch_status_) {
+    case FetchStatus::kNotFetched:
+    case FetchStatus::kFetched:
+      NOTREACHED();
+      break;
+    case FetchStatus::kFetching:
+      student_data_fetch_status_ = FetchStatus::kFetched;
+      break;
+    case FetchStatus::kFetchingInvalidated:
+      student_data_fetch_status_ = FetchStatus::kNotFetched;
+      break;
+  }
+
+  std::vector<base::OnceClosure> callbacks;
+  callbacks_waiting_for_student_data_.swap(callbacks);
+
+  for (auto& cb : callbacks) {
     std::move(cb).Run();
   }
 }
 
 void GlanceablesClassroomClientImpl::OnTeacherDataFetched() {
-  teacher_data_fetch_status_ = FetchStatus::kFetched;
-  for (auto& cb : callbacks_waiting_for_teacher_data_) {
+  switch (teacher_data_fetch_status_) {
+    case FetchStatus::kNotFetched:
+    case FetchStatus::kFetched:
+      NOTREACHED();
+      break;
+    case FetchStatus::kFetching:
+      teacher_data_fetch_status_ = FetchStatus::kFetched;
+      break;
+    case FetchStatus::kFetchingInvalidated:
+      teacher_data_fetch_status_ = FetchStatus::kNotFetched;
+      break;
+  }
+
+  std::vector<base::OnceClosure> callbacks;
+  callbacks_waiting_for_teacher_data_.swap(callbacks);
+
+  for (auto& cb : callbacks) {
     std::move(cb).Run();
   }
 }

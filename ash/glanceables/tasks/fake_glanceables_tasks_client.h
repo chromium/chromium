@@ -42,6 +42,10 @@ class ASH_EXPORT FakeGlanceablesTasksClient : public GlanceablesTasksClient {
   void MarkAsCompleted(const std::string& task_list_id,
                        const std::string& task_id,
                        MarkAsCompletedCallback callback) override;
+  void OnGlanceablesBubbleClosed() override;
+
+  // Returns `bubble_closed_count_`, while also resetting the counter.
+  int GetAndResetBubbleClosedCount();
 
  private:
   void PopulateTasks();
@@ -56,6 +60,9 @@ class ASH_EXPORT FakeGlanceablesTasksClient : public GlanceablesTasksClient {
   // All available tasks grouped by task list id.
   base::flat_map<std::string, std::unique_ptr<ui::ListModel<GlanceablesTask>>>
       tasks_in_task_lists_;
+
+  // Number of times `OnGlanceablesBubbleClosed()` has been called.
+  int bubble_closed_count_ = 0;
 };
 
 }  // namespace ash

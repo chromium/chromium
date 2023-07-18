@@ -42,6 +42,10 @@ class ASH_EXPORT GlanceablesTasksClient {
                                const std::string& task_id,
                                MarkAsCompletedCallback callback) = 0;
 
+  // Method called when the glanceables bubble UI closes. The client can use
+  // this as a signal to invalidate cached tasks data.
+  virtual void OnGlanceablesBubbleClosed() = 0;
+
   virtual ~GlanceablesTasksClient() = default;
 };
 

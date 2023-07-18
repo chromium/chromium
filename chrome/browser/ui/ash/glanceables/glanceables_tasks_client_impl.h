@@ -64,6 +64,7 @@ class GlanceablesTasksClientImpl : public GlanceablesTasksClient {
       const std::string& task_list_id,
       const std::string& task_id,
       GlanceablesTasksClient::MarkAsCompletedCallback callback) override;
+  void OnGlanceablesBubbleClosed() override;
 
  private:
   // Fetches one page of task lists data.

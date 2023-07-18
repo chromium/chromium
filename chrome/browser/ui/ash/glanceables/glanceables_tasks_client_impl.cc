@@ -162,6 +162,8 @@ void GlanceablesTasksClientImpl::MarkAsCompleted(
       task_list_id, task_id, Task::Status::kCompleted));
 }
 
+void GlanceablesTasksClientImpl::OnGlanceablesBubbleClosed() {}
+
 void GlanceablesTasksClientImpl::FetchTaskListsPage(
     const std::string& page_token,
     GlanceablesTasksClient::GetTaskListsCallback callback) {

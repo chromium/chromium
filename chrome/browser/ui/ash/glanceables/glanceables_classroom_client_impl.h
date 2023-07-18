@@ -78,6 +78,7 @@ class GlanceablesClassroomClientImpl : public GlanceablesClassroomClient {
       GetAssignmentsCallback callback) override;
   void GetGradedTeacherAssignments(GetAssignmentsCallback callback) override;
   void OpenUrl(const GURL& url) const override;
+  void OnGlanceablesBubbleClosed() override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(GlanceablesClassroomClientImplTest, FetchCourses);
@@ -112,7 +113,21 @@ class GlanceablesClassroomClientImpl : public GlanceablesClassroomClient {
       base::flat_map<std::string, GlanceablesClassroomCourseWorkItem>;
   using CourseWorkPerCourse = base::flat_map<std::string, CourseWorkInfo>;
 
-  enum class FetchStatus { kNotFetched, kFetching, kFetched };
+  enum class FetchStatus {
+    // The data needs to be fetched - either because it was never fetched, or
+    // glanceables bubble was closed since the data was last fetched.
+    kNotFetched,
+
+    // The data fetch is in progress.
+    kFetching,
+
+    // The data fetch is in progress, but the glanceables bubble was closed
+    // before the fetch finished.
+    kFetchingInvalidated,
+
+    // The data has been fetched.
+    kFetched
+  };
 
   // Wrapper around course work fetch callback that tracks the number of pending
   // course work page requests.

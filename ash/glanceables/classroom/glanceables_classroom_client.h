@@ -58,6 +58,10 @@ class ASH_EXPORT GlanceablesClassroomClient {
 
   // Opens classroom url.
   virtual void OpenUrl(const GURL& url) const = 0;
+
+  // Method called when the glanceables bubble UI closes. The client can use
+  // this as a signal to invalidate cached classroom data.
+  virtual void OnGlanceablesBubbleClosed() = 0;
 };
 
 }  // namespace ash
