@@ -11,25 +11,12 @@
 
 class AuthenticationService;
 class PrefService;
-class SyncSetupService;
-
-namespace syncer {
-class SyncService;
-}
 
 // Configuration object used by the MailtoHandlerService.
 @interface MailtoHandlerConfiguration : NSObject
 
 // AuthenticationService used by MailtoHandlerService.
 @property(nonatomic, assign) AuthenticationService* authService;
-
-// SyncService used by MailtoHandlerService.
-// TODO(crbug.com/1442213): Remove once all downstream dependencies are deleted.
-@property(nonatomic, assign) syncer::SyncService* syncService;
-
-// SyncSetupService used by MailtoHandlerService.
-// TODO(crbug.com/1442213): Remove once all downstream dependencies are deleted.
-@property(nonatomic, assign) SyncSetupService* syncSetupService;
 
 // PrefService used by MailtoHandlerService.
 @property(nonatomic, assign) PrefService* localState;
