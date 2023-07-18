@@ -77,3 +77,7 @@ BASE_FEATURE(kVerifyRequestInitiatorForMirrorHeaders,
              "VerifyRequestInitiatorForMirrorHeaders",
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(ENABLE_MIRROR)
+
+BASE_FEATURE(kProfilesReordering,
+             "ProfilesReordering",
+             base::FEATURE_DISABLED_BY_DEFAULT);

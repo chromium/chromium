@@ -195,6 +195,8 @@ void AddStrings(content::WebUIDataSource* html_source) {
   html_source->AddBoolean("askOnStartup",
                           g_browser_process->local_state()->GetBoolean(
                               prefs::kBrowserShowProfilePickerOnStartup));
+  html_source->AddBoolean("profilesReorderingEnabled",
+                          base::FeatureList::IsEnabled(kProfilesReordering));
   html_source->AddBoolean("signInProfileCreationFlowSupported",
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
                           AccountConsistencyModeManager::IsDiceSignInAllowed());

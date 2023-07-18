@@ -36,4 +36,6 @@ BASE_DECLARE_FEATURE(kDisallowManagedProfileSignout);
 BASE_DECLARE_FEATURE(kVerifyRequestInitiatorForMirrorHeaders);
 #endif  // BUILDFLAG(ENABLE_MIRROR)
 
+BASE_DECLARE_FEATURE(kProfilesReordering);
+
 #endif  // CHROME_BROWSER_SIGNIN_SIGNIN_FEATURES_H_
