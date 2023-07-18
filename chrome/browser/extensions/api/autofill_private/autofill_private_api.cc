@@ -29,6 +29,7 @@
 #include "components/autofill/core/browser/form_data_importer.h"
 #include "components/autofill/core/browser/geo/address_i18n.h"
 #include "components/autofill/core/browser/payments/local_card_migration_manager.h"
+#include "components/autofill/core/browser/payments/mandatory_reauth_manager.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_flow.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
@@ -796,32 +797,18 @@ AutofillPrivateAuthenticateUserAndFlipMandatoryAuthToggleFunction::Run() {
     return RespondNow(Error(kErrorDeviceAuthUnavailable));
   }
 
-  // If `device_authenticator` is not available, then don't do anything.
-  scoped_refptr<device_reauth::DeviceAuthenticator> device_authenticator =
-      client->GetDeviceAuthenticator();
-  if (!device_authenticator) {
-    return RespondNow(Error(kErrorDeviceAuthUnavailable));
-  }
-
-  // `device_authenticator` is a scoped_refptr, so we need to keep it alive
-  // until the callback that uses it is complete.
-  base::OnceClosure bind_device_authenticator =
-      base::DoNothingWithBoundArgs(device_authenticator);
   const std::u16string message =
       l10n_util::GetStringUTF16(IDS_PAYMENTS_AUTOFILL_MANDATORY_REAUTH_PROMPT);
 
   base::RecordAction(base::UserMetricsAction(
       "PaymentsUserAuthTriggeredForMandatoryAuthToggle"));
-  // We will be modifying the pref `kAutofillPaymentMethodsMandatoryReauth`
-  // asynchronously. The pref value directly correlates to the mandatory auth
-  // toggle.
-  autofill_util::AuthenticateUser(
-      device_authenticator, message,
+  client->GetOrCreatePaymentsMandatoryReauthManager()->AuthenticateWithMessage(
+      message,
       base::BindOnce(
           &AutofillPrivateAuthenticateUserAndFlipMandatoryAuthToggleFunction::
               UpdateMandatoryAuthTogglePref,
-          this)
-          .Then(base::IgnoreArgs(std::move(bind_device_authenticator))));
+          this));
+
   return RespondNow(NoArguments());
 #else
   return RespondNow(Error(kErrorDeviceAuthUnavailable));
@@ -870,35 +857,26 @@ AutofillPrivateAuthenticateUserToEditLocalCardFunction::Run() {
     return RespondNow(Error(kErrorDataUnavailable));
   }
   if (personal_data_manager->IsPaymentMethodsMandatoryReauthEnabled()) {
-    // If `device_authenticator` is not available, then don't do anything.
-    scoped_refptr<device_reauth::DeviceAuthenticator> device_authenticator =
-        client->GetDeviceAuthenticator();
-    if (!device_authenticator) {
-      return RespondNow(Error(kErrorDeviceAuthUnavailable));
-    }
-
-    // `device_authenticator` is a scoped_refptr, so we need to keep it alive
-    // until the callback that uses it is complete.
-    base::OnceClosure bind_device_authenticator =
-        base::DoNothingWithBoundArgs(device_authenticator);
     const std::u16string message = l10n_util::GetStringUTF16(
         IDS_PAYMENTS_AUTOFILL_EDIT_CARD_MANDATORY_REAUTH_PROMPT);
 
     base::RecordAction(base::UserMetricsAction(
         "PaymentsUserAuthTriggeredToShowEditLocalCardDialog"));
+
     // Based on the result of the auth, we will be asynchronously returning if
     // the user can edit the local card.
-    autofill_util::AuthenticateUser(
-        device_authenticator, message,
-        base::BindOnce(&AutofillPrivateAuthenticateUserToEditLocalCardFunction::
-                           CanShowEditDialogForLocalCard,
-                       this)
-            .Then(base::IgnoreArgs(std::move(bind_device_authenticator))));
+    client->GetOrCreatePaymentsMandatoryReauthManager()
+        ->AuthenticateWithMessage(
+            message,
+            base::BindOnce(
+                &AutofillPrivateAuthenticateUserToEditLocalCardFunction::
+                    CanShowEditDialogForLocalCard,
+                this));
 
-    // Due to async nature of AuthenticateWithMessage() on device authenticator
-    // we use the below check to make sure we have a `Respond` captured. If we
-    // didn't have this check, then we would show the edit card dialog box even
-    // before the user successfully completes the auth.
+    // Due to async nature of AuthenticateWithMessage() on mandatory re-auth
+    // manager we use the below check to make sure we have a `Respond` captured.
+    // If we didn't have this check, then we would show the edit card dialog box
+    // even before the user successfully completes the auth.
     return did_respond() ? AlreadyResponded() : RespondLater();
   }
 #endif

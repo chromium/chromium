@@ -425,11 +425,6 @@ class CreditCardAccessManager : public CreditCardCvcAuthenticator::Requester,
       const std::u16string& cvc,
       bool successful_auth);
 
-  // Callback that resets `device_authenticator_` after an authentication.
-  // TODO(crbug.com/1447084): Move authentication logic for re-auth into
-  // MandatoryReauthManager.
-  void OnReauthCompleted();
-
   // The current form of authentication in progress.
   UnmaskAuthFlowType unmask_auth_flow_type_ = UnmaskAuthFlowType::kNone;
 
@@ -525,15 +520,6 @@ class CreditCardAccessManager : public CreditCardCvcAuthenticator::Requester,
   // Cached data of cards which have been unmasked. This is cleared upon page
   // navigation. Map key is the card's server_id.
   std::unordered_map<std::string, CachedServerCardInfo> unmasked_card_cache_;
-
-  // Used to authenticate autofills when there was no interactive
-  // authentication. This class must keep this reference to
-  // `device_authenticator_` alive while an authentication is in progress. Set
-  // when we initiate a re-auth using `DeviceAuthenticator`, and reset once the
-  // authentication has finished.
-  // TODO(crbug.com/1447084): Move authentication logic for re-auth into
-  // MandatoryReauthManager.
-  scoped_refptr<device_reauth::DeviceAuthenticator> device_authenticator_;
 
   base::WeakPtrFactory<CreditCardAccessManager> weak_ptr_factory_{this};
 };

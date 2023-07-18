@@ -29,6 +29,18 @@ class MockMandatoryReauthManager : public MandatoryReauthManager {
   MOCK_METHOD(void, OnOptInAuthenticationStepCompleted, (bool), (override));
   MOCK_METHOD(void, OnUserCancelledOptInPrompt, (), (override));
   MOCK_METHOD(void, OnUserClosedOptInPrompt, (), (override));
+  MOCK_METHOD(
+      void,
+      Authenticate,
+      ((device_reauth::DeviceAuthRequester requester),
+       (device_reauth::DeviceAuthenticator::AuthenticateCallback callback)),
+      (override));
+  MOCK_METHOD(
+      void,
+      AuthenticateWithMessage,
+      ((const std::u16string& message),
+       (device_reauth::DeviceAuthenticator::AuthenticateCallback callback)),
+      (override));
 };
 
 }  // namespace autofill::payments

@@ -59,6 +59,39 @@ class MandatoryReauthManagerTest : public testing::Test {
   CreditCard virtual_card_ = test::GetVirtualCard();
 };
 
+// Test that `MandatoryReauthManager::Authenticate()` triggers
+// `DeviceAuthenticator::Authenticate()`.
+TEST_F(MandatoryReauthManagerTest, Authenticate) {
+  EXPECT_CALL(*mock_device_authenticator_, Authenticate).Times(1);
+
+  mandatory_reauth_manager_->Authenticate(
+      /*requester=*/device_reauth::DeviceAuthRequester::kLocalCardAutofill,
+      /*callback=*/base::DoNothing());
+
+  // Test that `MandatoryReauthManager::OnAuthenticationCompleted()` resets the
+  // device authenticator.
+  EXPECT_TRUE(mandatory_reauth_manager_->GetDeviceAuthenticatorForTesting());
+  mandatory_reauth_manager_->OnAuthenticationCompleted(
+      /*callback=*/base::DoNothing(), /*success=*/true);
+  EXPECT_FALSE(mandatory_reauth_manager_->GetDeviceAuthenticatorForTesting());
+}
+
+// Test that `MandatoryReauthManager::AuthenticateWithMessage()` triggers
+// `DeviceAuthenticator::AuthenticateWithMessage()`.
+TEST_F(MandatoryReauthManagerTest, AuthenticateWithMessage) {
+  EXPECT_CALL(*mock_device_authenticator_, AuthenticateWithMessage).Times(1);
+
+  mandatory_reauth_manager_->AuthenticateWithMessage(
+      /*message=*/u"Test", /*callback=*/base::DoNothing());
+
+  // Test that `MandatoryReauthManager::OnAuthenticationCompleted()` resets the
+  // device authenticator.
+  EXPECT_TRUE(mandatory_reauth_manager_->GetDeviceAuthenticatorForTesting());
+  mandatory_reauth_manager_->OnAuthenticationCompleted(
+      /*callback=*/base::DoNothing(), /*success=*/true);
+  EXPECT_FALSE(mandatory_reauth_manager_->GetDeviceAuthenticatorForTesting());
+}
+
 // Test that the MandatoryReauthManager returns that we should offer re-auth
 // opt-in if the conditions for offering it are all met for local cards.
 TEST_F(MandatoryReauthManagerTest, ShouldOfferOptin_LocalCard) {

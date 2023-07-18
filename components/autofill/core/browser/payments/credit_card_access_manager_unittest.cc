@@ -60,7 +60,6 @@
 #include "components/autofill/core/common/autofill_switches.h"
 #include "components/autofill/core/common/autofill_util.h"
 #include "components/autofill/core/common/form_data.h"
-#include "components/device_reauth/mock_device_authenticator.h"
 #include "components/prefs/pref_service.h"
 #include "components/security_state/core/security_state.h"
 #include "components/strings/grit/components_strings.h"
@@ -666,8 +665,8 @@ class CreditCardAccessManagerMandatoryReauthTest
     // We should only expect an AuthenticateWithMessage() call if the feature
     // flag is on and the pref is enabled.
     if (FeatureFlagIsOn() && PrefIsEnabled()) {
-      ON_CALL(*static_cast<device_reauth::MockDeviceAuthenticator*>(
-                  autofill_client_.GetDeviceAuthenticator().get()),
+      ON_CALL(*static_cast<payments::MockMandatoryReauthManager*>(
+                  autofill_client_.GetOrCreatePaymentsMandatoryReauthManager()),
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
               AuthenticateWithMessage)
 #elif BUILDFLAG(IS_ANDROID)
@@ -680,12 +679,13 @@ class CreditCardAccessManagerMandatoryReauthTest
                 std::move(callback).Run(mandatory_reauth_response_is_success);
               })));
     } else {
-      EXPECT_CALL(*static_cast<device_reauth::MockDeviceAuthenticator*>(
-                      autofill_client_.GetDeviceAuthenticator().get()),
+      EXPECT_CALL(
+          *static_cast<payments::MockMandatoryReauthManager*>(
+              autofill_client_.GetOrCreatePaymentsMandatoryReauthManager()),
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-                  AuthenticateWithMessage)
+          AuthenticateWithMessage)
 #elif BUILDFLAG(IS_ANDROID)
-                  Authenticate)
+          Authenticate)
 #endif
           .Times(0);
     }

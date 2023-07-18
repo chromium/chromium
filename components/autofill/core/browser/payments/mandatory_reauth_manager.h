@@ -9,6 +9,7 @@
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/form_data_importer.h"
+#include "components/device_reauth/device_authenticator.h"
 
 namespace autofill {
 
@@ -22,6 +23,31 @@ class MandatoryReauthManager {
   MandatoryReauthManager(const MandatoryReauthManager&) = delete;
   MandatoryReauthManager& operator=(const MandatoryReauthManager&) = delete;
   virtual ~MandatoryReauthManager();
+
+  // Initiates an authentication flow. This method calls
+  // `DeviceAuthenticator::Authenticate`, which is only implemented on Android.
+  // It will create a new instance of `device_authenticator_`, which will be
+  // reset once the authentication is finished. This method ensures that the
+  // last valid DeviceAuthenticator authentication is used if it happened within
+  // the set default auth validity period.
+  virtual void Authenticate(
+      device_reauth::DeviceAuthRequester requester,
+      device_reauth::DeviceAuthenticator::AuthenticateCallback callback);
+
+  // Initiates an authentication flow. This method calls
+  // `DeviceAuthenticator::AuthenticateWithMessage`, which is only implemented
+  // on certain desktop platforms. It will create a new instance of
+  // `device_authenticator_`, which will be reset once the authentication is
+  // finished.
+  virtual void AuthenticateWithMessage(
+      const std::u16string& message,
+      device_reauth::DeviceAuthenticator::AuthenticateCallback callback);
+
+  // This method is triggered once an authentication flow is completed. It will
+  // reset `device_authenticator_` before triggering `callback` with `success`.
+  void OnAuthenticationCompleted(
+      device_reauth::DeviceAuthenticator::AuthenticateCallback callback,
+      bool success);
 
   // Returns true if the user conditions denote that we should offer opt-in for
   // this user, false otherwise. `card_extracted_from_form` is the card
@@ -68,6 +94,11 @@ class MandatoryReauthManager {
   // Triggered when the user closes the opt-in prompt.
   virtual void OnUserClosedOptInPrompt();
 
+  scoped_refptr<device_reauth::DeviceAuthenticator>
+  GetDeviceAuthenticatorForTesting() {
+    return device_authenticator_;
+  }
+
  private:
   // Returns true if the autofill table contains a CreditCard for
   // `guid_of_last_filled_card` that matches `card_extracted_from_form`. If the
@@ -80,6 +111,14 @@ class MandatoryReauthManager {
 
   // Raw pointer to the web content's AutofillClient.
   raw_ptr<AutofillClient> client_;
+
+  // Used for authentication related to mandatory re-auth. This class must keep
+  // this reference to `device_authenticator_` alive while an authentication is
+  // in progress. Set any time we initiate an authentication, and reset once the
+  // authentication has finished. It is stored as a `scoped_refptr` so that
+  // `device_authenticator_` is destroyed if the tab owning this
+  // MandatoryReauthManager is destroyed.
+  scoped_refptr<device_reauth::DeviceAuthenticator> device_authenticator_;
 
   base::WeakPtrFactory<MandatoryReauthManager> weak_ptr_factory_{this};
 };

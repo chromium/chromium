@@ -7,7 +7,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
-#include "components/device_reauth/device_authenticator.h"
 #include "components/strings/grit/components_chromium_strings.h"
 #include "components/strings/grit/components_google_chrome_strings.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -17,6 +16,36 @@ namespace autofill::payments {
 MandatoryReauthManager::MandatoryReauthManager(AutofillClient* client)
     : client_(client) {}
 MandatoryReauthManager::~MandatoryReauthManager() = default;
+
+void MandatoryReauthManager::Authenticate(
+    device_reauth::DeviceAuthRequester requester,
+    device_reauth::DeviceAuthenticator::AuthenticateCallback callback) {
+  device_authenticator_ = client_->GetDeviceAuthenticator();
+  CHECK(device_authenticator_);
+  device_authenticator_->Authenticate(
+      requester,
+      base::BindOnce(&MandatoryReauthManager::OnAuthenticationCompleted,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
+      /*use_last_valid_auth=*/true);
+}
+
+void MandatoryReauthManager::AuthenticateWithMessage(
+    const std::u16string& message,
+    device_reauth::DeviceAuthenticator::AuthenticateCallback callback) {
+  device_authenticator_ = client_->GetDeviceAuthenticator();
+  CHECK(device_authenticator_);
+  device_authenticator_->AuthenticateWithMessage(
+      message,
+      base::BindOnce(&MandatoryReauthManager::OnAuthenticationCompleted,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void MandatoryReauthManager::OnAuthenticationCompleted(
+    device_reauth::DeviceAuthenticator::AuthenticateCallback callback,
+    bool success) {
+  device_authenticator_.reset();
+  std::move(callback).Run(success);
+}
 
 bool MandatoryReauthManager::ShouldOfferOptin(
     const absl::optional<CreditCard>& card_extracted_from_form,
@@ -180,32 +209,20 @@ void MandatoryReauthManager::StartOptInFlow() {
 }
 
 void MandatoryReauthManager::OnUserAcceptedOptInPrompt() {
-  scoped_refptr<device_reauth::DeviceAuthenticator> device_authenticator =
-      client_->GetDeviceAuthenticator();
-  CHECK(device_authenticator);
-
-  // `device_authenticator` is a scoped_refptr, so we need to keep it alive
-  // until the callback that uses it is complete.
-  base::OnceClosure bind_device_authenticator =
-      base::DoNothingWithBoundArgs(device_authenticator);
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-  device_authenticator->AuthenticateWithMessage(
+  AuthenticateWithMessage(
       l10n_util::GetStringUTF16(IDS_PAYMENTS_AUTOFILL_MANDATORY_REAUTH_PROMPT),
       base::BindOnce(
           &MandatoryReauthManager::OnOptInAuthenticationStepCompleted,
-          weak_ptr_factory_.GetWeakPtr())
-          .Then(base::IgnoreArgs(std::move(bind_device_authenticator))));
+          weak_ptr_factory_.GetWeakPtr()));
 #elif BUILDFLAG(IS_ANDROID)
   // TODO(crbug.com/1427216): Convert this to
   // DeviceAuthenticator::AuthenticateWithMessage() with the correct message
   // once it is supported. Currently, the message is "Verify it's you".
-  device_authenticator->Authenticate(
-      device_reauth::DeviceAuthRequester::kPaymentsAutofillOptIn,
-      base::BindOnce(
-          &MandatoryReauthManager::OnOptInAuthenticationStepCompleted,
-          weak_ptr_factory_.GetWeakPtr())
-          .Then(base::IgnoreArgs(std::move(bind_device_authenticator))),
-      /*use_last_valid_auth=*/true);
+  Authenticate(device_reauth::DeviceAuthRequester::kPaymentsAutofillOptIn,
+               base::BindOnce(
+                   &MandatoryReauthManager::OnOptInAuthenticationStepCompleted,
+                   weak_ptr_factory_.GetWeakPtr()));
 #else
   NOTREACHED_NORETURN();
 #endif
@@ -226,6 +243,7 @@ void MandatoryReauthManager::OnUserCancelledOptInPrompt() {
   client_->GetPersonalDataManager()->SetPaymentMethodsMandatoryReauthEnabled(
       /*enabled=*/false);
 }
+
 void MandatoryReauthManager::OnUserClosedOptInPrompt() {
   client_->GetPersonalDataManager()
       ->IncrementPaymentMethodsMandatoryReauthPromoShownCounter();
@@ -247,4 +265,5 @@ bool MandatoryReauthManager::LastFilledCardMatchesSubmittedCard(
 
   return stored_card->MatchingCardDetails(card_extracted_from_form);
 }
+
 }  // namespace autofill::payments
