@@ -14,6 +14,8 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/posix/eintr_wrapper.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/thread_pool.h"
 #include "media/base/media_log.h"
 #include "media/gpu/macros.h"
 #include "media/gpu/v4l2/v4l2_queue.h"
@@ -35,6 +37,51 @@ void* Mmap(int fd,
            int flags,
            unsigned int offset) {
   return mmap(addr, len, prot, flags, fd, offset);
+}
+
+// This method blocks waiting for an event from either |device_fd| or
+// |wake_event|; then if it's of the type POLLIN (meaning there's data) and
+// from |device_fd|, this function calls |dequeue_callback|. Since it blocks,
+// it needs to work on its own SequencedTaskRunner, in this case
+// |event_task_runner_|.
+// TODO(mcasas): Add an error callback too.
+void WaitOnceForCAPTUREQueueEvent(int device_fd,
+                                  int wake_event,
+                                  base::OnceClosure dequeue_callback) {
+  VLOGF(4) << "Going to poll()";
+
+  // We only want POLLIN for either |device_fd| (because that's the only
+  // possibility for |CAPTURE_queue_|) and |wake_event|. POLLERR, POLLHUP, or
+  // POLLNVAL are always return-able and anyway ignored when set in
+  // pollfd.events.
+  // https://www.kernel.org/doc/html/v5.15/userspace-api/media/v4l/func-poll.html
+  struct pollfd pollfds[] = {{.fd = device_fd, .events = POLLIN},
+                             {.fd = wake_event, .events = POLLIN}};
+  constexpr int kInfiniteTimeout = -1;
+  if (HANDLE_EINTR(poll(pollfds, std::size(pollfds), kInfiniteTimeout)) <
+      kIoctlOk) {
+    PLOG(ERROR) << "Polling for CAPTURE queue events failed";
+    return;
+  }
+
+  const auto events_from_device = pollfds[0].revents;
+  const auto other_events = pollfds[1].revents;
+  // "POLLIN There is data to read."
+  //  https://man7.org/linux/man-pages/man2/poll.2.html
+  if (events_from_device & POLLIN) {
+    std::move(dequeue_callback).Run();
+  } else if (other_events & POLLIN) {
+    // Somebody woke us up because they didn't want us waiting on |device_fd|.
+    // Do nothing.
+  } else {
+    // This could mean that |device_fd| has become invalid (closed, maybe);
+    // there's little we can do here.
+    // TODO(mcasas): Use the error callback to be added.
+    CHECK((events_from_device & (POLLERR | POLLHUP | POLLNVAL)) ||
+          (other_events & (POLLERR | POLLHUP | POLLNVAL)));
+    VLOG(2) << "Unhandled |events_from_device|: 0x" << std::hex
+            << events_from_device << ", or |other_events|: 0x" << other_events;
+  }
 }
 
 }  // namespace
@@ -152,6 +199,12 @@ void V4L2StatefulVideoDecoder::Initialize(const VideoDecoderConfig& config,
       std::move(init_cb).Run(DecoderStatus::Codes::kFailedToCreateDecoder);
       return;
     }
+    wake_event_.reset(eventfd(/*initval=*/0, EFD_NONBLOCK | EFD_CLOEXEC));
+    if (!wake_event_.is_valid()) {
+      PLOG(ERROR) << "Failed to create an eventfd.";
+      std::move(init_cb).Run(DecoderStatus::Codes::kFailedToCreateDecoder);
+      return;
+    }
   }
 
   // If we've been Initialize()d before, destroy state members.
@@ -213,6 +266,7 @@ void V4L2StatefulVideoDecoder::Initialize(const VideoDecoderConfig& config,
 
   profile_ = config.profile();
   aspect_ratio_ = config.aspect_ratio();
+  output_cb_ = std::move(output_cb);
   std::move(init_cb).Run(DecoderStatus::Codes::kOk);
 }
 
@@ -275,7 +329,17 @@ void V4L2StatefulVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
   if (PollOnceForResolutionChangeEvent()) {
     VLOGF(3) << "Got a resolution change event.";
     if (!CAPTURE_queue_) {  // It's the first configuration event.
-      InitializeCAPTUREQueue();
+      if (!InitializeCAPTUREQueue()) {
+        std::move(decode_cb).Run(DecoderStatus::Codes::kPlatformDecodeFailure);
+        return;
+      }
+      if (!event_task_runner_) {
+        event_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
+            {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
+        CHECK(event_task_runner_);
+
+        RearmCAPTUREQueueMonitoring();
+      }
     }
   }
 
@@ -343,15 +407,42 @@ V4L2StatefulVideoDecoder::V4L2StatefulVideoDecoder(
     base::WeakPtr<VideoDecoderMixin::Client> client)
     : VideoDecoderMixin(std::move(media_log),
                         std::move(task_runner),
-                        std::move(client)) {
+                        std::move(client)),
+      weak_this_factory_(this) {
   DCHECK(decoder_task_runner_->RunsTasksInCurrentSequence());
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOGF(1);
+  weak_this_ = weak_this_factory_.GetWeakPtr();
 }
 
 V4L2StatefulVideoDecoder::~V4L2StatefulVideoDecoder() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOGF(1);
+
+  weak_this_factory_.InvalidateWeakPtrs();
+  cancelable_task_tracker_.TryCancelAll();  // Not needed, but good explicit.
+
+  if (wake_event_.is_valid()) {
+    const uint64_t buf = 1;
+    const auto res = HANDLE_EINTR(write(wake_event_.get(), &buf, sizeof(buf)));
+    DPLOG_IF(ERROR, res < 0) << "Error writing to |wake_event_|";
+  }
+
+  CAPTURE_queue_.reset();
+  OUTPUT_queue_.reset();
+
+  if (event_task_runner_) {
+    // Destroy the two ScopedFDs (hence the PostTask business ISO DeleteSoon) on
+    // |event_task_runner_| for proper teardown threading. This must be the last
+    // operation in the destructor and after having explicitly destroyed other
+    // objects that might use |device_fd|.
+    event_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce([](base::ScopedFD fd) {}, std::move(device_fd_)));
+    event_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce([](base::ScopedFD fd) {}, std::move(wake_event_)));
+  }
 }
 
 bool V4L2StatefulVideoDecoder::PollOnceForResolutionChangeEvent() {
@@ -459,8 +550,12 @@ bool V4L2StatefulVideoDecoder::InitializeCAPTUREQueue() {
       v4l2_num_buffers, buffer_type, /*incoherent=*/false);
   CHECK_GE(allocated_buffers, v4l2_num_buffers);
 
+  if (!CAPTURE_queue_->Streamon()) {
+    return false;
+  }
   // We need to "enqueue" allocated buffers in the driver in order to use them.
-  return CAPTURE_queue_->Streamon() && TryAndEnqueueCAPTUREQueueBuffers();
+  TryAndEnqueueCAPTUREQueueBuffers();
+  return true;
 }
 
 std::vector<ImageProcessor::PixelLayoutCandidate>
@@ -522,8 +617,8 @@ size_t V4L2StatefulVideoDecoder::GetNumberOfReferenceFrames() {
     num_codec_reference_frames = std::max(
         base::checked_cast<size_t>(ctrl.value), num_codec_reference_frames);
   }
-  VLOG(2) << "Driver wants " << ctrl.value << " CAPTURE buffers. We'll use "
-          << num_codec_reference_frames;
+  VLOG(2) << "Driver wants: " << ctrl.value
+          << " CAPTURE buffers. We'll use: " << num_codec_reference_frames;
 
   // Verify |num_codec_reference_frames| has a reasonable value. Anecdotally 16
   // is the largest amount of reference frames seen, on an ITU-T H.264 test
@@ -533,7 +628,92 @@ size_t V4L2StatefulVideoDecoder::GetNumberOfReferenceFrames() {
   return num_codec_reference_frames;
 }
 
-bool V4L2StatefulVideoDecoder::TryAndEnqueueCAPTUREQueueBuffers() {
+void V4L2StatefulVideoDecoder::RearmCAPTUREQueueMonitoring() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Here we launch a single "wait for a |CAPTURE_queue_| event" monitoring
+  // Task (via an infinite-wait POSIX poll()). It lives on a background
+  // SequencedTaskRunner whose lifetime we don't control (comes from a pool), so
+  // it can outlive this class -- this is fine, however, because upon
+  // V4L2StatefulVideoDecoder destruction:
+  // - |cancelable_task_tracker_| is used to try to drop all such Tasks that
+  //   have not been serviced.
+  // - Any WeakPtr used for WaitOnceForCAPTUREQueueEvent() callbacks will be
+  //   invalidated.
+  // - A |wake_event_| is sent to break a hypothetical poll() wait;
+  //   WaitOnceForCAPTUREQueueEvent() should return immediately upon this
+  //   happening. (|wake_event_| is needed because we cannot rely on POSIX to
+  //   wake a thread that is blocked on a poll() upon the closing of an FD from
+  //   a different thread, concretely the "result is unspecified").
+  // - Both |device_fd_| and |wake_event_| are posted for destruction on said
+  //   background SequencedTaskRunner so that the FDs monitored by poll() are
+  //   guaranteed to stay alive until poll() returns, thus avoiding unspecified
+  //   behavior.
+  cancelable_task_tracker_.PostTask(
+      event_task_runner_.get(), FROM_HERE,
+      base::BindOnce(
+          &WaitOnceForCAPTUREQueueEvent, device_fd_.get(), wake_event_.get(),
+          base::BindPostTaskToCurrentDefault(base::BindOnce(
+              &V4L2StatefulVideoDecoder::TryAndDequeueCAPTUREQueueBuffers,
+              weak_this_))));
+}
+
+void V4L2StatefulVideoDecoder::TryAndDequeueCAPTUREQueueBuffers() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(CAPTURE_queue_) << "|CAPTURE_queue_| must be created at this point";
+
+  const v4l2_memory queue_type = CAPTURE_queue_->GetMemoryType();
+  DCHECK(queue_type == V4L2_MEMORY_MMAP || queue_type == V4L2_MEMORY_DMABUF);
+  const bool use_v4l2_allocated_buffers = !client_->GetVideoFramePool();
+  DCHECK((queue_type == V4L2_MEMORY_MMAP && use_v4l2_allocated_buffers) ||
+         (queue_type == V4L2_MEMORY_DMABUF && !use_v4l2_allocated_buffers));
+
+  bool success;
+  scoped_refptr<V4L2ReadableBuffer> dequeued_buffer;
+  for (std::tie(success, dequeued_buffer) = CAPTURE_queue_->DequeueBuffer();
+       success && dequeued_buffer;
+       std::tie(success, dequeued_buffer) = CAPTURE_queue_->DequeueBuffer()) {
+    VLOGF(3) << "There's at least one |CAPTURE_queue_| buffer ready.";
+    scoped_refptr<VideoFrame> video_frame = dequeued_buffer->GetVideoFrame();
+    CHECK(video_frame);
+
+    //  For a V4L2_MEMORY_MMAP |CAPTURE_queue_| we wrap |video_frame| to return
+    //  |dequeued_buffer| to |CAPTURE_queue_|, where they are "pooled". For a
+    //  V4L2_MEMORY_DMABUF |CAPTURE_queue_|, we don't do that because the
+    //  VideoFrames are pooled in |client_|s; TryAndEnqueueCAPTUREQueueBuffers()
+    //  will find them there.
+    if (queue_type == V4L2_MEMORY_MMAP) {
+      // TODO(mcasas): Consider carrying this gfx::Rect in the |video_frame|.
+      absl::optional<gfx::Rect> visible_rect = CAPTURE_queue_->GetVisibleRect();
+      CHECK(visible_rect.has_value());
+
+      auto wrapped_frame = VideoFrame::WrapVideoFrame(
+          video_frame, video_frame->format(), *visible_rect,
+          /*natural_size=*/visible_rect->size());
+
+      // Make sure |dequeued_buffer| stays alive and its reference released as
+      // |wrapped_frame| is destroyed, allowing -maybe- for it to get back to
+      // |CAPTURE_queue_|s free buffers.
+      wrapped_frame->AddDestructionObserver(base::BindPostTaskToCurrentDefault(
+          base::BindOnce([](scoped_refptr<V4L2ReadableBuffer> buffer) {},
+                         std::move(dequeued_buffer))));
+      CHECK(wrapped_frame);
+      output_cb_.Run(std::move(wrapped_frame));
+    } else {
+      output_cb_.Run(std::move(video_frame));
+    }
+  }
+  LOG_IF(ERROR, !success) << "Failed dequeueing from |CAPTURE_queue_|";
+  // Not an error if |dequeued_buffer| is empty, it's just an empty queue.
+
+  // There might be available resources for |CAPTURE_queue_| from previous
+  // cycles; try and make them available for the driver.
+  TryAndEnqueueCAPTUREQueueBuffers();
+
+  RearmCAPTUREQueueMonitoring();
+}
+
+void V4L2StatefulVideoDecoder::TryAndEnqueueCAPTUREQueueBuffers() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(CAPTURE_queue_) << "|CAPTURE_queue_| must be created at this point";
   const v4l2_memory queue_type = CAPTURE_queue_->GetMemoryType();
@@ -546,7 +726,7 @@ bool V4L2StatefulVideoDecoder::TryAndEnqueueCAPTUREQueueBuffers() {
     if (queue_type == V4L2_MEMORY_MMAP) {
       if (!std::move(*v4l2_buffer).QueueMMap()) {
         LOG(ERROR) << "CAPTURE queue failed to enqueue an MMAP buffer.";
-        return false;
+        return;
       }
     } else {
       // When using a V4L2_MEMORY_DMABUF queue, resource ownership is in our
@@ -555,17 +735,17 @@ bool V4L2StatefulVideoDecoder::TryAndEnqueueCAPTUREQueueBuffers() {
       // allocate conservatively). So, it's common that said frame pool gets
       // exhausted before we run out of |CAPTURE_queue_|s free "buffers" here.
       if (client_->GetVideoFramePool()->IsExhausted()) {
-        return true;
+        return;
       }
 
       auto video_frame = client_->GetVideoFramePool()->GetFrame();
+      CHECK(video_frame);
       if (!std::move(*v4l2_buffer).QueueDMABuf(std::move(video_frame))) {
         LOG(ERROR) << "CAPTURE queue failed to enqueue a DmaBuf buffer.";
-        return false;
+        return;
       }
     }
   }
-  return true;
 }
 
 }  // namespace media
