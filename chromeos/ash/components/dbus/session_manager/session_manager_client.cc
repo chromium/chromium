@@ -468,13 +468,10 @@ class SessionManagerClientImpl : public SessionManagerClient {
     dbus::MessageWriter writer(&method_call);
     writer.AppendString(cryptohome_id.account_id());
     writer.AppendString(mode);
-    dbus::Error error;
-    std::unique_ptr<dbus::Response> response =
-        blocking_method_caller_->CallMethodAndBlockWithError(&method_call,
-                                                             &error);
-    if (!response) {
+    auto result = blocking_method_caller_->CallMethodAndBlock(&method_call);
+    if (!result.has_value()) {
       LOG(ERROR) << "BlockingRequestBrowserDataMigration failed :"
-                 << error.name() << ":" << error.message();
+                 << result.error().name() << ":" << result.error().message();
       return false;
     }
 
@@ -488,13 +485,10 @@ class SessionManagerClientImpl : public SessionManagerClient {
         login_manager::kSessionManagerStartBrowserDataBackwardMigration);
     dbus::MessageWriter writer(&method_call);
     writer.AppendString(cryptohome_id.account_id());
-    dbus::Error error;
-    std::unique_ptr<dbus::Response> response =
-        blocking_method_caller_->CallMethodAndBlockWithError(&method_call,
-                                                             &error);
-    if (!response) {
+    auto result = blocking_method_caller_->CallMethodAndBlock(&method_call);
+    if (!result.has_value()) {
       LOG(ERROR) << "BlockingRequestBrowserDataBackwardMigration failed :"
-                 << error.name() << ":" << error.message();
+                 << result.error().name() << ":" << result.error().message();
       return false;
     }
 
@@ -874,21 +868,20 @@ class SessionManagerClientImpl : public SessionManagerClient {
     writer.AppendArrayOfBytes(
         reinterpret_cast<const uint8_t*>(descriptor_blob.data()),
         descriptor_blob.size());
-    dbus::Error error;
-    std::unique_ptr<dbus::Response> response =
-        blocking_method_caller_->CallMethodAndBlockWithError(&method_call,
-                                                             &error);
-    RetrievePolicyResponseType result = RetrievePolicyResponseType::SUCCESS;
-    if (error.IsValid()) {
-      result = GetPolicyResponseTypeByError(error.name());
+    auto result = blocking_method_caller_->CallMethodAndBlock(&method_call);
+    RetrievePolicyResponseType response_type =
+        RetrievePolicyResponseType::SUCCESS;
+    if (!result.has_value() && result.error().IsValid()) {
+      response_type = GetPolicyResponseTypeByError(result.error().name());
     }
-    if (result == RetrievePolicyResponseType::SUCCESS) {
-      ExtractPolicyResponseString(descriptor.account_type(), response.get(),
+    if (response_type == RetrievePolicyResponseType::SUCCESS) {
+      ExtractPolicyResponseString(descriptor.account_type(),
+                                  result.has_value() ? result->get() : nullptr,
                                   policy_out);
     } else {
       policy_out->clear();
     }
-    return result;
+    return response_type;
   }
 
   void CallStorePolicy(const login_manager::PolicyDescriptor& descriptor,
