@@ -214,42 +214,6 @@ bool IsExtensionDownload(DownloadUIModel* item) {
          download_crx_util::IsExtensionDownload(*item->GetDownloadItem());
 }
 
-bool IsHoldingSpaceIncognitoProfileIntegrationEnabled() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  return true;
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  return chromeos::BrowserParamsProxy::Get()
-      ->IsHoldingSpaceIncognitoProfileIntegrationEnabled();
-#else
-  return false;
-#endif
-}
-
-bool IsHoldingSpaceInProgressDownloadsNotificationSuppressionEnabled() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  return ash::features::
-      IsHoldingSpaceInProgressDownloadsNotificationSuppressionEnabled();
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  return chromeos::BrowserParamsProxy::Get()
-      ->IsHoldingSpaceInProgressDownloadsNotificationSuppressionEnabled();
-#else
-  return false;
-#endif
-}
-
-bool IsNotificationEligibleForSuppression(const DownloadUIModel* item) {
-  // Only notifications for in-progress downloads are eligible for suppression.
-  if (item->GetState() != download::DownloadItem::IN_PROGRESS)
-    return false;
-  // Notifications associated with dangerous or insecure downloads are not
-  // eligible for suppression as they likely contain important information.
-  if (item->IsDangerous() || item->IsInsecure())
-    return false;
-  // Otherwise notifications are assumed to be informational only and are
-  // therefore eligible for suppression.
-  return true;
-}
-
 }  // namespace
 
 DownloadItemNotification::DownloadItemNotification(
@@ -322,14 +286,6 @@ void DownloadItemNotification::DisablePopup() {
   if (notification_->priority() == message_center::LOW_PRIORITY)
     return;
 
-  // When the `notification_` is `suppressed_`, it is sufficient to simply
-  // update priority. Since the `notification_` should not be displayed to
-  // the user, no interaction with the `NotificationDisplayService` is needed.
-  if (suppressed_) {
-    notification_->set_priority(message_center::LOW_PRIORITY);
-    return;
-  }
-
   // Hides a notification from popup notifications if it's a pop-up, by
   // decreasing its priority and reshowing itself. Low-priority notifications
   // doesn't pop-up itself so this logic works as disabling pop-up.
@@ -342,11 +298,6 @@ void DownloadItemNotification::DisablePopup() {
 }
 
 void DownloadItemNotification::Close(bool by_user) {
-  if (suppressed_) {
-    DCHECK(!by_user);
-    return;
-  }
-
   closed_ = true;
 
   if (item_ && item_->IsDangerous() && !item_->IsDone()) {
@@ -506,24 +457,6 @@ void DownloadItemNotification::Update() {
 void DownloadItemNotification::UpdateNotificationData(bool display,
                                                       bool force_pop_up) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  // When holding space in-progress downloads notification suppression is
-  // enabled, eligible download notifications should be suppressed. Note that
-  // download notifications associated with an incognito profile are only
-  // suppressed if holding space incognito profile integration is also enabled.
-  if (!item_->profile()->IsIncognitoProfile() ||
-      IsHoldingSpaceIncognitoProfileIntegrationEnabled()) {
-    suppressed_ =
-        display && IsNotificationEligibleForSuppression(item_.get()) &&
-        IsHoldingSpaceInProgressDownloadsNotificationSuppressionEnabled();
-  } else {
-    suppressed_ = false;
-  }
-
-  if (suppressed_) {
-    CloseNotification();
-    return;
-  }
 
   if (item_->GetState() == download::DownloadItem::CANCELLED) {
     // Confirms that a download is cancelled by user action.

@@ -1272,13 +1272,6 @@ BASE_FEATURE(kHoldingSpaceCameraAppIntegration,
              "HoldingSpaceCameraAppIntegration",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables in-progress downloads notification suppression with the productivity
-// feature that aims to reduce context switching by enabling users to collect
-// content and transfer or access it later.
-BASE_FEATURE(kHoldingSpaceInProgressDownloadsNotificationSuppression,
-             "HoldingSpaceInProgressNotificationSuppression",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables holding space icon to be permanently displayed with extended file
 // expiration to increase predictability of the feature.
 BASE_FEATURE(kHoldingSpacePredictability,
@@ -3116,11 +3109,6 @@ bool IsHideShelfControlsInTabletModeEnabled() {
 
 bool IsHoldingSpaceCameraAppIntegrationEnabled() {
   return base::FeatureList::IsEnabled(kHoldingSpaceCameraAppIntegration);
-}
-
-bool IsHoldingSpaceInProgressDownloadsNotificationSuppressionEnabled() {
-  return base::FeatureList::IsEnabled(
-      kHoldingSpaceInProgressDownloadsNotificationSuppression);
 }
 
 bool IsHoldingSpacePredictabilityEnabled() {

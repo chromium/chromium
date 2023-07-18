@@ -578,13 +578,6 @@ void InjectBrowserInitParams(
   params->accepted_internal_ash_urls =
       ChromeWebUIControllerFactory::GetInstance()->GetListOfAcceptableURLs();
 
-  // Pass holding space feature flag state to lacros.
-  params->is_holding_space_incognito_profile_integration_enabled = true;
-  params
-      ->is_holding_space_in_progress_downloads_notification_suppression_enabled =
-      ash::features::
-          IsHoldingSpaceInProgressDownloadsNotificationSuppressionEnabled();
-
   std::vector<std::string> ash_capabilities = {
       kBrowserManagerReloadBrowserCapability,
       kSharedStoragePrefsCapability,

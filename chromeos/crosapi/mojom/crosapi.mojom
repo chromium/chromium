@@ -1209,19 +1209,21 @@ struct BrowserInitParams {
   [MinVersion=33]
   array<url.mojom.Url>? accepted_internal_ash_urls@32;
 
+  // Deprecated in M117. Enabled by default in M100.
   // Whether incognito profile integration is enabled with the feature that aims
   // to reduce context switching by enabling users to collect content and
   // transfer or access it later.
   // See `ash::features::IsHoldingSpaceIncognitoProfileIntegrationEnabled()`.
   [MinVersion=34]
-  bool is_holding_space_incognito_profile_integration_enabled@33;
+  bool is_holding_space_incognito_profile_integration_enabled_deprecated@33;
 
+  // Deprecated in M117. Never enabled.
   // Whether in-progress downloads notification suppression is enabled with the
   // feature that aims to reduce context switching by enabling users to collect
   // content and transfer or access it later.
   // See `ash::features::IsHoldingSpaceInProgressDownloadsNotificationSuppressionEnabled()`.
   [MinVersion=34]
-  bool is_holding_space_in_progress_downloads_notification_suppression_enabled@34;
+  bool is_holding_space_in_progress_downloads_notification_suppression_enabled_deprecated@34;
 
   // Whether the device is either enterprise managed or in demo mode.
   [MinVersion=35]

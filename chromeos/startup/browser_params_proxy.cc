@@ -201,18 +201,6 @@ BrowserParamsProxy::AcceptedInternalAshUrls() const {
   return BrowserInitParams::Get()->accepted_internal_ash_urls;
 }
 
-bool BrowserParamsProxy::IsHoldingSpaceIncognitoProfileIntegrationEnabled()
-    const {
-  return BrowserInitParams::Get()
-      ->is_holding_space_incognito_profile_integration_enabled;
-}
-
-bool BrowserParamsProxy::
-    IsHoldingSpaceInProgressDownloadsNotificationSuppressionEnabled() const {
-  return BrowserInitParams::Get()
-      ->is_holding_space_in_progress_downloads_notification_suppression_enabled;
-}
-
 bool BrowserParamsProxy::IsDeviceEnterprisedManaged() const {
   return BrowserInitParams::Get()->is_device_enterprised_managed;
 }

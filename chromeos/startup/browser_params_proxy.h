@@ -85,10 +85,6 @@ class COMPONENT_EXPORT(CHROMEOS_STARTUP) BrowserParamsProxy {
 
   const absl::optional<std::vector<GURL>>& AcceptedInternalAshUrls() const;
 
-  bool IsHoldingSpaceIncognitoProfileIntegrationEnabled() const;
-
-  bool IsHoldingSpaceInProgressDownloadsNotificationSuppressionEnabled() const;
-
   bool IsDeviceEnterprisedManaged() const;
 
   crosapi::mojom::BrowserInitParams::DeviceType DeviceType() const;
