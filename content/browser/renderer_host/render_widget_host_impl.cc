@@ -902,6 +902,12 @@ void RenderWidgetHostImpl::WasShown(
   // resize from SynchronizeVisualProperties is usually processed before the
   // renderer is painted.
   SynchronizeVisualProperties();
+
+  if (synthetic_gesture_controller_) {
+    // Synthetic gestures queued while hidden are deferred until the widget
+    // becomes visible.
+    synthetic_gesture_controller_->StartIfNeeded();
+  }
 }
 
 void RenderWidgetHostImpl::RequestSuccessfulPresentationTimeForNextFrame(
@@ -3660,6 +3666,10 @@ bool RenderWidgetHostImpl::HasGestureStopped() {
   }
 
   return true;
+}
+
+bool RenderWidgetHostImpl::IsHidden() const {
+  return is_hidden_;
 }
 
 void RenderWidgetHostImpl::DidProcessFrame(uint32_t frame_token,

@@ -35,4 +35,8 @@ void SyntheticGesture::DidQueue(
   dispatching_controller_ = controller;
 }
 
+bool SyntheticGesture::IsFromDevToolsDebugger() const {
+  return params_->from_devtools_debugger;
+}
+
 }  // namespace content

@@ -69,6 +69,8 @@ class CONTENT_EXPORT SyntheticGesture {
   // Called when the gesture is queued with a SyntheticGestureController.
   void DidQueue(base::WeakPtr<SyntheticGestureController> controller);
 
+  bool IsFromDevToolsDebugger() const;
+
  protected:
   // This is null until the gesture is queued with a controller. It must be set
   // before calling ForwardInputEvents. A gesture can cause the destruction of
