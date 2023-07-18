@@ -5646,7 +5646,6 @@ source_set("unit_tests") {
     "power/ml/user_activity_ukm_logger_helpers_unittest.cc",
     "power/ml/user_activity_ukm_logger_unittest.cc",
     "power/power_data_collector_unittest.cc",
-    "power/power_metrics_reporter_unittest.cc",
     "power/renderer_freezer_unittest.cc",
     "power/smart_charging/smart_charging_manager_unittest.cc",
     "power/smart_charging/smart_charging_ukm_logger_unittest.cc",

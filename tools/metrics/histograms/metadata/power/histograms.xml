@@ -1765,36 +1765,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Power.IdleScreenOffCountDaily" units="count"
-    expires_after="2022-05-01">
-  <owner>tbroch@chromium.org</owner>
-  <owner>napper@chromium.org</owner>
-  <summary>
-    Number of times that that the screen has been turned off in response to user
-    inactivity, reported daily. The count is accumulated through the day,
-    spanning reboots, and sent once the system clock indicates that a full day
-    or more has passed since the last report. If the system is suspended or off
-    for more than a day, the current count will be reported immediately the next
-    time the system boots, but the skipped days will not be reported. Chrome OS
-    only.
-  </summary>
-</histogram>
-
-<histogram name="Power.IdleSuspendCountDaily" units="count"
-    expires_after="2022-05-01">
-  <owner>tbroch@chromium.org</owner>
-  <owner>napper@chromium.org</owner>
-  <summary>
-    Number of times that that the system has suspended in response to user
-    inactivity, reported daily. The count is accumulated through the day,
-    spanning reboots, and sent once the system clock indicates that a full day
-    or more has passed since the last report. If the system is suspended or off
-    for more than a day, the current count will be reported immediately the next
-    time the system boots, but the skipped days will not be reported. Chrome OS
-    only.
-  </summary>
-</histogram>
-
 <histogram name="Power.IdleTimeAfterDimOnAC" units="ms"
     expires_after="2022-04-24">
   <owner>tbroch@chromium.org</owner>
@@ -1919,21 +1889,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     The level of the keyboard backlight as a percentage. Sampled every 30
     seconds.
-  </summary>
-</histogram>
-
-<histogram name="Power.LidClosedSuspendCountDaily" units="count"
-    expires_after="2021-10-10">
-  <owner>puthik@chromium.org</owner>
-  <owner>chromeos-platform-power@google.com</owner>
-  <summary>
-    Number of times that that the system has suspended in response to its lid
-    being closed, reported daily. The count is accumulated through the day,
-    spanning reboots, and sent once the system clock indicates that a full day
-    or more has passed since the last report. If the system is suspended or off
-    for more than a day, the current count will be reported immediately the next
-    time the system boots, but the skipped days will not be reported. Chrome OS
-    only.
   </summary>
 </histogram>
 

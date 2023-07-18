@@ -2776,15 +2776,6 @@ inline constexpr char kNetworkThrottlingEnabled[] = "net.throttling_enabled";
 // ash::PowerMetricsReporter.
 inline constexpr char kPowerMetricsDailySample[] = "power.metrics.daily_sample";
 
-// Integer prefs used to back event counts reported by
-// ash::PowerMetricsReporter.
-inline constexpr char kPowerMetricsIdleScreenOffCount[] =
-    "power.metrics.idle_screen_off_count";
-inline constexpr char kPowerMetricsIdleSuspendCount[] =
-    "power.metrics.idle_suspend_count";
-inline constexpr char kPowerMetricsLidClosedSuspendCount[] =
-    "power.metrics.lid_closed_suspend_count";
-
 // Key for list of users that should be reported.
 inline constexpr char kReportingUsers[] = "reporting_users";
 

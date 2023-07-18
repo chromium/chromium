@@ -928,6 +928,15 @@ const char kUnifiedConsentMigrationState[] = "unified_consent.migration_state";
 const char kPasswordsGroupingInfoRequested[] =
     "password_manager.passwords_grouping_info_requested";
 
+// Deprecated 07/2023.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+const char kPowerMetricsIdleScreenOffCount[] =
+    "power.metrics.idle_screen_off_count";
+const char kPowerMetricsIdleSuspendCount[] = "power.metrics.idle_suspend_count";
+const char kPowerMetricsLidClosedSuspendCount[] =
+    "power.metrics.lid_closed_suspend_count";
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1339,6 +1348,13 @@ void RegisterProfilePrefsForMigration(
 
   // Deprecated 07/2023
   registry->RegisterBooleanPref(kPasswordsGroupingInfoRequested, false);
+
+// Deprecated 07/2023.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  registry->RegisterIntegerPref(kPowerMetricsIdleScreenOffCount, 0);
+  registry->RegisterIntegerPref(kPowerMetricsIdleSuspendCount, 0);
+  registry->RegisterIntegerPref(kPowerMetricsLidClosedSuspendCount, 0);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 }  // namespace
 
@@ -2491,6 +2507,13 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
 
   // Added 07/2023.
   profile_prefs->ClearPref(kPasswordsGroupingInfoRequested);
+
+  // Added 07/2023.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  profile_prefs->ClearPref(kPowerMetricsIdleScreenOffCount);
+  profile_prefs->ClearPref(kPowerMetricsIdleSuspendCount);
+  profile_prefs->ClearPref(kPowerMetricsLidClosedSuspendCount);
+#endif
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS
