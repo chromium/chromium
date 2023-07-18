@@ -4,6 +4,7 @@ Version: 0
 License: University of Illinois/NCSA Open Source
 License File: LICENSE.TXT
 Security Critical: no
+Shipped: no
 
 Description:
 Library for in-process coverage-guided fuzz testing (fuzzing) of other
