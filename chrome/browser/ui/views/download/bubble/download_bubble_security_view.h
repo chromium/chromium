@@ -71,6 +71,9 @@ class DownloadBubbleSecurityView : public views::View {
   void UpdateButtons();
   void UpdateProgressBar();
 
+  // Reset fields that increase the width of the bubble.
+  void ClearWideFields();
+
   // |is_secondary_button| checks if the command/action originated from the
   // secondary button. Returns whether the dialog should close due to this
   // command.

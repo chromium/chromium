@@ -184,9 +184,8 @@ class ParagraphsView : public views::View {
 
     if (!paragraphs_.empty()) {
       paragraphs_.back()->SetProperty(views::kMarginsKey, gfx::Insets());
+      PreferredSizeChanged();
     }
-
-    PreferredSizeChanged();
   }
 
   int text_context_ = views::style::CONTEXT_LABEL;
@@ -350,6 +349,7 @@ void DownloadBubbleSecurityView::UpdateSecondaryIconAndText() {
   // instead give it a width that's the minimum we want it to have. Then the
   // Layout will stretch it back out into any additional space available.
   secondary_styled_label_->SizeToFit(GetMinimumLabelWidth());
+  secondary_styled_label_->PreferredSizeChanged();
 }
 
 void DownloadBubbleSecurityView::AddIconAndText() {
@@ -614,6 +614,28 @@ void DownloadBubbleSecurityView::UpdateProgressBar() {
   progress_bar_->SetValue(-1);
 }
 
+void DownloadBubbleSecurityView::ClearWideFields() {
+  bubble_delegate_->SetButtonLabel(ui::DIALOG_BUTTON_CANCEL, std::u16string());
+  bubble_delegate_->SetButtonLabel(ui::DIALOG_BUTTON_OK, std::u16string());
+  paragraphs_->SetText(std::u16string());
+  // Setting an extremely low value here will force the labels to break text
+  // into a large number of labels and lay them out, which is wasteful. We set a
+  // conservative value of 200 here, which is small enough to ensure the bubble
+  // can shrink to minimum width, but not so small as to cause performance
+  // problems.
+  CHECK_GE(views::LayoutProvider::Get()->GetDistanceMetric(
+               views::DistanceMetric::DISTANCE_BUBBLE_PREFERRED_WIDTH),
+           200);
+  paragraphs_->SizeToFit(200);
+  secondary_styled_label_->SetText(std::u16string());
+  secondary_styled_label_->SizeToFit(200);
+
+  title_->SetText(std::u16string());
+  deep_scanning_link_->SetText(std::u16string());
+
+  PreferredSizeChanged();
+}
+
 void DownloadBubbleSecurityView::RecordWarningActionTime(
     bool is_secondary_button) {
   DCHECK(warning_time_.has_value());
@@ -638,11 +660,13 @@ void DownloadBubbleSecurityView::UpdateSecurityView(
       DownloadItemModel::Wrap(download_row_view_->model()->GetDownloadItem());
   did_log_action_ = false;
 
-  // Subtle: Some of the security subpage views (like the prompt for deep
-  // scanning) use buttons that are too wide for a small dialog. Our multiline
-  // labels need to know the width of the bubble in order to size themselves
-  // appropriately (see `GetMinimumLabelWidth`). This means that we must update
-  // the buttons before the primary or secondary text.
+  // Our multiline labels need to know the width of the bubble in order to size
+  // themselves appropriately (see `GetMinimumLabelWidth`). This means that we
+  // must reset fields that increase the width of the bubble before update. This
+  // avoids problems where, e.g., both the buttons and the text used to be wide
+  // but aren't anymore. A single round of updates could still have a wide
+  // bubble.
+  ClearWideFields();
   UpdateButtons();
   UpdateHeader();
   UpdateIconAndText();
