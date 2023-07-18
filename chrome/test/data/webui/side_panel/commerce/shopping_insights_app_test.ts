@@ -11,6 +11,7 @@ import {ShoppingInsightsAppElement} from 'chrome://shopping-insights-side-panel.
 import {ShoppingListApiProxyImpl} from 'chrome://shopping-insights-side-panel.top-chrome/shared/commerce/shopping_list_api_proxy.js';
 import {PageCallbackRouter, PriceInsightsInfo, PriceInsightsInfo_PriceBucket, ProductInfo} from 'chrome://shopping-insights-side-panel.top-chrome/shared/shopping_list.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {fakeMetricsPrivate, MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
@@ -18,6 +19,7 @@ import {isVisible} from 'chrome://webui-test/test_util.js';
 suite('ShoppingInsightsAppTest', () => {
   let shoppingInsightsApp: ShoppingInsightsAppElement;
   const shoppingListApi = TestMock.fromClass(ShoppingListApiProxyImpl);
+  let metrics: MetricsTracker;
 
   const productInfo: ProductInfo = {
     title: 'Product Foo',
@@ -102,6 +104,8 @@ suite('ShoppingInsightsAppTest', () => {
     ShoppingListApiProxyImpl.setInstance(shoppingListApi);
 
     shoppingInsightsApp = document.createElement('shopping-insights-app');
+
+    metrics = fakeMetricsPrivate();
   });
 
   test('HasBothRangeAndHistoryMultipleOptions', async () => {
@@ -163,6 +167,11 @@ suite('ShoppingInsightsAppTest', () => {
     button.click();
     const url = await shoppingListApi.whenCalled('openUrlInNewTab');
     assertEquals('https://foo.com/jackpot', url.url);
+    assertEquals(
+        1,
+        metrics.count(
+            'Commerce.PriceInsights.BuyingOptionsClicked',
+            PriceInsightsInfo_PriceBucket.kLow));
 
     const commentRow = historySection.querySelector('insights-comment-row');
     assertTrue(!!commentRow);
@@ -181,6 +190,8 @@ suite('ShoppingInsightsAppTest', () => {
         loadTimeData.getString('feedback'), feedbackButton.textContent!.trim());
     feedbackButton.click();
     assertEquals(1, shoppingListApi.getCallCount('showFeedback'));
+    assertEquals(
+        1, metrics.count('Commerce.PriceInsights.InlineFeedbackLinkClicked'));
 
     assertTrue(isVisible(shoppingInsightsApp.shadowRoot!.querySelector(
         'shopping-insights-history-graph')));
@@ -253,6 +264,11 @@ suite('ShoppingInsightsAppTest', () => {
     buyOption.click();
     const url = await shoppingListApi.whenCalled('openUrlInNewTab');
     assertEquals('https://foo.com/jackpot', url.url);
+    assertEquals(
+        1,
+        metrics.count(
+            'Commerce.PriceInsights.BuyingOptionsClicked',
+            PriceInsightsInfo_PriceBucket.kHigh));
 
     assertFalse(isVisible(titleSection.querySelector('insights-comment-row')));
 

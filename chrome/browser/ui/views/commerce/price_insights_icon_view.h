@@ -24,6 +24,18 @@ class PriceInsightsIconView : public PageActionIconView {
       Profile* profile);
   ~PriceInsightsIconView() override;
 
+  // Enum for logging the price insights icon label. Each label we ever use
+  // should have a separate enum even if they are semantically similar (e.g.
+  // "Price is low" vs. "Great price") since it could have a nontrivial effect
+  // on the click-through rate. These values are persisted to logs. Entries
+  // should not be renumbered and numeric values should never be reused.
+  enum class PriceInsightsIconLabelType {
+    kNone = 0,
+    kPriceIsLow = 1,
+    kPriceIsHigh = 2,
+    kMaxValue = kPriceIsHigh,
+  };
+
   // PageActionIconView:
   views::BubbleDialogDelegate* GetBubble() const override;
 
@@ -43,10 +55,13 @@ class PriceInsightsIconView : public PageActionIconView {
   bool ShouldShow() const;
 
   // Show page action label if it meets the feature engagement requirements.
-  void MaybeShowPageActionLabel();
+  // Return true if the label is really shown.
+  bool MaybeShowPageActionLabel();
 
-  // Return whether the page is qualified for the page action label.
-  bool QualifiesForPageActionLabel();
+  // Return the page action label. If no label should be shown, return
+  // PriceInsightsIconLabelType::kNone.
+  PriceInsightsIconView::PriceInsightsIconLabelType
+  GetPriceInsightsIconLabelType();
 
   // Hides the page action label.
   void HidePageActionLabel();
@@ -61,6 +76,9 @@ class PriceInsightsIconView : public PageActionIconView {
   // Boolean that tracks whether we should extend the duration for which the
   // label is shown when it animates in.
   bool should_extend_label_shown_duration_ = false;
+
+  // Last shown label type.
+  PriceInsightsIconView::PriceInsightsIconLabelType last_shown_label_type_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_COMMERCE_PRICE_INSIGHTS_ICON_VIEW_H_

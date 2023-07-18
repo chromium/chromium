@@ -62,6 +62,7 @@ export class ShoppingInsightsHistoryGraphElement extends PolymerElement {
   locale: string;
   currency: string;
   private points: Array<{date: Date, price: number}>;
+  private isGraphInteracted_: boolean = false;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -201,6 +202,11 @@ export class ShoppingInsightsHistoryGraphElement extends PolymerElement {
       if (mouseX < xRange[0] || mouseX > xRange[1] || mouseY < yRange[1] ||
           mouseY > yRange[0]) {
         return;
+      }
+      if (!this.isGraphInteracted_) {
+        chrome.metricsPrivate.recordUserAction(
+            'Commerce.PriceInsights.HistoryGraphInteraction');
+        this.isGraphInteracted_ = true;
       }
       const nearestIndex =
           this.points.reduce((minIndex, _, currentIndex, array) => {

@@ -7,7 +7,7 @@ import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '../strings.m.js';
 
 import {ShoppingListApiProxy, ShoppingListApiProxyImpl} from '//shopping-insights-side-panel.top-chrome/shared/commerce/shopping_list_api_proxy.js';
-import {PriceInsightsInfo} from '//shopping-insights-side-panel.top-chrome/shared/shopping_list.mojom-webui.js';
+import {PriceInsightsInfo, PriceInsightsInfo_PriceBucket} from '//shopping-insights-side-panel.top-chrome/shared/shopping_list.mojom-webui.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './catalog_attributes_row.html.js';
@@ -33,6 +33,10 @@ export class CatalogAttributesRow extends PolymerElement {
 
   private openJackpot_() {
     this.shoppingApi_.openUrlInNewTab(this.priceInsightsInfo.jackpot);
+    chrome.metricsPrivate.recordEnumerationValue(
+        'Commerce.PriceInsights.BuyingOptionsClicked',
+        this.priceInsightsInfo.bucket,
+        PriceInsightsInfo_PriceBucket.MAX_VALUE + 1);
   }
 }
 

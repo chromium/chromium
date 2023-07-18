@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/commerce/price_insights_icon_view.h"
 
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -131,6 +132,10 @@ IN_PROC_BROWSER_TEST_F(PriceInsightsIconViewInteractiveTest,
   EXPECT_CALL(*mock_shopping_service_, GetProductInfoForUrl);
   EXPECT_CALL(*mock_shopping_service_, GetPriceInsightsInfoForUrl);
 
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectTotalCount(
+      "Commerce.PriceInsights.OmniboxIconClickedAfterLabelShown", 0);
+
   RunTestSequence(
       InstrumentTab(kShoppingTab),
       NavigateWebContents(kShoppingTab,
@@ -141,6 +146,9 @@ IN_PROC_BROWSER_TEST_F(PriceInsightsIconViewInteractiveTest,
       // Click on the action chip to open the side panel
       PressButton(kPriceInsightsChipElementId),
       WaitForShow(kSidePanelElementId), FlushEvents());
+
+  histogram_tester.ExpectTotalCount(
+      "Commerce.PriceInsights.OmniboxIconClickedAfterLabelShown", 1);
 }
 
 class PriceInsightsIconViewEngagementTest
@@ -167,6 +175,10 @@ class PriceInsightsIconViewEngagementTest
   }
 
   void VerifyIconExpandedOncePerDay() {
+    base::HistogramTester histogram_tester;
+    histogram_tester.ExpectTotalCount(
+        "Commerce.PriceInsights.OmniboxIconShownLabel", 0);
+
     ON_CALL(*mock_tab_helper_, ShouldShowPriceInsightsIconView)
         .WillByDefault(testing::Return(true));
     RunTestSequence(
@@ -176,6 +188,11 @@ class PriceInsightsIconViewEngagementTest
         FlushEvents(), EnsurePresent(kPriceInsightsChipElementId),
         CheckViewProperty(kPriceInsightsChipElementId,
                           &PriceInsightsIconView::ShouldShowLabel, true));
+
+    histogram_tester.ExpectTotalCount(
+        "Commerce.PriceInsights.OmniboxIconShownLabel", 1);
+    histogram_tester.ExpectBucketCount(
+        "Commerce.PriceInsights.OmniboxIconShownLabel", 1, 1);
 
     ON_CALL(*mock_tab_helper_, ShouldShowPriceInsightsIconView)
         .WillByDefault(testing::Return(false));
@@ -193,12 +210,22 @@ class PriceInsightsIconViewEngagementTest
         CheckViewProperty(kPriceInsightsChipElementId,
                           &PriceInsightsIconView::ShouldShowLabel, false));
 
+    histogram_tester.ExpectTotalCount(
+        "Commerce.PriceInsights.OmniboxIconShownLabel", 2);
+    histogram_tester.ExpectBucketCount(
+        "Commerce.PriceInsights.OmniboxIconShownLabel", 0, 1);
+
     ON_CALL(*mock_tab_helper_, ShouldShowPriceInsightsIconView)
         .WillByDefault(testing::Return(false));
     RunTestSequence(
         NavigateWebContents(kShoppingTab,
                             embedded_test_server()->GetURL(kNonShoppingURL)),
         FlushEvents(), EnsureNotPresent(kPriceInsightsChipElementId));
+
+    EXPECT_THAT(
+        histogram_tester.GetAllSamples(
+            "Commerce.PriceInsights.OmniboxIconShownLabel"),
+        BucketsAre(base::Bucket(0, 1), base::Bucket(1, 1), base::Bucket(2, 0)));
   }
 
  private:
