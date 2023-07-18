@@ -258,6 +258,11 @@ class ASH_EXPORT DeskBarViewBase : public views::View,
   // is ended.
   bool HandleReleaseEvent(DeskMiniView* mini_view,
                           const ui::LocatedEvent& event);
+  // Handle the click event from a desk preview.
+  void HandleClickEvent(DeskMiniView* mini_view);
+
+  // Fires when `desk_activation_timer_` is over.
+  void OnActivateDeskTimer(const base::Uuid& uuid);
 
   // Finalize any unfinished drag & drop. Initialize a new drag proxy.
   void InitDragDesk(DeskMiniView* mini_view,
@@ -464,6 +469,9 @@ class ASH_EXPORT DeskBarViewBase : public views::View,
   // ScrollView callback subscriptions.
   base::CallbackListSubscription on_contents_scrolled_subscription_;
   base::CallbackListSubscription on_contents_scroll_ended_subscription_;
+
+  // A timer to wait on desk activation before desk bar animation is finished.
+  base::OneShotTimer desk_activation_timer_;
 
   raw_ptr<aura::Window> root_;
 };

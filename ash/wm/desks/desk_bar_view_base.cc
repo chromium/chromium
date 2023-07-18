@@ -31,6 +31,7 @@
 #include "ash/wm/overview/overview_utils.h"
 #include "ash/wm/work_area_insets.h"
 #include "base/check.h"
+#include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/uuid.h"
@@ -38,6 +39,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
+#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/haptic_touchpad_effects.h"
 #include "ui/events/event_observer.h"
@@ -53,6 +55,9 @@
 namespace ash {
 
 namespace {
+
+// Duration of delay when Bento Bar Desk Button is clicked.
+constexpr base::TimeDelta kAnimationDelayDuration = base::Milliseconds(100);
 
 OverviewHighlightController* GetHighlightController() {
   auto* overview_controller = Shell::Get()->overview_controller();
@@ -776,11 +781,17 @@ void DeskBarViewBase::Layout() {
 }
 
 bool DeskBarViewBase::OnMousePressed(const ui::MouseEvent& event) {
+  if (desk_activation_timer_.IsRunning()) {
+    return false;
+  }
   DeskNameView::CommitChanges(GetWidget());
   return false;
 }
 
 void DeskBarViewBase::OnGestureEvent(ui::GestureEvent* event) {
+  if (desk_activation_timer_.IsRunning()) {
+    return;
+  }
   switch (event->type()) {
     case ui::ET_GESTURE_LONG_PRESS:
     case ui::ET_GESTURE_LONG_TAP:
@@ -865,6 +876,9 @@ int DeskBarViewBase::GetMiniViewIndex(const DeskMiniView* mini_view) const {
 
 void DeskBarViewBase::OnNewDeskButtonPressed(
     DesksCreationRemovalSource desks_creation_removal_source) {
+  if (desk_activation_timer_.IsRunning()) {
+    return;
+  }
   auto* controller = DesksController::Get();
   if (!controller->CanCreateDesks()) {
     return;
@@ -1086,6 +1100,9 @@ void DeskBarViewBase::OnHoverStateMayHaveChanged() {
 
 void DeskBarViewBase::OnGestureTap(const gfx::Rect& screen_rect,
                                    bool is_long_gesture) {
+  if (desk_activation_timer_.IsRunning()) {
+    return;
+  }
   for (auto* mini_view : mini_views_) {
     mini_view->OnWidgetGestureTap(screen_rect, is_long_gesture);
   }
@@ -1210,6 +1227,28 @@ bool DeskBarViewBase::HandleReleaseEvent(DeskMiniView* mini_view,
       NOTREACHED();
   }
   return true;
+}
+
+void DeskBarViewBase::OnActivateDeskTimer(const base::Uuid& uuid) {
+  auto* controller = DesksController::Get();
+
+  if (Desk* desk = controller->GetDeskByUuid(uuid)) {
+    controller->ActivateDesk(desk, DesksSwitchSource::kMiniViewButton);
+  }
+}
+
+void DeskBarViewBase::HandleClickEvent(DeskMiniView* mini_view) {
+  // A timer to delay closing the desk bar.
+  if (!ui::ScopedAnimationDurationScaleMode::is_zero()) {
+    desk_activation_timer_.Start(
+        FROM_HERE,
+        ui::ScopedAnimationDurationScaleMode::duration_multiplier() *
+            kAnimationDelayDuration,
+        base::BindOnce(&DeskBarViewBase::OnActivateDeskTimer,
+                       base::Unretained(this), mini_view->desk()->uuid()));
+  } else {
+    OnActivateDeskTimer(mini_view->desk()->uuid());
+  }
 }
 
 void DeskBarViewBase::InitDragDesk(DeskMiniView* mini_view,
@@ -1733,6 +1772,9 @@ int DeskBarViewBase::GetAdjustedUncroppedScrollPosition(int position) const {
 }
 
 void DeskBarViewBase::OnLibraryButtonPressed() {
+  if (desk_activation_timer_.IsRunning()) {
+    return;
+  }
   RecordLoadSavedDeskLibraryHistogram();
 
   if (type_ == Type::kDeskButton) {
