@@ -91,6 +91,13 @@ class ASH_EXPORT UserEducationDelegate {
   virtual void LaunchSystemWebAppAsync(const AccountId& account_id,
                                        SystemWebAppType system_web_app_type,
                                        int64_t display_id) = 0;
+
+  // Returns true if there is a currently running tutorial for the user
+  // associated with `account_id`. If `tutorial_id` is specified, specifically
+  // returns whether *that* tutorial is running.
+  virtual bool IsRunningTutorial(
+      const AccountId& account_id,
+      absl::optional<TutorialId> tutorial_id = absl::nullopt) const = 0;
 };
 
 }  // namespace ash

@@ -51,6 +51,9 @@ class ChromeUserEducationDelegate : public ash::UserEducationDelegate,
   void LaunchSystemWebAppAsync(const AccountId& account_id,
                                ash::SystemWebAppType system_web_app_type,
                                int64_t display_id) override;
+  bool IsRunningTutorial(const AccountId& account_id,
+                         absl::optional<ash::TutorialId> tutorial_id =
+                             absl::nullopt) const override;
 
   // ProfileManagerObserver:
   void OnProfileAdded(Profile* profile) override;

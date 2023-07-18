@@ -14,6 +14,7 @@
 #include "components/user_education/common/help_bubble.h"
 #include "components/user_education/common/tutorial_description.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -68,6 +69,11 @@ class ASH_EXPORT MockUserEducationDelegate : public UserEducationDelegate {
                SystemWebAppType system_web_app_type,
                int64_t display_id),
               (override));
+  MOCK_METHOD(bool,
+              IsRunningTutorial,
+              (const AccountId& account_id,
+               absl::optional<TutorialId> tutorial_id),
+              (const, override));
 };
 
 }  // namespace ash

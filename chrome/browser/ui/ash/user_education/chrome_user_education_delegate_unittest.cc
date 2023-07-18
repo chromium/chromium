@@ -198,7 +198,7 @@ TEST_F(ChromeUserEducationDelegateTest, StartAndAbortTutorial) {
   // Verify the tutorial is not running.
   user_education::TutorialService& tutorial_service =
       UserEducationServiceFactory::GetForProfile(profile())->tutorial_service();
-  EXPECT_FALSE(tutorial_service.IsRunningTutorial());
+  EXPECT_FALSE(delegate()->IsRunningTutorial(account_id()));
 
   // Attempt to start the tutorial.
   UNCALLED_MOCK_CALLBACK(base::OnceClosure, aborted_callback);
@@ -210,10 +210,14 @@ TEST_F(ChromeUserEducationDelegateTest, StartAndAbortTutorial) {
   // Confirm the tutorial is running.
   EXPECT_TRUE(tutorial_service.IsRunningTutorial());
 
+  // Verify the running tutorial's ID.
+  EXPECT_TRUE(
+      delegate()->IsRunningTutorial(account_id(), ash::TutorialId::kTest));
+
   // Abort the tutorial and expect the callback to be called.
   EXPECT_CALL_IN_SCOPE(aborted_callback, Run,
                        delegate()->AbortTutorial(account_id()));
-  EXPECT_FALSE(tutorial_service.IsRunningTutorial());
+  EXPECT_FALSE(delegate()->IsRunningTutorial(account_id()));
 }
 
 // Verifies that `AbortTutorial()` will only abort the tutorial associated with
