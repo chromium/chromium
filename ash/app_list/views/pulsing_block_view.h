@@ -21,7 +21,9 @@ class PulsingBlockView : public views::View {
  public:
   // Constructs a PulsingBlockView of |size|. Starts the pulsing animation after
   // a |animation_delay|.
-  PulsingBlockView(const gfx::Size& size, base::TimeDelta animation_delay);
+  PulsingBlockView(const gfx::Size& size,
+                   base::TimeDelta animation_delay,
+                   float corner_radius);
 
   PulsingBlockView(const PulsingBlockView&) = delete;
   PulsingBlockView& operator=(const PulsingBlockView&) = delete;
@@ -48,6 +50,7 @@ class PulsingBlockView : public views::View {
   // This field is not a raw_ptr<> because it was filtered by the rewriter
   // for: #addr-of
   RAW_PTR_EXCLUSION views::View* background_color_view_ = nullptr;
+
   const gfx::Size block_size_;
 };
 

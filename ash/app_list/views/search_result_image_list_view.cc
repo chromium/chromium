@@ -10,7 +10,6 @@
 #include <utility>
 #include <vector>
 
-#include "ash/app_list/app_list_model_provider.h"
 #include "ash/app_list/views/search_result_image_view.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -22,7 +21,6 @@
 #include "ui/compositor/layer.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/label.h"
-#include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/layout/table_layout_view.h"
@@ -93,11 +91,11 @@ SearchResultImageListView::SearchResultImageListView(
 
   for (size_t i = 0;
        i < SharedAppListConfig::instance().image_search_max_results(); ++i) {
-    image_views_.emplace_back(new SearchResultImageView(this));
-    image_views_.back()->SetPaintToLayer();
-    image_views_.back()->layer()->SetFillsBoundsOpaquely(false);
-    image_views_.back()->SetVisible(true);
-    image_view_container_->AddChildView(image_views_.back());
+    auto* image_view = image_view_container_->AddChildView(
+        std::make_unique<SearchResultImageView>(/*index=*/1, this));
+    image_view->SetPaintToLayer();
+    image_view->layer()->SetFillsBoundsOpaquely(false);
+    image_views_.push_back(image_view);
   }
 
   // TODO(crbug.com/1352636): replace mock results with real results.
@@ -229,7 +227,7 @@ int SearchResultImageListView::DoUpdate() {
 }
 
 void SearchResultImageListView::UpdateResultsVisibility(bool force_hide) {
-  SetVisible(num_results() > 0 && !force_hide);
+  SetVisible(!force_hide);
   for (size_t i = 0; i < image_views_.size(); ++i) {
     SearchResultImageView* result_view = GetResultViewAt(i);
     result_view->SetVisible(i < num_results() && !force_hide);

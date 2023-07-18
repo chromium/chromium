@@ -1364,7 +1364,8 @@ AppListItemView* AppsGridView::MaybeSwapPlaceholderAsset(size_t index) {
   if (should_animate_placeholder_swap) {
     PulsingBlockView* placeholder =
         items_container_->AddChildView(std::make_unique<PulsingBlockView>(
-            app_list_config_->grid_icon_size(), base::TimeDelta()));
+            app_list_config_->grid_icon_size(), base::TimeDelta(),
+            app_list_config_->grid_icon_dimension() / 2.f));
     placeholder->SetBoundsRect(view->bounds());
     placeholder->SetPaintToLayer();
     view->EnsureLayer();
@@ -1404,7 +1405,8 @@ void AppsGridView::UpdatePulsingBlockViews() {
     base::TimeDelta time = GetPulsingBlockAnimationDelayForIndex(
         pulsing_blocks_model_.view_size());
     auto view = std::make_unique<PulsingBlockView>(
-        app_list_config_->grid_icon_size(), time);
+        app_list_config_->grid_icon_size(), time,
+        app_list_config_->grid_icon_dimension() / 2.f);
     pulsing_blocks_model_.Add(view.get(), pulsing_blocks_model_.view_size());
     items_container_->AddChildView(std::move(view));
   }

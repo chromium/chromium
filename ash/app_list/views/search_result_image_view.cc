@@ -6,8 +6,10 @@
 
 #include <algorithm>
 #include <memory>
+#include <utility>
 
 #include "ash/app_list/model/search/search_result.h"
+#include "ash/app_list/views/pulsing_block_view.h"
 #include "ash/app_list/views/search_result_image_list_view.h"
 #include "ash/app_list/views/search_result_image_view_delegate.h"
 #include "ash/style/ash_color_id.h"
@@ -65,8 +67,9 @@ class ImagePreviewView : public views::ImageButton {
 }  // namespace
 
 SearchResultImageView::SearchResultImageView(
+    int index,
     SearchResultImageListView* list_view)
-    : list_view_(list_view) {
+    : index_(index), list_view_(list_view) {
   SetLayoutManager(std::make_unique<views::FillLayout>());
   result_image_ = AddChildView(std::make_unique<ImagePreviewView>());
   result_image_->SetCanProcessEventsWithinSubtree(false);
@@ -128,10 +131,27 @@ void SearchResultImageView::ConfigureLayoutForAvailableWidth(int width) {
   PreferredSizeChanged();
 }
 
+void SearchResultImageView::CreatePulsingBlockView() {
+  pulsing_block_view_ = AddChildView(std::make_unique<PulsingBlockView>(
+      size(), base::Milliseconds(index_ * 200), kRoundedCornerRadius));
+  pulsing_block_view_->SetCanProcessEventsWithinSubtree(false);
+  pulsing_block_view_->GetViewAccessibility().OverrideIsIgnored(true);
+}
+
 void SearchResultImageView::OnMetadataChanged() {
   if (!result() || result()->icon().icon.IsEmpty()) {
-    result_image_->SetImage(views::Button::STATE_NORMAL, gfx::ImageSkia());
+    result_image_->SetVisible(false);
+    if (result() && !pulsing_block_view_) {
+      CreatePulsingBlockView();
+    }
+
     return;
+  }
+
+  result_image_->SetVisible(true);
+  if (pulsing_block_view_) {
+    RemoveChildViewT(pulsing_block_view_.get());
+    pulsing_block_view_ = nullptr;
   }
 
   gfx::ImageSkia image = result()->icon().icon.Rasterize(GetColorProvider());

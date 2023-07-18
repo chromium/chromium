@@ -15,13 +15,14 @@ class ImageButton;
 }  // namespace views
 
 namespace ash {
+class PulsingBlockView;
 class SearchResultImageListView;
 
 // Displays a search result in the form of an unlabeled image.
 class ASH_EXPORT SearchResultImageView : public SearchResultBaseView {
  public:
   METADATA_HEADER(SearchResultImageView);
-  explicit SearchResultImageView(SearchResultImageListView* list_view);
+  SearchResultImageView(int index, SearchResultImageListView* list_view);
   SearchResultImageView(const SearchResultImageView&) = delete;
   SearchResultImageView& operator=(const SearchResultImageView&) = delete;
   ~SearchResultImageView() override;
@@ -39,17 +40,34 @@ class ASH_EXPORT SearchResultImageView : public SearchResultBaseView {
   // SearchResultBaseView overrides:
   void OnResultChanged() override;
 
+  // Creates a child pulsing block view as a placeholder.
+  void CreatePulsingBlockView();
+
+  // Returns true if the image view has a valid result and icon.
+  bool HasValidResultIcon();
+
   SearchResultImageListView* list_view() { return list_view_; }
+
+  PulsingBlockView* pulsing_block_view_for_test() const {
+    return pulsing_block_view_;
+  }
+  views::ImageButton* result_image_for_test() const { return result_image_; }
 
  private:
   // SearchResultObserver overrides:
   void OnMetadataChanged() override;
+
+  // The index of this view in its parent `list_view_`.
+  const int index_;
 
   // Owned by views hierarchy.
   raw_ptr<views::ImageButton> result_image_ = nullptr;
 
   // Parent list view. Owned by views hierarchy.
   raw_ptr<SearchResultImageListView, ExperimentalAsh> const list_view_;
+
+  // Child pulsing block view that is used as a placeholder.
+  raw_ptr<PulsingBlockView, ExperimentalAsh> pulsing_block_view_ = nullptr;
 
   // The preferred width of the image view which is used to calculate the
   // preferred size. This is set by the parent container view so that the image

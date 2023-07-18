@@ -280,6 +280,11 @@ void FileResult::OnThumbnailLoaded(const SkBitmap* bitmap,
 }
 
 void FileResult::UpdateIcon() {
+  // Do not set the default chromeos icon to the image search result.
+  if (display_type() == DisplayType::kImage) {
+    return;
+  }
+
   // DarkLightModeController might be nullptr in tests.
   auto* dark_light_mode_controller = ash::DarkLightModeController::Get();
   const bool dark_background = dark_light_mode_controller &&
