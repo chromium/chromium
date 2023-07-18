@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/browser/ui/views/tabs/tab_slot_controller.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/pointer/touch_ui_controller.h"
@@ -23,6 +24,7 @@
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/gfx/vector_icon_types.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
@@ -34,9 +36,14 @@
 #include "ui/aura/env.h"
 #endif
 
+namespace {
+constexpr int kIconSize = 16;
+constexpr gfx::Size kButtonSize = {28, 28};
+}  // namespace
+
 TabCloseButton::TabCloseButton(PressedCallback pressed_callback,
                                MouseEventCallback mouse_event_callback)
-    : views::ImageButton(std::move(pressed_callback)),
+    : views::LabelButton(std::move(pressed_callback)),
       mouse_event_callback_(std::move(mouse_event_callback)) {
   SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
   SetAccessibleName(l10n_util::GetStringUTF16(IDS_ACCNAME_CLOSE));
@@ -45,6 +52,8 @@ TabCloseButton::TabCloseButton(PressedCallback pressed_callback,
   views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
   views::InkDrop::Get(this)->SetHighlightOpacity(0.16f);
   views::InkDrop::Get(this)->SetVisibleOpacity(0.14f);
+
+  SetImageCentered(true);
 
   // Disable animation so that the hover indicator shows up immediately to help
   // avoid mis-clicks.
@@ -71,9 +80,7 @@ TabCloseButton::TabCloseButton(PressedCallback pressed_callback,
   ring_highlight_path->set_use_contents_bounds(true);
   views::FocusRing::Get(this)->SetPathGenerator(std::move(ring_highlight_path));
 
-  // Always have a value on this property so we can modify it directly without
-  // a heap allocation.
-  SetProperty(views::kInternalPaddingKey, gfx::Insets());
+  UpdateIcon();
 }
 
 TabCloseButton::~TabCloseButton() = default;
@@ -90,11 +97,10 @@ void TabCloseButton::SetColors(TabStyle::TabColors colors) {
       color_utils::GetColorWithMaxContrast(colors_.background_color));
   views::FocusRing::Get(this)->SetColorId(
       colors_.close_button_focus_ring_color);
-  OnPropertyChanged(&colors_, views::kPropertyEffectsPaint);
-}
 
-void TabCloseButton::SetButtonPadding(const gfx::Insets& padding) {
-  *GetProperty(views::kInternalPaddingKey) = padding;
+  UpdateIcon();
+
+  OnPropertyChanged(&colors_, views::kPropertyEffectsPaint);
 }
 
 views::View* TabCloseButton::GetTooltipHandlerForPoint(
@@ -110,7 +116,7 @@ views::View* TabCloseButton::GetTooltipHandlerForPoint(
 bool TabCloseButton::OnMousePressed(const ui::MouseEvent& event) {
   mouse_event_callback_.Run(this, event);
 
-  bool handled = ImageButton::OnMousePressed(event);
+  bool handled = LabelButton::OnMousePressed(event);
   // Explicitly mark midle-mouse clicks as non-handled to ensure the tab
   // sees them.
   return !event.IsMiddleMouseButton() && handled;
@@ -129,32 +135,12 @@ void TabCloseButton::OnMouseMoved(const ui::MouseEvent& event) {
 void TabCloseButton::OnGestureEvent(ui::GestureEvent* event) {
   // Consume all gesture events here so that the parent (Tab) does not
   // start consuming gestures.
-  ImageButton::OnGestureEvent(event);
+  LabelButton::OnGestureEvent(event);
   event->SetHandled();
 }
 
-gfx::Insets TabCloseButton::GetInsets() const {
-  return ImageButton::GetInsets() + *GetProperty(views::kInternalPaddingKey);
-}
-
 gfx::Size TabCloseButton::CalculatePreferredSize() const {
-  const int size = GetLayoutConstant(TAB_CLOSE_BUTTON_SIZE);
-  return gfx::Size(size, size) + GetInsets().size();
-}
-
-void TabCloseButton::PaintButtonContents(gfx::Canvas* canvas) {
-  cc::PaintFlags flags;
-  constexpr float kStrokeWidth = 1.5f;
-  const float size =
-      (GetLayoutConstant(TAB_CLOSE_BUTTON_SIZE) / 2) - kStrokeWidth;
-  gfx::RectF glyph_bounds(GetContentsBounds());
-  glyph_bounds.ClampToCenteredSize(gfx::SizeF(size, size));
-  flags.setAntiAlias(true);
-  flags.setStrokeWidth(kStrokeWidth);
-  flags.setStrokeCap(cc::PaintFlags::kRound_Cap);
-  flags.setColor(colors_.foreground_color);
-  canvas->DrawLine(glyph_bounds.origin(), glyph_bounds.bottom_right(), flags);
-  canvas->DrawLine(glyph_bounds.bottom_left(), glyph_bounds.top_right(), flags);
+  return kButtonSize;
 }
 
 views::View* TabCloseButton::TargetForRect(views::View* root,
@@ -189,7 +175,20 @@ bool TabCloseButton::GetHitTestMask(SkPath* mask) const {
   mask->addRect(gfx::RectToSkRect(GetMirroredRect(GetContentsBounds())));
   return true;
 }
+void TabCloseButton::UpdateIcon() {
+  const auto& icon = kCloseTabChromeRefreshIcon;
 
-BEGIN_METADATA(TabCloseButton, views::ImageButton)
+  SetImageModel(views::Button::STATE_NORMAL,
+                ui::ImageModel::FromVectorIcon(icon, colors_.foreground_color,
+                                               kIconSize));
+  SetImageModel(views::Button::STATE_HOVERED,
+                ui::ImageModel::FromVectorIcon(icon, colors_.foreground_color,
+                                               kIconSize));
+  SetImageModel(views::Button::STATE_PRESSED,
+                ui::ImageModel::FromVectorIcon(icon, colors_.foreground_color,
+                                               kIconSize));
+}
+
+BEGIN_METADATA(TabCloseButton, views::LabelButton)
 ADD_PROPERTY_METADATA(TabStyle::TabColors, Colors)
 END_METADATA

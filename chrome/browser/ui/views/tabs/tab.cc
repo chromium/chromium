@@ -331,31 +331,28 @@ void Tab::Layout() {
 
   int close_x = contents_rect.right();
   if (showing_close_button_) {
-    // If the ratio of the close button size to tab width exceeds the maximum.
-    // The close button should be as large as possible so that there is a larger
-    // hit-target for touch events. So the close button bounds extends to the
-    // edges of the tab. However, the larger hit-target should be active only
-    // for touch events, and the close-image should show up in the right place.
-    // So a border is added to the button with necessary padding. The close
-    // button (Tab::TabCloseButton) makes sure the padding is a hit-target only
-    // for touch events.
-    // TODO(pkasting): The padding should maybe be removed, see comments in
-    // TabCloseButton::TargetForRect().
-    const int close_button_size = GetLayoutConstant(TAB_CLOSE_BUTTON_SIZE);
+    // The visible size is the button's hover shape size. The actual size
+    // includes the border insets for the button.
+    const int close_button_visible_size =
+        GetLayoutConstant(TAB_CLOSE_BUTTON_SIZE);
+    const gfx::Size close_button_actual_size =
+        close_button_->GetPreferredSize();
+
+    // The close button is vertically centered in the contents_rect.
     const int top =
-        contents_rect.y() + Center(contents_rect.height(), close_button_size);
-    // Clamp the close button position to "centered within the tab"; this should
-    // only have an effect when animating in a new active tab, which might start
-    // out narrower than the minimum active tab width.
-    close_x = std::max(contents_rect.right() - close_button_size,
-                       Center(width(), close_button_size));
-    const int left = std::min(after_title_padding, close_x);
-    const int bottom = height() - close_button_size - top;
-    const int right = std::max(0, width() - (close_x + close_button_size));
-    close_button_->SetButtonPadding(
-        gfx::Insets::TLBR(top, left, bottom, right));
+        contents_rect.y() +
+        Center(contents_rect.height(), close_button_actual_size.height());
+
+    // The visible part of the close button should be placed against the
+    // right of the contents rect unless the tab is so small that it would
+    // overflow the left side of the contents_rect, in that case it will be
+    // placed in the middle of the tab.
+    close_x =
+        std::max(close_x - (close_button_visible_size + after_title_padding),
+                 Center(width(), close_button_actual_size.width()));
+
     close_button_->SetBoundsRect(
-        {gfx::Point(close_x - left, 0), close_button_->GetPreferredSize()});
+        {gfx::Point(close_x, top), close_button_actual_size});
   }
   close_button_->SetVisible(showing_close_button_);
 
@@ -995,10 +992,8 @@ void Tab::UpdateIconVisibility() {
       alert_indicator_button_->GetPreferredSize().width();
   // In case of touch optimized UI, the close button has an extra padding on the
   // left that needs to be considered.
-  const int close_button_width =
-      close_button_->GetPreferredSize().width() -
-      (touch_ui ? close_button_->GetInsets().right()
-                : close_button_->GetInsets().width());
+  const int close_button_width = GetLayoutConstant(TAB_CLOSE_BUTTON_SIZE) +
+                                 GetLayoutConstant(TAB_AFTER_TITLE_PADDING);
   const bool large_enough_for_close_button =
       available_width >= (touch_ui ? kTouchMinimumContentsWidthForCloseButtons
                                    : kMinimumContentsWidthForCloseButtons);

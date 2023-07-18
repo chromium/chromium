@@ -51,6 +51,7 @@ aggregate_vector_icons("chrome_vector_icons") {
     "click_to_call_illustration_dark.icon",
     "close_chrome_refresh.icon",
     "close_group.icon",
+    "close_tab_chrome_refresh.icon",
     "computer_with_circle_background.icon",
     "copy.icon",
     "copy_menu.icon",

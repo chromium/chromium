@@ -60,9 +60,7 @@ class TabTest : public ChromeViewsTestBase {
     return tab->alert_indicator_button_;
   }
 
-  static views::ImageButton* GetCloseButton(Tab* tab) {
-    return tab->close_button_;
-  }
+  static TabCloseButton* GetCloseButton(Tab* tab) { return tab->close_button_; }
 
   static int GetTitleWidth(Tab* tab) { return tab->title_->bounds().width(); }
 
@@ -383,9 +381,6 @@ TEST_F(TabTest, CloseButtonLayout) {
   EXPECT_EQ(close_button_insets.left(), close_button_insets_2.left());
   EXPECT_EQ(close_button_insets.bottom(), close_button_insets_2.bottom());
   EXPECT_EQ(close_button_insets.right(), close_button_insets_2.right());
-
-  // Also make sure the close button is sized as large as the tab.
-  EXPECT_EQ(50, GetCloseButton(&tab)->bounds().height());
 }
 
 // Regression test for http://crbug.com/609701. Ensure TabCloseButton does not
@@ -395,7 +390,7 @@ TEST_F(TabTest, CloseButtonFocus) {
   std::unique_ptr<views::Widget> widget = CreateTestWidget();
   Tab* tab = widget->SetContentsView(std::make_unique<Tab>(controller.get()));
 
-  views::ImageButton* tab_close_button = GetCloseButton(tab);
+  TabCloseButton* tab_close_button = GetCloseButton(tab);
 
   // Verify tab_close_button does not get focus on right click.
   ui::MouseEvent right_click_event(ui::ET_KEY_PRESSED, gfx::Point(),
