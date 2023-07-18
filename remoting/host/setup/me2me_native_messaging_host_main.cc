@@ -13,6 +13,7 @@
 #include "base/command_line.h"
 #include "base/files/file.h"
 #include "base/i18n/icu_util.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -283,9 +284,9 @@ int Me2MeNativeMessagingHostMain(int argc, char** argv) {
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
       ChromotingHostContext::Create(new remoting::AutoThreadTaskRunner(
           main_task_executor.task_runner(), run_loop.QuitClosure()));
-#else   // BUILDFLAG(IS_CHROMEOS_ASH)
-      CreateChromotingHostContext();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#else   // !BUILDFLAG(IS_CHROMEOS_ASH)
+      base::MakeRefCounted<BrowserInterop>()->CreateChromotingHostContext();
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Create the native messaging host.
   std::unique_ptr<extensions::NativeMessageHost> host(

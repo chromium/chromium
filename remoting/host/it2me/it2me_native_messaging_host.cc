@@ -220,6 +220,7 @@ void It2MeNativeMessagingHost::ProcessConnect(base::Value::Dict message,
 
   if (!policy_received_) {
     DCHECK(!pending_connect_);
+    LOG(WARNING) << "Delaying connection request until we receive the policies";
     pending_connect_ =
         base::BindOnce(&It2MeNativeMessagingHost::ProcessConnect, weak_ptr_,
                        std::move(message), std::move(response));

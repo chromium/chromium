@@ -121,7 +121,9 @@ bool ShouldAllowFileTransfer(
 
 }  // namespace
 
-It2MeNativeMessageHostAsh::It2MeNativeMessageHostAsh() = default;
+It2MeNativeMessageHostAsh::It2MeNativeMessageHostAsh(
+    std::unique_ptr<It2MeHostFactory> host_factory)
+    : host_factory_(std::move(host_factory)) {}
 It2MeNativeMessageHostAsh::~It2MeNativeMessageHostAsh() = default;
 
 mojo::PendingReceiver<mojom::SupportHostObserver>
@@ -139,10 +141,9 @@ It2MeNativeMessageHostAsh::Start(
   remote_.set_disconnect_handler(base::BindOnce(
       &It2MeNativeMessageHostAsh::Disconnect, base::Unretained(this)));
 
-  std::unique_ptr<It2MeHostFactory> host_factory(new It2MeHostFactory());
   native_message_host_ = std::make_unique<It2MeNativeMessagingHost>(
       /*needs_elevation=*/false, std::move(policy_watcher), std::move(context),
-      std::move(host_factory));
+      host_factory_->Clone());
   native_message_host_->Start(this);
 
   return observer;
@@ -161,33 +162,31 @@ void It2MeNativeMessageHostAsh::Connect(
   connected_callback_ = std::move(connected_callback);
   disconnected_callback_ = std::move(disconnected_callback);
 
-  base::Value::Dict message;
-  message.Set(kMessageType, kConnectMessage);
-
-  message.Set(kUserName, params->user_name);
-  message.Set(kAuthServiceWithToken, params->oauth_access_token);
-  message.Set(kSuppressUserDialogs,
-              ShouldSuppressUserDialog(*params, enterprise_params));
-  message.Set(kSuppressNotifications,
-              ShouldSuppressNotifications(*params, enterprise_params));
-  message.Set(kTerminateUponInput,
-              ShouldTerminateUponInput(*params, enterprise_params));
-  message.Set(kCurtainLocalUserSession,
-              ShouldCurtainLocalUserSession(*params, enterprise_params));
-  message.Set(kShowTroubleshootingTools,
-              ShouldShowTroubleshootingTools(enterprise_params));
-  message.Set(kAllowTroubleshootingTools,
-              ShouldAllowTroubleshootingTools(enterprise_params));
-  message.Set(kAllowReconnections, ShouldAllowReconnections(enterprise_params));
-  message.Set(kAllowFileTransfer, ShouldAllowFileTransfer(enterprise_params));
-  message.Set(kIsEnterpriseAdminUser, enterprise_params.has_value());
+  auto message =
+      base::Value::Dict()
+          .Set(kMessageType, kConnectMessage)
+          .Set(kUserName, params->user_name)
+          .Set(kAuthServiceWithToken, params->oauth_access_token)
+          .Set(kSuppressUserDialogs,
+               ShouldSuppressUserDialog(*params, enterprise_params))
+          .Set(kSuppressNotifications,
+               ShouldSuppressNotifications(*params, enterprise_params))
+          .Set(kTerminateUponInput,
+               ShouldTerminateUponInput(*params, enterprise_params))
+          .Set(kCurtainLocalUserSession,
+               ShouldCurtainLocalUserSession(*params, enterprise_params))
+          .Set(kShowTroubleshootingTools,
+               ShouldShowTroubleshootingTools(enterprise_params))
+          .Set(kAllowTroubleshootingTools,
+               ShouldAllowTroubleshootingTools(enterprise_params))
+          .Set(kAllowReconnections, ShouldAllowReconnections(enterprise_params))
+          .Set(kAllowFileTransfer, ShouldAllowFileTransfer(enterprise_params))
+          .Set(kIsEnterpriseAdminUser, enterprise_params.has_value());
   if (params->authorized_helper.has_value()) {
     message.Set(kAuthorizedHelper, *params->authorized_helper);
   }
 
-  std::string message_json;
-  base::JSONWriter::Write(message, &message_json);
-  native_message_host_->OnMessage(message_json);
+  native_message_host_->OnMessage(base::WriteJson(message).value());
 }
 
 void It2MeNativeMessageHostAsh::Disconnect() {

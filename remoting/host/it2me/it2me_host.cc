@@ -74,7 +74,12 @@ It2MeHost::DeferredConnectContext::DeferredConnectContext() = default;
 
 It2MeHost::DeferredConnectContext::~DeferredConnectContext() = default;
 
-It2MeHost::It2MeHost() = default;
+It2MeHost::It2MeHost() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  host_event_reporter_factory_ =
+      base::BindRepeating(&HostEventReporter::Create);
+#endif
+}
 
 It2MeHost::~It2MeHost() {
   // Check that resources that need to be torn down on the UI thread are gone.
@@ -290,7 +295,8 @@ void It2MeHost::ConnectOnNetworkThread(
   host_event_logger_ =
       HostEventLogger::Create(host_->status_monitor(), kApplicationName);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  host_event_reporter_ = HostEventReporter::Create(host_->status_monitor());
+  host_event_reporter_ =
+      host_event_reporter_factory_.Run(host_->status_monitor());
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Connect signaling and start the host.
@@ -357,6 +363,13 @@ ValidationCallback It2MeHost::GetValidationCallbackForTesting() {
   return base::BindRepeating(&It2MeHost::ValidateConnectionDetails,
                              base::Unretained(this));
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+void It2MeHost::SetHostEventReporterFactoryForTesting(
+    HostEventReporterFactory factory) {
+  host_event_reporter_factory_ = factory;
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 void It2MeHost::OnPolicyUpdate(base::Value::Dict policies) {
   // The policy watcher runs on the |ui_task_runner|.
@@ -770,6 +783,10 @@ const char* It2MeHost::GetRemoteSupportPolicyKey() const {
 
 It2MeHostFactory::It2MeHostFactory() = default;
 It2MeHostFactory::~It2MeHostFactory() = default;
+
+std::unique_ptr<It2MeHostFactory> It2MeHostFactory::Clone() const {
+  return std::make_unique<It2MeHostFactory>();
+}
 
 scoped_refptr<It2MeHost> It2MeHostFactory::CreateIt2MeHost() {
   return new It2MeHost();

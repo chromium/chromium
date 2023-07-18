@@ -429,6 +429,8 @@ static_library("test_support") {
     "mock_configuration_policy_provider.h",
     "mock_policy_service.cc",
     "mock_policy_service.h",
+    "policy_service_stub.cc",
+    "policy_service_stub.h",
     "policy_test_utils.cc",
     "policy_test_utils.h",
     "remote_commands/test_support/echo_remote_command_job.cc",

@@ -7,7 +7,7 @@
 #include <memory>
 #include <utility>
 
-#include "base/task/single_thread_task_runner.h"
+#include "base/memory/scoped_refptr.h"
 #include "remoting/host/chromeos/browser_interop.h"
 #include "remoting/host/chromoting_host_context.h"
 #include "remoting/host/it2me/it2me_native_messaging_host.h"
@@ -17,9 +17,12 @@ namespace remoting {
 
 std::unique_ptr<extensions::NativeMessageHost>
 CreateIt2MeNativeMessagingHostForChromeOS() {
+  auto browser_interop = base::MakeRefCounted<BrowserInterop>();
+
   return std::make_unique<It2MeNativeMessagingHost>(
-      /*needs_elevation=*/false, CreatePolicyWatcher(),
-      CreateChromotingHostContext(), std::make_unique<It2MeHostFactory>());
+      /*needs_elevation=*/false, browser_interop->CreatePolicyWatcher(),
+      browser_interop->CreateChromotingHostContext(),
+      std::make_unique<It2MeHostFactory>());
 }
 
 }  // namespace remoting

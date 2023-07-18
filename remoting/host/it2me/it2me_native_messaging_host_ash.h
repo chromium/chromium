@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/sequence_checker.h"
+#include "base/thread_annotations.h"
 #include "base/values.h"
 #include "extensions/browser/api/messaging/native_message_host.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -23,6 +24,7 @@ class NativeMessageHost;
 namespace remoting {
 
 class ChromotingHostContext;
+class It2MeHostFactory;
 class PolicyWatcher;
 struct ChromeOsEnterpriseParams;
 
@@ -34,7 +36,8 @@ struct ChromeOsEnterpriseParams;
 // All interactions with it must occur on the sequence it was created on.
 class It2MeNativeMessageHostAsh : public extensions::NativeMessageHost::Client {
  public:
-  It2MeNativeMessageHostAsh();
+  explicit It2MeNativeMessageHostAsh(
+      std::unique_ptr<It2MeHostFactory> host_factory);
   It2MeNativeMessageHostAsh(const It2MeNativeMessageHostAsh&) = delete;
   It2MeNativeMessageHostAsh& operator=(const It2MeNativeMessageHostAsh&) =
       delete;
@@ -81,6 +84,9 @@ class It2MeNativeMessageHostAsh : public extensions::NativeMessageHost::Client {
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   mojo::Remote<mojom::SupportHostObserver> remote_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+
+  std::unique_ptr<It2MeHostFactory> host_factory_
       GUARDED_BY_CONTEXT(sequence_checker_);
 };
 

@@ -8,11 +8,13 @@
 
 #include <stddef.h>
 
+#include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "base/strings/stringize_macros.h"
 #include "remoting/host/chromeos/browser_interop.h"
 #include "remoting/host/chromoting_host_context.h"
 #include "remoting/host/it2me/it2me_constants.h"
+#include "remoting/host/it2me/it2me_host.h"
 #include "remoting/host/it2me/it2me_native_messaging_host_ash.h"
 #include "remoting/host/policy_watcher.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -20,7 +22,17 @@
 namespace remoting {
 
 RemoteSupportHostAsh::RemoteSupportHostAsh(base::OnceClosure cleanup_callback)
-    : cleanup_callback_(std::move(cleanup_callback)) {}
+    : RemoteSupportHostAsh(std::make_unique<It2MeHostFactory>(),
+                           base::MakeRefCounted<BrowserInterop>(),
+                           std::move(cleanup_callback)) {}
+
+RemoteSupportHostAsh::RemoteSupportHostAsh(
+    std::unique_ptr<It2MeHostFactory> host_factory,
+    scoped_refptr<BrowserInterop> browser_interop,
+    base::OnceClosure cleanup_callback)
+    : host_factory_(std::move(host_factory)),
+      browser_interop_(browser_interop),
+      cleanup_callback_(std::move(cleanup_callback)) {}
 
 RemoteSupportHostAsh::~RemoteSupportHostAsh() = default;
 
@@ -38,11 +50,12 @@ void RemoteSupportHostAsh::StartSession(
   }
 
   it2me_native_message_host_ash_ =
-      std::make_unique<It2MeNativeMessageHostAsh>();
+      std::make_unique<It2MeNativeMessageHostAsh>(host_factory_->Clone());
 
   mojo::PendingReceiver<mojom::SupportHostObserver> pending_receiver =
-      it2me_native_message_host_ash_->Start(CreateChromotingHostContext(),
-                                            CreatePolicyWatcher());
+      it2me_native_message_host_ash_->Start(
+          browser_interop_->CreateChromotingHostContext(),
+          browser_interop_->CreatePolicyWatcher());
 
   mojom::StartSupportSessionResponsePtr response =
       mojom::StartSupportSessionResponse::NewObserver(

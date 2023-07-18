@@ -5,18 +5,19 @@
 #ifndef REMOTING_HOST_CHROMEOS_REMOTE_SUPPORT_HOST_ASH_H_
 #define REMOTING_HOST_CHROMEOS_REMOTE_SUPPORT_HOST_ASH_H_
 
+#include <memory>
 #include "base/functional/callback.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/bindings/receiver_set.h"
-#include "mojo/public/cpp/bindings/remote_set.h"
 #include "remoting/host/chromeos/session_id.h"
 #include "remoting/host/it2me/it2me_native_messaging_host_ash.h"
-#include "remoting/host/mojom/remote_support.mojom.h"
+#include "remoting/host/mojom/remote_support.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace remoting {
 
+class BrowserInterop;
+class It2MeHostFactory;
 class It2MeNativeMessageHostAsh;
 struct ChromeOsEnterpriseParams;
 
@@ -29,6 +30,9 @@ struct ChromeOsEnterpriseParams;
 class RemoteSupportHostAsh {
  public:
   explicit RemoteSupportHostAsh(base::OnceClosure cleanup_callback);
+  RemoteSupportHostAsh(std::unique_ptr<It2MeHostFactory> host_factory,
+                       scoped_refptr<BrowserInterop> browser_interop,
+                       base::OnceClosure cleanup_callback);
   RemoteSupportHostAsh(const RemoteSupportHostAsh&) = delete;
   RemoteSupportHostAsh& operator=(const RemoteSupportHostAsh&) = delete;
   ~RemoteSupportHostAsh();
@@ -55,8 +59,13 @@ class RemoteSupportHostAsh {
 
   SEQUENCE_CHECKER(sequence_checker_);
 
+  std::unique_ptr<It2MeHostFactory> host_factory_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+
   std::unique_ptr<It2MeNativeMessageHostAsh> it2me_native_message_host_ash_
       GUARDED_BY_CONTEXT(sequence_checker_);
+
+  scoped_refptr<BrowserInterop> browser_interop_;
 
   base::OnceClosure cleanup_callback_;
 };

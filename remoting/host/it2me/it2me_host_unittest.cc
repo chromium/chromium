@@ -25,6 +25,7 @@
 #include "remoting/host/chromeos/chromeos_enterprise_params.h"
 #include "remoting/host/chromoting_host.h"
 #include "remoting/host/chromoting_host_context.h"
+#include "remoting/host/host_event_reporter.h"
 #include "remoting/host/it2me/it2me_confirmation_dialog.h"
 #include "remoting/host/policy_watcher.h"
 #include "remoting/host/xmpp_register_support_host_request.h"
@@ -69,6 +70,21 @@ const char kMismatchedDomain3[] = "not_even_close.com";
 const char kPortRange[] = "12401-12408";
 
 const char kTestStunServer[] = "test_relay_server.com";
+
+class HostEventReporterStub : public HostEventReporter {
+ public:
+  HostEventReporterStub() = default;
+  HostEventReporterStub(const HostEventReporterStub&) = delete;
+  HostEventReporterStub& operator=(const HostEventReporterStub&) = delete;
+  ~HostEventReporterStub() override = default;
+};
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+std::unique_ptr<HostEventReporter> CreateHostEventReporterStub(
+    scoped_refptr<HostStatusMonitor>) {
+  return std::make_unique<HostEventReporterStub>();
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace
 
@@ -367,6 +383,11 @@ void It2MeHostTest::StartHost() {
   if (authorized_helper_.has_value()) {
     it2me_host_->set_authorized_helper(authorized_helper_.value());
   }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  it2me_host_->SetHostEventReporterFactoryForTesting(
+      base::BindRepeating(CreateHostEventReporterStub));
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   auto create_connection_context = base::BindOnce(
       [](std::unique_ptr<SignalStrategy> signal_strategy,

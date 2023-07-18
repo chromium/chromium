@@ -7,21 +7,32 @@
 
 #include <memory>
 
+#include "base/memory/ref_counted.h"
+
 namespace remoting {
 
 class ChromotingHostContext;
 class PolicyWatcher;
 
-// This file provides a set of helper functions which rely on the browser
+// This class provides a set of helper functions which rely on the browser
 // process. They are broken out into this file in order to prevent cyclical
 // dependencies in the other CRD Chrome OS build targets which the browser
 // process has a dependency on (e.g. RemotingService).
+// This class can be subclassed for testing.
+class BrowserInterop : public base::RefCounted<BrowserInterop> {
+ public:
+  BrowserInterop() = default;
 
-// Must be called on the main/UI sequence.
-extern std::unique_ptr<ChromotingHostContext> CreateChromotingHostContext();
+  // Must be called on the main/UI sequence.
+  virtual std::unique_ptr<ChromotingHostContext> CreateChromotingHostContext();
 
-// Can be called on any sequence.
-extern std::unique_ptr<PolicyWatcher> CreatePolicyWatcher();
+  // Can be called on any sequence.
+  virtual std::unique_ptr<PolicyWatcher> CreatePolicyWatcher();
+
+ protected:
+  friend class RefCounted<BrowserInterop>;
+  virtual ~BrowserInterop() = default;
+};
 
 }  // namespace remoting
 
