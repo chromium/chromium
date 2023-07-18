@@ -352,6 +352,9 @@ tast_disabled_tests_from_chrome_all = [
   # b/259700180
   "inputs.VirtualKeyboardGlideTyping.clamshell_a11y_docked",
 
+  # b/290443902
+  "inputs.VirtualKeyboardTypingOmnibox.a11y",
+
   # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
 ]
 
