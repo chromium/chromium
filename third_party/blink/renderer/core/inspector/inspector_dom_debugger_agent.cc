@@ -107,10 +107,18 @@ void InspectorDOMDebuggerAgent::CollectEventListeners(
   // bottom).
   Vector<AtomicString> event_types = target->EventTypes();
   for (AtomicString& type : event_types) {
-    EventListenerVector* listeners = target->GetEventListeners(type);
-    if (!listeners)
+    // We need to clone the EventListenerVector because `GetEffectiveFunction`
+    // can execute script which may invalidate the iterator.
+    EventListenerVector listeners;
+    if (auto* registered_listeners = target->GetEventListeners(type)) {
+      listeners = *registered_listeners;
+    } else {
       continue;
-    for (auto& registered_event_listener : *listeners) {
+    }
+    for (auto& registered_event_listener : listeners) {
+      if (registered_event_listener->Removed()) {
+        continue;
+      }
       EventListener* event_listener = registered_event_listener->Callback();
       JSBasedEventListener* v8_event_listener =
           DynamicTo<JSBasedEventListener>(event_listener);
