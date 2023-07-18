@@ -545,7 +545,7 @@ void BrowsingTopicsServiceImpl::GetBrowsingTopicsStateForWebUi(
       GetAllObservingDomains(browsing_topics_state_),
       base::BindOnce(
           &BrowsingTopicsServiceImpl::GetBrowsingTopicsStateForWebUiHelper,
-          base::Unretained(this), std::move(callback)));
+          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 std::vector<privacy_sandbox::CanonicalTopic>
@@ -706,7 +706,7 @@ void BrowsingTopicsServiceImpl::OnCalculateBrowsingTopicsCompleted(
         GetAllObservingDomains(browsing_topics_state_),
         base::BindOnce(
             &BrowsingTopicsServiceImpl::GetBrowsingTopicsStateForWebUiHelper,
-            base::Unretained(this), std::move(callback)));
+            weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
   get_state_for_webui_callbacks_.clear();
 }
