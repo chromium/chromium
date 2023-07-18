@@ -449,9 +449,6 @@ ChromeVoxBrailleInputHandlerTest = class extends ChromeVoxE2ETest {
 
     chrome.runtime.onConnectExternal = new FakeChromeEvent();
     this.port = new FakePort();
-    chrome.virtualKeyboardPrivate.getKeyboardConfig = function(callback) {
-      callback({a11ymode: true});
-    };
     chrome.accessibilityPrivate.sendSyntheticKeyEvent =
         (event, useRewriters, opt_callback) =>
             this.storeKeyEvent(event, useRewriters, opt_callback);

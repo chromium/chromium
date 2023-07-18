@@ -389,19 +389,15 @@ export class BrailleInputHandler {
    * @private
    */
   sendKeyEventPair_(event) {
-    chrome.virtualKeyboardPrivate.getKeyboardConfig(function(config) {
-      // Use the virtual keyboard API instead of the IME key event API
-      // so that these keys work even if the Braille IME is not active.
-      const keyName = /** @type {string} */ (event.standardKeyCode);
-      const numericCode = BrailleKeyEvent.keyCodeToLegacyCode(keyName);
-      if (!numericCode) {
-        throw Error('Unknown key code in event: ' + JSON.stringify(event));
-      }
-      EventGenerator.sendKeyPress(numericCode, {
-        shift: Boolean(event.shiftKey),
-        ctrl: Boolean(event.ctrlKey),
-        alt: Boolean(event.altKey),
-      });
+    const keyName = /** @type {string} */ (event.standardKeyCode);
+    const numericCode = BrailleKeyEvent.keyCodeToLegacyCode(keyName);
+    if (!numericCode) {
+      throw Error('Unknown key code in event: ' + JSON.stringify(event));
+    }
+    EventGenerator.sendKeyPress(numericCode, {
+      shift: Boolean(event.shiftKey),
+      ctrl: Boolean(event.ctrlKey),
+      alt: Boolean(event.altKey),
     });
   }
 }
