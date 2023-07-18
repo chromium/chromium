@@ -38,6 +38,7 @@
 #include "components/download/public/common/download_stats.h"
 #include "components/feature_engagement/public/tracker.h"
 #include "components/offline_items_collection/core/offline_content_aggregator.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "content/public/browser/download_manager.h"
 
 namespace {
@@ -246,6 +247,36 @@ void DownloadBubbleUIController::ProcessDownloadButtonPress(
     default:
       NOTREACHED() << "Unexpected button pressed on download bubble: "
                    << command;
+  }
+}
+
+bool DownloadBubbleUIController::ProcessDownloadButtonPressWithClose(
+    DownloadUIModel* model,
+    DownloadCommands::Command command,
+    bool is_main_view) {
+  ProcessDownloadButtonPress(model, command, is_main_view);
+  switch (command) {
+    case DownloadCommands::KEEP:
+    case DownloadCommands::DISCARD:
+    case DownloadCommands::REVIEW:
+    case DownloadCommands::RETRY:
+    case DownloadCommands::CANCEL:
+    case DownloadCommands::BYPASS_DEEP_SCANNING:
+    case DownloadCommands::RESUME:
+    case DownloadCommands::PAUSE:
+    case DownloadCommands::OPEN_WHEN_COMPLETE:
+    case DownloadCommands::SHOW_IN_FOLDER:
+    case DownloadCommands::ALWAYS_OPEN_TYPE:
+    case DownloadCommands::CANCEL_DEEP_SCAN:
+    case DownloadCommands::LEARN_MORE_SCANNING:
+      return true;
+    case DownloadCommands::DEEP_SCAN:
+      return !base::FeatureList::IsEnabled(
+          safe_browsing::kDeepScanningUpdatedUX);
+    default:
+      NOTREACHED() << "Unexpected button pressed on download bubble: "
+                   << command;
+      return true;
   }
 }
 

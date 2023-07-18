@@ -66,6 +66,12 @@ class DownloadBubbleUIController {
                                   DownloadCommands::Command command,
                                   bool is_main_view);
 
+  // Process button press on the bubble and return whether the bubble should
+  // close.
+  bool ProcessDownloadButtonPressWithClose(DownloadUIModel* model,
+                                           DownloadCommands::Command command,
+                                           bool is_main_view);
+
   // Notify when a download toolbar button (in any window) is pressed.
   void HandleButtonPressed();
 

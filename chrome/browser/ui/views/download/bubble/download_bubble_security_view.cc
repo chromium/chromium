@@ -64,6 +64,32 @@ enum class DownloadBubbleSubpageAction {
 };
 const char kSubpageActionHistogram[] = "Download.Bubble.SubpageAction";
 
+bool ShouldOpenPrimaryDialog(DownloadCommands::Command command) {
+  switch (command) {
+    case DownloadCommands::KEEP:
+    case DownloadCommands::DISCARD:
+    case DownloadCommands::REVIEW:
+    case DownloadCommands::RETRY:
+    case DownloadCommands::CANCEL:
+    case DownloadCommands::BYPASS_DEEP_SCANNING:
+    case DownloadCommands::RESUME:
+    case DownloadCommands::PAUSE:
+    case DownloadCommands::OPEN_WHEN_COMPLETE:
+    case DownloadCommands::SHOW_IN_FOLDER:
+    case DownloadCommands::ALWAYS_OPEN_TYPE:
+    case DownloadCommands::CANCEL_DEEP_SCAN:
+    case DownloadCommands::LEARN_MORE_SCANNING:
+      return true;
+    case DownloadCommands::DEEP_SCAN:
+      return !base::FeatureList::IsEnabled(
+          safe_browsing::kDeepScanningUpdatedUX);
+    default:
+      NOTREACHED() << "Unexpected button pressed on download bubble: "
+                   << command;
+      return true;
+  }
+}
+
 }  // namespace
 
 // This class encapsulates a piece of text broken into several paragraphs.
@@ -138,9 +164,12 @@ class ParagraphsView : public views::View {
   }
 
   void SizeToFit(int fixed_width) {
-    for (views::StyledLabel* label : paragraphs_) {
-      label->SizeToFit(fixed_width);
+    if (fixed_width_ == fixed_width) {
+      return;
     }
+
+    fixed_width_ = fixed_width;
+    Update();
   }
 
  private:
@@ -150,6 +179,7 @@ class ParagraphsView : public views::View {
       label->SetDefaultTextStyle(default_text_style_);
       label->SetProperty(views::kMarginsKey,
                          gfx::Insets().set_bottom(after_paragraph_));
+      label->SizeToFit(fixed_width_);
     }
 
     if (!paragraphs_.empty()) {
@@ -162,6 +192,7 @@ class ParagraphsView : public views::View {
   int text_context_ = views::style::CONTEXT_LABEL;
   int default_text_style_ = views::style::STYLE_PRIMARY;
   int after_paragraph_ = 0;
+  int fixed_width_ = 0;
   std::vector<views::StyledLabel*> paragraphs_;
 };
 
@@ -491,7 +522,7 @@ void DownloadBubbleSecurityView::AddProgressBar() {
   progress_bar_->SetVisible(false);
 }
 
-void DownloadBubbleSecurityView::ProcessButtonClick(
+bool DownloadBubbleSecurityView::ProcessButtonClick(
     DownloadCommands::Command command,
     bool is_secondary_button) {
   RecordWarningActionTime(is_secondary_button);
@@ -499,15 +530,22 @@ void DownloadBubbleSecurityView::ProcessButtonClick(
   // happens leading to closure of the bubble, it will be called after primary
   // dialog is opened.
   if (navigation_handler_ && bubble_controller_) {
-    navigation_handler_->OpenPrimaryDialog();
-    bubble_controller_->ProcessDownloadButtonPress(model_.get(), command,
-                                                   /*is_main_view=*/false);
+    bool should_close = bubble_controller_->ProcessDownloadButtonPressWithClose(
+        model_.get(), command,
+        /*is_main_view=*/false);
+    if (ShouldOpenPrimaryDialog(command)) {
+      navigation_handler_->OpenPrimaryDialog();
+    } else {
+      navigation_handler_->OpenSecurityDialog(download_row_view_);
+    }
+    return should_close;
   }
 
   base::UmaHistogramEnumeration(
       kSubpageActionHistogram,
       is_secondary_button ? DownloadBubbleSubpageAction::kPressedSecondaryButton
                           : DownloadBubbleSubpageAction::kPressedPrimaryButton);
+  return true;
 }
 
 void DownloadBubbleSecurityView::UpdateButton(
@@ -517,12 +555,12 @@ void DownloadBubbleSecurityView::UpdateButton(
   ui::DialogButton button_type =
       is_secondary_button ? ui::DIALOG_BUTTON_CANCEL : ui::DIALOG_BUTTON_OK;
 
-  base::OnceCallback callback(base::BindOnce(
+  base::RepeatingCallback callback(base::BindRepeating(
       &DownloadBubbleSecurityView::ProcessButtonClick, base::Unretained(this),
       button_info.command, is_secondary_button));
 
   if (button_type == ui::DIALOG_BUTTON_CANCEL) {
-    bubble_delegate_->SetCancelCallback(std::move(callback));
+    bubble_delegate_->SetCancelCallbackWithClose(callback);
     bubble_delegate_->SetButtonEnabled(button_type, !has_checkbox);
     views::LabelButton* button = bubble_delegate_->GetCancelButton();
     if (button_info.color) {
@@ -530,7 +568,7 @@ void DownloadBubbleSecurityView::UpdateButton(
     }
     secondary_button_ = button;
   } else {
-    bubble_delegate_->SetAcceptCallback(std::move(callback));
+    bubble_delegate_->SetAcceptCallbackWithClose(callback);
   }
 
   bubble_delegate_->SetButtonLabel(button_type, button_info.label);

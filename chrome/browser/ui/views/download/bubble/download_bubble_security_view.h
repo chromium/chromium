@@ -72,8 +72,9 @@ class DownloadBubbleSecurityView : public views::View {
   void UpdateProgressBar();
 
   // |is_secondary_button| checks if the command/action originated from the
-  // secondary button.
-  void ProcessButtonClick(DownloadCommands::Command command,
+  // secondary button. Returns whether the dialog should close due to this
+  // command.
+  bool ProcessButtonClick(DownloadCommands::Command command,
                           bool is_secondary_button);
   void RecordWarningActionTime(bool is_secondary_button);
 
