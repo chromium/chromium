@@ -1581,6 +1581,7 @@ void WebView::ApplyWebPreferences(const web_pref::WebPreferences& prefs,
       prefs.should_clear_document_background);
   settings->SetEnableScrollAnimator(prefs.enable_scroll_animator);
   settings->SetPrefersReducedMotion(prefs.prefers_reduced_motion);
+  settings->SetPrefersReducedTransparency(prefs.prefers_reduced_transparency);
 
   RuntimeEnabledFeatures::SetTouchEventFeatureDetectionEnabled(
       prefs.touch_event_feature_detection_enabled);

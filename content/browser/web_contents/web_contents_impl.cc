@@ -1049,6 +1049,7 @@ WebContentsImpl::WebContentsImpl(BrowserContext* browser_context)
   using_dark_colors_ = native_theme->ShouldUseDarkColors();
   preferred_color_scheme_ = native_theme->GetPreferredColorScheme();
   preferred_contrast_ = native_theme->GetPreferredContrast();
+  prefers_reduced_transparency_ = native_theme->GetPrefersReducedTransparency();
 
   screen_change_monitor_ =
       std::make_unique<ScreenChangeMonitor>(base::BindRepeating(
@@ -2900,6 +2901,7 @@ const blink::web_pref::WebPreferences WebContentsImpl::ComputeWebPreferences() {
        gfx::Animation::ScrollAnimationsEnabledBySystem());
 
   prefs.prefers_reduced_motion = gfx::Animation::PrefersReducedMotion();
+  prefs.prefers_reduced_transparency = prefers_reduced_transparency_;
 
   if (ChildProcessSecurityPolicyImpl::GetInstance()->HasWebUIBindings(
           GetRenderViewHost()->GetProcess()->GetID())) {
@@ -9500,6 +9502,8 @@ void WebContentsImpl::OnNativeThemeUpdated(ui::NativeTheme* observed_theme) {
       observed_theme->GetPreferredColorScheme();
   ui::NativeTheme::PreferredContrast preferred_contrast =
       observed_theme->GetPreferredContrast();
+  bool prefers_reduced_transparency =
+      observed_theme->GetPrefersReducedTransparency();
   bool preferences_changed = false;
 
   if (using_dark_colors_ != using_dark_colors) {
@@ -9512,6 +9516,10 @@ void WebContentsImpl::OnNativeThemeUpdated(ui::NativeTheme* observed_theme) {
   }
   if (preferred_contrast_ != preferred_contrast) {
     preferred_contrast_ = preferred_contrast;
+    preferences_changed = true;
+  }
+  if (prefers_reduced_transparency_ != prefers_reduced_transparency) {
+    prefers_reduced_transparency_ = prefers_reduced_transparency;
     preferences_changed = true;
   }
 

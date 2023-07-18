@@ -476,6 +476,9 @@ class NATIVE_THEME_EXPORT NativeTheme {
   // Returns the OS-level user preferred contrast.
   virtual PreferredContrast GetPreferredContrast() const;
 
+  // Returns the OS-level user preferred transparency.
+  virtual bool GetPrefersReducedTransparency() const;
+
   // Returns the system's caption style.
   virtual absl::optional<CaptionStyle> GetSystemCaptionStyle() const;
 
@@ -496,6 +499,9 @@ class NATIVE_THEME_EXPORT NativeTheme {
   void set_page_colors(PageColors page_colors) { page_colors_ = page_colors; }
   void set_preferred_color_scheme(PreferredColorScheme preferred_color_scheme) {
     preferred_color_scheme_ = preferred_color_scheme;
+  }
+  void set_prefers_reduced_transparency(bool prefers_reduced_transparency) {
+    prefers_reduced_transparency_ = prefers_reduced_transparency;
   }
   void SetPreferredContrast(PreferredContrast preferred_contrast);
   void set_system_colors(const std::map<SystemThemeColor, SkColor>& colors);
@@ -610,6 +616,7 @@ class NATIVE_THEME_EXPORT NativeTheme {
   const ui::SystemTheme system_theme_;
   bool forced_colors_ = false;
   PageColors page_colors_ = PageColors::kOff;
+  bool prefers_reduced_transparency_ = false;
   PreferredColorScheme preferred_color_scheme_ = PreferredColorScheme::kLight;
   PreferredContrast preferred_contrast_ = PreferredContrast::kNoPreference;
 

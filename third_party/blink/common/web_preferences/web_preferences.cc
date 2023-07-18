@@ -89,6 +89,7 @@ WebPreferences::WebPreferences()
       enable_scroll_animator(false),
       threaded_scrolling_enabled(true),
       prefers_reduced_motion(false),
+      prefers_reduced_transparency(false),
       touch_event_feature_detection_enabled(false),
       pointer_events_max_touch_points(0),
       available_pointer_types(0),

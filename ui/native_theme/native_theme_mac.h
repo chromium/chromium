@@ -154,7 +154,7 @@ class NATIVE_THEME_EXPORT NativeThemeMac : public NativeThemeBase {
   }
 
   NativeThemeEffectiveAppearanceObserver* __strong appearance_observer_;
-  id __strong high_contrast_notification_token_;
+  id __strong display_accessibility_notification_token_;
 
   // Used to notify the web native theme of changes to dark mode and high
   // contrast.
