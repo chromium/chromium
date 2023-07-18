@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 """Class for interacting with the Skia Gold image diffing service."""
 
+import enum
 import logging
 import os
 import platform
@@ -11,6 +12,8 @@ import sys
 import tempfile
 import time
 from typing import Any, Dict, List, Optional, Tuple
+
+import dataclasses  # Built-in, but pylint gives an ordering false positive.
 
 from skia_gold_common import skia_gold_properties
 
@@ -34,7 +37,8 @@ StepRetVal = Tuple[int, Optional[str]]
 
 
 class SkiaGoldSession():
-  class StatusCodes():
+  @enum.unique
+  class StatusCodes(enum.IntEnum):
     """Status codes for RunComparison."""
     SUCCESS = 0
     AUTH_FAILURE = 1
@@ -44,16 +48,15 @@ class SkiaGoldSession():
     LOCAL_DIFF_FAILURE = 5
     NO_OUTPUT_MANAGER = 6
 
+  @dataclasses.dataclass
   class ComparisonResults():
     """Struct-like object for storing results of an image comparison."""
-
-    def __init__(self):
-      self.public_triage_link: Optional[str] = None
-      self.internal_triage_link: Optional[str] = None
-      self.triage_link_omission_reason: Optional[str] = None
-      self.local_diff_given_image: Optional[str] = None
-      self.local_diff_closest_image: Optional[str] = None
-      self.local_diff_diff_image: Optional[str] = None
+    public_triage_link: Optional[str] = None
+    internal_triage_link: Optional[str] = None
+    triage_link_omission_reason: Optional[str] = None
+    local_diff_given_image: Optional[str] = None
+    local_diff_closest_image: Optional[str] = None
+    local_diff_diff_image: Optional[str] = None
 
   def __init__(self,
                working_dir: str,
