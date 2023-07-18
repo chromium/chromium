@@ -12,9 +12,7 @@
 
 // ChromeOS environment doesn't instantiate the NewWebUI<OmniboxPopupUI>
 // in the factory's GetWebUIFactoryFunction, so these don't work there yet.
-// Also avoid burdening test bots on mobile platforms where webui omnibox
-// isn't ready and the platform-specific views implementation is in scope.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#if !BUILDFLAG(IS_CHROMEOS)
 
 // Check that the location bar background (and the background of the textfield
 // it contains) changes when it receives focus, and matches the popup background
@@ -66,12 +64,11 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewWebUITest,
   }
 }
 
-IN_PROC_BROWSER_TEST_F(OmniboxPopupViewWebUITest, PopupLoadsAndAcceptsCalls) {
-  WaitForHandler();
-  popup_view()->UpdatePopupAppearance();
+IN_PROC_BROWSER_TEST_F(OmniboxPopupViewWebUITest,
+                       TestSatisfiesTestCoverageRobot) {
   OmniboxPopupSelection selection(OmniboxPopupSelection::kNoMatch);
   popup_view()->OnSelectionChanged(selection, selection);
   popup_view()->ProvideButtonFocusHint(0);
 }
 
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#endif  // !BUILDFLAG(IS_CHROMEOS)

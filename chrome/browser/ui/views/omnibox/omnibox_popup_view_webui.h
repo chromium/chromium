@@ -31,7 +31,7 @@ class OmniboxPopupViewWebUI : public OmniboxPopupView {
   OmniboxPopupViewWebUI(OmniboxViewViews* omnibox_view,
                         OmniboxController* controller,
                         LocationBarView* location_bar_view);
-  OmniboxPopupViewWebUI(const OmniboxPopupViewWebUI&) = delete;
+  explicit OmniboxPopupViewWebUI(const OmniboxPopupViewWebUI&) = delete;
   OmniboxPopupViewWebUI& operator=(const OmniboxPopupViewWebUI&) = delete;
   ~OmniboxPopupViewWebUI() override;
 
@@ -51,7 +51,7 @@ class OmniboxPopupViewWebUI : public OmniboxPopupView {
  protected:
   friend class OmniboxPopupViewWebUITest;
   FRIEND_TEST_ALL_PREFIXES(OmniboxPopupViewWebUITest,
-                           PopupLoadsAndAcceptsCalls);
+                           TestSatisfiesTestCoverageRobot);
 
   // Convenience accessor that returns the webui_view_'s WebUI handler.
   RealboxHandler* handler() const;

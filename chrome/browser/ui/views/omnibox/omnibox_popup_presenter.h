@@ -12,7 +12,6 @@
 #include "ui/views/widget/widget_observer.h"
 
 class LocationBarView;
-class OmniboxController;
 class RealboxHandler;
 
 // An assistant class for OmniboxPopupViewWebUI, this manages a WebView and a
@@ -25,8 +24,7 @@ class OmniboxPopupPresenter : public views::WebView,
                               public views::WidgetObserver {
  public:
   METADATA_HEADER(OmniboxPopupPresenter);
-  explicit OmniboxPopupPresenter(LocationBarView* location_bar_view,
-                                 OmniboxController* controller);
+  explicit OmniboxPopupPresenter(LocationBarView* location_bar_view);
   OmniboxPopupPresenter(const OmniboxPopupPresenter&) = delete;
   OmniboxPopupPresenter& operator=(const OmniboxPopupPresenter&) = delete;
   ~OmniboxPopupPresenter() override;
@@ -35,15 +33,8 @@ class OmniboxPopupPresenter : public views::WebView,
   void Show();
   void Hide();
 
-  // Tells whether the popup widget exists.
-  bool IsShown() const;
-
-  // Tells whether the WebUI handler is loaded and ready to receive calls.
-  // This must return true before any calls to GetHandler are made.
-  bool IsHandlerReady();
-
   // Get the handler for communicating with the WebUI interface.
-  RealboxHandler* GetHandler();
+  RealboxHandler* GetWebUIHandler();
 
   // views::WidgetObserver:
   void OnWidgetDestroyed(views::Widget* widget) override;
