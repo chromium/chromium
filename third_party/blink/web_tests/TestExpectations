@@ -2777,6 +2777,8 @@ crbug.com/1359555 external/wpt/speculation-rules/prerender/workers.html [ Failur
 crbug.com/626703 external/wpt/css/css-fonts/parsing/font-variant-invalid.html [ Crash ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 external/wpt/css/css-writing-modes/text-combine-upright-rtl-001.html [ Failure ]
+crbug.com/626703 external/wpt/css/css-writing-modes/text-combine-upright-rtl-002.html [ Failure ]
 crbug.com/626703 [ Mac13 ] virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/content-with-clip.html [ Failure ]
 crbug.com/626703 [ Win10.20h2 ] external/wpt/pointerevents/pointerevent_pointercapture_in_frame.html?pen [ Failure Timeout ]
 crbug.com/626703 [ Mac ] external/wpt/css/css-text/text-transform/text-transform-capitalize-034.html [ Failure ]
