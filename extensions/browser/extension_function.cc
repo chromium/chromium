@@ -28,6 +28,7 @@
 #include "base/trace_event/trace_event.h"
 #include "components/keyed_service/content/browser_context_keyed_service_shutdown_notifier_factory.h"
 #include "components/keyed_service/core/keyed_service_shutdown_notifier.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
@@ -274,6 +275,12 @@ class BrowserContextShutdownNotifierFactory
   friend class base::NoDestructor<BrowserContextShutdownNotifierFactory>;
   BrowserContextShutdownNotifierFactory()
       : BrowserContextKeyedServiceShutdownNotifierFactory("ExtensionFunction") {
+  }
+
+  content::BrowserContext* GetBrowserContextToUse(
+      content::BrowserContext* context) const override {
+    return extensions::ExtensionsBrowserClient::Get()->GetContextOwnInstance(
+        context, /*force_guest_profile=*/true);
   }
 };
 

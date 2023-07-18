@@ -112,6 +112,11 @@ ShellExtensionsBrowserClient::GetContextForOriginalOnly(
   return context;
 }
 
+bool ShellExtensionsBrowserClient::AreExtensionsDisabledForContext(
+    content::BrowserContext* context) {
+  return false;
+}
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 std::string ShellExtensionsBrowserClient::GetUserIdHashFromContext(
     content::BrowserContext* context) {

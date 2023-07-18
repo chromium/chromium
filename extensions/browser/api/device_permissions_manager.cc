@@ -689,7 +689,8 @@ BrowserContext* DevicePermissionsManagerFactory::GetBrowserContextToUse(
   // Return the original (possibly off-the-record) browser context so that a
   // separate instance of the DevicePermissionsManager is used in incognito
   // mode. The parent class's implemenation returns NULL.
-  return context;
+  return ExtensionsBrowserClient::Get()->GetContextOwnInstance(
+      context, /*force_guest_profile=*/true);
 }
 
 }  // namespace extensions

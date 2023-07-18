@@ -216,12 +216,14 @@ ProcessManager* ProcessManager::Create(BrowserContext* context) {
     // a regular incognito mode, background pages of extensions must be
     // created regardless of whether extensions use "spanning" or "split"
     // incognito behavior.
-    BrowserContext* original_context = client->GetOriginalContext(context);
+    BrowserContext* original_context = client->GetContextRedirectedToOriginal(
+        context, /*force_guest_profile=*/true);
     return new ProcessManager(context, original_context, extension_registry);
   }
 
   if (context->IsOffTheRecord()) {
-    BrowserContext* original_context = client->GetOriginalContext(context);
+    BrowserContext* original_context = client->GetContextRedirectedToOriginal(
+        context, /*force_guest_profile=*/true);
     return new IncognitoProcessManager(
         context, original_context, extension_registry);
   }
@@ -1115,7 +1117,8 @@ IncognitoProcessManager::GetSiteInstanceForURL(const GURL& url) {
       extension_registry_->enabled_extensions().GetExtensionOrAppByURL(url);
   if (extension && !IncognitoInfo::IsSplitMode(extension)) {
     BrowserContext* original_context =
-        ExtensionsBrowserClient::Get()->GetOriginalContext(browser_context());
+        ExtensionsBrowserClient::Get()->GetContextRedirectedToOriginal(
+            browser_context(), /*force_guest_profile=*/true);
     return ProcessManager::Get(original_context)->GetSiteInstanceForURL(url);
   }
 
