@@ -391,7 +391,7 @@ IN_PROC_BROWSER_TEST_F(CompanionLiveTest, InitialNavigationLoggedOut) {
 
   // Click on sign-in promo and expect sign in site in new tab.
   int tab_count = browser()->tab_strip_model()->count();
-  ClickButtonByAriaLabel("Sign in button");
+  ClickButtonByAriaLabel("Sign in to Chrome");
   WaitForTabCount(tab_count + 1);
 
   // Wait for page to load.
