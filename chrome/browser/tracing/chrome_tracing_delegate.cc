@@ -62,7 +62,8 @@ using tracing::BackgroundTracingStateManager;
 
 bool IsBackgroundTracingCommandLine() {
   auto tracing_mode = tracing::GetBackgroundTracingSetupMode();
-  if (tracing_mode == BackgroundTracingSetupMode::kFromConfigFile ||
+  if (tracing_mode == BackgroundTracingSetupMode::kFromJsonConfigFile ||
+      tracing_mode == BackgroundTracingSetupMode::kFromProtoConfigFile ||
       tracing_mode == BackgroundTracingSetupMode::kFromFieldTrialLocalOutput) {
     return true;
   }

@@ -181,11 +181,14 @@ bool BackgroundTracingManagerImpl::RequestActivateScenario() {
 
 bool BackgroundTracingManagerImpl::InitializeScenarios(
     const perfetto::protos::gen::ChromeFieldTracingConfig& config,
+    ReceiveCallback receive_callback,
     DataFiltering data_filtering) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (!RequestActivateScenario()) {
     return false;
   }
+
+  receive_callback_ = std::move(receive_callback);
 
   requires_anonymized_data_ = (data_filtering == ANONYMIZE_DATA);
   InitializeTraceReportDatabase();

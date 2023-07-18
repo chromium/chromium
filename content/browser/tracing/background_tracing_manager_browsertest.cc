@@ -454,7 +454,7 @@ IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest,
     }
   )pb";
   BackgroundTracingManager::GetInstance().InitializeScenarios(
-      ParseFieldTracingConfigFromText(kScenarioConfig),
+      ParseFieldTracingConfigFromText(kScenarioConfig), base::NullCallback(),
       BackgroundTracingManager::NO_DATA_FILTERING);
 
   background_tracing_helper.ExpectOnScenarioActive("test_scenario");
@@ -484,7 +484,7 @@ IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest,
     }
   )pb";
   BackgroundTracingManager::GetInstance().InitializeScenarios(
-      ParseFieldTracingConfigFromText(kScenarioConfig),
+      ParseFieldTracingConfigFromText(kScenarioConfig), base::NullCallback(),
       BackgroundTracingManager::NO_DATA_FILTERING);
 
   background_tracing_helper.ExpectOnScenarioActive("test_scenario");
@@ -524,7 +524,7 @@ IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest,
     }
   )pb";
   BackgroundTracingManager::GetInstance().InitializeScenarios(
-      ParseFieldTracingConfigFromText(kScenarioConfig),
+      ParseFieldTracingConfigFromText(kScenarioConfig), base::NullCallback(),
       BackgroundTracingManager::ANONYMIZE_DATA);
   background_tracing_helper.ExpectOnScenarioActive("test_scenario");
   EXPECT_TRUE(BackgroundTracingManager::EmitNamedTrigger("start_trigger"));
@@ -573,7 +573,7 @@ IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest,
     }
   )pb";
   BackgroundTracingManager::GetInstance().InitializeScenarios(
-      ParseFieldTracingConfigFromText(kScenarioConfig),
+      ParseFieldTracingConfigFromText(kScenarioConfig), base::NullCallback(),
       BackgroundTracingManager::NO_DATA_FILTERING);
 
   observer.ExpectOnScenarioActive("test_scenario");

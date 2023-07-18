@@ -19,19 +19,20 @@ const char kBackgroundTracingFieldTrial[] = "BackgroundTracing";
 
 }  // namespace
 
-void SetupBackgroundTracingFieldTrial() {
-  if (tracing::GetBackgroundTracingSetupMode() ==
-      BackgroundTracingSetupMode::kDisabledInvalidCommandLine)
-    return;
+bool SetupBackgroundTracingFieldTrial() {
+  auto tracing_mode = tracing::GetBackgroundTracingSetupMode();
 
-  if (tracing::SetupBackgroundTracingFromCommandLine(
-          kBackgroundTracingFieldTrial))
-    return;
-
-  auto& manager = BackgroundTracingManager::GetInstance();
-  manager.SetActiveScenario(
-      manager.GetBackgroundTracingConfig(kBackgroundTracingFieldTrial),
-      BackgroundTracingManager::ANONYMIZE_DATA);
+  if (tracing_mode == BackgroundTracingSetupMode::kFromFieldTrial) {
+    auto& manager = BackgroundTracingManager::GetInstance();
+    return manager.SetActiveScenario(
+        manager.GetBackgroundTracingConfig(kBackgroundTracingFieldTrial),
+        BackgroundTracingManager::ANONYMIZE_DATA);
+  } else if (tracing_mode !=
+             BackgroundTracingSetupMode::kDisabledInvalidCommandLine) {
+    return tracing::SetupBackgroundTracingFromCommandLine(
+        kBackgroundTracingFieldTrial);
+  }
+  return false;
 }
 
 }  // namespace tracing

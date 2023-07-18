@@ -20,7 +20,10 @@ namespace android_webview {
 
 bool IsBackgroundTracingCommandLine() {
   auto tracing_mode = tracing::GetBackgroundTracingSetupMode();
-  if (tracing_mode == tracing::BackgroundTracingSetupMode::kFromConfigFile ||
+  if (tracing_mode ==
+          tracing::BackgroundTracingSetupMode::kFromJsonConfigFile ||
+      tracing_mode ==
+          tracing::BackgroundTracingSetupMode::kFromProtoConfigFile ||
       tracing_mode ==
           tracing::BackgroundTracingSetupMode::kFromFieldTrialLocalOutput) {
     return true;

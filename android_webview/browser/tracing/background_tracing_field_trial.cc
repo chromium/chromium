@@ -17,47 +17,49 @@ using tracing::BackgroundTracingSetupMode;
 
 const char kBackgroundTracingFieldTrial[] = "BackgroundWebviewTracing";
 
-void SetupBackgroundTracingFieldTrial(int allowed_modes) {
-  if (tracing::GetBackgroundTracingSetupMode() ==
-      BackgroundTracingSetupMode::kDisabledInvalidCommandLine)
-    return;
+bool SetupBackgroundTracingFieldTrial(int allowed_modes) {
+  auto tracing_mode = tracing::GetBackgroundTracingSetupMode();
 
-  if (tracing::SetupBackgroundTracingFromCommandLine(
-          kBackgroundTracingFieldTrial))
-    return;
+  if (tracing_mode == BackgroundTracingSetupMode::kDisabledInvalidCommandLine) {
+    return false;
+  } else if (tracing_mode != BackgroundTracingSetupMode::kFromFieldTrial) {
+    return tracing::SetupBackgroundTracingFromCommandLine(
+        kBackgroundTracingFieldTrial);
+  }
 
   auto& manager = content::BackgroundTracingManager::GetInstance();
   std::unique_ptr<content::BackgroundTracingConfig> config =
       manager.GetBackgroundTracingConfig(kBackgroundTracingFieldTrial);
 
   if (!config)
-    return;
+    return false;
 
   if ((config->tracing_mode() & allowed_modes) == 0)
-    return;
+    return false;
 
   // WebView-only tracing session has additional filtering of event names that
   // include package names as a privacy requirement (see
   // go/public-webview-trace-collection).
   config->SetPackageNameFilteringEnabled(
       config->tracing_mode() != content::BackgroundTracingConfig::SYSTEM);
-  manager.SetActiveScenario(std::move(config),
-                            content::BackgroundTracingManager::ANONYMIZE_DATA);
+  return manager.SetActiveScenario(
+      std::move(config), content::BackgroundTracingManager::ANONYMIZE_DATA);
 }
 
 }  // namespace
 
 namespace android_webview {
 
-void MaybeSetupSystemTracing() {
+bool MaybeSetupSystemTracing() {
   if (!tracing::ShouldSetupSystemTracing())
-    return;
+    return false;
 
-  SetupBackgroundTracingFieldTrial(content::BackgroundTracingConfig::SYSTEM);
+  return SetupBackgroundTracingFieldTrial(
+      content::BackgroundTracingConfig::SYSTEM);
 }
 
-void MaybeSetupWebViewOnlyTracing() {
-  SetupBackgroundTracingFieldTrial(
+bool MaybeSetupWebViewOnlyTracing() {
+  return SetupBackgroundTracingFieldTrial(
       content::BackgroundTracingConfig::PREEMPTIVE |
       content::BackgroundTracingConfig::REACTIVE);
 }

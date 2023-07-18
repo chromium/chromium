@@ -87,6 +87,7 @@ class BackgroundTracingManagerImpl : public BackgroundTracingManager,
 
   bool InitializeScenarios(
       const perfetto::protos::gen::ChromeFieldTracingConfig& config,
+      ReceiveCallback receive_callback,
       DataFiltering data_filtering) override;
 
   bool SetActiveScenario(std::unique_ptr<BackgroundTracingConfig>,

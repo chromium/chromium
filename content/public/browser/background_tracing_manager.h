@@ -107,9 +107,6 @@ class BackgroundTracingManager {
 
   // Identical to SetActiveScenario except that whenever a trace is finalized,
   // BackgroundTracingManager calls `receive_callback` to upload the trace.
-  // `local_output` should be true if `receive_callback` saves the trace
-  // locally (such as for testing), false if `receive_callback` uploads the
-  // trace to a server.
   virtual bool SetActiveScenarioWithReceiveCallback(
       std::unique_ptr<BackgroundTracingConfig> config,
       ReceiveCallback receive_callback,
@@ -122,11 +119,10 @@ class BackgroundTracingManager {
   // guardian metric (e.g. FirstContentfulPaint). This can only be
   // called once.
   //
-  // This function uploads traces through UMA using SetTraceToUpload /
-  // GetLatestTraceToUpload. To specify a destination to upload to, use
-  // SetActiveScenarioWithReceiveCallback.
+  // `receive_callback` is called whenever a trace is finalized.
   virtual bool InitializeScenarios(
       const perfetto::protos::gen::ChromeFieldTracingConfig& config,
+      ReceiveCallback receive_callback,
       DataFiltering data_filtering) = 0;
 
   virtual bool HasActiveScenario() = 0;

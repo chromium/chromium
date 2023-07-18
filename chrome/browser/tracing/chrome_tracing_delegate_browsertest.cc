@@ -546,7 +546,8 @@ class ChromeTracingDelegateBrowserTestFromCommandLine
     base::FilePath config_path(
         temp_dir_.GetPath().Append(FILE_PATH_LITERAL("config.json")));
     ASSERT_TRUE(base::WriteFile(config_path, kDefaultConfigText));
-    command_line->AppendSwitchPath("enable-background-tracing", config_path);
+    command_line->AppendSwitchPath("enable-legacy-background-tracing",
+                                   config_path);
 
     output_path_ = base::FilePath(
         temp_dir_.GetPath().Append(FILE_PATH_LITERAL("output.perfetto.gz")));
