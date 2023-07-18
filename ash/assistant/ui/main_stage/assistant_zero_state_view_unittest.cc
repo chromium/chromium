@@ -15,8 +15,10 @@
 #include "ash/style/dark_light_mode_controller_impl.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/services/assistant/public/cpp/features.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/chromeos/styles/cros_styles.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/views/controls/label.h"
 
 namespace ash {
@@ -246,23 +248,32 @@ TEST_F(AssistantZeroStateViewUnittest, ThemeDarkLightModeForToast) {
 
   views::Label* title_label = learn_more_toast->GetTitleLabelForTesting();
 
-  EXPECT_FALSE(title_label->background());
-  EXPECT_EQ(title_label->GetEnabledColor(),
-            cros_styles::ResolveColor(cros_styles::ColorName::kTextColorPrimary,
+  const bool is_jelly_enabled = chromeos::features::IsJellyEnabled();
+  auto enabled_color =
+      is_jelly_enabled
+          ? learn_more_toast->GetColorProvider()->GetColor(
+                static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurface))
+          : cros_styles::ResolveColor(cros_styles::ColorName::kTextColorPrimary,
                                       /*is_dark_mode=*/initial_dark_mode_status,
-                                      /*use_debug_colors=*/false));
+                                      /*use_debug_colors=*/false);
+  EXPECT_EQ(title_label->GetEnabledColor(), enabled_color);
+  EXPECT_FALSE(title_label->background());
 
   // Switch the color mode.
   dark_light_mode_controller->ToggleColorMode();
   ASSERT_NE(initial_dark_mode_status,
             dark_light_mode_controller->IsDarkModeEnabled());
 
+  enabled_color =
+      is_jelly_enabled
+          ? learn_more_toast->GetColorProvider()->GetColor(
+                static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurface))
+          : cros_styles::ResolveColor(
+                cros_styles::ColorName::kTextColorPrimary,
+                /*is_dark_mode=*/!initial_dark_mode_status,
+                /*use_debug_colors=*/false);
+  EXPECT_EQ(title_label->GetEnabledColor(), enabled_color);
   EXPECT_FALSE(title_label->background());
-  EXPECT_EQ(
-      title_label->GetEnabledColor(),
-      cros_styles::ResolveColor(cros_styles::ColorName::kTextColorPrimary,
-                                /*is_dark_mode=*/!initial_dark_mode_status,
-                                /*use_debug_colors=*/false));
 }
 
 }  // namespace
