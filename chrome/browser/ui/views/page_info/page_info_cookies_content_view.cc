@@ -290,6 +290,15 @@ void PageInfoCookiesContentView::SetThirdPartyCookiesInfo(
         l10n_util::GetStringUTF16(
             CookieControlsUtil::GetEnforcedTooltipTextId(enforcement)));
   }
+
+  // Set the preferred width of the label wrapper to the title width. It ensures
+  // that the title isn't truncated and it prevents the container expanding to
+  // try to fit the description (which should be wrapped).
+  const int title_width =
+      third_party_cookies_title_->GetPreferredSize().width();
+  third_party_cookies_label_wrapper_->SetPreferredSize(gfx::Size(
+      title_width,
+      third_party_cookies_label_wrapper_->GetHeightForWidth(title_width)));
 }
 
 void PageInfoCookiesContentView::UpdateBlockingThirdPartyCookiesToggle(
@@ -518,13 +527,4 @@ void PageInfoCookiesContentView::AddThirdPartyCookiesContainer() {
 
   third_party_cookies_container_->AddChildView(
       PageInfoViewFactory::CreateSeparator());
-
-  // Set the preferred width of the container to the title width. It prevents
-  // the container expanding to try to fit the description (which should be
-  // wrapped).
-  const int title_width =
-      third_party_cookies_title_->GetPreferredSize().width();
-  third_party_cookies_container_->SetPreferredSize(gfx::Size(
-      title_width,
-      third_party_cookies_container_->GetHeightForWidth(title_width)));
 }
