@@ -61,6 +61,9 @@ OmniboxChipButton::OmniboxChipButton(PressedCallback callback)
         GetLayoutConstant(LOCATION_BAR_CHILD_INTERIOR_PADDING),
         GetLayoutInsets(LOCATION_BAR_ICON_INTERIOR_PADDING).left()));
   }
+  if (features::IsChromeRefresh2023()) {
+    label()->SetTextStyle(views::style::STYLE_BODY_4_EMPHASIS);
+  }
   SetCornerRadius(GetCornerRadius());
   constexpr auto kAnimationDuration = base::Milliseconds(350);
   animation_ = std::make_unique<gfx::SlideAnimation>(this);

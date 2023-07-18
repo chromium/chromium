@@ -223,8 +223,19 @@ void LocationBarView::Init() {
   const gfx::FontList& font_list = views::style::GetFont(
       CONTEXT_OMNIBOX_PRIMARY, views::style::STYLE_PRIMARY);
 
+  const gfx::FontList& omnibox_chip_font_list =
+      OmniboxFieldTrial::IsChromeRefreshIconsEnabled()
+          ? views::style::GetFont(CONTEXT_OMNIBOX_PRIMARY,
+                                  views::style::STYLE_BODY_4_EMPHASIS)
+          : font_list;
+  const gfx::FontList& page_action_font_list =
+      OmniboxFieldTrial::IsChromeRefreshIconsEnabled()
+          ? views::style::GetFont(CONTEXT_OMNIBOX_PRIMARY,
+                                  views::style::STYLE_BODY_3_EMPHASIS)
+          : font_list;
+
   auto location_icon_view =
-      std::make_unique<LocationIconView>(font_list, this, this);
+      std::make_unique<LocationIconView>(omnibox_chip_font_list, this, this);
   location_icon_view->set_drag_controller(this);
   location_icon_view_ = AddChildView(std::move(location_icon_view));
 
@@ -280,7 +291,8 @@ void LocationBarView::Init() {
   }
 
   selected_keyword_view_ = AddChildView(std::make_unique<SelectedKeywordView>(
-      this, TemplateURLServiceFactory::GetForProfile(profile_), font_list));
+      this, TemplateURLServiceFactory::GetForProfile(profile_),
+      omnibox_chip_font_list));
 
   if (browser_ && apps::features::LinkCapturingUiUpdateEnabled()) {
     intent_chip_ =
@@ -293,7 +305,7 @@ void LocationBarView::Init() {
       ContentSettingImageModel::GenerateContentSettingImageModels();
   for (auto& model : models) {
     auto image_view = std::make_unique<ContentSettingImageView>(
-        std::move(model), this, this, font_list);
+        std::move(model), this, this, page_action_font_list);
     image_view->SetIconColor(icon_color);
     image_view->SetVisible(false);
     content_setting_views_.push_back(AddChildView(std::move(image_view)));
@@ -367,7 +379,7 @@ void LocationBarView::Init() {
                           : icon_color;
   params.between_icon_spacing =
       OmniboxFieldTrial::IsChromeRefreshIconsEnabled() ? 8 : 0;
-  params.font_list = &font_list;
+  params.font_list = &page_action_font_list;
   params.browser = browser_;
   params.command_updater = command_updater();
   params.icon_label_bubble_delegate = this;
