@@ -46,8 +46,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.BuildInfo;
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -67,6 +65,7 @@ import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
+import org.chromium.chrome.test.util.browser.signin.SigninTestUtil;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.policy.test.annotations.Policies;
@@ -490,18 +489,10 @@ public class FirstRunActivitySigninAndSyncTest {
     }
 
     private void completeAutoDeviceLockIfNeeded() {
-        if (!ThreadUtils.runOnUiThreadBlockingNoException(
-                    () -> BuildInfo.getInstance().isAutomotive)) {
-            return;
+        if (mFirstRunActivity.getCurrentFragmentForTesting() instanceof SigninFirstRunFragment) {
+            SigninTestUtil.completeAutoDeviceLockIfNeeded(
+                    (SigninFirstRunFragment) mFirstRunActivity.getCurrentFragmentForTesting());
         }
-
-        onView(withId(R.id.device_lock_view)).check(matches(isDisplayed()));
-
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            SigninFirstRunFragment signinFirstRunFragment =
-                    (SigninFirstRunFragment) mFirstRunActivity.getCurrentFragmentForTesting();
-            signinFirstRunFragment.onDeviceLockReady();
-        });
     }
 
     private static class LinkClick implements ViewAction {

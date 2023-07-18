@@ -4,15 +4,23 @@
 
 package org.chromium.chrome.test.util.browser.signin;
 
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
+
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 
 import org.junit.Assert;
 
+import org.chromium.base.BuildInfo;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.SyncFirstSetupCompleteSource;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.signin.SigninFirstRunFragment;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.components.signin.AccountUtils;
@@ -161,6 +169,21 @@ public final class SigninTestUtil {
         } catch (TimeoutException e) {
             throw new RuntimeException("Timed out waiting for callback", e);
         }
+    }
+
+    /**
+     * Simulates completing the device lock challenge for SigninFirstRunFragment.
+     * @param fragment The fragment under test.
+     */
+    public static void completeAutoDeviceLockIfNeeded(SigninFirstRunFragment fragment) {
+        if (!ThreadUtils.runOnUiThreadBlockingNoException(
+                    () -> BuildInfo.getInstance().isAutomotive)) {
+            return;
+        }
+
+        onView(withId(R.id.device_lock_view)).check(matches(isDisplayed()));
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> fragment.onDeviceLockReady());
     }
 
     private SigninTestUtil() {}
