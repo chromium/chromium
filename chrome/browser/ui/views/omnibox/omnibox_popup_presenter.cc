@@ -4,6 +4,9 @@
 
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter.h"
 
+#include "base/run_loop.h"
+#include "base/task/thread_pool.h"
+#include "base/threading/platform_thread.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/omnibox/rounded_omnibox_results_frame.h"
@@ -76,13 +79,6 @@ bool OmniboxPopupPresenter::IsShown() const {
   return !!widget_;
 }
 
-bool OmniboxPopupPresenter::IsHandlerReady() {
-  OmniboxPopupUI* omnibox_popup_ui = static_cast<OmniboxPopupUI*>(
-      GetWebContents()->GetWebUI()->GetController());
-  return omnibox_popup_ui->handler() &&
-         omnibox_popup_ui->handler()->IsRemoteBound();
-}
-
 RealboxHandler* OmniboxPopupPresenter::GetHandler() {
   OmniboxPopupUI* omnibox_popup_ui = static_cast<OmniboxPopupUI*>(
       GetWebContents()->GetWebUI()->GetController());
@@ -120,6 +116,36 @@ gfx::Rect OmniboxPopupPresenter::GetTargetBounds() const {
   // Finally, expand the widget to accommodate the custom-drawn shadows.
   content_rect.Inset(-RoundedOmniboxResultsFrame::GetShadowInsets());
   return content_rect;
+}
+
+void OmniboxPopupPresenter::WaitForHandler() {
+  if (IsHandlerReady()) {
+    return;
+  }
+  base::RunLoop loop;
+  auto quit = loop.QuitClosure();
+  auto runner = base::ThreadPool::CreateTaskRunner(base::TaskTraits());
+  runner->PostTask(FROM_HERE,
+                   base::BindOnce(
+                       [](OmniboxPopupPresenter* presenter,
+                          base::RepeatingClosure* closure) {
+                         while (!presenter->IsHandlerReady()) {
+                           base::PlatformThread::Sleep(base::Milliseconds(1));
+                         }
+                         closure->Run();
+                       },
+                       base::Unretained(this), &quit));
+  // base::Unretained is safe here because this is not currently destructing and
+  // we are blocking until quit closure is run.
+  loop.Run();
+  CHECK(IsHandlerReady());
+}
+
+bool OmniboxPopupPresenter::IsHandlerReady() {
+  OmniboxPopupUI* omnibox_popup_ui = static_cast<OmniboxPopupUI*>(
+      GetWebContents()->GetWebUI()->GetController());
+  return omnibox_popup_ui->handler() &&
+         omnibox_popup_ui->handler()->IsRemoteBound();
 }
 
 void OmniboxPopupPresenter::ReleaseWidget(bool close) {
