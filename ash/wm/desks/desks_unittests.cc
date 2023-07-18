@@ -10991,6 +10991,48 @@ TEST_P(DeskButtonTest, BarBoundsWithWorkAreaChangeDockedMagnifier) {
   EXPECT_EQ(bounds, expected_bounds);
 }
 
+// Tests that desk button tab order is correct in the shelf.
+TEST_P(DeskButtonTest, TabOrder) {
+  NewDesk();
+  NewDesk();
+  auto* desks_controller = DesksController::Get();
+  ASSERT_THAT(desks_controller->desks().size(), 3);
+  ASSERT_THAT(desks_controller->GetActiveDeskIndex(), 0);
+
+  // Tabbing once should focus the shelf navigation widget.
+  SendKey(ui::VKEY_TAB);
+
+  // One more tab should focus the desk button, then the next desk button. There
+  // should be no previous desk button since we're on the first desk
+  SendKey(ui::VKEY_TAB);
+  ASSERT_TRUE(GetDeskButton()->HasFocus());
+  SendKey(ui::VKEY_TAB);
+  ASSERT_TRUE(GetDeskButton()->next_desk_button()->HasFocus());
+
+  // Tabbing in the other direction should work too.
+  SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
+  ASSERT_TRUE(GetDeskButton()->HasFocus());
+  SendKey(ui::VKEY_TAB);
+  ASSERT_TRUE(GetDeskButton()->next_desk_button()->HasFocus());
+
+  // Pressing the next desk button should take us to the next desk, and
+  // immediately pressing enter again should take us to the last desk.
+  DeskSwitchAnimationWaiter waiter;
+  SendKey(ui::VKEY_RETURN);
+  waiter.Wait();
+  ASSERT_THAT(desks_controller->GetActiveDeskIndex(), 1);
+  ASSERT_TRUE(GetDeskButton()->prev_desk_button()->GetEnabled());
+  ASSERT_TRUE(GetDeskButton()->next_desk_button()->GetEnabled());
+  DeskSwitchAnimationWaiter waiter2;
+  SendKey(ui::VKEY_RETURN);
+  waiter2.Wait();
+  ASSERT_THAT(desks_controller->GetActiveDeskIndex(), 2);
+
+  // Focus should have been passed to the hotseat widget now that the next desk
+  // button isn't visible.
+  ASSERT_FALSE(GetDeskButton()->next_desk_button()->GetEnabled());
+}
+
 // TODO(afakhry): Add more tests:
 // - Always on top windows are not tracked by any desk.
 // - Reusing containers when desks are removed and created.

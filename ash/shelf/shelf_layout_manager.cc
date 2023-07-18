@@ -1307,6 +1307,13 @@ void ShelfLayoutManager::OnSplitViewStateChanged(
 }
 
 void ShelfLayoutManager::OnOverviewModeWillStart() {
+  // If a shelf window is active before overview starts, deactivate it to avoid
+  // overview window activation issues.
+  // TODO(b/289287310): Consolidate behavior: shelf and overview.
+  auto* active_window = window_util::GetActiveWindow();
+  if (active_window && IsShelfWindow(active_window)) {
+    wm::DeactivateWindow(active_window);
+  }
   overview_mode_will_start_ = true;
 }
 
@@ -2416,13 +2423,22 @@ bool ShelfLayoutManager::IsShelfWindow(aura::Window* window) {
         (login_shelf_window && login_shelf_window->Contains(window));
   }
 
+  // Calculate whether `window` is contained by the desk button widget.
+  bool window_in_desk_button_widget = false;
+  if (features::IsDeskButtonEnabled()) {
+    const aura::Window* desk_button_window =
+        shelf_->desk_button_widget()->GetNativeWindow();
+    window_in_desk_button_widget =
+        (desk_button_window && desk_button_window->Contains(window));
+  }
+
   return (shelf_window && shelf_window->Contains(window)) ||
          (navigation_window && navigation_window->Contains(window)) ||
          (hotseat_window && hotseat_window->Contains(window)) ||
          (status_area_window && status_area_window->Contains(window)) ||
          (drag_handle_nudge_window &&
           drag_handle_nudge_window->Contains(window)) ||
-         window_in_login_shelf_widget;
+         window_in_login_shelf_widget || window_in_desk_button_widget;
 }
 
 bool ShelfLayoutManager::IsStatusAreaWindow(aura::Window* window) {

@@ -41,6 +41,12 @@ class DeskSwitchButton : public views::ImageButton {
   void OnMouseExited(const ui::MouseEvent& event) override;
   void OnPaintBackground(gfx::Canvas* canvas) override;
 
+  // views::View:
+  void AboutToRequestFocusFromTabTraversal(bool reverse) override;
+
+  // views::ViewObserver:
+  void OnViewBlurred(views::View* observed_view) override;
+
   bool hovered_ = false;
 };
 
@@ -72,6 +78,12 @@ class ASH_EXPORT DeskButton : public views::Button,
 
   void SetActivation(bool is_activated);
 
+  void SetFocused(bool is_focused);
+
+  // Changes whether the button is expanded and if the switch buttons are shown
+  // depending on if the button is focused.
+  void MaybeContract();
+
   std::u16string GetTitleForView(const views::View* view);
 
   views::Label* desk_name_label_for_test() const { return desk_name_label_; }
@@ -95,6 +107,12 @@ class ASH_EXPORT DeskButton : public views::Button,
   void OnDeskNameChanged(const Desk* desk,
                          const std::u16string& new_name) override;
 
+  // views::View:
+  void AboutToRequestFocusFromTabTraversal(bool reverse) override;
+
+  // views::ViewObserver:
+  void OnViewBlurred(views::View* observed_view) override;
+
   // Toggles the button's `is_activated_` state and adjusts the button's style
   // to reflect the new activation state.
   void OnButtonPressed();
@@ -116,6 +134,9 @@ class ASH_EXPORT DeskButton : public views::Button,
   void UpdateShelfAutoHideDisabler(
       absl::optional<Shelf::ScopedDisableAutoHide>& disabler,
       bool should_enable_shelf_auto_hide);
+
+  // Set up the focus ring, focus behavior, and highlight path for the buttons.
+  void SetupFocus(views::Button* view);
 
   // Widget that maintains this object.
   // TODO(b/272383056): Remove this and this class's dependence on accessing it.
@@ -143,6 +164,9 @@ class ASH_EXPORT DeskButton : public views::Button,
   // Tracks whether the button is currently activated (i.e. whether the desk
   // button has been pressed).
   bool is_activated_ = false;
+
+  // Tracks whether the button currently has focus.
+  bool is_focused_ = false;
 
   // Indicates that the shelf is horizontal and therefore the button should
   // always be expanded.

@@ -808,6 +808,9 @@ void ShelfWidget::Shutdown() {
   Shell::Get()->focus_cycler()->RemoveWidget(shelf_->status_area_widget());
   Shell::Get()->focus_cycler()->RemoveWidget(navigation_widget());
   Shell::Get()->focus_cycler()->RemoveWidget(hotseat_widget());
+  if (features::IsDeskButtonEnabled()) {
+    Shell::Get()->focus_cycler()->RemoveWidget(desk_button_widget());
+  }
 
   // Don't need to update the shelf background during shutdown.
   background_animator_.RemoveObserver(delegate_view_);
@@ -838,6 +841,9 @@ void ShelfWidget::PostCreateShelf() {
 
   // Add widgets to |focus_cycler| in the desired focus order in LTR.
   focus_cycler->AddWidget(navigation_widget());
+  if (features::IsDeskButtonEnabled()) {
+    focus_cycler->AddWidget(desk_button_widget());
+  }
   hotseat_widget()->SetFocusCycler(focus_cycler);
   focus_cycler->AddWidget(status_area_widget());
 

@@ -49,6 +49,11 @@ class ASH_EXPORT DeskButtonWidget : public ShelfComponent,
   // the current positioning.
   gfx::Rect GetTargetExpandedBounds() const;
 
+  // Depending on what child view has focus, either focus out of the desk
+  // button, or pass the focus to the next view. `reverse` indicates backward
+  // focusing, otherwise forward focusing.
+  void MaybeFocusOut(bool reverse);
+
   // Whether the desk button should currently be visible.
   bool ShouldBeVisible() const;
 
@@ -73,12 +78,23 @@ class ASH_EXPORT DeskButtonWidget : public ShelfComponent,
 
   DeskButton* GetDeskButton() const;
 
+  void set_default_last_focusable_child(bool default_last_focusable_child) {
+    default_last_focusable_child_ = default_last_focusable_child;
+  }
+
  private:
   class DelegateView;
 
   // Returns the proper origin that the shrunk desk button should have to be
   // centered in the shelf.
   gfx::Point GetCenteredOrigin() const;
+
+  // Sets the desk button to not be hovered and set un-expanded if necessary
+  // before focusing out.
+  void FocusOut(bool reverse);
+
+  // views::Widget:
+  bool OnNativeWidgetActivationChanged(bool active) override;
 
   raw_ptr<DelegateView, DanglingUntriaged> delegate_view_ = nullptr;
 
@@ -87,6 +103,10 @@ class ASH_EXPORT DeskButtonWidget : public ShelfComponent,
   raw_ptr<Shelf> const shelf_;
   bool is_horizontal_shelf_;
   bool is_expanded_;
+
+  // When true, the default focus of the desk button widget is the last
+  // focusable child.
+  bool default_last_focusable_child_ = false;
 };
 
 }  // namespace ash
