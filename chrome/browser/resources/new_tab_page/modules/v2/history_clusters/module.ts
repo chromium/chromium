@@ -78,7 +78,7 @@ export class HistoryClustersModuleElement extends I18nMixin
 
   private onDismissButtonClick_() {
     HistoryClustersProxyImpl.getInstance().handler.dismissCluster(
-        [this.searchResultsPage_, ...this.cluster.visits]);
+        [this.searchResultsPage_, ...this.cluster.visits], this.cluster.id);
     this.dispatchEvent(new CustomEvent('dismiss-module', {
       bubbles: true,
       composed: true,

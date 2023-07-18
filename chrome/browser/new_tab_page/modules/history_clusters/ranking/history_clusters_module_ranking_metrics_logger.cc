@@ -30,6 +30,13 @@ void HistoryClustersModuleRankingMetricsLogger::SetClicked(int64_t cluster_id) {
   }
 }
 
+void HistoryClustersModuleRankingMetricsLogger::SetDismissed(
+    int64_t cluster_id) {
+  if (ranking_metrics_infos_.contains(cluster_id)) {
+    ranking_metrics_infos_[cluster_id].dismissed = true;
+  }
+}
+
 void HistoryClustersModuleRankingMetricsLogger::SetLayoutTypeShown(
     ntp::history_clusters::mojom::LayoutType layout_type,
     int64_t cluster_id) {
@@ -76,6 +83,7 @@ void HistoryClustersModuleRankingMetricsLogger::MaybeRecordRankingMetricsInfo(
   ukm::builders::NewTabPage_HistoryClusters builder(ukm_source_id_);
   ranking_metrics_info.ranking_signals.PopulateUkmEntry(&builder);
   builder.SetDidEngageWithModule(ranking_metrics_info.clicked);
+  builder.SetDidDismissModule(ranking_metrics_info.dismissed);
   builder.SetLayoutTypeShown(
       static_cast<int64_t>(ranking_metrics_info.layout_type));
   builder.Record(ukm::UkmRecorder::Get());
