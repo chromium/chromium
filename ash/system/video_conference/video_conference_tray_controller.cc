@@ -473,10 +473,12 @@ void VideoConferenceTrayController::OnInputMuteChanged(
   microphone_muted_by_hardware_switch_ =
       method == CrasAudioHandler::InputMuteChangeMethod::kPhysicalShutter;
 
-  // Reset the speak-on-mute notification timer when change to mute so user can
-  // get instant speak-on-mute notification when they mute their microphone.
   if (mute_on) {
-    last_speak_on_mute_notification_time_.reset();
+    // Updates the last mic muted time and resets the should show notification
+    // flag so user gets 60 seconds cool down before speak-on-mute notification
+    // can show when they mute their microphone.
+    last_mic_muted_time_ = base::TimeTicks::Now();
+    should_show_speak_on_mute_notification = true;
 
     // Attempt showing the speak-on-mute opt-in nudge when input is muted.
     MaybeShowSpeakOnMuteOptInNudge(GetVcTrayInActiveWindow());
@@ -507,9 +509,9 @@ void VideoConferenceTrayController::OnInputMuteChanged(
 void VideoConferenceTrayController::OnSpeakOnMuteDetected() {
   const base::TimeTicks current_time = base::TimeTicks::Now();
 
-  if (!last_speak_on_mute_notification_time_.has_value() ||
-      (current_time - last_speak_on_mute_notification_time_.value())
-              .InSeconds() >= KSpeakOnMuteNotificationCoolDownDuration) {
+  if (should_show_speak_on_mute_notification &&
+      (current_time - last_mic_muted_time_).InSeconds() >=
+          KSpeakOnMuteNotificationCoolDownDuration) {
     AnchoredNudgeData nudge_data(
         kVideoConferenceTraySpeakOnMuteDetectedNudgeId,
         NudgeCatalogName::kVideoConferenceTraySpeakOnMuteDetected,
@@ -527,7 +529,9 @@ void VideoConferenceTrayController::OnSpeakOnMuteDetected() {
     nudge_data.anchored_to_shelf = true;
     AnchoredNudgeManager::Get()->Show(nudge_data);
 
-    last_speak_on_mute_notification_time_.emplace(current_time);
+    // Notification has shown in the current session, and we should not show it
+    // again.
+    should_show_speak_on_mute_notification = false;
   }
 }
 
@@ -578,6 +582,10 @@ void VideoConferenceTrayController::UpdateWithMediaState(
     // count.
     ++count_repeated_shows_;
     repeated_shows_timer_.Reset();
+
+    // Resets the should show flag for speak-on-mute notification so that
+    // notification can pop-up when new VC tray appears.
+    should_show_speak_on_mute_notification = true;
   }
 
   if (state_.has_media_app != old_state.has_media_app) {
