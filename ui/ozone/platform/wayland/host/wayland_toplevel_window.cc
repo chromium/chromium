@@ -138,6 +138,7 @@ void WaylandToplevelWindow::DispatchHostWindowDragMovement(
     shell_toplevel_->SurfaceResize(connection(), hittest);
 
   connection()->Flush();
+  connection()->event_source()->ResetPointerFlags();
 }
 
 void WaylandToplevelWindow::Show(bool inactive) {
