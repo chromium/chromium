@@ -89,6 +89,8 @@ class TestModelProviderFactory : public ModelProviderFactory {
     std::map<proto::SegmentId, MockDefaultModelProvider*>
         default_model_providers;
 
+    // Map of targets to the metadata that the default model should return when
+    // the platform requests for the data.
     std::map<proto::SegmentId, proto::SegmentationModelMetadata>
         default_provider_metadata;
 

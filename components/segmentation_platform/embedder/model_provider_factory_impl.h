@@ -69,7 +69,8 @@ class TestDefaultModelOverride {
 
   TestDefaultModelOverride();
 
-  std::map<proto::SegmentId, std::unique_ptr<DefaultModelProvider>> providers_;
+  std::map<proto::SegmentId, std::unique_ptr<DefaultModelProvider>>
+      default_providers_;
 };
 
 }  // namespace segmentation_platform

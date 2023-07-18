@@ -94,8 +94,8 @@ TestDefaultModelOverride& TestDefaultModelOverride::GetInstance() {
 std::unique_ptr<DefaultModelProvider>
 TestDefaultModelOverride::TakeOwnershipOfModelProvider(
     proto::SegmentId target) {
-  auto it = providers_.find(target);
-  if (it != providers_.end()) {
+  auto it = default_providers_.find(target);
+  if (it != default_providers_.end()) {
     DCHECK(it->second);
     return std::move(it->second);
   }
@@ -104,8 +104,8 @@ TestDefaultModelOverride::TakeOwnershipOfModelProvider(
 
 void TestDefaultModelOverride::SetModelForTesting(
     proto::SegmentId target,
-    std::unique_ptr<DefaultModelProvider> provider) {
-  providers_[target] = std::move(provider);
+    std::unique_ptr<DefaultModelProvider> default_provider) {
+  default_providers_[target] = std::move(default_provider);
 }
 
 }  // namespace segmentation_platform
