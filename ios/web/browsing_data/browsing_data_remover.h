@@ -13,7 +13,6 @@
 #include "base/time/time.h"
 #import "ios/web/public/browsing_data/browsing_data_removing_util.h"
 
-@protocol BrowsingDataRemoverObserver;
 @class WKWebView;
 
 namespace web {
@@ -37,13 +36,8 @@ class BrowsingDataRemover : public base::SupportsUserData::Data {
                          base::Time modified_since,
                          base::OnceClosure closure);
 
-  void AddObserver(id<BrowsingDataRemoverObserver> observer);
-  void RemoveObserver(id<BrowsingDataRemoverObserver> observer);
-
  private:
   web::BrowserState* browser_state_;  // weak, owns this object.
-  // The list of observers. Holds weak references.
-  NSHashTable<id<BrowsingDataRemoverObserver>>* observers_list_;
 
   // Dummy WKWebView. A WKWebView object is created before deleting cookies. and
   // is deleted after deleting cookies is completed. this is a workaround that

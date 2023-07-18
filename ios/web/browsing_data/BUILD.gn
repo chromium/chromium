@@ -6,7 +6,6 @@ source_set("browsing_data") {
   sources = [
     "browsing_data_remover.h",
     "browsing_data_remover.mm",
-    "browsing_data_remover_observer.h",
     "browsing_data_removing_util.mm",
     "system_cookie_store_util.mm",
   ]

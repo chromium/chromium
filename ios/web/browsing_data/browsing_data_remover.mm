@@ -8,7 +8,6 @@
 
 #import "base/ios/block_types.h"
 #import "base/memory/ptr_util.h"
-#import "ios/web/browsing_data/browsing_data_remover_observer.h"
 #import "ios/web/common/uikit_ui_util.h"
 #import "ios/web/public/browser_state.h"
 #import "ios/web/public/thread/web_thread.h"
@@ -27,7 +26,6 @@ namespace web {
 BrowsingDataRemover::BrowsingDataRemover(web::BrowserState* browser_state)
     : browser_state_(browser_state), weak_ptr_factory_(this) {
   DCHECK(browser_state_);
-  observers_list_ = [NSHashTable weakObjectsHashTable];
 }
 
 BrowsingDataRemover::~BrowsingDataRemover() {}
@@ -84,19 +82,11 @@ void BrowsingDataRemover::ClearBrowsingData(ClearBrowsingDataMask types,
     return;
   }
 
-  for (id<BrowsingDataRemoverObserver> observer in observers_list_) {
-    [observer willRemoveBrowsingData:this];
-  }
-
   base::WeakPtr<BrowsingDataRemover> weak_ptr = weak_ptr_factory_.GetWeakPtr();
   ProceduralBlock completion_block = ^{
     if (BrowsingDataRemover* strong_ptr = weak_ptr.get()) {
       [strong_ptr->dummy_web_view_ removeFromSuperview];
       strong_ptr->dummy_web_view_ = nil;
-      for (id<BrowsingDataRemoverObserver> observer in strong_ptr
-               ->observers_list_) {
-        [observer didRemoveBrowsingData:this];
-      }
     }
     std::move(block_closure).Run();
   };
@@ -145,16 +135,6 @@ void BrowsingDataRemover::ClearBrowsingData(ClearBrowsingDataMask types,
   [[WKWebsiteDataStore defaultDataStore] removeDataOfTypes:data_types_to_remove
                                              modifiedSince:delete_begin_date
                                          completionHandler:completion_block];
-}
-
-void BrowsingDataRemover::AddObserver(
-    id<BrowsingDataRemoverObserver> observer) {
-  [observers_list_ addObject:observer];
-}
-
-void BrowsingDataRemover::RemoveObserver(
-    id<BrowsingDataRemoverObserver> observer) {
-  [observers_list_ removeObject:observer];
 }
 
 }  // namespace web
