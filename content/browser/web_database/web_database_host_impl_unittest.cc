@@ -76,7 +76,7 @@ class WebDatabaseHostImplTest : public ::testing::Test {
         base::SingleThreadTaskRunner::GetCurrentDefault());
 
     db_tracker_ = storage::DatabaseTracker::Create(
-        base::FilePath(),
+        data_dir_.GetPath(),
         /*is_incognito=*/false,
         /*special_storage_policy=*/nullptr, quota_manager_proxy_);
     // Raw pointer usage is safe because `host_` stores a reference to the
