@@ -7,6 +7,8 @@
 
 #include <stdint.h>
 
+#include <string>
+
 #include "base/memory/weak_ptr.h"
 #include "components/attribution_reporting/registration_eligibility.mojom-forward.h"
 #include "content/browser/attribution_reporting/attribution_beacon_id.h"
@@ -16,6 +18,8 @@
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/conversions/attribution_data_host.mojom-forward.h"
 
+class GURL;
+
 namespace attribution_reporting {
 class SuitableOrigin;
 }  // namespace attribution_reporting
@@ -23,10 +27,6 @@ class SuitableOrigin;
 namespace net {
 class HttpResponseHeaders;
 }  // namespace net
-
-namespace url {
-class Origin;
-}  // namespace url
 
 namespace content {
 
@@ -75,7 +75,8 @@ class AttributionDataHostManager
       const attribution_reporting::SuitableOrigin& source_origin,
       bool is_within_fenced_frame,
       GlobalRenderFrameHostId render_frame_id,
-      int64_t navigation_id) = 0;
+      int64_t navigation_id,
+      std::string devtools_request_id) = 0;
 
   // Notifies the manager that an attribution request tied to an
   // attribution-enabled navigation with token `attribution_src_token` has sent
@@ -88,7 +89,7 @@ class AttributionDataHostManager
   virtual bool NotifyNavigationRegistrationData(
       const blink::AttributionSrcToken& attribution_src_token,
       const net::HttpResponseHeaders* headers,
-      attribution_reporting::SuitableOrigin reporting_origin,
+      GURL reporting_url,
       network::AttributionReportingRuntimeFeatures) = 0;
 
   // Notifies the manager whenever an attribution-enabled navigation request
@@ -112,7 +113,8 @@ class AttributionDataHostManager
       attribution_reporting::SuitableOrigin source_origin,
       bool is_within_fenced_frame,
       AttributionInputEvent input_event,
-      GlobalRenderFrameHostId render_frame_id) = 0;
+      GlobalRenderFrameHostId render_frame_id,
+      std::string devtools_request_id) = 0;
 
   // Notifies the manager whenever a response has been received to a beacon HTTP
   // request. Must be invoked for each redirect received, as well as the final
@@ -124,7 +126,7 @@ class AttributionDataHostManager
   virtual void NotifyFencedFrameReportingBeaconData(
       BeaconId beacon_id,
       network::AttributionReportingRuntimeFeatures,
-      url::Origin reporting_origin,
+      GURL reporting_url,
       const net::HttpResponseHeaders* headers,
       bool is_final_response) = 0;
 };

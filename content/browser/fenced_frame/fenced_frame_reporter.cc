@@ -286,11 +286,14 @@ void FencedFrameReporter::OnUrlMappingReady(
     std::string ignored_error_message;
     blink::mojom::ConsoleMessageLevel ignored_console_message_level =
         blink::mojom::ConsoleMessageLevel::kError;
+    const std::string devtools_request_id =
+        base::UnguessableToken::Create().ToString();
     SendReportInternal(it->second, pending_event.type, pending_event.data,
                        reporting_destination, pending_event.request_initiator,
                        pending_event.attribution_reporting_data,
                        pending_event.initiator_frame_tree_node_id,
-                       ignored_error_message, ignored_console_message_level);
+                       ignored_error_message, ignored_console_message_level,
+                       devtools_request_id);
   }
 }
 
@@ -333,13 +336,16 @@ bool FencedFrameReporter::SendReport(
 
   absl::optional<AttributionReportingData> attribution_reporting_data;
 
+  const std::string devtools_request_id =
+      base::UnguessableToken::Create().ToString();
   auto* attribution_host = AttributionHost::FromWebContents(
       WebContents::FromRenderFrameHost(request_initiator_frame));
   if (attribution_host &&
       network::HasAttributionSupport(AttributionManager::GetSupport())) {
     BeaconId beacon_id(unique_id_counter.GetNext());
     if (attribution_host->NotifyFencedFrameReportingBeaconStarted(
-            beacon_id, navigation_id, request_initiator_frame)) {
+            beacon_id, navigation_id, request_initiator_frame,
+            devtools_request_id)) {
       attribution_reporting_data.emplace(AttributionReportingData{
           .beacon_id = beacon_id,
           .is_automatic_beacon = navigation_id.has_value(),
@@ -360,10 +366,11 @@ bool FencedFrameReporter::SendReport(
     return true;
   }
 
-  return SendReportInternal(
-      it->second, event_type, event_data, reporting_destination,
-      request_initiator, attribution_reporting_data,
-      initiator_frame_tree_node_id, error_message, console_message_level);
+  return SendReportInternal(it->second, event_type, event_data,
+                            reporting_destination, request_initiator,
+                            attribution_reporting_data,
+                            initiator_frame_tree_node_id, error_message,
+                            console_message_level, devtools_request_id);
 }
 
 bool FencedFrameReporter::SendReportInternal(
@@ -375,7 +382,8 @@ bool FencedFrameReporter::SendReportInternal(
     const absl::optional<AttributionReportingData>& attribution_reporting_data,
     int initiator_frame_tree_node_id,
     std::string& error_message,
-    blink::mojom::ConsoleMessageLevel& console_message_level) {
+    blink::mojom::ConsoleMessageLevel& console_message_level,
+    const std::string& devtools_request_id) {
   // The URL map should not be pending at this point.
   DCHECK(reporting_destination_info.reporting_url_map);
 
@@ -449,9 +457,6 @@ bool FencedFrameReporter::SendReportInternal(
         attribution_reporting_data->attribution_reporting_runtime_features;
   }
 
-  // Set up DevTools integration for the request.
-  const std::string devtools_request_id =
-      base::UnguessableToken::Create().ToString();
   request->devtools_request_id = devtools_request_id;
   FrameTreeNode* initiator_frame_tree_node =
       FrameTreeNode::GloballyFindByID(initiator_frame_tree_node_id);
@@ -491,8 +496,7 @@ bool FencedFrameReporter::SendReportInternal(
           if (attribution_data_host_manager) {
             attribution_data_host_manager->NotifyFencedFrameReportingBeaconData(
                 beacon_id, attribution_reporting_runtime_features,
-                url::Origin::Create(url_before_redirect),
-                response_head.headers.get(),
+                url_before_redirect, response_head.headers.get(),
                 /*is_final_response=*/false);
           }
         },
@@ -517,8 +521,7 @@ bool FencedFrameReporter::SendReportInternal(
                 attribution_data_host_manager
                     ->NotifyFencedFrameReportingBeaconData(
                         beacon_id, attribution_reporting_runtime_features,
-                        url::Origin::Create(loader->GetFinalURL()),
-                        headers.get(),
+                        loader->GetFinalURL(), headers.get(),
                         /*is_final_response=*/true);
               }
 
@@ -674,7 +677,7 @@ void FencedFrameReporter::NotifyFencedFrameReportingBeaconFailed(
   attribution_data_host_manager->NotifyFencedFrameReportingBeaconData(
       attribution_reporting_data->beacon_id,
       attribution_reporting_data->attribution_reporting_runtime_features,
-      /*reporting_origin=*/url::Origin(), /*headers=*/nullptr,
+      /*reporting_url=*/GURL(), /*headers=*/nullptr,
       /*is_final_response=*/true);
 }
 

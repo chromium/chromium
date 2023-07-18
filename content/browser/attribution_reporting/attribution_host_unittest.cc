@@ -185,7 +185,7 @@ TEST_F(AttributionHostTest, ValidAttributionSrc_ForwardedToManager) {
                   impression.attribution_src_token, _,
                   *SuitableOrigin::Deserialize("https://secure_impression.com"),
                   /*is_within_fenced_frame=*/false, main_rfh()->GetGlobalId(),
-                  /*navigation_id=*/_));
+                  /*navigation_id=*/_, /*devtools_request_id*/ _));
 
   contents()->NavigateAndCommit(GURL("https://secure_impression.com"));
   auto navigation = NavigationSimulatorImpl::CreateRendererInitiated(
@@ -218,19 +218,19 @@ TEST_F(AttributionHostTest, ValidSourceRegistrations_ForwardedToManager) {
               NotifyNavigationRegistrationStarted(
                   impression.attribution_src_token, _, source_origin,
                   /*is_within_fenced_frame=*/false, frame_id,
-                  /*navigation_id=*/_));
+                  /*navigation_id=*/_, /*devtools_request_id*/ _));
   EXPECT_CALL(*mock_data_host_manager(),
-              NotifyNavigationRegistrationData(
-                  impression.attribution_src_token, redirect_headers.get(),
-                  /*reporting_origin=*/b_origin, _));
+              NotifyNavigationRegistrationData(impression.attribution_src_token,
+                                               redirect_headers.get(),
+                                               /*reporting_url=*/b_url, _));
   EXPECT_CALL(*mock_data_host_manager(),
-              NotifyNavigationRegistrationData(
-                  impression.attribution_src_token, redirect_headers.get(),
-                  /*reporting_origin=*/c_origin, _));
+              NotifyNavigationRegistrationData(impression.attribution_src_token,
+                                               redirect_headers.get(),
+                                               /*reporting_url=*/c_url, _));
   EXPECT_CALL(*mock_data_host_manager(),
-              NotifyNavigationRegistrationData(
-                  impression.attribution_src_token, headers.get(),
-                  /*reporting_origin=*/d_origin, _));
+              NotifyNavigationRegistrationData(impression.attribution_src_token,
+                                               headers.get(),
+                                               /*reporting_url=*/d_url, _));
   EXPECT_CALL(*mock_data_host_manager(), NotifyNavigationRegistrationCompleted(
                                              impression.attribution_src_token));
 
@@ -271,15 +271,15 @@ TEST_F(AttributionHostTest,
               NotifyNavigationRegistrationStarted(
                   impression.attribution_src_token, _, source_origin,
                   /*is_within_fenced_frame=*/false, frame_id,
-                  /*navigation_id=*/_));
+                  /*navigation_id=*/_, /*devtools_request_id*/ _));
   EXPECT_CALL(*mock_data_host_manager(),
-              NotifyNavigationRegistrationData(
-                  impression.attribution_src_token, redirect_headers.get(),
-                  /*reporting_origin=*/b_origin, _));
+              NotifyNavigationRegistrationData(impression.attribution_src_token,
+                                               redirect_headers.get(),
+                                               /*reporting_url=*/b_url, _));
   EXPECT_CALL(*mock_data_host_manager(),
-              NotifyNavigationRegistrationData(
-                  impression.attribution_src_token, redirect_headers.get(),
-                  /*reporting_origin=*/c_origin, _));
+              NotifyNavigationRegistrationData(impression.attribution_src_token,
+                                               redirect_headers.get(),
+                                               /*reporting_url=*/c_url, _));
   // Expect no call for origin d as the reporting origin is not suitable.
 
   // Expect that `NotifyNavigationRegistrationCompleted` gets called even if the
@@ -645,8 +645,8 @@ TEST_F(AttributionHostTest, FeatureDisabled_FencedFrameReportingBeaconDropped) {
       GURL("https://fencedframe.example"), fenced_frame);
 
   EXPECT_FALSE(attribution_host()->NotifyFencedFrameReportingBeaconStarted(
-      kBeaconId, kNavigationId,
-      static_cast<RenderFrameHostImpl*>(fenced_frame)));
+      kBeaconId, kNavigationId, static_cast<RenderFrameHostImpl*>(fenced_frame),
+      "devtools-request-id"));
 }
 
 TEST_F(AttributionHostTest, NotifyFencedFrameReportingBeaconStarted) {
@@ -667,12 +667,12 @@ TEST_F(AttributionHostTest, NotifyFencedFrameReportingBeaconStarted) {
   for (const auto& test_case : kTestCases) {
     contents()->NavigateAndCommit(GURL(test_case.source_origin));
     if (test_case.expected_valid) {
-      EXPECT_CALL(
-          *mock_data_host_manager(),
-          NotifyFencedFrameReportingBeaconStarted(
-              kBeaconId, Optional(kNavigationId),
-              *SuitableOrigin::Deserialize(test_case.source_origin),
-              /*is_within_fenced_frame=*/true, _, main_rfh()->GetGlobalId()));
+      EXPECT_CALL(*mock_data_host_manager(),
+                  NotifyFencedFrameReportingBeaconStarted(
+                      kBeaconId, Optional(kNavigationId),
+                      *SuitableOrigin::Deserialize(test_case.source_origin),
+                      /*is_within_fenced_frame=*/true, _,
+                      main_rfh()->GetGlobalId(), /*devtools_request_id=*/_));
     } else {
       EXPECT_CALL(*mock_data_host_manager(),
                   NotifyFencedFrameReportingBeaconStarted)
@@ -690,7 +690,8 @@ TEST_F(AttributionHostTest, NotifyFencedFrameReportingBeaconStarted) {
 
     EXPECT_EQ(attribution_host()->NotifyFencedFrameReportingBeaconStarted(
                   kBeaconId, kNavigationId,
-                  static_cast<RenderFrameHostImpl*>(fenced_frame)),
+                  static_cast<RenderFrameHostImpl*>(fenced_frame),
+                  "devtools-request-id"),
               test_case.expected_valid);
   }
 }
@@ -739,7 +740,8 @@ TEST_F(AttributionHostTest, FencedFrameReportingBeacon_FeaturePolicyChecked) {
 
     EXPECT_EQ(attribution_host()->NotifyFencedFrameReportingBeaconStarted(
                   kBeaconId, /*navigation_id=*/absl::nullopt,
-                  static_cast<RenderFrameHostImpl*>(fenced_frame)),
+                  static_cast<RenderFrameHostImpl*>(fenced_frame),
+                  "devtools-request-id"),
               test_case.expected);
   }
 }
@@ -801,16 +803,16 @@ TEST_F(AttributionHostTest, InsecureTaintTracking) {
               NotifyNavigationRegistrationStarted(
                   impression.attribution_src_token, _, source_origin,
                   /*is_within_fenced_frame=*/false, frame_id,
-                  /*navigation_id=*/_));
+                  /*navigation_id=*/_, /*devtools_request_id=*/_));
   EXPECT_CALL(*mock_data_host_manager(),
-              NotifyNavigationRegistrationData(
-                  impression.attribution_src_token, redirect_headers.get(),
-                  /*reporting_origin=*/b_origin, _))
+              NotifyNavigationRegistrationData(impression.attribution_src_token,
+                                               redirect_headers.get(),
+                                               /*reporting_url=*/b_url, _))
       .WillOnce(Return(true));
   EXPECT_CALL(*mock_data_host_manager(),
-              NotifyNavigationRegistrationData(
-                  impression.attribution_src_token, headers.get(),
-                  /*reporting_origin=*/d_origin, _))
+              NotifyNavigationRegistrationData(impression.attribution_src_token,
+                                               headers.get(),
+                                               /*reporting_url=*/d_url, _))
       .WillOnce(Return(true));
 
   contents()->NavigateAndCommit(GURL("https://secure_impression.com"));

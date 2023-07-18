@@ -29,6 +29,8 @@
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/conversions/attribution_data_host.mojom.h"
 
+class GURL;
+
 namespace attribution_reporting {
 class SuitableOrigin;
 
@@ -83,11 +85,12 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl
       const attribution_reporting::SuitableOrigin& source_origin,
       bool is_within_fenced_frame,
       GlobalRenderFrameHostId render_frame_id,
-      int64_t navigation_id) override;
+      int64_t navigation_id,
+      std::string devtools_request_id) override;
   bool NotifyNavigationRegistrationData(
       const blink::AttributionSrcToken& attribution_src_token,
       const net::HttpResponseHeaders* headers,
-      attribution_reporting::SuitableOrigin reporting_origin,
+      GURL reporting_url,
       network::AttributionReportingRuntimeFeatures) override;
   void NotifyNavigationRegistrationCompleted(
       const blink::AttributionSrcToken& attribution_src_token) override;
@@ -98,11 +101,12 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl
       attribution_reporting::SuitableOrigin source_origin,
       bool is_within_fenced_frame,
       AttributionInputEvent input_event,
-      GlobalRenderFrameHostId render_frame_id) override;
+      GlobalRenderFrameHostId render_frame_id,
+      std::string devtools_request_id) override;
   void NotifyFencedFrameReportingBeaconData(
       BeaconId beacon_id,
       network::AttributionReportingRuntimeFeatures,
-      url::Origin reporting_origin,
+      GURL reporting_url,
       const net::HttpResponseHeaders* headers,
       bool is_final_response) override;
 
@@ -137,11 +141,13 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl
 
   void OnReceiverDisconnected();
 
+  enum class Registrar;
   struct RegistrarAndHeader;
+  struct HeaderPendingDecode;
 
   void ParseSource(base::flat_set<SourceRegistrations>::iterator,
-                   attribution_reporting::SuitableOrigin reporting_origin,
-                   RegistrarAndHeader);
+                   HeaderPendingDecode,
+                   Registrar);
   void HandleNextWebDecode(const SourceRegistrations&);
   void OnWebSourceParsed(SourceRegistrationsId,
                          data_decoder::DataDecoder::ValueOrError result);

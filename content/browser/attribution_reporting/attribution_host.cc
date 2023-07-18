@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <string>
 #include <utility>
 
 #include "base/check.h"
@@ -25,6 +26,7 @@
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
+#include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
@@ -186,6 +188,8 @@ void AttributionHost::DidStartNavigation(NavigationHandle* navigation_handle) {
       AttributionManager::FromWebContents(web_contents());
   DCHECK(attribution_manager);
 
+  auto* navigation_request = static_cast<NavigationRequest*>(navigation_handle);
+
   attribution_manager->GetDataHostManager()
       ->NotifyNavigationRegistrationStarted(
           impression->attribution_src_token,
@@ -193,7 +197,11 @@ void AttributionHost::DidStartNavigation(NavigationHandle* navigation_handle) {
           /*source_origin=*/*std::move(initiator_root_frame_origin),
           initiator_frame_host->IsNestedWithinFencedFrame(),
           /*render_frame_id=*/initiator_root_frame->GetGlobalId(),
-          navigation_handle->GetNavigationId());
+          navigation_handle->GetNavigationId(),
+          // The devtools_navigation_token is going to be used as the
+          // navigation's request devtools inspector ID if there is an enabled
+          // agent host.
+          navigation_request->devtools_navigation_token().ToString());
   auto [_, inserted] = ongoing_registration_eligible_navigations_.emplace(
       navigation_handle->GetNavigationId());
   CHECK(inserted);
@@ -256,14 +264,12 @@ void AttributionHost::NotifyNavigationRegistrationData(
   if (redirect_chain.size() < offset) {
     return;
   }
-  absl::optional<SuitableOrigin> reporting_origin =
-      SuitableOrigin::Create(redirect_chain[redirect_chain.size() - offset]);
-
+  GURL reporting_url = redirect_chain[redirect_chain.size() - offset];
   // Pass the suitability as a proxy for the potentially trustworthy check, as
   // redirects should only happen for HTTP-based navigations.
   auto* tracker =
       InsecureTaintTracker::GetOrCreateForNavigationHandle(*navigation_handle);
-  if (!reporting_origin) {
+  if (!SuitableOrigin::IsSuitable(url::Origin::Create(reporting_url))) {
     tracker->TaintInsecure();
     return;
   }
@@ -276,8 +282,8 @@ void AttributionHost::NotifyNavigationRegistrationData(
       attribution_manager->GetDataHostManager()
           ->NotifyNavigationRegistrationData(
               impression->attribution_src_token,
-              navigation_handle->GetResponseHeaders(),
-              std::move(*reporting_origin), impression->runtime_features);
+              navigation_handle->GetResponseHeaders(), std::move(reporting_url),
+              impression->runtime_features);
 
   if (had_header) {
     tracker->NotifySecureRegistrationAttempt();
@@ -384,7 +390,8 @@ void AttributionHost::BindReceiver(
 bool AttributionHost::NotifyFencedFrameReportingBeaconStarted(
     BeaconId beacon_id,
     absl::optional<int64_t> navigation_id,
-    RenderFrameHostImpl* initiator_frame_host) {
+    RenderFrameHostImpl* initiator_frame_host,
+    std::string devtools_request_id) {
   if (!base::FeatureList::IsEnabled(
           features::kAttributionFencedFrameReportingBeacon)) {
     return false;
@@ -425,7 +432,7 @@ bool AttributionHost::NotifyFencedFrameReportingBeaconStarted(
       ->NotifyFencedFrameReportingBeaconStarted(
           beacon_id, navigation_id, std::move(*initiator_root_frame_origin),
           initiator_frame_host->IsNestedWithinFencedFrame(), input_event,
-          initiator_root_frame->GetGlobalId());
+          initiator_root_frame->GetGlobalId(), std::move(devtools_request_id));
   return true;
 }
 

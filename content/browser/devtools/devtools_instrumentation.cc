@@ -65,6 +65,9 @@ namespace devtools_instrumentation {
 
 namespace {
 
+namespace AttributionReportingIssueTypeEnum =
+    protocol::Audits::AttributionReportingIssueTypeEnum;
+
 const char kPrivacySandboxExtensionsAPI[] = "PrivacySandboxExtensionsAPI";
 
 template <typename Handler, typename... MethodArgs, typename... Args>
@@ -149,6 +152,81 @@ std::unique_ptr<protocol::Audits::InspectorIssue> BuildHeavyAdIssue(
           .SetCode(protocol::Audits::InspectorIssueCodeEnum::HeavyAdIssue)
           .SetDetails(std::move(protocol_issue_details))
           .Build();
+  return issue;
+}
+
+protocol::Audits::AttributionReportingIssueType
+BuildAttributionReportingIssueViolationType(
+    blink::mojom::AttributionReportingIssueType type) {
+  switch (type) {
+    case blink::mojom::AttributionReportingIssueType::kPermissionPolicyDisabled:
+      return AttributionReportingIssueTypeEnum::PermissionPolicyDisabled;
+    case blink::mojom::AttributionReportingIssueType::
+        kUntrustworthyReportingOrigin:
+      return AttributionReportingIssueTypeEnum::UntrustworthyReportingOrigin;
+    case blink::mojom::AttributionReportingIssueType::kInsecureContext:
+      return AttributionReportingIssueTypeEnum::InsecureContext;
+    case blink::mojom::AttributionReportingIssueType::
+        kInvalidRegisterSourceHeader:
+      return AttributionReportingIssueTypeEnum::InvalidHeader;
+    case blink::mojom::AttributionReportingIssueType::
+        kInvalidRegisterTriggerHeader:
+      return AttributionReportingIssueTypeEnum::InvalidRegisterTriggerHeader;
+    case blink::mojom::AttributionReportingIssueType::kSourceAndTriggerHeaders:
+      return AttributionReportingIssueTypeEnum::SourceAndTriggerHeaders;
+    case blink::mojom::AttributionReportingIssueType::kSourceIgnored:
+      return AttributionReportingIssueTypeEnum::SourceIgnored;
+    case blink::mojom::AttributionReportingIssueType::kTriggerIgnored:
+      return AttributionReportingIssueTypeEnum::TriggerIgnored;
+    case blink::mojom::AttributionReportingIssueType::kOsSourceIgnored:
+      return AttributionReportingIssueTypeEnum::OsSourceIgnored;
+    case blink::mojom::AttributionReportingIssueType::kOsTriggerIgnored:
+      return AttributionReportingIssueTypeEnum::OsTriggerIgnored;
+    case blink::mojom::AttributionReportingIssueType::
+        kInvalidRegisterOsSourceHeader:
+      return AttributionReportingIssueTypeEnum::InvalidRegisterOsSourceHeader;
+    case blink::mojom::AttributionReportingIssueType::
+        kInvalidRegisterOsTriggerHeader:
+      return AttributionReportingIssueTypeEnum::InvalidRegisterOsTriggerHeader;
+    case blink::mojom::AttributionReportingIssueType::kWebAndOsHeaders:
+      return AttributionReportingIssueTypeEnum::WebAndOsHeaders;
+    case blink::mojom::AttributionReportingIssueType::kNoWebOrOsSupport:
+      return AttributionReportingIssueTypeEnum::NoWebOrOsSupport;
+  }
+}
+
+std::unique_ptr<protocol::Audits::InspectorIssue>
+BuildAttributionReportingIssue(
+    const blink::mojom::AttributionReportingIssueDetailsPtr& issue_details) {
+  protocol::String violation_type = BuildAttributionReportingIssueViolationType(
+      issue_details->violation_type);
+
+  CHECK(issue_details->request->url.has_value());
+  auto request = protocol::Audits::AffectedRequest::Create()
+                     .SetRequestId(issue_details->request->request_id)
+                     .SetUrl(issue_details->request->url.value())
+                     .Build();
+  auto attribution_reporting_issue_details =
+      protocol::Audits::AttributionReportingIssueDetails::Create()
+          .SetViolationType(violation_type)
+          .SetRequest(std::move(request))
+          .Build();
+  if (issue_details->invalid_parameter.has_value()) {
+    attribution_reporting_issue_details->SetInvalidParameter(
+        issue_details->invalid_parameter.value());
+  }
+
+  auto protocol_issue_details =
+      protocol::Audits::InspectorIssueDetails::Create()
+          .SetAttributionReportingIssueDetails(
+              std::move(attribution_reporting_issue_details))
+          .Build();
+
+  auto issue = protocol::Audits::InspectorIssue::Create()
+                   .SetCode(protocol::Audits::InspectorIssueCodeEnum::
+                                AttributionReportingIssue)
+                   .SetDetails(std::move(protocol_issue_details))
+                   .Build();
   return issue;
 }
 
@@ -1620,6 +1698,10 @@ void BuildAndReportBrowserInitiatedIssue(
                                kFederatedAuthUserInfoRequestIssue) {
     issue = BuildFederatedAuthUserInfoRequestIssue(
         info->details->federated_auth_user_info_request_details);
+  } else if (info->code ==
+             blink::mojom::InspectorIssueCode::kAttributionReportingIssue) {
+    issue = BuildAttributionReportingIssue(
+        info->details->attribution_reporting_issue_details);
   } else {
     NOTREACHED() << "Unsupported type of browser-initiated issue";
   }

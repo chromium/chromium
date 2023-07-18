@@ -268,7 +268,8 @@ class CONTENT_EXPORT FencedFrameReporter
           attribution_reporting_data,
       int initiator_frame_tree_node_id,
       std::string& error_message,
-      blink::mojom::ConsoleMessageLevel& console_message_level);
+      blink::mojom::ConsoleMessageLevel& console_message_level,
+      const std::string& devtools_request_id);
 
   // Helper to send private aggregation requests in
   // `private_aggregation_event_map_` with key `pa_event_type`.

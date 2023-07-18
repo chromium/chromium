@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <string>
 
 #include "base/containers/flat_set.h"
 #include "build/build_config.h"
@@ -77,7 +78,8 @@ class CONTENT_EXPORT AttributionHost
   bool NotifyFencedFrameReportingBeaconStarted(
       BeaconId beacon_id,
       absl::optional<int64_t> navigation_id,
-      RenderFrameHostImpl* initiator_frame_host);
+      RenderFrameHostImpl* initiator_frame_host,
+      std::string devtools_request_id);
 
  private:
   friend class AttributionHostTestPeer;

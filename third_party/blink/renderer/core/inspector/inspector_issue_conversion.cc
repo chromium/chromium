@@ -61,6 +61,7 @@ blink::protocol::String InspectorIssueCodeValue(
     case mojom::blink::InspectorIssueCode::kBounceTrackingIssue:
     case mojom::blink::InspectorIssueCode::kGenericIssue:
     case mojom::blink::InspectorIssueCode::kDeprecationIssue:
+    case mojom::blink::InspectorIssueCode::kAttributionReportingIssue:
       NOTREACHED_NORETURN();
   }
 }
