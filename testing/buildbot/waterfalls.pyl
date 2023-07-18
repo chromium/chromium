@@ -1057,11 +1057,6 @@
     'name': 'chromium.android.fyi',
     'mixins': ['chromium-tester-service-account'],
     'machines': {
-      'Android ASAN (dbg) (reclient)': {
-        'additional_compile_targets': [
-          'all',
-        ],
-      },
       'android-12-x64-dbg-tests': {
         'mixins': [
           '12-x64-emulator',

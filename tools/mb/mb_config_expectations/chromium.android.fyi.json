@@ -1,19 +1,4 @@
 {
-  "Android ASAN (dbg) (reclient)": {
-    "gn_args": {
-      "debuggable_apks": false,
-      "ffmpeg_branding": "Chrome",
-      "is_asan": true,
-      "is_clang": true,
-      "is_component_build": true,
-      "is_debug": true,
-      "proprietary_codecs": true,
-      "strip_debug_info": true,
-      "symbol_level": 1,
-      "target_os": "android",
-      "use_remoteexec": true
-    }
-  },
   "Android arm64 Builder (dbg) (reclient)": {
     "gn_args": {
       "debuggable_apks": false,
