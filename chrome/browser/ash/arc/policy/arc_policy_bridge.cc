@@ -612,34 +612,6 @@ void ArcPolicyBridge::ReportCompliance(const std::string& request,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void ArcPolicyBridge::ReportCloudDpsRequested(
-    base::Time time,
-    const std::vector<std::string>& package_names) {
-  const std::set<std::string> packages_set(package_names.begin(),
-                                           package_names.end());
-  for (Observer& observer : observers_) {
-    observer.OnCloudDpsRequested(time, packages_set);
-  }
-}
-
-void ArcPolicyBridge::ReportCloudDpsSucceeded(
-    base::Time time,
-    const std::vector<std::string>& package_names) {
-  const std::set<std::string> packages_set(package_names.begin(),
-                                           package_names.end());
-  for (Observer& observer : observers_) {
-    observer.OnCloudDpsSucceeded(time, packages_set);
-  }
-}
-
-void ArcPolicyBridge::ReportCloudDpsFailed(base::Time time,
-                                           const std::string& package_name,
-                                           mojom::InstallErrorReason reason) {
-  for (Observer& observer : observers_) {
-    observer.OnCloudDpsFailed(time, package_name, reason);
-  }
-}
-
 void ArcPolicyBridge::ReportForceInstallMainLoopFailed(
     base::Time time,
     const std::vector<std::string>& package_names) {
