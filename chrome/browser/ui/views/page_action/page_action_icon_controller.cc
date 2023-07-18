@@ -26,9 +26,10 @@
 #include "chrome/browser/ui/views/commerce/price_insights_icon_view.h"
 #include "chrome/browser/ui/views/commerce/price_tracking_icon_view.h"
 #include "chrome/browser/ui/views/file_system_access/file_system_access_icon_view.h"
-#include "chrome/browser/ui/views/location_bar/cookie_controls_icon_view.h"
+#include "chrome/browser/ui/views/location_bar/cookie_controls/cookie_controls_icon_view.h"
 #include "chrome/browser/ui/views/location_bar/find_bar_icon.h"
 #include "chrome/browser/ui/views/location_bar/intent_picker_view.h"
+#include "chrome/browser/ui/views/location_bar/old_cookie_controls_icon_view.h"
 #include "chrome/browser/ui/views/location_bar/star_view.h"
 #include "chrome/browser/ui/views/location_bar/zoom_bubble_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_container.h"
@@ -47,6 +48,7 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_icon_container_view.h"
 #include "chrome/browser/ui/views/translate/translate_icon_view.h"
 #include "chrome/common/chrome_features.h"
+#include "components/content_settings/core/common/features.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/common/content_features.h"
 #include "ui/views/animation/ink_drop.h"
@@ -121,9 +123,17 @@ void PageActionIconController::Init(const PageActionIconParams& params,
                           SharingDialogView::GetAsBubbleForClickToCall)));
         break;
       case PageActionIconType::kCookieControls:
-        add_page_action_icon(type, std::make_unique<CookieControlsIconView>(
-                                       params.icon_label_bubble_delegate,
-                                       params.page_action_icon_delegate));
+        if (base::FeatureList::IsEnabled(
+                content_settings::features::kUserBypassUI)) {
+          add_page_action_icon(type, std::make_unique<CookieControlsIconView>(
+                                         params.icon_label_bubble_delegate,
+                                         params.page_action_icon_delegate));
+        } else {
+          add_page_action_icon(type,
+                               std::make_unique<OldCookieControlsIconView>(
+                                   params.icon_label_bubble_delegate,
+                                   params.page_action_icon_delegate));
+        }
         break;
       case PageActionIconType::kFind:
         add_page_action_icon(

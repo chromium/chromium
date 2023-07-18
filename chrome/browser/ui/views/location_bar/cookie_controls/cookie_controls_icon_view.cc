@@ -1,28 +1,21 @@
-// Copyright 2019 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/location_bar/cookie_controls_icon_view.h"
+#include "chrome/browser/ui/views/location_bar/cookie_controls/cookie_controls_icon_view.h"
 
 #include <memory>
 
-#include "base/feature_list.h"
-#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/view_ids.h"
-#include "chrome/browser/ui/views/location_bar/old_cookie_controls_bubble_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/content_settings/browser/ui/cookie_controls_controller.h"
 #include "components/content_settings/core/common/cookie_controls_breakage_confidence_level.h"
-#include "components/content_settings/core/common/features.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/vector_icons.h"
-#include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/vector_icons.h"
 #include "ui/views/view_class_properties.h"
@@ -44,10 +37,7 @@ CookieControlsIconView::CookieControlsIconView(
       l10n_util::GetStringUTF16(IDS_COOKIE_CONTROLS_TOOLTIP));
   SetProperty(views::kElementIdentifierKey, kCookieControlsIcon);
 
-  if (base::FeatureList::IsEnabled(content_settings::features::kUserBypassUI)) {
-    bubble_coordinator_ =
-        std::make_unique<CookieControlsBubbleCoordinator>(this);
-  }
+  bubble_coordinator_ = std::make_unique<CookieControlsBubbleCoordinator>(this);
 }
 
 CookieControlsIconView::~CookieControlsIconView() = default;
@@ -64,31 +54,11 @@ void CookieControlsIconView::UpdateImpl() {
               profile->IsOffTheRecord() ? CookieSettingsFactory::GetForProfile(
                                               profile->GetOriginalProfile())
                                         : nullptr);
-      old_controller_observation_.Observe(controller_.get());
       controller_observation_.Observe(controller_.get());
     }
     controller_->Update(web_contents);
   }
-  if (base::FeatureList::IsEnabled(content_settings::features::kUserBypassUI)) {
-    UpdateIconView();
-  } else {
-    SetVisible(ShouldBeVisible());
-  }
-}
-
-// Called by Chrome Guard, not User Bypass.
-void CookieControlsIconView::OnStatusChanged(
-    CookieControlsStatus status,
-    CookieControlsEnforcement enforcement,
-    int allowed_cookies,
-    int blocked_cookies) {
-  if (status_ != status) {
-    status_ = status;
-    SetVisible(ShouldBeVisible());
-    UpdateIconImage();
-  }
-
-  OnCookiesCountChanged(allowed_cookies, blocked_cookies);
+  UpdateIconView();
 }
 
 void CookieControlsIconView::UpdateIconView(bool confidence_changed) {
@@ -125,25 +95,6 @@ absl::optional<int> CookieControlsIconView::GetLabelForStatus() const {
   }
 }
 
-// Called by Chrome Guard, not User Bypass.
-void CookieControlsIconView::OnCookiesCountChanged(int allowed_cookies,
-                                                   int blocked_cookies) {
-  // The blocked cookie count changes quite frequently, so avoid unnecessary
-  // UI updates.
-  if (has_blocked_cookies_ != blocked_cookies > 0) {
-    has_blocked_cookies_ = blocked_cookies > 0;
-    SetVisible(ShouldBeVisible());
-  }
-}
-
-// Called by Chrome Guard, not User Bypass.
-void CookieControlsIconView::OnStatefulBounceCountChanged(int bounce_count) {
-  if (bounce_count > 0) {
-    has_blocked_cookies_ = true;
-    SetVisible(ShouldBeVisible());
-  }
-}
-
 void CookieControlsIconView::OnStatusChanged(
     CookieControlsStatus status,
     CookieControlsEnforcement enforcement,
@@ -154,7 +105,6 @@ void CookieControlsIconView::OnStatusChanged(
   }
 }
 
-// Called by User Bypass, not Chrome Guard.
 void CookieControlsIconView::OnSitesCountChanged(
     int allowed_third_party_sites_count,
     int blocked_third_party_sites_count) {
@@ -208,22 +158,12 @@ bool CookieControlsIconView::GetAssociatedBubble() const {
 
 void CookieControlsIconView::OnExecuting(
     PageActionIconView::ExecuteSource source) {
-  if (base::FeatureList::IsEnabled(content_settings::features::kUserBypassUI)) {
-    bubble_coordinator_->ShowBubble(
-        delegate()->GetWebContentsForPageActionIconView(), controller_.get());
-  } else {
-    OldCookieControlsBubbleView::ShowBubble(
-        this, this, delegate()->GetWebContentsForPageActionIconView(),
-        controller_.get(), status_);
-  }
+  bubble_coordinator_->ShowBubble(
+      delegate()->GetWebContentsForPageActionIconView(), controller_.get());
 }
 
 views::BubbleDialogDelegate* CookieControlsIconView::GetBubble() const {
-  if (base::FeatureList::IsEnabled(content_settings::features::kUserBypassUI)) {
-    return bubble_coordinator_->GetBubble();
-  } else {
-    return OldCookieControlsBubbleView::GetCookieBubble();
-  }
+  return bubble_coordinator_->GetBubble();
 }
 
 const gfx::VectorIcon& CookieControlsIconView::GetVectorIcon() const {
