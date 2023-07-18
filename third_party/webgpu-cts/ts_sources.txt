@@ -74,6 +74,7 @@ src/webgpu/util/texture/texture_ok.ts
 src/webgpu/gpu_test.ts
 src/webgpu/api/validation/validation_test.ts
 src/compat/api/validation/encoding/cmds/copyTextureToBuffer.spec.ts
+src/compat/api/validation/encoding/programmable/pipeline_bind_group_compat.spec.ts
 src/compat/api/validation/render_pipeline/fragment_state.spec.ts
 src/compat/api/validation/render_pipeline/shader_module.spec.ts
 src/compat/api/validation/texture/createTexture.spec.ts
