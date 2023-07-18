@@ -61,8 +61,6 @@
 @property(nonatomic, strong) OmniboxFocusOrchestrator* orchestrator;
 /// Whether the omnibox is currently focused.
 @property(nonatomic, assign) BOOL locationBarFocused;
-/// Whether the omnibox focusing should happen with animation.
-@property(nonatomic, assign) BOOL enableAnimationsForOmniboxFocus;
 
 @end
 
@@ -73,8 +71,10 @@
   ToolbarType _omniboxPosition;
   /// Type of the toolbar that contains the omnibox when it's not focused. The
   /// animation of focusing/defocusing the omnibox changes depending on this
-  /// position. TODO(crbug.com/1462889): Use this in focus animation.
+  /// position.
   ToolbarType _steadyStateOmniboxPosition;
+  /// Whether the omnibox focusing should happen with animation.
+  BOOL _enableAnimationsForOmniboxFocus;
 }
 
 - (instancetype)initWithBrowser:(Browser*)browser {
@@ -95,7 +95,7 @@
   if (self.started) {
     return;
   }
-  self.enableAnimationsForOmniboxFocus = YES;
+  _enableAnimationsForOmniboxFocus = YES;
   // Set a default position, overriden by `setInitialOmniboxPosition` below.
   _omniboxPosition = ToolbarType::kPrimary;
 
@@ -242,11 +242,17 @@
   }
   [self.toolbarMediator locationBarFocusChangedTo:focused];
 
+  // Disable toolbar animations when focusing the omnibox on secondary toolbar.
+  // TODO(crbug.com/1462889): Add animation in OmniboxFocusOrchestrator if
+  // needed.
+  BOOL animateTransition = _enableAnimationsForOmniboxFocus &&
+                           _steadyStateOmniboxPosition == ToolbarType::kPrimary;
+
   [self.orchestrator
       transitionToStateOmniboxFocused:focused
                       toolbarExpanded:focused && !IsRegularXRegularSizeClass(
                                                      self.traitEnvironment)
-                             animated:self.enableAnimationsForOmniboxFocus];
+                             animated:animateTransition];
   self.locationBarFocused = focused;
 }
 
@@ -310,9 +316,9 @@
 #pragma mark - FakeboxFocuser
 
 - (void)focusOmniboxNoAnimation {
-  self.enableAnimationsForOmniboxFocus = NO;
+  _enableAnimationsForOmniboxFocus = NO;
   [self fakeboxFocused];
-  self.enableAnimationsForOmniboxFocus = YES;
+  _enableAnimationsForOmniboxFocus = YES;
   // If the pasteboard is containing a URL, the omnibox popup suggestions are
   // displayed as soon as the omnibox is focused.
   // If the fake omnibox animation is triggered at the same time, it is possible
