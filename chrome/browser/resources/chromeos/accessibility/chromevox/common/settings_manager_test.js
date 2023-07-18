@@ -220,7 +220,10 @@ AX_TEST_F(
       const eventStreamFilters = {
         activedescendantchanged: true,
         alert: true,
-        ariaAttributeChanged: true,
+        // TODO(crbug.com/1464633) Fully remove ariaAttributeChangedDeprecated
+        // starting in 122, because although it was removed in 118, it is still
+        // present in earlier versions of LaCros.
+        ariaAttributeChangedDeprecated: true,
         autocorrectionOccured: false,
         blur: true,
         checkedStateChanged: false,

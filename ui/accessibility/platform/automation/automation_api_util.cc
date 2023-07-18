@@ -20,7 +20,10 @@ bool ShouldIgnoreAXEventForAutomation(ax::mojom::Event event_type) {
     // from the intersection of AXEventGenerator::Event and
     // ax::mojom::Event.
     case ax::mojom::Event::kActiveDescendantChanged:
-    case ax::mojom::Event::kAriaAttributeChanged:
+    // TODO(crbug.com/1464633) Fully remove kAriaAttributeChangedDeprecated
+    // starting in 122, because although it was removed in 118, it is still
+    // present in earlier versions of LaCros.
+    case ax::mojom::Event::kAriaAttributeChangedDeprecated:
     case ax::mojom::Event::kCheckedStateChanged:
     case ax::mojom::Event::kChildrenChanged:
     case ax::mojom::Event::kDocumentSelectionChanged:

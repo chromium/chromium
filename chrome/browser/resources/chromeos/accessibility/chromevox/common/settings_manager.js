@@ -241,7 +241,10 @@ SettingsManager.PREFS = [
 SettingsManager.EVENT_STREAM_FILTERS = [
   'activedescendantchanged',
   'alert',
-  'ariaAttributeChanged',
+  // TODO(crbug.com/1464633) Fully remove ariaAttributeChangedDeprecated
+  // starting in 122, because although it was removed in 118, it is still
+  // present in earlier versions of LaCros.
+  'ariaAttributeChangedDeprecated',
   'autocorrectionOccured',
   'blur',
   'checkedStateChanged',

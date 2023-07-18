@@ -82,20 +82,21 @@ export class RangeAutomationHandler extends BaseAutomationHandler {
       retarget = retarget.parent;
     }
 
-    // TODO: some of the events mapped to onAriaAttributeChanged need to have
+    // TODO: some of the events mapped to onAttributeChanged need to have
     // specific handlers that only output the specific attribute. There also
     // needs to be an audit of all attribute change events to ensure they get
     // outputted.
+    // TODO(crbug.com/1464633) Fully remove ARIA_ATTRIBUTE_CHANGED_DEPRECATED
+    // starting in 122, because although it was removed in 118, it is still
+    // present in earlier versions of LaCros.
     this.addListener_(
-        EventType.ARIA_ATTRIBUTE_CHANGED, this.onAriaAttributeChanged);
+        EventType.ARIA_ATTRIBUTE_CHANGED_DEPRECATED, this.onAttributeChanged);
+    this.addListener_(EventType.AUTO_COMPLETE_CHANGED, this.onAttributeChanged);
     this.addListener_(
-        EventType.AUTO_COMPLETE_CHANGED, this.onAriaAttributeChanged);
-    this.addListener_(
-        EventType.IMAGE_ANNOTATION_CHANGED, this.onAriaAttributeChanged);
-    this.addListener_(EventType.NAME_CHANGED, this.onAriaAttributeChanged);
-    this.addListener_(
-        EventType.DESCRIPTION_CHANGED, this.onAriaAttributeChanged);
-    this.addListener_(EventType.ROLE_CHANGED, this.onAriaAttributeChanged);
+        EventType.IMAGE_ANNOTATION_CHANGED, this.onAttributeChanged);
+    this.addListener_(EventType.NAME_CHANGED, this.onAttributeChanged);
+    this.addListener_(EventType.DESCRIPTION_CHANGED, this.onAttributeChanged);
+    this.addListener_(EventType.ROLE_CHANGED, this.onAttributeChanged);
     this.addListener_(EventType.AUTOCORRECTION_OCCURED, this.onEventIfInRange);
     this.addListener_(
         EventType.CHECKED_STATE_CHANGED, this.onCheckedStateChanged);
@@ -106,12 +107,11 @@ export class RangeAutomationHandler extends BaseAutomationHandler {
     this.addListener_(EventType.EXPANDED, this.onEventIfInRange);
     this.addListener_(EventType.INVALID_STATUS_CHANGED, this.onEventIfInRange);
     this.addListener_(EventType.LOCATION_CHANGED, this.onLocationChanged);
-    this.addListener_(
-        EventType.RELATED_NODE_CHANGED, this.onAriaAttributeChanged);
+    this.addListener_(EventType.RELATED_NODE_CHANGED, this.onAttributeChanged);
     this.addListener_(EventType.ROW_COLLAPSED, this.onEventIfInRange);
     this.addListener_(EventType.ROW_EXPANDED, this.onEventIfInRange);
-    this.addListener_(EventType.STATE_CHANGED, this.onAriaAttributeChanged);
-    this.addListener_(EventType.SORT_CHANGED, this.onAriaAttributeChanged);
+    this.addListener_(EventType.STATE_CHANGED, this.onAttributeChanged);
+    this.addListener_(EventType.SORT_CHANGED, this.onAttributeChanged);
   }
 
   /** @param {!ChromeVoxEvent} evt */
@@ -161,7 +161,7 @@ export class RangeAutomationHandler extends BaseAutomationHandler {
   }
 
   /** @param {!ChromeVoxEvent} evt */
-  onAriaAttributeChanged(evt) {
+  onAttributeChanged(evt) {
     // Don't report changes on editable nodes since they interfere with text
     // selection changes. Users can query via Search+k for the current state
     // of the text field (which would also report the entire value).

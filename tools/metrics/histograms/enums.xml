@@ -10284,7 +10284,7 @@ others/histograms.xml -->
   <int value="0" label="None"/>
   <int value="1" label="ActiveDescendantChanged"/>
   <int value="2" label="Alert"/>
-  <int value="3" label="AriaAttributeChanged"/>
+  <int value="3" label="AriaAttributeChangedDeprecated"/>
   <int value="4" label="AutocorrectionOccured"/>
   <int value="5" label="Blur"/>
   <int value="6" label="CheckedStateChanged"/>

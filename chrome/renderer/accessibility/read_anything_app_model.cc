@@ -540,7 +540,6 @@ void ReadAnythingAppModel::ProcessNonGeneratedEvents(
 
         // Audit these events e.g. to require distillation.
       case ax::mojom::Event::kActiveDescendantChanged:
-      case ax::mojom::Event::kAriaAttributeChanged:
       case ax::mojom::Event::kCheckedStateChanged:
       case ax::mojom::Event::kChildrenChanged:
       case ax::mojom::Event::kDocumentSelectionChanged:
@@ -598,6 +597,8 @@ void ReadAnythingAppModel::ProcessNonGeneratedEvents(
       case ax::mojom::Event::kTreeChanged:
       case ax::mojom::Event::kValueChanged:
         break;
+      case ax::mojom::Event::kAriaAttributeChangedDeprecated:
+        NOTREACHED_NORETURN();
     }
   }
 }

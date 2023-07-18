@@ -45,7 +45,10 @@ DesktopAutomationHandler = function(node) {
   this.addListener_(
       e.ACTIVE_DESCENDANT_CHANGED, this.onActiveDescendantChanged);
   this.addListener_(e.ALERT, this.onAlert);
-  this.addListener_(e.ARIA_ATTRIBUTE_CHANGED, this.onEventIfInRange);
+  // TODO(crbug.com/1464633) Fully remove ARIA_ATTRIBUTE_CHANGED_DEPRECATED
+  // starting in 122, because although it was removed in 118, it is still
+  // present in earlier versions of LaCros.
+  this.addListener_(e.ARIA_ATTRIBUTE_CHANGED_DEPRECATED, this.onEventIfInRange);
   this.addListener_(e.CHECKED_STATE_CHANGED, this.onEventIfInRange);
   this.addListener_(e.FOCUS, this.onFocus);
   this.addListener_(e.HOVER, this.onHover);

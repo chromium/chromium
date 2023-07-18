@@ -25,7 +25,10 @@ chrome.automation.EventType = {
   ACCESS_KEY_CHANGED: 'accessKeyChanged',
   ACTIVE_DESCENDANT_CHANGED: 'activeDescendantChanged',
   ALERT: 'alert',
-  ARIA_ATTRIBUTE_CHANGED: 'ariaAttributeChanged',
+  // TODO(crbug.com/1464633) Fully remove ARIA_ATTRIBUTE_CHANGED_DEPRECATED
+  // starting in 122, because although it was removed in 118, it is still
+  // present in earlier versions of LaCros.
+  ARIA_ATTRIBUTE_CHANGED_DEPRECATED: 'ariaAttributeChangedDeprecated',
   ARIA_CURRENT_CHANGED: 'ariaCurrentChanged',
   ATOMIC_CHANGED: 'atomicChanged',
   AUTO_COMPLETE_CHANGED: 'autoCompleteChanged',

@@ -3553,6 +3553,16 @@ void AXObjectCacheImpl::HandleAttributeChanged(const QualifiedName& attr_name,
     } else if (attr_name == html_names::kAriaOwnsAttr) {
       DeferTreeUpdate(&AXObjectCacheImpl::AriaOwnsChangedWithCleanLayout,
                       element);
+    } else if (attr_name == html_names::kAriaHaspopupAttr) {
+      if (AXObject* obj = Get(element)) {
+        if (obj->RoleValue() == ax::mojom::blink::Role::kButton ||
+            obj->RoleValue() == ax::mojom::blink::Role::kPopUpButton) {
+          // The aria-haspopup attribute can switch the role between kButton and
+          // kPopupButton.
+          DeferTreeUpdate(&AXObjectCacheImpl::HandleRoleChangeWithCleanLayout,
+                          element);
+        }
+      }
     } else {
       MarkElementDirty(element);
     }
@@ -3572,16 +3582,6 @@ void AXObjectCacheImpl::HandleAttributeChanged(const QualifiedName& attr_name,
       // DOM node or layout object backing. The simplest thing in this case is
       // to just wipe the subtree and start over.
       RemoveSubtreeWhenSafe(element);
-    }
-  } else if (attr_name == html_names::kAriaHaspopupAttr) {
-    if (AXObject* obj = Get(element)) {
-      if (obj->RoleValue() == ax::mojom::blink::Role::kButton ||
-          obj->RoleValue() == ax::mojom::blink::Role::kPopUpButton) {
-        // The aria-haspopup attribute can switch the role between kButton and
-        // kPopupButton.
-        DeferTreeUpdate(&AXObjectCacheImpl::HandleRoleChangeWithCleanLayout,
-                        element);
-      }
     }
   } else if (attr_name == html_names::kAltAttr) {
     TextChanged(element);

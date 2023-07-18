@@ -357,10 +357,13 @@ found in the LICENSE file.
              class="checkbox pref eventstream">
       <span>alert</span>
     </div></label>
+    <!-- TODO(crbug.com/1464633) Fully remove ariaAttributeChangedDeprecated
+         starting in 122, because although it was removed in 118, it is still
+         present in earlier versions of LaCros. -->
     <label><div class="option-eventstream">
-      <input name="ariaAttributeChanged" type="checkbox"
+      <input name="ariaAttributeChangedDeprecated" type="checkbox"
              class="checkbox pref eventstream">
-      <span>ariaAttributeChanged</span>
+      <span>ariaAttributeChangedDeprecated</span>
     </div></label>
     <label><div class="option-eventstream">
       <input name="autocorrectionOccured" type="checkbox"

@@ -34,7 +34,11 @@ enum Event {
   [Default]kNone = 0,
   kActiveDescendantChanged = 1,
   kAlert = 2,
-  kAriaAttributeChanged = 3,   // Implicit
+  // TODO(crbug.com/1464633) Fully remove kAriaAttributeChangedDeprecated
+  // starting in 122, because although it was removed in 118, it is still
+  // present in earlier versions of LaCros. We can remove the enum as long as
+  // the ordinal value 3 is still skipped.
+  kAriaAttributeChangedDeprecated = 3,  // Deprecated: Do not use.
   kAutocorrectionOccured = 4,  // Unknown: http://crbug.com/392498
   kBlur = 5,                   // Remove: http://crbug.com/392502
   kCheckedStateChanged = 6,    // Implicit

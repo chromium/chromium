@@ -550,9 +550,8 @@ void WebFrameTestProxy::PostAccessibilityEvent(const ui::AXEvent& event) {
     case ax::mojom::Event::kActiveDescendantChanged:
       event_name = "ActiveDescendantChanged";
       break;
-    case ax::mojom::Event::kAriaAttributeChanged:
-      event_name = "AriaAttributeChanged";
-      break;
+    case ax::mojom::Event::kAriaAttributeChangedDeprecated:
+      NOTREACHED_NORETURN();
     case ax::mojom::Event::kBlur:
       event_name = "Blur";
       break;

@@ -17,8 +17,8 @@ const char* ToString(ax::mojom::Event event) {
       return "activedescendantchanged";
     case ax::mojom::Event::kAlert:
       return "alert";
-    case ax::mojom::Event::kAriaAttributeChanged:
-      return "ariaAttributeChanged";
+    case ax::mojom::Event::kAriaAttributeChangedDeprecated:
+      return "ariaAttributeChangedDeprecated";
     case ax::mojom::Event::kAutocorrectionOccured:
       return "autocorrectionOccured";
     case ax::mojom::Event::kBlur:
