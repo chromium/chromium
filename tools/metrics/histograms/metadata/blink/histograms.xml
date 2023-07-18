@@ -713,7 +713,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Blink.Compositor.MemoryLimit" units="KB"
+<histogram name="Blink.Compositor.MemoryLimitKb" units="KB"
     expires_after="2023-12-04">
   <owner>lizeb@chromium.org</owner>
   <owner>chrome-gpu-memory@google.com</owner>
