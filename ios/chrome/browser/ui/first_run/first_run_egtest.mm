@@ -64,18 +64,29 @@ NSString* const kSyncPassphrase = @"hello";
 
 // Returns matcher for the primary action button.
 id<GREYMatcher> PromoStylePrimaryActionButtonMatcher() {
-  return grey_accessibilityID(kPromoStylePrimaryActionAccessibilityIdentifier);
+  return grey_allOf(
+      grey_accessibilityID(kPromoStylePrimaryActionAccessibilityIdentifier),
+      grey_sufficientlyVisible(), nil);
+}
+
+// Returns matcher for the sync encryption action button.
+id<GREYMatcher> SyncEncryptionButtonMatcher() {
+  return grey_allOf(chrome_test_util::ButtonWithAccessibilityLabelId(
+                        IDS_IOS_MANAGE_SYNC_ENCRYPTION),
+                    grey_sufficientlyVisible(), nil);
 }
 
 // Returns matcher for the secondary action button.
 id<GREYMatcher> PromoStyleSecondaryActionButtonMatcher() {
-  return grey_accessibilityID(
-      kPromoStyleSecondaryActionAccessibilityIdentifier);
+  return grey_allOf(
+      grey_accessibilityID(kPromoStyleSecondaryActionAccessibilityIdentifier),
+      grey_sufficientlyVisible(), nil);
 }
 
 // Returns matcher for UMA manage link.
 id<GREYMatcher> ManageUMALinkMatcher() {
-  return grey_accessibilityLabel(@"Manage");
+  return grey_allOf(grey_accessibilityLabel(@"Manage"),
+                    grey_sufficientlyVisible(), nil);
 }
 
 // Returns matcher for the button to open the Sync settings.
@@ -83,7 +94,7 @@ id<GREYMatcher> GetSyncSettings() {
   id<GREYMatcher> disclaimer =
       grey_accessibilityID(kPromoStyleDisclaimerViewAccessibilityIdentifier);
   return grey_allOf(grey_accessibilityLabel(@"settings"),
-                    grey_ancestor(disclaimer), nil);
+                    grey_ancestor(disclaimer), grey_sufficientlyVisible(), nil);
 }
 
 // Dismiss default browser promo.
@@ -548,9 +559,7 @@ void DismissDefaultBrowserPromo() {
   [[EarlGrey selectElementWithMatcher:GetSyncSettings()]
       performAction:grey_tap()];
   // Select Encryption item.
-  [[self elementInteractionWithGreyMatcher:
-             chrome_test_util::ButtonWithAccessibilityLabelId(
-                 IDS_IOS_MANAGE_SYNC_ENCRYPTION)
+  [[self elementInteractionWithGreyMatcher:SyncEncryptionButtonMatcher()
                       scrollViewIdentifier:
                           kManageSyncTableViewAccessibilityIdentifier]
       performAction:grey_tap()];
