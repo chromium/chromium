@@ -63,6 +63,14 @@ AgentGroupSchedulerImpl::~AgentGroupSchedulerImpl() {
 
   default_task_queue_->DetachFromMainThreadScheduler();
   compositor_task_queue_->DetachFromMainThreadScheduler();
+
+  // Leak this when removed during GC and if it contains agents.
+  // See https://linear.app/replay/issue/RUN-2056#comment-460ec1ff
+  if (recordreplay::AreEventsDisallowed(
+          "MainThreadSchedulerImpl::RemoveAgentGroupScheduler") &&
+      agents_->size())
+    return;
+
   main_thread_scheduler_.RemoveAgentGroupScheduler(this);
 }
 
@@ -137,16 +145,16 @@ void AgentGroupSchedulerImpl::RemoveAgent(Agent* agent) {
 }
 
 void AgentGroupSchedulerImpl::PerformMicrotaskCheckpoint() {
-  recordreplay::Assert(
-      "[RUN-2056-2298] AgentGroupSchedulerImpl::PerformMicrotaskCheckpoint "
-      "Start %d %d",
-      RecordReplayId(), (int)agents_->size());
-
   for (Agent* agent : *agents_) {
+    // WARN: Don't Assert on AgentGroupSchedulerImpl on its own since they are
+    // allowed to diverge. However, agents are not allowed to diverge.
+    // See https://linear.app/replay/issue/RUN-2056#comment-460ec1ff
+    recordreplay::Assert(
+        "[RUN-2056-2365] AgentGroupSchedulerImpl::PerformMicrotaskCheckpoint "
+        "%d %d %d",
+        RecordReplayId(), (int)agents_->size(), agent->RecordReplayId());
     agent->PerformMicrotaskCheckpoint();
   }
-
-  recordreplay::Assert("[RUN-2056-2211] AgentGroupSchedulerImpl::PerformMicrotaskCheckpoint Done");
 }
 
 }  // namespace scheduler
