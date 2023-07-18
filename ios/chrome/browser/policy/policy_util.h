@@ -29,13 +29,14 @@ enum class IncognitoModePrefs {
   kForced,
 };
 
-// Returns true if IncognitoModeAvailability policy is set by enterprise.
+// Returns true if IncognitoModeAvailability policy is set by enterprise or
+// custodian.
 bool IsIncognitoPolicyApplied(PrefService* pref_service);
 
-// Returns true if incognito mode is disabled by enterprise policy.
+// Returns true if incognito mode is disabled by policy.
 bool IsIncognitoModeDisabled(PrefService* pref_service);
 
-// Returns true if incognito mode is forced by enterprise policy.
+// Returns true if incognito mode is forced by policy.
 bool IsIncognitoModeForced(PrefService* pref_service);
 
 // Returns whether the browser is managed based on the presence of policy data

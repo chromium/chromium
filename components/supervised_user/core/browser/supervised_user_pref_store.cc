@@ -69,7 +69,15 @@ SupervisedUserSettingsPrefMappingEntry kSupervisedUserSettingsPrefMapping[] = {
 
 }  // namespace
 
+SupervisedUserPrefStore::SupervisedUserPrefStore() = default;
+
 SupervisedUserPrefStore::SupervisedUserPrefStore(
+    supervised_user::SupervisedUserSettingsService*
+        supervised_user_settings_service) {
+  Init(supervised_user_settings_service);
+}
+
+void SupervisedUserPrefStore::Init(
     supervised_user::SupervisedUserSettingsService*
         supervised_user_settings_service) {
   user_settings_subscription_ =
@@ -126,7 +134,13 @@ void SupervisedUserPrefStore::OnNewSettingsAvailable(
     prefs_->SetInteger(policy::policy_prefs::kForceYouTubeRestrict,
                        safe_search_api::YOUTUBE_RESTRICT_MODERATE);
     prefs_->SetBoolean(policy::policy_prefs::kHideWebStoreIcon, false);
+
+// TODO(b/290004926): Modifying `prefs::kSigninAllowed` causes check failures on
+// iOS.
+#if !BUILDFLAG(IS_IOS)
     prefs_->SetBoolean(prefs::kSigninAllowed, false);
+#endif  // !BUILDFLAG(IS_IOS)
+
     prefs_->SetBoolean(feed::prefs::kEnableSnippets, false);
 
 #if BUILDFLAG(IS_ANDROID)

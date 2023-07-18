@@ -18,6 +18,8 @@ source_set("prefs") {
     "//components/prefs/ios",
     "//components/proxy_config",
     "//components/search_engines",
+    "//components/supervised_user/core/browser",
+    "//components/supervised_user/core/common",
     "//components/sync_preferences",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/sync/prefs",

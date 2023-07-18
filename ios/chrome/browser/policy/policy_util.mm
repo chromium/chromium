@@ -16,7 +16,9 @@ bool IsIncognitoPolicyApplied(PrefService* pref_service) {
   if (!pref_service)
     return NO;
   return pref_service->IsManagedPreference(
-      policy::policy_prefs::kIncognitoModeAvailability);
+             policy::policy_prefs::kIncognitoModeAvailability) ||
+         pref_service->IsPreferenceManagedByCustodian(
+             policy::policy_prefs::kIncognitoModeAvailability);
 }
 
 bool IsIncognitoModeDisabled(PrefService* pref_service) {

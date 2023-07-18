@@ -8,6 +8,7 @@
 
 #import "base/apple/backup_util.h"
 #import "base/check.h"
+#import "base/feature_list.h"
 #import "base/files/file_path.h"
 #import "base/files/file_util.h"
 #import "base/task/sequenced_task_runner.h"
@@ -23,6 +24,9 @@
 #import "components/profile_metrics/browser_profile_type.h"
 #import "components/proxy_config/ios/proxy_service_factory.h"
 #import "components/proxy_config/pref_proxy_config_tracker.h"
+#import "components/supervised_user/core/browser/supervised_user_pref_store.h"
+#import "components/supervised_user/core/browser/supervised_user_settings_service.h"
+#import "components/supervised_user/core/common/features.h"
 #import "components/sync_preferences/pref_service_syncable.h"
 #import "components/user_prefs/user_prefs.h"
 #import "ios/chrome/browser/bookmarks/account_bookmark_model_factory.h"
@@ -31,15 +35,16 @@
 #import "ios/chrome/browser/browser_state/constants.h"
 #import "ios/chrome/browser/browser_state/off_the_record_chrome_browser_state_impl.h"
 #import "ios/chrome/browser/net/ios_chrome_url_request_context_getter.h"
-#import "ios/chrome/browser/shared/model/paths/paths_internal.h"
 #import "ios/chrome/browser/policy/browser_policy_connector_ios.h"
 #import "ios/chrome/browser/policy/browser_state_policy_connector.h"
 #import "ios/chrome/browser/policy/browser_state_policy_connector_factory.h"
 #import "ios/chrome/browser/policy/schema_registry_factory.h"
 #import "ios/chrome/browser/prefs/ios_chrome_pref_service_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/paths/paths_internal.h"
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/supervised_user/supervised_user_settings_service_factory.h"
 #import "ios/web/public/thread/web_thread.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -126,10 +131,22 @@ ChromeBrowserStateImpl::ChromeBrowserStateImpl(
   BrowserStateDependencyManager::GetInstance()
       ->RegisterBrowserStatePrefsForServices(pref_registry_.get());
 
+  scoped_refptr<SupervisedUserPrefStore> supervised_user_prefs;
+  if (base::FeatureList::IsEnabled(
+          supervised_user::kEnableSupervisionOnDesktopAndIOS)) {
+    // Create a SupervisedUserPrefStore and initialize it with empty data.
+    // The pref store will load SupervisedUserSettingsService disk data after
+    // the creation of PrefService.
+    supervised_user_prefs = base::MakeRefCounted<SupervisedUserPrefStore>();
+    supervised_user_prefs->OnNewSettingsAvailable(base::Value::Dict());
+    DCHECK(supervised_user_prefs->IsInitializationComplete());
+  }
+
   prefs_ = CreateBrowserStatePrefs(
       state_path_, GetIOTaskRunner().get(), pref_registry_,
       policy_connector_ ? policy_connector_->GetPolicyService() : nullptr,
-      GetApplicationContext()->GetBrowserPolicyConnector());
+      GetApplicationContext()->GetBrowserPolicyConnector(),
+      supervised_user_prefs);
   // Register on BrowserState.
   user_prefs::UserPrefs::Set(this, prefs_.get());
 
@@ -138,6 +155,23 @@ ChromeBrowserStateImpl::ChromeBrowserStateImpl(
 
   BrowserStateDependencyManager::GetInstance()->CreateBrowserStateServices(
       this);
+
+  // In //chrome/browser, SupervisedUserSettingsService is a SimpleKeyedService
+  // and can be created to initialize SupervisedUserPrefStore.
+  // In //ios/chrome/browser, SupervisedUserSettingsService is a
+  // BrowserStateKeyedService and is only available after the creation of
+  // SupervisedUserPrefStore.
+  supervised_user::SupervisedUserSettingsService* supervised_user_settings =
+      SupervisedUserSettingsServiceFactory::GetForBrowserState(this);
+
+  // Initialize the settings service and have the pref store subscribe to it.
+  supervised_user_settings->Init(state_path_, GetIOTaskRunner(),
+                                 /*load_synchronously=*/true);
+
+  if (base::FeatureList::IsEnabled(
+          supervised_user::kEnableSupervisionOnDesktopAndIOS)) {
+    supervised_user_prefs->Init(supervised_user_settings);
+  }
 
   base::FilePath cookie_path = state_path_.Append(kIOSChromeCookieFilename);
   base::FilePath cache_path = GetCachePath(base_cache_path);

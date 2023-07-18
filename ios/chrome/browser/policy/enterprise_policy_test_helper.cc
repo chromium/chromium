@@ -53,7 +53,7 @@ EnterprisePolicyTestHelper::EnterprisePolicyTestHelper(
           state_directory_path,
           base::SingleThreadTaskRunner::GetCurrentDefault().get(),
           pref_registry, browser_state_policy_connector_->GetPolicyService(),
-          browser_policy_connector_.get());
+          browser_policy_connector_.get(), /*supervised_user_prefs=*/nullptr);
 
   TestChromeBrowserState::Builder builder;
   builder.SetPath(state_directory_path);
