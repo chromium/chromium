@@ -37,14 +37,41 @@ __handlers.update(reproxy_from_rewrapper.handlers)
 def __disable_remote_b281663988(step_config):
     step_config["rules"].extend([
         {
-            # TODO(b/281663988): remote compiles fail for missing headers.
-            "name": "b/281663988",
+            # TODO(b/281663988): missing headers.
+            "name": "b281663988/missing-headers",
             "action_outs": [
                 "./obj/ui/qt/qt5_shim/qt_shim.o",
                 "./obj/ui/qt/qt6_shim/qt_shim.o",
                 "./obj/ui/qt/qt5_shim/qt5_shim_moc.o",
                 "./obj/ui/qt/qt6_shim/qt6_shim_moc.o",
                 "./obj/ui/qt/qt_interface/qt_interface.o",
+            ],
+            "remote": False,
+        },
+    ])
+    return step_config
+
+def __disable_remote_b289968566(step_config):
+    step_config["rules"].extend([
+        {
+            # TODO(b/289968566): they often faile with exit=137 (OOM?).
+            # We should migrate default machine type to n2-standard-2.
+            "name": "b289968566/exit-137",
+            "action_outs": [
+                "./android_clang_arm/obj/third_party/distributed_point_functions/distributed_point_functions/evaluate_prg_hwy.o",
+                "./clang_x64_v8_arm64/obj/v8/torque_generated_initializers/js-to-wasm-tq-csa.o",
+                "./clang_x86_v8_arm/obj/v8/torque_generated_initializers/js-to-wasm-tq-csa.o",
+                "./obj/chrome/browser/ash/ash/autotest_private_api.o",
+                "./obj/chrome/browser/ash/ash/chrome_browser_main_parts_ash.o",
+                "./obj/chrome/browser/browser/browser_prefs.o",
+                "./obj/chrome/browser/browser/chrome_browser_interface_binders.o",
+                "./obj/chrome/browser/ui/ash/holding_space/browser_tests/holding_space_ui_browsertest.o",
+                "./obj/chrome/test/browser_tests/browser_non_client_frame_view_chromeos_browsertest.o",
+                "./obj/chrome/test/browser_tests/chrome_shelf_controller_browsertest.o",
+                "./obj/chrome/test/browser_tests/device_local_account_browsertest.o",
+                "./obj/chrome/test/browser_tests/file_manager_browsertest_base.o",
+                "./obj/chrome/test/browser_tests/remote_apps_manager_browsertest.o",
+                "./obj/v8/torque_generated_initializers/js-to-wasm-tq-csa.o",
             ],
             "remote": False,
         },
@@ -72,9 +99,11 @@ def __step_config(ctx, step_config):
         },
     }
 
+    step_config = __disable_remote_b289968566(step_config)
+
     # reproxy_from_rewrapper takes precedence over remote exec wrapper handler if enabled.
     if reproxy_from_rewrapper.enabled(ctx):
-        __disable_remote_b281663988(step_config)
+        step_config = __disable_remote_b281663988(step_config)
         step_config = reproxy_from_rewrapper.step_config(ctx, step_config)
         if config.get(ctx, "remote_to_reproxy"):
             # Exclude mojo and clang. Already covered by reproxy_from_rewrapper.
@@ -86,7 +115,7 @@ def __step_config(ctx, step_config):
             step_config = proto.step_config(ctx, step_config)
             step_config = reproxy_from_remote.step_config(ctx, step_config)
     elif remote_exec_wrapper.enabled(ctx):
-        __disable_remote_b281663988(step_config)
+        step_config = __disable_remote_b281663988(step_config)
         step_config = remote_exec_wrapper.step_config(ctx, step_config)
     else:
         if android.enabled(ctx):
