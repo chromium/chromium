@@ -54,7 +54,6 @@ import org.chromium.components.browser_ui.util.ComposedBrowserControlsVisibility
 import org.chromium.components.embedder_support.delegate.WebContentsDelegateAndroid;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
-import org.chromium.components.external_intents.ExternalIntentsFeatures;
 import org.chromium.components.external_intents.ExternalNavigationHandler;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -116,13 +115,8 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
             if (TextUtils.isEmpty(mClientPackageName)) return false;
             if (!mExternalAuthUtils.isGoogleSigned(mClientPackageName)) return false;
 
-            if (ExternalIntentsFeatures.DO_NOT_REQUIRE_SPECIALIZED_CCT_HANDLER.isEnabled()) {
-                return ExternalNavigationHandler.resolveInfoContainsPackage(
-                        resolveInfoSupplier.get(), mClientPackageName);
-            } else {
-                return ExternalNavigationHandler.isPackageSpecializedHandler(
-                        mClientPackageName, resolveInfoSupplier.get());
-            }
+            return ExternalNavigationHandler.resolveInfoContainsPackage(
+                    resolveInfoSupplier.get(), mClientPackageName);
         }
 
         @Override

@@ -91,7 +91,6 @@ import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.browser_ui.modaldialog.ModalDialogTestUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
-import org.chromium.components.external_intents.ExternalIntentsFeatures;
 import org.chromium.components.external_intents.ExternalNavigationHandler;
 import org.chromium.components.external_intents.ExternalNavigationHandler.OverrideUrlLoadingResult;
 import org.chromium.components.external_intents.ExternalNavigationHandler.OverrideUrlLoadingResultType;
@@ -1554,7 +1553,6 @@ public class UrlOverridingTest {
 
     @Test
     @LargeTest
-    @Features.EnableFeatures({ExternalIntentsFeatures.BLOCK_FRAME_RENAVIGATIONS_NAME})
     public void testWindowRenavigation() throws Exception {
         String finalUrl = mTestServer.getURL(HELLO_PAGE);
         mActivityTestRule.startMainActivityOnBlankPage();
@@ -1567,7 +1565,6 @@ public class UrlOverridingTest {
 
     @Test
     @LargeTest
-    @Features.EnableFeatures({ExternalIntentsFeatures.BLOCK_FRAME_RENAVIGATIONS_NAME})
     public void testWindowRenavigationServerRedirect() throws Exception {
         String finalUrl = mTestServer.getURL(HELLO_PAGE);
         mActivityTestRule.startMainActivityOnBlankPage();
@@ -1580,7 +1577,6 @@ public class UrlOverridingTest {
 
     @Test
     @LargeTest
-    @Features.EnableFeatures({ExternalIntentsFeatures.BLOCK_FRAME_RENAVIGATIONS_NAME})
     public void testWindowServerRedirect() throws Exception {
         mActivityTestRule.startMainActivityOnBlankPage();
         loadUrlAndWaitForIntentUrl(
@@ -1589,9 +1585,7 @@ public class UrlOverridingTest {
 
     @Test
     @LargeTest
-    @Features.EnableFeatures({ExternalIntentsFeatures.BLOCK_INTENTS_TO_SELF_NAME})
-    public void
-    testIntentToSelf() {
+    public void testIntentToSelf() {
         String targetUrl = mTestServer.getURL(HELLO_PAGE);
         // Strip off the https: from the URL.
         String strippedTargetUrl = targetUrl.substring(6);
@@ -1611,9 +1605,7 @@ public class UrlOverridingTest {
 
     @Test
     @LargeTest
-    @Features.EnableFeatures({ExternalIntentsFeatures.BLOCK_INTENTS_TO_SELF_NAME})
-    public void
-    testIntentToSelfWithFallback() throws Exception {
+    public void testIntentToSelfWithFallback() throws Exception {
         mActivityTestRule.startMainActivityOnBlankPage();
 
         String targetUrl = mTestServer.getURL(HELLO_PAGE);
@@ -1658,9 +1650,7 @@ public class UrlOverridingTest {
     // that would escape the sandbox by clobbering the main frame.
     @Test
     @LargeTest
-    @Features.EnableFeatures({ExternalIntentsFeatures.BLOCK_INTENTS_TO_SELF_NAME})
-    public void
-    testIntentToSelfWithFallback_Sandboxed() throws Exception {
+    public void testIntentToSelfWithFallback_Sandboxed() throws Exception {
         mActivityTestRule.startMainActivityOnBlankPage();
 
         String targetUrl = mTestServer.getURL(HELLO_PAGE);
