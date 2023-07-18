@@ -129,6 +129,10 @@ class TextInput : public ui::TextInputClient,
     // Otherwise, set the selection range to be after the committed text.
     // Returns whether the operation is supported by the client.
     virtual bool ConfirmComposition(bool keep_selection) = 0;
+
+    // Does the current delegate support the new ConfirmComposition wayland
+    // method name confirm_preedit?
+    virtual bool SupportsConfirmPreedit() = 0;
   };
 
   explicit TextInput(std::unique_ptr<Delegate> delegate);
@@ -237,6 +241,7 @@ class TextInput : public ui::TextInputClient,
   bool ClearGrammarFragments(const gfx::Range& range) override;
   bool AddGrammarFragments(
       const std::vector<ui::GrammarFragment>& fragments) override;
+  bool SupportsAlwaysConfirmComposition() override;
   void GetActiveTextInputControlLayoutBounds(
       absl::optional<gfx::Rect>* control_bounds,
       absl::optional<gfx::Rect>* selection_bounds) override {}

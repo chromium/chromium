@@ -553,6 +553,10 @@ bool TextInput::AddGrammarFragments(
   return true;
 }
 
+bool TextInput::SupportsAlwaysConfirmComposition() {
+  return delegate_->SupportsConfirmPreedit();
+}
+
 void GetActiveTextInputControlLayoutBounds(
     absl::optional<gfx::Rect>* control_bounds,
     absl::optional<gfx::Rect>* selection_bounds) {
