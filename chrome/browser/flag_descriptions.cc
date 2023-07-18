@@ -4161,6 +4161,12 @@ const char kForceOffTextAutosizingName[] =
     "screens.";
 const char kForceOffTextAutosizingDescription[] = "Disable text autosizing.";
 
+const char kGridTabSwitcherLandscapeAspectRatioPhonesName[] =
+    "Landscape aspect ratio for thumbnails on tab switcher";
+const char kGridTabSwitcherLandscapeAspectRatioPhonesDescription[] =
+    "Use a landscape aspect ratio for tab thumbnails on the grid tab switcher. "
+    "Phone only.";
+
 const char kRevokeNotificationsPermissionIfDisabledOnAppLevelName[] =
     "Revoke site-level notification permission on Android";
 const char kRevokeNotificationsPermissionIfDisabledOnAppLevelDescription[] =

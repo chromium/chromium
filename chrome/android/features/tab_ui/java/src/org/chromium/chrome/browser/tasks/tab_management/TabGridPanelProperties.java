@@ -9,6 +9,7 @@ import android.text.TextWatcher;
 import android.view.View;
 import android.view.View.OnClickListener;
 
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
@@ -17,6 +18,8 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
  * List of properties used by TabGridDialog.
  */
 class TabGridPanelProperties {
+    public static final PropertyModel.ReadableObjectPropertyKey<BrowserControlsStateProvider>
+            BROWSER_CONTROLS_STATE_PROVIDER = new PropertyModel.ReadableObjectPropertyKey<>();
     public static final PropertyModel
             .WritableObjectPropertyKey<OnClickListener> COLLAPSE_CLICK_LISTENER =
             new PropertyModel.WritableObjectPropertyKey<>();
@@ -77,9 +80,9 @@ class TabGridPanelProperties {
     public static final PropertyModel
             .WritableObjectPropertyKey<String> COLLAPSE_BUTTON_CONTENT_DESCRIPTION =
             new PropertyModel.WritableObjectPropertyKey<>();
-    public static final PropertyKey[] ALL_KEYS = new PropertyKey[] {COLLAPSE_CLICK_LISTENER,
-            ADD_CLICK_LISTENER, HEADER_TITLE, CONTENT_TOP_MARGIN, PRIMARY_COLOR,
-            DIALOG_BACKGROUND_COLOR, TINT, IS_DIALOG_VISIBLE, VISIBILITY_LISTENER,
+    public static final PropertyKey[] ALL_KEYS = new PropertyKey[] {BROWSER_CONTROLS_STATE_PROVIDER,
+            COLLAPSE_CLICK_LISTENER, ADD_CLICK_LISTENER, HEADER_TITLE, CONTENT_TOP_MARGIN,
+            PRIMARY_COLOR, DIALOG_BACKGROUND_COLOR, TINT, IS_DIALOG_VISIBLE, VISIBILITY_LISTENER,
             SCRIMVIEW_CLICK_RUNNABLE, ANIMATION_SOURCE_VIEW, UNGROUP_BAR_STATUS,
             DIALOG_UNGROUP_BAR_BACKGROUND_COLOR, DIALOG_UNGROUP_BAR_HOVERED_BACKGROUND_COLOR,
             DIALOG_UNGROUP_BAR_TEXT_COLOR, DIALOG_UNGROUP_BAR_HOVERED_TEXT_COLOR,

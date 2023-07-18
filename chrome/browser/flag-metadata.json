@@ -4467,9 +4467,9 @@
     "expiry_milestone": 116
   },
   {
-    "name": "grid-tab-switcher-for-tablets",
-    "owners": [ "nemco@google.com", "clank-app-team@google.com" ],
-    "expiry_milestone": 114
+    "name": "grid-tab-switcher-landscape-aspect-ratio-phones",
+    "owners": [ "ckitagawa@google.com", "clank-app-team@google.com" ],
+    "expiry_milestone": 120
   },
   {
     "name": "handwriting-gesture-editing",

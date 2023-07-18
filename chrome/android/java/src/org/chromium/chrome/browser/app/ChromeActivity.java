@@ -87,7 +87,6 @@ import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.compositor.layouts.Layout;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.compositor.layouts.SceneChangeObserver;
-import org.chromium.chrome.browser.compositor.layouts.content.ContentOffsetProvider;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManagerHandler;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchFieldTrial;
@@ -647,7 +646,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             if (isFinishing()) return;
 
             TabModelSelector tabModelSelector = mTabModelOrchestrator.getTabModelSelector();
-            setTabContentManager(new TabContentManager(this, getContentOffsetProvider(),
+            setTabContentManager(new TabContentManager(this, mBrowserControlsManagerSupplier.get(),
                     !SysUtils.isLowEndDevice(),
                     tabModelSelector != null ? tabModelSelector::getTabById : null));
 
@@ -1984,13 +1983,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
      */
     public @NonNull FullscreenManager getFullscreenManager() {
         return getBrowserControlsManager().getFullscreenManager();
-    }
-
-    /**
-     * @return The content offset provider, may be null.
-     */
-    public ContentOffsetProvider getContentOffsetProvider() {
-        return mCompositorViewHolderSupplier.get();
     }
 
     /**

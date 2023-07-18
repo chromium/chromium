@@ -109,8 +109,9 @@ public class TabContentManagerTest {
             final TabContentManager tabContentManager =
                     sActivityTestRule.getActivity().getTabContentManagerSupplier().get();
             final int height = 100;
-            final int width = Math.round(
-                    height * TabUtils.getTabThumbnailAspectRatio(sActivityTestRule.getActivity()));
+            final int width = Math.round(height
+                    * TabUtils.getTabThumbnailAspectRatio(sActivityTestRule.getActivity(),
+                            sActivityTestRule.getActivity().getBrowserControlsManager()));
             tabContentManager.cacheTabThumbnail(currentTab);
             tabContentManager.getTabThumbnailWithCallback(currentTab.getId(),
                     new Size(width, height), bitmapCallback, /*forceUpdate=*/false,

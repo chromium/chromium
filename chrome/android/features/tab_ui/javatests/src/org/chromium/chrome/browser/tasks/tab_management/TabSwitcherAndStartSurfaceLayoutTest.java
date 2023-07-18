@@ -1238,7 +1238,8 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
         enterTabSwitcher(mActivityTestRule.getActivity());
         onViewWaiting(tabSwitcherViewMatcher())
                 .check(ThumbnailAspectRatioAssertion.havingAspectRatio(
-                        TabUtils.getTabThumbnailAspectRatio(mActivityTestRule.getActivity())));
+                        TabUtils.getTabThumbnailAspectRatio(mActivityTestRule.getActivity(),
+                                mActivityTestRule.getActivity().getBrowserControlsManager())));
     }
 
     @Test
@@ -1307,9 +1308,12 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     @CommandLineFlags.Add({BASE_PARAMS})
     public void testThumbnailFetchingResult_liveLayer(boolean isStartSurfaceRefactorEnabled)
             throws Exception {
-        var histograms = HistogramWatcher.newSingleRecordWatcher(
-                TabContentManager.UMA_THUMBNAIL_FETCHING_RESULT,
-                TabContentManager.ThumbnailFetchingResult.GOT_NOTHING);
+        // May be called when setting both grid card size and thumbnail fetcher.
+        var histograms = HistogramWatcher.newBuilder()
+                                 .expectIntRecord(TabContentManager.UMA_THUMBNAIL_FETCHING_RESULT,
+                                         TabContentManager.ThumbnailFetchingResult.GOT_NOTHING)
+                                 .allowExtraRecords(TabContentManager.UMA_THUMBNAIL_FETCHING_RESULT)
+                                 .build();
 
         prepareTabs(1, 0, "about:blank");
         enterTabSwitcher(mActivityTestRule.getActivity());
@@ -1327,9 +1331,12 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     @CommandLineFlags.Add({BASE_PARAMS})
     public void testThumbnailFetchingResult_jpeg(boolean isStartSurfaceRefactorEnabled)
             throws Exception {
-        var histograms = HistogramWatcher.newSingleRecordWatcher(
-                TabContentManager.UMA_THUMBNAIL_FETCHING_RESULT,
-                TabContentManager.ThumbnailFetchingResult.GOT_JPEG);
+        // May be called when setting both grid card size and thumbnail fetcher.
+        var histograms = HistogramWatcher.newBuilder()
+                                 .expectIntRecord(TabContentManager.UMA_THUMBNAIL_FETCHING_RESULT,
+                                         TabContentManager.ThumbnailFetchingResult.GOT_JPEG)
+                                 .allowExtraRecords(TabContentManager.UMA_THUMBNAIL_FETCHING_RESULT)
+                                 .build();
 
         prepareTabs(1, 0, "about:blank");
         simulateJpegHasCachedWithDefaultAspectRatio();
@@ -1349,9 +1356,13 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     @CommandLineFlags.Add({BASE_PARAMS + "/thumbnail_aspect_ratio/2.0/allow_to_refetch/true"})
     public void testThumbnailFetchingResult_changingAspectRatio(
             boolean isStartSurfaceRefactorEnabled) throws Exception {
-        var histograms = HistogramWatcher.newSingleRecordWatcher(
-                TabContentManager.UMA_THUMBNAIL_FETCHING_RESULT,
-                TabContentManager.ThumbnailFetchingResult.GOT_DIFFERENT_ASPECT_RATIO_JPEG);
+        // May be called when setting both grid card size and thumbnail fetcher.
+        var histograms = HistogramWatcher.newBuilder()
+                                 .expectIntRecord(TabContentManager.UMA_THUMBNAIL_FETCHING_RESULT,
+                                         TabContentManager.ThumbnailFetchingResult
+                                                 .GOT_DIFFERENT_ASPECT_RATIO_JPEG)
+                                 .allowExtraRecords(TabContentManager.UMA_THUMBNAIL_FETCHING_RESULT)
+                                 .build();
 
         prepareTabs(1, 0, "about:blank");
         // Simulate Jpeg has cached with default aspect ratio.
@@ -2400,7 +2411,8 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
 
     private void simulateJpegHasCachedWithDefaultAspectRatio() throws IOException {
         simulateJpegHasCachedWithAspectRatio(
-                TabUtils.getTabThumbnailAspectRatio(mActivityTestRule.getActivity()));
+                TabUtils.getTabThumbnailAspectRatio(mActivityTestRule.getActivity(),
+                        mActivityTestRule.getActivity().getBrowserControlsManager()));
     }
 
     private void simulateAspectRatioChangedToPoint75() throws IOException {

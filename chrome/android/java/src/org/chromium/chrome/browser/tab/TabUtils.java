@@ -17,11 +17,14 @@ import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.MathUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.ChromeActivity;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
@@ -255,14 +258,24 @@ public class TabUtils {
     /**
      * Return aspect ratio for grid tab card based on form factor and orientation.
      * @param context - Context of the application.
+     * @param browserControlsStateProvider - For getting browser controls height.
      * @return Aspect ratio for the grid tab card.
      */
-    public static float getTabThumbnailAspectRatio(Context context) {
-        if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)
+    public static float getTabThumbnailAspectRatio(
+            Context context, BrowserControlsStateProvider browserControlsStateProvider) {
+        if ((DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)
+                    || BuildInfo.getInstance().isAutomotive
+                    || ChromeFeatureList.sGridTabSwitcherLandscapeAspectRatioPhones.isEnabled())
                 && context.getResources().getConfiguration().orientation
                         == Configuration.ORIENTATION_LANDSCAPE) {
+            assert browserControlsStateProvider != null;
+            int toolbarHeightDp = (browserControlsStateProvider == null)
+                    ? 0
+                    : Math.round((float) browserControlsStateProvider.getTopControlsHeight()
+                            / context.getResources().getDisplayMetrics().density);
             return (context.getResources().getConfiguration().screenWidthDp * 1.f)
-                    / (context.getResources().getConfiguration().screenHeightDp * 1.f);
+                    / (context.getResources().getConfiguration().screenHeightDp * 1.f
+                            - toolbarHeightDp);
         }
         float value = (float) TabUiFeatureUtilities.THUMBNAIL_ASPECT_RATIO.getValue();
         return MathUtils.clamp(value, 0.5f, 2.0f);
@@ -272,11 +285,13 @@ public class TabUtils {
      * Derive grid card height based on width, expected thumbnail aspect ratio and margins.
      * @param cardWidthPx width of the card
      * @param context to derive view margins
+     * @param browserControlsStateProvider - For getting browser controls height.
      * @return computed card height.
      */
-    public static int deriveGridCardHeight(int cardWidthPx, Context context) {
+    public static int deriveGridCardHeight(int cardWidthPx, Context context,
+            BrowserControlsStateProvider browserControlsStateProvider) {
         int tabThumbnailHeight = (int) ((cardWidthPx - getThumbnailWidthDiff(context))
-                / getTabThumbnailAspectRatio(context));
+                / getTabThumbnailAspectRatio(context, browserControlsStateProvider));
         int cardHeightPx = tabThumbnailHeight + getThumbnailHeightDiff(context);
         return cardHeightPx;
     }

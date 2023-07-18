@@ -24,6 +24,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.params.ParameterAnnotations;
@@ -31,6 +33,7 @@ import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
@@ -70,6 +73,9 @@ public class TabGridThumbnailViewRenderTest {
     @Rule
     public TestRule mJunitProcessor = new Features.JUnitProcessor();
 
+    @Mock
+    private BrowserControlsStateProvider mBrowserControlsStateProvider;
+
     private FrameLayout mContentView;
     private ViewGroup mTabCard;
     private TabGridThumbnailView mTabGridThumbnailView;
@@ -82,6 +88,7 @@ public class TabGridThumbnailViewRenderTest {
 
     @Before
     public void setUp() {
+        MockitoAnnotations.initMocks(this);
         mActivityTestRule.launchActivity(null);
         mActivityTestRule.getActivity().setTheme(R.style.Theme_BrowserUI_DayNight);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
@@ -101,8 +108,8 @@ public class TabGridThumbnailViewRenderTest {
         });
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             final int cardWidthPx = mContentView.getMeasuredWidth() / 2;
-            final int cardHeightPx =
-                    TabUtils.deriveGridCardHeight(cardWidthPx, mActivityTestRule.getActivity());
+            final int cardHeightPx = TabUtils.deriveGridCardHeight(
+                    cardWidthPx, mActivityTestRule.getActivity(), mBrowserControlsStateProvider);
             mTabCard.setMinimumWidth(cardWidthPx);
             mTabCard.setMinimumHeight(cardHeightPx);
             mTabCard.getLayoutParams().width = cardWidthPx;

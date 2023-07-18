@@ -94,6 +94,8 @@ public class LayoutManagerChrome
      * @param tabSwitcherSupplier Supplier for an interface to talk to the Grid Tab Switcher when
      *         Start surface refactor is enabled. Used to create overviewLayout if it has value,
      *         otherwise will use the accessibility overview layout.
+     * @param browserControlsStateProvider The {@link BrowserControlsStateProvider} for top
+     *         controls.
      * @param tabContentManagerSupplier Supplier of the {@link TabContentManager} instance.
      * @param topUiThemeColorProvider {@link ThemeColorProvider} for top UI.
      * @param tabSwitcherScrimAnchor {@link ViewGroup} used by tab switcher layout to show scrim
@@ -102,6 +104,7 @@ public class LayoutManagerChrome
      */
     public LayoutManagerChrome(LayoutManagerHost host, ViewGroup contentContainer,
             Supplier<StartSurface> startSurfaceSupplier, Supplier<TabSwitcher> tabSwitcherSupplier,
+            BrowserControlsStateProvider browserControlsStateProvider,
             ObservableSupplier<TabContentManager> tabContentManagerSupplier,
             Supplier<TopUiThemeColorProvider> topUiThemeColorProvider,
             ViewGroup tabSwitcherScrimAnchor, ScrimCoordinator scrimCoordinator) {
@@ -132,11 +135,11 @@ public class LayoutManagerChrome
         if (ReturnToChromeUtil.isStartSurfaceRefactorEnabled(context)) {
             if (startSurfaceSupplier.hasValue() || tabSwitcherSupplier.hasValue()) {
                 createOverviewLayout(startSurfaceSupplier.get(), tabSwitcherSupplier.get(),
-                        scrimCoordinator, tabSwitcherScrimAnchor);
+                        browserControlsStateProvider, scrimCoordinator, tabSwitcherScrimAnchor);
             }
         } else if (startSurfaceSupplier.hasValue()) {
-            createOverviewLayout(startSurfaceSupplier.get(), /*tabSwitcher=*/null, scrimCoordinator,
-                    tabSwitcherScrimAnchor);
+            createOverviewLayout(startSurfaceSupplier.get(), /*tabSwitcher=*/null,
+                    browserControlsStateProvider, scrimCoordinator, tabSwitcherScrimAnchor);
         }
     }
 
@@ -146,12 +149,15 @@ public class LayoutManagerChrome
      *         is disabled.
      * @param tabSwitcher An interface to talk to the Grid Tab Switcher when Start surface refactor
      *         is enabled.
+     * @param browserControlsStateProvider The {@link BrowserControlsStateProvider} for top
+     *         controls.
      * @param scrimCoordinator scrim coordinator for GTS
      * @param tabSwitcherScrimAnchor scrim anchor view for GTS
      */
     protected void createOverviewLayout(@Nullable StartSurface startSurface,
-            @Nullable TabSwitcher tabSwitcher, ScrimCoordinator scrimCoordinator,
-            ViewGroup tabSwitcherScrimAnchor) {
+            @Nullable TabSwitcher tabSwitcher,
+            BrowserControlsStateProvider browserControlsStateProvider,
+            ScrimCoordinator scrimCoordinator, ViewGroup tabSwitcherScrimAnchor) {
         assert mOverviewLayout == null && mTabSwitcherLayout == null
                 && mStartSurfaceHomeLayout == null
                 && TabUiFeatureUtilities.isGridTabSwitcherEnabled(mHost.getContext());
@@ -168,7 +174,8 @@ public class LayoutManagerChrome
             assert tabManagementDelegate != null;
 
             mTabSwitcherLayout = tabManagementDelegate.createTabSwitcherLayout(context, this,
-                    renderHost, tabSwitcher, tabSwitcherScrimAnchor, scrimCoordinator);
+                    renderHost, browserControlsStateProvider, tabSwitcher, tabSwitcherScrimAnchor,
+                    scrimCoordinator);
 
             if (startSurface != null) {
                 mStartSurfaceHomeLayout = StartSurfaceDelegate.createStartSurfaceHomeLayout(
@@ -177,7 +184,8 @@ public class LayoutManagerChrome
         } else {
             assert startSurface != null;
             mOverviewLayout = StartSurfaceDelegate.createTabSwitcherAndStartSurfaceLayout(context,
-                    this, renderHost, startSurface, tabSwitcherScrimAnchor, scrimCoordinator);
+                    this, renderHost, browserControlsStateProvider, startSurface,
+                    tabSwitcherScrimAnchor, scrimCoordinator);
         }
 
         if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(mHost.getContext())) {

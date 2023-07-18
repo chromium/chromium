@@ -1672,8 +1672,11 @@ class TabListMediator {
         updateFaviconForTab(pseudoTab, null, null);
 
         if (mThumbnailProvider != null && mDefaultGridCardSize != null) {
-            tabInfo.set(TabProperties.GRID_CARD_SIZE,
-                    new Size(mDefaultGridCardSize.getWidth(), mDefaultGridCardSize.getHeight()));
+            if (!mDefaultGridCardSize.equals(tabInfo.get(TabProperties.GRID_CARD_SIZE))) {
+                tabInfo.set(TabProperties.GRID_CARD_SIZE,
+                        new Size(
+                                mDefaultGridCardSize.getWidth(), mDefaultGridCardSize.getHeight()));
+            }
         }
         if (mThumbnailProvider != null && mVisible) {
             boolean isSelectable = mUiType == UiType.SELECTABLE;

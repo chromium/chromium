@@ -162,7 +162,8 @@ public class TabSelectionEditorTest {
         mSnackbarManager = sActivityTestRule.getActivity().getSnackbarManager();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mTabSelectionEditorCoordinator = new TabSelectionEditorCoordinator(
-                    sActivityTestRule.getActivity(), mParentView, mTabModelSelector,
+                    sActivityTestRule.getActivity(), mParentView,
+                    sActivityTestRule.getActivity().getBrowserControlsManager(), mTabModelSelector,
                     sActivityTestRule.getActivity().getTabContentManager(),
                     mSetRecyclerViewPosition, getMode(),
                     sActivityTestRule.getActivity().getCompositorViewHolderForTesting(),

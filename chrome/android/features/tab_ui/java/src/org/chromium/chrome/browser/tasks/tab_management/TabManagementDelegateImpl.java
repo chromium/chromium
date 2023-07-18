@@ -44,10 +44,11 @@ import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
 public class TabManagementDelegateImpl implements TabManagementDelegate {
     @Override
     public Layout createTabSwitcherLayout(Context context, LayoutUpdateHost updateHost,
-            LayoutRenderHost renderHost, TabSwitcher tabSwitcher, ViewGroup tabSwitcherScrimAnchor,
+            LayoutRenderHost renderHost, BrowserControlsStateProvider browserControlsStateProvider,
+            TabSwitcher tabSwitcher, ViewGroup tabSwitcherScrimAnchor,
             ScrimCoordinator scrimCoordinator) {
-        return new TabSwitcherLayout(context, updateHost, renderHost, tabSwitcher,
-                tabSwitcherScrimAnchor, scrimCoordinator);
+        return new TabSwitcherLayout(context, updateHost, renderHost, browserControlsStateProvider,
+                tabSwitcher, tabSwitcherScrimAnchor, scrimCoordinator);
     }
 
     @Override
@@ -100,6 +101,7 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
 
     @Override
     public TabGroupUi createTabGroupUi(@NonNull Activity activity, @NonNull ViewGroup parentView,
+            @NonNull BrowserControlsStateProvider browserControlsStateProvider,
             @NonNull IncognitoStateProvider incognitoStateProvider,
             @NonNull ScrimCoordinator scrimCoordinator,
             @NonNull ObservableSupplier<Boolean> omniboxFocusStateSupplier,
@@ -111,11 +113,11 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
             @NonNull TabCreatorManager tabCreatorManager,
             @NonNull OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier,
             @NonNull SnackbarManager snackbarManager) {
-        return new TabGroupUiCoordinator(activity, parentView, incognitoStateProvider,
-                scrimCoordinator, omniboxFocusStateSupplier, bottomSheetController,
-                activityLifecycleDispatcher, isWarmOnResumeSupplier, tabModelSelector,
-                tabContentManager, rootView, dynamicResourceLoaderSupplier, tabCreatorManager,
-                layoutStateProviderSupplier, snackbarManager);
+        return new TabGroupUiCoordinator(activity, parentView, browserControlsStateProvider,
+                incognitoStateProvider, scrimCoordinator, omniboxFocusStateSupplier,
+                bottomSheetController, activityLifecycleDispatcher, isWarmOnResumeSupplier,
+                tabModelSelector, tabContentManager, rootView, dynamicResourceLoaderSupplier,
+                tabCreatorManager, layoutStateProviderSupplier, snackbarManager);
     }
 
     @Override

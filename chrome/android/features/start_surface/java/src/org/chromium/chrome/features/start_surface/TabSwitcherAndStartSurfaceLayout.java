@@ -82,6 +82,8 @@ public class TabSwitcherAndStartSurfaceLayout extends Layout {
     private static final String TRACE_SHOW_START_SURFACE = "StartSurfaceLayout.Show.StartSurface";
     private static final String TRACE_HIDE_START_SURFACE = "StartSurfaceLayout.Hide.StartSurface";
 
+    private final BrowserControlsStateProvider mBrowserControlsStateProvider;
+
     // The transition animation from a tab to the tab switcher.
     private AnimatorSet mTabToSwitcherAnimation;
     private boolean mIsAnimatingHide;
@@ -125,9 +127,11 @@ public class TabSwitcherAndStartSurfaceLayout extends Layout {
     private PerfListener mPerfListenerForTesting;
 
     public TabSwitcherAndStartSurfaceLayout(Context context, LayoutUpdateHost updateHost,
-            LayoutRenderHost renderHost, StartSurface startSurface,
-            ViewGroup tabSwitcherScrimAnchor, ScrimCoordinator scrimCoordinator) {
+            LayoutRenderHost renderHost, BrowserControlsStateProvider browserControlsStateProvider,
+            StartSurface startSurface, ViewGroup tabSwitcherScrimAnchor,
+            ScrimCoordinator scrimCoordinator) {
         super(context, updateHost, renderHost);
+        mBrowserControlsStateProvider = browserControlsStateProvider;
         mStartSurface = startSurface;
         mStartSurface.setOnTabSelectingListener(this::onTabSelecting);
         mScrimAnchor = tabSwitcherScrimAnchor;
@@ -557,10 +561,11 @@ public class TabSwitcherAndStartSurfaceLayout extends Layout {
         // down, making the "create group" visible for a while.
         animationList.add(CompositorAnimator.ofWritableFloatPropertyKey(handler, sourceLayoutTab,
                 LayoutTab.MAX_CONTENT_HEIGHT, sourceLayoutTab.getUnclampedOriginalContentHeight(),
-                TabUiFeatureUtilities.isTabThumbnailAspectRatioNotOne()
-                        ? Math.min(getWidth() / TabUtils.getTabThumbnailAspectRatio(getContext()),
-                                sourceLayoutTab.getUnclampedOriginalContentHeight())
-                        : getWidth(),
+                TabUiFeatureUtilities.isTabThumbnailAspectRatioNotOne() ? Math.min(getWidth()
+                                / TabUtils.getTabThumbnailAspectRatio(
+                                        getContext(), mBrowserControlsStateProvider),
+                        sourceLayoutTab.getUnclampedOriginalContentHeight())
+                                                                        : getWidth(),
                 ZOOMING_DURATION, Interpolators.FAST_OUT_SLOW_IN_INTERPOLATOR));
 
         mTabListTopOffset = getLastUsedTabListDelegate().getTabListTopOffset();
@@ -625,10 +630,11 @@ public class TabSwitcherAndStartSurfaceLayout extends Layout {
         // down, making the "create group" visible for a while.
         animationList.add(CompositorAnimator.ofWritableFloatPropertyKey(handler, sourceLayoutTab,
                 LayoutTab.MAX_CONTENT_HEIGHT,
-                TabUiFeatureUtilities.isTabThumbnailAspectRatioNotOne()
-                        ? Math.min(getWidth() / TabUtils.getTabThumbnailAspectRatio(getContext()),
-                                sourceLayoutTab.getUnclampedOriginalContentHeight())
-                        : getWidth(),
+                TabUiFeatureUtilities.isTabThumbnailAspectRatioNotOne() ? Math.min(getWidth()
+                                / TabUtils.getTabThumbnailAspectRatio(
+                                        getContext(), mBrowserControlsStateProvider),
+                        sourceLayoutTab.getUnclampedOriginalContentHeight())
+                                                                        : getWidth(),
                 sourceLayoutTab.getUnclampedOriginalContentHeight(), ZOOMING_DURATION,
                 Interpolators.FAST_OUT_SLOW_IN_INTERPOLATOR));
 

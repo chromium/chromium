@@ -111,6 +111,7 @@ specific_include_rules = {
   ],
   'TabUtils\.java' : [
     "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+    "+chrome/browser/browser_controls/android/java/src/org/chromium/chrome/browser/browser_controls/BrowserControlsStateProvider.java",
   ],
   'TabViewManagerImpl\.java': [
     "+chrome/browser/browser_controls/android/java/src/org/chromium/chrome/browser/browser_controls/BrowserControlsMarginSupplier.java",

@@ -142,7 +142,8 @@ public class TasksSurfaceCoordinator implements TasksSurface {
                     mView.getCarouselTabSwitcherContainer(), null, tabModelSelector,
                     /* isTablet= */ false, /* isScrollableMvtEnabled */ true,
                     /* mostRecentTab= */ null, /* singleTabCardClickedCallback */ null,
-                    /* snapshotParentViewRunnable */ null, mTabContentManager);
+                    /* snapshotParentViewRunnable */ null, mTabContentManager,
+                    browserControlsStateProvider);
         } else if (tabSwitcherType == TabSwitcherType.NONE) {
             mTabSwitcher = null;
         } else {

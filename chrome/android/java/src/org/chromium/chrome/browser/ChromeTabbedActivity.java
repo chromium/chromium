@@ -657,8 +657,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
             // clang-format off
             mLayoutManager = new LayoutManagerChromePhone(compositorViewHolder, mContentContainer,
-                    mStartSurfaceSupplier, mTabSwitcherSupplier, getTabContentManagerSupplier(),
-                    mRootUiCoordinator::getTopUiThemeColorProvider);
+                    mStartSurfaceSupplier, mTabSwitcherSupplier, getBrowserControlsManager(),
+                    getTabContentManagerSupplier(), mRootUiCoordinator::getTopUiThemeColorProvider);
             mLayoutStateProviderSupplier.set(mLayoutManager);
             // clang-format on
         }
@@ -675,11 +675,12 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             ViewGroup tabSwitcherViewHolder = findViewById(R.id.tab_switcher_view_holder);
             View toolbarContainerView = findViewById(R.id.toolbar_container);
             mLayoutManager = new LayoutManagerChromeTablet(compositorViewHolder, mContentContainer,
-                mStartSurfaceSupplier, mTabSwitcherSupplier, getTabContentManagerSupplier(),
-                mRootUiCoordinator::getTopUiThemeColorProvider, mTabModelStartupInfoSupplier,
-                tabSwitcherViewHolder, mRootUiCoordinator.getScrimCoordinator(),
-                getLifecycleDispatcher(), () -> createAndSetStartSurfaceForTablet(),
-                mMultiInstanceManager, toolbarContainerView);
+                mStartSurfaceSupplier, mTabSwitcherSupplier, getBrowserControlsManager(),
+                getTabContentManagerSupplier(), mRootUiCoordinator::getTopUiThemeColorProvider,
+                mTabModelStartupInfoSupplier, tabSwitcherViewHolder,
+                mRootUiCoordinator.getScrimCoordinator(), getLifecycleDispatcher(),
+                () -> createAndSetStartSurfaceForTablet(), mMultiInstanceManager,
+                toolbarContainerView);
             mLayoutStateProviderSupplier.set(mLayoutManager);
             // clang-format on
         }

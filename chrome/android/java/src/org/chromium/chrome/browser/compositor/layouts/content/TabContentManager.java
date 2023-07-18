@@ -31,6 +31,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.flags.PostNativeFlag;
@@ -88,7 +89,7 @@ public class TabContentManager {
      * can be increased.
      */
     private int mFullResThumbnailsMaxSize;
-    private final ContentOffsetProvider mContentOffsetProvider;
+    private final BrowserControlsStateProvider mBrowserControlsStateProvider;
     private long mNativeTabContentManager;
 
     private final ArrayList<ThumbnailChangeListener> mListeners =
@@ -142,14 +143,15 @@ public class TabContentManager {
     }
 
     /**
-     * @param context               The context that this cache is created in.
-     * @param contentOffsetProvider The provider of content parameter.
-     * @param tabFinder             The helper function to get tab from an ID.
+     * @param context                      The context that this cache is created in.
+     * @param BrowserControlsStateProvider The provider of offsets.
+     * @param tabFinder                    The helper function to get tab from an ID.
      */
-    public TabContentManager(Context context, ContentOffsetProvider contentOffsetProvider,
-            boolean snapshotsEnabled, TabFinder tabFinder) {
+    public TabContentManager(Context context,
+            BrowserControlsStateProvider browserControlsStateProvider, boolean snapshotsEnabled,
+            TabFinder tabFinder) {
         mContext = context;
-        mContentOffsetProvider = contentOffsetProvider;
+        mBrowserControlsStateProvider = browserControlsStateProvider;
         mTabFinder = tabFinder;
         mSnapshotsEnabled = snapshotsEnabled;
 
@@ -286,7 +288,7 @@ public class TabContentManager {
 
     private Bitmap readbackNativeView(View viewToDraw, float scale, NativePage nativePage) {
         Bitmap bitmap = null;
-        float overlayTranslateY = mContentOffsetProvider.getOverlayTranslateY();
+        float overlayTranslateY = mBrowserControlsStateProvider.getTopVisibleContentOffset();
 
         float leftMargin = 0.f;
         float topMargin = 0.f;
@@ -644,7 +646,7 @@ public class TabContentManager {
     }
 
     private double getTabCaptureAspectRatio() {
-        return TabUtils.getTabThumbnailAspectRatio(mContext);
+        return TabUtils.getTabThumbnailAspectRatio(mContext, mBrowserControlsStateProvider);
     }
 
     /**

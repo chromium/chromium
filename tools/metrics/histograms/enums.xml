@@ -64653,6 +64653,8 @@ from previous Chrome versions.
   <int value="380372760" label="V8Orinoco:disabled"/>
   <int value="380378407" label="LacrosProfileMigrationForceOff:enabled"/>
   <int value="381195146" label="LacrosResourcesFileSharing:disabled"/>
+  <int value="382131467"
+      label="GridTabSwitcherLandscapeAspectRatioPhones:enabled"/>
   <int value="382478170" label="SemanticColorDebugOverride:disabled"/>
   <int value="384054552" label="EnableDrDcVulkan:disabled"/>
   <int value="384677240" label="AssistMultiWordLacrosSupport:enabled"/>
@@ -65955,6 +65957,8 @@ from previous Chrome versions.
   <int value="1075637651" label="disable-tablet-splitview"/>
   <int value="1075862390" label="LauncherItemSuggest:enabled"/>
   <int value="1076335895" label="CrosPrivacyHubV0:enabled"/>
+  <int value="1076477581"
+      label="GridTabSwitcherLandscapeAspectRatioPhones:disabled"/>
   <int value="1077910471" label="RestoreTabsOnFRE:disabled"/>
   <int value="1079017005" label="LayoutExtraction:disabled"/>
   <int value="1079032226" label="ParallelDownloading:enabled"/>

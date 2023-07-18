@@ -52,6 +52,8 @@ import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -60,6 +62,7 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.layouts.LayoutType;
@@ -108,8 +111,12 @@ public class TabGroupUiTest {
                     .setRevision(1)
                     .build();
 
+    @Mock
+    private BrowserControlsStateProvider mBrowserControlsStateProvider;
+
     @Before
     public void setUp() {
+        MockitoAnnotations.initMocks(this);
         sActivityTestRule.loadUrl(UrlConstants.NTP_URL);
         TabUiTestHelper.verifyTabSwitcherLayoutType(sActivityTestRule.getActivity());
         CriteriaHelper.pollUiThread(
@@ -219,8 +226,8 @@ public class TabGroupUiTest {
 
         // Create a tab group with 2 tabs.
         finishActivity(sActivityTestRule.getActivity());
-        createThumbnailBitmapAndWriteToFile(0);
-        createThumbnailBitmapAndWriteToFile(1);
+        createThumbnailBitmapAndWriteToFile(0, mBrowserControlsStateProvider);
+        createThumbnailBitmapAndWriteToFile(1, mBrowserControlsStateProvider);
         TabAttributeCache.setRootIdForTesting(0, 0);
         TabAttributeCache.setRootIdForTesting(1, 0);
         createTabStateFile(new int[] {0, 1});
@@ -258,8 +265,8 @@ public class TabGroupUiTest {
 
         // Create a tab group with 2 tabs, and turn on enable_launch_bug_fix variation.
         finishActivity(sActivityTestRule.getActivity());
-        createThumbnailBitmapAndWriteToFile(0);
-        createThumbnailBitmapAndWriteToFile(1);
+        createThumbnailBitmapAndWriteToFile(0, mBrowserControlsStateProvider);
+        createThumbnailBitmapAndWriteToFile(1, mBrowserControlsStateProvider);
         TabAttributeCache.setRootIdForTesting(0, 0);
         TabAttributeCache.setRootIdForTesting(1, 0);
         createTabStateFile(new int[] {0, 1});

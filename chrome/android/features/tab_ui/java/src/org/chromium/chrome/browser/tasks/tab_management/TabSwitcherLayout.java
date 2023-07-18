@@ -77,6 +77,8 @@ public class TabSwitcherLayout extends Layout {
     private static final String TRACE_DONE_SHOWING_TAB_SWITCHER = "TabSwitcherLayout.DoneShowing";
     private static final String TRACE_DONE_HIDING_TAB_SWITCHER = "TabSwitcherLayout.DoneHiding";
 
+    private final BrowserControlsStateProvider mBrowserControlsStateProvider;
+
     // The transition animation from a tab to the tab switcher.
     private AnimatorSet mTabToSwitcherAnimation;
     private boolean mIsAnimatingHide;
@@ -99,7 +101,6 @@ public class TabSwitcherLayout extends Layout {
     // calculations during animations.
     private Boolean mCachedIsTabGtsAnimationEnabled;
     private float mBackgroundAlpha;
-    private int mTabListTopOffset;
 
     private int mFrameCount;
     private long mStartTime;
@@ -123,10 +124,11 @@ public class TabSwitcherLayout extends Layout {
     private PerfListener mPerfListenerForTesting;
 
     public TabSwitcherLayout(Context context, LayoutUpdateHost updateHost,
-            LayoutRenderHost renderHost, TabSwitcher tabSwitcher,
-            @Nullable ViewGroup tabSwitcherScrimAnchor,
+            LayoutRenderHost renderHost, BrowserControlsStateProvider browserControlsStateProvider,
+            TabSwitcher tabSwitcher, @Nullable ViewGroup tabSwitcherScrimAnchor,
             @Nullable ScrimCoordinator scrimCoordinator) {
         super(context, updateHost, renderHost);
+        mBrowserControlsStateProvider = browserControlsStateProvider;
         mTabSwitcher = tabSwitcher;
         mController = mTabSwitcher.getController();
         mTabSwitcher.setOnTabSelectingListener(this::onTabSelecting);
@@ -440,6 +442,11 @@ public class TabSwitcherLayout extends Layout {
         CompositorAnimationHandler handler = getAnimationHandler();
         Collection<Animator> animationList = new ArrayList<>(5);
 
+        // With the post start surface refactoring this offset overcompensates. Offset the reverse
+        // for the rect.
+        int tabListTopOffset = mGridTabListDelegate.getTabListTopOffset();
+        targetRect.offset(0, -tabListTopOffset);
+
         // Step 1: zoom out the source tab
         Supplier<Float> scaleStartValueSupplier = () -> 1.0f;
         Supplier<Float> scaleEndValueSupplier = () -> targetRect.width() / (getWidth() * mDpToPx);
@@ -463,13 +470,13 @@ public class TabSwitcherLayout extends Layout {
         // down, making the "create group" visible for a while.
         animationList.add(CompositorAnimator.ofWritableFloatPropertyKey(handler, sourceLayoutTab,
                 LayoutTab.MAX_CONTENT_HEIGHT, sourceLayoutTab.getUnclampedOriginalContentHeight(),
-                TabUiFeatureUtilities.isTabThumbnailAspectRatioNotOne()
-                        ? Math.min(getWidth() / TabUtils.getTabThumbnailAspectRatio(getContext()),
-                                sourceLayoutTab.getUnclampedOriginalContentHeight())
-                        : getWidth(),
+                TabUiFeatureUtilities.isTabThumbnailAspectRatioNotOne() ? Math.min(getWidth()
+                                / TabUtils.getTabThumbnailAspectRatio(
+                                        getContext(), mBrowserControlsStateProvider),
+                        sourceLayoutTab.getUnclampedOriginalContentHeight())
+                                                                        : getWidth(),
                 ZOOMING_DURATION, Interpolators.FAST_OUT_SLOW_IN_INTERPOLATOR));
 
-        mTabListTopOffset = mGridTabListDelegate.getTabListTopOffset();
         CompositorAnimator backgroundAlpha =
                 CompositorAnimator.ofFloat(handler, 0f, 1f, BACKGROUND_FADING_DURATION_MS,
                         animator -> mBackgroundAlpha = animator.getAnimatedValue());
@@ -514,6 +521,11 @@ public class TabSwitcherLayout extends Layout {
         CompositorAnimationHandler handler = getAnimationHandler();
         Collection<Animator> animationList = new ArrayList<>(5);
 
+        // With the post start surface refactoring this offset overcompensates. Offset the reverse
+        // for the rect.
+        int tabListTopOffset = mGridTabListDelegate.getTabListTopOffset();
+        source.offset(0, -tabListTopOffset);
+
         // Zoom in the source tab
         animationList.add(CompositorAnimator.ofWritableFloatPropertyKey(handler, sourceLayoutTab,
                 LayoutTab.SCALE, source.width() / (getWidth() * mDpToPx), 1, ZOOMING_DURATION,
@@ -528,14 +540,14 @@ public class TabSwitcherLayout extends Layout {
         // down, making the "create group" visible for a while.
         animationList.add(CompositorAnimator.ofWritableFloatPropertyKey(handler, sourceLayoutTab,
                 LayoutTab.MAX_CONTENT_HEIGHT,
-                TabUiFeatureUtilities.isTabThumbnailAspectRatioNotOne()
-                        ? Math.min(getWidth() / TabUtils.getTabThumbnailAspectRatio(getContext()),
-                                sourceLayoutTab.getUnclampedOriginalContentHeight())
-                        : getWidth(),
+                TabUiFeatureUtilities.isTabThumbnailAspectRatioNotOne() ? Math.min(getWidth()
+                                / TabUtils.getTabThumbnailAspectRatio(
+                                        getContext(), mBrowserControlsStateProvider),
+                        sourceLayoutTab.getUnclampedOriginalContentHeight())
+                                                                        : getWidth(),
                 sourceLayoutTab.getUnclampedOriginalContentHeight(), ZOOMING_DURATION,
                 Interpolators.FAST_OUT_SLOW_IN_INTERPOLATOR));
 
-        mTabListTopOffset = mGridTabListDelegate.getTabListTopOffset();
         CompositorAnimator backgroundAlpha =
                 CompositorAnimator.ofFloat(handler, 1f, 0f, BACKGROUND_FADING_DURATION_MS,
                         animator -> mBackgroundAlpha = animator.getAnimatedValue());
@@ -700,7 +712,7 @@ public class TabSwitcherLayout extends Layout {
         mSceneLayer.pushLayers(getContext(), contentViewport, contentViewport, this,
                 tabContentManager, resourceManager, browserControls,
                 isTabGtsAnimationEnabled(false) ? mGridTabListDelegate.getResourceId() : 0,
-                mBackgroundAlpha, mTabListTopOffset);
+                mBackgroundAlpha, 0);
         mFrameCount++;
         if (mLastFrameTime != 0) {
             long elapsed = SystemClock.elapsedRealtime() - mLastFrameTime;

@@ -238,7 +238,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kExploreSites,
     &kFocusOmniboxInIncognitoTabIntents,
     &kFoldableJankFix,
-    &kGridTabSwitcherForTablets,
+    &kGridTabSwitcherLandscapeAspectRatioPhones,
     &kImprovedIncognitoScreenshot,
     &kIncognitoReauthenticationForAndroid,
     &kIncognitoScreenshot,
@@ -752,9 +752,9 @@ BASE_FEATURE(kFoldableJankFix,
              "FoldableJankFix",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kGridTabSwitcherForTablets,
-             "GridTabSwitcherForTablets",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kGridTabSwitcherLandscapeAspectRatioPhones,
+             "GridTabSwitcherLandscapeAspectRatioPhones",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Only affects devices on API version >= 33.
 BASE_FEATURE(kImprovedIncognitoScreenshot,

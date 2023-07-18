@@ -56,6 +56,7 @@ import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.accessibility_tab_switcher.OverviewListLayout;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.layouts.Layout.LayoutState;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.device.DeviceClassManager;
@@ -119,6 +120,8 @@ public class LayoutManagerTest implements MockTabModelDelegate {
     private TabSwitcher.TabListDelegate mTabListDelegate;
     @Mock
     private TabSwitcher.Controller mTabSwitcherController;
+    @Mock
+    private BrowserControlsStateProvider mBrowserControlsStateProvider;
 
     @Captor
     private ArgumentCaptor<TabSwitcherViewObserver> mTabSwitcherViewObserverArgumentCaptor;
@@ -237,7 +240,8 @@ public class LayoutManagerTest implements MockTabModelDelegate {
         mManagerPhone = new LayoutManagerChromePhone(layoutManagerHost, container,
                 mStartSurfaceSupplier,
                 mIsStartSurfaceRefactorEnabled ? mTabSwitcherSupplier : new OneshotSupplierImpl<>(),
-                tabContentManagerSupplier, () -> mTopUiThemeColorProvider);
+                mBrowserControlsStateProvider, tabContentManagerSupplier,
+                () -> mTopUiThemeColorProvider);
 
         setUpLayouts();
 

@@ -60,6 +60,8 @@ public interface TabManagementDelegate {
      * @param context The current Android's context.
      * @param updateHost The parent {@link LayoutUpdateHost}.
      * @param renderHost The parent {@link LayoutRenderHost}.
+     * @param browserControlsStateProvider The {@link BrowserControlsStateProvider} for the top
+     *         controls.
      * @param tabSwitcher The {@link TabSwitcher} the layout should own.
      * @param tabSwitcherScrimAnchor {@link ViewGroup} used by tab switcher layout to show scrim
      *         when overview is visible.
@@ -67,7 +69,8 @@ public interface TabManagementDelegate {
      * @return The {@link TabSwitcherLayout}.
      */
     Layout createTabSwitcherLayout(Context context, LayoutUpdateHost updateHost,
-            LayoutRenderHost renderHost, TabSwitcher tabSwitcher, ViewGroup tabSwitcherScrimAnchor,
+            LayoutRenderHost renderHost, BrowserControlsStateProvider browserControlsStateProvider,
+            TabSwitcher tabSwitcher, ViewGroup tabSwitcherScrimAnchor,
             ScrimCoordinator scrimCoordinator);
 
     /**
@@ -143,6 +146,8 @@ public interface TabManagementDelegate {
      * Create the {@link TabGroupUi}.
      * @param activity The {@link Activity} that creates this surface.
      * @param parentView The parent view of this UI.
+     * @param browserControlsStateProvider The {@link BrowserControlsStateProvider} of the top
+     *                                     controls.
      * @param incognitoStateProvider Observable provider of incognito state.
      * @param scrimCoordinator The {@link ScrimCoordinator} to control scrim view.
      * @param omniboxFocusStateSupplier Supplier to access the focus state of the omnibox.
@@ -159,6 +164,7 @@ public interface TabManagementDelegate {
      * @return The {@link TabGroupUi}.
      */
     TabGroupUi createTabGroupUi(@NonNull Activity activity, @NonNull ViewGroup parentView,
+            @NonNull BrowserControlsStateProvider browserControlsStateProvider,
             @NonNull IncognitoStateProvider incognitoStateProvider,
             @NonNull ScrimCoordinator scrimCoordinator,
             @NonNull ObservableSupplier<Boolean> omniboxFocusStateSupplier,

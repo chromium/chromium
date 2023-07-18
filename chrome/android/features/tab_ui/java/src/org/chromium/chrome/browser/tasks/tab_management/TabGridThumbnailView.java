@@ -26,7 +26,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.view.ViewCompat;
 
-import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.tab_ui.R;
 
 /**
@@ -120,19 +119,6 @@ public class TabGridThumbnailView extends ImageView {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         if (!mInitialized) return;
 
-        int measuredWidth = getMeasuredWidth();
-        int measureHeight = getMeasuredHeight();
-
-        // TODO(crbug/1434775): Consider fixing the aspect ratio and cropping/resizing the Drawable
-        // to fit.
-        // Don't force a size if the placeholder drawable is in use.
-        if (isPlaceholder()) {
-            final int expectedHeight =
-                    (int) (measuredWidth * 1.0 / TabUtils.getTabThumbnailAspectRatio(getContext()));
-            measureHeight = expectedHeight;
-        }
-
-        setMeasuredDimension(measuredWidth, measureHeight);
         mRectF.set(0, 0, getMeasuredWidth(), getMeasuredHeight());
         if (TabUiFeatureUtilities.sThumbnailPlaceholder.isEnabled()) {
             resizeIconDrawable();

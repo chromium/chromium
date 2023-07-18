@@ -15,6 +15,7 @@ import androidx.annotation.Nullable;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
@@ -45,14 +46,17 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
             new ObservableSupplierImpl<>();
     private final Activity mActivity;
     private TabModelSelector mTabModelSelector;
+    private final BrowserControlsStateProvider mBrowserControlsStateProvider;
     private TabContentManager mTabContentManager;
     private TabSelectionEditorCoordinator mTabSelectionEditorCoordinator;
     private TabGridDialogView mDialogView;
     private SnackbarManager mSnackbarManager;
 
-    TabGridDialogCoordinator(Activity activity, TabModelSelector tabModelSelector,
-            TabContentManager tabContentManager, TabCreatorManager tabCreatorManager,
-            ViewGroup containerView, TabSwitcherMediator.ResetHandler resetHandler,
+    TabGridDialogCoordinator(Activity activity,
+            BrowserControlsStateProvider browserControlsStateProvider,
+            TabModelSelector tabModelSelector, TabContentManager tabContentManager,
+            TabCreatorManager tabCreatorManager, ViewGroup containerView,
+            TabSwitcherMediator.ResetHandler resetHandler,
             TabListMediator.GridCardOnClickListenerProvider gridCardOnClickListenerProvider,
             TabGridDialogMediator.AnimationSourceViewProvider animationSourceViewProvider,
             ScrimCoordinator scrimCoordinator, TabGroupTitleEditor tabGroupTitleEditor,
@@ -61,10 +65,14 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
             mActivity = activity;
             mComponentName = animationSourceViewProvider == null ? "TabGridDialogFromStrip"
                                                                  : "TabGridDialogInSwitcher";
+            mBrowserControlsStateProvider = browserControlsStateProvider;
             mTabModelSelector = tabModelSelector;
             mTabContentManager = tabContentManager;
 
-            mModel = new PropertyModel(TabGridPanelProperties.ALL_KEYS);
+            mModel = new PropertyModel.Builder(TabGridPanelProperties.ALL_KEYS)
+                             .with(TabGridPanelProperties.BROWSER_CONTROLS_STATE_PROVIDER,
+                                     mBrowserControlsStateProvider)
+                             .build();
             mRootView = rootView;
 
             mDialogView = containerView.findViewById(R.id.dialog_parent_view);
@@ -87,7 +95,7 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                     TabUiFeatureUtilities.shouldUseListMode(mActivity)
                             ? TabListCoordinator.TabListMode.LIST
                             : TabListCoordinator.TabListMode.GRID,
-                    activity, tabModelSelector,
+                    activity, mBrowserControlsStateProvider, tabModelSelector,
                     (tabId, thumbnailSize, callback, forceUpdate, writeBack, isSelected)
                             -> {
                         tabContentManager.getTabThumbnailWithCallback(
@@ -132,9 +140,9 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                     ? TabListCoordinator.TabListMode.LIST
                     : TabListCoordinator.TabListMode.GRID;
             mTabSelectionEditorCoordinator = new TabSelectionEditorCoordinator(mActivity,
-                    mDialogView.findViewById(R.id.dialog_container_view), mTabModelSelector,
-                    mTabContentManager, mTabListCoordinator::setRecyclerViewPosition, mode,
-                    mRootView,
+                    mDialogView.findViewById(R.id.dialog_container_view),
+                    mBrowserControlsStateProvider, mTabModelSelector, mTabContentManager,
+                    mTabListCoordinator::setRecyclerViewPosition, mode, mRootView,
                     /*displayGroups=*/false, mSnackbarManager);
         }
 

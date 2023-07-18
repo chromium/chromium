@@ -35,6 +35,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ErrorCollector;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
@@ -53,6 +55,7 @@ import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.build.BuildConfig;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.layouts.Layout;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerChromePhone;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerChromeTablet;
@@ -133,8 +136,12 @@ public class InstantStartTest {
     @Rule
     public SuggestionsDependenciesRule mSuggestionsDeps = new SuggestionsDependenciesRule();
 
+    @Mock
+    public BrowserControlsStateProvider mBrowserControlsStateProvider;
+
     @Before
     public void setUp() {
+        MockitoAnnotations.initMocks(this);
         ReturnToChromeUtil.setSkipInitializationCheckForTesting(true);
     }
 
@@ -174,8 +181,8 @@ public class InstantStartTest {
         TabContentManager tabContentManager =
                 mActivityTestRule.getActivity().getTabContentManager();
 
-        final Bitmap thumbnailBitmap =
-                StartSurfaceTestUtils.createThumbnailBitmapAndWriteToFile(tabId);
+        final Bitmap thumbnailBitmap = StartSurfaceTestUtils.createThumbnailBitmapAndWriteToFile(
+                tabId, mActivityTestRule.getActivity().getBrowserControlsManager());
         tabContentManager.getTabThumbnailWithCallback(
                 tabId, new Size(0, 0), thumbnailFetchListener, false, false);
         CriteriaHelper.pollInstrumentationThread(
@@ -451,7 +458,7 @@ public class InstantStartTest {
 
     private void testShowLastTabAtStartUp() throws IOException {
         StartSurfaceTestUtils.createTabStateFile(new int[] {0});
-        StartSurfaceTestUtils.createThumbnailBitmapAndWriteToFile(0);
+        StartSurfaceTestUtils.createThumbnailBitmapAndWriteToFile(0, mBrowserControlsStateProvider);
         TabAttributeCache.setTitleForTesting(0, "Google");
 
         // Launches Chrome and verifies that the last visited Tab is showing.

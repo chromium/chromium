@@ -2282,6 +2282,9 @@ extern const char kFeedDiscoFeedEndpointDescription[];
 extern const char kForceOffTextAutosizingName[];
 extern const char kForceOffTextAutosizingDescription[];
 
+extern const char kGridTabSwitcherLandscapeAspectRatioPhonesName[];
+extern const char kGridTabSwitcherLandscapeAspectRatioPhonesDescription[];
+
 extern const char kInfoCardAcknowledgementTrackingName[];
 extern const char kInfoCardAcknowledgementTrackingDescription[];
 
