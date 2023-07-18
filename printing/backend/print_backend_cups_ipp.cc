@@ -107,7 +107,9 @@ std::vector<std::string> PrintBackendCupsIpp::GetPrinterDriverInfo(
     return result;
 
   DCHECK_EQ(printer_name, printer->GetName());
+  result.emplace_back(printer->GetInfo());
   result.emplace_back(printer->GetMakeAndModel());
+  result.emplace_back(cupsUserAgent());
   return result;
 }
 
