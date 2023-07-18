@@ -326,6 +326,24 @@ std::unique_ptr<TestConditionWaiter> JSChecker::CreateHasClassWaiter(
   return CreateWaiterWithDescription(js_condition, description);
 }
 
+std::unique_ptr<TestConditionWaiter> JSChecker::CreateExistenceWaiter(
+    bool existence,
+    std::initializer_list<base::StringPiece> element_ids) {
+  return CreateExistenceWaiter(existence, GetOobeElementPath(element_ids));
+}
+
+std::unique_ptr<TestConditionWaiter> JSChecker::CreateExistenceWaiter(
+    bool existence,
+    const std::string& element) {
+  std::string js_condition = element + " === null";
+  if (existence) {
+    js_condition = "!(" + js_condition + ")";
+  }
+  std::string description;
+  description.append(element).append(existence ? " exists" : " does not exist");
+  return CreateWaiterWithDescription(js_condition, description);
+}
+
 void JSChecker::GetBoolImpl(const std::string& expression, bool* result) {
   CHECK(web_contents_);
   *result = content::EvalJs(web_contents_.get(), "!!(" + expression + ")")

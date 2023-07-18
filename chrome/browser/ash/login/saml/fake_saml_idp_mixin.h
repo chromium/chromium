@@ -58,6 +58,7 @@ class FakeSamlIdpMixin final : public InProcessBrowserTestMixin {
   GURL GetHttpSamlPageUrl() const;
   GURL GetSamlWithDeviceAttestationUrl() const;
   GURL GetSamlWithDeviceTrustUrl() const;
+  GURL GetLinkedPageUrl() const;
 
  private:
   GURL GetSamlAuthPageUrl() const;
@@ -73,7 +74,8 @@ class FakeSamlIdpMixin final : public InProcessBrowserTestMixin {
     kLoginAuth,
     kLoginWithDeviceAttestation,
     kLoginCheckDeviceAnswer,
-    kLoginWithDeviceTrust
+    kLoginWithDeviceTrust,
+    kLinkedPage
   };
 
   // Returns the RequestType that corresponds to `url`, or RequestType::Unknown
@@ -98,11 +100,17 @@ class FakeSamlIdpMixin final : public InProcessBrowserTestMixin {
   BuildResponseForCheckDeviceAnswer(
       const net::test_server::HttpRequest& request,
       const GURL& request_url);
+  std::unique_ptr<net::test_server::HttpResponse> BuildResponseForLinkedPage(
+      const net::test_server::HttpRequest& request,
+      const GURL& request_url) const;
 
   std::unique_ptr<net::test_server::HttpResponse> BuildHTMLResponse(
       const std::string& html_template,
       const std::string& relay_state,
       const std::string& next_path) const;
+
+  std::unique_ptr<net::test_server::HttpResponse> BuildHTMLResponse(
+      const std::string& response_html) const;
 
   void SaveChallengeResponse(const std::string& response);
   void ClearChallengeResponse();
