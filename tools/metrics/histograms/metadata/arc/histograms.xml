@@ -540,7 +540,6 @@ chromium-metrics-reviews@google.com.
     expires_after="2023-12-10">
   <owner>thanhdng@chromium.org</owner>
   <owner>tby@chromium.org</owner>
-  <owner>wrong@chromium.org</owner>
   <summary>
     Record a reason when an arc application completes installation successfully,
     including policy based applications, default applications and user prompted
@@ -637,7 +636,6 @@ chromium-metrics-reviews@google.com.
     expires_after="2023-06-04">
   <owner>thanhdng@chromium.org</owner>
   <owner>tby@chromium.org</owner>
-  <owner>wrong@chromium.org</owner>
   <summary>
     Record a reason why an application was uninstalled when uninstall is
     completed. Warning: this histogram was expired from 09/01/2021 to

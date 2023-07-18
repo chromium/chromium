@@ -384,7 +384,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Apps.AppList.AppSearchProvider.QueryTime" units="ms"
     expires_after="2023-11-12">
-  <owner>wrong@chromium.org</owner>
+  <owner>laurencom@chromium.org</owner>
   <owner>tbarzic@chromium.org</owner>
   <summary>
     The time between sending a non-empty query to AppSearchProvider and
@@ -445,7 +445,6 @@ chromium-metrics-reviews@google.com.
   <owner>amandadeacon@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
-  <owner>wrong@chromium.org</owner>
   <summary>
     Recorded on the first publication of zero-state results when opening the
     launcher. Records the number of {Type} results that are ready for display.
@@ -487,7 +486,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Apps.AppList.DriveSearchProvider.DriveFSLatency" units="ms"
     expires_after="2024-02-01">
-  <owner>wrong@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <summary>
@@ -498,7 +496,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Apps.AppList.DriveSearchProvider.FileInfoLatency" units="ms"
     expires_after="2024-02-01">
-  <owner>wrong@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <summary>
@@ -510,7 +507,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Apps.AppList.DriveSearchProvider.Latency" units="ms"
     expires_after="2024-02-01">
-  <owner>wrong@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <summary>
@@ -522,7 +518,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Apps.AppList.DriveSearchProvider.Relevance" units="score"
     expires_after="2023-12-04">
-  <owner>wrong@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <summary>
@@ -533,7 +528,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Apps.AppList.DriveSearchProvider.Status"
     enum="DriveSearchProviderStatus" expires_after="2023-12-04">
-  <owner>wrong@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <summary>
@@ -546,7 +540,6 @@ chromium-metrics-reviews@google.com.
     expires_after="2023-12-17">
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
-  <owner>wrong@chromium.org</owner>
   <summary>
     The time between sending a zero state query and receiving file
     recommendations back from DriveZeroStateProvider.
@@ -561,7 +554,6 @@ chromium-metrics-reviews@google.com.
   </obsolete>
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
-  <owner>wrong@chromium.org</owner>
   <summary>
     The outcome of a query for search results from DriverZeroStateProvider.
     Recorded once per zero-state query.
@@ -570,7 +562,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Apps.AppList.FileResult.DefaultRelevanceUsed"
     enum="BooleanUsage" expires_after="2023-11-30">
-  <owner>wrong@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <summary>
@@ -583,7 +574,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Apps.AppList.FileResult.ThumbnailLoadedError"
     enum="PlatformFileError" expires_after="2023-11-30">
-  <owner>wrong@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <summary>
@@ -595,7 +585,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Apps.AppList.FileSearchProvider.Latency" units="ms"
     expires_after="2023-12-04">
-  <owner>wrong@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <summary>
@@ -606,7 +595,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Apps.AppList.FileSearchProvider.Relevance" units="score"
     expires_after="2023-12-04">
-  <owner>wrong@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <summary>
@@ -617,7 +605,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Apps.AppList.FileSearchProvider.TimedOut"
     enum="BooleanTimedOut" expires_after="2023-07-30">
-  <owner>wrong@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <summary>
@@ -628,7 +615,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Apps.AppList.GameProvider.SearchStatus"
     enum="GameProviderSearchStatus" expires_after="2023-11-12">
-  <owner>wrong@chromium.org</owner>
+  <owner>laurencom@chromium.org</owner>
   <owner>amandadeacon@chromium.org</owner>
   <summary>
     The outcome of a query for game results. Logged once per game search query.
@@ -637,7 +624,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Apps.AppList.GameProvider.UpdateStatus" enum="DiscoveryError"
     expires_after="2023-11-12">
-  <owner>wrong@chromium.org</owner>
+  <owner>laurencom@chromium.org</owner>
   <owner>amandadeacon@chromium.org</owner>
   <summary>
     The outcome of an index update from the Discovery service. Logged once per
@@ -647,7 +634,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Apps.AppList.GameResult.IconLoadStatus" enum="DiscoveryError"
     expires_after="2023-08-28">
-  <owner>wrong@chromium.org</owner>
   <owner>amandadeacon@chromium.org</owner>
   <owner>chenjih@chromium.org</owner>
   <summary>
@@ -658,7 +644,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Apps.AppList.HelpAppProvider.ListSearchResultState"
     enum="HelpAppProviderListSearchResultState" expires_after="2023-12-10">
-  <owner>wrong@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <owner>zufeng@google.com</owner>
@@ -672,7 +657,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Apps.AppList.HelpAppProvider.QueryTime" units="ms"
     expires_after="2023-11-30">
-  <owner>wrong@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <owner>zufeng@google.com</owner>
@@ -685,7 +669,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Apps.AppList.ItemSuggestCache.ResponseSize" units="bytes"
     expires_after="2024-02-01">
-  <owner>wrong@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <summary>
@@ -697,7 +680,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Apps.AppList.ItemSuggestCache.Status"
     enum="ItemSuggestCacheStatus" expires_after="2024-02-01">
-  <owner>wrong@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <summary>
@@ -708,7 +690,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Apps.AppList.ItemSuggestCache.UpdateCacheLatency" units="ms"
     expires_after="2024-02-01">
-  <owner>wrong@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <summary>
@@ -721,9 +702,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Apps.AppList.Keyword.NumberOfKeywordsInQuery" units="count"
     expires_after="2023-12-17">
-  <owner>wrong@chromium.org</owner>
+  <owner>laurencom@chromium.org</owner>
   <owner>amandadeacon@chromium.org</owner>
-  <owner>rbeccahsu@google.com</owner>
   <summary>
     Records the number of keyword tokens that are detected in a user query.
     Reported once each time for each query generated.
@@ -802,7 +782,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Apps.AppList.OmniboxProvider.QueryTime" units="ms"
     expires_after="2023-12-17">
-  <owner>wrong@chromium.org</owner>
+  <owner>laurencom@chromium.org</owner>
   <owner>tbarzic@chromium.org</owner>
   <summary>
     The time between sending an non-empty query and receiving search results
@@ -813,7 +793,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Apps.AppList.OsSettingsProvider.Error"
     enum="OsSettingsProviderStatus" expires_after="2023-11-12">
-  <owner>wrong@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <summary>
@@ -827,7 +806,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Apps.AppList.OsSettingsProvider.IconLoadStatus"
     enum="OsSettingsProviderIconLoadStatus" expires_after="2023-11-12">
-  <owner>wrong@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <owner>chenjih@chromium.org</owner>
   <summary>
@@ -841,7 +819,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Apps.AppList.OsSettingsProvider.QueryTime" units="ms"
     expires_after="2023-12-10">
-  <owner>wrong@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <summary>
@@ -853,7 +830,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Apps.AppList.PersistentProto.ReadStatus"
     enum="PersistentProtoReadStatus" expires_after="2023-12-17">
-  <owner>wrong@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <summary>
@@ -866,7 +842,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Apps.AppList.PersistentProto.WriteStatus"
     enum="PersistentProtoWriteStatus" expires_after="2023-09-17">
-  <owner>wrong@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <summary>
@@ -891,7 +866,6 @@ chromium-metrics-reviews@google.com.
     expires_after="2023-12-04">
   <owner>andrewxu@chromium.org</owner>
   <owner>tby@chromium.org</owner>
-  <owner>wrong@chromium.org</owner>
   <summary>
     Record the size of the removed results proto in KB. Emitted when the proto
     initialization completes.
@@ -921,7 +895,6 @@ chromium-metrics-reviews@google.com.
   <owner>amandadeacon@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
-  <owner>wrong@chromium.org</owner>
   <summary>
     Recorded when the user has seen the zero-state launcher. Records the number
     of {Type} results shown.
@@ -964,7 +937,6 @@ chromium-metrics-reviews@google.com.
   <owner>amandadeacon@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
-  <owner>wrong@chromium.org</owner>
   <summary>
     Recorded when the user has seen the zero-state launcher. Records whether or
     not the user would have seen any Drive files. This is equivalent to
@@ -974,7 +946,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Apps.AppList.Search.Error" enum="AppListUserEventError"
     expires_after="2023-12-17">
-  <owner>wrong@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <summary>
@@ -986,7 +957,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Apps.AppList.Search.Federated.Actions"
     enum="AppListFederatedActions" expires_after="2024-02-01">
   <owner>amandadeacon@chromium.org</owner>
-  <owner>wrong@chromium.org</owner>
+  <owner>alanlxl@chromium.org</owner>
   <summary>
     Emitted on usage of launcher search. Records overall impressions, launches,
     abandons, and ignores, for the query list view when federated analytics is
@@ -1009,7 +980,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Apps.AppList.Search.Federated.InitStatus"
     enum="AppListFederatedInitStatus" expires_after="2024-02-01">
   <owner>amandadeacon@chromium.org</owner>
-  <owner>wrong@chromium.org</owner>
+  <owner>alanlxl@chromium.org</owner>
   <summary>
     Records status in initialization of federated analytics. These are expected
     to be rare, and the bucket proportion is not meaningful.
@@ -1019,7 +990,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Apps.AppList.Search.Federated.ReportStatus"
     enum="AppListFederatedReportStatus" expires_after="2024-02-01">
   <owner>amandadeacon@chromium.org</owner>
-  <owner>wrong@chromium.org</owner>
+  <owner>alanlxl@chromium.org</owner>
   <summary>
     Records status in reporting of federated analytics examples. These are
     expected to be rare, and the bucket proportion is not meaningful.
@@ -1051,7 +1022,6 @@ chromium-metrics-reviews@google.com.
     enum="AppListUserEventError" expires_after="2024-01-31">
   <owner>yulunwu@chromium.org</owner>
   <owner>tby@chromium.org</owner>
-  <owner>wrong@chromium.org</owner>
   <owner>tbarzic@chromium.org</owner>
   <summary>
     Records errors in processing other Apps.AppList.Search.Session2.* metrics.
@@ -1063,7 +1033,6 @@ chromium-metrics-reviews@google.com.
     enum="LauncherSearchSessionConclusion" expires_after="2024-01-31">
   <owner>yulunwu@chromium.org</owner>
   <owner>tby@chromium.org</owner>
-  <owner>wrong@chromium.org</owner>
   <owner>tbarzic@chromium.org</owner>
   <summary>
     Tracks search result launches, answer card impressions, and search session
@@ -1089,7 +1058,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Apps.AppList.Search.{SearchView}" enum="AppListSearchAction"
     expires_after="2023-07-31">
-  <owner>wrong@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <summary>
@@ -1116,7 +1084,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Apps.AppList.Search.{SearchView}.LaunchIndex" units="index"
     expires_after="2023-07-31">
-  <owner>wrong@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <summary>
@@ -1128,7 +1095,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Apps.AppList.Search.{SearchView}.{SearchAction}"
     enum="AppListSearchResult" expires_after="2023-07-31">
-  <owner>wrong@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <summary>
@@ -1158,7 +1124,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Apps.AppList.SearchQueryLength.Apps" units="characters"
     expires_after="2023-11-12">
-  <owner>wrong@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <summary>
@@ -1183,7 +1148,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Apps.AppList.SearchSuccess.Apps" enum="AppListLaunchedFrom"
     expires_after="2023-07-31">
-  <owner>wrong@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <summary>
@@ -1247,7 +1211,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Apps.AppList.SuggestedContent.Enabled" enum="BooleanEnabled"
     expires_after="2023-06-04">
-  <owner>wrong@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <summary>
@@ -1261,7 +1224,6 @@ chromium-metrics-reviews@google.com.
     name="Apps.AppList.SystemInfoProvider.CrosHealthdProbeError.{ProbeErrorSourceStruct}"
     enum="CrosDiagnosticsCrosHealthdProbeError" expires_after="2023-10-15">
   <owner>laurencom@google.com</owner>
-  <owner>wrong@chromium.org</owner>
   <owner>tby@google.com</owner>
   <summary>
     Records the ProbeError::ErrorType returned on request for
@@ -1279,7 +1241,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="Apps.AppList.SystemInfoProvider.Error.{ErrorSource}"
     enum="CrosDiagnosticsDataError" expires_after="2023-10-15">
   <owner>laurencom@google.com</owner>
-  <owner>wrong@google.com</owner>
   <owner>tby@google.com</owner>
   <summary>
     Records error type such as no data error, not a number error and expectation
@@ -1319,7 +1280,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Apps.AppList.UserEvent.LaunchIndex{LauncherUISurface}"
     units="index" expires_after="2023-07-31">
-  <owner>wrong@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <summary>
@@ -1340,7 +1300,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Apps.AppList.UserEvent.Overall{LauncherUISurface}"
     enum="AppListUserEvent" expires_after="2023-07-31">
-  <owner>wrong@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <summary>
@@ -1361,7 +1320,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Apps.AppList.UserEvent.Query" enum="Boolean"
     expires_after="2023-07-31">
-  <owner>wrong@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <summary>
@@ -1378,7 +1336,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Apps.AppList.UserEvent.TypeAbandon{LauncherUISurface}"
     enum="AppListSearchResult" expires_after="2023-07-31">
-  <owner>wrong@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <summary>
@@ -1401,7 +1358,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Apps.AppList.UserEvent.TypeImpression{LauncherUISurface}"
     enum="AppListSearchResult" expires_after="2023-07-31">
-  <owner>wrong@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <summary>
@@ -1430,7 +1386,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Apps.AppList.UserEvent.TypeLaunch{LauncherUISurface}"
     enum="AppListSearchResult" expires_after="2023-07-31">
-  <owner>wrong@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <summary>
@@ -1452,7 +1407,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Apps.AppList.ZeroStateDriveProvider.Relevance" units="score"
     expires_after="2023-07-31">
-  <owner>wrong@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <summary>
@@ -1463,7 +1417,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Apps.AppList.ZeroStateFileProvider.Latency" units="ms"
     expires_after="2023-10-01">
-  <owner>wrong@chromium.org</owner>
+  <owner>laurencom@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <summary>
     The time between sending a zero state query and receiving file
@@ -1473,7 +1427,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Apps.AppList.ZeroStateFileProvider.Relevance" units="score"
     expires_after="2023-07-31">
-  <owner>wrong@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <summary>
@@ -1484,7 +1437,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Apps.AppList.ZeroStateResults.LaunchedItemType"
     enum="ZeroStateResultType" expires_after="2023-07-31">
-  <owner>wrong@chromium.org</owner>
+  <owner>laurencom@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <summary>
     The type of item that was launched from a zero state launcher search result.
@@ -1676,7 +1629,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Apps.AppListLauncherClickedSearchQueryLength"
     units="characters" expires_after="2023-11-12">
-  <owner>wrong@chromium.org</owner>
+  <owner>laurencom@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <summary>
     Logs the length of user typed queries that result in launcher clicks.
