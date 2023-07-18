@@ -7,13 +7,13 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/waffle/waffle_tab_helper.h"
 #include "chrome/browser/ui/webui/waffle/waffle_ui.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/constrained_window/constrained_window_views.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/web_modal/web_contents_modal_dialog_host.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 
@@ -42,7 +42,7 @@ void ShowWaffleDialog(Browser& browser) {
 }
 
 WaffleDialogView::WaffleDialogView(Browser* browser) : browser_(browser) {
-  CHECK(base::FeatureList::IsEnabled(kWaffle));
+  CHECK(base::FeatureList::IsEnabled(switches::kWaffle));
   // Create the web view in the native dialog.
   web_view_ =
       AddChildView(std::make_unique<views::WebView>(browser->profile()));

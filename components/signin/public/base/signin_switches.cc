@@ -16,6 +16,10 @@ BASE_FEATURE(kIdentityStatusConsistency,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
+#if BUILDFLAG(ENABLE_WAFFLE_DESKTOP)
+BASE_FEATURE(kWaffle, "Waffle", base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 // Clears the token service before using it. This allows simulating the
 // expiration of credentials during testing.
 const char kClearTokenService[] = "clear-token-service";

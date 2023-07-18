@@ -9,7 +9,6 @@
 #include "base/json/json_writer.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/ui/webui/waffle/waffle_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
@@ -19,6 +18,7 @@
 #include "chrome/grit/waffle_resources_map.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_prepopulate_data.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_data_source.h"
 
@@ -49,7 +49,7 @@ std::string GetChoiceListJSON(Profile* profile) {
 
 WaffleUI::WaffleUI(content::WebUI* web_ui)
     : ui::MojoWebUIController(web_ui, true) {
-  CHECK(base::FeatureList::IsEnabled(kWaffle));
+  CHECK(base::FeatureList::IsEnabled(switches::kWaffle));
   auto* profile = Profile::FromWebUI(web_ui);
 
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(

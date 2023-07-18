@@ -98,6 +98,7 @@
 #include "components/security_interstitials/content/known_interception_disclosure_ui.h"
 #include "components/security_interstitials/content/urls.h"
 #include "components/signin/public/base/signin_buildflags.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "components/supervised_user/core/common/buildflags.h"
 #include "content/public/browser/web_contents.h"
@@ -716,7 +717,7 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
 
 #if BUILDFLAG(ENABLE_WAFFLE_DESKTOP)
   if (url.host_piece() == chrome::kChromeUIWaffleHost &&
-      base::FeatureList::IsEnabled(kWaffle)) {
+      base::FeatureList::IsEnabled(switches::kWaffle)) {
     return &NewWebUI<WaffleUI>;
   }
 #endif

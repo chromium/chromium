@@ -4,9 +4,9 @@
 
 #include "chrome/browser/ui/waffle/waffle_tab_helper.h"
 
-#include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/common/webui_url_constants.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 
@@ -15,7 +15,7 @@ WaffleTabHelper::~WaffleTabHelper() = default;
 WaffleTabHelper::WaffleTabHelper(content::WebContents* web_contents)
     : WebContentsObserver(web_contents),
       content::WebContentsUserData<WaffleTabHelper>(*web_contents) {
-  CHECK(base::FeatureList::IsEnabled(kWaffle));
+  CHECK(base::FeatureList::IsEnabled(switches::kWaffle));
 }
 
 void WaffleTabHelper::DidFinishNavigation(

@@ -4,14 +4,14 @@
 
 #include "chrome/browser/ui/webui/waffle/waffle_handler.h"
 
-#include "chrome/browser/signin/signin_features.h"
+#include "components/signin/public/base/signin_switches.h"
 
 WaffleHandler::WaffleHandler(
     mojo::PendingReceiver<waffle::mojom::PageHandler> receiver,
     base::OnceCallback<void(int)> display_dialog_callback)
     : receiver_(this, std::move(receiver)),
       display_dialog_callback_(std::move(display_dialog_callback)) {
-  CHECK(base::FeatureList::IsEnabled(kWaffle));
+  CHECK(base::FeatureList::IsEnabled(switches::kWaffle));
   // `display_dialog_callback` being null would indicate that the handler is
   // created before calling `WaffleUI::Initialize()`, which should never happen.
   CHECK(display_dialog_callback_);

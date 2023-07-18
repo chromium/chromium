@@ -26,10 +26,6 @@ extern const base::FeatureParam<std::string> kForYouFreStudyGroup;
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(ENABLE_WAFFLE_DESKTOP)
-BASE_DECLARE_FEATURE(kWaffle);
-#endif  // BUILDFLAG(ENABLE_WAFFLE_DESKTOP)
-
 BASE_DECLARE_FEATURE(kProcessGaiaRemoveLocalAccountHeader);
 
 BASE_DECLARE_FEATURE(kShowEnterpriseDialogForAllManagedAccountsSignin);
