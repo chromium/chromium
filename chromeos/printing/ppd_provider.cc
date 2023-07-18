@@ -76,6 +76,13 @@ std::string PpdPathInServingRoot(base::StringPiece ppd_basename) {
   return base::StrCat({"ppds_for_metadata_v3/", ppd_basename});
 }
 
+// Zebra printers that support ZPL contain "Zebra" and "ZPL" in the
+// IEEE 1284 device id make and model.
+bool SupportsGenericZebraPPD(const PrinterSearchData& search_data) {
+  return search_data.printer_id.make() == "Zebra" &&
+         search_data.printer_id.model().find("ZPL") != std::string::npos;
+}
+
 // Helper struct for PpdProviderImpl. Allows PpdProviderImpl to defer
 // its public method calls, which PpdProviderImpl will do when the
 // PpdMetadataManager is not ready to deal with locale-sensitive PPD
@@ -230,6 +237,14 @@ class PpdProviderImpl : public PpdProvider {
     PrinterSearchData lowercased_search_data(search_data);
     for (std::string& emm : lowercased_search_data.make_and_model) {
       emm = base::ToLowerASCII(emm);
+    }
+
+    // Any Zebra printer that supports ZPL uses the same PPD file, which is
+    // kept in the PPD index with the key "zebra zpl label printer".
+    if (SupportsGenericZebraPPD(lowercased_search_data)) {
+      lowercased_search_data.make_and_model.clear();
+      lowercased_search_data.make_and_model.push_back(
+          "zebra zpl label printer");
     }
 
     ResolvePpdReferenceContext context(lowercased_search_data, std::move(cb));
