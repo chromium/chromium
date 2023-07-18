@@ -186,7 +186,10 @@ void AddTabStripColorMixer(ui::ColorProvider* provider,
       kColorToolbarButtonIconInactive};
   mixer[kColorNewTabButtonCRBackgroundFrameActive] = {kColorToolbar};
   mixer[kColorNewTabButtonCRBackgroundFrameInactive] = {kColorToolbar};
-
+  mixer[kColorTabSearchButtonCRForegroundFrameActive] = {
+      kColorToolbarButtonIcon};
+  mixer[kColorTabSearchButtonCRForegroundFrameInactive] = {
+      kColorToolbarButtonIconInactive};
   /* WebUI Tab Strip colors. */
   // TODO(https://crbug.com/1060398): Update the tab strip color to respond
   // appopriately to activation changes.

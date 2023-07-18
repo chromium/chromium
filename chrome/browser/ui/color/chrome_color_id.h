@@ -165,6 +165,8 @@
   E_CPONLY(kColorNewTabButtonCRForegroundFrameInactive) \
   E_CPONLY(kColorNewTabButtonCRBackgroundFrameActive) \
   E_CPONLY(kColorNewTabButtonCRBackgroundFrameInactive) \
+  E_CPONLY(kColorTabSearchButtonCRForegroundFrameActive) \
+  E_CPONLY(kColorTabSearchButtonCRForegroundFrameInactive) \
   /* New Tab Page colors. */ \
   E_CPONLY(kColorNewTabPageActionButtonBackground) \
   E_CPONLY(kColorNewTabPageActionButtonBorder) \

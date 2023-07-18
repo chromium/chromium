@@ -7,7 +7,6 @@
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
-#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/frame/window_frame_util.h"
@@ -24,6 +23,7 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/vector_icons/vector_icons.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/clipboard/clipboard_constants.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
@@ -145,7 +145,7 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip)
           tab_strip_,
           base::BindRepeating(&TabStrip::NewTabButtonPressed,
                               base::Unretained(tab_strip_)),
-          kAddIcon));
+          vector_icons::kAddChromeRefreshIcon));
       new_tab_button_->SetProperty(views::kElementIdentifierKey,
                                    kNewTabButtonElementId);
     } else {
@@ -255,6 +255,20 @@ bool TabStripRegionView::IsRectInWindowCaption(const gfx::Rect& rect) {
     return gfx::ToEnclosingRect(rect_in_target_coords_f);
   };
 
+  // Perform checks for buttons that should be rendered above the tabstrip.
+  if (render_new_tab_button_over_tab_strip_ && new_tab_button_ &&
+      new_tab_button_->GetLocalBounds().Intersects(
+          get_target_rect(new_tab_button_))) {
+    return !new_tab_button_->HitTestRect(get_target_rect(new_tab_button_));
+  }
+
+  if (render_tab_search_before_tab_strip_ && tab_search_button_ &&
+      tab_search_button_->GetLocalBounds().Intersects(
+          get_target_rect(tab_search_button_))) {
+    return !tab_search_button_->HitTestRect(
+        get_target_rect(tab_search_button_));
+  }
+
   // Perform a hit test against the |tab_strip_container_| to ensure that the
   // rect is within the visible portion of the |tab_strip_| before calling the
   // tab strip's |IsRectInWindowCaption()| for scrolling disabled. Defer to
@@ -263,7 +277,6 @@ bool TabStripRegionView::IsRectInWindowCaption(const gfx::Rect& rect) {
   // the |tab_strip_container_| and the |tab_strip_| but not over the same
   // pixels. This could lead to this returning false when it should be returning
   // true.
-
   if (tab_strip_container_->HitTestRect(
           get_target_rect(tab_strip_container_))) {
     if (base::FeatureList::IsEnabled(features::kScrollableTabStrip)) {
@@ -364,7 +377,7 @@ void TabStripRegionView::Layout() {
         gfx::Rect(new_tab_button_new_position, new_tab_button_size);
 
     // If the tabsearch button is before the tabstrip container, then manually
-    // set the margins to the correct position.
+    // set the bounds.
     new_tab_button_->SetBoundsRect(new_tab_button_new_bounds);
   }
 }
