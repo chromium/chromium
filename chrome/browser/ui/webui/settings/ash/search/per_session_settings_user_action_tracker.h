@@ -20,7 +20,11 @@ namespace ash::settings {
 // should be created for that new session.
 class PerSessionSettingsUserActionTracker {
  public:
-  explicit PerSessionSettingsUserActionTracker(PrefService* pref_service);
+  // The parameter must be specifically a per-user profile pref, as we will be
+  // retrieving and setting profile-specific prefs in this class which do not
+  // exist in local prefs.
+  explicit PerSessionSettingsUserActionTracker(
+      PrefService* profile_pref_service);
   PerSessionSettingsUserActionTracker(
       const PerSessionSettingsUserActionTracker& other) = delete;
   PerSessionSettingsUserActionTracker& operator=(
@@ -67,12 +71,13 @@ class PerSessionSettingsUserActionTracker {
   // which is set once the user finished the OOBE.
   bool IsTodayInFirst7Days();
 
-  void ResetMetricsCountersAndTimestamp();
+  // Returns the size of the pref dict ::prefs::kTotalUniqueOsSettingsChanged
+  // after user-used unique Settings have been added to it.
+  int UpdateSettingsPrefTotalUniqueChanged();
 
-  // Returns the size of the pref dict if it changes. Otherwise, no value will
-  // get returned if if there were no new unique settings changed in the
-  // session.
-  absl::optional<int> UpdateSettingsPrefTotalUniqueChanged();
+  bool HasUserMetricsConsent();
+  void RecordTotalLifetimeMetric();
+  void ResetMetricsCountersAndTimestamp();
 
   // Time at which the last setting change metric was recorded since the window
   // has been focused, or null if no setting change has been recorded since the
@@ -107,7 +112,7 @@ class PerSessionSettingsUserActionTracker {
   // The point in time which the Settings page was last active and in focus.
   base::TimeTicks window_last_active_timestamp_;
 
-  raw_ptr<PrefService> pref_service_;
+  raw_ptr<PrefService> profile_pref_service_;
 };
 
 }  // namespace ash::settings

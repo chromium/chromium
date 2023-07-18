@@ -2,13 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {appNotificationHandlerMojom, setAppNotificationProviderForTesting} from 'chrome://os-settings/os_settings.js';
+import {appNotificationHandlerMojom, setAppNotificationProviderForTesting, setUserActionRecorderForTesting, userActionRecorderMojom} from 'chrome://os-settings/os_settings.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {createBoolPermission, getBoolPermissionValue, isBoolValue} from 'chrome://resources/cr_components/app_management/permission_util.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+
+import {FakeUserActionRecorder} from './fake_user_action_recorder.js';
 
 const {App, AppNotificationsObserverRemote, Readiness} =
     appNotificationHandlerMojom;
@@ -180,6 +182,9 @@ suite('AppNotificationsSubpageTests', function() {
 
   let setQuietModeCounter = 0;
 
+  /** @type {?userActionRecorderMojom.UserActionRecorderInterface} */
+  let userActionRecorder = null;
+
   function createPage() {
     page = document.createElement('settings-app-notifications-subpage');
     document.body.appendChild(page);
@@ -193,6 +198,9 @@ suite('AppNotificationsSubpageTests', function() {
   });
 
   setup(function() {
+    userActionRecorder = new FakeUserActionRecorder();
+    setUserActionRecorderForTesting(userActionRecorder);
+
     PolymerTest.clearBody();
     loadTimeData.overrideValues({showOsSettingsAppNotificationsRow: true});
   });
@@ -201,6 +209,7 @@ suite('AppNotificationsSubpageTests', function() {
     mojoApi_.resetForTest();
     page.remove();
     page = null;
+    setUserActionRecorderForTesting(null);
   });
 
   /**

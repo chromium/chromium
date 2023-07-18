@@ -27,7 +27,7 @@ class SettingsUserActionTracker : public mojom::UserActionRecorder {
  public:
   SettingsUserActionTracker(Hierarchy* hierarchy,
                             OsSettingsSections* sections,
-                            PrefService* pref_service);
+                            PrefService* profile_pref_service);
   SettingsUserActionTracker(const SettingsUserActionTracker& other) = delete;
   SettingsUserActionTracker& operator=(const SettingsUserActionTracker& other) =
       delete;
@@ -69,7 +69,7 @@ class SettingsUserActionTracker : public mojom::UserActionRecorder {
 
   raw_ptr<Hierarchy, ExperimentalAsh> hierarchy_;
   raw_ptr<OsSettingsSections, ExperimentalAsh> sections_;
-  raw_ptr<PrefService> pref_service_;
+  raw_ptr<PrefService> profile_pref_service_;
 
   std::unique_ptr<PerSessionSettingsUserActionTracker> per_session_tracker_;
   mojo::Receiver<mojom::UserActionRecorder> receiver_{this};

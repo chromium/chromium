@@ -1226,6 +1226,18 @@ inline constexpr char kTotalUniqueOsSettingsChanged[] =
 // days have passed since the user completed OOBE.
 inline constexpr char kHasResetFirst7DaysSettingsUsedCount[] =
     "settings.has_reset_first_seven_days_settings_used_count";
+
+// A boolean representing whether the user has revoked their consent
+// for UMA at least one time in the lifetime of the device.
+//
+// If the value is true, the user has revoked consent for recording their
+// metrics at least once in the device's lifetime. This is the final value of
+// this pref, ie. once the pref is set to true, the value will never change
+// again. Even if the user grants consent again, we will not record their metric
+// in the histogram
+// "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime.{Time}".
+const char kHasEverRevokedMetricsConsent[] =
+    "settings.has_ever_revoked_metrics_consent";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS)

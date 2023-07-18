@@ -4,8 +4,10 @@
 
 #include "chrome/browser/ui/webui/settings/ash/settings_user_action_tracker.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/values.h"
+#include "chrome/browser/metrics/chrome_metrics_service_client.h"
 #include "chrome/browser/ui/webui/settings/ash/fake_hierarchy.h"
 #include "chrome/browser/ui/webui/settings/ash/fake_os_settings_section.h"
 #include "chrome/browser/ui/webui/settings/ash/fake_os_settings_sections.h"
@@ -16,7 +18,28 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/metrics/metrics_pref_names.h"
+#include "components/metrics/metrics_state_manager.h"
+#include "components/metrics/test/test_enabled_state_provider.h"
+#include "components/metrics/test/test_metrics_service_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+namespace {
+class TestUserMetricsServiceClient
+    : public ::metrics::TestMetricsServiceClient {
+ public:
+  absl::optional<bool> GetCurrentUserMetricsConsent() const override {
+    return current_user_metrics_consent_;
+  }
+
+  void UpdateCurrentUserMetricsConsent(bool metrics_consent) override {
+    current_user_metrics_consent_ = metrics_consent;
+  }
+
+ private:
+  bool current_user_metrics_consent_ = true;
+};
+}  // namespace
 
 namespace ash::settings {
 
@@ -29,7 +52,10 @@ using ::chromeos::settings::mojom::Setting;
 
 class SettingsUserActionTrackerTest : public testing::Test {
  protected:
-  SettingsUserActionTrackerTest() = default;
+  SettingsUserActionTrackerTest() {
+    feature_list_.InitAndEnableFeature(::ash::features::kPerUserMetrics);
+  }
+
   ~SettingsUserActionTrackerTest() override = default;
 
   void SetUpTestingProfile() {
@@ -37,6 +63,29 @@ class SettingsUserActionTrackerTest : public testing::Test {
         TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(profile_manager_->SetUp());
     testing_profile_ = profile_manager_->CreateTestingProfile(kProfileName);
+  }
+
+  // metrics setup
+  void SetupTestMetricsClient() {
+    local_state_ = std::make_unique<TestingPrefServiceSimple>();
+    metrics::MetricsService::RegisterPrefs(local_state_->registry());
+
+    test_enabled_state_provider_ =
+        std::make_unique<metrics::TestEnabledStateProvider>(true, true);
+    test_metrics_state_manager_ = metrics::MetricsStateManager::Create(
+        local_state_.get(), test_enabled_state_provider_.get(), std::wstring(),
+        base::FilePath());
+    test_metrics_service_client_ =
+        std::make_unique<TestUserMetricsServiceClient>();
+    test_metrics_service_ = std::make_unique<metrics::MetricsService>(
+        test_metrics_state_manager_.get(), test_metrics_service_client_.get(),
+        local_state_.get());
+    TestingBrowserProcess::GetGlobal()->SetMetricsService(
+        test_metrics_service_.get());
+
+    // Needs to be set for metrics service.
+    base::SetRecordActionTaskRunner(
+        task_environment_.GetMainThreadTaskRunner());
   }
 
   // testing::Test:
@@ -58,6 +107,8 @@ class SettingsUserActionTrackerTest : public testing::Test {
 
     SetUpTestingProfile();
     test_pref_service_ = testing_profile_->GetPrefs();
+    SetupTestMetricsClient();
+
     tracker_ = std::make_unique<SettingsUserActionTracker>(
         fake_hierarchy_.get(), fake_sections_.get(), test_pref_service_);
     // Initialize per_session_tracker_ manually since BindInterface is never
@@ -65,6 +116,20 @@ class SettingsUserActionTrackerTest : public testing::Test {
     tracker_->per_session_tracker_ =
         std::make_unique<PerSessionSettingsUserActionTracker>(
             testing_profile_->GetPrefs());
+  }
+
+  void TearDown() override {
+    tracker_.reset();
+
+    TestingBrowserProcess::GetGlobal()->SetMetricsService(nullptr);
+    test_metrics_service_.reset();
+    test_metrics_service_client_.reset();
+    test_metrics_state_manager_.reset();
+    test_enabled_state_provider_.reset();
+    local_state_.reset();
+    test_pref_service_ = nullptr;
+    testing_profile_ = nullptr;
+    profile_manager_.reset();
   }
 
   // TestingProfile is bound to the IO thread:
@@ -77,6 +142,19 @@ class SettingsUserActionTrackerTest : public testing::Test {
   raw_ptr<TestingProfile> testing_profile_;
   raw_ptr<PrefService> test_pref_service_;
   std::unique_ptr<SettingsUserActionTracker> tracker_;
+
+  // This needs to be initialized before any tasks running on other threads
+  // access the feature list, and destroyed after |task_environment_|, to avoid
+  // data races.
+  base::test::ScopedFeatureList feature_list_;
+
+  // MetricsService.
+  std::unique_ptr<TestingPrefServiceSimple> local_state_;
+  std::unique_ptr<metrics::MetricsStateManager> test_metrics_state_manager_;
+  std::unique_ptr<TestUserMetricsServiceClient> test_metrics_service_client_;
+  std::unique_ptr<metrics::TestEnabledStateProvider>
+      test_enabled_state_provider_;
+  std::unique_ptr<metrics::MetricsService> test_metrics_service_;
 };
 
 TEST_F(SettingsUserActionTrackerTest, TestRecordSettingChangedBool) {

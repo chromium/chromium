@@ -5,13 +5,15 @@
 import 'chrome://os-settings/lazy_load.js';
 
 import {AccountManagerBrowserProxyImpl} from 'chrome://os-settings/lazy_load.js';
-import {ParentalControlsBrowserProxyImpl, Router, routes} from 'chrome://os-settings/os_settings.js';
+import {ParentalControlsBrowserProxyImpl, Router, routes, setUserActionRecorderForTesting, userActionRecorderMojom} from 'chrome://os-settings/os_settings.js';
 import {webUIListenerCallback} from 'chrome://resources/ash/common/cr.m.js';
 import {getDeepActiveElement} from 'chrome://resources/ash/common/util.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
+
+import {FakeUserActionRecorder} from './fake_user_action_recorder.js';
 
 /** @implements {AccountManagerBrowserProxy} */
 class TestAccountManagerBrowserProxy extends TestBrowserProxy {
@@ -157,11 +159,17 @@ suite('AccountManagerTests', function() {
   let accountManager = null;
   let accountList = null;
 
+  /** @type {?userActionRecorderMojom.UserActionRecorderInterface} */
+  let userActionRecorder = null;
+
   suiteSetup(function() {
     loadTimeData.overrideValues({isDeviceAccountManaged: true});
   });
 
   setup(function() {
+    userActionRecorder = new FakeUserActionRecorder();
+    setUserActionRecorderForTesting(userActionRecorder);
+
     browserProxy = new TestAccountManagerBrowserProxy();
     AccountManagerBrowserProxyImpl.setInstanceForTesting(browserProxy);
     PolymerTest.clearBody();
@@ -178,6 +186,7 @@ suite('AccountManagerTests', function() {
   teardown(function() {
     accountManager.remove();
     Router.getInstance().resetRouteForTesting();
+    setUserActionRecorderForTesting(null);
   });
 
   test('AccountListIsPopulatedAtStartup', async function() {
