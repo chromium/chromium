@@ -109,8 +109,7 @@ void BrowserCommandHandler::CanExecuteCommand(
                     DefaultSearchProviderIsGoogle();
       break;
     case Command::kStartPasswordManagerTutorial:
-      can_execute =
-          !!GetTutorialService() && BrowserSupportsNewPasswordManager();
+      can_execute = !!GetTutorialService();
       break;
   }
   std::move(callback).Run(can_execute);
@@ -274,11 +273,6 @@ void BrowserCommandHandler::OpenNTPAndStartCustomizeChromeTutorial(
   NavigateToURL(GURL(chrome::kChromeUINewTabPageURL), disposition);
 }
 
-bool BrowserCommandHandler::BrowserSupportsNewPasswordManager() {
-  return base::FeatureList::IsEnabled(
-      password_manager::features::kPasswordManagerRedesign);
-}
-
 void BrowserCommandHandler::StartPasswordManagerTutorial() {
   user_education::TutorialService* tutorial_service = GetTutorialService();
 
@@ -290,10 +284,6 @@ void BrowserCommandHandler::StartPasswordManagerTutorial() {
 
   const ui::ElementContext context = GetUiElementContext();
   if (!context) {
-    return;
-  }
-
-  if (!BrowserSupportsNewPasswordManager()) {
     return;
   }
 

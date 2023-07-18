@@ -435,36 +435,26 @@ void ShowClearBrowsingDataDialog(Browser* browser) {
 
 void ShowPasswordManager(Browser* browser) {
   base::RecordAction(UserMetricsAction("Options_ShowPasswordManager"));
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kPasswordManagerRedesign)) {
-    // This code is necessary to fix a bug (crbug.com/1448559) during Password
-    // Manager Shortcut tutorial flow.
-    auto* service =
-        UserEducationServiceFactory::GetForProfile(browser->profile());
-    if (service) {
-      auto* tutorial_service = &service->tutorial_service();
-      if (tutorial_service &&
-          tutorial_service->IsRunningTutorial(kPasswordManagerTutorialId)) {
-        ShowSingletonTab(browser, GURL(kChromeUIPasswordManagerSettingsURL));
-        return;
-      }
+  // This code is necessary to fix a bug (crbug.com/1448559) during Password
+  // Manager Shortcut tutorial flow.
+  auto* service =
+      UserEducationServiceFactory::GetForProfile(browser->profile());
+  if (service) {
+    auto* tutorial_service = &service->tutorial_service();
+    if (tutorial_service &&
+        tutorial_service->IsRunningTutorial(kPasswordManagerTutorialId)) {
+      ShowSingletonTab(browser, GURL(kChromeUIPasswordManagerSettingsURL));
+      return;
     }
-    ShowSingletonTabIgnorePathOverwriteNTP(browser,
-                                           GURL(kChromeUIPasswordManagerURL));
-  } else {
-    ShowSettingsSubPage(browser, kPasswordManagerSubPage);
   }
+  ShowSingletonTabIgnorePathOverwriteNTP(browser,
+                                         GURL(kChromeUIPasswordManagerURL));
 }
 
 void ShowPasswordCheck(Browser* browser) {
   base::RecordAction(UserMetricsAction("Options_ShowPasswordCheck"));
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kPasswordManagerRedesign)) {
-    ShowSingletonTabIgnorePathOverwriteNTP(
-        browser, GURL(kChromeUIPasswordManagerCheckupURL));
-  } else {
-    ShowSettingsSubPage(browser, kPasswordCheckSubPage);
-  }
+  ShowSingletonTabIgnorePathOverwriteNTP(
+      browser, GURL(kChromeUIPasswordManagerCheckupURL));
 }
 
 void ShowSafeBrowsingEnhancedProtection(Browser* browser) {

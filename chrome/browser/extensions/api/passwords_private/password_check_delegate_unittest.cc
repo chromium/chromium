@@ -1173,10 +1173,6 @@ TEST_F(PasswordCheckDelegateTest, WellKnownChangePasswordUrl_androidrealm) {
 // credentials.
 TEST_F(PasswordCheckDelegateTest,
        GetCredentialsWithReusedPasswordFillsFieldsCorrectly) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      password_manager::features::kPasswordManagerRedesign);
-
   store().AddLogin(MakeSavedPassword(kExampleCom, kUsername1, kWeakPassword1));
   store().AddLogin(MakeSavedPassword(kExampleCom, kUsername2, kWeakPassword2));
   store().AddLogin(MakeSavedAndroidPassword(
@@ -1222,9 +1218,6 @@ TEST_F(PasswordCheckDelegateTest,
 
 TEST_F(PasswordCheckDelegateTest,
        GetCredentialsWithReusedPasswordAvoidsSingleReuse) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      password_manager::features::kPasswordManagerRedesign);
-
   store().AddLogin(MakeSavedPassword(kExampleCom, kUsername1, kWeakPassword1));
   store().AddLogin(MakeSavedPassword(kExampleApp, kUsername2, kWeakPassword1));
   RunUntilIdle();

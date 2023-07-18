@@ -590,21 +590,6 @@ TEST_F(ChromeContentBrowserClientTest, RedirectPrivacySandboxURL) {
   histogram_tester.ExpectTotalCount(histogram_name, 2);
 }
 
-TEST_F(ChromeContentBrowserClientTest, RedirectToPasswordManager) {
-  base::test::ScopedFeatureList feature_list(
-      password_manager::features::kPasswordManagerRedesign);
-
-  TestChromeContentBrowserClient test_content_browser_client;
-
-  GURL settings_url = chrome::GetSettingsUrl(chrome::kPasswordManagerSubPage);
-  settings_url = net::AppendQueryParameter(settings_url, "foo", "bar");
-
-  GURL new_passwords_url = GURL(chrome::kChromeUIPasswordManagerURL);
-
-  test_content_browser_client.HandleWebUI(&settings_url, &profile_);
-  EXPECT_EQ(settings_url, new_passwords_url);
-}
-
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)

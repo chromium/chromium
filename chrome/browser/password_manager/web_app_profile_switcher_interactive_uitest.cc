@@ -76,16 +76,7 @@ void InstallAppForProfile(
 }  // namespace
 
 class WebAppProfileSwitcherBrowserTest
-    : public web_app::WebAppControllerBrowserTest {
- public:
-  WebAppProfileSwitcherBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        password_manager::features::kPasswordManagerRedesign);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
+    : public web_app::WebAppControllerBrowserTest {};
 
 IN_PROC_BROWSER_TEST_F(WebAppProfileSwitcherBrowserTest,
                        SwitchWebAppProfileRequiresInstall) {

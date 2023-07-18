@@ -227,9 +227,7 @@ bool WebAppBrowserController::HasReloadButton() const {
 
 #if !BUILDFLAG(IS_CHROMEOS)
 bool WebAppBrowserController::HasProfileMenuButton() const {
-  return (app_id() == web_app::kPasswordManagerAppId) &&
-         base::FeatureList::IsEnabled(
-             password_manager::features::kPasswordManagerRedesign);
+  return app_id() == web_app::kPasswordManagerAppId;
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 

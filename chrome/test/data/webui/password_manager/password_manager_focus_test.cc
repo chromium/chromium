@@ -14,10 +14,6 @@ class PasswordManagerUIFocusTest : public WebUIMochaBrowserTest {
   PasswordManagerUIFocusTest() {
     set_test_loader_host(password_manager::kChromeUIPasswordManagerHost);
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      password_manager::features::kPasswordManagerRedesign};
 };
 
 // https://crbug.com/1444623: Flaky on Mac.

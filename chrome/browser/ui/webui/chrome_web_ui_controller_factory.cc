@@ -557,10 +557,9 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
   // Bookmarks are part of NTP on Android.
   if (url.host_piece() == chrome::kChromeUIBookmarksHost)
     return &NewWebUI<BookmarksUI>;
-  if (url.host_piece() == password_manager::kChromeUIPasswordManagerHost &&
-      base::FeatureList::IsEnabled(
-          password_manager::features::kPasswordManagerRedesign))
+  if (url.host_piece() == password_manager::kChromeUIPasswordManagerHost) {
     return &NewWebUI<PasswordManagerUI>;
+  }
   if (url.host_piece() == chrome::kChromeUICommanderHost)
     return &NewWebUI<CommanderUI>;
   // Downloads list on Android uses the built-in download manager.

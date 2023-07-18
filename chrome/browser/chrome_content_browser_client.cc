@@ -6811,21 +6811,6 @@ bool ChromeContentBrowserClient::HandleWebUI(
   }
 #endif
 
-#if !BUILDFLAG(IS_ANDROID)
-  // TODO(crbug.com/1420597): Remove this after feature is launched.
-  // Redirect from old Password Manager UI in settings to new UI.
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kPasswordManagerRedesign)) {
-    if (url->SchemeIs(content::kChromeUIScheme) &&
-        url->DomainIs(chrome::kChromeUISettingsHost) &&
-        base::StartsWith(
-            url->path(),
-            chrome::GetSettingsUrl(chrome::kPasswordManagerSubPage).path())) {
-      *url = GURL(chrome::kChromeUIPasswordManagerURL);
-    }
-  }
-#endif
-
   return true;
 }
 

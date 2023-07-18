@@ -1504,8 +1504,6 @@ void AppMenuModel::Build() {
       browser_->tab_strip_model()->GetActiveWebContents();
   if (!browser_->profile()->IsOffTheRecord() && web_contents &&
       !IsPasswordManagerPage(web_contents->GetURL()) &&
-      base::FeatureList::IsEnabled(
-          password_manager::features::kPasswordManagerRedesign) &&
       !features::IsChromeRefresh2023()) {
     AddItemWithStringId(IDC_VIEW_PASSWORDS, IDS_VIEW_PASSWORDS);
     SetElementIdentifierAt(GetIndexOfCommandId(IDC_VIEW_PASSWORDS).value(),

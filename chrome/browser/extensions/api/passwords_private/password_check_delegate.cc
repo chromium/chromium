@@ -347,12 +347,9 @@ void PasswordCheckDelegate::StartPasswordAnalyses(
   insecure_credentials_manager_.StartWeakCheck(base::BindOnce(
       &PasswordCheckDelegate::RecordAndNotifyAboutCompletedWeakPasswordCheck,
       weak_ptr_factory_.GetWeakPtr()));
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kPasswordManagerRedesign)) {
-    insecure_credentials_manager_.StartReuseCheck(
-        base::BindOnce(&PasswordCheckDelegate::NotifyPasswordCheckStatusChanged,
-                       weak_ptr_factory_.GetWeakPtr()));
-  }
+  insecure_credentials_manager_.StartReuseCheck(
+      base::BindOnce(&PasswordCheckDelegate::NotifyPasswordCheckStatusChanged,
+                     weak_ptr_factory_.GetWeakPtr()));
   auto progress = base::MakeRefCounted<PasswordCheckProgress>();
   for (const auto& password : saved_passwords_presenter_->GetSavedPasswords())
     progress->IncrementCounts(password);

@@ -14,10 +14,6 @@ class PasswordManagerUITest : public WebUIMochaBrowserTest {
   PasswordManagerUITest() {
     set_test_loader_host(password_manager::kChromeUIPasswordManagerHost);
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      password_manager::features::kPasswordManagerRedesign};
 };
 
 IN_PROC_BROWSER_TEST_F(PasswordManagerUITest, AddPasswordDialog) {

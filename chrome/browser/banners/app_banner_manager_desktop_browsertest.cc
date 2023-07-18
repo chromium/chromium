@@ -471,8 +471,7 @@ class AppBannerManagerDesktopBrowserTestForPasswordManagerPage
  public:
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
-        {password_manager::features::kPasswordManagerRedesign},
-        GetDisabledFeatures());
+        /*enabled_features=*/{}, GetDisabledFeatures());
     TestAppBannerManagerDesktop::SetUp();
     AppBannerManagerBrowserTestBase::SetUp();
   }

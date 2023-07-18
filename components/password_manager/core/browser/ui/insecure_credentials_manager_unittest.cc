@@ -1209,9 +1209,6 @@ TEST_P(InsecureCredentialsManagerTest, UpdatingReusedPasswordFixesTheIssue) {
 #if BUILDFLAG(IS_IOS)
   base::test::ScopedFeatureList scoped_feature_list(
       password_manager::features::kIOSPasswordCheckup);
-#else
-  base::test::ScopedFeatureList scoped_feature_list(
-      password_manager::features::kPasswordManagerRedesign);
 #endif
 
   PasswordForm form1 = MakeSavedPassword(kExampleCom, kUsername1, kPassword1);
@@ -1240,9 +1237,6 @@ TEST_P(InsecureCredentialsManagerTest, IrrelevantUpdatesDontCauseReuseCheck) {
 #if BUILDFLAG(IS_IOS)
   base::test::ScopedFeatureList scoped_feature_list(
       password_manager::features::kIOSPasswordCheckup);
-#else
-  base::test::ScopedFeatureList scoped_feature_list(
-      password_manager::features::kPasswordManagerRedesign);
 #endif
 
   PasswordForm form1 = MakeSavedPassword(kExampleCom, kUsername1, kPassword1);

@@ -111,10 +111,6 @@ class TestCommandHandler : public BrowserCommandHandler {
     customize_chrome_side_panel_feature_supported_ = is_supported;
   }
 
-  void SetBrowserSupportsNewPasswordManager(bool is_supported) {
-    new_password_manager_feature_supported_ = is_supported;
-  }
-
   void SetDefaultSearchProviderToGoogle(bool is_google) {
     default_search_provider_is_google_ = is_google;
   }
@@ -128,10 +124,6 @@ class TestCommandHandler : public BrowserCommandHandler {
     return customize_chrome_side_panel_feature_supported_;
   }
 
-  bool BrowserSupportsNewPasswordManager() override {
-    return new_password_manager_feature_supported_;
-  }
-
   bool DefaultSearchProviderIsGoogle() override {
     return default_search_provider_is_google_;
   }
@@ -142,7 +134,6 @@ class TestCommandHandler : public BrowserCommandHandler {
 
   bool tab_groups_feature_supported_ = true;
   bool customize_chrome_side_panel_feature_supported_ = true;
-  bool new_password_manager_feature_supported_ = true;
   bool default_search_provider_is_google_ = true;
 };
 
@@ -603,14 +594,6 @@ TEST_F(BrowserCommandHandlerTest, StartPasswordManagerTutorialCommand) {
   MockTutorialService service(&registry, bubble_factory_registry.get());
   command_handler_->SetTutorialService(&service);
 
-  // If the browser does not support the new password manager,
-  // dont run the command.
-  command_handler_->SetBrowserSupportsNewPasswordManager(false);
-  EXPECT_FALSE(CanExecuteCommand(Command::kStartPasswordManagerTutorial));
-
-  // If the browser supports the new password manager and has a tutorial
-  // service it should allow running commands.
-  command_handler_->SetBrowserSupportsNewPasswordManager(true);
   EXPECT_TRUE(CanExecuteCommand(Command::kStartPasswordManagerTutorial));
 
   ClickInfoPtr info = ClickInfo::New();

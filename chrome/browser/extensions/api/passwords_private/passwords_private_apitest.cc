@@ -41,12 +41,7 @@ namespace {
 
 class PasswordsPrivateApiTest : public ExtensionApiTest {
  public:
-  PasswordsPrivateApiTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {password_manager::features::kPasswordManagerRedesign,
-         password_manager::features::kPasswordsGrouping},
-        {});
-  }
+  PasswordsPrivateApiTest() = default;
 
   PasswordsPrivateApiTest(const PasswordsPrivateApiTest&) = delete;
   PasswordsPrivateApiTest& operator=(const PasswordsPrivateApiTest&) = delete;
@@ -152,7 +147,6 @@ class PasswordsPrivateApiTest : public ExtensionApiTest {
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   scoped_refptr<TestPasswordsPrivateDelegate> test_delegate_;
 };
 

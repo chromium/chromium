@@ -801,10 +801,6 @@ class ProfileMenuClickTest : public SyncTest,
   void SetUpInProcessBrowserTestFixture() override {
     test_signin_client_subscription_ =
         secondary_account_helper::SetUpSigninClient(&test_url_loader_factory_);
-
-    // Needed by ProfileMenuClickTest_PasswordManagerWebApp test.
-    feature_list_.InitAndEnableFeature(
-        password_manager::features::kPasswordManagerRedesign);
   }
 
   // SyncTest:
@@ -889,7 +885,6 @@ class ProfileMenuClickTest : public SyncTest,
   base::HistogramTester histogram_tester_;
   std::unique_ptr<SyncServiceImplHarness> sync_harness_;
   raw_ptr<Profile, DanglingUntriaged> profile_ = nullptr;
-  base::test::ScopedFeatureList feature_list_;
 };
 
 #define PROFILE_MENU_CLICK_TEST(actionable_item_list, test_case_name)     \
@@ -1290,19 +1285,13 @@ PROFILE_MENU_CLICK_TEST(kActionableItems_PasswordManagerWebApp,
 class ProfileMenuViewWebAppTest : public ProfileMenuViewTestBase,
                                   public web_app::WebAppControllerBrowserTest {
  protected:
-  void SetUp() override {
-    // Enable the installable PasswordManager WebUI.
-    feature_list_.InitAndEnableFeature(
-        password_manager::features::kPasswordManagerRedesign);
-    web_app::WebAppControllerBrowserTest::SetUp();
-  }
+  void SetUp() override { web_app::WebAppControllerBrowserTest::SetUp(); }
 
   WebAppFrameToolbarTestHelper* toolbar_helper() {
     return &web_app_frame_toolbar_helper_;
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   WebAppFrameToolbarTestHelper web_app_frame_toolbar_helper_;
 };
 

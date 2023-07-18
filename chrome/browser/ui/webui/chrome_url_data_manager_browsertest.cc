@@ -177,8 +177,6 @@ class ChromeURLDataManagerWebUITrustedTypesTest
     enabled_features.push_back(history_clusters::kSidePanelJourneys);
     enabled_features.push_back(features::kSupportTool);
     enabled_features.push_back(ntp_features::kCustomizeChromeSidePanel);
-    enabled_features.push_back(
-        password_manager::features::kPasswordManagerRedesign);
     enabled_features.push_back(features::kReadAnything);
     enabled_features.push_back(user_notes::kUserNotes);
 
