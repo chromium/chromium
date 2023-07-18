@@ -17,7 +17,9 @@
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_tile_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_metrics_constants.h"
+#import "ios/chrome/browser/ui/content_suggestions/set_up_list/utils.h"
 #import "ios/chrome/browser/ui/favicon/favicon_attributes_with_payload.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -28,11 +30,25 @@
 
 #pragma mark - Public
 
+- (void)recordMagicStackTopModuleImpressionForType:
+    (ContentSuggestionsModuleType)type {
+  UMA_HISTOGRAM_ENUMERATION(kMagicStackTopModuleImpressionHistogram, type);
+}
+
+- (void)recordMagicStackModuleEngagementForType:
+    (ContentSuggestionsModuleType)type {
+  UMA_HISTOGRAM_ENUMERATION(kMagicStackModuleEngagementHistogram, type);
+}
+
 - (void)recordReturnToRecentTabTileShown {
   base::RecordAction(base::UserMetricsAction(kShowReturnToRecentTabTileAction));
 }
 
 - (void)recordShortcutTileTapped:(NTPCollectionShortcutType)shortcutType {
+  if (IsMagicStackEnabled()) {
+    [self recordMagicStackModuleEngagementForType:ContentSuggestionsModuleType::
+                                                      kShortcuts];
+  }
   switch (shortcutType) {
     case NTPCollectionShortcutTypeBookmark:
       base::RecordAction(base::UserMetricsAction(kShowBookmarksAction));
@@ -88,6 +104,11 @@
 
   new_tab_page_uma::RecordAction(
       false, webState, new_tab_page_uma::ACTION_OPENED_MOST_VISITED_ENTRY);
+
+  if (ShouldPutMostVisitedSitesInMagicStack()) {
+    [self recordMagicStackModuleEngagementForType:ContentSuggestionsModuleType::
+                                                      kMostVisited];
+  }
 }
 
 - (void)recordMostVisitedTileRemoved {
@@ -103,6 +124,15 @@
 }
 
 - (void)recordSetUpListItemSelected:(SetUpListItemType)type {
+  if (IsMagicStackEnabled()) {
+    if (set_up_list_utils::ShouldShowCompactedSetUpListModule()) {
+      [self recordMagicStackModuleEngagementForType:
+                ContentSuggestionsModuleType::kCompactedSetUpList];
+    } else {
+      [self recordMagicStackModuleEngagementForType:
+                SetUpListModuleTypeForSetUpListType(type)];
+    }
+  }
   set_up_list_metrics::RecordItemSelected(type);
 }
 

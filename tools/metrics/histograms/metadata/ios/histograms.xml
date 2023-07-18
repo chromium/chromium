@@ -1174,6 +1174,24 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.MagicStack.Module.Click" enum="IOSMagicStackModuleType"
+    expires_after="2024-07-03">
+  <owner>thegreenfrog@chromium.org</owner>
+  <owner>scottyoder@chromium.org</owner>
+  <summary>
+    Records a user engagement with a module within the Magic Stack.
+  </summary>
+</histogram>
+
+<histogram name="IOS.MagicStack.Module.TopImpression"
+    enum="IOSMagicStackModuleType" expires_after="2024-07-03">
+  <owner>thegreenfrog@chromium.org</owner>
+  <owner>scottyoder@chromium.org</owner>
+  <summary>
+    Records the first module shown for every Magic Stack impression.
+  </summary>
+</histogram>
+
 <histogram name="IOS.MainFrameNavigationIsInBrowserLockdownMode" enum="Boolean"
     expires_after="2023-11-23">
   <owner>joemerramos@chromium.org</owner>

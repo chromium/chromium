@@ -9,16 +9,17 @@
 
 #import "ios/chrome/browser/ntp/set_up_list_item_type.h"
 
-// Enum specifying the type of Content Suggestions a module is showing.
+// Enum specifying the type of Content Suggestions a module is showing. Entries
+// should not be renumbered and numeric values should never be reused.
 enum class ContentSuggestionsModuleType {
-  kMostVisited,
-  kShortcuts,
-  kReturnToRecentTab,
-  kSetUpListSync,
-  kSetUpListDefaultBrowser,
-  kSetUpListAutofill,
-  kCompactedSetUpList,
-  kSetUpListAllSet,
+  kMostVisited = 0,
+  kShortcuts = 1,
+  kSetUpListSync = 2,
+  kSetUpListDefaultBrowser = 3,
+  kSetUpListAutofill = 4,
+  kCompactedSetUpList = 5,
+  kSetUpListAllSet = 6,
+  kMaxValue = kSetUpListAllSet,
 };
 
 // Represents the content suggestions collection view.

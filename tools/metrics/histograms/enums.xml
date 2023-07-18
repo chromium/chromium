@@ -55356,6 +55356,15 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="4" label="Authorized when Chrome is in use"/>
 </enum>
 
+<enum name="IOSMagicStackModuleType">
+  <int value="0" label="Most Visited Tiles"/>
+  <int value="1" label="Shortcuts"/>
+  <int value="2" label="kSetUpListSync"/>
+  <int value="3" label="kSetUpListAutofill"/>
+  <int value="4" label="kCompactedSetUpList"/>
+  <int value="5" label="kSetUpListAllSet"/>
+</enum>
+
 <enum name="IOSMainThreadFreezeDetectionNotRunningAfterReportBlock">
   <int value="0" label="After Breakpad Ref">
     Freeze detection stopped after obtaining the breakpad lock.
