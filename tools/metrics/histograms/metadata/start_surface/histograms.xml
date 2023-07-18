@@ -23,7 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="StartSurface.ColdStartup.IsLastActiveTabNtp" enum="Boolean"
-    expires_after="2023-11-12">
+    expires_after="2024-01-14">
   <owner>hanxi@chromium.org</owner>
   <owner>xinyiji@chromium.org</owner>
   <summary>
@@ -34,7 +34,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="StartSurface.Module.Click" enum="ModuleTypeOnStartAndNTP"
-    expires_after="2023-11-12">
+    expires_after="2024-01-14">
   <owner>hanxi@chromium.org</owner>
   <owner>xinyiji@chromium.org</owner>
   <summary>
@@ -57,7 +57,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="StartSurface.Show.State" enum="StartSurfaceState"
-    expires_after="2023-11-12">
+    expires_after="2024-01-14">
   <owner>hanxi@chromium.org</owner>
   <owner>xinyiji@chromium.org</owner>
   <summary>
@@ -71,7 +71,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="StartSurface.SpareTab.TimeBetweenShowAndCreate" units="ms"
-    expires_after="2023-11-12">
+    expires_after="2024-01-14">
   <owner>sreejakshetty@chromium.org</owner>
   <owner>hanxi@chromium.org</owner>
   <summary>
@@ -81,7 +81,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="StartSurface.TimeSpent" units="ms" expires_after="2023-11-12">
+<histogram name="StartSurface.TimeSpent" units="ms" expires_after="2024-01-14">
   <owner>hanxi@chromium.org</owner>
   <owner>xinyiji@chromium.org</owner>
   <summary>

@@ -66,7 +66,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="QuickAnswers.Click" enum="QuickAnswersResultType"
-    expires_after="2024-01-07">
+    expires_after="2024-01-14">
   <owner>angelaxiao@chromium.org</owner>
   <owner>yawano@google.com</owner>
   <owner>llin@google.com</owner>
@@ -191,7 +191,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="QuickAnswers.Loading.Status" enum="QuickAnswersLoadStatus"
-    expires_after="2023-11-12">
+    expires_after="2024-01-14">
   <owner>angelaxiao@chromium.org</owner>
   <owner>yawano@google.com</owner>
   <owner>llin@google.com</owner>
@@ -273,7 +273,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="QuickAnswers.SelectedContent.Length" units="characters"
-    expires_after="2023-11-12">
+    expires_after="2024-01-14">
   <owner>angelaxiao@chromium.org</owner>
   <owner>yawano@google.com</owner>
   <owner>llin@google.com</owner>

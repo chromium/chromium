@@ -30,7 +30,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PluginVm.EngagementTime.Background" units="ms"
-    expires_after="2023-11-12">
+    expires_after="2024-01-14">
   <owner>timloh@google.com</owner>
   <owner>joelhockey@google.com</owner>
   <summary>

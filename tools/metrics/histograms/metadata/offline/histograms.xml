@@ -152,7 +152,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OfflinePages.DidNavigationThrottleCancelNavigation"
-    enum="Boolean" expires_after="2023-11-12">
+    enum="Boolean" expires_after="2024-01-14">
   <owner>curranmax@chromium.org</owner>
   <owner>tbansal@chromium.org</owner>
   <summary>

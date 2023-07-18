@@ -383,7 +383,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.AppSearchProvider.QueryTime" units="ms"
-    expires_after="2023-11-12">
+    expires_after="2024-01-14">
   <owner>laurencom@chromium.org</owner>
   <owner>tbarzic@chromium.org</owner>
   <summary>
@@ -614,7 +614,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.GameProvider.SearchStatus"
-    enum="GameProviderSearchStatus" expires_after="2023-11-12">
+    enum="GameProviderSearchStatus" expires_after="2024-01-14">
   <owner>laurencom@chromium.org</owner>
   <owner>amandadeacon@chromium.org</owner>
   <summary>
@@ -792,7 +792,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.OsSettingsProvider.Error"
-    enum="OsSettingsProviderStatus" expires_after="2023-11-12">
+    enum="OsSettingsProviderStatus" expires_after="2024-01-14">
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <summary>
@@ -805,7 +805,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.OsSettingsProvider.IconLoadStatus"
-    enum="OsSettingsProviderIconLoadStatus" expires_after="2023-11-12">
+    enum="OsSettingsProviderIconLoadStatus" expires_after="2024-01-14">
   <owner>tby@chromium.org</owner>
   <owner>chenjih@chromium.org</owner>
   <summary>
@@ -1123,7 +1123,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.SearchQueryLength.Apps" units="characters"
-    expires_after="2023-11-12">
+    expires_after="2024-01-14">
   <owner>thanhdng@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <summary>
@@ -1133,7 +1133,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.SearchResultRemovalDecision"
-    enum="AppListResultRemovalConfirmation" expires_after="2023-11-12">
+    enum="AppListResultRemovalConfirmation" expires_after="2024-01-14">
   <owner>tbarzic@chromium.org</owner>
   <owner>gzadina@google.com</owner>
   <summary>
@@ -1628,7 +1628,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppListLauncherClickedSearchQueryLength"
-    units="characters" expires_after="2023-11-12">
+    units="characters" expires_after="2024-01-14">
   <owner>laurencom@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <summary>
@@ -2404,7 +2404,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.QuickAppIconLoadTime" units="ms"
-    expires_after="2023-10-26">
+    expires_after="2024-01-14">
   <owner>mmourgos@chromium.org</owner>
   <owner>src/ash/app_list/OWNERS</owner>
   <summary>
