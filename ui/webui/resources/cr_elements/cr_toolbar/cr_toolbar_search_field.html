@@ -7,6 +7,10 @@
         width: 44px;
       }
 
+      :host-context([chrome-refresh-2023]):host {
+        isolation: isolate;
+      }
+
       :host([disabled]) {
         opacity: var(--cr-disabled-opacity);
       }

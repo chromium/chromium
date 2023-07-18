@@ -37,6 +37,7 @@
         --cr-input-placeholder-color:
             var(--color-textfield-foreground-placeholder,
                 var(--cr-fallback-on-surface-subtle));
+        isolation: isolate;
       }
 
       :host-context([chrome-refresh-2023]):host([readonly]) {
