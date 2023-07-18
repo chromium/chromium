@@ -30,7 +30,7 @@ std::u16string HostedDomainForPrimaryAccount(Browser* browser) {
   return base::UTF8ToUTF16(
       identity_manager
           ->FindExtendedAccountInfo(identity_manager->GetPrimaryAccountInfo(
-              signin::ConsentLevel::kSync))
+              signin::ConsentLevel::kSignin))
           .hosted_domain);
 }
 

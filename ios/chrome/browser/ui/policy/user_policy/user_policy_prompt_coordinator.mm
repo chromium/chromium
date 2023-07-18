@@ -47,7 +47,7 @@ constexpr CGFloat kHalfSheetCornerRadius = 20;
 #pragma mark - Internal
 
 // Returns the domain of the administrator hosting the primary account.
-// Returns an empty string if the account isn't managed OR isn't syncing.
+// Returns an empty string if the account isn't managed.
 - (NSString*)managedDomain {
   return base::SysUTF16ToNSString(HostedDomainForPrimaryAccount(self.browser));
 }
