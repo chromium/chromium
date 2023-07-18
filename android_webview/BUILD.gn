@@ -257,7 +257,7 @@ if (android_64bit_target_cpu) {
   }
 }
 
-if (is_official_build) {
+if (is_official_build && !skip_secondary_abi_for_cq) {
   # Used for binary size monitoring.
   create_app_bundle_minimal_apks("trichrome_webview_minimal_apks") {
     deps = [ ":trichrome_webview_bundle" ]
