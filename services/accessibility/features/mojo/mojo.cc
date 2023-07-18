@@ -60,10 +60,10 @@ gin::ObjectTemplateBuilder Mojo::GetObjectTemplateBuilder(
 
 void Mojo::CreateMessagePipe(gin::Arguments* arguments) {
   v8::Isolate* isolate = arguments->isolate();
-  DCHECK(isolate);
+  CHECK(isolate);
   v8::HandleScope handle_scope(isolate);
 
-  DCHECK(arguments);
+  CHECK(arguments);
 
   MojoCreateMessagePipeOptions options = {/*struct_size=*/0};
   options.struct_size = sizeof(::MojoCreateMessagePipeOptions);
@@ -91,7 +91,7 @@ void Mojo::CreateMessagePipe(gin::Arguments* arguments) {
 
 void Mojo::BindInterface(gin::Arguments* arguments) {
   v8::Isolate* isolate = arguments->isolate();
-  DCHECK(isolate);
+  CHECK(isolate);
   v8::HandleScope handle_scope(isolate);
 
   // The arguments are defined in third_party/blink/renderer/core/mojo/mojo.idl:
@@ -115,7 +115,7 @@ void Mojo::BindInterface(gin::Arguments* arguments) {
   // Use the context's global object to get the pointer to the V8 manager in
   // order to bind this receiver.
   v8::Local<v8::Context> context = arguments->GetHolderCreationContext();
-  DCHECK(!context.IsEmpty());
+  CHECK(!context.IsEmpty());
   V8Manager::GetFromContext(context)->BindInterface(interface_name,
                                                     std::move(receiver));
 }

@@ -35,13 +35,13 @@ gin::ObjectTemplateBuilder TextDecoder::GetObjectTemplateBuilder(
 // See third_party/blink/renderer/modules/encoding/text_decoder.h
 void TextDecoder::Decode(gin::Arguments* arguments) {
   v8::Isolate* isolate = arguments->isolate();
-  DCHECK(isolate);
+  CHECK(isolate);
   v8::HandleScope handle_scope(isolate);
 
   std::vector<v8::Local<v8::Value>> args = arguments->GetAll();
   // Note: We do not support a TextDecoderOptions parameter.
-  DCHECK_EQ(args.size(), 1u);
-  DCHECK(args[0]->IsArrayBuffer() || args[0]->IsArrayBufferView());
+  CHECK_GT(args.size(), 0u);
+  CHECK(args[0]->IsArrayBuffer() || args[0]->IsArrayBufferView());
   void* bytes = nullptr;
   size_t num_bytes = 0;
   if (args[0]->IsArrayBuffer()) {
