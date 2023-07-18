@@ -98,6 +98,8 @@ class HelpBubbleView : public views::BubbleDialogDelegateView {
   friend class HelpBubbleViewsTest;
   friend class internal::MenuEventMonitor;
 
+  class AnchorViewObserver;
+
   void MaybeStartAutoCloseTimer();
 
   void OnTimeout();
@@ -132,6 +134,10 @@ class HelpBubbleView : public views::BubbleDialogDelegateView {
   // Sniffs events intended for a menu to ensure that for bubbles anchored to
   // menus, hover, click, and tap events are still registered.
   std::unique_ptr<internal::MenuEventMonitor> menu_event_monitor_;
+
+  // Observes the anchor view. Dismisses the help bubble if it loses visibility.
+  // Useful when our anchor element is not the anchor view.
+  std::unique_ptr<AnchorViewObserver> anchor_observer_;
 
   // Auto close timeout. If the value is 0 (default), the bubble never times
   // out.

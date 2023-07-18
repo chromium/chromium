@@ -95,7 +95,7 @@ class TestHelpBubbleHandler : public HelpBubbleHandlerBase {
 
     using HelpBubbleHandlerBase::VisibilityProvider::SetLastKnownVisibility;
 
-    MOCK_METHOD(absl::optional<bool>, CheckIsVisible, (), (const override));
+    MOCK_METHOD(absl::optional<bool>, CheckIsVisible, (), (override));
   };
 
  private:

@@ -469,6 +469,33 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(HelpBubbleView,
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(HelpBubbleView, kBodyTextIdForTesting);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(HelpBubbleView, kTitleTextIdForTesting);
 
+// Watches for the anchor view to be destroyed or removed from its widget.
+// Used in cases where the anchor element is not the same as the anchor view.
+// Prevents the help bubble from lingering after its anchor is invalid, which
+// can cause crashes and other strange behavior.
+class HelpBubbleView::AnchorViewObserver : public views::ViewObserver {
+ public:
+  AnchorViewObserver(views::View* anchor_view, HelpBubbleView* help_bubble)
+      : help_bubble_(help_bubble) {
+    observation_.Observe(anchor_view);
+  }
+
+ private:
+  // views::ViewObserver:
+  void OnViewRemovedFromWidget(views::View*) override { Detach(); }
+  void OnViewIsDeleting(views::View*) override { Detach(); }
+
+  void Detach() {
+    observation_.Reset();
+    if (help_bubble_->GetWidget() && !help_bubble_->GetWidget()->IsClosed()) {
+      help_bubble_->GetWidget()->Close();
+    }
+  }
+
+  const base::raw_ptr<HelpBubbleView> help_bubble_;
+  base::ScopedObservation<View, ViewObserver> observation_{this};
+};
+
 HelpBubbleView::HelpBubbleView(const HelpBubbleDelegate* delegate,
                                const internal::HelpBubbleAnchorParams& anchor,
                                HelpBubbleParams params)
@@ -492,6 +519,7 @@ HelpBubbleView::HelpBubbleView(const HelpBubbleDelegate* delegate,
       delegate_(delegate) {
   if (anchor.rect.has_value()) {
     SetForceAnchorRect(anchor.rect.value());
+    anchor_observer_ = std::make_unique<AnchorViewObserver>(anchor.view, this);
   } else {
     // When hosted within a `views::ScrollView`, the anchor view may be
     // (partially) outside the viewport. Ensure that the anchor view is visible.
