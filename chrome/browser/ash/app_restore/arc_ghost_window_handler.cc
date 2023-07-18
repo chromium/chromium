@@ -30,6 +30,12 @@ void ArcGhostWindowHandler::WindowSessionResolver::PopulateProperties(
   if (params.window_session_id <= 0)
     return;
   auto* handler = ArcGhostWindowHandler::Get();
+  if (!handler) {
+    // TODO(b/291693166): Remove this null check after change the lifecycle of
+    // the handler.
+    LOG(ERROR) << "ArcGhostWindowHandler haven't been initialized.";
+    return;
+  }
   auto it =
       handler->session_id_to_shell_surface_.find(params.window_session_id);
   if (it != handler->session_id_to_shell_surface_.end()) {
