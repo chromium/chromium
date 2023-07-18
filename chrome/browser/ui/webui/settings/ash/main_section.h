@@ -25,7 +25,6 @@ class MainSection : public OsSettingsSection {
               ash::settings::SearchTagRegistry* search_tag_registry);
   ~MainSection() override;
 
- private:
   // OsSettingsSection:
   void AddLoadTimeData(content::WebUIDataSource* html_source) override;
   void AddHandlers(content::WebUI* web_ui) override;
@@ -37,6 +36,7 @@ class MainSection : public OsSettingsSection {
                  base::Value& value) const override;
   void RegisterHierarchy(HierarchyGenerator* generator) const override;
 
+ private:
   void AddChromeOSUserStrings(content::WebUIDataSource* html_source);
   std::unique_ptr<PluralStringHandler> CreatePluralStringHandler();
 };

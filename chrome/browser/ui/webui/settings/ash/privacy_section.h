@@ -31,7 +31,6 @@ class PrivacySection : public OsSettingsSection {
                  PrefService* pref_service);
   ~PrivacySection() override;
 
- private:
   // OsSettingsSection:
   void AddHandlers(content::WebUI* web_ui) override;
   void AddLoadTimeData(content::WebUIDataSource* html_source) override;
@@ -43,6 +42,7 @@ class PrivacySection : public OsSettingsSection {
                  base::Value& value) const override;
   void RegisterHierarchy(HierarchyGenerator* generator) const override;
 
+ private:
   bool AreFingerprintSettingsAllowed();
   void UpdateRemoveFingerprintSearchTags();
 

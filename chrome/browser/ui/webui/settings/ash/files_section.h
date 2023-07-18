@@ -22,7 +22,6 @@ class FilesSection : public OsSettingsSection {
   FilesSection(Profile* profile, SearchTagRegistry* search_tag_registry);
   ~FilesSection() override;
 
- private:
   // OsSettingsSection:
   void AddLoadTimeData(content::WebUIDataSource* html_source) override;
   void AddHandlers(content::WebUI* web_ui) override;

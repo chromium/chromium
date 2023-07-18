@@ -27,7 +27,6 @@ class PrintingSection : public OsSettingsSection,
                   CupsPrintersManager* printers_manager);
   ~PrintingSection() override;
 
- private:
   // OsSettingsSection:
   void AddLoadTimeData(content::WebUIDataSource* html_source) override;
   void AddHandlers(content::WebUI* web_ui) override;
@@ -39,6 +38,7 @@ class PrintingSection : public OsSettingsSection,
                  base::Value& value) const override;
   void RegisterHierarchy(HierarchyGenerator* generator) const override;
 
+ private:
   // CupsPrintersManager::Observer
   void OnPrintersChanged(
       chromeos::PrinterClass printer_class,

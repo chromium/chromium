@@ -31,7 +31,6 @@ class AboutSection : public OsSettingsSection {
   AboutSection(Profile* profile, SearchTagRegistry* search_tag_registry);
   ~AboutSection() override;
 
- private:
   // OsSettingsSection:
   void AddLoadTimeData(content::WebUIDataSource* html_source) override;
   void AddHandlers(content::WebUI* web_ui) override;
@@ -43,6 +42,7 @@ class AboutSection : public OsSettingsSection {
                  base::Value& value) const override;
   void RegisterHierarchy(HierarchyGenerator* generator) const override;
 
+ private:
   // Returns if the auto update toggle should be shown for the active user.
   bool ShouldShowAUToggle(user_manager::User* active_user);
 

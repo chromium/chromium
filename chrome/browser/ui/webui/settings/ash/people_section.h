@@ -51,7 +51,6 @@ class PeopleSection : public OsSettingsSection,
                 PrefService* pref_service);
   ~PeopleSection() override;
 
- private:
   // OsSettingsSection:
   void AddLoadTimeData(content::WebUIDataSource* html_source) override;
   void AddHandlers(content::WebUI* web_ui) override;
@@ -63,6 +62,7 @@ class PeopleSection : public OsSettingsSection,
                  base::Value& value) const override;
   void RegisterHierarchy(HierarchyGenerator* generator) const override;
 
+ private:
   // AccountManagerFacade::Observer:
   void OnAccountUpserted(const ::account_manager::Account& account) override;
   void OnAccountRemoved(const ::account_manager::Account& account) override;

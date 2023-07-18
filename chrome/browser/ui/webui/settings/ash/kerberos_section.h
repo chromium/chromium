@@ -30,7 +30,6 @@ class KerberosSection : public OsSettingsSection,
                   KerberosCredentialsManager* kerberos_credentials_manager);
   ~KerberosSection() override;
 
- private:
   // OsSettingsSection:
   void AddLoadTimeData(content::WebUIDataSource* html_source) override;
   void AddHandlers(content::WebUI* web_ui) override;
@@ -42,6 +41,7 @@ class KerberosSection : public OsSettingsSection,
                  base::Value& value) const override;
   void RegisterHierarchy(HierarchyGenerator* generator) const override;
 
+ private:
   // KerberosCredentialsManager::Observer:
   void OnAccountsChanged() override;
   void OnKerberosEnabledStateChanged() override;

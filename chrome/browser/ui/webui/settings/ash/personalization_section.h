@@ -29,7 +29,6 @@ class PersonalizationSection : public OsSettingsSection {
                          PrefService* pref_service);
   ~PersonalizationSection() override;
 
- private:
   // OsSettingsSection:
   void AddLoadTimeData(content::WebUIDataSource* html_source) override;
   void AddHandlers(content::WebUI* web_ui) override;
@@ -41,6 +40,7 @@ class PersonalizationSection : public OsSettingsSection {
                  base::Value& value) const override;
   void RegisterHierarchy(HierarchyGenerator* generator) const override;
 
+ private:
   PrefChangeRegistrar pref_change_registrar_;
 };
 

@@ -31,7 +31,6 @@ class LanguagesSection : public OsSettingsSection,
                    PrefService* pref_service);
   ~LanguagesSection() override;
 
- private:
   // OsSettingsSection:
   void AddLoadTimeData(content::WebUIDataSource* html_source) override;
   void AddHandlers(content::WebUI* web_ui) override;
@@ -43,6 +42,7 @@ class LanguagesSection : public OsSettingsSection,
                  base::Value& value) const override;
   void RegisterHierarchy(HierarchyGenerator* generator) const override;
 
+ private:
   bool IsEmojiSuggestionAllowed() const;
   bool IsSpellCheckEnabled() const;
   void UpdateSpellCheckSearchTags();

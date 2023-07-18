@@ -24,7 +24,6 @@ class ResetSection : public OsSettingsSection {
   ResetSection(Profile* profile, SearchTagRegistry* search_tag_registry);
   ~ResetSection() override;
 
- private:
   // OsSettingsSection:
   void AddLoadTimeData(content::WebUIDataSource* html_source) override;
   void AddHandlers(content::WebUI* web_ui) override;

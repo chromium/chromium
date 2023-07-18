@@ -34,7 +34,6 @@ class BluetoothSection : public OsSettingsSection,
                    PrefService* pref_service);
   ~BluetoothSection() override;
 
- private:
   // OsSettingsSection:
   void AddLoadTimeData(content::WebUIDataSource* html_source) override;
   void AddHandlers(content::WebUI* web_ui) override;
@@ -46,6 +45,7 @@ class BluetoothSection : public OsSettingsSection,
                  base::Value& value) const override;
   void RegisterHierarchy(HierarchyGenerator* generator) const override;
 
+ private:
   // device::BluetoothAdapter::Observer:
   void AdapterPresentChanged(device::BluetoothAdapter* adapter,
                              bool present) override;

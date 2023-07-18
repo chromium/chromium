@@ -34,7 +34,6 @@ class InternetSection
   InternetSection(Profile* profile, SearchTagRegistry* search_tag_registry);
   ~InternetSection() override;
 
- private:
   // OsSettingsSection:
   void AddLoadTimeData(content::WebUIDataSource* html_source) override;
   void AddHandlers(content::WebUI* web_ui) override;
@@ -50,6 +49,7 @@ class InternetSection
       OsSettingsIdentifier id,
       const std::string& url_to_modify) const override;
 
+ private:
   // network_config::CrosNetworkConfigObserver:
   void OnActiveNetworksChanged(
       std::vector<chromeos::network_config::mojom::NetworkStatePropertiesPtr>

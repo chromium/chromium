@@ -43,7 +43,6 @@ class DeviceSection : public OsSettingsSection,
                 PrefService* pref_service);
   ~DeviceSection() override;
 
- private:
   // OsSettingsSection:
   void AddLoadTimeData(content::WebUIDataSource* html_source) override;
   void AddHandlers(content::WebUI* web_ui) override;
@@ -55,6 +54,7 @@ class DeviceSection : public OsSettingsSection,
                  base::Value& value) const override;
   void RegisterHierarchy(HierarchyGenerator* generator) const override;
 
+ private:
   // system::PointerDeviceObserver::Observer:
   void TouchpadExists(bool exists) override;
   void HapticTouchpadExists(bool exists) override;

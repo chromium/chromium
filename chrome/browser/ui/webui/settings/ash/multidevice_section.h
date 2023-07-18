@@ -51,8 +51,6 @@ class MultiDeviceSection
       eche_app::EcheAppManager* eche_app_manager);
   ~MultiDeviceSection() override;
 
- private:
-  friend class MultiDeviceSectionTest;
   // OsSettingsSection:
   void AddLoadTimeData(content::WebUIDataSource* html_source) override;
   void AddHandlers(content::WebUI* web_ui) override;
@@ -63,6 +61,9 @@ class MultiDeviceSection
   bool LogMetric(chromeos::settings::mojom::Setting setting,
                  base::Value& value) const override;
   void RegisterHierarchy(HierarchyGenerator* generator) const override;
+
+ private:
+  friend class MultiDeviceSectionTest;
 
   // multidevice_setup::MultiDeviceSetupClient::Observer:
   void OnHostStatusChanged(

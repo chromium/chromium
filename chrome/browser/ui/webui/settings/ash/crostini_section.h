@@ -28,11 +28,6 @@ class CrostiniSection : public OsSettingsSection {
                   PrefService* pref_service);
   ~CrostiniSection() override;
 
- private:
-  friend class CrostiniSectionTest;
-
-  static bool ShouldShowBruschetta(Profile* profile);
-
   // OsSettingsSection:
   void AddLoadTimeData(content::WebUIDataSource* html_source) override;
   void AddHandlers(content::WebUI* web_ui) override;
@@ -43,6 +38,11 @@ class CrostiniSection : public OsSettingsSection {
   bool LogMetric(chromeos::settings::mojom::Setting setting,
                  base::Value& value) const override;
   void RegisterHierarchy(HierarchyGenerator* generator) const override;
+
+ private:
+  friend class CrostiniSectionTest;
+
+  static bool ShouldShowBruschetta(Profile* profile);
 
   bool IsExportImportAllowed() const;
   bool IsContainerUpgradeAllowed() const;
