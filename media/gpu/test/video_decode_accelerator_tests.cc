@@ -418,9 +418,9 @@ TEST_F(VideoDecoderTest, DestroyBeforeInitialize) {
   EXPECT_NE(tvp, nullptr);
 }
 
+#if BUILDFLAG(USE_V4L2_CODEC)
 // This test case calls Decode() a number of times and expect OK DecodeCBs. This
 // test only makes sense for V4L2 (VA-API doesn't have an input queue).
-#if BUILDFLAG(USE_V4L2_CODEC)
 TEST_F(VideoDecoderTest, Decode) {
   auto tvp = CreateDecoderListener(g_env->Video());
 
@@ -429,6 +429,21 @@ TEST_F(VideoDecoderTest, Decode) {
   const size_t kNumDecodeBuffers = 8;
   EXPECT_TRUE(tvp->WaitForEvent(DecoderListener::Event::kDecoderBufferAccepted,
                                 /*times=*/kNumDecodeBuffers));
+}
+
+// This test case sends all the frames and expects them to be fully decoded
+// (as in, VideoDecoder::OutputCB should be called). Most of them should be
+// decoded as well, but since this test doesn't exercise an End-of-Stream
+// (a.k.a. "a flush"), some will likely be held onto by the VideoDecoder/driver
+// as part of its decoding pipeline. We don't know how many (it depends also on
+// the ImageProcessor, if any), so it's not a good idea to set expectations on
+// the number of kFrameDecoded events.
+TEST_F(VideoDecoderTest, DecodeAndOutputAllFrames) {
+  auto tvp = CreateDecoderListener(g_env->Video());
+
+  tvp->Play();
+  EXPECT_TRUE(tvp->WaitForEvent(DecoderListener::Event::kDecoderBufferAccepted,
+                                /*times=*/g_env->Video()->NumFrames()));
 }
 #endif
 
