@@ -213,6 +213,11 @@ void CategorizedWorkerPoolImpl::Start(int max_concurrency_foreground) {
     max_concurrency_foreground = 1;
   }
 
+  recordreplay::Assert(
+      "[RUN-2353-2358] CategorizedWorkerPoolImpl::Start %d %d %d",
+      max_concurrency_foreground, recordreplay::IsRecordingOrReplaying(),
+      recordreplay::FeatureEnabled("no-render-workers"));
+
   // |max_concurrency_foreground| normal threads and 1 background threads are
   // created.
   const size_t num_threads = max_concurrency_foreground + 1;
