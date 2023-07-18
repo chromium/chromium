@@ -51,14 +51,14 @@ class AugmentedSurface : public SurfaceObserver {
     }
   }
 
-  void SetCorners(int32_t x,
-                  int32_t y,
-                  int32_t width,
-                  int32_t height,
-                  double top_left,
-                  double top_right,
-                  double bottom_right,
-                  double bottom_left) {
+  void SetCorners(float x,
+                  float y,
+                  float width,
+                  float height,
+                  float top_left,
+                  float top_right,
+                  float bottom_right,
+                  float bottom_left) {
     surface_->SetRoundedCorners(gfx::RRectF(
         gfx::RectF(x, y, width, height),
         gfx::RoundedCornersF(top_left, top_right, bottom_right, bottom_left)));
@@ -114,16 +114,20 @@ void augmented_surface_set_destination_size(wl_client* client,
       wl_fixed_to_double(width), wl_fixed_to_double(height));
 }
 
-void augmented_surface_set_rounded_corners_bounds(wl_client* client,
-                                                  wl_resource* resource,
-                                                  int32_t x,
-                                                  int32_t y,
-                                                  int32_t width,
-                                                  int32_t height,
-                                                  wl_fixed_t top_left,
-                                                  wl_fixed_t top_right,
-                                                  wl_fixed_t bottom_right,
-                                                  wl_fixed_t bottom_left) {
+void augmented_surface_set_rounded_corners_bounds_DEPRECATED(
+    wl_client* client,
+    wl_resource* resource,
+    int32_t x,
+    int32_t y,
+    int32_t width,
+    int32_t height,
+    wl_fixed_t top_left,
+    wl_fixed_t top_right,
+    wl_fixed_t bottom_right,
+    wl_fixed_t bottom_left) {
+  LOG(WARNING)
+      << "Deprecated. The server will deprecate the support for this request.";
+
   if (width < 0 || height < 0 || top_left < 0 || bottom_left < 0 ||
       bottom_right < 0 || top_right < 0) {
     wl_resource_post_error(resource, AUGMENTED_SURFACE_ERROR_BAD_VALUE,
@@ -159,13 +163,42 @@ void augmented_surface_set_trusted_damage(wl_client* client,
   GetUserDataAs<AugmentedSurface>(resource)->SetTrustedDamage(enabled);
 }
 
+void augmented_surface_set_rounded_corners_clip_bounds(wl_client* client,
+                                                       wl_resource* resource,
+                                                       wl_fixed_t x,
+                                                       wl_fixed_t y,
+                                                       wl_fixed_t width,
+                                                       wl_fixed_t height,
+                                                       wl_fixed_t top_left,
+                                                       wl_fixed_t top_right,
+                                                       wl_fixed_t bottom_right,
+                                                       wl_fixed_t bottom_left) {
+  if (width < 0 || height < 0 || top_left < 0 || bottom_left < 0 ||
+      bottom_right < 0 || top_right < 0) {
+    wl_resource_post_error(resource, AUGMENTED_SURFACE_ERROR_BAD_VALUE,
+                           "The size and corners must have positive values "
+                           "(%d, %d, %d, %d, %d, %d)",
+                           width, height, top_left, top_right, bottom_right,
+                           bottom_left);
+    return;
+  }
+
+  GetUserDataAs<AugmentedSurface>(resource)->SetCorners(
+      wl_fixed_to_double(x), wl_fixed_to_double(y), wl_fixed_to_double(width),
+      wl_fixed_to_double(height), wl_fixed_to_double(top_left),
+      wl_fixed_to_double(top_right), wl_fixed_to_double(bottom_right),
+      wl_fixed_to_double(bottom_left));
+}
+
 const struct augmented_surface_interface augmented_implementation = {
     augmented_surface_destroy,
     augmented_surface_set_corners_DEPRECATED,
     augmented_surface_set_destination_size,
-    augmented_surface_set_rounded_corners_bounds,
+    augmented_surface_set_rounded_corners_bounds_DEPRECATED,
     augmented_surface_set_background_color,
-    augmented_surface_set_trusted_damage};
+    augmented_surface_set_trusted_damage,
+    augmented_surface_set_rounded_corners_clip_bounds,
+};
 
 ////////////////////////////////////////////////////////////////////////////////
 // augmented_sub_surface_interface:
