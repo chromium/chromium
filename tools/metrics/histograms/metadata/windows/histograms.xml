@@ -22,6 +22,17 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<histogram name="Windows.AcLayersLoaded" enum="BooleanLoaded"
+    expires_after="2024-07-15">
+  <owner>ajgo@chromium.org</owner>
+  <owner>brucedawson@chromium.org</owner>
+  <summary>
+    Records if AcLayers.dll is loaded in the browser process, indicating that
+    Chrome has been shimmed by Window's AppCompat mechanism. Reported once per
+    browser session, on startup.
+  </summary>
+</histogram>
+
 <histogram name="Windows.CetAvailable" enum="BooleanAvailable"
     expires_after="2023-12-01">
   <owner>ajgo@chromium.org</owner>

@@ -494,6 +494,13 @@ bool IsParallelDllLoadingEnabled() {
   return max_loader_threads != 1;
 }
 
+// Records the presence (bad) or absence (good) of AcLayers.dll in the browser
+// process.
+void RecordAppCompatMetrics() {
+  HMODULE mod = ::GetModuleHandleW(L"AcLayers.dll");
+  base::UmaHistogramBoolean("Windows.AcLayersLoaded", mod ? true : false);
+}
+
 #endif  // BUILDFLAG(IS_WIN)
 
 void RecordDisplayHDRStatus(const display::Display& display) {
@@ -533,6 +540,7 @@ void RecordStartupMetrics() {
   // behavior.
   base::UmaHistogramBoolean("Windows.ParallelDllLoadingEnabled",
                             IsParallelDllLoadingEnabled());
+  RecordAppCompatMetrics();
   crypto::MaybeMeasureTpmOperations();
 #endif  // BUILDFLAG(IS_WIN)
 
