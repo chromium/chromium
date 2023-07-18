@@ -34,8 +34,34 @@ const char kSetGammaAction[] =
 const char kSetFullCTMAction[] =
     "set_color_matrix(id=123,ctm[0]*ctm[8]*),"
     "set_gamma_correction(id=123,degamma[0]*gamma[0]*)";
-const char kValidIccProfile[] = "ENCODED_ICC_PROFILE_IGNORED";
-const char kInvalidIccProfile[] = "ENCODED_ICC_PROFILE_IGNORED";
+const char kValidIccProfile[] =
+    "H4sIAEY3QWAAA+3SeVjMeRwH8E/TdthOCUkxOuTozrifpDFTVI4KUyL5Nc1GTWOOCiFnzhii"
+    "HBEqdxY5CzkXOSJXTEYkiWST5Ghnv9/5an/Tts/uP/vf7vv3zPN7z/f7zDzf3+/zAtBfy0Rh"
+    "mALECqXiQB9vJi8klKmnBF2wBB3oCHYRlEQUEMQNBpQgDpsJbdL4ALTwvdTpr/f/NoaRfAkF"
+    "oGWOejIlEktRT0PdIUYWG416IermCVIRXi/BXYwOiHol7gLSm3Cfpu4MQ9ypnyIiUcdncRQH"
+    "B7JR90fdWEB6GO7TSI/BPZ4SoP9nJAHompHzkLPxOCxXV7abu8Z5jYAHHGCBK7rY4Aaae/9K"
+    "pPxEKb4HRcRKZEIBkxPDp6TiOGE0JWGy45wdmf7SSGe0j+ek/oGC/vyxhmcCKhWaiRe9JpEB"
+    "sIsBTNLptfB8gAwrAGtbes02D8DOAiA3RRLlQZ5Py9ATQKdcpfrgAqAnB2hOVam+ZqtUzTkA"
+    "2mUARZmUTBz//RG0GB4A//SdvPPv0UaAGOotFAaKtjo/qKOjjq6uHoq+frt2P6IYGBgaGhkZ"
+    "G5uYmJq2b29m1qGDuXlHlE6dOne2sOjSxdKya1crK2vrbt26d2cye/SwsbG1tbfv2dPBoVev"
+    "3r379Onb19HRycnFxdXVzc3d3cOjXz8Wa8CAgQMHDRo8eMiQoUM9PYcN8/IaPtzbe8QIDofL"
+    "9fHx9R01ys/P3z8gYPTosWPHjQsMDAoKDp4wYeJEHi8kJDR00qTJk6dMCQ+fOjUigqIiI/n8"
+    "qCiBIDp6+vQZM2JiYmOFQpFo5kyxWCKRSuPjExISE2fNmj07KWnu3Hnz5s9PTl6wYNGixYuX"
+    "LFm6NCVl2bLly1esWLly1arVq1NT16xZiyKXr1+flrZhw8aN6ekZGZs2bd68dWtm5rZtWVk7"
+    "duzcuWtXdnZu7u7de/bs3btv3/79Bw4cPJiXd+jQ4cNHjhw9mp9/7Njx4ydOnDx56tTp0wUF"
+    "hYVnzpw9e+5cUdH58xcuXLx46dLly1eu/IJy9eq1a9evFxffuHHz5q1bt2+XlNy5c/duaem9"
+    "e/fvP0B5+PDRo8ePnzxRKMrLnz5VKp89q6h4/vzFi8rKly+rUF69qq5+/bqm5s2bt29ra9+9"
+    "q6t7//5XderrP6A0NHz82Nj46VNT0+fPX758Rfn2rbn5NxSs9f/5/9fnr2mgRUFrC7rqYAnE"
+    "goEBbYFooD20aGjtoUWEjY2dnb09UUG7IDKcnbENrIPYYLH699fUQftgs4kQLtfXd+RIbMTP"
+    "DxsZM4ZWMn48dhISQpyEhWEnf5bS2kpcHK1FJiNa5szR1LJwIdHS1opcvm5dixUiZcsWYmX7"
+    "9qwsYiUnh2jRtPIzSlsvBQW0FyKG9kK00F40xWAvWEtZGdaiUGAtSmVFBbZSVVVdXVODhdTW"
+    "1tVhG/X1DQ0AvwPCW+4LkAgAAA==";
+const char kInvalidIccProfile[] =
+    "H4sIAEY3QWAAA2NgYFyTk5xbzGLAwFBckJgc5O6kEBEZpcB+n4GbQZyBi4GZQT4xubjAMSDA"
+    "hwEn+HaNgRFEX9YFmYVbHVbAUQS0EEg/AWKRdAj7B4idBGYz8oDYRSFBzkC2ApAtkA5hG4DY"
+    "SRC2A4hdXlJQAmQHgNSnpBYnA9kpQLYHyD8oNgLdiiLGCKHgYowIpQWJRYnI6gjxEeYiwiQ3"
+    "pzQZySae1LzQYCCtA8QyDCEM/gwuQGzFoMDgyJAChApAnMpQzJDMUMSQyVDAUAIk8xnyGBgA"
+    "x6c/q6wBAAA=";
 
 class DisplayColorManagerForTest : public DisplayColorManager {
  public:
@@ -603,10 +629,13 @@ TEST_F(DisplayColorManagerTest, QuirksCalibration) {
   // Clear initial configuration log.
   log_->GetActionsAndClear();
 
-  WaitOnColorCalibration();
   // The VPD-written ICC has no vcgt table and would call
   // DisplayColorManager::ResetDisplayColorCalibration().
+  WaitOnColorCalibration();
+  EXPECT_TRUE(
+      base::MatchPattern(log_->GetActionsAndClear(), kResetGammaAction));
   // Confirm that the Quirks-fetched ICC, which does, is what is applied.
+  WaitOnColorCalibration();
   EXPECT_TRUE(base::MatchPattern(log_->GetActionsAndClear(), kSetGammaAction));
 }
 
@@ -645,8 +674,8 @@ TEST_F(DisplayColorManagerTest, VpdCalibrationWithQuirks) {
   // Clear initial configuration log.
   log_->GetActionsAndClear();
 
-  WaitOnColorCalibration();
   // Both the Quirks-fetched ICC and the the VPD-written ICC are valid.
+  WaitOnColorCalibration();
   EXPECT_TRUE(base::MatchPattern(log_->GetActionsAndClear(), kSetGammaAction));
 }
 

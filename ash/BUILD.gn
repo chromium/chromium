@@ -2872,6 +2872,7 @@ component("ash") {
     "//third_party/perfetto:libperfetto",
     "//third_party/qcms",
     "//third_party/re2",
+    "//third_party/zlib/google:compression_utils",
     "//ui/accessibility",
     "//ui/accessibility:ax_enums_mojo",
     "//ui/accessibility/mojom",
