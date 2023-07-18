@@ -658,7 +658,7 @@ bool FormDataImporter::ExtractAddressProfileFromSection(
   // At this stage, the saving of the profile can only be omitted by the
   // incognito mode but the import is not triggered if the browser is in the
   // incognito mode.
-  DCHECK(!personal_data_manager_->IsOffTheRecord());
+  DCHECK(!client_->IsOffTheRecord());
 
   AddressProfileImportCandidate import_candidate;
   import_candidate.profile = candidate_profile;

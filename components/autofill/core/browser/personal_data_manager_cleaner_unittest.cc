@@ -53,9 +53,8 @@ class PersonalDataManagerCleanerTest : public PersonalDataManagerTestBase,
   void SetUp() override {
     SetUpTest();
     personal_data_ = std::make_unique<PersonalDataManager>("EN", "US");
-    ResetPersonalDataManager(/*is_incognito=*/false,
-                             /*use_sync_transport_mode=*/false,
-                             personal_data_.get());
+    ResetPersonalDataManager(
+        /*use_sync_transport_mode=*/false, personal_data_.get());
     personal_data_manager_cleaner_ =
         std::make_unique<PersonalDataManagerCleaner>(personal_data_.get(),
                                                      nullptr, prefs_.get());

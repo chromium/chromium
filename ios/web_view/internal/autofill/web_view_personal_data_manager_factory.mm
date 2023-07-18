@@ -70,7 +70,7 @@ WebViewPersonalDataManagerFactory::BuildServiceInstanceFor(
       ApplicationContext::GetInstance()->GetLocalState(),
       WebViewIdentityManagerFactory::GetForBrowserState(browser_state),
       /*history_service=*/nullptr, sync_service, /*strike_database=*/nullptr,
-      /*image_fetcher=*/nullptr, browser_state->IsOffTheRecord());
+      /*image_fetcher=*/nullptr);
   return service;
 }
 

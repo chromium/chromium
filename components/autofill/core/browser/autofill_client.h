@@ -372,7 +372,10 @@ class AutofillClient : public RiskDataLoader {
   // crowdsourcing server.
   virtual AutofillDownloadManager* GetDownloadManager();
 
-  // Gets the PersonalDataManager instance associated with the client.
+  // Gets the PersonalDataManager instance associated with the original Chrome
+  // profile.
+  // To distinguish between (non-)incognito mode when deciding to persist data,
+  // use the client's `IsOffTheRecord()` function.
   virtual PersonalDataManager* GetPersonalDataManager() = 0;
 
   // Gets the AutofillOptimizationGuide instance associated with the client.

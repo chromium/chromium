@@ -66,8 +66,7 @@ class VirtualCardEnrollmentManagerTest : public testing::Test {
         /*history_service=*/nullptr,
         /*sync_service=*/&sync_service_,
         /*strike_database=*/nullptr,
-        /*image_fetcher=*/nullptr,
-        /*is_off_the_record=*/false);
+        /*image_fetcher=*/nullptr);
     autofill_client_->set_test_payments_client(
         std::make_unique<payments::TestPaymentsClient>(
             autofill_client_->GetURLLoaderFactory(),

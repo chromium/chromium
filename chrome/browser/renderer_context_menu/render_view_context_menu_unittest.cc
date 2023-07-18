@@ -1171,8 +1171,7 @@ class RenderViewContextMenuAutofillTest
 // Verify that Autofill context menu items are displayed on a plain text field.
 TEST_P(RenderViewContextMenuAutofillTest, ShowAutofillOptions) {
   autofill::PersonalDataManager* pdm =
-      autofill::PersonalDataManagerFactory::GetForProfile(
-          profile()->GetOriginalProfile());
+      autofill::PersonalDataManagerFactory::GetForProfile(profile());
   DCHECK(pdm);
   pdm->AddServerCreditCardForTest(
       std::make_unique<autofill::CreditCard>(autofill::test::GetCreditCard()));

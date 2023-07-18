@@ -36,8 +36,7 @@ class MandatoryReauthManagerTest : public testing::Test {
         /*history_service=*/nullptr,
         /*sync_service=*/nullptr,
         /*strike_database=*/nullptr,
-        /*image_fetcher=*/nullptr,
-        /*is_off_the_record=*/false);
+        /*image_fetcher=*/nullptr);
     test::SetCreditCardInfo(&server_card_, "Test User", "1111" /* Visa */,
                             test::NextMonth().c_str(), test::NextYear().c_str(),
                             "1");

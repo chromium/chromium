@@ -190,8 +190,7 @@ class CreditCardAccessManagerTest : public testing::Test {
                          /*history_service=*/nullptr,
                          /*sync_service=*/&sync_service_,
                          /*strike_database=*/nullptr,
-                         /*image_fetcher=*/nullptr,
-                         /*is_off_the_record=*/false);
+                         /*image_fetcher=*/nullptr);
     personal_data().SetPrefService(autofill_client_.GetPrefs());
 
     accessor_ = std::make_unique<TestAccessor>();
@@ -2355,7 +2354,7 @@ TEST_F(CreditCardAccessManagerTest, FIDOAuthOptChange_OptOut) {
 }
 
 TEST_F(CreditCardAccessManagerTest, FIDOAuthOptChange_OptOut_OffTheRecord) {
-  personal_data().set_is_off_the_record_for_testing(/*is_off_the_record=*/true);
+  autofill_client_.set_is_off_the_record(true);
   credit_card_access_manager_->FIDOAuthOptChange(/*opt_in=*/false);
   ASSERT_FALSE(fido_authenticator_->IsOptOutCalled());
 }

@@ -80,6 +80,11 @@ namespace autofill {
 // Handles loading and saving Autofill profile information to the web database.
 // This class also stores the profiles loaded from the database for use during
 // Autofill.
+// The `PersonalDataManager` is a `KeyedService`. However, no separate instance
+// exists for incognito mode. In incognito mode the original profile's
+// `PersonalDataManager` is used. It is the responsibility of the consumers of
+// the `PersonalDataManager` to ensure that no data from an incognito session is
+// persisted unintentionally.
 class PersonalDataManager : public KeyedService,
                             public WebDataServiceConsumer,
                             public AutofillWebDataServiceObserverOnUISequence,
@@ -118,9 +123,7 @@ class PersonalDataManager : public KeyedService,
   // |pref_service| must outlive this instance. |sync_service| is either null
   // (sync disabled by CLI) or outlives this object, it may not have started yet
   // but its preferences can already be queried. |image_fetcher| is to fetch the
-  // customized images for autofill data. |is_off_the_record| informs this
-  // instance whether the user is currently operating in an off-the-record
-  // context.
+  // customized images for autofill data.
   void Init(scoped_refptr<AutofillWebDataService> profile_database,
             scoped_refptr<AutofillWebDataService> account_database,
             PrefService* pref_service,
@@ -129,8 +132,7 @@ class PersonalDataManager : public KeyedService,
             history::HistoryService* history_service,
             syncer::SyncService* sync_service,
             StrikeDatabaseBase* strike_database,
-            AutofillImageFetcher* image_fetcher,
-            bool is_off_the_record);
+            AutofillImageFetcher* image_fetcher);
 
   // KeyedService:
   void Shutdown() override;
@@ -249,9 +251,8 @@ class PersonalDataManager : public KeyedService,
   // `iban` if the add is successful, or an empty string otherwise.
   // Below conditions should be met before adding `iban` to the database:
   // 1) IBAN saving must be enabled.
-  // 2) `is_off_the_record_` is false.
-  // 3) No IBAN exists in `local_ibans_` which has the same guid as`iban`.
-  // 4) Local database is available.
+  // 2) No IBAN exists in `local_ibans_` which has the same guid as`iban`.
+  // 3) Local database is available.
   virtual std::string AddIBAN(const IBAN& iban);
 
   // Updates `iban` which already exists in the web database. This can only
@@ -558,9 +559,6 @@ class PersonalDataManager : public KeyedService,
   // Returns whether sync's integration with payments is on.
   virtual bool IsAutofillWalletImportEnabled() const;
 
-  // Returns true if the PDM is in the off-the-record mode.
-  bool IsOffTheRecord() { return is_off_the_record_; }
-
   // Partitions `new_profiles` by their sources and sets
   // `synced_local_profiles_` and `account_profiles_` to the corresponding
   // profiles. Updates the web database by adding, updating and removing
@@ -650,9 +648,6 @@ class PersonalDataManager : public KeyedService,
   }
   bool auto_accept_address_imports_for_testing() {
     return auto_accept_address_imports_for_testing_;
-  }
-  void set_is_off_the_record_for_testing(bool is_off_the_record) {
-    is_off_the_record_ = is_off_the_record;
   }
 
  protected:
@@ -1032,10 +1027,6 @@ class PersonalDataManager : public KeyedService,
 
   // The image fetcher to fetch customized images for Autofill data.
   raw_ptr<AutofillImageFetcher> image_fetcher_ = nullptr;
-
-  // Whether the user is currently operating in an off-the-record context.
-  // Default value is false.
-  bool is_off_the_record_ = false;
 
   // Whether we have already logged the stored profile, credit card, IBAN, offer
   // and virtual card usage metrics this session.

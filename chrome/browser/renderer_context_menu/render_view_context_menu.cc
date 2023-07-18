@@ -790,8 +790,7 @@ RenderViewContextMenu::RenderViewContextMenu(
       accessibility_labels_submenu_model_(this),
       embedder_web_contents_(GetWebContentsToUse(&render_frame_host)),
       autofill_context_menu_manager_(
-          autofill::PersonalDataManagerFactory::GetForProfile(
-              GetProfile()->GetOriginalProfile()),
+          autofill::PersonalDataManagerFactory::GetForProfile(GetProfile()),
           this,
           &menu_model_,
           GetBrowser(),

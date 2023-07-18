@@ -365,8 +365,7 @@ void PersonalDataManager::Init(
     history::HistoryService* history_service,
     syncer::SyncService* sync_service,
     StrikeDatabaseBase* strike_database,
-    AutofillImageFetcher* image_fetcher,
-    bool is_off_the_record) {
+    AutofillImageFetcher* image_fetcher) {
   database_helper_->Init(profile_database, account_database);
 
   SetPrefService(pref_service);
@@ -392,15 +391,11 @@ void PersonalDataManager::Init(
 
   image_fetcher_ = image_fetcher;
 
-  is_off_the_record_ = is_off_the_record;
-
-  if (!is_off_the_record_) {
-    AutofillMetrics::LogIsAutofillEnabledAtStartup(IsAutofillEnabled());
-    AutofillMetrics::LogIsAutofillProfileEnabledAtStartup(
-        IsAutofillProfileEnabled());
-    AutofillMetrics::LogIsAutofillCreditCardEnabledAtStartup(
-        IsAutofillCreditCardEnabled());
-  }
+  AutofillMetrics::LogIsAutofillEnabledAtStartup(IsAutofillEnabled());
+  AutofillMetrics::LogIsAutofillProfileEnabledAtStartup(
+      IsAutofillProfileEnabled());
+  AutofillMetrics::LogIsAutofillCreditCardEnabledAtStartup(
+      IsAutofillCreditCardEnabled());
 
   if (strike_database) {
     profile_migration_strike_database_ =
@@ -417,13 +412,9 @@ void PersonalDataManager::Init(
     return;
   }
 
-  // No profile change callbacks are expected in the Incognito mode, this check ensures
-  // that the origin profile (which is actually used) change callback is not overridden.
-  if (!is_off_the_record) {
-    database_helper_->GetLocalDatabase()->SetAutofillProfileChangedCallback(
-        base::BindRepeating(&PersonalDataManager::OnAutofillProfileChanged,
-                            weak_factory_.GetWeakPtr()));
-  }
+  database_helper_->GetLocalDatabase()->SetAutofillProfileChangedCallback(
+      base::BindRepeating(&PersonalDataManager::OnAutofillProfileChanged,
+                          weak_factory_.GetWeakPtr()));
 
   Refresh();
 
@@ -432,7 +423,7 @@ void PersonalDataManager::Init(
 
   // Potentially import profiles for testing. `Init()` is called whenever the
   // corresponding Chrome profile is created. This is either during start-up or
-  // when the Chrome profile is changed (including incognito mode).
+  // when the Chrome profile is changed.
   MaybeImportDataForManualTesting(weak_factory_.GetWeakPtr());
 }
 
@@ -753,9 +744,6 @@ void PersonalDataManager::MarkObserversInsufficientFormDataForImport() {
 void PersonalDataManager::RecordUseOf(
     absl::variant<const AutofillProfile*, const CreditCard*>
         profile_or_credit_card) {
-  if (is_off_the_record_)
-    return;
-
   if (absl::holds_alternative<const CreditCard*>(profile_or_credit_card)) {
     CreditCard* credit_card = GetCreditCardByGUID(
         absl::get<const CreditCard*>(profile_or_credit_card)->guid());
@@ -808,8 +796,9 @@ void PersonalDataManager::RecordUseOf(
 
 void PersonalDataManager::AddUpiId(const std::string& upi_id) {
   DCHECK(!upi_id.empty());
-  if (is_off_the_record_ || !database_helper_->GetLocalDatabase())
+  if (!database_helper_->GetLocalDatabase()) {
     return;
+  }
 
   // Don't add a duplicate.
   if (base::Contains(upi_ids_, upi_id))
@@ -829,9 +818,6 @@ void PersonalDataManager::AddProfile(const AutofillProfile& profile) {
   if (!IsAutofillProfileEnabled())
     return;
 
-  if (is_off_the_record_)
-    return;
-
   if (!database_helper_->GetLocalDatabase())
     return;
 
@@ -839,9 +825,6 @@ void PersonalDataManager::AddProfile(const AutofillProfile& profile) {
 }
 
 void PersonalDataManager::UpdateProfile(const AutofillProfile& profile) {
-  if (is_off_the_record_)
-    return;
-
   if (!database_helper_->GetLocalDatabase())
     return;
 
@@ -929,9 +912,7 @@ std::string PersonalDataManager::AddIBAN(const IBAN& iban) {
   // IBANs from the settings page using this pref.
   SetAutofillHasSeenIban();
 
-  // Early exit if `is_off_the_record_` is true, or an IBAN which has the same
-  // guid exists in `local_ibans_`, or fail to get local database.
-  if (is_off_the_record_ || FindByGUID(local_ibans_, iban.guid()) ||
+  if (FindByGUID(local_ibans_, iban.guid()) ||
       !database_helper_->GetLocalDatabase()) {
     return std::string();
   }
@@ -956,9 +937,6 @@ std::string PersonalDataManager::AddIBAN(const IBAN& iban) {
 }
 
 std::string PersonalDataManager::UpdateIBAN(const IBAN& iban) {
-  if (is_off_the_record_)
-    return std::string();
-
   if (!database_helper_->GetLocalDatabase())
     return std::string();
 
@@ -972,9 +950,6 @@ std::string PersonalDataManager::UpdateIBAN(const IBAN& iban) {
 
 void PersonalDataManager::AddCreditCard(const CreditCard& credit_card) {
   if (!IsAutofillCreditCardEnabled())
-    return;
-
-  if (is_off_the_record_)
     return;
 
   if (credit_card.IsEmpty(app_locale_))
@@ -1013,9 +988,6 @@ void PersonalDataManager::DeleteLocalCreditCards(
 
 void PersonalDataManager::UpdateCreditCard(const CreditCard& credit_card) {
   DCHECK_EQ(CreditCard::LOCAL_CARD, credit_card.record_type());
-  if (is_off_the_record_)
-    return;
-
   CreditCard* existing_credit_card = GetCreditCardByGUID(credit_card.guid());
   if (!existing_credit_card)
     return;
@@ -1047,10 +1019,6 @@ void PersonalDataManager::AddFullServerCreditCard(
   DCHECK_EQ(CreditCard::FULL_SERVER_CARD, credit_card.record_type());
   DCHECK(!credit_card.IsEmpty(app_locale_));
   DCHECK(!credit_card.server_id().empty());
-
-  if (is_off_the_record_)
-    return;
-
   DCHECK(database_helper_->GetServerDatabase())
       << "Adding server card without server storage.";
 
@@ -1070,8 +1038,9 @@ void PersonalDataManager::UpdateServerCreditCard(
     const CreditCard& credit_card) {
   DCHECK_NE(CreditCard::LOCAL_CARD, credit_card.record_type());
 
-  if (is_off_the_record_ || !database_helper_->GetServerDatabase())
+  if (!database_helper_->GetServerDatabase()) {
     return;
+  }
 
   // Look up by server id, not GUID.
   const CreditCard* existing_credit_card = nullptr;
@@ -1099,9 +1068,6 @@ void PersonalDataManager::UpdateServerCreditCard(
 
 void PersonalDataManager::UpdateServerCardsMetadata(
     const std::vector<CreditCard>& credit_cards) {
-  if (is_off_the_record_)
-    return;
-
   DCHECK(database_helper_->GetServerDatabase())
       << "Updating server card metadata without server storage.";
 
@@ -1239,9 +1205,6 @@ void PersonalDataManager::
 }
 
 void PersonalDataManager::RemoveByGUID(const std::string& guid) {
-  if (is_off_the_record_)
-    return;
-
   if (!database_helper_->GetLocalDatabase())
     return;
 
@@ -1850,8 +1813,9 @@ const CreditCard* PersonalDataManager::GetServerCardForLocalCard(
 
 void PersonalDataManager::SetProfilesForAllSources(
     std::vector<AutofillProfile>* new_profiles) {
-  if (is_off_the_record_ || !database_helper_->GetLocalDatabase())
+  if (!database_helper_->GetLocalDatabase()) {
     return;
+  }
 
   ClearOnGoingProfileChanges();
 
@@ -2072,9 +2036,6 @@ PersonalDataManager::GetProfileUpdateStrikeDatabase() const {
 
 void PersonalDataManager::SetCreditCards(
     std::vector<CreditCard>* credit_cards) {
-  if (is_off_the_record_)
-    return;
-
   // Remove empty credit cards from input.
   base::EraseIf(*credit_cards, [this](const CreditCard& credit_card) {
     return credit_card.IsEmpty(app_locale_);
@@ -2253,9 +2214,6 @@ void PersonalDataManager::LoadPaymentsCustomerData() {
 
 std::string PersonalDataManager::SaveImportedProfile(
     const AutofillProfile& imported_profile) {
-  if (is_off_the_record_)
-    return std::string();
-
   std::vector<AutofillProfile> profiles;
   std::string guid = AutofillProfileComparator::MergeProfile(
       imported_profile, GetProfileStorage(imported_profile.source()),
@@ -2274,17 +2232,11 @@ std::string PersonalDataManager::SaveImportedProfile(
 std::string PersonalDataManager::OnAcceptedLocalCreditCardSave(
     const CreditCard& imported_card) {
   DCHECK(!imported_card.number().empty());
-  if (is_off_the_record_)
-    return std::string();
-
   return SaveImportedCreditCard(imported_card);
 }
 
 std::string PersonalDataManager::OnAcceptedLocalIBANSave(IBAN& imported_iban) {
   DCHECK(!imported_iban.value().empty());
-  if (is_off_the_record_)
-    return std::string();
-
   return SaveImportedIBAN(imported_iban);
 }
 

@@ -27,10 +27,6 @@ std::string IBANSaveManager::GetPartialIbanHashString(
 bool IBANSaveManager::AttemptToOfferIBANLocalSave(
     const IBAN& iban_import_candidate) {
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  if (client_->GetPersonalDataManager()->IsOffTheRecord()) {
-    return false;
-  }
-
   iban_save_candidate_ = iban_import_candidate;
   // If the max strikes limit has been reached, do not show the IBAN save
   // prompt.

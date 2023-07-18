@@ -78,8 +78,7 @@ class PersonalDataManagerTestBase {
   void SetUpTest();
   void TearDownTest();
 
-  void ResetPersonalDataManager(bool is_incognito,
-                                bool use_sync_transport_mode,
+  void ResetPersonalDataManager(bool use_sync_transport_mode,
                                 PersonalDataManager* personal_data);
 
   [[nodiscard]] bool TurnOnSyncFeature(PersonalDataManager* personal_data);

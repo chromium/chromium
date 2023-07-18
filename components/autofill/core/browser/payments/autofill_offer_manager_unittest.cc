@@ -60,8 +60,7 @@ class AutofillOfferManagerTest : public testing::Test {
                                 /*history_service=*/nullptr,
                                 /*sync_service=*/&sync_service_,
                                 /*strike_database=*/nullptr,
-                                /*image_fetcher=*/nullptr,
-                                /*is_off_the_record=*/false);
+                                /*image_fetcher=*/nullptr);
     personal_data_manager_.SetPrefService(autofill_client_.GetPrefs());
     autofill_offer_manager_ = std::make_unique<AutofillOfferManager>(
         &personal_data_manager_, &coupon_service_delegate_);

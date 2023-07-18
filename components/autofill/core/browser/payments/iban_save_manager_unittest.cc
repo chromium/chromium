@@ -38,8 +38,7 @@ class IBANSaveManagerTest : public testing::Test {
                          /*history_service=*/nullptr,
                          /*sync_service=*/nullptr,
                          /*strike_database=*/nullptr,
-                         /*image_fetcher=*/nullptr,
-                         /*is_off_the_record=*/false);
+                         /*image_fetcher=*/nullptr);
     iban_save_manager_ = std::make_unique<IBANSaveManager>(&autofill_client_);
   }
 
@@ -62,13 +61,6 @@ class IBANSaveManagerTest : public testing::Test {
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 TEST_F(IBANSaveManagerTest, AttemptToOfferIBANLocalSave_ValidIBAN) {
   EXPECT_TRUE(GetIBANSaveManager().AttemptToOfferIBANLocalSave(
-      autofill::test::GetIBAN()));
-}
-
-TEST_F(IBANSaveManagerTest, AttemptToOfferIBANLocalSave_IsOffTheRecord) {
-  personal_data().set_is_off_the_record_for_testing(true);
-
-  EXPECT_FALSE(GetIBANSaveManager().AttemptToOfferIBANLocalSave(
       autofill::test::GetIBAN()));
 }
 

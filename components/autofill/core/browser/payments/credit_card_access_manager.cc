@@ -340,7 +340,7 @@ void CreditCardAccessManager::FIDOAuthOptChange(bool opt_in) {
     // to add the maximum amount of strikes to the FIDO auth strike database, as
     // strike databases are not present in incognito mode and should not be
     // used.
-    if (personal_data_manager_->IsOffTheRecord()) {
+    if (client_->IsOffTheRecord()) {
       return;
     }
 

@@ -72,8 +72,6 @@ constexpr char kPrimaryAccountEmail[] = "syncuser@example.com";
 constexpr char16_t kPrimaryAccountEmail16[] = u"syncuser@example.com";
 constexpr char kAddressEntryIcon[] = "accountIcon";
 
-enum UserMode { USER_MODE_NORMAL, USER_MODE_INCOGNITO };
-
 const base::Time kArbitraryTime = base::Time::FromDoubleT(25);
 const base::Time kSomeLaterTime = base::Time::FromDoubleT(1000);
 const base::Time kMuchLaterTime = base::Time::FromDoubleT(5000);
@@ -141,14 +139,12 @@ class PersonalDataManagerHelper : public PersonalDataManagerTestBase {
     personal_data_.reset();
   }
 
-  void ResetPersonalDataManager(UserMode user_mode,
-                                bool use_sync_transport_mode = false) {
+  void ResetPersonalDataManager(bool use_sync_transport_mode = false) {
     if (personal_data_)
       personal_data_->Shutdown();
     personal_data_ = std::make_unique<PersonalDataManager>("EN", "US");
     PersonalDataManagerTestBase::ResetPersonalDataManager(
-        user_mode == USER_MODE_INCOGNITO, use_sync_transport_mode,
-        personal_data_.get());
+        use_sync_transport_mode, personal_data_.get());
   }
 
   void ResetProfiles() {
@@ -362,7 +358,7 @@ class PersonalDataManagerTest : public PersonalDataManagerHelper,
  protected:
   void SetUp() override {
     SetUpTest();
-    ResetPersonalDataManager(USER_MODE_NORMAL);
+    ResetPersonalDataManager();
   }
   void TearDown() override { TearDownTest(); }
 };
@@ -373,8 +369,8 @@ class PersonalDataManagerSyncTransportModeTest
  protected:
   void SetUp() override {
     SetUpTest();
-    ResetPersonalDataManager(USER_MODE_NORMAL,
-                             /*use_sync_transport_mode=*/true);
+    ResetPersonalDataManager(
+        /*use_sync_transport_mode=*/true);
   }
   void TearDown() override { TearDownTest(); }
 };
@@ -384,7 +380,7 @@ class PersonalDataManagerMockTest : public PersonalDataManagerTestBase,
  protected:
   void SetUp() override {
     SetUpTest();
-    ResetPersonalDataManager(USER_MODE_NORMAL);
+    ResetPersonalDataManager();
     personal_data_->pref_service_->SetInteger(
         prefs::kAutofillLastVersionDeduped, 0);
   }
@@ -396,14 +392,13 @@ class PersonalDataManagerMockTest : public PersonalDataManagerTestBase,
     TearDownTest();
   }
 
-  void ResetPersonalDataManager(UserMode user_mode) {
+  void ResetPersonalDataManager() {
     if (personal_data_)
       personal_data_->Shutdown();
     personal_data_ =
         std::make_unique<PersonalDataManagerMock>("en", std::string());
     PersonalDataManagerTestBase::ResetPersonalDataManager(
-        user_mode == USER_MODE_INCOGNITO, /*use_sync_transport_mode=*/true,
-        personal_data_.get());
+        /*use_sync_transport_mode=*/true, personal_data_.get());
   }
 
   bool TurnOnSyncFeature() {
@@ -464,7 +459,7 @@ TEST_F(PersonalDataManagerTest, AddProfile) {
   profile0.SetRawInfo(EMAIL_ADDRESS, u"j@s.com");
   AddProfileToPersonalDataManager(profile0);
   // Reload the database.
-  ResetPersonalDataManager(USER_MODE_NORMAL);
+  ResetPersonalDataManager();
   // Verify the addition.
   const std::vector<AutofillProfile*>& results1 = personal_data_->GetProfiles();
   ASSERT_EQ(1U, results1.size());
@@ -477,7 +472,7 @@ TEST_F(PersonalDataManagerTest, AddProfile) {
   AddProfileToPersonalDataManager(profile0a);
 
   // Reload the database.
-  ResetPersonalDataManager(USER_MODE_NORMAL);
+  ResetPersonalDataManager();
 
   // Verify the non-addition.
   const std::vector<AutofillProfile*>& results2 = personal_data_->GetProfiles();
@@ -495,7 +490,7 @@ TEST_F(PersonalDataManagerTest, AddProfile) {
   AddProfileToPersonalDataManager(profile1);
 
   // Reload the database.
-  ResetPersonalDataManager(USER_MODE_NORMAL);
+  ResetPersonalDataManager();
 
   // Verify the addition.
   std::vector<AutofillProfile*> profiles;
@@ -520,7 +515,7 @@ TEST_F(PersonalDataManagerTest, GetProfiles) {
   AddProfileToPersonalDataManager(kAccountProfile);
   AddProfileToPersonalDataManager(kAccountProfile2);
   AddProfileToPersonalDataManager(kLocalProfile);
-  ResetPersonalDataManager(USER_MODE_NORMAL);
+  ResetPersonalDataManager();
 
   EXPECT_THAT(
       personal_data_->GetProfiles(),
@@ -551,7 +546,7 @@ TEST_F(PersonalDataManagerTest, GetProfiles_Order) {
   AddProfileToPersonalDataManager(profile1);
   AddProfileToPersonalDataManager(profile2);
   AddProfileToPersonalDataManager(profile3);
-  ResetPersonalDataManager(USER_MODE_NORMAL);
+  ResetPersonalDataManager();
 
   // kNone doesn't guarantee any order.
   EXPECT_THAT(
@@ -713,7 +708,7 @@ TEST_F(PersonalDataManagerTest, AddProfile_BasicInformation) {
   AddProfileToPersonalDataManager(profile);
 
   // Reload the database.
-  ResetPersonalDataManager(USER_MODE_NORMAL);
+  ResetPersonalDataManager();
 
   // Verify the addition.
   const std::vector<AutofillProfile*>& results = personal_data_->GetProfiles();
@@ -917,7 +912,7 @@ TEST_F(PersonalDataManagerTest, AddUpdateRemoveProfiles) {
   // Reset the PersonalDataManager.  This tests that the personal data was saved
   // to the web database, and that we can load the profiles from the web
   // database.
-  ResetPersonalDataManager(USER_MODE_NORMAL);
+  ResetPersonalDataManager();
 
   // Verify that we've loaded the profiles from the web database.
   ExpectSameElements(profiles, personal_data_->GetProfiles());
@@ -1102,7 +1097,7 @@ TEST_F(PersonalDataManagerTest, AddUpdateRemoveIBANs) {
 
   // Reset the PersonalDataManager. This tests that the personal data was saved
   // to the web database, and that we can load the IBANs from the web database.
-  ResetPersonalDataManager(USER_MODE_NORMAL);
+  ResetPersonalDataManager();
 
   // Verify that we've reloaded the IBANs from the web database.
   ibans.clear();
@@ -1168,35 +1163,8 @@ TEST_F(PersonalDataManagerTest, OnAcceptedLocalIBANSave) {
   // Reset the PersonalDataManager. This tests that the IBANs are persisted
   // in the local web database even if the browser is re-loaded, ensuring that
   // the user can load the IBANs from the local web database on browser startup.
-  ResetPersonalDataManager(USER_MODE_NORMAL);
+  ResetPersonalDataManager();
   ExpectSameElements(ibans, personal_data_->GetLocalIBANs());
-}
-
-// Ensure that new IBAN cannot be updated nor saved via
-// `OnAcceptedLocalIBANSave()` if `is_off_the_record_` is true.
-TEST_F(PersonalDataManagerTest, OnAcceptedLocalIBANSave_IsOffTheRecordTrue) {
-  personal_data_->set_is_off_the_record_for_testing(true);
-  prefs::SetAutofillIBANEnabled(prefs_.get(), true);
-
-  // Start with a new IBAN and add the IBAN to the database.
-  personal_data_->AddIBAN(autofill::test::GetIBAN());
-
-  // Verify the new IBAN is not saved.
-  EXPECT_TRUE(personal_data_->GetLocalIBANs().empty());
-
-  // Creates a new IBAN and call `OnAcceptedLocalIBANSave()` and verify that
-  // the new IBAN is not saved.
-  IBAN iban1 = autofill::test::GetIBAN2();
-  personal_data_->OnAcceptedLocalIBANSave(iban1);
-
-  EXPECT_TRUE(personal_data_->GetLocalIBANs().empty());
-
-  // Updates the nickname for `iban1` and call `OnAcceptedLocalIBANSave()`,
-  // verify that nothing happens.
-  iban1.set_nickname(u"Nickname 0 updated");
-  personal_data_->OnAcceptedLocalIBANSave(iban1);
-
-  EXPECT_TRUE(personal_data_->GetLocalIBANs().empty());
 }
 
 TEST_F(PersonalDataManagerTest, AddUpdateRemoveCreditCards) {
@@ -1247,7 +1215,7 @@ TEST_F(PersonalDataManagerTest, AddUpdateRemoveCreditCards) {
   // Reset the PersonalDataManager.  This tests that the personal data was saved
   // to the web database, and that we can load the credit cards from the web
   // database.
-  ResetPersonalDataManager(USER_MODE_NORMAL);
+  ResetPersonalDataManager();
 
   // Verify that we've loaded the credit cards from the web database.
   cards.clear();
@@ -1318,7 +1286,7 @@ TEST_F(PersonalDataManagerTest, AddCreditCard_BasicInformation) {
   personal_data_->AddCreditCard(credit_card);
 
   // Reload the database.
-  ResetPersonalDataManager(USER_MODE_NORMAL);
+  ResetPersonalDataManager();
 
   // Verify the addition.
   const std::vector<CreditCard*>& results = personal_data_->GetCreditCards();
@@ -1645,7 +1613,7 @@ TEST_F(PersonalDataManagerTest, SetUniqueCreditCardLabels) {
   // Reset the PersonalDataManager.  This tests that the personal data was saved
   // to the web database, and that we can load the credit cards from the web
   // database.
-  ResetPersonalDataManager(USER_MODE_NORMAL);
+  ResetPersonalDataManager();
 
   std::vector<CreditCard*> cards;
   cards.push_back(&credit_card0);
@@ -1668,7 +1636,7 @@ TEST_F(PersonalDataManagerTest, SetEmptyProfile) {
   // Reset the PersonalDataManager.  This tests that the personal data was saved
   // to the web database, and that we can load the profiles from the web
   // database.
-  ResetPersonalDataManager(USER_MODE_NORMAL);
+  ResetPersonalDataManager();
 
   // Verify that we've loaded the profiles from the web database.
   ASSERT_EQ(0U, personal_data_->GetProfiles().size());
@@ -1687,7 +1655,7 @@ TEST_F(PersonalDataManagerTest, SetEmptyCreditCard) {
   // Reset the PersonalDataManager.  This tests that the personal data was saved
   // to the web database, and that we can load the credit cards from the web
   // database.
-  ResetPersonalDataManager(USER_MODE_NORMAL);
+  ResetPersonalDataManager();
 
   // Verify that we've loaded the credit cards from the web database.
   ASSERT_EQ(0U, personal_data_->GetCreditCards().size());
@@ -1878,81 +1846,6 @@ TEST_F(PersonalDataManagerTest, GetNonEmptyTypes) {
               testing::UnorderedElementsAreArray(expected_types));
 }
 
-TEST_F(PersonalDataManagerTest, IncognitoReadOnly) {
-  ASSERT_TRUE(personal_data_->GetProfiles().empty());
-  ASSERT_TRUE(personal_data_->GetCreditCards().empty());
-
-  AutofillProfile steve_jobs;
-  test::SetProfileInfo(&steve_jobs, "Steven", "Paul", "Jobs", "sjobs@apple.com",
-                       "Apple Computer, Inc.", "1 Infinite Loop", "",
-                       "Cupertino", "CA", "95014", "US", "(800) 275-2273");
-  AddProfileToPersonalDataManager(steve_jobs);
-
-  CreditCard bill_gates(base::Uuid::GenerateRandomV4().AsLowercaseString(),
-                        test::kEmptyOrigin);
-  test::SetCreditCardInfo(&bill_gates, "William H. Gates", "5555555555554444",
-                          "1", "2020", "1");
-  personal_data_->AddCreditCard(bill_gates);
-
-  // The personal data manager should be able to read existing profiles in an
-  // off-the-record context.
-  ResetPersonalDataManager(USER_MODE_INCOGNITO);
-  ASSERT_EQ(1U, personal_data_->GetProfiles().size());
-  ASSERT_EQ(1U, personal_data_->GetCreditCards().size());
-
-  // No adds, saves, or updates should take effect.
-  EXPECT_CALL(personal_data_observer_, OnPersonalDataChanged()).Times(0);
-
-  // Add profiles or credit card shouldn't work.
-  personal_data_->AddProfile(test::GetFullProfile());
-
-  CreditCard larry_page(base::Uuid::GenerateRandomV4().AsLowercaseString(),
-                        test::kEmptyOrigin);
-  test::SetCreditCardInfo(&larry_page, "Lawrence Page", "4111111111111111",
-                          "10", "2025", "1");
-  personal_data_->AddCreditCard(larry_page);
-
-  ResetPersonalDataManager(USER_MODE_INCOGNITO);
-  EXPECT_EQ(1U, personal_data_->GetProfiles().size());
-  EXPECT_EQ(1U, personal_data_->GetCreditCards().size());
-
-  // Saving or creating profiles from imported profiles shouldn't work.
-  steve_jobs.SetRawInfo(NAME_FIRST, u"Steve");
-  personal_data_->SaveImportedProfile(steve_jobs);
-
-  bill_gates.SetRawInfo(CREDIT_CARD_NAME_FULL, u"Bill Gates");
-  personal_data_->OnAcceptedLocalCreditCardSave(bill_gates);
-
-  ResetPersonalDataManager(USER_MODE_INCOGNITO);
-  EXPECT_EQ(u"Steven",
-            personal_data_->GetProfiles()[0]->GetRawInfo(NAME_FIRST));
-  EXPECT_EQ(
-      u"William H. Gates",
-      personal_data_->GetCreditCards()[0]->GetRawInfo(CREDIT_CARD_NAME_FULL));
-
-  // Updating existing profiles shouldn't work.
-  steve_jobs.SetRawInfo(NAME_FIRST, u"Steve");
-  personal_data_->UpdateProfile(steve_jobs);
-
-  bill_gates.SetRawInfo(CREDIT_CARD_NAME_FULL, u"Bill Gates");
-  personal_data_->UpdateCreditCard(bill_gates);
-
-  ResetPersonalDataManager(USER_MODE_INCOGNITO);
-  EXPECT_EQ(u"Steven",
-            personal_data_->GetProfiles()[0]->GetRawInfo(NAME_FIRST));
-  EXPECT_EQ(
-      u"William H. Gates",
-      personal_data_->GetCreditCards()[0]->GetRawInfo(CREDIT_CARD_NAME_FULL));
-
-  // Removing shouldn't work.
-  personal_data_->RemoveByGUID(steve_jobs.guid());
-  personal_data_->RemoveByGUID(bill_gates.guid());
-
-  ResetPersonalDataManager(USER_MODE_INCOGNITO);
-  EXPECT_EQ(1U, personal_data_->GetProfiles().size());
-  EXPECT_EQ(1U, personal_data_->GetCreditCards().size());
-}
-
 // Tests that GetAutofillOffers returns all available offers.
 TEST_F(PersonalDataManagerTest, GetAutofillOffers) {
   // Add two card-linked offers and one promo code offer.
@@ -2103,7 +1996,7 @@ TEST_F(PersonalDataManagerTest, DefaultCountryCodeComesFromProfiles) {
   AutofillProfile canadian_profile = test::GetFullCanadianProfile();
   ASSERT_EQ(canadian_profile.GetRawInfo(ADDRESS_HOME_COUNTRY), u"CA");
   AddProfileToPersonalDataManager(canadian_profile);
-  ResetPersonalDataManager(USER_MODE_NORMAL);
+  ResetPersonalDataManager();
   EXPECT_EQ("CA", personal_data_->GetDefaultCountryCodeForNewAddress());
 
   // Multiple profiles cast votes.
@@ -2113,7 +2006,7 @@ TEST_F(PersonalDataManagerTest, DefaultCountryCodeComesFromProfiles) {
   ASSERT_EQ(us_profile2.GetRawInfo(ADDRESS_HOME_COUNTRY), u"US");
   AddProfileToPersonalDataManager(us_profile1);
   AddProfileToPersonalDataManager(us_profile2);
-  ResetPersonalDataManager(USER_MODE_NORMAL);
+  ResetPersonalDataManager();
   EXPECT_EQ("US", personal_data_->GetDefaultCountryCodeForNewAddress());
 }
 
@@ -2173,7 +2066,7 @@ TEST_F(PersonalDataManagerTest, GetProfileSuggestions) {
                        "123 Zoo St.\nSecond Line\nThird line", "unit 5",
                        "Hollywood", "CA", "91601", "US", "12345678910");
   AddProfileToPersonalDataManager(profile);
-  ResetPersonalDataManager(USER_MODE_NORMAL);
+  ResetPersonalDataManager();
 
   std::vector<Suggestion> suggestions = personal_data_->GetProfileSuggestions(
       AutofillType(ADDRESS_HOME_STREET_ADDRESS), u"123", false, {});
@@ -2212,7 +2105,7 @@ TEST_F(PersonalDataManagerTest,
                        "123 Zoo St.\nSecond Line\nThird line", "unit 5",
                        "Hollywood", "CA", "91601", "US", "12345678910");
   AddProfileToPersonalDataManager(profile);
-  ResetPersonalDataManager(USER_MODE_NORMAL);
+  ResetPersonalDataManager();
 
   std::vector<Suggestion> suggestions = personal_data_->GetProfileSuggestions(
       AutofillType(PHONE_HOME_WHOLE_NUMBER), u"234", false, {});
@@ -2233,7 +2126,7 @@ TEST_F(PersonalDataManagerTest,
                        "123 Zoo St.\nSecond Line\nThird line", "unit 5",
                        "Hollywood", "CA", "91601", "US", "12345678910");
   AddProfileToPersonalDataManager(profile);
-  ResetPersonalDataManager(USER_MODE_NORMAL);
+  ResetPersonalDataManager();
 
   std::vector<Suggestion> suggestions = personal_data_->GetProfileSuggestions(
       AutofillType(PHONE_HOME_WHOLE_NUMBER), u"234", false, {});
@@ -2270,7 +2163,7 @@ TEST_F(PersonalDataManagerTest, GetProfileSuggestions_HideSubsets) {
   AddProfileToPersonalDataManager(profile1);
   AddProfileToPersonalDataManager(profile2);
   AddProfileToPersonalDataManager(profile3);
-  ResetPersonalDataManager(USER_MODE_NORMAL);
+  ResetPersonalDataManager();
 
   // Simulate a form with street address, city and state.
   ServerFieldTypeSet types = {ADDRESS_HOME_CITY, ADDRESS_HOME_STATE};
@@ -2299,7 +2192,7 @@ TEST_F(PersonalDataManagerTest, GetProfileSuggestions_SuggestionsLimit) {
     AddProfileToPersonalDataManager(profile);
     profiles.push_back(profile);
   }
-  ResetPersonalDataManager(USER_MODE_NORMAL);
+  ResetPersonalDataManager();
 
   std::vector<Suggestion> suggestions = personal_data_->GetProfileSuggestions(
       AutofillType(NAME_FIRST), u"Ma", false, {});
@@ -2343,7 +2236,7 @@ TEST_F(PersonalDataManagerTest, GetProfileSuggestions_ProfilesLimit) {
   profile.set_use_date(AutofillClock::Now() - base::Days(7));
   AddProfileToPersonalDataManager(profile);
 
-  ResetPersonalDataManager(USER_MODE_NORMAL);
+  ResetPersonalDataManager();
 
   std::vector<Suggestion> suggestions = personal_data_->GetProfileSuggestions(
       AutofillType(NAME_FIRST), u"Ma", false, {});
@@ -2386,7 +2279,7 @@ TEST_F(PersonalDataManagerTest, GetProfileSuggestions_Ranking) {
   profile2.set_use_count(300);
   AddProfileToPersonalDataManager(profile2);
 
-  ResetPersonalDataManager(USER_MODE_NORMAL);
+  ResetPersonalDataManager();
   std::vector<Suggestion> suggestions = personal_data_->GetProfileSuggestions(
       AutofillType(NAME_FIRST), u"Ma", false, {});
   ASSERT_EQ(3U, suggestions.size());
@@ -2419,7 +2312,7 @@ TEST_F(PersonalDataManagerTest, GetProfileSuggestions_NumberOfSuggestions) {
                        "Hollywood", "CA", "91601", "US", "12345678910");
   AddProfileToPersonalDataManager(profile3);
 
-  ResetPersonalDataManager(USER_MODE_NORMAL);
+  ResetPersonalDataManager();
 
   // Verify that all the profiles are suggested.
   std::vector<Suggestion> suggestions = personal_data_->GetProfileSuggestions(
@@ -2448,7 +2341,7 @@ TEST_F(PersonalDataManagerTest,
   profile2.set_use_date(AutofillClock::Now() - base::Days(20));
   AddProfileToPersonalDataManager(profile2);
 
-  ResetPersonalDataManager(USER_MODE_NORMAL);
+  ResetPersonalDataManager();
 
   // Query with empty string only returns profile2.
   {
@@ -2572,7 +2465,7 @@ TEST_F(PersonalDataManagerTest,
   // Disable Profile autofill.
   prefs::SetAutofillProfileEnabled(personal_data_->pref_service_, false);
   // Reload the database.
-  ResetPersonalDataManager(USER_MODE_NORMAL);
+  ResetPersonalDataManager();
 
   // Expect no profile values or suggestions were loaded.
   EXPECT_EQ(0U, personal_data_->GetProfilesToSuggest().size());
@@ -3258,7 +3151,7 @@ TEST_F(PersonalDataManagerTest,
   // Disable Credit card autofill.
   prefs::SetAutofillCreditCardEnabled(personal_data_->pref_service_, false);
   // Reload the database.
-  ResetPersonalDataManager(USER_MODE_NORMAL);
+  ResetPersonalDataManager();
 
   // Expect no credit card values or suggestions were loaded.
   EXPECT_EQ(0U, personal_data_->GetCreditCardsToSuggest().size());
@@ -3590,13 +3483,13 @@ TEST_F(PersonalDataManagerTest, ClearAllServerData) {
   PersonalDataProfileTaskWaiter(*personal_data_).Wait();
 
   // The card and profile should be there.
-  ResetPersonalDataManager(USER_MODE_NORMAL);
+  ResetPersonalDataManager();
   EXPECT_FALSE(personal_data_->GetCreditCards().empty());
 
   personal_data_->ClearAllServerData();
 
   // Reload the database, everything should be gone.
-  ResetPersonalDataManager(USER_MODE_NORMAL);
+  ResetPersonalDataManager();
   EXPECT_TRUE(personal_data_->GetCreditCards().empty());
 }
 
@@ -3607,14 +3500,14 @@ TEST_F(PersonalDataManagerTest, ClearAllLocalData) {
   personal_data_->Refresh();
 
   // The card and profile should be there.
-  ResetPersonalDataManager(USER_MODE_NORMAL);
+  ResetPersonalDataManager();
   EXPECT_FALSE(personal_data_->GetCreditCards().empty());
   EXPECT_FALSE(personal_data_->GetProfiles().empty());
 
   personal_data_->ClearAllLocalData();
 
   // Reload the database, everything should be gone.
-  ResetPersonalDataManager(USER_MODE_NORMAL);
+  ResetPersonalDataManager();
   EXPECT_TRUE(personal_data_->GetCreditCards().empty());
   EXPECT_TRUE(personal_data_->GetProfiles().empty());
 }
@@ -3649,7 +3542,7 @@ class SaveImportedProfileTest
 
   void SetUp() override {
     SetUpTest();
-    ResetPersonalDataManager(USER_MODE_NORMAL);
+    ResetPersonalDataManager();
   }
 
   void TearDown() override { TearDownTest(); }
@@ -4797,7 +4690,7 @@ TEST_F(PersonalDataManagerTest, LogStoredCreditCardMetrics) {
 
   // Reload the database, which will log the stored profile counts.
   base::HistogramTester histogram_tester;
-  ResetPersonalDataManager(USER_MODE_NORMAL);
+  ResetPersonalDataManager();
 
   EXPECT_EQ(personal_data_->GetServerCardWithArtImageCount(), 3U);
 
@@ -4962,7 +4855,7 @@ TEST_F(
   ASSERT_EQ(1U, personal_data_->GetCreditCards().size());
 
   // Reload the personal data manager.
-  ResetPersonalDataManager(USER_MODE_NORMAL);
+  ResetPersonalDataManager();
 
   // The credit card should still exist.
   ASSERT_EQ(1U, personal_data_->GetCreditCards().size());

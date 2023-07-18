@@ -799,9 +799,15 @@ void BrowserAutofillManager::OnFormSubmittedImpl(const FormData& form,
   // Always let the value patterns metric upload data.
   LogValuePatternsMetric(form);
 
-  // We will always give Autocomplete a chance to save the data.
+  // Note that `ValidateSubmittedForm()` returns nullptr in incognito mode.
+  // Consequently, no importing and no voting happens in incognito mode.
+  // Moreover, no key metrics are emitted in incognito mode due to this line,
+  // since they are conditioned form submission (see
+  // `FormEventLoggerBase::OnWillSubmitForm()`)
   std::unique_ptr<FormStructure> submitted_form = ValidateSubmittedForm(form);
+  CHECK(!client()->IsOffTheRecord() || !submitted_form);
   if (!submitted_form) {
+    // We always give Autocomplete a chance to save the data.
     single_field_form_fill_router_->OnWillSubmitForm(
         form, submitted_form.get(), client()->IsAutocompleteEnabled());
     return;

@@ -85,7 +85,6 @@ void PersonalDataManagerTestBase::TearDownTest() {
 }
 
 void PersonalDataManagerTestBase::ResetPersonalDataManager(
-    bool is_incognito,
     bool use_sync_transport_mode,
     PersonalDataManager* personal_data) {
   std::string email = use_sync_transport_mode ? kSyncTransportAccountEmail
@@ -118,7 +117,7 @@ void PersonalDataManagerTestBase::ResetPersonalDataManager(
       profile_database_service_, account_database_service_, prefs_.get(),
       prefs_.get(), identity_test_env_.identity_manager(),
       /*history_service=*/nullptr, &sync_service_, strike_database_.get(),
-      /*image_fetcher=*/nullptr, is_incognito);
+      /*image_fetcher=*/nullptr);
 
   personal_data->AddObserver(&personal_data_observer_);
   personal_data->OnStateChanged(&sync_service_);

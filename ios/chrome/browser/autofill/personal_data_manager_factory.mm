@@ -103,8 +103,7 @@ PersonalDataManagerFactory::BuildServiceInstanceFor(
       local_storage, account_storage, chrome_browser_state->GetPrefs(),
       GetApplicationContext()->GetLocalState(),
       IdentityManagerFactory::GetForBrowserState(chrome_browser_state),
-      history_service, sync_service, strike_database, autofill_image_fetcher,
-      chrome_browser_state->IsOffTheRecord());
+      history_service, sync_service, strike_database, autofill_image_fetcher);
 
   return service;
 }

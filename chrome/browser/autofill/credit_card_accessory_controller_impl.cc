@@ -271,8 +271,7 @@ bool CreditCardAccessoryController::AllowedForWebContents(
     Profile* profile =
         Profile::FromBrowserContext(web_contents->GetBrowserContext());
     PersonalDataManager* personal_data_manager =
-        PersonalDataManagerFactory::GetForProfile(
-            profile->GetOriginalProfile());
+        PersonalDataManagerFactory::GetForProfile(profile);
     if (personal_data_manager) {
       std::vector<CreditCard*> cards =
           personal_data_manager->GetCreditCardsToSuggest();

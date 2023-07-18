@@ -54,8 +54,7 @@ AutofillBubbleHandlerImpl::AutofillBubbleHandlerImpl(
     : browser_(browser), toolbar_button_provider_(toolbar_button_provider) {
   if (browser->profile()) {
     personal_data_manager_observation_.Observe(
-        PersonalDataManagerFactory::GetForProfile(
-            browser->profile()->GetOriginalProfile()));
+        PersonalDataManagerFactory::GetForProfile(browser->profile()));
   }
   if (toolbar_button_provider_->GetAvatarToolbarButton()) {
     avatar_toolbar_button_observation_.Observe(
