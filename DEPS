@@ -658,7 +658,7 @@ deps = {
               'version': '-MHcIYwDDRyZ2HMefnWEkV-_R5A8I7HS1jxDfGXoE4MC',
           },
       ],
-      'condition': 'checkout_android and host_os == "linux" and use_lenient_compiler_flags == True',
+      'condition': 'checkout_android and host_os == "linux"',
       'dep_type': 'cipd',
   },
 
