@@ -37,6 +37,7 @@ TEST_F(AndroidMetricsProviderTest, ProvideCurrentSessionData) {
   histogram_tester_.ExpectTotalCount("Android.VersionCode", 1);
   histogram_tester_.ExpectTotalCount("Android.AbiBitnessSupport", 1);
   histogram_tester_.ExpectTotalCount("Android.MultipleUserProfilesState", 1);
+  histogram_tester_.ExpectTotalCount("Android.WebView.PrimaryCpuAbiBitness", 1);
 }
 
 TEST_F(AndroidMetricsProviderTest, ProvidePreviousSessionData) {
@@ -44,15 +45,18 @@ TEST_F(AndroidMetricsProviderTest, ProvidePreviousSessionData) {
   histogram_tester_.ExpectTotalCount("Android.VersionCode", 0);
   histogram_tester_.ExpectTotalCount("Android.AbiBitnessSupport", 1);
   histogram_tester_.ExpectTotalCount("Android.MultipleUserProfilesState", 1);
+  histogram_tester_.ExpectTotalCount("Android.WebView.PrimaryCpuAbiBitness", 0);
 }
 
 TEST_F(AndroidMetricsProviderTest,
        ProvidePreviousSessionDataWithSavedLocalState) {
   metrics::AndroidMetricsHelper::SaveLocalState(&pref_service_, 588700002);
+  pref_service_.SetInteger(prefs::kPrimaryCpuAbiBitnessPref, 1);
   metrics_provider_.ProvidePreviousSessionData(&uma_proto_);
   histogram_tester_.ExpectTotalCount("Android.VersionCode", 1);
   histogram_tester_.ExpectTotalCount("Android.AbiBitnessSupport", 1);
   histogram_tester_.ExpectTotalCount("Android.MultipleUserProfilesState", 1);
+  histogram_tester_.ExpectTotalCount("Android.WebView.PrimaryCpuAbiBitness", 1);
 }
 
 }  // namespace android_webview

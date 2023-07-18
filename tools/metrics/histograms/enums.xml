@@ -87796,6 +87796,12 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="2" label="Price tracking disabled"/>
 </enum>
 
+<enum name="PrimaryCpuAbiBitness">
+  <int value="0" label="neither"/>
+  <int value="1" label="32-bit"/>
+  <int value="2" label="64-bit"/>
+</enum>
+
 <enum name="PrintAttemptOutcome">
   <int value="0" label="Cancelled print button disabled"/>
   <int value="1" label="Cancelled no printers available"/>

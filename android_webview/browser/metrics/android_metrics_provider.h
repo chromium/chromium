@@ -13,6 +13,11 @@
 
 namespace android_webview {
 
+namespace prefs {
+constexpr char kPrimaryCpuAbiBitnessPref[] =
+    "android_system_info.primary_cpu_abi_bitness";
+}
+
 // AndroidMetricsProvider is responsible for logging information related to
 // system-level information about the Android device as well as the process.
 class AndroidMetricsProvider : public metrics::MetricsProvider {
@@ -35,6 +40,7 @@ class AndroidMetricsProvider : public metrics::MetricsProvider {
 
  private:
   raw_ptr<PrefService> local_state_;
+  bool local_state_saved_ = false;
 };
 
 }  // namespace android_webview

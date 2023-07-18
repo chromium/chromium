@@ -14,6 +14,7 @@
 #include "android_webview/browser/aw_browser_process.h"
 #include "android_webview/browser/aw_feature_entries.h"
 #include "android_webview/browser/aw_metrics_service_client_delegate.h"
+#include "android_webview/browser/metrics/android_metrics_provider.h"
 #include "android_webview/browser/metrics/aw_metrics_service_client.h"
 #include "android_webview/browser/tracing/aw_tracing_delegate.h"
 #include "android_webview/browser/variations/variations_seed_loader.h"
@@ -91,8 +92,6 @@ const char* const kPersistentPrefsAllowlist[] = {
     // Unsent logs metadata.
     metrics::prefs::kMetricsInitialLogsMetadata,
     metrics::prefs::kMetricsOngoingLogsMetadata,
-    // Version code.
-    metrics::prefs::kVersionCodePref,
     net::nqe::kNetworkQualities,
     // Current and past country codes, to filter variations studies by country.
     variations::prefs::kVariationsCountry,
@@ -112,6 +111,10 @@ const char* const kPersistentPrefsAllowlist[] = {
 
     // The state of the previous background tracing session.
     tracing::kBackgroundTracingSessionState,
+
+    // System-level info.
+    metrics::prefs::kVersionCodePref,
+    prefs::kPrimaryCpuAbiBitnessPref,
 };
 
 void HandleReadError(PersistentPrefStore::PrefReadError error) {}

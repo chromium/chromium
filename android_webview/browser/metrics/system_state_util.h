@@ -21,6 +21,19 @@ enum class MultipleUserProfilesState {
 // Returns whether there are multiple user profiles.
 MultipleUserProfilesState GetMultipleUserProfilesState();
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused. See PrimaryCpuAbiBitness in
+// enums.xml.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.android_webview
+enum class PrimaryCpuAbiBitness {
+  kUnknown = 0,
+  k32bit = 1,
+  k64bit = 2,
+  kMaxValue = k64bit,
+};
+
+PrimaryCpuAbiBitness GetPrimaryCpuAbiBitness();
+
 }  // namespace android_webview
 
 #endif  // ANDROID_WEBVIEW_BROWSER_METRICS_SYSTEM_STATE_UTIL_H_
