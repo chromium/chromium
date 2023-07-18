@@ -91,8 +91,6 @@ void AddIssueToForm(PasswordForm* form,
 class PasswordCheckupUtilsTest : public PlatformTest {
  protected:
   PasswordCheckupUtilsTest() {
-    feature_list_.InitAndEnableFeature(
-        password_manager::features::kPasswordsGrouping);
     TestChromeBrowserState::Builder builder;
     builder.AddTestingFactory(
         IOSChromePasswordStoreFactory::GetInstance(),

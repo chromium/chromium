@@ -9,7 +9,6 @@
 #import "base/strings/string_util.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/bind.h"
-#import "base/test/scoped_feature_list.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/password_manager/core/browser/affiliation/fake_affiliation_service.h"
 #import "components/password_manager/core/browser/password_manager_test_utils.h"
@@ -111,8 +110,6 @@ PasswordForm CreatePasswordForm() {
 class PasswordsMediatorTest : public BlockCleanupTest {
  protected:
   void SetUp() override {
-    feature_list_.InitAndEnableFeature(
-        password_manager::features::kPasswordsGrouping);
     BlockCleanupTest::SetUp();
     TestChromeBrowserState::Builder builder;
     builder.AddTestingFactory(
@@ -167,7 +164,6 @@ class PasswordsMediatorTest : public BlockCleanupTest {
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   scoped_refptr<TestPasswordStore> store_;

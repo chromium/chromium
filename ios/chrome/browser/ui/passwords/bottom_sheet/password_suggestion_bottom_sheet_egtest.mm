@@ -82,8 +82,6 @@ id<GREYMatcher> ButtonWithAccessibilityID(NSString* id) {
   AppLaunchConfiguration config;
   config.features_enabled.push_back(
       password_manager::features::kIOSPasswordBottomSheet);
-  config.features_enabled.push_back(
-      password_manager::features::kPasswordsGrouping);
   return config;
 }
 

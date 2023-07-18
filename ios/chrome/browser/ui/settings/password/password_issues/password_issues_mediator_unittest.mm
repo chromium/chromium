@@ -126,8 +126,6 @@ GURL GetLocalizedURL(const GURL& original) {
 class PasswordIssuesMediatorTest : public BlockCleanupTest {
  protected:
   void SetUp() override {
-    feature_list_.InitAndEnableFeature(
-        password_manager::features::kPasswordsGrouping);
     BlockCleanupTest::SetUp();
     // Create BrowserState.
     TestChromeBrowserState::Builder test_cbs_builder;

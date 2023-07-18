@@ -55,8 +55,7 @@ class PasswordCheckupViewControllerTest : public ChromeTableViewControllerTest {
     // Enable Password Checkup and Password Grouping to get the affiliated
     // groups.
     feature_list.InitWithFeatures(
-        /*enabled_features=*/{password_manager::features::kIOSPasswordCheckup,
-                              password_manager::features::kPasswordsGrouping},
+        /*enabled_features=*/{password_manager::features::kIOSPasswordCheckup},
         /*disabled_features=*/{});
 
     ChromeTableViewControllerTest::SetUp();
