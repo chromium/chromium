@@ -69,11 +69,11 @@
 #include "ash/wm/root_window_layout_manager.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/splitview/split_view_utils.h"
-#include "ash/wm/stacking_controller.h"
 #include "ash/wm/switchable_windows.h"
 #include "ash/wm/system_modal_container_layout_manager.h"
 #include "ash/wm/system_wallpaper_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "ash/wm/window_parenting_controller.h"
 #include "ash/wm/window_properties.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
@@ -997,9 +997,9 @@ RootWindowController::RootWindowController(AshWindowTreeHost* ash_host)
   aura::Window* root_window = GetRootWindow();
   GetRootWindowSettings(root_window)->controller = this;
 
-  stacking_controller_ = std::make_unique<StackingController>();
+  window_parenting_controller_ = std::make_unique<WindowParentingController>();
   aura::client::SetWindowParentingClient(root_window,
-                                         stacking_controller_.get());
+                                         window_parenting_controller_.get());
   capture_client_ = std::make_unique<::wm::ScopedCaptureClient>(root_window);
 }
 

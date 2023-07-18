@@ -51,7 +51,6 @@ class RootWindowLayoutManager;
 class Shelf;
 class ShelfLayoutManager;
 class SplitViewController;
-class StackingController;
 class StatusAreaWidget;
 class SystemModalContainerLayoutManager;
 class SystemWallpaperController;
@@ -59,6 +58,7 @@ class TouchExplorationManager;
 class TouchHudDebug;
 class TouchHudProjection;
 class WallpaperWidgetController;
+class WindowParentingController;
 class WorkAreaInsets;
 
 namespace curtain {
@@ -305,7 +305,7 @@ class ASH_EXPORT RootWindowController {
   std::unique_ptr<AppMenuModelAdapter> root_window_menu_model_adapter_;
   std::unique_ptr<ui::SimpleMenuModel> sort_apps_submenu_;
 
-  std::unique_ptr<StackingController> stacking_controller_;
+  std::unique_ptr<WindowParentingController> window_parenting_controller_;
 
   std::unique_ptr<SplitViewController> split_view_controller_;
 
