@@ -2754,14 +2754,22 @@ std::vector<Suggestion> BrowserAutofillManager::GetProfileSuggestions(
     AutofillSuggestionTriggerSource trigger_source) const {
   address_form_event_logger_->OnDidPollSuggestions(field, sync_state_);
   AutofillProfile fake_profile;
-  std::vector<SkipStatus> skip_statuses = GetSkipStatuses(
-      form, form_structure, field, autofill_field.section,
-      /*optional_credit_card=*/absl::nullopt,
-      /*type_groups_originally_filled=*/{},
-      /*skip_unrecognized_autocomplete_fields=*/trigger_source !=
-          AutofillSuggestionTriggerSource::
-              kManualFallbackForAutocompleteUnrecognized,
-      /*is_refill=*/false);
+  // Getting the filling-relevant fields so that suggestions are based only on
+  // those fields. Function BrowserAutofillManager::GetSkipStatuses assumes that
+  // the passed FormData and FormStructure have the same size. If it's not the
+  // case we just assume as a fallback that all fields are relevant.
+  std::vector<SkipStatus> skip_statuses =
+      form.fields.size() == form_structure.field_count()
+          ? GetSkipStatuses(
+                form, form_structure, field, autofill_field.section,
+                /*optional_credit_card=*/absl::nullopt,
+                /*type_groups_originally_filled=*/{},
+                /*skip_unrecognized_autocomplete_fields=*/trigger_source !=
+                    AutofillSuggestionTriggerSource::
+                        kManualFallbackForAutocompleteUnrecognized,
+                /*is_refill=*/false)
+          : std::vector<SkipStatus>(form_structure.field_count(),
+                                    SkipStatus::kNotSkipped);
   return suggestion_generator_->GetSuggestionsForProfiles(
       form_structure, field, autofill_field.Type(), skip_statuses, app_locale_);
 }
