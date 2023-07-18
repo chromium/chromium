@@ -8,6 +8,8 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.util.AttributeSet;
 
+import androidx.appcompat.content.res.AppCompatResources;
+
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ntp.TitleUtil;
@@ -41,6 +43,7 @@ public class SuggestionsTileView extends TileView {
         mData = tile.getData();
         setIconViewLayoutParams(tile);
         setTitleParams();
+        setTileViewIconBackground();
     }
 
     /** Retrieves data associated with this view.  */
@@ -90,5 +93,13 @@ public class SuggestionsTileView extends TileView {
                 (MarginLayoutParams) getTitleView().getLayoutParams();
         marginLayoutParams.topMargin = getResources().getDimensionPixelSize(
                 R.dimen.tile_view_title_margin_top_modern_polish);
+    }
+
+    /** Update the background for the tile view icon for polishing purposes. */
+    private void setTileViewIconBackground() {
+        if (!ChromeFeatureList.sSurfacePolish.isEnabled()) return;
+
+        getIconBackgroundView().setBackground(
+                AppCompatResources.getDrawable(getContext(), R.drawable.oval_surface_3));
     }
 }

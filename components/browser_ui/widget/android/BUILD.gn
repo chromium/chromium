@@ -225,6 +225,7 @@ android_resources("java_resources") {
     "java/res/drawable/oval_surface_0.xml",
     "java/res/drawable/oval_surface_1.xml",
     "java/res/drawable/oval_surface_2.xml",
+    "java/res/drawable/oval_surface_3.xml",
     "java/res/drawable/query_tile_overlay.xml",
     "java/res/drawable/rectangle_surface_1.xml",
     "java/res/drawable/rounded_rectangle_surface_0.xml",
