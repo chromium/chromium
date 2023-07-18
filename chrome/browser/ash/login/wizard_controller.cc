@@ -219,6 +219,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session_manager.h"
+#include "components/startup_metric_utils/browser/startup_metric_utils.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_names.h"
@@ -360,6 +361,32 @@ void RecordUMAHistogramForOOBEStepCompletionTime(OobeScreenId screen,
       "OOBE.StepCompletionTimeByExitReason." + screen_name + "." + exit_reason;
   base::UmaHistogramCustomTimes(histogram_name_with_reason, step_time,
                                 base::Milliseconds(10), base::Minutes(10), 100);
+}
+
+void RecordUMAHistogramForOOBECompletion(
+    WizardController::CompletedOobeFlowType flow_type) {
+  base::TimeTicks startup_time = startup_metric_utils::MainEntryPointTicks();
+  if (startup_time.is_null()) {
+    return;
+  }
+  base::TimeDelta delta = base::TimeTicks::Now() - startup_time;
+
+  std::string type_string;
+  switch (flow_type) {
+    case WizardController::CompletedOobeFlowType::kAutoEnrollment:
+      type_string = "AutoEnrollment";
+      break;
+    case WizardController::CompletedOobeFlowType::kDemo:
+      type_string = "Demo";
+      break;
+    case WizardController::CompletedOobeFlowType::kRegular:
+      type_string = "Regular";
+      break;
+  }
+
+  std::string histogram_name = "OOBE.BootToOOBECompleted." + type_string;
+  base::UmaHistogramCustomTimes(histogram_name, delta, base::Milliseconds(10),
+                                base::Minutes(10), 100);
 }
 
 LoginDisplayHost* GetLoginDisplayHost() {
@@ -1888,7 +1915,12 @@ void WizardController::OnEnrollmentScreenExit(EnrollmentScreen::Result result) {
       break;
     case EnrollmentScreen::Result::BACK:
     case EnrollmentScreen::Result::SKIPPED_FOR_TESTS:
-      PerformOOBECompletedActions();
+      // The following `PerformOOBECompletedAction()` call will occur in both
+      // manual and auto enrollment. However, in the manual enrollment case,
+      // `PerformOOBECompletedAction()` method would be already called before
+      // with `CompletedOobeFlowType::kRegular` argument. OOBECompletedActions
+      // are only performed in the first call.
+      PerformOOBECompletedActions(CompletedOobeFlowType::kAutoEnrollment);
       DCHECK(!prescribed_enrollment_config_.is_forced());
       ShowLoginScreen();
       break;
@@ -1909,7 +1941,12 @@ void WizardController::OnEnrollmentScreenExit(EnrollmentScreen::Result result) {
 }
 
 void WizardController::OnEnrollmentDone() {
-  PerformOOBECompletedActions();
+  // The following `PerformOOBECompletedAction()` call will occur in both
+  // manual and auto enrollment. However, in the manual enrollment case,
+  // `PerformOOBECompletedAction()` method would be already called before
+  // with `CompletedOobeFlowType::kRegular` argument. OOBECompletedActions
+  // are only performed in the first call.
+  PerformOOBECompletedActions(CompletedOobeFlowType::kAutoEnrollment);
 
   // Restart to make the login page pick up the policy changes resulting from
   // enrollment recovery.  (Not pretty, but this codepath is rarely exercised.)
@@ -2007,7 +2044,7 @@ void WizardController::OnDemoSetupScreenExit(DemoSetupScreen::Result result) {
 
   switch (result) {
     case DemoSetupScreen::Result::COMPLETED:
-      PerformOOBECompletedActions();
+      PerformOOBECompletedActions(CompletedOobeFlowType::kDemo);
       SwitchWebUItoMojo();
       break;
     case DemoSetupScreen::Result::CANCELED:
@@ -2267,7 +2304,7 @@ void WizardController::OnDeviceDisabledChecked(bool device_disabled) {
             << prescribed_enrollment_config_.should_enroll();
     StartEnrollmentScreen(wizard_context_->enrollment_triggered_early);
   } else {
-    PerformOOBECompletedActions();
+    PerformOOBECompletedActions(CompletedOobeFlowType::kRegular);
     ShowPackagedLicenseScreen();
   }
 }
@@ -2338,7 +2375,8 @@ void WizardController::PerformPostNetworkScreenActions() {
   cros_healthd::internal::TriggerDlcInstall();
 }
 
-void WizardController::PerformOOBECompletedActions() {
+void WizardController::PerformOOBECompletedActions(
+    CompletedOobeFlowType flow_type) {
   // Avoid marking OOBE as completed multiple times if going from login screen
   // to enrollment screen (and back).
   if (oobe_marked_completed_) {
@@ -2346,7 +2384,7 @@ void WizardController::PerformOOBECompletedActions() {
   }
 
   StartupUtils::MarkOobeCompleted();
-  oobe_marked_completed_ = true;
+  RecordUMAHistogramForOOBECompletion(flow_type);
 }
 
 void WizardController::SetCurrentScreen(BaseScreen* new_current) {

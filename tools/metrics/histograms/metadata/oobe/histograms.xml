@@ -289,6 +289,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="OOBE.BootToOOBECompleted.{CompletedOobeFlowType}" units="ms"
+    expires_after="2023-12-31">
+  <owner>osamafathy@chromium.org</owner>
+  <owner>cros-oobe@google.com</owner>
+  <summary>
+    Time from boot until pre-login OOBE is completed. If the device was rebooted
+    during OOBE, the time is calculated since the last boot.
+  </summary>
+  <token key="CompletedOobeFlowType">
+    <variant name="AutoEnrollment"/>
+    <variant name="Demo"/>
+    <variant name="Regular"/>
+  </token>
+</histogram>
+
 <histogram name="OOBE.BootToSignInCompleted" units="ms"
     expires_after="2023-12-31">
   <owner>alemate@chromium.org</owner>

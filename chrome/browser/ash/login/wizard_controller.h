@@ -106,6 +106,12 @@ class WizardController : public OobeUI::Observer {
   // or deleted. Only additions possible.
   enum class ScreenShownStatus { kSkipped = 0, kShown = 1, kMaxValue = kShown };
 
+  enum class CompletedOobeFlowType {
+    kAutoEnrollment = 0,
+    kDemo = 1,
+    kRegular = 2
+  };
+
   explicit WizardController(WizardContext* wizard_context);
 
   WizardController(const WizardController&) = delete;
@@ -441,8 +447,10 @@ class WizardController : public OobeUI::Observer {
   // the update check.
   void PerformPostNetworkScreenActions();
 
-  // Actions that should be done right after update stage is finished.
-  void PerformOOBECompletedActions();
+  // Actions that should be done after OOBE flow is finished.
+  // If this is called, future boots before the device is owned will start in
+  // the first sign-in screen.
+  void PerformOOBECompletedActions(CompletedOobeFlowType flow_type);
 
   ErrorScreen* GetErrorScreen();
 
