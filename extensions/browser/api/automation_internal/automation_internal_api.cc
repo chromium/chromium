@@ -36,7 +36,6 @@
 #include "extensions/common/api/automation_internal.h"
 #include "extensions/common/extension_messages.h"
 #include "extensions/common/manifest_handlers/automation.h"
-#include "extensions/common/mojom/automation_query.mojom.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
@@ -59,62 +58,6 @@ namespace {
 
 const char kCannotRequestAutomationOnPage[] =
     "Failed request of automation on a page";
-const char kRendererDestroyed[] = "The tab was closed.";
-const char kNoDocument[] = "No document.";
-const char kNodeDestroyed[] =
-    "domQuerySelector sent on node which is no longer in the tree.";
-
-// Handles sending and receiving IPCs for a single querySelector request. On
-// creation, sends the request IPC, and is destroyed either when the response is
-// received or the renderer is destroyed.
-class QuerySelectorHandler {
- public:
-  QuerySelectorHandler(
-      blink::AssociatedInterfaceProvider* interface_provider,
-      int acc_obj_id,
-      const std::string& query,
-      extensions::AutomationInternalQuerySelectorFunction::Callback callback)
-      : callback_(std::move(callback)) {
-    interface_provider->GetInterface(&automation_query_);
-    automation_query_->QuerySelector(
-        acc_obj_id, query,
-        base::BindOnce(&QuerySelectorHandler::OnQueryResponse,
-                       base::Unretained(this)));
-    automation_query_.set_disconnect_handler(
-        base::BindOnce(&QuerySelectorHandler::HandleAutomationQueryRemoteError,
-                       base::Unretained(this)));
-  }
-
-  ~QuerySelectorHandler() = default;
-
- private:
-  void OnQueryResponse(int32_t result_acc_obj_id,
-                       extensions::mojom::AutomationQueryError error) {
-    std::string error_string;
-    switch (error) {
-      case extensions::mojom::AutomationQueryError::kNone:
-        break;
-      case extensions::mojom::AutomationQueryError::kNoDocument:
-        error_string = kNoDocument;
-        break;
-      case extensions::mojom::AutomationQueryError::kNodeDestroyed:
-        error_string = kNodeDestroyed;
-        break;
-    }
-    std::move(callback_).Run(error_string, result_acc_obj_id);
-    delete this;
-  }
-
-  void HandleAutomationQueryRemoteError() {
-    std::move(callback_).Run(kRendererDestroyed, 0);
-    delete this;
-  }
-
-  extensions::AutomationInternalQuerySelectorFunction::Callback callback_;
-
-  // Handles sending IPCs for a single querySelector request.
-  mojo::AssociatedRemote<extensions::mojom::AutomationQuery> automation_query_;
-};
 
 // Helper function to convert extension action to ax action.
 // |extension_id| can be the empty string.
@@ -711,47 +654,6 @@ AutomationInternalDisableDesktopFunction::Run() {
 #else
   return RespondNow(Error("getDesktop is unsupported by this platform"));
 #endif  // defined(USE_AURA)
-}
-
-// static
-int AutomationInternalQuerySelectorFunction::query_request_id_counter_ = 0;
-
-ExtensionFunction::ResponseAction
-AutomationInternalQuerySelectorFunction::Run() {
-  const AutomationInfo* automation_info = AutomationInfo::Get(extension());
-  EXTENSION_FUNCTION_VALIDATE(automation_info);
-
-  using api::automation_internal::QuerySelector::Params;
-  absl::optional<Params> params = Params::Create(args());
-  EXTENSION_FUNCTION_VALIDATE(params);
-
-  content::RenderFrameHost* render_frame_host =
-      content::RenderFrameHost::FromAXTreeID(
-          ui::AXTreeID::FromString(params->args.tree_id));
-  if (!render_frame_host) {
-    return RespondNow(
-        Error("domQuerySelector query sent on non-web or destroyed tree."));
-  }
-
-  // QuerySelectorHandler handles IPCs and deletes itself on completion.
-  new QuerySelectorHandler(
-      render_frame_host->GetRemoteAssociatedInterfaces(),
-      params->args.automation_node_id, params->args.selector,
-      base::BindOnce(&AutomationInternalQuerySelectorFunction::OnResponse,
-                     this));
-
-  return RespondLater();
-}
-
-void AutomationInternalQuerySelectorFunction::OnResponse(
-    const std::string& error,
-    int result_acc_obj_id) {
-  if (!error.empty()) {
-    Respond(Error(error));
-    return;
-  }
-
-  Respond(WithArguments(result_acc_obj_id));
 }
 
 }  // namespace extensions

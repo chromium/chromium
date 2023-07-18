@@ -248,13 +248,6 @@ IN_PROC_BROWSER_TEST_F(AutomationApiTest, MAYBE_CloseTab) {
       << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(AutomationApiTest, QuerySelector) {
-  StartEmbeddedTestServer();
-  ASSERT_TRUE(RunExtensionTest("automation/tests/tabs",
-                               {.extension_url = "queryselector.html"}))
-      << message_;
-}
-
 IN_PROC_BROWSER_TEST_F(AutomationApiTest, Find) {
   StartEmbeddedTestServer();
   ASSERT_TRUE(

@@ -70,7 +70,6 @@ mojom("mojom") {
   sources = [
     "mojom/api_permission_id.mojom",
     "mojom/app_window.mojom",
-    "mojom/automation_query.mojom",
     "mojom/automation_registry.mojom",
     "mojom/channel.mojom",
     "mojom/code_injection.mojom",

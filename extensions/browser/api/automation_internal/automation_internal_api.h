@@ -87,27 +87,6 @@ class AutomationInternalDisableDesktopFunction : public ExtensionFunction {
   ResponseAction Run() override;
 };
 
-class AutomationInternalQuerySelectorFunction : public ExtensionFunction {
-  DECLARE_EXTENSION_FUNCTION("automationInternal.querySelector",
-                             AUTOMATIONINTERNAL_QUERYSELECTOR)
-
- public:
-  using Callback =
-      base::OnceCallback<void(const std::string& error, int result_acc_obj_id)>;
-
- protected:
-  ~AutomationInternalQuerySelectorFunction() override = default;
-
-  ResponseAction Run() override;
-
- private:
-  void OnResponse(const std::string& error, int result_acc_obj_id);
-
-  // Used for assigning a unique ID to each request so that the response can be
-  // routed appropriately.
-  static int query_request_id_counter_;
-};
-
 }  // namespace extensions
 
 #endif  // EXTENSIONS_BROWSER_API_AUTOMATION_INTERNAL_AUTOMATION_INTERNAL_API_H_

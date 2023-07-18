@@ -886,7 +886,6 @@ declare namespace chrome {
       createPosition(type: PositionType, offset: number, isUpstream?: boolean):
           AutomationPosition;
       doDefault(): void;
-      domQuerySelector(selector: string, callback: QueryCallback): void;
       find(params: FindParams): AutomationNode|undefined;
       findAll(params: FindParams): AutomationNode[];
       focus(): void;
@@ -932,7 +931,6 @@ declare namespace chrome {
     type FocusCallback = (focusedNode: AutomationNode) => void;
     type PerformActionCallback = (result: boolean) => void;
     type PerformActionCallbackWithNode = (node: AutomationNode) => void;
-    type QueryCallback = (node: AutomationNode) => void;
     type RootCallback = (rootNode: AutomationNode) => void;
     type TreeChangeObserver = (change: TreeChange) => void;
 

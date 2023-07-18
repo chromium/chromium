@@ -1181,17 +1181,6 @@ AutomationNodeImpl.prototype = {
     this.performAction_('longClick');
   },
 
-  domQuerySelector: function(selector, callback) {
-    if (!this.rootImpl) {
-      callback();
-    }
-    automationInternal.querySelector(
-      { treeID: this.rootImpl.treeID,
-        automationNodeID: this.id,
-        selector: selector },
-      $Function.bind(this.domQuerySelectorCallback_, this, callback));
-  },
-
   find: function(params) {
     return this.findInternal_(params);
   },
@@ -1406,23 +1395,6 @@ AutomationNodeImpl.prototype = {
           requestID: requestID,
         },
         opt_args || {});
-  },
-
-  domQuerySelectorCallback_: function(userCallback, resultAutomationNodeID) {
-    // resultAutomationNodeID could be zero or undefined or (unlikely) null;
-    // they all amount to the same thing here, which is that no node was
-    // returned.
-    if (!resultAutomationNodeID || !this.rootImpl) {
-      userCallback(null);
-      return;
-    }
-    const resultNode = this.rootImpl.get(resultAutomationNodeID);
-    if (!resultNode) {
-      logging.WARNING('Query selector result not in tree: ' +
-                      resultAutomationNodeID);
-      userCallback(null);
-    }
-    userCallback(resultNode);
   },
 
   findInternal_: function(params, opt_results) {
@@ -2142,7 +2114,6 @@ utils.expose(AutomationNode, AutomationNodeImpl, {
     'boundsForRange',
     'createPosition',
     'doDefault',
-    'domQuerySelector',
     'find',
     'findAll',
     'focus',

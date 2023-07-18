@@ -15,8 +15,6 @@ source_set("renderer") {
     "api/app_window_custom_bindings.h",
     "api/automation/automation_api_converters.cc",
     "api/automation/automation_api_converters.h",
-    "api/automation/automation_api_helper.cc",
-    "api/automation/automation_api_helper.h",
     "api/automation/automation_internal_custom_bindings.cc",
     "api/automation/automation_internal_custom_bindings.h",
     "api/context_menus_custom_bindings.cc",

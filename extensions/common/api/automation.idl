@@ -709,9 +709,6 @@ enum PositionType {
     long focusOffset;
   };
 
-  // Called when the result for a <code>query</code> is available.
-  callback QueryCallback = void(AutomationNode node);
-
   [nocompile, noinline_doc] dictionary AutomationIntent {
     // A command associated with this AutomationIntent.
     IntentCommandType command;
@@ -1517,22 +1514,6 @@ enum PositionType {
     // Removes a listener for the given event type and event phase.
     static void removeEventListener(
         EventType eventType, AutomationListener listener, boolean capture);
-
-    // Gets the first node in this node's subtree which matches the given CSS
-    // selector and is within the same DOM context.
-    //
-    // If this node doesn't correspond directly with an HTML node in the DOM,
-    // querySelector will be run on this node's nearest HTML node ancestor. Note
-    // that this may result in the query returning a node which is not a
-    // descendant of this node.
-    //
-    // If the selector matches a node which doesn't directly correspond to an
-    // automation node (for example an element within an ARIA widget, where the
-    // ARIA widget forms one node of the automation tree, or an element which
-    // is hidden from accessibility via hiding it using CSS or using
-    // aria-hidden), this will return the nearest ancestor which does correspond
-    // to an automation node.
-    static void domQuerySelector(DOMString selector, QueryCallback callback);
 
     // Finds the first AutomationNode in this node's subtree which matches the
     // given search parameters.
