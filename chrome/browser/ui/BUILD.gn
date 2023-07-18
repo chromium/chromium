@@ -3442,6 +3442,7 @@ static_library("ui") {
       "//chromeos/ash/components/multidevice",
       "//chromeos/ash/components/multidevice/logging",
       "//chromeos/ash/components/nearby/presence",
+      "//chromeos/ash/components/nearby/presence/credentials",
       "//chromeos/ash/components/network",
       "//chromeos/ash/components/network/portal_detector",
       "//chromeos/ash/components/peripheral_notification",

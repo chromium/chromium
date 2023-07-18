@@ -5,7 +5,10 @@
 #include "chrome/browser/ui/webui/nearby_internals/nearby_internals_ui_presence_handler.h"
 #include "chrome/browser/ash/nearby/presence/nearby_presence_service_factory.h"
 #include "chrome/browser/nearby_sharing/logging/logging.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/components/nearby/presence/credentials/prefs.h"
 #include "chromeos/ash/components/nearby/presence/nearby_presence_service.h"
+#include "components/prefs/pref_service.h"
 
 namespace {
 
@@ -121,7 +124,16 @@ void NearbyInternalsPresenceHandler::HandleFirstTimePresenceFlow(
   if (service) {
     NS_LOG(VERBOSE) << __func__
                     << ": NearbyPresenceService was retrieved successfully";
-    // TODO(b/276307539): Call NPS function to initiate first time flow.
+    auto* pref_service = Profile::FromBrowserContext(context_)->GetPrefs();
+
+    // Reset the state that indicates that first time registration was
+    // completed for testing. This will trigger the first time flow in
+    // `NearbyPresenceService::Initialize()`, in the case that this was already
+    // set on the device for manual testing.
+    pref_service->SetBoolean(ash::nearby::presence::prefs::
+                                 kNearbyPresenceFirstTimeRegistrationComplete,
+                             false);
+    service->Initialize();
   }
 }
 
