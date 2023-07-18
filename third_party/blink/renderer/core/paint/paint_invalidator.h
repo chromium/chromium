@@ -7,7 +7,6 @@
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_shift_tracker.h"
 #include "third_party/blink/renderer/core/paint/paint_property_tree_builder.h"
 #include "third_party/blink/renderer/platform/graphics/paint_invalidation_reason.h"
@@ -15,6 +14,8 @@
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
+
+class LayoutObject;
 
 struct CORE_EXPORT PaintInvalidatorContext {
   STACK_ALLOCATED();
