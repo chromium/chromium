@@ -411,7 +411,6 @@ class ExtensionWebRequestEventRouter {
   using BlockedRequestMap = std::map<uint64_t, BlockedRequest>;
   // Map of request_id -> bit vector of EventTypes already signaled
   using SignaledRequestMap = std::map<uint64_t, int>;
-  using CallbacksForPageLoad = std::list<base::OnceClosure>;
 
   // The type of listener removal.
   enum class ListenerUpdateType {
@@ -595,8 +594,6 @@ class ExtensionWebRequestEventRouter {
   // Keeps track of time spent waiting on extensions using the blocking
   // webRequest API.
   std::unique_ptr<ExtensionWebRequestTimeTracker> request_time_tracker_;
-
-  CallbacksForPageLoad callbacks_for_page_load_;
 
   typedef std::pair<BrowserContextID, int> RulesRegistryKey;
   // Maps each browser_context (and OTRBrowserContext) and a webview key to its

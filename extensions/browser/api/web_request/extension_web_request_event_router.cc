@@ -389,6 +389,17 @@ void OnDNRActionMatched(content::BrowserContext* browser_context,
   action.tracked = true;
 }
 
+using CallbacksForPageLoad = std::list<base::OnceClosure>;
+
+// TODO(crbug.com/1433136): We need to investigate why this is a global
+// structure instead of a per-BrowserContext structure. It seems incorrect
+// that a page load in one BrowserContext should interact with a page load
+// in another one.
+CallbacksForPageLoad& GetCallbacksForPageLoad() {
+  static base::NoDestructor<CallbacksForPageLoad> instance;
+  return *instance.get();
+}
+
 }  // namespace
 
 // static
@@ -1722,7 +1733,7 @@ void ExtensionWebRequestEventRouter::OnOTRBrowserContextDestroyed(
 
 void ExtensionWebRequestEventRouter::AddCallbackForPageLoad(
     base::OnceClosure callback) {
-  callbacks_for_page_load_.push_back(std::move(callback));
+  GetCallbacksForPageLoad().push_back(std::move(callback));
 }
 
 bool ExtensionWebRequestEventRouter::HasExtraHeadersListenerForRequest(
@@ -1813,10 +1824,10 @@ bool ExtensionWebRequestEventRouter::IsPageLoad(
 }
 
 void ExtensionWebRequestEventRouter::NotifyPageLoad() {
-  for (auto& callback : callbacks_for_page_load_) {
+  for (auto& callback : GetCallbacksForPageLoad()) {
     std::move(callback).Run();
   }
-  callbacks_for_page_load_.clear();
+  GetCallbacksForPageLoad().clear();
 }
 
 content::BrowserContext* ExtensionWebRequestEventRouter::GetCrossBrowserContext(
