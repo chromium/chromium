@@ -194,6 +194,8 @@ export class HistoryClustersModuleElement extends I18nMixin
   }
 
   private onDisableButtonClick_() {
+    HistoryClustersProxyImpl.getInstance().handler.recordDisabled(
+        this.cluster.id);
     const disableEvent = new CustomEvent('disable-module', {
       composed: true,
       detail: {

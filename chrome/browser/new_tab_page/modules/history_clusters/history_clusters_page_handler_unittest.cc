@@ -496,6 +496,41 @@ TEST_F(HistoryClustersPageHandlerTest, RecordClick) {
       ukm::builders::NewTabPage_HistoryClusters::kDidEngageWithModuleName, 1);
 }
 
+TEST_F(HistoryClustersPageHandlerTest, RecordDisabled) {
+  // Send down some clusters so we have a logger.
+  int64_t cluster_id = 123;
+  std::vector<history::Cluster> sample_clusters = {SampleCluster(0, 1, 2)};
+  base::flat_map<int64_t, HistoryClustersModuleRankingSignals> ranking_signals =
+      {{cluster_id, HistoryClustersModuleRankingSignals()}};
+  EXPECT_CALL(mock_history_clusters_module_service(), GetClusters(testing::_))
+      .WillOnce(testing::Invoke(
+          [&sample_clusters, &ranking_signals](
+              base::OnceCallback<void(
+                  std::vector<history::Cluster>,
+                  base::flat_map<int64_t, HistoryClustersModuleRankingSignals>)>
+                  callback) {
+            std::move(callback).Run(sample_clusters, ranking_signals);
+          }));
+  base::MockCallback<HistoryClustersPageHandler::GetClustersCallback> callback;
+  EXPECT_CALL(callback, Run(testing::_));
+  handler().GetClusters(callback.Get());
+
+  // Simulate a disable and layout type.
+  handler().RecordLayoutTypeShown(
+      ntp::history_clusters::mojom::LayoutType::kLayout1, cluster_id);
+  handler().RecordDisabled(cluster_id);
+
+  // Reset handler to make sure UKM is recorded.
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
+  ResetHandler();
+  auto entries = test_ukm_recorder.GetEntriesByName(
+      ukm::builders::NewTabPage_HistoryClusters::kEntryName);
+  ASSERT_EQ(entries.size(), 1u);
+  test_ukm_recorder.ExpectEntryMetric(
+      entries[0],
+      ukm::builders::NewTabPage_HistoryClusters::kDidDisableModuleName, 1);
+}
+
 TEST_F(HistoryClustersPageHandlerTest, RecordLayoutTypeShown) {
   // Send down some clusters so we have a logger.
   int64_t cluster_id = 123;

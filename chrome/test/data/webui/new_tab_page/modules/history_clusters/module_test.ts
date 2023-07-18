@@ -218,6 +218,25 @@ suite('NewTabPageModulesHistoryClustersModuleTest', () => {
           await waitForUsageEvent;
         });
 
+    test('Backend is notified when module is disabled', async () => {
+      // Arrange.
+      const sampleClusterLabel = '"Sample Journey"';
+      const sampleCluster = createSampleCluster(
+          undefined, undefined, {label: sampleClusterLabel});
+      const moduleElement = await initializeModule([sampleCluster]);
+      assertTrue(!!moduleElement);
+
+      // Act.
+      const disableButton =
+          moduleElement.shadowRoot!.querySelector('ntp-module-header')!
+              .shadowRoot!.querySelector<HTMLElement>('#disableButton')!;
+      disableButton.click();
+
+      // Assert.
+      const clusterId = await handler.whenCalled('recordDisabled');
+      assertEquals(BigInt(111), clusterId);
+    });
+
     test('Backend is notified when module is dismissed', async () => {
       // Arrange.
       const sampleClusterLabel = '"Sample Journey"';

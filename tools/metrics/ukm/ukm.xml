@@ -15561,6 +15561,11 @@ be describing additional metrics about the same event.
       Cluster is of a boosted category.
     </summary>
   </metric>
+  <metric name="DidDisableModule" enum="Boolean">
+    <summary>
+      Whether the user disabled the module.
+    </summary>
+  </metric>
   <metric name="DidDismissModule" enum="Boolean">
     <summary>
       Whether the user dismissed the specific journey shown in this module.

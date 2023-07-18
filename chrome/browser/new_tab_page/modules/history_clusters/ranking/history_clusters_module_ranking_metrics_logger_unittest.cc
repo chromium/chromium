@@ -51,6 +51,7 @@ TEST_F(HistoryClustersModuleRankingMetricsLoggerTest, E2E) {
   HistoryClustersModuleRankingMetricsLogger logger(ukm::NoURLSourceId());
   logger.AddSignals({{1, signals1}, {2, signals2}, {3, should_not_be_logged}});
   logger.SetClicked(/*cluster_id=*/1);
+  logger.SetDisabled(/*cluster_id=*/1);
   logger.SetDismissed(/*cluster_id=*/1);
   logger.SetLayoutTypeShown(ntp::history_clusters::mojom::LayoutType::kLayout1,
                             /*cluster_id=*/1);
@@ -84,6 +85,9 @@ TEST_F(HistoryClustersModuleRankingMetricsLoggerTest, E2E) {
       entry,
       ukm::builders::NewTabPage_HistoryClusters::kDidEngageWithModuleName, 1);
   test_ukm_recorder.ExpectEntryMetric(
+      entry, ukm::builders::NewTabPage_HistoryClusters::kDidDisableModuleName,
+      1);
+  test_ukm_recorder.ExpectEntryMetric(
       entry, ukm::builders::NewTabPage_HistoryClusters::kDidDismissModuleName,
       1);
   test_ukm_recorder.ExpectEntryMetric(
@@ -113,6 +117,9 @@ TEST_F(HistoryClustersModuleRankingMetricsLoggerTest, E2E) {
   test_ukm_recorder.ExpectEntryMetric(
       entry2,
       ukm::builders::NewTabPage_HistoryClusters::kDidEngageWithModuleName, 0);
+  test_ukm_recorder.ExpectEntryMetric(
+      entry2, ukm::builders::NewTabPage_HistoryClusters::kDidDisableModuleName,
+      0);
   test_ukm_recorder.ExpectEntryMetric(
       entry2, ukm::builders::NewTabPage_HistoryClusters::kDidDismissModuleName,
       0);
