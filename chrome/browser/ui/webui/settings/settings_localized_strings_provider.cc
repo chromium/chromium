@@ -1631,8 +1631,7 @@ void AddSyncControlsStrings(content::WebUIDataSource* html_source) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
     {"appCheckboxSublabel", IDS_SETTINGS_APPS_CHECKBOX_SUBLABEL},
 #endif
-    {"paymentsCheckboxLabel",
-     IDS_AUTOFILL_ENABLE_PAYMENTS_INTEGRATION_CHECKBOX_LABEL},
+    {"paymentsCheckboxLabel", IDS_SYNC_DATATYPE_PAYMENTS},
     {"nonPersonalizedServicesSectionLabel",
      IDS_SETTINGS_NON_PERSONALIZED_SERVICES_SECTION_LABEL},
     {"customizeSyncLabel", IDS_SETTINGS_CUSTOMIZE_SYNC},

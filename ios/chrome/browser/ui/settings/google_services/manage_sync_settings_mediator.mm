@@ -105,6 +105,8 @@ constexpr CGFloat kErrorSymbolPointSize = 22.;
 // Model item for each data types.
 @property(nonatomic, strong) NSArray<TableViewItem*>* syncSwitchItems;
 // Autocomplete wallet item.
+// TODO(crbug.com/1459963): Avoid this property altogether and integrate instead
+// with `syncSwitchItems` and `kAccountSwitchItems`.
 @property(nonatomic, strong) TableViewItem* autocompleteWalletItem;
 // Encryption item.
 @property(nonatomic, strong) TableViewImageItem* encryptionItem;
@@ -276,21 +278,9 @@ constexpr CGFloat kErrorSymbolPointSize = 22.;
   }
   self.syncSwitchItems = syncSwitchItems;
 
-  if (![self isManagedSyncSettingsDataType:syncer::UserSelectableType::
-                                               kAutofill]) {
-    SyncSwitchItem* button =
-        [[SyncSwitchItem alloc] initWithType:AutocompleteWalletItemType];
-    button.text =
-        GetNSString(IDS_AUTOFILL_ENABLE_PAYMENTS_INTEGRATION_CHECKBOX_LABEL);
-    self.autocompleteWalletItem = button;
-  } else {
-    TableViewInfoButtonItem* button = [[TableViewInfoButtonItem alloc]
-        initWithType:AutocompleteWalletItemType];
-    button.text =
-        GetNSString(IDS_AUTOFILL_ENABLE_PAYMENTS_INTEGRATION_CHECKBOX_LABEL);
-    button.statusText = GetNSString(IDS_IOS_SETTING_OFF);
-    self.autocompleteWalletItem = button;
-  }
+  self.autocompleteWalletItem =
+      [self tableViewItemWithDataType:syncer::UserSelectableType::kPayments];
+
   [model addItem:self.autocompleteWalletItem
       toSectionWithIdentifier:SyncDataTypeSectionIdentifier];
   [self updateSyncItemsNotifyConsumer:NO];
@@ -705,8 +695,10 @@ constexpr CGFloat kErrorSymbolPointSize = 22.;
       accessibilityIdentifier = kSyncAutofillIdentifier;
       break;
     case syncer::UserSelectableType::kPayments:
-      // TODO(crbug.com/1459963): Unify the code with other datatypes.
-      NOTREACHED_NORETURN();
+      itemType = AutocompleteWalletItemType;
+      textStringID = IDS_SYNC_DATATYPE_PAYMENTS;
+      accessibilityIdentifier = kSyncPaymentsIdentifier;
+      break;
     case syncer::UserSelectableType::kPreferences:
       itemType = SettingsDataTypeItemType;
       textStringID = IDS_SYNC_DATATYPE_PREFERENCES;
@@ -911,6 +903,7 @@ constexpr CGFloat kErrorSymbolPointSize = 22.;
         }
         break;
       }
+      case AutocompleteWalletItemType:
       case AutofillDataTypeItemType:
       case BookmarksDataTypeItemType:
       case OpenTabsDataTypeItemType:
@@ -938,14 +931,6 @@ constexpr CGFloat kErrorSymbolPointSize = 22.;
         }
         break;
       }
-      case AutocompleteWalletItemType:
-        if ([self isManagedSyncSettingsDataType:syncer::UserSelectableType::
-                                                    kAutofill]) {
-          break;
-        }
-        _syncService->GetUserSettings()->SetSelectedType(
-            syncer::UserSelectableType::kPayments, value);
-        break;
       case SignOutAndTurnOffSyncItemType:
       case ManageGoogleAccountItemType:
       case ManageAccountsItemType:

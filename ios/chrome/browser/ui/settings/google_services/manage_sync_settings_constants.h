@@ -21,6 +21,7 @@ extern NSString* const kSyncBookmarksIdentifier;
 extern NSString* const kSyncOmniboxHistoryIdentifier;
 extern NSString* const kSyncHistoryAndTabsIdentifier;
 extern NSString* const kSyncPasswordsIdentifier;
+extern NSString* const kSyncPaymentsIdentifier;
 extern NSString* const kSyncOpenTabsIdentifier;
 extern NSString* const kSyncAutofillIdentifier;
 extern NSString* const kSyncPreferencesIdentifier;
