@@ -3935,6 +3935,7 @@ test("ash_pixeltests") {
     "system/time/calendar_unittest_utils.h",
     "system/time/calendar_up_next_pixeltest.cc",
     "system/time/calendar_view_pixeltest.cc",
+    "system/unified/date_tray_pixeltest.cc",
     "system/unified/feature_tile_pixeltest.cc",
     "system/unified/power_button_pixeltest.cc",
     "system/unified/unified_slider_view_pixeltest.cc",
