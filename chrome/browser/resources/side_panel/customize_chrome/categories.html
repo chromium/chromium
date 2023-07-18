@@ -91,53 +91,53 @@
     line-height: 16px;
   }
 
-  .tile:nth-child(-n+4) {
+  .tile:nth-of-type(-n+4) {
     grid-column: span 3;
      /* To result in an extra 5px horizontal gap between first 4 tiles. */
     padding-inline-end: 2.5px;
   }
 
-  :host-context([chrome-refresh-2023]) .tile:nth-child(-n+4) {
+  :host-context([chrome-refresh-2023]) .tile:nth-of-type(-n+4) {
     /* To result in an extra 8px horizontal gap between first 4 tiles. */
     padding-inline-end: 4px;
   }
 
-  :host-context([chrome-refresh-2023]) .tile:nth-child(-n+4) {
+  :host-context([chrome-refresh-2023]) .tile:nth-of-type(-n+4) {
     /* To result in an extra 10px vertical gap between large and small tiles. */
     padding-block-end: 10px;
     /* To result in an extra 8px vertical gap between first 4 tiles. */
     padding-block-start: 4px;
   }
 
-  :host-context([chrome-refresh-2023]) .tile:nth-child(-n+2) {
+  :host-context([chrome-refresh-2023]) .tile:nth-of-type(-n+2) {
     /* To result in an extra 8px vertical gap between first 4 tiles. */
     padding-block-end: 4px;
     padding-block-start: 0;
   }
 
-  .tile:nth-child(-n+4):nth-child(even) {
+  .tile:nth-of-type(-n+4):nth-of-type(even) {
     padding-inline-end: 0;
      /* To result in an extra 5px horizontal gap between first 4 tiles. */
     padding-inline-start: 2.5px;
   }
 
-  :host-context([chrome-refresh-2023]) .tile:nth-child(-n+4):nth-child(even) {
+  :host-context([chrome-refresh-2023]) .tile:nth-of-type(-n+4):nth-of-type(even) {
     padding-inline-end: 0;
     /* To result in an extra 8px horizontal gap between first 4 tiles. */
     padding-inline-start: 4px;
   }
 
-  .tile:nth-child(-n+4) .image-container {
+  .tile:nth-of-type(-n+4) .image-container {
     border-radius: 16px;
   }
 
-  .tile:nth-child(-n+4) .label {
+  .tile:nth-of-type(-n+4) .label {
     font-size: 13px;
     line-height: 20px;
     padding-top: 12px;
   }
 
-  :host-context([chrome-refresh-2023]) .tile:nth-child(-n+4) .label {
+  :host-context([chrome-refresh-2023]) .tile:nth-of-type(-n+4) .label {
     font-size: 12px;
     line-height: 16px;
     padding-top: 8px;
@@ -213,7 +213,7 @@
     width: 32px;
   }
 
-  .tile:nth-child(-n+4) customize-chrome-check-mark-wrapper {
+  .tile:nth-of-type(-n+4) customize-chrome-check-mark-wrapper {
     --customize-chrome-check-mark-wrapper-end: -6px;
     --customize-chrome-check-mark-wrapper-size: 24px;
     --customize-chrome-check-mark-wrapper-top: -9px;
@@ -284,23 +284,25 @@
       </customize-chrome-check-mark-wrapper>
       <div class="label">$i18n{uploadImage}</div>
     </div>
-    <div class="tile" tabindex="0" id="chromeColorsTile"
-        role="button" on-click="onChromeColorsClick_"
-        aria-current$="[[boolToString_(isChromeColorsSelected_)]]">
-      <customize-chrome-check-mark-wrapper
-          checked="[[isChromeColorsSelected_]]">
-        <div class="image-container">
-          <svg viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg"
-              xmlns:xlink="http://www.w3.org/1999/xlink">
-            <rect id="foreground" x="0" y="0" width="50" height="50">
-            </rect>
-            <rect id="background" x="0" y="25" width="50" height="25">
-            </rect>
-          </svg>
-        </div>
-      </customize-chrome-check-mark-wrapper>
-      <div class="label">$i18n{chromeColors}</div>
-    </div>
+    <template is="dom-if" if="[[!chromeRefresh2023Enabled_]]">
+      <div class="tile" tabindex="0" id="chromeColorsTile"
+          role="button" on-click="onChromeColorsClick_"
+          aria-current$="[[boolToString_(isChromeColorsSelected_)]]">
+        <customize-chrome-check-mark-wrapper
+            checked="[[isChromeColorsSelected_]]">
+          <div class="image-container">
+            <svg viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg"
+                xmlns:xlink="http://www.w3.org/1999/xlink">
+              <rect id="foreground" x="0" y="0" width="50" height="50">
+              </rect>
+              <rect id="background" x="0" y="25" width="50" height="25">
+              </rect>
+            </svg>
+          </div>
+        </customize-chrome-check-mark-wrapper>
+        <div class="label">$i18n{chromeColors}</div>
+      </div>
+    </template>
     <template is="dom-repeat" id="collectionsRepeat" items="[[collections_]]"
         on-rendered-item-count-changed="onCollectionsRendered_">
       <div class="tile collection" tabindex="0" role="button"

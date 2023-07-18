@@ -24,6 +24,7 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "ui/base/ui_base_features.h"
 
 namespace {
 
@@ -150,6 +151,9 @@ void NtpBackgroundService::FetchCollectionInfo() {
   // Add filtering for Panorama feature.
   if (base::FeatureList::IsEnabled(ntp_features::kCustomizeChromeSidePanel)) {
     request.add_filtering_label(base::StrCat({kFilteringLabel, ".panorama"}));
+  }
+  if (features::IsChromeWebuiRefresh2023()) {
+    request.add_filtering_label(base::StrCat({kFilteringLabel, ".gm3"}));
   }
 
   std::string serialized_proto;

@@ -25,6 +25,7 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/ui_base_features.h"
 #include "url/gurl.h"
 
 using testing::Eq;
@@ -132,6 +133,37 @@ TEST_P(NtpBackgroundServiceTest, CorrectCollectionRequest) {
             collection_request.filtering_label(1));
   EXPECT_EQ("chrome_desktop_ntp.panorama",
             collection_request.filtering_label(2));
+}
+
+// Add GM3 filter if ChromeWebuiRefresh2023 flag is enabled.
+TEST_P(NtpBackgroundServiceTest, CollectionRequestWithGM3Flag) {
+  // Enable ChromeWebuiRefresh2023.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {features::kChromeRefresh2023, features::kChromeWebuiRefresh2023}, {});
+
+  g_browser_process->SetApplicationLocale("foo");
+  service()->FetchCollectionInfo();
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(1u, test_url_loader_factory()->pending_requests()->size());
+  std::string request_body(test_url_loader_factory()
+                               ->pending_requests()
+                               ->at(0)
+                               .request.request_body->elements()
+                               ->at(0)
+                               .As<network::DataElementBytes>()
+                               .AsStringPiece());
+  ntp::background::GetCollectionsRequest collection_request;
+  EXPECT_TRUE(collection_request.ParseFromString(request_body));
+  EXPECT_EQ("foo", collection_request.language());
+  EXPECT_EQ(4, collection_request.filtering_label_size());
+  EXPECT_EQ("chrome_desktop_ntp", collection_request.filtering_label(0));
+  EXPECT_EQ("chrome_desktop_ntp.M" + version_info::GetMajorVersionNumber(),
+            collection_request.filtering_label(1));
+  EXPECT_EQ("chrome_desktop_ntp.panorama",
+            collection_request.filtering_label(2));
+  EXPECT_EQ("chrome_desktop_ntp.gm3", collection_request.filtering_label(3));
 }
 
 TEST_P(NtpBackgroundServiceTest, CollectionInfoNetworkError) {

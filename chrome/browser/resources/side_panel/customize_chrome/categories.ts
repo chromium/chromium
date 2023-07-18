@@ -44,7 +44,6 @@ const CategoriesElementBase = HelpBubbleMixin(PolymerElement) as
 export interface CategoriesElement {
   $: {
     chromeWebStoreTile: HTMLElement,
-    chromeColorsTile: HTMLElement,
     classicChromeTile: HTMLElement,
     heading: SpHeading,
     uploadImageTile: HTMLElement,

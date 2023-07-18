@@ -120,9 +120,15 @@ suite('CategoriesTest', () => {
   });
 
   test('clicking chrome colors sends event', async () => {
+    document.documentElement.toggleAttribute('chrome-refresh-2023', false);
+    await setInitialSettings(1);
     const eventPromise =
         eventToPromise('chrome-colors-select', categoriesElement);
-    categoriesElement.$.chromeColorsTile.click();
+    const chromeColorsTile =
+        categoriesElement.shadowRoot!.querySelector('#chromeColorsTile');
+    assertTrue(!!chromeColorsTile);
+
+    (chromeColorsTile as HTMLElement).click();
     const event = await eventPromise;
     assertTrue(!!event);
   });
@@ -245,5 +251,14 @@ suite('CategoriesTest', () => {
             '#classicChromeTile #cornerNewTabPageTile #cornerNewTabPage')!.src,
         'chrome://customize-chrome-side-panel.top-chrome/icons/' +
             'gm3_corner_new_tab_page.svg');
+  });
+
+  test('Hide chrome colors collection when GM3', async () => {
+    document.documentElement.toggleAttribute('chrome-refresh-2023', true);
+
+    await setInitialSettings(0);
+
+    assertTrue(
+        !categoriesElement.shadowRoot!.querySelector('#chromeColorsTile'));
   });
 });
