@@ -61,12 +61,12 @@ void InitThreading() {
   }
 }
 
-TimeDelta PlatformThread::Delegate::GetRealtimePeriod() {
+TimeDelta PlatformThreadBase::Delegate::GetRealtimePeriod() {
   return TimeDelta();
 }
 
 // static
-void PlatformThread::YieldCurrentThread() {
+void PlatformThreadBase::YieldCurrentThread() {
   // Don't use sched_yield(), as it can lead to 10ms delays.
   //
   // This only depresses the thread priority for 1ms, which is more in line
@@ -77,7 +77,7 @@ void PlatformThread::YieldCurrentThread() {
 }
 
 // static
-void PlatformThread::SetName(const std::string& name) {
+void PlatformThreadBase::SetName(const std::string& name) {
   ThreadIdNameManager::GetInstance()->SetName(name);
 
   // macOS does not expose the length limit of the name, so hardcode it.
@@ -149,7 +149,7 @@ std::atomic<TimeConstraints> g_time_constraints;
 }  // namespace
 
 // static
-void PlatformThread::InitFeaturesPostFieldTrial() {
+void PlatformThreadApple::InitFeaturesPostFieldTrial() {
   // A DCHECK is triggered on FeatureList initialization if the state of a
   // feature has been checked before. To avoid triggering this DCHECK in unit
   // tests that call this before initializing the FeatureList, only check the
@@ -164,7 +164,7 @@ void PlatformThread::InitFeaturesPostFieldTrial() {
 }
 
 // static
-void PlatformThread::SetCurrentThreadRealtimePeriodValue(
+void PlatformThreadApple::SetCurrentThreadRealtimePeriodValue(
     TimeDelta realtime_period) {
   if (g_use_optimized_realtime_threading.load()) {
     NSThread.currentThread.threadDictionary[kRealtimePeriodNsKey] =
@@ -292,7 +292,7 @@ void SetPriorityRealtimeAudio(TimeDelta realtime_period) {
 }  // anonymous namespace
 
 // static
-bool PlatformThread::CanChangeThreadType(ThreadType from, ThreadType to) {
+bool PlatformThreadBase::CanChangeThreadType(ThreadType from, ThreadType to) {
   return true;
 }
 
@@ -357,7 +357,7 @@ void SetCurrentThreadTypeImpl(ThreadType thread_type,
 }  // namespace internal
 
 // static
-ThreadPriorityForTest PlatformThread::GetCurrentThreadPriorityForTest() {
+ThreadPriorityForTest PlatformThreadBase::GetCurrentThreadPriorityForTest() {
   NSNumber* priority = base::mac::ObjCCast<NSNumber>(
       NSThread.currentThread.threadDictionary[kThreadPriorityForTestKey]);
 

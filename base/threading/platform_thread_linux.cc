@@ -394,7 +394,7 @@ GetCurrentThreadPriorityForPlatformForTest() {
 }  // namespace internal
 
 // static
-void PlatformThread::SetName(const std::string& name) {
+void PlatformThreadBase::SetName(const std::string& name) {
   ThreadIdNameManager::GetInstance()->SetName(name);
 
 #if !BUILDFLAG(IS_NACL) && !BUILDFLAG(IS_AIX)
@@ -419,7 +419,7 @@ void PlatformThread::SetName(const std::string& name) {
 
 #if !BUILDFLAG(IS_NACL)
 // static
-void PlatformThread::SetThreadTypeDelegate(ThreadTypeDelegate* delegate) {
+void PlatformThreadLinux::SetThreadTypeDelegate(ThreadTypeDelegate* delegate) {
   // A component cannot override a delegate set by another component, thus
   // disallow setting a delegate when one already exists.
   DCHECK(!g_thread_type_delegate || !delegate);
@@ -430,9 +430,9 @@ void PlatformThread::SetThreadTypeDelegate(ThreadTypeDelegate* delegate) {
 
 #if !BUILDFLAG(IS_NACL) && !BUILDFLAG(IS_AIX)
 // static
-void PlatformThread::SetThreadType(ProcessId process_id,
-                                   PlatformThreadId thread_id,
-                                   ThreadType thread_type) {
+void PlatformThreadLinux::SetThreadType(ProcessId process_id,
+                                        PlatformThreadId thread_id,
+                                        ThreadType thread_type) {
   // For legacy schedtune interface
   SetThreadCgroupsForThreadType(thread_id, thread_type);
 

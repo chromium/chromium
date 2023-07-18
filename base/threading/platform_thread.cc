@@ -21,7 +21,7 @@ ABSL_CONST_INIT thread_local ThreadType current_thread_type =
 }  // namespace
 
 // static
-void PlatformThread::SetCurrentThreadType(ThreadType thread_type) {
+void PlatformThreadBase::SetCurrentThreadType(ThreadType thread_type) {
   MessagePumpType message_pump_type = MessagePumpType::DEFAULT;
   if (CurrentIOThread::IsSet()) {
     message_pump_type = MessagePumpType::IO;
@@ -35,12 +35,12 @@ void PlatformThread::SetCurrentThreadType(ThreadType thread_type) {
 }
 
 // static
-ThreadType PlatformThread::GetCurrentThreadType() {
+ThreadType PlatformThreadBase::GetCurrentThreadType() {
   return current_thread_type;
 }
 
 // static
-absl::optional<TimeDelta> PlatformThread::GetThreadLeewayOverride() {
+absl::optional<TimeDelta> PlatformThreadBase::GetThreadLeewayOverride() {
 #if BUILDFLAG(IS_FUCHSIA)
   // On Fuchsia, all audio threads run with the CPU scheduling profile that uses
   // an interval of |kAudioSchedulingPeriod|. Using the default leeway may lead
