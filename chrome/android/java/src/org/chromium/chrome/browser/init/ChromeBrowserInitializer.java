@@ -224,6 +224,9 @@ public class ChromeBrowserInitializer {
         DeviceUtils.addDeviceSpecificUserAgentSwitch();
         ApplicationStatus.registerStateListenerForAllActivities(createActivityStateListener());
 
+        ChromeStartupDelegate startupDelegate = AppHooks.get().createChromeStartupDelegate();
+        startupDelegate.initGlobals();
+
         mPreInflationStartupComplete = true;
     }
 
