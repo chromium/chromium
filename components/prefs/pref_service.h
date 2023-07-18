@@ -80,6 +80,12 @@ class COMPONENTS_PREFS_EXPORT PrefService {
     EXCLUDE_DEFAULTS,
   };
 
+  struct COMPONENTS_PREFS_EXPORT PreferenceValueAndStore {
+    std::string name;
+    base::Value value;
+    PrefValueStore::PrefStoreType store;
+  };
+
   // A helper class to store all the information associated with a preference.
   class COMPONENTS_PREFS_EXPORT Preference {
    public:
@@ -335,6 +341,10 @@ class COMPONENTS_PREFS_EXPORT PrefService {
   // will be included. Otherwise, these will be omitted from the returned
   // dictionary.
   base::Value::Dict GetPreferenceValues(IncludeDefaults include_defaults) const;
+
+  // Returns a map of the preference values by their path including prefs that
+  // have their default value.
+  std::vector<PreferenceValueAndStore> GetPreferencesValueAndStore() const;
 
   bool ReadOnly() const;
 

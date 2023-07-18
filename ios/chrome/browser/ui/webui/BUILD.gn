@@ -56,6 +56,7 @@ source_set("webui") {
     "//components/download/resources/download_internals:resources",
     "//components/flags_ui",
     "//components/keyed_service/core",
+    "//components/local_state",
     "//components/metrics_services_manager",
     "//components/ntp_tiles",
     "//components/password_manager/core/browser",

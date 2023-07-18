@@ -108,6 +108,13 @@ class COMPONENTS_PREFS_EXPORT PrefValueStore {
       PrefStore* default_prefs,
       PrefNotifier* pref_notifier);
 
+  // Returns the pref store type identifying the source that controls the
+  // Preference identified by |name|. If none of the sources has a value,
+  // INVALID_STORE is returned. In practice, the default PrefStore
+  // should always have a value for any registered preferencem, so INVALID_STORE
+  // indicates an error.
+  PrefStoreType ControllingPrefStoreForPref(const std::string& name) const;
+
   // Gets the value for the given preference name that has the specified value
   // type. Values stored in a PrefStore that have the matching |name| but
   // a non-matching |type| are silently skipped. Returns true if a valid value
@@ -212,13 +219,6 @@ class COMPONENTS_PREFS_EXPORT PrefValueStore {
   bool PrefValueInStoreRange(const std::string& name,
                              PrefStoreType first_checked_store,
                              PrefStoreType last_checked_store) const;
-
-  // Returns the pref store type identifying the source that controls the
-  // Preference identified by |name|. If none of the sources has a value,
-  // INVALID_STORE is returned. In practice, the default PrefStore
-  // should always have a value for any registered preferencem, so INVALID_STORE
-  // indicates an error.
-  PrefStoreType ControllingPrefStoreForPref(const std::string& name) const;
 
   // Get a value from the specified |store|.
   bool GetValueFromStore(base::StringPiece name,

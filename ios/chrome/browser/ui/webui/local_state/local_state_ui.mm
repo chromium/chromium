@@ -51,8 +51,8 @@ void LocalStateUIHandler::RegisterMessages() {
 }
 
 void LocalStateUIHandler::HandleRequestJson(const base::Value::List& args) {
-  absl::optional<std::string> json =
-      GetPrefsAsJson(GetApplicationContext()->GetLocalState());
+  absl::optional<std::string> json = local_state_utils::GetPrefsAsJson(
+      GetApplicationContext()->GetLocalState());
   if (!json) {
     json = "Error loading Local State file.";
   }

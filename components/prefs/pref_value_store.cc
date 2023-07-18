@@ -106,6 +106,16 @@ std::unique_ptr<PrefValueStore> PrefValueStore::CloneAndSpecialize(
       recommended_prefs, default_prefs, pref_notifier);
 }
 
+PrefValueStore::PrefStoreType PrefValueStore::ControllingPrefStoreForPref(
+    const std::string& name) const {
+  for (size_t i = 0; i <= PREF_STORE_TYPE_MAX; ++i) {
+    if (PrefValueInStore(name, static_cast<PrefStoreType>(i))) {
+      return static_cast<PrefStoreType>(i);
+    }
+  }
+  return INVALID_STORE;
+}
+
 bool PrefValueStore::GetValue(base::StringPiece name,
                               base::Value::Type type,
                               const base::Value** out_value) const {
@@ -231,15 +241,6 @@ bool PrefValueStore::PrefValueInStoreRange(
       return true;
   }
   return false;
-}
-
-PrefValueStore::PrefStoreType PrefValueStore::ControllingPrefStoreForPref(
-    const std::string& name) const {
-  for (size_t i = 0; i <= PREF_STORE_TYPE_MAX; ++i) {
-    if (PrefValueInStore(name, static_cast<PrefStoreType>(i)))
-      return static_cast<PrefStoreType>(i);
-  }
-  return INVALID_STORE;
 }
 
 bool PrefValueStore::GetValueFromStore(base::StringPiece name,

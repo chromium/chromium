@@ -11,6 +11,7 @@
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/url_constants.h"
+#include "components/local_state/local_state_utils.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_thread.h"
 
@@ -32,12 +33,7 @@ void PrefsInternalsSource::StartDataRequest(
     const content::WebContents::Getter& wc_getter,
     content::URLDataSource::GotDataCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  std::string json;
-  base::Value::Dict prefs =
-      profile_->GetPrefs()->GetPreferenceValues(PrefService::INCLUDE_DEFAULTS);
-  CHECK(base::JSONWriter::WriteWithOptions(
-      prefs, base::JSONWriter::OPTIONS_PRETTY_PRINT, &json));
-
-  std::move(callback).Run(
-      base::MakeRefCounted<base::RefCountedString>(std::move(json)));
+  std::move(callback).Run(base::MakeRefCounted<base::RefCountedString>(
+      local_state_utils::GetPrefsAsJson(profile_->GetPrefs())
+          .value_or(std::string())));
 }

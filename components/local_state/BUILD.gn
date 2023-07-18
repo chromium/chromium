@@ -29,6 +29,7 @@ source_set("local_state") {
   deps = [
     "//base",
     "//components/prefs",
+    "//extensions/buildflags",
   ]
 }
 
@@ -39,6 +40,9 @@ source_set("unit_tests") {
   deps = [
     ":local_state",
     "//base",
+    "//components/prefs:prefs",
+    "//components/prefs:test_support",
+    "//extensions/buildflags",
     "//testing/gtest",
   ]
 }
