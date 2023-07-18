@@ -712,8 +712,12 @@ public class BookmarkUtils {
         return resources.getDimensionPixelSize(R.dimen.bookmark_favicon_display_size);
     }
 
-    /** Returns whether the given folder can have a new folder added to it. */
-    public static boolean canAddFolderToParent(BookmarkModel bookmarkModel, BookmarkId parent) {
+    /**
+     * Returns whether the given folder being viewed can have a new folder added to it. While in
+     * improved bookmarks, this includes the root folder.
+     */
+    public static boolean canAddFolderWhileViewingParent(
+            BookmarkModel bookmarkModel, BookmarkId parent) {
         return !Objects.equals(parent, bookmarkModel.getReadingListFolder())
                 && !Objects.equals(parent, bookmarkModel.getPartnerFolderId())
                 && !(Objects.equals(parent, bookmarkModel.getRootFolderId())

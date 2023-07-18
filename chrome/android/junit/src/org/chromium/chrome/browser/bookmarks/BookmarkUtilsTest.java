@@ -48,22 +48,30 @@ public class BookmarkUtilsTest {
     }
 
     @Test
-    public void testCanAddFolderToParent() {
-        assertFalse(BookmarkUtils.canAddFolderToParent(mBookmarkModel, ROOT_BOOKMARK_ID));
-        assertTrue(BookmarkUtils.canAddFolderToParent(mBookmarkModel, DESKTOP_BOOKMARK_ID));
-        assertTrue(BookmarkUtils.canAddFolderToParent(mBookmarkModel, FOLDER_BOOKMARK_ID_A));
-        assertFalse(BookmarkUtils.canAddFolderToParent(mBookmarkModel, READING_LIST_BOOKMARK_ID));
-        assertFalse(BookmarkUtils.canAddFolderToParent(mBookmarkModel, PARTNER_BOOKMARK_ID));
+    public void testcanAddFolderWhileViewingParent() {
+        assertFalse(BookmarkUtils.canAddFolderWhileViewingParent(mBookmarkModel, ROOT_BOOKMARK_ID));
+        assertTrue(
+                BookmarkUtils.canAddFolderWhileViewingParent(mBookmarkModel, DESKTOP_BOOKMARK_ID));
+        assertTrue(
+                BookmarkUtils.canAddFolderWhileViewingParent(mBookmarkModel, FOLDER_BOOKMARK_ID_A));
+        assertFalse(BookmarkUtils.canAddFolderWhileViewingParent(
+                mBookmarkModel, READING_LIST_BOOKMARK_ID));
+        assertFalse(
+                BookmarkUtils.canAddFolderWhileViewingParent(mBookmarkModel, PARTNER_BOOKMARK_ID));
     }
 
     @Test
     @EnableFeatures(ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS)
-    public void testCanAddFolderToParent_improvedBookmarksEnabled() {
-        assertTrue(BookmarkUtils.canAddFolderToParent(mBookmarkModel, ROOT_BOOKMARK_ID));
-        assertTrue(BookmarkUtils.canAddFolderToParent(mBookmarkModel, DESKTOP_BOOKMARK_ID));
-        assertTrue(BookmarkUtils.canAddFolderToParent(mBookmarkModel, FOLDER_BOOKMARK_ID_A));
-        assertFalse(BookmarkUtils.canAddFolderToParent(mBookmarkModel, READING_LIST_BOOKMARK_ID));
-        assertFalse(BookmarkUtils.canAddFolderToParent(mBookmarkModel, PARTNER_BOOKMARK_ID));
+    public void testcanAddFolderWhileViewingParent_improvedBookmarksEnabled() {
+        assertTrue(BookmarkUtils.canAddFolderWhileViewingParent(mBookmarkModel, ROOT_BOOKMARK_ID));
+        assertTrue(
+                BookmarkUtils.canAddFolderWhileViewingParent(mBookmarkModel, DESKTOP_BOOKMARK_ID));
+        assertTrue(
+                BookmarkUtils.canAddFolderWhileViewingParent(mBookmarkModel, FOLDER_BOOKMARK_ID_A));
+        assertFalse(BookmarkUtils.canAddFolderWhileViewingParent(
+                mBookmarkModel, READING_LIST_BOOKMARK_ID));
+        assertFalse(
+                BookmarkUtils.canAddFolderWhileViewingParent(mBookmarkModel, PARTNER_BOOKMARK_ID));
     }
 
     @Test
