@@ -15,10 +15,7 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-/**
- * A class representing the UI state of the {@link BookmarkManager}. All
- * states can be uniquely identified by a URL.
- */
+/** A class representing the UI state of the {@link BookmarkManagerMediator}. */
 public class BookmarkUiState {
     @IntDef({BookmarkUiMode.INVALID, BookmarkUiMode.LOADING, BookmarkUiMode.FOLDER,
             BookmarkUiMode.SEARCHING})
@@ -68,8 +65,8 @@ public class BookmarkUiState {
     }
 
     /**
-     * @return A state corresponding to the URI object. If the URI is not valid,
-     *         return all_bookmarks.
+     * @return A state corresponding to the URI object. If the URI is not valid a folder state for
+     * the root folder will be returned.
      */
     static BookmarkUiState createStateFromUrl(Uri uri, BookmarkModel bookmarkModel) {
         String url = uri.toString();
@@ -118,9 +115,7 @@ public class BookmarkUiState {
         return mUiMode == other.mUiMode && TextUtils.equals(mUrl, other.mUrl);
     }
 
-    /**
-     * @return Whether this state is valid.
-     */
+    /** Returns whether this state is valid. */
     boolean isValid(BookmarkModel bookmarkModel) {
         if (mUrl == null || mUiMode == BookmarkUiMode.INVALID) return false;
         if (mUrl.equals(SHOPPING_FILTER_URL)) return true;
