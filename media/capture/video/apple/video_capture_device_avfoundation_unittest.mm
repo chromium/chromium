@@ -287,7 +287,8 @@ TEST(VideoCaptureDeviceAVFoundationMacTest, ForwardsOddPixelBufferResolution) {
                                                 0, 0);
     [captureDevice
         callLocked:base::BindLambdaForTesting([&] {
-          EXPECT_CALL(frame_receiver, ReceiveFrame(_, _, format, _, _, _, _));
+          EXPECT_CALL(frame_receiver,
+                      ReceiveFrame(_, _, format, _, _, _, _, _));
           [captureDevice processPixelBufferPlanes:buffer->pixel_buffer
                                     captureFormat:format
                                        colorSpace:gfx::ColorSpace::CreateSRGB()

@@ -24,7 +24,8 @@ class MockVideoCaptureDeviceAVFoundationFrameReceiver
                const gfx::ColorSpace color_space,
                int aspect_numerator,
                int aspect_denominator,
-               base::TimeDelta timestamp),
+               base::TimeDelta timestamp,
+               int rotation),
               (override));
 
   MOCK_METHOD(void,

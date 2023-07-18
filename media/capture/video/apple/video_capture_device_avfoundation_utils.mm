@@ -103,4 +103,39 @@ gfx::Size GetSampleBufferSize(CMSampleBufferRef sample_buffer) {
   return gfx::Size(dimensions.width, dimensions.height);
 }
 
+#if BUILDFLAG(IS_IOS)
+absl::optional<int> MaybeGetVideoRotation(
+    UIDeviceOrientation orientation,
+    AVCaptureDevicePosition camera_position) {
+  bool is_front_camera = NO;
+  if (camera_position == AVCaptureDevicePositionFront) {
+    is_front_camera = YES;
+  } else if (camera_position == AVCaptureDevicePositionBack) {
+    is_front_camera = NO;
+  }
+
+  absl::optional<int> rotation;
+  switch (orientation) {
+    case UIDeviceOrientationPortrait:
+      rotation = 90;
+      break;
+    case UIDeviceOrientationPortraitUpsideDown:
+      rotation = 270;
+      break;
+    case UIDeviceOrientationLandscapeLeft:
+      rotation = is_front_camera ? 180 : 0;
+      break;
+    case UIDeviceOrientationLandscapeRight:
+      rotation = is_front_camera ? 0 : 180;
+      break;
+    // Don't change video orientation for FaceUp or FaceDown.
+    case UIDeviceOrientationFaceUp:
+    case UIDeviceOrientationFaceDown:
+    case UIDeviceOrientationUnknown:
+      break;
+  }
+  return rotation;
+}
+#endif
+
 }  // namespace media

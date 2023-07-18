@@ -77,7 +77,8 @@ class CAPTURE_EXPORT VideoCaptureDeviceApple
                     const gfx::ColorSpace color_space,
                     int aspect_numerator,
                     int aspect_denominator,
-                    base::TimeDelta timestamp) override;
+                    base::TimeDelta timestamp,
+                    int rotation) override;
   void ReceiveExternalGpuMemoryBufferFrame(CapturedExternalVideoBuffer frame,
                                            base::TimeDelta timestamp) override;
   void OnPhotoTaken(const uint8_t* image_data,

@@ -35,6 +35,10 @@
 #import "media/capture/video/mac/video_capture_metrics_mac.h"
 #endif
 
+#if BUILDFLAG(IS_IOS)
+#import <UIKit/UIKit.h>
+#endif
+
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
@@ -168,6 +172,11 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
   // The following attributes are set via -setCaptureHeight:width:frameRate:.
   float _frameRate;
 
+#if BUILDFLAG(IS_IOS)
+  UIDeviceOrientation _orientation;
+#endif
+  int _rotation;
+
   // Usage of GPU memory buffer is controlled by
   // `--disable-video-capture-use-gpu-memory-buffer` and
   // `--video-capture-use-gpu-memory-buffer` commandline switches. This flag
@@ -256,6 +265,7 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
                               "SampleDeliveryDispatchQueue",
                               DISPATCH_QUEUE_SERIAL);
     DCHECK(frameReceiver);
+    _rotation = 0;
     _useGPUMemoryBuffer = true;
     _capturedFirstFrame = false;
     _weakPtrHolderForStallCheck.the_self = self;
@@ -263,9 +273,36 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
     [self setFrameReceiver:frameReceiver];
     _captureSession = [[AVCaptureSession alloc] init];
     _sampleBufferTransformer = media::SampleBufferTransformer::Create();
+
+#if BUILDFLAG(IS_IOS)
+    _orientation = UIDeviceOrientationUnknown;
+    [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
+    [[NSNotificationCenter defaultCenter]
+        addObserver:self
+           selector:@selector(orientationChanged:)
+               name:UIDeviceOrientationDidChangeNotification
+             object:[UIDevice currentDevice]];
+#endif
   }
   return self;
 }
+
+#if BUILDFLAG(IS_IOS)
+- (void)orientationChanged:(NSNotification*)note {
+  UIDevice* device = note.object;
+  UIDeviceOrientation deviceOrientation = device.orientation;
+  AVCaptureConnection* captureConnection =
+      [_captureVideoDataOutput connectionWithMediaType:AVMediaTypeVideo];
+  if ([captureConnection isVideoOrientationSupported]) {
+    _orientation = deviceOrientation;
+    AVCaptureDevicePosition camera_position =
+        [[_captureDeviceInput device] position];
+    _rotation =
+        media::MaybeGetVideoRotation(_orientation, camera_position).value_or(0);
+    [self captureConfigurationChanged];
+  }
+}
+#endif
 
 - (void)dealloc {
   // Stopping a running photo output takes `_lock`. To avoid this happening
@@ -366,6 +403,18 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
                         options:0
                         context:(__bridge void*)_captureDevice];
   }
+
+#if BUILDFLAG(IS_IOS)
+  _orientation = [[UIDevice currentDevice] orientation];
+  if (_orientation == UIDeviceOrientationUnknown) {
+    _orientation = UIDeviceOrientationPortrait;
+  }
+
+  AVCaptureDevicePosition camera_position =
+      [[_captureDeviceInput device] position];
+  _rotation =
+      media::MaybeGetVideoRotation(_orientation, camera_position).value_or(0);
+#endif
 
   return YES;
 }
@@ -694,7 +743,7 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
     if (safe_to_forward) {
       _frameReceiver->ReceiveFrame(
           reinterpret_cast<const uint8_t*>(baseAddress), frameSize,
-          captureFormat, colorSpace, 0, 0, timestamp);
+          captureFormat, colorSpace, 0, 0, timestamp, _rotation);
     }
   }
 }
@@ -807,7 +856,7 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
   _frameReceiver->ReceiveFrame(
       packedBufferCopy.empty() ? pixelBufferAddresses[0]
                                : packedBufferCopy.data(),
-      frameSize, captureFormat, colorSpace, 0, 0, timestamp);
+      frameSize, captureFormat, colorSpace, 0, 0, timestamp, _rotation);
   CVPixelBufferUnlockBaseAddress(pixelBuffer, kCVPixelBufferLock_ReadOnly);
   return YES;
 }

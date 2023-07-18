@@ -27,7 +27,8 @@ class CAPTURE_EXPORT VideoCaptureDeviceAVFoundationFrameReceiver {
                             const gfx::ColorSpace color_space,
                             int aspect_numerator,
                             int aspect_denominator,
-                            base::TimeDelta timestamp) = 0;
+                            base::TimeDelta timestamp,
+                            int rotation) = 0;
 
   // Called to deliver GpuMemoryBuffer-wrapped captured video frames. This
   // function may be called from any thread, including those controlled by
