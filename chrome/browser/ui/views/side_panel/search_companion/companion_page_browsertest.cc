@@ -1652,8 +1652,6 @@ IN_PROC_BROWSER_TEST_F(CompanionPageDisabledBrowserTest,
   EXPECT_FALSE(base::FeatureList::IsEnabled(
       companion::features::internal::kSidePanelCompanion));
 
-  base::HistogramTester histogram_tester;
-
   // Navigate to a random page.
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), CreateUrl(kHost, kRelativeUrl1)));
@@ -1670,6 +1668,8 @@ IN_PROC_BROWSER_TEST_F(CompanionPageDisabledBrowserTest,
   EXPECT_EQ(0u, requests_received_on_server());
   EXPECT_FALSE(side_panel_toolbar_container()->IsPinned(
       SidePanelEntry::Id::kSearchCompanion));
+
+  base::HistogramTester histogram_tester;
 
   // Navigate to exps registration success page. It should enable the pref and
   // companion.
