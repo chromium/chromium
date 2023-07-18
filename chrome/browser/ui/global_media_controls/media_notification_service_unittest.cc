@@ -556,7 +556,8 @@ TEST_F(MediaNotificationServiceCastTest, GetDeviceListHostForSession) {
   service()->GetDeviceListHostForSession(
       id.ToString(), TakeReceiverAndExpectNoDisconnect(host_remote),
       TakeRemoteAndExpectNoDisconnect(client.receiver()));
-  base::RunLoop().RunUntilIdle();
+  host_remote.FlushForTesting();
+  client.receiver().FlushForTesting();
 }
 
 TEST_F(MediaNotificationServiceCastTest,
@@ -566,7 +567,8 @@ TEST_F(MediaNotificationServiceCastTest,
   service()->GetDeviceListHostForSession(
       "invalid_id", TakeReceiverAndExpectDisconnect(host_remote),
       TakeRemoteAndExpectDisconnect(client.receiver()));
-  base::RunLoop().RunUntilIdle();
+  host_remote.FlushForTesting();
+  client.receiver().FlushForTesting();
 }
 
 TEST_F(MediaNotificationServiceCastTest, GetDeviceListHostForPresentation) {
@@ -577,7 +579,8 @@ TEST_F(MediaNotificationServiceCastTest, GetDeviceListHostForPresentation) {
   service()->GetDeviceListHostForPresentation(
       TakeReceiverAndExpectNoDisconnect(host_remote),
       TakeRemoteAndExpectNoDisconnect(client.receiver()));
-  base::RunLoop().RunUntilIdle();
+  host_remote.FlushForTesting();
+  client.receiver().FlushForTesting();
 }
 
 TEST_F(MediaNotificationServiceCastTest,
@@ -587,7 +590,23 @@ TEST_F(MediaNotificationServiceCastTest,
   service()->GetDeviceListHostForPresentation(
       TakeReceiverAndExpectDisconnect(host_remote),
       TakeRemoteAndExpectDisconnect(client.receiver()));
-  base::RunLoop().RunUntilIdle();
+  host_remote.FlushForTesting();
+  client.receiver().FlushForTesting();
+}
+
+TEST_F(MediaNotificationServiceCastTest, DeleteDeviceListHostOnShutdown) {
+  mojo::Remote<mojom::DeviceListHost> host_remote;
+  MockDeviceListClient client;
+  auto id = SimulatePlayingControllableMediaForWebContents(web_contents());
+  service()->GetDeviceListHostForSession(
+      id.ToString(), TakeReceiverAndExpectDisconnect(host_remote),
+      TakeRemoteAndExpectDisconnect(client.receiver()));
+
+  // Shutdown() should cause a disconnect, fulfilling the expectations in
+  // TakeReceiver...() and TakeRemote...() above.
+  service()->Shutdown();
+  host_remote.FlushForTesting();
+  client.receiver().FlushForTesting();
 }
 
 TEST_F(MediaNotificationServiceCastTest,
