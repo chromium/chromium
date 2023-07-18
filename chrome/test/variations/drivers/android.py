@@ -86,12 +86,17 @@ class AndroidDriverFactory(DriverFactory):
       android_package=self.package_name,
       android_activity=self.activity_name,
     )
+    # We clean up the application dir and place several files there, so
+    # we need to keep the data when running webdriver.
+    options.mobile_options['androidKeepAppDataDir'] = True
 
     if seed_file:
       installed_seed_path = self._push_seed(seed_file)
       logging.info('Installed seed at (%s)', installed_seed_path)
       options.add_argument(
         f'variations-test-seed-path={installed_seed_path}')
+      options.add_argument('--disable-field-trial-config')
+      options.add_argument(f'--fake-variations-channel={self.channel}')
 
     driver = None
     try:
@@ -139,5 +144,15 @@ class WebviewDriverFactory(AndroidDriverFactory):
 
   #override
   def _push_seed(self, seed_file: str):
-    raise NotImplemented(f'not supported for webview.')
+    # Variation seeds for webview are always being loaded from app_webview.
+    package_dir = self.device.GetApplicationDataDirectory(self.package_name)
+    app_data_dir = posixpath.join(package_dir, 'app_webview')
+    local_seed_file = super()._push_seed(seed_file)
 
+    seed_path = posixpath.join(app_data_dir, 'variations_seed')
+    seed_new_path = posixpath.join(app_data_dir, 'variations_seed_new')
+    self.device.RunShellCommand(
+      ['cp', local_seed_file, seed_path], check_return=True, as_root=True)
+    self.device.RunShellCommand(
+      ['cp', local_seed_file, seed_new_path], check_return=True, as_root=True)
+    return local_seed_file
