@@ -401,6 +401,7 @@ void SurfaceTreeHost::UpdateHostWindowBounds() {
   // applied.
   aura::WindowOcclusionTracker::ScopedPause pause_occlusion;
 
+  const viz::LocalSurfaceId old_id = host_window_->GetLocalSurfaceId();
   const gfx::Rect& bounds = root_surface_->surface_hierarchy_content_bounds();
   gfx::Size size = bounds.size();
   if (client_submits_surfaces_in_pixel_coordinates_) {
@@ -412,7 +413,6 @@ void SurfaceTreeHost::UpdateHostWindowBounds() {
     host_window_->SetBounds({host_window_->bounds().origin(), size});
   }
 
-  const viz::LocalSurfaceId old_id = host_window_->GetLocalSurfaceId();
   if (previous_content_bounds_ != bounds &&
       host_window_->GetLocalSurfaceId() == old_id) {
     // Explicitly allocate local surface id if it's not updated since pixel
