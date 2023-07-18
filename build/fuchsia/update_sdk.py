@@ -7,6 +7,7 @@
 'fuchsia'."""
 
 import argparse
+import json
 import logging
 import os
 import platform
@@ -21,7 +22,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__),
 
 from common import SDK_ROOT, get_host_os, make_clean_directory
 
-_VERSION_FILE = os.path.join(SDK_ROOT, 'version')
+_VERSION_FILE = os.path.join(SDK_ROOT, 'meta', 'manifest.json')
 
 
 def _GetHostArch():
@@ -83,8 +84,11 @@ def main():
 
   gcs_tarball_prefix = GetSDKOverrideGCSPath()
   new_version = gcs_tarball_prefix if gcs_tarball_prefix else args.version
-  curr_version = (open(_VERSION_FILE, 'r').read().strip()
-                  if os.path.exists(_VERSION_FILE) else '')
+  curr_version = None
+  if os.path.exists(_VERSION_FILE):
+    with open(_VERSION_FILE) as f:
+      curr_version = json.load(f)['id']
+
   if new_version == curr_version:
     return
   make_clean_directory(SDK_ROOT)
@@ -121,8 +125,6 @@ def main():
   ]
   subprocess.run(build_def_cmd, check=True)
 
-  with open(_VERSION_FILE, 'w') as f:
-    f.write(new_version)
   return 0
 
 
