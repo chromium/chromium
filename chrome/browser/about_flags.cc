@@ -5793,16 +5793,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_ANDROID)
-    {"omnibox-adaptive-suggestions-visible-group-eligibility-update",
-     flag_descriptions::
-         kOmniboxAdaptiveSuggestionsVisibleGroupEligibilityUpdateName,
-     flag_descriptions::
-         kOmniboxAdaptiveSuggestionsVisibleGroupEligibilityUpdateDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(
-         chrome::android::
-             kOmniboxAdaptiveSuggestionsVisibleGroupEligibilityUpdate)},
-
     {"omnibox-adapt-narrow-tablet-windows",
      flag_descriptions::kOmniboxAdaptNarrowTabletWindowsName,
      flag_descriptions::kOmniboxAdaptNarrowTabletWindowsDescription, kOsAndroid,

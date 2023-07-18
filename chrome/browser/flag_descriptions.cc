@@ -2165,15 +2165,6 @@ const char kOmniboxAdaptiveSuggestionsCountDescription[] =
     "flag to adjust the limit of offered suggestions. The number of shown "
     "suggestions will be no less than the platform default limit.";
 
-const char kOmniboxAdaptiveSuggestionsVisibleGroupEligibilityUpdateName[] =
-    "Adaptive Suggestions Visible Group Eligibility Update";
-const char
-    kOmniboxAdaptiveSuggestionsVisibleGroupEligibilityUpdateDescription[] =
-        "When enabled, considers suggestions exposed 50% or more as fully "
-        "visible, and suggestions concealed 51% or more as fully hidden. This "
-        "changes the former behavior, where a suggestion exposed 1% or more "
-        "was considered fully visible.";
-
 const char kOmniboxAdaptNarrowTabletWindowsName[] =
     "Omnibox adapts to narrow tablet windows";
 const char kOmniboxAdaptNarrowTabletWindowsDescription[] =

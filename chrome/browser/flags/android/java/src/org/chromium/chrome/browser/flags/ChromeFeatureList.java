@@ -311,8 +311,6 @@ public abstract class ChromeFeatureList {
             "OfflinePagesDescriptivePendingStatus";
     public static final String OFFLINE_PAGES_LIVE_PAGE_SHARING = "OfflinePagesLivePageSharing";
     public static final String OMAHA_MIN_SDK_VERSION_ANDROID = "OmahaMinSdkVersionAndroid";
-    public static final String OMNIBOX_ADAPTIVE_SUGGESTIONS_VISIBLE_GROUP_ELIGIBILITY_UPDATE =
-            "AdaptiveSuggestionsVisibleGroupEligibilityUpdate";
     public static final String OMNIBOX_ADAPT_NARROW_TABLET_WINDOWS =
             "OmniboxAdaptNarrowTabletWindows";
     public static final String OMNIBOX_CACHE_SUGGESTION_RESOURCES =

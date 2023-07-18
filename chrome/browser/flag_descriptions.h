@@ -1228,11 +1228,6 @@ extern const char kOmniboxActionsInSuggestDescription[];
 extern const char kOmniboxAdaptiveSuggestionsCountName[];
 extern const char kOmniboxAdaptiveSuggestionsCountDescription[];
 
-extern const char
-    kOmniboxAdaptiveSuggestionsVisibleGroupEligibilityUpdateName[];
-extern const char
-    kOmniboxAdaptiveSuggestionsVisibleGroupEligibilityUpdateDescription[];
-
 extern const char kOmniboxAdaptNarrowTabletWindowsName[];
 extern const char kOmniboxAdaptNarrowTabletWindowsDescription[];
 

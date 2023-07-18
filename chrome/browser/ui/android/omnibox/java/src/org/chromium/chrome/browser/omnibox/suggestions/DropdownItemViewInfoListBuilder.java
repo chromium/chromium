@@ -349,15 +349,11 @@ class DropdownItemViewInfoListBuilder {
         }
 
         final List<AutocompleteMatch> suggestions = autocompleteResult.getSuggestionsList();
-        final boolean useOldEligibilityLogic =
-                !OmniboxFeatures.adaptiveSuggestionsVisibleGroupEligibilityUpdate();
 
         @Px
         int calculatedSuggestionsHeight = 0;
         int lastVisibleIndex;
         for (lastVisibleIndex = 0; lastVisibleIndex < suggestions.size(); lastVisibleIndex++) {
-            if (useOldEligibilityLogic && (calculatedSuggestionsHeight >= mDropdownHeight)) break;
-
             final AutocompleteMatch suggestion = suggestions.get(lastVisibleIndex);
             // We do not include suggestions with headers in partial grouping, so terminate early.
             if (suggestion.getGroupId() != AutocompleteMatch.INVALID_GROUP) {
@@ -368,11 +364,6 @@ class DropdownItemViewInfoListBuilder {
                     getProcessorForSuggestion(suggestion, lastVisibleIndex);
 
             int itemHeight = processor.getMinimumViewHeight();
-
-            if (useOldEligibilityLogic) {
-                calculatedSuggestionsHeight += itemHeight;
-                continue;
-            }
 
             // Evaluate suggestion and determine whether it should be considered visible or
             // concealed based on the degree to which it is exposed.
