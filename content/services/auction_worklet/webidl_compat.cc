@@ -56,6 +56,15 @@ bool DictConverter::GetOptionalSequence(
   return ConvertSequence(field, val, std::move(item_callback));
 }
 
+void DictConverter::PropagateErrorsFrom(DictConverter& other_converter) {
+  DCHECK(!failed_);
+  DCHECK(other_converter.failed_);
+  failed_ = true;
+  failure_exception_ = other_converter.failure_exception_;
+  failure_message_ = std::move(other_converter.failure_message_);
+  failed_with_timeout_ = other_converter.failed_with_timeout_;
+}
+
 v8::Local<v8::Value> DictConverter::GetMember(base::StringPiece field) {
   v8::Isolate* isolate = v8_helper_->isolate();
   // WebIDL treats undefined or null as a dict with all fields undefined.
@@ -283,8 +292,12 @@ bool DictConverter::ConvertSequence(
     }
 
     if (!item_callback.Run(next_item)) {
-      MarkFailed(base::StrCat(
-          {"Conversion for an item for sequence field '", field, "' failed."}));
+      // It's possible that the callback already propagated an error to us;
+      // if not, set one ourselves.
+      if (!failed_) {
+        MarkFailed(base::StrCat({"Conversion for an item for sequence field '",
+                                 field, "' failed."}));
+      }
       return false;
     }
   }

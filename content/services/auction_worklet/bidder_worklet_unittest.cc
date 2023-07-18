@@ -457,6 +457,7 @@ class BidderWorkletTest : public testing::Test {
       EXPECT_EQ(blink::PrintableAdCurrency(expected_bid->bid_currency),
                 blink::PrintableAdCurrency(bid_->bid_currency));
       EXPECT_EQ(expected_bid->ad_descriptor.url, bid_->ad_descriptor.url);
+      EXPECT_EQ(expected_bid->ad_descriptor.size, bid_->ad_descriptor.size);
       if (!expected_bid->ad_component_descriptors) {
         EXPECT_FALSE(bid_->ad_component_descriptors);
       } else {
@@ -1409,12 +1410,14 @@ TEST_F(BidderWorkletTest, GenerateBidReturnValueUrl) {
       R"({ad: ["ad"], bid:1, render:["http://response.test/"]})",
       /*expected_bid=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/absl::nullopt,
-      {"https://url.test/ generateBid() bid has incorrect structure."});
+      {"https://url.test/ generateBid() 'render': Required field 'url' "
+       "missing."});
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: ["ad"], bid:1, render:9})",
       /*expected_bid=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/absl::nullopt,
-      {"https://url.test/ generateBid() bid has incorrect structure."});
+      {"https://url.test/ generateBid() 'render': Value passed as dictionary "
+       "is neither object, null, nor undefined."});
 }
 
 TEST_F(BidderWorkletTest, GenerateBidReturnValueAdComponents) {
@@ -1514,9 +1517,8 @@ TEST_F(BidderWorkletTest, GenerateBidReturnValueAdComponents) {
         adComponents:[{}]})",
       /*expected_bid=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/absl::nullopt,
-      {"https://url.test/ generateBid() bid adComponents value must be an "
-       "array of strings or objects that contain the url string field and "
-       "optional width and height fields."});
+      {"https://url.test/ generateBid() adComponents entry: Required field "
+       "'url' missing."});
 
   // Up to 20 values in the output adComponents output array are allowed (And
   // they can all be the same URL).
@@ -1893,7 +1895,8 @@ TEST_F(BidderWorkletTest, GenerateBidSetBidThrows) {
        })",
       /*expected_bid=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/absl::nullopt,
-      {"https://url.test/:2 Uncaught TypeError: bid has incorrect structure."});
+      {"https://url.test/:2 Uncaught TypeError: 'render': Required field 'url' "
+       "missing."});
   RunGenerateBidWithJavascriptExpectingResult(
       R"(function generateBid() {
          setBid({ad: ["ad"], bid:1, render:9});
@@ -1901,7 +1904,8 @@ TEST_F(BidderWorkletTest, GenerateBidSetBidThrows) {
        })",
       /*expected_bid=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/absl::nullopt,
-      {"https://url.test/:2 Uncaught TypeError: bid has incorrect structure."});
+      {"https://url.test/:2 Uncaught TypeError: 'render': Value passed as "
+       "dictionary is neither object, null, nor undefined."});
 
   // ----------------------
   // No adComponents in IG.
@@ -1980,9 +1984,8 @@ TEST_F(BidderWorkletTest, GenerateBidSetBidThrows) {
        })",
       /*expected_bid=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/absl::nullopt,
-      {"https://url.test/:2 Uncaught TypeError: bid adComponents value must be "
-       "an array of strings or objects that contain the url string field and "
-       "optional width and height fields."});
+      {"https://url.test/:2 Uncaught TypeError: adComponents entry: Required "
+       "field 'url' missing."});
 
   // Up to 20 values in the output adComponents output array are allowed (And
   // they can all be the same URL).
@@ -2136,6 +2139,17 @@ TEST_F(BidderWorkletTest, GenerateBidSetBidNonTermConversion) {
       R"(function generateBid() {
          setBid({ get bid() { while(true) {} },
                  render:"https://response.test/"});
+         return {ad: "not_reached", bid: 4, render:"https://response.test/2"};
+       })",
+      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_data_version=*/absl::nullopt,
+      {"https://url.test/ execution of `generateBid` timed out."});
+
+  // Non-terminating conversion inside a field of the render dictionary.
+  RunGenerateBidWithJavascriptExpectingResult(
+      R"(function generateBid() {
+         setBid({bid: 1,
+                 render: { get url() { while(true) {} } } });
          return {ad: "not_reached", bid: 4, render:"https://response.test/2"};
        })",
       /*expected_bid=*/mojom::BidderWorkletBidPtr(),
@@ -8105,9 +8119,11 @@ TEST_F(BidderWorkletTest, GenerateBidRenderUrlWithSize) {
       R"({ad: "ad", bid: 1, render: {foo: "https://response.test/"}})",
       /*expected_bid=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/absl::nullopt, /*expected_errors=*/
-      {"https://url.test/ generateBid() bid has incorrect structure."});
+      {"https://url.test/ generateBid() 'render': Required field 'url' "
+       "missing."});
 
   // The 'render' field corresponds to an object with an invalid field.
+  // Extra fields are just ignored.
   RunGenerateBidWithReturnValueExpectingResult(
       R"({
           ad: "ad",
@@ -8119,25 +8135,34 @@ TEST_F(BidderWorkletTest, GenerateBidRenderUrlWithSize) {
             foo: 42
           }
         })",
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
-      /*expected_data_version=*/absl::nullopt, /*expected_errors=*/
-      {"https://url.test/ generateBid() bid has incorrect structure."});
+      /*expected_bid=*/mojom::BidderWorkletBid::New(
+          "\"ad\"", 1, /*bid_currency=*/absl::nullopt,
+          /*ad_cost=*/absl::nullopt,
+          blink::AdDescriptor(
+              GURL("https://response.test/"),
+              blink::AdSize(100, blink::AdSize::LengthUnit::kScreenWidth, 50,
+                            blink::AdSize::LengthUnit::kPixels)),
+          /*ad_component_descriptors=*/absl::nullopt,
+          /*modeling_signals=*/absl::nullopt, base::TimeDelta()));
 
   // The 'render' field corresponds to an empty object.
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: "ad", bid: 1, render: {}})",
       /*expected_bid=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/absl::nullopt, /*expected_errors=*/
-      {"https://url.test/ generateBid() bid has incorrect structure."});
+      {"https://url.test/ generateBid() 'render': Required field 'url' "
+       "missing."});
 
   // The 'render' field corresponds to an object without url string field.
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: "ad", bid: 1, render: {width: "100sw", height: "50px"}})",
       /*expected_bid=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/absl::nullopt, /*expected_errors=*/
-      {"https://url.test/ generateBid() bid has incorrect structure."});
+      {"https://url.test/ generateBid() 'render': Required field 'url' "
+       "missing."});
 
-  // Size is not of string type.
+  // Size is not of string type, but numbers just get stringified, so count
+  // as pixels.
   RunGenerateBidWithReturnValueExpectingResult(
       R"({
           ad: "ad",
@@ -8148,9 +8173,31 @@ TEST_F(BidderWorkletTest, GenerateBidRenderUrlWithSize) {
             height: 50
           }
         })",
+      /*expected_bid=*/mojom::BidderWorkletBid::New(
+          "\"ad\"", 1, /*bid_currency=*/absl::nullopt,
+          /*ad_cost=*/absl::nullopt,
+          blink::AdDescriptor(
+              GURL("https://response.test/"),
+              blink::AdSize(100, blink::AdSize::LengthUnit::kPixels, 50,
+                            blink::AdSize::LengthUnit::kPixels)),
+          /*ad_component_descriptors=*/absl::nullopt,
+          /*modeling_signals=*/absl::nullopt, base::TimeDelta()));
+
+  // Size is not convertible to string.
+  RunGenerateBidWithReturnValueExpectingResult(
+      R"({
+          ad: "ad",
+          bid: 1,
+          render: {
+            url: "https://response.test/",
+            width: {toString:() => { return {}; } },
+            height: 50
+          }
+        })",
       /*expected_bid=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/absl::nullopt, /*expected_errors=*/
-      {"https://url.test/ generateBid() bid has incorrect structure."});
+      {"undefined:0 Uncaught TypeError: Cannot convert object to primitive "
+       "value."});
 
   // Only width is specified.
   RunGenerateBidWithReturnValueExpectingResult(
@@ -8164,7 +8211,8 @@ TEST_F(BidderWorkletTest, GenerateBidRenderUrlWithSize) {
         })",
       /*expected_bid=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/absl::nullopt, /*expected_errors=*/
-      {"https://url.test/ generateBid() bid has incorrect structure."});
+      {"https://url.test/ generateBid() 'render': ads that specify dimensions "
+       "must specify both."});
 
   // Only height is specified.
   RunGenerateBidWithReturnValueExpectingResult(
@@ -8178,7 +8226,8 @@ TEST_F(BidderWorkletTest, GenerateBidRenderUrlWithSize) {
         })",
       /*expected_bid=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/absl::nullopt, /*expected_errors=*/
-      {"https://url.test/ generateBid() bid has incorrect structure."});
+      {"https://url.test/ generateBid() 'render': ads that specify dimensions "
+       "must specify both."});
 
   // Size has invalid units.
   RunGenerateBidWithReturnValueExpectingResult(
@@ -8396,12 +8445,11 @@ TEST_F(BidderWorkletTest, GenerateBidAdComponentsWithSize) {
         })",
       /*expected_bid=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/absl::nullopt, /*expected_errors=*/
-      {"https://url.test/ generateBid() bid adComponents value must be an "
-       "array of strings or objects that contain the url string field and "
-       "optional width and height fields."});
+      {"https://url.test/ generateBid() adComponents entry: Required field "
+       "'url' missing."});
 
   // The 'adComponents' field corresponds to an array of an object that has an
-  // invalid field.
+  // invalid field. That's OK.
   RunGenerateBidWithReturnValueExpectingResult(
       R"({
           ad: 0,
@@ -8416,11 +8464,14 @@ TEST_F(BidderWorkletTest, GenerateBidAdComponentsWithSize) {
             }
           ]
         })",
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
-      /*expected_data_version=*/absl::nullopt, /*expected_errors=*/
-      {"https://url.test/ generateBid() bid adComponents value must be an "
-       "array of strings or objects that contain the url string field and "
-       "optional width and height fields."});
+      /*expected_bid=*/mojom::BidderWorkletBid::New(
+          "0", 1, /*bid_currency=*/absl::nullopt, /*ad_cost=*/absl::nullopt,
+          blink::AdDescriptor(GURL("https://response.test/")),
+          std::vector<blink::AdDescriptor>{blink::AdDescriptor(
+              GURL("https://ad_component.test/"),
+              blink::AdSize(100, blink::AdSize::LengthUnit::kScreenWidth, 50,
+                            blink::AdSize::LengthUnit::kPixels))},
+          /*modeling_signals=*/absl::nullopt, base::TimeDelta()));
 
   // The 'adComponents' field corresponds to an array of an empty object.
   RunGenerateBidWithReturnValueExpectingResult(
@@ -8434,9 +8485,8 @@ TEST_F(BidderWorkletTest, GenerateBidAdComponentsWithSize) {
         })",
       /*expected_bid=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/absl::nullopt, /*expected_errors=*/
-      {"https://url.test/ generateBid() bid adComponents value must be an "
-       "array of strings or objects that contain the url string field and "
-       "optional width and height fields."});
+      {"https://url.test/ generateBid() adComponents entry: Required field "
+       "'url' missing."});
 
   // The 'adComponents' field corresponds to an array of an object without url
   // string field.
@@ -8454,11 +8504,10 @@ TEST_F(BidderWorkletTest, GenerateBidAdComponentsWithSize) {
         })",
       /*expected_bid=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/absl::nullopt, /*expected_errors=*/
-      {"https://url.test/ generateBid() bid adComponents value must be an "
-       "array of strings or objects that contain the url string field and "
-       "optional width and height fields."});
+      {"https://url.test/ generateBid() adComponents entry: Required field "
+       "'url' missing."});
 
-  // Size is not of string type.
+  // Size is not covertible to a string type.
   RunGenerateBidWithReturnValueExpectingResult(
       R"({
           ad: 0,
@@ -8466,16 +8515,15 @@ TEST_F(BidderWorkletTest, GenerateBidAdComponentsWithSize) {
           render: "https://response.test/",
           adComponents: [
             {
-              width: 100,
-              height: 50
+              url: "https://ad_component.test/",
+              width: {toString:() => { throw "oops" } },
+              height: {toString:() => { throw "oh no" } }
             }
           ]
         })",
       /*expected_bid=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/absl::nullopt, /*expected_errors=*/
-      {"https://url.test/ generateBid() bid adComponents value must be an "
-       "array of strings or objects that contain the url string field and "
-       "optional width and height fields."});
+      {"https://url.test/:14 Uncaught oh no."});
 
   // Only width is specified.
   RunGenerateBidWithReturnValueExpectingResult(
@@ -8492,9 +8540,8 @@ TEST_F(BidderWorkletTest, GenerateBidAdComponentsWithSize) {
         })",
       /*expected_bid=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/absl::nullopt, /*expected_errors=*/
-      {"https://url.test/ generateBid() bid adComponents value must be an "
-       "array of strings or objects that contain the url string field and "
-       "optional width and height fields."});
+      {"https://url.test/ generateBid() adComponents entry: ads that specify "
+       "dimensions must specify both."});
 
   // Only height is specified.
   RunGenerateBidWithReturnValueExpectingResult(
@@ -8511,9 +8558,8 @@ TEST_F(BidderWorkletTest, GenerateBidAdComponentsWithSize) {
         })",
       /*expected_bid=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/absl::nullopt, /*expected_errors=*/
-      {"https://url.test/ generateBid() bid adComponents value must be an "
-       "array of strings or objects that contain the url string field and "
-       "optional width and height fields."});
+      {"https://url.test/ generateBid() adComponents entry: ads that specify "
+       "dimensions must specify both."});
 
   // Size has invalid units.
   RunGenerateBidWithReturnValueExpectingResult(

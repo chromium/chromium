@@ -680,6 +680,89 @@ TEST_F(WebIDLCompatTest, SeqItemError) {
   EXPECT_FALSE(converter->FailureIsTimeout());
 }
 
+TEST_F(WebIDLCompatTest, SeqItemErrorPropagation) {
+  // Test of conversion in the middle of sequence failing and propagating
+  // an exception.
+  v8::Local<v8::Context> context = v8_helper_->CreateContext();
+  v8::Context::Scope ctx(context);
+
+  const char kScript[] = R"(
+    o1 = {
+      f1: [{"f": 1}, {"f":2}, {"f": {valueOf: () => { throw "Ouch" } } } ],
+    }
+    function make() { return o1 }
+  )";
+
+  auto converter = MakeFromScript(context, kScript);
+  bool saw_field = false;
+  std::vector<double> out;
+
+  EXPECT_FALSE(converter->GetOptionalSequence(
+      "f1", base::BindLambdaForTesting([&]() { saw_field = true; }),
+      base::BindLambdaForTesting([&](v8::Local<v8::Value> item) -> bool {
+        DictConverter inner(v8_helper_.get(), *time_limit_scope_,
+                            "'f1' entry: ", item);
+        double entry;
+        bool ok = inner.GetRequired("f", entry);
+        if (ok) {
+          out.push_back(entry);
+          return true;
+        } else {
+          converter->PropagateErrorsFrom(inner);
+          return false;
+        }
+      })));
+  EXPECT_THAT(out, ElementsAre(1.0, 2.0));
+  EXPECT_EQ("https://example.org/:3 Uncaught Ouch.", converter->ErrorMessage());
+  v8::MaybeLocal<v8::Value> exception = converter->FailureException();
+  ASSERT_FALSE(exception.IsEmpty());
+  std::string exception_str;
+  EXPECT_TRUE(gin::Converter<std::string>::FromV8(
+      v8_helper_->isolate(), exception.ToLocalChecked(), &exception_str));
+  EXPECT_EQ("Ouch", exception_str);
+  EXPECT_FALSE(converter->FailureIsTimeout());
+}
+
+TEST_F(WebIDLCompatTest, SeqItemTimeoutPropagation) {
+  // Test of conversion in the middle of sequence timing out and the propagation
+  // of that.
+  v8::Local<v8::Context> context = v8_helper_->CreateContext();
+  v8::Context::Scope ctx(context);
+
+  const char kScript[] = R"(
+    o1 = {
+      f1: [{"f": 1}, {"f":2}, {"f": {valueOf: () => { while(true) {} } } } ],
+    }
+    function make() { return o1 }
+  )";
+
+  auto converter = MakeFromScript(context, kScript);
+  bool saw_field = false;
+  std::vector<double> out;
+
+  EXPECT_FALSE(converter->GetOptionalSequence(
+      "f1", base::BindLambdaForTesting([&]() { saw_field = true; }),
+      base::BindLambdaForTesting([&](v8::Local<v8::Value> item) -> bool {
+        DictConverter inner(v8_helper_.get(), *time_limit_scope_,
+                            "'f1' entry: ", item);
+        double entry;
+        bool ok = inner.GetRequired("f", entry);
+        if (ok) {
+          out.push_back(entry);
+          return true;
+        } else {
+          converter->PropagateErrorsFrom(inner);
+          return false;
+        }
+      })));
+  EXPECT_THAT(out, ElementsAre(1.0, 2.0));
+  EXPECT_EQ("'f1' entry: Converting field 'f' to Number timed out.",
+            converter->ErrorMessage());
+  v8::MaybeLocal<v8::Value> exception = converter->FailureException();
+  EXPECT_TRUE(exception.IsEmpty());
+  EXPECT_TRUE(converter->FailureIsTimeout());
+}
+
 TEST_F(WebIDLCompatTest, SequenceSimpleIter) {
   v8::Local<v8::Context> context = v8_helper_->CreateContext();
   v8::Context::Scope ctx(context);

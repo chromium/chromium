@@ -113,8 +113,8 @@ class CONTENT_EXPORT DictConverter {
   // `item_callback` is expected to typecheck its input and return true/false as
   // appropriate.
   //
-  // TODO(morlovich): add a method to propagate exceptions from within callbacks
-  // used by `GetOptionalSequence`.
+  // The conversion routine can use PropagateErrorsFrom() to forward errors to
+  // `this` from a different converter.
   bool GetOptionalSequence(
       base::StringPiece field,
       base::OnceClosure exists_callback,
@@ -129,6 +129,11 @@ class CONTENT_EXPORT DictConverter {
   // Returns true if conversion failed because execution timeout has been
   // reached.
   bool FailureIsTimeout() { return failed_with_timeout_; }
+
+  // Moves over error information from `other_converter`; requires the
+  // converter to be in failed state and `this` not to be. `other_converter`
+  // will still be marked as in error, but will no longer have the error string.
+  void PropagateErrorsFrom(DictConverter& other_converter);
 
  private:
   // This can mark failure.

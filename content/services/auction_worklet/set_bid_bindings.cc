@@ -67,13 +67,52 @@ bool IsAllowedAdUrl(
   return false;
 }
 
-// Parse the field corresponds to 'render' or the entry in 'adComponents' array.
+struct AdRender {
+  std::string url;
+  absl::optional<std::string> width;
+  absl::optional<std::string> height;
+};
+
+// Handles conversion of (DOMString or AdRender) IDL type.
+bool ConvertDomStringOrAdRender(
+    AuctionV8Helper* v8_helper,
+    AuctionV8Helper::TimeLimitScope& time_limit_scope,
+    const std::string& error_prefix,
+    v8::Local<v8::Value> value,
+    AdRender& out,
+    DictConverter& propagate_errors_to) {
+  if (value->IsString()) {
+    bool ok = gin::ConvertFromV8(v8_helper->isolate(), value, &out.url);
+    DCHECK(ok);  // Shouldn't fail since it's known to be String.
+    return true;
+  }
+
+  DictConverter convert_ad_render(v8_helper, time_limit_scope, error_prefix,
+                                  value);
+  // This is alphabetical, since that's how dictionaries work.
+  if (!convert_ad_render.GetOptional("height", out.height) ||
+      !convert_ad_render.GetRequired("url", out.url) ||
+      !convert_ad_render.GetOptional("width", out.width)) {
+    propagate_errors_to.PropagateErrorsFrom(convert_ad_render);
+    return false;
+  }
+  return true;
+}
+
+// Parses an AdRender, either a top-level value of render: field in bid or
+// as part of its components array. This is meant to run on the output
+// of ConvertDomStringOrAdRender, which has already converted the string form
+// into a struct matching the dictionary form, and represents the semantics
+// step of the checking, which happens after all the IDL conversions take place.
+//
 // Return whether the parse is successful.
-// The JavaScript object can be in one of two forms:
+//
+// The dictionary can be in one of two forms:
 // 1. Contains only the url field:
 //      {url: "https://example.test/"}
 // 2. Contains the url and both width and height fields:
 //      {url: "https://example.test/", width: "100sw", height: "50px"}
+// Any other fields will be ignored.
 //
 // The size units are allowed to be specified as:
 // 1. "px": pixels.
@@ -83,48 +122,31 @@ bool IsAllowedAdUrl(
 // being invalid, for example:
 // {url: "https://example.test/", width: "100ft", height: "50in"}
 //
-// This will be immediately handled by `HoldsInvalidSize`, so we know the reason
+// This will be immediately handled by `IsValidAdSize`, so we know the reason
 // for the failure in order to emit more accurate error messages.
-bool TryToParseUrlWithSize(v8::Isolate* isolate,
-                           const v8::Local<v8::Value>& value,
-                           std::string& ad_url,
-                           absl::optional<blink::AdSize>& size) {
-  // TODO(morlovich): Use DictConverter here.
-  if (!value->IsObject()) {
+bool TryToParseUrlWithSize(AuctionV8Helper* v8_helper,
+                           AuctionV8Helper::TimeLimitScope& time_limit_scope,
+                           const std::string& error_prefix,
+                           AdRender& value,
+                           std::string& ad_url_out,
+                           absl::optional<blink::AdSize>& size_out,
+                           std::vector<std::string>& errors_out) {
+  // Either no dimensions must be specified, or both.
+  if (value.width.has_value() != value.height.has_value()) {
+    errors_out.push_back(base::StrCat(
+        {error_prefix, "ads that specify dimensions must specify both."}));
     return false;
   }
 
-  v8::Local<v8::Context> context = isolate->GetCurrentContext();
-  gin::Dictionary dict(isolate, value.As<v8::Object>());
-  if (!dict.Get("url", &ad_url)) {
-    return false;
-  }
+  ad_url_out = std::move(value.url);
+  if (value.width.has_value()) {
+    auto [width_val, width_units] = blink::ParseAdSizeString(*value.width);
+    auto [height_val, height_units] = blink::ParseAdSizeString(*value.height);
 
-  // The object being parse must either:
-  // 1. contain the 'url' field only.
-  // 2. contain the 'url', 'width' and 'height' fields.
-  uint32_t properties_count = value.As<v8::Object>()
-                                  ->GetPropertyNames(context)
-                                  .ToLocalChecked()
-                                  ->Length();
-  if (properties_count == 1u) {
-    return true;
+    size_out = blink::AdSize(width_val, width_units, height_val, height_units);
+  } else {
+    size_out = absl::nullopt;
   }
-  if (properties_count != 3u) {
-    return false;
-  }
-
-  std::string render_width;
-  std::string render_height;
-  if (!dict.Get("width", &render_width) ||
-      !dict.Get("height", &render_height)) {
-    return false;
-  }
-
-  auto [width_val, width_units] = blink::ParseAdSizeString(render_width);
-  auto [height_val, height_units] = blink::ParseAdSizeString(render_height);
-
-  size = blink::AdSize(width_val, width_units, height_val, height_units);
 
   return true;
 }
@@ -234,9 +256,9 @@ bool SetBidBindings::SetBid(v8::Local<v8::Value> generate_bid_result,
   struct GenerateBidOutput {
     absl::optional<double> bid;
     absl::optional<std::string> bid_currency;
-    absl::optional<v8::Local<v8::Value>> render;
+    absl::optional<AdRender> render;
     absl::optional<v8::Local<v8::Value>> ad;
-    absl::optional<std::vector<v8::Local<v8::Value>>> ad_components;
+    absl::optional<std::vector<AdRender>> ad_components;
     absl::optional<double> ad_cost;
     absl::optional<UnrestrictedDouble> modeling_signals;
     absl::optional<bool> allow_component_auction;
@@ -244,15 +266,6 @@ bool SetBidBindings::SetBid(v8::Local<v8::Value> generate_bid_result,
 
   auto components_exist = base::BindOnce(
       [](GenerateBidOutput& idl) { idl.ad_components.emplace(); },
-      std::ref(idl));
-
-  // TODO(morlovich): We should actually do the IDL-level type checking of these
-  // at this point.
-  auto collect_components = base::BindRepeating(
-      [](GenerateBidOutput& idl, v8::Local<v8::Value> component) -> bool {
-        idl.ad_components->push_back(component);
-        return true;
-      },
       std::ref(idl));
 
   AuctionV8Helper::TimeLimitScope time_limit_scope(time_limit_);
@@ -263,17 +276,52 @@ bool SetBidBindings::SetBid(v8::Local<v8::Value> generate_bid_result,
   v8::Isolate::SafeForTerminationScope handle_timeout_here(isolate);
   DictConverter convert_set_bid(v8_helper_.get(), time_limit_scope,
                                 error_prefix, generate_bid_result);
+
+  scoped_refptr<AuctionV8Helper> ref_v8_helper(v8_helper_.get());
+  std::string render_prefix = base::StrCat({error_prefix, "'render': "});
+  std::string components_prefix =
+      base::StrCat({error_prefix, "adComponents entry: "});
+  auto collect_components = base::BindRepeating(
+      [](scoped_refptr<AuctionV8Helper> v8_helper,
+         AuctionV8Helper::TimeLimitScope& time_limit_scope,
+         DictConverter& convert_set_bid, const std::string& error_prefix,
+         GenerateBidOutput& idl, v8::Local<v8::Value> component) -> bool {
+        AdRender converted_component;
+        if (ConvertDomStringOrAdRender(v8_helper.get(), time_limit_scope,
+                                       error_prefix, component,
+                                       converted_component, convert_set_bid)) {
+          idl.ad_components->push_back(std::move(converted_component));
+          return true;
+        } else {
+          // ConvertDomStringOrAdRender already forwarded the error for us.
+          return false;
+        }
+      },
+      ref_v8_helper, std::ref(time_limit_scope), std::ref(convert_set_bid),
+      std::cref(components_prefix), std::ref(idl));
+
   timeout_out = false;
-  if (!convert_set_bid.GetOptional("ad", idl.ad) ||
-      !convert_set_bid.GetOptionalSequence(
-          "adComponents", std::move(components_exist), collect_components) ||
-      !convert_set_bid.GetOptional("adCost", idl.ad_cost) ||
-      !convert_set_bid.GetOptional("allowComponentAuction",
-                                   idl.allow_component_auction) ||
-      !convert_set_bid.GetOptional("bid", idl.bid) ||
-      !convert_set_bid.GetOptional("bidCurrency", idl.bid_currency) ||
-      !convert_set_bid.GetOptional("modelingSignals", idl.modeling_signals) ||
-      !convert_set_bid.GetOptional("render", idl.render)) {
+  bool ok =
+      convert_set_bid.GetOptional("ad", idl.ad) &&
+      convert_set_bid.GetOptionalSequence(
+          "adComponents", std::move(components_exist), collect_components) &&
+      convert_set_bid.GetOptional("adCost", idl.ad_cost) &&
+      convert_set_bid.GetOptional("allowComponentAuction",
+                                  idl.allow_component_auction) &&
+      convert_set_bid.GetOptional("bid", idl.bid) &&
+      convert_set_bid.GetOptional("bidCurrency", idl.bid_currency) &&
+      convert_set_bid.GetOptional("modelingSignals", idl.modeling_signals);
+
+  absl::optional<v8::Local<v8::Value>> render_value;
+  ok = ok && convert_set_bid.GetOptional("render", render_value);
+  if (ok && render_value.has_value()) {
+    idl.render.emplace();
+    ok = ConvertDomStringOrAdRender(v8_helper_.get(), time_limit_scope,
+                                    render_prefix, *render_value, *idl.render,
+                                    convert_set_bid);
+  }
+
+  if (!ok) {
     exception_out = convert_set_bid.FailureException();
     errors_out.push_back(convert_set_bid.ErrorMessage());
     timeout_out = convert_set_bid.FailureIsTimeout();
@@ -347,24 +395,9 @@ bool SetBidBindings::SetBid(v8::Local<v8::Value> generate_bid_result,
 
   std::string render_url_string;
   absl::optional<blink::AdSize> render_size = absl::nullopt;
-  if (idl.render.value()->IsString()) {
-    // Old behavior before FLEDGE API incorporating ad size.
-    // The 'render' field corresponds to an url string, for example:
-    // render: "https://response.test/"
-    if (!gin::ConvertFromV8(isolate, *idl.render, &render_url_string)) {
-      errors_out.push_back(
-          base::StrCat({error_prefix, "bid has incorrect structure."}));
-      return false;
-    }
-  } else if (!TryToParseUrlWithSize(isolate, *idl.render, render_url_string,
-                                    render_size)) {
-    // New behavior after FLEDGE API incorporating ad size.
-    // The 'render' field corresponds to an object that contains the url string,
-    // and optional width and height, for example:
-    // 1. render: {url: "https://example.test/"}
-    // 2. render: {url: "https://example.test/", width: "100sw", height: "50px"}
-    errors_out.push_back(
-        base::StrCat({error_prefix, "bid has incorrect structure."}));
+  if (!TryToParseUrlWithSize(v8_helper_.get(), time_limit_scope, render_prefix,
+                             *idl.render, render_url_string, render_size,
+                             errors_out)) {
     return false;
   }
 
@@ -404,44 +437,12 @@ bool SetBidBindings::SetBid(v8::Local<v8::Value> generate_bid_result,
     }
 
     ad_component_descriptors.emplace();
-    for (size_t i = 0; i < idl.ad_components->size(); ++i) {
-      // TODO(morlovich): Should probably just put the IsString case into
-      // TryToParseUrlWithSize(), for above as well.
+    for (AdRender& component : *idl.ad_components) {
       std::string ad_component_url_string;
-      const v8::Local<v8::Value>& component = idl.ad_components->at(i);
       absl::optional<blink::AdSize> ad_component_size = absl::nullopt;
-      if (component->IsString()) {
-        // Old behavior before FLEDGE API incorporating ad size.
-        // The 'adComponents' field corresponds to an array of url strings, for
-        // example:
-        // adComponents: ["https://test/1",
-        //                "https://test/2",
-        //                "https://test/3"]
-        if (!gin::ConvertFromV8(isolate, component, &ad_component_url_string)) {
-          errors_out.push_back(base::StrCat(
-              {error_prefix,
-               "bid adComponents value must be an array of strings or objects "
-               "that contain the url string field and optional width and "
-               "height fields."}));
-          return false;
-        }
-      } else if (!TryToParseUrlWithSize(isolate, component,
-                                        ad_component_url_string,
-                                        ad_component_size)) {
-        // New behavior after FLEDGE API incorporating ad size.
-        // The 'adComponents' field corresponds to
-        // 1. an array of url strings or
-        // 2. objects that contain the url string, and optional width and height
-        //    fiedls
-        // For example:
-        // adComponents: [{url: "https://test/1"},
-        //                {url: "https://test/2", width: "10sw", height: "5px"},
-        //                "https://test/3"]
-        errors_out.push_back(
-            base::StrCat({error_prefix,
-                          "bid adComponents value must be an array of strings "
-                          "or objects that contain the url string field and "
-                          "optional width and height fields."}));
+      if (!TryToParseUrlWithSize(
+              v8_helper_.get(), time_limit_scope, components_prefix, component,
+              ad_component_url_string, ad_component_size, errors_out)) {
         return false;
       }
 
