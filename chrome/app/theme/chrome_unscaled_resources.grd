@@ -156,6 +156,8 @@
         <include name="IDR_BOREALIS_INSTALLER_COMPLETE_DARK" file="borealis/borealis_installer_complete_dark.png" type="BINDATA" />
         <include name="IDR_BOREALIS_INSTALLER_START_LIGHT" file="borealis/borealis_installer_start_light.png" type="BINDATA" />
         <include name="IDR_BOREALIS_INSTALLER_START_DARK" file="borealis/borealis_installer_start_dark.png" type="BINDATA" />
+        <!-- Bruschetta icons -->
+        <include name="IDR_LOGO_BRUSCHETTA_DEFAULT" file="bruschetta/logo_bruschetta_default.png" type="BINDATA" />
         <!-- Crostini icons -->
         <include name="IDR_LOGO_CROSTINI_TERMINAL" file="crostini/ic_terminal_256.png" type="BINDATA" />
         <include name="IDR_LOGO_CROSTINI_DEFAULT" file="crostini/ic_linux_256.png" type="BINDATA" />

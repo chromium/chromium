@@ -29,6 +29,7 @@
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/ui/ash/shelf/shelf_spinner_controller.h"
 #include "chrome/browser/ui/ash/shelf/shelf_spinner_item_controller.h"
+#include "chrome/grit/chrome_unscaled_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/intent.h"
@@ -144,6 +145,10 @@ apps::AppType BruschettaApps::AppType() const {
 
 guest_os::VmType BruschettaApps::VmType() const {
   return guest_os::VmType::BRUSCHETTA;
+}
+
+int BruschettaApps::DefaultIconResourceId() const {
+  return IDR_LOGO_BRUSCHETTA_DEFAULT;
 }
 
 void BruschettaApps::Launch(const std::string& app_id,

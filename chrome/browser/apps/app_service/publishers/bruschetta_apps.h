@@ -34,6 +34,7 @@ class BruschettaApps : public GuestOSApps {
   guest_os::VmType VmType() const override;
 
   // apps::AppPublisher overrides.
+  int DefaultIconResourceId() const override;
   void Launch(const std::string& app_id,
               int32_t event_flags,
               LaunchSource launch_source,
