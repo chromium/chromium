@@ -115,8 +115,8 @@ class HelpBubbleFactoryWebUIInteractiveUiTest : public InteractiveBrowserTest {
   }
 };
 
-// TODO(crbug.com/1462896): Re-enable this test
-#if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
+// TODO(crbug.com/1465717): Re-enable this test
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_ShowFloatingHelpBubble DISABLED_ShowFloatingHelpBubble
 #else
 #define MAYBE_ShowFloatingHelpBubble ShowFloatingHelpBubble
