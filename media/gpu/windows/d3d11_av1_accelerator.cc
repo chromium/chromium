@@ -114,9 +114,10 @@ bool D3D11AV1Accelerator::SubmitDecoderBuffer(
     tile_offset += tile.size;
   }
 
-  // Commit the buffers we prepared above.
+  // Commit the buffers we prepared above. Bitstream buffer will be committed
+  // by SubmitSlice() so we don't explicitly commit here.
   return params_buffer.Commit() && tile_buffer.Commit() &&
-         bitstream_buffer.Commit() && video_decoder_wrapper_->SubmitSlice();
+         video_decoder_wrapper_->SubmitSlice();
 }
 
 DecodeStatus D3D11AV1Accelerator::SubmitDecode(
