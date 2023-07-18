@@ -1530,7 +1530,7 @@ Your Google account may have other forms of browsing history like searches and a
         Privacy Sandbox trial
       </message>
       <message name="IDS_PRIVACY_GUIDE_PRIVACY_SANDBOX_DESCRIPTION" desc="Description for the Privacy Sandbox item on the final page of the privacy guide">
-        See how Chrome plans to safeguard you from cross-site tracking while preserving the open web
+        Chrome is exploring new features that allow sites to deliver the same browsing experience using less of your data
       </message>
       <message name="IDS_PRIVACY_GUIDE_WEB_APP_ACTIVITY_HEADING" desc="Title for the Web and App Activity item on the final page of the privacy guide">
         Web &amp; App Activity
