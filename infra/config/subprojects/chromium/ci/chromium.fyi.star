@@ -2377,6 +2377,13 @@ fyi_mac_builder(
 
 ci.builder(
     name = "Win 10 Fast Ring",
+    description_html = (
+        "This builder is intended to run builds & tests on pre-release " +
+        "versions of Windows. However, flashing such images on the bots " +
+        "is not supported at this time.<br/>So this builder remains paused " +
+        "until a solution can be determined. For more info, see " +
+        "<a href=\"http://shortn/_B7cJcHq55P\">http://shortn/_B7cJcHq55P</a>."
+    ),
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(config = "chromium"),
         chromium_config = builder_config.chromium_config(
