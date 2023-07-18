@@ -248,9 +248,15 @@ class ColorPaletteControllerImpl : public ColorPaletteController,
       return CurrentWallpaperColor(
           dark_light_mode_controller_->IsDarkModeEnabled());
     }
-    const auto seed_color =
-        wallpaper_controller_->GetCachedWallpaperColorForUser(account_id);
+    const bool should_use_k_means = ShouldUseKMeans(account_id);
+    absl::optional<SkColor> seed_color =
+        wallpaper_controller_->GetCachedWallpaperColorForUser(
+            account_id, should_use_k_means);
     if (seed_color.has_value()) {
+      if (should_use_k_means) {
+        bool dark = dark_light_mode_controller_->IsDarkModeEnabled();
+        return ColorUtil::AdjustKMeansColor(seed_color.value(), dark);
+      }
       return seed_color.value();
     }
     DVLOG(1)
@@ -389,6 +395,7 @@ class ColorPaletteControllerImpl : public ColorPaletteController,
     pref_change_registrar_->Init(prefs);
     UpdateLocalColorSchemePref();
     UpdateLocalSeedColorPref();
+    UpdateLocalUseKMeansPref();
 
     pref_change_registrar_->Add(
         prefs::kDynamicColorColorScheme,
@@ -399,6 +406,11 @@ class ColorPaletteControllerImpl : public ColorPaletteController,
         prefs::kDynamicColorSeedColor,
         base::BindRepeating(
             &ColorPaletteControllerImpl::UpdateLocalSeedColorPref,
+            base::Unretained(this)));
+    pref_change_registrar_->Add(
+        prefs::kDynamicColorUseKMeans,
+        base::BindRepeating(
+            &ColorPaletteControllerImpl::UpdateLocalUseKMeansPref,
             base::Unretained(this)));
   }
 
@@ -431,37 +443,32 @@ class ColorPaletteControllerImpl : public ColorPaletteController,
   }
 
   SkColor GetUserWallpaperColorOrDefault(SkColor default_color) const override {
-    const bool dark_mode = dark_light_mode_controller_->IsDarkModeEnabled();
-    const auto wallpaper_color = GetUserWallpaperColor();
-    if (!wallpaper_color.has_value()) {
+    const auto& calculated_colors = wallpaper_controller_->calculated_colors();
+    if (!calculated_colors) {
       DVLOG(1) << "Failed to get wallpaper color";
+      const bool dark_mode = dark_light_mode_controller_->IsDarkModeEnabled();
       return ColorUtil::AdjustKMeansColor(default_color, dark_mode);
     }
 
-    if (chromeos::features::IsJellyEnabled()) {
-      return wallpaper_color.value();
+    absl::optional<AccountId> account_id;
+    auto* session = GetActiveUserSession();
+    if (session) {
+      account_id = AccountFromSession(session);
+    }
+    if (!chromeos::features::IsJellyEnabled() ||
+        (account_id.has_value() && ShouldUseKMeans(*account_id))) {
+      return GetCurrentKMeanColor();
     }
 
-    return ColorUtil::AdjustKMeansColor(wallpaper_color.value(), dark_mode);
+    const auto celebi_color = GetCurrentCelebiColor();
+    if (celebi_color.has_value()) {
+      return *celebi_color;
+    }
+    DVLOG(1) << "Failed to get wallpaper color";
+    return default_color;
   }
 
  private:
-  // Gets a color extracted from the user's wallpaper.
-  // TODO(b/289106519): Combine this function with |CurrentWallpaperColor|.
-  absl::optional<SkColor> GetUserWallpaperColor() const {
-    const auto& calculated_colors = wallpaper_controller_->calculated_colors();
-    if (!calculated_colors) {
-      return {};
-    }
-    if (!chromeos::features::IsJellyEnabled()) {
-      // Always use k mean color. Mixing with black/white
-      // will handle adapting it to dark or light mode.
-      return wallpaper_controller_->GetKMeanColor();
-    }
-
-    return GetCurrentCelebiColor();
-  }
-
   // Gets the user's current wallpaper color.
   // TODO(b/289106519): Combine this function with |GetUserWallpaperColor|.
   absl::optional<SkColor> CurrentWallpaperColor(bool dark) const {
@@ -512,6 +519,13 @@ class ColorPaletteControllerImpl : public ColorPaletteController,
     if (pref_service) {
       return pref_service->GetBoolean(prefs::kDynamicColorUseKMeans);
     }
+    CHECK(local_state_);
+    const base::Value* value =
+        user_manager::KnownUser(local_state_)
+            .FindPath(account_id, prefs::kDynamicColorUseKMeans);
+    if (value && value->GetIfBool().has_value()) {
+      return value->GetBool();
+    }
     DVLOG(1) << "No user pref service or local pref service available. "
                 "Returning UseKMeans pref as false.";
     return false;
@@ -557,24 +571,35 @@ class ColorPaletteControllerImpl : public ColorPaletteController,
         session_state == session_manager::SessionState::OOBE ||
         (session_state == session_manager::SessionState::LOGIN_PRIMARY &&
          oobe_state_ != OobeDialogState::HIDDEN);
-    if (!chromeos::features::IsJellyEnabled() || is_oobe) {
-      // Generate a seed where we assume TonalSpot and ignore static colors.
-      ColorPaletteSeed seed;
-      bool dark = dark_light_mode_controller_->IsDarkModeEnabled();
-      absl::optional<SkColor> seed_color = CurrentWallpaperColor(dark);
-      if (!seed_color) {
-        // If `seed_color` is not available, we expect to have it shortly
-        // the color computation is done and this will be called again.
-        return {};
-      }
-      seed.color_mode = dark ? ui::ColorProviderKey::ColorMode::kDark
-                             : ui::ColorProviderKey::ColorMode::kLight;
-      seed.seed_color = *seed_color;
-      seed.scheme = ColorScheme::kTonalSpot;
 
-      return seed;
+    if (chromeos::features::IsJellyEnabled() && !is_oobe) {
+      // This early return prevents overwriting colors. When Jelly is disabled,
+      // it is always safe to return the k means color. OOBE has a special
+      // wallpaper and always uses celebi. In any other case, like on the login
+      // screen, the calculated colors may not have been updated and so the
+      // colors should not be updated.
+      return {};
     }
-    return {};
+    // Generate a seed where we assume TonalSpot and ignore static colors.
+    ColorPaletteSeed seed;
+    bool dark = dark_light_mode_controller_->IsDarkModeEnabled();
+    // If Jelly is enabled, then the user is in OOBE and should see the celebi
+    // color. If Jelly is not enabled, then users have no access to celebi and
+    // should see the k means color.
+    absl::optional<SkColor> seed_color = chromeos::features::IsJellyEnabled()
+                                             ? GetCurrentCelebiColor()
+                                             : GetCurrentKMeanColor();
+    if (!seed_color) {
+      // If `seed_color` is not available, we expect to have it shortly
+      // the color computation is done and this will be called again.
+      return {};
+    }
+    seed.color_mode = dark ? ui::ColorProviderKey::ColorMode::kDark
+                           : ui::ColorProviderKey::ColorMode::kLight;
+    seed.seed_color = *seed_color;
+    seed.scheme = ColorScheme::kTonalSpot;
+
+    return seed;
   }
 
   void NotifyObservers(const absl::optional<ColorPaletteSeed>& seed) {
@@ -612,6 +637,14 @@ class ColorPaletteControllerImpl : public ColorPaletteController,
     user_manager::KnownUser(local_state_)
         .SetPath(account_id, prefs::kDynamicColorSeedColor,
                  base::Int64ToValue(seed_color));
+  }
+
+  void UpdateLocalUseKMeansPref() {
+    CHECK(local_state_);
+    auto account_id = AccountFromSession(GetActiveUserSession());
+    auto use_k_means = GetUseKMeansPref(account_id);
+    user_manager::KnownUser(local_state_)
+        .SetBooleanPref(account_id, prefs::kDynamicColorUseKMeans, use_k_means);
   }
 
   base::ScopedObservation<DarkLightModeController, ColorModeObserver>
@@ -666,6 +699,7 @@ void ColorPaletteController::RegisterLocalStatePrefs(
   registry->RegisterIntegerPref(prefs::kDynamicColorColorScheme,
                                 static_cast<int>(ColorScheme::kTonalSpot));
   registry->RegisterUint64Pref(prefs::kDynamicColorSeedColor, 0);
+  registry->RegisterBooleanPref(prefs::kDynamicColorUseKMeans, false);
 }
 
 }  // namespace ash

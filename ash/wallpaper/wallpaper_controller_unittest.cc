@@ -1221,7 +1221,8 @@ TEST_P(WallpaperControllerTest, SaveCelebiColorWhenJellyActive) {
   EXPECT_EQ(kWallpaperColor, pref_manager_->GetCelebiColor(location));
 }
 
-TEST_P(WallpaperControllerTest, GetCachedWallpaperColorForUser) {
+TEST_P(WallpaperControllerTest,
+       GetCachedWallpaperColorForUser_WithCelebiColor) {
   // Cache some wallpapers and store that in the local prefs. Otherwise, we
   // can't cache colors.
   base::FilePath relative_path = PrecacheWallpapers(kAccountId1);
@@ -1237,13 +1238,38 @@ TEST_P(WallpaperControllerTest, GetCachedWallpaperColorForUser) {
 
   if (IsJellyEnabled()) {
     // User's wallpaper colors are accessible from login screen.
-    EXPECT_EQ(kWallpaperColor,
-              controller_->GetCachedWallpaperColorForUser(kAccountId1));
+    EXPECT_EQ(kWallpaperColor, controller_->GetCachedWallpaperColorForUser(
+                                   kAccountId1, /* use_k_means= */ false));
   } else {
     // User's celebi color is only retrieved when Jelly is enabled.
-    EXPECT_FALSE(
-        controller_->GetCachedWallpaperColorForUser(kAccountId1).has_value());
+    EXPECT_FALSE(controller_
+                     ->GetCachedWallpaperColorForUser(kAccountId1,
+                                                      /* use_k_means= */ false)
+                     .has_value());
   }
+}
+
+TEST_P(WallpaperControllerTest,
+       GetCachedWallpaperColorForUser_WithKMeansColor) {
+  if (!IsJellyEnabled()) {
+    return;
+  }
+  // Cache some wallpapers and store that in the local prefs. Otherwise, we
+  // can't cache colors.
+  base::FilePath relative_path = PrecacheWallpapers(kAccountId1);
+  WallpaperInfo info = InfoWithType(WallpaperType::kCustomized);
+  info.location = relative_path.value();
+  ASSERT_TRUE(pref_manager_->SetLocalWallpaperInfo(kAccountId1, info));
+
+  // Store colors in local prefs simulating cache behavior.
+  pref_manager_->CacheKMeanColor(relative_path.value(), kWallpaperColor);
+
+  // Reset to login screen.
+  GetSessionControllerClient()->RequestSignOut();
+
+  // User's wallpaper colors are accessible from login screen.
+  EXPECT_EQ(kWallpaperColor, controller_->GetCachedWallpaperColorForUser(
+                                 kAccountId1, /* use_k_means= */ true));
 }
 
 TEST_P(WallpaperControllerTest, EnableShelfColoringNotifiesObservers) {

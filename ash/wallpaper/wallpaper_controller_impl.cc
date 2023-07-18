@@ -456,7 +456,8 @@ SkColor WallpaperControllerImpl::GetKMeanColor() const {
 }
 
 absl::optional<SkColor> WallpaperControllerImpl::GetCachedWallpaperColorForUser(
-    const AccountId& account_id) const {
+    const AccountId& account_id,
+    bool should_use_k_means) const {
   if (!chromeos::features::IsJellyEnabled()) {
     return {};
   }
@@ -464,7 +465,8 @@ absl::optional<SkColor> WallpaperControllerImpl::GetCachedWallpaperColorForUser(
   if (!pref_manager_->GetLocalWallpaperInfo(account_id, &info)) {
     return {};
   }
-  return pref_manager_->GetCelebiColor(info.location);
+  return should_use_k_means ? pref_manager_->GetCachedKMeanColor(info.location)
+                            : pref_manager_->GetCelebiColor(info.location);
 }
 
 gfx::ImageSkia WallpaperControllerImpl::GetWallpaper() const {

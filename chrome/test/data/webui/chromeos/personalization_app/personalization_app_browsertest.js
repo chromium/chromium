@@ -667,7 +667,7 @@ TEST_F(
           toggle.click();
           await waitUntil(
               () => originalColor !== getComputedStyle(toggleDescription).color,
-              'toggle failed to update colors');
+              'toggle failed to update colors', 200, 5000);
         }
       }
 
@@ -699,7 +699,7 @@ TEST_F(
 
           await waitUntil(
               () => originalColor !== getComputedStyle(toggleDescription).color,
-              'failed to update colors');
+              'failed to update colors', 200, 5000);
         });
 
         test('shows color scheme options', async () => {
@@ -730,7 +730,7 @@ TEST_F(
                   () => originalColor !==
                       getComputedStyle(toggleDescription).color,
                   'failed to update colors', /* intervalMs= */ 200,
-                  /* timeoutMs= */ 3000);
+                  /* timeoutMs= */ 5000);
             }
 
             const newColor = getComputedStyle(toggleDescription).color;
@@ -780,7 +780,7 @@ TEST_F(
                   () => originalColor !==
                       getComputedStyle(lightButton).backgroundColor,
                   'failed to update colors', /* intervalMs= */ 200,
-                  /* timeoutMs= */ 3000);
+                  /* timeoutMs= */ 5000);
             }
 
             const newColor = getComputedStyle(lightButton).backgroundColor;

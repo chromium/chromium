@@ -137,7 +137,8 @@ class ASH_EXPORT WallpaperControllerImpl
 
   // Returns the sampled color of the given user's wallpaper.
   absl::optional<SkColor> GetCachedWallpaperColorForUser(
-      const AccountId& account_id) const;
+      const AccountId& account_id,
+      bool should_use_k_means) const;
 
   // Returns the set of calculated colors. If the colors have not yet been
   // calculated yet, returns an empty object.
