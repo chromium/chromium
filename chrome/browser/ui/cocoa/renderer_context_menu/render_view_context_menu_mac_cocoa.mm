@@ -211,8 +211,12 @@ RenderViewContextMenuMacCocoa::~RenderViewContextMenuMacCocoa() {
 void RenderViewContextMenuMacCocoa::Show() {
   views::Widget* widget = views::Widget::GetTopLevelWidgetForNativeView(
       source_web_contents_->GetNativeView());
-  const ui::ColorProvider* color_provider =
-      widget ? widget->GetColorProvider() : nullptr;
+
+  if (!widget) {
+    return;
+  }
+
+  const ui::ColorProvider* color_provider = widget->GetColorProvider();
 
   menu_controller_delegate_ = [[MenuControllerCocoaDelegateImpl alloc] init];
   menu_controller_ =
@@ -259,17 +263,12 @@ void RenderViewContextMenuMacCocoa::Show() {
     base::mac::ScopedSendingEvent sendingEventScoper;
 
     NSMenu* const menu = [menu_controller_ menu];
-    if (widget) {
-      ui::ElementTrackerMac::GetInstance()->NotifyMenuWillShow(
-          menu, views::ElementTrackerViews::GetContextForWidget(widget));
-    }
+    ui::ElementTrackerMac::GetInstance()->NotifyMenuWillShow(
+        menu, views::ElementTrackerViews::GetContextForWidget(widget));
 
     // Show the menu.
     [NSMenu popUpContextMenu:menu withEvent:clickEvent forView:parent_view_];
-
-    if (widget) {
-      ui::ElementTrackerMac::GetInstance()->NotifyMenuDoneShowing(menu);
-    }
+    ui::ElementTrackerMac::GetInstance()->NotifyMenuDoneShowing(menu);
   }
 }
 
