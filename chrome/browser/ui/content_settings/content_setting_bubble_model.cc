@@ -1015,15 +1015,12 @@ bool ContentSettingMediaStreamBubbleModel::CameraBlocked() const {
 
 void ContentSettingMediaStreamBubbleModel::SetIsUserModifiable() {
   DCHECK(CameraAccessed() || MicrophoneAccessed());
-  PageSpecificContentSettings* page_content_settings =
-      PageSpecificContentSettings::GetForFrame(&GetPage().GetMainDocument());
-
   bool is_camera_modifiable = GetSettingManagedByUser(
-      page_content_settings->media_stream_access_origin(),
-      ContentSettingsType::MEDIASTREAM_CAMERA, GetProfile(), nullptr);
+      web_contents()->GetURL(), ContentSettingsType::MEDIASTREAM_CAMERA,
+      GetProfile(), nullptr);
   bool is_mic_modifiable = GetSettingManagedByUser(
-      page_content_settings->media_stream_access_origin(),
-      ContentSettingsType::MEDIASTREAM_MIC, GetProfile(), nullptr);
+      web_contents()->GetURL(), ContentSettingsType::MEDIASTREAM_MIC,
+      GetProfile(), nullptr);
 
   set_is_user_modifiable((MicrophoneAccessed() && is_mic_modifiable) ||
                          (CameraAccessed() && is_camera_modifiable));
