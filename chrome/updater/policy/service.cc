@@ -412,6 +412,27 @@ std::string PolicyService::GetAllPoliciesAsString() const {
                             base::JoinString(policies, "\n  ").c_str());
 }
 
+bool PolicyService::AreUpdatesSuppressedNow(const base::Time& now) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  PolicyStatus<UpdatesSuppressedTimes> suppression =
+      GetUpdatesSuppressedTimes();
+  if (!suppression || !suppression.policy().valid()) {
+    return false;
+  }
+  base::Time::Exploded now_local;
+  now.LocalExplode(&now_local);
+  const bool are_updates_suppressed =
+      suppression.policy().contains(now_local.hour, now_local.minute);
+  VLOG(0) << __func__ << ": Updates are "
+          << (are_updates_suppressed ? "" : "not ") << "suppressed: now=" << now
+          << ": UpdatesSuppressedTimes: start_hour_:"
+          << suppression.policy().start_hour_
+          << ": start_minute_:" << suppression.policy().start_minute_
+          << ": duration_minute_:" << suppression.policy().duration_minute_;
+  return are_updates_suppressed;
+}
+
 template <typename T>
 PolicyStatus<T> PolicyService::QueryPolicy(
     const base::RepeatingCallback<absl::optional<T>(

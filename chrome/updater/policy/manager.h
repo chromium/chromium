@@ -23,9 +23,6 @@ namespace updater {
 // daylight savings time changes happen in between.
 class UpdatesSuppressedTimes {
  public:
-  UpdatesSuppressedTimes();
-  ~UpdatesSuppressedTimes();
-
   bool operator==(const UpdatesSuppressedTimes& other) const;
   bool operator!=(const UpdatesSuppressedTimes& other) const;
 

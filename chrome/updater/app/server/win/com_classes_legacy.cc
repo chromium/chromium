@@ -968,15 +968,11 @@ STDMETHODIMP PolicyStatusImpl::get_updatesSuppressedTimes(
     return E_FAIL;
   }
 
-  base::Time::Exploded now;
-  base::Time::Now().LocalExplode(&now);
   *start_hour = updates_suppressed_times.policy().start_hour_;
   *start_min = updates_suppressed_times.policy().start_minute_;
   *duration_min = updates_suppressed_times.policy().duration_minute_;
   *are_updates_suppressed =
-      updates_suppressed_times.policy().contains(now.hour, now.minute)
-          ? VARIANT_TRUE
-          : VARIANT_FALSE;
+      policy_service_->AreUpdatesSuppressedNow() ? VARIANT_TRUE : VARIANT_FALSE;
 
   return S_OK;
 }
@@ -1231,11 +1227,8 @@ STDMETHODIMP PolicyStatusImpl::get_updatesSuppressedTimes(
   if (!updates_suppressed_times.valid()) {
     return E_FAIL;
   }
-  base::Time::Exploded now;
-  base::Time::Now().LocalExplode(&now);
   *are_updates_suppressed =
-      updates_suppressed_times.contains(now.hour, now.minute) ? VARIANT_TRUE
-                                                              : VARIANT_FALSE;
+      policy_service_->AreUpdatesSuppressedNow() ? VARIANT_TRUE : VARIANT_FALSE;
   return PolicyStatusValueImpl::Create(*policy_status, value);
 }
 

@@ -104,6 +104,7 @@ class PolicyService : public base::RefCountedThreadSafe<PolicyService> {
 
   std::string source() const;
 
+  // These methods call and aggregate the results from the policy managers.
   PolicyStatus<base::TimeDelta> GetLastCheckPeriod() const;
   PolicyStatus<UpdatesSuppressedTimes> GetUpdatesSuppressedTimes() const;
   PolicyStatus<std::string> GetDownloadPreferenceGroupPolicy() const;
@@ -125,7 +126,9 @@ class PolicyService : public base::RefCountedThreadSafe<PolicyService> {
   // in legacy interfaces where a PolicyStatus<int> is required.
   PolicyStatus<int> DeprecatedGetLastCheckPeriodMinutes() const;
 
+  // Helper methods.
   std::string GetAllPoliciesAsString() const;
+  bool AreUpdatesSuppressedNow(const base::Time& now = base::Time::Now()) const;
 
  protected:
   virtual ~PolicyService();

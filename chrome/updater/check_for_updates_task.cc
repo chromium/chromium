@@ -51,18 +51,7 @@ bool ShouldSkipCheck(scoped_refptr<Configurator> config,
   }
 
   // Skip if the updater is in the update suppression period.
-  PolicyStatus<UpdatesSuppressedTimes> suppression =
-      config->GetPolicyService()->GetUpdatesSuppressedTimes();
-  if (suppression && suppression.policy().valid()) {
-    base::Time::Exploded now;
-    base::Time::Now().LocalExplode(&now);
-    if (suppression.policy().contains(now.hour, now.minute)) {
-      VLOG(0) << "Skipping checking for updates: in update suppression period.";
-      return true;
-    }
-  }
-
-  return false;
+  return config->GetPolicyService()->AreUpdatesSuppressedNow();
 }
 
 }  // namespace
