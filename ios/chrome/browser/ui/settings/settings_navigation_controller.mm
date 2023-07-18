@@ -41,6 +41,7 @@
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_coordinator.h"
+#import "ios/chrome/browser/ui/settings/privacy/privacy_coordinator.h"
 #import "ios/chrome/browser/ui/settings/privacy/privacy_safe_browsing_coordinator.h"
 #import "ios/chrome/browser/ui/settings/safety_check/safety_check_coordinator.h"
 #import "ios/chrome/browser/ui/settings/safety_check/safety_check_table_view_controller.h"
@@ -65,6 +66,7 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
 @interface SettingsNavigationController () <
     ClearBrowsingDataCoordinatorDelegate,
     GoogleServicesSettingsCoordinatorDelegate,
+    PrivacyCoordinatorDelegate,
     ManageSyncSettingsCoordinatorDelegate,
     PasswordDetailsCoordinatorDelegate,
     PasswordsCoordinatorDelegate,
@@ -76,6 +78,9 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
 // Google services settings coordinator.
 @property(nonatomic, strong)
     GoogleServicesSettingsCoordinator* googleServicesSettingsCoordinator;
+
+// Privacy settings coordinator.
+@property(nonatomic, strong) PrivacyCoordinator* privacySettingsCoordinator;
 
 // Sync settings coordinator.
 @property(nonatomic, strong)
@@ -358,6 +363,20 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
 }
 
 + (instancetype)
+    privacyControllerForBrowser:(Browser*)browser
+                       delegate:
+                           (id<SettingsNavigationControllerDelegate>)delegate {
+  DCHECK(browser);
+  SettingsNavigationController* navigationController =
+      [[SettingsNavigationController alloc]
+          initWithRootViewController:nil
+                             browser:browser
+                            delegate:delegate];
+  [navigationController showPrivacy];
+  return navigationController;
+}
+
++ (instancetype)
     autofillProfileControllerForBrowser:(Browser*)browser
                                delegate:
                                    (id<SettingsNavigationControllerDelegate>)
@@ -582,6 +601,7 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
   [self stopSafetyCheckCoordinator];
   [self stopClearBrowsingDataCoordinator];
   [self stopPrivacySafeBrowsingCoordinator];
+  [self stopPrivacySettingsCoordinator];
 
   // Reset the delegate to prevent any queued transitions from attempting to
   // close the settings.
@@ -639,6 +659,14 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
   [self.googleServicesSettingsCoordinator start];
 }
 
+- (void)showPrivacy {
+  self.privacySettingsCoordinator = [[PrivacyCoordinator alloc]
+      initWithBaseNavigationController:self
+                               browser:self.browser];
+  self.privacySettingsCoordinator.delegate = self;
+  [self.privacySettingsCoordinator start];
+}
+
 - (void)showSyncServices {
   if ([self.topViewController
           isKindOfClass:[ManageSyncSettingsCoordinator class]]) {
@@ -694,6 +722,12 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
 - (void)stopGoogleServicesSettingsCoordinator {
   [self.googleServicesSettingsCoordinator stop];
   self.googleServicesSettingsCoordinator = nil;
+}
+
+// Stops the privacy settings coordinator if it exsists.
+- (void)stopPrivacySettingsCoordinator {
+  [self.privacySettingsCoordinator stop];
+  self.privacySettingsCoordinator = nil;
 }
 
 // Stops the underlying Sync settings coordinator if it exists.
@@ -787,6 +821,14 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
     (GoogleServicesSettingsCoordinator*)coordinator {
   DCHECK_EQ(self.googleServicesSettingsCoordinator, coordinator);
   [self stopGoogleServicesSettingsCoordinator];
+}
+
+#pragma mark - PrivacyCoordinatorDelegate
+
+- (void)privacyCoordinatorViewControllerWasRemoved:
+    (PrivacyCoordinator*)coordinator {
+  DCHECK_EQ(self.privacySettingsCoordinator, coordinator);
+  [self stopPrivacySettingsCoordinator];
 }
 
 #pragma mark - ManageSyncSettingsCoordinatorDelegate

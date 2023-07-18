@@ -1529,6 +1529,21 @@ void InjectNTP(Browser* browser) {
                                  completion:nil];
 }
 
+- (void)showPrivacySettingsFromViewController:
+    (UIViewController*)baseViewController {
+  if (self.settingsNavigationController) {
+    return;
+  }
+
+  Browser* browser = self.mainInterface.browser;
+  self.settingsNavigationController =
+      [SettingsNavigationController privacyControllerForBrowser:browser
+                                                       delegate:self];
+  [baseViewController presentViewController:self.settingsNavigationController
+                                   animated:YES
+                                 completion:nil];
+}
+
 - (void)showReportAnIssueFromViewController:
             (UIViewController*)baseViewController
                                      sender:(UserFeedbackSender)sender {
