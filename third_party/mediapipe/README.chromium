@@ -52,6 +52,9 @@ Patches which can be low-friction upstreamed
 ============================================
 * set-executable-bit-for-files-with-shebang.patch - `chmod +x` on all files that
   have a shebang, per Chromium presubmit checks.
+* remove-mediapipe-op-resolver-default-value.patch - Removes the
+MediaPipeOpResolver from being always constructed in base_options.h. Chromium
+does not use it anyways, and building all those ops is not necessary.
 
 
 Patches which need to be upstreamed differently than they are patched
