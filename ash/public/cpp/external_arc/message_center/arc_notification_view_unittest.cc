@@ -161,11 +161,6 @@ class ArcNotificationViewTest : public AshTestBase {
         .x();
   }
 
-  bool IsPopupRemovedAfterIdle(const std::string& notification_id) const {
-    base::RunLoop().RunUntilIdle();
-    return !MessageCenter::Get()->FindPopupNotificationById(notification_id);
-  }
-
   bool IsRemovedAfterIdle(const std::string& notification_id) const {
     base::RunLoop().RunUntilIdle();
     return !MessageCenter::Get()->FindVisibleNotificationById(notification_id);
@@ -245,19 +240,19 @@ TEST_F(ArcNotificationViewTest, SlideOut) {
   BeginScroll();
   EXPECT_EQ(0.f, GetNotificationSlideAmount());
   ScrollBy(-10);
-  EXPECT_FALSE(IsPopupRemovedAfterIdle(notification_id));
+  EXPECT_FALSE(IsRemovedAfterIdle(notification_id));
   EXPECT_EQ(-10.f, GetNotificationSlideAmount());
   EndScroll();
-  EXPECT_FALSE(IsPopupRemovedAfterIdle(notification_id));
+  EXPECT_FALSE(IsRemovedAfterIdle(notification_id));
   EXPECT_EQ(0.f, GetNotificationSlideAmount());
 
   BeginScroll();
   EXPECT_EQ(0.f, GetNotificationSlideAmount());
   ScrollBy(-200);
-  EXPECT_FALSE(IsPopupRemovedAfterIdle(notification_id));
+  EXPECT_FALSE(IsRemovedAfterIdle(notification_id));
   EXPECT_EQ(-200.f, GetNotificationSlideAmount());
   EndScroll();
-  EXPECT_TRUE(IsPopupRemovedAfterIdle(notification_id));
+  EXPECT_TRUE(IsRemovedAfterIdle(notification_id));
 }
 
 // TODO(crbug.com/1410724): Flaky on MSAN bots.
@@ -276,19 +271,19 @@ TEST_F(ArcNotificationViewTest, MAYBE_SlideOutNested) {
   BeginScroll();
   EXPECT_EQ(0.f, GetNotificationSlideAmount());
   ScrollBy(-10);
-  EXPECT_FALSE(IsPopupRemovedAfterIdle(notification_id));
+  EXPECT_FALSE(IsRemovedAfterIdle(notification_id));
   EXPECT_EQ(-10.f, GetNotificationSlideAmount());
   EndScroll();
-  EXPECT_FALSE(IsPopupRemovedAfterIdle(notification_id));
+  EXPECT_FALSE(IsRemovedAfterIdle(notification_id));
   EXPECT_EQ(0.f, GetNotificationSlideAmount());
 
   BeginScroll();
   EXPECT_EQ(0.f, GetNotificationSlideAmount());
   ScrollBy(-200);
-  EXPECT_FALSE(IsPopupRemovedAfterIdle(notification_id));
+  EXPECT_FALSE(IsRemovedAfterIdle(notification_id));
   EXPECT_EQ(-200.f, GetNotificationSlideAmount());
   EndScroll();
-  EXPECT_TRUE(IsPopupRemovedAfterIdle(notification_id));
+  EXPECT_TRUE(IsRemovedAfterIdle(notification_id));
 }
 
 TEST_F(ArcNotificationViewTest, SlideOutPinned) {

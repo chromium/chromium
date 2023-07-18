@@ -484,14 +484,14 @@ TEST_P(NotificationGroupingControllerTest, NotificationSwipeGestureBehavior) {
   EXPECT_FALSE(parent_message_view->IsExpanded());
 
   // Swiping out a group child notification while the parent notification is
-  // collapsed should dismiss the popup but keep all notifications in the
-  // notification center.
+  // collapsed should slide and remove the entire group notification including
+  // the parent and other child notifications.
   GenerateSwipe(300, GetSlideOutController(
                          static_cast<AshNotificationView*>(message_view_2)));
 
-  EXPECT_FALSE(message_center->FindPopupNotificationById(parent_id));
-  EXPECT_TRUE(message_center->FindNotificationById(id1));
-  EXPECT_TRUE(message_center->FindNotificationById(id2));
+  EXPECT_FALSE(message_center->FindNotificationById(parent_id));
+  EXPECT_FALSE(message_center->FindNotificationById(id1));
+  EXPECT_FALSE(message_center->FindNotificationById(id2));
 }
 
 // Regression test for b/251684908. Tests that a duplicate `AddNotification`
