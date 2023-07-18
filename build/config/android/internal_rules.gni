@@ -653,9 +653,6 @@ template("write_build_config") {
       ]
       args += [ "--fail=$_msg" ]
     }
-    if (defined(use_lenient_compiler_flags) && use_lenient_compiler_flags) {
-      args += [ "-Wno-error=unknown-warning-option -Wno-error=unused-command-line-argument" ]
-    }
   }
 }
 
