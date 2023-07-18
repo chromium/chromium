@@ -32,6 +32,8 @@ std::string GetParentScreenString(
       return "UserCreation";
     case ErrorScreensHistogramHelper::ErrorParentScreen::kAddChild:
       return "AddChild";
+    case ErrorScreensHistogramHelper::ErrorParentScreen::kConsumerUpdate:
+      return "ConsumerUpdate";
   }
 }
 

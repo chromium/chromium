@@ -1752,6 +1752,8 @@ source_set("ash") {
     "login/screens/chromevox_hint/chromevox_hint_detector.h",
     "login/screens/consolidated_consent_screen.cc",
     "login/screens/consolidated_consent_screen.h",
+    "login/screens/consumer_update_screen.cc",
+    "login/screens/consumer_update_screen.h",
     "login/screens/core_oobe.cc",
     "login/screens/core_oobe.h",
     "login/screens/cryptohome_recovery_screen.cc",

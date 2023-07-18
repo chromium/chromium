@@ -162,8 +162,6 @@ void VersionUpdater::RequestUpdateCheck() {
   update_info_.update_size = 0;
   delegate_->UpdateInfoChanged(update_info_);
 
-  if (NetworkHandler::IsInitialized())
-    NetworkHandler::Get()->network_state_handler()->RemoveObserver(this);
   if (!UpdateEngineClient::Get()->HasObserver(this)) {
     UpdateEngineClient::Get()->AddObserver(this);
   }

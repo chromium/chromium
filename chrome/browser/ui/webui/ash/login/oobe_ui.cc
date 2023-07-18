@@ -51,6 +51,7 @@
 #include "chrome/browser/ui/webui/ash/login/base_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/choobe_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/consolidated_consent_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/consumer_update_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/core_oobe_handler.h"
 #include "chrome/browser/ui/webui/ash/login/cryptohome_recovery_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/cryptohome_recovery_setup_screen_handler.h"
@@ -310,6 +311,8 @@ void CreateAndAddOobeUIDataSource(Profile* profile,
   source->AddBoolean("isOobeGaiaInfoScreenEnabled",
                      features::IsOobeGaiaInfoScreenEnabled());
   source->AddBoolean("isChoobeEnabled", features::IsOobeChoobeEnabled());
+  source->AddBoolean("isSoftwareUpdateEnabled",
+                     features::IsOobeSoftwareUpdateEnabled());
   source->AddBoolean(
       "isArcVmDataMigrationEnabled",
       base::FeatureList::IsEnabled(arc::kEnableArcVmDataMigration));
@@ -519,6 +522,10 @@ void OobeUI::ConfigureOobeDisplay() {
 
   if (features::IsOobeChoobeEnabled()) {
     AddScreenHandler(std::make_unique<ChoobeScreenHandler>());
+  }
+
+  if (features::IsOobeSoftwareUpdateEnabled()) {
+    AddScreenHandler(std::make_unique<ConsumerUpdateScreenHandler>());
   }
 
   if (features::IsOobeTouchpadScrollEnabled()) {

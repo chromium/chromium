@@ -58,6 +58,7 @@
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ash/login/screens/choobe_screen.h"
 #include "chrome/browser/ash/login/screens/consolidated_consent_screen.h"
+#include "chrome/browser/ash/login/screens/consumer_update_screen.h"
 #include "chrome/browser/ash/login/screens/cryptohome_recovery_screen.h"
 #include "chrome/browser/ash/login/screens/cryptohome_recovery_setup_screen.h"
 #include "chrome/browser/ash/login/screens/demo_preferences_screen.h"
@@ -140,6 +141,7 @@
 #include "chrome/browser/ui/webui/ash/login/auto_enrollment_check_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/choobe_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/consolidated_consent_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/consumer_update_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/cryptohome_recovery_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/cryptohome_recovery_setup_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/demo_preferences_screen_handler.h"
@@ -905,6 +907,14 @@ WizardController::CreateScreens() {
                             weak_factory_.GetWeakPtr())));
   }
 
+  if (features::IsOobeSoftwareUpdateEnabled()) {
+    append(std::make_unique<ConsumerUpdateScreen>(
+        oobe_ui->GetView<ConsumerUpdateScreenHandler>()->AsWeakPtr(),
+        oobe_ui->GetErrorScreen(),
+        base::BindRepeating(&WizardController::OnConsumerUpdateScreenExit,
+                            weak_factory_.GetWeakPtr())));
+  }
+
   return result;
 }
 
@@ -995,6 +1005,10 @@ void WizardController::ShowGaiaInfoScreen() {
 
 void WizardController::ShowAddChildScreen() {
   SetCurrentScreen(GetScreen(AddChildScreenView::kScreenId));
+}
+
+void WizardController::ShowConsumerUpdateScreen() {
+  SetCurrentScreen(GetScreen(ConsumerUpdateScreenView::kScreenId));
 }
 
 void WizardController::ShowEnrollmentScreen() {
@@ -1246,6 +1260,14 @@ void WizardController::OnUserCreationScreenExit(
       LoginDisplayHost::default_host()->HideOobeDialog();
       break;
   }
+}
+
+void WizardController::OnConsumerUpdateScreenExit(
+    ConsumerUpdateScreen::Result result) {
+  OnScreenExit(ConsumerUpdateScreenView::kScreenId,
+               ConsumerUpdateScreen::GetResultString(result));
+  // ToDo(b/278855932) Implement the consumerUpdateScreenExit
+  NOTIMPLEMENTED();
 }
 
 void WizardController::OnGaiaScreenExit(GaiaScreen::Result result) {

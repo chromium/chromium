@@ -910,6 +910,15 @@
     <ph name="BEGIN_DESCRIPTION4">&lt;p&gt;</ph>Organization apps, services, and networks may only be available on enrolled devices.<ph name="END_DESCRIPTION4">&lt;/p&gt;</ph>
   </message>
 
+  <!-- Strings for the OOBE consumer update screen -->
+  <!-- TODO(b/290598534): Add final string and remove translateable tags -->
+  <message name="IDS_CONSUMER_UPDATE_DECLINE_BUTTON" translateable="false" desc="Label on the button that decline using cellular data for the consumer update screen">
+    No thanks
+  </message>
+  <message name="IDS_CONSUMER_UPDATE_SKIP_BUTTON" translateable="false" desc="Label on the button that skip the consumer update screen.">
+    Skip
+  </message>
+
    <!-- Strings for the OOBE demo setup flow -->
   <message name="IDS_OOBE_DEMO_SETUP_PREFERENCES_SCREEN_TITLE" desc="The title of the dialog that allows to choose demo setup preferences.">
     Choose your demo preferences

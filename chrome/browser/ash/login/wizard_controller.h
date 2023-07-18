@@ -27,6 +27,7 @@
 #include "chrome/browser/ash/login/screens/assistant_optin_flow_screen.h"
 #include "chrome/browser/ash/login/screens/choobe_screen.h"
 #include "chrome/browser/ash/login/screens/consolidated_consent_screen.h"
+#include "chrome/browser/ash/login/screens/consumer_update_screen.h"
 #include "chrome/browser/ash/login/screens/cryptohome_recovery_screen.h"
 #include "chrome/browser/ash/login/screens/cryptohome_recovery_setup_screen.h"
 #include "chrome/browser/ash/login/screens/demo_preferences_screen.h"
@@ -332,6 +333,7 @@ class WizardController : public OobeUI::Observer {
   void ShowDrivePinningScreen();
   void ShowGaiaInfoScreen();
   void ShowAddChildScreen();
+  void ShowConsumerUpdateScreen();
 
   // Shows images login screen.
   void ShowLoginScreen();
@@ -419,6 +421,7 @@ class WizardController : public OobeUI::Observer {
   void OnDrivePinningScreenExit(DrivePinningScreen::Result result);
   void OnGaiaInfoScreenExit(GaiaInfoScreen::Result result);
   void OnAddChildScreenExit(AddChildScreen::Result result);
+  void OnConsumerUpdateScreenExit(ConsumerUpdateScreen::Result result);
 
   // Callback invoked once it has been determined whether the device is disabled
   // or not.

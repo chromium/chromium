@@ -38,6 +38,7 @@ chromium-metrics-reviews@google.com.
   <variant name="Autolaunch"/>
   <variant name="Choobe"/>
   <variant name="Consolidated-consent"/>
+  <variant name="Consumer-update"/>
   <variant name="Cryptohome-recovery"/>
   <variant name="Cryptohome-recovery-setup"/>
   <variant name="Debugging"/>
@@ -139,6 +140,11 @@ chromium-metrics-reviews@google.com.
   <variant name="Consolidated-consent.AcceptedDemo"/>
   <variant name="Consolidated-consent.AcceptedRegular"/>
   <variant name="Consolidated-consent.BackDemo"/>
+  <variant name="Consumer-update.Updated"/>
+  <variant name="Consumer-update.UpdateDeclineCellular"/>
+  <variant name="Consumer-update.UpdateError"/>
+  <variant name="Consumer-update.UpdateNotRequired"/>
+  <variant name="Consumer-update.UpdateSkipped"/>
   <variant name="Cryptohome-recovery-setup.Done"/>
   <variant name="Cryptohome-recovery-setup.Skipped"/>
   <variant name="Cryptohome-recovery.GaiaLogin"/>
@@ -242,6 +248,7 @@ chromium-metrics-reviews@google.com.
 
 <variants name="OOBEScreenShownBeforeNetworkError">
   <variant name="AddChild" summary="Add Child Screen"/>
+  <variant name="ConsumerUpdate" summary="Consumer Update Screen"/>
   <variant name="Enrollment" summary="Enrollment or Autoenrollment"/>
   <variant name="Signin" summary="Signin Screen"/>
   <variant name="Update" summary="Update Screen"/>

@@ -59,6 +59,7 @@ import './screens/login/offline_login.js';
 import './screens/login/update_required_card.js';
 // SCREENS USED DURING THE OOBE FLOW
 import './screens/oobe/auto_enrollment_check.js';
+import './screens/oobe/consumer_update.js';
 import './screens/oobe/demo_preferences.js';
 import './screens/oobe/demo_setup.js';
 import './screens/oobe/enable_debugging.js';
@@ -181,6 +182,11 @@ export const loginScreensList = [
  */
 export const oobeScreensList = [
   {tag: 'auto-enrollment-check-element', id: 'auto-enrollment-check'},
+  {
+    tag: 'consumer-update-element',
+    id: 'consumer-update',
+    condition: 'isSoftwareUpdateEnabled',
+  },
   {tag: 'demo-preferences-element', id: 'demo-preferences'},
   {tag: 'demo-setup-element', id: 'demo-setup'},
   {tag: 'enable-debugging-element', id: 'debugging'},

@@ -2871,6 +2871,8 @@ static_library("ui") {
       "webui/ash/login/choobe_screen_handler.h",
       "webui/ash/login/consolidated_consent_screen_handler.cc",
       "webui/ash/login/consolidated_consent_screen_handler.h",
+      "webui/ash/login/consumer_update_screen_handler.cc",
+      "webui/ash/login/consumer_update_screen_handler.h",
       "webui/ash/login/cookie_waiter.cc",
       "webui/ash/login/cookie_waiter.h",
       "webui/ash/login/core_oobe_handler.cc",
