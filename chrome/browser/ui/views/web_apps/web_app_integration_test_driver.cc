@@ -901,28 +901,51 @@ void WebAppIntegrationTestDriver::TearDownOnMainThread() {
   }
 }
 
-// TODO(crbug.com/1378267): Figure out a way to handle the kUninstall logic and
-// close both the manifest update dialog as well as the uninstall dialog to
-// prevent the app_id_update_dialog_waiter_ from hanging.
 void WebAppIntegrationTestDriver::HandleAppIdentityUpdateDialogResponse(
     UpdateDialogResponse response) {
+  // This is used to test the silent updating of policy installed apps
+  // which do not trigger the manifest update dialog to be shown.
+  if (response == UpdateDialogResponse::kSkipDialog) {
+    return;
+  }
+
   // Resetting the global test state for app identity update dialogs so that
   // tests can accept/cancel the app identity update dialog.
   update_dialog_scope_ =
       web_app::SetIdentityUpdateDialogActionForTesting(absl::nullopt);
-  views::Widget* widget = app_id_update_dialog_waiter_->WaitIfNeededAndGet();
-  ASSERT_TRUE(widget != nullptr);
+  views::Widget* manifest_update_widget =
+      app_id_update_dialog_waiter_->WaitIfNeededAndGet();
+  ASSERT_TRUE(manifest_update_widget != nullptr);
+  auto uninstall_dialog_view = std::make_unique<views::NamedWidgetShownWaiter>(
+      views::test::AnyWidgetTestPasskey{}, "WebAppUninstallDialogDelegateView");
+  views::Widget* uninstall_dialog_widget = nullptr;
   switch (response) {
     case UpdateDialogResponse::kAcceptUpdate:
-      views::test::AcceptDialog(widget);
+      views::test::AcceptDialog(manifest_update_widget);
       break;
     case UpdateDialogResponse::kCancelDialogAndUninstall:
-      views::test::CancelDialog(widget);
+      manifest_update_widget->widget_delegate()
+          ->AsDialogDelegate()
+          ->CancelDialog();
+      uninstall_dialog_widget = uninstall_dialog_view->WaitIfNeededAndGet();
+      ASSERT_NE(uninstall_dialog_widget, nullptr);
+      views::test::AcceptDialog(uninstall_dialog_widget);
       break;
-    // The app identity update dialog cannot be used to skip an update.
-    case UpdateDialogResponse::kSkipUpdate:
-      NOTREACHED_NORETURN()
-          << "Cannot skip an update from the app identity dialog";
+    case UpdateDialogResponse::kCancelUninstallAndAcceptUpdate: {
+      manifest_update_widget->widget_delegate()
+          ->AsDialogDelegate()
+          ->CancelDialog();
+      uninstall_dialog_widget = uninstall_dialog_view->WaitIfNeededAndGet();
+      ASSERT_NE(uninstall_dialog_widget, nullptr);
+      views::test::WidgetDestroyedWaiter uninstall_destroyed(
+          uninstall_dialog_widget);
+      views::test::CancelDialog(uninstall_dialog_widget);
+      uninstall_destroyed.Wait();
+      views::test::AcceptDialog(manifest_update_widget);
+      break;
+    }
+    case UpdateDialogResponse::kSkipDialog:
+      NOTREACHED_NORETURN();
   }
 }
 
@@ -931,33 +954,35 @@ void WebAppIntegrationTestDriver::AwaitManifestUpdate(Site site) {
     return;
   }
   AppId app_id = GetAppIdBySiteMode(site);
-  ASSERT_TRUE(provider()->registrar_unsafe().GetAppById(app_id));
-  if (!previous_manifest_updates_.contains(app_id)) {
-    waiting_for_update_id_ = app_id;
-    waiting_for_update_run_loop_ = std::make_unique<base::RunLoop>();
-    // Only close windows if immediate updating is not enabled.
-    if (!base::FeatureList::IsEnabled(
-            features::kWebAppManifestImmediateUpdating)) {
-      Browser* browser = GetAppBrowserForAppId(profile(), app_id);
-      while (browser != nullptr) {
-        if (browser == app_browser_) {
-          app_browser_ = nullptr;
+  const WebApp* web_app = provider()->registrar_unsafe().GetAppById(app_id);
+  // If the update resulted in an uninstall, then no need to wait.
+  if (web_app) {
+    if (!previous_manifest_updates_.contains(app_id)) {
+      waiting_for_update_id_ = app_id;
+      waiting_for_update_run_loop_ = std::make_unique<base::RunLoop>();
+      // Only close windows if immediate updating is not enabled.
+      if (!base::FeatureList::IsEnabled(
+              features::kWebAppManifestImmediateUpdating)) {
+        Browser* browser = GetAppBrowserForAppId(profile(), app_id);
+        while (browser != nullptr) {
+          if (browser == app_browser_) {
+            app_browser_ = nullptr;
+          }
+          delegate_->CloseBrowserSynchronously(browser);
+          browser = GetAppBrowserForAppId(profile(), app_id);
         }
-        delegate_->CloseBrowserSynchronously(browser);
-        browser = GetAppBrowserForAppId(profile(), app_id);
       }
+      waiting_for_update_run_loop_->Run();
+      waiting_for_update_run_loop_.reset();
     }
-    waiting_for_update_run_loop_->Run();
-    waiting_for_update_run_loop_.reset();
+
+    // Wait for the app's scope in the App Service app cache to be consistent
+    // with the app's scope in the web app database. Returns immediately if they
+    // are already consistent.
+    WebAppScopeWaiter(profile(), app_id,
+                      provider()->registrar_unsafe().GetAppScope(app_id))
+        .Await();
   }
-
-  // Wait for the app's scope in the App Service app cache to be consistent with
-  // the app's scope in the web app database. Returns immediately if they are
-  // already consistent.
-  WebAppScopeWaiter(profile(), app_id,
-                    provider()->registrar_unsafe().GetAppScope(app_id))
-      .Await();
-
   AfterStateChangeAction();
 }
 
@@ -3567,6 +3592,28 @@ void WebAppIntegrationTestDriver::OnWebAppManifestUpdated(
   previous_manifest_updates_.insert(app_id);
   if (waiting_for_update_id_ == app_id) {
     DCHECK(waiting_for_update_run_loop_);
+    waiting_for_update_run_loop_->Quit();
+    waiting_for_update_id_ = absl::nullopt;
+    // The `BeforeState*Action()` methods check that the
+    // `after_state_change_action_state_` has not changed from the current
+    // state. This is great, except for the manifest update edge case, which can
+    // happen asynchronously outside of actions. In this case, re-grab the
+    // snapshot after the update.
+    if (executing_action_level_ == 0 && after_state_change_action_state_) {
+      after_state_change_action_state_ = ConstructStateSnapshot();
+    }
+  }
+}
+
+void WebAppIntegrationTestDriver::OnWebAppUninstalled(
+    const AppId& app_id,
+    webapps::WebappUninstallSource uninstall_source) {
+  if (!waiting_for_update_id_.has_value()) {
+    return;
+  }
+
+  if (waiting_for_update_id_.value() == app_id &&
+      waiting_for_update_run_loop_ != nullptr) {
     waiting_for_update_run_loop_->Quit();
     waiting_for_update_id_ = absl::nullopt;
     // The `BeforeState*Action()` methods check that the

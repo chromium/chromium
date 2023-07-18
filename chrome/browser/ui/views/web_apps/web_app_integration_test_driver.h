@@ -130,7 +130,8 @@ enum class FilesOptions {
 enum class UpdateDialogResponse {
   kAcceptUpdate,
   kCancelDialogAndUninstall,
-  kSkipUpdate
+  kCancelUninstallAndAcceptUpdate,
+  kSkipDialog
 };
 
 enum class SubAppInstallDialogOptions {
@@ -392,6 +393,9 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   // WebAppInstallManagerObserver:
   void OnWebAppManifestUpdated(const AppId& app_id,
                                base::StringPiece old_name) override;
+  void OnWebAppUninstalled(
+      const AppId& app_id,
+      webapps::WebappUninstallSource uninstall_source) override;
 
  private:
   // Must be called at the beginning of every state change action function.

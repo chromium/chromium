@@ -36,7 +36,6 @@ TODO(dmurph): Possibly this table up into markdown-header section.
 | manifest_update_colors | Site |  | 80 | Not Implemented | The website updates it's manifest.json to change the 'theme' color | P3 |
 | manifest_update_display | Site, Display |  | 116 | Implemented |  |  |
 | await_manifest_update | Site |  | 117 | WIP | Does any actions necessary (like closing browser windows) and blocks the execution of the test until the manifest has been updated for the given site. |  |
-| check_update_dialog_not_shown |  |  | 92 | WIP |  | finnur@ |
 | |
 | # Run on OS Login |
 | apply_run_on_os_login_policy_allowed | Site |  | 100 | Implemented | Apply WebAppSettings policy for run_on_os_login to be allowed | phillis@ |
