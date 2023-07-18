@@ -173,8 +173,8 @@ class ContentPasswordManagerDriver
   const mojo::AssociatedRemote<autofill::mojom::PasswordGenerationAgent>&
   GetPasswordGenerationAgent();
 
-  raw_ptr<content::RenderFrameHost, DanglingUntriaged> render_frame_host_;
-  raw_ptr<PasswordManagerClient> client_;
+  const raw_ptr<content::RenderFrameHost> render_frame_host_;
+  const raw_ptr<PasswordManagerClient> client_;
   PasswordGenerationFrameHelper password_generation_helper_;
   PasswordAutofillManager password_autofill_manager_;
 

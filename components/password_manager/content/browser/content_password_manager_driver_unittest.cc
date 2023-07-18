@@ -326,6 +326,11 @@ class ContentPasswordManagerDriverURLTest
         GURL("https://username:password@hostname/path?query#hash"));
   }
 
+  void TearDown() override {
+    driver_.reset();
+    ContentPasswordManagerDriverTest::TearDown();
+  }
+
   autofill::FormData ExpectedFormData() {
     autofill::FormData expected_form;
     expected_form.url = GURL("https://hostname/path");
