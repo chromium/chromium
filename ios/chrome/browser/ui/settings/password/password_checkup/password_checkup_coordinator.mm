@@ -95,11 +95,12 @@ using password_manager::PasswordCheckReferrer;
   [self.delegate passwordCheckupCoordinatorDidRemove:self];
 }
 
+// TODO(crbug.com/1464966): Make sure there aren't mutiple active
+// `_passwordIssuesCoordinator`s at once.
 - (void)showPasswordIssuesWithWarningType:
     (password_manager::WarningType)warningType {
   password_manager::LogOpenPasswordIssuesList(warningType);
 
-  CHECK(!_passwordIssuesCoordinator);
   _passwordIssuesCoordinator = [[PasswordIssuesCoordinator alloc]
             initForWarningType:warningType
       baseNavigationController:self.baseNavigationController

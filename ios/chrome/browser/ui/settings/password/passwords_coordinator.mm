@@ -217,8 +217,9 @@ using password_manager::WarningType;
   [self.passwordCheckupCoordinator start];
 }
 
+// TODO(crbug.com/1464966): Make sure there aren't mutiple active
+// `passwordIssuesCoordinator`s at once.
 - (void)showPasswordIssues {
-  DCHECK(!self.passwordIssuesCoordinator);
   self.passwordIssuesCoordinator = [[PasswordIssuesCoordinator alloc]
             initForWarningType:WarningType::kCompromisedPasswordsWarning
       baseNavigationController:self.baseNavigationController
