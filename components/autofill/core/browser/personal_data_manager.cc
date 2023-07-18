@@ -1100,6 +1100,20 @@ void PersonalDataManager::AddServerCvc(int64_t instrument_id,
   Refresh();
 }
 
+void PersonalDataManager::UpdateServerCvc(int64_t instrument_id,
+                                          const std::u16string& cvc) {
+  CHECK(GetCreditCardByInstrumentId(instrument_id));
+  CHECK(!cvc.empty());
+  CHECK(database_helper_->GetServerDatabase())
+      << "Updating Server cvc without server storage.";
+
+  // Update the new server cvc to the web database.
+  database_helper_->GetServerDatabase()->UpdateServerCvc(instrument_id, cvc);
+
+  // Refresh our local cache and send notifications to observers.
+  Refresh();
+}
+
 void PersonalDataManager::ResetFullServerCard(const std::string& guid) {
   for (const auto& card : server_credit_cards_) {
     if (card->guid() == guid) {

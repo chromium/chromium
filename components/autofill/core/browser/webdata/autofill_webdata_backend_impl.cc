@@ -96,7 +96,9 @@ enum class Result {
   kRemoveOriginURLsModifiedBetween_Failure = 221,
   kAddServerCvc_Success = 230,
   kAddServerCvc_Failure = 231,
-  kMaxValue = kAddServerCvc_Failure,
+  kUpdateServerCvc_Success = 240,
+  kUpdateServerCvc_Failure = 241,
+  kMaxValue = kUpdateServerCvc_Failure,
 };
 
 // Reports the success or failure of various operations on the database via UMA.
@@ -721,13 +723,26 @@ WebDatabase::State AutofillWebDataBackendImpl::AddServerCvc(
     int64_t instrument_id,
     const std::u16string& cvc,
     WebDatabase* db) {
-  DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
-  if (!AutofillTable::FromWebDatabase(db)->AddServerCvc(instrument_id, cvc)) {
-    ReportResult(Result::kAddServerCvc_Failure);
-    return WebDatabase::COMMIT_NOT_NEEDED;
+  CHECK(owning_task_runner()->RunsTasksInCurrentSequence());
+  if (AutofillTable::FromWebDatabase(db)->AddServerCvc(instrument_id, cvc)) {
+    ReportResult(Result::kAddServerCvc_Success);
+    return WebDatabase::COMMIT_NEEDED;
   }
-  ReportResult(Result::kAddServerCvc_Success);
-  return WebDatabase::COMMIT_NEEDED;
+  ReportResult(Result::kAddServerCvc_Failure);
+  return WebDatabase::COMMIT_NOT_NEEDED;
+}
+
+WebDatabase::State AutofillWebDataBackendImpl::UpdateServerCvc(
+    int64_t instrument_id,
+    const std::u16string& cvc,
+    WebDatabase* db) {
+  CHECK(owning_task_runner()->RunsTasksInCurrentSequence());
+  if (AutofillTable::FromWebDatabase(db)->UpdateServerCvc(instrument_id, cvc)) {
+    ReportResult(Result::kUpdateServerCvc_Success);
+    return WebDatabase::COMMIT_NEEDED;
+  }
+  ReportResult(Result::kUpdateServerCvc_Failure);
+  return WebDatabase::COMMIT_NOT_NEEDED;
 }
 
 WebDatabase::State AutofillWebDataBackendImpl::AddUpiId(

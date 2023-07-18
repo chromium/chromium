@@ -248,6 +248,13 @@ void AutofillWebDataService::AddServerCvc(int64_t instrument_id,
                                 autofill_backend_, instrument_id, cvc));
 }
 
+void AutofillWebDataService::UpdateServerCvc(int64_t instrument_id,
+                                             const std::u16string& cvc) {
+  wdbs_->ScheduleDBTask(
+      FROM_HERE, base::BindOnce(&AutofillWebDataBackendImpl::UpdateServerCvc,
+                                autofill_backend_, instrument_id, cvc));
+}
+
 WebDataServiceBase::Handle AutofillWebDataService::GetCreditCards(
     WebDataServiceConsumer* consumer) {
   return wdbs_->ScheduleDBTaskWithResult(
