@@ -127,13 +127,11 @@ void CookieSettings::ResetCookieSetting(const GURL& primary_url) {
 // TODO(crbug.com/1386190): Update to take in CookieSettingOverrides.
 bool CookieSettings::IsThirdPartyAccessAllowed(
     const GURL& first_party_url,
-    content_settings::SettingSource* source,
-    base::Time* expiration) const {
+    content_settings::SettingInfo* info) const {
   // Use GURL() as an opaque primary url to check if any site
   // could access cookies in a 3p context on |first_party_url|.
   return IsAllowed(GetCookieSetting(GURL(), first_party_url,
-                                    net::CookieSettingOverrides(), source,
-                                    expiration));
+                                    net::CookieSettingOverrides(), info));
 }
 
 void CookieSettings::SetThirdPartyCookieSetting(const GURL& first_party_url,
@@ -146,14 +144,19 @@ void CookieSettings::SetThirdPartyCookieSetting(const GURL& first_party_url,
 }
 
 void CookieSettings::ResetThirdPartyCookieSetting(const GURL& first_party_url) {
+  // Support resetting all patterns without domain wildcard or with
+  // |first_party_url| site.
+  // TODO(): Log metrics when there is pattern that has domain as wildcard.
+  auto pattern = ContentSettingsPattern::FromURL(first_party_url);
+  SettingInfo info;
+  host_content_settings_map_->GetContentSetting(
+      GURL(), first_party_url, ContentSettingsType::COOKIES, &info);
+  if (!info.secondary_pattern.HasDomainWildcard()) {
+    pattern = info.secondary_pattern;
+  }
   host_content_settings_map_->SetContentSettingCustomScope(
-      ContentSettingsPattern::Wildcard(),
-      ContentSettingsPattern::FromURL(first_party_url),
-      ContentSettingsType::COOKIES, CONTENT_SETTING_DEFAULT);
-  host_content_settings_map_->SetContentSettingCustomScope(
-      ContentSettingsPattern::Wildcard(),
-      ContentSettingsPattern::FromURLNoWildcard(first_party_url),
-      ContentSettingsType::COOKIES, CONTENT_SETTING_DEFAULT);
+      ContentSettingsPattern::Wildcard(), pattern, ContentSettingsType::COOKIES,
+      CONTENT_SETTING_DEFAULT);
 }
 
 bool CookieSettings::IsStorageDurable(const GURL& origin) const {
@@ -235,33 +238,28 @@ ContentSetting CookieSettings::GetCookieSettingInternal(
     const GURL& first_party_url,
     bool is_third_party_request,
     net::CookieSettingOverrides overrides,
-    content_settings::SettingSource* source,
-    base::Time* expiration) const {
+    content_settings::SettingInfo* info) const {
   // Auto-allow in extensions or for WebUI embedding a secure origin.
   if (ShouldAlwaysAllowCookies(url, first_party_url)) {
     return CONTENT_SETTING_ALLOW;
   }
 
   // First get any host-specific settings.
-  SettingInfo info;
+  SettingInfo setting_info;
   ContentSetting setting = host_content_settings_map_->GetContentSetting(
-      url, first_party_url, ContentSettingsType::COOKIES, &info);
-  if (source) {
-    *source = info.source;
-  }
-  if (expiration) {
-    *expiration = info.metadata.expiration();
+      url, first_party_url, ContentSettingsType::COOKIES, &setting_info);
+  if (info) {
+    *info = setting_info;
   }
 
   // If no explicit exception has been made and third-party cookies are blocked
   // by default, apply CONTENT_SETTING_BLOCKED.
-  bool block_third = info.primary_pattern.MatchesAllHosts() &&
-                     info.secondary_pattern.MatchesAllHosts() &&
+  bool block_third = setting_info.primary_pattern.MatchesAllHosts() &&
+                     setting_info.secondary_pattern.MatchesAllHosts() &&
                      ShouldBlockThirdPartyCookies() &&
                      !first_party_url.SchemeIs(extension_scheme_);
 
   bool block = block_third && is_third_party_request;
-
   if (!block) {
     FireStorageAccessHistogram(
         net::cookie_util::StorageAccessResult::ACCESS_ALLOWED);

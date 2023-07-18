@@ -271,12 +271,6 @@ TEST_F(CookieControlsTest, DisableForSite) {
   testing::Mock::VerifyAndClearExpectations(mock());
 
   // Enabling example.com again should change status to kEnabled.
-  // On status change methods are called twice, because both site- and
-  // origin-scoped exceptions need to be reset. The status is still disabled for
-  // the first call because the site-origin exception is reset first.
-  EXPECT_CALL(*mock(),
-              OnStatusChanged(CookieControlsStatus::kDisabledForSite,
-                              CookieControlsEnforcement::kNoEnforcement, 0, 0));
   EXPECT_CALL(*mock(),
               OnStatusChanged(CookieControlsStatus::kEnabled,
                               CookieControlsEnforcement::kNoEnforcement, 0, 0));
@@ -575,17 +569,13 @@ TEST_P(CookieControlsUserBypassTest, DisableForSite) {
   testing::Mock::VerifyAndClearExpectations(mock());
 
   // Enabling example.com again should change status to kEnabled.
-  // On status change methods are called twice, because both site- and
-  // origin-scoped exceptions need to be reset.
   EXPECT_CALL(*mock(),
               OnStatusChanged(CookieControlsStatus::kEnabled,
                               CookieControlsEnforcement::kNoEnforcement,
-                              zero_expiration()))
-      .Times(2);
-  EXPECT_CALL(*mock(), OnSitesCountChanged(0, 0)).Times(2);
+                              zero_expiration()));
+  EXPECT_CALL(*mock(), OnSitesCountChanged(0, 0));
   EXPECT_CALL(*mock(), OnBreakageConfidenceLevelChanged(
-                           CookieControlsBreakageConfidenceLevel::kLow))
-      .Times(2);
+                           CookieControlsBreakageConfidenceLevel::kLow));
   cookie_controls()->OnCookieBlockingEnabledForSite(true);
   testing::Mock::VerifyAndClearExpectations(mock());
 }
@@ -675,59 +665,11 @@ TEST_P(CookieControlsUserBypassTest, ThirdPartyCookiesException) {
   testing::Mock::VerifyAndClearExpectations(mock());
 
   // Disabling 3PC for example.com again should change status to kEnabled.
-  // On status change methods are called twice, because both site- and
-  // origin-scoped exceptions need to be reset.
-  EXPECT_CALL(*mock(),
-              OnStatusChanged(CookieControlsStatus::kDisabledForSite,
-                              CookieControlsEnforcement::kNoEnforcement,
-                              zero_expiration()));
   EXPECT_CALL(*mock(),
               OnStatusChanged(CookieControlsStatus::kEnabled,
-                              CookieControlsEnforcement::kNoEnforcement,
-                              zero_expiration()));
-  EXPECT_CALL(*mock(), OnSitesCountChanged(0, 0)).Times(2);
-  EXPECT_CALL(*mock(), OnBreakageConfidenceLevelChanged(
-                           CookieControlsBreakageConfidenceLevel::kMedium));
-  EXPECT_CALL(*mock(), OnBreakageConfidenceLevelChanged(
-                           CookieControlsBreakageConfidenceLevel::kLow));
-  cookie_controls()->OnCookieBlockingEnabledForSite(true);
-  testing::Mock::VerifyAndClearExpectations(mock());
-}
-
-TEST_P(CookieControlsUserBypassTest, ThirdPartyCookieAndUserBypassException) {
-  // Create third party cookies exception.
-  cookie_settings()->SetThirdPartyCookieSetting(
-      GURL("https://example.com"), ContentSetting::CONTENT_SETTING_ALLOW);
-  // Create user bypass exception.
-  cookie_settings()->SetCookieSettingForUserBypass(GURL("https://example.com"));
-
-  NavigateAndCommit(GURL("https://example.com"));
-  // Permanent (third-party cookie) exception takes precedence because it has
-  // narrower scope.
-  EXPECT_CALL(*mock(),
-              OnStatusChanged(CookieControlsStatus::kDisabledForSite,
                               CookieControlsEnforcement::kNoEnforcement,
                               zero_expiration()));
   EXPECT_CALL(*mock(), OnSitesCountChanged(0, 0));
-  EXPECT_CALL(*mock(), OnBreakageConfidenceLevelChanged(
-                           CookieControlsBreakageConfidenceLevel::kMedium));
-  cookie_controls()->Update(web_contents());
-  testing::Mock::VerifyAndClearExpectations(mock());
-
-  // Disabling 3PC for example.com should change status to kEnabled.
-  // On status change methods are called twice, because both site- and
-  // origin-scoped exceptions need to be reset.
-  EXPECT_CALL(*mock(),
-              OnStatusChanged(CookieControlsStatus::kDisabledForSite,
-                              CookieControlsEnforcement::kNoEnforcement,
-                              zero_expiration()));
-  EXPECT_CALL(*mock(),
-              OnStatusChanged(CookieControlsStatus::kEnabled,
-                              CookieControlsEnforcement::kNoEnforcement,
-                              zero_expiration()));
-  EXPECT_CALL(*mock(), OnSitesCountChanged(0, 0)).Times(2);
-  EXPECT_CALL(*mock(), OnBreakageConfidenceLevelChanged(
-                           CookieControlsBreakageConfidenceLevel::kMedium));
   EXPECT_CALL(*mock(), OnBreakageConfidenceLevelChanged(
                            CookieControlsBreakageConfidenceLevel::kLow));
   cookie_controls()->OnCookieBlockingEnabledForSite(true);
@@ -955,6 +897,131 @@ TEST_P(CookieControlsUserBypassTest, StorageAccessApiHighSiteEngagement) {
       StorageType::DATABASE,
       CreateFirstPartyStorageKey(GURL("https://highengagement.com")),
       /*blocked_by_policy=*/false);
+  testing::Mock::VerifyAndClearExpectations(mock());
+}
+
+TEST_P(CookieControlsUserBypassTest, CustomExceptionsNoWildcardMatchingDomain) {
+  auto* hcsm = HostContentSettingsMapFactory::GetForProfile(profile());
+
+  NavigateAndCommit(GURL("https://cool.things.com"));
+  EXPECT_CALL(*mock(),
+              OnStatusChanged(CookieControlsStatus::kEnabled,
+                              CookieControlsEnforcement::kNoEnforcement,
+                              zero_expiration()));
+  EXPECT_CALL(*mock(), OnSitesCountChanged(0, 0));
+  EXPECT_CALL(*mock(), OnBreakageConfidenceLevelChanged(
+                           CookieControlsBreakageConfidenceLevel::kLow));
+  cookie_controls()->Update(web_contents());
+  testing::Mock::VerifyAndClearExpectations(mock());
+
+  // Creating an exception changes the status to kDisabledForSite. The exception
+  // doesn't contain wildcards in the domain and isn't enforced.
+  EXPECT_CALL(*mock(),
+              OnStatusChanged(CookieControlsStatus::kDisabledForSite,
+                              CookieControlsEnforcement::kNoEnforcement,
+                              zero_expiration()));
+  EXPECT_CALL(*mock(), OnSitesCountChanged(0, 0));
+  EXPECT_CALL(*mock(), OnBreakageConfidenceLevelChanged(
+                           CookieControlsBreakageConfidenceLevel::kMedium));
+
+  hcsm->SetContentSettingCustomScope(
+      ContentSettingsPattern::Wildcard(),
+      ContentSettingsPattern::FromString("cool.things.com"),
+      ContentSettingsType::COOKIES, CONTENT_SETTING_ALLOW);
+  testing::Mock::VerifyAndClearExpectations(mock());
+}
+
+TEST_P(CookieControlsUserBypassTest, CustomExceptionsWildcardMatchingDomain) {
+  auto* hcsm = HostContentSettingsMapFactory::GetForProfile(profile());
+
+  NavigateAndCommit(GURL("https://cool.things.com"));
+  EXPECT_CALL(*mock(),
+              OnStatusChanged(CookieControlsStatus::kEnabled,
+                              CookieControlsEnforcement::kNoEnforcement,
+                              zero_expiration()));
+  EXPECT_CALL(*mock(), OnSitesCountChanged(0, 0));
+  EXPECT_CALL(*mock(), OnBreakageConfidenceLevelChanged(
+                           CookieControlsBreakageConfidenceLevel::kLow));
+  cookie_controls()->Update(web_contents());
+  testing::Mock::VerifyAndClearExpectations(mock());
+
+  // Creating an exception changes the status to kDisabledForSite. The exception
+  // has wildcard in the domain and cannot be reset, it is enforced by cookie
+  // setting.
+  EXPECT_CALL(*mock(), OnStatusChanged(
+                           CookieControlsStatus::kDisabledForSite,
+                           CookieControlsEnforcement::kEnforcedByCookieSetting,
+                           zero_expiration()));
+  EXPECT_CALL(*mock(), OnSitesCountChanged(0, 0));
+  EXPECT_CALL(*mock(), OnBreakageConfidenceLevelChanged(
+                           CookieControlsBreakageConfidenceLevel::kMedium));
+  hcsm->SetContentSettingCustomScope(
+      ContentSettingsPattern::Wildcard(),
+      ContentSettingsPattern::FromString("[*.]cool.things.com"),
+      ContentSettingsType::COOKIES, CONTENT_SETTING_ALLOW);
+  testing::Mock::VerifyAndClearExpectations(mock());
+}
+
+TEST_P(CookieControlsUserBypassTest,
+       CustomExceptionsWildcardLessSpecificDomain) {
+  auto* hcsm = HostContentSettingsMapFactory::GetForProfile(profile());
+
+  NavigateAndCommit(GURL("https://cool.things.com"));
+  EXPECT_CALL(*mock(),
+              OnStatusChanged(CookieControlsStatus::kEnabled,
+                              CookieControlsEnforcement::kNoEnforcement,
+                              zero_expiration()));
+  EXPECT_CALL(*mock(), OnSitesCountChanged(0, 0));
+  EXPECT_CALL(*mock(), OnBreakageConfidenceLevelChanged(
+                           CookieControlsBreakageConfidenceLevel::kLow));
+  cookie_controls()->Update(web_contents());
+  testing::Mock::VerifyAndClearExpectations(mock());
+
+  // Creating an exception changes the status to kDisabledForSite. The exception
+  // has wildcard in the domain and cannot be reset, it is enforced by cookie
+  // setting.
+  EXPECT_CALL(*mock(), OnStatusChanged(
+                           CookieControlsStatus::kDisabledForSite,
+                           CookieControlsEnforcement::kEnforcedByCookieSetting,
+                           zero_expiration()));
+  EXPECT_CALL(*mock(), OnSitesCountChanged(0, 0));
+  EXPECT_CALL(*mock(), OnBreakageConfidenceLevelChanged(
+                           CookieControlsBreakageConfidenceLevel::kMedium));
+  hcsm->SetContentSettingCustomScope(
+      ContentSettingsPattern::Wildcard(),
+      ContentSettingsPattern::FromString("[*.]things.com"),
+      ContentSettingsType::COOKIES, CONTENT_SETTING_ALLOW);
+  testing::Mock::VerifyAndClearExpectations(mock());
+}
+
+TEST_P(CookieControlsUserBypassTest, CustomExceptionsDotComWildcard) {
+  auto* hcsm = HostContentSettingsMapFactory::GetForProfile(profile());
+
+  NavigateAndCommit(GURL("https://cool.things.com"));
+  EXPECT_CALL(*mock(),
+              OnStatusChanged(CookieControlsStatus::kEnabled,
+                              CookieControlsEnforcement::kNoEnforcement,
+                              zero_expiration()));
+  EXPECT_CALL(*mock(), OnSitesCountChanged(0, 0));
+  EXPECT_CALL(*mock(), OnBreakageConfidenceLevelChanged(
+                           CookieControlsBreakageConfidenceLevel::kLow));
+  cookie_controls()->Update(web_contents());
+  testing::Mock::VerifyAndClearExpectations(mock());
+
+  // Creating an exception changes the status to kDisabledForSite. The exception
+  // has wildcard in the domain and cannot be reset, it is enforced by cookie
+  // setting.
+  EXPECT_CALL(*mock(), OnStatusChanged(
+                           CookieControlsStatus::kDisabledForSite,
+                           CookieControlsEnforcement::kEnforcedByCookieSetting,
+                           zero_expiration()));
+  EXPECT_CALL(*mock(), OnSitesCountChanged(0, 0));
+  EXPECT_CALL(*mock(), OnBreakageConfidenceLevelChanged(
+                           CookieControlsBreakageConfidenceLevel::kMedium));
+  hcsm->SetContentSettingCustomScope(
+      ContentSettingsPattern::Wildcard(),
+      ContentSettingsPattern::FromString("[*.]com"),
+      ContentSettingsType::COOKIES, CONTENT_SETTING_ALLOW);
   testing::Mock::VerifyAndClearExpectations(mock());
 }
 

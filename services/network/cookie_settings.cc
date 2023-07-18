@@ -278,8 +278,7 @@ ContentSetting CookieSettings::GetCookieSettingInternal(
     const GURL& first_party_url,
     bool is_third_party_request,
     net::CookieSettingOverrides overrides,
-    content_settings::SettingSource* source,
-    base::Time* expiration) const {
+    content_settings::SettingInfo* info) const {
   return GetCookieSettingWithMetadata(url, first_party_url,
                                       is_third_party_request, overrides)
       .cookie_setting();

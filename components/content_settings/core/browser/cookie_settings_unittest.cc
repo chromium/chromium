@@ -306,31 +306,85 @@ TEST_P(CookieSettingsTest, UserBypassPermanentExceptions) {
 
 TEST_P(CookieSettingsTest, UserBypassThirdPartyCookiesPermanentExceptions) {
   GURL first_party_url = kFirstPartySiteForCookies.RepresentativeUrl();
-  base::Time expiration;
+  SettingInfo info;
 
-  EXPECT_TRUE(cookie_settings_->IsThirdPartyAccessAllowed(
-      kFirstPartySite, nullptr, &expiration));
-  EXPECT_EQ(expiration, base::Time());
+  EXPECT_TRUE(
+      cookie_settings_->IsThirdPartyAccessAllowed(kFirstPartySite, &info));
+  EXPECT_EQ(info.metadata.expiration(), base::Time());
 
   prefs_.SetInteger(prefs::kCookieControlsMode,
                     static_cast<int>(CookieControlsMode::kBlockThirdParty));
-  EXPECT_FALSE(cookie_settings_->IsThirdPartyAccessAllowed(
-      kFirstPartySite, nullptr, &expiration));
-  EXPECT_EQ(expiration, base::Time());
+  EXPECT_FALSE(
+      cookie_settings_->IsThirdPartyAccessAllowed(kFirstPartySite, &info));
+  EXPECT_EQ(info.metadata.expiration(), base::Time());
 
   cookie_settings_->SetCookieSettingForUserBypass(first_party_url);
-  EXPECT_TRUE(cookie_settings_->IsThirdPartyAccessAllowed(
-      first_party_url, nullptr, &expiration));
-  EXPECT_EQ(expiration, base::Time());
-  SettingInfo info;
+  EXPECT_TRUE(
+      cookie_settings_->IsThirdPartyAccessAllowed(first_party_url, &info));
+  EXPECT_EQ(info.metadata.expiration(), base::Time());
+  SettingInfo exception_info;
   // Verify that the correct exception is created.
-  EXPECT_EQ(settings_map_->GetContentSetting(
-                GURL(), first_party_url, ContentSettingsType::COOKIES, &info),
+  EXPECT_EQ(settings_map_->GetContentSetting(GURL(), first_party_url,
+                                             ContentSettingsType::COOKIES,
+                                             &exception_info),
             CONTENT_SETTING_ALLOW);
-  EXPECT_TRUE(info.primary_pattern.MatchesAllHosts());
-  EXPECT_EQ(info.secondary_pattern,
+  EXPECT_TRUE(exception_info.primary_pattern.MatchesAllHosts());
+  EXPECT_EQ(exception_info.secondary_pattern,
             ContentSettingsPattern::FromURL(first_party_url));
 
+  cookie_settings_->ResetThirdPartyCookieSetting(first_party_url);
+  EXPECT_FALSE(
+      cookie_settings_->IsThirdPartyAccessAllowed(first_party_url, nullptr));
+  // Verify that the exception was removed.
+  EXPECT_EQ(settings_map_->GetContentSetting(GURL(), first_party_url,
+                                             ContentSettingsType::COOKIES,
+                                             &exception_info),
+            CONTENT_SETTING_ALLOW);
+  EXPECT_TRUE(exception_info.primary_pattern.MatchesAllHosts());
+  EXPECT_TRUE(exception_info.secondary_pattern.MatchesAllHosts());
+}
+
+TEST_P(CookieSettingsTest, CustomExceptionsNoWildcardLessSpecificDomain) {
+  GURL first_party_url = GURL("https://cool.things.com");
+
+  EXPECT_TRUE(
+      cookie_settings_->IsThirdPartyAccessAllowed(first_party_url, nullptr));
+
+  prefs_.SetInteger(prefs::kCookieControlsMode,
+                    static_cast<int>(CookieControlsMode::kBlockThirdParty));
+  EXPECT_FALSE(
+      cookie_settings_->IsThirdPartyAccessAllowed(first_party_url, nullptr));
+
+  // No wildcard, matching top-level domain:
+  auto less_specific_domain_pattern =
+      ContentSettingsPattern::FromString("things.com");
+  settings_map_->SetContentSettingCustomScope(
+      ContentSettingsPattern::Wildcard(), less_specific_domain_pattern,
+      ContentSettingsType::COOKIES, CONTENT_SETTING_ALLOW);
+  EXPECT_FALSE(
+      cookie_settings_->IsThirdPartyAccessAllowed(first_party_url, nullptr));
+}
+
+TEST_P(CookieSettingsTest, CustomExceptionsNoWildcardMatchingDomain) {
+  GURL first_party_url = GURL("https://cool.things.com");
+
+  EXPECT_TRUE(
+      cookie_settings_->IsThirdPartyAccessAllowed(first_party_url, nullptr));
+
+  prefs_.SetInteger(prefs::kCookieControlsMode,
+                    static_cast<int>(CookieControlsMode::kBlockThirdParty));
+  EXPECT_FALSE(
+      cookie_settings_->IsThirdPartyAccessAllowed(first_party_url, nullptr));
+
+  auto top_level_domain_pattern =
+      ContentSettingsPattern::FromString("cool.things.com");
+  settings_map_->SetContentSettingCustomScope(
+      ContentSettingsPattern::Wildcard(), top_level_domain_pattern,
+      ContentSettingsType::COOKIES, CONTENT_SETTING_ALLOW);
+  EXPECT_TRUE(
+      cookie_settings_->IsThirdPartyAccessAllowed(first_party_url, nullptr));
+
+  SettingInfo info;
   cookie_settings_->ResetThirdPartyCookieSetting(first_party_url);
   EXPECT_FALSE(
       cookie_settings_->IsThirdPartyAccessAllowed(first_party_url, nullptr));
@@ -340,6 +394,119 @@ TEST_P(CookieSettingsTest, UserBypassThirdPartyCookiesPermanentExceptions) {
             CONTENT_SETTING_ALLOW);
   EXPECT_TRUE(info.primary_pattern.MatchesAllHosts());
   EXPECT_TRUE(info.secondary_pattern.MatchesAllHosts());
+}
+
+TEST_P(CookieSettingsTest, CustomExceptionsWildcardMatchingDomain) {
+  GURL first_party_url = GURL("https://cool.things.com");
+
+  EXPECT_TRUE(
+      cookie_settings_->IsThirdPartyAccessAllowed(first_party_url, nullptr));
+
+  prefs_.SetInteger(prefs::kCookieControlsMode,
+                    static_cast<int>(CookieControlsMode::kBlockThirdParty));
+  EXPECT_FALSE(
+      cookie_settings_->IsThirdPartyAccessAllowed(first_party_url, nullptr));
+
+  auto top_level_domain_pattern =
+      ContentSettingsPattern::FromString("[*.]cool.things.com");
+  settings_map_->SetContentSettingCustomScope(
+      ContentSettingsPattern::Wildcard(), top_level_domain_pattern,
+      ContentSettingsType::COOKIES, CONTENT_SETTING_ALLOW);
+  EXPECT_TRUE(
+      cookie_settings_->IsThirdPartyAccessAllowed(first_party_url, nullptr));
+
+  SettingInfo info;
+  cookie_settings_->ResetThirdPartyCookieSetting(first_party_url);
+  EXPECT_TRUE(
+      cookie_settings_->IsThirdPartyAccessAllowed(first_party_url, nullptr));
+  // Verify that the exception was not removed (since it doesn't match any of
+  // the expected patterns).
+  EXPECT_EQ(settings_map_->GetContentSetting(
+                GURL(), first_party_url, ContentSettingsType::COOKIES, &info),
+            CONTENT_SETTING_ALLOW);
+  EXPECT_TRUE(info.primary_pattern.MatchesAllHosts());
+  EXPECT_EQ(info.secondary_pattern, top_level_domain_pattern);
+  // Manually reset the exception.
+  settings_map_->SetContentSettingCustomScope(
+      ContentSettingsPattern::Wildcard(), top_level_domain_pattern,
+      ContentSettingsType::COOKIES, CONTENT_SETTING_DEFAULT);
+  EXPECT_FALSE(
+      cookie_settings_->IsThirdPartyAccessAllowed(first_party_url, nullptr));
+}
+
+TEST_P(CookieSettingsTest, CustomExceptionsWildcardLessSpecificDomain) {
+  GURL first_party_url = GURL("https://cool.things.com");
+
+  EXPECT_TRUE(
+      cookie_settings_->IsThirdPartyAccessAllowed(first_party_url, nullptr));
+
+  prefs_.SetInteger(prefs::kCookieControlsMode,
+                    static_cast<int>(CookieControlsMode::kBlockThirdParty));
+  EXPECT_FALSE(
+      cookie_settings_->IsThirdPartyAccessAllowed(first_party_url, nullptr));
+
+  auto top_level_domain_wildcard_pattern =
+      ContentSettingsPattern::FromString("[*.]things.com");
+  settings_map_->SetContentSettingCustomScope(
+      ContentSettingsPattern::Wildcard(), top_level_domain_wildcard_pattern,
+      ContentSettingsType::COOKIES, CONTENT_SETTING_ALLOW);
+  EXPECT_TRUE(
+      cookie_settings_->IsThirdPartyAccessAllowed(first_party_url, nullptr));
+
+  SettingInfo info;
+  cookie_settings_->ResetThirdPartyCookieSetting(first_party_url);
+  EXPECT_TRUE(
+      cookie_settings_->IsThirdPartyAccessAllowed(first_party_url, nullptr));
+  // Verify that the exception was not removed (since it doesn't match any of
+  // the expected patterns).
+  EXPECT_EQ(settings_map_->GetContentSetting(
+                GURL(), first_party_url, ContentSettingsType::COOKIES, &info),
+            CONTENT_SETTING_ALLOW);
+  EXPECT_TRUE(info.primary_pattern.MatchesAllHosts());
+  EXPECT_EQ(info.secondary_pattern, top_level_domain_wildcard_pattern);
+  // Manually reset the exception.
+  settings_map_->SetContentSettingCustomScope(
+      ContentSettingsPattern::Wildcard(), top_level_domain_wildcard_pattern,
+      ContentSettingsType::COOKIES, CONTENT_SETTING_DEFAULT);
+  EXPECT_FALSE(
+      cookie_settings_->IsThirdPartyAccessAllowed(first_party_url, nullptr));
+}
+
+TEST_P(CookieSettingsTest, CustomExceptionsDotComWildcard) {
+  GURL first_party_url = GURL("https://cool.things.com");
+
+  EXPECT_TRUE(
+      cookie_settings_->IsThirdPartyAccessAllowed(first_party_url, nullptr));
+
+  prefs_.SetInteger(prefs::kCookieControlsMode,
+                    static_cast<int>(CookieControlsMode::kBlockThirdParty));
+  EXPECT_FALSE(
+      cookie_settings_->IsThirdPartyAccessAllowed(first_party_url, nullptr));
+
+  auto dot_com_pattern = ContentSettingsPattern::FromString("[*.]com");
+  settings_map_->SetContentSettingCustomScope(
+      ContentSettingsPattern::Wildcard(), dot_com_pattern,
+      ContentSettingsType::COOKIES, CONTENT_SETTING_ALLOW);
+  EXPECT_TRUE(
+      cookie_settings_->IsThirdPartyAccessAllowed(first_party_url, nullptr));
+
+  SettingInfo info;
+  cookie_settings_->ResetThirdPartyCookieSetting(first_party_url);
+  EXPECT_TRUE(
+      cookie_settings_->IsThirdPartyAccessAllowed(first_party_url, nullptr));
+  // Verify that the exception was not removed (since it doesn't match any of
+  // the expected patterns).
+  EXPECT_EQ(settings_map_->GetContentSetting(
+                GURL(), first_party_url, ContentSettingsType::COOKIES, &info),
+            CONTENT_SETTING_ALLOW);
+  EXPECT_TRUE(info.primary_pattern.MatchesAllHosts());
+  EXPECT_EQ(info.secondary_pattern, dot_com_pattern);
+  // Manually reset the exception.
+  settings_map_->SetContentSettingCustomScope(
+      ContentSettingsPattern::Wildcard(), dot_com_pattern,
+      ContentSettingsType::COOKIES, CONTENT_SETTING_DEFAULT);
+  EXPECT_FALSE(
+      cookie_settings_->IsThirdPartyAccessAllowed(first_party_url, nullptr));
 }
 
 TEST_P(CookieSettingsTest, TestAllowlistedScheme) {
@@ -649,46 +816,47 @@ TEST_P(CookieSettingsTestUserBypass, UserBypassTemporaryExceptions) {
 TEST_P(CookieSettingsTestUserBypass,
        UserBypassThirdPartyCookiesTemporaryExceptions) {
   GURL first_party_url = kFirstPartySiteForCookies.RepresentativeUrl();
-  base::Time expiration;
+  SettingInfo info;
 
-  EXPECT_TRUE(cookie_settings_->IsThirdPartyAccessAllowed(
-      kFirstPartySite, nullptr, &expiration));
-  EXPECT_EQ(expiration, base::Time());
+  EXPECT_TRUE(
+      cookie_settings_->IsThirdPartyAccessAllowed(kFirstPartySite, &info));
+  EXPECT_EQ(info.metadata.expiration(), base::Time());
 
   prefs_.SetInteger(prefs::kCookieControlsMode,
                     static_cast<int>(CookieControlsMode::kBlockThirdParty));
-  EXPECT_FALSE(cookie_settings_->IsThirdPartyAccessAllowed(
-      kFirstPartySite, nullptr, &expiration));
-  EXPECT_EQ(expiration, base::Time());
+  EXPECT_FALSE(
+      cookie_settings_->IsThirdPartyAccessAllowed(kFirstPartySite, &info));
+  EXPECT_EQ(info.metadata.expiration(), base::Time());
 
   cookie_settings_->SetCookieSettingForUserBypass(first_party_url);
-  EXPECT_TRUE(cookie_settings_->IsThirdPartyAccessAllowed(
-      first_party_url, nullptr, &expiration));
+  EXPECT_TRUE(
+      cookie_settings_->IsThirdPartyAccessAllowed(first_party_url, &info));
   base::TimeDelta expiration_delta =
       content_settings::features::kUserBypassUIExceptionExpiration.Get();
-  EXPECT_EQ(expiration, base::Time::Now() + expiration_delta);
-  SettingInfo info;
+  EXPECT_EQ(info.metadata.expiration(), base::Time::Now() + expiration_delta);
+  SettingInfo exception_info;
   // Verify that the correct exception is created.
-  EXPECT_EQ(settings_map_->GetContentSetting(
-                GURL(), first_party_url, ContentSettingsType::COOKIES, &info),
+  EXPECT_EQ(settings_map_->GetContentSetting(GURL(), first_party_url,
+                                             ContentSettingsType::COOKIES,
+                                             &exception_info),
             CONTENT_SETTING_ALLOW);
-  EXPECT_TRUE(info.primary_pattern.MatchesAllHosts());
-  EXPECT_EQ(info.secondary_pattern,
+  EXPECT_TRUE(exception_info.primary_pattern.MatchesAllHosts());
+  EXPECT_EQ(exception_info.secondary_pattern,
             ContentSettingsPattern::FromURL(first_party_url));
 
   cookie_settings_->ResetThirdPartyCookieSetting(first_party_url);
   EXPECT_FALSE(
       cookie_settings_->IsThirdPartyAccessAllowed(first_party_url, nullptr));
   // Verify that the exception was removed.
-  EXPECT_EQ(settings_map_->GetContentSetting(
-                GURL(), first_party_url, ContentSettingsType::COOKIES, &info),
+  EXPECT_EQ(settings_map_->GetContentSetting(GURL(), first_party_url,
+                                             ContentSettingsType::COOKIES,
+                                             &exception_info),
             CONTENT_SETTING_ALLOW);
-  EXPECT_TRUE(info.primary_pattern.MatchesAllHosts());
-  EXPECT_TRUE(info.secondary_pattern.MatchesAllHosts());
+  EXPECT_TRUE(exception_info.primary_pattern.MatchesAllHosts());
+  EXPECT_TRUE(exception_info.secondary_pattern.MatchesAllHosts());
 }
 
-TEST_P(CookieSettingsTestUserBypass,
-       ResetUserBypassAndThirdPartyCookiesExceptions) {
+TEST_P(CookieSettingsTestUserBypass, ResetThirdPartyCookiesExceptions) {
   GURL first_party_url = kFirstPartySiteForCookies.RepresentativeUrl();
 
   prefs_.SetInteger(prefs::kCookieControlsMode,
@@ -696,7 +864,6 @@ TEST_P(CookieSettingsTestUserBypass,
   EXPECT_FALSE(
       cookie_settings_->IsThirdPartyAccessAllowed(kFirstPartySite, nullptr));
 
-  cookie_settings_->SetCookieSettingForUserBypass(first_party_url);
   cookie_settings_->SetThirdPartyCookieSetting(first_party_url,
                                                CONTENT_SETTING_ALLOW);
   EXPECT_TRUE(
@@ -705,8 +872,9 @@ TEST_P(CookieSettingsTestUserBypass,
   cookie_settings_->ResetThirdPartyCookieSetting(first_party_url);
   EXPECT_FALSE(
       cookie_settings_->IsThirdPartyAccessAllowed(first_party_url, nullptr));
+
   SettingInfo info;
-  // Verify that both exceptions were removed.
+  // Verify that the exception was removed.
   EXPECT_EQ(settings_map_->GetContentSetting(
                 GURL(), first_party_url, ContentSettingsType::COOKIES, &info),
             CONTENT_SETTING_ALLOW);
@@ -1251,22 +1419,22 @@ TEST_P(CookieSettingsTest, ThirdPartyException) {
 }
 
 TEST_P(CookieSettingsTest, ManagedThirdPartyException) {
-  SettingSource source;
+  SettingInfo info;
   EXPECT_TRUE(
-      cookie_settings_->IsThirdPartyAccessAllowed(kFirstPartySite, &source));
+      cookie_settings_->IsThirdPartyAccessAllowed(kFirstPartySite, &info));
   EXPECT_TRUE(cookie_settings_->IsFullCookieAccessAllowed(
       kHttpsSite, kFirstPartySiteForCookies, /*top_frame_origin=*/absl::nullopt,
       GetCookieSettingOverrides()));
-  EXPECT_EQ(source, SettingSource::SETTING_SOURCE_USER);
+  EXPECT_EQ(info.source, SettingSource::SETTING_SOURCE_USER);
 
   prefs_.SetManagedPref(prefs::kManagedDefaultCookiesSetting,
                         std::make_unique<base::Value>(CONTENT_SETTING_BLOCK));
   EXPECT_FALSE(
-      cookie_settings_->IsThirdPartyAccessAllowed(kFirstPartySite, &source));
+      cookie_settings_->IsThirdPartyAccessAllowed(kFirstPartySite, &info));
   EXPECT_FALSE(cookie_settings_->IsFullCookieAccessAllowed(
       kHttpsSite, kFirstPartySiteForCookies, /*top_frame_origin=*/absl::nullopt,
       GetCookieSettingOverrides()));
-  EXPECT_EQ(source, SettingSource::SETTING_SOURCE_POLICY);
+  EXPECT_EQ(info.source, SettingSource::SETTING_SOURCE_POLICY);
 }
 
 TEST_P(CookieSettingsTest, ThirdPartySettingObserver) {

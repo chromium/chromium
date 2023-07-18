@@ -127,9 +127,9 @@ class CookieSettings : public CookieSettingsBase,
   // accessing cookies.
   //
   // This should only be called on the UI thread.
-  bool IsThirdPartyAccessAllowed(const GURL& first_party_url,
-                                 content_settings::SettingSource* source,
-                                 base::Time* expiration = nullptr) const;
+  bool IsThirdPartyAccessAllowed(
+      const GURL& first_party_url,
+      content_settings::SettingInfo* info = nullptr) const;
 
   // Sets the cookie setting for the site and third parties embedded in it.
   //
@@ -195,8 +195,7 @@ class CookieSettings : public CookieSettingsBase,
       const GURL& first_party_url,
       bool is_third_party_request,
       net::CookieSettingOverrides overrides,
-      content_settings::SettingSource* source,
-      base::Time* expiration) const override;
+      content_settings::SettingInfo* info) const override;
 
   // content_settings::Observer:
   void OnContentSettingChanged(

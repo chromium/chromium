@@ -601,23 +601,23 @@ TEST_P(CookieSettingsTest, GetCookieSettingSecureOriginCookiesAllowed) {
   settings.set_secure_origin_cookies_allowed_schemes({"chrome"});
   settings.set_block_third_party_cookies(true);
 
-  EXPECT_EQ(settings.GetCookieSetting(
-                GURL("https://foo.com") /* url */,
-                GURL("chrome://foo") /* first_party_url */,
-                GetCookieSettingOverrides(), nullptr /* source */),
-            CONTENT_SETTING_ALLOW);
+  EXPECT_EQ(
+      settings.GetCookieSetting(GURL("https://foo.com") /* url */,
+                                GURL("chrome://foo") /* first_party_url */,
+                                GetCookieSettingOverrides()),
+      CONTENT_SETTING_ALLOW);
 
-  EXPECT_EQ(settings.GetCookieSetting(
-                GURL("chrome://foo") /* url */,
-                GURL("https://foo.com") /* first_party_url */,
-                GetCookieSettingOverrides(), nullptr /* source */),
-            SettingWithForceAllowThirdPartyCookies());
+  EXPECT_EQ(
+      settings.GetCookieSetting(GURL("chrome://foo") /* url */,
+                                GURL("https://foo.com") /* first_party_url */,
+                                GetCookieSettingOverrides()),
+      SettingWithForceAllowThirdPartyCookies());
 
-  EXPECT_EQ(settings.GetCookieSetting(
-                GURL("http://foo.com") /* url */,
-                GURL("chrome://foo") /* first_party_url */,
-                GetCookieSettingOverrides(), nullptr /* source */),
-            SettingWithForceAllowThirdPartyCookies());
+  EXPECT_EQ(
+      settings.GetCookieSetting(GURL("http://foo.com") /* url */,
+                                GURL("chrome://foo") /* first_party_url */,
+                                GetCookieSettingOverrides()),
+      SettingWithForceAllowThirdPartyCookies());
 }
 
 TEST_P(CookieSettingsTest, GetCookieSettingWithThirdPartyCookiesAllowedScheme) {
@@ -628,20 +628,20 @@ TEST_P(CookieSettingsTest, GetCookieSettingWithThirdPartyCookiesAllowedScheme) {
   EXPECT_EQ(settings.GetCookieSetting(
                 GURL("http://foo.com") /* url */,
                 GURL("chrome-extension://foo") /* first_party_url */,
-                GetCookieSettingOverrides(), nullptr /* source */),
+                GetCookieSettingOverrides()),
             CONTENT_SETTING_ALLOW);
 
   EXPECT_EQ(settings.GetCookieSetting(
                 GURL("http://foo.com") /* url */,
                 GURL("other-scheme://foo") /* first_party_url */,
-                GetCookieSettingOverrides(), nullptr /* source */),
+                GetCookieSettingOverrides()),
             SettingWithForceAllowThirdPartyCookies());
 
-  EXPECT_EQ(settings.GetCookieSetting(
-                GURL("chrome-extension://foo") /* url */,
-                GURL("http://foo.com") /* first_party_url */,
-                GetCookieSettingOverrides(), nullptr /* source */),
-            SettingWithForceAllowThirdPartyCookies());
+  EXPECT_EQ(
+      settings.GetCookieSetting(GURL("chrome-extension://foo") /* url */,
+                                GURL("http://foo.com") /* first_party_url */,
+                                GetCookieSettingOverrides()),
+      SettingWithForceAllowThirdPartyCookies());
 }
 
 TEST_P(CookieSettingsTest, GetCookieSettingMatchingSchemeCookiesAllowed) {
@@ -652,20 +652,20 @@ TEST_P(CookieSettingsTest, GetCookieSettingMatchingSchemeCookiesAllowed) {
   EXPECT_EQ(settings.GetCookieSetting(
                 GURL("chrome-extension://bar") /* url */,
                 GURL("chrome-extension://foo") /* first_party_url */,
-                GetCookieSettingOverrides(), nullptr /* source */),
+                GetCookieSettingOverrides()),
             CONTENT_SETTING_ALLOW);
 
   EXPECT_EQ(settings.GetCookieSetting(
                 GURL("http://foo.com") /* url */,
                 GURL("chrome-extension://foo") /* first_party_url */,
-                GetCookieSettingOverrides(), nullptr /* source */),
+                GetCookieSettingOverrides()),
             SettingWithForceAllowThirdPartyCookies());
 
-  EXPECT_EQ(settings.GetCookieSetting(
-                GURL("chrome-extension://foo") /* url */,
-                GURL("http://foo.com") /* first_party_url */,
-                GetCookieSettingOverrides(), nullptr /* source */),
-            SettingWithForceAllowThirdPartyCookies());
+  EXPECT_EQ(
+      settings.GetCookieSetting(GURL("chrome-extension://foo") /* url */,
+                                GURL("http://foo.com") /* first_party_url */,
+                                GetCookieSettingOverrides()),
+      SettingWithForceAllowThirdPartyCookies());
 }
 
 TEST_P(CookieSettingsTest, LegacyCookieAccessDefault) {

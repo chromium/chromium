@@ -145,11 +145,11 @@ class CookieSettingsBase {
   bool IsCookieSessionOnly(const GURL& url) const;
 
   // A helper for applying third party cookie blocking rules.
-  ContentSetting GetCookieSetting(const GURL& url,
-                                  const GURL& first_party_url,
-                                  net::CookieSettingOverrides overrides,
-                                  content_settings::SettingSource* source,
-                                  base::Time* expiration = nullptr) const;
+  ContentSetting GetCookieSetting(
+      const GURL& url,
+      const GURL& first_party_url,
+      net::CookieSettingOverrides overrides,
+      content_settings::SettingInfo* info = nullptr) const;
 
   // Returns the cookie access semantics (legacy or nonlegacy) to be applied for
   // cookies on the given domain. The |cookie_domain| can be provided as the
@@ -247,8 +247,7 @@ class CookieSettingsBase {
       const GURL& first_party_url,
       bool is_third_party_request,
       net::CookieSettingOverrides overrides,
-      content_settings::SettingSource* source,
-      base::Time* expiration) const = 0;
+      content_settings::SettingInfo* info) const = 0;
 
   static bool storage_access_api_grants_unpartitioned_storage_;
   const bool is_storage_partitioned_;

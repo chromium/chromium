@@ -126,18 +126,16 @@ bool GetSettingManagedByUser(const GURL& url,
                              ContentSetting* out_setting) {
   HostContentSettingsMap* map =
       HostContentSettingsMapFactory::GetForProfile(profile);
-  SettingSource source;
+  SettingInfo info;
   ContentSetting setting;
   if (type == ContentSettingsType::COOKIES) {
     // TODO(crbug.com/1386190): Consider whether the following check should
     // somehow determine real CookieSettingOverrides rather than default to
     // none.
     setting = CookieSettingsFactory::GetForProfile(profile)->GetCookieSetting(
-        url, url, net::CookieSettingOverrides(), &source);
+        url, url, net::CookieSettingOverrides(), &info);
   } else {
-    SettingInfo info;
     setting = map->GetContentSetting(url, url, type, &info);
-    source = info.source;
   }
 
   if (out_setting)
@@ -145,7 +143,7 @@ bool GetSettingManagedByUser(const GURL& url,
 
   // Prevent creation of content settings for illegal urls like about:blank by
   // disallowing user management.
-  return source == SETTING_SOURCE_USER &&
+  return info.source == SETTING_SOURCE_USER &&
          map->CanSetNarrowestContentSetting(url, url, type);
 }
 

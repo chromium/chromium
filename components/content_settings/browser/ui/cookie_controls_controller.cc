@@ -104,29 +104,42 @@ CookieControlsController::Status CookieControlsController::GetStatus(
             CookieControlsEnforcement::kNoEnforcement, base::Time()};
   }
 
-  SettingSource source;
-  base::Time expiration;
-  bool is_allowed = cookie_settings_->IsThirdPartyAccessAllowed(
-      web_contents->GetLastCommittedURL(), &source, &expiration);
+  SettingInfo info;
+  bool is_allowed = cookie_settings_->IsThirdPartyAccessAllowed(url, &info);
+
+  const bool is_default_setting = info.primary_pattern.MatchesAllHosts() &&
+                                  info.secondary_pattern.MatchesAllHosts();
+
+  // The UI can reset only host-scoped (without wildcards in the domain) or
+  // site-scoped exceptions.
+  const bool host_or_site_scoped_exception =
+      !info.secondary_pattern.HasDomainWildcard() ||
+      info.secondary_pattern == ContentSettingsPattern::FromURL(url);
+
+  // Rules from regular mode can't be temporarily overridden in incognito.
+  const bool is_exception_from_regular_mode_in_incognito =
+      is_allowed && original_cookie_settings_ &&
+      original_cookie_settings_->ShouldBlockThirdPartyCookies() &&
+      original_cookie_settings_->IsThirdPartyAccessAllowed(url,
+                                                           nullptr /* info */);
 
   CookieControlsStatus status = is_allowed
                                     ? CookieControlsStatus::kDisabledForSite
                                     : CookieControlsStatus::kEnabled;
   CookieControlsEnforcement enforcement;
-  if (source == SETTING_SOURCE_POLICY) {
+  if (info.source == SETTING_SOURCE_POLICY) {
     enforcement = CookieControlsEnforcement::kEnforcedByPolicy;
-  } else if (source == SETTING_SOURCE_EXTENSION) {
+  } else if (info.source == SETTING_SOURCE_EXTENSION) {
     enforcement = CookieControlsEnforcement::kEnforcedByExtension;
-  } else if (is_allowed && original_cookie_settings_ &&
-             original_cookie_settings_->ShouldBlockThirdPartyCookies() &&
-             original_cookie_settings_->IsThirdPartyAccessAllowed(
-                 web_contents->GetLastCommittedURL(), nullptr /* source */)) {
-    // Rules from regular mode can't be temporarily overridden in incognito.
+  } else if (is_exception_from_regular_mode_in_incognito ||
+             (!is_default_setting && !host_or_site_scoped_exception)) {
+    // If the exception cannot be reset in-context because of the nature of the
+    // setting, display as managed by setting.
     enforcement = CookieControlsEnforcement::kEnforcedByCookieSetting;
   } else {
     enforcement = CookieControlsEnforcement::kNoEnforcement;
   }
-  return {status, enforcement, expiration};
+  return {status, enforcement, info.metadata.expiration()};
 }
 
 CookieControlsBreakageConfidenceLevel

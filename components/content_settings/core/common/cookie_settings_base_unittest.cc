@@ -51,8 +51,7 @@ class CallbackCookieSettings : public CookieSettingsBase {
       const GURL& first_party_url,
       bool is_third_party_request,
       net::CookieSettingOverrides overrides,
-      content_settings::SettingSource* source,
-      base::Time* expiration) const override {
+      content_settings::SettingInfo* info) const override {
     return callback_.Run(url);
   }
   ContentSetting GetSettingForLegacyCookieAccess(
