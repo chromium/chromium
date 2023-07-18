@@ -563,6 +563,11 @@ targets.compile_target(
     label = "//chrome/test/chromedriver/test/webview_shell:chromedriver_webview_shell_apk",
 )
 
+targets.windowed_test_launcher(
+    name = "chromeos_integration_tests",
+    label = "//chrome/test:chromeos_integration_tests",
+)
+
 targets.generated_script(
     name = "webdriver_wpt_tests",
     label = "//:webdriver_wpt_tests",
