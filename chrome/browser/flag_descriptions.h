@@ -464,6 +464,9 @@ extern const char
 extern const char kChromeWhatsNewUIName[];
 extern const char kChromeWhatsNewUIDescription[];
 
+extern const char kCreateShortcutIgnoresManifestName[];
+extern const char kCreateShortcutIgnoresManifestDescription[];
+
 extern const char kDisableProcessReuse[];
 extern const char kDisableProcessReuseDescription[];
 

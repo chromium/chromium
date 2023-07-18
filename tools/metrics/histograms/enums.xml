@@ -60135,6 +60135,7 @@ from previous Chrome versions.
   <int value="-1926236767" label="DynamicColorButtonsAndroid:enabled"/>
   <int value="-1926142124" label="LacrosColorManagement:disabled"/>
   <int value="-1926124919" label="WebViewOriginTrials:enabled"/>
+  <int value="-1925573731" label="CreateShortcutIgnoresManifest:enabled"/>
   <int value="-1925453192" label="BlockInsecurePrivateNetworkRequests:enabled"/>
   <int value="-1925214028"
       label="EnterpriseReportingApiKeychainRecreation:enabled"/>
@@ -64386,6 +64387,7 @@ from previous Chrome versions.
   <int value="265830810" label="BackgroundTaskComponentUpdate:enabled"/>
   <int value="266322815" label="ChromeModernDesign:disabled"/>
   <int value="266702296" label="disable-plugin-power-saver"/>
+  <int value="266787297" label="CreateShortcutIgnoresManifest:disabled"/>
   <int value="267313220" label="ScreenSaverPreview:disabled"/>
   <int value="267332914" label="AvoidUnnecessaryBeforeUnloadCheck:disabled"/>
   <int value="267706621" label="WallpaperPerDesk:disabled"/>

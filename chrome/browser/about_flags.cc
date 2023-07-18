@@ -10560,7 +10560,11 @@ const FeatureEntry kFeatureEntries[] = {
     {"enable-smart-card-web-api", flag_descriptions::kSmartCardWebApiName,
      flag_descriptions::kSmartCardWebApiDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(blink::features::kSmartCard)},
-#endif
+    {"create-shortcut-ignores-manifest",
+     flag_descriptions::kCreateShortcutIgnoresManifestName,
+     flag_descriptions::kCreateShortcutIgnoresManifestDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(webapps::features::kCreateShortcutIgnoresManifest)},
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
     {"ml-mobile-pwa-prompt", flag_descriptions::kMobilePWAInstallPromptMlName,
