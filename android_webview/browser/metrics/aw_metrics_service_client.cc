@@ -7,6 +7,7 @@
 #include <jni.h>
 #include <cstdint>
 
+#include "android_webview/browser/metrics/android_metrics_provider.h"
 #include "android_webview/browser_jni_headers/AwMetricsServiceClient_jni.h"
 #include "android_webview/common/aw_features.h"
 #include "android_webview/common/metrics/app_package_name_logging_rule.h"
@@ -298,6 +299,7 @@ void AwMetricsServiceClient::RegisterMetricsPrefs(
   registry->RegisterDictionaryPref(prefs::kMetricsAppPackageNameLoggingRule);
   registry->RegisterTimePref(prefs::kAppPackageNameLoggingRuleLastUpdateTime,
                              base::Time());
+  AndroidMetricsProvider::RegisterPrefs(registry);
 }
 
 // static

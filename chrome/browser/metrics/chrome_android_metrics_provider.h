@@ -38,6 +38,8 @@ class ChromeAndroidMetricsProvider : public metrics::MetricsProvider {
   void ProvideCurrentSessionData(
       metrics::ChromeUserMetricsExtension* uma_proto) override;
 
+  static void ResetGlobalStateForTesting();
+
  private:
   raw_ptr<PrefService> local_state_;
 };

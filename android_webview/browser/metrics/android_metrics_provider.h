@@ -7,15 +7,21 @@
 
 #include "components/metrics/metrics_provider.h"
 
+#include "base/memory/raw_ptr.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/pref_service.h"
+
 namespace android_webview {
 
 // AndroidMetricsProvider is responsible for logging information related to
 // system-level information about the Android device as well as the process.
 class AndroidMetricsProvider : public metrics::MetricsProvider {
  public:
-  AndroidMetricsProvider() = default;
-
+  explicit AndroidMetricsProvider(PrefService* local_state)
+      : local_state_(local_state) {}
   ~AndroidMetricsProvider() override = default;
+
+  static void RegisterPrefs(PrefRegistrySimple* registry);
 
   void ProvideCurrentSessionData(
       metrics::ChromeUserMetricsExtension* uma_proto) override;
@@ -23,8 +29,12 @@ class AndroidMetricsProvider : public metrics::MetricsProvider {
       metrics::ChromeUserMetricsExtension* uma_proto) override;
 
   AndroidMetricsProvider(const AndroidMetricsProvider&) = delete;
-
   AndroidMetricsProvider& operator=(const AndroidMetricsProvider&) = delete;
+
+  static void ResetGlobalStateForTesting();
+
+ private:
+  raw_ptr<PrefService> local_state_;
 };
 
 }  // namespace android_webview

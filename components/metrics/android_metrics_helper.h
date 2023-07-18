@@ -7,7 +7,14 @@
 
 #include <string>
 
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/pref_service.h"
+
 namespace metrics {
+
+namespace prefs {
+constexpr char kVersionCodePref[] = "android_system_info.last_version_code";
+}
 
 // Whether 64-bit and/or 32-bit apps can be installed on this device/OS.
 //
@@ -42,7 +49,14 @@ class AndroidMetricsHelper {
 
   // |current_session| denotes whether data is emitted for the current session,
   // as opposed to the previous session.
-  void EmitHistograms(bool current_session) const;
+  void EmitHistograms(PrefService* local_state, bool current_session);
+
+  static void RegisterPrefs(PrefRegistrySimple* registry);
+
+  // Made public for testing.
+  static void SaveLocalState(PrefService* local_state, int version_code_int);
+
+  void ResetForTesting() { local_state_saved_ = false; }
 
  private:
   friend struct AndroidMetricsHelperSingletonTraits;
@@ -53,6 +67,8 @@ class AndroidMetricsHelper {
 
   int version_code_int_ = 0;
   AbiBitnessSupport abi_bitness_support_ = AbiBitnessSupport::kNeither;
+
+  bool local_state_saved_ = false;
 };
 
 }  // namespace metrics

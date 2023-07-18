@@ -33,6 +33,7 @@
 #include "components/embedder_support/android/metrics/android_metrics_service_client.h"
 #include "components/embedder_support/origin_trials/origin_trial_prefs.h"
 #include "components/embedder_support/origin_trials/pref_names.h"
+#include "components/metrics/android_metrics_helper.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/metrics/persistent_histograms.h"
 #include "components/policy/core/browser/configuration_policy_pref_store.h"
@@ -90,6 +91,8 @@ const char* const kPersistentPrefsAllowlist[] = {
     // Unsent logs metadata.
     metrics::prefs::kMetricsInitialLogsMetadata,
     metrics::prefs::kMetricsOngoingLogsMetadata,
+    // Version code.
+    metrics::prefs::kVersionCodePref,
     net::nqe::kNetworkQualities,
     // Current and past country codes, to filter variations studies by country.
     variations::prefs::kVariationsCountry,

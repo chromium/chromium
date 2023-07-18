@@ -9,6 +9,8 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/pref_service.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include <sys/system_properties.h>
@@ -46,21 +48,54 @@ AndroidMetricsHelper::AndroidMetricsHelper(const std::string& version_code,
   }
 }
 
-void AndroidMetricsHelper::EmitHistograms(bool current_session) const {
-  if (version_code_int_) {
-    // These may change across sessions, so log them only for current session.
-    // Version code will sure change on every update. The other two are unlikely
-    // to change, but some factors like RAM targeting may do it.
-    //
-    // TODO(crrev.com/c/1462131): Carry these across sessions using
-    // SaveActivityTypeToLocalState/GetActivityTypeFromLocalState.
-    if (current_session) {
+void AndroidMetricsHelper::EmitHistograms(PrefService* local_state,
+                                          bool current_session) {
+  if (current_session) {
+    if (version_code_int_) {
+      // The values won't change within the session, so save only once.
+      if (!local_state_saved_) {
+        // version_code_int_ can change across session. Save it so that it can
+        // be restored in case the session dies before logs are flushed.
+        // abi_bitness_support_ doesn't change across sessions (that'd require
+        // OS reinstall), so no need to save it. It can be reliably
+        // reconstructed in the next session.
+        SaveLocalState(local_state, version_code_int_);
+        local_state_saved_ = true;
+      }
+
+      // This may change across sessions, so log it only for current session.
+      // Version code will sure change on every update. The other two are
+      // unlikely to change, but some factors like RAM targeting may do it.
       base::UmaHistogramSparse("Android.VersionCode", version_code_int_);
+    }
+  } else {
+    // Make sure we didn't overwrite the stored state yet.
+    CHECK(!local_state_saved_);
+    // For previous session, don't log version_code_int_ as version code may
+    // have changed (e.g. version update). Log saved value instead.
+    int restored_version_code_int =
+        local_state->GetInteger(prefs::kVersionCodePref);
+    if (restored_version_code_int) {
+      base::UmaHistogramSparse("Android.VersionCode",
+                               restored_version_code_int);
     }
   }
 
+  // abi_bitness_support_ doesn't change across sessions (that'd require OS
+  // reinstall), so no need to load it, just use the current value.
   base::UmaHistogramEnumeration("Android.AbiBitnessSupport",
                                 abi_bitness_support_);
+}
+
+// static
+void AndroidMetricsHelper::RegisterPrefs(PrefRegistrySimple* registry) {
+  registry->RegisterIntegerPref(prefs::kVersionCodePref, 0);
+}
+
+// static
+void AndroidMetricsHelper::SaveLocalState(PrefService* local_state,
+                                          int version_code_int) {
+  local_state->SetInteger(prefs::kVersionCodePref, version_code_int);
 }
 
 }  // namespace metrics

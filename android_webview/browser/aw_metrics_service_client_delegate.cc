@@ -25,7 +25,10 @@ AwMetricsServiceClientDelegate::~AwMetricsServiceClientDelegate() = default;
 
 void AwMetricsServiceClientDelegate::RegisterAdditionalMetricsProviders(
     metrics::MetricsService* service) {
-  service->RegisterMetricsProvider(std::make_unique<AndroidMetricsProvider>());
+  PrefService* local_state = AwBrowserProcess::GetInstance()->local_state();
+
+  service->RegisterMetricsProvider(
+      std::make_unique<AndroidMetricsProvider>(local_state));
   service->RegisterMetricsProvider(
       std::make_unique<AwPageLoadMetricsProvider>());
   service->RegisterMetricsProvider(std::make_unique<VisibilityMetricsProvider>(

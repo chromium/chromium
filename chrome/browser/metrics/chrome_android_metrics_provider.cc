@@ -66,6 +66,7 @@ ChromeAndroidMetricsProvider::~ChromeAndroidMetricsProvider() {}
 // static
 void ChromeAndroidMetricsProvider::RegisterPrefs(PrefRegistrySimple* registry) {
   chrome::android::RegisterActivityTypePrefs(registry);
+  metrics::AndroidMetricsHelper::RegisterPrefs(registry);
 }
 
 void ChromeAndroidMetricsProvider::OnDidCreateMetricsLog() {
@@ -96,6 +97,7 @@ void ChromeAndroidMetricsProvider::ProvidePreviousSessionData(
   EmitMultipleUserProfilesHistogram();
 
   metrics::AndroidMetricsHelper::GetInstance()->EmitHistograms(
+      local_state_,
       /*current_session=*/false);
 }
 
@@ -122,6 +124,12 @@ void ChromeAndroidMetricsProvider::ProvideCurrentSessionData(
   EmitAppNotificationStatusHistogram();
   EmitMultipleUserProfilesHistogram();
   metrics::AndroidMetricsHelper::GetInstance()->EmitHistograms(
+      local_state_,
       /*current_session=*/true);
   LocaleManager::RecordUserTypeMetrics();
+}
+
+// static
+void ChromeAndroidMetricsProvider::ResetGlobalStateForTesting() {
+  metrics::AndroidMetricsHelper::GetInstance()->ResetForTesting();  // IN-TEST
 }
