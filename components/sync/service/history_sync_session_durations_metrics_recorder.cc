@@ -65,14 +65,6 @@ bool HistorySyncSessionDurationsMetricsRecorder::IsHistorySyncEnabled() const {
           UserSelectableType::kHistory)) {
     return false;
   }
-  // For signed-in non-syncing users, history sync can only be enabled if the
-  // kReplaceSyncPromosWithSignInPromos feature is on.
-  // TODO(crbug.com/1455963,crbug.com/1134090): Update GetSelectedTypes() so
-  // that this extra check here isn't needed.
-  if (!sync_service_->IsSyncFeatureEnabled() &&
-      !base::FeatureList::IsEnabled(kReplaceSyncPromosWithSignInPromos)) {
-    return false;
-  }
   return true;
 }
 
