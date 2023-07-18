@@ -233,6 +233,7 @@ TEST_F(NetworkServiceProxyDelegateTest, OnResolveProxySuccessHttpProxy) {
   expected_proxy_list.AddProxyServer(
       net::PacResultElementToProxyServer("PROXY foo"));
   EXPECT_TRUE(result.proxy_list().Equals(expected_proxy_list));
+  EXPECT_FALSE(result.is_for_ip_protection());
 }
 
 TEST_F(NetworkServiceProxyDelegateTest, OnResolveProxySuccessHttpsUrl) {
@@ -249,6 +250,7 @@ TEST_F(NetworkServiceProxyDelegateTest, OnResolveProxySuccessHttpsUrl) {
   expected_proxy_list.AddProxyServer(
       net::PacResultElementToProxyServer("HTTPS foo"));
   EXPECT_TRUE(result.proxy_list().Equals(expected_proxy_list));
+  EXPECT_FALSE(result.is_for_ip_protection());
 }
 
 TEST_F(NetworkServiceProxyDelegateTest, OnResolveProxySuccessWebSocketUrl) {
@@ -265,6 +267,7 @@ TEST_F(NetworkServiceProxyDelegateTest, OnResolveProxySuccessWebSocketUrl) {
   expected_proxy_list.AddProxyServer(
       net::PacResultElementToProxyServer("HTTPS foo"));
   EXPECT_TRUE(result.proxy_list().Equals(expected_proxy_list));
+  EXPECT_FALSE(result.is_for_ip_protection());
 }
 
 TEST_F(NetworkServiceProxyDelegateTest, OnResolveProxyNoRuleForHttpsUrl) {
@@ -278,6 +281,7 @@ TEST_F(NetworkServiceProxyDelegateTest, OnResolveProxyNoRuleForHttpsUrl) {
                            net::ProxyRetryInfoMap(), &result);
 
   EXPECT_TRUE(result.is_direct());
+  EXPECT_FALSE(result.is_for_ip_protection());
 }
 
 TEST_F(NetworkServiceProxyDelegateTest, OnResolveProxyLocalhost) {
@@ -291,6 +295,7 @@ TEST_F(NetworkServiceProxyDelegateTest, OnResolveProxyLocalhost) {
                            net::ProxyRetryInfoMap(), &result);
 
   EXPECT_TRUE(result.is_direct());
+  EXPECT_FALSE(result.is_for_ip_protection());
 }
 
 TEST_F(NetworkServiceProxyDelegateTest, OnResolveProxyEmptyConfig) {
@@ -302,6 +307,7 @@ TEST_F(NetworkServiceProxyDelegateTest, OnResolveProxyEmptyConfig) {
                            net::ProxyRetryInfoMap(), &result);
 
   EXPECT_TRUE(result.is_direct());
+  EXPECT_FALSE(result.is_for_ip_protection());
 }
 
 TEST_F(NetworkServiceProxyDelegateTest, OnResolveProxyNonIdempotentMethod) {
@@ -315,6 +321,7 @@ TEST_F(NetworkServiceProxyDelegateTest, OnResolveProxyNonIdempotentMethod) {
                            net::ProxyRetryInfoMap(), &result);
 
   EXPECT_TRUE(result.is_direct());
+  EXPECT_FALSE(result.is_for_ip_protection());
 }
 
 TEST_F(NetworkServiceProxyDelegateTest,
@@ -333,6 +340,7 @@ TEST_F(NetworkServiceProxyDelegateTest,
   expected_proxy_list.AddProxyServer(
       net::PacResultElementToProxyServer("PROXY foo"));
   EXPECT_TRUE(result.proxy_list().Equals(expected_proxy_list));
+  EXPECT_FALSE(result.is_for_ip_protection());
 }
 
 TEST_F(NetworkServiceProxyDelegateTest,
@@ -349,6 +357,7 @@ TEST_F(NetworkServiceProxyDelegateTest,
                            net::ProxyRetryInfoMap(), &result);
 
   EXPECT_TRUE(result.is_direct());
+  EXPECT_FALSE(result.is_for_ip_protection());
 }
 
 TEST_F(NetworkServiceProxyDelegateTest, OnResolveProxyDoesNotOverrideExisting) {
@@ -366,6 +375,7 @@ TEST_F(NetworkServiceProxyDelegateTest, OnResolveProxyDoesNotOverrideExisting) {
   expected_proxy_list.AddProxyServer(
       net::PacResultElementToProxyServer("PROXY bar"));
   EXPECT_TRUE(result.proxy_list().Equals(expected_proxy_list));
+  EXPECT_FALSE(result.is_for_ip_protection());
 }
 
 TEST_F(NetworkServiceProxyDelegateTest, OnResolveProxyOverridesExisting) {
@@ -383,6 +393,7 @@ TEST_F(NetworkServiceProxyDelegateTest, OnResolveProxyOverridesExisting) {
   expected_proxy_list.AddProxyServer(
       net::PacResultElementToProxyServer("PROXY foo"));
   EXPECT_TRUE(result.proxy_list().Equals(expected_proxy_list));
+  EXPECT_FALSE(result.is_for_ip_protection());
 }
 
 TEST_F(NetworkServiceProxyDelegateTest, OnResolveProxyMergesDirect) {
@@ -403,6 +414,7 @@ TEST_F(NetworkServiceProxyDelegateTest, OnResolveProxyMergesDirect) {
       net::PacResultElementToProxyServer("PROXY foo"));
 
   EXPECT_TRUE(result.proxy_list().Equals(expected_proxy_list));
+  EXPECT_FALSE(result.is_for_ip_protection());
 
   // Resolve proxy for HTTPS URL and check that proxy list is not modified since
   // the config rules specify http
@@ -418,6 +430,7 @@ TEST_F(NetworkServiceProxyDelegateTest, OnResolveProxyMergesDirect) {
       net::PacResultElementToProxyServer("DIRECT"));
 
   EXPECT_TRUE(result_https.proxy_list().Equals(expected_proxy_list_https));
+  EXPECT_FALSE(result_https.is_for_ip_protection());
 }
 
 TEST_F(NetworkServiceProxyDelegateTest,
@@ -441,6 +454,7 @@ TEST_F(NetworkServiceProxyDelegateTest,
       net::PacResultElementToProxyServer("DIRECT"));
 
   EXPECT_TRUE(result.proxy_list().Equals(expected_proxy_list));
+  EXPECT_FALSE(result.is_for_ip_protection());
 }
 
 TEST_F(NetworkServiceProxyDelegateTest, OnResolveProxyDoesNotMergeDirect) {
@@ -460,6 +474,7 @@ TEST_F(NetworkServiceProxyDelegateTest, OnResolveProxyDoesNotMergeDirect) {
   expected_proxy_list.AddProxyServer(
       net::PacResultElementToProxyServer("DIRECT"));
   EXPECT_TRUE(result.proxy_list().Equals(expected_proxy_list));
+  EXPECT_FALSE(result.is_for_ip_protection());
 }
 
 TEST_F(NetworkServiceProxyDelegateTest,
@@ -480,6 +495,7 @@ TEST_F(NetworkServiceProxyDelegateTest,
   expected_proxy_list.AddProxyServer(
       net::PacResultElementToProxyServer("PROXY baz"));
   EXPECT_TRUE(result.proxy_list().Equals(expected_proxy_list));
+  EXPECT_FALSE(result.is_for_ip_protection());
 }
 
 TEST_F(NetworkServiceProxyDelegateTest,
@@ -499,6 +515,7 @@ TEST_F(NetworkServiceProxyDelegateTest,
   expected_proxy_list.AddProxyServer(
       net::PacResultElementToProxyServer("PROXY foo"));
   EXPECT_TRUE(result.proxy_list().Equals(expected_proxy_list));
+  EXPECT_FALSE(result.is_for_ip_protection());
 }
 
 TEST_F(NetworkServiceProxyDelegateTest, OnResolveProxyDeprioritizesBadProxies) {
@@ -518,6 +535,7 @@ TEST_F(NetworkServiceProxyDelegateTest, OnResolveProxyDeprioritizesBadProxies) {
   expected_proxy_list.AddProxyServer(
       net::PacResultElementToProxyServer("PROXY bar"));
   EXPECT_TRUE(result.proxy_list().Equals(expected_proxy_list));
+  EXPECT_FALSE(result.is_for_ip_protection());
 }
 
 TEST_F(NetworkServiceProxyDelegateTest, OnResolveProxyAllProxiesBad) {
@@ -534,12 +552,15 @@ TEST_F(NetworkServiceProxyDelegateTest, OnResolveProxyAllProxiesBad) {
   delegate->OnResolveProxy(GURL(kHttpUrl), GURL(), "GET", retry_map, &result);
 
   EXPECT_TRUE(result.is_direct());
+  EXPECT_FALSE(result.is_for_ip_protection());
 }
 
 TEST_F(NetworkServiceProxyDelegateTest,
        OnResolveProxyNetworkServiceProxyAllowListMatch) {
   auto config = mojom::CustomProxyConfig::New();
   config->rules.ParseFromString("http=foo");
+  config->should_override_existing_config = false;
+  config->should_replace_direct = true;
   config->rules.restrict_to_network_service_proxy_allow_list = true;
 
   std::map<std::string, std::set<std::string>> first_party_map;
@@ -548,6 +569,9 @@ TEST_F(NetworkServiceProxyDelegateTest,
       NetworkServiceProxyAllowList::CreateForTesting(first_party_map);
   auto delegate =
       CreateDelegate(std::move(config), &network_service_proxy_allow_list);
+
+  auto auth_token_cache = std::make_unique<MockIpProtectionAuthTokenCache>();
+  delegate->SetIpProtectionAuthTokenCache(std::move(auth_token_cache));
 
   net::ProxyInfo result;
   result.UseDirect();
@@ -558,6 +582,7 @@ TEST_F(NetworkServiceProxyDelegateTest,
   expected_proxy_list.AddProxyServer(
       net::PacResultElementToProxyServer("PROXY foo"));
   EXPECT_TRUE(result.proxy_list().Equals(expected_proxy_list));
+  EXPECT_TRUE(result.is_for_ip_protection());
 }
 
 TEST_F(
@@ -571,7 +596,6 @@ TEST_F(
   first_party_map["example.com"] = {"top.com"};
   auto network_service_proxy_allow_list =
       NetworkServiceProxyAllowList::CreateForTesting(first_party_map);
-
   auto delegate =
       CreateDelegate(std::move(config), &network_service_proxy_allow_list);
 
@@ -584,6 +608,7 @@ TEST_F(
                            net::ProxyRetryInfoMap(), &result);
 
   EXPECT_TRUE(result.is_direct());
+  EXPECT_FALSE(result.is_for_ip_protection());
 }
 
 TEST_F(
@@ -609,6 +634,7 @@ TEST_F(
                            net::ProxyRetryInfoMap(), &result);
 
   EXPECT_TRUE(result.is_direct());
+  EXPECT_FALSE(result.is_for_ip_protection());
 }
 
 // When a `config` does not look like an IP Protection `CustomProxyConfig`, the
@@ -629,6 +655,7 @@ TEST_F(NetworkServiceProxyDelegateTest,
                            net::ProxyRetryInfoMap(), &result);
   EXPECT_TRUE(result.is_direct());
   EXPECT_EQ(mock_auth_token_cache->may_need_auth_token_soon_calls(), 0);
+  EXPECT_FALSE(result.is_for_ip_protection());
 }
 
 // When a `config` does look like an IP Protection `CustomProxyConfig`, but the
@@ -658,6 +685,7 @@ TEST_F(NetworkServiceProxyDelegateTest, OnResolveProxyIpProtectionNoMatch) {
                            net::ProxyRetryInfoMap(), &result);
   EXPECT_TRUE(result.is_direct());
   EXPECT_EQ(mock_auth_token_cache->may_need_auth_token_soon_calls(), 0);
+  EXPECT_FALSE(result.is_for_ip_protection());
 }
 
 // When a `config` does look like an IP Protection `CustomProxyConfig` and
@@ -688,6 +716,7 @@ TEST_F(NetworkServiceProxyDelegateTest, OnResolveProxyMayNeedAuthTokenSoon) {
                            net::ProxyRetryInfoMap(), &result);
   EXPECT_FALSE(result.is_direct());
   EXPECT_EQ(mock_auth_token_cache->may_need_auth_token_soon_calls(), 1);
+  EXPECT_TRUE(result.is_for_ip_protection());
 }
 
 TEST_F(NetworkServiceProxyDelegateTest, InitialConfigUsedForProxy) {
@@ -707,6 +736,7 @@ TEST_F(NetworkServiceProxyDelegateTest, InitialConfigUsedForProxy) {
   expected_proxy_list.AddProxyServer(
       net::PacResultElementToProxyServer("PROXY foo"));
   EXPECT_TRUE(result.proxy_list().Equals(expected_proxy_list));
+  EXPECT_FALSE(result.is_for_ip_protection());
 }
 
 TEST_F(NetworkServiceProxyDelegateTest, OnFallbackObserved) {

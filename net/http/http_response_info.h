@@ -183,6 +183,12 @@ class NET_EXPORT HttpResponseInfo {
   // |InitFromPickle()| then use it to replace |was_fetched_via_proxy|.
   ProxyServer proxy_server;
 
+  // Whether this request was covered by IP protection. This may be true even if
+  // the IP Protection proxy server is `direct://`. It is false if `was_cached`.
+  // This field is not persisted by `Persist()` and not restored by
+  // `InitFromPickle()`.
+  bool was_ip_protected = false;
+
   // Whether the request use http proxy or server authentication.
   bool did_use_http_auth = false;
 

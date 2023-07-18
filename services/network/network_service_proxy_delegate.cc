@@ -140,6 +140,7 @@ void NetworkServiceProxyDelegate::OnResolveProxy(
         !network_service_proxy_allow_list_->Matches(url, top_frame_url)) {
       return;
     }
+    result->set_is_for_ip_protection(true);
     auth_token_cache_->MayNeedAuthTokenSoon();
   }
 

@@ -1903,6 +1903,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.HttpJob.IpProtection.TotalTimeNotCached" units="ms"
+    expires_after="2023-12-31">
+  <owner>djmitche@chromium.org</owner>
+  <owner>src/chrome/browser/ip_protection/OWNERS</owner>
+  <summary>
+    Time it takes to complete an HttpJob that is covered by IP Protection, from
+    starting the transaction until we are done reading, for jobs not served from
+    the cache. This time will be recorded even if the IP Protection proxy is
+    configured as `direct://` (i.e. an IP Protection proxy is configured but
+    doesn't actually proxy any traffic).
+  </summary>
+</histogram>
+
 <histogram name="Net.HttpJob.MainJobWaitTimeWithAvailableSpdySession"
     units="ms" expires_after="2024-01-14">
   <owner>fayang@chromium.org</owner>

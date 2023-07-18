@@ -51,8 +51,7 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
     : public HttpTransaction,
       public HttpStreamRequest::Delegate {
  public:
-  HttpNetworkTransaction(RequestPriority priority,
-                         HttpNetworkSession* session);
+  HttpNetworkTransaction(RequestPriority priority, HttpNetworkSession* session);
 
   HttpNetworkTransaction(const HttpNetworkTransaction&) = delete;
   HttpNetworkTransaction& operator=(const HttpNetworkTransaction&) = delete;
@@ -136,6 +135,14 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
   FRIEND_TEST_ALL_PREFIXES(HttpNetworkTransactionTest, ResetStateForRestart);
   FRIEND_TEST_ALL_PREFIXES(HttpNetworkTransactionTest,
                            CreateWebSocketHandshakeStream);
+  FRIEND_TEST_ALL_PREFIXES(HttpNetworkTransactionTest,
+                           SetProxyInfoInResponse_Direct);
+  FRIEND_TEST_ALL_PREFIXES(HttpNetworkTransactionTest,
+                           SetProxyInfoInResponse_Proxied);
+  FRIEND_TEST_ALL_PREFIXES(HttpNetworkTransactionTest,
+                           SetProxyInfoInResponse_Empty);
+  FRIEND_TEST_ALL_PREFIXES(HttpNetworkTransactionTest,
+                           SetProxyInfoInResponse_IpProtection);
   FRIEND_TEST_ALL_PREFIXES(SpdyNetworkTransactionTest, WindowUpdateReceived);
   FRIEND_TEST_ALL_PREFIXES(SpdyNetworkTransactionTest, WindowUpdateSent);
   FRIEND_TEST_ALL_PREFIXES(SpdyNetworkTransactionTest, WindowUpdateOverflow);
@@ -358,6 +365,9 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
 
   void RecordMetricsIfError(int rv);
   void RecordMetrics(int rv);
+
+  static void SetProxyInfoInResponse(const ProxyInfo& proxy_info,
+                                     HttpResponseInfo* response_info);
 
   scoped_refptr<HttpAuthController>
       auth_controllers_[HttpAuth::AUTH_NUM_TARGETS];
