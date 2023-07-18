@@ -2862,6 +2862,26 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
   </token>
 </histogram>
 
+<histogram name="ChromeOS.SwapManagement.SwapStart.Status" enum="AbslErrorCode"
+    expires_after="2024-01-18">
+  <owner>ctshao@google.com</owner>
+  <owner>bgeffon@google.com</owner>
+  <summary>
+    An enum value indicates whether or not swap_management started swap
+    successfully. The value is absl error code.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.SwapManagement.SwapStop.Status" enum="AbslErrorCode"
+    expires_after="2024-01-18">
+  <owner>ctshao@google.com</owner>
+  <owner>bgeffon@google.com</owner>
+  <summary>
+    An enum value indicates whether or not swap_management stopped swap
+    successfully. The value is absl error code.
+  </summary>
+</histogram>
+
 <histogram base="true" name="ChromeOS.SystemTray.AnimationSmoothness" units="%"
     expires_after="2023-12-31">
 <!-- Name completed by histogram suffixes
