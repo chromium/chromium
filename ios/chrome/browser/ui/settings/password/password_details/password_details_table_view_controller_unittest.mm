@@ -208,8 +208,7 @@ class PasswordDetailsTableViewControllerTest
  protected:
   PasswordDetailsTableViewControllerTest() {
     feature_list_.InitWithFeatures(
-        /*enabled_features=*/{password_manager::features::kPasswordsGrouping,
-                              syncer::kPasswordNotesWithBackup},
+        /*enabled_features=*/{syncer::kPasswordNotesWithBackup},
         /*disabled_features=*/{});
     handler_ = [[FakePasswordDetailsHandler alloc] init];
     delegate_ = [[FakePasswordDetailsDelegate alloc] init];
@@ -397,18 +396,6 @@ class PasswordDetailsTableViewControllerTest
   FakePasswordDetailsDelegate* delegate_ = nil;
   MockReauthenticationModule* reauthentication_module_ = nil;
   CredentialType credential_type_ = CredentialTypeRegular;
-};
-
-class PasswordGroupingTest : public ::testing::WithParamInterface<bool>,
-                             public PasswordDetailsTableViewControllerTest {
- protected:
-  PasswordGroupingTest() {
-    feature_list_.InitWithFeatureState(
-        password_manager::features::kPasswordsGrouping, GetParam());
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 // Tests that password is displayed properly.
@@ -616,7 +603,7 @@ TEST_F(PasswordDetailsTableViewControllerTest,
 }
 
 // Tests the “Change Password on Website” button.
-TEST_P(PasswordGroupingTest, TestChangePasswordOnWebsite) {
+TEST_F(PasswordDetailsTableViewControllerTest, TestChangePasswordOnWebsite) {
   SetPassword(kExampleCom, kUsername, kPassword, kNote,
               /*is_compromised=*/true);
   PasswordDetailsTableViewController* password_details =
@@ -943,30 +930,13 @@ TEST_F(PasswordDetailsTableViewControllerTest, TestBlockedOrigin) {
 TEST_F(PasswordDetailsTableViewControllerTest, CopySite) {
   std::vector<std::string> websites = {"http://www.example.com/"};
   NSString* expected_pasteboard = @"http://www.example.com/";
-  // Test without password grouping.
-  {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndDisableFeature(
-        password_manager::features::kPasswordsGrouping);
-    CheckCopyWebsites(
-        websites, expected_pasteboard,
-        l10n_util::GetNSString(IDS_IOS_SETTINGS_SITE_WAS_COPIED_MESSAGE));
-  }
-  // Test with password grouping.
-  {
-    base::test::ScopedFeatureList feature_list(
-        password_manager::features::kPasswordsGrouping);
-    CheckCopyWebsites(
-        websites, expected_pasteboard,
-        l10n_util::GetNSString(IDS_IOS_SETTINGS_SITES_WERE_COPIED_MESSAGE));
-  }
+  CheckCopyWebsites(
+      websites, expected_pasteboard,
+      l10n_util::GetNSString(IDS_IOS_SETTINGS_SITES_WERE_COPIED_MESSAGE));
 }
 
 // Tests copy multiple websites works as intended.
 TEST_F(PasswordDetailsTableViewControllerTest, CopySites) {
-  base::test::ScopedFeatureList feature_list(
-      password_manager::features::kPasswordsGrouping);
-
   std::vector<std::string> websites = {"http://www.example.com/",
                                        "http://example.com/"};
   CheckCopyWebsites(
@@ -1081,7 +1051,3 @@ TEST_F(PasswordDetailsTableViewControllerTest, CopyDetailsFailedEmitted) {
 
   EXPECT_FALSE(handler().passwordCopiedByUserCalled);
 }
-
-INSTANTIATE_TEST_SUITE_P(PasswordDetailsTableViewControllerTest,
-                         PasswordGroupingTest,
-                         ::testing::Bool());

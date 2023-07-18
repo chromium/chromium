@@ -259,23 +259,10 @@
   NSString* message;
   // Blocked websites have empty `password` and no title or message.
   if ([password.password length]) {
-    if (base::FeatureList::IsEnabled(
-            password_manager::features::kPasswordsGrouping)) {
-      std::tie(title, message) =
-          GetPasswordAlertTitleAndMessageForOrigins(password.origins);
-    } else {
-      message = l10n_util::GetNSStringF(
-          password.isCompromised
-              ? IDS_IOS_DELETE_COMPROMISED_PASSWORD_DESCRIPTION
-              : IDS_IOS_DELETE_PASSWORD_DESCRIPTION,
-          base::SysNSStringToUTF16(password.origins[0]));
-    }
+    std::tie(title, message) =
+        GetPasswordAlertTitleAndMessageForOrigins(password.origins);
   }
-  NSString* buttonText =
-      l10n_util::GetNSString(base::FeatureList::IsEnabled(
-                                 password_manager::features::kPasswordsGrouping)
-                                 ? IDS_IOS_DELETE_ACTION_TITLE
-                                 : IDS_IOS_CONFIRM_PASSWORD_DELETION);
+  NSString* buttonText = l10n_util::GetNSString(IDS_IOS_DELETE_ACTION_TITLE);
 
   self.actionSheetCoordinator =
       anchorView
