@@ -4,6 +4,7 @@ Version: 8cf872a1
 License: BSD
 License File: src/COPYING
 Security Critical: yes
+Shipped: yes
 
 Description:
 This directory contains a copy of Opus library
