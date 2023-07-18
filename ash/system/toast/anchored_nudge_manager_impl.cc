@@ -10,6 +10,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/system/anchored_nudge_data.h"
+#include "ash/public/cpp/system/scoped_anchored_nudge_pause.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/system/toast/anchored_nudge.h"
@@ -255,6 +256,11 @@ void AnchoredNudgeManagerImpl::Show(AnchoredNudgeData& nudge_data) {
   std::string id = nudge_data.id;
   CHECK(!id.empty());
 
+  // If `pause_counter_` is greater than 0, no nudges should be shown.
+  if (pause_counter_ > 0) {
+    return;
+  }
+
   // If `id` is already in use, cancel the nudge so it can be replaced.
   if (IsNudgeShown(id)) {
     Cancel(id);
@@ -344,6 +350,11 @@ void AnchoredNudgeManagerImpl::MaybeRecordNudgeAction(
                                 catalog_name);
 
   nudge_registry.erase(it);
+}
+
+std::unique_ptr<ScopedAnchoredNudgePause>
+AnchoredNudgeManagerImpl::CreateScopedPause() {
+  return std::make_unique<ScopedAnchoredNudgePause>();
 }
 
 void AnchoredNudgeManagerImpl::CloseAllNudges() {
@@ -463,6 +474,18 @@ void AnchoredNudgeManagerImpl::RecordButtonPressed(
       first_button ? "Ash.NotifierFramework.Nudge.FirstButtonPressed"
                    : "Ash.NotifierFramework.Nudge.SecondButtonPressed",
       catalog_name);
+}
+
+void AnchoredNudgeManagerImpl::Pause() {
+  ++pause_counter_;
+
+  // Immediately closes all the nudges.
+  CloseAllNudges();
+}
+
+void AnchoredNudgeManagerImpl::Resume() {
+  CHECK_GT(pause_counter_, 0);
+  --pause_counter_;
 }
 
 }  // namespace ash

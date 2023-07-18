@@ -4,6 +4,7 @@
 
 #include "ash/system/toast/toast_manager_impl.h"
 
+#include "ash/public/cpp/system/scoped_toast_pause.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "base/functional/bind.h"
@@ -113,6 +114,11 @@ void ToastManagerImpl::Show(ToastData data) {
   const std::string& id = data.id;
   DCHECK(!id.empty());
 
+  // If `pause_counter_` is greater than 0, no toasts should be shown.
+  if (pause_counter_ > 0) {
+    return;
+  }
+
   auto existing_toast = base::ranges::find(queue_, id, &ToastData::id);
 
   if (existing_toast != queue_.end()) {
@@ -176,6 +182,10 @@ bool ToastManagerImpl::MaybeActivateHighlightedDismissButtonOnActiveToast(
 bool ToastManagerImpl::IsRunning(const std::string& id) const {
   return HasActiveToasts() && current_toast_data_ &&
          current_toast_data_->id == id;
+}
+
+std::unique_ptr<ScopedToastPause> ToastManagerImpl::CreateScopedPause() {
+  return std::make_unique<ScopedToastPause>();
 }
 
 void ToastManagerImpl::OnClosed() {
@@ -329,6 +339,21 @@ void ToastManagerImpl::OnRootWindowAdded(aura::Window* root_window) {
 
 void ToastManagerImpl::OnRootWindowWillShutdown(aura::Window* root_window) {
   root_window_to_overlay_.erase(root_window);
+}
+
+void ToastManagerImpl::Pause() {
+  ++pause_counter_;
+
+  // Immediately closes all the toasts. Since `OnClosed` will not be called,
+  // manually resets `current_toast_data_` and `queue_`.
+  CloseAllToastsWithoutAnimation();
+  current_toast_data_.reset();
+  queue_.clear();
+}
+
+void ToastManagerImpl::Resume() {
+  CHECK_GT(pause_counter_, 0);
+  --pause_counter_;
 }
 
 }  // namespace ash

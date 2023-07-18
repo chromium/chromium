@@ -8,6 +8,7 @@
 
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/shelf_config.h"
+#include "ash/public/cpp/system/scoped_toast_pause.h"
 #include "ash/public/cpp/system/toast_data.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/root_window_controller.h"
@@ -272,6 +273,29 @@ TEST_P(ToastManagerImplTest, ShowAndCloseManuallyDuringAnimation) {
 
   task_environment()->FastForwardBy(base::Seconds(10));
   base::RunLoop().RunUntilIdle();
+}
+
+TEST_P(ToastManagerImplTest, ShowToastWithScopedToastPause) {
+  auto scoped_toast_pause = manager()->CreateScopedPause();
+
+  // If a `ScopedToastPause` exists, the toast should not be shown.
+  ShowToast("DUMMY", base::Milliseconds(10));
+  EXPECT_EQ(0, GetToastSerial());
+  EXPECT_FALSE(GetCurrentOverlay());
+
+  // Even if the `ScopedToastPause` is destroyed, the toast doesn't exist.
+  scoped_toast_pause.reset();
+  EXPECT_EQ(0, GetToastSerial());
+  EXPECT_FALSE(GetCurrentOverlay());
+}
+
+TEST_P(ToastManagerImplTest, CancelToastWithScopedToastPause) {
+  ShowToast("DUMMY", base::Milliseconds(10));
+  EXPECT_EQ(1, GetToastSerial());
+
+  // Creates a `ScopedToastPause` and all toasts will be cleared immediately.
+  manager()->CreateScopedPause();
+  EXPECT_FALSE(GetCurrentOverlay());
 }
 
 TEST_P(ToastManagerImplTest, QueueMessage) {

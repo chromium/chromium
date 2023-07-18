@@ -5,6 +5,7 @@
 #ifndef ASH_PUBLIC_CPP_SYSTEM_TOAST_MANAGER_H_
 #define ASH_PUBLIC_CPP_SYSTEM_TOAST_MANAGER_H_
 
+#include <memory>
 #include <string>
 
 #include "ash/public/cpp/ash_public_export.h"
@@ -12,6 +13,7 @@
 namespace ash {
 
 struct ToastData;
+class ScopedToastPause;
 
 // Public interface to show toasts.
 class ASH_PUBLIC_EXPORT ToastManager {
@@ -40,9 +42,20 @@ class ASH_PUBLIC_EXPORT ToastManager {
   // Tells if the toast with the provided ID is running.
   virtual bool IsRunning(const std::string& id) const = 0;
 
+  // Creates a `ScopedToastPause`.
+  virtual std::unique_ptr<ScopedToastPause> CreateScopedPause() = 0;
+
  protected:
   ToastManager();
   virtual ~ToastManager();
+
+ private:
+  friend class ScopedToastPause;
+
+  // `Pause()` will stop all the toasts from showing up, until `Resume()` is
+  // called.
+  virtual void Pause() = 0;
+  virtual void Resume() = 0;
 };
 
 }  // namespace ash

@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/system/anchored_nudge_data.h"
+#include "ash/public/cpp/system/scoped_anchored_nudge_pause.h"
 #include "ash/root_window_controller.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shelf/hotseat_widget.h"
@@ -435,6 +436,52 @@ TEST_F(AnchoredNudgeManagerImplTest, ShowNudge_AnchorViewWithoutWidget) {
   anchored_nudge_manager()->Show(nudge_data);
 
   // Anchor view does not have a widget, the nudge should not be created.
+  EXPECT_FALSE(GetShownNudges()[id]);
+}
+
+// Tests that a nudge will not be shown if a `ScopedAnchoredNudgePause` exists,
+// and even if the `scoped_anchored_nudge_pause` gets destroyed, the nudge is
+// dismissed and will not be saved.
+TEST_F(AnchoredNudgeManagerImplTest, ShowNudge_ScopedAnchoredNudgePause) {
+  std::unique_ptr<views::Widget> widget = CreateFramelessTestWidget();
+
+  // Set up nudge data contents.
+  const std::string id = "id";
+  auto* anchor_view = widget->SetContentsView(std::make_unique<views::View>());
+  auto nudge_data = CreateBaseNudgeData(id, anchor_view);
+
+  // Set up a `ScopedAnchoredNudgePause`.
+  auto scoped_anchored_nudge_pause =
+      anchored_nudge_manager()->CreateScopedPause();
+
+  // Attempt to show nudge.
+  anchored_nudge_manager()->Show(nudge_data);
+
+  // A `ScopedAnchoredNudgePause` exists, the nudge should not be shown.
+  EXPECT_FALSE(GetShownNudges()[id]);
+
+  // Destroy the `ScopedAnchoredNudgePause`, the nudge doesn't exist either.
+  scoped_anchored_nudge_pause.reset();
+  EXPECT_FALSE(GetShownNudges()[id]);
+}
+
+// Tests that if a `ScopedAnchoredNudgePause` creates when a nudge is showing,
+// the nudge will be dismissed immediately.
+TEST_F(AnchoredNudgeManagerImplTest, CancelNudge_ScopedAnchoredNudgePause) {
+  std::unique_ptr<views::Widget> widget = CreateFramelessTestWidget();
+
+  // Set up nudge data contents.
+  const std::string id = "id";
+  auto* anchor_view = widget->SetContentsView(std::make_unique<views::View>());
+  auto nudge_data = CreateBaseNudgeData(id, anchor_view);
+
+  // The nudge will be shown.
+  anchored_nudge_manager()->Show(nudge_data);
+  EXPECT_TRUE(GetShownNudges()[id]);
+
+  // After a `ScopedAnchoredNudgePause` is created, the nudge will be cleared
+  // immediately.
+  anchored_nudge_manager()->CreateScopedPause();
   EXPECT_FALSE(GetShownNudges()[id]);
 }
 
