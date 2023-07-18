@@ -8,7 +8,7 @@ import "url/mojom/url.mojom";
 
 // Methods called on the browser from the companion UI.
 // Keep this file in sync with
-// google3/java/com/google/lens/web/interfaces/standalone/commonweb/companionparent/companion_parent_communication_service.ts.
+// google3/java/com/google/lens/web/interfaces/standalone/commonweb/companionparent/companion_parent_communication_service.ts
 enum MethodType {
   // Methods used in renderer -> browser communication.
   // Method corresponding to `CompanionPageHandler.OnPromoAction`.
@@ -58,7 +58,7 @@ enum MethodType {
 
 // Types of promos shown in the companion UI.
 // Keep this file in sync with
-// google3/java/com/google/lens/web/interfaces/standalone/companionweb/service/companion_parent_communication_service.ts.
+// google3/java/com/google/lens/web/interfaces/standalone/commonweb/companionparent/companion_parent_communication_service.ts
 enum PromoType {
   // Promo to sign-in to chrome.
   kSignin = 1,
@@ -75,7 +75,7 @@ enum PromoType {
 
 // User actions taken on a promo.
 // Keep this file in sync with
-// google3/java/com/google/lens/web/interfaces/standalone/companionweb/service/companion_parent_communication_service.ts.
+// google3/java/com/google/lens/web/interfaces/standalone/commonweb/companionparent/companion_parent_communication_service.ts
 enum PromoAction {
   // Promo was shown in the companion UI.
   kShown = 1,
@@ -89,8 +89,12 @@ enum PromoAction {
 
 // User feedback actions on the PH surface.
 // Keep this file in sync with
-// google3/java/com/google/lens/web/interfaces/standalone/companionweb/service/companion_parent_communication_service.ts.
+// google3/java/com/google/lens/web/interfaces/standalone/commonweb/companionparent/companion_parent_communication_service.ts
 enum PhFeedback {
+  // Unknown value. Can be used when the user resets the previous feedback
+  // action.
+  kUnknown = 0,
+
   // User clicked thumbs up.
   kThumbsUp = 1,
 
@@ -123,7 +127,7 @@ struct ImageQuery {
 
 // Metadata for NotifyLinkOpen
 // Keep this file in sync with
-// google3/java/com/google/lens/web/interfaces/standalone/companionweb/service/companion_parent_communication_service.ts.
+// google3/java/com/google/lens/web/interfaces/standalone/commonweb/companionparent/companion_parent_communication_service.ts
 struct LinkOpenMetadata {
   enum LinkOpenAction {
     // Link was opened in a new tab.
@@ -144,7 +148,7 @@ struct LinkOpenMetadata {
 
 // Various UI surfaces on the companion page.
 // Keep this file in sync with
-// google3/java/com/google/lens/web/interfaces/standalone/companionweb/service/companion_parent_communication_service.ts.
+// google3/java/com/google/lens/web/interfaces/standalone/commonweb/companionparent/companion_parent_communication_service.ts
 enum UiSurface {
   kUnknown = 0,
   // Used for when the PH initial surface is shown that allows PH to be requested by the user.
