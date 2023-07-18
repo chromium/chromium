@@ -575,6 +575,7 @@ TEST_F(BrowserViewControllerTest, ViewOnInsert) {
                                 })];
   InsertWebState(std::move(ntp_web_state2));
   EXPECT_OCMOCK_VERIFY(container_view_mock);
+  [NTPCoordinator_ stop];
 }
 
 }  // namespace

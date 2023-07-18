@@ -86,6 +86,7 @@ source_set("coordinator") {
     ":component_factory_protocol",
     ":constants",
     ":feature_flags",
+    ":feed_menu",
     ":logo",
     ":ntp",
     ":ntp_internal",
@@ -110,7 +111,6 @@ source_set("coordinator") {
     "//ios/chrome/browser/ntp",
     "//ios/chrome/browser/ntp:features",
     "//ios/chrome/browser/search_engines:template_url_service_factory",
-    "//ios/chrome/browser/shared/coordinator/alert",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/coordinator/layout_guide",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_browser_agent",
@@ -268,10 +268,33 @@ source_set("ntp_internal") {
   ]
 }
 
+source_set("feed_menu") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "feed_menu_coordinator.h",
+    "feed_menu_coordinator.mm",
+  ]
+  deps = [
+    ":ntp_internal",
+    "//components/feed/core/v2/public/ios:feed_ios_public",
+    "//components/prefs",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/ntp:features",
+    "//ios/chrome/browser/shared/coordinator/alert",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/signin",
+    "//ui/strings",
+  ]
+}
+
 source_set("unit_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
+    "feed_menu_coordinator_unittest.mm",
     "new_tab_page_coordinator_unittest.mm",
     "new_tab_page_field_trial_unittest.mm",
     "new_tab_page_mediator_unittest.mm",
@@ -280,21 +303,27 @@ source_set("unit_tests") {
     ":component_factory",
     ":coordinator",
     ":feature_flags",
+    ":feed_menu",
     ":field_trial",
     ":logo",
     ":ntp",
     ":ntp_internal",
     "//base",
     "//base/test:test_support",
+    "//components/feed/core/v2/public/ios:feed_ios_public",
     "//components/ntp_tiles",
+    "//components/prefs",
     "//components/signin/public/identity_manager",
     "//components/variations",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/discover_feed:discover_feed_factory",
     "//ios/chrome/browser/favicon",
     "//ios/chrome/browser/ntp",
+    "//ios/chrome/browser/ntp:features",
     "//ios/chrome/browser/search_engines:template_url_service_factory",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_browser_agent",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/browser_state:test_support",
@@ -302,6 +331,8 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/signin",
+    "//ios/chrome/browser/signin:fake_system_identity",
+    "//ios/chrome/browser/signin:fake_system_identity_manager",
     "//ios/chrome/browser/signin:test_support",
     "//ios/chrome/browser/ui/content_suggestions",
     "//ios/chrome/browser/ui/content_suggestions:content_suggestions_ui",
@@ -319,6 +350,7 @@ source_set("unit_tests") {
     "//ios/web/public/test/fakes",
     "//testing/gtest",
     "//third_party/ocmock",
+    "//ui/strings",
   ]
 }
 

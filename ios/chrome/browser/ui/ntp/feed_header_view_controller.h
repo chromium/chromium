@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/discover_feed/feed_constants.h"
 
 @protocol FeedControlDelegate;
+@protocol FeedMenuCommands;
 @class FeedMetricsRecorder;
 @protocol NewTabPageDelegate;
 
@@ -29,6 +30,9 @@
 
 // Feed metrics recorder.
 @property(nonatomic, weak) FeedMetricsRecorder* feedMetricsRecorder;
+
+// Object that can open the feed menu.
+@property(nonatomic, weak) id<FeedMenuCommands> feedMenuHandler;
 
 // Initializes header with the Following segment dot visibility as
 // `followingDotVisible`.

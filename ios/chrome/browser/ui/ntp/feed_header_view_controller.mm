@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
 #import "ios/chrome/browser/ui/ntp/discover_feed_constants.h"
 #import "ios/chrome/browser/ui/ntp/feed_control_delegate.h"
+#import "ios/chrome/browser/ui/ntp/feed_menu_commands.h"
 #import "ios/chrome/browser/ui/ntp/metrics/feed_metrics_recorder.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_constants.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_delegate.h"
@@ -356,6 +357,9 @@ NSInteger kFeedSymbolPointSize = 17;
         kHeaderMenuButtonInsetTopAndBottom, kHeaderMenuButtonInsetSides);
     SetImageEdgeInsets(menuButton, imageInsets);
   }
+  [menuButton addTarget:self
+                 action:@selector(didTouchMenuButton)
+       forControlEvents:UIControlEventTouchUpInside];
 }
 
 // Configures and returns the feed header's sorting button.
@@ -790,6 +794,11 @@ NSInteger kFeedSymbolPointSize = 17;
   } else {
     return [[UIColor colorNamed:kBackgroundColor] colorWithAlphaComponent:0.95];
   }
+}
+
+// Opens the feed menu.
+- (void)didTouchMenuButton {
+  [self.feedMenuHandler openFeedMenuFromButton:self.menuButton];
 }
 
 @end
