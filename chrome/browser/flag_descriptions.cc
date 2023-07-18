@@ -53,6 +53,16 @@ const char kPdfUseSkiaRendererName[] =
 const char kPdfUseSkiaRendererDescription[] = "Use Skia as the PDF renderer.";
 #endif
 
+const char kAdvancedPeripheralsSupportName[] =
+    "Advanced peripherals support on Android.";
+const char kAdvancedPeripheralsSupportDescription[] =
+    "Advanced keyboard, mouse and trackpad support for increased productivity.";
+
+const char kAdvancedPeripheralsSupportTabStripName[] =
+    "Advanced peripherals support for the tab strip on Android.";
+const char kAdvancedPeripheralsSupportTabStripDescription[] =
+    "Advanced keyboard, mouse and trackpad support for the tab strip UI.";
+
 const char kAppDeduplicationServiceFondueName[] =
     "Identify duplicate app groups.";
 const char kAppDeduplicationServiceFondueDescription[] =

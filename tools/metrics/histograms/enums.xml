@@ -61726,6 +61726,7 @@ from previous Chrome versions.
   <int value="-1113373128" label="WebUIDownloadShelf:enabled"/>
   <int value="-1112782121" label="AndroidSigninPromos:disabled"/>
   <int value="-1111094917" label="Cormorant:enabled"/>
+  <int value="-1111056156" label="AdvancedPeripheralsSupportTabStrip:enabled"/>
   <int value="-1110928012" label="force-companion-pinned-state"/>
   <int value="-1109826787" label="AccessibilityExposeDisplayNone:enabled"/>
   <int value="-1109489088" label="LauncherFuzzyMatchForOmnibox:disabled"/>
@@ -63675,6 +63676,7 @@ from previous Chrome versions.
   <int value="-97145978" label="DesktopPWAsStayInWindow:enabled"/>
   <int value="-96820962"
       label="ExperimentalAccessibilitySelectToSpeakVoiceSwitching:enabled"/>
+  <int value="-95160434" label="AdvancedPeripheralsSupport:disabled"/>
   <int value="-94535722" label="TimeOfDayWallpaper:enabled"/>
   <int value="-94335249" label="UseAAudioDriver:enabled"/>
   <int value="-93619449" label="video-tutorials-instant-fetch"/>
@@ -64478,6 +64480,7 @@ from previous Chrome versions.
       label="AutofillImportNonFocusableCreditCardForms:enabled"/>
   <int value="310183389" label="AutofillFillIbanFields:enabled"/>
   <int value="310543591" label="PreinstalledWebAppWindowExperiment:enabled"/>
+  <int value="310992985" label="AdvancedPeripheralsSupport:enabled"/>
   <int value="312112911" label="FilesWebDriveOffice:enabled"/>
   <int value="313112736" label="HandwritingLegacyRecognitionAllLang:enabled"/>
   <int value="313253630" label="AutofillRefreshStyleAndroid:enabled"/>
@@ -65595,6 +65598,7 @@ from previous Chrome versions.
   <int value="886907524" label="autoplay-policy"/>
   <int value="886990840" label="ImeMojoDecoder:enabled"/>
   <int value="887011602" label="enable-spelling-auto-correct"/>
+  <int value="887129902" label="AdvancedPeripheralsSupportTabStrip:disabled"/>
   <int value="889816966"
       label="TrustedWebActivityNotificationPermissionDelegation:disabled"/>
   <int value="889837286" label="EnableHostnameSetting:enabled"/>

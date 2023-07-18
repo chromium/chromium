@@ -79,6 +79,16 @@
     "expiry_milestone": 100
   },
   {
+    "name": "advanced-peripherals-support",
+    "owners": [ "aishwaryarj@google.com", "zheliooo@google.com", "skavuluru@google.com", "clank-app-team@google.com" ],
+    "expiry_milestone": 120
+  },
+  {
+    "name": "advanced-peripherals-support-tab-strip",
+    "owners": [ "aishwaryarj@google.com", "zheliooo@google.com", "skavuluru@google.com", "clank-app-team@google.com" ],
+    "expiry_milestone": 120
+  },
+  {
     "name": "align-wakeups",
     "owners": [
       "etiennep@google.com", "fdoray@google.com"
