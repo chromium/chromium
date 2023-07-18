@@ -331,10 +331,11 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppMigrationBrowserTest,
     app_list_model_updater->SetItemPosition(
         kExtensionId, syncer::StringOrdinal("testapplistposition"));
     app_list_syncable_service->SetPinPosition(
-        kExtensionId, syncer::StringOrdinal("testpinposition"));
+        kExtensionId, syncer::StringOrdinal("testpinposition"),
+        /*pinned_by_policy=*/false);
     EXPECT_EQ(app_list_syncable_service->GetSyncItem(kExtensionId)->ToString(),
               "kbmnembi { Nothing } [testapplistposition] "
-              "[testpinposition](INVALID COLOR)");
+              "[testpinposition(up=?)](INVALID COLOR)");
 #endif
   }
 
@@ -373,13 +374,13 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppMigrationBrowserTest,
       EXPECT_EQ(
           app_list_syncable_service->GetSyncItem(GetWebAppId())->ToString(),
           base::StringPrintf("%s { Basic web app } [testapplistposition] "
-                             "[testpinposition](INVALID COLOR)",
+                             "[testpinposition(up=?)](INVALID COLOR)",
                              GetWebAppId().substr(0, 8).c_str()));
       // Old Chrome app prefs are retained.
       EXPECT_EQ(
           app_list_syncable_service->GetSyncItem(kExtensionId)->ToString(),
           "kbmnembi { Nothing } [testapplistposition] "
-          "[testpinposition](INVALID COLOR)");
+          "[testpinposition(up=?)](INVALID COLOR)");
 #endif
     }
   }
@@ -425,12 +426,12 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppMigrationBrowserTest,
     // Chrome OS shelf/list position should re-migrate.
     EXPECT_EQ(app_list_syncable_service->GetSyncItem(GetWebAppId())->ToString(),
               base::StringPrintf("%s { Basic web app } [testapplistposition] "
-                                 "[testpinposition](INVALID COLOR)",
+                                 "[testpinposition(up=?)](INVALID COLOR)",
                                  GetWebAppId().substr(0, 8).c_str()));
     // Old Chrome app prefs are retained.
     EXPECT_EQ(app_list_syncable_service->GetSyncItem(kExtensionId)->ToString(),
               "kbmnembi { Nothing } [testapplistposition] "
-              "[testpinposition](INVALID COLOR)");
+              "[testpinposition(up=?)](INVALID COLOR)");
 #endif
   }
 }
@@ -465,10 +466,11 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppMigrationBrowserTest,
     app_list_model_updater->SetItemPosition(
         kExtensionId, syncer::StringOrdinal("testapplistposition"));
     app_list_syncable_service->SetPinPosition(
-        kExtensionId, syncer::StringOrdinal("testpinposition"));
+        kExtensionId, syncer::StringOrdinal("testpinposition"),
+        /*pinned_by_policy=*/false);
     EXPECT_EQ(app_list_syncable_service->GetSyncItem(kExtensionId)->ToString(),
               "kbmnembi { Nothing } [testapplistposition] "
-              "[testpinposition](INVALID COLOR)");
+              "[testpinposition(up=?)](INVALID COLOR)");
 #endif
 
     // Set chrome://apps position.
@@ -521,12 +523,12 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppMigrationBrowserTest,
     // Chrome OS shelf/list position should migrate.
     EXPECT_EQ(app_list_syncable_service->GetSyncItem(GetWebAppId())->ToString(),
               base::StringPrintf("%s { Basic web app } [testapplistposition] "
-                                 "[testpinposition](INVALID COLOR)",
+                                 "[testpinposition(up=?)](INVALID COLOR)",
                                  GetWebAppId().substr(0, 8).c_str()));
     // Chrome app shelf/list position should be retained.
     EXPECT_EQ(app_list_syncable_service->GetSyncItem(kExtensionId)->ToString(),
               "kbmnembi { Nothing } [testapplistposition] "
-              "[testpinposition](INVALID COLOR)");
+              "[testpinposition(up=?)](INVALID COLOR)");
 #endif
 
     // chrome://apps position should migrate.

@@ -97,6 +97,24 @@ class AppListSyncableService : public syncer::SyncableService,
     // IDs of obsolete ephemeral items.
     bool is_ephemeral = false;
 
+    // Whether the app was pinned to shelf by the user or not.
+    // The eventual consistency (a sufficient amount of time after rollout)
+    // we're aspiring to reach here is for this field to be interleaved with the
+    // pin ordinal: `item_pin_ordinal.IsValid() <=> is_user_pinned.has_value()`.
+    // However, it's okay for this contract to be violated in the meantine.
+    //
+    //  * missing value indicates that either `item_pin_ordinal` is invalid or
+    //    this field is new and hasn't yet been processed by sync.
+    //  * `true` means that the app was pinned by the user.
+    //    We are using this definition in a relaxed way -- for instance, default
+    //    OS apps that are shown in the shelf (like Chrome itself) also have
+    //    this set to true.
+    //  * `false` means that the app was pinned by PinnedLauncherApps policy.
+    //    Note that user pin has priority: if an app was first pinned by the
+    //    user and then additionally specified in PinnedLauncherApps, this value
+    //    will be set to true.
+    absl::optional<bool> is_user_pinned;
+
     std::string ToString() const;
   };
 
@@ -205,9 +223,15 @@ class AppListSyncableService : public syncer::SyncableService,
   virtual syncer::StringOrdinal GetPinPosition(const std::string& app_id);
 
   // Sets pin position and how it is pinned for the app specified by |app_id|.
-  // Empty |item_pin_ordinal| indicates that the app has no pin.
+  // |item_pin_ordinal| must be valid.
+  // |pinned_by_policy| tells whether this item is pinned to the shelf by the
+  // `PinnedLauncherApps` policy.
   virtual void SetPinPosition(const std::string& app_id,
-                              const syncer::StringOrdinal& item_pin_ordinal);
+                              const syncer::StringOrdinal& item_pin_ordinal,
+                              bool pinned_by_policy);
+
+  // Removes pin position for the app specified by |app_id|.
+  virtual void RemovePinPosition(const std::string& app_id);
 
   // Gets the app list model updater.
   AppListModelUpdater* GetModelUpdater();

@@ -34,10 +34,12 @@ using SyncItem = app_list::AppListSyncableService::SyncItem;
 
 std::unique_ptr<SyncItem> MakeSyncItem(
     const std::string& id,
-    const syncer::StringOrdinal& pin_ordinal) {
+    const syncer::StringOrdinal& pin_ordinal,
+    absl::optional<bool> is_user_pinned = absl::nullopt) {
   auto item =
       std::make_unique<SyncItem>(id, sync_pb::AppListSpecifics::TYPE_APP);
   item->item_pin_ordinal = pin_ordinal;
+  item->is_user_pinned = is_user_pinned;
   return item;
 }
 
@@ -76,10 +78,12 @@ class AppListSyncableServiceFake : public app_list::AppListSyncableService {
 
   // Adds a new pin if it does not already exist.
   void SetPinPosition(const std::string& app_id,
-                      const syncer::StringOrdinal& item_pin_ordinal) override {
+                      const syncer::StringOrdinal& item_pin_ordinal,
+                      bool pinned_by_policy) override {
     auto it = item_map_.find(app_id);
     if (it == item_map_.end()) {
-      item_map_[app_id] = MakeSyncItem(app_id, item_pin_ordinal);
+      item_map_[app_id] = MakeSyncItem(app_id, item_pin_ordinal,
+                                       /*is_user_pinned=*/!pinned_by_policy);
       return;
     }
     it->second->item_pin_ordinal = item_pin_ordinal;
@@ -314,7 +318,8 @@ TEST_F(ChromeShelfPrefsTest, TransformationForStandaloneBrowserChromeApps) {
 
   // Now we move kNeitherId in between the first two ids.
   shelf_prefs_->SetPinPosition(pinned_apps[index + 2], pinned_apps[index],
-                               {pinned_apps[index + 1]});
+                               {pinned_apps[index + 1]},
+                               /*pinned_by_policy=*/false);
 
   // Get pinned apps again.
   pinned_apps = shelf_prefs_->GetPinnedAppsFromSync(helper_.get());

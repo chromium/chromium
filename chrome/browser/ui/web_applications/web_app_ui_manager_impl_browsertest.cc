@@ -201,7 +201,8 @@ IN_PROC_BROWSER_TEST_F(WebAppUiManagerImplBrowserTest, MigrateAppAttribute) {
   AppId old_app_id = test::InstallDummyWebApp(profile(), "old_app",
                                               GURL("https://old.app.com"));
   app_list_service->SetPinPosition(old_app_id,
-                                   syncer::StringOrdinal("positionold"));
+                                   syncer::StringOrdinal("positionold"),
+                                   /*pinned_by_policy=*/false);
 
   // Install a new app to migrate the old one to.
   AppId new_app_id = test::InstallDummyWebApp(profile(), "new_app",

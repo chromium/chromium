@@ -93,6 +93,10 @@ void GetSyncSpecificsFromSyncItem(const AppListSyncableService::SyncItem* item,
   specifics->set_item_pin_ordinal(item->item_pin_ordinal.IsValid()
                                       ? item->item_pin_ordinal.ToInternalValue()
                                       : std::string());
+  if (item->is_user_pinned.has_value() &&
+      ash::features::IsRemoveStalePolicyPinnedAppsFromShelfEnabled()) {
+    specifics->set_is_user_pinned(*item->is_user_pinned);
+  }
 
   if (item->item_color.IsValid()) {
     specifics->mutable_item_color()->set_background_color(
@@ -575,6 +579,7 @@ bool AppListSyncableService::TransferItemAttributes(
   attributes->item_ordinal = from_item->item_ordinal;
   attributes->item_pin_ordinal = from_item->item_pin_ordinal;
   attributes->item_color = from_item->item_color;
+  attributes->is_user_pinned = from_item->is_user_pinned;
 
   SyncItem* to_item = FindSyncItem(to_app_id);
   if (to_item) {
@@ -604,6 +609,7 @@ void AppListSyncableService::ApplyAppAttributes(
   item->parent_id = attributes->parent_id;
   item->item_ordinal = attributes->item_ordinal;
   item->item_pin_ordinal = attributes->item_pin_ordinal;
+  item->is_user_pinned = attributes->is_user_pinned;
   item->item_color = attributes->item_color;
 
   UpdateSyncItemInLocalStorage(profile_, item);
@@ -745,9 +751,13 @@ syncer::StringOrdinal AppListSyncableService::GetPinPosition(
 
 void AppListSyncableService::SetPinPosition(
     const std::string& app_id,
-    const syncer::StringOrdinal& item_pin_ordinal) {
+    const syncer::StringOrdinal& item_pin_ordinal,
+    bool pinned_by_policy) {
+  DCHECK(item_pin_ordinal.IsValid());
+
   // Pin position can be set only after model is built.
   DCHECK(IsInitialized());
+
   SyncItem* sync_item = FindSyncItem(app_id);
   SyncChange::SyncChangeType sync_change_type;
   if (sync_item) {
@@ -763,8 +773,26 @@ void AppListSyncableService::SetPinPosition(
   }
 
   sync_item->item_pin_ordinal = item_pin_ordinal;
+
   UpdateSyncItemInLocalStorage(profile_, sync_item);
   SendSyncChange(sync_item, sync_change_type);
+}
+
+void AppListSyncableService::RemovePinPosition(const std::string& app_id) {
+  // Pin position can be set only after model is built.
+  DCHECK(IsInitialized());
+
+  SyncItem* sync_item = FindSyncItem(app_id);
+  // No need to default-initialize already removed items.
+  if (!sync_item) {
+    return;
+  }
+
+  sync_item->item_pin_ordinal = syncer::StringOrdinal();
+  sync_item->is_user_pinned = absl::nullopt;
+
+  UpdateSyncItemInLocalStorage(profile_, sync_item);
+  SendSyncChange(sync_item, syncer::SyncChange::SyncChangeType::ACTION_UPDATE);
 }
 
 void AppListSyncableService::AddOrUpdateFromSyncItem(
@@ -1056,8 +1084,8 @@ AppListSyncableService::MergeDataAndStartSyncing(
 
   // Create SyncItem entries for initial_sync_data.
   for (const auto& data : initial_sync_data) {
-    const std::string& item_id = data.GetSpecifics().app_list().item_id();
-    const sync_pb::AppListSpecifics& specifics = data.GetSpecifics().app_list();
+    const auto& specifics = data.GetSpecifics().app_list();
+    const std::string& item_id = specifics.item_id();
     DVLOG(2) << this << "  Initial Sync Item: " << item_id
              << " Type: " << specifics.item_type();
     DCHECK_EQ(syncer::APP_LIST, data.GetDataType());
@@ -1465,9 +1493,13 @@ std::string AppListSyncableService::SyncItem::ToString() const {
   } else {
     res += " { " + item_name + " }";
     res += " [" + item_ordinal.ToDebugString() + "]";
-    if (!parent_id.empty())
+    if (!parent_id.empty()) {
       res += " <" + parent_id.substr(0, 8) + ">";
-    res += " [" + item_pin_ordinal.ToDebugString() + "]";
+    }
+    res += " [" + item_pin_ordinal.ToDebugString() + "(up=" +
+           (is_user_pinned.has_value() ? (*is_user_pinned ? "true" : "false")
+                                       : "?") +
+           ")]";
   }
 
   if (item_color.IsValid()) {

@@ -62,7 +62,8 @@ syncer::SyncData CreateAppRemoteData(
     const std::string& item_ordinal,
     const std::string& item_pin_ordinal,
     sync_pb::AppListSpecifics_AppListItemType item_type =
-        sync_pb::AppListSpecifics_AppListItemType_TYPE_APP);
+        sync_pb::AppListSpecifics_AppListItemType_TYPE_APP,
+    absl::optional<bool> is_user_pinned = absl::nullopt);
 
 }  // namespace app_list
 

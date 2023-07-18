@@ -55,6 +55,9 @@ message AppListSpecifics {
   optional string item_ordinal = 6;
 
   // Where on a shelf this item will appear.
+  // Note that not all apps are pinned to the shelf by the user -- some might
+  // originate from the PinnedLauncherApps policy. See `is_user_pinned` for more
+  // details.
   optional string item_pin_ordinal = 7;
 
   // The color groups used for grouping together icons by colors.
@@ -78,4 +81,23 @@ message AppListSpecifics {
     optional int32 hue = 2;
   }
   optional IconColor item_color = 8;
+
+  // Whether the app was pinned to shelf by the user or not (apps can also be
+  // pinned by other means such as enterprise policies).
+  // The eventual consistency (a sufficient amount of time after the rollout)
+  // promise here is for this field to be synced with the pin ordinal:
+  // `item_pin_ordinal.IsValid() <=> is_user_pinned.has_value()`.
+  // However, it's okay for this contract to be violated in the meantine.
+  //
+  //  * missing value indicates that either `item_pin_ordinal` is invalid or
+  //    this field is new and hasn't yet been processed by sync.
+  //  * `true` means that the app was pinned by the user.
+  //    This definition is used in a relaxed way -- for instance, default
+  //    OS apps that are shown in the shelf (like Chrome itself) also have this
+  //    value set to true.
+  //  * `false` means that the app was pinned by PinnedLauncherApps policy.
+  //    Note that user pin has priority: if an app was first pinned by the user
+  //    and then additionally specified in PinnedLauncherApps, this value will
+  //    be set to true.
+  optional bool is_user_pinned = 9;
 }

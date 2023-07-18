@@ -769,8 +769,14 @@ void TestControllerAsh::SetAppListItemAttributes(
 
   app_list_model_updater->SetItemPosition(
       item_id, syncer::StringOrdinal(attributes->item_position));
-  app_list_syncable_service->SetPinPosition(
-      item_id, syncer::StringOrdinal(attributes->pin_position));
+
+  if (auto ordinal = syncer::StringOrdinal(attributes->pin_position);
+      ordinal.IsValid()) {
+    app_list_syncable_service->SetPinPosition(item_id, ordinal,
+                                              /*pinned_by_policy=*/false);
+  } else {
+    app_list_syncable_service->RemovePinPosition(item_id);
+  }
 
   std::move(callback).Run();
 }

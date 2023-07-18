@@ -18,6 +18,7 @@
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
 #include "base/check.h"
+#include "base/check_is_test.h"
 #include "base/check_op.h"
 #include "base/containers/checked_iterators.h"
 #include "base/containers/contains.h"
@@ -109,10 +110,15 @@ syncer::StringOrdinal CreateFirstPinPosition(
 void EnsurePinnedOrMakeFirst(
     const std::string& app_id,
     app_list::AppListSyncableService* syncable_service) {
+  // This piece prevents accidental side-effects to the SetPinPosition() call
+  // below.
+  CHECK(app_id == app_constants::kChromeAppId ||
+        app_id == app_constants::kLacrosAppId);
   syncer::StringOrdinal position = syncable_service->GetPinPosition(app_id);
   if (!position.IsValid()) {
     position = CreateFirstPinPosition(syncable_service);
-    syncable_service->SetPinPosition(app_id, position);
+    syncable_service->SetPinPosition(app_id, position,
+                                     /*is_policy_initiated=*/false);
   }
 }
 
@@ -297,7 +303,8 @@ syncer::StringOrdinal CreateLastPinPosition(Profile* profile) {
 // app.
 void InsertPinsAfterChromeAndBeforeFirstPinnedApp(
     app_list::AppListSyncableService* syncable_service,
-    const std::vector<std::string>& app_ids) {
+    const std::vector<std::string>& app_ids,
+    bool is_policy_initiated) {
   // Chrome must be pinned at this point.
   syncer::StringOrdinal chrome_position =
       syncable_service->GetPinPosition(app_constants::kChromeAppId);
@@ -337,7 +344,7 @@ void InsertPinsAfterChromeAndBeforeFirstPinnedApp(
       continue;
     }
     const syncer::StringOrdinal position = after.CreateBetween(before);
-    syncable_service->SetPinPosition(app_id, position);
+    syncable_service->SetPinPosition(app_id, position, is_policy_initiated);
 
     // Shift after position, next policy pin position will be created after
     // current item.
@@ -379,7 +386,8 @@ std::vector<ash::ShelfID> ChromeShelfPrefs::GetPinnedAppsFromSync(
   // their install order differ.
   std::vector<std::string> policy_pinned_apps = GetAppsPinnedByPolicy(profile_);
   InsertPinsAfterChromeAndBeforeFirstPinnedApp(syncable_service,
-                                               policy_pinned_apps);
+                                               policy_pinned_apps,
+                                               /*is_policy_initiated=*/true);
 
   // If Lacros is enabled and allowed for this user type, ensure the Lacros icon
   // is pinned. Lacros doesn't support multi-signin, so only add the icon for
@@ -391,7 +399,8 @@ std::vector<ash::ShelfID> ChromeShelfPrefs::GetPinnedAppsFromSync(
     if (!lacros_position.IsValid()) {
       // If Lacros isn't already pinned, add it to the right of the Chrome icon.
       InsertPinsAfterChromeAndBeforeFirstPinnedApp(
-          syncable_service, {app_constants::kLacrosAppId});
+          syncable_service, {app_constants::kLacrosAppId},
+          /*is_policy_initiated=*/false);
     }
   }
 
@@ -434,6 +443,7 @@ std::vector<ash::ShelfID> ChromeShelfPrefs::GetPinnedAppsFromSync(
   std::vector<std::string> pins;
   base::ranges::transform(pin_infos, std::back_inserter(pins),
                           &PinInfo::app_id);
+
   return AppIdsToShelfIDs(pins);
 }
 
@@ -460,13 +470,14 @@ void ChromeShelfPrefs::RemovePinPosition(Profile* profile,
     return;
   }
   app_list::AppListSyncableServiceFactory::GetForProfile(profile)
-      ->SetPinPosition(app_id, syncer::StringOrdinal());
+      ->RemovePinPosition(app_id);
 }
 
 void ChromeShelfPrefs::SetPinPosition(
     const ash::ShelfID& shelf_id,
     const ash::ShelfID& shelf_id_before,
-    const std::vector<ash::ShelfID>& shelf_ids_after) {
+    const std::vector<ash::ShelfID>& shelf_ids_after,
+    bool pinned_by_policy) {
   const std::string app_id = GetSyncId(shelf_id.app_id);
 
   // No sync ids should begin with the lacros prefix, as it isn't stable.
@@ -520,7 +531,7 @@ void ChromeShelfPrefs::SetPinPosition(
     pin_position = position_after.CreateBefore();
   else
     pin_position = syncer::StringOrdinal::CreateInitialOrdinal();
-  syncable_service->SetPinPosition(app_id, pin_position);
+  syncable_service->SetPinPosition(app_id, pin_position, pinned_by_policy);
 }
 
 void ChromeShelfPrefs::SkipPinnedAppsFromSyncForTest() {
@@ -612,8 +623,8 @@ void ChromeShelfPrefs::AddDefaultApps(
   std::vector<std::string> default_app_ids;
   for (const char* default_app_id : GetDefaultPinnedAppsForFormFactor())
     default_app_ids.push_back(default_app_id);
-  InsertPinsAfterChromeAndBeforeFirstPinnedApp(syncable_service,
-                                               default_app_ids);
+  InsertPinsAfterChromeAndBeforeFirstPinnedApp(
+      syncable_service, default_app_ids, /*is_policy_initiated=*/false);
   ScopedListPrefUpdate update(pref_service, GetShelfDefaultPinLayoutPref());
   update->Append(kDefaultPinnedAppsKey);
 }

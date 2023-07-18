@@ -11,6 +11,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "cc/base/math_util.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -168,7 +169,10 @@ std::string GetLastPositionString() {
 // list model updater during testing.
 class AppListSyncableServiceTest : public test::AppListSyncableServiceTestBase {
  public:
-  AppListSyncableServiceTest() = default;
+  AppListSyncableServiceTest() {
+    feature_list_.InitAndEnableFeature(
+        ash::features::kRemoveStalePolicyPinnedAppsFromShelf);
+  }
   AppListSyncableServiceTest(const AppListSyncableServiceTest&) = delete;
   AppListSyncableServiceTest& operator=(const AppListSyncableServiceTest&) =
       delete;
@@ -206,6 +210,7 @@ class AppListSyncableServiceTest : public test::AppListSyncableServiceTestBase {
   }
 
  private:
+  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<AppListModelUpdater::TestApi> model_updater_test_api_;
 };
 
@@ -662,6 +667,8 @@ TEST_F(AppListSyncableServiceTest, InitialMerge_BadData) {
 }
 
 TEST_F(AppListSyncableServiceTest, InitialMergeAndUpdate) {
+  RemoveAllExistingItems();
+
   const std::string kItemId1 = GenerateId("item_id1");
   const std::string kItemId2 = GenerateId("item_id2");
 
@@ -671,9 +678,11 @@ TEST_F(AppListSyncableServiceTest, InitialMergeAndUpdate) {
   sync_list.push_back(CreateAppRemoteData(kItemId2, "item_name2", kParentId(),
                                           "ordinal", "pinordinal"));
 
+  auto sync_processor = std::make_unique<syncer::FakeSyncChangeProcessor>();
   app_list_syncable_service()->MergeDataAndStartSyncing(
       syncer::APP_LIST, sync_list,
-      std::make_unique<syncer::FakeSyncChangeProcessor>());
+      std::make_unique<syncer::SyncChangeProcessorWrapperForTest>(
+          sync_processor.get()));
   content::RunAllTasksUntilIdle();
 
   ASSERT_TRUE(GetSyncItem(kItemId1));
@@ -683,11 +692,13 @@ TEST_F(AppListSyncableServiceTest, InitialMergeAndUpdate) {
   change_list.push_back(syncer::SyncChange(
       FROM_HERE, syncer::SyncChange::ACTION_UPDATE,
       CreateAppRemoteData(kItemId1, "item_name1x", GenerateId("parent_id1x"),
-                          "ordinalx", "pinordinalx")));
+                          "ordinalx", "pinordinalx",
+                          sync_pb::AppListSpecifics_AppListItemType_TYPE_APP)));
   change_list.push_back(syncer::SyncChange(
       FROM_HERE, syncer::SyncChange::ACTION_UPDATE,
       CreateAppRemoteData(kItemId2, "item_name2x", GenerateId("parent_id2x"),
-                          "ordinalx", "pinordinalx")));
+                          "ordinalx", "pinordinalx",
+                          sync_pb::AppListSpecifics_AppListItemType_TYPE_APP)));
 
   app_list_syncable_service()->ProcessSyncChanges(base::Location(),
                                                   change_list);
@@ -699,6 +710,7 @@ TEST_F(AppListSyncableServiceTest, InitialMergeAndUpdate) {
   EXPECT_EQ("ordinalx", GetSyncItem(kItemId1)->item_ordinal.ToDebugString());
   EXPECT_EQ("pinordinalx",
             GetSyncItem(kItemId1)->item_pin_ordinal.ToDebugString());
+  EXPECT_FALSE(GetSyncItem(kItemId1)->is_user_pinned.has_value());
 
   ASSERT_TRUE(GetSyncItem(kItemId2));
   EXPECT_EQ("item_name2x", GetSyncItem(kItemId2)->item_name);
@@ -706,6 +718,7 @@ TEST_F(AppListSyncableServiceTest, InitialMergeAndUpdate) {
   EXPECT_EQ("ordinalx", GetSyncItem(kItemId2)->item_ordinal.ToDebugString());
   EXPECT_EQ("pinordinalx",
             GetSyncItem(kItemId2)->item_pin_ordinal.ToDebugString());
+  EXPECT_FALSE(GetSyncItem(kItemId2)->is_user_pinned.has_value());
 }
 
 TEST_F(AppListSyncableServiceTest, InitialMergeAndUpdate_BadData) {
@@ -723,16 +736,16 @@ TEST_F(AppListSyncableServiceTest, InitialMergeAndUpdate_BadData) {
   ASSERT_TRUE(GetSyncItem(kItemId));
 
   syncer::SyncChangeList change_list;
-  const syncer::SyncDataList update_list = CreateBadAppRemoteData(kItemId);
-  for (syncer::SyncDataList::const_iterator iter = update_list.begin();
-       iter != update_list.end(); ++iter) {
-    change_list.push_back(syncer::SyncChange(
-        FROM_HERE, syncer::SyncChange::ACTION_UPDATE, *iter));
-  }
+  syncer::SyncDataList update_list = CreateBadAppRemoteData(kItemId);
+
+  base::ranges::transform(
+      update_list, std::back_inserter(change_list), [](const auto& update) {
+        return syncer::SyncChange(FROM_HERE, syncer::SyncChange::ACTION_UPDATE,
+                                  update);
+      });
 
   // Validate items with bad data are processed without crashing.
-  app_list_syncable_service()->ProcessSyncChanges(base::Location(),
-                                                  change_list);
+  app_list_syncable_service()->ProcessSyncChanges(FROM_HERE, change_list);
   content::RunAllTasksUntilIdle();
 
   ASSERT_TRUE(GetSyncItem(kItemId));
@@ -1379,7 +1392,8 @@ TEST_F(AppListSyncableServiceTest, TransferItem) {
                                  syncer::StringOrdinal("position"));
   model_updater->SetItemFolderId(extensions::kWebStoreAppId, "folderid");
   app_list_syncable_service()->SetPinPosition(extensions::kWebStoreAppId,
-                                              syncer::StringOrdinal("pin"));
+                                              syncer::StringOrdinal("pin"),
+                                              /*pinned_by_policy=*/false);
 
   // Before transfer attributes are different in both, app item and in sync.
   EXPECT_TRUE(AreAllAppAtributesNotEqualInAppList(webstore_item, chrome_item));
@@ -1421,12 +1435,11 @@ TEST_F(AppListSyncableServiceTest, TransferItem) {
 TEST_F(AppListSyncableServiceTest, EphemeralAppsNotSynced) {
   RemoveAllExistingItems();
 
-  std::unique_ptr<syncer::FakeSyncChangeProcessor> sync_processor =
-      std::make_unique<syncer::FakeSyncChangeProcessor>();
+  auto sync_processor = std::make_unique<syncer::FakeSyncChangeProcessor>();
   app_list_syncable_service()->MergeDataAndStartSyncing(
       syncer::APP_LIST, {},
-      std::unique_ptr<syncer::SyncChangeProcessor>(
-          new syncer::SyncChangeProcessorWrapperForTest(sync_processor.get())));
+      std::make_unique<syncer::SyncChangeProcessorWrapperForTest>(
+          sync_processor.get()));
   content::RunAllTasksUntilIdle();
 
   const std::string ephemeral_app_id =
