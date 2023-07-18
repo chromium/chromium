@@ -763,8 +763,8 @@ enum DeviceMode {
   kConsumer,
   // Enrolled as an enterprise device.
   kEnterprise,
-  // Joined Active Directory.
-  kEnterpriseActiveDirectory,
+  // Deprecated in M115. No longer handled by Lacros, do not use.
+  kEnterpriseActiveDirectoryDeprecated,
   // Retail kiosk device.
   kLegacyRetailMode,
   // Locally owned as consumer kiosk and can auto-launch a kiosk webapp.

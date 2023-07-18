@@ -1180,39 +1180,6 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(
     ProfileBrowserTest,
-    IsMainProfileReturnsTrueForActiveDirectoryEnrolledDevices) {
-  base::ScopedAllowBlockingForTesting allow_blocking;
-  base::ScopedTempDir temp_dir;
-  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
-
-  {
-    base::FilePath profile_path =
-        temp_dir.GetPath().Append(chrome::kInitialProfile);
-    std::unique_ptr<Profile> profile(
-        CreateProfile(profile_path, /* delegate= */ nullptr,
-                      Profile::CREATE_MODE_SYNCHRONOUS));
-
-    crosapi::mojom::BrowserInitParamsPtr init_params =
-        crosapi::mojom::BrowserInitParams::New();
-    init_params->session_type = crosapi::mojom::SessionType::kRegularSession;
-    init_params->device_mode =
-        crosapi::mojom::DeviceMode::kEnterpriseActiveDirectory;
-    chromeos::BrowserInitParams::SetInitParamsForTests(std::move(init_params));
-
-    EXPECT_EQ(chromeos::BrowserParamsProxy::Get()->SessionType(),
-              crosapi::mojom::SessionType::kRegularSession);
-    EXPECT_TRUE(profile->IsMainProfile());
-
-    // Creating a profile causes an implicit connection attempt to a Mojo
-    // service, which occurs as part of a new task. Before deleting |profile|,
-    // ensure this task runs to prevent a crash.
-    FlushIoTaskRunnerAndSpinThreads();
-  }
-  FlushIoTaskRunnerAndSpinThreads();
-}
-
-IN_PROC_BROWSER_TEST_F(
-    ProfileBrowserTest,
     IsMainProfileReturnsTrueForMainProfileInRegularSessions) {
   const base::FilePath profile_path =
       browser()->profile()->GetPath().DirName().Append(chrome::kInitialProfile);

@@ -264,11 +264,6 @@ void DeviceCloudPolicyStoreAsh::CheckDMToken() {
   }
   dm_token_checked_ = true;
 
-  // PolicyData from Active Directory doesn't contain a DM token.
-  if (install_attributes_->IsActiveDirectoryManaged()) {
-    return;
-  }
-
   const em::PolicyData* policy_data = device_settings_service_->policy_data();
   if (policy_data && policy_data->has_request_token()) {
     base::UmaHistogramBoolean(kDMTokenCheckHistogram, true);

@@ -351,9 +351,9 @@ message DeviceRegisterResponse {
     // device settings from the cloud, but additionally this mode enables the
     // demo account on the device.
     RETAIL_DEPRECATED = 1;
-    // Devices in CHROME_AD mode are in enterprises with AD.  Device settings
-    // are controlled through the AD policy infrastructure.
-    CHROME_AD = 2;
+    // DEPRECATED: Devices in CHROME_AD mode are in enterprises with AD.  Device
+    // settings are controlled through the AD policy infrastructure.
+    CHROME_AD_DEPRECATED = 2;
     // Devices in DEMO mode have no local owner and get their device settings
     // from the cloud. They are controlled by demo mode domain and provide
     // customized demo experience to the users.

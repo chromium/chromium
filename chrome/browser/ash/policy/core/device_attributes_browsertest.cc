@@ -44,7 +44,6 @@ constexpr char kFakeHostname[] = "fake-hostname";
 constexpr char kFakeDirectoryApiID[] = "fake directory API ID";
 constexpr char kFakeObfuscatedCustomerID[] = "fake obfuscated customer ID";
 constexpr char kFakeLogoURL[] = "www.fakelogo.com/url";
-constexpr char kFakeRealm[] = "fake realm";
 constexpr char kFakeDeviceID[] = "fake device ID";
 
 }  // namespace
@@ -120,10 +119,6 @@ IN_PROC_BROWSER_TEST_F(DeviceAttributesTest, ReturnsAttributes) {
   EXPECT_EQ(kFakeLogoURL, attributes_.GetCustomerLogoURL());
   EXPECT_EQ(MarketSegment::ENTERPRISE,
             attributes_.GetEnterpriseMarketSegment());
-
-  // Set a fake active directory realm and verify it is returned.
-  stub_install_attributes()->SetActiveDirectoryManaged(kFakeRealm,
-                                                       kFakeDeviceID);
 }
 
 }  // namespace policy
