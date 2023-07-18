@@ -102,6 +102,9 @@ crbug.com/1368785 [ android-pixel-6 android-t arm renderer-skia-vulkan target-cp
 crbug.com/1368785 [ android-pixel-4 android-r qualcomm renderer-skia-gl target-cpu-32 ] WebCodecs_EncodingRateControl_avc1.420034_prefer-hardware_variable_* [ Failure ]
 crbug.com/1368785 [ android-nougat ] WebCodecs_EncodingRateControl_vp8_prefer-hardware_* [ Failure ]
 
+# Looks like AMD RX 5500 XT can't control HEVC CBR bitrate well.
+crbug.com/1465531 [ win amd-0x7340 ] WebCodecs_EncodingRateControl_hvc1.1.6.L123.00_prefer-hardware_constant_* [ Failure ]
+
 # The following expectations are added to enable WebCodecs tests on Sherlock.
 # unexpected_pass_finder is disabled so that the tool does not automatically remove these expectations.
 # TODO(crbug.com/1400465) Enable unexpected_pass_finder once test is running regularly on Sherlock.
