@@ -1097,9 +1097,6 @@ void WizardController::ShowWrongHWIDScreen() {
 
 void WizardController::ShowAutoEnrollmentCheckScreen() {
   AutoEnrollmentCheckScreen* screen = GetScreen<AutoEnrollmentCheckScreen>();
-  if (retry_auto_enrollment_check_) {
-    screen->ClearState();
-  }
   screen->set_auto_enrollment_controller(GetAutoEnrollmentController());
   SetCurrentScreen(screen);
 }
@@ -1906,7 +1903,6 @@ void WizardController::OnEnrollmentScreenExit(EnrollmentScreen::Result result) {
       AdvanceToScreen(TpmErrorView::kScreenId);
       break;
     case EnrollmentScreen::Result::BACK_TO_AUTO_ENROLLMENT_CHECK:
-      retry_auto_enrollment_check_ = true;
       ShowAutoEnrollmentCheckScreen();
       break;
   }

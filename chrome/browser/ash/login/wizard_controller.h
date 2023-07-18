@@ -540,10 +540,6 @@ class WizardController : public OobeUI::Observer {
   // The prescribed enrollment configuration for the device.
   policy::EnrollmentConfig prescribed_enrollment_config_;
 
-  // Whether the auto-enrollment check should be retried or the cached result
-  // returned if present.
-  bool retry_auto_enrollment_check_ = false;
-
   // Whether OOBE has yet been marked as completed.
   bool oobe_marked_completed_ = false;
 
