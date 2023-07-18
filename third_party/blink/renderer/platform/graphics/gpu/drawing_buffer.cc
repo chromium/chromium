@@ -848,7 +848,7 @@ DrawingBuffer::ColorBuffer::ColorBuffer(
 
 DrawingBuffer::ColorBuffer::~ColorBuffer() {
   if (base::PlatformThread::CurrentRef() != owning_thread_ref ||
-      !drawing_buffer || drawing_buffer->destroyed()) {
+      !drawing_buffer) {
     // If the context has been destroyed no cleanup is necessary since all
     // resources below are automatically destroyed. Note that if a ColorBuffer
     // is being destroyed on a different thread, it implies that the owning
@@ -858,8 +858,23 @@ DrawingBuffer::ColorBuffer::~ColorBuffer() {
   }
 
   gpu::gles2::GLES2Interface* gl = drawing_buffer->gl_;
-  gpu::SharedImageInterface* sii =
-      drawing_buffer->ContextProvider()->SharedImageInterface();
+  if (!gl) {
+    // Guard against in-flight destruction of the DrawingBuffer, while
+    // still performing cleanup during BeginDestruction().
+    return;
+  }
+  WebGraphicsContext3DProvider* provider = drawing_buffer->ContextProvider();
+  if (!provider) {
+    // Guard against in-flight destruction of the DrawingBuffer, while
+    // still performing cleanup during BeginDestruction().
+    return;
+  }
+  gpu::SharedImageInterface* sii = provider->SharedImageInterface();
+  if (!sii) {
+    // Guard against in-flight destruction of the DrawingBuffer, while
+    // still performing cleanup during BeginDestruction().
+    return;
+  }
 
   sii->DestroySharedImage(receive_sync_token, mailbox);
   gpu_memory_buffer.reset();
@@ -1195,6 +1210,7 @@ void DrawingBuffer::ClearCcLayer() {
 
 void DrawingBuffer::BeginDestruction() {
   DCHECK(!destruction_in_progress_);
+  destruction_in_progress_ = true;
 
   ClearCcLayer();
   recycled_color_buffer_queue_.clear();
@@ -1228,10 +1244,6 @@ void DrawingBuffer::BeginDestruction() {
   fbo_ = 0;
 
   client_ = nullptr;
-
-  // Mark destruction in progress after the color buffers have been
-  // deleted.
-  destruction_in_progress_ = true;
 }
 
 bool DrawingBuffer::ReallocateDefaultFramebuffer(const gfx::Size& size,
