@@ -30,8 +30,8 @@ declare_args() {
   # Build additional browser splits with HWASAN instrumentation enabled.
   build_hwasan_splits = false
 
-  # *For CQ puposes only* Leads to non-working APKs.
-  # Forces all APKs/bundles to be 64-bit only to improve build speed in the CQ
+  # This configuration has minimal coverage.
+  # Forces all APKs/bundles to be 64-bit only to improve build speed
   # (no need to also build 32-bit library).
   skip_secondary_abi_for_cq = false
 }
