@@ -54,8 +54,10 @@ public class ClientHintsTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
-    @CommandLineFlags.Add({ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
-    public void testClientHintsDefault() throws Throwable {
+    @CommandLineFlags.Add({"disable-features=UserAgentClientHint",
+            ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
+    public void
+    testClientHintsDefault() throws Throwable {
         final TestAwContentsClient contentsClient = new TestAwContentsClient();
         final AwContents contents =
                 mActivityTestRule.createAwTestContainerViewOnMainSync(contentsClient)
@@ -82,8 +84,10 @@ public class ClientHintsTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
-    @CommandLineFlags.Add({ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
-    public void testAllClientHints() throws Throwable {
+    @CommandLineFlags.Add({"disable-features=UserAgentClientHint",
+            ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
+    public void
+    testAllClientHints() throws Throwable {
         // Initial test setup.
         final TestAwContentsClient contentsClient = new TestAwContentsClient();
         final AwContents contents =
@@ -264,8 +268,10 @@ public class ClientHintsTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
-    @CommandLineFlags.Add({ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
-    public void testCriticalClientHints() throws Throwable {
+    @CommandLineFlags.Add({"disable-features=UserAgentClientHint",
+            ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
+    public void
+    testCriticalClientHints() throws Throwable {
         // Initial test setup.
         final TestAwContentsClient contentsClient = new TestAwContentsClient();
         final AwContents contents =
