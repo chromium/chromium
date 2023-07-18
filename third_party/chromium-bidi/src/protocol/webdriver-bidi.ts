@@ -200,6 +200,7 @@ export namespace Browser {
   };
 }
 export type BrowsingContextCommand =
+  | BrowsingContext.Activate
   | BrowsingContext.CaptureScreenshot
   | BrowsingContext.Close
   | BrowsingContext.Create

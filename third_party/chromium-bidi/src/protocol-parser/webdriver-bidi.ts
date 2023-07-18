@@ -278,6 +278,7 @@ export namespace Browser {
 }
 export const BrowsingContextCommandSchema = z.lazy(() =>
   z.union([
+    BrowsingContext.ActivateSchema,
     BrowsingContext.CaptureScreenshotSchema,
     BrowsingContext.CloseSchema,
     BrowsingContext.CreateSchema,
