@@ -1543,7 +1543,7 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
     config->valid = true;
     config->availability = Comparator(ANY, 0);
     config->session_rate = Comparator(EQUAL, 0);
-    // The user has tapped the new tab toolbar item < 2 times in a week.
+    // The user has tapped the tab grid toolbar item < 2 times in a week.
     config->used =
         EventConfig(feature_engagement::events::kTabGridToolbarItemUsed,
                     Comparator(LESS_THAN, 2), 7, 30);
