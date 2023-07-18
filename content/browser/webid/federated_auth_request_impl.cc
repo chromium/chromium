@@ -759,6 +759,8 @@ void FederatedAuthRequestImpl::RequestUserInfo(
 
 void FederatedAuthRequestImpl::CancelTokenRequest() {
   if (!auth_request_token_callback_) {
+    mojo::ReportBadMessage(
+        "The abort controller must be used after initiating a token request.");
     return;
   }
 

@@ -305,7 +305,11 @@ void WebOTPService::OnFailure(FailureType failure_type) {
 }
 
 void WebOTPService::Abort() {
-  CHECK(callback_);
+  if (!callback_) {
+    mojo::ReportBadMessage(
+        "The abort controller must be used after initiating an SMS request.");
+    return;
+  }
   CompleteRequest(SmsStatus::kAborted);
 }
 
