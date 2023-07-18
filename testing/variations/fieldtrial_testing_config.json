@@ -10761,6 +10761,55 @@
             ]
         }
     ],
+    "PreinstalledWebAppWindowExperiment": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledWithWindow_v1",
+                    "params": {
+                        "user_group": "window"
+                    },
+                    "enable_features": [
+                        "PreinstalledWebAppWindowExperiment"
+                    ]
+                },
+                {
+                    "name": "Disabled_v1",
+                    "disable_features": [
+                        "PreinstalledWebAppWindowExperiment"
+                    ]
+                },
+                {
+                    "name": "Enabled_v1",
+                    "enable_features": [
+                        "PreinstalledWebAppWindowExperiment"
+                    ]
+                },
+                {
+                    "name": "EnabledWithControl_v1",
+                    "params": {
+                        "user_group": "control"
+                    },
+                    "enable_features": [
+                        "PreinstalledWebAppWindowExperiment"
+                    ]
+                },
+                {
+                    "name": "EnabledWithTab_v1",
+                    "params": {
+                        "user_group": "tab"
+                    },
+                    "enable_features": [
+                        "PreinstalledWebAppWindowExperiment"
+                    ]
+                }
+            ]
+        }
+    ],
     "PreloadCookies": [
         {
             "platforms": [
