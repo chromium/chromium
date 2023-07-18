@@ -6526,6 +6526,12 @@ TEST_P(DesksTest, VisibleOnAllDesksGlobalBounds) {
 // Tests that the z-ordering of windows that are visible on all desks respects
 // its global MRU ordering.
 TEST_P(DesksTest, VisibleOnAllDesksGlobalZOrder) {
+  if (features::IsPerDeskZOrderEnabled()) {
+    // Z-ordering of windows is changed when this flag is enabled. The test
+    // below is written to expect the legacy behavior.
+    return;
+  }
+
   auto* controller = DesksController::Get();
   NewDesk();
   const Desk* desk_1 = controller->GetDeskAtIndex(0);
