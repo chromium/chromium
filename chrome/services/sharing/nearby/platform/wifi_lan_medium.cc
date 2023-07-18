@@ -112,6 +112,12 @@ bool WifiLanMedium::IsNetworkConnected() const {
 std::unique_ptr<api::WifiLanSocket> WifiLanMedium::ConnectToService(
     const NsdServiceInfo& remote_service_info,
     CancellationFlag* cancellation_flag) {
+  if (cancellation_flag && cancellation_flag->Cancelled()) {
+    LOG(WARNING) << "WifiLanMedium::" << __func__
+                 << ": Cancelled before connect attempt";
+    return nullptr;
+  }
+
   return ConnectToService(remote_service_info.GetIPAddress(),
                           remote_service_info.GetPort(), cancellation_flag);
 }
@@ -120,8 +126,6 @@ std::unique_ptr<api::WifiLanSocket> WifiLanMedium::ConnectToService(
     const std::string& ip_address,
     int port,
     CancellationFlag* cancellation_flag) {
-  // TODO(https://crbug.com/1261238): Possibly utilize cancellation_flag.
-
   net::IPAddress ip(reinterpret_cast<const uint8_t*>(ip_address.data()),
                     ip_address.length());
   const net::AddressList address_list =
@@ -138,6 +142,13 @@ std::unique_ptr<api::WifiLanSocket> WifiLanMedium::ConnectToService(
                      address_list, &connected_socket_parameters,
                      &connect_waitable_event));
   connect_waitable_event.Wait();
+
+  if (cancellation_flag && cancellation_flag->Cancelled()) {
+    LOG(WARNING) << "WifiLanMedium::" << __func__
+                 << ": Cancelled during connect to "
+                 << address_list.back().ToString();
+    return nullptr;
+  }
 
   bool success = connected_socket_parameters.has_value();
   if (!success) {
