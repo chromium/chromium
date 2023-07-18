@@ -97207,6 +97207,19 @@
        {}
       ]
      ],
+     "border-color-currentcolor.html": [
+      "525a89e312dfaa76b165b7583c980933e7e73163",
+      [
+       null,
+       [
+        [
+         "/css/css-color/border-color-currentcolor-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "border-left-color.xht": [
       "3214f2d8143cda12ecdcf8df00016e678cf2de52",
       [
@@ -204483,7 +204496,7 @@
        ]
       ],
       "svg-skewxy-001.html": [
-       "23467a9936ef96029cbaf93529d763e12becdaca",
+       "0eee25c5dfe36d919a1a116de15ae2780f7428c4",
        [
         null,
         [
@@ -275909,6 +275922,16 @@
    }
   },
   "support": {
+   ".cache": {
+    "gitignore2.json": [
+     "2a65364e1f8635d94593c8720be70482969acfc5",
+     []
+    ],
+    "mtime.json": [
+     "3db59e563979094f2b9bff4e5202d33a039ba124",
+     []
+    ]
+   },
    ".gitignore": [
     "d93e645d547894b50149d3726de2654957b6e06f",
     []
@@ -295981,6 +296004,14 @@
      ],
      "body-opacity-0-to-1-stacking-context.html.ini": [
       "f8d2fe8727545e1ac7a5934e7e95bc0a54d24512",
+      []
+     ],
+     "border-color-currentcolor-ref.html": [
+      "6efc0c414128f838293a465dbfb10bc1ef854e1f",
+      []
+     ],
+     "border-color-currentcolor.html.ini": [
+      "73542770e484f46376b774fd68ffcdc6d770a5b4",
       []
      ],
      "border-color-ref.xht": [
@@ -333966,6 +333997,10 @@
        "186db8b0d035951ac21fc00f43f7ab56cb16dbd0",
        []
       ],
+      "kind-of-widget-fallback-button-border-bottom-right-radius-001.html.ini": [
+       "758c3d0336a6e84449431603fda982e1df51c153",
+       []
+      ],
       "kind-of-widget-fallback-button-border-bottom-width-001.html.ini": [
        "2036b80044361c3e6df835fd9d511bfcc6ca7138",
        []
@@ -335127,7 +335162,7 @@
        []
       ],
       "kind-of-widget-fallback-textarea-border-left-width-001.html.ini": [
-       "3cc5bd22eb10e85b8bae3dd4175b777989f12bc4",
+       "52883368bc799b396d008898b19bc733fab53eaa",
        []
       ],
       "kind-of-widget-fallback-textarea-border-right-color-001.html.ini": [
@@ -342028,7 +342063,7 @@
       []
      ],
      "effect-reference-on-transparent-element.html.ini": [
-      "f9df782a8c3e548e9250dc1ef7a1523ec0cd293d",
+      "749665140f5c0598a8421cb9eb5b9055ad8f26c3",
       []
      ],
      "fecolormatrix-type-ref.html": [
@@ -351962,7 +351997,7 @@
       ]
      },
      "response_block.tentative.https-expected.txt": [
-      "ff9a29baf3b532af9ec4f680035f2a235b6b523b",
+      "e3e161bd457df9a8267ee0920bfeb7d05aec84e0",
       []
      ],
      "response_block.tentative.https.html.ini": [
@@ -368452,7 +368487,7 @@
         []
        ],
        "link-style-error-01-expected.txt": [
-        "d7f9ee690ff070279ff2271c2937627081cc8b17",
+        "cb6602e151542ef84651dd1f282ac86f61a60c5a",
         []
        ],
        "link-style-error-01.html.ini": [
@@ -368460,7 +368495,7 @@
         []
        ],
        "link-style-error-limited-quirks-expected.txt": [
-        "3ce740925d4fc1e364a2bc0586f6d5f8f906dc1a",
+        "dabc5f98a9b21af5c17ff0482f48bbb7da66b0a7",
         []
        ],
        "link-style-error-limited-quirks.html.ini": [
@@ -368468,7 +368503,7 @@
         []
        ],
        "link-style-error-quirks-expected.txt": [
-        "3ce740925d4fc1e364a2bc0586f6d5f8f906dc1a",
+        "dabc5f98a9b21af5c17ff0482f48bbb7da66b0a7",
         []
        ],
        "link-style-error-quirks.html.ini": [
@@ -369844,7 +369879,7 @@
         []
        ],
        "sandbox-top-navigation-child-special-cases.tentative.sub.window.js.ini": [
-        "9333d24a1613df2f94de68bb5c4ece70f0dea61a",
+        "5a3422187054dbd6f485715ca5a27a36c7d68799",
         []
        ],
        "sandbox-top-navigation-child.tentative.sub.window.js.ini": [
@@ -383313,7 +383348,7 @@
      []
     ],
     "delegate-request.https.sub.html.ini": [
-     "5721eee8b2dff19632c8c38445abe4a37bde989e",
+     "e039dfe067530ee134ca8089c9d7661f6bde0cef",
      []
     ],
     "historical.https-expected.txt": [
@@ -384929,7 +384964,7 @@
      []
     ],
     "modulepreload-as.html.ini": [
-     "adbfd5548d6499e2651d5cab4795ee6ed8b129cb",
+     "305eafe77569e821ef49912750882c027263097e",
      []
     ],
     "modulepreload-expected.txt": [
@@ -387291,7 +387326,7 @@
      []
     ],
     "content-type-parsing.html.ini": [
-     "bde5639bd03bfc171b67b89f47dcdd088e532514",
+     "834d281fdcfe65ec2e39d40364a67761aebe666f",
      []
     ],
     "frameset-timing.html": [
@@ -387460,7 +387495,7 @@
       []
      ],
      "entry-invariants.js": [
-      "bbc913b722903085963a133dab0a8a96f77b2506",
+      "78d43d1b01e45164320cee53eb2e410822f4ab3f",
       []
      ],
      "eventsource.py": [
@@ -391270,6 +391305,10 @@
        "ebee4ff8e8da785cf4b4a339c6514b5fe9b98f9b",
        []
       ],
+      "missing.asis": [
+       "4846fe01d61a64c6bd73bf5c23fbd4a1b970de3d",
+       []
+      ],
       "module-worker.js": [
        "385fe7101503cb4c7ca77e95e023459b29267741",
        []
@@ -391655,7 +391694,7 @@
        []
       ],
       "resource-timing-iframe.sub.html": [
-       "384c29b536bf1db829532b9485d41020f85bed95",
+       "ec4c726331d66ca298726e45fc3573e86e227e22",
        []
       ],
       "resource-timing-worker.js": [
@@ -399966,16 +400005,8 @@
      "5f8621ef83660c66f0d037ea28fafefb558140f1",
      []
     ],
-    "encoded-video-chunk.any-expected.txt": [
-     "bca2eae6d43d323efedcb12faaf60f98a510424b",
-     []
-    ],
     "encoded-video-chunk.any.js.ini": [
-     "b9e31dfb31d97ca9a0717c82d2ee543b7ec31464",
-     []
-    ],
-    "encoded-video-chunk.any.worker-expected.txt": [
-     "bca2eae6d43d323efedcb12faaf60f98a510424b",
+     "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
      []
     ],
     "encoded-video-chunk.crossOriginIsolated.https.any.js.headers": [
@@ -400039,7 +400070,7 @@
      []
     ],
     "full-cycle-test.https.any.js.ini": [
-     "8efa52d4ef0b0351c829ef644d21d7d04ad1ee53",
+     "bba92595aac07c17cf7ed410c19de765acce21ab",
      []
     ],
     "h264.annexb": [
@@ -400083,7 +400114,7 @@
      []
     ],
     "reconfiguring-encoder.https.any.js.ini": [
-     "e40fc13b708196cfb6e8430463e98d873fa107ba",
+     "148e7567882ef916faf4d44a9f7a7a461c1bc88f",
      []
     ],
     "sfx-aac.mp4": [
@@ -565923,7 +565954,7 @@
        ]
       ],
       "popover-attribute-basic.html": [
-       "32d3deb3848c22ee48403e40c17038f1cc8e2f59",
+       "13108949cb3c5e97f79245578e4af0871dfbf738",
        [
         null,
         {
@@ -608652,7 +608683,7 @@
      ]
     ],
     "entries-for-network-errors.sub.https.html": [
-     "95849d282621ffc121ae36a3f3543307a4e135db",
+     "ebc2247babcd4ab94d1fdd826d17d8c968189d79",
      [
       null,
       {}
@@ -617385,7 +617416,7 @@
       ]
      ],
      "resource-timing.sub.https.html": [
-      "9808ae5ae1bed06f5303240b772e4ead0d317137",
+      "e8328f3597ba25e34f02b9dd6cca1ed491cc9bbb",
       [
        null,
        {}
