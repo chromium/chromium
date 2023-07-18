@@ -780,22 +780,30 @@ ui::ColorId Tab::GetAlertIndicatorColor(TabAlertState state) const {
       group = 2;
       break;
   }
-  ui::ColorId color_ids[3][2][2] = {
-      {{kColorTabAlertMediaRecordingInactiveFrameInactive,
-        kColorTabAlertMediaRecordingInactiveFrameActive},
-       {kColorTabAlertMediaRecordingActiveFrameInactive,
-        kColorTabAlertMediaRecordingActiveFrameActive}},
-      {{kColorTabAlertPipPlayingInactiveFrameInactive,
-        kColorTabAlertPipPlayingInactiveFrameActive},
-       {kColorTabAlertPipPlayingActiveFrameInactive,
-        kColorTabAlertPipPlayingActiveFrameActive}},
-      {{kColorTabAlertAudioPlayingInactiveFrameInactive,
-        kColorTabAlertAudioPlayingInactiveFrameActive},
-       {kColorTabAlertAudioPlayingActiveFrameInactive,
-        kColorTabAlertAudioPlayingActiveFrameActive}}};
-  return color_ids[group][tab_style_views()->GetApparentActiveState() ==
-                          TabActive::kActive]
-                  [GetWidget()->ShouldPaintAsActive()];
+
+  if (features::IsChromeRefresh2023()) {
+    const ui::ColorId color_ids[3] = {kColorTabAlertMediaRecordingIcon,
+                                      kColorTabAlertPipPlayingIcon,
+                                      kColorTabAlertAudioPlayingIcon};
+    return color_ids[group];
+  } else {
+    const ui::ColorId color_ids[3][2][2] = {
+        {{kColorTabAlertMediaRecordingInactiveFrameInactive,
+          kColorTabAlertMediaRecordingInactiveFrameActive},
+         {kColorTabAlertMediaRecordingActiveFrameInactive,
+          kColorTabAlertMediaRecordingActiveFrameActive}},
+        {{kColorTabAlertPipPlayingInactiveFrameInactive,
+          kColorTabAlertPipPlayingInactiveFrameActive},
+         {kColorTabAlertPipPlayingActiveFrameInactive,
+          kColorTabAlertPipPlayingActiveFrameActive}},
+        {{kColorTabAlertAudioPlayingInactiveFrameInactive,
+          kColorTabAlertAudioPlayingInactiveFrameActive},
+         {kColorTabAlertAudioPlayingActiveFrameInactive,
+          kColorTabAlertAudioPlayingActiveFrameActive}}};
+    return color_ids[group][tab_style_views()->GetApparentActiveState() ==
+                            TabActive::kActive]
+                    [GetWidget()->ShouldPaintAsActive()];
+  }
 }
 
 bool Tab::IsActive() const {
