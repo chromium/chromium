@@ -576,6 +576,8 @@ source_set("browser") {
     "blob_storage/blob_registry_wrapper.h",
     "blob_storage/chrome_blob_storage_context.cc",
     "blob_storage/chrome_blob_storage_context.h",
+    "blob_storage/file_backed_blob_factory_impl.cc",
+    "blob_storage/file_backed_blob_factory_impl.h",
     "bluetooth/bluetooth_adapter_factory_wrapper.cc",
     "bluetooth/bluetooth_adapter_factory_wrapper.h",
     "bluetooth/bluetooth_allowed_devices.cc",

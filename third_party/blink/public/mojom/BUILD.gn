@@ -1074,6 +1074,7 @@ mojom("android_mojo_bindings") {
     "blob/blob_registry.mojom",
     "blob/blob_url_store.mojom",
     "blob/data_element.mojom",
+    "blob/file_backed_blob_factory.mojom",
     "blob/serialized_blob.mojom",
     "contacts/contacts_manager.mojom",
     "digital_goods/digital_goods.mojom",
