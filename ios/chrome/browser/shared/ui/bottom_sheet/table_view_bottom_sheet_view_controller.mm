@@ -66,9 +66,7 @@ CGFloat const kInitialHeightPadding = 5;
 
   _tableView.translatesAutoresizingMaskIntoConstraints = NO;
 
-  [_tableView selectRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]
-                          animated:NO
-                    scrollPosition:UITableViewScrollPositionNone];
+  [self selectFirstRow];
 
   return _tableView;
 }
@@ -119,9 +117,11 @@ CGFloat const kInitialHeightPadding = 5;
     }];
   }
 
-  [_tableView selectRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]
-                          animated:NO
-                    scrollPosition:UITableViewScrollPositionNone];
+  [self selectFirstRow];
+}
+
+- (CGFloat)bottomSheetEstimatedHeight {
+  return kEstimatedBaseHeightForBottomSheet;
 }
 
 - (CGFloat)tableViewEstimatedRowHeight {
@@ -173,7 +173,7 @@ CGFloat const kInitialHeightPadding = 5;
   // Update the custom detent with the correct initial height for the bottom
   // sheet. (Initial height is not calculated properly in -viewDidLoad, but we
   // need to setup the bottom sheet in that method so there is not a delay when
-  // showing the table view and the action buttons.
+  // showing the table view and the action buttons).
   UISheetPresentationController* presentationController =
       self.sheetPresentationController;
   if (@available(iOS 16, *)) {
@@ -203,6 +203,50 @@ CGFloat const kInitialHeightPadding = 5;
     didDeselectRowAtIndexPath:(NSIndexPath*)indexPath {
   [tableView cellForRowAtIndexPath:indexPath].accessoryType =
       UITableViewCellAccessoryNone;
+}
+
+#pragma mark - Public
+
+- (void)selectFirstRow {
+  [_tableView selectRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]
+                          animated:NO
+                    scrollPosition:UITableViewScrollPositionNone];
+}
+
+- (CGFloat)initialHeight {
+  CGFloat bottomSheetHeight = [self bottomSheetHeight];
+  if (bottomSheetHeight > 0) {
+    return bottomSheetHeight + kInitialHeightPadding;
+  }
+  // Return an estimated height if we can't calculate the actual height.
+  return kEstimatedBaseHeightForBottomSheet +
+         kTableViewEstimatedRowHeight * [self initialNumberOfVisibleCells];
+}
+
+- (CGFloat)fullHeight:(NSInteger)numberOfRows {
+  CGFloat bottomSheetHeight = [self bottomSheetHeight];
+  if (bottomSheetHeight > 0) {
+    return bottomSheetHeight;
+  }
+
+  // Return an estimated height for the bottom sheet while showing all rows
+  // (using estimated heights).
+  return kEstimatedBaseHeightForBottomSheet +
+         (kTableViewEstimatedRowHeight * numberOfRows);
+}
+
+- (void)setTableViewScrollEnabled:(BOOL)enabled {
+  _tableView.scrollEnabled = enabled;
+  self.scrollEnabled = enabled;
+
+  // Add gradient view to show that the user can scroll.
+  if (enabled) {
+    [self updateCustomGradientViewHeight:16];
+  }
+}
+
+- (CGFloat)initialNumberOfVisibleCells {
+  return 1;
 }
 
 #pragma mark - Private
@@ -264,41 +308,6 @@ CGFloat const kInitialHeightPadding = 5;
       [self.view
           systemLayoutSizeFittingSize:CGSizeMake(self.view.frame.size.width, 1)]
           .height;
-}
-
-// Returns the initial height of the bottom sheet while showing a single row.
-- (CGFloat)initialHeight {
-  CGFloat bottomSheetHeight = [self bottomSheetHeight];
-  if (bottomSheetHeight > 0) {
-    return bottomSheetHeight + kInitialHeightPadding;
-  }
-  // Return an estimated height if we can't calculate the actual height.
-  return kEstimatedBaseHeightForBottomSheet + kTableViewEstimatedRowHeight;
-}
-
-// Returns the desired height for the bottom sheet (can be larger than the
-// screen).
-- (CGFloat)fullHeight:(NSInteger)numberOfRows {
-  CGFloat bottomSheetHeight = [self bottomSheetHeight];
-  if (bottomSheetHeight > 0) {
-    return bottomSheetHeight;
-  }
-
-  // Return an estimated height for the bottom sheet while showing all rows
-  // (using estimated heights).
-  return kEstimatedBaseHeightForBottomSheet +
-         (kTableViewEstimatedRowHeight * numberOfRows);
-}
-
-// Enables scrolling of the table view
-- (void)setTableViewScrollEnabled:(BOOL)enabled {
-  _tableView.scrollEnabled = enabled;
-  self.scrollEnabled = enabled;
-
-  // Add gradient view to show that the user can scroll.
-  if (enabled) {
-    [self updateCustomGradientViewHeight:16];
-  }
 }
 
 @end

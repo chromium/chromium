@@ -115,6 +115,8 @@ const CGFloat kFaviconBadgeSideLength = 24;
     [self.view addSubview:self.navigationBar];
   }
 
+  NSMutableArray* stackSubviews = [[NSMutableArray alloc] init];
+
   if (self.image) {
     if (self.imageEnclosedWithShadowAndBadge ||
         self.imageEnclosedWithShadowWithoutBadge) {
@@ -126,11 +128,6 @@ const CGFloat kFaviconBadgeSideLength = 24;
       self.imageView = [self createImageView];
       self.imageContainerView = self.imageView;
     }
-  }
-
-  NSMutableArray* stackSubviews = [[NSMutableArray alloc] init];
-
-  if (self.image) {
     [stackSubviews addObject:self.imageContainerView];
   }
 
@@ -315,7 +312,9 @@ const CGFloat kFaviconBadgeSideLength = 24;
     centerYConstraint.active = YES;
   }
 
-  if (!self.imageHasFixedSize || self.image) {
+  // Only add the constraint for imageView with an image that has a variable
+  // size.
+  if (self.image && !self.imageHasFixedSize) {
     // Constrain the image to the scroll view size and its aspect ratio.
     [self.imageView
         setContentCompressionResistancePriority:UILayoutPriorityDefaultLow

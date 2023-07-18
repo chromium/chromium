@@ -30,19 +30,27 @@ namespace {
 // Credit Card icon corner radius.
 CGFloat const kCreditCardIconCornerRadius = 5;
 
+// Default spacing use for the views in the bottom sheet.
+CGFloat const kSpacing = 10;
+
 }  // namespace
 
 @interface PaymentsSuggestionBottomSheetViewController () <
     ConfirmationAlertActionHandler,
     UITableViewDataSource> {
+  // If YES: the table view is currently showing 2.5 credit card suggestions.
+  // If NO: the table view is currently showing all credit card suggestions.
+  BOOL _tableViewIsMinimized;
+
+  // Height constraint for the bottom sheet when showing 2.5 credit card
+  // suggestions.
+  NSLayoutConstraint* _minimizedHeightConstraint;
+
   // Height constraint for the bottom sheet when showing all suggestions.
   NSLayoutConstraint* _heightConstraint;
 
   // List of credit cards and icon for the bottom sheet.
   NSArray<id<PaymentsSuggestionBottomSheetData>>* _creditCardData;
-
-  // View which contains the GPay logo.
-  UIImageView* _logoImageView;
 
   // URL of the current page the bottom sheet is being displayed on.
   GURL _URL;
@@ -72,15 +80,19 @@ CGFloat const kCreditCardIconCornerRadius = 5;
 #pragma mark - UIViewController
 
 - (void)viewDidLoad {
-  _logoImageView = [[UIImageView alloc] initWithImage:[self titleImage]];
-  self.titleView = _logoImageView;
+  // If the user has more than 2 credit cards, we want to start with the
+  // minimized bottom sheet.
+  _tableViewIsMinimized = _creditCardData.count > 2;
+
+  self.image = [self titleImage];
+  self.customSpacingBeforeImageIfNoNavigationBar = kSpacing;
   self.subtitleTextStyle = UIFontTextStyleFootnote;
   std::u16string formattedURL =
       url_formatter::FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
           _URL);
   self.subtitleString = l10n_util::GetNSStringF(
       IDS_IOS_PAYMENT_BOTTOM_SHEET_SUBTITLE, formattedURL);
-  self.customSpacing = 10;
+  self.customSpacing = kSpacing;
 
   // Set the properties read by the super when constructing the
   // views in `-[ConfirmationAlertViewController viewDidLoad]`.
@@ -93,7 +105,8 @@ CGFloat const kCreditCardIconCornerRadius = 5;
 
   [super viewDidLoad];
 
-  [self expand:_creditCardData.count];
+  // Set selection to the first one.
+  [self selectFirstRow];
 }
 
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
@@ -102,7 +115,7 @@ CGFloat const kCreditCardIconCornerRadius = 5;
   if (self.traitCollection.userInterfaceStyle !=
       previousTraitCollection.userInterfaceStyle) {
     // Make sure the GPay logo matches the new trait collection.
-    _logoImageView.image = [self titleImage];
+    self.image = [self titleImage];
   }
 }
 
@@ -113,10 +126,62 @@ CGFloat const kCreditCardIconCornerRadius = 5;
     if (fullHeight > 0) {
       // Update height constraint for the table view.
       _heightConstraint.constant = fullHeight;
+
+      // TODO(crbug.com/1462643): Verify if the full height is larger than the
+      // whole screen. If so, use the full height here too.
+      _minimizedHeightConstraint.constant =
+          (fullHeight / _creditCardData.count) * 2.5;
     }
   }
 
-  [super viewWillAppear:animated];
+  // Update the custom detent with the correct initial height for the bottom
+  // sheet. (Initial height is not calculated properly in -viewDidLoad, but we
+  // need to setup the bottom sheet in that method so there is not a delay when
+  // showing the table view and the action buttons).
+  UISheetPresentationController* presentationController =
+      self.sheetPresentationController;
+  // Setup the minimized height (if the user has more than 2 credit cards).
+  NSMutableArray* currentDetents = [[NSMutableArray alloc] init];
+  if (@available(iOS 16, *)) {
+    if (_tableViewIsMinimized) {
+      CGFloat bottomSheetHeight = [self initialHeight];
+      auto detentBlock = ^CGFloat(
+          id<UISheetPresentationControllerDetentResolutionContext> context) {
+        return bottomSheetHeight;
+      };
+      UISheetPresentationControllerDetent* customDetent =
+          [UISheetPresentationControllerDetent
+              customDetentWithIdentifier:@"customDetent"
+                                resolver:detentBlock];
+      [currentDetents addObject:customDetent];
+    }
+  }
+
+  // Done calculating the height for the bottom sheet for 2.5 credit card
+  // suggestions, disable minimized height constraint.
+  _minimizedHeightConstraint.active = NO;
+  _heightConstraint.active = YES;
+
+  // Calculate the full height of the bottom sheet with the minimized height
+  // constraint disabled.
+  if (@available(iOS 16, *)) {
+    CGFloat fullHeight = [self fullHeight:_creditCardData.count];
+    __weak __typeof(self) weakSelf = self;
+    auto fullHeightBlock = ^CGFloat(
+        id<UISheetPresentationControllerDetentResolutionContext> context) {
+      BOOL tooLarge = (fullHeight > context.maximumDetentValue);
+      [weakSelf setTableViewScrollEnabled:tooLarge];
+      return tooLarge ? context.maximumDetentValue : fullHeight;
+    };
+    UISheetPresentationControllerDetent* customDetentExpand =
+        [UISheetPresentationControllerDetent
+            customDetentWithIdentifier:@"customDetentExpand"
+                              resolver:fullHeightBlock];
+    [currentDetents addObject:customDetentExpand];
+    presentationController.detents = [currentDetents copy];
+    presentationController.selectedDetentIdentifier =
+        _tableViewIsMinimized ? @"customDetent" : @"customDetentExpand";
+  }
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -268,10 +333,15 @@ CGFloat const kCreditCardIconCornerRadius = 5;
   [tableView registerClass:TableViewDetailIconCell.class
       forCellReuseIdentifier:@"cell"];
 
+  _minimizedHeightConstraint = [tableView.heightAnchor
+      constraintEqualToConstant:[self tableViewEstimatedRowHeight] * 2.5];
+  _minimizedHeightConstraint.priority = UILayoutPriorityDefaultLow;
   _heightConstraint = [tableView.heightAnchor
       constraintEqualToConstant:[self tableViewEstimatedRowHeight] *
                                 _creditCardData.count];
-  _heightConstraint.active = YES;
+
+  _minimizedHeightConstraint.active = _tableViewIsMinimized;
+  _heightConstraint.active = !_tableViewIsMinimized;
 
   return tableView;
 }
@@ -327,6 +397,10 @@ CGFloat const kCreditCardIconCornerRadius = 5;
                           image:infoIcon
                      identifier:nil
                         handler:showDetailsButtonTapHandler];
+}
+
+- (CGFloat)initialNumberOfVisibleCells {
+  return 2.5;
 }
 
 @end
