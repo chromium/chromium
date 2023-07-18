@@ -19,9 +19,9 @@
 namespace ash {
 namespace {
 
-class AppListInteractiveTest : public InteractiveBrowserTest {
+class AppListIntegrationTest : public InteractiveBrowserTest {
  public:
-  AppListInteractiveTest() {
+  AppListIntegrationTest() {
     // This test suite does not require a browser window.
     set_launch_browser_for_testing(nullptr);
 
@@ -37,7 +37,7 @@ class AppListInteractiveTest : public InteractiveBrowserTest {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(AppListInteractiveTest, OpenAndClose) {
+IN_PROC_BROWSER_TEST_F(AppListIntegrationTest, OpenAndClose) {
   // Kombucha needs a widget to be able to click on things.
   views::Widget* navigation_widget =
       Shell::GetPrimaryRootWindowController()->shelf()->navigation_widget();

@@ -4,7 +4,11 @@
 
 #include "chrome/test/base/chromeos/crosint/chromeos_test_suite.h"
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "build/chromeos_buildflags.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/test/ui_controls_ash.h"
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "base/check.h"
 #include "base/files/file_util.h"
 #include "chrome/common/chrome_paths_lacros.h"
@@ -17,7 +21,9 @@ ChromeOSTestSuite::~ChromeOSTestSuite() = default;
 
 void ChromeOSTestSuite::Initialize() {
   content::ContentTestSuiteBase::Initialize();
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  ash::test::EnableUIControlsAsh();
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
   // The lacros binary receives certain paths from ash very early in startup.
   // Simulate that behavior here. See chrome_paths_lacros.cc for details. The
   // specific path doesn't matter as long as it exists.
