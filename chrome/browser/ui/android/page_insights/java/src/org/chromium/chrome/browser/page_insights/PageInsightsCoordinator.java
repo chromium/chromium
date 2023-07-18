@@ -52,9 +52,9 @@ public class PageInsightsCoordinator {
      * @param bottomSheetController {@link ManagedBottomSheetController} for page insights.
      * @param bottomUiController {@link BottomSheetController} for other bottom sheet UIs.
      * @param expandedSheetHelper Helps interaction with other UI in expanded mode.
-     * @param tabObscuringHandler A delegate that provides the functionality of obscuring all tabs.
      * @param controlsStateProvider Provides the browser controls' state.
      * @param browserControlsSizer Bottom browser controls resizer.
+     * @param isPageInsightsHubEnabled Supplier of the feature flag.
      */
     public PageInsightsCoordinator(Context context, ObservableSupplier<Tab> tabProvider,
             ManagedBottomSheetController bottomSheetController,

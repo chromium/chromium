@@ -19,10 +19,6 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
-import org.chromium.chrome.browser.signin.services.SigninManager;
-import org.chromium.chrome.browser.signin.services.SigninManager.SignInStateObserver;
-import org.chromium.ui.util.TokenHolder;
 
 import java.util.Optional;
 
@@ -32,49 +28,31 @@ import java.util.Optional;
  * remaining valid for a specified period of time. Queries are made in a periodic fashion
  * to keep it in sync with the actual status.
  */
-public class PageInsightsSwaaChecker implements SignInStateObserver {
+public class PageInsightsSwaaChecker {
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     static final long REFRESH_PERIOD_MS = DateUtils.MINUTE_IN_MILLIS * 5;
     private static final int MSG_REFRESH = 37; // random msg ID
 
-    private static PageInsightsSwaaChecker sInstance;
-
+    private final Runnable mActivateCallback;
     private final Profile mProfile;
     private final Handler mHandler;
 
     private Supplier<Long> mElapsedRealtime;
-    private TokenHolder mTokenHolder;
 
-    public static PageInsightsSwaaChecker getForProfile(Profile profile) {
-        boolean profileSwitched = sInstance != null && sInstance.mProfile != profile;
-        if (sInstance == null || profileSwitched) {
-            sInstance = new PageInsightsSwaaChecker(profile);
-            if (profileSwitched) invalidateCache();
-        }
-        return sInstance;
-    }
-
-    private PageInsightsSwaaChecker(Profile profile) {
-        mProfile = profile;
+    PageInsightsSwaaChecker(Profile profile, Runnable activateCallback) {
         mElapsedRealtime = SystemClock::elapsedRealtime;
+        mProfile = profile;
+        mActivateCallback = activateCallback;
         mHandler = new Handler(Looper.getMainLooper()) {
             @Override
             public void handleMessage(Message msg) {
                 if (msg != null && msg.what == MSG_REFRESH) sendQuery();
             }
         };
-        mTokenHolder = new TokenHolder(() -> {
-            SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(mProfile);
-            if (mTokenHolder.hasTokens()) {
-                signinManager.addSignInStateObserver(PageInsightsSwaaChecker.this);
-            } else {
-                signinManager.removeSignInStateObserver(PageInsightsSwaaChecker.this);
-            }
-        });
     }
 
+    /** Reset sWAA info when it gets invalidated, or in preparation for the new profile. */
     static void invalidateCache() {
-        // Reset sWAA info in preparation for the new profile.
         SharedPreferencesManager prefs = SharedPreferencesManager.getInstance();
         prefs.removeKey(ChromePreferenceKeys.SWAA_TIMESTAMP);
         prefs.removeKey(ChromePreferenceKeys.SWAA_STATUS);
@@ -82,9 +60,8 @@ public class PageInsightsSwaaChecker implements SignInStateObserver {
 
     /**
      * Start periodic querying of supplemental Web and App Activity setting.
-     * @return a token to be used later to stop the checker.
      */
-    public int start() {
+    void start() {
         Optional<Boolean> swaaStatus = isSwaaEnabled();
         if (!swaaStatus.isPresent()) {
             sendQuery();
@@ -92,16 +69,13 @@ public class PageInsightsSwaaChecker implements SignInStateObserver {
             mHandler.sendEmptyMessageDelayed(
                     MSG_REFRESH, REFRESH_PERIOD_MS - timeSinceLastUpdateMs());
         }
-        return mTokenHolder.acquireToken();
     }
 
-    public void stop(int token) {
-        mTokenHolder.releaseToken(token);
-        if (!mTokenHolder.hasTokens()) {
-            // Stop and delete the checker when the last PIH CCT is gone.
-            mHandler.removeMessages(MSG_REFRESH);
-            sInstance = null;
-        }
+    /**
+     * Stop periodic querying of supplemental Web and App Activity setting.
+     */
+    void stop() {
+        mHandler.removeMessages(MSG_REFRESH);
     }
 
     private long timeSinceLastUpdateMs() {
@@ -120,6 +94,7 @@ public class PageInsightsSwaaChecker implements SignInStateObserver {
     @CalledByNative
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     void onSwaaResponse(boolean enabled) {
+        if (enabled) mActivateCallback.run();
         SharedPreferencesManager prefs = SharedPreferencesManager.getInstance();
         prefs.writeLong(ChromePreferenceKeys.SWAA_TIMESTAMP, mElapsedRealtime.get());
         prefs.writeBoolean(ChromePreferenceKeys.SWAA_STATUS, enabled);
@@ -144,15 +119,13 @@ public class PageInsightsSwaaChecker implements SignInStateObserver {
         return mHandler.hasMessages(MSG_REFRESH);
     }
 
-    @Override
-    public void onSignedIn() {
+    void onSignedIn() {
         mHandler.removeMessages(MSG_REFRESH);
         invalidateCache();
         sendQuery();
     }
 
-    @Override
-    public void onSignedOut() {
+    void onSignedOut() {
         mHandler.removeMessages(MSG_REFRESH);
         invalidateCache();
     }

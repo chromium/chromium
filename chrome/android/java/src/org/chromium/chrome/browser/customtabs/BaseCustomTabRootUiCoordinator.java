@@ -56,8 +56,8 @@ import org.chromium.chrome.browser.gsa.GSAContextDisplaySelection;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthCoordinatorFactory;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthManager;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+import org.chromium.chrome.browser.page_insights.PageInsightsActivator;
 import org.chromium.chrome.browser.page_insights.PageInsightsCoordinator;
-import org.chromium.chrome.browser.page_insights.PageInsightsSwaaChecker;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.reengagement.ReengagementNotificationController;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
@@ -105,7 +105,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
 
     private @Nullable PageInsightsCoordinator mPageInsightsCoordinator;
     private @Nullable ContextualSearchObserver mContextualSearchObserver;
-    private int mSwaaToken;
+    private int mPageInsightsToken;
 
     /**
      * Construct a new BaseCustomTabRootUiCoordinator.
@@ -209,7 +209,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                     activity, packageName, appName, new ChromePureJavaExceptionReporter());
         }
         mTabController = tabController;
-        mSwaaToken = TokenHolder.INVALID_TOKEN;
+        mPageInsightsToken = TokenHolder.INVALID_TOKEN;
     }
 
     @Override
@@ -256,6 +256,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
     public void onFinishNativeInitialization() {
         super.onFinishNativeInitialization();
 
+        maybeCreatePageInsightsComponent();
         if (isPageInsightsCapable(mIntentDataProvider.get())) {
             // Start sWAA checking handler while page insight-capable CCT is in use. We give some
             // delay in starting it to avoid the first call failing, which is observed sometimes.
@@ -264,8 +265,8 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                 @Override
                 public void onPageLoadFinished(Tab tab, GURL url) {
                     tab.removeObserver(this);
-                    Profile profile = mProfileSupplier.get();
-                    mSwaaToken = PageInsightsSwaaChecker.getForProfile(profile).start();
+                    var activator = PageInsightsActivator.getForProfile(mProfileSupplier.get());
+                    mPageInsightsToken = activator.start(() -> maybeCreatePageInsightsComponent());
                 }
             });
         }
@@ -324,10 +325,12 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     static boolean isPageInsightsHubEnabledSync(
             BrowserServicesIntentDataProvider intentData, Supplier<Profile> profile) {
-        return isPageInsightsCapable(intentData) && isChromeHistorySyncEnabled(profile);
+        return isPageInsightsCapable(intentData)
+                && isChromeHistorySyncWithoutCustomPassphraseEnabled(profile);
     }
 
-    private static boolean isChromeHistorySyncEnabled(Supplier<Profile> profile) {
+    private static boolean isChromeHistorySyncWithoutCustomPassphraseEnabled(
+            Supplier<Profile> profile) {
         SyncService syncService = SyncServiceFactory.getForProfile(profile.get());
         return syncService != null && syncService.isSyncingUnencryptedUrls();
     }
@@ -335,9 +338,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
     boolean isPageInsightsHubEnabled() {
         // TODO(b/286327847): Add UMA logging for failure cases.
         return isPageInsightsHubEnabledSync(mIntentDataProvider.get(), mProfileSupplier)
-                && PageInsightsSwaaChecker.getForProfile(mProfileSupplier.get())
-                           .isSwaaEnabled()
-                           .orElse(false);
+                && PageInsightsActivator.isSwaaEnabled();
     }
 
     public @Nullable PageInsightsCoordinator getPageInsightsCoordinator() {
@@ -460,8 +461,8 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
         }
 
         if (isPageInsightsCapable(mIntentDataProvider.get())
-                && mSwaaToken != TokenHolder.INVALID_TOKEN) {
-            PageInsightsSwaaChecker.getForProfile(mProfileSupplier.get()).stop(mSwaaToken);
+                && mPageInsightsToken != TokenHolder.INVALID_TOKEN) {
+            PageInsightsActivator.getForProfile(mProfileSupplier.get()).stop(mPageInsightsToken);
         }
 
         if (mPageInsightsCoordinator != null) {
