@@ -222,15 +222,13 @@ found in the LICENSE file.
     </a>
   </p>
   <div slot="content" class="landscape-header-aligned">
-    <div class="oobe-form">
-      <cr-input id="assetId" type="text" value="{{assetId_}}"
-          class="focus-on-show"
-          label="[[i18nDynamic(locale, 'enrollmentAssetIdLabel')]]">
-      </cr-input>
-      <cr-input id="location" type="text" value="{{deviceLocation_}}"
-          label="[[i18nDynamic(locale, 'enrollmentLocationLabel')]]">
-      </cr-input>
-    </div>
+    <cr-input id="assetId" type="text" value="{{assetId_}}"
+        class="focus-on-show"
+        label="[[i18nDynamic(locale, 'enrollmentAssetIdLabel')]]">
+    </cr-input>
+    <cr-input id="location" type="text" value="{{deviceLocation_}}"
+        label="[[i18nDynamic(locale, 'enrollmentLocationLabel')]]">
+    </cr-input>
   </div>
   <div slot="bottom-buttons">
     <oobe-text-button id="attributesSkip"

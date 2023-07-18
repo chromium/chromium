@@ -45,11 +45,6 @@
           padding: 13px 0;
         }
 
-        .oobe-form {
-          /* 40px distance from subtitle (oobe forms spec) - 20px of footer-container */
-          padding-top: 20px;
-        }
-
         /* Center-align both vertically and horizontally */
         .content-centered {
           margin: auto;
