@@ -235,11 +235,6 @@ UIView* CreateIconView(UIImage* icon) {
   line.tag = index;
   line.accessibilityIdentifier =
       InstructionViewRowAccessibilityIdentifier(index);
-  [line
-      addGestureRecognizer:[[UITapGestureRecognizer alloc]
-                               initWithTarget:self
-                                       action:@selector
-                                       (tappedOnALineWithGestureRecognizer:)]];
   // Don't set the accessibility traits indicating that it is tappable as we do
   // not actually expect any action, instead, we just want to measure how many
   // people believe it’s tappable.
@@ -303,11 +298,6 @@ UIView* CreateIconView(UIImage* icon) {
           [UIColor colorNamed:kPrimaryBackgroundColor].CGColor;
       break;
   }
-}
-
-- (void)tappedOnALineWithGestureRecognizer:
-    (UITapGestureRecognizer*)gestureRecognizer {
-  [self.tapListener tappedOnLineNumber:gestureRecognizer.view.tag];
 }
 
 @end

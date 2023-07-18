@@ -98503,12 +98503,6 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="1" label="Sync account switcher"/>
 </enum>
 
-<enum name="SigninSyncConsentDataRow">
-  <int value="0" label="BookmarksRowClicked"/>
-  <int value="1" label="AutofillRowClicked"/>
-  <int value="2" label="HistoryRowClicked"/>
-</enum>
-
 <enum name="SigninTokenStateTransition">
   <obsolete>
     Deprecated as of 09/2019.

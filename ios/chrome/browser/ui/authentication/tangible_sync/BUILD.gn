@@ -47,7 +47,6 @@ source_set("signin_ui") {
   ]
   deps = [
     "//components/password_manager/core/common:features",
-    "//components/signin/public/base",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/ui/elements",
     "//ios/chrome/browser/shared/ui/symbols",
