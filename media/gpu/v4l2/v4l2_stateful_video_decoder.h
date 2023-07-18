@@ -9,15 +9,11 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
-#include "base/task/cancelable_task_tracker.h"
+#include "base/task/sequenced_task_runner.h"
 #include "media/base/supported_video_decoder_config.h"
 #include "media/base/video_types.h"
 #include "media/gpu/chromeos/video_decoder_pipeline.h"
 #include "media/gpu/media_gpu_export.h"
-
-namespace base {
-class SequencedTaskRunner;
-}  // namespace base
 
 namespace media {
 
@@ -95,30 +91,17 @@ class MEDIA_GPU_EXPORT V4L2StatefulVideoDecoder : public VideoDecoderMixin {
   // default, conservative value).
   size_t GetNumberOfReferenceFrames();
 
-  // Convenience method to PostTask a wait for a |CAPTURE_queue_| event with a
-  // callback pointing to TryAndDequeueCAPTUREQueueBuffers().
-  void RearmCAPTUREQueueMonitoring();
-  // Dequeues all the available |CAPTURE_queue_| buffers and sends their
-  // associated VideoFrames to |output_cb_|. If all goes well, it will
-  // RearmCAPTUREQueueMonitoring().
-  // TODO(mcasas): Currently we also TryAndEnqueueCAPTUREQueueBuffers(), is this
-  // a good spot for that?
-  void TryAndDequeueCAPTUREQueueBuffers();
-
   // Tries to "enqueue" all available |CAPTURE_queue_| buffers in the driver's
   // CAPTURE queue (V4L2Queues don't do that by default upon allocation).
-  void TryAndEnqueueCAPTUREQueueBuffers();
+  // Returns false if any enqueuing operation failed,  true otherwise.
+  bool TryAndEnqueueCAPTUREQueueBuffers();
 
   base::ScopedFD device_fd_ GUARDED_BY_CONTEXT(sequence_checker_);
-  // This |wake_event_| is used to interrupt a blocking poll() call, such as the
-  // one started by e.g. RearmCAPTUREQueueMonitoring().
-  base::ScopedFD wake_event_ GUARDED_BY_CONTEXT(sequence_checker_);
 
-  // Bitstream information and other stuff collected during Initialize().
+  // Bitstream information, written during Initialize().
   VideoCodecProfile profile_ GUARDED_BY_CONTEXT(sequence_checker_) =
       VIDEO_CODEC_PROFILE_UNKNOWN;
   VideoAspectRatio aspect_ratio_ GUARDED_BY_CONTEXT(sequence_checker_);
-  OutputCB output_cb_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // OUTPUT in V4L2 terminology is the queue holding encoded chunks of
   // bitstream. CAPTURE is the queue holding decoded pictures. See e.g. [1].
@@ -126,21 +109,9 @@ class MEDIA_GPU_EXPORT V4L2StatefulVideoDecoder : public VideoDecoderMixin {
   scoped_refptr<V4L2Queue> OUTPUT_queue_ GUARDED_BY_CONTEXT(sequence_checker_);
   scoped_refptr<V4L2Queue> CAPTURE_queue_ GUARDED_BY_CONTEXT(sequence_checker_);
 
-  // A sequenced TaskRunner to wait for events coming from |CAPTURE_queue_| or
-  // |wake_event_|.
-  scoped_refptr<base::SequencedTaskRunner> event_task_runner_;
-  // Used to (try to) cancel the Tasks sent by RearmCAPTUREQueueMonitoring(),
-  // and not serviced yet, when no longer needed.
-  base::CancelableTaskTracker cancelable_task_tracker_
-      GUARDED_BY_CONTEXT(sequence_checker_);
-
   // Pegged to the construction and main work thread. Notably, |task_runner| is
   // not used.
   SEQUENCE_CHECKER(sequence_checker_);
-
-  // Weak pointer/factory associated with the main thread (|sequence_checker|).
-  base::WeakPtr<V4L2StatefulVideoDecoder> weak_this_;
-  base::WeakPtrFactory<V4L2StatefulVideoDecoder> weak_this_factory_;
 };
 
 }  // namespace media

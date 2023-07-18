@@ -229,11 +229,7 @@ void DecoderWrapper::InitializeTask(const VideoBitstream* video,
 
 void DecoderWrapper::DestroyDecoderTask(base::WaitableEvent* done) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(worker_sequence_checker_);
-  LOG_IF(WARNING, 0u != num_outstanding_decode_requests_)
-      << "There is/are " << num_outstanding_decode_requests_
-      << " Decode() requests that have not been acknowledged by |decoder_|. "
-         "This might be fine or a problem depending on whether the calling "
-         "test needed to have processed the full input bitstream or not.";
+  DCHECK_EQ(0u, num_outstanding_decode_requests_);
   DVLOGF(4);
 
   // Invalidate all scheduled tasks.
