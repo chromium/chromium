@@ -924,6 +924,10 @@ const char kPrefExplicitLanguageAskShown[] =
 const char kUnifiedConsentMigrationState[] = "unified_consent.migration_state";
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
+// Deprecated 07/2023.
+const char kPasswordsGroupingInfoRequested[] =
+    "password_manager.passwords_grouping_info_requested";
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1332,6 +1336,9 @@ void RegisterProfilePrefsForMigration(
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   registry->RegisterIntegerPref(kUnifiedConsentMigrationState, 0);
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+
+  // Deprecated 07/2023
+  registry->RegisterBooleanPref(kPasswordsGroupingInfoRequested, false);
 }
 }  // namespace
 
@@ -2481,6 +2488,9 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   profile_prefs->ClearPref(kUnifiedConsentMigrationState);
 #endif
+
+  // Added 07/2023.
+  profile_prefs->ClearPref(kPasswordsGroupingInfoRequested);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

@@ -127,9 +127,6 @@ const char kHadBiometricsAvailable[] =
     "password_manager.had_biometrics_available";
 #endif
 
-const char kPasswordsGroupingInfoRequested[] =
-    "password_manager.passwords_grouping_info_requested";
-
 #if BUILDFLAG(IS_IOS)
 const char kAccountStorageNoticeShown[] =
     "password_manager.account_storage_notice_shown";

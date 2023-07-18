@@ -55,8 +55,7 @@ IOSChromeAffiliationServiceFactory::BuildServiceInstanceFor(
            base::TaskShutdownBehavior::BLOCK_SHUTDOWN});
   auto affiliation_service =
       std::make_unique<password_manager::AffiliationServiceImpl>(
-          context->GetSharedURLLoaderFactory(), backend_task_runner,
-          ChromeBrowserState::FromBrowserState(context)->GetPrefs());
+          context->GetSharedURLLoaderFactory(), backend_task_runner);
 
   base::FilePath database_path = context->GetStatePath().Append(
       password_manager::kAffiliationDatabaseFileName);

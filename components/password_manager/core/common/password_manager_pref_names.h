@@ -233,11 +233,6 @@ extern const char kBiometricAuthenticationBeforeFilling[];
 extern const char kHadBiometricsAvailable[];
 #endif
 
-// Boolean which indicates whether grouping info was requested from the
-// affiliation service.
-// TODO(crbug.com/1420597): Remove this after Passwords Grouping launch.
-extern const char kPasswordsGroupingInfoRequested[];
-
 #if BUILDFLAG(IS_IOS)
 // Boolean pref indicating if the one-time notice for account storage was shown.
 // The notice informs passwords will start being saved to the signed-in account.

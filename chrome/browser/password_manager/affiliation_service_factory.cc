@@ -43,7 +43,7 @@ KeyedService* AffiliationServiceFactory::BuildServiceInstanceFor(
   auto backend_task_runner = base::ThreadPool::CreateSequencedTaskRunner(
       {base::MayBlock(), base::TaskPriority::USER_VISIBLE});
   auto* affiliation_service = new password_manager::AffiliationServiceImpl(
-      url_loader_factory, backend_task_runner, profile->GetPrefs());
+      url_loader_factory, backend_task_runner);
 
   base::FilePath database_path =
       profile->GetPath().Append(password_manager::kAffiliationDatabaseFileName);

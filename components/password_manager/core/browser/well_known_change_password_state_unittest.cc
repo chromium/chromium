@@ -232,7 +232,7 @@ TEST_P(WellKnownChangePasswordStateTest,
   scoped_refptr<base::TestMockTimeTaskRunner> background_task_runner =
       base::MakeRefCounted<base::TestMockTimeTaskRunner>();
   auto affiliation_service = std::make_unique<AffiliationServiceImpl>(
-      test_shared_loader_factory(), background_task_runner, nullptr);
+      test_shared_loader_factory(), background_task_runner);
 
   network::TestNetworkConnectionTracker* network_connection_tracker =
       network::TestNetworkConnectionTracker::GetInstance();
