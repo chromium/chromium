@@ -23,11 +23,6 @@ export class BrailleBackground {
     /** @private {boolean} */
     this.frozen_ = false;
 
-    /** @private {NavBraille} */
-    this.lastContent_ = null;
-    /** @private {?string} */
-    this.lastContentId_ = null;
-
     BrailleDisplayManager.instance.setCommandListener(
         (evt, content) => this.routeBrailleKeyEvent_(evt, content));
   }
@@ -106,12 +101,8 @@ export class BrailleBackground {
    * @private
    */
   setContent_(newContent, newContentId) {
-    const updateContent = () => {
-      this.lastContent_ = newContentId ? newContent : null;
-      this.lastContentId_ = newContentId;
-      BrailleDisplayManager.instance.setContent(
-          newContent, BrailleInputHandler.instance.getExpansionType());
-    };
+    const updateContent = () => BrailleDisplayManager.instance.setContent(
+        newContent, BrailleInputHandler.instance.getExpansionType());
     BrailleInputHandler.instance.onDisplayContentChanged(
         newContent.text, updateContent);
     updateContent();
