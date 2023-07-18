@@ -91,6 +91,38 @@ bool MaybeHandleWrongVerticalGesture(float offset_y, bool in_overview) {
   return false;
 }
 
+// For the continuous scroll animation, calculate what `OverviewEnterExitType`
+// to use based on the scroll event and current overview state. Returns null if
+// we should exit overview.
+absl::optional<OverviewEnterExitType> HandleContinuousScrollIntoOverview(
+    float scroll_y,
+    bool in_overview,
+    bool scroll_in_progress) {
+  // Note that when we call this function, we have already clamped the offset
+  // so that `0` <= scroll_y <= `kVerticalThresholdDp`.
+  if (!in_overview) {
+    // Start the continuous scroll. Otherwise, we should enter normally with
+    // type `kNormal`.
+    return scroll_y < WmGestureHandler::kEnterOverviewModeThresholdDp
+               ? OverviewEnterExitType::kContinuousAnimationEnterOnScrollUpdate
+               : OverviewEnterExitType::kNormal;
+  }
+
+  // If `scroll_in_progress`, the last gesture event was a `ET_SCROLL`, and we
+  // need to update the continuous animation.
+  if (scroll_in_progress) {
+    return OverviewEnterExitType::kContinuousAnimationEnterOnScrollUpdate;
+  }
+
+  // A continuous gesture has ended and we should animate into overview mode.
+  if (scroll_y >= WmGestureHandler::kEnterOverviewModeThresholdDp) {
+    return OverviewEnterExitType::kContinuousAnimationEnterOnScrollEnd;
+  }
+
+  // A continuous gesture has ended and we should animate out of overview mode.
+  return absl::nullopt;
+}
+
 // Handles vertical 3-finger scroll gesture by entering overview on scrolling
 // up, and exiting it on scrolling down. If entering overview and window cycle
 // list is open, close the window cycle list.
@@ -118,6 +150,55 @@ bool Handle3FingerVerticalScroll(float scroll_y) {
     base::RecordAction(base::UserMetricsAction("Touchpad_Gesture_Overview"));
     overview_controller->StartOverview(
         OverviewStartAction::k3FingerVerticalScroll);
+  }
+
+  return true;
+}
+
+// Similar behavior to `Handle3FingerVerticalScroll` but for continuous
+// gestures.
+bool Handle3FingerContinuousVerticalScroll(float scroll_y,
+                                           bool scroll_in_progress) {
+  auto* overview_controller = Shell::Get()->overview_controller();
+  const bool in_overview = overview_controller->InOverviewSession();
+
+  // Ignore downward scrolls when not in overview mode.
+  // TODO(b/291778355): Add logic to ignore upward scrolls when already in
+  // overview mode.
+  if (scroll_y < 0.f && !in_overview) {
+    return false;
+  }
+
+  // Prevent accidental swipes from triggering the continuous animation.
+  if (std::fabs(scroll_y) <
+          WmGestureHandler::kContinuousGestureMoveThresholdDp &&
+      !in_overview) {
+    return false;
+  }
+
+  // Handle the different scroll scenarios.
+  absl::optional<OverviewEnterExitType> entry_type =
+      HandleContinuousScrollIntoOverview(scroll_y, in_overview,
+                                         scroll_in_progress);
+
+  if (entry_type.has_value()) {
+    auto* window_cycle_controller = Shell::Get()->window_cycle_controller();
+    if (window_cycle_controller->IsCycling()) {
+      window_cycle_controller->CancelCycling();
+    }
+
+    base::RecordAction(base::UserMetricsAction("Touchpad_Gesture_Overview"));
+    overview_controller->StartOverview(
+        OverviewStartAction::k3FingerVerticalScroll, entry_type.value());
+  } else {
+    base::RecordAction(base::UserMetricsAction("Touchpad_Gesture_Overview"));
+
+    // TODO(b/291796028): Animation should change if a new selection has been a
+    // made.
+    if (overview_controller->AcceptSelection()) {
+      return true;
+    }
+    overview_controller->EndOverview(OverviewEndAction::k3FingerVerticalScroll);
   }
 
   return true;
@@ -201,8 +282,9 @@ bool WmGestureHandler::ProcessScrollEvent(const ui::ScrollEvent& event) {
 bool WmGestureHandler::ProcessEventImpl(int finger_count,
                                         float delta_x,
                                         float delta_y) {
-  if (!scroll_data_)
+  if (!scroll_data_) {
     return false;
+  }
 
   // Only three or four finger scrolls are supported.
   if (finger_count != 3 && finger_count != 4) {
@@ -219,6 +301,11 @@ bool WmGestureHandler::ProcessEventImpl(int finger_count,
 
   scroll_data_->scroll_x += delta_x;
   scroll_data_->scroll_y += delta_y;
+
+  if (features::IsContinuousOverviewScrollAnimationEnabled() &&
+      UpdateScrollForContinuousOverviewAnimation()) {
+    return true;
+  }
 
   // If the requirements to move the overview selector are met, reset
   // |scroll_data_|.
@@ -267,6 +354,8 @@ bool WmGestureHandler::EndScroll() {
   const int finger_count = scroll_data_->finger_count;
   const float scroll_x = scroll_data_->scroll_x;
   const float scroll_y = scroll_data_->scroll_y;
+  const bool vertical_continuous_gesture_started =
+      scroll_data_->vertical_continuous_gesture_started;
   const bool horizontal_continuous_gesture_started =
       scroll_data_->horizontal_continuous_gesture_started;
   scroll_data_.reset();
@@ -275,8 +364,19 @@ bool WmGestureHandler::EndScroll() {
     return false;
 
   if (finger_count == 3) {
-    if (std::fabs(scroll_x) < std::fabs(scroll_y))
+    // The end goal of `kContinuousOverviewScrollAnimation`, b/252521532, is to
+    // completely remove the current `Handle3FingerVerticalScroll()`. So, if the
+    // feature is enabled, skip this older function and no-op if
+    // `vertical_continuous_gesture_started` is false.
+    if (features::IsContinuousOverviewScrollAnimationEnabled()) {
+      return vertical_continuous_gesture_started
+                 ? Handle3FingerContinuousVerticalScroll(scroll_y, false)
+                 : false;
+    }
+
+    if (std::fabs(scroll_x) < std::fabs(scroll_y)) {
       return Handle3FingerVerticalScroll(scroll_y);
+    }
 
     return MoveOverviewSelection(finger_count, scroll_x, scroll_y);
   }
@@ -289,6 +389,36 @@ bool WmGestureHandler::EndScroll() {
   }
 
   return horizontal_continuous_gesture_started;
+}
+
+bool WmGestureHandler::UpdateScrollForContinuousOverviewAnimation() {
+  if (!scroll_data_) {
+    return false;
+  }
+  // Ignore horizontally dominant swipes if a continuous swipe has not started
+  // yet.
+  if (!scroll_data_->vertical_continuous_gesture_started &&
+      std::fabs(scroll_data_->scroll_x) > std::fabs(scroll_data_->scroll_y)) {
+    return false;
+  }
+  const int finger_count = scroll_data_->finger_count;
+
+  if (finger_count != 3) {
+    return false;
+  }
+
+  bool in_overview = Shell::Get()->overview_controller()->InOverviewSession();
+
+  // If this is the first scroll update and we are already in overview mode,
+  // reset the offset.
+  if (in_overview && !scroll_data_->vertical_continuous_gesture_started) {
+    scroll_data_->scroll_y = kVerticalThresholdDp + scroll_data_->scroll_y;
+  }
+  bool scroll_started = Handle3FingerContinuousVerticalScroll(
+      std::clamp(scroll_data_->scroll_y, 0.f, kVerticalThresholdDp),
+      /*scroll_in_progress=*/scroll_data_->vertical_continuous_gesture_started);
+  scroll_data_->vertical_continuous_gesture_started = true;
+  return scroll_started;
 }
 
 bool WmGestureHandler::MoveOverviewSelection(int finger_count,
