@@ -57,4 +57,12 @@ inline constexpr media::CdmType kMediaFoundationWidevineCdmType{
     0x8e73dec793bf5adcull, 0x27e572c9a1fd930eull};
 #endif  // BUILDFLAG(IS_WIN)
 
+// UUID from http://dashif.org/identifiers/content_protection/. UUIDs are used
+// in Android for creating MediaDRM objects that support the DRM scheme required
+// by content.
+#if BUILDFLAG(IS_ANDROID)
+inline constexpr uint8_t kWidevineUuid[16] = {
+    0xED, 0xEF, 0x8B, 0xA9, 0x79, 0xD6, 0x4A, 0xCE,  //
+    0xA3, 0xC8, 0x27, 0xDC, 0xD5, 0x1D, 0x21, 0xED};
+#endif  // BUILDFLAG(IS_ANDROID)
 #endif  // WIDEVINE_CDM_WIDEVINE_CDM_COMMON_H_
