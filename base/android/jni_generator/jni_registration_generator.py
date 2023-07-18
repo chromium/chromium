@@ -1,13 +1,9 @@
-#!/usr/bin/env python3
 # Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-"""Generates GEN_JNI.java (or N.java) and optional header for manual JNI
-registration.
-"""
+"""Entry point for "link" command."""
 
-import argparse
 import collections
 import functools
 import hashlib
@@ -115,7 +111,7 @@ def _Generate(options, native_sources, java_sources):
     header_guard = os.path.splitext(options.header_path)[0].upper() + '_'
     header_guard = re.sub(r'[/.-]', '_', header_guard)
     combined_dict['HEADER_GUARD'] = header_guard
-    combined_dict['NAMESPACE'] = options.namespace
+    combined_dict['NAMESPACE'] = options.namespace or ''
     header_content = CreateFromDict(options, combined_dict)
     with action_helpers.atomic_output(options.header_path, mode='w') as f:
       f.write(header_content)
@@ -889,93 +885,18 @@ def _ParseSourceList(path):
     return sorted(set(f.read().splitlines()))
 
 
-def main(argv):
-  arg_parser = argparse.ArgumentParser()
-  action_helpers.add_depfile_arg(arg_parser)
-
-  arg_parser.add_argument('--native-sources-file',
-                          help='A file which contains Java file paths, derived '
-                          'from native deps onto generate_jni.')
-  arg_parser.add_argument('--java-sources-file',
-                          required=True,
-                          help='A file which contains Java file paths, derived '
-                          'from java deps metadata.')
-  arg_parser.add_argument(
-      '--add-stubs-for-missing-native',
-      action='store_true',
-      help='Adds stub methods for any --java-sources-file which are missing '
-      'from --native-sources-files. If not passed, we will assert that none of '
-      'these exist.')
-  arg_parser.add_argument(
-      '--remove-uncalled-methods',
-      action='store_true',
-      help='Removes --native-sources-files which are not in '
-      '--java-sources-file. If not passed, we will assert that none of these '
-      'exist.')
-  arg_parser.add_argument(
-      '--header-path', help='Path to output header file (optional).')
-  arg_parser.add_argument(
-      '--srcjar-path',
-      required=True,
-      help='Path to output srcjar for GEN_JNI.java (and J/N.java if proxy'
-      ' hash is enabled).')
-  arg_parser.add_argument(
-      '--namespace',
-      default='',
-      help='Native namespace to wrap the registration functions '
-      'into.')
-  # TODO(crbug.com/898261) hook these flags up to the build config to enable
-  # mocking in instrumentation tests
-  arg_parser.add_argument(
-      '--enable-proxy-mocks',
-      default=False,
-      action='store_true',
-      help='Allows proxy native impls to be mocked through Java.')
-  arg_parser.add_argument(
-      '--require-mocks',
-      default=False,
-      action='store_true',
-      help='Requires all used native implementations to have a mock set when '
-      'called. Otherwise an exception will be thrown.')
-  arg_parser.add_argument(
-      '--use-proxy-hash',
-      action='store_true',
-      help='Enables hashing of the native declaration for methods in '
-      'an @JniNatives interface')
-  arg_parser.add_argument(
-      '--module-name',
-      help='Only look at natives annotated with a specific module name.')
-  arg_parser.add_argument(
-      '--enable-jni-multiplexing',
-      action='store_true',
-      help='Enables JNI multiplexing for Java native methods')
-  arg_parser.add_argument(
-      '--manual-jni-registration',
-      action='store_true',
-      help='Manually do JNI registration - required for crazy linker')
-  arg_parser.add_argument('--include-test-only',
-                          action='store_true',
-                          help='Whether to maintain ForTesting JNI methods.')
-  arg_parser.add_argument(
-      '--package_prefix',
-      help='Adds a prefix to the classes fully qualified-name. Effectively '
-      'changing a class name from foo.bar -> prefix.foo.bar')
-  args = arg_parser.parse_args(build_utils.ExpandFileArgs(argv[1:]))
-
+def main(parser, args):
   if not args.enable_proxy_mocks and args.require_mocks:
-    arg_parser.error(
-        'Invalid arguments: --require-mocks without --enable-proxy-mocks. '
-        'Cannot require mocks if they are not enabled.')
+    parser.error('--require-mocks requires --enable-proxy-mocks.')
   if not args.header_path and args.manual_jni_registration:
-    arg_parser.error(
-        'Invalid arguments: --manual-jni-registration without --header-path. '
-        'Cannot manually register JNI if there is no output header file.')
+    parser.error('--manual-jni-registration requires --header-path.')
+  if args.remove_uncalled_methods and not args.native_sources_file:
+    parser.error('--remove-uncalled-methods requires --native-sources-file.')
 
   java_sources = _ParseSourceList(args.java_sources_file)
   if args.native_sources_file:
     native_sources = _ParseSourceList(args.native_sources_file)
   else:
-    assert not args.remove_uncalled_methods
     if args.add_stubs_for_missing_native:
       # This will create a fully stubbed out GEN_JNI.
       native_sources = []
@@ -987,11 +908,5 @@ def main(argv):
   _Generate(args, native_sources, java_sources=java_sources)
 
   if args.depfile:
-    all_inputs = [args.java_sources_file] + native_sources + java_sources
-    if args.native_sources_file:
-      all_inputs.append(args.native_sources_file)
+    all_inputs = native_sources + java_sources
     action_helpers.write_depfile(args.depfile, args.srcjar_path, all_inputs)
-
-
-if __name__ == '__main__':
-  sys.exit(main(sys.argv))

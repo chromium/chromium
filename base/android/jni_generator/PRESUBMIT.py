@@ -23,7 +23,7 @@ def CommonChecks(input_api, output_api):
           output_api,
           unit_tests=[
               input_api.os_path.join(base_android_jni_generator_dir,
-                                     'jni_generator_tests.py')
+                                     'integration_tests.py')
           ],
           env=env,
       ))
