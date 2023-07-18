@@ -158,6 +158,7 @@ class ServiceProxyImplTest : public testing::Test,
 
   std::unique_ptr<test::TestSegmentInfoDatabase> segment_db_;
   TestModelProviderFactory::Data data_;
+  ExecutionService execution_;
   std::unique_ptr<TestModelProviderFactory> test_model_factory_;
   std::unique_ptr<DefaultModelManager> default_manager_;
   std::unique_ptr<ServiceProxyImpl> service_proxy_impl_;
@@ -259,16 +260,15 @@ TEST_F(ServiceProxyImplTest, ExecuteModel) {
   auto scheduler_moved = std::make_unique<MockModelExecutionScheduler>();
   MockModelExecutionScheduler* scheduler = scheduler_moved.get();
   auto model_manager = std::make_unique<MockModelManager>();
-  ExecutionService execution;
-  execution.InitForTesting(nullptr, nullptr, std::move(scheduler_moved),
-                           std::move(model_manager));
+  execution_.InitForTesting(nullptr, nullptr, std::move(scheduler_moved),
+                            std::move(model_manager));
 
   // Scheduler is not set, ExecuteModel() will do nothing.
   EXPECT_CALL(*scheduler, RequestModelExecution(_)).Times(0);
   service_proxy_impl_->ExecuteModel(
       SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB);
 
-  service_proxy_impl_->SetExecutionService(&execution);
+  service_proxy_impl_->SetExecutionService(&execution_);
   EXPECT_CALL(*scheduler, RequestModelExecution(_)).Times(0);
   service_proxy_impl_->ExecuteModel(
       SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB);
@@ -286,16 +286,15 @@ TEST_F(ServiceProxyImplTest, OverwriteResult) {
 
   auto scheduler_moved = std::make_unique<MockModelExecutionScheduler>();
   MockModelExecutionScheduler* scheduler = scheduler_moved.get();
-  ExecutionService execution;
-  execution.InitForTesting(nullptr, nullptr, std::move(scheduler_moved),
-                           nullptr);
+  execution_.InitForTesting(nullptr, nullptr, std::move(scheduler_moved),
+                            nullptr);
 
   // Scheduler is not set, OverwriteValue() will do nothing.
   EXPECT_CALL(*scheduler, OnModelExecutionCompleted(_, _)).Times(0);
   service_proxy_impl_->OverwriteResult(
       SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB, 0.7);
 
-  service_proxy_impl_->SetExecutionService(&execution);
+  service_proxy_impl_->SetExecutionService(&execution_);
 
   EXPECT_CALL(*scheduler, OnModelExecutionCompleted(_, _)).Times(1);
   service_proxy_impl_->OverwriteResult(
