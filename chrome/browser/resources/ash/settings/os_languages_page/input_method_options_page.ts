@@ -508,6 +508,8 @@ export class SettingsInputMethodOptionsPageElement extends
       // Japanese section
       case SettingsHeaders.PRIVACY:
         return this.i18n('inputMethodOptionsPrivacySectionTitle');
+      case SettingsHeaders.VIETNAMESE_SHORTHAND:
+        return this.i18n('inputMethodOptionsVietnameseShorthandTypingTitle');
 
       default:
         assertExhaustive(section);

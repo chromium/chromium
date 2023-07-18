@@ -258,6 +258,7 @@ export enum SettingsHeaders {
   SUGGESTIONS = 'suggestions',
   USER_DICTIONARIES = 'userDictionaries',
   VIRTUAL_KEYBOARD = 'virtualKeyboard',
+  VIETNAMESE_SHORTHAND = 'vietnameseShorthand',
 }
 
 /**
@@ -401,27 +402,59 @@ const Settings = {
       name: OptionType.PHYSICAL_KEYBOARD_AUTO_CORRECTION_LEVEL,
     }],
   }],
-  [SettingsType.VIETNAMESE_TELEX_SETTINGS]: [{
-    // TODO(b/288763256): Remove this placeholder and add correct title.
-    title: SettingsHeaders.PHYSICAL_KEYBOARD,
-    optionNames: [
-      {name: OptionType.VIETNAMESE_TELEX_ALLOW_FLEXIBLE_DIACRITICS},
-      {name: OptionType.VIETNAMESE_TELEX_NEW_STYLE_TONE_MARK_PLACEMENT},
-      {name: OptionType.VIETNAMESE_TELEX_INSERT_DOUBLE_HORN_ON_UO},
-      {name: OptionType.VIETNAMESE_TELEX_INSERT_U_HORN_ON_W},
-      {name: OptionType.VIETNAMESE_TELEX_SHOW_UNDERLINE},
-    ],
-  }],
-  [SettingsType.VIETNAMESE_VNI_SETTINGS]: [{
-    // TODO(b/288763256): Remove this placeholder and add correct title.
-    title: SettingsHeaders.PHYSICAL_KEYBOARD,
-    optionNames: [
-      {name: OptionType.VIETNAMESE_VNI_ALLOW_FLEXIBLE_DIACRITICS},
-      {name: OptionType.VIETNAMESE_VNI_NEW_STYLE_TONE_MARK_PLACEMENT},
-      {name: OptionType.VIETNAMESE_VNI_INSERT_DOUBLE_HORN_ON_UO},
-      {name: OptionType.VIETNAMESE_VNI_SHOW_UNDERLINE},
-    ],
-  }],
+  [SettingsType.VIETNAMESE_TELEX_SETTINGS]: [
+    {
+      // TODO(b/288763256): This "header" should actually include the
+      // option for flexible typing. However this feature needs to be
+      // supported in the options page logic.
+      title: SettingsHeaders.PHYSICAL_KEYBOARD,
+      optionNames: [
+        {
+          name: OptionType.VIETNAMESE_TELEX_ALLOW_FLEXIBLE_DIACRITICS,
+          dependentOptions: [
+            OptionType.VIETNAMESE_TELEX_NEW_STYLE_TONE_MARK_PLACEMENT,
+          ],
+        },
+      ],
+    },
+    {
+      title: SettingsHeaders.VIETNAMESE_SHORTHAND,
+      optionNames: [
+        {name: OptionType.VIETNAMESE_TELEX_INSERT_DOUBLE_HORN_ON_UO},
+        {name: OptionType.VIETNAMESE_TELEX_INSERT_U_HORN_ON_W},
+        // TODO(b/288763256): Show underline should not be under any header.
+        // Currently the options page doesn't allow an option to exist outside
+        // of a section under a header.
+        {name: OptionType.VIETNAMESE_TELEX_SHOW_UNDERLINE},
+      ],
+    },
+  ],
+  [SettingsType.VIETNAMESE_VNI_SETTINGS]: [
+    {
+      // TODO(b/288763256): This "header" should actually include the
+      // option for flexible typing. However this feature needs to be
+      // supported in the options page logic.
+      title: SettingsHeaders.PHYSICAL_KEYBOARD,
+      optionNames: [
+        {
+          name: OptionType.VIETNAMESE_VNI_ALLOW_FLEXIBLE_DIACRITICS,
+          dependentOptions: [
+            OptionType.VIETNAMESE_VNI_NEW_STYLE_TONE_MARK_PLACEMENT,
+          ],
+        },
+      ],
+    },
+    {
+      title: SettingsHeaders.VIETNAMESE_SHORTHAND,
+      optionNames: [
+        {name: OptionType.VIETNAMESE_VNI_INSERT_DOUBLE_HORN_ON_UO},
+        // TODO(b/288763256): Show underline should not be under any header.
+        // Currently the options page doesn't allow an option to exist outside
+        // of a section under a header.
+        {name: OptionType.VIETNAMESE_VNI_SHOW_UNDERLINE},
+      ],
+    },
+  ],
 } satisfies Record<SettingsType, Array<{
                      title: SettingsHeaders,
                      optionNames: Array<{
@@ -729,6 +762,16 @@ export function getOptionSubtitleName(option: OptionType): string {
     // an issue in other languages or with future strings which may be shorter.
     case OptionType.JAPANESE_MANAGE_USER_DICTIONARY:
       return 'inputMethodOptionsJapaneseManageUserDictionarySubtitle';
+    case OptionType.VIETNAMESE_TELEX_NEW_STYLE_TONE_MARK_PLACEMENT:
+    case OptionType.VIETNAMESE_VNI_NEW_STYLE_TONE_MARK_PLACEMENT:
+      return 'inputMethodOptionsVietnameseModernToneMarkPlacementDescription';
+    case OptionType.VIETNAMESE_TELEX_SHOW_UNDERLINE:
+    case OptionType.VIETNAMESE_VNI_SHOW_UNDERLINE:
+      return 'inputMethodOptionsVietnameseShowUnderlineDescription';
+    case OptionType.VIETNAMESE_TELEX_ALLOW_FLEXIBLE_DIACRITICS:
+      return 'inputMethodOptionsVietnameseTelexFlexibleTypingDescription';
+    case OptionType.VIETNAMESE_VNI_ALLOW_FLEXIBLE_DIACRITICS:
+      return 'inputMethodOptionsVietnameseVniFlexibleTypingDescription';
     default:
       return '';
   }
