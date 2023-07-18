@@ -109686,7 +109686,7 @@ Full version information for the fingerprint enum values:
   <int value="3" label="Internal, owned memory"/>
   <int value="4" label="Read-only shared memory region"/>
   <int value="5" label="Dmabuf file descriptor"/>
-  <int value="7" label="GpuMemoryBuffer"/>
+  <int value="6" label="GpuMemoryBuffer"/>
 </enum>
 
 <enum name="VideoFullscreenOrientationLockMetadataAvailability">
