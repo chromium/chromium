@@ -36,7 +36,7 @@ GL_EXPORT IDCompositionDevice3* GetDirectCompositionDevice();
 GL_EXPORT bool DirectCompositionSupported();
 
 // Returns true if video overlays are supported and should be used. Overridden
-// with --enable_direct_composition_video_overlays=1 and
+// with --enable-direct-composition-video-overlays and
 // --disable_direct_composition_video_overlays=1. This function is thread safe.
 GL_EXPORT bool DirectCompositionOverlaysSupported();
 
