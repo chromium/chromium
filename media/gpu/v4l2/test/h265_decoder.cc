@@ -47,8 +47,8 @@ std::unique_ptr<H265Decoder> H265Decoder::Create(
   }
 
   int sps_id;
-  H265Parser::Result res = parser->ParseSPS(&sps_id);
-  CHECK(res == H265Parser::kOk);
+  const H265Parser::Result parse_result = parser->ParseSPS(&sps_id);
+  CHECK_EQ(parse_result, H265Parser::kOk);
 
   const H265SPS* sps = parser->GetSPS(sps_id);
   CHECK(sps);
@@ -98,19 +98,22 @@ H265Decoder::DecodeResult H265Decoder::Decode() {
   DCHECK(state_ != kError) << "Decoder in error state";
 
   while (true) {
-    H265Parser::Result par_res;
-
     if (!curr_nalu_) {
       curr_nalu_ = std::make_unique<H265NALU>();
-      par_res = parser_->AdvanceToNextNALU(curr_nalu_.get());
-      if (par_res == H265Parser::kEOStream) {
+
+      const H265Parser::Result parse_result =
+          parser_->AdvanceToNextNALU(curr_nalu_.get());
+      if (parse_result == H265Parser::kEOStream) {
         curr_nalu_.reset();
-        CHECK(FinishPrevFrameIfPresent());
+
+        const bool success = FinishPrevFrameIfPresent();
+        CHECK(success) << "Failed to finish processing the previous frame.";
+
         is_stream_over_ = true;
         return kRanOutOfStreamData;
       }
 
-      CHECK(par_res == H265Parser::kOk);
+      CHECK_EQ(parse_result, H265Parser::kOk);
       VLOGF(4) << "New NALU: " << static_cast<int>(curr_nalu_->nal_unit_type);
     }
 
@@ -138,12 +141,13 @@ H265Decoder::DecodeResult H265Decoder::Decode() {
       case H265NALU::RADL_R:
       case H265NALU::RASL_N:
       case H265NALU::RASL_R:
-      case H265NALU::CRA_NUT:
+      case H265NALU::CRA_NUT: {
         if (!curr_slice_hdr_) {
           curr_slice_hdr_ = std::make_unique<H265SliceHeader>();
-          par_res = parser_->ParseSliceHeader(
+
+          const H265Parser::Result parse_result = parser_->ParseSliceHeader(
               *curr_nalu_, curr_slice_hdr_.get(), last_slice_hdr_.get());
-          if (par_res == H265Parser::kMissingParameterSet) {
+          if (parse_result == H265Parser::kMissingParameterSet) {
             // We may still be able to recover if we skip until we find the
             // SPS/PPS.
             curr_slice_hdr_.reset();
@@ -151,7 +155,7 @@ H265Decoder::DecodeResult H265Decoder::Decode() {
             break;
           }
 
-          CHECK(par_res == H265Parser::kOk);
+          CHECK_EQ(parse_result, H265Parser::kOk);
           if (!curr_slice_hdr_->irap_pic && state_ == kAfterReset) {
             // We can't resume from a non-IRAP picture.
             curr_slice_hdr_.reset();
@@ -162,9 +166,11 @@ H265Decoder::DecodeResult H265Decoder::Decode() {
           state_ = kTryPreprocessCurrentSlice;
           if (curr_slice_hdr_->irap_pic) {
             bool need_new_buffers = false;
-            CHECK(ProcessPPS(curr_slice_hdr_->slice_pic_parameter_set_id,
-                             &need_new_buffers))
-                << "Processing PPS Unit Failed.";
+
+            const bool success = ProcessPPS(
+                curr_slice_hdr_->slice_pic_parameter_set_id, &need_new_buffers);
+            CHECK(success) << "Failed to process PPS.";
+
             if (need_new_buffers) {
               curr_pic_ = nullptr;
               return kConfigChange;
@@ -173,7 +179,9 @@ H265Decoder::DecodeResult H265Decoder::Decode() {
         }
 
         if (state_ == kTryPreprocessCurrentSlice) {
-          CHECK(PreprocessCurrentSlice());
+          const bool success = PreprocessCurrentSlice();
+          CHECK(success) << "Failed to pre-process current slice.";
+
           state_ = kEnsurePicture;
         }
 
@@ -192,32 +200,51 @@ H265Decoder::DecodeResult H265Decoder::Decode() {
         }
 
         if (state_ == kTryNewFrame) {
-          CHECK(StartNewFrame(curr_slice_hdr_.get()));
+          const bool success = StartNewFrame(curr_slice_hdr_.get());
+          CHECK(success) << "Failed to start processing a new frame.";
+
           state_ = kTryCurrentSlice;
         }
 
         DCHECK_EQ(state_, kTryCurrentSlice);
-        CHECK(ProcessCurrentSlice());
+        const bool success = ProcessCurrentSlice();
+        CHECK(success) << "Failed to process current slice.";
+
         state_ = kDecoding;
-        last_slice_hdr_.swap(curr_slice_hdr_);
+        last_slice_hdr_ = std::move(curr_slice_hdr_);
         curr_slice_hdr_.reset();
         break;
-      case H265NALU::SPS_NUT:
-        CHECK(FinishPrevFrameIfPresent());
+      }
+      case H265NALU::SPS_NUT: {
+        const bool success = FinishPrevFrameIfPresent();
+        CHECK(success) << "Failed to finish processing the previous frame.";
+
         int sps_id;
-        par_res = parser_->ParseSPS(&sps_id);
-        CHECK(par_res == H265Parser::kOk) << "Parser Failed to parse SPS.";
+
+        const H265Parser::Result parse_result = parser_->ParseSPS(&sps_id);
+        CHECK_EQ(parse_result, H265Parser::kOk)
+            << "Parser Failed to parse SPS.";
 
         break;
-      case H265NALU::PPS_NUT:
-        CHECK(FinishPrevFrameIfPresent());
-        int pps_id;
-        par_res = parser_->ParsePPS(*curr_nalu_, &pps_id);
-        CHECK(par_res == H265Parser::kOk) << "Parser Failed to parse PPS.";
+      }
+      case H265NALU::PPS_NUT: {
+        const bool success = FinishPrevFrameIfPresent();
+        CHECK(success) << "Failed to finish processing the previous frame.";
 
+        int pps_id;
+
+        const H265Parser::Result parse_result =
+            parser_->ParsePPS(*curr_nalu_, &pps_id);
+        CHECK_EQ(parse_result, H265Parser::kOk)
+            << "Parser Failed to parse PPS.";
+
+        // TODO(b/261127809): add code to set |curr_pps_id_| in StartNewFrame()
         if (curr_pps_id_ == -1) {
           bool need_new_buffers = false;
-          CHECK(ProcessPPS(pps_id, &need_new_buffers));
+
+          const bool success_process_pps =
+              ProcessPPS(pps_id, &need_new_buffers);
+          CHECK(success_process_pps) << "Failed to process PPS.";
 
           if (need_new_buffers) {
             curr_nalu_.reset();
@@ -226,6 +253,7 @@ H265Decoder::DecodeResult H265Decoder::Decode() {
         }
 
         break;
+      }
       case H265NALU::EOS_NUT:
         first_picture_ = true;
         [[fallthrough]];
@@ -242,9 +270,11 @@ H265Decoder::DecodeResult H265Decoder::Decode() {
       case H265NALU::UNSPEC52:
       case H265NALU::UNSPEC53:
       case H265NALU::UNSPEC54:
-      case H265NALU::UNSPEC55:
-        CHECK(FinishPrevFrameIfPresent());
+      case H265NALU::UNSPEC55: {
+        const bool success = FinishPrevFrameIfPresent();
+        CHECK(success) << "Failed to finish processing the previous frame.";
         break;
+      }
       default:
         VLOGF(4) << "Skipping NALU type: " << curr_nalu_->nal_unit_type;
         break;
