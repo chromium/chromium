@@ -900,8 +900,8 @@
     },
     {
       "id": 122,
-      "description": "GPU rasterization should only be enabled on NVIDIA, Intel, and AMD RX-R2 GPUs with DX11+ or any GPU using ANGLE's GL backend.",
-      "cr_bugs": [1047002],
+      "description": "GPU rasterization should only be enabled on NVIDIA, Intel, AMD RX-R2 GPUs with DX11+, certain QC devices+drivers or any GPU using ANGLE's GL backend.",
+      "cr_bugs": [1047002, 1462800],
       "os": {
         "type": "win"
       },
@@ -942,6 +942,22 @@
           "comment": "XBox (0xd000) handles GPU rasterization",
           "vendor_id": "0x1414",
           "device_id": [ "0xd000" ]
+        },
+        {
+          "comment": "8280 QC chipset",
+          "vendor_id": "0x5143",
+          "device_id": [ "0x36333630" ],
+          "driver_version": {
+            "op": ">=",
+            "value": "30.0.3741.8500"
+          }
+        },
+        {
+          "vendor_id": "0x5143",
+          "driver_version": {
+            "op": ">=",
+            "value": "31.0.2.0"
+          }
         },
         {
           "gl_renderer": ".*OpenGL.*"
