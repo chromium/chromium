@@ -19,8 +19,8 @@ constexpr char kVersionCodePref[] = "android_system_info.last_version_code";
 // Whether 64-bit and/or 32-bit apps can be installed on this device/OS.
 //
 // These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused. See AbiBitnessSupport in enums.xml.
-enum class AbiBitnessSupport {
+// numeric values should never be reused. See CpuAbiBitnessSupport in enums.xml.
+enum class CpuAbiBitnessSupport {
   kNeither = 0,
   k32bitOnly = 1,
   k64bitOnly = 2,
@@ -45,7 +45,9 @@ class AndroidMetricsHelper {
   }
 
   int version_code_int() const { return version_code_int_; }
-  AbiBitnessSupport abi_bitness_support() const { return abi_bitness_support_; }
+  CpuAbiBitnessSupport cpu_abi_bitness_support() const {
+    return cpu_abi_bitness_support_;
+  }
 
   // |current_session| denotes whether data is emitted for the current session,
   // as opposed to the previous session.
@@ -66,7 +68,8 @@ class AndroidMetricsHelper {
                        bool has_abilist64);
 
   int version_code_int_ = 0;
-  AbiBitnessSupport abi_bitness_support_ = AbiBitnessSupport::kNeither;
+  CpuAbiBitnessSupport cpu_abi_bitness_support_ =
+      CpuAbiBitnessSupport::kNeither;
 
   bool local_state_saved_ = false;
 };

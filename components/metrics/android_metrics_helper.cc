@@ -37,11 +37,11 @@ AndroidMetricsHelper* AndroidMetricsHelper::GetInstance() {
 AndroidMetricsHelper::AndroidMetricsHelper(const std::string& version_code,
                                            bool has_abilist32,
                                            bool has_abilist64) {
-  abi_bitness_support_ = has_abilist32
-                             ? (has_abilist64 ? AbiBitnessSupport::k32And64bit
-                                              : AbiBitnessSupport::k32bitOnly)
-                             : (has_abilist64 ? AbiBitnessSupport::k64bitOnly
-                                              : AbiBitnessSupport::kNeither);
+  cpu_abi_bitness_support_ =
+      has_abilist32 ? (has_abilist64 ? CpuAbiBitnessSupport::k32And64bit
+                                     : CpuAbiBitnessSupport::k32bitOnly)
+                    : (has_abilist64 ? CpuAbiBitnessSupport::k64bitOnly
+                                     : CpuAbiBitnessSupport::kNeither);
   int output;
   if (base::StringToInt(version_code, &output)) {
     version_code_int_ = output;
@@ -56,8 +56,8 @@ void AndroidMetricsHelper::EmitHistograms(PrefService* local_state,
       if (!local_state_saved_) {
         // version_code_int_ can change across session. Save it so that it can
         // be restored in case the session dies before logs are flushed.
-        // abi_bitness_support_ doesn't change across sessions (that'd require
-        // OS reinstall), so no need to save it. It can be reliably
+        // cpu_abi_bitness_support_ doesn't change across sessions (that'd
+        // require OS reinstall), so no need to save it. It can be reliably
         // reconstructed in the next session.
         SaveLocalState(local_state, version_code_int_);
         local_state_saved_ = true;
@@ -81,10 +81,10 @@ void AndroidMetricsHelper::EmitHistograms(PrefService* local_state,
     }
   }
 
-  // abi_bitness_support_ doesn't change across sessions (that'd require OS
+  // cpu_abi_bitness_support_ doesn't change across sessions (that'd require OS
   // reinstall), so no need to load it, just use the current value.
-  base::UmaHistogramEnumeration("Android.AbiBitnessSupport",
-                                abi_bitness_support_);
+  base::UmaHistogramEnumeration("Android.CpuAbiBitnessSupport",
+                                cpu_abi_bitness_support_);
 }
 
 // static

@@ -654,13 +654,13 @@ void ChromeBrowserMainExtraPartsMetrics::PreBrowserStart() {
   // 3) Mixed 32-/64-bit devices, as non-mixed devices are forced to use
   //    a particular bitness, thus don't participate in the experiment.
   size_t ram_mb = base::SysInfo::AmountOfPhysicalMemoryMB();
-  auto abi_bitness_support =
-      metrics::AndroidMetricsHelper::GetInstance()->abi_bitness_support();
+  auto cpu_abi_bitness_support =
+      metrics::AndroidMetricsHelper::GetInstance()->cpu_abi_bitness_support();
   bool is_device_of_interest =
       (3.2 * 1024 < ram_mb && ram_mb < 6.5 * 1024) &&
       (chrome::android::GetMultipleUserProfilesState() ==
        chrome::android::MultipleUserProfilesState::kSingleProfile) &&
-      (abi_bitness_support == metrics::AbiBitnessSupport::k32And64bit);
+      (cpu_abi_bitness_support == metrics::CpuAbiBitnessSupport::k32And64bit);
   if (is_device_of_interest) {
     uint32_t gws_experiment_id = 0;
     std::string trial_group;

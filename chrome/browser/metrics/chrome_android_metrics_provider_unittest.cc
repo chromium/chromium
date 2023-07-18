@@ -83,14 +83,14 @@ TEST_F(ChromeAndroidMetricsProviderTest,
        ProvideCurrentSessionData_AndroidMetricsHelper) {
   metrics_provider_.ProvideCurrentSessionData(&uma_proto_);
   histogram_tester_.ExpectTotalCount("Android.VersionCode", 1);
-  histogram_tester_.ExpectTotalCount("Android.AbiBitnessSupport", 1);
+  histogram_tester_.ExpectTotalCount("Android.CpuAbiBitnessSupport", 1);
 }
 
 TEST_F(ChromeAndroidMetricsProviderTest,
        ProvidePreviousSessionData_AndroidMetricsHelper) {
   metrics_provider_.ProvidePreviousSessionData(&uma_proto_);
   histogram_tester_.ExpectTotalCount("Android.VersionCode", 0);
-  histogram_tester_.ExpectTotalCount("Android.AbiBitnessSupport", 1);
+  histogram_tester_.ExpectTotalCount("Android.CpuAbiBitnessSupport", 1);
 }
 
 TEST_F(ChromeAndroidMetricsProviderTest,
@@ -98,7 +98,7 @@ TEST_F(ChromeAndroidMetricsProviderTest,
   metrics::AndroidMetricsHelper::SaveLocalState(&pref_service_, 588700002);
   metrics_provider_.ProvidePreviousSessionData(&uma_proto_);
   histogram_tester_.ExpectTotalCount("Android.VersionCode", 1);
-  histogram_tester_.ExpectTotalCount("Android.AbiBitnessSupport", 1);
+  histogram_tester_.ExpectTotalCount("Android.CpuAbiBitnessSupport", 1);
 }
 
 TEST_F(ChromeAndroidMetricsProviderTest,
