@@ -503,10 +503,10 @@ void CloudOpenTask::OpenOrMoveFiles() {
     OpenAndroidOneDriveUrlsIfAccountMatchedODFS();
   } else {
     // The files need to be moved.
-    auto operation = GetOperationTypeForUpload(profile_, file_urls_.front()) ==
-                             file_manager::io_task::OperationType::kCopy
-                         ? OfficeFilesTransferRequired::kCopy
-                         : OfficeFilesTransferRequired::kMove;
+    auto operation =
+        GetUploadType(profile_, file_urls_.front()) == UploadType::kCopy
+            ? OfficeFilesTransferRequired::kCopy
+            : OfficeFilesTransferRequired::kMove;
     transfer_required_ = operation;
     switch (cloud_provider_) {
       case CloudProvider::kGoogleDrive:
@@ -883,23 +883,13 @@ mojom::DialogArgsPtr CloudOpenTask::CreateDialogArgs(
   args->dialog_page = dialog_page;
   args->set_office_as_default_handler =
       !HaveExplicitFileHandlers(profile_, file_urls_);
-  const file_manager::io_task::OperationType operation_type =
-      GetOperationTypeForUpload(profile_, file_urls_[0]);
-  switch (operation_type) {
-    case file_manager::io_task::OperationType::kMove:
+  const UploadType upload_type = GetUploadType(profile_, file_urls_[0]);
+  switch (upload_type) {
+    case UploadType::kMove:
       args->operation_type = mojom::OperationType::kMove;
       break;
-    case file_manager::io_task::OperationType::kCopy:
+    case UploadType::kCopy:
       args->operation_type = mojom::OperationType::kCopy;
-      break;
-    case file_manager::io_task::OperationType::kDelete:
-    case file_manager::io_task::OperationType::kEmptyTrash:
-    case file_manager::io_task::OperationType::kExtract:
-    case file_manager::io_task::OperationType::kRestore:
-    case file_manager::io_task::OperationType::kRestoreToDestination:
-    case file_manager::io_task::OperationType::kTrash:
-    case file_manager::io_task::OperationType::kZip:
-      NOTREACHED() << "Unexpected upload operation type";
       break;
   }
   return args;

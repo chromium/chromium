@@ -46,13 +46,13 @@ CloudUploadNotificationManager::CloudUploadNotificationManager(
     const std::string& cloud_provider_name,
     const std::string& target_app_name,
     int num_files,
-    file_manager::io_task::OperationType operation_type)
+    UploadType upload_type)
     : profile_(profile),
       file_name_(file_name),
       cloud_provider_name_(cloud_provider_name),
       target_app_name_(target_app_name),
       num_files_(num_files),
-      operation_type_(operation_type) {
+      upload_type_(upload_type) {
   // Generate a unique ID for the cloud upload notifications.
   notification_id_ =
       "cloud-upload-" +
@@ -82,8 +82,7 @@ CloudUploadNotificationManager::GetNotificationDisplayService() {
 
 std::unique_ptr<message_center::Notification>
 CloudUploadNotificationManager::CreateUploadProgressNotification() {
-  bool is_copy_operation =
-      operation_type_ == file_manager::io_task::OperationType::kCopy;
+  bool is_copy_operation = upload_type_ == UploadType::kCopy;
   // TODO(b/242685536) Use "files" for multi-files when support for
   // multi-files is added.
   std::u16string title = base::i18n::MessageFormatter::FormatWithNumberedArgs(
@@ -113,8 +112,7 @@ CloudUploadNotificationManager::CreateUploadProgressNotification() {
 
 std::unique_ptr<message_center::Notification>
 CloudUploadNotificationManager::CreateUploadCompleteNotification() {
-  bool is_copy_operation =
-      operation_type_ == file_manager::io_task::OperationType::kCopy;
+  bool is_copy_operation = upload_type_ == UploadType::kCopy;
   // TODO(b/242685536) Use "files" for multi-files when support for multi-files
   // is added.
   std::u16string title = base::i18n::MessageFormatter::FormatWithNumberedArgs(
@@ -155,8 +153,7 @@ CloudUploadNotificationManager::CreateUploadCompleteNotification() {
 std::unique_ptr<message_center::Notification>
 CloudUploadNotificationManager::CreateUploadErrorNotification(
     std::string message) {
-  bool is_copy_operation =
-      operation_type_ == file_manager::io_task::OperationType::kCopy;
+  bool is_copy_operation = upload_type_ == UploadType::kCopy;
   std::u16string title = base::i18n::MessageFormatter::FormatWithNumberedArgs(
       l10n_util::GetStringUTF16(is_copy_operation
                                     ? IDS_OFFICE_UPLOAD_ERROR_CANT_COPY_FILES

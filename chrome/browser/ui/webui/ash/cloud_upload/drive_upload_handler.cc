@@ -86,6 +86,7 @@ DriveUploadHandler::DriveUploadHandler(Profile* profile,
           file_manager::util::GetFileManagerFileSystemContext(profile)),
       drive_integration_service_(
           drive::DriveIntegrationServiceFactory::FindForProfile(profile)),
+      upload_type_(GetUploadType(profile, source_url)),
       notification_manager_(
           base::MakeRefCounted<CloudUploadNotificationManager>(
               profile,
@@ -94,7 +95,7 @@ DriveUploadHandler::DriveUploadHandler(Profile* profile,
               GetTargetAppName(source_url.path()),
               // TODO(b/242685536) Update when support for multi-files is added.
               /*num_files=*/1,
-              GetOperationTypeForUpload(profile, source_url))),
+              upload_type_)),
       source_url_(source_url) {
   observed_task_id_ = -1;
 }
@@ -173,7 +174,9 @@ void DriveUploadHandler::Run(UploadCallback callback) {
   }
 
   const file_manager::io_task::OperationType operation_type =
-      GetOperationTypeForUpload(profile_, source_url_);
+      GetUploadType(profile_, source_url_) == UploadType::kCopy
+          ? file_manager::io_task::OperationType::kCopy
+          : file_manager::io_task::OperationType::kMove;
   std::vector<FileSystemURL> source_urls{source_url_};
   std::unique_ptr<file_manager::io_task::IOTask> task =
       std::make_unique<file_manager::io_task::CopyOrMoveIOTask>(
@@ -261,7 +264,7 @@ void DriveUploadHandler::OnIOTaskStatus(
       DCHECK_EQ(status.outputs.size(), 1u);
       return;
     case file_manager::io_task::State::kCancelled:
-      if (status.type == file_manager::io_task::OperationType::kCopy) {
+      if (upload_type_ == UploadType::kCopy) {
         OnEndUpload(GURL(), OfficeFilesUploadResult::kCopyOperationCancelled,
                     GetGenericErrorMessage());
       } else {
@@ -283,7 +286,7 @@ void DriveUploadHandler::ShowIOTaskError(
     const file_manager::io_task::ProgressStatus& status) {
   OfficeFilesUploadResult upload_result;
   std::string error_message;
-  bool copy = status.type == file_manager::io_task::OperationType::kCopy;
+  bool copy = upload_type_ == UploadType::kCopy;
 
   base::File::Error file_error = base::File::FILE_ERROR_FAILED;
   // TODO(b/242685536) Find most relevant error in a multi-file upload when
@@ -393,8 +396,7 @@ void DriveUploadHandler::OnError(const drivefs::mojom::DriveError& error) {
   if (base::FilePath(error.path) != observed_relative_drive_path_) {
     return;
   }
-  bool copy = GetOperationTypeForUpload(profile_, source_url_) ==
-              file_manager::io_task::OperationType::kCopy;
+  bool copy = upload_type_ == UploadType::kCopy;
   switch (error.type) {
     case drivefs::mojom::DriveError::Type::kCantUploadStorageFull:
     case drivefs::mojom::DriveError::Type::kCantUploadStorageFullOrganization:

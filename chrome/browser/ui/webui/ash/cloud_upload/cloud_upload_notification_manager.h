@@ -15,6 +15,7 @@
 #include "chrome/browser/ash/file_manager/io_task.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_dialog.h"
+#include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
 #include "ui/message_center/public/cpp/notification.h"
 
 class Profile;
@@ -32,13 +33,12 @@ class CloudUploadNotificationManager
   using HandleCompleteNotificationClickCallback =
       base::OnceCallback<void(base::FilePath)>;
 
-  CloudUploadNotificationManager(
-      Profile* profile,
-      const std::string& file_name,
-      const std::string& cloud_provider_name,
-      const std::string& target_app_name,
-      int num_files,
-      file_manager::io_task::OperationType operation_type);
+  CloudUploadNotificationManager(Profile* profile,
+                                 const std::string& file_name,
+                                 const std::string& cloud_provider_name,
+                                 const std::string& target_app_name,
+                                 int num_files,
+                                 UploadType upload_type);
 
   // Creates the notification with "in progress" state if it doesn't exist, or
   // updates the progress bar if it does. |progress| is within the 0-100 range.
@@ -132,7 +132,7 @@ class CloudUploadNotificationManager
   std::string target_app_name_;
   std::u16string display_source_;
   int num_files_;
-  file_manager::io_task::OperationType operation_type_;
+  UploadType upload_type_;
   base::FilePath destination_path_;
   base::OnceClosure callback_;
   HandleCompleteNotificationClickCallback callback_for_testing_;

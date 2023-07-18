@@ -95,6 +95,7 @@ class DriveUploadHandler
       io_task_controller_;
   const raw_ptr<drive::DriveIntegrationService, ExperimentalAsh>
       drive_integration_service_;
+  const UploadType upload_type_;
   scoped_refptr<CloudUploadNotificationManager> notification_manager_;
   const storage::FileSystemURL source_url_;
   ::file_manager::io_task::IOTaskId observed_task_id_;

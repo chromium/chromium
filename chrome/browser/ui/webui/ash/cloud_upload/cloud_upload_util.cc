@@ -99,13 +99,11 @@ SourceType GetSourceType(Profile* profile,
   return SourceType::LOCAL;
 }
 
-file_manager::io_task::OperationType GetOperationTypeForUpload(
-    Profile* profile,
-    const storage::FileSystemURL& source_url) {
+UploadType GetUploadType(Profile* profile,
+                         const storage::FileSystemURL& source_url) {
   SourceType source_type = GetSourceType(profile, source_url);
-  return source_type == SourceType::LOCAL
-             ? file_manager::io_task::OperationType::kMove
-             : file_manager::io_task::OperationType::kCopy;
+  return source_type == SourceType::LOCAL ? UploadType::kMove
+                                          : UploadType::kCopy;
 }
 
 absl::optional<ProvidedFileSystemInfo> GetODFSInfo(Profile* profile) {
