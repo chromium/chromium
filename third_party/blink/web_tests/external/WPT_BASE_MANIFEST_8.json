@@ -28,6 +28,13 @@
        {}
       ]
      ],
+     "add-detached-node.html": [
+      "91aaa9c50004e0bb4c855791cf84aad542b9ef31",
+      [
+       null,
+       {}
+      ]
+     ],
      "aom-in-destroyed-iframe.html": [
       "d412892983a48aca624fcffa4100eb94b8109919",
       [
@@ -5788,6 +5795,13 @@
       ],
       "popover-manual-crash.html": [
        "535eb4c7d120186f620c376a149158900721fe12",
+       [
+        null,
+        {}
+       ]
+      ],
+      "popover-undefined-remove-crash.html": [
+       "3c273ea6f344d179a3d010d20f0779b3721abb40",
        [
         null,
         {}
@@ -275862,16 +275876,6 @@
    }
   },
   "support": {
-   ".cache": {
-    "gitignore2.json": [
-     "39ccd63d9cd605df966cbbf8eeadd623dc954919",
-     []
-    ],
-    "mtime.json": [
-     "41eb5f62f0f905db5dcd9e179ebbf59cd6f97fdc",
-     []
-    ]
-   },
    ".gitignore": [
     "d93e645d547894b50149d3726de2654957b6e06f",
     []
@@ -353327,7 +353331,7 @@
    "fledge": {
     "tentative": {
      "TODO": [
-      "d50e49261164795e9f49e50100de04178bc5ff7f",
+      "96654d2c592e9c570073afc5da1620020040d24c",
       []
      ],
      "auction-config.https.sub.window-expected.txt": [
@@ -353347,7 +353351,7 @@
       []
      ],
      "join-leave-ad-interest-group.https.sub.window-expected.txt": [
-      "64032ff143d233cc678ea0bbe8d5900807dfc71c",
+      "b84e598d3d731762bb51f19b6d75916dfcba794d",
       []
      ],
      "join-leave-ad-interest-group.https.sub.window.js.ini": [
@@ -353396,7 +353400,7 @@
        []
       ],
       "fledge-util.js": [
-       "5a05764e74e971b0a9bb3f37e7320a388dbac414",
+       "36fb05615a770cad0ed777ccc718390613140e2d",
        []
       ],
       "request-tracker.py": [
@@ -463337,7 +463341,7 @@
       ]
      ],
      "scroll-target-margin-005.html": [
-      "d3b60270e602b07a1c2b9e14f48e840fe92b7c3b",
+      "9296202354fe9e1465657d500049c5647575935a",
       [
        null,
        {}
@@ -485169,7 +485173,7 @@
     },
     "parts": {
      "basic-dom-part-objects.tentative.html": [
-      "a60ec8b0a161cdef0e449dcad696e6527befbc65",
+      "ee35298e5dabbbd09b45842c1f4d7f38642e2e74",
       [
        null,
        {}
@@ -517776,7 +517780,7 @@
       ]
      ],
      "join-leave-ad-interest-group.https.sub.window.js": [
-      "973c586ca4f1b3d35bd6c0814dc5fe3a012bbdda",
+      "d1d6d50e4b0bb0c42c5bdd1fc9ea2a46251f3db8",
       [
        "fledge/tentative/join-leave-ad-interest-group.https.sub.window.html",
        {
@@ -517792,8 +517796,13 @@
          [
           "script",
           "resources/fledge-util.js"
+         ],
+         [
+          "timeout",
+          "long"
          ]
-        ]
+        ],
+        "timeout": "long"
        }
       ]
      ],
