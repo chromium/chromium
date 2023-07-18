@@ -159,7 +159,8 @@ class WelcomeScreenBrowserTest : public OobeBaseTest {
         data_dir_.GetPath().AppendASCII("startup_manifest.json");
     EXPECT_TRUE(base::WriteFile(startup_manifest, kStartupManifestEnglish));
     path_override_ = std::make_unique<base::ScopedPathOverride>(
-        FILE_STARTUP_CUSTOMIZATION_MANIFEST, startup_manifest);
+        FILE_STARTUP_CUSTOMIZATION_MANIFEST, startup_manifest,
+        /*is_absolute=*/false, /*create=*/false);
 
     // Make sure chrome paths are overridden before proceeding - this is usually
     // done in chrome main, which has not happened yet.
@@ -1034,7 +1035,8 @@ class WelcomeScreenInternationalChromeVoxHintTest
         data_dir_.GetPath().AppendASCII("startup_manifest.json");
     EXPECT_TRUE(base::WriteFile(startup_manifest, kStartupManifestFrench));
     path_override_ = std::make_unique<base::ScopedPathOverride>(
-        FILE_STARTUP_CUSTOMIZATION_MANIFEST, startup_manifest);
+        FILE_STARTUP_CUSTOMIZATION_MANIFEST, startup_manifest,
+        /*is_absolute=*/false, /*create=*/false);
     return true;
   }
 

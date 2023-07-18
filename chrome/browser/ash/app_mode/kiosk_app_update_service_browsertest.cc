@@ -90,8 +90,8 @@ class KioskAppUpdateServiceTest
         base::NumberToString(uptime.InSecondsF());
     const base::FilePath uptime_file = temp_dir.Append("uptime");
     ASSERT_TRUE(base::WriteFile(uptime_file, uptime_seconds));
-    uptime_file_override_ =
-        std::make_unique<base::ScopedPathOverride>(FILE_UPTIME, uptime_file);
+    uptime_file_override_ = std::make_unique<base::ScopedPathOverride>(
+        FILE_UPTIME, uptime_file, /*is_absolute=*/false, /*create=*/false);
   }
 
   void SetUpOnMainThread() override {
