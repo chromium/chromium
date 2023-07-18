@@ -2657,6 +2657,11 @@
       base_feature: "none",
     },
     {
+      name: "PaymentRequestAllowOneActivationlessShow",
+      public: true,
+      status: "test",
+    },
+    {
       name: "PaymentRequestMerchantValidationEvent",
       status: "experimental",
       base_feature: "none",

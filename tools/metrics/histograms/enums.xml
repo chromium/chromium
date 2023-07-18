@@ -43508,6 +43508,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4604" label="SharedDictionaryUsedForSubFrameNavigation"/>
   <int value="4605" label="SharedDictionaryUsedForSubresource"/>
   <int value="4606" label="PriceChangeConfirmation"/>
+  <int value="4607" label="PaymentRequestActivationlessShow"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

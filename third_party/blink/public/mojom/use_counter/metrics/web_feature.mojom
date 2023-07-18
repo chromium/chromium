@@ -3944,6 +3944,7 @@ enum WebFeature {
   kSharedDictionaryUsedForSubFrameNavigation = 4604,
   kSharedDictionaryUsedForSubresource = 4605,
   kPriceChangeConfirmation = 4606,
+  kPaymentRequestActivationlessShow = 4607,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

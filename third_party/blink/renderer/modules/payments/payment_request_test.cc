@@ -322,6 +322,8 @@ TEST(PaymentRequestTest, CannotShowAfterAborted) {
 }
 
 TEST(PaymentRequestTest, CannotShowWithoutUserActivation) {
+  ScopedPaymentRequestAllowOneActivationlessShowForTest
+      scoped_activationless_show_enabled(false);
   PaymentRequestV8TestingScope scope;
   MockFunctionScope funcs(scope.GetScriptState());
   PaymentRequest* request = PaymentRequest::Create(
@@ -335,9 +337,13 @@ TEST(PaymentRequestTest, CannotShowWithoutUserActivation) {
             ToExceptionCode(DOMExceptionCode::kSecurityError));
   EXPECT_TRUE(scope.GetDocument().IsUseCounted(
       WebFeature::kPaymentRequestShowWithoutGestureOrToken));
+  EXPECT_FALSE(scope.GetDocument().IsUseCounted(
+      WebFeature::kPaymentRequestActivationlessShow));
 }
 
 TEST(PaymentRequestTest, ShowConsumesUserActivation) {
+  ScopedPaymentRequestAllowOneActivationlessShowForTest
+      scoped_activationless_show_enabled(false);
   PaymentRequestV8TestingScope scope;
   MockFunctionScope funcs(scope.GetScriptState());
   PaymentRequest* request = PaymentRequest::Create(
@@ -350,6 +356,29 @@ TEST(PaymentRequestTest, ShowConsumesUserActivation) {
       .Then(funcs.ExpectNoCall(), funcs.ExpectNoCall());
   EXPECT_FALSE(LocalFrame::HasTransientUserActivation(&(scope.GetFrame())));
   EXPECT_FALSE(scope.GetDocument().IsUseCounted(
+      WebFeature::kPaymentRequestShowWithoutGestureOrToken));
+}
+
+TEST(PaymentRequestTest, PaymentRequestActivationlessShowEnabled) {
+  ScopedPaymentRequestAllowOneActivationlessShowForTest
+      scoped_activationless_show_enabled(true);
+  PaymentRequestV8TestingScope scope;
+  MockFunctionScope funcs(scope.GetScriptState());
+  PaymentRequest* request = PaymentRequest::Create(
+      scope.GetExecutionContext(), BuildPaymentMethodDataForTest(),
+      BuildPaymentDetailsInitForTest(), ASSERT_NO_EXCEPTION);
+
+  EXPECT_FALSE(LocalFrame::HasTransientUserActivation(&(scope.GetFrame())));
+  EXPECT_FALSE(scope.GetDocument().IsUseCounted(
+      WebFeature::kPaymentRequestActivationlessShow));
+  EXPECT_FALSE(scope.GetDocument().IsUseCounted(
+      WebFeature::kPaymentRequestShowWithoutGestureOrToken));
+
+  request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION)
+      .Then(funcs.ExpectNoCall(), funcs.ExpectNoCall());
+  EXPECT_TRUE(scope.GetDocument().IsUseCounted(
+      WebFeature::kPaymentRequestActivationlessShow));
+  EXPECT_TRUE(scope.GetDocument().IsUseCounted(
       WebFeature::kPaymentRequestShowWithoutGestureOrToken));
 }
 

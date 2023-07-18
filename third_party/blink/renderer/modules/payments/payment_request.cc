@@ -841,21 +841,24 @@ bool ActivationlessShowEnabled(ExecutionContext* execution_context,
     return RuntimeEnabledFeatures::
         SecurePaymentConfirmationAllowOneActivationlessShowEnabled(
             execution_context);
+  } else {
+    return RuntimeEnabledFeatures::
+        PaymentRequestAllowOneActivationlessShowEnabled(execution_context);
   }
-
-  // Activationless show is currently only possible for the Secure Payment
-  // Confirmation method.
-  return false;
 }
 
 // Records metrics for an activationless Show() call based on the request
 // method.
 void RecordActivationlessShow(ExecutionContext* execution_context,
                               const HashSet<String>& method_names) {
-  DCHECK((method_names.size() == 1 &&
-          method_names.Contains(kSecurePaymentConfirmationMethod)));
-  UseCounter::Count(execution_context,
-                    WebFeature::kSecurePaymentConfirmationActivationlessShow);
+  if (method_names.size() == 1 &&
+      method_names.Contains(kSecurePaymentConfirmationMethod)) {
+    UseCounter::Count(execution_context,
+                      WebFeature::kSecurePaymentConfirmationActivationlessShow);
+  } else {
+    UseCounter::Count(execution_context,
+                      WebFeature::kPaymentRequestActivationlessShow);
+  }
 }
 
 }  // namespace
