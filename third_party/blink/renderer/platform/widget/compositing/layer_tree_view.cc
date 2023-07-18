@@ -317,6 +317,11 @@ void LayerTreeView::DidCompletePageScaleAnimation() {
 void LayerTreeView::DidPresentCompositorFrame(
     uint32_t frame_token,
     const gfx::PresentationFeedback& feedback) {
+
+  recordreplay::Assert(
+      "[RUN-2317-2366] LayerTreeView::DidPresentCompositorFrame A %u %d %d",
+      frame_token, !!delegate_, feedback.failed());
+
   if (!delegate_)
     return;
   DCHECK(layer_tree_host_->GetTaskRunnerProvider()
@@ -327,6 +332,11 @@ void LayerTreeView::DidPresentCompositorFrame(
     return;
   while (!presentation_callbacks_.empty()) {
     const auto& front = presentation_callbacks_.begin();
+
+    recordreplay::Assert(
+        "[RUN-2317-2366] LayerTreeView::DidPresentCompositorFrame B %u %zu",
+        front->first, front->second.size());
+
     if (viz::FrameTokenGT(front->first, frame_token))
       break;
     for (auto& callback : front->second)

@@ -3045,6 +3045,10 @@ class ReportTimeSwapPromise : public cc::SwapPromise {
       base::TimeTicks swap_time,
       WebFrameWidgetImpl::PromiseCallbacks callbacks,
       int frame_token) {
+    recordreplay::Assert(
+        "[RUN-2317-2366] ReportTimeSwapPromise::RunCallbackAfterSwap %u %d %d",
+        frame_token, !!widget, widget && widget->widget_base_);
+
     // If the widget was collected or the widget wasn't collected yet, but
     // it was closed don't schedule a presentation callback.
     if (widget && widget->widget_base_) {
