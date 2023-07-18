@@ -345,6 +345,10 @@ class PageInfo : private content_settings::CookieControlsObserver,
   FRIEND_TEST_ALL_PREFIXES(PageInfoTest, StorageAccessGrantsAreFiltered);
   FRIEND_TEST_ALL_PREFIXES(PageInfoTest, IncognitoPermissionsEmptyByDefault);
   FRIEND_TEST_ALL_PREFIXES(PageInfoTest, IncognitoPermissionsDontShowAsk);
+  FRIEND_TEST_ALL_PREFIXES(PageInfoTest,
+                           ShowInfoBarWhenAllowingThirdPartyCookies);
+  FRIEND_TEST_ALL_PREFIXES(PageInfoTest,
+                           ShowInfoBarWhenBlockingThirdPartyCookies);
 
   // OldCookieControlsObserver:
   void OnStatusChanged(CookieControlsStatus status,

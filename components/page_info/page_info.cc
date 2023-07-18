@@ -367,6 +367,7 @@ void PageInfo::OnThirdPartyToggleClicked(bool block_third_party_cookies) {
                            ? PAGE_INFO_COOKIES_BLOCKED_FOR_SITE
                            : PAGE_INFO_COOKIES_ALLOWED_FOR_SITE);
   controller_->OnCookieBlockingEnabledForSite(block_third_party_cookies);
+  show_info_bar_ = true;
 }
 
 // static
