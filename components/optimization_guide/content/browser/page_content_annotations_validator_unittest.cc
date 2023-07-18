@@ -48,6 +48,7 @@ TEST(PageContentAnnotationsValidatorTest, AllEnabledByExperiment) {
       {
           {"PageEntities", "true"},
           {"ContentVisibility", "true"},
+          {"TextEmbedding", "true"},
       });
 
   TestPageContentAnnotator annotator;
@@ -57,9 +58,10 @@ TEST(PageContentAnnotationsValidatorTest, AllEnabledByExperiment) {
   task_env.FastForwardBy(base::Seconds(30));
 
   const auto& annotation_requests = annotator.annotation_requests();
-  ASSERT_EQ(2U, annotation_requests.size());
+  ASSERT_EQ(3U, annotation_requests.size());
   EXPECT_EQ(annotation_requests[0].second, AnnotationType::kPageEntities);
   EXPECT_EQ(annotation_requests[1].second, AnnotationType::kContentVisibility);
+  EXPECT_EQ(annotation_requests[2].second, AnnotationType::kTextEmbedding);
 }
 
 TEST(PageContentAnnotationsValidatorTest, AllEnabledByCommandLine) {
@@ -73,6 +75,9 @@ TEST(PageContentAnnotationsValidatorTest, AllEnabledByCommandLine) {
   cmd->AppendSwitchASCII(
       switches::kPageContentAnnotationsValidationContentVisibility,
       "content viz,cv input2, cv keeps whitespace  ");
+  cmd->AppendSwitchASCII(
+      switches::kPageContentAnnotationsValidationTextEmbedding,
+      "text embedding,te input2, te keeps whitespace  ");
 
   TestPageContentAnnotator annotator;
   auto validator =
@@ -81,7 +86,7 @@ TEST(PageContentAnnotationsValidatorTest, AllEnabledByCommandLine) {
   task_env.FastForwardBy(base::Seconds(30));
 
   const auto& annotation_requests = annotator.annotation_requests();
-  ASSERT_EQ(2U, annotation_requests.size());
+  ASSERT_EQ(3U, annotation_requests.size());
 
   EXPECT_THAT(annotation_requests[0].first, testing::ElementsAreArray({
                                                 "page entities",
@@ -96,6 +101,13 @@ TEST(PageContentAnnotationsValidatorTest, AllEnabledByCommandLine) {
                                                 " cv keeps whitespace  ",
                                             }));
   EXPECT_EQ(annotation_requests[1].second, AnnotationType::kContentVisibility);
+
+  EXPECT_THAT(annotation_requests[2].first, testing::ElementsAreArray({
+                                                "text embedding",
+                                                "te input2",
+                                                " te keeps whitespace  ",
+                                            }));
+  EXPECT_EQ(annotation_requests[2].second, AnnotationType::kTextEmbedding);
 }
 
 TEST(PageContentAnnotationsValidatorTest, OnlyOneEnabled_Cmd) {
@@ -105,6 +117,7 @@ TEST(PageContentAnnotationsValidatorTest, OnlyOneEnabled_Cmd) {
   for (AnnotationType type : {
            AnnotationType::kPageEntities,
            AnnotationType::kContentVisibility,
+           AnnotationType::kTextEmbedding,
        }) {
     SCOPED_TRACE(AnnotationTypeToString(type));
     base::test::ScopedCommandLine scoped_cmd;
@@ -118,6 +131,10 @@ TEST(PageContentAnnotationsValidatorTest, OnlyOneEnabled_Cmd) {
       case AnnotationType::kContentVisibility:
         cmd->AppendSwitch(
             switches::kPageContentAnnotationsValidationContentVisibility);
+        break;
+      case AnnotationType::kTextEmbedding:
+        cmd->AppendSwitch(
+            switches::kPageContentAnnotationsValidationTextEmbedding);
         break;
       default:
         break;
@@ -143,6 +160,7 @@ TEST(PageContentAnnotationsValidatorTest, OnlyOneEnabled_Feature) {
   for (AnnotationType type : {
            AnnotationType::kPageEntities,
            AnnotationType::kContentVisibility,
+           AnnotationType::kTextEmbedding,
        }) {
     SCOPED_TRACE(AnnotationTypeToString(type));
     base::test::ScopedFeatureList scoped_feature_list;
@@ -157,6 +175,11 @@ TEST(PageContentAnnotationsValidatorTest, OnlyOneEnabled_Feature) {
         scoped_feature_list.InitAndEnableFeatureWithParameters(
             features::kPageContentAnnotationsValidation,
             {{"ContentVisibility", "true"}});
+        break;
+      case AnnotationType::kTextEmbedding:
+        scoped_feature_list.InitAndEnableFeatureWithParameters(
+            features::kPageContentAnnotationsValidation,
+            {{"TextEmbedding", "true"}});
         break;
       default:
         break;
@@ -181,6 +204,7 @@ TEST(PageContentAnnotationsValidatorTest, TimerDelayByCmd) {
 
   cmd->AppendSwitch(
       switches::kPageContentAnnotationsValidationContentVisibility);
+  cmd->AppendSwitch(switches::kPageContentAnnotationsValidationTextEmbedding);
   cmd->AppendSwitchASCII(
       switches::kPageContentAnnotationsValidationStartupDelaySeconds, "5");
 
@@ -195,6 +219,11 @@ TEST(PageContentAnnotationsValidatorTest, TimerDelayByCmd) {
 
   task_env.FastForwardBy(base::Milliseconds(1));
   EXPECT_FALSE(annotator.annotation_requests().empty());
+
+  const auto& annotation_requests = annotator.annotation_requests();
+  ASSERT_EQ(2U, annotation_requests.size());
+  EXPECT_EQ(annotation_requests[0].second, AnnotationType::kContentVisibility);
+  EXPECT_EQ(annotation_requests[1].second, AnnotationType::kTextEmbedding);
 }
 
 TEST(PageContentAnnotationsValidatorTest, TimerDelayByFeature) {
@@ -205,6 +234,7 @@ TEST(PageContentAnnotationsValidatorTest, TimerDelayByFeature) {
       features::kPageContentAnnotationsValidation,
       {
           {"ContentVisibility", "true"},
+          {"TextEmbedding", "true"},
           {"startup_delay", "5"},
       });
 
@@ -219,6 +249,11 @@ TEST(PageContentAnnotationsValidatorTest, TimerDelayByFeature) {
 
   task_env.FastForwardBy(base::Milliseconds(1));
   EXPECT_FALSE(annotator.annotation_requests().empty());
+
+  const auto& annotation_requests = annotator.annotation_requests();
+  ASSERT_EQ(2U, annotation_requests.size());
+  EXPECT_EQ(annotation_requests[0].second, AnnotationType::kContentVisibility);
+  EXPECT_EQ(annotation_requests[1].second, AnnotationType::kTextEmbedding);
 }
 
 TEST(PageContentAnnotationsValidatorTest, BatchSizeByCmd) {
@@ -228,6 +263,7 @@ TEST(PageContentAnnotationsValidatorTest, BatchSizeByCmd) {
 
   cmd->AppendSwitch(
       switches::kPageContentAnnotationsValidationContentVisibility);
+  cmd->AppendSwitch(switches::kPageContentAnnotationsValidationTextEmbedding);
   cmd->AppendSwitchASCII(
       switches::kPageContentAnnotationsValidationBatchSizeOverride, "5");
 
@@ -238,8 +274,11 @@ TEST(PageContentAnnotationsValidatorTest, BatchSizeByCmd) {
   task_env.FastForwardBy(base::Seconds(30));
 
   const auto& annotation_requests = annotator.annotation_requests();
-  ASSERT_EQ(1U, annotation_requests.size());
+  ASSERT_EQ(2U, annotation_requests.size());
   EXPECT_EQ(annotation_requests[0].first.size(), 5U);
+  EXPECT_EQ(annotation_requests[0].second, AnnotationType::kContentVisibility);
+  EXPECT_EQ(annotation_requests[1].first.size(), 5U);
+  EXPECT_EQ(annotation_requests[1].second, AnnotationType::kTextEmbedding);
 }
 
 TEST(PageContentAnnotationsValidatorTest, BatchSizeByFeature) {
@@ -250,6 +289,7 @@ TEST(PageContentAnnotationsValidatorTest, BatchSizeByFeature) {
       features::kPageContentAnnotationsValidation,
       {
           {"ContentVisibility", "true"},
+          {"TextEmbedding", "true"},
           {"batch_size", "5"},
       });
 
@@ -260,8 +300,11 @@ TEST(PageContentAnnotationsValidatorTest, BatchSizeByFeature) {
   task_env.FastForwardBy(base::Seconds(30));
 
   const auto& annotation_requests = annotator.annotation_requests();
-  ASSERT_EQ(1U, annotation_requests.size());
+  ASSERT_EQ(2U, annotation_requests.size());
   EXPECT_EQ(annotation_requests[0].first.size(), 5U);
+  EXPECT_EQ(annotation_requests[0].second, AnnotationType::kContentVisibility);
+  EXPECT_EQ(annotation_requests[1].first.size(), 5U);
+  EXPECT_EQ(annotation_requests[1].second, AnnotationType::kTextEmbedding);
 }
 
 TEST(PageContentAnnotationsValidatorTest, CommandOverridesFeature) {
@@ -275,6 +318,7 @@ TEST(PageContentAnnotationsValidatorTest, CommandOverridesFeature) {
       {
           {"PageEntities", "true"},
           {"ContentVisibility", "true"},
+          {"TextEmbedding", "true"},
           {"batch_size", "3"},
       });
 
@@ -291,7 +335,7 @@ TEST(PageContentAnnotationsValidatorTest, CommandOverridesFeature) {
   task_env.FastForwardBy(base::Seconds(30));
 
   const auto& annotation_requests = annotator.annotation_requests();
-  ASSERT_EQ(2U, annotation_requests.size());
+  ASSERT_EQ(3U, annotation_requests.size());
 
   EXPECT_EQ(annotation_requests[0].first.size(), 5U);
   EXPECT_EQ(annotation_requests[0].second, AnnotationType::kPageEntities);
@@ -299,6 +343,9 @@ TEST(PageContentAnnotationsValidatorTest, CommandOverridesFeature) {
   EXPECT_THAT(annotation_requests[1].first,
               testing::ElementsAre("content visibility"));
   EXPECT_EQ(annotation_requests[1].second, AnnotationType::kContentVisibility);
+
+  EXPECT_EQ(annotation_requests[2].first.size(), 5U);
+  EXPECT_EQ(annotation_requests[2].second, AnnotationType::kTextEmbedding);
 }
 
 }  // namespace optimization_guide

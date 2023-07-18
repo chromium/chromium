@@ -616,6 +616,9 @@ bool PageContentAnnotationValidationEnabledForType(AnnotationType type) {
     case AnnotationType::kContentVisibility:
       return cmd->HasSwitch(
           switches::kPageContentAnnotationsValidationContentVisibility);
+    case AnnotationType::kTextEmbedding:
+      return cmd->HasSwitch(
+          switches::kPageContentAnnotationsValidationTextEmbedding);
     default:
       NOTREACHED();
       break;

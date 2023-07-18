@@ -81,6 +81,14 @@ base::Value BatchAnnotationResult::AsValue() const {
     result.Set("visibility_score", *visibility_score());
   }
 
+  if (embeddings()) {
+    base::Value::List list;
+    for (const auto& embedding : *embeddings_) {
+      list.Append(embedding);
+    }
+    result.Set("embeddings", std::move(list));
+  }
+
   return base::Value(std::move(result));
 }
 
@@ -102,6 +110,12 @@ std::string BatchAnnotationResult::ToString() const {
     output = "{" + base::JoinString(all_entities, ",") + "}";
   } else if (visibility_score_) {
     output = base::NumberToString(*visibility_score_);
+  } else if (embeddings_) {
+    std::vector<std::string> all_embeddings;
+    for (const float& embedding : *embeddings_) {
+      all_embeddings.push_back(base::NumberToString(embedding));
+    }
+    output = "[" + base::JoinString(all_embeddings, ",") + "]";
   }
   return base::StringPrintf(
       "BatchAnnotationResult{"
