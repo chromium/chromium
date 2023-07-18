@@ -25,6 +25,7 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "third_party/blink/public/mojom/service_worker/controller_service_worker.mojom-shared.h"
+#include "third_party/blink/public/mojom/service_worker/service_worker_fetch_handler_bypass_option.mojom-shared.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_object.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_worker_client.mojom.h"
@@ -333,6 +334,14 @@ ServiceWorkerProviderContext::GetFetchHandlerType() const {
   DCHECK_NE(controller_version_id_,
             blink::mojom::kInvalidServiceWorkerVersionId);
   return fetch_handler_type_;
+}
+
+blink::mojom::ServiceWorkerFetchHandlerBypassOption
+ServiceWorkerProviderContext::GetFetchHandlerBypassOption() const {
+  CHECK(main_thread_task_runner_->RunsTasksInCurrentSequence());
+  CHECK_NE(controller_version_id_,
+           blink::mojom::kInvalidServiceWorkerVersionId);
+  return fetch_handler_bypass_option_;
 }
 
 const blink::WebString ServiceWorkerProviderContext::client_id() const {

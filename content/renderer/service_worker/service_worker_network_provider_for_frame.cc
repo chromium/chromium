@@ -15,6 +15,7 @@
 #include "content/renderer/render_thread_impl.h"
 #include "content/renderer/service_worker/service_worker_provider_context.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "third_party/blink/public/mojom/service_worker/service_worker_fetch_handler_bypass_option.mojom-shared.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 
 namespace content {
@@ -153,6 +154,14 @@ ServiceWorkerNetworkProviderForFrame::GetFetchHandlerType() {
   if (!context())
     return blink::mojom::ServiceWorkerFetchHandlerType::kNotSkippable;
   return context()->GetFetchHandlerType();
+}
+
+blink::mojom::ServiceWorkerFetchHandlerBypassOption
+ServiceWorkerNetworkProviderForFrame::GetFetchHandlerBypassOption() {
+  if (!context()) {
+    return blink::mojom::ServiceWorkerFetchHandlerBypassOption::kDefault;
+  }
+  return context()->GetFetchHandlerBypassOption();
 }
 
 int64_t ServiceWorkerNetworkProviderForFrame::ControllerServiceWorkerID() {

@@ -65,6 +65,16 @@ const std::string ComposeNavigationTypeString(
              : "CrossOriginNavigation";
 }
 
+// Check the eligibility based on the allowlist. This doesn't mean the
+// experiment is actually enabled. The eligibility is checked and UMA is
+// reported for the analysis purpose.
+bool HasRaceNetworkRequestEligibleScript(
+    scoped_refptr<ServiceWorkerVersion> version) {
+  return content::service_worker_loader_helpers::
+      FetchHandlerBypassedHashStrings()
+          .contains(version->sha256_script_checksum());
+}
+
 bool IsEligibleForRaceNetworkRequestByOriginTrial(
     scoped_refptr<ServiceWorkerVersion> version) {
   return version->origin_trial_tokens() &&
@@ -93,9 +103,7 @@ bool IsEligibleForRaceNetworkRequest(
     // RaceNetworkRequest is allowed only when the sha256 checksum of the
     // script is in the allowlist.
     case features::ServiceWorkerBypassFetchHandlerStrategy::kAllowList:
-      return content::service_worker_loader_helpers::
-          FetchHandlerBypassedHashStrings()
-              .contains(version->sha256_script_checksum());
+      return HasRaceNetworkRequestEligibleScript(version);
   }
 }
 
@@ -333,6 +341,13 @@ bool ServiceWorkerMainResourceLoader::MaybeStartRaceNetworkRequest(
       IsEligibleForRaceNetworkRequestByOriginTrial(version);
 
   if (!(is_enabled_by_feature_flag || is_enabled_by_origin_trial)) {
+    // Even if the feature is not enabled, if the SW has an eligible script, set
+    // the option as |kRaceNetworkRequestHoldback| for the measuring purpose.
+    if (HasRaceNetworkRequestEligibleScript(version)) {
+      version->set_fetch_handler_bypass_option(
+          blink::mojom::ServiceWorkerFetchHandlerBypassOption::
+              kRaceNetworkRequestHoldback);
+    }
     return false;
   }
 

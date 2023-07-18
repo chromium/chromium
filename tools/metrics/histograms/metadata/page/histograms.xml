@@ -1121,6 +1121,19 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="PageLoad.Clients.ServiceWorker2.PaintTiming.NavigationToLargestContentfulPaint2.RaceNetworkRequestEligible"
+    units="ms" expires_after="2024-01-14">
+  <owner>sisidovski@chromium.org</owner>
+  <owner>chrome-worker@google.com</owner>
+  <summary>
+    The LargestContentfulPaint time of pages with the Service Worker fetch
+    handlers. Metrics won't be recorded if pages are not controlled by service
+    workers. This is recorded only when the ServiceWorker script is eligible for
+    the experiment.
+  </summary>
+</histogram>
+
+<histogram
     name="PageLoad.Clients.ServiceWorker2.PaintTiming.{Timing}.{HandlerType}"
     units="ms" expires_after="2023-10-01">
   <owner>yyanagisawa@chromium.org</owner>

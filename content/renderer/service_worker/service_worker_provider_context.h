@@ -192,6 +192,8 @@ class CONTENT_EXPORT ServiceWorkerProviderContext
       const override;
   blink::mojom::ServiceWorkerFetchHandlerType GetFetchHandlerType()
       const override;
+  blink::mojom::ServiceWorkerFetchHandlerBypassOption
+  GetFetchHandlerBypassOption() const override;
   const blink::WebString client_id() const override;
 
  private:
