@@ -519,7 +519,6 @@ crbug.com/483282 [ mojave nvidia-0xfe9 ] deqp/functional/gles3/fbocolorbuffer/bl
 crbug.com/654187 [ mojave nvidia-0xfe9 ] deqp/functional/gles3/framebufferblit/conversion_28.html [ Failure ]
 crbug.com/654187 [ mojave nvidia-0xfe9 ] deqp/functional/gles3/framebufferblit/conversion_30.html [ Failure ]
 crbug.com/654187 [ mojave nvidia-0xfe9 ] deqp/functional/gles3/framebufferblit/conversion_33.html [ Failure ]
-crbug.com/1424484 [ mojave nvidia-0xfe9 ] deqp/functional/gles3/multisample/fbo_max_samples.html [ RetryOnFailure ]
 crbug.com/772651 [ mac nvidia ] conformance/glsl/bugs/vector-scalar-arithmetic-inside-loop-complex.html [ Failure ]
 crbug.com/795052 [ mac nvidia-0xfe9 ] conformance2/uniforms/draw-with-uniform-blocks.html [ Failure ]
 crbug.com/1414878 [ mojave nvidia-0xfe9 ] conformance2/textures/video/* [ RetryOnFailure ]
