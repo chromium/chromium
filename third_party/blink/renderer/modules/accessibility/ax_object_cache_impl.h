@@ -239,7 +239,7 @@ class MODULES_EXPORT AXObjectCacheImpl
   void TextChangedWithCleanLayout(Node* optional_node, AXObject*);
 
   void TextOffsetsChanged(const LayoutBlockFlow*) override;
-  void TextOffsetsChangedWithCleanLayout(Node*, AXObject*);
+  void TextOffsetsChangedWithCleanLayout(AXObject*);
 
   void FocusableChangedWithCleanLayout(Node* node);
   void DocumentTitleChanged() override;
@@ -252,8 +252,7 @@ class MODULES_EXPORT AXObjectCacheImpl
   void HandleAttributeChanged(const QualifiedName& attr_name,
                               Element*) override;
   void FinishedParsingTable(HTMLTableElement*) override;
-  void HandleValidationMessageVisibilityChanged(
-      const Node* form_control) override;
+  void HandleValidationMessageVisibilityChanged(Node* form_control) override;
   void HandleEventListenerAdded(Node& node,
                                 const AtomicString& event_type) override;
   void HandleEventListenerRemoved(Node& node,
@@ -708,32 +707,96 @@ class MODULES_EXPORT AXObjectCacheImpl
     void Trace(Visitor* visitor) const { visitor->Trace(target); }
   };
 
-  struct TreeUpdateParams final : public GarbageCollected<TreeUpdateParams> {
-    TreeUpdateParams(const Node* node,
-                     AXID axid,
-                     ax::mojom::blink::EventFrom event_from,
-                     ax::mojom::blink::Action event_from_action,
-                     const BlinkAXEventIntentsSet& intents,
-                     base::OnceClosure callback)
-        : node(node),
-          axid(axid),
-          event_from(event_from),
-          event_from_action(event_from_action),
-          callback(std::move(callback)) {
-      for (const auto& intent : intents) {
+  // The following represent functions that could be used as callbacks for
+  // DeferTreeUpdate. Every enum value represents a function that would be
+  // called after a tree update is complete.
+  // Please don't reuse these enums in multiple callers to DeferTreeUpdate().
+  // Instead, add an enum where the suffix describes where it's being called
+  // from (this helps when debugging an issue apparent in clean layout, by
+  // helping clarify the code paths).
+  enum class TreeUpdateReason : uint8_t {
+    // These updates are always associated with a DOM Node:
+    kDidHideMenuListPopup,
+    kDidShowMenuListPopup,
+    kMarkDirtyFromRemove,
+    kMarkDirtyFromHandleLayout,
+    kMarkDirtyFromHandleScroll,
+    kEditableTextContentChanged,
+    kNodeGainedFocus,
+    kNodeLostFocus,
+    kRoleMaybeChanged,
+    kTextMarkerDataAdded,
+    kUpdateActiveMenuOption,
+    kValidationMessageVisibilityChanged,
+    kRemoveValidationMessageObjectFromFocusedUIElement,
+    kRemoveValidationMessageObjectFromValidationMessageObject,
+    kTextChangedFromTextChangedNode,
+    kUpdateCacheAfterNodeIsAttached,
+    kUpdateTableRole,
+    kActiveDescendantChanged,
+    kSectionOrRegionRoleMaybeChanged,
+    kAriaPressedChanged,
+    kAriaSelectedChanged,
+    kAriaExpandedChanged,
+    kAriaOwnsChanged,
+    kInvalidateCachedValuesOnSubtree,
+    kRoleChange,
+    kLabelChanged,
+    kIdChanged,
+    kFocusableChanged,
+    kUseMapAttributeChanged,
+    kNameAttributeChanged,
+
+    // These updates are associated with an AXID:
+    kPostNotificationFromHandleLoadStart,
+    kPostNotificationFromHandleLoadComplete,
+    kTextOffsetsChanged,
+    kTextChangedFromTextChangedAXObject,
+    kMarkAXObjectDirty,
+    kMarkAXSubtreeDirty,
+    kChildrenChanged,
+  };
+
+  struct TreeUpdateParams {
+    DISALLOW_NEW();
+
+    TreeUpdateParams(
+        Node* node_arg,
+        AXID axid_arg,
+        ax::mojom::blink::EventFrom event_from_arg,
+        ax::mojom::blink::Action event_from_action_arg,
+        const BlinkAXEventIntentsSet& intents_arg,
+        TreeUpdateReason update_reason_arg,
+        ax::mojom::blink::Event event_arg = ax::mojom::blink::Event::kNone)
+        : node(node_arg),
+          axid(axid_arg),
+          event(event_arg),
+          event_from(event_from_arg),
+          update_reason(update_reason_arg),
+          event_from_action(event_from_action_arg) {
+      for (const auto& intent : intents_arg) {
+        DCHECK(node || axid) << "Either a DOM Node or AXID is required.";
+        DCHECK(!node || !axid) << "Provide a DOM Node *or* AXID, not both.";
         event_intents.insert(intent.key, intent.value);
       }
     }
-    WeakMember<const Node> node;
+
+    // Only either node or AXID will be filled at a time. Some events use Node
+    // while others use AXObject.
+    WeakMember<Node> node;
     AXID axid;
+
+    ax::mojom::blink::Event event;
     ax::mojom::blink::EventFrom event_from;
+    TreeUpdateReason update_reason;
     ax::mojom::blink::Action event_from_action;
     BlinkAXEventIntentsSet event_intents;
-    base::OnceClosure callback;
 
+    virtual ~TreeUpdateParams() = default;
     void Trace(Visitor* visitor) const { visitor->Trace(node); }
   };
-  typedef HeapVector<Member<TreeUpdateParams>> TreeUpdateCallbackQueue;
+
+  typedef HeapVector<TreeUpdateParams> TreeUpdateCallbackQueue;
 
   ax::mojom::blink::EventFrom ComputeEventFrom();
 
@@ -843,27 +906,27 @@ class MODULES_EXPORT AXObjectCacheImpl
   AXObject* GetOrCreateValidationMessageObject();
   void RemoveValidationMessageObjectWithCleanLayout(Node* document);
 
+  // To be called inside DeferTreeUpdate to check the queue status before
+  // adding.
+  bool CanDeferTreeUpdate(Document* tree_update_document);
+
+  // Checks the update queue, then pauses and rebuilds it if full. Returns true
+  // of the queue was paused.
+  bool PauseTreeUpdatesIfQueueFull(Document* tree_update_document);
+
   // Enqueue a callback to the given method to be run after layout is
   // complete.
-  void DeferTreeUpdate(void (AXObjectCacheImpl::*method)(const Node*),
-                       const Node* node);
-  void DeferTreeUpdate(void (AXObjectCacheImpl::*method)(Node*), Node* node);
   void DeferTreeUpdate(
-      void (AXObjectCacheImpl::*method)(Node* node,
-                                        ax::mojom::blink::Event event),
+      AXObjectCacheImpl::TreeUpdateReason update_reason,
       Node* node,
-      ax::mojom::blink::Event event);
-  void DeferTreeUpdate(void (AXObjectCacheImpl::*method)(const QualifiedName&,
-                                                         Element* element),
-                       const QualifiedName& attr_name,
-                       Element* element);
+      ax::mojom::blink::Event event = ax::mojom::blink::Event::kNone);
+
   // Provide either a DOM node or AXObject. If both are provided, then they must
   // match, meaning that the AXObject's DOM node must equal the provided node.
-  void DeferTreeUpdate(void (AXObjectCacheImpl::*method)(Node*, AXObject*),
-                       AXObject* obj);
-
-  void DeferTreeUpdateInternal(base::OnceClosure callback, const Node* node);
-  void DeferTreeUpdateInternal(base::OnceClosure callback, AXObject* obj);
+  void DeferTreeUpdate(
+      AXObjectCacheImpl::TreeUpdateReason update_reason,
+      AXObject* obj,
+      ax::mojom::blink::Event event = ax::mojom::blink::Event::kNone);
 
   void TextChangedWithCleanLayout(Node* node);
   void ChildrenChangedWithCleanLayout(Node* node);
@@ -892,12 +955,14 @@ class MODULES_EXPORT AXObjectCacheImpl
   // setting enabled, or where there is no active ancestral aria-modal dialog.
   AXObject* AncestorAriaModalDialog(Node* node);
 
-  void FireTreeUpdatedEventImmediately(
-      Document& document,
-      ax::mojom::blink::EventFrom event_from,
-      ax::mojom::blink::Action event_from_action,
-      const BlinkAXEventIntentsSet& event_intents,
-      base::OnceClosure callback);
+  // Ensure the update has not been destroyed (node or axid) and
+  // that the document being processed is the one this update is associated
+  // to.
+  bool IsTreeUpdateRelevant(Document& document, TreeUpdateParams& tree_update);
+
+  void FireTreeUpdatedEventImmediately(Document& document,
+                                       TreeUpdateParams& tree_update);
+
   void FireAXEventImmediately(AXObject* obj,
                               ax::mojom::blink::Event event_type,
                               ax::mojom::blink::EventFrom event_from,
