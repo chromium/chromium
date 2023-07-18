@@ -136,11 +136,9 @@ TEST_F(ManifestUnitTest, Extension) {
 
 // Verifies that key restriction based on type works.
 TEST_F(ManifestUnitTest, ExtensionTypes) {
-  base::Value::Dict value;
-  value.Set(keys::kName, "extension");
-  value.Set(keys::kVersion, "1");
-
-  const base::Value empty_dict(base::Value::Type::DICT);
+  auto value = base::Value::Dict()
+                   .Set(keys::kName, "extension")
+                   .Set(keys::kVersion, "1");
 
   std::unique_ptr<Manifest> manifest(
       new Manifest(ManifestLocation::kInternal, std::move(value),
