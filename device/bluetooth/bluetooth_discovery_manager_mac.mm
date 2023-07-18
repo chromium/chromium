@@ -51,7 +51,12 @@ class BluetoothDiscoveryManagerMacClassic
   BluetoothDiscoveryManagerMacClassic& operator=(
       const BluetoothDiscoveryManagerMacClassic&) = delete;
 
-  ~BluetoothDiscoveryManagerMacClassic() override = default;
+  ~BluetoothDiscoveryManagerMacClassic() override {
+    // IOBluetoothDeviceInquiry's delegate property is configured as "assign"
+    // rather than "weak". If it is not manually reset then our delegate could be
+    // accessed after we drop our strong reference and the object is freed.
+    inquiry_.delegate = nil;
+  }
 
   // BluetoothDiscoveryManagerMac override.
   bool IsDiscovering() const override { return should_do_discovery_; }
