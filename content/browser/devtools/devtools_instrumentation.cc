@@ -503,9 +503,18 @@ void OnFrameTreeNodeDestroyed(FrameTreeNode& frame_tree_node) {
 }
 
 bool IsPrerenderAllowed(FrameTree& frame_tree) {
+  FrameTreeNode* ftn = frame_tree.root();
+
+  auto* render_frame_agent_host = static_cast<RenderFrameDevToolsAgentHost*>(
+      RenderFrameDevToolsAgentHost::GetFor(ftn));
+  if (render_frame_agent_host &&
+      render_frame_agent_host->HasSessionsWithoutTabTargetSupport()) {
+    return false;
+  }
+
   bool is_allowed = true;
-  DispatchToAgents(frame_tree.root(),
-                   &protocol::PageHandler::IsPrerenderingAllowed, is_allowed);
+  DispatchToAgents(ftn, &protocol::PageHandler::IsPrerenderingAllowed,
+                   is_allowed);
   return is_allowed;
 }
 
