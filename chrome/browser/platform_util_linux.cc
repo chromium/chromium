@@ -106,6 +106,7 @@ class ShowItemHelper {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
     // The browser process is about to exit. Clean up while we still can.
     object_proxy_ = nullptr;
+    dbus_proxy_ = nullptr;
     if (bus_)
       bus_->ShutdownOnDBusThreadAndBlock();
     bus_.reset();
@@ -280,8 +281,8 @@ class ShowItemHelper {
   scoped_refptr<dbus::Bus> bus_;
 
   // These proxy objects are owned by `bus_`.
-  raw_ptr<dbus::ObjectProxy, LeakedDanglingUntriaged> dbus_proxy_ = nullptr;
-  raw_ptr<dbus::ObjectProxy, LeakedDanglingUntriaged> object_proxy_ = nullptr;
+  raw_ptr<dbus::ObjectProxy> dbus_proxy_ = nullptr;
+  raw_ptr<dbus::ObjectProxy> object_proxy_ = nullptr;
 
   absl::optional<bool> prefer_filemanager_interface_;
 
