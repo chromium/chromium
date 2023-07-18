@@ -102,6 +102,10 @@ BASE_DECLARE_FEATURE(kWebAuthnCableViaCredMan);
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnLinkingExperimentation);
 
+// Enable use of a cloud enclave authenticator service.
+COMPONENT_EXPORT(DEVICE_FIDO)
+BASE_DECLARE_FEATURE(kWebAuthnEnclaveAuthenticator);
+
 }  // namespace device
 
 #endif  // DEVICE_FIDO_FEATURES_H_

@@ -13,6 +13,7 @@
 #include "device/fido/aoa/android_accessory_discovery.h"
 #include "device/fido/cable/fido_cable_discovery.h"
 #include "device/fido/cable/v2_discovery.h"
+#include "device/fido/enclave/enclave_discovery.h"
 #include "device/fido/features.h"
 #include "device/fido/fido_discovery_base.h"
 #include "device/fido/mac/icloud_keychain.h"
@@ -104,11 +105,12 @@ std::vector<std::unique_ptr<FidoDiscoveryBase>> FidoDiscoveryFactory::Create(
       // TODO(https://crbug.com/825949): Add NFC support.
       return {};
     case FidoTransportProtocol::kInternal: {
+      std::vector<std::unique_ptr<FidoDiscoveryBase>> discoveries;
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
-      return MaybeCreatePlatformDiscovery();
-#else
-      return {};
+      discoveries = MaybeCreatePlatformDiscovery();
 #endif
+      MaybeCreateEnclaveDiscovery(discoveries);
+      return discoveries;
     }
     case FidoTransportProtocol::kAndroidAccessory:
       if (usb_device_manager_) {
@@ -180,6 +182,11 @@ FidoDiscoveryFactory::get_cable_contact_callback() {
 void FidoDiscoveryFactory::set_hid_ignore_list(
     base::flat_set<VidPid> hid_ignore_list) {
   hid_ignore_list_ = std::move(hid_ignore_list);
+}
+
+void FidoDiscoveryFactory::SetEnclavePasskeys(
+    std::vector<EnclavePasskey> passkeys) {
+  enclave_passkeys_ = std::move(passkeys);
 }
 
 // static
@@ -256,5 +263,15 @@ void FidoDiscoveryFactory::
   get_assertion_request_for_legacy_credential_check_ = std::move(request);
 }
 #endif
+
+void FidoDiscoveryFactory::MaybeCreateEnclaveDiscovery(
+    std::vector<std::unique_ptr<FidoDiscoveryBase>>& discoveries) {
+  if (!base::FeatureList::IsEnabled(kWebAuthnEnclaveAuthenticator)) {
+    return;
+  }
+  discoveries.emplace_back(
+      std::make_unique<enclave::EnclaveAuthenticatorDiscovery>(
+          std::move(enclave_passkeys_)));
+}
 
 }  // namespace device

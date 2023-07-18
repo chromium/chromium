@@ -389,9 +389,10 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, CableConfiguration) {
       ChromeAuthenticatorRequestDelegate delegate(main_rfh());
       delegate.SetRelyingPartyId(/*rp_id=*/"example.com");
       delegate.SetPassEmptyUsbDeviceManagerForTesting(true);
-      delegate.ConfigureDiscoveries(
-          url::Origin::Create(GURL(test.origin)), test.request_type,
-          test.resident_key_requirement, test.extensions, &discovery_factory);
+      delegate.ConfigureDiscoveries(url::Origin::Create(GURL(test.origin)),
+                                    test.origin, test.request_type,
+                                    test.resident_key_requirement,
+                                    test.extensions, &discovery_factory);
 
       switch (windows_has_hybrid ? test.expected_result_with_system_hybrid
                                  : test.expected_result) {
@@ -525,13 +526,14 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, VirtualEnvironmentAttestation) {
 // Tests that synced GPM passkeys are injected in the transport availability
 // info.
 TEST_F(ChromeAuthenticatorRequestDelegateTest, GPMPasskeys) {
+  std::string relying_party = "example.com";
   GURL url("https://example.com");
   content::WebContentsTester::For(web_contents())->NavigateAndCommit(url);
   ChromeWebAuthnCredentialsDelegateFactory::CreateForWebContents(
       web_contents());
   ChromeAuthenticatorRequestDelegate delegate(main_rfh());
   delegate.SetPassEmptyUsbDeviceManagerForTesting(true);
-  delegate.SetRelyingPartyId("example.com");
+  delegate.SetRelyingPartyId(relying_party);
 
   // Set up a paired phone from sync.
   auto phone = std::make_unique<device::cablev2::Pairing>();
@@ -545,7 +547,8 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, GPMPasskeys) {
       .WillOnce(testing::Return(testing::ByMove(std::move(phones))));
   MockCableDiscoveryFactory discovery_factory;
   delegate.ConfigureDiscoveries(
-      url::Origin::Create(url), device::FidoRequestType::kGetAssertion,
+      url::Origin::Create(url), relying_party,
+      device::FidoRequestType::kGetAssertion,
       /*resident_key_requirement=*/absl::nullopt,
       /*pairings_from_extension=*/std::vector<device::CableDiscoveryData>(),
       &discovery_factory);
@@ -591,19 +594,21 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, GPMPasskeys) {
 // Tests that synced GPM passkeys are not discovered if there are no sync paired
 // phones.
 TEST_F(ChromeAuthenticatorRequestDelegateTest, GPMPasskeys_NoSyncPairedPhones) {
+  std::string relying_party = "example.com";
   GURL url("https://example.com");
   content::WebContentsTester::For(web_contents())->NavigateAndCommit(url);
   ChromeWebAuthnCredentialsDelegateFactory::CreateForWebContents(
       web_contents());
   ChromeAuthenticatorRequestDelegate delegate(main_rfh());
   delegate.SetPassEmptyUsbDeviceManagerForTesting(true);
-  delegate.SetRelyingPartyId("example.com");
+  delegate.SetRelyingPartyId(relying_party);
 
   // Return an empty list of synced devices.
   EXPECT_CALL(observer_, GetCablePairingsFromSyncedDevices);
   MockCableDiscoveryFactory discovery_factory;
   delegate.ConfigureDiscoveries(
-      url::Origin::Create(url), device::FidoRequestType::kGetAssertion,
+      url::Origin::Create(url), relying_party,
+      device::FidoRequestType::kGetAssertion,
       /*resident_key_requirement=*/absl::nullopt,
       /*pairings_from_extension=*/std::vector<device::CableDiscoveryData>(),
       &discovery_factory);
@@ -615,7 +620,7 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, GPMPasskeys_NoSyncPairedPhones) {
   sync_pb::WebauthnCredentialSpecifics passkey;
   passkey.set_sync_id(std::string(16, 'a'));
   passkey.set_credential_id(std::string(16, 'b'));
-  passkey.set_rp_id("example.com");
+  passkey.set_rp_id(relying_party);
   passkey.set_user_id(std::string({5, 6, 7, 8}));
   passkey_model->AddNewPasskeyForTesting(std::move(passkey));
 

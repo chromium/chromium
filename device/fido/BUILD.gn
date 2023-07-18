@@ -144,6 +144,16 @@ component("fido") {
       "device_public_key_extension.h",
       "device_response_converter.cc",
       "device_response_converter.h",
+      "enclave/authenticator_json_conversions.cc",
+      "enclave/authenticator_json_conversions.h",
+      "enclave/enclave_authenticator.cc",
+      "enclave/enclave_authenticator.h",
+      "enclave/enclave_discovery.cc",
+      "enclave/enclave_discovery.h",
+      "enclave/enclave_http_client.cc",
+      "enclave/enclave_http_client.h",
+      "enclave/enclave_passkey.cc",
+      "enclave/enclave_passkey.h",
       "fido_authenticator.cc",
       "fido_authenticator.h",
       "fido_device.cc",
@@ -487,27 +497,6 @@ if (is_mac) {
 }
 
 if (!is_android && !is_ios && !is_chromeos) {
-  # This is being prototyped and is only being built into a test harness.
-  # It will be moved into the fido component later.
-  static_library("enclave_device") {
-    testonly = true
-    sources = [
-      "enclave/authenticator_json_conversions.cc",
-      "enclave/authenticator_json_conversions.h",
-      "enclave/enclave_authenticator.cc",
-      "enclave/enclave_authenticator.h",
-      "enclave/enclave_http_client.cc",
-      "enclave/enclave_http_client.h",
-    ]
-    deps = [
-      ":fido",
-      "//base",
-      "//components/cbor",
-      "//components/device_event_log",
-      "//net",
-    ]
-  }
-
   static_library("enclave_service") {
     testonly = true
     sources = [

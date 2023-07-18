@@ -165,6 +165,7 @@ class ChromeAuthenticatorRequestDelegate
       base::OnceCallback<void(bool)> callback) override;
   void ConfigureDiscoveries(
       const url::Origin& origin,
+      const std::string& rp_id,
       device::FidoRequestType request_type,
       absl::optional<device::ResidentKeyRequirement> resident_key_requirement,
       base::span<const device::CableDiscoveryData> pairings_from_extension,
@@ -242,6 +243,12 @@ class ChromeAuthenticatorRequestDelegate
   void GetPhoneContactableGpmPasskeysForRpId(
       const std::string& rp_id,
       std::vector<device::DiscoverableCredentialMetadata>* passkeys);
+
+  // Configures an WebAuthn enclave authenticator discovery and provides it with
+  // synced passkeys.
+  void ConfigureEnclaveDiscovery(
+      const std::string& rp_id,
+      device::FidoDiscoveryFactory* discovery_factory);
 
   const content::GlobalRenderFrameHostId render_frame_host_id_;
   const std::unique_ptr<AuthenticatorRequestDialogModel> dialog_model_;

@@ -4,17 +4,20 @@
 
 #include "device/fido/enclave/enclave_authenticator.h"
 
+#include <iterator>
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/ranges/algorithm.h"
 #include "components/device_event_log/device_event_log.h"
 #include "device/fido/cable/v2_handshake.h"
+#include "device/fido/discoverable_credential_metadata.h"
 #include "device/fido/enclave/authenticator_json_conversions.h"
 #include "device/fido/enclave/enclave_http_client.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_parsing_utils.h"
 
-namespace device {
+namespace device::enclave {
 
 namespace {
 
@@ -33,8 +36,10 @@ AuthenticatorSupportedOptions EnclaveAuthenticatorOptions() {
 
 EnclaveAuthenticator::EnclaveAuthenticator(
     const GURL& service_url,
-    base::span<const uint8_t, device::kP256X962Length> peer_identity)
-    : peer_identity_(fido_parsing_utils::Materialize(peer_identity)) {
+    base::span<const uint8_t, kP256X962Length> peer_identity,
+    std::vector<EnclavePasskey> passkeys)
+    : peer_identity_(fido_parsing_utils::Materialize(peer_identity)),
+      available_passkeys_(std::move(passkeys)) {
   // base::Unretained is safe because this class owns http_client_, which
   // holds this callback.
   http_client_ = std::make_unique<EnclaveHttpClient>(
@@ -82,8 +87,7 @@ void EnclaveAuthenticator::OnResponseReceived(
     int status,
     absl::optional<std::vector<uint8_t>> data) {
   if (status != net::OK) {
-    FIDO_LOG(ERROR) << GetId() << ": Message to enclave service failed: ["
-                    << status << "]";
+    FIDO_LOG(ERROR) << "Message to enclave service failed: [" << status << "]";
     if (pending_get_assertion_callback_) {
       std::move(pending_get_assertion_callback_)
           .Run(CtapDeviceResponseCode::kCtap2ErrOther, {});
@@ -147,7 +151,8 @@ void EnclaveAuthenticator::SendCommand() {
 
   // TODO(kenrb): |request_bytes| has to be signed by the registered key in
   // secure storage, so the enclave service knows this came from an authorized
-  // device.
+  // device. Alternatively there could be a WebAuthn challenge to the
+  // platform authenticator. This is TBD.
 
   http_client_->SendHttpRequest(EnclaveHttpClient::RequestType::kCommand,
                                 request_bytes);
@@ -158,13 +163,11 @@ void EnclaveAuthenticator::Cancel() {
 }
 
 AuthenticatorType EnclaveAuthenticator::GetType() const {
-  // TODO(kenrb): Real type.
-  return AuthenticatorType::kOther;
+  return AuthenticatorType::kEnclave;
 }
 
 std::string EnclaveAuthenticator::GetId() const {
-  // TODO(kenrb): Set up a proper device ID.
-  return "enclave-00000000";
+  return "EnclaveAuthenticator";
 }
 
 const AuthenticatorSupportedOptions& EnclaveAuthenticator::Options() const {
@@ -182,4 +185,4 @@ base::WeakPtr<FidoAuthenticator> EnclaveAuthenticator::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 
-}  // namespace device
+}  // namespace device::enclave

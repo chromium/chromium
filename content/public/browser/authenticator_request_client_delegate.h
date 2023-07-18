@@ -262,10 +262,10 @@ class CONTENT_EXPORT AuthenticatorRequestClientDelegate
 
   // ConfigureDiscoveries optionally configures |fido_discovery_factory|.
   //
-  // |origin| is the origin of the calling site, |request_type| is the type of
-  // the request and |resident_key_requirement| (which is only set when
-  // provided, i.e. for makeCredential calls) reflects the value requested by
-  // the site.
+  // |origin| is the origin of the calling site, |rp_id| is the relying party
+  // identifier of the request, |request_type| is the type of the request and
+  // |resident_key_requirement| (which is only set when provided, i.e. for
+  // makeCredential calls) reflects the value requested by the site.
   //
   // caBLE (also called the "hybrid" transport) must be configured in order to
   // be functional and |pairings_from_extension| contains any caBLEv1 pairings
@@ -275,6 +275,7 @@ class CONTENT_EXPORT AuthenticatorRequestClientDelegate
   // configured by this function.
   virtual void ConfigureDiscoveries(
       const url::Origin& origin,
+      const std::string& rp_id,
       device::FidoRequestType request_type,
       absl::optional<device::ResidentKeyRequirement> resident_key_requirement,
       base::span<const device::CableDiscoveryData> pairings_from_extension,

@@ -133,4 +133,9 @@ BASE_FEATURE(kWebAuthnLinkingExperimentation,
              "WebAuthenticationLinkingExperimentation",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Not yet enabled by default.
+BASE_FEATURE(kWebAuthnEnclaveAuthenticator,
+             "WebAuthenticationEnclaveAuthenticator",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace device

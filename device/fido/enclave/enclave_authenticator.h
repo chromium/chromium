@@ -8,11 +8,13 @@
 #include <memory>
 #include <vector>
 
+#include "base/component_export.h"
 #include "base/containers/span.h"
 #include "base/memory/weak_ptr.h"
 #include "device/fido/authenticator_get_assertion_response.h"
 #include "device/fido/cable/v2_constants.h"
 #include "device/fido/ctap_get_assertion_request.h"
+#include "device/fido/enclave/enclave_passkey.h"
 #include "device/fido/fido_authenticator.h"
 #include "device/fido/fido_types.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -27,11 +29,17 @@ class Crypter;
 class HandshakeInitiator;
 }  // namespace cablev2
 
-class EnclaveAuthenticator : public FidoAuthenticator {
+namespace enclave {
+
+// TODO(kenrb): Remove the export directive when it is no longer used by the
+// client stand-alone app.
+class COMPONENT_EXPORT(DEVICE_FIDO) EnclaveAuthenticator
+    : public FidoAuthenticator {
  public:
   EnclaveAuthenticator(
       const GURL& service_url,
-      base::span<const uint8_t, device::kP256X962Length> peer_identity);
+      base::span<const uint8_t, device::kP256X962Length> peer_identity,
+      std::vector<EnclavePasskey> passkeys);
   ~EnclaveAuthenticator() override;
 
   EnclaveAuthenticator(const EnclaveAuthenticator&) = delete;
@@ -81,8 +89,12 @@ class EnclaveAuthenticator : public FidoAuthenticator {
   std::string pending_json_request_;
   GetAssertionCallback pending_get_assertion_callback_;
 
+  std::vector<EnclavePasskey> available_passkeys_;
+
   base::WeakPtrFactory<EnclaveAuthenticator> weak_factory_{this};
 };
+
+}  // namespace enclave
 
 }  // namespace device
 

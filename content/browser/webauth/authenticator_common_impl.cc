@@ -551,7 +551,8 @@ void AuthenticatorCommonImpl::StartMakeCredentialRequest(
 
   discovery_factory()->no_cable_linking = req_state_->no_cable_linking;
   req_state_->request_delegate->ConfigureDiscoveries(
-      req_state_->caller_origin, device::FidoRequestType::kMakeCredential,
+      req_state_->caller_origin, req_state_->relying_party_id,
+      device::FidoRequestType::kMakeCredential,
       req_state_->make_credential_options->resident_key,
       base::span<const device::CableDiscoveryData>(), discovery_factory());
 
@@ -599,7 +600,8 @@ void AuthenticatorCommonImpl::StartGetAssertionRequest(
     cable_pairings = *req_state_->ctap_get_assertion_request->cable_extension;
   }
   req_state_->request_delegate->ConfigureDiscoveries(
-      req_state_->caller_origin, device::FidoRequestType::kGetAssertion,
+      req_state_->caller_origin, req_state_->relying_party_id,
+      device::FidoRequestType::kGetAssertion,
       /*resident_key_requirement=*/absl::nullopt, cable_pairings,
       discovery_factory());
 #if BUILDFLAG(IS_CHROMEOS)

@@ -98,6 +98,7 @@ enum class AuthenticatorType {
   kChromeOS,        // the platform authenticator on Chrome OS
   kPhone,           // the credential can be exercised via hybrid CTAP
   kICloudKeychain,  // iCloud Keychain on macOS
+  kEnclave,         // cloud enclave service
   kOther,
 };
 

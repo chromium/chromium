@@ -60,6 +60,7 @@
 #include "crypto/random.h"
 #include "device/fido/cable/v2_handshake.h"
 #include "device/fido/discoverable_credential_metadata.h"
+#include "device/fido/enclave/enclave_passkey.h"
 #include "device/fido/features.h"
 #include "device/fido/fido_authenticator.h"
 #include "device/fido/fido_discovery_factory.h"
@@ -555,6 +556,7 @@ void ChromeAuthenticatorRequestDelegate::ShouldReturnAttestation(
 
 void ChromeAuthenticatorRequestDelegate::ConfigureDiscoveries(
     const url::Origin& origin,
+    const std::string& rp_id,
     device::FidoRequestType request_type,
     absl::optional<device::ResidentKeyRequirement> resident_key_requirement,
     base::span<const device::CableDiscoveryData> pairings_from_extension,
@@ -727,6 +729,11 @@ void ChromeAuthenticatorRequestDelegate::ConfigureDiscoveries(
         browser_window->GetNativeWindow().GetNativeNSWindow()));
   }
 #endif
+
+  if (base::FeatureList::IsEnabled(device::kWebAuthnEnclaveAuthenticator) &&
+      request_type == device::FidoRequestType::kGetAssertion) {
+    ConfigureEnclaveDiscovery(rp_id, discovery_factory);
+  }
 }
 
 void ChromeAuthenticatorRequestDelegate::SelectAccount(
@@ -1019,4 +1026,33 @@ void ChromeAuthenticatorRequestDelegate::GetPhoneContactableGpmPasskeysForRpId(
                                  passkey.user_id().end()),
             passkey.user_name(), passkey.user_display_name()));
   }
+}
+
+void ChromeAuthenticatorRequestDelegate::ConfigureEnclaveDiscovery(
+    const std::string& rp_id,
+    device::FidoDiscoveryFactory* discovery_factory) {
+  webauthn::PasskeyModel* passkey_model =
+      PasskeyModelFactory::GetInstance()->GetForProfile(
+          Profile::FromBrowserContext(GetBrowserContext()));
+  CHECK(passkey_model);
+
+  std::vector<device::EnclavePasskey> enclave_passkeys;
+  for (const sync_pb::WebauthnCredentialSpecifics& entity :
+       passkey_model->GetAllPasskeys()) {
+    if (entity.rp_id() != rp_id) {
+      continue;
+    }
+    enclave_passkeys.emplace_back(
+        device::DiscoverableCredentialMetadata(
+            device::AuthenticatorType::kEnclave, entity.rp_id(),
+            std::vector<uint8_t>(entity.credential_id().begin(),
+                                 entity.credential_id().end()),
+            device::PublicKeyCredentialUserEntity(
+                std::vector<uint8_t>(entity.user_id().begin(),
+                                     entity.user_id().end()),
+                entity.user_name(), entity.user_display_name())),
+        std::vector<uint8_t>(entity.private_key().begin(),
+                             entity.private_key().end()));
+  }
+  discovery_factory->SetEnclavePasskeys(std::move(enclave_passkeys));
 }

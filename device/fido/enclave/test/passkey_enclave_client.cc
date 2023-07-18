@@ -16,6 +16,7 @@
 #include "device/fido/cable/v2_constants.h"
 #include "device/fido/ctap_get_assertion_request.h"
 #include "device/fido/enclave/enclave_authenticator.h"
+#include "device/fido/enclave/enclave_passkey.h"
 #include "device/fido/fido_constants.h"
 
 namespace device {
@@ -24,7 +25,7 @@ namespace {
 const GURL kLocalUrl = GURL("http://127.0.0.1:8880");
 
 // Corresponds to identity seed {1, 2, 3, 4}.
-const uint8_t kPeerPublicKey[] = {
+const uint8_t kPeerPublicKey[kP256X962Length] = {
     4,   244, 60,  222, 80,  52,  238, 134, 185, 2,   84,  48,  248,
     87,  211, 219, 145, 204, 130, 45,  180, 44,  134, 205, 239, 90,
     127, 34,  229, 225, 93,  163, 51,  206, 28,  47,  134, 238, 116,
@@ -45,13 +46,15 @@ class EnclaveTestClient {
   void Terminate(CtapDeviceResponseCode result,
                  std::vector<AuthenticatorGetAssertionResponse> response);
 
-  std::unique_ptr<EnclaveAuthenticator> device_;
+  std::unique_ptr<enclave::EnclaveAuthenticator> device_;
 
   base::RunLoop run_loop_;
 };
 
 int EnclaveTestClient::StartTransaction() {
-  device_ = std::make_unique<EnclaveAuthenticator>(kLocalUrl, kPeerPublicKey);
+  std::vector<EnclavePasskey> passkeys;
+  device_ = std::make_unique<enclave::EnclaveAuthenticator>(
+      kLocalUrl, kPeerPublicKey, std::move(passkeys));
   std::vector<uint8_t> msg = {'a', 'b', 'c', 'd'};
   // Set RP ID only, for test purposes.
   CtapGetAssertionRequest request("https://passkey.example", "");
