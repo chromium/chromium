@@ -157,9 +157,12 @@ found in the LICENSE file.
         <meta-data android:name="org.chromium.webapk.shell_apk.displayMode" android:value="{{{display_mode}}}" />
         <meta-data android:name="org.chromium.webapk.shell_apk.orientation" android:value="{{{orientation}}}" />
         <meta-data android:name="org.chromium.webapk.shell_apk.themeColor" android:value="{{{theme_color}}}" />
+        <meta-data android:name="org.chromium.webapk.shell_apk.darkThemeColor" android:value="{{{dark_theme_color}}}" />
 
         <!-- Empty if the Web Manifest does not provide a background color. -->
         <meta-data android:name="org.chromium.webapk.shell_apk.backgroundColor" android:value="{{{background_color}}}" />
+        <!-- Empty if the Web Manifest does not provide a background color. -->
+        <meta-data android:name="org.chromium.webapk.shell_apk.darkBackgroundColor" android:value="{{{dark_background_color}}}" />
 
         <meta-data android:name="org.chromium.webapk.shell_apk.defaultBackgroundColorId" android:resource="@color/webapp_default_bg" />
         <meta-data android:name="org.chromium.webapk.shell_apk.iconId" android:resource="@mipmap/app_icon" />

@@ -44,6 +44,7 @@ public class WebappIntentDataProvider extends BrowserServicesIntentDataProvider 
     private final @ActivityType int mActivityType;
     private final Intent mIntent;
     private final ColorProviderImpl mColorProvider;
+    private final ColorProviderImpl mDarkColorProvider;
 
     /**
      * Returns the toolbar color to use if a custom color is not specified by the webapp.
@@ -52,11 +53,20 @@ public class WebappIntentDataProvider extends BrowserServicesIntentDataProvider 
         return Color.WHITE;
     }
 
+    /**
+     * Returns the toolbar color to use if a custom dark color is not specified by the webapp.
+     */
+    public static int getDefaultDarkToolbarColor() {
+        return Color.BLACK;
+    }
+
     WebappIntentDataProvider(@NonNull Intent intent, int toolbarColor,
-            boolean hasCustomToolbarColor, @Nullable ShareData shareData,
-            @NonNull WebappExtras webappExtras, @Nullable WebApkExtras webApkExtras) {
+            boolean hasCustomToolbarColor, int darkToolbarColor, boolean hasCustomDarkToolbarColor,
+            @Nullable ShareData shareData, @NonNull WebappExtras webappExtras,
+            @Nullable WebApkExtras webApkExtras) {
         mIntent = intent;
         mColorProvider = new ColorProviderImpl(toolbarColor, hasCustomToolbarColor);
+        mDarkColorProvider = new ColorProviderImpl(darkToolbarColor, hasCustomDarkToolbarColor);
         final Context context = new ContextThemeWrapper(
                 ContextUtils.getApplicationContext(), ActivityUtils.getThemeId());
         mCloseButtonIcon = TintedDrawable.constructTintedDrawable(context, R.drawable.btn_close);
@@ -95,6 +105,11 @@ public class WebappIntentDataProvider extends BrowserServicesIntentDataProvider 
     @Override
     public @NonNull ColorProvider getColorProvider() {
         return mColorProvider;
+    }
+
+    @Override
+    public @NonNull ColorProvider getDarkColorProvider() {
+        return mDarkColorProvider;
     }
 
     @Override

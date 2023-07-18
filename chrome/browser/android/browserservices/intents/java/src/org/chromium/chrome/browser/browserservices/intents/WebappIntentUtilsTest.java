@@ -37,6 +37,8 @@ public class WebappIntentUtilsTest {
         assertFalse(toIntent.hasExtra(WebappConstants.EXTRA_IS_ICON_ADAPTIVE));
         assertFalse(toIntent.hasExtra(WebappConstants.EXTRA_DISPLAY_MODE));
         assertFalse(toIntent.hasExtra(WebappConstants.EXTRA_BACKGROUND_COLOR));
+        assertFalse(toIntent.hasExtra(WebappConstants.EXTRA_DARK_THEME_COLOR));
+        assertFalse(toIntent.hasExtra(WebappConstants.EXTRA_DARK_BACKGROUND_COLOR));
         assertFalse(toIntent.hasExtra(Intent.EXTRA_STREAM));
     }
 
@@ -52,6 +54,8 @@ public class WebappIntentUtilsTest {
         fromIntent.putExtra(WebappConstants.EXTRA_IS_ICON_GENERATED, true);
         fromIntent.putExtra(WebappConstants.EXTRA_DISPLAY_MODE, 1);
         fromIntent.putExtra(WebappConstants.EXTRA_BACKGROUND_COLOR, 1L);
+        fromIntent.putExtra(WebappConstants.EXTRA_DARK_THEME_COLOR, 2L);
+        fromIntent.putExtra(WebappConstants.EXTRA_DARK_BACKGROUND_COLOR, 3L);
 
         Intent toIntent = new Intent();
         WebappIntentUtils.copyWebappLaunchIntentExtras(fromIntent, toIntent);
@@ -61,6 +65,8 @@ public class WebappIntentUtilsTest {
                 true, toIntent.getBooleanExtra(WebappConstants.EXTRA_IS_ICON_GENERATED, false));
         assertEquals(1, toIntent.getIntExtra(WebappConstants.EXTRA_DISPLAY_MODE, 0));
         assertEquals(1L, toIntent.getLongExtra(WebappConstants.EXTRA_BACKGROUND_COLOR, 0L));
+        assertEquals(2L, toIntent.getLongExtra(WebappConstants.EXTRA_DARK_THEME_COLOR, 0L));
+        assertEquals(3L, toIntent.getLongExtra(WebappConstants.EXTRA_DARK_BACKGROUND_COLOR, 0L));
     }
 
     /**

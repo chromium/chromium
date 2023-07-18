@@ -511,10 +511,10 @@ public class WebApkUpdateManagerUnitTest {
         return WebApkIntentDataProviderFactory.create(new Intent(), "", manifestData.scopeUrl,
                 new WebappIcon(manifestData.primaryIcon), null, manifestData.name,
                 manifestData.shortName, manifestData.displayMode, manifestData.orientation, -1,
-                manifestData.themeColor, manifestData.backgroundColor,
-                manifestData.defaultBackgroundColor, false /* isPrimaryIconMaskable */,
-                false /* isSplashIconMaskable*/, kPackageName, -1, WEB_MANIFEST_URL,
-                manifestData.startUrl, manifestData.id, manifestData.appKey,
+                manifestData.themeColor, manifestData.backgroundColor, 0L /* darkThemeColor */,
+                0L /* darkBackgroundColor */, manifestData.defaultBackgroundColor,
+                false /* isPrimaryIconMaskable */, false /* isSplashIconMaskable*/, kPackageName,
+                -1, WEB_MANIFEST_URL, manifestData.startUrl, manifestData.id, manifestData.appKey,
                 WebApkDistributor.BROWSER, manifestData.iconUrlToMurmur2HashMap, shareTarget,
                 false /* forceNavigation */, false /* isSplashProvidedByWebApk */,
                 null /* shareData */, manifestData.shortcuts /* shortcutItems */,
@@ -526,7 +526,7 @@ public class WebApkUpdateManagerUnitTest {
      * @param color The bitmap color.
      */
     private static Bitmap createBitmap(int color) {
-        int colors[] = {color};
+        int[] colors = {color};
         return Bitmap.createBitmap(colors, 1, 1, Bitmap.Config.ALPHA_8);
     }
 

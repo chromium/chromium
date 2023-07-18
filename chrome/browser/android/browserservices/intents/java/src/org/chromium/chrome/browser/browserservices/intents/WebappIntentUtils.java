@@ -29,7 +29,8 @@ public class WebappIntentUtils {
             WebappConstants.EXTRA_SHORT_NAME, WebappConstants.EXTRA_DISPLAY_MODE,
             WebappConstants.EXTRA_ORIENTATION, WebappConstants.EXTRA_THEME_COLOR,
             WebappConstants.EXTRA_BACKGROUND_COLOR, WebappConstants.EXTRA_IS_ICON_GENERATED,
-            WebappConstants.EXTRA_IS_ICON_ADAPTIVE};
+            WebappConstants.EXTRA_IS_ICON_ADAPTIVE, WebappConstants.EXTRA_DARK_THEME_COLOR,
+            WebappConstants.EXTRA_DARK_BACKGROUND_COLOR};
 
     /**
      * WebAPK intent extras. Used for copying intent extras for {@link WebappActivity} launch

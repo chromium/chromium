@@ -22,6 +22,9 @@ public final class WebApkMetaDataKeys {
     public static final String ORIENTATION = "org.chromium.webapk.shell_apk.orientation";
     public static final String THEME_COLOR = "org.chromium.webapk.shell_apk.themeColor";
     public static final String BACKGROUND_COLOR = "org.chromium.webapk.shell_apk.backgroundColor";
+    public static final String DARK_THEME_COLOR = "org.chromium.webapk.shell_apk.darkThemeColor";
+    public static final String DARK_BACKGROUND_COLOR =
+            "org.chromium.webapk.shell_apk.darkBackgroundColor";
     public static final String DEFAULT_BACKGROUND_COLOR_ID =
             "org.chromium.webapk.shell_apk.defaultBackgroundColorId";
     public static final String ICON_ID = "org.chromium.webapk.shell_apk.iconId";

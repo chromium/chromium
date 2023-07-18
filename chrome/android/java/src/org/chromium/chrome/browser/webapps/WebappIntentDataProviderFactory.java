@@ -72,6 +72,12 @@ public class WebappIntentDataProviderFactory {
         boolean hasValidToolbarColor = WebappIntentUtils.isLongColorValid(themeColor);
         int toolbarColor = hasValidToolbarColor ? (int) themeColor
                                                 : WebappIntentDataProvider.getDefaultToolbarColor();
+        long darkThemeColor = IntentUtils.safeGetLongExtra(
+                intent, WebappConstants.EXTRA_DARK_THEME_COLOR, ColorUtils.INVALID_COLOR);
+        boolean hasValidDarkToolbarColor = WebappIntentUtils.isLongColorValid(darkThemeColor);
+        int darkToolbarColor = hasValidDarkToolbarColor
+                ? (int) darkThemeColor
+                : WebappIntentDataProvider.getDefaultDarkToolbarColor();
 
         String icon = IntentUtils.safeGetStringExtra(intent, WebappConstants.EXTRA_ICON);
 
@@ -88,6 +94,9 @@ public class WebappIntentDataProviderFactory {
         int source = sourceFromIntent(intent);
         Integer backgroundColor = WebappIntentUtils.colorFromLongColor(IntentUtils.safeGetLongExtra(
                 intent, WebappConstants.EXTRA_BACKGROUND_COLOR, ColorUtils.INVALID_COLOR));
+        Integer darkBackgroundColor =
+                WebappIntentUtils.colorFromLongColor(IntentUtils.safeGetLongExtra(intent,
+                        WebappConstants.EXTRA_DARK_BACKGROUND_COLOR, ColorUtils.INVALID_COLOR));
         boolean isIconGenerated = IntentUtils.safeGetBooleanExtra(
                 intent, WebappConstants.EXTRA_IS_ICON_GENERATED, false);
         boolean isIconAdaptive = IntentUtils.safeGetBooleanExtra(
@@ -101,11 +110,12 @@ public class WebappIntentDataProviderFactory {
         int defaultBackgroundColor =
                 SplashLayout.getDefaultBackgroundColor(ContextUtils.getApplicationContext());
 
-        WebappExtras webappExtras =
-                new WebappExtras(id, url, scope, new WebappIcon(icon, true /* isTrusted */), name,
-                        shortName, displayMode, orientation, source, backgroundColor,
-                        defaultBackgroundColor, isIconGenerated, isIconAdaptive, forceNavigation);
+        WebappExtras webappExtras = new WebappExtras(id, url, scope,
+                new WebappIcon(icon, true /* isTrusted */), name, shortName, displayMode,
+                orientation, source, backgroundColor, darkBackgroundColor, defaultBackgroundColor,
+                isIconGenerated, isIconAdaptive, forceNavigation);
         return new WebappIntentDataProvider(intent, toolbarColor, hasValidToolbarColor,
-                null /* shareData */, webappExtras, null /* webApkExtras */);
+                darkToolbarColor, hasValidDarkToolbarColor, null /* shareData */, webappExtras,
+                null /* webApkExtras */);
     }
 }

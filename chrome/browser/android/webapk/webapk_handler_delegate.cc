@@ -80,6 +80,7 @@ void WebApkHandlerDelegate::OnWebApkInfoRetrieved(
       static_cast<device::mojom::ScreenOrientationLockType>(jorientation),
       ui::JavaColorToOptionalSkColor(jtheme_color),
       ui::JavaColorToOptionalSkColor(jbackground_color),
+      ui::JavaColorToOptionalSkColor(0L), ui::JavaColorToOptionalSkColor(0L),
       base::Time::FromJavaTime(jlast_update_check_time_ms),
       base::Time::FromJavaTime(jlast_update_completion_time_ms),
       static_cast<bool>(jrelax_updates), backing_browser_package_name,

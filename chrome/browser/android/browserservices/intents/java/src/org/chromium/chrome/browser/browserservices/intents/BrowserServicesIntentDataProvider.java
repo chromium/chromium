@@ -253,6 +253,10 @@ public abstract class BrowserServicesIntentDataProvider {
 
     public abstract @NonNull ColorProvider getColorProvider();
 
+    public @NonNull ColorProvider getDarkColorProvider() {
+        return getColorProvider();
+    }
+
     /**
      * @return The drawable of the icon of close button shown in the custom tab toolbar.
      */

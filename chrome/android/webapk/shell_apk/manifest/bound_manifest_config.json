@@ -12,6 +12,8 @@
   "android_orientation": "unspecified",
   "theme_color": "4280295456L",
   "background_color": "4280295456L",
+  "dark_theme_color": "2105376L",
+  "dark_background_color": "2105376L",
   "background_color_xml": "#202020",
   "icon_urls_and_icon_murmur2_hashes": "https://doom-fire.com/icons/fire-new-192.png 0 https://doom-fire.com/icons/fire-maskable-512.png 0",
   "web_manifest_url": "https://doom-fire.com/manifest.json",
