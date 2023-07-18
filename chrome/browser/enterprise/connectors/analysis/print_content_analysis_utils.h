@@ -17,6 +17,40 @@ class WebContents;
 
 namespace enterprise_connectors {
 
+// Represents context for the kind of print workflow that needs to check if
+// scanning should happen. This is used in conjunction with the
+// `kEnableCloudScanAfterPreview` and `kEnableLocalScanAfterPreview` to control
+// the timing at which scanning occurs.
+enum class PrintScanningContext {
+  // Represents the moment the user presses ctrl-p/shift-ctrl-p or an equivalent
+  // action before any preview/system dialog is shown.
+  kBeforeSystemDialog = 0,
+  kBeforePreview = 1,
+
+  // Represents the moment the user has clicked "Print using system dialog",
+  // before said dialog is shown and before the print job starts.
+  kSystemPrintAfterPreview = 2,
+
+  // Represents the moment the user has clicked "Print", before the print job
+  // starts.
+  kNormalPrintAfterPreview = 3,
+
+  // Represents the code paths after the user has picked all printing settings
+  // from either the print preview dialog or system dialog, right as the
+  // document is about to be printed with a real print job. Also indicates what
+  // kind of workflow was used to get those print settings.
+  kSystemPrintBeforePrintDocument = 4,
+  kNormalPrintBeforePrintDocument = 5,
+
+  kMaxValue = kNormalPrintBeforePrintDocument,
+
+  // TODO(b/281087582): Once cloud scanning support is added, add this option
+  // for an extra Mac edge case for the extra "Open PDF in Preview" button on
+  // the print preview dialog.
+  // kMacOpenPdfInPreview = 6,
+
+};
+
 // This function takes something to print (`data`) and scans it if the policy is
 // enabled on a managed browser. It also passes on print metadata (e.g.
 // `printer_name`) to content scans and `hides_preview` for the local ones. On
@@ -27,19 +61,9 @@ namespace enterprise_connectors {
 void PrintIfAllowedByPolicy(scoped_refptr<base::RefCountedMemory> data,
                             content::WebContents* initiator,
                             std::string printer_name,
+                            PrintScanningContext context,
                             base::OnceCallback<void(bool)> on_verdict,
                             base::OnceClosure hide_preview);
-
-// Represents context for the kind of print workflow that needs to check if
-// scanning should happen. This is used in conjunction with the
-// `kEnableCloudScanAfterPreview` and `kEnableLocalScanAfterPreview` to control
-// the timing at which scanning occurs.
-enum class PrintScanningContext {
-  kBeforeSystemDialog,
-  kBeforePreview,
-  kSystemPrintAfterPreview,
-  kNormalPrintAfterPreview,
-};
 
 // Returns a `ContentAnalysisDelegate::Data` object with information about how
 // content scanning should proceed, or nullopt if it shouldn't.

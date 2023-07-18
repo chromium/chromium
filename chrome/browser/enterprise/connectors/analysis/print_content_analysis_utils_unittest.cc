@@ -254,11 +254,11 @@ TEST_P(PrintContentAnalysisUtilsTest,
   // TODO(b/281087582): Update assertions after the cloud policy is added to
   // tests.
   if (local_scan_after_preview_feature_enabled()) {
-    ASSERT_FALSE(data);
-  } else {
     ASSERT_TRUE(data);
     ASSERT_TRUE(data->settings.cloud_or_local_settings.is_local_analysis());
     ASSERT_EQ(data->settings.block_until_verdict, BlockUntilVerdict::kBlock);
+  } else {
+    ASSERT_FALSE(data);
   }
 }
 
@@ -270,12 +270,34 @@ TEST_P(PrintContentAnalysisUtilsTest,
   // TODO(b/281087582): Update assertions after the cloud policy is added to
   // tests.
   if (local_scan_after_preview_feature_enabled()) {
-    ASSERT_FALSE(data);
-  } else {
     ASSERT_TRUE(data);
     ASSERT_TRUE(data->settings.cloud_or_local_settings.is_local_analysis());
     ASSERT_EQ(data->settings.block_until_verdict, BlockUntilVerdict::kBlock);
+  } else {
+    ASSERT_FALSE(data);
   }
+}
+
+TEST_P(PrintContentAnalysisUtilsTest,
+       GetPrintAnalysisData_NormalPrintBeforePrintDocument) {
+  auto data = GetPrintAnalysisData(
+      contents(), PrintScanningContext::kNormalPrintBeforePrintDocument);
+
+  // TODO(b/285048545): Update this test once the `kSystemPrintAfterPreview`
+  // case's logic is used in code.
+  ASSERT_FALSE(data);
+}
+
+TEST_P(PrintContentAnalysisUtilsTest,
+       GetPrintAnalysisData_SystemPrintBeforePrintDocument) {
+  auto data = GetPrintAnalysisData(
+      contents(), PrintScanningContext::kSystemPrintBeforePrintDocument);
+
+  // This enum values should never return a populated `data` since scanning
+  // should either take place before the preview dialog with the
+  // `kBeforePreview` context, or right after it with the
+  // `kNormalPrintAfterPreview` context.
+  ASSERT_FALSE(data);
 }
 
 TEST_P(PrintContentAnalysisUtilsTest, PrintIfAllowedByPolicyAllowed) {
@@ -293,7 +315,9 @@ TEST_P(PrintContentAnalysisUtilsTest, PrintIfAllowedByPolicyAllowed) {
     run_loop.Quit();
   });
 
-  PrintIfAllowedByPolicy(data, contents(), kPrinterName, std::move(on_verdict),
+  PrintIfAllowedByPolicy(data, contents(), kPrinterName,
+                         PrintScanningContext::kNormalPrintAfterPreview,
+                         std::move(on_verdict),
                          /*hide_preview=*/base::DoNothing());
   run_loop.Run();
 }
@@ -334,7 +358,9 @@ TEST_P(PrintContentAnalysisUtilsTest, PrintIfAllowedByPolicyReportOnly) {
     run_loop.Quit();
   });
 
-  PrintIfAllowedByPolicy(data, contents(), kPrinterName, std::move(on_verdict),
+  PrintIfAllowedByPolicy(data, contents(), kPrinterName,
+                         PrintScanningContext::kNormalPrintAfterPreview,
+                         std::move(on_verdict),
                          /*hide_preview=*/base::DoNothing());
   run_loop.Run();
 }
@@ -380,7 +406,9 @@ TEST_P(PrintContentAnalysisUtilsTest, PrintIfAllowedByPolicyWarnThenCancel) {
     run_loop.Quit();
   });
 
-  PrintIfAllowedByPolicy(data, contents(), kPrinterName, std::move(on_verdict),
+  PrintIfAllowedByPolicy(data, contents(), kPrinterName,
+                         PrintScanningContext::kNormalPrintAfterPreview,
+                         std::move(on_verdict),
                          /*hide_preview=*/base::DoNothing());
   run_loop.Run();
 }
@@ -453,7 +481,9 @@ TEST_P(PrintContentAnalysisUtilsTest, PrintIfAllowedByPolicyWarnedThenBypass) {
     run_loop.Quit();
   });
 
-  PrintIfAllowedByPolicy(data, contents(), kPrinterName, std::move(on_verdict),
+  PrintIfAllowedByPolicy(data, contents(), kPrinterName,
+                         PrintScanningContext::kNormalPrintAfterPreview,
+                         std::move(on_verdict),
                          /*hide_preview=*/base::DoNothing());
   run_loop.Run();
 }
@@ -493,7 +523,9 @@ TEST_P(PrintContentAnalysisUtilsTest, PrintIfAllowedByPolicyBlocked) {
     run_loop.Quit();
   });
 
-  PrintIfAllowedByPolicy(data, contents(), kPrinterName, std::move(on_verdict),
+  PrintIfAllowedByPolicy(data, contents(), kPrinterName,
+                         PrintScanningContext::kNormalPrintAfterPreview,
+                         std::move(on_verdict),
                          /*hide_preview=*/base::DoNothing());
   run_loop.Run();
 }

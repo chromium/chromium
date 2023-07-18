@@ -9,6 +9,7 @@
 
 #include "base/feature_list.h"
 #include "base/memory/read_only_shared_memory_region.h"
+#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/device_event_log/device_event_log.h"
@@ -50,16 +51,79 @@ void ScanAndPrint(scoped_refptr<base::RefCountedMemory> data,
       safe_browsing::DeepScanAccessPoint::PRINT);
 }
 
+bool ShouldDoLocalScan(PrintScanningContext context) {
+  if (base::FeatureList::IsEnabled(
+          printing::features::kEnableLocalScanAfterPreview)) {
+    switch (context) {
+      // For "normal" prints, the scanning can happen immediately after the user
+      // clicks "Print" in the print preview dialog as the preview document is
+      // representative of what they are printing.
+      case PrintScanningContext::kNormalPrintAfterPreview:
+        return true;
+      case PrintScanningContext::kBeforePreview:
+      case PrintScanningContext::kNormalPrintBeforePrintDocument:
+        return false;
+
+      // For "system dialog" prints, the scanning waits until the user picks
+      // settings from the system dialog, and happens right before the document
+      // is printed through an existing print job.
+      // TODO(b/285048545): Update the `kSystemPrintAfterPreview` to return true
+      // and `kSystemPrintAfterPreview` to return false.
+      case PrintScanningContext::kBeforeSystemDialog:
+      case PrintScanningContext::kSystemPrintAfterPreview:
+        return true;
+      case PrintScanningContext::kSystemPrintBeforePrintDocument:
+        return false;
+    }
+  }
+
+  // `kEnableLocalScanAfterPreview` being off means printing should only happen
+  // before any kind of dialog to get settings.
+  switch (context) {
+    case PrintScanningContext::kBeforePreview:
+    case PrintScanningContext::kBeforeSystemDialog:
+      return true;
+
+    case PrintScanningContext::kNormalPrintAfterPreview:
+    case PrintScanningContext::kSystemPrintAfterPreview:
+    case PrintScanningContext::kNormalPrintBeforePrintDocument:
+    case PrintScanningContext::kSystemPrintBeforePrintDocument:
+      return false;
+  }
+}
+
+bool ShouldDoCloudScan(PrintScanningContext context) {
+  // TODO(b/281087582): Update this function's logic once cloud scanning
+  // supports post-preview scanning.
+  switch (context) {
+    case PrintScanningContext::kBeforeSystemDialog:
+    case PrintScanningContext::kBeforePreview:
+      return true;
+
+    case PrintScanningContext::kNormalPrintAfterPreview:
+    case PrintScanningContext::kSystemPrintAfterPreview:
+    case PrintScanningContext::kNormalPrintBeforePrintDocument:
+    case PrintScanningContext::kSystemPrintBeforePrintDocument:
+      return false;
+  }
+}
+
+bool ShouldScan(PrintScanningContext context,
+                const ContentAnalysisDelegate::Data& scanning_data) {
+  return scanning_data.settings.cloud_or_local_settings.is_local_analysis()
+             ? ShouldDoLocalScan(context)
+             : ShouldDoCloudScan(context);
+}
+
 }  // namespace
 
 void PrintIfAllowedByPolicy(scoped_refptr<base::RefCountedMemory> data,
                             content::WebContents* initiator,
                             std::string printer_name,
+                            PrintScanningContext context,
                             base::OnceCallback<void(bool)> on_verdict,
                             base::OnceClosure hide_preview) {
   DCHECK(initiator);
-
-  ContentAnalysisDelegate::Data scanning_data;
 
   // This needs to be done to avoid having an embedded page compare against
   // policies and report its URL. This is especially important when Chrome's PDF
@@ -69,26 +133,25 @@ void PrintIfAllowedByPolicy(scoped_refptr<base::RefCountedMemory> data,
   // passed to the delegate.
   content::WebContents* web_contents = initiator->GetOutermostWebContents();
 
-  if (ContentAnalysisDelegate::IsEnabled(
-          Profile::FromBrowserContext(web_contents->GetBrowserContext()),
-          web_contents->GetLastCommittedURL(), &scanning_data,
-          AnalysisConnector::PRINT) &&
-      base::FeatureList::IsEnabled(
-          printing::features::kEnableLocalScanAfterPreview) &&
-      scanning_data.settings.cloud_or_local_settings.is_local_analysis()) {
-    // Populate print metadata.
-    scanning_data.printer_name = std::move(printer_name);
+  absl::optional<ContentAnalysisDelegate::Data> scanning_data =
+      GetPrintAnalysisData(web_contents, context);
 
-    // Hide the preview dialog so it doesn't cover the content analysis dialog
-    // showing the status of the scanning.
-    // TODO(b/281087582): May need to be handled differently when the scan
-    // takes place in the cloud instead of locally.
-    std::move(hide_preview).Run();
-    ScanAndPrint(data, web_contents, std::move(scanning_data),
-                 std::move(on_verdict));
+  if (!scanning_data) {
+    std::move(on_verdict).Run(/*allowed=*/true);
     return;
   }
-  std::move(on_verdict).Run(/*allowed=*/true);
+
+  // Populate print metadata.
+  scanning_data->printer_name = std::move(printer_name);
+
+  // Hide the preview dialog so it doesn't cover the content analysis dialog
+  // showing the status of the scanning.
+  // TODO(b/281087582): May need to be handled differently when the scan
+  // takes place in the cloud instead of locally.
+  std::move(hide_preview).Run();
+
+  ScanAndPrint(data, web_contents, std::move(*scanning_data),
+               std::move(on_verdict));
 }
 
 absl::optional<ContentAnalysisDelegate::Data> GetPrintAnalysisData(
@@ -96,24 +159,16 @@ absl::optional<ContentAnalysisDelegate::Data> GetPrintAnalysisData(
     PrintScanningContext context) {
   ContentAnalysisDelegate::Data scanning_data;
 
-  if (!ContentAnalysisDelegate::IsEnabled(
-          Profile::FromBrowserContext(web_contents->GetBrowserContext()),
-          web_contents->GetOutermostWebContents()->GetLastCommittedURL(),
-          &scanning_data, AnalysisConnector::PRINT)) {
-    return absl::nullopt;
+  bool enabled = ContentAnalysisDelegate::IsEnabled(
+      Profile::FromBrowserContext(web_contents->GetBrowserContext()),
+      web_contents->GetOutermostWebContents()->GetLastCommittedURL(),
+      &scanning_data, AnalysisConnector::PRINT);
+
+  if (enabled && ShouldScan(context, scanning_data)) {
+    return scanning_data;
   }
 
-  // TODO(b/281087582): Update condition for cloud system print.
-  // Printing directly with a system dialog results in an immediate scan, so
-  // applying any post-preview feature should only be done in other contexts.
-  if (context != PrintScanningContext::kBeforeSystemDialog &&
-      base::FeatureList::IsEnabled(
-          printing::features::kEnableLocalScanAfterPreview) &&
-      scanning_data.settings.cloud_or_local_settings.is_local_analysis()) {
-    return absl::nullopt;
-  }
-
-  return scanning_data;
+  return absl::nullopt;
 }
 
 }  // namespace enterprise_connectors

@@ -747,6 +747,12 @@ void PrintPreviewHandler::HandleDoPrint(const base::Value::List& args) {
 #if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
   std::string device_name = *settings.FindString(kSettingDeviceName);
 
+  using enterprise_connectors::PrintScanningContext;
+  auto scan_context =
+      settings.FindBool(kSettingShowSystemDialog).value_or(false)
+          ? PrintScanningContext::kSystemPrintAfterPreview
+          : PrintScanningContext::kNormalPrintAfterPreview;
+
   auto on_verdict =
       base::BindOnce(&PrintPreviewHandler::OnVerdictByEnterprisePolicy,
                      weak_factory_.GetWeakPtr(), user_action,
@@ -756,8 +762,8 @@ void PrintPreviewHandler::HandleDoPrint(const base::Value::List& args) {
                                      weak_factory_.GetWeakPtr());
 
   enterprise_connectors::PrintIfAllowedByPolicy(
-      data, GetInitiator(), std::move(device_name), std::move(on_verdict),
-      std::move(hide_preview));
+      data, GetInitiator(), std::move(device_name), scan_context,
+      std::move(on_verdict), std::move(hide_preview));
 
 #else
   FinishHandleDoPrint(user_action, std::move(settings), data, callback_id);
