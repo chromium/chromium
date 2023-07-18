@@ -51,7 +51,8 @@ TEST_F(CompanionCoreUtilsTest, ImageUploadURLForCompanion) {
   base::test::ScopedFeatureList scoped_list;
   scoped_list.InitAndEnableFeature(features::internal::kSidePanelCompanion);
 
-  EXPECT_EQ("https://lens.google.com/upload", GetImageUploadURLForCompanion());
+  EXPECT_EQ("https://lens.google.com/v3/upload",
+            GetImageUploadURLForCompanion());
 }
 
 }  // namespace
