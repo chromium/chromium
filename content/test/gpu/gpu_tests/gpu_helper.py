@@ -65,7 +65,7 @@ def _ParseANGLEGpuVendorString(device_string: str) -> Optional[str]:
   return None
 
 
-def _GetANGLEGpuDeviceId(device_string: str) -> Optional[str]:
+def GetANGLEGpuDeviceId(device_string: str) -> Optional[str]:
   if not device_string:
     return None
   # ANGLE's device (renderer) string is of the form:
@@ -104,7 +104,7 @@ def GetGpuDeviceId(gpu_info: Optional[tgi.GPUInfo],
     primary_gpu = gpu_info.devices[index]
     if primary_gpu:
       return (primary_gpu.device_id
-              or _GetANGLEGpuDeviceId(primary_gpu.device_string)
+              or GetANGLEGpuDeviceId(primary_gpu.device_string)
               or primary_gpu.device_string)
   return 0
 

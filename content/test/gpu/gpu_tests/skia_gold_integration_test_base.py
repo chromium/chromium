@@ -346,6 +346,12 @@ class SkiaGoldIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
     # some sort?) messes a bit with inexact matching since each revision will
     # be treated as a separate trace, so strip it off.
     _StripAngleRevisionFromDriver(img_params)
+    # When running under the validating decoder, the device string is reported
+    # as the actual device, while under the passthrough decoder it is an ANGLE
+    # string that contains the device and some additional information. This
+    # difference can be annoying when trying to set up forwarding rules for the
+    # public Gold instance, so only use the actual device.
+    _ConvertAngleDeviceStringToActualDevice(img_params)
     # All values need to be strings, otherwise goldctl fails.
     gpu_keys = {
         'vendor_id':
@@ -556,6 +562,22 @@ def _StripAngleRevisionFromDriver(img_params: _ImageParameters) -> None:
       break
     kept_parts.append(part)
   img_params.driver_version = '.'.join(kept_parts)
+
+
+def _ConvertAngleDeviceStringToActualDevice(
+    img_params: _ImageParameters) -> None:
+  """Converts an ANGLE device string to only have the actual device.
+
+  E.g. ANGLE(Qualcomm, Adreno (TM) 640, OpenGL ES ...) -> Adreno (TM) 640
+
+  Modifies the string in place. No-ops if the driver string is not ANGLE.
+
+  Args:
+    img_params: An _ImageParameters instance to modify.
+  """
+  device_id = gpu_helper.GetANGLEGpuDeviceId(img_params.device_string)
+  if device_id:
+    img_params.device_string = device_id
 
 
 def _GetCombinedHardwareIdentifier(img_params: _ImageParameters) -> str:
