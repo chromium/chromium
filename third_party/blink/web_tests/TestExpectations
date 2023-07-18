@@ -1741,6 +1741,8 @@ crbug.com/567837 [ Win ] virtual/scalefactor150/fast/hidpi/static/popup-menu-wit
 # Popover test timeout/flakiness
 crbug.com/1416284 external/wpt/html/semantics/popovers/popover-attribute-basic.html [ Pass Timeout ]
 crbug.com/1446719 [ Mac ] external/wpt/html/semantics/popovers/light-dismiss-event-ordering.html [ Pass Timeout ]
+# crbug.com/1465321. This test is oddly flaky on Mac.
+crbug.com/1465321 [ Mac ] external/wpt/html/semantics/popovers/popover-focus-2.html [ Pass Timeout ]
 
 # Only virtual/threaded version of these tests pass (or running them with --enable-threaded-compositing).
 crbug.com/936891 fast/scrolling/document-level-touchmove-event-listener-passive-by-default.html [ Failure ]
@@ -6577,10 +6579,8 @@ crbug.com/1464866 http/tests/devtools/background-services/background-services-pa
 
 # Gardener 2023-07-17
 # Very flaky on most Mac builders
-crbug.com/1465321 [ Mac ] virtual/popover-hint-disabled/external/wpt/html/semantics/popovers/popover-focus-2.html [ Failure Pass Timeout ]
 crbug.com/1465321 [ Mac ] virtual/threaded/external/wpt/css/css-scroll-snap/input/keyboard.html [ Failure Pass Timeout ]
 crbug.com/1465321 [ Mac ] virtual/prefetch-no-vary-search/wpt_internal/speculation-rules/prefetch/no-vary-search/prefetch-single-non-eager-with-hint.https.html?26-26 [ Failure Pass Timeout ]
-crbug.com/1465321 [ Mac ] external/wpt/html/semantics/popovers/popover-focus-2.html [ Failure Pass Timeout ]
 crbug.com/1465321 [ Mac ] external/wpt/pointerevents/compat/pointerevent_mouse-pointer-preventdefault.html [ Failure Pass Timeout ]
 # Slightly flaky on individual builders
 crbug.com/1465321 [ Mac10.15 ] external/wpt/scroll-to-text-fragment/redirects.html [ Failure Pass ]
