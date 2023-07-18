@@ -48,22 +48,27 @@ size_t ParseUint32(const std::string& str,
   const size_t len = str.length();
   while (true) {
     const char& c = str[pos];
-    if (c != ' ')
+    if (c != ' ') {
       break;
-    if (++pos == len)
+    }
+    if (++pos == len) {
       return std::string::npos;
+    }
   }
 
   while (true) {
     const char& c = str[pos];
-    if (c < '0' || c > '9')
+    if (c < '0' || c > '9') {
       return std::string::npos;
+    }
     const uint32_t prev = *res;
     *res = *res * 10 + c - '0';
-    if (prev != (*res - c + '0') / 10)
+    if (prev != (*res - c + '0') / 10) {
       return std::string::npos;  // overflow
-    if (++pos == len || str[pos] == end_char)
+    }
+    if (++pos == len || str[pos] == end_char) {
       break;
+    }
   }
 
   return pos;
@@ -84,16 +89,19 @@ void SelectRecursively(
     const ArcTracingEvent* event,
     const std::vector<std::unique_ptr<ArcTracingEventMatcher>>& selector,
     ArcTracingModel::TracingEventPtrs* collector) {
-  if (level >= selector.size())
+  if (level >= selector.size()) {
     return;
-  if (!selector[level]->Match(*event))
+  }
+  if (!selector[level]->Match(*event)) {
     return;
+  }
   if (level == selector.size() - 1) {
     // Last segment
     collector->push_back(event);
   } else {
-    for (const auto& child : event->children())
+    for (const auto& child : event->children()) {
       SelectRecursively(level + 1, child.get(), selector, collector);
+    }
   }
 }
 
@@ -144,16 +152,18 @@ bool HandleGraphicsEvent(GraphicsEventsContext* context,
       event->SetTimestamp(timestamp);
       event->SetCategory(kAndroidCategory);
       event->SetName(name);
-      if (phase == TRACE_EVENT_PHASE_BEGIN)
+      if (phase == TRACE_EVENT_PHASE_BEGIN) {
         context->per_thread_pending_events_stack[tid].push_back(event.get());
-      else
+      } else {
         event->SetPhase(TRACE_EVENT_PHASE_COUNTER);
+      }
       context->converted_events.push_back(std::move(event));
     } break;
     case TRACE_EVENT_PHASE_END: {
       // Beginning event may not exist.
-      if (context->per_thread_pending_events_stack[tid].empty())
+      if (context->per_thread_pending_events_stack[tid].empty()) {
         return true;
+      }
       if (ParseUint32(line, event_position + 2, '\0', &pid) ==
           std::string::npos) {
         LOG(ERROR) << "Cannot parse pid of trace event: " << line;
@@ -326,8 +336,9 @@ bool SortByTimestampPred(const std::unique_ptr<ArcTracingEvent>& lhs,
                          const std::unique_ptr<ArcTracingEvent>& rhs) {
   const uint64_t lhs_timestamp = lhs->GetTimestamp();
   const uint64_t rhs_timestamp = rhs->GetTimestamp();
-  if (lhs_timestamp != rhs_timestamp)
+  if (lhs_timestamp != rhs_timestamp) {
     return lhs_timestamp < rhs_timestamp;
+  }
   return lhs->GetDuration() > rhs->GetDuration();
 }
 
@@ -387,13 +398,15 @@ bool ArcTracingModel::Build(const std::string& data) {
 ArcTracingModel::TracingEventPtrs ArcTracingModel::GetRoots() const {
   ArcTracingModel::TracingEventPtrs result;
   for (auto& gr : group_events_) {
-    for (const auto& event : gr.second)
+    for (const auto& event : gr.second) {
       result.emplace_back(event.get());
+    }
   }
 
   for (const auto& gr : per_thread_events_) {
-    for (const auto& event : gr.second)
+    for (const auto& event : gr.second) {
       result.emplace_back(event.get());
+    }
   }
   return result;
 }
@@ -403,8 +416,9 @@ ArcTracingModel::TracingEventPtrs ArcTracingModel::Select(
   ArcTracingModel::TracingEventPtrs collector;
   const std::vector<std::unique_ptr<ArcTracingEventMatcher>> selector =
       BuildSelector(query);
-  for (const ArcTracingEvent* root : GetRoots())
+  for (const ArcTracingEvent* root : GetRoots()) {
     SelectRecursively(0, root, selector, &collector);
+  }
 
   return collector;
 }
@@ -413,8 +427,9 @@ ArcTracingModel::TracingEventPtrs ArcTracingModel::Select(
     const ArcTracingEvent* event,
     const std::string query) const {
   ArcTracingModel::TracingEventPtrs collector;
-  for (const auto& child : event->children())
+  for (const auto& child : event->children()) {
     SelectRecursively(0, child.get(), BuildSelector(query), &collector);
+  }
   return collector;
 }
 
@@ -422,10 +437,12 @@ ArcTracingModel::TracingEventPtrs ArcTracingModel::GetGroupEvents(
     const std::string& id) const {
   TracingEventPtrs result;
   const auto& it = group_events_.find(id);
-  if (it == group_events_.end())
+  if (it == group_events_.end()) {
     return result;
-  for (const auto& group_event : it->second)
+  }
+  for (const auto& group_event : it->second) {
     result.emplace_back(group_event.get());
+  }
   return result;
 }
 
@@ -441,8 +458,9 @@ bool ArcTracingModel::ProcessEvent(base::Value::List* events) {
     std::unique_ptr<ArcTracingEvent> event =
         std::make_unique<ArcTracingEvent>(std::move(event_data).TakeDict());
     const uint64_t timestamp = event->GetTimestamp();
-    if (timestamp < min_timestamp_ || timestamp >= max_timestamp_)
+    if (timestamp < min_timestamp_ || timestamp >= max_timestamp_) {
       continue;
+    }
 
     switch (event->GetPhase()) {
       case TRACE_EVENT_PHASE_METADATA:
@@ -528,16 +546,18 @@ bool ArcTracingModel::ConvertSysTraces(const std::string& sys_traces) {
   while (true) {
     // Get end of line.
     size_t end_line_pos = sys_traces.find('\n', new_line_pos);
-    if (end_line_pos == std::string::npos)
+    if (end_line_pos == std::string::npos) {
       break;
+    }
 
     const std::string line =
         sys_traces.substr(new_line_pos, end_line_pos - new_line_pos);
     new_line_pos = end_line_pos + 1;
 
     // Skip comments and empty lines.
-    if (line.empty() || line[0] == '#')
+    if (line.empty() || line[0] == '#') {
       continue;
+    }
 
     // Spacing between TASK-PID and CPU# can vary between kernel versions
     // and depending on whether TGID option is enabled in trace_options.
@@ -567,8 +587,9 @@ bool ArcTracingModel::ConvertSysTraces(const std::string& sys_traces) {
     if (system_model_.thread_map().find(tid) ==
         system_model_.thread_map().end()) {
       int thread_name_start = 0;
-      while (line[thread_name_start] == ' ')
+      while (line[thread_name_start] == ' ') {
         ++thread_name_start;
+      }
       system_model_.thread_map()[tid] = ArcSystemModel::ThreadInfo(
           ArcSystemModel::kUnknownPid,
           line.substr(thread_name_start, kPidPosition - thread_name_start));
@@ -598,8 +619,9 @@ bool ArcTracingModel::ConvertSysTraces(const std::string& sys_traces) {
     }
 
     const uint64_t timestamp = 1000000LL * timestamp_high + timestamp_low;
-    if (timestamp < min_timestamp_ || timestamp >= max_timestamp_)
+    if (timestamp < min_timestamp_ || timestamp >= max_timestamp_) {
       continue;
+    }
 
     if (!strncmp(&line[separator_position], kTracingMarkWrite,
                  kTracingMarkWriteLength)) {
@@ -651,8 +673,9 @@ bool ArcTracingModel::ConvertSysTraces(const std::string& sys_traces) {
   // Close all pending tracing event, assuming last event is 0 duration.
   for (auto& pending_events :
        graphics_events_context.per_thread_pending_events_stack) {
-    if (pending_events.second.empty())
+    if (pending_events.second.empty()) {
       continue;
+    }
     const double last_timestamp = pending_events.second.back()->GetTimestamp();
     for (ArcTracingEvent* pending_event : pending_events.second) {
       pending_event->SetDuration(last_timestamp -
@@ -688,8 +711,9 @@ bool ArcTracingModel::AddToThread(std::unique_ptr<ArcTracingEvent> event) {
 }
 
 void ArcTracingModel::Dump(std::ostream& stream) const {
-  for (const ArcTracingEvent* root : GetRoots())
+  for (const ArcTracingEvent* root : GetRoots()) {
     root->Dump("", stream);
+  }
 }
 
 }  // namespace arc

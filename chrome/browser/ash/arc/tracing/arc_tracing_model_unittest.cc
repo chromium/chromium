@@ -65,8 +65,9 @@ constexpr char kSurfaceAttachBad[] = "_Surface::Attach";
 // Validates that events have increasing timestamp, and all events have allowed
 // transitions from the previous state.
 bool ValidateCpuEvents(const CpuEvents& cpu_events) {
-  if (cpu_events.empty())
+  if (cpu_events.empty()) {
     return false;
+  }
 
   CpuEvents cpu_events_reconstructed;
   for (const auto& cpu_event : cpu_events) {
@@ -83,8 +84,9 @@ bool ValidateCpuEvents(const CpuEvents& cpu_events) {
 // each type is found at least once.
 bool ValidateGrahpicsEvents(const GraphicsEvents& events,
                             const std::set<GraphicsEventType>& allowed_types) {
-  if (events.empty())
+  if (events.empty()) {
     return false;
+  }
   uint64_t previous_timestamp = 0;
   std::set<GraphicsEventType> used_types;
   for (const auto& event : events) {
@@ -102,9 +104,10 @@ bool ValidateGrahpicsEvents(const GraphicsEvents& events,
   }
   if (used_types.size() != allowed_types.size()) {
     for (const auto& allowed_type : allowed_types) {
-      if (!used_types.count(allowed_type))
+      if (!used_types.count(allowed_type)) {
         LOG(ERROR) << "Required event type " << allowed_type
                    << " << is not found.";
+      }
     }
     return false;
   }
@@ -122,8 +125,9 @@ std::unique_ptr<ArcTracingGraphicsModel> LoadGraphicsModel(
   DCHECK(!json_data.empty());
   std::unique_ptr<ArcTracingGraphicsModel> model =
       std::make_unique<ArcTracingGraphicsModel>();
-  if (!model->LoadFromJson(json_data))
+  if (!model->LoadFromJson(json_data)) {
     return nullptr;
+  }
   return model;
 }
 
@@ -173,8 +177,9 @@ TEST_F(ArcTracingModelTest, TopLevel) {
 
   // 4 CPU cores.
   EXPECT_EQ(4U, model.system_model().all_cpu_events().size());
-  for (const auto& cpu_events : model.system_model().all_cpu_events())
+  for (const auto& cpu_events : model.system_model().all_cpu_events()) {
     EXPECT_TRUE(ValidateCpuEvents(cpu_events));
+  }
 
   // Perform several well-known queries.
   EXPECT_FALSE(model.Select(kAcquireBufferQuery).empty());
