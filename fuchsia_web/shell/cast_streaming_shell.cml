@@ -126,8 +126,6 @@
         "fuchsia.accessibility.semantics.SemanticsManager",
         "fuchsia.ui.composition.Allocator",
         "fuchsia.ui.composition.Flatland",
-        // TODO(crbug.com/1427170): Remove Scenic after migration is complete.
-        "fuchsia.ui.scenic.Scenic",
       ],
       from: "parent",
       to: "#realm_builder",

@@ -41,11 +41,9 @@ source_set("present_frame") {
   ]
   deps = [
     "//base",
-    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.scenic",
     "//third_party/fuchsia-sdk/sdk/pkg/scenic_cpp",
   ]
   public_deps = [
-    "//third_party/abseil-cpp:absl",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.element",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.web",
   ]

@@ -317,12 +317,11 @@ int main(int argc, char** argv) {
   fuchsia::element::AnnotationControllerPtr annotation_controller;
   annotations_manager->Connect(annotation_controller.NewRequest());
 
-  absl::optional<fuchsia::element::GraphicalPresenterPtr> maybe_presenter;
+  fuchsia::element::GraphicalPresenterPtr presenter;
   if (is_headless) {
     frame->EnableHeadlessRendering();
   } else {
-    auto result = PresentFrame(frame.get(), std::move(annotation_controller));
-    maybe_presenter.swap(result);
+    presenter = PresentFrame(frame.get(), std::move(annotation_controller));
   }
 
   LOG(INFO) << "Launched browser at URL " << url.spec();

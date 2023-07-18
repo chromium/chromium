@@ -174,7 +174,7 @@ int main(int argc, char** argv) {
       std::make_unique<fuchsia_component_support::AnnotationsManager>();
   fuchsia::element::AnnotationControllerPtr annotation_controller;
   annotations_manager->Connect(annotation_controller.NewRequest());
-  auto maybe_presenter =
+  auto presenter =
       ConfigureFrame(frame.get(), std::move(annotation_controller));
 
   // Register the MessagePort for the Cast Streaming Receiver.
