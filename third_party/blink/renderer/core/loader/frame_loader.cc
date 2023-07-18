@@ -1718,6 +1718,11 @@ void FrameLoader::DispatchDidClearDocumentOfWindowObject() {
 
   Settings* settings = frame_->GetSettings();
   LocalDOMWindow* window = frame_->DomWindow();
+  recordreplay::Assert(
+      "[RUN-2351-2355] FrameLoader::DispatchDidClearDocumentOfWindowObject %d "
+      "%d %d",
+      !!settings, !!settings->GetForceMainWorldInitialization(),
+      recordreplay::IsRecordingOrReplaying("initialize-window-proxy"));
   if ((settings && settings->GetForceMainWorldInitialization()) ||
       // When replaying the ForceMainWorldInitialization may be set even
       // if it wasn't when recording, as additional CDP inspector features
