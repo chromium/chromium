@@ -203,7 +203,11 @@ class DriveUploadHandlerTest
 
   // `Wait` will not complete until this is called.
   void OnUploadDone(const GURL& url, int64_t size) {
-    ASSERT_FALSE(url.is_empty());
+    if (fail_sync_) {
+      ASSERT_TRUE(url.is_empty());
+    } else {
+      ASSERT_FALSE(url.is_empty());
+    }
     EndWait();
   }
 
@@ -234,15 +238,22 @@ class DriveUploadHandlerTest
   base::FilePath read_only_dir_;
   base::FilePath drive_mount_point_;
   base::FilePath drive_root_dir_;
+  bool fail_sync_ = false;
 
  private:
   // IOTaskController::Observer:
   void OnIOTaskStatus(
       const file_manager::io_task::ProgressStatus& status) override {
+    // Wait for the copy task to complete before starting the Drive sync.
     if (status.sources.size() == 1 &&
         status.sources[0].url.path() == source_file_path_ &&
-        status.state == file_manager::io_task::State::kSuccess) {
-      SimulateDriveUploadEvents();
+        status.state == file_manager::io_task::State::kSuccess &&
+        status.type == file_manager::io_task::OperationType::kCopy) {
+      if (fail_sync_) {
+        SimulateDriveUploadFailure();
+      } else {
+        SimulateDriveUploadEvents();
+      }
     }
   }
 
@@ -278,6 +289,27 @@ class DriveUploadHandlerTest
         drivefs::mojom::ItemEvent::State::kCompleted, 123, 456,
         drivefs::mojom::ItemEventReason::kTransfer);
     drivefs_delegate()->OnSyncingStatusUpdate(status.Clone());
+    drivefs_delegate().FlushForTesting();
+  }
+
+  void SimulateDriveUploadFailure() {
+    // Simulate server sync events.
+    drivefs::mojom::SyncingStatusPtr status =
+        drivefs::mojom::SyncingStatus::New();
+    status->item_events.emplace_back(
+        absl::in_place, 12, 34, observed_relative_drive_path().value(),
+        drivefs::mojom::ItemEvent::State::kQueued, 123, 456,
+        drivefs::mojom::ItemEventReason::kTransfer);
+    drivefs_delegate()->OnSyncingStatusUpdate(status.Clone());
+    drivefs_delegate().FlushForTesting();
+
+    drivefs::mojom::SyncingStatusPtr fail_status =
+        drivefs::mojom::SyncingStatus::New();
+    fail_status->item_events.emplace_back(
+        absl::in_place, 12, 34, observed_relative_drive_path().value(),
+        drivefs::mojom::ItemEvent::State::kFailed, 123, 456,
+        drivefs::mojom::ItemEventReason::kTransfer);
+    drivefs_delegate()->OnSyncingStatusUpdate(fail_status->Clone());
     drivefs_delegate().FlushForTesting();
   }
 
@@ -346,6 +378,34 @@ IN_PROC_BROWSER_TEST_F(DriveUploadHandlerTest, UploadFromReadOnlyFileSystem) {
     base::ScopedAllowBlockingForTesting allow_blocking;
     EXPECT_TRUE(base::PathExists(read_only_dir_.AppendASCII(test_file_name)));
     EXPECT_TRUE(base::PathExists(drive_root_dir_.AppendASCII(test_file_name)));
+  }
+}
+
+// Test that when the sync to Drive fails, the file is not moved to Drive.
+IN_PROC_BROWSER_TEST_F(DriveUploadHandlerTest, UploadFails) {
+  fail_sync_ = true;
+  SetUpObservers();
+  SetUpMyFiles();
+  SetUpDrive();
+  // Define the source file as a test docx file within My files.
+  const std::string test_file_name = "text.docx";
+  FileSystemURL source_file_url =
+      SetUpSourceFile(test_file_name, my_files_dir_);
+
+  EXPECT_CALL(fake_drivefs(), ImmediatelyUpload(_, _))
+      .WillOnce(RunOnceCallback<1>(drive::FileError::FILE_ERROR_FAILED));
+
+  DriveUploadHandler::Upload(
+      profile(), source_file_url,
+      base::BindOnce(&DriveUploadHandlerTest::OnUploadDone,
+                     base::Unretained(this)));
+  Wait();
+
+  // Check that the source file has not been moved to Drive.
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    EXPECT_TRUE(base::PathExists(my_files_dir_.AppendASCII(test_file_name)));
+    EXPECT_FALSE(base::PathExists(drive_root_dir_.AppendASCII(test_file_name)));
   }
 }
 
