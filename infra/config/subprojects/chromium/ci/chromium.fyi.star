@@ -1331,7 +1331,6 @@ The build configs and the bot specs should be in sync with <a href="https://ci.c
             config = "chromium",
             apply_configs = [
                 "android",
-                "checkout_siso",
                 "siso_latest",
             ],
         ),
@@ -1366,7 +1365,6 @@ This builder measures build performance for Android developer builds, by simulat
             config = "chromium",
             apply_configs = [
                 "android",
-                "checkout_siso",
                 "siso_latest",
             ],
         ),
@@ -1428,7 +1426,6 @@ The build configs and the bot specs should be in sync with <a href="https://ci.c
         gclient_config = builder_config.gclient_config(
             config = "chromium",
             apply_configs = [
-                "checkout_siso",
                 "siso_latest",
             ],
         ),
@@ -1456,7 +1453,6 @@ This builder measures build performance for Linux developer builds, by simulatin
         gclient_config = builder_config.gclient_config(
             config = "chromium",
             apply_configs = [
-                "checkout_siso",
                 "siso_latest",
             ],
         ),
@@ -1512,7 +1508,6 @@ The build configs and the bot specs should be in sync with <a href="https://ci.c
         gclient_config = builder_config.gclient_config(
             config = "chromium",
             apply_configs = [
-                "checkout_siso",
                 "siso_latest",
             ],
         ),
@@ -1540,7 +1535,6 @@ This builder measures build performance for Windows developer builds, by simulat
         gclient_config = builder_config.gclient_config(
             config = "chromium",
             apply_configs = [
-                "checkout_siso",
                 "siso_latest",
             ],
         ),
@@ -1603,7 +1597,6 @@ The build configs and the bot specs should be in sync with <a href="https://ci.c
             config = "chromium",
             apply_configs = [
                 "chromeos",
-                "checkout_siso",
                 "siso_latest",
             ],
         ),
