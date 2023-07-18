@@ -5,7 +5,6 @@
 package org.chromium.components.environment_integrity;
 
 import androidx.annotation.NonNull;
-import androidx.concurrent.futures.CallbackToFutureAdapter;
 import androidx.core.os.ExecutorCompat;
 
 import com.google.common.util.concurrent.FutureCallback;
@@ -130,13 +129,8 @@ public abstract class IntegrityServiceBridge {
 
     private static IntegrityServiceBridgeDelegate getDelegate() {
         ThreadUtils.checkUiThread();
-
         if (sDelegate == null) {
-            // TODO(https://crrev.com/c/4660453): Change to use IntegrityServiceBridgeDelegateImpl
-            // While landing this code upstream, the downstream build targets will not
-            // have a valid implementation of IntegrityServiceBridgeDelegateImpl.
-            // Instantiate with a shim class until then.
-            sDelegate = new IntegrityServiceBridgeDelegateShim();
+            sDelegate = new IntegrityServiceBridgeDelegateImpl();
         }
         return sDelegate;
     }
@@ -161,37 +155,5 @@ public abstract class IntegrityServiceBridge {
 
         void onGetIntegrityTokenResult(long callbackId, @IntegrityResponse int responseCode,
                 byte[] token, String errorMsg);
-    }
-
-    /**
-     * Temporary shim implementation while doing a 3-way commit to land the downstream
-     * implementation.
-     */
-    private static class IntegrityServiceBridgeDelegateShim
-            implements IntegrityServiceBridgeDelegate {
-        private static final String NOT_SUPPORTED_ERROR = "Environment Integrity not available.";
-        @Override
-        public ListenableFuture<Long> createEnvironmentIntegrityHandle(
-                boolean ignored, int timeoutMilliseconds) {
-            return CallbackToFutureAdapter.getFuture(resolver -> {
-                resolver.setException(new IntegrityException(
-                        NOT_SUPPORTED_ERROR, IntegrityResponse.API_NOT_AVAILABLE));
-                return "IntegrityServiceBridgeDelegateShim.createEnvironmentIntegrityHandle";
-            });
-        }
-
-        @Override
-        public ListenableFuture<byte[]> getEnvironmentIntegrityToken(
-                long handle, byte[] requestHash, int timeoutMilliseconds) {
-            return CallbackToFutureAdapter.getFuture(resolver -> {
-                resolver.setException(new IntegrityException(
-                        NOT_SUPPORTED_ERROR, IntegrityResponse.API_NOT_AVAILABLE));
-                return "IntegrityServiceBridgeDelegateShim.getEnvironmentIntegrityToken";
-            });
-        }
-        @Override
-        public boolean canUseGms() {
-            return false;
-        }
     }
 }
