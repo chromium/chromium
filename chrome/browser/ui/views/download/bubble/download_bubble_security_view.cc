@@ -90,6 +90,13 @@ bool ShouldOpenPrimaryDialog(DownloadCommands::Command command) {
   }
 }
 
+bool ShouldReturnToPrimaryDialog(download::DownloadDangerType danger_type) {
+  // The only non-terminal danger type where the security subpage view shows is
+  // `DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING`. We should then return to the row
+  // view for safe deep scans.
+  return danger_type == download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_SAFE;
+}
+
 }  // namespace
 
 // This class encapsulates a piece of text broken into several paragraphs.
@@ -658,8 +665,30 @@ void DownloadBubbleSecurityView::UpdateSecurityView(
   DCHECK(download_row_view_->model());
   model_ =
       DownloadItemModel::Wrap(download_row_view_->model()->GetDownloadItem());
+  model_->SetDelegate(this);
+  cached_danger_type_ = model_->GetDangerType();
   did_log_action_ = false;
 
+  UpdateViews();
+  base::UmaHistogramEnumeration(kSubpageActionHistogram,
+                                DownloadBubbleSubpageAction::kShown);
+}
+
+void DownloadBubbleSecurityView::OnDownloadUpdated() {
+  if (cached_danger_type_ == model_->GetDangerType()) {
+    return;
+  }
+
+  cached_danger_type_ = model_->GetDangerType();
+  if (ShouldReturnToPrimaryDialog(cached_danger_type_)) {
+    navigation_handler_->OpenPrimaryDialog();
+    return;
+  }
+
+  UpdateViews();
+}
+
+void DownloadBubbleSecurityView::UpdateViews() {
   // Our multiline labels need to know the width of the bubble in order to size
   // themselves appropriately (see `GetMinimumLabelWidth`). This means that we
   // must reset fields that increase the width of the bubble before update. This
@@ -672,8 +701,6 @@ void DownloadBubbleSecurityView::UpdateSecurityView(
   UpdateIconAndText();
   UpdateSecondaryIconAndText();
   UpdateProgressBar();
-  base::UmaHistogramEnumeration(kSubpageActionHistogram,
-                                DownloadBubbleSubpageAction::kShown);
 }
 
 void DownloadBubbleSecurityView::UpdateAccessibilityTextAndFocus() {

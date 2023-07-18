@@ -7,9 +7,9 @@
 
 #include "base/gtest_prod_util.h"
 #include "chrome/browser/download/download_ui_model.h"
+#include "components/download/public/common/download_danger_type.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
-#include "ui/color/color_id.h"
 #include "ui/views/controls/progress_bar.h"
 #include "ui/views/view.h"
 
@@ -26,10 +26,10 @@ class LabelButton;
 class DownloadBubbleUIController;
 class DownloadBubbleNavigationHandler;
 class DownloadBubbleRowView;
-class DownloadUIModel;
 class ParagraphsView;
 
-class DownloadBubbleSecurityView : public views::View {
+class DownloadBubbleSecurityView : public views::View,
+                                   public DownloadUIModel::Delegate {
  public:
   METADATA_HEADER(DownloadBubbleSecurityView);
   DownloadBubbleSecurityView(
@@ -54,15 +54,17 @@ class DownloadBubbleSecurityView : public views::View {
                            VerifyLogWarningActions);
 
   void BackButtonPressed();
-  void UpdateHeader();
   void AddHeader();
   void CloseBubble();
   void OnCheckboxClicked();
-  void UpdateIconAndText();
-  void UpdateSecondaryIconAndText();
   void AddIconAndText();
   void AddSecondaryIconAndText();
   void AddProgressBar();
+
+  void UpdateViews();
+  void UpdateHeader();
+  void UpdateIconAndText();
+  void UpdateSecondaryIconAndText();
   // Updates the subpage button. Setting initial state and color for enabled
   // state, if it is a secondary button.
   void UpdateButton(DownloadUIModel::BubbleUIInfo::SubpageButton button,
@@ -70,6 +72,9 @@ class DownloadBubbleSecurityView : public views::View {
                     bool has_checkbox);
   void UpdateButtons();
   void UpdateProgressBar();
+
+  // DownloadUIModel::Delegate implementation
+  void OnDownloadUpdated() override;
 
   // Reset fields that increase the width of the bubble.
   void ClearWideFields();
@@ -102,6 +107,8 @@ class DownloadBubbleSecurityView : public views::View {
   raw_ptr<views::ProgressBar> progress_bar_ = nullptr;
   absl::optional<base::Time> warning_time_;
   bool did_log_action_ = false;
+
+  download::DownloadDangerType cached_danger_type_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_DOWNLOAD_BUBBLE_DOWNLOAD_BUBBLE_SECURITY_VIEW_H_
