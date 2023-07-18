@@ -9,6 +9,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/json/json_reader.h"
 #include "base/location.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/ref_counted_memory.h"
@@ -37,6 +38,7 @@
 #include "printing/pwg_raster_settings.h"
 #include "services/device/public/mojom/usb_device.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/gfx/geometry/size.h"
 
 using extensions::DevicePermissionsManager;
 using extensions::Extension;
@@ -101,6 +103,45 @@ absl::optional<ProvisionalUsbPrinter> ParseProvisionalUsbPrinterId(
 extensions::PrinterProviderAPI* GetPrinterProviderAPI(Profile* profile) {
   return extensions::PrinterProviderAPIFactory::GetInstance()
       ->GetForBrowserContext(profile);
+}
+
+struct ExtensionPrinterSettings {
+  ExtensionPrinterSettings() = default;
+  ExtensionPrinterSettings(ExtensionPrinterSettings&&) noexcept = default;
+  ExtensionPrinterSettings& operator=(ExtensionPrinterSettings&&) noexcept =
+      default;
+  ~ExtensionPrinterSettings() = default;
+
+  std::string destination_id;
+  std::string capabilities;
+  gfx::Size page_size;
+  base::Value::Dict ticket;
+};
+
+// Parses print job `settings` for an extension printer and returns the parsed
+// output, or returns `absl::nullopt` on failure.
+absl::optional<ExtensionPrinterSettings> ParseExtensionPrinterSettings(
+    const base::Value::Dict& settings) {
+  ExtensionPrinterSettings parsed_settings;
+
+  const std::string* ticket = settings.FindString(kSettingTicket);
+  const std::string* capabilities = settings.FindString(kSettingCapabilities);
+  parsed_settings.page_size.SetSize(
+      settings.FindInt(kSettingPageWidth).value_or(0),
+      settings.FindInt(kSettingPageHeight).value_or(0));
+  if (!ticket || !capabilities || parsed_settings.page_size.IsEmpty()) {
+    NOTREACHED();
+    return absl::nullopt;
+  }
+  absl::optional<base::Value> ticket_value = base::JSONReader::Read(*ticket);
+  if (!ticket_value || !ticket_value->is_dict()) {
+    return absl::nullopt;
+  }
+
+  parsed_settings.destination_id = *settings.FindString(kSettingDeviceName);
+  parsed_settings.capabilities = *capabilities;
+  parsed_settings.ticket = std::move(*ticket_value).TakeDict();
+  return parsed_settings;
 }
 
 }  // namespace

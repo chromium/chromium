@@ -5,13 +5,9 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_PRINT_PREVIEW_PRINT_PREVIEW_UTILS_H_
 #define CHROME_BROWSER_UI_WEBUI_PRINT_PREVIEW_PRINT_PREVIEW_UTILS_H_
 
-#include <string>
-
 #include "base/values.h"
 #include "chrome/browser/ui/webui/print_preview/printer_handler.h"
 #include "printing/backend/print_backend.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
-#include "ui/gfx/geometry/size.h"
 
 namespace content {
 class WebContents;
@@ -57,23 +53,6 @@ void StartLocalPrint(base::Value::Dict job_settings,
                      scoped_refptr<base::RefCountedMemory> print_data,
                      content::WebContents* preview_web_contents,
                      PrinterHandler::PrintCallback callback);
-
-struct ExtensionPrinterSettings {
-  ExtensionPrinterSettings();
-  ExtensionPrinterSettings(ExtensionPrinterSettings&&) noexcept;
-  ExtensionPrinterSettings& operator=(ExtensionPrinterSettings&&) noexcept;
-  ~ExtensionPrinterSettings();
-
-  std::string destination_id;
-  std::string capabilities;
-  gfx::Size page_size;
-  base::Value::Dict ticket;
-};
-
-// Parses print job `settings` for an extension printer and returns the parsed
-// output, or returns `absl::nullopt` on failure.
-absl::optional<ExtensionPrinterSettings> ParseExtensionPrinterSettings(
-    const base::Value::Dict& settings);
 
 }  // namespace printing
 

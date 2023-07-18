@@ -4,15 +4,12 @@
 
 #include "chrome/browser/ui/webui/print_preview/print_preview_utils.h"
 
-#include <memory>
 #include <string>
 #include <utility>
-#include <vector>
 
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
-#include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/strings/string_piece.h"
@@ -257,40 +254,6 @@ void StartLocalPrint(base::Value::Dict job_settings,
   print_view_manager->PrintForPrintPreview(
       std::move(job_settings), std::move(print_data),
       preview_web_contents->GetPrimaryMainFrame(), std::move(callback));
-}
-
-ExtensionPrinterSettings::ExtensionPrinterSettings() = default;
-
-ExtensionPrinterSettings::ExtensionPrinterSettings(
-    ExtensionPrinterSettings&&) noexcept = default;
-
-ExtensionPrinterSettings& ExtensionPrinterSettings::operator=(
-    ExtensionPrinterSettings&&) noexcept = default;
-
-ExtensionPrinterSettings::~ExtensionPrinterSettings() = default;
-
-absl::optional<ExtensionPrinterSettings> ParseExtensionPrinterSettings(
-    const base::Value::Dict& settings) {
-  ExtensionPrinterSettings parsed_settings;
-
-  const std::string* ticket = settings.FindString(kSettingTicket);
-  const std::string* capabilities = settings.FindString(kSettingCapabilities);
-  parsed_settings.page_size.SetSize(
-      settings.FindInt(kSettingPageWidth).value_or(0),
-      settings.FindInt(kSettingPageHeight).value_or(0));
-  if (!ticket || !capabilities || parsed_settings.page_size.IsEmpty()) {
-    NOTREACHED();
-    return absl::nullopt;
-  }
-  absl::optional<base::Value> ticket_value = base::JSONReader::Read(*ticket);
-  if (!ticket_value || !ticket_value->is_dict()) {
-    return absl::nullopt;
-  }
-
-  parsed_settings.destination_id = *settings.FindString(kSettingDeviceName);
-  parsed_settings.capabilities = *capabilities;
-  parsed_settings.ticket = std::move(*ticket_value).TakeDict();
-  return parsed_settings;
 }
 
 }  // namespace printing
