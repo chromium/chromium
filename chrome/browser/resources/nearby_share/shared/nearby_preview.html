@@ -13,16 +13,25 @@
   }
 
   #title {
-    color: var(--cr-primary-text-color);
-    font-size: 13px;
     height: 60px;
     letter-spacing: 0.2px;
-    line-height: 20px;
     overflow: hidden;
     overflow-wrap: break-word;
     text-align: center;
     width: 116px;
   }
+
+  /* TODO(b/279623883): Remove once Jelly is launched. */
+  :host-context(body:not(.jelly-enabled)) #title {
+    color: var(--cr-primary-text-color);
+    font-size: 13px;
+    line-height: 20px;
+  }
+
+  :host-context(body.jelly-enabled) #title {
+    color: var(--cros-sys-on_surface_variant);
+    font: var(--cros-body-2-font);
+  } 
 </style>
 
 <iron-icon class$="[[getIconClass_(disabled)]]"

@@ -52,12 +52,21 @@
 
   #help {
     align-items: flex-start;
-    color: var(--cros-text-color-secondary);
     display: flex;
     flex-direction: row;
+    margin-block-end: 8px;
+  }
+
+  /* TODO(b/279623883): Remove once Jelly is launched. */
+  :host-context(body:not(.jelly-enabled)) #help {
+    color: var(--cros-text-color-secondary);
     font-size: 9px;
     line-height: 12px;
-    margin-block-end: 8px;
+  }
+
+  :host-context(body.jelly-enabled) #help {
+    color: var(--cros-sys-secondary);
+    font: var(--cros-annotation-2-font);
   }
 
   #helpText {
@@ -81,9 +90,17 @@
     display: flex;
     flex-grow: 1;
     justify-content: space-between;
+    overflow: hidden;
+  }
+
+  /* TODO(b/279623883): Remove once Jelly is launched. */
+  :host-context(body:not(.jelly-enabled)) #process-row {
     margin-block-end: 24px;
     margin-block-start: 24px;
-    overflow: hidden;
+  }
+
+  :host-context(body.jelly-enabled) #process-row {
+    margin-block-end: 40px;
   }
 
   .device-list-container {

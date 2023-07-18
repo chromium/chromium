@@ -49,18 +49,38 @@
   }
 
   #pageTitle {
-    color: var(--cros-text-color-primary);
-    /* TODO(b/279623883): Remove backup CSS properties once Jelly is launched. */
-    font: var(--cros-title-1-font, normal 16px/24px 'Google Sans');
     margin: 0;
   }
 
+  /* TODO(b/279623883): Remove once Jelly is launched. */
+  :host-context(body:not(.jelly-enabled)) #pageTitle {
+    font-family: 'Google Sans';
+    font-size: 16px;
+    font-weight: normal;
+    line-height: 24px;
+    color: var(--cros-text-color-primary);
+  }
+
+  :host-context(body.jelly-enabled) #pageTitle {
+    color: var(--cros-sys-on_surface);
+    font: var(--cros-title-1-font);
+  }
+
   #pageSubTitle {
+    margin: 0;
+  }
+
+  /* TODO(b/279623883): Remove once Jelly is launched. */
+  :host-context(body:not(.jelly-enabled)) #pageSubTitle {
     color: var(--cros-text-color-secondary);
     font-size: 14px;
     font-weight: inherit;
     line-height: 20px;
-    margin: 0;
+  }
+
+  :host-context(body.jelly-enabled) #pageSubTitle {
+    color: var(--cros-sys-on_surface_variant);
+    font: var(--cros-body-2-font);
   }
 
   #a11yAnnouncedPageSubTitle {
