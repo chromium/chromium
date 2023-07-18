@@ -5,6 +5,7 @@ Version: v5.5.2
 License: MIT
 License File: LICENSE
 Security Critical: no
+Shipped: yes
 
 Description:
 Lottie is a library for Android, iOS, Web, and Windows that parses Adobe After Effects animations exported as json with Bodymovin and renders them natively on mobile and on the web.
