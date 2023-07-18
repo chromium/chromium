@@ -562,6 +562,12 @@ class CONTENT_EXPORT RenderFrameHostImpl
     return render_frame_state_ == RenderFrameState::kDeleted;
   }
 
+  // Has the RenderFrame been created in the renderer process and not yet been
+  // deleted, exited or crashed. See RenderFrameState.
+  bool is_render_frame_created() const {
+    return render_frame_state_ == RenderFrameState::kCreated;
+  }
+
   // Immediately reinitializes DocumentUserData when the RenderFrameHost needs
   // to be immediately reused after a crash. Only usable for a main frame where
   // `is_render_frame_deleted()` is true.
@@ -3852,12 +3858,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
       const ukm::SourceId document_ukm_source_id,
       ukm::UkmRecorder* ukm_recorder,
       bool only_record_identifiability_metric = false);
-
-  // Has the RenderFrame been created in the renderer process and not yet been
-  // deleted, exited or crashed. See RenderFrameState.
-  bool is_render_frame_created() const {
-    return render_frame_state_ == RenderFrameState::kCreated;
-  }
 
   // Initializes |policy_container_host_|. Constructor helper.
   //

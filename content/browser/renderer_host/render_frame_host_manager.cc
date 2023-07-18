@@ -1559,6 +1559,24 @@ RenderFrameHostManager::GetFrameHostForNavigation(
   // before.
   if (!navigation_rfh->IsRenderFrameLive()) {
     DCHECK(!frame_tree_node_->parent());
+    SCOPED_CRASH_KEY_BOOL("Bug1404162", "is_main_frame",
+                          frame_tree_node_->IsMainFrame());
+    SCOPED_CRASH_KEY_BOOL("Bug1404162", "use_current_rfh", use_current_rfh);
+    SCOPED_CRASH_KEY_BOOL("Bug1404162", "nav_rfh_is_current_rfh",
+                          navigation_rfh == render_frame_host_.get());
+    SCOPED_CRASH_KEY_BOOL("Bug1404162", "must_be_replaced",
+                          navigation_rfh->must_be_replaced());
+    SCOPED_CRASH_KEY_BOOL("Bug1404162", "rf_created",
+                          navigation_rfh->is_render_frame_created());
+    SCOPED_CRASH_KEY_BOOL(
+        "Bug1404162", "process_live",
+        navigation_rfh->GetProcess()->IsInitializedAndNotDead());
+    SCOPED_CRASH_KEY_BOOL("Bug1404162", "without_early_commit",
+                          recovering_without_early_commit);
+    SCOPED_CRASH_KEY_STRING64("Bug1404162", "nav_rfh_lifecycle",
+                              RenderFrameHostImpl::LifecycleStateImplToString(
+                                  navigation_rfh->lifecycle_state()));
+
     if (!ReinitializeMainRenderFrame(navigation_rfh)) {
       return base::unexpected(
           GetFrameHostForNavigationFailed::kCouldNotReinitializeMainFrame);
