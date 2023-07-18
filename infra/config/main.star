@@ -189,6 +189,25 @@ luci.realm(
     ],
 )
 
+# Allows builders to write baselines
+# TODO(crbug/1465953) @project is not available, and @root should inherit into
+# project so we'll do this for now until @project is supported.
+luci.realm(
+    name = "@root",
+    bindings = [
+        luci.binding(
+            roles = "role/resultdb.baselineWriter",
+            groups = [
+                "project-chromium-ci-task-accounts",
+                "project-chromium-try-task-accounts",
+            ],
+            users = [
+                "chromium-orchestrator@chops-service-accounts.iam.gserviceaccount.com",
+            ],
+        ),
+    ],
+)
+
 luci.realm(
     name = "webrtc",
     bindings = [
