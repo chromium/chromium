@@ -975,9 +975,13 @@ void AuraToplevel::OnConfigure(const gfx::Rect& bounds,
   // TODO(crbug/1250129): Support snapped state.
   if (IsFullscreenOrPinnedWindowStateType(state_type)) {
     AddState(&states, XDG_TOPLEVEL_STATE_FULLSCREEN);
-    if (shell_surface_->GetWidget()->GetNativeWindow()->GetProperty(
-            chromeos::kImmersiveImpliedByFullscreen))
+    if (shell_surface_->GetWidget() &&
+        shell_surface_->GetWidget()->GetNativeWindow()->GetProperty(
+            chromeos::kImmersiveImpliedByFullscreen)) {
+      // TODO(oshima): Immersive should probably be default.
+      // Investigate and fix.
       AddState(&states, ZAURA_TOPLEVEL_STATE_IMMERSIVE);
+    }
   }
   if (resizing)
     AddState(&states, XDG_TOPLEVEL_STATE_RESIZING);
