@@ -20,9 +20,12 @@ def gen_preload_images_js(in_app_images: List[str],
             images[os.path.basename(image)] = f.read()
 
     filenames = [os.path.basename(f) for f in standalone_images]
+    formatted_images = '[' + ','.join(f'[{json.dumps(name)}, svg`{image}`]'
+                                      for name, image in images.items()) + ']'
     return (
+        'import {svg} from "chrome://resources/mwc/lit/index.js";'
         f'export const preloadImagesList = {json.dumps(filenames, indent=2)};'
-        f'export const preloadedImages = {json.dumps(images)};')
+        f'export const preloadedImages = new Map({formatted_images});')
 
 
 def main():

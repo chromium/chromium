@@ -27,6 +27,11 @@ class PathHandler(NamedTuple):
     transform: Optional[Callable[[str], str]] = None
 
 
+# Replaces all chrome:// reference to /chrome_stub/
+def stub_chrome_url(s: str) -> str:
+    return s.replace('chrome://', '/chrome_stub/')
+
+
 class DevServerHandler(http.server.SimpleHTTPRequestHandler):
     def __init__(
         self,
@@ -130,17 +135,17 @@ class DevServerHandler(http.server.SimpleHTTPRequestHandler):
     def _handle_preload_images_js(self):
         # TODO(pihsun): With watch, we can cache the result and only
         # re-generate when any image files are changed.
-        self._send_200(build.gen_preload_images_js())
+        self._send_200(stub_chrome_url(build.gen_preload_images_js()))
 
     def _transform_main_html(self, html: str) -> str:
         name = self._load_grd_strings()["name"]
 
         html = html.replace("$i18n{name}", name)
-        html = html.replace("chrome://", "/chrome_stub/")
+        html = stub_chrome_url(html)
         return html
 
     def _transform_js(self, js: str) -> str:
-        return js.replace("chrome://", "/chrome_stub/")
+        return stub_chrome_url(js)
 
     def _load_camera_app_helper_mojo_enums(self) -> Dict[str, Dict[str, int]]:
         with open(os.path.join(self.cca_root, "../camera_app_helper.mojom"),

@@ -13,6 +13,7 @@ import {
 import {
   assert,
   assertEnumVariant,
+  assertExists,
   assertInstanceof,
   checkEnumVariant,
 } from './assert.js';
@@ -28,7 +29,6 @@ import {GalleryButton} from './gallerybutton.js';
 import {I18nString} from './i18n_string.js';
 import {Intent} from './intent.js';
 import * as Comlink from './lib/comlink.js';
-import {loadSvgImages} from './lit/svg_wrapper.js';
 import * as metrics from './metrics.js';
 import * as filesystem from './models/file_system.js';
 import * as loadTimeData from './models/load_time_data.js';
@@ -360,7 +360,16 @@ export class App {
     })();
 
     preloadImages();
-    loadSvgImages();
+
+    for (const el of dom.getAll('[data-svg]', HTMLElement)) {
+      const imageName = assertExists(el.dataset['svg']);
+      const svg = document.createElement('svg-wrapper');
+      svg.setAttribute('name', imageName);
+      // Prepend the svg so it's on the bottom-most layer and won't be covering
+      // other possible children (e.g. inkdrop effect).
+      el.prepend(svg);
+    }
+
     metrics.sendLaunchEvent({launchType});
     await Promise.all([showWindow, startCamera]);
 
