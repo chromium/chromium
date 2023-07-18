@@ -375,133 +375,6 @@ class ClipboardHistoryBrowserTest : public ash::LoginManagerTest {
   base::test::RepeatingTestFuture<bool> operation_confirmed_future_;
 };
 
-// Verifies the clipboard history menu response to mouse and arrow key inputs.
-IN_PROC_BROWSER_TEST_F(ClipboardHistoryBrowserTest,
-                       VerifyMouseAndArrowKeyTraversal) {
-  SetClipboardText("A");
-  SetClipboardText("B");
-  SetClipboardText("C");
-
-  base::HistogramTester histogram_tester;
-
-  ShowContextMenuViaAccelerator(/*wait_for_selection=*/true);
-  ASSERT_TRUE(GetClipboardHistoryController()->IsMenuShowing());
-  ASSERT_EQ(3u, GetContextMenu()->GetMenuItemsCount());
-  histogram_tester.ExpectUniqueSample(
-      "Ash.ClipboardHistory.ContextMenu.ShowMenu",
-      crosapi::mojom::ClipboardHistoryControllerShowSource::kAccelerator, 1);
-
-  // The history menu's first item should be selected as default after the menu
-  // shows. Its delete button should not show, so the contents should not be
-  // clipped.
-  const views::MenuItemView* const first_menu_item_view =
-      GetMenuItemViewForClipboardHistoryItemAtIndex(/*index=*/0u);
-  EXPECT_TRUE(first_menu_item_view->IsSelected());
-  const auto* const first_history_item_view =
-      GetHistoryItemViewForIndex(/*index=*/0u);
-  EXPECT_FALSE(
-      first_history_item_view->GetViewByID(MenuViewID::kDeleteButtonViewID)
-          ->GetVisible());
-  EXPECT_TRUE(first_history_item_view->GetViewByID(MenuViewID::kContentsViewID)
-                  ->clip_path()
-                  .isEmpty());
-
-  // Move the mouse to the second menu item.
-  const views::MenuItemView* const second_menu_item_view =
-      GetMenuItemViewForClipboardHistoryItemAtIndex(/*index=*/1u);
-  EXPECT_FALSE(second_menu_item_view->IsSelected());
-  GetEventGenerator()->MoveMouseTo(
-      second_menu_item_view->GetBoundsInScreen().CenterPoint());
-
-  // The first menu item should not be selected while the second one should be.
-  EXPECT_FALSE(first_menu_item_view->IsSelected());
-  EXPECT_TRUE(second_menu_item_view->IsSelected());
-
-  // Under mouse hovering, the second item's delete button should show. If the
-  // clipboard history refresh is enabled, the contents should be clipped.
-  const auto* const second_history_item_view =
-      GetHistoryItemViewForIndex(/*index=*/1u);
-  EXPECT_TRUE(
-      second_history_item_view->GetViewByID(MenuViewID::kDeleteButtonViewID)
-          ->GetVisible());
-  EXPECT_NE(second_history_item_view->GetViewByID(MenuViewID::kContentsViewID)
-                ->clip_path()
-                .isEmpty(),
-            chromeos::features::IsClipboardHistoryRefreshEnabled());
-
-  // Move the selection to the third item by pressing the arrow key.
-  const views::MenuItemView* const third_menu_item_view =
-      GetMenuItemViewForClipboardHistoryItemAtIndex(/*index=*/2u);
-  EXPECT_FALSE(third_menu_item_view->IsSelected());
-  PressAndRelease(ui::KeyboardCode::VKEY_DOWN, ui::EF_NONE);
-
-  // The third item should be selected. Its delete button should not show, so
-  // the contents should not be clipped.
-  EXPECT_FALSE(second_menu_item_view->IsSelected());
-  EXPECT_TRUE(third_menu_item_view->IsSelected());
-  const auto* const third_history_item_view =
-      GetHistoryItemViewForIndex(/*index=*/2u);
-  EXPECT_FALSE(
-      third_history_item_view->GetViewByID(MenuViewID::kDeleteButtonViewID)
-          ->GetVisible());
-  EXPECT_TRUE(third_history_item_view->GetViewByID(MenuViewID::kContentsViewID)
-                  ->clip_path()
-                  .isEmpty());
-}
-
-// Verifies tab traversal behavior when there is only one item in clipboard
-// history.
-IN_PROC_BROWSER_TEST_F(ClipboardHistoryBrowserTest,
-                       VerifySingleItemTabTraversal) {
-  SetClipboardText("A");
-  ShowContextMenuViaAccelerator(/*wait_for_selection=*/true);
-
-  // Verify the default state right after the menu shows.
-  ASSERT_TRUE(GetClipboardHistoryController()->IsMenuShowing());
-  ASSERT_EQ(1u, GetContextMenu()->GetMenuItemsCount());
-
-  const views::MenuItemView* const menu_item_view =
-      GetMenuItemViewForClipboardHistoryItemAtIndex(/*index=*/0u);
-  const ash::ClipboardHistoryItemView* const history_item_view =
-      GetHistoryItemViewForIndex(/*index=*/0u);
-
-  EXPECT_TRUE(menu_item_view->IsSelected());
-  EXPECT_TRUE(history_item_view->IsMainButtonPseudoFocused());
-  EXPECT_FALSE(history_item_view->IsDeleteButtonPseudoFocused());
-
-  // Press the Tab key. Verify that the history item's pseudo focus moves from
-  // the main button to the delete button.
-  PressAndRelease(ui::VKEY_TAB);
-  EXPECT_TRUE(menu_item_view->IsSelected());
-  EXPECT_FALSE(history_item_view->IsMainButtonPseudoFocused());
-  EXPECT_TRUE(history_item_view->IsDeleteButtonPseudoFocused());
-
-  // Verify that the history item's delete button shows. In addition, the
-  // delete button's inkdrop highlight should fade in or be visible because the
-  // button is focused. If the clipboard history refresh is enabled, the delete
-  // button's visibility should cause the contents to be clipped.
-  const views::View* const delete_button =
-      history_item_view->GetViewByID(MenuViewID::kDeleteButtonViewID);
-  const views::View* const contents_view =
-      history_item_view->GetViewByID(MenuViewID::kContentsViewID);
-  EXPECT_TRUE(delete_button->GetVisible());
-  EXPECT_TRUE(views::InkDrop::Get(const_cast<views::View*>(delete_button))
-                  ->GetInkDrop()
-                  ->IsHighlightFadingInOrVisible());
-  EXPECT_NE(contents_view->clip_path().isEmpty(),
-            chromeos::features::IsClipboardHistoryRefreshEnabled());
-
-  // Press the Tab key. Verify that the history item's pseudo focus moves from
-  // the delete button back to the main button and the delete button stops being
-  // visible. The contents view should not be clipped.
-  PressAndRelease(ui::VKEY_TAB);
-  EXPECT_TRUE(menu_item_view->IsSelected());
-  EXPECT_TRUE(history_item_view->IsMainButtonPseudoFocused());
-  EXPECT_FALSE(history_item_view->IsDeleteButtonPseudoFocused());
-  EXPECT_FALSE(delete_button->GetVisible());
-  EXPECT_TRUE(contents_view->clip_path().isEmpty());
-}
-
 // Verifies tab traversal behavior when there are multiple items in clipboard
 // history.
 IN_PROC_BROWSER_TEST_F(ClipboardHistoryBrowserTest,
@@ -1339,37 +1212,6 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryTextfieldBrowserTest,
                                       /*expected_bucket_count=*/1);
 }
 
-// Verifies that the delete button should show after its host item view is under
-// gesture press for enough long time (https://crbug.com/1147584).
-IN_PROC_BROWSER_TEST_F(ClipboardHistoryTextfieldBrowserTest,
-                       DeleteButtonShowAfterLongPress) {
-  SetClipboardText("A");
-  SetClipboardText("B");
-  ShowContextMenuViaAccelerator(/*wait_for_selection=*/true);
-  ASSERT_TRUE(GetClipboardHistoryController()->IsMenuShowing());
-
-  ash::ClipboardHistoryItemView* second_item_view =
-      GetHistoryItemViewForIndex(/*index=*/1u);
-  views::View* second_item_delete_button =
-      second_item_view->GetViewByID(MenuViewID::kDeleteButtonViewID);
-  const views::View* const second_item_contents_view =
-      second_item_view->GetViewByID(MenuViewID::kContentsViewID);
-  EXPECT_FALSE(second_item_delete_button->GetVisible());
-  EXPECT_TRUE(second_item_contents_view->clip_path().isEmpty());
-
-  // Long press on the second item until its delete button shows.
-  GetEventGenerator()->PressTouch(
-      second_item_view->GetBoundsInScreen().CenterPoint());
-  base::RunLoop run_loop;
-  auto subscription = second_item_delete_button->AddVisibleChangedCallback(
-      run_loop.QuitClosure());
-  run_loop.Run();
-  GetEventGenerator()->ReleaseTouch();
-  EXPECT_TRUE(second_item_delete_button->GetVisible());
-  EXPECT_NE(second_item_contents_view->clip_path().isEmpty(),
-            chromeos::features::IsClipboardHistoryRefreshEnabled());
-}
-
 IN_PROC_BROWSER_TEST_F(ClipboardHistoryTextfieldBrowserTest,
                        ShouldPasteHistoryViaKeyboard) {
   base::HistogramTester histogram_tester;
@@ -1808,6 +1650,164 @@ IN_PROC_BROWSER_TEST_P(ClipboardHistoryRefreshAshBrowserTest,
       crosapi::mojom::ClipboardHistoryControllerShowSource::
           kRenderViewContextMenu,
       1);
+}
+
+// Verifies the clipboard history menu response to mouse and arrow key inputs.
+IN_PROC_BROWSER_TEST_P(ClipboardHistoryRefreshAshBrowserTest,
+                       VerifyMouseAndArrowKeyTraversal) {
+  SetClipboardText("A");
+  SetClipboardText("B");
+  SetClipboardText("C");
+
+  base::HistogramTester histogram_tester;
+
+  ShowContextMenuViaAccelerator(/*wait_for_selection=*/true);
+  ASSERT_TRUE(GetClipboardHistoryController()->IsMenuShowing());
+  ASSERT_EQ(3u, GetContextMenu()->GetMenuItemsCount());
+  histogram_tester.ExpectUniqueSample(
+      "Ash.ClipboardHistory.ContextMenu.ShowMenu",
+      crosapi::mojom::ClipboardHistoryControllerShowSource::kAccelerator, 1);
+
+  // The history menu's first item should be selected as default after the menu
+  // shows. Its delete button should not show, so the contents should not be
+  // clipped.
+  const views::MenuItemView* const first_menu_item_view =
+      GetMenuItemViewForClipboardHistoryItemAtIndex(/*index=*/0u);
+  EXPECT_TRUE(first_menu_item_view->IsSelected());
+  const auto* const first_history_item_view =
+      GetHistoryItemViewForIndex(/*index=*/0u);
+  EXPECT_FALSE(
+      first_history_item_view->GetViewByID(MenuViewID::kDeleteButtonViewID)
+          ->GetVisible());
+  EXPECT_TRUE(first_history_item_view->GetViewByID(MenuViewID::kContentsViewID)
+                  ->clip_path()
+                  .isEmpty());
+
+  // Move the mouse to the second menu item.
+  const views::MenuItemView* const second_menu_item_view =
+      GetMenuItemViewForClipboardHistoryItemAtIndex(/*index=*/1u);
+  EXPECT_FALSE(second_menu_item_view->IsSelected());
+  GetEventGenerator()->MoveMouseTo(
+      second_menu_item_view->GetBoundsInScreen().CenterPoint());
+
+  // The first menu item should not be selected while the second one should be.
+  EXPECT_FALSE(first_menu_item_view->IsSelected());
+  EXPECT_TRUE(second_menu_item_view->IsSelected());
+
+  // Under mouse hovering, the second item's delete button should show. If the
+  // clipboard history refresh is enabled, the contents should be clipped.
+  const auto* const second_history_item_view =
+      GetHistoryItemViewForIndex(/*index=*/1u);
+  EXPECT_TRUE(
+      second_history_item_view->GetViewByID(MenuViewID::kDeleteButtonViewID)
+          ->GetVisible());
+  EXPECT_NE(second_history_item_view->GetViewByID(MenuViewID::kContentsViewID)
+                ->clip_path()
+                .isEmpty(),
+            chromeos::features::IsClipboardHistoryRefreshEnabled());
+
+  // Move the selection to the third item by pressing the arrow key.
+  const views::MenuItemView* const third_menu_item_view =
+      GetMenuItemViewForClipboardHistoryItemAtIndex(/*index=*/2u);
+  EXPECT_FALSE(third_menu_item_view->IsSelected());
+  PressAndRelease(ui::KeyboardCode::VKEY_DOWN, ui::EF_NONE);
+
+  // The third item should be selected. Its delete button should not show, so
+  // the contents should not be clipped.
+  EXPECT_FALSE(second_menu_item_view->IsSelected());
+  EXPECT_TRUE(third_menu_item_view->IsSelected());
+  const auto* const third_history_item_view =
+      GetHistoryItemViewForIndex(/*index=*/2u);
+  EXPECT_FALSE(
+      third_history_item_view->GetViewByID(MenuViewID::kDeleteButtonViewID)
+          ->GetVisible());
+  EXPECT_TRUE(third_history_item_view->GetViewByID(MenuViewID::kContentsViewID)
+                  ->clip_path()
+                  .isEmpty());
+}
+
+// Verifies tab traversal behavior when there is only one item in clipboard
+// history.
+IN_PROC_BROWSER_TEST_P(ClipboardHistoryRefreshAshBrowserTest,
+                       VerifySingleItemTabTraversal) {
+  SetClipboardText("A");
+  ShowContextMenuViaAccelerator(/*wait_for_selection=*/true);
+
+  // Verify the default state right after the menu shows.
+  ASSERT_TRUE(GetClipboardHistoryController()->IsMenuShowing());
+  ASSERT_EQ(1u, GetContextMenu()->GetMenuItemsCount());
+
+  const views::MenuItemView* const menu_item_view =
+      GetMenuItemViewForClipboardHistoryItemAtIndex(/*index=*/0u);
+  const ash::ClipboardHistoryItemView* const history_item_view =
+      GetHistoryItemViewForIndex(/*index=*/0u);
+
+  EXPECT_TRUE(menu_item_view->IsSelected());
+  EXPECT_TRUE(history_item_view->IsMainButtonPseudoFocused());
+  EXPECT_FALSE(history_item_view->IsDeleteButtonPseudoFocused());
+
+  // Press the Tab key. Verify that the history item's pseudo focus moves from
+  // the main button to the delete button.
+  PressAndRelease(ui::VKEY_TAB);
+  EXPECT_TRUE(menu_item_view->IsSelected());
+  EXPECT_FALSE(history_item_view->IsMainButtonPseudoFocused());
+  EXPECT_TRUE(history_item_view->IsDeleteButtonPseudoFocused());
+
+  // Verify that the history item's delete button shows. In addition, the
+  // delete button's inkdrop highlight should fade in or be visible because the
+  // button is focused. If the clipboard history refresh is enabled, the delete
+  // button's visibility should cause the contents to be clipped.
+  const views::View* const delete_button =
+      history_item_view->GetViewByID(MenuViewID::kDeleteButtonViewID);
+  const views::View* const contents_view =
+      history_item_view->GetViewByID(MenuViewID::kContentsViewID);
+  EXPECT_TRUE(delete_button->GetVisible());
+  EXPECT_TRUE(views::InkDrop::Get(const_cast<views::View*>(delete_button))
+                  ->GetInkDrop()
+                  ->IsHighlightFadingInOrVisible());
+  EXPECT_NE(contents_view->clip_path().isEmpty(),
+            chromeos::features::IsClipboardHistoryRefreshEnabled());
+
+  // Press the Tab key. Verify that the history item's pseudo focus moves from
+  // the delete button back to the main button and the delete button stops being
+  // visible. The contents view should not be clipped.
+  PressAndRelease(ui::VKEY_TAB);
+  EXPECT_TRUE(menu_item_view->IsSelected());
+  EXPECT_TRUE(history_item_view->IsMainButtonPseudoFocused());
+  EXPECT_FALSE(history_item_view->IsDeleteButtonPseudoFocused());
+  EXPECT_FALSE(delete_button->GetVisible());
+  EXPECT_TRUE(contents_view->clip_path().isEmpty());
+}
+
+// Verifies that the delete button should show after its host item view is under
+// gesture press for enough long time (https://crbug.com/1147584).
+IN_PROC_BROWSER_TEST_P(ClipboardHistoryRefreshAshBrowserTest,
+                       DeleteButtonShowAfterLongPress) {
+  SetClipboardText("A");
+  SetClipboardText("B");
+  ShowContextMenuViaAccelerator(/*wait_for_selection=*/true);
+  ASSERT_TRUE(GetClipboardHistoryController()->IsMenuShowing());
+
+  ash::ClipboardHistoryItemView* second_item_view =
+      GetHistoryItemViewForIndex(/*index=*/1u);
+  views::View* second_item_delete_button =
+      second_item_view->GetViewByID(MenuViewID::kDeleteButtonViewID);
+  const views::View* const second_item_contents_view =
+      second_item_view->GetViewByID(MenuViewID::kContentsViewID);
+  EXPECT_FALSE(second_item_delete_button->GetVisible());
+  EXPECT_TRUE(second_item_contents_view->clip_path().isEmpty());
+
+  // Long press on the second item until its delete button shows.
+  GetEventGenerator()->PressTouch(
+      second_item_view->GetBoundsInScreen().CenterPoint());
+  base::RunLoop run_loop;
+  auto subscription = second_item_delete_button->AddVisibleChangedCallback(
+      run_loop.QuitClosure());
+  run_loop.Run();
+  GetEventGenerator()->ReleaseTouch();
+  EXPECT_TRUE(second_item_delete_button->GetVisible());
+  EXPECT_NE(second_item_contents_view->clip_path().isEmpty(),
+            chromeos::features::IsClipboardHistoryRefreshEnabled());
 }
 
 // Base class used to test features that only exist when the Ctrl+V longpress
