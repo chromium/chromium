@@ -5,11 +5,12 @@
 // clang-format off
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {HatsBrowserProxyImpl, LifetimeBrowserProxyImpl, MetricsBrowserProxyImpl, OpenWindowProxyImpl, PasswordCheckReferrer, PasswordManagerImpl, Router, routes, SafetyCheckBrowserProxy, PasswordManagerPage, SafetyCheckBrowserProxyImpl, SafetyCheckCallbackConstants, SafetyCheckExtensionsStatus, SafetyCheckIconStatus, SafetyCheckInteractions, SafetyCheckParentStatus, SafetyCheckPasswordsStatus, SafetyCheckSafeBrowsingStatus, SafetyCheckUpdatesStatus, SettingsSafetyCheckChildElement, SettingsSafetyCheckExtensionsChildElement, SettingsSafetyCheckPageElement, SettingsSafetyCheckPasswordsChildElement, SettingsSafetyCheckSafeBrowsingChildElement ,SettingsSafetyCheckUpdatesChildElement, TrustSafetyInteraction} from 'chrome://settings/settings.js';
+import {SafetyCheckExtensionsElement, SafetyCheckExtensionsBrowserProxyImpl, HatsBrowserProxyImpl, LifetimeBrowserProxyImpl, MetricsBrowserProxyImpl, OpenWindowProxyImpl, PasswordCheckReferrer, PasswordManagerImpl, Router, routes, SafetyCheckBrowserProxy, PasswordManagerPage, SafetyCheckBrowserProxyImpl, SafetyCheckCallbackConstants, SafetyCheckExtensionsStatus, SafetyCheckIconStatus, SafetyCheckInteractions, SafetyCheckParentStatus, SafetyCheckPasswordsStatus, SafetyCheckSafeBrowsingStatus, SafetyCheckUpdatesStatus, SettingsSafetyCheckChildElement, SettingsSafetyCheckExtensionsChildElement, SettingsSafetyCheckPageElement, SettingsSafetyCheckPasswordsChildElement, SettingsSafetyCheckSafeBrowsingChildElement ,SettingsSafetyCheckUpdatesChildElement, TrustSafetyInteraction} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
 
+import {TestExtensionBrowserProxy} from './test_extensions_browser_proxy.js';
 import {TestHatsBrowserProxy} from './test_hats_browser_proxy.js';
 import {TestLifetimeBrowserProxy} from './test_lifetime_browser_proxy.js';
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
@@ -790,6 +791,34 @@ suite('SafetyCheckSafeBrowsingChildUiTests', function() {
     });
   });
 });
+
+suite('SafetyCheckExtensionsUiTests', function() {
+  let page: SafetyCheckExtensionsElement;
+  let browserProxy: TestExtensionBrowserProxy;
+  let openWindowProxy: TestOpenWindowProxy;
+
+  setup(function() {
+    browserProxy = new TestExtensionBrowserProxy();
+    SafetyCheckExtensionsBrowserProxyImpl.setInstance(browserProxy);
+    openWindowProxy = new TestOpenWindowProxy();
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    OpenWindowProxyImpl.setInstance(openWindowProxy);
+    page = document.createElement('safety-check-extensions');
+    document.body.appendChild(page);
+    flush();
+  });
+
+  test('extensionsReviewUiTest', async function() {
+    // Make sure that clicking the Safety Check Review button navigates
+    // the user to the extensions page.
+    const safetyCheck = page.$.safetyCheckChild.shadowRoot!;
+    assertTrue(!!safetyCheck);
+    safetyCheck.querySelector<HTMLElement>('#button')!.click();
+    const url = await openWindowProxy.whenCalled('openUrl');
+    assertEquals('chrome://extensions', url);
+  });
+});
+
 
 suite('SafetyCheckExtensionsChildUiTests', function() {
   let metricsBrowserProxy: TestMetricsBrowserProxy;

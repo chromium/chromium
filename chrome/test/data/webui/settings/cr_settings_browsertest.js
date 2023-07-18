@@ -312,6 +312,7 @@ var CrSettingsSafetyCheckPermissionsTest = class extends CrSettingsBrowserTest {
       enabled: [
         'content_settings::features::kSafetyCheckUnusedSitePermissions',
         'features::kSafetyCheckNotificationPermissions',
+        'features::kSafetyCheckExtensions',
       ],
     };
   }
