@@ -118,6 +118,9 @@ BASE_DECLARE_FEATURE(kIOSLocationBarUseNativeContextMenu);
 // Feature flag that swaps the omnibox textfield implementation.
 BASE_DECLARE_FEATURE(kIOSNewOmniboxImplementation);
 
+// Feature flag to use direct upload for Lens searches.
+BASE_DECLARE_FEATURE(kIOSLensUseDirectUpload);
+
 // Feature flag to enable the Lens entrypoint in the home screen widget.
 BASE_DECLARE_FEATURE(kEnableLensInHomeScreenWidget);
 

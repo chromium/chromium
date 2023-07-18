@@ -1018,6 +1018,12 @@ const char kThemeColorInToolbarName[] = "Use page's theme color";
 const char kThemeColorInToolbarDescription[] =
     "When enabled, the omnibox background color is the page's theme color";
 
+const char kIOSLensUseDirectUploadName[] =
+    "Use direct upload for Lens searches";
+const char kIOSLensUseDirectUploadDescription[] =
+    "When enabled, use the direct upload Lens endpoint when searching images "
+    "with Lens.";
+
 const char kEnableLensInHomeScreenWidgetName[] =
     "Enable Google Lens in the Home Screen Widget";
 const char kEnableLensInHomeScreenWidgetDescription[] =

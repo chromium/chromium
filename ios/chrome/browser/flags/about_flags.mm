@@ -1604,6 +1604,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"tab-resumption", flag_descriptions::kTabResumptionName,
      flag_descriptions::kTabResumptionDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kTabResumption)},
+    {"ios-lens-use-direct-upload",
+     flag_descriptions::kIOSLensUseDirectUploadName,
+     flag_descriptions::kIOSLensUseDirectUploadDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kIOSLensUseDirectUpload)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

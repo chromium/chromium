@@ -894,6 +894,11 @@ extern const char kThemeColorInToolbarDescription[];
 extern const char kEnableLensInHomeScreenWidgetName[];
 extern const char kEnableLensInHomeScreenWidgetDescription[];
 
+// Title and description for the flag to enable using direct upload for
+// Lens searches in iOS.
+extern const char kIOSLensUseDirectUploadName[];
+extern const char kIOSLensUseDirectUploadDescription[];
+
 // Title and description for the flag to enable using Lens to search using
 // the device camera from the keyboard.
 extern const char kEnableLensInKeyboardName[];
