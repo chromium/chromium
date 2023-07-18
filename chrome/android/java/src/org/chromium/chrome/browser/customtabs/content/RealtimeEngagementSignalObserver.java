@@ -105,7 +105,6 @@ class RealtimeEngagementSignalObserver extends CustomTabTabObserver {
      * @param callback The {@link EngagementSignalsCallback} to sends the signals to.
      * @param hadScrollDown Whether there has been a scroll down gesture.
      */
-    // TODO(https://crbug.com/1378410): Inject this class and implement NativeInitObserver.
     public RealtimeEngagementSignalObserver(TabObserverRegistrar tabObserverRegistrar,
             CustomTabsConnection connection, CustomTabsSessionToken session,
             EngagementSignalsCallback callback, boolean hadScrollDown) {
