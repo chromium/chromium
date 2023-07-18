@@ -191,7 +191,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Crypto.TPMSupport2" enum="TPMSupport"
-    expires_after="2023-12-24">
+    expires_after="2024-03-01">
   <owner>agl@chromium.org</owner>
   <owner>davidben@chromium.org</owner>
   <owner>wfh@chromium.org</owner>
@@ -208,6 +208,16 @@ chromium-metrics-reviews@google.com.
   <summary>
     Collected on Windows at startup. Records whether a virtual and/or hardware
     TPM is present.
+  </summary>
+</histogram>
+
+<histogram name="Crypto.VirtualKeySupport" enum="TPMSupport"
+    expires_after="2024-03-01">
+  <owner>kristianm@chromium.org</owner>
+  <owner>agl@chromium.org</owner>
+  <summary>
+    Collected on Windows at startup. Records whether a virtual TPM is present
+    and, if so, what the best supported algorithm is.
   </summary>
 </histogram>
 
