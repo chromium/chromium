@@ -342,8 +342,6 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   void CheckAppInListTabbed(Site site);
   void CheckAppNavigation(Site site);
   void CheckAppNavigationIsStartUrl();
-  void CheckAppToolbarVisible();
-  void CheckAppToolbarNotVisible();
   void CheckBrowserNavigation(Site site);
   void CheckBrowserNavigationIsAppSettings(Site site);
   void CheckBrowserNotAtAppHome();
@@ -380,6 +378,7 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   void CheckWindowNotCreated();
   void CheckWindowControlsOverlay(Site site, IsOn is_on);
   void CheckWindowControlsOverlayToggle(Site site, IsShown is_shown);
+  void CheckWindowControlsOverlayToggleIcon(IsShown is_shown);
   void CheckWindowDisplayBrowser();
   void CheckWindowDisplayMinimal();
   void CheckWindowDisplayTabbed();

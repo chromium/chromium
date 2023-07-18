@@ -12,6 +12,14 @@ using WebAppIntegration = WebAppIntegrationTest;
 
 // Manual tests:
 
+IN_PROC_BROWSER_TEST_F(WebAppIntegrationTest,
+                       CheckWindowControlsOverlayToggleIcon) {
+  helper_.CreateShortcut(Site::kWco, WindowOptions::kWindowed);
+  helper_.CheckWindowControlsOverlayToggleIcon(IsShown::kShown);
+  helper_.EnterFullScreenApp();
+  helper_.CheckWindowControlsOverlayToggleIcon(IsShown::kNotShown);
+}
+
 IN_PROC_BROWSER_TEST_F(WebAppIntegrationTest, LaunchFromPlatformShortcut) {
   helper_.CreateShortcut(Site::kStandalone, WindowOptions::kWindowed);
   helper_.CheckWindowCreated();

@@ -2648,26 +2648,6 @@ void WebAppIntegrationTestDriver::CheckAppNavigationIsStartUrl() {
   AfterStateCheckAction();
 }
 
-void WebAppIntegrationTestDriver::CheckAppToolbarVisible() {
-  if (!BeforeStateCheckAction(__FUNCTION__)) {
-    return;
-  }
-  ASSERT_TRUE(app_browser());
-  BrowserView* app_view = BrowserView::GetBrowserViewForBrowser(app_browser());
-  ASSERT_TRUE(app_view->web_app_frame_toolbar_for_testing()->GetVisible());
-  AfterStateCheckAction();
-}
-
-void WebAppIntegrationTestDriver::CheckAppToolbarNotVisible() {
-  if (!BeforeStateCheckAction(__FUNCTION__)) {
-    return;
-  }
-  ASSERT_TRUE(app_browser());
-  BrowserView* app_view = BrowserView::GetBrowserViewForBrowser(app_browser());
-  ASSERT_FALSE(app_view->web_app_frame_toolbar_for_testing()->GetVisible());
-  AfterStateCheckAction();
-}
-
 void WebAppIntegrationTestDriver::CheckBrowserNavigation(Site site) {
   if (!BeforeStateCheckAction(__FUNCTION__)) {
     return;
@@ -3360,6 +3340,27 @@ void WebAppIntegrationTestDriver::CheckWindowControlsOverlayToggle(
                     ->window_controls_overlay_toggle_button()
                     ->GetVisible(),
             is_shown == IsShown::kShown);
+  AfterStateCheckAction();
+}
+
+void WebAppIntegrationTestDriver::CheckWindowControlsOverlayToggleIcon(
+    IsShown is_shown) {
+  if (!BeforeStateCheckAction(__FUNCTION__)) {
+    return;
+  }
+  ASSERT_TRUE(app_browser());
+  WebAppFrameToolbarView* toolbar =
+      BrowserView::GetBrowserViewForBrowser(app_browser())
+          ->web_app_frame_toolbar_for_testing();
+  // If toolbar is not visible, then the WCO toggle button is also invisible.
+  if (toolbar->GetVisible()) {
+    ASSERT_EQ(toolbar->get_right_container_for_testing()
+                      ->window_controls_overlay_toggle_button() &&
+                  toolbar->get_right_container_for_testing()
+                      ->window_controls_overlay_toggle_button()
+                      ->GetVisible(),
+              is_shown == IsShown::kShown);
+  }
   AfterStateCheckAction();
 }
 
