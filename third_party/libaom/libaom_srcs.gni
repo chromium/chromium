@@ -589,6 +589,7 @@ aom_dsp_encoder_intrin_neon = [
   "//third_party/libaom/source/libaom/aom_dsp/arm/obmc_sad_neon.c",
   "//third_party/libaom/source/libaom/aom_dsp/arm/sse_neon.c",
   "//third_party/libaom/source/libaom/aom_dsp/arm/sum_squares_neon.c",
+  "//third_party/libaom/source/libaom/aom_dsp/arm/blk_sse_sum_neon.c",
 ]
 
 aom_dsp_encoder_intrin_sse2 = [
