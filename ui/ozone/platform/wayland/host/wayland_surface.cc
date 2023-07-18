@@ -577,11 +577,38 @@ void WaylandSurface::ApplyPendingState() {
 
   if (pending_state_.rounded_clip_bounds != state_.rounded_clip_bounds) {
     DCHECK(get_augmented_surface());
-    if (augmented_surface_get_version(get_augmented_surface()) >=
-        AUGMENTED_SURFACE_SET_ROUNDED_CLIP_BOUNDS_SINCE_VERSION) {
-      gfx::RRectF rounded_clip_bounds = pending_state_.rounded_clip_bounds;
-      rounded_clip_bounds.Scale(1.f / GetWaylandScale(pending_state_));
+    gfx::RRectF rounded_clip_bounds = pending_state_.rounded_clip_bounds;
+    rounded_clip_bounds.Scale(1.f / GetWaylandScale(pending_state_));
 
+    // For backwards compatibility, support both the latest and the deprecated
+    // incarnation of this request. In the future, this API will get a clean up
+    // pass.
+    if (augmented_surface_get_version(get_augmented_surface()) >=
+        AUGMENTED_SURFACE_SET_ROUNDED_CORNERS_CLIP_BOUNDS_SINCE_VERSION) {
+      augmented_surface_set_rounded_corners_clip_bounds(
+          get_augmented_surface(),
+          wl_fixed_from_double(rounded_clip_bounds.rect().x()),
+          wl_fixed_from_double(rounded_clip_bounds.rect().y()),
+          wl_fixed_from_double(rounded_clip_bounds.rect().width()),
+          wl_fixed_from_double(rounded_clip_bounds.rect().height()),
+          wl_fixed_from_double(
+              rounded_clip_bounds
+                  .GetCornerRadii(gfx::RRectF::Corner::kUpperLeft)
+                  .x()),
+          wl_fixed_from_double(
+              rounded_clip_bounds
+                  .GetCornerRadii(gfx::RRectF::Corner::kUpperRight)
+                  .x()),
+          wl_fixed_from_double(
+              rounded_clip_bounds
+                  .GetCornerRadii(gfx::RRectF::Corner::kLowerRight)
+                  .x()),
+          wl_fixed_from_double(
+              rounded_clip_bounds
+                  .GetCornerRadii(gfx::RRectF::Corner::kLowerLeft)
+                  .x()));
+    } else if (augmented_surface_get_version(get_augmented_surface()) >=
+               AUGMENTED_SURFACE_SET_ROUNDED_CLIP_BOUNDS_SINCE_VERSION) {
       augmented_surface_set_rounded_clip_bounds(
           get_augmented_surface(), rounded_clip_bounds.rect().x(),
           rounded_clip_bounds.rect().y(), rounded_clip_bounds.rect().width(),
