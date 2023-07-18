@@ -1061,6 +1061,12 @@ void BrowserAccessibilityManager::LoadInlineTextBoxes(
   if (!delegate_)
     return;
 
+  if (!BrowserAccessibilityStateImpl::GetInstance()
+           ->GetAccessibilityMode()
+           .has_mode(ui::AXMode::kInlineTextBoxes)) {
+    return;
+  }
+
   ui::AXActionData action_data;
   action_data.action = ax::mojom::Action::kLoadInlineTextBoxes;
   action_data.target_node_id = node.GetId();
