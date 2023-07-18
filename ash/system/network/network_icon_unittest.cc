@@ -315,17 +315,8 @@ TEST_P(NetworkIconTest, ConnectingIconChangesInDarkMode) {
       GetDefaultNetworkImage(icon_type_, &animating);
   ASSERT_FALSE(light_mode_image.isNull());
   EXPECT_TRUE(animating);
-
-  if (GetParam()) {
-    // When Jellyroll is enabled, this color is
-    // cros.sys.system-on-primary-container which is the same color in dark and
-    // light mode.
-    EXPECT_TRUE(gfx::test::AreImagesEqual(gfx::Image(default_image),
-                                          gfx::Image(light_mode_image)));
-  } else {
-    EXPECT_FALSE(gfx::test::AreImagesEqual(gfx::Image(default_image),
-                                           gfx::Image(light_mode_image)));
-  }
+  EXPECT_FALSE(gfx::test::AreImagesEqual(gfx::Image(default_image),
+                                         gfx::Image(light_mode_image)));
 }
 
 // Tests that the default network image is a cellular network icon when cellular

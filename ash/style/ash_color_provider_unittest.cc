@@ -120,22 +120,22 @@ INSTANTIATE_TEST_SUITE_P(
 
          // Dark mode values
          {ColorMode::kDark, ColorProvider::BaseLayerType::kTransparent20,
-          SkColorSetARGB(0x33, 0x19, 0x1A, 0x1D)},
+          SkColorSetARGB(0x33, 0x5A, 0x5A, 0x5A)},
          {ColorMode::kDark, ColorProvider::BaseLayerType::kTransparent40,
-          SkColorSetARGB(0x66, 0x19, 0x1A, 0x1D)},
+          SkColorSetARGB(0x66, 0x5A, 0x5A, 0x5A)},
          {ColorMode::kDark, ColorProvider::BaseLayerType::kTransparent60,
-          SkColorSetARGB(0x99, 0x19, 0x1A, 0x1D)},
+          SkColorSetARGB(0x99, 0x5A, 0x5A, 0x5A)},
          {ColorMode::kDark, ColorProvider::BaseLayerType::kTransparent80,
-          SkColorSetARGB(0xCC, 0x19, 0x1A, 0x1D)},
+          SkColorSetARGB(0xCC, 0x5A, 0x5A, 0x5A)},
          {ColorMode::kDark,
           ColorProvider::BaseLayerType::kInvertedTransparent80,
-          SkColorSetARGB(0xCC, 0xE6, 0xE5, 0xE2)},
+          SkColorSetARGB(0xCC, 0xA5, 0xA5, 0xA5)},
          {ColorMode::kDark, ColorProvider::BaseLayerType::kTransparent90,
-          SkColorSetARGB(0xE5, 0x19, 0x1A, 0x1D)},
+          SkColorSetARGB(0xE5, 0x5A, 0x5A, 0x5A)},
          {ColorMode::kDark, ColorProvider::BaseLayerType::kTransparent95,
-          SkColorSetARGB(0xF2, 0x19, 0x1A, 0x1D)},
+          SkColorSetARGB(0xF2, 0x5A, 0x5A, 0x5A)},
          {ColorMode::kDark, ColorProvider::BaseLayerType::kOpaque,
-          SkColorSetARGB(0xFF, 0x19, 0x1A, 0x1D)}}));
+          SkColorSetARGB(0xFF, 0x5A, 0x5A, 0x5A)}}));
 
 using AshColorProviderControlsLayerTest =
     AshColorProviderBase<ColorProvider::ControlsLayerType>;

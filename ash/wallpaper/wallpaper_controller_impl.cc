@@ -1718,6 +1718,10 @@ void WallpaperControllerImpl::CreateEmptyWallpaperForTesting() {
   current_wallpaper_.reset();
   wallpaper_mode_ = WALLPAPER_IMAGE;
   UpdateWallpaperForAllRootWindows(/*lock_state_changed=*/false);
+  // Simulate default color sampling behavior.
+  SetCalculatedColors(WallpaperCalculatedColors(
+      /*prominent_colors=*/{}, /*k_means=*/SK_ColorWHITE,
+      /*celebi=*/gfx::kGoogleBlue400));
 }
 
 void WallpaperControllerImpl::ReloadWallpaperForTesting(bool clear_cache) {
