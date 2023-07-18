@@ -76,8 +76,6 @@ void AdaptiveChargingNotificationController::ShowAdaptiveChargingNotification(
       kAdaptiveChargingBatteryIcon,
       message_center::SystemNotificationWarningLevel::NORMAL);
 
-  if (hours_to_full.has_value())
-    notification->set_priority(message_center::SYSTEM_PRIORITY);
   notification->set_accent_color(
       DarkLightModeControllerImpl::Get()->IsDarkModeEnabled()
           ? gfx::kGoogleGreen300
