@@ -290,6 +290,8 @@ class AssistantVoiceMatch extends AssistantVoiceMatchBase {
     } else if (uiStep === VoiceMatchUIState.COMPLETED) {
       return this.i18n('assistantVoiceMatchCompleted');
     }
+    // TODO(b/291511939): Add a return value for
+    // VoiceMatchUIState.ALREADY_SETUP flow.
   }
 
   /**
@@ -307,6 +309,7 @@ class AssistantVoiceMatch extends AssistantVoiceMatchBase {
       return this.i18nAdvanced(
           'assistantVoiceMatchFooterForChild', {substitutions: [childName]});
     }
+    return trustedTypes.emptyHTML;
   }
 
   getVoiceMatchAnimationUrl_(isTabletMode) {
