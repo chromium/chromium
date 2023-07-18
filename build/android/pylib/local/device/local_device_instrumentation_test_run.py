@@ -684,6 +684,14 @@ class LocalDeviceInstrumentationTestRun(
             batch_name += '|cmd_line_remove:' + ','.join(
                 sorted(annotations['CommandLineFlags$Remove']['value']))
 
+        # WebView tests run in 2 process modes (single and multi). We must
+        # restart the process for each mode, so this means singleprocess tests
+        # and multiprocess tests must not be in the same batch.
+        webview_multiprocess_mode = test['method'].endswith(
+            base_test_result.MULTIPROCESS_SUFFIX)
+        if webview_multiprocess_mode:
+          batch_name += '|multiprocess_mode'
+
         batched_tests.setdefault(batch_name, []).append(test)
       else:
         other_tests.append(test)
