@@ -78,7 +78,7 @@ LibsecretLoader::SearchHelper::~SearchHelper() {
   if (error_)
     g_error_free(error_);
   if (results_)
-    g_list_free_full(results_, &g_object_unref);
+    g_list_free_full(results_.ExtractAsDangling(), &g_object_unref);
 }
 
 void LibsecretLoader::SearchHelper::Search(const SecretSchema* schema,
