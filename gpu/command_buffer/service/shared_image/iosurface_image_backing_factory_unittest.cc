@@ -39,6 +39,7 @@
 #endif
 
 #if BUILDFLAG(USE_DAWN)
+#include <dawn/native/DawnNative.h>
 #include <dawn/webgpu_cpp.h>
 #endif  // BUILDFLAG(USE_DAWN)
 
