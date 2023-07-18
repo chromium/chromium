@@ -21,7 +21,7 @@ class SingleTabViewProperties {
     public static final PropertyModel.WritableObjectPropertyKey<Drawable> FAVICON =
             new PropertyModel.WritableObjectPropertyKey<>();
     public static final PropertyModel.WritableObjectPropertyKey<Bitmap> TAB_THUMBNAIL =
-            new PropertyModel.WritableObjectPropertyKey<>();
+            new PropertyModel.WritableObjectPropertyKey<>(true /* skipEquality */);
     public static final PropertyModel.WritableBooleanPropertyKey IS_VISIBLE =
             new PropertyModel.WritableBooleanPropertyKey();
     public static final PropertyModel.WritableObjectPropertyKey<String> TITLE =
