@@ -889,7 +889,7 @@ class RawRefRewriter {
 
     // Matches expressions that used to have |SomeType&| as return type and
     // became |const raw_ref<SomeType>| after the rewrite.
-    auto affected_member_expr =
+    auto affected_member_expr = memberExpr(
         memberExpr(
             member(fieldDecl(hasExplicitFieldDecl(field_decl_matcher))),
             unless(anyOf(
@@ -904,7 +904,23 @@ class RawRefRewriter {
                 hasParent(arraySubscriptExpr()),
                 hasParent(callExpr(callee(
                     fieldDecl(hasExplicitFieldDecl(field_decl_matcher))))))))
-            .bind("affectedMemberExpr");
+            .bind("affectedMemberExpr"),
+
+        unless(anyOf(
+            // Exclude memberExpressions appearing inside a constructor
+            // initializer of a reference field where we should NOT add
+            // operator*.
+            hasParent(cxxConstructorDecl(hasAnyConstructorInitializer(allOf(
+                withInitializer(
+                    memberExpr(equalsBoundNode("affectedMemberExpr"))),
+                forField(
+                    fieldDecl(hasExplicitFieldDecl(field_decl_matcher))))))),
+            // Exclude memberExpressions, in initializer lists, that are
+            // initializing a reference field that will be rewritten into
+            // raw_ref.
+            hasParent(initListExpr(forEachInitExprWithFieldDecl(
+                memberExpr(equalsBoundNode("affectedMemberExpr")),
+                hasExplicitFieldDecl(field_decl_matcher)))))));
 
     match_finder.addMatcher(affected_member_expr, &affected_expr_rewriter);
 
@@ -969,7 +985,13 @@ class RawRefRewriter {
     // A a{num}; => A a{raw_ref(num)};
     auto init_list_expr_with_raw_ref = initListExpr(
         forEachInitExprWithFieldDecl(
-            expr(unless(materializeTemporaryExpr())).bind("initializer_expr"),
+            expr(unless(anyOf(
+                     materializeTemporaryExpr(),
+                     // Exclude member expressions where the member is a
+                     // reference field that will be rewritten into raw_ref.
+                     memberExpr(member(fieldDecl(
+                         hasExplicitFieldDecl(field_decl_matcher)))))))
+                .bind("initializer_expr"),
             hasExplicitFieldDecl(field_decl_matcher)),
         unless(hasParent(cxxConstructExpr())));
 

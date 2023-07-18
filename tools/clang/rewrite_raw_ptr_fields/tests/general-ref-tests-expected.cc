@@ -29,6 +29,10 @@ MySubStruct::inner_s::inner_s(const inner_s&) = default;
 struct MyStruct {
   MyStruct(MySubStruct& s) : ref(s) {}
 
+  // No rewrite expected for `other.ref` since `ref` itself with become a
+  // raw_ref.
+  MyStruct(const MyStruct& other) : ref(other.ref) {}
+
   const MySubStruct& get() const;
   // Expected rewrite: const raw_ref<MySubStruct> ref;
   const raw_ref<MySubStruct> ref;
@@ -37,6 +41,10 @@ struct MyStruct {
 template <class T>
 struct MyTemplatedStruct {
   MyTemplatedStruct(T& t) : ref(t) {}
+
+  // No rewrite expected for `other.ref` since `ref` itself with become a
+  // raw_ref.
+  MyTemplatedStruct(const MyTemplatedStruct& other) : ref(other.ref) {}
 
   // Expected rewrite: ref->member
   void setSubmember(int n) { ref->member = n; }
@@ -114,6 +122,11 @@ int main() {
   // Expected rewrite:  A obj{.member = {raw_ref(a)}};
   A obj2{.member = {raw_ref(a)}};
   *obj2.member.i++;
+
+  // No rewrite expected here for obj2.member.i since A::member::i itself will
+  // be rewritten into raw_ref.
+  A obj3{obj2.member.i};
+  *obj3.member.i++;
 
   static struct {
     // Expected rewrite: const raw_ref<int> member;
@@ -215,6 +228,15 @@ struct VectorMemberRef {
 };
 
 struct MyStruct2 {
+  MyStruct2(const MyStruct2& other)
+      :  // No rewrite expected for `other.int_ref` since `int_ref` itself with
+         // become a raw_ref.
+        int_ref(other.int_ref),
+        // Expected rewrite: i(*other.int_ref)
+        i(*other.int_ref),
+        func_ref(other.func_ref),
+        ref_to_array_of_ints(other.ref_to_array_of_ints) {}
+
   // Expected rewrite: const raw_ref<int> int_ref;
   const raw_ref<int> int_ref;
   int i;
