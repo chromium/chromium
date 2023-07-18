@@ -27,6 +27,7 @@ public class SharedBookmarkModelMocks {
     static final BookmarkId MOBILE_BOOKMARK_ID = new BookmarkId(sId++, BookmarkType.NORMAL);
     static final BookmarkId READING_LIST_BOOKMARK_ID =
             new BookmarkId(sId++, BookmarkType.READING_LIST);
+    static final BookmarkId PARTNER_BOOKMARK_ID = new BookmarkId(sId++, BookmarkType.NORMAL);
 
     static final BookmarkId FOLDER_BOOKMARK_ID_A = new BookmarkId(sId++, BookmarkType.NORMAL);
     static final BookmarkId URL_BOOKMARK_ID_A = new BookmarkId(sId++, BookmarkType.NORMAL);
@@ -49,6 +50,8 @@ public class SharedBookmarkModelMocks {
             makeFolderItem(MOBILE_BOOKMARK_ID, "Mobile bookmarks", ROOT_BOOKMARK_ID);
     static final BookmarkItem READING_LIST_ITEM =
             makeFolderItem(READING_LIST_BOOKMARK_ID, "Reading list", ROOT_BOOKMARK_ID);
+    static final BookmarkItem PARTNER_BOOKMARK_ITEM =
+            makeFolderItem(PARTNER_BOOKMARK_ID, "Partner bookmarks", ROOT_BOOKMARK_ID);
     static final BookmarkItem FOLDER_ITEM_A =
             makeFolderItem(FOLDER_BOOKMARK_ID_A, "Folder A", MOBILE_BOOKMARK_ID);
     static final BookmarkItem URL_ITEM_A =
@@ -68,6 +71,7 @@ public class SharedBookmarkModelMocks {
         doReturn(OTHER_BOOKMARK_ID).when(bookmarkModel).getOtherFolderId();
         doReturn(MOBILE_BOOKMARK_ID).when(bookmarkModel).getMobileFolderId();
         doReturn(READING_LIST_BOOKMARK_ID).when(bookmarkModel).getReadingListFolder();
+        doReturn(PARTNER_BOOKMARK_ID).when(bookmarkModel).getPartnerFolderId();
         doReturn(Collections.singletonList(READING_LIST_BOOKMARK_ID))
                 .when(bookmarkModel)
                 .getTopLevelFolderIds(/*getSpecial*/ true, /*getNormal*/ false);
@@ -76,6 +80,7 @@ public class SharedBookmarkModelMocks {
         doReturn(OTHER_BOOKMARK_ITEM).when(bookmarkModel).getBookmarkById(OTHER_BOOKMARK_ID);
         doReturn(MOBILE_BOOKMARK_ITEM).when(bookmarkModel).getBookmarkById(MOBILE_BOOKMARK_ID);
         doReturn(READING_LIST_ITEM).when(bookmarkModel).getBookmarkById(READING_LIST_BOOKMARK_ID);
+        doReturn(PARTNER_BOOKMARK_ITEM).when(bookmarkModel).getBookmarkById(PARTNER_BOOKMARK_ID);
         doReturn(FOLDER_ITEM_A).when(bookmarkModel).getBookmarkById(FOLDER_BOOKMARK_ID_A);
         doReturn(URL_ITEM_A).when(bookmarkModel).getBookmarkById(URL_BOOKMARK_ID_A);
         doReturn(URL_ITEM_B).when(bookmarkModel).getBookmarkById(URL_BOOKMARK_ID_B);

@@ -713,9 +713,17 @@ public class BookmarkUtils {
     }
 
     /** Returns whether the given folder can have a new folder added to it. */
-    public static boolean canAddSubfolder(BookmarkModel bookmarkModel, BookmarkId folder) {
-        return !Objects.equals(folder, bookmarkModel.getReadingListFolder())
-                && !Objects.equals(folder, bookmarkModel.getPartnerFolderId());
+    public static boolean canAddFolderToParent(BookmarkModel bookmarkModel, BookmarkId parent) {
+        return !Objects.equals(parent, bookmarkModel.getReadingListFolder())
+                && !Objects.equals(parent, bookmarkModel.getPartnerFolderId())
+                && !(Objects.equals(parent, bookmarkModel.getRootFolderId())
+                        && !BookmarkFeatures.isAndroidImprovedBookmarksEnabled());
+    }
+
+    /** Returns whether the given folder can have a new bookmark added to it. */
+    public static boolean canAddBookmarkToParent(BookmarkModel bookmarkModel, BookmarkId parent) {
+        return !Objects.equals(parent, bookmarkModel.getRootFolderId())
+                && !Objects.equals(parent, bookmarkModel.getPartnerFolderId());
     }
 
     /** Returns whether the given folder should display images. */

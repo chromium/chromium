@@ -275,7 +275,7 @@ class BookmarkToolbarMediator implements BookmarkUiObserver, DragListener,
         // New folder button.
         if (BookmarkFeatures.isAndroidImprovedBookmarksEnabled()) {
             mModel.set(BookmarkToolbarProperties.NEW_FOLDER_BUTTON_VISIBLE,
-                    BookmarkUtils.canAddSubfolder(mBookmarkModel, mCurrentFolder));
+                    BookmarkUtils.canAddFolderToParent(mBookmarkModel, mCurrentFolder));
         }
     }
 
