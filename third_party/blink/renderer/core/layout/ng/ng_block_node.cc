@@ -219,28 +219,6 @@ inline MinMaxSizesResult ComputeMinMaxSizesWithAlgorithm(
   return result;
 }
 
-LayoutUnit ContainingBlockContentInlineSize(const NGConstraintSpace& space,
-                                            const LayoutBox& box) {
-  DCHECK(box.ShouldComputeSizeAsReplaced());
-  WritingMode writing_mode = box.StyleRef().GetWritingMode();
-  if (LayoutObject* containing_block = box.ContainingBlock()) {
-    if (!IsParallelWritingMode(containing_block->StyleRef().GetWritingMode(),
-                               writing_mode)) {
-      // The size should be in the containing block writing mode.
-      LayoutUnit inline_size = space.ReplacedPercentageResolutionBlockSize();
-
-      // We cannot lay out without a definite containing block inline-size. We
-      // end up here if we're performing a measure pass (as part of resolving
-      // the intrinsic min/max inline-size of some ancestor, for instance).
-      // Legacy layout has a tendency of clamping negative sizes to 0 anyway,
-      // but this is missing when it comes to resolving percentage-based
-      // padding, for instance.
-      return inline_size.ClampIndefiniteToZero();
-    }
-  }
-  return space.ReplacedPercentageResolutionInlineSize().ClampIndefiniteToZero();
-}
-
 bool CanUseCachedIntrinsicInlineSizes(const NGConstraintSpace& constraint_space,
                                       const MinMaxSizesFloatInput& float_input,
                                       const NGBlockNode& node) {
@@ -807,8 +785,6 @@ void NGBlockNode::FinishLayout(LayoutBlockFlow* block_flow,
     // don't want to use the size that legacy calculates, so we force legacy to
     // use NG's size via BoxLayoutExtraInput's override fields.
     BoxLayoutExtraInput input(*box_);
-    input.containing_block_content_inline_size =
-        ContainingBlockContentInlineSize(constraint_space, *box_);
     input.size = physical_fragment.Size();
     input.border_padding_for_replaced =
         physical_fragment.Borders() + physical_fragment.Padding();

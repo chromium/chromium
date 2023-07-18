@@ -33,11 +33,6 @@ struct BoxLayoutExtraInput {
   // The border-box size computed by NGReplacedLayoutAlgorithm.
   PhysicalSize size;
 
-  // The content size of the containing block. These are somewhat vague legacy
-  // layout values, that typically either mean available size or percentage
-  // resolution size.
-  LayoutUnit containing_block_content_inline_size;
-
   // Border and padding values. This field is set only for LayoutReplaced.
   NGPhysicalBoxStrut border_padding_for_replaced;
 };

@@ -2120,8 +2120,6 @@ void LayoutBox::UpdateCachedIntrinsicLogicalWidthsIfNeeded() {
 LayoutUnit LayoutBox::OverrideContainingBlockContentLogicalWidth() const {
   NOT_DESTROYED();
   DCHECK(HasOverrideContainingBlockContentLogicalWidth());
-  if (extra_input_)
-    return extra_input_->containing_block_content_inline_size;
   return rare_data_->override_containing_block_content_logical_width_;
 }
 
@@ -2129,8 +2127,6 @@ LayoutUnit LayoutBox::OverrideContainingBlockContentLogicalWidth() const {
 // direction ?.
 bool LayoutBox::HasOverrideContainingBlockContentLogicalWidth() const {
   NOT_DESTROYED();
-  if (extra_input_)
-    return true;
   return rare_data_ &&
          rare_data_->has_override_containing_block_content_logical_width_;
 }
@@ -2140,7 +2136,6 @@ bool LayoutBox::HasOverrideContainingBlockContentLogicalWidth() const {
 void LayoutBox::SetOverrideContainingBlockContentLogicalWidth(
     LayoutUnit logical_width) {
   NOT_DESTROYED();
-  DCHECK(!extra_input_);
   DCHECK_GE(logical_width, LayoutUnit(-1));
   EnsureRareData().override_containing_block_content_logical_width_ =
       logical_width;
@@ -2151,7 +2146,6 @@ void LayoutBox::SetOverrideContainingBlockContentLogicalWidth(
 // direction ?.
 void LayoutBox::ClearOverrideContainingBlockContentSize() {
   NOT_DESTROYED();
-  DCHECK(!extra_input_);
   if (!rare_data_)
     return;
   EnsureRareData().has_override_containing_block_content_logical_width_ = false;
