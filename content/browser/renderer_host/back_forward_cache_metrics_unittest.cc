@@ -196,7 +196,7 @@ TEST_F(BackForwardCacheMetricsTest, TimeRecordedAtStart) {
 #else
 #define MAYBE_TimeRecordedWhenRendererIsKilled TimeRecordedWhenRendererIsKilled
 #endif
-TEST_F(BackForwardCacheMetricsTest, TimeRecordedWhenRendererIsKilled) {
+TEST_F(BackForwardCacheMetricsTest, MAYBE_TimeRecordedWhenRendererIsKilled) {
   // Need to enable back-forward cache to make sure a page is put into the
   // cache.
   base::test::ScopedFeatureList scoped_feature_list;
