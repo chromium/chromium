@@ -14,6 +14,8 @@ from typing import Dict, List, Optional, Set, Tuple, Type
 import unittest
 import unittest.mock as mock
 
+import dataclasses  # Built-in, but pylint gives an ordering false positive.
+
 import gpu_project_config
 import run_gpu_integration_test
 
@@ -123,15 +125,14 @@ def _GenerateNvidiaExampleTagsForTestClassAndArgs(
   return tags
 
 
+@dataclasses.dataclass
 class _IntegrationTestArgs():
   """Struct-like object for defining an integration test."""
-
-  def __init__(self, test_name: str):
-    self.test_name = test_name
-    self.failures = []
-    self.successes = []
-    self.skips = []
-    self.additional_args = []
+  test_name: str
+  failures: List[str] = ct.EmptyList()
+  successes: List[str] = ct.EmptyList()
+  skips: List[str] = ct.EmptyList()
+  additional_args: List[str] = ct.EmptyList()
 
 
 class GpuIntegrationTestUnittest(unittest.TestCase):

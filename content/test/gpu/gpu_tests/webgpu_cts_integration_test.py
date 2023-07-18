@@ -7,8 +7,10 @@ import json
 import os
 import sys
 import time
-from typing import Any, Dict, List, Set
+from typing import Any, Dict, List, Optional, Set
 import unittest
+
+import dataclasses  # Built-in, but pylint gives an ordering false positive.
 
 from gpu_tests import common_browser_args as cba
 from gpu_tests import common_typing as ct
@@ -57,12 +59,11 @@ MESSAGE_TYPE_TEST_LOG = 'TEST_LOG'
 MESSAGE_TYPE_TEST_FINISHED = 'TEST_FINISHED'
 
 
+@dataclasses.dataclass
 class WebGpuTestResult():
   """Struct-like object for holding a single test result."""
-
-  def __init__(self):
-    self.status = None
-    self.log_pieces = []
+  status: Optional[str] = None
+  log_pieces: List[str] = ct.EmptyList()
 
 
 class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):

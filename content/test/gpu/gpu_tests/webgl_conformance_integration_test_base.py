@@ -11,6 +11,8 @@ import sys
 import time
 from typing import Any, List, Optional, Set, Tuple
 
+import dataclasses  # Built-in, but pylint gives an ordering false positive.
+
 from gpu_tests import common_browser_args as cba
 from gpu_tests import common_typing as ct
 from gpu_tests import gpu_helper
@@ -54,13 +56,12 @@ def _CompareVersion(version1: str, version2: str) -> int:
   return cmp(ver_num1[0:size], ver_num2[0:size])
 
 
+@dataclasses.dataclass
 class WebGLTestArgs():
   """Struct-like class for passing args to a WebGLConformance test."""
-
-  def __init__(self, webgl_version=None, extension=None, extension_list=None):
-    self.webgl_version = webgl_version
-    self.extension = extension
-    self.extension_list = extension_list
+  webgl_version: Optional[int] = None
+  extension: Optional[str] = None
+  extension_list: Optional[List[str]] = None
 
 
 class WebGLConformanceIntegrationTestBase(

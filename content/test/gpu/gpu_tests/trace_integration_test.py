@@ -14,6 +14,8 @@ import tempfile
 from typing import Any, Dict, Generator, Iterator, List, Optional, Set, Tuple
 import unittest
 
+import dataclasses  # Built-in, but pylint gives an ordering false positive.
+
 from gpu_tests import common_browser_args as cba
 from gpu_tests import common_typing as ct
 from gpu_tests import gpu_integration_test
@@ -150,29 +152,20 @@ class _TraceTestOrigin(Enum):
   LOCALHOST = 'LocalhostUrlOfStaticFilePath'
 
 
+@dataclasses.dataclass
 class _TraceTestArguments():
   """Struct-like object for passing trace test arguments instead of dicts."""
-
-  def __init__(  # pylint: disable=too-many-arguments
-      self,
-      browser_args: List[str],
-      category: str,
-      test_harness_script: str,
-      finish_js_condition: str,
-      success_eval_func: str,
-      other_args: dict,
-      restart_browser: bool = True,
-      origin: _TraceTestOrigin = _TraceTestOrigin.DEFAULT):
-    self.browser_args = browser_args
-    self.category = category
-    self.test_harness_script = test_harness_script
-    self.finish_js_condition = finish_js_condition
-    self.success_eval_func = success_eval_func
-    self.other_args = other_args
-    self.restart_browser = restart_browser
-    self.origin = origin
+  browser_args: List[str]
+  category: str
+  test_harness_script: str
+  finish_js_condition: str
+  success_eval_func: str
+  other_args: dict
+  restart_browser: bool = True
+  origin: _TraceTestOrigin = _TraceTestOrigin.DEFAULT
 
 
+@dataclasses.dataclass
 class _CacheTraceTestArguments():
   """Struct-like object for passing persistent cache trace test arguments.
 
@@ -195,28 +188,17 @@ class _CacheTraceTestArguments():
   be written to the cache, thereby causing subsequent |cache_pages| to see cache
   hits when we actually expect them to be misses. Note this is not a problem
   for the restarted browser case because each browser restart seeds a new
-  temporary directory with only the contents after the first load page."""
-
-  def __init__(  # pylint: disable=too-many-arguments
-      self,
-      browser_args: List[str],
-      category: str,
-      test_harness_script: str,
-      finish_js_condition: str,
-      first_load_eval_func: str,
-      cache_eval_func: str,
-      cache_pages: List[str],
-      cache_page_origin: _TraceTestOrigin = _TraceTestOrigin.DEFAULT,
-      test_renavigation: bool = True):
-    self.browser_args = browser_args
-    self.category = category
-    self.test_harness_script = test_harness_script
-    self.finish_js_condition = finish_js_condition
-    self.first_load_eval_func = first_load_eval_func
-    self.cache_eval_func = cache_eval_func
-    self.cache_pages = cache_pages
-    self.cache_page_origin = cache_page_origin
-    self.test_renavigation = test_renavigation
+  temporary directory with only the contents after the first load page.
+  """
+  browser_args: List[str]
+  category: str
+  test_harness_script: str
+  finish_js_condition: str
+  first_load_eval_func: str
+  cache_eval_func: str
+  cache_pages: List[str]
+  cache_page_origin: _TraceTestOrigin = _TraceTestOrigin.DEFAULT
+  test_renavigation: bool = True
 
   def GenerateFirstLoadTest(self) -> _TraceTestArguments:
     """Returns the trace test arguments for the first load cache test."""
@@ -1108,14 +1090,13 @@ class TraceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     ]
 
 
+@dataclasses.dataclass
 class _VideoExpectations():
   """Struct-like object for passing around video test expectations."""
-
-  def __init__(self):
-    self.pixel_format = None  # str
-    self.zero_copy = None  # bool
-    self.no_overlay = None  # bool
-    self.presentation_mode = None  # str
+  pixel_format: Optional[str] = None
+  zero_copy: Optional[bool] = None
+  no_overlay: Optional[bool] = None
+  presentation_mode: Optional[str] = None
 
 
 def load_tests(loader: unittest.TestLoader, tests: Any,

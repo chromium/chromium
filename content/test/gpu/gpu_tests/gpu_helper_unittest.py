@@ -7,6 +7,9 @@ from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 import unittest
 from unittest import mock
 
+import dataclasses  # Built-in, but pylint gives an ordering false positive.
+
+from gpu_tests import common_typing as ct
 from gpu_tests import gpu_helper
 from telemetry.internal.platform import gpu_info
 
@@ -44,23 +47,14 @@ def CreateGpuDeviceDict(vendor_id: Optional[int] = None,
 # pylint: enable=too-many-arguments
 
 
+@dataclasses.dataclass
 class TagHelperTestCase():
   """Struct-like class for defining a tag helper test case."""
-
-  # pylint: disable=too-many-arguments
-  def __init__(self,
-               expected_result: Any,
-               device_dict: Optional[Dict[str, Union[str, int]]] = None,
-               aux_attributes: Optional[Dict[str, Any]] = None,
-               feature_status: Optional[Dict[str, str]] = None,
-               extra_browser_args: Optional[List[str]] = None):
-    self.expected_result = expected_result
-    self.device_dict = device_dict or {}
-    self.aux_attributes = aux_attributes or {}
-    self.feature_status = feature_status or {}
-    self.extra_browser_args = extra_browser_args or []
-
-  # pylint: enable=too-many-arguments
+  expected_result: Any
+  device_dict: Dict[str, Union[str, int]] = ct.EmptyDict()
+  aux_attributes: Dict[str, Any] = ct.EmptyDict()
+  feature_status: Dict[str, str] = ct.EmptyDict()
+  extra_browser_args: List[str] = ct.EmptyList()
 
 
 class TagHelpersUnittest(unittest.TestCase):
