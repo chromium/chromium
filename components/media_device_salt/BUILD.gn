@@ -6,6 +6,8 @@ static_library("media_device_salt") {
   sources = [
     "media_device_id_salt.cc",
     "media_device_id_salt.h",
+    "media_device_salt_database.cc",
+    "media_device_salt_database.h",
     "media_device_salt_service.cc",
     "media_device_salt_service.h",
   ]
@@ -16,12 +18,16 @@ static_library("media_device_salt") {
     "//components/prefs:prefs",
     "//components/user_prefs:user_prefs",
     "//content/public/browser",
+    "//sql",
   ]
 }
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "media_device_salt_service_unittest.cc" ]
+  sources = [
+    "media_device_salt_database_unittest.cc",
+    "media_device_salt_service_unittest.cc",
+  ]
 
   deps = [
     "//components/keyed_service/content",
@@ -30,6 +36,7 @@ source_set("unit_tests") {
     "//components/sync_preferences:test_support",
     "//components/user_prefs",
     "//content/test:test_support",
+    "//sql:sql",
     "//testing/gtest/",
   ]
 }

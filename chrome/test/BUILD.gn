@@ -10166,6 +10166,7 @@ if (!is_android) {
       "//components/keep_alive_registry",
       "//components/live_caption",
       "//components/live_caption:constants",
+      "//components/media_device_salt",
       "//components/media_message_center",
       "//components/media_router/browser:test_support",
       "//components/metrics:content",

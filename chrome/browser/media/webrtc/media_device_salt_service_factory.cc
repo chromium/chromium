@@ -4,6 +4,7 @@
 
 #include "chrome/browser/media/webrtc/media_device_salt_service_factory.h"
 
+#include "base/files/file_path.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/media_device_salt/media_device_salt_service.h"
 #include "components/user_prefs/user_prefs.h"
@@ -30,5 +31,8 @@ std::unique_ptr<KeyedService>
 MediaDeviceSaltServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   return std::make_unique<media_device_salt::MediaDeviceSaltService>(
-      user_prefs::UserPrefs::Get(context));
+      user_prefs::UserPrefs::Get(context),
+      context->IsOffTheRecord()
+          ? base::FilePath()
+          : context->GetPath().AppendASCII("MediaDeviceSalts"));
 }

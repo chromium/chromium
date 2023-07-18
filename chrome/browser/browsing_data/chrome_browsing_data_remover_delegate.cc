@@ -644,14 +644,6 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
       if (privacy_sandbox_settings)
         privacy_sandbox_settings->OnCookiesCleared();
 
-      // Media Device salts are handled separately, but also resetting them here
-      // to preserve the behavior of the browsingData extension API.
-      if (auto* media_device_salt_service =
-              MediaDeviceSaltServiceFactory::GetInstance()
-                  ->GetForBrowserContext(profile_)) {
-        media_device_salt_service->ResetSalt();
-      }
-
 #if BUILDFLAG(IS_ANDROID)
       Java_PackageHash_onCookiesDeleted(
           base::android::AttachCurrentThread(),
@@ -1275,17 +1267,17 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
   if ((remove_mask &
        content::BrowsingDataRemover::DATA_TYPE_MEDIA_DEVICE_SALTS) &&
       (origin_type_mask &
-       content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB) &&
-      filter_builder->MatchesAllOriginsAndDomains()) {
-    // TODO(crbug.com/1410462): Turn into an async action when introducing a
-    // per-storage-key backend.
-    base::ScopedClosureRunner completion_runner(
-        CreateTaskCompletionClosure(TracingDataType::kMediaDeviceSalts));
-
+       content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB)) {
     if (auto* media_device_salt_service =
             MediaDeviceSaltServiceFactory::GetInstance()->GetForBrowserContext(
                 profile_)) {
-      media_device_salt_service->ResetSalt();
+      content::StoragePartition::StorageKeyMatcherFunction storage_key_matcher;
+      if (!filter_builder->MatchesAllOriginsAndDomains()) {
+        storage_key_matcher = filter_builder->BuildStorageKeyFilter();
+      }
+      media_device_salt_service->DeleteSalts(
+          delete_begin_, delete_end_, std::move(storage_key_matcher),
+          CreateTaskCompletionClosure(TracingDataType::kMediaDeviceSalts));
     }
   }
 }

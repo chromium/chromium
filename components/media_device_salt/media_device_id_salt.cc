@@ -43,14 +43,6 @@ void MediaDeviceIDSalt::RegisterProfilePrefs(
 void MediaDeviceIDSalt::Reset(PrefService* pref_service) {
   pref_service->SetString(prefs::kMediaDeviceIdSalt,
                           base::UnguessableToken::Create().ToString());
-
-  // Propagate device change notifications, for anything currently using devices
-  // which will now have new IDs.
-  base::SystemMonitor* monitor = base::SystemMonitor::Get();
-  if (monitor) {
-    monitor->ProcessDevicesChanged(base::SystemMonitor::DEVTYPE_VIDEO_CAPTURE);
-    monitor->ProcessDevicesChanged(base::SystemMonitor::DEVTYPE_AUDIO);
-  }
 }
 
 }  // namespace media_device_salt

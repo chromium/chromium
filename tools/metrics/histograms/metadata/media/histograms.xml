@@ -3548,6 +3548,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.MediaDevices.SaltDatabaseErrors"
+    enum="SqliteLoggedResultCode" expires_after="2024-07-12">
+  <owner>guidou@chromium.org</owner>
+  <owner>video-cmi-apis@google.com</owner>
+  <summary>
+    Errors reported by SQLite while initializing or using the media-device salt
+    database.
+  </summary>
+</histogram>
+
 <histogram name="Media.MediaDevicesManager.VideoDeviceEnumeration.Result"
     enum="DeviceEnumerationResult" expires_after="2023-11-12">
   <owner>toprice@chromium.org</owner>

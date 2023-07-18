@@ -367,8 +367,7 @@ TEST_F(BrowsingDataApiTest, RemoveBrowsingDataAll) {
       content::BrowsingDataRemover::DATA_TYPE_COOKIES |
           (content::BrowsingDataRemover::DATA_TYPE_DOM_STORAGE &
            ~content::BrowsingDataRemover::DATA_TYPE_BACKGROUND_FETCH &
-           ~content::BrowsingDataRemover::DATA_TYPE_EMBEDDER_DOM_STORAGE &
-           ~content::BrowsingDataRemover::DATA_TYPE_MEDIA_DEVICE_SALTS) |
+           ~content::BrowsingDataRemover::DATA_TYPE_EMBEDDER_DOM_STORAGE) |
           content::BrowsingDataRemover::DATA_TYPE_CACHE |
           content::BrowsingDataRemover::DATA_TYPE_DOWNLOADS |
           chrome_browsing_data_remover::DATA_TYPE_FORM_DATA |
@@ -409,7 +408,9 @@ TEST_F(BrowsingDataApiTest, BrowsingDataRemovalMask) {
   RunBrowsingDataRemoveWithKeyAndCompareRemovalMask(
       "cacheStorage", content::BrowsingDataRemover::DATA_TYPE_CACHE_STORAGE);
   RunBrowsingDataRemoveWithKeyAndCompareRemovalMask(
-      "cookies", content::BrowsingDataRemover::DATA_TYPE_COOKIES);
+      "cookies",
+      content::BrowsingDataRemover::DATA_TYPE_COOKIES |
+          content::BrowsingDataRemover::DATA_TYPE_MEDIA_DEVICE_SALTS);
   RunBrowsingDataRemoveWithKeyAndCompareRemovalMask(
       "downloads", content::BrowsingDataRemover::DATA_TYPE_DOWNLOADS);
   RunBrowsingDataRemoveWithKeyAndCompareRemovalMask(
@@ -436,6 +437,7 @@ TEST_F(BrowsingDataApiTest, BrowsingDataRemovalMaskCombination) {
   RunBrowsingDataRemoveFunctionAndCompareRemovalMask(
       "{\"cookies\": true, \"history\": true}",
       content::BrowsingDataRemover::DATA_TYPE_COOKIES |
+          content::BrowsingDataRemover::DATA_TYPE_MEDIA_DEVICE_SALTS |
           chrome_browsing_data_remover::DATA_TYPE_HISTORY);
 }
 
@@ -626,12 +628,21 @@ TEST_F(BrowsingDataApiTest, RemoveWithSpecialUrlFilter) {
 }
 
 TEST_F(BrowsingDataApiTest, RemoveCookiesWithFilter) {
-  auto filter_builder = content::BrowsingDataFilterBuilder::Create(
+  auto filter_builder1 = content::BrowsingDataFilterBuilder::Create(
       content::BrowsingDataFilterBuilder::Mode::kPreserve);
-  filter_builder->AddRegisterableDomain("example.com");
+  filter_builder1->AddRegisterableDomain("example.com");
   delegate()->ExpectCall(base::Time::UnixEpoch(), base::Time::Max(),
                          content::BrowsingDataRemover::DATA_TYPE_COOKIES,
-                         UNPROTECTED_WEB, filter_builder.get());
+                         UNPROTECTED_WEB, filter_builder1.get());
+  // excludedOrigins are mapped to origins for media-device salts, so
+  // expect two calls.
+  auto filter_builder2 = content::BrowsingDataFilterBuilder::Create(
+      content::BrowsingDataFilterBuilder::Mode::kPreserve);
+  filter_builder2->AddOrigin(url::Origin::Create(GURL("http://example.com")));
+  delegate()->ExpectCall(
+      base::Time::UnixEpoch(), base::Time::Max(),
+      content::BrowsingDataRemover::DATA_TYPE_MEDIA_DEVICE_SALTS,
+      UNPROTECTED_WEB, filter_builder2.get());
 
   auto function = base::MakeRefCounted<BrowsingDataRemoveFunction>();
   EXPECT_FALSE(RunFunctionAndReturnSingleResult(
@@ -656,9 +667,11 @@ TEST_F(BrowsingDataApiTest, RemoveCookiesAndStorageWithFilter) {
       content::BrowsingDataFilterBuilder::Mode::kDelete);
   filter_builder2->AddOrigin(
       url::Origin::Create(GURL("http://www.example.com")));
-  delegate()->ExpectCall(base::Time::UnixEpoch(), base::Time::Max(),
-                         content::BrowsingDataRemover::DATA_TYPE_LOCAL_STORAGE,
-                         UNPROTECTED_WEB, filter_builder2.get());
+  delegate()->ExpectCall(
+      base::Time::UnixEpoch(), base::Time::Max(),
+      content::BrowsingDataRemover::DATA_TYPE_LOCAL_STORAGE |
+          content::BrowsingDataRemover::DATA_TYPE_MEDIA_DEVICE_SALTS,
+      UNPROTECTED_WEB, filter_builder2.get());
 
   auto function = base::MakeRefCounted<BrowsingDataRemoveFunction>();
   EXPECT_FALSE(RunFunctionAndReturnSingleResult(

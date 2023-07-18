@@ -96,8 +96,10 @@ static_assert((kFilterableDataTypes &
 uint64_t MaskForKey(const char* key) {
   if (strcmp(key, extension_browsing_data_api_constants::kCacheKey) == 0)
     return content::BrowsingDataRemover::DATA_TYPE_CACHE;
-  if (strcmp(key, extension_browsing_data_api_constants::kCookiesKey) == 0)
-    return content::BrowsingDataRemover::DATA_TYPE_COOKIES;
+  if (strcmp(key, extension_browsing_data_api_constants::kCookiesKey) == 0) {
+    return content::BrowsingDataRemover::DATA_TYPE_COOKIES |
+           content::BrowsingDataRemover::DATA_TYPE_MEDIA_DEVICE_SALTS;
+  }
   if (strcmp(key, extension_browsing_data_api_constants::kDownloadsKey) == 0)
     return content::BrowsingDataRemover::DATA_TYPE_DOWNLOADS;
   if (strcmp(key, extension_browsing_data_api_constants::kFileSystemsKey) == 0)

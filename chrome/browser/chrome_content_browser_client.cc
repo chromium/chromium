@@ -7253,7 +7253,8 @@ void ChromeContentBrowserClient::GetMediaDeviceIDSalt(
     return;
   }
 
-  salt_service->GetSalt(base::BindOnce(std::move(callback), allowed));
+  salt_service->GetSalt(rfh->storage_key(),
+                        base::BindOnce(std::move(callback), allowed));
 }
 
 #if !BUILDFLAG(IS_ANDROID)
