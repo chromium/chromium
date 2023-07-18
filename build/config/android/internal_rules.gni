@@ -3813,11 +3813,13 @@ if (enable_java_templates) {
       if (_kt_files != []) {
         _kt_allowlist = [
           "android/java/src/org/chromium/chrome/browser/tabmodel/AsyncTabParamsManagerImpl.kt",
+          "java/androidx/core/os/BuildCompat.kt",
           "webengine_shell_apk/src/org/chromium/webengine/shell/*.kt",
         ]
-        assert(filter_exclude(_kt_files, _kt_allowlist) == [],
-               "Only a files in the allowlist can be included for now. Feel " +
-                   "free to remove this assert when experimenting locally.")
+        _found_kt = filter_exclude(_kt_files, _kt_allowlist)
+        assert(
+            _found_kt == [],
+            "Only a files in the allowlist can be included for now. Feel " + "free to remove this assert when experimenting locally. Found: $_found_kt")
         _compile_kt_target_name = "${_main_target_name}__compile_kt"
         _kotlinc_jar_path = "$target_out_dir/$_output_name.kotlinc.jar"
         _kotlin_interface_jar_path =
