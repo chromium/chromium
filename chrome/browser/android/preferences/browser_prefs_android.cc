@@ -21,11 +21,11 @@ void RegisterPrefs(PrefRegistrySimple* registry) {
 
 void RegisterUserProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   NotificationPlatformBridgeAndroid::RegisterProfilePrefs(registry);
-  // TODO(shuyng): Use PrefRegistrySimple for RDS prefs registration.
   registry->RegisterBooleanPref(prefs::kDesktopSitePeripheralSettingEnabled,
                                 false);
   registry->RegisterBooleanPref(prefs::kDesktopSiteDisplaySettingEnabled,
                                 false);
+  registry->RegisterBooleanPref(prefs::kDesktopSiteWindowSettingEnabled, false);
 }
 
 }  // namespace android

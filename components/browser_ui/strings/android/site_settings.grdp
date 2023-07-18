@@ -153,6 +153,9 @@
   <message name="IDS_ENABLE_DESKTOP_SITE_EXTERNAL_DISPLAY_SUMMARY" translateable="false" desc="Summary for the preference to enable display setting for request desktop site">
     Always request desktop site if a monitor is connected
   </message>
+  <message name="IDS_ENABLE_DESKTOP_SITE_WINDOW_SETTING_TITLE" desc="Title for the preference to enable window setting for request desktop site">
+    When the window is narrow, request mobile view
+  </message>
 
   <!-- Site settings: general category strings -->
 

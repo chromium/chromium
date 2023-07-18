@@ -59,6 +59,13 @@ found in the LICENSE file.
         android:summary="@string/enable_desktop_site_external_display_summary"
         android:defaultValue="false"
         android:persistent="false" />
+    <!-- A checkbox to request mobile view when the window is narrow.
+         Only shown in the Desktop site category. -->
+    <org.chromium.components.browser_ui.settings.ChromeBaseCheckBoxPreference
+        android:key="desktop_site_window"
+        android:title="@string/enable_desktop_site_window_setting_title"
+        android:defaultValue="false"
+        android:persistent="false" />
     <!-- A hyperlink to explain more about Protected Media content settings. -->
     <org.chromium.components.browser_ui.settings.LearnMorePreference
         android:key="protected_content_learn_more" />

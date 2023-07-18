@@ -94,6 +94,7 @@ extern const char kInContextCookieControlsOpened[];
 extern const char kNotificationsVibrateEnabled[];
 extern const char kDesktopSitePeripheralSettingEnabled[];
 extern const char kDesktopSiteDisplaySettingEnabled[];
+extern const char kDesktopSiteWindowSettingEnabled[];
 #endif
 
 }  // namespace prefs

@@ -186,6 +186,9 @@ const char kDesktopSitePeripheralSettingEnabled[] =
 // Display setting for request desktop site. When enabled, we will always
 // request desktop site if a monitor is connected.
 const char kDesktopSiteDisplaySettingEnabled[] = "desktop_site.display_setting";
+// Window setting for request desktop site. When enabled, we will request
+// mobile site if the window is narrow.
+const char kDesktopSiteWindowSettingEnabled[] = "desktop_site.window_setting";
 #endif
 
 }  // namespace prefs

@@ -33,6 +33,7 @@ import static org.chromium.components.browser_ui.site_settings.WebsitePreference
 import static org.chromium.components.content_settings.PrefNames.COOKIE_CONTROLS_MODE;
 import static org.chromium.components.content_settings.PrefNames.DESKTOP_SITE_DISPLAY_SETTING_ENABLED;
 import static org.chromium.components.content_settings.PrefNames.DESKTOP_SITE_PERIPHERAL_SETTING_ENABLED;
+import static org.chromium.components.content_settings.PrefNames.DESKTOP_SITE_WINDOW_SETTING_ENABLED;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.content.Context;
@@ -1526,11 +1527,23 @@ public class SiteSettingsTest {
     @SmallTest
     @Feature({"Preferences"})
     @EnableFeatures(ContentFeatureList.REQUEST_DESKTOP_SITE_ADDITIONS)
+    @DisableFeatures(ContentFeatureList.REQUEST_DESKTOP_SITE_WINDOW_SETTING)
     public void testOnlyExpectedPreferencesRequestDesktopSiteAdditionalSettings() {
         String[] rdsDisabled = {"binary_toggle", "desktop_site_peripheral", "desktop_site_display",
                 "add_exception"};
         testExpectedPreferences(SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE, rdsDisabled,
                 BINARY_TOGGLE_WITH_EXCEPTION);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
+    @EnableFeatures(ContentFeatureList.REQUEST_DESKTOP_SITE_WINDOW_SETTING)
+    @DisableFeatures(ContentFeatureList.REQUEST_DESKTOP_SITE_ADDITIONS)
+    public void testOnlyExpectedPreferencesRequestDesktopSiteWindowSettings() {
+        String[] rdsEnabled = {"binary_toggle", "desktop_site_window", "add_exception"};
+        testExpectedPreferences(SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE,
+                BINARY_TOGGLE_WITH_EXCEPTION, rdsEnabled);
     }
 
     @Test
@@ -2216,6 +2229,39 @@ public class SiteSettingsTest {
             preferences.onPreferenceChange(externalDisplayPref, false);
             Assert.assertFalse("Display setting should be OFF.",
                     prefService.getBoolean(DESKTOP_SITE_DISPLAY_SETTING_ENABLED));
+        });
+        settingsActivity.finish();
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
+    @EnableFeatures(ContentFeatureList.REQUEST_DESKTOP_SITE_WINDOW_SETTING)
+    public void testDesktopSiteWindowSettings() {
+        final SettingsActivity settingsActivity = SiteSettingsTestUtils.startSiteSettingsCategory(
+                SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE);
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            SingleCategorySettings preferences =
+                    (SingleCategorySettings) settingsActivity.getMainFragment();
+            // Window setting is only available when the Global Setting is ON.
+            ChromeSwitchPreference toggle =
+                    preferences.findPreference(SingleCategorySettings.BINARY_TOGGLE_KEY);
+            preferences.onPreferenceChange(toggle, true);
+
+            ChromeBaseCheckBoxPreference windowSettingPref = preferences.findPreference(
+                    SingleCategorySettings.DESKTOP_SITE_WINDOW_TOGGLE_KEY);
+            PrefService prefService = UserPrefs.get(getBrowserContextHandle());
+            Assert.assertFalse("Window setting should be OFF.",
+                    prefService.getBoolean(DESKTOP_SITE_WINDOW_SETTING_ENABLED));
+
+            preferences.onPreferenceChange(windowSettingPref, true);
+            Assert.assertTrue("Window setting should be ON.",
+                    prefService.getBoolean(DESKTOP_SITE_WINDOW_SETTING_ENABLED));
+
+            preferences.onPreferenceChange(windowSettingPref, false);
+            Assert.assertFalse("Window setting should be OFF.",
+                    prefService.getBoolean(DESKTOP_SITE_WINDOW_SETTING_ENABLED));
         });
         settingsActivity.finish();
     }
