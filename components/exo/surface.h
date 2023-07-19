@@ -487,7 +487,7 @@ class Surface final : public ui::PropertyHandler {
   float GetBufferScale() const { return state_.basic_state.buffer_scale; }
 
   // Returns the last committed buffer.
-  Buffer* GetBuffer() { return state_.buffer->buffer().get(); }
+  Buffer* GetBuffer();
 
  private:
   struct State {

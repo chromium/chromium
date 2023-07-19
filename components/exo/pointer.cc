@@ -877,6 +877,12 @@ void Pointer::CaptureCursor(const gfx::Point& hotspot) {
   if (host_window()->bounds().IsEmpty())
     return;
 
+  // Return if the surface has no committed buffer.
+  Buffer* buffer = root_surface()->GetBuffer();
+  if (!buffer) {
+    return;
+  }
+
   // Cancel all pending captures.
   cursor_capture_weak_ptr_factory_.InvalidateWeakPtrs();
 
@@ -885,11 +891,11 @@ void Pointer::CaptureCursor(const gfx::Point& hotspot) {
   // Otherwise, send RequestCopyOfOutput request to viz
   // to capture cursor bitmap.
   if (!root_surface()->HasAcquireFence()) {
-    SkBitmap bitmap = root_surface()->GetBuffer()->CreateBitmap();
+    SkBitmap bitmap = buffer->CreateBitmap();
     if (!bitmap.empty()) {
       OnCursorBitmapObtained(hotspot, bitmap, root_surface()->GetBufferScale());
       return;
-    };
+    }
   }
 
   // Submit compositor frame to be captured.

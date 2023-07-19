@@ -1876,4 +1876,11 @@ void Surface::OnFullscreenStateChanged(bool fullscreen) {
   }
 }
 
+Buffer* Surface::GetBuffer() {
+  if (state_.buffer.has_value()) {
+    return state_.buffer->buffer().get();
+  }
+  return nullptr;
+}
+
 }  // namespace exo
