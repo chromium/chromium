@@ -13,6 +13,18 @@
         "type": "image/jpeg",
         "sizes": "551x541",
         "form_factor": "wide"
+      },
+      {
+        "src": "screenshot2-portrait-large.jpeg",
+        "type": "image/jpeg",
+        "sizes": "3927x4000",
+        "form_factor": "narrow"
+      },
+      {
+        "src": "screenshot2-portrait.jpeg",
+        "type": "image/jpeg",
+        "sizes": "541x551",
+        "form_factor": "narrow"
       }
     ],
     "scope": ".",

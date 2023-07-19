@@ -876,6 +876,7 @@ static_library("test_support") {
       "//components/web_package",
       "//components/web_package/test_support",
       "//components/webapps/browser",
+      "//components/webapps/browser:test_support",
       "//third_party/zlib/google:zip",
     ]
   }
@@ -1065,6 +1066,7 @@ if (is_android) {
       "../browser/browsing_data/chrome_browsing_data_lifetime_manager_browsertest.cc",
       "../browser/engagement/important_sites_util_browsertest.cc",
       "../browser/fast_checkout/fast_checkout_tab_helper_browsertest.cc",
+      "../browser/installable/installable_manager_browsertest.cc",
       "../browser/metrics/metrics_log_browsertest.cc",
       "../browser/metrics/metrics_service_user_demographics_browsertest.cc",
       "../browser/metrics/sampled_out_client_id_saved_browsertest.cc",
@@ -1141,6 +1143,7 @@ if (is_android) {
       "//components/spellcheck:buildflags",
       "//components/spellcheck/renderer:renderer",
       "//components/user_manager:user_manager",
+      "//components/webapps/browser:test_support",
     ]
 
     # Add unwind tables in android_browsertests apk to support enabling
@@ -1691,6 +1694,7 @@ if (!is_android) {
       "//components/variations/service",
       "//components/version_info",
       "//components/webapps/browser",
+      "//components/webapps/browser:test_support",
       "//components/webapps/common:common",
       "//components/webrtc",
       "//components/webrtc_logging/browser",
@@ -10199,6 +10203,7 @@ if (!is_android) {
       "//components/ukm:ukm_test_helper",
       "//components/user_education/common",
       "//components/user_education/test",
+      "//components/webapps/browser:test_support",
       "//components/webauthn/core/browser:test_support",
       "//content/test:browsertest_support",
       "//content/test:test_support",

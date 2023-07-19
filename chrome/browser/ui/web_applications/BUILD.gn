@@ -146,6 +146,7 @@ source_set("app_service_browser_tests") {
     "//components/embedder_support",
     "//components/page_load_metrics/browser:test_support",
     "//components/services/app_service",
+    "//components/webapps/browser:test_support",
   ]
 
   if (is_chromeos_lacros) {
