@@ -56,7 +56,7 @@ export class ReimagingDeviceInformationPage extends
   static get observers() {
     return [
       'updateNextButtonDisabledState_(serialNumber_, skuIndex_, regionIndex_,' +
-          ' isChassisBranded_, hwComplianceVersion_)',
+          ' isChassisBranded_, hwComplianceVersion_, featureLevel_)',
     ];
   }
 
@@ -479,7 +479,8 @@ export class ReimagingDeviceInformationPage extends
 
   /** @private */
   areComplianceQuestionsShown_() {
-    return isComplianceCheckEnabled() && !this.isComplianceStatusKnown_();
+    return this.shouldShowComplianceSection_() &&
+        !this.isComplianceStatusKnown_();
   }
 
   /** @private */

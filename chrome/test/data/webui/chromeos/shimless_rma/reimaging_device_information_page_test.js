@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assert} from 'chrome://resources/ash/common/assert.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {PromiseResolver} from 'chrome://resources/ash/common/promise_resolver.js';
 import {fakeDeviceRegions, fakeDeviceSkus, fakeDeviceWhiteLabels} from 'chrome://shimless-rma/fake_data.js';
@@ -495,63 +496,67 @@ suite('reimagingDeviceInformationPageTest', function() {
         assertTrue(isNextButtonDisabled, 'Next button should be disabled.');
       });
 
+  /**
+   * This function tests that the given featureLevel doesn't affect the state of
+   * the Next button.
+   * @param {FeatureLevel} featureLevel The feature level to test. Any value
+   *     besides kRmadFeatureLevelUnknown will work for this test, since all
+   *     values (besides that one) hide the compliance questions.
+   */
+  async function expectComplianceQuestionsToNotAffectNextButtonState(
+      featureLevel) {
+    // Unknown FeatureLevel should not be passed into this function.
+    assert(featureLevel !== FeatureLevel.kRmadFeatureLevelUnknown);
+
+    // Set the compliance check flag so that the additional questions show
+    // up if the feature level is unknown.
+    loadTimeData.overrideValues({complianceCheckEnabled: true});
+
+    initializeReimagingDeviceInformationPage();
+
+    // Set the feature level based on parameter.
+    service.setGetOriginalFeatureLevelResult(featureLevel);
+
+    await initializeComponent();
+
+    // We can't access the Next button directly, so setup an observer to save
+    // the button's current state when it changes.
+    let disableNextButtonEventFired = false;
+    let isNextButtonDisabled = false;
+    component.addEventListener('disable-next-button', (e) => {
+      disableNextButtonEventFired = true;
+      isNextButtonDisabled = e.detail;
+    });
+
+    // Manually update a property to trigger the observer and thus give us a way
+    // to check the state of the Next button.
+    component.shadowRoot.querySelector('#serialNumber').value = 'other value';
+    suppressedComponentOnSelectedChange_(component);
+    await flushTasks();
+
+    assertTrue(disableNextButtonEventFired, 'Event should have fired.');
+    assertFalse(isNextButtonDisabled, 'Next button should be enabled.');
+  }
+
   test(
-      'ReimagingDeviceInformationPage_NextButtonState_QuestionsNotShown',
+      'ReimagingDeviceInformationPage_NextButtonState_QuestionsNotShown_Unsupported',
       async () => {
-        // Set the compliance check flag so that the additional questions show
-        // up if the feature level is unknown.
-        loadTimeData.overrideValues({complianceCheckEnabled: true});
+        await expectComplianceQuestionsToNotAffectNextButtonState(
+            FeatureLevel.kRmadFeatureLevelUnsupported);
+      });
 
-        initializeReimagingDeviceInformationPage();
-
-        // Set the feature level so that the additional questions *don't* show
-        // up.
-        service.setGetOriginalFeatureLevelResult(
+  test(
+      'ReimagingDeviceInformationPage_NextButtonState_QuestionsNotShown_FeatureLevel0',
+      async () => {
+        await expectComplianceQuestionsToNotAffectNextButtonState(
             FeatureLevel.kRmadFeatureLevel0);
+      });
 
-        await initializeComponent();
-
-        const hwComplianceVersionElement =
-            component.shadowRoot.querySelector('#doesMeetRequirements');
-        const isChassisBrandedElement =
-            component.shadowRoot.querySelector('#isChassisBranded');
-
-        // Set the values of the compliance question properties to their default
-        // values. If the feature level were unknown, this would disable the
-        // next button. In this case, we're setting these values so that
-        // changing them later triggers the observer.
-        hwComplianceVersionElement.value = BooleanOrDefaultOptions.DEFAULT;
-        isChassisBrandedElement.value = BooleanOrDefaultOptions.DEFAULT;
-        suppressedComponentOnSelectedChange_(component);
-
-        let disableNextButtonEventFired = false;
-        let isNextButtonDisabled = false;
-        component.addEventListener('disable-next-button', (e) => {
-          disableNextButtonEventFired = true;
-          isNextButtonDisabled = e.detail;
-        });
-
-        // Manually update the property to trigger the observer.
-        isChassisBrandedElement.value = BooleanOrDefaultOptions.NO;
-        suppressedComponentOnSelectedChange_(component);
-        await flushTasks();
-
-        // We expect that the state of the compliance properties do not affect
-        // the state of the button. Specifically, the next button should be
-        // enabled even though "hwComplianceVersionIndex_" is still 0.
-        assertTrue(disableNextButtonEventFired, 'Event should have fired.');
-        assertFalse(isNextButtonDisabled, 'Next button should be enabled.');
-
-        // Reset the value of the tracking variable.
-        disableNextButtonEventFired = false;
-
-        // Reset the index back to its default value,
-        isChassisBrandedElement.value = BooleanOrDefaultOptions.DEFAULT;
-        suppressedComponentOnSelectedChange_(component);
-        await flushTasks();
-
-        assertTrue(disableNextButtonEventFired, 'Event should have fired.');
-        assertFalse(isNextButtonDisabled, 'Next button should be enabled.');
+  test(
+      'ReimagingDeviceInformationPage_NextButtonState_QuestionsNotShown_FeatureLevel1',
+      async () => {
+        await expectComplianceQuestionsToNotAffectNextButtonState(
+            FeatureLevel.kRmadFeatureLevel1);
       });
 
   test(
