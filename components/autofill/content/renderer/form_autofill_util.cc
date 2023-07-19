@@ -2060,11 +2060,8 @@ bool IsTextAreaElementOrTextInput(const WebFormControlElement& element) {
 
 bool IsCheckableElement(const WebFormControlElement& element) {
   WebInputElement input_element = element.DynamicTo<WebInputElement>();
-  if (input_element.IsNull()) {
-    return false;
-  }
-
-  return input_element.IsCheckbox() || input_element.IsRadioButton();
+  return !input_element.IsNull() &&
+         (input_element.IsCheckbox() || input_element.IsRadioButton());
 }
 
 bool IsCheckableElement(const WebElement& element) {
@@ -2095,15 +2092,10 @@ bool IsElementEditable(const WebInputElement& element) {
 }
 
 bool IsWebElementFocusableForAutofill(const WebElement& element) {
-  if (element.IsFocusable()) {
-    return true;
-  }
-
-  if (IsSelectMenuElement(element.DynamicTo<WebFormControlElement>())) {
-    // The <selectmenu> shadow root is not focusable.
-    return element.To<WebSelectMenuElement>().HasFocusableChild();
-  }
-  return false;
+  return element.IsFocusable() ||
+         // The <selectmenu> shadow root is not focusable.
+         (IsSelectMenuElement(element.DynamicTo<WebFormControlElement>()) &&
+          element.To<WebSelectMenuElement>().HasFocusableChild());
 }
 
 bool IsWebElementVisible(const blink::WebElement& element) {
