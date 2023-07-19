@@ -16,8 +16,10 @@
 #pragma mark - TabGridPageMutator
 
 - (void)currentlySelectedGrid:(BOOL)selected {
-  base::RecordAction(
-      base::UserMetricsAction("MobileTabGridSelectIncognitoPanel"));
+  if (selected) {
+    base::RecordAction(
+        base::UserMetricsAction("MobileTabGridSelectIncognitoPanel"));
+  }
   // TODO(crbug.com/1457146): Implement.
 }
 

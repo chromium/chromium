@@ -285,8 +285,11 @@ bool UserActionIsRequiredToHaveTabSyncWork(syncer::SyncService* sync_service) {
 #pragma mark - TabGridPageMutator
 
 - (void)currentlySelectedGrid:(BOOL)selected {
-  base::RecordAction(base::UserMetricsAction("MobileTabGridSelectRemotePanel"));
-  LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeAllTabs);
+  if (selected) {
+    base::RecordAction(
+        base::UserMetricsAction("MobileTabGridSelectRemotePanel"));
+    LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeAllTabs);
+  }
   // TODO(crbug.com/1457146): Implement.
 }
 
