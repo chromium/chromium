@@ -4299,6 +4299,8 @@ static_library("test_support") {
     "accessibility/autoclick_test_utils.h",
     "accessibility/caret_bounds_changed_waiter.cc",
     "accessibility/caret_bounds_changed_waiter.h",
+    "accessibility/dictation_test_utils.cc",
+    "accessibility/dictation_test_utils.h",
     "accessibility/fullscreen_magnifier_test_helper.cc",
     "accessibility/fullscreen_magnifier_test_helper.h",
     "accessibility/html_test_utils.cc",
