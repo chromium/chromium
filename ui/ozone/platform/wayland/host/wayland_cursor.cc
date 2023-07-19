@@ -116,6 +116,12 @@ void WaylandCursor::HideCursor() {
 void WaylandCursor::SetPlatformShapeInternal() {
   DCHECK_GT(cursor_data_->image_count, 0U);
 
+  // Under some conditions, either `images` is nullptr, or `image_count` is 0.
+  // See https://crbug.com/1341202
+  if (!cursor_data_->images || cursor_data_->image_count == 0U) {
+    return;
+  }
+
   // The image index is incremented every time the animation frame is committed.
   // Here we reset the counter if the final frame in the series has been sent,
   // so the new cycle of the animation starts.
