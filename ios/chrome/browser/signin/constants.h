@@ -34,8 +34,8 @@ typedef enum {
 enum class PostSignInAction {
   // No post action after sign-in.
   kNone,
-  // Enables bookmark and reading list account storage.
-  kEnableBookmarkReadingListAccountStorage,
+  // Shows a snackbar displaying the account that just signed-in.
+  kShowSnackbar,
   // TODO(crbug.com/1462858): Turn on sync was deprecated. Delete this enum
   // after phase 2 launches on iOS. See ConsentLevel::kSync documentation for
   // details.

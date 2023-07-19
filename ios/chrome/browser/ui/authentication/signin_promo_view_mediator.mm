@@ -15,6 +15,8 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/base/signin_metrics.h"
+#import "components/sync/base/features.h"
+#import "components/sync/service/sync_user_settings.h"
 #import "ios/chrome/browser/discover_feed/feed_constants.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
@@ -981,12 +983,19 @@ const char* AlreadySeenSigninViewPreferenceKey(
                initWithBrowser:_browser
                       identity:self.identity
                    accessPoint:self.accessPoint
-              postSignInAction:PostSignInAction::
-                                   kEnableBookmarkReadingListAccountStorage
+              postSignInAction:PostSignInAction::kShowSnackbar
       presentingViewController:_baseViewController];
   __weak id<SigninPromoViewConsumer> weakConsumer = self.consumer;
   __weak __typeof(self) weakSelf = self;
   [_authenticationFlow startSignInWithCompletion:^(BOOL success) {
+    if (success &&
+        (weakSelf.accessPoint ==
+             signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_MANAGER ||
+         weakSelf.accessPoint ==
+             signin_metrics::AccessPoint::ACCESS_POINT_READING_LIST)) {
+      [weakSelf optInBookmarkReadingListAccountStorage];
+    }
+
     [weakSelf signInFlowCompletedForInstantSignin];
     if ([weakSelf shouldWaitForInitialSync]) {
       return;
@@ -1098,6 +1107,23 @@ const char* AlreadySeenSigninViewPreferenceKey(
   CHECK(_dataTypeToWaitForInitialSync != syncer::ModelType::UNSPECIFIED);
   return _syncService->GetTypesWithPendingDownloadForInitialSync().Has(
       _dataTypeToWaitForInitialSync);
+}
+
+- (void)optInBookmarkReadingListAccountStorage {
+  bool bookmarksAccountStorageEnabled =
+      base::FeatureList::IsEnabled(syncer::kEnableBookmarksAccountStorage);
+  bool dualReadingListModelEnabled = base::FeatureList::IsEnabled(
+      syncer::kReadingListEnableDualReadingListModel);
+  bool readingListTransportUponSignInEnabled = base::FeatureList::IsEnabled(
+      syncer::kReadingListEnableSyncTransportModeUponSignIn);
+  CHECK(bookmarksAccountStorageEnabled ||
+        (dualReadingListModelEnabled && readingListTransportUponSignInEnabled))
+      << "bookmarksAccountStorageEnabled: " << bookmarksAccountStorageEnabled
+      << ", dualReadingListModelEnabled: " << dualReadingListModelEnabled
+      << ", readingListTransportUponSignInEnabled: "
+      << readingListTransportUponSignInEnabled;
+  _syncService->GetUserSettings()
+      ->SetBookmarksAndReadingListAccountStorageOptIn(true);
 }
 
 #pragma mark - ChromeAccountManagerServiceObserver
