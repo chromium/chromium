@@ -13,6 +13,8 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 
+import java.util.Map;
+
 /**
  * Class that controls retrieving and displaying surveys. Clients should call #downloadSurvey() and
  * register a runnable to run when the survey is available. After downloading the survey, call
@@ -45,7 +47,7 @@ public class SurveyController {
      * @param onFailureRunnable The runnable to notify when downloading the survey failed, or the
      *                          survey does not exist.
      */
-    public void downloadSurvey(Context context, String triggerId, Runnable onSuccessRunnable,
+    protected void downloadSurvey(Context context, String triggerId, Runnable onSuccessRunnable,
             Runnable onFailureRunnable) {}
 
     /**
@@ -56,16 +58,36 @@ public class SurveyController {
      * @param displayLogoResId Optional resource id of the logo to be displayed on the survey.
      *                         Pass 0 for no logo.
      * @param lifecycleDispatcher LifecycleDispatcher that will dispatch different activity signals.
+     *
+     * @deprecated Use {@link #showSurveyIfAvailable(Activity, String, int,
+     *         ActivityLifecycleDispatcher, Map)} instead.
      */
-    public void showSurveyIfAvailable(Activity activity, String siteId, boolean showAsBottomSheet,
-            int displayLogoResId, @Nullable ActivityLifecycleDispatcher lifecycleDispatcher) {}
+    @Deprecated
+    protected void showSurveyIfAvailable(Activity activity, String siteId,
+            boolean showAsBottomSheet, int displayLogoResId,
+            @Nullable ActivityLifecycleDispatcher lifecycleDispatcher) {}
+
+    /**
+     * Show the survey.
+     * @param activity The client activity for the survey request.
+     * @param triggerId Id used to trigger the survey.
+     * @param displayLogoResId Optional resource id of the logo to be displayed on the survey.
+     *                         Pass 0 for no logo.
+     * @param lifecycleDispatcher LifecycleDispatcher that will dispatch different activity signals.
+     * @param psd key-value set of list of PSD attaching to the survey.
+     */
+    protected void showSurveyIfAvailable(Activity activity, String triggerId, int displayLogoResId,
+            @Nullable ActivityLifecycleDispatcher lifecycleDispatcher,
+            @Nullable Map<String, String> psd) {
+        throw new UnsupportedOperationException();
+    }
 
     /**
      * Check if a survey is valid or expired.
      * @param triggerId  The ID used to fetch the data for the surveys.
      * @return true if the survey has expired, false if the survey is valid.
      */
-    public boolean isSurveyExpired(String triggerId) {
+    protected boolean isSurveyExpired(String triggerId) {
         return false;
     }
 }
