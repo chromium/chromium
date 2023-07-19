@@ -1610,12 +1610,11 @@ void ShellSurfaceBase::CreateShellSurfaceWidget(
   // Start tracking changes to window bounds and window state.
   window->AddObserver(this);
   ash::WindowState* window_state = ash::WindowState::Get(window);
-  // Skip initializing window state when it is menu.
-  // TODO(crbug.com/1338597): Remove `window_state` condition when tooltip fix
-  // is done. Without the fix, window_state can be null when  it is tooltip and
-  // the parent window is menu, so add null check of `window_state` here.
-  if (!is_menu_ && window_state)
+  // Skip initializing window state when `window_state` is null.
+  // This happesn when the window type is popup.
+  if (window_state) {
     InitializeWindowState(window_state);
+  }
 
   SetShellUseImmersiveForFullscreen(window, immersive_implied_by_fullscreen_);
 
