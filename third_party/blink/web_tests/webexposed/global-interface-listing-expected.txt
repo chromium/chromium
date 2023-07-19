@@ -11525,7 +11525,6 @@ interface XMLHttpRequest : XMLHttpRequestEventTarget
     attribute OPENED
     attribute UNSENT
     getter onreadystatechange
-    getter privateTokenOperationError
     getter readyState
     getter response
     getter responseText

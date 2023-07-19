@@ -2975,7 +2975,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     attribute OPENED
 [Worker]     attribute UNSENT
 [Worker]     getter onreadystatechange
-[Worker]     getter privateTokenOperationError
 [Worker]     getter readyState
 [Worker]     getter response
 [Worker]     getter responseText

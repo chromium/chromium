@@ -1747,12 +1747,6 @@ void XMLHttpRequest::DidFail(uint64_t, const ResourceError& error) {
     return;
   }
 
-  if (error.TrustTokenOperationError() !=
-      network::mojom::TrustTokenOperationStatus::kOk) {
-    trust_token_operation_error_ =
-        TrustTokenErrorToDOMException(error.TrustTokenOperationError());
-  }
-
   HandleNetworkError();
 }
 
@@ -2131,7 +2125,6 @@ void XMLHttpRequest::Trace(Visitor* visitor) const {
   visitor->Trace(upload_);
   visitor->Trace(blob_loader_);
   visitor->Trace(response_text_);
-  visitor->Trace(trust_token_operation_error_);
   XMLHttpRequestEventTarget::Trace(visitor);
   ThreadableLoaderClient::Trace(visitor);
   DocumentParserClient::Trace(visitor);

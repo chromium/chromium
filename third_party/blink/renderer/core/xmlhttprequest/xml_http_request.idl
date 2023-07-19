@@ -81,5 +81,4 @@ typedef (Blob or BufferSource or FormData or URLSearchParams or USVString) XMLHt
     [RaisesException=Getter] readonly attribute USVString responseText;
     // TODO(foolip): responseXML should be [Exposed=Window].
     [MeasureAs=XMLHttpRequestResponseXML, RaisesException=Getter] readonly attribute Document? responseXML;
-    [RuntimeEnabled=PrivateStateTokens, SecureContext] readonly attribute DOMException privateTokenOperationError;
 };

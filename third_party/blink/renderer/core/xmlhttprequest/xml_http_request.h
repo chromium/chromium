@@ -165,9 +165,6 @@ class CORE_EXPORT XMLHttpRequest final
   String responseType();
   void setResponseType(const String&, ExceptionState&);
   String responseURL();
-  DOMException* privateTokenOperationError() const {
-    return trust_token_operation_error_;
-  }
 
   // For Inspector.
   void SendForInspectorXHRReplay(scoped_refptr<EncodedFormData>,
@@ -314,7 +311,6 @@ class CORE_EXPORT XMLHttpRequest final
   AtomicString method_;
   HTTPHeaderMap request_headers_;
   network::mojom::blink::TrustTokenParamsPtr trust_token_params_;
-  Member<DOMException> trust_token_operation_error_;
   // Not converted to ASCII lowercase. Must be lowered later or compared
   // using case insensitive comparison functions if needed.
   AtomicString mime_type_override_;
