@@ -9,21 +9,6 @@ load("@builtin//lib/gn.star", "gn")
 load("@builtin//struct.star", "module")
 load("./config.star", "config")
 
-def __filearg(ctx, arg):
-    fn = ""
-    if arg.startswith("@FileArg("):
-        f = arg.removeprefix("@FileArg(").removesuffix(")").split(":")
-        fn = f[0].removesuffix("[]")  # [] suffix controls expand list?
-        v = json.decode(str(ctx.fs.read(ctx.fs.canonpath(fn))))
-        for k in f[1:]:
-            v = v[k]
-        arg = v
-    if type(arg) == "string":
-        if arg.startswith("["):
-            return fn, json.decode(arg)
-        return fn, [arg]
-    return fn, arg
-
 def __enabled(ctx):
     if "args.gn" in ctx.metadata:
         gn_args = gn.parse_args(ctx.metadata["args.gn"])
@@ -76,6 +61,17 @@ def __step_config(ctx, step_config):
             "timeout": "2m",
         },
         {
+            "name": "android/compile_resources",
+            "command_prefix": "python3 ../../build/android/gyp/compile_resources.py",
+            "handler": "android_compile_resources",
+            "inputs": [
+                "third_party/protobuf/python/google/protobuf/__init__.py",
+            ],
+            "remote": remote_run,
+            "canonicalize_dir": True,
+            "timeout": "2m",
+        },
+        {
             "name": "android/compile_java",
             "command_prefix": "python3 ../../build/android/gyp/compile_java.py",
             "handler": "android_compile_java",
@@ -97,6 +93,16 @@ def __step_config(ctx, step_config):
             "remote": remote_run,
             "canonicalize_dir": True,
             "timeout": "2m",
+        },
+        {
+            # TODO(b/284252142): this dex action takes long time even on a n2-highmem-8 worker.
+            # It needs to figure out how to make it faster. e.g. use intermediate files.
+            "name": "android/dex-local",
+            "command_prefix": "python3 ../../build/android/gyp/dex.py",
+            "action_outs": [
+                "./obj/android_webview/tools/system_webview_shell/system_webview_shell_apk/system_webview_shell_apk.mergeddex.jar",
+            ],
+            "remote": False,
         },
         {
             "name": "android/dex",
@@ -130,6 +136,71 @@ def __step_config(ctx, step_config):
         },
     ])
     return step_config
+
+def __filearg(ctx, arg):
+    fn = ""
+    if arg.startswith("@FileArg("):
+        f = arg.removeprefix("@FileArg(").removesuffix(")").split(":")
+        fn = f[0].removesuffix("[]")  # [] suffix controls expand list?
+        v = json.decode(str(ctx.fs.read(ctx.fs.canonpath(fn))))
+        for k in f[1:]:
+            v = v[k]
+        arg = v
+    if type(arg) == "string":
+        if arg.startswith("["):
+            return fn, json.decode(arg)
+        return fn, [arg]
+    return fn, arg
+
+def __android_compile_resources_handler(ctx, cmd):
+    # Script:
+    #   https://crsrc.org/c/build/android/gyp/compile_resources.py
+    # GN Config:
+    #   https://crsrc.org/c/build/config/android/internal_rules.gni;l=2163;drc=1b15af251f8a255e44f2e3e3e7990e67e87dcc3b
+    #   https://crsrc.org/c/build/config/android/system_image.gni;l=58;drc=39debde76e509774287a655285d8556a9b8dc634
+    # Sample args:
+    #   --aapt2-path ../../third_party/android_build_tools/aapt2/aapt2
+    #   --android-manifest gen/chrome/android/trichrome_library_system_stub_apk__manifest.xml
+    #   --arsc-package-name=org.chromium.trichromelibrary
+    #   --arsc-path obj/chrome/android/trichrome_library_system_stub_apk.ap_
+    #   --debuggable
+    #   --dependencies-res-zip-overlays=@FileArg\(gen/chrome/android/webapk/shell_apk/maps_go_webapk.build_config.json:deps_info:dependency_zip_overlays\)
+    #   --dependencies-res-zips=@FileArg\(gen/chrome/android/webapk/shell_apk/maps_go_webapk.build_config.json:deps_info:dependency_zips\)
+    #   --depfile gen/chrome/android/webapk/shell_apk/maps_go_webapk__compile_resources.d
+    #   --emit-ids-out=gen/chrome/android/webapk/shell_apk/maps_go_webapk__compile_resources.resource_ids
+    #   --extra-res-packages=@FileArg\(gen/chrome/android/webapk/shell_apk/maps_go_webapk.build_config.json:deps_info:extra_package_names\)
+    #   --include-resources(=)../../third_party/android_sdk/public/platforms/android-34/android.jar
+    #   --info-path obj/chrome/android/webapk/shell_apk/maps_go_webapk.ap_.info
+    #   --min-sdk-version=24
+    #   --proguard-file obj/chrome/android/webapk/shell_apk/maps_go_webapk/maps_go_webapk.resources.proguard.txt
+    #   --r-text-out gen/chrome/android/webapk/shell_apk/maps_go_webapk__compile_resources_R.txt
+    #   --rename-manifest-package=org.chromium.trichromelibrary
+    #   --srcjar-out gen/chrome/android/webapk/shell_apk/maps_go_webapk__compile_resources.srcjar
+    #   --target-sdk-version=33
+    #   --version-code 1
+    #   --version-name Developer\ Build
+    #   --webp-cache-dir=obj/android-webp-cache
+    inputs = []
+    for i, arg in enumerate(cmd.args):
+        if arg in ["--aapt2-path", "--include-resources"]:
+            inputs.append(ctx.fs.canonpath(cmd.args[i + 1]))
+        if arg.startswith("--include-resources="):
+            inputs.append(ctx.fs.canonpath(arg.removeprefix("--include-resources=")))
+        for k in ["--dependencies-res-zips=", "--dependencies-res-zip-overlays=", "--extra-res-packages="]:
+            if arg.startswith(k):
+                arg = arg.removeprefix(k)
+                fn, v = __filearg(ctx, arg)
+                if fn:
+                    inputs.append(ctx.fs.canonpath(fn))
+                for f in v:
+                    f = ctx.fs.canonpath(f)
+                    inputs.append(f)
+                    if k == "--dependencies-res-zips=" and ctx.fs.exists(f + ".info"):
+                        inputs.append(f + ".info")
+
+    ctx.actions.fix(
+        inputs = cmd.inputs + inputs,
+    )
 
 def __android_compile_java_handler(ctx, cmd):
     out = cmd.outputs[0]
@@ -219,10 +290,20 @@ def __android_write_build_config_handler(ctx, cmd):
     ctx.actions.fix(inputs = cmd.inputs + inputs)
 
 __handlers = {
+    "android_compile_resources": __android_compile_resources_handler,
     "android_compile_java": __android_compile_java_handler,
     "android_dex": __android_dex_handler,
     "android_turbine": __android_turbine_handler,
     "android_write_build_config": __android_write_build_config_handler,
+}
+
+__filegroups = {
+    # TODO(b/285078792): converge this file group with
+    # `third_party/protobuf/python/google:pyprotolib` in proto_linux.star.
+    "third_party/protobuf/python/google:google": {
+        "type": "glob",
+        "includes": ["*.py"],
+    },
 }
 
 def __input_deps(ctx, input_deps):
@@ -233,7 +314,6 @@ def __input_deps(ctx, input_deps):
         "third_party/jdk/current/conf/logging.properties",
         "third_party/jdk/current/conf/security/java.security",
         "third_party/jdk/current/lib/ct.sym",
-        "third_party/jdk/current/lib/jli/libjli.so",
         "third_party/jdk/current/lib/jrt-fs.jar",
         "third_party/jdk/current/lib/jvm.cfg",
         "third_party/jdk/current/lib/libawt.so",
@@ -260,12 +340,15 @@ def __input_deps(ctx, input_deps):
     input_deps["third_party/jdk/current/bin/javac"] = [
         "third_party/jdk/current:current",
     ]
+    input_deps["third_party/protobuf/python/google/protobuf/__init__.py"] = [
+        "third_party/protobuf/python/google:google",
+    ]
 
 android = module(
     "android",
     enabled = __enabled,
     step_config = __step_config,
-    filegroups = {},
+    filegroups = __filegroups,
     handlers = __handlers,
     input_deps = __input_deps,
 )
