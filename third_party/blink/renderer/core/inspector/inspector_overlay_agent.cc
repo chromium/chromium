@@ -653,8 +653,8 @@ protocol::Response InspectorOverlayAgent::highlightRect(
       std::make_unique<gfx::QuadF>(gfx::RectF(x, y, width, height));
   return SetInspectTool(MakeGarbageCollected<QuadHighlightTool>(
       this, GetFrontend(), std::move(quad),
-      ParseColor(color.fromMaybe(nullptr)),
-      ParseColor(outline_color.fromMaybe(nullptr))));
+      ParseColor(color.isJust() ? color.fromJust() : nullptr),
+      ParseColor(outline_color.isJust() ? outline_color.fromJust() : nullptr)));
 }
 
 protocol::Response InspectorOverlayAgent::highlightQuad(
@@ -667,8 +667,8 @@ protocol::Response InspectorOverlayAgent::highlightQuad(
   }
   return SetInspectTool(MakeGarbageCollected<QuadHighlightTool>(
       this, GetFrontend(), std::move(quad),
-      ParseColor(color.fromMaybe(nullptr)),
-      ParseColor(outline_color.fromMaybe(nullptr))));
+      ParseColor(color.isJust() ? color.fromJust() : nullptr),
+      ParseColor(outline_color.isJust() ? outline_color.fromJust() : nullptr)));
 }
 
 protocol::Response InspectorOverlayAgent::setShowHinge(
@@ -950,9 +950,10 @@ protocol::Response InspectorOverlayAgent::highlightFrame(
   std::unique_ptr<InspectorHighlightConfig> highlight_config =
       std::make_unique<InspectorHighlightConfig>();
   highlight_config->show_info = true;  // Always show tooltips for frames.
-  highlight_config->content = ParseColor(color.fromMaybe(nullptr));
+  highlight_config->content =
+      ParseColor(color.isJust() ? color.fromJust() : nullptr);
   highlight_config->content_outline =
-      ParseColor(outline_color.fromMaybe(nullptr));
+      ParseColor(outline_color.isJust() ? outline_color.fromJust() : nullptr);
 
   return SetInspectTool(MakeGarbageCollected<NodeHighlightTool>(
       this, GetFrontend(), frame->DeprecatedLocalOwner(), String(),
