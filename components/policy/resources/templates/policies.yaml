@@ -1129,6 +1129,7 @@ policies:
   1128: DefaultMidiSetting
   1129: MidiAllowedForUrls
   1130: MidiBlockedForUrls
+  1131: GlanceablesEnabled
 atomic_groups:
   1: Homepage
   2: RemoteAccess

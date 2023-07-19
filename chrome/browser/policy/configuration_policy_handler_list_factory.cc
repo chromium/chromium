@@ -1478,6 +1478,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kArcVmDataMigrationStrategy,
     arc::prefs::kArcVmDataMigrationStrategy,
     base::Value::Type::INTEGER },
+  { key::kGlanceablesEnabled,
+    ash::prefs::kGlanceablesEnabled,
+    base::Value::Type::BOOLEAN },
 #endif // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_LINUX)
