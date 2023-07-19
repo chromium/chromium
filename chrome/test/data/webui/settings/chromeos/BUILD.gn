@@ -88,18 +88,6 @@ build_webui_tests("build") {
     "utils.ts",
 
     # Subfolder files.
-    "a11y/basic_a11y_test.js",
-    "a11y/crostini_settings_details_a11y_test.js",
-    "a11y/crostini_settings_export_import_a11y_test.js",
-    "a11y/crostini_settings_shared_paths_a11y_test.js",
-    "a11y/crostini_settings_shared_usb_devices_a11y_test.js",
-    "a11y/crostini_settings_subpage_a11y_test.js",
-    "a11y/google_assistant_a11y_test.js",
-    "a11y/manage_accessibility_a11y_test.js",
-    "a11y/multidevice_a11y_test.js",
-    "a11y/multidevice_features_a11y_test.js",
-    "a11y/tts_subpage_a11y_test.js",
-
     "app_management/app_test.js",
     "app_management/fake_page_handler.ts",
     "app_management/file_handling_item_test.ts",
