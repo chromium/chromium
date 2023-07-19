@@ -840,6 +840,24 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="NewTabPage.Images.ShownTime{ImageType}" units="ms"
+    expires_after="2023-12-10">
+  <owner>danpeng@google.com</owner>
+  <owner>pauladedeji@google.com</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    The elapsed time between a request by the NTP frontend to show {ImageType}
+    and when it is loaded.
+
+    NewTabPage.Images.ShownTime.BackgroundImage is only logged when the NTP
+    loads with a background image. It is recorded once per NTP.
+  </summary>
+  <token key="ImageType">
+    <variant name=".BackgroundImage"
+        summary="background image set when user opens NTP"/>
+  </token>
+</histogram>
+
 <histogram name="NewTabPage.Languages.UILanguageRatioInTwoTopLanguages"
     units="%" expires_after="M77">
   <owner>jkrcal@chromium.org</owner>

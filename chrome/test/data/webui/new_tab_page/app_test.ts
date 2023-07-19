@@ -28,6 +28,7 @@ suite('NewTabPageAppTest', () => {
   let moduleResolver: PromiseResolver<Module[]>;
 
   const url: URL = new URL(location.href);
+  const backgroundImageLoadTime: number = 123;
 
   setup(async () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
@@ -60,7 +61,7 @@ suite('NewTabPageAppTest', () => {
                                .callbackRouter.$.bindNewPipeAndPassRemote();
     backgroundManager = installMock(BackgroundManager);
     backgroundManager.setResultFor(
-        'getBackgroundImageLoadTime', Promise.resolve(0));
+        'getBackgroundImageLoadTime', Promise.resolve(backgroundImageLoadTime));
     moduleRegistry = installMock(ModuleRegistry);
     moduleResolver = new PromiseResolver();
     moduleRegistry.setResultFor('initializeModules', moduleResolver.promise);
@@ -431,7 +432,7 @@ suite('NewTabPageAppTest', () => {
     });
 
     suite('theming metrics', () => {
-      test('having no theme produces correct metric', async () => {
+      test('having no theme produces correct metrics', async () => {
         // Arrange.
         const theme = createTheme();
         theme.isCustomBackground = false;
@@ -441,7 +442,9 @@ suite('NewTabPageAppTest', () => {
         await callbackRouterRemote.$.flushForTesting();
 
         // Assert.
+        assertEquals(1, metrics.count('NewTabPage.Collections.IdOnLoad'));
         assertEquals(1, metrics.count('NewTabPage.Collections.IdOnLoad', ''));
+        assertEquals(1, metrics.count('NewTabPage.BackgroundImageSource'));
         assertEquals(
             1,
             metrics.count(
@@ -449,7 +452,7 @@ suite('NewTabPageAppTest', () => {
                 NtpBackgroundImageSource.kNoImage));
       });
 
-      test('having first party theme produces correct metric', async () => {
+      test('having first party theme produces correct metrics', async () => {
         // Arrange.
         const theme = createTheme();
         theme.backgroundImage = createBackgroundImage('https://foo.com');
@@ -462,9 +465,11 @@ suite('NewTabPageAppTest', () => {
         await callbackRouterRemote.$.flushForTesting();
 
         // Assert.
+        assertEquals(1, metrics.count('NewTabPage.Collections.IdOnLoad'));
         assertEquals(
             1,
             metrics.count('NewTabPage.Collections.IdOnLoad', 'foo_collection'));
+        assertEquals(1, metrics.count('NewTabPage.BackgroundImageSource'));
         assertEquals(
             1,
             metrics.count(
@@ -472,7 +477,7 @@ suite('NewTabPageAppTest', () => {
                 NtpBackgroundImageSource.kFirstPartyThemeWithoutDailyRefresh));
       });
 
-      test('having third party theme produces correct metric', async () => {
+      test('having third party theme produces correct metrics', async () => {
         // Arrange.
         const theme = createTheme();
         theme.backgroundImage = createBackgroundImage('https://foo.com');
@@ -484,7 +489,9 @@ suite('NewTabPageAppTest', () => {
         await callbackRouterRemote.$.flushForTesting();
 
         // Assert.
+        assertEquals(1, metrics.count('NewTabPage.Collections.IdOnLoad'));
         assertEquals(1, metrics.count('NewTabPage.Collections.IdOnLoad', ''));
+        assertEquals(1, metrics.count('NewTabPage.BackgroundImageSource'));
         assertEquals(
             1,
             metrics.count(
@@ -492,28 +499,32 @@ suite('NewTabPageAppTest', () => {
                 NtpBackgroundImageSource.kThirdPartyTheme));
       });
 
-      test('having refresh daily enabled produces correct metric', async () => {
-        // Arrange.
-        const theme = createTheme();
-        theme.backgroundImage = createBackgroundImage('https://foo.com');
-        theme.backgroundImage.imageSource =
-            NtpBackgroundImageSource.kFirstPartyThemeWithDailyRefresh;
-        theme.backgroundImageCollectionId = 'foo_collection';
+      test(
+          'having refresh daily enabled produces correct metrics', async () => {
+            // Arrange.
+            const theme = createTheme();
+            theme.backgroundImage = createBackgroundImage('https://foo.com');
+            theme.backgroundImage.imageSource =
+                NtpBackgroundImageSource.kFirstPartyThemeWithDailyRefresh;
+            theme.backgroundImageCollectionId = 'foo_collection';
 
-        // Act.
-        callbackRouterRemote.setTheme(theme);
-        await callbackRouterRemote.$.flushForTesting();
+            // Act.
+            callbackRouterRemote.setTheme(theme);
+            await callbackRouterRemote.$.flushForTesting();
 
-        // Assert.
-        assertEquals(
-            1,
-            metrics.count('NewTabPage.Collections.IdOnLoad', 'foo_collection'));
-        assertEquals(
-            1,
-            metrics.count(
-                'NewTabPage.BackgroundImageSource',
-                NtpBackgroundImageSource.kFirstPartyThemeWithDailyRefresh));
-      });
+            // Assert.
+            assertEquals(1, metrics.count('NewTabPage.Collections.IdOnLoad'));
+            assertEquals(
+                1,
+                metrics.count(
+                    'NewTabPage.Collections.IdOnLoad', 'foo_collection'));
+            assertEquals(1, metrics.count('NewTabPage.BackgroundImageSource'));
+            assertEquals(
+                1,
+                metrics.count(
+                    'NewTabPage.BackgroundImageSource',
+                    NtpBackgroundImageSource.kFirstPartyThemeWithDailyRefresh));
+          });
 
       test('setting uploaded background produces correct metrics', async () => {
         // Arrange.
@@ -527,12 +538,33 @@ suite('NewTabPageAppTest', () => {
         await callbackRouterRemote.$.flushForTesting();
 
         // Assert.
+        assertEquals(1, metrics.count('NewTabPage.Collections.IdOnLoad'));
         assertEquals(1, metrics.count('NewTabPage.Collections.IdOnLoad', ''));
+        assertEquals(1, metrics.count('NewTabPage.BackgroundImageSource'));
         assertEquals(
             1,
             metrics.count(
                 'NewTabPage.BackgroundImageSource',
                 NtpBackgroundImageSource.kUploadedImage));
+      });
+
+      suite('background image load', () => {
+        suiteSetup(() => {
+          loadTimeData.overrideValues({backgroundImageUrl: 'https://foo.com'});
+        });
+
+        test('background image load time is logged', async () => {
+          // Assert.
+          assertEquals(
+              1, metrics.count('NewTabPage.Images.ShownTime.BackgroundImage'));
+          assertEquals(
+              1,
+              metrics.count(
+                  'NewTabPage.Images.ShownTime.BackgroundImage',
+                  Math.floor(
+                      backgroundImageLoadTime -
+                      window.performance.timeOrigin)));
+        });
       });
     });
   });
