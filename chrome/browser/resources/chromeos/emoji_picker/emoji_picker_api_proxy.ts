@@ -7,8 +7,7 @@ import {PageHandlerFactory, PageHandlerRemote, Status, TenorGifResponse} from '.
 import {NewWindowProxy} from './new_window_proxy.mojom-webui.js';
 import {EmojiVariants, GifSubcategoryData, VisualContent} from './types.js';
 
-// TODO(b/287545226): Replace this with the actual URL.
-const HELP_CENTRE_URL = 'https://google.com';
+const HELP_CENTRE_URL = 'https://support.google.com/chrome?p=palette';
 
 /** @interface */
 export interface EmojiPickerApiProxy {
