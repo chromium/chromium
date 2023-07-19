@@ -8,6 +8,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
@@ -270,6 +271,10 @@ public class TabGridDialogMediatorUnitTest {
         listener.onClick(mView);
 
         assertThat(mModel.get(TabGridPanelProperties.ANIMATION_SOURCE_VIEW), equalTo(null));
+        assertFalse(mModel.get(TabGridPanelProperties.IS_DIALOG_VISIBLE));
+
+        // Simulate the animation finishing.
+        mModel.get(TabGridPanelProperties.VISIBILITY_LISTENER).finishedHidingDialogView();
         verify(mDialogController).resetWithListOfTabs(null);
         verify(mTabCreator)
                 .createNewTab(
@@ -296,6 +301,10 @@ public class TabGridDialogMediatorUnitTest {
         View.OnClickListener listener = mModel.get(TabGridPanelProperties.COLLAPSE_CLICK_LISTENER);
         listener.onClick(mView);
 
+        assertFalse(mModel.get(TabGridPanelProperties.IS_DIALOG_VISIBLE));
+
+        // Simulate the animation finishing.
+        mModel.get(TabGridPanelProperties.VISIBILITY_LISTENER).finishedHidingDialogView();
         verify(mDialogController).resetWithListOfTabs(null);
     }
 
@@ -309,6 +318,10 @@ public class TabGridDialogMediatorUnitTest {
         Runnable scrimClickRunnable = mModel.get(TabGridPanelProperties.SCRIMVIEW_CLICK_RUNNABLE);
         scrimClickRunnable.run();
 
+        assertFalse(mModel.get(TabGridPanelProperties.IS_DIALOG_VISIBLE));
+
+        // Simulate the animation finishing.
+        mModel.get(TabGridPanelProperties.VISIBILITY_LISTENER).finishedHidingDialogView();
         verify(mDialogController).resetWithListOfTabs(null);
     }
 
@@ -446,6 +459,11 @@ public class TabGridDialogMediatorUnitTest {
                 newTab, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND, false);
 
         assertThat(mModel.get(TabGridPanelProperties.ANIMATION_SOURCE_VIEW), equalTo(null));
+        assertFalse(mModel.get(TabGridPanelProperties.IS_DIALOG_VISIBLE));
+
+        // Simulate the animation finishing.
+        mModel.get(TabGridPanelProperties.VISIBILITY_LISTENER).finishedHidingDialogView();
+
         verify(mDialogController).resetWithListOfTabs(null);
     }
 
@@ -502,6 +520,10 @@ public class TabGridDialogMediatorUnitTest {
         mTabModelObserverCaptor.getValue().willCloseTab(mTab1, false, true);
 
         assertThat(mModel.get(TabGridPanelProperties.ANIMATION_SOURCE_VIEW), equalTo(null));
+        assertFalse(mModel.get(TabGridPanelProperties.IS_DIALOG_VISIBLE));
+
+        // Simulate the animation finishing.
+        mModel.get(TabGridPanelProperties.VISIBILITY_LISTENER).finishedHidingDialogView();
         verify(mDialogController).resetWithListOfTabs(null);
         verify(mTabSwitcherResetHandler, never())
                 .resetWithTabList(mTabGroupModelFilter, false, false);
@@ -750,6 +772,11 @@ public class TabGridDialogMediatorUnitTest {
                 mTab1, TabSelectionType.FROM_USER, Tab.INVALID_TAB_ID);
 
         assertThat(mModel.get(TabGridPanelProperties.ANIMATION_SOURCE_VIEW), equalTo(null));
+        assertFalse(mModel.get(TabGridPanelProperties.IS_DIALOG_VISIBLE));
+
+        // Simulate the animation finishing.
+        mModel.get(TabGridPanelProperties.VISIBILITY_LISTENER).finishedHidingDialogView();
+
         verify(mDialogController).resetWithListOfTabs(null);
     }
 
@@ -763,23 +790,12 @@ public class TabGridDialogMediatorUnitTest {
 
         // Animation source view should not be specified.
         assertThat(mModel.get(TabGridPanelProperties.ANIMATION_SOURCE_VIEW), equalTo(null));
+        assertFalse(mModel.get(TabGridPanelProperties.IS_DIALOG_VISIBLE));
+
+        // Simulate the animation finishing.
+        mModel.get(TabGridPanelProperties.VISIBILITY_LISTENER).finishedHidingDialogView();
+
         verify(mDialogController).resetWithListOfTabs(eq(null));
-    }
-
-    @Test
-    public void hideDialog_WithVisibilityListener_BasicAnimation() {
-        // Mock that the animation source view is null, and the dialog is showing.
-        mModel.set(TabGridPanelProperties.ANIMATION_SOURCE_VIEW, null);
-        mModel.set(TabGridPanelProperties.IS_DIALOG_VISIBLE, true);
-        // Set visibility listener.
-        mModel.set(TabGridPanelProperties.VISIBILITY_LISTENER, mMediator);
-
-        mMediator.hideDialog(false);
-
-        // Animation source view should not be specified.
-        assertThat(mModel.get(TabGridPanelProperties.ANIMATION_SOURCE_VIEW), equalTo(null));
-        assertThat(mModel.get(TabGridPanelProperties.IS_DIALOG_VISIBLE), equalTo(false));
-        verifyNoMoreInteractions(mDialogController);
     }
 
     @Test
@@ -792,23 +808,12 @@ public class TabGridDialogMediatorUnitTest {
 
         // Animation source view should not be specified.
         assertThat(mModel.get(TabGridPanelProperties.ANIMATION_SOURCE_VIEW), equalTo(null));
+        assertFalse(mModel.get(TabGridPanelProperties.IS_DIALOG_VISIBLE));
+
+        // Simulate the animation finishing.
+        mModel.get(TabGridPanelProperties.VISIBILITY_LISTENER).finishedHidingDialogView();
+
         verify(mDialogController).resetWithListOfTabs(eq(null));
-    }
-
-    @Test
-    public void hideDialog_WithVisibilityListener_ClearsViewAnimation() {
-        // Mock that the animation source view exists, and the dialog is showing.
-        mModel.set(TabGridPanelProperties.ANIMATION_SOURCE_VIEW, mView);
-        mModel.set(TabGridPanelProperties.IS_DIALOG_VISIBLE, true);
-        // Set visibility listener.
-        mModel.set(TabGridPanelProperties.VISIBILITY_LISTENER, mMediator);
-
-        mMediator.hideDialog(false);
-
-        // Animation source view should not be specified.
-        assertThat(mModel.get(TabGridPanelProperties.ANIMATION_SOURCE_VIEW), equalTo(null));
-        assertThat(mModel.get(TabGridPanelProperties.IS_DIALOG_VISIBLE), equalTo(false));
-        verifyNoMoreInteractions(mDialogController);
     }
 
     @Test
@@ -822,6 +827,10 @@ public class TabGridDialogMediatorUnitTest {
 
         // Animation source view should be specified.
         assertThat(mModel.get(TabGridPanelProperties.ANIMATION_SOURCE_VIEW), equalTo(mView));
+        assertFalse(mModel.get(TabGridPanelProperties.IS_DIALOG_VISIBLE));
+
+        // Simulate the animation finishing.
+        mModel.get(TabGridPanelProperties.VISIBILITY_LISTENER).finishedHidingDialogView();
         verify(mDialogController).resetWithListOfTabs(eq(null));
     }
 
@@ -965,7 +974,10 @@ public class TabGridDialogMediatorUnitTest {
 
         mMediator.onReset(null);
 
-        assertThat(mModel.get(TabGridPanelProperties.IS_DIALOG_VISIBLE), equalTo(false));
+        assertFalse(mModel.get(TabGridPanelProperties.IS_DIALOG_VISIBLE));
+
+        // Simulate the animation finishing.
+        mModel.get(TabGridPanelProperties.VISIBILITY_LISTENER).finishedHidingDialogView();
         verify(mDialogController).postHiding();
     }
 

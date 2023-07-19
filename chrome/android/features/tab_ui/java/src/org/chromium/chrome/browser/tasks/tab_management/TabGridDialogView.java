@@ -121,6 +121,7 @@ public class TabGridDialogView extends FrameLayout {
     private int mUngroupBarTextColor;
     @ColorInt
     private int mUngroupBarHoveredTextColor;
+    private Integer mBindingToken;
 
     public TabGridDialogView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -785,6 +786,7 @@ public class TabGridDialogView extends FrameLayout {
     void hideDialog() {
         // Skip the hideDialog call caused by initializing the dialog visibility as false.
         if (getVisibility() != VISIBLE) return;
+
         assert mScrimCoordinator != null && mScrimPropertyModel != null;
         if (mCurrentDialogAnimator != null && mCurrentDialogAnimator != mHideDialogAnimation) {
             mCurrentDialogAnimator.end();
@@ -887,6 +889,15 @@ public class TabGridDialogView extends FrameLayout {
      */
     ViewGroup getSnackBarContainer() {
         return mSnackBarContainer;
+    }
+
+    void setBindingToken(Integer bindingToken) {
+        assert mBindingToken == null || bindingToken == null;
+        mBindingToken = bindingToken;
+    }
+
+    Integer getBindingToken() {
+        return mBindingToken;
     }
 
     Animator getCurrentDialogAnimatorForTesting() {

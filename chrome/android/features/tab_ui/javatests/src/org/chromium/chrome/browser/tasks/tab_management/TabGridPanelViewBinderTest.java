@@ -33,20 +33,21 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.filters.SmallTest;
 
-import com.google.android.material.color.MaterialColors;
-
 import org.hamcrest.Matchers;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
-import org.mockito.Spy;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tasks.tab_management.TabGridDialogView.VisibilityListener;
 import org.chromium.chrome.browser.theme.ThemeUtils;
@@ -69,7 +70,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 public class TabGridPanelViewBinderTest extends BlankUiTestActivityTestCase {
-    private static final String TAG = "TGPVBT";
     private static final int CONTENT_TOP_MARGIN = 56;
 
     @Rule
@@ -85,14 +85,22 @@ public class TabGridPanelViewBinderTest extends BlankUiTestActivityTestCase {
     private EditText mTitleTextView;
     private View mMainContent;
     private ScrimCoordinator mScrimCoordinator;
-    @Spy
     private GridLayoutManager mLayoutManager;
-    @Spy
     private LinearLayoutManager mLinearLayoutManager;
+    @Mock
+    private BrowserControlsStateProvider mBrowserControlsStateProvider;
+
+    private Integer mBindingToken;
+
+    @Before
+    public void setUp() {
+        MockitoAnnotations.initMocks(this);
+    }
 
     @Override
     public void setUpTest() throws Exception {
         super.setUpTest();
+        mBindingToken = 5;
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             FrameLayout parentView = new FrameLayout(getActivity());
             getActivity().setContentView(parentView);
@@ -113,13 +121,37 @@ public class TabGridPanelViewBinderTest extends BlankUiTestActivityTestCase {
             mScrimCoordinator = new ScrimCoordinator(getActivity(), null, parentView, Color.RED);
             mTabGridDialogView.setupScrimCoordinator(mScrimCoordinator);
 
-            mModel = new PropertyModel(TabGridPanelProperties.ALL_KEYS);
+            mModel = new PropertyModel.Builder(TabGridPanelProperties.ALL_KEYS)
+                             .with(TabGridPanelProperties.BROWSER_CONTROLS_STATE_PROVIDER,
+                                     mBrowserControlsStateProvider)
+                             .build();
+            mModel.set(TabGridPanelProperties.BINDING_TOKEN, mBindingToken);
 
             mMCP = PropertyModelChangeProcessor.create(mModel,
                     new TabGridPanelViewBinder.ViewHolder(
                             mToolbarView, mContentView, mTabGridDialogView),
                     TabGridPanelViewBinder::bind);
         });
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    public void testBindingToken() {
+        Assert.assertEquals(
+                mTabGridDialogView.getBindingToken().intValue(), mBindingToken.intValue());
+
+        mModel.set(TabGridPanelProperties.BINDING_TOKEN, null);
+        Assert.assertNull(mTabGridDialogView.getBindingToken());
+
+        String title = "1024 tabs";
+        Assert.assertNotEquals(title, mTitleTextView.getText());
+        mModel.set(TabGridPanelProperties.HEADER_TITLE, title);
+        Assert.assertNotEquals(title, mTitleTextView.getText());
+
+        mModel.set(TabGridPanelProperties.BINDING_TOKEN, 4);
+        Assert.assertEquals(mTabGridDialogView.getBindingToken().intValue(), 4);
+        Assert.assertEquals(title, mTitleTextView.getText().toString());
     }
 
     @Test
@@ -189,8 +221,6 @@ public class TabGridPanelViewBinderTest extends BlankUiTestActivityTestCase {
     @UiThreadTest
     public void testSetPrimaryColor() {
         int color = ContextCompat.getColor(getActivity(), R.color.modern_blue_300);
-        Assert.assertNull(mMainContent.getBackground());
-        Assert.assertNull(mContentView.getBackground());
 
         mModel.set(TabGridPanelProperties.PRIMARY_COLOR, color);
 
@@ -239,7 +269,7 @@ public class TabGridPanelViewBinderTest extends BlankUiTestActivityTestCase {
     public void testSetDialogVisibility() {
         Assert.assertNull(mTabGridDialogView.getCurrentDialogAnimatorForTesting());
 
-        // Setup basic dialog animation and a dummy scrim view click runnable. These are always
+        // Setup basic dialog animation and a fake scrim view click runnable. These are always
         // initialized before the visibility of dialog is set.
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mTabGridDialogView.setupDialogAnimation(null);
@@ -277,17 +307,13 @@ public class TabGridPanelViewBinderTest extends BlankUiTestActivityTestCase {
     @SmallTest
     @UiThreadTest
     public void testSetAnimationSourceView() {
-        // Initially, the show animation set is empty.
-        Assert.assertEquals(0,
-                mTabGridDialogView.getShowDialogAnimationForTesting().getChildAnimations().size());
-
         // When set animation source view as null, the show animation is set to be basic fade-in
         // which contains only one animation in animation set.
         mModel.set(TabGridPanelProperties.ANIMATION_SOURCE_VIEW, null);
         Assert.assertEquals(1,
                 mTabGridDialogView.getShowDialogAnimationForTesting().getChildAnimations().size());
 
-        // Create a dummy source view to setup the dialog animation.
+        // Create a placeholder source view to setup the dialog animation.
         View sourceView = new View(getActivity());
 
         // When set with a specific animation source view, the show animation contains 6 child
@@ -301,10 +327,6 @@ public class TabGridPanelViewBinderTest extends BlankUiTestActivityTestCase {
     @SmallTest
     @UiThreadTest
     public void testSetUngroupbarStatus() {
-        // Default status for ungroup bar is hidden.
-        Assert.assertEquals(TabGridDialogView.UngroupBarStatus.HIDE,
-                mTabGridDialogView.getUngroupBarStatusForTesting());
-
         mModel.set(
                 TabGridPanelProperties.UNGROUP_BAR_STATUS, TabGridDialogView.UngroupBarStatus.SHOW);
         Assert.assertEquals(TabGridDialogView.UngroupBarStatus.SHOW,
@@ -320,11 +342,8 @@ public class TabGridPanelViewBinderTest extends BlankUiTestActivityTestCase {
     @SmallTest
     @UiThreadTest
     public void testSetDialogBackgroundColor() {
-        int normalColor = MaterialColors.getColor(getActivity(), R.attr.colorSurface, TAG);
         int incognitoColor = ContextCompat.getColor(
                 getActivity(), R.color.incognito_tab_grid_dialog_background_color);
-        // Default setup is in normal mode.
-        Assert.assertEquals(normalColor, mTabGridDialogView.getBackgroundColorForTesting());
 
         mModel.set(TabGridPanelProperties.DIALOG_BACKGROUND_COLOR, incognitoColor);
 
@@ -335,12 +354,8 @@ public class TabGridPanelViewBinderTest extends BlankUiTestActivityTestCase {
     @SmallTest
     @UiThreadTest
     public void testSetUngroupbarBackgroundColor() {
-        int normalColor = MaterialColors.getColor(getActivity(), R.attr.colorSurface, TAG);
         int incognitoColor = ContextCompat.getColor(
                 getActivity(), R.color.incognito_tab_grid_dialog_background_color);
-        // Default setup is in normal mode.
-        Assert.assertEquals(
-                normalColor, mTabGridDialogView.getUngroupBarBackgroundColorForTesting());
 
         mModel.set(TabGridPanelProperties.DIALOG_UNGROUP_BAR_BACKGROUND_COLOR, incognitoColor);
 
@@ -352,12 +367,8 @@ public class TabGridPanelViewBinderTest extends BlankUiTestActivityTestCase {
     @SmallTest
     @UiThreadTest
     public void testSetUngroupbarHoveredBackgroundColor() {
-        int normalColor = MaterialColors.getColor(getActivity(), R.attr.colorPrimary, TAG);
         int incognitoColor = ContextCompat.getColor(
                 getActivity(), R.color.incognito_tab_grid_dialog_ungroup_bar_bg_hovered_color);
-        // Default setup is in normal mode.
-        Assert.assertEquals(
-                normalColor, mTabGridDialogView.getUngroupBarHoveredBackgroundColorForTesting());
 
         mModel.set(
                 TabGridPanelProperties.DIALOG_UNGROUP_BAR_HOVERED_BACKGROUND_COLOR, incognitoColor);
@@ -370,11 +381,8 @@ public class TabGridPanelViewBinderTest extends BlankUiTestActivityTestCase {
     @SmallTest
     @UiThreadTest
     public void testSetUngroupbarTextColor() {
-        int normalColor = MaterialColors.getColor(getActivity(), R.attr.colorPrimary, TAG);
         int incognitoColor = ContextCompat.getColor(
                 getActivity(), R.color.incognito_tab_grid_dialog_ungroup_bar_text_color);
-        // Default setup is in normal mode.
-        Assert.assertEquals(normalColor, mTabGridDialogView.getUngroupBarTextColorForTesting());
 
         mModel.set(TabGridPanelProperties.DIALOG_UNGROUP_BAR_TEXT_COLOR, incognitoColor);
 
@@ -385,12 +393,8 @@ public class TabGridPanelViewBinderTest extends BlankUiTestActivityTestCase {
     @SmallTest
     @UiThreadTest
     public void testSetUngroupbarHoveredTextColor() {
-        int normalColor = MaterialColors.getColor(getActivity(), R.attr.colorOnPrimary, TAG);
         int incognitoColor = ContextCompat.getColor(
                 getActivity(), R.color.incognito_tab_grid_dialog_ungroup_bar_text_hovered_color);
-        // Default setup is in normal mode.
-        Assert.assertEquals(
-                normalColor, mTabGridDialogView.getUngroupBarHoveredTextColorForTesting());
 
         mModel.set(TabGridPanelProperties.DIALOG_UNGROUP_BAR_HOVERED_TEXT_COLOR, incognitoColor);
 

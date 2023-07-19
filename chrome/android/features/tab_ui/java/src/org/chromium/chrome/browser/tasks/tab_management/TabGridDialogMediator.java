@@ -43,7 +43,6 @@ import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.KeyboardVisibilityDelegate;
-import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.text.EmptyTextWatcher;
 
@@ -272,10 +271,10 @@ public class TabGridDialogMediator
             hideDialog(true);
             RecordUserAction.record("TabGridDialog.Exit");
         };
+        mModel.set(TabGridPanelProperties.VISIBILITY_LISTENER, this);
         mModel.set(TabGridPanelProperties.IS_DIALOG_VISIBLE, false);
-        if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext)) {
-            mModel.set(TabGridPanelProperties.VISIBILITY_LISTENER, this);
-        }
+        mModel.set(
+                TabGridPanelProperties.UNGROUP_BAR_STATUS, TabGridDialogView.UngroupBarStatus.HIDE);
     }
 
     public void initWithNative(
@@ -317,6 +316,7 @@ public class TabGridDialogMediator
 
     void hideDialog(boolean showAnimation) {
         if (!mModel.get(TabGridPanelProperties.IS_DIALOG_VISIBLE)) return;
+
         if (!showAnimation) {
             mModel.set(TabGridPanelProperties.ANIMATION_SOURCE_VIEW, null);
         } else {
@@ -333,13 +333,8 @@ public class TabGridDialogMediator
         if (TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(mContext)) {
             mModel.set(TabGridPanelProperties.IS_TITLE_TEXT_FOCUSED, false);
         }
-        if (mModel.get(TabGridPanelProperties.VISIBILITY_LISTENER) != null) {
-            // If visibility listener is registered, listener will handle controller invocations for
-            // hide. hide view first. Listener will reset tabs on #finishedHiding.
-            mModel.set(TabGridPanelProperties.IS_DIALOG_VISIBLE, false);
-        } else {
-            mDialogController.resetWithListOfTabs(null);
-        }
+        // Hide view first. Listener will reset tabs on #finishedHiding.
+        mModel.set(TabGridPanelProperties.IS_DIALOG_VISIBLE, false);
     }
 
     /**
@@ -364,6 +359,7 @@ public class TabGridDialogMediator
         mDialogController.postHiding();
         // Purge the bitmap reference in the animation.
         mModel.set(TabGridPanelProperties.ANIMATION_SOURCE_VIEW, null);
+        mModel.set(TabGridPanelProperties.BINDING_TOKEN, null);
     }
 
     void onReset(@Nullable List<Tab> tabs) {
@@ -383,15 +379,17 @@ public class TabGridDialogMediator
                 mModel.set(TabGridPanelProperties.ANIMATION_SOURCE_VIEW, null);
             }
             updateDialog();
-            updateDialogScrollPosition();
             mModel.set(TabGridPanelProperties.SCRIMVIEW_CLICK_RUNNABLE, mScrimClickRunnable);
+            updateDialogScrollPosition();
+
+            // Do this after the dialog is updated so most attributes are not set with stale values
+            // when the binding token is set.
+            mModel.set(TabGridPanelProperties.BINDING_TOKEN, hashCode());
+
             mDialogController.prepareDialog();
             mModel.set(TabGridPanelProperties.IS_DIALOG_VISIBLE, true);
         } else if (mModel.get(TabGridPanelProperties.IS_DIALOG_VISIBLE)) {
             mModel.set(TabGridPanelProperties.IS_DIALOG_VISIBLE, false);
-            mDialogController.postHiding();
-            // Purge the bitmap reference in the animation.
-            mModel.set(TabGridPanelProperties.ANIMATION_SOURCE_VIEW, null);
         }
     }
 
