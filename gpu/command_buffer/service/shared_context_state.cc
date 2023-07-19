@@ -101,6 +101,14 @@ class GraphiteImageProvider : public skgpu::graphite::ImageProvider {
   }
 };
 
+// Creates a Graphite recorder, supplying it with a GraphiteImageProvider.
+std::unique_ptr<skgpu::graphite::Recorder>
+MakeGraphiteRecorderWithImageProvider(skgpu::graphite::Context* context) {
+  skgpu::graphite::RecorderOptions options;
+  options.fImageProvider = sk_make_sp<GraphiteImageProvider>();
+  return context->makeRecorder(options);
+}
+
 }  // anonymous namespace
 
 namespace gpu {
@@ -423,13 +431,15 @@ bool SharedContextState::InitializeGraphite(
     return false;
   }
 
-  // We only need an image provider for the OOP-R (gpu_main) recorder since
-  // that's where we encounter CPU-backed images.
-  skgpu::graphite::RecorderOptions recorder_options;
-  recorder_options.fImageProvider = sk_make_sp<GraphiteImageProvider>();
+  // We need image providers for both the OOP-R (gpu_main) recorder and the
+  // SkiaRenderer (viz thread) recorder, as both need to process CPU-backed
+  // images (for the SkiaRenderer recorder, this occurs in special cases such as
+  // an SVG/CSS filter effect that references an image but that got the effect
+  // promoted to composited).
   gpu_main_graphite_recorder_ =
-      graphite_context_->makeRecorder(recorder_options);
-  viz_compositor_graphite_recorder_ = graphite_context_->makeRecorder();
+      MakeGraphiteRecorderWithImageProvider(graphite_context_);
+  viz_compositor_graphite_recorder_ =
+      MakeGraphiteRecorderWithImageProvider(graphite_context_);
 
   transfer_cache_ = std::make_unique<ServiceTransferCache>(gpu_preferences);
   return true;
