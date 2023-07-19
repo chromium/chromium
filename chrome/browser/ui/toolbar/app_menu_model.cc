@@ -1228,7 +1228,7 @@ void AppMenuModel::LogMenuMetrics(int command_id) {
       LogMenuAction(MENU_ACTION_PASSWORD_MANAGER);
       break;
 
-    // Profile submenu.
+      // Profile submenu.
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
     case IDC_CUSTOMIZE_CHROME:
       if (!uma_action_recorded_) {
@@ -1597,8 +1597,18 @@ void AppMenuModel::Build() {
   // Always show this option if we're in tablet mode on Chrome OS.
   if (chromeos::TabletState::Get() &&
       chromeos::TabletState::Get()->InTabletMode()) {
-    AddCheckItemWithStringId(IDC_TOGGLE_REQUEST_TABLET_SITE,
-                             IDS_TOGGLE_REQUEST_TABLET_SITE);
+    if (features::IsChromeRefresh2023()) {
+      AddItemWithStringIdAndIcon(
+          IDC_TOGGLE_REQUEST_TABLET_SITE, IDS_TOGGLE_REQUEST_TABLET_SITE,
+          ui::ImageModel::FromVectorIcon(
+              chrome::IsRequestingTabletSite(browser_)
+                  ? kRequestMobileSiteCheckedIcon
+                  : kRequestMobileSiteUncheckedIcon,
+              ui::kColorMenuIcon, ui::SimpleMenuModel::kDefaultIconSize));
+    } else {
+      AddCheckItemWithStringId(IDC_TOGGLE_REQUEST_TABLET_SITE,
+                               IDS_TOGGLE_REQUEST_TABLET_SITE);
+    }
   }
 #endif
 

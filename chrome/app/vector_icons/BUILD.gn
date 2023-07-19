@@ -180,6 +180,8 @@ aggregate_vector_icons("chrome_vector_icons") {
     "remove.icon",
     "remove_box.icon",
     "report.icon",
+    "request_mobile_site_checked.icon",
+    "request_mobile_site_unchecked.icon",
     "resize_handle.icon",
     "sad_tab.icon",
     "safety_check.icon",
