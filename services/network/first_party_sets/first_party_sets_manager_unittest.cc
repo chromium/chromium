@@ -17,12 +17,10 @@
 #include "base/version.h"
 #include "net/base/features.h"
 #include "net/base/schemeful_site.h"
-#include "net/cookies/cookie_constants.h"
 #include "net/first_party_sets/first_party_set_entry.h"
 #include "net/first_party_sets/first_party_set_metadata.h"
 #include "net/first_party_sets/first_party_sets_context_config.h"
 #include "net/first_party_sets/global_first_party_sets.h"
-#include "net/first_party_sets/same_party_context.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -33,8 +31,6 @@ using ::testing::IsEmpty;
 using ::testing::Optional;
 using ::testing::Pair;
 using ::testing::UnorderedElementsAre;
-
-using Type = net::SamePartyContext::Type;
 
 const char* kDelayedQueriesCountHistogram =
     "Cookie.FirstPartySets.Network.DelayedQueriesCount";
@@ -262,9 +258,7 @@ TEST_F(AsyncWaitingFirstPartySetsManagerTest,
         net::SchemefulSite(GURL("https://example.test")),
         net::SiteType::kAssociated, 0);
 
-    EXPECT_EQ(future.Get(),
-              net::FirstPartySetMetadata(
-                  net::SamePartyContext(Type::kSameParty), &entry, &entry));
+    EXPECT_EQ(future.Get(), net::FirstPartySetMetadata(&entry, &entry));
   }
   histogram_tester().ExpectTotalCount(kDelayedQueriesCountHistogram, 1);
   histogram_tester().ExpectTotalCount(kMostDelayedQueryDeltaHistogram, 1);
@@ -319,8 +313,7 @@ TEST_F(AsyncNonwaitingFirstPartySetsManagerTest,
       net::SchemefulSite(GURL("https://example.test")),
       net::SiteType::kAssociated, 0);
 
-  EXPECT_EQ(net::FirstPartySetMetadata(net::SamePartyContext(Type::kSameParty),
-                                       &entry, &entry),
+  EXPECT_EQ(net::FirstPartySetMetadata(&entry, &entry),
             manager().ComputeMetadata(
                 associatedSite, &associatedSite, {associatedSite},
                 net::FirstPartySetsContextConfig(), base::NullCallback()));

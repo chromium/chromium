@@ -940,16 +940,14 @@ std::vector<net::CanonicalCookie> GetCanonicalCookies(
     net::CookiePartitionKeyCollection key_collection =
         net::CookiePartitionKeyCollection::ContainsAll());
 
-// Sets a cookie for the given url. Uses inclusive SameSiteCookieContext and
-// SamePartyContext::Type by default, which get cookies regardless of their
-// SameSite and SameParty attributes. Returns true on success.
+// Sets a cookie for the given url. Uses inclusive SameSiteCookieContext by
+// default, which gets cookies regardless of their SameSite attribute. Returns
+// true on success.
 bool SetCookie(BrowserContext* browser_context,
                const GURL& url,
                const std::string& value,
                net::CookieOptions::SameSiteCookieContext context =
-                   net::CookieOptions::SameSiteCookieContext::MakeInclusive(),
-               net::SamePartyContext::Type party_context =
-                   net::SamePartyContext::Type::kSameParty);
+                   net::CookieOptions::SameSiteCookieContext::MakeInclusive());
 
 // Same as `SetCookie`, but sets a Partitioned cookie with the given partition
 // key. `value` is expected to use the `Partitioned` attribute.
@@ -959,9 +957,7 @@ bool SetPartitionedCookie(
     const std::string& value,
     const net::CookiePartitionKey& cookie_partition_key,
     net::CookieOptions::SameSiteCookieContext context =
-        net::CookieOptions::SameSiteCookieContext::MakeInclusive(),
-    net::SamePartyContext::Type party_context =
-        net::SamePartyContext::Type::kSameParty);
+        net::CookieOptions::SameSiteCookieContext::MakeInclusive());
 
 // Deletes cookies matching the provided filter. Returns the number of cookies
 // that were deleted.

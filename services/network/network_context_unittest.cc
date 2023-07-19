@@ -4669,59 +4669,51 @@ TEST_F(NetworkContextTest,
   net::CookieAccessResultList excluded;
 
   // Cookies are allowed, so call returns true.
-  EXPECT_TRUE(network_context->url_request_context()
-                  ->network_delegate()
-                  ->AnnotateAndMoveUserBlockedCookies(
-                      *request,
-                      net::FirstPartySetMetadata(
-                          net::SamePartyContext(
-                              net::SamePartyContext::Type::kCrossParty),
-                          /*frame_entry=*/nullptr,
-                          /*top_frame_entry=*/nullptr),
-                      included, excluded));
+  EXPECT_TRUE(
+      network_context->url_request_context()
+          ->network_delegate()
+          ->AnnotateAndMoveUserBlockedCookies(*request,
+                                              net::FirstPartySetMetadata(
+                                                  /*frame_entry=*/nullptr,
+                                                  /*top_frame_entry=*/nullptr),
+                                              included, excluded));
 
   // Cookies are blocked, so call returns false.
   SetDefaultContentSetting(CONTENT_SETTING_BLOCK, network_context.get());
-  EXPECT_FALSE(network_context->url_request_context()
-                   ->network_delegate()
-                   ->AnnotateAndMoveUserBlockedCookies(
-                       *request,
-                       net::FirstPartySetMetadata(
-                           net::SamePartyContext(
-                               net::SamePartyContext::Type::kCrossParty),
-                           /*frame_entry=*/nullptr,
-                           /*top_frame_entry=*/nullptr),
-                       included, excluded));
+  EXPECT_FALSE(
+      network_context->url_request_context()
+          ->network_delegate()
+          ->AnnotateAndMoveUserBlockedCookies(*request,
+                                              net::FirstPartySetMetadata(
+                                                  /*frame_entry=*/nullptr,
+                                                  /*top_frame_entry=*/nullptr),
+                                              included, excluded));
 
   // Even with override, third party cookies blocked by content setting.
   request->cookie_setting_overrides().Clear();
   request->cookie_setting_overrides().Put(
       net::CookieSettingOverride::kForceThirdPartyByUser);
-  EXPECT_FALSE(network_context->url_request_context()
-                   ->network_delegate()
-                   ->AnnotateAndMoveUserBlockedCookies(
-                       *request,
-                       net::FirstPartySetMetadata(
-                           net::SamePartyContext(
-                               net::SamePartyContext::Type::kCrossParty),
-                           /*frame_entry=*/nullptr,
-                           /*top_frame_entry=*/nullptr),
-                       included, excluded));
+  EXPECT_FALSE(
+      network_context->url_request_context()
+          ->network_delegate()
+          ->AnnotateAndMoveUserBlockedCookies(*request,
+                                              net::FirstPartySetMetadata(
+                                                  /*frame_entry=*/nullptr,
+                                                  /*top_frame_entry=*/nullptr),
+                                              included, excluded));
 
   // Set blocking third party cookies instead of content setting.
   // Now override should apply.
   SetDefaultContentSetting(CONTENT_SETTING_ALLOW, network_context.get());
   network_context->cookie_manager()->BlockThirdPartyCookies(true);
-  EXPECT_TRUE(network_context->url_request_context()
-                  ->network_delegate()
-                  ->AnnotateAndMoveUserBlockedCookies(
-                      *request,
-                      net::FirstPartySetMetadata(
-                          net::SamePartyContext(
-                              net::SamePartyContext::Type::kCrossParty),
-                          /*frame_entry=*/nullptr,
-                          /*top_frame_entry=*/nullptr),
-                      included, excluded));
+  EXPECT_TRUE(
+      network_context->url_request_context()
+          ->network_delegate()
+          ->AnnotateAndMoveUserBlockedCookies(*request,
+                                              net::FirstPartySetMetadata(
+                                                  /*frame_entry=*/nullptr,
+                                                  /*top_frame_entry=*/nullptr),
+                                              included, excluded));
 }
 
 TEST_F(NetworkContextTest,
@@ -4737,16 +4729,14 @@ TEST_F(NetworkContextTest,
   net::CookieAccessResultList excluded;
 
   SetDefaultContentSetting(CONTENT_SETTING_ALLOW, network_context.get());
-  EXPECT_TRUE(network_context->url_request_context()
-                  ->network_delegate()
-                  ->AnnotateAndMoveUserBlockedCookies(
-                      *request,
-                      net::FirstPartySetMetadata(
-                          net::SamePartyContext(
-                              net::SamePartyContext::Type::kCrossParty),
-                          /*frame_entry=*/nullptr,
-                          /*top_frame_entry=*/nullptr),
-                      included, excluded));
+  EXPECT_TRUE(
+      network_context->url_request_context()
+          ->network_delegate()
+          ->AnnotateAndMoveUserBlockedCookies(*request,
+                                              net::FirstPartySetMetadata(
+                                                  /*frame_entry=*/nullptr,
+                                                  /*top_frame_entry=*/nullptr),
+                                              included, excluded));
 }
 
 // Gets notified by the EmbeddedTestServer on incoming connections being

@@ -960,9 +960,9 @@ TEST_P(CookieSettingsTest, AnnotateAndMoveUserBlockedCookies_CrossSiteEmbed) {
   // Note that `url` does not match the `top_frame_origin`.
   EXPECT_EQ(settings.AnnotateAndMoveUserBlockedCookies(
                 GURL(kURL), net::SiteForCookies(), &origin,
-                net::FirstPartySetMetadata(net::SamePartyContext(),
-                                           /*frame_entry=*/nullptr,
-                                           /*top_frame_entry=*/nullptr),
+                net::FirstPartySetMetadata(
+                    /*frame_entry=*/nullptr,
+                    /*top_frame_entry=*/nullptr),
                 GetCookieSettingOverrides(), maybe_included_cookies,
                 excluded_cookies),
             expected_any_allowed);
@@ -1139,9 +1139,9 @@ TEST_P(CookieSettingsTest,
   // though the request URL and the top-frame URL are same-site with each other.
   EXPECT_EQ(settings.AnnotateAndMoveUserBlockedCookies(
                 GURL(kSubDomainURL), net::SiteForCookies(), &origin,
-                net::FirstPartySetMetadata(net::SamePartyContext(),
-                                           /*frame_entry=*/nullptr,
-                                           /*top_frame_entry=*/nullptr),
+                net::FirstPartySetMetadata(
+                    /*frame_entry=*/nullptr,
+                    /*top_frame_entry=*/nullptr),
                 GetCookieSettingOverrides(), maybe_included_cookies,
                 excluded_cookies),
             expected_any_allowed);
@@ -1214,8 +1214,7 @@ TEST_P(CookieSettingsTest,
 
   EXPECT_EQ(settings.AnnotateAndMoveUserBlockedCookies(
                 GURL(kFPSMemberURL), net::SiteForCookies(), &origin,
-                net::FirstPartySetMetadata(net::SamePartyContext(),
-                                           &frame_entry, &top_frame_entry),
+                net::FirstPartySetMetadata(&frame_entry, &top_frame_entry),
                 GetCookieSettingOverrides(), maybe_included_cookies,
                 excluded_cookies),
             expected_allowed);
@@ -1286,8 +1285,7 @@ TEST_P(
 
   EXPECT_EQ(settings.AnnotateAndMoveUserBlockedCookies(
                 GURL(kFPSMemberURL), net::SiteForCookies(), &top_frame_origin,
-                net::FirstPartySetMetadata(net::SamePartyContext(),
-                                           &frame_entry, &top_frame_entry),
+                net::FirstPartySetMetadata(&frame_entry, &top_frame_entry),
                 GetCookieSettingOverrides(), maybe_included_cookies,
                 excluded_cookies),
             expected_allowed);
@@ -1349,9 +1347,9 @@ TEST_P(CookieSettingsTest,
   settings.set_block_third_party_cookies(true);
   EXPECT_TRUE(settings.AnnotateAndMoveUserBlockedCookies(
       GURL(kURL), net::SiteForCookies(), &top_level_origin,
-      net::FirstPartySetMetadata(net::SamePartyContext(),
-                                 /*frame_entry=*/nullptr,
-                                 /*top_frame_entry=*/nullptr),
+      net::FirstPartySetMetadata(
+          /*frame_entry=*/nullptr,
+          /*top_frame_entry=*/nullptr),
       GetCookieSettingOverrides(), maybe_included_cookies, excluded_cookies));
   EXPECT_THAT(maybe_included_cookies,
               ElementsAre(MatchesCookieWithAccessResult(
@@ -1368,9 +1366,9 @@ TEST_P(CookieSettingsTest,
       {CreateSetting(kURL, "*", CONTENT_SETTING_BLOCK)});
   EXPECT_FALSE(settings.AnnotateAndMoveUserBlockedCookies(
       GURL(kURL), net::SiteForCookies(), &top_level_origin,
-      net::FirstPartySetMetadata(net::SamePartyContext(),
-                                 /*frame_entry=*/nullptr,
-                                 /*top_frame_entry=*/nullptr),
+      net::FirstPartySetMetadata(
+          /*frame_entry=*/nullptr,
+          /*top_frame_entry=*/nullptr),
       GetCookieSettingOverrides(), maybe_included_cookies, excluded_cookies));
   EXPECT_THAT(maybe_included_cookies, IsEmpty());
   EXPECT_THAT(excluded_cookies,
@@ -1390,9 +1388,9 @@ TEST_P(CookieSettingsTest,
       {CreateSetting(kOtherURL, "*", CONTENT_SETTING_BLOCK)});
   EXPECT_EQ(settings.AnnotateAndMoveUserBlockedCookies(
                 GURL(kURL), net::SiteForCookies(), &top_level_origin,
-                net::FirstPartySetMetadata(net::SamePartyContext(),
-                                           /*frame_entry=*/nullptr,
-                                           /*top_frame_entry=*/nullptr),
+                net::FirstPartySetMetadata(
+                    /*frame_entry=*/nullptr,
+                    /*top_frame_entry=*/nullptr),
                 GetCookieSettingOverrides(), maybe_included_cookies,
                 excluded_cookies),
             IsForceAllowThirdPartyCookies());
@@ -1425,9 +1423,9 @@ TEST_P(CookieSettingsTest,
       {CreateSetting(kOtherURL, kUnrelatedURL, CONTENT_SETTING_BLOCK)});
   EXPECT_TRUE(settings.AnnotateAndMoveUserBlockedCookies(
       GURL(kURL), net::SiteForCookies(), &top_level_origin,
-      net::FirstPartySetMetadata(net::SamePartyContext(),
-                                 /*frame_entry=*/nullptr,
-                                 /*top_frame_entry=*/nullptr),
+      net::FirstPartySetMetadata(
+          /*frame_entry=*/nullptr,
+          /*top_frame_entry=*/nullptr),
       GetCookieSettingOverrides(), maybe_included_cookies, excluded_cookies));
   EXPECT_THAT(maybe_included_cookies,
               ElementsAre(MatchesCookieWithAccessResult(
