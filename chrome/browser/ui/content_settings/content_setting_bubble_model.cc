@@ -951,6 +951,12 @@ ContentSettingMediaStreamBubbleModel::~ContentSettingMediaStreamBubbleModel() =
     default;
 
 void ContentSettingMediaStreamBubbleModel::CommitChanges() {
+  PageSpecificContentSettings* content_settings =
+      PageSpecificContentSettings::GetForFrame(&GetPage().GetMainDocument());
+  if (content_settings->media_stream_access_origin().is_empty()) {
+    return;
+  }
+
   for (const auto& media_menu : bubble_content().media_menus) {
     const MediaMenu& menu = media_menu.second;
     if (menu.selected_device.id != menu.default_device.id)
@@ -975,6 +981,8 @@ void ContentSettingMediaStreamBubbleModel::OnManageButtonClicked() {
   DCHECK(CameraAccessed() || MicrophoneAccessed());
   if (!delegate())
     return;
+
+  CommitChanges();
 
   if (MicrophoneAccessed() && CameraAccessed()) {
     delegate()->ShowMediaSettingsPage();
