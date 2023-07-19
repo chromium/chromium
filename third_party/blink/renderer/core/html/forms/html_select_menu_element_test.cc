@@ -260,6 +260,29 @@ TEST_F(HTMLSelectMenuElementTest, SetSuggestedValue) {
   EXPECT_EQ(first_option, selectmenu->selectedOption());
 }
 
+// Test that passing an empty string to
+// HTMLSelectMenuElement::SetSuggestedValue() clears autofill preview state.
+TEST_F(HTMLSelectMenuElementTest, SetSuggestedValueEmptyString) {
+  SetHtmlInnerHTML(R"HTML(
+    <selectmenu id='selectmenu'>
+      <option id="first_option" selected>First</option>
+      <option id="second_option">Second</option>
+    </selectmenu>
+  )HTML");
+  HTMLSelectMenuElement* selectmenu =
+      To<HTMLSelectMenuElement>(GetElementById("selectmenu"));
+
+  selectmenu->SetSuggestedValue("Second");
+  EXPECT_EQ("Second", selectmenu->SuggestedValue());
+  EXPECT_EQ(blink::WebAutofillState::kPreviewed,
+            selectmenu->GetAutofillState());
+
+  selectmenu->SetSuggestedValue("");
+  EXPECT_EQ("", selectmenu->SuggestedValue());
+  EXPECT_EQ(blink::WebAutofillState::kNotFilled,
+            selectmenu->GetAutofillState());
+}
+
 // Test that HTMLSelectMenuElement::SetSuggestedOption() is a noop if the
 // passed-in value does not match any of the <option>s.
 TEST_F(HTMLSelectMenuElementTest, SetSuggestedValueNoMatchingOption) {
