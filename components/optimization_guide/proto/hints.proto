@@ -83,6 +83,9 @@ message GetHintsRequest {
 
   // Information about the request origin.
   optional OriginInfo origin_info = 9;
+
+  // The theme associated with this request.
+  optional ThemeKey theme_key = 10;
 }
 
 // Response to the GetHints request.
@@ -370,4 +373,13 @@ message Version {
   optional Timestamp generation_timestamp = 1;
   // The source from which the hint was served from.
   optional HintSource hint_source = 3;
+}
+
+// The theme the user is using.
+enum ThemeKey {
+  THEME_KEY_UNKNOWN = 0;
+  // User is using light mode.
+  THEME_KEY_LIGHT = 1;
+  // User is using dark mode.
+  THEME_KEY_DARK = 2;
 }
