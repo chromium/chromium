@@ -34,7 +34,6 @@ import org.chromium.chrome.browser.bookmarks.BookmarkModelObserver;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowDisplayPref;
 import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.read_later.ReadingListUtils;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.browser_ui.util.TraceEventVectorDrawableCompat;
@@ -288,13 +287,9 @@ public class BookmarkFolderSelectActivity
     }
 
     private void moveBookmarksAndFinish(List<BookmarkId> bookmarks, BookmarkId parent) {
-        List<BookmarkId> movedBookmarks = new ArrayList<>();
-        ReadingListUtils.typeSwapBookmarksIfNecessary(
-                mModel, mBookmarksToMove, movedBookmarks, parent);
-        mModel.moveBookmarks(mBookmarksToMove, parent);
-        movedBookmarks.addAll(mBookmarksToMove);
+        BookmarkUtils.moveBookmarksToViewedParent(mModel, bookmarks, parent);
         BookmarkUtils.setLastUsedParent(this, parent);
-        finishActivity(movedBookmarks);
+        finishActivity(bookmarks);
     }
 
     private void finishActivity(List<BookmarkId> bookmarks) {
