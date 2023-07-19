@@ -95,6 +95,7 @@ class DebugConnector : public auction_worklet::mojom::BidderWorklet {
       const absl::optional<GURL>& direct_from_seller_auction_signals,
       const std::string& seller_signals_json,
       mojom::KAnonymityBidMode kanon_mode,
+      bool bid_is_kanon,
       const GURL& browser_signal_render_url,
       double browser_signal_bid,
       const absl::optional<blink::AdCurrency>& browser_signal_bid_currency,

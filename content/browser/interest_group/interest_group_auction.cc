@@ -2235,13 +2235,30 @@ InterestGroupAuction::CreateReporter(
   TakeDebugReportUrlsAndFillInPrivateAggregationRequests(
       debug_win_report_urls, debug_loss_report_urls);
 
+  bool bid_is_kanon;
+  switch (kanon_mode_) {
+    case auction_worklet::mojom::KAnonymityBidMode::kSimulate:
+      // Check if the winner was k-anon, since we use the non-kanonymous winner
+      // in simulate mode.
+      bid_is_kanon = NonKAnonWinnerIsKAnon();
+      break;
+    case auction_worklet::mojom::KAnonymityBidMode::kEnforce:
+      // We always have a winner when we get here.
+      bid_is_kanon = true;
+      break;
+    case auction_worklet::mojom::KAnonymityBidMode::kNone:
+      // Set to false due to enforcement is completely off.
+      bid_is_kanon = false;
+      break;
+  }
+
   return std::make_unique<InterestGroupAuctionReporter>(
       interest_group_manager_, auction_worklet_manager_, browser_context,
       private_aggregation_manager,
       maybe_log_private_aggregation_web_features_callback_,
       std::move(auction_config), main_frame_origin, frame_origin,
       std::move(client_security_state), std::move(url_loader_factory),
-      kanon_mode_, std::move(winning_bid_info),
+      kanon_mode_, bid_is_kanon, std::move(winning_bid_info),
       std::move(top_level_seller_winning_bid_info),
       std::move(component_seller_winning_bid_info),
       std::move(interest_groups_that_bid), std::move(debug_win_report_urls),

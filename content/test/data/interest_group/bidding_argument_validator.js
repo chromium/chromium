@@ -237,8 +237,8 @@ function validateBrowserSignals(browserSignals, isGenerateBid) {
     }
     if (browserSignals.adCost !== 3)
       throw 'Wrong adCost ' + browserSignals.adCost;
-    if (!browserSignals.hasOwnProperty("enforcedKAnon"))
-      throw 'Missing enforcedKAnon';
+    if (!browserSignals.hasOwnProperty("kAnonStatus"))
+      throw 'Missing kAnonStatus';
   }
 }
 

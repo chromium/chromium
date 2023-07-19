@@ -480,6 +480,8 @@ interface BidderWorklet {
   //  the bidding function with only ads that are k-anonymous and produce an
   //  alternative bid.
   //
+  // `bid_is_kanon` is a boolean flag to show if the winner bid is k-anonymous.
+  //
   // `browser_signal_render_url` is the `render_url` returned by the
   //  BidderWorklet's generateBid() method, invoked as part of BidderWorklet
   //  creation.
@@ -563,6 +565,7 @@ interface BidderWorklet {
       url.mojom.Url? direct_from_seller_auction_signals,
       string seller_signals_json,
       KAnonymityBidMode kanon_mode,
+      bool bid_is_kanon,
       url.mojom.Url browser_signal_render_url,
       double browser_signal_bid,
       blink.mojom.AdCurrency? browser_signal_bid_currency,

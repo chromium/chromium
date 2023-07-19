@@ -143,6 +143,7 @@ InterestGroupAuctionReporter::InterestGroupAuctionReporter(
     network::mojom::ClientSecurityStatePtr client_security_state,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     auction_worklet::mojom::KAnonymityBidMode kanon_mode,
+    bool bid_is_kanon,
     WinningBidInfo winning_bid_info,
     SellerWinningBidInfo top_level_seller_winning_bid_info,
     absl::optional<SellerWinningBidInfo> component_seller_winning_bid_info,
@@ -165,6 +166,7 @@ InterestGroupAuctionReporter::InterestGroupAuctionReporter(
       client_security_state_(std::move(client_security_state)),
       url_loader_factory_(std::move(url_loader_factory)),
       kanon_mode_(kanon_mode),
+      bid_is_kanon_(bid_is_kanon),
       winning_bid_info_(std::move(winning_bid_info)),
       top_level_seller_winning_bid_info_(
           std::move(top_level_seller_winning_bid_info)),
@@ -716,7 +718,8 @@ void InterestGroupAuctionReporter::OnBidderWorkletReceived(
           winning_bid_info_.storage_interest_group->interest_group.owner),
       InterestGroupAuction::GetDirectFromSellerAuctionSignals(
           seller_info.subresource_url_builder.get()),
-      signals_for_winner, kanon_mode_, winning_bid_info_.render_url,
+      signals_for_winner, kanon_mode_, bid_is_kanon_,
+      winning_bid_info_.render_url,
       RoundStochasticallyToKBits(winning_bid_info_.bid,
                                  kFledgeBidReportingBits.Get()),
       winning_bid_info_.bid_currency,
