@@ -28,13 +28,13 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {DeepLinkingMixin} from '../deep_linking_mixin.js';
 import {Section} from '../mojom-webui/routes.mojom-webui.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
-import {RouteObserverMixin} from '../route_observer_mixin.js';
+import {RouteOriginMixin} from '../route_origin_mixin.js';
 import {Route, Router, routes} from '../router.js';
 
 import {getTemplate} from './date_time_page.html.js';
 import {TimeZoneBrowserProxy, TimeZoneBrowserProxyImpl} from './timezone_browser_proxy.js';
 
-const SettingsDateTimePageElementBase = DeepLinkingMixin(RouteObserverMixin(
+const SettingsDateTimePageElementBase = DeepLinkingMixin(RouteOriginMixin(
     PrefsMixin(I18nMixin(WebUiListenerMixin(PolymerElement)))));
 
 export class SettingsDateTimePageElement extends
@@ -74,19 +74,6 @@ export class SettingsDateTimePageElement extends
         value: loadTimeData.getString('timeZoneName'),
       },
 
-      focusConfig_: {
-        type: Object,
-        value() {
-          const map = new Map();
-          if (routes.DATETIME_TIMEZONE_SUBPAGE) {
-            map.set(
-                routes.DATETIME_TIMEZONE_SUBPAGE.path,
-                '#timeZoneSettingsTrigger');
-          }
-          return map;
-        },
-      },
-
       timeZoneSettingSubLabel_: {
         type: String,
         computed: `computeTimeZoneSettingSubLabel_(
@@ -122,14 +109,23 @@ export class SettingsDateTimePageElement extends
   private browserProxy_: TimeZoneBrowserProxy;
   private canSetDateTime_: boolean;
   private displayManagedByParentIcon_: boolean;
-  private focusConfig_: Map<string, string>;
   private section_: Section;
   private timeZoneSettingSubLabel_: string;
 
   constructor() {
     super();
 
+    /** RouteOriginMixin override */
+    this.route = routes.DATETIME;
+
     this.browserProxy_ = TimeZoneBrowserProxyImpl.getInstance();
+  }
+
+  override ready() {
+    super.ready();
+
+    this.addFocusConfig(
+        routes.DATETIME_TIMEZONE_SUBPAGE, '#timeZoneSettingsTrigger');
   }
 
   override connectedCallback() {
@@ -140,9 +136,11 @@ export class SettingsDateTimePageElement extends
     this.browserProxy_.dateTimePageReady();
   }
 
-  override currentRouteChanged(route: Route, _oldRoute?: Route) {
+  override currentRouteChanged(newRoute: Route, oldRoute?: Route) {
+    super.currentRouteChanged(newRoute, oldRoute);
+
     // Does not apply to this page.
-    if (route !== routes.DATETIME) {
+    if (newRoute !== this.route) {
       return;
     }
 

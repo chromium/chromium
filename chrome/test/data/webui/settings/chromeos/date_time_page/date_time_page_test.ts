@@ -11,6 +11,7 @@ import {getDeepActiveElement} from 'chrome://resources/js/util_ts.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertGT, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
+import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {TestTimeZoneBrowserProxy} from './test_timezone_browser_proxy.js';
 
@@ -551,4 +552,37 @@ suite('<settings-date-time-page>', () => {
     webUIListenerCallback('can-set-date-time-changed', false);
     assertEquals(0, setDateTimeButton.offsetHeight);
   });
+
+  test(
+      'Timezone subpage trigger is focused after returning from subpage',
+      async () => {
+        // Create settings-date-time-page element
+        Router.getInstance().navigateTo(routes.DATETIME);
+        const prefs = getFakePrefs();
+        prefs.cros.flags.fine_grained_time_zone_detection_enabled.value = false;
+        dateTime = initializeDateTime(prefs, false);
+        flush();
+
+        // Show timezone subpage trigger element
+        dateTime.set(
+            'prefs.cros.flags.fine_grained_time_zone_detection_enabled.value',
+            true);
+        flush();
+
+        const triggerSelector = '#timeZoneSettingsTrigger';
+        const triggerEl =
+            dateTime.shadowRoot!.querySelector<HTMLElement>(triggerSelector);
+        assertTrue(!!triggerEl);
+        triggerEl.click();
+        flush();
+
+        const popStateEventPromise = eventToPromise('popstate', window);
+        Router.getInstance().navigateToPreviousRoute();
+        await popStateEventPromise;
+        await waitAfterNextRender(dateTime);
+
+        assertEquals(
+            triggerEl, dateTime.shadowRoot!.activeElement,
+            `${triggerSelector} should be focused.`);
+      });
 });
