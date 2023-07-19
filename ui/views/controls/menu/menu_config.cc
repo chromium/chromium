@@ -56,12 +56,6 @@ void MenuConfig::InitCR2023() {
   item_vertical_margin = 6;
   item_horizontal_border_padding = 12;
   separator_horizontal_border_padding = 20;
-  // Using views-based BubbleBorder allows customizing menu shadow on macOS.
-  use_bubble_border = true;
-  use_outer_border = true;
-  touchable_menu_shadow_elevation = 3;
-  touchable_submenu_shadow_elevation = 3;
-  submenu_horizontal_inset = 8;
 }
 
 // static

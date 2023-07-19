@@ -103,13 +103,6 @@ void AddMaterialUiColorMixer(ColorProvider* provider,
   mixer[kColorSegmentedButtonRipple] = {kColorSysStateRippleNeutralOnSubtle};
   mixer[kColorSegmentedButtonChecked] = {kColorSysTonalContainer};
   mixer[kColorSeparator] = {kColorSysDivider};
-  mixer[kColorShadowBase] = {kColorSysShadow};
-  // 15% opacity.
-  mixer[kColorShadowValueAmbientShadowElevationThree] =
-      SetAlpha(kColorShadowBase, 0x26);
-  // 30% opacity.
-  mixer[kColorShadowValueKeyShadowElevationThree] =
-      SetAlpha(kColorShadowBase, 0x4D);
   mixer[kColorSidePanelComboboxBackground] = {kColorSysBaseContainer};
   mixer[kColorSliderThumb] = {kColorSysPrimary};
   mixer[kColorSliderThumbMinimal] = {kColorSysSecondary};

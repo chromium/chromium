@@ -515,10 +515,6 @@ MenuScrollViewContainer* SubmenuView::GetScrollViewContainer() {
   return scroll_view_container_;
 }
 
-const MenuScrollViewContainer* SubmenuView::GetScrollViewContainer() const {
-  return const_cast<SubmenuView*>(this)->GetScrollViewContainer();
-}
-
 MenuItemView* SubmenuView::GetLastItem() {
   const auto menu_items = GetMenuItems();
   return menu_items.empty() ? nullptr : menu_items.back();

@@ -159,7 +159,6 @@ class VIEWS_EXPORT SubmenuView : public View,
 
   // Returns the container for the SubmenuView.
   MenuScrollViewContainer* GetScrollViewContainer();
-  const MenuScrollViewContainer* GetScrollViewContainer() const;
 
   // Returns the last MenuItemView in this submenu.
   MenuItemView* GetLastItem();

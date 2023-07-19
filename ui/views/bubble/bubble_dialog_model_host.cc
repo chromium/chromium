@@ -15,7 +15,6 @@
 #include "ui/base/models/combobox_model.h"
 #include "ui/base/models/dialog_model.h"
 #include "ui/base/models/dialog_model_field.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/insets.h"
@@ -155,23 +154,6 @@ int GetDialogBottomMargins(LayoutProvider* layout_provider,
       return layout_provider->GetDistanceMetric(
           DISTANCE_DIALOG_CONTENT_MARGIN_BOTTOM_TEXT);
   }
-}
-
-BubbleBorder::Shadow GetBubbleShadow(ui::ModalType modal_type) {
-#if BUILDFLAG(IS_MAC)
-  if (!features::IsChromeRefresh2023()) {
-    return BubbleBorder::Shadow::DIALOG_SHADOW;
-  }
-
-  // Use views shadows unless this is a sheet (MODAL_TYPE_WINDOW).
-  // A sheet has a black-out mask that do not cover the views shadow area
-  // and therefore use native shadows instead.
-  return modal_type != ui::ModalType::MODAL_TYPE_WINDOW
-             ? BubbleBorder::Shadow::DIALOG_SHADOW
-             : BubbleBorder::Shadow::NO_SHADOW;
-#else
-  return BubbleBorder::Shadow::DIALOG_SHADOW;
-#endif
 }
 
 // A subclass of Checkbox that allows using an external Label/StyledLabel view
@@ -371,7 +353,7 @@ BubbleDialogModelHost::BubbleDialogModelHost(
     View* anchor_view,
     BubbleBorder::Arrow arrow,
     ui::ModalType modal_type)
-    : BubbleDialogDelegate(anchor_view, arrow, GetBubbleShadow(modal_type)),
+    : BubbleDialogDelegate(anchor_view, arrow),
       model_(std::move(model)),
       contents_view_(SetAndGetContentsView(this, modal_type)) {
   model_->set_host(GetPassKey(), this);

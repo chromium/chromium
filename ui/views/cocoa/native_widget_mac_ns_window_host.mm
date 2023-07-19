@@ -30,7 +30,6 @@
 #include "ui/base/cocoa/remote_layer_api.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/ime/input_method.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/recyclable_compositor_mac.h"
 #include "ui/display/screen.h"
@@ -62,32 +61,6 @@ using remote_cocoa::mojom::WindowVisibilityState;
 namespace views {
 
 namespace {
-
-bool ShouldUseWindowServerShadow(const Widget::InitParams& params) {
-  if (params.shadow_type == Widget::InitParams::ShadowType::kNone) {
-    return false;
-  }
-
-  if (params.shadow_type == Widget::InitParams::ShadowType::kDrop) {
-    return true;
-  }
-
-  CHECK_EQ(params.shadow_type, Widget::InitParams::ShadowType::kDefault);
-  if (features::IsChromeRefresh2023()) {
-    // An overview of shadows used in CR2023:
-    // 1. Browser window: system native shadow.
-    // 2. Bubble and non-modal dialogs: views shadow provided by BorderBubble.
-    // 3. Modal dialogs: sheet dialogs (MODAL_TYPE_WINDOW) use native shadow.
-    //                   other modal dialogs use views shadow.
-    // The use of native shadow on sheet dialogs is to circumvent the issue
-    // that the sheet black-out mask do not cover the views shadow area.
-    return params.delegate &&
-           params.delegate->GetModalType() == ui::MODAL_TYPE_WINDOW;
-  }
-
-  // Controls should get views shadows instead of native shadows.
-  return params.type != Widget::InitParams::TYPE_CONTROL;
-}
 
 // Dummy implementation of the BridgedNativeWidgetHost interface. This structure
 // exists to work around a bug wherein synchronous mojo calls to an associated
@@ -481,8 +454,23 @@ void NativeWidgetMacNSWindowHost::InitWindow(
     window_params->is_tooltip = is_tooltip;
     is_headless_mode_window_ = params.headless_mode;
 
-    window_params->has_window_server_shadow =
-        ShouldUseWindowServerShadow(params);
+    // macOS likes to put shadows on most things. However, frameless windows
+    // (with styleMask = NSWindowStyleMaskBorderless) default to no shadow. So
+    // change that. ShadowType::kDrop is used for Menus, which get the same
+    // shadow style on Mac.
+    switch (params.shadow_type) {
+      case Widget::InitParams::ShadowType::kNone:
+        window_params->has_window_server_shadow = false;
+        break;
+      case Widget::InitParams::ShadowType::kDefault:
+        // Controls should get views shadows instead of native shadows.
+        window_params->has_window_server_shadow =
+            params.type != Widget::InitParams::TYPE_CONTROL;
+        break;
+      case Widget::InitParams::ShadowType::kDrop:
+        window_params->has_window_server_shadow = true;
+        break;
+    }  // No default case, to pick up new types.
 
     // Include "regular" windows without the standard frame in the window cycle.
     // These use NSWindowStyleMaskBorderless so do not get it by default.

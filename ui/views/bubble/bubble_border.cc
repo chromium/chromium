@@ -21,7 +21,6 @@
 #include "third_party/skia/include/core/SkRRect.h"
 #include "third_party/skia/include/core/SkRect.h"
 #include "third_party/skia/include/core/SkScalar.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/canvas.h"
@@ -250,23 +249,8 @@ constexpr int BubbleBorder::kVisibleArrowRadius;
 constexpr int BubbleBorder::kVisibleArrowBuffer;
 
 BubbleBorder::BubbleBorder(Arrow arrow, Shadow shadow, ui::ColorId color_id)
-    : arrow_(arrow), color_id_(color_id) {
-  if (shadow == DIALOG_SHADOW) {
-#if BUILDFLAG(IS_MAC)
-    // CR2023 uses views-based shadows. Pre-CR2023 uses system native shadows.
-    shadow = features::IsChromeRefresh2023() ? STANDARD_SHADOW : NO_SHADOW;
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
-    shadow = CHROMEOS_SYSTEM_UI_SHADOW;
-#else
-    shadow = STANDARD_SHADOW;
-#endif
-  }
-  shadow_ = shadow;
-
+    : arrow_(arrow), shadow_(shadow), color_id_(color_id) {
   DCHECK_LT(shadow_, SHADOW_COUNT);
-  if (features::IsChromeRefresh2023()) {
-    md_shadow_elevation_ = 3;
-  }
 }
 
 BubbleBorder::~BubbleBorder() = default;

@@ -152,12 +152,6 @@ void BrowserFrame::InitBrowserFrame() {
     }
   }
 
-#if BUILDFLAG(IS_MAC)
-  // Uses a system-native shadow for browser windows to maintain consistent user
-  // experience and visual harmony with other applications.
-  params.shadow_type = views::Widget::InitParams::ShadowType::kDrop;
-#endif
-
   Init(std::move(params));
   SelectNativeTheme();
 
