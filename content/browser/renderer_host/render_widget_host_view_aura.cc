@@ -52,6 +52,7 @@
 #include "content/browser/renderer_host/ui_events_helper.h"
 #include "content/browser/renderer_host/visible_time_request_trigger.h"
 #include "content/public/browser/content_browser_client.h"
+#include "content/public/browser/device_service.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/page_visibility_state.h"
@@ -324,6 +325,11 @@ void RenderWidgetHostViewAura::InitAsChild(gfx::NativeView parent_view) {
     if (cursor_client)
       UpdateSystemCursorSize(cursor_client->GetSystemCursorSize());
   }
+
+#if BUILDFLAG(IS_WIN)
+  // This will fetch and set the display features.
+  EnsureDevicePostureServiceConnection();
+#endif
 }
 
 void RenderWidgetHostViewAura::InitAsPopup(
@@ -397,6 +403,11 @@ void RenderWidgetHostViewAura::InitAsPopup(
   auto* cursor_client = aura::client::GetCursorClient(root);
   if (cursor_client)
     UpdateSystemCursorSize(cursor_client->GetSystemCursorSize());
+
+#if BUILDFLAG(IS_WIN)
+  // This will fetch and set the display features.
+  EnsureDevicePostureServiceConnection();
+#endif
 }
 
 void RenderWidgetHostViewAura::Hide() {
@@ -732,6 +743,52 @@ void RenderWidgetHostViewAura::UpdateBackgroundColor() {
   bool opaque = SkColorGetA(color) == SK_AlphaOPAQUE;
   window_->layer()->SetFillsBoundsOpaquely(opaque);
   window_->layer()->SetColor(color);
+}
+
+#if BUILDFLAG(IS_WIN)
+void RenderWidgetHostViewAura::EnsureDevicePostureServiceConnection() {
+  if (device_posture_provider_.is_bound() &&
+      device_posture_provider_.is_connected()) {
+    return;
+  }
+  GetDeviceService().BindDevicePostureProvider(
+      device_posture_provider_.BindNewPipeAndPassReceiver());
+  device_posture_provider_->AddListenerAndGetCurrentViewportSegments(
+      device_posture_receiver_.BindNewPipeAndPassRemote(),
+      base::BindOnce(&RenderWidgetHostViewAura::OnViewportSegmentsChanged,
+                     base::Unretained(this)));
+}
+#endif
+
+void RenderWidgetHostViewAura::OnViewportSegmentsChanged(
+    const std::vector<gfx::Rect>& segments) {
+  if (segments.empty()) {
+    display_feature_ = absl::nullopt;
+    SynchronizeVisualProperties(cc::DeadlinePolicy::UseDefaultDeadline(),
+                                window_->GetLocalSurfaceId());
+    return;
+  }
+
+  display_feature_ = absl::nullopt;
+  if (segments.size() >= 2) {
+    float dip_scale = 1 / device_scale_factor_;
+    gfx::Rect transformed_display_feature =
+        gfx::ScaleToRoundedRect(segments[1], dip_scale);
+    transformed_display_feature.Offset(-GetViewBounds().x(),
+                                       -GetViewBounds().y());
+    transformed_display_feature.Intersect(gfx::Rect(GetVisibleViewportSize()));
+    if (transformed_display_feature.x() == 0) {
+      display_feature_ = {DisplayFeature::Orientation::kHorizontal,
+                          transformed_display_feature.y(),
+                          transformed_display_feature.height()};
+    } else if (transformed_display_feature.y() == 0) {
+      display_feature_ = {DisplayFeature::Orientation::kVertical,
+                          transformed_display_feature.x(),
+                          transformed_display_feature.width()};
+    }
+  }
+  SynchronizeVisualProperties(cc::DeadlinePolicy::UseDefaultDeadline(),
+                              window_->GetLocalSurfaceId());
 }
 
 absl::optional<DisplayFeature> RenderWidgetHostViewAura::GetDisplayFeature() {

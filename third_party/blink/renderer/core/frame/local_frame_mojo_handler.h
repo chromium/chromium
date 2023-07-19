@@ -48,7 +48,7 @@ class LocalFrameMojoHandler
       public mojom::blink::LocalMainFrame,
       public mojom::blink::HighPriorityLocalFrame,
       public mojom::blink::FullscreenVideoElementHandler,
-      public device::mojom::blink::DevicePostureProviderClient {
+      public device::mojom::blink::DevicePostureClient {
  public:
   explicit LocalFrameMojoHandler(blink::LocalFrame& frame);
   void Trace(Visitor* visitor) const;
@@ -260,7 +260,7 @@ class LocalFrameMojoHandler
   // mojom::FullscreenVideoElementHandler implementation:
   void RequestFullscreenVideoElement() final;
 
-  // DevicePostureServiceClient implementation:
+  // DevicePostureClient implementation:
   void OnPostureChanged(device::mojom::blink::DevicePostureType posture) final;
 
   Member<blink::LocalFrame> frame_;
@@ -300,7 +300,7 @@ class LocalFrameMojoHandler
       fullscreen_video_receiver_{this, nullptr};
 
   // LocalFrameMojoHandler can be reused by multiple ExecutionContext.
-  HeapMojoReceiver<device::mojom::blink::DevicePostureProviderClient,
+  HeapMojoReceiver<device::mojom::blink::DevicePostureClient,
                    LocalFrameMojoHandler>
       device_posture_receiver_{this, nullptr};
 
