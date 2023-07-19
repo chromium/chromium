@@ -470,7 +470,8 @@ PasswordAccessoryControllerImpl::PasswordAccessoryControllerImpl(
     password_manager::PasswordManagerClient* password_client,
     PasswordDriverSupplierForFocusedFrame driver_supplier,
     ShowMigrationWarningCallback show_migration_warning_callback)
-    : content::WebContentsUserData<PasswordAccessoryControllerImpl>(
+    : content::WebContentsObserver(web_contents),
+      content::WebContentsUserData<PasswordAccessoryControllerImpl>(
           *web_contents),
       credential_cache_(credential_cache),
       manual_filling_controller_(std::move(manual_filling_controller)),
@@ -478,6 +479,13 @@ PasswordAccessoryControllerImpl::PasswordAccessoryControllerImpl(
       driver_supplier_(std::move(driver_supplier)),
       show_migration_warning_callback_(
           std::move(show_migration_warning_callback)) {}
+
+void PasswordAccessoryControllerImpl::WebContentsDestroyed() {
+  // Remove itself to avoid that pointers to other `WebContentsUserData` objects
+  // become invalid.
+  GetWebContents().RemoveUserData(UserDataKey());
+  // Do not add code - `this` is now destroyed.
+}
 
 void PasswordAccessoryControllerImpl::ChangeCurrentOriginSavePasswordsStatus(
     bool saving_enabled) {
