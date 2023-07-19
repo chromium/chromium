@@ -1528,6 +1528,12 @@ BASE_FEATURE(kLinkCrossDeviceDogfoodFeedback,
              "LinkCrossDeviceDogFoodFeedback",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables local password as an option for local authentication.
+// (This feature is only available for consumer users)
+BASE_FEATURE(kLocalPasswordForConsumers,
+             "LocalPasswordForConsumers",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Supports the feature to hide sensitive content in notifications on the lock
 // screen. This option is effective when |kLockScreenNotification| is enabled.
 BASE_FEATURE(kLockScreenHideSensitiveNotificationsSupport,
@@ -1843,6 +1849,12 @@ BASE_FEATURE(kPasspointARCSupport,
 // Enables user to display Passpoint credentials in the UI.
 BASE_FEATURE(kPasspointSettings,
              "PasspointSettings",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// This feature allows usage of passwordless flow in GAIA.
+// (This feature is only available for consumer users)
+BASE_FEATURE(kPasswordlessGaiaForConsumers,
+             "PasswordlessGaiaForConsumers",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables a notification warning users that their Thunderbolt device is not
@@ -3266,6 +3278,10 @@ bool IsLinkCrossDeviceDogfoodFeedbackEnabled() {
   return base::FeatureList::IsEnabled(kLinkCrossDeviceDogfoodFeedback);
 }
 
+bool AreLocalPasswordsEnabledForConsumers() {
+  return base::FeatureList::IsEnabled(kLocalPasswordForConsumers);
+}
+
 bool IsLockScreenHideSensitiveNotificationsSupported() {
   return base::FeatureList::IsEnabled(
       kLockScreenHideSensitiveNotificationsSupport);
@@ -3491,6 +3507,10 @@ bool IsPasspointARCSupportEnabled() {
 bool IsPasspointSettingsEnabled() {
   return base::FeatureList::IsEnabled(kPasspointSettings) &&
          base::FeatureList::IsEnabled(kPasspointARCSupport);
+}
+
+bool IsPasswordlessGaiaEnabledForConsumers() {
+  return base::FeatureList::IsEnabled(kPasswordlessGaiaForConsumers);
 }
 
 bool IsPcieBillboardNotificationEnabled() {
