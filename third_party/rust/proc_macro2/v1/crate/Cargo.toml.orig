@@ -1,20 +1,20 @@
 [package]
 name = "proc-macro2"
-version = "1.0.56" # remember to update html_root_url
+version = "1.0.66" # remember to update html_root_url
 authors = ["David Tolnay <dtolnay@gmail.com>", "Alex Crichton <alex@alexcrichton.com>"]
 autobenches = false
 categories = ["development-tools::procedural-macro-helpers"]
 description = "A substitute implementation of the compiler's `proc_macro` API to decouple token-based libraries from the procedural macro use case."
 documentation = "https://docs.rs/proc-macro2"
-edition = "2018"
+edition = "2021"
 keywords = ["macros", "syn"]
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/dtolnay/proc-macro2"
-rust-version = "1.31"
+rust-version = "1.56"
 
 [package.metadata.docs.rs]
 rustc-args = ["--cfg", "procmacro2_semver_exempt"]
-rustdoc-args = ["--cfg", "procmacro2_semver_exempt", "--cfg", "doc_cfg"]
+rustdoc-args = ["--cfg", "procmacro2_semver_exempt", "--cfg", "doc_cfg", "--generate-link-to-definition"]
 targets = ["x86_64-unknown-linux-gnu"]
 
 [package.metadata.playground]

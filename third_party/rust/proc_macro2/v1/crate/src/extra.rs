@@ -22,9 +22,7 @@ enum DelimSpanEnum {
     #[cfg(wrap_proc_macro)]
     Compiler {
         join: proc_macro::Span,
-        #[cfg(not(no_group_open_close))]
         open: proc_macro::Span,
-        #[cfg(not(no_group_open_close))]
         close: proc_macro::Span,
     },
     Fallback(fallback::Span),
@@ -36,9 +34,7 @@ impl DelimSpan {
         let inner = match group {
             imp::Group::Compiler(group) => DelimSpanEnum::Compiler {
                 join: group.span(),
-                #[cfg(not(no_group_open_close))]
                 open: group.span_open(),
-                #[cfg(not(no_group_open_close))]
                 close: group.span_close(),
             },
             imp::Group::Fallback(group) => DelimSpanEnum::Fallback(group.span()),
@@ -66,13 +62,7 @@ impl DelimSpan {
     pub fn open(&self) -> Span {
         match &self.inner {
             #[cfg(wrap_proc_macro)]
-            DelimSpanEnum::Compiler {
-                #[cfg(not(no_group_open_close))]
-                open,
-                #[cfg(no_group_open_close)]
-                    join: open,
-                ..
-            } => Span::_new(imp::Span::Compiler(*open)),
+            DelimSpanEnum::Compiler { open, .. } => Span::_new(imp::Span::Compiler(*open)),
             DelimSpanEnum::Fallback(span) => Span::_new_fallback(span.first_byte()),
         }
     }
@@ -81,13 +71,7 @@ impl DelimSpan {
     pub fn close(&self) -> Span {
         match &self.inner {
             #[cfg(wrap_proc_macro)]
-            DelimSpanEnum::Compiler {
-                #[cfg(not(no_group_open_close))]
-                close,
-                #[cfg(no_group_open_close)]
-                    join: close,
-                ..
-            } => Span::_new(imp::Span::Compiler(*close)),
+            DelimSpanEnum::Compiler { close, .. } => Span::_new(imp::Span::Compiler(*close)),
             DelimSpanEnum::Fallback(span) => Span::_new_fallback(span.last_byte()),
         }
     }

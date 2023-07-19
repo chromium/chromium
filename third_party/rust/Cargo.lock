@@ -280,7 +280,7 @@ version = "0.2.17"
 
 [[package]]
 name = "proc-macro2"
-version = "1.0.56"
+version = "1.0.66"
 dependencies = [
  "unicode-ident",
 ]

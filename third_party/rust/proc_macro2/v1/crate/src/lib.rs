@@ -65,7 +65,7 @@
 //!
 //! To opt into the additional APIs available in the most recent nightly
 //! compiler, the `procmacro2_semver_exempt` config flag must be passed to
-//! rustc. We will polyfill those nightly-only APIs back to Rust 1.31.0. As
+//! rustc. We will polyfill those nightly-only APIs back to Rust 1.56.0. As
 //! these are unstable APIs that track the nightly compiler, minor versions of
 //! proc-macro2 may make breaking changes to them at any time.
 //!
@@ -86,11 +86,8 @@
 //! a different thread.
 
 // Proc-macro2 types in rustdoc of other crates get linked to here.
-#![doc(html_root_url = "https://docs.rs/proc-macro2/1.0.56")]
-#![cfg_attr(
-    any(proc_macro_span, super_unstable),
-    feature(proc_macro_span, proc_macro_span_shrink)
-)]
+#![doc(html_root_url = "https://docs.rs/proc-macro2/1.0.66")]
+#![cfg_attr(any(proc_macro_span, super_unstable), feature(proc_macro_span))]
 #![cfg_attr(super_unstable, feature(proc_macro_def_site))]
 #![cfg_attr(doc_cfg, feature(doc_cfg))]
 #![allow(
@@ -100,8 +97,10 @@
     clippy::items_after_statements,
     clippy::let_underscore_untyped,
     clippy::manual_assert,
+    clippy::manual_range_contains,
     clippy::must_use_candidate,
     clippy::needless_doctest_main,
+    clippy::new_without_default,
     clippy::return_self_not_must_use,
     clippy::shadow_unrelated,
     clippy::trivially_copy_pass_by_ref,
@@ -119,7 +118,9 @@ compile_error! {"\
     build script as well.
 "}
 
-#[cfg(use_proc_macro)]
+extern crate alloc;
+
+#[cfg(feature = "proc-macro")]
 extern crate proc_macro;
 
 mod marker;
@@ -143,8 +144,6 @@ use crate::fallback as imp;
 mod imp;
 
 #[cfg(span_locations)]
-mod convert;
-#[cfg(span_locations)]
 mod location;
 
 use crate::extra::DelimSpan;
@@ -152,7 +151,6 @@ use crate::marker::Marker;
 use core::cmp::Ordering;
 use core::fmt::{self, Debug, Display};
 use core::hash::{Hash, Hasher};
-use core::iter::FromIterator;
 use core::ops::RangeBounds;
 use core::str::FromStr;
 use std::error::Error;
@@ -235,14 +233,16 @@ impl FromStr for TokenStream {
     }
 }
 
-#[cfg(use_proc_macro)]
+#[cfg(feature = "proc-macro")]
+#[cfg_attr(doc_cfg, doc(cfg(feature = "proc-macro")))]
 impl From<proc_macro::TokenStream> for TokenStream {
     fn from(inner: proc_macro::TokenStream) -> Self {
         TokenStream::_new(inner.into())
     }
 }
 
-#[cfg(use_proc_macro)]
+#[cfg(feature = "proc-macro")]
+#[cfg_attr(doc_cfg, doc(cfg(feature = "proc-macro")))]
 impl From<TokenStream> for proc_macro::TokenStream {
     fn from(inner: TokenStream) -> Self {
         inner.inner.into()
@@ -402,9 +402,6 @@ impl Span {
     /// The span located at the invocation of the procedural macro, but with
     /// local variables, labels, and `$crate` resolved at the definition site
     /// of the macro. This is the same hygiene behavior as `macro_rules`.
-    ///
-    /// This function requires Rust 1.45 or later.
-    #[cfg(not(no_hygiene))]
     pub fn mixed_site() -> Self {
         Span::_new(imp::Span::mixed_site())
     }
@@ -489,24 +486,6 @@ impl Span {
     #[cfg_attr(doc_cfg, doc(cfg(feature = "span-locations")))]
     pub fn end(&self) -> LineColumn {
         self.inner.end()
-    }
-
-    /// Creates an empty span pointing to directly before this span.
-    ///
-    /// This method is semver exempt and not exposed by default.
-    #[cfg(all(procmacro2_semver_exempt, any(not(wrap_proc_macro), super_unstable)))]
-    #[cfg_attr(doc_cfg, doc(cfg(procmacro2_semver_exempt)))]
-    pub fn before(&self) -> Span {
-        Span::_new(self.inner.before())
-    }
-
-    /// Creates an empty span pointing to directly after this span.
-    ///
-    /// This method is semver exempt and not exposed by default.
-    #[cfg(all(procmacro2_semver_exempt, any(not(wrap_proc_macro), super_unstable)))]
-    #[cfg_attr(doc_cfg, doc(cfg(procmacro2_semver_exempt)))]
-    pub fn after(&self) -> Span {
-        Span::_new(self.inner.after())
     }
 
     /// Create a new span encompassing `self` and `other`.

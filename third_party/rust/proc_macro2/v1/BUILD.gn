@@ -11,7 +11,6 @@ cargo_crate("lib") {
   crate_root = "crate/src/lib.rs"
   sources = [
     "//third_party/rust/proc_macro2/v1/crate/build.rs",
-    "//third_party/rust/proc_macro2/v1/crate/src/convert.rs",
     "//third_party/rust/proc_macro2/v1/crate/src/detection.rs",
     "//third_party/rust/proc_macro2/v1/crate/src/extra.rs",
     "//third_party/rust/proc_macro2/v1/crate/src/fallback.rs",
@@ -32,8 +31,8 @@ cargo_crate("lib") {
 
   # Unit tests skipped. Generate with --with-tests to include them.
   build_native_rust_unit_tests = false
-  edition = "2018"
-  cargo_pkg_version = "1.0.56"
+  edition = "2021"
+  cargo_pkg_version = "1.0.66"
   cargo_pkg_authors =
       "David Tolnay <dtolnay@gmail.com>, Alex Crichton <alex@alexcrichton.com>"
   cargo_pkg_name = "proc-macro2"
