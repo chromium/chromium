@@ -74,12 +74,18 @@ class VIEWS_EXPORT BubbleBorder : public Border {
 #endif
     // NO_SHADOW don't draw a stroke or a shadow. This is used for platforms
     // that provide their own shadows or UIs that doesn't need shadows.
-    // See Widget::InitParams::ShadowType for system-provided shadows.
     NO_SHADOW,
     SHADOW_COUNT,
 
-    // Automatically choose one of the above shadow types at runtime.
-    DIALOG_SHADOW,
+#if BUILDFLAG(IS_MAC)
+    // On Mac, the native window server should provide its own shadow for
+    // windows that could overlap the browser window.
+    DIALOG_SHADOW = NO_SHADOW,
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
+    DIALOG_SHADOW = CHROMEOS_SYSTEM_UI_SHADOW,
+#else
+    DIALOG_SHADOW = STANDARD_SHADOW,
+#endif
   };
 
   // The border is stroked at 1px, but for the purposes of reserving space we

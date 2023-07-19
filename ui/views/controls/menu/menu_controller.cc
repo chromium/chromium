@@ -252,13 +252,8 @@ gfx::Point GetLocationInRootMenu(const SubmenuView& submenu,
 }
 
 bool Contains(const SubmenuView& submenu, const gfx::Point& location) {
-  // Exclude the shadow area from MenuScrollViewContainer.
-  // This allows the shadow to be transparent to mouse events.
-  const views::View* root_view = submenu.GetWidget()->GetRootView();
-  gfx::Rect scroll_view_container_bounds = View::ConvertRectToTarget(
-      submenu.GetScrollViewContainer(), root_view,
-      submenu.GetScrollViewContainer()->GetContentsBounds());
-  return scroll_view_container_bounds.Contains(location);
+  return submenu.GetWidget()->GetRootView()->GetLocalBounds().Contains(
+      location);
 }
 
 // Recurses through the child views of |view| returning the first view starting
@@ -2766,14 +2761,14 @@ gfx::Rect MenuController::CalculateBubbleMenuBounds(
     const int x_left = item_bounds.x() - width_with_right_inset;
     const int x_right = item_bounds.right() - border_and_shadow_insets.left();
     if (create_on_right) {
-      x = x_right - menu_config.submenu_horizontal_inset;
+      x = x_right;
       if (monitor_bounds.width() == 0 || x_right <= x_max) {
         // Enough room on the right, show normally.
-        x = x_right - menu_config.submenu_horizontal_inset;
+        x = x_right;
       } else if (x_left >= monitor_bounds.x()) {
         // Enough room on the left, show there.
         *resulting_direction = preferred_open_direction;
-        x = x_left + menu_config.submenu_horizontal_inset;
+        x = x_left;
       } else {
         // No room on either side. Flush the menu to the right edge.
         x = x_max;
@@ -2781,14 +2776,14 @@ gfx::Rect MenuController::CalculateBubbleMenuBounds(
     } else {
       if (monitor_bounds.width() == 0 || x_left >= monitor_bounds.x()) {
         // Enough room on the left, show normally.
-        x = x_left + menu_config.submenu_horizontal_inset;
+        x = x_left;
       } else if (x_right <= x_max) {
         // Enough room on the right, show there.
         *resulting_direction =
             preferred_open_direction == MenuOpenDirection::kLeading
                 ? MenuOpenDirection::kTrailing
                 : MenuOpenDirection::kLeading;
-        x = x_right - menu_config.submenu_horizontal_inset;
+        x = x_right;
       } else {
         // No room on either side. Flush the menu to the left edge.
         x = monitor_bounds.x();
