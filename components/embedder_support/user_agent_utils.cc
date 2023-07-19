@@ -359,6 +359,10 @@ std::string GetUserAgentInternal(
     UserAgentReductionEnterprisePolicyState user_agent_reduction) {
   std::string product =
       GetProductAndVersion(force_major_to_minor, user_agent_reduction);
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(kHeadless)) {
+    product.insert(0, "Headless");
+  }
+
 #if BUILDFLAG(IS_ANDROID)
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kUseMobileUserAgent))

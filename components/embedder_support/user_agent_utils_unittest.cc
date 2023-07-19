@@ -28,6 +28,7 @@
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/user_agent.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/user_agent/user_agent_brand_version_type.h"
@@ -1529,6 +1530,16 @@ TEST_F(UserAgentUtilsTest, GetUserAgent) {
   EXPECT_EQ(major_version, version_info::GetMajorVersionNumber());
   // Minor version should contain the actual minor version number.
   EXPECT_EQ(minor_version, "0");
+}
+
+TEST_F(UserAgentUtilsTest, HeadlessUserAgent) {
+  base::test::ScopedCommandLine scoped_command_line;
+  base::CommandLine* command_line = scoped_command_line.GetProcessCommandLine();
+  command_line->AppendSwitch(kHeadless);
+  ASSERT_TRUE(command_line->HasSwitch(kHeadless));
+
+  // In headless mode product name should have the Headless prefix.
+  EXPECT_THAT(GetUserAgent(), testing::HasSubstr("HeadlessChrome/"));
 }
 
 class UserAgentUtilsMinorVersionTest
