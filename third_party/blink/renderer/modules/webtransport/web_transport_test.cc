@@ -1978,7 +1978,7 @@ TEST_F(WebTransportTest, ReceivedResetStream) {
   V8TestingScope scope;
   v8::Isolate* isolate = scope.GetIsolate();
   constexpr uint32_t kStreamId = 99;
-  constexpr uint8_t kCode = 24;
+  constexpr uint32_t kCode = 0xffffffff;
 
   auto* web_transport =
       CreateAndConnectSuccessfully(scope, "https://example.com");
@@ -2027,7 +2027,7 @@ TEST_F(WebTransportTest, ReceivedStopSending) {
   V8TestingScope scope;
   v8::Isolate* isolate = scope.GetIsolate();
   constexpr uint32_t kStreamId = 51;
-  constexpr uint8_t kCode = 255;
+  constexpr uint32_t kCode = 255;
 
   auto* web_transport =
       CreateAndConnectSuccessfully(scope, "https://example.com");

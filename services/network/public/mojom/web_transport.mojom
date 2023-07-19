@@ -136,15 +136,15 @@ interface WebTransportClient {
 
   // Called when an outgoing or bidirectional stream gets a STOP_SENDING signal.
   // https://w3c.github.io/webtransport/#stream-signal-stop_sending
-  // `code` is an error code as described at
+  // `stream_error_code` is an error code as described at
   // https://ietf-wg-webtrans.github.io/draft-ietf-webtrans-http3/draft-ietf-webtrans-http3.html#name-resetting-data-streams.
-  OnReceivedStopSending(uint32 stream_id, uint8 code);
+  OnReceivedStopSending(uint32 stream_id, uint32 stream_error_code);
 
   // Called when an incoming or bidirectional stream gets a RESET_STREAM signal.
   // https://w3c.github.io/webtransport/#stream-signal-reset
-  // `code` is an error code as described at
+  // `stream_error_code` is an error code as described at
   // https://ietf-wg-webtrans.github.io/draft-ietf-webtrans-http3/draft-ietf-webtrans-http3.html#name-resetting-data-streams.
-  OnReceivedResetStream(uint32 stream_id, uint8 code);
+  OnReceivedResetStream(uint32 stream_id, uint32 stream_error_code);
 
   // Called when the session is terminated cleanly.
   // https://w3c.github.io/webtransport/#session-terminated

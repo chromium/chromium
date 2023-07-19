@@ -34,7 +34,7 @@ class MODULES_EXPORT WebTransportError : public DOMException {
   // For creating a WebTransportError from C++. Typically this will be
   // immediately passed to ScriptPromiseResolver::Reject.
   static v8::Local<v8::Value> Create(v8::Isolate*,
-                                     absl::optional<uint8_t> stream_error_code,
+                                     absl::optional<uint32_t> stream_error_code,
                                      String message,
                                      Source);
 
@@ -42,17 +42,19 @@ class MODULES_EXPORT WebTransportError : public DOMException {
   // so that it can be used with MakeGarbageCollected<> inside the Create
   // methods.
   WebTransportError(PassKey,
-                    absl::optional<uint8_t> stream_error_code,
+                    absl::optional<uint32_t> stream_error_code,
                     String message,
                     Source);
   ~WebTransportError() override;
 
-  absl::optional<uint8_t> streamErrorCode() const { return stream_error_code_; }
+  absl::optional<uint32_t> streamErrorCode() const {
+    return stream_error_code_;
+  }
 
   String source() const;
 
  private:
-  const absl::optional<uint8_t> stream_error_code_;
+  const absl::optional<uint32_t> stream_error_code_;
   const Source source_;
 };
 

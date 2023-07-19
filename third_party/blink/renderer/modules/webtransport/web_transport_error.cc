@@ -14,7 +14,7 @@ namespace blink {
 
 WebTransportError* WebTransportError::Create(
     const WebTransportErrorInit* init) {
-  absl::optional<uint8_t> stream_error_code =
+  absl::optional<uint32_t> stream_error_code =
       init->hasStreamErrorCode() ? absl::make_optional(init->streamErrorCode())
                                  : absl::nullopt;
   String message = init->hasMessage() ? init->message() : g_empty_string;
@@ -24,7 +24,7 @@ WebTransportError* WebTransportError::Create(
 
 v8::Local<v8::Value> WebTransportError::Create(
     v8::Isolate* isolate,
-    absl::optional<uint8_t> stream_error_code,
+    absl::optional<uint32_t> stream_error_code,
     String message,
     Source source) {
   auto* dom_exception = MakeGarbageCollected<WebTransportError>(
@@ -33,7 +33,7 @@ v8::Local<v8::Value> WebTransportError::Create(
 }
 
 WebTransportError::WebTransportError(PassKey,
-                                     absl::optional<uint8_t> stream_error_code,
+                                     absl::optional<uint32_t> stream_error_code,
                                      String message,
                                      Source source)
     : DOMException(DOMExceptionCode::kWebTransportError, std::move(message)),
