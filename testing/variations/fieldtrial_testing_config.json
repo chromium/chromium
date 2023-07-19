@@ -13650,6 +13650,24 @@
             ]
         }
     ],
+    "TimeOfDay": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "TimeOfDayEnabled",
+                    "enable_features": [
+                        "FeatureManagementTimeOfDayScreenSaver",
+                        "FeatureManagementTimeOfDayWallpaper",
+                        "TimeOfDayScreenSaver",
+                        "TimeOfDayWallpaper"
+                    ]
+                }
+            ]
+        }
+    ],
     "TopChromeWebUIUsesSpareRenderer": [
         {
             "platforms": [
