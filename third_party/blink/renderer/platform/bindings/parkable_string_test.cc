@@ -759,6 +759,26 @@ TEST_P(ParkableStringTest, SynchronousCompression) {
   task_environment_.FastForwardUntilNoTasksRemain();
 }
 
+TEST_P(ParkableStringTest, CompressionFailed) {
+  const size_t kSize = 20000;
+  Vector<char> data(kSize);
+  base::RandBytes(data.data(), data.size());
+  ParkableString parkable(String(data.data(), data.size()).ReleaseImpl());
+  WaitForDelayedParking();
+  EXPECT_EQ(ParkableStringImpl::Age::kOld, parkable.Impl()->age_for_testing());
+
+  // Because input string is too complicated, parking has failed.
+  EXPECT_FALSE(parkable.Impl()->is_parked());
+
+  // Make sure there will be no additional parking trial for this string.
+  EXPECT_EQ(ParkableStringImpl::AgeOrParkResult::kNonTransientFailure,
+            parkable.Impl()->MaybeAgeOrParkString());
+
+  // |Park()| should be failed as well.
+  EXPECT_FALSE(
+      parkable.Impl()->Park(ParkableStringImpl::ParkingMode::kCompress));
+}
+
 TEST_P(ParkableStringTest, ToAndFromDisk) {
   base::HistogramTester histogram_tester;
 

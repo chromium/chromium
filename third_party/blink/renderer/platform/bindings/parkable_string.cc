@@ -227,6 +227,7 @@ ParkableStringImpl::ParkableMetadata::ParkableMetadata(
     : lock_(),
       lock_depth_(0),
       state_(State::kUnparked),
+      compression_failed_(false),
       compressed_(nullptr),
       digest_(*digest),
       age_(Age::kYoung),
@@ -411,7 +412,10 @@ ParkableStringImpl::AgeOrParkResult ParkableStringImpl::MaybeAgeOrParkString() {
   if (age == Age::kYoung) {
     if (status == Status::kUnreferencedExternally)
       metadata_->age_ = MakeOlder(age);
-  } else if (age == Age::kOld && CanParkNow()) {
+  } else if (age == Age::kOld) {
+    if (!CanParkNow()) {
+      return AgeOrParkResult::kNonTransientFailure;
+    }
     bool ok = ParkInternal(ParkingMode::kCompress);
     DCHECK(ok);
     return AgeOrParkResult::kSuccessOrTransientFailure;
@@ -507,6 +511,10 @@ bool ParkableStringImpl::is_on_disk_no_lock() const {
   return metadata_->state_ == State::kOnDisk;
 }
 
+bool ParkableStringImpl::is_compression_failed_no_lock() const {
+  return metadata_->compression_failed_;
+}
+
 bool ParkableStringImpl::is_parked() const {
   base::AutoLock locker(metadata_->lock_);
   return is_parked_no_lock();
@@ -538,7 +546,7 @@ ParkableStringImpl::Status ParkableStringImpl::CurrentStatus() const {
 
 bool ParkableStringImpl::CanParkNow() const {
   return CurrentStatus() == Status::kUnreferencedExternally &&
-         metadata_->age_ != Age::kYoung;
+         metadata_->age_ != Age::kYoung && !is_compression_failed_no_lock();
 }
 
 void ParkableStringImpl::Unpark() {
@@ -784,8 +792,11 @@ void ParkableStringImpl::OnParkingCompleteOnMainThread(
   // uncompressed representation cannot be discarded now, avoid compressing
   // multiple times. This will allow synchronous parking next time.
   DCHECK(!metadata_->compressed_);
-  if (compressed)
+  if (compressed) {
     metadata_->compressed_ = std::move(compressed);
+  } else {
+    metadata_->compression_failed_ = true;
+  }
 
   // Between |Park()| and now, things may have happened:
   // 1. |ToString()| or
