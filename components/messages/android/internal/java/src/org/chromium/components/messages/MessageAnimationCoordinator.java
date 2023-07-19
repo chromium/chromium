@@ -183,9 +183,12 @@ public class MessageAnimationCoordinator implements SwipeAnimationHandler {
         assert !(currentFront == null && currentBack != null);
         assert !isSuspended || nextFront == null : "when suspending, all messages should be hidden";
         if (currentFront == nextFront && currentBack == nextBack) {
-            assert currentFront != null
-                    || !mMessageQueueDelegate.isReadyForShowing()
-                : "onFinishHiding should have been executed if no message is showing.";
+            if (currentFront == null && mMessageQueueDelegate.isReadyForShowing()) {
+                mMessageQueueDelegate.onFinishHiding();
+            } else if (currentFront != null) {
+                assert mMessageQueueDelegate.isReadyForShowing()
+                    : "onRequestShowing should have been called";
+            }
             return;
         }
 

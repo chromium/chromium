@@ -11,6 +11,7 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -737,6 +738,24 @@ public class MessageAnimationCoordinatorUnitTest {
 
         var currentMessages = mAnimationCoordinator.getCurrentDisplayedMessages();
         Assert.assertArrayEquals(new MessageState[] {m1, null}, currentMessages.toArray());
+    }
+
+    @Test
+    @SmallTest
+    public void testCurrentMessagesUpdateWhileWaitingForDelegateBeReady() {
+        when(mQueueDelegate.isReadyForShowing()).thenReturn(false);
+        doNothing().when(mQueueDelegate).onRequestShowing(any());
+        MessageState m1 = buildMessageState();
+        setMessageIdentifier(m1, 1);
+        mAnimationCoordinator.updateWithStacking(Arrays.asList(m1, null), false, () -> {});
+        verify(mQueueDelegate).onRequestShowing(any());
+        // Queue is updated while queue is still waiting the queue to be ready.
+        mAnimationCoordinator.updateWithStacking(Arrays.asList(null, null), true, () -> {});
+
+        // Queue becomes resumed again and the delegate is ready for showing.
+        when(mQueueDelegate.isReadyForShowing()).thenReturn(true);
+        mAnimationCoordinator.updateWithStacking(Arrays.asList(null, null), false, () -> {});
+        verify(mQueueDelegate).onFinishHiding();
     }
 
     private void setMessageIdentifier(MessageState message, int messageIdentifier) {
