@@ -266,25 +266,20 @@
       These settings are enforced by your administrator
     </message>
     <if expr="is_chromeos">
-      <!-- TODO(b/287470757): Replace with finalized strings. -->
-      <message translateable="false" name="IDS_PRINT_PREVIEW_MANAGE_PRINTERS_LABEL" desc="Text of button to open Printer settings when setup assistance is showing.">
+      <message name="IDS_PRINT_PREVIEW_MANAGE_PRINTERS_LABEL" desc="Text of button to open Printer settings when setup assistance is showing.">
         Manage printers
       </message>
-      <!-- TODO(b/287470757): Replace with finalized strings. -->
-      <message translateable="false" name="IDS_PRINT_PREVIEW_PRINTER_SETUP_INFO_MESSAGE_DETAIL_NO_PRINTERS_TEXT" desc="In CrOS destination dialog, message shown to users when destination list has no printers.">
-        Go to Printer settings to manage your printers
+      <message name="IDS_PRINT_PREVIEW_PRINTER_SETUP_INFO_MESSAGE_DETAIL_NO_PRINTERS_TEXT" desc="In CrOS destination dialog, message shown to users when destination list has no printers.">
+        Manage your printers in printer settings
       </message>
-      <!-- TODO(b/287470757): Replace with finalized strings. -->
-      <message translateable="false" name="IDS_PRINT_PREVIEW_PRINTER_SETUP_INFO_MESSAGE_DETAIL_PRINTER_OFFLINE_TEXT" desc="In preview-area, message shown to users when printer is offline.">
-        Make sure your printer is turned on and connected to the same network as your Chromebook or connected via USB
+      <message name="IDS_PRINT_PREVIEW_PRINTER_SETUP_INFO_MESSAGE_DETAIL_PRINTER_OFFLINE_TEXT" desc="In preview-area, message shown to users when printer is offline.">
+        Make sure your printer is turned on and connected to the same network as your Chromebook or use a USB cable
       </message>
-      <!-- TODO(b/287470757): Replace with finalized strings. -->
-      <message translateable="false" name="IDS_PRINT_PREVIEW_PRINTER_SETUP_INFO_MESSAGE_HEADING_NO_PRINTERS_TEXT" desc="In CrOS destination dialog, heading shown to users when destination list has no printers.">
+      <message name="IDS_PRINT_PREVIEW_PRINTER_SETUP_INFO_MESSAGE_HEADING_NO_PRINTERS_TEXT" desc="In CrOS destination dialog, heading shown to users when destination list has no printers.">
         No printer available
       </message>
-      <!-- TODO(b/287470757): Replace with finalized strings. -->
-      <message translateable="false" name="IDS_PRINT_PREVIEW_PRINTER_SETUP_INFO_MESSAGE_HEADING_PRINTER_OFFLINE_TEXT" desc="In preview-area, heading shown to users when printer is offline.">
-        Printer is offline
+      <message name="IDS_PRINT_PREVIEW_PRINTER_SETUP_INFO_MESSAGE_HEADING_PRINTER_OFFLINE_TEXT" desc="In preview-area, heading shown to users when printer is offline.">
+        Not connected to printer
       </message>
       <message name="IDS_PRINT_PREVIEW_PRINT_TO_GOOGLE_DRIVE"
                desc="Option shown on printer drop-down list for saving previewed document to Google Drive.">
