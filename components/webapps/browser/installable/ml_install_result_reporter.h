@@ -6,6 +6,7 @@
 #define COMPONENTS_WEBAPPS_BROWSER_INSTALLABLE_ML_INSTALL_RESULT_REPORTER_H_
 
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/types/pass_key.h"
 #include "components/segmentation_platform/public/trigger.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
@@ -15,6 +16,9 @@
 namespace webapps {
 class AppBannerManager;
 enum class MlInstallUserResponse;
+
+extern const base::FeatureParam<double> kGuardrailResultReportProb;
+extern const base::FeatureParam<double> kModelDeclineUserDeclineReportProb;
 
 // This class is responsible for reporting the result of the Ml installation
 // classification prediction and updating any guardrail metrics if applicable.
@@ -30,13 +34,14 @@ enum class MlInstallUserResponse;
 // possibly occur & report a real result to classification.
 class MlInstallResultReporter {
  public:
-  // Public for tests.
+  // Public for tests. Reported to UMA, do not change values.
   enum class MlInstallResponse {
     kAccepted = 0,
     kIgnored = 1,
     kCancelled = 2,
     kBlockedGuardrails = 3,
-    kMaxValue = kBlockedGuardrails
+    kReporterDestroyed = 4,
+    kMaxValue = kReporterDestroyed
   };
 
   MlInstallResultReporter(

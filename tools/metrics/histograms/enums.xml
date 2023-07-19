@@ -111941,12 +111941,14 @@ others/histograms.xml -->
   <int value="15" label="Main frame navigation cancelled manifest update"/>
 </enum>
 
-<enum name="WebAppMlInstallUserResponse">
+<enum name="WebAppMlInstallResponse">
   <int value="0" label="Install accepted"/>
   <int value="1" label="Dialog ignored without interaction"/>
   <int value="2" label="Dialog cancelled via user interaction"/>
   <int value="3"
       label="Guardrails prevented usage of (any) ML response, no dialog shown"/>
+  <int value="4"
+      label="The reporter was destroyed, likely on page navigation or close."/>
 </enum>
 
 <enum name="WebAppMoverResult">

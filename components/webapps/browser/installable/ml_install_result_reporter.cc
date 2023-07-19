@@ -5,16 +5,30 @@
 #include "components/webapps/browser/installable/ml_install_result_reporter.h"
 
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/rand_util.h"
 #include "components/segmentation_platform/public/segmentation_platform_service.h"
 #include "components/segmentation_platform/public/trigger.h"
 #include "components/webapps/browser/banners/app_banner_manager.h"
+#include "components/webapps/browser/features.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/browser/installable/ml_install_operation_tracker.h"
+#include "components/webapps/browser/installable/ml_installability_promoter.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace webapps {
+
+const base::FeatureParam<double> kGuardrailResultReportProb(
+    &webapps::features::kWebAppsEnableMLModelForPromotion,
+    "guardrail_report_prob",
+    0);
+
+const base::FeatureParam<double> kModelDeclineUserDeclineReportProb(
+    &webapps::features::kWebAppsEnableMLModelForPromotion,
+    "model_and_user_decline_report_prob",
+    0);
 
 MlInstallResultReporter::MlInstallResultReporter(
     base::WeakPtr<AppBannerManager> app_banner_manager,
@@ -36,7 +50,8 @@ MlInstallResultReporter::~MlInstallResultReporter() {
     ReportResultInternal(install_source_attached_,
                          MlInstallResponse::kBlockedGuardrails);
   } else {
-    ReportResultInternal(install_source_attached_, MlInstallResponse::kIgnored);
+    ReportResultInternal(install_source_attached_,
+                         MlInstallResponse::kReporterDestroyed);
   }
 }
 
@@ -89,19 +104,43 @@ void MlInstallResultReporter::ReportResultInternal(
   }
   base::UmaHistogramEnumeration("WebApp.MlInstall.DialogResponse", response);
 
-  switch (response) {
-    case MlInstallResponse::kAccepted:
-      app_banner_manager_->SaveInstallationAcceptedForMl(manifest_id_);
-      break;
-    case MlInstallResponse::kIgnored:
-      app_banner_manager_->SaveInstallationIgnoredForMl(manifest_id_);
-      break;
-    case MlInstallResponse::kCancelled:
-      app_banner_manager_->SaveInstallationDismissedForMl(manifest_id_);
-      break;
-    case MlInstallResponse::kBlockedGuardrails:
-      break;
+  bool ml_promoted =
+      ml_output_label_ == MLInstallabilityPromoter::kShowInstallPromptLabel;
+  if (ml_promoted) {
+    switch (response) {
+      case MlInstallResponse::kAccepted:
+        app_banner_manager_->SaveInstallationAcceptedForMl(manifest_id_);
+        break;
+      case MlInstallResponse::kReporterDestroyed:
+      case MlInstallResponse::kIgnored:
+        app_banner_manager_->SaveInstallationIgnoredForMl(manifest_id_);
+        break;
+      case MlInstallResponse::kCancelled:
+        app_banner_manager_->SaveInstallationDismissedForMl(manifest_id_);
+        break;
+      case MlInstallResponse::kBlockedGuardrails:
+        break;
+    }
   }
+
+  // If promition occurred but we were destroyed, then consider that an
+  // 'ignore'.
+  if (ml_promoted && response == MlInstallResponse::kReporterDestroyed) {
+    response = MlInstallResponse::kIgnored;
+  }
+
+  // Exit early to avoid over-sampling in a few cases.
+  if (!ml_promoted && response == MlInstallResponse::kReporterDestroyed &&
+      base::RandDouble() > kModelDeclineUserDeclineReportProb.Get()) {
+    // If the UX is never shown, then this reporter will simply be destroyed. Do
+    // not bother reporting this result.
+    return;
+  }
+  if (response == MlInstallResponse::kBlockedGuardrails &&
+      base::RandDouble() > kGuardrailResultReportProb.Get()) {
+    return;
+  }
+
   segmentation_platform::SegmentationPlatformService* segmentation =
       app_banner_manager_->GetSegmentationPlatformService();
   segmentation_platform::TrainingLabels training_labels;

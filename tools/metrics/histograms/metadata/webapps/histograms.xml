@@ -930,7 +930,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.MlInstall.DialogResponse"
-    enum="WebAppMlInstallUserResponse" expires_after="2024-09-10">
+    enum="WebAppMlInstallResponse" expires_after="2024-09-10">
   <owner>dmurph@chromium.org</owner>
   <owner>desktop-pwa-team@google.com</owner>
   <summary>
