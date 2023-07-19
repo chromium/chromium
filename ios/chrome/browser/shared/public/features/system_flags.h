@@ -91,6 +91,10 @@ NSString* GetForcedPromoToDisplay();
 // switches, but the former takes precedence.
 std::string GetSegmentForForcedDeviceSwitcherExperience();
 
+// Returns true if the the post iOS restore from backup state should be forced.
+// When true, SignInUtil::IsFirstSessionAfterDeviceRestore() will return true.
+bool IsPostDeviceRestoreForced();
+
 }  // namespace experimental_flags
 
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_SYSTEM_FLAGS_H_

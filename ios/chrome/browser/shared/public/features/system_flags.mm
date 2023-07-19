@@ -40,6 +40,7 @@ NSString* const kForceExperienceForDeviceSwitcherExperimentalSettings =
 BASE_FEATURE(kEnableThirdPartyKeyboardWorkaround,
              "EnableThirdPartyKeyboardWorkaround",
              base::FEATURE_ENABLED_BY_DEFAULT);
+NSString* const kForcePostRestoreState = @"ForcePostRestoreState";
 
 }  // namespace
 
@@ -158,6 +159,11 @@ std::string GetSegmentForForcedDeviceSwitcherExperience() {
     }
   }
   return segment;
+}
+
+bool IsPostDeviceRestoreForced() {
+  return
+      [[NSUserDefaults standardUserDefaults] boolForKey:kForcePostRestoreState];
 }
 
 }  // namespace experimental_flags
