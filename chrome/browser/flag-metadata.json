@@ -2436,7 +2436,7 @@
   {
     "name": "enable-disco-feed-endpoint",
     "owners": [ "tinazwang", "sczs" ],
-    "expiry_milestone": 116
+    "expiry_milestone": 120
   },
   {
     "name": "enable-discount-consent-v2",
