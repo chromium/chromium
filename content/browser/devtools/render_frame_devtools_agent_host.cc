@@ -48,6 +48,7 @@
 #include "content/browser/devtools/protocol/system_info_handler.h"
 #include "content/browser/devtools/protocol/target_handler.h"
 #include "content/browser/devtools/protocol/tracing_handler.h"
+#include "content/browser/devtools/web_contents_devtools_agent_host.h"
 #include "content/browser/fenced_frame/fenced_frame.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -196,6 +197,13 @@ bool RenderFrameDevToolsAgentHost::WasEverAttachedToAnyFrame() {
 
 // static
 bool DevToolsAgentHost::IsDebuggerAttached(WebContents* web_contents) {
+  return RenderFrameDevToolsAgentHost::IsDebuggerAttached(web_contents) ||
+         WebContentsDevToolsAgentHost::IsDebuggerAttached(web_contents);
+}
+
+// static
+bool RenderFrameDevToolsAgentHost::IsDebuggerAttached(
+    WebContents* web_contents) {
   FrameTreeNode* node =
       static_cast<WebContentsImpl*>(web_contents)->GetPrimaryFrameTree().root();
   RenderFrameDevToolsAgentHost* host = node ? FindAgentHost(node) : nullptr;

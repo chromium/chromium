@@ -212,6 +212,23 @@ IN_PROC_BROWSER_TEST_F(RenderFrameDevToolsAgentHostBrowserTest,
   devtools_agent_host->DetachClient(&devtools_agent_host_client);
 }
 
+IN_PROC_BROWSER_TEST_F(RenderFrameDevToolsAgentHostBrowserTest,
+                       CheckDebuggerAttachedToTabTarget) {
+  EXPECT_TRUE(embedded_test_server()->Start());
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+
+  WebContents* web_contents = shell()->web_contents();
+
+  scoped_refptr<DevToolsAgentHost> devtools_agent_host =
+      DevToolsAgentHost::GetOrCreateForTab(web_contents);
+  StubDevToolsAgentHostClient devtools_agent_host_client;
+  devtools_agent_host->AttachClient(&devtools_agent_host_client);
+
+  EXPECT_TRUE(DevToolsAgentHost::IsDebuggerAttached(web_contents));
+  devtools_agent_host->DetachClient(&devtools_agent_host_client);
+}
+
 class RenderFrameDevToolsAgentHostFencedFrameBrowserTest
     : public RenderFrameDevToolsAgentHostBrowserTest {
  public:

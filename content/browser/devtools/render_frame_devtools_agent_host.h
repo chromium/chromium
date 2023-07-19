@@ -44,6 +44,8 @@ class CONTENT_EXPORT RenderFrameDevToolsAgentHost
   // associated with the bug entry.
   static bool WasEverAttachedToAnyFrame();
 
+  static bool IsDebuggerAttached(WebContents* web_contents);
+
   static void AddAllAgentHosts(DevToolsAgentHost::List* result);
 
   // Returns appropriate agent host for given frame tree node, traversing

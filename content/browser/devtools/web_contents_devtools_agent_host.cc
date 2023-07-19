@@ -142,6 +142,13 @@ WebContentsDevToolsAgentHost* WebContentsDevToolsAgentHost::GetOrCreateFor(
 }
 
 // static
+bool WebContentsDevToolsAgentHost::IsDebuggerAttached(
+    WebContents* web_contents) {
+  WebContentsDevToolsAgentHost* host = FindAgentHost(web_contents);
+  return host && host->IsAttached();
+}
+
+// static
 void WebContentsDevToolsAgentHost::AddAllAgentHosts(
     DevToolsAgentHost::List* result) {
   for (WebContentsImpl* wc : WebContentsImpl::GetAllWebContents()) {
