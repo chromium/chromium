@@ -9,7 +9,6 @@
 #include "base/base64url.h"
 #include "base/containers/contains.h"
 #include "base/debug/crash_logging.h"
-#include "base/feature_list.h"
 #include "base/format_macros.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -36,7 +35,6 @@
 #include "components/search_engines/template_url_service_observer.h"
 #include "components/search_engines/template_url_starter_pack_data.h"
 #include "components/search_engines/util.h"
-#include "components/signin/public/base/signin_switches.h"
 #include "components/sync/model/sync_change.h"
 #include "components/sync/model/sync_change_processor.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
@@ -285,8 +283,6 @@ void TemplateURLService::RegisterProfilePrefs(
   registry->RegisterStringPref(prefs::kSyncedDefaultSearchProviderGUID,
                                std::string(),
                                flags);
-  registry->RegisterStringPref(prefs::kDefaultSearchProviderGUID,
-                               std::string());
   registry->RegisterBooleanPref(prefs::kDefaultSearchProviderEnabled, true);
   registry->RegisterBooleanPref(
       prefs::kDefaultSearchProviderContextMenuAccessAllowed, true);
@@ -505,9 +501,10 @@ void TemplateURLService::Remove(const TemplateURL* template_url) {
     // The default search engine can't be deleted. But the user defined DSE can
     // be hidden by an extension or policy and then deleted. Clean up the user
     // prefs then.
-    if (prefs_ && (template_url->sync_guid() ==
-                   GetDefaultSearchProviderPrefValue(*prefs_))) {
-      SetDefaultSearchProviderPrefValue(*prefs_, std::string());
+    if (prefs_ &&
+        (template_url->sync_guid() ==
+         prefs_->GetString(prefs::kSyncedDefaultSearchProviderGUID))) {
+      prefs_->SetString(prefs::kSyncedDefaultSearchProviderGUID, std::string());
     }
 
     UMA_HISTOGRAM_ENUMERATION(kDeleteSyncedEngineHistogramName,
@@ -920,9 +917,10 @@ void TemplateURLService::RepairPrepopulatedSearchEngines() {
       // a repair.
       DCHECK(fallback_engine);
       // Write the fallback engine's GUID to prefs, which will cause
-      // OnDefaultSearchProviderGUIDChanged() to set it as the new
+      // OnSyncedDefaultSearchProviderGUIDChanged() to set it as the new
       // user-selected engine.
-      SetDefaultSearchProviderPrefValue(*prefs_, fallback_engine->sync_guid());
+      prefs_->SetString(prefs::kSyncedDefaultSearchProviderGUID,
+                        fallback_engine->sync_guid());
     }
   } else {
     // If the default search provider came from a user pref we would have been
@@ -1604,19 +1602,11 @@ void TemplateURLService::Init(const Initializer* initializers,
 
   if (prefs_) {
     pref_change_registrar_.Init(prefs_);
-    if (base::FeatureList::IsEnabled(switches::kWaffle)) {
-      pref_change_registrar_.Add(
-          prefs::kDefaultSearchProviderGUID,
-          base::BindRepeating(
-              &TemplateURLService::OnDefaultSearchProviderGUIDChanged,
-              base::Unretained(this)));
-    } else {
-      pref_change_registrar_.Add(
-          prefs::kSyncedDefaultSearchProviderGUID,
-          base::BindRepeating(
-              &TemplateURLService::OnDefaultSearchProviderGUIDChanged,
-              base::Unretained(this)));
-    }
+    pref_change_registrar_.Add(
+        prefs::kSyncedDefaultSearchProviderGUID,
+        base::BindRepeating(
+            &TemplateURLService::OnSyncedDefaultSearchProviderGUIDChanged,
+            base::Unretained(this)));
   }
 
   DefaultSearchManager::Source source = DefaultSearchManager::FROM_USER;
@@ -1811,8 +1801,9 @@ void TemplateURLService::UpdateTemplateURLIfPrepopulated(
 }
 
 void TemplateURLService::MaybeUpdateDSEViaPrefs(TemplateURL* synced_turl) {
-  if (prefs_ && (synced_turl->sync_guid() ==
-                 GetDefaultSearchProviderPrefValue(*prefs_))) {
+  if (prefs_ &&
+      (synced_turl->sync_guid() ==
+          prefs_->GetString(prefs::kSyncedDefaultSearchProviderGUID))) {
     default_search_manager_.SetUserSelectedDefaultSearchEngine(
         synced_turl->data());
   }
@@ -1999,8 +1990,8 @@ bool TemplateURLService::ApplyDefaultSearchChangeNoMetrics(
           << "Add() to repair the DSE must never fail.";
     }
     if (default_search_provider_ && prefs_) {
-      SetDefaultSearchProviderPrefValue(*prefs_,
-                                        default_search_provider_->sync_guid());
+      prefs_->SetString(prefs::kSyncedDefaultSearchProviderGUID,
+                        default_search_provider_->sync_guid());
     }
   }
 
@@ -2232,8 +2223,9 @@ void TemplateURLService::MergeInSyncTemplateURL(
             conflicting_built_in_turl)) {
       std::string guid = conflicting_built_in_turl->sync_guid();
       if (conflicting_built_in_turl == default_search_provider_) {
-        bool pref_matched = GetDefaultSearchProviderPrefValue(*prefs_) ==
-                            default_search_provider_->sync_guid();
+        bool pref_matched =
+            prefs_->GetString(prefs::kSyncedDefaultSearchProviderGUID) ==
+            default_search_provider_->sync_guid();
         // Update the existing engine in-place.
         Update(default_search_provider_, TemplateURL(sync_turl->data()));
         // If prefs::kSyncedDefaultSearchProviderGUID matched
@@ -2242,8 +2234,8 @@ void TemplateURLService::MergeInSyncTemplateURL(
         // a new search engine from Sync which just hasn't been added locally
         // yet, so leave it alone in that case.
         if (pref_matched) {
-          SetDefaultSearchProviderPrefValue(
-              *prefs_, default_search_provider_->sync_guid());
+          prefs_->SetString(prefs::kSyncedDefaultSearchProviderGUID,
+                            default_search_provider_->sync_guid());
         }
 
         should_add_sync_turl = false;
@@ -2283,11 +2275,12 @@ void TemplateURLService::PatchMissingSyncGUIDs(
   }
 }
 
-void TemplateURLService::OnDefaultSearchProviderGUIDChanged() {
+void TemplateURLService::OnSyncedDefaultSearchProviderGUIDChanged() {
   base::AutoReset<DefaultSearchChangeOrigin> change_origin(
       &dsp_change_origin_, DSP_CHANGE_SYNC_PREF);
 
-  std::string new_guid = GetDefaultSearchProviderPrefValue(*prefs_);
+  std::string new_guid =
+      prefs_->GetString(prefs::kSyncedDefaultSearchProviderGUID);
   if (new_guid.empty()) {
     default_search_manager_.ClearUserSelectedDefaultSearchEngine();
     return;

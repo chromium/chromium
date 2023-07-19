@@ -689,9 +689,7 @@ class TemplateURLService : public WebDataServiceConsumer,
   // where old entries were being pushed to Sync without a sync_guid.
   void PatchMissingSyncGUIDs(OwnedTemplateURLVector* template_urls);
 
-  // Called when `kSyncedDefaultSearchProviderGUID` or
-  // `kDefaultSearchProviderGUID` is modified.
-  void OnDefaultSearchProviderGUIDChanged();
+  void OnSyncedDefaultSearchProviderGUIDChanged();
 
   // Goes through a vector of TemplateURLs and sets is_active to true if it was
   // not previously set (currently kUnspecified) and has been interacted with
