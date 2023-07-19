@@ -15,6 +15,7 @@
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/process_manager_observer.h"
 #include "extensions/common/api/webcam_private.h"
+#include "url/origin.h"
 
 namespace extensions {
 
@@ -59,7 +60,8 @@ class WebcamPrivateAPI : public BrowserContextKeyedAPI {
       std::string hmac_device_id,
       base::OnceCallback<void(const absl::optional<std::string>&)> callback);
 
-  void GetDeviceIdOnUIThread(const std::string& extension_id,
+  void GetDeviceIdOnUIThread(const url::Origin& security_origin,
+                             const std::string& extension_id,
                              const std::string& webcam_id,
                              base::OnceCallback<void(Webcam*)> webcam_callback,
                              const std::string& salt);
@@ -83,7 +85,7 @@ class WebcamPrivateAPI : public BrowserContextKeyedAPI {
                    const std::string& device_id,
                    base::OnceCallback<void(const std::string&)> callback);
   void FinalizeGetWebcamId(
-      const std::string& extension_id,
+      const url::Origin& security_origin,
       const std::string& device_id,
       base::OnceCallback<void(const std::string&)> webcam_id_callback,
       const std::string& device_id_salt);

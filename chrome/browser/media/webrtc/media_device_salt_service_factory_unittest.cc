@@ -9,6 +9,7 @@
 #include "components/media_device_salt/media_device_salt_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 TEST(MediaDeviceSaltServiceFactoryTest, Test) {
   content::BrowserTaskEnvironment task_environment;
@@ -22,6 +23,8 @@ TEST(MediaDeviceSaltServiceFactoryTest, Test) {
   ASSERT_TRUE(service);
 
   base::test::TestFuture<const std::string&> future;
-  service->GetSalt(future.GetCallback());
+  service->GetSalt(
+      blink::StorageKey::CreateFromStringForTesting("https://example.com"),
+      future.GetCallback());
   EXPECT_FALSE(future.Get().empty());
 }

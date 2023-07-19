@@ -62,7 +62,7 @@ void MediaDeviceSaltService::GetSalt(
     base::OnceCallback<void(const std::string&)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!base::FeatureList::IsEnabled(kMediaDeviceIdPartitioning)) {
-    GetSalt(std::move(callback));
+    std::move(callback).Run(GetGlobalSalt());
     return;
   }
 
@@ -87,11 +87,6 @@ void MediaDeviceSaltService::FinalizeGetSalt(
     absl::optional<std::string> salt) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::move(callback).Run(salt.has_value() ? *salt : fallback_salt_);
-}
-
-void MediaDeviceSaltService::GetSalt(
-    base::OnceCallback<void(const std::string&)> callback) {
-  std::move(callback).Run(GetGlobalSalt());
 }
 
 void MediaDeviceSaltService::DeleteSalts(

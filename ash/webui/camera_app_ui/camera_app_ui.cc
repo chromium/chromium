@@ -32,6 +32,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "services/video_capture/public/mojom/video_capture_service.mojom.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "ui/aura/window.h"
 #include "ui/webui/color_change_listener/color_change_handler.h"
 #include "ui/webui/webui_allowlist.h"
@@ -145,6 +146,7 @@ void TranslateVideoDeviceId(
     base::OnceCallback<void(const absl::optional<std::string>&)> callback) {
   if (salt_service) {
     salt_service->GetSalt(
+        blink::StorageKey::CreateFirstParty(origin),
         base::BindOnce(&GotSalt, origin, source_id, std::move(callback)));
   } else {
     // If the embedder does not provide a salt service, use the browser

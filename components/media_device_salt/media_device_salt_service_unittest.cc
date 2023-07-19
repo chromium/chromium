@@ -86,11 +86,6 @@ class MediaDeviceSaltServiceTest : public testing::TestWithParam<bool> {
   MediaDeviceSaltService* service() const { return service_.get(); }
 
   bool UsePerStorageKeySalts() const { return GetParam(); }
-  std::string GetSalt() const {
-    base::test::TestFuture<const std::string&> future;
-    service_->GetSalt(future.GetCallback());
-    return future.Get();
-  }
 
   std::string GetSalt(const blink::StorageKey& storage_key) const {
     base::test::TestFuture<const std::string&> future;
@@ -134,25 +129,6 @@ class MediaDeviceSaltServiceTest : public testing::TestWithParam<bool> {
   sync_preferences::TestingPrefServiceSyncable pref_service_;
   std::unique_ptr<MediaDeviceSaltService> service_;
 };
-
-TEST_P(MediaDeviceSaltServiceTest, GetAndResetGlobalSalt) {
-  feature_list().Reset();
-  feature_list().InitAndDisableFeature(kMediaDeviceIdPartitioning);
-
-  std::string salt1 = GetSalt();
-  EXPECT_FALSE(salt1.empty());
-  EXPECT_EQ(salt1, pref_service().GetString(
-                       media_device_salt::prefs::kMediaDeviceIdSalt));
-
-  service()->DeleteSalts(base::Time::Min(), base::Time::Max(),
-                         StorageKeyMatcher(), base::DoNothing());
-
-  std::string salt2 = GetSalt();
-  EXPECT_NE(salt1, salt2);
-  EXPECT_FALSE(salt2.empty());
-  EXPECT_EQ(salt2, pref_service().GetString(
-                       media_device_salt::prefs::kMediaDeviceIdSalt));
-}
 
 TEST_P(MediaDeviceSaltServiceTest, ResetGlobalSaltFiresDeviceChange) {
   feature_list().Reset();

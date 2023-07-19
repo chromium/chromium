@@ -114,30 +114,32 @@ void WebcamPrivateAPI::GetWebcam(const std::string& extension_id,
     return;
   }
 
+  url::Origin security_origin =
+      extensions::Extension::CreateOriginFromExtensionId(extension_id);
   if (media_device_salt::MediaDeviceSaltService* salt_service =
           ExtensionsBrowserClient::Get()->GetMediaDeviceSaltService(
               browser_context_)) {
     salt_service->GetSalt(
+        blink::StorageKey::CreateFirstParty(security_origin),
         base::BindOnce(&WebcamPrivateAPI::GetDeviceIdOnUIThread,
-                       weak_ptr_factory_.GetWeakPtr(), extension_id, webcam_id,
-                       std::move(callback)));
+                       weak_ptr_factory_.GetWeakPtr(), security_origin,
+                       extension_id, webcam_id, std::move(callback)));
   } else {
     // If the embedder does not provide a salt service, use the browser
     // context's unique ID as salt.
-    GetDeviceIdOnUIThread(extension_id, webcam_id, std::move(callback),
-                          browser_context_->UniqueId());
+    GetDeviceIdOnUIThread(security_origin, extension_id, webcam_id,
+                          std::move(callback), browser_context_->UniqueId());
   }
 }
 
 void WebcamPrivateAPI::GetDeviceIdOnUIThread(
+    const url::Origin& security_origin,
     const std::string& extension_id,
     const std::string& webcam_id,
     base::OnceCallback<void(Webcam*)> webcam_callback,
     const std::string& salt) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  url::Origin security_origin =
-      extensions::Extension::CreateOriginFromExtensionId(extension_id);
   auto got_device_cb =
       base::BindOnce(&WebcamPrivateAPI::OnGotDeviceIdOnUIThread,
                      weak_ptr_factory_.GetWeakPtr(), extension_id, webcam_id,
@@ -215,27 +217,30 @@ void WebcamPrivateAPI::GetWebcamId(
     const std::string& extension_id,
     const std::string& device_id,
     base::OnceCallback<void(const std::string&)> webcam_id_callback) {
+  url::Origin security_origin =
+      extensions::Extension::CreateOriginFromExtensionId(extension_id);
   if (media_device_salt::MediaDeviceSaltService* salt_service =
           ExtensionsBrowserClient::Get()->GetMediaDeviceSaltService(
               browser_context_)) {
-    salt_service->GetSalt(base::BindOnce(
-        &WebcamPrivateAPI::FinalizeGetWebcamId, weak_ptr_factory_.GetWeakPtr(),
-        extension_id, device_id, std::move(webcam_id_callback)));
+    salt_service->GetSalt(
+        blink::StorageKey::CreateFirstParty(security_origin),
+        base::BindOnce(&WebcamPrivateAPI::FinalizeGetWebcamId,
+                       weak_ptr_factory_.GetWeakPtr(), security_origin,
+                       device_id, std::move(webcam_id_callback)));
   } else {
     // If the embedder does not provide a salt service, use the browser
     // context's unique ID as salt.
-    FinalizeGetWebcamId(extension_id, device_id, std::move(webcam_id_callback),
+    FinalizeGetWebcamId(security_origin, device_id,
+                        std::move(webcam_id_callback),
                         browser_context_->UniqueId());
   }
 }
 
 void WebcamPrivateAPI::FinalizeGetWebcamId(
-    const std::string& extension_id,
+    const url::Origin& security_origin,
     const std::string& device_id,
     base::OnceCallback<void(const std::string&)> webcam_id_callback,
     const std::string& device_id_salt) {
-  url::Origin security_origin =
-      extensions::Extension::CreateOriginFromExtensionId(extension_id);
   std::string webcam_id = content::GetHMACForMediaDeviceID(
       device_id_salt, security_origin, device_id);
   std::move(webcam_id_callback).Run(webcam_id);

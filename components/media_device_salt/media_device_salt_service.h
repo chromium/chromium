@@ -42,11 +42,6 @@ class MediaDeviceSaltService : public KeyedService {
   void GetSalt(const blink::StorageKey& storage_key,
                base::OnceCallback<void(const std::string&)> callback);
 
-  // Returns the global salt via `callback`.
-  // TODO(crbug.com/1410462): Remove before enabling the
-  // MediaDeviceIdPartitioning feature.
-  void GetSalt(base::OnceCallback<void(const std::string&)> callback);
-
   // Deletes salts in the given time range whose storage keys match the given
   // `matcher`. If `matcher` is null, all entries in the given time range are
   // deleted. `done_closure` is invoked after the operation is complete.
