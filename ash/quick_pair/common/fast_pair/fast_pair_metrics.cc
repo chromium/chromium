@@ -603,7 +603,7 @@ absl::optional<std::string> GetFastPairDeviceType(
     return kDeviceTypeUnspecified;
   }
 
-  NOTREACHED_NORETURN();
+  return absl::nullopt;
 }
 
 absl::optional<std::string> GetFastPairNotificationType(
