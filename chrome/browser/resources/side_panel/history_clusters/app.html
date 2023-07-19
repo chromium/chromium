@@ -1,6 +1,5 @@
 <style include="sp-shared-style">
   :host {
-    --cr-toolbar-field-max-width: calc(100% - 32px);
     display: flex;
     flex-direction: column;
     height: 100%;
@@ -8,11 +7,16 @@
 
   #searchbox {
     margin: 16px auto 4px;
-    flex-shrink: 0
+    flex-shrink: 0;
+    width: auto;
+  }
+
+  :host-context(html:not([chrome-refresh-2023])) searchbox {
+    --cr-toolbar-field-max-width: calc(100% - 32px);
   }
 
   :host-context([chrome-refresh-2023]) #searchbox {
-    margin: var(--sp-body-padding) auto;
+    margin: var(--sp-body-padding);
   }
 
  #history-clusters {
