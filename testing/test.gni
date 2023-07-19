@@ -571,6 +571,12 @@ template("test") {
       ]
     }
 
+    if (is_asan) {
+      # TODO(crbug.com/1465997): Remove the extra cml segment for asan.
+      _manifest_fragments +=
+          [ "//build/config/fuchsia/test/asan_options.shard.test-cml" ]
+    }
+
     _test_component_manifest = "${target_out_dir}/${target_name}.cml"
     _merged_manifest_name = "${_output_name}.cml"
 
