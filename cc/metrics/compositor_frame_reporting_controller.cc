@@ -621,14 +621,6 @@ void CompositorFrameReportingController::DidPresentCompositorFrame(
     }
 
     if (termination_status == FrameTerminationStatus::kPresentedFrame) {
-      auto next = submitted_frame + 1;
-      bool next_reporter_from_same_frame =
-          next != submitted_compositor_frames_.end() &&
-          submitted_frame->frame_token == next->frame_token;
-      MaybePassEventMetricsFromDroppedFrames(*reporter,
-                                             submitted_frame->frame_token,
-                                             next_reporter_from_same_frame);
-
       // TODO(crbug.com/1334827): Consider using a separate container to
       // differentiate event predictions with and without a main dispatch stage.
       reporter->CalculateEventLatencyPrediction(
@@ -651,6 +643,18 @@ void CompositorFrameReportingController::DidPresentCompositorFrame(
               reporter->partial_update_decider()) {
         orig_reporter->AdoptReporter(std::move(reporter));
       }
+
+      // Pass dropped events only after the potential adoption has already taken
+      // place, as we don't want to pass the events from previously dropped
+      // frames to the adopter.
+      auto next = submitted_frame + 1;
+      bool next_reporter_from_same_frame =
+          next != submitted_compositor_frames_.end() &&
+          submitted_frame->frame_token == next->frame_token;
+      MaybePassEventMetricsFromDroppedFrames(*reporter_ptr,
+                                             submitted_frame->frame_token,
+                                             next_reporter_from_same_frame);
+
       reporter_ptr->DidSuccessfullyPresentFrame();
     } else {
       StoreEventMetricsFromDroppedFrames(*reporter,

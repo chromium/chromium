@@ -2488,5 +2488,144 @@ TEST_F(CompositorFrameReportingControllerTest,
                                     1);
 }
 
+// This test verifies the events from dropped frames doesn't get passed to
+// adopter if the impl only update was successful. As a result we expect only
+// two frames to report scroll jank metrics i.e. the frames corresponding to
+// R3impl and R4impl+R2main.
+//
+// |     R1main      |
+// | R1impl | R2impl | R3impl | R4impl |
+//          |          R2main          |
+//
+// The order of events (using the glossary above) is:
+// BF1->BMF1->SF1->PF1->AMF1->BF2->BMF2->SF(2+1)->PF(2+1)(dropped)->
+// BF3->SF3->PF3->AMF2->BF4->SF(4+2)->PF(4+2)
+TEST_F(CompositorFrameReportingControllerTest,
+       ScrollJankMetricsPresentationOrderReceivedDroppedEventsAreNotPassed) {
+  base::HistogramTester histogram_tester;
+
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+  base::test::TestTraceProcessor ttp;
+  ttp.StartTrace("input");
+#endif
+
+  std::unique_ptr<EventMetrics> metrics_1 = CreateScrollUpdateEventMetrics(
+      ui::ScrollInputType::kWheel, /*is_inertial=*/false,
+      ScrollUpdateEventMetrics::ScrollUpdateType::kStarted);
+  metrics_1->set_requires_main_thread_update();
+
+  std::unique_ptr<EventMetrics> metrics_2 = CreateScrollUpdateEventMetrics(
+      ui::ScrollInputType::kWheel, /*is_inertial=*/false,
+      ScrollUpdateEventMetrics::ScrollUpdateType::kContinued);
+  metrics_2->set_requires_main_thread_update();
+
+  std::unique_ptr<EventMetrics> metrics_3 = CreateScrollUpdateEventMetrics(
+      ui::ScrollInputType::kWheel, /*is_inertial=*/false,
+      ScrollUpdateEventMetrics::ScrollUpdateType::kContinued);
+  metrics_3->set_requires_main_thread_update();
+
+  SimulateBeginImplFrame();  // BF1
+  viz::BeginFrameId bf1_id = current_id_;
+  SimulateBeginMainFrame();  // BMF1
+  reporting_controller_.OnFinishImplFrame(current_id_);
+
+  // Submit a partial update containing R1impl.
+  EventMetrics::List metrics_list_1;
+  metrics_list_1.push_back(std::move(metrics_1));
+  ++current_token_;
+  reporting_controller_.DidSubmitCompositorFrame(
+      *current_token_, AdvanceNowByMs(10), current_id_, {},
+      {{}, std::move(metrics_list_1)},
+      /*has_missing_content=*/false);  // SF1
+
+  // Present frame containing update from R1impl.
+  viz::FrameTimingDetails details_1 = {};
+  details_1.presentation_feedback.timestamp = AdvanceNowByMs(10);
+  reporting_controller_.DidPresentCompositorFrame(*current_token_,
+                                                  details_1);  // PF1
+
+  // Commit and activate main update from R1main.
+  SimulateCommit(nullptr);
+  SimulateActivate();  // AMF1
+
+  SimulateBeginImplFrame();  // BF2
+  viz::BeginFrameId bf2_id = current_id_;
+  reporting_controller_.OnFinishImplFrame(current_id_);
+  SimulateBeginMainFrame();  // BMF2
+
+  // Submit frame containing update from R1main and R2impl.
+  EventMetrics::List metrics_list_2;
+  metrics_list_2.push_back(std::move(metrics_2));
+  ++current_token_;
+  reporting_controller_.DidSubmitCompositorFrame(
+      *current_token_, AdvanceNowByMs(10), current_id_, bf1_id,
+      {{}, std::move(metrics_list_2)},
+      /*has_missing_content=*/false);  // SF(2+1)
+
+  // The frame containing R1main and R2impl was dropped.
+  viz::FrameTimingDetails details_2 = {};
+  details_2.presentation_feedback.timestamp = AdvanceNowByMs(10);
+  details_2.presentation_feedback.flags |= gfx::PresentationFeedback::kFailure;
+  reporting_controller_.DidPresentCompositorFrame(*current_token_,
+                                                  details_2);  // PF(2+1)
+
+  SimulateBeginImplFrame();  // BF3
+  reporting_controller_.OnFinishImplFrame(current_id_);
+
+  // Submit partial update containing R3impl.
+  EventMetrics::List metrics_list_3;
+  metrics_list_3.push_back(std::move(metrics_3));
+  ++current_token_;
+  reporting_controller_.DidSubmitCompositorFrame(
+      *current_token_, AdvanceNowByMs(10), current_id_, bf1_id,
+      {{}, std::move(metrics_list_3)},
+      /*has_missing_content=*/false);  // SF3
+
+  viz::FrameTimingDetails details_3 = {};
+  details_3.presentation_feedback.timestamp = AdvanceNowByMs(10);
+  reporting_controller_.DidPresentCompositorFrame(*current_token_,
+                                                  details_3);  // PF3
+
+  // Commit and activate main update from R2main.
+  SimulateCommit(nullptr);
+  SimulateActivate();  // AMF2
+
+  SimulateBeginImplFrame();  // BF4
+  reporting_controller_.OnFinishImplFrame(current_id_);
+
+  // Submit frame containing update from R2main and R4impl.
+  ++current_token_;
+  reporting_controller_.DidSubmitCompositorFrame(
+      *current_token_, AdvanceNowByMs(10), current_id_, bf2_id, {},
+      /*has_missing_content=*/false);  // SF(4+2)
+
+  // Present frame containing R2main and R4impl.
+  viz::FrameTimingDetails details_4 = {};
+  details_4.presentation_feedback.timestamp = AdvanceNowByMs(10);
+  reporting_controller_.DidPresentCompositorFrame(*current_token_,
+                                                  details_4);  // PF(4+2)
+
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+  absl::Status status = ttp.StopAndParseTrace();
+  ASSERT_TRUE(status.ok()) << status.message();
+  std::string query =
+      R"(
+      SELECT count(*) as cnt from slice
+      where name = 'OutOfOrderTerminatedFrame'
+      )";
+  auto result = ttp.RunQuery(query);
+  ASSERT_TRUE(result.has_value()) << result.error();
+  EXPECT_THAT(result.value(),
+              ::testing::ElementsAre(std::vector<std::string>{"cnt"},
+                                     std::vector<std::string>{"0"}));
+#endif
+
+  // Expect reporters R3impl, R2main to report data to scroll jank tracker.
+  // R3impl - The events it received from previously dropped frames.
+  // R2main - The events associated with the reporter itself.
+  histogram_tester.ExpectTotalCount("Event.ScrollJank.MissedVsyncs.PerFrame",
+                                    2);
+}
+
 }  // namespace
 }  // namespace cc
