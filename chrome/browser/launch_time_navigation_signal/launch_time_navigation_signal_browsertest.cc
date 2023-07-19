@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/command_line.h"
+#include "build/branding_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -308,9 +309,15 @@ IN_PROC_BROWSER_TEST_P(LaunchNavigationBrowserRestartTest,
                             embedded_test_server()));
 }
 
+// Flaky on Chrome bots. See http://crbug.com/1448030.
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#define MAYBE_CmdLineURLRestartTest DISABLED_CmdLineURLRestartTest
+#else
+#define MAYBE_CmdLineURLRestartTest CmdLineURLRestartTest
+#endif
 // We attempt to restart the browser in this test body.
 IN_PROC_BROWSER_TEST_P(LaunchNavigationBrowserRestartTest,
-                       CmdLineURLRestartTest) {
+                       MAYBE_CmdLineURLRestartTest) {
   const ParamType& test_params = GetParam();
   const size_t expected_initial_tab_count = GetExpectedTabCountFromRestore();
   const bool expect_valid_system_entropy =
