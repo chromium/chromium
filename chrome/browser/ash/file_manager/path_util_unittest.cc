@@ -327,6 +327,23 @@ TEST_F(FileManagerPathUtilTest, MigrateToDriveFs) {
       result);
 }
 
+TEST_F(FileManagerPathUtilTest, GetGuestOsMountPointName) {
+  guest_os::GuestId arcvm(guest_os::VmType::ARCVM, "arcvm", "");
+  EXPECT_EQ(GetGuestOsMountPointName(profile_.get(), arcvm), "android_files");
+
+  guest_os::GuestId penguin(guest_os::VmType::TERMINA, "termina", "penguin");
+  EXPECT_EQ(GetGuestOsMountPointName(profile_.get(), penguin),
+            "crostini_0123456789abcdef_termina_penguin");
+
+  guest_os::GuestId other(guest_os::VmType::TERMINA, "termina", "other");
+  EXPECT_EQ(GetGuestOsMountPointName(profile_.get(), other),
+            "guestos+0123456789abcdef+termina+other");
+
+  guest_os::GuestId bru(guest_os::VmType::BRUSCHETTA, "bru", "penguin");
+  EXPECT_EQ(GetGuestOsMountPointName(profile_.get(), bru),
+            "guestos+0123456789abcdef+bru+penguin");
+}
+
 TEST_F(FileManagerPathUtilTest, ConvertBetweenFileSystemURLAndPathInsideVM) {
   storage::ExternalMountPoints* mount_points =
       storage::ExternalMountPoints::GetSystemInstance();
