@@ -639,8 +639,8 @@ class PersonalDataManager : public KeyedService,
   bool ShouldShowPaymentMethodsMandatoryReauthPromo();
   void IncrementPaymentMethodsMandatoryReauthPromoShownCounter();
 
-  // Returns true if the user pref to store and autofill CVC is enabled.
-  virtual bool IsPaymentCvcStorageAndFillingEnabled();
+  // Returns true if the user pref to store CVC is enabled.
+  virtual bool IsPaymentCvcStorageEnabled();
 
   // Used to automatically import addresses without a prompt. Should only be
   // set to true in tests.

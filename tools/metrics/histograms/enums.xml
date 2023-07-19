@@ -102638,7 +102638,7 @@ would be helpful to identify which type is being sent.
   <int value="60" label="PrefNeverPromptSitesWithTime"/>
   <int value="61" label="PrefTranslateRecentTarget"/>
   <int value="62" label="PrefDogfoodGroups"/>
-  <int value="64" label="AutofillPaymentCvcStorageAndFilling"/>
+  <int value="64" label="AutofillPaymentCvcStorage"/>
   <int value="100000" label="AppLanguagePromptShown"/>
   <int value="100001" label="(Obsolete) PrefExplicitLanguageAskShown"/>
   <int value="100002" label="ContextualSearchEnabled_Android"/>

@@ -36,7 +36,7 @@ extern const char kAutofillLastVersionDeduped[];
 extern const char kAutofillLastVersionDisusedAddressesDeleted[];
 extern const char kAutofillLastVersionDisusedCreditCardsDeleted[];
 extern const char kAutofillOrphanRowsRemoved[];
-extern const char kAutofillPaymentCvcStorageAndFilling[];
+extern const char kAutofillPaymentCvcStorage[];
 // Do not get/set the value of this pref directly. Use provided getter/setter.
 extern const char kAutofillProfileEnabled[];
 extern const char kAutofillSyncTransportOptIn[];
@@ -104,9 +104,9 @@ bool ShouldShowPaymentMethodsMandatoryReauthPromo(const PrefService* prefs);
 void IncrementPaymentMethodsMandatoryReauthPromoShownCounter(
     PrefService* prefs);
 
-bool IsPaymentCvcStorageAndFillingEnabled(const PrefService* prefs);
+bool IsPaymentCvcStorageEnabled(const PrefService* prefs);
 
-void SetPaymentCvcStorageAndFilling(PrefService* prefs, bool value);
+void SetPaymentCvcStorage(PrefService* prefs, bool value);
 
 void SetUserOptedInWalletSyncTransport(PrefService* prefs,
                                        const CoreAccountId& account_id,

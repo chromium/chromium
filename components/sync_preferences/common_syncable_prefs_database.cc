@@ -106,7 +106,7 @@ enum {
   kPrefTranslateRecentTarget = 61,
   kDogfoodGroupsSyncPrefName = 62,
   kSyncableMergeableDictPrefForTesting = 63,  // For tests.
-  kAutofillPaymentCvcStorageAndFilling = 64,
+  kAutofillPaymentCvcStorage = 64,
   // See components/sync_preferences/README.md about adding new entries here.
   // vvvvv IMPORTANT! vvvvv
   // Note to the reviewer: IT IS YOUR RESPONSIBILITY to ensure that new syncable
@@ -303,9 +303,9 @@ const auto& SyncablePreferences() {
         {kSyncableMergeableDictPrefForTesting,
          {syncable_prefs_ids::kSyncableMergeableDictPrefForTesting,
           syncer::PREFERENCES, false}},
-        {autofill::prefs::kAutofillPaymentCvcStorageAndFilling,
-         {syncable_prefs_ids::kAutofillPaymentCvcStorageAndFilling,
-          syncer::PREFERENCES, false}},
+        {autofill::prefs::kAutofillPaymentCvcStorage,
+         {syncable_prefs_ids::kAutofillPaymentCvcStorage, syncer::PREFERENCES,
+          false}},
   });
   return kCommonSyncablePrefsAllowlist;
 }

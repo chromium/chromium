@@ -2013,10 +2013,10 @@ void PersonalDataManager::
   prefs::IncrementPaymentMethodsMandatoryReauthPromoShownCounter(pref_service_);
 }
 
-bool PersonalDataManager::IsPaymentCvcStorageAndFillingEnabled() {
+bool PersonalDataManager::IsPaymentCvcStorageEnabled() {
   return base::FeatureList::IsEnabled(
              features::kAutofillEnableCvcStorageAndFilling) &&
-         prefs::IsPaymentCvcStorageAndFillingEnabled(pref_service_);
+         prefs::IsPaymentCvcStorageEnabled(pref_service_);
 }
 
 AutofillProfileMigrationStrikeDatabase*
