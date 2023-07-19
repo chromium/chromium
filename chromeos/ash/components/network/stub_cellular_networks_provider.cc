@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/components/network/stub_cellular_networks_provider.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/containers/contains.h"
 #include "base/uuid.h"
 #include "chromeos/ash/components/network/cellular_esim_profile.h"
@@ -171,8 +172,13 @@ bool StubCellularNetworksProvider::AddStubNetworks(
 
     bool is_managed = false;
     if (managed_cellular_pref_handler_) {
-      is_managed = managed_cellular_pref_handler_->GetSmdpAddressFromIccid(
-          iccid_eid_pair.first);
+      if (ash::features::IsSmdsSupportEuiccUploadEnabled()) {
+        is_managed = managed_cellular_pref_handler_->GetESimMetadata(
+                         iccid_eid_pair.first) != nullptr;
+      } else {
+        is_managed = managed_cellular_pref_handler_->GetSmdpAddressFromIccid(
+            iccid_eid_pair.first);
+      }
     }
     NET_LOG(EVENT) << "Adding stub cellular network for ICCID="
                    << iccid_eid_pair.first << " EID=" << iccid_eid_pair.second

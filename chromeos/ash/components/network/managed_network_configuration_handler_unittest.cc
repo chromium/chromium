@@ -11,6 +11,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"
@@ -629,7 +630,15 @@ TEST_F(ManagedNetworkConfigurationHandlerTest, SetPolicyProhibitedTechnology) {
       IsEmpty());
 }
 
-TEST_F(ManagedNetworkConfigurationHandlerTest, SetPolicyManagedCellular) {
+TEST_F(ManagedNetworkConfigurationHandlerTest,
+       SetPolicyManagedCellular_SmdsSupportDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{ash::features::kSmdsDbusMigration,
+                             ash::features::kSmdsSupport,
+                             ash::features::kSmdsSupportEuiccUpload});
+
   InitializeStandardProfiles();
   InitializeEuicc();
 
@@ -651,6 +660,55 @@ TEST_F(ManagedNetworkConfigurationHandlerTest, SetPolicyManagedCellular) {
   const std::string* iccid = properties->FindString(shill::kIccidProperty);
   ASSERT_TRUE(iccid);
   EXPECT_TRUE(managed_cellular_pref_handler_->GetSmdpAddressFromIccid(*iccid));
+
+  // Verify that applying a new cellular policy with same ICCID should update
+  // the old shill configuration.
+  EXPECT_TRUE(SetPolicy(::onc::ONC_SOURCE_DEVICE_POLICY, std::string(),
+                        "policy/policy_cellular_with_iccid.onc"));
+  base::RunLoop().RunUntilIdle();
+
+  ASSERT_EQ(std::string(), GetShillServiceClient()->FindServiceMatchingGUID(
+                               kTestGuidManagedCellular));
+  service_path = GetShillServiceClient()->FindServiceMatchingGUID(
+      kTestGuidManagedCellular2);
+  const base::Value::Dict* properties2 =
+      GetShillServiceClient()->GetServiceProperties(service_path);
+  ASSERT_TRUE(properties2);
+  absl::optional<bool> auto_connect =
+      properties2->FindBool(shill::kAutoConnectProperty);
+  ASSERT_TRUE(*auto_connect);
+}
+
+TEST_F(ManagedNetworkConfigurationHandlerTest,
+       SetPolicyManagedCellular_SmdsSupportEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{ash::features::kSmdsDbusMigration,
+                            ash::features::kSmdsSupport,
+                            ash::features::kSmdsSupportEuiccUpload},
+      /*disabled_features=*/{});
+
+  InitializeStandardProfiles();
+  InitializeEuicc();
+
+  base::Value::Dict expected_shill_properties = test_utils::ReadTestDictionary(
+      "policy/shill_policy_on_unconfigured_cellular.json");
+
+  EXPECT_TRUE(SetPolicy(::onc::ONC_SOURCE_DEVICE_POLICY, std::string(),
+                        "policy/policy_cellular.onc"));
+  FastForwardProfileRefreshDelay();
+  FastForwardAutoConnectWaiting();
+  base::RunLoop().RunUntilIdle();
+
+  std::string service_path = GetShillServiceClient()->FindServiceMatchingGUID(
+      kTestGuidManagedCellular);
+  const base::Value::Dict* properties =
+      GetShillServiceClient()->GetServiceProperties(service_path);
+  ASSERT_TRUE(properties);
+  EXPECT_THAT(*properties, DictionaryHasValues(expected_shill_properties));
+  const std::string* iccid = properties->FindString(shill::kIccidProperty);
+  ASSERT_TRUE(iccid);
+  EXPECT_TRUE(managed_cellular_pref_handler_->GetESimMetadata(*iccid));
 
   // Verify that applying a new cellular policy with same ICCID should update
   // the old shill configuration.

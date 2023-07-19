@@ -56,6 +56,8 @@ void ManagedCellularPrefHandler::AddIccidSmdpPair(
     const std::string& iccid,
     const std::string& smdp_address,
     bool sync_stub_networks) {
+  DCHECK(!ash::features::IsSmdsSupportEuiccUploadEnabled());
+
   if (!device_prefs_) {
     NET_LOG(ERROR) << "Device pref not available yet.";
     return;
@@ -77,6 +79,8 @@ void ManagedCellularPrefHandler::AddIccidSmdpPair(
 }
 
 void ManagedCellularPrefHandler::RemovePairWithIccid(const std::string& iccid) {
+  DCHECK(!ash::features::IsSmdsSupportEuiccUploadEnabled());
+
   if (!device_prefs_) {
     NET_LOG(ERROR) << "Device pref not available yet.";
     return;
@@ -96,6 +100,8 @@ void ManagedCellularPrefHandler::RemovePairWithIccid(const std::string& iccid) {
 
 const std::string* ManagedCellularPrefHandler::GetSmdpAddressFromIccid(
     const std::string& iccid) const {
+  DCHECK(!ash::features::IsSmdsSupportEuiccUploadEnabled());
+
   if (!device_prefs_) {
     NET_LOG(ERROR) << "Device pref not available yet.";
     return nullptr;
