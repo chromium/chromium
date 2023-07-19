@@ -1724,16 +1724,6 @@ void GpuImageDecodeCache::DoPurgeOldCacheEntries(base::TimeDelta max_age) {
 
     it = RemoveFromPersistentCache(it);
   }
-
-  // The calls below will empty the cache on the GPU side. These calls will
-  // also happen on the next frame, but we want to call them ourselves here to
-  // avoid having to wait for the next frame (which might be a long wait/never
-  // happen).
-  if (context_->GetLock()) {
-    viz::RasterContextProvider::ScopedRasterContextLock lock(context_);
-    RunPendingContextThreadOperations();
-    context_->ContextSupport()->FlushPendingWork();
-  }
 }
 
 void GpuImageDecodeCache::MaybePurgeOldCacheEntries() {

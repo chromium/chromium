@@ -4701,27 +4701,23 @@ TEST_P(GpuImageDecodeCachePurgeOnTimerTest, SimplePurgeOneImage) {
 
   ASSERT_EQ(cache_->GetNumCacheEntriesForTesting(), 0u);
   ASSERT_FALSE(cache_->HasPendingPurgeTaskForTesting());
-  ASSERT_EQ(cache_->ids_pending_deletion_count_for_testing(), 0u);
 
   CreateAndUnrefImage();
 
   ASSERT_EQ(cache_->GetNumCacheEntriesForTesting(), 1u);
   ASSERT_TRUE(cache_->HasPendingPurgeTaskForTesting());
-  ASSERT_EQ(cache_->ids_pending_deletion_count_for_testing(), 0u);
 
   FastForwardBy(GpuImageDecodeCache::get_purge_interval() / 2);
 
   // We haven't fast forwarded enough, so the entry is still in the cache.
   EXPECT_EQ(cache_->GetNumCacheEntriesForTesting(), 1u);
   EXPECT_TRUE(cache_->HasPendingPurgeTaskForTesting());
-  EXPECT_EQ(cache_->ids_pending_deletion_count_for_testing(), 0u);
 
   FastForwardBy(GpuImageDecodeCache::get_purge_interval());
 
   // Cache has been emptied
   EXPECT_EQ(cache_->GetNumCacheEntriesForTesting(), 0u);
   EXPECT_FALSE(cache_->HasPendingPurgeTaskForTesting());
-  EXPECT_EQ(cache_->ids_pending_deletion_count_for_testing(), 0u);
 }
 
 // Tests that we are able to purge multiple images from cache.
@@ -4731,27 +4727,23 @@ TEST_P(GpuImageDecodeCachePurgeOnTimerTest, SimplePurgeMultipleImages) {
 
   ASSERT_EQ(cache_->GetNumCacheEntriesForTesting(), 0u);
   ASSERT_FALSE(cache_->HasPendingPurgeTaskForTesting());
-  ASSERT_EQ(cache_->ids_pending_deletion_count_for_testing(), 0u);
 
   CreateAndUnrefImage(3);
 
   ASSERT_EQ(cache_->GetNumCacheEntriesForTesting(), 3u);
   ASSERT_TRUE(cache_->HasPendingPurgeTaskForTesting());
-  ASSERT_EQ(cache_->ids_pending_deletion_count_for_testing(), 0u);
 
   FastForwardBy(GpuImageDecodeCache::get_purge_interval() / 2);
 
   // We haven't fast forwarded enough, so the entry is still in the cache.
   EXPECT_EQ(cache_->GetNumCacheEntriesForTesting(), 3u);
   EXPECT_TRUE(cache_->HasPendingPurgeTaskForTesting());
-  EXPECT_EQ(cache_->ids_pending_deletion_count_for_testing(), 0u);
 
   FastForwardBy(GpuImageDecodeCache::get_purge_interval());
 
   // Cache has been emptied
   EXPECT_EQ(cache_->GetNumCacheEntriesForTesting(), 0u);
   EXPECT_FALSE(cache_->HasPendingPurgeTaskForTesting());
-  EXPECT_EQ(cache_->ids_pending_deletion_count_for_testing(), 0u);
 }
 
 TEST_P(GpuImageDecodeCachePurgeOnTimerTest, MultipleImagesWithDelay) {
@@ -4760,14 +4752,12 @@ TEST_P(GpuImageDecodeCachePurgeOnTimerTest, MultipleImagesWithDelay) {
 
   ASSERT_EQ(cache_->GetNumCacheEntriesForTesting(), 0u);
   ASSERT_FALSE(cache_->HasPendingPurgeTaskForTesting());
-  ASSERT_EQ(cache_->ids_pending_deletion_count_for_testing(), 0u);
 
   // Task posted, will run at 30s.
   CreateAndUnrefImage(3);
 
   ASSERT_EQ(cache_->GetNumCacheEntriesForTesting(), 3u);
   ASSERT_TRUE(cache_->HasPendingPurgeTaskForTesting());
-  ASSERT_EQ(cache_->ids_pending_deletion_count_for_testing(), 0u);
 
   // Time is now 15s.
   FastForwardBy(GpuImageDecodeCache::get_purge_interval() / 2);
@@ -4779,7 +4769,6 @@ TEST_P(GpuImageDecodeCachePurgeOnTimerTest, MultipleImagesWithDelay) {
   // still in the cache.
   ASSERT_EQ(cache_->GetNumCacheEntriesForTesting(), 7u);
   ASSERT_TRUE(cache_->HasPendingPurgeTaskForTesting());
-  ASSERT_EQ(cache_->ids_pending_deletion_count_for_testing(), 0u);
 
   // Time is now 30s, our task runs, and posts a new one.
   FastForwardBy(GpuImageDecodeCache::get_purge_interval() / 2);
@@ -4788,7 +4777,6 @@ TEST_P(GpuImageDecodeCachePurgeOnTimerTest, MultipleImagesWithDelay) {
   // 15s old.
   EXPECT_EQ(cache_->GetNumCacheEntriesForTesting(), 4u);
   EXPECT_TRUE(cache_->HasPendingPurgeTaskForTesting());
-  EXPECT_EQ(cache_->ids_pending_deletion_count_for_testing(), 0u);
 
   // Time is now 45s, second batch of images is now 30s old.
   FastForwardBy(GpuImageDecodeCache::get_purge_interval() / 2);
@@ -4797,7 +4785,6 @@ TEST_P(GpuImageDecodeCachePurgeOnTimerTest, MultipleImagesWithDelay) {
   // run yet.
   EXPECT_EQ(cache_->GetNumCacheEntriesForTesting(), 4u);
   EXPECT_TRUE(cache_->HasPendingPurgeTaskForTesting());
-  EXPECT_EQ(cache_->ids_pending_deletion_count_for_testing(), 0u);
 
   // Time is now 60s, images are 45s old.
   FastForwardBy(GpuImageDecodeCache::get_purge_interval() / 2);
@@ -4805,7 +4792,6 @@ TEST_P(GpuImageDecodeCachePurgeOnTimerTest, MultipleImagesWithDelay) {
   // Cache has been emptied
   EXPECT_EQ(cache_->GetNumCacheEntriesForTesting(), 0u);
   EXPECT_FALSE(cache_->HasPendingPurgeTaskForTesting());
-  EXPECT_EQ(cache_->ids_pending_deletion_count_for_testing(), 0u);
 }
 
 TEST_P(GpuImageDecodeCachePurgeOnTimerTest, MultipleImagesWithTimeGap) {
@@ -4814,34 +4800,29 @@ TEST_P(GpuImageDecodeCachePurgeOnTimerTest, MultipleImagesWithTimeGap) {
 
   ASSERT_EQ(cache_->GetNumCacheEntriesForTesting(), 0u);
   ASSERT_FALSE(cache_->HasPendingPurgeTaskForTesting());
-  ASSERT_EQ(cache_->ids_pending_deletion_count_for_testing(), 0u);
 
   // Task posted, will run at 30s.
   CreateAndUnrefImage(3);
 
   ASSERT_EQ(cache_->GetNumCacheEntriesForTesting(), 3u);
   ASSERT_TRUE(cache_->HasPendingPurgeTaskForTesting());
-  ASSERT_EQ(cache_->ids_pending_deletion_count_for_testing(), 0u);
 
   // Time is now 30s, cache is emptied.
   FastForwardBy(GpuImageDecodeCache::get_purge_interval());
   ASSERT_EQ(cache_->GetNumCacheEntriesForTesting(), 0u);
   ASSERT_FALSE(cache_->HasPendingPurgeTaskForTesting());
-  ASSERT_EQ(cache_->ids_pending_deletion_count_for_testing(), 0u);
 
   CreateAndUnrefImage(4);
 
   // New task is posted.
   ASSERT_EQ(cache_->GetNumCacheEntriesForTesting(), 4u);
   ASSERT_TRUE(cache_->HasPendingPurgeTaskForTesting());
-  ASSERT_EQ(cache_->ids_pending_deletion_count_for_testing(), 0u);
 
   FastForwardBy(GpuImageDecodeCache::get_purge_interval());
 
   // Cache has been emptied
   EXPECT_EQ(cache_->GetNumCacheEntriesForTesting(), 0u);
   EXPECT_FALSE(cache_->HasPendingPurgeTaskForTesting());
-  EXPECT_EQ(cache_->ids_pending_deletion_count_for_testing(), 0u);
 }
 
 TEST_P(GpuImageDecodeCachePurgeOnTimerTest, NoCache) {
