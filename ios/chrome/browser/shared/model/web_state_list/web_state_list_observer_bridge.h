@@ -35,12 +35,6 @@
                     atIndex:(int)atIndex
                      reason:(ActiveWebStateChangeReason)reason;
 
-// Invoked after pinned state for `webState` at the specified index has been
-// changed.
-- (void)webStateList:(WebStateList*)webStateList
-    didChangePinnedStateForWebState:(web::WebState*)webState
-                            atIndex:(int)atIndex;
-
 // Invoked before a batched operations begins. The observer can use this
 // notification if it is interested in considering all those individual
 // operations as a single mutation of the WebStateList (e.g. considering
