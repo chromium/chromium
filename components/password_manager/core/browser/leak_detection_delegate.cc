@@ -125,10 +125,6 @@ void LeakDetectionDelegate::OnShowLeakDetectionNotification(
   CredentialLeakType leak_type =
       CreateLeakType(IsSaved(in_stores != PasswordForm::Store::kNotSet),
                      is_reused, is_syncing);
-  base::UmaHistogramBoolean("PasswordManager.LeakDetection.IsPasswordSaved",
-                            IsPasswordSaved(leak_type));
-  base::UmaHistogramBoolean("PasswordManager.LeakDetection.IsPasswordReused",
-                            IsPasswordUsedOnOtherSites(leak_type));
   client_->NotifyUserCredentialsWereLeaked(leak_type, url, username);
 }
 
