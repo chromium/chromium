@@ -1115,8 +1115,9 @@ message BlinkHighEntropyAPI {
     optional string identifier = 1;
     repeated JSFunctionArgument func_arguments = 2;
 
-    // Deprecated in favour of outer source_location.
-    optional BlinkSourceLocation source_location = 3;
+    // Deprecated in favour of outer source_location. Not filled anymore in
+    // newer versions of chrome.
+    optional BlinkSourceLocation source_location = 3 [deprecated = true];
   }
   optional BlinkExecutionContext execution_context = 1;
   optional CalledJsApi called_api = 2;
