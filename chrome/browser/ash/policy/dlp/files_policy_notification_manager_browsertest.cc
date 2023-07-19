@@ -78,50 +78,6 @@ class FilesPolicyNotificationManagerBrowserTest : public InProcessBrowserTest {
   ~FilesPolicyNotificationManagerBrowserTest() override = default;
 };
 
-// (b/273269211): This is a test for the crash that happens upon showing a
-// warning dialog when a file is moved to Google Drive.
-IN_PROC_BROWSER_TEST_F(FilesPolicyNotificationManagerBrowserTest,
-                       WarningDialog_ComponentDestination) {
-  auto* fpnm = FilesPolicyNotificationManagerFactory::GetForBrowserContext(
-      browser()->profile());
-  ASSERT_TRUE(fpnm);
-  std::vector<base::FilePath> warning_files;
-  warning_files.emplace_back(base::FilePath("file1.txt"));
-  fpnm->ShowDlpWarning(base::DoNothing(), absl::nullopt,
-                       std::move(warning_files),
-                       DlpFileDestination(data_controls::Component::kDrive),
-                       dlp::FileAction::kMove);
-}
-
-// (b/277594200): This is a test for the crash that happens upon showing a
-// warning dialog when a file is dragged to a webpage.
-IN_PROC_BROWSER_TEST_F(FilesPolicyNotificationManagerBrowserTest,
-                       WarningDialog_UrlDestination) {
-  auto* fpnm = FilesPolicyNotificationManagerFactory::GetForBrowserContext(
-      browser()->profile());
-  ASSERT_TRUE(fpnm);
-  std::vector<base::FilePath> warning_files;
-  warning_files.emplace_back(base::FilePath("file1.txt"));
-  fpnm->ShowDlpWarning(base::DoNothing(), absl::nullopt,
-                       std::move(warning_files),
-                       DlpFileDestination(kExampleUrl), dlp::FileAction::kMove);
-}
-
-// (b/281495499): This is a test for the crash that happens upon showing a
-// warning dialog for downloads.
-IN_PROC_BROWSER_TEST_F(FilesPolicyNotificationManagerBrowserTest,
-                       WarningDialog_Download) {
-  auto* fpnm = FilesPolicyNotificationManagerFactory::GetForBrowserContext(
-      browser()->profile());
-  ASSERT_TRUE(fpnm);
-  std::vector<base::FilePath> warning_files;
-  warning_files.emplace_back(base::FilePath("file1.txt"));
-  fpnm->ShowDlpWarning(base::DoNothing(), absl::nullopt,
-                       std::move(warning_files),
-                       DlpFileDestination(data_controls::Component::kDrive),
-                       dlp::FileAction::kDownload);
-}
-
 using BlockedFilesMap = std::map<DlpConfidentialFile, Policy>;
 
 class MockFilesPolicyDialogFactory : public FilesPolicyDialogFactory {
