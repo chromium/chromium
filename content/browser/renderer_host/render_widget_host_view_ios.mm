@@ -597,30 +597,6 @@ void RenderWidgetHostViewIOS::UpdateCALayerTree(
   display_tree_->UpdateCALayerTree(ca_layer_params);
 }
 
-void RenderWidgetHostViewIOS::DidNavigateMainFramePreCommit() {
-  CHECK(browser_compositor_) << "Shouldn't be called during destruction!";
-  gesture_provider_.ResetDetection();
-  browser_compositor_->DidNavigateMainFramePreCommit();
-}
-
-void RenderWidgetHostViewIOS::DidEnterBackForwardCache() {
-  CHECK(browser_compositor_) << "Shouldn't be called during destruction!";
-  browser_compositor_->DidEnterBackForwardCache();
-  // If we have the fallback content timer running, force it to stop. Else, when
-  // the page is restored the timer could also fire, setting whatever
-  // `DelegatedFrameHost::first_local_surface_id_after_navigation_` as the
-  // fallback to our Surfacelayer.
-  //
-  // This is safe for BFCache restore because we will supply specific fallback
-  // surfaces for BFCache.
-  //
-  // We do not want to call this in `RWHImpl::WasHidden()` because in the case
-  // of `Visibility::OCCLUDED` we still want to keep the timer running.
-  //
-  // Called after to prevent prematurely evict the BFCached surface.
-  host()->ForceFirstFrameAfterNavigationTimeout();
-}
-
 void RenderWidgetHostViewIOS::DidNavigate() {
   browser_compositor_->DidNavigate();
 }

@@ -170,14 +170,10 @@ class CONTENT_EXPORT DelegatedFrameHost
   }
 
   void DidNavigate();
-
   // Navigation to a different page than the current one has begun. Caches the
   // current LocalSurfaceId information so that old content can be evicted if
   // navigation fails to complete.
-  void DidNavigateMainFramePreCommit();
-
-  // Called when the page has just entered BFCache.
-  void DidEnterBackForwardCache();
+  void OnNavigateToNewPage();
 
   void WindowTitleChanged(const std::string& title);
 
@@ -201,10 +197,6 @@ class CONTENT_EXPORT DelegatedFrameHost
     return frame_evictor_.get();
   }
 
-  viz::SurfaceId GetPreNavigationSurfaceIdForTesting() const {
-    return GetPreNavigationSurfaceId();
-  }
-
  private:
   friend class DelegatedFrameHostClient;
   FRIEND_TEST_ALL_PREFIXES(RenderWidgetHostViewAuraBrowserTest,
@@ -213,8 +205,6 @@ class CONTENT_EXPORT DelegatedFrameHost
                            StaleFrameContentOnEvictionRejected);
   FRIEND_TEST_ALL_PREFIXES(RenderWidgetHostViewAuraBrowserTest,
                            StaleFrameContentOnEvictionNone);
-  FRIEND_TEST_ALL_PREFIXES(NoCompositingRenderWidgetHostViewBrowserTest,
-                           BFCachedSurfaceShouldNotBeEvicted);
 
   // FrameEvictorClient implementation.
   void EvictDelegatedFrame(
@@ -245,12 +235,7 @@ class CONTENT_EXPORT DelegatedFrameHost
   raw_ptr<ui::Compositor> compositor_ = nullptr;
 
   // The LocalSurfaceId of the currently embedded surface.
-  //
-  // TODO(https://crbug.com/1459238): this value is a copy of what the browser
-  // wants to embed. The source of truth is stored else where. We should
-  // consider de-dup this ID.
   viz::LocalSurfaceId local_surface_id_;
-
   // The size of the above surface (updated at the same time).
   gfx::Size surface_dip_size_;
 
@@ -265,17 +250,10 @@ class CONTENT_EXPORT DelegatedFrameHost
   std::unique_ptr<viz::FrameEvictor> frame_evictor_;
 
   viz::LocalSurfaceId first_local_surface_id_after_navigation_;
-
   // While navigating we have no active |local_surface_id_|. Track the one from
   // before a navigation, because if the navigation fails to complete, we will
-  // need to evict its surface. If the old page enters BFCache, this id is used
-  // to restore `local_surface_id_`.
+  // need to evict its surface.
   viz::LocalSurfaceId pre_navigation_local_surface_id_;
-
-  // The fallback ID for BFCache restore. It is set when `this` enters the
-  // BFCache and is cleared when resize-while-hidden (which supplies with a
-  // latest fallback ID) or after it is used in `EmbedSurface`.
-  viz::LocalSurfaceId bfcache_fallback_;
 
   FrameEvictionState frame_eviction_state_ = FrameEvictionState::kNotStarted;
 

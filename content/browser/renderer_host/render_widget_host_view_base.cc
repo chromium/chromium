@@ -669,7 +669,8 @@ void RenderWidgetHostViewBase::TransformPointToRootSurface(gfx::PointF* point) {
   return;
 }
 
-void RenderWidgetHostViewBase::DidNavigateMainFramePreCommit() {}
+void RenderWidgetHostViewBase::OnDidNavigateMainFrameToNewPage() {
+}
 
 void RenderWidgetHostViewBase::OnFrameTokenChangedForView(
     uint32_t frame_token,

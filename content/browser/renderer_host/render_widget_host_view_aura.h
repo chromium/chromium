@@ -185,8 +185,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   void ResetFallbackToFirstNavigationSurface() override;
   bool RequestRepaintForTesting() override;
   void DidStopFlinging() override;
-  void DidNavigateMainFramePreCommit() override;
-  void DidEnterBackForwardCache() override;
+  void OnDidNavigateMainFrameToNewPage() override;
   const viz::FrameSinkId& GetFrameSinkId() const override;
   const viz::LocalSurfaceId& GetLocalSurfaceId() const override;
   bool TransformPointToCoordSpaceForView(

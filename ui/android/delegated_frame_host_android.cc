@@ -19,7 +19,6 @@
 #include "components/viz/common/features.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "components/viz/common/quads/compositor_frame.h"
-#include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
 #include "components/viz/common/surfaces/surface_id.h"
 #include "components/viz/host/host_frame_sink_manager.h"
 #include "ui/android/view_android.h"
@@ -175,9 +174,6 @@ void DelegatedFrameHostAndroid::EvictDelegatedFrame(
                                cc::DeadlinePolicy::UseDefaultDeadline());
   // If we have a surface from before a navigation, evict it, regardless of
   // visibility state.
-  //
-  // TODO(https://crbug.com/1459229): Investigate why guarding the invalid
-  // `pre_navigation_local_surface_id_` for Android only.
   if (!pre_navigation_local_surface_id_.is_valid() &&
       (!HasSavedFrame() || frame_evictor_->visible())) {
     return;
@@ -219,11 +215,6 @@ viz::SurfaceId DelegatedFrameHostAndroid::GetFallbackSurfaceIdForTesting()
       viz::SurfaceId());
 }
 
-viz::SurfaceId DelegatedFrameHostAndroid::GetCurrentSurfaceIdForTesting()
-    const {
-  return GetCurrentSurfaceId();
-}
-
 void DelegatedFrameHostAndroid::ClearFallbackSurfaceForCommitPending() {
   const absl::optional<viz::SurfaceId> fallback_surface_id =
       content_layer_->oldest_acceptable_fallback();
@@ -249,10 +240,8 @@ void DelegatedFrameHostAndroid::ResetFallbackToFirstNavigationSurface() {
     return;
   }
 
-  // If we have a surface from before a navigation and we are not in BFCache,
-  // evict it as well.
-  if (!bfcache_fallback_.is_valid() &&
-      pre_navigation_local_surface_id_.is_valid() &&
+  // If we have a surface from before a navigation, evict it as well.
+  if (pre_navigation_local_surface_id_.is_valid() &&
       !first_local_surface_id_after_navigation_.is_valid()) {
     EvictDelegatedFrame(frame_evictor_->CollectSurfaceIdsForEviction());
     content_layer_->SetBackgroundColor(SkColors::kTransparent);
@@ -371,16 +360,12 @@ void DelegatedFrameHostAndroid::EmbedSurface(
     // crbug.com/1218238.
     if (!content_layer_->bounds().IsEmpty() &&
         surface_size_in_pixels_ != content_layer_->bounds() &&
-        (has_fallback_surface || bfcache_fallback_.is_valid())) {
+        has_fallback_surface) {
       content_layer_->SetOldestAcceptableFallback(new_primary_surface_id);
+
       // We default to black background for fullscreen case.
       content_layer_->SetBackgroundColor(
           is_fullscreen ? SkColors::kBlack : SkColors::kTransparent);
-
-      // Invalidates `bfcache_fallback_`, resize-while-hidden has given us the
-      // latest `local_surface_id_`.
-      bfcache_fallback_ =
-          viz::ParentLocalSurfaceIdAllocator::InvalidLocalSurfaceId();
     }
   }
 
@@ -392,16 +377,6 @@ void DelegatedFrameHostAndroid::EmbedSurface(
   }
 
   frame_evictor_->OnNewSurfaceEmbedded();
-
-  if (bfcache_fallback_.is_valid()) {
-    // Inform Viz to show the primary surface with new ID asap; if the new
-    // surface isn't ready, use the fallback.
-    deadline_policy = cc::DeadlinePolicy::UseSpecifiedDeadline(0u);
-    content_layer_->SetOldestAcceptableFallback(
-        viz::SurfaceId(frame_sink_id_, bfcache_fallback_));
-    bfcache_fallback_ =
-        viz::ParentLocalSurfaceIdAllocator::InvalidLocalSurfaceId();
-  }
 
   if (!current_primary_surface_id.is_valid() ||
       current_primary_surface_id.local_surface_id() != local_surface_id_) {
@@ -494,38 +469,16 @@ void DelegatedFrameHostAndroid::DidNavigate() {
   first_local_surface_id_after_navigation_ = local_surface_id_;
 }
 
-void DelegatedFrameHostAndroid::DidNavigateMainFramePreCommit() {
+void DelegatedFrameHostAndroid::OnNavigateToNewPage() {
   // We are navigating to a different page, so the current |local_surface_id_|
   // and the fallback option of |first_local_surface_id_after_navigation_| are
   // no longer valid, as they represent older content from a different source.
   //
   // Cache the current |local_surface_id_| so that if navigation fails we can
   // evict it when transitioning to becoming visible.
-  //
-  // If the current page enters BFCache, `pre_navigation_local_surface_id_` will
-  // be restored as the primary `LocalSurfaceId` for this
-  // `DelegatedFrameHostAndroid`.
   pre_navigation_local_surface_id_ = local_surface_id_;
   first_local_surface_id_after_navigation_ = viz::LocalSurfaceId();
   SetLocalSurfaceId(viz::LocalSurfaceId());
-}
-
-void DelegatedFrameHostAndroid::DidEnterBackForwardCache() {
-  if (local_surface_id_.is_valid()) {
-    // Resize while hidden (`EmbedSurface` called after
-    // `DidNavigateMainFramePreCommit` and before `DidEnterBackForwardCache`).
-    //
-    // The `EmbedSurface` for the resize will invalidate
-    // `pre_navigation_local_surface_id_`. In this case we shouldn't restore the
-    // `local_surface_id_` because the surface with a different size should have
-    // a new ID.
-    CHECK(!pre_navigation_local_surface_id_.is_valid());
-    CHECK(!bfcache_fallback_.is_valid());
-  } else {
-    SetLocalSurfaceId(pre_navigation_local_surface_id_);
-    bfcache_fallback_ = pre_navigation_local_surface_id_;
-    pre_navigation_local_surface_id_ = viz::LocalSurfaceId();
-  }
 }
 
 void DelegatedFrameHostAndroid::SetTopControlsVisibleHeight(float height) {

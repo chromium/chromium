@@ -595,31 +595,8 @@ CursorManager* RenderWidgetHostViewMac::GetCursorManager() {
   return cursor_manager_.get();
 }
 
-void RenderWidgetHostViewMac::DidNavigateMainFramePreCommit() {
-  CHECK(browser_compositor_) << "Shouldn't be called during destruction!";
+void RenderWidgetHostViewMac::OnDidNavigateMainFrameToNewPage() {
   gesture_provider_.ResetDetection();
-  if (base::FeatureList::IsEnabled(
-          features::kInvalidateLocalSurfaceIdPreCommit)) {
-    browser_compositor_->DidNavigateMainFramePreCommit();
-  }
-}
-
-void RenderWidgetHostViewMac::DidEnterBackForwardCache() {
-  CHECK(browser_compositor_) << "Shouldn't be called during destruction!";
-  browser_compositor_->DidEnterBackForwardCache();
-  // If we have the fallback content timer running, force it to stop. Else, when
-  // the page is restored the timer could also fire, setting whatever
-  // `DelegatedFrameHost::first_local_surface_id_after_navigation_` as the
-  // fallback to our Surfacelayer.
-  //
-  // This is safe for BFCache restore because we will supply specific fallback
-  // surfaces for BFCache.
-  //
-  // We do not want to call this in `RWHImpl::WasHidden()` because in the case
-  // of `Visibility::OCCLUDED` we still want to keep the timer running.
-  //
-  // Called after to prevent prematurely evict the BFCached surface.
-  host()->ForceFirstFrameAfterNavigationTimeout();
 }
 
 void RenderWidgetHostViewMac::SetIsLoading(bool is_loading) {

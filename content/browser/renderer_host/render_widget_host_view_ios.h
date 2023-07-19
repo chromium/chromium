@@ -111,8 +111,6 @@ class CONTENT_EXPORT RenderWidgetHostViewIOS
   void CancelSuccessfulPresentationTimeRequestForHostAndDelegate() override;
   viz::ScopedSurfaceIdAllocator DidUpdateVisualProperties(
       const cc::RenderFrameMetadata& metadata) override;
-  void DidNavigateMainFramePreCommit() override;
-  void DidEnterBackForwardCache() override;
   void DidNavigate() override;
   bool RequestRepaintForTesting() override;
   void Destroy() override;
@@ -137,7 +135,7 @@ class CONTENT_EXPORT RenderWidgetHostViewIOS
     return browser_compositor_.get();
   }
 
-  // `BrowserCompositorIOSClient` overrides:
+  // BrowserCompositorIOS overrides:
   SkColor BrowserCompositorIOSGetGutterColor() override;
   void OnFrameTokenChanged(uint32_t frame_token,
                            base::TimeTicks activation_time) override;

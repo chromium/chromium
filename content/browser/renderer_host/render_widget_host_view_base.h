@@ -474,16 +474,9 @@ class CONTENT_EXPORT RenderWidgetHostViewBase : public RenderWidgetHostView {
   // Gets the bounds of the top-level window, in screen coordinates.
   virtual gfx::Rect GetBoundsInRootWindow() = 0;
 
-  // Dispatched when the main frame associated with a `RenderWidgetHostView` is
-  // being navigated to a different Document (won't be dispatched for
-  // same-document navigations).
-  //
-  // "PreCommit" means the new page hasn't been marked as visible yet.
-  virtual void DidNavigateMainFramePreCommit();
-
-  // Gives a chance to the caller to perform some task AFTER the page is
-  // unloaded and stored in the BFCache.
-  virtual void DidEnterBackForwardCache() {}
+  // Called by the WebContentsImpl when a user tries to navigate a new page on
+  // main frame.
+  virtual void OnDidNavigateMainFrameToNewPage();
 
   // Called by WebContentsImpl to notify the view about a change in visibility
   // of context menu. The view can then perform platform specific tasks and
