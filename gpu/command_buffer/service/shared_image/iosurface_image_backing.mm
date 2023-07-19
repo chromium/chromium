@@ -557,8 +557,8 @@ DawnIOSurfaceRepresentation::~DawnIOSurfaceRepresentation() {
   EndAccess();
 }
 
-WGPUTexture DawnIOSurfaceRepresentation::BeginAccess(
-    WGPUTextureUsage wgpu_texture_usage) {
+wgpu::Texture DawnIOSurfaceRepresentation::BeginAccess(
+    wgpu::TextureUsage wgpu_texture_usage) {
   const std::string debug_label =
       "IOSurface(" + CreateLabelForSharedImageUsage(usage()) + ")";
 
@@ -909,9 +909,9 @@ IOSurfaceImageBacking::ProduceOverlay(SharedImageManager* manager,
 std::unique_ptr<DawnImageRepresentation> IOSurfaceImageBacking::ProduceDawn(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker,
-    WGPUDevice device,
-    WGPUBackendType backend_type,
-    std::vector<WGPUTextureFormat> view_formats) {
+    const wgpu::Device& device,
+    wgpu::BackendType backend_type,
+    std::vector<wgpu::TextureFormat> view_formats) {
 #if BUILDFLAG(USE_DAWN)
   wgpu::TextureFormat wgpu_format = ToDawnFormat(format());
   // See comments in IOSurfaceImageBackingFactory::CreateSharedImage about
@@ -929,14 +929,9 @@ std::unique_ptr<DawnImageRepresentation> IOSurfaceImageBacking::ProduceDawn(
     return nullptr;
   }
 
-  std::vector<wgpu::TextureFormat> formats = {
-      reinterpret_cast<wgpu::TextureFormat*>(view_formats.data()),
-      reinterpret_cast<wgpu::TextureFormat*>(view_formats.data()) +
-          view_formats.size()};
-
   return std::make_unique<DawnIOSurfaceRepresentation>(
       manager, this, tracker, wgpu::Device(device), io_surface_,
-      io_surface_size_, wgpu_format, std::move(formats));
+      io_surface_size_, wgpu_format, std::move(view_formats));
 #else
   return nullptr;
 #endif
@@ -989,9 +984,8 @@ IOSurfaceImageBacking::ProduceSkiaGraphite(
   CHECK(context_state->graphite_context());
   if (context_state->gr_context_type() == GrContextType::kGraphiteDawn) {
 #if BUILDFLAG(SKIA_USE_DAWN)
-    WGPUDevice device =
-        context_state->dawn_context_provider()->GetDevice().Get();
-    auto backend_type = WGPUBackendType::WGPUBackendType_Metal;
+    auto device = context_state->dawn_context_provider()->GetDevice();
+    auto backend_type = wgpu::BackendType::Metal;
     auto dawn_representation = ProduceDawn(manager, tracker, device,
                                            backend_type, /*view_formats=*/{});
     if (!dawn_representation) {

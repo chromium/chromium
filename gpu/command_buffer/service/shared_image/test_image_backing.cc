@@ -134,13 +134,12 @@ class TestDawnImageRepresentation : public DawnImageRepresentation {
                               MemoryTypeTracker* tracker)
       : DawnImageRepresentation(manager, backing, tracker) {}
 
-  WGPUTexture BeginAccess(WGPUTextureUsage usage) override {
+  wgpu::Texture BeginAccess(wgpu::TextureUsage usage) override {
     if (!static_cast<TestImageBacking*>(backing())->can_access()) {
       return nullptr;
     }
 
-    // Return a dummy value.
-    return reinterpret_cast<WGPUTexture>(203);
+    return wgpu::Texture(reinterpret_cast<WGPUTexture>(203));
   }
 
   void EndAccess() override {}
@@ -304,9 +303,9 @@ TestImageBacking::ProduceSkiaGanesh(
 std::unique_ptr<DawnImageRepresentation> TestImageBacking::ProduceDawn(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker,
-    WGPUDevice device,
-    WGPUBackendType backend_type,
-    std::vector<WGPUTextureFormat> view_formats) {
+    const wgpu::Device& device,
+    wgpu::BackendType backend_type,
+    std::vector<wgpu::TextureFormat> view_formats) {
   return std::make_unique<TestDawnImageRepresentation>(manager, this, tracker);
 }
 

@@ -99,25 +99,25 @@ viz::SharedImageFormat PlaneFormat(DXGI_FORMAT dxgi_format, size_t plane) {
   return format;
 }
 
-WGPUTextureFormat DXGIToWGPUFormat(DXGI_FORMAT dxgi_format) {
+wgpu::TextureFormat DXGIToWGPUFormat(DXGI_FORMAT dxgi_format) {
   switch (dxgi_format) {
     case DXGI_FORMAT_R8G8B8A8_UNORM:
-      return WGPUTextureFormat_RGBA8Unorm;
+      return wgpu::TextureFormat::RGBA8Unorm;
     case DXGI_FORMAT_B8G8R8A8_UNORM:
-      return WGPUTextureFormat_BGRA8Unorm;
+      return wgpu::TextureFormat::BGRA8Unorm;
     case DXGI_FORMAT_R8_UNORM:
-      return WGPUTextureFormat_R8Unorm;
+      return wgpu::TextureFormat::R8Unorm;
     case DXGI_FORMAT_R8G8_UNORM:
-      return WGPUTextureFormat_RG8Unorm;
+      return wgpu::TextureFormat::RG8Unorm;
     case DXGI_FORMAT_R16G16B16A16_FLOAT:
-      return WGPUTextureFormat_RGBA16Float;
+      return wgpu::TextureFormat::RGBA16Float;
     case DXGI_FORMAT_R10G10B10A2_UNORM:
-      return WGPUTextureFormat_RGB10A2Unorm;
+      return wgpu::TextureFormat::RGB10A2Unorm;
     case DXGI_FORMAT_NV12:
-      return WGPUTextureFormat_R8BG8Biplanar420Unorm;
+      return wgpu::TextureFormat::R8BG8Biplanar420Unorm;
     default:
       NOTREACHED();
-      return WGPUTextureFormat_Undefined;
+      return wgpu::TextureFormat::Undefined;
   }
 }
 
@@ -634,58 +634,59 @@ bool D3DImageBacking::ReadbackToMemory(const std::vector<SkPixmap>& pixmaps) {
   return true;
 }
 
-WGPUTextureUsageFlags D3DImageBacking::GetAllowedDawnUsages(
-    WGPUDevice device,
-    const WGPUTextureFormat wgpu_format) const {
+wgpu::TextureUsage D3DImageBacking::GetAllowedDawnUsages(
+    const wgpu::Device& device,
+    const wgpu::TextureFormat wgpu_format) const {
   // TODO(crbug.com/2709243): Figure out other SI flags, if any.
-  const WGPUTextureUsageFlags kBasicUsage =
-      WGPUTextureUsage_CopySrc | WGPUTextureUsage_CopyDst |
-      WGPUTextureUsage_TextureBinding | WGPUTextureUsage_RenderAttachment;
+  const wgpu::TextureUsage kBasicUsage =
+      wgpu::TextureUsage::CopySrc | wgpu::TextureUsage::CopyDst |
+      wgpu::TextureUsage::TextureBinding | wgpu::TextureUsage::RenderAttachment;
   switch (wgpu_format) {
-    case WGPUTextureFormat_R8Unorm:
-    case WGPUTextureFormat_RG8Unorm:
+    case wgpu::TextureFormat::R8Unorm:
+    case wgpu::TextureFormat::RG8Unorm:
       return kBasicUsage;
-    case WGPUTextureFormat_BGRA8Unorm: {
+    case wgpu::TextureFormat::BGRA8Unorm: {
       if (usage() & gpu::SHARED_IMAGE_USAGE_WEBGPU_STORAGE_TEXTURE) {
-        if (dawn::native::GetProcs().deviceHasFeature(
-                device, WGPUFeatureName_BGRA8UnormStorage)) {
-          return kBasicUsage | WGPUTextureUsage_StorageBinding;
+        if (device.HasFeature(wgpu::FeatureName::BGRA8UnormStorage)) {
+          return kBasicUsage | wgpu::TextureUsage::StorageBinding;
         } else {
           // We cannot use BGRA8Unorm textures as storage textures when
           // the feature BGRA8UnormStorage is not enabled.
           LOG(ERROR) << "StorageBinding is not supported for "
-                     << WGPUTextureFormat_BGRA8Unorm << " when the feature "
-                     << WGPUFeatureName_BGRA8UnormStorage << " is not enabled";
-          return WGPUTextureUsage_None;
+                     << static_cast<int>(wgpu::TextureFormat::BGRA8Unorm)
+                     << " when the feature "
+                     << static_cast<int>(wgpu::FeatureName::BGRA8UnormStorage)
+                     << " is not enabled";
+          return wgpu::TextureUsage::None;
         }
       } else {
         return kBasicUsage;
       }
     }
-    case WGPUTextureFormat_RGBA8Unorm:
-    case WGPUTextureFormat_RGBA16Float: {
+    case wgpu::TextureFormat::RGBA8Unorm:
+    case wgpu::TextureFormat::RGBA16Float: {
       if (usage() & gpu::SHARED_IMAGE_USAGE_WEBGPU_STORAGE_TEXTURE) {
-        return kBasicUsage | WGPUTextureUsage_StorageBinding;
+        return kBasicUsage | wgpu::TextureUsage::StorageBinding;
       } else {
         return kBasicUsage;
       }
     }
-    case WGPUTextureFormat_R8BG8Biplanar420Unorm:
-      return WGPUTextureUsage_TextureBinding;
+    case wgpu::TextureFormat::R8BG8Biplanar420Unorm:
+      return wgpu::TextureUsage::TextureBinding;
     default:
-      return WGPUTextureUsage_None;
+      return wgpu::TextureUsage::None;
   }
 }
 
 std::unique_ptr<DawnImageRepresentation> D3DImageBacking::ProduceDawn(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker,
-    WGPUDevice device,
-    WGPUBackendType backend_type,
-    std::vector<WGPUTextureFormat> view_formats) {
+    const wgpu::Device& device,
+    wgpu::BackendType backend_type,
+    std::vector<wgpu::TextureFormat> view_formats) {
 #if BUILDFLAG(USE_DAWN)
 #if BUILDFLAG(DAWN_ENABLE_BACKEND_OPENGLES)
-  if (backend_type == WGPUBackendType_OpenGLES) {
+  if (backend_type == wgpu::BackendType::OpenGLES) {
     std::unique_ptr<GLTextureImageRepresentationBase> gl_representation =
         ProduceGLTexturePassthrough(manager, tracker);
     auto* d3d_representation =
@@ -701,9 +702,9 @@ std::unique_ptr<DawnImageRepresentation> D3DImageBacking::ProduceDawn(
         device);
   }
 #endif
-  const WGPUTextureFormat wgpu_format =
+  const wgpu::TextureFormat wgpu_format =
       DXGIToWGPUFormat(d3d11_texture_desc_.Format);
-  if (wgpu_format == WGPUTextureFormat_Undefined) {
+  if (wgpu_format == wgpu::TextureFormat::Undefined) {
     LOG(ERROR) << "Unsupported DXGI_FORMAT found: "
                << d3d11_texture_desc_.Format;
     return nullptr;
@@ -714,25 +715,25 @@ std::unique_ptr<DawnImageRepresentation> D3DImageBacking::ProduceDawn(
   // correct usages. This needs support in Skia to loosen TextureUsage
   // validation. Alternatively, add support in Dawn for multiplanar formats to
   // be Renderable.
-  WGPUTextureUsageFlags allowed_usage =
-      GetAllowedDawnUsages(device, wgpu_format);
-  if (allowed_usage == WGPUTextureUsage_None) {
-    LOG(ERROR) << "Allowed WGPUTextureUsage is unknown for WGPUTextureFormat: "
-               << wgpu_format;
+  wgpu::TextureUsage allowed_usage = GetAllowedDawnUsages(device, wgpu_format);
+  if (allowed_usage == wgpu::TextureUsage::None) {
+    LOG(ERROR)
+        << "Allowed wgpu::TextureUsage is unknown for wgpu::TextureFormat: "
+        << static_cast<int>(wgpu_format);
     return nullptr;
   }
 
   // We need to have an internal usage of CopySrc in order to use
   // CopyTextureToTextureInternal if texture format allows these usage.
-  WGPUTextureUsageFlags internal_usage =
-      (WGPUTextureUsage_CopySrc | WGPUTextureUsage_RenderAttachment |
-       WGPUTextureUsage_TextureBinding) &
+  wgpu::TextureUsage internal_usage =
+      (wgpu::TextureUsage::CopySrc | wgpu::TextureUsage::RenderAttachment |
+       wgpu::TextureUsage::TextureBinding) &
       allowed_usage;
 
-  WGPUTextureDescriptor texture_descriptor = {};
+  wgpu::TextureDescriptor texture_descriptor;
   texture_descriptor.format = wgpu_format;
   texture_descriptor.usage = allowed_usage;
-  texture_descriptor.dimension = WGPUTextureDimension_2D;
+  texture_descriptor.dimension = wgpu::TextureDimension::e2D;
   texture_descriptor.size = {static_cast<uint32_t>(size().width()),
                              static_cast<uint32_t>(size().height()), 1};
   texture_descriptor.mipLevelCount = 1;
@@ -744,14 +745,12 @@ std::unique_ptr<DawnImageRepresentation> D3DImageBacking::ProduceDawn(
   // We need to have internal usages of CopySrc for copies,
   // RenderAttachment for clears, and TextureBinding for copyTextureForBrowser
   // if texture format allows these usages.
-  WGPUDawnTextureInternalUsageDescriptor internalDesc = {};
-  internalDesc.chain.sType = WGPUSType_DawnTextureInternalUsageDescriptor;
+  wgpu::DawnTextureInternalUsageDescriptor internalDesc;
   internalDesc.internalUsage = internal_usage;
-  texture_descriptor.nextInChain =
-      reinterpret_cast<WGPUChainedStruct*>(&internalDesc);
+  texture_descriptor.nextInChain = &internalDesc;
 
   // Persistently open the shared handle by caching it on this backing.
-  auto it = dawn_external_image_cache_.find(device);
+  auto it = dawn_external_image_cache_.find(device.Get());
   if (it == dawn_external_image_cache_.end()) {
     CHECK(dxgi_shared_handle_state_);
     const HANDLE shared_handle = dxgi_shared_handle_state_->GetSharedHandle();
@@ -759,18 +758,19 @@ std::unique_ptr<DawnImageRepresentation> D3DImageBacking::ProduceDawn(
     CHECK(!dxgi_shared_handle_state_->has_keyed_mutex());
 
     ExternalImageDescriptorDXGISharedHandle externalImageDesc;
-    externalImageDesc.cTextureDescriptor = &texture_descriptor;
+    externalImageDesc.cTextureDescriptor =
+        reinterpret_cast<WGPUTextureDescriptor*>(&texture_descriptor);
     externalImageDesc.sharedHandle = shared_handle;
 
     DawnExternalImageState state;
     state.external_image =
-        ExternalImageDXGI::Create(device, &externalImageDesc);
+        ExternalImageDXGI::Create(device.Get(), &externalImageDesc);
     if (!state.external_image) {
       LOG(ERROR) << "Failed to create external image";
       return nullptr;
     }
     DCHECK(state.external_image->IsValid());
-    dawn_external_image_cache_.emplace(device, std::move(state));
+    dawn_external_image_cache_.emplace(device.Get(), std::move(state));
   }
 
   return std::make_unique<DawnD3DImageRepresentation>(manager, this, tracker,
@@ -789,11 +789,11 @@ D3DImageBacking::ProduceVideoDecode(SharedImageManager* manager,
 }
 
 #if BUILDFLAG(USE_DAWN)
-WGPUTexture D3DImageBacking::BeginAccessDawn(WGPUDevice device,
-                                             WGPUTextureUsage wgpu_usage) {
-  const bool write_access =
-      wgpu_usage & (WGPUTextureUsage_CopyDst | WGPUTextureUsage_StorageBinding |
-                    WGPUTextureUsage_RenderAttachment);
+wgpu::Texture D3DImageBacking::BeginAccessDawn(const wgpu::Device& device,
+                                               wgpu::TextureUsage wgpu_usage) {
+  const bool write_access = wgpu_usage & (wgpu::TextureUsage::CopyDst |
+                                          wgpu::TextureUsage::StorageBinding |
+                                          wgpu::TextureUsage::RenderAttachment);
 
   if (!ValidateBeginAccess(write_access))
     return nullptr;
@@ -826,7 +826,7 @@ WGPUTexture D3DImageBacking::BeginAccessDawn(WGPUDevice device,
     write_fence_ = d3d11_device_fence_;
   }
 
-  auto it = dawn_external_image_cache_.find(device);
+  auto it = dawn_external_image_cache_.find(device.Get());
   DCHECK(it != dawn_external_image_cache_.end());
 
   const D3DSharedFence* dawn_signaled_fence = it->second.signaled_fence.get();
@@ -853,7 +853,7 @@ WGPUTexture D3DImageBacking::BeginAccessDawn(WGPUDevice device,
   descriptor.isInitialized = IsCleared();
   descriptor.isSwapChainTexture =
       (usage() & SHARED_IMAGE_USAGE_WEBGPU_SWAP_CHAIN_TEXTURE);
-  descriptor.usage = wgpu_usage;
+  descriptor.usage = static_cast<WGPUTextureUsage>(wgpu_usage);
   descriptor.waitFences = std::move(wait_fences);
 
   ExternalImageDXGI* external_image = it->second.external_image.get();
@@ -874,18 +874,21 @@ WGPUTexture D3DImageBacking::BeginAccessDawn(WGPUDevice device,
     num_readers_++;
   }
 
-  return texture;
+  return wgpu::Texture(texture);
 }
 
-void D3DImageBacking::EndAccessDawn(WGPUDevice device, WGPUTexture texture) {
+void D3DImageBacking::EndAccessDawn(const wgpu::Device& device,
+                                    wgpu::Texture texture) {
   DCHECK(texture);
-  if (dawn::native::IsTextureSubresourceInitialized(texture, 0, 1, 0, 1))
+  if (dawn::native::IsTextureSubresourceInitialized(texture.Get(), 0, 1, 0,
+                                                    1)) {
     SetCleared();
+  }
 
   // External image is removed from cache on first EndAccess after device is
   // lost. It's ok to skip synchronization because it should've already been
   // synchronized before the entry was removed from the cache.
-  auto it = dawn_external_image_cache_.find(device);
+  auto it = dawn_external_image_cache_.find(device.Get());
   if (it != dawn_external_image_cache_.end()) {
     ExternalImageDXGI* external_image = it->second.external_image.get();
     DCHECK(external_image);
@@ -893,7 +896,7 @@ void D3DImageBacking::EndAccessDawn(WGPUDevice device, WGPUTexture texture) {
     // EndAccess will only succeed if the external image is still valid.
     if (external_image->IsValid()) {
       ExternalImageDXGIFenceDescriptor descriptor;
-      external_image->EndAccess(texture, &descriptor);
+      external_image->EndAccess(texture.Get(), &descriptor);
 
       scoped_refptr<D3DSharedFence> signaled_fence;
       if (descriptor.fenceHandle != nullptr) {
@@ -1100,9 +1103,8 @@ D3DImageBacking::ProduceSkiaGraphite(
   auto device = context_state->dawn_context_provider()->GetDevice();
   wgpu::AdapterProperties adapter_properties;
   device.GetAdapter().GetProperties(&adapter_properties);
-  auto dawn_representation = ProduceDawn(
-      manager, tracker, device.Get(),
-      static_cast<WGPUBackendType>(adapter_properties.backendType), {});
+  auto dawn_representation = ProduceDawn(manager, tracker, device.Get(),
+                                         adapter_properties.backendType, {});
   const bool is_yuv_plane =
       format().is_single_plane() && NumPlanes(d3d11_texture_desc_.Format) > 1;
   return SkiaGraphiteDawnImageRepresentation::Create(
