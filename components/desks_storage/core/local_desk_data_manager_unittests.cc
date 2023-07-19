@@ -362,9 +362,9 @@ class LocalDeskDataManagerTest : public testing::Test {
               LocalDeskDataManager::UpdateEntryStatus::kOk);
   }
 
-  void VerifyUpdateEntryBadPolicy() {
+  void VerifyUpdateEntryOutdatePolicy() {
     EXPECT_EQ(data_manager_->last_update_status_,
-              LocalDeskDataManager::UpdateEntryStatus::kBadPolicy);
+              LocalDeskDataManager::UpdateEntryStatus::kOutdatedPolicy);
   }
 
   void VerifyUpdateEntryNotFound() {
@@ -1128,9 +1128,11 @@ TEST_F(LocalDeskDataManagerTest, DoesNotOverwriteOnDifferentPolicy) {
   data_manager_->AddOrUpdateEntry(parsed_policy.at(0)->Clone(),
                                   base::BindOnce(&VerifyEntryAddedCorrectly));
 
-  // If we update the template it should return kDuplicate.
+  // If we update the template it should return kOutdatedPolicy because the
+  // policy definitions differ.  During runtime this happens if we attempt to
+  // update a template that has had a new policy pushed to it.
   data_manager_->UpdateEntry(MakePolicyTemplateWithEmptyPolicy());
-  VerifyUpdateEntryBadPolicy();
+  VerifyUpdateEntryOutdatePolicy();
 }
 
 }  // namespace desks_storage

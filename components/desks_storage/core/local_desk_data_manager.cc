@@ -497,7 +497,7 @@ void LocalDeskDataManager::UpdateEntry(
     // Do not update a template if the storage layer has a new policy.
   } else if (old_entry->second->policy_definition() !=
              entry->policy_definition()) {
-    last_update_status_ = UpdateEntryStatus::kBadPolicy;
+    last_update_status_ = UpdateEntryStatus::kOutdatedPolicy;
     return;
     // Make sure that there are actually new contents, otherwise don't bother
     // the io thread.

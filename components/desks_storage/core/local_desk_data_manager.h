@@ -128,11 +128,10 @@ class LocalDeskDataManager : public DeskModel, public AdminTemplateModel {
   // Update entry status used in testing to verify
   // behavior.
   enum class UpdateEntryStatus {
-    kUpdateNotCalled,
     kOk,
     kNotFound,
     kDuplicate,
-    kBadPolicy,
+    kOutdatedPolicy,
   };
 
   // Loads templates from `user_data_dir_path` and `sub_directory_name` into the
