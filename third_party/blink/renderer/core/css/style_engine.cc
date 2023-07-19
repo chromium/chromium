@@ -2206,32 +2206,11 @@ void StyleEngine::EnsureUAStyleForElement(const Element& element) {
 void StyleEngine::EnsureUAStyleForPseudoElement(PseudoId pseudo_id) {
   DCHECK(global_rule_set_);
 
-  if (IsTransitionPseudoElement(pseudo_id)) {
-    EnsureUAStyleForTransitionPseudos();
-    return;
-  }
-
   if (CSSDefaultStyleSheets::Instance()
           .EnsureDefaultStyleSheetsForPseudoElement(pseudo_id)) {
     global_rule_set_->MarkDirty();
     UpdateActiveStyle();
   }
-}
-
-void StyleEngine::EnsureUAStyleForTransitionPseudos() {
-  if (ua_view_transition_style_) {
-    return;
-  }
-
-  // Note that we don't need to mark any state dirty for style invalidation
-  // here. This is done externally by the code which invalidates this style
-  // sheet.
-  auto* transition = ViewTransitionUtils::GetActiveTransition(GetDocument());
-  auto* style_sheet_contents = CSSDefaultStyleSheets::ParseUASheet(
-      transition ? transition->UAStyleSheet() : "");
-  ua_view_transition_style_ = MakeGarbageCollected<RuleSet>();
-  ua_view_transition_style_->AddRulesFromSheet(
-      style_sheet_contents, CSSDefaultStyleSheets::ScreenEval());
 }
 
 void StyleEngine::EnsureUAStyleForForcedColors() {
@@ -2246,12 +2225,14 @@ void StyleEngine::EnsureUAStyleForForcedColors() {
 }
 
 RuleSet* StyleEngine::DefaultViewTransitionStyle() const {
-  DCHECK(ua_view_transition_style_);
-  return ua_view_transition_style_.Get();
-}
+  auto* transition = ViewTransitionUtils::GetActiveTransition(GetDocument());
+  if (!transition) {
+    return nullptr;
+  }
 
-void StyleEngine::InvalidateUAViewTransitionStyle() {
-  ua_view_transition_style_ = nullptr;
+  auto* style_sheet_contents = transition->UAStyleSheet();
+  return &style_sheet_contents->EnsureRuleSet(
+      CSSDefaultStyleSheets::ScreenEval());
 }
 
 bool StyleEngine::HasRulesForId(const AtomicString& id) const {
@@ -3876,7 +3857,6 @@ void StyleEngine::Trace(Visitor* visitor) const {
   visitor->Trace(text_tracks_);
   visitor->Trace(vtt_originating_element_);
   visitor->Trace(parent_for_detached_subtree_);
-  visitor->Trace(ua_view_transition_style_);
   visitor->Trace(style_image_cache_);
   visitor->Trace(fill_or_clip_path_uri_value_cache_);
   visitor->Trace(style_containment_scope_tree_);

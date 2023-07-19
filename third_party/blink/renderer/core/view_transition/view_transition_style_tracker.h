@@ -122,7 +122,7 @@ class ViewTransitionStyleTracker
   bool RunPostPrePaintSteps();
 
   // Provides a UA stylesheet applied to ::transition* pseudo elements.
-  const String& UAStyleSheet();
+  StyleSheetContents& UAStyleSheet();
 
   void Trace(Visitor* visitor) const;
 
@@ -339,7 +339,7 @@ class ViewTransitionStyleTracker
 
   // The dynamically generated UA stylesheet for default styles on
   // pseudo-elements.
-  absl::optional<String> ua_style_sheet_;
+  Member<StyleSheetContents> ua_style_sheet_;
 
   // The following state is buffered until the capture phase and populated again
   // by script for the start phase.

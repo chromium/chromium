@@ -992,13 +992,13 @@ PseudoElement* ViewTransition::CreatePseudoElement(
                                              view_transition_name);
 }
 
-String ViewTransition::UAStyleSheet() const {
+StyleSheetContents* ViewTransition::UAStyleSheet() const {
   // TODO(vmpstr): We can still request getComputedStyle(html,
   // "::view-transition-pseudo") outside of a page transition. What should we
   // return in that case?
   if (!style_tracker_)
-    return "";
-  return style_tracker_->UAStyleSheet();
+    return nullptr;
+  return &style_tracker_->UAStyleSheet();
 }
 
 void ViewTransition::WillCommitCompositorFrame() {

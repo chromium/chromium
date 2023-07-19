@@ -10,9 +10,11 @@
 #include "components/viz/common/view_transition_element_resource_id.h"
 #include "third_party/blink/public/resources/grit/blink_resources.h"
 #include "third_party/blink/renderer/core/animation/element_animations.h"
+#include "third_party/blink/renderer/core/css/css_default_style_sheets.h"
 #include "third_party/blink/renderer/core/css/properties/computed_style_utils.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
+#include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_document_state.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
@@ -1463,8 +1465,7 @@ ViewTransitionState ViewTransitionStyleTracker::GetViewTransitionState() const {
 }
 
 void ViewTransitionStyleTracker::InvalidateStyle() {
-  ua_style_sheet_.reset();
-  document_->GetStyleEngine().InvalidateUAViewTransitionStyle();
+  ua_style_sheet_ = nullptr;
 
   if (auto* originating_element = document_->documentElement()) {
     originating_element->SetNeedsStyleRecalc(
@@ -1517,7 +1518,7 @@ void ViewTransitionStyleTracker::InvalidateStyle() {
       .NotifyViewTransitionPseudoTreeChanged();
 }
 
-const String& ViewTransitionStyleTracker::UAStyleSheet() {
+StyleSheetContents& ViewTransitionStyleTracker::UAStyleSheet() {
   if (ua_style_sheet_)
     return *ua_style_sheet_;
 
@@ -1567,7 +1568,7 @@ const String& ViewTransitionStyleTracker::UAStyleSheet() {
     }
   }
 
-  ua_style_sheet_ = builder.Build();
+  ua_style_sheet_ = CSSDefaultStyleSheets::ParseUASheet(builder.Build());
   return *ua_style_sheet_;
 }
 
@@ -1579,6 +1580,7 @@ void ViewTransitionStyleTracker::Trace(Visitor* visitor) const {
   visitor->Trace(document_);
   visitor->Trace(element_data_map_);
   visitor->Trace(pending_transition_element_names_);
+  visitor->Trace(ua_style_sheet_);
 }
 
 void ViewTransitionStyleTracker::InvalidateHitTestingCache() {

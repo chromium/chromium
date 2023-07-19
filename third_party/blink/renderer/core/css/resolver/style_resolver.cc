@@ -818,13 +818,16 @@ void StyleResolver::ForEachUARulesForElement(const Element& element,
   }
 
   const auto pseudo_id = GetPseudoId(element, collector);
-  if (pseudo_id != kPseudoIdNone) {
-    if (IsTransitionPseudoElement(pseudo_id)) {
-      func(GetDocument().GetStyleEngine().DefaultViewTransitionStyle());
-    } else if (auto* rule_set =
-                   default_style_sheets.DefaultPseudoElementStyleOrNull()) {
-      func(rule_set);
-    }
+  if (pseudo_id == kPseudoIdNone) {
+    return;
+  }
+
+  auto* rule_set =
+      IsTransitionPseudoElement(pseudo_id)
+          ? GetDocument().GetStyleEngine().DefaultViewTransitionStyle()
+          : default_style_sheets.DefaultPseudoElementStyleOrNull();
+  if (rule_set) {
+    func(rule_set);
   }
 }
 

@@ -661,7 +661,6 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   const char* NameInHeapSnapshot() const override { return "StyleEngine"; }
 
   RuleSet* DefaultViewTransitionStyle() const;
-  void InvalidateUAViewTransitionStyle();
 
   const ActiveStyleSheetVector& ActiveUserStyleSheets() const {
     return active_user_style_sheets_;
@@ -922,12 +921,6 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   Member<ViewportStyleResolver> viewport_resolver_;
   Member<MediaQueryEvaluator> media_query_evaluator_;
   Member<CSSGlobalRuleSet> global_rule_set_;
-
-  // This is the default UA generated style sheet for the ::transition* pseudo
-  // elements. This is tracked by StyleEngine as opposed to
-  // CSSDefaultStyleSheets since it is 1:1 with a Document and can be
-  // dynamically updated.
-  Member<RuleSet> ua_view_transition_style_;
 
   PendingInvalidations pending_invalidations_;
 
