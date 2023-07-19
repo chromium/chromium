@@ -379,11 +379,11 @@ std::vector<AutofillField*> FormField::RemoveCheckableFields(
     // Ignore checkable fields as they interfere with parsers assuming context.
     // Eg., while parsing address, "Is PO box" checkbox after ADDRESS_LINE1
     // interferes with correctly understanding ADDRESS_LINE2.
-    // Ignore fields marked as presentational, unless for 'select' and
-    // 'selectmenu' fields (for synthetic fields.)
+    // Ignore fields marked as presentational, unless for 'select' fields (for
+    // synthetic fields.)
     if (IsCheckable(field->check_status) ||
         (field->role == FormFieldData::RoleAttribute::kPresentation &&
-         !field->IsSelectOrSelectMenuElement())) {
+         !field->IsSelectElement())) {
       continue;
     }
     processed_fields.push_back(field.get());

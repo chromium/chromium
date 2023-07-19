@@ -414,8 +414,16 @@ bool FormFieldData::IsPasswordInputElement() const {
   return form_control_type == "password";
 }
 
+bool FormFieldData::IsSelectElement() const {
+  return form_control_type == "select-one";
+}
+
+bool FormFieldData::IsSelectMenuElement() const {
+  return form_control_type == "selectmenu";
+}
+
 bool FormFieldData::IsSelectOrSelectMenuElement() const {
-  return form_control_type == "select-one" || form_control_type == "selectmenu";
+  return IsSelectElement() || IsSelectMenuElement();
 }
 
 bool FormFieldData::DidUserType() const {

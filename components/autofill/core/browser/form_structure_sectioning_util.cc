@@ -57,11 +57,9 @@ bool ConsecutiveSimilarFieldType(ServerFieldType current_type,
 // unfocusable <select> elements get a section, as hidden <select> elements are
 // common in custom select elements. To confine the impact of hidden <select>
 // elements, this exception only applies if their type is actually autofillable.
-// <selectmenu> elements behave the same as <select> elements for the sake of
-// simplicity.
 bool IsSectionable(const AutofillField& field) {
   return field.IsFocusable() ||
-         (field.IsSelectOrSelectMenuElement() && field.IsFieldFillable());
+         (field.IsSelectElement() && field.IsFieldFillable());
 }
 
 // Assign all credit card fields without a valid autocomplete attribute section

@@ -4482,6 +4482,64 @@ TEST_F(BrowserAutofillManagerTest, PreviewCreditCardForm_VirtualCard) {
   EXPECT_EQ(response_data.fields[4].value, expected_cvc);
 }
 
+// Test that unfocusable fields aren't filled, except for <select> fields (but
+// not <selectmenu> fields).
+TEST_F(BrowserAutofillManagerTest, DoNotFillUnfocusableFieldsExceptForSelect) {
+  // Create a form with both focusable and non-focusable fields.
+  FormData form;
+  form.name = u"MyForm";
+  form.url = GURL("https://myform.com/form.html");
+  form.action = GURL("https://myform.com/submit.html");
+
+  FormFieldData field;
+
+  test::CreateTestFormField("First Name", "firstname", "", "text", &field);
+  form.fields.push_back(field);
+
+  test::CreateTestFormField("", "lastname", "", "text", &field);
+  form.fields.push_back(field);
+
+  test::CreateTestFormField("Postal Code", "postal_code", "", "text", &field);
+  field.is_focusable = false;
+  form.fields.push_back(field);
+
+  test::CreateTestSelectOrSelectMenuField(
+      "Country", "country", "", "", {"CA", "US"}, {"Canada", "United States"},
+      "selectmenu", &field);
+  field.is_focusable = false;
+  form.fields.push_back(field);
+
+  test::CreateTestSelectOrSelectMenuField(
+      "Country", "country", "", "", {"CA", "US"}, {"Canada", "United States"},
+      "selectmenu", &field);
+  form.fields.push_back(field);
+
+  test::CreateTestSelectOrSelectMenuField(
+      "Country", "country", "", "", {"CA", "US"}, {"Canada", "United States"},
+      "select-one", &field);
+  field.is_focusable = false;
+  form.fields.push_back(field);
+
+  FormsSeen({form});
+
+  FormData response_data;
+  FillAutofillFormDataAndSaveResults(form, form.fields[0], MakeGuid(1),
+                                     &response_data);
+
+  ASSERT_EQ(6U, response_data.fields.size());
+  ExpectFilledField("First Name", "firstname", "Elvis", "text",
+                    response_data.fields[0]);
+  ExpectFilledField("", "lastname", "Presley", "text", response_data.fields[1]);
+  ExpectFilledField("Postal Code", "postal_code", "", "text",
+                    response_data.fields[2]);
+  ExpectFilledField("Country", "country", "", "selectmenu",
+                    response_data.fields[3]);
+  ExpectFilledField("Country", "country", "US", "selectmenu",
+                    response_data.fields[4]);
+  ExpectFilledField("Country", "country", "US", "select-one",
+                    response_data.fields[5]);
+}
+
 // Test that non-focusable field is ignored while inferring boundaries between
 // sections, but not filled.
 TEST_F(BrowserAutofillManagerTest, FillFormWithNonFocusableFields) {

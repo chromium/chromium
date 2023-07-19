@@ -672,7 +672,7 @@ void FormStructureRationalizer::ApplyRationalizationsToHiddenSelects(
   for (auto current_index = field_index + 1; current_index < fields_->size();
        current_index++) {
     if ((*fields_)[current_index]->IsFocusable() ||
-        !(*fields_)[current_index]->IsSelectOrSelectMenuElement() ||
+        !(*fields_)[current_index]->IsSelectElement() ||
         (*fields_)[current_index]->Type().GetStorableType() != old_type) {
       break;
     }
@@ -686,7 +686,7 @@ void FormStructureRationalizer::ApplyRationalizationsToHiddenSelects(
     return;
   for (auto current_index = field_index - 1;; current_index--) {
     if ((*fields_)[current_index]->IsFocusable() ||
-        !(*fields_)[current_index]->IsSelectOrSelectMenuElement() ||
+        !(*fields_)[current_index]->IsSelectElement() ||
         (*fields_)[current_index]->Type().GetStorableType() != old_type) {
       break;
     }

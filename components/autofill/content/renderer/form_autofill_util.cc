@@ -1105,7 +1105,7 @@ std::vector<WebFormControlElement> ForEachMatchingFormFieldCommon(
 
     if (!element.IsEnabled() || element.IsReadOnly() ||
         (!IsWebElementFocusableForAutofill(element) &&
-         !IsSelectOrSelectMenuElement(element))) {
+         !IsSelectElement(element))) {
       continue;
     }
 

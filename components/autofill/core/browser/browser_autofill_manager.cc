@@ -2309,10 +2309,9 @@ std::vector<SkipStatus> BrowserAutofillManager::GetSkipStatuses(
       continue;
     }
 
-    // Don't fill unfocusable fields, with the exception of <select> and
-    // <selectmenu> fields, for the sake of filling the synthetic fields.
-    if (!autofill_field->IsFocusable() &&
-        !autofill_field->IsSelectOrSelectMenuElement()) {
+    // Don't fill unfocusable fields, with the exception of <select> fields, for
+    // the sake of filling the synthetic fields.
+    if (!autofill_field->IsFocusable() && !autofill_field->IsSelectElement()) {
       skip_statuses[i] = SkipStatus::kInvisibleField;
       continue;
     }
@@ -2492,7 +2491,7 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
       form_interactions_ukm_logger()
           ->LogHiddenRepresentationalFieldSkipDecision(
               *form_structure, *autofill_field,
-              !autofill_field->IsSelectOrSelectMenuElement());
+              !autofill_field->IsSelectElement());
     }
     const bool has_value_before = !result.fields[i].value.empty();
     // Log when the suggestion is selected and log on non-checkable fields that
@@ -2519,8 +2518,8 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
 
     // Must match ForEachMatchingFormField() in form_autofill_util.cc.
     // Only notify autofilling of empty fields and the field that initiated the
-    // filling (note that "select-one" controls may not be empty but will still
-    // be autofilled).
+    // filling (note that <select> and <selectmenu> controls may not be empty
+    // but will still be autofilled).
     const bool should_notify =
         !is_credit_card &&
         (result.fields[i].SameFieldAs(field) ||

@@ -107,7 +107,7 @@ void GetFormField(autofill::FormFieldData* field,
     return;
 
   // Hack to get suggestions from select input elements.
-  if (field->form_control_type == "select-one") {
+  if (field->IsSelectElement()) {
     // Any value set will cause the BrowserAutofillManager to filter suggestions
     // (only show suggestions that begin the same as the current value) with the
     // effect that one only suggestion would be returned; the value itself.
