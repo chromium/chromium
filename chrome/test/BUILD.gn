@@ -1697,7 +1697,6 @@ if (!is_android) {
       "//components/webapps/browser",
       "//components/webapps/browser:test_support",
       "//components/webapps/common:common",
-      "//components/webauthn/core/browser:test_support",
       "//components/webrtc",
       "//components/webrtc_logging/browser",
       "//content/public/common",
