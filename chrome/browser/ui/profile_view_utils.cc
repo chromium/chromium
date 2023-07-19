@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/profile_view_utils.h"
 
+#include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
@@ -15,6 +16,7 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/common/url_constants.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -119,4 +121,11 @@ std::vector<ProfileAttributesEntry*> GetAllOtherProfileEntriesForProfileSubMenu(
   }
 
   return result;
+}
+
+bool IsOtherProfileCommand(int command_id) {
+  return command_id >= AppMenuModel::kMinOtherProfileCommandId &&
+         ((command_id - IDC_FIRST_UNBOUNDED_MENU) %
+              AppMenuModel::kNumUnboundedMenuTypes ==
+          (AppMenuModel::kMinOtherProfileCommandId - IDC_FIRST_UNBOUNDED_MENU));
 }

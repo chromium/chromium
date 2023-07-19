@@ -1333,6 +1333,16 @@ void AppMenuModel::LogMenuMetrics(int command_id) {
       }
       LogMenuAction(MENU_ACTION_SHOW_ADDRESSES);
       break;
+    default: {
+      if (IsOtherProfileCommand(command_id)) {
+        if (!uma_action_recorded_) {
+          UMA_HISTOGRAM_MEDIUM_TIMES(
+              "WrenchMenu.TimeToAction.SwitchToAnotherProfile", delta);
+        }
+        LogMenuAction(MENU_ACTION_SWITCH_TO_ANOTHER_PROFILE);
+      }
+      break;
+    }
   }
 
   if (!uma_action_recorded_) {

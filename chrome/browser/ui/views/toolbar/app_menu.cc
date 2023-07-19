@@ -145,14 +145,6 @@ bool IsRecentTabsCommand(int command_id) {
           1);
 }
 
-// Returns true if |command_id| identifies an other profile menu item.
-bool IsOtherProfileCommand(int command_id) {
-  return command_id >= IDC_FIRST_UNBOUNDED_MENU &&
-         ((command_id - IDC_FIRST_UNBOUNDED_MENU) %
-              AppMenuModel::kNumUnboundedMenuTypes ==
-          2);
-}
-
 // Combination border/background for the buttons contained in the menu. The
 // painting of the border/background is done here as LabelButton does not always
 // paint the border.

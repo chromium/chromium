@@ -116715,6 +116715,7 @@ Called by update_scheduler_enums.py.-->
   <int value="77" label="Password Manager (submenu)"/>
   <int value="78" label="Payment methods"/>
   <int value="79" label="Addresses and more"/>
+  <int value="80" label="Switch directly to other profile"/>
 </enum>
 
 <enum name="WrongConfigurationMetric">

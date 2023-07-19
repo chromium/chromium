@@ -41,4 +41,7 @@ std::u16string GetProfileMenuDisplayName(
 std::vector<ProfileAttributesEntry*> GetAllOtherProfileEntriesForProfileSubMenu(
     const Profile* current_profile);
 
+// Returns true if |command_id| identifies an other profile menu item.
+bool IsOtherProfileCommand(int command_id);
+
 #endif  // CHROME_BROWSER_UI_PASSWORDS_UI_UTILS_H_

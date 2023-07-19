@@ -14673,6 +14673,7 @@ regressions. -->
     <variant name="ShowTranslate"/>
     <variant name="ShowTurnOnSync"/>
     <variant name="SiteSettings"/>
+    <variant name="SwitchToAnotherProfile"/>
     <variant name="TaskManager"/>
     <variant name="ViewSource"/>
     <variant name="VisitChromeWebStore"/>
