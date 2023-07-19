@@ -169,31 +169,9 @@ void AddToHomescreenDataFetcher::OnDidGetWebPageMetadata(
   if (!web_contents_)
     return;
 
-  // Note, the title should have already been clipped on the renderer side.
-  // TODO(https://crbug.com/673422): Would be nice if this constraint could be
-  // specified directly in the mojom file and enforced automatically.
-  if (web_page_metadata->application_name.size() > kMaxMetaTagAttributeLength) {
-    mojo::ReportBadMessage("application_name is too long");
-    return;
-  }
+  shortcut_info_.user_title = web_contents_->GetTitle();
+  shortcut_info_.UpdateFromWebPageMetadata(*web_page_metadata);
 
-  // Set the user-editable title to be the page's title.
-  std::u16string app_name;
-  base::TrimWhitespace(web_page_metadata->application_name,
-                       base::TrimPositions::TRIM_ALL, &app_name);
-  shortcut_info_.user_title =
-      app_name.empty() ? web_contents_->GetTitle() : app_name;
-  shortcut_info_.short_name = shortcut_info_.user_title;
-  shortcut_info_.name = shortcut_info_.user_title;
-
-  if (web_page_metadata->mobile_capable ==
-          mojom::WebPageMobileCapable::ENABLED ||
-      web_page_metadata->mobile_capable ==
-          mojom::WebPageMobileCapable::ENABLED_APPLE) {
-    shortcut_info_.display = blink::mojom::DisplayMode::kStandalone;
-    shortcut_info_.UpdateSource(
-        ShortcutInfo::SOURCE_ADD_TO_HOMESCREEN_STANDALONE);
-  }
   mobile_capable_meta_ = web_page_metadata->mobile_capable;
 
   // Kick off a timeout for downloading web app manifest data. If we haven't

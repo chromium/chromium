@@ -103,6 +103,30 @@ std::vector<WebappIcon> ShortcutInfo::GetWebApkIcons() {
   return icons;
 }
 
+void ShortcutInfo::UpdateFromWebPageMetadata(
+    const mojom::WebPageMetadata& metadata) {
+  std::u16string app_name;
+  base::TrimWhitespace(metadata.application_name, base::TrimPositions::TRIM_ALL,
+                       &app_name);
+  if (!app_name.empty()) {
+    user_title = app_name;
+  }
+  short_name = user_title;
+  name = user_title;
+  if (!metadata.description.empty()) {
+    description = metadata.description;
+  }
+  if (metadata.application_url.is_valid()) {
+    url = metadata.application_url;
+    scope = metadata.application_url;
+  }
+  if (metadata.mobile_capable == mojom::WebPageMobileCapable::ENABLED ||
+      metadata.mobile_capable == mojom::WebPageMobileCapable::ENABLED_APPLE) {
+    display = blink::mojom::DisplayMode::kStandalone;
+    UpdateSource(ShortcutInfo::SOURCE_ADD_TO_HOMESCREEN_STANDALONE);
+  }
+}
+
 void ShortcutInfo::UpdateFromManifest(const blink::mojom::Manifest& manifest) {
   std::u16string s_name = manifest.short_name.value_or(std::u16string());
   std::u16string f_name = manifest.name.value_or(std::u16string());

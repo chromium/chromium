@@ -102,6 +102,43 @@ TEST_F(ShortcutInfoTest, AllAttributesUpdate) {
   ASSERT_EQ(manifest_.icons[0].src, GURL(info_.icon_urls[0]));
 }
 
+TEST_F(ShortcutInfoTest, UpdateFromWebPageMetadata) {
+  info_ = ShortcutInfo(GURL());
+  webapps::mojom::WebPageMetadataPtr metadata =
+      webapps::mojom::WebPageMetadata::New();
+  metadata->application_name = u"new title";
+  metadata->description = u"new description";
+  metadata->application_url = GURL("https://new.com/start");
+  metadata->mobile_capable = mojom::WebPageMobileCapable::ENABLED;
+
+  info_.UpdateFromWebPageMetadata(*metadata);
+
+  ASSERT_EQ(metadata->application_name, info_.user_title);
+  ASSERT_EQ(metadata->application_name, info_.name);
+  ASSERT_EQ(metadata->application_name, info_.short_name);
+  ASSERT_EQ(metadata->description, info_.description);
+  ASSERT_EQ(metadata->application_url, info_.url);
+  ASSERT_EQ(metadata->application_url, info_.scope);
+  ASSERT_EQ(blink::mojom::DisplayMode::kStandalone, info_.display);
+}
+
+TEST_F(ShortcutInfoTest, UpdateFromEmptyMetadata) {
+  GURL test_url("https://example.com");
+  info_ = ShortcutInfo(test_url);
+  info_.user_title = u"old title";
+  webapps::mojom::WebPageMetadataPtr metadata =
+      webapps::mojom::WebPageMetadata::New();
+
+  info_.UpdateFromWebPageMetadata(*metadata);
+
+  ASSERT_EQ(u"old title", info_.user_title);
+  ASSERT_EQ(u"old title", info_.name);
+  ASSERT_EQ(u"old title", info_.short_name);
+  ASSERT_TRUE(info_.description.empty());
+  ASSERT_EQ(test_url, info_.url);
+  ASSERT_EQ(blink::mojom::DisplayMode::kBrowser, info_.display);
+}
+
 TEST_F(ShortcutInfoTest, GetAllWebApkIcons) {
   GURL best_primary_icon_url("https://best_primary_icon.png");
   GURL splash_image_url("https://splash_image.png");
