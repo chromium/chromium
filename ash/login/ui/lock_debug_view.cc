@@ -85,7 +85,6 @@ enum class DebugAuthEnabledState {
   // Note that this would only be displayed on the secondary login screen.
   kMultiProfilePrimaryOnly,
   kMultiProfileNotAllowed,
-  kMultiProfileOwnerPrimaryOnly,
 
   // The auth disabled message is displayed because the force online
   // sign in is unavailable on the secondary login screen.
@@ -450,9 +449,6 @@ class LockDebugView::DebugDataDispatcherTransformer
       case DebugAuthEnabledState::kMultiProfileNotAllowed:
         behavior = MultiProfileUserBehavior::NOT_ALLOWED;
         break;
-      case DebugAuthEnabledState::kMultiProfileOwnerPrimaryOnly:
-        behavior = MultiProfileUserBehavior::OWNER_PRIMARY_ONLY;
-        break;
       case DebugAuthEnabledState::kForceOnlineSignIn:
         break;
     }
@@ -478,7 +474,6 @@ class LockDebugView::DebugDataDispatcherTransformer
         break;
       case DebugAuthEnabledState::kMultiProfilePrimaryOnly:
       case DebugAuthEnabledState::kMultiProfileNotAllowed:
-      case DebugAuthEnabledState::kMultiProfileOwnerPrimaryOnly:
         lock_debug_view_->lock()->SetMultiprofilePolicyForUserForDebug(
             debug_users_[user_index].account_id, behavior);
         break;

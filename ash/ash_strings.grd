@@ -4534,9 +4534,6 @@ Turning on battery saver to increase your battery life.
       <message name="IDS_ASH_LOGIN_MULTI_PROFILES_PRIMARY_ONLY_POLICY_MSG" desc="Text that is shown on the bubble shown for user pod which is not allowed in multi-profiles session because of primary-only policy.">
         The administrator for this account requires this account to be the first signed-in account in a multiple sign-in session.
       </message>
-      <message name="IDS_ASH_LOGIN_MULTI_PROFILES_OWNER_PRIMARY_ONLY_MSG" desc="Text that is shown on the bubble shown for owner user pod which is not allowed in multi-profiles session because it has to be primary user in the session.">
-        This owner account has to be the first signed-in account in a multiple sign-in session.
-      </message>
       <message name="IDS_ASH_LOGIN_ONLINE_SIGN_IN_MESSAGE" desc="Message shown in the login screen when online sign-in is required.">
         Sign in
       </message>

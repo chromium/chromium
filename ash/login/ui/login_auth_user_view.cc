@@ -1428,9 +1428,6 @@ std::u16string LoginAuthUserView::GetMultiprofileDisableAuthMessage() const {
     case MultiProfileUserBehavior::NOT_ALLOWED:
       message_id = IDS_ASH_LOGIN_MULTI_PROFILES_NOT_ALLOWED_POLICY_MSG;
       break;
-    case MultiProfileUserBehavior::OWNER_PRIMARY_ONLY:
-      message_id = IDS_ASH_LOGIN_MULTI_PROFILES_OWNER_PRIMARY_ONLY_MSG;
-      break;
     case MultiProfileUserBehavior::UNRESTRICTED:
       NOTREACHED();
       message_id = 0;

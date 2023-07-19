@@ -113,7 +113,6 @@ enum class MultiProfileUserBehavior {
   UNRESTRICTED = 0,
   PRIMARY_ONLY = 1,
   NOT_ALLOWED = 2,
-  OWNER_PRIMARY_ONLY = 3,
 };
 
 // The status of fingerprint availability.
