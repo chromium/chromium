@@ -102,6 +102,20 @@ component("features") {
   ]
 }
 
+static_library("test_support") {
+  testonly = true
+  sources = [
+    "autofill_test_utils.cc",
+    "autofill_test_utils.h",
+  ]
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//url",
+  ]
+  public_deps = [ ":common" ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [
