@@ -154,9 +154,11 @@ class ScalableIphNotificationDelegate
   // TODO(b/284158779): Add `ActionType`.
   ScalableIphNotificationDelegate(
       std::unique_ptr<scalable_iph::IphSession> iph_session,
-      std::string notification_id)
+      std::string notification_id,
+      ActionType action_type)
       : iph_session_(std::move(iph_session)),
-        notification_id_(notification_id) {}
+        notification_id_(notification_id),
+        action_type_(action_type) {}
 
   // message_center::NotificationDelegate:
   void Click(const absl::optional<int>& button_index,
@@ -165,16 +167,9 @@ class ScalableIphNotificationDelegate
       return;
     }
 
-    // TODO(b/284158779): Handle action.
-    // iph_session->PerformAction(action_type_)
-
+    iph_session_->PerformAction(action_type_);
     message_center::MessageCenter::Get()->RemoveNotification(notification_id_,
                                                              /*by_user=*/false);
-  }
-
-  void Close(bool by_user) override {
-    // TODO(b/284158779): Handle dismiss.
-    // iph_session->Dismiss(action_type_, by_user);
   }
 
  private:
@@ -182,6 +177,7 @@ class ScalableIphNotificationDelegate
 
   std::unique_ptr<scalable_iph::IphSession> iph_session_;
   std::string notification_id_;
+  ActionType action_type_;
 };
 
 }  // namespace
@@ -256,7 +252,8 @@ void ScalableIphDelegateImpl::ShowNotification(
           base::UTF8ToUTF16(notification_source_name), GURL(), GetNotifierId(),
           rich_notification_data,
           base::MakeRefCounted<ScalableIphNotificationDelegate>(
-              std::move(iph_session), params.notification_id),
+              std::move(iph_session), params.notification_id,
+              params.button.action.action_type),
           gfx::kNoneIcon,
           message_center::SystemNotificationWarningLevel::NORMAL);
   if (IsWallpaperNotification(params)) {
@@ -391,7 +388,7 @@ void ScalableIphDelegateImpl::OnNetworkStateList(
 
 void ScalableIphDelegateImpl::OnNudgeButtonClicked(
     const std::string& bubble_id,
-    scalable_iph::ActionType action_type) {
+    ActionType action_type) {
   if (bubble_id_ != bubble_id) {
     DCHECK(false) << "Callback for an obsolete bubble id gets called "
                   << bubble_id;
