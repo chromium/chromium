@@ -12,6 +12,7 @@
 #include "base/containers/cxx20_erase.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/json/json_writer.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
@@ -447,6 +448,14 @@ MakeCredentialRequestHandler::MakeCredentialRequestHandler(
       fido_discovery_factory,
       base::STLSetIntersection<base::flat_set<FidoTransportProtocol>>(
           supported_transports, allowed_transports));
+  std::string json_string;
+  if (!options_.json ||
+      !base::JSONWriter::WriteWithOptions(
+          *options_.json->value, base::JsonOptions::OPTIONS_PRETTY_PRINT,
+          &json_string)) {
+    json_string = "no JSON";
+  }
+  FIDO_LOG(EVENT) << "Starting MakeCredential flow: " << json_string;
   Start();
 }
 

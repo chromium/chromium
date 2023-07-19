@@ -138,4 +138,9 @@ BASE_FEATURE(kWebAuthnEnclaveAuthenticator,
              "WebAuthenticationEnclaveAuthenticator",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enabled in M117. Remove in or after M120.
+BASE_FEATURE(kWebAuthnJSONSerializeRequests,
+             "WebAuthenticationJSONSerializeRequests",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace device

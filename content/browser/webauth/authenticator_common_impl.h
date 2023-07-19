@@ -27,7 +27,6 @@
 
 namespace device {
 
-class FidoRequestHandlerBase;
 class FidoDiscoveryFactory;
 
 enum class FidoReturnCode : uint8_t;

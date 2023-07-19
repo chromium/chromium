@@ -40,6 +40,7 @@ include_rules = [
   "+components/url_formatter",
   "+components/viz",
   "+components/web_package",
+  "+components/webauthn/json",
   "+components/cbor",
   "+components/os_crypt/sync/os_crypt_switches.h",
   # *********************************** NOTE ***********************************

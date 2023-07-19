@@ -3263,6 +3263,7 @@ source_set("browser") {
     deps += [
       "//components/speech:speech",
       "//components/vector_icons",
+      "//components/webauthn/json",
       "//content/browser/tracing:resources",
     ]
   }
