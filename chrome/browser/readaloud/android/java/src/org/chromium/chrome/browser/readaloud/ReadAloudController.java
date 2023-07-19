@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.readaloud;
 
-import android.content.Context;
-
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
@@ -35,7 +33,6 @@ public class ReadAloudController {
     private final Map<String, Boolean> mTimepointsSupportedMap = new HashMap<>();
     private final HashSet<String> mPendingRequests = new HashSet<>();
     private final TabModel mTabModel;
-    private final ReadAloudReadabilityHooks mReadabilityHooks;
     private TabModelTabObserver mTabObserver;
 
     @Nullable
@@ -66,14 +63,11 @@ public class ReadAloudController {
                 }
             };
 
-    public ReadAloudController(
-            Context context, ObservableSupplier<Profile> profileSupplier, TabModel tabModel) {
+    public ReadAloudController(ObservableSupplier<Profile> profileSupplier, TabModel tabModel) {
         mProfileSupplier = profileSupplier;
         mTabModel = tabModel;
-        mReadabilityHooks = sReadabilityHooksForTesting != null
-                ? sReadabilityHooksForTesting
-                : new ReadAloudReadabilityHooksImpl(context, /* apiKeyOverride= */ null);
-        if (mReadabilityHooks.isEnabled()) {
+
+        if (getReadabilityHooks().isEnabled()) {
             mTabObserver = new TabModelTabObserver(mTabModel) {
                 @Override
                 public void onPageLoadStarted(Tab tab, GURL url) {
@@ -92,7 +86,7 @@ public class ReadAloudController {
                     }
 
                     mPendingRequests.add(urlSpec);
-                    mReadabilityHooks.isPageReadable(urlSpec, mReadabilityCallback);
+                    getReadabilityHooks().isPageReadable(urlSpec, mReadabilityCallback);
                 }
             };
         }
@@ -147,6 +141,13 @@ public class ReadAloudController {
     public static void setReadabilityHooks(ReadAloudReadabilityHooks hooks) {
         sReadabilityHooksForTesting = hooks;
         ResettersForTesting.register(() -> sReadabilityHooksForTesting = null);
+    }
+
+    private ReadAloudReadabilityHooks getReadabilityHooks() {
+        if (sReadabilityHooksForTesting != null) {
+            return sReadabilityHooksForTesting;
+        }
+        return ReadAloudReadabilityHooksImpl.getInstance();
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)

@@ -4,12 +4,18 @@
 
 package org.chromium.chrome.browser.readaloud;
 
-import android.content.Context;
-
-import androidx.annotation.Nullable;
 /** Empty implementation of ReadAloudReadabilityHooks. */
 public class ReadAloudReadabilityHooksImpl implements ReadAloudReadabilityHooks {
-    public ReadAloudReadabilityHooksImpl(Context context, @Nullable String apiKeyOverride){};
+    private static ReadAloudReadabilityHooksImpl sHooks;
+
+    private ReadAloudReadabilityHooksImpl(){};
+
+    public static ReadAloudReadabilityHooksImpl getInstance() {
+        if (sHooks == null) {
+            sHooks = new ReadAloudReadabilityHooksImpl();
+        }
+        return sHooks;
+    }
 
     @Override
     public boolean isEnabled() {
