@@ -210,7 +210,7 @@ public final class BaseSuggestionViewBinder<T extends View>
             int paddingStart = sds.isLarge ? sPaddingStartLargeIcon : sPaddingSmallIcon;
             int paddingEnd = sds.isLarge ? sPaddingEndLargeIcon : sPaddingSmallIcon;
             int edgeSize = sds.isLarge ? sEdgeSizeLargeIcon : sEdgeSize;
-            rciv.setPadding(paddingStart, 0, paddingEnd, 0);
+            rciv.setPaddingRelative(paddingStart, 0, paddingEnd, 0);
             rciv.setMinimumHeight(edgeSize);
             rciv.setClipToOutline(sds.useRoundedCorners);
         }
