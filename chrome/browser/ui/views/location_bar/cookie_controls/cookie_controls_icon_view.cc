@@ -58,13 +58,12 @@ void CookieControlsIconView::UpdateImpl() {
     }
     controller_->Update(web_contents);
   }
-  UpdateIconView();
+  UpdateVisibilityAndAnimate();
 }
 
-void CookieControlsIconView::UpdateIconView(bool confidence_changed) {
+void CookieControlsIconView::UpdateVisibilityAndAnimate(
+    bool confidence_changed) {
   UpdateIconImage();
-
-  // TODO(crbug.com/1446230): Update visibility logic for User Bypass.
   bool should_show = ShouldBeVisible();
   if (should_show) {
     if (!GetVisible() || confidence_changed) {
@@ -101,25 +100,21 @@ void CookieControlsIconView::OnStatusChanged(
     base::Time expiration) {
   if (status_ != status) {
     status_ = status;
-    UpdateIconView();
+    UpdateVisibilityAndAnimate();
   }
 }
 
 void CookieControlsIconView::OnSitesCountChanged(
     int allowed_third_party_sites_count,
     int blocked_third_party_sites_count) {
-  if (has_blocked_sites_ != blocked_third_party_sites_count > 0) {
-    has_blocked_sites_ = blocked_third_party_sites_count > 0;
-    UpdateIconView();
-  }
+  // The icon doesn't update if sites count changes.
 }
 
 void CookieControlsIconView::OnBreakageConfidenceLevelChanged(
     CookieControlsBreakageConfidenceLevel level) {
-  // TODO(1446230): Implement OnBreakageConfidenceLevelChanged.
   if (confidence_ != level) {
     confidence_ = level;
-    UpdateIconView(/*confidence_changed=*/true);
+    UpdateVisibilityAndAnimate(/*confidence_changed=*/true);
   }
 }
 
@@ -136,17 +131,9 @@ bool CookieControlsIconView::ShouldBeVisible() const {
     return false;
   }
 
-  switch (status_) {
-    case CookieControlsStatus::kDisabledForSite:
-      return true;
-    case CookieControlsStatus::kEnabled:
-      // TODO(crbug.com/1446230): Update visibility logic, as part of task
-      // b/285315102.
-      return has_blocked_cookies_ || has_blocked_sites_;
-    case CookieControlsStatus::kDisabled:
-    case CookieControlsStatus::kUninitialized:
-      return false;
-  }
+  // Only show the icon for medium & high confidence.
+  return (confidence_ == CookieControlsBreakageConfidenceLevel::kMedium ||
+          confidence_ == CookieControlsBreakageConfidenceLevel::kHigh);
 }
 
 bool CookieControlsIconView::GetAssociatedBubble() const {
