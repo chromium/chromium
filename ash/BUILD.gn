@@ -3282,6 +3282,7 @@ test("ash_unittests") {
     "style/color_util_unittest.cc",
     "style/dark_light_mode_controller_unittests.cc",
     "style/system_components_unittests.cc",
+    "style/system_shadow_unittest.cc",
     "system/accessibility/accessibility_detailed_view_unittest.cc",
     "system/accessibility/accessibility_feature_pod_controller_unittest.cc",
     "system/accessibility/autoclick_menu_bubble_controller_unittest.cc",

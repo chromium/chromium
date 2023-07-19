@@ -7,6 +7,7 @@
 #include "ash/style/system_shadow_on_nine_patch_layer.h"
 #include "ash/style/system_shadow_on_texture_layer.h"
 #include "base/memory/ptr_util.h"
+#include "ui/color/color_provider.h"
 
 namespace ash {
 
@@ -55,6 +56,17 @@ int SystemShadow::GetElevationFromType(Type type) {
       return 16;
     case Type::kElevation24:
       return 24;
+  }
+}
+
+void SystemShadow::ObserveColorProviderSource(
+    ui::ColorProviderSource* color_provider_source) {
+  Observe(color_provider_source);
+}
+
+void SystemShadow::OnColorProviderChanged() {
+  if (auto* color_provider_source = GetColorProviderSource()) {
+    UpdateShadowColors(color_provider_source->GetColorProvider());
   }
 }
 

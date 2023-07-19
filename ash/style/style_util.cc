@@ -7,8 +7,10 @@
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/color_util.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
+#include "ash/style/system_shadow.h"
 #include "ash/style/typography.h"
 #include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/font_list.h"
 #include "ui/views/animation/flood_fill_ink_drop_ripple.h"
@@ -188,6 +190,32 @@ StyleUtil::CreateAshStyleTooltipView() {
       TypographyToken::kCrosAnnotation1));
   tooltip_view->SetMinLineHeight(kTooltipMinLineHeight);
   return tooltip_view;
+}
+
+// static
+ui::Shadow::ElevationToColorsMap StyleUtil::CreateShadowElevationToColorsMap(
+    const ui::ColorProvider* color_provider) {
+  ui::Shadow::ElevationToColorsMap colors_map;
+  colors_map[SystemShadow::GetElevationFromType(
+      SystemShadow::Type::kElevation4)] =
+      std::make_pair(
+          color_provider->GetColor(ui::kColorShadowValueKeyShadowElevationFour),
+          color_provider->GetColor(
+              ui::kColorShadowValueAmbientShadowElevationFour));
+  colors_map[SystemShadow::GetElevationFromType(
+      SystemShadow::Type::kElevation12)] =
+      std::make_pair(color_provider->GetColor(
+                         ui::kColorShadowValueKeyShadowElevationTwelve),
+                     color_provider->GetColor(
+                         ui::kColorShadowValueAmbientShadowElevationTwelve));
+  colors_map[SystemShadow::GetElevationFromType(
+      SystemShadow::Type::kElevation24)] =
+      std::make_pair(
+          color_provider->GetColor(
+              ui::kColorShadowValueKeyShadowElevationTwentyFour),
+          color_provider->GetColor(
+              ui::kColorShadowValueAmbientShadowElevationTwentyFour));
+  return colors_map;
 }
 
 }  // namespace ash

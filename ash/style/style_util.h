@@ -8,8 +8,13 @@
 #include "ash/ash_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/color/color_id.h"
+#include "ui/compositor_extra/shadow.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/insets.h"
+
+namespace ui {
+class ColorProvider;
+}  // namespace ui
 
 namespace views {
 class Background;
@@ -103,6 +108,10 @@ class ASH_EXPORT StyleUtil {
 
   static std::unique_ptr<views::corewm::TooltipViewAura>
   CreateAshStyleTooltipView();
+
+  // Creates a shadow colors map with given color provider.
+  static ui::Shadow::ElevationToColorsMap CreateShadowElevationToColorsMap(
+      const ui::ColorProvider* color_provider);
 
  private:
   StyleUtil() = default;

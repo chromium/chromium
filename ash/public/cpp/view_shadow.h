@@ -37,6 +37,7 @@ class ASH_PUBLIC_EXPORT ViewShadow : public views::ViewObserver,
   void OnLayerRecreated(ui::Layer* old_layer) override;
 
   ui::Shadow* shadow() { return shadow_.get(); }
+  const ui::Shadow* shadow() const { return shadow_.get(); }
 
  private:
   // views::ViewObserver:

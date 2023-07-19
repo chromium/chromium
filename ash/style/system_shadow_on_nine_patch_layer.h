@@ -11,8 +11,10 @@
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
 #include "ui/compositor_extra/shadow.h"
+#include "ui/views/view_observer.h"
 
 namespace ui {
+class ColorProvider;
 class Layer;
 }  // namespace ui
 
@@ -33,9 +35,15 @@ class SystemShadowOnNinePatchLayer : public SystemShadow {
   const gfx::Rect& GetContentBounds() override;
   ui::Layer* GetLayer() override;
   ui::Layer* GetNinePatchLayer() override;
+  const gfx::ShadowValues GetShadowValuesForTesting() const override;
 
  protected:
   virtual ui::Shadow* shadow() = 0;
+  virtual const ui::Shadow* shadow() const = 0;
+
+ private:
+  // SystemShadow:
+  void UpdateShadowColors(const ui::ColorProvider* color_provider) override;
 };
 
 // An implementation of `SystemShadowOnNinePatchLayer`. It is directly based on
@@ -52,6 +60,7 @@ class SystemShadowOnNinePatchLayerImpl : public SystemShadowOnNinePatchLayer {
  private:
   // SystemShadowOnNinePatchLayer:
   ui::Shadow* shadow() override;
+  const ui::Shadow* shadow() const override;
 
   ui::Shadow shadow_;
 };
@@ -60,7 +69,8 @@ class SystemShadowOnNinePatchLayerImpl : public SystemShadowOnNinePatchLayer {
 // ViewShadow. The ViewShadow is added in the layers beneath the view and
 // adjusts its content bounds with the view's bounds. Do not manually set the
 // content bounds.
-class SystemViewShadowOnNinePatchLayer : public SystemShadowOnNinePatchLayer {
+class SystemViewShadowOnNinePatchLayer : public SystemShadowOnNinePatchLayer,
+                                         public views::ViewObserver {
  public:
   SystemViewShadowOnNinePatchLayer(views::View* view, SystemShadow::Type type);
   SystemViewShadowOnNinePatchLayer(const SystemViewShadowOnNinePatchLayer&) =
@@ -72,12 +82,19 @@ class SystemViewShadowOnNinePatchLayer : public SystemShadowOnNinePatchLayer {
   // SystemShadow:
   void SetRoundedCornerRadius(int corner_radius) override;
 
+  // views::ViewObserver:
+  void OnViewAddedToWidget(views::View* observed_view) override;
+  void OnViewIsDeleting(views::View* observed_view) override;
+
  private:
   // SystemShadowOnNinePatchLayer:
   void SetContentBounds(const gfx::Rect& content_bounds) override;
   ui::Shadow* shadow() override;
+  const ui::Shadow* shadow() const override;
 
   ViewShadow view_shadow_;
+  base::ScopedObservation<views::View, views::ViewObserver> view_observation_{
+      this};
 };
 
 // An extension of SystemShadowOnNinePatchLayerImpl. The shadow is added at the
@@ -101,6 +118,7 @@ class SystemWindowShadowOnNinePatchLayer
                              const gfx::Rect& new_bounds,
                              ui::PropertyChangeReason reason) override;
   void OnWindowDestroyed(aura::Window* window) override;
+  void OnWindowAddedToRootWindow(aura::Window* window) override;
 
  private:
   // SystemShadowOnNinePatchLayerImpl:
