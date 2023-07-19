@@ -185,6 +185,7 @@ void InstallPreloadedVerifiedAppCommand::OnManifestParsed(
   data_retriever_->GetIcons(
       &web_contents_lock_->shared_web_contents(), std::move(icon_urls),
       /*skip_page_favicons=*/true,
+      /*fail_all_if_any_fail=*/false,
       base::BindOnce(&InstallPreloadedVerifiedAppCommand::OnIconsRetrieved,
                      weak_ptr_factory_.GetWeakPtr()));
 }

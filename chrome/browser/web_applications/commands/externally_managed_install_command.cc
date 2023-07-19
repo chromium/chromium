@@ -211,6 +211,7 @@ void ExternallyManagedInstallCommand::OnPreparedForIconRetrieving(
     WebAppUrlLoaderResult result) {
   data_retriever_->GetIcons(
       web_contents_.get(), std::move(icon_urls), skip_page_favicons,
+      /*fail_all_if_any_fail=*/false,
       base::BindOnce(&ExternallyManagedInstallCommand::
                          OnIconsRetrievedUpgradeLockDescription,
                      weak_factory_.GetWeakPtr()));

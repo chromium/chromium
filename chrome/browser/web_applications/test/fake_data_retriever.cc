@@ -49,10 +49,11 @@ void FakeDataRetriever::CheckInstallabilityAndRetrieveManifest(
 void FakeDataRetriever::GetIcons(content::WebContents* web_contents,
                                  const base::flat_set<GURL>& icon_urls,
                                  bool skip_page_favicons,
+                                 bool fail_all_if_any_fail,
                                  GetIconsCallback callback) {
   if (get_icons_delegate_) {
-    icons_map_ =
-        get_icons_delegate_.Run(web_contents, icon_urls, skip_page_favicons);
+    icons_map_ = get_icons_delegate_.Run(
+        web_contents, icon_urls, skip_page_favicons, fail_all_if_any_fail);
   }
 
   completion_callback_ =

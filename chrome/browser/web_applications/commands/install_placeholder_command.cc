@@ -96,6 +96,7 @@ void InstallPlaceholderCommand::FetchCustomIcon(const GURL& url,
 
   data_retriever_->GetIcons(
       web_contents_.get(), {url}, /*skip_page_favicons=*/true,
+      /*fail_all_if_any_fail=*/false,
       base::BindOnce(&InstallPlaceholderCommand::OnCustomIconFetched,
                      weak_factory_.GetWeakPtr(), url, retries_left));
 }

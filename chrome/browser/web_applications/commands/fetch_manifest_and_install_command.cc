@@ -437,6 +437,7 @@ void FetchManifestAndInstallCommand::OnDidCheckForIntentToPlayStore(
 
   data_retriever_->GetIcons(
       web_contents_.get(), std::move(icon_urls), skip_page_favicons,
+      /*fail_all_if_any_fail=*/false,
       base::BindOnce(
           &FetchManifestAndInstallCommand::OnIconsRetrievedShowDialog,
           weak_ptr_factory_.GetWeakPtr()));

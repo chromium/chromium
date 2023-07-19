@@ -187,6 +187,7 @@ void FetchInstallInfoFromInstallUrlCommand::OnManifestRetrieved(
 
   data_retriever_->GetIcons(
       &lock_->shared_web_contents(), std::move(icon_urls), skip_page_favicons,
+      /*fail_all_if_any_fail=*/false,
       base::BindOnce(&FetchInstallInfoFromInstallUrlCommand::OnIconsRetrieved,
                      weak_ptr_factory_.GetWeakPtr(), std::move(web_app_info)));
 }

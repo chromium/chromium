@@ -20,6 +20,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/fake_web_contents_manager.h"
+#include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
@@ -189,6 +190,10 @@ TEST_F(IsolatedWebAppApplyUpdateCommandTest, Succeeds) {
   WriteUpdateBundleToDisk();
   CreateDefaultPageState();
 
+  auto& icon_state = fake_web_contents_manager().GetOrCreateIconState(
+      url_info_.origin().GetURL().Resolve(kIconPath));
+  icon_state.bitmaps = {web_app::CreateSquareIcon(32, SK_ColorWHITE)};
+
   auto result = ApplyPendingUpdate();
   EXPECT_THAT(result.has_value(), IsTrue()) << result.error();
 
@@ -339,17 +344,6 @@ TEST_F(IsolatedWebAppApplyUpdateCommandTest, FailsIfIconDownloadFails) {
   WriteUpdateBundleToDisk();
   CreateDefaultPageState();
 
-  // TODO(b/288394839): We currently do not error when the download of an
-  // individual icon fails. We should change that behavior for IWAs and fail
-  // installation/update if icons cannot be downloaded. Once this is done, the
-  // code below should be updated to use `icon_state.http_status_code` to test
-  // that a failing icon download fails the update process, instead of using
-  // `icon_state.trigger_primary_page_changed_if_fetched` to test a failing icon
-  // download.
-  auto& icon_state = fake_web_contents_manager().GetOrCreateIconState(
-      url_info_.origin().GetURL().Resolve(kIconPath));
-  icon_state.trigger_primary_page_changed_if_fetched = true;
-
   auto result = ApplyPendingUpdate();
   ASSERT_THAT(result.has_value(), IsFalse());
   EXPECT_THAT(result.error().message,
@@ -380,6 +374,10 @@ TEST_F(IsolatedWebAppApplyUpdateCommandTest, FailsIfInstallFinalizerFails) {
   InstallIwa(update_info());
   WriteUpdateBundleToDisk();
   CreateDefaultPageState();
+
+  auto& icon_state = fake_web_contents_manager().GetOrCreateIconState(
+      url_info_.origin().GetURL().Resolve(kIconPath));
+  icon_state.bitmaps = {web_app::CreateSquareIcon(32, SK_ColorWHITE)};
 
   auto result = ApplyPendingUpdate();
   ASSERT_THAT(result.has_value(), IsFalse());

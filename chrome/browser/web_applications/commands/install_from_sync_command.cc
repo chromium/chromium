@@ -248,6 +248,7 @@ void InstallFromSyncCommand::OnDidPerformInstallableCheck(
   data_retriever_->GetIcons(
       &lock_->shared_web_contents(), std::move(icon_urls),
       /*skip_page_favicons=*/true,
+      /*fail_all_if_any_fail=*/false,
       base::BindOnce(&InstallFromSyncCommand::OnIconsRetrievedFinalizeInstall,
                      weak_ptr_factory_.GetWeakPtr(),
                      FinalizeMode::kNormalWebAppInfo));
@@ -311,6 +312,7 @@ void InstallFromSyncCommand::InstallFallback(webapps::InstallResultCode code) {
   data_retriever_->GetIcons(
       &lock_->shared_web_contents(), std::move(icon_urls),
       /*skip_page_favicons=*/true,
+      /*fail_all_if_any_fail=*/false,
       base::BindOnce(&InstallFromSyncCommand::OnIconsRetrievedFinalizeInstall,
                      weak_ptr_factory_.GetWeakPtr(),
                      FinalizeMode::kFallbackWebAppInfo));

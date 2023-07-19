@@ -171,8 +171,8 @@ std::unique_ptr<MockDataRetriever> CreateDefaultDataRetriever(
   using HttpStatusCode = int;
   std::map<GURL, HttpStatusCode> http_result = {};
 
-  ON_CALL(*fake_data_retriever, GetIcons(_, _, _, IsNotNullCallback()))
-      .WillByDefault(RunOnceCallback<3>(IconsDownloadedResult::kCompleted,
+  ON_CALL(*fake_data_retriever, GetIcons(_, _, _, _, IsNotNullCallback()))
+      .WillByDefault(RunOnceCallback<4>(IconsDownloadedResult::kCompleted,
                                         std::move(icons), http_result));
 
   return fake_data_retriever;
@@ -797,8 +797,9 @@ TEST_F(InstallIsolatedWebAppCommandManifestIconsTest,
 
   EXPECT_CALL(*fake_data_retriever,
               GetIcons(_, UnorderedElementsAre(img_url),
-                       /*skip_page_favicons=*/true, IsNotNullCallback()))
-      .WillOnce(RunOnceCallback<3>(IconsDownloadedResult::kCompleted,
+                       /*skip_page_favicons=*/true,
+                       /*fail_all_if_any_fail=*/true, IsNotNullCallback()))
+      .WillOnce(RunOnceCallback<4>(IconsDownloadedResult::kCompleted,
                                    std::move(icons), http_result));
 
   EXPECT_TRUE(ExecuteCommand(
@@ -850,8 +851,8 @@ TEST_F(InstallIsolatedWebAppCommandManifestIconsTest,
   using HttpStatusCode = int;
   std::map<GURL, HttpStatusCode> http_result = {};
 
-  EXPECT_CALL(*fake_data_retriever, GetIcons(_, _, _, IsNotNullCallback()))
-      .WillOnce(RunOnceCallback<3>(IconsDownloadedResult::kAbortedDueToFailure,
+  EXPECT_CALL(*fake_data_retriever, GetIcons(_, _, _, _, IsNotNullCallback()))
+      .WillOnce(RunOnceCallback<4>(IconsDownloadedResult::kAbortedDueToFailure,
                                    std::move(icons), http_result));
 
   EXPECT_THAT(ExecuteCommand(

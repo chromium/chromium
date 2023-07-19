@@ -333,6 +333,8 @@ void IsolatedWebAppInstallCommandHelper::RetrieveIconsAndPopulateInstallInfo(
   data_retriever_->GetIcons(
       &web_contents, std::move(icon_urls),
       /*skip_page_favicons=*/true,
+      // IWAs should not refer to resources which don't exist.
+      /*fail_all_if_any_fail=*/true,
       base::BindOnce(&IsolatedWebAppInstallCommandHelper::OnRetrieveIcons,
                      weak_factory_.GetWeakPtr(), std::move(install_info),
                      std::move(callback)));

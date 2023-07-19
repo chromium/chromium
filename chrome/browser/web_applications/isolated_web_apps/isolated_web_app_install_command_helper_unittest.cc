@@ -798,8 +798,9 @@ TEST_F(InstallIsolatedWebAppCommandHelperManifestIconsTest,
       CreateDefaultDataRetriever(kSomeTestApplicationUrl);
   EXPECT_CALL(*fake_data_retriever,
               GetIcons(_, UnorderedElementsAre(img_url),
-                       /*skip_page_favicons=*/true, IsNotNullCallback()))
-      .WillOnce(RunOnceCallback<3>(IconsDownloadedResult::kCompleted,
+                       /*skip_page_favicons=*/true,
+                       /*fail_all_if_any_fail=*/true, IsNotNullCallback()))
+      .WillOnce(RunOnceCallback<4>(IconsDownloadedResult::kCompleted,
                                    std::move(icons), http_result));
   auto command_helper = std::make_unique<IsolatedWebAppInstallCommandHelper>(
       url_info, std::move(fake_data_retriever),
@@ -852,8 +853,8 @@ TEST_F(InstallIsolatedWebAppCommandHelperManifestIconsTest,
 
   std::unique_ptr<MockDataRetriever> fake_data_retriever =
       CreateDefaultDataRetriever(url_info.origin().GetURL());
-  EXPECT_CALL(*fake_data_retriever, GetIcons(_, _, _, IsNotNullCallback()))
-      .WillOnce(RunOnceCallback<3>(IconsDownloadedResult::kAbortedDueToFailure,
+  EXPECT_CALL(*fake_data_retriever, GetIcons(_, _, _, _, IsNotNullCallback()))
+      .WillOnce(RunOnceCallback<4>(IconsDownloadedResult::kAbortedDueToFailure,
                                    std::move(icons), http_result));
   auto command_helper = std::make_unique<IsolatedWebAppInstallCommandHelper>(
       url_info, std::move(fake_data_retriever),

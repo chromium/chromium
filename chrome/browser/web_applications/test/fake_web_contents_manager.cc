@@ -115,6 +115,18 @@ class FakeWebContentsManager::FakeWebAppIconDownloader
       auto icons_it = manager_->icon_state_.find(icon_url);
       if (icons_it == manager_->icon_state_.end()) {
         DLOG(WARNING) << "No icon state at url: " << icon_url.spec();
+
+        if (options.fail_all_if_any_fail) {
+          // TODO: Test this codepath when migrating the
+          // ManifestUpdateCheckCommand to use WebContentsManager.
+          base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+              FROM_HERE,
+              base::BindOnce(std::move(callback),
+                             IconsDownloadedResult::kAbortedDueToFailure,
+                             IconsMap{}, std::move(per_icon_results)));
+          return;
+        }
+
         per_icon_results[icon_url] = 404;
         continue;
       }
@@ -274,6 +286,7 @@ class FakeWebContentsManager::FakeWebAppDataRetriever
   void GetIcons(content::WebContents* web_contents,
                 const base::flat_set<GURL>& extra_favicon_urls,
                 bool skip_page_favicons,
+                bool fail_all_if_any_fail,
                 GetIconsCallback callback) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     CHECK(manager_);
@@ -285,7 +298,7 @@ class FakeWebContentsManager::FakeWebAppDataRetriever
     downloader_ptr->Start(web_contents, extra_favicon_urls,
                           std::move(callback).Then(std::move(owning_callback)),
                           {.skip_page_favicons = skip_page_favicons,
-                           .fail_all_if_any_fail = false});
+                           .fail_all_if_any_fail = fail_all_if_any_fail});
   }
 
  private:
