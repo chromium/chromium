@@ -12,6 +12,7 @@
 
 namespace gpu {
 struct ContextCreationAttribs;
+class GpuDriverBugWorkarounds;
 
 namespace gles2 {
 class ContextGroup;
@@ -53,6 +54,8 @@ ParseWebGPUAdapterName(const base::CommandLine* command_line);
 
 GPU_GLES2_EXPORT WebGPUPowerPreference
 ParseWebGPUPowerPreference(const base::CommandLine* command_line);
+
+bool MSAAIsSlow(const GpuDriverBugWorkarounds& workarounds);
 
 }  // namespace gles2
 }  // namespace gpu

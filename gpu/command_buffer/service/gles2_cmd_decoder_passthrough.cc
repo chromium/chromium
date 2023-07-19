@@ -24,6 +24,7 @@
 #include "gpu/command_buffer/service/multi_draw_manager.h"
 #include "gpu/command_buffer/service/passthrough_discardable_manager.h"
 #include "gpu/command_buffer/service/program_cache.h"
+#include "gpu/command_buffer/service/service_utils.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "ui/gl/gl_utils.h"
@@ -1414,10 +1415,7 @@ gpu::Capabilities GLES2DecoderPassthroughImpl::GetCapabilities() {
       group_->gpu_feature_info()
           .status_values[GPU_FEATURE_TYPE_GPU_RASTERIZATION] ==
       kGpuFeatureStatusEnabled;
-  caps.msaa_is_slow =
-      base::FeatureList::IsEnabled(features::kEnableMSAAOnNewIntelGPUs)
-          ? feature_info_->workarounds().msaa_is_slow_2
-          : feature_info_->workarounds().msaa_is_slow;
+  caps.msaa_is_slow = MSAAIsSlow(feature_info_->workarounds());
   caps.avoid_stencil_buffers =
       feature_info_->workarounds().avoid_stencil_buffers;
   caps.multisample_compatibility =

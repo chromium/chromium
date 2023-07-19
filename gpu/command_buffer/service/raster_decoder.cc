@@ -1258,10 +1258,7 @@ Capabilities RasterDecoderImpl::GetCapabilities() {
                  feature_info()->workarounds().max_3d_array_texture_size);
   }
   caps.sync_query = feature_info()->feature_flags().chromium_sync_query;
-  caps.msaa_is_slow =
-      base::FeatureList::IsEnabled(features::kEnableMSAAOnNewIntelGPUs)
-          ? feature_info()->workarounds().msaa_is_slow_2
-          : feature_info()->workarounds().msaa_is_slow;
+  caps.msaa_is_slow = gles2::MSAAIsSlow(feature_info()->workarounds());
   caps.avoid_stencil_buffers =
       feature_info()->workarounds().avoid_stencil_buffers;
 

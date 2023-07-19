@@ -316,6 +316,8 @@ bool SharedContextState::InitializeGanesh(
   // in GetCapabilities and ensuring these are also used by the
   // PaintOpBufferSerializer.
   GrContextOptions options = GetDefaultGrContextOptions();
+
+  options.fAllowMSAAOnNewIntel = !gles2::MSAAIsSlow(workarounds);
   options.fPersistentCache = cache;
   options.fShaderErrorHandler = this;
   if (gpu_preferences.force_max_texture_size)

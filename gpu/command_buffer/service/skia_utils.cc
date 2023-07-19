@@ -95,8 +95,6 @@ GrContextOptions GetDefaultGrContextOptions() {
   // in a more granular way.  For OOPR-Canvas we want 8, but for other purposes,
   // a texture atlas with sample count of 4 would be sufficient
   options.fInternalMultisampleCount = 8;
-  options.fAllowMSAAOnNewIntel =
-      base::FeatureList::IsEnabled(features::kEnableMSAAOnNewIntelGPUs);
 
   options.fSuppressMipmapSupport =
       base::CommandLine::ForCurrentProcess()->HasSwitch(

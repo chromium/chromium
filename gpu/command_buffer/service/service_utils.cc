@@ -310,5 +310,22 @@ WebGPUPowerPreference ParseWebGPUPowerPreference(
   return WebGPUPowerPreference::kNone;
 }
 
+bool MSAAIsSlow(const GpuDriverBugWorkarounds& workarounds) {
+  // The logic below assumes that msaa_is_slow is a superset of
+  // msaa_is_slow_2
+  CHECK(!workarounds.msaa_is_slow_2 || workarounds.msaa_is_slow);
+
+  // Only query the kEnableMSAAOnNewIntelGPUs feature flag if the host device
+  // is affected by the experiment (i.e. is a new Intel GPU).
+  // This is to avoid activating the experiment on hosts that are irrelevant
+  // to the study in order to boost statistical power.
+  bool affected_by_experiment =
+      workarounds.msaa_is_slow && !workarounds.msaa_is_slow_2;
+
+  return affected_by_experiment ? !base::FeatureList::IsEnabled(
+                                      features::kEnableMSAAOnNewIntelGPUs)
+                                : workarounds.msaa_is_slow;
+}
+
 }  // namespace gles2
 }  // namespace gpu
