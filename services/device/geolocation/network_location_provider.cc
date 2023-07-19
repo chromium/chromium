@@ -4,11 +4,13 @@
 
 #include "services/device/geolocation/network_location_provider.h"
 
+#include <iterator>
 #include <utility>
 
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_runner.h"
@@ -83,6 +85,16 @@ NetworkLocationProvider::~NetworkLocationProvider() {
 void NetworkLocationProvider::FillDiagnostics(
     mojom::GeolocationDiagnostics& diagnostics) {
   diagnostics.provider_state = state_;
+  diagnostics.network_location_diagnostics =
+      mojom::NetworkLocationDiagnostics::New();
+  base::ranges::transform(
+      wifi_data_.access_point_data,
+      std::back_inserter(
+          diagnostics.network_location_diagnostics->access_point_data),
+      [](const auto& access_point) { return access_point.Clone(); });
+  if (!wifi_timestamp_.is_null()) {
+    diagnostics.network_location_diagnostics->wifi_timestamp = wifi_timestamp_;
+  }
 }
 
 void NetworkLocationProvider::SetUpdateCallback(

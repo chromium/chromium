@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from '//resources/js/assert_ts.js';
 import {CustomElement} from '//resources/js/custom_element.js';
 import {getTrustedHTML} from '//resources/js/static_types.js';
 
@@ -17,22 +16,40 @@ export class DiagnoseInfoTableElement extends CustomElement {
     return getTemplate();
   }
 
-  private tableCaption_: HTMLElement;
+  private tableTitle_: HTMLElement;
   private tableHead_: HTMLElement;
   private tableBody_: HTMLElement;
+  private tableFooter_: HTMLElement;
 
   constructor() {
     super();
+    this.tableTitle_ =
+        this.getRequiredElement<HTMLElement>('caption#table-title');
     this.tableHead_ = this.getRequiredElement<HTMLElement>('thead');
     this.tableBody_ = this.getRequiredElement<HTMLElement>('tbody');
-    this.tableCaption_ = this.getRequiredElement<HTMLElement>('caption');
+    this.tableFooter_ =
+        this.getRequiredElement<HTMLElement>('caption#table-footer');
   }
 
-  updateTable(tableName: string, entries: Array<Record<string, string>>) {
-    assert(entries.length > 0);
+  hideTable() {
+    this.style.display = 'none';
+    this.tableTitle_.textContent = '';
     this.tableHead_.innerHTML = getTrustedHTML``;
     this.tableBody_.innerHTML = getTrustedHTML``;
-    this.tableCaption_.textContent = tableName;
+    this.tableFooter_.textContent = '';
+  }
+
+  updateTable(
+      tableName: string, entries: Array<Record<string, string>>,
+      footer: string|undefined = undefined) {
+    if (entries.length === 0) {
+      this.hideTable();
+      return;
+    }
+    this.style.display = 'block';
+    this.tableTitle_.textContent = tableName;
+    this.tableHead_.innerHTML = getTrustedHTML``;
+    this.tableBody_.innerHTML = getTrustedHTML``;
     const tableHeadFirstRow = document.createElement('tr');
     this.tableHead_.appendChild(tableHeadFirstRow);
     for (let i: number = 0; i < entries.length; i++) {
@@ -49,6 +66,11 @@ export class DiagnoseInfoTableElement extends CustomElement {
         tableBodyRow.appendChild(valueCell);
       }
       this.tableBody_.appendChild(tableBodyRow);
+    }
+    if (footer === undefined) {
+      this.tableFooter_.textContent = '';
+    } else {
+      this.tableFooter_.textContent = footer;
     }
   }
 }

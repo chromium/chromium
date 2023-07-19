@@ -13,6 +13,7 @@
 #include "net/base/network_change_notifier.h"
 #include "services/device/geolocation/position_cache_test_util.h"
 #include "services/device/public/cpp/geolocation/geoposition.h"
+#include "services/device/public/mojom/geolocation_internals.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace device {
@@ -24,6 +25,12 @@ class PositionCacheImplTest : public ::testing::Test {
         network_change_notifier_(
             net::NetworkChangeNotifier::CreateMockIfNeeded()),
         cache_(task_environment_.GetMockTickClock()) {}
+
+  mojom::PositionCacheDiagnosticsPtr GetDiagnostics() {
+    auto diagnostics = mojom::PositionCacheDiagnostics::New();
+    cache_.FillDiagnostics(*diagnostics);
+    return diagnostics;
+  }
 
  protected:
   base::test::TaskEnvironment task_environment_;
@@ -221,4 +228,70 @@ TEST_F(PositionCacheImplTest, NetworkChangeClearsEmptyWifiDataPosition) {
   EXPECT_TRUE(initial_geoposition->Equals(*found_position));
   EXPECT_EQ(1U, cache_.GetPositionCacheSize());
 }
+
+TEST_F(PositionCacheImplTest, DiagnosticsEmpty) {
+  auto diagnostics = GetDiagnostics();
+  ASSERT_TRUE(diagnostics);
+  EXPECT_EQ(0u, diagnostics->cache_size);
+  EXPECT_FALSE(diagnostics->last_hit);
+  EXPECT_FALSE(diagnostics->last_miss);
+  EXPECT_FALSE(diagnostics->hit_rate);
+  EXPECT_FALSE(diagnostics->last_network_result);
+}
+
+TEST_F(PositionCacheImplTest, DiagnosticsCacheMiss) {
+  base::Time miss_time = base::Time::Now();
+  EXPECT_EQ(nullptr,
+            cache_.FindPosition(testing::CreateDefaultUniqueWifiData()));
+  auto diagnostics = GetDiagnostics();
+  ASSERT_TRUE(diagnostics);
+  EXPECT_EQ(0u, diagnostics->cache_size);
+  EXPECT_FALSE(diagnostics->last_hit);
+  EXPECT_EQ(miss_time, diagnostics->last_miss);
+  EXPECT_EQ(0.0, diagnostics->hit_rate);
+  EXPECT_FALSE(diagnostics->last_network_result);
+}
+
+TEST_F(PositionCacheImplTest, DiagnosticsCacheHit) {
+  auto wifi_data = testing::CreateDefaultUniqueWifiData();
+  auto position = testing::CreateGeoposition(1);
+  cache_.CachePosition(wifi_data, *position);
+  {
+    auto diagnostics = GetDiagnostics();
+    ASSERT_TRUE(diagnostics);
+    EXPECT_EQ(1u, diagnostics->cache_size);
+    EXPECT_FALSE(diagnostics->last_hit);
+    EXPECT_FALSE(diagnostics->last_miss);
+    EXPECT_FALSE(diagnostics->hit_rate);
+    EXPECT_FALSE(diagnostics->last_network_result);
+  }
+  base::Time hit_time = base::Time::Now();
+  auto* found_position = cache_.FindPosition(wifi_data);
+  ASSERT_TRUE(found_position);
+  EXPECT_EQ(*position, *found_position);
+  {
+    auto diagnostics = GetDiagnostics();
+    ASSERT_TRUE(diagnostics);
+    EXPECT_EQ(1u, diagnostics->cache_size);
+    EXPECT_EQ(hit_time, diagnostics->last_hit);
+    EXPECT_FALSE(diagnostics->last_miss);
+    EXPECT_EQ(1.0, diagnostics->hit_rate);
+    EXPECT_FALSE(diagnostics->last_network_result);
+  }
+}
+
+TEST_F(PositionCacheImplTest, DiagnosticsLastNetworkResult) {
+  auto result =
+      mojom::GeopositionResult::NewPosition(testing::CreateGeoposition(1));
+  cache_.SetLastUsedNetworkPosition(*result);
+
+  auto diagnostics = GetDiagnostics();
+  ASSERT_TRUE(diagnostics);
+  EXPECT_EQ(0u, diagnostics->cache_size);
+  EXPECT_FALSE(diagnostics->last_hit);
+  EXPECT_FALSE(diagnostics->last_miss);
+  EXPECT_FALSE(diagnostics->hit_rate);
+  EXPECT_EQ(*result, *diagnostics->last_network_result);
+}
+
 }  // namespace device

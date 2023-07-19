@@ -149,6 +149,11 @@ void LocationArbitrator::FillDiagnostics(
   for (auto& provider : providers_) {
     provider->FillDiagnostics(diagnostics);
   }
+  if (position_cache_) {
+    diagnostics.position_cache_diagnostics =
+        mojom::PositionCacheDiagnostics::New();
+    position_cache_->FillDiagnostics(*diagnostics.position_cache_diagnostics);
+  }
 }
 
 void LocationArbitrator::SetUpdateCallback(

@@ -8,6 +8,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/device_event_log/device_event_log.h"
 #include "services/device/geolocation/wifi_data.h"
+#include "services/device/public/mojom/geolocation_internals.mojom.h"
 #include "services/device/public/mojom/geoposition.mojom.h"
 
 namespace device {
@@ -75,10 +76,17 @@ void PositionCacheImpl::CachePosition(const WifiData& wifi_data,
 }
 
 const mojom::Geoposition* PositionCacheImpl::FindPosition(
-    const WifiData& wifi_data) const {
+    const WifiData& wifi_data) {
   const Hash key = MakeKey(wifi_data);
   auto it = base::ranges::find(data_, key);
-  return it == data_.end() ? nullptr : (it->position());
+  if (it == data_.end()) {
+    ++miss_count_;
+    last_miss_ = base::Time::Now();
+    return nullptr;
+  }
+  ++hit_count_;
+  last_hit_ = base::Time::Now();
+  return it->position();
 }
 
 size_t PositionCacheImpl::GetPositionCacheSize() const {
@@ -94,6 +102,24 @@ const mojom::GeopositionResult* PositionCacheImpl::GetLastUsedNetworkPosition()
 void PositionCacheImpl::SetLastUsedNetworkPosition(
     const mojom::GeopositionResult& result) {
   last_used_result_ = result.Clone();
+}
+
+void PositionCacheImpl::FillDiagnostics(
+    mojom::PositionCacheDiagnostics& diagnostics) {
+  diagnostics.cache_size = data_.size();
+  if (last_hit_) {
+    diagnostics.last_hit = *last_hit_;
+  }
+  if (last_miss_) {
+    diagnostics.last_miss = *last_miss_;
+  }
+  if (hit_count_ || miss_count_) {
+    diagnostics.hit_rate =
+        static_cast<double>(hit_count_) / (hit_count_ + miss_count_);
+  }
+  if (last_used_result_) {
+    diagnostics.last_network_result = last_used_result_.Clone();
+  }
 }
 
 void PositionCacheImpl::OnNetworkChanged(

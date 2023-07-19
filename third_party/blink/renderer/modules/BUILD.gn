@@ -282,6 +282,7 @@ group("make_modules_generated") {
     "//media/capture/mojom:image_capture_blink_headers",
     "//media/midi:mojo_blink_headers",
     "//services/device/public/mojom:generic_sensor_headers",
+    "//services/device/public/mojom:geoposition_blink_headers",
     "//services/device/public/mojom:mojom_blink_headers",
     "//services/device/public/mojom:usb_blink_headers",
     "//services/shape_detection/public/mojom:mojom_blink_headers",

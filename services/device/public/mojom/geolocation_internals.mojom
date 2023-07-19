@@ -4,6 +4,9 @@
 
 module device.mojom;
 
+import "mojo/public/mojom/base/time.mojom";
+import "services/device/public/mojom/geoposition.mojom";
+
 // Types and interfaces defined in this file are intended for use by the
 // geolocation internals WebUI. (chrome://location-internals)
 
@@ -29,6 +32,36 @@ struct AccessPointData {
   int32 signal_to_noise = kInvalidSignalToNoise;
 };
 
+// A snapshot of the internal state of the NetworkLocationProvider.
+struct NetworkLocationDiagnostics {
+  // The most recently received set of nearby Wi-Fi access points, or an empty
+  // array if no access point data has been received.
+  array<AccessPointData> access_point_data;
+
+  // The time when `access_point_data` was received from the platform API, or
+  // null if no access point data has been received.
+  mojo_base.mojom.Time? wifi_timestamp;
+};
+
+// Diagnostic information about the cache of responses from the location
+// service.
+struct PositionCacheDiagnostics {
+  // The number of entries in the cache.
+  uint32 cache_size = 0;
+
+  // Timestamps recorded for the most recent cache hit and miss. May be null if
+  // the cache has not been accessed.
+  mojo_base.mojom.Time? last_hit;
+  mojo_base.mojom.Time? last_miss;
+
+  // The cache hit rate. May be null if the cache has not been accessed.
+  double? hit_rate;
+
+  // The most recently used network position estimate or error, or null if no
+  // network position estimate has been created.
+  GeopositionResult? last_network_result;
+};
+
 // A snapshot of the internal state of the Geolocation API implementation.
 struct GeolocationDiagnostics {
   // The current state of a LocationProvider.
@@ -46,6 +79,14 @@ struct GeolocationDiagnostics {
 
   // The state of the active provider, or kStopped if there is no provider.
   ProviderState provider_state;
+
+  // Internal state of the network location provider, or null if the network
+  // location provider is not active.
+  NetworkLocationDiagnostics? network_location_diagnostics;
+
+  // Diagnostic information about the position cache, or null if the position
+  // cache has not been created.
+  PositionCacheDiagnostics? position_cache_diagnostics;
 };
 
 // Interface for chrome://location-internals to access geolocation debug data.
@@ -54,4 +95,3 @@ interface GeolocationInternals {
   // or null if the geolocation service is not initialized.
   GetDiagnostics() => (GeolocationDiagnostics? diagnostics);
 };
-

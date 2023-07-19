@@ -20,12 +20,12 @@ export const REFRESH_STATUS_FAILURE =
      initialized, please click "Start Watching Position" button or access
       Geolocation API at least once.`;
 export const REFRESH_FINISH_EVENT = 'refresh-finish-event';
-const DiagnoseInfoView = 'diagnose-info-view';
+export const DIAGNOSE_INFO_VIEW_ID = 'diagnose-info-view';
 
 let watchId: number = -1;
 let geolocationInternals: GeolocationInternalsRemote|null = null;
 const diagnoseInfoView =
-    getRequiredElement<DiagnoseInfoViewElement>(DiagnoseInfoView);
+    getRequiredElement<DiagnoseInfoViewElement>(DIAGNOSE_INFO_VIEW_ID);
 
 // Initialize buttons callback
 function initializeButtons() {
