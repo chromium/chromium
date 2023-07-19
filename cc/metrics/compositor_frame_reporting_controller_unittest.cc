@@ -1428,7 +1428,6 @@ TEST_F(CompositorFrameReportingControllerTest,
   std::unique_ptr<EventMetrics> metrics_1 = CreateScrollUpdateEventMetrics(
       ui::ScrollInputType::kWheel, /*is_inertial=*/false,
       ScrollUpdateEventMetrics::ScrollUpdateType::kStarted);
-  metrics_1->set_requires_main_thread_update();
   base::TimeTicks start_time_1 = metrics_1->GetDispatchStageTimestamp(
       EventMetrics::DispatchStage::kGenerated);
 
@@ -1438,6 +1437,7 @@ TEST_F(CompositorFrameReportingControllerTest,
   std::unique_ptr<EventMetrics> metrics_2 = CreateScrollUpdateEventMetrics(
       ui::ScrollInputType::kWheel, /*is_inertial=*/false,
       ScrollUpdateEventMetrics::ScrollUpdateType::kContinued);
+  metrics_2->set_requires_main_thread_update();
   base::TimeTicks start_time_2 = metrics_2->GetDispatchStageTimestamp(
       EventMetrics::DispatchStage::kGenerated);
 
@@ -1474,10 +1474,10 @@ TEST_F(CompositorFrameReportingControllerTest,
   details_2.presentation_feedback.timestamp = AdvanceNowByMs(10);
   reporting_controller_.DidPresentCompositorFrame(*current_token_, details_2);
 
-  // metrics_1 has requires_main_thread_update(), so its latency is based on the
-  // final-update presentation (details_2).
+  // metrics_1 did NOT have requires_main_thread_update(), so its latency is
+  // based on the partial-update presentation (details_1).
   base::TimeDelta expected_latency_1 =
-      details_2.presentation_feedback.timestamp - start_time_1;
+      details_1.presentation_feedback.timestamp - start_time_1;
   histogram_tester.ExpectBucketCount(
       "EventLatency.FirstGestureScrollUpdate.Wheel.TotalLatency",
       expected_latency_1.InMicroseconds(), 1);
@@ -1485,10 +1485,10 @@ TEST_F(CompositorFrameReportingControllerTest,
       "EventLatency.FirstGestureScrollUpdate.Wheel.TotalLatency2",
       expected_latency_1.InMicroseconds(), 1);
 
-  // metrics_2 did NOT have requires_main_thread_update(), so its latency is
-  // based on the partial-update presentation (details_1).
+  // metrics_2 has requires_main_thread_update(), so its latency is based on the
+  // final-update presentation (details_2).
   base::TimeDelta expected_latency_2 =
-      details_1.presentation_feedback.timestamp - start_time_2;
+      details_2.presentation_feedback.timestamp - start_time_2;
   histogram_tester.ExpectBucketCount(
       "EventLatency.GestureScrollUpdate.Wheel.TotalLatency",
       expected_latency_2.InMicroseconds(), 1);
