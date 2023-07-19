@@ -20,7 +20,7 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
-#include "content/browser/file_system_access/file_system_access_write_lock_manager.h"
+#include "content/browser/file_system_access/file_system_access_lock_manager.h"
 #include "content/browser/file_system_access/fixed_file_system_access_permission_grant.h"
 #include "content/browser/file_system_access/mock_file_system_access_permission_context.h"
 #include "content/public/test/browser_task_environment.h"
@@ -79,8 +79,9 @@ class TestFileSystemBackend : public storage::TestFileSystemBackend {
       const storage::FileSystemURL& url,
       storage::FileSystemContext* context,
       base::File::Error* error_code) const override {
-    if (operation_created_callback_)
+    if (operation_created_callback_) {
       std::move(operation_created_callback_).Run(url);
+    }
     return storage::TestFileSystemBackend::CreateFileSystemOperation(
         url, context, error_code);
   }
@@ -154,13 +155,11 @@ class FileSystemAccessFileWriterImplTest : public testing::Test {
           quarantine_receivers_.Add(&quarantine_, std::move(receiver));
         });
 
-    auto lock = manager_->TakeWriteLock(
-        test_file_url_,
-        FileSystemAccessWriteLockManager::WriteLockType::kShared);
+    auto lock = manager_->TakeLock(
+        test_file_url_, FileSystemAccessLockManager::LockType::kShared);
     ASSERT_TRUE(lock);
-    auto swap_lock = manager_->TakeWriteLock(
-        test_swap_url_,
-        FileSystemAccessWriteLockManager::WriteLockType::kExclusive);
+    auto swap_lock = manager_->TakeLock(
+        test_swap_url_, FileSystemAccessLockManager::LockType::kExclusive);
     ASSERT_TRUE(swap_lock);
 
     handle_ = manager_->CreateFileWriter(
@@ -215,13 +214,16 @@ class FileSystemAccessFileWriterImplTest : public testing::Test {
       auto buf = base::MakeRefCounted<net::IOBufferWithSize>(4096);
       net::TestCompletionCallback callback;
       int rv = reader->Read(buf.get(), buf->size(), callback.callback());
-      if (rv == net::ERR_IO_PENDING)
+      if (rv == net::ERR_IO_PENDING) {
         rv = callback.WaitForResult();
+      }
       EXPECT_GE(rv, 0);
-      if (rv < 0)
+      if (rv < 0) {
         return "(read failure)";
-      if (rv == 0)
+      }
+      if (rv == 0) {
         return result;
+      }
       result.append(buf->data(), rv);
     }
   }
@@ -594,12 +596,11 @@ TEST_F(FileSystemAccessFileWriterAfterWriteChecksTest,
             storage::AsyncFileTestHelper::CreateFile(file_system_context_.get(),
                                                      test_swap_url_));
 
-  auto lock = manager_->TakeWriteLock(
-      test_file_url_, FileSystemAccessWriteLockManager::WriteLockType::kShared);
+  auto lock = manager_->TakeLock(
+      test_file_url_, FileSystemAccessLockManager::LockType::kShared);
   ASSERT_TRUE(lock);
-  auto swap_lock = manager_->TakeWriteLock(
-      test_swap_url_,
-      FileSystemAccessWriteLockManager::WriteLockType::kExclusive);
+  auto swap_lock = manager_->TakeLock(
+      test_swap_url_, FileSystemAccessLockManager::LockType::kExclusive);
   ASSERT_TRUE(swap_lock);
 
   mojo::PendingRemote<blink::mojom::FileSystemAccessFileWriter> remote;

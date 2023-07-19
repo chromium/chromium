@@ -19,8 +19,8 @@
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "content/browser/file_system_access/features.h"
+#include "content/browser/file_system_access/file_system_access_lock_manager.h"
 #include "content/browser/file_system_access/file_system_access_safe_move_helper.h"
-#include "content/browser/file_system_access/file_system_access_write_lock_manager.h"
 #include "content/browser/file_system_access/fixed_file_system_access_permission_grant.h"
 #include "content/browser/file_system_access/mock_file_system_access_permission_context.h"
 #include "content/public/test/browser_task_environment.h"
@@ -83,8 +83,9 @@ class TestFileSystemBackend : public storage::TestFileSystemBackend {
       const storage::FileSystemURL& url,
       storage::FileSystemContext* context,
       base::File::Error* error_code) const override {
-    if (operation_created_callback_)
+    if (operation_created_callback_) {
       std::move(operation_created_callback_).Run(url);
+    }
     return storage::TestFileSystemBackend::CreateFileSystemOperation(
         url, context, error_code);
   }
@@ -158,9 +159,8 @@ class FileSystemAccessSafeMoveHelperTest : public testing::Test {
           quarantine_receivers_.Add(&quarantine_, std::move(receiver));
         });
 
-    ASSERT_TRUE(manager_->TakeWriteLock(
-        test_dest_url_,
-        FileSystemAccessWriteLockManager::WriteLockType::kShared));
+    ASSERT_TRUE(manager_->TakeLock(
+        test_dest_url_, FileSystemAccessLockManager::LockType::kShared));
 
     InitializeHelperWithUrls(test_source_url_, test_dest_url_);
   }

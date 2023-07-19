@@ -22,7 +22,7 @@
 #include "components/services/storage/public/mojom/file_system_access_context.mojom.h"
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
 #include "content/browser/file_system_access/file_system_access.pb.h"
-#include "content/browser/file_system_access/file_system_access_write_lock_manager.h"
+#include "content/browser/file_system_access/file_system_access_lock_manager.h"
 #include "content/browser/file_system_access/file_system_chooser.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/file_system_access_entry_factory.h"
@@ -181,31 +181,30 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
   CreateDirectoryHandle(const BindingContext& context,
                         const storage::FileSystemURL& url,
                         const SharedHandleState& handle_state);
-  // Attempts to take a write lock on `url`. The lock is released when the
-  // returned object is destroyed.
-  scoped_refptr<FileSystemAccessWriteLockManager::WriteLock> TakeWriteLock(
+  // Attempts to take a lock on `url`. The lock is released when the returned
+  // object is destroyed.
+  scoped_refptr<FileSystemAccessLockManager::Lock> TakeLock(
       const storage::FileSystemURL& url,
-      FileSystemAccessWriteLockManager::WriteLockType lock_type);
+      FileSystemAccessLockManager::LockType lock_type);
 
   // Creates a new FileSystemAccessFileWriterImpl for a given target and
   // swap file URLs. Assumes the passed in URLs are valid and represent files.
   mojo::PendingRemote<blink::mojom::FileSystemAccessFileWriter>
-  CreateFileWriter(
-      const BindingContext& binding_context,
-      const storage::FileSystemURL& url,
-      const storage::FileSystemURL& swap_url,
-      scoped_refptr<FileSystemAccessWriteLockManager::WriteLock> lock,
-      scoped_refptr<FileSystemAccessWriteLockManager::WriteLock> swap_lock,
-      const SharedHandleState& handle_state,
-      bool auto_close);
+  CreateFileWriter(const BindingContext& binding_context,
+                   const storage::FileSystemURL& url,
+                   const storage::FileSystemURL& swap_url,
+                   scoped_refptr<FileSystemAccessLockManager::Lock> lock,
+                   scoped_refptr<FileSystemAccessLockManager::Lock> swap_lock,
+                   const SharedHandleState& handle_state,
+                   bool auto_close);
   // Returns a weak pointer to a newly created FileSystemAccessFileWriterImpl.
   // Useful for tests
   base::WeakPtr<FileSystemAccessFileWriterImpl> CreateFileWriter(
       const BindingContext& binding_context,
       const storage::FileSystemURL& url,
       const storage::FileSystemURL& swap_url,
-      scoped_refptr<FileSystemAccessWriteLockManager::WriteLock> lock,
-      scoped_refptr<FileSystemAccessWriteLockManager::WriteLock> swap_lock,
+      scoped_refptr<FileSystemAccessLockManager::Lock> lock,
+      scoped_refptr<FileSystemAccessLockManager::Lock> swap_lock,
       const SharedHandleState& handle_state,
       mojo::PendingReceiver<blink::mojom::FileSystemAccessFileWriter> receiver,
       bool has_transient_user_activation,
@@ -223,7 +222,7 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
           blink::mojom::FileSystemAccessCapacityAllocationHost>
           capacity_allocation_host_receiver,
       int64_t file_size,
-      scoped_refptr<FileSystemAccessWriteLockManager::WriteLock> lock,
+      scoped_refptr<FileSystemAccessLockManager::Lock> lock,
       base::ScopedClosureRunner on_close_callback);
 
   // Create a transfer token for a specific file or directory.
@@ -558,11 +557,11 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
   mojo::ReceiverSet<storage::mojom::FileSystemAccessContext>
       internals_receivers_ GUARDED_BY_CONTEXT(sequence_checker_);
 
-  // The `write_lock_manager_` manager should be destroyed after
-  // `writer_receivers_` and `access_handle_host_receivers_`. The write locks
-  // held by file writers and access handles dereference the lock manager on
-  // destruction, so it should outlive them.
-  std::unique_ptr<FileSystemAccessWriteLockManager> write_lock_manager_
+  // The `lock_manager_` manager should be destroyed after `writer_receivers_`
+  // and `access_handle_host_receivers_`. The locks held by file writers and
+  // access handles dereference the lock manager on destruction, so it should
+  // outlive them.
+  std::unique_ptr<FileSystemAccessLockManager> lock_manager_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   // All the receivers for file and directory handles that have references to

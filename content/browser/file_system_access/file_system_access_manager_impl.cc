@@ -33,8 +33,8 @@
 #include "content/browser/file_system_access/file_system_access_error.h"
 #include "content/browser/file_system_access/file_system_access_file_handle_impl.h"
 #include "content/browser/file_system_access/file_system_access_file_writer_impl.h"
+#include "content/browser/file_system_access/file_system_access_lock_manager.h"
 #include "content/browser/file_system_access/file_system_access_transfer_token_impl.h"
-#include "content/browser/file_system_access/file_system_access_write_lock_manager.h"
 #include "content/browser/file_system_access/file_system_chooser.h"
 #include "content/browser/file_system_access/fixed_file_system_access_permission_grant.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -310,8 +310,7 @@ FileSystemAccessManagerImpl::FileSystemAccessManagerImpl(
     : context_(std::move(context)),
       blob_context_(std::move(blob_context)),
       permission_context_(permission_context),
-      write_lock_manager_(
-          std::make_unique<FileSystemAccessWriteLockManager>(PassKey())),
+      lock_manager_(std::make_unique<FileSystemAccessLockManager>(PassKey())),
       off_the_record_(off_the_record) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(context_);
@@ -472,9 +471,10 @@ void FileSystemAccessManagerImpl::ResolveDefaultDirectory(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   PathInfo path_info;
-  if (resolved_starting_directory_token)
+  if (resolved_starting_directory_token) {
     HandleTransferTokenAsDefaultDirectory(resolved_starting_directory_token,
                                           path_info);
+  }
 
   if (path_info.path.empty() && permission_context_) {
     if (!common_options->starting_directory_id.empty()) {
@@ -819,8 +819,9 @@ std::string SerializeURLImpl(const storage::FileSystemURL& url,
         is_external ? data.mutable_external() : data.mutable_local();
 
     base::FilePath url_path = is_external ? url.virtual_path() : url.path();
-    if (root_permission_path.empty())
+    if (root_permission_path.empty()) {
       root_permission_path = url_path;
+    }
     file_data->set_root_path(SerializePath(root_permission_path));
 
     base::FilePath relative_path;
@@ -1066,12 +1067,12 @@ FileSystemAccessManagerImpl::CreateDirectoryHandle(
       result.InitWithNewPipeAndPassReceiver());
   return result;
 }
-scoped_refptr<FileSystemAccessWriteLockManager::WriteLock>
-FileSystemAccessManagerImpl::TakeWriteLock(
+scoped_refptr<FileSystemAccessLockManager::Lock>
+FileSystemAccessManagerImpl::TakeLock(
     const storage::FileSystemURL& url,
-    FileSystemAccessWriteLockManager::WriteLockType lock_type) {
+    FileSystemAccessLockManager::LockType lock_type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return write_lock_manager_->TakeLock(url, lock_type);
+  return lock_manager_->TakeLock(url, lock_type);
 }
 
 mojo::PendingRemote<blink::mojom::FileSystemAccessFileWriter>
@@ -1079,8 +1080,8 @@ FileSystemAccessManagerImpl::CreateFileWriter(
     const BindingContext& binding_context,
     const storage::FileSystemURL& url,
     const storage::FileSystemURL& swap_url,
-    scoped_refptr<FileSystemAccessWriteLockManager::WriteLock> lock,
-    scoped_refptr<FileSystemAccessWriteLockManager::WriteLock> swap_lock,
+    scoped_refptr<FileSystemAccessLockManager::Lock> lock,
+    scoped_refptr<FileSystemAccessLockManager::Lock> swap_lock,
     const SharedHandleState& handle_state,
     bool auto_close) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -1103,8 +1104,8 @@ FileSystemAccessManagerImpl::CreateFileWriter(
     const BindingContext& binding_context,
     const storage::FileSystemURL& url,
     const storage::FileSystemURL& swap_url,
-    scoped_refptr<FileSystemAccessWriteLockManager::WriteLock> lock,
-    scoped_refptr<FileSystemAccessWriteLockManager::WriteLock> swap_lock,
+    scoped_refptr<FileSystemAccessLockManager::Lock> lock,
+    scoped_refptr<FileSystemAccessLockManager::Lock> swap_lock,
     const SharedHandleState& handle_state,
     mojo::PendingReceiver<blink::mojom::FileSystemAccessFileWriter> receiver,
     bool has_transient_user_activation,
@@ -1132,11 +1133,10 @@ FileSystemAccessManagerImpl::CreateAccessHandleHost(
     mojo::PendingReceiver<blink::mojom::FileSystemAccessCapacityAllocationHost>
         capacity_allocation_host_receiver,
     int64_t file_size,
-    scoped_refptr<FileSystemAccessWriteLockManager::WriteLock> lock,
+    scoped_refptr<FileSystemAccessLockManager::Lock> lock,
     base::ScopedClosureRunner on_close_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(lock->type() ==
-         FileSystemAccessWriteLockManager::WriteLockType::kExclusive);
+  DCHECK(lock->type() == FileSystemAccessLockManager::LockType::kExclusive);
 
   mojo::PendingRemote<blink::mojom::FileSystemAccessAccessHandleHost> result;
   auto receiver = result.InitWithNewPipeAndPassReceiver();
@@ -1647,12 +1647,14 @@ void FileSystemAccessManagerImpl::CleanupAccessHandleCapacityAllocationImpl(
     base::File::Error result,
     const base::File::Info& file_info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (result != base::File::FILE_OK)
+  if (result != base::File::FILE_OK) {
     return;
+  }
   DCHECK_GE(file_info.size, 0);
   // if the QuotaManagerProxy is gone, no changes are possible.
-  if (!context_->quota_manager_proxy())
+  if (!context_->quota_manager_proxy()) {
     return;
+  }
   DCHECK_GE(allocated_file_size, 0);
 
   int64_t overallocation = allocated_file_size - file_info.size;

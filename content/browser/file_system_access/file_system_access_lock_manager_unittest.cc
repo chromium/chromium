@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/file_system_access/file_system_access_write_lock_manager.h"
+#include "content/browser/file_system_access/file_system_access_lock_manager.h"
 
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
@@ -20,15 +20,15 @@
 
 namespace content {
 
-using WriteLock = FileSystemAccessWriteLockManager::WriteLock;
-using WriteLockType = FileSystemAccessWriteLockManager::WriteLockType;
+using Lock = FileSystemAccessLockManager::Lock;
+using LockType = FileSystemAccessLockManager::LockType;
 using storage::FileSystemURL;
 
 static constexpr char kTestMountPoint[] = "testfs";
 
-class FileSystemAccessWriteLockManagerTest : public testing::Test {
+class FileSystemAccessLockManagerTest : public testing::Test {
  public:
-  FileSystemAccessWriteLockManagerTest()
+  FileSystemAccessLockManagerTest()
       : task_environment_(base::test::TaskEnvironment::MainThreadType::IO) {}
 
   void SetUp() override {
@@ -66,70 +66,58 @@ class FileSystemAccessWriteLockManagerTest : public testing::Test {
                                   const FileSystemURL& child_url) {
     // Parent cannot take exclusive lock if child is exclusively locked.
     {
-      auto child_lock =
-          manager_->TakeWriteLock(child_url, WriteLockType::kExclusive);
+      auto child_lock = manager_->TakeLock(child_url, LockType::kExclusive);
       ASSERT_TRUE(child_lock);
-      ASSERT_FALSE(
-          manager_->TakeWriteLock(parent_url, WriteLockType::kExclusive));
+      ASSERT_FALSE(manager_->TakeLock(parent_url, LockType::kExclusive));
     }
 
     // Parent can take shared lock if child is exclusively locked.
     {
-      auto child_lock =
-          manager_->TakeWriteLock(child_url, WriteLockType::kExclusive);
+      auto child_lock = manager_->TakeLock(child_url, LockType::kExclusive);
       ASSERT_TRUE(child_lock);
-      ASSERT_TRUE(manager_->TakeWriteLock(parent_url, WriteLockType::kShared));
+      ASSERT_TRUE(manager_->TakeLock(parent_url, LockType::kShared));
     }
 
     // Child cannot take exclusive lock if parent is exclusively locked.
     {
-      auto parent_lock =
-          manager_->TakeWriteLock(parent_url, WriteLockType::kExclusive);
+      auto parent_lock = manager_->TakeLock(parent_url, LockType::kExclusive);
       ASSERT_TRUE(parent_lock);
-      ASSERT_FALSE(
-          manager_->TakeWriteLock(child_url, WriteLockType::kExclusive));
+      ASSERT_FALSE(manager_->TakeLock(child_url, LockType::kExclusive));
     }
 
     // Child cannot take shared lock if parent is exclusively locked.
     {
-      auto parent_lock =
-          manager_->TakeWriteLock(parent_url, WriteLockType::kExclusive);
+      auto parent_lock = manager_->TakeLock(parent_url, LockType::kExclusive);
       ASSERT_TRUE(parent_lock);
-      ASSERT_FALSE(manager_->TakeWriteLock(child_url, WriteLockType::kShared));
+      ASSERT_FALSE(manager_->TakeLock(child_url, LockType::kShared));
     }
 
     // Parent cannot take exclusive lock if child holds a shared lock.
     {
-      auto child_lock =
-          manager_->TakeWriteLock(child_url, WriteLockType::kShared);
+      auto child_lock = manager_->TakeLock(child_url, LockType::kShared);
       ASSERT_TRUE(child_lock);
-      ASSERT_FALSE(
-          manager_->TakeWriteLock(parent_url, WriteLockType::kExclusive));
+      ASSERT_FALSE(manager_->TakeLock(parent_url, LockType::kExclusive));
     }
 
     // Parent can take shared lock if child holds a shared lock.
     {
-      auto child_lock =
-          manager_->TakeWriteLock(child_url, WriteLockType::kShared);
+      auto child_lock = manager_->TakeLock(child_url, LockType::kShared);
       ASSERT_TRUE(child_lock);
-      ASSERT_TRUE(manager_->TakeWriteLock(parent_url, WriteLockType::kShared));
+      ASSERT_TRUE(manager_->TakeLock(parent_url, LockType::kShared));
     }
 
     // Child can take exclusive lock if parent holds a shared lock.
     {
-      auto parent_lock =
-          manager_->TakeWriteLock(parent_url, WriteLockType::kShared);
+      auto parent_lock = manager_->TakeLock(parent_url, LockType::kShared);
       ASSERT_TRUE(parent_lock);
-      ASSERT_TRUE(
-          manager_->TakeWriteLock(child_url, WriteLockType::kExclusive));
+      ASSERT_TRUE(manager_->TakeLock(child_url, LockType::kExclusive));
     }
 
     // Child can take shared lock if parent holds a shared lock.
     {
-      auto parent_lock =
-          manager_->TakeWriteLock(parent_url, WriteLockType::kShared);
+      auto parent_lock = manager_->TakeLock(parent_url, LockType::kShared);
       ASSERT_TRUE(parent_lock);
-      ASSERT_TRUE(manager_->TakeWriteLock(child_url, WriteLockType::kShared));
+      ASSERT_TRUE(manager_->TakeLock(child_url, LockType::kShared));
     }
   }
 
@@ -150,67 +138,65 @@ class FileSystemAccessWriteLockManagerTest : public testing::Test {
   scoped_refptr<FileSystemAccessManagerImpl> manager_;
 };
 
-TEST_F(FileSystemAccessWriteLockManagerTest, ExclusiveLock) {
+TEST_F(FileSystemAccessLockManagerTest, ExclusiveLock) {
   base::FilePath path = dir_.GetPath().AppendASCII("foo");
   auto url = manager_->CreateFileSystemURLFromPath(
       FileSystemAccessEntryFactory::PathType::kLocal, path);
 
   {
-    auto exclusive_lock =
-        manager_->TakeWriteLock(url, WriteLockType::kExclusive);
+    auto exclusive_lock = manager_->TakeLock(url, LockType::kExclusive);
     ASSERT_TRUE(exclusive_lock);
 
     // Cannot take another lock while the file is exclusively locked.
-    ASSERT_FALSE(manager_->TakeWriteLock(url, WriteLockType::kExclusive));
-    ASSERT_FALSE(manager_->TakeWriteLock(url, WriteLockType::kShared));
+    ASSERT_FALSE(manager_->TakeLock(url, LockType::kExclusive));
+    ASSERT_FALSE(manager_->TakeLock(url, LockType::kShared));
   }
 
   // The exclusive lock has been released and should be available to be
   // re-acquired.
-  ASSERT_TRUE(manager_->TakeWriteLock(url, WriteLockType::kExclusive));
+  ASSERT_TRUE(manager_->TakeLock(url, LockType::kExclusive));
 }
 
-TEST_F(FileSystemAccessWriteLockManagerTest, SharedLock) {
+TEST_F(FileSystemAccessLockManagerTest, SharedLock) {
   base::FilePath path = dir_.GetPath().AppendASCII("foo");
   auto url = manager_->CreateFileSystemURLFromPath(
       FileSystemAccessEntryFactory::PathType::kLocal, path);
 
   {
-    auto shared_lock = manager_->TakeWriteLock(url, WriteLockType::kShared);
+    auto shared_lock = manager_->TakeLock(url, LockType::kShared);
     ASSERT_TRUE(shared_lock);
 
     // Can take another shared lock, but not an exclusive lock.
-    ASSERT_TRUE(manager_->TakeWriteLock(url, WriteLockType::kShared));
-    ASSERT_FALSE(manager_->TakeWriteLock(url, WriteLockType::kExclusive));
+    ASSERT_TRUE(manager_->TakeLock(url, LockType::kShared));
+    ASSERT_FALSE(manager_->TakeLock(url, LockType::kExclusive));
   }
 
   // The shared locks have been released and we should be available to acquire
   // an exclusive lock.
-  ASSERT_TRUE(manager_->TakeWriteLock(url, WriteLockType::kExclusive));
+  ASSERT_TRUE(manager_->TakeLock(url, LockType::kExclusive));
 }
 
-TEST_F(FileSystemAccessWriteLockManagerTest, SandboxedFile) {
+TEST_F(FileSystemAccessLockManagerTest, SandboxedFile) {
   auto url = file_system_context_->CreateCrackedFileSystemURL(
       kTestStorageKey, storage::kFileSystemTypeTemporary,
       base::FilePath::FromUTF8Unsafe("test/foo/bar"));
   url.SetBucket(kTestBucketLocator);
 
   {
-    auto exclusive_lock =
-        manager_->TakeWriteLock(url, WriteLockType::kExclusive);
+    auto exclusive_lock = manager_->TakeLock(url, LockType::kExclusive);
     ASSERT_TRUE(exclusive_lock);
 
     // Cannot take another lock while the file is exclusively locked.
-    ASSERT_FALSE(manager_->TakeWriteLock(url, WriteLockType::kExclusive));
-    ASSERT_FALSE(manager_->TakeWriteLock(url, WriteLockType::kShared));
+    ASSERT_FALSE(manager_->TakeLock(url, LockType::kExclusive));
+    ASSERT_FALSE(manager_->TakeLock(url, LockType::kShared));
   }
 
   // The exclusive lock has been released and should be available to be
   // re-acquired.
-  ASSERT_TRUE(manager_->TakeWriteLock(url, WriteLockType::kExclusive));
+  ASSERT_TRUE(manager_->TakeLock(url, LockType::kExclusive));
 }
 
-TEST_F(FileSystemAccessWriteLockManagerTest, SandboxedFilesSamePath) {
+TEST_F(FileSystemAccessLockManagerTest, SandboxedFilesSamePath) {
   // Sandboxed files of the same relative path do not lock across sites if the
   // BucketLocator is set.
   const blink::StorageKey kOtherStorageKey =
@@ -228,19 +214,17 @@ TEST_F(FileSystemAccessWriteLockManagerTest, SandboxedFilesSamePath) {
   url2.SetBucket(kOtherBucketLocator);
 
   // Take a lock on the file in the first file system.
-  auto exclusive_lock1 =
-      manager_->TakeWriteLock(url1, WriteLockType::kExclusive);
+  auto exclusive_lock1 = manager_->TakeLock(url1, LockType::kExclusive);
   ASSERT_TRUE(exclusive_lock1);
-  ASSERT_FALSE(manager_->TakeWriteLock(url1, WriteLockType::kExclusive));
+  ASSERT_FALSE(manager_->TakeLock(url1, LockType::kExclusive));
 
   // Can still take a lock on the file in the second file system.
-  auto exclusive_lock2 =
-      manager_->TakeWriteLock(url2, WriteLockType::kExclusive);
+  auto exclusive_lock2 = manager_->TakeLock(url2, LockType::kExclusive);
   ASSERT_TRUE(exclusive_lock2);
-  ASSERT_FALSE(manager_->TakeWriteLock(url2, WriteLockType::kExclusive));
+  ASSERT_FALSE(manager_->TakeLock(url2, LockType::kExclusive));
 }
 
-TEST_F(FileSystemAccessWriteLockManagerTest, SandboxedFilesDifferentBucket) {
+TEST_F(FileSystemAccessLockManagerTest, SandboxedFilesDifferentBucket) {
   // Sandboxed files of the same relative path do not lock across buckets.
   const auto path = base::FilePath::FromUTF8Unsafe("test/foo/bar");
   auto url1 = file_system_context_->CreateCrackedFileSystemURL(
@@ -255,19 +239,17 @@ TEST_F(FileSystemAccessWriteLockManagerTest, SandboxedFilesDifferentBucket) {
   url2.SetBucket(kOtherBucketLocator);
 
   // Take a lock on the file in the first file system.
-  auto exclusive_lock1 =
-      manager_->TakeWriteLock(url1, WriteLockType::kExclusive);
+  auto exclusive_lock1 = manager_->TakeLock(url1, LockType::kExclusive);
   ASSERT_TRUE(exclusive_lock1);
-  ASSERT_FALSE(manager_->TakeWriteLock(url1, WriteLockType::kExclusive));
+  ASSERT_FALSE(manager_->TakeLock(url1, LockType::kExclusive));
 
   // Can still take a lock on the file in the second file system.
-  auto exclusive_lock2 =
-      manager_->TakeWriteLock(url2, WriteLockType::kExclusive);
+  auto exclusive_lock2 = manager_->TakeLock(url2, LockType::kExclusive);
   ASSERT_TRUE(exclusive_lock2);
-  ASSERT_FALSE(manager_->TakeWriteLock(url2, WriteLockType::kExclusive));
+  ASSERT_FALSE(manager_->TakeLock(url2, LockType::kExclusive));
 }
 
-TEST_F(FileSystemAccessWriteLockManagerTest, DifferentBackends) {
+TEST_F(FileSystemAccessLockManagerTest, DifferentBackends) {
   // We'll use the same path and pretend they're from different backends.
   base::FilePath path =
       base::FilePath::FromUTF8Unsafe(kTestMountPoint).AppendASCII("foo");
@@ -284,19 +266,18 @@ TEST_F(FileSystemAccessWriteLockManagerTest, DifferentBackends) {
 
   // Take a lock on the file in the local file system.
   auto local_exclusive_lock =
-      manager_->TakeWriteLock(local_url, WriteLockType::kExclusive);
+      manager_->TakeLock(local_url, LockType::kExclusive);
   ASSERT_TRUE(local_exclusive_lock);
-  ASSERT_FALSE(manager_->TakeWriteLock(local_url, WriteLockType::kExclusive));
+  ASSERT_FALSE(manager_->TakeLock(local_url, LockType::kExclusive));
 
   // Can still take a lock on the file in the external file system.
   auto external_exclusive_lock =
-      manager_->TakeWriteLock(external_url, WriteLockType::kExclusive);
+      manager_->TakeLock(external_url, LockType::kExclusive);
   ASSERT_TRUE(external_exclusive_lock);
-  ASSERT_FALSE(
-      manager_->TakeWriteLock(external_url, WriteLockType::kExclusive));
+  ASSERT_FALSE(manager_->TakeLock(external_url, LockType::kExclusive));
 }
 
-TEST_F(FileSystemAccessWriteLockManagerTest, LockAcrossSites) {
+TEST_F(FileSystemAccessLockManagerTest, LockAcrossSites) {
   base::FilePath path = dir_.GetPath().AppendASCII("foo");
   auto url1 = FileSystemURL::CreateForTest(kTestStorageKey,
                                            storage::kFileSystemTypeLocal, path);
@@ -310,21 +291,20 @@ TEST_F(FileSystemAccessWriteLockManagerTest, LockAcrossSites) {
   EXPECT_NE(url1.storage_key(), url2.storage_key());
 
   {
-    auto exclusive_lock =
-        manager_->TakeWriteLock(url1, WriteLockType::kExclusive);
+    auto exclusive_lock = manager_->TakeLock(url1, LockType::kExclusive);
     ASSERT_TRUE(exclusive_lock);
 
     // Other sites cannot access the file while it is exclusively locked.
-    ASSERT_FALSE(manager_->TakeWriteLock(url2, WriteLockType::kExclusive));
-    ASSERT_FALSE(manager_->TakeWriteLock(url2, WriteLockType::kShared));
+    ASSERT_FALSE(manager_->TakeLock(url2, LockType::kExclusive));
+    ASSERT_FALSE(manager_->TakeLock(url2, LockType::kShared));
   }
 
   // The exclusive lock has been released and should be available to be
   // re-acquired.
-  ASSERT_TRUE(manager_->TakeWriteLock(url2, WriteLockType::kExclusive));
+  ASSERT_TRUE(manager_->TakeLock(url2, LockType::kExclusive));
 }
 
-TEST_F(FileSystemAccessWriteLockManagerTest, AncestorLocks) {
+TEST_F(FileSystemAccessLockManagerTest, AncestorLocks) {
   base::FilePath parent_path = dir_.GetPath().AppendASCII("foo");
   auto parent_url = manager_->CreateFileSystemURLFromPath(
       FileSystemAccessEntryFactory::PathType::kLocal, parent_path);
@@ -335,7 +315,7 @@ TEST_F(FileSystemAccessWriteLockManagerTest, AncestorLocks) {
   AssertAncestorLockBehavior(parent_url, child_url);
 }
 
-TEST_F(FileSystemAccessWriteLockManagerTest, AncestorLocksExternal) {
+TEST_F(FileSystemAccessLockManagerTest, AncestorLocksExternal) {
   base::FilePath parent_path =
       base::FilePath::FromUTF8Unsafe(kTestMountPoint).AppendASCII("foo");
   auto parent_url = manager_->CreateFileSystemURLFromPath(
@@ -347,7 +327,7 @@ TEST_F(FileSystemAccessWriteLockManagerTest, AncestorLocksExternal) {
   AssertAncestorLockBehavior(parent_url, child_url);
 }
 
-TEST_F(FileSystemAccessWriteLockManagerTest, AncestorLocksSandboxed) {
+TEST_F(FileSystemAccessLockManagerTest, AncestorLocksSandboxed) {
   auto parent_path = base::FilePath::FromUTF8Unsafe("test/foo/bar");
   auto parent_url = file_system_context_->CreateCrackedFileSystemURL(
       kTestStorageKey, storage::kFileSystemTypeTemporary, parent_path);

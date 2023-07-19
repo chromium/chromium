@@ -26,13 +26,13 @@ namespace content {
 class FileSystemAccessAccessHandleHostImpl
     : public blink::mojom::FileSystemAccessAccessHandleHost {
  public:
-  // Creates an AccessHandleHost that acts as an exclusive write lock on the
-  // file. AccessHandleHosts should only be created via the
+  // Creates an AccessHandleHost that acts as an exclusive lock on the file.
+  // AccessHandleHosts should only be created via the
   // FileSystemAccessManagerImpl.
   FileSystemAccessAccessHandleHostImpl(
       FileSystemAccessManagerImpl* manager,
       const storage::FileSystemURL& url,
-      scoped_refptr<FileSystemAccessWriteLockManager::WriteLock> lock,
+      scoped_refptr<FileSystemAccessLockManager::Lock> lock,
       base::PassKey<FileSystemAccessManagerImpl> pass_key,
       mojo::PendingReceiver<blink::mojom::FileSystemAccessAccessHandleHost>
           receiver,
@@ -106,11 +106,11 @@ class FileSystemAccessAccessHandleHostImpl
   // the callback too early, before the file is actually closed.
   base::ScopedClosureRunner on_close_callback_;
 
-  // Exclusive write lock on the file. It is released on destruction. This
-  // member must be declared after `close_callback_` to ensure that the lock is
-  // released before the FileSystemSyncAccessHandle.close() method returns. See
+  // Exclusive lock on the file. It is released on destruction. This member must
+  // be declared after `close_callback_` to ensure that the lock is released
+  // before the FileSystemSyncAccessHandle.close() method returns. See
   // https://github.com/whatwg/fs/issues/83.
-  scoped_refptr<FileSystemAccessWriteLockManager::WriteLock> lock_;
+  scoped_refptr<FileSystemAccessLockManager::Lock> lock_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_WRITE_LOCK_MANAGER_H_
-#define CONTENT_BROWSER_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_WRITE_LOCK_MANAGER_H_
+#ifndef CONTENT_BROWSER_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_LOCK_MANAGER_H_
+#define CONTENT_BROWSER_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_LOCK_MANAGER_H_
 
 #include <map>
 
@@ -26,14 +26,14 @@ namespace content {
 
 class FileSystemAccessManagerImpl;
 
-// This class is in charge of the creation of WriteLocks. WriteLocks restrict
-// the access to a specific file, preventing unexpected concurrent access to
+// This class is in charge of the creation of Locks. Locks restrict the access
+// to a specific file or directory, preventing unexpected concurrent access to
 // data. It is owned by the FileSystemAccessManagerImpl.
-class CONTENT_EXPORT FileSystemAccessWriteLockManager {
+class CONTENT_EXPORT FileSystemAccessLockManager {
  public:
-  using PassKey = base::PassKey<FileSystemAccessWriteLockManager>;
+  using PassKey = base::PassKey<FileSystemAccessLockManager>;
 
-  enum class WriteLockType {
+  enum class LockType {
     // An exclusive lock prevents the taking of any new lock.
     kExclusive,
     // A shared lock prevents the taking of new exclusive locks, while allowing
@@ -73,76 +73,74 @@ class CONTENT_EXPORT FileSystemAccessWriteLockManager {
     const absl::optional<storage::BucketLocator> bucket_locator;
   };
 
-  // This class represents an active write lock on a file or directory. The lock
-  // is released on destruction.
-  class CONTENT_EXPORT WriteLock : public base::RefCounted<WriteLock> {
+  // This class represents an active lock on an entry locator. The lock is
+  // released on destruction.
+  class CONTENT_EXPORT Lock : public base::RefCounted<Lock> {
    public:
-    WriteLock(base::WeakPtr<FileSystemAccessWriteLockManager> lock_manager,
-              const EntryLocator& entry_locator,
-              const WriteLockType& type,
-              const scoped_refptr<WriteLock> parent_lock,
-              base::PassKey<FileSystemAccessWriteLockManager> pass_key);
+    Lock(base::WeakPtr<FileSystemAccessLockManager> lock_manager,
+         const EntryLocator& entry_locator,
+         const LockType& type,
+         const scoped_refptr<Lock> parent_lock,
+         base::PassKey<FileSystemAccessLockManager> pass_key);
 
-    WriteLock(WriteLock const&) = delete;
-    WriteLock& operator=(WriteLock const&) = delete;
+    Lock(Lock const&) = delete;
+    Lock& operator=(Lock const&) = delete;
 
-    const WriteLockType& type() const { return type_; }
+    const LockType& type() const { return type_; }
 
    private:
-    friend class base::RefCounted<WriteLock>;
+    friend class base::RefCounted<Lock>;
     // The lock is released on destruction.
-    ~WriteLock();
+    ~Lock();
 
     SEQUENCE_CHECKER(sequence_checker_);
 
-    // The FileSystemAccessWriteLockManager that created this instance. Used on
+    // The FileSystemAccessLockManager that created this instance. Used on
     // destruction to release the lock on the file.
-    base::WeakPtr<FileSystemAccessWriteLockManager> lock_manager_
+    base::WeakPtr<FileSystemAccessLockManager> lock_manager_
         GUARDED_BY_CONTEXT(sequence_checker_);
 
     // Locator of the file or directory associated with this lock. It is used to
-    // unlock the exclusive write lock on closure/destruction.
+    // unlock the exclusive lock on closure/destruction.
     const EntryLocator entry_locator_;
 
-    const WriteLockType type_;
+    const LockType type_;
 
     // When a file or directory is locked, it acquires a shared lock on its
     // parent directory, which acquires a shared lock on its parent, and so
     // forth. When this instance goes away, the associated ancestor locks are
     // automatically released. May be null if this instance represents the root
     // of its file system.
-    const scoped_refptr<WriteLock> parent_lock_;
+    const scoped_refptr<Lock> parent_lock_;
   };
 
-  explicit FileSystemAccessWriteLockManager(
+  explicit FileSystemAccessLockManager(
       base::PassKey<FileSystemAccessManagerImpl> pass_key);
-  ~FileSystemAccessWriteLockManager();
+  ~FileSystemAccessLockManager();
 
-  FileSystemAccessWriteLockManager(FileSystemAccessWriteLockManager const&) =
+  FileSystemAccessLockManager(FileSystemAccessLockManager const&) = delete;
+  FileSystemAccessLockManager& operator=(FileSystemAccessLockManager const&) =
       delete;
-  FileSystemAccessWriteLockManager& operator=(
-      FileSystemAccessWriteLockManager const&) = delete;
 
   // Attempts to take a lock on `url`. Returns the lock if successful.
-  scoped_refptr<WriteLock> TakeLock(const storage::FileSystemURL& url,
-                                    WriteLockType lock_type);
+  scoped_refptr<Lock> TakeLock(const storage::FileSystemURL& url,
+                               LockType lock_type);
 
  private:
-  scoped_refptr<WriteLock> TakeLockImpl(const EntryLocator& entry_locator,
-                                        WriteLockType lock_type);
+  scoped_refptr<Lock> TakeLockImpl(const EntryLocator& entry_locator,
+                                   LockType lock_type);
 
-  // Releases the lock on `entry_locator`. Called from the WriteLock destructor.
+  // Releases the lock on `entry_locator`. Called from the Lock destructor.
   void ReleaseLock(const EntryLocator& entry_locator);
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  std::map<EntryLocator, WriteLock*> locks_
-      GUARDED_BY_CONTEXT(sequence_checker_);
+  std::map<EntryLocator, Lock*> locks_ GUARDED_BY_CONTEXT(sequence_checker_);
 
-  base::WeakPtrFactory<FileSystemAccessWriteLockManager> weak_factory_
+  base::WeakPtrFactory<FileSystemAccessLockManager> weak_factory_
       GUARDED_BY_CONTEXT(sequence_checker_){this};
 };
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_WRITE_LOCK_MANAGER_H_
+#endif  // CONTENT_BROWSER_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_LOCK_MANAGER_H_

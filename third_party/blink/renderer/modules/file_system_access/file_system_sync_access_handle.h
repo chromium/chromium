@@ -60,7 +60,7 @@ class FileSystemSyncAccessHandle final : public ScriptWrappable {
   // getter.
   Member<FileSystemAccessFileDelegate> file_delegate_;
 
-  // Mojo pipe that holds the renderer's write lock on the file.
+  // Mojo pipe that holds the renderer's lock on the file.
   HeapMojoRemote<mojom::blink::FileSystemAccessAccessHandleHost>
       access_handle_remote_;
 

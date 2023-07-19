@@ -92,7 +92,7 @@ interface FileSystemAccessFileHandle {
 
   // Returns a file object and an access handle host. The file can be used to
   // initiate file operations from the renderer. The access handle host acts as
-  // an exclusive write lock while the mojo pipe remains open.
+  // an exclusive lock while the mojo pipe remains open.
   // TODO(https://crbug.com/1327821): Replace this with expected<T, E> if/when
   // it becomes available for mojom.
   OpenAccessHandle() =>  (FileSystemAccessError result, FileSystemAccessAccessHandleFile? file, pending_remote<FileSystemAccessAccessHandleHost>? access_handle_host);
