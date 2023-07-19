@@ -51,9 +51,13 @@ class H265Decoder : public VideoDecoder {
     // retryable error) is returned. The next time Decode() is called the call
     // that previously failed will be retried and execution continues from
     // there (if possible).
+    // Processes PPS before processing the current slice.
     kTryPreprocessCurrentSlice,
+    // Makes sure processing the previous frame is finished.
     kEnsurePicture,
+    // Processes a new frame.
     kTryNewFrame,
+    // Processes the current slice.
     kTryCurrentSlice,
     // Error in decode, can't continue.
     kError,
