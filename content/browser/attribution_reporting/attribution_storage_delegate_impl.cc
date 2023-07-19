@@ -59,12 +59,6 @@ std::vector<base::TimeDelta> GetVtcEarlyDeadlines(
       config.event_level_limit.second_event_report_window_deadline};
 }
 
-base::Time GetClampedTime(base::TimeDelta time_delta, base::Time source_time) {
-  constexpr base::TimeDelta kMinDeltaTime = base::Days(1);
-  return source_time +
-         std::clamp(time_delta, kMinDeltaTime, kDefaultAttributionSourceExpiry);
-}
-
 bool GenerateWithRate(double r) {
   DCHECK_GE(r, 0);
   DCHECK_LE(r, 1);
@@ -347,29 +341,26 @@ base::Time AttributionStorageDelegateImpl::GetExpiryTime(
     absl::optional<base::TimeDelta> declared_expiry,
     base::Time source_time,
     attribution_reporting::mojom::SourceType source_type) {
-  // Default to the maximum expiry time.
   base::TimeDelta expiry =
       declared_expiry.value_or(kDefaultAttributionSourceExpiry);
 
-  // Expiry time for event sources must be a whole number of days.
   if (source_type == attribution_reporting::mojom::SourceType::kEvent) {
     expiry = expiry.RoundToMultiple(base::Days(1));
   }
 
-  // If the impression specified its own expiry, clamp it to the minimum and
-  // maximum.
-  return GetClampedTime(expiry, source_time);
+  return source_time +
+         std::clamp(expiry, base::Days(1), kDefaultAttributionSourceExpiry);
 }
 
 absl::optional<base::Time> AttributionStorageDelegateImpl::GetReportWindowTime(
     absl::optional<base::TimeDelta> declared_window,
     base::Time source_time) {
-  // If the impression specified its own window, clamp it to the minimum and
-  // maximum.
-  return declared_window.has_value()
-             ? absl::make_optional(
-                   GetClampedTime(declared_window.value(), source_time))
-             : absl::nullopt;
+  if (!declared_window.has_value()) {
+    return absl::nullopt;
+  }
+
+  return source_time + std::clamp(*declared_window, base::Hours(1),
+                                  kDefaultAttributionSourceExpiry);
 }
 
 std::vector<base::TimeDelta> AttributionStorageDelegateImpl::EffectiveDeadlines(

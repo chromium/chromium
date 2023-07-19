@@ -15,8 +15,8 @@
             "Attribution-Reporting-Register-Source": {
               "destination": "https://destination.test",
               "source_event_id": "123",
-              // Clamped to one day (86400 seconds).
-              "event_report_window": "86390",
+              // Clamped to one hour (3600 seconds).
+              "event_report_window": "3590",
               "aggregation_keys": {
                 "a": "0x1"
               }
@@ -67,10 +67,10 @@
     ],
     "triggers": [
       // Should result in an event-level report and an aggregatable report
-      // as the event report window was clamped to one day.
+      // as the event report window was clamped to one hour.
       {
-        // 86,400,000 ms = 1 day = clamped event_report_window value
-        "timestamp": "86400000",
+        // 3,600,000 ms = 1 hour = clamped event_report_window value
+        "timestamp": "3600000",
         "registration_request": {
           "attribution_src_url": "https://reporter.test/register-trigger",
           "destination_origin": "https://destination.test"
@@ -100,8 +100,8 @@
       // Should result in an aggregatable report, but not event-level report as
       // event report window has passed.
       {
-        // 86,400,001 ms = 1 day + 1 ms
-        "timestamp": "86400001",
+        // 3,600,001 ms = 1 hour + 1 ms
+        "timestamp": "3600001",
         "registration_request": {
           "attribution_src_url": "https://reporter.test/register-trigger",
           "destination_origin": "https://destination.test"
@@ -189,15 +189,15 @@
         "payload": {
           "attribution_destination": "https://destination.test",
           "randomized_trigger_rate": 0.0001372,
-          // 90,000 s = 86,400 s (clamped event_report_window) + 1 h (base
+          // 7200 s = 3600 s (clamped event_report_window) + 1 h (base
           // delay)
-          "scheduled_report_time": "90000",
+          "scheduled_report_time": "7200",
           "source_event_id": "123",
           "source_type": "navigation",
           "trigger_data": "1"
         },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-event-attribution",
-        "report_time": "90000000"
+        "report_time": "7200000"
       },
       {
         "payload": {
@@ -240,7 +240,7 @@
           ]
         },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution",
-        "report_time": "90000000"
+        "report_time": "7200000"
       },
       {
         "payload": {
@@ -250,7 +250,7 @@
               "value": 456
            } ]
         },
-        "report_time": "90000001",
+        "report_time": "7200001",
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution"
       }
     ],
@@ -264,7 +264,7 @@
           },
           "type": "trigger-event-report-window-passed"
        } ],
-       "report_time": "86400001",
+       "report_time": "3600001",
        "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
       }
     ]

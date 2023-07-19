@@ -500,9 +500,9 @@ TEST(AttributionStorageDelegateImplTest,
     base::TimeDelta declared_report_window;
     base::TimeDelta want_report_window;
   } kTestCases[] = {
-      {base::Days(-1), base::Days(1)},
-      {base::Days(0), base::Days(1)},
-      {base::Days(1) - base::Milliseconds(1), base::Days(1)},
+      {base::Hours(-1), base::Hours(1)},
+      {base::Hours(0), base::Hours(1)},
+      {base::Hours(1) - base::Milliseconds(1), base::Hours(1)},
   };
 
   const base::Time source_time = base::Time::Now();

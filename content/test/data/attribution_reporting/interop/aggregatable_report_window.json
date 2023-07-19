@@ -15,8 +15,8 @@
             "Attribution-Reporting-Register-Source": {
               "destination": "https://destination.test",
               "source_event_id": "123",
-              // Clamped to one day (86400 seconds).
-              "aggregatable_report_window": "86390",
+              // Clamped to one hour (3600 seconds).
+              "aggregatable_report_window": "3590",
               "aggregation_keys": {
                 "a": "0x1"
               }
@@ -71,10 +71,10 @@
     ],
     "triggers": [
       // Should result in an event-level report and an aggregatable report
-      // as the aggregatable report window was clamped to one day.
+      // as the aggregatable report window was clamped to one hour.
       {
-        // 86,400,000 ms = 1 day
-        "timestamp": "86400000",
+        // 3,600,000 ms = 1 hour
+        "timestamp": "3600000",
         "registration_request": {
           "attribution_src_url": "https://reporter.test/register-trigger",
           "destination_origin": "https://destination.test"
@@ -104,8 +104,8 @@
       // Should result in an event-level report, but not aggregatable report as
       // aggregatable report window has passed.
       {
-        // 86,400,001 ms = 1 day + 1 ms
-        "timestamp": "86400001",
+        // 3,600,001 ms = 1 hour + 1 ms
+        "timestamp": "3600001",
         "registration_request": {
           "attribution_src_url": "https://reporter.test/register-trigger",
           "destination_origin": "https://destination.test"
@@ -234,9 +234,9 @@
           ]
         },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution",
-         // 90,000,000 ms  = 86,400 s (clamped aggregatable_report_window)  + 1
+         // 7,200,000 ms  = 3,600 s (clamped aggregatable_report_window)  + 1
          // hour (base delay)
-        "report_time": "90000000"
+        "report_time": "7200000"
       },
       {
         "payload": {
@@ -262,7 +262,7 @@
           },
           "type": "trigger-aggregate-report-window-passed"
        } ],
-       "report_time": "86400001",
+       "report_time": "3600001",
        "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
       },
       {
