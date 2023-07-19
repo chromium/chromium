@@ -89,14 +89,14 @@ uint32_t MaskForKey(const char* key) {
 
 extensions::mojom::HostID GenerateHostIDFromEmbedder(
     const extensions::Extension* extension,
-    content::WebContents* web_contents) {
+    content::RenderFrameHost* embedder_rfh) {
   if (extension) {
     return extensions::mojom::HostID(
         extensions::mojom::HostID::HostType::kExtensions, extension->id());
   }
 
-  if (web_contents && web_contents->GetWebUI()) {
-    const GURL& url = web_contents->GetSiteInstance()->GetSiteURL();
+  if (embedder_rfh && embedder_rfh->GetMainFrame()->GetWebUI()) {
+    const GURL& url = embedder_rfh->GetSiteInstance()->GetSiteURL();
     return extensions::mojom::HostID(
         extensions::mojom::HostID::HostType::kWebUi, url.spec());
   }
@@ -472,8 +472,7 @@ ExecuteCodeFunction::InitResult WebViewInternalExecuteCodeFunction::Init() {
     return set_init_result(SUCCESS);
   }
 
-  WebContents* web_contents = GetSenderWebContents();
-  if (web_contents && web_contents->GetWebUI()) {
+  if (render_frame_host() && render_frame_host()->GetMainFrame()->GetWebUI()) {
     const GURL& url = render_frame_host()->GetSiteInstance()->GetSiteURL();
     set_host_id(extensions::mojom::HostID(
         extensions::mojom::HostID::HostType::kWebUi, url.spec()));
@@ -592,9 +591,8 @@ WebViewInternalAddContentScriptsFunction::Run() {
 
   GURL owner_base_url(
       render_frame_host()->GetSiteInstance()->GetSiteURL().GetWithEmptyPath());
-  content::WebContents* sender_web_contents = GetSenderWebContents();
   extensions::mojom::HostID host_id =
-      GenerateHostIDFromEmbedder(extension(), sender_web_contents);
+      GenerateHostIDFromEmbedder(extension(), render_frame_host());
   bool incognito_enabled = browser_context()->IsOffTheRecord();
 
   std::string error;
@@ -635,9 +633,8 @@ WebViewInternalRemoveContentScriptsFunction::Run() {
       WebViewContentScriptManager::Get(browser_context());
   DCHECK(manager);
 
-  content::WebContents* sender_web_contents = GetSenderWebContents();
   extensions::mojom::HostID host_id =
-      GenerateHostIDFromEmbedder(extension(), sender_web_contents);
+      GenerateHostIDFromEmbedder(extension(), render_frame_host());
 
   std::vector<std::string> script_name_list;
   if (params->script_name_list)
