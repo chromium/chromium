@@ -6,10 +6,69 @@ Android WebView has supported core Safe Browsing features since 2017.
 
 ## What is Safe Browsing?
 
+Safe Browsing launched in 2005 to protect users across the web from phishing attacks.
+It has evolved to give users tools to help protect themselves from web-based threats
+like malware, unwanted software, and social engineering across desktop and mobile
+platforms. For info on the feature, see https://safebrowsing.google.com/.
+
+## How does Safe Browsing in WebView work?
+
+WebView’s Safe Browsing implementation is built on top of Chromium’s Safe Browsing
+interfaces and library. For each navigation in Android apps when Safe Browsing is enabled,
+since a single page can contain multiple threats WebView gets the most
+severe threat for the navigation chain and shows an interstitial.
+
+## Safe Browsing in //components
+
+Safe Browsing has many components; for brevity, we will only discuss the ones most
+relevant to WebView. Based on Safe Browsing’s version (v4 or v5) we have different
+lookup mechanisms to check if the URL is safe, it all starts from
+`BrowserUrlLoaderThrottle::WillStartRequest` which creates the Safe Browsing checker
+to start the check for url, that checker creates the appropriate lookup mechanism
+based on some conditions, the following diagram shows the flow in a bigger picture:
+
+<br>
+
+![Code Overview](docs/code-overview.png)
+
+<br>
+
+`SafeBrowsingLookupMechanism` is the base class and we have three implementations
+for it, hash_realtime == V5 (send partial hash of the URL to the server through
+a proxy), url_realtime == Protego (send URL to the server), hash_database == V4
+(check against the local blocklist), worth mentioning that `SafeBrowsingLookupMechanismRunner`
+controls LookUpMechanism and  sets a timeout for the mechanism to run within.
+The timeout is defined at the top of the class.
+
+When the check is required in the remote DB, it delegates the call to `ApiHandlerBridge`,
+which uses JNI to call StartURLCheck on SafeBrowsingApiBridge. ApiBridge uses
+the `SafetyNetApiHandler` (Soon to be SafeBrowsingApiHandler) to make the `startUriLookup`
+call, the next section talks about WebView specifics.
+
 See the relevant Chromium classes in
 [//components/safe\_browsing/](/components/safe_browsing).
 
-For info on the feature, see https://safebrowsing.google.com/.
+## WebView Implementation
+
+One of the main classes in WebView implementation is
+[AwUrlCheckerDelegateImpl](https://source.chromium.org/chromium/chromium/src/+/main:android_webview/browser/safe_browsing/aw_url_checker_delegate_impl.cc)
+which defines the 4 threat types WebView support in the constructor, it calls
+[WebViewClient#onSafeBrowsingHit](https://developer.android.com/reference/android/webkit/WebViewClient#onSafeBrowsingHit(android.webkit.WebView,%20android.webkit.WebResourceRequest,%20int,%20android.webkit.SafeBrowsingResponse))
+to allow the app to respond, also it handles the app’s response to the
+[callback](https://developer.android.com/reference/android/webkit/SafeBrowsingResponse),
+the default behavior is to show interstitial by calling
+`ui_manager->DisplayBlockingPage`. When the callback returns backToSafety()
+or the user clicks “back to safety” button in the interstitial the class triggers
+`onReceivedError()` callback.
+
+WebView has its own allowlisting mechanism which lives in AwSafeBrowsingAllowlistManager,
+it was implemented to serve a specific API,
+[setSafeBrowsingAllowlist](https://developer.android.com/reference/androidx/webkit/WebViewCompat#setSafeBrowsingAllowlist(java.util.Set%3Cjava.lang.String%3E,android.webkit.ValueCallback%3Cjava.lang.Boolean%3E)),
+and that doesn’t have anything to do with the allowlisting in //components
+(WebView uses both of them but they are unaffiliated).
+
+Any WebView Safe Browsing UI specific logic is being managed by AwSafeBrowsingUIManager,
+that includes creating the interstitial based on the error.
 
 ## Building your own WebView
 
