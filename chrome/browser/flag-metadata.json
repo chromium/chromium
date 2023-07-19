@@ -5582,13 +5582,8 @@
   },
   {
     "name": "ntp-modules-redesigned",
-    "owners": [ "mahmadi", "tiborg" ],
-    "expiry_milestone": 108
-  },
-  {
-    "name": "ntp-modules-redesigned-layout",
-    "owners": [ "pauladedeji", "tiborg" ],
-    "expiry_milestone": 108
+    "owners": [ "mahmadi", "tiborg", "romanarora" ],
+    "expiry_milestone": 121
   },
   {
     "name": "ntp-photos-module",
