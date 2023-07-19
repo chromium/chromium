@@ -142,7 +142,7 @@ bool ImeService::IsFeatureEnabled(const char* feature_name) {
       &features::kAssistMultiWord,
       &features::kAutocorrectParamsTuning,
       &features::kFirstPartyVietnameseInput,
-      &features::kLacrosSupport,
+      &features::kLacrosOnly,
       &features::kSystemJapanesePhysicalTyping,
       &features::kImeDownloaderUpdate,
       &features::kImeUsEnglishModelUpdate,
@@ -158,6 +158,15 @@ bool ImeService::IsFeatureEnabled(const char* feature_name) {
       return base::FeatureList::IsEnabled(*feature);
     }
   }
+
+  // For backwards-compatibility, check for the "LacrosSupport" flag, which was
+  // replaced by LacrosOnly.
+  // TODO(b/290714161): Remove this once the shared library no longer uses
+  // LacrosSupport.
+  if (strcmp(feature_name, "LacrosSupport") == 0) {
+    return base::FeatureList::IsEnabled(features::kLacrosOnly);
+  }
+
   return false;
 }
 
