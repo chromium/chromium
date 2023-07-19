@@ -26,6 +26,10 @@
     };
     const waitOnPaintEntriesPromise = () => {
       return new Promise((resolve, reject) => {
+        if (!performance.softNavPaintMetricsSupported) {
+          // If we don't have paint entries, fall back to a timer instead.
+          setTimeout(resolve, 200);
+        }
         const paint_entries = []
         new PerformanceObserver(list => {
           paint_entries.push(...list.getEntries());

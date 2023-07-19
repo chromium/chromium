@@ -241,7 +241,10 @@ void SoftNavigationHeuristics::ResetPaintsIfNeeded(LocalFrame* frame,
                                                    LocalDOMWindow* window) {
   if (!did_reset_paints_) {
     if (RuntimeEnabledFeatures::SoftNavigationHeuristicsEnabled(window)) {
-      if (Document* document = window->document()) {
+      if (Document* document = window->document();
+          document &&
+          RuntimeEnabledFeatures::SoftNavigationHeuristicsExposeFPAndFCPEnabled(
+              window)) {
         PaintTiming::From(*document).ResetFirstPaintAndFCP();
       }
       DCHECK(frame->View());

@@ -319,6 +319,10 @@ class CORE_EXPORT Performance : public EventTargetWithInlineData {
                            const base::TickClock* tick_clock);
   void ResetTimeOriginForTesting(base::TimeTicks time_origin);
 
+  // TODO(https://crbug.com/1457049): remove this once visited links are
+  // partitioned.
+  bool softNavPaintMetricsSupported() const;
+
  private:
   void AddPaintTiming(PerformancePaintTiming::PaintType,
                       base::TimeTicks start_time,
