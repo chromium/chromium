@@ -5,12 +5,16 @@
 #ifndef IOS_CHROME_BROWSER_SAFETY_CHECK_IOS_CHROME_SAFETY_CHECK_MANAGER_H_
 #define IOS_CHROME_BROWSER_SAFETY_CHECK_IOS_CHROME_SAFETY_CHECK_MANAGER_H_
 
+#import "base/memory/scoped_refptr.h"
 #import "base/memory/weak_ptr.h"
 #import "base/observer_list.h"
 #import "base/observer_list_types.h"
+#import "base/scoped_observation.h"
 #import "base/sequence_checker.h"
+#import "base/task/sequenced_task_runner.h"
 #import "components/keyed_service/core/keyed_service.h"
 #import "components/prefs/pref_change_registrar.h"
+#import "ios/chrome/browser/passwords/ios_chrome_password_check_manager.h"
 #import "ios/chrome/browser/safety_check/ios_chrome_safety_check_manager_constants.h"
 
 class IOSChromeSafetyCheckManager;
@@ -55,9 +59,14 @@ class IOSChromeSafetyCheckManagerObserver : public base::CheckedObserver {
 //
 // This class notifies its observers (`IOSChromeSafetyCheckManagerObserver`)
 // when state from the above list change.
-class IOSChromeSafetyCheckManager : public KeyedService {
+class IOSChromeSafetyCheckManager
+    : public KeyedService,
+      public IOSChromePasswordCheckManager::Observer {
  public:
-  explicit IOSChromeSafetyCheckManager(PrefService* pref_service);
+  explicit IOSChromeSafetyCheckManager(
+      PrefService* pref_service,
+      scoped_refptr<IOSChromePasswordCheckManager> password_check_manager,
+      const scoped_refptr<base::SequencedTaskRunner> task_runner);
 
   IOSChromeSafetyCheckManager(const IOSChromeSafetyCheckManager&) = delete;
   IOSChromeSafetyCheckManager& operator=(const IOSChromeSafetyCheckManager&) =
@@ -68,6 +77,10 @@ class IOSChromeSafetyCheckManager : public KeyedService {
   // KeyedService implementation.
   void Shutdown() override;
 
+  // IOSChromePasswordCheckManager::Observer implementation.
+  void PasswordCheckStatusChanged(PasswordCheckState state) override;
+  void InsecureCredentialsChanged() override;
+
   // Adds/removes an observer to be notified of PasswordSafetyCheckState,
   // SafeBrowsingSafetyCheckState, UpdateChromeSafetyCheckState, and
   // RunningSafetyCheckState events.
@@ -77,20 +90,44 @@ class IOSChromeSafetyCheckManager : public KeyedService {
   // Returns the current state of the Safe Browsing check.
   SafeBrowsingSafetyCheckState GetSafeBrowsingCheckState() const;
 
+  // Returns the current state of the Password check.
+  PasswordSafetyCheckState GetPasswordCheckState() const;
+
  private:
   // Sets `safe_browsing_check_state_` to `state` and notifies any observers
   // of the change.
   void SetSafeBrowsingCheckState(SafeBrowsingSafetyCheckState state);
 
+  // Updates `password_check_state_` to `state` and notifies any observers
+  // of the change.
+  void SetPasswordCheckState(PasswordSafetyCheckState state);
+
+  // Converts `state` (`PasswordCheckState`) to type
+  // `PasswordSafetyCheckState`, then calls
+  // `SetPasswordCheckState(PasswordSafetyCheckState state)`.
+  void ConvertAndSetPasswordCheckState(PasswordCheckState state);
+
+  // Updates `password_check_state_` to the latest, correct value based on
+  // changes in the insecure credentials list. Then calls
+  // `SetPasswordCheckState(PasswordSafetyCheckState state)`.
+  //
+  // NOTE: This method exists to cover an edge case where the insecure
+  // credentials list may change while the Password check is currently running.
+  void RefreshOutdatedPasswordCheckState();
+
   // Called when a Safe Browsing pref value changes.
   void OnSafeBrowsingPrefChanged();
-
-  // Observers to listen to Safety Check changes.
-  base::ObserverList<IOSChromeSafetyCheckManagerObserver> observers_;
 
   // Current state of the Safe Browsing check.
   SafeBrowsingSafetyCheckState safe_browsing_check_state_ =
       SafeBrowsingSafetyCheckState::kDefault;
+
+  // Current state of the Password check.
+  PasswordSafetyCheckState password_check_state_ =
+      PasswordSafetyCheckState::kDefault;
+
+  // Observers to listen to Safety Check changes.
+  base::ObserverList<IOSChromeSafetyCheckManagerObserver> observers_;
 
   // Weak pointer to the pref service, which checks the user's Enhanced Safe
   // Browsing state.
@@ -99,9 +136,21 @@ class IOSChromeSafetyCheckManager : public KeyedService {
   // Registrar for pref changes notifications.
   PrefChangeRegistrar pref_change_registrar_;
 
+  // Owning, smart pointer to the Password Check Manager, which checks the
+  // user's Passwords (e.g. insecure credentials) state.
+  const scoped_refptr<IOSChromePasswordCheckManager> password_check_manager_;
+
+  base::ScopedObservation<IOSChromePasswordCheckManager,
+                          IOSChromePasswordCheckManager::Observer>
+      password_check_manager_observation_{this};
+
   // Validates IOSChromeSafetyCheckManager::Observer events are evaluated on the
   // same sequence that IOSChromeSafetyCheckManager was created on.
   SEQUENCE_CHECKER(sequence_checker_);
+
+  // Ensures IOSChromePasswordCheckManager::Observer events are posted on the
+  // same sequence that IOSChromeSafetyCheckManager was created on.
+  const scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   base::WeakPtrFactory<IOSChromeSafetyCheckManager> weak_ptr_factory_{this};
 };

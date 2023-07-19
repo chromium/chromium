@@ -45,6 +45,8 @@ enum class PasswordSafetyCheckState {
   kDisabled,
   // When password check failed due to network issues, quota limit or others.
   kError,
+  // When password check failed due to user being signed out.
+  kSignedOut,
 };
 
 // Enum with all possible states of the Safe Browsing check.

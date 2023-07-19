@@ -4,9 +4,13 @@
 
 #import "ios/chrome/browser/safety_check/ios_chrome_safety_check_manager_factory.h"
 
+#import "base/memory/scoped_refptr.h"
+#import "base/task/sequenced_task_runner.h"
 #import "components/keyed_service/core/keyed_service.h"
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/passwords/ios_chrome_password_check_manager.h"
+#import "ios/chrome/browser/passwords/ios_chrome_password_check_manager_factory.h"
 #import "ios/chrome/browser/safety_check/ios_chrome_safety_check_manager.h"
 #import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
@@ -34,7 +38,9 @@ IOSChromeSafetyCheckManagerFactory::GetInstance() {
 IOSChromeSafetyCheckManagerFactory::IOSChromeSafetyCheckManagerFactory()
     : BrowserStateKeyedServiceFactory(
           "SafetyCheckManager",
-          BrowserStateDependencyManager::GetInstance()) {}
+          BrowserStateDependencyManager::GetInstance()) {
+  DependsOn(IOSChromePasswordCheckManagerFactory::GetInstance());
+}
 
 IOSChromeSafetyCheckManagerFactory::~IOSChromeSafetyCheckManagerFactory() =
     default;
@@ -47,8 +53,13 @@ IOSChromeSafetyCheckManagerFactory::BuildServiceInstanceFor(
   ChromeBrowserState* browser_state =
       ChromeBrowserState::FromBrowserState(context);
 
+  const scoped_refptr<base::SequencedTaskRunner> task_runner =
+      base::SequencedTaskRunner::GetCurrentDefault();
+
   return std::make_unique<IOSChromeSafetyCheckManager>(
-      browser_state->GetPrefs());
+      browser_state->GetPrefs(),
+      IOSChromePasswordCheckManagerFactory::GetForBrowserState(browser_state),
+      task_runner);
 }
 
 web::BrowserState* IOSChromeSafetyCheckManagerFactory::GetBrowserStateToUse(
