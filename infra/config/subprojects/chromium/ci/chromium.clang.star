@@ -3,6 +3,8 @@
 # found in the LICENSE file.
 """Definitions of builders in the chromium.clang builder group."""
 
+load("//lib/args.star", "args")
+load("//lib/builder_config.star", "builder_config")
 load("//lib/builders.star", "builders", "os", "reclient", "sheriff_rotations", "xcode")
 load("//lib/branches.star", "branches")
 load("//lib/ci.star", "ci")
@@ -360,6 +362,35 @@ ci.builder(
     console_view_entry = consoles.console_view_entry(
         category = "ToT Windows|Asan",
         short_name = "fuz",
+    ),
+)
+
+ci.builder(
+    name = "ToTWinArm64PGO",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "clang_tot",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium_win_clang_tot",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_arch = builder_config.target_arch.ARM,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.WIN,
+        ),
+        build_gs_bucket = "chromium-clang-archive",
+    ),
+    os = os.WINDOWS_DEFAULT,
+    sheriff_rotations = args.ignore_default(None),
+    console_view_entry = consoles.console_view_entry(
+        category = "ToT Windows",
+        short_name = "pgo-arm",
     ),
 )
 

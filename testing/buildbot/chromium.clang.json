@@ -2049,6 +2049,11 @@
       "all"
     ]
   },
+  "ToTWinArm64PGO": {
+    "additional_compile_targets": [
+      "all"
+    ]
+  },
   "ToTWinOfficial": {
     "additional_compile_targets": [
       "chrome_official_builder"

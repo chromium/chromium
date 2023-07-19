@@ -432,6 +432,17 @@
       "use_libfuzzer": true
     }
   },
+  "ToTWinArm64PGO": {
+    "gn_args": {
+      "chrome_pgo_phase": 1,
+      "is_clang": true,
+      "is_official_build": true,
+      "is_on_release_branch": true,
+      "llvm_force_head_revision": true,
+      "symbol_level": 0,
+      "target_cpu": "arm64"
+    }
+  },
   "ToTWinOfficial": {
     "gn_args": {
       "is_chrome_branded": true,

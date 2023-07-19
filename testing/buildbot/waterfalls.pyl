@@ -2042,6 +2042,15 @@
           'all',
         ],
       },
+      'ToTWinArm64PGO': {
+        'mixins': [
+          'arm64',
+          'win11',
+        ],
+        'additional_compile_targets': [
+          'all',
+        ],
+      },
       'ToTWinOfficial': {
         'mixins': [
           'chrome-tester-service-account',

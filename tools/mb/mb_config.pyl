@@ -232,6 +232,7 @@
       'ToTWin64(dll)': 'clang_tot_shared_release_dcheck',
       'ToTWin64PGO': 'clang_tot_official_pgo',
       'ToTWinASanLibfuzzer': 'libfuzzer_windows_asan_clang_tot_release_bot',
+      'ToTWinArm64PGO': 'clang_tot_official_pgo_arm64',
       'ToTWinOfficial': 'clang_tot_win_official_full_symbols_static_x86',
       'ToTWinOfficial64': 'clang_tot_win_official_full_symbols_static',
       'ToTWindowsCoverage': 'clang_tot_coverage_minimal_symbols_release',
@@ -2411,6 +2412,10 @@
 
     'clang_tot_official_pgo': [
       'clang_tot', 'official_optimize', 'no_symbols', 'pgo_phase_1',
+    ],
+
+    'clang_tot_official_pgo_arm64': [
+      'clang_tot', 'official_optimize', 'no_symbols', 'pgo_phase_1', 'arm64',
     ],
 
     'clang_tot_shared_debug': [
