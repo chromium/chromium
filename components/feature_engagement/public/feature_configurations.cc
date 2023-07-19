@@ -1256,26 +1256,6 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
     return config;
   }
 
-  if (kIPHRequestDesktopSiteExceptionsSpecificFeature.name == feature->name) {
-    // A config that allows the RDS site-level setting IPH to be shown on sites
-    // that are more functional in desktop mode. This will be triggered a
-    // maximum of 2 times (once per 2 weeks), and if the user has not used the
-    // app menu to create a desktop site exception in a span of a year.
-    absl::optional<FeatureConfig> config = FeatureConfig();
-    config->valid = true;
-    config->availability = Comparator(GREATER_THAN_OR_EQUAL, 2);
-    config->session_rate = Comparator(LESS_THAN, 1);
-    config->used = EventConfig("app_menu_desktop_site_exception_added",
-                               Comparator(EQUAL, 0), 360, 360);
-    config->trigger =
-        EventConfig("request_desktop_site_exceptions_specific_iph_trigger",
-                    Comparator(LESS_THAN, 2), 720, 720);
-    config->event_configs.insert(
-        EventConfig("request_desktop_site_exceptions_specific_iph_trigger",
-                    Comparator(EQUAL, 0), 14, 14));
-    return config;
-  }
-
   if (kIPHPageZoomFeature.name == feature->name) {
     absl::optional<FeatureConfig> config = FeatureConfig();
     config->valid = true;

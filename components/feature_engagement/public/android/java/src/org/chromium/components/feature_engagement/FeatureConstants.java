@@ -71,7 +71,6 @@ import java.lang.annotation.RetentionPolicy;
         FeatureConstants.REQUEST_DESKTOP_SITE_DEFAULT_ON_FEATURE,
         FeatureConstants.REQUEST_DESKTOP_SITE_OPT_IN_FEATURE,
         FeatureConstants.REQUEST_DESKTOP_SITE_EXCEPTIONS_GENERIC_FEATURE,
-        FeatureConstants.REQUEST_DESKTOP_SITE_EXCEPTIONS_SPECIFIC_FEATURE,
         FeatureConstants.IPH_MIC_TOOLBAR_FEATURE, FeatureConstants.IPH_SHARE_SCREENSHOT_FEATURE,
         FeatureConstants.IPH_SHARING_HUB_LINK_TOGGLE_FEATURE,
         FeatureConstants.IPH_WEB_FEED_FOLLOW_FEATURE,
@@ -136,8 +135,6 @@ public @interface FeatureConstants {
     String REQUEST_DESKTOP_SITE_OPT_IN_FEATURE = "IPH_RequestDesktopSiteOptIn";
     String REQUEST_DESKTOP_SITE_EXCEPTIONS_GENERIC_FEATURE =
             "IPH_RequestDesktopSiteExceptionsGeneric";
-    String REQUEST_DESKTOP_SITE_EXCEPTIONS_SPECIFIC_FEATURE =
-            "IPH_RequestDesktopSiteExceptionsSpecific";
 
     /**
      * An IPH feature indicating to users that there are settings for downloads and they are

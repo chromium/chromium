@@ -4145,11 +4145,6 @@ const char kRequestDesktopSiteDefaultsLoggingDescription[] =
     "Silently report crashes with display spec when ineligible device shows "
     "up in cohort or device screen size exceeds threshold.";
 
-const char kRequestDesktopSitePerSiteIphName[] =
-    "Contextual help for request desktop site site-level settings on Android.";
-const char kRequestDesktopSitePerSiteIphDescription[] =
-    "Provide in-product help for desktop site site-level settings.";
-
 const char kRequestDesktopSiteWindowSettingName[] =
     "Window setting for request desktop site on Android.";
 const char kRequestDesktopSiteWindowSettingDescription[] =

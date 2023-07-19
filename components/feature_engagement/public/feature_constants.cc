@@ -246,9 +246,6 @@ BASE_FEATURE(kIPHRequestDesktopSiteOptInFeature,
 BASE_FEATURE(kIPHRequestDesktopSiteExceptionsGenericFeature,
              "IPH_RequestDesktopSiteExceptionsGeneric",
              base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kIPHRequestDesktopSiteExceptionsSpecificFeature,
-             "IPH_RequestDesktopSiteExceptionsSpecific",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHShoppingListSaveFlowFeature,
              "IPH_ShoppingListSaveFlow",
              base::FEATURE_ENABLED_BY_DEFAULT);

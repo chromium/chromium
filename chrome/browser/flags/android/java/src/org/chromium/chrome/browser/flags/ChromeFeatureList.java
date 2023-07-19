@@ -403,7 +403,6 @@ public abstract class ChromeFeatureList {
             "RequestDesktopSiteOptInControlSynthetic";
     public static final String REQUEST_DESKTOP_SITE_OPT_IN_SYNTHETIC =
             "RequestDesktopSiteOptInSynthetic";
-    public static final String REQUEST_DESKTOP_SITE_PER_SITE_IPH = "RequestDesktopSitePerSiteIph";
     public static final String RESIZE_ONLY_ACTIVE_TAB = "ResizeOnlyActiveTab";
     public static final String SAFE_BROWSING_DELAYED_WARNINGS = "SafeBrowsingDelayedWarnings";
     public static final String SAFE_MODE_FOR_CACHED_FLAGS = "SafeModeForCachedFlags";

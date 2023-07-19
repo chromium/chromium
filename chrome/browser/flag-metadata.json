@@ -6858,11 +6858,6 @@
     "expiry_milestone": 120
   },
   {
-    "name": "request-desktop-site-per-site-iph",
-    "owners": [ "aishwaryarj@google.com", "skavuluru@google.com", "twellington", "clank-app-team@google.com" ],
-    "expiry_milestone": 120
-  },
-  {
     "name": "request-desktop-site-window-setting",
     "owners": [ "shuyng@google.com", "skavuluru@google.com", "clank-app-team@google.com" ],
     "expiry_milestone": 120

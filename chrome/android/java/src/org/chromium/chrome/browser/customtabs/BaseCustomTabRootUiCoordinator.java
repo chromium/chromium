@@ -502,7 +502,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                 mDesktopSiteSettingsIPHController = DesktopSiteSettingsIPHController.create(
                         mActivity, mWindowAndroid, mActivityTabProvider, regularProfile,
                         getToolbarManager().getMenuButtonView(),
-                        mAppMenuCoordinator.getAppMenuHandler(), getPrimaryDisplaySizeInInches());
+                        mAppMenuCoordinator.getAppMenuHandler());
             }
         }));
     }

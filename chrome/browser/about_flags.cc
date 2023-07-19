@@ -9719,13 +9719,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
-    {"request-desktop-site-per-site-iph",
-     flag_descriptions::kRequestDesktopSitePerSiteIphName,
-     flag_descriptions::kRequestDesktopSitePerSiteIphDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kRequestDesktopSitePerSiteIph)},
-#endif  // BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(IS_ANDROID)
     {"request-desktop-site-window-setting",
      flag_descriptions::kRequestDesktopSiteWindowSettingName,
      flag_descriptions::kRequestDesktopSiteWindowSettingDescription, kOsAndroid,

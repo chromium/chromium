@@ -4047,9 +4047,6 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_RDS_SITE_SETTINGS_GENERIC_IPH_TEXT_MOBILE" desc="Message on the generic text bubble shown to educate the user about using the desktop site site-level setting to switch to mobile mode.">
         You can request the mobile site for <ph name="HOST_NAME">%1$s<ex>www.example.com</ex></ph>
       </message>
-      <message name="IDS_RDS_SITE_SETTINGS_SPECIFIC_IPH_TEXT" desc="Message on the text bubble shown on specific websites more functional in desktop mode to educate the user about using the desktop site site-level setting.">
-        Switch to desktop site for a better view of this site
-      </message>
 
       <!-- Accessibility -->
 

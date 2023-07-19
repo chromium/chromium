@@ -154,7 +154,6 @@ BASE_DECLARE_FEATURE(kRequestDesktopSiteOptInControlSynthetic);
 BASE_DECLARE_FEATURE(kRequestDesktopSiteOptInSynthetic);
 BASE_DECLARE_FEATURE(kRequestDesktopSiteDefaultsDowngrade);
 BASE_DECLARE_FEATURE(kRequestDesktopSiteDefaultsLogging);
-BASE_DECLARE_FEATURE(kRequestDesktopSitePerSiteIph);
 BASE_DECLARE_FEATURE(kRestoreTabsOnFRE);
 BASE_DECLARE_FEATURE(kSharingHubLinkToggle);
 BASE_DECLARE_FEATURE(kShowScrollableMVTOnNTPAndroid);
