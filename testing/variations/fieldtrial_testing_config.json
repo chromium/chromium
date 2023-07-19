@@ -9211,6 +9211,7 @@
                     "enable_features": [
                         "Cr2023ActionChips",
                         "Cr2023ActionChipsIcons",
+                        "OmniboxExpandedLayout",
                         "OmniboxExpandedStateColors",
                         "OmniboxExpandedStateHeight",
                         "OmniboxExpandedStateShape",
