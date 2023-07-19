@@ -4,6 +4,7 @@
 
 #include "chrome/browser/metrics/chrome_browser_main_extra_parts_metrics.h"
 
+#include <algorithm>
 #include <cmath>
 #include <cstdint>
 #include <memory>
@@ -160,23 +161,200 @@ void RecordMemoryMetrics() {
 }
 
 // These values are written to logs.  New enum values can be added, but existing
-// enums must never be renumbered or deleted and reused.
-enum UMALinuxDistro {
-  UMA_LINUX_DISTRO_UNKNOWN = 0,
-  UMA_LINUX_DISTRO_ARCH = 1,
-  UMA_LINUX_DISTRO_CENTOS = 2,
-  UMA_LINUX_DISTRO_DEBIAN = 3,
-  UMA_LINUX_DISTRO_ELEMENTARY = 4,
-  UMA_LINUX_DISTRO_FEDORA = 5,
-  UMA_LINUX_DISTRO_MINT = 6,
-  UMA_LINUX_DISTRO_OPENSUSE_LEAP = 7,
-  UMA_LINUX_DISTRO_RHEL = 8,
-  UMA_LINUX_DISTRO_SUSE_ENTERPRISE = 9,
-  UMA_LINUX_DISTRO_UBUNTU = 10,
+// enums must never be renumbered or deleted and reused unless the histogram is
+// renamed.
+enum class UmaLinuxDistro {
+  kUnknown = 0,
+  kOther = 1,
+  kAlma = 2,
+  kAlpine = 3,
+  kAlter = 4,
+  kAmazon = 5,
+  kAnarchy = 6,
+  kAntergos = 7,
+  kAntiX = 8,
+  kAoscOs = 9,
+  kAperio = 10,
+  kApricity = 11,
+  kArch = 12,
+  kArcoLinux = 13,
+  kArtix = 14,
+  kArya = 15,
+  kAsteroidOs = 16,
+  kBedrock = 17,
+  kBitrig = 18,
+  kBlackArch = 19,
+  kBlag = 20,
+  kBlankOn = 21,
+  kBlueLight = 22,
+  kBodhi = 23,
+  kBonsai = 24,
+  kBunsenLabs = 25,
+  kCalculate = 26,
+  kCarbs = 27,
+  kCblMariner = 28,
+  kCelOs = 29,
+  kCentOs = 30,
+  kChakra = 31,
+  kChaletOs = 32,
+  kChapeau = 33,
+  kCleanjaro = 34,
+  kClearLinux = 35,
+  kClearOs = 36,
+  kClover = 37,
+  kCondres = 38,
+  kContainerLinux = 39,
+  kCrux = 40,
+  kCrystalLinux = 41,
+  kCucumber = 42,
+  kCyberOs = 43,
+  kDahlia = 44,
+  kDarkOs = 45,
+  kDebian = 46,
+  kDeepin = 47,
+  kDesaOs = 48,
+  kDevuan = 49,
+  kDracOs = 50,
+  kDrauger = 51,
+  kElementary = 52,
+  kEndeavourOs = 53,
+  kEndless = 54,
+  kEuroLinux = 55,
+  kExherbo = 56,
+  kFedora = 57,
+  kFeren = 58,
+  kFrugalware = 59,
+  kFuntoo = 60,
+  kGalliumOs = 61,
+  kGaruda = 62,
+  kGentoo = 63,
+  kGlaucus = 64,
+  kGnewSense = 65,
+  kGnome = 66,
+  kGoboLinux = 67,
+  kGrombyang = 68,
+  kHash = 69,
+  kHuayra = 70,
+  kHydroOs = 71,
+  kHyperbola = 72,
+  kIglu = 73,
+  kInstantOs = 74,
+  kItc = 75,
+  kJanus = 76,
+  kKaOs = 77,
+  kKaisen = 78,
+  kKali = 79,
+  kKde = 80,
+  kKibojoe = 81,
+  kKogaion = 82,
+  kKorora = 83,
+  kKsLinux = 84,
+  kKubuntu = 85,
+  kLangitKetujuh = 86,
+  kLaxerOs = 87,
+  kLede = 88,
+  kLibreElec = 89,
+  kLinuxLite = 90,
+  kLinuxMint = 91,
+  kLiveRaizo = 92,
+  kLmde = 93,
+  kLubuntu = 94,
+  kLunar = 95,
+  kMageia = 96,
+  kMagpieOs = 97,
+  kMandriva = 98,
+  kManjaro = 99,
+  kMaui = 100,
+  kMer = 101,
+  kMinix = 102,
+  kMx = 103,
+  kNamib = 104,
+  kNeptune = 105,
+  kNetrunner = 106,
+  kNitrux = 107,
+  kNixOs = 108,
+  kNurunner = 109,
+  kNutyX = 110,
+  kObRevenge = 111,
+  kObarun = 112,
+  kOpenEuler = 113,
+  kOpenIndiana = 114,
+  kOpenMandriva = 115,
+  kOpenSourceMediaCenter = 116,
+  kOpenStage = 117,
+  kOpenSuse = 118,
+  kOpenSuseLeap = 119,
+  kOpenSuseTumbleweed = 120,
+  kOpenWrt = 121,
+  kOpenMamba = 122,
+  kOracle = 123,
+  kOsElbrus = 124,
+  kParabola = 125,
+  kPardus = 126,
+  kParrot = 127,
+  kParsix = 128,
+  kPcLinuxOs = 129,
+  kPengwin = 130,
+  kPentoo = 131,
+  kPeppermint = 132,
+  kPisi = 133,
+  kPnmLinux = 134,
+  kPopOs = 135,
+  kPorteus = 136,
+  kPostMarketOs = 137,
+  kProxmox = 138,
+  kPuffOs = 139,
+  kPuppy = 140,
+  kPureOs = 141,
+  kQubes = 142,
+  kQubyt = 143,
+  kQuibian = 144,
+  kRadix = 145,
+  kRaspbian = 146,
+  kReborn = 147,
+  kRedStar = 148,
+  kRedcore = 149,
+  kRedhat = 150,
+  kRefractedDevuan = 151,
+  kRegata = 152,
+  kRegolith = 153,
+  kRocky = 154,
+  kRosa = 155,
+  kSabayon = 156,
+  kSabotage = 157,
+  kSailfish = 158,
+  kSalentOs = 159,
+  kScientific = 160,
+  kSemc = 161,
+  kSeptor = 162,
+  kSerene = 163,
+  kSharkLinux = 164,
+  kSiduction = 165,
+  kSkiffOs = 166,
+  kSlackware = 167,
+  kSliTaz = 168,
+  kSmartOs = 169,
+  kSolus = 170,
+  kSourceMage = 171,
+  kSparky = 172,
+  kStar = 173,
+  kSteamOs = 174,
+  kSwagArch = 175,
+  kT2 = 176,
+  kTails = 177,
+  kTeArch = 178,
+  kTrisquel = 179,
+  kUbuntu = 180,
+  kUnivention = 181,
+  kVenom = 182,
+  kVnux = 183,
+  kVoid = 184,
+  kXferience = 185,
+  kXubuntu = 186,
+  kZorin = 187,
 
-  // Note: Add new distros to the list above this line, and update Linux.Distro2
-  // in tools/metrics/histograms/enums.xml accordingly.
-  UMA_LINUX_DISTRO_MAX
+  // Needed for UMA.
+  kMaxValue = kZorin,
 };
 
 enum UMALinuxGlibcVersion {
@@ -240,9 +418,7 @@ void RecordMicroArchitectureStats() {
                            base::SysInfo::NumberOfProcessors());
 }
 
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX)
 void RecordLinuxDistroSpecific(const std::string& version_string,
                                size_t parts,
                                const char* histogram_name) {
@@ -260,67 +436,275 @@ void RecordLinuxDistroSpecific(const std::string& version_string,
     base::UmaHistogramSparse(histogram_name, sample.ValueOrDie());
 }
 
-void RecordLinuxDistro() {
-  UMALinuxDistro distro_result = UMA_LINUX_DISTRO_UNKNOWN;
+// Some releases may have multiple names like "opensuse_leap", "opensuse leap",
+// or "opensuseleap".  Trim non-alphanumeric characters so they all map to the
+// same name.
+std::string TrimLinuxDistro(const std::string& distro) {
+  std::string trimmed;
+  for (char c : distro) {
+    if (base::IsAsciiAlphaNumeric(c)) {
+      trimmed.push_back(c);
+    }
+  }
+  return trimmed;
+}
 
+void RecordLinuxDistro() {
+  std::string distro = base::GetLinuxDistro();
+  if (distro.empty() || distro == "Unknown") {
+    base::UmaHistogramEnumeration("Linux.Distro3", UmaLinuxDistro::kUnknown);
+    return;
+  }
   std::vector<std::string> distro_tokens =
-      base::SplitString(base::GetLinuxDistro(), base::kWhitespaceASCII,
-                        base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-  if (distro_tokens.size() > 0) {
-    if (distro_tokens[0] == "Ubuntu") {
-      // Format: Ubuntu YY.MM.P [LTS]
-      // We are only concerned with release (YY.MM) not the patch (P).
-      distro_result = UMA_LINUX_DISTRO_UBUNTU;
-      if (distro_tokens.size() >= 2)
-        RecordLinuxDistroSpecific(distro_tokens[1], 2, "Linux.Distro.Ubuntu");
-    } else if (distro_tokens[0] == "openSUSE") {
-      // Format: openSUSE Leap RR.R
-      distro_result = UMA_LINUX_DISTRO_OPENSUSE_LEAP;
-      if (distro_tokens.size() >= 3 && distro_tokens[1] == "Leap") {
-        RecordLinuxDistroSpecific(distro_tokens[2], 2,
-                                  "Linux.Distro.OpenSuseLeap");
-      }
-    } else if (distro_tokens[0] == "Debian") {
-      // Format: Debian GNU/Linux R.P (<codename>)
-      // We are only concerned with the release (R) not the patch (P).
-      distro_result = UMA_LINUX_DISTRO_DEBIAN;
-      if (distro_tokens.size() >= 3)
-        RecordLinuxDistroSpecific(distro_tokens[2], 1, "Linux.Distro.Debian");
-    } else if (distro_tokens[0] == "Fedora") {
-      // Format: Fedora RR (<codename>)
-      distro_result = UMA_LINUX_DISTRO_FEDORA;
-      if (distro_tokens.size() >= 2)
-        RecordLinuxDistroSpecific(distro_tokens[1], 1, "Linux.Distro.Fedora");
-    } else if (distro_tokens[0] == "Arch") {
-      // Format: Arch Linux
-      distro_result = UMA_LINUX_DISTRO_ARCH;
-    } else if (distro_tokens[0] == "CentOS") {
-      // Format: CentOS [Linux] <version> (<codename>)
-      distro_result = UMA_LINUX_DISTRO_CENTOS;
-    } else if (distro_tokens[0] == "elementary") {
-      // Format: elementary OS <release name>
-      distro_result = UMA_LINUX_DISTRO_ELEMENTARY;
-    } else if (distro_tokens.size() >= 2 && distro_tokens[1] == "Mint") {
-      // Format: Linux Mint RR
-      distro_result = UMA_LINUX_DISTRO_MINT;
-      if (distro_tokens.size() >= 3)
-        RecordLinuxDistroSpecific(distro_tokens[2], 1, "Linux.Distro.Mint");
-    } else if (distro_tokens.size() >= 4 && distro_tokens[0] == "Red" &&
-               distro_tokens[1] == "Hat" && distro_tokens[2] == "Enterprise" &&
-               distro_tokens[3] == "Linux") {
-      // Format: Red Hat Enterprise Linux <variant> R.P (<codename>)
-      distro_result = UMA_LINUX_DISTRO_RHEL;
-    } else if (distro_tokens.size() >= 3 && distro_tokens[0] == "SUSE" &&
-               distro_tokens[1] == "Linux" &&
-               distro_tokens[2] == "Enterprise") {
-      // Format: SUSE Linux Enterprise <variant> RR
-      distro_result = UMA_LINUX_DISTRO_SUSE_ENTERPRISE;
+      base::SplitString(distro, base::kWhitespaceASCII, base::TRIM_WHITESPACE,
+                        base::SPLIT_WANT_NONEMPTY);
+  CHECK(distro_tokens.size());
+  if (distro_tokens[0] == "Ubuntu") {
+    // Format: Ubuntu YY.MM.P [LTS]
+    // We are only concerned with release (YY.MM) not the patch (P).
+    if (distro_tokens.size() >= 2) {
+      RecordLinuxDistroSpecific(distro_tokens[1], 2, "Linux.Distro.Ubuntu");
+    }
+  } else if (distro_tokens[0] == "openSUSE") {
+    // Format: openSUSE Leap RR.R
+    if (distro_tokens.size() >= 3 && distro_tokens[1] == "Leap") {
+      RecordLinuxDistroSpecific(distro_tokens[2], 2,
+                                "Linux.Distro.OpenSuseLeap");
+    }
+  } else if (distro_tokens[0] == "Debian") {
+    // Format: Debian GNU/Linux R.P (<codename>)
+    // We are only concerned with the release (R) not the patch (P).
+    if (distro_tokens.size() >= 3) {
+      RecordLinuxDistroSpecific(distro_tokens[2], 1, "Linux.Distro.Debian");
+    }
+  } else if (distro_tokens[0] == "Fedora") {
+    // Format: Fedora RR (<codename>)
+    if (distro_tokens.size() >= 2) {
+      RecordLinuxDistroSpecific(distro_tokens[1], 1, "Linux.Distro.Fedora");
+    }
+  } else if (distro_tokens.size() >= 2 && distro_tokens[1] == "Mint") {
+    // Format: Linux Mint RR
+    if (distro_tokens.size() >= 3) {
+      RecordLinuxDistroSpecific(distro_tokens[2], 1, "Linux.Distro.Mint");
     }
   }
 
-  base::UmaHistogramSparse("Linux.Distro2", distro_result);
+  using enum UmaLinuxDistro;
+  // This array must be kept sorted since it is binary searched.
+  constexpr std::pair<const char*, UmaLinuxDistro> kDistroPrefixes[] = {
+      {"alma", kAlma},
+      {"alpine", kAlpine},
+      {"alter", kAlter},
+      {"amazon", kAmazon},
+      {"anarchy", kAnarchy},
+      {"antergos", kAntergos},
+      {"antix", kAntiX},
+      {"aoscos", kAoscOs},
+      {"aperio", kAperio},
+      {"apricity", kApricity},
+      {"arch", kArch},
+      {"arcolinux", kArcoLinux},
+      {"artix", kArtix},
+      {"arya", kArya},
+      {"asteroidos", kAsteroidOs},
+      {"ataraxia", kJanus},
+      {"bedrock", kBedrock},
+      {"bitrig", kBitrig},
+      {"blackarch", kBlackArch},
+      {"blag", kBlag},
+      {"blankon", kBlankOn},
+      {"bluelight", kBlueLight},
+      {"bodhi", kBodhi},
+      {"bonsai", kBonsai},
+      {"bunsenlabs", kBunsenLabs},
+      {"calculate", kCalculate},
+      {"carbs", kCarbs},
+      {"cblmariner", kCblMariner},
+      {"celos", kCelOs},
+      {"centos", kCentOs},
+      {"chakra", kChakra},
+      {"chaletos", kChaletOs},
+      {"chapeau", kChapeau},
+      {"cleanjaro", kCleanjaro},
+      {"clearlinux", kClearLinux},
+      {"clearos", kClearOs},
+      {"clover", kClover},
+      {"condres", kCondres},
+      {"containerlinux", kContainerLinux},
+      {"crux", kCrux},
+      {"crystallinux", kCrystalLinux},
+      {"cucumber", kCucumber},
+      {"cyberos", kCyberOs},
+      {"dahlia", kDahlia},
+      {"darkos", kDarkOs},
+      {"debian", kDebian},
+      {"deepin", kDeepin},
+      {"desaos", kDesaOs},
+      {"devuan", kDevuan},
+      {"dracos", kDracOs},
+      {"drauger", kDrauger},
+      {"elementary", kElementary},
+      {"endeavouros", kEndeavourOs},
+      {"endless", kEndless},
+      {"eurolinux", kEuroLinux},
+      {"exherbo", kExherbo},
+      {"fedora", kFedora},
+      {"feren", kFeren},
+      {"frugalware", kFrugalware},
+      {"funtoo", kFuntoo},
+      {"galliumos", kGalliumOs},
+      {"garuda", kGaruda},
+      {"gentoo", kGentoo},
+      {"glaucus", kGlaucus},
+      {"gnewsense", kGnewSense},
+      {"gnome", kGnome},
+      {"gobolinux", kGoboLinux},
+      {"grombyang", kGrombyang},
+      {"hash", kHash},
+      {"huayra", kHuayra},
+      {"hyperbola", kHyperbola},
+      {"i3buntu", kUbuntu},
+      {"iglu", kIglu},
+      {"instantos", kInstantOs},
+      {"itc", kItc},
+      {"janus", kJanus},
+      {"kaisen", kKaisen},
+      {"kali", kKali},
+      {"kaos", kKaOs},
+      {"kde", kKde},
+      {"kibojoe", kKibojoe},
+      {"kogaion", kKogaion},
+      {"korora", kKorora},
+      {"kslinux", kKsLinux},
+      {"kubuntu", kKubuntu},
+      {"langitketujuh", kLangitKetujuh},
+      {"laxeros", kLaxerOs},
+      {"lede", kLede},
+      {"libreelec", kLibreElec},
+      {"linuxlite", kLinuxLite},
+      {"linuxmint", kLinuxMint},
+      {"liveraizo", kLiveRaizo},
+      {"lmde", kLmde},
+      {"lubuntu", kLubuntu},
+      {"lunar", kLunar},
+      {"mageia", kMageia},
+      {"magpieos", kMagpieOs},
+      {"mandrake", kMandriva},
+      {"mandriva", kMandriva},
+      {"manjaro", kManjaro},
+      {"maui", kMaui},
+      {"mer", kMer},
+      {"minix", kMinix},
+      {"mint", kLinuxMint},
+      {"mx", kMx},
+      {"namib", kNamib},
+      {"neptune", kNeptune},
+      {"netrunner", kNetrunner},
+      {"nitrux", kNitrux},
+      {"nixos", kNixOs},
+      {"nurunner", kNurunner},
+      {"nutyx", kNutyX},
+      {"obarun", kObarun},
+      {"obrevenge", kObRevenge},
+      {"openeuler", kOpenEuler},
+      {"openindiana", kOpenIndiana},
+      {"openmamba", kOpenMamba},
+      {"openmandriva", kOpenMandriva},
+      {"opensourcemediacenter", kOpenSourceMediaCenter},
+      {"openstage", kOpenStage},
+      {"opensuse", kOpenSuse},
+      {"opensuseleap", kOpenSuseLeap},
+      {"opensusetumbleweed", kOpenSuseTumbleweed},
+      {"openwrt", kOpenWrt},
+      {"oracle", kOracle},
+      {"oselbrus", kOsElbrus},
+      {"osmc", kOpenSourceMediaCenter},
+      {"parabola", kParabola},
+      {"pardus", kPardus},
+      {"parrot", kParrot},
+      {"parsix", kParsix},
+      {"pclinuxos", kPcLinuxOs},
+      {"pengwin", kPengwin},
+      {"pentoo", kPentoo},
+      {"peppermint", kPeppermint},
+      {"pisi", kPisi},
+      {"pnmlinux", kPnmLinux},
+      {"popos", kPopOs},
+      {"porteus", kPorteus},
+      {"postmarketos", kPostMarketOs},
+      {"precisepuppy", kPuppy},
+      {"proxmox", kProxmox},
+      {"puffos", kPuffOs},
+      {"puppy", kPuppy},
+      {"pureos", kPureOs},
+      {"qubes", kQubes},
+      {"qubyt", kQubyt},
+      {"quibian", kQuibian},
+      {"quirkywerewolf", kPuppy},
+      {"radix", kRadix},
+      {"raspbian", kRaspbian},
+      {"reborn", kReborn},
+      {"redcore", kRedcore},
+      {"redhat", kRedhat},
+      {"redstar", kRedStar},
+      {"refracteddevuan", kRefractedDevuan},
+      {"regata", kRegata},
+      {"regolith", kRegolith},
+      {"rhel", kRedhat},
+      {"rocky", kRocky},
+      {"rosa", kRosa},
+      {"sabayon", kSabayon},
+      {"sabotage", kSabotage},
+      {"sailfish", kSailfish},
+      {"salentos", kSalentOs},
+      {"scientific", kScientific},
+      {"semc", kSemc},
+      {"septor", kSeptor},
+      {"serene", kSerene},
+      {"sharklinux", kSharkLinux},
+      {"siduction", kSiduction},
+      {"skiffos", kSkiffOs},
+      {"slackware", kSlackware},
+      {"slitaz", kSliTaz},
+      {"smartos", kSmartOs},
+      {"solus", kSolus},
+      {"sourcemage", kSourceMage},
+      {"sparky", kSparky},
+      {"star", kStar},
+      {"steamos", kSteamOs},
+      {"suse", kOpenSuse},
+      {"swagarch", kSwagArch},
+      {"t2", kT2},
+      {"tails", kTails},
+      {"tearch", kTeArch},
+      {"trisquel", kTrisquel},
+      {"ubuntu", kUbuntu},
+      {"univention", kUnivention},
+      {"venom", kVenom},
+      {"vnux", kVnux},
+      {"void", kVoid},
+      {"whpnmlinux", kPnmLinux},
+      {"xferience", kXferience},
+      {"xubuntu", kXubuntu},
+      {"zorin", kZorin},
+  };
+  struct Compare {
+    bool operator()(const std::string& string,
+                    const std::pair<const char*, UmaLinuxDistro>& pair) {
+      return string < pair.first;
+    }
+  };
+
+  std::string trimmed = TrimLinuxDistro(base::ToLowerASCII(distro));
+  auto* it = std::upper_bound(kDistroPrefixes, std::end(kDistroPrefixes),
+                              trimmed, Compare());
+  if (it != kDistroPrefixes && base::StartsWith(trimmed, (--it)->first)) {
+    base::UmaHistogramEnumeration("Linux.Distro3", it->second);
+  } else {
+    base::UmaHistogramEnumeration("Linux.Distro3", UmaLinuxDistro::kOther);
+  }
 }
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_LINUX)
 
 void RecordLinuxGlibcVersion() {
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
@@ -731,9 +1115,7 @@ void ChromeBrowserMainExtraPartsMetrics::PostBrowserStart() {
   constexpr base::TaskTraits kBestEffortTaskTraits = {
       base::MayBlock(), base::TaskPriority::BEST_EFFORT,
       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN};
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX)
   base::ThreadPool::PostTask(FROM_HERE, kBestEffortTaskTraits,
                              base::BindOnce(&RecordLinuxDistro));
 #endif

@@ -7535,7 +7535,7 @@ chromium-metrics-reviews@google.com.
   <owner>thomasanderson@chromium.org</owner>
   <summary>
     The Debian version number (eg. 8: Jessie, 9: Stretch). Logged once on
-    startup if Linux.Distro2 is Debian.
+    startup if Linux.Distro3 is Debian.
   </summary>
 </histogram>
 
@@ -7547,7 +7547,7 @@ chromium-metrics-reviews@google.com.
   <owner>thomasanderson@chromium.org</owner>
   <summary>
     The Fedora version number (eg. 27, 28) Logged once on startup if
-    Linux.Distro2 is Fedora.
+    Linux.Distro3 is Fedora.
   </summary>
 </histogram>
 
@@ -7559,7 +7559,7 @@ chromium-metrics-reviews@google.com.
   <owner>thomasanderson@chromium.org</owner>
   <summary>
     The Linux Mint version number (eg. 20, 20.1) Logged once on startup if
-    Linux.Distro2 is Mint.
+    Linux.Distro3 is Mint.
   </summary>
 </histogram>
 
@@ -7571,7 +7571,7 @@ chromium-metrics-reviews@google.com.
   <owner>thomasanderson@chromium.org</owner>
   <summary>
     The openSUSE Leap version number, logged as 1000*major + minor (eg. 15001 =
-    15.1). Logged once on startup if Linux.Distro2 is openSUSE Leap.
+    15.1). Logged once on startup if Linux.Distro3 is openSUSE Leap.
   </summary>
 </histogram>
 
@@ -7583,11 +7583,11 @@ chromium-metrics-reviews@google.com.
   <owner>thomasanderson@chromium.org</owner>
   <summary>
     The Ubuntu version number, logged as 1000*year + month (eg. 16004 = 16.04
-    Xenial). Logged once on startup if Linux.Distro2 is Ubuntu.
+    Xenial). Logged once on startup if Linux.Distro3 is Ubuntu.
   </summary>
 </histogram>
 
-<histogram name="Linux.Distro2" enum="LinuxDistro2" expires_after="never">
+<histogram name="Linux.Distro3" enum="LinuxDistro3" expires_after="never">
 <!-- expires-never: Needed to measure Linux ecosystem. -->
 
   <owner>thestig@chromium.org</owner>
