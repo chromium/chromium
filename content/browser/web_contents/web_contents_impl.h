@@ -1464,6 +1464,8 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
                            PopupWindowBrowserNavResumeLoad);
   FRIEND_TEST_ALL_PREFIXES(WebContentsImplBrowserTest,
                            SuppressedPopupWindowBrowserNavResumeLoad);
+  FRIEND_TEST_ALL_PREFIXES(RenderWidgetHostSitePerProcessTest,
+                           BrowserClosesPopupIntersectsPermissionPrompt);
 
   // So |find_request_manager_| can be accessed for testing.
   friend class FindRequestManagerTest;

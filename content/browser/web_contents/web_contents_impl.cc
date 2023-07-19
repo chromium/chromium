@@ -4522,10 +4522,19 @@ void WebContentsImpl::ShowCreatedWidget(int process_id,
                   bottom_right.y() - origin.y());
   }
 
+  RenderWidgetHostImpl* render_widget_host_impl = widget_host_view->host();
+  auto permission_exclusion_area_bounds =
+      PermissionControllerImpl::FromBrowserContext(GetBrowserContext())
+          ->GetExclusionAreaBoundsInScreen(outermost_web_contents);
+  if (permission_exclusion_area_bounds &&
+      permission_exclusion_area_bounds->Intersects(transformed_rect)) {
+    render_widget_host_impl->ShutdownAndDestroyWidget(true);
+    return;
+  }
+
   widget_host_view->InitAsPopup(view, transformed_rect,
                                 transformed_anchor_rect);
 
-  RenderWidgetHostImpl* render_widget_host_impl = widget_host_view->host();
   // Renderer-owned popup widgets wait for the renderer to request for them
   // to be shown. We signal that this condition is satisfied by calling Init().
   render_widget_host_impl->Init();

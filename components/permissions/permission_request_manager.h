@@ -24,6 +24,8 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/gfx/geometry/rect.h"
 
 class GURL;
 
@@ -176,6 +178,10 @@ class PermissionRequestManager
   base::WeakPtr<PermissionPrompt::Delegate> GetWeakPtr() override;
   content::WebContents* GetAssociatedWebContents() override;
   bool RecreateView() override;
+
+  // Returns the bounds of the active permission prompt view if we're
+  // displaying one.
+  absl::optional<gfx::Rect> GetPromptBubbleViewBoundsInScreen() const;
 
   void set_manage_clicked() { did_click_manage_ = true; }
   void set_learn_more_clicked() { did_click_learn_more_ = true; }

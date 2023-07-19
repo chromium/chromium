@@ -37,6 +37,7 @@ class PermissionPromptBubble : public PermissionPromptDesktop,
   bool UpdateAnchor() override;
   permissions::PermissionPromptDisposition GetPromptDisposition()
       const override;
+  absl::optional<gfx::Rect> GetViewBoundsInScreen() const override;
 
   views::Widget* GetPromptBubbleWidgetForTesting() override;
 

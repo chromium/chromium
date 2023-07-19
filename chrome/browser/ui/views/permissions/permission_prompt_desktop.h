@@ -38,6 +38,7 @@ class PermissionPromptDesktop : public permissions::PermissionPrompt {
   TabSwitchingBehavior GetTabSwitchingBehavior() override;
   permissions::PermissionPromptDisposition GetPromptDisposition()
       const override = 0;
+  absl::optional<gfx::Rect> GetViewBoundsInScreen() const override;
 
   virtual views::Widget* GetPromptBubbleWidgetForTesting();
 

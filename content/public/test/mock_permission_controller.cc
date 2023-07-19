@@ -28,4 +28,5 @@ void MockPermissionController::ResetPermission(blink::PermissionType permission,
 
 void MockPermissionController::UnsubscribePermissionStatusChange(
     SubscriptionId subscription_id) {}
+
 }  // namespace content

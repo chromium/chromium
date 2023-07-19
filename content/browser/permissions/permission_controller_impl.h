@@ -13,6 +13,8 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/permission_overrides.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/gfx/geometry/rect.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -26,6 +28,7 @@ class BrowserContext;
 class PermissionControllerImplTest;
 class RenderProcessHost;
 class PermissionServiceImpl;
+class WebContents;
 struct PermissionResult;
 
 using blink::PermissionType;
@@ -94,8 +97,19 @@ class CONTENT_EXPORT PermissionControllerImpl : public PermissionController {
   void UnsubscribePermissionStatusChange(
       SubscriptionId subscription_id) override;
 
+  // If there's currently a permission prompt bubble for the given WebContents,
+  // returns the bounds of the bubble view as exclusion area in screen
+  // coordinates.
+  absl::optional<gfx::Rect> GetExclusionAreaBoundsInScreen(
+      WebContents* web_contents) const;
+
   void add_notify_listener_observer_for_tests(base::RepeatingClosure callback) {
     onchange_listeners_callback_for_tests_ = std::move(callback);
+  }
+
+  void set_exclusion_area_bounds_for_tests(
+      const absl::optional<gfx::Rect>& bounds) {
+    exclusion_area_bounds_for_tests_ = bounds;
   }
 
  private:
@@ -180,6 +194,8 @@ class CONTENT_EXPORT PermissionControllerImpl : public PermissionController {
   PermissionOverrides permission_overrides_;
 
   absl::optional<base::RepeatingClosure> onchange_listeners_callback_for_tests_;
+
+  absl::optional<gfx::Rect> exclusion_area_bounds_for_tests_;
 
   // Note that SubscriptionId is distinct from
   // PermissionControllerDelegate::SubscriptionId, and the concrete ID values

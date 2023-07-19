@@ -763,6 +763,11 @@ bool PermissionRequestManager::RecreateView() {
   return true;
 }
 
+absl::optional<gfx::Rect>
+PermissionRequestManager::GetPromptBubbleViewBoundsInScreen() const {
+  return view_ ? view_->GetViewBoundsInScreen() : absl::nullopt;
+}
+
 PermissionRequestManager::PermissionRequestManager(
     content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),

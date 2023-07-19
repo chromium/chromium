@@ -748,6 +748,18 @@ bool PermissionControllerImpl::IsSubscribedToPermissionChangeEvent(
          permission_service_context->GetOnchangeEventListeners().end();
 }
 
+absl::optional<gfx::Rect>
+PermissionControllerImpl::GetExclusionAreaBoundsInScreen(
+    WebContents* web_contents) const {
+  if (exclusion_area_bounds_for_tests_.has_value()) {
+    return exclusion_area_bounds_for_tests_;
+  }
+  PermissionControllerDelegate* delegate =
+      browser_context_->GetPermissionControllerDelegate();
+  return delegate ? delegate->GetExclusionAreaBoundsInScreen(web_contents)
+                  : absl::nullopt;
+}
+
 void PermissionControllerImpl::NotifyEventListener() {
   if (onchange_listeners_callback_for_tests_.has_value()) {
     onchange_listeners_callback_for_tests_.value().Run();

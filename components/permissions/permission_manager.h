@@ -31,6 +31,7 @@ namespace content {
 class BrowserContext;
 class RenderFrameHost;
 class RenderProcessHost;
+class WebContents;
 }
 
 class GeolocationPermissionContextDelegateTests;
@@ -161,6 +162,8 @@ class PermissionManager : public KeyedService,
       override;
   void UnsubscribePermissionStatusChange(
       SubscriptionId subscription_id) override;
+  absl::optional<gfx::Rect> GetExclusionAreaBoundsInScreen(
+      content::WebContents* web_contents) const override;
 
   // Called when a permission was decided for a given PendingRequest. The
   // PendingRequest is identified by its |request_local_id| and the permission

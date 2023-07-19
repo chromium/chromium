@@ -19,6 +19,7 @@
 #include "components/permissions/features.h"
 #include "components/permissions/permission_context_base.h"
 #include "components/permissions/permission_request_id.h"
+#include "components/permissions/permission_request_manager.h"
 #include "components/permissions/permission_result.h"
 #include "components/permissions/permission_uma_util.h"
 #include "components/permissions/permission_util.h"
@@ -517,6 +518,13 @@ void PermissionManager::UnsubscribePermissionStatusChange(
     PermissionContextBase* context = GetPermissionContext(type);
     context->RemoveObserver(this);
   }
+}
+
+absl::optional<gfx::Rect> PermissionManager::GetExclusionAreaBoundsInScreen(
+    content::WebContents* web_contents) const {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  auto* manager = PermissionRequestManager::FromWebContents(web_contents);
+  return manager ? manager->GetPromptBubbleViewBoundsInScreen() : absl::nullopt;
 }
 
 void PermissionManager::OnPermissionsRequestResponseStatus(

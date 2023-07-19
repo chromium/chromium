@@ -8,7 +8,9 @@
 #include "base/types/id_type.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/permission_result.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
+#include "ui/gfx/geometry/rect.h"
 
 class GURL;
 
@@ -23,6 +25,7 @@ enum class PermissionType;
 namespace content {
 class RenderFrameHost;
 class RenderProcessHost;
+class WebContents;
 
 class CONTENT_EXPORT PermissionControllerDelegate {
  public:
@@ -143,6 +146,14 @@ class CONTENT_EXPORT PermissionControllerDelegate {
   // unsubscribed |subscription_id| or an `is_null()` ID is a no-op.
   virtual void UnsubscribePermissionStatusChange(
       SubscriptionId subscription_id) = 0;
+
+  // If there's currently a permission UI presenting for the given WebContents,
+  // returns bounds of the view as an exclusion area. We will use these bounds
+  // to avoid situations where users may make bad decisions based on incorrect
+  // contextual information (due to content or widgets overlaying the exclusion
+  // area)
+  virtual absl::optional<gfx::Rect> GetExclusionAreaBoundsInScreen(
+      WebContents* web_contents) const;
 
   // Returns whether permission can be overridden.
   virtual bool IsPermissionOverridable(

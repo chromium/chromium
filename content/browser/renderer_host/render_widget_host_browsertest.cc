@@ -14,6 +14,7 @@
 #include "base/test/test_timeouts.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "content/browser/permissions/permission_controller_impl.h"
 #include "content/browser/renderer_host/input/input_router_impl.h"
 #include "content/browser/renderer_host/input/synthetic_smooth_drag_gesture.h"
 #include "content/browser/renderer_host/input/touch_action_filter.h"
@@ -45,6 +46,10 @@
 #include "ui/events/base_event_utils.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/latency/latency_info.h"
+
+#if BUILDFLAG(IS_MAC)
+#include "third_party/blink/public/mojom/choosers/popup_menu.mojom-blink.h"
+#endif
 
 namespace content {
 
@@ -646,7 +651,182 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostSitePerProcessTest,
     }
   }
 }
+
 #endif
+
+#if !BUILDFLAG(IS_ANDROID)
+
+namespace {
+
+// Intercept PopupWidgetHost::ShowPopup to override the initial bounds
+class ShowPopupInterceptor
+    : public blink::mojom::PopupWidgetHostInterceptorForTesting {
+ public:
+  ShowPopupInterceptor(WebContentsImpl* web_contents,
+                       RenderFrameHostImpl* frame_host,
+                       const gfx::Rect& overriden_bounds)
+      : overriden_bounds_(overriden_bounds), frame_host_(frame_host) {
+    frame_host_->SetCreateNewPopupCallbackForTesting(base::BindRepeating(
+        &ShowPopupInterceptor::DidCreatePopupWidget, base::Unretained(this)));
+  }
+
+  ShowPopupInterceptor(const ShowPopupInterceptor&) = delete;
+  ShowPopupInterceptor& operator=(const ShowPopupInterceptor&) = delete;
+
+  ~ShowPopupInterceptor() override {
+    if (auto* rwhi = RenderWidgetHostImpl::FromID(process_id_, routing_id_)) {
+      std::ignore =
+          rwhi->popup_widget_host_receiver_for_testing().SwapImplForTesting(
+              rwhi);
+    }
+
+    frame_host_->SetCreateNewPopupCallbackForTesting(base::NullCallback());
+  }
+
+  void Wait() { run_loop_.Run(); }
+
+  // blink::mojom::PopupWidgetHostInterceptorForTesting:
+  blink::mojom::PopupWidgetHost* GetForwardingInterface() override {
+    DCHECK_NE(MSG_ROUTING_NONE, routing_id_);
+    return RenderWidgetHostImpl::FromID(process_id_, routing_id_);
+  }
+
+  void ShowPopup(const gfx::Rect& initial_rect,
+                 const gfx::Rect& initial_anchor_rect,
+                 ShowPopupCallback callback) override {
+    GetForwardingInterface()->ShowPopup(overriden_bounds_, initial_anchor_rect,
+                                        std::move(callback));
+    run_loop_.Quit();
+  }
+
+  void DidCreatePopupWidget(RenderWidgetHostImpl* render_widget_host) {
+    process_id_ = render_widget_host->GetProcess()->GetID();
+    routing_id_ = render_widget_host->GetRoutingID();
+    std::ignore = render_widget_host->popup_widget_host_receiver_for_testing()
+                      .SwapImplForTesting(this);
+  }
+
+  int last_routing_id() const { return routing_id_; }
+
+ private:
+  base::RunLoop run_loop_;
+  gfx::Rect overriden_bounds_;
+  int32_t routing_id_ = MSG_ROUTING_NONE;
+  int32_t process_id_ = 0;
+  raw_ptr<RenderFrameHostImpl> frame_host_;
+};
+
+#if BUILDFLAG(IS_MAC)
+
+// Intercepts calls to LocalFrameHost::ShowPopupMenu method(), to override
+// initial bounds and hook the `PopupMenuClient`
+class ShowPopupMenuInterceptor
+    : public blink::mojom::LocalFrameHostInterceptorForTesting,
+      public blink::mojom::PopupMenuClient {
+ public:
+  explicit ShowPopupMenuInterceptor(RenderFrameHostImpl* render_frame_host,
+                                    const gfx::Rect& overriden_bounds)
+      : overriden_bounds_(overriden_bounds),
+        render_frame_host_(render_frame_host),
+        swapped_impl_(
+            render_frame_host_->local_frame_host_receiver_for_testing(),
+            this) {}
+
+  ~ShowPopupMenuInterceptor() override = default;
+
+  LocalFrameHost* GetForwardingInterface() override {
+    return render_frame_host_;
+  }
+
+  void Wait() { run_loop_.Run(); }
+
+  void ShowPopupMenu(
+      mojo::PendingRemote<blink::mojom::PopupMenuClient> popup_client,
+      const gfx::Rect& bounds,
+      int32_t item_height,
+      double font_size,
+      int32_t selected_item,
+      std::vector<blink::mojom::MenuItemPtr> menu_items,
+      bool right_aligned,
+      bool allow_multiple_selection) override {
+    GetForwardingInterface()->ShowPopupMenu(
+        receiver_.BindNewPipeAndPassRemote(), overriden_bounds_, item_height,
+        font_size, selected_item, std::move(menu_items), right_aligned,
+        allow_multiple_selection);
+  }
+
+  void DidAcceptIndices(const std::vector<int32_t>& indices) override {
+    receiver_.reset();
+  }
+
+  void DidCancel() override {
+    is_cancelled_ = true;
+    receiver_.reset();
+    run_loop_.Quit();
+  }
+
+  bool is_cancelled() const { return is_cancelled_; }
+
+ private:
+  base::RunLoop run_loop_;
+  bool is_cancelled_{false};
+  gfx::Rect overriden_bounds_;
+  raw_ptr<RenderFrameHostImpl> render_frame_host_;
+  mojo::test::ScopedSwapImplForTesting<
+      mojo::AssociatedReceiver<blink::mojom::LocalFrameHost>>
+      swapped_impl_;
+  mojo::Receiver<blink::mojom::PopupMenuClient> receiver_{this};
+};
+#endif  // BUILDFLAG(IS_MAC)
+
+}  // namespace
+
+IN_PROC_BROWSER_TEST_F(RenderWidgetHostSitePerProcessTest,
+                       BrowserClosesPopupIntersectsPermissionPrompt) {
+  GURL main_url(embedded_test_server()->GetURL(
+      "a.com", "/site_isolation/page-with-select.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  auto* contents = static_cast<WebContentsImpl*>(web_contents());
+  FrameTreeNode* root = contents->GetPrimaryFrameTree().root();
+  RenderFrameHostImpl* root_frame_host = root->current_frame_host();
+
+  // TODO(crbug.com/1181150): Crash when we attempt to use a mock prompt here.
+  // After the ticket is fixed, remove the shortcut of getting bounds and use
+  // the `MockPermissionPromptFactory` instead.
+  // Create a popup widget and wait for the RenderWidgetHost to be shown.
+  gfx::Rect permission_exclusion_area_bounds(100, 100, 100, 100);
+  static_cast<PermissionControllerImpl*>(
+      root_frame_host->GetBrowserContext()->GetPermissionController())
+      ->set_exclusion_area_bounds_for_tests(permission_exclusion_area_bounds);
+#if BUILDFLAG(IS_MAC)
+  ShowPopupMenuInterceptor show_popup_menu_interceptor(
+      root_frame_host, permission_exclusion_area_bounds -
+                           contents->GetContainerBounds().OffsetFromOrigin());
+#else
+  ShowPopupInterceptor show_popup_interceptor(contents, root_frame_host,
+                                              permission_exclusion_area_bounds);
+#endif  // BUILDFLAG(IS_MAC)
+
+  NativeWebKeyboardEvent event(
+      blink::WebKeyboardEvent::Type::kChar, blink::WebInputEvent::kNoModifiers,
+      blink::WebInputEvent::GetStaticTimeStampForTests());
+  event.text[0] = ' ';
+  EXPECT_TRUE(ExecJs(root_frame_host, "focusSelectMenu();"));
+  root_frame_host->GetRenderWidgetHost()->ForwardKeyboardEvent(event);
+
+#if BUILDFLAG(IS_MAC)
+  show_popup_menu_interceptor.Wait();
+  ASSERT_TRUE(show_popup_menu_interceptor.is_cancelled());
+#else
+  show_popup_interceptor.Wait();
+  ASSERT_FALSE(
+      RenderWidgetHost::FromID(root_frame_host->GetProcess()->GetID(),
+                               show_popup_interceptor.last_routing_id()));
+#endif  // BUILDFLAG(IS_MAC)
+}
+
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Tests that `window.screen` dimensions match the display, not the viewport,
 // while the frame is fullscreen. See crbug.com/1367416

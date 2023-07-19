@@ -9,12 +9,14 @@
 #include "base/task/current_thread.h"
 #import "components/remote_cocoa/app_shim/native_widget_mac_nswindow.h"
 #import "content/app_shim_remote_cocoa/render_widget_host_view_cocoa.h"
+#include "content/browser/permissions/permission_controller_impl.h"
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_mac.h"
 #include "content/browser/renderer_host/web_menu_runner_mac.h"
+#include "content/public/browser/web_contents.h"
 #import "ui/base/cocoa/base_view.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -68,11 +70,31 @@ void PopupMenuHelper::ShowPopupMenu(
   if (!g_allow_showing_popup_menus)
     return;
 
+  RenderWidgetHostViewMac* rwhvm = GetRenderWidgetHostView();
+  auto* web_contents = rwhvm->GetWebContents();
+
+  // Convert element_bounds to be in screen.
+  gfx::Rect client_area = web_contents->GetContainerBounds();
+  gfx::Rect bounds_in_screen = bounds + client_area.OffsetFromOrigin();
+
+  // The new popup menu would overlap the permission prompt, which could lead to
+  // users making decisions based on incorrect information. We should close the
+  // popup if it intersects with the permission prompt.
+  auto permission_exclusion_area_bounds =
+      PermissionControllerImpl::FromBrowserContext(
+          web_contents->GetBrowserContext())
+          ->GetExclusionAreaBoundsInScreen(web_contents);
+  if (permission_exclusion_area_bounds &&
+      permission_exclusion_area_bounds->Intersects(bounds_in_screen)) {
+    popup_client_->DidCancel();
+    delegate_->OnMenuClosed();  // May delete |this|.
+    return;
+  }
+
   // Retain the Cocoa view for the duration of the pop-up so that it can't be
   // dealloced if my Destroy() method is called while the pop-up's up (which
   // would in turn delete me, causing a crash once the -runMenuInView
   // call returns. That's what was happening in <http://crbug.com/33250>).
-  RenderWidgetHostViewMac* rwhvm = GetRenderWidgetHostView();
   RenderWidgetHostViewCocoa* cocoa_view = rwhvm->GetInProcessNSView();
 
   // Check if the underlying native window is headless and if so, return early

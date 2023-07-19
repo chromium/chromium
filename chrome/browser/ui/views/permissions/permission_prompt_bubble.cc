@@ -77,6 +77,14 @@ void PermissionPromptBubble::OnWidgetActivationChanged(views::Widget* widget,
       prompt_bubble_->GetWidget()->GetPrimaryWindowWidget()->IsVisible();
 }
 
+absl::optional<gfx::Rect> PermissionPromptBubble::GetViewBoundsInScreen()
+    const {
+  return prompt_bubble_
+             ? absl::make_optional<gfx::Rect>(
+                   prompt_bubble_->GetWidget()->GetWindowBoundsInScreen())
+             : absl::nullopt;
+}
+
 bool PermissionPromptBubble::UpdateAnchor() {
   bool was_browser_changed = UpdateBrowser();
   // TODO(crbug.com/1175231): Investigate why prompt_bubble_ can be null

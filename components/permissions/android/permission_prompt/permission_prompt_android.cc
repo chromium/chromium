@@ -33,6 +33,11 @@ PermissionPromptAndroid::GetTabSwitchingBehavior() {
   return TabSwitchingBehavior::kKeepPromptAlive;
 }
 
+absl::optional<gfx::Rect> PermissionPromptAndroid::GetViewBoundsInScreen()
+    const {
+  return absl::nullopt;
+}
+
 void PermissionPromptAndroid::Closing() {
   delegate_->Dismiss();
 }
