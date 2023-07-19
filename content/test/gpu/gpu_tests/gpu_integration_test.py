@@ -17,6 +17,9 @@ import types
 from typing import Any, Dict, Generator, List, Optional, Set, Tuple, Type
 import unittest
 
+import dataclasses  # Built-in, but pylint gives an ordering false positive.
+
+from telemetry.internal.browser import browser_options as bo
 from telemetry.internal.results import artifact_compatibility_wrapper as acw
 from telemetry.testing import serially_executed_browser_test_case
 from telemetry.util import minidump_utils
@@ -55,14 +58,25 @@ TestTuple = Tuple[str, ct.GeneratedTest]
 TestTupleGenerator = Generator[TestTuple, None, None]
 
 
+@dataclasses.dataclass
+class _BrowserLaunchInfo():
+  browser_args: Set[str] = ct.EmptySet()
+  profile_dir: Optional[str] = None
+  profile_type: Optional[str] = None
+
+  def __eq__(self, other: Any):
+    return (isinstance(other, _BrowserLaunchInfo)
+            and self.browser_args == other.browser_args
+            and self.profile_dir == other.profile_dir
+            and self.profile_type == other.profile_type)
+
+
 # pylint: disable=too-many-public-methods
 class GpuIntegrationTest(
     serially_executed_browser_test_case.SeriallyExecutedBrowserTestCase):
 
-  _cached_expectations = None
-  _also_run_disabled_tests = False
   _disable_log_uploads = False
-  _extra_intel_device_id_with_overlays = None
+  _extra_intel_device_id_with_overlays: Optional[str] = None
   _skip_post_test_cleanup_and_debug_info = False
   _skip_post_failure_browser_restart = False
 
@@ -74,14 +88,12 @@ class GpuIntegrationTest(
   # We store a deep copy of the original browser finder options in
   # order to be able to restart the browser multiple times, with a
   # different set of command line arguments each time.
-  _original_finder_options = None
+  _original_finder_options: Optional[bo.BrowserFinderOptions] = None
 
   # We keep track of the set of command line arguments used to launch
   # the browser most recently in order to figure out whether we need
-  # to relaunch it, if a new pixel test requires a different set of
-  # arguments.
-  _last_launched_browser_args = set()
-  _last_launched_profile = (None, None)
+  # to relaunch it if the current test requires different ones.
+  _last_launched_browser_info = _BrowserLaunchInfo()
 
   # Keeps track of flaky tests that we're retrying.
   # TODO(crbug.com/1248602): Remove this in favor of a method that doesn't rely
@@ -90,9 +102,9 @@ class GpuIntegrationTest(
 
   # Keeps track of the first test that is run on a shard for a flakiness
   # workaround. See crbug.com/1079244.
-  _first_run_test = None
+  _first_run_test: Optional[str] = None
 
-  tab: ct.Tab = None
+  tab: Optional[ct.Tab] = None
 
   def __init__(self, *args, **kwargs):
     super().__init__(*args, **kwargs)
@@ -151,15 +163,18 @@ class GpuIntegrationTest(
 
     This should be called once in SetUpProcess and once in GenerateGpuTests.
     """
+    cls._original_finder_options = options.Copy()
     cls._skip_post_test_cleanup_and_debug_info =\
         options.skip_post_test_cleanup_and_debug_info
     cls._skip_post_failure_browser_restart =\
         options.no_browser_restart_on_failure
+    cls._disable_log_uploads = options.disable_log_uploads
+    cls._extra_intel_device_id_with_overlays = (
+        options.extra_intel_device_id_with_overlays)
 
   @classmethod
   def SetUpProcess(cls) -> None:
     super(GpuIntegrationTest, cls).SetUpProcess()
-    cls._original_finder_options = cls._finder_options.Copy()
     cls._SetClassVariablesFromOptions(cls._finder_options)
 
   @classmethod
@@ -315,8 +330,8 @@ class GpuIntegrationTest(
       browser_options.profile_type = profile_type
 
     # Save the last set of options for comparison.
-    cls._last_launched_browser_args = set(browser_args)
-    cls._last_launched_profile = (profile_dir, profile_type)
+    cls._last_launched_browser_info = _BrowserLaunchInfo(
+        set(browser_args), profile_dir, profile_type)
     cls.SetBrowserOptions(cls._finder_options)
 
   def RestartBrowserIfNecessaryWithArgs(
@@ -352,13 +367,14 @@ class GpuIntegrationTest(
     cls = self.__class__
     new_browser_args = cls._GenerateAndSanitizeBrowserArgs(additional_args)
 
-    diff_browser_args = set(new_browser_args) != cls._last_launched_browser_args
-    diff_profile = (profile_dir, profile_type) != cls._last_launched_profile
-    if force_restart or diff_browser_args or diff_profile:
-      logging.info('Restarting browser with arguments: %s', new_browser_args)
-      if diff_profile:
-        logging.info('Restarting browser with type (%s) --user-data-dir=%s',
-                     profile_type, profile_dir)
+    new_browser_info = _BrowserLaunchInfo(set(new_browser_args), profile_dir,
+                                          profile_type)
+    args_differ = (new_browser_info.browser_args !=
+                   cls._last_launched_browser_info.browser_args)
+    if force_restart or new_browser_info != cls._last_launched_browser_info:
+      logging.info(
+          'Restarting browser with arguments: %s, profile type %s, and profile '
+          'directory %s', new_browser_args, profile_type, profile_dir)
       cls.StopBrowser()
       cls._SetBrowserArgsForNextStartup(new_browser_args, profile_dir,
                                         profile_type)
@@ -366,7 +382,7 @@ class GpuIntegrationTest(
 
     # If we restarted due to a change in browser args, it's possible that a
     # Skip expectation now applies to the test, so check for that.
-    if diff_browser_args:
+    if args_differ:
       expected_results, _ = self.GetExpectationsForTest()
       if ResultType.Skip in expected_results:
         message = (
@@ -389,9 +405,7 @@ class GpuIntegrationTest(
   @classmethod
   def GenerateTestCases__RunGpuTest(cls, options: ct.ParsedCmdArgs
                                     ) -> TestTupleGenerator:
-    cls._disable_log_uploads = options.disable_log_uploads
-    cls._extra_intel_device_id_with_overlays = (
-        options.extra_intel_device_id_with_overlays)
+    cls._SetClassVariablesFromOptions(options)
     for test_name, url, args in cls.GenerateGpuTests(options):
       yield test_name, (url, test_name, args)
 

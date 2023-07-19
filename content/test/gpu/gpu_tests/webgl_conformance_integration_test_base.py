@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 """Base class for WebGL conformance tests."""
 
+import collections
 import logging
 import json
 import os
@@ -18,7 +19,7 @@ from gpu_tests import common_typing as ct
 from gpu_tests import gpu_helper
 from gpu_tests import gpu_integration_test
 from gpu_tests import webgl_test_util
-from gpu_tests.util import websocket_server
+from gpu_tests.util import websocket_server as wss
 
 import gpu_path_util
 
@@ -67,21 +68,21 @@ class WebGLTestArgs():
 class WebGLConformanceIntegrationTestBase(
     gpu_integration_test.GpuIntegrationTest):
 
-  _webgl_version = None
+  _webgl_version: Optional[int] = None
   is_asan = False
   _crash_count = 0
   _gl_backend = ''
   _angle_backend = ''
   _command_decoder = ''
   _verified_flags = False
-  _original_environ = None
+  _original_environ: Optional[collections.abc.Mapping] = None
   page_loaded = False
 
   # Scripts read from file during process start up.
-  _conformance_harness_script = None
-  _extension_harness_additional_script = None
+  _conformance_harness_script: Optional[str] = None
+  _extension_harness_additional_script: Optional[str] = None
 
-  websocket_server = None
+  websocket_server: Optional[wss.WebsocketServer] = None
 
   @classmethod
   def _SuiteSupportsParallelTests(cls) -> bool:
@@ -155,7 +156,6 @@ class WebGLConformanceIntegrationTestBase(
     test_paths = cls._ParseTests('00_test_list.txt',
                                  options.webgl_conformance_version,
                                  (options.webgl2_only == 'true'), None)
-    cls._SetClassVariablesFromOptions(options)
     assert cls._webgl_version is not None
     for test_path in test_paths:
       test_path_with_args = test_path
@@ -334,7 +334,7 @@ class WebGLConformanceIntegrationTestBase(
         if response_type == 'TEST_FINISHED':
           break
         raise RuntimeError('Received unknown message type %s' % response_type)
-    except websocket_server.WebsocketReceiveMessageTimeoutError:
+    except wss.WebsocketReceiveMessageTimeoutError:
       logging.error(
           'Timed out waiting for websocket message (%.3f seconds since test '
           'start), checking for hung renderer',
@@ -349,7 +349,7 @@ class WebGLConformanceIntegrationTestBase(
                                                 timeout=5)
       logging.error('Timeout does *not* appear to be due to a hung renderer')
       raise
-    except websocket_server.ClientClosedConnectionError as e:
+    except wss.ClientClosedConnectionError as e:
       raise RuntimeError(
           'Detected closed websocket (%.3f seconds since test start) - likely '
           'caused by a renderer crash' % (time.time() - start_time)) from e
@@ -490,7 +490,7 @@ class WebGLConformanceIntegrationTestBase(
     # Logging every time a connection is opened/closed is spammy, so decrease
     # the default log level.
     logging.getLogger('websockets.server').setLevel(logging.WARNING)
-    cls.websocket_server = websocket_server.WebsocketServer()
+    cls.websocket_server = wss.WebsocketServer()
     cls.websocket_server.StartServer()
 
     cls.CustomizeBrowserArgs([])

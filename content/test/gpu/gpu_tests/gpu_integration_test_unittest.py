@@ -111,7 +111,7 @@ def _GenerateNvidiaExampleTagsForTestClassAndArgs(
   tags = None
   with mock.patch.object(
       test_class, 'ExpectationsFiles', return_value=['exp.txt']):
-    _ = list(test_class.GenerateGpuTests(args))
+    _ = list(test_class.GenerateTestCases__RunGpuTest(args))
     platform = fakes.FakePlatform('win', 'win10')
     browser = fakes.FakeBrowser(platform, 'release')
     browser._returned_system_info = _GetSystemInfo(

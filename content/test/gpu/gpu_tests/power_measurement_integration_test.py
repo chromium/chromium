@@ -229,7 +229,7 @@ class _PowerMeasurementTestArguments():
 
 class PowerMeasurementIntegrationTest(gpu_integration_test.GpuIntegrationTest):
 
-  _url_mode = None
+  _url_mode: Optional[bool] = None
 
   @classmethod
   def Name(cls) -> str:

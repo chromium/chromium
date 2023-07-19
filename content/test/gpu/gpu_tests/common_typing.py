@@ -31,3 +31,4 @@ Browser = browser.Browser
 # object is also problematic.
 EmptyDict = lambda: dataclasses.field(default_factory=dict)
 EmptyList = lambda: dataclasses.field(default_factory=list)
+EmptySet = lambda: dataclasses.field(default_factory=set)

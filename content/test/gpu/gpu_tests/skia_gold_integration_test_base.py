@@ -92,13 +92,14 @@ class SkiaGoldIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
   # This information is class-scoped, so that it can be shared across
   # invocations of tests; but it's zapped every time the browser is
   # restarted with different command line arguments.
-  _image_parameters = None
+  _image_parameters: Optional[_ImageParameters] = None
 
-  _skia_gold_temp_dir = None
-  _skia_gold_session_manager = None
-  _skia_gold_properties = None
+  _skia_gold_temp_dir: Optional[str] = None
+  _skia_gold_session_manager: Optional[sgsm.SkiaGoldSessionManager] = None
+  _skia_gold_properties: Optional[sgp.SkiaGoldProperties] = None
 
-  _dom_automation_controller_script = None
+  # Loaded from disk at a later point.
+  _dom_automation_controller_script: Optional[str] = None
 
   @classmethod
   def SetUpProcess(cls) -> None:
