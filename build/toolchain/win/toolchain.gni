@@ -27,9 +27,7 @@ if (host_os == "win") {
 
 _clang_bin_path = rebase_path("$clang_base_path/bin", root_build_dir)
 
-# Makes a single MSVC toolchain. Callers should normally instead invoke
-# "msvc_toolchain" which makes an additional toolchain for Rust targets that
-# are build-time artificts such as proc macros.
+# Makes a single MSVC toolchain.
 #
 # Parameters:
 #   environment: File name of environment file.
@@ -37,7 +35,7 @@ _clang_bin_path = rebase_path("$clang_base_path/bin", root_build_dir)
 # You would also define a toolchain_args variable with at least these set:
 #   current_cpu: current_cpu to pass as a build arg
 #   current_os: current_os to pass as a build arg
-template("single_msvc_toolchain") {
+template("msvc_toolchain") {
   toolchain(target_name) {
     # When invoking this toolchain not as the default one, these args will be
     # passed to the build. They are ignored when this is the default toolchain.
@@ -593,42 +591,16 @@ template("single_msvc_toolchain") {
   }
 }
 
-# Makes an MSVC toolchain for the target, and an equivalent toolchain with the
-# prebuilt Rust stdlib for building proc macros (and other for-build-use
-# artifacts).
-template("msvc_toolchain") {
-  single_msvc_toolchain(target_name) {
-    assert(defined(invoker.toolchain_args),
-           "Toolchains must declare toolchain_args")
-    forward_variables_from(invoker,
-                           "*",
-                           [
-                             "visibility",
-                             "test_only",
-                           ])
-
-    # No need to forward visibility and test_only as they apply to targets not
-    # toolchains, but presubmit checks require that we explicitly exclude them
-  }
-
-  if (enable_rust && current_toolchain == default_toolchain) {
-    # Make an additional toolchain which is used for making tools that are run
-    # on the host machine as part of the build process (such as proc macros
-    # and Cargo build scripts). This toolchain uses the prebuilt stdlib that
-    # comes with the compiler, so it doesn't have to wait for the stdlib to be
-    # built before building other stuff. And this ensures its proc macro
-    # outputs have the right ABI to be loaded by the compiler, and it can be
-    # used to compile build scripts that are part of the stdlib that is built
-    # for the default toolchain.
-    single_msvc_toolchain("${target_name}_for_rust_host_build_tools") {
-      assert(defined(invoker.toolchain_args),
-             "Toolchains must declare toolchain_args")
+template("msvc_rust_host_build_tools_toolchain") {
+  assert(defined(invoker.toolchain_args))
+  if (enable_rust) {
+    msvc_toolchain("${target_name}_for_rust_host_build_tools") {
       forward_variables_from(invoker,
                              "*",
                              [
                                "toolchain_args",
                                "visibility",
-                               "test_only",
+                               "testonly",
                              ])
       toolchain_args = {
         # Populate toolchain args from the invoker.
@@ -643,25 +615,31 @@ template("msvc_toolchain") {
         use_clang_coverage = false
         use_sanitizer_coverage = false
         generate_linker_map = false
-
-        # On Windows, cross-compile for x86 changes the `host_toolchain`
-        # into x86 too so as to avoid compiling things twice (see
-        # //build/config/BUILDCONFIG.gn). But the prebuilt stdlib does not
-        # exist for Windows x86 and it's exceedingly difficult to get it
-        # built from a single build_rust.py invocation. So we just don't follow
-        # along in this toolchain, and always use the host cpu type (which will
-        # be x64). Things built with this toolchain are never built for the
-        # target_cpu anyhow, so the optimization there does not benefit them.
-        current_cpu = host_cpu
       }
     }
   }
 }
 
 template("win_toolchains") {
+  # On Windows, cross-compile for x86 changes the `host_toolchain`
+  # into x86 too so as to avoid compiling things twice (see
+  # //build/config/BUILDCONFIG.gn). But the prebuilt stdlib does not
+  # exist for Windows x86 and it's exceedingly difficult to get it
+  # built from a single build_rust.py invocation. So we just don't follow
+  # along in the `msvc_rust_host_build_tools_toolchain` toolchains, and
+  # always use the host cpu type (which will be x64 in that case). Things
+  # built with these toolchains are never built for the target_cpu anyhow,
+  # so the optimization there does not benefit them.
+  #
+  # Thus, in msvc_rust_host_build_tools_toolchain:
+  # * Use `rust_host_toolchain_arch` instead of `toolchain_arch`.
+  # * Use `rust_host_win_toolchain_data` instead of `win_toolchain_data`.
+
   assert(defined(invoker.toolchain_arch))
   toolchain_arch = invoker.toolchain_arch
+  rust_host_toolchain_arch = host_cpu
 
+  # The toolchain data for `msvc_toolchain()`.
   if (toolchain_arch == "x86") {
     win_toolchain_data = win_toolchain_data_x86
   } else if (toolchain_arch == "x64") {
@@ -670,6 +648,18 @@ template("win_toolchains") {
     win_toolchain_data = win_toolchain_data_arm64
   } else {
     error("Unsupported toolchain_arch, add it to win_toolchain_data.gni")
+  }
+
+  # The toolchain data for `msvc_rust_host_build_tools_toolchain()`.
+  if (rust_host_toolchain_arch == "x86") {
+    rust_host_win_toolchain_data = win_toolchain_data_x86
+  } else if (rust_host_toolchain_arch == "x64") {
+    rust_host_win_toolchain_data = win_toolchain_data_x64
+  } else if (rust_host_toolchain_arch == "arm64") {
+    rust_host_win_toolchain_data = win_toolchain_data_arm64
+  } else {
+    error(
+        "Unsupported rust_host_toolchain_arch, add it to win_toolchain_data.gni")
   }
 
   # The toolchain using MSVC only makes sense when not doing cross builds.
@@ -695,6 +685,20 @@ template("win_toolchains") {
         current_cpu = toolchain_arch
       }
     }
+    msvc_rust_host_build_tools_toolchain(cl_toolchain_prefix + target_name) {
+      environment = "environment." + rust_host_toolchain_arch
+      cl = "\"${rust_host_win_toolchain_data.vc_bin_dir}/cl.exe\""
+
+      toolchain_args = {
+        if (defined(invoker.toolchain_args)) {
+          forward_variables_from(invoker.toolchain_args, "*")
+        }
+        is_clang = false
+        use_clang_coverage = false
+        current_os = "win"
+        current_cpu = rust_host_toolchain_arch
+      }
+    }
   }
 
   if (defined(invoker.clang_toolchain_prefix)) {
@@ -702,21 +706,23 @@ template("win_toolchains") {
   } else {
     clang_toolchain_prefix = "win_clang_"
   }
+
+  _clang_lib_dir =
+      rebase_path("$clang_base_path/lib/clang/$clang_version/lib/windows",
+                  root_build_dir)
+  if (host_os == "win") {
+    # And to match the other -libpath flags.
+    _clang_lib_dir = string_replace(_clang_lib_dir, "/", "\\")
+  }
+
   msvc_toolchain(clang_toolchain_prefix + target_name) {
     environment = "environment." + toolchain_arch
     cl = "${_clang_bin_path}/clang-cl${_exe}"
-    _clang_lib_dir =
-        rebase_path("$clang_base_path/lib/clang/$clang_version/lib/windows",
-                    root_build_dir)
-    if (host_os == "win") {
-      # And to match the other -libpath flags.
-      _clang_lib_dir = string_replace(_clang_lib_dir, "/", "\\")
-    }
 
     sys_include_flags = "${win_toolchain_data.include_flags_imsvc}"
     if (use_lld) {
-      sys_lib_flags =
-          "-libpath:$_clang_lib_dir ${win_toolchain_data.libpath_lldlink_flags}"
+      sys_lib_flags = "-libpath:$_clang_lib_dir " +
+                      "${win_toolchain_data.libpath_lldlink_flags}"
     }
 
     toolchain_args = {
@@ -726,6 +732,25 @@ template("win_toolchains") {
       is_clang = true
       current_os = "win"
       current_cpu = toolchain_arch
+    }
+  }
+  msvc_rust_host_build_tools_toolchain(clang_toolchain_prefix + target_name) {
+    environment = "environment." + rust_host_toolchain_arch
+    cl = "${_clang_bin_path}/clang-cl${_exe}"
+
+    sys_include_flags = "${rust_host_win_toolchain_data.include_flags_imsvc}"
+    if (use_lld) {
+      sys_lib_flags = "-libpath:$_clang_lib_dir " +
+                      "${rust_host_win_toolchain_data.libpath_lldlink_flags}"
+    }
+
+    toolchain_args = {
+      if (defined(invoker.toolchain_args)) {
+        forward_variables_from(invoker.toolchain_args, "*")
+      }
+      is_clang = true
+      current_os = "win"
+      current_cpu = rust_host_toolchain_arch
     }
   }
 }
