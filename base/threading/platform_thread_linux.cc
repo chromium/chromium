@@ -28,14 +28,12 @@
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if !BUILDFLAG(IS_NACL) && !BUILDFLAG(IS_AIX)
 #include <pthread.h>
 #include <sys/prctl.h>
 #include <sys/resource.h>
 #include <sys/time.h>
 #include <sys/types.h>
 #include <unistd.h>
-#endif
 
 namespace base {
 
@@ -47,9 +45,7 @@ BASE_FEATURE(kSchedUtilHints,
 
 namespace {
 
-#if !BUILDFLAG(IS_NACL)
 ThreadTypeDelegate* g_thread_type_delegate = nullptr;
-#endif
 
 #if BUILDFLAG(IS_CHROMEOS)
 std::atomic<bool> g_use_sched_util(true);
@@ -67,8 +63,6 @@ const bool kSchedulerUseLatencyTuneDef = true;
 int g_scheduler_boost_adj;
 int g_scheduler_limit_adj;
 bool g_scheduler_use_latency_tune_adj;
-
-#if !BUILDFLAG(IS_NACL) && !BUILDFLAG(IS_AIX)
 
 // Defined by linux uclamp ABI of sched_setattr().
 const uint32_t kSchedulerUclampMin = 0;
@@ -136,10 +130,8 @@ long sched_setattr(pid_t pid,
                    unsigned int flags) {
   return syscall(__NR_sched_setattr, pid, attr, flags);
 }
-#endif  // !BUILDFLAG(IS_NACL) && !BUILDFLAG(IS_AIX)
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if !BUILDFLAG(IS_NACL)
 const FilePath::CharType kCgroupDirectory[] =
     FILE_PATH_LITERAL("/sys/fs/cgroup");
 
@@ -307,15 +299,12 @@ void SetThreadCgroupsForThreadType(PlatformThreadId thread_id,
       thread_id, cgroup_filepath.Append(FILE_PATH_LITERAL("schedtune")),
       thread_type);
 }
-#endif
 }  // namespace
 
 namespace internal {
 
 namespace {
-#if !BUILDFLAG(IS_NACL)
 const struct sched_param kRealTimePrio = {8};
-#endif
 }  // namespace
 
 const ThreadPriorityToNiceValuePairForTest
@@ -340,19 +329,14 @@ const ThreadTypeToNiceValuePair kThreadTypeToNiceValueMap[7] = {
 };
 
 bool CanSetThreadTypeToRealtimeAudio() {
-#if !BUILDFLAG(IS_NACL)
   // A non-zero soft-limit on RLIMIT_RTPRIO is required to be allowed to invoke
   // pthread_setschedparam in SetCurrentThreadTypeForPlatform().
   struct rlimit rlim;
   return getrlimit(RLIMIT_RTPRIO, &rlim) != 0 && rlim.rlim_cur != 0;
-#else
-  return false;
-#endif
 }
 
 bool SetCurrentThreadTypeForPlatform(ThreadType thread_type,
                                      MessagePumpType pump_type_hint) {
-#if !BUILDFLAG(IS_NACL)
   const PlatformThreadId tid = PlatformThread::CurrentId();
 
   if (g_thread_type_delegate &&
@@ -371,14 +355,10 @@ bool SetCurrentThreadTypeForPlatform(ThreadType thread_type,
 
   return thread_type == ThreadType::kRealtimeAudio &&
          pthread_setschedparam(pthread_self(), SCHED_RR, &kRealTimePrio) == 0;
-#else
-  return false;
-#endif
 }
 
 absl::optional<ThreadPriorityForTest>
 GetCurrentThreadPriorityForPlatformForTest() {
-#if !BUILDFLAG(IS_NACL)
   int maybe_sched_rr = 0;
   struct sched_param maybe_realtime_prio = {0};
   if (pthread_getschedparam(pthread_self(), &maybe_sched_rr,
@@ -387,17 +367,14 @@ GetCurrentThreadPriorityForPlatformForTest() {
       maybe_realtime_prio.sched_priority == kRealTimePrio.sched_priority) {
     return absl::make_optional(ThreadPriorityForTest::kRealtimeAudio);
   }
-#endif
   return absl::nullopt;
 }
 
 }  // namespace internal
 
-// static
 void PlatformThreadBase::SetName(const std::string& name) {
-  ThreadIdNameManager::GetInstance()->SetName(name);
+  SetNameCommon(name);
 
-#if !BUILDFLAG(IS_NACL) && !BUILDFLAG(IS_AIX)
   // On linux we can get the thread names to show up in the debugger by setting
   // the process name for the LWP.  We don't want to do this for the main
   // thread because that would rename the process, causing tools like killall
@@ -414,10 +391,8 @@ void PlatformThreadBase::SetName(const std::string& name) {
   // We expect EPERM failures in sandboxed processes, just ignore those.
   if (err < 0 && errno != EPERM)
     DPLOG(ERROR) << "prctl(PR_SET_NAME)";
-#endif  //  !BUILDFLAG(IS_NACL) && !BUILDFLAG(IS_AIX)
 }
 
-#if !BUILDFLAG(IS_NACL)
 // static
 void PlatformThreadLinux::SetThreadTypeDelegate(ThreadTypeDelegate* delegate) {
   // A component cannot override a delegate set by another component, thus
@@ -426,9 +401,7 @@ void PlatformThreadLinux::SetThreadTypeDelegate(ThreadTypeDelegate* delegate) {
 
   g_thread_type_delegate = delegate;
 }
-#endif
 
-#if !BUILDFLAG(IS_NACL) && !BUILDFLAG(IS_AIX)
 // static
 void PlatformThreadLinux::SetThreadType(ProcessId process_id,
                                         PlatformThreadId thread_id,
@@ -448,7 +421,6 @@ void PlatformThreadLinux::SetThreadType(ProcessId process_id,
               << nice_setting;
   }
 }
-#endif  //  !BUILDFLAG(IS_NACL) && !BUILDFLAG(IS_AIX)
 
 #if BUILDFLAG(IS_CHROMEOS)
 void PlatformThread::InitFeaturesPostFieldTrial() {
@@ -485,25 +457,5 @@ void PlatformThread::InitFeaturesPostFieldTrial() {
   g_scheduler_hints_adjusted.store(true);
 }
 #endif
-
-void InitThreading() {}
-
-void TerminateOnThread() {}
-
-size_t GetDefaultThreadStackSize(const pthread_attr_t& attributes) {
-#if !defined(THREAD_SANITIZER) && defined(__GLIBC__)
-  // Generally glibc sets ample default stack sizes, so use the default there.
-  return 0;
-#elif !defined(THREAD_SANITIZER)
-  // Other libcs (uclibc, musl, etc) tend to use smaller stacks, often too small
-  // for chromium. Make sure we have enough space to work with here. Note that
-  // for comparison glibc stacks are generally around 8MB.
-  return 2 * (1 << 20);
-#else
-  // ThreadSanitizer bloats the stack heavily. Evidence has been that the
-  // default stack size isn't enough for some browser tests.
-  return 2 * (1 << 23);  // 2 times 8192K (the default stack size on Linux).
-#endif
-}
 
 }  // namespace base

@@ -78,7 +78,7 @@ void PlatformThreadBase::YieldCurrentThread() {
 
 // static
 void PlatformThreadBase::SetName(const std::string& name) {
-  ThreadIdNameManager::GetInstance()->SetName(name);
+  SetNameCommon(name);
 
   // macOS does not expose the length limit of the name, so hardcode it.
   const int kMaxNameLength = 63;

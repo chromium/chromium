@@ -269,6 +269,9 @@ class BASE_EXPORT PlatformThreadBase {
   static size_t GetDefaultThreadStackSize();
 
   static ThreadPriorityForTest GetCurrentThreadPriorityForTest();
+
+  protected:
+  static void SetNameCommon(const std::string& name);
 };
 
 #if BUILDFLAG(IS_APPLE)

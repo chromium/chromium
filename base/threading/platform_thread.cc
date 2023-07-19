@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/threading/platform_thread.h"
+#include "base/threading/thread_id_name_manager.h"
 
 #include "base/task/current_thread.h"
 #include "third_party/abseil-cpp/absl/base/attributes.h"
@@ -50,6 +51,11 @@ absl::optional<TimeDelta> PlatformThreadBase::GetThreadLeewayOverride() {
     return kAudioSchedulingPeriod;
 #endif
   return absl::nullopt;
+}
+
+// static
+void PlatformThreadBase::SetNameCommon(const std::string& name) {
+  ThreadIdNameManager::GetInstance()->SetName(name);
 }
 
 namespace internal {

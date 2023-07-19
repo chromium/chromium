@@ -1004,6 +1004,7 @@ component("base") {
       "process/process_iterator_linux.cc",
       "process/process_linux.cc",
       "process/process_metrics_linux.cc",
+      "threading/platform_thread_linux_base.cc",
       "threading/platform_thread_linux.cc",
       "threading/thread_type_delegate.cc",
       "threading/thread_type_delegate.h",
@@ -1522,7 +1523,8 @@ component("base") {
       "rand_util_nacl.cc",
       "sync_socket_nacl.cc",
       "system/sys_info_nacl.cc",
-      "threading/platform_thread_linux.cc",
+      "threading/platform_thread_linux_base.cc",
+      "threading/platform_thread_nacl.cc",
     ]
   } else {
     sources += [
