@@ -107,6 +107,7 @@ public class ChromeSurveyController {
     private final @Nullable ActivityLifecycleDispatcher mLifecycleDispatcher;
     private final Activity mActivity;
     private final MessageDispatcher mMessageDispatcher;
+    private SurveyController mSurveyController;
     private @Nullable TabObserver mTabObserver;
     private @Nullable PauseResumeWithNativeObserver mLifecycleObserver;
 
@@ -153,10 +154,10 @@ public class ChromeSurveyController {
         mLoggingHandler = new Handler();
         mTabModelSelector = tabModelSelector;
 
-        SurveyController surveyController = SurveyController.getInstance();
+        mSurveyController = SurveyController.create();
         Runnable onSuccessRunnable = () -> onSurveyAvailable(mTriggerId);
         Runnable onFailureRunnable = () -> Log.w(TAG, "Survey does not exists or download failed.");
-        surveyController.downloadSurvey(context, mTriggerId, onSuccessRunnable, onFailureRunnable);
+        mSurveyController.downloadSurvey(context, mTriggerId, onSuccessRunnable, onFailureRunnable);
     }
 
     /**
@@ -226,7 +227,7 @@ public class ChromeSurveyController {
         }
 
         // Return early without displaying the message prompt if the survey has expired.
-        if (SurveyController.getInstance().isSurveyExpired(siteId)) {
+        if (mSurveyController.isSurveyExpired(siteId)) {
             return;
         }
         Resources resources = mActivity.getResources();
@@ -269,7 +270,7 @@ public class ChromeSurveyController {
             mLifecycleObserver = new PauseResumeWithNativeObserver() {
                 @Override
                 public void onResumeWithNative() {
-                    if (SurveyController.getInstance().isSurveyExpired(siteId)) {
+                    if (mSurveyController.isSurveyExpired(siteId)) {
                         mMessageDispatcher.dismissMessage(
                                 message, DismissReason.DISMISSED_BY_FEATURE);
                     }
@@ -290,7 +291,7 @@ public class ChromeSurveyController {
      * @param siteId The site id of the survey to display.
      */
     private void showSurvey(String siteId) {
-        SurveyController.getInstance().showSurveyIfAvailable(
+        mSurveyController.showSurveyIfAvailable(
                 mActivity, siteId, true, R.drawable.chrome_sync_logo, mLifecycleDispatcher);
     }
 

@@ -21,22 +21,22 @@ import java.util.Map;
  * {@link showSurveyIfAvailable()} to display the survey.
  */
 public class SurveyController {
-    private static SurveyController sInstance;
+    private static SurveyController sTestInstance;
 
     /**
      * @return The SurveyController to use during the lifetime of the browser process.
      */
-    public static SurveyController getInstance() {
-        if (sInstance == null) {
-            sInstance = AppHooks.get().createSurveyController();
+    public static SurveyController create() {
+        if (sTestInstance != null) {
+            return sTestInstance;
         }
-        return sInstance;
+        return AppHooks.get().createSurveyController();
     }
 
     /** Set the instance to use for survey related tests. Reset back to null after tests. */
     public static void setInstanceForTesting(SurveyController testInstance) {
-        sInstance = testInstance;
-        ResettersForTesting.register(() -> sInstance = null);
+        sTestInstance = testInstance;
+        ResettersForTesting.register(() -> sTestInstance = null);
     }
 
     /**
