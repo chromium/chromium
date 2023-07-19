@@ -17,8 +17,9 @@
 import {expect} from 'chai';
 import * as sinon from 'sinon';
 
-import {CdpTarget} from './cdpTarget.js';
-import {PreloadScriptStorage} from './PreloadScriptStorage';
+import {CdpTarget} from '../context/cdpTarget.js';
+
+import {PreloadScriptStorage} from './PreloadScriptStorage.js';
 import {BidiPreloadScript} from './bidiPreloadScript.js';
 
 const MOCKED_UUID_1 = '00000000-0000-0000-0000-00000000000a';

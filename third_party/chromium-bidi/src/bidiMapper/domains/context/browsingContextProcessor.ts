@@ -21,30 +21,28 @@ import type {ICdpConnection} from '../../../cdp/cdpConnection.js';
 import {
   BrowsingContext,
   InvalidArgumentException,
-  NoSuchScriptException,
-  Script,
   type Cdp,
   type EmptyResult,
 } from '../../../protocol/protocol.js';
 import {LogType, type LoggerFn} from '../../../utils/log.js';
 import type {IEventManager} from '../events/EventManager.js';
-import type {Realm} from '../script/realm.js';
 import type {RealmStorage} from '../script/realmStorage.js';
+import type {PreloadScriptStorage} from '../script/PreloadScriptStorage.js';
 
-import {PreloadScriptStorage} from './PreloadScriptStorage.js';
-import {BidiPreloadScript} from './bidiPreloadScript';
 import {BrowsingContextImpl} from './browsingContextImpl.js';
 import type {BrowsingContextStorage} from './browsingContextStorage.js';
 import {CdpTarget} from './cdpTarget.js';
 
 export class BrowsingContextProcessor {
-  readonly #browsingContextStorage: BrowsingContextStorage;
   readonly #cdpConnection: ICdpConnection;
-  readonly #eventManager: IEventManager;
-  readonly #logger?: LoggerFn;
-  readonly #realmStorage: RealmStorage;
   readonly #selfTargetId: string;
-  readonly #preloadScriptStorage = new PreloadScriptStorage();
+  readonly #eventManager: IEventManager;
+
+  readonly #realmStorage: RealmStorage;
+  readonly #browsingContextStorage: BrowsingContextStorage;
+  readonly #preloadScriptStorage: PreloadScriptStorage;
+
+  readonly #logger?: LoggerFn;
 
   constructor(
     cdpConnection: ICdpConnection,
@@ -52,6 +50,7 @@ export class BrowsingContextProcessor {
     eventManager: IEventManager,
     browsingContextStorage: BrowsingContextStorage,
     realmStorage: RealmStorage,
+    preloadScriptStorage: PreloadScriptStorage,
     logger?: LoggerFn
   ) {
     this.#cdpConnection = cdpConnection;
@@ -59,6 +58,7 @@ export class BrowsingContextProcessor {
     this.#eventManager = eventManager;
     this.#browsingContextStorage = browsingContextStorage;
     this.#realmStorage = realmStorage;
+    this.#preloadScriptStorage = preloadScriptStorage;
     this.#logger = logger;
 
     this.#setEventListeners(this.#cdpConnection.browserClient());
@@ -199,16 +199,6 @@ export class BrowsingContextProcessor {
       ?.onTargetInfoChanged(params);
   }
 
-  async #getRealm(target: Script.Target): Promise<Realm> {
-    if ('realm' in target) {
-      return this.#realmStorage.getRealm({
-        realmId: target.realm,
-      });
-    }
-    const context = this.#browsingContextStorage.getContext(target.context);
-    return context.getOrCreateSandbox(target.sandbox);
-  }
-
   process_browsingContext_getTree(
     params: BrowsingContext.GetTreeParameters
   ): BrowsingContext.GetTreeResult {
@@ -317,103 +307,6 @@ export class BrowsingContextProcessor {
   ): Promise<BrowsingContext.PrintResult> {
     const context = this.#browsingContextStorage.getContext(params.context);
     return context.print(params);
-  }
-
-  async process_script_addPreloadScript(
-    params: Script.AddPreloadScriptParameters
-  ): Promise<Script.AddPreloadScriptResult> {
-    const preloadScript = new BidiPreloadScript(params);
-    this.#preloadScriptStorage.addPreloadScript(preloadScript);
-
-    const cdpTargets = new Set<CdpTarget>(
-      this.#browsingContextStorage
-        .getTopLevelContexts()
-        .map((context) => context.cdpTarget)
-    );
-
-    await preloadScript.initInTargets(cdpTargets, false);
-
-    return {
-      script: preloadScript.id,
-    };
-  }
-
-  async process_script_removePreloadScript(
-    params: Script.RemovePreloadScriptParameters
-  ): Promise<EmptyResult> {
-    const bidiId = params.script;
-
-    const scripts = this.#preloadScriptStorage.findPreloadScripts({
-      id: bidiId,
-    });
-
-    if (scripts.length === 0) {
-      throw new NoSuchScriptException(
-        `No preload script with BiDi ID '${bidiId}'`
-      );
-    }
-
-    await Promise.all(scripts.map((script) => script.remove()));
-
-    this.#preloadScriptStorage.removeBiDiPreloadScripts({
-      id: bidiId,
-    });
-
-    return {};
-  }
-
-  async process_script_evaluate(
-    params: Script.EvaluateParameters
-  ): Promise<Script.EvaluateResult> {
-    const realm = await this.#getRealm(params.target);
-    return realm.evaluate(
-      params.expression,
-      params.awaitPromise,
-      params.resultOwnership ?? Script.ResultOwnership.None,
-      params.serializationOptions ?? {}
-    );
-  }
-
-  process_script_getRealms(
-    params: Script.GetRealmsParameters
-  ): Script.GetRealmsResult {
-    if (params.context !== undefined) {
-      // Make sure the context is known.
-      this.#browsingContextStorage.getContext(params.context);
-    }
-    const realms = this.#realmStorage
-      .findRealms({
-        browsingContextId: params.context,
-        type: params.type,
-      })
-      .map((realm: Realm) => realm.realmInfo);
-    return {realms};
-  }
-
-  async process_script_callFunction(
-    params: Script.CallFunctionParameters
-  ): Promise<Script.EvaluateResult> {
-    const realm = await this.#getRealm(params.target);
-    return realm.callFunction(
-      params.functionDeclaration,
-      params.this ?? {
-        type: 'undefined',
-      }, // `this` is `undefined` by default.
-      params.arguments ?? [], // `arguments` is `[]` by default.
-      params.awaitPromise,
-      params.resultOwnership ?? Script.ResultOwnership.None,
-      params.serializationOptions ?? {}
-    );
-  }
-
-  async process_script_disown(
-    params: Script.DisownParameters
-  ): Promise<EmptyResult> {
-    const realm = await this.#getRealm(params.target);
-    await Promise.all(
-      params.handles.map(async (handle) => realm.disown(handle))
-    );
-    return {};
   }
 
   async process_browsingContext_setViewport(

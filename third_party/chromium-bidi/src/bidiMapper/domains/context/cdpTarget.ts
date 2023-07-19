@@ -24,8 +24,7 @@ import {LogManager} from '../log/logManager.js';
 import {NetworkProcessor} from '../network/networkProcessor.js';
 import type {ChannelProxy} from '../script/channelProxy.js';
 import type {RealmStorage} from '../script/realmStorage.js';
-
-import type {PreloadScriptStorage} from './PreloadScriptStorage.js';
+import type {PreloadScriptStorage} from '../script/PreloadScriptStorage.js';
 
 export class CdpTarget {
   readonly #targetId: string;

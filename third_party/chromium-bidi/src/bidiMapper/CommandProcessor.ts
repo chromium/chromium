@@ -34,6 +34,8 @@ import {BrowsingContextProcessor} from './domains/context/browsingContextProcess
 import type {BrowsingContextStorage} from './domains/context/browsingContextStorage.js';
 import type {IEventManager} from './domains/events/EventManager.js';
 import {InputProcessor} from './domains/input/InputProcessor.js';
+import {PreloadScriptStorage} from './domains/script/PreloadScriptStorage.js';
+import {ScriptProcessor} from './domains/script/ScriptProcessor.js';
 import type {RealmStorage} from './domains/script/realmStorage.js';
 
 type CommandProcessorEvents = {
@@ -43,6 +45,7 @@ type CommandProcessorEvents = {
 export class CommandProcessor extends EventEmitter<CommandProcessorEvents> {
   #browsingContextProcessor: BrowsingContextProcessor;
   #inputProcessor: InputProcessor;
+  #scriptProcessor: ScriptProcessor;
 
   #eventManager: IEventManager;
   #parser: IBidiParser;
@@ -61,15 +64,22 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEvents> {
     this.#eventManager = eventManager;
     this.#parser = parser;
     this.#logger = logger;
+    const preloadScriptStorage = new PreloadScriptStorage();
     this.#browsingContextProcessor = new BrowsingContextProcessor(
       cdpConnection,
       selfTargetId,
       eventManager,
       browsingContextStorage,
       realmStorage,
+      preloadScriptStorage,
       logger
     );
     this.#inputProcessor = InputProcessor.create(browsingContextStorage);
+    this.#scriptProcessor = new ScriptProcessor(
+      browsingContextStorage,
+      realmStorage,
+      preloadScriptStorage
+    );
   }
 
   static #process_session_status(): Session.StatusResult {
@@ -181,27 +191,27 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEvents> {
       // Script domain
       // keep-sorted start block=yes
       case 'script.addPreloadScript':
-        return this.#browsingContextProcessor.process_script_addPreloadScript(
+        return this.#scriptProcessor.addPreloadScript(
           this.#parser.parseAddPreloadScriptParams(command.params)
         );
       case 'script.callFunction':
-        return this.#browsingContextProcessor.process_script_callFunction(
+        return this.#scriptProcessor.callFunction(
           this.#parser.parseCallFunctionParams(command.params)
         );
       case 'script.disown':
-        return this.#browsingContextProcessor.process_script_disown(
+        return this.#scriptProcessor.disown(
           this.#parser.parseDisownParams(command.params)
         );
       case 'script.evaluate':
-        return this.#browsingContextProcessor.process_script_evaluate(
+        return this.#scriptProcessor.evaluate(
           this.#parser.parseEvaluateParams(command.params)
         );
       case 'script.getRealms':
-        return this.#browsingContextProcessor.process_script_getRealms(
+        return this.#scriptProcessor.getRealms(
           this.#parser.parseGetRealmsParams(command.params)
         );
       case 'script.removePreloadScript':
-        return this.#browsingContextProcessor.process_script_removePreloadScript(
+        return this.#scriptProcessor.removePreloadScript(
           this.#parser.parseRemovePreloadScriptParams(command.params)
         );
       // keep-sorted end
