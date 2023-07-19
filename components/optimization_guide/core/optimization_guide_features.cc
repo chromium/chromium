@@ -171,7 +171,7 @@ BASE_FEATURE(kPageVisibilityBatchAnnotations,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTextEmbeddingBatchAnnotations,
-             "TextEmebddingBatchAnnotations",
+             "TextEmbeddingBatchAnnotations",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kPageContentAnnotationsValidation,
