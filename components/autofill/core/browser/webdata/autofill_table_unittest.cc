@@ -1241,6 +1241,25 @@ TEST_F(AutofillTableTest, CreditCard) {
   EXPECT_FALSE(db_creditcard);
 }
 
+// Tests that verify ClearCreditCards function working as expected.
+TEST_F(AutofillTableTest, ClearCreditCards) {
+  CreditCard card = test::GetCreditCard();
+  card.set_cvc(u"123");
+  EXPECT_TRUE(table_->AddCreditCard(card));
+  std::unique_ptr<CreditCard> db_card = table_->GetCreditCard(card.guid());
+  EXPECT_EQ(card.cvc(), db_card->cvc());
+
+  // After ClearCreditCards, local_stored_cvc table and credit_cards table
+  // should be empty.
+  table_->ClearCreditCards();
+  EXPECT_FALSE(table_->GetCreditCard(card.guid()));
+  sql::Statement s(db_->GetSQLConnection()->GetUniqueStatement(
+      "SELECT guid FROM local_stored_cvc WHERE guid=?"));
+  s.BindString(0, card.guid());
+  ASSERT_TRUE(s.is_valid());
+  EXPECT_FALSE(s.Step());
+}
+
 // Tests that adding credit card with cvc, get credit card with cvc and update
 // credit card with only cvc change will not update credit_card table
 // modification_date.

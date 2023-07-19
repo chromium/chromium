@@ -829,7 +829,7 @@ class AutofillTable : public WebDatabaseTable,
                                        const base::Time& delete_end);
 
   // Clear all credit cards.
-  bool ClearCreditCards();
+  void ClearCreditCards();
 
   // Read all the stored metadata for |model_type| and fill |metadata_batch|
   // with it.

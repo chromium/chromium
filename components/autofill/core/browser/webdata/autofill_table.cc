@@ -2968,8 +2968,9 @@ bool AutofillTable::RemoveOriginURLsModifiedBetween(
   return true;
 }
 
-bool AutofillTable::ClearCreditCards() {
-  return Delete(db_, kCreditCardsTable) || Delete(db_, kLocalStoredCvcTable);
+void AutofillTable::ClearCreditCards() {
+  Delete(db_, kLocalStoredCvcTable);
+  Delete(db_, kCreditCardsTable);
 }
 
 bool AutofillTable::GetAllSyncMetadata(syncer::ModelType model_type,
