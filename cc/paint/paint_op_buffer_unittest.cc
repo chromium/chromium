@@ -2927,7 +2927,9 @@ TEST(PaintOpBufferTest, RasterPaintWorkletImageRectTranslated) {
   EXPECT_CALL(canvas, willSave()).InSequence(s);
   EXPECT_CALL(canvas, didScale(1.0f / scale_adjustment[0].width(),
                                1.0f / scale_adjustment[0].height()));
-  EXPECT_CALL(canvas, onDrawImage2(NonLazyImage(), 0.0f, 0.0f, sampling, _));
+  EXPECT_CALL(canvas, onDrawImageRect2(NonLazyImage(), SkRect::MakeWH(10, 10),
+                                       SkRect::MakeWH(10, 10), sampling, _,
+                                       SkCanvas::kFast_SrcRectConstraint));
   EXPECT_CALL(canvas, willRestore()).InSequence(s);
   EXPECT_CALL(canvas, willRestore()).InSequence(s);
   EXPECT_CALL(canvas, willRestore()).InSequence(s);
@@ -2973,7 +2975,9 @@ TEST(PaintOpBufferTest, RasterPaintWorkletImageRectScaled) {
   EXPECT_CALL(canvas, willSave()).InSequence(s);
   EXPECT_CALL(canvas, didScale(1.0f / scale_adjustment[0].width(),
                                1.0f / scale_adjustment[0].height()));
-  EXPECT_CALL(canvas, onDrawImage2(NonLazyImage(), 0.0f, 0.0f, sampling, _));
+  EXPECT_CALL(canvas, onDrawImageRect2(NonLazyImage(), SkRect::MakeWH(10, 10),
+                                       SkRect::MakeWH(10, 10), sampling, _,
+                                       SkCanvas::kFast_SrcRectConstraint));
   EXPECT_CALL(canvas, willRestore()).InSequence(s);
   EXPECT_CALL(canvas, willRestore()).InSequence(s);
   EXPECT_CALL(canvas, willRestore()).InSequence(s);
@@ -3021,7 +3025,9 @@ TEST(PaintOpBufferTest, RasterPaintWorkletImageRectClipped) {
   EXPECT_CALL(canvas, willSave()).InSequence(s);
   EXPECT_CALL(canvas, didScale(1.0f / scale_adjustment[0].width(),
                                1.0f / scale_adjustment[0].height()));
-  EXPECT_CALL(canvas, onDrawImage2(NonLazyImage(), 0.0f, 0.0f, sampling, _));
+  EXPECT_CALL(canvas, onDrawImageRect2(NonLazyImage(), SkRect::MakeWH(10, 10),
+                                       SkRect::MakeWH(10, 10), sampling, _,
+                                       SkCanvas::kFast_SrcRectConstraint));
   EXPECT_CALL(canvas, willRestore()).InSequence(s);
   EXPECT_CALL(canvas, willRestore()).InSequence(s);
   EXPECT_CALL(canvas, willRestore()).InSequence(s);
@@ -3055,17 +3061,28 @@ TEST(PaintOpBufferTest, ReplacesImagesFromProvider) {
   buffer.push<DrawOvalOp>(SkRect::MakeWH(10, 10), flags);
 
   testing::StrictMock<MockCanvas> canvas;
-  testing::Sequence s;
+
+  // Some of the expected calls need to occur in specific sequences.
+  testing::Sequence save_restore_seq;
+  testing::Sequence on_draw_image_rect_seq;
 
   SkSamplingOptions sampling0({0, 1.0f / 2});
   SkSamplingOptions sampling1(SkFilterMode::kLinear, SkMipmapMode::kNearest);
 
   // Save/scale/image/restore from DrawImageop.
-  EXPECT_CALL(canvas, willSave()).InSequence(s);
+  EXPECT_CALL(canvas, willSave()).InSequence(save_restore_seq);
   EXPECT_CALL(canvas, didScale(1.0f / scale_adjustment[0].width(),
                                1.0f / scale_adjustment[0].height()));
-  EXPECT_CALL(canvas, onDrawImage2(NonLazyImage(), 0.0f, 0.0f, sampling0, _));
-  EXPECT_CALL(canvas, willRestore()).InSequence(s);
+
+  // Note: We must ensure that this expectation is used for the first call to
+  // onDrawImageRect2() to avoid spurious EXPECT_*() calls firing when gtest
+  // tries to match the expectation corresponding to the
+  // DrawImageRectOp (below) against the call for the DrawImageOp.
+  EXPECT_CALL(canvas, onDrawImageRect2(NonLazyImage(), SkRect::MakeWH(10, 10),
+                                       SkRect::MakeWH(10, 10), sampling0, _,
+                                       SkCanvas::kFast_SrcRectConstraint))
+      .InSequence(on_draw_image_rect_seq);
+  EXPECT_CALL(canvas, willRestore()).InSequence(save_restore_seq);
 
   // DrawImageRectop.
   SkRect src_rect =
@@ -3074,7 +3091,8 @@ TEST(PaintOpBufferTest, ReplacesImagesFromProvider) {
               onDrawImageRect2(NonLazyImage(),
                                MatchesRect(src_rect, scale_adjustment[1]),
                                SkRect::MakeWH(10, 10), sampling1, _,
-                               SkCanvas::kFast_SrcRectConstraint));
+                               SkCanvas::kFast_SrcRectConstraint))
+      .InSequence(on_draw_image_rect_seq);
 
   // DrawOvalop.
   EXPECT_CALL(canvas, onDrawOval(SkRect::MakeWH(10, 10),
@@ -3172,7 +3190,10 @@ TEST(PaintOpBufferTest, ReplacesImagesFromProviderOOP) {
       EXPECT_CALL(canvas, willSave()).InSequence(s);
       EXPECT_CALL(canvas, didScale(1.0f / expected_scale.width(),
                                    1.0f / expected_scale.height()));
-      EXPECT_CALL(canvas, onDrawImage2(NonLazyImage(), 0.0f, 0.0f, _, _));
+      EXPECT_CALL(canvas,
+                  onDrawImageRect2(NonLazyImage(), SkRect::MakeWH(10, 10),
+                                   SkRect::MakeWH(10, 10), _, _,
+                                   SkCanvas::kFast_SrcRectConstraint));
       EXPECT_CALL(canvas, willRestore()).InSequence(s);
       op.Raster(&canvas, params);
     } else if (op.GetType() == PaintOpType::DrawImageRect) {
