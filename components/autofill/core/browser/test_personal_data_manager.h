@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -113,8 +114,8 @@ class TestPersonalDataManager : public PersonalDataManager {
   void AddCardArtImage(const GURL& url, const gfx::Image& image);
 
   // Sets a local/server card's nickname based on the provided |guid|.
-  void SetNicknameForCardWithGUID(const char* guid,
-                                  const std::string& nickname);
+  void SetNicknameForCardWithGUID(std::string_view guid,
+                                  std::string_view nickname);
 
   void set_timezone_country_code(const std::string& timezone_country_code) {
     timezone_country_code_ = timezone_country_code;

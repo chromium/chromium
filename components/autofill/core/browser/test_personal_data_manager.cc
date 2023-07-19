@@ -380,8 +380,8 @@ void TestPersonalDataManager::AddCardArtImage(const GURL& url,
 }
 
 void TestPersonalDataManager::SetNicknameForCardWithGUID(
-    const char* guid,
-    const std::string& nickname) {
+    std::string_view guid,
+    std::string_view nickname) {
   for (auto& card : local_credit_cards_) {
     if (card->guid() == guid) {
       card->SetNickname(base::ASCIIToUTF16(nickname));
