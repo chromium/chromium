@@ -1251,6 +1251,7 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
   <token key="Survey">
     <variant name="Audio"/>
     <variant name="BatteryLife"/>
+    <variant name="CameraApp"/>
     <variant name="General"/>
     <variant name="GeneralCamera"/>
     <variant name="Performance"/>
