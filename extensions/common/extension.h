@@ -307,7 +307,7 @@ class Extension final : public base::RefCountedThreadSafe<Extension> {
   // Type-related queries. These are all mutually exclusive.
   //
   // The differences between the types of Extension are documented here:
-  // https://chromium.googlesource.com/chromium/src/+/HEAD/extensions/docs/extension_and_app_types.md
+  // //extensions/docs/extension_and_app_types.md
   bool is_platform_app() const;         // aka "V2 app", "V2 packaged app"
   bool is_hosted_app() const;           // Hosted app (or bookmark app)
   bool is_legacy_packaged_app() const;  // aka "V1 packaged app"
