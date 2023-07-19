@@ -1417,6 +1417,16 @@ TEST_F(PersonalDataManagerTest, AddAndGetCreditCardArtImage) {
   EXPECT_TRUE(gfx::test::AreImagesEqual(expected_image, *cached_image));
 }
 
+TEST_F(PersonalDataManagerTest,
+       TestNoImageFetchingAttemptForCardsWithInvalidCardArtUrls) {
+  base::HistogramTester histogram_tester;
+
+  gfx::Image* actual_image =
+      personal_data_->GetCreditCardArtImageForUrl(GURL());
+  EXPECT_FALSE(actual_image);
+  EXPECT_EQ(0, histogram_tester.GetTotalSum("Autofill.ImageFetcher.Result"));
+}
+
 TEST_F(PersonalDataManagerMockTest, ProcessCardArtUrlChanges) {
   CreditCard card = test::GetFullServerCard();
   card.set_server_id("card_server_id");

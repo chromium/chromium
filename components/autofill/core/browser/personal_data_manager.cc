@@ -1432,6 +1432,10 @@ GURL PersonalDataManager::GetCardArtURL(const CreditCard& credit_card) const {
 
 gfx::Image* PersonalDataManager::GetCreditCardArtImageForUrl(
     const GURL& card_art_url) const {
+  if (!card_art_url.is_valid()) {
+    return nullptr;
+  }
+
   gfx::Image* cached_image = GetCachedCardArtImageForUrl(card_art_url);
   if (cached_image)
     return cached_image;

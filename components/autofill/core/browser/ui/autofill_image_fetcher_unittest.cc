@@ -221,46 +221,6 @@ TEST_F(AutofillImageFetcherTest, FetchImage_ResolveCardArtImage) {
       gfx::test::AreImagesEqual(override_image, received_images[fake_url1]));
 }
 
-TEST_F(AutofillImageFetcherTest, FetchImage_InvalidUrlFailure) {
-  base::TimeTicks now = AutofillTickClock::NowTicks();
-  TestAutofillTickClock test_clock;
-  test_clock.SetNowTicks(now);
-
-  gfx::Image fake_image1 = GetTestImage(IDR_DEFAULT_FAVICON);
-  GURL fake_url1 = GURL("http://www.example.com/fake_image1");
-  std::map<GURL, gfx::Image> expected_images = {{fake_url1, fake_image1}};
-
-  std::map<GURL, gfx::Image> received_images;
-  const auto callback =
-      base::BindLambdaForTesting([&](const CardArtImageData& card_art_images) {
-        for (auto& entry : card_art_images) {
-          received_images[entry->card_art_url] = entry->card_art_image;
-        }
-      });
-  const auto barrier_callback =
-      base::BarrierCallback<std::unique_ptr<CreditCardArtImage>>(
-          1U, std::move(callback));
-
-  base::HistogramTester histogram_tester;
-  // Expect to be called once with one invalid url.
-  EXPECT_CALL(*mock_image_fetcher(), FetchImageAndData_(_, _, _, _)).Times(1);
-  std::vector<GURL> urls = {fake_url1, GURL("")};
-  autofill_image_fetcher()->FetchImagesForURLs(urls, base::DoNothing());
-
-  test_clock.Advance(base::Milliseconds(200));
-  // Simulate successful image fetching (for image with URL) -> expect the
-  // callback to be called.
-  autofill_image_fetcher()->SimulateOnImageFetched(barrier_callback, fake_url1,
-                                                   now, fake_image1);
-
-  ValidateResult(std::move(received_images), expected_images);
-  EXPECT_THAT(histogram_tester.GetAllSamples("Autofill.ImageFetcher.Result"),
-              BucketsAre(Bucket(false, 1), Bucket(true, 1)));
-  histogram_tester.ExpectTotalCount("Autofill.ImageFetcher.RequestLatency", 1);
-  histogram_tester.ExpectUniqueSample("Autofill.ImageFetcher.RequestLatency",
-                                      200, 1);
-}
-
 TEST_F(AutofillImageFetcherTest, FetchImage_ServerFailure) {
   base::TimeTicks now = AutofillTickClock::NowTicks();
   TestAutofillTickClock test_clock;
