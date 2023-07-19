@@ -7,6 +7,7 @@
 #import <memory>
 
 #import "base/test/metrics/histogram_tester.h"
+#import "components/feed/core/v2/public/common_enums.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/browser/discover_feed/discover_feed_service_factory.h"
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
@@ -23,6 +24,8 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_mediator.h"
 #import "ios/chrome/browser/ui/content_suggestions/user_account_image_update_delegate.h"
 #import "ios/chrome/browser/ui/ntp/logo_vendor.h"
+#import "ios/chrome/browser/ui/ntp/metrics/feed_metrics_constants.h"
+#import "ios/chrome/browser/ui/ntp/metrics/feed_metrics_recorder.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_consumer.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_header_consumer.h"
 #import "ios/chrome/browser/ui/toolbar/test/toolbar_test_navigation_manager.h"
@@ -40,10 +43,21 @@
 #error "This file requires ARC support."
 #endif
 
+using feed::FeedUserActionType;
+
 namespace {
 // A random scroll position value to use for testing.
 const CGFloat kSomeScrollPosition = 500.0;
+
 }  // namespace
+
+// Expects a URL to start with a prefix.
+#define EXPECT_URL_PREFIX(url, prefix) \
+  EXPECT_STREQ(url.spec().substr(0, strlen(prefix)).c_str(), prefix);
+
+// Expects the URL loader to have loaded a URL that has the given `prefix`.
+#define EXPECT_URL_LOAD(prefix) \
+  EXPECT_URL_PREFIX(url_loader_->last_params.web_params.url, prefix);
 
 class NewTabPageMediatorTest : public PlatformTest {
  public:
@@ -100,6 +114,8 @@ class NewTabPageMediatorTest : public PlatformTest {
              discoverFeedService:discover_feed_service];
     header_consumer_ = OCMProtocolMock(@protocol(NewTabPageHeaderConsumer));
     mediator_.headerConsumer = header_consumer_;
+    feed_metrics_recorder_ = [[FeedMetricsRecorder alloc] init];
+    mediator_.feedMetricsRecorder = feed_metrics_recorder_;
     histogram_tester_.reset(new base::HistogramTester());
   }
 
@@ -138,6 +154,7 @@ class NewTabPageMediatorTest : public PlatformTest {
   id header_consumer_;
   id image_updater_;
   id logo_vendor_;
+  FeedMetricsRecorder* feed_metrics_recorder_;
   NewTabPageMediator* mediator_;
   ToolbarTestNavigationManager* navigation_manager_;
   FakeUrlLoadingBrowserAgent* url_loader_;
@@ -209,4 +226,45 @@ TEST_F(NewTabPageMediatorTest, TestSaveContentOffsetForWebState) {
       NewTabPageTabHelper::FromWebState(initial_web_state_.get())
           ->ScrollPositionFromSavedState();
   EXPECT_EQ(saved_scroll_position, kSomeScrollPosition);
+}
+
+// Tests that the FeedManagementNavigationDelegate methods load URLs and
+// record metrics.
+TEST_F(NewTabPageMediatorTest, TestFeedManagementNavigationDelegate) {
+  [mediator_ handleNavigateToActivity];
+  EXPECT_URL_LOAD("https://myactivity.google.com/myactivity");
+  histogram_tester_->ExpectUniqueSample(
+      kDiscoverFeedUserActionHistogram,
+      FeedUserActionType::kTappedManageActivity, 1);
+
+  histogram_tester_.reset(new base::HistogramTester());
+  [mediator_ handleNavigateToInterests];
+  EXPECT_URL_LOAD("https://google.com/preferences/interests");
+  histogram_tester_->ExpectUniqueSample(
+      kDiscoverFeedUserActionHistogram,
+      FeedUserActionType::kTappedManageInterests, 1);
+
+  histogram_tester_.reset(new base::HistogramTester());
+  [mediator_ handleNavigateToHidden];
+  EXPECT_URL_LOAD("https://google.com/preferences/interests/hidden");
+  histogram_tester_->ExpectUniqueSample(kDiscoverFeedUserActionHistogram,
+                                        FeedUserActionType::kTappedManageHidden,
+                                        1);
+
+  histogram_tester_.reset(new base::HistogramTester());
+  GURL followed_url("https://example.org");
+  [mediator_ handleNavigateToFollowedURL:followed_url];
+  EXPECT_URL_LOAD(followed_url.spec().c_str());
+  // TODO(crbug.com/1331102): Add metrics.
+}
+
+// Tests that the handleFeedLearnMoreTapped loads the correct URL and records
+// metrics.
+TEST_F(NewTabPageMediatorTest, TestHandleFeedLearnMoreTapped) {
+  [mediator_ handleFeedLearnMoreTapped];
+  EXPECT_URL_LOAD("https://support.google.com/chrome/"
+                  "?p=new_tab&co=GENIE.Platform%3DiOS&oco=1");
+  histogram_tester_->ExpectUniqueSample(kDiscoverFeedUserActionHistogram,
+                                        FeedUserActionType::kTappedLearnMore,
+                                        1);
 }

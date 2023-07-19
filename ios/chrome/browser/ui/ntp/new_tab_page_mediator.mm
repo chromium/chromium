@@ -211,33 +211,29 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
   }
 }
 
-// Opens web page for a menu item in the NTP.
-- (void)openMenuItemWebPage:(GURL)URL {
-  _URLLoader->Load(UrlLoadParams::InCurrentTab(URL));
-  // TODO(crbug.com/1085419): Add metrics.
-}
-
-- (void)handleFeedManageActivityTapped {
-  [self openMenuItemWebPage:GURL(kFeedManageActivityURL)];
-  [self.feedMetricsRecorder recordHeaderMenuManageActivityTapped];
-}
-
-- (void)handleFeedManageInterestsTapped {
-  [self openMenuItemWebPage:GURL(kFeedManageInterestsURL)];
-  [self.feedMetricsRecorder recordHeaderMenuManageInterestsTapped];
-}
-
-- (void)handleFeedManageHiddenTapped {
-  [self openMenuItemWebPage:GURL(kFeedManageHiddenURL)];
-  [self.feedMetricsRecorder recordHeaderMenuManageHiddenTapped];
-}
-
 - (void)handleFeedLearnMoreTapped {
-  [self openMenuItemWebPage:GURL(kFeedLearnMoreURL)];
   [self.feedMetricsRecorder recordHeaderMenuLearnMoreTapped];
+  [self openMenuItemWebPage:GURL(kFeedLearnMoreURL)];
 }
 
-- (void)handleVisitSiteFromFollowManagementList:(const GURL&)url {
+#pragma mark - FeedManagementNavigationDelegate
+
+- (void)handleNavigateToActivity {
+  [self.feedMetricsRecorder recordHeaderMenuManageActivityTapped];
+  [self openMenuItemWebPage:GURL(kFeedManageActivityURL)];
+}
+
+- (void)handleNavigateToInterests {
+  [self.feedMetricsRecorder recordHeaderMenuManageInterestsTapped];
+  [self openMenuItemWebPage:GURL(kFeedManageInterestsURL)];
+}
+
+- (void)handleNavigateToHidden {
+  [self.feedMetricsRecorder recordHeaderMenuManageHiddenTapped];
+  [self openMenuItemWebPage:GURL(kFeedManageHiddenURL)];
+}
+
+- (void)handleNavigateToFollowedURL:(const GURL&)url {
   // TODO(crbug.com/1331102): Add metrics.
   [self openMenuItemWebPage:url];
 }
@@ -367,6 +363,12 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
   } else {
     [self.imageUpdater setSignedOutAccountImage];
   }
+}
+
+// Opens web page for a menu item in the NTP.
+- (void)openMenuItemWebPage:(GURL)URL {
+  _URLLoader->Load(UrlLoadParams::InCurrentTab(URL));
+  // TODO(crbug.com/1085419): Add metrics.
 }
 
 @end

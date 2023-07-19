@@ -75,7 +75,6 @@
 #import "ios/chrome/browser/ui/ntp/feed_delegate.h"
 #import "ios/chrome/browser/ui/ntp/feed_header_view_controller.h"
 #import "ios/chrome/browser/ui/ntp/feed_management/feed_management_coordinator.h"
-#import "ios/chrome/browser/ui/ntp/feed_management/feed_management_navigation_delegate.h"
 #import "ios/chrome/browser/ui/ntp/feed_menu_coordinator.h"
 #import "ios/chrome/browser/ui/ntp/feed_promos/feed_sign_in_promo_coordinator.h"
 #import "ios/chrome/browser/ui/ntp/feed_sign_in_promo_delegate.h"
@@ -121,7 +120,6 @@
                                      DiscoverFeedPreviewDelegate,
                                      FeedControlDelegate,
                                      FeedDelegate,
-                                     FeedManagementNavigationDelegate,
                                      FeedMenuCoordinatorDelegate,
                                      FeedSignInPromoDelegate,
                                      FeedWrapperViewControllerDelegate,
@@ -850,10 +848,10 @@
       [self handleFeedManageTapped];
       break;
     case FeedMenuItemType::kManageActivity:
-      [self.NTPMediator handleFeedManageActivityTapped];
+      [self.NTPMediator handleNavigateToActivity];
       break;
     case FeedMenuItemType::kManageInterests:
-      [self.NTPMediator handleFeedManageInterestsTapped];
+      [self.NTPMediator handleNavigateToInterests];
       break;
     case FeedMenuItemType::kLearnMore:
       [self.NTPMediator handleFeedLearnMoreTapped];
@@ -961,24 +959,6 @@
 
 - (void)contentSuggestionsWasUpdated {
   [self.NTPViewController updateHeightAboveFeed];
-}
-
-#pragma mark - FeedManagementNavigationDelegate
-
-- (void)handleNavigateToActivity {
-  [self.NTPMediator handleFeedManageActivityTapped];
-}
-
-- (void)handleNavigateToInterests {
-  [self.NTPMediator handleFeedManageInterestsTapped];
-}
-
-- (void)handleNavigateToHidden {
-  [self.NTPMediator handleFeedManageHiddenTapped];
-}
-
-- (void)handleNavigateToFollowedURL:(const GURL&)url {
-  [self.NTPMediator handleVisitSiteFromFollowManagementList:url];
 }
 
 #pragma mark - FeedSignInPromoDelegate
@@ -1531,7 +1511,7 @@
   self.feedManagementCoordinator = [[FeedManagementCoordinator alloc]
       initWithBaseViewController:self.NTPViewController
                          browser:self.browser];
-  self.feedManagementCoordinator.navigationDelegate = self;
+  self.feedManagementCoordinator.navigationDelegate = self.NTPMediator;
   self.feedManagementCoordinator.feedMetricsRecorder = self.feedMetricsRecorder;
   [self.feedManagementCoordinator start];
 }

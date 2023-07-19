@@ -7,6 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/ui/ntp/feed_management/feed_management_navigation_delegate.h"
+
 namespace signin {
 class IdentityManager;
 }  // namespace signin
@@ -31,7 +33,7 @@ class UrlLoadingBrowserAgent;
 
 // Mediator for the NTP Home panel, handling the interactions with the
 // suggestions.
-@interface NewTabPageMediator : NSObject
+@interface NewTabPageMediator : NSObject <FeedManagementNavigationDelegate>
 
 - (instancetype)
             initWithWebState:(web::WebState*)webState
@@ -72,25 +74,9 @@ class UrlLoadingBrowserAgent;
 // before navigating away.
 - (void)saveContentOffsetForWebState:(web::WebState*)webState;
 
-// Handles the actions following a tap on the "Manage Activity" item in the
-// Discover feed menu.
-- (void)handleFeedManageActivityTapped;
-
-// Handles the actions following a tap on the "Manage Interests" item in the
-// Discover feed menu.
-- (void)handleFeedManageInterestsTapped;
-
-// Handles the actions following a tap on the "Manage Hidden" item in the
-// Discover feed menu.
-- (void)handleFeedManageHiddenTapped;
-
 // Handles the actions following a tap on the "Learn More" item in the Discover
 // feed menu.
 - (void)handleFeedLearnMoreTapped;
-
-// Handles the actions following a tap on the "Visit Site" item in the followed
-// item edit menu of the follow management page.
-- (void)handleVisitSiteFromFollowManagementList:(const GURL&)url;
 
 @end
 
