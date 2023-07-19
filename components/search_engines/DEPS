@@ -10,6 +10,7 @@ include_rules = [
   "+components/pref_registry",
   "+components/prefs",
   "+components/strings/grit/components_strings.h",
+  "+components/signin",
   "+components/sync",
   "+components/sync_preferences/testing_pref_service_syncable.h",
   "+components/url_formatter",

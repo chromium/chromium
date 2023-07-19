@@ -23,9 +23,7 @@ namespace switches {
 BASE_DECLARE_FEATURE(kIdentityStatusConsistency);
 #endif
 
-#if BUILDFLAG(ENABLE_WAFFLE_DESKTOP)
 BASE_DECLARE_FEATURE(kWaffle);
-#endif
 
 extern const char kClearTokenService[];
 

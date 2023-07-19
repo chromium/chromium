@@ -6,11 +6,21 @@
 
 namespace prefs {
 
+// The GUID of the locally saved default search provider. Note that this acts
+// like a pointer to which synced search engine should be the default, rather
+// than the prefs below which describe the locally saved default search provider
+// details. This is ignored in the case of the default search provider being
+// managed by policy. This pref is in the process of replacing
+// `kSyncedDefaultSearchProviderGUID`.
+const char kDefaultSearchProviderGUID[] = "default_search_provider.guid";
+
 // The GUID of the synced default search provider. Note that this acts like a
 // pointer to which synced search engine should be the default, rather than the
 // prefs below which describe the locally saved default search provider details
 // (and are not synced). This is ignored in the case of the default search
 // provider being managed by policy.
+// This pref is in the process of being replaced by
+// `kDefaultSearchProviderGUID`.
 const char kSyncedDefaultSearchProviderGUID[] =
     "default_search_provider.synced_guid";
 
