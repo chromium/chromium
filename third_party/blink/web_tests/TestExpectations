@@ -6575,8 +6575,6 @@ crbug.com/1464206 http/tests/devtools/a11y-axe-core/performance/timeline-overvie
 crbug.com/1464206 http/tests/devtools/tracing/timeline-misc/timeline-auto-zoom.js [ Failure Pass ]
 crbug.com/1464206 http/tests/devtools/tracing/timeline-misc/timeline-flame-chart-automatically-size-window.js [ Failure Pass ]
 
-crbug.com/1464866 http/tests/devtools/background-services/background-services-panel.js [ Failure Pass ]
-
 # Gardener 2023-07-17
 # Very flaky on most Mac builders
 crbug.com/1465321 [ Mac ] virtual/threaded/external/wpt/css/css-scroll-snap/input/keyboard.html [ Failure Pass Timeout ]
