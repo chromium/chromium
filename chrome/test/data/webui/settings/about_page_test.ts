@@ -307,6 +307,7 @@ suite('AboutPageTest_AllBuilds', function() {
   });
 });
 
+// <if expr="_google_chrome">
 suite('AboutPageTest_OfficialBuilds', function() {
   let page: SettingsAboutPageElement;
   let browserProxy: TestAboutPageBrowserProxy;
@@ -326,7 +327,7 @@ suite('AboutPageTest_OfficialBuilds', function() {
     await browserProxy.whenCalled('openFeedbackDialog');
   });
 
-  // <if expr="_google_chrome and is_macosx">
+  // <if expr="is_macosx">
   type Scenarios = 'CANT_PROMOTE'|'CAN_PROMOTE'|'IN_BETWEEN'|'PROMOTED';
 
   /**
@@ -437,3 +438,4 @@ suite('AboutPageTest_OfficialBuilds', function() {
   });
   // </if>
 });
+// </if>

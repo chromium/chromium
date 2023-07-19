@@ -57,12 +57,12 @@ var CrSettingsAboutPageTest = class extends CrSettingsBrowserTest {
 };
 
 TEST_F('CrSettingsAboutPageTest', 'AboutPage', function() {
-  mocha.grep('AboutPageTest_AllBuilds').run();
+  runMochaSuite('AboutPageTest_AllBuilds');
 });
 
 GEN('#if BUILDFLAG(GOOGLE_CHROME_BRANDING)');
 TEST_F('CrSettingsAboutPageTest', 'AboutPage_OfficialBuild', function() {
-  mocha.grep('AboutPageTest_OfficialBuilds').run();
+  runMochaSuite('AboutPageTest_OfficialBuilds');
 });
 GEN('#endif');
 
