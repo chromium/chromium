@@ -5,8 +5,8 @@
 #include "base/feature_list_buildflags.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
-#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/views/controls/rich_controls_container_view.h"
 #include "chrome/browser/ui/views/location_bar/cookie_controls/cookie_controls_bubble_view.h"
 #include "chrome/browser/ui/views/location_bar/cookie_controls/cookie_controls_content_view.h"
@@ -63,29 +63,6 @@ class CookieControlsInteractiveUiTest : public InteractiveBrowserTest {
   }
 
  protected:
-  // TODO(crbug.com/1446230): This was useful during development, but should be
-  // moved to a browsertest, instead of a uitest, where it's a bit more
-  // appropriate.
-  auto CheckException(const GURL& first_party_url, bool should_exist) {
-    return Steps(Do([=]() {
-      content_settings::SettingInfo info;
-      EXPECT_EQ(
-          host_content_settings_map()->GetContentSetting(
-              GURL(), first_party_url, ContentSettingsType::COOKIES, &info),
-          CONTENT_SETTING_ALLOW);
-      EXPECT_TRUE(info.primary_pattern.MatchesAllHosts());
-      // If an exception exists, it will have a targeted secondary pattern.
-      // If it does not exist, it will fall through the default wildcard.
-      if (should_exist) {
-        EXPECT_EQ(info.secondary_pattern,
-                  ContentSettingsPattern::FromURL(first_party_url));
-
-      } else {
-        EXPECT_TRUE(info.secondary_pattern.MatchesAllHosts());
-      }
-    }));
-  }
-
   auto CheckIcon(ElementSpecifier view,
                  const gfx::VectorIcon& icon_pre_2023_refresh,
                  const gfx::VectorIcon& icon_post_2023_refresh) {
@@ -112,7 +89,6 @@ class CookieControlsInteractiveUiTest : public InteractiveBrowserTest {
 
   auto CheckStateForTemporaryException() {
     return Steps(
-        CheckException(third_party_cookie_page_url(), /*should_exist=*/true),
         CheckViewProperty(CookieControlsContentView::kTitle,
                           &views::Label::GetText,
                           l10n_util::GetPluralStringFUTF16(
@@ -132,7 +108,6 @@ class CookieControlsInteractiveUiTest : public InteractiveBrowserTest {
     return Steps(
         CheckViewProperty(CookieControlsContentView::kToggleButton,
                           &views::ToggleButton::GetIsOn, false),
-        CheckException(third_party_cookie_page_url(), /*should_exist=*/false),
         CheckViewProperty(
             CookieControlsContentView::kTitle, &views::Label::GetText,
             l10n_util::GetStringUTF16(
@@ -158,9 +133,6 @@ class CookieControlsInteractiveUiTest : public InteractiveBrowserTest {
   }
   content_settings::CookieSettings* cookie_settings() {
     return CookieSettingsFactory::GetForProfile(browser()->profile()).get();
-  }
-  HostContentSettingsMap* host_content_settings_map() {
-    return HostContentSettingsMapFactory::GetForProfile(browser()->profile());
   }
   GURL third_party_cookie_page_url() {
     return https_server()->GetURL("a.test",
@@ -213,7 +185,6 @@ IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiTest, RemoveException) {
 
   RunTestSequenceInContext(
       context(), InstrumentTab(kWebContentsElementId),
-      CheckException(third_party_cookie_page_url(), /*should_exist=*/true),
       NavigateWebContents(kWebContentsElementId, third_party_cookie_page_url()),
       PressButton(CookieControlsIconView::kCookieControlsIcon),
       InAnyContext(WaitForShow(CookieControlsContentView::kToggleButton)),
@@ -241,3 +212,44 @@ IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiTest, FeedbackOpens) {
       InAnyContext(WaitForShow(FeedbackDialog::kFeedbackDialogForTesting)));
 }
 #endif
+
+IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiTest, ReloadView) {
+  // Test that opening the bubble, then closing it after making a change,
+  // results in the reload view being displayed.
+  browser()->profile()->GetPrefs()->SetInteger(
+      prefs::kCookieControlsMode,
+      static_cast<int>(content_settings::CookieControlsMode::kBlockThirdParty));
+  const GURL third_party_cookie_page_url =
+      https_server()->GetURL("a.test", "/third_party_partitioned_cookies.html");
+
+  RunTestSequenceInContext(
+      context(), InstrumentTab(kWebContentsElementId),
+      NavigateWebContents(kWebContentsElementId, third_party_cookie_page_url),
+      PressButton(CookieControlsIconView::kCookieControlsIcon),
+      InAnyContext(WaitForShow(CookieControlsBubbleView::kContentView)),
+      PressButton(CookieControlsContentView::kToggleButton),
+      PressButton(kLocationIconElementId),
+      InAnyContext(WaitForShow(CookieControlsBubbleView::kReloadingView)),
+      WaitForHide(CookieControlsBubbleView::kCookieControlsBubble));
+}
+
+IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiTest, NoReloadView) {
+  // Test that opening the bubble, then closing it without making an effective
+  // change to cookie settings, does not show the reload view.
+  browser()->profile()->GetPrefs()->SetInteger(
+      prefs::kCookieControlsMode,
+      static_cast<int>(content_settings::CookieControlsMode::kBlockThirdParty));
+  const GURL third_party_cookie_page_url =
+      https_server()->GetURL("a.test", "/third_party_partitioned_cookies.html");
+
+  RunTestSequenceInContext(
+      context(), InstrumentTab(kWebContentsElementId),
+      NavigateWebContents(kWebContentsElementId, third_party_cookie_page_url),
+      PressButton(CookieControlsIconView::kCookieControlsIcon),
+      InAnyContext(WaitForShow(CookieControlsBubbleView::kContentView)),
+      PressButton(CookieControlsContentView::kToggleButton),
+      PressButton(CookieControlsContentView::kToggleButton),
+      PressButton(kLocationIconElementId),
+      EnsureNotPresent(CookieControlsBubbleView::kReloadingView),
+      WaitForHide(CookieControlsBubbleView::kCookieControlsBubble));
+}

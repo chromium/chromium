@@ -17,6 +17,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/favicon/core/favicon_service.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -72,9 +73,9 @@ CookieControlsBubbleViewController::CookieControlsBubbleViewController(
     CookieControlsBubbleView* bubble_view,
     content_settings::CookieControlsController* controller,
     content::WebContents* web_contents)
-    : bubble_view_(bubble_view),
-      controller_(controller->AsWeakPtr()),
-      browser_(chrome::FindBrowserWithWebContents(web_contents)) {
+    : content::WebContentsObserver(web_contents),
+      bubble_view_(bubble_view),
+      controller_(controller->AsWeakPtr()) {
   controller_observation_.Observe(controller);
   bubble_view_->UpdateSubtitle(GetSubjectUrlName(web_contents));
 
@@ -82,9 +83,26 @@ CookieControlsBubbleViewController::CookieControlsBubbleViewController(
   bubble_view_->InitReloadingView(InitReloadingView(web_contents));
 
   FetchFaviconFrom(web_contents);
-  SetButtonPressedCallbacks();
+  SetCallbacks();
 
-  bubble_view_->ShowContentView();
+  bubble_view_->GetReloadingView()->SetVisible(false);
+  bubble_view_->GetContentView()->SetVisible(true);
+}
+
+void CookieControlsBubbleViewController::OnUserClosedContentView() {
+  controller_observation_.Reset();
+
+  if (!requires_reload_) {
+    bubble_view_->CloseWidget();
+    return;
+  }
+
+  if (web_contents()) {
+    web_contents()->GetController().SetNeedsReload();
+    web_contents()->GetController().LoadIfNecessary();
+  }
+  bubble_view_->SwitchToReloadingView();
+  waiting_for_reload_ = true;
 }
 
 void CookieControlsBubbleViewController::OnFaviconFetched(
@@ -147,7 +165,7 @@ void CookieControlsBubbleViewController::OnStatusChanged(
       break;
     case CookieControlsStatus::kDisabled:
     case CookieControlsStatus::kUninitialized:
-      NOTREACHED();
+      bubble_view_->CloseWidget();
       break;
     default:
       NOTREACHED();
@@ -166,7 +184,12 @@ void CookieControlsBubbleViewController::OnBreakageConfidenceLevelChanged(
   // TODO(1446230): Implement OnBreakageConfidenceLevelChanged.
 }
 
-void CookieControlsBubbleViewController::SetButtonPressedCallbacks() {
+void CookieControlsBubbleViewController::SetCallbacks() {
+  on_user_closed_content_view_callback_ =
+      bubble_view_->RegisterOnUserClosedContentViewCallback(base::BindRepeating(
+          &CookieControlsBubbleViewController::OnUserClosedContentView,
+          base::Unretained(this)));
+
   toggle_button_callback_ =
       bubble_view_->GetContentView()->RegisterToggleButtonPressedCallback(
           base::BindRepeating(
@@ -182,20 +205,21 @@ void CookieControlsBubbleViewController::SetButtonPressedCallbacks() {
 
 void CookieControlsBubbleViewController::OnToggleButtonPressed(bool new_value) {
   controller_->OnCookieBlockingEnabledForSite(!new_value);
+
+  // A reload is only required when the end toggle state differs from the start
+  // toggle state. Keep track of this by flipping a bool back and forth.
+  requires_reload_ = !requires_reload_;
 }
 
 void CookieControlsBubbleViewController::OnFeedbackButtonPressed() {
   chrome::ShowFeedbackPage(
-      browser_, chrome::kFeedbackSourceCookieControls,
+      chrome::FindBrowserWithWebContents(web_contents()),
+      chrome::kFeedbackSourceCookieControls,
       /*description_template=*/std::string(),
       l10n_util::GetStringUTF8(
           IDS_COOKIE_CONTROLS_BUBBLE_SEND_FEEDBACK_FORM_PLACEHOLDER),
       "cookie-controls",
       /*extra_diagnostics=*/std::string());
-}
-
-void CookieControlsBubbleViewController::DidStopLoading() {
-  bubble_view_->CloseWidget();
 }
 
 std::unique_ptr<views::View>
@@ -255,4 +279,10 @@ void CookieControlsBubbleViewController::FetchFaviconFrom(
       base::BindOnce(&CookieControlsBubbleViewController::OnFaviconFetched,
                      weak_factory_.GetWeakPtr()),
       &cancelable_task_tracker_);
+}
+
+void CookieControlsBubbleViewController::DidStopLoading() {
+  if (waiting_for_reload_) {
+    bubble_view_->CloseWidget();
+  }
 }
