@@ -41,7 +41,7 @@ DeskActionView::DeskActionView(
   layer()->SetFillsBoundsOpaquely(false);
   blurred_background_ = std::make_unique<BlurredBackgroundShield>(
       this, kColorAshShieldAndBase80, ColorProvider::kBackgroundBlurSigma,
-      gfx::RoundedCornersF(kCornerRadius), /*add_layer_to_region=*/false);
+      gfx::RoundedCornersF(kCornerRadius));
   SetOrientation(views::BoxLayout::Orientation::kHorizontal);
   SetBetweenChildSpacing(kButtonSpacing);
   combine_desks_button_->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);

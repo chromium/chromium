@@ -85,10 +85,7 @@ void BlurredBackgroundShield::OnViewVisibilityChanged(
 
 void BlurredBackgroundShield::OnLayerTargetBoundsChanged(
     views::View* observed_view) {
-  if (add_layer_to_region_) {
-    // The layers in the view's region below will be automatically positioned.
-    background_layer_.SetBounds(gfx::Rect(host_->size()));
-  } else if (auto* host_layer = host_->layer()) {
+  if (auto* host_layer = host_->layer()) {
     background_layer_.SetBounds(host_layer->bounds());
   }
 }
