@@ -255,7 +255,7 @@ bool QtUi::Initialize() {
   ui::ColorProviderManager::Get().AppendColorProviderInitializer(
       base::BindRepeating(&QtUi::AddNativeColorMixer, base::Unretained(this)));
   FontChanged();
-  display_config().primary_scale = shim_->GetScaleFactor();
+  ScaleFactorMaybeChangedImpl();
 
   return true;
 }
@@ -616,15 +616,24 @@ absl::optional<SkColor> QtUi::GetColor(int id, bool use_custom_frame) const {
 DISABLE_CFI_VCALL
 void QtUi::ScaleFactorMaybeChangedImpl() {
   scale_factor_task_active_ = false;
-  double qt_scale = shim_->GetScaleFactor();
-  auto& scale = display_config().primary_scale;
-  if (qt_scale == scale) {
-    return;
+  qt::MonitorScale* qt_monitors;
+  ui::DisplayConfig new_config;
+  size_t n_monitors =
+      shim_->GetMonitorConfig(&qt_monitors, &new_config.primary_scale);
+  std::vector<ui::DisplayGeometry> ui_monitors;
+  ui_monitors.reserve(n_monitors);
+  for (size_t i = 0; i < n_monitors; i++) {
+    const qt::MonitorScale& monitor = qt_monitors[i];
+    ui_monitors.push_back(ui::DisplayGeometry{
+        {monitor.x_px, monitor.y_px, monitor.width_px, monitor.height_px},
+        monitor.scale});
   }
-  scale = qt_scale;
-  for (ui::DeviceScaleFactorObserver& observer :
-       device_scale_factor_observer_list()) {
-    observer.OnDeviceScaleFactorChanged();
+  if (display_config() != new_config) {
+    display_config() = std::move(new_config);
+    for (ui::DeviceScaleFactorObserver& observer :
+         device_scale_factor_observer_list()) {
+      observer.OnDeviceScaleFactorChanged();
+    }
   }
 }
 

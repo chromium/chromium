@@ -199,6 +199,18 @@ QPalette::ColorGroup ColorStateToColorGroup(ColorState state) {
   }
 }
 
+float GetScreenScale(const QScreen* screen) {
+  constexpr double kDefaultPixelDpi = 96.0;
+  double scale = screen->devicePixelRatio() * screen->logicalDotsPerInch() /
+                 kDefaultPixelDpi;
+  // Round to the nearest 1/16th so that UI can losslessly multiply and divide
+  // by the scale factor using floating point arithmetic.  GtkUi also rounds
+  // in this way, but to 1/64th.  1/16th is chosen here since that's what
+  // KDE settings uses.
+  scale = std::round(scale * 16) / 16;
+  return scale > 0 ? scale : 1.0;
+}
+
 }  // namespace
 
 QtShim::QtShim(QtInterface::Delegate* delegate, int* argc, char** argv)
@@ -218,25 +230,21 @@ QtShim::QtShim(QtInterface::Delegate* delegate, int* argc, char** argv)
 
 QtShim::~QtShim() = default;
 
-double QtShim::GetScaleFactor() const {
-  constexpr double kDefaultPixelDpi = 96.0;
-  // Use the largest scale factor across all displays as the global scale
-  // factor.  This matches the behavior of `app_.devicePixelRatio()`, except
-  // this also takes into account the logical DPI.
-  // TODO(https://crbug.com/1450301): Unlike GTK, QT supports per-display
-  // scaling. Use this instead of the max scale factor.
-  double scale = 0.0;
-  for (QScreen* screen : app_.screens()) {
-    scale =
-        std::max(scale, screen->devicePixelRatio() *
-                            screen->logicalDotsPerInch() / kDefaultPixelDpi);
+size_t QtShim::GetMonitorConfig(MonitorScale** monitors, float* primary_scale) {
+  size_t n_monitors = app_.screens().size();
+  monitor_scales_.resize(n_monitors);
+  for (size_t i = 0; i < n_monitors; i++) {
+    const QScreen* screen = app_.screens()[i];
+    MonitorScale monitor = monitor_scales_[i];
+    monitor.x_px = screen->geometry().x();
+    monitor.y_px = screen->geometry().y();
+    monitor.width_px = screen->geometry().width();
+    monitor.height_px = screen->geometry().height();
+    monitor.scale = GetScreenScale(screen);
   }
-  // Round to the nearest 16th so that UI can losslessly multiply and divide
-  // by the scale factor using floating point arithmetic.  GtkUi also rounds
-  // in this way, but to 1/64th.  1/16th is chosen here since that's what
-  // KDE settings uses.
-  scale = std::round(scale * 16) / 16;
-  return scale > 0 ? scale : 1.0;
+  *monitors = monitor_scales_.data();
+  *primary_scale = GetScreenScale(app_.primaryScreen());
+  return n_monitors;
 }
 
 FontRenderParams QtShim::GetFontRenderParams() const {
