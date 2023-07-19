@@ -308,7 +308,7 @@ class NetworkHandler : public DevToolsDomainHandler,
       network::mojom::PrivateNetworkRequestPolicy policy);
   static protocol::Network::IPAddressSpace BuildIpAddressSpace(
       network::mojom::IPAddressSpace space);
-  static Maybe<protocol::Network::ClientSecurityState>
+  static std::unique_ptr<protocol::Network::ClientSecurityState>
   MaybeBuildClientSecurityState(
       const network::mojom::ClientSecurityStatePtr& state);
   static std::unique_ptr<protocol::Network::CorsErrorStatus>

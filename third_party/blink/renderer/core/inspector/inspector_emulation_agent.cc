@@ -275,23 +275,17 @@ protocol::Response InspectorEmulationAgent::setEmulatedMedia(
   protocol::Response response = AssertPage();
   if (!response.IsSuccess())
     return response;
-  if (media.isJust()) {
-    auto mediaValue = media.takeJust();
-    emulated_media_.Set(mediaValue);
-    GetWebViewImpl()->GetPage()->GetSettings().SetMediaTypeOverride(mediaValue);
-  } else {
-    emulated_media_.Set("");
-    GetWebViewImpl()->GetPage()->GetSettings().SetMediaTypeOverride("");
-  }
+  String media_value = media.fromMaybe("");
+  emulated_media_.Set(media_value);
+  GetWebViewImpl()->GetPage()->GetSettings().SetMediaTypeOverride(media_value);
 
   auto const old_emulated_media_features_keys = emulated_media_features_.Keys();
   emulated_media_features_.Clear();
 
   if (features.isJust()) {
-    auto featuresValue = features.takeJust();
-    for (auto const& mediaFeature : *featuresValue.get()) {
-      auto const& name = mediaFeature->getName();
-      auto const& value = mediaFeature->getValue();
+    for (const auto& media_feature : *features.fromJust()) {
+      String name = media_feature->getName();
+      String value = media_feature->getValue();
       emulated_media_features_.Set(name, value);
     }
 
@@ -650,8 +644,8 @@ protocol::Response InspectorEmulationAgent::setUserAgentOverride(
       return protocol::Response::InvalidParams(
           "Can't specify UserAgentMetadata but no UA string");
     }
-    std::unique_ptr<protocol::Emulation::UserAgentMetadata> ua_metadata =
-        ua_metadata_override.takeJust();
+    protocol::Emulation::UserAgentMetadata* ua_metadata =
+        ua_metadata_override.fromJust();
     ua_metadata_override_.emplace();
     if (ua_metadata->hasBrands()) {
       for (const auto& bv : *ua_metadata->getBrands(nullptr)) {

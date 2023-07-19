@@ -442,8 +442,7 @@ Response EmulationHandler::SetUserAgentOverride(
         "Empty userAgent invalid with userAgentMetadata provided");
   }
 
-  std::unique_ptr<Emulation::UserAgentMetadata> ua_metadata =
-      ua_metadata_override.takeJust();
+  Emulation::UserAgentMetadata* ua_metadata = ua_metadata_override.fromJust();
   blink::UserAgentMetadata new_ua_metadata;
   blink::UserAgentMetadata default_ua_metadata =
       GetContentClient()->browser()->GetUserAgentMetadata();

@@ -3363,18 +3363,18 @@ String NetworkHandler::BuildIpAddressSpace(
   }
 }
 
-Maybe<protocol::Network::ClientSecurityState>
+std::unique_ptr<protocol::Network::ClientSecurityState>
 NetworkHandler::MaybeBuildClientSecurityState(
     const network::mojom::ClientSecurityStatePtr& state) {
-  if (!state) {
-    return {};
-  }
-  return protocol::Network::ClientSecurityState::Create()
-      .SetPrivateNetworkRequestPolicy(BuildPrivateNetworkRequestPolicy(
-          state->private_network_request_policy))
-      .SetInitiatorIPAddressSpace(BuildIpAddressSpace(state->ip_address_space))
-      .SetInitiatorIsSecureContext(state->is_web_secure_context)
-      .Build();
+  return state ? protocol::Network::ClientSecurityState::Create()
+                     .SetPrivateNetworkRequestPolicy(
+                         BuildPrivateNetworkRequestPolicy(
+                             state->private_network_request_policy))
+                     .SetInitiatorIPAddressSpace(
+                         BuildIpAddressSpace(state->ip_address_space))
+                     .SetInitiatorIsSecureContext(state->is_web_secure_context)
+                     .Build()
+               : nullptr;
 }
 
 std::unique_ptr<protocol::Network::CorsErrorStatus>

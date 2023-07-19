@@ -135,12 +135,11 @@ void NetworkServiceDevToolsObserver::OnPrivateNetworkRequest(
           .SetRequest(std::move(affected_request))
           .SetCorsErrorStatus(std::move(cors_error_status))
           .Build();
-  auto maybe_protocol_security_state =
-      protocol::NetworkHandler::MaybeBuildClientSecurityState(
-          client_security_state);
-  if (maybe_protocol_security_state.isJust()) {
+  if (auto maybe_protocol_security_state =
+          protocol::NetworkHandler::MaybeBuildClientSecurityState(
+              client_security_state)) {
     cors_issue_details->SetClientSecurityState(
-        maybe_protocol_security_state.takeJust());
+        std::move(maybe_protocol_security_state));
   }
   auto details = protocol::Audits::InspectorIssueDetails::Create()
                      .SetCorsIssueDetails(std::move(cors_issue_details))
@@ -240,12 +239,11 @@ void NetworkServiceDevToolsObserver::OnCorsError(
   if (initiator_origin) {
     cors_issue_details->SetInitiatorOrigin(initiator_origin->GetURL().spec());
   }
-  auto maybe_protocol_security_state =
-      protocol::NetworkHandler::MaybeBuildClientSecurityState(
-          client_security_state);
-  if (maybe_protocol_security_state.isJust()) {
+  if (auto maybe_protocol_security_state =
+          protocol::NetworkHandler::MaybeBuildClientSecurityState(
+              client_security_state)) {
     cors_issue_details->SetClientSecurityState(
-        maybe_protocol_security_state.takeJust());
+        std::move(maybe_protocol_security_state));
   }
 
   auto details = protocol::Audits::InspectorIssueDetails::Create()
