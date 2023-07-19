@@ -110,6 +110,13 @@ class PrivacySandboxAttestations {
   // the parsing and loading are completed.
   void SetLoadAttestationsDoneCallbackForTesting(base::OnceClosure callback);
 
+  // Set the callback to be invoked when attestations map starts to be parsed.
+  // (The parsing will be paused.) The typical usage is to set the callback to
+  // `base::RunLoop::QuitClosure()`. Tests then can use `base::RunLoop::Run()`,
+  // together with this callback, to inspect state once parsing starts.
+  void SetLoadAttestationsParsingStartedCallbackForTesting(
+      base::OnceClosure callback);
+
  private:
   friend class base::NoDestructor<PrivacySandboxAttestations>;
 
@@ -138,11 +145,19 @@ class PrivacySandboxAttestations {
   // Invoke the `attestations_loaded_callback_` registered by tests, if any.
   void RunLoadAttestationsDoneCallbackForTesting();
 
+  // Invoke the `attestations_parsing_started_callback_` registered by tests,
+  // if any. If this function returns true, parsing should be paused (because
+  // we're in a test). If it returns false, do nothing.
+  bool RunLoadAttestationsParsingStartedCallbackForTesting();
+
   // Task runner used to execute the file opening and parsing.
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   // This callback is invoked at the end of the loading of the attestations map.
   base::OnceClosure load_attestations_done_callback_;
+
+  // This callback is invoked when parsing for the attestations map starts.
+  base::OnceClosure load_attestations_parsing_started_callback_;
 
   Progress attestations_parse_progress_ = kNotStarted;
 

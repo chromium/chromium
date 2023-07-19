@@ -86,6 +86,26 @@ class PrivacySandboxAttestationsFeatureEnabledTest
     run_loop.Run();
   }
 
+  void WriteAttestationsFileAndPauseDuringParsing(base::Version version,
+                                                  std::string_view content) {
+    base::ScopedTempDir component_install_dir;
+    CHECK(component_install_dir.CreateUniqueTempDirUnderPath(
+        scoped_temp_dir_.GetPath()));
+    base::FilePath attestations_file_path =
+        component_install_dir.GetPath().Append(
+            FILE_PATH_LITERAL("attestations"));
+    CHECK(base::WriteFile(attestations_file_path, content));
+
+    base::RunLoop run_loop;
+    privacy_sandbox::PrivacySandboxAttestations::GetInstance()
+        ->SetLoadAttestationsParsingStartedCallbackForTesting(
+            run_loop.QuitClosure());
+
+    PrivacySandboxAttestations::GetInstance()->LoadAttestations(
+        version, attestations_file_path);
+    run_loop.Run();
+  }
+
  private:
   base::ScopedTempDir scoped_temp_dir_;
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -98,7 +118,7 @@ TEST_F(PrivacySandboxAttestationsFeatureEnabledTest,
   Status attestation_status =
       PrivacySandboxAttestations::GetInstance()->IsSiteAttested(
           site, PrivacySandboxAttestationsGatedAPI::kTopics);
-  EXPECT_EQ(attestation_status, Status::kAttestationsNotLoaded);
+  EXPECT_EQ(attestation_status, Status::kAttestationsFileNotYetReady);
 }
 
 TEST_F(PrivacySandboxAttestationsFeatureEnabledTest, AttestedIfOverridden) {
@@ -174,6 +194,14 @@ TEST_F(PrivacySandboxAttestationsFeatureEnabledTest,
   EXPECT_FALSE(PrivacySandboxAttestations::GetInstance()
                    ->GetVersionForTesting()
                    .IsValid());
+
+  // Attempts to check attestation status should return that the file is
+  // corrupt.
+  net::SchemefulSite site(GURL("https://example.com"));
+  Status attestation_status =
+      PrivacySandboxAttestations::GetInstance()->IsSiteAttested(
+          site, PrivacySandboxAttestationsGatedAPI::kTopics);
+  EXPECT_EQ(attestation_status, Status::kAttestationsFileCorrupt);
 }
 
 TEST_F(PrivacySandboxAttestationsFeatureEnabledTest, LoadAttestationsFile) {
@@ -185,7 +213,7 @@ TEST_F(PrivacySandboxAttestationsFeatureEnabledTest, LoadAttestationsFile) {
   ASSERT_EQ(PrivacySandboxAttestations::GetInstance()->IsSiteAttested(
                 net::SchemefulSite(GURL(site)),
                 PrivacySandboxAttestationsGatedAPI::kTopics),
-            Status::kAttestationsNotLoaded);
+            Status::kAttestationsFileNotYetReady);
 
   // Add attestation for the site.
   PrivacySandboxAttestationsProto::PrivacySandboxAttestedAPIsProto
@@ -213,6 +241,37 @@ TEST_F(PrivacySandboxAttestationsFeatureEnabledTest, LoadAttestationsFile) {
 }
 
 TEST_F(PrivacySandboxAttestationsFeatureEnabledTest,
+       LoadAttestationsFilePauseDuringParsing) {
+  PrivacySandboxAttestationsProto proto;
+  ASSERT_TRUE(proto.site_attestations_size() == 0);
+
+  std::string site = "https://example.com";
+  ASSERT_EQ(PrivacySandboxAttestations::GetInstance()->IsSiteAttested(
+                net::SchemefulSite(GURL(site)),
+                PrivacySandboxAttestationsGatedAPI::kTopics),
+            Status::kAttestationsFileNotYetReady);
+
+  // Add attestation for the site.
+  PrivacySandboxAttestationsProto::PrivacySandboxAttestedAPIsProto
+      site_attestation;
+  site_attestation.add_attested_apis(TOPICS);
+  (*proto.mutable_site_attestations())[site] = site_attestation;
+
+  std::string serialized_proto;
+  proto.SerializeToString(&serialized_proto);
+
+  WriteAttestationsFileAndPauseDuringParsing(base::Version("0.0.1"),
+                                             serialized_proto);
+
+  // The attestation check should return an error indicating that parsing is in
+  // progress.
+  EXPECT_EQ(PrivacySandboxAttestations::GetInstance()->IsSiteAttested(
+                net::SchemefulSite(GURL(site)),
+                PrivacySandboxAttestationsGatedAPI::kTopics),
+            Status::kAttestationsDownloadedNotYetLoaded);
+}
+
+TEST_F(PrivacySandboxAttestationsFeatureEnabledTest,
        OlderVersionAttestationsFileIsNotLoaded) {
   base::HistogramTester histogram_tester;
   PrivacySandboxAttestationsProto proto;
@@ -222,7 +281,7 @@ TEST_F(PrivacySandboxAttestationsFeatureEnabledTest,
   ASSERT_EQ(PrivacySandboxAttestations::GetInstance()->IsSiteAttested(
                 net::SchemefulSite(GURL(site)),
                 PrivacySandboxAttestationsGatedAPI::kTopics),
-            Status::kAttestationsNotLoaded);
+            Status::kAttestationsFileNotYetReady);
 
   // Add attestation for the site.
   PrivacySandboxAttestationsProto::PrivacySandboxAttestedAPIsProto
@@ -279,7 +338,7 @@ TEST_F(PrivacySandboxAttestationsFeatureEnabledTest,
   ASSERT_EQ(PrivacySandboxAttestations::GetInstance()->IsSiteAttested(
                 net::SchemefulSite(GURL(site)),
                 PrivacySandboxAttestationsGatedAPI::kTopics),
-            Status::kAttestationsNotLoaded);
+            Status::kAttestationsFileNotYetReady);
 
   // Add attestation for the site.
   PrivacySandboxAttestationsProto::PrivacySandboxAttestedAPIsProto

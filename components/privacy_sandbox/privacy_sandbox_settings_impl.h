@@ -115,8 +115,10 @@ class PrivacySandboxSettingsImpl : public PrivacySandboxSettings {
     kSiteDataAccessBlocked = 4,
     kMismatchedConsent = 5,
     kAttestationFailed = 6,
-    kAttestationsNotLoaded = 7,
-    kMaxValue = kAttestationsNotLoaded,
+    kAttestationsFileNotYetReady = 7,
+    kAttestationsDownloadedNotYetLoaded = 8,
+    kAttestationsFileCorrupt = 9,
+    kMaxValue = kAttestationsFileCorrupt,
   };
 
   static bool IsAllowed(Status status);

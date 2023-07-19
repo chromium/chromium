@@ -1764,8 +1764,9 @@ class PrivacySandboxAttestationsTest : public PrivacySandboxSettingsM1Test {
   }
 };
 
-// When the attestations map has not yet been loaded,  attestation fails.
-TEST_F(PrivacySandboxAttestationsTest, AttestationsNotLoaded) {
+// When the attestations map has not yet been downloaded, or the browser hasn't
+// confirmed that it is present in the filesystem, attestation fails.
+TEST_F(PrivacySandboxAttestationsTest, AttestationsFileNotYetReady) {
   GURL top_frame_url("https://top-frame.com");
   GURL enrollee_url("https://embedded.com");
   RunTestCase(
@@ -1801,7 +1802,7 @@ TEST_F(PrivacySandboxAttestationsTest, AttestationsNotLoaded) {
                kIsPrivateAggregationAllowedMetric,
                kIsEventReportingDestinationAttestedForSharedStorageMetric,
                kIsEventReportingDestinationAttestedForFledgeMetric},
-           static_cast<int>(Status::kAttestationsNotLoaded)}});
+           static_cast<int>(Status::kAttestationsFileNotYetReady)}});
 }
 
 // When the attestations map has no enrollments at all (i.e., no enrollment
