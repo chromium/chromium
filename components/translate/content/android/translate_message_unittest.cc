@@ -1255,9 +1255,7 @@ TEST_F(TranslateMessageTest, TranslationIgnored) {
   EXPECT_EQ(100, translate_prefs_->GetTranslationAcceptedCount("fr"));
   EXPECT_EQ(100, translate_prefs_->GetTranslationDeniedCount("fr"));
 
-  // TODO(crbug.com/1408277): Change this back to 1 after re-enabling the
-  // counting of ignored cases.
-  EXPECT_EQ(0, translate_prefs_->GetTranslationIgnoredCount("fr"));
+  EXPECT_EQ(1, translate_prefs_->GetTranslationIgnoredCount("fr"));
 }
 
 TEST_F(TranslateMessageTest, TranslationNotIgnoredBecauseOverflowMenuOpened) {

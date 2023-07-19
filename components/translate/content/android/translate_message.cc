@@ -393,10 +393,9 @@ void TranslateMessage::HandleDismiss(JNIEnv* env, jint dismiss_reason) {
             messages::DismissReason::GESTURE &&
         ui_delegate_->ShouldAutoNeverTranslate();
 
-    if (static_cast<messages::DismissReason>(dismiss_reason) ==
-        messages::DismissReason::GESTURE) {
-      ui_delegate_->TranslationDeclined(true);
-    }
+    ui_delegate_->TranslationDeclined(
+        static_cast<messages::DismissReason>(dismiss_reason) ==
+        messages::DismissReason::GESTURE);
 
     if (should_auto_never_translate) {
       RecordCompactInfobarEvent(

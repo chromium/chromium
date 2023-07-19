@@ -98,7 +98,7 @@ enum {
   kPrefTranslateAutoAlwaysCount = 53,
   kPrefTranslateAutoNeverCount = 54,
   kPrefTranslateDeniedCount = 55,
-  kPrefTranslateIgnoredCount = 56,
+  // kPrefTranslateIgnoredCount = 56, (no longer synced)
   kBlockedLanguages = 57,
   kOfferTranslateEnabled = 58,
   kPrefAlwaysTranslateList = 59,
@@ -275,9 +275,6 @@ const auto& SyncablePreferences() {
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
         {translate::TranslatePrefs::kPrefTranslateDeniedCount,
          {syncable_prefs_ids::kPrefTranslateDeniedCount, syncer::PREFERENCES,
-          false}},
-        {translate::TranslatePrefs::kPrefTranslateIgnoredCount,
-         {syncable_prefs_ids::kPrefTranslateIgnoredCount, syncer::PREFERENCES,
           false}},
         {translate::prefs::kBlockedLanguages,
          {syncable_prefs_ids::kBlockedLanguages, syncer::PREFERENCES, false}},

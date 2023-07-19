@@ -102622,7 +102622,8 @@ would be helpful to identify which type is being sent.
   <int value="53" label="PrefTranslateAutoAlwaysCount"/>
   <int value="54" label="PrefTranslateAutoNeverCount"/>
   <int value="55" label="PrefTranslateDeniedCount"/>
-  <int value="56" label="PrefTranslateIgnoredCount"/>
+  <int value="56"
+      label="(obsolete, no longer synced) PrefTranslateIgnoredCount"/>
   <int value="57" label="BlockedLanguages"/>
   <int value="58" label="OfferTranslateEnabled"/>
   <int value="59" label="PrefAlwaysTranslateList"/>
