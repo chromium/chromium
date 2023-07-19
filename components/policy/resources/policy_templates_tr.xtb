@@ -1851,6 +1851,7 @@ Not: Bir alanın atlanması, tüm değerlerin o alanla eşleştiği anlamına ge
 <translation id="2608887839902987727">Giriş portalı kimlik doğrulamasının, proxy ayarlarını yoksaymasını engelle</translation>
 <translation id="2608985885792348429">Varsayılan pano ayarı</translation>
 <translation id="2615240493030733717">Saat dilimi bilgisi raporlama</translation>
+<translation id="2619258867868873629"><ph name="PRODUCT_OS_NAME" /> cihazlardaki "PDF olarak kaydet" hedefinin yanı sıra "Google Drive'a kaydet" hedefi</translation>
 <translation id="2621290137818374425">Politikanın ayarlanması, belirtilen URL'lerdeki ana makine adları için Sertifika Şeffaflığı açıklama gereksinimlerini kapatır. Yanlış kullanılan sertifikaları algılamayı zorlaştırırken kurumsal ana makineler, aksi halde güvenilmeyecek olan (uygun bir şekilde herkese açık olarak paylaşılmadığından) sertifikaları kullanmaya devam edebilir.
 
       Politikanın ayarlanmadan bırakılması, Sertifika Şeffaflığı aracılığıyla açıklama gerektiren sertifikaların açıklanmaması durumunda <ph name="PRODUCT_NAME" /> ürününün bu sertifikalara güvenmeyeceği anlamına gelir.
@@ -8484,6 +8485,7 @@ Politika ayarlanırsa sınıra uymak için eski anlık görüntüler gerektiğin
 
       Uyarı: Kullanıcıların yazılım güncellemelerini ve kritik güvenlik düzeltmelerini almasını engelleyebileceği için sürüm kısıtlamalarının yapılandırılması önerilmez. Güncellemeleri belirli bir sürüm ön ekiyle sınırlamak, kullanıcıları risk altında bırakabilir.</translation>
 <translation id="8508489378025029342">Cihaz etkinlik zamanı raporlamasını etkinleştir</translation>
+<translation id="8510357716574220408"><ph name="CLOUD_PRINT_NAME" /> (Kullanımdan kaldırıldı)</translation>
 <translation id="8511192250554640451">Arka plandaki JavaScript zamanlayıcılarının kısıtlanmasının, Chrome mantığı tarafından kontrol edilmesine ve kullanıcılar tarafından yapılandırılmasına izin ver</translation>
 <translation id="8511708772548158302">Mevcut OS sürümü hedeften yeniyse cihazı hedef sürüme geri al. Cihazda powerwash işlemi gerçekleştirilir, ancak cihaz genelindeki sertifikası olmayan ağ yapılandırmaları korunur ve otomatik olarak yeniden kaydedilir.
 <ph name="PRODUCT_OS_NAME" /> 106 veya önceki sürümlere geri alma işlemi desteklenmez.</translation>

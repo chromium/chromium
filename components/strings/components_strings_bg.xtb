@@ -3465,6 +3465,7 @@
 <translation id="8390725133630534698">Споделянето от <ph name="ORIGIN_NAME" /> в(ъв) <ph name="VM_NAME" /> е блокирано от администраторски правила</translation>
 <translation id="8396522675989118466">Това е <ph name="NUMBER_OF_DIGITS" />-цифреният код на <ph name="SIDE_OF_CARD" /></translation>
 <translation id="8398335999901363925">Списъкът с начини на плащане, които да бъдат попълнени при докосване, е отворен на пълната височина.</translation>
+<translation id="8398446215576328011">Връщане на приложените правила в предишното им състояние</translation>
 <translation id="8398790343843005537">Намиране на телефона ви</translation>
 <translation id="8403506619177967839">Фен фикшън</translation>
 <translation id="8405579342203358118">Управление на данните, които да се синхронизират, от настройките на Chrome</translation>

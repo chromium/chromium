@@ -372,6 +372,7 @@
 <translation id="397105322502079400">正在计算...</translation>
 <translation id="39823212440917567">系统会自动移除存在时长已超过 <ph name="NUMBER_OF_DAYS" /> 天的打印任务</translation>
 <translation id="3993704782688964914">您的<ph name="DEVICE_NAME" />目前已是最新版本</translation>
+<translation id="3998976413398910035">管理打印机</translation>
 <translation id="4003384961948020559">失败 - 出纸盘已满</translation>
 <translation id="4021031199988160623">切换到笔记本电脑模式即可进行测试</translation>
 <translation id="4034824040120875894">打印机</translation>
@@ -588,6 +589,7 @@
 <translation id="5620281292257375798">仅供内部使用</translation>
 <translation id="5649768706273821470">收听</translation>
 <translation id="5655283760733841251">调高键盘亮度</translation>
+<translation id="5655776422854483175">无打印作业</translation>
 <translation id="5659593005791499971">电子邮件</translation>
 <translation id="5662240986744577912">使用切换开关可启用或停用隐私保护屏幕</translation>
 <translation id="5669267381087807207">正在激活</translation>
@@ -668,6 +670,7 @@
 <translation id="6278428485366576908">主题背景</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">开启深色主题</translation>
+<translation id="628726841779494414">在打印机设置中管理您的打印机</translation>
 <translation id="629550705077076970">将键盘调暗</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" />测试已被取消</translation>
 <translation id="631063167932043783">“探索”应用</translation>

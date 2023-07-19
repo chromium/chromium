@@ -372,6 +372,7 @@
 <translation id="397105322502079400">Beräknar ...</translation>
 <translation id="39823212440917567">Utskriftsjobb som är äldre än <ph name="NUMBER_OF_DAYS" /> dagar tas bort</translation>
 <translation id="3993704782688964914"><ph name="DEVICE_NAME" /> har nu uppdaterats</translation>
+<translation id="3998976413398910035">Hantera skrivare</translation>
 <translation id="4003384961948020559">Misslyckades – utmatningsfacket är fullt</translation>
 <translation id="4021031199988160623">Byt till laptopläge för att testa</translation>
 <translation id="4034824040120875894">Skrivare</translation>
@@ -588,6 +589,7 @@
 <translation id="5620281292257375798">Endast internt</translation>
 <translation id="5649768706273821470">Lyssna</translation>
 <translation id="5655283760733841251">Tangenten som ökar ljusstyrkan på tangentbordet</translation>
+<translation id="5655776422854483175">Inga utskriftsjobb</translation>
 <translation id="5659593005791499971">E-post</translation>
 <translation id="5662240986744577912">aktivera och inaktivera integritetsskärmen</translation>
 <translation id="5669267381087807207">Aktiverar</translation>
@@ -668,6 +670,7 @@
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">Aktivera mörkt tema</translation>
+<translation id="628726841779494414">Hantera dina skrivare i skrivarinställningarna</translation>
 <translation id="629550705077076970">tona ned tangentbordet</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" />-testet har avbrutits</translation>
 <translation id="631063167932043783">Appen Utforska</translation>

@@ -192,7 +192,6 @@
 <translation id="2056878612599315956">Сайт тындырылды</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{1 файл жүктөлүп алынбай калды}other{# файл жүктөлүп алынбай калды}}</translation>
 <translation id="2067805253194386918">текст</translation>
-<translation id="2079545284768500474">Кайтаруу</translation>
 <translation id="2082238445998314030"><ph name="TOTAL_RESULTS" /> ичинен <ph name="RESULT_NUMBER" /> натыйжа</translation>
 <translation id="2096012225669085171">Бардык түзмөктөрдө шайкештирүү жана жекечелештирүү</translation>
 <translation id="2100273922101894616">Авто кирүү</translation>
@@ -393,7 +392,6 @@
 <translation id="3123734510202723619">Жарыялар</translation>
 <translation id="3134784203083076891">"</translation>
 <translation id="314939179385989105">Chrome’дун башкы бети</translation>
-<translation id="3157931365184549694">Калыбына келтирүү</translation>
 <translation id="3166827708714933426">Өтмөктүн жана терезенин кыска жолдору</translation>
 <translation id="316694332262407393">Chrome мурунтан эле иштеп жатат.</translation>
 <translation id="3167258285411721858"><ph name="HOST_NAME" /> мобилдик түзмөктөгү сайтын сурана аласыз</translation>
@@ -427,7 +425,6 @@
 <translation id="3303414029551471755">Мазмун жүктөлүп алына берсинби?</translation>
 <translation id="3305130791745726624">Түзмөктөргө жөнөтүү</translation>
 <translation id="3305795716056605962">Барактарды которуу үчүн "Дагы параметрлер" баскычын басыңыз</translation>
-<translation id="3319664549618064419">Бул сайтты жакшыраак көрүү үчүн компьютердик версияга которулуңуз</translation>
 <translation id="3334729583274622784">Файлдын кеңейтүүсү өчүрүлсүнбү?</translation>
 <translation id="3341262203274374114">Жазылуу токтотулган жок. Бир жерден ката кетти.</translation>
 <translation id="3359667936385849800">Учурдагы кызмат көрсөтүүчүңүздү колдонуңуз</translation>
@@ -544,7 +541,6 @@
 <translation id="4024768890073681126">Серепчиңди ата-энең башкарат</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# саат}other{# саат}}</translation>
 <translation id="4035877632587724847">Тыюу салуу</translation>
-<translation id="4036177530563778041">Токтогон жериңизден оңой улантыңыз</translation>
 <translation id="4042941173059740150"><ph name="SITE_ETLD_PLUS_ONE" /> сайтына <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> аккаунту менен өтүңүз</translation>
 <translation id="4044708993631234325">Ылдыйкы экран</translation>
 <translation id="4045764304651014138">Колдонуу статистикасы</translation>
@@ -895,7 +891,6 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="5864419784173784555">Башка жүктөп алуу күтүлүүдө…</translation>
 <translation id="5865733239029070421">Колдонуу статистикасын жана каталар жөнүндө кабарларды Google'га автоматтык түрдө жөнөтүп турат</translation>
 <translation id="5869522115854928033">Сакталган сырсөздөр</translation>
-<translation id="5876496397064130037">Жасалчу иш улантылды</translation>
 <translation id="587735546353481577">Сайтка жазылуу үчүн ага өтүп, Google Chrome менюсун ачып, "Жазылууну" таптаңыз.</translation>
 <translation id="5879072387416556377">Жакшыраак сунуштарды алыңыз</translation>
 <translation id="5916664084637901428">Күйүк</translation>
@@ -1123,7 +1118,6 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="7029390216614421513">QR кодду же штрих кодду бул алкакка жайгаштырыңыз.</translation>
 <translation id="7029809446516969842">Сырсөздөр</translation>
 <translation id="7030304022046916278">URL даректерин текшерүү үчүн Коопсуз серептөөгө жөнөтөт</translation>
-<translation id="7030585293819777123">Акыркы жасалчу ишиңизди улантасызбы?</translation>
 <translation id="7035701931849773472">Башка параметрлер</translation>
 <translation id="7037830628447527439">Chrome'го Google аккаунтуңуз менен кириңиз</translation>
 <translation id="7038956721828960940">chrome_image_<ph name="CURRENT_TIMESTAMP_MS" /></translation>

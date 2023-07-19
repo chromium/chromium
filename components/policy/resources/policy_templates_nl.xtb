@@ -1843,6 +1843,7 @@ Opmerking: Als je een veld overslaat, betekent dit dat alle waarden overeenkomen
 <translation id="2608887839902987727">Voorkomen dat captive portal-verificatie proxyinstellingen negeert</translation>
 <translation id="2608985885792348429">Standaard klembordinstelling</translation>
 <translation id="2615240493030733717">Informatie over tijdzone rapporteren</translation>
+<translation id="2619258867868873629">De bestemming Opslaan als pdf en de bestemming Opslaan in Google Drive op <ph name="PRODUCT_OS_NAME" />-apparaten</translation>
 <translation id="2621290137818374425">Als je het beleid instelt, wordt de handhaving van vereisten voor openbaarmaking via Certificaattransparantie uitgezet voor de hostnamen in de opgegeven URL's. Hoewel het moeilijker wordt om misbruik van certificaten vast te stellen, kunnen hosts certificaten blijven gebruiken die anders niet zouden worden vertrouwd (omdat deze niet op de juiste manier openbaar zijn gemaakt).
 
 Als je het beleid niet instelt, betekent dit dat als certificaten die openbaar moeten worden gemaakt via Certificaattransparantie niet openbaar worden gemaakt, de betreffende certificaten niet door <ph name="PRODUCT_NAME" /> worden vertrouwd.
@@ -8361,6 +8362,7 @@ Dit beleid wordt verwijderd in M75.</translation>
 
       Waarschuwing: Het wordt niet aanbevolen versiebeperkingen te configureren, omdat gebruikers hierdoor mogelijk geen software-updates en essentiële beveiligingsoplossingen ontvangen. Als je updates beperkt tot een specifiek versievoorvoegsel, kunnen gebruikers gevaar lopen.</translation>
 <translation id="8508489378025029342">Rapportage voor tijd van apparaatactiviteit aanzetten</translation>
+<translation id="8510357716574220408"><ph name="CLOUD_PRINT_NAME" /> (beëindigd)</translation>
 <translation id="8511192250554640451">Toestaan dat throttling van JavaScript-timers op de achtergrond wordt bepaald door Chrome-logica en wordt ingesteld door gebruikers</translation>
 <translation id="8511708772548158302">Herstel het apparaat naar de doelversie als de huidige OS-versie nieuwer is dan de doelversie. Er wordt een Powerwash op het apparaat uitgevoerd, maar apparaatbrede netwerkconfiguraties zonder certificaten blijven bewaard en het apparaat wordt automatisch opnieuw ingeschreven.
 Rollback naar <ph name="PRODUCT_OS_NAME" /> versie 106 of lager wordt niet ondersteund.</translation>

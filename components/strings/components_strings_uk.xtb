@@ -319,6 +319,7 @@
 <translation id="160851722280695521">Грайте в гру Dino Run у Chrome</translation>
 <translation id="161042844686301425">Бірюзовий</translation>
 <translation id="1611101756749861742">Другий рулон</translation>
+<translation id="1615178538289490617">Скасувати доступ для порту <ph name="PORT_NAME" /></translation>
 <translation id="1615402009686901181">Адміністратор заборонив запис екрана, якщо видно конфіденційний контент</translation>
 <translation id="1617276713587758852">Кросовери</translation>
 <translation id="1618571384971354160">Послуги евакуатора й допомога в дорозі</translation>
@@ -625,6 +626,7 @@
 <translation id="2276057643614339130">Надрукована основа</translation>
 <translation id="2277103315734023688">Перейти вперед</translation>
 <translation id="2277753418458118549">Показати інформацію про з’єднання</translation>
+<translation id="22792995594807632">Перевірте файли, перш ніж завантажувати їх на пристрій</translation>
 <translation id="2283340219607151381">Зберігати й заповнювати адреси</translation>
 <translation id="2283447177162560884">Сторінку "<ph name="PAGE_TITLE" />" видалено</translation>
 <translation id="2286383991450886080">34 x 44 дюйм.</translation>
@@ -1276,6 +1278,7 @@
 <translation id="3736520371357197498">Якщо ви розумієте ризики, пов’язані з безпекою, <ph name="BEGIN_LINK" />перейдіть на цей ненадійний сайт<ph name="END_LINK" /> до того, як небезпечні програми буде видалено.</translation>
 <translation id="3738166223076830879">Ваша організація керує веб-переглядачем.</translation>
 <translation id="3740319564441798148">Міжміські автобуси й потяги</translation>
+<translation id="3740447166056383374">Перевірте файли, перш ніж копіювати їх</translation>
 <translation id="374325029554577103">Товари для фітнесу</translation>
 <translation id="3743765582345153106">Завжди перевіряти під час використання автозаповнення</translation>
 <translation id="3744111561329211289">Фонова синхронізація</translation>
@@ -1796,6 +1799,7 @@
 <translation id="4852429274334674023">Операційні системи</translation>
 <translation id="4854853140771946034">Швидко створюйте нові нотатки в Google Keep</translation>
 <translation id="485902285759009870">Перевірка коду…</translation>
+<translation id="4862630594858951805">Хочете отримувати електронні листи про зниження цін?</translation>
 <translation id="486459320933704969">Батько, мати чи опікун мають дозволити тобі відвідати цей веб-сайт</translation>
 <translation id="4866506163384898554">Натисніть |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />|, щоб показати курсор</translation>
 <translation id="4873616204573862158">Окуляри</translation>
@@ -1991,6 +1995,7 @@
 <translation id="5255690596502591079">Усе одно записати</translation>
 <translation id="5255833070095767006">350 x 460 мм</translation>
 <translation id="5257739419779698609">{0,plural, =1{Згідно з правилом адміністратора не рекомендовано копіювати цей файл у розташування "<ph name="DESTINATION_NAME" />"}one{Згідно з правилом адміністратора не рекомендовано копіювати ці файли в розташування "<ph name="DESTINATION_NAME" />"}few{Згідно з правилом адміністратора не рекомендовано копіювати ці файли в розташування "<ph name="DESTINATION_NAME" />"}many{Згідно з правилом адміністратора не рекомендовано копіювати ці файли в розташування "<ph name="DESTINATION_NAME" />"}other{Згідно з правилом адміністратора не рекомендовано копіювати ці файли в розташування "<ph name="DESTINATION_NAME" />"}}</translation>
+<translation id="5263867360296733198">Перевірте файли, перш ніж завантажувати їх із пристрою</translation>
 <translation id="5266128565379329178">Зшити вгорі</translation>
 <translation id="5269225904387178860">Пробити чотири отвори внизу</translation>
 <translation id="5269999699920406580">Функції, які застосовуються до всієї системи, може налаштовувати лише власник: <ph name="OWNER_EMAIL" /></translation>
@@ -2064,6 +2069,7 @@
 <translation id="5412236728747081950">Цей сайт використовує дані про ваші інтереси з Chrome, щоб показувати вам доречнішу рекламу</translation>
 <translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" /> – <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">Накопичувач 4</translation>
+<translation id="5414446060143308245">Перевірте файли, перш ніж переносити їх</translation>
 <translation id="5414511064953050917">Усе одно перемістити</translation>
 <translation id="5421136146218899937">Очистити історію…</translation>
 <translation id="5423269318075950257">Відстежувати ціну</translation>
@@ -2148,6 +2154,7 @@
 <translation id="5595485650161345191">Редагувати адресу</translation>
 <translation id="5596939519753369075">2 x 3,5 дюйм.</translation>
 <translation id="560412284261940334">Керування не підтримується</translation>
+<translation id="5605249000617390290">Докладніше про відстеження цін</translation>
 <translation id="5605670050355397069">Ledger</translation>
 <translation id="5610142619324316209">перевірити наявність з’єднання</translation>
 <translation id="5610807607761827392">Ви можете керувати картками й адресами в <ph name="BEGIN_LINK" />Налаштуваннях<ph name="END_LINK" />.</translation>
@@ -2284,6 +2291,7 @@
 <translation id="5921639886840618607">Зберегти картку в обліковому записі Google?</translation>
 <translation id="5922853866070715753">Майже готово</translation>
 <translation id="5923492272538889093">Використовувати функцію розблокування пристрою замість коду CVC?</translation>
+<translation id="5924510104057992926">Перевірте файли, перш ніж відкривати їх</translation>
 <translation id="5924782825030413055">Джерело останнього оновлення згоди:</translation>
 <translation id="5925040402342933574">Оптичний диск (напівглянцевий)</translation>
 <translation id="5926982310317673627">Спортзали й оздоровчі клуби</translation>
@@ -2509,6 +2517,7 @@
 <translation id="6394852772105848029">Сайт хоче відкрити додаток <ph name="APP_NAME" /></translation>
 <translation id="6398765197997659313">Вийти з повноекранного режиму</translation>
 <translation id="6401136357288658127">Це правило не підтримується. Натомість потрібно застосувати правило <ph name="NEW_POLICY" />.</translation>
+<translation id="6402537308870515461">Перевірте файли, перш ніж переміщувати їх</translation>
 <translation id="6403167778944553">Спальні й ванні кімнати</translation>
 <translation id="6404511346730675251">Редагувати закладку</translation>
 <translation id="6405181733356710802">Перейти в додаток <ph name="APP_NAME" />?</translation>
@@ -2657,6 +2666,7 @@
 <translation id="6710594484020273272">&lt;Введіть пошуковий термін&gt;</translation>
 <translation id="671076103358959139">Маркер реєстрації:</translation>
 <translation id="6711464428925977395">Помилка проксі-сервера або неправильна адреса.</translation>
+<translation id="6716013836112872184">Отримуйте листи на адресу <ph name="EMAIL" />, коли на якомусь сайті знизиться ціна.</translation>
 <translation id="6716672519412350405">Хост <ph name="URL" /> намагається створити 3D-карту вашого оточення й відстежувати положення камери</translation>
 <translation id="6718612893943028815">Використовувати камеру?</translation>
 <translation id="6721164594124191969">Етикетки (глянцеві)</translation>
@@ -3187,6 +3197,7 @@
 <translation id="7767278989746220252">Тераси, газони й сади</translation>
 <translation id="776749070095465053">Тканина</translation>
 <translation id="7773005668374414287">Однаковий порядок лицевою стороною вгору</translation>
+<translation id="7779418012194492374">Скасувати доступ для пристрою <ph name="DEVICE_NAME" /></translation>
 <translation id="7781829728241885113">Учора</translation>
 <translation id="7785790577395078482">цього планшета</translation>
 <translation id="7786368602962652765">Обов’язкове поле порожнє. Заповніть його, перш ніж зберегти.</translation>
@@ -3810,6 +3821,7 @@
 <translation id="9155211586651734179">Підключено периферійні аудіопристрої</translation>
 <translation id="9155646082713385498">Журнали</translation>
 <translation id="9157595877708044936">Налаштування...</translation>
+<translation id="9161794544616754735">{0,plural, =1{Файл "<ph name="FILE_NAME" />" може містити конфіденційний контент}one{<ph name="FILE_COUNT" /> файл може містити конфіденційний контент}few{<ph name="FILE_COUNT" /> файли можуть містити конфіденційний контент}many{<ph name="FILE_COUNT" /> файлів можуть містити конфіденційний контент}other{<ph name="FILE_COUNT" /> файлу можуть містити конфіденційний контент}}</translation>
 <translation id="9164742147345933553">os://flags</translation>
 <translation id="9165305804774426672">На основі того, які дії ви виконуєте на відвіданих сайтах, вони також можуть визначати ваші інтереси. Наприклад, якщо ви перейшли на сайт, де продаються кросівки для бігу на довгі дистанції, він може вирішити, що ви цікавитеся марафонським бігом.</translation>
 <translation id="9166851138617700776">Докладніше про оголошення, пропоновані сайтами, і оцінку ефективності реклами</translation>

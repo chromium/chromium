@@ -192,7 +192,6 @@
 <translation id="2056878612599315956">Сайтът е на пауза</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{1 изтегляне не бе успешно}other{# изтегляния не бяха успешни}}</translation>
 <translation id="2067805253194386918">текст</translation>
-<translation id="2079545284768500474">Отмяна</translation>
 <translation id="2082238445998314030">Резултат <ph name="RESULT_NUMBER" /> от <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2096012225669085171">Синхронизиране и персонализиране на всички устройства</translation>
 <translation id="2100273922101894616">Автоматичен вход</translation>
@@ -397,7 +396,6 @@
 <translation id="3123734510202723619">Съобщения</translation>
 <translation id="3134784203083076891">“</translation>
 <translation id="314939179385989105">Началната страница на Chrome</translation>
-<translation id="3157931365184549694">Възстановяване</translation>
 <translation id="3166827708714933426">Комбинации за раздели и прозорци</translation>
 <translation id="316694332262407393">Chrome вече се изпълнява тук.</translation>
 <translation id="3167258285411721858">Можете да заявите мобилната версия на сайта <ph name="HOST_NAME" /></translation>
@@ -431,7 +429,6 @@
 <translation id="3303414029551471755">Искате ли да продължите с изтеглянето на съдържанието?</translation>
 <translation id="3305130791745726624">Изпращане до устройства</translation>
 <translation id="3305795716056605962">Превеждайте страници от бутона „Още опции“</translation>
-<translation id="3319664549618064419">За по-добър изглед на този сайт преминете към настолната му версия</translation>
 <translation id="3334729583274622784">Да се промени ли файловото разширение?</translation>
 <translation id="3341262203274374114">Прекратяването на следенето не е възможно. Нещо се обърка.</translation>
 <translation id="3359667936385849800">Използване на текущия ви доставчик на услуги</translation>
@@ -449,6 +446,7 @@
 <translation id="3429160811076349561">Функциите за изпробване са изключени</translation>
 <translation id="3435465986463792564">Отворили сте много прозорци? Можете да ги управлявате оттук</translation>
 <translation id="3435738964857648380">Сигурност</translation>
+<translation id="3439276997620616816">Тук ще се показват скорошните ви раздели</translation>
 <translation id="3443221991560634068">Презареждане на текущата страница</translation>
 <translation id="3444179773590444986">Искате ли да споделите отзиви за тъмната тема за сайтовете?</translation>
 <translation id="3452832259067974318">За да защити поверителността ви, Chrome няма да попълни автоматично паролата ви в това поле.</translation>
@@ -548,7 +546,6 @@
 <translation id="4024768890073681126">Браузърът се управлява от родител</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# ч}other{# ч}}</translation>
 <translation id="4035877632587724847">Забраняване</translation>
-<translation id="4036177530563778041">Лесно продължавайте оттам, откъдето сте прекъснали</translation>
 <translation id="4042941173059740150">Продължаване към <ph name="SITE_ETLD_PLUS_ONE" /> чрез <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="4044708993631234325">Долен лист</translation>
 <translation id="4045764304651014138">Данни за употребата</translation>
@@ -903,7 +900,6 @@
 <translation id="5864419784173784555">Изчаква се друго изтегляне…</translation>
 <translation id="5865733239029070421">Автоматично изпраща до Google статистически данни за използването на Chrome и сигнали за сривове</translation>
 <translation id="5869522115854928033">Запазени пароли</translation>
-<translation id="5876496397064130037">Задачата е възобновена</translation>
 <translation id="587735546353481577">За да последвате даден сайт, посетете го, отворете менюто на Chrome и докоснете съответната опция.</translation>
 <translation id="5879072387416556377">Получавайте по-добри предложения</translation>
 <translation id="5916664084637901428">Включено</translation>
@@ -1131,7 +1127,6 @@
 <translation id="7029390216614421513">Разположете QR кода или баркода в тази рамка</translation>
 <translation id="7029809446516969842">Пароли</translation>
 <translation id="7030304022046916278">URL адресите се изпращат до Безопасно сърфиране за проверка</translation>
-<translation id="7030585293819777123">Да се възобнови ли последната ви задача?</translation>
 <translation id="7035701931849773472">Други опции</translation>
 <translation id="7037830628447527439">Влезте в Chrome с профила си в Google</translation>
 <translation id="7038956721828960940">chrome_image_<ph name="CURRENT_TIMESTAMP_MS" /></translation>

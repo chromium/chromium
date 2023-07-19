@@ -192,7 +192,6 @@
 <translation id="2056878612599315956">Ο ιστότοπος τέθηκε σε παύση</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{1 λήψη απέτυχε}other{# λήψεις απέτυχαν}}</translation>
 <translation id="2067805253194386918">κείμενο</translation>
-<translation id="2079545284768500474">Αναίρεση</translation>
 <translation id="2082238445998314030">Αποτέλεσμα <ph name="RESULT_NUMBER" /> από <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2096012225669085171">Συγχρονισμός και εξατομίκευση σε όλες τις συσκευές</translation>
 <translation id="2100273922101894616">Αυτόματη σύνδεση</translation>
@@ -397,7 +396,6 @@
 <translation id="3123734510202723619">Ανακοινώσεις</translation>
 <translation id="3134784203083076891">"</translation>
 <translation id="314939179385989105">Αρχική σελίδα του Chrome</translation>
-<translation id="3157931365184549694">Επαναφορά</translation>
 <translation id="3166827708714933426">Συντομεύσεις καρτέλας και παραθύρου</translation>
 <translation id="316694332262407393">Το Chrome εκτελείται ήδη εδώ.</translation>
 <translation id="3167258285411721858">Μπορείτε να ζητήσετε τον ιστότοπο για κινητά του <ph name="HOST_NAME" /></translation>
@@ -431,7 +429,6 @@
 <translation id="3303414029551471755">Συνέχεια για λήψη του περιεχομένου;</translation>
 <translation id="3305130791745726624">Αποστολή σε συσκευές</translation>
 <translation id="3305795716056605962">Μετάφραση σελίδων από το κουμπί Περισσότερες επιλογές</translation>
-<translation id="3319664549618064419">Κάντε εναλλαγή στον ιστότοπο για υπολογιστές για καλύτερη προβολή αυτού του ιστοτόπου</translation>
 <translation id="3334729583274622784">Θέλετε να αλλάξετε την επέκταση αρχείου;</translation>
 <translation id="3341262203274374114">Δεν είναι δυνατή η κατάργηση παρακολούθησης. Παρουσιάστηκε κάποιο πρόβλημα.</translation>
 <translation id="3359667936385849800">Χρήση του τρέχοντα παρόχου υπηρεσίας σας.</translation>
@@ -550,7 +547,6 @@
 <translation id="4024768890073681126">Η διαχείριση του προγράμματος περιήγησης γίνεται από τον γονέα σου</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# ω.}other{# ω.}}</translation>
 <translation id="4035877632587724847">Να μην επιτραπεί</translation>
-<translation id="4036177530563778041">Συνεχίστε εύκολα από εκεί που σταματήσατε</translation>
 <translation id="4042941173059740150">Συνέχεια σε <ph name="SITE_ETLD_PLUS_ONE" /> με <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="4044708993631234325">Φύλλο κάτω μέρους</translation>
 <translation id="4045764304651014138">Δεδομένα χρήσης</translation>
@@ -906,7 +902,6 @@
 <translation id="5864419784173784555">Αναμονή για άλλη λήψη…</translation>
 <translation id="5865733239029070421">Αποστέλλει αυτόματα στατιστικά στοιχεία χρήσης και αναφορές σφαλμάτων στην Google</translation>
 <translation id="5869522115854928033">Αποθηκευμένοι κωδικοί πρόσβασης</translation>
-<translation id="5876496397064130037">Η εργασία συνεχίστηκε</translation>
 <translation id="587735546353481577">Για να ακολουθήσετε έναν ιστότοπο, μεταβείτε στον ιστότοπο, ανοίξτε το μενού Chrome και πατήστε Παρακολούθηση.</translation>
 <translation id="5879072387416556377">Δείτε καλύτερες προτάσεις</translation>
 <translation id="5916664084637901428">Ενεργό</translation>
@@ -1135,7 +1130,6 @@
 <translation id="7029390216614421513">Τοποθετήστε τον κωδικό QR ή τον γραμμωτό κώδικα σε αυτό το πλαίσιο.</translation>
 <translation id="7029809446516969842">Κωδ. πρόσβασης</translation>
 <translation id="7030304022046916278">Στέλνει URL στην Ασφαλή περιήγηση για να τα ελέγξει</translation>
-<translation id="7030585293819777123">Θέλετε να συνεχίσετε την τελευταία εργασία σας;</translation>
 <translation id="7035701931849773472">Άλλες επιλογές</translation>
 <translation id="7037830628447527439">Συνδεθείτε στο Chrome μέσω του Λογαριασμού σας Google</translation>
 <translation id="7038956721828960940">chrome_image_<ph name="CURRENT_TIMESTAMP_MS" /></translation>

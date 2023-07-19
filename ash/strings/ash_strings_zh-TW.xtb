@@ -513,6 +513,7 @@
 <translation id="3294437725009624529">訪客</translation>
 <translation id="3298690094479023523">系統仍無法驗證 PIN 碼或密碼，請再試一次。</translation>
 <translation id="3300193645498960160">如果在靜音狀態下說話，系統會傳送通知給你。音訊資料只會儲存在裝置上。</translation>
+<translation id="3306386552969601301"><ph name="DEVICECOUNT" /> 部裝置已連線至「<ph name="DEVICE_NAME" />」無線基地台</translation>
 <translation id="3307642347673023554">已切換為筆記型電腦模式</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> 日後仍可登入。</translation>
 <translation id="3321628682574733415">家長存取碼不正確</translation>
@@ -552,6 +553,7 @@
 <translation id="3445288400492335833"><ph name="MINUTES" /> 分鐘</translation>
 <translation id="3445925074670675829">USB-C 裝置</translation>
 <translation id="3455468639467374593">範本，「<ph name="TEMPLATE_NAME" />」</translation>
+<translation id="3456931972722214204">1 部裝置已連線至「<ph name="DEVICE_NAME" />」無線基地台</translation>
 <translation id="346243998268439747">重設縮放比例</translation>
 <translation id="3465223694362104965">這個裝置自你上次登入後接上了另外一組鍵盤。使用前請確認你信任該組鍵盤。</translation>
 <translation id="3465356146291925647">由系統管理員管理</translation>
@@ -761,6 +763,7 @@
 <translation id="4324840740119394760">這將允許「<ph name="APP_NAME" />」和具有攝影機權限的所有應用程式和網站存取攝影機</translation>
 <translation id="4333628967105022692">有多位使用者登入時不支援 Lacros 瀏覽器。</translation>
 <translation id="4338109981321384717">放大鏡</translation>
+<translation id="4356872429719185452">顯示無線基地台詳細資料。無線基地台正在啟用。</translation>
 <translation id="4371348193907997655">投放設定</translation>
 <translation id="4375482231364171368">在網址列搜尋</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />，訊號強度為 <ph name="SIGNAL_STRENGTH" />%</translation>
@@ -1108,6 +1111,7 @@
 <translation id="5825969630400862129">設定已連結的裝置</translation>
 <translation id="5837036133683224804">停止透過<ph name="RECEIVER_NAME" />投放「<ph name="ROUTE_TITLE" />」</translation>
 <translation id="5841296711770970362">播放下一首曲目</translation>
+<translation id="5842553299352339114">「<ph name="DEVICE_NAME" />」無線基地台已啟用，目前沒有任何裝置連線</translation>
 <translation id="584525477304726060">按住視窗即可放到最大</translation>
 <translation id="5856638668464565213"><ph name="NETWORK_NAME" /> 尚未啟用。</translation>
 <translation id="5860033963881614850">關閉</translation>
@@ -1369,6 +1373,7 @@
 <translation id="6981291220124935078">開啟存取權</translation>
 <translation id="6981982820502123353">無障礙設定</translation>
 <translation id="698231206551913481">將這位使用者移除後，與這位使用者相關聯的所有檔案和本機資料都會遭到永久刪除。</translation>
+<translation id="7004910047186208204">連線至行動數據網路</translation>
 <translation id="7005239792648594238">開啟應用程式即可開始</translation>
 <translation id="7007983414944123363">系統無法驗證你的 PIN 碼或密碼，請再試一次。</translation>
 <translation id="7014684956566476813">已連線至名為「<ph name="DEVICE_NAME" />」的裝置</translation>
@@ -1523,6 +1528,7 @@
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 則通知}other{# 則通知}}</translation>
 <translation id="7723703419796509666">顯示或隱藏開發人員工具控制台</translation>
 <translation id="7724603315864178912">剪下</translation>
+<translation id="7725108879223146004">顯示無線基地台詳細資料。無線基地台正在關閉。</translation>
 <translation id="7727952505535211425">在新分頁中開啟網址列中的網站</translation>
 <translation id="77365090426890123">記憶體用量</translation>
 <translation id="7742327441377685481">沒有任何通知</translation>
@@ -1658,6 +1664,7 @@
 <translation id="8308637677604853869">前一個選單</translation>
 <translation id="830868413617744215">測試版</translation>
 <translation id="8314772463905284467">大寫鍵已啟用</translation>
+<translation id="8315514906653279104">啟用中...</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="8345019317483336363">已選取「<ph name="WINDOW_TITLE" />」視窗</translation>
 <translation id="8349964124165471584">在新視窗中開啟連結</translation>

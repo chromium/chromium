@@ -3290,6 +3290,7 @@
 <translation id="3721119614952978349">你與 Google</translation>
 <translation id="3722108462506185496">啟用虛擬機器服務時發生錯誤，請再試一次。</translation>
 <translation id="3722624153992426516">已收到<ph name="IMPORT_CERTIFICATE__INSTRUCTION_NAME" />的操作說明</translation>
+<translation id="3724897774652282549">填寫表單</translation>
 <translation id="3726965532284929944">QT</translation>
 <translation id="3727144509609414201">可用的 WiFi 網路</translation>
 <translation id="3727187387656390258">檢查彈出式視窗</translation>
@@ -3361,7 +3362,6 @@
 <translation id="3776508619697147021">網站可以要求自動下載多個檔案</translation>
 <translation id="3776796446459804932">這個擴充功能違反了 Chrome 線上應用程式商店政策。</translation>
 <translation id="3777483481409781352">無法啟用行動裝置</translation>
-<translation id="3777806571986431400">擴充功能已啟用</translation>
 <translation id="3778208826288864398">由於你輸入太多次錯誤的 PIN 碼，因此安全金鑰已遭到鎖定。你必須重設安全金鑰。</translation>
 <translation id="3778740492972734840">開發人員工具(&amp;D)</translation>
 <translation id="3778868487658107119">Google 助理可根據你的問題提供解答，或是依指令執行各種操作。它是你專屬的 Google 服務，隨時為你提供協助。</translation>
@@ -7218,6 +7218,7 @@
 <translation id="7067396782363924830">環境光顏色</translation>
 <translation id="7067725467529581407">不再顯示這個訊息。</translation>
 <translation id="7068279399556423026">登入即可查看在其他裝置上開啟的分頁</translation>
+<translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{這個網站的新密碼}other{這個網站的新密碼}}</translation>
 <translation id="7070484045139057854">可讀取及變更網站資料</translation>
 <translation id="7072010813301522126">捷徑名稱</translation>
 <translation id="7074066049407662839">必須登入才能儲存密碼</translation>

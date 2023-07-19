@@ -372,6 +372,7 @@
 <translation id="397105322502079400">Obliczanie...</translation>
 <translation id="39823212440917567">Zadania drukowania starsze niż <ph name="NUMBER_OF_DAYS" /> dni zostaną usunięte</translation>
 <translation id="3993704782688964914">Oprogramowanie urządzenia (<ph name="DEVICE_NAME" />) jest aktualne</translation>
+<translation id="3998976413398910035">Zarządzaj drukarkami</translation>
 <translation id="4003384961948020559">Niepowodzenie – odbiornik papieru jest pełny</translation>
 <translation id="4021031199988160623">Aby przetestować, przełącz na tryb laptopa</translation>
 <translation id="4034824040120875894">Drukarka</translation>
@@ -588,6 +589,7 @@
 <translation id="5620281292257375798">Na użytek wewnętrzny</translation>
 <translation id="5649768706273821470">Posłuchaj</translation>
 <translation id="5655283760733841251">Zwiększ jasność klawiatury</translation>
+<translation id="5655776422854483175">Brak zadań drukowania</translation>
 <translation id="5659593005791499971">E-mail</translation>
 <translation id="5662240986744577912">przełącz filtr prywatności</translation>
 <translation id="5669267381087807207">Aktywowanie</translation>
@@ -668,6 +670,7 @@
 <translation id="6278428485366576908">Motyw</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">Włącz ciemny motyw</translation>
+<translation id="628726841779494414">Zarządzaj drukarkami w ustawieniach drukarek</translation>
 <translation id="629550705077076970">przyciemnianie klawiatury</translation>
 <translation id="6302401976930124515">Test <ph name="TEST_NAME" /> został anulowany</translation>
 <translation id="631063167932043783">Aplikacja Odkrywaj</translation>

@@ -3305,6 +3305,7 @@
 <translation id="3721119614952978349">您和 Google</translation>
 <translation id="3722108462506185496">啟用虛擬機器服務時發生錯誤。請稍後再試。</translation>
 <translation id="3722624153992426516">已接收「<ph name="IMPORT_CERTIFICATE__INSTRUCTION_NAME" />」指示</translation>
+<translation id="3724897774652282549">填寫表格</translation>
 <translation id="3726965532284929944">QT</translation>
 <translation id="3727144509609414201">可用的 Wi-Fi 網絡</translation>
 <translation id="3727187387656390258">檢查彈出式視窗</translation>
@@ -3376,7 +3377,6 @@
 <translation id="3776508619697147021">網站可要求自動下載多個檔案</translation>
 <translation id="3776796446459804932">這個擴充功能違反了 Chrome 網上應用程式商店政策。</translation>
 <translation id="3777483481409781352">無法啟用流動裝置</translation>
-<translation id="3777806571986431400">擴充功能已啟用</translation>
 <translation id="3778208826288864398">由於您輸入太多次錯誤的 PIN，因此安全密鑰已被鎖定。您需要重設安全密鑰。</translation>
 <translation id="3778740492972734840">開發人員工具(&amp;D)</translation>
 <translation id="3778868487658107119">度身訂造的「Google 助理」隨時為您提供協助，不但可根據您的問題提供解答，還可以按指令執行各種操作。</translation>
@@ -7239,6 +7239,7 @@
 <translation id="7067396782363924830">氛圍顏色</translation>
 <translation id="7067725467529581407">不再顯示此訊息。</translation>
 <translation id="7068279399556423026">登入即可查看在其他裝置上開啟的分頁</translation>
+<translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{收到此網站的新密碼}other{收到此網站的新密碼}}</translation>
 <translation id="7070484045139057854">可讀取及變更網站資料</translation>
 <translation id="7072010813301522126">捷徑名稱</translation>
 <translation id="7074066049407662839">登入以儲存密碼</translation>
@@ -9626,6 +9627,7 @@
 <translation id="9068598199622656904">每次只需按下 1 個按鍵，便可使用鍵盤快速鍵 (而非同時按下多個按鍵)</translation>
 <translation id="9068878141610261315">不支援的檔案類型</translation>
 <translation id="9069665781180028115">所選項目將可在此 Chromebook 上使用。如果您是第一次使用 Chromebook，建議同步處理所有項目，備份您的偏好設定。您可隨時前往「設定」&gt; [帳戶] 作出變更。</translation>
+<translation id="9070231741075992882">你向「<ph name="APP_NAME" />」授予的權限亦會向其已安裝和串流的應用程式授予。</translation>
 <translation id="9070342919388027491">分頁移咗去左邊</translation>
 <translation id="9074739597929991885">藍牙</translation>
 <translation id="9074836595010225693">已連接 USB 滑鼠</translation>

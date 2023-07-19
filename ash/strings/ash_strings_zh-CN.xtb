@@ -32,6 +32,7 @@
 <translation id="1117719261843403176">开启/关闭移动流量。<ph name="STATE" />。</translation>
 <translation id="112308213915226829">自动隐藏任务栏</translation>
 <translation id="1142002900084379065">近期照片</translation>
+<translation id="114221662579355151">这将允许“<ph name="APP1_NAME" />”“<ph name="APP2_NAME" />”以及所有具有摄像头使用权限的应用和网站使用摄像头。您可能需要刷新网页或重启应用。</translation>
 <translation id="1148499908455722006">打开“<ph name="USER_NAME" />”的信息对话框</translation>
 <translation id="1150989369772528668">日历</translation>
 <translation id="1153356358378277386">已配对的设备</translation>
@@ -118,6 +119,7 @@
 <translation id="14648076227129703">如果您开启摄像头，即意味着允许“<ph name="APP1_NAME" />”“<ph name="APP2_NAME" />”以及所有具有摄像头使用权限的应用和网站使用摄像头</translation>
 <translation id="1467432559032391204">向左</translation>
 <translation id="146902737843070955">您的管理员要求进行此项更改</translation>
+<translation id="1469148162491666137">这将允许“<ph name="APP1_NAME" />”“<ph name="APP2_NAME" />”以及所有具有摄像头和麦克风使用权限的应用和网站使用摄像头/麦克风。您可能需要刷新网页或重启应用。</translation>
 <translation id="147310119694673958">手机电量：<ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1479909375538722835">悬浮无障碍功能菜单</translation>
 <translation id="1480845547124508962"><ph name="CURRENT_TIME" />，按 Enter 键即可打开日历视图</translation>
@@ -128,6 +130,7 @@
 <translation id="1510238584712386396">启动器</translation>
 <translation id="1516740043221086139">“勿扰”模式已开启。</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{显示通知设置。针对 1 个应用关闭通知}other{显示通知设置。针对 # 个应用关闭通知}}</translation>
+<translation id="1523032696246003">电池电量为 <ph name="BATTERY_PERCENTAGE" />% | 还需 <ph name="TIME" />才能充满</translation>
 <translation id="1525508553941733066">关闭</translation>
 <translation id="1526448108126799339">在新窗口中打开标签页</translation>
 <translation id="1528259147807435347">过去一周内修改过</translation>
@@ -140,6 +143,7 @@
 <translation id="1550523713251050646">点击即可查看更多选项</translation>
 <translation id="1555130319947370107">蓝色</translation>
 <translation id="1557622599341396706">显示桌面名称</translation>
+<translation id="1569384531973824928">这将允许所有具有摄像头和麦克风使用权限的应用和网站使用摄像头/麦克风。您可能需要刷新网页或重启应用。</translation>
 <translation id="1576623706766186887">开启放大镜时缩小</translation>
 <translation id="1586324912145647027">转至桌面 1 到 8</translation>
 <translation id="1589090746204042747">访问您在此次会话中的所有活动</translation>
@@ -312,6 +316,7 @@
 <translation id="2369165858548251131">“你好”用英文怎么说</translation>
 <translation id="2382875860893882175">目前已暂停投放。您可随时恢复投放或停止投放。</translation>
 <translation id="2386292613071805067">选择网页上的全部内容</translation>
+<translation id="2396594569364254378">内存已使用 <ph name="USED_MEMORY" /> | 共 <ph name="TOTAL_MEMORY" /></translation>
 <translation id="2397416548179033562">显示 Chrome 菜单</translation>
 <translation id="240006516586367791">媒体控件</translation>
 <translation id="2402411679569069051">若要解锁 Chromebook，请使用指纹或解锁您的手机</translation>
@@ -508,6 +513,7 @@
 <translation id="3294437725009624529">访客</translation>
 <translation id="3298690094479023523">仍然无法验证您的 PIN 码或密码。请重试。</translation>
 <translation id="3300193645498960160">如果您在静音状态下说话，会收到通知。音频只会存储在您的设备上。</translation>
+<translation id="3306386552969601301"><ph name="DEVICECOUNT" /> 部设备已连接到 <ph name="DEVICE_NAME" /> 热点</translation>
 <translation id="3307642347673023554">已切换到笔记本电脑模式</translation>
 <translation id="3308453408813785101">日后“<ph name="USER_EMAIL_ADDRESS" />”仍能登录。</translation>
 <translation id="3321628682574733415">家长访问代码不正确</translation>
@@ -547,6 +553,7 @@
 <translation id="3445288400492335833"><ph name="MINUTES" />分钟</translation>
 <translation id="3445925074670675829">USB-C 设备</translation>
 <translation id="3455468639467374593">模板“<ph name="TEMPLATE_NAME" />”</translation>
+<translation id="3456931972722214204">1 部设备已连接到 <ph name="DEVICE_NAME" /> 热点</translation>
 <translation id="346243998268439747">重置缩放级别</translation>
 <translation id="3465223694362104965">这部设备当前连接的键盘已不同于您上次登录时所用的键盘。请确保您信任此键盘，然后再使用它。</translation>
 <translation id="3465356146291925647">由您的管理员管理</translation>
@@ -640,6 +647,7 @@
 <translation id="3799080171973636491">您按下了全屏放大镜的键盘快捷键。要开启这项功能吗？</translation>
 <translation id="380165613292957338">嗨，有什么我可以帮你的吗？</translation>
 <translation id="3804737937830804242">收起相机</translation>
+<translation id="3824784079442479685">这将允许“<ph name="APP_NAME" />”以及所有具有摄像头使用权限的应用和网站使用摄像头。您可能需要刷新网页或重启应用。</translation>
 <translation id="3826099427150913765">切换到密码</translation>
 <translation id="383058930331066723">省电模式已开启</translation>
 <translation id="383629559565718788">显示键盘设置</translation>
@@ -695,6 +703,7 @@
 <translation id="4066027111132117168">已开启，<ph name="REMAINING_TIME" /></translation>
 <translation id="4069532248403319695">打开“下载内容”页</translation>
 <translation id="4072264167173457037">信号中等</translation>
+<translation id="4076455981957565732">已上交 <ph name="NUM_TURNED_IN" /> 份（共 <ph name="TOTAL_NUM_OF_SUBMISSIONS" /> 份）• <ph name="NUM_GRADED" /> 份已评分</translation>
 <translation id="4086921558679520050">在设备上开启物理麦克风开关</translation>
 <translation id="4101772068965291327">打开主页</translation>
 <translation id="4112140312785995938">快退</translation>
@@ -757,6 +766,7 @@
 <translation id="4324840740119394760">如果您开启摄像头，即意味着允许“<ph name="APP_NAME" />”以及所有具有摄像头使用权限的应用和网站使用摄像头</translation>
 <translation id="4333628967105022692">当有多个用户登录时，Lacros 不受支持。</translation>
 <translation id="4338109981321384717">放大镜</translation>
+<translation id="4356872429719185452">显示热点详情。热点正在开启。</translation>
 <translation id="4371348193907997655">投放设置</translation>
 <translation id="4375482231364171368">在地址栏中搜索</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />，信号强度为 <ph name="SIGNAL_STRENGTH" />%</translation>
@@ -853,6 +863,7 @@
 <translation id="4752784485658729358">最多只能保存 6 个桌面。若要保存一个新桌面，请先移除一个已存桌面。</translation>
 <translation id="4759238208242260848">下载内容</translation>
 <translation id="4762573482154983647">隐藏应用</translation>
+<translation id="4763885921995354846">这将允许所有具有摄像头使用权限的应用和网站使用摄像头。您可能需要刷新网页或重启应用。</translation>
 <translation id="4774338217796918551">您需要等到明天<ph name="COME_BACK_TIME" /> 才能再次使用此设备。</translation>
 <translation id="4776584068981882959">仍然无法验证您的密码。请重试。</translation>
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" /> 的密码</translation>
@@ -880,6 +891,7 @@
 <translation id="4871905435473761992">显示热点详情。您的移动网络不支持热点。</translation>
 <translation id="4872237917498892622">Alt + 搜索键或 Shift</translation>
 <translation id="4872852897273142380">聚焦于或突出显示书签栏（若显示）</translation>
+<translation id="4881323000405981760">Linux 应用不支持特效</translation>
 <translation id="4881695831933465202">打开</translation>
 <translation id="4889868803215848840">（可选）提供反馈来帮助改进建议：</translation>
 <translation id="4890187583552566966">Google 助理已被您的管理员停用。</translation>
@@ -1054,6 +1066,7 @@
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5618148318840095371">我们已将您切换到更好的网络</translation>
 <translation id="5619862035903135339">管理员政策已停用截屏功能</translation>
+<translation id="5620979661744857819">这将允许“<ph name="APP_NAME" />”以及所有具有摄像头和麦克风使用权限的应用和网站使用摄像头/麦克风。您可能需要刷新网页或重启应用。</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">无法验证您的密码。请重试。</translation>
 <translation id="5646376287012673985">位置信息</translation>
@@ -1101,10 +1114,12 @@
 <translation id="5825969630400862129">设置已连接的设备</translation>
 <translation id="5837036133683224804">停止将“<ph name="ROUTE_TITLE" />”投放至“<ph name="RECEIVER_NAME" />”</translation>
 <translation id="5841296711770970362">切换到下一首</translation>
+<translation id="5842553299352339114"><ph name="DEVICE_NAME" /> 热点已开启，但尚未连接任何设备</translation>
 <translation id="584525477304726060">按住即可最大化</translation>
 <translation id="5856638668464565213">尚未启用“<ph name="NETWORK_NAME" />”。</translation>
 <translation id="5860033963881614850">关闭</translation>
 <translation id="5860491529813859533">启用</translation>
+<translation id="5864748620896638071">电池电量为 <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5867217927013474703">正在收集网络信息</translation>
 <translation id="5867606971598166637">您的系统管理员正在监控您的屏幕</translation>
 <translation id="5876666360658629066">输入家长访问码</translation>
@@ -1362,6 +1377,7 @@
 <translation id="6981291220124935078">启用使用权限</translation>
 <translation id="6981982820502123353">无障碍</translation>
 <translation id="698231206551913481">移除该用户后，与其关联的所有文件和本地数据都会被永久删除。</translation>
+<translation id="7004910047186208204">连接到移动数据网络</translation>
 <translation id="7005239792648594238">打开一款应用即可开始使用</translation>
 <translation id="7007983414944123363">无法验证您的 PIN 码或密码。请重试。</translation>
 <translation id="7014684956566476813">已连接到一部名为“<ph name="DEVICE_NAME" />”的设备</translation>
@@ -1475,6 +1491,7 @@
 <translation id="7561982940498449837">关闭菜单</translation>
 <translation id="7564874036684306347">将窗口移至另一桌面可能会导致出现意外行为 - 后续的通知、窗口和对话框可能会被拆分到不同的桌面中。</translation>
 <translation id="7569509451529460200">已启用盲文和 ChromeVox</translation>
+<translation id="7571361473021531288">电池电量为 <ph name="BATTERY_PERCENTAGE" />% | 还需 <ph name="TIME" />才能充满</translation>
 <translation id="7573585051776738856">将活动窗口停靠在右侧。</translation>
 <translation id="7579778809502851308">截取屏幕</translation>
 <translation id="7593891976182323525">搜索键或 Shift</translation>
@@ -1512,6 +1529,7 @@
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 条通知}other{# 条通知}}</translation>
 <translation id="7723703419796509666">显示或隐藏开发者工具控制台</translation>
 <translation id="7724603315864178912">剪切</translation>
+<translation id="7725108879223146004">显示热点详情。热点正在关闭。</translation>
 <translation id="7727952505535211425">在新标签页中打开地址栏中的网站</translation>
 <translation id="77365090426890123">内存使用情况</translation>
 <translation id="7742327441377685481">无通知</translation>
@@ -1647,6 +1665,7 @@
 <translation id="8308637677604853869">上一菜单</translation>
 <translation id="830868413617744215">测试版</translation>
 <translation id="8314772463905284467">Caps Lock 已打开</translation>
+<translation id="8315514906653279104">正在开启…</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="8345019317483336363">已选择‘<ph name="WINDOW_TITLE" />’窗口</translation>
 <translation id="8349964124165471584">在新窗口中打开链接</translation>
@@ -1797,6 +1816,7 @@
 <translation id="9024331582947483881">全屏</translation>
 <translation id="9029736946581028033">设备很快就会关机</translation>
 <translation id="9030319654231318877">已关闭，直到日落</translation>
+<translation id="9030665205623277906">CPU 用量概况：<ph name="CPU_USEAGE" />%</translation>
 <translation id="9034924485347205037">Linux 文件</translation>
 <translation id="9047624247355796468">打开“<ph name="NETWORK_NAME" />”的设置。</translation>
 <translation id="9059834730836941392">收起通知</translation>

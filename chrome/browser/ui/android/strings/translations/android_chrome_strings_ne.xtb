@@ -192,7 +192,6 @@
 <translation id="2056878612599315956">साइट पज गरियो</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{१ वटा डाउनलोड गर्न सकिएन}other{# वटा डाउनलोडहरू गर्न सकिएन}}</translation>
 <translation id="2067805253194386918">पाठ</translation>
-<translation id="2079545284768500474">अन्डू गर्नुहोस्</translation>
 <translation id="2082238445998314030"><ph name="TOTAL_RESULTS" /> को <ph name="RESULT_NUMBER" /> परिणाम</translation>
 <translation id="2096012225669085171">यन्त्रहरूभरि सिंक र वैयक्तीकृत गर्नुहोस्</translation>
 <translation id="2100273922101894616">स्वत: साइन-इन</translation>
@@ -397,7 +396,6 @@
 <translation id="3123734510202723619">घोषणाहरू</translation>
 <translation id="3134784203083076891">”</translation>
 <translation id="314939179385989105">Chrome को गृहपृष्ठ</translation>
-<translation id="3157931365184549694">पुन: भण्डारण</translation>
 <translation id="3166827708714933426">ट्याब र विन्डोका सर्टकटहरू</translation>
 <translation id="316694332262407393">यसमा अहिले Chrome चलिरहेको छ।</translation>
 <translation id="3167258285411721858">तपाईं <ph name="HOST_NAME" /> को मोबाइल साइटको लिंक माग्न सक्नुहुन्छ</translation>
@@ -431,7 +429,6 @@
 <translation id="3303414029551471755">सामग्री डाउनलोड गर्न अगाडि बढ्ने हो?</translation>
 <translation id="3305130791745726624">डिभाइसहरूमा पठाउनुहोस्</translation>
 <translation id="3305795716056605962">"थप विकल्पहरू" बटनमा गई पेजहरू अनुवाद गर्नुहोस्</translation>
-<translation id="3319664549618064419">यो साइटको अझ राम्रो दृश्य हेर्न डेस्कटप साइट प्रयोग गर्नुहोस्</translation>
 <translation id="3334729583274622784">फाइलको एक्स्टेन्सन परिवर्तन गर्ने हो?</translation>
 <translation id="3341262203274374114">अनफलो गर्न सकिएन। कुनै समस्या आयो।</translation>
 <translation id="3359667936385849800">तपाईंको हालको सेवा प्रदायक प्रयोग गर्नुहोस्</translation>
@@ -457,6 +454,7 @@
 <translation id="3479552764303398839">अहिले होइन</translation>
 <translation id="3493531032208478708">सुझाव दिइएको सामग्रीको बारेमा <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="3495219333887281978">साइन इन गर्ने सुविधा पुछारको पानाको आधा स्क्रिनमा खोलिएको छ।</translation>
+<translation id="3498338220321963224">पछि प्रोफाइल लक हटाइएका खण्डमा तपाईंको सेभ गरिएको जानकारी मेटाइने छ।</translation>
 <translation id="3499246418971111862">chrome_qrcode_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="350276055892098337">सबैभन्दा पुरानो सुरुमा आउने गरी क्रमबद्ध गर्नुहोस्</translation>
 <translation id="3507132249039706973">'मानक सुरक्षा' सक्रिय छ</translation>
@@ -548,7 +546,6 @@
 <translation id="4024768890073681126">तपाईंका अभिभावक तपाईंको ब्राउजर व्यवस्थापन गर्नुहुन्छ</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# घन्टा}other{# घन्टा}}</translation>
 <translation id="4035877632587724847">अनुमति नदिनुहोस्</translation>
-<translation id="4036177530563778041">आफूले छाडेकै ठाउँबाट सजिलैसँग जारी राख्नुहोस्</translation>
 <translation id="4042941173059740150"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> प्रयोग गरी <ph name="SITE_ETLD_PLUS_ONE" /> मा साइन इन गर्नुहोस्</translation>
 <translation id="4044708993631234325">पुछारको पाना</translation>
 <translation id="4045764304651014138">प्रयोगसम्बन्धी डेटा</translation>
@@ -623,6 +620,7 @@
 <translation id="4409271659088619928">तपाईंको डिफल्ट सर्च इन्जिन <ph name="DSE" /> हो। तपाईंको सर्च इन्जिनमा खोजको इतिहास मेटाउन मिल्छ भने खोज इतिहास मेटाउन सर्च इन्जिनले उपलब्ध गराएका निर्देशनहरू हेर्नुहोस्।</translation>
 <translation id="441383202534727410">तपाईंको ब्राउजिङ हिस्ट्रीका आधारमा यहाँ साइटहरूको सूची देखिन बढीमा एक हप्ता लाग्न सक्छ।</translation>
 <translation id="4415276339145661267">आफ्नो Google खाताको व्यवस्थापन गर्नुहोस्</translation>
+<translation id="4417111749295506837">कारमा Chrome मा भएको आफ्नो जानकारी सिंक गर्न र उक्त जानकारी सुरक्षित राख्न तपाईंले अनिवार्य रूपमा प्रोफाइल लक बनाउनु पर्छ। तपाईंले हरेक पटक कारमा छिर्दा कोड वा पासवर्ड प्रयोग गर्नु पर्ने हुन्छ।</translation>
 <translation id="4425140285732600465">यो उत्पादनको मूल्य ट्र्याक गरिँदै छ। कुनै साइटमा मूल्य घटेका खण्डमा अलर्ट प्राप्त गर्नुहोस्।</translation>
 <translation id="442518031075347249">तपाईं अबदेखि Google Pay मा आफ्नो भर्चुअल कार्ड प्रयोग गर्न सक्नु हुने छैन। <ph name="BEGIN_LINK1" />भर्चुअल कार्डका बारेमा थप जान्नुहोस्<ph name="END_LINK1" /></translation>
 <translation id="4428065317363009941">विज्ञापनको पर्सनलाइजेसन</translation>
@@ -902,7 +900,6 @@
 <translation id="5864419784173784555">अर्को डाउनलोडको प्रतीक्षा गर्दै…</translation>
 <translation id="5865733239029070421">प्रयोगसम्बन्धी तथ्याङ्क र क्र्यास रिपोर्टहरू स्वतः Google मा पठाउँछ</translation>
 <translation id="5869522115854928033">बचत गरिएका पासवर्डहरू</translation>
-<translation id="5876496397064130037">कार्य सुचारु गरिएको छ</translation>
 <translation id="587735546353481577">आफूले चाहेको साइट फलो गर्न उक्त साइटमा जानुहोस्, Chrome मेनु खोल्नुहोस् र 'फलो गर्नुहोस्' मा ट्याप गर्नुहोस्।</translation>
 <translation id="5879072387416556377">अझ राम्रा सुझावहरू प्राप्त गर्नुहोस्</translation>
 <translation id="5916664084637901428">अन</translation>
@@ -990,6 +987,7 @@
 <translation id="6363990818884053551">सिंक गर्ने कार्य सुरु गर्न यो काम गर्न खोज्ने व्यक्ति तपाईं नै हो भन्ने कुरा पुष्टि गर्नुहोस्</translation>
 <translation id="6364438453358674297">इतिहासबाट सुझाव हटाउने?</translation>
 <translation id="6380100320871303656">यो मोड अन हुँदा Chrome लाई तपाईं जुन जुन पेज खोल्न सक्नुहुन्छ भन्ने लाग्छ ती पेज अझ छिटो अन्तरालमा प्रिलोड गरेर राखिन्छ। यो सेटिङ अन हुँदा बढी डेटा प्रयोग हुन सक्छ।</translation>
+<translation id="6391355955030242704">कारमा Chrome मा भएको आफ्नो जानकारी सिंक गर्न र उक्त जानकारी सुरक्षित राख्न तपाईंले अनिवार्य रूपमा सुरक्षासम्बन्धी सेटिङमा गई प्रोफाइल लक बनाउनु पर्छ। तपाईंले हरेक पटक कारमा छिर्दा कोड वा पासवर्ड प्रयोग गर्नु पर्ने हुन्छ।</translation>
 <translation id="6394791151443660613">खोज्नुहोस्: <ph name="SEARCH_QUERY" /></translation>
 <translation id="6395288395575013217">लिंक</translation>
 <translation id="6397616442223433927">यन्त्र फेरि अनलाइन भयो</translation>
@@ -1130,7 +1128,6 @@
 <translation id="7029390216614421513">QR कोड/बारकोडलाई यस फ्रेमभित्र पार्नुहोस्।</translation>
 <translation id="7029809446516969842">पासवर्डहरू</translation>
 <translation id="7030304022046916278">यो सुविधाले URL सुरक्षित छ कि छैन भनी जाँच गर्नका निम्ति URL हरू Safe Browsing मा पठाउँछ</translation>
-<translation id="7030585293819777123">तपाईंको पछिल्लो कार्य सुचारु गर्ने हो?</translation>
 <translation id="7035701931849773472">अन्य विकल्पहरू</translation>
 <translation id="7037830628447527439">आफ्नो Google खाता प्रयोग गरी Chrome मा साइन इन गर्नुहोस्</translation>
 <translation id="7038956721828960940">chrome_image_<ph name="CURRENT_TIMESTAMP_MS" /></translation>

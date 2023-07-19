@@ -513,6 +513,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="3294437725009624529">Gość</translation>
 <translation id="3298690094479023523">Nadal nie udało się zweryfikować Twojego hasła ani kodu PIN. Spróbuj ponownie.</translation>
 <translation id="3300193645498960160">Powiadomimy Cię, gdy będziesz mówić, a mikrofon będzie wyciszony. Dźwięk nigdy nie jest wysyłany poza Twoje urządzenie.</translation>
+<translation id="3306386552969601301">Urządzenia połączone z hotspotem <ph name="DEVICE_NAME" />: <ph name="DEVICECOUNT" /></translation>
 <translation id="3307642347673023554">Przełączono na tryb laptopa</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> nadal może się później zalogować.</translation>
 <translation id="3321628682574733415">Nieprawidłowy kod rodzica</translation>
@@ -552,6 +553,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="3445925074670675829">Urządzenie USB-C</translation>
 <translation id="3455468639467374593">Szablon, <ph name="TEMPLATE_NAME" /></translation>
+<translation id="3456931972722214204">Z hotspotem <ph name="DEVICE_NAME" /> jest połączone 1 urządzenie</translation>
 <translation id="346243998268439747">Resetuj poziom powiększenia</translation>
 <translation id="3465223694362104965">Od czasu Twojego ostatniego logowania do tego urządzenia podłączono inną klawiaturę. Zanim jej użyjesz, upewnij się, że masz do niej zaufanie.</translation>
 <translation id="3465356146291925647">Zarządzana przez administratora</translation>
@@ -764,6 +766,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="4324840740119394760">Spowoduje to przyznanie dostępu do aparatu aplikacji <ph name="APP_NAME" /> oraz wszystkim aplikacjom i stronom internetowym, które mają uprawnienia do korzystania z niego</translation>
 <translation id="4333628967105022692">Kiedy zalogowanych jest wielu użytkowników, przeglądarka Lacros nie jest obsługiwana.</translation>
 <translation id="4338109981321384717">Lupa</translation>
+<translation id="4356872429719185452">Pokaż szczegóły hotspota. Hotspot właśnie się włącza.</translation>
 <translation id="4371348193907997655">Ustawienia przesyłania</translation>
 <translation id="4375482231364171368">Szukaj na pasku adresu</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, siła sygnału <ph name="SIGNAL_STRENGTH" /> procent</translation>
@@ -1111,6 +1114,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="5825969630400862129">Ustawienia połączonych urządzeń</translation>
 <translation id="5837036133683224804">Zatrzymaj usługę <ph name="ROUTE_TITLE" /> na urządzeniu <ph name="RECEIVER_NAME" /></translation>
 <translation id="5841296711770970362">Przejdź do następnego utworu</translation>
+<translation id="5842553299352339114">Hotspot <ph name="DEVICE_NAME" /> jest włączony, brak połączonych urządzeń</translation>
 <translation id="584525477304726060">Przytrzymaj, aby zmaksymalizować</translation>
 <translation id="5856638668464565213">Sieć <ph name="NETWORK_NAME" /> nie została aktywowana.</translation>
 <translation id="5860033963881614850">Wyłączone</translation>
@@ -1372,6 +1376,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="6981291220124935078">Włącz dostęp</translation>
 <translation id="6981982820502123353">Ułatwienia dostępu</translation>
 <translation id="698231206551913481">Usunięcie tego użytkownika spowoduje trwałe usunięcie wszystkich związanych z nim plików i danych lokalnych.</translation>
+<translation id="7004910047186208204">Połącz z siecią komórkową</translation>
 <translation id="7005239792648594238">Aby rozpocząć, otwórz aplikację</translation>
 <translation id="7007983414944123363">Nie udało się zweryfikować Twojego kodu PIN ani hasła. Spróbuj ponownie.</translation>
 <translation id="7014684956566476813">Połączono z urządzeniem o nazwie <ph name="DEVICE_NAME" /></translation>
@@ -1526,6 +1531,7 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 powiadomienie}few{# powiadomienia}many{# powiadomień}other{# powiadomienia}}</translation>
 <translation id="7723703419796509666">Wyświetl lub ukryj konsolę Narzędzi dla programistów</translation>
 <translation id="7724603315864178912">Wytnij</translation>
+<translation id="7725108879223146004">Pokaż szczegóły hotspota. Hotspot właśnie się wyłącza.</translation>
 <translation id="7727952505535211425">Otwórz stronę z paska adresu w nowej karcie</translation>
 <translation id="77365090426890123">wykorzystanie pamięci</translation>
 <translation id="7742327441377685481">Brak powiadomień</translation>
@@ -1661,6 +1667,7 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="8308637677604853869">Poprzednie menu</translation>
 <translation id="830868413617744215">Beta</translation>
 <translation id="8314772463905284467">Caps Lock jest włączony.</translation>
+<translation id="8315514906653279104">Włączam…</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" /> <ph name="GET_STARTED" /></translation>
 <translation id="8345019317483336363">Wybrano okno <ph name="WINDOW_TITLE" /></translation>
 <translation id="8349964124165471584">Otwórz link w nowym oknie</translation>

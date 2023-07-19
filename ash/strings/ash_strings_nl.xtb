@@ -32,6 +32,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="1117719261843403176">Mobiele data aan-/uitzetten. <ph name="STATE" />.</translation>
 <translation id="112308213915226829">Plank automatisch verbergen</translation>
 <translation id="1142002900084379065">Recente foto's</translation>
+<translation id="114221662579355151">Hiermee geef je <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> en alle apps en websites met camerarechten toegang tot de camera. Je moet misschien de webpagina vernieuwen of de app opnieuw starten.</translation>
 <translation id="1148499908455722006">Dialoogvenster met informatie openen voor <ph name="USER_NAME" /></translation>
 <translation id="1150989369772528668">Agenda</translation>
 <translation id="1153356358378277386">Gekoppelde apparaten</translation>
@@ -118,6 +119,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="14648076227129703">Hiermee geef je <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> en alle apps en websites met camerarechten toegang tot de camera</translation>
 <translation id="1467432559032391204">Links</translation>
 <translation id="146902737843070955">Je beheerder heeft deze wijziging aangevraagd</translation>
+<translation id="1469148162491666137">Hiermee geef je toegang aan <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> en alle apps en websites met camera- en microfoonrechten. Je moet misschien de webpagina vernieuwen of de app opnieuw starten.</translation>
 <translation id="147310119694673958">Telefoonbatterij <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1479909375538722835">Zwevend toegankelijkheidsmenu</translation>
 <translation id="1480845547124508962"><ph name="CURRENT_TIME" />. Druk op Enter om de Agenda-weergave te openen.</translation>
@@ -128,6 +130,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="1510238584712386396">Launcher</translation>
 <translation id="1516740043221086139">Niet storen staat aan.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Instellingen voor meldingen bekijken. Meldingen staan uit voor een app}other{Instellingen voor meldingen bekijken. Meldingen staan uit voor # apps}}</translation>
+<translation id="1523032696246003">Batterij: <ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> tot vol</translation>
 <translation id="1525508553941733066">SLUITEN</translation>
 <translation id="1526448108126799339">Nieuw tabblad openen in een nieuw venster</translation>
 <translation id="1528259147807435347">In de afgelopen week bewerkt</translation>
@@ -140,6 +143,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="1550523713251050646">Klik voor meer opties</translation>
 <translation id="1555130319947370107">Blauw</translation>
 <translation id="1557622599341396706">Bureaunaam tonen</translation>
+<translation id="1569384531973824928">Hiermee geef je toegang aan alle apps en websites met camera- en microfoonrechten. Je moet misschien de webpagina vernieuwen of de app opnieuw starten.</translation>
 <translation id="1576623706766186887">Uitzoomen als vergrootglas aanstaat</translation>
 <translation id="1586324912145647027">Naar bureau 1 tot en met 8 gaan</translation>
 <translation id="1589090746204042747">Al je activiteit in deze sessie bekijken</translation>
@@ -312,6 +316,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="2369165858548251131">Chinees voor 'hallo'</translation>
 <translation id="2382875860893882175">Casten is nu onderbroken. Je kunt het casten op elk moment hervatten of stoppen.</translation>
 <translation id="2386292613071805067">Alles op pagina selecteren</translation>
+<translation id="2396594569364254378">Geheugen <ph name="USED_MEMORY" /> | <ph name="TOTAL_MEMORY" /> (totaal)</translation>
 <translation id="2397416548179033562">Chrome-menu bekijken</translation>
 <translation id="240006516586367791">Mediabediening</translation>
 <translation id="2402411679569069051">Gebruik je vingerafdruk of ontgrendel je telefoon om je Chromebook te ontgrendelen</translation>
@@ -640,6 +645,7 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="3799080171973636491">Je hebt op de sneltoets van het vergrootglas voor volledig scherm gedrukt. Wil je deze functie aanzetten?</translation>
 <translation id="380165613292957338">Hoi, wat kan ik voor je doen?</translation>
 <translation id="3804737937830804242">Camera samenvouwen</translation>
+<translation id="3824784079442479685">Hiermee geef je <ph name="APP_NAME" /> en alle apps en websites met camerarechten toegang tot de camera. Je moet misschien de webpagina vernieuwen of de app opnieuw starten.</translation>
 <translation id="3826099427150913765">Overschakelen naar wachtwoord</translation>
 <translation id="383058930331066723">Batterijbesparing staat aan</translation>
 <translation id="383629559565718788">Toetsenbordinstellingen bekijken</translation>
@@ -695,6 +701,7 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="4066027111132117168">Aan, <ph name="REMAINING_TIME" /></translation>
 <translation id="4069532248403319695">Pagina Downloads openen</translation>
 <translation id="4072264167173457037">Normaal signaal</translation>
+<translation id="4076455981957565732"><ph name="NUM_TURNED_IN" />/<ph name="TOTAL_NUM_OF_SUBMISSIONS" /> ingeleverd • <ph name="NUM_GRADED" /> beoordeeld</translation>
 <translation id="4086921558679520050">Zet de fysieke microfoonschakelaar aan op je apparaat</translation>
 <translation id="4101772068965291327">Homepage openen</translation>
 <translation id="4112140312785995938">Achteruit zoeken</translation>
@@ -853,6 +860,7 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="4752784485658729358">Er zijn maar 6 opgeslagen bureaus toegestaan. Verwijder een bureau om een nieuwe op te slaan.</translation>
 <translation id="4759238208242260848">Downloads</translation>
 <translation id="4762573482154983647">Apps verbergen</translation>
+<translation id="4763885921995354846">Hiermee geef je alle apps en websites met camerarechten toegang tot de camera. Je moet misschien de webpagina vernieuwen of de app opnieuw starten.</translation>
 <translation id="4774338217796918551">Kom morgen terug om <ph name="COME_BACK_TIME" />.</translation>
 <translation id="4776584068981882959">Je wachtwoord kan nog steeds niet worden geverifieerd. Probeer het opnieuw.</translation>
 <translation id="4776917500594043016">Wachtwoord voor <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -880,6 +888,7 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="4871905435473761992">Toon de hotspotdetails. Je mobiele netwerk ondersteunt geen hotspots.</translation>
 <translation id="4872237917498892622">Alt+Zoeken of Shift</translation>
 <translation id="4872852897273142380">De focus op de bookmarkbalk plaatsen of de bookmarkbalk markeren (indien getoond)</translation>
+<translation id="4881323000405981760">Effecten worden niet ondersteund in Linux-apps</translation>
 <translation id="4881695831933465202">Openen</translation>
 <translation id="4889868803215848840">Geef optionele feedback om suggesties te verbeteren:</translation>
 <translation id="4890187583552566966">De Google Assistent is uitgezet door je beheerder.</translation>
@@ -1054,6 +1063,7 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="5601503069213153581">Pincode</translation>
 <translation id="5618148318840095371">Je bent overgeschakeld naar een beter netwerk</translation>
 <translation id="5619862035903135339">Op basis van het beheerdersbeleid wordt schermopname uitgezet</translation>
+<translation id="5620979661744857819">Hiermee geef je toegang aan <ph name="APP_NAME" /> en alle apps en websites met camera- en microfoonrechten. Je moet misschien de webpagina vernieuwen of de app opnieuw starten.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">Je wachtwoord kan niet worden geverifieerd. Probeer het opnieuw.</translation>
 <translation id="5646376287012673985">Locatie</translation>
@@ -1105,6 +1115,7 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="5856638668464565213"><ph name="NETWORK_NAME" /> is niet geactiveerd.</translation>
 <translation id="5860033963881614850">Uit</translation>
 <translation id="5860491529813859533">Aanzetten</translation>
+<translation id="5864748620896638071">Batterij <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5867217927013474703">Netwerkinformatie ophalen</translation>
 <translation id="5867606971598166637">Je systeembeheerder houdt je schermen in de gaten</translation>
 <translation id="5876666360658629066">Voer de oudercode in</translation>
@@ -1475,6 +1486,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="7561982940498449837">Menu sluiten</translation>
 <translation id="7564874036684306347">Verplaatsing van vensters naar een ander bureaublad kan leiden tot onverwacht gedrag. Verdere meldingen, vensters en dialoogvensters worden mogelijk verdeeld over de bureaubladen.</translation>
 <translation id="7569509451529460200">Braille en ChromeVox staan aan</translation>
+<translation id="7571361473021531288">Batterij <ph name="BATTERY_PERCENTAGE" />% | Nog <ph name="TIME" /> over</translation>
 <translation id="7573585051776738856">Actief venster rechts vastgezet.</translation>
 <translation id="7579778809502851308">Schermopname</translation>
 <translation id="7593891976182323525">Zoeken of Shift</translation>
@@ -1797,6 +1809,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="9024331582947483881">volledig scherm</translation>
 <translation id="9029736946581028033">Apparaat gaat straks uit</translation>
 <translation id="9030319654231318877">Uit tot zonsondergang</translation>
+<translation id="9030665205623277906">Momentopname van CPU-gebruik: <ph name="CPU_USEAGE" />%</translation>
 <translation id="9034924485347205037">Linux-bestanden</translation>
 <translation id="9047624247355796468">Instellingen openen voor <ph name="NETWORK_NAME" /></translation>
 <translation id="9059834730836941392">Melding samenvouwen</translation>

@@ -372,6 +372,7 @@
 <translation id="397105322502079400">Calcolo in corso...</translation>
 <translation id="39823212440917567">I processi di stampa risalenti a oltre <ph name="NUMBER_OF_DAYS" /> giorni fa verranno rimossi</translation>
 <translation id="3993704782688964914">Dispositivo (<ph name="DEVICE_NAME" />) aggiornato</translation>
+<translation id="3998976413398910035">Gestisci stampanti</translation>
 <translation id="4003384961948020559">Operazione non riuscita - Vassoio di uscita pieno</translation>
 <translation id="4021031199988160623">Passa alla modalità laptop per eseguire il test</translation>
 <translation id="4034824040120875894">Stampante</translation>
@@ -588,6 +589,7 @@
 <translation id="5620281292257375798">Solo per uso interno</translation>
 <translation id="5649768706273821470">Ascolta</translation>
 <translation id="5655283760733841251">Aumenta la luminosità della tastiera</translation>
+<translation id="5655776422854483175">Nessun processo di stampa</translation>
 <translation id="5659593005791499971">Email</translation>
 <translation id="5662240986744577912">attiva/disattiva Schermata privata</translation>
 <translation id="5669267381087807207">Attivazione</translation>
@@ -668,6 +670,7 @@
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">Attiva il tema scuro</translation>
+<translation id="628726841779494414">Gestisci le stampanti nelle impostazioni delle stampanti</translation>
 <translation id="629550705077076970">Oscuramento della tastiera</translation>
 <translation id="6302401976930124515">Il test <ph name="TEST_NAME" /> è stato annullato</translation>
 <translation id="631063167932043783">App Esplora</translation>
