@@ -25,6 +25,7 @@ const std::vector<std::string> kPreloadingAttemptUkmMetrics{
     Preloading_Attempt::kAccurateTriggeringName,
     Preloading_Attempt::kReadyTimeName,
     Preloading_Attempt::kTimeToNextNavigationName,
+    Preloading_Attempt::kSpeculationEagernessName,
 };
 
 const std::vector<std::string> kPreloadingPredictionUkmMetrics{
@@ -46,7 +47,8 @@ UkmEntry PreloadingAttemptUkmEntryBuilder::BuildEntry(
     PreloadingTriggeringOutcome triggering_outcome,
     PreloadingFailureReason failure_reason,
     bool accurate,
-    absl::optional<base::TimeDelta> ready_time) const {
+    absl::optional<base::TimeDelta> ready_time,
+    absl::optional<blink::mojom::SpeculationEagerness> eagerness) const {
   std::map<std::string, int64_t> metrics = {
       {Preloading_Attempt::kPreloadingTypeName,
        static_cast<int64_t>(preloading_type)},
@@ -67,6 +69,10 @@ UkmEntry PreloadingAttemptUkmEntryBuilder::BuildEntry(
     metrics.insert({Preloading_Attempt::kReadyTimeName,
                     ukm::GetExponentialBucketMinForCounts1000(
                         ready_time->InMilliseconds())});
+  }
+  if (eagerness) {
+    metrics.insert({Preloading_Attempt::kSpeculationEagernessName,
+                    static_cast<int64_t>(eagerness.value())});
   }
   return UkmEntry{source_id, std::move(metrics)};
 }

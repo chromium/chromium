@@ -100009,6 +100009,12 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="65652" label="Destination root"/>
 </enum>
 
+<enum name="SpeculationEagerness">
+  <int value="0" label="Conservative"/>
+  <int value="1" label="Moderate"/>
+  <int value="2" label="Eager"/>
+</enum>
+
 <enum name="SpeculationRulesLoadOutcome">
   <int value="0" label="Success"/>
   <int value="1" label="Unparseable Speculation-Rules response header"/>

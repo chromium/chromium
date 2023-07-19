@@ -617,12 +617,17 @@ class PrefetchServiceTest : public RenderViewHostTestHarness {
     return mock_handle.GetNextPageUkmSourceId();
   }
 
-  void ExpectCorrectUkmLogs(PreloadingEligibility eligibility,
-                            PreloadingHoldbackStatus holdback,
-                            PreloadingTriggeringOutcome outcome,
-                            PreloadingFailureReason failure,
-                            bool is_accurate = false,
-                            bool expect_ready_time = false) {
+  struct ExpectCorrectUkmLogsArgs {
+    PreloadingEligibility eligibility = PreloadingEligibility::kEligible;
+    PreloadingHoldbackStatus holdback = PreloadingHoldbackStatus::kAllowed;
+    PreloadingTriggeringOutcome outcome = PreloadingTriggeringOutcome::kReady;
+    PreloadingFailureReason failure = PreloadingFailureReason::kUnspecified;
+    bool is_accurate = false;
+    bool expect_ready_time = false;
+    blink::mojom::SpeculationEagerness eagerness =
+        blink::mojom::SpeculationEagerness::kEager;
+  };
+  void ExpectCorrectUkmLogs(ExpectCorrectUkmLogsArgs args) {
     const auto source_id = ForceLogsUploadAndGetUkmId();
     auto actual_attempts = test_ukm_recorder()->GetEntries(
         ukm::builders::Preloading_Attempt::kEntryName,
@@ -630,14 +635,16 @@ class PrefetchServiceTest : public RenderViewHostTestHarness {
     EXPECT_EQ(actual_attempts.size(), 1u);
 
     absl::optional<base::TimeDelta> ready_time = absl::nullopt;
-    if (outcome == PreloadingTriggeringOutcome::kReady ||
-        outcome == PreloadingTriggeringOutcome::kSuccess || expect_ready_time) {
+    if (args.outcome == PreloadingTriggeringOutcome::kReady ||
+        args.outcome == PreloadingTriggeringOutcome::kSuccess ||
+        args.expect_ready_time) {
       ready_time = base::ScopedMockElapsedTimersForTest::kMockElapsedTime;
     }
 
     const auto expected_attempts = {attempt_entry_builder()->BuildEntry(
-        source_id, PreloadingType::kPrefetch, eligibility, holdback, outcome,
-        failure, is_accurate, ready_time)};
+        source_id, PreloadingType::kPrefetch, args.eligibility, args.holdback,
+        args.outcome, args.failure, args.is_accurate, ready_time,
+        args.eagerness)};
 
     EXPECT_THAT(actual_attempts,
                 testing::UnorderedElementsAreArray(expected_attempts))
@@ -747,10 +754,7 @@ TEST_F(PrefetchServiceTest, SuccessCase) {
   histogram_tester.ExpectUniqueSample(
       "PrefetchProxy.AfterClick.RedirectChainSize", 1, 1);
 
-  ExpectCorrectUkmLogs(PreloadingEligibility::kEligible,
-                       PreloadingHoldbackStatus::kAllowed,
-                       PreloadingTriggeringOutcome::kReady,
-                       PreloadingFailureReason::kUnspecified);
+  ExpectCorrectUkmLogs({});
 
   histogram_tester.ExpectUniqueSample(
       base::StringPrintf(
@@ -815,10 +819,10 @@ TEST_F(PrefetchServiceTest, NoPrefetchingPreloadingDisabled) {
       GetPrefetchToServe(GURL("https://example.com"));
   EXPECT_FALSE(serveable_reader);
 
-  ExpectCorrectUkmLogs(PreloadingEligibility::kPreloadingDisabled,
-                       PreloadingHoldbackStatus::kUnspecified,
-                       PreloadingTriggeringOutcome::kUnspecified,
-                       PreloadingFailureReason::kUnspecified);
+  ExpectCorrectUkmLogs(
+      {.eligibility = PreloadingEligibility::kPreloadingDisabled,
+       .holdback = PreloadingHoldbackStatus::kUnspecified,
+       .outcome = PreloadingTriggeringOutcome::kUnspecified});
 }
 
 TEST_F(PrefetchServiceTest, NoPrefetchingDomainNotInAllowList) {
@@ -875,10 +879,9 @@ TEST_F(PrefetchServiceTest, NoPrefetchingDomainNotInAllowList) {
 
   // `IsDomainInPrefetchAllowList` returns false so we did not reach the
   // eligibility check.
-  ExpectCorrectUkmLogs(PreloadingEligibility::kUnspecified,
-                       PreloadingHoldbackStatus::kUnspecified,
-                       PreloadingTriggeringOutcome::kUnspecified,
-                       PreloadingFailureReason::kUnspecified);
+  ExpectCorrectUkmLogs({.eligibility = PreloadingEligibility::kUnspecified,
+                        .holdback = PreloadingHoldbackStatus::kUnspecified,
+                        .outcome = PreloadingTriggeringOutcome::kUnspecified});
 }
 
 class PrefetchServiceAllowAllDomainsTest : public PrefetchServiceTest {
@@ -959,10 +962,7 @@ TEST_F(PrefetchServiceAllowAllDomainsTest, AllowAllDomains) {
             PrefetchStatus::kPrefetchSuccessful);
   EXPECT_TRUE(serveable_reader.IsPrefetchServable(base::TimeDelta::Max()));
 
-  ExpectCorrectUkmLogs(PreloadingEligibility::kEligible,
-                       PreloadingHoldbackStatus::kAllowed,
-                       PreloadingTriggeringOutcome::kReady,
-                       PreloadingFailureReason::kUnspecified);
+  ExpectCorrectUkmLogs({});
 }
 
 class PrefetchServiceAllowAllDomainsForExtendedPreloadingTest
@@ -1047,10 +1047,7 @@ TEST_F(PrefetchServiceAllowAllDomainsForExtendedPreloadingTest,
             PrefetchStatus::kPrefetchSuccessful);
   EXPECT_TRUE(serveable_reader.IsPrefetchServable(base::TimeDelta::Max()));
 
-  ExpectCorrectUkmLogs(PreloadingEligibility::kEligible,
-                       PreloadingHoldbackStatus::kAllowed,
-                       PreloadingTriggeringOutcome::kReady,
-                       PreloadingFailureReason::kUnspecified);
+  ExpectCorrectUkmLogs({});
 }
 
 TEST_F(PrefetchServiceAllowAllDomainsForExtendedPreloadingTest,
@@ -1108,10 +1105,9 @@ TEST_F(PrefetchServiceAllowAllDomainsForExtendedPreloadingTest,
       GetPrefetchToServe(GURL("https://example.com"));
   EXPECT_FALSE(serveable_reader);
 
-  ExpectCorrectUkmLogs(PreloadingEligibility::kUnspecified,
-                       PreloadingHoldbackStatus::kUnspecified,
-                       PreloadingTriggeringOutcome::kUnspecified,
-                       PreloadingFailureReason::kUnspecified);
+  ExpectCorrectUkmLogs({.eligibility = PreloadingEligibility::kUnspecified,
+                        .holdback = PreloadingHoldbackStatus::kUnspecified,
+                        .outcome = PreloadingTriggeringOutcome::kUnspecified});
 }
 
 TEST_F(PrefetchServiceTest, NonProxiedPrefetchDoesNotRequireAllowList) {
@@ -1184,10 +1180,7 @@ TEST_F(PrefetchServiceTest, NonProxiedPrefetchDoesNotRequireAllowList) {
             PrefetchStatus::kPrefetchSuccessful);
   EXPECT_TRUE(serveable_reader.IsPrefetchServable(base::TimeDelta::Max()));
 
-  ExpectCorrectUkmLogs(PreloadingEligibility::kEligible,
-                       PreloadingHoldbackStatus::kAllowed,
-                       PreloadingTriggeringOutcome::kReady,
-                       PreloadingFailureReason::kUnspecified);
+  ExpectCorrectUkmLogs({});
 }
 
 TEST_F(PrefetchServiceTest, NotEligibleHostnameNonUnique) {
@@ -1241,11 +1234,11 @@ TEST_F(PrefetchServiceTest, NotEligibleHostnameNonUnique) {
       GetPrefetchToServe(GURL("https://example.com"));
   EXPECT_FALSE(serveable_reader);
 
-  ExpectCorrectUkmLogs(ToPreloadingEligibility(
-                           PrefetchStatus::kPrefetchNotEligibleHostIsNonUnique),
-                       PreloadingHoldbackStatus::kUnspecified,
-                       PreloadingTriggeringOutcome::kUnspecified,
-                       PreloadingFailureReason::kUnspecified);
+  ExpectCorrectUkmLogs(
+      {.eligibility = ToPreloadingEligibility(
+           PrefetchStatus::kPrefetchNotEligibleHostIsNonUnique),
+       .holdback = PreloadingHoldbackStatus::kUnspecified,
+       .outcome = PreloadingTriggeringOutcome::kUnspecified});
 }
 
 TEST_F(PrefetchServiceTest, NotEligibleDataSaverEnabled) {
@@ -1305,10 +1298,9 @@ TEST_F(PrefetchServiceTest, NotEligibleDataSaverEnabled) {
       GetPrefetchToServe(GURL("https://example.com"));
   EXPECT_FALSE(serveable_reader);
 
-  ExpectCorrectUkmLogs(PreloadingEligibility::kDataSaverEnabled,
-                       PreloadingHoldbackStatus::kUnspecified,
-                       PreloadingTriggeringOutcome::kUnspecified,
-                       PreloadingFailureReason::kUnspecified);
+  ExpectCorrectUkmLogs({.eligibility = PreloadingEligibility::kDataSaverEnabled,
+                        .holdback = PreloadingHoldbackStatus::kUnspecified,
+                        .outcome = PreloadingTriggeringOutcome::kUnspecified});
 }
 
 TEST_F(PrefetchServiceTest, NotEligibleNonHttps) {
@@ -1360,11 +1352,10 @@ TEST_F(PrefetchServiceTest, NotEligibleNonHttps) {
   EXPECT_FALSE(serveable_reader);
 
   ExpectCorrectUkmLogs(
-      ToPreloadingEligibility(
-          PrefetchStatus::kPrefetchNotEligibleSchemeIsNotHttps),
-      PreloadingHoldbackStatus::kUnspecified,
-      PreloadingTriggeringOutcome::kUnspecified,
-      PreloadingFailureReason::kUnspecified);
+      {.eligibility = ToPreloadingEligibility(
+           PrefetchStatus::kPrefetchNotEligibleSchemeIsNotHttps),
+       .holdback = PreloadingHoldbackStatus::kUnspecified,
+       .outcome = PreloadingTriggeringOutcome::kUnspecified});
 }
 
 TEST_F(PrefetchServiceTest, NotEligiblePrefetchProxyNotAvailable) {
@@ -1422,11 +1413,10 @@ TEST_F(PrefetchServiceTest, NotEligiblePrefetchProxyNotAvailable) {
       GetPrefetchToServe(GURL("https://example.com"));
   EXPECT_FALSE(serveable_reader);
 
-  ExpectCorrectUkmLogs(
-      ToPreloadingEligibility(PrefetchStatus::kPrefetchProxyNotAvailable),
-      PreloadingHoldbackStatus::kUnspecified,
-      PreloadingTriggeringOutcome::kUnspecified,
-      PreloadingFailureReason::kUnspecified);
+  ExpectCorrectUkmLogs({.eligibility = ToPreloadingEligibility(
+                            PrefetchStatus::kPrefetchProxyNotAvailable),
+                        .holdback = PreloadingHoldbackStatus::kUnspecified,
+                        .outcome = PreloadingTriggeringOutcome::kUnspecified});
 }
 
 TEST_F(PrefetchServiceTest,
@@ -1495,10 +1485,7 @@ TEST_F(PrefetchServiceTest,
             PrefetchStatus::kPrefetchSuccessful);
   EXPECT_TRUE(serveable_reader.IsPrefetchServable(base::TimeDelta::Max()));
 
-  ExpectCorrectUkmLogs(PreloadingEligibility::kEligible,
-                       PreloadingHoldbackStatus::kAllowed,
-                       PreloadingTriggeringOutcome::kReady,
-                       PreloadingFailureReason::kUnspecified);
+  ExpectCorrectUkmLogs({});
 }
 
 TEST_F(PrefetchServiceTest, NotEligibleOriginWithinRetryAfterWindow) {
@@ -1555,11 +1542,10 @@ TEST_F(PrefetchServiceTest, NotEligibleOriginWithinRetryAfterWindow) {
       GetPrefetchToServe(GURL("https://example.com"));
   EXPECT_FALSE(serveable_reader);
 
-  ExpectCorrectUkmLogs(
-      ToPreloadingEligibility(PrefetchStatus::kPrefetchIneligibleRetryAfter),
-      PreloadingHoldbackStatus::kUnspecified,
-      PreloadingTriggeringOutcome::kUnspecified,
-      PreloadingFailureReason::kUnspecified);
+  ExpectCorrectUkmLogs({.eligibility = ToPreloadingEligibility(
+                            PrefetchStatus::kPrefetchIneligibleRetryAfter),
+                        .holdback = PreloadingHoldbackStatus::kUnspecified,
+                        .outcome = PreloadingTriggeringOutcome::kUnspecified});
 }
 
 TEST_F(PrefetchServiceTest, EligibleNonHttpsNonProxiedPotentiallyTrustworthy) {
@@ -1619,10 +1605,7 @@ TEST_F(PrefetchServiceTest, EligibleNonHttpsNonProxiedPotentiallyTrustworthy) {
             PrefetchStatus::kPrefetchSuccessful);
   EXPECT_TRUE(serveable_reader.IsPrefetchServable(base::TimeDelta::Max()));
 
-  ExpectCorrectUkmLogs(PreloadingEligibility::kEligible,
-                       PreloadingHoldbackStatus::kAllowed,
-                       PreloadingTriggeringOutcome::kReady,
-                       PreloadingFailureReason::kUnspecified);
+  ExpectCorrectUkmLogs({});
 }
 
 TEST_F(PrefetchServiceTest, NotEligibleServiceWorkerRegistered) {
@@ -1677,11 +1660,10 @@ TEST_F(PrefetchServiceTest, NotEligibleServiceWorkerRegistered) {
   EXPECT_FALSE(serveable_reader);
 
   ExpectCorrectUkmLogs(
-      ToPreloadingEligibility(
-          PrefetchStatus::kPrefetchNotEligibleUserHasServiceWorker),
-      PreloadingHoldbackStatus::kUnspecified,
-      PreloadingTriggeringOutcome::kUnspecified,
-      PreloadingFailureReason::kUnspecified);
+      {.eligibility = ToPreloadingEligibility(
+           PrefetchStatus::kPrefetchNotEligibleUserHasServiceWorker),
+       .holdback = PreloadingHoldbackStatus::kUnspecified,
+       .outcome = PreloadingTriggeringOutcome::kUnspecified});
 }
 
 TEST_F(PrefetchServiceTest, EligibleServiceWorkerNotRegistered) {
@@ -1744,10 +1726,7 @@ TEST_F(PrefetchServiceTest, EligibleServiceWorkerNotRegistered) {
             PrefetchStatus::kPrefetchSuccessful);
   EXPECT_TRUE(serveable_reader.IsPrefetchServable(base::TimeDelta::Max()));
 
-  ExpectCorrectUkmLogs(PreloadingEligibility::kEligible,
-                       PreloadingHoldbackStatus::kAllowed,
-                       PreloadingTriggeringOutcome::kReady,
-                       PreloadingFailureReason::kUnspecified);
+  ExpectCorrectUkmLogs({});
 }
 
 TEST_F(PrefetchServiceTest, NotEligibleUserHasCookies) {
@@ -1800,11 +1779,10 @@ TEST_F(PrefetchServiceTest, NotEligibleUserHasCookies) {
       GetPrefetchToServe(GURL("https://example.com"));
   EXPECT_FALSE(serveable_reader);
 
-  ExpectCorrectUkmLogs(ToPreloadingEligibility(
-                           PrefetchStatus::kPrefetchNotEligibleUserHasCookies),
-                       PreloadingHoldbackStatus::kUnspecified,
-                       PreloadingTriggeringOutcome::kUnspecified,
-                       PreloadingFailureReason::kUnspecified);
+  ExpectCorrectUkmLogs({.eligibility = ToPreloadingEligibility(
+                            PrefetchStatus::kPrefetchNotEligibleUserHasCookies),
+                        .holdback = PreloadingHoldbackStatus::kUnspecified,
+                        .outcome = PreloadingTriggeringOutcome::kUnspecified});
 }
 
 TEST_F(PrefetchServiceTest, EligibleUserHasCookiesForDifferentUrl) {
@@ -1866,10 +1844,7 @@ TEST_F(PrefetchServiceTest, EligibleUserHasCookiesForDifferentUrl) {
             PrefetchStatus::kPrefetchSuccessful);
   EXPECT_TRUE(serveable_reader.IsPrefetchServable(base::TimeDelta::Max()));
 
-  ExpectCorrectUkmLogs(PreloadingEligibility::kEligible,
-                       PreloadingHoldbackStatus::kAllowed,
-                       PreloadingTriggeringOutcome::kReady,
-                       PreloadingFailureReason::kUnspecified);
+  ExpectCorrectUkmLogs({});
 }
 
 TEST_F(PrefetchServiceTest, EligibleSameOriginPrefetchCanHaveExistingCookies) {
@@ -1934,10 +1909,7 @@ TEST_F(PrefetchServiceTest, EligibleSameOriginPrefetchCanHaveExistingCookies) {
             PrefetchStatus::kPrefetchSuccessful);
   EXPECT_TRUE(serveable_reader.IsPrefetchServable(base::TimeDelta::Max()));
 
-  ExpectCorrectUkmLogs(PreloadingEligibility::kEligible,
-                       PreloadingHoldbackStatus::kAllowed,
-                       PreloadingTriggeringOutcome::kReady,
-                       PreloadingFailureReason::kUnspecified);
+  ExpectCorrectUkmLogs({});
 }
 
 // TODO(crbug.com/1396460): Test flaky on lacros trybots.
@@ -2008,12 +1980,10 @@ TEST_F(PrefetchServiceTest, MAYBE_FailedCookiesChangedAfterPrefetchStarted) {
 
   // ReadyTime will be included in the UKM, because the prefetch was ready, and
   // then failed.
-  ExpectCorrectUkmLogs(
-      PreloadingEligibility::kEligible, PreloadingHoldbackStatus::kAllowed,
-      PreloadingTriggeringOutcome::kFailure,
-      ToPreloadingFailureReason(PrefetchStatus::kPrefetchNotUsedCookiesChanged),
-      /*is_accurate=*/false,
-      /*expect_ready_time=*/true);
+  ExpectCorrectUkmLogs({.outcome = PreloadingTriggeringOutcome::kFailure,
+                        .failure = ToPreloadingFailureReason(
+                            PrefetchStatus::kPrefetchNotUsedCookiesChanged),
+                        .expect_ready_time = true});
 }
 
 // TODO(crbug.com/1396460): Test flaky on lacros trybots.
@@ -2089,10 +2059,7 @@ TEST_F(PrefetchServiceTest, MAYBE_SameOriginPrefetchIgnoresProxyRequirement) {
             PrefetchStatus::kPrefetchSuccessful);
   EXPECT_TRUE(serveable_reader.IsPrefetchServable(base::TimeDelta::Max()));
 
-  ExpectCorrectUkmLogs(PreloadingEligibility::kEligible,
-                       PreloadingHoldbackStatus::kAllowed,
-                       PreloadingTriggeringOutcome::kReady,
-                       PreloadingFailureReason::kUnspecified);
+  ExpectCorrectUkmLogs({});
 }
 
 // TODO(crbug.com/1396460): Test flaky on lacros trybots.
@@ -2160,12 +2127,11 @@ TEST_F(PrefetchServiceTest,
   EXPECT_FALSE(serveable_reader);
 
   ExpectCorrectUkmLogs(
-      ToPreloadingEligibility(
-          PrefetchStatus::
-              kPrefetchNotEligibleSameSiteCrossOriginPrefetchRequiredProxy),
-      PreloadingHoldbackStatus::kUnspecified,
-      PreloadingTriggeringOutcome::kUnspecified,
-      PreloadingFailureReason::kUnspecified);
+      {.eligibility = ToPreloadingEligibility(
+           PrefetchStatus::
+               kPrefetchNotEligibleSameSiteCrossOriginPrefetchRequiredProxy),
+       .holdback = PreloadingHoldbackStatus::kUnspecified,
+       .outcome = PreloadingTriggeringOutcome::kUnspecified});
 }
 
 TEST_F(PrefetchServiceTest, NotEligibleExistingConnectProxy) {
@@ -2222,11 +2188,10 @@ TEST_F(PrefetchServiceTest, NotEligibleExistingConnectProxy) {
       GetPrefetchToServe(GURL("https://example.com"));
   EXPECT_FALSE(serveable_reader);
 
-  ExpectCorrectUkmLogs(ToPreloadingEligibility(
-                           PrefetchStatus::kPrefetchNotEligibleExistingProxy),
-                       PreloadingHoldbackStatus::kUnspecified,
-                       PreloadingTriggeringOutcome::kUnspecified,
-                       PreloadingFailureReason::kUnspecified);
+  ExpectCorrectUkmLogs({.eligibility = ToPreloadingEligibility(
+                            PrefetchStatus::kPrefetchNotEligibleExistingProxy),
+                        .holdback = PreloadingHoldbackStatus::kUnspecified,
+                        .outcome = PreloadingTriggeringOutcome::kUnspecified});
 
   PrefetchService::SetNetworkContextForProxyLookupForTesting(nullptr);
 }
@@ -2299,10 +2264,7 @@ TEST_F(PrefetchServiceTest, EligibleExistingConnectProxyButSameOriginPrefetch) {
             PrefetchStatus::kPrefetchSuccessful);
   EXPECT_TRUE(serveable_reader.IsPrefetchServable(base::TimeDelta::Max()));
 
-  ExpectCorrectUkmLogs(PreloadingEligibility::kEligible,
-                       PreloadingHoldbackStatus::kAllowed,
-                       PreloadingTriggeringOutcome::kReady,
-                       PreloadingFailureReason::kUnspecified);
+  ExpectCorrectUkmLogs({});
 
   PrefetchService::SetNetworkContextForProxyLookupForTesting(nullptr);
 }
@@ -2360,10 +2322,9 @@ TEST_F(PrefetchServiceTest, FailedNon2XXResponseCode) {
       GetPrefetchToServe(GURL("https://example.com"));
   EXPECT_FALSE(serveable_reader);
 
-  ExpectCorrectUkmLogs(
-      PreloadingEligibility::kEligible, PreloadingHoldbackStatus::kAllowed,
-      PreloadingTriggeringOutcome::kFailure,
-      ToPreloadingFailureReason(PrefetchStatus::kPrefetchFailedNon2XX));
+  ExpectCorrectUkmLogs({.outcome = PreloadingTriggeringOutcome::kFailure,
+                        .failure = ToPreloadingFailureReason(
+                            PrefetchStatus::kPrefetchFailedNon2XX)});
 }
 
 TEST_F(PrefetchServiceTest, FailedNetError) {
@@ -2418,10 +2379,9 @@ TEST_F(PrefetchServiceTest, FailedNetError) {
       GetPrefetchToServe(GURL("https://example.com"));
   EXPECT_FALSE(serveable_reader);
 
-  ExpectCorrectUkmLogs(
-      PreloadingEligibility::kEligible, PreloadingHoldbackStatus::kAllowed,
-      PreloadingTriggeringOutcome::kFailure,
-      ToPreloadingFailureReason(PrefetchStatus::kPrefetchFailedNetError));
+  ExpectCorrectUkmLogs({.outcome = PreloadingTriggeringOutcome::kFailure,
+                        .failure = ToPreloadingFailureReason(
+                            PrefetchStatus::kPrefetchFailedNetError)});
 }
 
 TEST_F(PrefetchServiceTest, HandleRetryAfterResponse) {
@@ -2488,10 +2448,9 @@ TEST_F(PrefetchServiceTest, HandleRetryAfterResponse) {
       GetPrefetchToServe(GURL("https://example.com"));
   EXPECT_FALSE(serveable_reader);
 
-  ExpectCorrectUkmLogs(
-      PreloadingEligibility::kEligible, PreloadingHoldbackStatus::kAllowed,
-      PreloadingTriggeringOutcome::kFailure,
-      ToPreloadingFailureReason(PrefetchStatus::kPrefetchFailedNon2XX));
+  ExpectCorrectUkmLogs({.outcome = PreloadingTriggeringOutcome::kFailure,
+                        .failure = ToPreloadingFailureReason(
+                            PrefetchStatus::kPrefetchFailedNon2XX)});
 }
 
 TEST_F(PrefetchServiceTest, SuccessNonHTML) {
@@ -2553,10 +2512,7 @@ TEST_F(PrefetchServiceTest, SuccessNonHTML) {
             PrefetchStatus::kPrefetchSuccessful);
   EXPECT_TRUE(serveable_reader.IsPrefetchServable(base::TimeDelta::Max()));
 
-  ExpectCorrectUkmLogs(PreloadingEligibility::kEligible,
-                       PreloadingHoldbackStatus::kAllowed,
-                       PreloadingTriggeringOutcome::kReady,
-                       PreloadingFailureReason::kUnspecified);
+  ExpectCorrectUkmLogs({});
 }
 
 TEST_F(PrefetchServiceTest, NotServeableNavigationInDifferentRenderFrameHost) {
@@ -2608,10 +2564,7 @@ TEST_F(PrefetchServiceTest, NotServeableNavigationInDifferentRenderFrameHost) {
       GetPrefetchToServe(GURL("https://example.com"));
   EXPECT_FALSE(serveable_reader);
 
-  ExpectCorrectUkmLogs(PreloadingEligibility::kEligible,
-                       PreloadingHoldbackStatus::kAllowed,
-                       PreloadingTriggeringOutcome::kReady,
-                       PreloadingFailureReason::kUnspecified);
+  ExpectCorrectUkmLogs({});
 }
 
 class PrefetchServiceLimitedPrefetchesTest : public PrefetchServiceTest {
@@ -2764,7 +2717,8 @@ TEST_F(PrefetchServiceLimitedPrefetchesTest, LimitedNumberOfPrefetches) {
              PreloadingFailureReason::kUnspecified,
              /*accurate=*/false,
              /*ready_time=*/
-             base::ScopedMockElapsedTimersForTest::kMockElapsedTime),
+             base::ScopedMockElapsedTimersForTest::kMockElapsedTime,
+             blink::mojom::SpeculationEagerness::kEager),
          attempt_entry_builder()->BuildEntry(
              source_id, PreloadingType::kPrefetch,
              PreloadingEligibility::kEligible,
@@ -2773,7 +2727,8 @@ TEST_F(PrefetchServiceLimitedPrefetchesTest, LimitedNumberOfPrefetches) {
              PreloadingFailureReason::kUnspecified,
              /*accurate=*/false,
              /*ready_time=*/
-             base::ScopedMockElapsedTimersForTest::kMockElapsedTime),
+             base::ScopedMockElapsedTimersForTest::kMockElapsedTime,
+             blink::mojom::SpeculationEagerness::kEager),
          attempt_entry_builder()->BuildEntry(
              source_id, PreloadingType::kPrefetch,
              PreloadingEligibility::kEligible,
@@ -2781,7 +2736,9 @@ TEST_F(PrefetchServiceLimitedPrefetchesTest, LimitedNumberOfPrefetches) {
              PreloadingTriggeringOutcome::kFailure,
              ToPreloadingFailureReason(
                  content::PrefetchStatus::kPrefetchFailedPerPageLimitExceeded),
-             /*accurate=*/false)};
+             /*accurate=*/false,
+             /*ready_time=*/absl::nullopt,
+             blink::mojom::SpeculationEagerness::kEager)};
     EXPECT_THAT(actual_attempts,
                 testing::UnorderedElementsAreArray(expected_attempts))
         << test::ActualVsExpectedUkmEntriesToString(actual_attempts,
@@ -2857,11 +2814,9 @@ TEST_F(PrefetchServiceWithHTMLOnlyTest, FailedNonHTMLWithHTMLOnly) {
       GetPrefetchToServe(GURL("https://example.com"));
   EXPECT_FALSE(serveable_reader);
 
-  ExpectCorrectUkmLogs(PreloadingEligibility::kEligible,
-                       PreloadingHoldbackStatus::kAllowed,
-                       PreloadingTriggeringOutcome::kFailure,
-                       ToPreloadingFailureReason(
-                           PrefetchStatus::kPrefetchFailedMIMENotSupported));
+  ExpectCorrectUkmLogs({.outcome = PreloadingTriggeringOutcome::kFailure,
+                        .failure = ToPreloadingFailureReason(
+                            PrefetchStatus::kPrefetchFailedMIMENotSupported)});
 }
 
 class PrefetchServiceAlwaysMakeDecoyRequestTest : public PrefetchServiceTest {
@@ -2932,10 +2887,9 @@ TEST_F(PrefetchServiceAlwaysMakeDecoyRequestTest, DecoyRequest) {
       GetPrefetchToServe(GURL("https://example.com"));
   EXPECT_FALSE(serveable_reader);
   // A decoy is considered a failure.
-  ExpectCorrectUkmLogs(
-      PreloadingEligibility::kEligible, PreloadingHoldbackStatus::kAllowed,
-      PreloadingTriggeringOutcome::kFailure,
-      ToPreloadingFailureReason(PrefetchStatus::kPrefetchIsPrivacyDecoy));
+  ExpectCorrectUkmLogs({.outcome = PreloadingTriggeringOutcome::kFailure,
+                        .failure = ToPreloadingFailureReason(
+                            PrefetchStatus::kPrefetchIsPrivacyDecoy)});
 }
 
 TEST_F(PrefetchServiceAlwaysMakeDecoyRequestTest,
@@ -2995,11 +2949,10 @@ TEST_F(PrefetchServiceAlwaysMakeDecoyRequestTest,
       GetPrefetchToServe(GURL("https://example.com"));
   EXPECT_FALSE(serveable_reader);
 
-  ExpectCorrectUkmLogs(ToPreloadingEligibility(
-                           PrefetchStatus::kPrefetchNotEligibleUserHasCookies),
-                       PreloadingHoldbackStatus::kUnspecified,
-                       PreloadingTriggeringOutcome::kUnspecified,
-                       PreloadingFailureReason::kUnspecified);
+  ExpectCorrectUkmLogs({.eligibility = ToPreloadingEligibility(
+                            PrefetchStatus::kPrefetchNotEligibleUserHasCookies),
+                        .holdback = PreloadingHoldbackStatus::kUnspecified,
+                        .outcome = PreloadingTriggeringOutcome::kUnspecified});
 }
 
 // TODO(crbug.com/1396460): Test flaky on lacros trybots.
@@ -3081,10 +3034,9 @@ TEST_F(PrefetchServiceAlwaysMakeDecoyRequestTest, MAYBE_RedirectDecoyRequest) {
       GetPrefetchToServe(GURL("https://example.com"));
   EXPECT_FALSE(serveable_reader);
 
-  ExpectCorrectUkmLogs(
-      PreloadingEligibility::kEligible, PreloadingHoldbackStatus::kAllowed,
-      PreloadingTriggeringOutcome::kFailure,
-      ToPreloadingFailureReason(PrefetchStatus::kPrefetchIsPrivacyDecoy));
+  ExpectCorrectUkmLogs({.outcome = PreloadingTriggeringOutcome::kFailure,
+                        .failure = ToPreloadingFailureReason(
+                            PrefetchStatus::kPrefetchIsPrivacyDecoy)});
 }
 
 class PrefetchServiceHoldbackTest : public PrefetchServiceTest {
@@ -3145,10 +3097,8 @@ TEST_F(PrefetchServiceHoldbackTest, PrefetchHeldback) {
       GetPrefetchToServe(GURL("https://example.com"));
   EXPECT_FALSE(serveable_reader);
 
-  ExpectCorrectUkmLogs(PreloadingEligibility::kEligible,
-                       PreloadingHoldbackStatus::kHoldback,
-                       PreloadingTriggeringOutcome::kUnspecified,
-                       PreloadingFailureReason::kUnspecified);
+  ExpectCorrectUkmLogs({.holdback = PreloadingHoldbackStatus::kHoldback,
+                        .outcome = PreloadingTriggeringOutcome::kUnspecified});
 }
 
 class PrefetchServiceIncognitoTest : public PrefetchServiceTest {
@@ -3210,11 +3160,10 @@ TEST_F(PrefetchServiceIncognitoTest, OffTheRecordIneligible) {
   EXPECT_FALSE(serveable_reader);
 
   ExpectCorrectUkmLogs(
-      ToPreloadingEligibility(
-          PrefetchStatus::kPrefetchNotEligibleBrowserContextOffTheRecord),
-      PreloadingHoldbackStatus::kUnspecified,
-      PreloadingTriggeringOutcome::kUnspecified,
-      PreloadingFailureReason::kUnspecified);
+      {.eligibility = ToPreloadingEligibility(
+           PrefetchStatus::kPrefetchNotEligibleBrowserContextOffTheRecord),
+       .holdback = PreloadingHoldbackStatus::kUnspecified,
+       .outcome = PreloadingTriggeringOutcome::kUnspecified});
 }
 
 TEST_F(PrefetchServiceTest, NonDefaultStoragePartition) {
@@ -3268,11 +3217,10 @@ TEST_F(PrefetchServiceTest, NonDefaultStoragePartition) {
   EXPECT_FALSE(serveable_reader);
 
   ExpectCorrectUkmLogs(
-      ToPreloadingEligibility(
-          PrefetchStatus::kPrefetchNotEligibleNonDefaultStoragePartition),
-      PreloadingHoldbackStatus::kUnspecified,
-      PreloadingTriggeringOutcome::kUnspecified,
-      PreloadingFailureReason::kUnspecified);
+      {.eligibility = ToPreloadingEligibility(
+           PrefetchStatus::kPrefetchNotEligibleNonDefaultStoragePartition),
+       .holdback = PreloadingHoldbackStatus::kUnspecified,
+       .outcome = PreloadingTriggeringOutcome::kUnspecified});
 }
 
 class PrefetchServiceStreamingURLLoaderTest : public PrefetchServiceTest {
@@ -3409,10 +3357,7 @@ TEST_F(PrefetchServiceStreamingURLLoaderTest,
                   ->GetHead()
                   ->was_in_prefetch_cache);
 
-  ExpectCorrectUkmLogs(PreloadingEligibility::kEligible,
-                       PreloadingHoldbackStatus::kAllowed,
-                       PreloadingTriggeringOutcome::kReady,
-                       PreloadingFailureReason::kUnspecified);
+  ExpectCorrectUkmLogs({});
 }
 
 class PrefetchServiceNoVarySearchTest : public PrefetchServiceTest {
@@ -3495,10 +3440,7 @@ TEST_F(PrefetchServiceNoVarySearchTest, MAYBE_NoVarySearchSuccessCase) {
   EXPECT_EQ(serving_page_metrics->prefetch_header_latency.value(),
             base::Milliseconds(kHeaderLatency));
 
-  ExpectCorrectUkmLogs(PreloadingEligibility::kEligible,
-                       PreloadingHoldbackStatus::kAllowed,
-                       PreloadingTriggeringOutcome::kReady,
-                       PreloadingFailureReason::kUnspecified);
+  ExpectCorrectUkmLogs({});
 }
 
 class PrefetchServiceAllowRedirectTest : public PrefetchServiceTest {
@@ -3605,10 +3547,7 @@ TEST_F(PrefetchServiceAllowRedirectTest, MAYBE_PrefetchEligibleRedirect) {
   histogram_tester.ExpectUniqueSample(
       "PrefetchProxy.AfterClick.RedirectChainSize", 2, 1);
 
-  ExpectCorrectUkmLogs(PreloadingEligibility::kEligible,
-                       PreloadingHoldbackStatus::kAllowed,
-                       PreloadingTriggeringOutcome::kReady,
-                       PreloadingFailureReason::kUnspecified);
+  ExpectCorrectUkmLogs({});
 }
 
 // TODO(crbug.com/1396460): Test flaky on lacros trybots.
@@ -3695,11 +3634,10 @@ TEST_F(PrefetchServiceAllowRedirectTest, MAYBE_IneligibleRedirectCookies) {
   histogram_tester.ExpectTotalCount(
       "PrefetchProxy.AfterClick.RedirectChainSize", 0);
 
-  ExpectCorrectUkmLogs(PreloadingEligibility::kEligible,
-                       PreloadingHoldbackStatus::kAllowed,
-                       PreloadingTriggeringOutcome::kFailure,
-                       ToPreloadingFailureReason(
-                           PrefetchStatus::kPrefetchFailedIneligibleRedirect));
+  ExpectCorrectUkmLogs(
+      {.outcome = PreloadingTriggeringOutcome::kFailure,
+       .failure = ToPreloadingFailureReason(
+           PrefetchStatus::kPrefetchFailedIneligibleRedirect)});
 }
 
 // TODO(crbug.com/1396460): Test flaky on lacros trybots.
@@ -3789,11 +3727,10 @@ TEST_F(PrefetchServiceAllowRedirectTest,
   histogram_tester.ExpectTotalCount(
       "PrefetchProxy.AfterClick.RedirectChainSize", 0);
 
-  ExpectCorrectUkmLogs(PreloadingEligibility::kEligible,
-                       PreloadingHoldbackStatus::kAllowed,
-                       PreloadingTriggeringOutcome::kFailure,
-                       ToPreloadingFailureReason(
-                           PrefetchStatus::kPrefetchFailedIneligibleRedirect));
+  ExpectCorrectUkmLogs(
+      {.outcome = PreloadingTriggeringOutcome::kFailure,
+       .failure = ToPreloadingFailureReason(
+           PrefetchStatus::kPrefetchFailedIneligibleRedirect)});
 }
 
 // TODO(crbug.com/1396460): Test flaky on lacros trybots.
@@ -3872,11 +3809,9 @@ TEST_F(PrefetchServiceAllowRedirectTest, MAYBE_InvalidRedirect) {
   histogram_tester.ExpectTotalCount(
       "PrefetchProxy.AfterClick.RedirectChainSize", 0);
 
-  ExpectCorrectUkmLogs(PreloadingEligibility::kEligible,
-                       PreloadingHoldbackStatus::kAllowed,
-                       PreloadingTriggeringOutcome::kFailure,
-                       ToPreloadingFailureReason(
-                           PrefetchStatus::kPrefetchFailedInvalidRedirect));
+  ExpectCorrectUkmLogs({.outcome = PreloadingTriggeringOutcome::kFailure,
+                        .failure = ToPreloadingFailureReason(
+                            PrefetchStatus::kPrefetchFailedInvalidRedirect)});
 }
 
 // TODO(crbug.com/1396460): Test flaky on lacros trybots.
@@ -3977,10 +3912,7 @@ TEST_F(PrefetchServiceAllowRedirectTest,
   histogram_tester.ExpectUniqueSample(
       "PrefetchProxy.AfterClick.RedirectChainSize", 2, 1);
 
-  ExpectCorrectUkmLogs(PreloadingEligibility::kEligible,
-                       PreloadingHoldbackStatus::kAllowed,
-                       PreloadingTriggeringOutcome::kReady,
-                       PreloadingFailureReason::kUnspecified);
+  ExpectCorrectUkmLogs({});
 }
 
 // TODO(crbug.com/1396460): Test flaky on lacros trybots.
@@ -4076,11 +4008,10 @@ TEST_F(PrefetchServiceAllowRedirectTest,
   histogram_tester.ExpectTotalCount(
       "PrefetchProxy.AfterClick.RedirectChainSize", 0);
 
-  ExpectCorrectUkmLogs(PreloadingEligibility::kEligible,
-                       PreloadingHoldbackStatus::kAllowed,
-                       PreloadingTriggeringOutcome::kFailure,
-                       ToPreloadingFailureReason(
-                           PrefetchStatus::kPrefetchFailedIneligibleRedirect));
+  ExpectCorrectUkmLogs(
+      {.outcome = PreloadingTriggeringOutcome::kFailure,
+       .failure = ToPreloadingFailureReason(
+           PrefetchStatus::kPrefetchFailedIneligibleRedirect)});
 }
 
 // TODO(crbug.com/1396460): Test flaky on lacros trybots.
@@ -4188,10 +4119,7 @@ TEST_F(PrefetchServiceAllowRedirectTest,
   histogram_tester.ExpectUniqueSample(
       "PrefetchProxy.AfterClick.RedirectChainSize", 2, 1);
 
-  ExpectCorrectUkmLogs(PreloadingEligibility::kEligible,
-                       PreloadingHoldbackStatus::kAllowed,
-                       PreloadingTriggeringOutcome::kReady,
-                       PreloadingFailureReason::kUnspecified);
+  ExpectCorrectUkmLogs({});
 }
 
 // TODO(crbug.com/1396460): Test flaky on lacros trybots.
@@ -4300,10 +4228,7 @@ TEST_F(PrefetchServiceAllowRedirectTest,
   histogram_tester.ExpectUniqueSample(
       "PrefetchProxy.AfterClick.RedirectChainSize", 2, 1);
 
-  ExpectCorrectUkmLogs(PreloadingEligibility::kEligible,
-                       PreloadingHoldbackStatus::kAllowed,
-                       PreloadingTriggeringOutcome::kReady,
-                       PreloadingFailureReason::kUnspecified);
+  ExpectCorrectUkmLogs({});
 }
 
 // TODO(crbug.com/1396460): Test flaky on lacros trybots.
@@ -4411,10 +4336,7 @@ TEST_F(PrefetchServiceAllowRedirectTest,
   histogram_tester.ExpectUniqueSample(
       "PrefetchProxy.AfterClick.RedirectChainSize", 2, 1);
 
-  ExpectCorrectUkmLogs(PreloadingEligibility::kEligible,
-                       PreloadingHoldbackStatus::kAllowed,
-                       PreloadingTriggeringOutcome::kReady,
-                       PreloadingFailureReason::kUnspecified);
+  ExpectCorrectUkmLogs({});
 }
 
 class PrefetchServiceAllowRedirectsAndAlwaysBlockUntilHeadTest
@@ -4557,10 +4479,7 @@ TEST_F(PrefetchServiceAllowRedirectsAndAlwaysBlockUntilHeadTest,
   histogram_tester.ExpectUniqueSample(
       "PrefetchProxy.AfterClick.RedirectChainSize", 2, 1);
 
-  ExpectCorrectUkmLogs(PreloadingEligibility::kEligible,
-                       PreloadingHoldbackStatus::kAllowed,
-                       PreloadingTriggeringOutcome::kReady,
-                       PreloadingFailureReason::kUnspecified);
+  ExpectCorrectUkmLogs({});
 }
 
 // TODO(crbug.com/1396460): Test flaky on lacros trybots.
@@ -4647,11 +4566,9 @@ TEST_F(PrefetchServiceAllowRedirectTest,
   histogram_tester.ExpectTotalCount(
       "PrefetchProxy.AfterClick.RedirectChainSize", 0);
 
-  ExpectCorrectUkmLogs(PreloadingEligibility::kEligible,
-                       PreloadingHoldbackStatus::kAllowed,
-                       PreloadingTriggeringOutcome::kFailure,
-                       ToPreloadingFailureReason(
-                           PrefetchStatus::kPrefetchFailedInvalidRedirect));
+  ExpectCorrectUkmLogs({.outcome = PreloadingTriggeringOutcome::kFailure,
+                        .failure = ToPreloadingFailureReason(
+                            PrefetchStatus::kPrefetchFailedInvalidRedirect)});
 }
 
 class PrefetchServiceNeverBlockUntilHeadTest : public PrefetchServiceTest {
@@ -4726,10 +4643,7 @@ TEST_F(PrefetchServiceNeverBlockUntilHeadTest, MAYBE_HeadNotReceived) {
   EXPECT_TRUE(serving_page_metrics->same_tab_as_prefetching_tab);
   EXPECT_FALSE(serving_page_metrics->prefetch_header_latency);
 
-  ExpectCorrectUkmLogs(PreloadingEligibility::kEligible,
-                       PreloadingHoldbackStatus::kAllowed,
-                       PreloadingTriggeringOutcome::kRunning,
-                       PreloadingFailureReason::kUnspecified);
+  ExpectCorrectUkmLogs({.outcome = PreloadingTriggeringOutcome::kRunning});
 }
 
 class PrefetchServiceAlwaysBlockUntilHeadTest
@@ -4851,10 +4765,7 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest, MAYBE_BlockUntilHeadReceived) {
                   ->GetHead()
                   ->was_in_prefetch_cache);
 
-  ExpectCorrectUkmLogs(PreloadingEligibility::kEligible,
-                       PreloadingHoldbackStatus::kAllowed,
-                       PreloadingTriggeringOutcome::kReady,
-                       PreloadingFailureReason::kUnspecified);
+  ExpectCorrectUkmLogs({.eagerness = GetParam()});
 
   std::string histogram_suffix =
       GetPrefetchEagernessHistogramSuffix(GetParam());
@@ -4980,11 +4891,7 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
                   ->GetHead()
                   ->was_in_prefetch_cache);
 
-  ExpectCorrectUkmLogs(PreloadingEligibility::kEligible,
-                       PreloadingHoldbackStatus::kAllowed,
-                       PreloadingTriggeringOutcome::kReady,
-                       PreloadingFailureReason::kUnspecified,
-                       /*accurate*/ true);
+  ExpectCorrectUkmLogs({.is_accurate = true, .eagerness = GetParam()});
 
   std::string histogram_suffix =
       GetPrefetchEagernessHistogramSuffix(GetParam());
@@ -5103,11 +5010,7 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
   EXPECT_EQ(serving_page_metrics->prefetch_header_latency.value(),
             base::Milliseconds(kHeaderLatency));
 
-  ExpectCorrectUkmLogs(PreloadingEligibility::kEligible,
-                       PreloadingHoldbackStatus::kAllowed,
-                       PreloadingTriggeringOutcome::kReady,
-                       PreloadingFailureReason::kUnspecified,
-                       /*accurate*/ false);
+  ExpectCorrectUkmLogs({.eagerness = GetParam()});
 
   std::string histogram_suffix =
       GetPrefetchEagernessHistogramSuffix(GetParam());
@@ -5227,11 +5130,7 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
   EXPECT_EQ(serving_page_metrics->prefetch_header_latency.value(),
             base::Milliseconds(kHeaderLatency));
 
-  ExpectCorrectUkmLogs(PreloadingEligibility::kEligible,
-                       PreloadingHoldbackStatus::kAllowed,
-                       PreloadingTriggeringOutcome::kReady,
-                       PreloadingFailureReason::kUnspecified,
-                       /*accurate*/ false);
+  ExpectCorrectUkmLogs({.eagerness = GetParam()});
 
   std::string histogram_suffix =
       GetPrefetchEagernessHistogramSuffix(GetParam());
@@ -5341,11 +5240,10 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
   EXPECT_EQ(serving_page_metrics->prefetch_header_latency.value(),
             base::Milliseconds(kHeaderLatency));
 
-  ExpectCorrectUkmLogs(PreloadingEligibility::kEligible,
-                       PreloadingHoldbackStatus::kAllowed,
-                       PreloadingTriggeringOutcome::kFailure,
-                       ToPreloadingFailureReason(
-                           PrefetchStatus::kPrefetchNotUsedCookiesChanged));
+  ExpectCorrectUkmLogs({.outcome = PreloadingTriggeringOutcome::kFailure,
+                        .failure = ToPreloadingFailureReason(
+                            PrefetchStatus::kPrefetchNotUsedCookiesChanged),
+                        .eagerness = GetParam()});
 
   std::string histogram_suffix =
       GetPrefetchEagernessHistogramSuffix(GetParam());
@@ -5439,10 +5337,10 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
   EXPECT_TRUE(serving_page_metrics->same_tab_as_prefetching_tab);
   EXPECT_FALSE(serving_page_metrics->prefetch_header_latency);
 
-  ExpectCorrectUkmLogs(
-      PreloadingEligibility::kEligible, PreloadingHoldbackStatus::kAllowed,
-      PreloadingTriggeringOutcome::kFailure,
-      ToPreloadingFailureReason(PrefetchStatus::kPrefetchFailedNetError));
+  ExpectCorrectUkmLogs({.outcome = PreloadingTriggeringOutcome::kFailure,
+                        .failure = ToPreloadingFailureReason(
+                            PrefetchStatus::kPrefetchFailedNetError),
+                        .eagerness = GetParam()});
 
   std::string histogram_suffix =
       GetPrefetchEagernessHistogramSuffix(GetParam());
@@ -5540,10 +5438,10 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
   EXPECT_TRUE(serving_page_metrics->same_tab_as_prefetching_tab);
   EXPECT_FALSE(serving_page_metrics->prefetch_header_latency);
 
-  ExpectCorrectUkmLogs(
-      PreloadingEligibility::kEligible, PreloadingHoldbackStatus::kAllowed,
-      PreloadingTriggeringOutcome::kFailure,
-      ToPreloadingFailureReason(PrefetchStatus::kPrefetchFailedNetError));
+  ExpectCorrectUkmLogs({.outcome = PreloadingTriggeringOutcome::kFailure,
+                        .failure = ToPreloadingFailureReason(
+                            PrefetchStatus::kPrefetchFailedNetError),
+                        .eagerness = GetParam()});
 
   std::string histogram_suffix =
       GetPrefetchEagernessHistogramSuffix(GetParam());
@@ -5672,10 +5570,7 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadWithTimeoutTest,
 
   EXPECT_FALSE(serveable_reader);
 
-  ExpectCorrectUkmLogs(PreloadingEligibility::kEligible,
-                       PreloadingHoldbackStatus::kAllowed,
-                       PreloadingTriggeringOutcome::kReady,
-                       PreloadingFailureReason::kUnspecified);
+  ExpectCorrectUkmLogs({.eagerness = GetParam()});
 
   std::string histogram_suffix =
       GetPrefetchEagernessHistogramSuffix(GetParam());
@@ -5775,10 +5670,7 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadWithTimeoutTest,
 
   EXPECT_FALSE(serveable_reader);
 
-  ExpectCorrectUkmLogs(PreloadingEligibility::kEligible,
-                       PreloadingHoldbackStatus::kAllowed,
-                       PreloadingTriggeringOutcome::kReady,
-                       PreloadingFailureReason::kUnspecified);
+  ExpectCorrectUkmLogs({.eagerness = GetParam()});
 
   std::string histogram_suffix =
       GetPrefetchEagernessHistogramSuffix(GetParam());
@@ -5947,7 +5839,8 @@ TEST_F(PrefetchServiceNewLimitsTest, NonEagerPrefetchEvictedAtLimit) {
                  content::PrefetchStatus::kPrefetchEvicted),
              /*accurate=*/false,
              /*ready_time=*/
-             base::ScopedMockElapsedTimersForTest::kMockElapsedTime),
+             base::ScopedMockElapsedTimersForTest::kMockElapsedTime,
+             blink::mojom::SpeculationEagerness::kModerate),
          attempt_entry_builder()->BuildEntry(
              source_id, PreloadingType::kPrefetch,
              PreloadingEligibility::kEligible,
@@ -5957,7 +5850,8 @@ TEST_F(PrefetchServiceNewLimitsTest, NonEagerPrefetchEvictedAtLimit) {
                  content::PrefetchStatus::kPrefetchEvicted),
              /*accurate=*/false,
              /*ready_time=*/
-             base::ScopedMockElapsedTimersForTest::kMockElapsedTime),
+             base::ScopedMockElapsedTimersForTest::kMockElapsedTime,
+             blink::mojom::SpeculationEagerness::kModerate),
          attempt_entry_builder()->BuildEntry(
              source_id, PreloadingType::kPrefetch,
              PreloadingEligibility::kEligible,
@@ -5966,7 +5860,8 @@ TEST_F(PrefetchServiceNewLimitsTest, NonEagerPrefetchEvictedAtLimit) {
              PreloadingFailureReason::kUnspecified,
              /*accurate=*/false,
              /*ready_time=*/
-             base::ScopedMockElapsedTimersForTest::kMockElapsedTime),
+             base::ScopedMockElapsedTimersForTest::kMockElapsedTime,
+             blink::mojom::SpeculationEagerness::kModerate),
          attempt_entry_builder()->BuildEntry(
              source_id, PreloadingType::kPrefetch,
              PreloadingEligibility::kEligible,
@@ -5975,7 +5870,8 @@ TEST_F(PrefetchServiceNewLimitsTest, NonEagerPrefetchEvictedAtLimit) {
              PreloadingFailureReason::kUnspecified,
              /*accurate=*/false,
              /*ready_time=*/
-             base::ScopedMockElapsedTimersForTest::kMockElapsedTime)};
+             base::ScopedMockElapsedTimersForTest::kMockElapsedTime,
+             blink::mojom::SpeculationEagerness::kModerate)};
     EXPECT_THAT(actual_attempts,
                 testing::UnorderedElementsAreArray(expected_attempts))
         << test::ActualVsExpectedUkmEntriesToString(actual_attempts,
@@ -6386,7 +6282,8 @@ TEST_F(PrefetchServiceNewLimitsTest, EagerPrefetchLimitIsDynamic) {
                  content::PrefetchStatus::kPrefetchEvicted),
              /*accurate=*/false,
              /*ready_time=*/
-             base::ScopedMockElapsedTimersForTest::kMockElapsedTime),
+             base::ScopedMockElapsedTimersForTest::kMockElapsedTime,
+             blink::mojom::SpeculationEagerness::kEager),
          // |url_2| (evicted)
          attempt_entry_builder()->BuildEntry(
              source_id, PreloadingType::kPrefetch,
@@ -6397,7 +6294,8 @@ TEST_F(PrefetchServiceNewLimitsTest, EagerPrefetchLimitIsDynamic) {
                  content::PrefetchStatus::kPrefetchEvicted),
              /*accurate=*/false,
              /*ready_time=*/
-             base::ScopedMockElapsedTimersForTest::kMockElapsedTime),
+             base::ScopedMockElapsedTimersForTest::kMockElapsedTime,
+             blink::mojom::SpeculationEagerness::kEager),
          // |url_3| (ready)
          attempt_entry_builder()->BuildEntry(
              source_id, PreloadingType::kPrefetch,
@@ -6407,7 +6305,8 @@ TEST_F(PrefetchServiceNewLimitsTest, EagerPrefetchLimitIsDynamic) {
              PreloadingFailureReason::kUnspecified,
              /*accurate=*/false,
              /*ready_time=*/
-             base::ScopedMockElapsedTimersForTest::kMockElapsedTime),
+             base::ScopedMockElapsedTimersForTest::kMockElapsedTime,
+             blink::mojom::SpeculationEagerness::kEager),
          // |url_1|, attempt #2 (ready)
          attempt_entry_builder()->BuildEntry(
              source_id, PreloadingType::kPrefetch,
@@ -6417,7 +6316,8 @@ TEST_F(PrefetchServiceNewLimitsTest, EagerPrefetchLimitIsDynamic) {
              PreloadingFailureReason::kUnspecified,
              /*accurate=*/false,
              /*ready_time=*/
-             base::ScopedMockElapsedTimersForTest::kMockElapsedTime)};
+             base::ScopedMockElapsedTimersForTest::kMockElapsedTime,
+             blink::mojom::SpeculationEagerness::kEager)};
     EXPECT_THAT(actual_attempts,
                 testing::UnorderedElementsAreArray(expected_attempts))
         << test::ActualVsExpectedUkmEntriesToString(actual_attempts,

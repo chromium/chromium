@@ -704,7 +704,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, SpeculationRulesPrerender) {
         PreloadingTriggeringOutcome::kSuccess,
         PreloadingFailureReason::kUnspecified,
         /*accurate=*/true,
-        /*ready_time=*/kMockElapsedTime);
+        /*ready_time=*/kMockElapsedTime,
+        blink::mojom::SpeculationEagerness::kEager);
 
     UkmEntry prediction_expected_entry =
         prediction_ukm_entry_builder().BuildEntry(ukm_source_id,
@@ -761,7 +762,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, SpeculationInitiatorNavigateAway) {
         PreloadingTriggeringOutcome::kReady,
         PreloadingFailureReason::kUnspecified,
         /*accurate=*/false,
-        /*ready_time=*/kMockElapsedTime);
+        /*ready_time=*/kMockElapsedTime,
+        blink::mojom::SpeculationEagerness::kEager);
 
     UkmEntry prediction_expected_entry =
         prediction_ukm_entry_builder().BuildEntry(
@@ -1369,7 +1371,9 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, CancelOnAuthRequested) {
         PreloadingEligibility::kEligible, PreloadingHoldbackStatus::kAllowed,
         PreloadingTriggeringOutcome::kFailure,
         ToPreloadingFailureReason(PrerenderFinalStatus::kLoginAuthRequested),
-        /*accurate=*/false);
+        /*accurate=*/false,
+        /*ready_time=*/absl::nullopt,
+        blink::mojom::SpeculationEagerness::kEager);
 
     EXPECT_EQ(attempt_ukm_entries[0], attempt_expected_entry)
         << test::ActualVsExpectedUkmEntryToString(attempt_ukm_entries[0],
@@ -1842,7 +1846,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, SameOriginRedirection) {
         PreloadingTriggeringOutcome::kSuccess,
         PreloadingFailureReason::kUnspecified,
         /*accurate=*/true,
-        /*ready_time=*/kMockElapsedTime);
+        /*ready_time=*/kMockElapsedTime,
+        blink::mojom::SpeculationEagerness::kEager);
 
     EXPECT_EQ(attempt_ukm_entries[0], attempt_expected_entry)
         << test::ActualVsExpectedUkmEntryToString(attempt_ukm_entries[0],
@@ -4914,7 +4919,9 @@ IN_PROC_BROWSER_TEST_F(PrerenderLowMemoryBrowserTest, NoPrerender) {
         PreloadingHoldbackStatus::kUnspecified,
         PreloadingTriggeringOutcome::kUnspecified,
         PreloadingFailureReason::kUnspecified,
-        /*accurate=*/true);
+        /*accurate=*/true,
+        /*ready_time=*/absl::nullopt,
+        blink::mojom::SpeculationEagerness::kEager);
 
     EXPECT_EQ(attempt_ukm_entries[0], attempt_expected_entry)
         << test::ActualVsExpectedUkmEntryToString(attempt_ukm_entries[0],
@@ -5220,14 +5227,18 @@ IN_PROC_BROWSER_TEST_F(PrerenderSequentialPrerenderingBrowserTest,
             PreloadingHoldbackStatus::kAllowed,
             PreloadingTriggeringOutcome::kRunning,
             PreloadingFailureReason::kUnspecified,
-            /*accurate=*/false),
+            /*accurate=*/false,
+            /*ready_time=*/absl::nullopt,
+            blink::mojom::SpeculationEagerness::kEager),
         attempt_ukm_entry_builder().BuildEntry(
             ukm_source_id, PreloadingType::kPrerender,
             PreloadingEligibility::kEligible,
             PreloadingHoldbackStatus::kAllowed,
             PreloadingTriggeringOutcome::kTriggeredButPending,
             PreloadingFailureReason::kUnspecified,
-            /*accurate=*/true),
+            /*accurate=*/true,
+            /*ready_time=*/absl::nullopt,
+            blink::mojom::SpeculationEagerness::kEager),
     };
 
     EXPECT_THAT(ukm_entries,
@@ -5570,14 +5581,17 @@ IN_PROC_BROWSER_TEST_F(PrerenderSequentialPrerenderingBrowserTest,
             PreloadingTriggeringOutcome::kSuccess,
             PreloadingFailureReason::kUnspecified,
             /*accurate=*/true,
-            /*ready_time=*/kMockElapsedTime),
+            /*ready_time=*/kMockElapsedTime,
+            blink::mojom::SpeculationEagerness::kEager),
         attempt_ukm_entry_builder().BuildEntry(
             ukm_source_id, PreloadingType::kPrerender,
             PreloadingEligibility::kEligible,
             PreloadingHoldbackStatus::kAllowed,
             PreloadingTriggeringOutcome::kTriggeredButPending,
             PreloadingFailureReason::kUnspecified,
-            /*accurate=*/false),
+            /*accurate=*/false,
+            /*ready_time=*/absl::nullopt,
+            blink::mojom::SpeculationEagerness::kEager),
     };
 
     EXPECT_THAT(ukm_entries,
@@ -5641,21 +5655,26 @@ IN_PROC_BROWSER_TEST_F(
             PreloadingTriggeringOutcome::kSuccess,
             PreloadingFailureReason::kUnspecified,
             /*accurate=*/true,
-            /*ready_time=*/kMockElapsedTime),
+            /*ready_time=*/kMockElapsedTime,
+            blink::mojom::SpeculationEagerness::kEager),
         attempt_ukm_entry_builder().BuildEntry(
             ukm_source_id, PreloadingType::kPrerender,
             PreloadingEligibility::kEligible,
             PreloadingHoldbackStatus::kAllowed,
             PreloadingTriggeringOutcome::kRunning,
             PreloadingFailureReason::kUnspecified,
-            /*accurate=*/false),
+            /*accurate=*/false,
+            /*ready_time=*/absl::nullopt,
+            blink::mojom::SpeculationEagerness::kEager),
         attempt_ukm_entry_builder().BuildEntry(
             ukm_source_id, PreloadingType::kPrerender,
             PreloadingEligibility::kEligible,
             PreloadingHoldbackStatus::kAllowed,
             PreloadingTriggeringOutcome::kTriggeredButPending,
             PreloadingFailureReason::kUnspecified,
-            /*accurate=*/false),
+            /*accurate=*/false,
+            /*ready_time=*/absl::nullopt,
+            blink::mojom::SpeculationEagerness::kEager),
     };
 
     EXPECT_THAT(ukm_entries,
@@ -5743,7 +5762,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderSequentialPrerenderingBrowserTest,
             PreloadingTriggeringOutcome::kSuccess,
             PreloadingFailureReason::kUnspecified,
             /*accurate=*/true,
-            /*ready_time=*/kMockElapsedTime),
+            /*ready_time=*/kMockElapsedTime,
+            blink::mojom::SpeculationEagerness::kEager),
         attempt_ukm_entry_builder().BuildEntry(
             ukm_source_id, PreloadingType::kPrerender,
             PreloadingEligibility::kEligible,
@@ -5751,21 +5771,26 @@ IN_PROC_BROWSER_TEST_F(PrerenderSequentialPrerenderingBrowserTest,
             PreloadingTriggeringOutcome::kReady,
             PreloadingFailureReason::kUnspecified,
             /*accurate=*/false,
-            /*ready_time=*/kMockElapsedTime),
+            /*ready_time=*/kMockElapsedTime,
+            blink::mojom::SpeculationEagerness::kEager),
         attempt_ukm_entry_builder().BuildEntry(
             ukm_source_id, PreloadingType::kPrerender,
             PreloadingEligibility::kEligible,
             PreloadingHoldbackStatus::kAllowed,
             PreloadingTriggeringOutcome::kRunning,
             PreloadingFailureReason::kUnspecified,
-            /*accurate=*/false),
+            /*accurate=*/false,
+            /*ready_time=*/absl::nullopt,
+            blink::mojom::SpeculationEagerness::kEager),
         attempt_ukm_entry_builder().BuildEntry(
             ukm_source_id, PreloadingType::kPrerender,
             PreloadingEligibility::kEligible,
             PreloadingHoldbackStatus::kAllowed,
             PreloadingTriggeringOutcome::kTriggeredButPending,
             PreloadingFailureReason::kUnspecified,
-            /*accurate=*/false),
+            /*accurate=*/false,
+            /*ready_time=*/absl::nullopt,
+            blink::mojom::SpeculationEagerness::kEager),
     };
 
     EXPECT_THAT(ukm_entries,
@@ -8764,7 +8789,9 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, SkipCrossSitePrerender) {
         PreloadingHoldbackStatus::kUnspecified,
         PreloadingTriggeringOutcome::kUnspecified,
         PreloadingFailureReason::kUnspecified,
-        /*accurate=*/true);
+        /*accurate=*/true,
+        /*ready_time=*/absl::nullopt,
+        blink::mojom::SpeculationEagerness::kEager);
 
     EXPECT_EQ(attempt_ukm_entries[0], attempt_expected_entry)
         << test::ActualVsExpectedUkmEntryToString(attempt_ukm_entries[0],
@@ -9038,7 +9065,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderSameSiteCrossOriginBrowserTest,
         PreloadingTriggeringOutcome::kSuccess,
         PreloadingFailureReason::kUnspecified,
         /*accurate=*/true,
-        /*ready_time=*/kMockElapsedTime);
+        /*ready_time=*/kMockElapsedTime,
+        blink::mojom::SpeculationEagerness::kEager);
 
     EXPECT_EQ(attempt_ukm_entries[0], attempt_expected_entry)
         << test::ActualVsExpectedUkmEntryToString(attempt_ukm_entries[0],
@@ -9113,7 +9141,8 @@ IN_PROC_BROWSER_TEST_F(
         PreloadingTriggeringOutcome::kSuccess,
         PreloadingFailureReason::kUnspecified,
         /*accurate=*/true,
-        /*ready_time=*/kMockElapsedTime);
+        /*ready_time=*/kMockElapsedTime,
+        blink::mojom::SpeculationEagerness::kEager);
 
     EXPECT_EQ(attempt_ukm_entries[0], attempt_expected_entry)
         << test::ActualVsExpectedUkmEntryToString(attempt_ukm_entries[0],
@@ -10296,7 +10325,9 @@ IN_PROC_BROWSER_TEST_F(PrerenderSpeculationRulesHoldbackBrowserTest,
         PreloadingEligibility::kEligible, PreloadingHoldbackStatus::kHoldback,
         PreloadingTriggeringOutcome::kUnspecified,
         PreloadingFailureReason::kUnspecified,
-        /*accurate=*/true);
+        /*accurate=*/true,
+        /*ready_time=*/absl::nullopt,
+        blink::mojom::SpeculationEagerness::kEager);
 
     EXPECT_EQ(attempt_ukm_entries[0], attempt_expected_entry)
         << test::ActualVsExpectedUkmEntryToString(attempt_ukm_entries[0],

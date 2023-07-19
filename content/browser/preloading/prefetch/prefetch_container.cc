@@ -24,6 +24,7 @@
 #include "content/browser/preloading/prefetch/prefetch_type.h"
 #include "content/browser/preloading/prefetch/proxy_lookup_client_impl.h"
 #include "content/browser/preloading/preloading.h"
+#include "content/browser/preloading/preloading_attempt_impl.h"
 #include "content/browser/preloading/preloading_data_impl.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/public/browser/global_routing_id.h"
@@ -373,9 +374,11 @@ PrefetchContainer::PrefetchContainer(
             ? PreloadingDataImpl::GetSameURLAndNoVarySearchURLMatcher(
                   prefetch_document_manager_, prefetch_url_)
             : PreloadingDataImpl::GetSameURLMatcher(prefetch_url_);
-    auto* attempt = preloading_data->AddPreloadingAttempt(
-        GetPredictorForSpeculationRules(world), PreloadingType::kPrefetch,
-        std::move(matcher));
+    auto* attempt = static_cast<PreloadingAttemptImpl*>(
+        preloading_data->AddPreloadingAttempt(
+            GetPredictorForSpeculationRules(world), PreloadingType::kPrefetch,
+            std::move(matcher)));
+    attempt->SetSpeculationEagerness(prefetch_type.GetEagerness());
     attempt_ = attempt->GetWeakPtr();
     initiator_devtools_navigation_token_ = rfhi->GetDevToolsNavigationToken();
   }

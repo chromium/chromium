@@ -20310,6 +20310,13 @@ be describing additional metrics about the same event.
       configuration used for that preloading attempt.
     </summary>
   </metric>
+  <metric name="SpeculationEagerness" enum="SpeculationEagerness">
+    <summary>
+      The eagerness of the speculation rule that triggered this preload. This is
+      only set if the Preloading Attempt is triggered by a speculation rule.
+      Values are from the Chrome enum blink::mojom::SpeculationEagerness.
+    </summary>
+  </metric>
   <metric name="TimeToNextNavigation">
     <summary>
       The amount of time the attempt took to reach the next navigation, in
@@ -20400,6 +20407,13 @@ be describing additional metrics about the same event.
       The sampling rate for preloading attempts is set via field trial through
       the PreloadingConfig feature. The logged value just represents the
       configuration used for that preloading attempt.
+    </summary>
+  </metric>
+  <metric name="SpeculationEagerness" enum="SpeculationEagerness">
+    <summary>
+      The eagerness of the speculation rule that triggered this preload. This is
+      only set if the Preloading Attempt is triggered by a speculation rule.
+      Values are from the Chrome enum blink::mojom::SpeculationEagerness.
     </summary>
   </metric>
   <metric name="TimeToNextNavigation">

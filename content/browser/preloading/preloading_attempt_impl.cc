@@ -257,6 +257,9 @@ void PreloadingAttemptImpl::RecordPreloadingAttemptMetrics(
       builder.SetReadyTime(ukm::GetExponentialBucketMinForCounts1000(
           ready_time_->InMilliseconds()));
     }
+    if (eagerness_) {
+      builder.SetSpeculationEagerness(static_cast<int64_t>(eagerness_.value()));
+    }
     builder.Record(ukm_recorder);
   }
 
@@ -278,6 +281,9 @@ void PreloadingAttemptImpl::RecordPreloadingAttemptMetrics(
     if (ready_time_) {
       builder.SetReadyTime(ukm::GetExponentialBucketMinForCounts1000(
           ready_time_->InMilliseconds()));
+    }
+    if (eagerness_) {
+      builder.SetSpeculationEagerness(static_cast<int64_t>(eagerness_.value()));
     }
     builder.Record(ukm_recorder);
   }
@@ -307,6 +313,18 @@ void PreloadingAttemptImpl::SetIsAccurateTriggering(const GURL& navigated_url) {
   // Use the predicate to match the URLs as the matching logic varies for each
   // predictor.
   is_accurate_triggering_ |= url_match_predicate_.Run(navigated_url);
+}
+
+void PreloadingAttemptImpl::SetSpeculationEagerness(
+    blink::mojom::SpeculationEagerness eagerness) {
+  CHECK(predictor_type_.ukm_value() ==
+            content_preloading_predictor::kSpeculationRules.ukm_value() ||
+        predictor_type_.ukm_value() ==
+            content_preloading_predictor::kSpeculationRulesFromIsolatedWorld
+                .ukm_value())
+      << "predictor_type_: " << predictor_type_.name()
+      << " (ukm_value = " << predictor_type_.ukm_value() << ")";
+  eagerness_ = eagerness;
 }
 
 // Used for StateTransitions matching.

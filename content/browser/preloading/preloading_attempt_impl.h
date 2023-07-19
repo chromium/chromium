@@ -10,6 +10,7 @@
 #include "content/public/browser/preloading_data.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom-shared.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -68,6 +69,8 @@ class CONTENT_EXPORT PreloadingAttemptImpl : public PreloadingAttempt {
 
   PreloadingType preloading_type() const { return preloading_type_; }
 
+  void SetSpeculationEagerness(blink::mojom::SpeculationEagerness eagerness);
+
  private:
   friend class test::PreloadingAttemptAccessor;
 
@@ -122,6 +125,10 @@ class CONTENT_EXPORT PreloadingAttemptImpl : public PreloadingAttempt {
 
   // TODO: doc
   uint32_t sampling_seed_;
+
+  // Eagerness of this preloading attempt (specified by a speculation rule).
+  // This is only set for attempts that are triggered by speculation rules.
+  absl::optional<blink::mojom::SpeculationEagerness> eagerness_ = absl::nullopt;
 
   base::WeakPtrFactory<PreloadingAttemptImpl> weak_factory_{this};
 };

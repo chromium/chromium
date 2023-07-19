@@ -12,6 +12,7 @@
 #include "content/public/browser/preloading.h"
 #include "content/public/browser/preloading_data.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom-shared.h"
 
 namespace content::test {
 
@@ -41,7 +42,9 @@ class PreloadingAttemptUkmEntryBuilder {
       PreloadingTriggeringOutcome triggering_outcome,
       PreloadingFailureReason failure_reason,
       bool accurate,
-      absl::optional<base::TimeDelta> ready_time = absl::nullopt) const;
+      absl::optional<base::TimeDelta> ready_time = absl::nullopt,
+      absl::optional<blink::mojom::SpeculationEagerness> eagerness =
+          absl::nullopt) const;
 
  private:
   PreloadingPredictor predictor_;

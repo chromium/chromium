@@ -405,7 +405,8 @@ class PrefetchURLLoaderInterceptorTest : public RenderViewHostTestHarness {
         PreloadingEligibility::kEligible, PreloadingHoldbackStatus::kAllowed,
         expected_outcome, expected_failure_reason,
         /*accurate=*/is_accurate_trigger,
-        /*ready_time=*/base::ScopedMockElapsedTimersForTest::kMockElapsedTime)};
+        /*ready_time=*/base::ScopedMockElapsedTimersForTest::kMockElapsedTime,
+        blink::mojom::SpeculationEagerness::kEager)};
 
     EXPECT_THAT(actual_attempts,
                 testing::UnorderedElementsAreArray(expected_attempts))

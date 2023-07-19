@@ -5,6 +5,7 @@
 #include "content/browser/preloading/prerenderer_impl.h"
 
 #include "content/browser/preloading/preloading.h"
+#include "content/browser/preloading/preloading_attempt_impl.h"
 #include "content/browser/preloading/prerender/prerender_attributes.h"
 #include "content/browser/preloading/prerender/prerender_final_status.h"
 #include "content/browser/preloading/prerender/prerender_host_registry.h"
@@ -199,9 +200,11 @@ bool PrerendererImpl::MaybePrerender(
   // this prerendering attempt.
   PreloadingURLMatchCallback same_url_matcher =
       PreloadingData::GetSameURLMatcher(candidate->url);
-  PreloadingAttempt* preloading_attempt = preloading_data->AddPreloadingAttempt(
-      GetPredictorForSpeculationRules(candidate->injection_world),
-      PreloadingType::kPrerender, std::move(same_url_matcher));
+  auto* preloading_attempt =
+      static_cast<PreloadingAttemptImpl*>(preloading_data->AddPreloadingAttempt(
+          GetPredictorForSpeculationRules(candidate->injection_world),
+          PreloadingType::kPrerender, std::move(same_url_matcher)));
+  preloading_attempt->SetSpeculationEagerness(candidate->eagerness);
 
   auto [begin, end] = base::ranges::equal_range(
       started_prerenders_.begin(), started_prerenders_.end(), candidate->url,
