@@ -393,25 +393,23 @@ class ColorPaletteControllerImpl : public ColorPaletteController,
 
     pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
     pref_change_registrar_->Init(prefs);
-    UpdateLocalColorSchemePref();
-    UpdateLocalSeedColorPref();
-    UpdateLocalUseKMeansPref();
+    OnColorSchemePrefChanged();
+    OnSeedColorPrefChanged();
+    OnUseKMeansPrefChanged();
 
     pref_change_registrar_->Add(
         prefs::kDynamicColorColorScheme,
         base::BindRepeating(
-            &ColorPaletteControllerImpl::UpdateLocalColorSchemePref,
+            &ColorPaletteControllerImpl::OnColorSchemePrefChanged,
             base::Unretained(this)));
     pref_change_registrar_->Add(
         prefs::kDynamicColorSeedColor,
-        base::BindRepeating(
-            &ColorPaletteControllerImpl::UpdateLocalSeedColorPref,
-            base::Unretained(this)));
+        base::BindRepeating(&ColorPaletteControllerImpl::OnSeedColorPrefChanged,
+                            base::Unretained(this)));
     pref_change_registrar_->Add(
         prefs::kDynamicColorUseKMeans,
-        base::BindRepeating(
-            &ColorPaletteControllerImpl::UpdateLocalUseKMeansPref,
-            base::Unretained(this)));
+        base::BindRepeating(&ColorPaletteControllerImpl::OnUseKMeansPrefChanged,
+                            base::Unretained(this)));
   }
 
   // Sets the UseKMeans pref to false if the user is new, and
@@ -615,7 +613,7 @@ class ColorPaletteControllerImpl : public ColorPaletteController,
     RefreshNativeTheme(*seed);
   }
 
-  void UpdateLocalColorSchemePref() {
+  void OnColorSchemePrefChanged() {
     if (!local_state_) {
       CHECK_IS_TEST();
       return;
@@ -625,9 +623,10 @@ class ColorPaletteControllerImpl : public ColorPaletteController,
     user_manager::KnownUser(local_state_)
         .SetIntegerPref(account_id, prefs::kDynamicColorColorScheme,
                         static_cast<int>(color_scheme));
+    NotifyObservers(BestEffortSeed(GetActiveUserSession()));
   }
 
-  void UpdateLocalSeedColorPref() {
+  void OnSeedColorPrefChanged() {
     if (!local_state_) {
       CHECK_IS_TEST();
       return;
@@ -637,14 +636,16 @@ class ColorPaletteControllerImpl : public ColorPaletteController,
     user_manager::KnownUser(local_state_)
         .SetPath(account_id, prefs::kDynamicColorSeedColor,
                  base::Int64ToValue(seed_color));
+    NotifyObservers(BestEffortSeed(GetActiveUserSession()));
   }
 
-  void UpdateLocalUseKMeansPref() {
+  void OnUseKMeansPrefChanged() {
     CHECK(local_state_);
     auto account_id = AccountFromSession(GetActiveUserSession());
     auto use_k_means = GetUseKMeansPref(account_id);
     user_manager::KnownUser(local_state_)
         .SetBooleanPref(account_id, prefs::kDynamicColorUseKMeans, use_k_means);
+    NotifyObservers(BestEffortSeed(GetActiveUserSession()));
   }
 
   base::ScopedObservation<DarkLightModeController, ColorModeObserver>

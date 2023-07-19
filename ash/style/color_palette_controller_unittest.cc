@@ -250,6 +250,79 @@ TEST_F(ColorPaletteControllerTest, SetStaticColor_JellyDisabled_AlwaysKMeans) {
       color_palette_controller()->GetColorPaletteSeed(kAccountId)->seed_color);
 }
 
+TEST_F(ColorPaletteControllerTest, UpdateColorScheme_NotifiesObserver) {
+  base::test::ScopedFeatureList feature_list(chromeos::features::kJelly);
+  color_palette_controller()->SetColorScheme(ColorScheme::kVibrant, kAccountId,
+                                             base::DoNothing());
+  SimulateUserLogin(kAccountId);
+  UpdateWallpaperColor(SK_ColorBLUE);
+  const ColorScheme color_scheme = ColorScheme::kExpressive;
+  PrefService* pref_service =
+      Shell::Get()->session_controller()->GetUserPrefServiceForUser(kAccountId);
+
+  MockPaletteObserver observer;
+  base::ScopedObservation<ColorPaletteController,
+                          ColorPaletteController::Observer>
+      observation(&observer);
+  observation.Observe(color_palette_controller());
+  EXPECT_CALL(observer, OnColorPaletteChanging(testing::Field(
+                            &ColorPaletteSeed::scheme, color_scheme)))
+      .Times(1);
+
+  pref_service->SetInteger(prefs::kDynamicColorColorScheme,
+                           static_cast<int>(color_scheme));
+  task_environment()->RunUntilIdle();
+}
+
+TEST_F(ColorPaletteControllerTest, UpdateStaticColor_NotifiesObserver) {
+  base::test::ScopedFeatureList feature_list(chromeos::features::kJelly);
+  color_palette_controller()->SetColorScheme(ColorScheme::kVibrant, kAccountId,
+                                             base::DoNothing());
+  SimulateUserLogin(kAccountId);
+  color_palette_controller()->SetStaticColor(SK_ColorRED, kAccountId,
+                                             base::DoNothing());
+  UpdateWallpaperColor(SK_ColorBLUE);
+  const SkColor static_color = SK_ColorGRAY;
+  PrefService* pref_service =
+      Shell::Get()->session_controller()->GetUserPrefServiceForUser(kAccountId);
+
+  MockPaletteObserver observer;
+  base::ScopedObservation<ColorPaletteController,
+                          ColorPaletteController::Observer>
+      observation(&observer);
+  observation.Observe(color_palette_controller());
+  EXPECT_CALL(observer, OnColorPaletteChanging(testing::Field(
+                            &ColorPaletteSeed::seed_color, static_color)))
+      .Times(1);
+
+  pref_service->SetUint64(prefs::kDynamicColorSeedColor, static_color);
+  task_environment()->RunUntilIdle();
+}
+
+TEST_F(ColorPaletteControllerTest, UpdateUseKMeans_NotifiesObserver) {
+  base::test::ScopedFeatureList feature_list(chromeos::features::kJelly);
+  color_palette_controller()->SetColorScheme(ColorScheme::kTonalSpot,
+                                             kAccountId, base::DoNothing());
+  SetUseKMeansPref(true);
+  UpdateWallpaperColor(kCelebiColor);
+  SimulateUserLogin(kAccountId);
+
+  MockPaletteObserver observer;
+  base::ScopedObservation<ColorPaletteController,
+                          ColorPaletteController::Observer>
+      observation(&observer);
+  observation.Observe(color_palette_controller());
+  EXPECT_CALL(
+      observer,
+      OnColorPaletteChanging(testing::AllOf(
+          testing::Field(&ColorPaletteSeed::scheme, ColorScheme::kTonalSpot),
+          testing::Field(&ColorPaletteSeed::seed_color, kCelebiColor))))
+      .Times(1);
+
+  SetUseKMeansPref(false);
+  task_environment()->RunUntilIdle();
+}
+
 TEST_F(ColorPaletteControllerTest, ColorModeTriggersObserver) {
   base::test::ScopedFeatureList feature_list(chromeos::features::kJelly);
 
