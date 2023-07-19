@@ -123,7 +123,13 @@ class CONTENT_EXPORT PreloadingAttemptImpl : public PreloadingAttempt {
   // standard buckets, of 1.15 spacing.
   absl::optional<base::TimeDelta> ready_time_;
 
-  // TODO: doc
+  // The random seed used to determine if a preloading attempt should be sampled
+  // in UKM logs. We use a different random seed for each session (that is the
+  // source of randomness for sampling) and then hash that seed with the UKM
+  // source ID so that all attempts for a given source ID use the same random
+  // value to determine sampling. This allows all PreloadingAttempt for a given
+  // (preloading_type, predictor) in a page load to be sampled in or out
+  // together.
   uint32_t sampling_seed_;
 
   // Eagerness of this preloading attempt (specified by a speculation rule).
