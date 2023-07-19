@@ -7,6 +7,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/frame/window_frame_util.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/tabs/new_tab_button.h"
@@ -173,12 +174,20 @@ IN_PROC_BROWSER_TEST_F(TabStripRegionViewBrowserTest, TestBeginEndFocus) {
   EXPECT_TRUE(tab_0->HasFocus());
 }
 
-#if !BUILDFLAG(IS_WIN)
 IN_PROC_BROWSER_TEST_F(TabStripRegionViewBrowserTest,
                        TestSearchButtonIsEndAligned) {
-  const int kRightMargin =
-      GetLayoutConstant(TABSTRIP_REGION_VIEW_CONTROL_PADDING);
-  EXPECT_EQ(tab_strip_region_view()->GetLocalBounds().right() - kRightMargin,
-            tab_search_button()->bounds().right());
+  if (WindowFrameUtil::IsWindowsTabSearchCaptionButtonEnabled(browser())) {
+    EXPECT_EQ(tab_search_button(), nullptr);
+  } else {
+    const int kRightMargin =
+        GetLayoutConstant(TABSTRIP_REGION_VIEW_CONTROL_PADDING);
+
+    const int tab_search_button_expected_x =
+        TabSearchBubbleHost::ShouldTabSearchRenderBeforeTabStrip()
+            ? tab_strip_region_view()->GetLocalBounds().x() + kRightMargin
+            : tab_strip_region_view()->GetLocalBounds().right() - kRightMargin;
+
+    EXPECT_EQ(tab_search_button()->bounds().right(),
+              tab_search_button_expected_x);
+  }
 }
-#endif  // !BUILDFLAG(IS_WIN)
