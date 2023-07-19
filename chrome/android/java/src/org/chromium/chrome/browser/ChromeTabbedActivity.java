@@ -2242,14 +2242,14 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         } else if (id == R.id.close_all_tabs_menu_id) {
             // Close both incognito and normal tabs.
             CloseAllTabsDialog.show(this, getModalDialogManagerSupplier(),
-                    () -> getTabModelSelector().closeAllTabs(), /*isIncognito=*/false);
+                    getTabModelSelectorSupplier().get(),
+                    () -> getTabModelSelector().closeAllTabs());
             RecordUserAction.record("MobileMenuCloseAllTabs");
         } else if (id == R.id.close_all_incognito_tabs_menu_id) {
             // Close only incognito tabs
             CloseAllTabsDialog.show(this, getModalDialogManagerSupplier(),
-                    ()
-                            -> getTabModelSelector().getModel(true).closeAllTabs(),
-                    /*isIncognito=*/true);
+                    getTabModelSelectorSupplier().get(),
+                    () -> getTabModelSelector().getModel(true).closeAllTabs());
             RecordUserAction.record("MobileMenuCloseAllIncognitoTabs");
         } else if (id == R.id.focus_url_bar) {
             boolean isUrlBarVisible =
