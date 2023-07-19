@@ -90,13 +90,15 @@ export class CategoriesElement extends CategoriesElementBase {
   private collections_: BackgroundCollection[];
   private selectedCategory_: SelectedCategory;
   private theme_: Theme;
-  private setThemeListenerId_: number|null = null;
 
   private pageHandler_: CustomizeChromePageHandlerInterface;
+  private previewImageLoadStartEpoch_: number;
+  private setThemeListenerId_: number|null = null;
 
   constructor() {
     super();
     this.pageHandler_ = CustomizeChromeApiProxy.getInstance().handler;
+    this.previewImageLoadStartEpoch_ = Date.now();
     this.pageHandler_.getBackgroundCollections().then(({collections}) => {
       this.collections_ = collections;
     });
@@ -135,6 +137,18 @@ export class CategoriesElement extends CategoriesElementBase {
       this.registerHelpBubble(
           CHROME_THEME_COLLECTION_ELEMENT_ID, collections[4]);
     }
+  }
+
+  private onPreviewImageLoad_() {
+    chrome.metricsPrivate.recordValue(
+        {
+          metricName: 'NewTabPage.Images.ShownTime.CollectionPreviewImage',
+          type: chrome.metricsPrivate.MetricTypeType.HISTOGRAM_LOG,
+          min: 1,
+          max: 60000,  // 60 seconds.
+          buckets: 100,
+        },
+        Math.floor(Date.now() - this.previewImageLoadStartEpoch_));
   }
 
   private computeSelectedCategory_() {

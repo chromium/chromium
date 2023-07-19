@@ -846,15 +846,21 @@ chromium-metrics-reviews@google.com.
   <owner>pauladedeji@google.com</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
   <summary>
-    The elapsed time between a request by the NTP frontend to show {ImageType}
+    The elapsed time between when {ImageType} is requested by the NTP frontend
     and when it is loaded.
 
     NewTabPage.Images.ShownTime.BackgroundImage is only logged when the NTP
     loads with a background image. It is recorded once per NTP.
+
+    Other {ImageType} metrics are logged every time that {ImageType} is shown.
   </summary>
   <token key="ImageType">
     <variant name=".BackgroundImage"
         summary="background image set when user opens NTP"/>
+    <variant name=".CollectionPreviewImage"
+        summary="collection preview image in Customize Chrome"/>
+    <variant name=".ThemePreviewImage"
+        summary="theme preview image in Customize Chrome"/>
   </token>
 </histogram>
 
