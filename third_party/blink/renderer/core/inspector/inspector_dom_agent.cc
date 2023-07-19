@@ -244,27 +244,6 @@ protocol::DOM::PseudoType InspectorDOMAgent::ProtocolPseudoElementType(
   }
 }
 
-// static
-Color InspectorDOMAgent::ParseColor(protocol::DOM::RGBA* rgba) {
-  if (!rgba)
-    return Color::kTransparent;
-
-  int r = rgba->getR();
-  int g = rgba->getG();
-  int b = rgba->getB();
-  if (!rgba->hasA())
-    return Color(r, g, b);
-
-  double a = rgba->getA(1);
-  // Clamp alpha to the [0..1] range.
-  if (a < 0)
-    a = 0;
-  else if (a > 1)
-    a = 1;
-
-  return Color(r, g, b, static_cast<int>(a * 255));
-}
-
 InspectorDOMAgent::InspectorDOMAgent(
     v8::Isolate* isolate,
     InspectedFrames* inspected_frames,

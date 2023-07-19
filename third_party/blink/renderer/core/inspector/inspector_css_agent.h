@@ -59,6 +59,7 @@ class CSSStyleRule;
 class CSSStyleSheet;
 class CSSSupportsRule;
 class CSSScopeRule;
+class Color;
 class Document;
 class Element;
 class FontCustomPlatformData;

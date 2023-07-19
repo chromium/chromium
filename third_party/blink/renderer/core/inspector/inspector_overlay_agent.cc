@@ -125,6 +125,29 @@ v8::MaybeLocal<v8::Value> GetV8Property(v8::Local<v8::Context> context,
   return object_obj->Get(context, name_str);
 }
 
+Color ParseColor(protocol::DOM::RGBA* rgba) {
+  if (!rgba) {
+    return Color::kTransparent;
+  }
+
+  int r = rgba->getR();
+  int g = rgba->getG();
+  int b = rgba->getB();
+  if (!rgba->hasA()) {
+    return Color(r, g, b);
+  }
+
+  double a = rgba->getA(1);
+  // Clamp alpha to the [0..1] range.
+  if (a < 0) {
+    a = 0;
+  } else if (a > 1) {
+    a = 1;
+  }
+
+  return Color(r, g, b, static_cast<int>(a * 255));
+}
+
 }  // namespace
 
 // OverlayNames ----------------------------------------------------------------
@@ -630,8 +653,8 @@ protocol::Response InspectorOverlayAgent::highlightRect(
       std::make_unique<gfx::QuadF>(gfx::RectF(x, y, width, height));
   return SetInspectTool(MakeGarbageCollected<QuadHighlightTool>(
       this, GetFrontend(), std::move(quad),
-      InspectorDOMAgent::ParseColor(color.fromMaybe(nullptr)),
-      InspectorDOMAgent::ParseColor(outline_color.fromMaybe(nullptr))));
+      ParseColor(color.fromMaybe(nullptr)),
+      ParseColor(outline_color.fromMaybe(nullptr))));
 }
 
 protocol::Response InspectorOverlayAgent::highlightQuad(
@@ -644,8 +667,8 @@ protocol::Response InspectorOverlayAgent::highlightQuad(
   }
   return SetInspectTool(MakeGarbageCollected<QuadHighlightTool>(
       this, GetFrontend(), std::move(quad),
-      InspectorDOMAgent::ParseColor(color.fromMaybe(nullptr)),
-      InspectorDOMAgent::ParseColor(outline_color.fromMaybe(nullptr))));
+      ParseColor(color.fromMaybe(nullptr)),
+      ParseColor(outline_color.fromMaybe(nullptr))));
 }
 
 protocol::Response InspectorOverlayAgent::setShowHinge(
@@ -672,13 +695,11 @@ protocol::Response InspectorOverlayAgent::setShowHinge(
   }
 
   // Use default color if a content color is not provided.
-  Color content_color =
-      config->hasContentColor()
-          ? InspectorDOMAgent::ParseColor(config->getContentColor(nullptr))
-          : Color(38, 38, 38);
+  Color content_color = config->hasContentColor()
+                            ? ParseColor(config->getContentColor(nullptr))
+                            : Color(38, 38, 38);
   // outlineColor uses a kTransparent default from ParseColor if not provided.
-  Color outline_color =
-      InspectorDOMAgent::ParseColor(config->getOutlineColor(nullptr));
+  Color outline_color = ParseColor(config->getOutlineColor(nullptr));
 
   DCHECK(frame_impl_->GetFrameView() && GetFrame());
 
@@ -929,10 +950,9 @@ protocol::Response InspectorOverlayAgent::highlightFrame(
   std::unique_ptr<InspectorHighlightConfig> highlight_config =
       std::make_unique<InspectorHighlightConfig>();
   highlight_config->show_info = true;  // Always show tooltips for frames.
-  highlight_config->content =
-      InspectorDOMAgent::ParseColor(color.fromMaybe(nullptr));
+  highlight_config->content = ParseColor(color.fromMaybe(nullptr));
   highlight_config->content_outline =
-      InspectorDOMAgent::ParseColor(outline_color.fromMaybe(nullptr));
+      ParseColor(outline_color.fromMaybe(nullptr));
 
   return SetInspectTool(MakeGarbageCollected<NodeHighlightTool>(
       this, GetFrontend(), frame->DeprecatedLocalOwner(), String(),
@@ -1627,10 +1647,10 @@ InspectorOverlayAgent::SourceOrderConfigFromInspectorObject(
     std::unique_ptr<protocol::Overlay::SourceOrderConfig>
         source_order_inspector_object) {
   InspectorSourceOrderConfig source_order_config = InspectorSourceOrderConfig();
-  source_order_config.parent_outline_color = InspectorDOMAgent::ParseColor(
-      source_order_inspector_object->getParentOutlineColor());
-  source_order_config.child_outline_color = InspectorDOMAgent::ParseColor(
-      source_order_inspector_object->getChildOutlineColor());
+  source_order_config.parent_outline_color =
+      ParseColor(source_order_inspector_object->getParentOutlineColor());
+  source_order_config.child_outline_color =
+      ParseColor(source_order_inspector_object->getChildOutlineColor());
 
   return source_order_config;
 }
@@ -1691,7 +1711,7 @@ InspectorOverlayAgent::ToGridHighlightConfig(
 
   highlight_config->show_track_sizes = config->getShowTrackSizes(false);
   highlight_config->grid_color =
-      InspectorDOMAgent::ParseColor(config->getGridBorderColor(nullptr));
+      ParseColor(config->getGridBorderColor(nullptr));
 
   // cellBorderColor is deprecated. We only use it if defined and none of the
   // new properties are.
@@ -1699,26 +1719,23 @@ InspectorOverlayAgent::ToGridHighlightConfig(
                                !config->hasColumnLineColor() &&
                                config->hasCellBorderColor();
   highlight_config->row_line_color =
-      hasLegacyBorderColors
-          ? InspectorDOMAgent::ParseColor(config->getCellBorderColor(nullptr))
-          : InspectorDOMAgent::ParseColor(config->getRowLineColor(nullptr));
+      hasLegacyBorderColors ? ParseColor(config->getCellBorderColor(nullptr))
+                            : ParseColor(config->getRowLineColor(nullptr));
   highlight_config->column_line_color =
-      hasLegacyBorderColors
-          ? InspectorDOMAgent::ParseColor(config->getCellBorderColor(nullptr))
-          : InspectorDOMAgent::ParseColor(config->getColumnLineColor(nullptr));
+      hasLegacyBorderColors ? ParseColor(config->getCellBorderColor(nullptr))
+                            : ParseColor(config->getColumnLineColor(nullptr));
 
-  highlight_config->row_gap_color =
-      InspectorDOMAgent::ParseColor(config->getRowGapColor(nullptr));
+  highlight_config->row_gap_color = ParseColor(config->getRowGapColor(nullptr));
   highlight_config->column_gap_color =
-      InspectorDOMAgent::ParseColor(config->getColumnGapColor(nullptr));
+      ParseColor(config->getColumnGapColor(nullptr));
   highlight_config->row_hatch_color =
-      InspectorDOMAgent::ParseColor(config->getRowHatchColor(nullptr));
+      ParseColor(config->getRowHatchColor(nullptr));
   highlight_config->column_hatch_color =
-      InspectorDOMAgent::ParseColor(config->getColumnHatchColor(nullptr));
+      ParseColor(config->getColumnHatchColor(nullptr));
   highlight_config->area_border_color =
-      InspectorDOMAgent::ParseColor(config->getAreaBorderColor(nullptr));
+      ParseColor(config->getAreaBorderColor(nullptr));
   highlight_config->grid_background_color =
-      InspectorDOMAgent::ParseColor(config->getGridBackgroundColor(nullptr));
+      ParseColor(config->getGridBackgroundColor(nullptr));
   return highlight_config;
 }
 
@@ -1768,9 +1785,9 @@ InspectorOverlayAgent::ToScrollSnapContainerHighlightConfig(
       InspectorOverlayAgent::ToLineStyle(config->getSnapAreaBorder(nullptr));
 
   highlight_config->scroll_margin_color =
-      InspectorDOMAgent::ParseColor(config->getScrollMarginColor(nullptr));
+      ParseColor(config->getScrollMarginColor(nullptr));
   highlight_config->scroll_padding_color =
-      InspectorDOMAgent::ParseColor(config->getScrollPaddingColor(nullptr));
+      ParseColor(config->getScrollPaddingColor(nullptr));
 
   return highlight_config;
 }
@@ -1824,11 +1841,10 @@ InspectorOverlayAgent::ToIsolationModeHighlightConfig(
   std::unique_ptr<InspectorIsolationModeHighlightConfig> highlight_config =
       std::make_unique<InspectorIsolationModeHighlightConfig>();
   highlight_config->resizer_color =
-      InspectorDOMAgent::ParseColor(config->getResizerColor(nullptr));
+      ParseColor(config->getResizerColor(nullptr));
   highlight_config->resizer_handle_color =
-      InspectorDOMAgent::ParseColor(config->getResizerHandleColor(nullptr));
-  highlight_config->mask_color =
-      InspectorDOMAgent::ParseColor(config->getMaskColor(nullptr));
+      ParseColor(config->getResizerHandleColor(nullptr));
+  highlight_config->mask_color = ParseColor(config->getMaskColor(nullptr));
   highlight_config->highlight_index = idx;
 
   return highlight_config;
@@ -1841,7 +1857,7 @@ absl::optional<LineStyle> InspectorOverlayAgent::ToLineStyle(
     return absl::nullopt;
   }
   absl::optional<LineStyle> line_style = LineStyle();
-  line_style->color = InspectorDOMAgent::ParseColor(config->getColor(nullptr));
+  line_style->color = ParseColor(config->getColor(nullptr));
   line_style->pattern = config->getPattern("solid");
 
   return line_style;
@@ -1854,10 +1870,8 @@ absl::optional<BoxStyle> InspectorOverlayAgent::ToBoxStyle(
     return absl::nullopt;
   }
   absl::optional<BoxStyle> box_style = BoxStyle();
-  box_style->fill_color =
-      InspectorDOMAgent::ParseColor(config->getFillColor(nullptr));
-  box_style->hatch_color =
-      InspectorDOMAgent::ParseColor(config->getHatchColor(nullptr));
+  box_style->fill_color = ParseColor(config->getFillColor(nullptr));
+  box_style->hatch_color = ParseColor(config->getHatchColor(nullptr));
 
   return box_style;
 }
@@ -1885,22 +1899,16 @@ InspectorOverlayAgent::ToHighlightConfig(
   highlight_config->show_styles = config->getShowStyles(false);
   highlight_config->show_rulers = config->getShowRulers(false);
   highlight_config->show_extension_lines = config->getShowExtensionLines(false);
-  highlight_config->content =
-      InspectorDOMAgent::ParseColor(config->getContentColor(nullptr));
-  highlight_config->padding =
-      InspectorDOMAgent::ParseColor(config->getPaddingColor(nullptr));
-  highlight_config->border =
-      InspectorDOMAgent::ParseColor(config->getBorderColor(nullptr));
-  highlight_config->margin =
-      InspectorDOMAgent::ParseColor(config->getMarginColor(nullptr));
+  highlight_config->content = ParseColor(config->getContentColor(nullptr));
+  highlight_config->padding = ParseColor(config->getPaddingColor(nullptr));
+  highlight_config->border = ParseColor(config->getBorderColor(nullptr));
+  highlight_config->margin = ParseColor(config->getMarginColor(nullptr));
   highlight_config->event_target =
-      InspectorDOMAgent::ParseColor(config->getEventTargetColor(nullptr));
-  highlight_config->shape =
-      InspectorDOMAgent::ParseColor(config->getShapeColor(nullptr));
+      ParseColor(config->getEventTargetColor(nullptr));
+  highlight_config->shape = ParseColor(config->getShapeColor(nullptr));
   highlight_config->shape_margin =
-      InspectorDOMAgent::ParseColor(config->getShapeMarginColor(nullptr));
-  highlight_config->css_grid =
-      InspectorDOMAgent::ParseColor(config->getCssGridColor(nullptr));
+      ParseColor(config->getShapeMarginColor(nullptr));
+  highlight_config->css_grid = ParseColor(config->getCssGridColor(nullptr));
 
   namespace ColorFormatEnum = protocol::Overlay::ColorFormatEnum;
 
