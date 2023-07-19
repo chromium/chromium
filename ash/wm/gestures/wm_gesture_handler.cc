@@ -188,8 +188,7 @@ bool Handle3FingerContinuousVerticalScroll(float scroll_y,
     }
 
     base::RecordAction(base::UserMetricsAction("Touchpad_Gesture_Overview"));
-    overview_controller->StartOverview(
-        OverviewStartAction::k3FingerVerticalScroll, entry_type.value());
+    overview_controller->HandleContinuousScroll(scroll_y, entry_type.value());
   } else {
     base::RecordAction(base::UserMetricsAction("Touchpad_Gesture_Overview"));
 

@@ -50,6 +50,12 @@ class ASH_EXPORT OverviewController : public OverviewDelegate,
   // Returns true if overview mode is active.
   bool InOverviewSession() const;
 
+  // Receives a continuous scroll event from the gesture handler and either
+  // initializes overview mode in preparation for future continuous scrolls, or
+  // immediately calls `OverviewGrid::PositionWindowsForContinuousScrolls()` if
+  // overview mode has already been initialized.
+  bool HandleContinuousScroll(float y_offset, OverviewEnterExitType type);
+
   // Moves the current selection forward or backward.
   void IncrementSelection(bool forward);
 
