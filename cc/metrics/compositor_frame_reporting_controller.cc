@@ -570,10 +570,13 @@ void CompositorFrameReportingController::DidPresentCompositorFrame(
       // reporter's 'partial update' flag can be unset if necessary. This is not
       // necessary for frames with failed presentation as we can say for sure
       // that they are dropped and nothing will change their fate.
+
+      CompositorFrameReporter* reporter_ptr = reporter.get();
       if (CompositorFrameReporter* orig_reporter =
               reporter->partial_update_decider()) {
         orig_reporter->AdoptReporter(std::move(reporter));
       }
+      reporter_ptr->DidSuccessfullyPresentFrame();
     } else {
       // If the frame didn't end up being presented, keep its metrics around to
       // be reported with the first following presented frame.

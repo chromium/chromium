@@ -794,6 +794,10 @@ EventMetrics::List CompositorFrameReporter::TakeMainBlockedEventsMetrics() {
   return result;
 }
 
+void CompositorFrameReporter::DidSuccessfullyPresentFrame() {
+  ReportScrollJankMetrics();
+}
+
 void CompositorFrameReporter::TerminateReporter() {
   if (frame_termination_status_ == FrameTerminationStatus::kUnknown)
     TerminateFrame(FrameTerminationStatus::kUnknown, Now());
@@ -855,7 +859,6 @@ void CompositorFrameReporter::TerminateReporter() {
     // Only report event latency metrics if the frame was presented.
     if (TestReportType(FrameReportType::kNonDroppedFrame)) {
       ReportEventLatencyMetrics();
-      ReportScrollJankMetrics();
     }
   }
 
