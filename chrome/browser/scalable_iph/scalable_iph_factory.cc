@@ -107,7 +107,11 @@ content::BrowserContext* ScalableIphFactory::GetBrowserContextToUse(
 
   CHECK(user_manager::UserManager::IsInitialized())
       << "UserManager is required for an eligibility check";
-  if (!user_manager::UserManager::Get()->IsOwnerUser(
+  // Check that the user profile is the device owner, excepting when
+  // the device owner id is not registered yet (i.e. first sessions).
+  if (user_manager::UserManager::Get()->GetOwnerAccountId() !=
+          EmptyAccountId() &&
+      !user_manager::UserManager::Get()->IsOwnerUser(
           ash::BrowserContextHelper::Get()->GetUserByBrowserContext(
               browser_context))) {
     return nullptr;
