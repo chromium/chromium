@@ -73,6 +73,10 @@ void AddChildScreen::ShowImpl() {
 
   scoped_observation_.Observe(network_state_informer_.get());
 
+  // Fixing the Guest shelfButton
+  // Todo(b/291766001) Nuke is_first_signin_step_ in LoginshelfView
+  LoginScreen::Get()->SetIsFirstSigninStep(true);
+
   UpdateState(NetworkError::ERROR_REASON_UPDATE);
 
   if (!error_screen_visible_) {
