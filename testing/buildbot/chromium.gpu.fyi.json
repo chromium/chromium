@@ -5154,7 +5154,7 @@
         "autotest_name": "chromium_Graphics",
         "bucket": "chromiumos-image-archive",
         "cros_board": "kevin",
-        "cros_img": "kevin-public/R114-15408.0.0",
+        "cros_img": "kevin-public/R117-15511.0.0",
         "extra_browser_args": "--log-level=0 --js-flags=--expose-gc --use-cmd-decoder=validating",
         "name": "context_lost_validating_tests KEVIN_PUBLIC_LKGM",
         "resultdb": {
@@ -5184,7 +5184,7 @@
         "autotest_name": "chromium_Graphics",
         "bucket": "chromiumos-image-archive",
         "cros_board": "kevin",
-        "cros_img": "kevin-public/R114-15408.0.0",
+        "cros_img": "kevin-public/R117-15511.0.0",
         "extra_browser_args": "--log-level=0 --js-flags=--expose-gc --use-cmd-decoder=validating",
         "name": "expected_color_pixel_validating_test KEVIN_PUBLIC_LKGM",
         "precommit_args": [
@@ -5214,7 +5214,7 @@
         "autotest_name": "chromium_Graphics",
         "bucket": "chromiumos-image-archive",
         "cros_board": "kevin",
-        "cros_img": "kevin-public/R114-15408.0.0",
+        "cros_img": "kevin-public/R117-15511.0.0",
         "extra_browser_args": "--log-level=0 --js-flags=--expose-gc",
         "name": "gpu_process_launch_tests KEVIN_PUBLIC_LKGM",
         "resultdb": {
@@ -5239,7 +5239,7 @@
         "autotest_name": "chromium_Graphics",
         "bucket": "chromiumos-image-archive",
         "cros_board": "kevin",
-        "cros_img": "kevin-public/R114-15408.0.0",
+        "cros_img": "kevin-public/R117-15511.0.0",
         "extra_browser_args": "--log-level=0 --js-flags=--expose-gc",
         "name": "hardware_accelerated_feature_tests KEVIN_PUBLIC_LKGM",
         "resultdb": {
@@ -5268,7 +5268,7 @@
         "autotest_name": "chromium_Graphics",
         "bucket": "chromiumos-image-archive",
         "cros_board": "kevin",
-        "cros_img": "kevin-public/R114-15408.0.0",
+        "cros_img": "kevin-public/R117-15511.0.0",
         "extra_browser_args": "--log-level=0 --js-flags=--expose-gc --force_high_performance_gpu",
         "name": "info_collection_tests KEVIN_PUBLIC_LKGM",
         "resultdb": {
@@ -5293,7 +5293,7 @@
         "autotest_name": "chromium_Graphics",
         "bucket": "chromiumos-image-archive",
         "cros_board": "kevin",
-        "cros_img": "kevin-public/R114-15408.0.0",
+        "cros_img": "kevin-public/R117-15511.0.0",
         "extra_browser_args": "--log-level=0 --js-flags=--expose-gc --force_higher_performance_gpu --use-cmd-decoder=validating",
         "name": "mediapipe_validating_tests KEVIN_PUBLIC_LKGM",
         "resultdb": {
@@ -5324,7 +5324,7 @@
         "autotest_name": "chromium_Graphics",
         "bucket": "chromiumos-image-archive",
         "cros_board": "kevin",
-        "cros_img": "kevin-public/R114-15408.0.0",
+        "cros_img": "kevin-public/R117-15511.0.0",
         "extra_browser_args": "--log-level=0 --js-flags=--expose-gc --use-cmd-decoder=validating",
         "name": "pixel_skia_gold_validating_test KEVIN_PUBLIC_LKGM",
         "precommit_args": [
@@ -5355,7 +5355,7 @@
         "autotest_name": "chromium_Graphics",
         "bucket": "chromiumos-image-archive",
         "cros_board": "kevin",
-        "cros_img": "kevin-public/R114-15408.0.0",
+        "cros_img": "kevin-public/R117-15511.0.0",
         "extra_browser_args": "--log-level=0 --js-flags=--expose-gc --use-cmd-decoder=validating",
         "name": "screenshot_sync_validating_tests KEVIN_PUBLIC_LKGM",
         "resultdb": {
@@ -5381,7 +5381,7 @@
         "autotest_name": "chromium_Graphics",
         "bucket": "chromiumos-image-archive",
         "cros_board": "kevin",
-        "cros_img": "kevin-public/R114-15408.0.0",
+        "cros_img": "kevin-public/R117-15511.0.0",
         "extra_browser_args": "--log-level=0 --js-flags=--expose-gc",
         "name": "trace_test KEVIN_PUBLIC_LKGM",
         "resultdb": {
@@ -5406,7 +5406,7 @@
         "autotest_name": "chromium_Graphics",
         "bucket": "chromiumos-image-archive",
         "cros_board": "kevin",
-        "cros_img": "kevin-public/R114-15408.0.0",
+        "cros_img": "kevin-public/R117-15511.0.0",
         "extra_browser_args": "--log-level=0 --js-flags=--expose-gc --use-cmd-decoder=validating",
         "name": "webcodecs_tests KEVIN_PUBLIC_LKGM",
         "resultdb": {
@@ -5434,7 +5434,7 @@
         "autotest_name": "chromium_Graphics",
         "bucket": "chromiumos-image-archive",
         "cros_board": "kevin",
-        "cros_img": "kevin-public/R114-15408.0.0",
+        "cros_img": "kevin-public/R117-15511.0.0",
         "extra_browser_args": "--log-level=0 --js-flags=--expose-gc --use-gl=angle --use-angle=gles --use-cmd-decoder=passthrough --force_high_performance_gpu",
         "name": "webgl2_conformance_gles_passthrough_tests KEVIN_PUBLIC_LKGM",
         "resultdb": {
@@ -5462,7 +5462,7 @@
         "autotest_name": "chromium_Graphics",
         "bucket": "chromiumos-image-archive",
         "cros_board": "kevin",
-        "cros_img": "kevin-public/R114-15408.0.0",
+        "cros_img": "kevin-public/R117-15511.0.0",
         "extra_browser_args": "--log-level=0 --js-flags=--expose-gc --use-cmd-decoder=validating --force_high_performance_gpu",
         "name": "webgl2_conformance_validating_tests KEVIN_PUBLIC_LKGM",
         "resultdb": {
@@ -5489,7 +5489,7 @@
         "autotest_name": "chromium_Graphics",
         "bucket": "chromiumos-image-archive",
         "cros_board": "kevin",
-        "cros_img": "kevin-public/R114-15408.0.0",
+        "cros_img": "kevin-public/R117-15511.0.0",
         "extra_browser_args": "--log-level=0 --js-flags=--expose-gc --use-cmd-decoder=validating --force_high_performance_gpu",
         "name": "webgl_conformance_validating_tests KEVIN_PUBLIC_LKGM",
         "resultdb": {
