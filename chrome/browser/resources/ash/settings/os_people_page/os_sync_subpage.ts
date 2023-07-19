@@ -334,6 +334,7 @@ export class OsSettingsSyncSubpageElement extends
           this.shadowRoot!.querySelector<HTMLElement>('#sync-advanced-row');
       assert(toFocus);
       focusWithoutInk(toFocus);
+      return null;
     });
   }
 

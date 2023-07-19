@@ -246,7 +246,6 @@ export class SettingsCursorAndTouchpadPageElement extends
   private cursorColorOptions_: Option[];
   private deviceBrowserProxy_: DevicePageBrowserProxy;
   private isKioskModeActive_: boolean;
-  private route_: Route;
   private shelfNavigationButtonsImplicitlyEnabled_: boolean;
   private shelfNavigationButtonsPref_:
       chrome.settingsPrivate.PrefObject<boolean>;
@@ -256,7 +255,7 @@ export class SettingsCursorAndTouchpadPageElement extends
     super();
 
     /** RouteOriginMixin override */
-    this.route_ = routes.A11Y_CURSOR_AND_TOUCHPAD;
+    this.route = routes.A11Y_CURSOR_AND_TOUCHPAD;
 
     this.cursorAndTouchpadBrowserProxy_ =
         CursorAndTouchpadPageBrowserProxyImpl.getInstance();
@@ -292,7 +291,7 @@ export class SettingsCursorAndTouchpadPageElement extends
     super.currentRouteChanged(newRoute, prevRoute);
 
     // Does not apply to this page.
-    if (newRoute !== routes.A11Y_CURSOR_AND_TOUCHPAD) {
+    if (newRoute !== this.route) {
       return;
     }
 

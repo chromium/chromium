@@ -89,13 +89,12 @@ export class SettingsAudioAndCaptionsPageElement extends
   prefs: {[key: string]: any};
   private audioAndCaptionsBrowserProxy_: AudioAndCaptionsPageBrowserProxy;
   private isKioskModeActive_: boolean;
-  private route_: Route;
 
   constructor() {
     super();
 
     /** RouteOriginMixin override */
-    this.route_ = routes.A11Y_AUDIO_AND_CAPTIONS;
+    this.route = routes.A11Y_AUDIO_AND_CAPTIONS;
 
     this.audioAndCaptionsBrowserProxy_ =
         AudioAndCaptionsPageBrowserProxyImpl.getInstance();
@@ -146,7 +145,7 @@ export class SettingsAudioAndCaptionsPageElement extends
     super.currentRouteChanged(newRoute, prevRoute);
 
     // Does not apply to this page.
-    if (newRoute !== routes.A11Y_AUDIO_AND_CAPTIONS) {
+    if (newRoute !== this.route) {
       return;
     }
 

@@ -244,6 +244,7 @@ class SettingsKeyboardElement extends SettingsKeyboardElementBase {
             castExists(this.shadowRoot!.getElementById('showLanguagesInput'));
         focusWithoutInk(showLanguagesInputEl);
       });
+      return null;
     });
   }
 

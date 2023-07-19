@@ -2,17 +2,28 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+/**
+ * @fileoverview
+ * Extends the RouteObserverMixin by adding focus configuration via a mapping
+ * of Route path to element selector. When exiting a subpage via back
+ * navigation, the element which triggers the subpage's route will be focused.
+ *
+ * Subscribing elements must specify their `route` instance variable and call
+ * the `currentRouteChanged()` super method.
+ */
+
 import {assertInstanceof} from 'chrome://resources/js/assert_ts.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
-import {beforeNextRender, dedupingMixin, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {afterNextRender, dedupingMixin, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {castExists} from './assert_extras.js';
 import {Constructor} from './common/types.js';
+import {ElementConfig, FocusConfig} from './focus_config.js';
 import {RouteObserverMixin, RouteObserverMixinInterface} from './route_observer_mixin.js';
-import {Route, Router} from './router.js';
+import {Route, Router, routes} from './router.js';
 
 export interface RouteOriginMixinInterface extends RouteObserverMixinInterface {
-  addFocusConfig(route: Route|undefined, value: string): void;
+  route: Route|undefined;
+  addFocusConfig(route: Route|undefined, value: ElementConfig): void;
 }
 
 export const RouteOriginMixin = dedupingMixin(
@@ -26,10 +37,9 @@ export const RouteOriginMixin = dedupingMixin(
           return {
             /**
              * A Map specifying which element should be focused when exiting a
-             * subpage. The key of the map holds a Route path, and the value
-             * holds either a query selector that identifies the associated
-             * element to focus or a function to be run when a
-             * neon-animation-finish event is handled.
+             * subpage. The key of the map holds a Route object's path, and the
+             * value holds the configuration to find and focus the element. See
+             * addFocusConfig() for more details.
              */
             focusConfig_: {
               type: Object,
@@ -38,17 +48,18 @@ export const RouteOriginMixin = dedupingMixin(
           };
         }
 
-        private focusConfig_: Map<string, string|Function>;
         /**
          * The route corresponding to this page.
          */
-        private route_: Route|undefined = undefined;
+        route: Route|undefined = undefined;
+        private focusConfig_: FocusConfig;
 
         override connectedCallback(): void {
           super.connectedCallback();
-          // All elements with this behavior must specify their route.
+
+          // All elements using this mixin must specify their route.
           assertInstanceof(
-              this.route_, Route,
+              this.route, Route,
               'Route origin element must specify its route.');
         }
 
@@ -59,21 +70,32 @@ export const RouteOriginMixin = dedupingMixin(
             return;
           }
 
-          // Route change does not apply to this page.
-          if (this.route_ !== newRoute) {
+          // Route change does not apply to the route for this page.
+          // When infinite scroll exists (OsSettingsRevampWayfinding disabled)
+          // subpage triggers should be refocused if the previous route was the
+          // root page.
+          if (newRoute !== this.route && newRoute !== routes.BASIC) {
             return;
           }
 
-          this.triggerFocus_(prevRoute);
+          if (prevRoute) {
+            // Defer focusing trigger element until after next render
+            afterNextRender(this, () => {
+              this.focusTriggerElement(prevRoute);
+            });
+          }
         }
 
         /**
          * Adds a route path to |this.focusConfig_| if the route exists.
          * Otherwise it does nothing.
-         * @param value A query selector leading to a button that routes
-         *     the user to |route| if it is defined.
+         * @param value One of the following:
+         *  1) A string representing a query selector for the element.
+         *  2) A reference to the element.
+         *  3) A function that returns the element, or returns null if the
+         *     element will be focused manually.
          */
-        addFocusConfig(route: Route|undefined, value: string) {
+        addFocusConfig(route: Route|undefined, value: ElementConfig) {
           if (route) {
             this.focusConfig_.set(route.path, value);
           }
@@ -83,22 +105,23 @@ export const RouteOriginMixin = dedupingMixin(
          * Focuses the element for a given route by finding the associated
          * query selector or calling the configured function.
          */
-        private triggerFocus_(route?: Route) {
-          if (!route) {
+        private focusTriggerElement(route: Route) {
+          const config = this.focusConfig_.get(route.path);
+          if (!config) {
             return;
           }
 
-          const pathConfig = this.focusConfig_.get(route.path);
-          if (pathConfig) {
-            if (typeof pathConfig === 'function') {
-              pathConfig();
-            } else if (typeof pathConfig === 'string') {
-              const element = castExists(
-                  this.shadowRoot!.querySelector<HTMLElement>(pathConfig));
-              beforeNextRender(this, () => {
-                focusWithoutInk(element);
-              });
-            }
+          let element: HTMLElement|null = null;
+          if (typeof config === 'function') {
+            element = config();
+          } else if (typeof config === 'string') {
+            element = this.shadowRoot!.querySelector<HTMLElement>(config);
+          } else if (config instanceof HTMLElement) {
+            element = config;
+          }
+
+          if (element) {
+            focusWithoutInk(element);
           }
         }
       }

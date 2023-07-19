@@ -11,7 +11,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
-import {waitAfterNextRender, waitBeforeNextRender} from 'chrome://webui-test/polymer_test_util.js';
+import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
 suite('<settings-text-to-speech-subpage>', function() {
@@ -61,7 +61,7 @@ suite('<settings-text-to-speech-subpage>', function() {
           const popStateEventPromise = eventToPromise('popstate', window);
           router.navigateToPreviousRoute();
           await popStateEventPromise;
-          await waitBeforeNextRender(page);
+          await waitAfterNextRender(page);
 
           assertEquals(routes.A11Y_TEXT_TO_SPEECH, router.currentRoute);
           assertEquals(

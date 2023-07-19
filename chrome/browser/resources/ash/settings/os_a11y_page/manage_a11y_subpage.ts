@@ -397,7 +397,6 @@ export class SettingsManageA11ySubpageElement extends
   private isGuest_: boolean;
   private isKioskModeActive_: boolean;
   private manageBrowserProxy_: ManageA11ySubpageBrowserProxy;
-  private route_: Route;
   private screenMagnifierMouseFollowingModePrefValues_: Record<string, number>;
   private screenMagnifierZoomOptions_: Option[];
   private shelfNavigationButtonsImplicitlyEnabled_: boolean;
@@ -411,7 +410,7 @@ export class SettingsManageA11ySubpageElement extends
     super();
 
     /** RouteOriginMixin override */
-    this.route_ = routes.MANAGE_ACCESSIBILITY;
+    this.route = routes.MANAGE_ACCESSIBILITY;
 
     this.manageBrowserProxy_ = ManageA11ySubpageBrowserProxyImpl.getInstance();
 
@@ -476,7 +475,7 @@ export class SettingsManageA11ySubpageElement extends
     super.currentRouteChanged(newRoute, prevRoute);
 
     // Does not apply to this page.
-    if (newRoute !== this.route_) {
+    if (newRoute !== this.route) {
       return;
     }
 

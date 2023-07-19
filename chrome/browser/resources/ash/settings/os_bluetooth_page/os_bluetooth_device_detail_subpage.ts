@@ -110,7 +110,6 @@ class SettingsBluetoothDeviceDetailSubpageElement extends
   private device_: PairedBluetoothDeviceProperties|null;
   private isDeviceConnected_: boolean;
   private pageState_: PageState;
-  private route_: Route;
   private shouldShowChangeDeviceNameDialog_: boolean;
   private shouldShowForgetDeviceDialog_: boolean;
 
@@ -118,7 +117,8 @@ class SettingsBluetoothDeviceDetailSubpageElement extends
     super();
 
     /** RouteOriginMixin override */
-    this.route_ = routes.BLUETOOTH_DEVICE_DETAIL;
+    this.route = routes.BLUETOOTH_DEVICE_DETAIL;
+
     this.browserProxy_ =
         OsBluetoothDevicesSubpageBrowserProxyImpl.getInstance();
   }
@@ -136,7 +136,7 @@ class SettingsBluetoothDeviceDetailSubpageElement extends
   override currentRouteChanged(route: Route, oldRoute?: Route): void {
     super.currentRouteChanged(route, oldRoute);
 
-    if (route !== this.route_) {
+    if (route !== this.route) {
       return;
     }
 

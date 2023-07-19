@@ -96,12 +96,12 @@ export class SettingsMultideviceFeatureItemElement extends
   isFeatureIconHidden: boolean;
   subpageRoute: Route|undefined;
   subpageRouteUrlSearchParams: URLSearchParams|undefined;
-  private route_: Route;
 
   constructor() {
     super();
 
-    this.route_ = routes.MULTIDEVICE_FEATURES;
+    /** RouteOriginMixin override */
+    this.route = routes.MULTIDEVICE_FEATURES;
   }
 
   override ready(): void {

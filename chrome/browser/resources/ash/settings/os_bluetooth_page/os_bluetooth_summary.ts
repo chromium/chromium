@@ -38,7 +38,6 @@ enum LabelType {
 const SettingsBluetoothSummaryElementBase =
     RouteOriginMixin(I18nMixin(PolymerElement));
 
-/** @polymer */
 class SettingsBluetoothSummaryElement extends
     SettingsBluetoothSummaryElementBase {
   static get is() {
@@ -84,7 +83,6 @@ class SettingsBluetoothSummaryElement extends
 
       /**
        * Email address for the primary user.
-       * @private
        */
       primaryUserEmail_: {
         type: String,
@@ -103,13 +101,13 @@ class SettingsBluetoothSummaryElement extends
   private isBluetoothToggleOn_: boolean;
   private isSecondaryUser_: boolean;
   private primaryUserEmail_: string;
-  private route_: Route;
 
   constructor() {
     super();
 
     /** RouteOriginMixin override */
-    this.route_ = routes.BASIC;
+    this.route = routes.BLUETOOTH;
+
     this.browserProxy_ =
         OsBluetoothDevicesSubpageBrowserProxyImpl.getInstance();
   }
@@ -123,9 +121,10 @@ class SettingsBluetoothSummaryElement extends
   /**
    * RouteOriginMixinInterface override
    */
-  override currentRouteChanged(route: Route, oldRoute?: Route): void {
-    super.currentRouteChanged(route, oldRoute);
-    if (route === routes.BLUETOOTH) {
+  override currentRouteChanged(newRoute: Route, oldRoute?: Route): void {
+    super.currentRouteChanged(newRoute, oldRoute);
+
+    if (newRoute === this.route) {
       this.browserProxy_.showBluetoothRevampHatsSurvey();
     }
   }

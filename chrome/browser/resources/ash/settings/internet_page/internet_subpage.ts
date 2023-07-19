@@ -242,7 +242,6 @@ class SettingsInternetSubpageElement extends
   private networkStateList_: OncMojo.NetworkStateProperties[];
   private notificationsDisabledDeviceNames_: string[];
   private pendingSettingId_: Setting|null;
-  private route_: Route;
   private scanIntervalId_: number|null;
   private showTechnologyBadge_: boolean;
   private thirdPartyVpns_: Record<string, OncMojo.NetworkStateProperties[]>;
@@ -251,7 +250,9 @@ class SettingsInternetSubpageElement extends
   constructor() {
     super();
 
-    this.route_ = routes.INTERNET_NETWORKS;
+    /** RouteOriginMixin override */
+    this.route = routes.INTERNET_NETWORKS;
+
     this.scanIntervalId_ = null;
     this.browserProxy_ = InternetPageBrowserProxyImpl.getInstance();
     this.networkConfig_ =
@@ -326,7 +327,7 @@ class SettingsInternetSubpageElement extends
    * RouteObserverMixin override
    */
   override currentRouteChanged(newRoute: Route, oldRoute?: Route): void {
-    if (newRoute !== routes.INTERNET_NETWORKS) {
+    if (newRoute !== this.route) {
       this.stopScanning_();
       return;
     }

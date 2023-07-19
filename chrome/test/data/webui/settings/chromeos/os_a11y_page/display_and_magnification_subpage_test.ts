@@ -11,7 +11,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {pressAndReleaseKeyOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertGT, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks, waitBeforeNextRender} from 'chrome://webui-test/polymer_test_util.js';
+import {flushTasks, waitAfterNextRender, waitBeforeNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
 const DEUTERANOMALY_VALUE = 1;
@@ -66,7 +66,7 @@ suite('<settings-display-and-magnification-subpage>', () => {
           const popStateEventPromise = eventToPromise('popstate', window);
           router.navigateToPreviousRoute();
           await popStateEventPromise;
-          await waitBeforeNextRender(page);
+          await waitAfterNextRender(page);
 
           assertEquals(
               routes.A11Y_DISPLAY_AND_MAGNIFICATION, router.currentRoute);

@@ -203,7 +203,6 @@ class SettingsCrostiniSubpageElement extends
   private installerShowing_: boolean;
   private isAndroidEnabled_: boolean;
   private isDiskUserChosenSize_: boolean;
-  private route_: Route;
   private showCrostiniContainerUpgrade_: boolean;
   private showCrostiniMicPermissionDialog_: boolean;
   private showDiskResizeConfirmationDialog_: boolean;
@@ -214,7 +213,7 @@ class SettingsCrostiniSubpageElement extends
     super();
 
     /** RouteOriginMixin override */
-    this.route_ = routes.CROSTINI_DETAILS;
+    this.route = routes.CROSTINI_DETAILS;
 
     this.isDiskUserChosenSize_ = false;
 
@@ -265,7 +264,7 @@ class SettingsCrostiniSubpageElement extends
 
   override currentRouteChanged(route: Route) {
     // Does not apply to this page.
-    if (route !== routes.CROSTINI_DETAILS) {
+    if (route !== this.route) {
       return;
     }
 

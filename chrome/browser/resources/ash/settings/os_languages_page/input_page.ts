@@ -231,7 +231,7 @@ export class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
     assert(!oldConfig);
     this.focusConfig.set(
         routes.OS_LANGUAGES_EDIT_DICTIONARY.path,
-        () => focusWithoutInk(this.$.editDictionarySubpageTrigger));
+        '#editDictionarySubpageTrigger');
   }
 
   private onShowImeMenuChange_(e: Event): void {

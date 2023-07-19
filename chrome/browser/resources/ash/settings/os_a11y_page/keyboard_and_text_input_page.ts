@@ -142,7 +142,6 @@ export class SettingsKeyboardAndTextInputPageElement extends
       chrome.settingsPrivate.PrefObject<boolean>;
   private keyboardAndTextInputBrowserProxy_:
       KeyboardAndTextInputPageBrowserProxy;
-  private route_: Route;
   private stickyKeysEnabledPref_: chrome.settingsPrivate.PrefObject<boolean>;
   private showDictationLocaleMenu_: boolean;
   private useDictationLocaleSubtitleOverride_: boolean;
@@ -151,7 +150,7 @@ export class SettingsKeyboardAndTextInputPageElement extends
     super();
 
     /** RouteOriginMixin override */
-    this.route_ = routes.A11Y_KEYBOARD_AND_TEXT_INPUT;
+    this.route = routes.A11Y_KEYBOARD_AND_TEXT_INPUT;
 
     this.keyboardAndTextInputBrowserProxy_ =
         KeyboardAndTextInputPageBrowserProxyImpl.getInstance();
@@ -184,7 +183,7 @@ export class SettingsKeyboardAndTextInputPageElement extends
     super.currentRouteChanged(newRoute, prevRoute);
 
     // Does not apply to this page.
-    if (newRoute !== routes.A11Y_KEYBOARD_AND_TEXT_INPUT) {
+    if (newRoute !== this.route) {
       return;
     }
 

@@ -91,7 +91,6 @@ class SettingsStorageElement extends SettingsStorageElementBase {
 
   private browserProxy_: DevicePageBrowserProxy;
   private isEphemeralUser_: boolean;
-  private route_: Route;
   private showCrostiniStorage_: boolean;
   private showDriveOfflineStorage_: boolean;
   private showOtherUsers_: boolean;
@@ -102,7 +101,7 @@ class SettingsStorageElement extends SettingsStorageElementBase {
     super();
 
     /** RouteOriginMixin override */
-    this.route_ = routes.STORAGE;
+    this.route = routes.STORAGE;
 
     /**
      * Timer ID for periodic update.
@@ -158,7 +157,7 @@ class SettingsStorageElement extends SettingsStorageElementBase {
   override currentRouteChanged(newRoute: Route, oldRoute?: Route) {
     super.currentRouteChanged(newRoute, oldRoute);
 
-    if (newRoute !== this.route_) {
+    if (newRoute !== this.route) {
       return;
     }
     this.onPageShown_();

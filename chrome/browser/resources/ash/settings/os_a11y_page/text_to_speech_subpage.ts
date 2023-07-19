@@ -129,7 +129,6 @@ export class SettingsTextToSpeechSubpageElement extends
   private deviceBrowserProxy_: DevicePageBrowserProxy;
   private hasKeyboard_: boolean;
   private isAccessibilityChromeVoxPageMigrationEnabled_: boolean;
-  private route_: Route;
   private pdfOcrProgress_: number;
   private pdfOcrStatus_: ScreenAiInstallStatus;
   private showPdfOcrToggle_: boolean;
@@ -139,7 +138,7 @@ export class SettingsTextToSpeechSubpageElement extends
     super();
 
     /** RouteOriginMixin override */
-    this.route_ = routes.A11Y_TEXT_TO_SPEECH;
+    this.route = routes.A11Y_TEXT_TO_SPEECH;
 
     this.textToSpeechBrowserProxy_ =
         TextToSpeechSubpageBrowserProxyImpl.getInstance();
@@ -211,7 +210,7 @@ export class SettingsTextToSpeechSubpageElement extends
     super.currentRouteChanged(newRoute, prevRoute);
 
     // Does not apply to this page.
-    if (newRoute !== routes.A11Y_TEXT_TO_SPEECH) {
+    if (newRoute !== this.route) {
       return;
     }
 

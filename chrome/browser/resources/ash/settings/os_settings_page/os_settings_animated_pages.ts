@@ -155,7 +155,7 @@ class OsSettingsAnimatedPagesElement extends
       } else {
         handler = () => {
           if (typeof pathConfig === 'string') {
-            const element = this.querySelector(pathConfig);
+            const element = this.querySelector<HTMLElement>(pathConfig);
             assert(element);
             pathConfig = element;
           }

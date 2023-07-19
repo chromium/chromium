@@ -29,7 +29,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {DeepLinkingMixin} from '../deep_linking_mixin.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
-import {RouteOriginMixin} from '../route_origin_mixin.js';
+import {RouteObserverMixin} from '../route_observer_mixin.js';
 import {Route, Router, routes} from '../router.js';
 
 import {getInputDeviceSettingsProvider} from './input_device_mojo_interface_provider.js';
@@ -38,7 +38,7 @@ import {getPrefPolicyFields, settingsAreEqual} from './input_device_settings_uti
 import {getTemplate} from './per_device_keyboard_subsection.html.js';
 
 const SettingsPerDeviceKeyboardSubsectionElementBase =
-    DeepLinkingMixin(I18nMixin(RouteOriginMixin(PolymerElement)));
+    DeepLinkingMixin(I18nMixin(RouteObserverMixin(PolymerElement)));
 
 export class SettingsPerDeviceKeyboardSubsectionElement extends
     SettingsPerDeviceKeyboardSubsectionElementBase {
@@ -122,9 +122,9 @@ export class SettingsPerDeviceKeyboardSubsectionElement extends
     ];
   }
 
-  override currentRouteChanged(route: Route): void {
+  override currentRouteChanged(newRoute: Route): void {
     // Does not apply to this page.
-    if (route !== routes.PER_DEVICE_KEYBOARD) {
+    if (newRoute !== routes.PER_DEVICE_KEYBOARD) {
       return;
     }
 
@@ -140,7 +140,6 @@ export class SettingsPerDeviceKeyboardSubsectionElement extends
 
   protected keyboard: Keyboard;
   protected keyboardPolicies: KeyboardPolicies;
-  private route_: Route = routes.PER_DEVICE_KEYBOARD;
   private topRowAreFunctionKeysPref: chrome.settingsPrivate.PrefObject;
   private blockMetaFunctionKeyRewritesPref: chrome.settingsPrivate.PrefObject;
   private remapKeyboardKeysSublabel: string;

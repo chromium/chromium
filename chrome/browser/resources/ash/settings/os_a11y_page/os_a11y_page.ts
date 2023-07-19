@@ -130,7 +130,6 @@ export class OsSettingsA11yPageElement extends OsSettingsA11yPageElementBase {
   private isAccessibilityOSSettingsVisibilityEnabled_: boolean;
   private isGuest_: boolean;
   private isKioskModeActive_: boolean;
-  private route_: Route;
   private section_: Section;
   private showAccessibilityLabelsSetting_: boolean;
   private isAccessibilityChromeVoxPageMigrationEnabled_: boolean;
@@ -138,7 +137,9 @@ export class OsSettingsA11yPageElement extends OsSettingsA11yPageElementBase {
   constructor() {
     super();
 
-    this.route_ = routes.OS_ACCESSIBILITY;
+    /** RouteOriginMixin override */
+    this.route = routes.OS_ACCESSIBILITY;
+
     this.browserProxy_ = OsA11yPageBrowserProxyImpl.getInstance();
   }
 
@@ -183,7 +184,7 @@ export class OsSettingsA11yPageElement extends OsSettingsA11yPageElementBase {
   override currentRouteChanged(newRoute: Route, prevRoute?: Route) {
     super.currentRouteChanged(newRoute, prevRoute);
 
-    if (newRoute === routes.OS_ACCESSIBILITY) {
+    if (newRoute === this.route) {
       this.attemptDeepLink();
     }
   }

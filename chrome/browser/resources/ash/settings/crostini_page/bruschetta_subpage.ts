@@ -15,7 +15,7 @@ import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {RouteOriginMixin} from '../route_origin_mixin.js';
-import {Route, Router, routes} from '../router.js';
+import {Router, routes} from '../router.js';
 
 import {getTemplate} from './bruschetta_subpage.html.js';
 import {CrostiniBrowserProxy, CrostiniBrowserProxyImpl} from './crostini_browser_proxy.js';
@@ -38,14 +38,13 @@ class BruschettaSubpageElement extends BruschettaSubpageElementBase {
     ];
   }
 
-  private route_: Route;
   private browserProxy_: CrostiniBrowserProxy;
 
   constructor() {
     super();
 
     /** RouteOriginMixin override */
-    this.route_ = routes.BRUSCHETTA_DETAILS;
+    this.route = routes.BRUSCHETTA_DETAILS;
 
     // For now we reuse the Crostini browser proxy, we're both part of
     // crostini_page. At some point we may want to split them apart (or make
@@ -55,6 +54,7 @@ class BruschettaSubpageElement extends BruschettaSubpageElementBase {
 
   override ready() {
     super.ready();
+
     this.addFocusConfig(
         routes.BRUSCHETTA_SHARED_USB_DEVICES, '#bruschetta-shared-usb-devices');
     this.addFocusConfig(

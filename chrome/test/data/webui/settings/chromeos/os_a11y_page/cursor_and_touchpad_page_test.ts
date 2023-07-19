@@ -112,7 +112,7 @@ suite('<settings-cursor-and-touchpad-page>', () => {
         const popStateEventPromise = eventToPromise('popstate', window);
         router.navigateToPreviousRoute();
         await popStateEventPromise;
-        await waitBeforeNextRender(page);
+        await waitAfterNextRender(page);
 
         assertEquals(routes.A11Y_CURSOR_AND_TOUCHPAD, router.currentRoute);
         assertEquals(

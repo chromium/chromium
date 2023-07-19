@@ -139,7 +139,6 @@ export class SettingsDisplayAndMagnificationSubpageElement extends
 
   private isKioskModeActive_: boolean;
   private experimentalColorEnhancementSettingsEnabled_: boolean;
-  private route_: Route;
   private screenMagnifierMouseFollowingModePrefValues_: {[key: string]: number};
   private screenMagnifierZoomOptions_: Array<{value: number, name: string}>;
 
@@ -148,7 +147,7 @@ export class SettingsDisplayAndMagnificationSubpageElement extends
     super();
 
     /** RouteOriginMixin override */
-    this.route_ = routes.A11Y_DISPLAY_AND_MAGNIFICATION;
+    this.route = routes.A11Y_DISPLAY_AND_MAGNIFICATION;
   }
 
   override ready() {
@@ -164,7 +163,7 @@ export class SettingsDisplayAndMagnificationSubpageElement extends
     super.currentRouteChanged(newRoute, prevRoute);
 
     // Does not apply to this page.
-    if (newRoute !== routes.A11Y_DISPLAY_AND_MAGNIFICATION) {
+    if (newRoute !== this.route) {
       return;
     }
 

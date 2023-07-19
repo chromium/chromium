@@ -10,29 +10,43 @@
  */
 
 import {CrSettingsPrefs, OsSettingsUiElement, Router, routes} from 'chrome://os-settings/os_settings.js';
+import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
-import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
+import {FakeNetworkConfig} from 'chrome://webui-test/chromeos/fake_network_config_mojom.js';
+import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 suite('<os-settings-ui> Scroll Restoration', () => {
   let ui: OsSettingsUiElement;
+  let mojoRemote: FakeNetworkConfig;
+
+  suiteSetup(() => {
+    mojoRemote = new FakeNetworkConfig();
+    const mojoInstance = new MojoInterfaceProviderImpl();
+    mojoInstance.setMojoServiceRemoteForTest(mojoRemote);
+    MojoInterfaceProviderImpl.setInstanceForTest(mojoInstance);
+  });
 
   setup(async () => {
     // Mimic styles from HTML document to enable the scrollable container
     document.documentElement.style.height = '100%';
     document.body.style.height = '100%';
 
+    Router.getInstance().navigateTo(routes.BASIC);
+
     ui = document.createElement('os-settings-ui');
     document.body.appendChild(ui);
-    flush();
-
+    await flushTasks();
     await CrSettingsPrefs.initialized;
+
+    // Wait for Network summary to be setup to avoid changes in section height
+    await mojoRemote.whenCalled('getDeviceStateList');
   });
 
   teardown(() => {
     Router.getInstance().resetRouteForTesting();
+    mojoRemote.resetForTest();
     ui.remove();
   });
 

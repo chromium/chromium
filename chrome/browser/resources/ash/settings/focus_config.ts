@@ -2,4 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-export type FocusConfig = Map<string, (string|Element|(() => void))>;
+type FinderFn = () => HTMLElement|null;
+export type ElementConfig = string|HTMLElement|FinderFn;
+export type FocusConfig = Map<string, ElementConfig>;

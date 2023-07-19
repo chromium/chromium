@@ -230,7 +230,6 @@ class SettingsSelectToSpeakSubpageElement extends
     ];
   }
 
-  private route_: Route;
   private langBrowserProxy_: LanguagesBrowserProxy;
   private enhancedNetworkVoicesVirtualPref_:
       chrome.settingsPrivate.PrefObject<boolean>;
@@ -253,7 +252,7 @@ class SettingsSelectToSpeakSubpageElement extends
     this.langBrowserProxy_ = LanguagesBrowserProxyImpl.getInstance();
 
     /** RouteOriginMixin override */
-    this.route_ = routes.A11Y_SELECT_TO_SPEAK;
+    this.route = routes.A11Y_SELECT_TO_SPEAK;
   }
 
   override ready() {
@@ -285,7 +284,7 @@ class SettingsSelectToSpeakSubpageElement extends
     super.currentRouteChanged(newRoute, prevRoute);
 
     // Does not apply to this page.
-    if (newRoute !== routes.A11Y_SELECT_TO_SPEAK) {
+    if (newRoute !== this.route) {
       return;
     }
 

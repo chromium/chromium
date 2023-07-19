@@ -13,7 +13,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util_ts.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {waitAfterNextRender, waitBeforeNextRender} from 'chrome://webui-test/polymer_test_util.js';
+import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
 suite('<settings-keyboard-and-text-input-page>', () => {
@@ -230,7 +230,7 @@ suite('<settings-keyboard-and-text-input-page>', () => {
           const popStateEventPromise = eventToPromise('popstate', window);
           router.navigateToPreviousRoute();
           await popStateEventPromise;
-          await waitBeforeNextRender(page);
+          await waitAfterNextRender(page);
 
           assertEquals(
               routes.A11Y_KEYBOARD_AND_TEXT_INPUT, router.currentRoute);
