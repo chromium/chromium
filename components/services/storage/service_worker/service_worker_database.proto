@@ -114,6 +114,7 @@ message ServiceWorkerRegistrationData {
             }
           }
           repeated Part pathname = 1;
+          repeated Part hostname = 2;
         }
         message Request {
           optional string method = 1;

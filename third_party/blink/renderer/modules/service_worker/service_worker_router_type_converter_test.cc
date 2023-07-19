@@ -60,16 +60,20 @@ TEST(ServiceWorkerRouterTypeConverterTest, EmptyUrlPatternShouldBeNullopt) {
 }
 
 TEST(ServiceWorkerRouterTypeConverterTest, RegexpUrlPatternShouldBeNullopt) {
-  constexpr const char kFakeUrlPattern[] = "/fake/(\\\\d+)";
-  auto* idl_rule = blink::RouterRule::Create();
-  auto* idl_condition = blink::RouterCondition::Create();
-  idl_condition->setUrlPattern(kFakeUrlPattern);
-  idl_rule->setCondition(idl_condition);
-  idl_rule->setSource(blink::V8RouterSourceEnum::Enum::kNetwork);
+  auto verify = [](const WTF::String& test_url_pattern) {
+    auto* idl_rule = blink::RouterRule::Create();
+    auto* idl_condition = blink::RouterCondition::Create();
+    idl_condition->setUrlPattern(test_url_pattern);
+    idl_rule->setCondition(idl_condition);
+    idl_rule->setSource(blink::V8RouterSourceEnum::Enum::kNetwork);
 
-  auto blink_rule =
-      mojo::ConvertTo<absl::optional<blink::ServiceWorkerRouterRule>>(idl_rule);
-  EXPECT_FALSE(blink_rule.has_value());
+    auto blink_rule =
+        mojo::ConvertTo<absl::optional<blink::ServiceWorkerRouterRule>>(
+            idl_rule);
+    EXPECT_FALSE(blink_rule.has_value());
+  };
+  verify("/fake/(\\\\d+)");
+  verify("://fake(\\\\d+).com/");
 }
 
 TEST(ServiceWorkerRouterTypeConverterTest, Race) {

@@ -11,7 +11,7 @@ SafeUrlPattern::SafeUrlPattern() = default;
 SafeUrlPattern::~SafeUrlPattern() = default;
 
 bool operator==(const SafeUrlPattern& left, const SafeUrlPattern& right) {
-  return left.pathname == right.pathname;
+  return left.hostname == right.hostname && left.pathname == right.pathname;
 }
 
 }  // namespace blink

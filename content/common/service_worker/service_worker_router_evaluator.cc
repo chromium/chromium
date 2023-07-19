@@ -41,22 +41,56 @@ void RecordMatchedSourceType(
       "ServiceWorker.RouterEvaluator.MatchedFirstSourceType", sources[0].type);
 }
 
-std::string ConvertToRegex(const blink::SafeUrlPattern& url_pattern) {
+absl::optional<std::string> PathnameConvertToRegex(
+    const blink::SafeUrlPattern& url_pattern) {
+  if (url_pattern.pathname.empty()) {
+    return absl::nullopt;
+  }
   liburlpattern::Options options = {.delimiter_list = "/",
                                     .prefix_list = "/",
                                     .sensitive = true,
                                     .strict = false};
   liburlpattern::Pattern pattern(url_pattern.pathname, options, "[^/]+?");
-  VLOG(3) << "regex string:" << pattern.GenerateRegexString();
+  VLOG(3) << "path regex string:" << pattern.GenerateRegexString();
   return pattern.GenerateRegexString();
 }
 
-std::string ConvertToPattern(const blink::SafeUrlPattern& url_pattern) {
+absl::optional<std::string> HostnameConvertToRegex(
+    const blink::SafeUrlPattern& url_pattern) {
+  if (url_pattern.hostname.empty()) {
+    return absl::nullopt;
+  }
+  liburlpattern::Options options = {.delimiter_list = ".",
+                                    .prefix_list = "",
+                                    .sensitive = false,
+                                    .strict = false};
+  liburlpattern::Pattern pattern(url_pattern.hostname, options, "[^\\.]+?");
+  std::string regex_string = pattern.GenerateRegexString();
+  VLOG(3) << "host regex string: " << regex_string;
+  return regex_string;
+}
+
+std::string PathnameConvertToPattern(const blink::SafeUrlPattern& url_pattern) {
+  if (url_pattern.pathname.empty()) {
+    return std::string();
+  }
   liburlpattern::Options options = {.delimiter_list = "/",
                                     .prefix_list = "/",
                                     .sensitive = true,
                                     .strict = false};
   liburlpattern::Pattern pattern(url_pattern.pathname, options, "[^/]+?");
+  return pattern.GeneratePatternString();
+}
+
+std::string HostnameConvertToPattern(const blink::SafeUrlPattern& url_pattern) {
+  if (url_pattern.hostname.empty()) {
+    return std::string();
+  }
+  liburlpattern::Options options = {.delimiter_list = ".",
+                                    .prefix_list = "",
+                                    .sensitive = false,
+                                    .strict = false};
+  liburlpattern::Pattern pattern(url_pattern.hostname, options, "[^\\.]+?");
   return pattern.GeneratePatternString();
 }
 
@@ -79,7 +113,9 @@ base::Value RequestToValue(
 bool IsValidCondition(const blink::ServiceWorkerRouterCondition& condition) {
   switch (condition.type) {
     case blink::ServiceWorkerRouterCondition::ConditionType::kUrlPattern:
-      return condition.url_pattern.has_value();
+      return condition.url_pattern.has_value() &&
+             !(condition.url_pattern->hostname.empty() &&
+               condition.url_pattern->pathname.empty());
     case blink::ServiceWorkerRouterCondition::ConditionType::kRequest:
       return condition.request.has_value() &&
              (condition.request->method.has_value() ||
@@ -146,7 +182,8 @@ namespace content {
 class ServiceWorkerRouterEvaluator::RouterRule {
  public:
   RouterRule()
-      : url_patterns_(RE2::Set(RE2::Options(), RE2::Anchor::UNANCHORED)) {}
+      : pathname_patterns_(RE2::Set(RE2::Options(), RE2::Anchor::UNANCHORED)),
+        hostname_patterns_(RE2::Set(RE2::Options(), RE2::Anchor::UNANCHORED)) {}
   ~RouterRule() = default;
   bool SetRule(const blink::ServiceWorkerRouterRule& rule);
   bool IsConditionMatched(const network::ResourceRequest& request) const;
@@ -171,10 +208,12 @@ class ServiceWorkerRouterEvaluator::RouterRule {
       const network::ResourceRequest& request) const;
   bool IsNonUrlPatternConditionMatched(
       const network::ResourceRequest& request) const;
-  // To process SafeUrlPattern faster, the all patterns are combined to the
+  // To process SafeUrlPattern faster, all patterns are combined into the
   // `RE::Set` and compiled when `ServiceWorkerRouterEvaluator` is initialized.
-  RE2::Set url_patterns_;
-  size_t url_pattern_length_ = 0;
+  RE2::Set pathname_patterns_;
+  size_t pathname_pattern_length_ = 0;
+  RE2::Set hostname_patterns_;
+  size_t hostname_pattern_length_ = 0;
   // Non-SafeUrlPattern conditions are processed one by one.
   std::vector<blink::ServiceWorkerRouterCondition> non_url_pattern_conditions_;
   std::vector<blink::ServiceWorkerRouterSource> sources_;
@@ -205,16 +244,33 @@ bool ServiceWorkerRouterEvaluator::RouterRule::SetConditions(
     }
 
     // Code for SafeUrlPattern conditions.
-    if (url_patterns_.Add(ConvertToRegex(*condition.url_pattern), nullptr) ==
-        -1) {
-      // Failed to parse the regex.
-      RecordSetupError(ServiceWorkerRouterEvaluatorErrorEnums::kParseError);
-      return false;
+    auto pathregex = PathnameConvertToRegex(*condition.url_pattern);
+    if (pathregex) {
+      if (pathname_patterns_.Add(*pathregex, nullptr) == -1) {
+        // Failed to parse the regex.
+        RecordSetupError(ServiceWorkerRouterEvaluatorErrorEnums::kParseError);
+        return false;
+      }
+      // Counts the conditions to ensure all conditions are matched.
+      ++pathname_pattern_length_;
     }
-    // Counts SafeUrlPattern conditions to ensure all conditions are matched.
-    ++url_pattern_length_;
+    auto hostregex = HostnameConvertToRegex(*condition.url_pattern);
+    if (hostregex) {
+      if (hostname_patterns_.Add(*hostregex, nullptr) == -1) {
+        // Failed to parse the regex.
+        RecordSetupError(ServiceWorkerRouterEvaluatorErrorEnums::kParseError);
+        return false;
+      }
+      // Counts the conditions to ensure all conditions are matched.
+      ++hostname_pattern_length_;
+    }
   }
-  if (!url_patterns_.Compile()) {
+  if (pathname_pattern_length_ > 0 && !pathname_patterns_.Compile()) {
+    // Failed to compile the regex.
+    RecordSetupError(ServiceWorkerRouterEvaluatorErrorEnums::kCompileError);
+    return false;
+  }
+  if (hostname_pattern_length_ > 0 && !hostname_patterns_.Compile()) {
     // Failed to compile the regex.
     RecordSetupError(ServiceWorkerRouterEvaluatorErrorEnums::kCompileError);
     return false;
@@ -230,18 +286,25 @@ bool ServiceWorkerRouterEvaluator::RouterRule::IsConditionMatched(
 
 bool ServiceWorkerRouterEvaluator::RouterRule::IsUrlPatternConditionMatched(
     const network::ResourceRequest& request) const {
-  if (url_pattern_length_ == 0) {
-    // No SafeUrlPattern conditions, which should be considered as success.
-    return true;
+  if (hostname_pattern_length_ > 0) {
+    std::vector<int> vec;
+    if (!hostname_patterns_.Match(request.url.host(), &vec)) {
+      return false;
+    }
+    // ensure it matches all included patterns.
+    if (vec.size() != hostname_pattern_length_) {
+      return false;
+    }
   }
-
-  std::vector<int> vec;
-  if (!url_patterns_.Match(request.url.path(), &vec)) {
-    return false;
-  }
-  // ensure it matches all included patterns.
-  if (vec.size() != url_pattern_length_) {
-    return false;
+  if (pathname_pattern_length_ > 0) {
+    std::vector<int> vec;
+    if (!pathname_patterns_.Match(request.url.path(), &vec)) {
+      return false;
+    }
+    // ensure it matches all included patterns.
+    if (vec.size() != pathname_pattern_length_) {
+      return false;
+    }
   }
   return true;
 }
@@ -288,10 +351,12 @@ ServiceWorkerRouterEvaluator::Evaluate(
   CHECK(is_valid_);
   for (const auto& rule : compiled_rules_) {
     if (rule->IsConditionMatched(request)) {
+      VLOG(3) << "matched request url=" << request.url;
       RecordMatchedSourceType(rule->sources());
       return rule->sources();
     }
   }
+  VLOG(3) << "not matched request url=" << request.url;
   return std::vector<blink::ServiceWorkerRouterSource>();
 }
 
@@ -305,7 +370,18 @@ base::Value ServiceWorkerRouterEvaluator::ToValue() const {
       switch (c.type) {
         case blink::ServiceWorkerRouterCondition::ConditionType::kUrlPattern: {
           base::Value::Dict out_c;
-          out_c.Set("urlPattern", ConvertToPattern(*c.url_pattern));
+          base::Value out_value;
+          std::string host = HostnameConvertToPattern(*c.url_pattern);
+          std::string path = PathnameConvertToPattern(*c.url_pattern);
+          if (!host.empty()) {
+            base::Value::Dict host_path;
+            host_path.Set("host", host);
+            host_path.Set("path", path);
+            out_value = base::Value(std::move(host_path));
+          } else {
+            out_value = base::Value(path);
+          }
+          out_c.Set("urlPattern", std::move(out_value));
           condition.Append(std::move(out_c));
           break;
         }

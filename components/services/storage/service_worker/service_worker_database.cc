@@ -280,6 +280,127 @@ int64_t AccumulateResourceSizeInBytes(
   return total_size_bytes;
 }
 
+absl::optional<std::vector<liburlpattern::Part>> ConvertToBlinkParts(
+    const google::protobuf::RepeatedPtrField<
+        storage::ServiceWorkerRegistrationData::RouterRules::RuleV1::Condition::
+            URLPattern::Part>& parts) {
+  std::vector<liburlpattern::Part> ret;
+  for (const auto& pathname : parts) {
+    liburlpattern::Part part;
+    switch (pathname.modifier()) {
+      case ServiceWorkerRegistrationData::RouterRules::RuleV1::Condition::
+          URLPattern::Part::kNone:
+        part.modifier = liburlpattern::Modifier::kNone;
+        break;
+      case ServiceWorkerRegistrationData::RouterRules::RuleV1::Condition::
+          URLPattern::Part::kOptional:
+        part.modifier = liburlpattern::Modifier::kOptional;
+        break;
+      case ServiceWorkerRegistrationData::RouterRules::RuleV1::Condition::
+          URLPattern::Part::kZeroOrMore:
+        part.modifier = liburlpattern::Modifier::kZeroOrMore;
+        break;
+      case ServiceWorkerRegistrationData::RouterRules::RuleV1::Condition::
+          URLPattern::Part::kOneOrMore:
+        part.modifier = liburlpattern::Modifier::kOneOrMore;
+        break;
+    }
+    switch (pathname.pattern_case()) {
+      case ServiceWorkerRegistrationData::RouterRules::RuleV1::Condition::
+          URLPattern::Part::PATTERN_NOT_SET:
+        // If URLPattern is used, one of the part must be set.
+        return absl::nullopt;
+      case ServiceWorkerRegistrationData::RouterRules::RuleV1::Condition::
+          URLPattern::Part::kFixed:
+        part.type = liburlpattern::PartType::kFixed;
+        part.value = pathname.fixed().value();
+        break;
+      // No case statement for "regexp" is intended for the security
+      // concern.
+      case ServiceWorkerRegistrationData::RouterRules::RuleV1::Condition::
+          URLPattern::Part::kSegmentWildcard:
+        part.type = liburlpattern::PartType::kSegmentWildcard;
+        part.name = pathname.segment_wildcard().name();
+        part.prefix = pathname.segment_wildcard().prefix();
+        part.value = pathname.segment_wildcard().value();
+        part.suffix = pathname.segment_wildcard().suffix();
+        break;
+      case ServiceWorkerRegistrationData::RouterRules::RuleV1::Condition::
+          URLPattern::Part::kFullWildcard:
+        part.type = liburlpattern::PartType::kFullWildcard;
+        part.name = pathname.full_wildcard().name();
+        part.prefix = pathname.full_wildcard().prefix();
+        part.value = pathname.full_wildcard().value();
+        part.suffix = pathname.full_wildcard().suffix();
+        break;
+    }
+    ret.emplace_back(part);
+  }
+  return ret;
+}
+
+void ConvertToProtoPathname(
+    const std::vector<liburlpattern::Part> parts,
+    google::protobuf::RepeatedPtrField<
+        storage::ServiceWorkerRegistrationData::RouterRules::RuleV1::Condition::
+            URLPattern::Part>* out_parts) {
+  for (const auto& p : parts) {
+    ServiceWorkerRegistrationData::RouterRules::RuleV1::Condition::URLPattern::
+        Part* pathname = out_parts->Add();
+    switch (p.modifier) {
+      case liburlpattern::Modifier::kNone:
+        pathname->set_modifier(ServiceWorkerRegistrationData::RouterRules::
+                                   RuleV1::Condition::URLPattern::Part::kNone);
+        break;
+      case liburlpattern::Modifier::kOptional:
+        pathname->set_modifier(
+            ServiceWorkerRegistrationData::RouterRules::RuleV1::Condition::
+                URLPattern::Part::kOptional);
+        break;
+      case liburlpattern::Modifier::kZeroOrMore:
+        pathname->set_modifier(
+            ServiceWorkerRegistrationData::RouterRules::RuleV1::Condition::
+                URLPattern::Part::kZeroOrMore);
+        break;
+      case liburlpattern::Modifier::kOneOrMore:
+        pathname->set_modifier(
+            ServiceWorkerRegistrationData::RouterRules::RuleV1::Condition::
+                URLPattern::Part::kOneOrMore);
+        break;
+    }
+    switch (p.type) {
+      case liburlpattern::PartType::kFixed: {
+        ServiceWorkerRegistrationData::RouterRules::RuleV1::Condition::
+            URLPattern::Part::FixedPattern* part = pathname->mutable_fixed();
+        part->set_value(p.value);
+        break;
+      }
+      case liburlpattern::PartType::kRegex:
+        NOTREACHED_NORETURN() << "should not see regexp URLPattern";
+      case liburlpattern::PartType::kSegmentWildcard: {
+        ServiceWorkerRegistrationData::RouterRules::RuleV1::Condition::
+            URLPattern::Part::WildcardPattern* part =
+                pathname->mutable_segment_wildcard();
+        part->set_name(p.name);
+        part->set_prefix(p.prefix);
+        part->set_value(p.value);
+        part->set_suffix(p.suffix);
+        break;
+      }
+      case liburlpattern::PartType::kFullWildcard: {
+        ServiceWorkerRegistrationData::RouterRules::RuleV1::Condition::
+            URLPattern::Part::WildcardPattern* part =
+                pathname->mutable_full_wildcard();
+        part->set_name(p.name);
+        part->set_prefix(p.prefix);
+        part->set_value(p.value);
+        part->set_suffix(p.suffix);
+        break;
+      }
+    }
+  }
+}
+
 }  // namespace
 
 const char* ServiceWorkerDatabase::StatusToString(
@@ -1977,56 +2098,19 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::ParseRegistrationData(
             condition.type =
                 blink::ServiceWorkerRouterCondition::ConditionType::kUrlPattern;
             blink::SafeUrlPattern url_pattern;
-            for (const auto& pathname : c.url_pattern().pathname()) {
-              liburlpattern::Part part;
-              switch (pathname.modifier()) {
-                case ServiceWorkerRegistrationData::RouterRules::RuleV1::
-                    Condition::URLPattern::Part::kNone:
-                  part.modifier = liburlpattern::Modifier::kNone;
-                  break;
-                case ServiceWorkerRegistrationData::RouterRules::RuleV1::
-                    Condition::URLPattern::Part::kOptional:
-                  part.modifier = liburlpattern::Modifier::kOptional;
-                  break;
-                case ServiceWorkerRegistrationData::RouterRules::RuleV1::
-                    Condition::URLPattern::Part::kZeroOrMore:
-                  part.modifier = liburlpattern::Modifier::kZeroOrMore;
-                  break;
-                case ServiceWorkerRegistrationData::RouterRules::RuleV1::
-                    Condition::URLPattern::Part::kOneOrMore:
-                  part.modifier = liburlpattern::Modifier::kOneOrMore;
-                  break;
+            if (c.url_pattern().pathname_size() > 0) {
+              auto pathname = ConvertToBlinkParts(c.url_pattern().pathname());
+              if (!pathname) {
+                return Status::kErrorCorrupted;
               }
-              switch (pathname.pattern_case()) {
-                case ServiceWorkerRegistrationData::RouterRules::RuleV1::
-                    Condition::URLPattern::Part::PATTERN_NOT_SET:
-                  // If URLPattern is used, one of the part must be set.
-                  return Status::kErrorCorrupted;
-                case ServiceWorkerRegistrationData::RouterRules::RuleV1::
-                    Condition::URLPattern::Part::kFixed:
-                  part.type = liburlpattern::PartType::kFixed;
-                  part.value = pathname.fixed().value();
-                  break;
-                // No case statement for "regexp" is intended for the security
-                // concern.
-                case ServiceWorkerRegistrationData::RouterRules::RuleV1::
-                    Condition::URLPattern::Part::kSegmentWildcard:
-                  part.type = liburlpattern::PartType::kSegmentWildcard;
-                  part.name = pathname.segment_wildcard().name();
-                  part.prefix = pathname.segment_wildcard().prefix();
-                  part.value = pathname.segment_wildcard().value();
-                  part.suffix = pathname.segment_wildcard().suffix();
-                  break;
-                case ServiceWorkerRegistrationData::RouterRules::RuleV1::
-                    Condition::URLPattern::Part::kFullWildcard:
-                  part.type = liburlpattern::PartType::kFullWildcard;
-                  part.name = pathname.full_wildcard().name();
-                  part.prefix = pathname.full_wildcard().prefix();
-                  part.value = pathname.full_wildcard().value();
-                  part.suffix = pathname.full_wildcard().suffix();
-                  break;
+              url_pattern.pathname = *pathname;
+            }
+            if (c.url_pattern().hostname_size() > 0) {
+              auto hostname = ConvertToBlinkParts(c.url_pattern().hostname());
+              if (!hostname) {
+                return Status::kErrorCorrupted;
               }
-              url_pattern.pathname.emplace_back(part);
+              url_pattern.hostname = *hostname;
             }
             condition.url_pattern = url_pattern;
 
@@ -2419,63 +2503,17 @@ void ServiceWorkerDatabase::WriteRegistrationDataInBatch(
           case blink::ServiceWorkerRouterCondition::ConditionType::
               kUrlPattern: {
             ServiceWorkerRegistrationData::RouterRules::RuleV1::Condition::
-                URLPattern* url_pattern = condition->mutable_url_pattern();
-            for (const auto& p : c.url_pattern->pathname) {
-              ServiceWorkerRegistrationData::RouterRules::RuleV1::Condition::
-                  URLPattern::Part* pathname = url_pattern->add_pathname();
-              switch (p.modifier) {
-                case liburlpattern::Modifier::kNone:
-                  pathname->set_modifier(
-                      ServiceWorkerRegistrationData::RouterRules::RuleV1::
-                          Condition::URLPattern::Part::kNone);
-                  break;
-                case liburlpattern::Modifier::kOptional:
-                  pathname->set_modifier(
-                      ServiceWorkerRegistrationData::RouterRules::RuleV1::
-                          Condition::URLPattern::Part::kOptional);
-                  break;
-                case liburlpattern::Modifier::kZeroOrMore:
-                  pathname->set_modifier(
-                      ServiceWorkerRegistrationData::RouterRules::RuleV1::
-                          Condition::URLPattern::Part::kZeroOrMore);
-                  break;
-                case liburlpattern::Modifier::kOneOrMore:
-                  pathname->set_modifier(
-                      ServiceWorkerRegistrationData::RouterRules::RuleV1::
-                          Condition::URLPattern::Part::kOneOrMore);
-                  break;
-              }
-              switch (p.type) {
-                case liburlpattern::PartType::kFixed: {
-                  ServiceWorkerRegistrationData::RouterRules::RuleV1::
-                      Condition::URLPattern::Part::FixedPattern* part =
-                          pathname->mutable_fixed();
-                  part->set_value(p.value);
-                  break;
-                }
-                case liburlpattern::PartType::kRegex:
-                  NOTREACHED_NORETURN() << "should not see regexp URLPattern";
-                case liburlpattern::PartType::kSegmentWildcard: {
-                  ServiceWorkerRegistrationData::RouterRules::RuleV1::
-                      Condition::URLPattern::Part::WildcardPattern* part =
-                          pathname->mutable_segment_wildcard();
-                  part->set_name(p.name);
-                  part->set_prefix(p.prefix);
-                  part->set_value(p.value);
-                  part->set_suffix(p.suffix);
-                  break;
-                }
-                case liburlpattern::PartType::kFullWildcard: {
-                  ServiceWorkerRegistrationData::RouterRules::RuleV1::
-                      Condition::URLPattern::Part::WildcardPattern* part =
-                          pathname->mutable_full_wildcard();
-                  part->set_name(p.name);
-                  part->set_prefix(p.prefix);
-                  part->set_value(p.value);
-                  part->set_suffix(p.suffix);
-                  break;
-                }
-              }
+                URLPattern* mutable_url_pattern =
+                    condition->mutable_url_pattern();
+            CHECK(!c.url_pattern->pathname.empty() ||
+                  !c.url_pattern->hostname.empty());
+            if (!c.url_pattern->pathname.empty()) {
+              ConvertToProtoPathname(c.url_pattern->pathname,
+                                     mutable_url_pattern->mutable_pathname());
+            }
+            if (!c.url_pattern->hostname.empty()) {
+              ConvertToProtoPathname(c.url_pattern->hostname,
+                                     mutable_url_pattern->mutable_hostname());
             }
             break;
           }

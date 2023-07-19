@@ -3597,6 +3597,9 @@ TEST(ServiceWorkerDatabaseTest, RouterRulesStoreRestore) {
     condition.type =
         blink::ServiceWorkerRouterCondition::ConditionType::kUrlPattern;
     blink::SafeUrlPattern url_pattern;
+    url_pattern.hostname.emplace_back(liburlpattern::PartType::kFixed,
+                                      "example.com",
+                                      liburlpattern::Modifier::kNone);
     url_pattern.pathname.emplace_back(liburlpattern::PartType::kFixed,
                                       "/test_data",
                                       liburlpattern::Modifier::kNone);
@@ -3621,6 +3624,9 @@ TEST(ServiceWorkerDatabaseTest, RouterRulesStoreRestore) {
       condition.type =
           blink::ServiceWorkerRouterCondition::ConditionType::kUrlPattern;
       blink::SafeUrlPattern url_pattern;
+      url_pattern.hostname.emplace_back(liburlpattern::PartType::kFixed,
+                                        "example.com",
+                                        liburlpattern::Modifier::kNone);
       url_pattern.pathname.emplace_back(liburlpattern::PartType::kFixed,
                                         "/test_data",
                                         liburlpattern::Modifier::kNone);
@@ -3690,6 +3696,38 @@ TEST(ServiceWorkerDatabaseTest, RouterRulesStoreRestore) {
     store_and_restore(router_rules);
   }
 
+  // multiple hostnames.
+  {
+    blink::ServiceWorkerRouterRules router_rules;
+    blink::ServiceWorkerRouterRule rule;
+    blink::ServiceWorkerRouterCondition condition;
+    condition.type =
+        blink::ServiceWorkerRouterCondition::ConditionType::kUrlPattern;
+    blink::SafeUrlPattern url_pattern;
+    url_pattern.hostname.emplace_back(liburlpattern::PartType::kFixed,
+                                      "example.com",
+                                      liburlpattern::Modifier::kNone);
+    url_pattern.hostname.emplace_back(liburlpattern::PartType::kFullWildcard,
+                                      "name", "prefix", "", "suffix",
+                                      liburlpattern::Modifier::kZeroOrMore);
+    url_pattern.hostname.emplace_back(liburlpattern::PartType::kSegmentWildcard,
+                                      "name", "prefix", "", "suffix",
+                                      liburlpattern::Modifier::kOptional);
+    url_pattern.hostname.emplace_back(liburlpattern::PartType::kSegmentWildcard,
+                                      "name", "prefix", "", "suffix",
+                                      liburlpattern::Modifier::kOneOrMore);
+    condition.url_pattern = std::move(url_pattern);
+    rule.conditions.emplace_back(condition);
+
+    blink::ServiceWorkerRouterSource source;
+    source.type = blink::ServiceWorkerRouterSource::SourceType::kNetwork;
+    source.network_source = blink::ServiceWorkerRouterNetworkSource{};
+    rule.sources.emplace_back(source);
+    router_rules.rules.emplace_back(rule);
+
+    store_and_restore(router_rules);
+  }
+
   // multiple sources
   {
     blink::ServiceWorkerRouterRules router_rules;
@@ -3698,6 +3736,9 @@ TEST(ServiceWorkerDatabaseTest, RouterRulesStoreRestore) {
     condition.type =
         blink::ServiceWorkerRouterCondition::ConditionType::kUrlPattern;
     blink::SafeUrlPattern url_pattern;
+    url_pattern.hostname.emplace_back(liburlpattern::PartType::kFixed,
+                                      "example.com",
+                                      liburlpattern::Modifier::kNone);
     url_pattern.pathname.emplace_back(liburlpattern::PartType::kFixed,
                                       "/test_data",
                                       liburlpattern::Modifier::kNone);

@@ -16,18 +16,10 @@
 
 namespace {
 
-absl::optional<blink::ServiceWorkerRouterCondition>
-RouterUrlPatternConditionToBlink(blink::RouterCondition* v8_condition) {
-  if (!v8_condition) {
-    // No UrlCondition configured.
-    return absl::nullopt;
-  }
-  if (v8_condition->urlPattern().empty()) {
-    // No URLPattern configured.
-    return absl::nullopt;
-  }
+absl::optional<std::vector<liburlpattern::Part>> ToPartList(
+    const String& pattern) {
   // TODO(crbug.com/1371756): unify the code with manifest_parser.cc
-  WTF::StringUTF8Adaptor utf8(v8_condition->urlPattern());
+  WTF::StringUTF8Adaptor utf8(pattern);
   auto parse_result = liburlpattern::Parse(
       base::StringPiece(utf8.data(), utf8.size()),
       [](base::StringPiece input) { return std::string(input); });
@@ -44,11 +36,29 @@ RouterUrlPatternConditionToBlink(blink::RouterCondition* v8_condition) {
     }
     part_list.push_back(std::move(part));
   }
+  return part_list;
+}
+
+absl::optional<blink::ServiceWorkerRouterCondition>
+RouterUrlPatternConditionToBlink(blink::RouterCondition* v8_condition) {
+  if (!v8_condition) {
+    // No UrlCondition configured.
+    return absl::nullopt;
+  }
+  if (v8_condition->urlPattern().empty()) {
+    // No URLPattern configured.
+    return absl::nullopt;
+  }
+  // TODO(crbug.com/1371756): implement hostname and other fields support.
+  auto ret = ToPartList(v8_condition->urlPattern());
+  if (!ret.has_value()) {
+    return absl::nullopt;
+  }
+  blink::SafeUrlPattern url_pattern;
+  url_pattern.pathname = std::move(*ret);
   blink::ServiceWorkerRouterCondition condition;
   condition.type =
       blink::ServiceWorkerRouterCondition::ConditionType::kUrlPattern;
-  blink::SafeUrlPattern url_pattern;
-  url_pattern.pathname = std::move(part_list);
   condition.url_pattern = std::move(url_pattern);
   return condition;
 }

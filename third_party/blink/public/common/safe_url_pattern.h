@@ -18,6 +18,7 @@ struct BLINK_COMMON_EXPORT SafeUrlPattern {
   SafeUrlPattern();
   ~SafeUrlPattern();
 
+  std::vector<liburlpattern::Part> hostname;
   std::vector<liburlpattern::Part> pathname;
 };
 

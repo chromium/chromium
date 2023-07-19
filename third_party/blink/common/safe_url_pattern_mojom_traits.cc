@@ -126,6 +126,10 @@ bool StructTraits<
     blink::mojom::SafeUrlPatternDataView,
     ::blink::SafeUrlPattern>::Read(blink::mojom::SafeUrlPatternDataView data,
                                    ::blink::SafeUrlPattern* out) {
+  if (!data.ReadHostname(&out->hostname)) {
+    return false;
+  }
+
   if (!data.ReadPathname(&out->pathname)) {
     return false;
   }

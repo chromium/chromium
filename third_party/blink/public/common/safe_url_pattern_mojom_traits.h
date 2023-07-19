@@ -118,6 +118,10 @@ struct BLINK_COMMON_EXPORT
 template <>
 struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::SafeUrlPatternDataView,
                                         ::blink::SafeUrlPattern> {
+  static const std::vector<liburlpattern::Part>& hostname(
+      const ::blink::SafeUrlPattern& pattern) {
+    return pattern.hostname;
+  }
   static const std::vector<liburlpattern::Part>& pathname(
       const ::blink::SafeUrlPattern& pattern) {
     return pattern.pathname;
