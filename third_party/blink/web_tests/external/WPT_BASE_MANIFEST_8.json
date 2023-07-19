@@ -275922,16 +275922,6 @@
    }
   },
   "support": {
-   ".cache": {
-    "gitignore2.json": [
-     "2a65364e1f8635d94593c8720be70482969acfc5",
-     []
-    ],
-    "mtime.json": [
-     "3db59e563979094f2b9bff4e5202d33a039ba124",
-     []
-    ]
-   },
    ".gitignore": [
     "d93e645d547894b50149d3726de2654957b6e06f",
     []
@@ -383424,7 +383414,7 @@
      []
     ],
     "payment-request-show-method.https-expected.txt": [
-     "cfa347a35752d1cf456c8810a6852b3661352594",
+     "b8b0d5172be969a4d52daf83de598802d9bf9778",
      []
     ],
     "payment-request-show-method.https.html.ini": [
@@ -383460,11 +383450,11 @@
      ]
     },
     "show-consume-activation.https-expected.txt": [
-     "e0b8f1752d0e0d7c11e3f4f583123ab3d56b14ff",
+     "55bff7ba393b6688f25106f8de5583c9b2838469",
      []
     ],
     "show-consume-activation.https.html.ini": [
-     "d20c4ae976a5db0da76cfb55d40a9a5b6b0cafe5",
+     "398c2d8997e8b655cdff1ba453e274ee970100a4",
      []
     ],
     "show-method-optional-promise-rejects.https-expected.txt": [
@@ -465402,6 +465392,34 @@
         {}
        ]
       ],
+      "auto-015.html": [
+       "05252dfddacee2d29451043c45f73d65667275a7",
+       [
+        null,
+        {}
+       ]
+      ],
+      "auto-016.html": [
+       "5846101614c20b67f7d863600f0ba40a3f6943e5",
+       [
+        null,
+        {}
+       ]
+      ],
+      "auto-017.html": [
+       "669f9505d706e293cd7dcafb0b65e1ecfadeeafd",
+       [
+        null,
+        {}
+       ]
+      ],
+      "auto-018.html": [
+       "b5121c67f766906b6e808798cdde142892bba637",
+       [
+        null,
+        {}
+       ]
+      ],
       "contain-intrinsic-size-009.html": [
        "0aa62eaaeff5d6cc2fd499b1bf6907e11cbe0e37",
        [
@@ -480718,6 +480736,13 @@
      ],
      "ElementInternals-labels.html": [
       "b27be5f2fc3b157e3217f15256558fec528ef69c",
+      [
+       null,
+       {}
+      ]
+     ],
+     "ElementInternals-setFormValue-nullish-value.html": [
+      "28c12c4600b328937d5ab50b652433887cde832e",
       [
        null,
        {}
@@ -581916,6 +581941,13 @@
         {}
        ]
       ],
+      "size-containment-001.tentative.html": [
+       "dddd1f32b2361e5f4c5b19a6cb07e1abe859e908",
+       [
+        null,
+        {}
+       ]
+      ],
       "width-height-001.html": [
        "2deedc3f0b84d4f822387f080bd13ef265f011cf",
        [
@@ -590739,7 +590771,7 @@
      ]
     ],
     "payment-request-show-method.https.html": [
-     "a03121692b1a812f16b99d2c434debb77524a4dc",
+     "d3385b5468b8fc6cfd954df4e77c5959f8ceb32f",
      [
       null,
       {
@@ -590766,7 +590798,7 @@
      ]
     ],
     "show-consume-activation.https.html": [
-     "044fca5d40801fcad93fc5137a12fdfc8db4147c",
+     "6f629489e4af4c433274dd38737a4097b564c280",
      [
       null,
       {
