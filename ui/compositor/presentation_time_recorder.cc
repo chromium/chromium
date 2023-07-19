@@ -194,9 +194,10 @@ void PresentationTimeRecorder::SetReportPresentationTimeImmediatelyForTest(
 
 namespace {
 
-base::HistogramBase* CreateTimesHistogram(const char* name) {
+base::HistogramBase* CreateTimesHistogram(const char* name,
+                                          base::TimeDelta maximum) {
   return base::Histogram::FactoryTimeGet(
-      name, base::Milliseconds(1), base::Milliseconds(200), 50,
+      name, base::Milliseconds(1), maximum, 50,
       base::HistogramBase::kUmaTargetedHistogramFlag);
 }
 
@@ -212,11 +213,13 @@ class PresentationTimeHistogramRecorder
   PresentationTimeHistogramRecorder(
       ui::Compositor* compositor,
       const char* presentation_time_histogram_name,
-      const char* max_latency_histogram_name)
+      const char* max_latency_histogram_name,
+      base::TimeDelta maximum)
       : PresentationTimeRecorderInternal(compositor),
         presentation_time_histogram_(
-            CreateTimesHistogram(presentation_time_histogram_name)),
-        max_latency_histogram_name_(max_latency_histogram_name) {}
+            CreateTimesHistogram(presentation_time_histogram_name, maximum)),
+        max_latency_histogram_name_(max_latency_histogram_name),
+        maximum_(maximum) {}
 
   PresentationTimeHistogramRecorder(const PresentationTimeHistogramRecorder&) =
       delete;
@@ -225,7 +228,7 @@ class PresentationTimeHistogramRecorder
 
   ~PresentationTimeHistogramRecorder() override {
     if (present_count() > 0 && !max_latency_histogram_name_.empty()) {
-      CreateTimesHistogram(max_latency_histogram_name_.c_str())
+      CreateTimesHistogram(max_latency_histogram_name_.c_str(), maximum_)
           ->AddTimeMillisecondsGranularity(
               base::Milliseconds(max_latency_ms()));
     }
@@ -239,6 +242,7 @@ class PresentationTimeHistogramRecorder
  private:
   raw_ptr<base::HistogramBase> presentation_time_histogram_;
   std::string max_latency_histogram_name_;
+  base::TimeDelta maximum_;
 };
 
 }  // namespace
@@ -247,11 +251,12 @@ std::unique_ptr<PresentationTimeRecorder>
 CreatePresentationTimeHistogramRecorder(
     ui::Compositor* compositor,
     const char* presentation_time_histogram_name,
-    const char* max_latency_histogram_name) {
+    const char* max_latency_histogram_name,
+    base::TimeDelta maximum) {
   return std::make_unique<PresentationTimeRecorder>(
       std::make_unique<PresentationTimeHistogramRecorder>(
           compositor, presentation_time_histogram_name,
-          max_latency_histogram_name));
+          max_latency_histogram_name, maximum));
 }
 
 // TestApi --------------------------------------------------------------------

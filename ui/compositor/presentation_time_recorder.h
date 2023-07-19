@@ -67,7 +67,8 @@ COMPOSITOR_EXPORT std::unique_ptr<PresentationTimeRecorder>
 CreatePresentationTimeHistogramRecorder(
     ui::Compositor* compositor,
     const char* presentation_time_histogram_name,
-    const char* max_latency_histogram_name = "");
+    const char* max_latency_histogram_name = "",
+    base::TimeDelta maximum = base::Milliseconds(200));
 
 }  // namespace ui
 
