@@ -755,13 +755,11 @@ export class FileGrid extends Grid {
                            [
                              'availableOffline',
                              'pinned',
+                             'canPin',
                              'syncStatus',
                              'progress',
                            ])[0] ||
           {};
-      listItem.classList.toggle(
-          'dim-offline', metadata.availableOffline === false);
-      listItem.classList.toggle('pinned', metadata.pinned);
       filelist.updateInlineStatus(listItem, metadata);
       listItem.toggleAttribute(
           'disabled',
@@ -826,11 +824,10 @@ export class FileGrid extends Grid {
                            'progress',
                          ])[0] ||
         {};
-    const {contentMimeType, availableOffline, pinned, canPin} = metadata;
 
     const locationInfo = this.volumeManager_.getLocationInfo(entry);
     const detailIcon = filelist.renderFileTypeIcon(
-        li.ownerDocument, entry, locationInfo, contentMimeType);
+        li.ownerDocument, entry, locationInfo, metadata.contentMimeType);
 
     // For FilesNg we add the checkmark in the same location.
     const checkmark = li.ownerDocument.createElement('div');
@@ -845,37 +842,9 @@ export class FileGrid extends Grid {
     frame.appendChild(bottom);
     li.setAttribute('file-name', util.getEntryLabel(locationInfo, entry));
 
-    // The inline status box contains both sync status indicators and available
-    // offline indicators.
-    const inlineStatus = li.ownerDocument.createElement('div');
-    inlineStatus.className = 'inline-status';
-
-    const inlineStatusIcon = li.ownerDocument.createElement('xf-icon');
-    inlineStatusIcon.size = 'extra_small';
-    if (util.isDriveFsBulkPinningEnabled() && !util.isNullOrUndefined(canPin) &&
-        !canPin) {
-      inlineStatusIcon.type = 'cant-pin';
-      li.classList.toggle('cant-pin', true);
-    } else {
-      inlineStatusIcon.type = 'offline';
-      li.classList.toggle('cant-pin', false);
+    if (locationInfo && locationInfo.isDriveBased) {
+      frame.appendChild(li.ownerDocument.createElement('xf-inline-status'));
     }
-    inlineStatus.appendChild(inlineStatusIcon);
-
-    if (util.isInlineSyncStatusEnabled()) {
-      const syncProgress = li.ownerDocument.createElement('xf-pie-progress');
-      syncProgress.className = 'progress';
-      inlineStatus.appendChild(syncProgress);
-    }
-
-    /** @type {!FilesTooltip} */ (
-        li.ownerDocument.querySelector('files-tooltip'))
-        .addTarget(/** @type {!HTMLElement} */ (inlineStatus));
-
-    frame.appendChild(inlineStatus);
-
-    li.classList.toggle('dim-offline', availableOffline === false);
-    li.classList.toggle('pinned', pinned);
 
     if (entry) {
       this.decorateThumbnailBox_(assertInstanceof(li, HTMLLIElement), entry);

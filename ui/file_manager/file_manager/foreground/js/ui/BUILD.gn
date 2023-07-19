@@ -438,6 +438,9 @@ js_library("file_table") {
     "//ui/file_manager/file_manager/foreground/js:list_thumbnail_loader",
     "//ui/file_manager/file_manager/foreground/js/metadata:metadata_model",
   ]
+  externs_list = [
+    "//ui/file_manager/file_manager/externs/polymer_elements/files_tooltip.js",
+  ]
 }
 
 js_unittest("file_table_unittest") {
@@ -468,9 +471,6 @@ js_library("file_table_list") {
     "//ui/file_manager/file_manager/externs:volume_manager",
     "//ui/file_manager/file_manager/foreground/js:file_list_model",
     "//ui/file_manager/file_manager/foreground/js/metadata:metadata_model",
-  ]
-  externs_list = [
-    "//ui/file_manager/file_manager/externs/polymer_elements/files_tooltip.js",
   ]
 }
 
@@ -541,9 +541,6 @@ js_library("grid") {
     ":list_selection_controller",
     ":list_selection_model",
     "//ui/file_manager/file_manager/common/js:ui",
-  ]
-  externs_list = [
-    "//ui/file_manager/file_manager/externs/polymer_elements/files_tooltip.js",
   ]
 }
 

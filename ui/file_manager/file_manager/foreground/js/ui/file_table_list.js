@@ -491,33 +491,6 @@ filelist.renderFileNameLabel = (doc, entry, locationInfo) => {
 };
 
 /**
- * Renders the drive inline status in the detail table.
- * @param {!Document} doc Owner document.
- * @return {!HTMLDivElement} Created element.
- */
-filelist.renderInlineStatus = (doc) => {
-  const inlineStatus =
-      /** @type {!HTMLDivElement} */ (doc.createElement('div'));
-  inlineStatus.className = 'inline-status';
-
-  const inlineStatusIcon = doc.createElement('xf-icon');
-  inlineStatusIcon.size = 'extra_small';
-  inlineStatusIcon.type = 'offline';
-  inlineStatus.appendChild(inlineStatusIcon);
-
-  if (util.isInlineSyncStatusEnabled()) {
-    const syncProgress = doc.createElement('xf-pie-progress');
-    syncProgress.className = 'progress';
-    inlineStatus.appendChild(syncProgress);
-  }
-
-  /** @type {!FilesTooltip} */ (document.querySelector('files-tooltip'))
-      .addTarget(inlineStatus);
-
-  return inlineStatus;
-};
-
-/**
  * Updates grid item or table row for the externalProps.
  * @param {ListItem} li List item.
  * @param {Entry|FilesAppEntry} entry The entry.
@@ -526,8 +499,6 @@ filelist.renderInlineStatus = (doc) => {
 filelist.updateListItemExternalProps =
     (li, entry, externalProps, isTeamDriveRoot) => {
       if (li.classList.contains('file')) {
-        li.classList.toggle(
-            'dim-offline', externalProps.availableOffline === false);
         li.classList.toggle('dim-hosted', !!externalProps.hosted);
         if (externalProps.contentMimeType) {
           li.classList.toggle(
@@ -541,7 +512,6 @@ filelist.updateListItemExternalProps =
         }
       }
 
-      li.classList.toggle('pinned', externalProps.pinned);
       li.classList.toggle('shortcut', !!externalProps.shortcut);
 
       const iconDiv = li.querySelector('.detail-icon');
@@ -1002,7 +972,6 @@ filelist.updateCacheItemInlineStatus =
         'canPin',
         'syncStatus',
         'progress',
-        'syncCompletedTime',
       ])[0];
 
       filelist.updateInlineStatus(restoredItem, metadata);
@@ -1014,78 +983,31 @@ filelist.updateCacheItemInlineStatus =
  * @param {?MetadataItem} metadata Metadata.
  */
 filelist.updateInlineStatus = (li, metadata) => {
-  if (!metadata) {
+  const inlineStatus = li.querySelector('xf-inline-status');
+
+  if (!metadata || !inlineStatus) {
     return;
   }
 
-  const inlineStatus = li.querySelector('.inline-status');
-  if (!inlineStatus) {
-    return;
-  }
-  // Clear the inline status' aria label and set it to "in progress",
-  // "queued", or "available offline" with the respective order of
-  // precedence if applicable.
-  inlineStatus.setAttribute(
-      'aria-label', metadata.pinned ? str('OFFLINE_COLUMN_LABEL') : '');
+  const {pinned, availableOffline, canPin, progress, syncStatus} = metadata;
 
   if (util.isDriveFsBulkPinningEnabled()) {
-    const inlineIcon = inlineStatus.querySelector('xf-icon');
-
-    if (!util.isNullOrUndefined(metadata.canPin) && !metadata.canPin) {
-      // Items that can't be pinned should show a dashed icon to indicate
-      // they cannot be used offline (e.g. google forms can't be made
-      // available offline).
-      li.classList.toggle('cant-pin', true);
-      inlineIcon.type = 'cant-pin';
-      inlineStatus.setAttribute(
-          'aria-label', str('DRIVE_ITEM_UNAVAILABLE_OFFLINE'));
-      return;
-    }
-
-    // In the event a previous item that could not be pinned has instead
-    // become pinnable, ensure the inline status icon is reset and the class
-    // is removed.
-    li.classList.toggle('cant-pin', false);
-    inlineIcon.type = 'offline';
+    const cantPin = canPin === false;
+    li.classList.toggle('cant-pin', cantPin);
+    inlineStatus.toggleAttribute('cant-pin', cantPin);
   }
 
-  if (!util.isInlineSyncStatusEnabled()) {
-    return;
+  // Directories are always displayed as available offline.
+  const dimOffline =
+      li.classList.contains('file') && availableOffline === false;
+  li.classList.toggle('dim-offline', dimOffline);
+  li.classList.toggle('pinned', pinned);
+  inlineStatus.toggleAttribute('available-offline', pinned && !dimOffline);
+
+  if (util.isInlineSyncStatusEnabled()) {
+    inlineStatus.setAttribute('sync-status', String(syncStatus));
+    inlineStatus.setAttribute('progress', String(progress));
   }
-
-  let {syncStatus} = metadata;
-  let progress = metadata.progress ?? 0;
-
-  if (!syncStatus) {
-    return;
-  }
-
-  const {syncCompletedTime} = metadata;
-
-  // Hold "completed" state for 300ms to give users a chance to see it.
-  if (syncCompletedTime && Date.now() - syncCompletedTime < 300) {
-    syncStatus = chrome.fileManagerPrivate.SyncStatus.COMPLETED;
-    progress = 1.0;
-  }
-
-  switch (syncStatus) {
-    case chrome.fileManagerPrivate.SyncStatus.QUEUED:
-    case chrome.fileManagerPrivate.SyncStatus.ERROR:
-      progress = 0;
-      inlineStatus.setAttribute('aria-label', str('QUEUED_LABEL'));
-      break;
-    case chrome.fileManagerPrivate.SyncStatus.IN_PROGRESS:
-      inlineStatus.setAttribute(
-          'aria-label',
-          strf('IN_PROGRESS_PERCENTAGE_LABEL', (progress * 100).toFixed(0)));
-      break;
-    default:
-      break;
-  }
-
-  li.setAttribute('data-sync-status', syncStatus);
-  inlineStatus.querySelector('.progress')
-      .setAttribute('progress', progress.toFixed(2));
 };
 
 export {filelist};

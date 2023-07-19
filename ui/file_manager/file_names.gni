@@ -298,6 +298,7 @@ ts_files = [
   "file_manager/widgets/xf_select.ts",
   "file_manager/widgets/xf_splitter.ts",
   "file_manager/widgets/xf_pie_progress.ts",
+  "file_manager/widgets/xf_inline_status.ts",
   "file_manager/foreground/js/ui/search_autocomplete_list.ts",
   "file_manager/widgets/xf_cloud_panel.ts",
   "file_manager/widgets/xf_tree.ts",
