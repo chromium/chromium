@@ -5,11 +5,11 @@
 import './diagnose_info_table.js';
 
 import {CustomElement} from '//resources/js/custom_element.js';
-import {Time} from '//resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
+import {Time, TimeDelta} from '//resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
 
 import {DiagnoseInfoTableElement} from './diagnose_info_table.js';
 import {getTemplate} from './diagnose_info_view.html.js';
-import {GeolocationDiagnostics, INVALID_CHANNEL, INVALID_RADIO_SIGNAL_STRENGTH, INVALID_SIGNAL_TO_NOISE, NetworkLocationDiagnostics, PositionCacheDiagnostics} from './geolocation_internals.mojom-webui.js';
+import {GeolocationDiagnostics, INVALID_CHANNEL, INVALID_RADIO_SIGNAL_STRENGTH, INVALID_SIGNAL_TO_NOISE, NetworkLocationDiagnostics, PositionCacheDiagnostics, WifiPollingPolicyDiagnostics} from './geolocation_internals.mojom-webui.js';
 import {BAD_ACCURACY, BAD_ALTITUDE, BAD_HEADING, BAD_LATITUDE_LONGITUDE, BAD_SPEED, GeopositionResult} from './geoposition.mojom-webui.js';
 
 export const PROVIDER_STATE_TABLE_ID = 'provider-state-table';
@@ -22,6 +22,7 @@ const PROVIDER_STATE_ENUM: {[key: number]: string} = {
 export const WATCH_TABLE_ID = 'watch-position-table';
 export const WIFI_DATA_TABLE_ID = 'wifi-data-table';
 export const POSITION_CACHE_TABLE_ID = 'position-cache-table';
+export const WIFI_POLLING_POLICY_TABLE_ID = 'wifi-polling-policy-table';
 
 // Converts `mojoTime` from `mojom_base.mojom.Time` to `Date`.
 function mojoTimeToDate(mojoTime: Time) {
@@ -91,6 +92,14 @@ function stringifyMojoGeopositionResult(
   return 'Invalid result';
 }
 
+// Return a string representation of `TimeDelta` in second.
+function stringifyMojoTimeDelta(mojoTime: TimeDelta|undefined) {
+  if (!mojoTime) {
+    return 'None';
+  }
+  return `${Number(mojoTime.microseconds) / 1000000}`;
+}
+
 export class DiagnoseInfoViewElement extends CustomElement {
   static get is() {
     return 'diagnose-info-view';
@@ -124,6 +133,7 @@ export class DiagnoseInfoViewElement extends CustomElement {
   private wifiDataTable_: DiagnoseInfoTableElement;
   private positionCacheTable_: DiagnoseInfoTableElement;
   private watchPositionTable_: DiagnoseInfoTableElement;
+  private wifiPollingPolicyTable_: DiagnoseInfoTableElement;
 
   constructor() {
     super();
@@ -137,12 +147,16 @@ export class DiagnoseInfoViewElement extends CustomElement {
             `#${POSITION_CACHE_TABLE_ID}`);
     this.watchPositionTable_ =
         this.getRequiredElement<DiagnoseInfoTableElement>(`#${WATCH_TABLE_ID}`);
+    this.wifiPollingPolicyTable_ =
+        this.getRequiredElement<DiagnoseInfoTableElement>(
+            `#${WIFI_POLLING_POLICY_TABLE_ID}`);
   }
 
   updateDiagnosticsTables(data: GeolocationDiagnostics) {
     this.updateProviderState(data.providerState);
     this.updateNetworkLocationDiagnostics(data.networkLocationDiagnostics);
     this.updatePositionCacheDiagnostics(data.positionCacheDiagnostics);
+    this.updateWifiPollingPolicyTable(data.wifiPollingPolicyDiagnostics);
   }
 
   updateProviderState(providerState: number) {
@@ -182,6 +196,11 @@ export class DiagnoseInfoViewElement extends CustomElement {
         } else {
           row['Signal to Noise Ratio'] = `${accessPointData.signalToNoise} dB`;
         }
+        if (accessPointData.timestamp) {
+          row['Timestamp'] = stringifyMojoTime(accessPointData.timestamp);
+        } else {
+          row['Timestamp'] = 'N/A';
+        }
         wifiData.push(row);
       }
       if (wifiData.length === 0) {
@@ -191,6 +210,7 @@ export class DiagnoseInfoViewElement extends CustomElement {
         row['Signal strength'] = '';
         row['Channel'] = '';
         row['Signal to Noise Ratio'] = '';
+        row['Timestamp'] = '';
         wifiData.push(row);
       }
     }
@@ -229,6 +249,29 @@ export class DiagnoseInfoViewElement extends CustomElement {
   updateWatchPositionTable(data: Record<string, string>) {
     const footerMessage = `Last updated ${new Date().toLocaleString()}`;
     this.watchPositionTable_.updateTable(WATCH_TABLE_ID, [data], footerMessage);
+  }
+
+  updateWifiPollingPolicyTable(data?: WifiPollingPolicyDiagnostics) {
+    if (!data) {
+      this.wifiPollingPolicyTable_.hideTable();
+      return;
+    }
+    const row: Record<string, string> = {};
+    row['Interval start time'] = stringifyMojoTime(data.intervalStart);
+    row['Interval duration (sec)'] =
+        stringifyMojoTimeDelta(data.intervalDuration);
+    row['Polling interval (sec)'] =
+        stringifyMojoTimeDelta(data.pollingInterval);
+    row['Default interval (sec)'] =
+        stringifyMojoTimeDelta(data.defaultInterval);
+    row['No change interval (sec)'] =
+        stringifyMojoTimeDelta(data.noChangeInterval);
+    row['Two no change interval (sec)'] =
+        stringifyMojoTimeDelta(data.twoNoChangeInterval);
+    row['No Wi-Fi interval (sec)'] =
+        stringifyMojoTimeDelta(data.noWifiInterval);
+    this.wifiPollingPolicyTable_.updateTable(
+        WIFI_POLLING_POLICY_TABLE_ID, [row]);
   }
 }
 

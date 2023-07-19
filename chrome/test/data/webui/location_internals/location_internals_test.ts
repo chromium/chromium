@@ -4,17 +4,16 @@
 
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
-import {POSITION_CACHE_TABLE_ID, WIFI_DATA_TABLE_ID} from 'chrome://location-internals/diagnose_info_view.js';
+import {POSITION_CACHE_TABLE_ID, WIFI_DATA_TABLE_ID, WIFI_POLLING_POLICY_TABLE_ID} from 'chrome://location-internals/diagnose_info_view.js';
 import {GeolocationDiagnostics, GeolocationInternalsInterface, GeolocationInternalsPendingReceiver, GeolocationInternalsReceiver, INVALID_CHANNEL, INVALID_RADIO_SIGNAL_STRENGTH, INVALID_SIGNAL_TO_NOISE} from 'chrome://location-internals/geolocation_internals.mojom-webui.js';
 import {BAD_ACCURACY, BAD_ALTITUDE, BAD_HEADING, BAD_LATITUDE_LONGITUDE, BAD_SPEED} from 'chrome://location-internals/geoposition.mojom-webui.js';
 import {DIAGNOSE_INFO_VIEW_ID, initializeMojo, REFRESH_BUTTON_ID, REFRESH_FINISH_EVENT, REFRESH_STATUS_FAILURE, REFRESH_STATUS_ID, REFRESH_STATUS_SUCCESS, WATCH_BUTTON_ID} from 'chrome://location-internals/location_internals.js';
 import {LocationInternalsHandler, LocationInternalsHandlerInterface, LocationInternalsHandlerReceiver} from 'chrome://location-internals/location_internals.mojom-webui.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {getRequiredElement} from 'chrome://resources/js/util_ts.js';
-import {Time} from 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
+import {Time, TimeDelta} from 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
-
 
 let geolocationInternalsRemote: FakeGeolocationInternalsRemote|null = null;
 
@@ -43,6 +42,14 @@ function dateToMojoTime(date: Date) {
   const epochDeltaInMs = unixEpoch - windowsEpoch;
   const internalValue = BigInt(date.valueOf() + epochDeltaInMs) * BigInt(1000);
   return {internalValue} as Time;
+}
+
+/**
+ * Converts a time delta in milliseconds to TimeDelta.
+ * @param milliseconds time delta in milliseconds
+ */
+function millisecondsToMojoTimeDelta(milliseconds: number): TimeDelta {
+  return {microseconds: BigInt(Math.floor(milliseconds * 1000))};
 }
 
 // Checks that the table with ID `tableId` is not shown.
@@ -213,8 +220,14 @@ suite('LocationInternalsUITest', function() {
     });
     checkTableContents(
         WIFI_DATA_TABLE_ID, WIFI_DATA_TABLE_ID,
-        ['MAC address', 'Signal strength', 'Channel', 'Signal to Noise Ratio'],
-        [['No access point data', '', '', '']], 'No Wi-Fi data received');
+        [
+          'MAC address',
+          'Signal strength',
+          'Channel',
+          'Signal to Noise Ratio',
+          'Timestamp',
+        ],
+        [['No access point data', '', '', '', '']], 'No Wi-Fi data received');
   });
 
   test('NetworkLocationDiagnosticsGotWifiData', async function() {
@@ -228,12 +241,14 @@ suite('LocationInternalsUITest', function() {
             radioSignalStrength: -50,
             channel: 1,
             signalToNoise: 10,
+            timestamp: dateToMojoTime(new Date('2020-01-12T22:25:00')),
           },
           {
             macAddress: 'aa-bb-cc-dd-ee-ff',
             radioSignalStrength: -42,
             channel: 2,
             signalToNoise: 15,
+            timestamp: dateToMojoTime(new Date('2020-01-12T22:26:00')),
           },
         ],
         wifiTimestamp: dateToMojoTime(new Date('2020-01-12T22:27:00')),
@@ -241,10 +256,28 @@ suite('LocationInternalsUITest', function() {
     });
     checkTableContents(
         WIFI_DATA_TABLE_ID, WIFI_DATA_TABLE_ID,
-        ['MAC address', 'Signal strength', 'Channel', 'Signal to Noise Ratio'],
         [
-          ['00-11-22-33-44-55', '-50 dBm', '1', '10 dB'],
-          ['aa-bb-cc-dd-ee-ff', '-42 dBm', '2', '15 dB'],
+          'MAC address',
+          'Signal strength',
+          'Channel',
+          'Signal to Noise Ratio',
+          'Timestamp',
+        ],
+        [
+          [
+            '00-11-22-33-44-55',
+            '-50 dBm',
+            '1',
+            '10 dB',
+            '1/12/2020, 10:25:00 PM',
+          ],
+          [
+            'aa-bb-cc-dd-ee-ff',
+            '-42 dBm',
+            '2',
+            '15 dB',
+            '1/12/2020, 10:26:00 PM',
+          ],
         ],
         'Wi-Fi data last received 1/12/2020, 10:27:00 PM');
   });
@@ -259,14 +292,21 @@ suite('LocationInternalsUITest', function() {
           radioSignalStrength: INVALID_RADIO_SIGNAL_STRENGTH,
           channel: INVALID_CHANNEL,
           signalToNoise: INVALID_SIGNAL_TO_NOISE,
+          timestamp: undefined,
         }],
         wifiTimestamp: dateToMojoTime(new Date('2020-01-12T22:27:00')),
       },
     });
     checkTableContents(
         WIFI_DATA_TABLE_ID, WIFI_DATA_TABLE_ID,
-        ['MAC address', 'Signal strength', 'Channel', 'Signal to Noise Ratio'],
-        [['00-11-22-33-44-55', 'N/A', 'N/A', 'N/A']],
+        [
+          'MAC address',
+          'Signal strength',
+          'Channel',
+          'Signal to Noise Ratio',
+          'Timestamp',
+        ],
+        [['00-11-22-33-44-55', 'N/A', 'N/A', 'N/A', 'N/A']],
         'Wi-Fi data last received 1/12/2020, 10:27:00 PM');
   });
 
@@ -446,6 +486,56 @@ suite('LocationInternalsUITest', function() {
           'None',
           'N/A',
           'User denied Geolocation (1)',
+        ]]);
+  });
+
+  test('WifiPollingPolicyTableHidden', async function() {
+    // Simulate geolocation not yet initialized.
+    await simulateDiagnosticsUpdate(null);
+    checkTableHidden(WIFI_POLLING_POLICY_TABLE_ID);
+
+    // Simulate wifi polling policy not initialized.
+    await simulateDiagnosticsUpdate({providerState: 0});
+    checkTableHidden(WIFI_POLLING_POLICY_TABLE_ID);
+  });
+
+  test('WifiPollingPolicyTablePopulated', async function() {
+    // Simulate valid wifi polling policy data is populated.
+    await simulateDiagnosticsUpdate({
+      providerState: 1,
+      wifiPollingPolicyDiagnostics: {
+        intervalStart: dateToMojoTime(new Date('2020-01-12T22:27:00')),
+        intervalDuration:
+            millisecondsToMojoTimeDelta(2 * 60 * 1000),  // 2 minutes
+        pollingInterval:
+            millisecondsToMojoTimeDelta(2 * 60 * 1000),           // 2 minutes
+        defaultInterval: millisecondsToMojoTimeDelta(10 * 1000),  // 10 seconds
+        noChangeInterval:
+            millisecondsToMojoTimeDelta(2 * 60 * 1000),  // 2 minutes
+        twoNoChangeInterval:
+            millisecondsToMojoTimeDelta(10 * 60 * 1000),         // 10 minutes
+        noWifiInterval: millisecondsToMojoTimeDelta(20 * 1000),  // 20 seconds
+      },
+    });
+    checkTableContents(
+        WIFI_POLLING_POLICY_TABLE_ID, WIFI_POLLING_POLICY_TABLE_ID,
+        [
+          'Interval start time',
+          'Interval duration (sec)',
+          'Polling interval (sec)',
+          'Default interval (sec)',
+          'No change interval (sec)',
+          'Two no change interval (sec)',
+          'No Wi-Fi interval (sec)',
+        ],
+        [[
+          '1/12/2020, 10:27:00 PM',
+          '120',
+          '120',
+          '10',
+          '120',
+          '600',
+          '20',
         ]]);
   });
 });

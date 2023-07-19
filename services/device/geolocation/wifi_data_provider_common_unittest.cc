@@ -56,6 +56,7 @@ class MockPollingPolicy : public WifiPollingPolicy {
   MOCK_METHOD0(InitialInterval, int());
   MOCK_METHOD0(PollingInterval, int());
   MOCK_METHOD0(NoWifiInterval, int());
+  void FillDiagnostics(mojom::WifiPollingPolicyDiagnostics&) override {}
 };
 
 class WifiDataProviderCommonWithMock : public WifiDataProviderCommon {

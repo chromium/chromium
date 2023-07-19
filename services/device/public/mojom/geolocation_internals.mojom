@@ -30,6 +30,10 @@ struct AccessPointData {
   // The ratio in dB of the signal strength to the background noise level, or
   // kInvalidSignalToNoise if the signal to noise ratio is not provided.
   int32 signal_to_noise = kInvalidSignalToNoise;
+
+  // Timestamp when this access point was last seen, or null if the platform
+  // does not provide a last seen timestamp.
+  mojo_base.mojom.Time? timestamp;
 };
 
 // A snapshot of the internal state of the NetworkLocationProvider.
@@ -62,6 +66,33 @@ struct PositionCacheDiagnostics {
   GeopositionResult? last_network_result;
 };
 
+// Diagnostic information about the WifiPollingPolicy.
+struct WifiPollingPolicyDiagnostics {
+  // The time when the last Wi-Fi scan was started, or null if
+  // no Wi-Fi scanning has occurred.
+  mojo_base.mojom.Time? interval_start;
+
+  // The duration of the current interval.
+  mojo_base.mojom.TimeDelta interval_duration;
+
+  // The duration of the next Wi-Fi polling interval.
+  mojo_base.mojom.TimeDelta polling_interval;
+
+  // The duration of the default polling interval.
+  mojo_base.mojom.TimeDelta default_interval;
+
+  // The duration of the polling interval when the scan data has not changed
+  // significantly between the last two consecutive scans.
+  mojo_base.mojom.TimeDelta no_change_interval;
+
+  // The duration of the polling interval when the scan data has not changed
+  // significantly between the last three consecutive scans.
+  mojo_base.mojom.TimeDelta two_no_change_interval;
+
+  // The duration of the polling interval when Wi-Fi scanning is not available.
+  mojo_base.mojom.TimeDelta no_wifi_interval;
+};
+
 // A snapshot of the internal state of the Geolocation API implementation.
 struct GeolocationDiagnostics {
   // The current state of a LocationProvider.
@@ -87,6 +118,9 @@ struct GeolocationDiagnostics {
   // Diagnostic information about the position cache, or null if the position
   // cache has not been created.
   PositionCacheDiagnostics? position_cache_diagnostics;
+
+  // Internal state of Wi-Fi data polling policy.
+  WifiPollingPolicyDiagnostics? wifi_polling_policy_diagnostics;
 };
 
 // Interface for chrome://location-internals to access geolocation debug data.
