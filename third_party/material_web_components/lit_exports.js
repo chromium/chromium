@@ -1,4 +1,9 @@
-/** Simple file to export all lit resources we care about for easy bundling. */
+/**
+ * Simple file to export all lit resources we care about for easy bundling.
+ * The exports should be the same as
+ * https://github.com/lit/lit/blob/main/packages/lit/src/index.all.ts.
+ * TODO(b/291526741): Use the lit bundle directly.
+ */
 
 export * from "./components-chromium/node_modules/lit/index.js";
 export * from "./components-chromium/node_modules/lit/decorators.js";
@@ -22,5 +27,5 @@ export * from "./components-chromium/node_modules/lit/directives/template-conten
 export * from "./components-chromium/node_modules/lit/directives/unsafe-html.js";
 export * from "./components-chromium/node_modules/lit/directives/unsafe-svg.js";
 export * from "./components-chromium/node_modules/lit/directives/until.js";
-export * from "./components-chromium/node_modules/lit/directives/when.js";
-export {literal} from "./components-chromium/node_modules/lit/static-html.js";
+export * from './components-chromium/node_modules/lit/directives/when.js';
+export {html as staticHtml, literal, svg as staticSvg, unsafeStatic, withStatic,} from './components-chromium/node_modules/lit/static-html.js';

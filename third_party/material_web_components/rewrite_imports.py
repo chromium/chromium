@@ -28,6 +28,13 @@ def main(argv):
     # matched against the entire import path. I.e. "foo|bar" will translate to
     # re.replace("^foo$", "bar", line).
     parser.add_argument('--import_mappings', nargs='*')
+    # List of rules for renaming imported variables. The format is
+    # "path:oldName|newName". When "path" is part of the original path, the
+    # variable is renamed to "newName". E.g.
+    # Rule: 'lit/static-html:html|staticHtml'
+    # Original: import { static } from 'lit/static-html'
+    # Rewrite: import { staticHtml } from 'lit/static-html'
+    parser.add_argument('--import_var_mappings', nargs='*')
     # The directory to output the rewritten files to.
     parser.add_argument('--out_dir', required=True)
     # The directory to output the manifest file to. The manifest can be used
@@ -49,6 +56,15 @@ def main(argv):
         (src, dst) = mapping.split('|')
         import_mappings[src] = dst
 
+    import_var_mappings = list()
+    for mapping in args.import_var_mappings:
+        (path, renaming) = mapping.split(':')
+        (old_name, new_name) = renaming.split('|')
+        import_var_mappings.append((path, (old_name, new_name)))
+
+    # For `import_path`, either replace the prefix as described in
+    #  `--import_mappings` or drop the "generated:" prefix. Returns None if no
+    #  processing is needed.
     def _map_import(import_path):
         for regex in import_mappings.keys():
             import_match = re.match(f"^{regex}(.*)", import_path)
@@ -63,26 +79,42 @@ def main(argv):
             return generated_import_match.group(1)
         return None
 
+    # Applies the rules from --import_var_mappings and returns the rewritten
+    # import variables.
+    def _map_import_vars(path, variables):
+        for (map_path, (old, new)) in import_var_mappings:
+            if map_path in path:
+                variables = re.sub(rf"\b{old}\b", new,
+                                   variables).replace(f'{new} as {new}', new)
+        return variables
+
     for f in args.in_files:
         output = []
-        line_no = 0
         changed_lines_list = list()
-        for line in open(os.path.join(args.base_dir, f), 'r').readlines():
-            # Keep line counter to pass in rewrite info to rewrite_imports.js
-            line_no += 1
+        for line_no, line in enumerate(
+                open(os.path.join(args.base_dir, f), 'r').readlines()):
             # Investigate JS parsing if this is insufficient.
             match = re.match(r'^(import .*["\'])(.*)(["\'];)$', line)
-            if match and _map_import(match.group(2)):
-                new_import = _map_import(match.group(2))
-                line = f"{match.group(1)}{new_import}{match.group(3)}\n"
-                generated_column = len(match.group(1)) + len(match.group(2))
-                rewritten_column = len(match.group(1)) + len(new_import)
-                changed_line = {
-                    "lineNum": line_no,
-                    "generatedColumn": generated_column,
-                    "rewrittenColumn": rewritten_column
-                }
-                changed_lines_list.append(changed_line)
+            if match:
+                import_vars = match.group(1)
+                import_path = match.group(2)
+                new_import_path = _map_import(import_path) or import_path
+                new_import_vars = _map_import_vars(import_path, import_vars)
+                # If this is an import statement line and it has a replacement,
+                # modify the line before outputing it.
+                if new_import_path != import_path or new_import_vars != import_vars:
+                    line = f"{new_import_vars}{new_import_path}{match.group(3)}\n"
+                    generated_column = len(import_vars) + len(import_path)
+                    # TODO(b/290142486): Also adjust the location of import var
+                    # tokens.
+                    rewritten_column = len(new_import_vars) + len(
+                        new_import_path)
+                    changed_line = {
+                        "lineNum": line_no,
+                        "generatedColumn": generated_column,
+                        "rewrittenColumn": rewritten_column
+                    }
+                    changed_lines_list.append(changed_line)
             output.append(line)
         with open(os.path.join(args.out_dir, f), 'w') as out_file:
             out_file.write(''.join(output))
