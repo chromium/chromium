@@ -11,8 +11,10 @@
 #include "base/memory/ptr_util.h"
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "media/base/bitstream_buffer.h"
+#include "media/base/media_switches.h"
 #include "media/base/media_util.h"
 #include "media/base/test_helpers.h"
 #include "media/base/video_codecs.h"
@@ -41,6 +43,10 @@ class NdkVideoEncoderAcceleratorTest
   void SetUp() override {
     if (!NdkVideoEncodeAccelerator::IsSupported())
       GTEST_SKIP() << "Not supported Android version";
+
+#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+    feature_list_.InitAndEnableFeature(kPlatformHEVCEncoderSupport);
+#endif
 
     auto args = GetParam();
     profile_ = args.profile;
@@ -204,6 +210,7 @@ class NdkVideoEncoderAcceleratorTest
   VideoPixelFormat pixel_format_;
 
   base::test::TaskEnvironment task_environment_;
+  base::test::ScopedFeatureList feature_list_;
   base::RunLoop loop_;
   std::unique_ptr<VideoEncodeAccelerator> accelerator_;
   size_t output_buffer_size_ = 0;
@@ -315,6 +322,10 @@ VideoParams kParams[] = {
     {VP8PROFILE_MIN, PIXEL_FORMAT_NV12},
     {H264PROFILE_BASELINE, PIXEL_FORMAT_I420},
     {H264PROFILE_BASELINE, PIXEL_FORMAT_NV12},
+#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+    {HEVCPROFILE_MAIN, PIXEL_FORMAT_I420},
+    {HEVCPROFILE_MAIN, PIXEL_FORMAT_NV12},
+#endif
 };
 
 INSTANTIATE_TEST_SUITE_P(AllNdkEncoderTests,

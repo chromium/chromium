@@ -18,6 +18,8 @@
 #include "build/build_config.h"
 #include "media/base/android/media_codec_util.h"
 #include "media/base/bitstream_buffer.h"
+#include "media/base/media_switches.h"
+#include "media/base/video_codecs.h"
 #include "media/base/video_frame.h"
 #include "media/gpu/android/mediacodec_stubs.h"
 #include "media/gpu/android/video_accelerator_util.h"
@@ -207,7 +209,26 @@ NdkVideoEncodeAccelerator::GetSupportedProfiles() {
     return profiles;
 
   for (auto& info : GetEncoderInfoCache()) {
-    profiles.push_back(info.profile);
+    const auto codec = VideoCodecProfileToVideoCodec(info.profile.profile);
+    switch (codec) {
+      case VideoCodec::kHEVC:
+#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+        if (base::FeatureList::IsEnabled(kPlatformHEVCEncoderSupport) &&
+            // Currently only 8bit NV12 and I420 encoding is supported, so limit
+            // this to main profile only just like other platforms.
+            info.profile.profile == VideoCodecProfile::HEVCPROFILE_MAIN &&
+            // Some devices may report to have a software HEVC encoder,
+            // however based on tests, they are not always working well,
+            // so limit the support to HW only for now.
+            !info.profile.is_software_codec) {
+          profiles.push_back(info.profile);
+        }
+#endif
+        break;
+      default:
+        profiles.push_back(info.profile);
+        break;
+    }
   }
   return profiles;
 }

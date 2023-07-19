@@ -36,6 +36,7 @@ class VideoAcceleratorUtil {
             MediaCodecUtil.MimeTypes.VIDEO_VP9,
             MediaCodecUtil.MimeTypes.VIDEO_AV1,
             MediaCodecUtil.MimeTypes.VIDEO_H264,
+            MediaCodecUtil.MimeTypes.VIDEO_HEVC,
     };
 
     private static final String[] SUPPORTED_DECODER_TYPES = {
