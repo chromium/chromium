@@ -108,7 +108,7 @@ suite('acceleratorEditViewTest', function() {
     // Click on the edit button.
     getElementById('editButton')!.click();
 
-    // Press 'Snap Window left' key, expect an error due since it is a
+    // Press 'Snap Window left' key, expect an error since it is a
     // pre-existing shortcut.
     const viewElement = getElementById('acceleratorItem');
     viewElement!.dispatchEvent(new KeyboardEvent('keydown', {
@@ -137,6 +137,58 @@ suite('acceleratorEditViewTest', function() {
       code: 'KeyE',
       ctrlKey: true,
       altKey: true,
+      shiftKey: false,
+      metaKey: false,
+    }));
+
+    await flushTasks();
+    assertFalse(editViewElement!.hasError);
+  });
+
+  test('PressKeyToResetError', async () => {
+    const fakeResult: AcceleratorResultData = {
+      result: AcceleratorConfigResult.kConflict,
+      shortcutName: {data: [1]},
+    };
+
+    provider.setFakeReplaceAcceleratorResult(fakeResult);
+
+    const acceleratorInfo = createStandardAcceleratorInfo(
+        Modifier.ALT,
+        /*key=*/ 221,
+        /*keyDisplay=*/ ']');
+
+    editViewElement!.acceleratorInfo = acceleratorInfo;
+    editViewElement!.source = AcceleratorSource.kAsh;
+    editViewElement!.action = 1;
+    await flushTasks();
+
+    // Click on the edit button.
+    getElementById('editButton')!.click();
+
+    // Press 'Snap Window left' key, expect an error since it is a
+    // pre-existing shortcut.
+    const viewElement = getElementById('acceleratorItem');
+    viewElement!.dispatchEvent(new KeyboardEvent('keydown', {
+      key: '[',
+      keyCode: 219,
+      code: 'Key[',
+      ctrlKey: false,
+      altKey: true,
+      shiftKey: false,
+      metaKey: false,
+    }));
+
+    await flushTasks();
+    assertTrue(editViewElement!.hasError);
+
+    // Press a single key, expect error to be reset.
+    viewElement!.dispatchEvent(new KeyboardEvent('keydown', {
+      key: 'a',
+      keyCode: 220,
+      code: 'KeyA',
+      ctrlKey: false,
+      altKey: false,
       shiftKey: false,
       metaKey: false,
     }));

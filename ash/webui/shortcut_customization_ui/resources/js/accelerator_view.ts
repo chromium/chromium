@@ -231,7 +231,9 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
     if (!this.isCapturing) {
       return;
     }
-    this.handleKey(e);
+    e.preventDefault();
+    e.stopPropagation();
+    this.handleKeyDown(e);
   }
 
   private onKeyUp(e: KeyboardEvent): void {
@@ -240,6 +242,40 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
     }
     e.preventDefault();
     e.stopPropagation();
+    this.handleKeyUp(e);
+  }
+
+  private handleKeyDown(e: KeyboardEvent): void {
+    if (this.hasError) {
+      // Reset status state when pressing the a new key.
+      this.statusMessage = '';
+      this.hasError = false;
+    }
+
+    // Add the key pressed to pendingAccelerator.
+    this.set(
+        'pendingAcceleratorInfo.layoutProperties.standardAccelerator.accelerator',
+        this.keystrokeToAccelerator(e));
+
+    if (this.isModifierKey(e)) {
+      // Reset the keyDisplay property if the key is a modifier.
+      this.set(
+          'pendingAcceleratorInfo.layoutProperties.standardAccelerator.keyDisplay',
+          '');
+    } else {
+      // Set keyDisplay property.
+      this.set(
+          'pendingAcceleratorInfo.layoutProperties.standardAccelerator.keyDisplay',
+          this.getKeyDisplay(e));
+    }
+
+    // Only process valid accelerators.
+    if (this.isValidDefaultAccelerator(this.pendingAcceleratorInfo)) {
+      this.processPendingAccelerator(this.pendingAcceleratorInfo);
+    }
+  }
+
+  private handleKeyUp(e: KeyboardEvent): void {
     const pendingAccelerator = this.pendingAcceleratorInfo.layoutProperties
                                    .standardAccelerator.accelerator;
     // Remove the modifier that was just released.
@@ -267,35 +303,6 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
           'pendingAcceleratorInfo.layoutProperties.standardAccelerator' +
               '.keyDisplay',
           '');
-    }
-  }
-
-  private handleKey(e: KeyboardEvent): void {
-    // While capturing, we prevent all events from bubbling, to prevent
-    // shortcuts from executing and interrupting the input capture.
-    e.preventDefault();
-    e.stopPropagation();
-
-    // Add the key pressed to pendingAccelerator.
-    this.set(
-        'pendingAcceleratorInfo.layoutProperties.standardAccelerator.accelerator',
-        this.keystrokeToAccelerator(e));
-
-    if (this.isModifierKey(e)) {
-      // Reset the keyDisplay property if the key is a modifier.
-      this.set(
-          'pendingAcceleratorInfo.layoutProperties.standardAccelerator.keyDisplay',
-          '');
-    } else {
-      // Set keyDisplay property.
-      this.set(
-          'pendingAcceleratorInfo.layoutProperties.standardAccelerator.keyDisplay',
-          this.getKeyDisplay(e));
-    }
-
-    // Only process valid accelerators.
-    if (this.isValidDefaultAccelerator(this.pendingAcceleratorInfo)) {
-      this.processPendingAccelerator(this.pendingAcceleratorInfo);
     }
   }
 
