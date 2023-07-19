@@ -107468,6 +107468,10 @@ Full version information for the fingerprint enum values:
   <int value="12" label="Browsing Data"/>
   <int value="13" label="Privacy Guide"/>
   <int value="14" label="Control Group"/>
+  <int value="15" label="Privacy Sandbox 4 Consent Accept"/>
+  <int value="16" label="Privacy Sandbox 4 Consent Decline"/>
+  <int value="17" label="Privacy Sandbox 4 Notice Ok"/>
+  <int value="18" label="Privacy Sandbox 4 Notice Settings"/>
 </enum>
 
 <enum name="TrustTokenRequestHelperFactoryOutcome">
