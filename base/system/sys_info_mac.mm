@@ -21,6 +21,8 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 
+#include "base/record_replay.h"
+
 namespace base {
 
 namespace {
@@ -56,8 +58,17 @@ std::string SysInfo::OperatingSystemVersion() {
 void SysInfo::OperatingSystemVersionNumbers(int32_t* major_version,
                                             int32_t* minor_version,
                                             int32_t* bugfix_version) {
-  NSOperatingSystemVersion version =
-      [[NSProcessInfo processInfo] operatingSystemVersion];
+  // It is difficult to record/replay the operatingSystemVersion message below
+  // because different library calls with different signatures are used on x64 vs. ARM
+  // (objc_msgSend_stret vs. objc_msgSend). Manually record/replay the resulting
+  // version to workaround this problem.
+  NSOperatingSystemVersion version;
+  if (recordreplay::IsRecording()) {
+    recordreplay::AutoPassThroughEvents pt;
+    version = [[NSProcessInfo processInfo] operatingSystemVersion];
+  }
+  recordreplay::RecordReplayBytes("SysInfo::OperatingSystemVersionNumbers",
+                                  &version, sizeof(version));
   *major_version = saturated_cast<int32_t>(version.majorVersion);
   *minor_version = saturated_cast<int32_t>(version.minorVersion);
   *bugfix_version = saturated_cast<int32_t>(version.patchVersion);
