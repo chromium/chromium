@@ -83,6 +83,9 @@ const char kIntensiveWakeUpThrottlingEnabled[] =
 #if BUILDFLAG(IS_ANDROID)
 // Boolean policy preference to disable the BackForwardCache feature.
 const char kBackForwardCacheEnabled[] = "policy.back_forward_cache_enabled";
+
+// Boolean policy preference to disable the Read Aloud feature.
+const char kReadAloudEnabled[] = "policy.read_aloud_enabled";
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // Boolean policy preference to disable the User-Agent Client Hints

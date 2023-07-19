@@ -52,6 +52,7 @@ extern const char kIntensiveWakeUpThrottlingEnabled[];
 extern const char kUserAgentClientHintsGREASEUpdateEnabled[];
 #if BUILDFLAG(IS_ANDROID)
 extern const char kBackForwardCacheEnabled[];
+extern const char kReadAloudEnabled[];
 #endif  // BUILDFLAG(IS_ANDROID)
 extern const char kIsolatedAppsDeveloperModeAllowed[];
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
