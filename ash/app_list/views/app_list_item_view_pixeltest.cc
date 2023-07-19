@@ -150,10 +150,10 @@ class AppListItemViewPixelTest
   size_t GetRevisionNumber() {
     if (jelly_enabled()) {
       // Revision numbers reset with Jelly.
-      return 0u;
+      return 1u;
     }
 
-    size_t base_revision_number = 3;
+    size_t base_revision_number = 4;
     if (use_folder_icon_refresh()) {
       ++base_revision_number;
     }

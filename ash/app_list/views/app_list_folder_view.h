@@ -107,6 +107,7 @@ class ASH_EXPORT AppListFolderView : public views::View,
   void FocusFirstItem(bool silently);
 
   // views::View
+  void AddedToWidget() override;
   void Layout() override;
   void ChildPreferredSizeChanged(View* child) override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;

@@ -664,7 +664,7 @@ AppListFolderView::AppListFolderView(AppListFolderController* folder_controller,
 
   // Create a shadow under `background_view_`.
   shadow_ = SystemShadow::CreateShadowOnNinePatchLayer(
-      SystemShadow::Type::kElevation8);
+      SystemShadow::Type::kElevation12);
   background_view_->AddLayerToRegion(shadow_->GetLayer(),
                                      views::LayerRegion::kBelow);
 
@@ -832,6 +832,10 @@ void AppListFolderView::ScheduleShowHideAnimation(bool show,
 
   for (auto& animation : folder_visibility_animations_)
     animation->ScheduleAnimation(animation_completion_callback);
+}
+
+void AppListFolderView::AddedToWidget() {
+  shadow_->ObserveColorProviderSource(GetWidget());
 }
 
 void AppListFolderView::Layout() {
