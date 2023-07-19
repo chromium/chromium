@@ -11,13 +11,13 @@ export const CrPolicyStrings: CrPolicyStringsType = {
   controlledSettingPolicy: 'policy',
   controlledSettingRecommendedMatches: 'matches',
   controlledSettingRecommendedDiffers: 'differs',
+  controlledSettingParent: 'parent',
+  controlledSettingChildRestriction: 'Restricted for child',
 
   // <if expr="chromeos_ash">
   controlledSettingShared: 'shared: $1',
   controlledSettingWithOwner: 'owner: $1',
   controlledSettingNoOwner: 'owner',
-  controlledSettingParent: 'parent',
-  controlledSettingChildRestriction: 'Restricted for child',
   // </if>
 };
 

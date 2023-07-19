@@ -48,7 +48,6 @@ suite('CrPolicyIndicatorMixin', function() {
             indicator.indicatorType, indicator.indicatorSourceName));
   });
 
-  // <if expr="chromeos_ash">
   test('parent-controlled indicator', function() {
     indicator.indicatorType = CrPolicyIndicatorType.PARENT;
 
@@ -70,7 +69,6 @@ suite('CrPolicyIndicatorMixin', function() {
         indicator.getIndicatorTooltip(
             indicator.indicatorType, indicator.indicatorSourceName));
   });
-  // </if>
 
   test('recommended indicator', function() {
     indicator.indicatorType = CrPolicyIndicatorType.RECOMMENDED;

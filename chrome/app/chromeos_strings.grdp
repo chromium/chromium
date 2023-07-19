@@ -2196,9 +2196,6 @@
   <message name="IDS_CONTROLLED_SETTING_DEMO_SESSION" desc="Text displayed in the controlled settings bubble when a setting's value is enforced by demo session.">
     This setting can't be changed in a demo session.
   </message>
-  <message name="IDS_CONTROLLED_SETTING_PARENT" desc="Text displayed in the controlled settings bubble when a setting's value is controlled by user's parent.">
-    This setting is managed by a parent.
-  </message>
   <message name="IDS_STATUSBAR_DISABLE_SPOKEN_FEEDBACK" desc="The menu option to disable spoken feedback accessibility feature.">
     Disable ChromeVox (spoken feedback)
   </message>

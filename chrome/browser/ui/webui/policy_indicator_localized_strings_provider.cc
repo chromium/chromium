@@ -31,13 +31,14 @@ void AddLocalizedStrings(content::WebUIDataSource* html_source) {
     {"controlledSettingExtension", IDS_CONTROLLED_SETTING_EXTENSION},
     {"controlledSettingExtensionWithoutName",
      IDS_CONTROLLED_SETTING_EXTENSION_WITHOUT_NAME},
+    {"controlledSettingChildRestriction",
+     IDS_CONTROLLED_SETTING_CHILD_RESTRICTION},
+    {"controlledSettingParent", IDS_CONTROLLED_SETTING_PARENT},
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"controlledSettingShared", IDS_CONTROLLED_SETTING_SHARED},
     {"controlledSettingWithOwner", IDS_CONTROLLED_SETTING_WITH_OWNER},
     {"controlledSettingNoOwner", IDS_CONTROLLED_SETTING_NO_OWNER},
-    {"controlledSettingParent", IDS_CONTROLLED_SETTING_PARENT},
-    {"controlledSettingChildRestriction",
-     IDS_CONTROLLED_SETTING_CHILD_RESTRICTION},
 #endif
   };
   html_source->AddLocalizedStrings(localized_strings);
