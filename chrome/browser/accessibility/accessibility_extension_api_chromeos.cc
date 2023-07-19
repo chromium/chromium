@@ -45,6 +45,7 @@
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/manifest_handlers/background_info.h"
+#include "services/accessibility/public/mojom/assistive_technology_type.mojom.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/aura/client/cursor_client.h"
 #include "ui/aura/window_tree_host.h"
@@ -503,6 +504,37 @@ AccessibilityPrivateSetFocusRingsFunction::Run() {
 
   auto* accessibility_manager = AccessibilityManager::Get();
 
+  ax::mojom::AssistiveTechnologyType at_type;
+  switch (params->at_type) {
+    case extensions::api::accessibility_private::ASSISTIVE_TECHNOLOGY_TYPE_NONE:
+      at_type = ax::mojom::AssistiveTechnologyType::kUnknown;
+      break;
+    case extensions::api::accessibility_private::
+        ASSISTIVE_TECHNOLOGY_TYPE_CHROMEVOX:
+      at_type = ax::mojom::AssistiveTechnologyType::kChromeVox;
+      break;
+    case extensions::api::accessibility_private::
+        ASSISTIVE_TECHNOLOGY_TYPE_SELECTTOSPEAK:
+      at_type = ax::mojom::AssistiveTechnologyType::kSelectToSpeak;
+      break;
+    case extensions::api::accessibility_private::
+        ASSISTIVE_TECHNOLOGY_TYPE_SWITCHACCESS:
+      at_type = ax::mojom::AssistiveTechnologyType::kSwitchAccess;
+      break;
+    case extensions::api::accessibility_private::
+        ASSISTIVE_TECHNOLOGY_TYPE_AUTOCLICK:
+      at_type = ax::mojom::AssistiveTechnologyType::kAutoClick;
+      break;
+    case extensions::api::accessibility_private::
+        ASSISTIVE_TECHNOLOGY_TYPE_MAGNIFIER:
+      at_type = ax::mojom::AssistiveTechnologyType::kMagnifier;
+      break;
+    case extensions::api::accessibility_private::
+        ASSISTIVE_TECHNOLOGY_TYPE_DICTATION:
+      at_type = ax::mojom::AssistiveTechnologyType::kDictation;
+      break;
+  }
+
   for (const accessibility_private::FocusRingInfo& focus_ring_info :
        params->focus_rings) {
     auto focus_ring = std::make_unique<ash::AccessibilityFocusRingInfo>();
@@ -516,7 +548,7 @@ AccessibilityPrivateSetFocusRingsFunction::Run() {
     }
 
     const std::string id = accessibility_manager->GetFocusRingId(
-        extension_id(), focus_ring_info.id ? *(focus_ring_info.id) : "");
+        at_type, focus_ring_info.id ? *(focus_ring_info.id) : "");
 
     if (!content::ParseHexColorString(focus_ring_info.color,
                                       &(focus_ring->color))) {

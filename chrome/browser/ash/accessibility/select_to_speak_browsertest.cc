@@ -504,7 +504,7 @@ IN_PROC_BROWSER_TEST_F(SelectToSpeakTest, FocusRingMovesWithMouse) {
   AccessibilityManager::Get()->SetFocusRingObserverForTest(callback);
 
   std::string focus_ring_id = AccessibilityManager::Get()->GetFocusRingId(
-      extension_misc::kSelectToSpeakExtensionId, "");
+      ax::mojom::AssistiveTechnologyType::kSelectToSpeak, "");
 
   AccessibilityFocusRingControllerImpl* controller =
       Shell::Get()->accessibility_focus_ring_controller();

@@ -187,6 +187,12 @@
         "enum": ["aboveAccessibilityBubbles", "belowAccessibilityBubbles"]
       },
       {
+        "id": "AssistiveTechnologyType",
+        "type": "string",
+        "description": "The assistive technology type of this extension.",
+        "enum": ["chromeVox", "selectToSpeak", "switchAccess", "autoClick", "magnifier", "dictation"]
+      },
+      {
         "id": "FocusRingInfo",
         "type": "object",
         "properties": {
@@ -467,6 +473,11 @@
             "type": "array",
             "items": { "$ref": "FocusRingInfo" },
             "description": "Array of focus rings to draw."
+          },
+          {
+            "name": "atType",
+            "$ref": "AssistiveTechnologyType",
+            "description": "Associates these focus rings with this feature type."
           }
         ]
       },

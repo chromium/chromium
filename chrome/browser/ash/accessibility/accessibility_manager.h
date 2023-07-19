@@ -35,6 +35,7 @@
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/browser/extension_system.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "services/accessibility/public/mojom/assistive_technology_type.mojom.h"
 #include "services/media_session/public/mojom/audio_focus.mojom.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/base/ime/ash/input_method_manager.h"
@@ -338,14 +339,14 @@ class AccessibilityManager
                     std::unique_ptr<AccessibilityFocusRingInfo> focus_ring);
 
   // Hides focus ring on screen.
-  void HideFocusRing(std::string caller_id);
+  void HideFocusRing(std::string focus_ring_id);
 
-  // Initializes the focus rings when an extension loads.
-  void InitializeFocusRings(const std::string& extension_id);
+  // Initializes the focus rings when a feature loads.
+  void InitializeFocusRings(ax::mojom::AssistiveTechnologyType at_type);
 
-  // Hides all focus rings for the extension, and removes that extension from
-  // |focus_ring_names_for_extension_id_|.
-  void RemoveFocusRings(const std::string& extension_id);
+  // Hides all focus rings for the `at_type`, and removes that `at_type` from
+  // |focus_ring_names_for_at_type_|.
+  void RemoveFocusRings(ax::mojom::AssistiveTechnologyType at_type);
 
   // Draws a highlight at the given rects in screen coordinates. Rects may be
   // overlapping and will be merged into one layer. This looks similar to
@@ -372,8 +373,8 @@ class AccessibilityManager
   // Sets the bluetooth braille display device address for the current user.
   void UpdateBluetoothBrailleDisplayAddress(const std::string& address);
 
-  // Create a focus ring ID from the extension ID and the name of the ring.
-  const std::string GetFocusRingId(const std::string& extension_id,
+  // Create a focus ring ID from the `at_type` and the name of the ring.
+  const std::string GetFocusRingId(ax::mojom::AssistiveTechnologyType at_type,
                                    const std::string& focus_ring_name);
 
   // Sends a panel action event to the Select-to-speak extension.
@@ -627,8 +628,8 @@ class AccessibilityManager
 
   std::unique_ptr<PumpkinInstaller> pumpkin_installer_;
 
-  std::map<std::string, std::set<std::string>>
-      focus_ring_names_for_extension_id_;
+  std::map<ax::mojom::AssistiveTechnologyType, std::set<std::string>>
+      focus_ring_names_for_at_type_;
 
   bool app_terminating_ = false;
 

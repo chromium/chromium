@@ -13,6 +13,11 @@ mojom("automation") {
   ]
 }
 
+mojom("assistive_technology_type") {
+  sources = [ "assistive_technology_type.mojom" ]
+  public_deps = [ "//mojo/public/mojom/base" ]
+}
+
 mojom("mojom") {
   if (supports_os_accessibility_service) {
     enabled_features = [ "supports_os_accessibility_service" ]
@@ -25,6 +30,7 @@ mojom("mojom") {
   ]
   if (supports_os_accessibility_service) {
     public_deps += [
+      ":assistive_technology_type",
       ":os_service_mojom",
       "//third_party/blink/public/mojom:mojom_platform",
       "//ui/accessibility/mojom",

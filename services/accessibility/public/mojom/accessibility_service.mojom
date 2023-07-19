@@ -11,17 +11,8 @@ import "services/accessibility/public/mojom/automation.mojom";
 import "services/accessibility/public/mojom/tts.mojom";
 [EnableIf=supports_os_accessibility_service]
 import "third_party/blink/public/mojom/devtools/devtools_agent.mojom";
-
-// All the features which are implemented by the accessibility service.
 [EnableIf=supports_os_accessibility_service]
-enum AssistiveTechnologyType {
-  kChromeVox,
-  kSelectToSpeak,
-  kSwitchAccess,
-  kAutoClick,
-  kMagnifier,
-  kDictation,
-};
+import "services/accessibility/public/mojom/assistive_technology_type.mojom";
 
 // Implemented by the accessibility service. Turns on and off features.
 // The caller is the client OS, for example, Chrome OS Ash.

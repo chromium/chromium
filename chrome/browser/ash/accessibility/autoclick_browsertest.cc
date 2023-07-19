@@ -181,7 +181,7 @@ IN_PROC_BROWSER_TEST_F(AutoclickBrowserTest,
   AccessibilityFocusRingControllerImpl* controller =
       Shell::Get()->accessibility_focus_ring_controller();
   std::string focus_ring_id = AccessibilityManager::Get()->GetFocusRingId(
-      extension_misc::kAccessibilityCommonExtensionId, "");
+      ax::mojom::AssistiveTechnologyType::kAutoClick, "");
   const AccessibilityFocusRingGroup* focus_ring_group =
       controller->GetFocusRingGroupForTesting(focus_ring_id);
   // No focus rings to start.

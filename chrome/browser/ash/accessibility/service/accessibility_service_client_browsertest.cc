@@ -257,6 +257,9 @@ class AccessibilityServiceClientTest : public InProcessBrowserTest {
     auto client = std::make_unique<AccessibilityServiceClient>();
     client->SetProfile(browser()->profile());
     switch (type) {
+      case ax::mojom::AssistiveTechnologyType::kUnknown:
+        NOTREACHED() << "Unknown AT type";
+        break;
       case ax::mojom::AssistiveTechnologyType::kChromeVox:
         client->SetChromeVoxEnabled(true);
         break;
