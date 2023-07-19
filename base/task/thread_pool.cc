@@ -34,7 +34,8 @@ class PostTaskAndReplyWithTraitsTaskRunner
 internal::ThreadPoolImpl* GetThreadPoolImpl() {
   auto* instance = ThreadPoolInstance::Get();
   DCHECK(instance)
-      << "Ref. Prerequisite section of base/task/thread_pool.h.\n"
+      << "No threadpool instance for this process. See the 'Prerequisite' "
+         "section of base/task/thread_pool.h.\n"
          "Hint: if this is in a unit test, you're likely merely missing a "
          "base::test::TaskEnvironment member in your fixture (or your fixture "
          "is using a base::test::SingleThreadTaskEnvironment and now needs a "
