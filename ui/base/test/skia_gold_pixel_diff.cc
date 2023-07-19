@@ -197,28 +197,6 @@ const char* GetDiffGoldInstance() {
   return kSkiaGoldPublicInstance;
 }
 
-absl::optional<std::string> FormatPathForTerminalOutput(
-    absl::optional<base::FilePath>& path) {
-  if (path.has_value()) {
-    base::FilePath path_absolute = path.value();
-    if (!path_absolute.IsAbsolute()) {
-      path_absolute = base::PathService::CheckedGet(base::DIR_CURRENT)
-                          .Append(path_absolute);
-    }
-
-    base::FilePath path_normalized;
-    if (!base::NormalizeFilePath(path_absolute, &path_normalized)) {
-      return {path->MaybeAsASCII()};
-    }
-
-    return {std::string("file:///") +
-            path_normalized.NormalizePathSeparatorsTo(FILE_PATH_LITERAL('/'))
-                .MaybeAsASCII()};
-  } else {
-    return absl::nullopt;
-  }
-}
-
 }  // namespace
 
 SkiaGoldPixelDiff::SkiaGoldPixelDiff() = default;
@@ -508,25 +486,63 @@ void SkiaGoldPixelDiff::GenerateLocalDiff(
   int exit_code = LaunchProcess(cmd);
   CHECK_EQ(exit_code, 0);
 
+  struct DiffLink {
+    base::FilePath png_path;
+    base::Time mtime;
+  };
   struct DiffLinks {
-    absl::optional<base::FilePath> given_image;
-    absl::optional<base::FilePath> closest_image;
-    absl::optional<base::FilePath> diff_image;
+    absl::optional<DiffLink> given_image;
+    absl::optional<DiffLink> closest_image;
+    absl::optional<DiffLink> diff_image;
+  };
+
+  auto AssignIfNewer = [](absl::optional<DiffLink>& image,
+                          const base::FilePath& png_path,
+                          const base::Time& mtime) {
+    if (!image.has_value() || mtime > image->mtime) {
+      image = {
+          .png_path = png_path,
+          .mtime = mtime,
+      };
+    };
   };
 
   DiffLinks results;
   base::FileEnumerator e(output_dir, false, base::FileEnumerator::FILES,
                          FILE_PATH_LITERAL("*.png"));
   for (base::FilePath name = e.Next(); !name.empty(); name = e.Next()) {
+    base::Time mtime = e.GetInfo().GetLastModifiedTime();
     std::string png_file_name = name.BaseName().MaybeAsASCII();
     if (png_file_name.starts_with("input-")) {
-      results.given_image = {name};
+      AssignIfNewer(results.given_image, name, mtime);
     } else if (png_file_name.starts_with("closest-")) {
-      results.closest_image = {name};
+      AssignIfNewer(results.closest_image, name, mtime);
     } else if (png_file_name == "diff.png") {
-      results.diff_image = {name};
+      AssignIfNewer(results.diff_image, name, mtime);
     }
   }
+
+  auto FormatPathForTerminalOutput =
+      [](absl::optional<DiffLink>& path) -> absl::optional<std::string> {
+    if (path.has_value()) {
+      base::FilePath path_absolute = path.value().png_path;
+      if (!path_absolute.IsAbsolute()) {
+        path_absolute = base::PathService::CheckedGet(base::DIR_CURRENT)
+                            .Append(path_absolute);
+      }
+
+      base::FilePath path_normalized;
+      if (!base::NormalizeFilePath(path_absolute, &path_normalized)) {
+        return {path->png_path.MaybeAsASCII()};
+      }
+
+      return {std::string("file:///") +
+              path_normalized.NormalizePathSeparatorsTo(FILE_PATH_LITERAL('/'))
+                  .MaybeAsASCII()};
+    } else {
+      return absl::nullopt;
+    }
+  };
 
   const char* failure_message = "Unable to retrieve link";
   LOG(INFO) << "\n  Generated image: "
