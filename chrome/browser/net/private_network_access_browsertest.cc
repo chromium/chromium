@@ -61,13 +61,13 @@ using testing::IsEmpty;
 // automatic request to /favicon.ico. This is because the automatic request
 // messes with our tests, in which we want to trigger a single request from the
 // web page to a resource of our choice and observe the side-effect in metrics.
-constexpr char kNoFaviconPath[] = "/local_network_access/no-favicon.html";
+constexpr char kNoFaviconPath[] = "/private_network_access/no-favicon.html";
 
 // Same as kNoFaviconPath, except it carries a header that makes the browser
 // consider it came from the `public` address space, irrespective of the fact
 // that we loaded the web page from localhost.
 constexpr char kTreatAsPublicAddressPath[] =
-    "/local_network_access/no-favicon-treat-as-public-address.html";
+    "/private_network_access/no-favicon-treat-as-public-address.html";
 
 GURL SecureURL(const net::EmbeddedTestServer& server, const std::string& path) {
   // Test HTTPS servers cannot lie about their hostname, so they yield URLs
@@ -584,8 +584,9 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessWithFeatureEnabledBrowserTest,
 
   EXPECT_TRUE(content::NavigateToURL(
       web_contents(),
-      NonSecureURL(*server,
-                   "/local_network_access/remote-initiator-navigation.html")));
+      NonSecureURL(
+          *server,
+          "/private_network_access/remote-initiator-navigation.html")));
   EXPECT_THAT(
       feature_histogram_tester.GetNonZeroCounts(AllAddressSpaceFeatures()),
       IsEmpty());
@@ -615,8 +616,9 @@ IN_PROC_BROWSER_TEST_F(
 
   EXPECT_TRUE(content::NavigateToURL(
       web_contents(),
-      NonSecureURL(*server,
-                   "/local_network_access/remote-initiator-navigation.html")));
+      NonSecureURL(
+          *server,
+          "/private_network_access/remote-initiator-navigation.html")));
 
   EXPECT_EQ(true, content::EvalJs(web_contents(), R"(
     runTest({
@@ -641,8 +643,9 @@ IN_PROC_BROWSER_TEST_F(
 
   EXPECT_TRUE(content::NavigateToURL(
       web_contents(),
-      NonSecureURL(*server,
-                   "/local_network_access/remote-initiator-navigation.html")));
+      NonSecureURL(
+          *server,
+          "/private_network_access/remote-initiator-navigation.html")));
 
   EXPECT_EQ(true, content::EvalJs(web_contents(), R"(
     runTest({

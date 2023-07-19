@@ -191,12 +191,12 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
-                       LocalNetworkAccessIgnoredCrossSitePreflightError) {
+                       PrivateNetworkAccessIgnoredCrossSitePreflightError) {
   ASSERT_TRUE(content::NavigateToURL(
       web_contents(),
       https_server().GetURL(
           "a.com",
-          "/local_network_access/no-favicon-treat-as-public-address.html")));
+          "/private_network_access/no-favicon-treat-as-public-address.html")));
 
   ASSERT_EQ(true, content::EvalJs(
                       web_contents(),
@@ -213,12 +213,12 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(
     ChromeWebPlatformSecurityMetricsBrowserTest,
-    LocalNetworkAccessIgnoredCrossOriginSameSitePreflightError) {
+    PrivateNetworkAccessIgnoredCrossOriginSameSitePreflightError) {
   ASSERT_TRUE(content::NavigateToURL(
       web_contents(),
       https_server().GetURL(
           "a.com",
-          "/local_network_access/no-favicon-treat-as-public-address.html")));
+          "/private_network_access/no-favicon-treat-as-public-address.html")));
 
   ASSERT_EQ(true, content::EvalJs(web_contents(),
                                   content::JsReplace(
@@ -234,12 +234,12 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
-                       LocalNetworkAccessSameOriginNoIgnoredPreflightError) {
+                       PrivateNetworkAccessSameOriginNoIgnoredPreflightError) {
   ASSERT_TRUE(content::NavigateToURL(
       web_contents(),
       https_server().GetURL(
           "a.com",
-          "/local_network_access/no-favicon-treat-as-public-address.html")));
+          "/private_network_access/no-favicon-treat-as-public-address.html")));
 
   ASSERT_EQ(true, content::EvalJs(
                       web_contents(),
@@ -255,15 +255,15 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
 }
 
 // This test verifies that when a secure context served from the public address
-// space loads a resource from the local network, the correct WebFeature is
+// space loads a resource from the private network, the correct WebFeature is
 // use-counted.
 IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
-                       LocalNetworkAccessFetchWithPreflight) {
+                       PrivateNetworkAccessFetchWithPreflight) {
   ASSERT_TRUE(content::NavigateToURL(
       web_contents(),
       https_server().GetURL(
           "a.com",
-          "/local_network_access/no-favicon-treat-as-public-address.html")));
+          "/private_network_access/no-favicon-treat-as-public-address.html")));
 
   ASSERT_EQ(true,
             content::EvalJs(
@@ -281,12 +281,12 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
 // the correct WebFeature is use-counted to reflect the suppressed error.
 IN_PROC_BROWSER_TEST_F(
     ChromeWebPlatformSecurityMetricsBrowserTest,
-    LocalNetworkAccessFetchWithPreflightRepliedWithoutLNAHeaders) {
+    PrivateNetworkAccessFetchWithPreflightRepliedWithoutLNAHeaders) {
   ASSERT_EQ(true, content::NavigateToURL(
                       web_contents(),
                       https_server().GetURL(
                           "a.com",
-                          "/local_network_access/"
+                          "/private_network_access/"
                           "no-favicon-treat-as-public-address.html")));
 
   // The server does not reply with valid CORS headers, so the preflight fails.
@@ -307,7 +307,7 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
   ASSERT_EQ(true,
             content::NavigateToURL(
                 web_contents(), https_server().GetURL("a.com",
-                                                      "/local_network_access/"
+                                                      "/private_network_access/"
                                                       "no-favicon.html")));
 
   base::StringPiece kScriptTemplate = R"(
@@ -345,7 +345,7 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
   ASSERT_EQ(true,
             content::NavigateToURL(
                 web_contents(), https_server().GetURL("a.com",
-                                                      "/local_network_access/"
+                                                      "/private_network_access/"
                                                       "no-favicon.html")));
 
   base::StringPiece kScriptTemplate = R"(

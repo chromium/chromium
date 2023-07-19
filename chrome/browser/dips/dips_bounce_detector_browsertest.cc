@@ -2136,8 +2136,8 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
   // Navigate to URL for shared worker.
   ASSERT_TRUE(content::NavigateToURL(
       GetActiveWebContents(),
-      embedded_test_server()->GetURL("a.test",
-                                     "/local_network_access/no-favicon.html")));
+      embedded_test_server()->GetURL(
+          "a.test", "/private_network_access/no-favicon.html")));
 
   // Create and start a shared worker on the current page.
   ASSERT_EQ(true, content::EvalJs(GetActiveWebContents(),
@@ -2174,7 +2174,7 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
   // made.
   EXPECT_THAT(logger->log(),
               testing::Contains("OnSharedWorkerClientAdded(a.test/"
-                                "local_network_access/no-favicon.html)"));
+                                "private_network_access/no-favicon.html)"));
 
   // Clean up the observer to avoid a dangling ptr.
   GetActiveWebContents()
@@ -2202,8 +2202,8 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
   // Navigate to URL for dedicated worker.
   ASSERT_TRUE(content::NavigateToURL(
       GetActiveWebContents(),
-      embedded_test_server()->GetURL("a.test",
-                                     "/local_network_access/no-favicon.html")));
+      embedded_test_server()->GetURL(
+          "a.test", "/private_network_access/no-favicon.html")));
 
   // Create and start a dedicated worker on the current page.
   ASSERT_EQ(true, content::EvalJs(GetActiveWebContents(),
@@ -2234,7 +2234,7 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
   // made.
   EXPECT_THAT(logger->log(),
               testing::Contains("OnDedicatedWorkerCreated(a.test/"
-                                "local_network_access/no-favicon.html)"));
+                                "private_network_access/no-favicon.html)"));
 
   // Clean up the observer to avoid a dangling ptr.
   GetActiveWebContents()
