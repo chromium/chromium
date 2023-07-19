@@ -8,7 +8,6 @@ load("@builtin//struct.star", "module")
 
 __KNOWN_CONFIG_OPTIONS = [
     "remote_all",
-    "remote_android",
     "remote_nasm",
     "remote_proto",
     "remote_to_reproxy",
