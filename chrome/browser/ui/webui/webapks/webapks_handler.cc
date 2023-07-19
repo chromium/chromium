@@ -66,6 +66,10 @@ void WebApksHandler::OnWebApkInfoRetrieved(const WebApkInfo& webapk_info) {
              ui::OptionalSkColorToString(webapk_info.theme_color));
   result.Set("backgroundColor",
              ui::OptionalSkColorToString(webapk_info.background_color));
+  result.Set("darkThemeColor",
+             ui::OptionalSkColorToString(webapk_info.dark_theme_color));
+  result.Set("darkBackgroundColor",
+             ui::OptionalSkColorToString(webapk_info.dark_background_color));
   result.Set("lastUpdateCheckTimeMs",
              webapk_info.last_update_check_time.ToJsTime());
   result.Set("lastUpdateCompletionTimeMs",

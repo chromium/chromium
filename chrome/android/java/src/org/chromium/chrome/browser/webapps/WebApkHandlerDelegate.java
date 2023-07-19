@@ -28,7 +28,8 @@ public class WebApkHandlerDelegate {
                 String packageName, String id, int shellApkVersion, int versionCode, String uri,
                 String scope, String manifestUrl, String manifestStartUrl, String manifestId,
                 int displayMode, int orientation, long themeColor, long backgroundColor,
-                long lastUpdateCheckTimeMs, long lastUpdateCompletionTimeMs, boolean relaxUpdates,
+                long darkThemeColor, long darkBackgroundColor, long lastUpdateCheckTimeMs,
+                long lastUpdateCompletionTimeMs, boolean relaxUpdates,
                 String backingBrowserPackageName, boolean isBackingBrowser, String updateStatus);
     }
 
@@ -108,6 +109,7 @@ public class WebApkHandlerDelegate {
                 webApkInfo.scopeUrl(), webApkInfo.manifestUrl(), webApkInfo.manifestStartUrl(),
                 webApkInfo.manifestId(), webApkInfo.displayMode(), webApkInfo.orientation(),
                 webApkInfo.toolbarColor(), webApkInfo.backgroundColor(),
+                webApkInfo.darkToolbarColor(), webApkInfo.darkBackgroundColor(),
                 lastUpdateCheckTimeMsForStorage, lastUpdateCompletionTimeMsInStorage,
                 relaxUpdatesForStorage, backingBrowserPackageName, isBackingBrowser, updateStatus);
     }

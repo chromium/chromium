@@ -44,6 +44,8 @@ class WebApkHandlerDelegate {
       const jint jorientation,
       const jlong jtheme_color,
       const jlong jbackground_color,
+      const jlong jdark_theme_color,
+      const jlong jdark_background_color,
       const jlong jlast_update_check_time_ms,
       const jlong jlast_update_completion_time_ms,
       const jboolean jrelax_updates,
