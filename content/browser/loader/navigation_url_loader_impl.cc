@@ -1029,7 +1029,7 @@ void NavigationURLLoaderImpl::OnComplete(
   // URLLoaderClient has already been transferred to the renderer process and
   // OnComplete is not expected to be called here.
   if (status.error_code == net::OK) {
-    SCOPED_CRASH_KEY_STRING256("NavigationURLLoader::Complete", "url",
+    SCOPED_CRASH_KEY_STRING256("NavigationURLLoader_Complete", "url",
                                url_.spec());
     base::debug::DumpWithoutCrashing();
     return;

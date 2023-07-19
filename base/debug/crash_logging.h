@@ -120,13 +120,20 @@ class BASE_EXPORT ScopedCrashKeyString {
 
 // Internal helpers for the SCOPED_CRASH_KEY_... helper macros defined below.
 //
-// The static_assert that checks the length of |key_name| is a compile-time
-// equivalent of the DCHECK in crash_reporter::internal::CrashKeyStringImpl::Set
-// that restricts the name of a crash key to 40 characters.
+// The first static_assert that checks the length of |key_name| is a
+// compile-time equivalent of the DCHECK in
+// crash_reporter::internal::CrashKeyStringImpl::Set that restricts the name of
+// a crash key to 40 characters.
+//
+// The second static_assert that checks for reserved characters is a compile
+// time equivalent of the DCHECK in base::debug::AllocateCrashKeyString.
 #define SCOPED_CRASH_KEY_STRING_INTERNAL2(category, name, nonce, data,  \
                                           key_size)                     \
   static_assert(::std::size(category "-" name) < 40,                    \
                 "Crash key names must be shorter than 40 characters."); \
+  static_assert(::base::StringPiece(category "-" name).find(':') ==     \
+                    ::base::StringPiece::npos,                          \
+                "Crash key names must not contain the ':' character."); \
   ::base::debug::ScopedCrashKeyString scoped_crash_key_helper##nonce(   \
       [] {                                                              \
         static auto* const key = ::base::debug::AllocateCrashKeyString( \
