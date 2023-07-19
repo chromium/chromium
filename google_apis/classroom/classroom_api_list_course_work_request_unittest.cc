@@ -120,7 +120,7 @@ TEST_F(ClassroomApiListCourseWorkRequestTest, ListCourseWorkRequest) {
                 Field(&HttpRequest::relative_url,
                       Eq("/v1/courses/course-1/courseWork"
                          "?fields=courseWork(id%2Ctitle%2Cstate%2CalternateLink"
-                         "%2CdueDate(year%2Cmonth%2Cday)"
+                         "%2CupdateTime%2CdueDate(year%2Cmonth%2Cday)"
                          "%2CdueTime(hours%2Cminutes%2Cseconds%2Cnanos))"
                          "%2CnextPageToken")))))
       .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse())));
@@ -148,7 +148,7 @@ TEST_F(ClassroomApiListCourseWorkRequestTest,
                 Field(&HttpRequest::relative_url,
                       Eq("/v1/courses/course-1/courseWork"
                          "?fields=courseWork(id%2Ctitle%2Cstate%2CalternateLink"
-                         "%2CdueDate(year%2Cmonth%2Cday)"
+                         "%2CupdateTime%2CdueDate(year%2Cmonth%2Cday)"
                          "%2CdueTime(hours%2Cminutes%2Cseconds%2Cnanos))"
                          "%2CnextPageToken"
                          "&pageToken=qwerty")))))
@@ -177,7 +177,7 @@ TEST_F(ClassroomApiListCourseWorkRequestTest,
                 Field(&HttpRequest::relative_url,
                       Eq("/v1/courses/course-1/courseWork"
                          "?fields=courseWork(id%2Ctitle%2Cstate%2CalternateLink"
-                         "%2CdueDate(year%2Cmonth%2Cday)"
+                         "%2CupdateTime%2CdueDate(year%2Cmonth%2Cday)"
                          "%2CdueTime(hours%2Cminutes%2Cseconds%2Cnanos))"
                          "%2CnextPageToken")))))
       .WillOnce(Return(ByMove(TestRequestHandler::CreateFailedResponse())));

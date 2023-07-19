@@ -12,6 +12,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "google_apis/common/parser_util.h"
+#include "google_apis/common/time_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
@@ -20,6 +21,7 @@ namespace {
 
 constexpr char kApiResponseCourseWorkKey[] = "courseWork";
 constexpr char kApiResponseCourseWorkItemAlternateLinkKey[] = "alternateLink";
+constexpr char kApiResponseCourseWorkItemUpdateTimeKey[] = "updateTime";
 constexpr char kApiResponseCourseWorkItemDueDateKey[] = "dueDate";
 constexpr char kApiResponseCourseWorkItemDueTimeKey[] = "dueTime";
 constexpr char kApiResponseCourseWorkItemStateKey[] = "state";
@@ -110,6 +112,9 @@ void CourseWorkItem::RegisterJSONConverter(
   converter->RegisterCustomField<GURL>(
       kApiResponseCourseWorkItemAlternateLinkKey,
       &CourseWorkItem::alternate_link_, &ConvertCourseWorkItemAlternateLink);
+  converter->RegisterCustomField<base::Time>(
+      kApiResponseCourseWorkItemUpdateTimeKey, &CourseWorkItem::last_update_,
+      &util::GetTimeFromString);
 }
 
 // static
