@@ -10,7 +10,6 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_smart_card_access_mode.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_smart_card_protocol.h"
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
-#include "third_party/blink/renderer/core/dom/dom_high_res_time_stamp.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -20,6 +19,8 @@ namespace blink {
 
 class ScriptPromiseResolver;
 class SmartCardReaderStateIn;
+
+class SmartCardGetStatusChangeOptions;
 
 class SmartCardContext final : public ScriptWrappable,
                                public ExecutionContextClient {
@@ -36,7 +37,7 @@ class SmartCardContext final : public ScriptWrappable,
   ScriptPromise getStatusChange(
       ScriptState* script_state,
       const HeapVector<Member<SmartCardReaderStateIn>>& reader_states,
-      AbortSignal* signal,
+      SmartCardGetStatusChangeOptions* options,
       ExceptionState& exception_state);
 
   ScriptPromise connect(ScriptState* script_state,

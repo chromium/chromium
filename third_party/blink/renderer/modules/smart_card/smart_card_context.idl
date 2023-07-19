@@ -48,6 +48,11 @@ enum SmartCardAccessMode {
   "direct"
 };
 
+dictionary SmartCardGetStatusChangeOptions {
+  DOMHighResTimeStamp timeout;
+  AbortSignal signal;
+};
+
 [
   Exposed=Window,
   RuntimeEnabled=SmartCard,
@@ -60,7 +65,7 @@ enum SmartCardAccessMode {
   [CallWith=ScriptState, RaisesException]
   Promise<sequence<SmartCardReaderStateOut>> getStatusChange(
       sequence<SmartCardReaderStateIn> readerStates,
-      AbortSignal signal);
+      optional SmartCardGetStatusChangeOptions options = {});
 
   [CallWith=ScriptState, RaisesException]
   Promise<SmartCardConnectResult> connect(

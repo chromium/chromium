@@ -650,7 +650,7 @@ IN_PROC_BROWSER_TEST_F(SmartCardTest, GetStatusChange) {
       GetFakeSmartCardDelegate().mock_context_factory;
 
   EXPECT_CALL(mock_context_factory,
-              GetStatusChange(base::TimeDelta::Max(), _, _))
+              GetStatusChange(base::Milliseconds(4321), _, _))
       .WillOnce(
           [](base::TimeDelta timeout,
              std::vector<device::mojom::SmartCardReaderStateInPtr> states_in,
@@ -707,7 +707,7 @@ IN_PROC_BROWSER_TEST_F(SmartCardTest, GetStatusChange) {
                             currentCount: 6 }];
        let statesOut = await context.getStatusChange(
            readerStates,
-           AbortSignal.timeout(4321));
+           {timeout: 4321});
 
        if (statesOut.length !== 1) {
          return `states array has size ${statesOut.length}`;
@@ -784,22 +784,22 @@ IN_PROC_BROWSER_TEST_F(SmartCardTest, GetStatusChangeAborted) {
 
   ASSERT_TRUE(NavigateToURL(shell(), GetIsolatedContextUrl()));
 
-  EXPECT_EQ("Exception: AbortError", EvalJs(shell(), R"((async () => {
+  EXPECT_EQ("Exception: Error, Something", EvalJs(shell(), R"((async () => {
        let context = await navigator.smartCard.establishContext();
 
        let abortController = new AbortController();
 
        let getStatusPromise = context.getStatusChange(
            [{readerName: "Fake Reader", currentState: {empty: true}}],
-           abortController.signal);
+           {signal: abortController.signal});
 
-       abortController.abort();
+       abortController.abort(Error("Something"));
 
        try {
          let result = await getStatusPromise;
          return "Success";
        } catch (e) {
-         return `Exception: ${e.name}`;
+         return `Exception: ${e.name}, ${e.message}`;
        }
      })())"));
 }

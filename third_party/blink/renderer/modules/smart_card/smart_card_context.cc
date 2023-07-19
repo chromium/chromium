@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/smart_card/smart_card_context.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_smart_card_connect_result.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_smart_card_get_status_change_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_smart_card_reader_state_flags.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_smart_card_reader_state_in.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_smart_card_reader_state_out.h"
@@ -155,30 +156,37 @@ ScriptPromise SmartCardContext::listReaders(ScriptState* script_state,
 ScriptPromise SmartCardContext::getStatusChange(
     ScriptState* script_state,
     const HeapVector<Member<SmartCardReaderStateIn>>& reader_states,
-    AbortSignal* signal,
+    SmartCardGetStatusChangeOptions* options,
     ExceptionState& exception_state) {
   if (!EnsureMojoConnection(exception_state) ||
       !EnsureNoOperationInProgress(exception_state)) {
     return ScriptPromise();
   }
 
-  if (signal->aborted()) {
-    return ScriptPromise::Reject(
-        script_state, get_status_change_abort_signal_->reason(script_state));
+  if (options->hasSignal()) {
+    if (options->signal()->aborted()) {
+      return ScriptPromise::Reject(
+          script_state, get_status_change_abort_signal_->reason(script_state));
+    }
+    CHECK(!get_status_change_abort_signal_);
+    CHECK(!get_status_change_abort_handle_);
+    get_status_change_abort_signal_ = options->signal();
+    get_status_change_abort_handle_ =
+        get_status_change_abort_signal_->AddAlgorithm(
+            MakeGarbageCollected<GetStatusChangeAbortAlgorithm>(this));
   }
-  CHECK(!get_status_change_abort_signal_);
-  CHECK(!get_status_change_abort_handle_);
-  get_status_change_abort_signal_ = signal;
-  get_status_change_abort_handle_ =
-      get_status_change_abort_signal_->AddAlgorithm(
-          MakeGarbageCollected<GetStatusChangeAbortAlgorithm>(this));
+
+  base::TimeDelta timeout = base::TimeDelta::Max();
+  if (options->hasTimeout()) {
+    timeout = base::Milliseconds(options->timeout());
+  }
 
   ScriptPromiseResolver* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
       script_state, exception_state.GetContext());
 
   get_status_change_request_ = resolver;
   scard_context_->GetStatusChange(
-      base::TimeDelta::Max(), ToMojomReaderStatesIn(reader_states),
+      timeout, ToMojomReaderStatesIn(reader_states),
       WTF::BindOnce(&SmartCardContext::OnGetStatusChangeDone,
                     WrapPersistent(this), WrapPersistent(resolver)));
 
@@ -309,12 +317,12 @@ void SmartCardContext::OnListReadersDone(
 void SmartCardContext::OnGetStatusChangeDone(
     ScriptPromiseResolver* resolver,
     device::mojom::blink::SmartCardStatusChangeResultPtr result) {
-  CHECK(get_status_change_abort_signal_);
   CHECK_EQ(get_status_change_request_, resolver);
   get_status_change_request_ = nullptr;
 
   if (result->is_error()) {
-    if (get_status_change_abort_signal_->aborted() &&
+    if (get_status_change_abort_signal_ &&
+        get_status_change_abort_signal_->aborted() &&
         result->get_error() ==
             device::mojom::blink::SmartCardError::kCancelled) {
       CHECK(!get_status_change_abort_handle_);

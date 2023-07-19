@@ -3058,6 +3058,8 @@ if (target_os != "android") {
     "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_smart_card_connection_status.h",
     "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_smart_card_error_options.cc",
     "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_smart_card_error_options.h",
+    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_smart_card_get_status_change_options.cc",
+    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_smart_card_get_status_change_options.h",
     "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_smart_card_reader_state_flags.cc",
     "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_smart_card_reader_state_flags.h",
     "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_smart_card_reader_state_in.cc",
