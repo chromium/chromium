@@ -59,7 +59,7 @@ struct BLINK_COMMON_EXPORT InterestGroup {
 
     // Optional alternative identifiers for reporting purposes that can be
     // passed to reporting scripts in lieu of group name if they pass k-anon
-    // checks.
+    // checks. These are only set on ads, not on component ads.
     absl::optional<std::string> buyer_reporting_id;
     absl::optional<std::string> buyer_and_seller_reporting_id;
 

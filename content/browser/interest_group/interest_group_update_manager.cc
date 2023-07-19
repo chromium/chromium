@@ -260,7 +260,8 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 
 // Helper for TryToCopyAds() and TryToCopyAdComponents().
 [[nodiscard]] absl::optional<std::vector<blink::InterestGroup::Ad>> ExtractAds(
-    const base::Value::List& ads_list) {
+    const base::Value::List& ads_list,
+    bool for_components) {
   std::vector<blink::InterestGroup::Ad> ads;
   for (const base::Value& ads_value : ads_list) {
     const base::Value::Dict* ads_dict = ads_value.GetIfDict();
@@ -286,15 +287,17 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
     if (maybe_size_group) {
       ad.size_group = *maybe_size_group;
     }
-    const std::string* maybe_buyer_reporting_id =
-        ads_dict->FindString("buyerReportingId");
-    if (maybe_buyer_reporting_id) {
-      ad.buyer_reporting_id = *maybe_buyer_reporting_id;
-    }
-    const std::string* maybe_buyer_and_seller_reporting_id =
-        ads_dict->FindString("buyerAndSellerReportingId");
-    if (maybe_buyer_and_seller_reporting_id) {
-      ad.buyer_and_seller_reporting_id = *maybe_buyer_and_seller_reporting_id;
+    if (!for_components) {
+      const std::string* maybe_buyer_reporting_id =
+          ads_dict->FindString("buyerReportingId");
+      if (maybe_buyer_reporting_id) {
+        ad.buyer_reporting_id = *maybe_buyer_reporting_id;
+      }
+      const std::string* maybe_buyer_and_seller_reporting_id =
+          ads_dict->FindString("buyerAndSellerReportingId");
+      if (maybe_buyer_and_seller_reporting_id) {
+        ad.buyer_and_seller_reporting_id = *maybe_buyer_and_seller_reporting_id;
+      }
     }
     const base::Value* maybe_metadata = ads_dict->Find("metadata");
     if (maybe_metadata) {
@@ -324,7 +327,7 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
   if (!maybe_ads)
     return true;
   absl::optional<std::vector<blink::InterestGroup::Ad>> maybe_extracted_ads =
-      ExtractAds(*maybe_ads);
+      ExtractAds(*maybe_ads, /*for_components=*/false);
   if (!maybe_extracted_ads)
     return false;
   interest_group_update.ads = std::move(*maybe_extracted_ads);
@@ -340,7 +343,7 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
   if (!maybe_ads)
     return true;
   absl::optional<std::vector<blink::InterestGroup::Ad>> maybe_extracted_ads =
-      ExtractAds(*maybe_ads);
+      ExtractAds(*maybe_ads, /*for_components=*/true);
   if (!maybe_extracted_ads)
     return false;
   interest_group_update.ad_components = std::move(*maybe_extracted_ads);

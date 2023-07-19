@@ -1209,6 +1209,8 @@ TEST_F(AdAuctionServiceImplTest, UpdateAllUpdatableFields) {
 "adComponents": [{"renderURL": "https://example.com/component_url",
                   "sizeGroup": "group_new",
                   "metadata": {"new_c": "d"},
+                  "buyerReportingId": "ignored1",
+                  "buyerAndSellerReportingId": "ignored2",
                   "adRenderId": "456def"
                  }],
 "adSizes": {"size_new": {"width": "300px", "height": "150px"}},
@@ -1247,7 +1249,9 @@ TEST_F(AdAuctionServiceImplTest, UpdateAllUpdatableFields) {
       /*render_url=*/GURL("https://example.com/render"),
       /*metadata=*/"{\"ad\":\"metadata\",\"here\":[1,2,3]}",
       /*size_group=*/"group_old",
-      /*ad_render_id=*/"456def");
+      /*buyer_reporting_id=*/absl::nullopt,
+      /*buyer_and_seller_reporting_id=*/absl::nullopt,
+      /*ad_render_id=*/"123def");
   interest_group.ad_components->emplace_back(std::move(ad_component));
   interest_group.ad_sizes.emplace();
   interest_group.ad_sizes->emplace(
@@ -1330,6 +1334,11 @@ TEST_F(AdAuctionServiceImplTest, UpdateAllUpdatableFields) {
             "https://example.com/component_url");
   EXPECT_EQ(group.ad_components.value()[0].size_group, "group_new");
   EXPECT_EQ(group.ad_components.value()[0].metadata, "{\"new_c\":\"d\"}");
+  EXPECT_FALSE(group.ad_components.value()[0].buyer_reporting_id.has_value());
+  EXPECT_FALSE(
+      group.ad_components.value()[0].buyer_and_seller_reporting_id.has_value());
+  ASSERT_TRUE(group.ad_components.value()[0].ad_render_id.has_value());
+  EXPECT_EQ(group.ad_components.value()[0].ad_render_id.value(), "456def");
   ASSERT_TRUE(group.ad_sizes.has_value());
   ASSERT_EQ(group.ad_sizes->size(), 1u);
   EXPECT_EQ(group.ad_sizes->at("size_new"),

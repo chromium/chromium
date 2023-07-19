@@ -295,6 +295,11 @@ bool ValidateBlinkInterestGroup(const mojom::blink::InterestGroup& group,
         error = "The adRenderId is too long.";
         return false;
       }
+
+      // The code should not be setting these for `ad_components`
+      DCHECK(group.ad_components.value()[i]->buyer_reporting_id.IsNull());
+      DCHECK(group.ad_components.value()[i]
+                 ->buyer_and_seller_reporting_id.IsNull());
     }
   }
 

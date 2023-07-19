@@ -148,8 +148,8 @@ base::Value ToValue(const blink::InterestGroup::Ad& ad) {
   }
   return value;
 }
-blink::InterestGroup::Ad FromInterestGroupAdValue(
-    const base::Value::Dict& dict) {
+blink::InterestGroup::Ad FromInterestGroupAdValue(const base::Value::Dict& dict,
+                                                  bool for_components) {
   blink::InterestGroup::Ad result;
   const std::string* maybe_url = dict.FindString("url");
   if (maybe_url)
@@ -158,15 +158,18 @@ blink::InterestGroup::Ad FromInterestGroupAdValue(
   if (maybe_size_group) {
     result.size_group = *maybe_size_group;
   }
-  const std::string* maybe_buyer_reporting_id =
-      dict.FindString("buyer_reporting_id");
-  if (maybe_buyer_reporting_id) {
-    result.buyer_reporting_id = *maybe_buyer_reporting_id;
-  }
-  const std::string* maybe_buyer_and_seller_reporting_id =
-      dict.FindString("buyer_and_seller_reporting_id");
-  if (maybe_buyer_and_seller_reporting_id) {
-    result.buyer_and_seller_reporting_id = *maybe_buyer_and_seller_reporting_id;
+  if (!for_components) {
+    const std::string* maybe_buyer_reporting_id =
+        dict.FindString("buyer_reporting_id");
+    if (maybe_buyer_reporting_id) {
+      result.buyer_reporting_id = *maybe_buyer_reporting_id;
+    }
+    const std::string* maybe_buyer_and_seller_reporting_id =
+        dict.FindString("buyer_and_seller_reporting_id");
+    if (maybe_buyer_and_seller_reporting_id) {
+      result.buyer_and_seller_reporting_id =
+          *maybe_buyer_and_seller_reporting_id;
+    }
   }
   const std::string* maybe_metadata = dict.FindString("metadata");
   if (maybe_metadata)
@@ -217,15 +220,17 @@ std::string Serialize(
   return Serialize(list);
 }
 absl::optional<std::vector<blink::InterestGroup::Ad>>
-DeserializeInterestGroupAdVector(const std::string& serialized_ads) {
+DeserializeInterestGroupAdVector(const std::string& serialized_ads,
+                                 bool for_components) {
   std::unique_ptr<base::Value> ads_value = DeserializeValue(serialized_ads);
   if (!ads_value || !ads_value->is_list())
     return absl::nullopt;
   std::vector<blink::InterestGroup::Ad> result;
   for (const auto& ad_value : ads_value->GetList()) {
     const base::Value::Dict* dict = ad_value.GetIfDict();
-    if (dict)
-      result.emplace_back(FromInterestGroupAdValue(*dict));
+    if (dict) {
+      result.emplace_back(FromInterestGroupAdValue(*dict, for_components));
+    }
   }
   return result;
 }
@@ -1193,8 +1198,10 @@ bool DoLoadInterestGroup(sql::Database& db,
       DeserializeStringVector(load.ColumnString(15));
   if (load.GetColumnType(16) != sql::ColumnType::kNull)
     group.user_bidding_signals = load.ColumnString(16);
-  group.ads = DeserializeInterestGroupAdVector(load.ColumnString(17));
-  group.ad_components = DeserializeInterestGroupAdVector(load.ColumnString(18));
+  group.ads = DeserializeInterestGroupAdVector(load.ColumnString(17),
+                                               /*for_components=*/false);
+  group.ad_components = DeserializeInterestGroupAdVector(
+      load.ColumnString(18), /*for_components=*/true);
   group.ad_sizes = DeserializeStringSizeMap(load.ColumnString(19));
   group.size_groups = DeserializeStringStringVectorMap(load.ColumnString(20));
 

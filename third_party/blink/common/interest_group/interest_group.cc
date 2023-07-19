@@ -239,6 +239,10 @@ bool InterestGroup::IsValid() const {
           return false;
         }
       }
+      // These shouldn't be in components array.
+      if (ad.buyer_reporting_id || ad.buyer_and_seller_reporting_id) {
+        return false;
+      }
     }
   }
 

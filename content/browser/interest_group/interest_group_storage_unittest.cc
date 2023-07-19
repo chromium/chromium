@@ -125,7 +125,8 @@ class InterestGroupStorageTest : public testing::Test {
         std::vector<InterestGroup::Ad>{
             blink::InterestGroup::Ad(
                 GURL("https://full.example.com/adcomponent1"), "metadata1c",
-                "group_1", "adRenderId2"),
+                "group_1", /*buyer_reporting_id=*/absl::nullopt,
+                /*buyer_and_seller_reporting_id=*/absl::nullopt, "adRenderId2"),
             blink::InterestGroup::Ad(
                 GURL("https://full.example.com/adcomponent2"), "metadata2c",
                 "group_2")},
