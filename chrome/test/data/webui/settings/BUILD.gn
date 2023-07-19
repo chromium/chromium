@@ -8,11 +8,6 @@ build_webui_tests("build") {
   resource_path_prefix = "settings"
 
   files = [
-    "a11y/about_a11y_test.ts",
-    "a11y/accessibility_a11y_test.ts",
-    "a11y/basic_a11y_test.ts",
-    "a11y/manage_profile_a11y_test.ts",
-    "a11y/sign_out_a11y_test.ts",
     "about_page_test.ts",
     "advanced_page_test.ts",
     "all_sites_test.ts",

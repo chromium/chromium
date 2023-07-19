@@ -150,13 +150,10 @@ if (include_js_tests) {
       "histograms/histograms_internals_ui_browsertest.js",
       "invalidations/about_invalidations_browsertest.js",
       "js2gtest_browsertest.js",
-      "management/a11y/management_a11y_test.js",
       "media_internals/media_internals_ui_browsertest.js",
       "net_internals/net_internals_browsertest.js",
-      "privacy_sandbox/privacy_sandbox_dialog_a11y_browsertest.js",
       "privacy_sandbox/privacy_sandbox_dialog_browsertest.js",
       "sandboxstatus_browsertest.js",
-      "settings/a11y/a11y_browsertest.js",
       "settings/cr_settings_browsertest.js",
       "settings/privacy_sandbox_browsertest.js",
       "settings/settings_idle_load_browsertest.js",
@@ -167,7 +164,6 @@ if (include_js_tests) {
       "a11y/accessibility_test.js",
       "net_internals/net_internals_test_base.js",
       "polymer_browser_test_base.js",
-      "settings/a11y/settings_accessibility_test.js",
       "//third_party/axe-core/axe.js",
     ]
 
@@ -231,10 +227,6 @@ if (include_js_tests) {
       ]
     }
 
-    if (enable_dice_support) {
-      sources += [ "welcome/a11y_tests.js" ]
-    }
-
     if (enable_dice_support || is_chromeos_ash) {
       sources += [ "gaia_auth_host/gaia_auth_host_browsertest.js" ]
     }
@@ -243,10 +235,7 @@ if (include_js_tests) {
       sources += [ "certificate_viewer_dialog_browsertest.js" ]
     }
     if (enable_extensions) {
-      sources += [
-        "extensions/a11y/extensions_a11y_test.js",
-        "extensions/cr_extensions_browsertest.js",
-      ]
+      sources += [ "extensions/cr_extensions_browsertest.js" ]
     }
     if (enable_print_preview) {
       sources += [ "print_preview/print_preview_ui_browsertest.js" ]
