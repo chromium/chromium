@@ -9,7 +9,6 @@
 #include "chrome/browser/ui/views/location_bar/cookie_controls/cookie_controls_bubble_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
 #include "content/public/browser/web_contents.h"
-#include "ui/views/widget/widget.h"
 
 class CookieControlsContentView;
 
@@ -37,15 +36,13 @@ class CookieControlsBubbleViewImpl : public CookieControlsBubbleView,
   void UpdateFaviconImage(const gfx::Image& image,
                           int favicon_view_id) override;
 
-  void SwitchToReloadingView() override;
+  void ShowContentView() override;
+  void ShowReloadingView() override;
 
   CookieControlsContentView* GetContentView() override;
   View* GetReloadingView() override;
 
   void CloseWidget() override;
-
-  base::CallbackListSubscription RegisterOnUserClosedContentViewCallback(
-      base::RepeatingClosureList::CallbackType callback) override;
 
  protected:
   gfx::Size CalculatePreferredSize() const override;
@@ -54,7 +51,6 @@ class CookieControlsBubbleViewImpl : public CookieControlsBubbleView,
   // LocationBarBubbleDelegateView:
   void Init() override;
   void CloseBubble() override;
-  bool OnCloseRequested(views::Widget::ClosedReason close_reason) override;
 
   // views::View:
   void ChildPreferredSizeChanged(views::View* child) override;
@@ -62,7 +58,6 @@ class CookieControlsBubbleViewImpl : public CookieControlsBubbleView,
   raw_ptr<View> reloading_view_ = nullptr;
   raw_ptr<CookieControlsContentView> content_view_ = nullptr;
 
-  base::RepeatingClosureList on_user_closed_content_view_callback_list_;
   OnCloseBubbleCallback callback_;
 };
 

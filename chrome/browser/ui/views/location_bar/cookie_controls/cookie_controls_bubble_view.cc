@@ -6,5 +6,3 @@
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(CookieControlsBubbleView,
                                       kCookieControlsBubble);
-DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(CookieControlsBubbleView, kContentView);
-DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(CookieControlsBubbleView, kReloadingView);

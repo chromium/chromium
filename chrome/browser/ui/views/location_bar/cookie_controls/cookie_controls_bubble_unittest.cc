@@ -40,17 +40,13 @@ class MockCookieControlsBubbleView : public CookieControlsBubbleView {
   MOCK_METHOD(void, UpdateSubtitle, (const std::u16string&), (override));
   MOCK_METHOD(void, UpdateFaviconImage, (const gfx::Image&, int), (override));
 
-  MOCK_METHOD(void, SwitchToReloadingView, (), (override));
+  MOCK_METHOD(void, ShowContentView, (), (override));
+  MOCK_METHOD(void, ShowReloadingView, (), (override));
 
   MOCK_METHOD(CookieControlsContentView*, GetContentView, (), (override));
   MOCK_METHOD(views::View*, GetReloadingView, (), (override));
 
   MOCK_METHOD(void, CloseWidget, (), (override));
-
-  MOCK_METHOD(base::CallbackListSubscription,
-              RegisterOnUserClosedContentViewCallback,
-              (base::RepeatingClosureList::CallbackType),
-              (override));
 };
 
 class MockCookieControlsContentView : public CookieControlsContentView {
@@ -134,16 +130,11 @@ class CookieControlsBubbleViewControllerTest
         std::make_unique<testing::NiceMock<MockCookieControlsBubbleView>>();
     mock_content_view_ =
         std::make_unique<testing::NiceMock<MockCookieControlsContentView>>();
-
-    empty_reloading_view_ = std::make_unique<views::View>();
-
     controller_ = std::make_unique<content_settings::CookieControlsController>(
         CookieSettingsFactory::GetForProfile(browser()->profile()), nullptr);
 
     ON_CALL(*mock_bubble_view(), GetContentView())
         .WillByDefault(testing::Return(mock_content_view()));
-    ON_CALL(*mock_bubble_view(), GetReloadingView())
-        .WillByDefault(testing::Return(empty_reloading_view()));
 
     EXPECT_CALL(*mock_bubble_view(),
                 UpdateSubtitle(base::ASCIIToUTF16(url.host())));
@@ -173,14 +164,11 @@ class CookieControlsBubbleViewControllerTest
     return mock_content_view_.get();
   }
 
-  views::View* empty_reloading_view() { return empty_reloading_view_.get(); }
-
  private:
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<content_settings::CookieControlsController> controller_;
   std::unique_ptr<MockCookieControlsContentView> mock_content_view_;
   std::unique_ptr<MockCookieControlsBubbleView> mock_bubble_view_;
-  std::unique_ptr<views::View> empty_reloading_view_;
   std::unique_ptr<CookieControlsBubbleViewController> view_controller_;
 };
 

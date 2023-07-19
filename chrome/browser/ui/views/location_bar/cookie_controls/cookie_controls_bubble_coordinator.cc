@@ -46,11 +46,6 @@ CookieControlsBubbleViewImpl* CookieControlsBubbleCoordinator::GetBubble() {
   return bubble_view_;
 }
 
-CookieControlsBubbleViewController*
-CookieControlsBubbleCoordinator::GetViewControllerForTesting() {
-  return view_controller_.get();
-}
-
 void CookieControlsBubbleCoordinator::OnViewIsDeleting(
     views::View* observed_view) {
   bubble_view_ = nullptr;

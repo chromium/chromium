@@ -49,14 +49,12 @@ void CookieControlsBubbleViewImpl::InitContentView(
     std::unique_ptr<CookieControlsContentView> view) {
   CHECK(!content_view_);
   content_view_ = AddChildView(std::move(view));
-  content_view_->SetProperty(views::kElementIdentifierKey, kContentView);
 }
 
 void CookieControlsBubbleViewImpl::InitReloadingView(
     std::unique_ptr<View> view) {
   CHECK(!reloading_view_);
   reloading_view_ = AddChildView(std::move(view));
-  reloading_view_->SetProperty(views::kElementIdentifierKey, kReloadingView);
 }
 
 void CookieControlsBubbleViewImpl::UpdateTitle(const std::u16string& title) {
@@ -77,10 +75,14 @@ void CookieControlsBubbleViewImpl::UpdateFaviconImage(const gfx::Image& image,
   favicon->SetImage(ui::ImageModel::FromImage(image));
 }
 
-void CookieControlsBubbleViewImpl::SwitchToReloadingView() {
+void CookieControlsBubbleViewImpl::ShowContentView() {
+  GetReloadingView()->SetVisible(false);
+  GetContentView()->SetVisible(true);
+}
+
+void CookieControlsBubbleViewImpl::ShowReloadingView() {
   GetReloadingView()->SetVisible(true);
   GetContentView()->SetVisible(false);
-  SizeToContents();
 }
 
 CookieControlsContentView* CookieControlsBubbleViewImpl::GetContentView() {
@@ -93,12 +95,6 @@ views::View* CookieControlsBubbleViewImpl::GetReloadingView() {
 
 void CookieControlsBubbleViewImpl::CloseWidget() {
   GetWidget()->Close();
-}
-
-base::CallbackListSubscription
-CookieControlsBubbleViewImpl::RegisterOnUserClosedContentViewCallback(
-    base::RepeatingClosureList::CallbackType callback) {
-  return on_user_closed_content_view_callback_list_.Add(std::move(callback));
 }
 
 gfx::Size CookieControlsBubbleViewImpl::CalculatePreferredSize() const {
@@ -125,15 +121,4 @@ void CookieControlsBubbleViewImpl::CloseBubble() {
   }
   std::move(callback_).Run(this);
   LocationBarBubbleDelegateView::CloseBubble();
-}
-
-bool CookieControlsBubbleViewImpl::OnCloseRequested(
-    views::Widget::ClosedReason close_reason) {
-  if (close_reason == views::Widget::ClosedReason::kUnspecified ||
-      !GetContentView()->GetVisible()) {
-    return true;
-  }
-
-  on_user_closed_content_view_callback_list_.Notify();
-  return false;
 }
