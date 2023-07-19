@@ -25,7 +25,6 @@ def __step_config(ctx, step_config):
         rule["reproxy_config"] = {
             "platform": platform,
             "labels": {
-                # TODO: don't hardcode this
                 "type": "tool",
             },
             "canonicalize_working_dir": rule.get("canonicalize_dir", False),
