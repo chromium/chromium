@@ -14,7 +14,8 @@ import time
 from typing import Optional, Tuple
 
 import common
-from common import BootMode, boot_device, get_system_info, find_image_in_sdk, \
+from boot_device import BootMode, StateTransitionError, boot_device
+from common import get_system_info, find_image_in_sdk, \
                    register_device_args
 from compatible_utils import get_sdk_hash, pave, running_unattended
 from lockfile import lock
@@ -42,7 +43,7 @@ def _get_system_info(target: Optional[str],
     if running_unattended():
         try:
             boot_device(target, BootMode.REGULAR, serial_num)
-        except (subprocess.CalledProcessError, common.StateTransitionError):
+        except (subprocess.CalledProcessError, StateTransitionError):
             logging.warning('Could not boot device. Assuming in ZEDBOOT')
             return ('', '')
         wait_cmd = common.run_ffx_command(cmd=('target', 'wait', '-t', '180'),
