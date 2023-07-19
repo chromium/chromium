@@ -82,6 +82,12 @@ content::WebContents* OpenURLFromTabInternal(
   // window.
   if (params.disposition == WindowOpenDisposition::NEW_BACKGROUND_TAB) {
     new_tab_params.disposition = WindowOpenDisposition::NEW_BACKGROUND_TAB;
+  } else if (params.disposition == WindowOpenDisposition::OFF_THE_RECORD) {
+    // Don't force this behaviour for requests for an incognito window, where
+    // it would not be acceptable to open in a new tab of a non-incognito
+    // window.
+    new_tab_params.disposition = WindowOpenDisposition::OFF_THE_RECORD;
+    new_tab_params.window_action = NavigateParams::SHOW_WINDOW;
   } else {
     new_tab_params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
     new_tab_params.window_action = NavigateParams::SHOW_WINDOW;
