@@ -417,10 +417,6 @@ GpuServiceImpl::GpuServiceImpl(
     overlay_state_service->Initialize(
         base::SequencedTaskRunner::GetCurrentDefault());
   }
-
-  // Add GpuServiceImpl to DirectCompositionOverlayCapsMonitor observer list for
-  // overlay and DXGI info update.
-  gl::DirectCompositionOverlayCapsMonitor::GetInstance()->AddObserver(this);
 #endif
 
   gpu_memory_buffer_factory_ = gpu::GpuMemoryBufferFactory::CreateNativeType(
@@ -642,6 +638,13 @@ void GpuServiceImpl::InitializeWithHost(
           ? gpu_channel_manager_->default_offscreen_surface()->GetGLDisplay()
           : nullptr,
       !!watchdog_thread_);
+
+#if BUILDFLAG(IS_WIN)
+  // Add GpuServiceImpl to DirectCompositionOverlayCapsMonitor observer list for
+  // overlay and DXGI info update. This should be added after |gpu_host_| is
+  // initialized.
+  gl::DirectCompositionOverlayCapsMonitor::GetInstance()->AddObserver(this);
+#endif
 }
 
 void GpuServiceImpl::Bind(
@@ -1425,8 +1428,9 @@ void GpuServiceImpl::OnOverlayCapsChanged() {
   // Update DXGI adapter info in the GPU process through the GPU host mojom.
   auto old_dxgi_info = std::move(dxgi_info_);
   dxgi_info_ = gl::GetDirectCompositionHDRMonitorDXGIInfo();
-  if (!mojo::Equals(dxgi_info_, old_dxgi_info))
+  if (!mojo::Equals(dxgi_info_, old_dxgi_info)) {
     gpu_host_->DidUpdateDXGIInfo(dxgi_info_.Clone());
+  }
 }
 #endif
 
