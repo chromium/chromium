@@ -58,8 +58,6 @@ class ShellSurfaceBase : public SurfaceTreeHost,
                          public wm::ActivationChangeObserver,
                          public wm::TooltipObserver {
  public:
-  using ShapeRects = std::vector<gfx::Rect>;
-
   // The |origin| is the initial position in screen coordinates. The position
   // specified as part of the geometry is relative to the shell surface.
   ShellSurfaceBase(Surface* surface,
@@ -349,6 +347,8 @@ class ShellSurfaceBase : public SurfaceTreeHost,
     in_extended_drag_ = in_extended_drag;
   }
 
+  const absl::optional<cc::Region>& shape_dp() const { return shape_dp_; }
+
  protected:
   // Creates the |widget_| for |surface_|. |show_state| is the initial state
   // of the widget (e.g. maximized).
@@ -444,8 +444,8 @@ class ShellSurfaceBase : public SurfaceTreeHost,
   gfx::Rect geometry_;
   gfx::Rect pending_geometry_;
   absl::optional<gfx::Rect> initial_bounds_;
-  absl::optional<ShapeRects> shape_rects_dp_;
-  absl::optional<ShapeRects> pending_shape_rects_dp_;
+  absl::optional<cc::Region> shape_dp_;
+  absl::optional<cc::Region> pending_shape_dp_;
 
   int64_t display_id_ = display::kInvalidDisplayId;
   int64_t pending_display_id_ = display::kInvalidDisplayId;

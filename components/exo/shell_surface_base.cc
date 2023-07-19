@@ -207,6 +207,11 @@ class CustomWindowTargeter : public aura::WindowTargeter {
     gfx::Point local_point =
         ConvertEventLocationToWindowCoordinates(window, event);
 
+    if (shell_surface_->shape_dp() &&
+        !shell_surface_->shape_dp()->Contains(local_point)) {
+      return false;
+    }
+
     if (IsInResizeHandle(window, event, local_point))
       return true;
 
@@ -464,17 +469,28 @@ void ShellSurfaceBase::UpdateSystemModal() {
 }
 
 void ShellSurfaceBase::UpdateShape() {
-  if (!host_window() || !host_window()->layer()) {
+  auto* widget_window = widget_->GetNativeWindow();
+  if (!widget_window || !widget_window->layer()) {
     return;
   }
 
-  if (!shape_rects_dp_.has_value()) {
-    host_window()->layer()->SetAlphaShape(nullptr);
+  if (!shape_dp_.has_value()) {
+    widget_window->layer()->SetAlphaShape(nullptr);
     return;
   }
 
-  auto shape_rects = std::make_unique<ui::Layer::ShapeRects>(*shape_rects_dp_);
-  host_window()->layer()->SetAlphaShape(std::move(shape_rects));
+  // TODO(crbug.com/1465999): The current implementation of window shape must
+  // only be used on frameless windows with shadows disabled, otherwise we risk
+  // the layer bounds not matching the bounds of the root surface. This needs to
+  // be updated such that the shape is applied to the root surface's geometry.
+  DCHECK_EQ(frame_type_, SurfaceFrameType::NONE);
+
+  auto shape_rects_dp = std::make_unique<ui::Layer::ShapeRects>();
+  for (gfx::Rect rect : shape_dp_.value()) {
+    shape_rects_dp->push_back(std::move(rect));
+  }
+
+  widget_window->layer()->SetAlphaShape(std::move(shape_rects_dp));
 }
 
 void ShellSurfaceBase::SetApplicationId(const char* application_id) {
@@ -1167,6 +1183,13 @@ bool ShellSurfaceBase::WidgetHasHitTestMask() const {
 }
 
 void ShellSurfaceBase::GetWidgetHitTestMask(SkPath* mask) const {
+  // If a window shape is applied set the hit test mask to the boundary path
+  // of the masked region.
+  if (shape_dp_) {
+    shape_dp_->GetBoundaryPath(mask);
+    return;
+  }
+
   GetHitTestMask(mask);
 
   gfx::Point origin = host_window()->bounds().origin();
@@ -1749,7 +1772,7 @@ void ShellSurfaceBase::UpdateShadow() {
   aura::Window* window = widget_->GetNativeWindow();
 
   // Window shadows should be disabled if a window shape has been set.
-  if (!shadow_bounds_ || shape_rects_dp_.has_value()) {
+  if (!shadow_bounds_ || shape_dp_.has_value()) {
     wm::SetShadowElevation(window, wm::kShadowElevationNone);
   } else {
     // Use a small style shadow for popup surface.
@@ -1957,7 +1980,7 @@ void ShellSurfaceBase::CommitWidget() {
   // Apply new window geometry.
   geometry_ = pending_geometry_;
   display_id_ = pending_display_id_;
-  shape_rects_dp_ = pending_shape_rects_dp_;
+  shape_dp_ = pending_shape_dp_;
 
   // Apply new minimum/maximium size.
   minimum_size_ = pending_minimum_size_;
@@ -2123,17 +2146,28 @@ void ShellSurfaceBase::SetZOrder(ui::ZOrderLevel z_order) {
 }
 
 void ShellSurfaceBase::SetShape(absl::optional<cc::Region> shape) {
-  pending_shape_rects_dp_.reset();
   if (!shape) {
+    pending_shape_dp_.reset();
     return;
   }
 
-  ShapeRects shape_rects_dp;
-  for (gfx::Rect rect : shape.value()) {
-    shape_rects_dp.push_back(std::move(rect));
+  if (frame_enabled()) {
+    LOG(ERROR) << "SetShape() is not supported for windows with frame enabled.";
+    return;
   }
 
-  pending_shape_rects_dp_ = std::move(shape_rects_dp);
+  // SetShape() may be called some time after a window has been created. In case
+  // server_side_resize_ has been set we disable it here.
+  server_side_resize_ = false;
+
+  // Although window shape is only supported for frameless windows we must also
+  // ensure window shadows are disabled as shadows can contribute to the widget
+  // window's layer bounds.
+  // TODO(crbug.com/1465999): This will not be necessary once the implementation
+  // is updated to use the root surface's geometry.
+  OnSetFrame(SurfaceFrameType::NONE);
+
+  pending_shape_dp_ = std::move(shape);
 }
 
 // static
