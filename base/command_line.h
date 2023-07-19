@@ -204,9 +204,9 @@ class BASE_EXPORT CommandLine {
   // prefix and value. If no such switch is present, this has no effect.
   void RemoveSwitch(const base::StringPiece switch_key_without_prefix);
 
-  // Copy a set of switches (and any values) from another command line.
+  // Copies a set of switches (and any values) from another command line.
   // Commonly used when launching a subprocess.
-  // Preferred version.
+  // If an entry in `switches` does not exist in `source`, then it is ignored.
   void CopySwitchesFrom(const CommandLine& source,
                         span<const char* const> switches);
 
