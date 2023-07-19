@@ -19,17 +19,21 @@ SelectToSpeakKeystrokeSelectionTest = class extends SelectToSpeakE2ETest {
   /** @override */
   async setUpDeferred() {
     await super.setUpDeferred();
-    await importModule(
-        'selectToSpeak', '/select_to_speak/select_to_speak_main.js');
-    await importModule(
-        'SelectToSpeakConstants',
-        '/select_to_speak/select_to_speak_constants.js');
-    await importModule('PrefsManager', '/select_to_speak/prefs_manager.js');
+
+    await Promise.all([
+      importModule('selectToSpeak', '/select_to_speak/select_to_speak_main.js'),
+      importModule(
+          'SelectToSpeakConstants',
+          '/select_to_speak/select_to_speak_constants.js'),
+      importModule('PrefsManager', '/select_to_speak/prefs_manager.js'),
+    ]);
+
     await new Promise(resolve => {
       chrome.settingsPrivate.setPref(
           PrefsManager.ENHANCED_VOICES_DIALOG_SHOWN_KEY, true,
           '' /* unused, see crbug.com/866161 */, () => resolve());
     });
+
     if (!selectToSpeak.prefsManager_.enhancedVoicesDialogShown()) {
       // TODO(b/267705784): This shouldn't happen, but sometimes the
       // setPref call above does not cause PrefsManager.updateSettingsPrefs_ to

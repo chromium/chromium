@@ -29,8 +29,10 @@ MagnifierE2ETest = class extends E2ETestBase {
   /** @override */
   async setUpDeferred() {
     await super.setUpDeferred();
-    await importModule('RectUtil', '/common/rect_util.js');
-    await importModule('KeyCode', '/common/key_code.js');
+    await Promise.all([
+      importModule('RectUtil', '/common/rect_util.js'),
+      importModule('KeyCode', '/common/key_code.js'),
+    ]);
   }
 
   async getPref(name) {

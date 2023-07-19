@@ -26,11 +26,13 @@ E2ETestBase = class extends AccessibilityTestBase {
   async setUpDeferred() {
     await super.setUpDeferred();
 
-    // Alphabetical by file path.
-    await importModule('AsyncUtil', '/common/async_util.js');
-    await importModule('EventGenerator', '/common/event_generator.js');
-    await importModule('KeyCode', '/common/key_code.js');
-    await importModule('constants', '/common/constants.js');
+    await Promise.all([
+      // Alphabetical by file path.
+      importModule('AsyncUtil', '/common/async_util.js'),
+      importModule('EventGenerator', '/common/event_generator.js'),
+      importModule('KeyCode', '/common/key_code.js'),
+      importModule('constants', '/common/constants.js'),
+    ]);
   }
 
   /** @override */

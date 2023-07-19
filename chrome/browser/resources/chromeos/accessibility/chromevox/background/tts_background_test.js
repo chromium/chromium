@@ -13,16 +13,18 @@ ChromeVoxBackgroundTtsTest = class extends ChromeVoxE2ETest {
   async setUpDeferred() {
     await super.setUpDeferred();
 
-    // Alphabetical based on file path.
-    await importModule('ChromeVox', '/chromevox/background/chromevox.js');
-    await importModule(
-        'CommandHandlerInterface',
-        '/chromevox/background/command_handler_interface.js');
-    await importModule('PrimaryTts', '/chromevox/background/primary_tts.js');
-    await importModule(
-        'SettingsManager', '/chromevox/common/settings_manager.js');
-    await importModule(
-        ['QueueMode', 'TtsSpeechProperties'], '/chromevox/common/tts_types.js');
+    await Promise.all([
+      // Alphabetical based on file path.
+      importModule('ChromeVox', '/chromevox/background/chromevox.js'),
+      importModule(
+          'CommandHandlerInterface',
+          '/chromevox/background/command_handler_interface.js'),
+      importModule('PrimaryTts', '/chromevox/background/primary_tts.js'),
+      importModule('SettingsManager', '/chromevox/common/settings_manager.js'),
+      importModule(
+          ['QueueMode', 'TtsSpeechProperties'],
+          '/chromevox/common/tts_types.js'),
+    ]);
 
     globalThis.tts = new PrimaryTts();
   }

@@ -22,17 +22,18 @@ ChromeVoxOptionsTest = class extends ChromeVoxE2ETest {
   async setUpDeferred() {
     await super.setUpDeferred();
 
-    // Alphabetical based on file path.
-    await importModule(
-        'CommandHandlerInterface',
-        '/chromevox/background/command_handler_interface.js');
-    await importModule('TtsSettings', '/chromevox/common/tts_types.js');
-    await importModule('AsyncUtil', '/common/async_util.js');
-    await importModule('EventGenerator', '/common/event_generator.js');
-    await importModule('KeyCode', '/common/key_code.js');
-    await importModule('LocalStorage', '/common/local_storage.js');
-    await importModule(
-        'SettingsManager', '/chromevox/common/settings_manager.js');
+    await Promise.all([
+      // Alphabetical based on file path.
+      importModule(
+          'CommandHandlerInterface',
+          '/chromevox/background/command_handler_interface.js'),
+      importModule('TtsSettings', '/chromevox/common/tts_types.js'),
+      importModule('AsyncUtil', '/common/async_util.js'),
+      importModule('EventGenerator', '/common/event_generator.js'),
+      importModule('KeyCode', '/common/key_code.js'),
+      importModule('LocalStorage', '/common/local_storage.js'),
+      importModule('SettingsManager', '/chromevox/common/settings_manager.js'),
+    ]);
   }
 
   async loadOptionsPage() {

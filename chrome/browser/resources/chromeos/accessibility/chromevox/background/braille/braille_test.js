@@ -9,16 +9,16 @@ ChromeVoxBrailleTest = class extends ChromeVoxE2ETest {
   async setUpDeferred() {
     await super.setUpDeferred();
 
-    // Alphabetized by file path.
-    await importModule(
-        'BrailleBackground',
-        '/chromevox/background/braille/braille_background.js');
-    await importModule(
-        'LogStore', '/chromevox/background/logging/log_store.js');
-    await importModule('LogType', '/chromevox/common/log_types.js');
-    await importModule(
-        'SettingsManager', '/chromevox/common/settings_manager.js');
-    await importModule('Spannable', '/chromevox/common/spannable.js');
+    await Promise.all([
+      // Alphabetized by file path.
+      importModule(
+          'BrailleBackground',
+          '/chromevox/background/braille/braille_background.js'),
+      importModule('LogStore', '/chromevox/background/logging/log_store.js'),
+      importModule('LogType', '/chromevox/common/log_types.js'),
+      importModule('SettingsManager', '/chromevox/common/settings_manager.js'),
+      importModule('Spannable', '/chromevox/common/spannable.js'),
+    ]);
   }
 };
 

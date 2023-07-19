@@ -9,8 +9,10 @@ SwitchAccessSwitchAccessTest = class extends SwitchAccessE2ETest {
   /** @override */
   async setUpDeferred() {
     await super.setUpDeferred();
-    await importModule('Flags', '/common/flags.js');
-    await importModule('SwitchAccess', '/switch_access/switch_access.js');
+    await Promise.all([
+      importModule('Flags', '/common/flags.js'),
+      importModule('SwitchAccess', '/switch_access/switch_access.js'),
+    ]);
   }
 
   async waitForCallback() {

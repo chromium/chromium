@@ -8,14 +8,15 @@ GEN_INCLUDE(['../switch_access_e2e_test_base.js']);
 SwitchAccessBasicNodeTest = class extends SwitchAccessE2ETest {
   async setUpDeferred() {
     await super.setUpDeferred();
-    await importModule(
-        ['BasicNode', 'BasicRootNode'], '/switch_access/nodes/basic_node.js');
-    await importModule(
-        'BackButtonNode', '/switch_access/nodes/back_button_node.js');
+    await Promise.all([
+      importModule(
+          ['BasicNode', 'BasicRootNode'], '/switch_access/nodes/basic_node.js'),
+      importModule(
+          'BackButtonNode', '/switch_access/nodes/back_button_node.js'),
 
-    await importModule('DesktopNode', '/switch_access/nodes/desktop_node.js');
-    await importModule(
-        'SARootNode', '/switch_access/nodes/switch_access_node.js');
+      importModule('DesktopNode', '/switch_access/nodes/desktop_node.js'),
+      importModule('SARootNode', '/switch_access/nodes/switch_access_node.js'),
+    ]);
 
     globalThis.MenuAction = chrome.accessibilityPrivate.SwitchAccessMenuAction;
   }

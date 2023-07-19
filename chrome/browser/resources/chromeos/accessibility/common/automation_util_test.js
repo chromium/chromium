@@ -16,8 +16,10 @@ AccessibilityExtensionAutomationUtilE2ETest = class extends CommonE2ETestBase {
   /** @override */
   async setUpDeferred() {
     await super.setUpDeferred();
-    await importModule('RectUtil', '/common/rect_util.js');
-    await importModule('AutomationUtil', '/common/automation_util.js');
+    await Promise.all([
+      importModule('RectUtil', '/common/rect_util.js'),
+      importModule('AutomationUtil', '/common/automation_util.js'),
+    ]);
 
     window.Dir = constants.Dir;
     window.RoleType = chrome.automation.RoleType;

@@ -13,31 +13,32 @@ ChromeVoxEditingTest = class extends ChromeVoxE2ETest {
   async setUpDeferred() {
     await super.setUpDeferred();
 
-    // Alphabetical based on file path.
-    await importModule(
-        'BrailleCommandHandler',
-        '/chromevox/background/braille/braille_command_handler.js');
-    await importModule(
-        'BrailleDisplayManager',
-        '/chromevox/background/braille/braille_display_manager.js');
-    await importModule(
-        'BrailleTranslatorManager',
-        '/chromevox/background/braille/braille_translator_manager.js');
-    await importModule(
-        'EditableLine', '/chromevox/background/editing/editable_line.js');
-    await importModule(
-        'TextEditHandler', '/chromevox/background/editing/editing.js');
-    await importModule(
-        'DesktopAutomationInterface',
-        '/chromevox/background/event/desktop_automation_interface.js');
-    await importModule(
-        ['BrailleKeyEvent', 'BrailleKeyCommand'],
-        '/chromevox/common/braille/braille_key_types.js');
-    await importModule('EventGenerator', '/common/event_generator.js');
-    await importModule('KeyCode', '/common/key_code.js');
-    await importModule('LocalStorage', '/common/local_storage.js');
-    await importModule(
-        'SettingsManager', '/chromevox/common/settings_manager.js');
+    await Promise.all([
+      // Alphabetical based on file path.
+      importModule(
+          'BrailleCommandHandler',
+          '/chromevox/background/braille/braille_command_handler.js'),
+      importModule(
+          'BrailleDisplayManager',
+          '/chromevox/background/braille/braille_display_manager.js'),
+      importModule(
+          'BrailleTranslatorManager',
+          '/chromevox/background/braille/braille_translator_manager.js'),
+      importModule(
+          'EditableLine', '/chromevox/background/editing/editable_line.js'),
+      importModule(
+          'TextEditHandler', '/chromevox/background/editing/editing.js'),
+      importModule(
+          'DesktopAutomationInterface',
+          '/chromevox/background/event/desktop_automation_interface.js'),
+      importModule(
+          ['BrailleKeyEvent', 'BrailleKeyCommand'],
+          '/chromevox/common/braille/braille_key_types.js'),
+      importModule('EventGenerator', '/common/event_generator.js'),
+      importModule('KeyCode', '/common/key_code.js'),
+      importModule('LocalStorage', '/common/local_storage.js'),
+      importModule('SettingsManager', '/chromevox/common/settings_manager.js'),
+    ]);
 
     globalThis.EventType = chrome.automation.EventType;
     globalThis.RoleType = chrome.automation.RoleType;

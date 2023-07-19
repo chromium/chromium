@@ -29,12 +29,14 @@ SelectToSpeakEnhancedNetworkTtsVoicesTest = class extends SelectToSpeakE2ETest {
   /** @override */
   async setUpDeferred() {
     await super.setUpDeferred();
-    await importModule(
-        'selectToSpeak', '/select_to_speak/select_to_speak_main.js');
-    await importModule(
-        'SelectToSpeakConstants',
-        '/select_to_speak/select_to_speak_constants.js');
-    await importModule('PrefsManager', '/select_to_speak/prefs_manager.js');
+
+    await Promise.all([
+      importModule('selectToSpeak', '/select_to_speak/select_to_speak_main.js'),
+      importModule(
+          'SelectToSpeakConstants',
+          '/select_to_speak/select_to_speak_constants.js'),
+      importModule('PrefsManager', '/select_to_speak/prefs_manager.js'),
+    ]);
   }
 
   // Sets the policy to allow or disallow the network voices.

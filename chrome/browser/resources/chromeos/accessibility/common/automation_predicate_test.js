@@ -10,10 +10,12 @@ AccessibilityExtensionAutomationPredicateTest =
   /**@override */
   async setUpDeferred() {
     await super.setUpDeferred();
-    await importModule(
-        'AutomationPredicate', '/common/automation_predicate.js');
-    await importModule(
-        'createMockNode', '/common/testing/test_node_generator.js');
+    await Promise.all([
+      await importModule(
+          'AutomationPredicate', '/common/automation_predicate.js'),
+      await importModule(
+          'createMockNode', '/common/testing/test_node_generator.js'),
+    ]);
   }
 };
 
