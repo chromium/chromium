@@ -25,15 +25,16 @@ import org.chromium.ui.base.DeviceFormFactor;
 public class DeviceClassManager {
     // Params for controlling Grid Tab Switcher (GTS) rollout for accessibility and low-end device
     // users.
+    // TODO(crbug/1466158): Remove and keep in true state for both.
     private static final String GTS_ACCESSIBILITY_SUPPORT_PARAM = "gts-accessibility-support";
     public static final BooleanCachedFieldTrialParameter GTS_ACCESSIBILITY_SUPPORT =
             new BooleanCachedFieldTrialParameter(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID,
-                    GTS_ACCESSIBILITY_SUPPORT_PARAM, false);
+                    GTS_ACCESSIBILITY_SUPPORT_PARAM, true);
 
     private static final String GTS_LOW_END_SUPPORT_PARAM = "gts-low-end-support";
     public static final BooleanCachedFieldTrialParameter GTS_LOW_END_SUPPORT =
             new BooleanCachedFieldTrialParameter(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID,
-                    GTS_LOW_END_SUPPORT_PARAM, false);
+                    GTS_LOW_END_SUPPORT_PARAM, true);
 
     private static DeviceClassManager sInstance;
 

@@ -34,6 +34,7 @@ public class TabUiFeatureUtilities {
             new BooleanCachedFieldTrialParameter(
                     ChromeFeatureList.TAB_TO_GTS_ANIMATION, SKIP_SLOW_ZOOMING_PARAM, true);
 
+    // TODO(crbug/1466158): Remove and keep in false state.
     private static final String GTS_ACCESSIBILITY_LIST_MODE_PARAM = "gts-accessibility-list-mode";
     public static final BooleanCachedFieldTrialParameter GTS_ACCESSIBILITY_LIST_MODE =
             new BooleanCachedFieldTrialParameter(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID,
