@@ -181,7 +181,8 @@
         <span aria-label$="[[savedPrintersAriaLabel_]]">
           $i18n{savedPrintersTitle}
         </span>
-        <div class="secondary" hidden="[[!isPrinterSettingsRevampEnabled_]]">
+        <div class="secondary" hidden="[[!isPrinterSettingsRevampEnabled_]]"
+            aria-hidden="true">
           $i18n{savedPrintersSubtext}
         </div>
       </div>
@@ -218,7 +219,8 @@
   </div>
   <div id="nearbyPrintersRevamp" class="padded first nearby-printers-section"
       hidden="[[!isPrinterSettingsRevampEnabled_]]">
-    <div id="nearbyPrintersDescription">
+    <div id="nearbyPrintersDescription"
+        aria-hidden="[[isPrinterSettingsRevampEnabled_]]">
       <div id="availablePrintersReadyTitle"
           aria-label$="[[nearbyPrintersAriaLabel_]]">
         $i18n{availablePrintersReadyTitle}
@@ -228,9 +230,14 @@
         $i18n{availablePrintersReadySubtext}
       </div>
     </div>
+    <span id="nearbyPrintersAriaLabel" hidden>
+      [[nearbyPrintersAriaLabel_]]
+    </span>
     <cr-icon-button id="nearbyPrinterToggleButton" on-click="toggleClicked_"
         iron-icon="[[getIconDirection_(nearbyPrintersExpanded_)]]"
-        aria-expanded="[[nearbyPrintersExpanded_]]">
+        aria-expanded="[[nearbyPrintersExpanded_]]"
+        aria-label="$i18n{availablePrintersReadyTitle}"
+        aria-describedby="nearbyPrintersAriaLabel">
     </cr-icon-button>
     <cr-policy-pref-indicator
         pref="[[prefs.native_printing.user_native_printers_allowed]]"
@@ -266,7 +273,7 @@
           <iron-icon icon="os-settings:printer-setup"></iron-icon>
         </div>
         <div id="helpSectionText">
-          <div class="help-title">
+          <div class="help-title" aria-hidden="true">
             $i18n{helpSectionTitle}
           </div>
           <div class="secondary">
