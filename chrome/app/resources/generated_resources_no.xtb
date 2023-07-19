@@ -7580,7 +7580,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7634337648687970851">Gjenoppretting av lokale data støttes ikke for øyeblikket.</translation>
 <translation id="7634566076839829401">Noe gikk galt. Prøv på nytt.</translation>
 <translation id="7635048370253485243">Festet av administratoren din</translation>
-<translation id="7635711411613274199">Om en annonse du ser har et personlig preg avhenger av denne innstillingen, <ph name="BEGIN_LINK1" />Annonseemner<ph name="LINK_END1" />, <ph name="BEGIN_LINK2" />innstillingene for informasjonskapsler<ph name="LINK_END2" /> og om nettstedet du ser på viser personlig tilpassede annonser</translation>
+<translation id="7635711411613274199">Om en annonse du ser har et personlig preg avhenger av denne innstillingen, <ph name="BEGIN_LINK1" />Annonseemner<ph name="LINK_END1" />, <ph name="BEGIN_LINK2" />innstillingene for informasjonskapsler<ph name="LINK_END2" /> og om nettstedet du ser på, viser personlig tilpassede annonser</translation>
 <translation id="7636919061354591437">Installer på denne enheten</translation>
 <translation id="7637253234491814483">Trykk på fingeravtrykkssensoren øverst til høyre på tastaturet, ved siden av av/på-knappen. Fingeravtrykksdataene lagres sikkert og sendes aldri fra <ph name="DEVICE_TYPE" />.</translation>
 <translation id="7637272932128132922">Mens denne fanen var inaktiv, frigjorde minnesparing minne til andre oppgaver. Du kan når som helst endre dette i <ph name="SETTINGS_LINK" />.</translation>
@@ -9298,7 +9298,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="9100765901046053179">Avanserte innstillinger</translation>
 <translation id="9101691533782776290">Start appen</translation>
 <translation id="9102610709270966160">Slå på utvidelsen</translation>
-<translation id="9102864637938129124">Nettsteder og annonsører kan forstå hvordan annonser innfrir. Denne innstillingen er på.</translation>
+<translation id="9102864637938129124">Nettsteder og annonsører kan forstå hvilke resultater annonser gir. Denne innstillingen er på.</translation>
 <translation id="9103479157856427471">Innzoomet skjerm følger tastaturets fokus</translation>
 <translation id="9103868373786083162">Trykk for å gå tilbake, eller trykk på kontekstmenyen for å se loggen</translation>
 <translation id="9108035152087032312">Gi navn til &amp;vinduet …</translation>
