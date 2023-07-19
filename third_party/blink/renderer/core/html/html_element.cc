@@ -1217,7 +1217,9 @@ void HTMLElement::UpdatePopoverAttribute(const AtomicString& value) {
         "Found a 'popover' attribute with an invalid value."));
     UseCounter::Count(GetDocument(), WebFeature::kPopoverTypeInvalid);
   }
-  if (HasPopoverAttribute()) {
+  // The attribute might not be set here, so check GetPopoverData instead of
+  // HasPopoverAttribute.
+  if (GetPopoverData()) {
     if (PopoverType() == type)
       return;
     String original_type = FastGetAttribute(html_names::kPopoverAttr);
@@ -1236,7 +1238,9 @@ void HTMLElement::UpdatePopoverAttribute(const AtomicString& value) {
     }
   }
   if (type == PopoverValueType::kNone) {
-    if (HasPopoverAttribute()) {
+    // The attribute might not be set here, so check GetPopoverData instead of
+    // HasPopoverAttribute.
+    if (GetPopoverData()) {
       // If the popover attribute is being removed, remove the PopoverData.
       RemovePopoverData();
     }
@@ -1262,6 +1266,7 @@ void HTMLElement::UpdatePopoverAttribute(const AtomicString& value) {
 }
 
 bool HTMLElement::HasPopoverAttribute() const {
+  CHECK_EQ(FastHasAttribute(html_names::kPopoverAttr), !!GetPopoverData());
   return GetPopoverData();
 }
 
@@ -1320,12 +1325,14 @@ bool HTMLElement::IsPopoverReady(PopoverTriggerAction action,
     }
   };
 
-  if (!HasPopoverAttribute()) {
+  if (!FastHasAttribute(html_names::kPopoverAttr)) {
     maybe_throw_exception(DOMExceptionCode::kNotSupportedError,
                           "Not supported on elements that do not have a valid "
                           "value for the 'popover' attribute.");
     return false;
   }
+  CHECK(GetPopoverData());
+
   if (action == PopoverTriggerAction::kShow &&
       GetPopoverData()->visibilityState() != PopoverVisibilityState::kHidden) {
     if (!RuntimeEnabledFeatures::PopoverDialogDontThrowEnabled()) {
