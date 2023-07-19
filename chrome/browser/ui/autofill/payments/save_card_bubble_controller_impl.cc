@@ -305,6 +305,7 @@ void SaveCardBubbleControllerImpl::OnSaveButton(
       break;
     }
     case BubbleType::LOCAL_SAVE:
+    case BubbleType::LOCAL_CVC_SAVE:
       DCHECK(!local_save_card_prompt_callback_.is_null());
       if (auto* sentiment_service =
               TrustSafetySentimentServiceFactory::GetForProfile(GetProfile())) {
@@ -315,10 +316,6 @@ void SaveCardBubbleControllerImpl::OnSaveButton(
       should_show_card_saved_label_animation_ = true;
       std::move(local_save_card_prompt_callback_)
           .Run(AutofillClient::SaveCardOfferUserDecision::kAccepted);
-      break;
-    // TODO (crbug.com/1462821): Add view interactions when the save button is
-    // clicked.
-    case BubbleType::LOCAL_CVC_SAVE:
       break;
     case BubbleType::MANAGE_CARDS:
       LogManageCardsPromptMetric(ManageCardsPromptMetric::kManageCardsDone,
@@ -332,7 +329,8 @@ void SaveCardBubbleControllerImpl::OnSaveButton(
 }
 
 void SaveCardBubbleControllerImpl::OnCancelButton() {
-  if (current_bubble_type_ == BubbleType::LOCAL_SAVE) {
+  if (current_bubble_type_ == BubbleType::LOCAL_SAVE ||
+      current_bubble_type_ == BubbleType::LOCAL_CVC_SAVE) {
     std::move(local_save_card_prompt_callback_)
         .Run(AutofillClient::SaveCardOfferUserDecision::kDeclined);
   } else if (current_bubble_type_ == BubbleType::UPLOAD_SAVE) {
@@ -397,7 +395,8 @@ void SaveCardBubbleControllerImpl::OnBubbleClosed(
   // Handles |current_bubble_type_| change according to its current type and the
   // |closed_reason|.
   if (closed_reason == PaymentsBubbleClosedReason::kAccepted) {
-    if (current_bubble_type_ == BubbleType::LOCAL_SAVE) {
+    if (current_bubble_type_ == BubbleType::LOCAL_SAVE ||
+        current_bubble_type_ == BubbleType::LOCAL_CVC_SAVE) {
       current_bubble_type_ = BubbleType::MANAGE_CARDS;
     } else if (current_bubble_type_ == BubbleType::UPLOAD_SAVE) {
       current_bubble_type_ = BubbleType::INACTIVE;
@@ -541,9 +540,12 @@ void SaveCardBubbleControllerImpl::ShowBubble() {
   // Upload save callback should not be null for UPLOAD_SAVE state.
   DCHECK(!(upload_save_card_prompt_callback_.is_null() &&
            current_bubble_type_ == BubbleType::UPLOAD_SAVE));
-  // Local save callback should not be null for LOCAL_SAVE state.
+  // Local save callback should not be null for LOCAL_SAVE or LOCAL_CVC_SAVE
+  // state.
   DCHECK(!(local_save_card_prompt_callback_.is_null() &&
            current_bubble_type_ == BubbleType::LOCAL_SAVE));
+  CHECK(!(local_save_card_prompt_callback_.is_null() &&
+          current_bubble_type_ == BubbleType::LOCAL_CVC_SAVE));
   DCHECK(!bubble_view());
   Show();
 }
@@ -553,9 +555,12 @@ void SaveCardBubbleControllerImpl::ShowIconOnly() {
   // Upload save callback should not be null for UPLOAD_SAVE state.
   DCHECK(!(upload_save_card_prompt_callback_.is_null() &&
            current_bubble_type_ == BubbleType::UPLOAD_SAVE));
-  // Local save callback should not be null for LOCAL_SAVE state.
+  // Local save callback should not be null for LOCAL_SAVE or LOCAL_CVC_SAVE
+  // state.
   DCHECK(!(local_save_card_prompt_callback_.is_null() &&
            current_bubble_type_ == BubbleType::LOCAL_SAVE));
+  CHECK(!(local_save_card_prompt_callback_.is_null() &&
+          current_bubble_type_ == BubbleType::LOCAL_CVC_SAVE));
   DCHECK(!bubble_view());
 
   // Show the icon only. The bubble can still be displayed if the user

@@ -314,8 +314,9 @@ class AutofillClient : public RiskDataLoader {
         AutofillSuggestionTriggerSource::kUnspecified};
   };
 
-  // Callback to run after local credit card save is offered. Sends whether the
-  // prompt was accepted, declined, or ignored in |user_decision|.
+  // Callback to run after local credit card save or local CVC save is offered.
+  // Sends whether the prompt was accepted, declined, or ignored in
+  // |user_decision|.
   typedef base::OnceCallback<void(SaveCardOfferUserDecision user_decision)>
       LocalSaveCardPromptCallback;
 

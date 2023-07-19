@@ -200,8 +200,7 @@ class SaveCardBubbleControllerImpl
       upload_save_card_prompt_callback_;
 
   // Callback to run once the user makes a decision with respect to the local
-  // credit card offer-to-save prompt. If both callbacks return true for
-  // .is_null() then no bubble is available to show and the icon is not visible.
+  // credit card offer-to-save prompt or the local CVC offer-to-save prompt.
   AutofillClient::LocalSaveCardPromptCallback local_save_card_prompt_callback_;
 
   // Governs whether the upload or local save version of the UI should be shown.
