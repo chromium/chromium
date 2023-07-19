@@ -89,9 +89,6 @@ class PdfAccessibilityTree : public content::PluginAXTreeSource,
     void ScheduleOcrRequests(base::queue<PdfOcrRequest> requests);
     bool IsOcrReady() const;
     bool IsQueueEmpty() const;
-    void SetScreenAIAnnotatorForTesting(
-        mojo::PendingRemote<screen_ai::mojom::ScreenAIAnnotator>
-            screen_ai_annotator);
 
    private:
     void ScheduleNextQueuedTask();
@@ -173,18 +170,17 @@ class PdfAccessibilityTree : public content::PluginAXTreeSource,
   void OnDestruct() override;
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-  PdfOcrService* CreateOcrService();
+  void CreateOcrService();
 
   // Removes the image node in the accessibility tree with the specified ID, and
   // adds a page node and its child nodes built from OCR results. OCR results
   // are provided in the format of AXTreeUpdate, which is used for storing both
   // the page id and the new nodes built from OCR results; this AXTreeUpdate
   // shouldn't be unserialized directly.
-  virtual void OnOcrDataReceived(
-      const ui::AXNodeID& image_node_id,
-      const chrome_pdf::AccessibilityImageInfo& image,
-      const ui::AXNodeID& parent_node_id,
-      const ui::AXTreeUpdate& tree_update);
+  void OnOcrDataReceived(const ui::AXNodeID& image_node_id,
+                         const chrome_pdf::AccessibilityImageInfo& image,
+                         const ui::AXNodeID& parent_node_id,
+                         const ui::AXTreeUpdate& tree_update);
 
   const ui::AXTree& tree_for_testing() const { return tree_; }
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
