@@ -135,8 +135,7 @@ IN_PROC_BROWSER_TEST_F(AutofillContextMenuManagerFeedbackUIBrowserTest,
   base::HistogramTester histogram_tester;
   // Executing autofill feedback command opens the Feedback UI.
   autofill_context_menu_manager_->ExecuteCommand(
-      AutofillContextMenuManager::CommandId(
-          IDC_CONTENT_CONTEXT_AUTOFILL_FEEDBACK));
+      IDC_CONTENT_CONTEXT_AUTOFILL_FEEDBACK);
 
   // Checks that feedback form was requested.
   histogram_tester.ExpectTotalCount("Feedback.RequestSource", 1);
@@ -145,8 +144,7 @@ IN_PROC_BROWSER_TEST_F(AutofillContextMenuManagerFeedbackUIBrowserTest,
 IN_PROC_BROWSER_TEST_F(AutofillContextMenuManagerFeedbackUIBrowserTest,
                        CloseTabWhileUIIsOpenShouldNotCrash) {
   autofill_context_menu_manager_->ExecuteCommand(
-      AutofillContextMenuManager::CommandId(
-          IDC_CONTENT_CONTEXT_AUTOFILL_FEEDBACK));
+      IDC_CONTENT_CONTEXT_AUTOFILL_FEEDBACK);
 
   content::WebContents* tab =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -160,8 +158,7 @@ IN_PROC_BROWSER_TEST_F(AutofillContextMenuManagerFeedbackUIBrowserTest,
   ASSERT_EQ(nullptr, FeedbackDialog::GetInstanceForTest());
 
   autofill_context_menu_manager_->ExecuteCommand(
-      AutofillContextMenuManager::CommandId(
-          IDC_CONTENT_CONTEXT_AUTOFILL_FEEDBACK));
+      IDC_CONTENT_CONTEXT_AUTOFILL_FEEDBACK);
 
   FeedbackDialog* feedback_dialog = FeedbackDialog::GetInstanceForTest();
   // Test that a feedback dialog object has been created.
@@ -192,8 +189,7 @@ IN_PROC_BROWSER_TEST_F(AutofillContextMenuManagerFeedbackUIBrowserTest,
 
   // Display feedback dialog.
   autofill_context_menu_manager_->ExecuteCommand(
-      AutofillContextMenuManager::CommandId(
-          IDC_CONTENT_CONTEXT_AUTOFILL_FEEDBACK));
+      IDC_CONTENT_CONTEXT_AUTOFILL_FEEDBACK);
 
   ui::WebDialogDelegate* feedback_dialog = FeedbackDialog::GetInstanceForTest();
   // Test that a feedback dialog object has been created.
@@ -242,8 +238,7 @@ IN_PROC_BROWSER_TEST_F(AutofillContextMenuManagerFeedbackUIBrowserTest,
                               form.fields[0].global_id().renderer_id));
   // Display feedback dialog.
   autofill_context_menu_manager_->ExecuteCommand(
-      AutofillContextMenuManager::CommandId(
-          IDC_CONTENT_CONTEXT_AUTOFILL_FEEDBACK));
+      IDC_CONTENT_CONTEXT_AUTOFILL_FEEDBACK);
 
   ui::WebDialogDelegate* feedback_dialog = FeedbackDialog::GetInstanceForTest();
   // Test that a feedback dialog object has been created.

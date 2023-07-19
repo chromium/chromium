@@ -295,7 +295,7 @@ TEST_F(AutofillContextMenuManagerTest, ExecuteCommand) {
 
     EXPECT_CALL(*driver(), RendererShouldFillFieldWithValue(
                                field_global_id, map_value.fill_value));
-    autofill_context_menu_manager()->ExecuteCommand(command_id);
+    autofill_context_menu_manager()->ExecuteCommand(command_id.value());
   }
 }
 
@@ -373,8 +373,7 @@ TEST_F(AutofillContextMenuManagerTest,
           AutofillSuggestionTriggerSource::
               kManualFallbackForAutocompleteUnrecognized));
   autofill_context_menu_manager()->ExecuteCommand(
-      AutofillContextMenuManager::CommandId(
-          IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_AUTOCOMPLETE_UNRECOGNIZED));
+      IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_AUTOCOMPLETE_UNRECOGNIZED);
 }
 
 }  // namespace autofill

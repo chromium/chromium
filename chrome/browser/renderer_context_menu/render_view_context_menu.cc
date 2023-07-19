@@ -811,6 +811,8 @@ RenderViewContextMenu::RenderViewContextMenu(
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   pdf_ocr_submenu_model_ = std::make_unique<ui::SimpleMenuModel>(this);
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+
+  observers_.AddObserver(&autofill_context_menu_manager_);
 }
 
 RenderViewContextMenu::~RenderViewContextMenu() = default;
@@ -2490,13 +2492,6 @@ bool RenderViewContextMenu::IsCommandIdEnabled(int id) const {
   if (ContextMenuMatcher::IsExtensionsCustomCommandId(id))
     return extension_items_.IsCommandIdEnabled(id);
 
-  // Autofill items.
-  if (autofill::AutofillContextMenuManager::IsAutofillCustomCommandId(
-          autofill::AutofillContextMenuManager::CommandId(id))) {
-    return autofill_context_menu_manager_.IsCommandIdEnabled(
-        autofill::AutofillContextMenuManager::CommandId(id));
-  }
-
   if (id >= IDC_CONTENT_CONTEXT_PROTOCOL_HANDLER_FIRST &&
       id <= IDC_CONTENT_CONTEXT_PROTOCOL_HANDLER_LAST) {
     return true;
@@ -2774,11 +2769,6 @@ bool RenderViewContextMenu::IsCommandIdChecked(int id) const {
 bool RenderViewContextMenu::IsCommandIdVisible(int id) const {
   if (ContextMenuMatcher::IsExtensionsCustomCommandId(id))
     return extension_items_.IsCommandIdVisible(id);
-  if (autofill::AutofillContextMenuManager::IsAutofillCustomCommandId(
-          autofill::AutofillContextMenuManager::CommandId(id))) {
-    return autofill_context_menu_manager_.IsCommandIdVisible(
-        autofill::AutofillContextMenuManager::CommandId(id));
-  }
   return RenderViewContextMenuBase::IsCommandIdVisible(id);
 }
 
@@ -2812,13 +2802,6 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
       extension_items_.ExecuteCommand(id, source_web_contents_,
                                       render_frame_host, params_);
     }
-    return;
-  }
-
-  if (autofill::AutofillContextMenuManager::IsAutofillCustomCommandId(
-          autofill::AutofillContextMenuManager::CommandId(id))) {
-    autofill_context_menu_manager_.ExecuteCommand(
-        autofill::AutofillContextMenuManager::CommandId(id));
     return;
   }
 

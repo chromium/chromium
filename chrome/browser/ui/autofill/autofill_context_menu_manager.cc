@@ -225,39 +225,32 @@ void AutofillContextMenuManager::AppendItems() {
   }
 }
 
-bool AutofillContextMenuManager::IsCommandIdChecked(
-    CommandId command_id) const {
-  return false;
+bool AutofillContextMenuManager::IsCommandIdSupported(int command_id) {
+  return IsAutofillCustomCommandId(CommandId(command_id));
 }
 
-bool AutofillContextMenuManager::IsCommandIdVisible(
-    CommandId command_id) const {
+bool AutofillContextMenuManager::IsCommandIdEnabled(int command_id) {
   return true;
 }
 
-bool AutofillContextMenuManager::IsCommandIdEnabled(
-    CommandId command_id) const {
-  return true;
-}
-
-void AutofillContextMenuManager::ExecuteCommand(CommandId command_id) {
+void AutofillContextMenuManager::ExecuteCommand(int command_id) {
   content::RenderFrameHost* rfh = delegate_->GetRenderFrameHost();
   if (!rfh)
     return;
 
-  DCHECK(IsAutofillCustomCommandId(command_id));
+  CHECK(IsAutofillCustomCommandId(CommandId(command_id)));
 
-  if (command_id.value() == kAutofillContextFeedback) {
+  if (command_id == kAutofillContextFeedback) {
     ExecuteAutofillFeedbackCommand(rfh);
     return;
   }
 
-  if (command_id.value() == kAutofillFallbackForAutocompleteUnrecognized) {
+  if (command_id == kAutofillFallbackForAutocompleteUnrecognized) {
     ExecuteFallbackForAutocompleteUnrecognizedCommand(rfh);
     return;
   }
 
-  ExecuteMenuManagerCommand(command_id, rfh);
+  ExecuteMenuManagerCommand(CommandId(command_id), rfh);
 }
 
 void AutofillContextMenuManager::ExecuteAutofillFeedbackCommand(

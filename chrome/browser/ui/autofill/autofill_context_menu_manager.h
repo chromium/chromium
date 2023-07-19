@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/user_education/scoped_new_badge_tracker.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/renderer_context_menu/render_view_context_menu_base.h"
+#include "components/renderer_context_menu/render_view_context_menu_observer.h"
 #include "content/public/browser/context_menu_params.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/models/simple_menu_model.h"
@@ -100,7 +101,7 @@ struct ContextMenuItem {
 // how this is done.
 // 4. The Other Section, that suggests more granular data for filling. See
 // `AddAddressOrCreditCardItemToMenu` and `AddProfileDataToMenu` for details.
-class AutofillContextMenuManager {
+class AutofillContextMenuManager : public RenderViewContextMenuObserver {
  public:
   // Represents command id used to denote a row in the context menu. The
   // command ids are created when the items are added to the context menu during
@@ -123,20 +124,22 @@ class AutofillContextMenuManager {
       ui::SimpleMenuModel* menu_model,
       Browser* browser,
       std::unique_ptr<ScopedNewBadgeTracker> new_badge_tracker);
-  ~AutofillContextMenuManager();
+  ~AutofillContextMenuManager() override;
   AutofillContextMenuManager(const AutofillContextMenuManager&) = delete;
   AutofillContextMenuManager& operator=(const AutofillContextMenuManager&) =
       delete;
 
   // Adds items such as "Addresses"/"Credit Cards"/"Passwords" to the top level
   // of the context menu.
+  // Note: This doesn't use `RenderViewContextMenuObserver::InitMenu()`, since
+  // Autofill context menu entries are conditioned on
+  // `ContextMenuContentType::ITEM_GROUP_AUTOFILL`.
   void AppendItems();
 
-  // `AutofillContextMenuManager` specific, called from `RenderViewContextMenu`.
-  bool IsCommandIdChecked(CommandId command_id) const;
-  bool IsCommandIdVisible(CommandId command_id) const;
-  bool IsCommandIdEnabled(CommandId command_id) const;
-  void ExecuteCommand(CommandId command_id);
+  // `RenderViewContextMenuObserver` overrides.
+  bool IsCommandIdSupported(int command_id) override;
+  bool IsCommandIdEnabled(int command_id) override;
+  void ExecuteCommand(int command_id) override;
 
   // Getter for `command_id_to_menu_item_value_mapper_` used for testing
   // purposes.
