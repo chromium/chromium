@@ -52,6 +52,7 @@
 #include "components/no_state_prefetch/browser/no_state_prefetch_contents.h"
 #include "components/password_manager/content/browser/bad_message.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
+#include "components/password_manager/content/browser/content_password_manager_driver_factory.h"
 #include "components/password_manager/content/browser/form_meta_data.h"
 #include "components/password_manager/content/browser/password_change_success_tracker_factory.h"
 #include "components/password_manager/content/browser/password_manager_log_router_factory.h"
@@ -476,7 +477,7 @@ void ChromePasswordManagerClient::GeneratePassword(
           driver.get());
 #else
   password_manager::ContentPasswordManagerDriver* content_driver =
-      driver_factory_->GetDriverForFrame(web_contents()->GetFocusedFrame());
+      GetDriverFactory()->GetDriverForFrame(web_contents()->GetFocusedFrame());
   if (!content_driver)
     return;
 #endif
@@ -1033,7 +1034,7 @@ void ChromePasswordManagerClient::AutomaticGenerationAvailable(
   }
 #if BUILDFLAG(IS_ANDROID)
   password_manager::ContentPasswordManagerDriver* driver =
-      driver_factory_->GetDriverForFrame(rfh);
+      GetDriverFactory()->GetDriverForFrame(rfh);
   // This method is called over Mojo via a RenderFrameHostReceiverSet; the
   // current target frame must be live.
   // TODO(crbug.com/1294378): Remove reference to nested frames once
@@ -1056,7 +1057,7 @@ void ChromePasswordManagerClient::AutomaticGenerationAvailable(
       base::AsWeakPtr(driver), ui_data, element_bounds_in_screen_space);
 #else
   password_manager::ContentPasswordManagerDriver* driver =
-      driver_factory_->GetDriverForFrame(rfh);
+      GetDriverFactory()->GetDriverForFrame(rfh);
   // This method is called over Mojo via a RenderFrameHostReceiverSet; the
   // current target frame must be live.
   // TODO(crbug.com/1294378): Remove reference to nested frames once
@@ -1096,7 +1097,7 @@ void ChromePasswordManagerClient::ShowPasswordEditingPopup(
     const std::u16string& password_value) {
   content::RenderFrameHost* rfh =
       password_generation_driver_receivers_.GetCurrentTargetFrame();
-  auto* driver = driver_factory_->GetDriverForFrame(rfh);
+  auto* driver = GetDriverFactory()->GetDriverForFrame(rfh);
   // This method is called over Mojo via a RenderFrameHostReceiverSet; the
   // current target frame must be live.
   // TODO(crbug.com/1294378): Remove reference to nested frames once
@@ -1139,7 +1140,7 @@ void ChromePasswordManagerClient::PresaveGeneratedPassword(
 
   content::RenderFrameHost* rfh =
       password_generation_driver_receivers_.GetCurrentTargetFrame();
-  PasswordManagerDriver* driver = driver_factory_->GetDriverForFrame(rfh);
+  PasswordManagerDriver* driver = GetDriverFactory()->GetDriverForFrame(rfh);
   // This method is called over Mojo via a RenderFrameHostReceiverSet; the
   // current target frame must be live.
   // TODO(crbug.com/1294378): Remove reference to nested frames once
@@ -1159,7 +1160,7 @@ void ChromePasswordManagerClient::PasswordNoLongerGenerated(
     const autofill::FormData& form_data) {
   content::RenderFrameHost* rfh =
       password_generation_driver_receivers_.GetCurrentTargetFrame();
-  PasswordManagerDriver* driver = driver_factory_->GetDriverForFrame(rfh);
+  PasswordManagerDriver* driver = GetDriverFactory()->GetDriverForFrame(rfh);
   // This method is called over Mojo via a RenderFrameHostReceiverSet; the
   // current target frame must be live.
   // TODO(crbug.com/1294378): Remove reference to nested frames once
@@ -1306,7 +1307,6 @@ ChromePasswordManagerClient::ChromePasswordManagerClient(
                                 g_browser_process->local_state(),
                                 SyncServiceFactory::GetForProfile(profile_)),
       httpauth_manager_(this),
-      driver_factory_(nullptr),
       content_credential_manager_(this),
       password_generation_driver_receivers_(web_contents, this),
       observer_(nullptr),
@@ -1333,16 +1333,15 @@ ChromePasswordManagerClient::ChromePasswordManagerClient(
       helper_(this) {
   ContentPasswordManagerDriverFactory::CreateForWebContents(web_contents, this,
                                                             autofill_client);
-  driver_factory_ =
-      ContentPasswordManagerDriverFactory::FromWebContents(web_contents);
+  ContentPasswordManagerDriverFactory* driver_factory = GetDriverFactory();
   log_manager_ = autofill::LogManager::Create(
       password_manager::PasswordManagerLogRouterFactory::GetForBrowserContext(
           profile_),
       base::BindRepeating(
           &ContentPasswordManagerDriverFactory::RequestSendLoggingAvailability,
-          base::Unretained(driver_factory_)));
+          base::Unretained(driver_factory)));
 
-  driver_factory_->RequestSendLoggingAvailability();
+  driver_factory->RequestSendLoggingAvailability();
 #if BUILDFLAG(IS_ANDROID)
   // `this` is tab-scoped, however the local passwords migration warning
   // should only be launched on startup.
@@ -1410,6 +1409,12 @@ void ChromePasswordManagerClient::WebContentsDestroyed() {
             messages::DismissReason::TAB_DESTROYED);
   }
 #endif
+}
+
+password_manager::ContentPasswordManagerDriverFactory*
+ChromePasswordManagerClient::GetDriverFactory() const {
+  return password_manager::ContentPasswordManagerDriverFactory::FromWebContents(
+      web_contents());
 }
 
 gfx::RectF ChromePasswordManagerClient::GetBoundsInScreenSpace(

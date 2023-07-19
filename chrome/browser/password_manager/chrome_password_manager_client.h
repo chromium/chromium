@@ -342,6 +342,9 @@ class ChromePasswordManagerClient
   void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
   void WebContentsDestroyed() override;
 
+  password_manager::ContentPasswordManagerDriverFactory* GetDriverFactory()
+      const;
+
   // Given |bounds| in the renderers coordinate system, return the same bounds
   // in the screens coordinate system.
   gfx::RectF GetBoundsInScreenSpace(const gfx::RectF& bounds);
@@ -420,10 +423,6 @@ class ChromePasswordManagerClient
   GeneratedPasswordSavedMessageDelegate
       generated_password_saved_message_delegate_;
 #endif  // BUILDFLAG(IS_ANDROID)
-
-  raw_ptr<password_manager::ContentPasswordManagerDriverFactory,
-          AcrossTasksDanglingUntriaged>
-      driver_factory_;
 
   // As a mojo service, will be registered into service registry
   // of the main frame host by ChromeContentBrowserClient
