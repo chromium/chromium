@@ -1121,14 +1121,10 @@ void MainThreadSchedulerImpl::SetHaveSeenABlockingGestureForTesting(
 void MainThreadSchedulerImpl::PerformMicrotaskCheckpoint() {
   // This will fallback to execute the microtask checkpoint for the
   // default EventLoop for the isolate.
-
-  // Warn: Don't assert on `agent_group_schedulers.size()` since they are
-  // allowed to diverge.
-  // See https://linear.app/replay/issue/RUN-2056#comment-460ec1ff
   recordreplay::Assert(
-      "[RUN-2056-2365] MainThreadSchedulerImpl::PerformMicrotaskCheckpoint A %d %d",
-      recordreplay::PointerId(this), !!isolate());
-
+      "[RUN-2056-2298] MainThreadSchedulerImpl::PerformMicrotaskCheckpoint %d %d %u",
+      recordreplay::PointerId(this), !!isolate(),
+      main_thread_only().agent_group_schedulers.size());
   if (isolate())
     EventLoop::PerformIsolateGlobalMicrotasksCheckpoint(isolate());
   // Perform a microtask checkpoint for each AgentSchedulingGroup. This
@@ -1141,8 +1137,7 @@ void MainThreadSchedulerImpl::PerformMicrotaskCheckpoint() {
     agent_group_scheduler->PerformMicrotaskCheckpoint();
   }
   recordreplay::Assert(
-      "[RUN-2056-2365] MainThreadSchedulerImpl::PerformMicrotaskCheckpoint "
-      "B");
+      "[RUN-2056] MainThreadSchedulerImpl::PerformMicrotaskCheckpoint Done");
 }
 
 // static
@@ -2170,6 +2165,9 @@ void MainThreadSchedulerImpl::RemoveAgentGroupScheduler(
     AgentGroupSchedulerImpl* agent_group_scheduler) {
   DCHECK(main_thread_only().agent_group_schedulers.Contains(
       agent_group_scheduler));
+  recordreplay::Assert(
+      "[RUN-2056-2316] MainThreadSchedulerImpl::RemoveAgentGroupScheduler %d",
+      agent_group_scheduler->RecordReplayId());
   main_thread_only().agent_group_schedulers.erase(agent_group_scheduler);
 }
 
