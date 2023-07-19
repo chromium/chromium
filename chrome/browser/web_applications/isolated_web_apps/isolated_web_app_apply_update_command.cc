@@ -253,7 +253,7 @@ void IsolatedWebAppApplyUpdateCommand::OnFinalized(
   } else {
     std::stringstream ss;
     ss << "Error during finalization: " << update_result_code;
-    ReportFailure(ss.view());
+    ReportFailure(ss.str());
   }
 }
 
