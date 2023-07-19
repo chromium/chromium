@@ -28,6 +28,7 @@ enum class PopupItemId : int {
   kAutocompleteEntry,
   kInsecureContextPaymentDisabledMessage,
   kPasswordEntry,
+  kFieldByFieldFilling,
   kSeparator,
   kClearForm,
   kAutofillOptions,

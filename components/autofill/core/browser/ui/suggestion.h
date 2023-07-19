@@ -62,6 +62,7 @@ struct Suggestion {
   Suggestion();
   explicit Suggestion(std::u16string main_text);
   explicit Suggestion(PopupItemId popup_item_id);
+  Suggestion(std::u16string main_text, PopupItemId popup_item_id);
   // Constructor for unit tests. It will convert the strings from UTF-8 to
   // UTF-16.
   Suggestion(base::StringPiece main_text,
@@ -133,6 +134,9 @@ struct Suggestion {
   // Contains an image to display for the suggestion.
   gfx::Image custom_icon;
 
+  // The children of this suggestion. If present, the autofill popup will have
+  // submenus.
+  std::vector<Suggestion> children;
 #if BUILDFLAG(IS_ANDROID)
   // The url for the custom icon. This is used by android to fetch the image as
   // android does not support gfx::Image directly.

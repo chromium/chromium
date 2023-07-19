@@ -509,6 +509,12 @@ BASE_FEATURE(kAutofillShowManualFallbackInContextMenu,
              "AutofillShowManualFallbackInContextMenu",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Controls whether granular filling will be available in the autofill popup.
+// TODO(crbug.com/1459990): Clean up when launched.
+BASE_FEATURE(kAutofillGranularFillingAvailable,
+             "AutofillGranularFillingAvailable",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Allows silent profile updates even when the profile import requirements are
 // not met.
 BASE_FEATURE(kAutofillSilentProfileUpdateForInsufficientImport,

@@ -45,6 +45,10 @@ Suggestion::Suggestion(std::u16string main_text)
 Suggestion::Suggestion(PopupItemId popup_item_id)
     : popup_item_id(popup_item_id) {}
 
+Suggestion::Suggestion(std::u16string main_text, PopupItemId popup_item_id)
+    : popup_item_id(popup_item_id),
+      main_text(std::move(main_text), Text::IsPrimary(true)) {}
+
 Suggestion::Suggestion(base::StringPiece main_text,
                        base::StringPiece label,
                        std::string icon,
