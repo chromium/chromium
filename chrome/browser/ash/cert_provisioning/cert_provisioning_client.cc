@@ -25,6 +25,8 @@ namespace em = enterprise_management;
 using CertProvisioningResponseErrorType =
     em::ClientCertificateProvisioningResponse::Error;
 
+using ResponseCase = em::ClientCertificateProvisioningResponse::ResponseCase;
+
 namespace {
 
 // Returns the device management protocol string representation of a CertScope.
@@ -38,6 +40,7 @@ std::string CertScopeToString(CertScope cert_scope) {
   NOTREACHED();
 }
 
+// "Static" flow:
 // Checks all error-like fields of a client cert provisioning response.
 // Extracts error and try_again_later fields from the |response| into
 // |response_error| and |try_later|. Returns true if all error-like fields are
@@ -62,6 +65,32 @@ bool CheckCommonClientCertProvisioningResponse(
   }
 
   return true;
+}
+
+// "Dynamic flow":
+// Detects error-like cases that are common to all requests.
+// Returns an `Error` struct if any error-like case has been detected,
+// or `nullopt` otherwise.
+absl::optional<CertProvisioningClient::Error> HandleCommonErrorCases(
+    policy::DeviceManagementStatus status,
+    const em::ClientCertificateProvisioningResponse& response,
+    ResponseCase expected_response_case) {
+  if (status != policy::DM_STATUS_SUCCESS) {
+    return CertProvisioningClient::Error{status, em::CertProvBackendError()};
+  }
+
+  if (response.has_backend_error()) {
+    return CertProvisioningClient::Error{status, response.backend_error()};
+  }
+
+  if (response.response_case() != expected_response_case) {
+    // Either no field or an unexpected field was set in the "response" oneof
+    // field.
+    return CertProvisioningClient::Error{
+        policy::DM_STATUS_RESPONSE_DECODING_ERROR, em::CertProvBackendError()};
+  }
+
+  return absl::nullopt;
 }
 
 std::vector<uint8_t> StrToBytes(const std::string& val) {
@@ -103,25 +132,39 @@ CertProvisioningClientImpl::CertProvisioningClientImpl(
 
 CertProvisioningClientImpl::~CertProvisioningClientImpl() = default;
 
-void CertProvisioningClientImpl::StartOrContinue(
-    ProvisioningProcess provisioning_process,
-    NextActionCallback callback) {
+void CertProvisioningClientImpl::Start(ProvisioningProcess provisioning_process,
+                                       StartCallback callback) {
   em::ClientCertificateProvisioningRequest request;
   FillCommonRequestData(std::move(provisioning_process), request);
 
   // Sets the request type, no actual data is required.
-  request.mutable_start_or_continue_request();
+  request.mutable_start_request();
 
   cloud_policy_client_->ClientCertProvisioningRequest(
       std::move(request),
-      base::BindOnce(&CertProvisioningClientImpl::OnNextActionResponse,
+      base::BindOnce(&CertProvisioningClientImpl::OnStartResponse,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void CertProvisioningClientImpl::GetNextInstruction(
+    ProvisioningProcess provisioning_process,
+    NextInstructionCallback callback) {
+  em::ClientCertificateProvisioningRequest request;
+  FillCommonRequestData(std::move(provisioning_process), request);
+
+  // Sets the request type, no actual data is required.
+  request.mutable_get_next_instruction_request();
+
+  cloud_policy_client_->ClientCertProvisioningRequest(
+      std::move(request),
+      base::BindOnce(&CertProvisioningClientImpl::OnGetNextInstructionResponse,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void CertProvisioningClientImpl::Authorize(
     ProvisioningProcess provisioning_process,
     std::string va_challenge_response,
-    NextActionCallback callback) {
+    AuthorizeCallback callback) {
   em::ClientCertificateProvisioningRequest request;
   FillCommonRequestData(std::move(provisioning_process), request);
 
@@ -130,14 +173,14 @@ void CertProvisioningClientImpl::Authorize(
 
   cloud_policy_client_->ClientCertProvisioningRequest(
       std::move(request),
-      base::BindOnce(&CertProvisioningClientImpl::OnNextActionResponse,
+      base::BindOnce(&CertProvisioningClientImpl::OnAuthorizeResponse,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void CertProvisioningClientImpl::UploadProofOfPossession(
     ProvisioningProcess provisioning_process,
     std::string signature,
-    NextActionCallback callback) {
+    UploadProofOfPossessionCallback callback) {
   em::ClientCertificateProvisioningRequest request;
   FillCommonRequestData(std::move(provisioning_process), request);
 
@@ -146,8 +189,9 @@ void CertProvisioningClientImpl::UploadProofOfPossession(
 
   cloud_policy_client_->ClientCertProvisioningRequest(
       std::move(request),
-      base::BindOnce(&CertProvisioningClientImpl::OnNextActionResponse,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+      base::BindOnce(
+          &CertProvisioningClientImpl::OnUploadProofOfPossessionResponse,
+          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void CertProvisioningClientImpl::StartCsr(
@@ -214,43 +258,68 @@ void CertProvisioningClientImpl::FillCommonRequestData(
                              provisioning_process.public_key.size());
 }
 
-void CertProvisioningClientImpl::OnNextActionResponse(
-    NextActionCallback callback,
+void CertProvisioningClientImpl::OnAuthorizeResponse(
+    AuthorizeCallback callback,
     policy::DeviceManagementStatus status,
     const em::ClientCertificateProvisioningResponse& response) {
-  absl::optional<CertProvisioningResponseErrorType> response_error;
+  if (absl::optional<Error> error = HandleCommonErrorCases(
+          status, response,
+          /*expected_response_case=*/ResponseCase::kAuthorizeResponse)) {
+    return std::move(callback).Run(base::unexpected(std::move(error).value()));
+  }
 
-  // Single step loop for convenience.
-  do {
-    if (status != policy::DM_STATUS_SUCCESS) {
-      break;
-    }
+  // Everything is ok, run |callback| with no error.
+  return std::move(callback).Run({});
+}
 
-    if (response.has_error()) {
-      response_error = response.error();
-      break;
-    }
+void CertProvisioningClientImpl::OnUploadProofOfPossessionResponse(
+    UploadProofOfPossessionCallback callback,
+    policy::DeviceManagementStatus status,
+    const em::ClientCertificateProvisioningResponse& response) {
+  if (absl::optional<Error> error = HandleCommonErrorCases(
+          status, response, /*expected_response_case=*/
+          ResponseCase::kUploadProofOfPossessionResponse)) {
+    return std::move(callback).Run(base::unexpected(std::move(error).value()));
+  }
 
-    if (!response.has_next_action_response()) {
-      status = policy::DM_STATUS_RESPONSE_DECODING_ERROR;
-      break;
-    }
+  // Everything is ok, run |callback| with no error.
+  return std::move(callback).Run({});
+}
 
-    // One of the oneof fields must be set.
-    if (response.next_action_response().instruction_case() ==
-        em::CertProvNextActionResponse::INSTRUCTION_NOT_SET) {
-      status = policy::DM_STATUS_RESPONSE_DECODING_ERROR;
-      break;
-    }
+void CertProvisioningClientImpl::OnStartResponse(
+    StartCallback callback,
+    policy::DeviceManagementStatus status,
+    const em::ClientCertificateProvisioningResponse& response) {
+  if (absl::optional<Error> error = HandleCommonErrorCases(
+          status, response,
+          /*expected_response_case=*/ResponseCase::kStartResponse)) {
+    return std::move(callback).Run(base::unexpected(std::move(error).value()));
+  }
 
-    // Everything is ok, run |callback| with data.
-    std::move(callback).Run(status, response_error,
-                            response.next_action_response());
-    return;
-  } while (false);
+  // Everything is ok, run |callback| with data.
+  return std::move(callback).Run(response.start_response());
+}
 
-  // Something went wrong. Return error via |status|, |response_error|.
-  std::move(callback).Run(status, response_error, CertProvNextActionResponse());
+void CertProvisioningClientImpl::OnGetNextInstructionResponse(
+    NextInstructionCallback callback,
+    policy::DeviceManagementStatus status,
+    const em::ClientCertificateProvisioningResponse& response) {
+  if (absl::optional<Error> error =
+          HandleCommonErrorCases(status, response, /*expected_response_case=*/
+                                 ResponseCase::kGetNextInstructionResponse)) {
+    return std::move(callback).Run(base::unexpected(std::move(error).value()));
+  }
+
+  // One of the oneof fields must be set.
+  if (response.get_next_instruction_response().instruction_case() ==
+      em::CertProvGetNextInstructionResponse::INSTRUCTION_NOT_SET) {
+    return std::move(callback).Run(
+        base::unexpected(Error{policy::DM_STATUS_RESPONSE_DECODING_ERROR,
+                               em::CertProvBackendError()}));
+  }
+
+  // Everything is ok, run |callback| with data.
+  return std::move(callback).Run(response.get_next_instruction_response());
 }
 
 void CertProvisioningClientImpl::OnStartCsrResponse(

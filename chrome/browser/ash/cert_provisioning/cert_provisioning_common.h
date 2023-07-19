@@ -52,7 +52,7 @@ enum class CertScope { kUser = 0, kDevice = 1, kMaxValue = kDevice };
 // enums.xml should be updated.
 enum class CertProvisioningWorkerState {
   kInitState = 0,
-  kKeypairGenerated = 1,          // Unused in "dynamic" flow.
+  kKeypairGenerated = 1,
   kStartCsrResponseReceived = 2,  // Unused in "dynamic" flow.
   kVaChallengeFinished = 3,
   kKeyRegistered = 4,
@@ -101,6 +101,7 @@ inline constexpr base::EnumSet<CertProvisioningWorkerState,
                                CertProvisioningWorkerState::kMaxValue>
     kDynamicWorkerStates = {
         CertProvisioningWorkerState::kInitState,
+        CertProvisioningWorkerState::kKeypairGenerated,
         CertProvisioningWorkerState::kVaChallengeFinished,
         CertProvisioningWorkerState::kKeyRegistered,
         CertProvisioningWorkerState::kKeypairMarked,

@@ -4050,18 +4050,42 @@ message DownloadCertResponse {
   optional string pem_encoded_certificate = 1;
 }
 
-// "Dynamic" flow: Used to start or continue a cerificate provisioning
+// "Dynamic" flow: Used to start a cerificate provisioning process.
+message CertProvStartRequest {}
+
+message CertProvStartResponse {
+  // The client should register for FCM messages using this topic in order to
+  // receive notifications for the certificate provisioning process.
+  optional string invalidation_topic = 1;
+}
+
+// "Dynamic" flow: Used to fetch the next instruction that the client should
 // process.
-message CertProvStartOrContinueRequest {}
+message CertProvGetNextInstructionRequest {}
+
+message CertProvGetNextInstructionResponse {
+  // One of the instructions must be filled.
+  // If no instruction is available yet, the server should respond with a
+  // `CertProvBackendError` instead of a `CertProvGetNextInstructionResponse`.
+  oneof instruction {
+    CertProvAuthorizeInstruction authorize_instruction = 1;
+    CertProvProofOfPossessionInstruction proof_of_possession_instruction = 2;
+    CertProvImportCertificateInstruction import_certificate_instruction = 3;
+  }
+}
 
 // "Dynamic" flow: Used to authorize the client, currently using a Verified
 // Access challenge response.
+// The client should send this request after it received a
+// `CertProvAuthorizeInstruction`.
 message CertProvAuthorizeRequest {
   // Verified access challenge response.
   optional bytes va_challenge_response = 1;
 }
 
-// "Dynamic" flow: Upload the result of a `ProofOfPossessionChallenge`.
+message CertProvAuthorizeResponse {}
+
+// "Dynamic" flow: Upload the result of a `ProofOfPossessionInstruction`.
 message CertProvUploadProofOfPossessionRequest {
   // A client-generated cryptographic signature proving the possession of the
   // client's private key.
@@ -4075,13 +4099,7 @@ message CertProvUploadProofOfPossessionRequest {
   optional bytes signature = 1;
 }
 
-// The client should try again later.
-message CertProvTryLaterInstruction {
-  // The delay after which the client should retry on its own.
-  // It should also be observing the invalidation for the certificate
-  // provisioning process.
-  optional int64 delay_ms = 1;
-}
+message CertProvUploadProofOfPossessionResponse {}
 
 // The client should perform an authorization step.
 message CertProvAuthorizeInstruction {
@@ -4092,8 +4110,6 @@ message CertProvAuthorizeInstruction {
 // The client should provide a proof-of-possession signature generated using
 // the private key.
 message CertProvProofOfPossessionInstruction {
-  reserved 1;
-
   // Data to sign for CSR creation.
   // The signing algorithm is currently RSA_PKCS1_V1_5. The client will perform
   // PKCS#1 v1.5 padding on `data_to_sign`. `data_to_sign` is expected to
@@ -4101,7 +4117,7 @@ message CertProvProofOfPossessionInstruction {
   // add such a prefix. Also `data_to_sign` must be shorter than (key_size-11)
   // bytes. If no other key size was specified in the
   // RequiredClientCertificateFor{User,Device} policy, 2048 bits is assumed.
-  optional bytes data_to_sign = 2;
+  optional bytes data_to_sign = 1;
 }
 
 // The client should import an issued certificate.
@@ -4110,32 +4126,10 @@ message CertProvImportCertificateInstruction {
   optional string pem_encoded_certificate = 1;
 }
 
-// Response for all requests in the "Dynamic" flow.
-// Encodes the next action that the client should perform.
-message CertProvNextActionResponse {
-  // The client should register for FCM messages using this topic in order to
-  // receive notifications for the certificate provisioning process.
-  // The client starts listening to the first such `invalidation_topic` per
-  // certificate provisioning process and ignores subsequent values.
-  optional string invalidation_topic = 1;
-
-  // One of the instructions must be filled.
-  // If no instruction is available yet, the server should fill
-  // `try_again_later_ms`.
-  oneof instruction {
-    // If filled, the request can currently not be processed and the client
-    // is supposed to continue later using StartOrContinueRequest.
-    CertProvTryLaterInstruction try_later_instruction = 5;
-
-    CertProvAuthorizeInstruction authorize_instruction = 2;
-    CertProvProofOfPossessionInstruction proof_of_possession_instruction = 3;
-    CertProvImportCertificateInstruction import_certificate_instruction = 4;
-  }
-}
-
 // Start / continue client certificate provisioning process for the profile
 // `cert_profile_id`.
 message ClientCertificateProvisioningRequest {
+  reserved 9 to 11;
   // The scope of the certificate. Similar to policy_type in PolicyFetchRequest.
   //   google/chromeos/device => a certificate for a device is being requested.
   //   google/chromeos/user => a certificate for a user is being requested.
@@ -4159,10 +4153,11 @@ message ClientCertificateProvisioningRequest {
     DownloadCertRequest download_cert_request = 7;
 
     // "Dynamic" flow (go/cert-prov-api-dm-changes)
-    CertProvStartOrContinueRequest start_or_continue_request = 9;
-    CertProvAuthorizeRequest authorize_request = 10;
+    CertProvStartRequest start_request = 12;
+    CertProvGetNextInstructionRequest get_next_instruction_request = 13;
+    CertProvAuthorizeRequest authorize_request = 14;
     CertProvUploadProofOfPossessionRequest upload_proof_of_possession_request =
-        11;
+        15;
   }
 
   // Received as part of policy for client certificate profiles. The client
@@ -4172,8 +4167,50 @@ message ClientCertificateProvisioningRequest {
   optional bytes policy_version = 8;
 }
 
+// This marks an error between ChromeOS client and backend, including those
+// involving the Certificate Authority or a Connector software.
+// These could be mapped to HTTP error codes, but reuse of HTTP error codes was
+// deemed confusing and difficult in the existing device management protocol
+// (see existing usage of HTTP error codes described in the
+// `DeviceManagementResponse` comment).
+message CertProvBackendError {
+  enum Error {
+    ERROR_UNSPECIFIED = 0;
+    // The attempted request is invalid in the current state of the certificate
+    // provisioning process.
+    INVALID_OPERATION = 1;
+    // The client has sent inconsistent data. This can happen if the client has
+    // outdated policy.
+    INCONSISTENT_DATA = 2;
+    // The identity of the client could not be verified.
+    IDENTITY_VERIFICATION_ERROR = 3;
+    // The Certificate Provisioning Process (CPP) already exists and cannot be
+    // started again.
+    CPP_ALREADY_EXISTS = 4;
+    // The backend does not accept the public key sent by the client.
+    BAD_PUBLIC_KEY = 5;
+    // The signature provided by the client is invalid.
+    INVALID_SIGNATURE = 6;
+    // The next instruction on how to proceed in the certificate provisioning
+    // protocol is not yet available.
+    INSTRUCTION_NOT_YET_AVAILABLE = 7;
+    // The CA did not respond within the deadline.
+    CA_UNAVAILABLE = 8;
+    // The CA exhibited an internal server error.
+    CA_FAILURE = 9;
+  }
+
+  // The specific error type.
+  optional Error error = 1;
+
+  // A debug message that could be useful for understanding the error.
+  optional string debug_message = 2;
+}
+
 // Response for ClientCertificateProvisioningRequest.
 message ClientCertificateProvisioningResponse {
+  reserved 6;
+
   // Error conditions that the server side reports to the client that don't fit
   // into the standard HTTP error schema.
   // Note that HTTP errors can still be signaled for the client certificate
@@ -4208,21 +4245,23 @@ message ClientCertificateProvisioningResponse {
   // is supposed to try again later using the same data.
   // The value is the number of milliseconds when the client should
   // automatically retry.
-  // Used in "Static" flow only. The "Dynamic" flow uses the
-  // `try_again_later_ms` field in `CertProvNextActionResponse`.
+  // Used in "Static" flow only.
   optional int64 try_again_later = 1;
 
   oneof response {
-    // Used in "Static" and "Dynamic" flows.
-    Error error = 2;
-
     // Used in "Static" flow.
+    Error error = 2;
     StartCsrResponse start_csr_response = 3;
     FinishCsrResponse finish_csr_response = 4;
     DownloadCertResponse download_cert_response = 5;
 
     // Used in "Dynamic" flow.
-    CertProvNextActionResponse next_action_response = 6;
+    CertProvStartResponse start_response = 7;
+    CertProvGetNextInstructionResponse get_next_instruction_response = 8;
+    CertProvAuthorizeResponse authorize_response = 9;
+    CertProvUploadProofOfPossessionResponse
+        upload_proof_of_possession_response = 10;
+    CertProvBackendError backend_error = 11;
   }
 }
 

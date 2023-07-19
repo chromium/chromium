@@ -13,6 +13,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
+#include "base/types/expected.h"
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_common.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/proto/device_management_backend.pb.h"
@@ -58,8 +59,13 @@ class CertProvisioningClient {
     static constexpr int kFieldCount = 4;
   };
 
-  using CertProvNextActionResponse =
-      enterprise_management::CertProvNextActionResponse;
+  struct Error {
+    policy::DeviceManagementStatus device_management_status;
+    enterprise_management::CertProvBackendError backend_error;
+  };
+
+  using CertProvGetNextInstructionResponse =
+      enterprise_management::CertProvGetNextInstructionResponse;
 
   using StartCsrCallback = base::OnceCallback<void(
       policy::DeviceManagementStatus status,
@@ -84,22 +90,33 @@ class CertProvisioningClient {
       absl::optional<int64_t> try_later,
       const std::string& pem_encoded_certificate)>;
 
-  using NextActionCallback = base::OnceCallback<void(
-      policy::DeviceManagementStatus status,
-      absl::optional<enterprise_management::
-                         ClientCertificateProvisioningResponse::Error> error,
-      const CertProvNextActionResponse& next_action_response)>;
+  using StartCallback = base::OnceCallback<void(
+      base::expected<enterprise_management::CertProvStartResponse, Error>
+          result)>;
 
-  virtual void StartOrContinue(ProvisioningProcess provisioning_process,
-                               NextActionCallback callback) = 0;
+  using NextInstructionCallback = base::OnceCallback<void(
+      base::expected<CertProvGetNextInstructionResponse, Error> result)>;
+
+  using AuthorizeCallback =
+      base::OnceCallback<void(base::expected<void, Error> result)>;
+
+  using UploadProofOfPossessionCallback =
+      base::OnceCallback<void(base::expected<void, Error> result)>;
+
+  virtual void Start(ProvisioningProcess provisioning_process,
+                     StartCallback callback) = 0;
+
+  virtual void GetNextInstruction(ProvisioningProcess provisioning_process,
+                                  NextInstructionCallback callback) = 0;
 
   virtual void Authorize(ProvisioningProcess provisioning_process,
                          std::string va_challenge_response,
-                         NextActionCallback callback) = 0;
+                         AuthorizeCallback callback) = 0;
 
-  virtual void UploadProofOfPossession(ProvisioningProcess provisioning_process,
-                                       std::string signature,
-                                       NextActionCallback callback) = 0;
+  virtual void UploadProofOfPossession(
+      ProvisioningProcess provisioning_process,
+      std::string signature,
+      UploadProofOfPossessionCallback callback) = 0;
 
   // Sends certificate provisioning start csr request. It is Step 1 in the
   // certificate provisioning flow. |cert_scope| defines if it is a user- or
@@ -145,16 +162,20 @@ class CertProvisioningClientImpl : public CertProvisioningClient {
       delete;
   ~CertProvisioningClientImpl() override;
 
-  void StartOrContinue(ProvisioningProcess provisioning_process,
-                       NextActionCallback callback) override;
+  void Start(ProvisioningProcess provisioning_process,
+             StartCallback callback) override;
+
+  void GetNextInstruction(ProvisioningProcess provisioning_process,
+                          NextInstructionCallback callback) override;
 
   void Authorize(ProvisioningProcess provisioning_process,
                  std::string va_challenge_response,
-                 NextActionCallback callback) override;
+                 AuthorizeCallback callback) override;
 
-  void UploadProofOfPossession(ProvisioningProcess provisioning_process,
-                               std::string signature,
-                               NextActionCallback callback) override;
+  void UploadProofOfPossession(
+      ProvisioningProcess provisioning_process,
+      std::string signature,
+      UploadProofOfPossessionCallback callback) override;
 
   void StartCsr(ProvisioningProcess provisioning_process,
                 StartCsrCallback callback) override;
@@ -172,8 +193,26 @@ class CertProvisioningClientImpl : public CertProvisioningClient {
       ProvisioningProcess provisioning_process,
       enterprise_management::ClientCertificateProvisioningRequest& out_request);
 
-  void OnNextActionResponse(
-      NextActionCallback callback,
+  void OnStartResponse(
+      StartCallback callback,
+      policy::DeviceManagementStatus status,
+      const enterprise_management::ClientCertificateProvisioningResponse&
+          response);
+
+  void OnGetNextInstructionResponse(
+      NextInstructionCallback callback,
+      policy::DeviceManagementStatus status,
+      const enterprise_management::ClientCertificateProvisioningResponse&
+          response);
+
+  void OnAuthorizeResponse(
+      AuthorizeCallback callback,
+      policy::DeviceManagementStatus status,
+      const enterprise_management::ClientCertificateProvisioningResponse&
+          response);
+
+  void OnUploadProofOfPossessionResponse(
+      UploadProofOfPossessionCallback callback,
       policy::DeviceManagementStatus status,
       const enterprise_management::ClientCertificateProvisioningResponse&
           response);

@@ -144,6 +144,8 @@ bool IsStateTransitionAllowed(CertProvisioningWorkerState prev_state,
 
   switch (prev_state) {
     case CertProvisioningWorkerState::kInitState:
+      return new_state == CertProvisioningWorkerState::kKeypairGenerated;
+    case CertProvisioningWorkerState::kKeypairGenerated:
       return new_state == CertProvisioningWorkerState::kReadyForNextOperation;
     case CertProvisioningWorkerState::kReadyForNextOperation:
       return IsInstructionReceivedState(new_state);
@@ -159,11 +161,9 @@ bool IsStateTransitionAllowed(CertProvisioningWorkerState prev_state,
     case CertProvisioningWorkerState::kKeyRegistered:
       return new_state == CertProvisioningWorkerState::kKeypairMarked;
     case CertProvisioningWorkerState::kKeypairMarked:
-      return new_state == CertProvisioningWorkerState::kReadyForNextOperation ||
-             IsInstructionReceivedState(new_state);
+      return new_state == CertProvisioningWorkerState::kReadyForNextOperation;
     case CertProvisioningWorkerState::kSignCsrFinished:
-      return new_state == CertProvisioningWorkerState::kReadyForNextOperation ||
-             IsInstructionReceivedState(new_state);
+      return new_state == CertProvisioningWorkerState::kReadyForNextOperation;
     case CertProvisioningWorkerState::kSucceeded:
     case CertProvisioningWorkerState::kInconsistentDataError:
     case CertProvisioningWorkerState::kFailed:
@@ -171,7 +171,6 @@ bool IsStateTransitionAllowed(CertProvisioningWorkerState prev_state,
       // These are final state, so they should already be handled above.
       CHECK(false);
       return false;
-    case CertProvisioningWorkerState::kKeypairGenerated:
     case CertProvisioningWorkerState::kStartCsrResponseReceived:
     case CertProvisioningWorkerState::kFinishCsrResponseReceived:
       // Not used in "dynamic" flow.
@@ -283,8 +282,11 @@ void CertProvisioningWorkerDynamic::DoStep() {
     case CertProvisioningWorkerState::kInitState:
       GenerateKey();
       return;
+    case CertProvisioningWorkerState::kKeypairGenerated:
+      Start();
+      return;
     case CertProvisioningWorkerState::kReadyForNextOperation:
-      StartOrContinue();
+      GetNextInstruction();
       return;
     case CertProvisioningWorkerState::kAuthorizeInstructionReceived:
       BuildVaChallengeResponse();
@@ -313,7 +315,6 @@ void CertProvisioningWorkerDynamic::DoStep() {
     case CertProvisioningWorkerState::kCanceled:
       DCHECK(false);
       return;
-    case CertProvisioningWorkerState::kKeypairGenerated:
     case CertProvisioningWorkerState::kStartCsrResponseReceived:
     case CertProvisioningWorkerState::kFinishCsrResponseReceived:
       // Not used in "dynamic" flow.
@@ -439,63 +440,72 @@ void CertProvisioningWorkerDynamic::OnGenerateKeyForVaDone(
 
   key_location_ = KeyLocation::kVaDatabase;
   public_key_ = StrToBytes(result.public_key);
+  RETURN_ON_FINAL_STATE(
+      UpdateState(FROM_HERE, CertProvisioningWorkerState::kKeypairGenerated));
+  DoStep();
+}
+
+void CertProvisioningWorkerDynamic::Start() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // From this point, connection to the DM Server was successful.
+  cert_provisioning_client_->Start(
+      GetProvisioningProcessForClient(),
+      base::BindOnce(&CertProvisioningWorkerDynamic::OnStartResponse,
+                     weak_factory_.GetWeakPtr()));
+}
+
+void CertProvisioningWorkerDynamic::OnStartResponse(
+    base::expected<enterprise_management::CertProvStartResponse,
+                   CertProvisioningClient::Error> response) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!ProcessResponseErrors(response)) {
+    return;
+  }
+
+  invalidation_topic_ = response.value().invalidation_topic();
+  RegisterForInvalidationTopic();
+
   RETURN_ON_FINAL_STATE(UpdateState(
       FROM_HERE, CertProvisioningWorkerState::kReadyForNextOperation));
   DoStep();
 }
 
-void CertProvisioningWorkerDynamic::StartOrContinue() {
+void CertProvisioningWorkerDynamic::GetNextInstruction() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  cert_provisioning_client_->StartOrContinue(
+  cert_provisioning_client_->GetNextInstruction(
       GetProvisioningProcessForClient(),
-      base::BindOnce(&CertProvisioningWorkerDynamic::OnNextActionReceived,
-                     weak_factory_.GetWeakPtr()));
+      base::BindOnce(
+          &CertProvisioningWorkerDynamic::OnGetNextInstructionResponse,
+          weak_factory_.GetWeakPtr()));
 }
 
-void CertProvisioningWorkerDynamic::OnNextActionReceived(
-    policy::DeviceManagementStatus status,
-    absl::optional<
-        enterprise_management::ClientCertificateProvisioningResponse::Error>
-        error,
-    const em::CertProvNextActionResponse& next_action_response) {
+void CertProvisioningWorkerDynamic::OnGetNextInstructionResponse(
+    base::expected<enterprise_management::CertProvGetNextInstructionResponse,
+                   CertProvisioningClient::Error> response) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!ProcessResponseErrors(status, error)) {
+  if (!ProcessResponseErrors(response)) {
     return;
   }
 
-  va_challenge_response_.clear();
-  signature_.clear();
-
-  // Currently the client only processes the first invalidation topic sent by
-  // the server and ignores any invalidation topics sent after that.
-  if (invalidation_topic_.empty()) {
-    invalidation_topic_ = next_action_response.invalidation_topic();
-    RegisterForInvalidationTopic();
-  }
-
-  if (next_action_response.has_try_later_instruction()) {
-    RETURN_ON_FINAL_STATE(UpdateState(
-        FROM_HERE, CertProvisioningWorkerState::kReadyForNextOperation));
-    ScheduleNextStep(base::Milliseconds(
-        next_action_response.try_later_instruction().delay_ms()));
-    return;
-  }
-
-  if (next_action_response.has_authorize_instruction()) {
+  const em::CertProvGetNextInstructionResponse& next_instruction_response =
+      response.value();
+  if (next_instruction_response.has_authorize_instruction()) {
     OnAuthorizeInstructionReceived(
-        next_action_response.authorize_instruction());
+        next_instruction_response.authorize_instruction());
     return;
   }
-  if (next_action_response.has_proof_of_possession_instruction()) {
+  if (next_instruction_response.has_proof_of_possession_instruction()) {
     OnProofOfPossessionInstructionReceived(
-        next_action_response.proof_of_possession_instruction());
+        next_instruction_response.proof_of_possession_instruction());
     return;
   }
-  if (next_action_response.has_import_certificate_instruction()) {
+  if (next_instruction_response.has_import_certificate_instruction()) {
     OnImportCertificateInstructionReceived(
-        next_action_response.import_certificate_instruction());
+        next_instruction_response.import_certificate_instruction());
     return;
   }
   // CertProvisioningClient ensures that at least one of the instructions was
@@ -629,7 +639,7 @@ void CertProvisioningWorkerDynamic::OnRegisterKeyDone(
 
 void CertProvisioningWorkerDynamic::MarkRegularKey() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  MarkKey(CertProvisioningWorkerState::kReadyForNextOperation);
+  MarkKey(CertProvisioningWorkerState::kKeypairGenerated);
 }
 
 void CertProvisioningWorkerDynamic::MarkVaGeneratedKey() {
@@ -672,8 +682,23 @@ void CertProvisioningWorkerDynamic::OnMarkKeyDone(
 void CertProvisioningWorkerDynamic::UploadAuthorization() {
   cert_provisioning_client_->Authorize(
       GetProvisioningProcessForClient(), va_challenge_response_,
-      base::BindOnce(&CertProvisioningWorkerDynamic::OnNextActionReceived,
-                     weak_factory_.GetWeakPtr()));
+      base::BindOnce(
+          &CertProvisioningWorkerDynamic::OnUploadAuthorizationResponse,
+          weak_factory_.GetWeakPtr()));
+}
+
+void CertProvisioningWorkerDynamic::OnUploadAuthorizationResponse(
+    base::expected<void, CertProvisioningClient::Error> response) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!ProcessResponseErrors(response)) {
+    return;
+  }
+  va_challenge_response_.clear();
+
+  RETURN_ON_FINAL_STATE(UpdateState(
+      FROM_HERE, CertProvisioningWorkerState::kReadyForNextOperation));
+  DoStep();
 }
 
 void CertProvisioningWorkerDynamic::BuildProofOfPossession() {
@@ -723,8 +748,24 @@ void CertProvisioningWorkerDynamic::OnBuildProofOfPossessionDone(
 void CertProvisioningWorkerDynamic::UploadProofOfPossession() {
   cert_provisioning_client_->UploadProofOfPossession(
       GetProvisioningProcessForClient(), BytesToStr(signature_),
-      base::BindOnce(&CertProvisioningWorkerDynamic::OnNextActionReceived,
-                     weak_factory_.GetWeakPtr()));
+      base::BindOnce(
+          &CertProvisioningWorkerDynamic::OnUploadProofOfPossessionResponse,
+          weak_factory_.GetWeakPtr()));
+}
+
+void CertProvisioningWorkerDynamic::OnUploadProofOfPossessionResponse(
+    base::expected<void, CertProvisioningClient::Error> response) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!ProcessResponseErrors(response)) {
+    return;
+  }
+
+  signature_.clear();
+
+  RETURN_ON_FINAL_STATE(UpdateState(
+      FROM_HERE, CertProvisioningWorkerState::kReadyForNextOperation));
+  DoStep();
 }
 
 void CertProvisioningWorkerDynamic::ImportCert() {
@@ -772,11 +813,23 @@ void CertProvisioningWorkerDynamic::OnImportCertDone(
       UpdateState(FROM_HERE, CertProvisioningWorkerState::kSucceeded));
 }
 
+template <typename ResultType>
 bool CertProvisioningWorkerDynamic::ProcessResponseErrors(
-    policy::DeviceManagementStatus status,
-    absl::optional<CertProvisioningResponseErrorType> error) {
+    const base::expected<ResultType, CertProvisioningClient::Error>& response) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  if (response.has_value()) {
+    last_backend_server_error_ = absl::nullopt;
+    return true;
+  }
+
+  ProcessResponseErrors(response.error());
+  return false;
+}
+
+void CertProvisioningWorkerDynamic::ProcessResponseErrors(
+    const CertProvisioningClient::Error& error) {
+  const policy::DeviceManagementStatus status = error.device_management_status;
   if ((status ==
        policy::DeviceManagementStatus::DM_STATUS_TEMPORARY_UNAVAILABLE) ||
       (status == policy::DeviceManagementStatus::DM_STATUS_REQUEST_FAILED) ||
@@ -789,7 +842,7 @@ bool CertProvisioningWorkerDynamic::ProcessResponseErrors(
         BackendServerError(status, base::Time::NowFromSystemTime());
     request_backoff_.InformOfRequest(false);
     ScheduleNextStep(request_backoff_.GetTimeUntilRelease());
-    return false;
+    return;
   }
 
   // From this point, connection to the DM Server was successful.
@@ -801,34 +854,42 @@ bool CertProvisioningWorkerDynamic::ProcessResponseErrors(
          " in state: ", CertificateProvisioningWorkerStateToString(state_)});
     FINAL_STATE_EXPECTED(
         UpdateState(FROM_HERE, CertProvisioningWorkerState::kFailed));
-    return false;
+    return;
   }
 
   request_backoff_.InformOfRequest(true);
 
-  if (error.has_value() &&
-      (error.value() == CertProvisioningResponseError::INCONSISTENT_DATA)) {
-    LOG(ERROR) << "Server response contains error: " << error.value()
+  const em::CertProvBackendError& backend_error = error.backend_error;
+  if (backend_error.error() ==
+      em::CertProvBackendError::INSTRUCTION_NOT_YET_AVAILABLE) {
+    LOG(WARNING) << "No instruction available yet "
+                 << " for profile ID: " << cert_profile_.profile_id;
+    // Don't change state, just retry the operation in this state in a delay (or
+    // when an invalidation is triggered).
+    // TODO(b/289983352): Use a backoff strategy for the delay.
+    ScheduleNextStep(base::Seconds(30));
+    return;
+  }
+
+  if (backend_error.error() == em::CertProvBackendError::INCONSISTENT_DATA) {
+    LOG(ERROR) << "Server response contains error: " << backend_error.error()
                << " for profile ID: " << cert_profile_.profile_id
                << " in state: "
                << CertificateProvisioningWorkerStateToString(state_);
     FINAL_STATE_EXPECTED(UpdateState(
         FROM_HERE, CertProvisioningWorkerState::kInconsistentDataError));
-    return false;
+    return;
   }
 
-  if (error.has_value()) {
-    failure_message_ = base::StrCat(
-        {"Server response contains error: ",
-         base::NumberToString(error.value()),
-         " for profile ID: ", cert_profile_.profile_id,
-         " in state: ", CertificateProvisioningWorkerStateToString(state_)});
-    FINAL_STATE_EXPECTED(
-        UpdateState(FROM_HERE, CertProvisioningWorkerState::kFailed));
-    return false;
-  }
-
-  return true;
+  failure_message_ = base::StrCat(
+      {"Server response contains error: ",
+       base::NumberToString(backend_error.error()),
+       " for profile ID: ", cert_profile_.profile_id,
+       " in state: ", CertificateProvisioningWorkerStateToString(state_),
+       ". Debug message: ", backend_error.debug_message()});
+  FINAL_STATE_EXPECTED(
+      UpdateState(FROM_HERE, CertProvisioningWorkerState::kFailed));
+  return;
 }
 
 void CertProvisioningWorkerDynamic::ScheduleNextStep(base::TimeDelta delay) {
@@ -951,6 +1012,9 @@ void CertProvisioningWorkerDynamic::HandleSerialization() {
   switch (state_) {
     case CertProvisioningWorkerState::kInitState:
       break;
+    case CertProvisioningWorkerState::kKeypairGenerated:
+      // Serialize as we're going to perform a server-side request which could
+      // be repeated if we had e.g. no connectivity.
     case CertProvisioningWorkerState::kReadyForNextOperation:
       // Serialize as we're going to wait for a server-side instruction.
     case CertProvisioningWorkerState::kSignCsrFinished:
@@ -976,7 +1040,6 @@ void CertProvisioningWorkerDynamic::HandleSerialization() {
     case CertProvisioningWorkerState::kCanceled:
       CertProvisioningSerializer::DeleteWorkerFromPrefs(pref_service_, *this);
       break;
-    case CertProvisioningWorkerState::kKeypairGenerated:
     case CertProvisioningWorkerState::kStartCsrResponseReceived:
     case CertProvisioningWorkerState::kFinishCsrResponseReceived:
       // Not used in "dynamic" flow.
