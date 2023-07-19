@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-PASS Static imports from inline modules in the HTML document
-PASS Dynamic imports from inline modules in the HTML document
-PASS Static imports from external modules
-FAIL Dynamic imports from external modules assert_equals: Referrer should be the document URL expected "http://web-platform.test:8001/html/semantics/scripting-1/the-script-element/module/module-import-referrer.js" but got "http://web-platform.test:8001/html/semantics/scripting-1/the-script-element/module/module-import-referrer.html"
-Harness: the test ran to completion.
-

@@ -18,14 +18,15 @@ void ModuleTreeLinkerRegistry::Fetch(
     const ScriptFetchOptions& options,
     Modulator* modulator,
     ModuleScriptCustomFetchType custom_fetch_type,
-    ModuleTreeClient* client) {
+    ModuleTreeClient* client,
+    String referrer) {
   ModuleTreeLinker* linker = MakeGarbageCollected<ModuleTreeLinker>(
       fetch_client_settings_object_fetcher, context_type, destination,
       modulator, custom_fetch_type, this, client,
       base::PassKey<ModuleTreeLinkerRegistry>());
   AddLinker(linker);
   linker->FetchRoot(url, module_type, options,
-                    base::PassKey<ModuleTreeLinkerRegistry>());
+                    base::PassKey<ModuleTreeLinkerRegistry>(), referrer);
   DCHECK(linker->IsFetching());
 }
 

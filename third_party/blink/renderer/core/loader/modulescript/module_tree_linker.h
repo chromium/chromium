@@ -52,7 +52,8 @@ class CORE_EXPORT ModuleTreeLinker final : public SingleModuleClient {
   void FetchRoot(const KURL&,
                  ModuleType,
                  const ScriptFetchOptions&,
-                 base::PassKey<ModuleTreeLinkerRegistry>);
+                 base::PassKey<ModuleTreeLinkerRegistry>,
+                 String referrer);
   void FetchRootInline(ModuleScript*, base::PassKey<ModuleTreeLinkerRegistry>);
 
  private:
