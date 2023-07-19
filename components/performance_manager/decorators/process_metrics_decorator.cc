@@ -61,7 +61,7 @@ ProcessMetricsDecorator::ScopedMetricsInterestTokenImpl::
     ScopedMetricsInterestTokenImpl(Graph* graph)
     : graph_(graph) {
   auto* decorator = graph->GetRegisteredObjectAs<ProcessMetricsDecorator>();
-  DCHECK(decorator);
+  CHECK(decorator);
   decorator->OnMetricsInterestTokenCreated();
 }
 
@@ -82,6 +82,7 @@ ProcessMetricsDecorator::RegisterInterestForProcessMetrics(Graph* graph) {
 
 void ProcessMetricsDecorator::OnPassedToGraph(Graph* graph) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK_EQ(state_, State::kStopped);
   graph_ = graph;
   graph_->RegisterObject(this);
   graph_->GetNodeDataDescriberRegistry()->RegisterDescriber(
@@ -95,16 +96,35 @@ void ProcessMetricsDecorator::OnTakenFromGraph(Graph* graph) {
   graph_->GetNodeDataDescriberRegistry()->UnregisterDescriber(this);
   graph_->UnregisterObject(this);
   graph_ = nullptr;
+  CHECK_EQ(state_, State::kStopped);
 }
 
 base::Value::Dict ProcessMetricsDecorator::DescribeSystemNodeData(
     const SystemNode*) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::Value::Dict ret;
   ret.Set("interest_token_count",
           base::NumberToString(metrics_interest_token_count_));
   ret.Set("time_to_next_refresh",
           TimeDeltaFromNowToValue(refresh_timer_.desired_run_time()));
+  ret.Set("state", static_cast<int>(state_));
   return ret;
+}
+
+void ProcessMetricsDecorator::SetGraphForTesting(Graph* graph) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK_EQ(state_, State::kStopped);
+  graph_ = graph;
+}
+
+bool ProcessMetricsDecorator::IsTimerRunningForTesting() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return refresh_timer_.IsRunning();
+}
+
+base::TimeDelta ProcessMetricsDecorator::GetTimerDelayForTesting() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return refresh_timer_.GetCurrentDelay();
 }
 
 void ProcessMetricsDecorator::OnMetricsInterestTokenCreated() {
@@ -112,14 +132,16 @@ void ProcessMetricsDecorator::OnMetricsInterestTokenCreated() {
   ++metrics_interest_token_count_;
   if (metrics_interest_token_count_ == 1) {
     // Take the first metrics measurement immediately.
-    CHECK(!refresh_timer_.IsRunning());
+    CHECK_EQ(state_, State::kStopped);
     RefreshMetrics();
   }
+  CHECK_NE(state_, State::kStopped);
 }
 
 void ProcessMetricsDecorator::OnMetricsInterestTokenReleased() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_GT(metrics_interest_token_count_, 0U);
+  CHECK_NE(state_, State::kStopped);
+  CHECK_GT(metrics_interest_token_count_, 0U);
   --metrics_interest_token_count_;
   if (metrics_interest_token_count_ == 0) {
     StopTimer();
@@ -128,22 +150,34 @@ void ProcessMetricsDecorator::OnMetricsInterestTokenReleased() {
 
 void ProcessMetricsDecorator::StartTimer() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // The timer should only be started immediately after processing the response
+  // to a refresh, to start the countdown to the next refresh.
+  CHECK_EQ(state_, State::kWaitingForResponse);
+  CHECK_GT(metrics_interest_token_count_, 0U);
   CHECK(!refresh_timer_.IsRunning());
   refresh_timer_.Start(
       FROM_HERE, kMetricsRefreshInterval,
       base::BindRepeating(&ProcessMetricsDecorator::RefreshMetrics,
                           base::Unretained(this)));
+  state_ = State::kWaitingForRefresh;
 }
 
 void ProcessMetricsDecorator::StopTimer() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   refresh_timer_.Stop();
+  state_ = State::kStopped;
 }
 
 void ProcessMetricsDecorator::RefreshMetrics() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // This is either triggered by `refresh_timer_` firing or called directly when
+  // the first interest token is created.
+  CHECK(state_ == State::kWaitingForRefresh || state_ == State::kStopped);
+  CHECK_GT(metrics_interest_token_count_, 0U);
+  CHECK(!refresh_timer_.IsRunning());
 
   // Asynchronously update memory metrics.
+  state_ = State::kWaitingForResponse;
   RequestProcessesMemoryMetrics(base::BindOnce(
       &ProcessMetricsDecorator::DidGetMemoryUsage, weak_factory_.GetWeakPtr()));
 }
@@ -159,8 +193,8 @@ void ProcessMetricsDecorator::RefreshMetricsForTesting() {
 void ProcessMetricsDecorator::RequestProcessesMemoryMetrics(
     memory_instrumentation::MemoryInstrumentation::RequestGlobalDumpCallback
         callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // TODO(sebmarchand): Use the synchronous calls once they are available.
+  // This function is replaced during testing, so all state checking should
+  // be done in the calling function, RefreshMetrics().
   auto* mem_instrumentation =
       memory_instrumentation::MemoryInstrumentation::GetInstance();
   // The memory instrumentation service is not available in unit tests unless
@@ -168,6 +202,8 @@ void ProcessMetricsDecorator::RequestProcessesMemoryMetrics(
   if (mem_instrumentation) {
     mem_instrumentation->RequestPrivateMemoryFootprint(base::kNullProcessId,
                                                        std::move(callback));
+  } else {
+    std::move(callback).Run(false, nullptr);
   }
 }
 
@@ -175,22 +211,20 @@ void ProcessMetricsDecorator::DidGetMemoryUsage(
     bool success,
     std::unique_ptr<memory_instrumentation::GlobalMemoryDump> process_dumps) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(process_dumps);
-  // Check if the decorator was removed from the graph while the request was
-  // being handled.
-  if (!graph_) {
+  // Check if the updates were stopped while the request was being handled.
+  if (state_ == State::kStopped) {
     return;
   }
 
   // Always schedule the next measurement, even if this one didn't succeed.
-  if (metrics_interest_token_count_) {
-    StartTimer();
-  }
+  CHECK_EQ(state_, State::kWaitingForResponse);
+  StartTimer();
 
   if (!success) {
     return;
   }
 
+  CHECK(process_dumps);
   auto* graph_impl = GraphImpl::FromGraph(graph_);
 
   // Refresh the process nodes with the data contained in |process_dumps|.

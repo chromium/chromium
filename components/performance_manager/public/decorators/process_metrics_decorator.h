@@ -65,12 +65,9 @@ class ProcessMetricsDecorator
   base::Value::Dict DescribeSystemNodeData(
       const SystemNode* node) const override;
 
-  void SetGraphForTesting(Graph* graph) { graph_ = graph; }
-  bool IsTimerRunningForTesting() const { return refresh_timer_.IsRunning(); }
-
-  base::TimeDelta GetTimerDelayForTesting() const {
-    return refresh_timer_.GetCurrentDelay();
-  }
+  void SetGraphForTesting(Graph* graph);
+  bool IsTimerRunningForTesting() const;
+  base::TimeDelta GetTimerDelayForTesting() const;
 
   void RefreshMetricsForTesting();
 
@@ -90,7 +87,7 @@ class ProcessMetricsDecorator
       base::OnceCallback<
           void(bool success,
                std::unique_ptr<memory_instrumentation::GlobalMemoryDump> dump)>
-          callback);
+          callback) VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // Function that should be used as a callback to
   // MemoryInstrumentation::RequestPrivateMemoryFootprint. |success| will
@@ -106,15 +103,30 @@ class ProcessMetricsDecorator
   void OnMetricsInterestTokenReleased();
 
  private:
+  enum class State {
+    // Metrics are not being refreshed.
+    kStopped,
+
+    // `refresh_timer_` is counting down to the next metrics refresh.
+    kWaitingForRefresh,
+
+    // A refresh is in progress, waiting for the response from the
+    // MemoryInstrumentation service. Implies `refresh_timer_` is not running
+    // (it will be started when the response is received.)
+    kWaitingForResponse,
+  };
+  State state_ GUARDED_BY_CONTEXT(sequence_checker_) = State::kStopped;
+
   // The timer responsible for refreshing the metrics.
-  base::OneShotTimer refresh_timer_;
+  base::OneShotTimer refresh_timer_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // The Graph instance owning this decorator.
-  raw_ptr<Graph> graph_;
+  raw_ptr<Graph> graph_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // The number of clients currently interested by the metrics tracked by this
   // class.
-  size_t metrics_interest_token_count_ = 0;
+  size_t metrics_interest_token_count_ GUARDED_BY_CONTEXT(sequence_checker_) =
+      0;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
