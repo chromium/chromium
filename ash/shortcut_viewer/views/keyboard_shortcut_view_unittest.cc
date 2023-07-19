@@ -13,7 +13,9 @@
 #include "ash/test/ash_test_base.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -51,6 +53,8 @@ class KeyboardShortcutViewTest : public ash::AshTestBase {
 
   // ash::AshTestBase:
   void SetUp() override {
+    // TODO(b/291803593): This is the old UI so it's not compatible with Jelly.
+    scoped_features_.InitAndDisableFeature(chromeos::features::kJelly);
     ash::AshTestBase::SetUp();
     // Simulate the complete listing of input devices, required by the viewer.
     ui::DeviceDataManagerTestApi().OnDeviceListsComplete();
@@ -96,6 +100,9 @@ class KeyboardShortcutViewTest : public ash::AshTestBase {
   KeyboardShortcutView* GetView() const {
     return KeyboardShortcutView::GetInstanceForTesting();
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_features_;
 };
 
 // Shows and closes the widget for KeyboardShortcutViewer.
