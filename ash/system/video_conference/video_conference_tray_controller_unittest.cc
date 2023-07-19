@@ -651,4 +651,60 @@ TEST_F(VideoConferenceTrayControllerTest, SpeakOnMuteOptInNudge_OptIn) {
   EXPECT_FALSE(IsNudgeShown(nudge_id));
 }
 
+// Tests that the speak on mute opt-in nudge cancels other VC nudges, and other
+// VC nudge requests are blocked if a nudge is shown on screen.
+TEST_F(VideoConferenceTrayControllerTest, NudgeBlocksOtherNudges) {
+  const auto* opt_in_nudge_id = kVideoConferenceTraySpeakOnMuteOptInNudgeId;
+  const auto* speak_on_mute_nudge_id =
+      kVideoConferenceTraySpeakOnMuteDetectedNudgeId;
+  const auto* opt_in_confirmation_nudge =
+      kVideoConferenceTraySpeakOnMuteOptInConfirmationNudgeId;
+  const auto* use_while_disabled_nudge_id =
+      kVideoConferenceTrayCameraUseWhileHWDisabledNudgeId;
+
+  const auto* app_name = u"app_name";
+  const auto camera_device_name =
+      l10n_util::GetStringUTF16(IDS_ASH_VIDEO_CONFERENCE_CAMERA_NAME);
+
+  SetTrayAndButtonsVisible();
+
+  // Show a "use while disabled nudge".
+  controller()->OnCameraHWPrivacySwitchStateChanged(
+      /*device_id=*/"device_id", cros::mojom::CameraPrivacySwitchState::ON);
+  controller()->HandleDeviceUsedWhileDisabled(
+      crosapi::mojom::VideoConferenceMediaDevice::kCamera, app_name);
+  EXPECT_TRUE(IsNudgeShown(use_while_disabled_nudge_id));
+
+  // Show opt-in nudge by muting the microphone, "use while disabled" nudge
+  // should have been cancelled.
+  controller()->SetMicrophoneMuted(true);
+  EXPECT_TRUE(controller()->GetMicrophoneMuted());
+  EXPECT_TRUE(IsNudgeShown(opt_in_nudge_id));
+  EXPECT_FALSE(IsNudgeShown(use_while_disabled_nudge_id));
+
+  // Opt in to speak-on-mute. Opt-in nudge should be dismissed and confirmation
+  // nudge should be showing.
+  LeftClickOn(GetNudgeSecondButton(opt_in_nudge_id));
+  EXPECT_FALSE(IsNudgeShown(opt_in_nudge_id));
+  EXPECT_TRUE(IsNudgeShown(opt_in_confirmation_nudge));
+
+  // Wait for 60 seconds to simulate that the mic mute cool down has passed. The
+  // speak on mute nudge should be ready to show.
+  task_environment()->AdvanceClock(base::Seconds(60));
+
+  // Speak on mute, but nudge should not be shown since the confirmation nudge
+  // is currently visible.
+  controller()->OnSpeakOnMuteDetected();
+  EXPECT_FALSE(IsNudgeShown(speak_on_mute_nudge_id));
+
+  // Dismiss the confirmation nudge.
+  AnchoredNudgeManager::Get()->Cancel(opt_in_confirmation_nudge);
+  EXPECT_FALSE(IsNudgeShown(opt_in_confirmation_nudge));
+
+  // Speak on mute, nudge should be shown since there are no other blocking
+  // nudges.
+  controller()->OnSpeakOnMuteDetected();
+  EXPECT_TRUE(IsNudgeShown(speak_on_mute_nudge_id));
+}
+
 }  // namespace ash

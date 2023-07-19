@@ -21,6 +21,7 @@
 #include "ash/style/icon_button.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/status_area_widget.h"
+#include "ash/system/toast/anchored_nudge_manager_impl.h"
 #include "ash/system/video_conference/video_conference_common.h"
 #include "ash/system/video_conference/video_conference_tray.h"
 #include "base/check.h"
@@ -70,6 +71,7 @@ constexpr char kVideoConferenceTrayCameraUseWhileSWDisabledNudgeId[] =
 // called. Please keep in sync whenever adding/removing/updating a nudge id.
 const char* const kNudgeIds[] = {
     kVideoConferenceTraySpeakOnMuteOptInNudgeId,
+    kVideoConferenceTraySpeakOnMuteOptInConfirmationNudgeId,
     kVideoConferenceTraySpeakOnMuteDetectedNudgeId,
     kVideoConferenceTrayMicrophoneUseWhileHWDisabledNudgeId,
     kVideoConferenceTrayMicrophoneUseWhileSWDisabledNudgeId,
@@ -300,6 +302,15 @@ void VideoConferenceTrayController::CloseAllVcNudges() {
   }
 }
 
+bool VideoConferenceTrayController::IsAnyVcNudgeShown() {
+  for (size_t i = 0; i < std::size(kNudgeIds); ++i) {
+    if (Shell::Get()->anchored_nudge_manager()->IsNudgeShown(kNudgeIds[i])) {
+      return true;
+    }
+  }
+  return false;
+}
+
 bool VideoConferenceTrayController::GetHasCameraPermissions() const {
   return state_.has_camera_permission;
 }
@@ -507,6 +518,11 @@ void VideoConferenceTrayController::OnInputMuteChanged(
 }
 
 void VideoConferenceTrayController::OnSpeakOnMuteDetected() {
+  // Do not show "Speak on mute" nudge if another nudge is showing.
+  if (IsAnyVcNudgeShown()) {
+    return;
+  }
+
   const base::TimeTicks current_time = base::TimeTicks::Now();
 
   if (should_show_speak_on_mute_notification &&
@@ -661,6 +677,11 @@ bool VideoConferenceTrayController::HasMicrophonePermission() const {
 void VideoConferenceTrayController::HandleDeviceUsedWhileDisabled(
     crosapi::mojom::VideoConferenceMediaDevice device,
     const std::u16string& app_name) {
+  // Do not show "Use while disabled" nudge if another nudge is showing.
+  if (IsAnyVcNudgeShown()) {
+    return;
+  }
+
   // TODO(b/273570886): Handle the case when both camera and microphone are
   // being used while disabled.
   std::u16string device_name;

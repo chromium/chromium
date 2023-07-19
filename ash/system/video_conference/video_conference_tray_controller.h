@@ -211,6 +211,9 @@ class ASH_EXPORT VideoConferenceTrayController
   // Records repeated shows metric when the timer is stop.
   void RecordRepeatedShows();
 
+  // Returns true if any of the VC nudges are visible on screen.
+  bool IsAnyVcNudgeShown();
+
   // The number of capturing apps, fetched from `VideoConferenceManagerAsh`.
   int capturing_apps_ = 0;
 
