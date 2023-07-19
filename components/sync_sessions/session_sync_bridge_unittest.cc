@@ -1550,9 +1550,9 @@ TEST_F(SessionSyncBridgeTest, ShouldNotBroadcastUpdatesIfEmpty) {
 
 TEST_F(SessionSyncBridgeTest, ShouldDoGarbageCollection) {
   // We construct two identical sessions, one modified recently, one modified
-  // more than |kStaleSessionThreshold| ago (14 days ago).
-  const base::Time stale_mtime = base::Time::Now() - base::Days(15);
-  const base::Time recent_mtime = base::Time::Now() - base::Days(13);
+  // more than |kStaleSessionThreshold| ago (28 days ago).
+  const base::Time stale_mtime = base::Time::Now() - base::Days(29);
+  const base::Time recent_mtime = base::Time::Now() - base::Days(27);
   const std::string kStaleSessionTag = "stalesessiontag";
   const std::string kRecentSessionTag = "recentsessiontag";
   const int kWindowId = 2000001;

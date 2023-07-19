@@ -37,7 +37,7 @@ using syncer::MetadataChangeList;
 
 // Default time without activity after which a session is considered stale and
 // becomes a candidate for garbage collection.
-const base::TimeDelta kStaleSessionThreshold = base::Days(14);
+const base::TimeDelta kStaleSessionThreshold = base::Days(28);
 
 std::unique_ptr<syncer::EntityData> MoveToEntityData(
     const std::string& client_name,
