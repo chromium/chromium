@@ -69,7 +69,7 @@ struct InterestGroup {
     // bidding scripts for all interest groups that share a common biddnig
     // script. After the script is loaded, the script context is frozen and
     // checked for any state that may persist between function execution. If any
-    // potentially persistent state is identified, execution abandoned.
+    // potentially persistent state is identified, execution is abandoned.
     kFrozenContext,
   };
 
