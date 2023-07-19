@@ -408,11 +408,11 @@ TEST_F(EGLImageBackingFactoryThreadSafeTest, Dawn_SkiaGL) {
     // Create a DawnImageRepresentation using WGPUBackendType_OpenGLES backend.
     auto dawn_representation =
         shared_image_representation_factory_->ProduceDawn(
-            mailbox, device.Get(), WGPUBackendType_OpenGLES, {});
+            mailbox, device, wgpu::BackendType::OpenGLES, {});
     ASSERT_TRUE(dawn_representation);
 
     auto scoped_access = dawn_representation->BeginScopedAccess(
-        WGPUTextureUsage_RenderAttachment,
+        wgpu::TextureUsage::RenderAttachment,
         SharedImageRepresentation::AllowUnclearedAccess::kYes);
     ASSERT_TRUE(scoped_access);
 

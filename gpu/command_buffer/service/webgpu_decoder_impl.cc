@@ -384,7 +384,7 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
       const wgpu::Device& device,
       wgpu::BackendType backendType,
       wgpu::TextureUsage usage,
-      std::vector<WGPUTextureFormat> view_formats);
+      std::vector<wgpu::TextureFormat> view_formats);
 
   std::unique_ptr<SharedImageRepresentationAndAccess>
   AssociateMailboxUsingSkiaFallback(
@@ -392,7 +392,7 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
       MailboxFlags flags,
       const wgpu::Device& device,
       wgpu::TextureUsage usage,
-      std::vector<WGPUTextureFormat> view_formats);
+      std::vector<wgpu::TextureFormat> view_formats);
 
   // Device creation requires that an isolation key has been set for the
   // decoder. As a result, this callback also runs all queued device creation
@@ -443,11 +443,11 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
   class SharedImageRepresentationAndAccess {
    public:
     virtual ~SharedImageRepresentationAndAccess() = default;
-    // Get an unowned reference to the WGPUTexture for the shared image.
-    virtual WGPUTexture texture() const = 0;
+    // Get an unowned reference to the wgpu::Texture for the shared image.
+    virtual wgpu::Texture texture() const = 0;
   };
 
-  // Wraps a |DawnImageRepresentation| as a WGPUTexture.
+  // Wraps a |DawnImageRepresentation| as a wgpu::Texture.
   class SharedImageRepresentationAndAccessDawn
       : public SharedImageRepresentationAndAccess {
    public:
@@ -457,7 +457,7 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
         : representation_(std::move(representation)),
           access_(std::move(access)) {}
 
-    WGPUTexture texture() const override { return access_->texture(); }
+    wgpu::Texture texture() const override { return access_->texture(); }
 
    private:
     std::unique_ptr<DawnImageRepresentation> representation_;
@@ -465,7 +465,7 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
   };
 
   // Wraps a |SkiaImageRepresentation| and exposes
-  // it as a WGPUTexture by performing CPU readbacks/uploads.
+  // it as a wgpu::Texture by performing CPU readbacks/uploads.
   class SharedImageRepresentationAndAccessSkiaFallback
       : public SharedImageRepresentationAndAccess {
    public:
@@ -474,7 +474,7 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
            std::unique_ptr<SkiaImageRepresentation> representation,
            const wgpu::Device& device,
            wgpu::TextureUsage usage,
-           std::vector<WGPUTextureFormat> view_formats) {
+           std::vector<wgpu::TextureFormat> view_formats) {
       viz::SharedImageFormat format = representation->format();
       // Include list of formats this is tested to work with.
       // See gpu/command_buffer/tests/webgpu_mailbox_unittest.cc
@@ -522,7 +522,7 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
       texture_.Destroy();
     }
 
-    WGPUTexture texture() const override { return texture_.Get(); }
+    wgpu::Texture texture() const override { return texture_.Get(); }
 
    private:
     SharedImageRepresentationAndAccessSkiaFallback(
@@ -530,12 +530,12 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
         std::unique_ptr<SkiaImageRepresentation> representation,
         const wgpu::Device& device,
         wgpu::TextureUsage usage,
-        std::vector<WGPUTextureFormat> view_formats)
+        std::vector<wgpu::TextureFormat> view_formats)
         : shared_context_state_(std::move(shared_context_state)),
           representation_(std::move(representation)),
           device_(device),
           usage_(usage) {
-      // Create a WGPUTexture to hold the image contents.
+      // Create a wgpu::Texture to hold the image contents.
       // It should be internally copyable so Chrome can internally perform
       // copies with it, but Javascript cannot (unless |usage| contains copy
       // src/dst).
@@ -669,7 +669,7 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
       // Unmap the buffer.
       buffer.Unmap();
 
-      // Copy from the staging WGPUBuffer into the WGPUTexture.
+      // Copy from the staging WGPUBuffer into the wgpu::Texture.
       wgpu::DawnEncoderInternalUsageDescriptor internal_usage_desc;
       internal_usage_desc.useInternalUsages = true;
       wgpu::CommandEncoderDescriptor command_encoder_desc = {
@@ -859,7 +859,7 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
     }
     ~ErrorSharedImageRepresentationAndAccess() override = default;
 
-    WGPUTexture texture() const override { return texture_.Get(); }
+    wgpu::Texture texture() const override { return texture_.Get(); }
 
    private:
     wgpu::Texture texture_;
@@ -1750,11 +1750,10 @@ WebGPUDecoderImpl::AssociateMailboxDawn(
     const wgpu::Device& device,
     wgpu::BackendType backendType,
     wgpu::TextureUsage usage,
-    std::vector<WGPUTextureFormat> view_formats) {
+    std::vector<wgpu::TextureFormat> view_formats) {
   std::unique_ptr<DawnImageRepresentation> shared_image =
       shared_image_representation_factory_->ProduceDawn(
-          mailbox, device.Get(), static_cast<WGPUBackendType>(backendType),
-          std::move(view_formats));
+          mailbox, device, backendType, std::move(view_formats));
 
   if (!shared_image) {
     DLOG(ERROR) << "AssociateMailbox: Couldn't produce shared image";
@@ -1763,8 +1762,9 @@ WebGPUDecoderImpl::AssociateMailboxDawn(
 
 #if !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_APPLE)
   if (usage & wgpu::TextureUsage::StorageBinding) {
-    DLOG(ERROR) << "AssociateMailbox: WGPUTextureUsage_StorageBinding is NOT "
-                   "supported yet.";
+    DLOG(ERROR)
+        << "AssociateMailbox: wgpu::TextureUsage::StorageBinding is NOT "
+           "supported yet.";
     return nullptr;
   }
 #endif
@@ -1776,8 +1776,7 @@ WebGPUDecoderImpl::AssociateMailboxDawn(
 
   std::unique_ptr<DawnImageRepresentation::ScopedAccess> scoped_access =
       shared_image->BeginScopedAccess(
-          static_cast<WGPUTextureUsage>(usage),
-          SharedImageRepresentation::AllowUnclearedAccess::kYes);
+          usage, SharedImageRepresentation::AllowUnclearedAccess::kYes);
   if (!scoped_access) {
     DLOG(ERROR) << "AssociateMailbox: Couldn't begin shared image access";
     return nullptr;
@@ -1793,7 +1792,7 @@ WebGPUDecoderImpl::AssociateMailboxUsingSkiaFallback(
     MailboxFlags flags,
     const wgpu::Device& device,
     wgpu::TextureUsage usage,
-    std::vector<WGPUTextureFormat> view_formats) {
+    std::vector<wgpu::TextureFormat> view_formats) {
   // Before using the shared context, ensure it is current if we're on GL.
   if (shared_context_state_->GrContextIsGL()) {
     shared_context_state_->MakeCurrent(/* gl_surface */ nullptr);
@@ -1866,10 +1865,10 @@ error::Error WebGPUDecoderImpl::HandleAssociateMailboxImmediate(
       << "AssociateMailbox was passed an invalid mailbox";
 
   // Copy the view formats into a vector.
-  static_assert(sizeof(WGPUTextureFormat) == sizeof(uint32_t));
-  std::vector<WGPUTextureFormat> view_formats(view_format_count);
+  static_assert(sizeof(wgpu::TextureFormat) == sizeof(uint32_t));
+  std::vector<wgpu::TextureFormat> view_formats(view_format_count);
   memcpy(view_formats.data(), const_cast<const uint32_t*>(packed_data),
-         view_format_count * sizeof(WGPUTextureFormat));
+         view_format_count * sizeof(wgpu::TextureFormat));
 
   if (usage & ~kAllowedMailboxTextureUsages) {
     DLOG(ERROR) << "AssociateMailbox: Invalid usage";
@@ -1894,9 +1893,9 @@ error::Error WebGPUDecoderImpl::HandleAssociateMailboxImmediate(
   }
 
   if (!representation_and_access) {
-    // According to the WebGPU specification, failing to create a WGPUTexture
+    // According to the WebGPU specification, failing to create a wgpu::Texture
     // which wraps a shared image (like the canvas drawing buffer) should yield
-    // an error WGPUTexture. Use an implementation of
+    // an error wgpu::Texture. Use an implementation of
     // SharedImageRepresentationAndAccess which always provides an error.
     representation_and_access =
         std::make_unique<ErrorSharedImageRepresentationAndAccess>(device,
@@ -1905,8 +1904,9 @@ error::Error WebGPUDecoderImpl::HandleAssociateMailboxImmediate(
 
   // Inject the texture in the dawn::wire::Server and remember which shared
   // image it is associated with.
-  if (!wire_server_->InjectTexture(representation_and_access->texture(), id,
-                                   generation, device_id, device_generation)) {
+  if (!wire_server_->InjectTexture(representation_and_access->texture().Get(),
+                                   id, generation, device_id,
+                                   device_generation)) {
     DLOG(ERROR) << "AssociateMailbox: Invalid texture ID";
     return error::kInvalidArguments;
   }

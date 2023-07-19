@@ -38,8 +38,8 @@ ExternalVkImageDawnImageRepresentation::
   EndAccess();
 }
 
-WGPUTexture ExternalVkImageDawnImageRepresentation::BeginAccess(
-    WGPUTextureUsage usage) {
+wgpu::Texture ExternalVkImageDawnImageRepresentation::BeginAccess(
+    wgpu::TextureUsage usage) {
   DCHECK(begin_access_semaphores_.empty());
   if (!backing_impl()->BeginAccess(false, &begin_access_semaphores_,
                                    /*is_gl=*/false)) {

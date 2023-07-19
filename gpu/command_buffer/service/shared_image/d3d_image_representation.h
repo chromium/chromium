@@ -57,15 +57,15 @@ class DawnD3DImageRepresentation : public DawnImageRepresentation {
   DawnD3DImageRepresentation(SharedImageManager* manager,
                              SharedImageBacking* backing,
                              MemoryTypeTracker* tracker,
-                             WGPUDevice device);
+                             const wgpu::Device& device);
   ~DawnD3DImageRepresentation() override;
 
-  WGPUTexture BeginAccess(WGPUTextureUsage usage) override;
+  wgpu::Texture BeginAccess(wgpu::TextureUsage usage) override;
   void EndAccess() override;
 
  private:
-  const WGPUDevice device_;
-  WGPUTexture texture_ = nullptr;
+  const wgpu::Device device_;
+  wgpu::Texture texture_;
 
   // TODO(cwallez@chromium.org): Load procs only once when the factory is
   // created and pass a pointer to them around?

@@ -321,10 +321,7 @@ target(link_target_type, "gles2_sources") {
   }
 
   if (use_dawn) {
-    deps += [
-      "//gpu/webgpu:common",
-      "//third_party/dawn/src/dawn:cpp",
-    ]
+    deps += [ "//gpu/webgpu:common" ]
     sources += [
       "dawn_caching_interface.cc",
       "dawn_caching_interface.h",
@@ -361,7 +358,7 @@ target(link_target_type, "gles2_sources") {
     "//gpu/command_buffer/common:webgpu_sources",
     "//skia",
     "//third_party/blink/public/common/tokens:tokens_headers",
-    "//third_party/dawn/include/dawn:headers",
+    "//third_party/dawn/include/dawn:cpp_headers",
   ]
   deps += [
     ":disk_cache_proto",
@@ -380,7 +377,8 @@ target(link_target_type, "gles2_sources") {
     "//skia:buildflags",
     "//third_party/angle:angle_image_util",
     "//third_party/angle:angle_version_info",
-    "//third_party/dawn/include/dawn:cpp_headers",
+    "//third_party/dawn/src/dawn:cpp",
+    "//third_party/dawn/src/dawn:proc",
     "//third_party/libyuv",
     "//third_party/protobuf:protobuf_lite",
     "//third_party/re2",

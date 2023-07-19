@@ -5,8 +5,8 @@
 #include "gpu/command_buffer/service/shared_image/dawn_ozone_image_representation.h"
 
 #include <dawn/native/VulkanBackend.h>
-
 #include <vulkan/vulkan.h>
+
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
@@ -39,7 +39,8 @@ DawnOzoneImageRepresentation::~DawnOzoneImageRepresentation() {
   EndAccess();
 }
 
-WGPUTexture DawnOzoneImageRepresentation::BeginAccess(WGPUTextureUsage usage) {
+wgpu::Texture DawnOzoneImageRepresentation::BeginAccess(
+    wgpu::TextureUsage usage) {
   // It doesn't make sense to have two overlapping BeginAccess calls on the same
   // representation.
   if (texture_) {
