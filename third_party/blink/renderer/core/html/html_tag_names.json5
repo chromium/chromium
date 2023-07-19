@@ -356,6 +356,11 @@
     },
     "param",
     {
+      name: "permission",
+      interfaceName: "HTMLPermissionElement",
+      runtimeEnabled: "PermissionElement",
+    },
+    {
       name: "picture",
       interfaceName: "HTMLPictureElement",
     },
