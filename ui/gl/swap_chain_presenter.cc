@@ -482,11 +482,9 @@ int SwapChainPresenter::PresentationHistory::composed_count() const {
 
 SwapChainPresenter::SwapChainPresenter(
     DCLayerTree* layer_tree,
-    HWND window,
     Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device,
     Microsoft::WRL::ComPtr<IDCompositionDevice2> dcomp_device)
     : layer_tree_(layer_tree),
-      window_(window),
       switched_to_BGRA8888_time_tick_(base::TimeTicks::Now()),
       d3d11_device_(d3d11_device),
       dcomp_device_(dcomp_device),
@@ -675,8 +673,9 @@ gfx::Size SwapChainPresenter::GetMonitorSize() const {
     // Get the monitor on which the overlay is displayed.
     MONITORINFO monitor_info;
     monitor_info.cbSize = sizeof(monitor_info);
-    if (GetMonitorInfo(MonitorFromWindow(window_, MONITOR_DEFAULTTONEAREST),
-                       &monitor_info)) {
+    if (GetMonitorInfo(
+            MonitorFromWindow(layer_tree_->window(), MONITOR_DEFAULTTONEAREST),
+            &monitor_info)) {
       monitor_size = gfx::Rect(monitor_info.rcMonitor).size();
     }
 
@@ -1417,9 +1416,10 @@ bool SwapChainPresenter::PresentToSwapChain(DCLayerOverlayParams& params,
 
   // Enable VideoProcessor-HDR for SDR content if the monitor and
   // GPU driver support it
-  bool use_vp_auto_hdr = !content_is_hdr &&
-                         DirectCompositionMonitorHDREnabled(window_) &&
-                         enable_vp_auto_hdr_ && !is_on_battery_power_;
+  bool use_vp_auto_hdr =
+      !content_is_hdr &&
+      DirectCompositionMonitorHDREnabled(layer_tree_->window()) &&
+      enable_vp_auto_hdr_ && !is_on_battery_power_;
 
   bool use_hdr_swap_chain =
       ((content_is_hdr && params.hdr_metadata.IsValid()) || use_vp_auto_hdr);

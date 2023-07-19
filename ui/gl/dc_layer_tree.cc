@@ -758,7 +758,7 @@ bool DCLayerTree::CommitAndClearPendingOverlays(
         // TODO(sunnyps): Try to find a matching swap chain based on size, type
         // of swap chain, gl image, etc.
         video_swap_chain = std::make_unique<SwapChainPresenter>(
-            this, window_, d3d11_device_, dcomp_device_);
+            this, d3d11_device_, dcomp_device_);
         if (frame_rate_ > 0) {
           video_swap_chain->SetFrameRate(frame_rate_);
         }

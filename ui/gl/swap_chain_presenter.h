@@ -27,7 +27,6 @@ namespace gl {
 class SwapChainPresenter : public base::PowerStateObserver {
  public:
   SwapChainPresenter(DCLayerTree* layer_tree,
-                     HWND window,
                      Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device,
                      Microsoft::WRL::ComPtr<IDCompositionDevice2> dcomp_device);
 
@@ -259,8 +258,6 @@ class SwapChainPresenter : public base::PowerStateObserver {
 
   // Layer tree instance that owns this swap chain presenter.
   raw_ptr<DCLayerTree> layer_tree_ = nullptr;
-
-  const HWND window_;
 
   // Current size of swap chain.
   gfx::Size swap_chain_size_;
