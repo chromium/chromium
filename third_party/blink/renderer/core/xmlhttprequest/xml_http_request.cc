@@ -497,7 +497,7 @@ ScriptValue XMLHttpRequest::response(ScriptState* script_state,
       return ScriptValue(isolate,
                          ToV8Traits<Blob>::ToV8(script_state, ResponseBlob()));
     case kResponseTypeArrayBuffer:
-      return ScriptValue(isolate, ToV8Traits<DOMArrayBuffer>::ToV8(
+      return ScriptValue(isolate, ToV8Traits<IDLNullable<DOMArrayBuffer>>::ToV8(
                                       script_state, ResponseArrayBuffer()));
     default:
       NOTREACHED();
