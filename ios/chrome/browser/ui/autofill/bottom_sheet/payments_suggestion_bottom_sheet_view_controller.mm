@@ -62,6 +62,9 @@ CGFloat const kSpacing = 10;
 // YES if the GPay logo should be shown to the user.
 @property(nonatomic, assign) BOOL showGooglePayLogo;
 
+// Whether the bottom sheet will be disabled on exit. Default is YES.
+@property(nonatomic, assign) BOOL disableBottomSheetOnExit;
+
 @end
 
 @implementation PaymentsSuggestionBottomSheetViewController
@@ -73,6 +76,7 @@ CGFloat const kSpacing = 10;
   if (self) {
     self.handler = handler;
     _URL = URL;
+    self.disableBottomSheetOnExit = YES;
   }
   return self;
 }
@@ -185,7 +189,9 @@ CGFloat const kSpacing = 10;
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
-  [self.delegate disableBottomSheet];
+  if (self.disableBottomSheetOnExit) {
+    [self.delegate disableBottomSheet];
+  }
 }
 
 #pragma mark - PaymentsSuggestionBottomSheetConsumer
@@ -363,6 +369,7 @@ CGFloat const kSpacing = 10;
   __weak __typeof(self) weakSelf = self;
   void (^paymentMethodsButtonTapHandler)(UIAction*) = ^(UIAction* action) {
     // Open Payment Methods.
+    weakSelf.disableBottomSheetOnExit = NO;
     [weakSelf.handler displayPaymentMethods];
   };
   UIImage* listIcon =
@@ -385,6 +392,7 @@ CGFloat const kSpacing = 10;
 
   void (^showDetailsButtonTapHandler)(UIAction*) = ^(UIAction* action) {
     // Open Payments Details.
+    weakSelf.disableBottomSheetOnExit = NO;
     [weakSelf.handler
         displayPaymentDetailsForCreditCardIdentifier:creditCardIdentifier];
   };

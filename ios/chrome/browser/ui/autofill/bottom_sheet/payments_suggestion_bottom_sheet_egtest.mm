@@ -9,6 +9,7 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
+#import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
@@ -31,7 +32,10 @@ const char kFormCardName[] = "CCName";
 @interface PaymentsSuggestionBottomSheetEGTest : ChromeTestCase
 @end
 
-@implementation PaymentsSuggestionBottomSheetEGTest
+@implementation PaymentsSuggestionBottomSheetEGTest {
+  // Last digits of the credit card
+  NSString* _lastDigits;
+}
 
 - (void)setUp {
   [super setUp];
@@ -41,7 +45,7 @@ const char kFormCardName[] = "CCName";
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
 
   [AutofillAppInterface clearCreditCardStore];
-  [AutofillAppInterface saveLocalCreditCard];
+  _lastDigits = [AutofillAppInterface saveLocalCreditCard];
 }
 
 - (void)tearDown {
@@ -82,6 +86,50 @@ id<GREYMatcher> ContinueButton() {
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:continueButton];
 
   [[EarlGrey selectElementWithMatcher:continueButton] performAction:grey_tap()];
+}
+
+- (void)testOpenPaymentsBottomSheetAfterLongPress {
+  [self loadPaymentsPage];
+
+  // Open the Payments Bottom Sheet.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:chrome_test_util::TapWebElementWithId(kFormCardName)];
+
+  id<GREYMatcher> continueButton = ContinueButton();
+
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:continueButton];
+
+  // Long press to open context menu.
+  id<GREYMatcher> creditCardEntry = grey_text(_lastDigits);
+
+  [[EarlGrey selectElementWithMatcher:creditCardEntry]
+      performAction:grey_longPress()];
+
+  [ChromeEarlGreyUI waitForAppToIdle];
+
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_allOf(
+              chrome_test_util::ButtonWithAccessibilityLabel(
+                  l10n_util::GetNSString(
+                      IDS_IOS_PAYMENT_BOTTOM_SHEET_MANAGE_PAYMENT_METHODS)),
+              grey_interactable(), nullptr)] performAction:grey_tap()];
+
+  [ChromeEarlGreyUI waitForAppToIdle];
+
+  // Close the context menu.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::NavigationBarCancelButton()]
+      performAction:grey_tap()];
+
+  [ChromeEarlGreyUI waitForAppToIdle];
+
+  // Try to open the Payments Bottom Sheet again.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:chrome_test_util::TapWebElementWithId(kFormCardName)];
+
+  // Make sure the bottom sheet re-opens.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:continueButton];
 }
 
 @end
