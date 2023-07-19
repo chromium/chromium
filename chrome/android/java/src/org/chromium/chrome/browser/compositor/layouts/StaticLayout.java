@@ -226,6 +226,13 @@ public class StaticLayout extends Layout {
             }
 
             @Override
+            public void onDestroyed(Tab tab) {
+                if (mModel.get(LayoutTab.TAB_ID) != tab.getId()) return;
+
+                mModel.set(LayoutTab.TAB_ID, Tab.INVALID_TAB_ID);
+            }
+
+            @Override
             public void onTabUnregistered(Tab tab) {
                 if (mModel.get(LayoutTab.TAB_ID) != tab.getId()) return;
 
