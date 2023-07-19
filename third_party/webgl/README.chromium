@@ -6,8 +6,9 @@ SOURCE CODE: git clone https://github.com/KhronosGroup/WebGL.git
 Date: 12/03/2013
 Revision: 159f31dd34842c871032d97d360a9dce5153f585
 Security Critical: no
+Shipped: no
 License: MIT
-License File: NOT_SHIPPED
+License File: src/LICENSE.txt
 
 Description:
 This is a snapshot of the public webgl conformance tests directory on the

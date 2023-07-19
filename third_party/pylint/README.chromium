@@ -4,6 +4,7 @@ Version: 1.4.1
 License: GPL v2
 License File: pylint/LICENSE.txt
 Security Critical: No
+Shipped: no
 
 Description:
 This directory contains the pylint module.

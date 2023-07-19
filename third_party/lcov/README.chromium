@@ -3,8 +3,9 @@ Short Name: lcov
 URL: http://ltp.sourceforge.net/coverage/lcov.php
 Version: 1.10
 License: GPL v2
-License file: COPYING
+License File: COPYING
 Security Critical: no
+Shipped: no
 
 Description:
 This directory contains a stock lcov-1.10 with the following changes:

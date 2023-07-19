@@ -2,7 +2,9 @@ Name: libevent
 URL: http://libevent.org/
 Version: 1.4.15
 License: BSD
+License File: LICENSE
 Security Critical: yes
+Shipped: yes
 
 Local Modifications:
 Rather than use libevent's own build system, we just build a Chrome

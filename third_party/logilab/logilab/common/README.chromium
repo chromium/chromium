@@ -5,6 +5,7 @@ CPEPrefix: cpe:/a:logilab:logilab-common:0.63.2
 License: GPL v2
 License File: LICENSE.txt
 Security Critical: No
+Shipped: no
 
 Description:
 This directory contains the logilab-common module, required for logilab-astng
