@@ -108,6 +108,10 @@ class SearchResultListViewTest : public views::test::WidgetTest {
     return result_view->get_title_container_for_test();
   }
 
+  views::FlexLayoutView* GetProgressBarContents(SearchResultView* result_view) {
+    return result_view->get_progress_bar_container_for_test();
+  }
+
   views::FlexLayoutView* GetDetailsContents(SearchResultView* result_view) {
     return result_view->get_details_container_for_test();
   }
@@ -230,6 +234,25 @@ class SearchResultListViewTest : public views::test::WidgetTest {
     RunPendingMessages();
   }
 
+  void SetupProgressBarAnswerCard() {
+    SearchModel::SearchResults* results = GetResults();
+    std::unique_ptr<TestSearchResult> result =
+        std::make_unique<TestSearchResult>();
+    result->set_display_type(ash::SearchResultDisplayType::kAnswerCard);
+    result->set_best_match(true);
+
+    result->SetAccessibleName(u"Memory 2.4GB | 7.6 GB total");
+    result->SetDetails(u"Memory 2.4GB | 7.6 GB total");
+    auto system_info_data =
+        std::make_unique<ash::SystemInfoAnswerCardData>(0.5);
+
+    result->SetSystemInfoAnswerCardData(*system_info_data.get());
+    results->Add(std::move(result));
+
+    // Adding results will schedule Update().
+    RunPendingMessages();
+  }
+
   int GetOpenResultCountAndReset(int ranking) {
     EXPECT_GT(view_delegate_.open_search_result_counts().count(ranking), 0u);
     int result = view_delegate_.open_search_result_counts()[ranking];
@@ -329,6 +352,23 @@ TEST_F(SearchResultListViewTest, KeyboardShortcutAnswerCard) {
       GetResultTextSeparatorLabel(GetAnswerCardResultViewAt(0))->GetVisible());
 
   EXPECT_FALSE(GetDetailsContents(GetAnswerCardResultViewAt(0))->GetVisible());
+}
+
+// Verifies that details and progress contents are shown for system info answer
+// cards which are of bar chart type normally
+TEST_F(SearchResultListViewTest, ProgressBarAnswerCardTest) {
+  default_view()->SetBounds(0, 0, kPreferredWidth, 400);
+  SetupProgressBarAnswerCard();  // Details,and progress bar views should be
+                                 // visible.
+  EXPECT_FALSE(GetTitleContents(GetAnswerCardResultViewAt(0))->GetVisible());
+  EXPECT_TRUE(GetDetailsContents(GetAnswerCardResultViewAt(0))->GetVisible());
+  EXPECT_TRUE(
+      GetProgressBarContents(GetAnswerCardResultViewAt(0))->GetVisible());
+
+  EXPECT_FALSE(
+      GetResultTextSeparatorLabel(GetAnswerCardResultViewAt(0))->GetVisible());
+  EXPECT_FALSE(
+      GetKeyboardShortcutContents(GetAnswerCardResultViewAt(0))->GetVisible());
 }
 
 TEST_F(SearchResultListViewTest, CorrectEnumLength) {

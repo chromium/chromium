@@ -3,8 +3,10 @@
 // found in the LICENSE file.
 
 #include "ash/app_list/views/search_result_view.h"
+#include <memory>
 
 #include "ash/app_list/model/search/test_search_result.h"
+#include "ash/public/cpp/app_list/app_list_types.h"
 #include "base/memory/raw_ptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/controls/label.h"
@@ -76,6 +78,10 @@ class SearchResultViewWidgetTest : public views::test::WidgetTest {
     for (const auto& label_tag_pair : view->details_label_tags_)
       merged_string += label_tag_pair.GetLabel()->GetText();
     return merged_string;
+  }
+
+  bool IsProgressBarChart(SearchResultView* view) {
+    return view->is_progress_bar_answer_card_;
   }
 
   void SetSearchResultViewMultilineDetailsHeight(
@@ -310,6 +316,18 @@ TEST_F(SearchResultViewTest, FlexWeightCalculation) {
                   ->GetProperty(views::kFlexBehaviorKey)
                   ->order());
   }
+}
+
+TEST_F(SearchResultViewWidgetTest, ProgressBarResult) {
+  auto progress_bar_result = std::make_unique<TestSearchResult>();
+  auto system_info_data = std::make_unique<ash::SystemInfoAnswerCardData>(0.5);
+  progress_bar_result->SetSystemInfoAnswerCardData(*system_info_data.get());
+  SetupTestSearchResult(progress_bar_result.get());
+  answer_card_view()->SetResult(progress_bar_result.get());
+  answer_card_view()->OnResultChanged();
+  EXPECT_EQ(true, IsProgressBarChart(answer_card_view()));
+  EXPECT_EQ(u"Test Search Result Details 0",
+            GetDetailsText(answer_card_view()));
 }
 
 }  // namespace ash

@@ -159,6 +159,22 @@ class APP_LIST_MODEL_EXPORT SearchResult {
     metadata_->is_recommendation = is_recommendation;
   }
 
+  bool is_system_info_card() const {
+    return metadata_->system_info_answer_card_data.has_value();
+  }
+
+  bool is_system_info_card_bar_chart() const {
+    return metadata_->system_info_answer_card_data.has_value() &&
+           metadata_->system_info_answer_card_data->bar_chart_percentage
+               .has_value();
+  }
+
+  absl::optional<double> bar_chart_value() const {
+    return is_system_info_card_bar_chart()
+               ? metadata_->system_info_answer_card_data->bar_chart_percentage
+               : absl::nullopt;
+  }
+
   bool skip_update_animation() const {
     return metadata_->skip_update_animation;
   }
@@ -168,6 +184,11 @@ class APP_LIST_MODEL_EXPORT SearchResult {
 
   bool use_badge_icon_background() const {
     return metadata_->use_badge_icon_background;
+  }
+
+  void set_system_info_answer_card_data(
+      const ash::SystemInfoAnswerCardData& system_info_data) {
+    metadata_->system_info_answer_card_data = system_info_data;
   }
 
   void AddObserver(SearchResultObserver* observer);

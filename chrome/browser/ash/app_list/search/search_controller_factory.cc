@@ -34,6 +34,7 @@
 #include "chrome/browser/ash/app_list/search/personalization_provider.h"
 #include "chrome/browser/ash/app_list/search/search_controller.h"
 #include "chrome/browser/ash/app_list/search/search_features.h"
+#include "chrome/browser/ash/app_list/search/system_info/system_info_card_provider.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
@@ -88,6 +89,10 @@ std::unique_ptr<SearchController> CreateSearchController(
   if (!profile->IsGuestSession()) {
     controller->AddProvider(std::make_unique<FileSearchProvider>(profile));
     controller->AddProvider(std::make_unique<DriveSearchProvider>(profile));
+    if (search_features::isLauncherSystemInfoAnswerCardsEnabled()) {
+      controller->AddProvider(
+          std::make_unique<SystemInfoCardProvider>(profile));
+    }
     if (search_features::IsLauncherImageSearchEnabled()) {
       controller->AddProvider(
           std::make_unique<LocalImageSearchProvider>(profile));

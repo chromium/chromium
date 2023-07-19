@@ -26,6 +26,8 @@ class TestSearchResult : public SearchResult {
   void SetTitle(const std::u16string& title);
   void SetDetails(const std::u16string& details);
   void SetCategory(const ash::AppListSearchResultCategory category);
+  void SetSystemInfoAnswerCardData(
+      const ash::SystemInfoAnswerCardData& system_info_data);
 };
 
 }  // namespace ash
