@@ -22,16 +22,17 @@ class ArrowContainer : public views::View {
   ArrowContainer& operator=(const ArrowContainer&) = delete;
   ~ArrowContainer() override;
 
- protected:
   // Set triangle wedge offset from center of the container on the height.
   //   - `offset` < 0, the triangle wedge is above the center.
   //   - `offset` > 0, the triangle wedge is below the center.
   //   - `offset` = 0, the triangle wedge is right on the center.
   void SetArrowVerticalOffset(int offset);
   // Set the triangle wedge on left or right side.
-  void SetArrowOnLeft(bool is_on_left);
+  void SetArrowOnLeft(bool arrow_on_left);
 
  private:
+  void UpdateBorder();
+
   // views::View:
   void OnPaintBackground(gfx::Canvas* canvas) override;
   gfx::Size CalculatePreferredSize() const override;

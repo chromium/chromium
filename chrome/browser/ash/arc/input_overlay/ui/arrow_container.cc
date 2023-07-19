@@ -4,11 +4,11 @@
 
 #include "chrome/browser/ash/arc/input_overlay/ui/arrow_container.h"
 
-#include "arrow_container.h"
 #include "cc/paint/paint_flags.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/canvas.h"
+#include "ui/views/border.h"
 
 namespace arc::input_overlay {
 namespace {
@@ -20,7 +20,7 @@ constexpr int kTriangleLength = 20;
 constexpr int kTriangleHeight = 14;
 constexpr int kCornerRadius = 16;
 constexpr int kBorderThickness = 2;
-
+constexpr int kBorderInset = 16;
 // Draws the dialog shape path with round corner. It starts after the corner
 // radius on line #0 and draws clockwise.
 //
@@ -61,7 +61,7 @@ SkPath BackgroundPath(int height,
   // Top left after corner radius to top right corner radius.
   path.rLineTo(short_length, 0);
   path.rArcTo(kCornerRadius, kCornerRadius, 0, SkPath::kSmall_ArcSize,
-              SkPathDirection::kCW, +kCornerRadius, +kCornerRadius);
+              SkPathDirection::kCW, kCornerRadius, kCornerRadius);
   if (draw_triangle_on_left) {
     // Top right after corner radius to bottom right corner radius.
     path.rLineTo(0, short_height);
@@ -75,7 +75,7 @@ SkPath BackgroundPath(int height,
     path.rLineTo(0, limit - action_offset);
   }
   path.rArcTo(kCornerRadius, kCornerRadius, 0, SkPath::kSmall_ArcSize,
-              SkPathDirection::kCW, -kCornerRadius, +kCornerRadius);
+              SkPathDirection::kCW, -kCornerRadius, kCornerRadius);
   // Bottom right after corner radius to bottom left corner radius.
   path.rLineTo(-short_length, 0);
   path.rArcTo(kCornerRadius, kCornerRadius, 0, SkPath::kSmall_ArcSize,
@@ -93,7 +93,7 @@ SkPath BackgroundPath(int height,
     path.rLineTo(0, -short_height);
   }
   path.rArcTo(kCornerRadius, kCornerRadius, 0, SkPath::kSmall_ArcSize,
-              SkPathDirection::kCW, +kCornerRadius, -kCornerRadius);
+              SkPathDirection::kCW, kCornerRadius, -kCornerRadius);
   // Path finish.
   path.close();
   return path;
@@ -101,7 +101,10 @@ SkPath BackgroundPath(int height,
 
 }  // namespace
 
-ArrowContainer::ArrowContainer() {}
+ArrowContainer::ArrowContainer() {
+  UpdateBorder();
+}
+
 ArrowContainer::~ArrowContainer() = default;
 
 void ArrowContainer::SetArrowVerticalOffset(int offset) {
@@ -111,11 +114,21 @@ void ArrowContainer::SetArrowVerticalOffset(int offset) {
   }
 }
 
-void ArrowContainer::SetArrowOnLeft(bool is_on_left) {
-  if (arrow_on_left_ != is_on_left) {
-    arrow_on_left_ = is_on_left;
+void ArrowContainer::SetArrowOnLeft(bool arrow_on_left) {
+  if (arrow_on_left_ != arrow_on_left) {
+    arrow_on_left_ = arrow_on_left;
+    UpdateBorder();
     SchedulePaint();
   }
+}
+
+void ArrowContainer::UpdateBorder() {
+  SetBorder(views::CreateEmptyBorder(
+      arrow_on_left_
+          ? gfx::Insets::TLBR(kBorderInset, kBorderInset + kTriangleHeight,
+                              kBorderInset, kBorderInset)
+          : gfx::Insets::TLBR(kBorderInset, kBorderInset, kBorderInset,
+                              kBorderInset + kTriangleHeight)));
 }
 
 void ArrowContainer::OnPaintBackground(gfx::Canvas* canvas) {
