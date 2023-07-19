@@ -17,7 +17,6 @@
 #include "components/services/screen_ai/buildflags/buildflags.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/zoom/page_zoom_constants.h"
-#include "pdf/pdf_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/webui/web_ui_util.h"
@@ -214,8 +213,6 @@ void AddAdditionalData(bool enable_printing,
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   dict->Set("printingEnabled", printing_enabled);
   dict->Set("pdfAnnotationsEnabled", annotations_enabled);
-  dict->Set("pdfAttachmentsEnabled",
-            base::FeatureList::IsEnabled(chrome_pdf::features::kPdfPortfolio));
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   // TODO(crbug.com/1444895): Re-enable it when integrating PDF OCR with
   // Select-to-Speak. Consider adding a feature flag.
