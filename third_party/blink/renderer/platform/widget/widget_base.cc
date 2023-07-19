@@ -301,8 +301,8 @@ void WidgetBase::Shutdown() {
                           scoped_refptr<WidgetInputHandlerManager> manager,
                           scoped_refptr<scheduler::WidgetScheduler> scheduler) {
                          recordreplay::Assert(
-                             "[RUN-2224-2323] WidgetBase::Shutdown %d %d",
-                             manager->HasOneRef(), scheduler->HasOneRef());
+                             "[RUN-2224-2323] WidgetBase::Shutdown %d:%d %d:%d",
+                             manager->HasOneRef(), manager->HasAtLeastOneRef(), scheduler->HasOneRef(), scheduler->HasAtLeastOneRef());
                          view.reset();
                          manager.reset();
                          scheduler->Shutdown();
