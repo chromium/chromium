@@ -986,8 +986,8 @@ enum OpenUrlFrom {
 // parameters here. If a new parameter is added and its value is only known
 // after the user has logged in, please update BrowserPostLoginParams as well.
 //
-// Next version: 65
-// Next id: 65
+// Next version: 66
+// Next id: 66
 [Stable, RenamedFrom="crosapi.mojom.LacrosInitParams"]
 struct BrowserInitParams {
   // This is ash-chrome's version of the Crosapi interface. This is used by
@@ -1387,6 +1387,11 @@ struct BrowserInitParams {
   // Tells if PDF OCR feature is enabled.
   [MinVersion=64]
   bool is_pdf_ocr_enabled@64;
+
+  // If true, the DriveFsBulkPinning flag and it's accompanying feature
+  // management flag has been enabled.
+  [MinVersion=65]
+  bool is_drivefs_bulk_pinning_enabled@65;
 };
 
 // BrowserPostLoginParams is the subset of parameters in BrowserInitParams

@@ -643,6 +643,9 @@ void InjectBrowserInitParams(
       ::features::IsVariableRefreshRateEnabled();
 
   params->is_pdf_ocr_enabled = ::features::IsPdfOcrEnabled();
+
+  params->is_drivefs_bulk_pinning_enabled =
+      ash::features::IsDriveFsBulkPinningEnabled();
 }
 
 template <typename BrowserParams>
