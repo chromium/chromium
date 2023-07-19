@@ -168,64 +168,20 @@ bool IsAutofillExperimentId(int id) {
   });
 }
 
-// Helper to log the HTTP |response_code| and other data received for
-// |request_type| to UMA.
-void LogHttpResponseData(AutofillDownloadManager::RequestType request_type,
-                         int response_code,
-                         int net_error,
-                         base::TimeDelta request_duration) {
-  int response_or_error_code = net_error;
-  if (net_error == net::OK || net_error == net::ERR_HTTP_RESPONSE_CODE_FAILURE)
-    response_or_error_code = response_code;
-
-  switch (request_type) {
+const char* RequestTypeToString(AutofillDownloadManager::RequestType type) {
+  switch (type) {
     case AutofillDownloadManager::REQUEST_QUERY:
-      base::UmaHistogramSparse("Autofill.Query.HttpResponseOrErrorCode",
-                               response_or_error_code);
-      UMA_HISTOGRAM_TIMES("Autofill.Query.RequestDuration", request_duration);
-      break;
+      return "Query";
     case AutofillDownloadManager::REQUEST_UPLOAD:
-      base::UmaHistogramSparse("Autofill.Upload.HttpResponseOrErrorCode",
-                               response_or_error_code);
-      UMA_HISTOGRAM_TIMES("Autofill.Upload.RequestDuration", request_duration);
-      break;
-    default:
-      NOTREACHED();
+      return "Upload";
   }
+  NOTREACHED_NORETURN();
 }
 
-// Helper to log, to UMA, the |num_bytes| sent for a failing instance of
-// |request_type|.
-void LogFailingPayloadSize(AutofillDownloadManager::RequestType request_type,
-                           size_t num_bytes) {
-  switch (request_type) {
-    case AutofillDownloadManager::REQUEST_QUERY:
-      UMA_HISTOGRAM_COUNTS_100000("Autofill.Query.FailingPayloadSize",
-                                  num_bytes);
-      break;
-    case AutofillDownloadManager::REQUEST_UPLOAD:
-      UMA_HISTOGRAM_COUNTS_100000("Autofill.Upload.FailingPayloadSize",
-                                  num_bytes);
-      break;
-    default:
-      NOTREACHED();
-  }
-}
-
-// Helper to log, to UMA, the |delay| caused by exponential backoff.
-void LogExponentialBackoffDelay(
-    AutofillDownloadManager::RequestType request_type,
-    base::TimeDelta delay) {
-  switch (request_type) {
-    case AutofillDownloadManager::REQUEST_QUERY:
-      UMA_HISTOGRAM_MEDIUM_TIMES("Autofill.Query.BackoffDelay", delay);
-      break;
-    case AutofillDownloadManager::REQUEST_UPLOAD:
-      UMA_HISTOGRAM_MEDIUM_TIMES("Autofill.Upload.BackoffDelay", delay);
-      break;
-    default:
-      NOTREACHED();
-  }
+std::string GetMetricName(AutofillDownloadManager::RequestType request_type,
+                          std::string_view suffix) {
+  return base::StrCat(
+      {"Autofill.", RequestTypeToString(request_type), ".", suffix});
 }
 
 net::NetworkTrafficAnnotationTag GetNetworkTrafficAnnotation(
@@ -301,17 +257,6 @@ size_t CountActiveFieldsInForms(const std::vector<FormStructure*>& forms) {
   for (const auto* form : forms)
     active_field_count += form->active_field_count();
   return active_field_count;
-}
-
-const char* RequestTypeToString(AutofillDownloadManager::RequestType type) {
-  switch (type) {
-    case AutofillDownloadManager::REQUEST_QUERY:
-      return "query";
-    case AutofillDownloadManager::REQUEST_UPLOAD:
-      return "upload";
-  }
-  NOTREACHED();
-  return "";
 }
 
 std::string FieldTypeToString(uint32_t type) {
@@ -462,14 +407,18 @@ bool CanThrottleUpload(const FormStructure& form,
 
 // Determines whether a HTTP request was successful based on its response code.
 bool IsHttpSuccess(int response_code) {
-  return (response_code >= 200 && response_code < 300);
+  return response_code >= 200 && response_code < 300;
 }
 
-bool GetUploadPayloadForApi(const AutofillUploadContents& upload,
-                            std::string* payload) {
+absl::optional<std::string> GetUploadPayloadForApi(
+    const AutofillUploadContents& upload) {
   AutofillUploadRequest upload_request;
   *upload_request.mutable_upload() = upload;
-  return upload_request.SerializeToString(payload);
+  std::string payload;
+  if (!upload_request.SerializeToString(&payload)) {
+    return absl::nullopt;
+  }
+  return std::move(payload);
 }
 
 // Gets an API method URL given its type (query or upload), an optional
@@ -481,20 +430,15 @@ bool GetUploadPayloadForApi(const AutofillUploadContents& upload,
 std::string GetAPIMethodUrl(AutofillDownloadManager::RequestType type,
                             base::StringPiece resource_id,
                             base::StringPiece method) {
-  const char* api_method_url;
-  if (type == AutofillDownloadManager::REQUEST_QUERY) {
-    if (method == "POST") {
-      api_method_url = "/v1/pages:get";
-    } else {
-      api_method_url = "/v1/pages";
+  const char* api_method_url = [&] {
+    switch (type) {
+      case AutofillDownloadManager::REQUEST_QUERY:
+        return method == "POST" ? "/v1/pages:get" : "/v1/pages";
+      case AutofillDownloadManager::REQUEST_UPLOAD:
+        return "/v1/forms:vote";
     }
-  } else if (type == AutofillDownloadManager::REQUEST_UPLOAD) {
-    api_method_url = "/v1/forms:vote";
-  } else {
-    // This should not be reached, but we never know.
-    NOTREACHED() << "Request of type " << type << " is invalid";
-    return "";
-  }
+    NOTREACHED_NORETURN();
+  }();
   if (resource_id.empty()) {
     return std::string(api_method_url);
   }
@@ -502,33 +446,34 @@ std::string GetAPIMethodUrl(AutofillDownloadManager::RequestType type,
 }
 
 // Gets HTTP body payload for API POST request.
-bool GetAPIBodyPayload(const std::string& payload,
-                       AutofillDownloadManager::RequestType type,
-                       std::string* output_payload) {
+absl::optional<std::string> GetAPIBodyPayload(
+    std::string payload,
+    AutofillDownloadManager::RequestType type) {
   // Don't do anything for payloads not related to Query.
   if (type != AutofillDownloadManager::REQUEST_QUERY) {
-    *output_payload = payload;
-    return true;
+    return std::move(payload);
   }
   // Wrap query payload in a request proto to interface with API Query method.
   AutofillPageResourceQueryRequest request;
-  request.set_serialized_request(payload);
-  if (!request.SerializeToString(output_payload)) {
-    return false;
+  request.set_serialized_request(std::move(payload));
+  payload = {};
+  if (!request.SerializeToString(&payload)) {
+    return absl::nullopt;
   }
-  return true;
+  return std::move(payload);
 }
 
 // Gets the data payload for API Query (POST and GET).
-bool GetAPIQueryPayload(const AutofillPageQueryRequest& query,
-                        std::string* payload) {
+absl::optional<std::string> GetAPIQueryPayload(
+    const AutofillPageQueryRequest& query) {
   std::string serialized_query;
   if (!query.SerializeToString(&serialized_query))
-    return false;
+    return absl::nullopt;
 
+  std::string payload;
   base::Base64UrlEncode(serialized_query,
-                        base::Base64UrlEncodePolicy::INCLUDE_PADDING, payload);
-  return true;
+                        base::Base64UrlEncodePolicy::INCLUDE_PADDING, &payload);
+  return std::move(payload);
 }
 
 // Raw metadata uploading enabled iff this Chrome instance is on Canary or Dev
@@ -636,10 +581,8 @@ bool AutofillDownloadManager::StartQueryRequest(
   for (int id : *active_experiments_)
     query.mutable_experiments()->Add(id);
 
-  // Get the query request payload.
-  std::string payload;
-  bool is_payload_serialized = GetAPIQueryPayload(query, &payload);
-  if (!is_payload_serialized) {
+  absl::optional<std::string> payload = GetAPIQueryPayload(query);
+  if (!payload) {
     return false;
   }
 
@@ -648,7 +591,7 @@ bool AutofillDownloadManager::StartQueryRequest(
       .form_signatures = std::move(queried_form_signatures),
       .request_type = AutofillDownloadManager::REQUEST_QUERY,
       .isolation_info = std::move(isolation_info),
-      .payload = std::move(payload),
+      .payload = std::move(payload).value(),
   };
   AutofillMetrics::LogServerQueryMetric(AutofillMetrics::QUERY_SENT);
 
@@ -708,10 +651,8 @@ bool AutofillDownloadManager::StartUploadRequest(
     }
 
     // Get the POST payload that contains upload data.
-    std::string payload;
-    bool is_payload = GetUploadPayloadForApi(upload, &payload);
-    // Indicate that we could not serialize upload in the payload.
-    if (!is_payload) {
+    absl::optional<std::string> payload = GetUploadPayloadForApi(upload);
+    if (!payload) {
       return false;
     }
 
@@ -725,7 +666,7 @@ bool AutofillDownloadManager::StartUploadRequest(
         .form_signatures = {form.form_signature()},
         .request_type = AutofillDownloadManager::REQUEST_UPLOAD,
         .isolation_info = absl::nullopt,
-        .payload = std::move(payload),
+        .payload = std::move(payload).value(),
     };
 
     LOG_AF(log_manager_) << LoggingScope::kAutofillServer
@@ -772,11 +713,11 @@ std::tuple<GURL, std::string> AutofillDownloadManager::GetRequestURLAndMethod(
     if (GetPayloadLength(request_data.payload) <= kMaxQueryGetSize) {
       resource_id = request_data.payload;
       method = "GET";
-      UMA_HISTOGRAM_BOOLEAN("Autofill.Query.ApiUrlIsTooLong", false);
+      base::UmaHistogramBoolean("Autofill.Query.ApiUrlIsTooLong", false);
     } else {
-      UMA_HISTOGRAM_BOOLEAN("Autofill.Query.ApiUrlIsTooLong", true);
+      base::UmaHistogramBoolean("Autofill.Query.ApiUrlIsTooLong", true);
     }
-    UMA_HISTOGRAM_BOOLEAN("Autofill.Query.Method", (method == "GET") ? 0 : 1);
+    base::UmaHistogramBoolean("Autofill.Query.Method", method != "GET");
   }
 
   // Make the canonical URL to query the API, e.g.,
@@ -808,8 +749,8 @@ bool AutofillDownloadManager::StartRequest(FormRequestData request_data) {
   // thousands when rich metadata is enabled.
   if (request_data.request_type == AutofillDownloadManager::REQUEST_QUERY &&
       method == "GET") {
-    UMA_HISTOGRAM_COUNTS_100000("Autofill.Query.GetUrlLength",
-                                request_url.spec().length());
+    base::UmaHistogramCounts100000("Autofill.Query.GetUrlLength",
+                                   request_url.spec().length());
   }
 
   auto resource_request = std::make_unique<network::ResourceRequest>();
@@ -858,15 +799,15 @@ bool AutofillDownloadManager::StartRequest(FormRequestData request_data) {
   simple_loader->SetAllowHttpErrorResults(true);
 
   if (method == "POST") {
-    const std::string content_type = "application/x-protobuf";
-    std::string payload;
-    if (!GetAPIBodyPayload(request_data.payload, request_data.request_type,
-                           &payload)) {
+    static constexpr char content_type[] = "application/x-protobuf";
+    absl::optional<std::string> payload = GetAPIBodyPayload(
+        std::move(request_data.payload), request_data.request_type);
+    if (!payload) {
       return false;
     }
-
     // Attach payload data and add data format header.
-    simple_loader->AttachStringForUpload(payload, content_type);
+    simple_loader->AttachStringForUpload(std::move(payload).value(),
+                                         content_type);
   }
 
   // Transfer ownership of the loader into url_loaders_. Temporarily hang
@@ -942,13 +883,19 @@ void AutofillDownloadManager::OnSimpleLoaderComplete(
   // Even if the server does not fill the response body when responding, the
   // corresponding response string will be at least instantiated and empty.
   // Having the response body a nullptr probably reflects a problem.
-  const bool success =
-      IsHttpSuccess(response_code) && (response_body != nullptr);
+  const bool success = IsHttpSuccess(response_code) && response_body != nullptr;
   loader_backoff_.InformOfRequest(success);
 
-  LogHttpResponseData(request_data.request_type, response_code,
-                      simple_loader->NetError(),
-                      AutofillTickClock::NowTicks() - request_start);
+  // Log the HTTP response or error code and request duration.
+  int net_error = simple_loader->NetError();
+  base::UmaHistogramSparse(
+      GetMetricName(request_data.request_type, "HttpResponseOrErrorCode"),
+      net_error != net::OK && net_error != net::ERR_HTTP_RESPONSE_CODE_FAILURE
+          ? net_error
+          : response_code);
+  base::UmaHistogramTimes(
+      GetMetricName(request_data.request_type, "RequestDuration"),
+      AutofillTickClock::NowTicks() - request_start);
 
   // Handle error if there is and return.
   if (!success) {
@@ -960,6 +907,9 @@ void AutofillDownloadManager::OnSimpleLoaderComplete(
              << simple_loader->NetError() << " and HTTP response code "
              << response_code << " and error message from the server "
              << error_message;
+    base::UmaHistogramCounts100000(
+        GetMetricName(request_data.request_type, "FailingPayloadSize"),
+        request_data.payload.length());
 
     if (request_data.observer) {
       request_data.observer->OnServerRequestError(
@@ -967,22 +917,21 @@ void AutofillDownloadManager::OnSimpleLoaderComplete(
           response_code);
     }
 
-    LogFailingPayloadSize(request_data.request_type,
-                          request_data.payload.length());
-
     // If the failure was a client error don't retry.
-    if (response_code >= 400 && response_code <= 499)
+    if (response_code >= 400 && response_code <= 499) {
       return;
+    }
 
     // If we've exhausted the maximum number of attempts, don't retry.
-    if (++request_data.num_attempts >= GetMaxServerAttempts())
+    if (++request_data.num_attempts >= GetMaxServerAttempts()) {
       return;
-
-    base::TimeDelta backoff = loader_backoff_.GetTimeUntilRelease();
-    LogExponentialBackoffDelay(request_data.request_type, backoff);
+    }
 
     // Reschedule with the appropriate delay, ignoring return value because
     // payload is already well formed.
+    base::TimeDelta backoff = loader_backoff_.GetTimeUntilRelease();
+    base::UmaHistogramMediumTimes(
+        GetMetricName(request_data.request_type, "BackoffDelay"), backoff);
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(
@@ -992,23 +941,25 @@ void AutofillDownloadManager::OnSimpleLoaderComplete(
     return;
   }
 
-  if (request_data.request_type == AutofillDownloadManager::REQUEST_QUERY) {
-    CacheQueryRequest(request_data.form_signatures, *response_body);
-    UMA_HISTOGRAM_BOOLEAN("Autofill.Query.WasInCache",
-                          simple_loader->LoadedFromCache());
-    if (request_data.observer) {
-      request_data.observer->OnLoadedServerPredictions(
-          std::move(*response_body), request_data.form_signatures);
+  switch (request_data.request_type) {
+    case REQUEST_QUERY: {
+      CacheQueryRequest(request_data.form_signatures, *response_body);
+      base::UmaHistogramBoolean("Autofill.Query.WasInCache",
+                                simple_loader->LoadedFromCache());
+      if (request_data.observer) {
+        request_data.observer->OnLoadedServerPredictions(
+            std::move(*response_body), request_data.form_signatures);
+      }
+      return;
     }
-    return;
+    case REQUEST_UPLOAD:
+      DVLOG(1) << "AutofillDownloadManager: upload request has succeeded.";
+      if (request_data.observer) {
+        request_data.observer->OnUploadedPossibleFieldTypes();
+      }
+      return;
   }
-
-  DCHECK_EQ(request_data.request_type, AutofillDownloadManager::REQUEST_UPLOAD);
-  DVLOG(1) << "AutofillDownloadManager: upload request has succeeded.";
-
-  if (request_data.observer) {
-    request_data.observer->OnUploadedPossibleFieldTypes();
-  }
+  NOTREACHED_NORETURN();
 }
 
 void AutofillDownloadManager::InitActiveExperiments() {

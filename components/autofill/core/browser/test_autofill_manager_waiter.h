@@ -17,6 +17,7 @@
 #include "base/time/time.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "components/autofill/core/browser/autofill_manager.h"
+#include "components/autofill/core/common/dense_set.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -32,6 +33,7 @@ enum class AutofillManagerEvent {
   kDidFillAutofillFormData,
   kJavaScriptChangedAutofilledValue,
   kFormSubmitted,
+  kMaxValue = kFormSubmitted
 };
 
 // Records AutofillManager::Observer::OnBeforeFoo() events and blocks until the
@@ -82,9 +84,8 @@ class TestAutofillManagerWaiter : public AutofillManager::Observer {
  public:
   using Event = AutofillManagerEvent;
 
-  explicit TestAutofillManagerWaiter(
-      AutofillManager& manager,
-      std::initializer_list<Event> relevant_events = {});
+  explicit TestAutofillManagerWaiter(AutofillManager& manager,
+                                     DenseSet<Event> relevant_events = {});
   TestAutofillManagerWaiter(const TestAutofillManagerWaiter&) = delete;
   TestAutofillManagerWaiter& operator=(const TestAutofillManagerWaiter&) =
       delete;
@@ -188,7 +189,7 @@ class TestAutofillManagerWaiter : public AutofillManager::Observer {
   void OnAfterFormSubmitted(AutofillManager& manager,
                             FormGlobalId form) override;
 
-  std::vector<Event> relevant_events_;
+  DenseSet<Event> relevant_events_;
   std::unique_ptr<State> state_ = std::make_unique<State>();
   base::TimeDelta timeout_ = base::Seconds(30);
   base::ScopedObservation<AutofillManager, AutofillManager::Observer>

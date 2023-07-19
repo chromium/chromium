@@ -64,7 +64,7 @@ std::string TestAutofillManagerWaiter::State::Describe() const {
 
 TestAutofillManagerWaiter::TestAutofillManagerWaiter(
     AutofillManager& manager,
-    std::initializer_list<Event> relevant_events)
+    DenseSet<Event> relevant_events)
     : relevant_events_(relevant_events) {
   observation_.Observe(&manager);
 }
@@ -179,7 +179,7 @@ void TestAutofillManagerWaiter::Reset() {
 }
 
 bool TestAutofillManagerWaiter::IsRelevant(Event event) const {
-  return relevant_events_.empty() || base::Contains(relevant_events_, event);
+  return relevant_events_.empty() || relevant_events_.contains(event);
 }
 
 void TestAutofillManagerWaiter::Increment(Event event,

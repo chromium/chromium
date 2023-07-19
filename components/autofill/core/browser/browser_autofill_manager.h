@@ -899,7 +899,7 @@ class BrowserAutofillManager : public AutofillManager,
   // - We observe a form submission.
   // - The list becomes to large.
 
-  // Callbacks are wiped in the following  situations:
+  // Callbacks are wiped in the following situations:
   // - A form is submitted.
   // - A callback is overridden by a more recent version.
   std::list<std::pair<FormSignature, base::OnceClosure>> queued_vote_uploads_;

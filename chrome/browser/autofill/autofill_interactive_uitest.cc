@@ -4147,8 +4147,7 @@ class MAYBE_AutofillInteractiveFormSubmissionTest
 
   void EnterValues() {
     TestAutofillManagerWaiter waiter(
-        *autofill_manager(), {AutofillManagerEvent::kTextFieldDidChange,
-                              AutofillManagerEvent::kTextFieldDidChange});
+        *autofill_manager(), {AutofillManagerEvent::kTextFieldDidChange});
     // Normally we would enter the state last, but we don't have a
     // kSelectElementDidChange event, yet. Therefore, we just wait until
     // the second text field was reported to the autofill manager.
