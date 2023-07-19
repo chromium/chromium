@@ -80,6 +80,7 @@ AutofillBubbleBase* AutofillBubbleHandlerImpl::ShowSaveCreditCardBubble(
   SaveCardBubbleViews* bubble = nullptr;
   switch (bubble_type) {
     case BubbleType::LOCAL_SAVE:
+    case BubbleType::LOCAL_CVC_SAVE:
     case BubbleType::UPLOAD_SAVE:
       bubble =
           new SaveCardOfferBubbleViews(anchor_view, web_contents, controller);

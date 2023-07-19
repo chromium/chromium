@@ -269,6 +269,11 @@ class AutofillClient : public RiskDataLoader {
       return *this;
     }
 
+    SaveCreditCardOptions& with_cvc_save_only(bool b) {
+      cvc_save_only = b;
+      return *this;
+    }
+
     bool from_dynamic_change_form = false;
     bool has_non_focusable_field = false;
     bool should_request_name_from_user = false;
@@ -277,6 +282,7 @@ class AutofillClient : public RiskDataLoader {
     bool has_multiple_legal_lines = false;
     bool has_same_last_four_as_server_card_but_different_expiration_date =
         false;
+    bool cvc_save_only = false;
   };
 
   // Used for options of save (and update) address profile prompt.
@@ -626,11 +632,11 @@ class AutofillClient : public RiskDataLoader {
 #endif
 
   // Runs |callback| once the user makes a decision with respect to the
-  // offer-to-save prompt. On desktop, shows the offer-to-save bubble if
-  // |options.show_prompt| is true; otherwise only shows the
-  // omnibox icon. On mobile, shows the offer-to-save infobar if
-  // |options.show_prompt| is true; otherwise does not offer to
-  // save at all.
+  // offer-to-save prompt. This includes both the save local card prompt and the
+  // save CVC for a local card prompt. On desktop, shows the offer-to-save
+  // bubble if |options.show_prompt| is true; otherwise only shows the omnibox
+  // icon. On mobile, shows the offer-to-save infobar if |options.show_prompt|
+  // is true; otherwise does not offer to save at all.
   virtual void ConfirmSaveCreditCardLocally(
       const CreditCard& card,
       AutofillClient::SaveCreditCardOptions options,

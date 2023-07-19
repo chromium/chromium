@@ -93,11 +93,11 @@ void SaveCardBubbleControllerImpl::OfferLocalSave(
   is_upload_save_ = false;
   is_reshow_ = false;
   options_ = options;
-  legal_message_lines_.clear();
-
   card_ = card;
   local_save_card_prompt_callback_ = std::move(save_card_prompt_callback);
-  current_bubble_type_ = BubbleType::LOCAL_SAVE;
+  legal_message_lines_.clear();
+  current_bubble_type_ = options.cvc_save_only ? BubbleType::LOCAL_CVC_SAVE
+                                               : BubbleType::LOCAL_SAVE;
 
   if (options.show_prompt)
     ShowBubble();
@@ -119,8 +119,8 @@ void SaveCardBubbleControllerImpl::OfferUploadSave(
   options_ = options;
   card_ = card;
   upload_save_card_prompt_callback_ = std::move(save_card_prompt_callback);
-  current_bubble_type_ = BubbleType::UPLOAD_SAVE;
   legal_message_lines_ = legal_message_lines;
+  current_bubble_type_ = BubbleType::UPLOAD_SAVE;
 
   if (options_.show_prompt)
     ShowBubble();
@@ -165,6 +165,9 @@ std::u16string SaveCardBubbleControllerImpl::GetWindowTitle() const {
     case BubbleType::LOCAL_SAVE:
       return l10n_util::GetStringUTF16(
           IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_LOCAL);
+    case BubbleType::LOCAL_CVC_SAVE:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_SAVE_CVC_PROMPT_TITLE_LOCAL);
     case BubbleType::UPLOAD_SAVE:
       if (base::FeatureList::IsEnabled(
               features::kAutofillEnableNewSaveCardBubbleUi)) {
@@ -191,6 +194,11 @@ std::u16string SaveCardBubbleControllerImpl::GetExplanatoryMessage() const {
   if (current_bubble_type_ == BubbleType::FAILURE)
     return l10n_util::GetStringUTF16(IDS_AUTOFILL_FAILURE_BUBBLE_EXPLANATION);
 
+  if (current_bubble_type_ == BubbleType::LOCAL_CVC_SAVE) {
+    return l10n_util::GetStringUTF16(
+        IDS_AUTOFILL_SAVE_CVC_PROMPT_EXPLANATION_LOCAL);
+  }
+
   if (current_bubble_type_ != BubbleType::UPLOAD_SAVE)
     return std::u16string();
 
@@ -212,6 +220,7 @@ std::u16string SaveCardBubbleControllerImpl::GetExplanatoryMessage() const {
 std::u16string SaveCardBubbleControllerImpl::GetAcceptButtonText() const {
   switch (current_bubble_type_) {
     case BubbleType::LOCAL_SAVE:
+    case BubbleType::LOCAL_CVC_SAVE:
       return l10n_util::GetStringUTF16(
           IDS_AUTOFILL_SAVE_CARD_BUBBLE_LOCAL_SAVE_ACCEPT);
     case BubbleType::UPLOAD_SAVE:
@@ -229,6 +238,7 @@ std::u16string SaveCardBubbleControllerImpl::GetAcceptButtonText() const {
 std::u16string SaveCardBubbleControllerImpl::GetDeclineButtonText() const {
   switch (current_bubble_type_) {
     case BubbleType::LOCAL_SAVE:
+    case BubbleType::LOCAL_CVC_SAVE:
       return l10n_util::GetStringUTF16(
           IDS_AUTOFILL_NO_THANKS_DESKTOP_LOCAL_SAVE);
     case BubbleType::UPLOAD_SAVE:
@@ -305,6 +315,10 @@ void SaveCardBubbleControllerImpl::OnSaveButton(
       should_show_card_saved_label_animation_ = true;
       std::move(local_save_card_prompt_callback_)
           .Run(AutofillClient::SaveCardOfferUserDecision::kAccepted);
+      break;
+    // TODO (crbug.com/1462821): Add view interactions when the save button is
+    // clicked.
+    case BubbleType::LOCAL_CVC_SAVE:
       break;
     case BubbleType::MANAGE_CARDS:
       LogManageCardsPromptMetric(ManageCardsPromptMetric::kManageCardsDone,
@@ -427,6 +441,8 @@ std::u16string SaveCardBubbleControllerImpl::GetSavePaymentIconTooltipText()
     case BubbleType::UPLOAD_SAVE:
     case BubbleType::MANAGE_CARDS:
       return l10n_util::GetStringUTF16(IDS_TOOLTIP_SAVE_CREDIT_CARD);
+    case BubbleType::LOCAL_CVC_SAVE:
+      return l10n_util::GetStringUTF16(IDS_TOOLTIP_SAVE_CVC);
     case BubbleType::UPLOAD_IN_PROGRESS:
       return l10n_util::GetStringUTF16(IDS_TOOLTIP_SAVE_CREDIT_CARD_PENDING);
     case BubbleType::FAILURE:
@@ -492,6 +508,8 @@ void SaveCardBubbleControllerImpl::DoShowBubble() {
                                  is_upload_save_);
       break;
     case BubbleType::FAILURE:
+    // TODO (crbug.com/1462821): Add metrics for local CVC save.
+    case BubbleType::LOCAL_CVC_SAVE:
       break;
     case BubbleType::UPLOAD_IN_PROGRESS:
     case BubbleType::INACTIVE:
@@ -553,6 +571,8 @@ void SaveCardBubbleControllerImpl::ShowIconOnly() {
           GetSyncState());
       break;
     case BubbleType::FAILURE:
+    // TODO (crbug.com/1462821): Add metrics for local CVC save.
+    case BubbleType::LOCAL_CVC_SAVE:
       break;
     case BubbleType::UPLOAD_IN_PROGRESS:
     case BubbleType::MANAGE_CARDS:

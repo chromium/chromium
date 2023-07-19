@@ -105,6 +105,7 @@ class SaveCardBubbleControllerImplTest : public DialogBrowserTest {
       case BubbleType::FAILURE:
         controller_->ShowBubbleForSaveCardFailureForTesting();
         break;
+      case BubbleType::LOCAL_CVC_SAVE:
       case BubbleType::UPLOAD_IN_PROGRESS:
       case BubbleType::INACTIVE:
         break;

@@ -24,8 +24,8 @@ namespace autofill {
 
 enum class BubbleType;
 
-// Implementation of per-tab class to control the save credit card bubble and
-// Omnibox icon.
+// Implementation of per-tab class to control the local/server save credit card
+// bubble, the local/server save CVC bubble, and Omnibox icon.
 class SaveCardBubbleControllerImpl
     : public AutofillBubbleControllerBase,
       public SaveCardBubbleController,
@@ -45,11 +45,15 @@ class SaveCardBubbleControllerImpl
       delete;
   ~SaveCardBubbleControllerImpl() override;
 
-  // Sets up the controller and offers to save the |card| locally.
+  // Sets up the controller and is responsible for offering both local card save
+  // and local CVC save. The local CVC save bubble saves CVC for an existing
+  // local card.
   // |save_card_prompt_callback| will be invoked once the user makes a decision
-  // with respect to the offer-to-save prompt. If
-  // |options.show_bubble| is true, pops up the offer-to-save
-  // bubble; otherwise, only the omnibox icon is displayed.
+  // with respect to the offer-to-save prompt.
+  // If |options.show_bubble| is true, pops up the offer-to-save bubble;
+  // otherwise, only the omnibox icon is displayed.
+  // If |options.cvc_save_only| is true, the local CVC save bubble is shown,
+  // else the local card save bubble is shown.
   // If |options.has_non_focusable_field| is true, the save is triggered by a
   // form that has non_focusable fields.
   // If |options.from_dynamic_change_form| is true, the save is triggered by a
@@ -210,10 +214,14 @@ class SaveCardBubbleControllerImpl
   // of the UI should surface a textfield requesting the cardholder name.
   // |options_.should_request_expiration_date_from_user|, Whether the upload
   // save version of the UI should surface a pair of dropdowns requesting the
-  // expiration date. |options_.show_prompt| Whether the offer-to-save bubble
-  // should be shown or not. If true, behaves normally. If false, the omnibox
-  // icon will be displayed when offering credit card save, but the bubble
-  // itself will not pop up.
+  // expiration date.
+  // |options_.show_prompt| Whether the offer-to-save bubble should be shown or
+  // not. If true, behaves normally. If false, the omnibox icon will be
+  // displayed when offering credit card save, but the bubble itself will not
+  // pop up.
+  // |options_.cvc_save_only| If true, offer-to-save CVC bubble is shown which
+  // upon acceptance saves CVC to an already existing card. If false,
+  // offer-to-save card bubble is shown.
   AutofillClient::SaveCreditCardOptions options_;
 
   // The account info of the signed-in user.
