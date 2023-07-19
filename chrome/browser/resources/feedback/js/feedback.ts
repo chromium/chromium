@@ -703,6 +703,8 @@ function initialize() {
 
       // Now we can unhide the user email section:
       getRequiredElement('user-email').hidden = false;
+      // Only show email consent checkbox when an email address exists.
+      getRequiredElement('consent-container').hidden = false;
     });
 
     // An extension called us with an attached file.
