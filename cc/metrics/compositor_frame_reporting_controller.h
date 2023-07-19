@@ -160,6 +160,12 @@ class CC_EXPORT CompositorFrameReportingController {
   // instances should still be created for these frames. The following
   // functions accomplish this.
   void ProcessSkippedFramesIfNecessary(const viz::BeginFrameArgs& args);
+  void MaybePassEventMetricsFromDroppedFrames(
+      CompositorFrameReporter& reporter,
+      uint32_t frame_token,
+      bool next_reporter_from_same_frame);
+  void StoreEventMetricsFromDroppedFrames(CompositorFrameReporter& reporter,
+                                          uint32_t frame_token);
   void CreateReportersForDroppedFrames(
       const viz::BeginFrameArgs& old_args,
       const viz::BeginFrameArgs& new_args) const;
@@ -237,7 +243,7 @@ class CC_EXPORT CompositorFrameReportingController {
   // can drop while a long running main still eventually presents, in which
   // cases its more appropriate to check against frame_token instead of
   // BeginFrameId.
-  std::map<uint32_t, EventMetrics::List> events_metrics_from_dropped_frames_;
+  std::map<uint32_t, EventMetricsSet> events_metrics_from_dropped_frames_;
 
   // Tracking the swap times in a queue to measure delta of multiple swaps in
   // each vsync.
