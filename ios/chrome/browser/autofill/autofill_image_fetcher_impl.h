@@ -25,11 +25,22 @@ class AutofillImageFetcherImpl : public AutofillImageFetcher,
   ~AutofillImageFetcherImpl() override;
 
   // AutofillImageFetcher:
+  GURL ResolveCardArtURL(const GURL& card_art_url) override;
+  gfx::Image ResolveCardArtImage(const GURL& card_art_url,
+                                 const gfx::Image& card_art_image) override;
   image_fetcher::ImageFetcher* GetImageFetcher() override;
   base::WeakPtr<AutofillImageFetcher> GetWeakPtr() override;
 
+  void SetScreenScaleForTesting(CGFloat scale);
+
  private:
   std::unique_ptr<image_fetcher::ImageFetcher> image_fetcher_;
+
+  // To make sure the fetched images are not blurry, we scale the fetched size
+  // up by the pixel density or 'scale' of the screen. The scale is kept as a
+  // member variable as it can be overridden in tests.
+  CGFloat screen_scale_;
+
   base::WeakPtrFactory<AutofillImageFetcherImpl> weak_ptr_factory_{this};
 };
 

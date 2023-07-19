@@ -158,6 +158,7 @@ source_set("unit_tests") {
   sources = [
     "autofill_controller_js_unittest.mm",
     "autofill_controller_unittest.mm",
+    "autofill_image_fetcher_impl_unittest.mm",
     "autofill_java_script_feature_unittest.mm",
     "child_frame_registration_java_script_feature_unittest.mm",
     "form_input_accessory_view_handler_unittest.mm",
@@ -211,6 +212,7 @@ source_set("unit_tests") {
     "//third_party/leveldatabase",
     "//third_party/ocmock",
     "//ui/base:test_support",
+    "//ui/gfx:test_support",
   ]
 }
 
