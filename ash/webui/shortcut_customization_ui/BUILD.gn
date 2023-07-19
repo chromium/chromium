@@ -40,6 +40,7 @@ source_set("unit_tests") {
 
   sources = [
     "backend/accelerator_configuration_provider_unittest.cc",
+    "backend/accelerator_layout_table_unittest.cc",
     "backend/search/search_concept_registry_unittest.cc",
     "backend/search/search_handler_unittest.cc",
     "shortcuts_app_manager_unittest.cc",

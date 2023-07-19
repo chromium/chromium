@@ -13,6 +13,7 @@
 #include "ash/public/cpp/accelerators.h"
 #include "ash/public/mojom/accelerator_info.mojom.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "base/containers/fixed_flat_set.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/events/event_constants.h"
@@ -28,11 +29,14 @@
 //    2.    If you are adding a browser/ambient [1] accelerator, add a new
 //          enum to `NonConfigurableActions`. Then add an entry to
 //          `GetNonConfigurableActionsMap` in `accelerator_layout_table.cc`.
-//    3.    Add a new entry to `kAcceleratorLayouts` below. Please check that
+//    3.    If the new accelerator does not have a layout and will not appear in
+//          the Shortcuts app, add it to `kAcceleratorsWithoutLayout` and skip
+//          step 4 & 5.
+//    4.    Add a new entry to `kAcceleratorLayouts` below. Please check that
 //          you are adding the accelerator to the correct category determined
 //          from step 1. The ordering of the accelerators is reflected in the
 //          app, so place the accelerator where it would most logically fit.
-//    4.    If the accelerator can be modified, ensure that the
+//    5.    If the accelerator can be modified, ensure that the
 //          `kAcceleratorLayouts` entry has its `locked` field set to `false`.
 //
 //   [1]: An "ambient" accelerator is a non-modifiable miscellaneous accelerator
@@ -229,6 +233,17 @@ using NonConfigurableActionsMap =
 const NonConfigurableActionsMap& GetNonConfigurableActionsMap();
 
 std::u16string GetKeyDisplay(ui::KeyboardCode key_code);
+
+// A fixed set of accelerators that should not have a layout. This is used for
+// integrity check to make sure when a new accelerator is added, either it has
+// been added to `kAcceleratorLayouts` or here.
+constexpr auto kAcceleratorsWithoutLayout =
+    base::MakeFixedFlatSet<AcceleratorAction>({
+        AcceleratorAction::kToggleProjectorMarker,
+        AcceleratorAction::kToggleWifi,
+        AcceleratorAction::kTouchHudClear,
+        AcceleratorAction::kTouchHudModeChange,
+    });
 
 // A fixed array of accelerator layouts used for categorization and styling of
 // accelerator actions. The ordering of the array is important and is used
