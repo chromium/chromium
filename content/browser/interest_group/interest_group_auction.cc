@@ -16,6 +16,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/base64url.h"
 #include "base/check.h"
 #include "base/containers/cxx20_erase_vector.h"
 #include "base/functional/bind.h"
@@ -2036,7 +2037,11 @@ void InterestGroupAuction::StartFromServerResponse(
           config_->seller,
           std::string(reinterpret_cast<char*>(hash.data()), hash.size()))) {
     // If it wasn't witnessed then we don't know that it came from the server.
-    OnBiddingAndScoringComplete(AuctionResult::kInvalidServerResponse);
+    OnBiddingAndScoringComplete(
+        AuctionResult::kInvalidServerResponse,
+        {base::StrCat(
+            {"runAdAuction(): Server response was not witnessed from ",
+             config_->seller.Serialize()})});
     return;
   }
 
@@ -2045,13 +2050,19 @@ void InterestGroupAuction::StartFromServerResponse(
           config_->server_response->request_id);
   if (!request_context) {
     // The corresponding context for the requested blob couldn't be found.
-    OnBiddingAndScoringComplete(AuctionResult::kInvalidServerResponse);
+    OnBiddingAndScoringComplete(
+        AuctionResult::kInvalidServerResponse,
+        {base::StrCat(
+            {"runAdAuction(): No corresponding request with ID: ",
+             config_->server_response->request_id.AsLowercaseString()})});
     return;
   }
 
   // The auction must be for the same seller that requested the blob.
   if (request_context->seller != config_->seller) {
-    OnBiddingAndScoringComplete(AuctionResult::kInvalidServerResponse);
+    OnBiddingAndScoringComplete(
+        AuctionResult::kInvalidServerResponse,
+        {"runAdAuction(): Seller in response doesn't match request"});
     return;
   }
 
@@ -2062,7 +2073,9 @@ void InterestGroupAuction::StartFromServerResponse(
           request_context->context);
   if (!maybe_response.ok()) {
     // We couldn't decrypt the response.
-    OnBiddingAndScoringComplete(AuctionResult::kInvalidServerResponse);
+    OnBiddingAndScoringComplete(
+        AuctionResult::kInvalidServerResponse,
+        {"runAdAuction(): Could not decrypt server response"});
     return;
   }
   const std::string& plaintext_response = maybe_response->GetPlaintextData();
@@ -2070,7 +2083,9 @@ void InterestGroupAuction::StartFromServerResponse(
       ExtractCompressedBiddingAndAuctionResponse(
           base::as_bytes(base::make_span(plaintext_response)));
   if (!compressed_response) {
-    OnBiddingAndScoringComplete(AuctionResult::kInvalidServerResponse);
+    OnBiddingAndScoringComplete(
+        AuctionResult::kInvalidServerResponse,
+        {"runAdAuction(): Could not parse response framing"});
     return;
   }
   auto decoder = std::make_unique<data_decoder::DataDecoder>();
@@ -3740,7 +3755,9 @@ void InterestGroupAuction::OnDecompressedServerResponse(
     base::expected<mojo_base::BigBuffer, std::string> result) {
   if (!result.has_value()) {
     // We couldn't unzip the response.
-    OnBiddingAndScoringComplete(AuctionResult::kBadMojoMessage);
+    OnBiddingAndScoringComplete(
+        AuctionResult::kBadMojoMessage,
+        {"runAdAuction(): Could not decompress server response"});
     return;
   }
   base::span<const uint8_t> result_span = result.value().byte_span();
@@ -3761,7 +3778,9 @@ void InterestGroupAuction::OnParsedServerResponse(
     data_decoder::DataDecoder::ValueOrError result) {
   if (!result.has_value()) {
     // We couldn't parse the CBOR of the response.
-    OnBiddingAndScoringComplete(AuctionResult::kBadMojoMessage);
+    OnBiddingAndScoringComplete(
+        AuctionResult::kInvalidServerResponse,
+        {"runAdAuction(): Could not parse server response"});
     return;
   }
   absl::optional<BiddingAndAuctionResponse> response =
@@ -3769,16 +3788,24 @@ void InterestGroupAuction::OnParsedServerResponse(
                                           request_context->group_names);
   if (!response) {
     // We couldn't recognize the structure of the response.
-    OnBiddingAndScoringComplete(AuctionResult::kBadMojoMessage);
+    OnBiddingAndScoringComplete(
+        AuctionResult::kInvalidServerResponse,
+        {"runAdAuction(): Could not parse server response"});
     return;
+  }
+  std::vector<std::string> errors;
+  if (response->error) {
+    errors.push_back(base::StrCat({"runAdAuction(): ", *response->error}));
   }
   if (response->is_chaff) {
     // This is a place-holder response because there was no winner.
-    OnBiddingAndScoringComplete(AuctionResult::kNoBids);
+    OnBiddingAndScoringComplete(AuctionResult::kNoBids, errors);
     return;
   }
   if (response->bid && !IsValidBid(*response->bid)) {
-    OnBiddingAndScoringComplete(AuctionResult::kNoBids);
+    errors.push_back(base::StrCat({"runAdAuction(): Invalid bid value ",
+                                   base::NumberToString(*response->bid)}));
+    OnBiddingAndScoringComplete(AuctionResult::kNoBids, errors);
     return;
   }
   any_bid_made_ = !response->bidding_groups.empty();
@@ -3787,7 +3814,8 @@ void InterestGroupAuction::OnParsedServerResponse(
                                         response->interest_group_name);
   // Winning group must be a bidder.
   if (!base::Contains(response->bidding_groups, winning_group)) {
-    OnBiddingAndScoringComplete(AuctionResult::kInvalidServerResponse);
+    errors.push_back("runAdAuction(): Winning group must be a bidder");
+    OnBiddingAndScoringComplete(AuctionResult::kInvalidServerResponse, errors);
     return;
   }
 
@@ -3801,7 +3829,9 @@ void InterestGroupAuction::OnLoadedWinningGroup(
     BiddingAndAuctionResponse response,
     absl::optional<StorageInterestGroup> maybe_group) {
   if (!maybe_group) {
-    OnBiddingAndScoringComplete(AuctionResult::kInvalidServerResponse);
+    OnBiddingAndScoringComplete(
+        AuctionResult::kInvalidServerResponse,
+        {"runAdAuction(): Could not load winning interest group"});
     return;
   }
   std::vector<blink::AdDescriptor> ad_components;
@@ -3811,7 +3841,9 @@ void InterestGroupAuction::OnLoadedWinningGroup(
 
   if (!maybe_group->interest_group.bidding_url) {
     // Groups must have a bidding logic URL to bid.
-    OnBiddingAndScoringComplete(AuctionResult::kInvalidServerResponse);
+    OnBiddingAndScoringComplete(
+        AuctionResult::kInvalidServerResponse,
+        {"runAdAuction(): Winning group doesn't have a bidding URL"});
     return;
   }
   all_bids_scored_ = true;
@@ -3829,7 +3861,9 @@ void InterestGroupAuction::OnLoadedWinningGroup(
   buyer_helpers_.emplace_back(std::move(buyer_helper));
 
   if (!bid) {
-    OnBiddingAndScoringComplete(AuctionResult::kInvalidServerResponse);
+    OnBiddingAndScoringComplete(
+        AuctionResult::kInvalidServerResponse,
+        {"runAdAuction(): Couldn't reconstruct winning bid"});
     return;
   }
 
