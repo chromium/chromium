@@ -36,6 +36,7 @@ import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -106,7 +107,7 @@ public class CustomTabsTestUtils {
             }
         }).session;
         Assert.assertTrue(connection.warmup(0));
-        startupCallbackHelper.waitForCallback(0);
+        startupCallbackHelper.waitForCallback(0, 1, 10, TimeUnit.SECONDS);
         return connection;
     }
 

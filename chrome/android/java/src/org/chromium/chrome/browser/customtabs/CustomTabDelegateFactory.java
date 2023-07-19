@@ -54,6 +54,7 @@ import org.chromium.components.browser_ui.util.ComposedBrowserControlsVisibility
 import org.chromium.components.embedder_support.delegate.WebContentsDelegateAndroid;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
+import org.chromium.components.external_intents.ExternalIntentsFeatures;
 import org.chromium.components.external_intents.ExternalNavigationHandler;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -113,7 +114,10 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
         @Override
         public boolean isForTrustedCallingApp(Supplier<List<ResolveInfo>> resolveInfoSupplier) {
             if (TextUtils.isEmpty(mClientPackageName)) return false;
-            if (!mExternalAuthUtils.isGoogleSigned(mClientPackageName)) return false;
+            if (!ExternalIntentsFeatures.TRUSTED_CLIENT_GESTURE_BYPASS.isEnabled()
+                    && !mExternalAuthUtils.isGoogleSigned(mClientPackageName)) {
+                return false;
+            }
 
             return ExternalNavigationHandler.resolveInfoContainsPackage(
                     resolveInfoSupplier.get(), mClientPackageName);
