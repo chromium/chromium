@@ -157,11 +157,20 @@ message ServiceWorkerRegistrationData {
           }
           optional Destination destination = 3;
         }
+        message RunningStatus {
+          enum Status {
+            kRunning = 0;
+            kNotRunning = 1;
+          }
+          optional Status status = 1;
+        }
         oneof condition {
           // Used for representing URLPattern.
           URLPattern url_pattern = 1;
           // Used for representing Request.
           Request request = 2;
+          // Used for representing running status.
+          RunningStatus running_status = 3;
         }
       }
       message Source {

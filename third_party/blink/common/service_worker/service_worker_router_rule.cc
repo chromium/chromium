@@ -24,6 +24,8 @@ bool ServiceWorkerRouterCondition::operator==(
       return url_pattern == other.url_pattern;
     case ConditionType::kRequest:
       return request == other.request;
+    case ConditionType::kRunningStatus:
+      return running_status == other.running_status;
   }
 }
 

@@ -7,6 +7,26 @@ module blink.mojom;
 import "services/network/public/mojom/fetch_api.mojom";
 import "third_party/blink/public/mojom/safe_url_pattern.mojom";
 
+// Enum to represent the ServiceWorker running status.
+// The purpose of having the condition is avoid using ServiceWorker
+// if the service worker is not ready to run the fetch handler right away.
+// `kNotRunning` includes `EmbeddedWorkerStatus`'s `kStarting` and `kStopping`
+// in addition to `kStopped`.
+enum ServiceWorkerRouterRunningStatusEnum {
+  // ServiceWorker can run the fetch handler without waiting for starting
+  // it up.
+  kRunning = 0,
+  // Not ready to run the fetch handler right away.
+  kNotRunning = 1,
+};
+
+// This represents a running status condition to match.
+// See:
+// https://github.com/yoshisatoyanagisawa/service-worker-static-routing-api/blob/main/final-form.md
+struct ServiceWorkerRouterRunningStatusCondition {
+  ServiceWorkerRouterRunningStatusEnum status;
+};
+
 // This represents a request condition to match.
 // See:
 // https://github.com/yoshisatoyanagisawa/service-worker-static-routing-api/blob/main/final-form.md
@@ -41,6 +61,7 @@ union ServiceWorkerRouterCondition {
   // URLPattern to be used for matching.
   SafeUrlPattern url_pattern;
   ServiceWorkerRouterRequestCondition request;
+  ServiceWorkerRouterRunningStatusCondition running_status;
 };
 
 // This is used for specifying the source is network.

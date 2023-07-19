@@ -3654,6 +3654,17 @@ TEST(ServiceWorkerDatabaseTest, RouterRulesStoreRestore) {
       condition.request = request;
       rule.conditions.push_back(condition);
     }
+    {
+      // test for running status.
+      blink::ServiceWorkerRouterCondition condition;
+      condition.type =
+          blink::ServiceWorkerRouterCondition::ConditionType::kRunningStatus;
+      blink::ServiceWorkerRouterRunningStatusCondition running_status;
+      running_status.status = blink::ServiceWorkerRouterRunningStatusCondition::
+          RunningStatusEnum::kRunning;
+      condition.running_status = running_status;
+      rule.conditions.push_back(condition);
+    }
 
     blink::ServiceWorkerRouterSource source;
     source.type = blink::ServiceWorkerRouterSource::SourceType::kNetwork;

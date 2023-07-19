@@ -121,6 +121,8 @@ bool IsValidCondition(const blink::ServiceWorkerRouterCondition& condition) {
              (condition.request->method.has_value() ||
               condition.request->mode.has_value() ||
               condition.request->destination.has_value());
+    case blink::ServiceWorkerRouterCondition::ConditionType::kRunningStatus:
+      return condition.running_status.has_value();
   }
 }
 
@@ -321,6 +323,9 @@ bool ServiceWorkerRouterEvaluator::RouterRule::IsNonUrlPatternConditionMatched(
           return false;
         }
         break;
+      case blink::ServiceWorkerRouterCondition::ConditionType::kRunningStatus:
+        NOTIMPLEMENTED() << "Not implemented yet. crbug.com/1371756";
+        break;
     }
   }
   return true;
@@ -389,6 +394,11 @@ base::Value ServiceWorkerRouterEvaluator::ToValue() const {
           base::Value::Dict out_c;
           out_c.Set("request", RequestToValue(*c.request));
           condition.Append(std::move(out_c));
+          break;
+        }
+        case blink::ServiceWorkerRouterCondition::ConditionType::
+            kRunningStatus: {
+          NOTIMPLEMENTED() << "Not implemented yet. crbug.com/1371756";
           break;
         }
       }

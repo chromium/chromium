@@ -33,6 +33,23 @@ struct ServiceWorkerRouterRequestCondition {
   bool operator==(const ServiceWorkerRouterRequestCondition& other) const;
 };
 
+struct ServiceWorkerRouterRunningStatusCondition {
+  enum class RunningStatusEnum {
+    kRunning = 0,
+    // This includes kStarting and kStopping in addition to kStopped.
+    // These states are consolidated to kNotRunning because they need to
+    // wait for ServiceWorker set up to run the fetch handler.
+    kNotRunning = 1,
+  };
+
+  RunningStatusEnum status;
+
+  bool operator==(
+      const ServiceWorkerRouterRunningStatusCondition& other) const {
+    return status == other.status;
+  }
+};
+
 // TODO(crbug.com/1371756): implement other conditions in the proposal.
 // TODO(crbug.com/1456599): migrate to absl::variant if possible.
 struct BLINK_COMMON_EXPORT ServiceWorkerRouterCondition {
@@ -42,6 +59,8 @@ struct BLINK_COMMON_EXPORT ServiceWorkerRouterCondition {
     kUrlPattern,
     // Request condition.
     kRequest,
+    // Running status condition.
+    kRunningStatus,
   };
   ConditionType type;
 
@@ -52,6 +71,10 @@ struct BLINK_COMMON_EXPORT ServiceWorkerRouterCondition {
   // Request to be used for matching.
   // This field is valid if `type` is `kRequest`.
   absl::optional<ServiceWorkerRouterRequestCondition> request;
+
+  // Running status to be used for matching.
+  // This field is valid if `type` is `kRunningStatus`.
+  absl::optional<ServiceWorkerRouterRunningStatusCondition> running_status;
 
   bool operator==(const ServiceWorkerRouterCondition& other) const;
 };

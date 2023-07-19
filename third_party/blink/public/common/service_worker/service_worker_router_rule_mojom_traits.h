@@ -16,6 +16,54 @@
 namespace mojo {
 
 template <>
+struct BLINK_COMMON_EXPORT EnumTraits<
+    blink::mojom::ServiceWorkerRouterRunningStatusEnum,
+    blink::ServiceWorkerRouterRunningStatusCondition::RunningStatusEnum> {
+  static blink::mojom::ServiceWorkerRouterRunningStatusEnum ToMojom(
+      blink::ServiceWorkerRouterRunningStatusCondition::RunningStatusEnum
+          input) {
+    switch (input) {
+      case blink::ServiceWorkerRouterRunningStatusCondition::RunningStatusEnum::
+          kRunning:
+        return blink::mojom::ServiceWorkerRouterRunningStatusEnum::kRunning;
+      case blink::ServiceWorkerRouterRunningStatusCondition::RunningStatusEnum::
+          kNotRunning:
+        return blink::mojom::ServiceWorkerRouterRunningStatusEnum::kNotRunning;
+    }
+  }
+  static bool FromMojom(
+      blink::mojom::ServiceWorkerRouterRunningStatusEnum input,
+      blink::ServiceWorkerRouterRunningStatusCondition::RunningStatusEnum*
+          output) {
+    switch (input) {
+      case blink::mojom::ServiceWorkerRouterRunningStatusEnum::kRunning:
+        *output = blink::ServiceWorkerRouterRunningStatusCondition::
+            RunningStatusEnum::kRunning;
+        break;
+      case blink::mojom::ServiceWorkerRouterRunningStatusEnum::kNotRunning:
+        *output = blink::ServiceWorkerRouterRunningStatusCondition::
+            RunningStatusEnum::kNotRunning;
+        break;
+    }
+    return true;
+  }
+};
+
+template <>
+struct BLINK_COMMON_EXPORT StructTraits<
+    blink::mojom::ServiceWorkerRouterRunningStatusConditionDataView,
+    blink::ServiceWorkerRouterRunningStatusCondition> {
+  static blink::ServiceWorkerRouterRunningStatusCondition::RunningStatusEnum
+  status(const blink::ServiceWorkerRouterRunningStatusCondition& data) {
+    return data.status;
+  }
+
+  static bool Read(
+      blink::mojom::ServiceWorkerRouterRunningStatusConditionDataView data,
+      blink::ServiceWorkerRouterRunningStatusCondition* out);
+};
+
+template <>
 struct BLINK_COMMON_EXPORT
     StructTraits<blink::mojom::ServiceWorkerRouterRequestConditionDataView,
                  blink::ServiceWorkerRouterRequestCondition> {
@@ -71,6 +119,11 @@ struct BLINK_COMMON_EXPORT
   static const blink::ServiceWorkerRouterRequestCondition& request(
       const blink::ServiceWorkerRouterCondition& data) {
     return *data.request;
+  }
+
+  static const blink::ServiceWorkerRouterRunningStatusCondition& running_status(
+      const blink::ServiceWorkerRouterCondition& data) {
+    return *data.running_status;
   }
 
   static bool Read(blink::mojom::ServiceWorkerRouterConditionDataView data,

@@ -2281,6 +2281,30 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::ParseRegistrationData(
             condition.request = request;
             break;
           }
+          case ServiceWorkerRegistrationData::RouterRules::RuleV1::Condition::
+              kRunningStatus: {
+            condition.type = blink::ServiceWorkerRouterCondition::
+                ConditionType::kRunningStatus;
+            blink::ServiceWorkerRouterRunningStatusCondition running_status;
+            if (!c.has_running_status() || !c.running_status().has_status()) {
+              return Status::kErrorCorrupted;
+            }
+            switch (c.running_status().status()) {
+              case ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                  Condition::RunningStatus::kRunning:
+                running_status.status =
+                    blink::ServiceWorkerRouterRunningStatusCondition::
+                        RunningStatusEnum::kRunning;
+                break;
+              case ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                  Condition::RunningStatus::kNotRunning:
+                running_status.status =
+                    blink::ServiceWorkerRouterRunningStatusCondition::
+                        RunningStatusEnum::kNotRunning;
+                break;
+            }
+            condition.running_status = running_status;
+          }
         }
         router_rule.conditions.emplace_back(condition);
       }
@@ -2681,6 +2705,26 @@ void ServiceWorkerDatabase::WriteRegistrationDataInBatch(
               }
             }
             break;
+          }
+          case blink::ServiceWorkerRouterCondition::ConditionType::
+              kRunningStatus: {
+            ServiceWorkerRegistrationData::RouterRules::RuleV1::Condition::
+                RunningStatus* running_status =
+                    condition->mutable_running_status();
+            switch (c.running_status->status) {
+              case blink::ServiceWorkerRouterRunningStatusCondition::
+                  RunningStatusEnum::kRunning:
+                running_status->set_status(
+                    ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                        Condition::RunningStatus::kRunning);
+                break;
+              case blink::ServiceWorkerRouterRunningStatusCondition::
+                  RunningStatusEnum::kNotRunning:
+                running_status->set_status(
+                    ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                        Condition::RunningStatus::kNotRunning);
+                break;
+            }
           }
         }
       }
