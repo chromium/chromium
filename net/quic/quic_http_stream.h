@@ -87,8 +87,6 @@ class NET_EXPORT_PRIVATE QuicHttpStream : public MultiplexedHttpStream {
 
   enum State {
     STATE_NONE,
-    STATE_HANDLE_PROMISE,
-    STATE_HANDLE_PROMISE_COMPLETE,
     STATE_REQUEST_STREAM,
     STATE_REQUEST_STREAM_COMPLETE,
     STATE_SET_REQUEST_PRIORITY,
@@ -105,9 +103,6 @@ class NET_EXPORT_PRIVATE QuicHttpStream : public MultiplexedHttpStream {
   void DoCallback(int rv);
 
   int DoLoop(int rv);
-  // TODO(https://crbug.com/1426477): Remove DoHandlePromise*().
-  int DoHandlePromise();
-  int DoHandlePromiseComplete(int rv);
   int DoRequestStream();
   int DoRequestStreamComplete(int rv);
   int DoSetRequestPriority();

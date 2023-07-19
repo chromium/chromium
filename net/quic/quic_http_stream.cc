@@ -118,20 +118,6 @@ int QuicHttpStream::InitializeStream(bool can_send_early,
   return MapStreamError(rv);
 }
 
-int QuicHttpStream::DoHandlePromise() {
-  next_state_ = STATE_HANDLE_PROMISE_COMPLETE;
-  return ERR_FAILED;
-}
-
-int QuicHttpStream::DoHandlePromiseComplete(int rv) {
-  DCHECK_NE(ERR_IO_PENDING, rv);
-  DCHECK_GT(OK, rv);
-  DCHECK(request_info_);
-
-  next_state_ = STATE_REQUEST_STREAM;
-  return OK;
-}
-
 int QuicHttpStream::SendRequest(const HttpRequestHeaders& request_headers,
                                 HttpResponseInfo* response,
                                 CompletionOnceCallback callback) {
@@ -422,13 +408,6 @@ int QuicHttpStream::DoLoop(int rv) {
     State state = next_state_;
     next_state_ = STATE_NONE;
     switch (state) {
-      case STATE_HANDLE_PROMISE:
-        CHECK_EQ(OK, rv);
-        rv = DoHandlePromise();
-        break;
-      case STATE_HANDLE_PROMISE_COMPLETE:
-        rv = DoHandlePromiseComplete(rv);
-        break;
       case STATE_REQUEST_STREAM:
         CHECK_EQ(OK, rv);
         rv = DoRequestStream();
