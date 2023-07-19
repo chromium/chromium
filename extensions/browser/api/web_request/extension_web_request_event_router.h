@@ -26,8 +26,6 @@
 #include "extensions/browser/guest_view/guest_view_events.h"
 #include "extensions/common/url_pattern_set.h"
 
-class ExtensionWebRequestTimeTracker;
-
 namespace net {
 class AuthChallengeInfo;
 class AuthCredentials;
@@ -590,10 +588,6 @@ class ExtensionWebRequestEventRouter {
   // A map of request ids to a bitvector indicating which events have been
   // signaled and should not be sent again.
   SignaledRequestMap signaled_requests_;
-
-  // Keeps track of time spent waiting on extensions using the blocking
-  // webRequest API.
-  std::unique_ptr<ExtensionWebRequestTimeTracker> request_time_tracker_;
 
   typedef std::pair<BrowserContextID, int> RulesRegistryKey;
   // Maps each browser_context (and OTRBrowserContext) and a webview key to its

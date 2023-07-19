@@ -400,6 +400,11 @@ CallbacksForPageLoad& GetCallbacksForPageLoad() {
   return *instance.get();
 }
 
+ExtensionWebRequestTimeTracker& GetExtensionWebRequestTimeTracker() {
+  static base::NoDestructor<ExtensionWebRequestTimeTracker> instance;
+  return *instance.get();
+}
+
 }  // namespace
 
 // static
@@ -726,9 +731,7 @@ ExtensionWebRequestEventRouter* ExtensionWebRequestEventRouter::GetInstance() {
   return instance.get();
 }
 
-ExtensionWebRequestEventRouter::ExtensionWebRequestEventRouter()
-    : request_time_tracker_(
-          std::make_unique<ExtensionWebRequestTimeTracker>()) {}
+ExtensionWebRequestEventRouter::ExtensionWebRequestEventRouter() = default;
 
 void ExtensionWebRequestEventRouter::RegisterRulesRegistry(
     content::BrowserContext* browser_context,
@@ -767,7 +770,7 @@ int ExtensionWebRequestEventRouter::OnBeforeRequest(
       break;
     }
   }
-  request_time_tracker_->LogRequestStartTime(
+  GetExtensionWebRequestTimeTracker().LogRequestStartTime(
       request->id, base::TimeTicks::Now(), has_listener,
       HasExtraHeadersListenerForRequest(browser_context, request));
 
@@ -801,8 +804,8 @@ int ExtensionWebRequestEventRouter::OnBeforeRequest(
         CreateEventDetails(*request, extra_info_spec));
     event_details->SetRequestBody(request);
 
-    request_time_tracker_->LogBeforeRequestDispatchTime(request->id,
-                                                        base::TimeTicks::Now());
+    GetExtensionWebRequestTimeTracker().LogBeforeRequestDispatchTime(
+        request->id, base::TimeTicks::Now());
 
     initialize_blocked_requests |= DispatchEvent(
         browser_context, request, listeners, std::move(event_details));
@@ -824,8 +827,8 @@ int ExtensionWebRequestEventRouter::OnBeforeRequest(
           ->ruleset_manager();
 
   if (ruleset_manager->has_rulesets()) {
-    request_time_tracker_->LogBeforeRequestDNRStartTime(request->id,
-                                                        base::TimeTicks::Now());
+    GetExtensionWebRequestTimeTracker().LogBeforeRequestDNRStartTime(
+        request->id, base::TimeTicks::Now());
 
     auto record_completion_time = [](ExtensionWebRequestTimeTracker* tracker,
                                      int64_t request_id) {
@@ -840,8 +843,9 @@ int ExtensionWebRequestEventRouter::OnBeforeRequest(
       // We only record completion time if there's at least one relevant rule.
       // Otherwise, we'd record evaluation for every request even if the user
       // only had a single rule added.
-      scoped_timer = base::ScopedClosureRunner(base::BindOnce(
-          record_completion_time, request_time_tracker_.get(), request->id));
+      scoped_timer = base::ScopedClosureRunner(
+          base::BindOnce(record_completion_time,
+                         &GetExtensionWebRequestTimeTracker(), request->id));
     }
 
     for (const auto& action : actions) {
@@ -1172,7 +1176,8 @@ void ExtensionWebRequestEventRouter::OnCompleted(
     return;
   }
 
-  request_time_tracker_->LogRequestEndTime(request->id, base::TimeTicks::Now());
+  GetExtensionWebRequestTimeTracker().LogRequestEndTime(request->id,
+                                                        base::TimeTicks::Now());
 
   // See comment in OnErrorOccurred regarding net::ERR_WS_UPGRADE.
   DCHECK(net_error == net::OK || net_error == net::ERR_WS_UPGRADE);
@@ -1225,7 +1230,8 @@ void ExtensionWebRequestEventRouter::OnErrorOccurred(
     return;
   }
 
-  request_time_tracker_->LogRequestEndTime(request->id, base::TimeTicks::Now());
+  GetExtensionWebRequestTimeTracker().LogRequestEndTime(request->id,
+                                                        base::TimeTicks::Now());
 
   DCHECK_NE(net::OK, net_error);
   DCHECK_NE(net::ERR_IO_PENDING, net_error);
@@ -1259,7 +1265,8 @@ void ExtensionWebRequestEventRouter::OnRequestWillBeDestroyed(
     const WebRequestInfo* request) {
   ClearPendingCallbacks(*request);
   signaled_requests_.erase(request->id);
-  request_time_tracker_->LogRequestEndTime(request->id, base::TimeTicks::Now());
+  GetExtensionWebRequestTimeTracker().LogRequestEndTime(request->id,
+                                                        base::TimeTicks::Now());
 }
 
 void ExtensionWebRequestEventRouter::ClearPendingCallbacks(
@@ -2036,7 +2043,7 @@ void ExtensionWebRequestEventRouter::DecrementBlockCount(
     // of ExecuteDeltas(). Use the cached `request_event` and `request_id`
     // instead of using `blocked_request`.
     if (request_event == kOnBeforeRequest) {
-      request_time_tracker_->LogBeforeRequestCompletionTime(
+      GetExtensionWebRequestTimeTracker().LogBeforeRequestCompletionTime(
           request_id, base::TimeTicks::Now());
     }
   }
@@ -2071,7 +2078,8 @@ int ExtensionWebRequestEventRouter::ExecuteDeltas(
   helpers::EventResponseDeltas& deltas = blocked_request.response_deltas;
   base::TimeDelta block_time =
       base::Time::Now() - blocked_request.blocking_time;
-  request_time_tracker_->IncrementTotalBlockTime(request->id, block_time);
+  GetExtensionWebRequestTimeTracker().IncrementTotalBlockTime(request->id,
+                                                              block_time);
 
   bool request_headers_modified = false;
   bool response_headers_modified = false;
@@ -2132,9 +2140,9 @@ int ExtensionWebRequestEventRouter::ExecuteDeltas(
       blocked_request.new_url && !blocked_request.new_url->is_empty();
 
   if (canceled_by_extension) {
-    request_time_tracker_->SetRequestCanceled(request->id);
+    GetExtensionWebRequestTimeTracker().SetRequestCanceled(request->id);
   } else if (redirected) {
-    request_time_tracker_->SetRequestRedirected(request->id);
+    GetExtensionWebRequestTimeTracker().SetRequestRedirected(request->id);
   }
 
   // Log UMA metrics. Note: We are not necessarily concerned with the final
