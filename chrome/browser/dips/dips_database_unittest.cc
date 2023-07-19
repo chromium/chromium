@@ -90,8 +90,9 @@ class DIPSDatabaseTest : public testing::Test {
     db_.reset();
 
     // Deletes temporary directory from on-disk tests
-    if (!in_memory_)
+    if (!in_memory_) {
       ASSERT_TRUE(temp_dir_.Delete());
+    }
   }
 
   base::Time Now() { return clock_.Now(); }

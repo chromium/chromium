@@ -107,8 +107,9 @@ DIPSDatabase::DIPSDatabase(const absl::optional<base::FilePath>& db_path)
            "absl::nullopt `db_path`.";
   }
 
-  if (Init() != sql::INIT_OK)
+  if (Init() != sql::INIT_OK) {
     LOG(WARNING) << "Failed to initialize the DIPS SQLite database.";
+  }
 }
 
 DIPSDatabase::~DIPSDatabase() {
@@ -130,8 +131,9 @@ void DIPSDatabase::DatabaseErrorCallback(int extended_error,
   }
 
   // The default handling is to assert on debug and to ignore on release.
-  if (!sql::Database::IsExpectedSqliteError(extended_error))
+  if (!sql::Database::IsExpectedSqliteError(extended_error)) {
     DLOG(FATAL) << db_->GetErrorMessage();
+  }
 }
 
 sql::InitStatus DIPSDatabase::OpenDatabase() {
@@ -148,11 +150,13 @@ sql::InitStatus DIPSDatabase::OpenDatabase() {
       &DIPSDatabase::DatabaseErrorCallback, base::Unretained(this)));
 
   if (in_memory()) {
-    if (!db_->OpenInMemory())
+    if (!db_->OpenInMemory()) {
       return sql::INIT_FAILURE;
+    }
   } else {
-    if (!db_->Open(db_path_))
+    if (!db_->Open(db_path_)) {
       return sql::INIT_FAILURE;
+    }
   }
   return sql::INIT_OK;
 }
@@ -355,8 +359,9 @@ sql::InitStatus DIPSDatabase::InitImpl() {
 
   // Scope initialization in a transaction so we can't be partially initialized.
   sql::Transaction transaction(db_.get());
-  if (!transaction.Begin())
+  if (!transaction.Begin()) {
     return sql::INIT_FAILURE;
+  }
 
   // Check if the table already exists to update schema if needed.
   bool table_already_exists = sql::MetaTable::DoesTableExist(db_.get());
@@ -372,8 +377,9 @@ sql::InitStatus DIPSDatabase::InitImpl() {
   }
 
   // Initialization is complete.
-  if (!transaction.Commit())
+  if (!transaction.Commit()) {
     return sql::INIT_FAILURE;
+  }
 
   return sql::INIT_OK;
 }
@@ -423,8 +429,9 @@ void DIPSDatabase::LogDatabaseMetrics() {
 
 bool DIPSDatabase::CheckDBInit() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!db_ || !db_->is_open())
+  if (!db_ || !db_->is_open()) {
     return false;
+  }
 
   // Computing these metrics may be costly, so we only do it every
   // |kMetricsInterval|.
@@ -500,8 +507,9 @@ bool DIPSDatabase::Write(const std::string& site,
 
 absl::optional<StateValue> DIPSDatabase::Read(const std::string& site) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!CheckDBInit())
+  if (!CheckDBInit()) {
     return absl::nullopt;
+  }
 
   static constexpr char kReadSql[] =  // clang-format off
       "SELECT site,"
@@ -771,8 +779,9 @@ size_t DIPSDatabase::ClearExpiredRows() {
 
 bool DIPSDatabase::RemoveRow(const std::string& site) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!CheckDBInit())
+  if (!CheckDBInit()) {
     return false;
+  }
 
   ClearExpiredRows();
 
@@ -814,14 +823,16 @@ bool DIPSDatabase::RemoveEventsByTime(const base::Time& delete_begin,
                                       const base::Time& delete_end,
                                       const DIPSEventRemovalType type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!CheckDBInit())
+  if (!CheckDBInit()) {
     return false;
+  }
 
   ClearExpiredRows();
 
   sql::Transaction transaction(db_.get());
-  if (!transaction.Begin())
+  if (!transaction.Begin()) {
     return false;
+  }
 
   GarbageCollect();
 
@@ -833,17 +844,20 @@ bool DIPSDatabase::RemoveEventsBySite(bool preserve,
                                       const std::vector<std::string>& sites,
                                       const DIPSEventRemovalType type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!CheckDBInit())
+  if (!CheckDBInit()) {
     return false;
+  }
 
   sql::Transaction transaction(db_.get());
-  if (!transaction.Begin())
+  if (!transaction.Begin()) {
     return false;
+  }
 
   GarbageCollect();
 
-  if (!ClearTimestampsBySite(preserve, sites, type))
+  if (!ClearTimestampsBySite(preserve, sites, type)) {
     return false;
+  }
 
   return transaction.Commit();
 }
@@ -852,8 +866,9 @@ bool DIPSDatabase::ClearTimestamps(const base::Time& delete_begin,
                                    const base::Time& delete_end,
                                    const DIPSEventRemovalType type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!CheckDBInit())
+  if (!CheckDBInit()) {
     return false;
+  }
 
   ClearExpiredRows();
 
@@ -962,8 +977,9 @@ bool DIPSDatabase::AdjustFirstTimestamps(const base::Time& delete_begin,
                                          const base::Time& delete_end,
                                          const DIPSEventRemovalType type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!CheckDBInit())
+  if (!CheckDBInit()) {
     return false;
+  }
 
   ClearExpiredRows();
 
@@ -1067,8 +1083,9 @@ bool DIPSDatabase::AdjustLastTimestamps(const base::Time& delete_begin,
                                         const base::Time& delete_end,
                                         const DIPSEventRemovalType type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!CheckDBInit())
+  if (!CheckDBInit()) {
     return false;
+  }
 
   ClearExpiredRows();
 
@@ -1173,8 +1190,9 @@ bool DIPSDatabase::ClearTimestampsBySite(bool preserve,
                                          const DIPSEventRemovalType type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (sites.empty())
+  if (sites.empty()) {
     return true;
+  }
 
   std::string placeholders =
       base::JoinString(std::vector<base::StringPiece>(sites.size(), "?"), ",");
@@ -1197,8 +1215,9 @@ bool DIPSDatabase::ClearTimestampsBySite(bool preserve,
       s_clear_storage.BindString(i, sites[i]);
     }
 
-    if (!s_clear_storage.Run())
+    if (!s_clear_storage.Run()) {
       return false;
+    }
   }
 
   return RemoveEmptyRows();
@@ -1227,8 +1246,9 @@ bool DIPSDatabase::RemoveEmptyRows() {
 
 size_t DIPSDatabase::GetEntryCount() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!CheckDBInit())
+  if (!CheckDBInit()) {
     return 0;
+  }
 
   ClearExpiredRows();
 
@@ -1239,8 +1259,9 @@ size_t DIPSDatabase::GetEntryCount() {
 
 size_t DIPSDatabase::GarbageCollect() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!CheckDBInit())
+  if (!CheckDBInit()) {
     return 0;
+  }
 
   size_t num_deleted = ClearExpiredRows();
 
@@ -1261,8 +1282,9 @@ size_t DIPSDatabase::GarbageCollect() {
 
 size_t DIPSDatabase::GarbageCollectOldest(int purge_goal) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!CheckDBInit())
+  if (!CheckDBInit()) {
     return 0;
+  }
 
   static constexpr char kGarbageCollectOldestSql[] =  // clang-format off
     "DELETE FROM bounces "
@@ -1298,8 +1320,9 @@ size_t DIPSDatabase::GarbageCollectOldest(int purge_goal) {
       db_->GetCachedStatement(SQL_FROM_HERE, kGarbageCollectOldestSql));
   s_garbage_collect_oldest.BindInt(0, purge_goal);
 
-  if (!s_garbage_collect_oldest.Run())
+  if (!s_garbage_collect_oldest.Run()) {
     return 0;
+  }
 
   return db_->GetLastChangeCount();
 }
