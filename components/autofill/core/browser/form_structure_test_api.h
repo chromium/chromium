@@ -76,10 +76,6 @@ class FormStructureTestApi {
                   /*server_types=*/overall_types);
   }
 
-  const std::vector<std::unique_ptr<AutofillField>>& fields() {
-    return form_structure_->fields_;
-  }
-
   mojom::SubmissionIndicatorEvent get_submission_event() const {
     return form_structure_->submission_event_;
   }

@@ -7028,13 +7028,13 @@ TEST_P(FormStructureTest_ForPatternSource, ParseFieldTypesWithPatterns) {
   test::CreateTestAddressFormData(&form);
   FormStructure form_structure(form);
   test_api(&form_structure).ParseFieldTypesWithPatterns(pattern_source());
-  ASSERT_THAT(test_api(&form_structure).fields(), Not(IsEmpty()));
+  ASSERT_THAT(form_structure.fields(), Not(IsEmpty()));
 
   auto get_heuristic_type = [&](const AutofillField& field) {
     return field.heuristic_type(pattern_source());
   };
   EXPECT_THAT(
-      test_api(&form_structure).fields(),
+      form_structure.fields(),
       Each(Pointee(ResultOf(get_heuristic_type,
                             AllOf(Not(NO_SERVER_DATA), Not(UNKNOWN_TYPE))))));
 
@@ -7042,7 +7042,7 @@ TEST_P(FormStructureTest_ForPatternSource, ParseFieldTypesWithPatterns) {
     auto get_other_pattern_heuristic_type = [&](const AutofillField& field) {
       return field.heuristic_type(other_pattern_source);
     };
-    EXPECT_THAT(test_api(&form_structure).fields(),
+    EXPECT_THAT(form_structure.fields(),
                 Each(Pointee(ResultOf(get_other_pattern_heuristic_type,
                                       NO_SERVER_DATA))))
         << "PatternSource = " << static_cast<int>(other_pattern_source);
