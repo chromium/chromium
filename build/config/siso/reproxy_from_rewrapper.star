@@ -147,6 +147,9 @@ def __step_config(ctx, step_config):
             mojom_parser_rule.update({
                 "command_prefix": "python3 ../../build/util/action_remote.py ../../buildtools/reclient/rewrapper --custom_processor=mojom_parser",
                 "handler": "rewrite_action_remote_py",
+                # Disable native remote handling. Only reproxy should handle.
+                # TODO(b/285078792): Refactor with remote_to_rewrapper as this logic is confusing.
+                "remote": False,
             })
 
     step_config["rules"].extend([
