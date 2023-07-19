@@ -63,8 +63,10 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/views/crostini/crostini_expired_container_warning_view.h"
 #include "chrome/browser/ui/views/crostini/crostini_update_filesystem_view.h"
+#include "chrome/browser/ui/webui/ash/system_web_dialog_delegate.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chromeos/ash/components/dbus/anomaly_detector/anomaly_detector_client.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/ash/components/dbus/vm_concierge/concierge_service.pb.h"
@@ -3429,7 +3431,7 @@ void CrostiniManager::RestartCompleted(CrostiniRestarter* restarter,
   // Destroy the restarter.
   restarters_by_container_.erase(container_id);
 
-  if (ShouldWarnAboutExpiredVersion(profile_, container_id)) {
+  if (ShouldWarnAboutExpiredVersion(container_id)) {
     CrostiniExpiredContainerWarningView::Show(profile_, std::move(closure));
   } else {
     std::move(closure).Run();
@@ -4136,6 +4138,33 @@ bool CrostiniManager::FetchCreateOptions(const guest_os::GuestId& container_id,
   }
 
   return *create_options.FindBool(prefs::kCrostiniCreateOptionsUsedKey);
+}
+
+bool CrostiniManager::ShouldWarnAboutExpiredVersion(
+    const guest_os::GuestId& container_id) {
+  if (already_warned_expired_version_) {
+    return false;
+  }
+  if (!CrostiniFeatures::Get()->IsContainerUpgradeUIAllowed(profile_)) {
+    return false;
+  }
+  if (container_id != DefaultContainerId()) {
+    return false;
+  }
+  // If the warning dialog is already open we can add more callbacks to it, but
+  // if we've moved to the upgrade dialog proper we should run them now as they
+  // may be part of the upgrade process.
+  if (ash::SystemWebDialogDelegate::FindInstance(
+          GURL{chrome::kChromeUICrostiniUpgraderUrl}.spec())) {
+    return false;
+  }
+
+  if (!IsContainerVersionExpired(profile_, container_id)) {
+    return false;
+  }
+
+  already_warned_expired_version_ = true;
+  return true;
 }
 
 }  // namespace crostini

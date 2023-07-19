@@ -39,9 +39,7 @@
 #include "chrome/browser/ui/ash/shelf/shelf_spinner_item_controller.h"
 #include "chrome/browser/ui/views/crostini/crostini_recovery_view.h"
 #include "chrome/browser/ui/webui/ash/crostini_upgrader/crostini_upgrader_dialog.h"
-#include "chrome/browser/ui/webui/ash/system_web_dialog_delegate.h"
 #include "chrome/common/chrome_features.h"
-#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user.h"
@@ -453,24 +451,6 @@ bool IsContainerVersionExpired(Profile* profile,
   auto version = static_cast<ContainerOsVersion>(value->GetInt());
   return version == ContainerOsVersion::kDebianStretch ||
          version == ContainerOsVersion::kDebianBuster;
-}
-
-bool ShouldWarnAboutExpiredVersion(Profile* profile,
-                                   const guest_os::GuestId& container_id) {
-  if (!CrostiniFeatures::Get()->IsContainerUpgradeUIAllowed(profile)) {
-    return false;
-  }
-  if (container_id != DefaultContainerId()) {
-    return false;
-  }
-  // If the warning dialog is already open we can add more callbacks to it, but
-  // if we've moved to the upgrade dialog proper we should run them now as they
-  // may be part of the upgrade process.
-  if (ash::SystemWebDialogDelegate::FindInstance(
-          GURL{chrome::kChromeUICrostiniUpgraderUrl}.spec())) {
-    return false;
-  }
-  return IsContainerVersionExpired(profile, container_id);
 }
 
 std::u16string GetTimeRemainingMessage(base::TimeTicks start, int percent) {

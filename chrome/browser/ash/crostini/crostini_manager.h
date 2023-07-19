@@ -823,6 +823,8 @@ class CrostiniManager : public KeyedService,
   // Best-effort attempt to premount the user's files.
   void MountCrostiniFilesBackground(guest_os::GuestInfo info);
 
+  bool ShouldWarnAboutExpiredVersion(const guest_os::GuestId& container_id);
+
   raw_ptr<Profile, ExperimentalAsh> profile_;
   std::string owner_id_;
 
@@ -936,6 +938,8 @@ class CrostiniManager : public KeyedService,
       mount_provider_ids_;
 
   base::CallbackListSubscription primary_counter_mount_subscription_;
+
+  bool already_warned_expired_version_ = false;
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.

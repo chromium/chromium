@@ -136,9 +136,6 @@ void SetContainerBadgeColor(Profile* profile,
 bool IsContainerVersionExpired(Profile* profile,
                                const guest_os::GuestId& container_id);
 
-bool ShouldWarnAboutExpiredVersion(Profile* profile,
-                                   const guest_os::GuestId& container_id);
-
 const guest_os::GuestId& DefaultContainerId();
 
 bool IsCrostiniWindow(const aura::Window* window);
