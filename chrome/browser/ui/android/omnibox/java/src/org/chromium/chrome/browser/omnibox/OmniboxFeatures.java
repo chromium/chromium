@@ -58,7 +58,7 @@ public class OmniboxFeatures {
                     "modernize_visual_update_merge_clipboard_on_ntp", false);
 
     private static final MutableFlagWithSafeDefault sOmniboxConsumesImeInsets =
-            new MutableFlagWithSafeDefault(ChromeFeatureList.OMNIBOX_CONSUMERS_IME_INSETS, false);
+            new MutableFlagWithSafeDefault(ChromeFeatureList.OMNIBOX_CONSUMERS_IME_INSETS, true);
     private static final MutableFlagWithSafeDefault sShouldAdaptToNarrowTabletWindows =
             new MutableFlagWithSafeDefault(
                     ChromeFeatureList.OMNIBOX_ADAPT_NARROW_TABLET_WINDOWS, false);

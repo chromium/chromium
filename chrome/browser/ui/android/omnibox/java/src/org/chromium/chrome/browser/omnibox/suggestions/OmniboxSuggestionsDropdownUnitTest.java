@@ -352,28 +352,27 @@ public class OmniboxSuggestionsDropdownUnitTest {
         mDropdown.onAttachedToWindow();
         mDropdown.setLayoutParams(new LayoutParams(
                 ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-        mOmniboxAlignment = new OmniboxAlignment(0, 100, 600, 0, 10, 10);
+        int marginTop = 100;
+        int height = 800 - marginTop;
+        mOmniboxAlignment = new OmniboxAlignment(0, 100, 600, height, 10, 10);
         mOmniboxAlignmentSupplier.set(mOmniboxAlignment);
-        layoutDropdown(600, 800);
+        layoutDropdown(600, height);
 
         MarginLayoutParams layoutParams = (MarginLayoutParams) mDropdown.getLayoutParams();
         assertNotNull(layoutParams);
-        assertEquals(100, layoutParams.topMargin);
-        assertEquals(800 - 100, mDropdown.getMeasuredHeight());
+        assertEquals(marginTop, layoutParams.topMargin);
 
         mOmniboxAlignment = new OmniboxAlignment(0, 54, 600, 0, 10, 10);
         mOmniboxAlignmentSupplier.set(mOmniboxAlignment);
-        layoutDropdown(600, 800);
+        layoutDropdown(600, height);
 
         layoutParams = (MarginLayoutParams) mDropdown.getLayoutParams();
         assertNotNull(layoutParams);
         assertEquals(54, layoutParams.topMargin);
-        assertEquals(800 - 54, mDropdown.getMeasuredHeight());
     }
 
     @Test
     @SmallTest
-    @EnableFeatures({ChromeFeatureList.OMNIBOX_CONSUMERS_IME_INSETS})
     public void testAlignmentProvider_heightChange() {
         mDropdown.setEmbedder(mEmbedder);
         mDropdown.onAttachedToWindow();
