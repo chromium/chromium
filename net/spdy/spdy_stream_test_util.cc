@@ -61,13 +61,13 @@ void StreamDelegateBase::OnHeadersSent() {
 
 void StreamDelegateBase::OnEarlyHintsReceived(
     const spdy::Http2HeaderBlock& headers) {
-  EXPECT_EQ(stream_->type() != SPDY_PUSH_STREAM, send_headers_completed_);
+  EXPECT_TRUE(send_headers_completed_);
   early_hints_.push_back(headers.Clone());
 }
 
 void StreamDelegateBase::OnHeadersReceived(
     const spdy::Http2HeaderBlock& response_headers) {
-  EXPECT_EQ(stream_->type() != SPDY_PUSH_STREAM, send_headers_completed_);
+  EXPECT_TRUE(send_headers_completed_);
   response_headers_ = response_headers.Clone();
 }
 

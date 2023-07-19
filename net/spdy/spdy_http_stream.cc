@@ -249,16 +249,6 @@ int SpdyHttpStream::SendRequest(const HttpRequestHeaders& request_headers,
     return result;
   response_info_->remote_endpoint = address;
 
-  if (stream_->type() == SPDY_PUSH_STREAM) {
-    // Pushed streams do not send any data, and should always be
-    // idle. However, we still want to return ERR_IO_PENDING to mimic
-    // non-push behavior. The callback will be called when the
-    // response is received.
-    CHECK(response_callback_.is_null());
-    response_callback_ = std::move(callback);
-    return ERR_IO_PENDING;
-  }
-
   spdy::Http2HeaderBlock headers;
   CreateSpdyHeadersFromHttpRequest(*request_info_, request_headers, &headers);
   DispatchRequestHeadersCallback(headers);
@@ -312,13 +302,8 @@ void SpdyHttpStream::OnEarlyHintsReceived(
 void SpdyHttpStream::OnHeadersReceived(
     const spdy::Http2HeaderBlock& response_headers) {
   DCHECK(!response_headers_complete_);
+  DCHECK(response_info_);
   response_headers_complete_ = true;
-
-  if (!response_info_) {
-    DCHECK_EQ(stream_->type(), SPDY_PUSH_STREAM);
-    push_response_info_ = std::make_unique<HttpResponseInfo>();
-    response_info_ = push_response_info_.get();
-  }
 
   const int rv = SpdyHeadersToHttpResponse(response_headers, response_info_);
   DCHECK_NE(rv, ERR_INCOMPLETE_HTTP2_HEADERS);
@@ -357,7 +342,7 @@ void SpdyHttpStream::OnDataReceived(std::unique_ptr<SpdyBuffer> buffer) {
   // ReadResponseBody(), therefore user_buffer_ may be NULL.  This may often
   // happen for server initiated streams.
   DCHECK(stream_);
-  DCHECK(!stream_->IsClosed() || stream_->type() == SPDY_PUSH_STREAM);
+  DCHECK(!stream_->IsClosed());
   if (buffer) {
     response_body_queue_.Enqueue(std::move(buffer));
     MaybeScheduleBufferedReadCallback();

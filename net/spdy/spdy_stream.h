@@ -48,10 +48,6 @@ enum SpdyStreamType {
   // A stream where the client sends a request with possibly a body,
   // and the server then sends a response with a body.
   SPDY_REQUEST_RESPONSE_STREAM,
-  // A server-initiated stream where the server just sends a response
-  // with a body and the client does not send anything.
-  // TODO(https://crbug.com/1426477): Remove.
-  SPDY_PUSH_STREAM
 };
 
 // Passed to some SpdyStream functions to indicate whether there's
@@ -417,7 +413,6 @@ class NET_EXPORT_PRIVATE SpdyStream {
   enum State {
     STATE_IDLE,
     STATE_OPEN,
-    STATE_HALF_CLOSED_LOCAL_UNCLAIMED,
     STATE_HALF_CLOSED_LOCAL,
     STATE_HALF_CLOSED_REMOTE,
     STATE_RESERVED_REMOTE,
@@ -436,16 +431,6 @@ class NET_EXPORT_PRIVATE SpdyStream {
     READY_FOR_DATA_OR_TRAILERS,
     TRAILERS_RECEIVED
   };
-
-  // When a server-push stream is claimed by SetDelegate(), this function is
-  // posted on the current MessageLoop to replay everything the server has sent.
-  // From the perspective of SpdyStream's state machine, headers, data, and
-  // FIN states received prior to the delegate being attached have not yet been
-  // read. While buffered by |pending_recv_data_| it's not until
-  // PushedStreamReplay() is invoked that reads are considered
-  // to have occurred, driving the state machine forward.
-  // TODO(https://crbug.com/1426477): Remove.
-  void PushedStreamReplay();
 
   // Produces the HEADERS frame for the stream. The stream must
   // already be activated.
