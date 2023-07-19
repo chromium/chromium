@@ -281,9 +281,6 @@ TEST_F(TabInteractionRecorderAndroidTest,
 }
 
 TEST_F(TabInteractionRecorderAndroidTest, ResetInteractions) {
-  test_feature_list_.InitAndEnableFeature(
-      chrome::android::kCCTRetainingStateInMemory);
-
   std::unique_ptr<content::WebContents> contents = CreateTestWebContents();
   auto* helper = TabInteractionRecorderAndroid::FromWebContents(contents.get());
 

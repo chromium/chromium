@@ -3757,11 +3757,6 @@ const char kCCTResizableSideSheetForThirdPartiesName[] =
     "Side sheet Custom Tabs (third party)";
 const char kCCTResizableSideSheetForThirdPartiesDescription[] =
     "Enable side sheet Custom Tabs for third party apps.";
-
-const char kCCTRetainingStateInMemoryName[] =
-    "Enable restoring of previous Custom Tab session";
-const char kCCTRetainingStateInMemoryDescription[] =
-    "Enables ability to fully restore a recently engaged with Custom Tab.";
 const char kCCTRealTimeEngagementSignalsName[] =
     "Enable CCT real-time engagement signals.";
 const char kCCTRealTimeEngagementSignalsDescription[] =

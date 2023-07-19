@@ -2183,9 +2183,6 @@ extern const char kCCTResizableSideSheetDescription[];
 extern const char kCCTResizableSideSheetForThirdPartiesName[];
 extern const char kCCTResizableSideSheetForThirdPartiesDescription[];
 
-extern const char kCCTRetainingStateInMemoryName[];
-extern const char kCCTRetainingStateInMemoryDescription[];
-
 extern const char kCCTRealTimeEngagementSignalsName[];
 extern const char kCCTRealTimeEngagementSignalsDescription[];
 extern const char kCCTRealTimeEngagementSignalsAlternativeImplName[];
