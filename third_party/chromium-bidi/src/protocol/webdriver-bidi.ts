@@ -579,8 +579,8 @@ export namespace BrowsingContext {
     message: string;
   };
 }
-export type NetworkCommand = {};
-export type NetworkResult = {};
+export type NetworkCommand = Record<string, never>;
+export type NetworkResult = Record<string, never>;
 export type NetworkEvent =
   | Network.BeforeRequestSent
   | Network.FetchError
