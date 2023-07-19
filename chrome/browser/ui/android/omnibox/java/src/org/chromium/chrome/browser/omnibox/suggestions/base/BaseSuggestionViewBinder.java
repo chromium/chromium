@@ -210,8 +210,16 @@ public final class BaseSuggestionViewBinder<T extends View>
             int paddingStart = sds.isLarge ? sPaddingStartLargeIcon : sPaddingSmallIcon;
             int paddingEnd = sds.isLarge ? sPaddingEndLargeIcon : sPaddingSmallIcon;
             int edgeSize = sds.isLarge ? sEdgeSizeLargeIcon : sEdgeSize;
+
+            // Note: ImageView, unlike other View types, includes logic to scale its bounds
+            // proportionally to its image aspect ratio. This guarantees behavior consistent with
+            // RoundedCornerImageView, dp-accurate rounding and hardware acceleration.
+            // The view bound adjustment is controlled by the following three lines.
+            rciv.setAdjustViewBounds(true);
+            rciv.setMaxWidth(edgeSize);
+            rciv.setMaxHeight(edgeSize);
+
             rciv.setPaddingRelative(paddingStart, 0, paddingEnd, 0);
-            rciv.setMinimumHeight(edgeSize);
             rciv.setClipToOutline(sds.useRoundedCorners);
         }
 
