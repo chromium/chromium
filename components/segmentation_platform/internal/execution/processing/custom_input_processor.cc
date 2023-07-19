@@ -234,6 +234,13 @@ bool CustomInputProcessor::AddFromInputContext(
     return false;
   }
   const auto& input_context = feature_processor_state->input_context();
+  if (!input_context) {
+    feature_processor_state->SetError(
+        stats::FeatureProcessingError::kCustomInputError,
+        "input context missing");
+    return false;
+  }
+
   auto input_name = custom_input.name();
   auto custom_input_iter = custom_input.additional_args().find("name");
   if (custom_input_iter != custom_input.additional_args().end()) {
