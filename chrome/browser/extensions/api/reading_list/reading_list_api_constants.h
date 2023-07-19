@@ -13,6 +13,7 @@ extern const char kInvalidURLError[];
 extern const char kNotSupportedURLError[];
 extern const char kDuplicateURLError[];
 extern const char kURLNotFoundError[];
+extern const char kNoUpdateProvided[];
 
 }  // namespace extensions::reading_list_api_constants
 

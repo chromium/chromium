@@ -11,5 +11,7 @@ const char kInvalidURLError[] = "URL is not valid.";
 const char kNotSupportedURLError[] = "URL is not supported.";
 const char kDuplicateURLError[] = "Duplicate URL.";
 const char kURLNotFoundError[] = "URL not found.";
+const char kNoUpdateProvided[] =
+    "At least one of `title` or `hasBeenRead` must be provided.";
 
 }  // namespace extensions::reading_list_api_constants

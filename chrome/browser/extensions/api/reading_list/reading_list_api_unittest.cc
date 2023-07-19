@@ -195,4 +195,83 @@ TEST_F(ReadingListApiUnitTest, RemoveNonExistentURL) {
   EXPECT_EQ(error, reading_list_api_constants::kURLNotFoundError);
 }
 
+// Test that it is possible to update the features of an entry.
+TEST_F(ReadingListApiUnitTest, UpdateEntryFeatures) {
+  scoped_refptr<const Extension> extension = CreateReadingListExtension();
+
+  ReadingListModel* reading_list_model =
+      ReadingListModelFactory::GetForBrowserContext(profile());
+
+  ReadingListLoadObserver(reading_list_model).Wait();
+
+  reading_list_model->AddOrReplaceEntry(
+      GURL("https://www.example.com"), "example of title",
+      reading_list::EntrySource::ADDED_VIA_CURRENT_APP, base::TimeDelta());
+
+  // Verify that the entry has been added.
+  EXPECT_EQ(reading_list_model->size(), 1u);
+
+  // Update the entry that was added before.
+  auto update_function = base::MakeRefCounted<ReadingListUpdateEntryFunction>();
+  update_function->set_extension(extension);
+  static constexpr char kArgs[] =
+      R"([{
+          "url": "https://www.example.com",
+          "title": "Title",
+          "hasBeenRead": true
+        }])";
+  api_test_utils::RunFunction(update_function.get(), kArgs, profile(),
+                              api_test_utils::FunctionMode::kNone);
+
+  // Verify that the size of the reading list model is still the same.
+  EXPECT_EQ(reading_list_model->size(), 1u);
+
+  // Verify the features of the entry.
+  GURL url = GURL("https://www.example.com");
+  auto entry = reading_list_model->GetEntryByURL(url);
+  EXPECT_EQ(entry->URL(), url);
+  EXPECT_EQ(entry->Title(), "Title");
+  EXPECT_TRUE(entry->IsRead());
+}
+
+// Test that trying to update an entry by providing only the URL, generates an
+// error.
+TEST_F(ReadingListApiUnitTest, UpdateEntryOnlyWithTheURL) {
+  scoped_refptr<const Extension> extension = CreateReadingListExtension();
+
+  ReadingListModel* reading_list_model =
+      ReadingListModelFactory::GetForBrowserContext(profile());
+
+  ReadingListLoadObserver(reading_list_model).Wait();
+
+  reading_list_model->AddOrReplaceEntry(
+      GURL("https://www.example.com"), "example of title",
+      reading_list::EntrySource::ADDED_VIA_CURRENT_APP, base::TimeDelta());
+
+  // Verify that the entry has been added.
+  EXPECT_EQ(reading_list_model->size(), 1u);
+
+  // Update the entry that was added before.
+  auto update_function = base::MakeRefCounted<ReadingListUpdateEntryFunction>();
+  update_function->set_extension(extension);
+  static constexpr char kArgs[] =
+      R"([{
+          "url": "https://www.example.com",
+        }])";
+  std::string error = api_test_utils::RunFunctionAndReturnError(
+      update_function.get(), kArgs, profile(),
+      api_test_utils::FunctionMode::kNone);
+  EXPECT_EQ(error, reading_list_api_constants::kNoUpdateProvided);
+
+  // Verify that the size of the reading list model is still the same.
+  EXPECT_EQ(reading_list_model->size(), 1u);
+
+  // Verify the features of the entry.
+  GURL url = GURL("https://www.example.com");
+  auto entry = reading_list_model->GetEntryByURL(url);
+  EXPECT_EQ(entry->URL(), url);
+  EXPECT_EQ(entry->Title(), "example of title");
+  EXPECT_FALSE(entry->IsRead());
+}
+
 }  // namespace extensions

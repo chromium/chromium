@@ -21,20 +21,41 @@ namespace readingList{
     DOMString url;
   };
 
+  dictionary UpdateEntryOptions {
+    // The url that will be updated.
+    DOMString url;
+
+    // The updated title.
+    DOMString? title;
+
+    // The updated read status.
+    boolean? hasBeenRead;
+  };
+
   callback AddEntryCallback = void ();
   callback RemoveEntryCallback = void();
+  callback UpdateEntryCallback = void();
 
   interface Functions {
     // Adds an entry to the reading list if it does not exist.
     // |entry|: The entry to add to the reading list.
     // |callback|: Invoked once the entry has been added.
-    [supportsPromises] static void addEntry(ReadingListEntry entry,
-                                            AddEntryCallback callback);
+    [supportsPromises] static void addEntry(
+                                      ReadingListEntry entry,
+                                      optional AddEntryCallback callback);
 
     // Removes an entry from the reading list if it exists.
     // |info|: The entry to remove from the reading list.
     // |callback|: Invoked once the entry has been removed.
-    [supportsPromises] static void removeEntry(RemoveOptions info,
-                                               RemoveEntryCallback callback);
+    [supportsPromises] static void removeEntry(
+                                      RemoveOptions info,
+                                      optional RemoveEntryCallback callback);
+
+    // Updates the features of a reading list entry if it exists.
+    // |info|: The entry to update.
+    // |callback|: Invoked once the matched entries have been updated.
+    [supportsPromises] static void updateEntry(
+                                      UpdateEntryOptions info,
+                                      optional UpdateEntryCallback callback);
   };
 };

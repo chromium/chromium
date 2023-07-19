@@ -68,6 +68,36 @@ class ReadingListRemoveEntryFunction : public ExtensionFunction,
   GURL url_;
 };
 
+class ReadingListUpdateEntryFunction : public ExtensionFunction,
+                                       public ReadingListModelObserver {
+ public:
+  DECLARE_EXTENSION_FUNCTION("readingList.updateEntry", READINGLIST_UPDATEENTRY)
+
+  ReadingListUpdateEntryFunction();
+  ReadingListUpdateEntryFunction(const ReadingListUpdateEntryFunction&) =
+      delete;
+  ReadingListUpdateEntryFunction& operator=(
+      const ReadingListUpdateEntryFunction&) = delete;
+
+  // ExtensionFunction:
+  ResponseAction Run() override;
+
+ private:
+  ~ReadingListUpdateEntryFunction() override;
+
+  ResponseValue UpdateEntriesInTheReadingList();
+
+  // ReadingListModelObserver:
+  void ReadingListModelLoaded(const ReadingListModel* model) override;
+
+  base::ScopedObservation<ReadingListModel, ReadingListModelObserver>
+      reading_list_observation_{this};
+  raw_ptr<ReadingListModel> reading_list_model_;
+  GURL url_;
+  absl::optional<std::string> title_;
+  absl::optional<bool> has_been_read_;
+};
+
 }  // namespace extensions
 
 #endif  // CHROME_BROWSER_EXTENSIONS_API_READING_LIST_READING_LIST_API_H_

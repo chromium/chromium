@@ -122,4 +122,69 @@ ReadingListRemoveEntryFunction::RemoveEntryFromReadingList() {
   return NoArguments();
 }
 
+//////////////////////////////////////////////////////////////////////////////
+//////////////////////ReadingListUpdateEntryFunction//////////////////////////
+//////////////////////////////////////////////////////////////////////////////
+
+ReadingListUpdateEntryFunction::ReadingListUpdateEntryFunction() = default;
+ReadingListUpdateEntryFunction::~ReadingListUpdateEntryFunction() = default;
+
+ExtensionFunction::ResponseAction ReadingListUpdateEntryFunction::Run() {
+  auto params = api::reading_list::UpdateEntry::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  title_ = params->info.title;
+  has_been_read_ = params->info.has_been_read;
+
+  if (!title_.has_value() && !has_been_read_.has_value()) {
+    return RespondNow(Error(reading_list_api_constants::kNoUpdateProvided));
+  }
+
+  url_ = GURL(params->info.url);
+  if (!url_.is_valid()) {
+    return RespondNow(Error(reading_list_api_constants::kInvalidURLError));
+  }
+
+  reading_list_model_ =
+      ReadingListModelFactory::GetForBrowserContext(browser_context());
+
+  if (!reading_list_model_->loaded()) {
+    reading_list_observation_.Observe(reading_list_model_);
+    AddRef();
+    return RespondLater();
+  }
+
+  auto response = UpdateEntriesInTheReadingList();
+  return RespondNow(std::move(response));
+}
+
+void ReadingListUpdateEntryFunction::ReadingListModelLoaded(
+    const ReadingListModel* model) {
+  reading_list_observation_.Reset();
+  auto response = UpdateEntriesInTheReadingList();
+  Respond(std::move(response));
+  Release();  // Balanced in Run().
+}
+
+ExtensionFunction::ResponseValue
+ReadingListUpdateEntryFunction::UpdateEntriesInTheReadingList() {
+  if (!reading_list_model_->IsUrlSupported(url_)) {
+    return Error(reading_list_api_constants::kNotSupportedURLError);
+  }
+
+  if (!reading_list_model_->GetEntryByURL(url_)) {
+    return Error(reading_list_api_constants::kURLNotFoundError);
+  }
+
+  if (title_.has_value()) {
+    reading_list_model_->SetEntryTitleIfExists(url_, title_.value());
+  }
+
+  if (has_been_read_.has_value()) {
+    reading_list_model_->SetReadStatusIfExists(url_, has_been_read_.value());
+  }
+
+  return NoArguments();
+}
+
 }  // namespace extensions
