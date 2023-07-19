@@ -195,6 +195,8 @@ bool PermissionsPolicy::IsFeatureEnabledForSubresourceRequest(
   return IsFeatureEnabledForOriginImpl(feature, origin, opt_in_features);
 }
 
+// Implements Permissions Policy 9.8: Get feature value for origin.
+// Version https://www.w3.org/TR/2023/WD-permissions-policy-1-20230717/
 bool PermissionsPolicy::GetFeatureValueForOrigin(
     mojom::PermissionsPolicyFeature feature,
     const url::Origin& origin) const {
@@ -424,8 +426,8 @@ std::unique_ptr<PermissionsPolicy> PermissionsPolicy::CreateFromParentPolicy(
   return new_policy;
 }
 
-// Implements Permissions Policy 9.8: Is feature enabled in document for origin?
-// Version https://www.w3.org/TR/2023/WD-permissions-policy-1-20230322/
+// Implements Permissions Policy 9.9: Is feature enabled in document for origin?
+// Version https://www.w3.org/TR/2023/WD-permissions-policy-1-20230717/
 bool PermissionsPolicy::IsFeatureEnabledForOriginImpl(
     mojom::PermissionsPolicyFeature feature,
     const url::Origin& origin,
@@ -435,13 +437,13 @@ bool PermissionsPolicy::IsFeatureEnabledForOriginImpl(
 
   auto inherited_value = inherited_policies_.at(feature);
 
-  // 9.8.2: If policy’s inherited policy for feature is Disabled, return
+  // 9.9.2: If policy’s inherited policy for feature is Disabled, return
   // "Disabled".
   if (!inherited_value) {
     return false;
   }
 
-  // 9.8.3: If feature is present in policy’s declared policy:
+  // 9.9.3: If feature is present in policy’s declared policy:
   //    1. If the allowlist for feature in policy’s declared policy matches
   //       origin, then return "Enabled".
   //    2. Otherwise return "Disabled".
@@ -463,10 +465,10 @@ bool PermissionsPolicy::IsFeatureEnabledForOriginImpl(
 
   switch (default_policy) {
     case PermissionsPolicyFeatureDefault::EnableForAll:
-      // 9.8.4: If feature’s default allowlist is *, return "Enabled".
+      // 9.9.4: If feature’s default allowlist is *, return "Enabled".
       return true;
     case PermissionsPolicyFeatureDefault::EnableForSelf:
-      // 9.8.5: If feature’s default allowlist is 'self', and origin is same
+      // 9.9.5: If feature’s default allowlist is 'self', and origin is same
       // origin with document’s origin, return "Enabled".
       if (origin_.IsSameOriginWith(origin)) {
         return true;
@@ -475,7 +477,7 @@ bool PermissionsPolicy::IsFeatureEnabledForOriginImpl(
     case PermissionsPolicyFeatureDefault::EnableForNone:
       break;
   }
-  // 9.8.6: Return "Disabled".
+  // 9.9.6: Return "Disabled".
   return false;
 }
 
@@ -493,7 +495,7 @@ bool PermissionsPolicy::IsFeatureEnabledForSubresourceRequestAssumingOptIn(
 
 // Implements Permissions Policy 9.7: Define an inherited policy for
 // feature in container at origin.
-// Version https://www.w3.org/TR/2023/WD-permissions-policy-1-20230322/
+// Version https://www.w3.org/TR/2023/WD-permissions-policy-1-20230717/
 bool PermissionsPolicy::InheritedValueForFeature(
     const PermissionsPolicy* parent_policy,
     std::pair<mojom::PermissionsPolicyFeature, PermissionsPolicyFeatureDefault>
