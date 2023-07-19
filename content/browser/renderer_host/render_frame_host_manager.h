@@ -277,9 +277,9 @@ class CONTENT_EXPORT RenderFrameHostManager {
   // be deleted soon and we are just waiting for the frame's unload handler).
   RenderFrameProxyHost* GetProxyToParent();
 
-  // If this is a RenderFrameHostManager for a main frame, returns the proxy to
-  // inner WebContents in the outer WebContents's SiteInstance. Returns nullptr
-  // if this WebContents isn't part of inner/outer relationship.
+  // If this is a RenderFrameHostManager for a main frame, returns the proxy
+  // representing this main frame to its outer document's SiteInstance. Returns
+  // nullptr if this is not the main frame of an inner frame tree.
   RenderFrameProxyHost* GetProxyToOuterDelegate();
 
   // If this is a main frame for an inner delegate, return the

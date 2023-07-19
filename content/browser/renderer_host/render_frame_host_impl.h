@@ -2792,9 +2792,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // FrameTreeNode or RenderFrameHostManager.
   RenderFrameProxyHost* GetProxyToParent();
 
-  // Returns the proxy to inner WebContents in the outer WebContents's
-  // SiteInstance. Note that this is not allowed to call this function on
-  // inactive RenderFrameHost.
+  // Returns the proxy representing `this` to its outer document's SiteInstance.
+  // Note that this can only be called for active main RenderFrameHosts. Returns
+  // nullptr if `this` is not the main frame of an inner frame tree.
   RenderFrameProxyHost* GetProxyToOuterDelegate();
 
   void DidChangeReferrerPolicy(network::mojom::ReferrerPolicy referrer_policy);
