@@ -234,7 +234,7 @@ class BASE_EXPORT TimeDelta {
   constexpr int64_t InSeconds() const;
   int64_t InSecondsFloored() const;
   double InMillisecondsF() const;
-  int64_t InMilliseconds() const;
+  constexpr int64_t InMilliseconds() const;
   int64_t InMillisecondsRoundedUp() const;
   constexpr int64_t InMicroseconds() const { return delta_; }
   double InMicrosecondsF() const;
@@ -946,6 +946,14 @@ constexpr double TimeDelta::InSecondsF() const {
 
 constexpr int64_t TimeDelta::InSeconds() const {
   return is_inf() ? delta_ : (delta_ / Time::kMicrosecondsPerSecond);
+}
+
+constexpr int64_t TimeDelta::InMilliseconds() const {
+  if (!is_inf()) {
+    return delta_ / Time::kMicrosecondsPerMillisecond;
+  }
+  return (delta_ < 0) ? std::numeric_limits<int64_t>::min()
+                      : std::numeric_limits<int64_t>::max();
 }
 
 constexpr int64_t TimeDelta::InNanoseconds() const {
