@@ -21,7 +21,6 @@ import android.view.DragEvent;
 import android.view.View;
 import android.view.View.DragShadowBuilder;
 import android.view.View.MeasureSpec;
-import android.view.accessibility.AccessibilityManager;
 import android.widget.ImageView;
 
 import androidx.test.core.app.ApplicationProvider;
@@ -37,14 +36,13 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
-import org.robolectric.shadow.api.Shadow;
-import org.robolectric.shadows.ShadowAccessibilityManager;
 import org.robolectric.shadows.ShadowContentResolver;
 
 import org.chromium.base.compat.ApiHelperForN;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.dragdrop.DragAndDropDelegateImpl.DragTargetType;
 import org.chromium.url.JUnitTestGURLs;
 
@@ -114,6 +112,8 @@ public class DragAndDropDelegateImplUnitTest {
         mDropDataProviderImpl.onDragEnd(false);
         UmaRecorderHolder.resetForTesting();
         ShadowApiHelperForN.sLastDragShadowBuilder = null;
+        AccessibilityState.setIsTouchExplorationEnabledForTesting(false);
+        AccessibilityState.setIsPerformGesturesEnabledForTesting(false);
     }
 
     @Test
@@ -238,7 +238,7 @@ public class DragAndDropDelegateImplUnitTest {
     }
 
     @Test
-    @Config(shadows = {ShadowApiHelperForN.class, ShadowAccessibilityManager.class})
+    @Config(shadows = {ShadowApiHelperForN.class})
     public void testStartDragAndDrop_NotSupportedForA11y() {
         final Bitmap shadowImage = Bitmap.createBitmap(1, 1, Bitmap.Config.ALPHA_8);
         final DropDataAndroid dropData = DropDataAndroid.create("text", null, null, null, null);
@@ -248,13 +248,15 @@ public class DragAndDropDelegateImplUnitTest {
                         /*cursorOffsetX*/ 0, /*cursorOffsetY*/ 0, /*dragObjRectWidth*/ 100,
                         /*dragObjRectHeight*/ 200));
 
-        AccessibilityManager a11yManager =
-                (AccessibilityManager) mContext.getSystemService(Context.ACCESSIBILITY_SERVICE);
-        ShadowAccessibilityManager shadowA11yManager = Shadow.extract(a11yManager);
-        shadowA11yManager.setEnabled(true);
-        shadowA11yManager.setTouchExplorationEnabled(true);
-
+        AccessibilityState.setIsTouchExplorationEnabledForTesting(true);
         Assert.assertFalse("Drag and drop should not start when isTouchExplorationEnabled=true.",
+                mDragAndDropDelegateImpl.startDragAndDrop(mContainerView, shadowImage, dropData,
+                        /*cursorOffsetX*/ 0, /*cursorOffsetY*/ 0, /*dragObjRectWidth*/ 100,
+                        /*dragObjRectHeight*/ 200));
+
+        AccessibilityState.setIsTouchExplorationEnabledForTesting(false);
+        AccessibilityState.setIsPerformGesturesEnabledForTesting(true);
+        Assert.assertFalse("Drag and drop should not start when isPerformGesturesEnabled=true.",
                 mDragAndDropDelegateImpl.startDragAndDrop(mContainerView, shadowImage, dropData,
                         /*cursorOffsetX*/ 0, /*cursorOffsetY*/ 0, /*dragObjRectWidth*/ 100,
                         /*dragObjRectHeight*/ 200));
