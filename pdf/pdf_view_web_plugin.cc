@@ -1106,7 +1106,9 @@ void PdfViewWebPlugin::DocumentLoadComplete() {
 
   RecordDocumentMetrics();
 
-  SendAttachments();
+  if (base::FeatureList::IsEnabled(chrome_pdf::features::kPdfPortfolio)) {
+    SendAttachments();
+  }
   SendBookmarks();
   SendMetadata();
 
