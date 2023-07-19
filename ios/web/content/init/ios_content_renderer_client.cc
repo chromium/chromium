@@ -36,4 +36,29 @@ void IOSContentRendererClient::RunScriptsAtDocumentEnd(
   // JavaScriptFeatures.
 }
 
+void IOSContentRendererClient::PrepareErrorPage(
+    content::RenderFrame* render_frame,
+    const blink::WebURLError& error,
+    const std::string& http_method,
+    content::mojom::AlternativeErrorPageOverrideInfoPtr
+        alternative_error_page_info,
+    std::string* error_html) {
+  if (error_html) {
+    *error_html = "This is an error page";
+  }
+}
+
+void IOSContentRendererClient::PrepareErrorPageForHttpStatusError(
+    content::RenderFrame* render_frame,
+    const blink::WebURLError& error,
+    const std::string& http_method,
+    int http_status,
+    content::mojom::AlternativeErrorPageOverrideInfoPtr
+        alternative_error_page_info,
+    std::string* error_html) {
+  if (error_html) {
+    *error_html = "This is an http status error page";
+  }
+}
+
 }  // namespace web
