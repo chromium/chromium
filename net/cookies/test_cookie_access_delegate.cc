@@ -21,6 +21,7 @@
 #include "net/cookies/cookie_util.h"
 #include "net/first_party_sets/first_party_set_entry.h"
 #include "net/first_party_sets/first_party_set_metadata.h"
+#include "net/first_party_sets/same_party_context.h"
 
 namespace net {
 
@@ -67,7 +68,8 @@ TestCookieAccessDelegate::ComputeFirstPartySetMetadataMaybeAsync(
   absl::optional<FirstPartySetEntry> top_frame_owner =
       top_frame_site ? FindFirstPartySetEntry(*top_frame_site) : absl::nullopt;
   return RunMaybeAsync(
-      FirstPartySetMetadata(base::OptionalToPtr(FindFirstPartySetEntry(site)),
+      FirstPartySetMetadata(SamePartyContext(),
+                            base::OptionalToPtr(FindFirstPartySetEntry(site)),
                             base::OptionalToPtr(top_frame_owner)),
       std::move(callback));
 }

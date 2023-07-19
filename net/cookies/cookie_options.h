@@ -10,8 +10,11 @@
 #include <ostream>
 #include <string>
 
-#include "base/check_op.h"
 #include "net/base/net_export.h"
+#include "net/cookies/cookie_constants.h"
+#include "net/cookies/cookie_inclusion_status.h"
+#include "net/first_party_sets/same_party_context.h"
+#include "url/gurl.h"
 
 namespace net {
 
@@ -266,6 +269,13 @@ class NET_EXPORT CookieOptions {
   void unset_return_excluded_cookies() { return_excluded_cookies_ = false; }
   bool return_excluded_cookies() const { return return_excluded_cookies_; }
 
+  void set_same_party_context(const SamePartyContext& context) {
+    same_party_context_ = context;
+  }
+  const SamePartyContext& same_party_context() const {
+    return same_party_context_;
+  }
+
   // Getter/setter of |full_party_context_size_| for logging purposes.
   void set_full_party_context_size(uint32_t len) {
     full_party_context_size_ = len;
@@ -294,6 +304,8 @@ class NET_EXPORT CookieOptions {
   SameSiteCookieContext same_site_cookie_context_;
   bool update_access_time_ = true;
   bool return_excluded_cookies_ = false;
+
+  SamePartyContext same_party_context_;
 
   // The size of the isolation_info.party_context plus the top-frame site.
   // Stored for logging purposes.

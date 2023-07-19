@@ -61,6 +61,11 @@ const SchemefulSite& ProjectKey(
   return p.first;
 }
 
+SamePartyContext::Type ContextTypeFromBool(bool is_same_party) {
+  return is_same_party ? SamePartyContext::Type::kSameParty
+                       : SamePartyContext::Type::kCrossParty;
+}
+
 }  // namespace
 
 GlobalFirstPartySets::GlobalFirstPartySets() = default;
@@ -178,7 +183,12 @@ FirstPartySetMetadata GlobalFirstPartySets::ComputeMetadata(
     const FirstPartySetsContextConfig& fps_context_config) const {
   const base::ElapsedTimer timer;
 
-  // TODO(https://crbug.com/1348588): Remove this histogram.
+  SamePartyContext::Type context_type =
+      ContextTypeFromBool(IsContextSamePartyWithSite(
+          site, top_frame_site, party_context, fps_context_config));
+
+  SamePartyContext context(context_type);
+
   UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
       "Cookie.FirstPartySets.ComputeContext.Latency", timer.Elapsed(),
       base::Microseconds(1), base::Milliseconds(100), 50);
@@ -188,8 +198,33 @@ FirstPartySetMetadata GlobalFirstPartySets::ComputeMetadata(
                      : absl::nullopt;
 
   return FirstPartySetMetadata(
-      base::OptionalToPtr(FindEntry(site, fps_context_config)),
+      context, base::OptionalToPtr(FindEntry(site, fps_context_config)),
       base::OptionalToPtr(top_frame_entry));
+}
+
+bool GlobalFirstPartySets::IsContextSamePartyWithSite(
+    const SchemefulSite& site,
+    const SchemefulSite* top_frame_site,
+    const std::set<SchemefulSite>& party_context,
+    const FirstPartySetsContextConfig& fps_context_config) const {
+  const absl::optional<FirstPartySetEntry> site_entry =
+      FindEntry(site, fps_context_config);
+  if (!site_entry.has_value())
+    return false;
+
+  const auto is_in_same_set_as_frame_site =
+      [this, &site_entry,
+       &fps_context_config](const SchemefulSite& context_site) -> bool {
+    const absl::optional<FirstPartySetEntry> context_entry =
+        FindEntry(context_site, fps_context_config);
+    return context_entry.has_value() &&
+           context_entry->primary() == site_entry->primary();
+  };
+
+  if (top_frame_site && !is_in_same_set_as_frame_site(*top_frame_site))
+    return false;
+
+  return base::ranges::all_of(party_context, is_in_same_set_as_frame_site);
 }
 
 void GlobalFirstPartySets::ApplyManuallySpecifiedSet(

@@ -167,6 +167,18 @@ class NET_EXPORT GlobalFirstPartySets {
       const std::vector<base::flat_map<SchemefulSite, FirstPartySetEntry>>&
           addition_sets) const;
 
+  // Returns whether `site` is same-party with `party_context`, and
+  // `top_frame_site` (if it is not nullptr). That is, is `site`'s primary the
+  // same as the primaries of every member of `party_context` and of
+  // `top_frame_site`? Note: if `site` is not a member of a First-Party Set,
+  // then this returns false. If `top_frame_site` is nullptr, then it is
+  // ignored.
+  bool IsContextSamePartyWithSite(
+      const SchemefulSite& site,
+      const SchemefulSite* top_frame_site,
+      const std::set<SchemefulSite>& party_context,
+      const FirstPartySetsContextConfig& fps_context_config) const;
+
   // Same as the public version of ForEachEffectiveSetEntry, but is allowed to
   // omit the `config` argument (i.e. pass nullptr instead of a reference).
   bool ForEachEffectiveSetEntry(

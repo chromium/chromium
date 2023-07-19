@@ -1020,6 +1020,14 @@ mojom("mojom_first_party_sets") {
               cpp = "::net::FirstPartySetEntry"
             },
             {
+              mojom = "network.mojom.SamePartyCookieContextType"
+              cpp = "::net::SamePartyContext::Type"
+            },
+            {
+              mojom = "network.mojom.SamePartyContext"
+              cpp = "::net::SamePartyContext"
+            },
+            {
               mojom = "network.mojom.FirstPartySetMetadata"
               cpp = "::net::FirstPartySetMetadata"
               move_only = true

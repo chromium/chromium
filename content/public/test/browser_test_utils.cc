@@ -102,6 +102,7 @@
 #include "net/filter/gzip_header.h"
 #include "net/filter/gzip_source_stream.h"
 #include "net/filter/mock_source_stream.h"
+#include "net/first_party_sets/same_party_context.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
@@ -1893,7 +1894,8 @@ std::vector<net::CanonicalCookie> GetCanonicalCookies(
 bool SetCookie(BrowserContext* browser_context,
                const GURL& url,
                const std::string& value,
-               net::CookieOptions::SameSiteCookieContext context) {
+               net::CookieOptions::SameSiteCookieContext context,
+               net::SamePartyContext::Type party_context) {
   mojo::Remote<network::mojom::CookieManager> cookie_manager;
   browser_context->GetDefaultStoragePartition()
       ->GetNetworkContext()
@@ -1906,6 +1908,7 @@ bool SetCookie(BrowserContext* browser_context,
   net::CookieOptions options;
   options.set_include_httponly();
   options.set_same_site_cookie_context(context);
+  options.set_same_party_context(net::SamePartyContext(party_context));
   base::test::TestFuture<net::CookieAccessResult> future;
   cookie_manager->SetCanonicalCookie(*cc.get(), url, options,
                                      future.GetCallback());
@@ -1916,7 +1919,8 @@ bool SetPartitionedCookie(BrowserContext* browser_context,
                           const GURL& url,
                           const std::string& value,
                           const net::CookiePartitionKey& cookie_partition_key,
-                          net::CookieOptions::SameSiteCookieContext context) {
+                          net::CookieOptions::SameSiteCookieContext context,
+                          net::SamePartyContext::Type party_context) {
   DCHECK(base::Contains(value, ";Partitioned"));
   mojo::Remote<network::mojom::CookieManager> cookie_manager;
   browser_context->GetDefaultStoragePartition()
@@ -1930,6 +1934,7 @@ bool SetPartitionedCookie(BrowserContext* browser_context,
   net::CookieOptions options;
   options.set_include_httponly();
   options.set_same_site_cookie_context(context);
+  options.set_same_party_context(net::SamePartyContext(party_context));
   base::test::TestFuture<net::CookieAccessResult> future;
   cookie_manager->SetCanonicalCookie(*cc, url, options, future.GetCallback());
   return future.Get().status.IsInclude();

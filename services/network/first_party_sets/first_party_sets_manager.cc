@@ -15,6 +15,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/ranges/algorithm.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
@@ -24,6 +25,7 @@
 #include "net/first_party_sets/first_party_set_entry.h"
 #include "net/first_party_sets/first_party_set_metadata.h"
 #include "net/first_party_sets/global_first_party_sets.h"
+#include "net/first_party_sets/same_party_context.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {

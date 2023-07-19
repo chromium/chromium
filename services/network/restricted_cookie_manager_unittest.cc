@@ -39,6 +39,7 @@
 #include "net/cookies/test_cookie_access_delegate.h"
 #include "net/first_party_sets/first_party_set_metadata.h"
 #include "net/first_party_sets/global_first_party_sets.h"
+#include "net/first_party_sets/same_party_context.h"
 #include "services/network/cookie_access_delegate_impl.h"
 #include "services/network/cookie_settings.h"
 #include "services/network/first_party_sets/first_party_sets_access_delegate.h"
@@ -323,7 +324,9 @@ class RestrictedCookieManagerTest
       bool can_modify_httponly,
       const net::CookieOptions::SameSiteCookieContext::ContextType
           same_site_cookie_context_type = net::CookieOptions::
-              SameSiteCookieContext::ContextType::CROSS_SITE) {
+              SameSiteCookieContext::ContextType::CROSS_SITE,
+      const net::SamePartyContext::Type same_party_context_type =
+          net::SamePartyContext::Type::kCrossParty) {
     net::ResultSavingCookieCallback<net::CookieAccessResult> callback;
     net::CookieOptions options;
     if (can_modify_httponly)
@@ -331,6 +334,8 @@ class RestrictedCookieManagerTest
     net::CookieOptions::SameSiteCookieContext same_site_cookie_context(
         same_site_cookie_context_type, same_site_cookie_context_type);
     options.set_same_site_cookie_context(same_site_cookie_context);
+    options.set_same_party_context(
+        net::SamePartyContext(same_party_context_type));
 
     cookie_monster_.SetCanonicalCookieAsync(
         std::make_unique<net::CanonicalCookie>(cookie),
@@ -389,7 +394,8 @@ class RestrictedCookieManagerTest
             /*httponly=*/false, net::CookieSameSite::NO_RESTRICTION,
             net::COOKIE_PRIORITY_DEFAULT, /*same_party=*/true),
         "https", /*can_modify_httponly=*/true,
-        net::CookieOptions::SameSiteCookieContext::ContextType::SAME_SITE_LAX));
+        net::CookieOptions::SameSiteCookieContext::ContextType::SAME_SITE_LAX,
+        net::SamePartyContext::Type::kSameParty));
   }
 
   std::unique_ptr<TestCookieChangeListener> CreateCookieChangeListener(

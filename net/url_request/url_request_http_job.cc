@@ -61,6 +61,7 @@
 #include "net/filter/source_stream.h"
 #include "net/filter/zstd_source_stream.h"
 #include "net/first_party_sets/first_party_set_metadata.h"
+#include "net/first_party_sets/same_party_context.h"
 #include "net/http/http_content_disposition.h"
 #include "net/http/http_log_util.h"
 #include "net/http/http_network_session.h"
@@ -146,12 +147,14 @@ void LogTrustAnchor(const net::HashValueVector& spki_hashes) {
 
 net::CookieOptions CreateCookieOptions(
     net::CookieOptions::SameSiteCookieContext same_site_context,
+    const net::SamePartyContext& same_party_context,
     const net::IsolationInfo& isolation_info,
     bool is_in_nontrivial_first_party_set) {
   net::CookieOptions options;
   options.set_return_excluded_cookies();
   options.set_include_httponly();
   options.set_same_site_cookie_context(same_site_context);
+  options.set_same_party_context(same_party_context);
   if (isolation_info.party_context().has_value()) {
     // Count the top-frame site since it's not in the party_context.
     options.set_full_party_context_size(isolation_info.party_context()->size() +
@@ -669,9 +672,9 @@ void URLRequestHttpJob::AddCookieHeaderAndStart() {
 
   bool is_in_nontrivial_first_party_set =
       first_party_set_metadata_.frame_entry().has_value();
-  CookieOptions options =
-      CreateCookieOptions(same_site_context, request_->isolation_info(),
-                          is_in_nontrivial_first_party_set);
+  CookieOptions options = CreateCookieOptions(
+      same_site_context, first_party_set_metadata_.context(),
+      request_->isolation_info(), is_in_nontrivial_first_party_set);
 
   cookie_store->GetCookieListWithOptionsAsync(
       request_->url(), options,
@@ -905,9 +908,9 @@ void URLRequestHttpJob::SaveCookiesAndNotifyHeadersComplete(int result) {
 
   bool is_in_nontrivial_first_party_set =
       first_party_set_metadata_.frame_entry().has_value();
-  CookieOptions options =
-      CreateCookieOptions(same_site_context, request_->isolation_info(),
-                          is_in_nontrivial_first_party_set);
+  CookieOptions options = CreateCookieOptions(
+      same_site_context, first_party_set_metadata_.context(),
+      request_->isolation_info(), is_in_nontrivial_first_party_set);
 
   // Set all cookies, without waiting for them to be set. Any subsequent
   // read will see the combined result of all cookie operation.
