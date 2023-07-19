@@ -2410,6 +2410,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Omnibox.ZeroSuggest.AllResults" units="units"
+    expires_after="2024-06-28">
+  <owner>pnoland@chromium.org</owner>
+  <owner>chrome-omnibox-team@google.com</owner>
+  <summary>
+    The number of results (either query or URL) from ZeroSuggest. This is
+    emitted every time ZeroSuggestProvider produces results on omnibox focus or
+    on omnibox input clobber, either from the cache or from the remote response.
+  </summary>
+</histogram>
+
 <histogram name="Omnibox.ZeroSuggest.Eligible.OnFocusV2"
     enum="ZeroSuggestEligibleOnFocus" expires_after="2022-12-25">
   <obsolete>
@@ -2443,6 +2454,28 @@ chromium-metrics-reviews@google.com.
     suggest suggestions (including incognito mode), and reports eligibility for
     suggestions even if kOmniboxPopupShortcutIconsInZeroState is enabled
     (meaning: suggestions are not shown, but current URL is eligible).
+  </summary>
+</histogram>
+
+<histogram name="Omnibox.ZeroSuggest.QueryResults" units="units"
+    expires_after="2024-06-29">
+  <owner>pnoland@chromium.org</owner>
+  <owner>chrome-omnibox-team@google.com</owner>
+  <summary>
+    The number of query results returned from ZeroSuggest. This is emitted every
+    time ZeroSuggestProvider produces results on omnibox focus or on omnibox
+    input clobber, either from the cache or from the remote response.
+  </summary>
+</histogram>
+
+<histogram name="Omnibox.ZeroSuggest.URLResults" units="units"
+    expires_after="2024-06-29">
+  <owner>pnoland@chromium.org</owner>
+  <owner>chrome-omnibox-team@google.com</owner>
+  <summary>
+    The number of URL results returned from ZeroSuggest. This is emitted every
+    time ZeroSuggestProvider produces results on omnibox focus or on omnibox
+    input clobber, either from the cache or from the remote response.
   </summary>
 </histogram>
 

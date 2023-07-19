@@ -694,9 +694,10 @@ void ZeroSuggestProvider::ConvertSuggestResultsToAutocompleteMatches(
   const int num_query_results = map.size();
   const int num_nav_results = results.navigation_results.size();
   const int num_results = num_query_results + num_nav_results;
-  base::UmaHistogramCounts1M("ZeroSuggest.QueryResults", num_query_results);
-  base::UmaHistogramCounts1M("ZeroSuggest.URLResults", num_nav_results);
-  base::UmaHistogramCounts1M("ZeroSuggest.AllResults", num_results);
+  base::UmaHistogramCounts1M("Omnibox.ZeroSuggest.QueryResults",
+                             num_query_results);
+  base::UmaHistogramCounts1M("Omnibox.ZeroSuggest.URLResults", num_nav_results);
+  base::UmaHistogramCounts1M("Omnibox.ZeroSuggest.AllResults", num_results);
 
   if (num_results == 0) {
     return;

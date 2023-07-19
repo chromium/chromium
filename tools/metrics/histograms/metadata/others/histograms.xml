@@ -14732,34 +14732,6 @@ regressions. -->
   </summary>
 </histogram>
 
-<histogram name="ZeroSuggest.AllResults" units="units"
-    expires_after="2020-03-01">
-  <owner>hfung@chromium.org</owner>
-  <summary>
-    The number of results (either query or URL) from ZeroSuggest. This is set
-    every time a successful response from ZeroSuggest is received, which can be
-    every time the user focuses on the omnibox.
-  </summary>
-</histogram>
-
-<histogram name="ZeroSuggest.QueryResults" units="units" expires_after="M77">
-  <owner>hfung@chromium.org</owner>
-  <summary>
-    The number of query results returned from ZeroSuggest. This is set every
-    time a successful response from ZeroSuggest is received, which can be every
-    time the user focuses on the omnibox.
-  </summary>
-</histogram>
-
-<histogram name="ZeroSuggest.URLResults" units="units" expires_after="M77">
-  <owner>hfung@chromium.org</owner>
-  <summary>
-    The number of URL results returned from ZeroSuggest. This is set every time
-    a successful response from ZeroSuggest is received, which can be every time
-    the user focuses on the omnibox.
-  </summary>
-</histogram>
-
 </histograms>
 
 </histogram-configuration>
