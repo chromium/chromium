@@ -372,7 +372,7 @@ void BaseUIManager::DisplayBlockingPage(const UnsafeResource& resource) {
     base::WeakPtr<content::NavigationHandle> error_page_navigation_handle =
         outermost_contents->GetController().LoadPostCommitErrorPage(
             outermost_contents->GetPrimaryMainFrame(), unsafe_url,
-            blocking_page->GetHTMLContents(), net::ERR_BLOCKED_BY_CLIENT);
+            blocking_page->GetHTMLContents());
     if (error_page_navigation_handle) {
       blocking_page->CreatedPostCommitErrorPageNavigation(
           error_page_navigation_handle.get());

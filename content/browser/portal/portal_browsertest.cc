@@ -2324,8 +2324,7 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest,
   std::string error_html = "Error page";
   TestNavigationObserver error_observer(portal_contents);
   portal_contents->GetController().LoadPostCommitErrorPage(
-      portal_contents->GetPrimaryMainFrame(), portal_url, error_html,
-      net::ERR_BLOCKED_BY_CLIENT);
+      portal_contents->GetPrimaryMainFrame(), portal_url, error_html);
   error_observer.Wait();
   EXPECT_FALSE(error_observer.last_navigation_succeeded());
   EXPECT_EQ(net::ERR_BLOCKED_BY_CLIENT, error_observer.last_net_error_code());

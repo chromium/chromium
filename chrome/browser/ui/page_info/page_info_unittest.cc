@@ -52,6 +52,7 @@
 #include "content/public/test/web_contents_tester.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/features.h"
+#include "net/base/net_errors.h"
 #include "net/cert/cert_status_flags.h"
 #include "net/cert/x509_certificate.h"
 #include "net/ssl/ssl_connection_status_flags.h"

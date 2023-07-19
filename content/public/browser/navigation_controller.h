@@ -23,7 +23,6 @@
 #include "content/public/browser/session_storage_namespace.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/common/referrer.h"
-#include "net/base/net_errors.h"
 #include "services/network/public/cpp/resource_request_body.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/navigation/impression.h"
@@ -473,8 +472,7 @@ class NavigationController {
   virtual base::WeakPtr<NavigationHandle> LoadPostCommitErrorPage(
       RenderFrameHost* render_frame_host,
       const GURL& url,
-      const std::string& error_page_html,
-      net::Error error) = 0;
+      const std::string& error_page_html) = 0;
 
   // Renavigation --------------------------------------------------------------
 

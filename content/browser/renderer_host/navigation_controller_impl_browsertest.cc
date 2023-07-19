@@ -17118,8 +17118,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
 
   std::string error_html = "Error page";
   TestNavigationObserver error_observer(shell()->web_contents());
-  controller.LoadPostCommitErrorPage(root, url, error_html,
-                                     net::ERR_BLOCKED_BY_CLIENT);
+  controller.LoadPostCommitErrorPage(root, url, error_html);
   error_observer.Wait();
 
   scoped_refptr<SiteInstance> error_site_instance =
@@ -17163,8 +17162,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
 
   std::string error_html = "Error page";
   TestNavigationObserver error_observer(shell()->web_contents());
-  controller.LoadPostCommitErrorPage(child, url, error_html,
-                                     net::ERR_BLOCKED_BY_CLIENT);
+  controller.LoadPostCommitErrorPage(child, url, error_html);
   error_observer.Wait();
 
   // If error page isolation is enabled the `child` pointer will be invalid
@@ -17233,8 +17231,7 @@ IN_PROC_BROWSER_TEST_P(
   std::string error_html = "Error page";
   DidStartNavigationObserver did_start_navigation_observer(
       shell()->web_contents());
-  controller.LoadPostCommitErrorPage(frame, url, error_html,
-                                     net::ERR_BLOCKED_BY_CLIENT);
+  controller.LoadPostCommitErrorPage(frame, url, error_html);
 
   // The error page navigation was ignored.
   EXPECT_FALSE(did_start_navigation_observer.observed());
@@ -17260,8 +17257,7 @@ IN_PROC_BROWSER_TEST_P(
   std::string error_html = "Error page";
   GURL error_url("about:blank#error");
   TestNavigationObserver error_observer(shell()->web_contents());
-  controller.LoadPostCommitErrorPage(child, error_url, error_html,
-                                     net::ERR_BLOCKED_BY_CLIENT);
+  controller.LoadPostCommitErrorPage(child, error_url, error_html);
   error_observer.Wait();
 
   // If error page isolation is enabled the `child` pointer will be invalid
@@ -17310,9 +17306,8 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   // Call LoadPostCommitErrorPage on the popup.
   std::string error_html = "Error page";
   TestNavigationObserver error_observer(popup_contents);
-  controller.LoadPostCommitErrorPage(popup_main_frame,
-                                     popup_main_frame->GetLastCommittedURL(),
-                                     error_html, net::ERR_BLOCKED_BY_CLIENT);
+  controller.LoadPostCommitErrorPage(
+      popup_main_frame, popup_main_frame->GetLastCommittedURL(), error_html);
   error_observer.Wait();
 
   // The post-commit error page committed an error page and sets the last
@@ -17372,7 +17367,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   std::string error_html = "Error page";
   TestNavigationObserver error_observer(shell()->web_contents());
   controller.LoadPostCommitErrorPage(child, child->GetLastCommittedURL(),
-                                     error_html, net::ERR_BLOCKED_BY_CLIENT);
+                                     error_html);
   error_observer.Wait();
 
   // The post-commit error page committed an error page and sets the last
@@ -17441,7 +17436,7 @@ IN_PROC_BROWSER_TEST_P(
   std::string error_html = "Error page";
   TestNavigationObserver error_observer(shell()->web_contents());
   controller.LoadPostCommitErrorPage(child, child->GetLastCommittedURL(),
-                                     error_html, net::ERR_BLOCKED_BY_CLIENT);
+                                     error_html);
   error_observer.Wait();
 
   // The post-commit error page committed an error page and sets the last
@@ -17548,8 +17543,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   // Trigger a post-commit error page navigation.
   TestNavigationObserver error_observer(shell()->web_contents());
   controller.LoadPostCommitErrorPage(
-      shell()->web_contents()->GetPrimaryMainFrame(), url2, "Error Page",
-      net::ERR_BLOCKED_BY_CLIENT);
+      shell()->web_contents()->GetPrimaryMainFrame(), url2, "Error Page");
   error_observer.Wait();
   EXPECT_EQ(PAGE_TYPE_ERROR, controller.GetLastCommittedEntry()->GetPageType());
   EXPECT_EQ(2, controller.GetEntryCount());
@@ -17584,8 +17578,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   // Trigger a post-commit error page navigation.
   TestNavigationObserver error_observer(shell()->web_contents());
   controller.LoadPostCommitErrorPage(
-      shell()->web_contents()->GetPrimaryMainFrame(), url, "Error Page",
-      net::ERR_BLOCKED_BY_CLIENT);
+      shell()->web_contents()->GetPrimaryMainFrame(), url, "Error Page");
   error_observer.Wait();
   EXPECT_EQ(PAGE_TYPE_ERROR, controller.GetLastCommittedEntry()->GetPageType());
   EXPECT_EQ(1, controller.GetEntryCount());
@@ -17622,8 +17615,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   // Trigger a post-commit error page navigation.
   TestNavigationObserver error_observer(shell()->web_contents());
   controller.LoadPostCommitErrorPage(
-      shell()->web_contents()->GetPrimaryMainFrame(), url, "Error Page",
-      net::ERR_BLOCKED_BY_CLIENT);
+      shell()->web_contents()->GetPrimaryMainFrame(), url, "Error Page");
   error_observer.Wait();
   EXPECT_EQ(PAGE_TYPE_ERROR, controller.GetLastCommittedEntry()->GetPageType());
   EXPECT_EQ(1, controller.GetEntryCount());

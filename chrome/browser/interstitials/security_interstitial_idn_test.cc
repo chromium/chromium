@@ -32,7 +32,7 @@ testing::AssertionResult SecurityInterstitialIDNTest::VerifyIDNDecoded() const {
   content::TestNavigationObserver observer(contents);
   contents->GetController().LoadPostCommitErrorPage(
       contents->GetPrimaryMainFrame(), request_url,
-      blocking_page->GetHTMLContents(), net::ERR_BLOCKED_BY_CLIENT);
+      blocking_page->GetHTMLContents());
   observer.Wait();
   delete blocking_page;
   if (ui_test_utils::FindInPage(contents, kHostnameUnicode, true /*forward*/,

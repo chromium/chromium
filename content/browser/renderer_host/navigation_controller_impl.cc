@@ -99,6 +99,7 @@
 #include "content/public/common/url_constants.h"
 #include "content/public/common/url_utils.h"
 #include "media/base/mime_util.h"
+#include "net/base/net_errors.h"
 #include "net/http/http_status_code.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
@@ -4225,8 +4226,7 @@ base::WeakPtr<NavigationHandle>
 NavigationControllerImpl::LoadPostCommitErrorPage(
     RenderFrameHost* render_frame_host,
     const GURL& url,
-    const std::string& error_page_html,
-    net::Error error) {
+    const std::string& error_page_html) {
   RenderFrameHostImpl* rfhi =
       static_cast<RenderFrameHostImpl*>(render_frame_host);
 
@@ -4274,7 +4274,7 @@ NavigationControllerImpl::LoadPostCommitErrorPage(
           false /* is_form_submission */, nullptr /* navigation_ui_data */,
           absl::nullopt /* impression */, false /* is_pdf */);
   navigation_request->set_post_commit_error_page_html(error_page_html);
-  navigation_request->set_net_error(error);
+  navigation_request->set_net_error(net::ERR_BLOCKED_BY_CLIENT);
   node->TakeNavigationRequest(std::move(navigation_request));
   DCHECK(node->navigation_request());
 

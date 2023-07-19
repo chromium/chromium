@@ -11,6 +11,7 @@
 #include "chrome/browser/ssl/security_state_tab_helper.h"
 #include "components/security_state/content/content_utils.h"
 #include "content/public/browser/web_contents.h"
+#include "net/base/net_errors.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
 #include "net/ssl/ssl_cipher_suite_names.h"

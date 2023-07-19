@@ -3799,8 +3799,7 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
   // currently run in that case.
   TestNavigationObserver navigation_observer(shell()->web_contents(), 1);
   shell()->web_contents()->GetController().LoadPostCommitErrorPage(
-      subframe_rfh, subframe_rfh->GetLastCommittedURL(), "error_page_contents",
-      net::ERR_BLOCKED_BY_CLIENT);
+      subframe_rfh, subframe_rfh->GetLastCommittedURL(), "error_page_contents");
   navigation_observer.Wait();
   EXPECT_FALSE(navigation_observer.last_navigation_succeeded());
 

@@ -7,6 +7,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/types/pass_key.h"
 #include "content/browser/webid/flags.h"
+#include "net/base/net_errors.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
