@@ -424,11 +424,6 @@ extern const char kFeedExperimentTaggingDescription[];
 extern const char kFeedInvisibleForegroundRefreshName[];
 extern const char kFeedInvisibleForegroundRefreshDescription[];
 
-// Title and description for the flag to set the default Following feed sort
-// type.
-extern const char kFollowingFeedDefaultSortTypeName[];
-extern const char kFollowingFeedDefaultSortTypeDescription[];
-
 // Title and description for the flag to trigger the startup sign-in promo.
 extern const char kForceStartupSigninPromoName[];
 extern const char kForceStartupSigninPromoDescription[];

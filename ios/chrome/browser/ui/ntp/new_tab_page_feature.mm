@@ -31,10 +31,6 @@ BASE_FEATURE(kEnableDiscoverFeedTopSyncPromo,
              "EnableDiscoverFeedTopSyncPromo",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kEnableFollowingFeedDefaultSortType,
-             "EnableFollowingFeedDefaultSortType",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kEnableNTPViewHierarchyRepair,
              "NTPViewHierarchyRepair",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -85,11 +81,6 @@ const char kDiscoverFeedTopSyncPromoAutodismissImpressions[] =
     "autodismissImpressions";
 const char kDiscoverFeedTopSyncPromoIgnoreEngagementCondition[] =
     "IgnoreFeedEngagementConditionForTopSyncPromo";
-
-// EnableFollowingFeedDefaultSortType parameters.
-const char kFollowingFeedDefaultSortTypeSortByLatest[] = "SortByLatest";
-const char kFollowingFeedDefaultSortTypeGroupedByPublisher[] =
-    "GroupedByPublisher";
 
 // Feature parameters for `kFeedHeaderSettings`.
 const char kEnableDotForNewFollowedContent[] =
@@ -155,16 +146,6 @@ int FeedSyncPromoAutodismissCount() {
   return base::GetFieldTrialParamByFeatureAsInt(
       kEnableDiscoverFeedTopSyncPromo,
       kDiscoverFeedTopSyncPromoAutodismissImpressions, 10);
-}
-
-bool IsFollowingFeedDefaultSortTypeEnabled() {
-  return base::FeatureList::IsEnabled(kEnableFollowingFeedDefaultSortType);
-}
-
-bool IsDefaultFollowingFeedSortTypeGroupedByPublisher() {
-  return base::GetFieldTrialParamByFeatureAsBool(
-      kEnableFollowingFeedDefaultSortType,
-      kFollowingFeedDefaultSortTypeGroupedByPublisher, true);
 }
 
 bool IsContentSuggestionsForSupervisedUserEnabled(PrefService* pref_service) {

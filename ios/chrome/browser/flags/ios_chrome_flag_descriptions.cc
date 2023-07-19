@@ -503,11 +503,6 @@ const char kFeedInvisibleForegroundRefreshDescription[] =
     "the moment the app is backgrounding (e.g., during extended execution "
     "time).";
 
-const char kFollowingFeedDefaultSortTypeName[] =
-    "Following feed default sort type.";
-const char kFollowingFeedDefaultSortTypeDescription[] =
-    "Sets the default sort type for Following feed content.";
-
 const char kForceStartupSigninPromoName[] = "Display the startup sign-in promo";
 const char kForceStartupSigninPromoDescription[] =
     "When enabled, the startup sign-in promo is always displayed when starting "

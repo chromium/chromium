@@ -572,19 +572,6 @@ const FeatureEntry::FeatureVariation kEnableExpKitTextClassifierVariations[] = {
     {"Enabled for One Tap mode", kEnableExpKitTextClassifierOneTap,
      std::size(kEnableExpKitTextClassifierOneTap), nullptr}};
 
-const FeatureEntry::FeatureParam kFollowingFeedSortTypeGroupedByPublisher[] = {
-    {kFollowingFeedDefaultSortTypeGroupedByPublisher, "true"},
-    {kFollowingFeedDefaultSortTypeSortByLatest, "false"}};
-const FeatureEntry::FeatureParam kFollowingFeedSortTypeSortByLatest[] = {
-    {kFollowingFeedDefaultSortTypeGroupedByPublisher, "false"},
-    {kFollowingFeedDefaultSortTypeSortByLatest, "true"}};
-
-const FeatureEntry::FeatureVariation kFollowingFeedDefaultSortTypeVariations[] =
-    {{"Grouped by Publisher", kFollowingFeedSortTypeGroupedByPublisher,
-      std::size(kFollowingFeedSortTypeGroupedByPublisher), nullptr},
-     {"Sort by Latest", kFollowingFeedSortTypeSortByLatest,
-      std::size(kFollowingFeedSortTypeSortByLatest), nullptr}};
-
 const FeatureEntry::FeatureParam kTabInactivityThresholdOneWeek[] = {
     {kTabInactivityThresholdParameterName,
      kTabInactivityThresholdOneWeekParam}};
@@ -1275,13 +1262,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableRefineDataSourceReloadReportingDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kEnableRefineDataSourceReloadReporting)},
-    {"enable-default-following-feed-sort-type",
-     flag_descriptions::kFollowingFeedDefaultSortTypeName,
-     flag_descriptions::kFollowingFeedDefaultSortTypeDescription,
-     flags_ui::kOsIos,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(kEnableFollowingFeedDefaultSortType,
-                                    kFollowingFeedDefaultSortTypeVariations,
-                                    "EnableFollowingFeedDefaultSortType")},
     {"tab-grid-recency-sort", flag_descriptions::kTabGridRecencySortName,
      flag_descriptions::kTabGridRecencySortDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kTabGridRecencySort)},
