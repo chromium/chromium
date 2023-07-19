@@ -57,6 +57,7 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/components/arc/session/connection_holder.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
+#include "chrome/browser/ash/apps/apk_web_app_service.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crosapi/web_app_service_ash.h"
@@ -595,11 +596,17 @@ app_management::mojom::AppPtr AppManagementPageHandler::CreateUIAppPtr(
 void AppManagementPageHandler::OpenStorePage(const std::string& app_id) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile_);
-  proxy->AppRegistryCache().ForOneApp(app_id, [&proxy](const apps::AppUpdate&
-                                                           update) {
+  auto* apk_service = ash::ApkWebAppService::Get(profile_);
+  proxy->AppRegistryCache().ForOneApp(app_id, [&proxy, &apk_service](
+                                                  const apps::AppUpdate&
+                                                      update) {
     if (update.InstallSource() == apps::InstallSource::kPlayStore) {
-      GURL url("https://play.google.com/store/apps/details?id=" +
-               update.PublisherId());
+      std::string package_name = update.PublisherId();
+      if (apk_service->IsWebAppInstalledFromArc(update.AppId())) {
+        package_name =
+            apk_service->GetPackageNameForWebApp(update.AppId()).value();
+      }
+      GURL url("https://play.google.com/store/apps/details?id=" + package_name);
       proxy->LaunchAppWithUrl(arc::kPlayStoreAppId, ui::EF_NONE, url,
                               apps::LaunchSource::kFromChromeInternal);
     } else if (update.InstallSource() == apps::InstallSource::kChromeWebStore) {
