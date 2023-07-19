@@ -3,8 +3,9 @@ URL: https://www.sourceware.org/pthreads-win32/
 Version: 2.9.1.0
 Date: 2012-08-21
 License: LGPL 2.1
-License File: NOT_SHIPPED
+License File: LICENSE
 Security Critical: no
+Shipped: no
 
 This library is included only to allow external users of the Native Client SDK
 to build PPAPI plugins using the pthreads interface. This is convenient during

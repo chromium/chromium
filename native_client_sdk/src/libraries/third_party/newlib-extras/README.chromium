@@ -5,6 +5,7 @@ Date: 2013-07-30
 License: BSD 3-Clause License
 License File: README
 Security Critical: no
+Shipped: yes
 
 This directory contains several socket-related header files taken from newlib.
 These files are not present in the version of newlib included in the NaCl
