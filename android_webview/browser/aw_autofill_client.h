@@ -133,6 +133,7 @@ class AwAutofillClient : public autofill::ContentAutofillClient {
       const autofill::AutofillProfile* original_profile,
       SaveAddressProfilePromptOptions options,
       AddressProfileSavePromptCallback callback) override;
+  void ShowDeleteAddressProfileDialog() override;
   bool HasCreditCardScanFeature() override;
   void ScanCreditCard(CreditCardScanCallback callback) override;
   bool IsTouchToFillCreditCardSupported() override;

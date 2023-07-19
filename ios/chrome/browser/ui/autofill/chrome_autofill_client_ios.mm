@@ -393,6 +393,10 @@ void ChromeAutofillClientIOS::ConfirmSaveAddressProfile(
       std::move(delegate)));
 }
 
+void ChromeAutofillClientIOS::ShowDeleteAddressProfileDialog() {
+  NOTREACHED();
+}
+
 bool ChromeAutofillClientIOS::HasCreditCardScanFeature() {
   return false;
 }

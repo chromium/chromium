@@ -212,6 +212,7 @@ class ChromeAutofillClient : public ContentAutofillClient,
   void CreditCardUploadCompleted(bool card_saved) override;
   void ConfirmCreditCardFillAssist(const CreditCard& card,
                                    base::OnceClosure callback) override;
+  void ShowDeleteAddressProfileDialog() override;
   void ConfirmSaveAddressProfile(
       const AutofillProfile& profile,
       const AutofillProfile* original_profile,

@@ -231,6 +231,7 @@ class MockAutofillClient : public autofill::AutofillClient {
                SaveAddressProfilePromptOptions,
                AddressProfileSavePromptCallback),
               (override));
+  MOCK_METHOD(void, ShowDeleteAddressProfileDialog, (), (override));
   MOCK_METHOD(bool, HasCreditCardScanFeature, (), (override));
   MOCK_METHOD(void, ScanCreditCard, (CreditCardScanCallback), (override));
   MOCK_METHOD(bool, IsTouchToFillCreditCardSupported, (), (override));

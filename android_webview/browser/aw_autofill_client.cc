@@ -206,6 +206,10 @@ void AwAutofillClient::ConfirmSaveCreditCardLocally(
   NOTIMPLEMENTED();
 }
 
+void AwAutofillClient::ShowDeleteAddressProfileDialog() {
+  NOTREACHED();
+}
+
 void AwAutofillClient::ConfirmSaveCreditCardToCloud(
     const autofill::CreditCard& card,
     const autofill::LegalMessageLines& legal_message_lines,

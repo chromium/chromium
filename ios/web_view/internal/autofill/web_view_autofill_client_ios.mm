@@ -269,6 +269,12 @@ void WebViewAutofillClientIOS::ConfirmSaveAddressProfile(
                             callback:std::move(callback)];
 }
 
+void WebViewAutofillClientIOS::ShowDeleteAddressProfileDialog() {
+  // Please note: This method is only implemented on desktop and therefore
+  // unreachable here.
+  NOTREACHED();
+}
+
 bool WebViewAutofillClientIOS::HasCreditCardScanFeature() {
   return false;
 }

@@ -663,6 +663,10 @@ class AutofillClient : public RiskDataLoader {
   virtual void ConfirmCreditCardFillAssist(const CreditCard& card,
                                            base::OnceClosure callback) = 0;
 
+  // Show a delete address profile dialog asking if users want to proceed with
+  // deletion.
+  virtual void ShowDeleteAddressProfileDialog() = 0;
+
   // Shows the offer-to-save (or update) address profile bubble. If
   // `original_profile` is nullptr, this renders a save prompt. Otherwise, it
   // renders an update prompt where `original_profile` is the address profile

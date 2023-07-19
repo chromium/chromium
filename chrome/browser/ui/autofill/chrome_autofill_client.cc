@@ -98,6 +98,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/ssl_status.h"
 #include "content/public/browser/storage_partition.h"
+#include "delete_address_profile_dialog_controller_impl.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "ui/gfx/geometry/rect.h"
 #include "url/origin.h"
@@ -130,6 +131,7 @@
 #include "components/webauthn/android/internal_authenticator_android.h"
 #include "ui/android/window_android.h"
 #else  // BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/autofill/delete_address_profile_dialog_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/offer_notification_bubble_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/save_card_bubble_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/save_upi_bubble_controller_impl.h"
@@ -786,6 +788,19 @@ void ChromeAutofillClient::ConfirmCreditCardFillAssist(
               std::move(infobar_delegate)))) {
     raw_delegate->set_was_shown();
   }
+#endif
+}
+
+void ChromeAutofillClient::ShowDeleteAddressProfileDialog() {
+#if !BUILDFLAG(IS_ANDROID)
+  DeleteAddressProfileDialogControllerImpl::CreateForWebContents(
+      web_contents());
+  DeleteAddressProfileDialogControllerImpl* controller =
+      DeleteAddressProfileDialogControllerImpl::FromWebContents(web_contents());
+  controller->OfferDelete();
+#else
+  // Delete address profile dialog is only available is desktop.
+  NOTREACHED();
 #endif
 }
 
