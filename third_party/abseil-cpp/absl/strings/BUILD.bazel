@@ -28,6 +28,20 @@ package(
 licenses(["notice"])
 
 cc_library(
+    name = "string_view",
+    srcs = ["string_view.cc"],
+    hdrs = ["string_view.h"],
+    copts = ABSL_DEFAULT_COPTS,
+    linkopts = ABSL_DEFAULT_LINKOPTS,
+    deps = [
+        "//absl/base",
+        "//absl/base:config",
+        "//absl/base:core_headers",
+        "//absl/base:throw_delegate",
+    ],
+)
+
+cc_library(
     name = "strings",
     srcs = [
         "ascii.cc",
@@ -50,7 +64,6 @@ cc_library(
         "str_cat.cc",
         "str_replace.cc",
         "str_split.cc",
-        "string_view.cc",
         "substitute.cc",
     ],
     hdrs = [
@@ -72,8 +85,15 @@ cc_library(
     ],
     copts = ABSL_DEFAULT_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
+    textual_hdrs = [
+        # string_view.h was once part of :strings, so string_view.h is
+        # re-exported for backwards compatibility.
+        # New code should directly depend on :string_view.
+        "string_view.h",
+    ],
     deps = [
         ":internal",
+        ":string_view",
         "//absl/base",
         "//absl/base:config",
         "//absl/base:core_headers",
@@ -263,6 +283,7 @@ cc_test(
     tags = ["benchmark"],
     visibility = ["//visibility:private"],
     deps = [
+        ":string_view",
         ":strings",
         "//absl/base:core_headers",
         "//absl/base:raw_logging_internal",
@@ -277,7 +298,7 @@ cc_test(
     copts = ABSL_TEST_COPTS,
     visibility = ["//visibility:private"],
     deps = [
-        ":strings",
+        ":string_view",
         "//absl/base:config",
         "//absl/base:core_headers",
         "//absl/base:dynamic_annotations",

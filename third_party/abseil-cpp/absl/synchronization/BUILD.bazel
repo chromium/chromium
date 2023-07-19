@@ -21,7 +21,7 @@ load(
     "ABSL_TEST_COPTS",
 )
 
-package(default_visibility = ["//visibility:public"])
+package(default_visibility = ["//visibility:private"])
 
 licenses(["notice"])
 
@@ -38,9 +38,6 @@ cc_library(
         "//conditions:default": [],
     }),
     linkopts = ABSL_DEFAULT_LINKOPTS,
-    visibility = [
-        "//absl:__subpackages__",
-    ],
     deps = [
         "//absl/base",
         "//absl/base:base_internal",
@@ -58,7 +55,6 @@ cc_library(
     copts = ABSL_DEFAULT_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
     visibility = [
-        "//absl/synchronization:__pkg__",
     ],
     deps = [
         "//absl/base",
@@ -123,6 +119,7 @@ cc_library(
         "//absl:wasm": [],
         "//conditions:default": ["-pthread"],
     }) + ABSL_DEFAULT_LINKOPTS,
+    visibility = ["//visibility:public"],
     deps = [
         ":graphcycles_internal",
         ":kernel_timeout_internal",
@@ -149,7 +146,7 @@ cc_test(
     copts = ABSL_TEST_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
     tags = [
-        "no_test_wasm",
+        "no_test_wasm",  # b/122473323
     ],
     deps = [
         ":synchronization",
@@ -165,7 +162,7 @@ cc_test(
     copts = ABSL_TEST_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
     tags = [
-        "no_test_wasm",
+        "no_test_wasm",  # b/122473323
     ],
     deps = [
         ":synchronization",
@@ -181,7 +178,6 @@ cc_binary(
     copts = ABSL_TEST_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
     tags = ["benchmark"],
-    visibility = ["//visibility:private"],
     deps = [
         ":synchronization",
         ":thread_pool",
@@ -275,7 +271,6 @@ cc_library(
     copts = ABSL_TEST_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
     visibility = [
-        "//absl/synchronization:__pkg__",
     ],
     deps = [
         ":synchronization",
@@ -292,7 +287,6 @@ cc_binary(
     testonly = 1,
     copts = ABSL_DEFAULT_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
-    visibility = ["//visibility:private"],
     deps = [
         ":mutex_benchmark_common",
     ],
@@ -319,6 +313,8 @@ cc_library(
     srcs = ["internal/per_thread_sem_test.cc"],
     copts = ABSL_TEST_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
+    visibility = [
+    ],
     deps = [
         ":synchronization",
         "//absl/base",

@@ -60,7 +60,7 @@ struct EnableNullable {
 };
 
 template <typename T>
-struct EnableNonNull {
+struct EnableNonnull {
   static_assert(nullability_internal::IsSupportedType<std::remove_cv_t<T>>,
                 "Template argument must be a raw or supported smart pointer "
                 "type. See absl/base/nullability.h.");
@@ -86,8 +86,8 @@ using NullableImpl
 #endif
     = T;
 
-template <typename T, typename = typename EnableNonNull<T>::type>
-using NonNullImpl
+template <typename T, typename = typename EnableNonnull<T>::type>
+using NonnullImpl
 #if ABSL_HAVE_CPP_ATTRIBUTE(clang::annotate)
     [[clang::annotate("Nonnull")]]
 #endif

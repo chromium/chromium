@@ -20,7 +20,7 @@
 // expected nullability of pointers. These annotations allow you to designate
 // pointers in one of three classification states:
 //
-//  * "Non-null" (for pointers annotated `NonNull<T>`), indicating that it is
+//  * "Non-null" (for pointers annotated `Nonnull<T>`), indicating that it is
 //    invalid for the given pointer to ever be null.
 //  * "Nullable" (for pointers annotated `Nullable<T>`), indicating that it is
 //    valid for the given pointer to be null.
@@ -69,7 +69,7 @@
 //
 // It is important to note that these annotations are not distinct strong
 // *types*. They are alias templates defined to be equal to the underlying
-// pointer type. A pointer annotated `NonNull<T*>`, for example, is simply a
+// pointer type. A pointer annotated `Nonnull<T*>`, for example, is simply a
 // pointer of type `T*`. Each annotation acts as a form of documentation about
 // the contract for the given pointer. Each annotation requires providers or
 // consumers of these pointers across API boundaries to take appropriate steps
@@ -91,13 +91,13 @@
 // Example:
 //
 // // PaySalary() requires the passed pointer to an `Employee` to be non-null.
-// void PaySalary(absl::NonNull<Employee *> e) {
+// void PaySalary(absl::Nonnull<Employee *> e) {
 //   pay(e->salary);  // OK to dereference
 // }
 //
 // // CompleteTransaction() guarantees the returned pointer to an `Account` to
 // // be non-null.
-// absl::NonNull<Account *> balance CompleteTransaction(double fee) {
+// absl::Nonnull<Account *> balance CompleteTransaction(double fee) {
 // ...
 // }
 //
@@ -144,8 +144,8 @@
 // These nullability annotations are primarily a human readable signal about the
 // intended contract of the pointer. They are not *types* and do not currently
 // provide any correctness guarantees. For example, a pointer annotated as
-// `NonNull<T*>` is *not guaranteed* to be non-null, and the compiler won't
-// alert or prevent assignment of a `Nullable<T*>` to a `NonNull<T*>`.
+// `Nonnull<T*>` is *not guaranteed* to be non-null, and the compiler won't
+// alert or prevent assignment of a `Nullable<T*>` to a `Nonnull<T*>`.
 // ===========================================================================
 #ifndef ABSL_BASE_NULLABILITY_H_
 #define ABSL_BASE_NULLABILITY_H_
@@ -154,7 +154,7 @@
 
 namespace absl {
 
-// absl::NonNull
+// absl::Nonnull
 //
 // The indicated pointer is never null. It is the responsibility of the provider
 // of this pointer across an API boundary to ensure that the pointer is never be
@@ -164,11 +164,11 @@ namespace absl {
 // Example:
 //
 // // `employee` is designated as not null.
-// void PaySalary(absl::NotNull<Employee *> employee) {
+// void PaySalary(absl::Nonnull<Employee *> employee) {
 //   pay(*employee);  // OK to dereference
 // }
 template <typename T>
-using NonNull = nullability_internal::NonNullImpl<T>;
+using Nonnull = nullability_internal::NonnullImpl<T>;
 
 // absl::Nullable
 //
@@ -195,7 +195,7 @@ using Nullable = nullability_internal::NullableImpl<T>;
 // Consumers of these pointers across an API boundary should treat such pointers
 // with the same caution they treat currently unannotated pointers. Most
 // existing code will have "unknown"  pointers, which should eventually be
-// migrated into one of the above two nullability states: `NonNull<T>` or
+// migrated into one of the above two nullability states: `Nonnull<T>` or
 //  `Nullable<T>`.
 //
 // NOTE: Because this annotation is the global default state, pointers without

@@ -15,7 +15,7 @@ absl_source_set("graphcycles_internal") {
     "//third_party/abseil-cpp/absl/base:malloc_internal",
     "//third_party/abseil-cpp/absl/base:raw_logging_internal",
   ]
-  visibility = [ "//third_party/abseil-cpp/absl/*" ]
+  visibility = [ ":*" ]
 }
 
 absl_source_set("kernel_timeout_internal") {
@@ -123,6 +123,7 @@ absl_source_set("per_thread_sem_test_common") {
     "//third_party/abseil-cpp/absl/time",
     "//third_party/googletest:gtest",
   ]
+  visibility = [ ":*" ]
 }
 
 # absl_test("mutex_method_pointer_test") {

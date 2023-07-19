@@ -2041,7 +2041,8 @@ class raw_hash_set {
   // Extension API: support for lazy emplace.
   //
   // Looks up key in the table. If found, returns the iterator to the element.
-  // Otherwise calls `f` with one argument of type `raw_hash_set::constructor`.
+  // Otherwise calls `f` with one argument of type `raw_hash_set::constructor`,
+  // and returns an iterator to the new element.
   //
   // `f` must abide by several restrictions:
   //  - it MUST call `raw_hash_set::constructor` with arguments as if a

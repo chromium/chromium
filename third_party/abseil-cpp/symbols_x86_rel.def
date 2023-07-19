@@ -1226,12 +1226,6 @@ EXPORTS
     ?max@?$RandenPool@I@random_internal@absl@@SAIXZ
     ?max@?$RandenPool@_K@random_internal@absl@@SA_KXZ
     ?memcasecmp@strings_internal@absl@@YAHPBD0I@Z
-    ?memcspn@strings_internal@absl@@YAIPBDI0@Z
-    ?memdup@strings_internal@absl@@YAPADPBDI@Z
-    ?memmatch@strings_internal@absl@@YAPBDPBDI0I@Z
-    ?mempbrk@strings_internal@absl@@YAPADPBDI0@Z
-    ?memrchr@strings_internal@absl@@YAPADPBDHI@Z
-    ?memspn@strings_internal@absl@@YAIPBDI0@Z
     ?min@?$RandenPool@E@random_internal@absl@@SAEXZ
     ?min@?$RandenPool@G@random_internal@absl@@SAGXZ
     ?min@?$RandenPool@I@random_internal@absl@@SAIXZ

@@ -14,6 +14,10 @@
 
 #include "absl/debugging/symbolize.h"
 
+#ifdef __EMSCRIPTEN__
+#include <emscripten.h>
+#endif
+
 #ifndef _WIN32
 #include <fcntl.h>
 #include <sys/mman.h>
@@ -107,6 +111,8 @@ static ABSL_PER_THREAD_TLS_KEYWORD char
 #endif
 
 #if !defined(__EMSCRIPTEN__)
+static void *GetPCFromFnPtr(void *ptr) { return ptr; }
+
 // Used below to hopefully inhibit some compiler/linker optimizations
 // that may remove kHpageTextPadding, kPadding0, and kPadding1 from
 // the binary.
@@ -116,6 +122,13 @@ static volatile bool volatile_bool = false;
 static constexpr size_t kHpageSize = 1 << 21;
 const char kHpageTextPadding[kHpageSize * 4] ABSL_ATTRIBUTE_SECTION_VARIABLE(
     .text) = "";
+
+#else
+static void *GetPCFromFnPtr(void *ptr) {
+  return EM_ASM_PTR(
+      { return wasmOffsetConverter.convert(wasmTable.get($0).name, 0); }, ptr);
+}
+
 #endif  // !defined(__EMSCRIPTEN__)
 
 static char try_symbolize_buffer[4096];
@@ -164,15 +177,14 @@ void ABSL_ATTRIBUTE_NOINLINE TestWithReturnAddress() {
 #endif
 }
 
-#ifndef ABSL_INTERNAL_HAVE_EMSCRIPTEN_SYMBOLIZE
-
 TEST(Symbolize, Cached) {
   // Compilers should give us pointers to them.
-  EXPECT_STREQ("nonstatic_func", TrySymbolize((void *)(&nonstatic_func)));
-
+  EXPECT_STREQ("nonstatic_func",
+               TrySymbolize(GetPCFromFnPtr((void *)(&nonstatic_func))));
   // The name of an internal linkage symbol is not specified; allow either a
   // mangled or an unmangled name here.
-  const char *static_func_symbol = TrySymbolize((void *)(&static_func));
+  const char *static_func_symbol =
+      TrySymbolize(GetPCFromFnPtr((void *)(&static_func)));
   EXPECT_TRUE(strcmp("static_func", static_func_symbol) == 0 ||
               strcmp("static_func()", static_func_symbol) == 0);
 
@@ -182,33 +194,50 @@ TEST(Symbolize, Cached) {
 TEST(Symbolize, Truncation) {
   constexpr char kNonStaticFunc[] = "nonstatic_func";
   EXPECT_STREQ("nonstatic_func",
-               TrySymbolizeWithLimit((void *)(&nonstatic_func),
+               TrySymbolizeWithLimit(GetPCFromFnPtr((void *)(&nonstatic_func)),
                                      strlen(kNonStaticFunc) + 1));
   EXPECT_STREQ("nonstatic_...",
-               TrySymbolizeWithLimit((void *)(&nonstatic_func),
+               TrySymbolizeWithLimit(GetPCFromFnPtr((void *)(&nonstatic_func)),
                                      strlen(kNonStaticFunc) + 0));
   EXPECT_STREQ("nonstatic...",
-               TrySymbolizeWithLimit((void *)(&nonstatic_func),
+               TrySymbolizeWithLimit(GetPCFromFnPtr((void *)(&nonstatic_func)),
                                      strlen(kNonStaticFunc) - 1));
-  EXPECT_STREQ("n...", TrySymbolizeWithLimit((void *)(&nonstatic_func), 5));
-  EXPECT_STREQ("...", TrySymbolizeWithLimit((void *)(&nonstatic_func), 4));
-  EXPECT_STREQ("..", TrySymbolizeWithLimit((void *)(&nonstatic_func), 3));
-  EXPECT_STREQ(".", TrySymbolizeWithLimit((void *)(&nonstatic_func), 2));
-  EXPECT_STREQ("", TrySymbolizeWithLimit((void *)(&nonstatic_func), 1));
-  EXPECT_EQ(nullptr, TrySymbolizeWithLimit((void *)(&nonstatic_func), 0));
+  EXPECT_STREQ("n...", TrySymbolizeWithLimit(
+                           GetPCFromFnPtr((void *)(&nonstatic_func)), 5));
+  EXPECT_STREQ("...", TrySymbolizeWithLimit(
+                          GetPCFromFnPtr((void *)(&nonstatic_func)), 4));
+  EXPECT_STREQ("..", TrySymbolizeWithLimit(
+                         GetPCFromFnPtr((void *)(&nonstatic_func)), 3));
+  EXPECT_STREQ(
+      ".", TrySymbolizeWithLimit(GetPCFromFnPtr((void *)(&nonstatic_func)), 2));
+  EXPECT_STREQ(
+      "", TrySymbolizeWithLimit(GetPCFromFnPtr((void *)(&nonstatic_func)), 1));
+  EXPECT_EQ(nullptr, TrySymbolizeWithLimit(
+                         GetPCFromFnPtr((void *)(&nonstatic_func)), 0));
 }
 
 TEST(Symbolize, SymbolizeWithDemangling) {
   Foo::func(100);
-  EXPECT_STREQ("Foo::func()", TrySymbolize((void *)(&Foo::func)));
+#ifdef __EMSCRIPTEN__
+  // Emscripten's online symbolizer is more precise with arguments.
+  EXPECT_STREQ("Foo::func(int)",
+               TrySymbolize(GetPCFromFnPtr((void *)(&Foo::func))));
+#else
+  EXPECT_STREQ("Foo::func()",
+               TrySymbolize(GetPCFromFnPtr((void *)(&Foo::func))));
+#endif
 }
 
 TEST(Symbolize, SymbolizeSplitTextSections) {
-  EXPECT_STREQ("unlikely_func()", TrySymbolize((void *)(&unlikely_func)));
-  EXPECT_STREQ("hot_func()", TrySymbolize((void *)(&hot_func)));
-  EXPECT_STREQ("startup_func()", TrySymbolize((void *)(&startup_func)));
-  EXPECT_STREQ("exit_func()", TrySymbolize((void *)(&exit_func)));
-  EXPECT_STREQ("regular_func()", TrySymbolize((void *)(&regular_func)));
+  EXPECT_STREQ("unlikely_func()",
+               TrySymbolize(GetPCFromFnPtr((void *)(&unlikely_func))));
+  EXPECT_STREQ("hot_func()", TrySymbolize(GetPCFromFnPtr((void *)(&hot_func))));
+  EXPECT_STREQ("startup_func()",
+               TrySymbolize(GetPCFromFnPtr((void *)(&startup_func))));
+  EXPECT_STREQ("exit_func()",
+               TrySymbolize(GetPCFromFnPtr((void *)(&exit_func))));
+  EXPECT_STREQ("regular_func()",
+               TrySymbolize(GetPCFromFnPtr((void *)(&regular_func))));
 }
 
 // Tests that verify that Symbolize stack footprint is within some limit.
@@ -278,7 +307,8 @@ TEST(Symbolize, SymbolizeWithDemanglingStackConsumption) {
 
 #endif  // ABSL_INTERNAL_HAVE_DEBUGGING_STACK_CONSUMPTION
 
-#ifndef ABSL_INTERNAL_HAVE_DARWIN_SYMBOLIZE
+#if !defined(ABSL_INTERNAL_HAVE_DARWIN_SYMBOLIZE) && \
+    !defined(ABSL_INTERNAL_HAVE_EMSCRIPTEN_SYMBOLIZE)
 // Use a 64K page size for PPC.
 const size_t kPageSize = 64 << 10;
 // We place a read-only symbols into the .text section and verify that we can
@@ -436,8 +466,8 @@ TEST(Symbolize, ForEachSection) {
 
   close(fd);
 }
-#endif  // !ABSL_INTERNAL_HAVE_DARWIN_SYMBOLIZE
-#endif  // !ABSL_INTERNAL_HAVE_EMSCRIPTEN_SYMBOLIZE
+#endif  // !ABSL_INTERNAL_HAVE_DARWIN_SYMBOLIZE &&
+        // !ABSL_INTERNAL_HAVE_EMSCRIPTEN_SYMBOLIZE
 
 // x86 specific tests.  Uses some inline assembler.
 extern "C" {
@@ -598,7 +628,8 @@ int main(int argc, char **argv) {
   absl::InitializeSymbolizer(argv[0]);
   testing::InitGoogleTest(&argc, argv);
 
-#if defined(ABSL_INTERNAL_HAVE_ELF_SYMBOLIZE) || \
+#if defined(ABSL_INTERNAL_HAVE_ELF_SYMBOLIZE) ||        \
+    defined(ABSL_INTERNAL_HAVE_EMSCRIPTEN_SYMBOLIZE) || \
     defined(ABSL_INTERNAL_HAVE_DARWIN_SYMBOLIZE)
   TestWithPCInsideInlineFunction();
   TestWithPCInsideNonInlineFunction();

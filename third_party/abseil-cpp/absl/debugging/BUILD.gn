@@ -60,6 +60,7 @@ absl_source_set("symbolize") {
     "//third_party/abseil-cpp/absl/base:malloc_internal",
     "//third_party/abseil-cpp/absl/base:raw_logging_internal",
     "//third_party/abseil-cpp/absl/strings",
+    "//third_party/abseil-cpp/absl/strings:string_view",
   ]
 
   # TODO(mbonadei): The bazel file has:
