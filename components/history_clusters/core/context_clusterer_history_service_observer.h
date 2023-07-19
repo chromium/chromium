@@ -123,9 +123,6 @@ class ContextClustererHistoryServiceObserver
   // Gets the site engagement score for `normalized_url`.
   float GetEngagementScore(const GURL& normalized_url);
 
-  // Gets the URL for display for `normalized_url`.
-  std::u16string GetURLForDisplay(const GURL& normalized_url);
-
   // Overrides `clock_` for testing.
   void OverrideClockForTesting(const base::Clock* clock);
 
@@ -168,9 +165,6 @@ class ContextClustererHistoryServiceObserver
   // Should only be null for tests.
   raw_ptr<site_engagement::SiteEngagementScoreProvider>
       engagement_score_provider_;
-
-  // URL to URL for display mapping.
-  base::HashingLRUCache<std::string, std::u16string> url_for_display_cache_;
 
   // Used to schedule the clean up of clusters.
   raw_ptr<const base::Clock> clock_;

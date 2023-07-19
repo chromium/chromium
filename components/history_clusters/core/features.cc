@@ -97,10 +97,6 @@ BASE_FEATURE(kJourneysNamedNewTabGroups,
              "JourneysNamedNewTabGroups",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kUseUrlForDisplayCache,
-             "HistoryClustersUrlForDisplayCache",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kJourneysZeroStateFiltering,
              "JourneysZeroStateFiltering",
              base::FEATURE_DISABLED_BY_DEFAULT);

@@ -131,7 +131,6 @@ ContextClustererHistoryServiceObserver::ContextClustererHistoryServiceObserver(
       optimization_guide_decider_(optimization_guide_decider),
       engagement_score_cache_(GetConfig().engagement_score_cache_size),
       engagement_score_provider_(engagement_score_provider),
-      url_for_display_cache_(GetConfig().url_for_display_cache_size),
       clock_(base::DefaultClock::GetInstance()) {
   if (history_service_) {
     history_service_observation_.Observe(history_service_);
@@ -475,7 +474,7 @@ ContextClustererHistoryServiceObserver::CreateClusterVisit(
           ? cluster_visit.normalized_url
           : ComputeURLForDeduping(cluster_visit.normalized_url);
   cluster_visit.url_for_display =
-      GetURLForDisplay(cluster_visit.normalized_url);
+      ComputeURLForDisplay(cluster_visit.normalized_url);
   if (engagement_score_provider_) {
     cluster_visit.engagement_score =
         GetEngagementScore(cluster_visit.normalized_url);
@@ -503,21 +502,6 @@ float ContextClustererHistoryServiceObserver::GetEngagementScore(
           score,
           clock_->Now() + GetConfig().engagement_score_cache_refresh_duration));
   return score;
-}
-
-std::u16string ContextClustererHistoryServiceObserver::GetURLForDisplay(
-    const GURL& normalized_url) {
-  if (!GetConfig().use_url_for_display_cache) {
-    return ComputeURLForDisplay(normalized_url);
-  }
-
-  auto it = url_for_display_cache_.Peek(normalized_url.spec());
-  if (it != url_for_display_cache_.end()) {
-    return it->second;
-  }
-  std::u16string url_for_display = ComputeURLForDisplay(normalized_url);
-  url_for_display_cache_.Put(normalized_url.spec(), url_for_display);
-  return url_for_display;
 }
 
 void ContextClustererHistoryServiceObserver::OverrideClockForTesting(
