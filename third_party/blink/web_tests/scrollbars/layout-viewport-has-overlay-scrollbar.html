@@ -1,0 +1,15 @@
+<!DOCTYPE HTML>
+<script>
+if (window.internals)
+    internals.settings.setViewportEnabled(true);
+</script>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<div style="width:40px;height:3000px;background:green"></div>
+<script>
+  promise_test(async t => {
+    await new Promise(resolve => { requestAnimationFrame(resolve); });
+
+    assert_equals(innerWidth, document.scrollingElement.clientWidth);
+  }, "Scrollbar becomes overlay when viewport setting is enabled.");
+</script>
