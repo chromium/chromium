@@ -1,13 +1,13 @@
--- Copyright 2019 The Chromium Authors
+-- Copyright 2023 The Chromium Authors
 -- Use of this source code is governed by a BSD-style license that can be
 -- found in the LICENSE file.
 
 -- TODO(b/286187288): Move this dependency to stdlib.
-SELECT RUN_METRIC('chrome/event_latency_scroll_jank_cause.sql');
+SELECT RUN_METRIC('chrome/chrome_scroll_jank_v3.sql');
 SELECT IMPORT('common.slices');
 
 -- Selects EventLatency slices that correspond with janks in a scroll. This is
--- based on the V2 version of scroll jank metrics.
+-- based on the V3 version of scroll jank metrics.
 --
 -- @column id INT                     The slice id.
 -- @column ts INT                     The start timestamp of the slice.
@@ -18,36 +18,60 @@ SELECT IMPORT('common.slices');
 --                                    the jank.
 -- @column sub_cause_of_jank STRING   The stage of cause_of_jank that caused the
 --                                    jank.
-CREATE TABLE chrome_janky_event_latencies_v2 AS
-  SELECT
+-- @column delayed_frame_count INT    How many vsyncs this frame missed its
+--                                    deadline by.
+-- @column frame_jank_ts INT          The start timestamp where frame
+--                                    frame presentation was delayed.
+-- @column frame_jank_dur INT         The duration in ms of the delay in frame
+--                                    presentation.
+CREATE TABLE chrome_janky_event_latencies_v3 AS
+SELECT
     s.id,
     s.ts,
     s.dur,
     s.track_id,
     s.name,
     e.cause_of_jank,
-    e.sub_cause_of_jank
+    e.sub_cause_of_jank,
+    CAST((e.delay_since_last_frame/e.vsync_interval) AS INT) AS delayed_frame_count,
+    CAST(s.ts + s.dur - ((e.delay_since_last_frame - e.vsync_interval) * 1e6) AS INT) AS frame_jank_ts,
+    CAST((e.delay_since_last_frame - e.vsync_interval) * 1e6 AS INT) AS frame_jank_dur
 FROM slice s
-JOIN event_latency_scroll_jank_cause e
-  ON s.id = e.slice_id
-WHERE
-  HAS_DESCENDANT_SLICE_WITH_NAME(
-    s.id,
-    'SubmitCompositorFrameToPresentationCompositorFrame');
+JOIN chrome_janky_frames e
+  ON s.id = e. event_latency_id;
+
+-- Frame presentation interval is the delta between when the frame was supposed
+-- to be presented and when it was actually presented.
+--
+-- @column id INT                     Unique id.
+-- @column ts INT                     The start timestamp of the slice.
+-- @column dur INT                    The duration of the slice.
+-- @column delayed_frame_count INT    How many vsyncs this frame missed its
+--                                    deadline by.
+-- @column event_latency_id STRING    The id of the associated event latency in
+--                                    the slice table.
+CREATE VIEW chrome_janky_frame_presentation_intervals AS
+SELECT
+    ROW_NUMBER() OVER(ORDER BY frame_jank_ts) AS id,
+    frame_jank_ts AS ts,
+    frame_jank_dur AS dur,
+    delayed_frame_count,
+    id AS event_latency_id
+FROM chrome_janky_event_latencies_v3;
 
 -- Defines slices for all of janky scrolling intervals in a trace.
 --
 -- @column id            The unique identifier of the janky interval.
 -- @column ts            The start timestamp of the janky interval.
 -- @column dur           The duration of the janky interval.
-CREATE TABLE chrome_scroll_jank_intervals_v2 AS
+CREATE TABLE chrome_scroll_jank_intervals_v3 AS
 -- Sub-table to retrieve all janky slice timestamps. Ordering calculations are
 -- based on timestamps rather than durations.
 WITH janky_latencies AS (
   SELECT
-    s.ts AS start_ts,
-    s.ts + s.dur AS end_ts
-  FROM chrome_janky_event_latencies_v2 s),
+    s.frame_jank_ts AS start_ts,
+    s.frame_jank_ts + s.frame_jank_dur AS end_ts
+  FROM chrome_janky_event_latencies_v3 s),
 -- Determine the local maximum timestamp for janks thus far; this will allow
 -- us to coalesce all earlier events up to the maximum.
 ordered_jank_end_ts AS (

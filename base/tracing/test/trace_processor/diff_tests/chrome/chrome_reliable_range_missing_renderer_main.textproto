@@ -1,0 +1,50 @@
+# There is a Renderer process, but there's no Renderer main thread.
+# The entire trace is unreliable.
+
+packet {
+  timestamp: 1
+  incremental_state_cleared: true
+  trusted_packet_sequence_id: 1
+  track_descriptor {
+    uuid: 1
+    thread {
+      pid: 1
+      tid: 1
+    }
+    parent_uuid: 0
+  }
+}
+packet {
+    timestamp: 2
+    track_descriptor {
+        uuid: 2
+        process {
+            pid: 1
+        }
+        chrome_process {
+            process_type: PROCESS_RENDERER
+        }
+    }
+}
+
+# Slice begin event
+packet {
+  trusted_packet_sequence_id: 2
+  timestamp: 11
+  track_event {
+    track_uuid: 1
+    categories: "cat"
+    type: 1
+    name: "slice1"
+  }
+}
+# Slice end event
+packet {
+  trusted_packet_sequence_id: 2
+  timestamp: 1011
+  track_event {
+    track_uuid: 1
+    categories: "cat"
+    type: 2
+  }
+}

@@ -1,0 +1,53 @@
+packet {
+  timestamp: 0
+  incremental_state_cleared: true
+  trusted_packet_sequence_id: 1
+  track_event {
+    type: TYPE_INSTANT
+    name: "ActiveProcesses"
+    [perfetto.protos.ChromeTrackEvent.active_processes]: {
+      pid: 1
+      # Process 2 is marked as active, but its process descriptors are not
+      # present. Therefore, there is data loss until the end of the trace and
+      # the reliable range starts at the last packet's timestamp.
+      pid: 2
+    }
+  }
+}
+packet {
+  timestamp: 1
+  trusted_packet_sequence_id: 2
+  track_descriptor {
+    uuid: 1
+    thread {
+      pid: 1
+      tid: 1
+    }
+    process {
+        pid: 1
+    }
+    parent_uuid: 0
+  }
+}
+
+# Slice begin event
+packet {
+  trusted_packet_sequence_id: 2
+  timestamp: 11
+  track_event {
+    track_uuid: 1
+    categories: "cat"
+    type: 1
+    name: "slice1"
+  }
+}
+# Slice end event
+packet {
+  trusted_packet_sequence_id: 2
+  timestamp: 1011
+  track_event {
+    track_uuid: 1
+    categories: "cat"
+    type: 2
+  }
+}

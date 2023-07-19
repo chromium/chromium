@@ -5061,6 +5061,18 @@ hooks = [
     ],
   },
 
+  # Download test data for Perfetto diff tests
+  {
+    'name': 'perfetto_testdata',
+    'pattern': '\\.sha256',
+    'action': [ 'python3',
+                'src/third_party/perfetto/tools/test_data',
+                '--dir',
+                'src/base/tracing/test/data',
+                'download',
+    ],
+  },
+
   # Download test data for Maps telemetry_gpu_integration_test.
   {
     'name': 'maps_perf_test_load_dataset',

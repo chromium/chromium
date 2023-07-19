@@ -1,0 +1,5 @@
+
+"full_name","duration_ms","thread_dur_ms"
+"FrameHost::BeginNavigation (unknown frame type)",16.111000,10.451000
+"Looper.dispatch: android.net.ConnectivityManager$CallbackHandler(null)",10.507000,0.878000
+"blink.mojom.PresentationService message (hash=3202951471)",22.524000,9.992000
