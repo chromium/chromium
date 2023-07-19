@@ -109,6 +109,11 @@ class PolicyUIHandler : public content::WebUIMessageHandler,
 
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
 
+  uint32_t reload_policies_count_ = 0;
+  uint32_t export_to_json_count_ = 0;
+  uint32_t copy_to_json_count_ = 0;
+  uint32_t upload_report_count_ = 0;
+
   base::WeakPtrFactory<PolicyUIHandler> weak_factory_{this};
 };
 

@@ -56,6 +56,8 @@ source_set("internal") {
     "webui/policy_status_provider.h",
     "webui/policy_webui_constants.cc",
     "webui/policy_webui_constants.h",
+    "webui/statistics_collector.cc",
+    "webui/statistics_collector.h",
   ]
 
   if (!is_chromeos_ash) {

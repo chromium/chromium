@@ -54,6 +54,7 @@
 #include "components/policy/core/browser/policy_conversions.h"
 #include "components/policy/core/browser/webui/json_generation.h"
 #include "components/policy/core/browser/webui/policy_webui_constants.h"
+#include "components/policy/core/browser/webui/statistics_collector.h"
 #include "components/policy/core/common/cloud/cloud_policy_manager.h"
 #include "components/policy/core/common/cloud/cloud_policy_refresh_scheduler.h"
 #include "components/policy/core/common/cloud/cloud_policy_util.h"
@@ -95,7 +96,7 @@
 namespace {
 
 // Key under which extension policies are grouped in JSON policy exports.
-const char kExtensionsKey[] = "extensions";
+constexpr char kExtensionsKey[] = "extensions";
 
 }  // namespace
 
@@ -105,6 +106,9 @@ PolicyUIHandler::~PolicyUIHandler() {
   if (export_policies_select_file_dialog_) {
     export_policies_select_file_dialog_->ListenerDestroyed();
   }
+  policy::RecordPolicyUIButtonUsage(reload_policies_count_,
+                                    export_to_json_count_, copy_to_json_count_,
+                                    upload_report_count_);
 }
 
 void PolicyUIHandler::AddCommonLocalizedStringsToSource(
@@ -236,6 +240,7 @@ void PolicyUIHandler::AddInfobarForActiveLocalTestPolicies() {
 }
 
 void PolicyUIHandler::HandleExportPoliciesJson(const base::Value::List& args) {
+  export_to_json_count_ += 1;
 #if BUILDFLAG(IS_ANDROID)
   // TODO(crbug.com/1228691): Unify download logic between all platforms to
   // use the WebUI download solution (and remove the Android check).
@@ -285,6 +290,7 @@ void PolicyUIHandler::HandleListenPoliciesUpdates(
 }
 
 void PolicyUIHandler::HandleReloadPolicies(const base::Value::List& args) {
+  reload_policies_count_ += 1;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Allow user to manually fetch remote commands. Useful for testing or when
   // the invalidation service is not working properly.
@@ -312,6 +318,7 @@ void PolicyUIHandler::HandleReloadPolicies(const base::Value::List& args) {
 }
 
 void PolicyUIHandler::HandleCopyPoliciesJson(const base::Value::List& args) {
+  copy_to_json_count_ += 1;
   std::string policies_json = GetPoliciesAsJson();
   ui::ScopedClipboardWriter scw(ui::ClipboardBuffer::kCopyPaste);
   scw.WriteText(base::UTF8ToUTF16(policies_json));
@@ -352,6 +359,7 @@ void PolicyUIHandler::HandleGetPolicyLogs(const base::Value::List& args) {
 
 #if !BUILDFLAG(IS_CHROMEOS)
 void PolicyUIHandler::HandleUploadReport(const base::Value::List& args) {
+  upload_report_count_ += 1;
   DCHECK_EQ(1u, args.size());
   std::string callback_id = args[0].GetString();
   auto* report_scheduler = g_browser_process->browser_policy_connector()

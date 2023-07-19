@@ -2327,6 +2327,27 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Enterprise.PolicyUI.ButtonUsage.{ButtonType}" units="counts"
+    expires_after="2024-07-01">
+  <owner>zmin@chromium.org</owner>
+  <owner>src/components/policy/OWNERS</owner>
+  <summary>
+    The total number of time {ButtonType} button has been clicked for each time
+    chrome://policy page is opened. Recorded once the page is closed. Export To
+    JSON button is not available on iOS.
+
+    Note that we won't be able to collect the data if the page is not closed
+    normally. For example, browser is crash or shutdown by OS which often
+    happens on mobile platforms.
+  </summary>
+  <token key="ButtonType">
+    <variant name="CopyToJson" summary="Copy To JSON"/>
+    <variant name="ExportToJson" summary="Export To JSON"/>
+    <variant name="ReloadPolicies" summary="Reload Policies"/>
+    <variant name="Upload Report" summary="Upload Report"/>
+  </token>
+</histogram>
+
 <histogram name="Enterprise.PolicyUpdatePeriod.Device" units="days"
     expires_after="2023-12-01">
   <owner>rbock@google.com</owner>
