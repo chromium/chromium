@@ -374,6 +374,7 @@ Private State Token 能夠改善網絡上的私隱，而且系統無法透過信
 <translation id="3027644380269727216">根據您在網站上的活動推薦。此設定已開啟。</translation>
 <translation id="3029276696788198026">不使用預先載入模式</translation>
 <translation id="3029704984691124060">複雜密碼不符</translation>
+<translation id="303514781271618814">Chrome 正在探索新功能，讓網站能在使用較少資料的情況下提供相同的瀏覽體驗</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />取得說明<ph name="END_LINK" /></translation>
 <translation id="3037177537145227281">正在追蹤價格</translation>
 <translation id="3037517125981011456">顯示登入 Chrome 的指示</translation>
@@ -1040,7 +1041,6 @@ Private State Token 能夠改善網絡上的私隱，而且系統無法透過信
 <translation id="6590471736817333463">節省高達 60% 數據用量</translation>
 <translation id="6590680911007613645">請確保您儲存的密碼與 <ph name="SITE" /> 上的密碼相符</translation>
 <translation id="6593061639179217415">桌面版網站</translation>
-<translation id="6594121454516132231">查看 Chrome 如何計劃防止有心人士透過跨網站追蹤機制取得您的資料，同時保護開放網絡</translation>
 <translation id="6594347733515723558">排序和檢視選項</translation>
 <translation id="6595046016124923392">圖片會傳送至 Google，以便為您提供更完善的說明。</translation>
 <translation id="6600954340915313787">已複製至 Chrome</translation>

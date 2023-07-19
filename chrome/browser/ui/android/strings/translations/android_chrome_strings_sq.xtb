@@ -374,6 +374,7 @@ Kodet e gjendjes private përmirësojnë privatësinë në ueb dhe nuk mund të 
 <translation id="3027644380269727216">Bazuar në aktivitetin tënd në një sajt. Ky cilësim është aktiv.</translation>
 <translation id="3029276696788198026">Pa ngarkim paraprak</translation>
 <translation id="3029704984691124060">Frazat e kalimit nuk përputhen</translation>
+<translation id="303514781271618814">Chrome po eksploron veçori të reja që u lejojnë sajteve të ofrojnë të njëjtën përvojë shfletimi duke përdorur më pak nga të dhënat e tua</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Kërko ndihmë<ph name="END_LINK" /></translation>
 <translation id="3037177537145227281">Çmimi po monitorohet</translation>
 <translation id="3037517125981011456">Shfaq kërkesa për t'u identifikuar në Chrome</translation>
@@ -690,7 +691,7 @@ Llogaria jote e Google mund të ketë forma të tjera të historikut të shfleti
 <translation id="4763480195061959176">video</translation>
 <translation id="4766313118839197559">Fjalëkalimet ruhen në "Menaxherin e fjalëkalimeve" në këtë pajisje</translation>
 <translation id="4766678251456904326">Shto llogari në pajisje</translation>
-<translation id="4767947714785277816">Ne po prezantojmë një veçori të re të privatësisë së reklamave që quajtur matja e reklamave. Chrome ndan vetëm informacione shumë të kufizuara mes sajteve dhe aplikacioneve, si p.sh. kur të është shfaqur një reklamë, për të ndihmuar në matjen e performancës së reklamave.</translation>
+<translation id="4767947714785277816">Ne po prezantojmë një veçori të re të privatësisë së reklamave që quajtur "Matja e reklamave". Chrome ndan vetëm informacione shumë të kufizuara mes sajteve dhe aplikacioneve, si p.sh. kur të është shfaqur një reklamë, për të ndihmuar në matjen e performancës së reklamave.</translation>
 <translation id="4769095993849849966">Emri i ri i skedarit</translation>
 <translation id="4778653490315793244">Nuk shfaqet ende asgjë</translation>
 <translation id="4787736314074622408">Dëshiron të fshish <ph name="ITEM_TITLE" />?</translation>
@@ -1040,7 +1041,6 @@ Për shembull, disa sajte uebi mund t'i përgjigjen kësaj kërkese duke të tre
 <translation id="6590471736817333463">Kurse deri në 60% të të dhënave</translation>
 <translation id="6590680911007613645">Sigurohu që fjalëkalimi që po ruan përputhet me fjalëkalimin tënd për <ph name="SITE" />.</translation>
 <translation id="6593061639179217415">Sajti për desktop</translation>
-<translation id="6594121454516132231">Shiko se si planifikon Chrome të të mbrojë nga gjurmimi nëpër sajtet e uebit, ndërkohë që vazhdon të ruajë uebin e hapur</translation>
 <translation id="6594347733515723558">Opsionet e renditjes dhe shikimit</translation>
 <translation id="6595046016124923392">Imazhet janë dërguar te Google për të përmirësuar përshkrimet për ty.</translation>
 <translation id="6600954340915313787">Kopjuar në Chrome</translation>

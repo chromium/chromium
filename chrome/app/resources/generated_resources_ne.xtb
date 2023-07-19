@@ -342,6 +342,7 @@
 <translation id="1275718070701477396">चयन गरिएको</translation>
 <translation id="1276994519141842946"><ph name="APP_NAME" /> अनइन्स्टल गर्न सकिएन</translation>
 <translation id="1277020343994096713">तपाईंले हाल प्रयोग गरिराख्नुभएको भन्दा फरक PIN सिर्जना गर्नुहोस्</translation>
+<translation id="1277597051786235230"><ph name="SEARCH_ENGINE" /> को नयाँ ट्याबमा “<ph name="SEARCH_TERMS" />” खोज्नुहोस्</translation>
 <translation id="1278859221870828664">Google Play का एप तथा सेवाहरूको समीक्षा गर्नुहोस्</translation>
 <translation id="127946606521051357">नजिकैको यन्त्रले डेटा सेयर गर्ने प्रयास गर्दै छ।</translation>
 <translation id="1280965841156951489">फाइलहरू सम्पादन गर्नुहोस्</translation>
@@ -2658,6 +2659,7 @@
 <translation id="32101887417650595">प्रिन्टरमा जोड्न सकिएन</translation>
 <translation id="3210736980143419785">डाउनलोड गर्ने कार्य पूरा गर्न सकिएन</translation>
 <translation id="321084946921799184">पहेँलो र सेतो</translation>
+<translation id="3211126692872351610"><ph name="SEARCH_ENGINE" /> को नयाँ ट्याबमा “<ph name="SEARCH_TERMS" />” खोज्नुहोस्</translation>
 <translation id="321356136776075234">यन्त्र OU (जस्तै, OU=Chromebooks,DC=उदाहरण,DC=com)</translation>
 <translation id="321367297115597343">यो फोल्डरमा बुकमार्क हाल्नुहोस्</translation>
 <translation id="3214531106883826119"><ph name="BEGIN_BOLD" />ख्याल गर्नुहोस्:<ph name="END_BOLD" /> <ph name="SUPERVISED_USER_NAME" /> को आवाजसँग मिल्दोजुल्दो आवाज वा रेकर्डिङ प्रयोग गरेर पनि उनको व्यक्तिगत सामग्री हेर्न सकिने सम्भावना हुन्छ।</translation>

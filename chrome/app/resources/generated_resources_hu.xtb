@@ -346,6 +346,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="1275718070701477396">Kijelölve</translation>
 <translation id="1276994519141842946">A(z) <ph name="APP_NAME" /> eltávolítása nem sikerült</translation>
 <translation id="1277020343994096713">Hozzon létre új, a jelenlegitől eltérő PIN-kódot.</translation>
+<translation id="1277597051786235230">&amp;Keresés a(z) <ph name="SEARCH_ENGINE" /> rendszeren a(z) „<ph name="SEARCH_TERMS" />” kifejezésre új lapon</translation>
 <translation id="1278859221870828664">A Google Play-alkalmazások és -szolgáltatások áttekintése</translation>
 <translation id="127946606521051357">Egy közeli eszköz megosztást végez</translation>
 <translation id="1280965841156951489">Fájlok szerkesztése</translation>
@@ -2674,6 +2675,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="32101887417650595">Nem lehet csatlakozni a nyomtatóhoz</translation>
 <translation id="3210736980143419785">Nem sikerült befejezni a letöltést</translation>
 <translation id="321084946921799184">Sárga-fehér</translation>
+<translation id="3211126692872351610">&amp;Keresés a(z) <ph name="SEARCH_ENGINE" /> rendszeren a(z) „<ph name="SEARCH_TERMS" />” kifejezésre új lapon</translation>
 <translation id="321356136776075234">Eszköz-SZE (pl.: SZE=Chromebooks,DC=example,DC=com)</translation>
 <translation id="321367297115597343">Könyvjelző hozzáadása ehhez a mappához</translation>
 <translation id="3214531106883826119"><ph name="BEGIN_BOLD" />Megjegyzés<ph name="END_BOLD" />: Előfordulhat, hogy hasonló hangú személy vagy hangfelvétel segítségével is hozzá lehet férni <ph name="SUPERVISED_USER_NAME" /> személyes találataihoz.</translation>

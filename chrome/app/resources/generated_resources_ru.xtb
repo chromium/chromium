@@ -347,6 +347,7 @@
 <translation id="1275718070701477396">Выбрано</translation>
 <translation id="1276994519141842946">Не удалось удалить <ph name="APP_NAME" />.</translation>
 <translation id="1277020343994096713">Создайте PIN-код, который отличается от текущего.</translation>
+<translation id="1277597051786235230">&amp;Искать "<ph name="SEARCH_TERMS" />" в <ph name="SEARCH_ENGINE" /> на новой вкладке</translation>
 <translation id="1278859221870828664">Ознакомьтесь с условиями предоставления приложений и сервисов Google Play</translation>
 <translation id="127946606521051357">Устройство поблизости передает файлы</translation>
 <translation id="1280965841156951489">Разрешить</translation>
@@ -2662,6 +2663,7 @@
 <translation id="32101887417650595">Не удается подключиться к принтеру</translation>
 <translation id="3210736980143419785">Не удалось завершить скачивание</translation>
 <translation id="321084946921799184">Желтый с белым</translation>
+<translation id="3211126692872351610">&amp;Искать "<ph name="SEARCH_TERMS" />" в <ph name="SEARCH_ENGINE" /> на новой вкладке</translation>
 <translation id="321356136776075234">Организационное подразделение устройства (например, OU=Chromebooks,DC=example,DC=com)</translation>
 <translation id="321367297115597343">Добавьте закладку в эту папку.</translation>
 <translation id="3214531106883826119"><ph name="BEGIN_BOLD" />Примечание.<ph name="END_BOLD" /> Человек с похожим голосом или записью голоса пользователя <ph name="SUPERVISED_USER_NAME" /> может получить доступ к его персональным результатам.</translation>

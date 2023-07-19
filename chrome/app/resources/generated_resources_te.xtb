@@ -346,6 +346,7 @@
 <translation id="1275718070701477396">ఎంచుకోబడింది</translation>
 <translation id="1276994519141842946"><ph name="APP_NAME" />ను అన్ఇన్‌స్టాల్ చేయడం సాధ్యపడలేదు.</translation>
 <translation id="1277020343994096713">మీ ప్రస్తుత PINకు భిన్నంగా ఉన్న ఒక కొత్త PINను క్రియేట్ చేయండి</translation>
+<translation id="1277597051786235230">కొత్త ట్యాబ్‌కు వెళ్లి <ph name="SEARCH_ENGINE" />‌లో “<ph name="SEARCH_TERMS" />” అని సెర్చ్ చేయండి</translation>
 <translation id="1278859221870828664">Google Play యాప్‌లు, సర్వీస్‌లను రివ్యూ చేయండి</translation>
 <translation id="127946606521051357">సమీపంలోని పరికరం షేర్ చేస్తోంది</translation>
 <translation id="1280965841156951489">ఎడిటింగ్‌ను అనుమతించండి</translation>
@@ -2673,6 +2674,7 @@
 <translation id="32101887417650595">ప్రింటర్‌కు కనెక్ట్ చేయడం సాధ్యపడలేదు</translation>
 <translation id="3210736980143419785">డౌన్‌లోడ్‌ను పూర్తి చేయడం సాధ్యం కాలేదు</translation>
 <translation id="321084946921799184">పసుపు పచ్చ మరియు తెలుపు</translation>
+<translation id="3211126692872351610">కొత్త ట్యాబ్‌కు వెళ్లి <ph name="SEARCH_ENGINE" />‌లో “<ph name="SEARCH_TERMS" />” అని సెర్చ్ చేయండి</translation>
 <translation id="321356136776075234">పరికరం OU (ఉదా. OU=Chromebooks,DC=example,DC=com)</translation>
 <translation id="321367297115597343">ఈ ఫోల్డర్‌కు బుక్‌మార్క్‌ను జోడించండి</translation>
 <translation id="3214531106883826119"><ph name="BEGIN_BOLD" />గమనిక:<ph name="END_BOLD" /> ఒకే రీతిలో ఉండే వాయిస్ లేదా రికార్డింగ్ సైతం <ph name="SUPERVISED_USER_NAME" /> వ్యక్తిగత ఫలితాలను యాక్సెస్ చేయగలిగే అవకాశం ఉంది.</translation>

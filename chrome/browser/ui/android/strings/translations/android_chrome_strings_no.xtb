@@ -374,6 +374,7 @@ Med private tilstandstokener får du bedre personvern på nettet, og de kan ikke
 <translation id="3027644380269727216">Basert på aktiviteten din på et nettsted. Denne innstillingen er på.</translation>
 <translation id="3029276696788198026">Ingen forhåndslasting</translation>
 <translation id="3029704984691124060">Passordfrasene stemmer ikke overens</translation>
+<translation id="303514781271618814">Chrome utforsker nye funksjoner som gjør det mulig for nettsteder å bruke mindre av dataene dine og likevel gi deg den samme nettlesingsopplevelsen</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Få hjelp<ph name="END_LINK" /></translation>
 <translation id="3037177537145227281">Sporer prisen</translation>
 <translation id="3037517125981011456">Viser beskjeder om å logge på Chrome</translation>
@@ -1040,7 +1041,6 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="6590471736817333463">Spar opptil 60 % data</translation>
 <translation id="6590680911007613645">Sørg for at passordet du lagrer, samsvarer med passordet ditt for <ph name="SITE" /></translation>
 <translation id="6593061639179217415">Side for datamaskiner</translation>
-<translation id="6594121454516132231">Se hvordan Chrome planlegger å verne deg mot sporing på tvers av nettsteder, samtidig som det åpne nettet ivaretas</translation>
 <translation id="6594347733515723558">Alt. sort. og visning</translation>
 <translation id="6595046016124923392">Bildene blir sendt til Google for å gjøre beskrivelsene bedre.</translation>
 <translation id="6600954340915313787">Kopiert til Chrome</translation>

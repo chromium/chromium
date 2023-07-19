@@ -346,6 +346,7 @@ Paroole saate alati kontrollida menüüs <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1275718070701477396">Valitud</translation>
 <translation id="1276994519141842946">Rakendust <ph name="APP_NAME" /> ei saanud installida</translation>
 <translation id="1277020343994096713">Looge uus PIN-kood, mis erineb teie praegusest PIN-koodist</translation>
+<translation id="1277597051786235230">Teenusest <ph name="SEARCH_ENGINE" /> uuel vahelehel sõna „<ph name="SEARCH_TERMS" />” otsimine</translation>
 <translation id="1278859221870828664">Vaadake üle Google Play rakendused ja teenused</translation>
 <translation id="127946606521051357">Läheduses asuv seade jagab</translation>
 <translation id="1280965841156951489">Muuda faile</translation>
@@ -2666,6 +2667,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="32101887417650595">Printeriga ei saa ühendust</translation>
 <translation id="3210736980143419785">Ei saanud allalaadimist lõpetada</translation>
 <translation id="321084946921799184">Kollane ja valge</translation>
+<translation id="3211126692872351610">&amp;Otsige teenusest <ph name="SEARCH_ENGINE" /> uuel vahelehel sõna „<ph name="SEARCH_TERMS" />”</translation>
 <translation id="321356136776075234">Seadme OU (nt OU = Chromebooks, DC = example, DC = com)</translation>
 <translation id="321367297115597343">Järjehoidja lisamine sellesse kausta</translation>
 <translation id="3214531106883826119"><ph name="BEGIN_BOLD" />Märkus.<ph name="END_BOLD" /> Lapse <ph name="SUPERVISED_USER_NAME" /> personaalsetele tulemustele võib juurde pääseda ka sarnase hääle või tema hääle salvestise abil.</translation>

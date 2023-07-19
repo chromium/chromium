@@ -345,6 +345,7 @@ Verifică parolele oricând în <ph name="GOOGLE_PASSWORD_MANAGER" />.</translat
 <translation id="1275718070701477396">Selectat</translation>
 <translation id="1276994519141842946">Nu s-a putut dezinstala <ph name="APP_NAME" /></translation>
 <translation id="1277020343994096713">Creează un nou cod PIN, diferit de cel actual</translation>
+<translation id="1277597051786235230">&amp;Caută „<ph name="SEARCH_TERMS" />” pe <ph name="SEARCH_ENGINE" /> într-o filă nouă</translation>
 <translation id="1278859221870828664">Examinează aplicațiile și serviciile Google Play</translation>
 <translation id="127946606521051357">Un dispozitiv din apropiere distribuie</translation>
 <translation id="1280965841156951489">Editează fișierele</translation>
@@ -2661,6 +2662,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="32101887417650595">Nu se poate conecta la imprimantă</translation>
 <translation id="3210736980143419785">Nu s-a putut finaliza descărcarea</translation>
 <translation id="321084946921799184">Galben și alb</translation>
+<translation id="3211126692872351610">&amp;Caută „<ph name="SEARCH_TERMS" />” pe <ph name="SEARCH_ENGINE" /> într-o filă nouă</translation>
 <translation id="321356136776075234">Unitatea organizațională (UO) a dispozitivului (de exemplu, UO=Chromebooks,DC=example,DC=com)</translation>
 <translation id="321367297115597343">Adaugă un marcaj în acest dosar</translation>
 <translation id="3214531106883826119"><ph name="BEGIN_BOLD" />Notă:<ph name="END_BOLD" /> o voce asemănătoare sau o înregistrare a vocii ar putea accesa rezultatele personalizate ale lui <ph name="SUPERVISED_USER_NAME" />.</translation>

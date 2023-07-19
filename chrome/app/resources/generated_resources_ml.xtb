@@ -346,6 +346,7 @@
 <translation id="1275718070701477396">തിരഞ്ഞെടുത്തു</translation>
 <translation id="1276994519141842946"><ph name="APP_NAME" /> അൺഇൻസ്‌റ്റാൾ ചെയ്യാനായില്ല.</translation>
 <translation id="1277020343994096713">നിങ്ങളുടെ നിലവിലെ പിൻ നമ്പറിൽ നിന്ന് വ്യത്യസ്തമായ ഒരു പുതിയ പിൻ സൃഷ്ടിക്കുക</translation>
+<translation id="1277597051786235230"><ph name="SEARCH_ENGINE" /> എന്നതിൽ പുതിയ ടാബിൽ “<ph name="SEARCH_TERMS" />” &amp;തിരയുക</translation>
 <translation id="1278859221870828664">Google Play ആപ്പുകളും സേവനങ്ങളും അവലോകനം ചെയ്യുക</translation>
 <translation id="127946606521051357">സമീപത്തുള്ള ഉപകരണം പങ്കിടുന്നു</translation>
 <translation id="1280965841156951489">ഫയലുകൾ എഡിറ്റ് ചെയ്യുക</translation>
@@ -2659,6 +2660,7 @@
 <translation id="32101887417650595">പ്രിന്ററിലേക്ക് കണക്റ്റ് ചെയ്യാനാവുന്നില്ല</translation>
 <translation id="3210736980143419785">ഡൗൺലോഡ് പൂർത്തിയാക്കാനായില്ല</translation>
 <translation id="321084946921799184">മഞ്ഞയും വെള്ളയും</translation>
+<translation id="3211126692872351610"><ph name="SEARCH_ENGINE" /> എന്നതിൽ പുതിയ ടാബിൽ “<ph name="SEARCH_TERMS" />” &amp;തിരയുക</translation>
 <translation id="321356136776075234">ഉപകരണ OU (ഉദാ. OU=Chromebooks, DC=ഉദാഹരണം, DC=com)</translation>
 <translation id="321367297115597343">ഈ ഫോൾഡറിലേക്ക് ഒരു ബുക്ക്‌മാർക്ക് ചേർക്കുക</translation>
 <translation id="3214531106883826119"><ph name="BEGIN_BOLD" />ശ്രദ്ധിക്കുക:<ph name="END_BOLD" /> സമാനമായ ശബ്‌ദത്തിനോ റെക്കോർഡിംഗിനോ <ph name="SUPERVISED_USER_NAME" /> എന്ന കുട്ടിയുടെ വ്യക്തിപരമായ ഫലങ്ങൾ ആക്‌സസ് ചെയ്യാനായേക്കാം.</translation>

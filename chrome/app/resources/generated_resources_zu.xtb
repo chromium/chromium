@@ -347,6 +347,7 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.}}</t
 <translation id="1275718070701477396">Ikhethiwe</translation>
 <translation id="1276994519141842946">Ayikwazanga ukukhipha i-<ph name="APP_NAME" /></translation>
 <translation id="1277020343994096713">Dala Iphinikhodi entsha ehlukile Kuphinikhodi yakho yamanje</translation>
+<translation id="1277597051786235230">&amp;Sesha i-<ph name="SEARCH_ENGINE" /> nge-“<ph name="SEARCH_TERMS" />” Kuthebhu Entsha</translation>
 <translation id="1278859221870828664">Buyekeza ama-app namasevisi we-Google Play</translation>
 <translation id="127946606521051357">Idivayisi eseduze iyabelana</translation>
 <translation id="1280965841156951489">Hlela amafayela</translation>
@@ -2676,6 +2677,7 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.</tra
 <translation id="32101887417650595">Ayikwazi ukuxhumeka kuphrinta</translation>
 <translation id="3210736980143419785">Ayikwazanga ukuqedela ukudawuniloda</translation>
 <translation id="321084946921799184">Okuphuzi nokumhlophe</translation>
+<translation id="3211126692872351610">&amp;Sesha i-<ph name="SEARCH_ENGINE" /> nge-“<ph name="SEARCH_TERMS" />” kuthebhu entsha</translation>
 <translation id="321356136776075234">I-OU yedivayisi (isb. OU=Chromebooks,DC=example,DC=com)</translation>
 <translation id="321367297115597343">Engeza ibhukhimakhi kule folda</translation>
 <translation id="3214531106883826119"><ph name="BEGIN_BOLD" />Qaphela<ph name="END_BOLD" /> Izwi elifanayo noma ukurekhoda kungase kukwazi ukufinyelela kwimiphumela yomuntu siqu ka-<ph name="SUPERVISED_USER_NAME" />.</translation>

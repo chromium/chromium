@@ -69,6 +69,7 @@
 <translation id="4985291216379576555">Hors ligne, Chromium ne peut pas vérifier s'il y a des mises à jour</translation>
 <translation id="4996471330284142407">Faites-en plus avec le navigateur Chromium : simple, sécuritaire et plus rapide que jamais.</translation>
 <translation id="4999538639245140991">Puisque vous vous déconnectez d'un compte géré par <ph name="SIGNOUT_MANAGED_DOMAIN" />, vos données Chromium seront supprimées de cet appareil. Toutefois, vos données resteront dans votre compte Google.</translation>
+<translation id="5042011327527167688">Touchez « Afficher avec Google Maps dans Chromium ».</translation>
 <translation id="5048795749726991615">Pour récupérer facilement vos mots de passe enregistrés dans vos autres applications, utilisez Chromium pour le remplissage automatique</translation>
 <translation id="5171868502429358653">Connectez-vous à Chromium</translation>
 <translation id="5224391634244552924">Aucun mot de passe enregistré. Chromium ne peut vérifier vos mots de passe que si vous les enregistrez.</translation>
@@ -113,6 +114,7 @@
 <translation id="7357211569052832586">Les données sélectionnées ont été supprimées de Chromium et des appareils synchronisés. D'autres formes d'historique de navigation, telles que les recherches et l'activité d'autres services Google, peuvent exister sur votre compte Google. Plus de détails à history.google.com.</translation>
 <translation id="7395825497086981028">Votre mot de passe sera enregistré dans le gestionnaire de mots de passe du compte <ph name="EMAIL" />.</translation>
 <translation id="7400689562045506105">Utiliser Chromium partout</translation>
+<translation id="7523464085759699266">Activez « Verrouiller les onglets de navigation privée lorsque vous fermez Chromium ».</translation>
 <translation id="7674213385180944843">Ouvrez Paramètres &gt; Confidentialité &gt; Appareil photo &gt; Chromium et activez l'appareil photo.</translation>
 <translation id="7746854981345936341">Conseil pour Chromium. Certains boutons se trouvent désormais en bas de votre écran, comme Précédent, Suivant et Rechercher.</translation>
 <translation id="7763454117143368771">Utilisez Chromium comme navigateur par défaut pour vous protéger des sites dangereux et conserver vos mots de passe en sécurité</translation>
@@ -124,6 +126,7 @@
 <translation id="7931842119211730154">Verrouiller les onglets de navigation privée lorsque vous fermez Chromium</translation>
 <translation id="7980860476903281594">Chromium partage votre position avec les sites que vous autorisez.</translation>
 <translation id="8013573822802650211">Pour voir vos onglets partout où vous utilisez Chromium, connectez-vous sur tous vos appareils</translation>
+<translation id="8071041515667087705">Accédez aux paramètres de Chromium.</translation>
 <translation id="8073677936375100957">Effacer vos données Chromium de cet appareil?</translation>
 <translation id="8240981428553046115">Chromium n'a pas pu vérifier s'il y a des mises à jour. Réessayez plus tard.</translation>
 <translation id="8409374867500149834">Vous disposez de la sécurité la plus robuste de Chromium contre les sites Web dangereux</translation>

@@ -374,6 +374,7 @@ Tokeny soukromého stavu zvyšují ochranu soukromí na webu a nelze pomocí ni
 <translation id="3027644380269727216">Na základě vaší aktivity na webu. Toto nastavení je zapnuté.</translation>
 <translation id="3029276696788198026">Žádné předběžné načítání</translation>
 <translation id="3029704984691124060">Heslové fráze se neshodují</translation>
+<translation id="303514781271618814">Chrome zkoumá nové funkce, které webům umožňují poskytovat stejné prostředí a využívat při tom méně dat</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Zobrazit nápovědu<ph name="END_LINK" /></translation>
 <translation id="3037177537145227281">Cena sledována</translation>
 <translation id="3037517125981011456">Zobrazuje výzvy k přihlášení do Chromu</translation>
@@ -1040,7 +1041,6 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="6590471736817333463">Ušetřete až 60 % dat</translation>
 <translation id="6590680911007613645">Zkontrolujte, zda se ukládané heslo shoduje s heslem pro web <ph name="SITE" />.</translation>
 <translation id="6593061639179217415">Stránky pro počítač</translation>
-<translation id="6594121454516132231">Podívejte se, jak vás Chrome plánuje chránit před sledováním mezi weby, aniž by omezoval otevřenost webu</translation>
 <translation id="6594347733515723558">Řazení a zobrazení</translation>
 <translation id="6595046016124923392">Za účelem zlepšení popisů se obrázky odesílají do Googlu.</translation>
 <translation id="6600954340915313787">Zkopírováno do Chromu</translation>

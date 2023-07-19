@@ -374,6 +374,7 @@ Mae tocynnau ymddiriedaeth yn gwella eich preifatrwydd ar y we ac ni ellir eu de
 <translation id="3027644380269727216">Yn seiliedig ar eich gweithgarwch ar wefan. Mae'r gosodiad hwn wedi'i droi ymlaen.</translation>
 <translation id="3029276696788198026">Dim rhaglwytho</translation>
 <translation id="3029704984691124060">Nid yw'r cyfrinymadroddion yn cyfateb</translation>
+<translation id="303514781271618814">Mae Chrome yn archwilio nodweddion newydd sy'n caniatáu i wefannau ddarparu'r un profiad pori drwy ddefnyddio llai o'ch data</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Cael help<ph name="END_LINK" /></translation>
 <translation id="3037177537145227281">Yn dilyn y pris</translation>
 <translation id="3037517125981011456">Dangos anogwyr i fewngofnodi i Chrome</translation>
@@ -1040,7 +1041,6 @@ Er enghraifft, gall rhai gwefannau ymateb i'r cais hwn drwy ddangos hysbysebion 
 <translation id="6590471736817333463">Arbedwch hyd at 60% o ddata</translation>
 <translation id="6590680911007613645">Gwnewch yn siŵr bod y cyfrinair rydych yn ei gadw yn cyd-fynd â'ch cyfrinair <ph name="SITE" /></translation>
 <translation id="6593061639179217415">Gwefan bwrdd gwaith</translation>
-<translation id="6594121454516132231">Gweld sut mae Chrome yn bwriadu eich amddiffyn rhag olrhain traws-wefan wrth ddiogelu'r we agored</translation>
 <translation id="6594347733515723558">Trefnu a gweld opsiynau</translation>
 <translation id="6595046016124923392">Anfonir lluniau at Google i wella disgrifiadau i chi.</translation>
 <translation id="6600954340915313787">Copïwyd i Chrome</translation>

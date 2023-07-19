@@ -344,6 +344,7 @@
 <translation id="1275718070701477396">已选择</translation>
 <translation id="1276994519141842946">无法卸载 <ph name="APP_NAME" /></translation>
 <translation id="1277020343994096713">请创建一个与您的当前 PIN 码不同的新 PIN 码</translation>
+<translation id="1277597051786235230">在新标签页中从 <ph name="SEARCH_ENGINE" /> 上搜索“<ph name="SEARCH_TERMS" />”(&amp;S)</translation>
 <translation id="1278859221870828664">查看 Google Play 应用和服务</translation>
 <translation id="127946606521051357">附近的设备正在分享内容</translation>
 <translation id="1280965841156951489">修改文件</translation>
@@ -2652,6 +2653,7 @@
 <translation id="32101887417650595">无法连接到打印机</translation>
 <translation id="3210736980143419785">无法完成下载</translation>
 <translation id="321084946921799184">黄色和白色</translation>
+<translation id="3211126692872351610">在新标签页中从 <ph name="SEARCH_ENGINE" /> 上搜索“<ph name="SEARCH_TERMS" />”(&amp;S)</translation>
 <translation id="321356136776075234">设备 OU（例如 OU=Chromebooks,DC=example,DC=com）</translation>
 <translation id="321367297115597343">为此文件夹添加书签</translation>
 <translation id="3214531106883826119"><ph name="BEGIN_BOLD" />注意<ph name="END_BOLD" />：如果有人在语音上与<ph name="SUPERVISED_USER_NAME" />相似或拥有后者的语音录音，此人可能也能获取后者的个人信息相关结果。</translation>

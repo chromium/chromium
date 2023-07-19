@@ -374,6 +374,7 @@ Los tokens de estado privado mejoran la privacidad en la Web y no pueden usarse 
 <translation id="3027644380269727216">Según tu actividad en un sitio. Este parámetro de configuración está activado.</translation>
 <translation id="3029276696788198026">Sin precarga</translation>
 <translation id="3029704984691124060">Las frases de contraseña no coinciden.</translation>
+<translation id="303514781271618814">Chrome está explorando funciones nuevas que les permiten a los sitios ofrecer la misma experiencia de navegación usando menos de tus datos</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Obtener ayuda<ph name="END_LINK" /></translation>
 <translation id="3037177537145227281">Se está haciendo el seguimiento de precios</translation>
 <translation id="3037517125981011456">Muestra mensajes para acceder a Chrome.</translation>
@@ -1040,7 +1041,6 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="6590471736817333463">Ahorra hasta un 60% de datos</translation>
 <translation id="6590680911007613645">Asegúrate de que la contraseña que guardes coincida con la de <ph name="SITE" />.</translation>
 <translation id="6593061639179217415">Sitio para computadoras</translation>
-<translation id="6594121454516132231">Ve cómo Chrome planea protegerte ante el seguimiento entre sitios, a la vez que se preserva la Web abierta</translation>
 <translation id="6594347733515723558">Ordenar y ver opciones</translation>
 <translation id="6595046016124923392">Se envían las imágenes a Google para proporcionarte mejores descripciones.</translation>
 <translation id="6600954340915313787">Se copió en Chrome.</translation>
