@@ -10,7 +10,7 @@ ServiceWorkerResourceLoader::~ServiceWorkerResourceLoader() = default;
 
 void ServiceWorkerResourceLoader::SetCommitResponsibility(
     FetchResponseFrom fetch_response_from) {
-  CHECK_EQ(commit_responsibility_, FetchResponseFrom::kNoResponseYet);
+  DCHECK(commit_responsibility_ == FetchResponseFrom::kNoResponseYet);
   commit_responsibility_ = fetch_response_from;
   RecordFetchResponseFrom();
 }
