@@ -215,8 +215,12 @@
   }
 
   @media (max-width: 550px) {
-    #customizeButton {
+    :host-context([chrome-refresh-2023]) #customizeButton {
       padding-inline-start: 8px;
+    }
+
+    #customizeButton {
+      padding-inline-start: 0;
       padding-inline-end: 0;
     }
 
@@ -226,8 +230,13 @@
   }
 
   @media (max-width: 970px) {
-    :host([modules-shown-to-user]) #customizeButton {
+    :host-context([chrome-refresh-2023]):host([modules-shown-to-user])
+        #customizeButton {
       padding-inline-start: 8px;
+    }
+
+    :host([modules-shown-to-user]) #customizeButton {
+      padding-inline-start: 0;
       padding-inline-end: 0;
     }
 
@@ -237,8 +246,13 @@
   }
 
   @media (max-width: 1020px) {
-    :host([modules-fre-shown]) #customizeButton {
+    :host-context([chrome-refresh-2023]):host([modules-fre-shown])
+        #customizeButton {
       padding-inline-start: 8px;
+    }
+
+    :host([modules-fre-shown]) #customizeButton {
+      padding-inline-start: 0;
       padding-inline-end: 0;
     }
 
