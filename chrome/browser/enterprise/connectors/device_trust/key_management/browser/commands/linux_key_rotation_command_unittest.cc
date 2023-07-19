@@ -76,8 +76,7 @@ class LinuxKeyRotationCommandTest : public testing::Test {
 
   static base::CommandLine GetMojoCommandLine(base::CommandLine command_line) {
     auto test_command_line = base::GetMultiProcessTestChildBaseCommandLine();
-    test_command_line.CopySwitchesFrom(command_line, kSwitches,
-                                       std::size(kSwitches));
+    test_command_line.CopySwitchesFrom(command_line, kSwitches);
     return test_command_line;
   }
 

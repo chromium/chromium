@@ -429,12 +429,6 @@ void CommandLine::CopySwitchesFrom(const CommandLine& source,
   }
 }
 
-void CommandLine::CopySwitchesFrom(const CommandLine& source,
-                                   const char* const switches[],
-                                   size_t count) {
-  CopySwitchesFrom(source, make_span(switches, count));
-}
-
 CommandLine::StringVector CommandLine::GetArgs() const {
   // Gather all arguments after the last switch (may include kSwitchTerminator).
   StringVector args(argv_.begin() + begin_args_, argv_.end());

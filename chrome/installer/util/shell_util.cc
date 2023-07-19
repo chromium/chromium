@@ -1177,8 +1177,7 @@ bool ShortcutOpListOrRemoveUnknownArgs(
       switches::kProfileDirectory,
   };
   base::CommandLine desired_args(base::CommandLine::NO_PROGRAM);
-  desired_args.CopySwitchesFrom(current_args, kept_switches,
-                                std::size(kept_switches));
+  desired_args.CopySwitchesFrom(current_args, kept_switches);
   if (desired_args.argv().size() == current_args.argv().size())
     return true;
   if (shortcuts)

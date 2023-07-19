@@ -273,7 +273,7 @@ void BeginUserExperiment(const InstallerState& installer_state,
       kExperimentRetryDelay,
   };
   setup_command.CopySwitchesFrom(*base::CommandLine::ForCurrentProcess(),
-                                 kSwitchesToCopy, std::size(kSwitchesToCopy));
+                                 kSwitchesToCopy);
 
   if (user_context) {
     // This is either a per-user install or a per-machine install run via

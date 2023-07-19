@@ -210,11 +210,6 @@ class BASE_EXPORT CommandLine {
   void CopySwitchesFrom(const CommandLine& source,
                         span<const char* const> switches);
 
-  // Deprecation version of CopySwitchesFrom() above.
-  void CopySwitchesFrom(const CommandLine& source,
-                        const char* const switches[],
-                        size_t count);
-
   // Get the remaining arguments to the command.
   StringVector GetArgs() const;
 

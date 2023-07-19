@@ -267,8 +267,7 @@ void WebEngineContentBrowserClient::AppendExtraCommandLineSwitches(
 
   if (process_type == switches::kRendererProcess) {
     command_line->CopySwitchesFrom(browser_command_line,
-                                   kRendererSwitchesToCopy,
-                                   std::size(kRendererSwitchesToCopy));
+                                   kRendererSwitchesToCopy);
   } else if (process_type == switches::kUtilityProcess) {
     // Although only the Network process needs
     // kUnsafelyTreatInsecureOriginAsSecureSwitchToCopy, differentiating utility
@@ -276,8 +275,7 @@ void WebEngineContentBrowserClient::AppendExtraCommandLineSwitches(
     // switch to all Utility processes so do the same here.
     // Do not add other switches here.
     command_line->CopySwitchesFrom(
-        browser_command_line, kUnsafelyTreatInsecureOriginAsSecureSwitchToCopy,
-        std::size(kUnsafelyTreatInsecureOriginAsSecureSwitchToCopy));
+        browser_command_line, kUnsafelyTreatInsecureOriginAsSecureSwitchToCopy);
   }
 }
 

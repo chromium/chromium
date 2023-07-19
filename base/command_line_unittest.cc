@@ -523,17 +523,6 @@ TEST(CommandLineTest, CopySwitches) {
   EXPECT_THAT(cl.argv(), testing::ElementsAre(FILE_PATH_LITERAL(""),
                                               FILE_PATH_LITERAL("--a"),
                                               FILE_PATH_LITERAL("--c")));
-
-  CommandLine cl2(CommandLine::NO_PROGRAM);
-  EXPECT_THAT(cl2.argv(), testing::ElementsAre(FILE_PATH_LITERAL("")));
-
-  cl2.CopySwitchesFrom(source, nullptr, 0);
-  EXPECT_THAT(cl2.argv(), testing::ElementsAre(FILE_PATH_LITERAL("")));
-
-  cl2.CopySwitchesFrom(source, kSwitchesToCopy, std::size(kSwitchesToCopy));
-  EXPECT_THAT(cl2.argv(), testing::ElementsAre(FILE_PATH_LITERAL(""),
-                                               FILE_PATH_LITERAL("--a"),
-                                               FILE_PATH_LITERAL("--c")));
 }
 
 TEST(CommandLineTest, PrependSimpleWrapper) {
