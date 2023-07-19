@@ -1164,17 +1164,6 @@
       ]
     },
     {
-      "id": 152,
-      "cr_bugs": [581777],
-      "description": "copyTexImage2D fails when reading from IOSurface on multiple GPU types.",
-      "os": {
-        "type": "macosx"
-      },
-      "features": [
-        "use_intermediary_for_copy_texture_image"
-      ]
-    },
-    {
       "id": 153,
       "cr_bugs": [594016],
       "description": "Vivante GC1000 with EXT_multisampled_render_to_texture fails glReadPixels",
