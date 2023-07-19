@@ -761,9 +761,12 @@ class InputHandler::InputInjector
         !pending_mouse_callbacks_.empty()) {
       auto callback = std::move(pending_mouse_callbacks_.front());
       pending_mouse_callbacks_.pop_front();
-      // We may need to dispatch the event back to the drag controller in case
-      // drag was initiated at some point between dispatch and now. The event
-      // will have been ignored during dispatch in this case.
+      // We need to handle the event in the drag controller in case drag was
+      // initiated at some point between dispatch and now because the event will
+      // have been ignored during dispatch in this case.
+      //
+      // Note this also applies to the mouse move that triggers the drag, so
+      // HandleMouseEvent has special logic to handle this specific case.
       if (!widget_host_ ||
           !owner_->drag_controller_.HandleMouseEvent(
               *widget_host_, static_cast<const blink::WebMouseEvent&>(event),
@@ -817,24 +820,43 @@ bool InputHandler::DragController::HandleMouseEvent(
     std::unique_ptr<DispatchMouseEventCallback>& callback) {
   if (!drag_state_) {
     if (event.GetType() == blink::mojom::EventType::kMouseMove) {
-      last_mouse_move_ = base::WrapUnique(
-          static_cast<blink::WebMouseEvent*>(event.Clone().release()));
+      last_mouse_move_ = std::make_unique<blink::WebMouseEvent>(event);
       last_widget_host_ = host.GetWeakPtr();
     }
     return false;
   }
   switch (event.GetType()) {
     case blink::mojom::EventType::kMouseMove:
-      UpdateDragging(host,
-                     base::WrapUnique(static_cast<blink::WebMouseEvent*>(
-                         event.Clone().release())),
+      // It's possible that the mouse movement that starts a drag is acked
+      // after dragging starts. When this happens,
+      //
+      //  1. `StartDragging` will update the drag state with the mouse
+      //     movement (through `last_mouse_move_`), then
+      //  2. the mouse movement (this time from acking in `OnInputEventAck`)
+      //     will attempt to update the drag state _again_ and go through this
+      //     branch.
+      //
+      // Since we only want the mouse movement to update the drag state once,
+      // we attempt to stop it here.
+      //
+      // Since we don't have unique identifiers for each event, the best we
+      // can hope for is the timestamps are the same.
+      //
+      // Note that in general, the mouse movement will be acked before the
+      // dragging starts, so this should happen rarely.
+      if (last_mouse_move_) {
+        auto timestamp = last_mouse_move_->TimeStamp();
+        last_mouse_move_ = nullptr;
+        if (timestamp == event.TimeStamp()) {
+          return false;
+        }
+      }
+      UpdateDragging(host, std::make_unique<blink::WebMouseEvent>(event),
                      std::make_unique<FailSafe<DispatchMouseEventCallback>>(
                          std::move(callback)));
       return true;
     case blink::mojom::EventType::kMouseUp:
-      EndDragging(&host,
-                  base::WrapUnique(static_cast<blink::WebMouseEvent*>(
-                      event.Clone().release())),
+      EndDragging(&host, std::make_unique<blink::WebMouseEvent>(event),
                   std::make_unique<FailSafe<DispatchMouseEventCallback>>(
                       std::move(callback)));
       return true;
@@ -874,7 +896,9 @@ void InputHandler::DragController::StartDragging(
       std::make_unique<DragController::DragState>(DragController::DragState{
           drop_data, drag_operations_mask, nullptr, gfx::PointF(),
           ui::mojom::DragOperation::kNone, 0, base::DoNothing()});
-  UpdateDragging(*last_widget_host_, std::move(last_mouse_move_), nullptr);
+  UpdateDragging(*last_widget_host_,
+                 std::make_unique<blink::WebMouseEvent>(*last_mouse_move_),
+                 nullptr);
 }
 
 void InputHandler::DragController::CancelDragging(base::OnceClosure callback) {
