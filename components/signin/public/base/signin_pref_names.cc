@@ -105,4 +105,9 @@ const char kRestrictAccountsToPatterns[] =
 // next startup.
 const char kSigninAllowedOnNextStartup[] = "signin.allowed_on_next_startup";
 
+// String that represent the url for which cookies will have to be moved to a
+// newly created profile via signin interception.
+const char kSigninInterceptionIDPCookiesUrl[] =
+    "signin.interception.idp_cookies.url";
+
 }  // namespace prefs

@@ -9,11 +9,13 @@
 
 #include "base/containers/enum_set.h"
 #include "base/files/file_path.h"
+#include "base/functional/callback.h"
 #include "base/supports_user_data.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/identity_manager/tribool.h"
+#include "net/cookies/canonical_cookie.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
@@ -45,6 +47,40 @@ class ScopedForceSigninSetterForTesting {
   ScopedForceSigninSetterForTesting& operator=(
       const ScopedForceSigninSetterForTesting&) = delete;
 };
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+// Utility class that moves cookies linked to a URL from one profile to the
+// other. This will be mostly used when a new profile is created after a
+// signin interception of an account linked a SAML signin.
+class CookiesMover {
+ public:
+  // Moves cookies related to `url` from `source_profile` to
+  // `destination_profile` and calls `callback` when it is done.
+  CookiesMover(base::WeakPtr<Profile> source_profile,
+               base::WeakPtr<Profile> destination_profile,
+               base::OnceCallback<void()> callback);
+
+  CookiesMover(const CookiesMover& copy) = delete;
+  CookiesMover& operator=(const CookiesMover&) = delete;
+  ~CookiesMover();
+
+  void StartMovingCookies();
+
+ private:
+  void OnCookiesReceived(
+      const std::vector<net::CookieWithAccessResult>& included,
+      const std::vector<net::CookieWithAccessResult>& excluded);
+
+  // Called when all the cookies have been moved.
+  void OnCookiesMoved();
+
+  GURL url_;
+  base::WeakPtr<Profile> source_profile_;
+  base::WeakPtr<Profile> destination_profile_;
+  base::OnceCallback<void()> callback_;
+  base::WeakPtrFactory<CookiesMover> weak_pointer_factory_{this};
+};
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Return whether the force sign in policy is enabled or not.
 // The state of this policy will not be changed without relaunch Chrome.

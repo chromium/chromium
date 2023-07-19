@@ -13,12 +13,19 @@
 #include "base/scoped_observation.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/enterprise/profile_management/profile_management_features.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/signin_util.h"
+#include "components/prefs/pref_service.h"
+#include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/accounts_mutator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "content/public/browser/storage_partition.h"
+#include "net/cookies/canonical_cookie.h"
+#include "services/network/public/mojom/cookie_manager.mojom.h"
 
 // Waits until the tokens are loaded and calls the callback. The callback is
 // called immediately if the tokens are already loaded, and called with nullptr
@@ -162,11 +169,27 @@ void DiceSignedInProfileCreator::OnNewProfileInitialized(Profile* new_profile) {
     return;
   }
 
+  cookies_mover_ = std::make_unique<signin_util::CookiesMover>(
+      source_profile_->GetWeakPtr(), new_profile->GetWeakPtr(),
+      base::BindOnce(&DiceSignedInProfileCreator::LoadNewProfileTokens,
+                     weak_pointer_factory_.GetWeakPtr(),
+                     new_profile->GetWeakPtr()));
+  cookies_mover_->StartMovingCookies();
+}
+
+void DiceSignedInProfileCreator::LoadNewProfileTokens(
+    base::WeakPtr<Profile> new_profile) {
+  if (new_profile.WasInvalidated()) {
+    if (callback_) {
+      std::move(callback_).Run(nullptr);
+    }
+    return;
+  }
   DCHECK(!tokens_loaded_callback_runner_);
   // base::Unretained is fine because the runner is owned by this.
   auto tokens_loaded_callback_runner =
       TokensLoadedCallbackRunner::RunWhenLoaded(
-          new_profile,
+          new_profile.get(),
           base::BindOnce(&DiceSignedInProfileCreator::OnNewProfileTokensLoaded,
                          base::Unretained(this)));
   // If the callback was called synchronously, |this| may have been deleted.

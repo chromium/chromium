@@ -6,8 +6,10 @@
 
 #include <memory>
 
+#include "base/barrier_closure.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
@@ -15,6 +17,7 @@
 #include "base/supports_user_data.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/enterprise/profile_management/profile_management_features.h"
 #include "chrome/browser/policy/cloud/user_policy_signin_service_internal.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profiles_state.h"
@@ -23,7 +26,11 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/google/core/common/google_util.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/base/signin_pref_names.h"
+#include "content/public/browser/storage_partition.h"
 #include "google_apis/gaia/gaia_auth_util.h"
+#include "net/cookies/canonical_cookie.h"
+#include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace signin_util {
@@ -48,6 +55,75 @@ ScopedForceSigninSetterForTesting::ScopedForceSigninSetterForTesting(
 ScopedForceSigninSetterForTesting::~ScopedForceSigninSetterForTesting() {
   ResetForceSigninForTesting();  // IN-TEST
 }
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+CookiesMover::CookiesMover(base::WeakPtr<Profile> source_profile,
+                           base::WeakPtr<Profile> destination_profile,
+                           base::OnceCallback<void()> callback)
+    : url_(source_profile->GetPrefs()->GetString(
+          prefs::kSigninInterceptionIDPCookiesUrl)),
+      source_profile_(std::move(source_profile)),
+      destination_profile_(std::move(destination_profile)),
+      callback_(std::move(callback)) {
+  CHECK(callback_);
+}
+
+CookiesMover::~CookiesMover() = default;
+
+void CookiesMover::StartMovingCookies() {
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+  bool allow_cookies_to_be_moved = base::FeatureList::IsEnabled(
+      profile_management::features::kThirdPartyProfileManagement);
+#else
+  bool allow_cookies_to_be_moved = false;
+#endif
+  if (!allow_cookies_to_be_moved || url_.is_empty() || !url_.is_valid()) {
+    std::move(callback_).Run();
+    return;
+  }
+
+  source_profile_->GetPrefs()->ClearPref(
+      prefs::kSigninInterceptionIDPCookiesUrl);
+  source_profile_->GetDefaultStoragePartition()
+      ->GetCookieManagerForBrowserProcess()
+      ->GetCookieList(url_, net::CookieOptions::MakeAllInclusive(),
+                      net::CookiePartitionKeyCollection::Todo(),
+                      base::BindOnce(&CookiesMover::OnCookiesReceived,
+                                     weak_pointer_factory_.GetWeakPtr()));
+}
+
+void CookiesMover::OnCookiesReceived(
+    const std::vector<net::CookieWithAccessResult>& included,
+    const std::vector<net::CookieWithAccessResult>& excluded) {
+  // If either profile was destroyed, stop the operation.
+  if (source_profile_.WasInvalidated() ||
+      destination_profile_.WasInvalidated()) {
+    std::move(callback_).Run();
+    return;
+  }
+  // We expected 2 * `cookies.size()` actions since we have to set the cookie at
+  // destination and delete it from the source.
+  base::RepeatingClosure barrier = base::BarrierClosure(
+      included.size() * 2, base::BindOnce(&CookiesMover::OnCookiesMoved,
+                                          weak_pointer_factory_.GetWeakPtr()));
+  auto* source_cookie_manager = source_profile_->GetDefaultStoragePartition()
+                                    ->GetCookieManagerForBrowserProcess();
+  auto* destination_cookie_manager =
+      destination_profile_->GetDefaultStoragePartition()
+          ->GetCookieManagerForBrowserProcess();
+  for (const auto& [cookie, _] : included) {
+    destination_cookie_manager->SetCanonicalCookie(
+        cookie, url_, net::CookieOptions::MakeAllInclusive(),
+        base::IgnoreArgs<net::CookieAccessResult>(barrier));
+    source_cookie_manager->DeleteCanonicalCookie(
+        cookie, base::IgnoreArgs<bool>(barrier));
+  }
+}
+
+void CookiesMover::OnCookiesMoved() {
+  std::move(callback_).Run();
+}
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 
 bool IsForceSigninEnabled() {
   if (g_is_force_signin_enabled_cache == NOT_CACHED) {
