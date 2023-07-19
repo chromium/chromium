@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_EXTENSIONS_EXTENSION_SETTINGS_BROWSERTEST_H_
-#define CHROME_BROWSER_UI_WEBUI_EXTENSIONS_EXTENSION_SETTINGS_BROWSERTEST_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_EXTENSIONS_EXTENSION_SETTINGS_TEST_BASE_H_
+#define CHROME_BROWSER_UI_WEBUI_EXTENSIONS_EXTENSION_SETTINGS_TEST_BASE_H_
 
 #include <memory>
 
@@ -15,19 +15,19 @@
 namespace extensions {
 class Extension;
 class ScopedTestDialogAutoConfirm;
-}
+}  // namespace extensions
 
-// C++ test fixture used by extension_settings_browsertest.js.
-class ExtensionSettingsUIBrowserTest : public WebUIBrowserTest {
+// C++ base class used by Extensions tests in chrome/test/data/webui/extensions/
+// and chrome/browser/ui/webui/extensions/.
+class ExtensionSettingsTestBase : public WebUIBrowserTest {
  public:
-  ExtensionSettingsUIBrowserTest();
+  ExtensionSettingsTestBase();
 
-  ExtensionSettingsUIBrowserTest(const ExtensionSettingsUIBrowserTest&) =
+  ExtensionSettingsTestBase(const ExtensionSettingsTestBase&) = delete;
+  ExtensionSettingsTestBase& operator=(const ExtensionSettingsTestBase&) =
       delete;
-  ExtensionSettingsUIBrowserTest& operator=(
-      const ExtensionSettingsUIBrowserTest&) = delete;
 
-  ~ExtensionSettingsUIBrowserTest() override;
+  ~ExtensionSettingsTestBase() override;
 
  protected:
   void InstallGoodExtension();
@@ -71,4 +71,4 @@ class ExtensionSettingsUIBrowserTest : public WebUIBrowserTest {
       uninstall_auto_confirm_;
 };
 
-#endif  // CHROME_BROWSER_UI_WEBUI_EXTENSIONS_EXTENSION_SETTINGS_BROWSERTEST_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_EXTENSIONS_EXTENSION_SETTINGS_TEST_BASE_H_

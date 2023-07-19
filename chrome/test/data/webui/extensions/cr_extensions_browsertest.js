@@ -9,7 +9,7 @@ GEN_INCLUDE(['//chrome/test/data/webui/polymer_browser_test_base.js']);
 
 GEN('#include "build/build_config.h"');
 GEN('#include "chrome/browser/ui/webui/extensions/' +
-    'extension_settings_browsertest.h"');
+    'extension_settings_test_base.h"');
 GEN('#include "chrome/browser/ui/ui_features.h"');
 GEN('#include "content/public/test/browser_test.h"');
 GEN('#include "build/chromeos_buildflags.h"');
@@ -26,7 +26,7 @@ const CrExtensionsBrowserTest = class extends PolymerTest {
 
   /** @override */
   get typedefCppFixture() {
-    return 'ExtensionSettingsUIBrowserTest';
+    return 'ExtensionSettingsTestBase';
   }
 
   // The name of the mocha suite. Should be overriden by subclasses.
