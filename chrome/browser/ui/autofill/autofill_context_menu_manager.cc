@@ -253,6 +253,10 @@ void AutofillContextMenuManager::ExecuteCommand(int command_id) {
   ExecuteMenuManagerCommand(CommandId(command_id), rfh);
 }
 
+void AutofillContextMenuManager::OnMenuClosed() {
+  fallback_metric_logger_.ContextMenuClosed();
+}
+
 void AutofillContextMenuManager::ExecuteAutofillFeedbackCommand(
     content::RenderFrameHost* rfh) {
   AutofillManager* manager =
@@ -280,12 +284,17 @@ void AutofillContextMenuManager::
   if (!driver) {
     return;
   }
-  CHECK(params_.field_renderer_id);
-  FieldGlobalId field = {LocalFrameToken(rfh->GetFrameToken().value()),
-                         FieldRendererId(*params_.field_renderer_id)};
+  AutofillField* field = GetAutofillField();
+  if (!field) {
+    // The field should generally exist, since the fallback option is only shown
+    // when the field can be retrieved. But if the website removed the field
+    // before the entry was select, it might not be available anymore.
+    return;
+  }
   driver->browser_events().RendererShouldTriggerSuggestions(
-      field, AutofillSuggestionTriggerSource::
-                 kManualFallbackForAutocompleteUnrecognized);
+      field->global_id(), AutofillSuggestionTriggerSource::
+                              kManualFallbackForAutocompleteUnrecognized);
+  fallback_metric_logger_.ContextMenuEntryAccepted();
 }
 
 void AutofillContextMenuManager::ExecuteMenuManagerCommand(
@@ -579,6 +588,9 @@ void AutofillContextMenuManager::
       IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_AUTOCOMPLETE_UNRECOGNIZED,
       ui::ImageModel::FromVectorIcon(vector_icons::kLocationOnIcon));
   menu_model_->AddSeparator(ui::NORMAL_SEPARATOR);
+  fallback_metric_logger_.ContextMenuEntryShown(
+      /*field_has_ac_unrecognized=*/field
+          ->ShouldSuppressSuggestionsAndFillingByDefault());
 }
 
 bool AutofillContextMenuManager::HaveEnoughIdsForProfile(

@@ -2795,6 +2795,26 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram
+    name="Autofill.ManualFallback.Funnel.ExplicitTriggering.{AutocompleteState}.Address"
+    enum="BooleanSelectManualFallback" expires_after="M125">
+  <owner>fleimgruber@google.com</owner>
+  <owner>chrome-autofill-team@google.com</owner>
+  <summary>
+    Records the acceptance of manual fallback suggestions, by tracking the
+    number of times a user accepted/didn't accept the manual fallback option in
+    the context menu. Emitted when the context menu is closed, but only if the
+    manual fallback entry was available.
+  </summary>
+  <token key="AutocompleteState">
+    <variant name="ClassifiedFieldAutocompleteRecognized"
+        summary="A classified field with recognized autocomplete attribute"/>
+    <variant name="ClassifiedFieldAutocompleteUnrecognized"
+        summary="A classified field with unrecognized autocomplete attribute"/>
+    <variant name="Total" summary="Sum of recognized and unrecognized"/>
+  </token>
+</histogram>
+
 <histogram name="Autofill.MigrateUserOptedInToWalletSync"
     enum="AutofillMigrateUserOptedInToWalletSync" expires_after="2020-11-30">
   <obsolete>

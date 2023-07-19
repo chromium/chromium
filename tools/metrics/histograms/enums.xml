@@ -13728,6 +13728,11 @@ Called by update_bad_message_reasons.py.-->
   <int value="1" label="Selected"/>
 </enum>
 
+<enum name="BooleanSelectManualFallback">
+  <int value="0" label="Didn't accept the manual fallback context menu entry"/>
+  <int value="1" label="Accepted the manual fallback context menu entry"/>
+</enum>
+
 <enum name="BooleanSensitive">
   <int value="0" label="Not Sensitive"/>
   <int value="1" label="Sensitive"/>

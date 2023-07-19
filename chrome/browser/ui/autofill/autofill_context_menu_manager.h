@@ -11,6 +11,7 @@
 #include "base/types/strong_alias.h"
 #include "chrome/browser/ui/user_education/scoped_new_badge_tracker.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/metrics/fallback_autocomplete_unrecognized_metrics.h"
 #include "components/renderer_context_menu/render_view_context_menu_base.h"
 #include "components/renderer_context_menu/render_view_context_menu_observer.h"
 #include "content/public/browser/context_menu_params.h"
@@ -140,6 +141,7 @@ class AutofillContextMenuManager : public RenderViewContextMenuObserver {
   bool IsCommandIdSupported(int command_id) override;
   bool IsCommandIdEnabled(int command_id) override;
   void ExecuteCommand(int command_id) override;
+  void OnMenuClosed() override;
 
   // Getter for `command_id_to_menu_item_value_mapper_` used for testing
   // purposes.
@@ -269,6 +271,9 @@ class AutofillContextMenuManager : public RenderViewContextMenuObserver {
       command_id_to_menu_item_value_mapper_;
 
   std::unique_ptr<ScopedNewBadgeTracker> new_badge_tracker_;
+
+  autofill_metrics::AutocompleteUnrecognizedFallbackMetricLogger
+      fallback_metric_logger_;
 };
 
 }  // namespace autofill
