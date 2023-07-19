@@ -5,7 +5,9 @@
 #ifndef UI_BASE_INTERACTION_INTERACTIVE_TEST_H_
 #define UI_BASE_INTERACTION_INTERACTIVE_TEST_H_
 
+#include <functional>
 #include <memory>
+#include <type_traits>
 #include <utility>
 #include <vector>
 
@@ -22,6 +24,7 @@
 #include "ui/base/interaction/interaction_sequence.h"
 #include "ui/base/interaction/interaction_test_util.h"
 #include "ui/base/interaction/interactive_test_internal.h"
+#include "ui/base/interaction/state_observer.h"
 
 #if !BUILDFLAG(IS_IOS)
 #include "ui/base/accelerators/accelerator.h"
@@ -257,6 +260,56 @@ class InteractiveTestApi {
   // otherwise working properly.
   [[nodiscard]] static MultiStep FlushEvents();
 
+  // Adds an observed state with identifier `id` in the current context. Use
+  // `WaitForState()` to wait for state changes. This is a useful way to wait
+  // for an asynchronous state that isn't a UI element.
+  //
+  // To construct the observer on the fly as the test is running, use the
+  // argument-forwarding version below.
+  //
+  // Note: Some types are unavailable; for any UTF-8 string type, use
+  // std::string. For any UTF-16 type, use std::u16string.
+  template <typename Observer,
+            typename = std::enable_if<std::is_same_v<
+                typename Observer::ValueType,
+                internal::MatcherTypeFor<typename Observer::ValueType>>>>
+  [[nodiscard]] StepBuilder ObserveState(
+      StateIdentifier<Observer> id,
+      std::unique_ptr<Observer> state_observer);
+
+  // Adds an observed state with identifier `id` in the current context. Use
+  // `WaitForState()` to wait for state changes. This is a useful way to wait
+  // for an asynchronous state that isn't a UI element.
+  //
+  // This version of the function forwards its arguments to the `Observer`'s
+  // constructor, with some of them being evaluated at runtime:
+  //  - Arguments wrapped in `std::ref()` will be unwrapped
+  //  - Functions and callbacks will be evaluated and their return values used
+  //
+  // If you must pass a callback or function pointer to the observer's
+  // constructor, use the other version of this method above.
+  //
+  // Note: Some types are unavailable; for any UTF-8 string type, use
+  // std::string. For any UTF-16 type, use std::u16string.
+  template <typename Observer,
+            typename... Args,
+            typename = std::enable_if<std::is_same_v<
+                typename Observer::ValueType,
+                internal::MatcherTypeFor<typename Observer::ValueType>>>>
+  [[nodiscard]] StepBuilder ObserveState(StateIdentifier<Observer> id,
+                                         Args&&... args);
+
+  // Waits for the state of state observer `id` (bound with `ObserveState()` in
+  // the current context) to match `value`. If `value` is a function, callback,
+  // or `std::reference_wrapper`, it will be called or unwrapped as the step is
+  // run, rather than having its value frozen when the test sequence is created.
+  // A matcher may also be passed, and the step will proceed when the value of
+  // the state satisfies the matcher.
+  //
+  // See /chrome/test/interaction/README.md for more information.
+  template <typename O, typename V>
+  [[nodiscard]] static MultiStep WaitForState(StateIdentifier<O> id, V&& value);
+
   // Provides syntactic sugar so you can put "in any context" before an action
   // or test step rather than after. For example the following are equivalent:
   // ```
@@ -396,6 +449,9 @@ class InteractiveTestApi {
   // making one or more calls to `std::vector::emplace_back`.
   static void AddStep(MultiStep& dest, StepBuilder src);
   static void AddStep(MultiStep& dest, MultiStep src);
+
+  // Equivalent to calling FormatDescription(format) on every step in `steps`.
+  static void AddDescription(MultiStep& steps, const base::StringPiece& format);
 
  private:
   // Implementation for RunTestSequenceInContext().
@@ -689,25 +745,89 @@ InteractionSequence::StepBuilder InteractiveTestApi::AnyOf(
   return step;
 }
 
+template <typename Observer, typename>
+InteractionSequence::StepBuilder InteractiveTestApi::ObserveState(
+    StateIdentifier<Observer> id,
+    std::unique_ptr<Observer> observer) {
+  auto step = WithElement(
+      internal::kInteractiveTestPivotElementId,
+      base::BindOnce(
+          [](InteractiveTestApi* api, ElementIdentifier id,
+             std::unique_ptr<Observer> observer, TrackedElement* el) {
+            api->private_test_impl().AddStateObserver(id, el->context(),
+                                                      std::move(observer));
+          },
+          base::Unretained(this), id.identifier(), std::move(observer)));
+  step.SetDescription("ObserveState()");
+  return step;
+}
+
+template <typename Observer, typename... Args, typename>
+InteractionSequence::StepBuilder InteractiveTestApi::ObserveState(
+    StateIdentifier<Observer> id,
+    Args&&... args) {
+  auto step = WithElement(
+      internal::kInteractiveTestPivotElementId,
+      base::BindOnce(
+          [](InteractiveTestApi* api, ElementIdentifier id,
+             std::remove_cvref_t<Args>... args, TrackedElement* el) {
+            api->private_test_impl().AddStateObserver(
+                id, el->context(),
+                std::make_unique<Observer>(
+                    (INTERACTIVE_TEST_UNWRAP_IMPL(args, Args))...));
+          },
+          base::Unretained(this), id.identifier(), std::move(args)...));
+  step.SetDescription("ObserveState()");
+  return step;
+}
+
+// static
+template <typename O, typename V>
+InteractiveTestApi::MultiStep InteractiveTestApi::WaitForState(
+    StateIdentifier<O> id,
+    V&& value) {
+  using T = typename O::ValueType;
+  using U = std::remove_cvref_t<V>;
+  auto wait_callback = base::BindOnce(
+      [](ElementIdentifier id, U value, InteractionSequence* seq,
+         TrackedElement* el) {
+        auto* const typed = internal::StateObserverElementT<T>::LookupElement(
+            id, el->context(), seq);
+        if (!typed) {
+          LOG(ERROR) << "No state observer registered for identifier " << id
+                     << " in the current context.";
+          seq->FailForTesting();
+          return;
+        }
+        if constexpr (internal::IsReferenceWrapper<U>) {
+          typed->SetTarget(testing::Matcher<T>(T(value.get())));
+        } else if constexpr (std::is_base_of_v<testing::Matcher<T>, U>) {
+          // Note that a Matcher<T> is actually a wrapper around a "matcher"
+          // object, not a matcher itself.
+          typed->SetTarget(value);
+        } else if constexpr (internal::IsMatcher<U>) {
+          // Need to wrap the "matcher" in a Matcher<T> for it to be used.
+          typed->SetTarget(testing::Matcher<T>(value));
+        } else {
+          typed->SetTarget(
+              testing::Matcher<T>(T(INTERACTIVE_TEST_UNWRAP_IMPL(value, U))));
+        }
+      },
+      id.identifier(), std::move(value));
+  auto result = Steps(WithElement(internal::kInteractiveTestPivotElementId,
+                                  std::move(wait_callback)),
+                      WaitForShow(id.identifier()));
+  AddDescription(result, "WaitForState( %s )");
+  return result;
+}
+
 // static
 template <typename... Args>
 InteractiveTestApi::StepBuilder InteractiveTestApi::Log(Args... args) {
   auto step = Do(base::BindOnce(
       [](std::remove_cvref_t<Args>... args) {
         auto info = COMPACT_GOOGLE_LOG_INFO;
-        ((info.stream() <<
-          [&]() {
-            if constexpr (internal::IsCallbackValue<Args>) {
-              return std::move(args).Run();
-            } else if constexpr (internal::IsFunctionPointerValue<Args>) {
-              return (*args)();
-            } else if constexpr (internal::IsCallableValue<Args>) {
-              return args();
-            } else {
-              return args;
-            }
-          }()),
-         ...);
+        ((info.stream() << INTERACTIVE_TEST_UNWRAP_IMPL(args, Args)), ...);
       },
       std::move(args)...));
   step.SetDescription("Log()");

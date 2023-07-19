@@ -4,15 +4,19 @@
 
 #include "ui/base/interaction/interactive_test_internal.h"
 
+#include <memory>
+
 #include "base/callback_list.h"
 #include "base/check.h"
 #include "base/containers/contains.h"
+#include "base/functional/bind.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/strings/stringprintf.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_test_util.h"
+#include "ui/base/interaction/framework_specific_implementation.h"
 
 namespace ui::test::internal {
 
@@ -21,6 +25,14 @@ DEFINE_CUSTOM_ELEMENT_EVENT_TYPE(kInteractiveTestPivotEventType);
 
 const char kInteractiveTestFailedMessagePrefix[] = "Interactive test failed ";
 const char kNoCheckDescriptionSpecified[] = "[no description specified]";
+
+StateObserverElement::StateObserverElement(ElementIdentifier id,
+                                           ElementContext context)
+    : TestElementBase(id, context) {}
+
+StateObserverElement::~StateObserverElement() = default;
+
+DEFINE_FRAMEWORK_SPECIFIC_METADATA(StateObserverElement)
 
 InteractiveTestPrivate::InteractiveTestPrivate(
     std::unique_ptr<InteractionTestUtil> test_util)
@@ -114,7 +126,9 @@ TrackedElement* InteractiveTestPrivate::GetPivotElement(
 }
 
 void InteractiveTestPrivate::DoTestSetUp() {}
-void InteractiveTestPrivate::DoTestTearDown() {}
+void InteractiveTestPrivate::DoTestTearDown() {
+  state_observer_elements_.clear();
+}
 
 void InteractiveTestPrivate::OnSequenceComplete() {
   success_ = true;

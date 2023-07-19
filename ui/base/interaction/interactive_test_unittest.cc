@@ -4,11 +4,14 @@
 
 #include "ui/base/interaction/interactive_test.h"
 #include <functional>
+#include <memory>
 #include <string>
 
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -20,6 +23,7 @@
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/expect_call_in_scope.h"
 #include "ui/base/interaction/interaction_sequence.h"
+#include "ui/base/interaction/state_observer.h"
 
 #if !BUILDFLAG(IS_IOS)
 #include "ui/base/accelerators/accelerator.h"
@@ -1314,6 +1318,183 @@ TEST_F(InteractiveTestTest, ConditionalBindingMethods) {
           Do(correct.Get()), Do(incorrect.Get())),
       IfElementMatches(kTestId2, &CheckElementFunction, testing::Ne(nullptr),
                        Do(incorrect.Get()), Do(correct.Get())));
+}
+
+namespace {
+
+template <typename T>
+class TestObservable;
+
+template <typename T>
+class TestObserver : public base::CheckedObserver {
+ public:
+  TestObserver() = default;
+  ~TestObserver() override = default;
+
+  virtual void OnObservableValueChanged(TestObservable<T>* observable,
+                                        T value) {}
+  virtual void OnObservableDestroying(TestObservable<T>* observable) {}
+};
+
+template <typename T>
+class TestObservable {
+ public:
+  explicit TestObservable(T value) : value_(value) {}
+  ~TestObservable() {
+    for (auto& observer : observers_) {
+      observer.OnObservableDestroying(this);
+    }
+  }
+
+  T value() const { return value_; }
+
+  void SetValue(T value) {
+    value_ = value;
+    for (auto& observer : observers_) {
+      observer.OnObservableValueChanged(this, value);
+    }
+  }
+
+  void AddObserver(TestObserver<T>* observer) {
+    observers_.AddObserver(observer);
+  }
+  void RemoveObserver(TestObserver<T>* observer) {
+    observers_.RemoveObserver(observer);
+  }
+
+ private:
+  T value_ = 0;
+  base::ObserverList<TestObserver<T>> observers_;
+};
+
+template <typename T>
+class TestStateObserver
+    : public ObservationStateObserver<T, TestObservable<T>, TestObserver<T>> {
+ public:
+  using Base = ObservationStateObserver<T, TestObservable<T>, TestObserver<T>>;
+
+  explicit TestStateObserver(TestObservable<T>* observable)
+      : Base(observable) {}
+  ~TestStateObserver() override = default;
+
+  // ObservationStateObserver:
+  T GetStateObserverInitialState() const override {
+    return Base::source()->value();
+  }
+
+  // TestObserver:
+  void OnObservableValueChanged(TestObservable<T>* observable,
+                                T value) override {
+    Base::OnStateObserverStateChanged(value);
+  }
+  void OnObservableDestroying(TestObservable<T>* observable) override {
+    Base::OnObservationStateObserverSourceDestroyed();
+  }
+};
+
+DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(TestStateObserver<int>, kIntTestState);
+DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(TestStateObserver<std::string>,
+                                    kStringTestState);
+DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(TestStateObserver<std::u16string>,
+                                    kWStringTestState);
+
+}  // namespace
+
+TEST_F(InteractiveTestTest, ObserveStateFromUniquePtr) {
+  TestObservable<int> observable(2);
+  QueueActions(
+      base::BindLambdaForTesting([&observable]() { observable.SetValue(0); }));
+  QueueActions(
+      base::BindLambdaForTesting([&observable]() { observable.SetValue(3); }));
+  QueueActions(
+      base::BindLambdaForTesting([&observable]() { observable.SetValue(1); }));
+  RunTestSequenceInContext(
+      kTestContext1,
+      ObserveState(kIntTestState,
+                   std::make_unique<TestStateObserver<int>>(&observable)),
+      WaitForState(kIntTestState, 3),
+      CheckResult([&observable]() { return observable.value(); }, 3),
+      WaitForState(kIntTestState, testing::Ne(3)),
+      CheckResult([&observable]() { return observable.value(); }, 1));
+}
+
+TEST_F(InteractiveTestTest, ObserveExistingStateProceedsImmediately) {
+  TestObservable<int> observable(2);
+  RunTestSequenceInContext(kTestContext1,
+                           ObserveState(kIntTestState, &observable),
+                           WaitForState(kIntTestState, 2));
+}
+
+TEST_F(InteractiveTestTest, ObserveStateFromArgsWithReferences) {
+  TestObservable<int> observable(2);
+  int target = 0;
+  TestObservable<int>* obs_ptr = nullptr;
+  QueueActions(
+      base::BindLambdaForTesting([&observable]() { observable.SetValue(0); }));
+  QueueActions(
+      base::BindLambdaForTesting([&observable]() { observable.SetValue(3); }));
+  RunTestSequenceInContext(
+      kTestContext1, Do([&]() {
+        target = 3;
+        obs_ptr = &observable;
+      }),
+      ObserveState(kIntTestState, std::ref(obs_ptr)),
+      WaitForState(kIntTestState, std::ref(target)),
+      CheckResult([&observable]() { return observable.value(); }, 3));
+}
+
+TEST_F(InteractiveTestTest, ObserveStateFromArgsWithFunctions) {
+  TestObservable<int> observable(2);
+  QueueActions(
+      base::BindLambdaForTesting([&observable]() { observable.SetValue(0); }));
+  QueueActions(
+      base::BindLambdaForTesting([&observable]() { observable.SetValue(3); }));
+  RunTestSequenceInContext(
+      kTestContext1, ObserveState(kIntTestState, [&]() { return &observable; }),
+      WaitForState(kIntTestState, base::BindRepeating([]() { return 3; })),
+      CheckResult([&observable]() { return observable.value(); }, 3));
+}
+
+TEST_F(InteractiveTestTest, ObserveStateResetsOnDestruction) {
+  auto observable = std::make_unique<TestObservable<int>>(2);
+  QueueActions(
+      base::BindLambdaForTesting([&observable]() { observable->SetValue(0); }));
+  QueueActions(
+      base::BindLambdaForTesting([&observable]() { observable->SetValue(3); }));
+  QueueActions(
+      base::BindLambdaForTesting([&observable]() { observable.reset(); }));
+  RunTestSequenceInContext(kTestContext1,
+                           ObserveState(kIntTestState, observable.get()),
+                           WaitForState(kIntTestState, 3),
+                           WaitForState(kIntTestState, testing::Ne(3)));
+}
+
+TEST_F(InteractiveTestTest, ObserveStateWithString) {
+  TestObservable<std::string> observable("foo");
+  static const char* const kBar = "bar";
+  constexpr char kBaz[] = "baz";
+  QueueActions(
+      base::BindLambdaForTesting([&]() { observable.SetValue(kBar); }));
+  QueueActions(
+      base::BindLambdaForTesting([&]() { observable.SetValue(kBaz); }));
+  RunTestSequenceInContext(kTestContext1,
+                           ObserveState(kStringTestState, &observable),
+                           WaitForState(kStringTestState, kBar),
+                           WaitForState(kStringTestState, testing::Eq(kBaz)));
+}
+
+TEST_F(InteractiveTestTest, ObserveStateWithWideString) {
+  TestObservable<std::u16string> observable(u"foo");
+  static const char16_t* const kBar = u"bar";
+  constexpr char16_t kBaz[] = u"baz";
+  QueueActions(
+      base::BindLambdaForTesting([&]() { observable.SetValue(kBar); }));
+  QueueActions(
+      base::BindLambdaForTesting([&]() { observable.SetValue(kBaz); }));
+  RunTestSequenceInContext(kTestContext1,
+                           ObserveState(kWStringTestState, &observable),
+                           WaitForState(kWStringTestState, kBar),
+                           WaitForState(kWStringTestState, testing::Eq(kBaz)));
 }
 
 }  // namespace ui::test

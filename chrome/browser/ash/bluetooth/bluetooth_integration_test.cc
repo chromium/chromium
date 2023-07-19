@@ -23,6 +23,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_test_util.h"
+#include "ui/base/interaction/state_observer.h"
 #include "ui/views/interaction/element_tracker_views.h"
 
 namespace ash {
@@ -31,48 +32,37 @@ namespace {
 using bluez::BluetoothAdapterClient;
 using bluez::BluezDBusManager;
 
-DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kBluetoothPoweredElementId);
-
-// A fake UI element that shows itself when the bluetooth adapter is powered on
-// and hides itself when the adapter is powered off. It tracks the OS bluetooth
-// daemon state via D-Bus properties. This element allows bluetooth states to be
-// detected by Kombucha WaitForShow() / WaitForHide().
-class BluetoothPoweredElement : public ui::test::TestElement,
-                                public BluetoothAdapterClient::Observer {
+// State tracker for Bluetooth power-on.
+class BluetoothPowerStateObserver : public ui::test::ObservationStateObserver<
+                                        bool,
+                                        BluetoothAdapterClient,
+                                        BluetoothAdapterClient::Observer> {
  public:
-  BluetoothPoweredElement(ui::ElementContext context,
-                          BluetoothAdapterClient* adapter_client,
-                          BluetoothAdapterClient::Properties* properties)
-      : ui::test::TestElement(kBluetoothPoweredElementId, context),
-        adapter_client_(
-            raw_ref<BluetoothAdapterClient>::from_ptr(adapter_client)),
-        properties_(
-            raw_ref<BluetoothAdapterClient::Properties>::from_ptr(properties)) {
-    adapter_client_->AddObserver(this);
-    // Show the element immediately if the adapter is powered.
-    if (properties_->powered.value()) {
-      Show();
-    }
-  }
+  BluetoothPowerStateObserver(BluetoothAdapterClient* adapter_client,
+                              BluetoothAdapterClient::Properties* properties)
+      : ObservationStateObserver(adapter_client), properties_(properties) {}
 
-  ~BluetoothPoweredElement() override { adapter_client_->RemoveObserver(this); }
+  ~BluetoothPowerStateObserver() override = default;
+
+  // ui::test::ObservationStateObserver:
+  bool GetStateObserverInitialState() const override {
+    return properties_->powered.value();
+  }
 
   // BluetoothAdapterClient::Observer:
   void AdapterPropertyChanged(const dbus::ObjectPath& object_path,
                               const std::string& property_name) override {
     if (property_name == properties_->powered.name()) {
-      if (properties_->powered.value()) {
-        Show();
-      } else {
-        Hide();
-      }
+      OnStateObserverStateChanged(properties_->powered.value());
     }
   }
 
  private:
-  const raw_ref<BluetoothAdapterClient> adapter_client_;
-  const raw_ref<BluetoothAdapterClient::Properties> properties_;
+  const base::raw_ptr<BluetoothAdapterClient::Properties> properties_;
 };
+
+DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(BluetoothPowerStateObserver,
+                                    kBluetoothPowerState);
 
 // Give all widgets on the same display (having the same root window) the same
 // Kombucha context. This is useful for ash system UI because it uses a variety
@@ -97,16 +87,6 @@ class BluetoothIntegrationTest : public InteractiveBrowserTest {
 
   ~BluetoothIntegrationTest() override {
     views::ElementTrackerViews::SetContextOverrideCallback({});
-  }
-
-  // A more readable way to wait for the bluetooth adapter to be powered on.
-  auto WaitForBluetoothPoweredOn() {
-    return WaitForShow(kBluetoothPoweredElementId);
-  }
-
-  // A more readable way to wait for the bluetooth adapter to be powered off.
-  auto WaitForBluetoothPoweredOff() {
-    return WaitForHide(kBluetoothPoweredElementId);
   }
 
  private:
@@ -137,41 +117,37 @@ IN_PROC_BROWSER_TEST_F(BluetoothIntegrationTest,
       Shell::GetPrimaryRootWindowController()->shelf()->GetStatusAreaWidget();
   SetContextWidget(status_area_widget);
 
-  // Create the fake element representing bluetooth adapter state from D-Bus.
-  // Use the same Kombucha context as the rest of the test.
-  ui::ElementContext context = GetContextForWidget(status_area_widget);
-  BluetoothPoweredElement bluetooth_powered_element(context, adapter_client,
-                                                    properties);
+  RunTestSequence(ObserveState(kBluetoothPowerState,
+                               std::make_unique<BluetoothPowerStateObserver>(
+                                   adapter_client, properties)),
+                  // Ensure bluetooth is on at test start. If this fails it
+                  // means some previous test left bluetooth disabled.
+                  WaitForState(kBluetoothPowerState, true),
 
-  RunTestSequence(
-      // Ensure bluetooth is on at test start. If this fails it means some
-      // previous test left bluetooth disabled.
-      WaitForBluetoothPoweredOn(),
+                  Log("Opening quick settings bubble"),
+                  PressButton(kUnifiedSystemTrayElementId),
+                  WaitForShow(kQuickSettingsViewElementId),
 
-      Log("Opening quick settings bubble"),
-      PressButton(kUnifiedSystemTrayElementId),
-      WaitForShow(kQuickSettingsViewElementId),
+                  // The bluetooth toggle button may take time to enable because
+                  // the UI queries the bluetooth adapter state asynchronously.
+                  Log("Waiting for bluetooth toggle button to enable"),
+                  WaitForViewProperty(kBluetoothFeatureTileToggleElementId,
+                                      views::View, Enabled, true),
 
-      // The bluetooth toggle button may take time to enable because the UI
-      // queries the bluetooth adapter state asynchronously.
-      Log("Waiting for bluetooth toggle button to enable"),
-      WaitForViewProperty(kBluetoothFeatureTileToggleElementId, views::View,
-                          Enabled, true),
+                  Log("Pressing bluetooth toggle button"),
+                  PressButton(kBluetoothFeatureTileToggleElementId),
 
-      Log("Pressing bluetooth toggle button"),
-      PressButton(kBluetoothFeatureTileToggleElementId),
+                  Log("Waiting for bluetooth adapter to power off"),
+                  WaitForState(kBluetoothPowerState, false),
 
-      Log("Waiting for bluetooth adapter to power off"),
-      WaitForBluetoothPoweredOff(),
+                  // Allow UI state to settle.
+                  FlushEvents(),
 
-      // Allow UI state to settle.
-      FlushEvents(),
+                  Log("Pressing bluetooth toggle button again"),
+                  PressButton(kBluetoothFeatureTileToggleElementId),
 
-      Log("Pressing bluetooth toggle button again"),
-      PressButton(kBluetoothFeatureTileToggleElementId),
-
-      Log("Waiting for bluetooth adapter to power on"),
-      WaitForBluetoothPoweredOn());
+                  Log("Waiting for bluetooth adapter to power on"),
+                  WaitForState(kBluetoothPowerState, true));
 }
 
 }  // namespace

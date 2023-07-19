@@ -9,6 +9,7 @@
 
 #include "base/auto_reset.h"
 #include "base/functional/callback_helpers.h"
+#include "base/strings/string_piece_forward.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_run_loop_timeout.h"
@@ -17,6 +18,7 @@
 #include "ui/base/interaction/interaction_sequence.h"
 #include "ui/base/interaction/interaction_test_util.h"
 #include "ui/base/interaction/interactive_test_internal.h"
+#include "ui/base/interaction/state_observer.h"
 
 namespace ui::test {
 
@@ -378,6 +380,14 @@ void InteractiveTestApi::AddStep(MultiStep& dest, StepBuilder src) {
 void InteractiveTestApi::AddStep(MultiStep& dest, MultiStep src) {
   for (auto& step : src)
     dest.emplace_back(std::move(step));
+}
+
+// static
+void InteractiveTestApi::AddDescription(MultiStep& steps,
+                                        const base::StringPiece& format) {
+  for (auto& step : steps) {
+    step.FormatDescription(format);
+  }
 }
 
 }  // namespace ui::test
