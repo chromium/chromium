@@ -65,6 +65,10 @@ webapk::WebApk_UpdateReason ConvertUpdateReasonToProtoEnum(
       return webapk::WebApk::MANUALLY_TRIGGERED;
     case WebApkUpdateReason::SHORTCUTS_DIFFER:
       return webapk::WebApk::SHORTCUTS_DIFFER;
+    case WebApkUpdateReason::DARK_BACKGROUND_COLOR_DIFFERS:
+      return webapk::WebApk::DARK_BACKGROUND_COLOR_DIFFERS;
+    case WebApkUpdateReason::DARK_THEME_COLOR_DIFFERS:
+      return webapk::WebApk::DARK_THEME_COLOR_DIFFERS;
   }
 }
 

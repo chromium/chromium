@@ -119,10 +119,11 @@ public class WebApkUpdateDataFetcher extends EmptyTabObserver {
             String primaryIconMurmur2Hash, Bitmap primaryIconBitmap, boolean isPrimaryIconMaskable,
             String splashIconUrl, String splashIconMurmur2Hash, byte[] splashIconData,
             boolean isSplashIconMaskable, String[] iconUrls, @DisplayMode.EnumType int displayMode,
-            int orientation, long themeColor, long backgroundColor, String shareAction,
-            String shareParamsTitle, String shareParamsText, boolean isShareMethodPost,
-            boolean isShareEncTypeMultipart, String[] shareParamsFileNames,
-            String[][] shareParamsAccepts, String[][] shortcuts, byte[][] shortcutIconData) {
+            int orientation, long themeColor, long backgroundColor, long darkThemeColor,
+            long darkBackgroundColor, String shareAction, String shareParamsTitle,
+            String shareParamsText, boolean isShareMethodPost, boolean isShareEncTypeMultipart,
+            String[] shareParamsFileNames, String[][] shareParamsAccepts, String[][] shortcuts,
+            byte[][] shortcutIconData) {
         Context appContext = ContextUtils.getApplicationContext();
 
         HashMap<String, String> iconUrlToMurmur2HashMap = new HashMap<String, String>();
@@ -158,7 +159,7 @@ public class WebApkUpdateDataFetcher extends EmptyTabObserver {
                 WebApkIntentDataProviderFactory.create(new Intent(), mOldInfo.url(), scopeUrl,
                         new WebappIcon(primaryIconBitmap), new WebappIcon(splashIconData), name,
                         shortName, displayMode, orientation, mOldInfo.source(), themeColor,
-                        backgroundColor, 0L /* darkThemeColor */, 0L /* darkBackgroundColor */,
+                        backgroundColor, darkThemeColor, darkBackgroundColor,
                         defaultBackgroundColor, isPrimaryIconMaskable, isSplashIconMaskable,
                         mOldInfo.webApkPackageName(), mOldInfo.shellApkVersion(), manifestUrl,
                         manifestStartUrl, manifestId, mOldInfo.appKey(), WebApkDistributor.BROWSER,

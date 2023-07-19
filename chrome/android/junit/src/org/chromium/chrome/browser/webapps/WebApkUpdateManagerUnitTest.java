@@ -120,6 +120,8 @@ public class WebApkUpdateManagerUnitTest {
     private static final int ORIENTATION = ScreenOrientationLockType.DEFAULT;
     private static final long THEME_COLOR = 1L;
     private static final long BACKGROUND_COLOR = 2L;
+    private static final long DARK_THEME_COLOR = 3L;
+    private static final long DARK_BACKGROUND_COLOR = 4L;
     private static final int DEFAULT_BACKGROUND_COLOR = 3;
     private static final String SHARE_TARGET_ACTION = "/share_action.html";
     private static final String SHARE_TARGET_PARAM_TITLE = "share_params_title";
@@ -168,13 +170,13 @@ public class WebApkUpdateManagerUnitTest {
                 String primaryIconUrl, byte[] primaryIconData, boolean isPrimaryIconMaskable,
                 String splashIconUrl, byte[] splashIconData, boolean isSplashIconMaskable,
                 String[] iconUrls, String[] iconHashes, @DisplayMode.EnumType int displayMode,
-                int orientation, long themeColor, long backgroundColor, String shareTargetAction,
-                String shareTargetParamTitle, String shareTargetParamText,
-                boolean shareTargetParamIsMethodPost, boolean shareTargetParamIsEncTypeMultipart,
-                String[] shareTargetParamFileNames, Object[] shareTargetParamAccepts,
-                String[][] shortcuts, byte[][] shortcutIconData, String manifestUrl,
-                String webApkPackage, int webApkVersion, boolean isManifestStale,
-                boolean isAppIdentityUpdateSupported, int[] updateReasons,
+                int orientation, long themeColor, long backgroundColor, long darkThemeColor,
+                long darkBackgroundColor, String shareTargetAction, String shareTargetParamTitle,
+                String shareTargetParamText, boolean shareTargetParamIsMethodPost,
+                boolean shareTargetParamIsEncTypeMultipart, String[] shareTargetParamFileNames,
+                Object[] shareTargetParamAccepts, String[][] shortcuts, byte[][] shortcutIconData,
+                String manifestUrl, String webApkPackage, int webApkVersion,
+                boolean isManifestStale, boolean isAppIdentityUpdateSupported, int[] updateReasons,
                 Callback<Boolean> callback) {}
 
         @Override
@@ -336,6 +338,8 @@ public class WebApkUpdateManagerUnitTest {
         public int orientation;
         public long themeColor;
         public long backgroundColor;
+        public long darkThemeColor;
+        public long darkBackgroundColor;
         public int defaultBackgroundColor;
         public String shareTargetAction;
         public String shareTargetParamTitle;
@@ -407,6 +411,9 @@ public class WebApkUpdateManagerUnitTest {
         metaData.putString(WebApkMetaDataKeys.SHORT_NAME, manifestData.shortName);
         metaData.putString(WebApkMetaDataKeys.THEME_COLOR, manifestData.themeColor + "L");
         metaData.putString(WebApkMetaDataKeys.BACKGROUND_COLOR, manifestData.backgroundColor + "L");
+        metaData.putString(WebApkMetaDataKeys.DARK_THEME_COLOR, manifestData.darkThemeColor + "L");
+        metaData.putString(
+                WebApkMetaDataKeys.DARK_BACKGROUND_COLOR, manifestData.darkBackgroundColor + "L");
         metaData.putInt(WebApkMetaDataKeys.DEFAULT_BACKGROUND_COLOR_ID,
                 FakeDefaultBackgroundColorResource.ID);
         metaData.putString(WebApkMetaDataKeys.WEB_MANIFEST_URL, WEB_MANIFEST_URL);
@@ -479,6 +486,8 @@ public class WebApkUpdateManagerUnitTest {
         manifestData.orientation = ORIENTATION;
         manifestData.themeColor = THEME_COLOR;
         manifestData.backgroundColor = BACKGROUND_COLOR;
+        manifestData.darkThemeColor = DARK_THEME_COLOR;
+        manifestData.darkBackgroundColor = DARK_BACKGROUND_COLOR;
         manifestData.defaultBackgroundColor = DEFAULT_BACKGROUND_COLOR;
         manifestData.shareTargetAction = SHARE_TARGET_ACTION;
         manifestData.shareTargetParamTitle = SHARE_TARGET_PARAM_TITLE;
@@ -511,8 +520,8 @@ public class WebApkUpdateManagerUnitTest {
         return WebApkIntentDataProviderFactory.create(new Intent(), "", manifestData.scopeUrl,
                 new WebappIcon(manifestData.primaryIcon), null, manifestData.name,
                 manifestData.shortName, manifestData.displayMode, manifestData.orientation, -1,
-                manifestData.themeColor, manifestData.backgroundColor, 0L /* darkThemeColor */,
-                0L /* darkBackgroundColor */, manifestData.defaultBackgroundColor,
+                manifestData.themeColor, manifestData.backgroundColor, manifestData.darkThemeColor,
+                manifestData.darkBackgroundColor, manifestData.defaultBackgroundColor,
                 false /* isPrimaryIconMaskable */, false /* isSplashIconMaskable*/, kPackageName,
                 -1, WEB_MANIFEST_URL, manifestData.startUrl, manifestData.id, manifestData.appKey,
                 WebApkDistributor.BROWSER, manifestData.iconUrlToMurmur2HashMap, shareTarget,
@@ -1225,6 +1234,26 @@ public class WebApkUpdateManagerUnitTest {
         oldData.backgroundColor = 1L;
         ManifestData fetchedData = defaultManifestData();
         fetchedData.backgroundColor = 2L;
+        assertTrue(checkUpdateNeededForFetchedManifest(oldData, fetchedData));
+    }
+
+    /** Test that an upgrade is requested when the Web Manifest 'dark_theme_color' changes. */
+    @Test
+    public void testManifestDarkThemeColorChangedShouldUpgrade() {
+        ManifestData oldData = defaultManifestData();
+        oldData.themeColor = 3L;
+        ManifestData fetchedData = defaultManifestData();
+        fetchedData.themeColor = 4L;
+        assertTrue(checkUpdateNeededForFetchedManifest(oldData, fetchedData));
+    }
+
+    /** Test that an upgrade is requested when the Web Manifest 'dark_background_color' changes. */
+    @Test
+    public void testManifestDarkBackgroundColorChangedShouldUpgrade() {
+        ManifestData oldData = defaultManifestData();
+        oldData.backgroundColor = 4L;
+        ManifestData fetchedData = defaultManifestData();
+        fetchedData.backgroundColor = 5L;
         assertTrue(checkUpdateNeededForFetchedManifest(oldData, fetchedData));
     }
 

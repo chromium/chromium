@@ -113,6 +113,8 @@ public class WebApkUpdateManagerTest {
     private static final int WEBAPK_SHELL_VERSION = 1000;
     private static final long WEBAPK_THEME_COLOR = 2147483648L;
     private static final long WEBAPK_BACKGROUND_COLOR = 2147483648L;
+    private static final long WEBAPK_DARK_THEME_COLOR = 2147483648L;
+    private static final long WEBAPK_DARK_BACKGROUND_COLOR = 2147483648L;
 
     private static final String HISTOGRAM = "WebApk.AppIdentityDialog.PendingImageUpdateDiffValue";
     private static final String HISTOGRAM_SCALED =
@@ -227,6 +229,8 @@ public class WebApkUpdateManagerTest {
         public int shellVersion;
         public long themeColor;
         public long backgroundColor;
+        public long darkThemeColor;
+        public long darkBackgroundColor;
         public boolean isPrimaryIconMaskable;
         public List<WebApkExtras.ShortcutItem> shortcuts;
     }
@@ -249,6 +253,8 @@ public class WebApkUpdateManagerTest {
         creationData.orientation = WEBAPK_ORIENTATION;
         creationData.themeColor = WEBAPK_THEME_COLOR;
         creationData.backgroundColor = WEBAPK_BACKGROUND_COLOR;
+        creationData.darkThemeColor = WEBAPK_DARK_THEME_COLOR;
+        creationData.darkBackgroundColor = WEBAPK_DARK_BACKGROUND_COLOR;
         creationData.shellVersion = WEBAPK_SHELL_VERSION;
         creationData.isPrimaryIconMaskable = false;
         creationData.shortcuts = new ArrayList<>();
@@ -293,7 +299,7 @@ public class WebApkUpdateManagerTest {
                             null, null, creationData.name, creationData.shortName,
                             creationData.displayMode, creationData.orientation, 0,
                             creationData.themeColor, creationData.backgroundColor,
-                            0L /* darkThemeColor */, 0L /* darkBackgroundColor */, 0,
+                            creationData.darkThemeColor, creationData.darkBackgroundColor, 0,
                             creationData.isPrimaryIconMaskable, false /* isSplashIconMaskable */,
                             "", creationData.shellVersion, creationData.manifestUrl,
                             creationData.startUrl, creationData.manifestId, creationData.appKey,
@@ -456,6 +462,7 @@ public class WebApkUpdateManagerTest {
         creationData.name += "!";
         creationData.shortName += "!";
         creationData.backgroundColor -= 1;
+        creationData.darkBackgroundColor -= 1;
         creationData.iconUrlToMurmur2HashMap.put(
                 mTestServer.getURL(WEBAPK_ICON_URL), WEBAPK_ICON_MURMUR2_HASH + "1");
 
@@ -472,6 +479,7 @@ public class WebApkUpdateManagerTest {
         expectedUpdateReasons.add(WebApkUpdateReason.SHORT_NAME_DIFFERS);
         expectedUpdateReasons.add(WebApkUpdateReason.NAME_DIFFERS);
         expectedUpdateReasons.add(WebApkUpdateReason.BACKGROUND_COLOR_DIFFERS);
+        expectedUpdateReasons.add(WebApkUpdateReason.DARK_BACKGROUND_COLOR_DIFFERS);
         assertUpdateReasonsEqual(
                 expectedUpdateReasons.toArray(new Integer[expectedUpdateReasons.size()]));
     }

@@ -79,6 +79,8 @@ static void JNI_WebApkUpdateManager_StoreWebApkUpdateRequestToFile(
     jint java_orientation,
     jlong java_theme_color,
     jlong java_background_color,
+    jlong java_dark_theme_color,
+    jlong java_dark_background_color,
     const JavaParamRef<jstring>& java_share_target_action,
     const JavaParamRef<jstring>& java_share_target_param_title,
     const JavaParamRef<jstring>& java_share_target_param_text,
@@ -111,6 +113,9 @@ static void JNI_WebApkUpdateManager_StoreWebApkUpdateRequestToFile(
       static_cast<device::mojom::ScreenOrientationLockType>(java_orientation);
   info.theme_color = ui::JavaColorToOptionalSkColor(java_theme_color);
   info.background_color = ui::JavaColorToOptionalSkColor(java_background_color);
+  info.dark_theme_color = ui::JavaColorToOptionalSkColor(java_dark_theme_color);
+  info.dark_background_color =
+      ui::JavaColorToOptionalSkColor(java_dark_background_color);
   info.best_primary_icon_url =
       GURL(ConvertJavaStringToUTF8(env, java_primary_icon_url));
   info.is_primary_icon_maskable = java_is_primary_icon_maskable;

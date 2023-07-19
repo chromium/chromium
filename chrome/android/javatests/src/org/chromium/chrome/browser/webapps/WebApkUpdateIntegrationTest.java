@@ -82,6 +82,8 @@ public class WebApkUpdateIntegrationTest {
     private static final int SHELL_APK_VERSION = 1000;
     private static final String THEME_COLOR = "1L";
     private static final String BACKGROUND_COLOR = "2L";
+    private static final String DARK_THEME_COLOR = "3L";
+    private static final String DARK_BACKGROUND_COLOR = "4L";
 
     private EmbeddedTestServer mTestServer;
     private Context mContextToRestore;
@@ -141,6 +143,8 @@ public class WebApkUpdateIntegrationTest {
         bundle.putString(WebApkMetaDataKeys.ORIENTATION, ORIENTATION);
         bundle.putString(WebApkMetaDataKeys.THEME_COLOR, THEME_COLOR);
         bundle.putString(WebApkMetaDataKeys.BACKGROUND_COLOR, BACKGROUND_COLOR);
+        bundle.putString(WebApkMetaDataKeys.DARK_THEME_COLOR, DARK_THEME_COLOR);
+        bundle.putString(WebApkMetaDataKeys.DARK_BACKGROUND_COLOR, DARK_BACKGROUND_COLOR);
         bundle.putInt(WebApkMetaDataKeys.SHELL_APK_VERSION, SHELL_APK_VERSION);
         bundle.putString(
                 WebApkMetaDataKeys.WEB_MANIFEST_URL, mTestServer.getURL(WEBAPK_MANIFEST_URL));
