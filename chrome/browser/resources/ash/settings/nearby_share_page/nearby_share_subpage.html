@@ -162,7 +162,7 @@
     </cr-toggle>
   </div>
   <template is="dom-if" if="[[showVisibilityDialog_]]" restamp>
-    <nearby-share-contact-visibility-dialog settings="{{settings}}"
+    <nearby-share-contact-visibility-dialog settings="{{settings}}" profile-email="[[profileLabel_]]"
         id="visibilityDialog" on-close="onVisibilityDialogClose_">
     </nearby-share-contact-visibility-dialog>
   </template>

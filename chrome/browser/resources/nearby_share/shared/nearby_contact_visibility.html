@@ -245,7 +245,7 @@
         <iron-icon icon="nearby20:contact-all" class="card-icon">
         </iron-icon>
         <div id="contactsLabel" class="card-label" aria-hidden="true">
-          Contacts
+          $i18n{nearbyShareContactVisiblityContactsButton}
         </div>
       </div>
     </cr-card-radio-button>
@@ -255,7 +255,7 @@
         <iron-icon icon="nearby20:contact-group" class="card-icon">
         </iron-icon>
         <div id="yourDevicesLabel" class="card-label" aria-hidden="true">
-          Your Devices
+          $i18n{nearbyShareContactVisibilityYourDevices}
         </div>
       </div>
     </cr-card-radio-button>
@@ -360,7 +360,7 @@
               contactsState)]]">
         <div id="explanation">
           <div class="cr-secondary-text"
-              inner-h-t-m-l="[[getVisibilityDescription_(selectedVisibility, isAllContactsToggledOn_)]]">
+              inner-h-t-m-l="[[getVisibilityDescription_(selectedVisibility, isSelectedContactsToggledOn_, profileEmail)]]">
           </div>
         </div>
       </template>

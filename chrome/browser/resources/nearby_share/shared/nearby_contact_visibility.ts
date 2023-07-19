@@ -175,6 +175,11 @@ export class NearbyContactVisibilityElement extends
           return true;
         },
       },
+
+      profileEmail: {
+        type: String,
+        value: '',
+      },
     };
   }
 
@@ -192,6 +197,8 @@ export class NearbyContactVisibilityElement extends
   isVisibilitySelected: boolean;
   selectedVisibility: string|null;
   settings: NearbySettings|null;
+  isSelectedContactsToggled: boolean;
+  profileEmail: string;
 
   private contactManager_: ContactManagerInterface|null;
   private downloadContactsObserverReceiver_: DownloadContactsObserverReceiver|
@@ -640,11 +647,17 @@ export class NearbyContactVisibilityElement extends
     if (this.isSelfShareEnabled_) {
       switch (this.getSelectedVisibility()) {
         case Visibility.kAllContacts:
-          return this.i18nAdvanced('nearbyShareContactVisibilityOwnAll');
+          return this.i18nAdvanced(
+              'nearbyShareContactVisibilityOwnAllSelfShare',
+              {substitutions: [this.profileEmail]});
         case Visibility.kSelectedContacts:
-          return this.i18nAdvanced('nearbyShareContactVisibilityOwnSome');
+          return this.i18nAdvanced(
+              'nearbyShareContactVisibilityOwnSomeSelfShare',
+              {substitutions: [this.profileEmail]});
         case Visibility.kYourDevices:
-          return this.i18nAdvanced('nearbyShareContactVisibilityOwnNone');
+          return this.i18nAdvanced(
+              'nearbyShareContactVisibilityOwnYourDevices',
+              {substitutions: [this.profileEmail]});
         case Visibility.kNoOne:
           return this.i18nAdvanced('nearbyShareContactVisibilityOwnNone');
         default:

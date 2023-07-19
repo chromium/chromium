@@ -45,10 +45,16 @@ class NearbyShareContactVisibilityDialogElement extends PolymerElement {
         type: Object,
         value: {},
       },
+
+      profileEmail: {
+        type: String,
+        value: '',
+      },
     };
   }
 
   settings: NearbySettings;
+  profileEmail: string;
 
   private onSaveClick_(): void {
     const contactVisibility = this.$.contactVisibility;
