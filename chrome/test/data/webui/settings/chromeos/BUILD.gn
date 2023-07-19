@@ -115,6 +115,7 @@ build_webui_tests("build") {
     "date_time_page/timezone_subpage_test.ts",
 
     "device_page/audio_page_test.ts",
+    "device_page/customize_mouse_buttons_subpage_test.ts",
     "device_page/device_page_tests.js",
     "device_page/fake_cros_audio_config_test.ts",
     "device_page/fake_input_device_settings_provider_test.ts",

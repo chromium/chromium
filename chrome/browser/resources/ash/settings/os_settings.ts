@@ -15,6 +15,7 @@ import './os_settings_ui/os_settings_ui.js';
 import 'chrome://resources/cr_components/settings_prefs/prefs.js';
 import './device_page/audio.js';
 import './device_page/cros_audio_config.js';
+import './device_page/customize_mouse_buttons_subpage.js';
 import './device_page/device_page.js';
 import './device_page/display.js';
 import './device_page/display_layout.js';

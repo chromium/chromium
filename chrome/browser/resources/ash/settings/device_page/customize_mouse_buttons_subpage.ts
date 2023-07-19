@@ -47,6 +47,12 @@ export class SettingsCustomizeMouseButtonsSubpageElement extends
     };
   }
 
+  static get observers(): string[] {
+    return [
+      'onMouseListUpdated(mice.*)',
+    ];
+  }
+
   mouse: Mouse;
   mice: Mouse[];
 
@@ -78,6 +84,22 @@ export class SettingsCustomizeMouseButtonsSubpageElement extends
 
   private hasMice(): boolean {
     return this.mice?.length > 0;
+  }
+
+  private isMouseConnected(id: number): boolean {
+    return !!this.mice.find(mouse => mouse.id === id);
+  }
+
+  onMouseListUpdated(): void {
+    if (Router.getInstance().currentRoute !== routes.CUSTOMIZE_MOUSE_BUTTONS) {
+      return;
+    }
+
+    if (!this.hasMice() || !this.isMouseConnected(this.getMouseIdFromUrl())) {
+      Router.getInstance().navigateTo(routes.DEVICE);
+      return;
+    }
+    this.initializeMouse();
   }
 }
 
