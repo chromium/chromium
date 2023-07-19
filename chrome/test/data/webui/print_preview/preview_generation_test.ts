@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ColorMode, Destination, DestinationOrigin, DestinationState, Margins, MarginsType, NativeInitialSettings, NativeLayerImpl, PluginProxyImpl, PreviewTicket, PrintPreviewAppElement, PrintPreviewDestinationSettingsElement, Range, ScalingType} from 'chrome://print/print_preview.js';
+import {ColorMode, CustomMarginsOrientation, Destination, DestinationOrigin, DestinationState, Margins, MarginsType, NativeInitialSettings, NativeLayerImpl, PluginProxyImpl, PreviewTicket, PrintPreviewAppElement, PrintPreviewDestinationSettingsElement, Range, ScalingType} from 'chrome://print/print_preview.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 // <if expr="is_chromeos">
@@ -726,5 +726,11 @@ suite(preview_generation_test.suiteName, function() {
 
     assertEquals(612, page.$.documentInfo.pageSize.width);
     assertEquals(792, page.$.documentInfo.pageSize.height);
+
+    const o = CustomMarginsOrientation;
+    assertEquals(28, page.$.documentInfo.margins.get(o.TOP));
+    assertEquals(28, page.$.documentInfo.margins.get(o.RIGHT));
+    assertEquals(28, page.$.documentInfo.margins.get(o.BOTTOM));
+    assertEquals(28, page.$.documentInfo.margins.get(o.LEFT));
   });
 });
