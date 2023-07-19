@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/feature_list.h"
+#include "chrome/browser/ui/webui/ash/mako/mako_source.h"
 #include "chrome/browser/ui/webui/ash/mako/url_constants.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
@@ -34,6 +35,8 @@ bool MakoUntrustedUIConfig::IsWebUIEnabled(
 MakoUntrustedUI::MakoUntrustedUI(content::WebUI* web_ui)
     : content::WebUIController(web_ui) {
   CHECK(base::FeatureList::IsEnabled(features::kOrca));
+  content::URLDataSource::Add(web_ui->GetWebContents()->GetBrowserContext(),
+                              std::make_unique<MakoSource>());
 }
 MakoUntrustedUI::~MakoUntrustedUI() = default;
 
