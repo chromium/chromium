@@ -24,6 +24,7 @@
 #include "third_party/blink/public/web/web_view.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_enums.mojom.h"
+#include "ui/accessibility/ax_tree_id.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/geometry/point.h"
@@ -31,11 +32,16 @@
 #include "ui/gfx/geometry/rect_f.h"
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+#include "base/containers/queue.h"
+#include "components/services/screen_ai/public/mojom/screen_ai_service.mojom.h"
 #include "components/services/screen_ai/screen_ai_ax_tree_serializer.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/ax_tree_id.h"
+#include "ui/accessibility/ax_tree_update.h"
 #include "ui/gfx/geometry/transform.h"
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
@@ -154,6 +160,74 @@ void WaitForThreadTasks() {
       FROM_HERE, run_loop.QuitClosure());
   run_loop.Run();
 }
+
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+class FakeScreenAIAnnotator : public screen_ai::mojom::ScreenAIAnnotator {
+ public:
+  FakeScreenAIAnnotator() = default;
+  FakeScreenAIAnnotator(const FakeScreenAIAnnotator&) = delete;
+  FakeScreenAIAnnotator& operator=(const FakeScreenAIAnnotator&) = delete;
+  ~FakeScreenAIAnnotator() override = default;
+
+  void PerformOcrAndReturnAXTreeUpdate(
+      const ::SkBitmap& image,
+      PerformOcrAndReturnAXTreeUpdateCallback callback) override {
+    ui::AXTreeUpdate update;
+    update.root_id = -1;
+    ui::AXNodeData node;
+    node.id = -1;
+    node.role = ax::mojom::Role::kStaticText;
+    node.SetNameChecked("Testing");
+    update.nodes = {node};
+    std::move(callback).Run(update);
+  }
+
+  void ExtractSemanticLayout(const ::SkBitmap& image,
+                             const ::ui::AXTreeID& parent_tree_id,
+                             ExtractSemanticLayoutCallback callback) override {
+    ui::AXTreeID tree_id = ui::AXTreeID::CreateNewAXTreeID();
+    std::move(callback).Run(tree_id);
+  }
+
+  void PerformOcrAndReturnAnnotation(
+      const ::SkBitmap& image,
+      PerformOcrAndReturnAnnotationCallback callback) override {
+    auto annotation = screen_ai::mojom::VisualAnnotation::New();
+    std::move(callback).Run(std::move(annotation));
+  }
+
+  mojo::PendingRemote<screen_ai::mojom::ScreenAIAnnotator>
+  BindNewPipeAndPassRemote() {
+    return receiver_.BindNewPipeAndPassRemote();
+  }
+
+ private:
+  mojo::Receiver<screen_ai::mojom::ScreenAIAnnotator> receiver_{this};
+};
+
+class TestPdfAccessibilityTree : public PdfAccessibilityTree {
+ public:
+  TestPdfAccessibilityTree(
+      content::RenderFrame* render_frame,
+      chrome_pdf::PdfAccessibilityActionHandler* action_handler)
+      : PdfAccessibilityTree(render_frame, action_handler) {}
+  ~TestPdfAccessibilityTree() override = default;
+  TestPdfAccessibilityTree(const TestPdfAccessibilityTree&) = delete;
+  TestPdfAccessibilityTree& operator=(const TestPdfAccessibilityTree&) = delete;
+
+  std::vector<ui::AXTreeUpdate>& GetTreeUpdates() { return updates_; }
+
+  void OnOcrDataReceived(const ui::AXNodeID& image_node_id,
+                         const chrome_pdf::AccessibilityImageInfo& image,
+                         const ui::AXNodeID& parent_node_id,
+                         const ui::AXTreeUpdate& tree_update) override {
+    updates_.push_back(tree_update);
+  }
+
+ private:
+  std::vector<ui::AXTreeUpdate> updates_;
+};
+#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
 }  // namespace
 
@@ -2307,6 +2381,92 @@ TEST_F(PdfAccessibilityTreeTest, TestTransformFromOnOcrDataReceived) {
   bounds = ocred_node->data().relative_bounds.bounds;
   // The bounds already got updated inside of OnOcrDataReceived().
   CompareRect(kExpectedTextBoundRelativeToTreeBounds2, bounds);
+}
+
+TEST_F(PdfAccessibilityTreeTest, TestPdfOcrService) {
+  base::test::ScopedFeatureList scoped_feature_list(::features::kPdfOcr);
+
+  // Create a PDF with 105 pages.
+  doc_info_.page_count = 105;
+  doc_info_.text_accessible = true;
+  doc_info_.text_copyable = true;
+
+  chrome_pdf::AccessibilityImageInfo image;
+  image.alt_text = "";
+  ASSERT_EQ(0u, image.text_run_index)
+      << "Images should not be anchored to any `TextRunInfo` for the "
+         "`PdfOcrService` to work with them.";
+  image.bounds = gfx::RectF(0.0f, 0.0f, 1.0f, 1.0f);
+  image.image_data.allocN32Pixels(/* width */ 1, /* height */ 1,
+                                  /*isOpaque=*/false);
+  page_objects_.images.push_back(image);
+
+  content::RenderFrame* render_frame = GetMainRenderFrame();
+  ASSERT_TRUE(render_frame);
+  render_frame->SetAccessibilityModeForTest(ui::AXMode::kWebContents);
+  ASSERT_TRUE(render_frame->GetRenderAccessibility());
+
+  TestPdfAccessibilityActionHandler action_handler;
+  TestPdfAccessibilityTree pdf_accessibility_tree(render_frame,
+                                                  &action_handler);
+
+  pdf_accessibility_tree.SetAccessibilityViewportInfo(viewport_info_);
+  pdf_accessibility_tree.SetAccessibilityDocInfo(doc_info_);
+  ASSERT_EQ(0u, text_runs_.size())
+      << "OcrService won't run unless the PDF has no accessible text in it.";
+  ASSERT_EQ(0u, chars_.size())
+      << "OcrService won't run unless the PDF has no accessible text in it.";
+  for (uint32_t i = 0; i < doc_info_.page_count; ++i) {
+    page_info_.page_index = i;
+    // All pages are identical.
+    pdf_accessibility_tree.SetAccessibilityPageInfo(page_info_, text_runs_,
+                                                    chars_, page_objects_);
+  }
+  WaitForThreadTasks();
+
+  const ui::AXTree& ax_tree_in_pdf = pdf_accessibility_tree.tree_for_testing();
+  ui::AXNode* root_node = ax_tree_in_pdf.root();
+  ASSERT_NE(nullptr, root_node);
+  ASSERT_EQ(ax::mojom::Role::kPdfRoot, root_node->GetRole());
+  uint32_t pages_plus_status_node_count = doc_info_.page_count + 1u;
+  ASSERT_EQ(pages_plus_status_node_count, root_node->children().size());
+
+  ui::AXNode* page_node = root_node->children()[1];
+  ASSERT_NE(nullptr, page_node);
+  ASSERT_EQ(ax::mojom::Role::kRegion, page_node->GetRole());
+  ASSERT_EQ(1u, page_node->children().size());
+
+  ui::AXNode* paragraph_node = page_node->children()[0];
+  ASSERT_NE(nullptr, paragraph_node);
+  ASSERT_EQ(ax::mojom::Role::kParagraph, paragraph_node->GetRole());
+  ASSERT_EQ(1u, paragraph_node->children().size());
+
+  ui::AXNode* image_node = paragraph_node->children()[0];
+  ASSERT_NE(nullptr, image_node);
+  ASSERT_EQ(ax::mojom::Role::kImage, image_node->GetRole());
+  ASSERT_EQ(0u, image_node->children().size());
+
+  PdfAccessibilityTree::PdfOcrService* ocr_service =
+      pdf_accessibility_tree.CreateOcrService();
+  ASSERT_NE(nullptr, ocr_service);
+  FakeScreenAIAnnotator fake_annotator;
+  ocr_service->SetScreenAIAnnotatorForTesting(
+      fake_annotator.BindNewPipeAndPassRemote());
+
+  for (uint32_t i = 0; i < doc_info_.page_count; ++i) {
+    base::queue<PdfAccessibilityTree::PdfOcrRequest> requests;
+    requests.emplace(image_node->id(), image, paragraph_node->id());
+    ocr_service->ScheduleOcrRequests(requests);
+    WaitForThreadTasks();
+  }
+
+  ASSERT_EQ(doc_info_.page_count,
+            pdf_accessibility_tree.GetTreeUpdates().size());
+  for (uint32_t i = 0; i < doc_info_.page_count; ++i) {
+    EXPECT_EQ(pdf_accessibility_tree.GetTreeUpdates()[i].ToString(),
+              "AXTreeUpdate: root id -1\n"
+              "id=-1 staticText name=Testing (0, 0)-(0, 0)\n");
+  }
 }
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
