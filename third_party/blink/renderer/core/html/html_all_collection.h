@@ -41,6 +41,12 @@ class HTMLAllCollection final : public HTMLCollection {
   HTMLAllCollection(ContainerNode&, CollectionType);
   ~HTMLAllCollection() override;
 
+  V8UnionElementOrHTMLCollection* item(v8::Isolate*, ExceptionState&) {
+    return nullptr;
+  }
+  V8UnionElementOrHTMLCollection* item(v8::Isolate*,
+                                       v8::Local<v8::Value>,
+                                       ExceptionState&);
   Element* AnonymousIndexedGetter(unsigned index);
   V8UnionElementOrHTMLCollection* NamedGetter(const AtomicString& name);
 };

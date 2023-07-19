@@ -33,5 +33,5 @@
     readonly attribute unsigned long length;
     getter Element? (unsigned long index);
     [ImplementedAs=NamedGetter] getter (HTMLCollection or Element)? namedItem(DOMString name);
-    [Custom] (HTMLCollection or Element)? item(optional DOMString nameOrIndex);
+    [CallWith=Isolate, RaisesException] (HTMLCollection or Element)? item(optional any nameOrIndex);
 };
