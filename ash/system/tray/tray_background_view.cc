@@ -247,7 +247,7 @@ class TrayBackgroundView::TrayBackgroundViewSessionChangeHandler
 
 TrayBackgroundView::TrayBackgroundView(
     Shelf* shelf,
-    TrayBackgroundViewCatalogName catalog_name,
+    const TrayBackgroundViewCatalogName catalog_name,
     RoundedCornerBehavior corner_behavior)
     // Note the ink drop style is ignored.
     : ActionableView(TrayPopupInkDropStyle::FILL_BOUNDS),
@@ -261,7 +261,8 @@ TrayBackgroundView::TrayBackgroundView(
       show_when_collapsed_(true),
       corner_behavior_(corner_behavior),
       widget_observer_(new TrayWidgetObserver(this)),
-      handler_(new TrayBackgroundViewSessionChangeHandler(this)) {
+      handler_(new TrayBackgroundViewSessionChangeHandler(this)),
+      should_close_bubble_on_lock_state_change_(true) {
   DCHECK(shelf_);
   SetNotifyEnterExitOnChild(true);
 
@@ -530,6 +531,12 @@ void TrayBackgroundView::UpdateStatusArea(bool should_log_visible_pod_count) {
     if (should_log_visible_pod_count) {
       status_area_widget->LogVisiblePodCountMetric();
     }
+  }
+}
+
+void TrayBackgroundView::UpdateAfterLockStateChange(bool locked) {
+  if (should_close_bubble_on_lock_state_change_) {
+    CloseBubble();
   }
 }
 

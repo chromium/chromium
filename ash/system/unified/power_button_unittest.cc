@@ -47,9 +47,15 @@ class PowerButtonTest : public NoSessionAshTestBase {
   void SetUp() override {
     feature_list_.InitAndEnableFeature(features::kQsRevamp);
     NoSessionAshTestBase::SetUp();
+
     // Test with the real system tray bubble so that the power button has a real
     // UnifiedSystemTrayController to test clicking on the email item.
-    UnifiedSystemTray* system_tray = GetPrimaryUnifiedSystemTray();
+    ShowSystemTrayBubble();
+  }
+
+ protected:
+  void ShowSystemTrayBubble() {
+    auto* system_tray = GetPrimaryUnifiedSystemTray();
     system_tray->ShowBubble();
     button_ = system_tray->bubble()
                   ->quick_settings_view()
@@ -57,7 +63,6 @@ class PowerButtonTest : public NoSessionAshTestBase {
                   ->power_button_for_testing();
   }
 
- protected:
   views::MenuItemView* GetMenuView() {
     return button_->GetMenuViewForTesting();
   }
@@ -298,6 +303,9 @@ TEST_F(PowerButtonTest, ButtonStatesLoggedIn) {
 TEST_F(PowerButtonTest, ButtonStatesLockScreen) {
   CreateUserSessions(1);
   BlockUserSession(BLOCKED_BY_LOCK_SCREEN);
+
+  // Changes in lock state close the system tray bubble, so re-show it.
+  ShowSystemTrayBubble();
 
   EXPECT_TRUE(GetPowerButton()->GetVisible());
 

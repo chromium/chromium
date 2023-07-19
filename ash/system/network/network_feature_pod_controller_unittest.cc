@@ -102,17 +102,9 @@ class NetworkFeaturePodControllerTest
 
     AshTestBase::SetUp();
 
+    // Create the feature tile.
     GetPrimaryUnifiedSystemTray()->ShowBubble();
-
-    network_feature_pod_controller_ =
-        std::make_unique<NetworkFeaturePodController>(tray_controller());
-    if (IsQsRevampEnabled()) {
-      feature_tile_ = network_feature_pod_controller_->CreateTile();
-      quick_settings_view()->AddChildView(feature_tile_.get());
-    } else {
-      feature_pod_button_.reset(
-          network_feature_pod_controller_->CreateButton());
-    }
+    CreateFeatureTile();
 
     // Add the non-default cellular and ethernet devices to Shill.
     network_state_helper()->manager_test()->AddTechnology(shill::kTypeCellular,
@@ -130,9 +122,7 @@ class NetworkFeaturePodControllerTest
 
   void TearDown() override {
     network_feature_pod_controller_.reset();
-    if (IsQsRevampEnabled()) {
-      feature_tile_.reset();
-    } else {
+    if (!IsQsRevampEnabled()) {
       feature_pod_button_.reset();
     }
 
@@ -142,6 +132,18 @@ class NetworkFeaturePodControllerTest
   bool IsQsRevampEnabled() const { return GetParam(); }
 
  protected:
+  void CreateFeatureTile() {
+    network_feature_pod_controller_ =
+        std::make_unique<NetworkFeaturePodController>(tray_controller());
+    if (IsQsRevampEnabled()) {
+      feature_tile_ = quick_settings_view()->AddChildView(
+          network_feature_pod_controller_->CreateTile());
+    } else {
+      feature_pod_button_.reset(
+          network_feature_pod_controller_->CreateButton());
+    }
+  }
+
   // Disabling a network technology does not remove corresponding networks from
   // the testing fakes. This function is used to clear the existing networks.
   void ClearNetworks() {
@@ -153,6 +155,11 @@ class NetworkFeaturePodControllerTest
   void LockScreen() {
     GetSessionControllerClient()->LockScreen();
 
+    // Changing the lock state closes the system tray bubble which destroys all
+    // feature tiles, so open the bubble and recreate the feature tile.
+    GetPrimaryUnifiedSystemTray()->ShowBubble();
+    CreateFeatureTile();
+
     // Perform an action to cause the button to be updated since we do not
     // actually observe session state changes.
     PressLabel();
@@ -160,6 +167,11 @@ class NetworkFeaturePodControllerTest
 
   void UnlockScreen() {
     GetSessionControllerClient()->UnlockScreen();
+
+    // Changing the lock state closes the system tray bubble which destroys all
+    // feature tiles, so open the bubble and recreate the feature tile.
+    GetPrimaryUnifiedSystemTray()->ShowBubble();
+    CreateFeatureTile();
 
     // Perform an action to cause the button to be updated since we do not
     // actually observe session state changes.
@@ -354,7 +366,7 @@ class NetworkFeaturePodControllerTest
 
   FeaturePodButton* feature_pod_button() { return feature_pod_button_.get(); }
 
-  FeatureTile* feature_tile() { return feature_tile_.get(); }
+  FeatureTile* feature_tile() { return feature_tile_; }
 
   FeaturePodIconButton* feature_pod_icon_button() {
     return feature_pod_button_->icon_button_;
@@ -395,7 +407,7 @@ class NetworkFeaturePodControllerTest
   std::string wifi_path_;
   std::string tether_path_;
   std::string tether_wifi_path_;
-  std::unique_ptr<FeatureTile> feature_tile_;
+  raw_ptr<FeatureTile, ExperimentalAsh> feature_tile_;
   std::unique_ptr<FeaturePodButton> feature_pod_button_;
   std::unique_ptr<NetworkFeaturePodController> network_feature_pod_controller_;
 };
@@ -858,6 +870,8 @@ TEST_P(NetworkFeaturePodControllerTest, HasCorrectIcons) {
 
   // Lock screen to get the button's disabled state.
   LockScreen();
+  icon_button = IsQsRevampEnabled() ? feature_tile()->icon_button()
+                                    : feature_pod_icon_button();
   image = gfx::Image(icon_button->GetImage(views::Button::STATE_DISABLED));
 
   EXPECT_TRUE(gfx::test::AreImagesEqual(
@@ -876,6 +890,8 @@ TEST_P(NetworkFeaturePodControllerTest, HasCorrectIcons) {
       network_handler::ErrorCallback());
   base::RunLoop().RunUntilIdle();
 
+  icon_button = IsQsRevampEnabled() ? feature_tile()->icon_button()
+                                    : feature_pod_icon_button();
   image = gfx::Image(icon_button->GetImage(views::Button::STATE_NORMAL));
 
   EXPECT_TRUE(gfx::test::AreImagesEqual(

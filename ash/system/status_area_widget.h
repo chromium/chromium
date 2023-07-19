@@ -270,6 +270,9 @@ class ASH_EXPORT StatusAreaWidget : public SessionObserver,
   // shelf width.
   int GetCollapseAvailableWidth(bool force_collapsible) const;
 
+  // SessionObserver:
+  void OnLockStateChanged(bool locked) override;
+
   const raw_ptr<StatusAreaWidgetDelegate, ExperimentalAsh>
       status_area_widget_delegate_;
 

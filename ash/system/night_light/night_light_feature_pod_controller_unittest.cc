@@ -50,6 +50,9 @@ class NightLightFeaturePodControllerTest
   }
 
   void CreateButton() {
+    if (!system_tray_->IsBubbleShown()) {
+      system_tray_->ShowBubble();
+    }
     controller_ = std::make_unique<NightLightFeaturePodController>(
         system_tray_->bubble()->unified_system_tray_controller());
     if (IsQsRevampEnabled()) {

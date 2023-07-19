@@ -59,13 +59,7 @@ class HotspotFeaturePodControllerTest : public AshTestBase {
     base::RunLoop().RunUntilIdle();
 
     GetPrimaryUnifiedSystemTray()->ShowBubble();
-
-    hotspot_feature_pod_controller_ =
-        std::make_unique<HotspotFeaturePodController>(
-            GetPrimaryUnifiedSystemTray()
-                ->bubble()
-                ->unified_system_tray_controller());
-    hotspot_feature_tile_ = hotspot_feature_pod_controller_->CreateTile();
+    CreateHotspotFeatureTile();
   }
 
   void TearDown() override {
@@ -74,6 +68,16 @@ class HotspotFeaturePodControllerTest : public AshTestBase {
     AshTestBase::TearDown();
 
     cros_hotspot_config_test_helper_.reset();
+  }
+
+  void CreateHotspotFeatureTile() {
+    CHECK(GetPrimaryUnifiedSystemTray()->IsBubbleShown());
+    hotspot_feature_pod_controller_ =
+        std::make_unique<HotspotFeaturePodController>(
+            GetPrimaryUnifiedSystemTray()
+                ->bubble()
+                ->unified_system_tray_controller());
+    hotspot_feature_tile_ = hotspot_feature_pod_controller_->CreateTile();
   }
 
   void UpdateHotspotInfo(HotspotState state,
@@ -367,6 +371,11 @@ TEST_F(HotspotFeaturePodControllerTest, HotspotDisabledBlockedByPolicy) {
 TEST_F(HotspotFeaturePodControllerTest, LockScreen) {
   EnableAndDisableHotspotOnce();
   LockScreen();
+
+  // Locking the screen closes the system tray bubble thus destroying the
+  // hotspot feature tile, so re-show the bubble and recreate the tile.
+  GetPrimaryUnifiedSystemTray()->ShowBubble();
+  CreateHotspotFeatureTile();
   UpdateHotspotInfo(HotspotState::kDisabled, HotspotAllowStatus::kAllowed);
 
   EXPECT_TRUE(hotspot_feature_tile_->GetVisible());

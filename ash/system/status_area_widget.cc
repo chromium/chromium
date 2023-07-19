@@ -836,4 +836,10 @@ int StatusAreaWidget::GetCollapseAvailableWidth(bool force_collapsible) const {
   return available_width;
 }
 
+void StatusAreaWidget::OnLockStateChanged(bool locked) {
+  for (auto* tray_button : tray_buttons_) {
+    tray_button->UpdateAfterLockStateChange(locked);
+  }
+}
+
 }  // namespace ash

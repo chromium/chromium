@@ -122,7 +122,12 @@ TEST_P(NearbyShareFeaturePodControllerTest, ButtonVisibilityLoggedIn) {
 TEST_P(NearbyShareFeaturePodControllerTest, ButtonVisibilityLocked) {
   CreateUserSessions(1);
   BlockUserSession(UserSessionBlockReason::BLOCKED_BY_LOCK_SCREEN);
+
+  // Showing the lock screen closes the system tray bubble, so re-show it before
+  // setting up the button.
+  GetPrimaryUnifiedSystemTray()->ShowBubble();
   SetUpButton();
+
   // If locked, it should not be visible.
   EXPECT_FALSE(IsButtonVisible());
 }

@@ -85,6 +85,10 @@ TEST_P(CaptureModeFeaturePodControllerTest, ButtonVisibility) {
 
   // The button is not visible at the lock screen.
   GetSessionControllerClient()->LockScreen();
+
+  // Locking the screen closes the system tray bubble, so re-show it before
+  // creating the button again.
+  GetPrimaryUnifiedSystemTray()->ShowBubble();
   CreateButton();
   EXPECT_FALSE(IsButtonVisible());
 }

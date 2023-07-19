@@ -65,7 +65,7 @@ class ASH_EXPORT TrayBackgroundView : public ActionableView,
   };
 
   TrayBackgroundView(Shelf* shelf,
-                     TrayBackgroundViewCatalogName catalog_name,
+                     const TrayBackgroundViewCatalogName catalog_name,
                      RoundedCornerBehavior corner_behavior = kAllRounded);
   TrayBackgroundView(const TrayBackgroundView&) = delete;
   TrayBackgroundView& operator=(const TrayBackgroundView&) = delete;
@@ -122,6 +122,10 @@ class ASH_EXPORT TrayBackgroundView : public ActionableView,
 
   // Called to update the tray button after the login status changes.
   virtual void UpdateAfterLoginStatusChange();
+
+  // Called whenever the lock state changes. `locked` represents the current
+  // lock state.
+  void UpdateAfterLockStateChange(bool locked);
 
   // Called whenever the status area's collapse state changes.
   virtual void UpdateAfterStatusAreaCollapseChange();
@@ -236,6 +240,14 @@ class ASH_EXPORT TrayBackgroundView : public ActionableView,
     show_when_collapsed_ = show_when_collapsed;
   }
 
+  // Sets whether changes in lock state should cause this tray's bubble to close
+  // if it is currently open.
+  void set_should_close_bubble_on_lock_state_change(
+      bool should_close_bubble_on_lock_state_change) {
+    should_close_bubble_on_lock_state_change_ =
+        should_close_bubble_on_lock_state_change;
+  }
+
  protected:
   // ActionableView:
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
@@ -327,7 +339,7 @@ class ASH_EXPORT TrayBackgroundView : public ActionableView,
   raw_ptr<Shelf, ExperimentalAsh> shelf_;
 
   // The catalog name, used to record metrics on feature integrations.
-  TrayBackgroundViewCatalogName catalog_name_;
+  const TrayBackgroundViewCatalogName catalog_name_;
 
   // Convenience pointer to the contents view.
   raw_ptr<TrayContainer, ExperimentalAsh> tray_container_;
@@ -378,6 +390,10 @@ class ASH_EXPORT TrayBackgroundView : public ActionableView,
   std::unique_ptr<TrayBackgroundViewSessionChangeHandler> handler_;
   std::unique_ptr<ui::SimpleMenuModel> context_menu_model_;
   std::unique_ptr<views::MenuRunner> context_menu_runner_;
+
+  // Whether changes in lock state should cause this tray's bubble to close if
+  // it is currently open.
+  bool should_close_bubble_on_lock_state_change_;
 
   base::ObserverList<Observer> observers_;
 
