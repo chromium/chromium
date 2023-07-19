@@ -1306,7 +1306,8 @@ void FocusFakebox() {
   // TODO(crbug.com/1454516): This should use grey_typeText when fixed.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::DefocusedLocationView()]
       performAction:grey_tap()];
-  [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"127" flags:0];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
+      performAction:grey_replaceText(@"127")];
 
   // We expect to have an autocomplete.
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
