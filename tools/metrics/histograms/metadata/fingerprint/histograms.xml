@@ -66,7 +66,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Fingerprint.Enroll.NumCaptures" units="captures"
     expires_after="2024-01-01">
-  <owner>agrandi@google.com</owner>
+  <owner>hesling@chromium.org</owner>
   <owner>chromeos-fingerprint@google.com</owner>
   <summary>
     Count the number of fingerprint sensor captures (i.e. touches) performed
@@ -290,7 +290,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Fingerprint.Unlock.RecentAttemptsCountBeforeSuccess"
     units="attempts" expires_after="2024-01-01">
-  <owner>agrandi@google.com</owner>
+  <owner>hesling@chromium.org</owner>
   <owner>chromeos-fingerprint@google.com</owner>
   <summary>
     Counts the number of recent fingerprint attempts until successful screen
