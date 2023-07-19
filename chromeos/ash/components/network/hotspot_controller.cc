@@ -46,6 +46,14 @@ void HotspotController::Init(
 }
 
 void HotspotController::EnableHotspot(HotspotControlCallback callback) {
+  if (current_disable_request_) {
+    NET_LOG(ERROR)
+        << "Failed to enable hotspot as a disable request is in progress";
+    HotspotMetricsHelper::RecordSetTetheringEnabledResult(
+        /*enabled=*/true,
+        hotspot_config::mojom::HotspotControlResult::kInvalid);
+    return;
+  }
   if (!current_enable_request_) {
     current_enable_request_ = std::make_unique<HotspotControlRequest>(
         /*enabled=*/true, /*disable_reason=*/absl::nullopt,
@@ -64,6 +72,16 @@ void HotspotController::EnableHotspot(HotspotControlCallback callback) {
 void HotspotController::DisableHotspot(
     HotspotControlCallback callback,
     hotspot_config::mojom::DisableReason disable_reason) {
+  if (current_enable_request_) {
+    current_enable_request_->abort = true;
+    if (hotspot_state_handler_->GetHotspotState() ==
+        hotspot_config::mojom::HotspotState::kEnabling) {
+      current_disable_request_ = std::make_unique<HotspotControlRequest>(
+          /*enabled=*/false, disable_reason, std::move(callback));
+      PerformSetTetheringEnabled(/*enabled=*/false);
+    }
+    return;
+  }
   if (!current_disable_request_) {
     current_disable_request_ = std::make_unique<HotspotControlRequest>(
         /*enabled=*/false, disable_reason, std::move(callback));
@@ -111,6 +129,12 @@ void HotspotController::CheckTetheringReadiness() {
 
 void HotspotController::OnCheckTetheringReadiness(
     HotspotCapabilitiesProvider::CheckTetheringReadinessResult result) {
+  if (current_enable_request_->abort) {
+    NET_LOG(ERROR) << "Aborting in check tethering readiness";
+    CompleteEnableRequest(
+        hotspot_config::mojom::HotspotControlResult::kAborted);
+    return;
+  }
   if (result == HotspotCapabilitiesProvider::CheckTetheringReadinessResult::
                     kUpstreamNetworkNotAvailable) {
     CompleteEnableRequest(
@@ -130,6 +154,11 @@ void HotspotController::OnCheckTetheringReadiness(
 
 void HotspotController::OnPrepareEnableHotspotCompleted(bool prepare_success,
                                                         bool wifi_turned_off) {
+  if (current_enable_request_->abort) {
+    CompleteEnableRequest(
+        hotspot_config::mojom::HotspotControlResult::kAborted);
+    return;
+  }
   NET_LOG(EVENT) << "Prepare enable hotspot completed, success: "
                  << prepare_success << ", wifi turned off " << wifi_turned_off;
   current_enable_request_->wifi_turned_off = wifi_turned_off;
@@ -142,6 +171,11 @@ void HotspotController::OnPrepareEnableHotspotCompleted(bool prepare_success,
 }
 
 void HotspotController::PerformSetTetheringEnabled(bool enabled) {
+  if (enabled && current_enable_request_->abort) {
+    CompleteEnableRequest(
+        hotspot_config::mojom::HotspotControlResult::kAborted);
+    return;
+  }
   ShillManagerClient::Get()->SetTetheringEnabled(
       enabled,
       base::BindOnce(&HotspotController::OnSetTetheringEnabledSuccess,
@@ -196,7 +230,8 @@ void HotspotController::CompleteEnableRequest(
       << result;
 
   if (current_enable_request_->wifi_turned_off &&
-      result != HotspotControlResult::kSuccess) {
+      result != HotspotControlResult::kSuccess &&
+      !current_enable_request_->abort) {
     // Turn Wifi back on if failed to enable hotspot.
     technology_state_controller_->SetTechnologiesEnabled(
         NetworkTypePattern::WiFi(), /*enabled=*/true,
@@ -247,7 +282,11 @@ void HotspotController::PrepareEnableWifi(
   if (hotspot_state_handler_->GetHotspotState() ==
           hotspot_config::mojom::HotspotState::kEnabled ||
       hotspot_state_handler_->GetHotspotState() ==
-          hotspot_config::mojom::HotspotState::kEnabling) {
+          hotspot_config::mojom::HotspotState::kEnabling ||
+      current_enable_request_) {
+    if (current_enable_request_) {
+      current_enable_request_->abort = true;
+    }
     DisableHotspot(
         base::BindOnce(&HotspotController::OnPrepareEnableWifiCompleted,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)),

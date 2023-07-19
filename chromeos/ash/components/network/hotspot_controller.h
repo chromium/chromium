@@ -88,6 +88,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotController
 
     bool enabled;
     bool wifi_turned_off = false;
+    bool abort = false;
     // Set for disable requests and will be nullopt for enable requests.
     absl::optional<hotspot_config::mojom::DisableReason> disable_reason;
     // Tracks the latency of enable hotspot operation and will be nullopt for

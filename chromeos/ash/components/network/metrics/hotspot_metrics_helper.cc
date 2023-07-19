@@ -141,6 +141,8 @@ HotspotMetricsHelper::GetSetEnabledMetricsResult(
       return HotspotMetricsSetEnabledResult::kShillOperationFailure;
     case HotspotControlResult::kAlreadyFulfilled:
       return HotspotMetricsSetEnabledResult::kAlreadyFulfilled;
+    case HotspotControlResult::kAborted:
+      return HotspotMetricsSetEnabledResult::kAborted;
     default:
       return HotspotMetricsSetEnabledResult::kUnknownFailure;
   }

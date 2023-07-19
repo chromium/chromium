@@ -51800,6 +51800,12 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="11"
       label="kAlreadyFulfilled: The hotspot's current state is the same as
              the enable/disable operation requested."/>
+  <int value="12"
+      label="kAborted: The enable hotspot operation has been aborted by the
+             user."/>
+  <int value="13"
+      label="kInvalid: The enable hotspot operation is invalid due to an
+             ongoing disable operation."/>
 </enum>
 
 <enum name="HotspotSupport">

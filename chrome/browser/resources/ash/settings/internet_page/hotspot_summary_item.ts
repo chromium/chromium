@@ -122,8 +122,7 @@ export class HotspotSummaryItemElement extends HotspotSummaryItemElementBase {
       return true;
     }
 
-    return this.hotspotInfo.state === HotspotState.kEnabling ||
-        this.hotspotInfo.state === HotspotState.kDisabling;
+    return this.hotspotInfo.state === HotspotState.kDisabling;
   }
 
   private shouldShowArrowButton_(allowStatus: HotspotAllowStatus): boolean {

@@ -356,8 +356,8 @@ suite('<hotspot-summary-item>', () => {
     // Simulate state becoming kEnabling.
     hotspotConfig_.setFakeHotspotState(HotspotState.kEnabling);
     await flushAsync();
-    // Toggle should be disabled.
-    assertTrue(enableHotspotToggle.disabled);
+    // Toggle should be enabled to support abort operation.
+    assertFalse(enableHotspotToggle.disabled);
     hotspotConfig_.setFakeHotspotState(HotspotState.kDisabled);
 
     // Simulate AllowStatus becoming kDisallowedByPolicy.

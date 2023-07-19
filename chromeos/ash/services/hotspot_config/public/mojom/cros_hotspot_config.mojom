@@ -96,6 +96,10 @@ enum HotspotControlResult {
   kShillOperationFailed,
   // The hotspot's current state is the same as the state requested.
   kAlreadyFulfilled,
+  // Hotspot enable request has been aborted.
+  kAborted,
+  // Invalid hotspot enable request.
+  kInvalid,
   kUnknownFailure,
 };
 

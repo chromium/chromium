@@ -153,7 +153,7 @@ class HotspotControllerTest : public ::testing::Test {
                              shill::kStateOnline, /*visible=*/true);
   }
 
-  hotspot_config::mojom::HotspotControlResult EnableHotspot() {
+  hotspot_config::mojom::HotspotControlResult EnableHotspot(bool abort) {
     base::RunLoop run_loop;
     hotspot_config::mojom::HotspotControlResult return_result;
     hotspot_controller_->EnableHotspot(base::BindLambdaForTesting(
@@ -161,6 +161,9 @@ class HotspotControllerTest : public ::testing::Test {
           return_result = result;
           run_loop.Quit();
         }));
+    if (hotspot_controller_->current_enable_request_) {
+      hotspot_controller_->current_enable_request_->abort = abort;
+    }
     run_loop.Run();
     FlushMojoCalls();
     return return_result;
@@ -246,7 +249,7 @@ class HotspotControllerTest : public ::testing::Test {
 
 TEST_F(HotspotControllerTest, EnableTetheringCapabilitiesNotAllowed) {
   EXPECT_EQ(hotspot_config::mojom::HotspotControlResult::kNotAllowed,
-            EnableHotspot());
+            EnableHotspot(/*abort=*/false));
 }
 
 TEST_F(HotspotControllerTest, EnableTetheringSuccess) {
@@ -263,7 +266,7 @@ TEST_F(HotspotControllerTest, EnableTetheringSuccess) {
       HotspotMetricsHelper::HotspotMetricsCheckReadinessResult::kReady, 1);
 
   EXPECT_EQ(hotspot_config::mojom::HotspotControlResult::kSuccess,
-            EnableHotspot());
+            EnableHotspot(/*abort=*/false));
   // Verifies that Wifi technology will be turned off.
   EXPECT_EQ(
       NetworkStateHandler::TECHNOLOGY_AVAILABLE,
@@ -289,6 +292,21 @@ TEST_F(HotspotControllerTest, EnableTetheringSuccess) {
       1);
 }
 
+TEST_F(HotspotControllerTest, AbortEnableTethering) {
+  SetValidTetheringCapabilities();
+  AddActiveCellularServivce();
+  network_state_test_helper_.manager_test()->SetSimulateTetheringEnableResult(
+      FakeShillSimulatedResult::kSuccess, shill::kTetheringEnableResultSuccess);
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(hotspot_config::mojom::HotspotControlResult::kAborted,
+            EnableHotspot(/*abort=*/true));
+
+  histogram_tester_.ExpectBucketCount(
+      HotspotMetricsHelper::kHotspotEnableResultHistogram,
+      HotspotMetricsHelper::HotspotMetricsSetEnabledResult::kAborted, 1);
+}
+
 TEST_F(HotspotControllerTest, EnableTetheringReadinessCheckFailure) {
   // Setup the hotspot capabilities so that the initial hotspot allowance
   // status is allowed.
@@ -310,7 +328,7 @@ TEST_F(HotspotControllerTest, EnableTetheringReadinessCheckFailure) {
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(hotspot_config::mojom::HotspotControlResult::kReadinessCheckFailed,
-            EnableHotspot());
+            EnableHotspot(/*abort=*/false));
   EXPECT_EQ(
       hotspot_config::mojom::HotspotAllowStatus::kDisallowedReadinessCheckFail,
       hotspot_capabilities_provider_->GetHotspotCapabilities().allow_status);
@@ -354,7 +372,7 @@ TEST_F(HotspotControllerTest, EnableTetheringNetworkSetupFailure) {
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(hotspot_config::mojom::HotspotControlResult::kNetworkSetupFailure,
-            EnableHotspot());
+            EnableHotspot(/*abort=*/false));
   // Verifies that Wifi technology will still be on if enable hotspot failed.
   EXPECT_EQ(
       NetworkStateHandler::TECHNOLOGY_ENABLED,
