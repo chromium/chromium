@@ -51,12 +51,10 @@ class MockPrivacySandboxSettings
               (base::Time, base::Time),
               (override));
   MOCK_METHOD(bool,
-              IsFledgeJoiningAllowed,
-              (const url::Origin&),
-              (override, const));
-  MOCK_METHOD(bool,
               IsFledgeAllowed,
-              (const url::Origin&, const url::Origin&),
+              (const url::Origin&,
+               const url::Origin&,
+               content::ContentBrowserClient::InterestGroupApiOperation),
               (override, const));
   MOCK_METHOD(
       bool,

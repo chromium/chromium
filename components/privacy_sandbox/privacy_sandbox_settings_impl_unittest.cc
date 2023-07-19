@@ -60,6 +60,8 @@ constexpr auto kIsRestrictedAccount = StateKey::kIsRestrictedAccount;
 constexpr auto kHasAppropriateTopicsConsent =
     StateKey::kHasAppropriateTopicsConsent;
 constexpr auto kAttestationsMap = StateKey::kAttestationsMap;
+constexpr auto kBlockFledgeJoiningForEtldplus1 =
+    StateKey::kBlockFledgeJoiningForEtldplus1;
 
 // using enum privacy_sandbox_test_util::InputKey;
 using privacy_sandbox_test_util::InputKey;
@@ -81,7 +83,11 @@ using privacy_sandbox_test_util::OutputKey;
 constexpr auto kIsTopicsAllowed = OutputKey::kIsTopicsAllowed;
 constexpr auto kIsTopicsAllowedForContext =
     OutputKey::kIsTopicsAllowedForContext;
-constexpr auto kIsFledgeAllowed = OutputKey::kIsFledgeAllowed;
+constexpr auto kIsFledgeJoinAllowed = OutputKey::kIsFledgeJoinAllowed;
+constexpr auto kIsFledgeLeaveAllowed = OutputKey::kIsFledgeLeaveAllowed;
+constexpr auto kIsFledgeUpdateAllowed = OutputKey::kIsFledgeUpdateAllowed;
+constexpr auto kIsFledgeSellAllowed = OutputKey::kIsFledgeSellAllowed;
+constexpr auto kIsFledgeBuyAllowed = OutputKey::kIsFledgeBuyAllowed;
 constexpr auto kIsAttributionReportingAllowed =
     OutputKey::kIsAttributionReportingAllowed;
 constexpr auto kMaySendAttributionReport = OutputKey::kMaySendAttributionReport;
@@ -94,7 +100,15 @@ constexpr auto kIsPrivateAggregationAllowed =
 constexpr auto kIsTopicsAllowedMetric = OutputKey::kIsTopicsAllowedMetric;
 constexpr auto kIsTopicsAllowedForContextMetric =
     OutputKey::kIsTopicsAllowedForContextMetric;
-constexpr auto kIsFledgeAllowedMetric = OutputKey::kIsFledgeAllowedMetric;
+constexpr auto kIsFledgeJoinAllowedMetric =
+    OutputKey::kIsFledgeJoinAllowedMetric;
+constexpr auto kIsFledgeLeaveAllowedMetric =
+    OutputKey::kIsFledgeLeaveAllowedMetric;
+constexpr auto kIsFledgeUpdateAllowedMetric =
+    OutputKey::kIsFledgeUpdateAllowedMetric;
+constexpr auto kIsFledgeSellAllowedMetric =
+    OutputKey::kIsFledgeSellAllowedMetric;
+constexpr auto kIsFledgeBuyAllowedMetric = OutputKey::kIsFledgeBuyAllowedMetric;
 constexpr auto kIsAttributionReportingAllowedMetric =
     OutputKey::kIsAttributionReportingAllowedMetric;
 constexpr auto kMaySendAttributionReportMetric =
@@ -199,6 +213,9 @@ class PrivacySandboxSettingsTest : public testing::Test {
   PrivacySandboxSettings* privacy_sandbox_settings() {
     return privacy_sandbox_settings_.get();
   }
+  PrivacySandboxSettingsImpl* privacy_sandbox_settings_impl() {
+    return privacy_sandbox_settings_.get();
+  }
   void ResetDisabledTopicsFeature(const std::string& topics_to_disable) {
     SetUp();
     disabled_topics_feature_list_.Reset();
@@ -230,7 +247,7 @@ class PrivacySandboxSettingsTest : public testing::Test {
   scoped_refptr<content_settings::CookieSettings> cookie_settings_;
   ScopedPrivacySandboxAttestations scoped_attestations_;
 
-  std::unique_ptr<PrivacySandboxSettings> privacy_sandbox_settings_;
+  std::unique_ptr<PrivacySandboxSettingsImpl> privacy_sandbox_settings_;
 };
 
 TEST_F(PrivacySandboxSettingsTest, DefaultContentSettingBlockOverridePref) {
@@ -263,7 +280,8 @@ TEST_F(PrivacySandboxSettingsTest, DefaultContentSettingBlockOverridePref) {
 
   EXPECT_FALSE(privacy_sandbox_settings()->IsFledgeAllowed(
       url::Origin::Create(GURL("https://test.com")),
-      url::Origin::Create(GURL("https://embedded.com"))));
+      url::Origin::Create(GURL("https://embedded.com")),
+      content::ContentBrowserClient::InterestGroupApiOperation::kJoin));
 
   EXPECT_FALSE(privacy_sandbox_settings()->IsSharedStorageAllowed(
       url::Origin::Create(GURL("https://test.com")),
@@ -311,7 +329,8 @@ TEST_F(PrivacySandboxSettingsTest, DefaultContentSettingBlockOverridePref) {
 
   EXPECT_FALSE(privacy_sandbox_settings()->IsFledgeAllowed(
       url::Origin::Create(GURL("https://test.com")),
-      url::Origin::Create(GURL("https://embedded.com"))));
+      url::Origin::Create(GURL("https://embedded.com")),
+      content::ContentBrowserClient::InterestGroupApiOperation::kJoin));
 
   EXPECT_FALSE(privacy_sandbox_settings()->IsSharedStorageAllowed(
       url::Origin::Create(GURL("https://test.com")),
@@ -353,7 +372,8 @@ TEST_F(PrivacySandboxSettingsTest, CookieExceptionsApply) {
 
   EXPECT_FALSE(privacy_sandbox_settings()->IsFledgeAllowed(
       url::Origin::Create(GURL("https://test.com")),
-      url::Origin::Create(GURL("https://embedded.com"))));
+      url::Origin::Create(GURL("https://embedded.com")),
+      content::ContentBrowserClient::InterestGroupApiOperation::kJoin));
 
   EXPECT_FALSE(privacy_sandbox_settings()->IsSharedStorageAllowed(
       url::Origin::Create(GURL("https://test.com")),
@@ -394,7 +414,8 @@ TEST_F(PrivacySandboxSettingsTest, CookieExceptionsApply) {
 
   EXPECT_FALSE(privacy_sandbox_settings()->IsFledgeAllowed(
       url::Origin::Create(GURL("https://test.com")),
-      url::Origin::Create(GURL("https://embedded.com"))));
+      url::Origin::Create(GURL("https://embedded.com")),
+      content::ContentBrowserClient::InterestGroupApiOperation::kJoin));
 
   EXPECT_FALSE(privacy_sandbox_settings()->IsSharedStorageAllowed(
       url::Origin::Create(GURL("https://test.com")),
@@ -450,7 +471,8 @@ TEST_F(PrivacySandboxSettingsTest, CookieExceptionsApply) {
 
   EXPECT_FALSE(privacy_sandbox_settings()->IsFledgeAllowed(
       url::Origin::Create(GURL("https://test.com")),
-      url::Origin::Create(GURL("https://embedded.com"))));
+      url::Origin::Create(GURL("https://embedded.com")),
+      content::ContentBrowserClient::InterestGroupApiOperation::kJoin));
 
   EXPECT_FALSE(privacy_sandbox_settings()->IsSharedStorageAllowed(
       url::Origin::Create(GURL("https://test.com")),
@@ -482,7 +504,8 @@ TEST_F(PrivacySandboxSettingsTest, CookieExceptionsApply) {
 
   EXPECT_TRUE(privacy_sandbox_settings()->IsFledgeAllowed(
       url::Origin::Create(GURL("https://test.com")),
-      url::Origin::Create(GURL("https://embedded.com"))));
+      url::Origin::Create(GURL("https://embedded.com")),
+      content::ContentBrowserClient::InterestGroupApiOperation::kJoin));
 
   // Exceptions which specify a top frame origin should not match against other
   // top frame origins, or an empty origin.
@@ -518,7 +541,8 @@ TEST_F(PrivacySandboxSettingsTest, CookieExceptionsApply) {
 
   EXPECT_TRUE(privacy_sandbox_settings()->IsFledgeAllowed(
       url::Origin::Create(GURL("https://another-test.com")),
-      url::Origin::Create(GURL("https://embedded.com"))));
+      url::Origin::Create(GURL("https://embedded.com")),
+      content::ContentBrowserClient::InterestGroupApiOperation::kJoin));
 
   EXPECT_TRUE(privacy_sandbox_settings()->IsSharedStorageAllowed(
       url::Origin::Create(GURL("https://another-test.com")),
@@ -558,7 +582,8 @@ TEST_F(PrivacySandboxSettingsTest, CookieExceptionsApply) {
 
   EXPECT_FALSE(privacy_sandbox_settings()->IsFledgeAllowed(
       url::Origin::Create(GURL("https://test.com")),
-      url::Origin::Create(GURL("https://embedded.com"))));
+      url::Origin::Create(GURL("https://embedded.com")),
+      content::ContentBrowserClient::InterestGroupApiOperation::kJoin));
 
   EXPECT_FALSE(privacy_sandbox_settings()->IsSharedStorageAllowed(
       url::Origin::Create(GURL("https://test.com")),
@@ -595,7 +620,8 @@ TEST_F(PrivacySandboxSettingsTest, ThirdPartyCookies) {
 
   EXPECT_FALSE(privacy_sandbox_settings()->IsFledgeAllowed(
       url::Origin::Create(GURL("https://test.com")),
-      url::Origin::Create(GURL("https://embedded.com"))));
+      url::Origin::Create(GURL("https://embedded.com")),
+      content::ContentBrowserClient::InterestGroupApiOperation::kJoin));
 
   EXPECT_FALSE(privacy_sandbox_settings()->IsSharedStorageAllowed(
       url::Origin::Create(GURL("https://test.com")),
@@ -630,7 +656,8 @@ TEST_F(PrivacySandboxSettingsTest, ThirdPartyCookies) {
 
   EXPECT_FALSE(privacy_sandbox_settings()->IsFledgeAllowed(
       url::Origin::Create(GURL("https://test.com")),
-      url::Origin::Create(GURL("https://embedded.com"))));
+      url::Origin::Create(GURL("https://embedded.com")),
+      content::ContentBrowserClient::InterestGroupApiOperation::kJoin));
 
   EXPECT_FALSE(privacy_sandbox_settings()->IsSharedStorageAllowed(
       url::Origin::Create(GURL("https://test.com")),
@@ -670,7 +697,8 @@ TEST_F(PrivacySandboxSettingsTest, ThirdPartyCookies) {
 
   EXPECT_FALSE(privacy_sandbox_settings()->IsFledgeAllowed(
       url::Origin::Create(GURL("https://test.com")),
-      url::Origin::Create(GURL("https://embedded.com"))));
+      url::Origin::Create(GURL("https://embedded.com")),
+      content::ContentBrowserClient::InterestGroupApiOperation::kJoin));
 
   EXPECT_FALSE(privacy_sandbox_settings()->IsSharedStorageAllowed(
       url::Origin::Create(GURL("https://test.com")),
@@ -740,36 +768,36 @@ TEST_F(PrivacySandboxSettingsTest, FledgeJoiningAllowed) {
       /*managed_cookie_setting=*/ContentSetting::CONTENT_SETTING_BLOCK,
       /*managed_cookie_exceptions=*/
       {{"https://example.com", "*", ContentSetting::CONTENT_SETTING_BLOCK}});
-  EXPECT_TRUE(privacy_sandbox_settings()->IsFledgeJoiningAllowed(
+  EXPECT_TRUE(privacy_sandbox_settings_impl()->IsFledgeJoiningAllowed(
       url::Origin::Create(GURL("https://example.com"))));
 
   // Settings should match at the eTLD + 1 level.
   privacy_sandbox_settings()->SetFledgeJoiningAllowed("example.com", false);
 
-  EXPECT_FALSE(privacy_sandbox_settings()->IsFledgeJoiningAllowed(
+  EXPECT_FALSE(privacy_sandbox_settings_impl()->IsFledgeJoiningAllowed(
       url::Origin::Create(GURL("https://subsite.example.com"))));
-  EXPECT_FALSE(privacy_sandbox_settings()->IsFledgeJoiningAllowed(
+  EXPECT_FALSE(privacy_sandbox_settings_impl()->IsFledgeJoiningAllowed(
       url::Origin::Create(GURL("http://example.com"))));
-  EXPECT_FALSE(privacy_sandbox_settings()->IsFledgeJoiningAllowed(
+  EXPECT_FALSE(privacy_sandbox_settings_impl()->IsFledgeJoiningAllowed(
       url::Origin::Create(GURL("https://example.com:888"))));
-  EXPECT_FALSE(privacy_sandbox_settings()->IsFledgeJoiningAllowed(
+  EXPECT_FALSE(privacy_sandbox_settings_impl()->IsFledgeJoiningAllowed(
       url::Origin::Create(GURL("https://example.com"))));
-  EXPECT_TRUE(privacy_sandbox_settings()->IsFledgeJoiningAllowed(
+  EXPECT_TRUE(privacy_sandbox_settings_impl()->IsFledgeJoiningAllowed(
       url::Origin::Create(GURL("https://example.com.au"))));
 
   privacy_sandbox_settings()->SetFledgeJoiningAllowed("example.com", true);
 
-  EXPECT_TRUE(privacy_sandbox_settings()->IsFledgeJoiningAllowed(
+  EXPECT_TRUE(privacy_sandbox_settings_impl()->IsFledgeJoiningAllowed(
       url::Origin::Create(GURL("https://example.com"))));
-  EXPECT_TRUE(privacy_sandbox_settings()->IsFledgeJoiningAllowed(
+  EXPECT_TRUE(privacy_sandbox_settings_impl()->IsFledgeJoiningAllowed(
       url::Origin::Create(GURL("https://subsite.example.com"))));
-  EXPECT_TRUE(privacy_sandbox_settings()->IsFledgeJoiningAllowed(
+  EXPECT_TRUE(privacy_sandbox_settings_impl()->IsFledgeJoiningAllowed(
       url::Origin::Create(GURL("http://example.com"))));
-  EXPECT_TRUE(privacy_sandbox_settings()->IsFledgeJoiningAllowed(
+  EXPECT_TRUE(privacy_sandbox_settings_impl()->IsFledgeJoiningAllowed(
       url::Origin::Create(GURL("https://example.com:888"))));
-  EXPECT_TRUE(privacy_sandbox_settings()->IsFledgeJoiningAllowed(
+  EXPECT_TRUE(privacy_sandbox_settings_impl()->IsFledgeJoiningAllowed(
       url::Origin::Create(GURL("https://example.com"))));
-  EXPECT_TRUE(privacy_sandbox_settings()->IsFledgeJoiningAllowed(
+  EXPECT_TRUE(privacy_sandbox_settings_impl()->IsFledgeJoiningAllowed(
       url::Origin::Create(GURL("https://example.com.au"))));
 }
 
@@ -779,39 +807,39 @@ TEST_F(PrivacySandboxSettingsTest, NonEtldPlusOneBlocked) {
                                                       false);
 
   // Applied setting should affect subdomaings.
-  EXPECT_FALSE(privacy_sandbox_settings()->IsFledgeJoiningAllowed(
+  EXPECT_FALSE(privacy_sandbox_settings_impl()->IsFledgeJoiningAllowed(
       url::Origin::Create(GURL("https://subsite.example.com"))));
-  EXPECT_FALSE(privacy_sandbox_settings()->IsFledgeJoiningAllowed(
+  EXPECT_FALSE(privacy_sandbox_settings_impl()->IsFledgeJoiningAllowed(
       url::Origin::Create(GURL("http://another.subsite.example.com"))));
-  EXPECT_TRUE(privacy_sandbox_settings()->IsFledgeJoiningAllowed(
+  EXPECT_TRUE(privacy_sandbox_settings_impl()->IsFledgeJoiningAllowed(
       url::Origin::Create(GURL("https://example.com"))));
 
   // When removing the setting, only an exact match, and not the associated
   // eTLD+1, should remove a setting.
   privacy_sandbox_settings()->SetFledgeJoiningAllowed("example.com", true);
-  EXPECT_FALSE(privacy_sandbox_settings()->IsFledgeJoiningAllowed(
+  EXPECT_FALSE(privacy_sandbox_settings_impl()->IsFledgeJoiningAllowed(
       url::Origin::Create(GURL("https://subsite.example.com"))));
-  EXPECT_FALSE(privacy_sandbox_settings()->IsFledgeJoiningAllowed(
+  EXPECT_FALSE(privacy_sandbox_settings_impl()->IsFledgeJoiningAllowed(
       url::Origin::Create(GURL("http://another.subsite.example.com"))));
-  EXPECT_TRUE(privacy_sandbox_settings()->IsFledgeJoiningAllowed(
+  EXPECT_TRUE(privacy_sandbox_settings_impl()->IsFledgeJoiningAllowed(
       url::Origin::Create(GURL("https://example.com"))));
 
   privacy_sandbox_settings()->SetFledgeJoiningAllowed("subsite.example.com",
                                                       true);
-  EXPECT_TRUE(privacy_sandbox_settings()->IsFledgeJoiningAllowed(
+  EXPECT_TRUE(privacy_sandbox_settings_impl()->IsFledgeJoiningAllowed(
       url::Origin::Create(GURL("https://subsite.example.com"))));
-  EXPECT_TRUE(privacy_sandbox_settings()->IsFledgeJoiningAllowed(
+  EXPECT_TRUE(privacy_sandbox_settings_impl()->IsFledgeJoiningAllowed(
       url::Origin::Create(GURL("http://another.subsite.example.com"))));
-  EXPECT_TRUE(privacy_sandbox_settings()->IsFledgeJoiningAllowed(
+  EXPECT_TRUE(privacy_sandbox_settings_impl()->IsFledgeJoiningAllowed(
       url::Origin::Create(GURL("https://example.com"))));
 
   // IP addresses should also be accepted as a fallback.
   privacy_sandbox_settings()->SetFledgeJoiningAllowed("10.1.1.100", false);
-  EXPECT_FALSE(privacy_sandbox_settings()->IsFledgeJoiningAllowed(
+  EXPECT_FALSE(privacy_sandbox_settings_impl()->IsFledgeJoiningAllowed(
       url::Origin::Create(GURL("https://10.1.1.100"))));
-  EXPECT_FALSE(privacy_sandbox_settings()->IsFledgeJoiningAllowed(
+  EXPECT_FALSE(privacy_sandbox_settings_impl()->IsFledgeJoiningAllowed(
       url::Origin::Create(GURL("http://10.1.1.100:8080"))));
-  EXPECT_TRUE(privacy_sandbox_settings()->IsFledgeJoiningAllowed(
+  EXPECT_TRUE(privacy_sandbox_settings_impl()->IsFledgeJoiningAllowed(
       url::Origin::Create(GURL("https://10.2.2.200"))));
 }
 
@@ -827,33 +855,33 @@ TEST_F(PrivacySandboxSettingsTest, FledgeJoinSettingTimeRangeDeletion) {
   task_environment()->AdvanceClock(base::Hours(1));
   privacy_sandbox_settings()->SetFledgeJoiningAllowed("third.com", false);
 
-  EXPECT_FALSE(privacy_sandbox_settings()->IsFledgeJoiningAllowed(
+  EXPECT_FALSE(privacy_sandbox_settings_impl()->IsFledgeJoiningAllowed(
       url::Origin::Create(GURL("https://first.com"))));
-  EXPECT_FALSE(privacy_sandbox_settings()->IsFledgeJoiningAllowed(
+  EXPECT_FALSE(privacy_sandbox_settings_impl()->IsFledgeJoiningAllowed(
       url::Origin::Create(GURL("https://second.com"))));
-  EXPECT_FALSE(privacy_sandbox_settings()->IsFledgeJoiningAllowed(
+  EXPECT_FALSE(privacy_sandbox_settings_impl()->IsFledgeJoiningAllowed(
       url::Origin::Create(GURL("https://third.com"))));
 
   // Construct a deletion which only targets the second setting.
   privacy_sandbox_settings()->ClearFledgeJoiningAllowedSettings(
       kSecondSettingTime - base::Seconds(1),
       kSecondSettingTime + base::Seconds(1));
-  EXPECT_FALSE(privacy_sandbox_settings()->IsFledgeJoiningAllowed(
+  EXPECT_FALSE(privacy_sandbox_settings_impl()->IsFledgeJoiningAllowed(
       url::Origin::Create(GURL("https://first.com"))));
-  EXPECT_TRUE(privacy_sandbox_settings()->IsFledgeJoiningAllowed(
+  EXPECT_TRUE(privacy_sandbox_settings_impl()->IsFledgeJoiningAllowed(
       url::Origin::Create(GURL("https://second.com"))));
-  EXPECT_FALSE(privacy_sandbox_settings()->IsFledgeJoiningAllowed(
+  EXPECT_FALSE(privacy_sandbox_settings_impl()->IsFledgeJoiningAllowed(
       url::Origin::Create(GURL("https://third.com"))));
 
   // Perform a maximmal time range deletion, which should remove the two
   // remaining settings.
   privacy_sandbox_settings()->ClearFledgeJoiningAllowedSettings(
       base::Time(), base::Time::Max());
-  EXPECT_TRUE(privacy_sandbox_settings()->IsFledgeJoiningAllowed(
+  EXPECT_TRUE(privacy_sandbox_settings_impl()->IsFledgeJoiningAllowed(
       url::Origin::Create(GURL("https://first.com"))));
-  EXPECT_TRUE(privacy_sandbox_settings()->IsFledgeJoiningAllowed(
+  EXPECT_TRUE(privacy_sandbox_settings_impl()->IsFledgeJoiningAllowed(
       url::Origin::Create(GURL("https://second.com"))));
-  EXPECT_TRUE(privacy_sandbox_settings()->IsFledgeJoiningAllowed(
+  EXPECT_TRUE(privacy_sandbox_settings_impl()->IsFledgeJoiningAllowed(
       url::Origin::Create(GURL("https://third.com"))));
 }
 
@@ -1195,15 +1223,20 @@ TEST_F(PrivacySandboxSettingsM1Test, ApiPreferenceEnabled) {
            url::Origin::Create(GURL("https://dest-origin.com"))}},
       TestOutput{
           {MultipleOutputKeys{
-               kIsTopicsAllowed, kIsTopicsAllowedForContext, kIsFledgeAllowed,
-               kIsAttributionReportingEverAllowed,
+               kIsTopicsAllowed, kIsTopicsAllowedForContext,
+               kIsFledgeJoinAllowed, kIsFledgeLeaveAllowed,
+               kIsFledgeUpdateAllowed, kIsFledgeSellAllowed,
+               kIsFledgeBuyAllowed, kIsAttributionReportingEverAllowed,
                kIsAttributionReportingAllowed, kMaySendAttributionReport,
                kIsSharedStorageAllowed, kIsSharedStorageSelectURLAllowed,
                kIsPrivateAggregationAllowed},
            true},
           {MultipleOutputKeys{
                kIsTopicsAllowedMetric, kIsTopicsAllowedForContextMetric,
-               kIsFledgeAllowedMetric, kIsAttributionReportingEverAllowedMetric,
+               kIsFledgeJoinAllowedMetric, kIsFledgeLeaveAllowedMetric,
+               kIsFledgeUpdateAllowedMetric, kIsFledgeSellAllowedMetric,
+               kIsFledgeBuyAllowedMetric,
+               kIsAttributionReportingEverAllowedMetric,
                kIsAttributionReportingAllowedMetric,
                kMaySendAttributionReportMetric, kIsSharedStorageAllowedMetric,
                kIsSharedStorageSelectURLAllowedMetric,
@@ -1230,15 +1263,20 @@ TEST_F(PrivacySandboxSettingsM1Test, ApiPreferenceDisabled) {
            url::Origin::Create(GURL("https://dest-origin.com"))}},
       TestOutput{
           {MultipleOutputKeys{
-               kIsTopicsAllowed, kIsTopicsAllowedForContext, kIsFledgeAllowed,
-               kIsAttributionReportingEverAllowed,
+               kIsTopicsAllowed, kIsTopicsAllowedForContext,
+               kIsFledgeJoinAllowed, kIsFledgeLeaveAllowed,
+               kIsFledgeUpdateAllowed, kIsFledgeSellAllowed,
+               kIsFledgeBuyAllowed, kIsAttributionReportingEverAllowed,
                kIsAttributionReportingAllowed, kMaySendAttributionReport,
                kIsSharedStorageSelectURLAllowed, kIsPrivateAggregationAllowed},
            false},
           {kIsSharedStorageAllowed, true},
           {MultipleOutputKeys{
                kIsTopicsAllowedMetric, kIsTopicsAllowedForContextMetric,
-               kIsFledgeAllowedMetric, kIsAttributionReportingEverAllowedMetric,
+               kIsFledgeJoinAllowedMetric, kIsFledgeLeaveAllowedMetric,
+               kIsFledgeUpdateAllowedMetric, kIsFledgeSellAllowedMetric,
+               kIsFledgeBuyAllowedMetric,
+               kIsAttributionReportingEverAllowedMetric,
                kIsAttributionReportingAllowedMetric,
                kMaySendAttributionReportMetric,
                kIsSharedStorageSelectURLAllowedMetric,
@@ -1267,15 +1305,20 @@ TEST_F(PrivacySandboxSettingsM1Test, CookieControlsModeHasNoEffect) {
            url::Origin::Create(GURL("https://dest-origin.com"))}},
       TestOutput{
           {MultipleOutputKeys{
-               kIsTopicsAllowed, kIsTopicsAllowedForContext, kIsFledgeAllowed,
-               kIsAttributionReportingEverAllowed,
+               kIsTopicsAllowed, kIsTopicsAllowedForContext,
+               kIsFledgeJoinAllowed, kIsFledgeLeaveAllowed,
+               kIsFledgeUpdateAllowed, kIsFledgeSellAllowed,
+               kIsFledgeBuyAllowed, kIsAttributionReportingEverAllowed,
                kIsAttributionReportingAllowed, kMaySendAttributionReport,
                kIsSharedStorageAllowed, kIsSharedStorageSelectURLAllowed,
                kIsPrivateAggregationAllowed},
            true},
           {MultipleOutputKeys{
                kIsTopicsAllowedMetric, kIsTopicsAllowedForContextMetric,
-               kIsFledgeAllowedMetric, kIsAttributionReportingEverAllowedMetric,
+               kIsFledgeJoinAllowedMetric, kIsFledgeLeaveAllowedMetric,
+               kIsFledgeUpdateAllowedMetric, kIsFledgeSellAllowedMetric,
+               kIsFledgeBuyAllowedMetric,
+               kIsAttributionReportingEverAllowedMetric,
                kIsAttributionReportingAllowedMetric,
                kMaySendAttributionReportMetric, kIsSharedStorageAllowedMetric,
                kIsSharedStorageSelectURLAllowedMetric,
@@ -1308,7 +1351,9 @@ TEST_F(PrivacySandboxSettingsM1Test, SiteDataDefaultBlockExceptionApplies) {
                               kIsAttributionReportingEverAllowed},
            true},
           {MultipleOutputKeys{
-               kIsTopicsAllowedForContext, kIsFledgeAllowed,
+               kIsTopicsAllowedForContext, kIsFledgeJoinAllowed,
+               kIsFledgeLeaveAllowed, kIsFledgeUpdateAllowed,
+               kIsFledgeSellAllowed, kIsFledgeBuyAllowed,
                kIsAttributionReportingAllowed, kMaySendAttributionReport,
                kIsSharedStorageAllowed, kIsSharedStorageSelectURLAllowed,
                kIsPrivateAggregationAllowed},
@@ -1317,7 +1362,9 @@ TEST_F(PrivacySandboxSettingsM1Test, SiteDataDefaultBlockExceptionApplies) {
                               kIsAttributionReportingEverAllowedMetric},
            static_cast<int>(Status::kAllowed)},
           {MultipleOutputKeys{
-               kIsTopicsAllowedForContextMetric, kIsFledgeAllowedMetric,
+               kIsTopicsAllowedForContextMetric, kIsFledgeJoinAllowedMetric,
+               kIsFledgeLeaveAllowedMetric, kIsFledgeUpdateAllowedMetric,
+               kIsFledgeSellAllowedMetric, kIsFledgeBuyAllowedMetric,
                kIsAttributionReportingAllowedMetric,
                kMaySendAttributionReportMetric, kIsSharedStorageAllowedMetric,
                kIsSharedStorageSelectURLAllowedMetric,
@@ -1351,7 +1398,9 @@ TEST_F(PrivacySandboxSettingsM1Test, SiteDataBlockExceptionApplies) {
                               kIsAttributionReportingEverAllowed},
            true},
           {MultipleOutputKeys{
-               kIsTopicsAllowedForContext, kIsFledgeAllowed,
+               kIsTopicsAllowedForContext, kIsFledgeJoinAllowed,
+               kIsFledgeLeaveAllowed, kIsFledgeUpdateAllowed,
+               kIsFledgeSellAllowed, kIsFledgeBuyAllowed,
                kIsAttributionReportingAllowed, kMaySendAttributionReport,
                kIsSharedStorageAllowed, kIsSharedStorageSelectURLAllowed,
                kIsPrivateAggregationAllowed},
@@ -1360,7 +1409,9 @@ TEST_F(PrivacySandboxSettingsM1Test, SiteDataBlockExceptionApplies) {
                               kIsAttributionReportingEverAllowedMetric},
            static_cast<int>(Status::kAllowed)},
           {MultipleOutputKeys{
-               kIsTopicsAllowedForContextMetric, kIsFledgeAllowedMetric,
+               kIsTopicsAllowedForContextMetric, kIsFledgeJoinAllowedMetric,
+               kIsFledgeLeaveAllowedMetric, kIsFledgeUpdateAllowedMetric,
+               kIsFledgeSellAllowedMetric, kIsFledgeBuyAllowedMetric,
                kIsAttributionReportingAllowedMetric,
                kMaySendAttributionReportMetric, kIsSharedStorageAllowedMetric,
                kIsSharedStorageSelectURLAllowedMetric,
@@ -1394,15 +1445,20 @@ TEST_F(PrivacySandboxSettingsM1Test, SiteDataAllowDoesntOverridePref) {
       TestOutput{
           {kIsSharedStorageAllowed, true},
           {MultipleOutputKeys{
-               kIsTopicsAllowed, kIsTopicsAllowedForContext, kIsFledgeAllowed,
-               kIsAttributionReportingEverAllowed,
+               kIsTopicsAllowed, kIsTopicsAllowedForContext,
+               kIsFledgeJoinAllowed, kIsFledgeLeaveAllowed,
+               kIsFledgeUpdateAllowed, kIsFledgeSellAllowed,
+               kIsFledgeBuyAllowed, kIsAttributionReportingEverAllowed,
                kIsAttributionReportingAllowed, kMaySendAttributionReport,
                kIsSharedStorageSelectURLAllowed, kIsPrivateAggregationAllowed},
            false},
           {kIsSharedStorageAllowedMetric, static_cast<int>(Status::kAllowed)},
           {MultipleOutputKeys{
                kIsTopicsAllowedMetric, kIsTopicsAllowedForContextMetric,
-               kIsFledgeAllowedMetric, kIsAttributionReportingEverAllowedMetric,
+               kIsFledgeJoinAllowedMetric, kIsFledgeLeaveAllowedMetric,
+               kIsFledgeUpdateAllowedMetric, kIsFledgeSellAllowedMetric,
+               kIsFledgeBuyAllowedMetric,
+               kIsAttributionReportingEverAllowedMetric,
                kIsAttributionReportingAllowedMetric,
                kMaySendAttributionReportMetric,
                kIsSharedStorageSelectURLAllowedMetric,
@@ -1433,15 +1489,19 @@ TEST_F(PrivacySandboxSettingsM1Test, SiteDataAllowExceptions) {
            url::Origin::Create(GURL("https://dest-origin.com"))}},
       TestOutput{
           {MultipleOutputKeys{
-               kIsTopicsAllowed, kIsTopicsAllowedForContext, kIsFledgeAllowed,
-               kIsAttributionReportingEverAllowed,
+               kIsTopicsAllowed, kIsTopicsAllowedForContext,
+               kIsFledgeJoinAllowed, kIsFledgeLeaveAllowed,
+               kIsFledgeUpdateAllowed, kIsFledgeSellAllowed,
+               kIsFledgeBuyAllowed, kIsAttributionReportingEverAllowed,
                kIsAttributionReportingAllowed, kMaySendAttributionReport,
                kIsSharedStorageAllowed, kIsSharedStorageSelectURLAllowed,
                kIsPrivateAggregationAllowed},
            true},
           {MultipleOutputKeys{
                kIsTopicsAllowedMetric, kIsTopicsAllowedForContextMetric,
-               kIsFledgeAllowedMetric, kIsAttributionReportingAllowedMetric,
+               kIsFledgeJoinAllowedMetric, kIsFledgeLeaveAllowedMetric,
+               kIsFledgeUpdateAllowedMetric, kIsFledgeSellAllowedMetric,
+               kIsFledgeBuyAllowedMetric, kIsAttributionReportingAllowedMetric,
                kIsAttributionReportingAllowedMetric,
                kMaySendAttributionReportMetric, kIsSharedStorageAllowedMetric,
                kIsSharedStorageSelectURLAllowedMetric,
@@ -1472,15 +1532,20 @@ TEST_F(PrivacySandboxSettingsM1Test, UnrelatedSiteDataBlock) {
            url::Origin::Create(GURL("https://dest-origin.com"))}},
       TestOutput{
           {MultipleOutputKeys{
-               kIsTopicsAllowed, kIsTopicsAllowedForContext, kIsFledgeAllowed,
-               kIsAttributionReportingEverAllowed,
+               kIsTopicsAllowed, kIsTopicsAllowedForContext,
+               kIsFledgeJoinAllowed, kIsFledgeLeaveAllowed,
+               kIsFledgeUpdateAllowed, kIsFledgeSellAllowed,
+               kIsFledgeBuyAllowed, kIsAttributionReportingEverAllowed,
                kIsAttributionReportingAllowed, kMaySendAttributionReport,
                kIsSharedStorageAllowed, kIsSharedStorageSelectURLAllowed,
                kIsPrivateAggregationAllowed},
            true},
           {MultipleOutputKeys{
                kIsTopicsAllowedMetric, kIsTopicsAllowedForContextMetric,
-               kIsFledgeAllowedMetric, kIsAttributionReportingEverAllowedMetric,
+               kIsFledgeJoinAllowedMetric, kIsFledgeLeaveAllowedMetric,
+               kIsFledgeUpdateAllowedMetric, kIsFledgeSellAllowedMetric,
+               kIsFledgeBuyAllowedMetric,
+               kIsAttributionReportingEverAllowedMetric,
                kIsAttributionReportingAllowedMetric,
                kMaySendAttributionReportMetric, kIsSharedStorageAllowedMetric,
                kIsSharedStorageSelectURLAllowedMetric,
@@ -1514,7 +1579,9 @@ TEST_F(PrivacySandboxSettingsM1Test, UnrelatedSiteDataAllow) {
                               kIsAttributionReportingEverAllowed},
            true},
           {MultipleOutputKeys{
-               kIsTopicsAllowedForContext, kIsFledgeAllowed,
+               kIsTopicsAllowedForContext, kIsFledgeJoinAllowed,
+               kIsFledgeLeaveAllowed, kIsFledgeUpdateAllowed,
+               kIsFledgeSellAllowed, kIsFledgeBuyAllowed,
                kIsAttributionReportingAllowed, kMaySendAttributionReport,
                kIsSharedStorageAllowed, kIsSharedStorageSelectURLAllowed,
                kIsPrivateAggregationAllowed},
@@ -1523,7 +1590,9 @@ TEST_F(PrivacySandboxSettingsM1Test, UnrelatedSiteDataAllow) {
                               kIsAttributionReportingEverAllowedMetric},
            static_cast<int>(Status::kAllowed)},
           {MultipleOutputKeys{
-               kIsTopicsAllowedForContextMetric, kIsFledgeAllowedMetric,
+               kIsTopicsAllowedForContextMetric, kIsFledgeJoinAllowedMetric,
+               kIsFledgeLeaveAllowedMetric, kIsFledgeUpdateAllowedMetric,
+               kIsFledgeSellAllowedMetric, kIsFledgeBuyAllowedMetric,
                kIsAttributionReportingAllowedMetric,
                kMaySendAttributionReportMetric, kIsSharedStorageAllowedMetric,
                kIsSharedStorageSelectURLAllowedMetric,
@@ -1550,15 +1619,20 @@ TEST_F(PrivacySandboxSettingsM1Test, ApisAreOffInIncognito) {
            url::Origin::Create(GURL("https://dest-origin.com"))}},
       TestOutput{
           {MultipleOutputKeys{
-               kIsTopicsAllowed, kIsTopicsAllowedForContext, kIsFledgeAllowed,
-               kIsAttributionReportingEverAllowed,
+               kIsTopicsAllowed, kIsTopicsAllowedForContext,
+               kIsFledgeJoinAllowed, kIsFledgeLeaveAllowed,
+               kIsFledgeUpdateAllowed, kIsFledgeSellAllowed,
+               kIsFledgeBuyAllowed, kIsAttributionReportingEverAllowed,
                kIsAttributionReportingAllowed, kMaySendAttributionReport,
                kIsSharedStorageAllowed, kIsSharedStorageSelectURLAllowed,
                kIsPrivateAggregationAllowed},
            false},
           {MultipleOutputKeys{
                kIsTopicsAllowedMetric, kIsTopicsAllowedForContextMetric,
-               kIsFledgeAllowedMetric, kIsAttributionReportingEverAllowedMetric,
+               kIsFledgeJoinAllowedMetric, kIsFledgeLeaveAllowedMetric,
+               kIsFledgeUpdateAllowedMetric, kIsFledgeSellAllowedMetric,
+               kIsFledgeBuyAllowedMetric,
+               kIsAttributionReportingEverAllowedMetric,
                kIsAttributionReportingAllowedMetric,
                kMaySendAttributionReportMetric, kIsSharedStorageAllowedMetric,
                kIsSharedStorageSelectURLAllowedMetric,
@@ -1585,15 +1659,20 @@ TEST_F(PrivacySandboxSettingsM1Test, ApisAreOffForRestrictedAccounts) {
            url::Origin::Create(GURL("https://dest-origin.com"))}},
       TestOutput{
           {MultipleOutputKeys{
-               kIsTopicsAllowed, kIsTopicsAllowedForContext, kIsFledgeAllowed,
-               kIsAttributionReportingEverAllowed,
+               kIsTopicsAllowed, kIsTopicsAllowedForContext,
+               kIsFledgeJoinAllowed, kIsFledgeLeaveAllowed,
+               kIsFledgeUpdateAllowed, kIsFledgeSellAllowed,
+               kIsFledgeBuyAllowed, kIsAttributionReportingEverAllowed,
                kIsAttributionReportingAllowed, kMaySendAttributionReport,
                kIsSharedStorageAllowed, kIsSharedStorageSelectURLAllowed,
                kIsPrivateAggregationAllowed},
            false},
           {MultipleOutputKeys{
                kIsTopicsAllowedMetric, kIsTopicsAllowedForContextMetric,
-               kIsFledgeAllowedMetric, kIsAttributionReportingEverAllowedMetric,
+               kIsFledgeJoinAllowedMetric, kIsFledgeLeaveAllowedMetric,
+               kIsFledgeUpdateAllowedMetric, kIsFledgeSellAllowedMetric,
+               kIsFledgeBuyAllowedMetric,
+               kIsAttributionReportingEverAllowedMetric,
                kIsAttributionReportingAllowedMetric,
                kMaySendAttributionReportMetric, kIsSharedStorageAllowedMetric,
                kIsSharedStorageSelectURLAllowedMetric,
@@ -1662,7 +1741,9 @@ TEST_F(PrivacySandboxSettingsM1Test, NoAppropriateTopicsConsent) {
            url::Origin::Create(GURL("https://dest-origin.com"))}},
       TestOutput{
           {MultipleOutputKeys{
-               kIsFledgeAllowed, kIsAttributionReportingAllowed,
+               kIsFledgeJoinAllowed, kIsFledgeLeaveAllowed,
+               kIsFledgeUpdateAllowed, kIsFledgeSellAllowed,
+               kIsFledgeBuyAllowed, kIsAttributionReportingAllowed,
                kIsAttributionReportingEverAllowed, kMaySendAttributionReport,
                kIsSharedStorageAllowed, kIsSharedStorageSelectURLAllowed,
                kIsPrivateAggregationAllowed},
@@ -1670,7 +1751,10 @@ TEST_F(PrivacySandboxSettingsM1Test, NoAppropriateTopicsConsent) {
           {MultipleOutputKeys{kIsTopicsAllowed, kIsTopicsAllowedForContext},
            false},
           {MultipleOutputKeys{
-               kIsFledgeAllowedMetric, kIsAttributionReportingEverAllowedMetric,
+               kIsFledgeJoinAllowedMetric, kIsFledgeLeaveAllowedMetric,
+               kIsFledgeUpdateAllowedMetric, kIsFledgeSellAllowedMetric,
+               kIsFledgeBuyAllowedMetric,
+               kIsAttributionReportingEverAllowedMetric,
                kIsAttributionReportingAllowedMetric,
                kMaySendAttributionReportMetric, kIsSharedStorageAllowedMetric,
                kIsSharedStorageSelectURLAllowedMetric,
@@ -1734,12 +1818,16 @@ TEST_F(PrivacySandboxSettingsM1RestrictedNotice,
            url::Origin::Create(GURL("https://dest-origin.com"))}},
       TestOutput{
           {MultipleOutputKeys{kIsTopicsAllowed, kIsTopicsAllowedForContext,
-                              kIsFledgeAllowed, kIsSharedStorageAllowed,
+                              kIsFledgeJoinAllowed, kIsFledgeLeaveAllowed,
+                              kIsFledgeUpdateAllowed, kIsFledgeSellAllowed,
+                              kIsFledgeBuyAllowed, kIsSharedStorageAllowed,
                               kIsSharedStorageSelectURLAllowed},
            false},
           {MultipleOutputKeys{
                kIsTopicsAllowedMetric, kIsTopicsAllowedForContextMetric,
-               kIsFledgeAllowedMetric, kIsSharedStorageAllowedMetric,
+               kIsFledgeJoinAllowedMetric, kIsFledgeLeaveAllowedMetric,
+               kIsFledgeUpdateAllowedMetric, kIsFledgeSellAllowedMetric,
+               kIsFledgeBuyAllowedMetric, kIsSharedStorageAllowedMetric,
                kIsSharedStorageSelectURLAllowedMetric},
            static_cast<int>(Status::kRestricted)},
 
@@ -1770,11 +1858,13 @@ TEST_F(PrivacySandboxAttestationsTest, AttestationsFileNotYetReady) {
   GURL top_frame_url("https://top-frame.com");
   GURL enrollee_url("https://embedded.com");
   RunTestCase(
-      TestState{{MultipleStateKeys{kM1TopicsEnabledUserPrefValue,
-                                   kM1FledgeEnabledUserPrefValue,
-                                   kM1AdMeasurementEnabledUserPrefValue},
-                 true},
-                {kAttestationsMap, absl::nullopt}},
+      TestState{
+          {MultipleStateKeys{kM1TopicsEnabledUserPrefValue,
+                             kM1FledgeEnabledUserPrefValue,
+                             kM1AdMeasurementEnabledUserPrefValue},
+           true},
+          {kAttestationsMap,
+           absl::optional<privacy_sandbox::PrivacySandboxAttestationsMap>()}},
       TestInput{
           {kTopicsURL, enrollee_url},
           {kTopFrameOrigin, url::Origin::Create(top_frame_url)},
@@ -1789,7 +1879,9 @@ TEST_F(PrivacySandboxAttestationsTest, AttestationsFileNotYetReady) {
       TestOutput{
           {MultipleOutputKeys{
                kIsTopicsAllowedForContext, kIsAttributionReportingAllowed,
-               kMaySendAttributionReport, kIsFledgeAllowed,
+               kMaySendAttributionReport, kIsFledgeJoinAllowed,
+               kIsFledgeLeaveAllowed, kIsFledgeUpdateAllowed,
+               kIsFledgeSellAllowed, kIsFledgeBuyAllowed,
                kIsEventReportingDestinationAttestedForFledge,
                kIsEventReportingDestinationAttestedForSharedStorage,
                kIsSharedStorageAllowed, kIsPrivateAggregationAllowed},
@@ -1797,7 +1889,9 @@ TEST_F(PrivacySandboxAttestationsTest, AttestationsFileNotYetReady) {
           {MultipleOutputKeys{
                kIsTopicsAllowedForContextMetric,
                kIsAttributionReportingAllowedMetric,
-               kMaySendAttributionReportMetric, kIsFledgeAllowedMetric,
+               kMaySendAttributionReportMetric, kIsFledgeJoinAllowedMetric,
+               kIsFledgeLeaveAllowedMetric, kIsFledgeUpdateAllowedMetric,
+               kIsFledgeSellAllowedMetric, kIsFledgeBuyAllowedMetric,
                kIsSharedStorageAllowedMetric,
                kIsPrivateAggregationAllowedMetric,
                kIsEventReportingDestinationAttestedForSharedStorageMetric,
@@ -1830,7 +1924,9 @@ TEST_F(PrivacySandboxAttestationsTest, NoEnrollments) {
       TestOutput{
           {MultipleOutputKeys{
                kIsTopicsAllowedForContext, kIsAttributionReportingAllowed,
-               kMaySendAttributionReport, kIsFledgeAllowed,
+               kMaySendAttributionReport, kIsFledgeJoinAllowed,
+               kIsFledgeLeaveAllowed, kIsFledgeUpdateAllowed,
+               kIsFledgeSellAllowed, kIsFledgeBuyAllowed,
                kIsEventReportingDestinationAttestedForFledge,
                kIsEventReportingDestinationAttestedForSharedStorage,
                kIsSharedStorageAllowed, kIsPrivateAggregationAllowed},
@@ -1838,7 +1934,9 @@ TEST_F(PrivacySandboxAttestationsTest, NoEnrollments) {
           {MultipleOutputKeys{
                kIsTopicsAllowedForContextMetric,
                kIsAttributionReportingAllowedMetric,
-               kMaySendAttributionReportMetric, kIsFledgeAllowedMetric,
+               kMaySendAttributionReportMetric, kIsFledgeJoinAllowedMetric,
+               kIsFledgeLeaveAllowedMetric, kIsFledgeUpdateAllowedMetric,
+               kIsFledgeSellAllowedMetric, kIsFledgeBuyAllowedMetric,
                kIsSharedStorageAllowedMetric,
                kIsPrivateAggregationAllowedMetric,
                kIsEventReportingDestinationAttestedForSharedStorageMetric,
@@ -1873,7 +1971,9 @@ TEST_F(PrivacySandboxAttestationsTest, EnrollmentWithoutAttestations) {
       TestOutput{
           {MultipleOutputKeys{
                kIsTopicsAllowedForContext, kIsAttributionReportingAllowed,
-               kMaySendAttributionReport, kIsFledgeAllowed,
+               kMaySendAttributionReport, kIsFledgeJoinAllowed,
+               kIsFledgeLeaveAllowed, kIsFledgeUpdateAllowed,
+               kIsFledgeSellAllowed, kIsFledgeBuyAllowed,
                kIsEventReportingDestinationAttestedForFledge,
                kIsEventReportingDestinationAttestedForSharedStorage,
                kIsSharedStorageAllowed, kIsPrivateAggregationAllowed},
@@ -1881,7 +1981,9 @@ TEST_F(PrivacySandboxAttestationsTest, EnrollmentWithoutAttestations) {
           {MultipleOutputKeys{
                kIsTopicsAllowedForContextMetric,
                kIsAttributionReportingAllowedMetric,
-               kMaySendAttributionReportMetric, kIsFledgeAllowedMetric,
+               kMaySendAttributionReportMetric, kIsFledgeJoinAllowedMetric,
+               kIsFledgeLeaveAllowedMetric, kIsFledgeUpdateAllowedMetric,
+               kIsFledgeSellAllowedMetric, kIsFledgeBuyAllowedMetric,
                kIsSharedStorageAllowedMetric,
                kIsPrivateAggregationAllowedMetric,
                kIsEventReportingDestinationAttestedForSharedStorageMetric,
@@ -1916,7 +2018,9 @@ TEST_F(PrivacySandboxAttestationsTest, TopicsAttestation) {
           {kIsTopicsAllowedForContext, true},
           {MultipleOutputKeys{
                kIsAttributionReportingAllowed, kMaySendAttributionReport,
-               kIsFledgeAllowed, kIsSharedStorageAllowed,
+               kIsFledgeJoinAllowed, kIsFledgeLeaveAllowed,
+               kIsFledgeUpdateAllowed, kIsFledgeSellAllowed,
+               kIsFledgeBuyAllowed, kIsSharedStorageAllowed,
                kIsEventReportingDestinationAttestedForFledge,
                kIsEventReportingDestinationAttestedForSharedStorage,
                kIsPrivateAggregationAllowed},
@@ -1925,7 +2029,9 @@ TEST_F(PrivacySandboxAttestationsTest, TopicsAttestation) {
            static_cast<int>(Status::kAllowed)},
           {MultipleOutputKeys{
                kIsAttributionReportingAllowedMetric,
-               kMaySendAttributionReportMetric, kIsFledgeAllowedMetric,
+               kMaySendAttributionReportMetric, kIsFledgeJoinAllowedMetric,
+               kIsFledgeLeaveAllowedMetric, kIsFledgeUpdateAllowedMetric,
+               kIsFledgeSellAllowedMetric, kIsFledgeBuyAllowedMetric,
                kIsSharedStorageAllowedMetric,
                kIsPrivateAggregationAllowedMetric,
                kIsEventReportingDestinationAttestedForSharedStorageMetric,
@@ -1961,7 +2067,9 @@ TEST_F(PrivacySandboxAttestationsTest, PrivateAggregationAttestation) {
           {kIsPrivateAggregationAllowed, true},
           {MultipleOutputKeys{
                kIsTopicsAllowedForContext, kIsAttributionReportingAllowed,
-               kMaySendAttributionReport, kIsFledgeAllowed,
+               kMaySendAttributionReport, kIsFledgeJoinAllowed,
+               kIsFledgeLeaveAllowed, kIsFledgeUpdateAllowed,
+               kIsFledgeSellAllowed, kIsFledgeBuyAllowed,
                kIsEventReportingDestinationAttestedForFledge,
                kIsEventReportingDestinationAttestedForSharedStorage,
                kIsSharedStorageAllowed},
@@ -1971,7 +2079,9 @@ TEST_F(PrivacySandboxAttestationsTest, PrivateAggregationAttestation) {
           {MultipleOutputKeys{
                kIsTopicsAllowedForContextMetric,
                kIsAttributionReportingAllowedMetric,
-               kMaySendAttributionReportMetric, kIsFledgeAllowedMetric,
+               kMaySendAttributionReportMetric, kIsFledgeJoinAllowedMetric,
+               kIsFledgeLeaveAllowedMetric, kIsFledgeUpdateAllowedMetric,
+               kIsFledgeSellAllowedMetric, kIsFledgeBuyAllowedMetric,
                kIsSharedStorageAllowedMetric,
                kIsEventReportingDestinationAttestedForSharedStorageMetric,
                kIsEventReportingDestinationAttestedForFledgeMetric},
@@ -2008,7 +2118,9 @@ TEST_F(PrivacySandboxAttestationsTest, SharedStorageAttestation) {
            true},
           {MultipleOutputKeys{kIsTopicsAllowedForContext,
                               kIsAttributionReportingAllowed,
-                              kMaySendAttributionReport, kIsFledgeAllowed,
+                              kMaySendAttributionReport, kIsFledgeJoinAllowed,
+                              kIsFledgeLeaveAllowed, kIsFledgeUpdateAllowed,
+                              kIsFledgeSellAllowed, kIsFledgeBuyAllowed,
                               kIsEventReportingDestinationAttestedForFledge,
                               kIsPrivateAggregationAllowed},
            false},
@@ -2019,7 +2131,9 @@ TEST_F(PrivacySandboxAttestationsTest, SharedStorageAttestation) {
           {MultipleOutputKeys{
                kIsTopicsAllowedForContextMetric,
                kIsAttributionReportingAllowedMetric,
-               kMaySendAttributionReportMetric, kIsFledgeAllowedMetric,
+               kMaySendAttributionReportMetric, kIsFledgeJoinAllowedMetric,
+               kIsFledgeLeaveAllowedMetric, kIsFledgeUpdateAllowedMetric,
+               kIsFledgeSellAllowedMetric, kIsFledgeBuyAllowedMetric,
                kIsPrivateAggregationAllowedMetric,
                kIsEventReportingDestinationAttestedForFledgeMetric},
            static_cast<int>(Status::kAttestationFailed)}});
@@ -2037,7 +2151,57 @@ TEST_F(PrivacySandboxAttestationsTest, FledgeAttestation) {
           {kAttestationsMap,
            PrivacySandboxAttestationsMap{
                {net::SchemefulSite(enrollee_url),
-                {PrivacySandboxAttestationsGatedAPI::kProtectedAudience}},
+                {PrivacySandboxAttestationsGatedAPI::kProtectedAudience}}}}},
+      TestInput{
+          {kTopicsURL, enrollee_url},
+          {kTopFrameOrigin, url::Origin::Create(top_frame_url)},
+          {kAdMeasurementReportingOrigin, url::Origin::Create(enrollee_url)},
+          {kFledgeAuctionPartyOrigin, url::Origin::Create(enrollee_url)},
+          {kEventReportingDestinationOrigin, url::Origin::Create(enrollee_url)},
+          {kAdMeasurementSourceOrigin,
+           url::Origin::Create(GURL(top_frame_url))},
+          {kAdMeasurementDestinationOrigin,
+           url::Origin::Create(GURL(top_frame_url))},
+          {kAccessingOrigin, url::Origin::Create(enrollee_url)}},
+      TestOutput{
+          {MultipleOutputKeys{kIsFledgeJoinAllowed, kIsFledgeLeaveAllowed,
+                              kIsFledgeUpdateAllowed, kIsFledgeSellAllowed,
+                              kIsFledgeBuyAllowed,
+                              kIsEventReportingDestinationAttestedForFledge},
+           true},
+          {MultipleOutputKeys{
+               kIsTopicsAllowedForContext, kIsAttributionReportingAllowed,
+               kMaySendAttributionReport, kIsSharedStorageAllowed,
+               kIsPrivateAggregationAllowed,
+               kIsEventReportingDestinationAttestedForSharedStorage},
+           false},
+          {MultipleOutputKeys{
+               kIsFledgeJoinAllowedMetric, kIsFledgeLeaveAllowedMetric,
+               kIsFledgeUpdateAllowedMetric, kIsFledgeSellAllowedMetric,
+               kIsFledgeBuyAllowedMetric,
+               kIsEventReportingDestinationAttestedForFledgeMetric},
+           static_cast<int>(Status::kAllowed)},
+          {MultipleOutputKeys{
+               kIsTopicsAllowedForContextMetric,
+               kIsAttributionReportingAllowedMetric,
+               kMaySendAttributionReportMetric, kIsSharedStorageAllowedMetric,
+               kIsPrivateAggregationAllowedMetric,
+               kIsEventReportingDestinationAttestedForSharedStorageMetric},
+           static_cast<int>(Status::kAttestationFailed)}});
+}
+
+TEST_F(PrivacySandboxAttestationsTest, FledgeAttestationBlockJoiningEtldplus1) {
+  GURL top_frame_url("https://top-frame.com");
+  GURL enrollee_url("https://embedded.com");
+  RunTestCase(
+      TestState{
+          {MultipleStateKeys{kM1TopicsEnabledUserPrefValue,
+                             kM1FledgeEnabledUserPrefValue,
+                             kM1AdMeasurementEnabledUserPrefValue},
+           true},
+          {kBlockFledgeJoiningForEtldplus1, std::string("top-frame.com")},
+          {kAttestationsMap,
+           PrivacySandboxAttestationsMap{
                {net::SchemefulSite(enrollee_url),
                 {PrivacySandboxAttestationsGatedAPI::kProtectedAudience}}}}},
       TestInput{
@@ -2052,19 +2216,23 @@ TEST_F(PrivacySandboxAttestationsTest, FledgeAttestation) {
            url::Origin::Create(GURL(top_frame_url))},
           {kAccessingOrigin, url::Origin::Create(enrollee_url)}},
       TestOutput{
-          {MultipleOutputKeys{kIsFledgeAllowed,
-                              kIsEventReportingDestinationAttestedForFledge},
+          {MultipleOutputKeys{kIsEventReportingDestinationAttestedForFledge,
+                              kIsFledgeLeaveAllowed, kIsFledgeUpdateAllowed,
+                              kIsFledgeSellAllowed, kIsFledgeBuyAllowed},
            true},
           {MultipleOutputKeys{
-               kIsTopicsAllowedForContext, kIsAttributionReportingAllowed,
-               kMaySendAttributionReport, kIsSharedStorageAllowed,
-               kIsPrivateAggregationAllowed,
+               kIsFledgeJoinAllowed, kIsTopicsAllowedForContext,
+               kIsAttributionReportingAllowed, kMaySendAttributionReport,
+               kIsSharedStorageAllowed, kIsPrivateAggregationAllowed,
                kIsEventReportingDestinationAttestedForSharedStorage},
            false},
           {MultipleOutputKeys{
-               kIsFledgeAllowedMetric,
+               kIsFledgeLeaveAllowedMetric, kIsFledgeUpdateAllowedMetric,
+               kIsFledgeSellAllowedMetric, kIsFledgeBuyAllowedMetric,
                kIsEventReportingDestinationAttestedForFledgeMetric},
            static_cast<int>(Status::kAllowed)},
+          {kIsFledgeJoinAllowedMetric,
+           static_cast<int>(Status::kJoiningTopFrameBlocked)},
           {MultipleOutputKeys{
                kIsTopicsAllowedForContextMetric,
                kIsAttributionReportingAllowedMetric,
@@ -2103,7 +2271,9 @@ TEST_F(PrivacySandboxAttestationsTest, AttributionReportingAttestation) {
                               kMaySendAttributionReport},
            true},
           {MultipleOutputKeys{
-               kIsTopicsAllowedForContext, kIsFledgeAllowed,
+               kIsTopicsAllowedForContext, kIsFledgeJoinAllowed,
+               kIsFledgeLeaveAllowed, kIsFledgeUpdateAllowed,
+               kIsFledgeSellAllowed, kIsFledgeBuyAllowed,
                kIsSharedStorageAllowed,
                kIsEventReportingDestinationAttestedForFledge,
                kIsEventReportingDestinationAttestedForSharedStorage,
@@ -2113,7 +2283,9 @@ TEST_F(PrivacySandboxAttestationsTest, AttributionReportingAttestation) {
                               kMaySendAttributionReportMetric},
            static_cast<int>(Status::kAllowed)},
           {MultipleOutputKeys{
-               kIsTopicsAllowedForContextMetric, kIsFledgeAllowedMetric,
+               kIsTopicsAllowedForContextMetric, kIsFledgeJoinAllowedMetric,
+               kIsFledgeLeaveAllowedMetric, kIsFledgeUpdateAllowedMetric,
+               kIsFledgeSellAllowedMetric, kIsFledgeBuyAllowedMetric,
                kIsSharedStorageAllowedMetric,
                kIsPrivateAggregationAllowedMetric,
                kIsEventReportingDestinationAttestedForSharedStorageMetric,

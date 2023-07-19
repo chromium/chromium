@@ -129,6 +129,7 @@ enum class StateKey {
   kHasAppropriateTopicsConsent = 24,
   kM1RestrictedNoticeAcknowledged = 25,
   kAttestationsMap = 26,
+  kBlockFledgeJoiningForEtldplus1 = 27,
 };
 
 // Defines the input to the functions under test.
@@ -151,7 +152,6 @@ enum class InputKey {
 enum class OutputKey {
   kIsTopicsAllowed = 1,
   kIsTopicsAllowedForContext = 2,
-  kIsFledgeAllowed = 3,
   kIsAttributionReportingAllowed = 4,
   kMaySendAttributionReport = 5,
   kIsSharedStorageAllowed = 6,
@@ -159,7 +159,6 @@ enum class OutputKey {
   kIsPrivateAggregationAllowed = 8,
   kIsTopicsAllowedMetric = 9,
   kIsTopicsAllowedForContextMetric = 10,
-  kIsFledgeAllowedMetric = 11,
   kIsAttributionReportingAllowedMetric = 12,
   kMaySendAttributionReportMetric = 13,
   kIsSharedStorageAllowedMetric = 14,
@@ -184,6 +183,16 @@ enum class OutputKey {
   kIsEventReportingDestinationAttestedForSharedStorage = 33,
   kIsEventReportingDestinationAttestedForFledgeMetric = 34,
   kIsEventReportingDestinationAttestedForSharedStorageMetric = 35,
+  kIsFledgeJoinAllowed = 36,
+  kIsFledgeLeaveAllowed = 37,
+  kIsFledgeUpdateAllowed = 38,
+  kIsFledgeSellAllowed = 39,
+  kIsFledgeBuyAllowed = 40,
+  kIsFledgeJoinAllowedMetric = 41,
+  kIsFledgeLeaveAllowedMetric = 42,
+  kIsFledgeUpdateAllowedMetric = 43,
+  kIsFledgeSellAllowedMetric = 44,
+  kIsFledgeBuyAllowedMetric = 45,
 };
 
 // To allow multiple input keys to map to the same value, without having to

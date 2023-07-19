@@ -52,7 +52,16 @@ constexpr char kIsAttributionReportingAllowedHistogram[] =
     "PrivacySandbox.IsAttributionReportingAllowed";
 constexpr char kMaySendAttributionReportHistogram[] =
     "PrivacySandbox.MaySendAttributionReport";
-constexpr char kIsFledgeAllowedHistogram[] = "PrivacySandbox.IsFledgeAllowed";
+constexpr char kIsFledgeJoinAllowedHistogram[] =
+    "PrivacySandbox.IsFledgeJoinAllowed";
+constexpr char kIsFledgeLeaveAllowedHistogram[] =
+    "PrivacySandbox.IsFledgeLeaveAllowed";
+constexpr char kIsFledgeUpdateAllowedHistogram[] =
+    "PrivacySandbox.IsFledgeUpdateAllowed";
+constexpr char kIsFledgeSellAllowedHistogram[] =
+    "PrivacySandbox.IsFledgeSellAllowed";
+constexpr char kIsFledgeBuyAllowedHistogram[] =
+    "PrivacySandbox.IsFledgeBuyAllowed";
 constexpr char kIsPrivacySandboxReportingDestinationAttestedHistogram[] =
     "PrivacySandbox.IsPrivacySandboxReportingDestinationAttested";
 constexpr char kIsSharedStorageAllowedHistogram[] =
@@ -99,6 +108,30 @@ bool PrivacySandboxSettingsImpl::IsAllowed(Status status) {
 void PrivacySandboxSettingsImpl::JoinHistogram(const char* name,
                                                Status status) {
   base::UmaHistogramEnumeration(name, status);
+}
+
+// static
+void PrivacySandboxSettingsImpl::JoinFledgeHistogram(
+    content::ContentBrowserClient::InterestGroupApiOperation
+        interest_group_api_operation,
+    Status status) {
+  switch (interest_group_api_operation) {
+    case content::ContentBrowserClient::InterestGroupApiOperation::kJoin:
+      JoinHistogram(kIsFledgeJoinAllowedHistogram, status);
+      break;
+    case content::ContentBrowserClient::InterestGroupApiOperation::kLeave:
+      JoinHistogram(kIsFledgeLeaveAllowedHistogram, status);
+      break;
+    case content::ContentBrowserClient::InterestGroupApiOperation::kUpdate:
+      JoinHistogram(kIsFledgeUpdateAllowedHistogram, status);
+      break;
+    case content::ContentBrowserClient::InterestGroupApiOperation::kSell:
+      JoinHistogram(kIsFledgeSellAllowedHistogram, status);
+      break;
+    case content::ContentBrowserClient::InterestGroupApiOperation::kBuy:
+      JoinHistogram(kIsFledgeBuyAllowedHistogram, status);
+      break;
+  }
 }
 
 PrivacySandboxSettingsImpl::PrivacySandboxSettingsImpl(
@@ -507,7 +540,9 @@ bool PrivacySandboxSettingsImpl::IsEventReportingDestinationAttested(
 
 bool PrivacySandboxSettingsImpl::IsFledgeAllowed(
     const url::Origin& top_frame_origin,
-    const url::Origin& auction_party) const {
+    const url::Origin& auction_party,
+    content::ContentBrowserClient::InterestGroupApiOperation
+        interest_group_api_operation) const {
   // Check for attestation on the auction party's site. The auction party is a
   // variety of entities during the auction, all of which need to be attested.
   Status attestation_status =
@@ -515,13 +550,21 @@ bool PrivacySandboxSettingsImpl::IsFledgeAllowed(
           net::SchemefulSite(auction_party),
           PrivacySandboxAttestationsGatedAPI::kProtectedAudience);
   if (!IsAllowed(attestation_status)) {
-    JoinHistogram(kIsFledgeAllowedHistogram, attestation_status);
+    JoinFledgeHistogram(interest_group_api_operation, attestation_status);
+    return false;
+  }
+
+  if (interest_group_api_operation ==
+          content::ContentBrowserClient::InterestGroupApiOperation::kJoin &&
+      !IsFledgeJoiningAllowed(top_frame_origin)) {
+    JoinFledgeHistogram(interest_group_api_operation,
+                        Status::kJoiningTopFrameBlocked);
     return false;
   }
 
   if (base::FeatureList::IsEnabled(privacy_sandbox::kPrivacySandboxSettings4)) {
     Status status = GetM1FledgeAllowedStatus(top_frame_origin, auction_party);
-    JoinHistogram(kIsFledgeAllowedHistogram, status);
+    JoinFledgeHistogram(interest_group_api_operation, status);
     return IsAllowed(status);
   }
 

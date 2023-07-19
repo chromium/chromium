@@ -6,6 +6,7 @@
 #define COMPONENTS_PRIVACY_SANDBOX_PRIVACY_SANDBOX_SETTINGS_H_
 
 #include "components/keyed_service/core/keyed_service.h"
+#include "content/public/browser/content_browser_client.h"
 
 #include "base/time/time.h"
 
@@ -151,16 +152,13 @@ class PrivacySandboxSettings : public KeyedService {
   virtual void ClearFledgeJoiningAllowedSettings(base::Time start_time,
                                                  base::Time end_time) = 0;
 
-  // Determines whether the user may be joined to FLEDGE interest groups on, or
-  // by, |top_frame_origin|. This is an additional check that must be
-  // combined with the more generic IsFledgeAllowed().
-  virtual bool IsFledgeJoiningAllowed(
-      const url::Origin& top_frame_origin) const = 0;
-
   // Determine whether |auction_party| can register an interest group, or sell
   // buy in an auction, on |top_frame_origin|.
-  virtual bool IsFledgeAllowed(const url::Origin& top_frame_origin,
-                               const url::Origin& auction_party) const = 0;
+  virtual bool IsFledgeAllowed(
+      const url::Origin& top_frame_origin,
+      const url::Origin& auction_party,
+      content::ContentBrowserClient::InterestGroupApiOperation
+          interest_group_api_operation) const = 0;
 
   // Determine whether |destination_origin| is allowed to receive events
   // (reportEvent(), automatic beacons) reported by an API like Protected

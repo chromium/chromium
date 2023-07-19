@@ -57,10 +57,10 @@ class PrivacySandboxSettingsImpl : public PrivacySandboxSettings {
                                bool allowed) override;
   void ClearFledgeJoiningAllowedSettings(base::Time start_time,
                                          base::Time end_time) override;
-  bool IsFledgeJoiningAllowed(
-      const url::Origin& top_frame_origin) const override;
   bool IsFledgeAllowed(const url::Origin& top_frame_origin,
-                       const url::Origin& auction_party) const override;
+                       const url::Origin& auction_party,
+                       content::ContentBrowserClient::InterestGroupApiOperation
+                           interest_group_api_operation) const override;
   bool IsEventReportingDestinationAttested(
       const url::Origin& destination_origin,
       privacy_sandbox::PrivacySandboxAttestationsGatedAPI invoking_api)
@@ -91,6 +91,10 @@ class PrivacySandboxSettingsImpl : public PrivacySandboxSettings {
   friend class PrivacySandboxSettingsTest;
   friend class PrivacySandboxAttestations;
   friend class PrivacySandboxAttestationsTestBase;
+  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxSettingsTest, FledgeJoiningAllowed);
+  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxSettingsTest, NonEtldPlusOneBlocked);
+  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxSettingsTest,
+                           FledgeJoinSettingTimeRangeDeletion);
   // Called when the First-Party Sets enabled preference is changed.
   void OnFirstPartySetsEnabledPrefChanged();
 
@@ -118,12 +122,17 @@ class PrivacySandboxSettingsImpl : public PrivacySandboxSettings {
     kAttestationsFileNotYetReady = 7,
     kAttestationsDownloadedNotYetLoaded = 8,
     kAttestationsFileCorrupt = 9,
-    kMaxValue = kAttestationsFileCorrupt,
+    kJoiningTopFrameBlocked = 10,
+    kMaxValue = kJoiningTopFrameBlocked,
   };
 
   static bool IsAllowed(Status status);
 
   static void JoinHistogram(const char* name, Status status);
+  static void JoinFledgeHistogram(
+      content::ContentBrowserClient::InterestGroupApiOperation
+          interest_group_api_operation,
+      Status status);
 
   // Get the Topics that are disabled by Finch.
   const std::vector<browsing_topics::Topic>& GetFinchDisabledTopics();
@@ -158,6 +167,10 @@ class PrivacySandboxSettingsImpl : public PrivacySandboxSettings {
   // why it is not allowed.
   Status GetM1FledgeAllowedStatus(const url::Origin& top_frame_origin,
                                   const url::Origin& accessing_origin) const;
+
+  // Internal helper for `IsFledgeAllowed`. Used only when
+  // `interest_group_api_operation` is `kJoin`.
+  bool IsFledgeJoiningAllowed(const url::Origin& top_frame_origin) const;
 
   base::ObserverList<Observer>::Unchecked observers_;
 

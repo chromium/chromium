@@ -88531,6 +88531,7 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
       label="Attestations not yet (confirmed to have been) downloaded"/>
   <int value="8" label="Attestations downloaded, not yet loaded"/>
   <int value="9" label="Attestations file corrupt"/>
+  <int value="10" label="Protected Audience joining blocked due to top frame"/>
 </enum>
 
 <enum name="PrivacySandboxPrivateAggregationBudgeterBudgetValidityStatus2">

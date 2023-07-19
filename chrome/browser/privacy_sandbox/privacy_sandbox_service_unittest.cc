@@ -4288,7 +4288,7 @@ TEST_F(PrivacySandboxServiceM1Test, DisablePrivacySandboxFledgePolicy) {
       TestOutput{{OutputKey::kPromptType, static_cast<int>(PromptType::kNone)},
                  {OutputKey::kM1PromptSuppressedReason,
                   static_cast<int>(PromptSuppressedReason::kNone)},
-                 {OutputKey::kIsFledgeAllowed, false}});
+                 {OutputKey::kIsFledgeJoinAllowed, false}});
 }
 
 TEST_F(PrivacySandboxServiceM1Test, DisablePrivacySandboxAdMeasurementPolicy) {

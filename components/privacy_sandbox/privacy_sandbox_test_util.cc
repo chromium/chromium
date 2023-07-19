@@ -294,6 +294,12 @@ void ApplyTestState(
                   privacy_sandbox::PrivacySandboxAttestationsMap>>(value));
       return;
     }
+    case (StateKey::kBlockFledgeJoiningForEtldplus1): {
+      SCOPED_TRACE("State Setup: Disable FLEDGE joining for eTLD+1");
+      privacy_sandbox_settings->SetFledgeJoiningAllowed(
+          GetItemValue<std::string>(value), false);
+      return;
+    }
     default:
       NOTREACHED();
   }
@@ -344,16 +350,72 @@ void CheckOutput(
                     top_frame_origin, topics_url));
       return;
     }
-    case (OutputKey::kIsFledgeAllowed): {
-      SCOPED_TRACE("Check Output: IsFledgeAllowed()");
+    case (OutputKey::kIsFledgeJoinAllowed): {
+      SCOPED_TRACE("Check Output: IsFledgeAllowed(kJoin)");
       auto top_frame_origin =
           GetItemValueForKey<url::Origin>(InputKey::kTopFrameOrigin, input);
       auto fledge_auction_party_origin = GetItemValueForKey<url::Origin>(
           InputKey::kFledgeAuctionPartyOrigin, input);
       auto return_value = GetItemValue<bool>(output_value);
-      ASSERT_EQ(return_value,
-                privacy_sandbox_settings->IsFledgeAllowed(
-                    top_frame_origin, fledge_auction_party_origin));
+      ASSERT_EQ(
+          return_value,
+          privacy_sandbox_settings->IsFledgeAllowed(
+              top_frame_origin, fledge_auction_party_origin,
+              content::ContentBrowserClient::InterestGroupApiOperation::kJoin));
+      return;
+    }
+    case (OutputKey::kIsFledgeLeaveAllowed): {
+      SCOPED_TRACE("Check Output: IsFledgeAllowed(kLeave)");
+      auto top_frame_origin =
+          GetItemValueForKey<url::Origin>(InputKey::kTopFrameOrigin, input);
+      auto fledge_auction_party_origin = GetItemValueForKey<url::Origin>(
+          InputKey::kFledgeAuctionPartyOrigin, input);
+      auto return_value = GetItemValue<bool>(output_value);
+      ASSERT_EQ(return_value, privacy_sandbox_settings->IsFledgeAllowed(
+                                  top_frame_origin, fledge_auction_party_origin,
+                                  content::ContentBrowserClient::
+                                      InterestGroupApiOperation::kLeave));
+      return;
+    }
+    case (OutputKey::kIsFledgeUpdateAllowed): {
+      SCOPED_TRACE("Check Output: IsFledgeAllowed(kUpdate)");
+      auto top_frame_origin =
+          GetItemValueForKey<url::Origin>(InputKey::kTopFrameOrigin, input);
+      auto fledge_auction_party_origin = GetItemValueForKey<url::Origin>(
+          InputKey::kFledgeAuctionPartyOrigin, input);
+      auto return_value = GetItemValue<bool>(output_value);
+      ASSERT_EQ(return_value, privacy_sandbox_settings->IsFledgeAllowed(
+                                  top_frame_origin, fledge_auction_party_origin,
+                                  content::ContentBrowserClient::
+                                      InterestGroupApiOperation::kUpdate));
+      return;
+    }
+    case (OutputKey::kIsFledgeSellAllowed): {
+      SCOPED_TRACE("Check Output: IsFledgeAllowed(kSell)");
+      auto top_frame_origin =
+          GetItemValueForKey<url::Origin>(InputKey::kTopFrameOrigin, input);
+      auto fledge_auction_party_origin = GetItemValueForKey<url::Origin>(
+          InputKey::kFledgeAuctionPartyOrigin, input);
+      auto return_value = GetItemValue<bool>(output_value);
+      ASSERT_EQ(
+          return_value,
+          privacy_sandbox_settings->IsFledgeAllowed(
+              top_frame_origin, fledge_auction_party_origin,
+              content::ContentBrowserClient::InterestGroupApiOperation::kSell));
+      return;
+    }
+    case (OutputKey::kIsFledgeBuyAllowed): {
+      SCOPED_TRACE("Check Output: IsFledgeAllowed(kBuy)");
+      auto top_frame_origin =
+          GetItemValueForKey<url::Origin>(InputKey::kTopFrameOrigin, input);
+      auto fledge_auction_party_origin = GetItemValueForKey<url::Origin>(
+          InputKey::kFledgeAuctionPartyOrigin, input);
+      auto return_value = GetItemValue<bool>(output_value);
+      ASSERT_EQ(
+          return_value,
+          privacy_sandbox_settings->IsFledgeAllowed(
+              top_frame_origin, fledge_auction_party_origin,
+              content::ContentBrowserClient::InterestGroupApiOperation::kBuy));
       return;
     }
     case (OutputKey::kIsEventReportingDestinationAttestedForFledge): {
@@ -509,17 +571,78 @@ void CheckOutput(
           "PrivacySandbox.IsTopicsAllowedForContext", histogram_value, 1);
       return;
     }
-    case (OutputKey::kIsFledgeAllowedMetric): {
-      SCOPED_TRACE("Check Output: PrivacySandbox.IsFledgeAllowed");
+    case (OutputKey::kIsFledgeJoinAllowedMetric): {
+      SCOPED_TRACE("Check Output: PrivacySandbox.IsFledgeJoinAllowed");
       base::HistogramTester histogram_tester;
       auto top_frame_origin =
           GetItemValueForKey<url::Origin>(InputKey::kTopFrameOrigin, input);
       auto fledge_auction_party_origin = GetItemValueForKey<url::Origin>(
           InputKey::kFledgeAuctionPartyOrigin, input);
       std::ignore = privacy_sandbox_settings->IsFledgeAllowed(
-          top_frame_origin, fledge_auction_party_origin);
+          top_frame_origin, fledge_auction_party_origin,
+          content::ContentBrowserClient::InterestGroupApiOperation::kJoin);
       auto histogram_value = GetItemValue<int>(output_value);
-      histogram_tester.ExpectUniqueSample("PrivacySandbox.IsFledgeAllowed",
+      histogram_tester.ExpectUniqueSample("PrivacySandbox.IsFledgeJoinAllowed",
+                                          histogram_value, 1);
+      return;
+    }
+    case (OutputKey::kIsFledgeLeaveAllowedMetric): {
+      SCOPED_TRACE("Check Output: PrivacySandbox.IsFledgeLeaveAllowed");
+      base::HistogramTester histogram_tester;
+      auto top_frame_origin =
+          GetItemValueForKey<url::Origin>(InputKey::kTopFrameOrigin, input);
+      auto fledge_auction_party_origin = GetItemValueForKey<url::Origin>(
+          InputKey::kFledgeAuctionPartyOrigin, input);
+      std::ignore = privacy_sandbox_settings->IsFledgeAllowed(
+          top_frame_origin, fledge_auction_party_origin,
+          content::ContentBrowserClient::InterestGroupApiOperation::kLeave);
+      auto histogram_value = GetItemValue<int>(output_value);
+      histogram_tester.ExpectUniqueSample("PrivacySandbox.IsFledgeLeaveAllowed",
+                                          histogram_value, 1);
+      return;
+    }
+    case (OutputKey::kIsFledgeUpdateAllowedMetric): {
+      SCOPED_TRACE("Check Output: PrivacySandbox.IsFledgeUpdateAllowed");
+      base::HistogramTester histogram_tester;
+      auto top_frame_origin =
+          GetItemValueForKey<url::Origin>(InputKey::kTopFrameOrigin, input);
+      auto fledge_auction_party_origin = GetItemValueForKey<url::Origin>(
+          InputKey::kFledgeAuctionPartyOrigin, input);
+      std::ignore = privacy_sandbox_settings->IsFledgeAllowed(
+          top_frame_origin, fledge_auction_party_origin,
+          content::ContentBrowserClient::InterestGroupApiOperation::kUpdate);
+      auto histogram_value = GetItemValue<int>(output_value);
+      histogram_tester.ExpectUniqueSample(
+          "PrivacySandbox.IsFledgeUpdateAllowed", histogram_value, 1);
+      return;
+    }
+    case (OutputKey::kIsFledgeSellAllowedMetric): {
+      SCOPED_TRACE("Check Output: PrivacySandbox.IsFledgeSellAllowed");
+      base::HistogramTester histogram_tester;
+      auto top_frame_origin =
+          GetItemValueForKey<url::Origin>(InputKey::kTopFrameOrigin, input);
+      auto fledge_auction_party_origin = GetItemValueForKey<url::Origin>(
+          InputKey::kFledgeAuctionPartyOrigin, input);
+      std::ignore = privacy_sandbox_settings->IsFledgeAllowed(
+          top_frame_origin, fledge_auction_party_origin,
+          content::ContentBrowserClient::InterestGroupApiOperation::kSell);
+      auto histogram_value = GetItemValue<int>(output_value);
+      histogram_tester.ExpectUniqueSample("PrivacySandbox.IsFledgeSellAllowed",
+                                          histogram_value, 1);
+      return;
+    }
+    case (OutputKey::kIsFledgeBuyAllowedMetric): {
+      SCOPED_TRACE("Check Output: PrivacySandbox.IsFledgeBuyAllowed");
+      base::HistogramTester histogram_tester;
+      auto top_frame_origin =
+          GetItemValueForKey<url::Origin>(InputKey::kTopFrameOrigin, input);
+      auto fledge_auction_party_origin = GetItemValueForKey<url::Origin>(
+          InputKey::kFledgeAuctionPartyOrigin, input);
+      std::ignore = privacy_sandbox_settings->IsFledgeAllowed(
+          top_frame_origin, fledge_auction_party_origin,
+          content::ContentBrowserClient::InterestGroupApiOperation::kBuy);
+      auto histogram_value = GetItemValue<int>(output_value);
+      histogram_tester.ExpectUniqueSample("PrivacySandbox.IsFledgeBuyAllowed",
                                           histogram_value, 1);
       return;
     }
