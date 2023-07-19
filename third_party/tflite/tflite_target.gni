@@ -40,7 +40,9 @@
 minimal_vars_to_forward_to_target = [
   "cflags",
   "configs",
+  "defines",
   "deps",
+  "include_dirs",
   "public_configs",
   "public_deps",
   "sources",
