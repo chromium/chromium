@@ -103,7 +103,7 @@ class PLATFORM_EXPORT Color {
     kNone,
   };
 
-  static bool IsColorFunction(ColorSpace color_space) {
+  static bool IsPredefinedColorSpace(ColorSpace color_space) {
     return color_space == ColorSpace::kSRGB ||
            color_space == ColorSpace::kSRGBLinear ||
            color_space == ColorSpace::kDisplayP3 ||
@@ -134,6 +134,11 @@ class PLATFORM_EXPORT Color {
 
   static bool IsChromaSecondComponent(ColorSpace color_space) {
     return color_space == ColorSpace::kLch || color_space == ColorSpace::kOklch;
+  }
+
+  static bool IsLegacyColorSpace(ColorSpace color_space) {
+    return color_space == ColorSpace::kSRGBLegacy ||
+           color_space == ColorSpace::kHSL || color_space == ColorSpace::kHWB;
   }
 
   static bool ColorSpaceHasHue(ColorSpace color_space) {

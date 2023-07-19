@@ -79,6 +79,7 @@
 #include "third_party/blink/renderer/core/svg/svg_path_utilities.h"
 #include "third_party/blink/renderer/platform/animation/timing_function.h"
 #include "third_party/blink/renderer/platform/fonts/font_selection_types.h"
+#include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_initiator_type_names.h"
@@ -1642,377 +1643,6 @@ cssvalue::CSSURIValue* ConsumeUrl(CSSParserTokenRange& range,
       url_string, context.CompleteURL(url_string));
 }
 
-static bool ParseRGBParameters(CSSParserTokenRange& range,
-                               const CSSParserContext& context,
-                               Color& result) {
-  DCHECK(range.Peek().FunctionId() == CSSValueID::kRgb ||
-         range.Peek().FunctionId() == CSSValueID::kRgba);
-  CSSParserTokenRange args = ConsumeFunction(range);
-  absl::optional<double> color_array[3];
-  absl::optional<double> alpha = 1.0f;
-  bool has_commas = false;
-  bool has_percent = false;
-  bool has_bare_numbers = false;
-  bool has_none = false;
-  for (int channel = 0; channel < 3; ++channel) {
-    // Commas have to be consistent
-    if (ConsumeCommaIncludingWhitespace(args)) {
-      has_commas = true;
-    } else if (has_commas || args.AtEnd()) {
-      return false;
-    }
-
-    if (CSSPrimitiveValue* value_percent = ConsumePercent(
-            args, context, CSSPrimitiveValue::ValueRange::kAll)) {
-      color_array[channel] =
-          value_percent->GetDoubleValueWithoutClamping() / 100.0f;
-      has_percent = true;
-    } else if (CSSPrimitiveValue* value_number = ConsumeNumber(
-                   args, context, CSSPrimitiveValue::ValueRange::kAll)) {
-      color_array[channel] =
-          value_number->GetDoubleValueWithoutClamping() / 255.0f;
-      has_bare_numbers = true;
-    } else if (ConsumeIdent<CSSValueID::kNone>(args)) {
-      has_none = true;
-    } else {
-      return false;
-    }
-  }
-
-  if (has_bare_numbers && has_percent) {
-    return false;
-  }
-
-  bool comma_consumed = ConsumeCommaIncludingWhitespace(args);
-  bool slash_consumed = ConsumeSlashIncludingWhitespace(args);
-  if ((comma_consumed && !has_commas) || (slash_consumed && has_commas)) {
-    return false;
-  }
-  if (comma_consumed || slash_consumed) {
-    if (CSSPrimitiveValue* value = ConsumeNumberOrPercent(
-            args, context, CSSPrimitiveValue::ValueRange::kAll)) {
-      alpha = value->GetDoubleValueWithoutClamping();
-      if (isfinite(alpha.value())) {
-        alpha = ClampTo<double>(alpha.value(), 0.0, 1.0);
-      }
-    } else {
-      if (ConsumeIdent<CSSValueID::kNone>(args)) {
-        alpha.reset();
-        has_none = true;
-      } else {
-        return false;
-      }
-    }
-  }
-
-  // <modern-rgba-syntax> allows for "none" but disallows commas.
-  // <legacy-rgba-syntax> allows for commas, but not "none". They cannot be
-  // mixed. https://csswg.sesse.net/css-color-4/#typedef-modern-rgb-syntax
-  if (has_none && has_commas) {
-    return false;
-  }
-
-  // TODO(crbug.com/1399566): There are many code paths that still compress
-  // alpha to be an 8-bit integer. If it is not explicitly compressed here,
-  // tests will fail due to some paths doing this compression and others not.
-  // See compositing/background-color/background-color-alpha.html for example.
-  // Ideally we would allow alpha to be any float value, but we have to clean
-  // up all spots where this compression happens before this is possible.
-  if (alpha && isfinite(alpha.value())) {
-    alpha = round(alpha.value() * 255.0) / 255.0;
-  }
-
-  result = Color::FromColorSpace(Color::ColorSpace::kSRGBLegacy, color_array[0],
-                                 color_array[1], color_array[2], alpha);
-
-  return args.AtEnd();
-}
-
-static bool ParseHSLParameters(CSSParserTokenRange& range,
-                               const CSSParserContext& context,
-                               Color& result) {
-  DCHECK(range.Peek().FunctionId() == CSSValueID::kHsl ||
-         range.Peek().FunctionId() == CSSValueID::kHsla);
-  CSSParserTokenRange args = ConsumeFunction(range);
-  absl::optional<float> color_array[3];
-  CSSPrimitiveValue* value = ConsumeHue(args, context, absl::nullopt);
-  bool has_none = false;
-  if (value) {
-    // HSL expects a hue in the range [0.0, 6.0]
-    // https://www.w3.org/TR/css-color-4/#typedef-hue
-    color_array[0] = value->GetDoubleValue() / 60.0f;
-  } else {
-    if (!ConsumeIdent<CSSValueID::kNone>(args)) {
-      return false;
-    }
-    has_none = true;
-  }
-
-  bool requires_commas = false;
-  for (int i = 1; i < 3; i++) {
-    if (ConsumeCommaIncludingWhitespace(args)) {
-      if (i != 1 && !requires_commas) {
-        return false;
-      }
-      requires_commas = true;
-    } else if (requires_commas || args.AtEnd()) {
-      return false;
-    }
-    value = ConsumePercent(args, context, CSSPrimitiveValue::ValueRange::kAll);
-    if (value) {
-      double double_value = value->GetDoubleValue();
-      color_array[i] = ClampTo<float>(double_value, 0.0f, 100.0f) /
-                       100.0f;  // Needs to be value between 0 and 1.0.
-    } else {
-      if (!ConsumeIdent<CSSValueID::kNone>(args)) {
-        return false;
-      }
-      has_none = true;
-    }
-  }
-
-  absl::optional<float> alpha;
-  bool comma_consumed = ConsumeCommaIncludingWhitespace(args);
-  bool slash_consumed = ConsumeSlashIncludingWhitespace(args);
-  if ((comma_consumed && !requires_commas) ||
-      (slash_consumed && requires_commas)) {
-    return false;
-  }
-  if (comma_consumed || slash_consumed) {
-    double alpha_param = 1.0;
-    if (ConsumeNumberRaw(args, context, alpha_param)) {
-      alpha = ClampTo<float>(alpha_param, 0.0f, 1.0f);
-    } else {
-      CSSPrimitiveValue* alpha_percent =
-          ConsumePercent(args, context, CSSPrimitiveValue::ValueRange::kAll);
-      if (alpha_percent) {
-        alpha = alpha_percent->GetDoubleValue() / 100.0f;
-      } else {
-        if (!ConsumeIdent<CSSValueID::kNone>(args)) {
-          return false;
-        }
-        has_none = true;
-      }
-    }
-  } else {
-    // It was the hsl form so it should consider alpha to be 1.0f.
-    alpha = 1.0f;
-  }
-
-  if (requires_commas && has_none) {
-    return false;
-  }
-
-  result =
-      Color::FromHSLA(color_array[0], color_array[1], color_array[2], alpha);
-  return args.AtEnd();
-}
-
-// If there is no alpha value, set it to 1.0. "none" is a different value.
-// This is the behavior required by most CSSColor4 colors like lab, lch and the
-// color() function.
-static absl::optional<double> ConsumeAlphaWithLeadingSlash(
-    CSSParserTokenRange& range,
-    const CSSParserContext& context) {
-  absl::optional<double> result;
-  double raw_alpha = 1.0;
-  bool alpha_is_none = false;
-  if (ConsumeSlashIncludingWhitespace(range)) {
-    alpha_is_none = ConsumeIdent<CSSValueID::kNone>(range);
-    if (!alpha_is_none) {
-      if (!ConsumeNumberRaw(range, context, raw_alpha)) {
-        CSSPrimitiveValue* alpha_percent =
-            ConsumePercent(range, context, CSSPrimitiveValue::ValueRange::kAll);
-        if (!alpha_percent) {
-          return false;
-        }
-        raw_alpha = alpha_percent->GetDoubleValue() / 100.0;
-      }
-    }
-  }
-  if (!alpha_is_none) {
-    result = ClampTo<double>(raw_alpha, 0.0, 1.0);
-  }
-
-  return result;
-}
-
-static bool ParseHWBParameters(CSSParserTokenRange& range,
-                               const CSSParserContext& context,
-                               Color& result) {
-  DCHECK(range.Peek().FunctionId() == CSSValueID::kHwb);
-  CSSParserTokenRange args = ConsumeFunction(range);
-  CSSPrimitiveValue* value;
-  absl::optional<float> hue;
-  if (!ConsumeIdent<CSSValueID::kNone>(args)) {
-    value = ConsumeHue(args, context, absl::nullopt);
-    if (!value) {
-      return false;
-    }
-    // HWB expects a hue in the range [0.0, 6.0]
-    // https://www.w3.org/TR/css-color-4/#typedef-hue
-    hue = value->GetDoubleValue() / 60.0f;
-  }
-
-  // Consume two percentage values.
-  absl::optional<float> percentages[2];
-  for (auto& percentage : percentages) {
-    if (ConsumeIdent<CSSValueID::kNone>(args)) {
-      continue;
-    }
-    value = ConsumePercent(args, context, CSSPrimitiveValue::ValueRange::kAll);
-    if (!value) {
-      return false;
-    }
-    double double_value = value->GetDoubleValue();
-    percentage = ClampTo<float>(double_value, 0.0f, 100.0f) /
-                 100.0f;  // Needs to be a value between 0 and 1.0.
-  }
-
-  absl::optional<float> float_alpha;
-  absl::optional<double> optional_alpha =
-      ConsumeAlphaWithLeadingSlash(args, context);
-  // Per spec, "none" for hwb = 0.0
-  if (optional_alpha.has_value()) {
-    float_alpha = optional_alpha.value();
-  }
-
-  result = Color::FromHWBA(hue, percentages[0], percentages[1], float_alpha);
-  return args.AtEnd();
-}
-
-static bool ParseLABOrOKLABParameters(CSSParserTokenRange& range,
-                                      const CSSParserContext& context,
-                                      Color& result) {
-  CSSValueID function_id = range.Peek().FunctionId();
-  DCHECK(function_id == CSSValueID::kLab || function_id == CSSValueID::kOklab);
-  Color::ColorSpace color_space = (function_id == CSSValueID::kLab)
-                                      ? Color::ColorSpace::kLab
-                                      : Color::ColorSpace::kOklab;
-  context.Count(WebFeature::kCSSColorLabOklab);
-  CSSParserTokenRange args = ConsumeFunction(range);
-  // Consume lightness, either a percentage or a number or "none"
-  absl::optional<double> lightness;
-  if (!ConsumeIdent<CSSValueID::kNone>(args)) {
-    if (CSSPrimitiveValue* value_percent =
-            ConsumePercent(args, context, CSSPrimitiveValue::ValueRange::kAll);
-        value_percent) {
-      lightness =
-          std::min(100.0, std::max(0.0, value_percent->GetDoubleValue()));
-    } else if (CSSPrimitiveValue* value = ConsumeNumber(
-                   args, context, CSSPrimitiveValue::ValueRange::kAll);
-               value) {
-      lightness = value->GetDoubleValueWithoutClamping();
-      if (isfinite(lightness.value())) {
-        lightness = std::min(100.0, std::max(0.0, lightness.value())) *
-                    (function_id == CSSValueID::kLab ? 1.0 : 100.0);
-      }
-    } else {
-      return false;
-    }
-  }
-
-  // If the values for a or b are percentages they need to be mapped onto the
-  // correct ranges. https://www.w3.org/TR/css-color-4/#specifying-lab-lch
-  const double ab_coefficient_for_percentages =
-      (color_space == Color::ColorSpace::kLab) ? 1.25 : 0.004;
-  absl::optional<double> ab[2];
-  for (absl::optional<double>& i : ab) {
-    if (ConsumeIdent<CSSValueID::kNone>(args)) {
-      continue;
-    }
-    if (CSSPrimitiveValue* value_percent =
-            ConsumePercent(args, context, CSSPrimitiveValue::ValueRange::kAll);
-        value_percent) {
-      i = value_percent->GetDoubleValue() * ab_coefficient_for_percentages;
-    } else if (CSSPrimitiveValue* value = ConsumeNumber(
-                   args, context, CSSPrimitiveValue::ValueRange::kAll);
-               value) {
-      i = value->GetDoubleValueWithoutClamping();
-    } else {
-      return false;
-    }
-  }
-
-  absl::optional<double> alpha = ConsumeAlphaWithLeadingSlash(args, context);
-
-  result = Color::FromColorSpace(color_space, lightness, ab[0], ab[1], alpha);
-  return args.AtEnd();
-}
-
-static bool ParseLCHOrOKLCHParameters(CSSParserTokenRange& range,
-                                      const CSSParserContext& context,
-                                      Color& result) {
-  CSSValueID function_id = range.Peek().FunctionId();
-  DCHECK(function_id == CSSValueID::kLch || function_id == CSSValueID::kOklch);
-  Color::ColorSpace color_space = (function_id == CSSValueID::kLch)
-                                      ? Color::ColorSpace::kLch
-                                      : Color::ColorSpace::kOklch;
-
-  context.Count(WebFeature::kCSSColorLchOklch);
-  CSSParserTokenRange args = ConsumeFunction(range);
-  // Consume lightness, either a percentage or a number
-  absl::optional<double> lightness;
-  if (!ConsumeIdent<CSSValueID::kNone>(args)) {
-    if (CSSPrimitiveValue* value_percent =
-            ConsumePercent(args, context, CSSPrimitiveValue::ValueRange::kAll);
-        value_percent) {
-      lightness =
-          std::min(100.0, std::max(0.0, value_percent->GetDoubleValue()));
-    } else if (CSSPrimitiveValue* value = ConsumeNumber(
-                   args, context, CSSPrimitiveValue::ValueRange::kAll);
-               value) {
-      lightness = value->GetDoubleValueWithoutClamping();
-      if (isfinite(lightness.value())) {
-        lightness = std::min(
-            100.0,
-            std::max(0.0, lightness.value() *
-                              (function_id == CSSValueID::kLch ? 1.0 : 100.0)));
-      }
-    } else {
-      return false;
-    }
-  }
-
-  // If the value for chroma is a percentage it needs to be mapped onto the
-  // correct range. https://www.w3.org/TR/css-color-4/#specifying-lab-lch
-  const double chroma_coefficient_for_percentages =
-      (color_space == Color::ColorSpace::kLch) ? 1.5 : 0.004;
-  absl::optional<double> chroma;
-  if (!ConsumeIdent<CSSValueID::kNone>(args)) {
-    if (CSSPrimitiveValue* value_percent =
-            ConsumePercent(args, context, CSSPrimitiveValue::ValueRange::kAll);
-        value_percent) {
-      chroma =
-          value_percent->GetDoubleValue() * chroma_coefficient_for_percentages;
-    } else if (CSSPrimitiveValue* value = ConsumeNumber(
-                   args, context, CSSPrimitiveValue::ValueRange::kAll);
-               value) {
-      chroma = value->GetDoubleValueWithoutClamping();
-      if (isfinite(chroma.value())) {
-        chroma = std::max(0.0, chroma.value());
-      }
-    } else {
-      return false;
-    }
-  }
-
-  absl::optional<double> hue;
-  if (!ConsumeIdent<CSSValueID::kNone>(args)) {
-    if (CSSPrimitiveValue* value = ConsumeHue(args, context, absl::nullopt);
-        value) {
-      hue = std::max(0.0, value->GetDoubleValue());
-    } else {
-      return false;
-    }
-  }
-
-  absl::optional<double> alpha = ConsumeAlphaWithLeadingSlash(args, context);
-
-  result = Color::FromColorSpace(color_space, lightness, chroma, hue, alpha);
-  return args.AtEnd();
-}
-
 static bool ConsumeColorInterpolationSpace(
     CSSParserTokenRange& args,
     Color::ColorSpace& color_space,
@@ -2155,86 +1785,6 @@ static CSSValue* ConsumeColorMixFunction(CSSParserTokenRange& range,
   return result;
 }
 
-// https://www.w3.org/TR/css-color-4/#funcdef-color
-static bool ParseColorFunctionParameters(CSSParserTokenRange& range,
-                                         const CSSParserContext& context,
-                                         Color& result) {
-  DCHECK(range.Peek().FunctionId() == CSSValueID::kColor);
-  context.Count(WebFeature::kCSSColorColorSpecifiedSpace);
-
-  CSSParserTokenRange args = ConsumeFunction(range);
-  // First argument is the colorspace
-  CSSValueID colorspace_id_ = args.ConsumeIncludingWhitespace().Id();
-  Color::ColorSpace colorspace;
-  switch (colorspace_id_) {
-    case CSSValueID::kSRGB:
-      colorspace = Color::ColorSpace::kSRGB;
-      break;
-    case CSSValueID::kRec2020:
-      colorspace = Color::ColorSpace::kRec2020;
-      break;
-    case CSSValueID::kSRGBLinear:
-      colorspace = Color::ColorSpace::kSRGBLinear;
-      break;
-    case CSSValueID::kDisplayP3:
-      colorspace = Color::ColorSpace::kDisplayP3;
-      break;
-    case CSSValueID::kA98Rgb:
-      colorspace = Color::ColorSpace::kA98RGB;
-      break;
-    case CSSValueID::kProphotoRgb:
-      colorspace = Color::ColorSpace::kProPhotoRGB;
-      break;
-    case CSSValueID::kXyzD50:
-      colorspace = Color::ColorSpace::kXYZD50;
-      break;
-    case CSSValueID::kXyz:
-    case CSSValueID::kXyzD65:
-      colorspace = Color::ColorSpace::kXYZD65;
-      break;
-    default:
-      return false;
-  }
-
-  absl::optional<double> params[3];
-  bool has_commas = false;
-  bool has_none = false;
-  for (absl::optional<double>& param : params) {
-    if (ConsumeCommaIncludingWhitespace(args)) {
-      has_commas = true;
-    }
-    if (ConsumeIdent<CSSValueID::kNone>(args)) {
-      has_none = true;
-      continue;
-    }
-
-    CSSPrimitiveValue* value =
-        ConsumeNumber(args, context, CSSPrimitiveValue::ValueRange::kAll);
-    if (value) {
-      param = value->GetDoubleValueWithoutClamping();
-      continue;
-    }
-
-    value = ConsumePercent(args, context, CSSPrimitiveValue::ValueRange::kAll);
-    if (value) {
-      param = value->GetDoubleValue() / 100.0;
-      continue;
-    }
-
-    // Missing components should not parse.
-    return false;
-  }
-  if (has_commas && has_none) {
-    return false;
-  }
-
-  absl::optional<double> alpha = ConsumeAlphaWithLeadingSlash(args, context);
-
-  result =
-      Color::FromColorSpace(colorspace, params[0], params[1], params[2], alpha);
-  return args.AtEnd();
-}
-
 static bool ParseHexColor(CSSParserTokenRange& range,
                           Color& result,
                           bool accept_quirky_colors) {
@@ -2276,50 +1826,263 @@ static bool ParseHexColor(CSSParserTokenRange& range,
   return true;
 }
 
+static Color::ColorSpace CSSValueIDToColorSpace(const CSSValueID& id) {
+  switch (id) {
+    case CSSValueID::kRgb:
+    case CSSValueID::kRgba:
+      return Color::ColorSpace::kSRGBLegacy;
+    case CSSValueID::kHsl:
+    case CSSValueID::kHsla:
+      return Color::ColorSpace::kHSL;
+    case CSSValueID::kHwb:
+      return Color::ColorSpace::kHWB;
+    case CSSValueID::kLab:
+      return Color::ColorSpace::kLab;
+    case CSSValueID::kOklab:
+      return Color::ColorSpace::kOklab;
+    case CSSValueID::kLch:
+      return Color::ColorSpace::kLch;
+    case CSSValueID::kOklch:
+      return Color::ColorSpace::kOklch;
+    case CSSValueID::kSRGB:
+      return Color::ColorSpace::kSRGB;
+    case CSSValueID::kRec2020:
+      return Color::ColorSpace::kRec2020;
+    case CSSValueID::kSRGBLinear:
+      return Color::ColorSpace::kSRGBLinear;
+    case CSSValueID::kDisplayP3:
+      return Color::ColorSpace::kDisplayP3;
+    case CSSValueID::kA98Rgb:
+      return Color::ColorSpace::kA98RGB;
+    case CSSValueID::kProphotoRgb:
+      return Color::ColorSpace::kProPhotoRGB;
+    case CSSValueID::kXyzD50:
+      return Color::ColorSpace::kXYZD50;
+    case CSSValueID::kXyz:
+    case CSSValueID::kXyzD65:
+      return Color::ColorSpace::kXYZD65;
+    default:
+      return Color::ColorSpace::kNone;
+  }
+}
+
+static bool ColorChannelIsHue(Color::ColorSpace color_space, int channel) {
+  if (color_space == Color::ColorSpace::kHSL ||
+      color_space == Color::ColorSpace::kHWB) {
+    if (channel == 0) {
+      return true;
+    }
+  }
+  if (color_space == Color::ColorSpace::kLch ||
+      color_space == Color::ColorSpace::kOklch) {
+    if (channel == 2) {
+      return true;
+    }
+  }
+  return false;
+}
+
+// Parses the color inputs rgb(), rgba(), hsl(), hsla(), hwb(), lab(), oklab(),
+// lch(), oklch() and color(). https://www.w3.org/TR/css-color-4/
 static bool ParseFunctionalSyntaxColor(CSSParserTokenRange& range,
                                        const CSSParserContext& context,
                                        Color& result) {
-  CSSParserTokenRange color_range = range;
-  switch (range.Peek().FunctionId()) {
-    case CSSValueID::kRgb:
-    case CSSValueID::kRgba:
-      if (!ParseRGBParameters(color_range, context, result)) {
-        return false;
-      }
-      break;
-    case CSSValueID::kHsl:
-    case CSSValueID::kHsla:
-      if (!ParseHSLParameters(color_range, context, result)) {
-        return false;
-      }
-      break;
-    case CSSValueID::kHwb:
-      if (!ParseHWBParameters(color_range, context, result)) {
-        return false;
-      }
-      break;
-    case CSSValueID::kLab:
-    case CSSValueID::kOklab:
-      if (!ParseLABOrOKLABParameters(color_range, context, result)) {
-        return false;
-      }
-      break;
-    case CSSValueID::kLch:
-    case CSSValueID::kOklch:
-      if (!ParseLCHOrOKLCHParameters(color_range, context, result)) {
-        return false;
-      }
-      break;
-    case CSSValueID::kColor:
-      if (!ParseColorFunctionParameters(color_range, context, result)) {
-        return false;
-      }
-      break;
-    default:
-      return false;
+  // Get the color space. This will either be the name of the function, or it
+  // will be the first argument of the "color" function.
+  CSSValueID function_id = range.Peek().FunctionId();
+  Color::ColorSpace color_space = CSSValueIDToColorSpace(function_id);
+  if (color_space == Color::ColorSpace::kNone &&
+      function_id != CSSValueID::kColor) {
+    return false;
   }
-  range = color_range;
-  return true;
+  CSSParserTokenRange args = ConsumeFunction(range);
+  if (function_id == CSSValueID::kColor) {
+    color_space =
+        CSSValueIDToColorSpace(args.ConsumeIncludingWhitespace().Id());
+    if (!Color::IsPredefinedColorSpace(color_space)) {
+      return false;
+    }
+  }
+
+  // Parse the three color channel params.
+  absl::optional<double> params[3];
+  bool is_percentage[3] = {false, false, false};
+  bool has_commas = false;
+  bool has_none = false;
+  CSSPrimitiveValue* temp;
+  for (int i = 0; i < 3; i++) {
+    if (has_commas && !ConsumeCommaIncludingWhitespace(args)) {
+      // Commas must be consistent.
+      return false;
+    }
+    if (ConsumeCommaIncludingWhitespace(args)) {
+      has_commas = true;
+    }
+    if (ConsumeIdent<CSSValueID::kNone>(args)) {
+      has_none = true;
+      continue;
+    }
+
+    if (ColorChannelIsHue(color_space, i)) {
+      temp = ConsumeHue(args, context, absl::nullopt);
+      if (temp) {
+        params[i] = temp->GetDoubleValue();
+        continue;
+      } else {
+        return false;
+      }
+    }
+
+    if ((temp = ConsumeNumber(args, context,
+                              CSSPrimitiveValue::ValueRange::kAll))) {
+      params[i] = temp->GetDoubleValueWithoutClamping();
+      continue;
+    }
+
+    if ((temp = ConsumePercent(args, context,
+                               CSSPrimitiveValue::ValueRange::kAll))) {
+      params[i] = temp->GetDoubleValue() / 100.0;
+      is_percentage[i] = true;
+      continue;
+    }
+
+    // Missing components should not parse.
+    return false;
+  }
+
+  // Parse alpha.
+  absl::optional<double> alpha = 1.0;
+  bool expect_alpha = false;
+  if (ConsumeSlashIncludingWhitespace(args)) {
+    expect_alpha = true;
+    if (has_commas) {
+      return false;
+    }
+  } else if (Color::IsLegacyColorSpace(color_space) && has_commas &&
+             ConsumeCommaIncludingWhitespace(args)) {
+    expect_alpha = true;
+  }
+  if (expect_alpha) {
+    if ((temp = ConsumeNumber(args, context,
+                              CSSPrimitiveValue::ValueRange::kAll))) {
+      alpha = temp->GetDoubleValueWithoutClamping();
+      if (isfinite(alpha.value())) {
+        alpha = ClampTo<double>(alpha.value(), 0.0, 1.0);
+      }
+    } else {
+      if ((temp = ConsumePercent(args, context,
+                                 CSSPrimitiveValue::ValueRange::kAll))) {
+        alpha = temp->GetDoubleValue() / 100.0;
+      } else if (ConsumeIdent<CSSValueID::kNone>(args)) {
+        has_none = true;
+        alpha.reset();
+      } else {
+        return false;
+      }
+    }
+  }
+
+  // "None" is not a part of the legacy syntax.
+  if (has_commas && has_none) {
+    return false;
+  }
+
+  // Legacy rgb needs percentage consistency. Non-percentages need to be mapped
+  // from the range [0, 255] to the [0, 1] that we store internally.
+  if (color_space == Color::ColorSpace::kSRGBLegacy) {
+    bool uses_percentage = false;
+    bool uses_bare_numbers = false;
+    for (int i = 0; i < 3; i++) {
+      if (params[i].has_value()) {
+        if (is_percentage[i]) {
+          if (uses_bare_numbers) {
+            return false;
+          }
+          uses_percentage = true;
+        } else {
+          if (uses_percentage) {
+            return false;
+          }
+          uses_bare_numbers = true;
+          params[i].value() /= 255.0;
+        }
+      }
+    }
+    // TODO(crbug.com/1399566): There are many code paths that still compress
+    // alpha to be an 8-bit integer. If it is not explicitly compressed here,
+    // tests will fail due to some paths doing this compression and others not.
+    // See compositing/background-color/background-color-alpha.html for example.
+    // Ideally we would allow alpha to be any float value, but we have to clean
+    // up all spots where this compression happens before this is possible.
+    if (alpha && isfinite(alpha.value())) {
+      alpha = round(alpha.value() * 255.0) / 255.0;
+    }
+  }
+
+  // Legacy syntax is not allowed for hwb().
+  if (has_commas && color_space == Color::ColorSpace::kHWB) {
+    return false;
+  }
+
+  if (color_space == Color::ColorSpace::kHSL) {
+    // 2nd and 3rd parameters of hsl() must be percentages or "none" and clamped
+    // to the range [0, 1].
+    for (int i : {1, 2}) {
+      if (params[i].has_value()) {
+        if (!is_percentage[i]) {
+          return false;
+        }
+        params[i] = ClampTo<double>(params[i].value(), 0.0, 1.0);
+      }
+    }
+  }
+
+  // For historical reasons, the "hue" of hwb() and hsl() are stored in the
+  // range [0, 6].
+  if ((color_space == Color::ColorSpace::kHSL ||
+       color_space == Color::ColorSpace::kHWB) &&
+      params[0].has_value()) {
+    params[0].value() /= 60.0;
+  }
+
+  // Lightness is stored in the range [0, 100] for lab(), oklab(), lch() and
+  // oklch(). For oklab() and oklch() input for lightness is in the range [0,
+  // 1].
+  if (Color::IsLightnessFirstComponent(color_space)) {
+    if (params[0].has_value()) {
+      if (is_percentage[0]) {
+        params[0].value() *= 100.0;
+      } else if (color_space == Color::ColorSpace::kOklab ||
+                 color_space == Color::ColorSpace::kOklch) {
+        params[0].value() *= 100.0;
+      }
+    }
+
+    // For lab() and oklab() percentage inputs for a or b need to be mapped onto
+    // the correct ranges. https://www.w3.org/TR/css-color-4/#specifying-lab-lch
+    if (!Color::IsChromaSecondComponent(color_space)) {
+      const double ab_coefficient_for_percentages =
+          (color_space == Color::ColorSpace::kLab) ? 125 : 0.4;
+
+      if (params[1].has_value() && is_percentage[1]) {
+        params[1].value() *= ab_coefficient_for_percentages;
+      }
+      if (params[2].has_value() && is_percentage[2]) {
+        params[2].value() *= ab_coefficient_for_percentages;
+      }
+    } else {
+      // Same as above, mapping percentage values for chroma in lch()/oklch().
+      const double chroma_coefficient_for_percentages =
+          (color_space == Color::ColorSpace::kLch) ? 150 : 0.4;
+      if (params[1].has_value() && is_percentage[1]) {
+        params[1].value() *= chroma_coefficient_for_percentages;
+      }
+    }
+  }
+
+  result = Color::FromColorSpace(color_space, params[0], params[1], params[2],
+                                 alpha);
+  return args.AtEnd();
 }
 
 namespace {
