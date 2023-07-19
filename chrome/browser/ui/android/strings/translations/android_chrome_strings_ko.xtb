@@ -369,7 +369,7 @@
 <translation id="3006881078666935414">사용 데이터 없음</translation>
 <translation id="3016635187733453316">이 기기가 인터넷에 연결되어 있는지 확인하세요.</translation>
 <translation id="3026955690410463085">링크 포함</translation>
-<translation id="3027644380269727216">사이트 내 활동을 기반으로 추천됩니다. 설정이 사용 설정되어 있습니다.</translation>
+<translation id="3027644380269727216">사이트 내 활동을 기반으로 추천됩니다. 이 설정을 사용하고 있습니다.</translation>
 <translation id="3029276696788198026">미리 로드 안함</translation>
 <translation id="3029704984691124060">암호가 일치하지 않습니다.</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />도움 받기<ph name="END_LINK" /></translation>
@@ -617,7 +617,7 @@
 <translation id="4405224443901389797">다음 폴더로 이동…</translation>
 <translation id="4405636711880428279">가상 카드를 삭제하시겠습니까?</translation>
 <translation id="4409271659088619928">기본 검색엔진은 <ph name="DSE" />입니다. 해당 검색엔진에서 검색 기록을 삭제할 수 있는 경우 검색 기록 삭제 안내를 확인하세요.</translation>
-<translation id="441383202534727410">방문 기록을 기반으로 여기에 사이트 목록이 표시되기까지 최대 일주일이 걸릴 수 있습니다.</translation>
+<translation id="441383202534727410">방문 기록을 기반으로 사이트 목록이 표시되는 데 최대 일주일이 걸릴 수 있습니다.</translation>
 <translation id="4415276339145661267">Google 계정 관리</translation>
 <translation id="4425140285732600465">가격 추적 중입니다. 사이트에서 가격이 인하되면 알림이 전송됩니다.</translation>
 <translation id="442518031075347249">더 이상 Google Pay에서 가상 카드를 사용할 수 없습니다. <ph name="BEGIN_LINK1" />가상 카드에 관해 자세히 알아보기<ph name="END_LINK1" /></translation>
@@ -920,7 +920,7 @@
 <translation id="6005538289190791541">추천 비밀번호</translation>
 <translation id="6011308810877101166">추천 검색어 개선</translation>
 <translation id="6026538407078977628">전체 화면으로 확장</translation>
-<translation id="6030719887161080597">사이트에서 광고 실적을 측정하는 데 사용하는 정보를 관리합니다.</translation>
+<translation id="6030719887161080597">사이트에서 광고 실적을 측정하는 데 사용하는 정보 관리</translation>
 <translation id="6034146297924778597">지난 15분 동안의 다음 기록이 삭제됩니다.</translation>
 <translation id="6039379616847168523">다음 탭으로 이동</translation>
 <translation id="6040143037577758943">닫기</translation>
@@ -1202,7 +1202,7 @@
 <translation id="7453467225369441013">대부분의 사이트에서 로그아웃됩니다. Google 계정에서는 로그아웃되지 않습니다.</translation>
 <translation id="7453810262525006706">사이드뷰로 축소</translation>
 <translation id="7454641608352164238">저장공간 부족</translation>
-<translation id="7455988709578031708">방문 기록을 기반으로 추천됩니다. 설정이 사용 설정되어 있습니다.</translation>
+<translation id="7455988709578031708">방문 기록을 기반으로 추천됩니다. 이 설정을 사용하고 있습니다.</translation>
 <translation id="7456774706094330779">확장된 미리 로드</translation>
 <translation id="7466431077154602932">간단히 보기</translation>
 <translation id="7474822150871987353">페이지에서 나가지 않고도 웹사이트의 주제에 관해 알아봅니다. 페이지에서 하나 이상의 단어를 선택하여 검색합니다.</translation>
@@ -1535,7 +1535,7 @@
 <translation id="9100610230175265781">암호를 입력해야 합니다.</translation>
 <translation id="9101137867221042551">관리</translation>
 <translation id="9102803872260866941">미리보기 탭 열림</translation>
-<translation id="9102864637938129124">사이트 및 광고주가 광고 실적을 파악할 수 있습니다. 설정이 사용 설정되어 있습니다.</translation>
+<translation id="9102864637938129124">사이트 및 광고주가 광고 실적을 파악할 수 있습니다. 이 설정을 사용하고 있습니다.</translation>
 <translation id="9104217018994036254">탭을 공유할 기기 목록입니다.</translation>
 <translation id="9106148373857059373">북마크 저장 흐름 닫힘</translation>
 <translation id="9108312223223904744">휴대전화를 보안 키로 사용 지원</translation>

@@ -1285,7 +1285,7 @@ Na primjer, neke web-lokacije na taj zahtjev mogu odgovoriti tako da vam prikaž
 <translation id="7851858861565204677">Ostali uređaji</translation>
 <translation id="7853202427316060426">Aktivnost</translation>
 <translation id="7859988229622350291">Nikad ne prevodi</translation>
-<translation id="7864208933699511058">Hoće li se oglas koji vam se prikazuje dok pregledavate personalizirati ovisi o toj postavci, <ph name="BEGIN_LINK_1" />oglasima koje predlažu web-lokacije<ph name="END_LINK_1" />, <ph name="BEGIN_LINK_2" />postavkama kolačića<ph name="END_LINK_2" /> i o tome personalizira li web-lokacija koju pregledavate oglase.</translation>
+<translation id="7864208933699511058">Personalizacija oglasa koji vam se prikazuje dok pregledavate ovisi o toj postavci, <ph name="BEGIN_LINK_1" />oglasima koje predlažu web-lokacije<ph name="END_LINK_1" />, <ph name="BEGIN_LINK_2" />postavkama kolačića<ph name="END_LINK_2" /> i postavkama personalizacije koje određuje web-lokacija koju pregledavate.</translation>
 <translation id="7866213166286285359">Prevedite stranice ovdje</translation>
 <translation id="78707286264420418"><ph name="PRODUCT_NAME" /> treba dopuštenje za uređaje u blizini radi povezivanja s vašim uređajem</translation>
 <translation id="7875915731392087153">Izradite e-poruku</translation>

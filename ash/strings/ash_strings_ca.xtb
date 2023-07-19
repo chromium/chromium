@@ -41,7 +41,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="1175572348579024023">Desplaça</translation>
 <translation id="1178581264944972037">Posa en pausa</translation>
 <translation id="1181037720776840403">Suprimeix</translation>
-<translation id="1182225749592316782">Es concedirà l'accés a tots els llocs web i totes les aplicacions que tinguin els permisos per accedir a la càmera i al micròfon</translation>
+<translation id="1182225749592316782">Permet l'accés a totes les aplicacions i tots els llocs web amb permisos per accedir a la càmera i al micròfon.</translation>
 <translation id="1183863904939664422">No m'interessa aquest suggeriment</translation>
 <translation id="1184126796192815024">Aquesta xarxa no admet les aplicacions de reproducció en continu del telèfon. Prova d'utilitzar el punt d'accés Wi-Fi del telèfon. <ph name="LEARN_MORE" /></translation>
 <translation id="118437560755358292">Introdueix la contrasenya o el PIN per augmentar la seguretat</translation>
@@ -1068,7 +1068,7 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="576453121877257266">La funció Llum nocturna està activada.</translation>
 <translation id="5764569119212455782">Canvia al darrer idioma seleccionat</translation>
 <translation id="5769373120130404283">Pantalla de privadesa</translation>
-<translation id="5773950591113557721">Es concedirà l'accés a <ph name="APP_NAME" /> i totes les aplicacions i tots els llocs web que tinguin els permisos per accedir a la càmera i al micròfon</translation>
+<translation id="5773950591113557721">Permet l'accés a <ph name="APP_NAME" /> i a totes les aplicacions i tots els llocs web amb permís per accedir a la càmera i al micròfon.</translation>
 <translation id="5774295353725270860">Obre l'aplicació Fitxers</translation>
 <translation id="5777841717266010279">Vols aturar la compartició de pantalla?</translation>
 <translation id="5779721926447984944">Fitxers fixats</translation>
@@ -1295,7 +1295,7 @@ Instal·lació nova</translation>
 <translation id="679368458793552943">Amplia quan la lupa estigui activada</translation>
 <translation id="6801878137098616817">Editat fa poc</translation>
 <translation id="6802196538183166658">Obre la configuració ràpida seleccionant l'hora</translation>
-<translation id="6802687695197837794">Es concedirà l'accés a <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> i totes les aplicacions i tots els llocs web que tinguin els permisos per accedir a la càmera i al micròfon</translation>
+<translation id="6802687695197837794">Permet l'accés a <ph name="APP1_NAME" />, <ph name="APP2_NAME" />  i a totes les aplicacions i tots els llocs web amb permisos per accedir a la càmera i al micròfon.</translation>
 <translation id="6803622936009808957">No s'han pogut projectar les pantalles, perquè no s'ha trobat cap resolució compatible. S'ha entrat al mode d'escriptori ampliat.</translation>
 <translation id="6812232930908427253">No s'ha pogut desar l'escriptori. Hi ha massa finestres o pestanyes.</translation>
 <translation id="6818242057446442178">Enrere per paraula</translation>

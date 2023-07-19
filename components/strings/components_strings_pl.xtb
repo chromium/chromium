@@ -886,7 +886,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
       by upewnić się, że serwer proxy działa. Jeśli uważasz, że
       nie powinien być on używany:
       <ph name="PLATFORM_TEXT" /></translation>
-<translation id="317878711435188021">Wiedzieć, kiedy używasz urządzenia</translation>
+<translation id="317878711435188021">Uzyskiwanie informacji o tym, kiedy używasz urządzenia</translation>
 <translation id="3180358318770512945">Rodzicielstwo</translation>
 <translation id="3187306450550410410">Elastyczne zarządzanie pracą</translation>
 <translation id="3187472288455401631">Pomiar skuteczności reklam</translation>
@@ -3317,7 +3317,7 @@ Dodatkowe informacje:
 <translation id="9048662076076074925">24 x 36 cali</translation>
 <translation id="9049981332609050619">Podjęto próbę nawiązania połączenia z witryną <ph name="DOMAIN" />, jednak serwer przedstawił nieprawidłowy certyfikat.</translation>
 <translation id="9050666287014529139">Hasło</translation>
-<translation id="9053840549256861041">Wprowadzamy pomiar skuteczności reklam – nową funkcję ochrony prywatności w reklamach. Chrome udostępnia witrynom bardzo ograniczone informacje (np. o tym, kiedy reklama się wyświetliła), aby ułatwiać im ocenę skuteczności reklam.</translation>
+<translation id="9053840549256861041">Wprowadzamy pomiar skuteczności reklam – nową funkcję ochrony prywatności w reklamach. Chrome udostępnia witrynom bardzo ograniczone informacje (np. o tym, kiedy reklama się wyświetliła), aby pomagać im w ocenie skuteczności reklam.</translation>
 <translation id="9056953843249698117">Sklep</translation>
 <translation id="9062620674789239642">Mógł zostać przeniesiony, edytowany lub usunięty.</translation>
 <translation id="9063398205799684336">Koperta Kaku 2</translation>

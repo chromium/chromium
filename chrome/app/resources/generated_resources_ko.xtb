@@ -1186,7 +1186,7 @@
 <translation id="1992397118740194946">설정 안됨</translation>
 <translation id="1992924914582925289">기기에서 삭제</translation>
 <translation id="1994173015038366702">사이트 URL</translation>
-<translation id="1995916364271252349">사이트에서 사용하고 표시할 수 있는 정보(위치, 카메라, 팝업 등)를 제어합니다.</translation>
+<translation id="1995916364271252349">사이트에서 사용하고 표시할 수 있는 정보(위치, 카메라, 팝업 등) 제어</translation>
 <translation id="1997433994358798851">Chrome에서 블루투스를 사용하여 기기에 연결하려면 권한이 필요합니다.</translation>
 <translation id="1997616988432401742">내 인증서</translation>
 <translation id="1999115740519098545">시작 그룹</translation>
@@ -2440,7 +2440,7 @@
 <translation id="3024374909719388945">24시간 단위 사용</translation>
 <translation id="3025174326431589540">{COUNT,plural, =0{저장된 비밀번호 없음}=1{사이트 {COUNT}개의 비밀번호 확인함}other{사이트 및 앱 {COUNT}개의 비밀번호 확인함}}</translation>
 <translation id="3027296729579831126">Nearby Share 사용 설정</translation>
-<translation id="3027644380269727216">사이트 내 활동을 기반으로 추천됩니다. 설정이 사용 설정되어 있습니다.</translation>
+<translation id="3027644380269727216">사이트 내 활동을 기반으로 추천됩니다. 이 설정을 사용하고 있습니다.</translation>
 <translation id="3029276696788198026">미리 로드 안함</translation>
 <translation id="3029466929721441205">앱 표시줄에 스타일러스 도구 표시</translation>
 <translation id="3029808567601324798">잠금 시간</translation>
@@ -2564,7 +2564,7 @@
 <translation id="3150927491400159470">강력 새로고침</translation>
 <translation id="315116470104423982">모바일 데이터</translation>
 <translation id="3151539355209957474">시작 시간</translation>
-<translation id="3151562827395986343">방문 기록, 쿠키, 캐시 등을 삭제합니다.</translation>
+<translation id="3151562827395986343">방문 기록, 쿠키, 캐시 등을 삭제</translation>
 <translation id="3151786313568798007">방향</translation>
 <translation id="3152356229013609796">휴대전화의 알림을 보고 닫거나 답장합니다.</translation>
 <translation id="3157387275655328056">읽기 목록에 추가</translation>
@@ -5792,7 +5792,7 @@ Google에 전송하여 안전한 파일인지 확인할 수 있습니다. 스캔
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" /> - USB 기기 연결됨</translation>
 <translation id="6027945736510816438"><ph name="WEBSITE" /> 도메인을 찾으셨나요?</translation>
 <translation id="6028117231645531007">지문 추가</translation>
-<translation id="6030719887161080597">사이트에서 광고 실적을 측정하는 데 사용하는 정보를 관리합니다.</translation>
+<translation id="6030719887161080597">사이트에서 광고 실적을 측정하는 데 사용하는 정보 관리</translation>
 <translation id="6031600495088157824">툴바의 입력 옵션</translation>
 <translation id="6032715498678347852">사이트 액세스를 허용하려면 확장 프로그램을 클릭하세요.</translation>
 <translation id="6032912588568283682">파일 시스템</translation>
@@ -7402,7 +7402,7 @@ Google에 전송하여 안전한 파일인지 확인할 수 있습니다. 스캔
 <translation id="7453467225369441013">대부분의 사이트에서 로그아웃됩니다. Google 계정에서는 로그아웃되지 않습니다.</translation>
 <translation id="7454548535253569100">포털: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="7455730275746867420">추가 컨테이너 관리</translation>
-<translation id="7455988709578031708">방문 기록을 기반으로 추천됩니다. 설정이 사용 설정되어 있습니다.</translation>
+<translation id="7455988709578031708">방문 기록을 기반으로 추천됩니다. 이 설정을 사용하고 있습니다.</translation>
 <translation id="7456142309650173560">개발자</translation>
 <translation id="7456774706094330779">확장된 미리 로드</translation>
 <translation id="7456847797759667638">위치 열기...</translation>
@@ -9340,7 +9340,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="9100765901046053179">고급 설정</translation>
 <translation id="9101691533782776290">앱 실행</translation>
 <translation id="9102610709270966160">확장 프로그램 사용</translation>
-<translation id="9102864637938129124">사이트 및 광고주가 광고 실적을 파악할 수 있습니다. 설정이 사용 설정되어 있습니다.</translation>
+<translation id="9102864637938129124">사이트 및 광고주가 광고 실적을 파악할 수 있습니다. 이 설정을 사용하고 있습니다.</translation>
 <translation id="9103479157856427471">키보드 포커스를 따라 확대된 화면 이동</translation>
 <translation id="9103868373786083162">돌아가려면 뒤로 버튼을 누르고, 방문 기록을 보려면 컨텍스트 메뉴 키를 누릅니다.</translation>
 <translation id="9108035152087032312">창 이름 지정...</translation>
