@@ -1623,6 +1623,8 @@ void AddSyncControlsStrings(content::WebUIDataSource* html_source) {
     {"historyCheckboxLabel", IDS_SETTINGS_HISTORY_CHECKBOX_LABEL},
     {"extensionsCheckboxLabel", IDS_SETTINGS_EXTENSIONS_CHECKBOX_LABEL},
     {"openTabsCheckboxLabel", IDS_SETTINGS_OPEN_TABS_CHECKBOX_LABEL},
+    {"savedTabGroupsCheckboxLabel",
+     IDS_SETTINGS_SAVED_TAB_GROUPS_CHECKBOX_LABEL},
     {"wifiConfigurationsCheckboxLabel",
      IDS_SETTINGS_WIFI_CONFIGURATIONS_CHECKBOX_LABEL},
     {"syncEverythingCheckboxLabel",

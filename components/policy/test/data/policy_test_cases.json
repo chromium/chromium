@@ -2128,6 +2128,9 @@
           "sync.reading_list": {
             "default_value": false
           },
+          "sync.saved_tab_groups": {
+            "default_value": false
+          },
           "sync.tabs": {
             "default_value": false
           },
@@ -2149,6 +2152,7 @@
             "passwords",
             "preferences",
             "readingList",
+            "savedTabGroups",
             "tabs",
             "themes",
             "typedUrls"
@@ -2174,6 +2178,9 @@
             "value": false
           },
           "sync.reading_list": {
+            "value": false
+          },
+          "sync.saved_tab_groups": {
             "value": false
           },
           "sync.tabs": {

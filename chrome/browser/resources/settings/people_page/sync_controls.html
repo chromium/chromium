@@ -197,6 +197,21 @@
         </cr-toggle>
       </div>
 
+      <div class="list-item" hidden="[[!syncPrefs.savedTabGroupsRegistered]]">
+        <div id="savedTabGroupsCheckboxLabel">
+          $i18n{savedTabGroupsCheckboxLabel}
+        </div>
+        <cr-policy-indicator indicator-type="userPolicy"
+            hidden="[[!syncPrefs.savedTabGroupsManaged]]">
+        </cr-policy-indicator>
+        <cr-toggle checked="{{syncPrefs.savedTabGroupsSynced}}"
+            on-change="onSingleSyncDataTypeChanged_"
+            disabled="[[disableTypeCheckBox_(
+              syncPrefs.syncAllDataTypes, syncPrefs.savedTabGroupsManaged)]]"
+            aria-labelledby="savedTabGroupsCheckboxLabel">
+        </cr-toggle>
+      </div>
+
       <div class="list-item" hidden="[[!syncPrefs.passwordsRegistered]]">
         <div id="passwordsCheckboxLabel">
           $i18n{passwordsCheckboxLabel}
