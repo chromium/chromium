@@ -130,8 +130,6 @@ source_set("mediapipe_shims") {
 
   deps = [
     "//third_party/abseil-cpp:absl",
-    "//third_party/abseil-cpp/absl/log:check",
-    "//third_party/abseil-cpp/absl/log:log",
     "//third_party/protobuf:protobuf_lite",
   ]
 }
@@ -424,7 +422,6 @@ tflite_static_library("mediapipe_core") {
     ":mediapipe_proto",
     ":mediapipe_shims",
     "//third_party/abseil-cpp:absl",
-    "//third_party/abseil-cpp/absl/log:check",
     "//third_party/gemmlowp",
     "//third_party/protobuf:protobuf_lite",
     "//third_party/re2",
@@ -548,8 +545,6 @@ tflite_static_library("mediapipe_tasks") {
     ":mediapipe_proto",
     ":mediapipe_shims",
     "//third_party/abseil-cpp:absl",
-    "//third_party/abseil-cpp/absl/log:check",
-    "//third_party/abseil-cpp/absl/log:log",
     "//third_party/gemmlowp",
     "//third_party/protobuf:protobuf_lite",
     "//third_party/re2",
