@@ -7,7 +7,7 @@ import './toggle_row.js';
 import {assert, assertNotReached} from '//resources/js/assert_ts.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {App, Permission, PermissionType, TriState} from './app_management.mojom-webui.js';
+import {App, InstallReason, Permission, PermissionType, TriState} from './app_management.mojom-webui.js';
 import {BrowserProxy} from './browser_proxy.js';
 import {AppManagementUserAction} from './constants.js';
 import {PermissionTypeIndex} from './permission_constants.js';
@@ -61,9 +61,12 @@ export class AppManagementPermissionItemElement extends PolymerElement {
         reflectToAttribute: true,
       },
 
+      /**
+       * True if the app is managed or is a sub app.
+       */
       disabled_: {
         type: Boolean,
-        computed: 'isManaged_(app, permissionType)',
+        computed: 'isDisabled_(app, permissionType)',
         reflectToAttribute: true,
       },
     };
@@ -104,6 +107,19 @@ export class AppManagementPermissionItemElement extends PolymerElement {
     const permission = getPermission(app, permissionType);
     assert(permission);
     return permission.isManaged;
+  }
+
+  private isDisabled_(app: App|undefined, permissionType: PermissionTypeIndex):
+      boolean {
+    if (app === undefined || permissionType === undefined) {
+      return false;
+    }
+
+    if (app.installReason === InstallReason.kSubApp) {
+      return true;
+    }
+
+    return this.isManaged_(app, permissionType);
   }
 
   private getValue_(

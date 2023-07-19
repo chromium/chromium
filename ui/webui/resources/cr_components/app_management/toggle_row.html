@@ -38,7 +38,7 @@
   </template>
   <cr-toggle id="toggle"
       checked="[[value]]"
-      disabled$="[[managed]]"
+      disabled="[[isDisabled_(disabled, managed)]]"
       role="button"
       tabindex="0"
       aria-pressed="[[value]]"

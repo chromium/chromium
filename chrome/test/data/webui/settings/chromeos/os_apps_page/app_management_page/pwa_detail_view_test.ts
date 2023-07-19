@@ -6,7 +6,7 @@ import 'chrome://os-settings/lazy_load.js';
 
 import {AppManagementPermissionHeadingElement, AppManagementPinToShelfItemElement, AppManagementPwaDetailViewElement, AppManagementSubAppsItemElement} from 'chrome://os-settings/lazy_load.js';
 import {AppManagementStore, updateSelectedAppId, updateSubAppToParentAppId} from 'chrome://os-settings/os_settings.js';
-import {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
+import {App, InstallReason} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {PermissionTypeIndex} from 'chrome://resources/cr_components/app_management/permission_constants.js';
 import {AppManagementToggleRowElement} from 'chrome://resources/cr_components/app_management/toggle_row.js';
 import {convertOptionalBoolToBool, getPermissionValueBool} from 'chrome://resources/cr_components/app_management/util.js';
@@ -126,8 +126,11 @@ suite('<app-management-pwa-detail-view>', () => {
   });
 
   test('Show sub apps correctly', async () => {
-    const sub1 = await fakeHandler.addApp();
-    const sub2 = await fakeHandler.addApp();
+    const subAppOptions = {
+      installReason: InstallReason.kSubApp,
+    };
+    const sub1 = await fakeHandler.addApp('Sub1', subAppOptions);
+    const sub2 = await fakeHandler.addApp('Sub2', subAppOptions);
     const parent = await fakeHandler.addApp();
     AppManagementStore.getInstance().dispatch(
         updateSubAppToParentAppId(sub1.id, parent.id));
@@ -181,5 +184,18 @@ suite('<app-management-pwa-detail-view>', () => {
 
     assertFalse(permissionHeadingWithExplanation.checkVisibility()),
         'permission explanation should not be shown';
+
+    const checkToggleDisabled = (permissionType: PermissionTypeIndex) => {
+      assertTrue(getPermissionBoolByType(permissionType));
+      assertTrue(
+          (getPermissionCrToggleByType(pwaDetailView, permissionType) as
+           CrToggleElement)
+              .disabled,
+          'permission toggle should be disabled on sub app setting page');
+    };
+
+    checkToggleDisabled('kLocation');
+    checkToggleDisabled('kCamera');
+    checkToggleDisabled('kMicrophone');
   });
 });

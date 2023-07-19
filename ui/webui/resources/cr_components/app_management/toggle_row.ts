@@ -29,6 +29,7 @@ export class AppManagementToggleRowElement extends PolymerElement {
       icon: String,
       label: String,
       managed: {type: Boolean, value: false, reflectToAttribute: true},
+      disabled: {type: Boolean, value: false, reflectToAttribute: true},
       value: {type: Boolean, value: false, reflectToAttribute: true},
       description: String,
     };
@@ -37,6 +38,7 @@ export class AppManagementToggleRowElement extends PolymerElement {
   icon: string;
   label: string;
   managed: boolean;
+  disabled: boolean;
   value: boolean;
   description: string;
 
@@ -51,6 +53,10 @@ export class AppManagementToggleRowElement extends PolymerElement {
 
   setToggle(value: boolean) {
     this.$.toggle.checked = value;
+  }
+
+  private isDisabled_(disabled: boolean, managed: boolean): boolean {
+    return disabled || managed;
   }
 
   private onClick_(event: Event) {
