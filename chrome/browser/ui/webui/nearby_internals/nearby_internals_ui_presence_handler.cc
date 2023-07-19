@@ -17,6 +17,43 @@ const char kDeviceNameKey[] = "name";
 const char kDeviceIdKey[] = "id";
 const char kTypeKey[] = "type";
 const char kEndpointKey[] = "endpoint_id";
+const char kActionsKey[] = "actions";
+
+// ActionType strings representations.
+const char kActiveUnlockAction[] = "Active Unlock";
+const char kNearbyShareAction[] = "Nearby Share";
+const char kInstantTetheringAction[] = "Instant Tethering";
+const char kPhoneHubAction[] = "Phone Hub";
+const char kPresenceManagerAction[] = "Presence Manager";
+const char kFinderAction[] = "Finder";
+const char kFastPairSassAction[] = "Fast Pair Sass";
+const char kTapToTransferAction[] = "Tap To Transfer";
+const char kLastAction[] = "Invalid Action";
+
+std::string PresenceActionToString(
+    ash::nearby::presence::NearbyPresenceService::Action action_enum) {
+  switch (action_enum) {
+    case ash::nearby::presence::NearbyPresenceService::Action::kActiveUnlock:
+      return kActiveUnlockAction;
+    case ash::nearby::presence::NearbyPresenceService::Action::kNearbyShare:
+      return kNearbyShareAction;
+    case ash::nearby::presence::NearbyPresenceService::Action::
+        kInstantTethering:
+      return kInstantTetheringAction;
+    case ash::nearby::presence::NearbyPresenceService::Action::kPhoneHub:
+      return kPhoneHubAction;
+    case ash::nearby::presence::NearbyPresenceService::Action::kPresenceManager:
+      return kPresenceManagerAction;
+    case ash::nearby::presence::NearbyPresenceService::Action::kFinder:
+      return kFinderAction;
+    case ash::nearby::presence::NearbyPresenceService::Action::kFastPairSass:
+      return kFastPairSassAction;
+    case ash::nearby::presence::NearbyPresenceService::Action::kTapToTransfer:
+      return kTapToTransferAction;
+    case ash::nearby::presence::NearbyPresenceService::Action::kLast:
+      return kLastAction;
+  }
+}
 
 // Converts |presence_device| to a raw dictionary value used as a JSON argument
 // to JavaScript functions.
@@ -35,6 +72,17 @@ base::Value::Dict PresenceDeviceToDictionary(
   }
 
   dictionary.Set(kEndpointKey, presence_device.GetEndpointId());
+  std::string actions_list;
+  for (auto action : presence_device.GetActions()) {
+    actions_list += PresenceActionToString(action);
+    actions_list += ", ";
+  }
+
+  // Remove the trailing comma and whitespace.
+  actions_list.pop_back();
+  actions_list.pop_back();
+
+  dictionary.Set(kActionsKey, actions_list);
   return dictionary;
 }
 

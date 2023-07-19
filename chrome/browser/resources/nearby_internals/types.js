@@ -105,7 +105,8 @@ export let TimestampedMessage;
  * during testing.
  * @typedef {{connectable: boolean,
  *            type: string,
- *            endpoint_id: string}}
+ *            endpoint_id: string,
+ *            actions: string}}
  */
 export let PresenceDevice;
 

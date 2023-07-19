@@ -72,6 +72,7 @@ Polymer({
   onPresenceDeviceFound_(device) {
     const type = device['type'];
     const endpointId = device['endpoint_id'];
+    const actions = device['actions'];
 
     // If there is not a device with this endpoint_id currently in the devices
     // list, add it.
@@ -81,6 +82,7 @@ Polymer({
         'connectable': true,
         'type': type,
         'endpoint_id': endpointId,
+        'actions': actions,
       });
     }
   },
@@ -90,6 +92,7 @@ Polymer({
   onPresenceDeviceChanged_(device) {
     const type = device['type'];
     const endpointId = device['endpoint_id'];
+    const actions = device['actions'];
 
     const index = this.npDiscoveredDevicesList_.findIndex(
         list_device => list_device.endpoint_id === endpointId);
@@ -101,6 +104,7 @@ Polymer({
         'connectable': true,
         'type': type,
         'endpoint_id': endpointId,
+        'actions': actions,
       });
       return;
     }
@@ -109,12 +113,14 @@ Polymer({
       'connectable': true,
       'type': type,
       'endpoint_id': endpointId,
+      'actions': actions,
     };
   },
 
   onPresenceDeviceLost_(device) {
     const type = device['type'];
     const endpointId = device['endpoint_id'];
+    const actions = device['actions'];
 
     const index = this.npDiscoveredDevicesList_.findIndex(
         list_device => list_device.endpoint_id === endpointId);
@@ -128,6 +134,7 @@ Polymer({
       'connectable': false,
       'type': type,
       'endpoint_id': endpointId,
+      'actions': actions,
     };
   },
 });

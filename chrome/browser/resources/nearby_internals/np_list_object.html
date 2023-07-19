@@ -1,5 +1,5 @@
 <style>
-  #type {
+  .info-text {
     display: inline-block;
     text-align: start;
     width: 100%;
@@ -14,6 +14,9 @@
       hidden="[[!item.connectable]]">Connectable Device</span>
   <span id="status_text_lost"
       hidden="[[item.connectable]]">Not Connectable Device</span>
-  <span id="type">[[item.type]]</span>
-  <span id="endpoint_id">[[item.endpoint_id]]</span>
+  <span id="type" class="info-text">[[item.type]]</span>
+  <span id="endpoint_id"
+      class="info-text">Endpoint ID: [[item.endpoint_id]]</span>
+  <span id="actions"
+      class="info-text">Associated Actions: [[item.actions]]</span>
 </div>
