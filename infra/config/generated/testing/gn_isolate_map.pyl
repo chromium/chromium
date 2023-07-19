@@ -906,10 +906,6 @@
     "label": "//headless:headless_unittests",
     "type": "console_test_launcher",
   },
-  "image_processor_perf_test": {
-    "label": "//media/gpu/chromeos:image_processor_perf_test",
-    "type": "additional_compile_target",
-  },
   "install_static_unittests": {
     "label": "//chrome/install_static:install_static_unittests",
     "type": "console_test_launcher",
@@ -1801,14 +1797,6 @@
     "label": "//chrome/test:usage_time_limit_unittests",
     "type": "console_test_launcher",
   },
-  "v4l2_stateless_decoder": {
-    "label": "//media/gpu/v4l2:v4l2_stateless_decoder",
-    "type": "additional_compile_target",
-  },
-  "v4l2_unittest": {
-    "label": "//media/gpu/v4l2:v4l2_unittest",
-    "type": "additional_compile_target",
-  },
   "vaapi_unittest": {
     "label": "//media/gpu/vaapi:vaapi_unittest",
     "type": "console_test_launcher",
@@ -1816,22 +1804,6 @@
   "fake_libva_driver_unittest": {
     "label": "//media/gpu/vaapi/test/fake_libva_driver:fake_libva_driver_unittest",
     "type": "console_test_launcher",
-  },
-  "video_decode_accelerator_tests": {
-    "label": "//media/gpu/test:video_decode_accelerator_tests",
-    "type": "additional_compile_target",
-  },
-  "video_decode_accelerator_perf_tests": {
-    "label": "//media/gpu/test:video_decode_accelerator_perf_tests",
-    "type": "additional_compile_target",
-  },
-  "video_encode_accelerator_tests": {
-    "label": "//media/gpu/test:video_encode_accelerator_tests",
-    "type": "additional_compile_target",
-  },
-  "video_encode_accelerator_perf_tests": {
-    "label": "//media/gpu/test:video_encode_accelerator_perf_tests",
-    "type": "additional_compile_target",
   },
   "views_examples_unittests": {
     "label": "//ui/views/examples:views_examples_unittests",
