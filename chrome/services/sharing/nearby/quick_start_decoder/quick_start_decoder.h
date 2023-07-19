@@ -60,8 +60,9 @@ class QuickStartDecoder : public mojom::QuickStartDecoder {
   void DoDecodeBootstrapConfigurations(
       const absl::optional<std::vector<uint8_t>>& data,
       DecodeBootstrapConfigurationsCallback callback);
-  mojom::GetAssertionResponsePtr DoDecodeGetAssertionResponse(
-      const absl::optional<std::vector<uint8_t>>& data);
+  void DoDecodeGetAssertionResponse(
+      const absl::optional<std::vector<uint8_t>>& data,
+      DecodeGetAssertionResponseCallback callback);
   void DoDecodeWifiCredentialsResponse(
       const absl::optional<std::vector<uint8_t>>& data,
       DecodeWifiCredentialsResponseCallback callback);

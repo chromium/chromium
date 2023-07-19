@@ -61,10 +61,11 @@ void FakeQuickStartDecoder::DecodeGetAssertionResponse(
     const absl::optional<std::vector<uint8_t>>& data,
     DecodeGetAssertionResponseCallback callback) {
   EXPECT_EQ(expected_data_, data);
-  std::move(callback).Run(mojom::GetAssertionResponse::New(
-      response_status_, response_decoder_status_, response_decoder_error_,
-      response_email_, response_credential_id_, response_data_,
-      response_signature_));
+  if (error_.has_value()) {
+    std::move(callback).Run(nullptr, error_);
+  }
+
+  std::move(callback).Run(std::move(fido_assertion_), absl::nullopt);
 }
 
 void FakeQuickStartDecoder::DecodeNotifySourceOfUpdateResponse(
@@ -97,20 +98,8 @@ void FakeQuickStartDecoder::SetUserVerificationResponse(
 }
 
 void FakeQuickStartDecoder::SetAssertionResponse(
-    mojom::GetAssertionResponse::GetAssertionStatus status,
-    uint8_t decoder_status,
-    uint8_t decoder_error,
-    const std::string& email,
-    const std::string& credential_id,
-    const std::vector<uint8_t>& signature,
-    const std::vector<uint8_t>& data) {
-  response_status_ = status;
-  response_decoder_status_ = decoder_status;
-  response_decoder_error_ = decoder_error;
-  response_email_ = email;
-  response_credential_id_ = credential_id;
-  response_signature_ = signature;
-  response_data_ = data;
+    mojom::FidoAssertionResponsePtr fido_assertion) {
+  fido_assertion_ = std::move(fido_assertion);
 }
 
 void FakeQuickStartDecoder::SetWifiCredentialsResponse(

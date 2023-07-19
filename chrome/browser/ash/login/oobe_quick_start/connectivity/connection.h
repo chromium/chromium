@@ -22,6 +22,7 @@
 #include "chromeos/ash/components/quick_start/types.h"
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder.mojom.h"
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom-shared.h"
+#include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom.h"
 #include "components/cbor/values.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
@@ -138,7 +139,8 @@ class Connection
 
   void GenerateFidoAssertionInfo(
       RequestAccountTransferAssertionCallback callback,
-      ::ash::quick_start::mojom::GetAssertionResponsePtr response);
+      ash::quick_start::mojom::FidoAssertionResponsePtr fido_response,
+      absl::optional<::ash::quick_start::mojom::QuickStartDecoderError> error);
 
   void OnBootstrapConfigurationsResponse(
       BootstrapConfigurationsCallback callback,

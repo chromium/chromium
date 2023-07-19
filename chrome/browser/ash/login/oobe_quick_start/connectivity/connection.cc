@@ -231,11 +231,9 @@ void Connection::OnRequestAccountTransferAssertionResponse(
 
 void Connection::GenerateFidoAssertionInfo(
     RequestAccountTransferAssertionCallback callback,
-    ::ash::quick_start::mojom::GetAssertionResponsePtr response) {
-  mojom::GetAssertionResponse::GetAssertionStatus success =
-      mojom::GetAssertionResponse::GetAssertionStatus::kSuccess;
-
-  if (response->status != success) {
+    ash::quick_start::mojom::FidoAssertionResponsePtr fido_response,
+    absl::optional<::ash::quick_start::mojom::QuickStartDecoderError> error) {
+  if (error.has_value()) {
     // TODO (b/286877412): Update this logic once we've aligned on an unknown
     // message strategy.
     QS_LOG(INFO) << "Ignoring message and re-reading";
@@ -246,10 +244,10 @@ void Connection::GenerateFidoAssertionInfo(
   }
 
   FidoAssertionInfo assertion_info;
-  assertion_info.email = response->email;
-  assertion_info.credential_id = response->credential_id;
-  assertion_info.authenticator_data = response->auth_data;
-  assertion_info.signature = response->signature;
+  assertion_info.email = fido_response->email;
+  assertion_info.credential_id = fido_response->credential_id;
+  assertion_info.authenticator_data = fido_response->auth_data;
+  assertion_info.signature = fido_response->signature;
 
   std::move(callback).Run(assertion_info);
 }

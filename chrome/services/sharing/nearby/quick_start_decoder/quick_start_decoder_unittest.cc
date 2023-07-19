@@ -33,11 +33,6 @@ constexpr char kCryptauthDeviceIdKey[] = "cryptauthDeviceId";
 constexpr char kExampleCryptauthDeviceId[] = "helloworld";
 constexpr char kFidoMessageKey[] = "fidoMessage";
 constexpr uint8_t kSuccess = 0x00;
-constexpr uint8_t kCtap2ErrInvalidCBOR = 0x12;
-constexpr uint8_t kCtap2ErrMissingParameter = 0x14;
-constexpr int kCborDecoderErrorInvalidUtf8 = 6;
-constexpr int kCborDecoderNoError = 0;
-constexpr int kCborDecoderUnknownError = 14;
 
 // Key in Wifi Information response containing information about the wifi
 // network as a JSON Dictionary.
@@ -81,8 +76,6 @@ const char kWifiTransferResultHistogramName[] = "QuickStart.WifiTransferResult";
 const char kWifiTransferResultFailureReasonHistogramName[] =
     "QuickStart.WifiTransferResult.FailureReason";
 
-using GetAssertionStatus = mojom::GetAssertionResponse::GetAssertionStatus;
-
 std::vector<uint8_t> BuildEncodedResponseData(
     std::vector<uint8_t> credential_id,
     std::vector<uint8_t> auth_data,
@@ -118,9 +111,10 @@ class QuickStartDecoderTest : public testing::Test {
         remote_.BindNewPipeAndPassReceiver(), base::DoNothing());
   }
 
-  mojom::GetAssertionResponsePtr DoDecodeGetAssertionResponse(
-      const std::vector<uint8_t>& data) {
-    return decoder_->DoDecodeGetAssertionResponse(data);
+  void DoDecodeGetAssertionResponse(
+      const std::vector<uint8_t>& data,
+      QuickStartDecoder::DecodeGetAssertionResponseCallback callback) {
+    return decoder_->DoDecodeGetAssertionResponse(data, std::move(callback));
   }
 
   void DoDecodeBootstrapConfigurations(
@@ -183,11 +177,15 @@ TEST_F(QuickStartDecoderTest, ConvertCtapDeviceResponseCodeTest_InRange) {
   std::vector<uint8_t> data = BuildEncodedResponseData(
       credential_id, auth_data, signature, user_id, status_code);
   std::vector<uint8_t> message = BuildSecondDeviceAuthPayload(data);
-  mojom::GetAssertionResponsePtr response =
-      DoDecodeGetAssertionResponse(std::move(message));
-  EXPECT_EQ(response->ctap_device_response_code, status_code);
-  EXPECT_EQ(response->status, GetAssertionStatus::kCtapResponseError);
-  EXPECT_TRUE(response->credential_id.empty());
+  base::test::TestFuture<
+      ::ash::quick_start::mojom::FidoAssertionResponsePtr,
+      absl::optional<::ash::quick_start::mojom::QuickStartDecoderError>>
+      future;
+
+  DoDecodeGetAssertionResponse(message, future.GetCallback());
+  EXPECT_TRUE(future.Get<0>().is_null());
+  EXPECT_EQ(future.Get<1>(),
+            mojom::QuickStartDecoderError::kMessageDoesNotMatchSchema);
 }
 
 TEST_F(QuickStartDecoderTest, ConvertCtapDeviceRespnoseCodeTest_OutOfRange) {
@@ -199,11 +197,15 @@ TEST_F(QuickStartDecoderTest, ConvertCtapDeviceRespnoseCodeTest_OutOfRange) {
   std::vector<uint8_t> data = BuildEncodedResponseData(
       kValidCredentialId, auth_data, signature, user_id, status_code);
   std::vector<uint8_t> message = BuildSecondDeviceAuthPayload(data);
-  mojom::GetAssertionResponsePtr response =
-      DoDecodeGetAssertionResponse(std::move(message));
-  EXPECT_EQ(response->ctap_device_response_code, status_code);
-  EXPECT_EQ(response->status, GetAssertionStatus::kCtapResponseError);
-  EXPECT_TRUE(response->credential_id.empty());
+  base::test::TestFuture<
+      ::ash::quick_start::mojom::FidoAssertionResponsePtr,
+      absl::optional<::ash::quick_start::mojom::QuickStartDecoderError>>
+      future;
+
+  DoDecodeGetAssertionResponse(message, future.GetCallback());
+  EXPECT_TRUE(future.Get<0>().is_null());
+  EXPECT_EQ(future.Get<1>(),
+            mojom::QuickStartDecoderError::kMessageDoesNotMatchSchema);
 }
 
 TEST_F(QuickStartDecoderTest, CborDecodeGetAssertionResponse_DecoderError) {
@@ -215,50 +217,56 @@ TEST_F(QuickStartDecoderTest, CborDecodeGetAssertionResponse_DecoderError) {
   // Include 0x00 as first byte for kSuccess CtapDeviceResponse status.
   std::vector<uint8_t> data = {0x00, 0x63, 0x00, 0x00, 0xA6};
   std::vector<uint8_t> message = BuildSecondDeviceAuthPayload(data);
-  int expected = kCborDecoderErrorInvalidUtf8;
-  mojom::GetAssertionResponsePtr response =
-      DoDecodeGetAssertionResponse(std::move(message));
-  EXPECT_EQ(response->cbor_decoder_error, expected);
-  EXPECT_EQ(response->status, GetAssertionStatus::kCborDecoderError);
-  EXPECT_TRUE(response->credential_id.empty());
+  base::test::TestFuture<
+      ::ash::quick_start::mojom::FidoAssertionResponsePtr,
+      absl::optional<::ash::quick_start::mojom::QuickStartDecoderError>>
+      future;
+
+  DoDecodeGetAssertionResponse(message, future.GetCallback());
+  EXPECT_TRUE(future.Get<0>().is_null());
+  EXPECT_EQ(future.Get<1>(),
+            mojom::QuickStartDecoderError::kMessageDoesNotMatchSchema);
 }
 
 TEST_F(QuickStartDecoderTest, DecodeGetAssertionResponse_ResponseIsNotJson) {
   std::vector<uint8_t> data;
-  uint8_t expected_device_response_code = kCtap2ErrInvalidCBOR;
-  int expected_decoder_error = kCborDecoderUnknownError;
-  mojom::GetAssertionResponsePtr response =
-      DoDecodeGetAssertionResponse(std::move(data));
-  EXPECT_EQ(response->ctap_device_response_code, expected_device_response_code);
-  EXPECT_EQ(response->cbor_decoder_error, expected_decoder_error);
-  EXPECT_EQ(response->status, GetAssertionStatus::kMessagePayloadParseError);
-  EXPECT_TRUE(response->credential_id.empty());
+  base::test::TestFuture<
+      ::ash::quick_start::mojom::FidoAssertionResponsePtr,
+      absl::optional<::ash::quick_start::mojom::QuickStartDecoderError>>
+      future;
+
+  DoDecodeGetAssertionResponse(data, future.GetCallback());
+  EXPECT_TRUE(future.Get<0>().is_null());
+  EXPECT_EQ(future.Get<1>(),
+            mojom::QuickStartDecoderError::kUnableToReadAsJSON);
 }
 
 TEST_F(QuickStartDecoderTest, DecodeGetAssertionResponse_EmptyResponse) {
   std::vector<uint8_t> data{};
-  uint8_t expected_device_response_code = kCtap2ErrInvalidCBOR;
-  int expected_decoder_error = kCborDecoderUnknownError;
   std::vector<uint8_t> message = BuildSecondDeviceAuthPayload(data);
-  mojom::GetAssertionResponsePtr response =
-      DoDecodeGetAssertionResponse(std::move(message));
-  EXPECT_EQ(response->ctap_device_response_code, expected_device_response_code);
-  EXPECT_EQ(response->cbor_decoder_error, expected_decoder_error);
-  EXPECT_EQ(response->status, GetAssertionStatus::kCtapResponseError);
-  EXPECT_TRUE(response->credential_id.empty());
+  base::test::TestFuture<
+      ::ash::quick_start::mojom::FidoAssertionResponsePtr,
+      absl::optional<::ash::quick_start::mojom::QuickStartDecoderError>>
+      future;
+
+  DoDecodeGetAssertionResponse(message, future.GetCallback());
+  EXPECT_TRUE(future.Get<0>().is_null());
+  EXPECT_EQ(future.Get<1>(),
+            mojom::QuickStartDecoderError::kMessageDoesNotMatchSchema);
 }
 
 TEST_F(QuickStartDecoderTest, DecodeGetAssertionResponse_OnlyStatusCode) {
   std::vector<uint8_t> data{0x00};
-  uint8_t expected_device_response_code = kCtap2ErrInvalidCBOR;
-  int expected_decoder_error = kCborDecoderUnknownError;
   std::vector<uint8_t> message = BuildSecondDeviceAuthPayload(data);
-  mojom::GetAssertionResponsePtr response =
-      DoDecodeGetAssertionResponse(std::move(message));
-  EXPECT_EQ(response->ctap_device_response_code, expected_device_response_code);
-  EXPECT_EQ(response->cbor_decoder_error, expected_decoder_error);
-  EXPECT_EQ(response->status, GetAssertionStatus::kCtapResponseError);
-  EXPECT_TRUE(response->credential_id.empty());
+  base::test::TestFuture<
+      ::ash::quick_start::mojom::FidoAssertionResponsePtr,
+      absl::optional<::ash::quick_start::mojom::QuickStartDecoderError>>
+      future;
+
+  DoDecodeGetAssertionResponse(message, future.GetCallback());
+  EXPECT_TRUE(future.Get<0>().is_null());
+  EXPECT_EQ(future.Get<1>(),
+            mojom::QuickStartDecoderError::kMessageDoesNotMatchSchema);
 }
 
 TEST_F(QuickStartDecoderTest, DecodeGetAssertionResponse_Valid) {
@@ -271,15 +279,17 @@ TEST_F(QuickStartDecoderTest, DecodeGetAssertionResponse_Valid) {
   std::vector<uint8_t> data = BuildEncodedResponseData(
       kValidCredentialId, kValidAuthData, kValidSignature, user_id, status);
   std::vector<uint8_t> message = BuildSecondDeviceAuthPayload(data);
-  mojom::GetAssertionResponsePtr response =
-      DoDecodeGetAssertionResponse(std::move(message));
-  EXPECT_EQ(response->ctap_device_response_code, kSuccess);
-  EXPECT_EQ(response->cbor_decoder_error, kCborDecoderNoError);
-  EXPECT_EQ(response->status, GetAssertionStatus::kSuccess);
-  EXPECT_EQ(response->credential_id, expected_credential_id);
-  EXPECT_EQ(response->email, email);
-  EXPECT_EQ(response->auth_data, kValidAuthData);
-  EXPECT_EQ(response->signature, kValidSignature);
+  base::test::TestFuture<
+      ::ash::quick_start::mojom::FidoAssertionResponsePtr,
+      absl::optional<::ash::quick_start::mojom::QuickStartDecoderError>>
+      future;
+
+  DoDecodeGetAssertionResponse(message, future.GetCallback());
+  EXPECT_FALSE(future.Get<1>().has_value());
+  EXPECT_EQ(future.Get<0>()->credential_id, expected_credential_id);
+  EXPECT_EQ(future.Get<0>()->email, email);
+  EXPECT_EQ(future.Get<0>()->auth_data, kValidAuthData);
+  EXPECT_EQ(future.Get<0>()->signature, kValidSignature);
 }
 
 TEST_F(QuickStartDecoderTest, DecodeGetAssertionResponse_InvalidEmptyValues) {
@@ -293,11 +303,15 @@ TEST_F(QuickStartDecoderTest, DecodeGetAssertionResponse_InvalidEmptyValues) {
   std::vector<uint8_t> data = BuildEncodedResponseData(
       credential_id, kValidAuthData, kValidSignature, user_id, status);
   std::vector<uint8_t> message = BuildSecondDeviceAuthPayload(data);
-  mojom::GetAssertionResponsePtr response =
-      DoDecodeGetAssertionResponse(std::move(message));
-  EXPECT_EQ(response->ctap_device_response_code, kCtap2ErrMissingParameter);
-  EXPECT_EQ(response->cbor_decoder_error, kCborDecoderUnknownError);
-  EXPECT_EQ(response->status, GetAssertionStatus::kCborDecoderError);
+  base::test::TestFuture<
+      ::ash::quick_start::mojom::FidoAssertionResponsePtr,
+      absl::optional<::ash::quick_start::mojom::QuickStartDecoderError>>
+      future;
+
+  DoDecodeGetAssertionResponse(message, future.GetCallback());
+  EXPECT_TRUE(future.Get<0>().is_null());
+  EXPECT_EQ(future.Get<1>(),
+            mojom::QuickStartDecoderError::kMessageDoesNotMatchSchema);
 }
 
 TEST_F(QuickStartDecoderTest,

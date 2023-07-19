@@ -34,6 +34,7 @@ struct UserVerificationRequested {
   bool is_awaiting_user_verification;
 };
 
+// TODO (b/291903244): Convert Responses on QuickStartDecoder to Union Type
 enum QuickStartDecoderError {
   kEmptyMessage = 0,
   kUnableToReadAsJSON = 1,
@@ -47,19 +48,7 @@ struct WifiCredentials {
   string? password;
 };
 
-struct GetAssertionResponse {
-  enum GetAssertionStatus {
-    kSuccess = 0,
-    kCtapResponseError = 1,
-    kCborDecoderError = 2,
-    kMessagePayloadParseError = 3,
-    kUnknownError = 4,
-  };
-
-  GetAssertionStatus status;
-
-  uint8 ctap_device_response_code;
-  int64 cbor_decoder_error;
+struct FidoAssertionResponse {
   string email;
   string credential_id;
 

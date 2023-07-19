@@ -40,7 +40,7 @@ interface QuickStartDecoder {
   // that details fields we need to pass along to GAIA as well as error
   // codes from the CBOR decoding step and from the phone.
   DecodeGetAssertionResponse(array<uint8>? data) => (
-    GetAssertionResponse response);
+   FidoAssertionResponse? response, QuickStartDecoderError? error);
 
   // Decode UserVerificationRequested message, indicating we are waiting
   // for the user to pass a verification prompt.

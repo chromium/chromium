@@ -332,11 +332,11 @@ TEST_F(ConnectionTest, RequestAccountTransferAssertion) {
 
   fake_quick_start_decoder_->SetExpectedData(data);
   fake_quick_start_decoder_->SetAssertionResponse(
-      /*status=*/mojom::GetAssertionResponse::GetAssertionStatus::kSuccess,
-      /*decoder_status=*/kSuccess,
-      /*decoder_error=*/kSuccess, /*email=*/email,
-      /*credential_id=*/expected_credential_id,
-      /*signature=*/signature, auth_data);
+      mojom::FidoAssertionResponse::New(
+          /*email=*/email,
+          /*credential_id=*/expected_credential_id,
+          /*auth_data=*/auth_data,
+          /*signature=*/signature));
   fake_nearby_connection_->AppendReadableData(data);
   EXPECT_FALSE(fake_nearby_connection_->IsClosed());
 

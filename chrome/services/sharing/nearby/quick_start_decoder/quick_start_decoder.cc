@@ -29,17 +29,14 @@ namespace ash::quick_start {
 namespace {
 
 using CBOR = cbor::Value;
-using GetAssertionStatus = mojom::GetAssertionResponse::GetAssertionStatus;
 
+constexpr int kExpectedResponseSize = 2;
 constexpr char kCredentialIdKey[] = "id";
 constexpr char kEntitiyIdMapKey[] = "id";
 constexpr char kDeviceDetailsKey[] = "deviceDetails";
 constexpr char kCryptauthDeviceIdKey[] = "cryptauthDeviceId";
 constexpr uint8_t kCtapDeviceResponseSuccess = 0x00;
 constexpr int kCborDecoderNoError = 0;
-constexpr int kCborDecoderUnknownError = 14;
-constexpr uint8_t kCtap2ErrInvalidCBOR = 0x12;
-constexpr uint8_t kCtap2ErrMissingParameter = 0x14;
 constexpr char kFidoMessageKey[] = "fidoMessage";
 
 // Key in Wifi Information response containing information about the wifi
@@ -89,21 +86,71 @@ std::pair<int, absl::optional<cbor::Value>> CborDecodeGetAssertionResponse(
   }
   return std::make_pair(kCborDecoderNoError, std::move(cbor));
 }
+}  // namespace
 
-mojom::GetAssertionResponsePtr BuildGetAssertionResponseError(
-    GetAssertionStatus status,
-    uint8_t ctap_device_response_code,
-    int cbor_decoder_error) {
-  return mojom::GetAssertionResponse::New(status, ctap_device_response_code,
-                                          cbor_decoder_error,
-                                          /*email=*/"", /*credential_id=*/"",
-                                          /*auth_data=*/std::vector<uint8_t>{},
-                                          /*signature=*/std::vector<uint8_t>{});
+QuickStartDecoder::QuickStartDecoder(
+    mojo::PendingReceiver<mojom::QuickStartDecoder> receiver,
+    base::OnceClosure on_disconnect)
+    : receiver_(this, std::move(receiver)) {
+  receiver_.set_disconnect_handler(std::move(on_disconnect));
 }
 
-mojom::GetAssertionResponsePtr ParseGetAssertionResponse(
-    cbor::Value decoded_response) {
-  const cbor::Value::MapValue& response_map = decoded_response.GetMap();
+QuickStartDecoder::~QuickStartDecoder() = default;
+
+void QuickStartDecoder::DoDecodeGetAssertionResponse(
+    const absl::optional<std::vector<uint8_t>>& data,
+    DecodeGetAssertionResponseCallback callback) {
+  if (!data.has_value()) {
+    LOG(ERROR) << "No response bytes received.";
+    std::move(callback).Run(nullptr,
+                            mojom::QuickStartDecoderError::kEmptyMessage);
+    return;
+  }
+
+  absl::optional<std::vector<uint8_t>> parsed_response_bytes =
+      ExtractFidoDataFromJsonResponse(data.value());
+  if (!parsed_response_bytes.has_value()) {
+    LOG(ERROR) << "Failed to extract Fido data from JSON response.";
+    std::move(callback).Run(nullptr,
+                            mojom::QuickStartDecoderError::kUnableToReadAsJSON);
+    return;
+  }
+
+  std::vector<unsigned char>& response_bytes = parsed_response_bytes.value();
+  if (response_bytes.size() < kExpectedResponseSize) {
+    LOG(ERROR) << "GetAssertionResponse requires a status code byte and "
+                  "response bytes. Data in size: "
+               << response_bytes.size();
+    std::move(callback).Run(
+        nullptr, mojom::QuickStartDecoderError::kMessageDoesNotMatchSchema);
+    return;
+  }
+  uint8_t ctap_status = response_bytes[0];
+  base::span<const uint8_t> cbor_bytes(response_bytes);
+  cbor_bytes = cbor_bytes.subspan(1);
+  if (ctap_status != kCtapDeviceResponseSuccess) {
+    LOG(ERROR) << "Ctap Device Response Status Code is not Success(0x00). Got: "
+               << ctap_status;
+    std::move(callback).Run(
+        nullptr, mojom::QuickStartDecoderError::kMessageDoesNotMatchSchema);
+    return;
+  }
+  std::pair<int, absl::optional<cbor::Value>> decoded_values =
+      CborDecodeGetAssertionResponse(cbor_bytes);
+  if (decoded_values.first != kCborDecoderNoError) {
+    std::move(callback).Run(
+        nullptr, mojom::QuickStartDecoderError::kMessageDoesNotMatchSchema);
+    return;
+  }
+  if (!decoded_values.second || !decoded_values.second->is_map()) {
+    LOG(ERROR) << "The CBOR decoded response values needs to be a valid CBOR "
+                  "Value Map.";
+    std::move(callback).Run(
+        nullptr, mojom::QuickStartDecoderError::kMessageDoesNotMatchSchema);
+    return;
+  }
+
+  const cbor::Value::MapValue& response_map = decoded_values.second->GetMap();
   // According to FIDO CTAP2 GetAssertionResponse, credential is stored at CBOR
   // index 0x01.
   auto credential_value_it = response_map.find(CBOR(0x01));
@@ -120,9 +167,9 @@ mojom::GetAssertionResponsePtr ParseGetAssertionResponse(
 
   if (credential_id.empty()) {
     LOG(ERROR) << "credential_id is empty in FIDO Message";
-    return BuildGetAssertionResponseError(GetAssertionStatus::kCborDecoderError,
-                                          kCtap2ErrMissingParameter,
-                                          kCborDecoderUnknownError);
+    std::move(callback).Run(
+        nullptr, mojom::QuickStartDecoderError::kMessageDoesNotMatchSchema);
+    return;
   }
 
   // According to FIDO CTAP2 GetAssertionResponse, authData is stored at CBOR
@@ -136,9 +183,9 @@ mojom::GetAssertionResponsePtr ParseGetAssertionResponse(
 
   if (auth_data.empty()) {
     LOG(ERROR) << "auth_data is empty in FIDO Message";
-    return BuildGetAssertionResponseError(GetAssertionStatus::kCborDecoderError,
-                                          kCtap2ErrMissingParameter,
-                                          kCborDecoderUnknownError);
+    std::move(callback).Run(
+        nullptr, mojom::QuickStartDecoderError::kMessageDoesNotMatchSchema);
+    return;
   }
 
   // According to FIDO CTAP2 GetAssertionResponse, signature is stored at CBOR
@@ -152,9 +199,9 @@ mojom::GetAssertionResponsePtr ParseGetAssertionResponse(
 
   if (signature.empty()) {
     LOG(ERROR) << "signature is empty in FIDO Message";
-    return BuildGetAssertionResponseError(GetAssertionStatus::kCborDecoderError,
-                                          kCtap2ErrMissingParameter,
-                                          kCborDecoderUnknownError);
+    std::move(callback).Run(
+        nullptr, mojom::QuickStartDecoderError::kMessageDoesNotMatchSchema);
+    return;
   }
 
   // According to FIDO CTAP2 GetAssertionResponse, user is stored at CBOR index
@@ -172,79 +219,14 @@ mojom::GetAssertionResponsePtr ParseGetAssertionResponse(
 
   if (email.empty()) {
     LOG(ERROR) << "email is empty in FIDO Message";
-    return BuildGetAssertionResponseError(GetAssertionStatus::kCborDecoderError,
-                                          kCtap2ErrMissingParameter,
-                                          kCborDecoderUnknownError);
+    std::move(callback).Run(
+        nullptr, mojom::QuickStartDecoderError::kMessageDoesNotMatchSchema);
+    return;
   }
 
-  return mojom::GetAssertionResponse::New(
-      /*status=*/GetAssertionStatus::kSuccess,
-      /*ctap_device_response_code=*/kCtapDeviceResponseSuccess,
-      /*cbor_decoder_error=*/kCborDecoderNoError, email, credential_id,
-      auth_data, signature);
-}
-
-}  // namespace
-
-QuickStartDecoder::QuickStartDecoder(
-    mojo::PendingReceiver<mojom::QuickStartDecoder> receiver,
-    base::OnceClosure on_disconnect)
-    : receiver_(this, std::move(receiver)) {
-  receiver_.set_disconnect_handler(std::move(on_disconnect));
-}
-
-QuickStartDecoder::~QuickStartDecoder() = default;
-
-mojom::GetAssertionResponsePtr QuickStartDecoder::DoDecodeGetAssertionResponse(
-    const absl::optional<std::vector<uint8_t>>& data) {
-  if (!data.has_value()) {
-    LOG(ERROR) << "No response bytes received.";
-    return BuildGetAssertionResponseError(
-        GetAssertionStatus::kMessagePayloadParseError, kCtap2ErrInvalidCBOR,
-        kCborDecoderUnknownError);
-  }
-
-  absl::optional<std::vector<uint8_t>> parsed_response_bytes =
-      ExtractFidoDataFromJsonResponse(data.value());
-  if (!parsed_response_bytes.has_value()) {
-    LOG(ERROR) << "Failed to extract Fido data from JSON response.";
-    return BuildGetAssertionResponseError(
-        GetAssertionStatus::kMessagePayloadParseError, kCtap2ErrInvalidCBOR,
-        kCborDecoderUnknownError);
-  }
-
-  std::vector<unsigned char>& response_bytes = parsed_response_bytes.value();
-  if (response_bytes.size() < 2) {
-    LOG(ERROR) << "GetAssertionResponse requires a status code byte and "
-                  "response bytes. Data in size: "
-               << response_bytes.size();
-    return BuildGetAssertionResponseError(
-        GetAssertionStatus::kCtapResponseError, kCtap2ErrInvalidCBOR,
-        kCborDecoderUnknownError);
-  }
-  uint8_t ctap_status = response_bytes[0];
-  base::span<const uint8_t> cbor_bytes(response_bytes);
-  cbor_bytes = cbor_bytes.subspan(1);
-  if (ctap_status != kCtapDeviceResponseSuccess) {
-    LOG(ERROR) << "Ctap Device Response Status Code is not Success(0x00). Got: "
-               << ctap_status;
-    return BuildGetAssertionResponseError(
-        GetAssertionStatus::kCtapResponseError, ctap_status,
-        kCborDecoderUnknownError);
-  }
-  std::pair<int, absl::optional<cbor::Value>> decoded_values =
-      CborDecodeGetAssertionResponse(cbor_bytes);
-  if (decoded_values.first != kCborDecoderNoError) {
-    return BuildGetAssertionResponseError(GetAssertionStatus::kCborDecoderError,
-                                          ctap_status, decoded_values.first);
-  }
-  if (!decoded_values.second || !decoded_values.second->is_map()) {
-    LOG(ERROR) << "The CBOR decoded response values needs to be a valid CBOR "
-                  "Value Map.";
-    return BuildGetAssertionResponseError(GetAssertionStatus::kUnknownError,
-                                          ctap_status, decoded_values.first);
-  }
-  return ParseGetAssertionResponse(std::move(decoded_values.second.value()));
+  std::move(callback).Run(mojom::FidoAssertionResponse::New(
+                              email, credential_id, auth_data, signature),
+                          absl::nullopt);
 }
 
 void QuickStartDecoder::DoDecodeBootstrapConfigurations(
@@ -532,7 +514,7 @@ void QuickStartDecoder::DoDecodeWifiCredentialsResponse(
 void QuickStartDecoder::DecodeGetAssertionResponse(
     const absl::optional<std::vector<uint8_t>>& data,
     DecodeGetAssertionResponseCallback callback) {
-  std::move(callback).Run(DoDecodeGetAssertionResponse(data));
+  DoDecodeGetAssertionResponse(std::move(data), std::move(callback));
 }
 
 absl::optional<std::vector<uint8_t>>
