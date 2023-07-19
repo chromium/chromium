@@ -40,7 +40,7 @@ GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(
     CreateChooserTitlePopUpBrowserTest);
 
 IN_PROC_BROWSER_TEST_F(CreateChooserTitlePopUpBrowserTest,
-                       DISABLED_UseOriginNotUrl) {
+                       UseOriginNotUrl) {
   ASSERT_TRUE(
       NavigateToURL(browser()->tab_strip_model()->GetActiveWebContents(),
                     server()->GetURL("/simple.html")));
