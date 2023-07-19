@@ -381,7 +381,6 @@ void CookieControlsController::TabObserver::PrimaryPageChanged(
   const GURL& current_url =
       content::WebContentsObserver::web_contents()->GetVisibleURL();
   if (last_visited_url_ != GURL() && current_url != last_visited_url_) {
-    last_visited_url_ = current_url;
     reload_count_ = 0;
     timer_.Stop();
   } else {
@@ -390,8 +389,9 @@ void CookieControlsController::TabObserver::PrimaryPageChanged(
                    &CookieControlsController::TabObserver::ResetReloadCounter);
     }
     reload_count_++;
-    cookie_controls_->OnPageReloadDetected(reload_count_);
   }
+  last_visited_url_ = current_url;
+  cookie_controls_->OnPageReloadDetected(reload_count_);
 }
 
 void CookieControlsController::TabObserver::ResetReloadCounter() {

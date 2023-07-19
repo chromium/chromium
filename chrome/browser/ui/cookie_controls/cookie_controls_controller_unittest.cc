@@ -733,16 +733,16 @@ TEST_P(CookieControlsUserBypassTest, FrequentPageReloads) {
       /*blocked_by_policy=*/false);
   testing::Mock::VerifyAndClearExpectations(mock());
 
-  // Visiting some other site, should reset the confidence level.
-  NavigateAndCommit(GURL("https://somethingelse.com"));
-  EXPECT_CALL(*mock(),
-              OnStatusChanged(CookieControlsStatus::kEnabled,
-                              CookieControlsEnforcement::kNoEnforcement,
-                              zero_expiration()));
-  EXPECT_CALL(*mock(), OnSitesCountChanged(0, 0));
+  // Visiting some other site that have access site data, should reset the
+  // confidence level.
+  EXPECT_CALL(*mock(), OnSitesCountChanged(1, 0));
   EXPECT_CALL(*mock(), OnBreakageConfidenceLevelChanged(
-                           CookieControlsBreakageConfidenceLevel::kLow));
-  cookie_controls()->Update(web_contents());
+                           CookieControlsBreakageConfidenceLevel::kMedium));
+  NavigateAndCommit(GURL("https://somethingelse.com"));
+  page_specific_content_settings()->OnStorageAccessed(
+      StorageType::DATABASE,
+      CreateFirstPartyStorageKey(GURL("https://somethingelse.com")),
+      /*blocked_by_policy=*/false);
   testing::Mock::VerifyAndClearExpectations(mock());
 }
 
