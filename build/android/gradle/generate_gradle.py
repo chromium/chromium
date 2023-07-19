@@ -53,7 +53,7 @@ _GRADLE_BUILD_FILE = 'build.gradle'
 _CMAKE_FILE = 'CMakeLists.txt'
 # This needs to come first alphabetically among all modules.
 _MODULE_ALL = '_all'
-_INSTRUMENTATION_TARGET_SUFFIX = '_test_apk__test_apk__apk'
+_INSTRUMENTATION_TARGET_SUFFIX = '_test_apk__test_apk'
 
 _DEFAULT_TARGETS = [
     '//android_webview/test/embedded_test_server:aw_net_test_support_apk',
@@ -172,6 +172,9 @@ class _ProjectEntry:
   def NinjaTarget(self):
     return self._gn_target[2:]
 
+  def BuildConfigPath(self):
+    return os.path.join('gen', self.GradleSubdir() + '.build_config.json')
+
   def GradleSubdir(self):
     """Returns the output subdirectory."""
     ninja_target = self.NinjaTarget()
@@ -191,8 +194,7 @@ class _ProjectEntry:
   def BuildConfig(self):
     """Reads and returns the project's .build_config.json JSON."""
     if not self._build_config:
-      path = os.path.join('gen', self.GradleSubdir() + '.build_config.json')
-      with open(_RebasePath(path)) as jsonfile:
+      with open(_RebasePath(self.BuildConfigPath())) as jsonfile:
         self._build_config = json.load(jsonfile)
     return self._build_config
 
@@ -842,13 +844,17 @@ def main():
         os.path.join(output_dir, gn_helpers.BUILD_VARS_FILENAME)):
       _RunGnGen(output_dir)
 
+  main_entries = [_ProjectEntry.FromGnTarget(t) for t in targets]
+  if not args.all:
+    # list_java_targets.py takes care of building .build_config.json in the
+    # --all case.
+    _BuildTargets(output_dir, [t.BuildConfigPath() for t in main_entries])
+
   build_vars = gn_helpers.ReadBuildVars(output_dir)
   jinja_processor = jinja_template.JinjaProcessor(_FILE_DIR)
   generator = _ProjectContextGenerator(_gradle_output_dir, build_vars,
                                        args.use_gradle_process_resources,
                                        jinja_processor, args.split_projects)
-
-  main_entries = [_ProjectEntry.FromGnTarget(t) for t in targets]
 
   if args.all:
     # There are many unused libraries, so restrict to those that are actually
