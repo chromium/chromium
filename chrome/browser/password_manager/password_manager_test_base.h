@@ -101,8 +101,7 @@ class BubbleObserver {
   void WaitForSaveUnsyncedCredentialsPrompt() const;
 
  private:
-  const raw_ptr<ManagePasswordsUIController, DanglingUntriaged>
-      passwords_ui_controller_;
+  const raw_ptr<ManagePasswordsUIController> passwords_ui_controller_;
 };
 
 // A helper class that synchronously waits until the password store handles a
