@@ -15,6 +15,62 @@ namespace v4l2_test {
 
 namespace {
 constexpr uint32_t kDriverCodecFourcc = V4L2_PIX_FMT_HEVC_SLICE;
+
+// Gets bit depth info from SPS
+bool ParseBitDepth(const H265SPS& sps, uint8_t& bit_depth) {
+  // Spec 7.4.3.2.1
+  // See spec at http://www.itu.int/rec/T-REC-H.265
+  if (sps.bit_depth_y != sps.bit_depth_c) {
+    LOG(ERROR) << "Different bit depths among planes is not supported";
+    return false;
+  }
+  bit_depth = base::checked_cast<uint8_t>(sps.bit_depth_y);
+  return true;
+}
+
+// Checks bit depth is supported with the given HEVC profile
+bool IsValidBitDepth(uint8_t bit_depth, VideoCodecProfile profile) {
+  switch (profile) {
+    // Spec A.3.2
+    case HEVCPROFILE_MAIN:
+      return bit_depth == 8u;
+    // Spec A.3.3
+    case HEVCPROFILE_MAIN10:
+      return bit_depth == 8u || bit_depth == 10u;
+    // Spec A.3.4
+    case HEVCPROFILE_MAIN_STILL_PICTURE:
+      return bit_depth == 8u;
+    // Spec A.3.5
+    case HEVCPROFILE_REXT:
+      return bit_depth == 8u || bit_depth == 10u || bit_depth == 12u ||
+             bit_depth == 14u || bit_depth == 16u;
+    // Spec A.3.6
+    case HEVCPROFILE_HIGH_THROUGHPUT:
+      return bit_depth == 8u || bit_depth == 10u || bit_depth == 14u ||
+             bit_depth == 16u;
+    // Spec G.11.1.1
+    case HEVCPROFILE_MULTIVIEW_MAIN:
+      return bit_depth == 8u;
+    // Spec H.11.1.1
+    case HEVCPROFILE_SCALABLE_MAIN:
+      return bit_depth == 8u || bit_depth == 10u;
+    // Spec I.11.1.1
+    case HEVCPROFILE_3D_MAIN:
+      return bit_depth == 8u;
+    // Spec A.3.7
+    case HEVCPROFILE_SCREEN_EXTENDED:
+      return bit_depth == 8u || bit_depth == 10u;
+    // Spec H.11.1.2
+    case HEVCPROFILE_SCALABLE_REXT:
+      return bit_depth == 8u || bit_depth == 12u || bit_depth == 16u;
+    // Spec A.3.8
+    case HEVCPROFILE_HIGH_THROUGHPUT_SCREEN_EXTENDED:
+      return bit_depth == 8u || bit_depth == 10u || bit_depth == 14u;
+    default:
+      LOG(ERROR) << "Invalid profile specified for H265";
+      return false;
+  }
+}
 }
 
 H265Decoder::H265Decoder(std::unique_ptr<V4L2IoctlShim> v4l2_ioctl,
@@ -69,9 +125,91 @@ std::unique_ptr<H265Decoder> H265Decoder::Create(
       new H265Decoder(std::move(v4l2_ioctl), coded_size.value(), stream));
 }
 
-bool H265Decoder::ProcessPPS(int pps_id, bool* need_new_buffers) {
+bool H265Decoder::OutputAllRemainingPics() {
   NOTIMPLEMENTED();
   return false;
+}
+
+bool H265Decoder::Flush() {
+  VLOGF(4) << "Decoder flush";
+
+  if (!OutputAllRemainingPics()) {
+    return false;
+  }
+
+  dpb_.Clear();
+  prev_tid0_pic_ = nullptr;
+
+  return true;
+}
+
+bool H265Decoder::ProcessPPS(int pps_id, bool* need_new_buffers) {
+  VLOGF(4) << "Processing PPS id:" << pps_id;
+
+  const H265PPS* pps = parser_->GetPPS(pps_id);
+  DCHECK(pps);
+
+  const H265SPS* sps = parser_->GetSPS(pps->pps_seq_parameter_set_id);
+  DCHECK(sps);
+
+  if (need_new_buffers) {
+    *need_new_buffers = false;
+  }
+
+  gfx::Size new_pic_size = sps->GetCodedSize();
+  gfx::Rect new_visible_rect = sps->GetVisibleRect();
+  if (visible_rect_ != new_visible_rect) {
+    VLOGF(4) << "New visible rect: " << new_visible_rect.ToString();
+    visible_rect_ = new_visible_rect;
+  }
+
+  VideoChromaSampling new_chroma_sampling = sps->GetChromaSampling();
+  if (new_chroma_sampling != VideoChromaSampling::k420) {
+    LOG(ERROR) << "Only YUV 4:2:0 is supported";
+    return false;
+  }
+
+  // Equation 7-8
+  max_pic_order_cnt_lsb_ =
+      std::pow(2, sps->log2_max_pic_order_cnt_lsb_minus4 + 4);
+
+  VideoCodecProfile new_profile = H265Parser::ProfileIDCToVideoCodecProfile(
+      sps->profile_tier_level.general_profile_idc);
+
+  uint8_t new_bit_depth = 0;
+  if (!ParseBitDepth(*sps, new_bit_depth)) {
+    return false;
+  }
+
+  if (!IsValidBitDepth(new_bit_depth, new_profile)) {
+    LOG(ERROR) << "Invalid bit depth=" << base::strict_cast<int>(new_bit_depth)
+               << ", profile=" << GetProfileName(new_profile);
+    return false;
+  }
+
+  if (pic_size_ != new_pic_size || dpb_.MaxNumPics() != sps->max_dpb_size ||
+      profile_ != new_profile || bit_depth_ != new_bit_depth ||
+      chroma_sampling_ != new_chroma_sampling) {
+    CHECK(Flush()) << "Failed to flush the decoder.";
+
+    LOG(INFO) << "Codec profile: " << GetProfileName(new_profile)
+              << ", level(x30): " << sps->profile_tier_level.general_level_idc
+              << ", DPB size: " << sps->max_dpb_size
+              << ", Picture size: " << new_pic_size.ToString()
+              << ", bit_depth: " << base::strict_cast<int>(new_bit_depth)
+              << ", chroma_sampling_format: "
+              << VideoChromaSamplingToString(new_chroma_sampling);
+    profile_ = new_profile;
+    bit_depth_ = new_bit_depth;
+    pic_size_ = new_pic_size;
+    chroma_sampling_ = new_chroma_sampling;
+    dpb_.SetMaxNumPics(sps->max_dpb_size);
+    if (need_new_buffers) {
+      *need_new_buffers = true;
+    }
+  }
+
+  return true;
 }
 
 bool H265Decoder::PreprocessCurrentSlice() {

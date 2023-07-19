@@ -8,6 +8,7 @@
 
 #include "media/gpu/v4l2/test/video_decoder.h"
 
+#include "media/base/video_codecs.h"
 #include "media/gpu/v4l2/test/h265_dpb.h"
 #include "media/video/h265_parser.h"
 
@@ -67,7 +68,13 @@ class H265Decoder : public VideoDecoder {
     kRanOutOfStreamData,  // Need more stream data to proceed.
   };
 
-  // Process H265 stream structures.
+  // Output all pictures in DPB that have not been outputted yet.
+  bool OutputAllRemainingPics();
+
+  // Output all pictures in DPB and clear the DPB.
+  bool Flush();
+
+  // Process H265 bitstream PPS (picture parameter set).
   bool ProcessPPS(int pps_id, bool* need_new_buffers);
 
   // Process current slice header to discover if we need to start a new picture,
@@ -95,6 +102,9 @@ class H265Decoder : public VideoDecoder {
 
   std::unique_ptr<H265Parser> parser_;
 
+  // DPB in use.
+  H265DPB dpb_;
+
   // Picture currently being processed/decoded.
   scoped_refptr<H265Picture> curr_pic_;
 
@@ -104,6 +114,10 @@ class H265Decoder : public VideoDecoder {
 
   const base::MemoryMappedFile& data_stream_;
 
+  // Global state values needed for decoding. See spec.
+  scoped_refptr<H265Picture> prev_tid0_pic_;
+  int max_pic_order_cnt_lsb_;
+
   // Currently active PPS.
   int curr_pps_id_ = -1;
 
@@ -111,6 +125,18 @@ class H265Decoder : public VideoDecoder {
   std::unique_ptr<H265NALU> curr_nalu_;
   std::unique_ptr<H265SliceHeader> curr_slice_hdr_;
   std::unique_ptr<H265SliceHeader> last_slice_hdr_;
+
+  // Output picture size.
+  gfx::Size pic_size_;
+  // Output visible cropping rect.
+  gfx::Rect visible_rect_;
+
+  // Profile of input bitstream.
+  VideoCodecProfile profile_;
+  // Bit depth of input bitstream.
+  uint8_t bit_depth_ = 0;
+  // Chroma sampling format of input bitstream.
+  VideoChromaSampling chroma_sampling_ = VideoChromaSampling::kUnknown;
 
   // If this is true, then the entire steam has been parsed.
   bool is_stream_over_ = false;
