@@ -18,6 +18,7 @@ import com.android.launcher3.TabItemInfo;
 import com.ark.browser.core.ArkCompositorViewHolder;
 import com.ark.browser.core.ArkWebContents;
 import com.ark.browser.core.ArkWebManager;
+import com.ark.browser.event.LoadUrlEvent;
 import com.ark.browser.settings.AppConfig;
 import com.ark.browser.tab.PageInfo;
 import com.ark.browser.tab.PageSnapshotManager;
@@ -39,6 +40,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.util.ColorUtils;
 import org.chromium.ui.widget.Toast;
 
@@ -178,6 +180,10 @@ public class TabSwitcherManager implements SwitcherRecyclerLayout.Callback {
 
     public View getBrowserLayout() {
         return mBrowserLayout;
+    }
+
+    public ArkLauncherLayout getLauncherLayout() {
+        return mLauncherLayout;
     }
 
     public TabSwitcherLayout getTabSwitcherLayout() {
@@ -431,6 +437,21 @@ public class TabSwitcherManager implements SwitcherRecyclerLayout.Callback {
                 mViewHolder.getTabContentManager().cacheThumbnail(arkWeb.getWebContents(), arkWeb.getId());
             }
         }
+    }
+
+    public void openUrl(LoadUrlEvent event) {
+        ITabGroup tabGroup = TabGroupManager.global().getTabGroup(event.isIncognito());
+        LoadUrlParams loadUrlParams = event.getLoadUrlParams();
+        if (event.isNewTab() || tabGroup.getCurrentTab() == null) {
+            loadUrlParams.setTransitionType(PageTransition.GENERATED);
+            tabGroup.openNewTab(event.getPageInfo(), loadUrlParams, TabLaunchType.FROM_CHROME_UI);
+        } else if (isInBrowser() && tabGroup.getCurrentTab() != null) {
+            // TODO new tab or new page?
+            tabGroup.openNewTab(loadUrlParams, TabLaunchType.FROM_CHROME_UI);
+        } else {
+            tabGroup.openNewTab(event.getPageInfo(), loadUrlParams, TabLaunchType.FROM_CHROME_UI);
+        }
+        goToBrowser();
     }
 
 

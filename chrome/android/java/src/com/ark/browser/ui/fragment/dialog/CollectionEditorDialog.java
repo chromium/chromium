@@ -11,10 +11,13 @@ import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 
+import com.android.launcher3.database.HomepageManager;
 import com.ark.browser.core.bookmark.BookmarkModel;
+import com.ark.browser.event.BundleEvent;
 import com.ark.browser.settings.Keys;
 import com.ark.browser.ui.widget.EmptyAlertEditText;
-import com.zpj.fragmentation.SupportHelper;
+import com.ark.browser.utils.ArkLogger;
+import com.zpj.bus.ZBus;
 import com.zpj.fragmentation.dialog.base.OverDragBottomDialogFragment;
 import com.zpj.skin.SkinEngine;
 import com.zpj.toast.ZToast;
@@ -84,7 +87,7 @@ public class CollectionEditorDialog extends OverDragBottomDialogFragment<Collect
         if (id != BookmarkId.INVALID_ID) {
             mBookmarkId = new BookmarkId(id, type);
         }
-        
+
         if (mBookmarkId == null) {
             if (mTab == null) {
                 popThis();
@@ -92,7 +95,7 @@ public class CollectionEditorDialog extends OverDragBottomDialogFragment<Collect
                 mBookmarkId = mModel.getUserBookmarkIdForTab(mTab);
             }
         }
-        
+
     }
 
     @Override
@@ -147,6 +150,15 @@ public class CollectionEditorDialog extends OverDragBottomDialogFragment<Collect
         } else {
             currentFolderId = bookmarkItem.getParentId();
         }
+        ArkLogger.e(this, "init currentFolderId=" + currentFolderId
+                + " bookmarkItem=" + bookmarkItem
+                + " defaultFolder=" + mModel.getDefaultFolder()
+                + " rootId=" + mModel.getRootFolderId()
+                + " desktopId=" + mModel.getDesktopFolderId()
+                + " otherId=" + mModel.getOtherFolderId());
+        if (currentFolderId == null) {
+            currentFolderId = mModel.getDesktopFolderId();
+        }
 
         if (bookmarkItem != null && mModel.doesBookmarkExist(mBookmarkId)) {
             addToBookmark = true;
@@ -159,9 +171,9 @@ public class CollectionEditorDialog extends OverDragBottomDialogFragment<Collect
         url = originalUrl.getSpec();
         title = originalTitle;
 
-//        if (HomepageManager.getFavoriteByUrl(url) != null) {
-//            addToHomepage = true;
-//        }
+        if (HomepageManager.getFavoriteByUrl(url) != null) {
+            addToHomepage = true;
+        }
 
         EmptyAlertEditText mTitleEditText = findViewById(R.id.title_text);
         mTitleEditText.setOnTouchListener((v, event) -> {
@@ -338,18 +350,24 @@ public class CollectionEditorDialog extends OverDragBottomDialogFragment<Collect
                     }
                 }
             }
-        } else if (mModel.doesBookmarkExist(mBookmarkId)) {
+        } else if (mBookmarkId != null && mModel.doesBookmarkExist(mBookmarkId)) {
             mModel.deleteBookmark(mBookmarkId);
             ZToast.normal("删除书签成功");
         }
 
-//        boolean inTheHomepage = HomepageManager.getFavoriteByUrl(url) != null;
-//        if (addToHomepage && !inTheHomepage) {
-//            EventBus.postAddToHomepageEvent(title, url);
-//        } else if (!addToHomepage && inTheHomepage) {
-//            ChromeActivity.fromContext(context).getLauncherFragment()
-//                    .getLauncherLayout().removeItem(url, true);
-//        }
+        boolean inTheHomepage = HomepageManager.getFavoriteByUrl(url) != null;
+        if (addToHomepage && !inTheHomepage) {
+            BundleEvent.with(BundleEvent.ACTION_ADD_TO_HOMEPAGE)
+                    .putString("url", url)
+                    .putString("title", title)
+                    .post();
+        } else if (!addToHomepage && inTheHomepage) {
+            BundleEvent.with(BundleEvent.ACTION_REMOVE_FROM_HOMEPAGE)
+                    .putString("url", url)
+                    .post();
+        }
+
+        ZBus.post("key_update_star_button");
 
 //        ChromeActivity.fromContext(context).getLauncherFragment()
 //                .getLauncherManager().getBottomContainer().updateStarButton(mTab);

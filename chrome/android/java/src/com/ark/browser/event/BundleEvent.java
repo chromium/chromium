@@ -17,6 +17,8 @@ import java.util.ArrayList;
 public class BundleEvent {
 
     public static final int ACTION_GO_TO_BROWSER = 0;
+    public static final int ACTION_ADD_TO_HOMEPAGE = 1;
+    public static final int ACTION_REMOVE_FROM_HOMEPAGE = 2;
 
     private final int mAction;
     private final Bundle mBundle;
@@ -36,6 +38,18 @@ public class BundleEvent {
 
     public Bundle getBundle() {
         return mBundle;
+    }
+
+    public String getString(String key) {
+        return mBundle.getString(key);
+    }
+
+    public String getString(String key, String defaultVaue) {
+        return mBundle.getString(key, defaultVaue);
+    }
+
+    public String[] getStringArray(String key) {
+        return mBundle.getStringArray(key);
     }
 
     public boolean getBoolean(String key) {
@@ -181,13 +195,18 @@ public class BundleEvent {
         private final int mAction;
         private final Bundle mBundle = new Bundle();
 
-        public Builder(int action) {
+        private Builder(int action) {
             mAction = action;
         }
 
         public Builder putAll(Bundle bundle) {
              mBundle.putAll(bundle);
              return this;
+        }
+
+        public Builder putString(@Nullable String key, String value) {
+            mBundle.putString(key, value);
+            return this;
         }
 
         public Builder putBoolean(@Nullable String key, boolean value) {

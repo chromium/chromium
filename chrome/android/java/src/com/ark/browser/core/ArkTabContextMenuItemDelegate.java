@@ -194,7 +194,7 @@ public class ArkTabContextMenuItemDelegate implements ContextMenuItemDelegate {
 
         LoadUrlParams params = new LoadUrlParams(url);
         params.setReferrer(referrer);
-        LoadUrlEvent.post(params, true);
+        LoadUrlEvent.post(mTab.getPageInfo(), params, true, mTab.isIncognito());
 
     }
 
@@ -209,7 +209,7 @@ public class ArkTabContextMenuItemDelegate implements ContextMenuItemDelegate {
         Toast.makeText(ContextUtils.getApplicationContext(), "onOpenInNewTabInGroup", Toast.LENGTH_SHORT).show();
         LoadUrlParams params = new LoadUrlParams(url);
         params.setReferrer(referrer);
-        LoadUrlEvent.post(params, true);
+        LoadUrlEvent.post(mTab.getPageInfo(), params, true, mTab.isIncognito());
     }
 
     @Override
@@ -235,7 +235,7 @@ public class ArkTabContextMenuItemDelegate implements ContextMenuItemDelegate {
         Toast.makeText(ContextUtils.getApplicationContext(), "onOpenImageInNewTab", Toast.LENGTH_SHORT).show();
         LoadUrlParams params = new LoadUrlParams(url);
         params.setReferrer(referrer);
-        LoadUrlEvent.post(params, true);
+        LoadUrlEvent.post(mTab.getPageInfo(), params, true, mTab.isIncognito());
     }
 
     @Override

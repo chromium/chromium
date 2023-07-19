@@ -35,8 +35,10 @@ import com.ark.browser.ui.fragment.dialog.ExitDialog;
 import com.ark.browser.ui.widget.homepage.TabSwitcherManager;
 import com.ark.browser.utils.ArkLogger;
 import com.ark.browser.utils.ThreadPool;
+import com.zpj.bus.Consumer;
 import com.zpj.bus.ZBus;
 import com.zpj.fragmentation.dialog.ZDialog;
+import com.zpj.toast.ZToast;
 import com.zpj.utils.FileUtils;
 
 import org.chromium.base.supplier.Supplier;
@@ -48,7 +50,6 @@ import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.lifecycle.StartStopWithNativeObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabDelegateFactory;
-import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.browser_ui.widget.InsetObserverView;
 import org.chromium.components.messages.DismissReason;
@@ -60,9 +61,7 @@ import org.chromium.components.messages.MessageIdentifier;
 import org.chromium.components.messages.MessageQueueDelegate;
 import org.chromium.components.messages.MessagesFactory;
 import org.chromium.components.messages.MessagesMetrics;
-import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.net.ConnectionType;
-import org.chromium.ui.base.PageTransition;
 
 public class ArkMainFragment extends BaseFragment implements
         PauseResumeWithNativeObserver, StartStopWithNativeObserver, InsetObserverView.WindowInsetObserver {
@@ -186,7 +185,7 @@ public class ArkMainFragment extends BaseFragment implements
 
         ZBus.with(this)
                 .observe(LoadUrlEvent.class)
-                .doOnChange(this::onSearchEvent)
+                .doOnChange(this::openUrl)
                 .subscribe();
 
         ZBus.with(this)
@@ -195,11 +194,40 @@ public class ArkMainFragment extends BaseFragment implements
                 .subscribe();
 
         ZBus.with(this)
+                .observe("key_update_star_button")
+                .doOnChange(new Consumer<String>() {
+                    @Override
+                    public void accept(String s) {
+                        mSwitcherManager.getBottomController().updateStarButton();
+                    }
+                })
+                .subscribe();
+
+        ZBus.with(this)
                 .observe(BundleEvent.class)
                 .doOnChange(event -> {
                     int action = event.getAction();
                     if (action == BundleEvent.ACTION_GO_TO_BROWSER) {
                         mSwitcherManager.goToBrowser(event.getBoolean("animated", true));
+                    } else if (action == BundleEvent.ACTION_ADD_TO_HOMEPAGE) {
+                        String url = event.getString("url", null);
+                        String title = event.getString("title", null);
+                        if (url == null || title == null) {
+                            ZToast.warning("标题或链接为空!");
+                        } else if (mSwitcherManager.getLauncherLayout().addItem(title, url)) {
+                            ZToast.success("成功添加到首页!");
+                        } else {
+                            ZToast.error("添加到首页失败!");
+                        }
+                    } else if (action == BundleEvent.ACTION_REMOVE_FROM_HOMEPAGE) {
+                        String url = event.getString("url", null);
+                        if (url == null) {
+                            ZToast.warning("移除链接不能为空!");
+                        } else if (mSwitcherManager.getLauncherLayout().removeItem(url, true)) {
+                            ZToast.success("从首页移除成功!");
+                        } else {
+                            ZToast.error("从首页移除失败!");
+                        }
                     }
                 })
                 .subscribe();
@@ -457,29 +485,12 @@ public class ArkMainFragment extends BaseFragment implements
         }
     }
 
-    public void onSearchEvent(LoadUrlEvent event) {
-        ITabGroup tabGroup = TabGroupManager.global().getTabGroup(event.isIncognito());
-
+    private void openUrl(LoadUrlEvent event) {
         popTo(ArkMainFragment.class, false);
         for (int i = 0; i < getChildFragmentManager().getBackStackEntryCount(); i++) {
             popChild();
         }
-
-        mSwitcherManager.goToBrowser();
-
-        LoadUrlParams loadUrlParams = event.getLoadUrlParams();
-        if (event.isNewTab() || tabGroup.getCurrentTab() == null) {
-            loadUrlParams.setTransitionType(PageTransition.GENERATED);
-            tabGroup.openNewTab(event.getPageInfo(), event.getLoadUrlParams(), TabLaunchType.FROM_CHROME_UI);
-            return;
-        }
-
-        if (mSwitcherManager.isInBrowser() && tabGroup.getCurrentTab() != null) {
-            // TODO new tab or new page?
-            tabGroup.openNewTab(loadUrlParams, TabLaunchType.FROM_CHROME_UI);
-        } else {
-            tabGroup.openNewTab(event.getPageInfo(), loadUrlParams, TabLaunchType.FROM_CHROME_UI);
-        }
+        mSwitcherManager.openUrl(event);
     }
 
     public TabSwitcherManager getSwitcherManager() {

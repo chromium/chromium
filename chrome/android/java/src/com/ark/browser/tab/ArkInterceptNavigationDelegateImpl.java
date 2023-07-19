@@ -133,11 +133,11 @@ public class ArkInterceptNavigationDelegateImpl extends InterceptNavigationDeleg
         int pageTransition = navigationHandle.pageTransition();
         ArkLogger.e(TAG, "shouldIgnoreNavigation url=" + mTab.getUrl()
                 + "\noriginUrl=" + mTab.getOriginalUrl()
-                + "\npageTransition=" + pageTransition
+                + "\npageTransition=" + pageTransition + " &=" + (pageTransition & PageTransition.FORWARD_BACK)
                 + "\ngetLastCommittedEntryIndex=" + getLastCommittedEntryIndex()
                 + "\nisInitialNavigation=" + isInitialNavigation()
                 + "\nisSameDocument=" + navigationHandle.isSameDocument());
-        if (isInitialNavigation()) {
+        if (isInitialNavigation() || getLastCommittedEntryIndex() > 0) {
             return false;
         }
         if (pageTransition == PageTransition.RELOAD
@@ -148,7 +148,8 @@ public class ArkInterceptNavigationDelegateImpl extends InterceptNavigationDeleg
                 || pageTransition == PageTransition.CLIENT_REDIRECT
                 || pageTransition == PageTransition.SERVER_REDIRECT
                 || pageTransition == PageTransition.CHAIN_START
-                || pageTransition == PageTransition.CHAIN_END) {
+                || pageTransition == PageTransition.CHAIN_END
+                || (pageTransition & PageTransition.FORWARD_BACK) != 0) {
             return false;
         }
 

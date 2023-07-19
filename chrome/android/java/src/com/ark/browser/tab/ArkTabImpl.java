@@ -75,6 +75,7 @@ import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsAccessibility;
 import org.chromium.ui.UiUtils;
+import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.url.GURL;
@@ -120,6 +121,8 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
     @VisibleForTesting()
     protected final ObserverList<TabObserver> mObservers = new ObserverList<>();
 
+    private ViewAndroidDelegate mViewAndroidDelegate;
+
     /**
      * Tab id to be used as a source tab in SyncedTabDelegate.
      */
@@ -129,6 +132,7 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
     private boolean mIsShowingErrorPage;
 
     /**
+     * TODO move to ArkWebContents
      * True while a page load is in progress.
      */
     private boolean mIsLoading;
@@ -277,6 +281,7 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
     }
 
     public IPage loadInNewPage(LoadUrlParams params) {
+        stopLoading();
         int nextIndex;
         if (mTab.getPageSize() == 0) {
             nextIndex = 0;
@@ -460,7 +465,10 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
         WindowAndroid old = mWindowAndroid;
         mWindowAndroid = (ArkWindowAndroid) window;
 
-
+        if (mViewAndroidDelegate != null) {
+            mViewAndroidDelegate.destroy();
+            mViewAndroidDelegate = null;
+        }
 
         if (mArkWeb != null) {
             if (mWindowAndroid == null) {
@@ -519,6 +527,18 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
             return null;
         }
         return mWindowAndroid.getCompositorViewHolder().getContentView();
+    }
+
+    public ViewAndroidDelegate getViewAndroidDelegate() {
+        if (mViewAndroidDelegate == null) {
+            if (mWindowAndroid == null) {
+                mViewAndroidDelegate = ViewAndroidDelegate.createBasicDelegate(/* containerView */ null);
+            } else {
+                mViewAndroidDelegate = new ArkTabViewAndroidDelegate(this,
+                        mWindowAndroid.getCompositorViewHolder().getContentView());
+            }
+        }
+        return mViewAndroidDelegate;
     }
 
     @Override
@@ -903,6 +923,11 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
         for (TabObserver observer : mObservers) observer.onDestroyed(this);
         mObservers.clear();
 
+        if (mViewAndroidDelegate != null) {
+            mViewAndroidDelegate.destroy();
+            mViewAndroidDelegate = null;
+        }
+
         if (mWindowAndroid != null) {
             TabContentManager manager = mWindowAndroid.getTabContentManager();
             if (manager != null) {
@@ -912,7 +937,7 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
 
         mUserDataHost.destroy();
         mTabViewManager.destroy();
-        destroyWebContents(true);
+        destroyWebContents(false);
 
         TabImportanceManager.tabDestroyed(this);
 
@@ -1378,13 +1403,12 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
             ArkLogger.e(TAG, "initWebContents webContents=" + webContents);
             TraceEvent.begin("ChromeTab.initWebContents");
             ArkWebContents oldWebContents = mArkWeb;
-            mArkWeb = webContents;
-
-            mArkWeb.attach(this);
-
             if (oldWebContents != null) {
                 oldWebContents.detach(this);
             }
+            mArkWeb = webContents;
+            mArkWeb.attach(this);
+
 
             updateInteractableState();
 
@@ -1524,13 +1548,14 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
 
         mArkWeb.detach(this);
 
+        if (mViewAndroidDelegate != null) {
+            mViewAndroidDelegate.destroy();
+            mViewAndroidDelegate = null;
+        }
+
         updateInteractableState();
 
         ArkWebContents contentsToDestroy = mArkWeb;
-        if (contentsToDestroy.getViewAndroidDelegate() != null
-                && contentsToDestroy.getViewAndroidDelegate() instanceof TabViewAndroidDelegate) {
-            contentsToDestroy.getViewAndroidDelegate().destroy();
-        }
         mArkWeb = null;
 
         assert mNativeTabAndroid != 0;
@@ -1577,12 +1602,15 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
 
     @Override
     public void cacheThumbnail() {
+        if (mArkWeb == null) {
+            return;
+        }
         PageSnapshotManager.getInstance().cachePage(getPageInfo());
 
         if (mWindowAndroid != null) {
             mWindowAndroid.getCompositorViewHolder()
                     .getTabContentManager()
-                    .cacheThumbnail(getWebContents(), getArkWeb().getId());
+                    .cacheThumbnail(mArkWeb.getWebContents(), mArkWeb.getId());
         }
 
     }

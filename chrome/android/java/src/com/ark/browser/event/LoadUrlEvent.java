@@ -78,5 +78,9 @@ public class LoadUrlEvent {
         new LoadUrlEvent(pageInfo, new LoadUrlParams(url), isNewTab, incognito).post();
     }
 
+    public static void post(PageInfo pageInfo, LoadUrlParams loadUrlParams, boolean isNewTab, boolean incognito) {
+        new LoadUrlEvent(pageInfo, loadUrlParams, isNewTab, incognito).post();
+    }
+
 }
 

@@ -849,7 +849,7 @@ public class ArkCompositorViewHolder extends FrameLayout
         return mTabVisible;
     }
 
-    @Nullable
+    @NonNull
     public ContentView getContentView() {
         return mContentView;
     }

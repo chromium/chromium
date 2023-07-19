@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
+import com.android.launcher3.database.HomepageManager;
 import com.ark.browser.core.bookmark.BookmarkBridge;
 import com.ark.browser.core.bookmark.BookmarkModel;
 import com.ark.browser.settings.AppConfig;
@@ -239,6 +240,10 @@ public class BottomController {
         };
     }
 
+    public void updateStarButton() {
+        updateStarButton(mTab);
+    }
+
     /**
      * 更新收藏按钮状态
      *
@@ -254,7 +259,8 @@ public class BottomController {
             mBookmarkModel.finishLoadingBookmarkModel(() -> updateStarButton(tab));
             return;
         }
-        if (tab != null && mBookmarkModel.hasBookmarkIdForTab(tab)) {
+        if (tab != null && (mBookmarkModel.hasBookmarkIdForTab(tab)
+                || HomepageManager.getFavoriteByUrl(tab.getUrl().getSpec()) != null)) {
             starButton.setImageResource(R.drawable.ic_bookmark_added);
         } else {
             starButton.setImageResource(R.drawable.ic_add_bookmark);
@@ -289,6 +295,8 @@ public class BottomController {
         loadingCancel.setImageResource(drawableId);
         if (page.isLoading()) {
             mProgressBar.start();
+        } else {
+            mProgressBar.complete();
         }
 
         updateStarButton(page);

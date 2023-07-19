@@ -275,22 +275,20 @@ public class ArkWebContents {
 
     public void attach(ArkTabImpl tab) {
         ArkLogger.e(this, "attach pageInfo=" + mPageInfo);
+        setImportance(ChildProcessImportance.MODERATE);
         ContentView cv = tab.getContentView();
-        ViewAndroidDelegate delegate;
         if (cv == null) {
-            delegate = ViewAndroidDelegate.createBasicDelegate(/* containerView */ null);
             mWebContents.setOverscrollRefreshHandler(null);
         } else {
-            delegate = new ArkTabViewAndroidDelegate(tab, cv);
             mWebContents.setOverscrollRefreshHandler(tab.getWindowAndroid()
                     .getCompositorViewHolder().getSwipeRefreshHandler());
         }
-        mWebContents.initialize(VersionInfo.getProductVersion(),
-                delegate, cv, tab.getWindowAndroid(), WebContents.createDefaultInternalsHolder());
-
-        mWebContents.setImportance(mImportance);
+        mWebContents.initialize(VersionInfo.getProductVersion(), tab.getViewAndroidDelegate(),
+                cv, tab.getWindowAndroid(), WebContents.createDefaultInternalsHolder());
 
         updateThemeColor();
+
+        loadIfNecessary();
     }
 
     public void detach(ArkTabImpl tab) {
@@ -300,7 +298,9 @@ public class ArkWebContents {
         if (accessibility != null) {
             accessibility.setObscuredByAnotherView(false);
         }
+        mWebContents.setViewAndroidDelegate(ViewAndroidDelegate.createBasicDelegate(/* containerView */ null));
         mWebContents.setOverscrollRefreshHandler(null);
+        mWebContents.setFocus(false);
     }
 
 //    public void destroy() {
