@@ -4,6 +4,7 @@ Version: 1.6.0
 License: LGPL 2.1
 License File: COPYING.libv4l
 Security Critical: No
+Shipped: yes
 
 Description:
 This contains header files of v4l-utils for dynamic loading.
