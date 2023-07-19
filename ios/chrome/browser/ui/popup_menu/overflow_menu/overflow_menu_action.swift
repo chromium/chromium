@@ -13,9 +13,6 @@ import Combine
   /// If true, do not override the color of the row's text with a custom color.
   @Published public var useSystemRowColoring = false
 
-  /// Whether the action is shown or hidden in the menu overall.
-  @Published public var shown = true
-
   /// The uniquely-identifying `overflow_menu::ActionType` of the action,
   /// stored as an int because Swift does not yet support C++ enum variables.
   public var actionType = 0

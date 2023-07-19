@@ -251,28 +251,36 @@ struct OverflowMenuDestinationView: View {
 
   var highlighted = false
 
+  @Environment(\.editMode) var editMode
+
   weak var metricsHandler: PopupMenuMetricsHandler?
 
   var body: some View {
-    Button(
-      action: {
-        metricsHandler?.popupMenuTookAction()
-        destination.handler()
-      },
-      label: {
-        EmptyView()
+    VStack {
+      Button(
+        action: {
+          // When editing, no actions are performed.
+          if editMode?.wrappedValue.isEditing == true {
+            return
+          }
+          metricsHandler?.popupMenuTookAction()
+          destination.handler()
+        },
+        label: {
+          EmptyView()
+        }
+      )
+      .accessibilityIdentifier(accessibilityIdentifier)
+      .accessibilityLabel(Text(accessibilityLabel))
+      .buttonStyle(
+        OverflowMenuDestinationButton(
+          destination: destination, layoutParameters: layoutParameters, highlighted: highlighted)
+      )
+      .if(highlighted) { view in
+        view.anchorPreference(
+          key: OverflowMenuDestinationList.HighlightedDestinationBounds.self, value: .bounds
+        ) { $0 }
       }
-    )
-    .accessibilityIdentifier(accessibilityIdentifier)
-    .accessibilityLabel(Text(accessibilityLabel))
-    .buttonStyle(
-      OverflowMenuDestinationButton(
-        destination: destination, layoutParameters: layoutParameters, highlighted: highlighted)
-    )
-    .if(highlighted) { view in
-      view.anchorPreference(
-        key: OverflowMenuDestinationList.HighlightedDestinationBounds.self, value: .bounds
-      ) { $0 }
     }
   }
 

@@ -70,11 +70,14 @@ struct OverflowMenuDestinationList: View {
   @Environment(\.layoutDirection) var layoutDirection: LayoutDirection
 
   /// The destinations for this view.
-  var destinations: [OverflowMenuDestination]
+  @Binding var destinations: [OverflowMenuDestination]
 
   weak var metricsHandler: PopupMenuMetricsHandler?
 
   @ObservedObject var uiConfiguration: OverflowMenuUIConfiguration
+
+  // The drag handler to use for drag interactions on this list
+  var dragHandler: DestinationDragHandler?
 
   /// Tracks the list's current offset, to see when it scrolls. When the offset
   /// is `nil`, scroll tracking is not set up yet. This is necessary because
@@ -133,7 +136,25 @@ struct OverflowMenuDestinationList: View {
                 destination: destination, layoutParameters: layoutParameters,
                 highlighted: uiConfiguration.highlightDestination == destination.destination,
                 metricsHandler: metricsHandler
-              ).id(destination.destination)
+              )
+              .id(destination.destination)
+              .ifLet(dragHandler) { view, dragHandler in
+                view
+                  .opacity(
+                    dragHandler.dragOnDestinations
+                      && dragHandler.currentDrag?.item == destination ? 0.01 : 1
+                  )
+                  .onDrag {
+                    dragHandler.startDrag(from: destination)
+                    return NSItemProvider(object: destination.name as NSString)
+                  }
+                  .onDrop(
+                    of: [.text],
+                    delegate: dragHandler.newDropDelegate(
+                      forDestination: destination))
+
+              }
+
             }
           }
 

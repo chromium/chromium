@@ -31,7 +31,9 @@ public class ActionCustomizationModel: NSObject, ObservableObject {
     // Set up sinks for every action so when their toggle value changes, this
     // class can reassign them to the correct group.
     actions.forEach { action in
-      action.$shown.sink { [weak self] newShown in
+      // dropFirst, so the sink is only called for subsequent changes, not the
+      // initial state.
+      action.$shown.dropFirst().sink { [weak self] newShown in
         self?.toggle(action: action, newShown: newShown)
       }.store(in: &cancellables)
     }

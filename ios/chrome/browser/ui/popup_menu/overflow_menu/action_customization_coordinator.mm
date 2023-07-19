@@ -23,6 +23,9 @@
   // Model for this feature.
   ActionCustomizationModel* _model;
 
+  // Destination model for this feature.
+  DestinationCustomizationModel* _destinationCustomizationModel;
+
   // UI configuration object to configure this view.
   OverflowMenuUIConfiguration* _UIConfiguration;
 
@@ -39,9 +42,16 @@
                                      highlightDestination:-1];
 
   _model = self.menuOrderer.actionCustomizationModel;
+
+  NSArray<OverflowMenuDestination*>* destinations =
+      [self.menuOrderer sortedDestinations];
+  _destinationCustomizationModel =
+      [[DestinationCustomizationModel alloc] initWithDestinations:destinations];
   _viewController = [OverflowMenuViewProvider
-      makeActionCustomizationViewControllerWithModel:_model
-                                     uiConfiguration:_UIConfiguration];
+      makeActionCustomizationViewControllerWithActionModel:_model
+                                          destinationModel:
+                                              _destinationCustomizationModel
+                                           uiConfiguration:_UIConfiguration];
 
   UISheetPresentationController* sheetPresentationController =
       _viewController.sheetPresentationController;

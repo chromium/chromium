@@ -30,6 +30,9 @@ import SwiftUI
   /// Closure to execute when item is selected.
   @Published public var handler: () -> Void
 
+  /// Whether the item is shown or hidden in the menu overall.
+  @Published public var shown = true
+
   public init(
     name: String,
     symbolName: String?,
