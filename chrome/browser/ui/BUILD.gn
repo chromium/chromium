@@ -553,6 +553,7 @@ static_library("ui") {
     "//components/payments/core:error_strings",
     "//components/performance_manager",
     "//components/permissions",
+    "//components/policy/content",
     "//components/policy/core/browser",
     "//components/pref_registry",
     "//components/privacy_sandbox",
