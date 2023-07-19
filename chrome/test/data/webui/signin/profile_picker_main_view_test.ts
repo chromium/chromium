@@ -7,8 +7,8 @@ import 'chrome://profile-picker/profile_picker.js';
 import {loadTimeData, ManageProfilesBrowserProxyImpl, NavigationMixin, ProfileCardElement, ProfilePickerMainViewElement, ProfileState, Routes} from 'chrome://profile-picker/profile_picker.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks, waitBeforeNextRender} from 'chrome://webui-test/polymer_test_util.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {flushTasks, waitAfterNextRender, waitBeforeNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 import {TestManageProfilesBrowserProxy} from './test_manage_profiles_browser_proxy.js';
 
@@ -299,5 +299,28 @@ suite('ProfilePickerMainViewTest', function() {
     flushTasks();
     await verifyProfileCard(
         profiles, mainViewElement.shadowRoot!.querySelectorAll('profile-card'));
+  });
+
+
+  test('ProfilesDragStartEnd', async function() {
+    loadTimeData.overrideValues({profilesReorderingEnabled: true});
+
+    const profiles = generateProfilesList(2);
+    webUIListenerCallback('profiles-list-changed', [...profiles]);
+    flushTasks();
+
+    // Make sure to wait for the initialization of the DragDelegate.
+    await waitAfterNextRender(mainViewElement.$.profiles);
+
+    const profileCards =
+        mainViewElement.shadowRoot!.querySelectorAll('profile-card');
+    assertEquals(profileCards.length, 2);
+    const draggingCard = profileCards[0]!;
+
+    draggingCard.dispatchEvent(new DragEvent('dragstart'));
+    assertTrue(draggingCard.classList.contains('dragging'));
+
+    draggingCard.dispatchEvent(new DragEvent('dragend'));
+    assertFalse(draggingCard.classList.contains('dragging'));
   });
 });

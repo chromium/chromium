@@ -13,15 +13,124 @@ import './profile_card.js';
 import './profile_picker_shared.css.js';
 import './strings.m.js';
 
+import {listenOnce} from '//resources/js/util_ts.js';
 import {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {afterNextRender, DomRepeat, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ManageProfilesBrowserProxy, ManageProfilesBrowserProxyImpl, ProfileState} from './manage_profiles_browser_proxy.js';
 import {navigateTo, NavigationMixin, Routes} from './navigation_mixin.js';
 import {isAskOnStartupAllowed, isGuestModeEnabled, isProfileCreationAllowed} from './policy_helper.js';
 import {getTemplate} from './profile_picker_main_view.html.js';
+
+// Interface to interact with the real underlying tile list that expects to have
+// the Drag and Drop functionality.
+interface DraggableTileListInterface {
+  // Given an index, returns the HTMLElement corresponding to the draggable
+  // tile.
+  getDraggableTile(index: number): HTMLElement;
+}
+
+// This delegate class allows any Polymer list container of tiles 'T' to add
+// the drag and drop with reordering functionality.
+//
+// The events that will be redirected to this delegate are:
+// - 'dragstart': triggered once when a tile is initially being dragged.
+// - 'dragend': triggered once when a tile drag stops, after a drop.
+// A full drag event cycle starts with 'dragstart' and ends with 'dragend'.
+//
+// To activate the drag and drop functionality, a call to
+// `initializeTileListListeners()` will attach all necessary 'drag-' event
+// listeners to the proper tiles. This method must be called once the HTML
+// tiles, that are intended to be drag and dropped, are properly rendered.
+class DragDropReorderTileListDelegate {
+  // ---------------------------------------------------------------------------
+  // public section:
+
+  constructor(tileListInterface: DraggableTileListInterface) {
+    this.tileListInterface_ = tileListInterface;
+  }
+
+  // Initialize tiles to be able to react to drag events.
+  initializeTileListListeners(tileCount: number) {
+    for (let i = 0; i < tileCount; ++i) {
+      const tile = this.getDraggableTile_(i);
+      tile.draggable = true;
+
+      tile.addEventListener('dragstart', (event: DragEvent) => {
+        this.onDragStart_(event);
+      });
+
+      // TODO: check if this event delay can be removed for MacOS.
+      // It is making the drop have an awkward movement.
+      tile.addEventListener('dragend', (event: DragEvent) => {
+        this.onDragEnd_(event);
+      });
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // private section
+
+  // Event 'dragstart' is applied on the tile that will be dragged. We store the
+  // tile being dragged in temporary member variables that will be used
+  // throughout a single drag event cycle. We need to store information in
+  // member variables since future events will be triggered in different stack
+  // calls.
+  private onDragStart_(event: DragEvent) {
+    // 'event.target' corresponds to the tile being dragged. Implicit cast to
+    // an HTMLElement.
+    this.markDraggingTile_(event.target as HTMLElement);
+  }
+
+  // Event 'dragend` is applied on the tile that was dragged and now dropped. We
+  // restore all the temporary member variables to their original state. It is
+  // the end of the drag event cycle.
+  // TODO: Apply the reordering in this function later.
+  private onDragEnd_(event: DragEvent) {
+    // The 'event.target' of the 'dragend' event is expected to be the same as
+    // the one that started the drag event cycle.
+    assert(this.draggingTile_);
+    assert(this.draggingTile_ === event.target as HTMLElement);
+    this.resetDraggingTile_();
+  }
+
+  // Prepare 'this.draggingTile_' member variable as the dragging tile.
+  // It will used throughout each drag event cycle and reset in the
+  // `resetDraggingTile_()` method which restore the tile to it's initial state.
+  private markDraggingTile_(element: HTMLElement) {
+    this.draggingTile_ = element;
+    this.draggingTile_.classList.add('dragging');
+
+    // Apply specific style to hide the tile that is being dragged, making sure
+    // only the image that sticks on the mouse pointer to be displayed while
+    // dragging. A very low value different than 0 is needed, otherwise the
+    // element would be considered invisible and would not react to drag events
+    // anymore. A value of '0.001' is enough to simulate the 'invisible' effect.
+    this.draggingTile_.style.opacity = '0.001';
+  }
+
+  // Restores `this.draggingTile_` to it's initial state.
+  private resetDraggingTile_() {
+    this.draggingTile_!.style.removeProperty('opacity');
+
+    this.draggingTile_!.classList.remove('dragging');
+    this.draggingTile_ = null;
+  }
+
+  private getDraggableTile_(index: number) {
+    return this.tileListInterface_.getDraggableTile(index);
+  }
+
+  // ---------------------------------------------------------------------------
+  // private members:
+
+  private tileListInterface_: DraggableTileListInterface;
+
+  private draggingTile_: HTMLElement|null = null;
+}
 
 export interface ProfilePickerMainViewElement {
   $: {
@@ -31,6 +140,7 @@ export interface ProfilePickerMainViewElement {
     browseAsGuestButton: HTMLElement,
     profilesContainer: HTMLElement,
     wrapper: HTMLElement,
+    profiles: DomRepeat,
   };
 }
 
@@ -38,7 +148,7 @@ const ProfilePickerMainViewElementBase =
     WebUiListenerMixin(NavigationMixin(PolymerElement));
 
 export class ProfilePickerMainViewElement extends
-    ProfilePickerMainViewElementBase {
+    ProfilePickerMainViewElementBase implements DraggableTileListInterface {
   static get is() {
     return 'profile-picker-main-view';
   }
@@ -85,6 +195,8 @@ export class ProfilePickerMainViewElement extends
       ManageProfilesBrowserProxyImpl.getInstance();
   private resizeObserver_: ResizeObserver|null = null;
   private previousRoute_: Routes|null = null;
+
+  private dragDelegate_: DragDropReorderTileListDelegate;
 
   override ready() {
     super.ready();
@@ -156,6 +268,17 @@ export class ProfilePickerMainViewElement extends
   private handleProfilesListChanged_(profilesList: ProfileState[]) {
     this.profilesListLoaded_ = true;
     this.profilesList_ = profilesList;
+
+    if (loadTimeData.getBoolean('profilesReorderingEnabled')) {
+      this.dragDelegate_ = new DragDropReorderTileListDelegate(this);
+
+      listenOnce(this, 'dom-change', () => {
+        afterNextRender(this, () => {
+          this.dragDelegate_.initializeTileListListeners(
+              this.profilesList_.length);
+        });
+      });
+    }
   }
 
   /**
@@ -197,6 +320,11 @@ export class ProfilePickerMainViewElement extends
   private computeHideAskOnStartup_(): boolean {
     return !isAskOnStartupAllowed() || !this.profilesList_ ||
         this.profilesList_.length < 2;
+  }
+
+  // @override
+  getDraggableTile(index: number): HTMLElement {
+    return this.shadowRoot!.querySelector<HTMLElement>('#profile-' + index)!;
   }
 }
 
