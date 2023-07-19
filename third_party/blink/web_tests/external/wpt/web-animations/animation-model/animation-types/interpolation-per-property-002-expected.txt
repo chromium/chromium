@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 371 tests; 357 PASS, 14 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 375 tests; 361 PASS, 14 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Setup
 PASS isolation (type: discrete) has testInterpolation function
 PASS isolation uses discrete animation when animating between "auto" and "isolate" with linear easing
@@ -242,6 +242,10 @@ PASS text-anchor (type: discrete) has testInterpolation function
 PASS text-anchor uses discrete animation when animating between "middle" and "end" with linear easing
 PASS text-anchor uses discrete animation when animating between "middle" and "end" with effect easing
 PASS text-anchor uses discrete animation when animating between "middle" and "end" with keyframe easing
+PASS text-autospace (type: discrete) has testInterpolation function
+PASS text-autospace uses discrete animation when animating between "normal" and "no-autospace" with linear easing
+PASS text-autospace uses discrete animation when animating between "normal" and "no-autospace" with effect easing
+PASS text-autospace uses discrete animation when animating between "normal" and "no-autospace" with keyframe easing
 PASS text-decoration-color (type: color) has testInterpolation function
 PASS text-decoration-color supports animating as color of rgb()
 PASS text-decoration-color supports animating as color of #RGB

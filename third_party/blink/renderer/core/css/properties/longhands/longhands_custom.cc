@@ -7918,6 +7918,13 @@ const CSSValue* TextAnchor::CSSValueFromComputedStyleInternal(
   return CSSIdentifierValue::Create(style.TextAnchor());
 }
 
+const CSSValue* TextAutospace::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style) const {
+  return CSSIdentifierValue::Create(style.TextAutospace());
+}
+
 const CSSValue* TextBoxTrim::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject* layout_object,

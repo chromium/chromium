@@ -69928,6 +69928,7 @@ Called by update_use_counter_css.py.-->
   <int value="764" label="word-boundary-detection (obsolete)"/>
   <int value="765" label="position-fallback-bounds"/>
   <int value="766" label="transition-animation-type"/>
+  <int value="767" label="text-autospace"/>
 </enum>
 
 <enum name="MappedEditingCommands">

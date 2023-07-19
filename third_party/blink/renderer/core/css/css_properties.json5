@@ -4888,6 +4888,17 @@
       typedom_types: ["Keyword"],
     },
     {
+      name: "text-autospace",
+      property_methods: ["CSSValueFromComputedStyleInternal"],
+      inherited: true,
+      field_group: "*",
+      field_template: "keyword",
+      keywords: ["normal", "no-autospace"],
+      default_value: "normal",
+      typedom_types: ["Keyword"],
+      runtime_flag: "CSSTextAutoSpace",
+    },
+    {
       name: "text-box-trim",
       property_methods: ["CSSValueFromComputedStyleInternal"],
       field_group: "box",

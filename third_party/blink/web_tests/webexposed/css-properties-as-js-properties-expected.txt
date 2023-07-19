@@ -432,6 +432,7 @@ tableLayout
 textAlign
 textAlignLast
 textAnchor
+textAutospace
 textBoxTrim
 textCombineUpright
 textDecoration

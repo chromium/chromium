@@ -758,6 +758,12 @@
     "fit-content",
 
     //
+    // text-autospace
+    //
+    // normal
+    "no-autospace",
+
+    //
     // text-overflow
     //
     "clip",
