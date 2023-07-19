@@ -71,7 +71,6 @@ public final class BaseSuggestionViewBinder<T extends View>
     private final ViewBinder<PropertyModel, T, PropertyKey> mContentBinder;
 
     private static boolean sDimensionsInitialized;
-    private static int sIconWidthPx;
     private static int sPaddingSmallIcon;
     private static int sPaddingStartLargeIcon;
     private static int sPaddingEndLargeIcon;
@@ -203,10 +202,6 @@ public final class BaseSuggestionViewBinder<T extends View>
         final SuggestionDrawableState sds = model.get(BaseSuggestionViewProperties.ICON);
 
         if (sds != null) {
-            rciv.setLayoutParams(new SuggestionLayout.LayoutParams(sIconWidthPx,
-                    ViewGroup.LayoutParams.WRAP_CONTENT,
-                    SuggestionLayout.LayoutParams.SuggestionViewType.DECORATION));
-
             int paddingStart = sds.isLarge ? sPaddingStartLargeIcon : sPaddingSmallIcon;
             int paddingEnd = sds.isLarge ? sPaddingEndLargeIcon : sPaddingSmallIcon;
             int edgeSize = sds.isLarge ? sEdgeSizeLargeIcon : sEdgeSize;
@@ -371,14 +366,8 @@ public final class BaseSuggestionViewBinder<T extends View>
         boolean showModernizeVisualUpdate =
                 OmniboxFeatures.shouldShowModernizeVisualUpdate(context);
         Resources resources = context.getResources();
-        sIconWidthPx = resources.getDimensionPixelSize(showModernizeVisualUpdate
-                        ? R.dimen.omnibox_suggestion_icon_area_size_modern
-                        : R.dimen.omnibox_suggestion_icon_area_size);
 
-        sPaddingSmallIcon = showModernizeVisualUpdate
-                ? OmniboxResourceProvider.getIconStartPadding(context)
-                : resources.getDimensionPixelSize(
-                        R.dimen.omnibox_suggestion_24dp_icon_margin_start);
+        sPaddingSmallIcon = OmniboxResourceProvider.getIconStartPadding(context);
         sPaddingStartLargeIcon = OmniboxResourceProvider.getLargeIconStartPadding(context);
         sPaddingEndLargeIcon = OmniboxResourceProvider.getLargeIconEndPadding(context);
         sEdgeSize = resources.getDimensionPixelSize(R.dimen.omnibox_suggestion_24dp_icon_size);

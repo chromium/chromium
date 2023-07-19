@@ -87,7 +87,7 @@ class SuggestionLayout extends ViewGroup {
         private final @SuggestionViewType int mSuggestionViewType;
         private final @NonNull Rect mPlacement;
 
-        public LayoutParams(int width, int height, @SuggestionViewType int type) {
+        private LayoutParams(int width, int height, @SuggestionViewType int type) {
             super(width, height);
             mPlacement = new Rect();
             mSuggestionViewType = type;
