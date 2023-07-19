@@ -652,12 +652,15 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, SpeculationRulesPrerender) {
   // Start prerendering `kPrerenderingUrl`.
   ASSERT_EQ(GetRequestCount(kPrerenderingUrl), 0);
   int host_id = AddPrerender(kPrerenderingUrl);
+  WaitForPrerenderLoadCompletion(kPrerenderingUrl);
   ASSERT_NE(host_id, RenderFrameHost::kNoFrameTreeNodeId);
   ASSERT_EQ(GetRequestCount(kPrerenderingUrl), 1);
 
   NavigationHandleObserver activation_observer(web_contents(),
                                                kPrerenderingUrl);
   NavigatePrimaryPage(kPrerenderingUrl);
+  // Ensure the state has been propagated to renderer processes.
+  ASSERT_EQ(false, EvalJs(web_contents(), "document.prerendering"));
 
   // The prerender host should be consumed.
   EXPECT_FALSE(HasHostForUrl(kPrerenderingUrl));
@@ -715,6 +718,11 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, SpeculationRulesPrerender) {
         << test::ActualVsExpectedUkmEntryToString(prediction_ukm_entries[1],
                                                   prediction_expected_entry);
   }
+
+  // Collect metrics we recorded the renderer processes.
+  FetchHistogramsFromChildProcesses();
+  histogram_tester().ExpectTotalCount(
+      "Prerender.Experimental.ActivationIPCDelay", 1u);
 }
 
 // Tests that the speculationrules-triggered prerender would be destroyed after

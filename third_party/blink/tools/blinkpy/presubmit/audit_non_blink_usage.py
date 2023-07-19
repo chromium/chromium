@@ -857,6 +857,12 @@ _CONFIG = [
         ],
     },
     {
+        'paths': ['third_party/blink/renderer/core/exported/web_view_impl.cc'],
+        'allowed': [
+            'base::TaskAnnotator',
+        ],
+    },
+    {
         'paths': ['third_party/blink/renderer/core/clipboard'],
         'allowed': ['base::EscapeForHTML'],
     },
