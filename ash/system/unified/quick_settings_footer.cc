@@ -8,6 +8,7 @@
 #include <memory>
 #include <numeric>
 
+#include "ash/ash_element_identifiers.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/quick_settings_catalogs.h"
@@ -36,6 +37,7 @@
 #include "ui/views/controls/button/button.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/view.h"
+#include "ui/views/view_class_properties.h"
 
 namespace ash {
 namespace {
@@ -252,6 +254,8 @@ QuickSettingsFooter::QuickSettingsFooter(
         IconButton::Type::kMedium, &vector_icons::kSettingsOutlineIcon,
         IDS_ASH_STATUS_TRAY_SETTINGS));
     settings_button_->SetID(VIEW_ID_QS_SETTINGS_BUTTON);
+    settings_button_->SetProperty(views::kElementIdentifierKey,
+                                  kQuickSettingsSettingsButtonElementId);
 
     local_state_pref_change_registrar_.Init(Shell::Get()->local_state());
     local_state_pref_change_registrar_.Add(
