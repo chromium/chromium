@@ -2,8 +2,9 @@ Name: webpagereplay
 URL: https://github.com/catapult-project/catapult/blob/master/web_page_replay_go/README.md
 Version: 2ee6438f0cb2f657860e3e40b7788f1448e5da3c
 License: 2020 The Chromium Authors
-License File: NOT_SHIPPED
+License File: LICENSE
 Security Critical: no
+Shipped: no
 License Android Compatible: no
 Description:
 - Web Page Replay (WprGo) is a performance testing tool written in Golang for
