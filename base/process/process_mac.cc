@@ -27,7 +27,7 @@ namespace {
 // TASK_DEFAULT_APPLICATION.
 BASE_FEATURE(kMacSetDefaultTaskRole,
              "MacSetDefaultTaskRole",
-             FEATURE_ENABLED_BY_DEFAULT);
+             FEATURE_DISABLED_BY_DEFAULT);
 
 // Returns the `task_role_t` of the process whose process ID is `pid`.
 absl::optional<task_role_t> GetTaskCategoryPolicyRole(
