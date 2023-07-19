@@ -339,11 +339,9 @@ bool HasValidHostPrefixAttributes(const GURL& url,
 }  // namespace
 
 CookieAccessParams::CookieAccessParams(CookieAccessSemantics access_semantics,
-                                       bool delegate_treats_url_as_trustworthy,
-                                       CookieSamePartyStatus same_party_status)
+                                       bool delegate_treats_url_as_trustworthy)
     : access_semantics(access_semantics),
-      delegate_treats_url_as_trustworthy(delegate_treats_url_as_trustworthy),
-      same_party_status(same_party_status) {}
+      delegate_treats_url_as_trustworthy(delegate_treats_url_as_trustworthy) {}
 
 CanonicalCookie::CanonicalCookie() = default;
 
@@ -1192,8 +1190,6 @@ CookieAccessResult CanonicalCookie::IncludeForRequestURL(
         CookieInclusionStatus::EXCLUDE_SAMESITE_NONE_INSECURE);
   }
 
-  CHECK_EQ(params.same_party_status,
-           CookieSamePartyStatus::kNoSamePartyEnforcement);
   // Only apply SameSite-related warnings if SameParty is not in effect.
   ApplySameSiteCookieWarningToStatus(SameSite(), effective_same_site,
                                      IsSecure(),
@@ -1368,8 +1364,6 @@ CookieAccessResult CanonicalCookie::IsSetPermittedInContext(
       break;
   }
 
-  CHECK_EQ(params.same_party_status,
-           CookieSamePartyStatus::kNoSamePartyEnforcement);
   // Only apply SameSite-related warnings if SameParty is not in effect.
   ApplySameSiteCookieWarningToStatus(
       SameSite(), access_result.effective_same_site, IsSecure(),

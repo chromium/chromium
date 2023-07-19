@@ -304,14 +304,6 @@ ComputeFirstPartySetMetadataMaybeAsync(
 NET_EXPORT CookieOptions::SameSiteCookieContext::ContextMetadata::HttpMethod
 HttpMethodStringToEnum(const std::string& in);
 
-// Get the SameParty inclusion status. If the cookie is not SameParty, returns
-// kNoSamePartyEnforcement; if the cookie is SameParty but does not have a
-// valid context, returns kEnforceSamePartyExclude.
-NET_EXPORT CookieSamePartyStatus
-GetSamePartyStatus(const CanonicalCookie& cookie,
-                   const CookieOptions& options,
-                   bool same_party_attribute_enabled);
-
 // Takes a CookieAccessResult and returns a bool, returning true if the
 // CookieInclusionStatus in CookieAccessResult was set to "include", else
 // returning false.

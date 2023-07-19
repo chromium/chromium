@@ -306,8 +306,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RestrictedCookieManager
   // update filtering.
   CookieAccessesByURLAndSite recent_cookie_accesses_;
 
-  bool same_party_attribute_enabled_;
-
   // This class can optionally bind its Receiver. If that's the case it's stored
   // done with this variable.
   mojo::Receiver<mojom::RestrictedCookieManager> receiver_;

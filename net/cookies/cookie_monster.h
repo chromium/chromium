@@ -734,8 +734,6 @@ class NET_EXPORT CookieMonster : public CookieStore {
   // nonce.
   size_t num_nonced_partitioned_cookie_bytes_ = 0u;
 
-  bool same_party_attribute_enabled_ = false;
-
   CookieMonsterChangeDispatcher change_dispatcher_;
 
   // Indicates whether the cookie store has been initialized.

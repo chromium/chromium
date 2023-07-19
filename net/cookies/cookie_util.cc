@@ -940,13 +940,6 @@ HttpMethodStringToEnum(const std::string& in) {
   return HttpMethod::kUnknown;
 }
 
-CookieSamePartyStatus GetSamePartyStatus(
-    const CanonicalCookie& cookie,
-    const CookieOptions& options,
-    const bool same_party_attribute_enabled) {
-  return CookieSamePartyStatus::kNoSamePartyEnforcement;
-}
-
 bool IsCookieAccessResultInclude(CookieAccessResult cookie_access_result) {
   return cookie_access_result.status.IsInclude();
 }

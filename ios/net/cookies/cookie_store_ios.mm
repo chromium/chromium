@@ -482,8 +482,7 @@ void CookieStoreIOS::DeleteCookiesMatchingInfoAsync(
             bool delegate_treats_url_as_trustworthy = false;
             net::CookieAccessParams params = {
                 net::CookieAccessSemantics::UNKNOWN,
-                delegate_treats_url_as_trustworthy,
-                net::CookieSamePartyStatus::kNoSamePartyEnforcement};
+                delegate_treats_url_as_trustworthy};
             return delete_info.Matches(cc, params);
           },
           std::move(delete_info)),

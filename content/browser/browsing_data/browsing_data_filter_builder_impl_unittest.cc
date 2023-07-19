@@ -76,12 +76,11 @@ void RunTestCase(TestCase test_case,
   EXPECT_TRUE(cookie) << cookie_line << " from " << test_case.url
                       << " is not a valid cookie";
   if (cookie) {
-    EXPECT_EQ(test_case.should_match,
-              delete_info.Matches(
-                  *cookie,
-                  net::CookieAccessParams{
-                      net::CookieAccessSemantics::NONLEGACY, false,
-                      net::CookieSamePartyStatus::kNoSamePartyEnforcement}))
+    EXPECT_EQ(
+        test_case.should_match,
+        delete_info.Matches(*cookie,
+                            net::CookieAccessParams{
+                                net::CookieAccessSemantics::NONLEGACY, false}))
         << cookie->DebugString();
   }
 
@@ -90,12 +89,11 @@ void RunTestCase(TestCase test_case,
       test_url, cookie_line, base::Time::Now(), absl::nullopt /* server_time */,
       absl::nullopt /* cookie_partition_key */);
   if (cookie) {
-    EXPECT_EQ(test_case.should_match,
-              delete_info.Matches(
-                  *cookie,
-                  net::CookieAccessParams{
-                      net::CookieAccessSemantics::NONLEGACY, false,
-                      net::CookieSamePartyStatus::kNoSamePartyEnforcement}))
+    EXPECT_EQ(
+        test_case.should_match,
+        delete_info.Matches(*cookie,
+                            net::CookieAccessParams{
+                                net::CookieAccessSemantics::NONLEGACY, false}))
         << cookie->DebugString();
   }
 
@@ -104,12 +102,11 @@ void RunTestCase(TestCase test_case,
       test_url, cookie_line, base::Time::Now(), absl::nullopt /* server_time */,
       absl::nullopt /* cookie_partition_key */);
   if (cookie) {
-    EXPECT_EQ(test_case.should_match,
-              delete_info.Matches(
-                  *cookie,
-                  net::CookieAccessParams{
-                      net::CookieAccessSemantics::NONLEGACY, false,
-                      net::CookieSamePartyStatus::kNoSamePartyEnforcement}))
+    EXPECT_EQ(
+        test_case.should_match,
+        delete_info.Matches(*cookie,
+                            net::CookieAccessParams{
+                                net::CookieAccessSemantics::NONLEGACY, false}))
         << cookie->DebugString();
   }
 
@@ -118,12 +115,11 @@ void RunTestCase(TestCase test_case,
       test_url, cookie_line, base::Time::Now(), absl::nullopt /* server_time */,
       absl::nullopt /* cookie_partition_key */);
   if (cookie) {
-    EXPECT_EQ(test_case.should_match,
-              delete_info.Matches(
-                  *cookie,
-                  net::CookieAccessParams{
-                      net::CookieAccessSemantics::NONLEGACY, false,
-                      net::CookieSamePartyStatus::kNoSamePartyEnforcement}))
+    EXPECT_EQ(
+        test_case.should_match,
+        delete_info.Matches(*cookie,
+                            net::CookieAccessParams{
+                                net::CookieAccessSemantics::NONLEGACY, false}))
         << cookie->DebugString();
   }
 }
@@ -455,12 +451,10 @@ TEST(BrowsingDataFilterBuilderImplTest, PartitionedCookies) {
         "__Host-A=B; Secure; SameSite=None; Path=/; Partitioned;",
         base::Time::Now(), absl::nullopt, test_case.cookie_partition_key);
     EXPECT_TRUE(cookie);
-    EXPECT_EQ(
-        test_case.should_match,
-        delete_info.Matches(
-            *cookie, net::CookieAccessParams{
-                         net::CookieAccessSemantics::NONLEGACY, false,
-                         net::CookieSamePartyStatus::kNoSamePartyEnforcement}));
+    EXPECT_EQ(test_case.should_match,
+              delete_info.Matches(
+                  *cookie, net::CookieAccessParams{
+                               net::CookieAccessSemantics::NONLEGACY, false}));
   }
 }
 
@@ -928,9 +922,8 @@ TEST(BrowsingDataFilterBuilderImplTest, ExcludeUnpartitionedCookies) {
       absl::nullopt, absl::nullopt);
   EXPECT_TRUE(cookie);
   EXPECT_FALSE(delete_info.Matches(
-      *cookie, net::CookieAccessParams{
-                   net::CookieAccessSemantics::NONLEGACY, false,
-                   net::CookieSamePartyStatus::kNoSamePartyEnforcement}));
+      *cookie,
+      net::CookieAccessParams{net::CookieAccessSemantics::NONLEGACY, false}));
 
   // Partitioned cookie should match.
   cookie = net::CanonicalCookie::Create(
@@ -941,9 +934,8 @@ TEST(BrowsingDataFilterBuilderImplTest, ExcludeUnpartitionedCookies) {
           GURL("https://toplevelsite.com")));
   EXPECT_TRUE(cookie);
   EXPECT_TRUE(delete_info.Matches(
-      *cookie, net::CookieAccessParams{
-                   net::CookieAccessSemantics::NONLEGACY, false,
-                   net::CookieSamePartyStatus::kNoSamePartyEnforcement}));
+      *cookie,
+      net::CookieAccessParams{net::CookieAccessSemantics::NONLEGACY, false}));
 
   // Nonced partitioned cookie should match.
   cookie = net::CanonicalCookie::Create(
@@ -954,9 +946,8 @@ TEST(BrowsingDataFilterBuilderImplTest, ExcludeUnpartitionedCookies) {
           GURL("https://toplevelsite.com"), base::UnguessableToken::Create()));
   EXPECT_TRUE(cookie);
   EXPECT_TRUE(delete_info.Matches(
-      *cookie, net::CookieAccessParams{
-                   net::CookieAccessSemantics::NONLEGACY, false,
-                   net::CookieSamePartyStatus::kNoSamePartyEnforcement}));
+      *cookie,
+      net::CookieAccessParams{net::CookieAccessSemantics::NONLEGACY, false}));
 }
 
 TEST(BrowsingDataFilterBuilderImplTest, CopyAndEquality) {

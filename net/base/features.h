@@ -286,12 +286,6 @@ NET_EXPORT BASE_DECLARE_FEATURE(kUdpSocketPosixAlwaysUpdateBytesReceived);
 // See spec changes in https://github.com/httpwg/http-extensions/pull/1348
 NET_EXPORT BASE_DECLARE_FEATURE(kCookieSameSiteConsidersRedirectChain);
 
-// When this feature is enabled, the SameParty attribute is enabled. (Note that
-// when this feature is disabled, the SameParty attribute is still parsed and
-// saved for cookie-sets, but it has no associated semantics (when setting or
-// reading cookies).)
-NET_EXPORT BASE_DECLARE_FEATURE(kSamePartyAttributeEnabled);
-
 // When this feature is enabled, the network service will wait until First-Party
 // Sets are initialized before issuing requests that use the HTTP cache or
 // cookies.

@@ -181,16 +181,11 @@ bool CookieChangeSubscription::ShouldObserveChangeTo(
   net_options.set_is_in_nontrivial_first_party_set(true);
 
   return cookie
-      .IncludeForRequestURL(
-          url_, net_options,
-          net::CookieAccessParams{
-              access_semantics,
-              network::IsUrlPotentiallyTrustworthy(url_),
-              net::cookie_util::GetSamePartyStatus(
-                  cookie, net_options,
-                  base::FeatureList::IsEnabled(
-                      net::features::kSamePartyAttributeEnabled)),
-          })
+      .IncludeForRequestURL(url_, net_options,
+                            net::CookieAccessParams{
+                                access_semantics,
+                                network::IsUrlPotentiallyTrustworthy(url_),
+                            })
       .status.IsInclude();
 }
 

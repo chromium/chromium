@@ -66,9 +66,8 @@
   // and not secure will not be included), and legacy mode.
   cookieAccessSemantics = net::CookieAccessSemantics::UNKNOWN;
 
-  net::CookieAccessParams params = {
-      cookieAccessSemantics, delegate_treats_url_as_trustworthy,
-      net::CookieSamePartyStatus::kNoSamePartyEnforcement};
+  net::CookieAccessParams params = {cookieAccessSemantics,
+                                    delegate_treats_url_as_trustworthy};
   for (NSHTTPCookie* cookie in self.cookies) {
     std::unique_ptr<net::CanonicalCookie> canonical_cookie =
         net::CanonicalCookieFromSystemCookie(cookie, base::Time());
