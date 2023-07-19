@@ -280,11 +280,6 @@ class WebStateList {
   // specified index to null.
   void ClearOpenersReferencing(int index);
 
-  // Notify the observers if the active WebState change. `reason` is the value
-  // passed to the WebStateListObservers.
-  void NotifyIfActiveWebStateChanged(web::WebState* old_web_state,
-                                     ActiveWebStateChangeReason reason);
-
   // Returns the index of the `n`-th WebState (with n > 0) in the sequence of
   // WebStates opened from the specified WebState starting the search from
   // `start_index` (the returned index may be smaller than `start_index` if
@@ -321,6 +316,10 @@ class WebStateList {
   // Returns the wrapper of the WebState at the specified index. It is invalid
   // to call this with an index such that `ContainsIndex(index)` returns false.
   WebStateWrapper* GetWebStateWrapperAt(int index) const;
+
+  // Takes action when the active WebState changes. Does nothing it
+  // there is no active WebState.
+  void OnActiveWebStateChanged();
 
   SEQUENCE_CHECKER(sequence_checker_);
 
