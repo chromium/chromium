@@ -64,8 +64,8 @@ typedef NS_ENUM(NSInteger, SyncSettingsItemType) {
   ReadingListDataTypeItemType,
   // kSyncPreferences.
   SettingsDataTypeItemType,
-  // Item for kAutofillWalletImportEnabled.
-  AutocompleteWalletItemType,
+  // kPayments.
+  PaymentsDataTypeItemType,
   // Item for the header and the footer of the types list.
   TypesListHeaderOrFooterType,
   // SignOutSectionIdentifier section.

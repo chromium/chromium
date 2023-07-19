@@ -378,7 +378,7 @@ TEST_F(ManageSyncSettingsMediatorTest,
     }
     SyncSwitchItem* switch_item =
         base::mac::ObjCCastStrict<SyncSwitchItem>(item);
-    if (switch_item.type == AutocompleteWalletItemType) {
+    if (switch_item.type == PaymentsDataTypeItemType) {
       EXPECT_FALSE(switch_item.enabled);
     } else {
       EXPECT_TRUE(switch_item.enabled);
