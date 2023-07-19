@@ -29,9 +29,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_INDEXEDDB_WEB_IDB_CALLBACKS_IMPL_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_INDEXEDDB_WEB_IDB_CALLBACKS_IMPL_H_
 
-#include <memory>
-
-#include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "third_party/blink/public/common/indexeddb/web_idb_types.h"
@@ -43,7 +40,6 @@
 
 namespace blink {
 
-class IDBKey;
 class IDBRequest;
 struct IDBDatabaseMetadata;
 
@@ -66,7 +62,6 @@ class WebIDBCallbacksImpl final : public WebIDBCallbacks {
   void SuccessDatabase(
       mojo::PendingAssociatedRemote<mojom::blink::IDBDatabase> pending_database,
       const IDBDatabaseMetadata& metadata) override;
-  void SuccessKey(std::unique_ptr<IDBKey>) override;
   void SuccessValue(mojom::blink::IDBReturnValuePtr) override;
   void SuccessInteger(int64_t) override;
 

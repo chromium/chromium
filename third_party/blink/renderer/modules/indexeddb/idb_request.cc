@@ -594,6 +594,18 @@ void IDBRequest::OnCount(bool success, uint32_t count) {
   }
 }
 
+void IDBRequest::OnPut(mojom::blink::IDBTransactionPutResultPtr result) {
+  if (result->is_error_result()) {
+    HandleError(std::move(result->get_error_result()));
+    return;
+  }
+
+  probe::AsyncTask async_task(GetExecutionContext(), &async_task_context_,
+                              "put");
+  DCHECK(result->is_key());
+  HandleResponse(std::move(result->get_key()));
+}
+
 void IDBRequest::OnGet(mojom::blink::IDBDatabaseGetResultPtr result) {
   if (result->is_error_result()) {
     HandleError(std::move(result->get_error_result()));

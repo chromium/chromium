@@ -167,9 +167,10 @@ IDBRequest* IDBObjectStore::get(ScriptState* script_state,
 
   IDBRequest* request = IDBRequest::Create(
       script_state, this, transaction_.Get(), std::move(metrics));
-  BackendDB()->Get(transaction_->Id(), Id(), IDBIndexMetadata::kInvalidId,
-                   key_range, /*key_only=*/false,
-                   WTF::BindOnce(&IDBRequest::OnGet, WrapPersistent(request)));
+  BackendDB()->Get(
+      transaction_->Id(), Id(), IDBIndexMetadata::kInvalidId, key_range,
+      /*key_only=*/false,
+      WTF::BindOnce(&IDBRequest::OnGet, WrapWeakPersistent(request)));
   return request;
 }
 
@@ -672,8 +673,8 @@ IDBRequest* IDBObjectStore::DoPut(ScriptState* script_state,
   request->transit_blob_handles() = value_wrapper.TakeBlobDataHandles();
   transaction_->transaction_backend()->Put(
       Id(), std::move(idb_value), IDBKey::Clone(key), put_mode,
-      base::WrapUnique(request->CreateWebCallbacks().release()),
-      std::move(index_keys));
+      std::move(index_keys),
+      WTF::BindOnce(&IDBRequest::OnPut, WrapWeakPersistent(request)));
 
   return request;
 }

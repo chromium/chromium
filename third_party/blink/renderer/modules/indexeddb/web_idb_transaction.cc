@@ -44,12 +44,13 @@ void WebIDBTransaction::DeleteObjectStore(int64_t object_store_id) {
   transaction_->DeleteObjectStore(object_store_id);
 }
 
-void WebIDBTransaction::Put(int64_t object_store_id,
-                            std::unique_ptr<IDBValue> value,
-                            std::unique_ptr<IDBKey> primary_key,
-                            mojom::blink::IDBPutMode put_mode,
-                            std::unique_ptr<WebIDBCallbacks> callbacks,
-                            Vector<IDBIndexKeys> index_keys) {
+void WebIDBTransaction::Put(
+    int64_t object_store_id,
+    std::unique_ptr<IDBValue> value,
+    std::unique_ptr<IDBKey> primary_key,
+    mojom::blink::IDBPutMode put_mode,
+    Vector<IDBIndexKeys> index_keys,
+    mojom::blink::IDBTransaction::PutCallback callback) {
   IndexedDBDispatcher::ResetCursorPrefetchCaches(transaction_id_, nullptr);
 
   size_t index_keys_size = 0;
@@ -65,36 +66,19 @@ void WebIDBTransaction::Put(int64_t object_store_id,
   size_t arg_size =
       value->DataSize() + primary_key->SizeEstimate() + index_keys_size;
   if (arg_size >= max_put_value_size_) {
-    callbacks->Error(
-        mojom::blink::IDBException::kUnknownError,
-        String::Format("The serialized keys and/or value are too large"
-                       " (size=%" PRIuS " bytes, max=%" PRIuS " bytes).",
-                       arg_size, max_put_value_size_));
+    std::move(callback).Run(
+        mojom::blink::IDBTransactionPutResult::NewErrorResult(
+            mojom::blink::IDBError::New(
+                mojom::blink::IDBException::kUnknownError,
+                String::Format("The serialized keys and/or value are too large"
+                               " (size=%" PRIuS " bytes, max=%" PRIuS
+                               " bytes).",
+                               arg_size, max_put_value_size_))));
     return;
   }
 
-  callbacks->SetState(transaction_id_);
   transaction_->Put(object_store_id, std::move(value), std::move(primary_key),
-                    put_mode, std::move(index_keys),
-                    WTF::BindOnce(&WebIDBTransaction::PutCallback,
-                                  WTF::Unretained(this), std::move(callbacks)));
-}
-
-void WebIDBTransaction::PutCallback(
-    std::unique_ptr<WebIDBCallbacks> callbacks,
-    mojom::blink::IDBTransactionPutResultPtr result) {
-  if (result->is_error_result()) {
-    callbacks->Error(result->get_error_result()->error_code,
-                     std::move(result->get_error_result()->error_message));
-    callbacks.reset();
-    return;
-  }
-
-  if (result->is_key()) {
-    callbacks->SuccessKey(std::move(result->get_key()));
-    callbacks.reset();
-    return;
-  }
+                    put_mode, std::move(index_keys), std::move(callback));
 }
 
 void WebIDBTransaction::Commit(int64_t num_errors_handled) {

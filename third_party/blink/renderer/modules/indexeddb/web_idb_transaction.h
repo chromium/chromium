@@ -36,8 +36,8 @@ class MODULES_EXPORT WebIDBTransaction final {
            std::unique_ptr<IDBValue> value,
            std::unique_ptr<IDBKey> primary_key,
            mojom::blink::IDBPutMode,
-           std::unique_ptr<WebIDBCallbacks> callbacks,
-           Vector<IDBIndexKeys>);
+           Vector<IDBIndexKeys>,
+           mojom::blink::IDBTransaction::PutCallback callback);
   void PutCallback(std::unique_ptr<WebIDBCallbacks> callbacks,
                    mojom::blink::IDBTransactionPutResultPtr result);
   void Commit(int64_t num_errors_handled);

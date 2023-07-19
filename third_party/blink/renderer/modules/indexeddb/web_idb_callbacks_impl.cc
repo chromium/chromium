@@ -128,17 +128,6 @@ void WebIDBCallbacksImpl::SuccessDatabase(
   }
 }
 
-void WebIDBCallbacksImpl::SuccessKey(std::unique_ptr<IDBKey> key) {
-  if (!request_)
-    return;
-
-  probe::AsyncTask async_task(request_->GetExecutionContext(),
-                              &async_task_context_, "success");
-  IDBRequest* request = request_.Get();
-  Detach();
-  request->HandleResponse(std::move(key));
-}
-
 void WebIDBCallbacksImpl::SuccessValue(
     mojom::blink::IDBReturnValuePtr return_value) {
   if (!request_)

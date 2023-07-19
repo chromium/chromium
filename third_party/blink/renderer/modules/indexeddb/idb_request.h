@@ -305,6 +305,7 @@ class MODULES_EXPORT IDBRequest : public EventTarget,
   void OnClear(bool success);
   void OnDelete(bool success);
   void OnCount(bool success, uint32_t count);
+  void OnPut(mojom::blink::IDBTransactionPutResultPtr result);
   void OnGet(mojom::blink::IDBDatabaseGetResultPtr result);
   void OnGetAll(bool key_only,
                 mojo::PendingReceiver<mojom::blink::IDBDatabaseGetAllResultSink>

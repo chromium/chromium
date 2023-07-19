@@ -26,13 +26,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_INDEXEDDB_WEB_IDB_CALLBACKS_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_INDEXEDDB_WEB_IDB_CALLBACKS_H_
 
-#include <memory>
-
-#include "base/memory/weak_ptr.h"
-#include "mojo/public/cpp/bindings/pending_associated_remote.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-blink.h"
-#include "third_party/blink/renderer/modules/modules_export.h"
 
 namespace blink {
 
@@ -41,7 +35,6 @@ class WebIDBCallbacks : public mojom::blink::IDBCallbacks {
   virtual void DetachRequestFromCallback() = 0;
   virtual void SetState(int64_t transaction_id) = 0;
   virtual void SuccessValue(mojom::blink::IDBReturnValuePtr value) = 0;
-  virtual void SuccessKey(std::unique_ptr<IDBKey> key) = 0;
 };
 
 }  // namespace blink

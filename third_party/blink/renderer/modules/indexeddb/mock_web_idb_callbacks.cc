@@ -15,10 +15,6 @@ MockWebIDBCallbacks::~MockWebIDBCallbacks() {}
 
 void MockWebIDBCallbacks::SetState(int64_t transaction_id) {}
 
-void MockWebIDBCallbacks::SuccessKey(std::unique_ptr<IDBKey> key) {
-  DoSuccessKey(key);
-}
-
 void MockWebIDBCallbacks::SuccessValue(mojom::blink::IDBReturnValuePtr value) {
   DoSuccessValue(value);
 }

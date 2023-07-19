@@ -5,14 +5,11 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_INDEXEDDB_MOCK_WEB_IDB_CALLBACKS_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_INDEXEDDB_MOCK_WEB_IDB_CALLBACKS_H_
 
-#include <memory>
-
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-blink-forward.h"
 #include "third_party/blink/public/web/web_heap.h"
-#include "third_party/blink/renderer/modules/indexeddb/idb_database_error.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_metadata.h"
 #include "third_party/blink/renderer/modules/indexeddb/web_idb_callbacks.h"
 
@@ -29,14 +26,9 @@ class MockWebIDBCallbacks : public WebIDBCallbacks {
 
   void SetState(int64_t) override;
 
-  MOCK_METHOD2(Error, void(mojom::blink::IDBException, const String&));
-
   MOCK_METHOD2(SuccessDatabase,
                void(mojo::PendingAssociatedRemote<mojom::blink::IDBDatabase>,
                     const IDBDatabaseMetadata&));
-
-  void SuccessKey(std::unique_ptr<IDBKey>) override;
-  MOCK_METHOD1(DoSuccessKey, void(const std::unique_ptr<IDBKey>&));
 
   void SuccessValue(mojom::blink::IDBReturnValuePtr) override;
   MOCK_METHOD1(DoSuccessValue, void(const mojom::blink::IDBReturnValuePtr&));
