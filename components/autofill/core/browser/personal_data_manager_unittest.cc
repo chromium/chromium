@@ -1287,6 +1287,23 @@ TEST_F(PersonalDataManagerTest, ServerCvc) {
   EXPECT_TRUE(personal_data_->GetCreditCards()[0]->cvc().empty());
 }
 
+// Test that verify clear server cvc function working as expected.
+TEST_F(PersonalDataManagerTest, ClearServerCvc) {
+  // Add a server card cvc.
+  const std::u16string kCvc = u"111";
+  CreditCard credit_card = test::GetMaskedServerCard();
+  SetServerCards({credit_card});
+  personal_data_->AddServerCvc(credit_card.instrument_id(), kCvc);
+  PersonalDataProfileTaskWaiter(*personal_data_).Wait();
+  ASSERT_EQ(personal_data_->GetCreditCards().size(), 1U);
+  EXPECT_EQ(personal_data_->GetCreditCards()[0]->cvc(), kCvc);
+
+  // After we clear server cvcs we should expect empty cvc.
+  personal_data_->ClearServerCvcs();
+  PersonalDataProfileTaskWaiter(*personal_data_).Wait();
+  EXPECT_TRUE(personal_data_->GetCreditCards()[0]->cvc().empty());
+}
+
 // Test that a new credit card has its basic information set.
 TEST_F(PersonalDataManagerTest, AddCreditCard_BasicInformation) {
   // Create the test clock and set the time to a specific value.

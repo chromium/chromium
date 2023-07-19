@@ -1129,6 +1129,17 @@ void PersonalDataManager::RemoveServerCvc(int64_t instrument_id) {
   Refresh();
 }
 
+void PersonalDataManager::ClearServerCvcs() {
+  CHECK(database_helper_->GetServerDatabase())
+      << "Removing Server cvc without server storage.";
+
+  // Clear the server cvc in the web database.
+  database_helper_->GetServerDatabase()->ClearServerCvcs();
+
+  // Refresh our local cache and send notifications to observers.
+  Refresh();
+}
+
 void PersonalDataManager::ResetFullServerCard(const std::string& guid) {
   for (const auto& card : server_credit_cards_) {
     if (card->guid() == guid) {

@@ -261,6 +261,12 @@ void AutofillWebDataService::RemoveServerCvc(int64_t instrument_id) {
                                 autofill_backend_, instrument_id));
 }
 
+void AutofillWebDataService::ClearServerCvcs() {
+  wdbs_->ScheduleDBTask(
+      FROM_HERE, base::BindOnce(&AutofillWebDataBackendImpl::ClearServerCvcs,
+                                autofill_backend_));
+}
+
 WebDataServiceBase::Handle AutofillWebDataService::GetCreditCards(
     WebDataServiceConsumer* consumer) {
   return wdbs_->ScheduleDBTaskWithResult(

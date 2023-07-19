@@ -100,7 +100,9 @@ enum class Result {
   kUpdateServerCvc_Failure = 241,
   kRemoveServerCvc_Success = 250,
   kRemoveServerCvc_Failure = 251,
-  kMaxValue = kRemoveServerCvc_Failure,
+  kClearServerCvcs_Success = 260,
+  kClearServerCvcs_Failure = 261,
+  kMaxValue = kClearServerCvcs_Failure,
 };
 
 // Reports the success or failure of various operations on the database via UMA.
@@ -756,6 +758,17 @@ WebDatabase::State AutofillWebDataBackendImpl::RemoveServerCvc(
     return WebDatabase::COMMIT_NEEDED;
   }
   ReportResult(Result::kRemoveServerCvc_Failure);
+  return WebDatabase::COMMIT_NOT_NEEDED;
+}
+
+WebDatabase::State AutofillWebDataBackendImpl::ClearServerCvcs(
+    WebDatabase* db) {
+  CHECK(owning_task_runner()->RunsTasksInCurrentSequence());
+  if (AutofillTable::FromWebDatabase(db)->ClearServerCvcs()) {
+    ReportResult(Result::kClearServerCvcs_Success);
+    return WebDatabase::COMMIT_NEEDED;
+  }
+  ReportResult(Result::kClearServerCvcs_Failure);
   return WebDatabase::COMMIT_NOT_NEEDED;
 }
 
