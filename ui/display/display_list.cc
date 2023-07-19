@@ -99,6 +99,9 @@ uint32_t DisplayList::UpdateDisplay(const Display& display, Type type) {
   if (local_display->GetSizeInPixel() != display.GetSizeInPixel()) {
     local_display->set_size_in_pixels(display.GetSizeInPixel());
   }
+  if (local_display->native_origin() != display.native_origin()) {
+    local_display->set_native_origin(display.native_origin());
+  }
   for (DisplayObserver& observer : observers_)
     observer.OnDisplayMetricsChanged(*local_display, changed_values);
   DCHECK(IsValid());

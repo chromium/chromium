@@ -255,7 +255,7 @@ bool QtUi::Initialize() {
   ui::ColorProviderManager::Get().AppendColorProviderInitializer(
       base::BindRepeating(&QtUi::AddNativeColorMixer, base::Unretained(this)));
   FontChanged();
-  scale_factor_ = shim_->GetScaleFactor();
+  display_config().primary_scale = shim_->GetScaleFactor();
 
   return true;
 }
@@ -347,11 +347,6 @@ QtUi::WindowFrameAction QtUi::GetWindowFrameAction(
     case WindowFrameActionSource::kRightClick:
       return WindowFrameAction::kMenu;
   }
-}
-
-DISABLE_CFI_VCALL
-float QtUi::GetDeviceScaleFactor() const {
-  return shim_->GetScaleFactor();
 }
 
 DISABLE_CFI_VCALL
@@ -621,11 +616,12 @@ absl::optional<SkColor> QtUi::GetColor(int id, bool use_custom_frame) const {
 DISABLE_CFI_VCALL
 void QtUi::ScaleFactorMaybeChangedImpl() {
   scale_factor_task_active_ = false;
-  double scale = shim_->GetScaleFactor();
-  if (scale == scale_factor_) {
+  double qt_scale = shim_->GetScaleFactor();
+  auto& scale = display_config().primary_scale;
+  if (qt_scale == scale) {
     return;
   }
-  scale_factor_ = scale;
+  scale = qt_scale;
   for (ui::DeviceScaleFactorObserver& observer :
        device_scale_factor_observer_list()) {
     observer.OnDeviceScaleFactorChanged();

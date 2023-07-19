@@ -89,10 +89,6 @@ LinuxUi::WindowFrameAction FakeLinuxUi::GetWindowFrameAction(
   return WindowFrameAction::kNone;
 }
 
-float FakeLinuxUi::GetDeviceScaleFactor() const {
-  return 1.0f;
-}
-
 bool FakeLinuxUi::PreferDarkTheme() const {
   return false;
 }

@@ -662,8 +662,10 @@ gfx::Size GetSeparatorSize(bool horizontal) {
 }
 
 float GetDeviceScaleFactor() {
-  ui::LinuxUi* linux_ui = ui::LinuxUi::instance();
-  return linux_ui ? linux_ui->GetDeviceScaleFactor() : 1;
+  if (const auto* linux_ui = ui::LinuxUi::instance()) {
+    return linux_ui->display_config().primary_scale;
+  }
+  return 1.0f;
 }
 
 GdkTexture* GetTextureFromRenderNode(GskRenderNode* node) {

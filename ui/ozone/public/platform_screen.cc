@@ -61,7 +61,9 @@ display::TabletState PlatformScreen::GetTabletState() const {
 }
 #endif
 
-void PlatformScreen::SetDeviceScaleFactor(float scale) {}
+#if BUILDFLAG(IS_LINUX)
+void PlatformScreen::SetDisplayConfig(const DisplayConfig& display_config) {}
+#endif
 
 void PlatformScreen::StorePlatformNameIntoListOfValues(
     base::Value::List& values,

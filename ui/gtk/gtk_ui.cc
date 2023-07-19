@@ -809,7 +809,7 @@ void GtkUi::UpdateColors() {
 }
 
 void GtkUi::UpdateDefaultFont() {
-  gfx::SetFontRenderParamsDeviceScaleFactor(device_scale_factor_);
+  gfx::SetFontRenderParamsDeviceScaleFactor(display_config().primary_scale);
 
   auto fake_label = TakeGObject(gtk_label_new(nullptr));
   PangoContext* pc = gtk_widget_get_pango_context(fake_label);
@@ -881,19 +881,16 @@ float GtkUi::GetRawDeviceScaleFactor() {
 }
 
 void GtkUi::UpdateDeviceScaleFactor() {
-  float old_device_scale_factor = device_scale_factor_;
-  device_scale_factor_ = GetRawDeviceScaleFactor();
-  if (device_scale_factor_ != old_device_scale_factor) {
+  auto& scale = display_config().primary_scale;
+  float raw_scale = GetRawDeviceScaleFactor();
+  if (raw_scale != scale) {
+    scale = raw_scale;
     for (ui::DeviceScaleFactorObserver& observer :
          device_scale_factor_observer_list()) {
       observer.OnDeviceScaleFactorChanged();
     }
   }
   UpdateDefaultFont();
-}
-
-float GtkUi::GetDeviceScaleFactor() const {
-  return device_scale_factor_;
 }
 
 }  // namespace gtk

@@ -41,7 +41,6 @@ class QtUi : public ui::LinuxUiAndTheme, QtInterface::Delegate {
   gfx::Image GetIconForContentType(const std::string& content_type,
                                    int size,
                                    float scale) const override;
-  float GetDeviceScaleFactor() const override;
   base::flat_map<std::string, std::string> GetKeyboardLayoutMap() override;
 #if BUILDFLAG(ENABLE_PRINTING)
   printing::PrintDialogLinuxInterface* CreatePrintDialog(
@@ -120,7 +119,6 @@ class QtUi : public ui::LinuxUiAndTheme, QtInterface::Delegate {
   std::unique_ptr<QtNativeTheme> native_theme_;
 
   bool scale_factor_task_active_ = false;
-  double scale_factor_ = 1.0;
 
   base::WeakPtrFactory<QtUi> weak_factory_{this};
 };

@@ -428,6 +428,7 @@ TEST_P(WaylandScreenTest, OutputPropertyChangesPrimaryDisplayChanged) {
   // shifting display1 to its left.
   display1.set_bounds(gfx::Rect(-800, 0, 800, 600));
   display2.set_bounds(gfx::Rect(0, 0, 700, 500));
+  display2.set_native_origin(gfx::Point(0, 0));
 
   // Purposely send the output metrics out of order.
   platform_screen_->OnOutputAddedOrUpdated(MakeMetrics(display2));

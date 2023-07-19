@@ -53,6 +53,10 @@ struct COMPONENT_EXPORT(DISPLAY_SHARED_MOJOM_TRAITS)
     return display.GetSizeInPixel();
   }
 
+  static gfx::Point native_origin(const display::Display& display) {
+    return display.native_origin();
+  }
+
   static const gfx::Rect& work_area(const display::Display& display) {
     return display.work_area();
   }

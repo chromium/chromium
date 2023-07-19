@@ -14,6 +14,7 @@
 #include "ui/gfx/x/randr.h"
 #include "ui/gfx/x/x11_atom_cache.h"
 #include "ui/gfx/x/xproto.h"
+#include "ui/linux/linux_ui.h"
 
 namespace ui {
 
@@ -79,12 +80,12 @@ void XDisplayManager::SetDisplayList(std::vector<display::Display> displays) {
 // 1.3.
 void XDisplayManager::FetchDisplayList() {
   std::vector<display::Display> displays;
-  float scale = delegate_->GetXDisplayScaleFactor();
+  auto& display_config = delegate_->GetDisplayConfig();
   if (IsXrandrAvailable()) {
-    displays = BuildDisplaysFromXRandRInfo(xrandr_version_, scale,
+    displays = BuildDisplaysFromXRandRInfo(xrandr_version_, display_config,
                                            &primary_display_index_);
   } else {
-    displays = GetFallbackDisplayList(scale);
+    displays = GetFallbackDisplayList(display_config.primary_scale);
   }
 
   if (displays != displays_) {

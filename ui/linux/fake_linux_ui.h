@@ -23,7 +23,6 @@ class FakeLinuxUi : public LinuxUiAndTheme {
   gfx::Image GetIconForContentType(const std::string& content_type,
                                    int size,
                                    float scale) const override;
-  float GetDeviceScaleFactor() const override;
   base::flat_map<std::string, std::string> GetKeyboardLayoutMap() override;
 #if BUILDFLAG(ENABLE_PRINTING)
   printing::PrintDialogLinuxInterface* CreatePrintDialog(

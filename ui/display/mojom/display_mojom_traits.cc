@@ -123,6 +123,10 @@ bool StructTraits<display::mojom::DisplayDataView, display::Display>::Read(
   if (!data.ReadSizeInPixels(&out->size_in_pixels_))
     return false;
 
+  if (!data.ReadNativeOrigin(&out->native_origin_)) {
+    return false;
+  }
+
   if (!data.ReadWorkArea(&out->work_area_))
     return false;
 

@@ -34,6 +34,7 @@ struct Display {
   int64 id;
   gfx.mojom.Rect bounds;
   gfx.mojom.Size size_in_pixels;
+  gfx.mojom.Point native_origin;
   gfx.mojom.Rect work_area;
   float device_scale_factor;
   Rotation rotation;

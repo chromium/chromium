@@ -63,7 +63,6 @@ class GtkUi : public ui::LinuxUiAndTheme {
   gfx::Image GetIconForContentType(const std::string& content_type,
                                    int size,
                                    float scale) const override;
-  float GetDeviceScaleFactor() const override;
   base::flat_map<std::string, std::string> GetKeyboardLayoutMap() override;
 #if BUILDFLAG(ENABLE_PRINTING)
   printing::PrintDialogLinuxInterface* CreatePrintDialog(
@@ -187,8 +186,6 @@ class GtkUi : public ui::LinuxUiAndTheme {
   // The action to take when middle, double, or right clicking the titlebar.
   base::flat_map<WindowFrameActionSource, WindowFrameAction>
       window_frame_actions_;
-
-  float device_scale_factor_ = 1.0f;
 
   // Paints a native window frame.  Typically only one of these will be
   // non-null.  The exception is when the user starts or stops their compositor

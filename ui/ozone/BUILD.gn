@@ -134,6 +134,7 @@ component("ozone_base") {
     "//gpu/vulkan:buildflags",
     "//ipc",
     "//skia",
+    "//ui/base:types",
     "//ui/base/clipboard:clipboard_types",
     "//ui/display",
     "//ui/display/types",
@@ -159,6 +160,10 @@ component("ozone_base") {
     public_deps += [
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.images:fuchsia.images_hlcpp",
     ]
+  }
+
+  if (is_linux) {
+    public_deps += [ "//ui/linux:linux_ui" ]
   }
 
   visibility += [
