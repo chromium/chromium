@@ -268,7 +268,7 @@ IDBOpenDBRequest* IDBFactory::OpenInternal(ScriptState* script_state,
                                            int64_t version,
                                            ExceptionState& exception_state) {
   TRACE_EVENT1("IndexedDB", "IDBFactory::open", "name", name.Utf8());
-  IDBRequest::AsyncTraceState metrics("IDBFactory::open");
+  IDBRequest::AsyncTraceState metrics(IDBRequest::TypeForMetrics::kFactoryOpen);
   DCHECK(version >= 1 || version == IDBDatabaseMetadata::kNoVersion);
 
   ExecutionContext* context = ExecutionContext::From(script_state);
@@ -362,7 +362,8 @@ IDBOpenDBRequest* IDBFactory::DeleteDatabaseInternal(
     ExceptionState& exception_state,
     bool force_close) {
   TRACE_EVENT1("IndexedDB", "IDBFactory::deleteDatabase", "name", name.Utf8());
-  IDBRequest::AsyncTraceState metrics("IDBFactory::deleteDatabase");
+  IDBRequest::AsyncTraceState metrics(
+      IDBRequest::TypeForMetrics::kFactoryDeleteDatabase);
   ExecutionContext* context = ExecutionContext::From(script_state);
 
   DCHECK(context->IsContextThread());

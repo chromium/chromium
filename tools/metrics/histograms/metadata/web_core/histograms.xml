@@ -22,6 +22,12 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="IDBRequestType">
+  <variant name="ObjectStoreAdd"/>
+  <variant name="ObjectStoreGet"/>
+  <variant name="ObjectStorePut"/>
+</variants>
+
 <histogram name="WebCore.DistillabilityUs" units="microseconds"
     expires_after="2024-01-14">
   <owner>wychen@chromium.org</owner>
@@ -488,6 +494,13 @@ chromium-metrics-reviews@google.com.
     The size of the IndexedDB value used in an IndexedDB object store 'put'
     operation. Recorded for every 'put' operation.
   </summary>
+</histogram>
+
+<histogram name="WebCore.IndexedDB.RequestDuration.{IDBRequestType}" units="ms"
+    expires_after="2024-08-01">
+  <owner>estade@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>Records end to end duration of an IndexedDB operation.</summary>
 </histogram>
 
 <histogram name="WebCore.IndexedDB.TombstoneSweeper.DeletedTombstonesSize"

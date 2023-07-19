@@ -133,7 +133,8 @@ IDBRequest* IDBCursor::update(ScriptState* script_state,
 
 void IDBCursor::advance(unsigned count, ExceptionState& exception_state) {
   TRACE_EVENT0("IndexedDB", "IDBCursor::advanceRequestSetup");
-  IDBRequest::AsyncTraceState metrics("IDBCursor::advance");
+  IDBRequest::AsyncTraceState metrics(
+      IDBRequest::TypeForMetrics::kCursorAdvance);
   if (!count) {
     exception_state.ThrowTypeError(
         "A count argument with value 0 (zero) was supplied, must be greater "
@@ -167,7 +168,8 @@ void IDBCursor::Continue(ScriptState* script_state,
                          const ScriptValue& key_value,
                          ExceptionState& exception_state) {
   TRACE_EVENT0("IndexedDB", "IDBCursor::continueRequestSetup");
-  IDBRequest::AsyncTraceState metrics("IDBCursor::continue");
+  IDBRequest::AsyncTraceState metrics(
+      IDBRequest::TypeForMetrics::kCursorContinue);
 
   if (!transaction_->IsActive()) {
     exception_state.ThrowDOMException(
@@ -206,7 +208,8 @@ void IDBCursor::continuePrimaryKey(ScriptState* script_state,
                                    const ScriptValue& primary_key_value,
                                    ExceptionState& exception_state) {
   TRACE_EVENT0("IndexedDB", "IDBCursor::continuePrimaryKeyRequestSetup");
-  IDBRequest::AsyncTraceState metrics("IDBCursor::continuePrimaryKey");
+  IDBRequest::AsyncTraceState metrics(
+      IDBRequest::TypeForMetrics::kCursorContinuePrimaryKey);
 
   if (!transaction_->IsActive()) {
     exception_state.ThrowDOMException(
@@ -324,7 +327,8 @@ void IDBCursor::Continue(std::unique_ptr<IDBKey> key,
 IDBRequest* IDBCursor::Delete(ScriptState* script_state,
                               ExceptionState& exception_state) {
   TRACE_EVENT0("IndexedDB", "IDBCursor::deleteRequestSetup");
-  IDBRequest::AsyncTraceState metrics("IDBCursor::delete");
+  IDBRequest::AsyncTraceState metrics(
+      IDBRequest::TypeForMetrics::kCursorDelete);
   if (!transaction_->IsActive()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kTransactionInactiveError,

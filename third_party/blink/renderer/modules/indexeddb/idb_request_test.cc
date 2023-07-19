@@ -447,7 +447,9 @@ TEST_F(IDBRequestTest, ConnectionsAfterStopping) {
 // Expose private state for testing.
 class AsyncTraceStateForTesting : public IDBRequest::AsyncTraceState {
  public:
-  AsyncTraceStateForTesting() : IDBRequest::AsyncTraceState() {}
+  explicit AsyncTraceStateForTesting(IDBRequest::TypeForMetrics type)
+      : IDBRequest::AsyncTraceState(type) {}
+  AsyncTraceStateForTesting() = default;
   AsyncTraceStateForTesting(AsyncTraceStateForTesting&& other)
       : IDBRequest::AsyncTraceState(std::move(other)) {}
   AsyncTraceStateForTesting& operator=(AsyncTraceStateForTesting&& rhs) {
@@ -455,70 +457,42 @@ class AsyncTraceStateForTesting : public IDBRequest::AsyncTraceState {
     return *this;
   }
 
-  const char* trace_event_name() const {
-    return IDBRequest::AsyncTraceState::trace_event_name();
+  absl::optional<IDBRequest::TypeForMetrics> type() const {
+    return IDBRequest::AsyncTraceState::type();
   }
   size_t id() const { return IDBRequest::AsyncTraceState::id(); }
-
-  size_t PopulateForNewEvent(const char* trace_event_name) {
-    return IDBRequest::AsyncTraceState::PopulateForNewEvent(trace_event_name);
-  }
 };
 
 TEST(IDBRequestAsyncTraceStateTest, EmptyConstructor) {
   AsyncTraceStateForTesting state;
 
-  EXPECT_EQ(nullptr, state.trace_event_name());
+  EXPECT_FALSE(state.type());
   EXPECT_TRUE(state.IsEmpty());
 }
 
-TEST(IDBRequestAsyncTraceStateTest, PopulateForNewEvent) {
-  AsyncTraceStateForTesting state1, state2, state3;
-
-  const char* name1 = "event1";
-  size_t id1 = state1.PopulateForNewEvent(name1);
-  const char* name2 = "event2";
-  size_t id2 = state2.PopulateForNewEvent(name2);
-  const char* name3 = "event3";
-  size_t id3 = state3.PopulateForNewEvent(name3);
-
-  EXPECT_EQ(name1, state1.trace_event_name());
-  EXPECT_EQ(name2, state2.trace_event_name());
-  EXPECT_EQ(name3, state3.trace_event_name());
-  EXPECT_EQ(id1, state1.id());
-  EXPECT_EQ(id2, state2.id());
-  EXPECT_EQ(id3, state3.id());
-
-  EXPECT_NE(id1, id2);
-  EXPECT_NE(id1, id3);
-  EXPECT_NE(id2, id3);
-
-  EXPECT_TRUE(!state1.IsEmpty());
-  EXPECT_TRUE(!state2.IsEmpty());
-  EXPECT_TRUE(!state3.IsEmpty());
-}
-
 TEST(IDBRequestAsyncTraceStateTest, MoveConstructor) {
-  AsyncTraceStateForTesting source_state;
-  const char* event_name = "event_name";
-  size_t id = source_state.PopulateForNewEvent(event_name);
+  IDBRequest::TypeForMetrics type =
+      IDBRequest::TypeForMetrics::kObjectStoreGetAllKeys;
+  AsyncTraceStateForTesting source_state(type);
+  size_t id = source_state.id();
 
   AsyncTraceStateForTesting state(std::move(source_state));
-  EXPECT_EQ(event_name, state.trace_event_name());
+  EXPECT_EQ(type, *state.type());
   EXPECT_EQ(id, state.id());
   EXPECT_TRUE(source_state.IsEmpty());
 }
 
 TEST(IDBRequestAsyncTraceStateTest, MoveAssignment) {
-  AsyncTraceStateForTesting source_state;
-  const char* event_name = "event_name";
-  size_t id = source_state.PopulateForNewEvent(event_name);
+  IDBRequest::TypeForMetrics type =
+      IDBRequest::TypeForMetrics::kObjectStoreGetAllKeys;
+  AsyncTraceStateForTesting source_state(type);
+  size_t id = source_state.id();
 
   AsyncTraceStateForTesting state;
-
   EXPECT_TRUE(state.IsEmpty());
+
   state = std::move(source_state);
-  EXPECT_EQ(event_name, state.trace_event_name());
+  EXPECT_EQ(type, *state.type());
   EXPECT_EQ(id, state.id());
   EXPECT_TRUE(source_state.IsEmpty());
 }
