@@ -752,10 +752,9 @@ OverlayImageRepresentation::BeginScopedReadAccess() {
 DawnImageRepresentation::ScopedAccess::ScopedAccess(
     base::PassKey<DawnImageRepresentation> /* pass_key */,
     DawnImageRepresentation* representation,
-    wgpu::Texture texture,
+    WGPUTexture texture,
     AccessMode access_mode)
-    : ScopedAccessBase(representation, access_mode),
-      texture_(std::move(texture)) {}
+    : ScopedAccessBase(representation, access_mode), texture_(texture) {}
 
 DawnImageRepresentation::ScopedAccess::~ScopedAccess() {
   representation()->EndAccess();
@@ -763,16 +762,16 @@ DawnImageRepresentation::ScopedAccess::~ScopedAccess() {
 
 std::unique_ptr<DawnImageRepresentation::ScopedAccess>
 DawnImageRepresentation::BeginScopedAccess(
-    wgpu::TextureUsage usage,
+    WGPUTextureUsage usage,
     AllowUnclearedAccess allow_uncleared) {
   if (allow_uncleared != AllowUnclearedAccess::kYes && !IsCleared()) {
     LOG(ERROR) << "Attempt to access an uninitialized SharedImage";
     return nullptr;
   }
 
-  wgpu::Texture texture = BeginAccess(usage);
+  WGPUTexture texture = BeginAccess(usage);
   if (!texture) {
-    LOG(ERROR) << "Error creating wgpu::Texture";
+    LOG(ERROR) << "Error creating WGPUTexture";
     return nullptr;
   }
 
@@ -786,8 +785,7 @@ DawnImageRepresentation::BeginScopedAccess(
   }
 
   return std::make_unique<ScopedAccess>(
-      base::PassKey<DawnImageRepresentation>(), this, std::move(texture),
-      access_mode);
+      base::PassKey<DawnImageRepresentation>(), this, texture, access_mode);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

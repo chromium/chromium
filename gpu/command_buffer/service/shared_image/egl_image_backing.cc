@@ -291,11 +291,11 @@ EGLImageBacking::ProduceSkiaGanesh(
 std::unique_ptr<DawnImageRepresentation> EGLImageBacking::ProduceDawn(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker,
-    const wgpu::Device& device,
-    wgpu::BackendType backend_type,
-    std::vector<wgpu::TextureFormat> view_formats) {
+    WGPUDevice device,
+    WGPUBackendType backend_type,
+    std::vector<WGPUTextureFormat> view_formats) {
 #if BUILDFLAG(USE_DAWN) && BUILDFLAG(DAWN_ENABLE_BACKEND_OPENGLES)
-  if (backend_type == wgpu::BackendType::OpenGLES) {
+  if (backend_type == WGPUBackendType_OpenGLES) {
     std::unique_ptr<GLTextureImageRepresentationBase> gl_representation;
     if (use_passthrough_) {
       gl_representation = ProduceGLTexturePassthrough(manager, tracker);
@@ -309,7 +309,7 @@ std::unique_ptr<DawnImageRepresentation> EGLImageBacking::ProduceDawn(
     }
     return std::make_unique<DawnEGLImageRepresentation>(
         std::move(gl_representation), egl_image, manager, this, tracker,
-        device.Get());
+        device);
   }
 #endif  // BUILDFLAG(USE_DAWN) && BUILDFLAG(DAWN_ENABLE_BACKEND_OPENGLES)
   return nullptr;

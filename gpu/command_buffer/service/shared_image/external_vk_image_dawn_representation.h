@@ -28,7 +28,7 @@ class ExternalVkImageDawnImageRepresentation : public DawnImageRepresentation {
 
   ~ExternalVkImageDawnImageRepresentation() override;
 
-  wgpu::Texture BeginAccess(wgpu::TextureUsage usage) override;
+  WGPUTexture BeginAccess(WGPUTextureUsage usage) override;
   void EndAccess() override;
 
  private:

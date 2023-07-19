@@ -287,7 +287,7 @@ class WrappedDawnCompoundImageRepresentation : public DawnImageRepresentation {
   }
 
   // DawnImageRepresentation implementation.
-  wgpu::Texture BeginAccess(wgpu::TextureUsage webgpu_usage) final {
+  WGPUTexture BeginAccess(WGPUTextureUsage webgpu_usage) final {
     AccessMode access_mode =
         webgpu_usage & kWriteUsage ? AccessMode::kWrite : AccessMode::kRead;
     compound_backing()->NotifyBeginAccess(SharedImageAccessStream::kDawn,
@@ -560,9 +560,9 @@ void CompoundImageBacking::SetClearedRect(const gfx::Rect& cleared_rect) {}
 std::unique_ptr<DawnImageRepresentation> CompoundImageBacking::ProduceDawn(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker,
-    const wgpu::Device& device,
-    wgpu::BackendType backend_type,
-    std::vector<wgpu::TextureFormat> view_formats) {
+    WGPUDevice device,
+    WGPUBackendType backend_type,
+    std::vector<WGPUTextureFormat> view_formats) {
   auto* backing = GetBacking(SharedImageAccessStream::kDawn);
   if (!backing)
     return nullptr;

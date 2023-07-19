@@ -238,9 +238,9 @@ class AHardwareBufferImageBacking : public AndroidImageBacking {
   std::unique_ptr<DawnImageRepresentation> ProduceDawn(
       SharedImageManager* manager,
       MemoryTypeTracker* tracker,
-      const wgpu::Device& device,
-      wgpu::BackendType backend_type,
-      std::vector<wgpu::TextureFormat> view_formats) override;
+      WGPUDevice device,
+      WGPUBackendType backend_type,
+      std::vector<WGPUTextureFormat> view_formats) override;
 
  private:
   const base::android::ScopedHardwareBufferHandle hardware_buffer_handle_;
@@ -492,25 +492,30 @@ std::unique_ptr<DawnImageRepresentation>
 AHardwareBufferImageBacking::ProduceDawn(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker,
-    const wgpu::Device& device,
-    wgpu::BackendType backend_type,
-    std::vector<wgpu::TextureFormat> view_formats) {
+    WGPUDevice device,
+    WGPUBackendType backend_type,
+    std::vector<WGPUTextureFormat> view_formats) {
 #if BUILDFLAG(USE_DAWN)
   // Use same texture for all the texture representations generated from same
   // backing.
   DCHECK(hardware_buffer_handle_.is_valid());
 
   // Only Vulkan is supported on Android currently
-  DCHECK_EQ(backend_type, wgpu::BackendType::Vulkan);
+  DCHECK_EQ(backend_type, WGPUBackendType_Vulkan);
   wgpu::TextureFormat webgpu_format = ToDawnFormat(format());
   if (webgpu_format == wgpu::TextureFormat::Undefined) {
     LOG(ERROR) << "Unable to fine a suitable WebGPU format.";
     return nullptr;
   }
 
+  std::vector<wgpu::TextureFormat> formats = {
+      reinterpret_cast<wgpu::TextureFormat*>(view_formats.data()),
+      reinterpret_cast<wgpu::TextureFormat*>(view_formats.data()) +
+          view_formats.size()};
+
   return std::make_unique<DawnAHardwareBufferImageRepresentation>(
       manager, this, tracker, wgpu::Device(device), webgpu_format,
-      std::move(view_formats), hardware_buffer_handle_.get());
+      std::move(formats), hardware_buffer_handle_.get());
 #else
   return nullptr;
 #endif  // BUILDFLAG(USE_DAWN)

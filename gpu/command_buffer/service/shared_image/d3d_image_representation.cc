@@ -56,19 +56,23 @@ DawnD3DImageRepresentation::DawnD3DImageRepresentation(
     SharedImageManager* manager,
     SharedImageBacking* backing,
     MemoryTypeTracker* tracker,
-    const wgpu::Device& device)
+    WGPUDevice device)
     : DawnImageRepresentation(manager, backing, tracker),
       device_(device),
       dawn_procs_(dawn::native::GetProcs()) {
   DCHECK(device_);
+
+  // Keep a reference to the device so that it stays valid (it might become
+  // lost in which case operations will be noops).
+  dawn_procs_.deviceReference(device_);
 }
 
 DawnD3DImageRepresentation::~DawnD3DImageRepresentation() {
   EndAccess();
+  dawn_procs_.deviceRelease(device_);
 }
 
-wgpu::Texture DawnD3DImageRepresentation::BeginAccess(
-    wgpu::TextureUsage usage) {
+WGPUTexture DawnD3DImageRepresentation::BeginAccess(WGPUTextureUsage usage) {
   D3DImageBacking* d3d_image_backing = static_cast<D3DImageBacking*>(backing());
   texture_ = d3d_image_backing->BeginAccessDawn(device_, usage);
   return texture_;
@@ -85,7 +89,9 @@ void DawnD3DImageRepresentation::EndAccess() {
 
   // All further operations on the textures are errors (they would be racy
   // with other backings).
-  texture_.Destroy();
+  dawn_procs_.textureDestroy(texture_);
+
+  dawn_procs_.textureRelease(texture_);
   texture_ = nullptr;
 }
 #endif  // BUILDFLAG(USE_DAWN)

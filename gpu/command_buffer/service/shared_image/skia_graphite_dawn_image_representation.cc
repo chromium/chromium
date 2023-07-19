@@ -118,7 +118,7 @@ SkiaGraphiteDawnImageRepresentation::BeginWriteAccess(
   CHECK_EQ(mode_, RepresentationAccessMode::kNone);
   CHECK(!dawn_scoped_access_);
   dawn_scoped_access_ = dawn_representation_->BeginScopedAccess(
-      GetSupportedDawnTextureUsage(format(), is_yuv_plane_),
+      GetSupportedWGPUTextureUsage(format(), is_yuv_plane_),
       AllowUnclearedAccess::kYes);
   if (!dawn_scoped_access_) {
     DLOG(ERROR) << "Could not create DawnImageRepresentation::ScopedAccess";
@@ -160,7 +160,7 @@ SkiaGraphiteDawnImageRepresentation::BeginWriteAccess() {
   CHECK(!dawn_scoped_access_);
 
   dawn_scoped_access_ = dawn_representation_->BeginScopedAccess(
-      GetSupportedDawnTextureUsage(format(), is_yuv_plane_),
+      GetSupportedWGPUTextureUsage(format(), is_yuv_plane_),
       AllowUnclearedAccess::kYes);
   if (!dawn_scoped_access_) {
     DLOG(ERROR) << "Could not create DawnImageRepresentation::ScopedAccess";
@@ -184,7 +184,7 @@ SkiaGraphiteDawnImageRepresentation::BeginReadAccess() {
   CHECK(!dawn_scoped_access_);
 
   dawn_scoped_access_ = dawn_representation_->BeginScopedAccess(
-      GetSupportedDawnTextureUsage(format(), is_yuv_plane_),
+      GetSupportedWGPUTextureUsage(format(), is_yuv_plane_),
       AllowUnclearedAccess::kNo);
 
   if (!dawn_scoped_access_) {

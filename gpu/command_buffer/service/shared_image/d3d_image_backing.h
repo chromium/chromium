@@ -104,17 +104,16 @@ class GPU_GLES2_EXPORT D3DImageBacking
   std::unique_ptr<DawnImageRepresentation> ProduceDawn(
       SharedImageManager* manager,
       MemoryTypeTracker* tracker,
-      const wgpu::Device& device,
-      wgpu::BackendType backend_type,
-      std::vector<wgpu::TextureFormat> view_formats) override;
+      WGPUDevice device,
+      WGPUBackendType backend_type,
+      std::vector<WGPUTextureFormat> view_formats) override;
 
   bool BeginAccessD3D11(bool write_access);
   void EndAccessD3D11();
 
 #if BUILDFLAG(USE_DAWN)
-  wgpu::Texture BeginAccessDawn(const wgpu::Device& device,
-                                wgpu::TextureUsage usage);
-  void EndAccessDawn(const wgpu::Device& device, wgpu::Texture texture);
+  WGPUTexture BeginAccessDawn(WGPUDevice device, WGPUTextureUsage usage);
+  void EndAccessDawn(WGPUDevice device, WGPUTexture texture);
 #endif
 
   absl::optional<gl::DCLayerOverlayImage> GetDCLayerOverlayImage();
@@ -217,7 +216,6 @@ class GPU_GLES2_EXPORT D3DImageBacking
     // D3DSharedFence::IsSameFenceAsHandle() is true for fence handle from Dawn.
     scoped_refptr<D3DSharedFence> signaled_fence;
   };
-
   base::flat_map<WGPUDevice, DawnExternalImageState> dawn_external_image_cache_;
 #endif  // BUILDFLAG(USE_DAWN)
 
@@ -238,9 +236,9 @@ class GPU_GLES2_EXPORT D3DImageBacking
       Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain = nullptr,
       bool is_back_buffer = false);
 
-  wgpu::TextureUsage GetAllowedDawnUsages(
-      const wgpu::Device& device,
-      const wgpu::TextureFormat wgpu_format) const;
+  WGPUTextureUsageFlags GetAllowedDawnUsages(
+      WGPUDevice device,
+      const WGPUTextureFormat wgpu_format) const;
 
   void* GetEGLImage() const;
 

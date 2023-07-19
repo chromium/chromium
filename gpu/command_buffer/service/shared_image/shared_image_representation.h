@@ -713,9 +713,9 @@ class GPU_GLES2_EXPORT SkiaGraphiteImageRepresentation
 class GPU_GLES2_EXPORT DawnImageRepresentation
     : public SharedImageRepresentation {
  public:
-  static constexpr wgpu::TextureUsage kWriteUsage =
-      wgpu::TextureUsage::CopyDst | wgpu::TextureUsage::RenderAttachment |
-      wgpu::TextureUsage::StorageBinding;
+  static constexpr uint32_t kWriteUsage = WGPUTextureUsage_CopyDst |
+                                          WGPUTextureUsage_RenderAttachment |
+                                          WGPUTextureUsage_StorageBinding;
 
   DawnImageRepresentation(SharedImageManager* manager,
                           SharedImageBacking* backing,
@@ -727,23 +727,23 @@ class GPU_GLES2_EXPORT DawnImageRepresentation
    public:
     ScopedAccess(base::PassKey<DawnImageRepresentation> pass_key,
                  DawnImageRepresentation* representation,
-                 wgpu::Texture texture,
+                 WGPUTexture texture,
                  AccessMode access_mode);
     ~ScopedAccess();
 
     // Get the unowned texture handle. The caller should take a reference
     // if necessary by doing wgpu::Texture texture(access->texture());
-    const wgpu::Texture& texture() const { return texture_; }
+    WGPUTexture texture() const { return texture_; }
 
    private:
-    wgpu::Texture texture_;
+    WGPUTexture texture_ = 0;
   };
 
   // Calls BeginAccess and returns a ScopedAccess object which will EndAccess
   // when it goes out of scope. The Representation must outlive the returned
   // ScopedAccess.
   std::unique_ptr<ScopedAccess> BeginScopedAccess(
-      wgpu::TextureUsage usage,
+      WGPUTextureUsage usage,
       AllowUnclearedAccess allow_uncleared);
 
  private:
@@ -751,7 +751,7 @@ class GPU_GLES2_EXPORT DawnImageRepresentation
 
   // This can return null in case of a Dawn validation error, for example if
   // usage is invalid.
-  virtual wgpu::Texture BeginAccess(wgpu::TextureUsage usage) = 0;
+  virtual WGPUTexture BeginAccess(WGPUTextureUsage usage) = 0;
   virtual void EndAccess() = 0;
 };
 

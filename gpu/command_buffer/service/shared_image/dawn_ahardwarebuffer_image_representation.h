@@ -28,7 +28,7 @@ class DawnAHardwareBufferImageRepresentation : public DawnImageRepresentation {
       AHardwareBuffer* buffer);
   ~DawnAHardwareBufferImageRepresentation() override;
 
-  wgpu::Texture BeginAccess(wgpu::TextureUsage usage) override;
+  WGPUTexture BeginAccess(WGPUTextureUsage usage) override;
   void EndAccess() override;
 
  private:

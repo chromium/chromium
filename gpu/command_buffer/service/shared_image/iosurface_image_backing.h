@@ -191,7 +191,7 @@ class DawnIOSurfaceRepresentation : public DawnImageRepresentation {
                               std::vector<wgpu::TextureFormat> view_formats);
   ~DawnIOSurfaceRepresentation() override;
 
-  wgpu::Texture BeginAccess(wgpu::TextureUsage usage) final;
+  WGPUTexture BeginAccess(WGPUTextureUsage usage) final;
   void EndAccess() final;
 
  private:
@@ -282,9 +282,9 @@ class GPU_GLES2_EXPORT IOSurfaceImageBacking
   std::unique_ptr<DawnImageRepresentation> ProduceDawn(
       SharedImageManager* manager,
       MemoryTypeTracker* tracker,
-      const wgpu::Device& device,
-      wgpu::BackendType backend_type,
-      std::vector<wgpu::TextureFormat> view_formats) final;
+      WGPUDevice device,
+      WGPUBackendType backend_type,
+      std::vector<WGPUTextureFormat> view_formats) final;
   std::unique_ptr<SkiaGaneshImageRepresentation> ProduceSkiaGanesh(
       SharedImageManager* manager,
       MemoryTypeTracker* tracker,

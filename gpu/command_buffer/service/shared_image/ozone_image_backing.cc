@@ -128,18 +128,23 @@ scoped_refptr<gfx::NativePixmap> OzoneImageBacking::GetNativePixmap() {
 std::unique_ptr<DawnImageRepresentation> OzoneImageBacking::ProduceDawn(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker,
-    const wgpu::Device& device,
-    wgpu::BackendType backend_type,
-    std::vector<wgpu::TextureFormat> view_formats) {
+    WGPUDevice device,
+    WGPUBackendType backend_type,
+    std::vector<WGPUTextureFormat> view_formats) {
 #if BUILDFLAG(USE_DAWN)
   wgpu::TextureFormat webgpu_format = ToDawnFormat(format());
   if (webgpu_format == wgpu::TextureFormat::Undefined) {
     return nullptr;
   }
 
+  std::vector<wgpu::TextureFormat> formats = {
+      reinterpret_cast<wgpu::TextureFormat*>(view_formats.data()),
+      reinterpret_cast<wgpu::TextureFormat*>(view_formats.data()) +
+          view_formats.size()};
+
   return std::make_unique<DawnOzoneImageRepresentation>(
-      manager, this, tracker, device, webgpu_format, std::move(view_formats),
-      pixmap_);
+      manager, this, tracker, wgpu::Device(device), webgpu_format,
+      std::move(formats), pixmap_);
 #else  // !BUILDFLAG(USE_DAWN)
   return nullptr;
 #endif

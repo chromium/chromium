@@ -31,8 +31,8 @@ DawnAHardwareBufferImageRepresentation::
   EndAccess();
 }
 
-wgpu::Texture DawnAHardwareBufferImageRepresentation::BeginAccess(
-    wgpu::TextureUsage usage) {
+WGPUTexture DawnAHardwareBufferImageRepresentation::BeginAccess(
+    WGPUTextureUsage usage) {
   // It doesn't make sense to have two overlapping BeginAccess calls on the same
   // representation.
   if (texture_) {

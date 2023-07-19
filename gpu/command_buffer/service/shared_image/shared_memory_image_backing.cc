@@ -111,9 +111,9 @@ const std::vector<SkPixmap>& SharedMemoryImageBacking::pixmaps() {
 std::unique_ptr<DawnImageRepresentation> SharedMemoryImageBacking::ProduceDawn(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker,
-    const wgpu::Device& device,
-    wgpu::BackendType backend_type,
-    std::vector<wgpu::TextureFormat> view_formats) {
+    WGPUDevice device,
+    WGPUBackendType backend_type,
+    std::vector<WGPUTextureFormat> view_formats) {
   NOTIMPLEMENTED_LOG_ONCE();
   return nullptr;
 }
