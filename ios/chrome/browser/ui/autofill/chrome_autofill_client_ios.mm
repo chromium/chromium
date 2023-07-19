@@ -463,7 +463,7 @@ bool ChromeAutofillClientIOS::IsPasswordManagerEnabled() {
       password_manager::prefs::kCredentialsEnableService);
 }
 
-void ChromeAutofillClientIOS::PropagateAutofillPredictions(
+void ChromeAutofillClientIOS::HandleParsedForms(
     AutofillDriver* driver,
     const std::vector<FormStructure*>& forms) {
   web::WebFrame* frame = (static_cast<AutofillDriverIOS*>(driver))->web_frame();
@@ -478,6 +478,17 @@ void ChromeAutofillClientIOS::PropagateAutofillPredictions(
   if (helper && !personal_data_manager_->GetCreditCardsToSuggest().empty()) {
     helper->AttachPaymentsListeners(forms, frame);
   }
+}
+
+void ChromeAutofillClientIOS::PropagateAutofillPredictions(
+    AutofillDriver* driver,
+    const std::vector<FormStructure*>& forms) {
+  web::WebFrame* frame = (static_cast<AutofillDriverIOS*>(driver))->web_frame();
+  if (!frame) {
+    return;
+  }
+
+  HandleParsedForms(driver, forms);
 
   // If the frame exists, then the driver will exist/be created.
   IOSPasswordManagerDriver* password_manager_driver =

@@ -792,6 +792,11 @@ class AutofillClient : public RiskDataLoader {
       AutofillDriver* driver,
       const std::vector<FormStructure*>& forms) = 0;
 
+  // Handle the parsed forms for the provided driver.
+  virtual void HandleParsedForms(
+      AutofillDriver* driver,
+      const std::vector<autofill::FormStructure*>& forms);
+
   // Inform the client that the form has been filled.
   virtual void DidFillOrPreviewForm(mojom::RendererFormDataAction action,
                                     AutofillTriggerSource trigger_source,

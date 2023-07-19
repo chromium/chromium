@@ -252,6 +252,9 @@ class BrowserAutofillManager : public AutofillManager,
   // metrics.
   void DidSuppressPopup(const FormData& form, const FormFieldData& field);
 
+  // Handle the parsed forms for the given web frame.
+  void HandleParsedForms(const std::vector<autofill::FormStructure*>& forms);
+
   // AutofillManager:
   base::WeakPtr<AutofillManager> GetWeakPtr() override;
   CreditCardAccessManager* GetCreditCardAccessManager() override;
