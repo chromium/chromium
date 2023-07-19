@@ -258,10 +258,7 @@ export enum SettingsHeaders {
   SUGGESTIONS = 'suggestions',
   USER_DICTIONARIES = 'userDictionaries',
   VIRTUAL_KEYBOARD = 'virtualKeyboard',
-  VIETNAMESE_FLEXIBLE_TYPING_EMPTY_HEADER =
-      'vietnameseFlexibleTypingEmptyHeader',
   VIETNAMESE_SHORTHAND = 'vietnameseShorthand',
-  VIETNAMESE_SHOW_UNDERLINE_EMPTY_HEADER = 'vietnameseShowUnderlineEmptyHeader',
 }
 
 /**
@@ -407,7 +404,10 @@ const Settings = {
   }],
   [SettingsType.VIETNAMESE_TELEX_SETTINGS]: [
     {
-      title: SettingsHeaders.VIETNAMESE_FLEXIBLE_TYPING_EMPTY_HEADER,
+      // TODO(b/288763256): This "header" should actually include the
+      // option for flexible typing. However this feature needs to be
+      // supported in the options page logic.
+      title: SettingsHeaders.PHYSICAL_KEYBOARD,
       optionNames: [
         {
           name: OptionType.VIETNAMESE_TELEX_ALLOW_FLEXIBLE_DIACRITICS,
@@ -422,18 +422,19 @@ const Settings = {
       optionNames: [
         {name: OptionType.VIETNAMESE_TELEX_INSERT_DOUBLE_HORN_ON_UO},
         {name: OptionType.VIETNAMESE_TELEX_INSERT_U_HORN_ON_W},
-      ],
-    },
-    {
-      title: SettingsHeaders.VIETNAMESE_SHOW_UNDERLINE_EMPTY_HEADER,
-      optionNames: [
+        // TODO(b/288763256): Show underline should not be under any header.
+        // Currently the options page doesn't allow an option to exist outside
+        // of a section under a header.
         {name: OptionType.VIETNAMESE_TELEX_SHOW_UNDERLINE},
       ],
     },
   ],
   [SettingsType.VIETNAMESE_VNI_SETTINGS]: [
     {
-      title: SettingsHeaders.VIETNAMESE_FLEXIBLE_TYPING_EMPTY_HEADER,
+      // TODO(b/288763256): This "header" should actually include the
+      // option for flexible typing. However this feature needs to be
+      // supported in the options page logic.
+      title: SettingsHeaders.PHYSICAL_KEYBOARD,
       optionNames: [
         {
           name: OptionType.VIETNAMESE_VNI_ALLOW_FLEXIBLE_DIACRITICS,
@@ -447,11 +448,9 @@ const Settings = {
       title: SettingsHeaders.VIETNAMESE_SHORTHAND,
       optionNames: [
         {name: OptionType.VIETNAMESE_VNI_INSERT_DOUBLE_HORN_ON_UO},
-      ],
-    },
-    {
-      title: SettingsHeaders.VIETNAMESE_SHOW_UNDERLINE_EMPTY_HEADER,
-      optionNames: [
+        // TODO(b/288763256): Show underline should not be under any header.
+        // Currently the options page doesn't allow an option to exist outside
+        // of a section under a header.
         {name: OptionType.VIETNAMESE_VNI_SHOW_UNDERLINE},
       ],
     },

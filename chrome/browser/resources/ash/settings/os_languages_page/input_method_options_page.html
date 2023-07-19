@@ -14,9 +14,7 @@
 
 <div route-path="default">
   <template is="dom-repeat" items="[[optionSections_]]" as="section">
-    <template is="dom-if" if="[[shouldShowTitle(section)]]">
-      <h2>[[section.title]]</h2>
-    </template>
+    <h2>[[section.title]]</h2>
     <div class="list-frame">
       <template is="dom-repeat" items="[[section.options]]" as="option">
         <div class="list-item">

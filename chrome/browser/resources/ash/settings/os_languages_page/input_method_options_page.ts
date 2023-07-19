@@ -510,19 +510,10 @@ export class SettingsInputMethodOptionsPageElement extends
         return this.i18n('inputMethodOptionsPrivacySectionTitle');
       case SettingsHeaders.VIETNAMESE_SHORTHAND:
         return this.i18n('inputMethodOptionsVietnameseShorthandTypingTitle');
-      case SettingsHeaders.VIETNAMESE_FLEXIBLE_TYPING_EMPTY_HEADER:
-      case SettingsHeaders.VIETNAMESE_SHOW_UNDERLINE_EMPTY_HEADER:
-        return '';
+
       default:
         assertExhaustive(section);
     }
-  }
-
-  /**
-   * @return true if title should be shown.
-   */
-  private shouldShowTitle(section: Section): boolean {
-    return section.title.length > 0;
   }
 
   /**
