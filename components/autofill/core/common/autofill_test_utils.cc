@@ -5,8 +5,8 @@
 #include "components/autofill/core/common/autofill_test_utils.h"
 
 #include <algorithm>
-#include <cstring>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/check.h"
@@ -108,10 +108,19 @@ FormFieldData WithoutUnserializedData(FormFieldData field) {
   return field;
 }
 
-void CreateTestFormField(const char* label,
-                         const char* name,
-                         const char* value,
-                         const char* type,
+FormFieldData CreateTestFormField(std::string_view label,
+                                  std::string_view name,
+                                  std::string_view value,
+                                  std::string_view type) {
+  FormFieldData field;
+  CreateTestFormField(label, name, value, type, &field);
+  return field;
+}
+
+void CreateTestFormField(std::string_view label,
+                         std::string_view name,
+                         std::string_view value,
+                         std::string_view type,
                          FormFieldData* field) {
   field->host_frame = MakeLocalFrameToken();
   field->unique_renderer_id = MakeFieldRendererId();
@@ -122,22 +131,44 @@ void CreateTestFormField(const char* label,
   field->is_focusable = true;
 }
 
-void CreateTestFormField(const char* label,
-                         const char* name,
-                         const char* value,
-                         const char* type,
-                         const char* autocomplete,
+FormFieldData CreateTestFormField(std::string_view label,
+                                  std::string_view name,
+                                  std::string_view value,
+                                  std::string_view type,
+                                  std::string_view autocomplete) {
+  FormFieldData field;
+  CreateTestFormField(label, name, value, type, autocomplete, &field);
+  return field;
+}
+
+void CreateTestFormField(std::string_view label,
+                         std::string_view name,
+                         std::string_view value,
+                         std::string_view type,
+                         std::string_view autocomplete,
                          FormFieldData* field) {
   CreateTestFormField(label, name, value, type, field);
   field->autocomplete_attribute = autocomplete;
   field->parsed_autocomplete = ParseAutocompleteAttribute(autocomplete);
 }
 
-void CreateTestFormField(const char* label,
-                         const char* name,
-                         const char* value,
-                         const char* type,
-                         const char* autocomplete,
+FormFieldData CreateTestFormField(std::string_view label,
+                                  std::string_view name,
+                                  std::string_view value,
+                                  std::string_view type,
+                                  std::string_view autocomplete,
+                                  uint64_t max_length) {
+  FormFieldData field;
+  CreateTestFormField(label, name, value, type, autocomplete, max_length,
+                      &field);
+  return field;
+}
+
+void CreateTestFormField(std::string_view label,
+                         std::string_view name,
+                         std::string_view value,
+                         std::string_view type,
+                         std::string_view autocomplete,
                          uint64_t max_length,
                          FormFieldData* field) {
   // First, set the `max_length`, as the `parsed_autocomplete` is set based on
@@ -146,9 +177,19 @@ void CreateTestFormField(const char* label,
   CreateTestFormField(label, name, value, type, autocomplete, field);
 }
 
-void CreateTestSelectField(const char* label,
-                           const char* name,
-                           const char* value,
+FormFieldData CreateTestSelectField(std::string_view label,
+                                    std::string_view name,
+                                    std::string_view value,
+                                    const std::vector<const char*>& values,
+                                    const std::vector<const char*>& contents) {
+  FormFieldData field;
+  CreateTestSelectField(label, name, value, values, contents, &field);
+  return field;
+}
+
+void CreateTestSelectField(std::string_view label,
+                           std::string_view name,
+                           std::string_view value,
                            const std::vector<const char*>& values,
                            const std::vector<const char*>& contents,
                            FormFieldData* field) {
@@ -156,10 +197,22 @@ void CreateTestSelectField(const char* label,
                         contents, field);
 }
 
-void CreateTestSelectField(const char* label,
-                           const char* name,
-                           const char* value,
-                           const char* autocomplete,
+FormFieldData CreateTestSelectField(std::string_view label,
+                                    std::string_view name,
+                                    std::string_view value,
+                                    std::string_view autocomplete,
+                                    const std::vector<const char*>& values,
+                                    const std::vector<const char*>& contents) {
+  FormFieldData field;
+  CreateTestSelectField(label, name, value, autocomplete, values, contents,
+                        &field);
+  return field;
+}
+
+void CreateTestSelectField(std::string_view label,
+                           std::string_view name,
+                           std::string_view value,
+                           std::string_view autocomplete,
                            const std::vector<const char*>& values,
                            const std::vector<const char*>& contents,
                            FormFieldData* field) {
@@ -167,16 +220,40 @@ void CreateTestSelectField(const char* label,
                                     contents, "select-one", field);
 }
 
-void CreateTestSelectOrSelectMenuField(const char* label,
-                                       const char* name,
-                                       const char* value,
-                                       const char* autocomplete,
+FormFieldData CreateTestSelectField(const std::vector<const char*>& values) {
+  FormFieldData field;
+  CreateTestSelectField(values, &field);
+  return field;
+}
+
+void CreateTestSelectField(const std::vector<const char*>& values,
+                           FormFieldData* field) {
+  CreateTestSelectField("", "", "", values, values, field);
+}
+
+FormFieldData CreateTestSelectOrSelectMenuField(
+    std::string_view label,
+    std::string_view name,
+    std::string_view value,
+    std::string_view autocomplete,
+    const std::vector<const char*>& values,
+    const std::vector<const char*>& contents,
+    std::string_view field_type) {
+  FormFieldData field;
+  CreateTestSelectOrSelectMenuField(label, name, value, autocomplete, values,
+                                    contents, field_type, &field);
+  return field;
+}
+
+void CreateTestSelectOrSelectMenuField(std::string_view label,
+                                       std::string_view name,
+                                       std::string_view value,
+                                       std::string_view autocomplete,
                                        const std::vector<const char*>& values,
                                        const std::vector<const char*>& contents,
-                                       const char* field_type,
+                                       std::string_view field_type,
                                        FormFieldData* field) {
-  CHECK(strcmp(field_type, "select-one") == 0 ||
-        strcmp(field_type, "selectmenu") == 0);
+  CHECK(field_type == "select-one" || field_type == "selectmenu");
   CreateTestFormField(label, name, value, field_type, field);
   field->autocomplete_attribute = autocomplete;
   field->parsed_autocomplete = ParseAutocompleteAttribute(autocomplete);
@@ -191,14 +268,19 @@ void CreateTestSelectOrSelectMenuField(const char* label,
   }
 }
 
-void CreateTestSelectField(const std::vector<const char*>& values,
-                           FormFieldData* field) {
-  CreateTestSelectField("", "", "", values, values, field);
+FormFieldData CreateTestDatalistField(std::string_view label,
+                                      std::string_view name,
+                                      std::string_view value,
+                                      const std::vector<const char*>& values,
+                                      const std::vector<const char*>& labels) {
+  FormFieldData field;
+  CreateTestDatalistField(label, name, value, values, labels, &field);
+  return field;
 }
 
-void CreateTestDatalistField(const char* label,
-                             const char* name,
-                             const char* value,
+void CreateTestDatalistField(std::string_view label,
+                             std::string_view name,
+                             std::string_view value,
                              const std::vector<const char*>& values,
                              const std::vector<const char*>& labels,
                              FormFieldData* field) {
@@ -219,10 +301,15 @@ void CreateTestDatalistField(const char* label,
   field->datalist_labels = label16;
 }
 
-void CreateTestPersonalInformationFormData(FormData* form,
-                                           const char* unique_id) {
+FormData CreateTestPersonalInformationFormData() {
+  FormData form;
+  CreateTestPersonalInformationFormData(&form);
+  return form;
+}
+
+void CreateTestPersonalInformationFormData(FormData* form) {
   form->unique_renderer_id = MakeFormRendererId();
-  form->name = u"MyForm" + ASCIIToUTF16(unique_id ? unique_id : "");
+  form->name = u"MyForm";
   form->url = GURL("https://myform.com/form.html");
   form->action = GURL("https://myform.com/submit.html");
   form->main_frame_origin =
@@ -239,13 +326,20 @@ void CreateTestPersonalInformationFormData(FormData* form,
   form->fields.push_back(field);
 }
 
+FormData CreateTestCreditCardFormData(bool is_https,
+                                      bool use_month_type,
+                                      bool split_names) {
+  FormData form;
+  CreateTestCreditCardFormData(&form, is_https, use_month_type, split_names);
+  return form;
+}
+
 void CreateTestCreditCardFormData(FormData* form,
                                   bool is_https,
                                   bool use_month_type,
-                                  bool split_names,
-                                  const char* unique_id) {
+                                  bool split_names) {
   form->unique_renderer_id = MakeFormRendererId();
-  form->name = u"MyForm" + ASCIIToUTF16(unique_id ? unique_id : "");
+  form->name = u"MyForm";
   if (is_https) {
     form->url = GURL("https://myform.com/form.html");
     form->action = GURL("https://myform.com/submit.html");
@@ -289,7 +383,13 @@ void CreateTestCreditCardFormData(FormData* form,
   form->fields.push_back(field);
 }
 
-void CreateTestIbanFormData(FormData* form_data, const char* value) {
+FormData CreateTestIbanFormData(std::string_view value) {
+  FormData form;
+  CreateTestIbanFormData(&form, value);
+  return form;
+}
+
+void CreateTestIbanFormData(FormData* form_data, std::string_view value) {
   FormFieldData field;
   test::CreateTestFormField("IBAN Value:", "iban_value", value, "text", &field);
   form_data->fields.push_back(field);

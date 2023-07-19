@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_COMMON_AUTOFILL_TEST_UTILS_H_
 #define COMPONENTS_AUTOFILL_CORE_COMMON_AUTOFILL_TEST_UTILS_H_
 
+#include <string_view>
 #include <vector>
 
 #include "base/location.h"
@@ -120,85 +121,126 @@ inline constexpr char kIbanValue[] = "FR76 3000 6000 0112 3456 7890 189";
 inline constexpr char kIbanValue_1[] = "CH56 0483 5012 3456 7800 9";
 inline constexpr char kIbanValue_2[] = "CH93 0076 2011 6238 5295 7";
 
-// Provides a quick way to populate a FormField with c-strings.
-void CreateTestFormField(const char* label,
-                         const char* name,
-                         const char* value,
-                         const char* type,
+// Provides a quick way to populate a `FormFieldData`.
+FormFieldData CreateTestFormField(std::string_view label,
+                                  std::string_view name,
+                                  std::string_view value,
+                                  std::string_view type);
+void CreateTestFormField(std::string_view label,
+                         std::string_view name,
+                         std::string_view value,
+                         std::string_view type,
                          FormFieldData* field);
 
-void CreateTestFormField(const char* label,
-                         const char* name,
-                         const char* value,
-                         const char* type,
-                         const char* autocomplete,
+FormFieldData CreateTestFormField(std::string_view label,
+                                  std::string_view name,
+                                  std::string_view value,
+                                  std::string_view type,
+                                  std::string_view autocomplete);
+void CreateTestFormField(std::string_view label,
+                         std::string_view name,
+                         std::string_view value,
+                         std::string_view type,
+                         std::string_view autocomplete,
                          FormFieldData* field);
 
-void CreateTestFormField(const char* label,
-                         const char* name,
-                         const char* value,
-                         const char* type,
-                         const char* autocomplete,
+FormFieldData CreateTestFormField(std::string_view label,
+                                  std::string_view name,
+                                  std::string_view value,
+                                  std::string_view type,
+                                  std::string_view autocomplete,
+                                  uint64_t max_length);
+void CreateTestFormField(std::string_view label,
+                         std::string_view name,
+                         std::string_view value,
+                         std::string_view type,
+                         std::string_view autocomplete,
                          uint64_t max_length,
                          FormFieldData* field);
 
 // Provides a quick way to populate a select field.
-void CreateTestSelectField(const char* label,
-                           const char* name,
-                           const char* value,
+FormFieldData CreateTestSelectField(std::string_view label,
+                                    std::string_view name,
+                                    std::string_view value,
+                                    const std::vector<const char*>& values,
+                                    const std::vector<const char*>& contents);
+void CreateTestSelectField(std::string_view label,
+                           std::string_view name,
+                           std::string_view value,
                            const std::vector<const char*>& values,
                            const std::vector<const char*>& contents,
                            FormFieldData* field);
 
-void CreateTestSelectField(const char* label,
-                           const char* name,
-                           const char* value,
-                           const char* autocomplete,
+FormFieldData CreateTestSelectField(std::string_view label,
+                                    std::string_view name,
+                                    std::string_view value,
+                                    std::string_view autocomplete,
+                                    const std::vector<const char*>& values,
+                                    const std::vector<const char*>& contents);
+void CreateTestSelectField(std::string_view label,
+                           std::string_view name,
+                           std::string_view value,
+                           std::string_view autocomplete,
                            const std::vector<const char*>& values,
                            const std::vector<const char*>& contents,
                            FormFieldData* field);
 
-void CreateTestSelectOrSelectMenuField(const char* label,
-                                       const char* name,
-                                       const char* value,
-                                       const char* autocomplete,
-                                       const std::vector<const char*>& values,
-                                       const std::vector<const char*>& contents,
-                                       const char* field_type,
-                                       FormFieldData* field);
-
+FormFieldData CreateTestSelectField(const std::vector<const char*>& values);
 void CreateTestSelectField(const std::vector<const char*>& values,
                            FormFieldData* field);
 
+FormFieldData CreateTestSelectOrSelectMenuField(
+    std::string_view label,
+    std::string_view name,
+    std::string_view value,
+    std::string_view autocomplete,
+    const std::vector<const char*>& values,
+    const std::vector<const char*>& contents,
+    std::string_view field_type);
+void CreateTestSelectOrSelectMenuField(std::string_view label,
+                                       std::string_view name,
+                                       std::string_view value,
+                                       std::string_view autocomplete,
+                                       const std::vector<const char*>& values,
+                                       const std::vector<const char*>& contents,
+                                       std::string_view field_type,
+                                       FormFieldData* field);
+
 // Provides a quick way to populate a datalist field.
-void CreateTestDatalistField(const char* label,
-                             const char* name,
-                             const char* value,
+FormFieldData CreateTestDatalistField(std::string_view label,
+                                      std::string_view name,
+                                      std::string_view value,
+                                      const std::vector<const char*>& values,
+                                      const std::vector<const char*>& labels);
+void CreateTestDatalistField(std::string_view label,
+                             std::string_view name,
+                             std::string_view value,
                              const std::vector<const char*>& values,
                              const std::vector<const char*>& labels,
                              FormFieldData* field);
 
 // Populates `form` with data corresponding to a simple personal information
-// form, including name and email, but no address-related fields. Use
-// `unique_id` to optionally ensure that each form has its own signature.
-void CreateTestPersonalInformationFormData(FormData* form,
-                                           const char* unique_id = nullptr);
+// form, including name and email, but no address-related fields.
+FormData CreateTestPersonalInformationFormData();
+void CreateTestPersonalInformationFormData(FormData* form);
 
 // Populates `form` with data corresponding to a simple credit card form.
 // Note that this actually appends fields to the form data, which can be
-// useful for building up more complex test forms. Use `unique_id` to optionally
-// ensure that each form has its own signature.
+// useful for building up more complex test forms.
+FormData CreateTestCreditCardFormData(bool is_https,
+                                      bool use_month_type,
+                                      bool split_names = false);
 void CreateTestCreditCardFormData(FormData* form,
                                   bool is_https,
                                   bool use_month_type,
-                                  bool split_names = false,
-                                  const char* unique_id = nullptr);
+                                  bool split_names = false);
 
 // Populates `form_data` with data corresponding to an IBAN form (a form with a
 // single IBAN field). Note that this actually appends fields to the form data,
 // which can be useful for building up more complex test forms.
+FormData CreateTestIbanFormData(std::string_view value = kIbanValue);
 void CreateTestIbanFormData(FormData* form_data,
-                            const char* value = kIbanValue);
+                            std::string_view value = kIbanValue);
 
 }  // namespace test
 
