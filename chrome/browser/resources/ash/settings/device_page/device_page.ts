@@ -39,8 +39,8 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {KeyboardPolicies, MousePolicies} from '../mojom-webui/input_device_settings.mojom-webui.js';
 import {KeyboardSettingsObserverReceiver, MouseSettingsObserverReceiver, PointingStickSettingsObserverReceiver, TouchpadSettingsObserverReceiver} from '../mojom-webui/input_device_settings_provider.mojom-webui.js';
 import {Section} from '../mojom-webui/routes.mojom-webui.js';
-import {RouteObserverMixin} from '../route_observer_mixin.js';
-import {Router, routes} from '../router.js';
+import {RouteOriginMixin} from '../route_origin_mixin.js';
+import {Route, Router, routes} from '../router.js';
 
 import {getTemplate} from './device_page.html.js';
 import {DevicePageBrowserProxy, DevicePageBrowserProxyImpl} from './device_page_browser_proxy.js';
@@ -56,11 +56,11 @@ interface SettingsDevicePageElement {
 }
 
 const SettingsDevicePageElementBase =
-    RouteObserverMixin(I18nMixin(WebUiListenerMixin(PolymerElement)));
+    RouteOriginMixin(I18nMixin(WebUiListenerMixin(PolymerElement)));
 
 class SettingsDevicePageElement extends SettingsDevicePageElementBase {
   static get is() {
-    return 'settings-device-page';
+    return 'settings-device-page' as const;
   }
 
   static get template() {
@@ -142,74 +142,6 @@ class SettingsDevicePageElement extends SettingsDevicePageElementBase {
         readOnly: true,
       },
 
-      focusConfig_: {
-        type: Object,
-        value() {
-          const map = new Map();
-          if (routes.POINTERS) {
-            map.set(routes.POINTERS.path, '#pointersRow');
-          }
-          if (routes.PER_DEVICE_MOUSE) {
-            map.set(routes.PER_DEVICE_MOUSE.path, '#perDeviceMouseRow');
-          }
-          if (routes.PER_DEVICE_TOUCHPAD) {
-            map.set(routes.PER_DEVICE_TOUCHPAD.path, '#perDeviceTouchpadRow');
-          }
-          if (routes.PER_DEVICE_POINTING_STICK) {
-            map.set(
-                routes.PER_DEVICE_POINTING_STICK.path,
-                '#perDevicePointingStickRow');
-          }
-          if (routes.PER_DEVICE_KEYBOARD) {
-            map.set(routes.PER_DEVICE_KEYBOARD.path, '#perDeviceKeyboardRow');
-          }
-          if (routes.PER_DEVICE_KEYBOARD_REMAP_KEYS) {
-            map.set(
-                routes.PER_DEVICE_KEYBOARD_REMAP_KEYS.path,
-                '#perDeviceKeyboardRemapKeysRow');
-          }
-          if (routes.KEYBOARD) {
-            map.set(routes.KEYBOARD.path, '#keyboardRow');
-          }
-          if (routes.STYLUS) {
-            map.set(routes.STYLUS.path, '#stylusRow');
-          }
-          if (routes.DISPLAY) {
-            map.set(routes.DISPLAY.path, '#displayRow');
-          }
-          if (routes.AUDIO) {
-            map.set(routes.AUDIO.path, '#audioRow');
-          }
-          if (routes.STORAGE) {
-            map.set(routes.STORAGE.path, '#storageRow');
-          }
-          if (routes.EXTERNAL_STORAGE_PREFERENCES) {
-            map.set(
-                routes.EXTERNAL_STORAGE_PREFERENCES.path,
-                '#externalStoragePreferencesRow');
-          }
-          if (routes.POWER) {
-            map.set(routes.POWER.path, '#powerRow');
-          }
-          if (routes.GRAPHICS_TABLET) {
-            map.set(routes.GRAPHICS_TABLET.path, '#tabletRow');
-          }
-          if (routes.CUSTOMIZE_MOUSE_BUTTONS) {
-            map.set(
-                routes.CUSTOMIZE_MOUSE_BUTTONS.path,
-                '#customizeMouseButtonsRow');
-          }
-          if (routes.CUSTOMIZE_TABLET_BUTTONS) {
-            map.set(
-                routes.CUSTOMIZE_TABLET_BUTTONS,
-                '#customizeTabletButtonsSubpage');
-            map.set(
-                routes.CUSTOMIZE_PEN_BUTTONS, '#customizePenButtonsSubpage');
-          }
-          return map;
-        },
-      },
-
       androidEnabled_: {
         type: Boolean,
         value() {
@@ -281,6 +213,9 @@ class SettingsDevicePageElement extends SettingsDevicePageElementBase {
   constructor() {
     super();
 
+    /** RouteOriginMixin override */
+    this.route = routes.DEVICE;
+
     this.browserProxy_ = DevicePageBrowserProxyImpl.getInstance();
     if (this.isDeviceSettingsSplitEnabled_) {
       this.inputDeviceSettingsProvider = getInputDeviceSettingsProvider();
@@ -323,6 +258,35 @@ class SettingsDevicePageElement extends SettingsDevicePageElementBase {
         'storage-android-enabled-changed',
         this.set.bind(this, 'androidEnabled_'));
     this.browserProxy_.updateAndroidEnabled();
+  }
+
+  override ready() {
+    super.ready();
+
+    this.addFocusConfig(routes.POINTERS, '#pointersRow');
+    this.addFocusConfig(routes.PER_DEVICE_MOUSE, '#perDeviceMouseRow');
+    this.addFocusConfig(routes.PER_DEVICE_TOUCHPAD, '#perDeviceTouchpadRow');
+    this.addFocusConfig(
+        routes.PER_DEVICE_POINTING_STICK, '#perDevicePointingStickRow');
+    this.addFocusConfig(routes.PER_DEVICE_KEYBOARD, '#perDeviceKeyboardRow');
+    this.addFocusConfig(
+        routes.PER_DEVICE_KEYBOARD_REMAP_KEYS,
+        '#perDeviceKeyboardRemapKeysRow');
+    this.addFocusConfig(routes.KEYBOARD, '#keyboardRow');
+    this.addFocusConfig(routes.STYLUS, '#stylusRow');
+    this.addFocusConfig(routes.DISPLAY, '#displayRow');
+    this.addFocusConfig(routes.AUDIO, '#audioRow');
+    this.addFocusConfig(routes.STORAGE, '#storageRow');
+    this.addFocusConfig(
+        routes.EXTERNAL_STORAGE_PREFERENCES, '#externalStoragePreferencesRow');
+    this.addFocusConfig(routes.POWER, '#powerRow');
+    this.addFocusConfig(routes.GRAPHICS_TABLET, '#tabletRow');
+    this.addFocusConfig(
+        routes.CUSTOMIZE_MOUSE_BUTTONS, '#customizeMouseButtonsRow');
+    this.addFocusConfig(
+        routes.CUSTOMIZE_TABLET_BUTTONS, '#customizeTabletButtonsSubpage');
+    this.addFocusConfig(
+        routes.CUSTOMIZE_PEN_BUTTONS, '#customizePenButtonsSubpage');
   }
 
   private observePointingStickSettings(): void {
@@ -517,7 +481,9 @@ class SettingsDevicePageElement extends SettingsDevicePageElementBase {
     Router.getInstance().navigateTo(routes.POWER);
   }
 
-  override currentRouteChanged() {
+  override currentRouteChanged(newRoute: Route, oldRoute?: Route) {
+    super.currentRouteChanged(newRoute, oldRoute);
+
     this.checkPointerSubpage_();
   }
 
@@ -587,7 +553,7 @@ class SettingsDevicePageElement extends SettingsDevicePageElementBase {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'settings-device-page': SettingsDevicePageElement;
+    [SettingsDevicePageElement.is]: SettingsDevicePageElement;
   }
 }
 

@@ -16,15 +16,12 @@ import '/shared/settings/controls/settings_dropdown_menu.js';
 
 import {DropdownMenuOptionList} from '/shared/settings/controls/settings_dropdown_menu.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
-import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {castExists} from '../assert_extras.js';
 import {DeepLinkingMixin} from '../deep_linking_mixin.js';
-import {FocusConfig} from '../focus_config.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
-import {RouteObserverMixin} from '../route_observer_mixin.js';
+import {RouteOriginMixin} from '../route_origin_mixin.js';
 import {Route, Router, routes} from '../router.js';
 
 import {DevicePageBrowserProxy, DevicePageBrowserProxyImpl} from './device_page_browser_proxy.js';
@@ -46,11 +43,11 @@ enum ModifierKey {
 }
 
 const SettingsKeyboardElementBase =
-    DeepLinkingMixin(RouteObserverMixin(WebUiListenerMixin(PolymerElement)));
+    DeepLinkingMixin(RouteOriginMixin(WebUiListenerMixin(PolymerElement)));
 
 class SettingsKeyboardElement extends SettingsKeyboardElementBase {
   static get is() {
-    return 'settings-keyboard';
+    return 'settings-keyboard' as const;
   }
 
   static get template() {
@@ -63,11 +60,6 @@ class SettingsKeyboardElement extends SettingsKeyboardElementBase {
       prefs: {
         type: Object,
         notify: true,
-      },
-
-      focusConfig: {
-        type: Object,
-        observer: 'onFocusConfigChange_',
       },
 
       /** Whether to show Caps Lock options. */
@@ -151,7 +143,6 @@ class SettingsKeyboardElement extends SettingsKeyboardElementBase {
     };
   }
 
-  focusConfig: FocusConfig;
   private browserProxy_: DevicePageBrowserProxy;
   private hasAssistantKey_: boolean;
   private hasLauncherKey_: boolean;
@@ -166,6 +157,9 @@ class SettingsKeyboardElement extends SettingsKeyboardElementBase {
   constructor() {
     super();
 
+    /** RouteOriginMixin override */
+    this.route = routes.KEYBOARD;
+
     this.browserProxy_ = DevicePageBrowserProxyImpl.getInstance();
   }
 
@@ -176,14 +170,18 @@ class SettingsKeyboardElement extends SettingsKeyboardElementBase {
         'show-keys-changed', this.onShowKeysChange_.bind(this));
     this.browserProxy_.initializeKeyboard();
     this.setUpKeyMapTargets_();
+
+    this.addFocusConfig(routes.OS_LANGUAGES_INPUT, '#showLanguagesInput');
   }
 
-  override currentRouteChanged(route: Route) {
+  override currentRouteChanged(newRoute: Route, oldRoute?: Route) {
+    super.currentRouteChanged(newRoute, oldRoute);
+
     // Does not apply to this page.
-    if (route !== routes.KEYBOARD) {
+    if (newRoute !== this.route) {
       return;
     }
-    if (Router.getInstance().currentRoute === routes.KEYBOARD &&
+    if (Router.getInstance().currentRoute === this.route &&
         this.isDeviceSettingsSplitEnabled_) {
       // Call setCurrentRoute function to go to the per device keyboard subpage
       // when the feature flag is turned on. We don't use navigateTo function
@@ -237,17 +235,6 @@ class SettingsKeyboardElement extends SettingsKeyboardElementBase {
     ];
   }
 
-  private onFocusConfigChange_() {
-    this.focusConfig.set(routes.OS_LANGUAGES_INPUT.path, () => {
-      afterNextRender(this, () => {
-        const showLanguagesInputEl =
-            castExists(this.shadowRoot!.getElementById('showLanguagesInput'));
-        focusWithoutInk(showLanguagesInputEl);
-      });
-      return null;
-    });
-  }
-
   /**
    * Handler for updating which keys to show.
    */
@@ -282,7 +269,7 @@ class SettingsKeyboardElement extends SettingsKeyboardElementBase {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'settings-keyboard': SettingsKeyboardElement;
+    [SettingsKeyboardElement.is]: SettingsKeyboardElement;
   }
 }
 
