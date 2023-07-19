@@ -168,6 +168,9 @@ Preload::PrerenderFinalStatus PrerenderFinalStatusToProtocol(
       return Preload::PrerenderFinalStatusEnum::ResourceLoadBlockedByClient;
     case PrerenderFinalStatus::kSpeculationRuleRemoved:
       return Preload::PrerenderFinalStatusEnum::SpeculationRuleRemoved;
+    case PrerenderFinalStatus::kActivatedWithAuxiliaryBrowsingContexts:
+      return Preload::PrerenderFinalStatusEnum::
+          ActivatedWithAuxiliaryBrowsingContexts;
   }
 }
 

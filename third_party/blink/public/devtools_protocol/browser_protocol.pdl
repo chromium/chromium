@@ -11247,6 +11247,7 @@ experimental domain Preload
       PrerenderingDisabledByDevTools
       ResourceLoadBlockedByClient
       SpeculationRuleRemoved
+      ActivatedWithAuxiliaryBrowsingContexts
 
   # Fired when a prerender attempt is completed.
   event prerenderAttemptCompleted

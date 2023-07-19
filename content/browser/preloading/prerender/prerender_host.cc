@@ -1046,6 +1046,7 @@ void PrerenderHost::SetFailureReason(
     case PrerenderFinalStatus::kMemoryPressureAfterTriggered:
     case PrerenderFinalStatus::kPrerenderingDisabledByDevTools:
     case PrerenderFinalStatus::kResourceLoadBlockedByClient:
+    case PrerenderFinalStatus::kActivatedWithAuxiliaryBrowsingContexts:
       if (attempt_) {
         attempt_->SetFailureReason(
             ToPreloadingFailureReason(reason.final_status()));

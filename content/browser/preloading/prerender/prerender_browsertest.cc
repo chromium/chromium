@@ -1013,12 +1013,12 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
   EXPECT_EQ(web_contents()->GetLastCommittedURL(), kPrerenderingUrl);
   EXPECT_FALSE(prerender_observer.was_activated());
 
-  // The prerendered page should be destroyed as the trigger page navigated
-  // away.
+  // The prerendered page should be destroyed on activation attempt.
   prerender_observer.WaitForDestroyed();
   EXPECT_EQ(GetHostForUrl(kPrerenderingUrl),
             RenderFrameHost::kNoFrameTreeNodeId);
-  ExpectFinalStatusForSpeculationRule(PrerenderFinalStatus::kTriggerDestroyed);
+  ExpectFinalStatusForSpeculationRule(
+      PrerenderFinalStatus::kActivatedWithAuxiliaryBrowsingContexts);
 }
 
 // Tests that clicking a link annotated with "target=_blank rel=opener" cannot
@@ -2919,10 +2919,9 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, Activation_PageWithPopUpWindow) {
   EXPECT_EQ(web_contents()->GetLastCommittedURL(), kPrerenderingUrl);
   EXPECT_EQ(GetRequestCount(kPrerenderingUrl), 2);
 
-  // Activation shouldn't happen, so the prerender host should not be consumed.
-  // However, we don't check the existence of the prerender host here unlike
-  // other activation tests because navigating the frame that triggered
-  // prerendering abandons the prerendered page regardless of activation.
+  // The prerender host should be canceled.
+  ExpectFinalStatusForSpeculationRule(
+      PrerenderFinalStatus::kActivatedWithAuxiliaryBrowsingContexts);
 }
 
 // Tests that all RenderFrameHostImpls in the prerendering page know the

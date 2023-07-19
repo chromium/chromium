@@ -290,6 +290,7 @@ PreloadingEligibility ToEligibility(PrerenderFinalStatus status) {
     case PrerenderFinalStatus::kResourceLoadBlockedByClient:
       return PreloadingEligibility::kPreloadingDisabledByDevTools;
     case PrerenderFinalStatus::kSpeculationRuleRemoved:
+    case PrerenderFinalStatus::kActivatedWithAuxiliaryBrowsingContexts:
       NOTREACHED_NORETURN();
   }
 
@@ -1437,14 +1438,6 @@ int PrerenderHostRegistry::FindHostToActivateInternal(
   if (navigation_request.IsInPrerenderedMainFrame())
     return RenderFrameHost::kNoFrameTreeNodeId;
 
-  // Disallow activation when other auxiliary browsing contexts (e.g., pop-up
-  // windows) exist in the same browsing context group. This is because these
-  // browsing contexts should be able to script each other, but prerendered
-  // pages are created in new browsing context groups.
-  SiteInstance* site_instance = render_frame_host->GetSiteInstance();
-  if (site_instance->GetRelatedActiveContentsCount() != 1u)
-    return RenderFrameHost::kNoFrameTreeNodeId;
-
   // Find an available host for the navigation URL.
   PrerenderHost* host = nullptr;
   for (const auto& [host_id, it_prerender_host] :
@@ -1456,6 +1449,17 @@ int PrerenderHostRegistry::FindHostToActivateInternal(
   }
   if (!host)
     return RenderFrameHost::kNoFrameTreeNodeId;
+
+  // Disallow activation when other auxiliary browsing contexts (e.g., pop-up
+  // windows) exist in the same browsing context group. This is because these
+  // browsing contexts should be able to script each other, but prerendered
+  // pages are created in new browsing context groups.
+  SiteInstance* site_instance = render_frame_host->GetSiteInstance();
+  if (site_instance->GetRelatedActiveContentsCount() != 1u) {
+    CancelHost(host->frame_tree_node_id(),
+               PrerenderFinalStatus::kActivatedWithAuxiliaryBrowsingContexts);
+    return RenderFrameHost::kNoFrameTreeNodeId;
+  }
 
   // TODO(crbug.com/1399709): Remove the restriction after further investigation
   // and discussion.

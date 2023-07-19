@@ -87607,6 +87607,7 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="69" label="kPrerenderingDisabledByDevTools"/>
   <int value="70" label="kResourceLoadBlockedByClient"/>
   <int value="71" label="kSpeculationRuleRemoved"/>
+  <int value="72" label="kActivatedWithAuxiliaryBrowsingContexts"/>
 </enum>
 
 <enum name="PrerenderHoverEvent">

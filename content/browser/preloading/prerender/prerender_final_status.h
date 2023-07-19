@@ -132,7 +132,13 @@ enum class PrerenderFinalStatus {
   // <script type="speculationrules">.
   kSpeculationRuleRemoved = 71,
 
-  kMaxValue = kSpeculationRuleRemoved,
+  // A trigger page cannot activate a prerendered page when it has auxiliary
+  // browsing contexts that should be able to script each other (e.g., pop-up
+  // windows with openers). For details, see comments on the place where this
+  // status is specified.
+  kActivatedWithAuxiliaryBrowsingContexts = 72,
+
+  kMaxValue = kActivatedWithAuxiliaryBrowsingContexts,
 };
 
 // Helper method to convert PrerenderFinalStatus to PreloadingFailureReason.
