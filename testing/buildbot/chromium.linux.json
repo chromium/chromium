@@ -7549,5 +7549,16 @@
     "additional_compile_targets": [
       "empty_main"
     ]
+  },
+  "linux-v4l2-codecs-rel": {
+    "additional_compile_targets": [
+      "image_processor_perf_test",
+      "video_decode_accelerator_tests",
+      "video_decode_accelerator_perf_tests",
+      "video_encode_accelerator_tests",
+      "video_encode_accelerator_perf_tests",
+      "v4l2_stateless_decoder",
+      "v4l2_unittest"
+    ]
   }
 }

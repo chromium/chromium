@@ -1118,6 +1118,11 @@ targets.console_test_launcher(
     label = "//headless:headless_unittests",
 )
 
+targets.compile_target(
+    name = "image_processor_perf_test",
+    label = "//media/gpu/chromeos:image_processor_perf_test",
+)
+
 targets.console_test_launcher(
     name = "install_static_unittests",
     label = "//chrome/install_static:install_static_unittests",
@@ -2201,6 +2206,16 @@ targets.console_test_launcher(
     label = "//chrome/test:usage_time_limit_unittests",
 )
 
+targets.compile_target(
+    name = "v4l2_stateless_decoder",
+    label = "//media/gpu/v4l2:v4l2_stateless_decoder",
+)
+
+targets.compile_target(
+    name = "v4l2_unittest",
+    label = "//media/gpu/v4l2:v4l2_unittest",
+)
+
 targets.console_test_launcher(
     name = "vaapi_unittest",
     label = "//media/gpu/vaapi:vaapi_unittest",
@@ -2209,6 +2224,26 @@ targets.console_test_launcher(
 targets.console_test_launcher(
     name = "fake_libva_driver_unittest",
     label = "//media/gpu/vaapi/test/fake_libva_driver:fake_libva_driver_unittest",
+)
+
+targets.compile_target(
+    name = "video_decode_accelerator_tests",
+    label = "//media/gpu/test:video_decode_accelerator_tests",
+)
+
+targets.compile_target(
+    name = "video_decode_accelerator_perf_tests",
+    label = "//media/gpu/test:video_decode_accelerator_perf_tests",
+)
+
+targets.compile_target(
+    name = "video_encode_accelerator_tests",
+    label = "//media/gpu/test:video_encode_accelerator_tests",
+)
+
+targets.compile_target(
+    name = "video_encode_accelerator_perf_tests",
+    label = "//media/gpu/test:video_encode_accelerator_perf_tests",
 )
 
 targets.windowed_test_launcher(
