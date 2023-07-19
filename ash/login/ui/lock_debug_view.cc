@@ -35,6 +35,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/user_manager/known_user.h"
+#include "components/user_manager/multi_user/multi_user_sign_in_policy.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ime/ash/ime_keyboard.h"
 #include "ui/views/controls/button/md_text_button.h"
@@ -83,8 +84,8 @@ enum class DebugAuthEnabledState {
 
   // The auth disabled message is displayed because of multiprofile policy.
   // Note that this would only be displayed on the secondary login screen.
-  kMultiProfilePrimaryOnly,
-  kMultiProfileNotAllowed,
+  kMultiUserPolicyPrimaryOnly,
+  kMultiUserPolicyNotAllowed,
 
   // The auth disabled message is displayed because the force online
   // sign in is unavailable on the secondary login screen.
@@ -428,7 +429,8 @@ class LockDebugView::DebugDataDispatcherTransformer
 
     debug_user->enable_auth = true;
     AuthDisabledReason reason;
-    MultiProfileUserBehavior behavior = MultiProfileUserBehavior::UNRESTRICTED;
+    user_manager::MultiUserSignInPolicy multi_user_sign_in_policy =
+        user_manager::MultiUserSignInPolicy::kUnrestricted;
 
     switch (debug_user->auth_enable_state) {
       case DebugAuthEnabledState::kAuthEnabled:
@@ -443,19 +445,21 @@ class LockDebugView::DebugDataDispatcherTransformer
       case DebugAuthEnabledState::kTimeWindowLimit:
         reason = AuthDisabledReason::kTimeWindowLimit;
         break;
-      case DebugAuthEnabledState::kMultiProfilePrimaryOnly:
-        behavior = MultiProfileUserBehavior::PRIMARY_ONLY;
+      case DebugAuthEnabledState::kMultiUserPolicyPrimaryOnly:
+        multi_user_sign_in_policy =
+            user_manager::MultiUserSignInPolicy::kPrimaryOnly;
         break;
-      case DebugAuthEnabledState::kMultiProfileNotAllowed:
-        behavior = MultiProfileUserBehavior::NOT_ALLOWED;
+      case DebugAuthEnabledState::kMultiUserPolicyNotAllowed:
+        multi_user_sign_in_policy =
+            user_manager::MultiUserSignInPolicy::kNotAllowed;
         break;
       case DebugAuthEnabledState::kForceOnlineSignIn:
         break;
     }
 
     debug_dispatcher_.EnableAuthForUser(debug_user->account_id);
-    lock_debug_view_->lock()->SetMultiprofilePolicyForUserForDebug(
-        debug_users_[user_index].account_id, behavior);
+    lock_debug_view_->lock()->SetMultiUserSignInPolicyForUserForDebug(
+        debug_users_[user_index].account_id, multi_user_sign_in_policy);
     lock_debug_view_->lock()->UndoForceOnlineSignInForUserForDebug(
         debug_users_[user_index].account_id);
 
@@ -472,10 +476,10 @@ class LockDebugView::DebugDataDispatcherTransformer
                 base::Time::Now() + base::Hours(user_index) + base::Hours(8),
                 base::Minutes(15), true /*bool disable_lock_screen_media*/));
         break;
-      case DebugAuthEnabledState::kMultiProfilePrimaryOnly:
-      case DebugAuthEnabledState::kMultiProfileNotAllowed:
-        lock_debug_view_->lock()->SetMultiprofilePolicyForUserForDebug(
-            debug_users_[user_index].account_id, behavior);
+      case DebugAuthEnabledState::kMultiUserPolicyPrimaryOnly:
+      case DebugAuthEnabledState::kMultiUserPolicyNotAllowed:
+        lock_debug_view_->lock()->SetMultiUserSignInPolicyForUserForDebug(
+            debug_users_[user_index].account_id, multi_user_sign_in_policy);
         break;
       case DebugAuthEnabledState::kForceOnlineSignIn:
         debug_dispatcher_.ForceOnlineSignInForUser(

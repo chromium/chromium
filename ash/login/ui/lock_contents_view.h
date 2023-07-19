@@ -37,6 +37,7 @@
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/power_manager/power_supply_properties.pb.h"
 #include "components/account_id/account_id.h"
+#include "components/user_manager/multi_user/multi_user_sign_in_policy.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/display/display_observer.h"
@@ -209,10 +210,10 @@ class ASH_EXPORT LockContentsView
   // a note in the menu user view.
   void ToggleManagementForUserForDebug(const AccountId& user);
 
-  // Called for debugging to make |user| having a multiprofile policy.
-  void SetMultiprofilePolicyForUserForDebug(
+  // Called for debugging to make |user| having a multi-user-sign-in policy.
+  void SetMultiUserSignInPolicyForUserForDebug(
       const AccountId& user,
-      const MultiProfileUserBehavior& multiprofile_policy);
+      user_manager::MultiUserSignInPolicy policy);
 
   // Called for debugging to toggle forced online sign-in form |user|.
   void ToggleForceOnlineSignInForUserForDebug(const AccountId& user);

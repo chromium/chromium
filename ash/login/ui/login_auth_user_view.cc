@@ -52,6 +52,7 @@
 #include "chromeos/ash/components/login/auth/auth_events_recorder.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/user_manager/known_user.h"
+#include "components/user_manager/multi_user/multi_user_sign_in_policy.h"
 #include "components/user_manager/user.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -676,13 +677,13 @@ void LoginAuthUserView::SetAuthMethods(
       Shell::Get()->session_controller()->GetSessionState() ==
       session_manager::SessionState::LOGIN_SECONDARY;
 
-  if (is_secondary_login && !user.is_multiprofile_allowed) {
+  if (is_secondary_login && !user.is_multi_user_sign_in_allowed) {
     online_sign_in_button_->SetVisible(false);
     disabled_auth_message_->SetVisible(true);
     disabled_auth_message_->SetAuthDisabledMessage(
         l10n_util::GetStringUTF16(
-            IDS_ASH_LOGIN_MULTI_PROFILES_RESTRICTED_POLICY_TITLE),
-        GetMultiprofileDisableAuthMessage());
+            IDS_ASH_LOGIN_MULTI_USER_SIGN_IN_RESTRICTED_POLICY_TITLE),
+        GetMultiUserSignInDisableAuthMessage());
   }
   // We do not want the online sign in button to be visible on the secondary
   // login screen since we can not call OOBE there. In such a case, we indicate
@@ -1419,16 +1420,16 @@ std::u16string LoginAuthUserView::GetPasswordViewPlaceholder() const {
   return l10n_util::GetStringUTF16(IDS_ASH_LOGIN_POD_PASSWORD_PLACEHOLDER);
 }
 
-std::u16string LoginAuthUserView::GetMultiprofileDisableAuthMessage() const {
+std::u16string LoginAuthUserView::GetMultiUserSignInDisableAuthMessage() const {
   int message_id;
-  switch (current_user().multiprofile_policy) {
-    case MultiProfileUserBehavior::PRIMARY_ONLY:
-      message_id = IDS_ASH_LOGIN_MULTI_PROFILES_PRIMARY_ONLY_POLICY_MSG;
+  switch (current_user().multi_user_sign_in_policy) {
+    case user_manager::MultiUserSignInPolicy::kPrimaryOnly:
+      message_id = IDS_ASH_LOGIN_MULTI_USER_SIGN_IN_PRIMARY_ONLY_POLICY_MSG;
       break;
-    case MultiProfileUserBehavior::NOT_ALLOWED:
-      message_id = IDS_ASH_LOGIN_MULTI_PROFILES_NOT_ALLOWED_POLICY_MSG;
+    case user_manager::MultiUserSignInPolicy::kNotAllowed:
+      message_id = IDS_ASH_LOGIN_MULTI_USER_SIGN_IN_NOT_ALLOWED_POLICY_MSG;
       break;
-    case MultiProfileUserBehavior::UNRESTRICTED:
+    case user_manager::MultiUserSignInPolicy::kUnrestricted:
       NOTREACHED();
       message_id = 0;
       break;

@@ -301,7 +301,7 @@ class ASH_EXPORT LoginAuthUserView : public NonAccessibleView {
   // Convenience methods to determine UI text based on the InputFieldMode.
   std::u16string GetPinPasswordToggleText() const;
   std::u16string GetPasswordViewPlaceholder() const;
-  std::u16string GetMultiprofileDisableAuthMessage() const;
+  std::u16string GetMultiUserSignInDisableAuthMessage() const;
 
   // Authentication methods available and extra parameters that control the UI.
   AuthMethods auth_methods_ = AUTH_NONE;

@@ -102,16 +102,17 @@ MultiProfileUserController::GetPrimaryUserPolicy() const {
 }
 
 // static
-MultiProfileUserBehavior MultiProfileUserController::UserBehaviorStringToEnum(
+user_manager::MultiUserSignInPolicy
+MultiProfileUserController::UserBehaviorStringToEnum(
     const std::string& behavior) {
   if (behavior == kBehaviorPrimaryOnly) {
-    return MultiProfileUserBehavior::PRIMARY_ONLY;
+    return user_manager::MultiUserSignInPolicy::kPrimaryOnly;
   }
   if (behavior == kBehaviorNotAllowed) {
-    return MultiProfileUserBehavior::NOT_ALLOWED;
+    return user_manager::MultiUserSignInPolicy::kNotAllowed;
   }
 
-  return MultiProfileUserBehavior::UNRESTRICTED;
+  return user_manager::MultiUserSignInPolicy::kUnrestricted;
 }
 
 bool MultiProfileUserController::IsUserAllowedInSession(

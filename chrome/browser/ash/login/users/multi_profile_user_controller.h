@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "components/user_manager/multi_user/multi_user_sign_in_policy.h"
 
 class PrefChangeRegistrar;
 class PrefRegistrySimple;
@@ -25,8 +26,6 @@ class PrefRegistrySyncable;
 }
 
 namespace ash {
-
-enum class MultiProfileUserBehavior;
 
 // MultiProfileUserController decides whether a user is allowed to be in a
 // multi-profiles session. It caches the multi-profile user behavior pref backed
@@ -71,8 +70,8 @@ class MultiProfileUserController {
   // NOT_ALLOWED_PRIMARY_USER_POLICY_FORBIDS)
   UserAllowedInSessionReason GetPrimaryUserPolicy() const;
 
-  // Returns the user behavior in MultiProfileUserBehavior enum.
-  static MultiProfileUserBehavior UserBehaviorStringToEnum(
+  // Returns the user behavior in MultiUserSignInPolicy enum.
+  static user_manager::MultiUserSignInPolicy UserBehaviorStringToEnum(
       const std::string& behavior);
 
   // Returns true if user allowed to be in the current session. If `reason` not

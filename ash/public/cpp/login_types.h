@@ -13,6 +13,7 @@
 #include "chromeos/ash/components/proximity_auth/public/mojom/auth_type.mojom-forward.h"
 #include "chromeos/components/security_token_pin/constants.h"
 #include "components/account_id/account_id.h"
+#include "components/user_manager/multi_user/multi_user_sign_in_policy.h"
 
 namespace ash {
 
@@ -105,14 +106,6 @@ enum class ManagementDeviceMode {
   kKioskSku = 3,
   kOther = 4,
   kMaxValue = kOther,
-};
-
-// Supported multi-profile user behavior values.
-// TODO(estade): change all the enums to use kCamelCase.
-enum class MultiProfileUserBehavior {
-  UNRESTRICTED = 0,
-  PRIMARY_ONLY = 1,
-  NOT_ALLOWED = 2,
 };
 
 // The status of fingerprint availability.
@@ -267,12 +260,12 @@ struct ASH_PUBLIC_EXPORT LoginUserInfo {
   // LoginScreenModel::SetSmartLockState) which update the current state.
   SmartLockState smart_lock_state = SmartLockState::kDisabled;
 
-  // True if multi-profiles sign in is allowed for this user.
-  bool is_multiprofile_allowed = false;
+  // True if multi-user-sign-in is allowed for this user.
+  bool is_multi_user_sign_in_allowed = false;
 
-  // Enforced policy for multi-profiles sign in.
-  MultiProfileUserBehavior multiprofile_policy =
-      MultiProfileUserBehavior::UNRESTRICTED;
+  // Enforced policy for multi-user-sign-in.
+  user_manager::MultiUserSignInPolicy multi_user_sign_in_policy =
+      user_manager::MultiUserSignInPolicy::kUnrestricted;
 
   // True if this user can be removed.
   bool can_remove = false;

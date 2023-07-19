@@ -70,6 +70,7 @@
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "components/user_manager/known_user.h"
+#include "components/user_manager/multi_user/multi_user_sign_in_policy.h"
 #include "components/user_manager/user_type.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -1351,14 +1352,14 @@ void LockContentsView::ToggleManagementForUserForDebug(const AccountId& user) {
   }
 }
 
-void LockContentsView::SetMultiprofilePolicyForUserForDebug(
+void LockContentsView::SetMultiUserSignInPolicyForUserForDebug(
     const AccountId& user,
-    const MultiProfileUserBehavior& multiprofile_policy) {
-  auto replace = [multiprofile_policy](const LoginUserInfo& user_info) {
+    user_manager::MultiUserSignInPolicy policy) {
+  auto replace = [policy](const LoginUserInfo& user_info) {
     auto changed = user_info;
-    changed.multiprofile_policy = multiprofile_policy;
-    changed.is_multiprofile_allowed =
-        multiprofile_policy == MultiProfileUserBehavior::UNRESTRICTED;
+    changed.multi_user_sign_in_policy = policy;
+    changed.is_multi_user_sign_in_allowed =
+        policy == user_manager::MultiUserSignInPolicy::kUnrestricted;
     return changed;
   };
 
