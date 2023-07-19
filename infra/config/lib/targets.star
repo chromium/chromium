@@ -438,7 +438,7 @@ GN_ISOLATE_MAP_PYL = """\
 # Instead:
 # 1. Modify //infra/config/targets/targets.star
 # 2. Run //infra/config/main.star
-# 3. Run //infra/config/scripts/sync-isolate-map.py
+# 3. Run //infra/config/scripts/sync-py-files.py
 
 {{
 {entries}
@@ -476,6 +476,7 @@ MIXINS_PYL = """\
 # Instead:
 # 1. Modify //infra/config/targets/mixins.star
 # 2. Run //infra/config/main.star
+# 3. Run //infra/config/scripts/sync-py-files.py
 
 {{
 {entries}
