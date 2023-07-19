@@ -343,6 +343,12 @@ These mac specializations are required due to launching from platform shortcut a
 | WMLC | install_or_shortcut_windowed(MinimalUi) | manifest_update_display(MinimalUi, Wco) | await_manifest_update(MinimalUi) | maybe_close_pwa | launch(MinimalUi) | enable_window_controls_overlay(MinimalUi) | check_window_controls_overlay_toggle(MinimalUi, Shown) |
 | WMLC | install_or_shortcut_windowed(Wco) | manifest_update_display(Wco, Standalone) | await_manifest_update(Wco) | maybe_close_pwa | launch(Wco) | check_window_controls_overlay_toggle(Wco, NotShown) |
 | WMLC | install_or_shortcut_windowed(Wco) | manifest_update_display(Wco, Standalone) | await_manifest_update(Wco) | maybe_close_pwa | launch(Wco) | check_window_controls_overlay(Wco, Off) |
+| WMLC | install_or_shortcut_by_user_windowed(Wco) |  check_window_controls_overlay_toggle_icon(Shown) |
+| WMLC | install_or_shortcut_by_user_windowed(Wco) |  enter_full_screen_app | check_window_controls_overlay_toggle_icon(NotShown) |
+| WMLC | install_or_shortcut_by_user_windowed(Wco) |  enter_full_screen_app | exit_full_screen_app | check_window_controls_overlay_toggle_icon(Shown) |
+| WMLC | install_policy_app(Wco, ShortcutOptions::All, Windowed, WebApp) | launch(Wco) | check_window_controls_overlay_toggle_icon(Shown) |
+| WMLC | install_policy_app(Wco, ShortcutOptions::All, Windowed, WebApp) | launch(Wco) | enter_full_screen_app | check_window_controls_overlay_toggle_icon(NotShown) |
+| WMLC | install_policy_app(Wco, ShortcutOptions::All, Windowed, WebApp) | launch(Wco) | enter_full_screen_app | exit_full_screen_app | check_window_controls_overlay_toggle_icon(Shown) |
 
 ## File Handling
 
