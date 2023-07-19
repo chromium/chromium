@@ -563,6 +563,7 @@ src/webgpu/shader/validation/parse/discard.spec.ts
 src/webgpu/shader/validation/parse/enable.spec.ts
 src/webgpu/shader/validation/parse/identifiers.spec.ts
 src/webgpu/shader/validation/parse/literal.spec.ts
+src/webgpu/shader/validation/parse/must_use.spec.ts
 src/webgpu/shader/validation/parse/pipeline_stage.spec.ts
 src/webgpu/shader/validation/parse/semicolon.spec.ts
 src/webgpu/shader/validation/parse/source.spec.ts
