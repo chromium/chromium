@@ -572,7 +572,7 @@ BASE_FEATURE(kDecodeLossyWebPImagesToYUV,
 // Has no effect unless viewport handling is enabled.
 BASE_FEATURE(kDefaultViewportIsDeviceWidth,
              "DefaultViewportIsDeviceWidth",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kDelayAsyncScriptExecution,
              "DelayAsyncScriptExecution",
