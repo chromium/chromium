@@ -3,4 +3,4 @@ Document
 ++Group
 ++++Text
 ++++++Text Name='Pet name:'
-++++Edit Name='Pet name:' IsRequiredForForm=true
+++++Edit Name='Pet name:' IsRequiredForForm=true ControllerFor='Please enter pet name'

@@ -3,4 +3,4 @@ AXWebArea
 ++AXGroup
 ++++AXGroup
 ++++++AXStaticText AXValue='Pet name:'
-++++AXTextField AXTitle='Pet name:'
+++++AXTextField AXErrorMessageElements=[:2] AXTitle='Pet name:'

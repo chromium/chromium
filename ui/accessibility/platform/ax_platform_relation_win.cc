@@ -41,8 +41,6 @@ std::wstring GetIA2RelationFromIntAttr(ax::mojom::IntAttribute attribute) {
   switch (attribute) {
     case ax::mojom::IntAttribute::kMemberOfId:
       return IA2_RELATION_MEMBER_OF;
-    case ax::mojom::IntAttribute::kErrormessageId:
-      return IA2_RELATION_ERROR;
     case ax::mojom::IntAttribute::kPopupForId:
       // Map "popup for" to "controlled by".
       // Unlike ATK there is no special IA2 popup-for relationship, but it can
@@ -63,6 +61,8 @@ std::wstring GetIA2RelationFromIntListAttr(
       return IA2_RELATION_DESCRIBED_BY;
     case ax::mojom::IntListAttribute::kDetailsIds:
       return IA2_RELATION_DETAILS;
+    case ax::mojom::IntListAttribute::kErrormessageIds:
+      return IA2_RELATION_ERROR;
     case ax::mojom::IntListAttribute::kFlowtoIds:
       return IA2_RELATION_FLOWS_TO;
     case ax::mojom::IntListAttribute::kLabelledbyIds:
@@ -75,8 +75,6 @@ std::wstring GetIA2RelationFromIntListAttr(
 std::wstring GetIA2ReverseRelationFromIntAttr(
     ax::mojom::IntAttribute attribute) {
   switch (attribute) {
-    case ax::mojom::IntAttribute::kErrormessageId:
-      return IA2_RELATION_ERROR_FOR;
     default:
       return std::wstring();
   }
@@ -91,6 +89,8 @@ std::wstring GetIA2ReverseRelationFromIntListAttr(
       return IA2_RELATION_DESCRIPTION_FOR;
     case ax::mojom::IntListAttribute::kDetailsIds:
       return IA2_RELATION_DETAILS_FOR;
+    case ax::mojom::IntListAttribute::kErrormessageIds:
+      return IA2_RELATION_ERROR_FOR;
     case ax::mojom::IntListAttribute::kFlowtoIds:
       return IA2_RELATION_FLOWS_FROM;
     case ax::mojom::IntListAttribute::kLabelledbyIds:

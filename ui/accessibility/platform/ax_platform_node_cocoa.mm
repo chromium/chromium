@@ -1280,6 +1280,12 @@ void CollectAncestorRoles(
   if (_node->HasHtmlAttribute("aria-dropeffect"))
     [axAttributes addObject:NSAccessibilityDropEffectsAttribute];
 
+  // Error messages.
+  if (_node->HasIntListAttribute(
+          ax::mojom::IntListAttribute::kErrormessageIds)) {
+    [axAttributes addObject:NSAccessibilityErrorMessageElementsAttribute];
+  }
+
   // Grabbed
   if (_node->HasHtmlAttribute("aria-grabbed"))
     [axAttributes addObject:NSAccessibilityGrabbedAttribute];
@@ -1631,6 +1637,23 @@ void CollectAncestorRoles(
   if (![self instanceActive])
     return nil;
   return @(_node->GetBoolAttribute(ax::mojom::BoolAttribute::kBusy));
+}
+
+- (NSArray*)AXErrorMessageElements {
+  if (![self instanceActive]) {
+    return nil;
+  }
+
+  NSMutableArray* elements = [NSMutableArray array];
+  for (ui::AXNodeID id : _node->GetIntListAttribute(
+           ax::mojom::IntListAttribute::kErrormessageIds)) {
+    AXPlatformNodeCocoa* node = [self fromNodeID:id];
+    if (node) {
+      [elements addObject:node];
+    }
+  }
+
+  return elements.count ? elements : nil;
 }
 
 - (NSNumber*)AXGrabbed {

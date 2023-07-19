@@ -469,7 +469,8 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeDelegate {
   // See `AXNode::HasVisibleCaretOrSelection`.
   virtual bool HasVisibleCaretOrSelection() const;
 
-  // Get another node from this same tree.
+  // Get a node in the platform AX tree given the ID of its
+  // corresponding node in the Blink AX tree.
   virtual AXPlatformNode* GetFromNodeID(int32_t id);
 
   // Get a node from a different tree using a tree ID and node ID.

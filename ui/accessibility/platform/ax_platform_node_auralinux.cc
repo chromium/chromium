@@ -3166,6 +3166,10 @@ void AXPlatformNodeAuraLinux::GetAtkState(AtkStateSet* atk_state_set) {
   }
 }
 
+// Some relations only exist in a high enough ATK version.
+// If a relation has a version requirement, it will be documented in
+// the link below.
+// https://docs.gtk.org/atk/enum.RelationType.html
 struct AtkIntRelation {
   ax::mojom::IntAttribute attribute;
   AtkRelationType relation;
@@ -3177,10 +3181,6 @@ static AtkIntRelation kIntRelations[] = {
      absl::nullopt},
     {ax::mojom::IntAttribute::kPopupForId, ATK_RELATION_POPUP_FOR,
      absl::nullopt},
-#if defined(ATK_226)
-    {ax::mojom::IntAttribute::kErrormessageId, ATK_RELATION_ERROR_MESSAGE,
-     ATK_RELATION_ERROR_FOR},
-#endif
 };
 
 struct AtkIntListRelation {
@@ -3198,6 +3198,10 @@ static AtkIntListRelation kIntListRelations[] = {
 #endif
     {ax::mojom::IntListAttribute::kDescribedbyIds, ATK_RELATION_DESCRIBED_BY,
      ATK_RELATION_DESCRIPTION_FOR},
+#if defined(ATK_226)
+    {ax::mojom::IntListAttribute::kErrormessageIds, ATK_RELATION_ERROR_MESSAGE,
+     ATK_RELATION_ERROR_FOR},
+#endif
     {ax::mojom::IntListAttribute::kFlowtoIds, ATK_RELATION_FLOWS_TO,
      ATK_RELATION_FLOWS_FROM},
     {ax::mojom::IntListAttribute::kLabelledbyIds, ATK_RELATION_LABELLED_BY,

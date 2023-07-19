@@ -1475,7 +1475,7 @@ const char* ToString(ax::mojom::IntAttribute int_attribute) {
       return "descriptionFrom";
     case ax::mojom::IntAttribute::kActivedescendantId:
       return "activedescendantId";
-    case ax::mojom::IntAttribute::kErrormessageId:
+    case ax::mojom::IntAttribute::kErrormessageIdDeprecated:
       return "errormessageId";
     case ax::mojom::IntAttribute::kInPageLinkTargetId:
       return "inPageLinkTargetId";
@@ -1610,7 +1610,7 @@ ax::mojom::IntAttribute StringToIntAttribute(const std::string& int_attribute) {
   } else if (int_attribute == "kActivedescendantId") {
     return ax::mojom::IntAttribute::kActivedescendantId;
   } else if (int_attribute == "kErrormessageId") {
-    return ax::mojom::IntAttribute::kErrormessageId;
+    return ax::mojom::IntAttribute::kErrormessageIdDeprecated;
   } else if (int_attribute == "kInPageLinkTargetId") {
     return ax::mojom::IntAttribute::kInPageLinkTargetId;
   } else if (int_attribute == "kMemberOfId") {
@@ -1819,6 +1819,8 @@ const char* ToString(ax::mojom::IntListAttribute int_list_attribute) {
       return "detailsIds";
     case ax::mojom::IntListAttribute::kDescribedbyIds:
       return "describedbyIds";
+    case ax::mojom::IntListAttribute::kErrormessageIds:
+      return "errorMessageIds";
     case ax::mojom::IntListAttribute::kFlowtoIds:
       return "flowtoIds";
     case ax::mojom::IntListAttribute::kLabelledbyIds:

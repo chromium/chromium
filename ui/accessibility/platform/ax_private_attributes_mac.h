@@ -80,6 +80,9 @@ COMPONENT_EXPORT(AX_PLATFORM)
 constexpr NSString* const NSAccessibilityElementBusyAttribute =
     @"AXElementBusy";
 COMPONENT_EXPORT(AX_PLATFORM)
+constexpr NSString* const NSAccessibilityErrorMessageElementsAttribute =
+    @"AXErrorMessageElements";
+COMPONENT_EXPORT(AX_PLATFORM)
 constexpr NSString* const NSAccessibilityFocusableAncestorAttribute =
     @"AXFocusableAncestor";
 COMPONENT_EXPORT(AX_PLATFORM)

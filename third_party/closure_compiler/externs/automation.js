@@ -1450,8 +1450,8 @@ chrome.automation.AutomationNode.prototype.inPageLinkTarget;
 chrome.automation.AutomationNode.prototype.details;
 
 /**
- * A node that provides an error message for a current node.
- * @type {(!chrome.automation.AutomationNode|undefined)}
+ * The nodes, if any, that provide an error message for a current node.
+ * @type {(!Array<!chrome.automation.AutomationNode>|undefined)}
  * @see https://developer.chrome.com/extensions/automation#type-errorMessage
  */
 chrome.automation.AutomationNode.prototype.errorMessage;

@@ -2291,7 +2291,7 @@ interface Element : Node
     getter ariaDescription
     getter ariaDetailsElements
     getter ariaDisabled
-    getter ariaErrorMessageElement
+    getter ariaErrorMessageElements
     getter ariaExpanded
     getter ariaFlowToElements
     getter ariaHasPopup
@@ -2439,7 +2439,7 @@ interface Element : Node
     setter ariaDescription
     setter ariaDetailsElements
     setter ariaDisabled
-    setter ariaErrorMessageElement
+    setter ariaErrorMessageElements
     setter ariaExpanded
     setter ariaFlowToElements
     setter ariaHasPopup
@@ -2510,7 +2510,7 @@ interface ElementInternals
     getter ariaDescription
     getter ariaDetailsElements
     getter ariaDisabled
-    getter ariaErrorMessageElement
+    getter ariaErrorMessageElements
     getter ariaExpanded
     getter ariaFlowToElements
     getter ariaHasPopup
@@ -2573,7 +2573,7 @@ interface ElementInternals
     setter ariaDescription
     setter ariaDetailsElements
     setter ariaDisabled
-    setter ariaErrorMessageElement
+    setter ariaErrorMessageElements
     setter ariaExpanded
     setter ariaFlowToElements
     setter ariaHasPopup

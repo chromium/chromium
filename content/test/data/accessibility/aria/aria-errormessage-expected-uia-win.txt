@@ -1,11 +1,13 @@
-#<skip -- crbug.com/1428967>
 Document
 ++Group IsControlElement=false
-++++Edit Name='Invalid is true' ControllerFor='{region}'
+++++Edit Name='Invalid is true' ControllerFor='{group}'
+++++Edit Name='Invalid is true with multiple errors' ControllerFor='{group}, {group}'
 ++++Edit Name='Invalid is false'
 ++++Edit Name='Invalid is not set'
 ++Group IsControlElement=false
 ++++Text Name='Error for invalid input'
+++Group IsControlElement=false
+++++Text Name='Another error for invalid input'
 ++Group IsControlElement=false
 ++++Text Name='Error for input which is not invalid'
 ++Group IsControlElement=false

@@ -310,8 +310,9 @@ TEST_F(AccessibilityObjectModelTest, SparseAttributes) {
       cache->ObjectFromAXID(node_data.GetIntListAttribute(
           ax::mojom::blink::IntListAttribute::kDetailsIds)[0]);
   ASSERT_EQ(ax::mojom::Role::kContentInfo, aria_details_target->RoleValue());
-  auto* error_message_target = cache->ObjectFromAXID(node_data.GetIntAttribute(
-      ax::mojom::blink::IntAttribute::kErrormessageId));
+  auto* error_message_target =
+      cache->ObjectFromAXID(node_data.GetIntListAttribute(
+          ax::mojom::blink::IntListAttribute::kErrormessageIds)[0]);
   ASSERT_NE(nullptr, error_message_target);
   ASSERT_EQ(ax::mojom::Role::kArticle, error_message_target->RoleValue());
 
@@ -325,8 +326,11 @@ TEST_F(AccessibilityObjectModelTest, SparseAttributes) {
   details_node_list->add(
       GetDocument().getElementById(AtomicString("details2"))->accessibleNode());
   target->accessibleNode()->setDetails(details_node_list);
-  target->accessibleNode()->setErrorMessage(
+  AccessibleNodeList* error_message_node_list =
+      MakeGarbageCollected<AccessibleNodeList>();
+  error_message_node_list->add(
       GetDocument().getElementById(AtomicString("error2"))->accessibleNode());
+  target->accessibleNode()->setErrorMessage(error_message_node_list);
 
   ui::AXNodeData node_data2;
   ax_target->Serialize(&node_data2, ui::kAXModeComplete);
@@ -348,8 +352,9 @@ TEST_F(AccessibilityObjectModelTest, SparseAttributes) {
       cache->ObjectFromAXID(node_data2.GetIntListAttribute(
           ax::mojom::blink::IntListAttribute::kDetailsIds)[0]);
   ASSERT_EQ(ax::mojom::Role::kContentInfo, aria_details_target2->RoleValue());
-  auto* error_message_target2 = cache->ObjectFromAXID(node_data.GetIntAttribute(
-      ax::mojom::blink::IntAttribute::kErrormessageId));
+  auto* error_message_target2 =
+      cache->ObjectFromAXID(node_data2.GetIntListAttribute(
+          ax::mojom::blink::IntListAttribute::kErrormessageIds)[0]);
   ASSERT_NE(nullptr, error_message_target2);
   ASSERT_EQ(ax::mojom::Role::kArticle, error_message_target2->RoleValue());
 }

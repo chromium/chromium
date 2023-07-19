@@ -2381,15 +2381,6 @@ TEST_F(AXPlatformNodeAuraLinuxTest, TestAllReverseAtkRelations) {
     g_object_unref(G_OBJECT(relations));
   };
 
-  auto test_int_relation = [&](ax::mojom::IntAttribute relation,
-                               AtkRelationType expected_relation,
-                               AtkRelationType expected_reverse_relation) {
-    auto setter = [&](AXNodeData* data, int target_id) {
-      data->AddIntAttribute(relation, target_id);
-    };
-    test_relation(setter, expected_relation, expected_reverse_relation);
-  };
-
   auto test_int_list_relation = [&](ax::mojom::IntListAttribute relation,
                                     AtkRelationType expected_relation,
                                     AtkRelationType expected_reverse_relation) {
@@ -2402,8 +2393,8 @@ TEST_F(AXPlatformNodeAuraLinuxTest, TestAllReverseAtkRelations) {
 
   test_int_list_relation(ax::mojom::IntListAttribute::kDetailsIds,
                          ATK_RELATION_DETAILS, ATK_RELATION_DETAILS_FOR);
-  test_int_relation(ax::mojom::IntAttribute::kErrormessageId,
-                    ATK_RELATION_ERROR_MESSAGE, ATK_RELATION_ERROR_FOR);
+  test_int_list_relation(ax::mojom::IntListAttribute::kErrormessageIds,
+                         ATK_RELATION_ERROR_MESSAGE, ATK_RELATION_ERROR_FOR);
   test_int_list_relation(ax::mojom::IntListAttribute::kControlsIds,
                          ATK_RELATION_CONTROLLER_FOR,
                          ATK_RELATION_CONTROLLED_BY);

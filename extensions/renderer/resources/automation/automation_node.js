@@ -1540,7 +1540,6 @@ const intAttributes = [
 // Int attribute, relation property to expose, reverse relation to expose.
 const nodeRefAttributes = [
   ['activedescendantId', 'activeDescendant', 'activeDescendantFor'],
-  ['errormessageId', 'errorMessage', 'errorMessageFor'],
   ['inPageLinkTargetId', 'inPageLinkTarget', null],
   ['nextFocusId', 'nextFocus', null],
   ['nextOnLineId', 'nextOnLine', null],
@@ -1560,6 +1559,7 @@ const nodeRefListAttributes = [
   ['controlsIds', 'controls', 'controlledBy'],
   ['describedbyIds', 'describedBy', 'descriptionFor'],
   ['detailsIds', 'details', 'detailsFor'],
+  ['errorMessageIds', 'errorMessage', 'errorMessageFor'],
   ['flowtoIds', 'flowTo', 'flowFrom'],
   ['labelledbyIds', 'labelledBy', 'labelFor'],
 ];

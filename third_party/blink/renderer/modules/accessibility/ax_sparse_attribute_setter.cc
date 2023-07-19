@@ -52,9 +52,6 @@ void SetObjectAttribute(ax::mojom::blink::IntAttribute attribute,
                         AXObject* object,
                         ui::AXNodeData* node_data,
                         const AtomicString& value) {
-  if (object->IsProhibited(attribute))
-    return;
-
   Element* element = object->GetElement();
   if (!element)
     return;
@@ -80,6 +77,9 @@ void SetIntListAttribute(ax::mojom::blink::IntListAttribute attribute,
                          AXObject* object,
                          ui::AXNodeData* node_data,
                          const AtomicString& value) {
+  if (object->IsProhibited(attribute)) {
+    return;
+  }
   Element* element = object->GetElement();
   if (!element)
     return;
@@ -160,8 +160,8 @@ AXSparseAttributeSetterMap& GetAXSparseAttributeSetterMap() {
                            html_names::kAriaControlsAttr));
     ax_sparse_setter_map.Set(
         html_names::kAriaErrormessageAttr,
-        WTF::BindRepeating(&SetObjectAttribute,
-                           ax::mojom::blink::IntAttribute::kErrormessageId,
+        WTF::BindRepeating(&SetIntListAttribute,
+                           ax::mojom::blink::IntListAttribute::kErrormessageIds,
                            html_names::kAriaErrormessageAttr));
     ax_sparse_setter_map.Set(
         html_names::kAriaDetailsAttr,
@@ -259,9 +259,6 @@ void AXNodeDataAOMPropertyClient::AddRelationProperty(
     case AOMRelationProperty::kActiveDescendant:
       attribute = ax::mojom::blink::IntAttribute::kActivedescendantId;
       break;
-    case AOMRelationProperty::kErrorMessage:
-      attribute = ax::mojom::blink::IntAttribute::kErrormessageId;
-      break;
     default:
       return;
   }
@@ -284,6 +281,9 @@ void AXNodeDataAOMPropertyClient::AddRelationListProperty(
       break;
     case AOMRelationListProperty::kDetails:
       attribute = ax::mojom::blink::IntListAttribute::kDetailsIds;
+      break;
+    case AOMRelationListProperty::kErrorMessage:
+      attribute = ax::mojom::blink::IntListAttribute::kErrormessageIds;
       break;
     case AOMRelationListProperty::kFlowTo:
       attribute = ax::mojom::blink::IntListAttribute::kFlowtoIds;

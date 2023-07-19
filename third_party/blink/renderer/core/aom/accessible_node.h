@@ -73,13 +73,13 @@ enum class AOMUIntProperty {
 
 enum class AOMRelationProperty {
   kActiveDescendant,
-  kErrorMessage,
 };
 
 enum class AOMRelationListProperty {
   kDescribedBy,
   kDetails,
   kControls,
+  kErrorMessage,
   kFlowTo,
   kLabeledBy,
   kOwns,
@@ -252,8 +252,8 @@ class CORE_EXPORT AccessibleNode : public EventTarget,
   absl::optional<bool> disabled() const;
   void setDisabled(absl::optional<bool>);
 
-  AccessibleNode* errorMessage() const;
-  void setErrorMessage(AccessibleNode*);
+  AccessibleNodeList* errorMessage() const;
+  void setErrorMessage(AccessibleNodeList*);
 
   absl::optional<bool> expanded() const;
   void setExpanded(absl::optional<bool>);

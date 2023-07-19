@@ -812,7 +812,13 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   virtual String AutoComplete() const { return String(); }
   virtual void AriaOwnsElements(AXObjectVector& owns) const {}
   virtual void AriaDescribedbyElements(AXObjectVector&) const {}
-  virtual AXObject* ErrorMessage() const { return nullptr; }
+  virtual AXObjectVector ErrorMessage() const { return AXObjectVector(); }
+  virtual AXObjectVector ErrorMessageFromAria() const {
+    return AXObjectVector();
+  }
+  virtual AXObjectVector ErrorMessageFromHTML() const {
+    return AXObjectVector();
+  }
 
   // Determines whether this object has an associated popup menu, list, or grid,
   // such as in the case of an ARIA combobox or when the browser offers an
@@ -875,7 +881,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // to enforce that prohibition. An example of something prohibited that we
   // do not enforce is aria-label/aria-labelledby on certain text containers.
   bool IsProhibited(ax::mojom::blink::StringAttribute attribute) const;
-  bool IsProhibited(ax::mojom::blink::IntAttribute attribute) const;
+  bool IsProhibited(ax::mojom::blink::IntListAttribute attribute) const;
 
   // ARIA live-region features.
   bool IsLiveRegionRoot() const;  // Any live region, including polite="off".

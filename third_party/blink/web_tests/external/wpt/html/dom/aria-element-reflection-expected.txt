@@ -3,8 +3,8 @@ PASS aria-activedescendant element reflection
 PASS If the content attribute is set directly, the IDL attribute getter always returns the first element whose ID matches the content attribute.
 PASS Setting the IDL attribute to an element which is not the first element in DOM order with its ID causes the content attribute to be an empty string
 PASS Setting an element reference that crosses into a shadow tree is disallowed, but setting one that is in a shadow inclusive ancestor is allowed.
-FAIL aria-errormessage assert_equals: expected (string) "" but got (object) null
-FAIL ariaErrorMessageElement is not defined assert_false: expected false got true
+PASS aria-errormessage
+PASS ariaErrorMessageElement is not defined
 PASS aria-details
 PASS Deleting a reflected element should return null for the IDL attribute and the content attribute will be empty.
 PASS Changing the ID of an element doesn't lose the reference.

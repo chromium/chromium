@@ -1,0 +1,6 @@
+[document web]
+++[notification] name='Please enter pet name' error-for=[entry]
+++[section]
+++++[label] label-for=[entry]
+++++++[static] name='Pet name:'
+++++[entry] name='Pet name:' selectable-text labelled-by=[label] error-message=[notification]

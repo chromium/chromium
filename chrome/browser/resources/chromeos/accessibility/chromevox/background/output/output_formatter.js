@@ -804,7 +804,15 @@ export class OutputFormatter {
         }
       }
     } else if (node[relationName]) {
-      const related = node[relationName];
+      let related;
+      // TODO(https://crbug.com/1460020): Support multiple IDs in
+      // aria-errormessage.
+      if (relationName === 'errorMessage') {
+        related = node[relationName][0];
+      } else {
+        related = node[relationName];
+      }
+
       this.output_.formatNode(
           related, related, outputTypes.OutputCustomEvent.NAVIGATE, buff,
           formatLog);

@@ -479,16 +479,19 @@ SAFEARRAY* AXPlatformNodeWin::CreateUIAControllerForArray() {
       platform_node_list.push_back(view_popup_node_win);
   }
 
-  // The aria-errormessage attribute (mapped to the kErrormessageId) is expected
-  // to be exposed through the ControllerFor property on UIA:
-  // https://www.w3.org/TR/wai-aria-1.1/#aria-errormessage.
-  if (HasIntAttribute(ax::mojom::IntAttribute::kErrormessageId)) {
-    AXPlatformNodeWin* error_message_node_win =
-        static_cast<AXPlatformNodeWin*>(GetFromUniqueId(
-            GetIntAttribute(ax::mojom::IntAttribute::kErrormessageId)));
-
-    if (IsValidUiaRelationTarget(error_message_node_win))
-      platform_node_list.push_back(error_message_node_win);
+  // The aria-errormessage attribute (mapped to the kErrormessageIds) is
+  // expected to be exposed through the ControllerFor property on UIA:
+  // https://w3c.github.io/core-aam/#ariaErrorMessage
+  if (HasIntListAttribute(ax::mojom::IntListAttribute::kErrormessageIds)) {
+    std::vector<int32_t> error_message_node_ids =
+        GetIntListAttribute(ax::mojom::IntListAttribute::kErrormessageIds);
+    for (int32_t id : error_message_node_ids) {
+      AXPlatformNodeWin* error_message_node_win =
+          static_cast<AXPlatformNodeWin*>(GetDelegate()->GetFromNodeID(id));
+      if (IsValidUiaRelationTarget(error_message_node_win)) {
+        platform_node_list.push_back(error_message_node_win);
+      }
+    }
   }
 
   return CreateUIAElementsSafeArray(platform_node_list);

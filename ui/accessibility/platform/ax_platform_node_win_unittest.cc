@@ -4436,7 +4436,8 @@ TEST_F(AXPlatformNodeWinTest, UIAGetControllerForPropertyId) {
   AXNodeData group1;
   group1.id = 5;
   group1.role = ax::mojom::Role::kGenericContainer;
-  group1.AddIntAttribute(ax::mojom::IntAttribute::kErrormessageId, 6);
+  group1.AddIntListAttribute(ax::mojom::IntListAttribute::kErrormessageIds,
+                             std::vector<AXNodeID>{6});
 
   AXNodeData text1;
   text1.id = 6;

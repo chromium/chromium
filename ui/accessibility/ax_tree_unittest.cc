@@ -49,6 +49,52 @@ bool IsNodeOffscreen(const AXTree& tree, int32_t id) {
   return result;
 }
 
+void AssertReverseRelationFor(ax::mojom::IntListAttribute relation) {
+  std::vector<int32_t> node_two;
+  node_two.push_back(2);
+  std::vector<int32_t> node_three;
+  node_three.push_back(3);
+
+  std::vector<int32_t> nodes_two_three;
+  nodes_two_three.push_back(2);
+  nodes_two_three.push_back(3);
+
+  AXTreeUpdate initial_state;
+  initial_state.root_id = 1;
+  initial_state.nodes.resize(3);
+  initial_state.nodes[0].id = 1;
+  initial_state.nodes[0].AddIntListAttribute(relation, node_two);
+  initial_state.nodes[0].child_ids.push_back(2);
+  initial_state.nodes[0].child_ids.push_back(3);
+  initial_state.nodes[1].id = 2;
+  initial_state.nodes[2].id = 3;
+
+  AXTree tree(initial_state);
+
+  ASSERT_EQ(tree.GetReverseRelations(relation, 2), std::set({1}));
+  ASSERT_TRUE(tree.GetReverseRelations(relation, 3).empty());
+
+  // Make sure removing `node_two` and adding `node_three` to the
+  // forward relation updates the reverse relation accordingly.
+  AXTreeUpdate update = initial_state;
+  update.nodes[0].intlist_attributes.clear();
+  update.nodes[0].AddIntListAttribute(relation, node_three);
+  EXPECT_TRUE(tree.Unserialize(update));
+
+  ASSERT_TRUE(tree.GetReverseRelations(relation, 2).empty());
+  ASSERT_EQ(tree.GetReverseRelations(relation, 3), std::set({1}));
+
+  // Make sure reverse relations exist for both `node_two` and
+  // `node_three` if the forward relation points to both nodes.
+  update = initial_state;
+  update.nodes[0].intlist_attributes.clear();
+  update.nodes[0].AddIntListAttribute(relation, nodes_two_three);
+  EXPECT_TRUE(tree.Unserialize(update));
+
+  ASSERT_EQ(tree.GetReverseRelations(relation, 2), std::set({1}));
+  ASSERT_EQ(tree.GetReverseRelations(relation, 3), std::set({1}));
+}
+
 class TestAXTreeObserver final : public AXTreeObserver {
  public:
   explicit TestAXTreeObserver(AXTree* tree)
@@ -1772,10 +1818,6 @@ TEST(AXTreeTest, IntReverseRelations) {
       tree.GetReverseRelations(ax::mojom::IntAttribute::kActivedescendantId, 1);
   ASSERT_EQ(0U, reverse_active_descendant.size());
 
-  auto reverse_errormessage =
-      tree.GetReverseRelations(ax::mojom::IntAttribute::kErrormessageId, 1);
-  ASSERT_EQ(0U, reverse_errormessage.size());
-
   auto reverse_member_of =
       tree.GetReverseRelations(ax::mojom::IntAttribute::kMemberOfId, 1);
   ASSERT_EQ(2U, reverse_member_of.size());
@@ -1811,46 +1853,17 @@ TEST(AXTreeTest, IntReverseRelations) {
 }
 
 TEST(AXTreeTest, IntListReverseRelations) {
-  std::vector<int32_t> node_two;
-  node_two.push_back(2);
+  std::vector<ax::mojom::IntListAttribute> relationsToTest = {
+      ax::mojom::IntListAttribute::kControlsIds,
+      ax::mojom::IntListAttribute::kDetailsIds,
+      ax::mojom::IntListAttribute::kDescribedbyIds,
+      ax::mojom::IntListAttribute::kErrormessageIds,
+      ax::mojom::IntListAttribute::kFlowtoIds,
+      ax::mojom::IntListAttribute::kLabelledbyIds};
 
-  std::vector<int32_t> nodes_two_three;
-  nodes_two_three.push_back(2);
-  nodes_two_three.push_back(3);
-
-  AXTreeUpdate initial_state;
-  initial_state.root_id = 1;
-  initial_state.nodes.resize(3);
-  initial_state.nodes[0].id = 1;
-  initial_state.nodes[0].AddIntListAttribute(
-      ax::mojom::IntListAttribute::kLabelledbyIds, node_two);
-  initial_state.nodes[0].child_ids.push_back(2);
-  initial_state.nodes[0].child_ids.push_back(3);
-  initial_state.nodes[1].id = 2;
-  initial_state.nodes[2].id = 3;
-
-  AXTree tree(initial_state);
-
-  auto reverse_labelled_by =
-      tree.GetReverseRelations(ax::mojom::IntListAttribute::kLabelledbyIds, 2);
-  ASSERT_EQ(1U, reverse_labelled_by.size());
-  EXPECT_TRUE(base::Contains(reverse_labelled_by, 1));
-
-  reverse_labelled_by =
-      tree.GetReverseRelations(ax::mojom::IntListAttribute::kLabelledbyIds, 3);
-  ASSERT_EQ(0U, reverse_labelled_by.size());
-
-  // Change existing attributes.
-  AXTreeUpdate update = initial_state;
-  update.nodes[0].intlist_attributes.clear();
-  update.nodes[0].AddIntListAttribute(
-      ax::mojom::IntListAttribute::kLabelledbyIds, nodes_two_three);
-  EXPECT_TRUE(tree.Unserialize(update));
-
-  reverse_labelled_by =
-      tree.GetReverseRelations(ax::mojom::IntListAttribute::kLabelledbyIds, 3);
-  ASSERT_EQ(1U, reverse_labelled_by.size());
-  EXPECT_TRUE(base::Contains(reverse_labelled_by, 1));
+  for (auto relation : relationsToTest) {
+    AssertReverseRelationFor(relation);
+  }
 }
 
 TEST(AXTreeTest, DeletingNodeUpdatesReverseRelations) {

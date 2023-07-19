@@ -264,3 +264,32 @@ test(function(t)
 if (window.testRunner)
     document.body.className = "hideAllContainers";
 </script>
+
+<input id="input4" aria-invalid="true" aria-errormessage="error1 error2">
+<div id="error1">Error 1</div>
+<div id="error2">Error 2</div>
+<div id="error3">Error 3</div>
+
+<script>
+test(function(t) {
+    var axInput = accessibilityController.accessibleElementById("input4");
+    var axError1 = accessibilityController.accessibleElementById("error1");
+    var axError2 = accessibilityController.accessibleElementById("error2");
+    var axError3 = accessibilityController.accessibleElementById("error3");
+    assert_true(axInput.ariaErrorMessageElementAtIndex(0).isEqual(axError1));
+    assert_true(axInput.ariaErrorMessageElementAtIndex(1).isEqual(axError2));
+
+    var input = document.getElementById("input4");
+    var error3 = document.getElementById("error3");
+    input.accessibleNode.errorMessage = new AccessibleNodeList([error3.accessibleNode]);
+    assert_true(axInput.ariaErrorMessageElementAtIndex(0).isEqual(axError1));
+    assert_true(axInput.ariaErrorMessageElementAtIndex(1).isEqual(axError2));
+
+    input.accessibleNode.errorMessage.add(error3.accessibleNode);
+    assert_true(axInput.ariaErrorMessageElementAtIndex(2) === undefined);
+
+    input.accessibleNode.errorMessage = null;
+    assert_true(axInput.ariaErrorMessageElementAtIndex(0).isEqual(axError1));
+    assert_true(axInput.ariaErrorMessageElementAtIndex(1).isEqual(axError2));
+}, "AccessibleNode.errorMessage");
+</script>

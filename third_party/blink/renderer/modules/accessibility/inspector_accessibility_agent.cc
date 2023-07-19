@@ -444,13 +444,15 @@ void FillSparseAttributes(AXObject& ax_object,
                        CreateRelatedNodeListValue(*target)));
   }
 
-  if (node_data.HasIntAttribute(
-          ax::mojom::blink::IntAttribute::kErrormessageId)) {
-    AXObject* target =
-        ax_object.AXObjectCache().ObjectFromAXID(node_data.GetIntAttribute(
-            ax::mojom::blink::IntAttribute::kErrormessageId));
-    properties.emplace_back(CreateProperty(
-        AXPropertyNameEnum::Errormessage, CreateRelatedNodeListValue(*target)));
+  if (node_data.HasIntListAttribute(
+          ax::mojom::blink::IntListAttribute::kErrormessageIds)) {
+    const auto ax_ids = node_data.GetIntListAttribute(
+        ax::mojom::blink::IntListAttribute::kErrormessageIds);
+    AXObject::AXObjectVector ax_objects;
+    GetObjectsFromAXIDs(ax_object.AXObjectCache(), ax_ids, &ax_objects);
+    properties.emplace_back(CreateRelatedNodeListProperty(
+        AXPropertyNameEnum::Errormessage, ax_objects,
+        html_names::kAriaErrormessageAttr, ax_object));
   }
 
   if (node_data.HasIntListAttribute(

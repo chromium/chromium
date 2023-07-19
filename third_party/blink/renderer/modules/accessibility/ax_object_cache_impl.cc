@@ -3750,10 +3750,9 @@ AXObject* AXObjectCacheImpl::ValidationMessageObjectIfInvalid(
         if (focused_object) {
           // Return as long as the focused form control isn't overriding with a
           // different message via aria-errormessage.
-          bool override_native_validation_message =
-              focused_object->GetAOMPropertyOrARIAAttribute(
-                  AOMRelationProperty::kErrorMessage);
-          if (!override_native_validation_message) {
+          AXObject::AXObjectVector aria_error_messages =
+              focused_object->ErrorMessageFromAria();
+          if (aria_error_messages.empty()) {
             AXObject* message = GetOrCreateValidationMessageObject();
             DCHECK(message);
             DCHECK(!message->IsDetached());

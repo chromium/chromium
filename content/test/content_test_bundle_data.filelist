@@ -681,6 +681,7 @@ data/accessibility/aria/aria-errormessage-expected-android-external.txt
 data/accessibility/aria/aria-errormessage-expected-auralinux-xenial.txt
 data/accessibility/aria/aria-errormessage-expected-auralinux.txt
 data/accessibility/aria/aria-errormessage-expected-blink.txt
+data/accessibility/aria/aria-errormessage-expected-mac.txt
 data/accessibility/aria/aria-errormessage-expected-uia-win.txt
 data/accessibility/aria/aria-errormessage-expected-win.txt
 data/accessibility/aria/aria-errormessage.html
@@ -3068,6 +3069,7 @@ data/accessibility/html/form-expected-uia-win.txt
 data/accessibility/html/form-expected-win.txt
 data/accessibility/html/form-validation-message-after-hide-timeout-expected-blink.txt
 data/accessibility/html/form-validation-message-after-hide-timeout.html
+data/accessibility/html/form-validation-message-expected-auralinux.txt
 data/accessibility/html/form-validation-message-expected-blink.txt
 data/accessibility/html/form-validation-message-expected-fuchsia.txt
 data/accessibility/html/form-validation-message-expected-mac.txt

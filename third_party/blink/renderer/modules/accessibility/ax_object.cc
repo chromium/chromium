@@ -1925,9 +1925,11 @@ void AXObject::SerializeOtherScreenReaderAttributes(
         PreviousOnLine()->AXObjectID());
   }
 
-  if (ErrorMessage() && !ErrorMessage()->IsDetached()) {
-    node_data->AddIntAttribute(ax::mojom::blink::IntAttribute::kErrormessageId,
-                               ErrorMessage()->AXObjectID());
+  AXObjectVector error_messages = ErrorMessage();
+  if (error_messages.size() > 0) {
+    AddIntListAttributeFromObjects(
+        ax::mojom::blink::IntListAttribute::kErrormessageIds, error_messages,
+        node_data);
   }
 
   if (ui::SupportsHierarchicalLevel(node_data->role) && HierarchicalLevel()) {
@@ -4122,11 +4124,13 @@ bool AXObject::IsProhibited(ax::mojom::blink::StringAttribute attribute) const {
   return false;
 }
 
-bool AXObject::IsProhibited(ax::mojom::blink::IntAttribute attribute) const {
+bool AXObject::IsProhibited(
+    ax::mojom::blink::IntListAttribute attribute) const {
   // ARIA 1.2 prohibits exposure of aria-errormessage when aria-invalid is
   // false.
-  if (attribute == ax::mojom::blink::IntAttribute::kErrormessageId)
+  if (attribute == ax::mojom::blink::IntListAttribute::kErrormessageIds) {
     return GetInvalidState() == ax::mojom::blink::InvalidState::kFalse;
+  }
   return false;
 }
 

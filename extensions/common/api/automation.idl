@@ -1028,8 +1028,8 @@ enum PositionType {
     // A node that provides more details about the current node.
     AutomationNode[]? details;
 
-    // A node that provides an error message for a current node.
-    AutomationNode? errorMessage;
+    // The nodes, if any, that provide an error message for the current node.
+    AutomationNode[]? errorMessages;
 
     // Reverse relationship for details.
     AutomationNode[]? detailsFor;

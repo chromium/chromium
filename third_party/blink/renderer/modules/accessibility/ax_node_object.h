@@ -269,9 +269,16 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
   void HandleAriaExpandedChanged() override;
   void HandleActiveDescendantChanged() override;
 
-  // The aria-errormessage object or native object from a validationMessage
-  // alert.
-  AXObject* ErrorMessage() const override;
+  // Gets a list of nodes that form an error message for this node, if it
+  // exists. Error messages from ARIA will always override native error
+  // messages.
+  AXObjectVector ErrorMessage() const override;
+  // Gets a list of nodes specified by `aria-errormessage` that form an error
+  // message for this node, if any exist.
+  AXObjectVector ErrorMessageFromAria() const override;
+  // Gets a list of nodes created from HTML validation that form an error
+  // message for this node, if any exist.
+  AXObjectVector ErrorMessageFromHTML() const override;
 
   // Position in set and Size of set
   int PosInSet() const override;
