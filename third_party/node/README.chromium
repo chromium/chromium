@@ -5,8 +5,9 @@ Version: 12.14.1
 Revision: f098f8295c407e5a5126b501ed5f1aa80bd86106
 Date: Tue Dec 06 2016 18:07:35 GMT-0800 (PST)
 License: NodeJS
-License File: NOT_SHIPPED
+License File: LICENSE
 Security Critical: no
+Shipped: no
 
 Description:
 Node binaries and NPM modules necessary for buliding Chrome's WebUI.
