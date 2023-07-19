@@ -1423,9 +1423,9 @@
     ],
     "skylab_tests": [
       {
-        "autotest_name": "tast.chrome-from-tls",
+        "autotest_name": "tast.chrome-from-gcs",
         "cros_board": "octopus",
-        "cros_img": "octopus-release/R117-15519.0.0",
+        "cros_img": "octopus-release/R117-15538.0.0",
         "name": "chrome_all_tast_tests OCTOPUS_RELEASE_CHROME_FROM_TLS_LKGM",
         "shards": 10,
         "tast_expr": "(\"group:mainline\" && \"dep:chrome\" && !informational)",
@@ -1562,8 +1562,9 @@
     ],
     "skylab_tests": [
       {
+        "autotest_name": "tast.lacros-from-gcs",
         "cros_board": "dedede",
-        "cros_img": "dedede-release/R117-15511.0.0",
+        "cros_img": "dedede-release/R117-15538.0.0",
         "name": "lacros_all_tast_tests DEDEDE_RELEASE_LKGM",
         "resultdb": {
           "enable": true,
@@ -1626,8 +1627,9 @@
         "variant_id": "DEDEDE_RELEASE_STABLE"
       },
       {
+        "autotest_name": "tast.lacros-from-gcs",
         "cros_board": "eve",
-        "cros_img": "eve-release/R117-15511.0.0",
+        "cros_img": "eve-release/R117-15538.0.0",
         "name": "lacros_all_tast_tests EVE_RELEASE_LKGM",
         "resultdb": {
           "enable": true,
@@ -1724,8 +1726,9 @@
     ],
     "skylab_tests": [
       {
+        "autotest_name": "tast.lacros-from-gcs",
         "cros_board": "jacuzzi",
-        "cros_img": "jacuzzi-release/R117-15511.0.0",
+        "cros_img": "jacuzzi-release/R117-15538.0.0",
         "name": "lacros_all_tast_tests JACUZZI_RELEASE_LKGM",
         "resultdb": {
           "enable": true,
@@ -1822,8 +1825,9 @@
     ],
     "skylab_tests": [
       {
+        "autotest_name": "tast.lacros-from-gcs",
         "cros_board": "strongbad",
-        "cros_img": "strongbad-release/R117-15511.0.0",
+        "cros_img": "strongbad-release/R117-15538.0.0",
         "name": "lacros_all_tast_tests STRONGBAD_RELEASE_LKGM",
         "resultdb": {
           "enable": true,

@@ -463,9 +463,9 @@
   'CROS_BRYA_RELEASE_ASH_LKGM': {
     'skylab': {
       'cros_board': 'brya',
-      'cros_chrome_version': '117.0.5855.0',
-      'cros_img': 'brya-release/R117-15519.0.0',
-      'autotest_name': 'tast.chrome-from-tls',
+      'cros_chrome_version': '117.0.5881.0',
+      'cros_img': 'brya-release/R117-15538.0.0',
+      'autotest_name': 'tast.chrome-from-gcs',
       'shards': 10,
     },
     'identifier': 'BRYA_RELEASE_LKGM',
@@ -473,8 +473,9 @@
   'CROS_DEDEDE_RELEASE_LKGM': {
     'skylab': {
       'cros_board': 'dedede',
-      'cros_chrome_version': '116.0.5833.0',
-      'cros_img': 'dedede-release/R117-15511.0.0',
+      'cros_chrome_version': '117.0.5881.0',
+      'cros_img': 'dedede-release/R117-15538.0.0',
+      'autotest_name': 'tast.lacros-from-gcs',
     },
     'enabled': True,
     'identifier': 'DEDEDE_RELEASE_LKGM',
@@ -509,8 +510,9 @@
   'CROS_EVE_RELEASE_LKGM': {
     'skylab': {
       'cros_board': 'eve',
-      'cros_chrome_version': '116.0.5833.0',
-      'cros_img': 'eve-release/R117-15511.0.0',
+      'cros_chrome_version': '117.0.5881.0',
+      'cros_img': 'eve-release/R117-15538.0.0',
+      'autotest_name': 'tast.lacros-from-gcs',
     },
     'enabled': True,
     'identifier': 'EVE_RELEASE_LKGM',
@@ -594,8 +596,9 @@
   'CROS_JACUZZI_RELEASE_LKGM': {
     'skylab': {
       'cros_board': 'jacuzzi',
-      'cros_chrome_version': '116.0.5833.0',
-      'cros_img': 'jacuzzi-release/R117-15511.0.0',
+      'cros_chrome_version': '117.0.5881.0',
+      'cros_img': 'jacuzzi-release/R117-15538.0.0',
+      'autotest_name': 'tast.lacros-from-gcs',
     },
     'enabled': True,
     'identifier': 'JACUZZI_RELEASE_LKGM',
@@ -621,9 +624,9 @@
   'CROS_JACUZZI_RELEASE_CHROME_FROM_TLS_ASH_LKGM': {
     'skylab': {
       'cros_board': 'jacuzzi',
-      'cros_chrome_version': '117.0.5855.0',
-      'cros_img': 'jacuzzi-release/R117-15519.0.0',
-      'autotest_name': 'tast.chrome-from-tls',
+      'cros_chrome_version': '117.0.5881.0',
+      'cros_img': 'jacuzzi-release/R117-15538.0.0',
+      'autotest_name': 'tast.chrome-from-gcs',
       'shards': 10,
     },
     'identifier': 'JACUZZI_RELEASE_CHROME_FROM_TLS_LKGM',
@@ -682,9 +685,9 @@
   'CROS_KEVIN_RELEASE_CHROME_FROM_TLS_ASH_LKGM': {
     'skylab': {
       'cros_board': 'kevin',
-      'cros_chrome_version': '117.0.5855.0',
-      'cros_img': 'kevin-release/R117-15519.0.0',
-      'autotest_name': 'tast.chrome-from-tls',
+      'cros_chrome_version': '117.0.5881.0',
+      'cros_img': 'kevin-release/R117-15538.0.0',
+      'autotest_name': 'tast.chrome-from-gcs',
       'shards': 10,
     },
     'identifier': 'CROS_KEVIN_RELEASE_CHROME_FROM_TLS_LKGM',
@@ -702,9 +705,9 @@
   'CROS_OCTOPUS_RELEASE_CHROME_FROM_TLS_ASH_LKGM': {
     'skylab': {
       'cros_board': 'octopus',
-      'cros_chrome_version': '117.0.5855.0',
-      'cros_img': 'octopus-release/R117-15519.0.0',
-      'autotest_name': 'tast.chrome-from-tls',
+      'cros_chrome_version': '117.0.5881.0',
+      'cros_img': 'octopus-release/R117-15538.0.0',
+      'autotest_name': 'tast.chrome-from-gcs',
       'shards': 10,
     },
     'identifier': 'OCTOPUS_RELEASE_CHROME_FROM_TLS_LKGM',
@@ -748,8 +751,9 @@
   'CROS_STRONGBAD_RELEASE_LKGM': {
     'skylab': {
       'cros_board': 'strongbad',
-      'cros_chrome_version': '116.0.5833.0',
-      'cros_img': 'strongbad-release/R117-15511.0.0',
+      'cros_chrome_version': '117.0.5881.0',
+      'cros_img': 'strongbad-release/R117-15538.0.0',
+      'autotest_name': 'tast.lacros-from-gcs',
     },
     'enabled': True,
     'identifier': 'STRONGBAD_RELEASE_LKGM',
@@ -784,9 +788,9 @@
   'CROS_TROGDOR_RELEASE_ASH_LKGM': {
     'skylab': {
       'cros_board': 'trogdor',
-      'cros_chrome_version': '117.0.5855.0',
-      'cros_img': 'trogdor-release/R117-15519.0.0',
-      'autotest_name': 'tast.chrome-from-tls',
+      'cros_chrome_version': '117.0.5881.0',
+      'cros_img': 'trogdor-release/R117-15538.0.0',
+      'autotest_name': 'tast.chrome-from-gcs',
       'shards': 10,
     },
     'identifier': 'TROGDOR_RELEASE_LKGM',
@@ -846,9 +850,9 @@
   'CROS_VOLTEER_RELEASE_ASH_LKGM': {
     'skylab': {
       'cros_board': 'volteer',
-      'cros_chrome_version': '117.0.5855.0',
-      'cros_img': 'volteer-release/R117-15519.0.0',
-      'autotest_name': 'tast.chrome-from-tls',
+      'cros_chrome_version': '117.0.5881.0',
+      'cros_img': 'volteer-release/R117-15538.0.0',
+      'autotest_name': 'tast.chrome-from-gcs',
       'shards': 10,
     },
     'enabled': True,
