@@ -43,6 +43,12 @@ using chrome_test_util::SettingsDoneButton;
 - (void)setUp {
   [super setUp];
 
+  // These tests enable Chrome Sync through Recent Tabs. If there are too many
+  // tabs in the list, the button at the bottom of the view is offscreen and its
+  // animation causes tests to hang for the same reasons as crbug.com/640977.
+  // Clear browsing history to ensure that there are no recent tabs.
+  [ChromeEarlGrey clearBrowsingHistory];
+
   [ChromeEarlGrey
       waitForSyncEngineInitialized:NO
                        syncTimeout:syncher::kSyncUKMOperationsTimeout];
@@ -258,13 +264,7 @@ using chrome_test_util::SettingsDoneButton;
 //
 // Corresponds to ConsentAddedButNoSyncCheck in //chrome/browser/metrics/
 // ukm_browsertest.cc.
-// TODO(crbug.com/1459991): Test is flaky on iphone-simulator.
-#if TARGET_IPHONE_SIMULATOR
-#define MAYBE_testConsentAddedButNoSync DISABLED_testConsentAddedButNoSync
-#else
-#define MAYBE_testConsentAddedButNoSync testConsentAddedButNoSync
-#endif
-- (void)MAYBE_testConsentAddedButNoSync {
+- (void)testConsentAddedButNoSync {
   [SigninEarlGrey signOut];
   [MetricsAppInterface setMetricsAndCrashReportingForTesting:NO];
   GREYAssert([MetricsAppInterface checkUKMRecordingEnabled:NO],
@@ -350,13 +350,7 @@ using chrome_test_util::SettingsDoneButton;
 //
 // Corresponds to HistoryDeleteCheck in //chrome/browser/metrics/
 // ukm_browsertest.cc.
-// TODO(crbug.com/1459991): Test is flaky on iphone-simulator.
-#if TARGET_IPHONE_SIMULATOR
-#define MAYBE_testHistoryDelete DISABLED_testHistoryDelete
-#else
-#define MAYBE_testHistoryDelete testHistoryDelete
-#endif
-- (void)MAYBE_testHistoryDelete {
+- (void)testHistoryDelete {
   const uint64_t originalClientID = [MetricsAppInterface UKMClientID];
 
   const uint64_t kDummySourceId = 0x54321;
