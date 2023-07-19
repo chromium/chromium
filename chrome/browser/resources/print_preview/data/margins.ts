@@ -59,20 +59,6 @@ export class Margins {
   }
 
   /**
-   * Parses a margins object from the given serialized state.
-   * @param state Serialized representation of the margins created by
-   *     the {@code serialize} method.
-   * @return New margins instance.
-   */
-  static parse(state: MarginsObject): Margins {
-    return new Margins(
-        state[CustomMarginsOrientation.TOP] || 0,
-        state[CustomMarginsOrientation.RIGHT] || 0,
-        state[CustomMarginsOrientation.BOTTOM] || 0,
-        state[CustomMarginsOrientation.LEFT] || 0);
-  }
-
-  /**
    * @param orientation Specifies the margin value to get.
    * @return Value of the margin of the given orientation.
    */
