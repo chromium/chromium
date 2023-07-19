@@ -941,83 +941,9 @@ TEST_F('CrSettingsSiteSettingsPageTest', 'SafetyHubDisabled', function() {
   runMochaSuite('SafetyHubDisabled');
 });
 
-var CrSettingsMenuTest = class extends CrSettingsBrowserTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://settings/test_loader.html?module=settings/settings_menu_test.js';
-  }
-};
-
-TEST_F('CrSettingsMenuTest', 'All', function() {
-  mocha.run()
-});
-
-[['AppearanceFontsPage', 'appearance_fonts_page_test.js'],
- [
-   'SettingsCategoryDefaultRadioGroup',
-   'settings_category_default_radio_group_test.js',
- ],
- ['AntiAbusePage', 'anti_abuse_page_test.js'],
- ['CategorySettingExceptions', 'category_setting_exceptions_test.js'],
- ['Checkbox', 'checkbox_test.js'],
- ['ChooserExceptionList', 'chooser_exception_list_test.js'],
- ['ChooserExceptionListEntry', 'chooser_exception_list_entry_test.js'],
- ['CollapseRadioButton', 'collapse_radio_button_test.js'],
- ['ControlledButton', 'controlled_button_test.js'],
- ['ControlledRadioButton', 'controlled_radio_button_test.js'],
- ['AutofillAddressValidation', 'autofill_section_address_validation_test.js'],
- ['DoNotTrackToggle', 'do_not_track_toggle_test.js'],
- ['DownloadsPage', 'downloads_page_test.js'],
- ['DropdownMenu', 'dropdown_menu_test.js'],
- ['ExtensionControlledIndicator', 'extension_controlled_indicator_test.js'],
- ['FileSystemSettingsList', 'file_system_site_list_test.js'],
- ['FileSystemSettingsListEntries', 'file_system_site_entry_test.js'],
- ['FileSystemSettingsListEntryItems', 'file_system_site_entry_item_test.js'],
- ['HelpPage', 'help_page_test.js'],
- ['PaymentsSection', 'payments_section_test.js'],
- ['PaymentsSectionCardDialogs', 'payments_section_card_dialogs_test.js'],
- ['PaymentsSectionCardRows', 'payments_section_card_rows_test.js'],
- ['PaymentsSectionIban', 'payments_section_iban_test.js'],
- ['PaymentsSectionUpi', 'payments_section_upi_test.js'],
- ['PeoplePage', 'people_page_test.js'],
- ['PeoplePageSyncControls', 'people_page_sync_controls_test.js'],
- ['PreloadingPage', 'preloading_page_test.js'],
- ['ProtocolHandlers', 'protocol_handlers_test.js'],
- ['RecentSitePermissions', 'recent_site_permissions_test.js'],
- // Flaky on all OSes. TODO(crbug.com/1127733): Enable the test.
- ['ResetPage', 'reset_page_test.js', 'DISABLED_All'],
- ['ResetProfileBanner', 'reset_profile_banner_test.js'],
- ['SafetyHub', 'safety_hub_test.js'],
- ['SearchEngines', 'search_engines_page_test.js'],
- ['SearchPage', 'search_page_test.js'],
- ['Search', 'search_settings_test.js'],
- ['Section', 'settings_section_test.js'],
- ['SecurityKeysBioEnrollment', 'security_keys_bio_enrollment_test.js'],
- [
-   'SecurityKeysCredentialManagement',
-   'security_keys_credential_management_test.js'
- ],
- ['SecurityKeysResetDialog', 'security_keys_reset_dialog_test.js'],
- ['SecurityKeysSetPinDialog', 'security_keys_set_pin_dialog_test.js'],
- ['SecurityKeysPhonesSubpage', 'security_keys_phones_subpage_test.js'],
- ['SecureDns', 'secure_dns_test.js'],
- ['SimpleConfirmationDialog', 'simple_confirmation_dialog_test.js'],
- ['SiteDataTest', 'site_data_test.js'],
- ['SiteDetailsPermission', 'site_details_permission_test.js'],
- [
-   'SiteDetailsPermissionDeviceEntry',
-   'site_details_permission_device_entry_test.js'
- ],
- ['SiteEntry', 'site_entry_test.js'],
- ['SiteFavicon', 'site_favicon_test.js'],
- ['SiteListEntry', 'site_list_entry_test.js'],
- ['Slider', 'settings_slider_test.js'],
- ['StartupUrlsPage', 'startup_urls_page_test.js'],
- // Flaky on all OSes. TODO(crbug.com/1302405): Enable the test.
- ['Subpage', 'settings_subpage_test.js', 'DISABLED_All'],
- ['SyncAccountControl', 'sync_account_control_test.js'],
- ['ToggleButton', 'settings_toggle_button_test.js'],
- ['ZoomLevels', 'zoom_levels_test.js'],
+[
+    // Flaky on all OSes. TODO(crbug.com/1302405): Enable the test.
+    ['Subpage', 'settings_subpage_test.js', 'DISABLED_All'],
 ].forEach(test => registerTest(...test));
 
 // Timeout on Linux dbg bots: https://crbug.com/1394737

@@ -39,6 +39,7 @@ source_set("browser_tests") {
     "metrics_internals/metrics_internals_browsertest.cc",
     "new_tab_page/new_tab_page_browsertest.cc",
     "password_manager/password_manager_browsertest.cc",
+    "settings/settings_browsertest.cc",
     "side_panel/bookmarks/sp_bookmarks_browsertest.cc",
     "side_panel/commerce/commerce_browsertest.cc",
     "side_panel/customize_chrome/customize_chrome_browsertest.cc",
