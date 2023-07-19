@@ -7,6 +7,7 @@ CPEPrefix: cpe:/a:webmproject:libwebm:1.0.0.28
 License: BSD
 License File: source/LICENSE.TXT
 Security Critical: yes
+Shipped: yes
 
 Description:
 libwebm is a library to read and write WebM files. It's used by MediaStream
