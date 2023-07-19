@@ -221,11 +221,11 @@ MinMaxSizesResult NGMathRadicalLayoutAlgorithm::ComputeMinMaxSizes(
     sizes.max_size +=
         std::max(-index_result.sizes.max_size, horizontal.kern_after_degree);
   }
+  if (HasBaseGlyphForRadical(Style())) {
+    sizes += GetMinMaxSizesForVerticalStretchyOperator(Style(),
+                                                       kSquareRootCharacter);
+  }
   if (base) {
-    if (HasBaseGlyphForRadical(Style())) {
-      sizes += GetMinMaxSizesForVerticalStretchyOperator(Style(),
-                                                         kSquareRootCharacter);
-    }
     const auto base_result = ComputeMinAndMaxContentContributionForMathChild(
         Style(), ConstraintSpace(), base, ChildAvailableSize().block_size);
     depends_on_block_constraints |= base_result.depends_on_block_constraints;
