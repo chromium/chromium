@@ -18,6 +18,10 @@
 #include "components/feedback/proto/math.pb.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
+#endif
+
 namespace {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -40,6 +44,17 @@ constexpr char kZipExt[] = ".zip";
 
 constexpr char kPngMimeType[] = "image/png";
 constexpr char kArbitraryMimeType[] = "application/octet-stream";
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// Keep in sync with
+// google3/java/com/google/wireless/android/tools/betterbug/protos/uploadfeedbackreport.proto.
+constexpr char kIsCrossDeviceIssueKey[] = "is_cross_device_issue";
+constexpr char kIsCrossDeviceIssueTrueValue[] = "true";
+constexpr char kTargetDeviceIdKey[] = "target_device_id";
+constexpr char kTargetDeviceIdTypeKey[] = "target_device_id_type";
+// Enum value for MAC_ADDRESS type.
+constexpr char kTargetDeviceIdTypeMacAddressValue[] = "1";
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Determine if the given feedback value is small enough to not need to
 // be compressed.
@@ -180,6 +195,17 @@ void FeedbackCommon::PrepareReport(
 
   if (category_tag().size())
     feedback_data->set_bucket(category_tag());
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (ash::features::IsLinkCrossDeviceDogfoodFeedbackEnabled() &&
+      gaia::IsGoogleInternalAccountEmail(user_email()) &&
+      mac_address_.has_value()) {
+    AddFeedbackData(feedback_data, kIsCrossDeviceIssueKey,
+                    kIsCrossDeviceIssueTrueValue);
+    AddFeedbackData(feedback_data, kTargetDeviceIdKey, mac_address_.value());
+    AddFeedbackData(feedback_data, kTargetDeviceIdTypeKey,
+                    kTargetDeviceIdTypeMacAddressValue);
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 void FeedbackCommon::RedactDescription(redaction::RedactionTool& redactor) {

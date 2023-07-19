@@ -1,4 +1,5 @@
 include_rules = [
+  "+ash/constants",
   "-content",
   "+components/keyed_service/core",
   "+components/prefs",
