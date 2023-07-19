@@ -1787,56 +1787,37 @@ function DOM_getAllBoundingClientRects() {
     .map((elem, i) => {
       const id = registerPlainObject(elem.raw) || i;
 
-      const { left, top, right, bottom } = shiftRect(elem.raw.getBoundingClientRect(), elem.offset);
+      // Use the bounding client rect as a fallback.
+      let { left, top, right, bottom } =
+        shiftRect(elem.raw.getBoundingClientRect(), elem.offset);
+
+      // If we can get a box-model for the element, use its border
+      // as the bounding rect.
+      try {
+        const nodeId = getBlinkNodeIdByRrpId(id);
+        const cdpModel = fromJsGetBoxModel(nodeId);
+        if (cdpModel) {
+          const top_left = cdpModel.border.slice(0, 2);
+          const top_right = cdpModel.border.slice(2, 4);
+          const bottom_right = cdpModel.border.slice(4, 6);
+          const bottom_left = cdpModel.border.slice(6, 8);
+          left = Math.min(top_left[0], bottom_left[0]);
+          top = Math.min(top_left[1], top_right[1]);
+          right = Math.max(top_right[0], bottom_right[0]);
+          bottom = Math.max(bottom_left[1], bottom_right[1]);
+        }
+      } catch (err) {
+        warning(`Failed to get border box for ${id}: ${err.toString()}`);
+      }
 
       if (left >= right || top >= bottom) {
         return null;
       }
 
-      const clipBounds = shiftRect(elem.clipBounds, elem.offset);
-      // ignore elements that are completely outside their clipBounds
-      if (
-        clipBounds.left > right ||
-        clipBounds.top > bottom ||
-        clipBounds.right < left ||
-        clipBounds.bottom < top
-      ) {
-        return null;
-      }
-      // only return the clipBounds that actually affect this element
-      if (clipBounds.left === undefined || clipBounds.left <= left) {
-        delete clipBounds.left;
-      }
-      if (clipBounds.top === undefined || clipBounds.top <= top) {
-        delete clipBounds.top;
-      }
-      if (clipBounds.right === undefined || clipBounds.right >= right) {
-        delete clipBounds.right;
-      }
-      if (clipBounds.bottom === undefined || clipBounds.bottom >= bottom) {
-        delete clipBounds.bottom;
-      }
-
-      const rects = [...elem.raw.getClientRects()]
-        .map(rect => shiftRect(rect, elem.offset))
-        .map(({ left, top, right, bottom }) => {
-          if (left >= right || top >= bottom) {
-            return null;
-          }
-          return [left, top, right, bottom];
-        })
-        .filter((v) => !!v);
-
       const v = {
         node: id,
         rect: [left, top, right, bottom],
       };
-      if (rects.length > 1) {
-        v.rects = rects;
-      }
-      if (Object.keys(clipBounds).length > 0) {
-        v.clipBounds = clipBounds;
-      }
       if (elem.style?.getPropertyValue("visibility") === "hidden") {
         v.visibility = "hidden";
       }
