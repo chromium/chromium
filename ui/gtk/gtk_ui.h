@@ -25,6 +25,8 @@
 #endif
 
 typedef struct _GParamSpec GParamSpec;
+typedef struct _GdkDisplay GdkDisplay;
+typedef struct _GdkMonitor GdkMonitor;
 typedef struct _GtkParamSpec GtkParamSpec;
 typedef struct _GtkSettings GtkSettings;
 typedef struct _GtkStyle GtkStyle;
@@ -130,6 +132,8 @@ class GtkUi : public ui::LinuxUiAndTheme {
                      void*,
                      GParamSpec*);
 
+  CHROMEG_CALLBACK_1(GtkUi, void, OnMonitorAdded, GdkDisplay*, GdkMonitor*);
+
   // Loads all GTK-provided settings.
   void LoadGtkValues();
 
@@ -140,11 +144,14 @@ class GtkUi : public ui::LinuxUiAndTheme {
   // Updates |default_font_*|.
   void UpdateDefaultFont();
 
+  // Listen for scale factor changes on `monitor`.
+  void TrackMonitor(GdkMonitor* monitor);
+
   // Updates the device scale factor so that the default font size can be
   // recalculated.
   void UpdateDeviceScaleFactor();
 
-  float GetRawDeviceScaleFactor();
+  ui::DisplayConfig GetDisplayConfig() const;
 
   std::unique_ptr<GtkUiPlatform> platform_;
 
