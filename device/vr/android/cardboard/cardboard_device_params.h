@@ -24,7 +24,7 @@ using OwnedCardboardParams = internal::ScopedCardboardObject<uint8_t*>;
 // without needing to pass that information beyond this class.
 class CardboardDeviceParams {
  public:
-  static CardboardDeviceParams GetV1DeviceParams();
+  static CardboardDeviceParams GetDeviceParams();
   ~CardboardDeviceParams();
 
   CardboardDeviceParams(const CardboardDeviceParams&) = delete;
