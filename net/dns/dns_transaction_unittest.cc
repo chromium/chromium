@@ -501,6 +501,10 @@ class URLRequestMockDohJob : public URLRequestJob, public AsyncSocket {
     return "https://" + (kMockHostname + ("/" + path));
   }
 
+  static std::string GetMockHttpUrl(const std::string& path) {
+    return "http://" + (kMockHostname + ("/" + path));
+  }
+
   // URLRequestJob implementation:
   void Start() override {
     if (on_start_)
@@ -2578,6 +2582,31 @@ TEST_F(DnsTransactionTest, HttpsGetRedirect) {
   helper0.StartTransaction(transaction_factory_.get(), kT0HostName, kT0Qtype,
                            true /* secure */, resolve_context_.get());
   helper0.RunUntilComplete();
+}
+
+void MakeResponseInsecureRedirect(URLRequest* request, HttpResponseInfo* info) {
+  if (request->url_chain().size() < 2) {
+    info->headers->ReplaceStatusLine("HTTP/1.1 302 Found");
+    const std::string location = URLRequestMockDohJob::GetMockHttpUrl(
+        "/redirect-destination?" + request->url().query());
+    info->headers->AddHeader("Location", location);
+  }
+}
+
+TEST_F(DnsTransactionTest, HttpsGetRedirectToInsecureProtocol) {
+  ConfigureDohServers(/*use_post=*/false);
+  AddQueryAndResponse(0, kT0HostName, kT0Qtype, kT0ResponseDatagram,
+                      std::size(kT0ResponseDatagram), SYNCHRONOUS,
+                      Transport::HTTPS, /*opt_rdata=*/nullptr,
+                      DnsQuery::PaddingStrategy::BLOCK_LENGTH_128,
+                      /*enqueue_transaction_id=*/false);
+  TransactionHelper helper0(ERR_ABORTED);
+  SetResponseModifierCallback(
+      base::BindRepeating(MakeResponseInsecureRedirect));
+  helper0.StartTransaction(transaction_factory_.get(), kT0HostName, kT0Qtype,
+                           /*secure=*/true, resolve_context_.get());
+  helper0.RunUntilComplete();
+  ASSERT_EQ(helper0.response(), nullptr);
 }
 
 void MakeResponseNoType(URLRequest* request, HttpResponseInfo* info) {
