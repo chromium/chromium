@@ -10,6 +10,7 @@
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/color_util.h"
 #include "ash/style/style_util.h"
+#include "ash/style/typography.h"
 #include "ash/wm/desks/desk_bar_view_base.h"
 #include "ash/wm/desks/desk_button_base.h"
 #include "ash/wm/desks/desk_mini_view.h"
@@ -137,6 +138,8 @@ ExpandedDesksBarButton::ExpandedDesksBarButton(
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
   label_->SetHorizontalAlignment(gfx::ALIGN_CENTER);
+  label_->SetFontList(TypographyProvider::Get()->ResolveTypographyToken(
+      TypographyToken::kCrosAnnotation1));
   SetButtonState(initially_enabled);
 
   views::InstallRoundRectHighlightPathGenerator(

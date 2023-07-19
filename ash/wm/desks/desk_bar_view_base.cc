@@ -14,6 +14,7 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
+#include "ash/style/typography.h"
 #include "ash/utility/haptics_util.h"
 #include "ash/wm/desks/desk_action_view.h"
 #include "ash/wm/desks/desk_mini_view_animations.h"
@@ -587,6 +588,9 @@ DeskBarViewBase::DeskBarViewBase(aura::Window* root, Type type)
                                   base::Unretained(this))));
       library_button_label_ =
           scroll_view_contents_->AddChildView(std::make_unique<views::Label>());
+      library_button_label_->SetFontList(
+          TypographyProvider::Get()->ResolveTypographyToken(
+              TypographyToken::kCrosAnnotation1));
       library_button_label_->SetPaintToLayer();
       library_button_label_->layer()->SetFillsBoundsOpaquely(false);
     } else {
