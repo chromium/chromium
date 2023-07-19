@@ -889,7 +889,8 @@ class OmniboxViewViewsIMETest : public OmniboxViewViewsTest {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_{::features::kUiaProvider};
-  raw_ptr<OmniboxMockInputMethod, DanglingAcrossTasks> input_method_ = nullptr;
+  raw_ptr<OmniboxMockInputMethod, AcrossTasksDanglingUntriaged> input_method_ =
+      nullptr;
 };
 
 IN_PROC_BROWSER_TEST_F(OmniboxViewViewsIMETest, TextInputTypeChangedTest) {

@@ -101,7 +101,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_WIN) MockTSFBridge : public TSFBridge {
   unsigned set_focused_client_call_count_ = 0;
   unsigned remove_focused_client_call_count_ = 0;
   raw_ptr<TextInputClient> text_input_client_ = nullptr;
-  raw_ptr<ImeKeyEventDispatcher, DanglingAcrossTasks>
+  raw_ptr<ImeKeyEventDispatcher, AcrossTasksDanglingUntriaged>
       ime_key_event_dispatcher_ = nullptr;
   HWND focused_window_ = nullptr;
   TextInputType latest_text_input_type_ = TEXT_INPUT_TYPE_NONE;

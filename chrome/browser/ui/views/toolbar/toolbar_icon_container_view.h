@@ -112,7 +112,7 @@ class ToolbarIconContainerView : public views::View,
 
   // The main view is nominally always present and is last child in the view
   // hierarchy.
-  raw_ptr<views::View, DanglingAcrossTasks> main_item_ = nullptr;
+  raw_ptr<views::View, AcrossTasksDanglingUntriaged> main_item_ = nullptr;
 
   // Override for the icon color. If not set, |kColorToolbarButtonIcon| is used.
   absl::optional<SkColor> icon_color_;

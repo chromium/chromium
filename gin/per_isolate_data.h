@@ -88,7 +88,7 @@ class GIN_EXPORT PerIsolateData {
 
   // PerIsolateData doesn't actually own |isolate_|. Instead, the isolate is
   // owned by the IsolateHolder, which also owns the PerIsolateData.
-  raw_ptr<v8::Isolate, DanglingAcrossTasks> isolate_;
+  raw_ptr<v8::Isolate, AcrossTasksDanglingUntriaged> isolate_;
   raw_ptr<v8::ArrayBuffer::Allocator, DanglingUntriaged> allocator_;
   ObjectTemplateMap object_templates_;
   FunctionTemplateMap function_templates_;

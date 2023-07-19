@@ -622,8 +622,10 @@ class LayerTreeHostContextCacheTest : public LayerTreeHostTest {
                  void(bool aggressively_free_resources));
   };
 
-  raw_ptr<MockContextSupport, DanglingAcrossTasks> mock_main_context_support_;
-  raw_ptr<MockContextSupport, DanglingAcrossTasks> mock_worker_context_support_;
+  raw_ptr<MockContextSupport, AcrossTasksDanglingUntriaged>
+      mock_main_context_support_;
+  raw_ptr<MockContextSupport, AcrossTasksDanglingUntriaged>
+      mock_worker_context_support_;
 };
 
 // Test if the LTH successfully frees resources on the main/worker
@@ -6010,7 +6012,7 @@ class LayerTreeHostTestElasticOverscroll : public LayerTreeHostTest {
  private:
   FakeContentLayerClient client_;
   raw_ptr<Layer, DanglingUntriaged> root_layer_;
-  raw_ptr<ScrollElasticityHelper, DanglingAcrossTasks>
+  raw_ptr<ScrollElasticityHelper, AcrossTasksDanglingUntriaged>
       scroll_elasticity_helper_;
   int content_layer_id_;
   int num_draws_;

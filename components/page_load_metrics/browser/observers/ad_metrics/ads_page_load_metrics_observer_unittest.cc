@@ -874,8 +874,8 @@ class AdsPageLoadMetricsObserverTest
   std::unique_ptr<base::SimpleTestTickClock> clock_;
 
   // A pointer to the AdsPageLoadMetricsObserver used by the tests.
-  raw_ptr<AdsPageLoadMetricsObserver, DanglingAcrossTasks> ads_observer_ =
-      nullptr;
+  raw_ptr<AdsPageLoadMetricsObserver, AcrossTasksDanglingUntriaged>
+      ads_observer_ = nullptr;
 };
 
 INSTANTIATE_TEST_SUITE_P(All, AdsPageLoadMetricsObserverTest, testing::Bool());

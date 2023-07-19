@@ -56,8 +56,8 @@ class ExtensionInstallDialogViewTestSupervised
   }
 
  private:
-  raw_ptr<const Extension, DanglingAcrossTasks> extension_;
-  raw_ptr<content::WebContents, DanglingAcrossTasks> web_contents_;
+  raw_ptr<const Extension, AcrossTasksDanglingUntriaged> extension_;
+  raw_ptr<content::WebContents, AcrossTasksDanglingUntriaged> web_contents_;
   std::unique_ptr<SupervisedUserExtensionsMetricsRecorder>
       supervised_user_extensions_metrics_recorder_;
 };

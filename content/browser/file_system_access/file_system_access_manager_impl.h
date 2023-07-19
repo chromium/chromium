@@ -545,7 +545,7 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
   const scoped_refptr<ChromeBlobStorageContext> blob_context_;
   base::SequenceBound<storage::FileSystemOperationRunner> operation_runner_
       GUARDED_BY_CONTEXT(sequence_checker_);
-  raw_ptr<FileSystemAccessPermissionContext, DanglingAcrossTasks>
+  raw_ptr<FileSystemAccessPermissionContext, AcrossTasksDanglingUntriaged>
       permission_context_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // All the mojo receivers for this FileSystemAccessManager itself. Keeps

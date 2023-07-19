@@ -284,7 +284,7 @@ class MojoAudioDecoderTest : public ::testing::Test {
   // Service side mock.
   std::unique_ptr<MockAudioDecoder> owned_mock_audio_decoder_{
       std::make_unique<StrictMock<MockAudioDecoder>>()};
-  raw_ptr<MockAudioDecoder, DanglingAcrossTasks> mock_audio_decoder_{
+  raw_ptr<MockAudioDecoder, AcrossTasksDanglingUntriaged> mock_audio_decoder_{
       owned_mock_audio_decoder_.get()};
 
   int num_of_decodes_ = 0;

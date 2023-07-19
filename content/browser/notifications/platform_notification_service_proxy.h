@@ -116,8 +116,8 @@ class PlatformNotificationServiceProxy {
       scoped_refptr<ServiceWorkerRegistration> registration);
 
   scoped_refptr<ServiceWorkerContextWrapper> service_worker_context_;
-  raw_ptr<BrowserContext, DanglingAcrossTasks> browser_context_;
-  raw_ptr<PlatformNotificationService, DanglingAcrossTasks>
+  raw_ptr<BrowserContext, AcrossTasksDanglingUntriaged> browser_context_;
+  raw_ptr<PlatformNotificationService, AcrossTasksDanglingUntriaged>
       notification_service_;
   base::WeakPtrFactory<PlatformNotificationServiceProxy> weak_ptr_factory_ui_{
       this};

@@ -158,7 +158,8 @@ class QRCodeGeneratorBubble : public QRCodeGeneratorBubbleView,
 
   base::OnceClosure on_closing_;
   base::OnceClosure on_back_button_pressed_;
-  raw_ptr<content::WebContents, DanglingAcrossTasks> web_contents_;  // weak.
+  raw_ptr<content::WebContents, AcrossTasksDanglingUntriaged>
+      web_contents_;  // weak.
 };
 
 }  // namespace qrcode_generator

@@ -944,7 +944,8 @@ class ExtensionPrefs : public KeyedService {
   base::FilePath install_directory_;
 
   // Weak pointer, owned by BrowserContext.
-  raw_ptr<ExtensionPrefValueMap, DanglingAcrossTasks> extension_pref_value_map_;
+  raw_ptr<ExtensionPrefValueMap, AcrossTasksDanglingUntriaged>
+      extension_pref_value_map_;
 
   raw_ptr<base::Clock> clock_;
 

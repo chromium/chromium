@@ -73,9 +73,9 @@ class ServiceWorkerHostInterceptor
   blink::ServiceWorkerStatusCode status_ =
       blink::ServiceWorkerStatusCode::kErrorFailed;
   int service_worker_process_id_ = -1;
-  raw_ptr<ServiceWorkerVersion, DanglingAcrossTasks> service_worker_version_ =
-      nullptr;
-  raw_ptr<blink::mojom::ServiceWorkerHost, DanglingAcrossTasks>
+  raw_ptr<ServiceWorkerVersion, AcrossTasksDanglingUntriaged>
+      service_worker_version_ = nullptr;
+  raw_ptr<blink::mojom::ServiceWorkerHost, AcrossTasksDanglingUntriaged>
       forwarding_interface_ = nullptr;
 };
 

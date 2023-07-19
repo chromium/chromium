@@ -326,9 +326,11 @@ class PwaInstallViewBrowserTest : public extensions::ExtensionBrowserTest {
   std::string intercept_request_path_;
   std::string intercept_request_response_;
 
-  raw_ptr<PageActionIconView, DanglingAcrossTasks> pwa_install_view_ = nullptr;
-  raw_ptr<content::WebContents, DanglingAcrossTasks> web_contents_ = nullptr;
-  raw_ptr<webapps::TestAppBannerManagerDesktop, DanglingAcrossTasks>
+  raw_ptr<PageActionIconView, AcrossTasksDanglingUntriaged> pwa_install_view_ =
+      nullptr;
+  raw_ptr<content::WebContents, AcrossTasksDanglingUntriaged> web_contents_ =
+      nullptr;
+  raw_ptr<webapps::TestAppBannerManagerDesktop, AcrossTasksDanglingUntriaged>
       app_banner_manager_ = nullptr;
 
  private:

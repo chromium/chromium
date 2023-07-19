@@ -362,11 +362,12 @@ class CONTENT_EXPORT InterestGroupAuction
 
     // InterestGroup that made the bid. Owned by the BidState of that
     // InterestGroup.
-    const raw_ptr<const blink::InterestGroup, DanglingAcrossTasks>
+    const raw_ptr<const blink::InterestGroup, AcrossTasksDanglingUntriaged>
         interest_group;
 
     // Points to the InterestGroupAd within `interest_group`.
-    const raw_ptr<const blink::InterestGroup::Ad, DanglingAcrossTasks> bid_ad;
+    const raw_ptr<const blink::InterestGroup::Ad, AcrossTasksDanglingUntriaged>
+        bid_ad;
 
     // `bid_state` of the InterestGroup that made the bid. This should not be
     // written to, except for adding seller debug reporting URLs.
@@ -974,7 +975,7 @@ class CONTENT_EXPORT InterestGroupAuction
   const raw_ptr<AuctionMetricsRecorder> auction_metrics_recorder_;
 
   // Configuration of this auction.
-  raw_ptr<const blink::AuctionConfig, DanglingAcrossTasks> config_;
+  raw_ptr<const blink::AuctionConfig, AcrossTasksDanglingUntriaged> config_;
 
   // True once all promises in this and component auction's configuration have
   // been resolved. (Note that if `this` is a component auction, it only looks

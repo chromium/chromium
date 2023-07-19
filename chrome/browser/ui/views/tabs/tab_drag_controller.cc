@@ -265,8 +265,8 @@ class TabDragController::SourceTabStripEmptinessTracker
     parent_->OnSourceTabStripEmpty();
   }
 
-  const raw_ptr<TabStripModel, DanglingAcrossTasks> tab_strip_;
-  const raw_ptr<TabDragController, DanglingAcrossTasks> parent_;
+  const raw_ptr<TabStripModel, AcrossTasksDanglingUntriaged> tab_strip_;
+  const raw_ptr<TabDragController, AcrossTasksDanglingUntriaged> parent_;
 };
 
 class TabDragController::DraggedTabsClosedTracker

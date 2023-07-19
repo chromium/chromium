@@ -200,9 +200,9 @@ class ViewAXPlatformNodeDelegateTest : public ViewsTestBase {
   const int DEFAULT_VIEW_ID = 0;
   const int NON_DEFAULT_VIEW_ID = 1;
 
-  raw_ptr<Widget, DanglingAcrossTasks> widget_ = nullptr;
-  raw_ptr<Button, DanglingAcrossTasks> button_ = nullptr;
-  raw_ptr<Label, DanglingAcrossTasks> label_ = nullptr;
+  raw_ptr<Widget, AcrossTasksDanglingUntriaged> widget_ = nullptr;
+  raw_ptr<Button, AcrossTasksDanglingUntriaged> button_ = nullptr;
+  raw_ptr<Label, AcrossTasksDanglingUntriaged> label_ = nullptr;
   ScopedAXModeSetter ax_mode_setter_;
 };
 
@@ -240,7 +240,8 @@ class ViewAXPlatformNodeDelegateTableTest
 
  private:
   std::unique_ptr<TestTableModel> model_;
-  raw_ptr<TableView, DanglingAcrossTasks> table_ = nullptr;  // Owned by parent.
+  raw_ptr<TableView, AcrossTasksDanglingUntriaged> table_ =
+      nullptr;  // Owned by parent.
 };
 
 class ViewAXPlatformNodeDelegateMenuTest
@@ -297,9 +298,10 @@ class ViewAXPlatformNodeDelegateMenuTest
 
  private:
   // Owned by runner_.
-  raw_ptr<views::TestMenuItemView, DanglingAcrossTasks> menu_ = nullptr;
+  raw_ptr<views::TestMenuItemView, AcrossTasksDanglingUntriaged> menu_ =
+      nullptr;
 
-  raw_ptr<SubmenuView, DanglingAcrossTasks> submenu_ = nullptr;
+  raw_ptr<SubmenuView, AcrossTasksDanglingUntriaged> submenu_ = nullptr;
   std::unique_ptr<TestMenuDelegate> menu_delegate_;
   std::unique_ptr<MenuRunner> runner_;
   UniqueWidgetPtr owner_;

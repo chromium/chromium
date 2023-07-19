@@ -586,9 +586,9 @@ class BorderlessIsolatedWebAppBrowserTest
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<net::EmbeddedTestServer> isolated_web_app_dev_server_;
-  raw_ptr<Browser, DanglingAcrossTasks> browser_;
-  raw_ptr<BrowserView, DanglingAcrossTasks> browser_view_;
-  raw_ptr<BrowserNonClientFrameView, DanglingAcrossTasks> frame_view_;
+  raw_ptr<Browser, AcrossTasksDanglingUntriaged> browser_;
+  raw_ptr<BrowserView, AcrossTasksDanglingUntriaged> browser_view_;
+  raw_ptr<BrowserNonClientFrameView, AcrossTasksDanglingUntriaged> frame_view_;
 };
 
 IN_PROC_BROWSER_TEST_F(BorderlessIsolatedWebAppBrowserTest,

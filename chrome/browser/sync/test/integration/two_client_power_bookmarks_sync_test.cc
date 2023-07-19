@@ -64,8 +64,10 @@ class TwoClientPowerBookmarksSyncTest : public SyncTest {
   }
 
  protected:
-  raw_ptr<power_bookmarks::PowerBookmarkService, DanglingAcrossTasks> service0_;
-  raw_ptr<power_bookmarks::PowerBookmarkService, DanglingAcrossTasks> service1_;
+  raw_ptr<power_bookmarks::PowerBookmarkService, AcrossTasksDanglingUntriaged>
+      service0_;
+  raw_ptr<power_bookmarks::PowerBookmarkService, AcrossTasksDanglingUntriaged>
+      service1_;
 
  private:
   power_bookmarks::PowerBookmarkService* GetSyncService(int index) {

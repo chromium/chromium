@@ -176,7 +176,7 @@ class CONTENT_EXPORT WebContentsFrameTracker final
   // will be posted to the UI thread before the MouseCursorOverlayController
   // deleter task.
 #if !BUILDFLAG(IS_ANDROID)
-  raw_ptr<MouseCursorOverlayController, DanglingAcrossTasks>
+  raw_ptr<MouseCursorOverlayController, AcrossTasksDanglingUntriaged>
       cursor_controller_ = nullptr;
 #endif
 

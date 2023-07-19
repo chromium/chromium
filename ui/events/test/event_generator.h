@@ -483,7 +483,7 @@ class EventGenerator {
 
   std::unique_ptr<EventGeneratorDelegate> delegate_;
   gfx::Point current_screen_location_;
-  raw_ptr<EventTarget, DanglingAcrossTasks> current_target_ = nullptr;
+  raw_ptr<EventTarget, AcrossTasksDanglingUntriaged> current_target_ = nullptr;
   int flags_ = 0;
   bool grab_ = false;
 

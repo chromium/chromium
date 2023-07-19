@@ -47,7 +47,7 @@ class SubresourceFilterHistoryObserver
 
   // Outlives this object.
   raw_ptr<subresource_filter::SubresourceFilterContentSettingsManager,
-          DanglingAcrossTasks>
+          AcrossTasksDanglingUntriaged>
       settings_manager_;
 };
 

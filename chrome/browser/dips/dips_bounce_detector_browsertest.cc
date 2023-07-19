@@ -508,8 +508,8 @@ class DIPSBounceDetectorBrowserTest : public PlatformBrowserTest {
   content::test::PrerenderTestHelper prerender_test_helper_;
   content::test::FencedFrameTestHelper fenced_frame_test_helper_;
   base::test::ScopedFeatureList scoped_feature_list_;
-  raw_ptr<DIPSWebContentsObserver, DanglingAcrossTasks> web_contents_observer_ =
-      nullptr;
+  raw_ptr<DIPSWebContentsObserver, AcrossTasksDanglingUntriaged>
+      web_contents_observer_ = nullptr;
 };
 
 IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,

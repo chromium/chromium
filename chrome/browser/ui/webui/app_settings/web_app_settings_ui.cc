@@ -65,7 +65,7 @@ class WebAppSettingsWindowDelegate : public AppManagementPageHandler::Delegate {
   }
 
  private:
-  raw_ptr<Profile, DanglingAcrossTasks> profile_;
+  raw_ptr<Profile, AcrossTasksDanglingUntriaged> profile_;
 };
 
 }  // namespace

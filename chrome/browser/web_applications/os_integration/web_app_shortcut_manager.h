@@ -173,7 +173,7 @@ class WebAppShortcutManager {
   const raw_ptr<Profile> profile_;
   raw_ptr<WebAppFileHandlerManager, DanglingUntriaged> file_handler_manager_ =
       nullptr;
-  raw_ptr<WebAppProtocolHandlerManager, DanglingAcrossTasks>
+  raw_ptr<WebAppProtocolHandlerManager, AcrossTasksDanglingUntriaged>
       protocol_handler_manager_ = nullptr;
 
   raw_ptr<WebAppProvider> provider_ = nullptr;

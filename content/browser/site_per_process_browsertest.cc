@@ -8526,7 +8526,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
     }
 
    private:
-    const raw_ref<RenderFrameHost, DanglingAcrossTasks> requesting_rfh_;
+    const raw_ref<RenderFrameHost, AcrossTasksDanglingUntriaged>
+        requesting_rfh_;
   };
 
   // Set up a test page with a same-site child frame.

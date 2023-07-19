@@ -235,7 +235,7 @@ class SidePanelCoordinator final : public SidePanelRegistryObserver,
   // to delays for loading content. This is used for metrics.
   base::TimeTicks opened_timestamp_;
 
-  const raw_ptr<BrowserView, DanglingAcrossTasks> browser_view_;
+  const raw_ptr<BrowserView, AcrossTasksDanglingUntriaged> browser_view_;
   raw_ptr<SidePanelRegistry> global_registry_;
   absl::optional<SidePanelEntry::Key> last_active_global_entry_key_;
 
@@ -252,15 +252,16 @@ class SidePanelCoordinator final : public SidePanelRegistryObserver,
   // Used to update SidePanelEntry options in the `header_combobox_` based on
   // their availability in the observed side panel registries.
   std::unique_ptr<SidePanelComboboxModel> combobox_model_;
-  raw_ptr<views::Combobox, DanglingAcrossTasks> header_combobox_ = nullptr;
+  raw_ptr<views::Combobox, AcrossTasksDanglingUntriaged> header_combobox_ =
+      nullptr;
 
   // Used to update the visibility of the 'Open in New Tab' header button.
-  raw_ptr<views::ImageButton, DanglingAcrossTasks>
+  raw_ptr<views::ImageButton, AcrossTasksDanglingUntriaged>
       header_open_in_new_tab_button_ = nullptr;
 
   // Used to update the visibility of the pin header button.
-  raw_ptr<views::ToggleImageButton, DanglingAcrossTasks> header_pin_button_ =
-      nullptr;
+  raw_ptr<views::ToggleImageButton, AcrossTasksDanglingUntriaged>
+      header_pin_button_ = nullptr;
 
   base::ObserverList<SidePanelViewStateObserver> view_state_observers_;
 

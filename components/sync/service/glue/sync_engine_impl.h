@@ -202,8 +202,9 @@ class SyncEngineImpl : public SyncEngine,
 
   // The host which we serve (and are owned by). Set in Initialize() and nulled
   // out in StopSyncingForShutdown().
-  // DanglingAcrossTasks because it is assigned a DanglingAcrossTasks pointer.
-  raw_ptr<SyncEngineHost, DanglingAcrossTasks> host_ = nullptr;
+  // AcrossTasksDanglingUntriaged because it is assigned a
+  // AcrossTasksDanglingUntriaged pointer.
+  raw_ptr<SyncEngineHost, AcrossTasksDanglingUntriaged> host_ = nullptr;
 
   raw_ptr<SyncInvalidationsService> sync_invalidations_service_ = nullptr;
 

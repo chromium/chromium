@@ -43,7 +43,8 @@ struct VIZ_SERVICE_EXPORT FixedPassData {
   FixedPassData& operator=(FixedPassData&& other);
   ~FixedPassData();
 
-  raw_ptr<CompositorRenderPass, DanglingAcrossTasks> render_pass = nullptr;
+  raw_ptr<CompositorRenderPass, AcrossTasksDanglingUntriaged> render_pass =
+      nullptr;
   // DrawQuads in |render_pass| that can contribute additional damage (eg.
   // surface and render passes) that need to be visited during the prewalk phase
   // of aggregation. Stored in front-to-back order like in |render_pass|.

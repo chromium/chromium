@@ -422,7 +422,7 @@ class ChromePasswordManagerClient
 #endif  // BUILDFLAG(IS_ANDROID)
 
   raw_ptr<password_manager::ContentPasswordManagerDriverFactory,
-          DanglingAcrossTasks>
+          AcrossTasksDanglingUntriaged>
       driver_factory_;
 
   // As a mojo service, will be registered into service registry

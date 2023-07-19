@@ -244,7 +244,7 @@ class ExtensionContentSettingsApiTest : public ExtensionApiTest {
   }
 
  private:
-  raw_ptr<Profile, DanglingAcrossTasks> profile_ = nullptr;
+  raw_ptr<Profile, AcrossTasksDanglingUntriaged> profile_ = nullptr;
   std::unique_ptr<ScopedKeepAlive> keep_alive_;
   std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive_;
 };

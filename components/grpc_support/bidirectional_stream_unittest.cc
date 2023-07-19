@@ -105,7 +105,7 @@ class TestBidirectionalStreamCallback {
     ~WriteData();
   };
 
-  raw_ptr<bidirectional_stream, DanglingAcrossTasks> stream;
+  raw_ptr<bidirectional_stream, AcrossTasksDanglingUntriaged> stream;
   base::WaitableEvent stream_done_event;
 
   // Test parameters.
@@ -117,7 +117,7 @@ class TestBidirectionalStreamCallback {
 
   // Test results.
   ResponseStep response_step;
-  raw_ptr<char, DanglingAcrossTasks> read_buffer;
+  raw_ptr<char, AcrossTasksDanglingUntriaged> read_buffer;
   std::map<std::string, std::string> response_headers;
   std::map<std::string, std::string> response_trailers;
   std::vector<std::string> read_data;

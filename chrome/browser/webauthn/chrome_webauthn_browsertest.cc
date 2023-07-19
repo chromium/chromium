@@ -318,8 +318,8 @@ class WebAuthnConditionalUITest : public WebAuthnBrowserTest {
       }
     }
 
-    raw_ptr<ChromeAuthenticatorRequestDelegate, DanglingAcrossTasks> delegate_ =
-        nullptr;
+    raw_ptr<ChromeAuthenticatorRequestDelegate, AcrossTasksDanglingUntriaged>
+        delegate_ = nullptr;
     std::vector<std::string> accounts_;
 
    private:

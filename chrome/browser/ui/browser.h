@@ -247,7 +247,7 @@ class Browser : public TabStripModelObserver,
     Type type;
 
     // The associated profile.
-    raw_ptr<Profile, DanglingAcrossTasks> profile;
+    raw_ptr<Profile, AcrossTasksDanglingUntriaged> profile;
 
     // Specifies the browser `is_trusted_source_` value.
     bool trusted_source = false;
@@ -1202,7 +1202,7 @@ class Browser : public TabStripModelObserver,
   const Type type_;
 
   // This Browser's profile.
-  const raw_ptr<Profile, DanglingAcrossTasks> profile_;
+  const raw_ptr<Profile, AcrossTasksDanglingUntriaged> profile_;
 
   // Prevent Profile deletion until this browser window is closed.
   std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive_;

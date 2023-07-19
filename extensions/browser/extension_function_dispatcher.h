@@ -151,9 +151,10 @@ class ExtensionFunctionDispatcher {
 
   void RemoveWorkerCallbacksForProcess(int render_process_id);
 
-  raw_ptr<content::BrowserContext, DanglingAcrossTasks> browser_context_;
+  raw_ptr<content::BrowserContext, AcrossTasksDanglingUntriaged>
+      browser_context_;
 
-  raw_ptr<Delegate, DanglingAcrossTasks> delegate_;
+  raw_ptr<Delegate, AcrossTasksDanglingUntriaged> delegate_;
 
   // This map doesn't own either the keys or the values. When a RenderFrameHost
   // instance goes away, the corresponding entry in this map (if exists) will be

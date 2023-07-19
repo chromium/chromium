@@ -864,7 +864,7 @@ class GetDisplayMediaVideoTrackBrowserTest
   const DisplaySurfaceType display_surface_type_;
 
  private:
-  raw_ptr<content::WebContents, DanglingAcrossTasks> tab_ = nullptr;
+  raw_ptr<content::WebContents, AcrossTasksDanglingUntriaged> tab_ = nullptr;
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -1002,7 +1002,7 @@ class GetDisplayMediaHiDpiBrowserTest
 
   base::test::ScopedFeatureList feature_list_;
   const TestConfigForHiDpi test_config_;
-  raw_ptr<content::WebContents, DanglingAcrossTasks> tab_ = nullptr;
+  raw_ptr<content::WebContents, AcrossTasksDanglingUntriaged> tab_ = nullptr;
 };
 
 IN_PROC_BROWSER_TEST_P(GetDisplayMediaHiDpiBrowserTest, Capture) {

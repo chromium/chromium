@@ -277,7 +277,7 @@ class COMPONENT_EXPORT(UI_BASE) SimpleMenuModel : public MenuModel {
 
   ItemVector items_;
 
-  raw_ptr<Delegate, DanglingAcrossTasks> delegate_;
+  raw_ptr<Delegate, AcrossTasksDanglingUntriaged> delegate_;
 
   base::WeakPtrFactory<SimpleMenuModel> method_factory_{this};
 };

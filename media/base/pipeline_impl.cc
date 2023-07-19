@@ -204,7 +204,7 @@ class PipelineImpl::RendererWrapper final : public DemuxerHost,
 
   const scoped_refptr<base::SequencedTaskRunner> media_task_runner_;
   const scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
-  const raw_ptr<MediaLog, DanglingAcrossTasks> media_log_;
+  const raw_ptr<MediaLog, AcrossTasksDanglingUntriaged> media_log_;
 
   // A weak pointer to PipelineImpl. Must only use on the main task runner.
   base::WeakPtr<PipelineImpl> weak_pipeline_;

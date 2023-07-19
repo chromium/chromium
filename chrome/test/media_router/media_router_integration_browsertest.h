@@ -211,7 +211,7 @@ class MediaRouterIntegrationIncognitoBrowserTest
   Browser* browser() override;
 
  private:
-  raw_ptr<Browser, DanglingAcrossTasks> incognito_browser_ = nullptr;
+  raw_ptr<Browser, AcrossTasksDanglingUntriaged> incognito_browser_ = nullptr;
 };
 
 }  // namespace media_router

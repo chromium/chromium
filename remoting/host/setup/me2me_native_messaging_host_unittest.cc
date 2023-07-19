@@ -263,7 +263,7 @@ class Me2MeNativeMessagingHostTest : public testing::Test {
  protected:
   // Reference to the MockDaemonControllerDelegate, which is owned by
   // |channel_|.
-  raw_ptr<MockDaemonControllerDelegate, DanglingAcrossTasks>
+  raw_ptr<MockDaemonControllerDelegate, AcrossTasksDanglingUntriaged>
       daemon_controller_delegate_;
 
  private:

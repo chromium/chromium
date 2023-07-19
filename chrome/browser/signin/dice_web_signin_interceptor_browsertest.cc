@@ -134,7 +134,7 @@ class FakeDiceWebSigninInterceptorDelegate
   }
 
  private:
-  raw_ptr<Browser, DanglingAcrossTasks> fre_browser_ = nullptr;
+  raw_ptr<Browser, AcrossTasksDanglingUntriaged> fre_browser_ = nullptr;
   CoreAccountId fre_account_id_;
   WebSigninInterceptor::SigninInterceptionType expected_interception_type_ =
       WebSigninInterceptor::SigninInterceptionType::kMultiUser;

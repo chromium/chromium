@@ -60,9 +60,10 @@ class PriceInsightsIconViewInteractiveTest : public InteractiveBrowserTest {
   }
 
  protected:
-  raw_ptr<commerce::MockShoppingService, DanglingAcrossTasks>
+  raw_ptr<commerce::MockShoppingService, AcrossTasksDanglingUntriaged>
       mock_shopping_service_;
-  raw_ptr<MockShoppingListUiTabHelper, DanglingAcrossTasks> mock_tab_helper_;
+  raw_ptr<MockShoppingListUiTabHelper, AcrossTasksDanglingUntriaged>
+      mock_tab_helper_;
   absl::optional<commerce::PriceInsightsInfo> price_insights_info_;
 
  private:

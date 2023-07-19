@@ -81,7 +81,7 @@ class Http1Connection : public HttpConnection, public HttpResponseDelegate {
                           int rv);
 
   std::unique_ptr<StreamSocket> socket_;
-  raw_ptr<EmbeddedTestServerConnectionListener, DanglingAcrossTasks>
+  raw_ptr<EmbeddedTestServerConnectionListener, AcrossTasksDanglingUntriaged>
       connection_listener_;
   raw_ptr<EmbeddedTestServer> server_delegate_;
   HttpRequestParser request_parser_;

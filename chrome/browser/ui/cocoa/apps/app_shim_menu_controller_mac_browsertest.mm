@@ -136,10 +136,12 @@ class AppShimMenuControllerBrowserTest
     return window_list.front();
   }
 
-  raw_ptr<const extensions::Extension, DanglingAcrossTasks> app_1_ = nullptr;
-  raw_ptr<const extensions::Extension, DanglingAcrossTasks> app_2_ = nullptr;
-  raw_ptr<const extensions::Extension, DanglingAcrossTasks> hosted_app_ =
+  raw_ptr<const extensions::Extension, AcrossTasksDanglingUntriaged> app_1_ =
       nullptr;
+  raw_ptr<const extensions::Extension, AcrossTasksDanglingUntriaged> app_2_ =
+      nullptr;
+  raw_ptr<const extensions::Extension, AcrossTasksDanglingUntriaged>
+      hosted_app_ = nullptr;
   NSUInteger initial_menu_item_count_ = 0;
 };
 

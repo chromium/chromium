@@ -606,12 +606,12 @@ class V4SafeBrowsingServiceTest : public InProcessBrowserTest {
  private:
   std::unique_ptr<TestSafeBrowsingServiceFactory> sb_factory_;
   // Owned by the V4Database.
-  raw_ptr<TestV4DatabaseFactory, DanglingAcrossTasks> v4_db_factory_;
+  raw_ptr<TestV4DatabaseFactory, AcrossTasksDanglingUntriaged> v4_db_factory_;
   // Owned by the V4GetHashProtocolManager.
-  raw_ptr<TestV4GetHashProtocolManagerFactory, DanglingAcrossTasks>
+  raw_ptr<TestV4GetHashProtocolManagerFactory, AcrossTasksDanglingUntriaged>
       v4_get_hash_factory_;
   // Owned by the V4Database.
-  raw_ptr<TestV4StoreFactory, DanglingAcrossTasks> store_factory_;
+  raw_ptr<TestV4StoreFactory, AcrossTasksDanglingUntriaged> store_factory_;
 
 #if defined(ADDRESS_SANITIZER)
   // TODO(lukasza): https://crbug.com/971820: Disallow renderer crashes once the

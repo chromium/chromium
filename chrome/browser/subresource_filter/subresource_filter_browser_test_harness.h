@@ -211,7 +211,7 @@ class SubresourceFilterBrowserTest : public PlatformBrowserTest {
   std::unique_ptr<TestSafeBrowsingDatabaseHelper> database_helper_;
 
   // Owned by the profile.
-  raw_ptr<SubresourceFilterProfileContext, DanglingAcrossTasks>
+  raw_ptr<SubresourceFilterProfileContext, AcrossTasksDanglingUntriaged>
       profile_context_;
 };
 

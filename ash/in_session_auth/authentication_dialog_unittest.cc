@@ -117,9 +117,9 @@ class AuthenticationDialogTest : public AshTestBase {
 
   absl::optional<bool> success_;
   base::UnguessableToken token_;
-  raw_ptr<AuthenticationDialog, DanglingAcrossTasks> dialog_;
+  raw_ptr<AuthenticationDialog, AcrossTasksDanglingUntriaged> dialog_;
   std::unique_ptr<MockInSessionAuthTokenProvider> auth_token_provider_;
-  raw_ptr<MockAuthPerformer, DanglingAcrossTasks> auth_performer_;
+  raw_ptr<MockAuthPerformer, AcrossTasksDanglingUntriaged> auth_performer_;
   std::unique_ptr<AuthenticationDialog::TestApi> test_api_;
 };
 

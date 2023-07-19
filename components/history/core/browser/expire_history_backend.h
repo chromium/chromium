@@ -275,9 +275,9 @@ class ExpireHistoryBackend {
   raw_ptr<HistoryBackendNotifier> notifier_;
 
   // Non-owning pointers to the databases we deal with (MAY BE NULL).
-  raw_ptr<HistoryDatabase, DanglingAcrossTasks>
+  raw_ptr<HistoryDatabase, AcrossTasksDanglingUntriaged>
       main_db_;  // Main history database.
-  raw_ptr<favicon::FaviconDatabase, DanglingAcrossTasks> favicon_db_;
+  raw_ptr<favicon::FaviconDatabase, AcrossTasksDanglingUntriaged> favicon_db_;
 
   // The threshold for "old" history where we will automatically delete it.
   base::TimeDelta expiration_threshold_;
@@ -304,7 +304,7 @@ class ExpireHistoryBackend {
   std::unique_ptr<ExpiringVisitsReader> auto_subframe_visits_reader_;
 
   // The HistoryBackendClient; may be null.
-  raw_ptr<HistoryBackendClient, DanglingAcrossTasks> backend_client_;
+  raw_ptr<HistoryBackendClient, AcrossTasksDanglingUntriaged> backend_client_;
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 

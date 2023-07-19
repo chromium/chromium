@@ -60,7 +60,7 @@ struct ModelExecutorImpl::ExecutionState {
   std::unique_ptr<ModelExecutionTraceEvent> trace_event;
 
   proto::SegmentInfo segment_info;
-  raw_ptr<ModelProvider, DanglingAcrossTasks> model_provider = nullptr;
+  raw_ptr<ModelProvider, AcrossTasksDanglingUntriaged> model_provider = nullptr;
   bool record_metrics_for_default = false;
   ModelExecutionCallback callback;
   ModelProvider::Request input_tensor;

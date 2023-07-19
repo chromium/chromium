@@ -261,7 +261,7 @@ class WebAppFileHandlingBrowserTest : public WebAppFileHandlingTestBase {
   }
 
   TestServerRedirectHandle redirect_handle_;
-  raw_ptr<content::WebContents, DanglingAcrossTasks> web_contents_;
+  raw_ptr<content::WebContents, AcrossTasksDanglingUntriaged> web_contents_;
   std::unique_ptr<content::WebContentsDestroyedWatcher> destroyed_watcher_;
 };
 

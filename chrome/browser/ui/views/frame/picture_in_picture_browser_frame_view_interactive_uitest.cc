@@ -103,7 +103,7 @@ class PictureInPictureBrowserFrameViewTest : public InProcessBrowserTest {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  raw_ptr<PictureInPictureBrowserFrameView, DanglingAcrossTasks>
+  raw_ptr<PictureInPictureBrowserFrameView, AcrossTasksDanglingUntriaged>
       pip_frame_view_ = nullptr;
 };
 

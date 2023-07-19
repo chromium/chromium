@@ -1572,7 +1572,8 @@ class UpdateJobTestHelper : public EmbeddedWorkerTestHelper,
     }
 
    private:
-    raw_ptr<ScriptFailureEmbeddedWorkerInstanceClient, DanglingAcrossTasks>
+    raw_ptr<ScriptFailureEmbeddedWorkerInstanceClient,
+            AcrossTasksDanglingUntriaged>
         client_;
   };
 
@@ -1683,7 +1684,7 @@ class UpdateJobTestHelper : public EmbeddedWorkerTestHelper,
     update_found_ = true;
   }
 
-  raw_ptr<FakeEmbeddedWorkerInstanceClient, DanglingAcrossTasks>
+  raw_ptr<FakeEmbeddedWorkerInstanceClient, AcrossTasksDanglingUntriaged>
       initial_embedded_worker_instance_client_ = nullptr;
   scoped_refptr<ServiceWorkerRegistration> observed_registration_;
   std::vector<AttributeChangeLogEntry> attribute_change_log_;

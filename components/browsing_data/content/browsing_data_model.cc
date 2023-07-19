@@ -179,7 +179,7 @@ struct StorageRemoverHelper {
 
   raw_ptr<content::StoragePartition> storage_partition_;
   scoped_refptr<BrowsingDataQuotaHelper> quota_helper_;
-  raw_ptr<BrowsingDataModel::Delegate, DanglingAcrossTasks> delegate_;
+  raw_ptr<BrowsingDataModel::Delegate, AcrossTasksDanglingUntriaged> delegate_;
   base::WeakPtrFactory<StorageRemoverHelper> weak_ptr_factory_{this};
 };
 

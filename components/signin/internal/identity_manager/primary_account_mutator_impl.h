@@ -49,10 +49,10 @@ class PrimaryAccountMutatorImpl : public PrimaryAccountMutator {
 
   // Pointers to the services used by the PrimaryAccountMutatorImpl. They
   // *must* outlive this instance.
-  raw_ptr<AccountTrackerService, DanglingAcrossTasks> account_tracker_ =
-      nullptr;
-  raw_ptr<PrimaryAccountManager, DanglingAcrossTasks> primary_account_manager_ =
-      nullptr;
+  raw_ptr<AccountTrackerService, AcrossTasksDanglingUntriaged>
+      account_tracker_ = nullptr;
+  raw_ptr<PrimaryAccountManager, AcrossTasksDanglingUntriaged>
+      primary_account_manager_ = nullptr;
   raw_ptr<PrefService> pref_service_ = nullptr;
   raw_ptr<SigninClient> signin_client_ = nullptr;
 };

@@ -460,7 +460,7 @@ class HeadlessWebContentsBeginFrameControlTest : public HeadlessBrowserTest {
             base::Unretained(this)));
   }
 
-  raw_ptr<HeadlessWebContentsImpl, DanglingAcrossTasks> web_contents_ =
+  raw_ptr<HeadlessWebContentsImpl, AcrossTasksDanglingUntriaged> web_contents_ =
       nullptr;  // Not owned.
 
   int num_begin_frames_ = 0;

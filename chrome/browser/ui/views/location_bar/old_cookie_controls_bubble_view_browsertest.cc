@@ -150,7 +150,8 @@ class OldCookieControlsBubbleViewTest : public DialogBrowserTest {
   PageActionIconView* cookie_controls_icon() { return cookie_controls_icon_; }
 
  private:
-  raw_ptr<PageActionIconView, DanglingAcrossTasks> cookie_controls_icon_;
+  raw_ptr<PageActionIconView, AcrossTasksDanglingUntriaged>
+      cookie_controls_icon_;
 };
 
 // Test that cookie icon is not shown when cookies are not blocked.

@@ -168,7 +168,7 @@ class SavedTabGroupBar : public views::AccessiblePaneView,
   // Provides a callback that returns the page navigator
   base::RepeatingCallback<content::PageNavigator*()> GetPageNavigatorGetter();
 
-  raw_ptr<views::MenuButton, DanglingAcrossTasks> overflow_button_;
+  raw_ptr<views::MenuButton, AcrossTasksDanglingUntriaged> overflow_button_;
 
   // Used to show the overflow menu when clicked.
   raw_ptr<views::BubbleDialogDelegate> bubble_delegate_ = nullptr;
@@ -177,8 +177,8 @@ class SavedTabGroupBar : public views::AccessiblePaneView,
   raw_ptr<SavedTabGroupModel> saved_tab_group_model_;
 
   // The page navigator used to create tab groups
-  raw_ptr<content::PageNavigator, DanglingAcrossTasks> page_navigator_ =
-      nullptr;
+  raw_ptr<content::PageNavigator, AcrossTasksDanglingUntriaged>
+      page_navigator_ = nullptr;
   raw_ptr<Browser> browser_;
 
   // During a drag and drop session, `drag_data_` owns the state for the drag.

@@ -86,9 +86,10 @@ class TabStripRegionView final : public views::AccessiblePaneView {
   void UpdateNewTabButtonBorder();
 
   raw_ptr<views::FlexLayout, DanglingUntriaged> layout_manager_ = nullptr;
-  raw_ptr<views::View, DanglingAcrossTasks> tab_strip_container_ = nullptr;
+  raw_ptr<views::View, AcrossTasksDanglingUntriaged> tab_strip_container_ =
+      nullptr;
   raw_ptr<views::View, DanglingUntriaged> reserved_grab_handle_space_ = nullptr;
-  raw_ptr<TabStrip, DanglingAcrossTasks> tab_strip_ = nullptr;
+  raw_ptr<TabStrip, AcrossTasksDanglingUntriaged> tab_strip_ = nullptr;
   raw_ptr<TabStripScrollContainer, DanglingUntriaged>
       tab_strip_scroll_container_ = nullptr;
   raw_ptr<views::Button, DanglingUntriaged> new_tab_button_ = nullptr;

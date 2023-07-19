@@ -122,9 +122,10 @@ class HeadlessBrowserContextIsolationTest
   }
 
  private:
-  raw_ptr<HeadlessBrowserContext, DanglingAcrossTasks> browser_context_ =
+  raw_ptr<HeadlessBrowserContext, AcrossTasksDanglingUntriaged>
+      browser_context_ = nullptr;
+  raw_ptr<HeadlessWebContents, AcrossTasksDanglingUntriaged> web_contents2_ =
       nullptr;
-  raw_ptr<HeadlessWebContents, DanglingAcrossTasks> web_contents2_ = nullptr;
   SimpleDevToolsProtocolClient devtools_client2_;
 };
 

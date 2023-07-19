@@ -168,7 +168,8 @@ class WebTestControlHost : public WebContentsObserver,
     Node(Node&& other);
     Node& operator=(Node&& other);
 
-    raw_ptr<RenderFrameHost, DanglingAcrossTasks> render_frame_host = nullptr;
+    raw_ptr<RenderFrameHost, AcrossTasksDanglingUntriaged> render_frame_host =
+        nullptr;
     GlobalRenderFrameHostId render_frame_host_id;
     std::vector<Node*> children;
   };

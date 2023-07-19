@@ -83,10 +83,11 @@ class TestManagePasswordsUIController : public ManagePasswordsUIController {
   MOCK_METHOD(void, OnDialogClosed, (), ());
 
  private:
-  raw_ptr<AccountChooserPrompt, DanglingAcrossTasks> current_account_chooser_;
-  raw_ptr<AutoSigninFirstRunPrompt, DanglingAcrossTasks>
+  raw_ptr<AccountChooserPrompt, AcrossTasksDanglingUntriaged>
+      current_account_chooser_;
+  raw_ptr<AutoSigninFirstRunPrompt, AcrossTasksDanglingUntriaged>
       current_autosignin_prompt_;
-  raw_ptr<CredentialLeakPrompt, DanglingAcrossTasks>
+  raw_ptr<CredentialLeakPrompt, AcrossTasksDanglingUntriaged>
       current_credential_leak_prompt_;
 };
 
@@ -177,7 +178,8 @@ class PasswordDialogViewTest : public DialogBrowserTest {
   }
 
  private:
-  raw_ptr<TestManagePasswordsUIController, DanglingAcrossTasks> controller_;
+  raw_ptr<TestManagePasswordsUIController, AcrossTasksDanglingUntriaged>
+      controller_;
 };
 
 void PasswordDialogViewTest::SetUpOnMainThread() {

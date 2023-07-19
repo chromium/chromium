@@ -141,16 +141,17 @@ class FakeSensorProvider : public mojom::SensorProvider {
 
   // The following sensor pointers are owned by the caller of
   // FakeSensorProvider::GetSensor().
-  raw_ptr<FakeSensor, DanglingAcrossTasks> ambient_light_sensor_ = nullptr;
-  raw_ptr<FakeSensor, DanglingAcrossTasks> accelerometer_ = nullptr;
-  raw_ptr<FakeSensor, DanglingAcrossTasks> linear_acceleration_sensor_ =
+  raw_ptr<FakeSensor, AcrossTasksDanglingUntriaged> ambient_light_sensor_ =
       nullptr;
-  raw_ptr<FakeSensor, DanglingAcrossTasks> gravity_sensor_ = nullptr;
-  raw_ptr<FakeSensor, DanglingAcrossTasks> gyroscope_ = nullptr;
-  raw_ptr<FakeSensor, DanglingAcrossTasks> relative_orientation_sensor_ =
-      nullptr;
-  raw_ptr<FakeSensor, DanglingAcrossTasks> absolute_orientation_sensor_ =
-      nullptr;
+  raw_ptr<FakeSensor, AcrossTasksDanglingUntriaged> accelerometer_ = nullptr;
+  raw_ptr<FakeSensor, AcrossTasksDanglingUntriaged>
+      linear_acceleration_sensor_ = nullptr;
+  raw_ptr<FakeSensor, AcrossTasksDanglingUntriaged> gravity_sensor_ = nullptr;
+  raw_ptr<FakeSensor, AcrossTasksDanglingUntriaged> gyroscope_ = nullptr;
+  raw_ptr<FakeSensor, AcrossTasksDanglingUntriaged>
+      relative_orientation_sensor_ = nullptr;
+  raw_ptr<FakeSensor, AcrossTasksDanglingUntriaged>
+      absolute_orientation_sensor_ = nullptr;
 
   SensorReading ambient_light_sensor_reading_;
   SensorReading accelerometer_reading_;

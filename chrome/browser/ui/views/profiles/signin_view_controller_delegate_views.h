@@ -146,7 +146,7 @@ class SigninViewControllerDelegateViews
   raw_ptr<views::Widget> modal_signin_widget_ = nullptr;
 
   const raw_ptr<views::WebView> content_view_;
-  raw_ptr<content::WebContents, DanglingAcrossTasks> web_contents_;
+  raw_ptr<content::WebContents, AcrossTasksDanglingUntriaged> web_contents_;
   const raw_ptr<Browser> browser_;
   views::UnhandledKeyboardEventHandler unhandled_keyboard_event_handler_;
   bool should_show_close_button_;

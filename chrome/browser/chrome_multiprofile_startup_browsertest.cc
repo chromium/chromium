@@ -159,7 +159,7 @@ class ChromeMultiProfileStartupBrowserTestBase
     }
   }
 
-  raw_ptr<MockMainExtraParts, DanglingAcrossTasks> mock_part_;
+  raw_ptr<MockMainExtraParts, AcrossTasksDanglingUntriaged> mock_part_;
 };
 
 IN_PROC_BROWSER_TEST_P(ChromeMultiProfileStartupBrowserTestBase,

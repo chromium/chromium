@@ -78,9 +78,10 @@ class SyncSessionsRouterTabHelper
   // |router_| is a KeyedService and is guaranteed to outlive |this|.
   raw_ptr<SyncSessionsWebContentsRouter, DanglingUntriaged> router_;
 
-  raw_ptr<ChromeTranslateClient, DanglingAcrossTasks> chrome_translate_client_;
+  raw_ptr<ChromeTranslateClient, AcrossTasksDanglingUntriaged>
+      chrome_translate_client_;
 
-  raw_ptr<favicon::FaviconDriver, DanglingAcrossTasks> favicon_driver_;
+  raw_ptr<favicon::FaviconDriver, AcrossTasksDanglingUntriaged> favicon_driver_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

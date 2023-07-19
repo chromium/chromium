@@ -160,7 +160,7 @@ class PrivacySandboxSettingsImpl : public PrivacySandboxSettings {
   base::ObserverList<Observer>::Unchecked observers_;
 
   std::unique_ptr<Delegate> delegate_;
-  raw_ptr<HostContentSettingsMap, DanglingAcrossTasks>
+  raw_ptr<HostContentSettingsMap, AcrossTasksDanglingUntriaged>
       host_content_settings_map_;
   scoped_refptr<content_settings::CookieSettings> cookie_settings_;
   raw_ptr<PrefService, DanglingUntriaged> pref_service_;

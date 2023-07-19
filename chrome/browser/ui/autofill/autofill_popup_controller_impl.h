@@ -227,7 +227,7 @@ class AutofillPopupControllerImpl : public AutofillPopupController {
   void SetViewForTesting(base::WeakPtr<AutofillPopupView> view);
 
   PopupControllerCommon controller_common_;
-  raw_ptr<content::WebContents, DanglingAcrossTasks> web_contents_;
+  raw_ptr<content::WebContents, AcrossTasksDanglingUntriaged> web_contents_;
   AutofillPopupViewPtr view_;
   base::WeakPtr<AutofillPopupDelegate> delegate_;
 

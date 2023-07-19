@@ -154,7 +154,7 @@ void OpenBookmarkByGUID(WindowOpenDisposition disposition,
 }  // namespace
 
 @implementation BookmarkMenuCocoaController {
-  raw_ptr<BookmarkMenuBridge, DanglingAcrossTasks>
+  raw_ptr<BookmarkMenuBridge, AcrossTasksDanglingUntriaged>
       _bridge;  // Weak. Owns |self|.
 }
 

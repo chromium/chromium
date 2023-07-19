@@ -68,7 +68,8 @@ class MockNoStatePrefetchProcessorImplDelegate final
   }
 
  private:
-  raw_ptr<MockNoStatePrefetchLinkManager, DanglingAcrossTasks> link_manager_;
+  raw_ptr<MockNoStatePrefetchLinkManager, AcrossTasksDanglingUntriaged>
+      link_manager_;
 };
 
 class NoStatePrefetchProcessorImplTest

@@ -138,13 +138,13 @@ class BrowserWaiter : public BrowserListObserver {
   void OnBrowserRemoved(Browser* browser) override;
 
  private:
-  const raw_ptr<Browser, DanglingAcrossTasks> filter_ = nullptr;
+  const raw_ptr<Browser, AcrossTasksDanglingUntriaged> filter_ = nullptr;
 
   base::RunLoop added_run_loop_;
-  raw_ptr<Browser, DanglingAcrossTasks> added_browser_ = nullptr;
+  raw_ptr<Browser, AcrossTasksDanglingUntriaged> added_browser_ = nullptr;
 
   base::RunLoop removed_run_loop_;
-  raw_ptr<Browser, DanglingAcrossTasks> removed_browser_ = nullptr;
+  raw_ptr<Browser, AcrossTasksDanglingUntriaged> removed_browser_ = nullptr;
 };
 
 class UpdateAwaiter : public WebAppInstallManagerObserver {

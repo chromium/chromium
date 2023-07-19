@@ -488,10 +488,11 @@ class IsolatedWebAppBrowserServiceWorkerTest
 
   const GURL& app_url() const { return app_url_; }
 
-  raw_ptr<Browser, DanglingAcrossTasks> app_window_;
-  raw_ptr<content::WebContents, DanglingAcrossTasks> app_web_contents_;
-  raw_ptr<content::RenderFrameHost, DanglingAcrossTasks> app_frame_;
-  raw_ptr<content::StoragePartition, DanglingAcrossTasks> storage_partition_;
+  raw_ptr<Browser, AcrossTasksDanglingUntriaged> app_window_;
+  raw_ptr<content::WebContents, AcrossTasksDanglingUntriaged> app_web_contents_;
+  raw_ptr<content::RenderFrameHost, AcrossTasksDanglingUntriaged> app_frame_;
+  raw_ptr<content::StoragePartition, AcrossTasksDanglingUntriaged>
+      storage_partition_;
   GURL app_url_;
 
   std::unique_ptr<net::EmbeddedTestServer> isolated_web_app_dev_server_;

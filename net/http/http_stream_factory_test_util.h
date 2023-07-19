@@ -157,11 +157,12 @@ class TestJobFactory : public HttpStreamFactory::JobFactory {
   MockHttpStreamFactoryJob* dns_alpn_h3_job() const { return dns_alpn_h3_job_; }
 
  private:
-  raw_ptr<MockHttpStreamFactoryJob, DanglingAcrossTasks> main_job_ = nullptr;
-  raw_ptr<MockHttpStreamFactoryJob, DanglingAcrossTasks> alternative_job_ =
+  raw_ptr<MockHttpStreamFactoryJob, AcrossTasksDanglingUntriaged> main_job_ =
       nullptr;
-  raw_ptr<MockHttpStreamFactoryJob, DanglingAcrossTasks> dns_alpn_h3_job_ =
-      nullptr;
+  raw_ptr<MockHttpStreamFactoryJob, AcrossTasksDanglingUntriaged>
+      alternative_job_ = nullptr;
+  raw_ptr<MockHttpStreamFactoryJob, AcrossTasksDanglingUntriaged>
+      dns_alpn_h3_job_ = nullptr;
 };
 
 }  // namespace net

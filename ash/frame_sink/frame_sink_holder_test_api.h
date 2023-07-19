@@ -30,7 +30,7 @@ class FrameSinkHolderTestApi {
   bool IsFirstFrameRequested() const;
 
  private:
-  raw_ptr<FrameSinkHolder, DanglingAcrossTasks> frame_sink_holder_;
+  raw_ptr<FrameSinkHolder, AcrossTasksDanglingUntriaged> frame_sink_holder_;
 };
 
 }  // namespace ash

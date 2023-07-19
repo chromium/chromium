@@ -4367,8 +4367,8 @@ class MockPrerenderPasswordManagerDriver
   }
   base::OnceClosure quit_closure_;
   uint32_t wait_type_ = WAIT_FOR_NOTHING;
-  raw_ptr<autofill::mojom::PasswordManagerDriver, DanglingAcrossTasks> impl_ =
-      nullptr;
+  raw_ptr<autofill::mojom::PasswordManagerDriver, AcrossTasksDanglingUntriaged>
+      impl_ = nullptr;
 };
 
 class MockPrerenderPasswordManagerDriverInjector

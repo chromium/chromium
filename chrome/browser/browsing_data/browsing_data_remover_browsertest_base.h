@@ -97,7 +97,7 @@ class BrowsingDataRemoverBrowserTestBase : public PlatformBrowserTest {
  private:
   base::test::ScopedFeatureList feature_list_;
 #if !BUILDFLAG(IS_ANDROID)
-  raw_ptr<Browser, DanglingAcrossTasks> incognito_browser_ = nullptr;
+  raw_ptr<Browser, AcrossTasksDanglingUntriaged> incognito_browser_ = nullptr;
 #endif
 };
 

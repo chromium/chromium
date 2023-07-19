@@ -126,7 +126,7 @@ class AffiliationServiceImpl : public AffiliationService,
   // living on the backend thread. It will be deleted asynchronously during
   // shutdown on the backend thread, so it will outlive |this| along with all
   // its in-flight tasks.
-  raw_ptr<AffiliationBackend, DanglingAcrossTasks> backend_;
+  raw_ptr<AffiliationBackend, AcrossTasksDanglingUntriaged> backend_;
 
   scoped_refptr<base::SequencedTaskRunner> backend_task_runner_;
 

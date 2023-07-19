@@ -376,7 +376,7 @@ class TestThreatDetailsFactory : public ThreatDetailsFactory {
   ThreatDetails* get_details() { return details_; }
 
  private:
-  raw_ptr<ThreatDetails, DanglingAcrossTasks> details_;
+  raw_ptr<ThreatDetails, AcrossTasksDanglingUntriaged> details_;
 };
 
 // A SafeBrowingBlockingPage class that lets us wait until it's hidden.

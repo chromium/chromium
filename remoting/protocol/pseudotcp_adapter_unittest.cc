@@ -152,7 +152,7 @@ class FakeSocket : public P2PDatagramSocket {
 
   base::circular_deque<std::vector<char>> incoming_packets_;
 
-  raw_ptr<FakeSocket, DanglingAcrossTasks> peer_socket_;
+  raw_ptr<FakeSocket, AcrossTasksDanglingUntriaged> peer_socket_;
   raw_ptr<RateLimiter> rate_limiter_;
   int latency_ms_;
 };
@@ -309,8 +309,8 @@ class PseudoTcpAdapterTest : public testing::Test {
         base::WrapUnique(client_socket_.get()));
   }
 
-  raw_ptr<FakeSocket, DanglingAcrossTasks> host_socket_;
-  raw_ptr<FakeSocket, DanglingAcrossTasks> client_socket_;
+  raw_ptr<FakeSocket, AcrossTasksDanglingUntriaged> host_socket_;
+  raw_ptr<FakeSocket, AcrossTasksDanglingUntriaged> client_socket_;
 
   std::unique_ptr<PseudoTcpAdapter> host_pseudotcp_;
   std::unique_ptr<PseudoTcpAdapter> client_pseudotcp_;

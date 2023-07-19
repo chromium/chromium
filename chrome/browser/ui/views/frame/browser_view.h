@@ -1007,7 +1007,8 @@ class BrowserView : public BrowserWindow,
   // The view that manages the tab strip, toolbar, and sometimes the bookmark
   // bar. Stacked top in the view hiearachy so it can be used to slide out
   // the top views in immersive fullscreen.
-  raw_ptr<TopContainerView, DanglingAcrossTasks> top_container_ = nullptr;
+  raw_ptr<TopContainerView, AcrossTasksDanglingUntriaged> top_container_ =
+      nullptr;
 
   // Menu button and page status icons. Only used by web-app windows.
   raw_ptr<WebAppFrameToolbarView, DanglingUntriaged> web_app_frame_toolbar_ =
@@ -1020,11 +1021,11 @@ class BrowserView : public BrowserWindow,
   raw_ptr<views::Label, DanglingUntriaged> web_app_window_title_ = nullptr;
 
   // The view that contains the tabstrip, new tab button, and grab handle space.
-  raw_ptr<TabStripRegionView, DanglingAcrossTasks> tab_strip_region_view_ =
-      nullptr;
+  raw_ptr<TabStripRegionView, AcrossTasksDanglingUntriaged>
+      tab_strip_region_view_ = nullptr;
 
   // The TabStrip.
-  raw_ptr<TabStrip, DanglingAcrossTasks> tabstrip_ = nullptr;
+  raw_ptr<TabStrip, AcrossTasksDanglingUntriaged> tabstrip_ = nullptr;
 
   // the webui based tabstrip, when applicable. see https://crbug.com/989131.
   raw_ptr<WebUITabStripContainerView, DanglingUntriaged> webui_tab_strip_ =
@@ -1038,7 +1039,7 @@ class BrowserView : public BrowserWindow,
   std::unique_ptr<AccessibilityModeObserver> accessibility_mode_observer_;
 
   // The Toolbar containing the navigation buttons, menus and the address bar.
-  raw_ptr<ToolbarView, DanglingAcrossTasks> toolbar_ = nullptr;
+  raw_ptr<ToolbarView, AcrossTasksDanglingUntriaged> toolbar_ = nullptr;
 
   // The OverlayView for the widget, which is used to host `top_container_`
   // during immersive reveal.
@@ -1073,7 +1074,8 @@ class BrowserView : public BrowserWindow,
   std::unique_ptr<BookmarkBarView> bookmark_bar_view_;
 
   // Separator between top container and contents.
-  raw_ptr<views::View, DanglingAcrossTasks> contents_separator_ = nullptr;
+  raw_ptr<views::View, AcrossTasksDanglingUntriaged> contents_separator_ =
+      nullptr;
 
   // Loading bar (part of top container for / WebUI tab strip).
   raw_ptr<TopContainerLoadingBar, DanglingUntriaged> loading_bar_ = nullptr;
@@ -1081,39 +1083,43 @@ class BrowserView : public BrowserWindow,
   // The do-nothing view which controls the z-order of the find bar widget
   // relative to views which paint into layers and views with an associated
   // NativeView.
-  raw_ptr<View, DanglingAcrossTasks> find_bar_host_view_ = nullptr;
+  raw_ptr<View, AcrossTasksDanglingUntriaged> find_bar_host_view_ = nullptr;
 
   // The download shelf.
   raw_ptr<DownloadShelf, DanglingUntriaged> download_shelf_ = nullptr;
 
   // The InfoBarContainerView that contains InfoBars for the current tab.
-  raw_ptr<InfoBarContainerView, DanglingAcrossTasks> infobar_container_ =
-      nullptr;
+  raw_ptr<InfoBarContainerView, AcrossTasksDanglingUntriaged>
+      infobar_container_ = nullptr;
 
   // The view that contains the selected WebContents.
-  raw_ptr<ContentsWebView, DanglingAcrossTasks> contents_web_view_ = nullptr;
+  raw_ptr<ContentsWebView, AcrossTasksDanglingUntriaged> contents_web_view_ =
+      nullptr;
 
   // The view that contains devtools window for the selected WebContents.
-  raw_ptr<views::WebView, DanglingAcrossTasks> devtools_web_view_ = nullptr;
+  raw_ptr<views::WebView, AcrossTasksDanglingUntriaged> devtools_web_view_ =
+      nullptr;
 
   // The view managing the devtools and contents positions.
   // Handled by ContentsLayoutManager.
-  raw_ptr<views::View, DanglingAcrossTasks> contents_container_ = nullptr;
+  raw_ptr<views::View, AcrossTasksDanglingUntriaged> contents_container_ =
+      nullptr;
 
   // The side panel aligned to the left or the right side of the browser window
   // depending on the kSidePanelHorizontalAlignment pref's value.
-  raw_ptr<SidePanel, DanglingAcrossTasks> unified_side_panel_ = nullptr;
-  raw_ptr<views::View, DanglingAcrossTasks>
+  raw_ptr<SidePanel, AcrossTasksDanglingUntriaged> unified_side_panel_ =
+      nullptr;
+  raw_ptr<views::View, AcrossTasksDanglingUntriaged>
       right_aligned_side_panel_separator_ = nullptr;
 
   // The side search side panel.
-  raw_ptr<views::View, DanglingAcrossTasks> left_aligned_side_panel_separator_ =
-      nullptr;
+  raw_ptr<views::View, AcrossTasksDanglingUntriaged>
+      left_aligned_side_panel_separator_ = nullptr;
 
   // Provides access to the toolbar buttons this browser view uses. Buttons may
   // appear in a hosted app frame or in a tabbed UI toolbar.
-  raw_ptr<ToolbarButtonProvider, DanglingAcrossTasks> toolbar_button_provider_ =
-      nullptr;
+  raw_ptr<ToolbarButtonProvider, AcrossTasksDanglingUntriaged>
+      toolbar_button_provider_ = nullptr;
 
   // The handler responsible for showing autofill bubbles.
   std::unique_ptr<autofill::AutofillBubbleHandler> autofill_bubble_handler_;

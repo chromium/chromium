@@ -138,8 +138,8 @@ struct CC_EXPORT TaskGraph {
     Edge(const Task* task, Task* dependent)
         : task(task), dependent(dependent) {}
 
-    raw_ptr<const Task, DanglingAcrossTasks> task;
-    raw_ptr<Task, DanglingAcrossTasks> dependent;
+    raw_ptr<const Task, AcrossTasksDanglingUntriaged> task;
+    raw_ptr<Task, AcrossTasksDanglingUntriaged> dependent;
   };
 
   TaskGraph();

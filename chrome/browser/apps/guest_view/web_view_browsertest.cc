@@ -841,9 +841,10 @@ class WebViewTest : public extensions::PlatformAppBrowserTest {
 
   TestGuestViewManagerFactory factory_;
   // Note that these are only set if you launch app using LoadAppWithGuest().
-  raw_ptr<guest_view::GuestViewBase, DanglingAcrossTasks> guest_view_ = nullptr;
-  raw_ptr<content::WebContents, DanglingAcrossTasks> embedder_web_contents_ =
+  raw_ptr<guest_view::GuestViewBase, AcrossTasksDanglingUntriaged> guest_view_ =
       nullptr;
+  raw_ptr<content::WebContents, AcrossTasksDanglingUntriaged>
+      embedder_web_contents_ = nullptr;
 };
 
 // The following test suites are created to group tests based on specific

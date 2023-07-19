@@ -2197,7 +2197,7 @@ class MultiPageBrowserTest : public InProcessBrowserTest {
   content::WebContents* GetWebContents() { return web_contents_; }
 
   net::test_server::EmbeddedTestServerHandle test_server_handle_;
-  raw_ptr<content::WebContents, DanglingAcrossTasks> web_contents_;
+  raw_ptr<content::WebContents, AcrossTasksDanglingUntriaged> web_contents_;
 };
 
 IN_PROC_BROWSER_TEST_F(MultiPageBrowserTest, LoadingPredictor) {

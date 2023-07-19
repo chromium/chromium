@@ -422,10 +422,10 @@ class TabStrip : public views::View,
 
   std::unique_ptr<TabHoverCardController> hover_card_controller_;
 
-  raw_ref<TabDragContextImpl, DanglingAcrossTasks> drag_context_;
+  raw_ref<TabDragContextImpl, AcrossTasksDanglingUntriaged> drag_context_;
 
   // The View parent for the tabs and the various group views.
-  raw_ref<TabContainer, DanglingAcrossTasks> tab_container_;
+  raw_ref<TabContainer, AcrossTasksDanglingUntriaged> tab_container_;
 
   // The background offset used by inactive tabs to match the frame image.
   int background_offset_ = 0;

@@ -948,7 +948,7 @@ constexpr auto FlakyDanglingUntriaged = base::RawPtrTraits::kMayDangle;
 // one task, and the raw_ptr was released in a different one.
 //
 // This is not meant to be added manually. You can ignore this flag.
-constexpr auto DanglingAcrossTasks = base::RawPtrTraits::kMayDangle;
+constexpr auto AcrossTasksDanglingUntriaged = base::RawPtrTraits::kMayDangle;
 
 // The use of pointer arithmetic with raw_ptr is strongly discouraged and
 // disabled by default. Usually a container like span<> should be used

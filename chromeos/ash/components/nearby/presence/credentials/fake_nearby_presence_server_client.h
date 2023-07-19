@@ -41,7 +41,7 @@ class FakeNearbyPresenceServerClient : public NearbyPresenceServerClient {
         scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
         override;
 
-    raw_ptr<FakeNearbyPresenceServerClient, DanglingAcrossTasks>
+    raw_ptr<FakeNearbyPresenceServerClient, AcrossTasksDanglingUntriaged>
         last_created_fake_server_client_ = nullptr;
   };
 

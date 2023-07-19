@@ -142,11 +142,11 @@ class WebAppOpaqueBrowserFrameViewTest : public InProcessBrowserTest {
               theme_mode == ThemeMode::kDefault);
   }
 
-  raw_ptr<BrowserView, DanglingAcrossTasks> browser_view_ = nullptr;
-  raw_ptr<OpaqueBrowserFrameView, DanglingAcrossTasks>
+  raw_ptr<BrowserView, AcrossTasksDanglingUntriaged> browser_view_ = nullptr;
+  raw_ptr<OpaqueBrowserFrameView, AcrossTasksDanglingUntriaged>
       opaque_browser_frame_view_ = nullptr;
-  raw_ptr<WebAppFrameToolbarView, DanglingAcrossTasks> web_app_frame_toolbar_ =
-      nullptr;
+  raw_ptr<WebAppFrameToolbarView, AcrossTasksDanglingUntriaged>
+      web_app_frame_toolbar_ = nullptr;
 #if BUILDFLAG(IS_LINUX)
   std::unique_ptr<ui::LinuxUiGetter> linux_ui_getter_;
 #endif
@@ -405,8 +405,8 @@ class WebAppOpaqueBrowserFrameViewWindowControlsOverlayTest
     std::ignore = title_watcher.WaitAndGetTitle();
   }
 
-  raw_ptr<BrowserView, DanglingAcrossTasks> browser_view_ = nullptr;
-  raw_ptr<OpaqueBrowserFrameView, DanglingAcrossTasks>
+  raw_ptr<BrowserView, AcrossTasksDanglingUntriaged> browser_view_ = nullptr;
+  raw_ptr<OpaqueBrowserFrameView, AcrossTasksDanglingUntriaged>
       opaque_browser_frame_view_ = nullptr;
   WebAppFrameToolbarTestHelper web_app_frame_toolbar_helper_;
 

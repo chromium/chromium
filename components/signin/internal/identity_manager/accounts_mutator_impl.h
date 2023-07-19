@@ -73,9 +73,12 @@ class AccountsMutatorImpl : public AccountsMutator {
 #endif
 
  private:
-  raw_ptr<ProfileOAuth2TokenService, DanglingAcrossTasks> token_service_;
-  raw_ptr<AccountTrackerService, DanglingAcrossTasks> account_tracker_service_;
-  raw_ptr<PrimaryAccountManager, DanglingAcrossTasks> primary_account_manager_;
+  raw_ptr<ProfileOAuth2TokenService, AcrossTasksDanglingUntriaged>
+      token_service_;
+  raw_ptr<AccountTrackerService, AcrossTasksDanglingUntriaged>
+      account_tracker_service_;
+  raw_ptr<PrimaryAccountManager, AcrossTasksDanglingUntriaged>
+      primary_account_manager_;
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   raw_ptr<PrefService> pref_service_;
 #endif

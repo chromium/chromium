@@ -216,7 +216,7 @@ class Job : public base::RefCountedThreadSafe<Job>,
 
   // The Parameters for this Job.
   // Initialized on origin thread and then accessed from both threads.
-  const raw_ptr<const Params, DanglingAcrossTasks> params_;
+  const raw_ptr<const Params, AcrossTasksDanglingUntriaged> params_;
 
   std::unique_ptr<ProxyResolverV8Tracing::Bindings> bindings_;
 
@@ -253,13 +253,14 @@ class Job : public base::RefCountedThreadSafe<Job>,
   // -------------------------------------------------------
 
   scoped_refptr<net::PacFileData> script_data_;
-  raw_ptr<std::unique_ptr<ProxyResolverV8>, DanglingAcrossTasks> resolver_out_;
+  raw_ptr<std::unique_ptr<ProxyResolverV8>, AcrossTasksDanglingUntriaged>
+      resolver_out_;
 
   // -------------------------------------------------------
   // State specific to GET_PROXY_FOR_URL.
   // -------------------------------------------------------
 
-  raw_ptr<net::ProxyInfo, DanglingAcrossTasks>
+  raw_ptr<net::ProxyInfo, AcrossTasksDanglingUntriaged>
       user_results_;  // Owned by caller, lives on origin thread.
   GURL url_;
   net::NetworkAnonymizationKey network_anonymization_key_;

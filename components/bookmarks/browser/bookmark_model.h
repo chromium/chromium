@@ -483,12 +483,14 @@ class BookmarkModel final : public BookmarkUndoProvider,
   // |owned_root_|. Once loading has completed, |owned_root_| is destroyed and
   // this is set to url_index_->root(). |owned_root_| is done as lots of
   // existing code assumes the root is non-null while loading.
-  raw_ptr<BookmarkNode, DanglingAcrossTasks> root_ = nullptr;
+  raw_ptr<BookmarkNode, AcrossTasksDanglingUntriaged> root_ = nullptr;
 
-  raw_ptr<BookmarkPermanentNode, DanglingAcrossTasks> bookmark_bar_node_ =
+  raw_ptr<BookmarkPermanentNode, AcrossTasksDanglingUntriaged>
+      bookmark_bar_node_ = nullptr;
+  raw_ptr<BookmarkPermanentNode, AcrossTasksDanglingUntriaged> other_node_ =
       nullptr;
-  raw_ptr<BookmarkPermanentNode, DanglingAcrossTasks> other_node_ = nullptr;
-  raw_ptr<BookmarkPermanentNode, DanglingAcrossTasks> mobile_node_ = nullptr;
+  raw_ptr<BookmarkPermanentNode, AcrossTasksDanglingUntriaged> mobile_node_ =
+      nullptr;
 
   // The maximum ID assigned to the bookmark nodes in the model.
   int64_t next_node_id_ = 1;

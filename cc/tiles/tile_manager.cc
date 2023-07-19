@@ -185,7 +185,7 @@ class RasterTaskImpl : public TileTask {
   TileResolution tile_resolution_;
   int layer_id_;
   uint64_t source_prepare_tiles_id_;
-  raw_ptr<void, DanglingAcrossTasks> tile_tracing_id_;
+  raw_ptr<void, AcrossTasksDanglingUntriaged> tile_tracing_id_;
   uint64_t new_content_id_;
   int source_frame_number_;
   std::unique_ptr<RasterBuffer> raster_buffer_;
@@ -372,7 +372,8 @@ class DidFinishRunningAllTilesTask : public TileTask {
 
  private:
   raw_ptr<base::SequencedTaskRunner> task_runner_;
-  raw_ptr<RasterQueryQueue, DanglingAcrossTasks> pending_raster_queries_;
+  raw_ptr<RasterQueryQueue, AcrossTasksDanglingUntriaged>
+      pending_raster_queries_;
   CompletionCb completion_cb_;
 };
 

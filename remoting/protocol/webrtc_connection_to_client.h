@@ -90,7 +90,7 @@ class WebrtcConnectionToClient : public ConnectionToClient,
 
   std::unique_ptr<Session> session_;
 
-  raw_ptr<WebrtcVideoEncoderFactory, DanglingAcrossTasks>
+  raw_ptr<WebrtcVideoEncoderFactory, AcrossTasksDanglingUntriaged>
       video_encoder_factory_;
 
   HostVideoStatsDispatcher video_stats_dispatcher_;

@@ -28,7 +28,7 @@ class DefaultEventGeneratorDelegate : public EventGeneratorDelegateAura {
       const Window* window) const override;
 
  private:
-  raw_ptr<Window, DanglingAcrossTasks> root_window_;
+  raw_ptr<Window, AcrossTasksDanglingUntriaged> root_window_;
 };
 
 }  // namespace test

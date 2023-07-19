@@ -1190,7 +1190,7 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
 
  protected:
   mojo::Remote<blink::mojom::FederatedAuthRequest> request_remote_;
-  raw_ptr<FederatedAuthRequestImpl, DanglingAcrossTasks>
+  raw_ptr<FederatedAuthRequestImpl, AcrossTasksDanglingUntriaged>
       federated_auth_request_impl_;
 
   std::unique_ptr<TestIdpNetworkRequestManager> test_network_request_manager_;

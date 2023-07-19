@@ -117,7 +117,8 @@ class MenuItemViewTestInsert : public MenuTestBase {
   }
 
  private:
-  raw_ptr<views::MenuItemView, DanglingAcrossTasks> inserted_item_ = nullptr;
+  raw_ptr<views::MenuItemView, AcrossTasksDanglingUntriaged> inserted_item_ =
+      nullptr;
 };
 
 // MenuItemViewTestInsertXY inserts an item at index X and selects the
@@ -225,8 +226,9 @@ class MenuItemViewTestInsertWithSubmenu : public MenuTestBase {
   }
 
  private:
-  raw_ptr<views::MenuItemView, DanglingAcrossTasks> submenu_ = nullptr;
-  raw_ptr<views::MenuItemView, DanglingAcrossTasks> inserted_item_ = nullptr;
+  raw_ptr<views::MenuItemView, AcrossTasksDanglingUntriaged> submenu_ = nullptr;
+  raw_ptr<views::MenuItemView, AcrossTasksDanglingUntriaged> inserted_item_ =
+      nullptr;
 };
 
 // MenuItemViewTestInsertWithSubmenuX posts a menu and its submenu,
@@ -380,7 +382,7 @@ class MenuItemViewTestRemoveWithSubmenu : public MenuTestBase {
   }
 
  private:
-  raw_ptr<views::MenuItemView, DanglingAcrossTasks> submenu_ = nullptr;
+  raw_ptr<views::MenuItemView, AcrossTasksDanglingUntriaged> submenu_ = nullptr;
 };
 
 using MenuItemViewTestRemoveWithSubmenu0 = MenuItemViewTestRemoveWithSubmenu<0>;

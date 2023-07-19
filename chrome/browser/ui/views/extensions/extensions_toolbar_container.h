@@ -318,7 +318,7 @@ class ExtensionsToolbarContainer
   // `extensions_features::kExtensionsMenuAccessControl` experiment is released.
   // Exactly one of `extensions_button_ and `extensions_controls_` is created;
   // the other is null.
-  const raw_ptr<ExtensionsToolbarButton, DanglingAcrossTasks>
+  const raw_ptr<ExtensionsToolbarButton, AcrossTasksDanglingUntriaged>
       extensions_button_;
   const raw_ptr<ExtensionsToolbarControls, DanglingUntriaged>
       extensions_controls_;

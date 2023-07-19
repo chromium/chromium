@@ -2812,7 +2812,7 @@ class PushMessagingIncognitoBrowserTest : public PushMessagingBrowserTestBase {
 
  protected:
   content::test::PrerenderTestHelper prerender_helper_;
-  raw_ptr<Browser, DanglingAcrossTasks> incognito_browser_ = nullptr;
+  raw_ptr<Browser, AcrossTasksDanglingUntriaged> incognito_browser_ = nullptr;
 };
 
 // Regression test for https://crbug.com/476474

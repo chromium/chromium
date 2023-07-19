@@ -95,7 +95,7 @@ class SyncFileSystemBackend : public storage::FileSystemBackend {
 
   // |profile_| will initially be valid but may be destroyed before |this|, so
   // it should be checked before being accessed.
-  raw_ptr<Profile, DanglingAcrossTasks> profile_;
+  raw_ptr<Profile, AcrossTasksDanglingUntriaged> profile_;
 
   // A flag to skip the initialization sequence of SyncFileSystemService for
   // testing.

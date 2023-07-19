@@ -65,8 +65,8 @@ class WebAppUiManagerImplBrowserTest : public InProcessBrowserTest {
     return WebAppProvider::GetForTest(profile())->ui_manager();
   }
 
-  raw_ptr<TestShortcutManager, DanglingAcrossTasks> shortcut_manager_;
-  raw_ptr<FakeOsIntegrationManager, DanglingAcrossTasks>
+  raw_ptr<TestShortcutManager, AcrossTasksDanglingUntriaged> shortcut_manager_;
+  raw_ptr<FakeOsIntegrationManager, AcrossTasksDanglingUntriaged>
       os_integration_manager_;
 
  private:

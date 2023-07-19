@@ -187,10 +187,11 @@ class GeolocationPermissionContextTests
 
   TestPermissionsClient client_;
   // owned by |BrowserContest::GetPermissionControllerDelegate()|
-  raw_ptr<GeolocationPermissionContext, DanglingAcrossTasks>
+  raw_ptr<GeolocationPermissionContext, AcrossTasksDanglingUntriaged>
       geolocation_permission_context_ = nullptr;
   // owned by |geolocation_permission_context_|
-  raw_ptr<TestGeolocationPermissionContextDelegate, DanglingAcrossTasks>
+  raw_ptr<TestGeolocationPermissionContextDelegate,
+          AcrossTasksDanglingUntriaged>
       delegate_ = nullptr;
   std::vector<std::unique_ptr<content::WebContents>> extra_tabs_;
   std::vector<std::unique_ptr<MockPermissionPromptFactory>>

@@ -82,7 +82,7 @@ class WaylandSubsurface : public base::LinkNode<WaylandSubsurface> {
   const raw_ptr<WaylandConnection> connection_;
   // |parent_| refers to the WaylandWindow whose wl_surface is the parent to
   // this subsurface.
-  const raw_ptr<WaylandWindow, DanglingAcrossTasks> parent_;
+  const raw_ptr<WaylandWindow, AcrossTasksDanglingUntriaged> parent_;
   bool visible_ = false;
 };
 

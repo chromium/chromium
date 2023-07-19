@@ -910,7 +910,8 @@ class ExtensionsToolbarContainerFeatureUITest
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 
-  raw_ptr<content::WebContents, DanglingAcrossTasks> web_contents_ = nullptr;
+  raw_ptr<content::WebContents, AcrossTasksDanglingUntriaged> web_contents_ =
+      nullptr;
 };
 
 class ExtensionsToolbarContainerFeatureUIReloadBubbleAcceptanceTest

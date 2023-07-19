@@ -84,7 +84,7 @@ class TestV4DatabaseFactory : public V4DatabaseFactory {
   // test in the test fixture instantiates a new SafebrowsingService instance,
   // which instantiates a new V4LocalDatabaseManager, which instantiates a new
   // V4Database using this method so use-after-free isn't possible.
-  raw_ptr<TestV4Database, DanglingAcrossTasks> v4_db_ = nullptr;
+  raw_ptr<TestV4Database, AcrossTasksDanglingUntriaged> v4_db_ = nullptr;
 };
 
 class TestV4GetHashProtocolManager : public V4GetHashProtocolManager {
@@ -112,7 +112,8 @@ class TestV4GetHashProtocolManagerFactory
 
  private:
   // Owned by the SafeBrowsingService.
-  raw_ptr<TestV4GetHashProtocolManager, DanglingAcrossTasks> pm_ = nullptr;
+  raw_ptr<TestV4GetHashProtocolManager, AcrossTasksDanglingUntriaged> pm_ =
+      nullptr;
 };
 
 struct TestV4HashResponseInfo {

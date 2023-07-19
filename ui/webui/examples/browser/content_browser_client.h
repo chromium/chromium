@@ -30,7 +30,8 @@ class ContentBrowserClient : public content::ContentBrowserClient {
   std::unique_ptr<content::DevToolsManagerDelegate>
   CreateDevToolsManagerDelegate() override;
 
-  raw_ptr<BrowserMainParts, DanglingAcrossTasks> browser_main_parts_ = nullptr;
+  raw_ptr<BrowserMainParts, AcrossTasksDanglingUntriaged> browser_main_parts_ =
+      nullptr;
 };
 
 }  // namespace webui_examples

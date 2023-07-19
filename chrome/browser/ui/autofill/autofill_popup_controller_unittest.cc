@@ -335,7 +335,7 @@ class AutofillPopupControllerUnitTest : public ChromeRenderViewHostTestHarness {
       password_manager::metrics_util::PasswordMigrationWarningTriggers)>>
       show_pwd_migration_warning_callback_;
 #endif
-  raw_ptr<NiceMock<TestAutofillPopupController>, DanglingAcrossTasks>
+  raw_ptr<NiceMock<TestAutofillPopupController>, AcrossTasksDanglingUntriaged>
       autofill_popup_controller_ = nullptr;
 };
 

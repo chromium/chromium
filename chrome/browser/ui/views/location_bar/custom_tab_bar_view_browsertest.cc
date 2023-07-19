@@ -75,8 +75,8 @@ class TestTitleObserver : public TabStripModelObserver {
  private:
   bool seen_target_title_ = false;
 
-  raw_ptr<content::WebContents, DanglingAcrossTasks> contents_;
-  raw_ptr<Browser, DanglingAcrossTasks> browser_;
+  raw_ptr<content::WebContents, AcrossTasksDanglingUntriaged> contents_;
+  raw_ptr<Browser, AcrossTasksDanglingUntriaged> browser_;
   std::u16string target_title_;
   base::RunLoop awaiter_;
 };
@@ -226,12 +226,12 @@ class CustomTabBarViewBrowserTest
     Install(std::move(web_app_info));
   }
 
-  raw_ptr<BrowserView, DanglingAcrossTasks> browser_view_;
-  raw_ptr<LocationBarView, DanglingAcrossTasks> location_bar_;
-  raw_ptr<CustomTabBarView, DanglingAcrossTasks> custom_tab_bar_;
-  raw_ptr<Browser, DanglingAcrossTasks> app_browser_ = nullptr;
-  raw_ptr<web_app::AppBrowserController, DanglingAcrossTasks> app_controller_ =
-      nullptr;
+  raw_ptr<BrowserView, AcrossTasksDanglingUntriaged> browser_view_;
+  raw_ptr<LocationBarView, AcrossTasksDanglingUntriaged> location_bar_;
+  raw_ptr<CustomTabBarView, AcrossTasksDanglingUntriaged> custom_tab_bar_;
+  raw_ptr<Browser, AcrossTasksDanglingUntriaged> app_browser_ = nullptr;
+  raw_ptr<web_app::AppBrowserController, AcrossTasksDanglingUntriaged>
+      app_controller_ = nullptr;
 
  private:
   void Install(std::unique_ptr<web_app::WebAppInstallInfo> web_app_info) {

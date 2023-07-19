@@ -233,7 +233,7 @@ class BrowserCloseObserver : public BrowserListObserver {
   }
 
  private:
-  raw_ptr<Browser, DanglingAcrossTasks> browser_;
+  raw_ptr<Browser, AcrossTasksDanglingUntriaged> browser_;
   base::RunLoop run_loop_;
 };
 

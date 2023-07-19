@@ -197,10 +197,10 @@ class SyncServiceImplHarness {
   bool IsSyncEnabledByUser() const;
 
   // Profile associated with this sync client.
-  const raw_ptr<Profile, DanglingAcrossTasks> profile_;
+  const raw_ptr<Profile, AcrossTasksDanglingUntriaged> profile_;
 
   // SyncServiceImpl object associated with |profile_|.
-  const raw_ptr<syncer::SyncServiceImpl, DanglingAcrossTasks> service_;
+  const raw_ptr<syncer::SyncServiceImpl, AcrossTasksDanglingUntriaged> service_;
 
   // Prevents Sync from running until configuration is complete.
   std::unique_ptr<syncer::SyncSetupInProgressHandle> sync_blocker_;

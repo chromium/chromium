@@ -323,7 +323,7 @@ class AccessCodeCastHandlerTest : public ChromeRenderViewHostTestHarness {
 
   scoped_refptr<base::TestMockTimeTaskRunner> mock_time_task_runner_;
 
-  raw_ptr<MockMediaRouter, DanglingAcrossTasks> router_;
+  raw_ptr<MockMediaRouter, AcrossTasksDanglingUntriaged> router_;
   std::unique_ptr<LoggerImpl> logger_;
   signin::IdentityTestEnvironment identity_test_env_;
 
@@ -348,7 +348,7 @@ class AccessCodeCastHandlerTest : public ChromeRenderViewHostTestHarness {
   NiceMock<cast_channel::MockCastMessageHandler> message_handler_;
   std::unique_ptr<StrictMock<MockPage>> page_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  raw_ptr<Profile, DanglingAcrossTasks> profile_;
+  raw_ptr<Profile, AcrossTasksDanglingUntriaged> profile_;
   std::unique_ptr<MockCastMediaSinkServiceImpl>
       mock_cast_media_sink_service_impl_;
   std::unique_ptr<MockWebContentsPresentationManager> presentation_manager_;

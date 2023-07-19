@@ -133,7 +133,7 @@ class OutputProtectionImplTest : public testing::Test {
   }
 
   mojo::Remote<OutputProtection> output_protection_mojo_;
-  raw_ptr<MockDisplaySystemDelegate, DanglingAcrossTasks>
+  raw_ptr<MockDisplaySystemDelegate, AcrossTasksDanglingUntriaged>
       delegate_;  // Not owned.
   std::unique_ptr<display::DisplaySnapshot> displays_[std::size(kDisplayIds)];
   std::vector<display::DisplaySnapshot*> cached_displays_;

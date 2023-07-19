@@ -252,7 +252,8 @@ struct ParentPermissionDialogView::Params {
   std::u16string message;
 
   // An optional extension whose permissions should be displayed
-  raw_ptr<const extensions::Extension, DanglingAcrossTasks> extension = nullptr;
+  raw_ptr<const extensions::Extension, AcrossTasksDanglingUntriaged> extension =
+      nullptr;
 
   // The user's profile
   raw_ptr<Profile> profile = nullptr;

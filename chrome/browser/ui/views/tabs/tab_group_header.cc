@@ -88,8 +88,8 @@ class TabGroupHighlightPathGenerator : public views::HighlightPathGenerator {
   }
 
  private:
-  const raw_ptr<const views::View, DanglingAcrossTasks> chip_;
-  const raw_ptr<const views::View, DanglingAcrossTasks> title_;
+  const raw_ptr<const views::View, AcrossTasksDanglingUntriaged> chip_;
+  const raw_ptr<const views::View, AcrossTasksDanglingUntriaged> title_;
   const raw_ref<const TabGroupStyle> style_;
 };
 

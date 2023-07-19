@@ -84,7 +84,8 @@ class CONTENT_EXPORT SharedStorageHeaderObserver {
                               const url::Origin& request_origin);
 
   // `storage_partition_` owns `this`, so it will outlive `this`.
-  raw_ptr<StoragePartitionImpl, DanglingAcrossTasks> storage_partition_;
+  raw_ptr<StoragePartitionImpl, AcrossTasksDanglingUntriaged>
+      storage_partition_;
 
   base::WeakPtrFactory<SharedStorageHeaderObserver> weak_ptr_factory_{this};
 };

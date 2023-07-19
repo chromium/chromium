@@ -335,7 +335,8 @@ class VideoPictureInPictureWindowControllerBrowserTest
   }
 
  private:
-  raw_ptr<content::VideoPictureInPictureWindowController, DanglingAcrossTasks>
+  raw_ptr<content::VideoPictureInPictureWindowController,
+          AcrossTasksDanglingUntriaged>
       pip_window_controller_ = nullptr;
   MockVideoPictureInPictureWindowController mock_controller_;
 };

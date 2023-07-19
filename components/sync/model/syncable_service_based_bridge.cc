@@ -204,10 +204,10 @@ class LocalChangeProcessor : public SyncChangeProcessor {
   const ModelType type_;
   const base::RepeatingCallback<void(const absl::optional<ModelError>&)>
       error_callback_;
-  const raw_ptr<ModelTypeStore, DanglingAcrossTasks> store_;
+  const raw_ptr<ModelTypeStore, AcrossTasksDanglingUntriaged> store_;
   const raw_ptr<SyncableServiceBasedBridge::InMemoryStore, DanglingUntriaged>
       in_memory_store_;
-  const raw_ptr<ModelTypeChangeProcessor, DanglingAcrossTasks> other_;
+  const raw_ptr<ModelTypeChangeProcessor, AcrossTasksDanglingUntriaged> other_;
   SEQUENCE_CHECKER(sequence_checker_);
 };
 

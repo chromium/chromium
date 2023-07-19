@@ -176,7 +176,7 @@ class BorderView : public NativeViewHost {
 
  private:
   std::unique_ptr<View> child_;
-  raw_ptr<Widget, DanglingAcrossTasks> widget_ = nullptr;
+  raw_ptr<Widget, AcrossTasksDanglingUntriaged> widget_ = nullptr;
 };
 
 }  // namespace
@@ -231,11 +231,12 @@ class FocusTraversalTest : public FocusManagerTest {
     ReverseChildrenFocusOrderImpl(parent);
   }
 
-  raw_ptr<TabbedPane, DanglingAcrossTasks> style_tab_ = nullptr;
-  raw_ptr<BorderView, DanglingAcrossTasks> search_border_view_ = nullptr;
+  raw_ptr<TabbedPane, AcrossTasksDanglingUntriaged> style_tab_ = nullptr;
+  raw_ptr<BorderView, AcrossTasksDanglingUntriaged> search_border_view_ =
+      nullptr;
   DummyComboboxModel combobox_model_;
-  raw_ptr<PaneView, DanglingAcrossTasks> left_container_;
-  raw_ptr<PaneView, DanglingAcrossTasks> right_container_;
+  raw_ptr<PaneView, AcrossTasksDanglingUntriaged> left_container_;
+  raw_ptr<PaneView, AcrossTasksDanglingUntriaged> right_container_;
 
  private:
   // Implementation of `ReverseChildrenFocusOrder`. |seen_views| should not be

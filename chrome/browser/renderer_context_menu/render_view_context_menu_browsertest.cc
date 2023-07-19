@@ -527,10 +527,10 @@ class PdfPluginContextMenuBrowserTest : public InProcessBrowserTest {
   content::RenderFrameHost* extension_frame() { return extension_frame_; }
 
  private:
-  raw_ptr<content::RenderFrameHost, DanglingAcrossTasks> extension_frame_ =
-      nullptr;
+  raw_ptr<content::RenderFrameHost, AcrossTasksDanglingUntriaged>
+      extension_frame_ = nullptr;
   guest_view::TestGuestViewManagerFactory factory_;
-  raw_ptr<guest_view::TestGuestViewManager, DanglingAcrossTasks>
+  raw_ptr<guest_view::TestGuestViewManager, AcrossTasksDanglingUntriaged>
       test_guest_view_manager_;
 };
 

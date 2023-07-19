@@ -120,7 +120,7 @@ struct COMPONENT_EXPORT(COLOR_PROVIDER_KEY) ColorProviderKey {
   scoped_refptr<ThemeInitializerSupplier> custom_theme;
   // Only dereferenced when populating the ColorMixer. After that, used to
   // compare addresses during lookup.
-  raw_ptr<InitializerSupplier, DanglingAcrossTasks> app_controller =
+  raw_ptr<InitializerSupplier, AcrossTasksDanglingUntriaged> app_controller =
       nullptr;  // unowned
 
   bool operator<(const ColorProviderKey& other) const {

@@ -234,7 +234,7 @@ class SHELL_DIALOGS_EXPORT SelectFileDialog
       const GURL* caller) = 0;
 
   // The listener to be notified of selection completion.
-  raw_ptr<Listener, DanglingAcrossTasks> listener_;
+  raw_ptr<Listener, AcrossTasksDanglingUntriaged> listener_;
 
  private:
   // Tests if the file selection dialog can be displayed by

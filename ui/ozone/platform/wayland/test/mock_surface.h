@@ -119,22 +119,23 @@ class MockSurface : public ServerObject {
   void set_buffer_scale(int32_t buffer_scale) { buffer_scale_ = buffer_scale; }
 
  private:
-  raw_ptr<MockXdgSurface, DanglingAcrossTasks> xdg_surface_ = nullptr;
-  raw_ptr<TestSubSurface, DanglingAcrossTasks> sub_surface_ = nullptr;
-  raw_ptr<TestViewport, DanglingAcrossTasks> viewport_ = nullptr;
-  raw_ptr<TestAlphaBlending, DanglingAcrossTasks> blending_ = nullptr;
-  raw_ptr<TestOverlayPrioritizedSurface, DanglingAcrossTasks>
+  raw_ptr<MockXdgSurface, AcrossTasksDanglingUntriaged> xdg_surface_ = nullptr;
+  raw_ptr<TestSubSurface, AcrossTasksDanglingUntriaged> sub_surface_ = nullptr;
+  raw_ptr<TestViewport, AcrossTasksDanglingUntriaged> viewport_ = nullptr;
+  raw_ptr<TestAlphaBlending, AcrossTasksDanglingUntriaged> blending_ = nullptr;
+  raw_ptr<TestOverlayPrioritizedSurface, AcrossTasksDanglingUntriaged>
       prioritized_surface_ = nullptr;
-  raw_ptr<TestAugmentedSurface, DanglingAcrossTasks> augmented_surface_ =
-      nullptr;
+  raw_ptr<TestAugmentedSurface, AcrossTasksDanglingUntriaged>
+      augmented_surface_ = nullptr;
   gfx::Rect opaque_region_ = {-1, -1, 0, 0};
   gfx::Rect input_region_ = {-1, -1, 0, 0};
 
-  raw_ptr<wl_resource, DanglingAcrossTasks> frame_callback_ = nullptr;
+  raw_ptr<wl_resource, AcrossTasksDanglingUntriaged> frame_callback_ = nullptr;
   base::flat_map<wl_resource*, wl_resource*> linux_buffer_releases_;
 
-  raw_ptr<wl_resource, DanglingAcrossTasks> attached_buffer_ = nullptr;
-  raw_ptr<wl_resource, DanglingAcrossTasks> prev_attached_buffer_ = nullptr;
+  raw_ptr<wl_resource, AcrossTasksDanglingUntriaged> attached_buffer_ = nullptr;
+  raw_ptr<wl_resource, AcrossTasksDanglingUntriaged> prev_attached_buffer_ =
+      nullptr;
 
   int32_t buffer_scale_ = -1;
 };

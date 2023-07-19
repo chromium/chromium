@@ -289,7 +289,7 @@ class CertificateProviderApiTest : public extensions::ExtensionApiTest {
 
  protected:
   testing::NiceMock<policy::MockConfigurationPolicyProvider> provider_;
-  raw_ptr<chromeos::CertificateProviderService, DanglingAcrossTasks>
+  raw_ptr<chromeos::CertificateProviderService, AcrossTasksDanglingUntriaged>
       cert_provider_service_ = nullptr;
   policy::PolicyMap policy_map_;
 
@@ -490,10 +490,10 @@ class CertificateProviderApiMockedExtensionTest
     return certificate_data;
   }
 
-  raw_ptr<content::WebContents, DanglingAcrossTasks> extension_contents_ =
-      nullptr;
-  raw_ptr<const extensions::Extension, DanglingAcrossTasks> extension_ =
-      nullptr;
+  raw_ptr<content::WebContents, AcrossTasksDanglingUntriaged>
+      extension_contents_ = nullptr;
+  raw_ptr<const extensions::Extension, AcrossTasksDanglingUntriaged>
+      extension_ = nullptr;
   base::FilePath extension_path_;
 };
 
@@ -599,8 +599,8 @@ class CertificateProviderRequestPinTest : public CertificateProviderApiTest {
     extension_ = LoadExtension(extension_path);
   }
 
-  raw_ptr<const extensions::Extension, DanglingAcrossTasks> extension_ =
-      nullptr;
+  raw_ptr<const extensions::Extension, AcrossTasksDanglingUntriaged>
+      extension_ = nullptr;
   std::unique_ptr<ExtensionTestMessageListener> command_request_listener_;
 };
 

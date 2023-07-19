@@ -58,7 +58,8 @@ class ExternalProtocolDialogBrowserTest
   base::HistogramTester histogram_tester_;
 
  protected:
-  raw_ptr<ExternalProtocolDialog, DanglingAcrossTasks> dialog_ = nullptr;
+  raw_ptr<ExternalProtocolDialog, AcrossTasksDanglingUntriaged> dialog_ =
+      nullptr;
   std::string blocked_scheme_;
   url::Origin blocked_origin_;
   BlockState blocked_state_ = BlockState::UNKNOWN;

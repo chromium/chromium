@@ -2402,7 +2402,7 @@ class LayerTreeHostScrollTestElasticOverscroll
   // These values should be used on the impl thread only.
   int num_begin_main_frames_impl_thread_;
   MockInputHandlerClient input_handler_client_;
-  raw_ptr<ScrollElasticityHelper, DanglingAcrossTasks>
+  raw_ptr<ScrollElasticityHelper, AcrossTasksDanglingUntriaged>
       scroll_elasticity_helper_;
 
   // These values should be used on the main thread only.

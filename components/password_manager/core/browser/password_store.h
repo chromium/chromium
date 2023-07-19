@@ -216,7 +216,7 @@ class PasswordStore : public PasswordStoreInterface {
 
   std::unique_ptr<AffiliatedMatchHelper> affiliated_match_helper_;
 
-  raw_ptr<PrefService, DanglingAcrossTasks> prefs_ = nullptr;
+  raw_ptr<PrefService, AcrossTasksDanglingUntriaged> prefs_ = nullptr;
 
   InitStatus init_status_ = InitStatus::kUnknown;
 };

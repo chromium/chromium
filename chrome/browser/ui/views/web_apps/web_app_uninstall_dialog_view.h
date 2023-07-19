@@ -69,7 +69,7 @@ class WebAppUninstallDialogDelegateView : public views::DialogDelegateView {
   void OnDialogAccepted();
   void OnDialogCanceled();
 
-  raw_ptr<WebAppUninstallDialogViews, DanglingAcrossTasks> dialog_;
+  raw_ptr<WebAppUninstallDialogViews, AcrossTasksDanglingUntriaged> dialog_;
 
   raw_ptr<views::Checkbox> checkbox_ = nullptr;
   gfx::ImageSkia image_;
@@ -80,7 +80,7 @@ class WebAppUninstallDialogDelegateView : public views::DialogDelegateView {
   // The dialog needs start_url copy even if app gets uninstalled.
   GURL app_start_url_;
 
-  const raw_ptr<Profile, DanglingAcrossTasks> profile_;
+  const raw_ptr<Profile, AcrossTasksDanglingUntriaged> profile_;
 
   webapps::WebappUninstallSource uninstall_source_;
 };
@@ -149,7 +149,7 @@ class WebAppUninstallDialogViews
 
   // The web app we are showing the dialog for.
   web_app::AppId app_id_;
-  const raw_ptr<Profile, DanglingAcrossTasks> profile_;
+  const raw_ptr<Profile, AcrossTasksDanglingUntriaged> profile_;
 
   THREAD_CHECKER(thread_checker_);
 

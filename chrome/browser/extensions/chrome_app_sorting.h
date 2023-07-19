@@ -184,10 +184,10 @@ class ChromeAppSorting : public AppSorting,
 
   const raw_ptr<content::BrowserContext, DanglingUntriaged> browser_context_ =
       nullptr;
-  raw_ptr<const web_app::WebAppRegistrar, DanglingAcrossTasks>
+  raw_ptr<const web_app::WebAppRegistrar, AcrossTasksDanglingUntriaged>
       web_app_registrar_ = nullptr;
-  raw_ptr<web_app::WebAppSyncBridge, DanglingAcrossTasks> web_app_sync_bridge_ =
-      nullptr;
+  raw_ptr<web_app::WebAppSyncBridge, AcrossTasksDanglingUntriaged>
+      web_app_sync_bridge_ = nullptr;
   base::ScopedObservation<web_app::WebAppRegistrar,
                           web_app::WebAppRegistrarObserver>
       app_registrar_observation_{this};
