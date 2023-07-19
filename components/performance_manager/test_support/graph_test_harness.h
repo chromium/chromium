@@ -35,7 +35,7 @@ class TestNodeWrapper {
   template <typename... Args>
   static TestNodeWrapper<NodeClass> Create(GraphImpl* graph, Args&&... args);
 
-  TestNodeWrapper() {}
+  TestNodeWrapper() = default;
 
   explicit TestNodeWrapper(std::unique_ptr<NodeClass> impl)
       : impl_(std::move(impl)) {
@@ -43,9 +43,16 @@ class TestNodeWrapper {
   }
 
   TestNodeWrapper(TestNodeWrapper&& other) : impl_(std::move(other.impl_)) {}
+  TestNodeWrapper& operator=(TestNodeWrapper&& other) {
+    if (this != &other) {
+      reset();
+      impl_ = std::move(other.impl_);
+    }
+    return *this;
+  }
 
-  void operator=(TestNodeWrapper&& other) { impl_ = std::move(other.impl_); }
-  void operator=(const TestNodeWrapper& other) = delete;
+  TestNodeWrapper(const TestNodeWrapper& other) = delete;
+  TestNodeWrapper& operator=(const TestNodeWrapper& other) = delete;
 
   ~TestNodeWrapper() { reset(); }
 
