@@ -200,7 +200,10 @@ void HoldingSpaceTrayChildBubble::Init() {
     return;
   }
 
-  SetBackground(views::CreateThemedSolidBackground(kColorAshShieldAndBase80));
+  SetBackground(views::CreateThemedSolidBackground(
+      chromeos::features::IsJellyEnabled()
+          ? static_cast<ui::ColorId>(cros_tokens::kCrosSysSystemBaseElevated)
+          : kColorAshShieldAndBase80));
   SetBorder(std::make_unique<views::HighlightBorder>(
       kBubbleCornerRadius,
       chromeos::features::IsJellyrollEnabled()
