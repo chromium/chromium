@@ -9,7 +9,7 @@ module ui.mojom;
 // Note: The ordering of values in this enum must not change as the values are
 // saved to prefs.
 enum SixPackShortcutModifier {
-  kAlt = 0,
-  kSearch = 1,
-  kNone = 2,
+  kNone = 0,
+  kAlt = 1,
+  kSearch = 2,
 };
