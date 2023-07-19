@@ -165,10 +165,15 @@ bool operator==(const PublicKey& a, const PublicKey* b_ptr) {
 // A wrapper around `PublicKey` that also stores related certs and attributes
 // for convenience.
 struct FuzzKey {
-  FuzzKey(PublicKey pub_key, Token token, KeyType type, bool can_be_listed)
+  FuzzKey(PublicKey pub_key,
+          Token token,
+          KeyType type,
+          absl::optional<uint32_t> rsa_key_size,
+          bool can_be_listed)
       : public_key(std::move(pub_key)),
         token(token),
         key_type(type),
+        rsa_key_size(rsa_key_size),
         can_be_listed(can_be_listed) {
     // NSS sets an empty nickname by default, this doesn't have to be like this
     // in general.
@@ -186,6 +191,7 @@ struct FuzzKey {
   PublicKey public_key;
   Token token;
   KeyType key_type;
+  absl::optional<uint32_t> rsa_key_size;
   // Contains imported net::X509Certificate certs. The corresponding kcer::Cert
   // certs will be found on the next ListCerts (from the related token) and
   // pending certs will be "converted" into kcer::Cert certs and stored in
@@ -207,6 +213,309 @@ struct FuzzKey {
   absl::optional<chaps::KeyPermissions> key_permissions;
   absl::optional<std::string> cert_provisioning_profile_id;
 };
+
+//==============================================================================
+
+class CertGenerator {
+ public:
+  CertGenerator(FuzzedDataProvider& data_provider,
+                base::span<const uint8_t> public_key_spki);
+  // Returns a randomized (possibly not valid) certificate for
+  // `public_key_spki`. The current implementation allows only a single call to
+  // this method per instance of the class.
+  scoped_refptr<net::X509Certificate> GetX509Cert();
+
+ private:
+  inline bool GetBool();
+  inline int GetInt();
+  inline uint64_t GetUint64();
+  inline std::string GetString();
+  inline std::vector<uint8_t> GetBytes();
+  inline GURL GetGurl();
+  inline net::IPAddress GetIpAddress();
+  std::vector<net::KeyUsageBit> GetKeyUsages();
+
+  void GenerateCert();
+
+  // The current implementation allows only a single call to the GetX509Cert().
+  // Not a hard requirement, can be changed if needed.
+  bool can_be_used_ = true;
+  FuzzedDataProvider& data_provider_;
+  base::span<const uint8_t> public_key_spki_;
+  std::unique_ptr<net::CertBuilder> issuer_;
+  std::unique_ptr<net::CertBuilder> cert_builder_;
+};
+
+CertGenerator::CertGenerator(FuzzedDataProvider& data_provider,
+                             base::span<const uint8_t> public_key_spki)
+    : data_provider_(data_provider), public_key_spki_(public_key_spki) {}
+
+scoped_refptr<net::X509Certificate> CertGenerator::GetX509Cert() {
+  CHECK(can_be_used_);
+  can_be_used_ = false;
+  GenerateCert();
+  return cert_builder_->GetX509Certificate();
+}
+
+bool CertGenerator::GetBool() {
+  // FuzzedDataProvider is expected to return false from ConsumeBool() when
+  // there's no remaining bytes, but make it more explicit since GenerateCert()
+  // relies on that.
+  return (data_provider_.remaining_bytes() > 0) && data_provider_.ConsumeBool();
+}
+
+int CertGenerator::GetInt() {
+  return data_provider_.ConsumeIntegral<int>();
+}
+
+uint64_t CertGenerator::GetUint64() {
+  return data_provider_.ConsumeIntegral<uint64_t>();
+}
+
+std::string CertGenerator::GetString() {
+  return data_provider_.ConsumeRandomLengthString();
+}
+
+inline std::vector<uint8_t> CertGenerator::GetBytes() {
+  size_t length = data_provider_.ConsumeIntegralInRange<size_t>(
+      0, /*max=*/data_provider_.remaining_bytes());
+  return data_provider_.ConsumeBytes<uint8_t>(length);
+}
+
+inline GURL CertGenerator::GetGurl() {
+  return GURL(data_provider_.ConsumeRandomLengthString());
+}
+
+inline net::IPAddress CertGenerator::GetIpAddress() {
+  bool use_ip4 = GetBool();
+  if (use_ip4) {
+    return net::IPAddress(data_provider_.ConsumeIntegral<uint8_t>(),
+                          data_provider_.ConsumeIntegral<uint8_t>(),
+                          data_provider_.ConsumeIntegral<uint8_t>(),
+                          data_provider_.ConsumeIntegral<uint8_t>());
+  } else {
+    return net::IPAddress(data_provider_.ConsumeIntegral<uint8_t>(),
+                          data_provider_.ConsumeIntegral<uint8_t>(),
+                          data_provider_.ConsumeIntegral<uint8_t>(),
+                          data_provider_.ConsumeIntegral<uint8_t>(),
+                          data_provider_.ConsumeIntegral<uint8_t>(),
+                          data_provider_.ConsumeIntegral<uint8_t>(),
+                          data_provider_.ConsumeIntegral<uint8_t>(),
+                          data_provider_.ConsumeIntegral<uint8_t>(),
+                          data_provider_.ConsumeIntegral<uint8_t>(),
+                          data_provider_.ConsumeIntegral<uint8_t>(),
+                          data_provider_.ConsumeIntegral<uint8_t>(),
+                          data_provider_.ConsumeIntegral<uint8_t>(),
+                          data_provider_.ConsumeIntegral<uint8_t>(),
+                          data_provider_.ConsumeIntegral<uint8_t>(),
+                          data_provider_.ConsumeIntegral<uint8_t>(),
+                          data_provider_.ConsumeIntegral<uint8_t>());
+  }
+}
+
+std::vector<net::KeyUsageBit> CertGenerator::GetKeyUsages() {
+  std::vector<net::KeyUsageBit> result;
+  uint16_t key_usages = data_provider_.ConsumeIntegral<uint16_t>();
+  if (key_usages & net::KEY_USAGE_BIT_DIGITAL_SIGNATURE) {
+    result.push_back(net::KEY_USAGE_BIT_DIGITAL_SIGNATURE);
+  }
+  if (key_usages & net::KEY_USAGE_BIT_NON_REPUDIATION) {
+    result.push_back(net::KEY_USAGE_BIT_NON_REPUDIATION);
+  }
+  if (key_usages & net::KEY_USAGE_BIT_KEY_ENCIPHERMENT) {
+    result.push_back(net::KEY_USAGE_BIT_KEY_ENCIPHERMENT);
+  }
+  if (key_usages & net::KEY_USAGE_BIT_DATA_ENCIPHERMENT) {
+    result.push_back(net::KEY_USAGE_BIT_DATA_ENCIPHERMENT);
+  }
+  if (key_usages & net::KEY_USAGE_BIT_KEY_AGREEMENT) {
+    result.push_back(net::KEY_USAGE_BIT_KEY_AGREEMENT);
+  }
+  if (key_usages & net::KEY_USAGE_BIT_KEY_CERT_SIGN) {
+    result.push_back(net::KEY_USAGE_BIT_KEY_CERT_SIGN);
+  }
+  if (key_usages & net::KEY_USAGE_BIT_CRL_SIGN) {
+    result.push_back(net::KEY_USAGE_BIT_CRL_SIGN);
+  }
+  if (key_usages & net::KEY_USAGE_BIT_ENCIPHER_ONLY) {
+    result.push_back(net::KEY_USAGE_BIT_ENCIPHER_ONLY);
+  }
+  if (key_usages & net::KEY_USAGE_BIT_DECIPHER_ONLY) {
+    result.push_back(net::KEY_USAGE_BIT_DECIPHER_ONLY);
+  }
+  return result;
+}
+
+void CertGenerator::GenerateCert() {
+  std::string issuer_common_name = data_provider_.ConsumeRandomLengthString();
+  bool issuer_uses_rsa_key = GetBool();
+
+  issuer_ = std::make_unique<net::CertBuilder>(/*orig_cert=*/nullptr,
+                                               /*issuer=*/nullptr);
+  issuer_->SetSubjectCommonName(std::move(issuer_common_name));
+  if (issuer_uses_rsa_key) {
+    issuer_->GenerateRSAKey();
+  } else {
+    issuer_->GenerateECKey();
+  }
+
+  cert_builder_ = net::CertBuilder::FromSubjectPublicKeyInfo(public_key_spki_,
+                                                             issuer_.get());
+  // Set some default values to increases the chances for a correct cert.
+  cert_builder_->SetSignatureAlgorithm(
+      issuer_uses_rsa_key ? net::SignatureAlgorithm::kRsaPkcs1Sha256
+                          : net::SignatureAlgorithm::kEcdsaSha256);
+  auto now = base::Time::Now();
+  cert_builder_->SetValidity(now, now + base::Days(30));
+  cert_builder_->SetSubjectCommonName("SubjectCommonName");
+  cert_builder_->SetSerialNumber(data_provider_.ConsumeIntegral<uint64_t>());
+  if ((data_provider_.remaining_bytes() == 0) || GetBool()) {
+    return;
+  }
+
+  // Randomize the cert.
+  if (GetBool()) {
+    // RFC 5280 guarantees that these values are from [0,2].
+    int version = data_provider_.ConsumeIntegralInRange(0, 2);
+    cert_builder_->SetCertificateVersion(
+        static_cast<net::CertificateVersion>(version));
+  }
+  if (GetBool()) {
+    cert_builder_->ClearExtensions();
+  }
+  for (int i = data_provider_.ConsumeIntegralInRange(0, 100);
+       (data_provider_.remaining_bytes() > 0) && (i > 0); --i) {
+    std::string oid_str = GetString();
+    std::string value = GetString();
+    bool critical = GetBool();
+    cert_builder_->SetExtension(net::der::Input(&oid_str), std::move(value),
+                                critical);
+  }
+  if (GetBool()) {
+    cert_builder_->SetBasicConstraints(/*is_ca=*/GetBool(),
+                                       /*path_len=*/GetInt());
+  }
+  if (GetBool()) {
+    std::vector<std::string> permitted_dns_names;
+    while (GetBool()) {
+      permitted_dns_names.push_back(GetString());
+    }
+    std::vector<std::string> excluded_dns_names;
+    while (GetBool()) {
+      excluded_dns_names.push_back(GetString());
+    }
+    cert_builder_->SetNameConstraintsDnsNames(permitted_dns_names,
+                                              excluded_dns_names);
+  }
+  if (GetBool()) {
+    std::vector<GURL> ca_issuers_urls;
+    while (GetBool()) {
+      ca_issuers_urls.push_back(GetGurl());
+    }
+    std::vector<GURL> ocsp_urls;
+    while (GetBool()) {
+      ocsp_urls.push_back(GetGurl());
+    }
+    cert_builder_->SetCaIssuersAndOCSPUrls(ca_issuers_urls, ocsp_urls);
+  }
+  if (GetBool()) {
+    std::vector<GURL> urls;
+    while (GetBool()) {
+      urls.emplace_back(GetString());
+    }
+    cert_builder_->SetCrlDistributionPointUrls(urls);
+  }
+  if (GetBool()) {
+    cert_builder_->SetIssuerTLV(GetBytes());
+  }
+  if (GetBool()) {
+    cert_builder_->SetSubjectCommonName(GetString());
+  }
+  if (GetBool()) {
+    cert_builder_->SetSubjectTLV(GetBytes());
+  }
+  if (GetBool()) {
+    std::vector<std::string> dns_names;
+    while (GetBool()) {
+      dns_names.push_back(GetString());
+    }
+    std::vector<net::IPAddress> ip_addresses;
+    while (GetBool()) {
+      ip_addresses.push_back(GetIpAddress());
+    }
+    cert_builder_->SetSubjectAltNames(dns_names, ip_addresses);
+  }
+  if (GetBool()) {
+    std::vector<net::KeyUsageBit> key_usages = GetKeyUsages();
+    if (!key_usages.empty()) {  // Empty not allowed.
+      cert_builder_->SetKeyUsages(key_usages);
+    }
+  }
+  if (GetBool()) {
+    std::vector<std::string> memory_holder;
+    std::vector<net::der::Input> purpose_oids;
+    while (GetBool()) {
+      memory_holder.push_back(GetString());
+      purpose_oids.emplace_back(&memory_holder.back());
+    }
+    if (!purpose_oids.empty()) {  // Empty not allowed.
+      cert_builder_->SetExtendedKeyUsages(purpose_oids);
+    }
+  }
+  if (GetBool()) {
+    std::vector<std::string> policy_oids;
+    while (GetBool()) {
+      policy_oids.push_back(GetString());
+    }
+    cert_builder_->SetCertificatePolicies(policy_oids);
+  }
+  if (GetBool()) {
+    std::vector<std::pair<std::string, std::string>> policy_mappings;
+    while (GetBool()) {
+      policy_mappings.emplace_back(GetString(), GetString());
+    }
+    cert_builder_->SetPolicyMappings(policy_mappings);
+  }
+  if (GetBool()) {
+    absl::optional<uint64_t> require_explicit_policy;
+    if (GetBool()) {
+      require_explicit_policy = GetUint64();
+    }
+    absl::optional<uint64_t> inhibit_policy_mapping;
+    if (GetBool()) {
+      inhibit_policy_mapping = GetUint64();
+    }
+    cert_builder_->SetPolicyConstraints(require_explicit_policy,
+                                        inhibit_policy_mapping);
+  }
+  if (GetBool()) {
+    cert_builder_->SetInhibitAnyPolicy(/*skip_certs=*/GetUint64());
+  }
+  if (GetBool()) {
+    base::Time not_before = base::Time() + base::Microseconds(GetUint64());
+    base::Time not_after = base::Time() + base::Microseconds(GetUint64());
+    cert_builder_->SetValidity(not_before, not_after);
+  }
+  if (GetBool()) {
+    cert_builder_->SetSubjectKeyIdentifier(GetString());
+  }
+  if (GetBool()) {
+    cert_builder_->SetAuthorityKeyIdentifier(GetString());
+  }
+  if (GetBool()) {
+    cert_builder_->SetSignatureAlgorithm(
+        data_provider_.ConsumeEnum<net::SignatureAlgorithm>());
+  }
+  if (GetBool()) {
+    cert_builder_->SetSignatureAlgorithmTLV(GetString());
+  }
+  if (GetBool()) {
+    cert_builder_->SetOuterSignatureAlgorithmTLV(GetString());
+  }
+  if (GetBool()) {
+    cert_builder_->SetTBSSignatureAlgorithmTLV(GetString());
+  }
+}
 
 //==============================================================================
 
@@ -388,9 +697,10 @@ void KcerFuzzer::RunGenerateRsaKey() {
   EXPECT_GE(spki->size(), 4u);
   EXPECT_EQ(public_key.GetToken(), token);
 
-  kcer_data_.emplace(std::move(spki),
-                     FuzzKey(std::move(public_key), token, KeyType::kRsa,
-                             /*can_be_listed=*/true));
+  kcer_data_.emplace(
+      std::move(spki),
+      FuzzKey(std::move(public_key), token, KeyType::kRsa, modulus_length_bits,
+              /*can_be_listed=*/true));
 }
 
 void KcerFuzzer::RunGenerateEcKey() {
@@ -420,6 +730,7 @@ void KcerFuzzer::RunGenerateEcKey() {
 
   kcer_data_.emplace(std::move(spki),
                      FuzzKey(std::move(public_key), token, KeyType::kEcc,
+                             /*rsa_key_size=*/absl::nullopt,
                              /*can_be_listed=*/true));
 }
 
@@ -456,6 +767,7 @@ void KcerFuzzer::RunImportKey() {
 
     kcer_data_.emplace(std::move(spki),
                        FuzzKey(std::move(public_key), token, KeyType::kRsa,
+                               /*rsa_key_size=*/absl::nullopt,
                                /*can_be_listed=*/false));
     return;
   }
@@ -470,16 +782,116 @@ void KcerFuzzer::RunImportKey() {
   }
 }
 
+// Runs `ImportCertFromBytes()` with random bytes as an input. It's generally
+// not expected that the bytes will encode a correct certificate.
 void KcerFuzzer::RunImportCertFromBytesUseRandomInput() {
-  // TODO(b:244408716): Implement.
+  Token token = data_provider_.ConsumeEnum<Token>();
+  CertDer cert(GetBytes(/*min=*/0));
+
+  base::test::TestFuture<base::expected<void, Error>> import_waiter;
+  kcer_->ImportCertFromBytes(token, cert, import_waiter.GetCallback());
+
+  if (!base::Contains(available_tokens_, token)) {
+    ASSERT_FALSE(import_waiter.Get().has_value());
+    EXPECT_EQ(import_waiter.Get().error(), Error::kTokenIsNotAvailable);
+    return;
+  }
+
+  // `cert` is probably incorrect, just fuzz for crashes here. Also see
+  // RunImportCertFromBytesUseValidCert().
+  EXPECT_TRUE(import_waiter.Wait());
+
+  if (import_waiter.Get().has_value()) {
+    scoped_refptr<net::X509Certificate> x509_cert =
+        net::X509Certificate::CreateFromBytes(std::move(cert).value());
+    // If Kcer imported it, it's expected to be parsable.
+    EXPECT_TRUE(x509_cert);
+    // TODO(miersh): The chances of randomly finding a cert are quite low. For
+    // simplicity just finish the fuzzer iteration with success. Ideally the
+    // fuzzer would extract the public key from the cert and assign the cert to
+    // the correct FuzzKey in `kcer_data_`,
+    // net/cert/asn1_util.h:ExtractSPKIFromDERCert() can potentially be used for
+    // that.
+    keep_fuzzing_ = false;
+    return;
+  }
 }
 
+// Generates a certificate for an existing key, encodes it as bytes and runs
+// `ImportCertFromBytes()` using the bytes as an input. The certificate is
+// randomized and can be invalid, but the general structure of the certificate
+// will be valid and the fuzzer is expected to find valid certificates quite
+// often.
 void KcerFuzzer::RunImportCertFromBytesUseValidCert() {
-  // TODO(b:244408716): Implement.
+  Token token = data_provider_.ConsumeEnum<Token>();
+  FuzzKey* key = SelectFuzzKey();
+  if (!key) {
+    return;
+  }
+  CertGenerator cert_generator(data_provider_,
+                               key->public_key.GetSpki().value());
+  scoped_refptr<net::X509Certificate> cert = cert_generator.GetX509Cert();
+  if (!cert) {
+    return;
+  }
+
+  base::span<const uint8_t> cert_data = GetCertData(cert);
+  CertDer cert_der(std::vector<uint8_t>(cert_data.begin(), cert_data.end()));
+
+  base::test::TestFuture<base::expected<void, Error>> import_waiter;
+  kcer_->ImportCertFromBytes(token, std::move(cert_der),
+                             import_waiter.GetCallback());
+
+  if (!base::Contains(available_tokens_, token)) {
+    ASSERT_FALSE(import_waiter.Get().has_value());
+    EXPECT_EQ(import_waiter.Get().error(), Error::kTokenIsNotAvailable);
+    return;
+  }
+
+  if (key->token != token) {
+    ASSERT_FALSE(import_waiter.Get().has_value());
+    EXPECT_EQ(import_waiter.Get().error(), Error::kKeyNotFound);
+    return;
+  }
+
+  if (import_waiter.Get().has_value()) {
+    key->nickname_known = false;
+    key->pending_certs.insert(cert);
+  }
 }
 
 void KcerFuzzer::RunImportX509Cert() {
-  // TODO(b:244408716): Implement.
+  Token token = data_provider_.ConsumeEnum<Token>();
+  FuzzKey* key = SelectFuzzKey();
+  if (!key) {
+    return;
+  }
+  CertGenerator cert_generator(data_provider_,
+                               key->public_key.GetSpki().value());
+  scoped_refptr<net::X509Certificate> cert = cert_generator.GetX509Cert();
+  if (!cert) {
+    return;
+  }
+
+  base::test::TestFuture<base::expected<void, Error>> import_waiter;
+  kcer_->ImportX509Cert(token, cert, import_waiter.GetCallback());
+
+  if (!base::Contains(available_tokens_, token)) {
+    ASSERT_FALSE(import_waiter.Get().has_value());
+    EXPECT_EQ(import_waiter.Get().error(), Error::kTokenIsNotAvailable);
+    return;
+  }
+
+  if (key->token != token) {
+    ASSERT_FALSE(import_waiter.Get().has_value());
+    EXPECT_EQ(import_waiter.Get().error(), Error::kKeyNotFound);
+    return;
+  }
+
+  if (import_waiter.Get().has_value()) {
+    key->nickname_known = false;
+    key->pending_certs.insert(cert);
+  }
 }
 
 void KcerFuzzer::RunRemoveKeyAndCerts() {
@@ -510,7 +922,40 @@ void KcerFuzzer::RunRemoveKeyAndCerts() {
 }
 
 void KcerFuzzer::RunRemoveCert() {
-  // TODO(b:244408716): Implement.
+  if (certs_counter_ == 0) {
+    return;
+  }
+
+  // This index describes an N-th cert across all keys.
+  size_t cert_idx = GetSizeT(certs_counter_ - 1);
+  // Iterate over all keys, count certs until the key holding the selected cert
+  // is found.
+  FuzzKey* key = nullptr;
+  size_t certs_counted = 0;
+  for (auto& [spki, kcer_key] : kcer_data_) {
+    if (certs_counted + kcer_key.certs.size() <= cert_idx) {
+      certs_counted += kcer_key.certs.size();
+      continue;
+    }
+    key = &kcer_key;
+    // Convert `cert_idx` into a local index for `key` (instead of a global
+    // one for all the keys).
+    cert_idx -= certs_counted;
+    break;
+  }
+  ASSERT_TRUE(key && (cert_idx < key->certs.size()));
+
+  auto cert_iter = key->certs.begin();
+  std::advance(cert_iter, cert_idx);
+
+  base::test::TestFuture<base::expected<void, Error>> remove_cert_waiter;
+  kcer_->RemoveCert(*cert_iter, remove_cert_waiter.GetCallback());
+
+  EXPECT_TRUE(remove_cert_waiter.Get().has_value());
+
+  // Remove the cert from `kcer_data_`.
+  key->certs.erase(cert_iter);
+  certs_counter_--;
 }
 
 void KcerFuzzer::RunListKeys() {
@@ -538,7 +983,60 @@ void KcerFuzzer::RunListKeys() {
 }
 
 void KcerFuzzer::RunListCerts() {
-  // TODO(b:244408716): Implement.
+  base::flat_set<Token> tokens = SelectTokens();
+
+  base::test::TestFuture<std::vector<scoped_refptr<const Cert>>,
+                         base::flat_map<Token, Error>>
+      list_certs_waiter;
+  kcer_->ListCerts(tokens, list_certs_waiter.GetCallback());
+
+  const std::vector<scoped_refptr<const Cert>>& certs =
+      list_certs_waiter.Get<0>();
+  std::unordered_set<scoped_refptr<const Cert>, FuzzHash, FuzzEqual>
+      listed_certs(certs.begin(), certs.end());
+
+  for (auto& [spki, kcer_key] : kcer_data_) {
+    // Skip data that is on unrelated tokens and should not have been found.
+    if (!base::Contains(tokens, kcer_key.public_key.GetToken())) {
+      continue;
+    }
+    // Check that all known certs are found. Remove matched certs from the
+    // `listed_certs`.
+    for (const scoped_refptr<const Cert>& cert : kcer_key.certs) {
+      auto iter = listed_certs.find(cert);
+      EXPECT_TRUE(iter != listed_certs.end());
+      listed_certs.erase(iter);
+    }
+    // Check that all pending certs are found. Replace pending
+    // net::X509Certificate objects with the found kcer::Cert alternatives.
+    // Found certs are extracted (i.e. removed) from `listed_certs`.
+    for (const scoped_refptr<net::X509Certificate>& cert :
+         kcer_key.pending_certs) {
+      auto iter = listed_certs.find(cert);
+      EXPECT_TRUE(iter != listed_certs.end());
+      scoped_refptr<const Cert> found_cert =
+          std::move(listed_certs.extract(iter)).value();
+      // kcer_certs_.insert(found_cert);
+      kcer_key.certs.insert(std::move(found_cert));
+      certs_counter_++;
+    }
+    // All pending certs were found and replaced, the set can be cleared
+    // now.
+    kcer_key.pending_certs.clear();
+  }
+  // If `listed_certs` are not empty by this point, some additional unexpected
+  // certs were found.
+  EXPECT_TRUE(listed_certs.empty());
+
+  const base::flat_map<Token, Error>& errors = list_certs_waiter.Get<1>();
+  for (const auto& [token, error] : errors) {
+    if (error == Error::kTokenIsNotAvailable) {
+      EXPECT_FALSE(base::Contains(available_tokens_, token));
+    } else {
+      // Other errors are not expected.
+      ADD_FAILURE();
+    }
+  }
 }
 
 void KcerFuzzer::RunDoesPrivateKeyExist() {
@@ -567,44 +1065,297 @@ void KcerFuzzer::RunDoesPrivateKeyExist() {
   }
 }
 
+std::vector<SigningScheme> GetAllSigningSchemes() {
+  std::vector<SigningScheme> all_schemes;
+  all_schemes.reserve(10);
+  // Effectively unused.
+  SigningScheme a = SigningScheme::kRsaPkcs1Sha1;
+  // Use switch-case to ensure that all values are handled.
+  switch (a) {
+    case SigningScheme::kRsaPkcs1Sha1:
+      all_schemes.push_back(SigningScheme::kRsaPkcs1Sha1);
+      [[fallthrough]];
+    case SigningScheme::kRsaPkcs1Sha256:
+      all_schemes.push_back(SigningScheme::kRsaPkcs1Sha256);
+      [[fallthrough]];
+    case SigningScheme::kRsaPkcs1Sha384:
+      all_schemes.push_back(SigningScheme::kRsaPkcs1Sha384);
+      [[fallthrough]];
+    case SigningScheme::kRsaPkcs1Sha512:
+      all_schemes.push_back(SigningScheme::kRsaPkcs1Sha512);
+      [[fallthrough]];
+    case SigningScheme::kEcdsaSecp256r1Sha256:
+      all_schemes.push_back(SigningScheme::kEcdsaSecp256r1Sha256);
+      [[fallthrough]];
+    case SigningScheme::kEcdsaSecp384r1Sha384:
+      all_schemes.push_back(SigningScheme::kEcdsaSecp384r1Sha384);
+      [[fallthrough]];
+    case SigningScheme::kEcdsaSecp521r1Sha512:
+      all_schemes.push_back(SigningScheme::kEcdsaSecp521r1Sha512);
+      [[fallthrough]];
+    case SigningScheme::kRsaPssRsaeSha256:
+      all_schemes.push_back(SigningScheme::kRsaPssRsaeSha256);
+      [[fallthrough]];
+    case SigningScheme::kRsaPssRsaeSha384:
+      all_schemes.push_back(SigningScheme::kRsaPssRsaeSha384);
+      [[fallthrough]];
+    case SigningScheme::kRsaPssRsaeSha512:
+      all_schemes.push_back(SigningScheme::kRsaPssRsaeSha512);
+  }
+  return all_schemes;
+}
+
+bool DoesKeyTypeMatchSigningScheme(KeyType key_type,
+                                   SigningScheme signing_scheme) {
+  switch (signing_scheme) {
+    case SigningScheme::kRsaPkcs1Sha1:
+    case SigningScheme::kRsaPkcs1Sha256:
+    case SigningScheme::kRsaPkcs1Sha384:
+    case SigningScheme::kRsaPkcs1Sha512:
+    case SigningScheme::kRsaPssRsaeSha256:
+    case SigningScheme::kRsaPssRsaeSha384:
+    case SigningScheme::kRsaPssRsaeSha512:
+      return (key_type == KeyType::kRsa);
+    case SigningScheme::kEcdsaSecp256r1Sha256:
+    case SigningScheme::kEcdsaSecp384r1Sha384:
+    case SigningScheme::kEcdsaSecp521r1Sha512:
+      return (key_type == KeyType::kEcc);
+  }
+}
+
 void KcerFuzzer::RunSign() {
-  // TODO(b:244408716): Implement.
+  FuzzKey* expected_key = nullptr;
+  PrivateKeyHandle key_handle = GeneratePrivateKeyHandle(&expected_key);
+
+  // Cannot use ConsumeEnum() because the values are not sequential.
+  static std::vector<SigningScheme> all_schemes = GetAllSigningSchemes();
+  SigningScheme signing_scheme =
+      all_schemes.at(GetSizeT(all_schemes.size() - 1));
+
+  DataToSign data_to_sign(GetBytes(/*min=*/0));
+
+  base::test::TestFuture<base::expected<Signature, Error>> sign_waiter;
+  kcer_->Sign(key_handle, signing_scheme, data_to_sign,
+              sign_waiter.GetCallback());
+
+  if (!expected_key) {
+    EXPECT_FALSE(sign_waiter.Get().has_value());
+    return;
+  }
+
+  if (sign_waiter.Get().has_value()) {
+    // Not strict, i.e. silently skip verification for signing schemes if it's
+    // not implemented yet.
+    EXPECT_TRUE(VerifySignature(
+        signing_scheme, expected_key->public_key.GetSpki(), data_to_sign,
+        sign_waiter.Get().value(), /*strict=*/false));
+    return;
+  }
+
+  if (sign_waiter.Get().error() == Error::kKeyDoesNotSupportSigningScheme) {
+    EXPECT_FALSE(
+        DoesKeyTypeMatchSigningScheme(expected_key->key_type, signing_scheme));
+    return;
+  }
+
+  if (expected_key->rsa_key_size.has_value() &&
+      (expected_key->rsa_key_size.value() < 1034) &&
+      (signing_scheme == SigningScheme::kRsaPssRsaeSha512)) {
+    // The key is too small, a failure is expected.
+    return;
+  }
+
+  // No other errors is expected.
+  ADD_FAILURE() << "Unexpected error: " << sign_waiter.Get().error();
 }
 
 // Runs SignRsaPkcs1Raw() with a random input, most likely incorrect one.
 // Primarily check for crashes.
 void KcerFuzzer::RunSignRsaPkcs1Digest() {
-  // TODO(b:244408716): Implement.
+  FuzzKey* expected_key = nullptr;
+  PrivateKeyHandle key_handle = GeneratePrivateKeyHandle(&expected_key);
+
+  DigestWithPrefix digest_with_prefix(GetBytes(/*min=*/0));
+
+  base::test::TestFuture<base::expected<Signature, Error>> sign_waiter;
+  kcer_->SignRsaPkcs1Raw(key_handle, std::move(digest_with_prefix),
+                         sign_waiter.GetCallback());
+
+  if (!expected_key) {
+    EXPECT_FALSE(sign_waiter.Get().has_value());
+
+    return;
+  }
+
+  // Can't check the signature without knowing the original data. Just fuzz for
+  // crashes here. Also see RunSignRsaPkcs1DigestAndVerifySignature().
+  EXPECT_TRUE(sign_waiter.Wait());
 }
 
 // Runs SignRsaPkcs1Raw() with a correct DigestWithPrefix and verifies the
 // signature for it.
 void KcerFuzzer::RunSignRsaPkcs1DigestAndVerifySignature() {
-  // TODO(b:244408716): Implement.
+  FuzzKey* expected_key = nullptr;
+  PrivateKeyHandle key_handle = GeneratePrivateKeyHandle(&expected_key);
+
+  DataToSign data_to_sign(GetBytes(/*min=*/0));
+
+  auto hasher = crypto::SecureHash::Create(crypto::SecureHash::SHA256);
+  hasher->Update(data_to_sign->data(), data_to_sign->size());
+  std::vector<uint8_t> hash(hasher->GetHashLength());
+  hasher->Finish(hash.data(), hash.size());
+  DigestWithPrefix digest_with_prefix(PrependSHA256DigestInfo(hash));
+
+  base::test::TestFuture<base::expected<Signature, Error>> sign_waiter;
+  kcer_->SignRsaPkcs1Raw(key_handle, std::move(digest_with_prefix),
+                         sign_waiter.GetCallback());
+
+  if (!expected_key) {
+    EXPECT_FALSE(sign_waiter.Get().has_value());
+
+    return;
+  }
+
+  if (sign_waiter.Get().has_value()) {
+    EXPECT_TRUE(VerifySignature(SigningScheme::kRsaPkcs1Sha256,
+                                expected_key->public_key.GetSpki(),
+                                data_to_sign, sign_waiter.Get().value()));
+  }
 }
 
 void KcerFuzzer::RunGetAvailableTokens() {
-  // TODO(b:244408716): Implement.
+  base::flat_set<Token> available_tokens = kcer_->GetAvailableTokens();
+
+  for (const auto& [expected_token, v] : available_tokens_) {
+    EXPECT_TRUE(base::Contains(available_tokens, expected_token));
+  }
 }
 
 void KcerFuzzer::RunGetTokenInfo() {
-  // TODO(b:244408716): Implement.
+  Token token = data_provider_.ConsumeEnum<Token>();
+
+  base::test::TestFuture<base::expected<TokenInfo, Error>> token_info_waiter;
+  kcer_->GetTokenInfo(token, token_info_waiter.GetCallback());
+
+  if (!base::Contains(available_tokens_, token)) {
+    ASSERT_FALSE(token_info_waiter.Get().has_value());
+    EXPECT_EQ(token_info_waiter.Get().error(), Error::kTokenIsNotAvailable);
+
+    return;
+  }
+
+  ASSERT_TRUE(token_info_waiter.Get().has_value());
+  const TokenInfo& token_info = token_info_waiter.Get().value();
+  // These values don't have to be exactly like this, they are what a software
+  // NSS slot returns in tests. Still useful to test that they are not
+  // completely off.
+  EXPECT_THAT(token_info.pkcs11_id, testing::Lt(1000u));
+  EXPECT_THAT(token_info.token_name,
+              testing::StartsWith("NSS Application Slot"));
+  EXPECT_EQ(token_info.module_name, "NSS Internal PKCS #11 Module");
 }
 
 void KcerFuzzer::RunGetKeyInfo() {
-  // TODO(b:244408716): Implement.
+  FuzzKey* expected_key = nullptr;
+  PrivateKeyHandle key_handle = GeneratePrivateKeyHandle(&expected_key);
+
+  base::test::TestFuture<base::expected<KeyInfo, Error>> key_info_waiter;
+  kcer_->GetKeyInfo(key_handle, key_info_waiter.GetCallback());
+
+  if (available_tokens_.empty() ||
+      (key_handle.GetTokenInternal().has_value() &&
+       !base::Contains(available_tokens_,
+                       key_handle.GetTokenInternal().value()))) {
+    ASSERT_FALSE(key_info_waiter.Get().has_value());
+    EXPECT_EQ(key_info_waiter.Get().error(), Error::kTokenIsNotAvailable);
+
+    return;
+  }
+
+  if (!expected_key) {
+    EXPECT_FALSE(key_info_waiter.Get().has_value());
+
+    return;
+  }
+  ASSERT_TRUE(key_info_waiter.Get().has_value());
+  const KeyInfo& key_info = key_info_waiter.Get().value();
+
+  // Software-backed keys are never generated in the current implementation.
+  EXPECT_EQ(key_info.is_hardware_backed, true);
+  EXPECT_EQ(key_info.key_type, expected_key->key_type);
+
+  if (expected_key->nickname_known) {
+    EXPECT_EQ(key_info.nickname, expected_key->nickname);
+  }
+  EXPECT_TRUE(KeyPermissionsEqual(key_info.key_permissions,
+                                  expected_key->key_permissions));
+  EXPECT_EQ(key_info.cert_provisioning_profile_id,
+            expected_key->cert_provisioning_profile_id);
 }
 
 void KcerFuzzer::RunSetKeyNickname() {
-  // TODO(b:244408716): Implement.
+  FuzzKey* expected_key = nullptr;
+  PrivateKeyHandle key_handle = GeneratePrivateKeyHandle(&expected_key);
+  std::string nickname = data_provider_.ConsumeRandomLengthString();
+
+  base::test::TestFuture<base::expected<void, Error>> set_nickname_waiter;
+  kcer_->SetKeyNickname(std::move(key_handle), nickname,
+                        set_nickname_waiter.GetCallback());
+  if (!expected_key) {
+    EXPECT_FALSE(set_nickname_waiter.Get().has_value());
+    return;
+  }
+
+  EXPECT_TRUE(set_nickname_waiter.Get().has_value());
+  expected_key->nickname_known = true;
+
+  // Fuzzer can generate strings with null characters inside. Kcer is expected
+  // to only handle the beginning of the string until the first null character.
+  auto pos = nickname.find('\0');
+  if (pos != std::string::npos) {
+    nickname.resize(pos);
+  }
+
+  expected_key->nickname = nickname;
 }
 
 void KcerFuzzer::RunSetKeyPermissions() {
-  // TODO(b:244408716): Implement.
+  FuzzKey* expected_key = nullptr;
+  PrivateKeyHandle key_handle = GeneratePrivateKeyHandle(&expected_key);
+  chaps::KeyPermissions key_permissions;
+  key_permissions.mutable_key_usages()->set_arc(data_provider_.ConsumeBool());
+  key_permissions.mutable_key_usages()->set_corporate(
+      data_provider_.ConsumeBool());
+
+  base::test::TestFuture<base::expected<void, Error>> set_permissions_waiter;
+  kcer_->SetKeyPermissions(std::move(key_handle), key_permissions,
+                           set_permissions_waiter.GetCallback());
+  if (!expected_key) {
+    EXPECT_FALSE(set_permissions_waiter.Get().has_value());
+
+    return;
+  }
+
+  EXPECT_TRUE(set_permissions_waiter.Get().has_value());
+  expected_key->key_permissions = key_permissions;
 }
 
 void KcerFuzzer::RunSetCertProvisioningProfileId() {
-  // TODO(b:244408716): Implement.
+  FuzzKey* expected_key = nullptr;
+  PrivateKeyHandle key_handle = GeneratePrivateKeyHandle(&expected_key);
+  std::string cert_prov_id = data_provider_.ConsumeRandomLengthString();
+
+  base::test::TestFuture<base::expected<void, Error>> set_cert_prov_id_waiter;
+  kcer_->SetCertProvisioningProfileId(std::move(key_handle), cert_prov_id,
+                                      set_cert_prov_id_waiter.GetCallback());
+  if (!expected_key) {
+    EXPECT_FALSE(set_cert_prov_id_waiter.Get().has_value());
+
+    return;
+  }
+
+  EXPECT_TRUE(set_cert_prov_id_waiter.Get().has_value());
+  expected_key->cert_provisioning_profile_id = cert_prov_id;
 }
 
 base::flat_set<Token> KcerFuzzer::SelectTokens() {
@@ -746,5 +1497,9 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   kcer::KcerFuzzer fuzzer(data, size);
   fuzzer.Run();
 
-  return testing::Test::HasFailure() ? -1 : 0;
+  if (testing::Test::HasFailure()) {
+    // Simulate a crash to make the fuzzer report the issue.
+    abort();
+  }
+  return 0;
 }

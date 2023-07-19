@@ -894,6 +894,11 @@ void CertBuilder::SetTBSSignatureAlgorithmTLV(
   Invalidate();
 }
 
+void CertBuilder::SetSerialNumber(uint64_t serial_number) {
+  serial_number_ = serial_number;
+  Invalidate();
+}
+
 void CertBuilder::SetRandomSerialNumber() {
   serial_number_ = base::RandUint64();
   Invalidate();

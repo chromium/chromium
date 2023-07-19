@@ -44,6 +44,7 @@ enum class SignatureAlgorithm {
   kRsaPssSha256,
   kRsaPssSha384,
   kRsaPssSha512,
+  kMaxValue = kRsaPssSha512,
 };
 
 // Parses AlgorithmIdentifier as defined by RFC 5280 section 4.1.1.2:

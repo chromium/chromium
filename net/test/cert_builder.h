@@ -262,6 +262,7 @@ class CertBuilder {
   // comment for general notes.
   void SetTBSSignatureAlgorithmTLV(base::StringPiece signature_algorithm_tlv);
 
+  void SetSerialNumber(uint64_t serial_number);
   void SetRandomSerialNumber();
 
   // Sets the private key for the generated certificate to an EC key. If a key
