@@ -111,7 +111,7 @@ namespace {
 // active in the current web state of `browser`, this returns true. Otherwise,
 // returns false.
 bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
-  if (!IsNativeFindInPageAvailable()) {
+  if (!IsNativeFindInPageAvailable() || !browser) {
     return false;
   }
 
