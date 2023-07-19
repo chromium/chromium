@@ -124,6 +124,17 @@ class DIPSRedirectContext {
     return redirects_.size() + redirect_prefix_count_;
   }
 
+  bool HasUrlInRedirectChain(const GURL& url) {
+    const std::string site = GetSiteForDIPS(url);
+
+    for (const auto& redirect : redirects_) {
+      if (GetSiteForDIPS(redirect->url) == site) {
+        return true;
+      }
+    }
+    return false;
+  }
+
  private:
   void AppendClientRedirect(DIPSRedirectInfoPtr client_redirect);
   void AppendServerRedirects(std::vector<DIPSRedirectInfoPtr> server_redirects);
@@ -240,6 +251,8 @@ class DIPSBounceDetector {
   void OnServerCookiesAccessed(DIPSNavigationHandle* navigation_handle,
                                const GURL& url,
                                CookieOperation op);
+  void RecordRedirectHeuristic(const ukm::SourceId& source_id,
+                               const content::CookieAccessDetails& details);
   void OnWorkerInitialized(const GURL& url);
   void DidFinishNavigation(DIPSNavigationHandle* navigation_handle);
   // Only records a new user activation event once per

@@ -17,6 +17,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/dips/dips_service.h"
 #include "chrome/browser/dips/dips_service_factory.h"
 #include "chrome/browser/dips/dips_test_utils.h"
@@ -391,8 +392,11 @@ class DIPSBounceDetectorBrowserTest : public PlatformBrowserTest {
     host_resolver()->AddRule("b.test", "127.0.0.1");
     host_resolver()->AddRule("sub.b.test", "127.0.0.1");
     host_resolver()->AddRule("c.test", "127.0.0.1");
+    host_resolver()->AddRule("sub.c.test", "127.0.0.1");
     host_resolver()->AddRule("d.test", "127.0.0.1");
+    host_resolver()->AddRule("sub.d.test", "127.0.0.1");
     host_resolver()->AddRule("e.test", "127.0.0.1");
+    host_resolver()->AddRule("sub.e.test", "127.0.0.1");
     host_resolver()->AddRule("f.test", "127.0.0.1");
     host_resolver()->AddRule("g.test", "127.0.0.1");
     SetUpDIPSWebContentsObserver();
@@ -419,10 +423,16 @@ class DIPSBounceDetectorBrowserTest : public PlatformBrowserTest {
 
   // Navigate to /set-cookie on `host` and wait for OnCookiesAccessed() to be
   // called.
-  [[nodiscard]] bool NavigateToSetCookie(base::StringPiece host) {
+  [[nodiscard]] bool NavigateToSetCookie(const net::EmbeddedTestServer* server,
+                                         base::StringPiece host,
+                                         bool is_secure_cookie_set) {
     auto* web_contents = GetActiveWebContents();
-    const auto url =
-        embedded_test_server()->GetURL(host, "/set-cookie?name=value");
+    std::string relative_url = "/set-cookie?name=value";
+    if (is_secure_cookie_set) {
+      relative_url += ";Secure;SameSite=None";
+    }
+    const auto url = server->GetURL(host, relative_url);
+
     URLCookieAccessObserver observer(web_contents, url,
                                      CookieOperation::kChange);
     bool success = content::NavigateToURL(web_contents, url);
@@ -1044,10 +1054,14 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
   content::WebContents* web_contents = GetActiveWebContents();
 
   // Set cookies on all 4 test domains
-  ASSERT_TRUE(NavigateToSetCookie("a.test"));
-  ASSERT_TRUE(NavigateToSetCookie("b.test"));
-  ASSERT_TRUE(NavigateToSetCookie("c.test"));
-  ASSERT_TRUE(NavigateToSetCookie("d.test"));
+  ASSERT_TRUE(NavigateToSetCookie(embedded_test_server(), "a.test",
+                                  /*is_secure_cookie_set=*/false));
+  ASSERT_TRUE(NavigateToSetCookie(embedded_test_server(), "b.test",
+                                  /*is_secure_cookie_set=*/false));
+  ASSERT_TRUE(NavigateToSetCookie(embedded_test_server(), "c.test",
+                                  /*is_secure_cookie_set=*/false));
+  ASSERT_TRUE(NavigateToSetCookie(embedded_test_server(), "d.test",
+                                  /*is_secure_cookie_set=*/false));
 
   // Start logging WebContentsObserver callbacks.
   WCOCallbackLogger::CreateForWebContents(web_contents);
@@ -1532,6 +1546,124 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
                   "[1/1] blank -> "
                   "b.test/cross-site-with-cookie/c.test/title1.html (Write) -> "
                   "c.test/title1.html")));
+}
+
+// Tests building and recording the RedirectHeuristic_CookieAccess UKM event.
+IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
+                       RecordsRedirectHeuristicCookieAccessEvent) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+  WebContents* web_contents = GetActiveWebContents();
+
+  // We host the "image" on an HTTPS server, because for it to write a
+  // cookie, the cookie needs to be SameSite=None and Secure.
+  net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
+  https_server.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+  https_server.AddDefaultHandlers(
+      base::FilePath(FILE_PATH_LITERAL("chrome/test/data")));
+  ASSERT_TRUE(https_server.Start());
+
+  GURL initial_url = embedded_test_server()->GetURL("a.test", "/title1.html");
+
+  GURL tracker_url_pre_target_redirect =
+      embedded_test_server()->GetURL("b.test", "/title1.html");
+  GURL image_url_pre_target_redirect =
+      https_server.GetURL("sub.b.test", "/favicon/icon.png");
+
+  GURL target_url_3pc_allowed =
+      embedded_test_server()->GetURL("d.test", "/title1.html");
+  GURL image_url_3pc_allowed =
+      https_server.GetURL("sub.d.test", "/favicon/icon.png");
+  GURL target_url_3pc_blocked =
+      embedded_test_server()->GetURL("e.test", "/title1.html");
+
+  GURL tracker_url_post_target_redirect =
+      embedded_test_server()->GetURL("c.test", "/title1.html");
+  GURL image_url_post_target_redirect =
+      https_server.GetURL("sub.c.test", "/favicon/icon.png");
+
+  GURL final_url = embedded_test_server()->GetURL("f.test", "/title1.html");
+
+  // Initialize 3PC settings for the target sites.
+  HostContentSettingsMap* map = HostContentSettingsMapFactory::GetForProfile(
+      web_contents->GetBrowserContext());
+  map->SetContentSettingCustomScope(ContentSettingsPattern::Wildcard(),
+                                    ContentSettingsPattern::FromString(
+                                        "[*.]" + target_url_3pc_allowed.host()),
+                                    ContentSettingsType::COOKIES,
+                                    ContentSetting::CONTENT_SETTING_ALLOW);
+  map->SetContentSettingCustomScope(ContentSettingsPattern::Wildcard(),
+                                    ContentSettingsPattern::FromString(
+                                        "[*.]" + target_url_3pc_blocked.host()),
+                                    ContentSettingsType::COOKIES,
+                                    ContentSetting::CONTENT_SETTING_BLOCK);
+
+  // Set cookies on image URLs.
+  ASSERT_TRUE(NavigateToSetCookie(&https_server, "sub.b.test",
+                                  /*is_secure_cookie_set=*/true));
+  ASSERT_TRUE(NavigateToSetCookie(&https_server, "sub.c.test",
+                                  /*is_secure_cookie_set=*/true));
+  ASSERT_TRUE(NavigateToSetCookie(&https_server, "sub.d.test",
+                                  /*is_secure_cookie_set=*/true));
+
+  // Visit initial page.
+  ASSERT_TRUE(content::NavigateToURL(web_contents, initial_url));
+  // Redirect to tracking URL.
+  ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
+      web_contents, tracker_url_pre_target_redirect));
+
+  // Redirect to first target URL.
+  ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
+      web_contents, target_url_3pc_allowed));
+  // Read a cookie from the tracking URL.
+  CreateImageAndWaitForCookieAccess(image_url_pre_target_redirect);
+  // Read a cookie from the second tracking URL.
+  CreateImageAndWaitForCookieAccess(image_url_post_target_redirect);
+  // Read a cookie from an image with the same domain as the current URL.
+  CreateImageAndWaitForCookieAccess(image_url_3pc_allowed);
+
+  // Redirect to second target URL.
+  ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
+      web_contents, target_url_3pc_blocked));
+  // Read a cookie from the tracking URL.
+  CreateImageAndWaitForCookieAccess(image_url_pre_target_redirect);
+
+  // Redirect to second tracking URL. (This has no effect since the cookie
+  // accesses already happened.)
+  ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
+      web_contents, tracker_url_post_target_redirect));
+  // Redirect to final URL.
+  ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(web_contents,
+                                                                   final_url));
+
+  EndRedirectChain();
+
+  std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry> ukm_entries =
+      ukm_recorder.GetEntries("RedirectHeuristic.CookieAccess",
+                              {"AccessAllowed"});
+
+  // Expect two UKM entries.
+
+  // Include the cookies reads where:
+  // - A tracking site read cookies while embedded on a site later in the
+  // redirect chain.
+  // - A tracking site attempted to read cookies while embedded on a site later
+  // in the redirect chain, but was blocked.
+
+  // Exclude the cookies reads where:
+  // - The tracking site did not appear in the prior redirect chain.
+  // - The tracking and target sites had the same domain.
+  ASSERT_EQ(2u, ukm_entries.size());
+
+  EXPECT_THAT(
+      ukm_recorder.GetSourceForSourceId(ukm_entries[0].source_id)->url(),
+      Eq(target_url_3pc_allowed));
+  EXPECT_THAT(ukm_entries[0].metrics, ElementsAre(Pair("AccessAllowed", true)));
+
+  EXPECT_THAT(
+      ukm_recorder.GetSourceForSourceId(ukm_entries[1].source_id)->url(),
+      Eq(target_url_3pc_blocked));
+  EXPECT_THAT(ukm_entries[1].metrics,
+              ElementsAre(Pair("AccessAllowed", false)));
 }
 
 class DIPSBounceTrackingDevToolsIssueTest

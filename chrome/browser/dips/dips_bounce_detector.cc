@@ -35,7 +35,9 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "net/cookies/canonical_cookie.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -574,6 +576,12 @@ bool HasCHIPS(const net::CookieList& cookie_list) {
 void DIPSWebContentsObserver::OnCookiesAccessed(
     content::RenderFrameHost* render_frame_host,
     const content::CookieAccessDetails& details) {
+  detector_.RecordRedirectHeuristic(render_frame_host->GetPageUkmSourceId(),
+                                    details);
+
+  // Discard all notifications that are:
+  // - From other page types like FencedFrames and Prerendered.
+  // - Blocked by policies.
   if (!IsInPrimaryPage(render_frame_host) || details.blocked_by_policy) {
     return;
   }
@@ -594,8 +602,11 @@ void DIPSWebContentsObserver::OnCookiesAccessed(
 void DIPSWebContentsObserver::OnCookiesAccessed(
     NavigationHandle* navigation_handle,
     const content::CookieAccessDetails& details) {
+  detector_.RecordRedirectHeuristic(navigation_handle->GetNextPageUkmSourceId(),
+                                    details);
+
   // Discard all notifications that are:
-  // - From other page types like FencedFrames, and Prerendered.
+  // - From other page types like FencedFrames and Prerendered.
   // - Blocked by policies.
   if (!IsInPrimaryPage(navigation_handle) || details.blocked_by_policy) {
     return;
@@ -653,6 +664,27 @@ void DIPSBounceDetector::OnServerCookiesAccessed(
   if (state) {
     state->filter.AddAccess(url, op);
   }
+}
+
+void DIPSBounceDetector::RecordRedirectHeuristic(
+    const ukm::SourceId& source_id,
+    const content::CookieAccessDetails& details) {
+  // The redirect heuristic only applies when a main frame URL from earlier in
+  // the redirect chain is now attempting to access cookies as a tracker on the
+  // current main frame URL.
+  if (details.first_party_url == details.url ||
+      !committed_redirect_context_.HasUrlInRedirectChain(details.url)) {
+    return;
+  }
+
+  // TODO(b/291101513): Record other UKM metrics:
+  // - SitesPassedCount
+  // - MillisecondsSinceRedirect
+  // - HoursSinceLastInteraction
+  // - OpenerHasSameSiteIframe
+  ukm::builders::RedirectHeuristic_CookieAccess(source_id)
+      .SetAccessAllowed(!details.blocked_by_policy)
+      .Record(ukm::UkmRecorder::Get());
 }
 
 void DIPSWebContentsObserver::OnServiceWorkerAccessed(
