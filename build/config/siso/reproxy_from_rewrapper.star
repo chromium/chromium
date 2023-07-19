@@ -133,7 +133,7 @@ __handlers = {
 }
 
 def __enabled(ctx):
-    if config.get(ctx, "rewrapper_to_reproxy") and "args.gn" in ctx.metadata:
+    if "args.gn" in ctx.metadata:
         gn_args = gn.parse_args(ctx.metadata["args.gn"])
         if gn_args.get("use_remoteexec") == "true":
             return True
