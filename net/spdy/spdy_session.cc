@@ -340,19 +340,6 @@ base::Value::Dict NetLogSpdyRecvGoAwayParams(spdy::SpdyStreamId last_stream_id,
   return dict;
 }
 
-// TODO(https://crbug.com/1426477): Remove.
-base::Value::Dict NetLogSpdyPushPromiseReceivedParams(
-    const spdy::Http2HeaderBlock* headers,
-    spdy::SpdyStreamId stream_id,
-    spdy::SpdyStreamId promised_stream_id,
-    NetLogCaptureMode capture_mode) {
-  base::Value::Dict dict;
-  dict.Set("headers", ElideHttp2HeaderBlockForNetLog(*headers, capture_mode));
-  dict.Set("id", static_cast<int>(stream_id));
-  dict.Set("promised_stream_id", static_cast<int>(promised_stream_id));
-  return dict;
-}
-
 base::Value::Dict NetLogSpdySessionStalledParams(size_t num_active_streams,
                                                  size_t num_created_streams,
                                                  size_t max_concurrent_streams,
@@ -1752,17 +1739,6 @@ void SpdySession::ProcessPendingStreamRequests() {
   }
 }
 
-void SpdySession::TryCreatePushStream(spdy::SpdyStreamId stream_id,
-                                      spdy::SpdyStreamId associated_stream_id,
-                                      spdy::Http2HeaderBlock headers) {
-  // Pushed streams are speculative, so they start at an IDLE priority.
-  // TODO(bnc): Send pushed stream cancellation with higher priority to avoid
-  // wasting bandwidth.
-  const RequestPriority request_priority = IDLE;
-  EnqueueResetStreamFrame(stream_id, request_priority,
-                          spdy::ERROR_CODE_REFUSED_STREAM, "Push is disabled.");
-}
-
 void SpdySession::CloseActiveStreamIterator(ActiveStreamMap::iterator it,
                                             int status) {
   // TODO(mbelshe): We should send a RST_STREAM control frame here
@@ -2979,19 +2955,11 @@ void SpdySession::OnWindowUpdate(spdy::SpdyStreamId stream_id,
   }
 }
 
-void SpdySession::OnPushPromise(spdy::SpdyStreamId stream_id,
-                                spdy::SpdyStreamId promised_stream_id,
-                                spdy::Http2HeaderBlock headers) {
+void SpdySession::OnPushPromise(spdy::SpdyStreamId /*stream_id*/,
+                                spdy::SpdyStreamId /*promised_stream_id*/,
+                                spdy::Http2HeaderBlock /*headers*/) {
   CHECK(in_io_loop_);
-
-  net_log_.AddEvent(NetLogEventType::HTTP2_SESSION_RECV_PUSH_PROMISE,
-                    [&](NetLogCaptureMode capture_mode) {
-                      return NetLogSpdyPushPromiseReceivedParams(
-                          &headers, stream_id, promised_stream_id,
-                          capture_mode);
-                    });
-
-  TryCreatePushStream(promised_stream_id, stream_id, std::move(headers));
+  DoDrainSession(ERR_HTTP2_PROTOCOL_ERROR, "PUSH_PROMISE received");
 }
 
 void SpdySession::OnHeaders(spdy::SpdyStreamId stream_id,
