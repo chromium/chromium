@@ -135,6 +135,18 @@
     "expires": "Sep 1, 2023"
   },
   {
+    "prefix": "disable-intersection-optimization",
+    "platforms": ["Linux", "Mac"],
+    "bases": ["external/wpt/intersection-observer",
+              "external/wpt/html/semantics/embedded-content/the-img-element",
+              "external/wpt/html/semantics/embedded-content/the-iframe-element",
+              "http/tests/intersection-observer",
+              "intersection-observer",
+              "wpt_internal/display-lock"],
+    "args": ["--disable-features=IntersectionOptimization"],
+    "expires": "Oct 1, 2023"
+  },
+  {
     "prefix": "attribution-reporting-debug-mode",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["wpt_internal/attribution-reporting"],

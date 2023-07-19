@@ -2019,7 +2019,8 @@
       status: "experimental",
     },
     {
-      "name": "IntersectionOptimization",
+      name: "IntersectionOptimization",
+      status: "experimental",
     },
     {
       name: "JavaScriptCompileHintsMagicRuntime",
