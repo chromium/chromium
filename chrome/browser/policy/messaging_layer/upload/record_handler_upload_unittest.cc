@@ -2,12 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/time/time.h"
 #include "chrome/browser/policy/messaging_layer/upload/record_handler_impl.h"
+
+#include <string_view>
 
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
+
 #include "chrome/browser/policy/messaging_layer/proto/synced/log_upload_event.pb.h"
 #include "chrome/browser/policy/messaging_layer/public/report_client_test_util.h"
 #include "chrome/browser/policy/messaging_layer/upload/dm_server_uploader.h"
@@ -103,8 +106,8 @@ class MockFileUploadDelegate : public FileUploadJob::Delegate {
  public:
   MOCK_METHOD(void,
               DoInitiate,
-              (base::StringPiece origin_path,
-               base::StringPiece upload_parameters,
+              (std::string_view origin_path,
+               std::string_view upload_parameters,
                base::OnceCallback<void(
                    StatusOr<std::pair<int64_t /*total*/,
                                       std::string /*session_token*/>>)> cb),
@@ -114,7 +117,7 @@ class MockFileUploadDelegate : public FileUploadJob::Delegate {
               DoNextStep,
               (int64_t total,
                int64_t uploaded,
-               base::StringPiece session_token,
+               std::string_view session_token,
                ScopedReservation scoped_reservation,
                base::OnceCallback<void(
                    StatusOr<std::pair<int64_t /*uploaded*/,
@@ -124,14 +127,14 @@ class MockFileUploadDelegate : public FileUploadJob::Delegate {
   MOCK_METHOD(
       void,
       DoFinalize,
-      (base::StringPiece session_token,
+      (std::string_view session_token,
        base::OnceCallback<void(StatusOr<std::string /*access_parameters*/>)>
            cb),
       (override));
 
   MOCK_METHOD(void,
               DoDeleteFile,
-              (base::StringPiece /*origin_path*/),
+              (std::string_view /*origin_path*/),
               (override));
 };
 
@@ -216,7 +219,7 @@ class RecordHandlerUploadTest : public ::testing::Test {
 };
 
 EncryptedRecord ComposeEncryptedRecord(
-    base::StringPiece data,
+    std::string_view data,
     UploadSettings upload_settings,
     absl::optional<UploadTracker> upload_tracker) {
   static constexpr int64_t kGenerationId = 1234;
@@ -277,7 +280,7 @@ UploadTracker ComposeDoneTracker(int64_t total) {
 ::testing::Matcher<LogUploadEvent> MatchTrackerInProgress(
     int64_t uploaded,
     int64_t total,
-    base::StringPiece session_token) {
+    std::string_view session_token) {
   return Property(
       &LogUploadEvent::upload_tracker,
       AllOf(Property(&UploadTracker::uploaded, Eq(uploaded)),
@@ -288,7 +291,7 @@ UploadTracker ComposeDoneTracker(int64_t total) {
 
 ::testing::Matcher<LogUploadEvent> MatchTrackerFinished(
     int64_t total,
-    base::StringPiece access_parameters) {
+    std::string_view access_parameters) {
   return Property(&LogUploadEvent::upload_tracker,
                   AllOf(Property(&UploadTracker::uploaded, Eq(total)),
                         Property(&UploadTracker::total, Eq(total)),
@@ -319,7 +322,7 @@ TEST_F(RecordHandlerUploadTest, SuccessfulInitiation) {
 
   EXPECT_CALL(*delegate_, DoInitiate(StrEq(kUploadFileName), Not(IsEmpty()), _))
       .WillOnce(Invoke(
-          [](base::StringPiece origin_path, base::StringPiece upload_parameters,
+          [](std::string_view origin_path, std::string_view upload_parameters,
              base::OnceCallback<void(
                  StatusOr<std::pair<int64_t /*total*/,
                                     std::string /*session_token*/>>)> cb) {
@@ -368,7 +371,7 @@ TEST_F(RecordHandlerUploadTest, SuccessfulNextStep) {
   EXPECT_CALL(*delegate_,
               DoNextStep(Eq(300L), Eq(100L), StrEq(kSessionToken), _, _))
       .WillOnce(
-          [](int64_t total, int64_t uploaded, base::StringPiece session_token,
+          [](int64_t total, int64_t uploaded, std::string_view session_token,
              ScopedReservation scoped_reservation,
              base::OnceCallback<void(
                  StatusOr<std::pair<int64_t /*uploaded*/,
@@ -417,7 +420,7 @@ TEST_F(RecordHandlerUploadTest, SuccessfulFinalize) {
   EXPECT_CALL(*delegate_, DoNextStep).Times(0);
   EXPECT_CALL(*delegate_, DoFinalize(StrEq(kSessionToken), _))
       .WillOnce(
-          Invoke([](base::StringPiece session_token,
+          Invoke([](std::string_view session_token,
                     base::OnceCallback<void(
                         StatusOr<std::string /*access_parameters*/>)> cb) {
             std::move(cb).Run(kAccessParameters);
@@ -491,7 +494,7 @@ TEST_F(RecordHandlerUploadTest, FailedProcessing) {
   EXPECT_CALL(*delegate_,
               DoNextStep(Eq(300L), Eq(100L), StrEq(kSessionToken), _, _))
       .WillOnce(
-          [](int64_t total, int64_t uploaded, base::StringPiece session_token,
+          [](int64_t total, int64_t uploaded, std::string_view session_token,
              ScopedReservation scoped_reservation,
              base::OnceCallback<void(
                  StatusOr<std::pair<int64_t /*uploaded*/,
@@ -534,7 +537,7 @@ TEST_F(RecordHandlerUploadTest, RepeatedInitiationAttempts) {
 
   EXPECT_CALL(*delegate_, DoInitiate(StrEq(kUploadFileName), Not(IsEmpty()), _))
       .WillOnce(Invoke(
-          [](base::StringPiece origin_path, base::StringPiece upload_parameters,
+          [](std::string_view origin_path, std::string_view upload_parameters,
              base::OnceCallback<void(
                  StatusOr<std::pair<int64_t /*total*/,
                                     std::string /*session_token*/>>)> cb) {
@@ -587,7 +590,7 @@ TEST_F(RecordHandlerUploadTest, InitiationFailureTriggersRetry) {
   // Simulate delegate failure initiating the job.
   EXPECT_CALL(*delegate_, DoInitiate(StrEq(kUploadFileName), Not(IsEmpty()), _))
       .WillOnce(Invoke(
-          [](base::StringPiece origin_path, base::StringPiece upload_parameters,
+          [](std::string_view origin_path, std::string_view upload_parameters,
              base::OnceCallback<void(
                  StatusOr<std::pair<int64_t /*total*/,
                                     std::string /*session_token*/>>)> cb) {
@@ -656,7 +659,7 @@ TEST_F(RecordHandlerUploadTest, RepeatedNextStepAttempts) {
   EXPECT_CALL(*delegate_,
               DoNextStep(Eq(300L), Eq(100L), StrEq(kSessionToken), _, _))
       .WillOnce(
-          [](int64_t total, int64_t uploaded, base::StringPiece session_token,
+          [](int64_t total, int64_t uploaded, std::string_view session_token,
              ScopedReservation scoped_reservation,
              base::OnceCallback<void(
                  StatusOr<std::pair<int64_t /*uploaded*/,
@@ -713,7 +716,7 @@ TEST_F(RecordHandlerUploadTest, NextStepFailureTriggersRetry) {
   EXPECT_CALL(*delegate_,
               DoNextStep(Eq(300L), Eq(100L), StrEq(kSessionToken), _, _))
       .WillOnce(
-          [](int64_t total, int64_t uploaded, base::StringPiece session_token,
+          [](int64_t total, int64_t uploaded, std::string_view session_token,
              ScopedReservation scoped_reservation,
              base::OnceCallback<void(
                  StatusOr<std::pair<int64_t /*uploaded*/,
@@ -782,7 +785,7 @@ TEST_F(RecordHandlerUploadTest, RepeatedFinalizeAttempts) {
   EXPECT_CALL(*delegate_, DoNextStep).Times(0);
   EXPECT_CALL(*delegate_, DoFinalize(StrEq(kSessionToken), _))
       .WillOnce(
-          Invoke([](base::StringPiece session_token,
+          Invoke([](std::string_view session_token,
                     base::OnceCallback<void(
                         StatusOr<std::string /*access_parameters*/>)> cb) {
             std::move(cb).Run(kAccessParameters);
@@ -838,7 +841,7 @@ TEST_F(RecordHandlerUploadTest, FinalizeFailureTriggersRetry) {
   // Simulate delegate failure finalizing the job.
   EXPECT_CALL(*delegate_, DoFinalize(StrEq(kSessionToken), _))
       .WillOnce(
-          Invoke([](base::StringPiece session_token,
+          Invoke([](std::string_view session_token,
                     base::OnceCallback<void(
                         StatusOr<std::string /*access_parameters*/>)> cb) {
             std::move(cb).Run(Status(error::CANCELLED, "Failure by test"));

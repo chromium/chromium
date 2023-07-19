@@ -5,6 +5,7 @@
 #include "chrome/browser/policy/messaging_layer/public/report_client.h"
 
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "base/feature_list.h"
@@ -54,7 +55,7 @@ const base::FilePath::CharType kReportingDirectory[] =
 // static
 void ReportingClient::CreateLocalStorageModule(
     const base::FilePath& local_reporting_path,
-    base::StringPiece verification_key,
+    std::string_view verification_key,
     CompressionInformation::CompressionAlgorithm compression_algorithm,
     UploaderInterface::AsyncStartUploaderCb async_start_upload_cb,
     base::OnceCallback<void(StatusOr<scoped_refptr<StorageModuleInterface>>)>

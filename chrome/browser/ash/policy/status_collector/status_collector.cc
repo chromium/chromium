@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/policy/status_collector/status_collector.h"
 
+#include <string_view>
+
 #include "base/time/time.h"
 #include "chrome/browser/ash/app_mode/arc/arc_kiosk_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
@@ -84,7 +86,7 @@ void StatusCollector::RegisterProfilePrefs(PrefRegistrySimple* registry) {
 // static
 absl::optional<std::string> StatusCollector::GetBootMode(
     ash::system::StatisticsProvider* statistics_provider) {
-  const absl::optional<base::StringPiece> dev_switch_mode =
+  const absl::optional<std::string_view> dev_switch_mode =
       statistics_provider->GetMachineStatistic(ash::system::kDevSwitchBootKey);
   if (!dev_switch_mode) {
     return absl::nullopt;

@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -15,7 +16,6 @@
 #include "base/feature_list.h"
 #include "base/location.h"
 #include "base/sequence_checker.h"
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -665,7 +665,7 @@ void MetricReportingManager::InitDeviceActivityCollector() {
 
 std::vector<CollectorBase*>
 MetricReportingManager::GetTelemetryCollectorsFromSetting(
-    base::StringPiece setting_name) {
+    std::string_view setting_name) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   const base::Value::List* telemetry_list = nullptr;

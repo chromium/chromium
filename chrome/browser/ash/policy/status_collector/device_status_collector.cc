@@ -8,6 +8,7 @@
 #include <stdint.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <string_view>
 
 #include <algorithm>
 #include <cstdint>
@@ -181,8 +182,9 @@ std::vector<em::VolumeInfo> GetVolumeInfo(
     // Non-native file systems do not have a mount point in the local file
     // system. However, it's worth checking here, as it's easier than checking
     // earlier which mount point is local, and which one is not.
-    if (mount_point.empty() || !base::PathExists(mount_path))
+    if (mount_point.empty() || !base::PathExists(mount_path)) {
       continue;
+    }
 
     int64_t free_size = base::SysInfo::AmountOfFreeDiskSpace(mount_path);
     int64_t total_size = base::SysInfo::AmountOfTotalDiskSpace(mount_path);
@@ -213,8 +215,9 @@ std::string ReadCPUStatistics() {
     size_t eol = contents.find("\n");
     if (eol != std::string::npos) {
       std::string line = contents.substr(0, eol);
-      if (line.compare(0, 4, "cpu ") == 0)
+      if (line.compare(0, 4, "cpu ") == 0) {
         return line;
+      }
     }
     // First line should always start with "cpu ".
     NOTREACHED() << "Could not parse /proc/stat contents: " << contents;
@@ -311,14 +314,16 @@ std::vector<em::CPUTempInfo> ReadCPUTempInfo() {
 // If |contents| contains |prefix| followed by a hex integer, parses the hex
 // integer of specified length and returns it.
 // Otherwise, returns absl::nullopt.
-absl::optional<int> ExtractHexIntegerAfterPrefix(base::StringPiece contents,
-                                                 base::StringPiece prefix,
+absl::optional<int> ExtractHexIntegerAfterPrefix(std::string_view contents,
+                                                 std::string_view prefix,
                                                  size_t hex_number_length) {
   size_t prefix_position = contents.find(prefix);
-  if (prefix_position == std::string::npos)
+  if (prefix_position == std::string::npos) {
     return absl::nullopt;
-  if (prefix_position + prefix.size() + hex_number_length >= contents.size())
+  }
+  if (prefix_position + prefix.size() + hex_number_length >= contents.size()) {
     return absl::nullopt;
+  }
   int parsed_number;
   if (!base::HexStringToInt(
           contents.substr(prefix_position + prefix.size(), hex_number_length),
@@ -346,11 +351,13 @@ em::DiskLifetimeEstimation ReadDiskLifeTimeEstimation() {
     return est;
   }
   auto slc_est = ExtractHexIntegerAfterPrefix(contents, pattern_slc, 2);
-  if (slc_est)
+  if (slc_est) {
     est.set_slc(slc_est.value());
+  }
   auto mlc_est = ExtractHexIntegerAfterPrefix(contents, pattern_mlc, 2);
-  if (mlc_est)
+  if (mlc_est) {
     est.set_mlc(mlc_est.value());
+  }
   return est;
 }
 
@@ -423,16 +430,19 @@ void FetchGraphicsStatus(
 
 bool ReadAndroidStatus(StatusCollector::AndroidStatusReceiver receiver) {
   auto* const arc_service_manager = arc::ArcServiceManager::Get();
-  if (!arc_service_manager)
+  if (!arc_service_manager) {
     return false;
+  }
   auto* const instance_holder =
       arc_service_manager->arc_bridge_service()->enterprise_reporting();
-  if (!instance_holder)
+  if (!instance_holder) {
     return false;
+  }
   auto* const instance =
       ARC_GET_INSTANCE_FOR_METHOD(instance_holder, GetStatus);
-  if (!instance)
+  if (!instance) {
     return false;
+  }
   instance->GetStatus(std::move(receiver));
   return true;
 }
@@ -508,8 +518,9 @@ bool AddCrostiniAppInfo(
   app->set_app_type(em::CROSTINI_APP_TYPE_INTERACTIVE);
 
   const std::string& package_id = registration.PackageId();
-  if (package_id.empty())
+  if (package_id.empty()) {
     return true;
+  }
 
   const std::vector<std::string> package_info = base::SplitString(
       package_id, ";", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
@@ -555,13 +566,16 @@ std::pair<std::string, std::string> ReadFirmwareVersion() {
   std::string firmware;
   std::string contents;
   const base::FilePath file_path(kPathFirmware);
-  if (!base::ReadFileToString(file_path, &contents))
+  if (!base::ReadFileToString(file_path, &contents)) {
     return {firmware, kFirmwareFileNotRead};
-  if (contents.empty())
+  }
+  if (contents.empty()) {
     return {firmware, kFirmwareFileEmpty};
+  }
   firmware = chromeos::version_loader::ParseFirmware(contents);
-  if (firmware.empty())
+  if (firmware.empty()) {
     return {firmware, kFirmwareNotParsed};
+  }
   return {firmware, std::string()};
 }
 
@@ -685,8 +699,9 @@ class DeviceStatusCollectorState : public StatusCollectorState {
         &external_mount_points);
 
     std::vector<std::string> mount_points;
-    for (const auto& info : external_mount_points)
+    for (const auto& info : external_mount_points) {
       mount_points.push_back(info.path.value());
+    }
 
     for (const auto& mount_point :
          ash::disks::DiskMountManager::GetInstance()->mount_points()) {
@@ -799,8 +814,9 @@ class DeviceStatusCollectorState : public StatusCollectorState {
       SetDeviceStatusReported();
     }
     response_params_.device_status->clear_volume_infos();
-    for (const em::VolumeInfo& info : volume_info)
+    for (const em::VolumeInfo& info : volume_info) {
       *response_params_.device_status->add_volume_infos() = info;
+    }
   }
 
   void OnCPUTempInfoReceived(
@@ -1007,8 +1023,9 @@ class DeviceStatusCollectorState : public StatusCollectorState {
         case cros_healthd::BatteryResult::Tag::kBatteryInfo: {
           const auto& battery_info = battery_result->get_battery_info();
           // Device does not have a battery.
-          if (battery_info.is_null())
+          if (battery_info.is_null()) {
             break;
+          }
 
           em::PowerStatus* const power_status_out =
               response_params_.device_status->mutable_power_status();
@@ -1034,9 +1051,10 @@ class DeviceStatusCollectorState : public StatusCollectorState {
           for (const std::unique_ptr<SampledData>& sample_data : samples) {
             auto it =
                 sample_data->battery_samples.find(battery_info->model_name);
-            if (it != sample_data->battery_samples.end())
+            if (it != sample_data->battery_samples.end()) {
               battery_info_out->add_samples()->CheckTypeAndMergeFrom(
                   it->second);
+            }
           }
           SetDeviceStatusReported();
           break;
@@ -1074,19 +1092,22 @@ class DeviceStatusCollectorState : public StatusCollectorState {
               cpu_info->num_total_threads);
 
           for (const auto& physical_cpu : cpu_info->physical_cpus) {
-            if (physical_cpu.is_null())
+            if (physical_cpu.is_null()) {
               continue;
+            }
 
             em::CpuInfo* const cpu_info_out =
                 response_params_.device_status->add_cpu_info();
-            if (physical_cpu->model_name)
+            if (physical_cpu->model_name) {
               cpu_info_out->set_model_name(physical_cpu->model_name.value());
+            }
             cpu_info_out->set_architecture(
                 static_cast<em::CpuInfo::Architecture>(cpu_info->architecture));
 
             for (const auto& logical_cpu : physical_cpu->logical_cpus) {
-              if (logical_cpu.is_null())
+              if (logical_cpu.is_null()) {
                 continue;
+              }
 
               em::LogicalCpuInfo* const logical_cpu_info_out =
                   cpu_info_out->add_logical_cpus();
@@ -1103,8 +1124,9 @@ class DeviceStatusCollectorState : public StatusCollectorState {
               }
 
               for (const auto& c_state : logical_cpu->c_states) {
-                if (c_state.is_null())
+                if (c_state.is_null()) {
                   continue;
+                }
 
                 em::CpuCStateInfo* const c_state_info_out =
                     logical_cpu_info_out->add_c_states();
@@ -1491,8 +1513,9 @@ class DeviceStatusCollectorState : public StatusCollectorState {
   }
 
   void OnEMMCLifetimeReceived(const em::DiskLifetimeEstimation& est) {
-    if (!est.has_slc() && !est.has_mlc())
+    if (!est.has_slc() && !est.has_mlc()) {
       return;
+    }
     em::DiskLifetimeEstimation* state =
         response_params_.device_status->mutable_storage_status()
             ->mutable_lifetime_estimation();
@@ -1501,8 +1524,9 @@ class DeviceStatusCollectorState : public StatusCollectorState {
   }
 
   void OnStatefulPartitionInfoReceived(const em::StatefulPartitionInfo& hdsi) {
-    if (!hdsi.has_available_space() && !hdsi.has_total_space())
+    if (!hdsi.has_available_space() && !hdsi.has_total_space()) {
       return;
+    }
     em::StatefulPartitionInfo* stateful_partition_info =
         response_params_.device_status->mutable_stateful_partition_info();
     DCHECK_GE(hdsi.total_space(), hdsi.available_space());
@@ -1594,23 +1618,29 @@ DeviceStatusCollector::DeviceStatusCollector(
   CHECK(base::SequencedTaskRunner::HasCurrentDefault());
   task_runner_ = base::SequencedTaskRunner::GetCurrentDefault();
 
-  if (volume_info_fetcher_.is_null())
+  if (volume_info_fetcher_.is_null()) {
     volume_info_fetcher_ = base::BindRepeating(&GetVolumeInfo);
+  }
 
-  if (cpu_statistics_fetcher_.is_null())
+  if (cpu_statistics_fetcher_.is_null()) {
     cpu_statistics_fetcher_ = base::BindRepeating(&ReadCPUStatistics);
+  }
 
-  if (cpu_temp_fetcher_.is_null())
+  if (cpu_temp_fetcher_.is_null()) {
     cpu_temp_fetcher_ = base::BindRepeating(&ReadCPUTempInfo);
+  }
 
-  if (android_status_fetcher_.is_null())
+  if (android_status_fetcher_.is_null()) {
     android_status_fetcher_ = base::BindRepeating(&ReadAndroidStatus);
+  }
 
-  if (tpm_status_fetcher_.is_null())
+  if (tpm_status_fetcher_.is_null()) {
     tpm_status_fetcher_ = base::BindRepeating(&ReadTpmStatus);
+  }
 
-  if (emmc_lifetime_fetcher_.is_null())
+  if (emmc_lifetime_fetcher_.is_null()) {
     emmc_lifetime_fetcher_ = base::BindRepeating(&ReadDiskLifeTimeEstimation);
+  }
 
   if (stateful_partition_info_fetcher_.is_null()) {
     stateful_partition_info_fetcher_ =
@@ -1620,11 +1650,13 @@ DeviceStatusCollector::DeviceStatusCollector(
   cros_healthd_data_fetcher_ = base::BindRepeating(
       &DeviceStatusCollector::FetchCrosHealthdData, weak_factory_.GetWeakPtr());
 
-  if (graphics_status_fetcher_.is_null())
+  if (graphics_status_fetcher_.is_null()) {
     graphics_status_fetcher_ = base::BindRepeating(&FetchGraphicsStatus);
+  }
 
-  if (crash_report_info_fetcher_.is_null())
+  if (crash_report_info_fetcher_.is_null()) {
     crash_report_info_fetcher_ = base::BindRepeating(&ReadCrashReportInfo);
+  }
 
   idle_poll_timer_.Start(FROM_HERE, kIdlePollInterval, this,
                          &DeviceStatusCollector::CheckIdleState);
@@ -1915,8 +1947,9 @@ void DeviceStatusCollector::ClearCachedCpuUsage() {
 
 void DeviceStatusCollector::ProcessIdleState(ui::IdleState state) {
   // Do nothing if device activity reporting is disabled.
-  if (!report_activity_times_)
+  if (!report_activity_times_) {
     return;
+  }
 
   base::Time now = clock_->Now();
 
@@ -1945,8 +1978,9 @@ void DeviceStatusCollector::ProcessIdleState(ui::IdleState state) {
 
 void DeviceStatusCollector::PowerChanged(
     const power_manager::PowerSupplyProperties& prop) {
-  if (!power_status_callback_.is_null())
+  if (!power_status_callback_.is_null()) {
     std::move(power_status_callback_).Run(prop);
+  }
 }
 
 void DeviceStatusCollector::SampleMemoryUsage() {
@@ -1954,15 +1988,17 @@ void DeviceStatusCollector::SampleMemoryUsage() {
   // are read from in the Get*StatusAsync methods.
   DCHECK(thread_checker_.CalledOnValidThread());
 
-  if (!report_memory_info_)
+  if (!report_memory_info_) {
     return;
+  }
 
   MemoryUsage usage = {base::SysInfo::AmountOfAvailablePhysicalMemory(),
                        base::Time::Now()};
   memory_usage_.push_back(usage);
 
-  if (memory_usage_.size() > kMaxResourceUsageSamples)
+  if (memory_usage_.size() > kMaxResourceUsageSamples) {
     memory_usage_.pop_front();
+  }
 }
 
 void DeviceStatusCollector::SampleCpuUsage() {
@@ -1971,8 +2007,9 @@ void DeviceStatusCollector::SampleCpuUsage() {
   DCHECK(thread_checker_.CalledOnValidThread());
 
   // If report cpu info has been disabled, do nothing here.
-  if (!report_cpu_info_)
+  if (!report_cpu_info_) {
     return;
+  }
 
   // Call out to the blocking pool to sample CPU stats.
   base::ThreadPool::PostTaskAndReplyWithResult(
@@ -2035,8 +2072,9 @@ void DeviceStatusCollector::ReceiveCPUStatistics(const std::string& stats) {
 
   // If our cache of samples is full, throw out old samples to make room for new
   // sample.
-  if (cpu_usage_.size() > kMaxResourceUsageSamples)
+  if (cpu_usage_.size() > kMaxResourceUsageSamples) {
     cpu_usage_.pop_front();
+  }
 
   std::unique_ptr<SampledData> sample = std::make_unique<SampledData>();
   sample->timestamp = timestamp;
@@ -2055,8 +2093,9 @@ void DeviceStatusCollector::SampleProbeData(
     ash::cros_healthd::mojom::TelemetryInfoPtr result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  if (result.is_null())
+  if (result.is_null()) {
     return;
+  }
 
   const auto& battery_result = result->battery_result;
   if (!battery_result.is_null()) {
@@ -2144,13 +2183,15 @@ void DeviceStatusCollector::AddDataSample(std::unique_ptr<SampledData> sample,
 
   // If our cache of samples is full, throw out old samples to make room for new
   // sample.
-  if (sampled_data_.size() > kMaxResourceUsageSamples)
+  if (sampled_data_.size() > kMaxResourceUsageSamples) {
     sampled_data_.pop_front();
+  }
   // We have two code paths that end here. One is regular sampling, that does
   // not have final callback, and full report request, that would use callback
   // to receive ProbeResponse.
-  if (!callback.is_null())
+  if (!callback.is_null()) {
     std::move(callback).Run();
+  }
 }
 
 void DeviceStatusCollector::FetchCrosHealthdData(
@@ -2185,8 +2226,9 @@ void DeviceStatusCollector::OnProbeDataFetched(
 void DeviceStatusCollector::ReportingUsersChanged() {
   std::vector<std::string> reporting_users;
   for (auto& value : pref_service_->GetList(prefs::kReportingUsers)) {
-    if (value.is_string())
+    if (value.is_string()) {
       reporting_users.push_back(value.GetString());
+    }
   }
 
   activity_storage_->FilterActivityPeriodsByUsers(reporting_users);
@@ -2197,8 +2239,9 @@ std::string DeviceStatusCollector::GetUserForActivityReporting() const {
   // multi-user sessions.
   const user_manager::User* const primary_user =
       user_manager::UserManager::Get()->GetPrimaryUser();
-  if (!primary_user)
+  if (!primary_user) {
     return std::string();
+  }
 
   // Store affiliated user emails or the kiosk app id / guest session account
   // emails. Those emails will be used to calculate the session type when
@@ -2293,7 +2336,7 @@ bool DeviceStatusCollector::GetVersionInfo(
 
 bool DeviceStatusCollector::GetWriteProtectSwitch(
     em::DeviceStatusReportRequest* status) {
-  const absl::optional<base::StringPiece> firmware_write_protect =
+  const absl::optional<std::string_view> firmware_write_protect =
       statistics_provider_->GetMachineStatistic(
           ash::system::kFirmwareWriteProtectCurrentKey);
   if (!firmware_write_protect) {
@@ -2344,29 +2387,37 @@ bool DeviceStatusCollector::GetNetworkConfiguration(
     // Determine the type enum constant for |device|.
     size_t type_idx = 0;
     for (; type_idx < std::size(kDeviceTypeMap); ++type_idx) {
-      if ((*device)->type() == kDeviceTypeMap[type_idx].type_string)
+      if ((*device)->type() == kDeviceTypeMap[type_idx].type_string) {
         break;
+      }
     }
 
     // If the type isn't in |kDeviceTypeMap|, the interface is not relevant for
     // reporting. This filters out VPN devices.
-    if (type_idx >= std::size(kDeviceTypeMap))
+    if (type_idx >= std::size(kDeviceTypeMap)) {
       continue;
+    }
 
     em::NetworkInterface* interface = status->add_network_interfaces();
     interface->set_type(kDeviceTypeMap[type_idx].type_constant);
-    if (!(*device)->mac_address().empty())
+    if (!(*device)->mac_address().empty()) {
       interface->set_mac_address((*device)->mac_address());
-    if (!(*device)->meid().empty())
+    }
+    if (!(*device)->meid().empty()) {
       interface->set_meid((*device)->meid());
-    if (!(*device)->imei().empty())
+    }
+    if (!(*device)->imei().empty()) {
       interface->set_imei((*device)->imei());
-    if (!(*device)->mdn().empty())
+    }
+    if (!(*device)->mdn().empty()) {
       interface->set_mdn((*device)->mdn());
-    if (!(*device)->iccid().empty())
+    }
+    if (!(*device)->iccid().empty()) {
       interface->set_iccid((*device)->iccid());
-    if (!(*device)->path().empty())
+    }
+    if (!(*device)->path().empty()) {
       interface->set_device_path((*device)->path());
+    }
 
     // Report EIDs for cellular connections.
     if ((*device)->type() == shill::kTypeCellular) {
@@ -2454,16 +2505,19 @@ bool DeviceStatusCollector::GetNetworkStatus(
       }
     }
 
-    if (!state->device_path().empty())
+    if (!state->device_path().empty()) {
       proto_state->set_device_path(state->device_path());
+    }
 
     std::string ip_address = state->GetIpAddress();
-    if (!ip_address.empty())
+    if (!ip_address.empty()) {
       proto_state->set_ip_address(ip_address);
+    }
 
     std::string gateway = state->GetGateway();
-    if (!gateway.empty())
+    if (!gateway.empty()) {
       proto_state->set_gateway(gateway);
+    }
   }
   return anything_reported;
 }
@@ -2475,8 +2529,9 @@ bool DeviceStatusCollector::GetUsers(em::DeviceStatusReportRequest* status) {
   bool anything_reported = false;
   for (auto* user : users) {
     // Only users with gaia accounts (regular) are reported.
-    if (!user->HasGaiaAccount())
+    if (!user->HasGaiaAccount()) {
       continue;
+    }
 
     em::DeviceUser* device_user = status->add_users();
     if (reporting_user_tracker_->ShouldReportUser(
@@ -2530,8 +2585,9 @@ bool DeviceStatusCollector::GetAudioStatus(
 bool DeviceStatusCollector::GetOsUpdateStatus(
     em::DeviceStatusReportRequest* status) {
   const base::Version platform_version(GetPlatformVersion());
-  if (!platform_version.IsValid())
+  if (!platform_version.IsValid()) {
     return false;
+  }
 
   std::string required_platform_version_string;
   // Can be uninitialized in tests.
@@ -2550,8 +2606,9 @@ bool DeviceStatusCollector::GetOsUpdateStatus(
     // If this is non-Kiosk session, the OS is considered as up-to-date if the
     // status of UpdateEngineClient is idle.
     if (update_engine_status.current_operation() ==
-        update_engine::Operation::IDLE)
+        update_engine::Operation::IDLE) {
       required_platform_version = base::Version(platform_version);
+    }
   } else {
     // If this is Kiosk session, |required_platform_version| can be searched
     // from the KioskAppClient instance.
@@ -2618,8 +2675,9 @@ bool DeviceStatusCollector::GetRunningKioskApp(
       GetAutoLaunchedKioskSessionInfo();
   // Only generate running kiosk app reports if we are in an auto-launched kiosk
   // session.
-  if (!account)
+  if (!account) {
     return false;
+  }
 
   em::AppStatus* running_kiosk_app = status->mutable_running_kiosk_app();
   if (account->type == DeviceLocalAccount::TYPE_KIOSK_APP) {
@@ -2730,26 +2788,33 @@ void DeviceStatusCollector::GetDeviceStatus(
   // version
   probe_categories.push_back(ProbeCategoryEnum::kSystem);
 
-  if (report_timezone_info_)
+  if (report_timezone_info_) {
     probe_categories.push_back(ProbeCategoryEnum::kTimezone);
+  }
 
-  if (report_backlight_info_)
+  if (report_backlight_info_) {
     probe_categories.push_back(ProbeCategoryEnum::kBacklight);
+  }
 
-  if (report_bluetooth_info_)
+  if (report_bluetooth_info_) {
     probe_categories.push_back(ProbeCategoryEnum::kBluetooth);
+  }
 
-  if (report_fan_info_)
+  if (report_fan_info_) {
     probe_categories.push_back(ProbeCategoryEnum::kFan);
+  }
 
-  if (report_power_status_)
+  if (report_power_status_) {
     probe_categories.push_back(ProbeCategoryEnum::kBattery);
+  }
 
-  if (report_activity_times_)
+  if (report_activity_times_) {
     anything_reported |= GetActivityTimes(status);
+  }
 
-  if (report_audio_status_)
+  if (report_audio_status_) {
     anything_reported |= GetAudioStatus(status);
+  }
 
   if (report_version_info_) {
     probe_categories.push_back(ProbeCategoryEnum::kTpm);
@@ -2765,17 +2830,21 @@ void DeviceStatusCollector::GetDeviceStatus(
     anything_reported |= GetNetworkConfiguration(status);
   }
 
-  if (report_network_status_)
+  if (report_network_status_) {
     anything_reported |= GetNetworkStatus(status);
+  }
 
-  if (report_users_)
+  if (report_users_) {
     anything_reported |= GetUsers(status);
+  }
 
-  if (report_os_update_status_)
+  if (report_os_update_status_) {
     anything_reported |= GetOsUpdateStatus(status);
+  }
 
-  if (report_running_kiosk_app_)
+  if (report_running_kiosk_app_) {
     anything_reported |= GetRunningKioskApp(status);
+  }
 
   if (report_memory_info_) {
     probe_categories.push_back(ProbeCategoryEnum::kMemory);
@@ -2801,19 +2870,22 @@ void DeviceStatusCollector::GetDeviceStatus(
 
   // Mark if any of the above functions reported data so that the response is
   // sent.
-  if (anything_reported)
+  if (anything_reported) {
     state->SetDeviceStatusReported();
+  }
 
   if (report_storage_status_) {
     probe_categories.push_back(ProbeCategoryEnum::kNonRemovableBlockDevices);
     GetStorageStatus(state);
   }
 
-  if (report_graphics_status_)
+  if (report_graphics_status_) {
     GetGraphicsStatus(state);
+  }
 
-  if (report_crash_report_info_ && stat_reporting_pref_)
+  if (report_crash_report_info_ && stat_reporting_pref_) {
     GetCrashReportInfo(state);
+  }
 
   // The health daemon should always be queried to get the device vendor,
   // product name, and product version.
@@ -2828,23 +2900,27 @@ bool DeviceStatusCollector::GetSessionStatusForUser(
     em::SessionStatusReportRequest* status,
     const user_manager::User* user) {
   Profile* const profile = ash::ProfileHelper::Get()->GetProfileByUser(user);
-  if (!profile)
+  if (!profile) {
     return false;
+  }
 
   bool anything_reported_user = false;
 
   const bool report_android_status =
       profile->GetPrefs()->GetBoolean(prefs::kReportArcStatusEnabled);
-  if (report_android_status)
+  if (report_android_status) {
     anything_reported_user |= GetAndroidStatus(status, state);
+  }
 
   const bool report_crostini_usage = profile->GetPrefs()->GetBoolean(
       crostini::prefs::kReportCrostiniUsageEnabled);
-  if (report_crostini_usage)
+  if (report_crostini_usage) {
     anything_reported_user |= GetCrostiniUsage(status, profile);
+  }
 
-  if (anything_reported_user && !user->IsDeviceLocalAccount())
+  if (anything_reported_user && !user->IsDeviceLocalAccount()) {
     status->set_user_dm_token(GetDMTokenForProfile(profile));
+  }
 
   // Time zone is not reported in enterprise reports.
 
@@ -2860,8 +2936,9 @@ void DeviceStatusCollector::GetSessionStatus(
   user_manager::UserManager* user_manager = user_manager::UserManager::Get();
   const user_manager::User* const primary_user = user_manager->GetPrimaryUser();
 
-  if (report_kiosk_session_status_)
+  if (report_kiosk_session_status_) {
     anything_reported |= GetKioskSessionStatus(status);
+  }
 
   // Only report affiliated users' data in enterprise reporting. Note that
   // device-local accounts are also affiliated. Currently we only report for the
@@ -2879,16 +2956,18 @@ void DeviceStatusCollector::GetSessionStatus(
   }
 
   // Wipe pointer if we didn't actually add any data.
-  if (!anything_reported)
+  if (!anything_reported) {
     state->response_params().session_status.reset();
+  }
 }
 
 bool DeviceStatusCollector::GetKioskSessionStatus(
     em::SessionStatusReportRequest* status) {
   std::unique_ptr<const DeviceLocalAccount> account =
       GetAutoLaunchedKioskSessionInfo();
-  if (!account)
+  if (!account) {
     return false;
+  }
 
   // Get the account ID associated with this user.
   status->set_device_local_account_id(account->account_id);
@@ -2958,14 +3037,16 @@ std::string DeviceStatusCollector::GetAppVersion(
       user_manager::UserManager::Get()->GetActiveUser());
   // TODO(b/191334671): Replace with DCHECK once we no longer hit this timing
   // issue.
-  if (!profile)
+  if (!profile) {
     return std::string();
+  }
   const extensions::ExtensionRegistry* const registry =
       extensions::ExtensionRegistry::Get(profile);
   const extensions::Extension* const extension = registry->GetExtensionById(
       kiosk_app_id, extensions::ExtensionRegistry::EVERYTHING);
-  if (!extension)
+  if (!extension) {
     return std::string();
+  }
   return extension->VersionString();
 }
 

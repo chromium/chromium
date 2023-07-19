@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "components/policy/core/common/cloud/encrypted_reporting_job_configuration.h"
+
 #include <cstddef>
+#include <string_view>
 
 #include "base/base64.h"
 #include "base/functional/callback_helpers.h"
@@ -156,7 +158,7 @@ class ResponseValueBuilder {
   }
 
  private:
-  static std::string GetPath(base::StringPiece base, base::StringPiece leaf) {
+  static std::string GetPath(std::string_view base, std::string_view leaf) {
     return base::JoinString({base, leaf}, ".");
   }
 
@@ -230,7 +232,7 @@ class EncryptedReportingJobConfigurationTest : public testing::Test {
     return test_upload;
   }
 
-  base::Value GenerateSingleRecord(base::StringPiece encrypted_wrapped_record,
+  base::Value GenerateSingleRecord(std::string_view encrypted_wrapped_record,
                                    ::reporting::Priority priority = kPriority) {
     base::Value::Dict record_dictionary;
     std::string base64_encode;
@@ -254,8 +256,8 @@ class EncryptedReportingJobConfigurationTest : public testing::Test {
     return base::Value(std::move(record_dictionary));
   }
 
-  static base::Value::Dict GenerateContext(base::StringPiece key,
-                                           base::StringPiece value) {
+  static base::Value::Dict GenerateContext(std::string_view key,
+                                           std::string_view value) {
     base::Value::Dict context;
     context.SetByDottedPath(key, value);
     return context;

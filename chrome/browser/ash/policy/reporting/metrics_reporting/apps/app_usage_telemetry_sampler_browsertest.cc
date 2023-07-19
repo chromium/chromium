@@ -4,12 +4,12 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <tuple>
 #include <vector>
 
 #include "base/check.h"
 #include "base/functional/bind.h"
-#include "base/strings/string_piece_forward.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "base/time/time_override.h"
@@ -216,7 +216,7 @@ class AppUsageTelemetrySamplerBrowserTest
     }
   }
 
-  void VerifyWebAppUsageUKM(base::StringPiece instance_id,
+  void VerifyWebAppUsageUKM(std::string_view instance_id,
                             const base::TimeDelta& running_time) {
     const auto entries =
         test_ukm_recorder_->GetEntriesByName(kAppUsageUKMEntryName);

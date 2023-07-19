@@ -6,6 +6,7 @@
 
 #include <cstddef>
 #include <memory>
+#include <string_view>
 
 #include "base/check.h"
 #include "base/containers/contains.h"
@@ -74,7 +75,7 @@ AppEventsObserver::AppInstallTracker::AppInstallTracker(
 
 AppEventsObserver::AppInstallTracker::~AppInstallTracker() = default;
 
-void AppEventsObserver::AppInstallTracker::Add(base::StringPiece app_id) {
+void AppEventsObserver::AppInstallTracker::Add(std::string_view app_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!profile_) {
     // Profile destroyed. Skip.
@@ -89,7 +90,7 @@ void AppEventsObserver::AppInstallTracker::Add(base::StringPiece app_id) {
       GetDiskConsumptionForList(apps_installed_pref.Get()));
 }
 
-void AppEventsObserver::AppInstallTracker::Remove(base::StringPiece app_id) {
+void AppEventsObserver::AppInstallTracker::Remove(std::string_view app_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!profile_) {
     // Profile destroyed. Skip.
@@ -105,7 +106,7 @@ void AppEventsObserver::AppInstallTracker::Remove(base::StringPiece app_id) {
 }
 
 bool AppEventsObserver::AppInstallTracker::Contains(
-    base::StringPiece app_id) const {
+    std::string_view app_id) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(profile_);
   return base::Contains(

@@ -5,8 +5,10 @@
 #ifndef CHROME_BROWSER_POLICY_MESSAGING_LAYER_UPLOAD_RECORD_UPLOAD_REQUEST_BUILDER_H_
 #define CHROME_BROWSER_POLICY_MESSAGING_LAYER_UPLOAD_RECORD_UPLOAD_REQUEST_BUILDER_H_
 
-#include "base/strings/string_piece.h"
+#include <string_view>
+
 #include "base/values.h"
+
 #include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/resources/resource_manager.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -91,14 +93,14 @@ class UploadEncryptedReportingRequestBuilder {
 
   // Sets the requestId field.
   UploadEncryptedReportingRequestBuilder& SetRequestId(
-      base::StringPiece request_id);
+      std::string_view request_id);
 
   // Return the built dictionary. Also set requestId to a random string if it
   // hasn't been set yet.
   absl::optional<base::Value::Dict> Build();
 
-  static base::StringPiece GetEncryptedRecordListPath();
-  static base::StringPiece GetAttachEncryptionSettingsPath();
+  static std::string_view GetEncryptedRecordListPath();
+  static std::string_view GetAttachEncryptionSettingsPath();
 
   absl::optional<base::Value::Dict> result_;
 };
@@ -113,10 +115,10 @@ class EncryptedRecordDictionaryBuilder {
 
   absl::optional<base::Value::Dict> Build();
 
-  static base::StringPiece GetEncryptedWrappedRecordPath();
-  static base::StringPiece GetSequenceInformationKeyPath();
-  static base::StringPiece GetEncryptionInfoPath();
-  static base::StringPiece GetCompressionInformationPath();
+  static std::string_view GetEncryptedWrappedRecordPath();
+  static std::string_view GetSequenceInformationKeyPath();
+  static std::string_view GetEncryptionInfoPath();
+  static std::string_view GetCompressionInformationPath();
 
  private:
   absl::optional<base::Value::Dict> result_;
@@ -131,9 +133,9 @@ class SequenceInformationDictionaryBuilder {
 
   absl::optional<base::Value::Dict> Build();
 
-  static base::StringPiece GetSequencingIdPath();
-  static base::StringPiece GetGenerationIdPath();
-  static base::StringPiece GetPriorityPath();
+  static std::string_view GetSequencingIdPath();
+  static std::string_view GetGenerationIdPath();
+  static std::string_view GetPriorityPath();
 
  private:
   absl::optional<base::Value::Dict> result_;
@@ -148,8 +150,8 @@ class EncryptionInfoDictionaryBuilder {
 
   absl::optional<base::Value::Dict> Build();
 
-  static base::StringPiece GetEncryptionKeyPath();
-  static base::StringPiece GetPublicKeyIdPath();
+  static std::string_view GetEncryptionKeyPath();
+  static std::string_view GetPublicKeyIdPath();
 
  private:
   absl::optional<base::Value::Dict> result_;
@@ -164,7 +166,7 @@ class CompressionInformationDictionaryBuilder {
 
   absl::optional<base::Value::Dict> Build();
 
-  static base::StringPiece GetCompressionAlgorithmPath();
+  static std::string_view GetCompressionAlgorithmPath();
 
  private:
   absl::optional<base::Value::Dict> result_;

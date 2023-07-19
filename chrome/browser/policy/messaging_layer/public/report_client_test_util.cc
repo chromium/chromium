@@ -4,11 +4,12 @@
 
 #include "chrome/browser/policy/messaging_layer/public/report_client_test_util.h"
 
+#include <string_view>
+
 #include "base/files/file_path.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/singleton.h"
-#include "base/strings/string_piece.h"
 #include "chrome/browser/policy/messaging_layer/public/report_client.h"
 #include "components/reporting/storage/storage_module_interface.h"
 #include "components/reporting/storage/test_storage_module.h"
@@ -19,10 +20,10 @@ namespace reporting {
 std::unique_ptr<ReportingClient::TestEnvironment>
 ReportingClient::TestEnvironment::CreateWithLocalStorage(
     const base::FilePath& reporting_path,
-    base::StringPiece verification_key) {
+    std::string_view verification_key) {
   return base::WrapUnique(new TestEnvironment(base::BindRepeating(
       [](const base::FilePath& reporting_path,
-         base::StringPiece verification_key,
+         std::string_view verification_key,
          base::OnceCallback<void(
              StatusOr<scoped_refptr<StorageModuleInterface>>)>
              storage_created_cb) {

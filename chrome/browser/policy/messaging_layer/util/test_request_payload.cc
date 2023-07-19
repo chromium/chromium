@@ -7,6 +7,7 @@
 #include "chrome/browser/policy/messaging_layer/util/test_request_payload.h"
 
 #include <string>
+#include <string_view>
 
 #include "base/json/json_reader.h"
 
@@ -14,7 +15,7 @@ namespace reporting {
 
 // Return true if s a properly formatted positive integer, i.e., is not empty,
 // contains digits only and does not start with 0.
-static bool IsPositiveInteger(base::StringPiece s) {
+static bool IsPositiveInteger(std::string_view s) {
   if (s.empty()) {
     return false;
   } else if (s.size() == 1) {
@@ -335,7 +336,7 @@ bool RequestContainingRecordMatcher::IsSubDict(const base::Value::Dict& sub,
 }
 
 RequestContainingRecordMatcher::RequestContainingRecordMatcher(
-    base::StringPiece matched_record_json)
+    std::string_view matched_record_json)
     : matched_record_json_(matched_record_json) {}
 
 bool RequestContainingRecordMatcher::MatchAndExplain(

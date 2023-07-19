@@ -5,6 +5,7 @@
 #include "chrome/browser/policy/messaging_layer/upload/record_upload_request_builder.h"
 
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/base64.h"
@@ -15,7 +16,6 @@
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_runner.h"
@@ -103,7 +103,7 @@ UploadEncryptedReportingRequestBuilder::AddRecord(
 
 UploadEncryptedReportingRequestBuilder&
 UploadEncryptedReportingRequestBuilder::SetRequestId(
-    base::StringPiece request_id) {
+    std::string_view request_id) {
   if (!result_.has_value()) {
     // Some errors were already detected
     return *this;
@@ -131,13 +131,13 @@ UploadEncryptedReportingRequestBuilder::Build() {
 }
 
 // static
-base::StringPiece
+std::string_view
 UploadEncryptedReportingRequestBuilder::GetEncryptedRecordListPath() {
   return kEncryptedRecordListKey;
 }
 
 // static
-base::StringPiece
+std::string_view
 UploadEncryptedReportingRequestBuilder::GetAttachEncryptionSettingsPath() {
   return kAttachEncryptionSettingsKey;
 }
@@ -218,24 +218,24 @@ absl::optional<base::Value::Dict> EncryptedRecordDictionaryBuilder::Build() {
 }
 
 // static
-base::StringPiece
+std::string_view
 EncryptedRecordDictionaryBuilder::GetEncryptedWrappedRecordPath() {
   return kEncryptedWrappedRecord;
 }
 
 // static
-base::StringPiece
+std::string_view
 EncryptedRecordDictionaryBuilder::GetSequenceInformationKeyPath() {
   return kSequenceInformationKey;
 }
 
 // static
-base::StringPiece EncryptedRecordDictionaryBuilder::GetEncryptionInfoPath() {
+std::string_view EncryptedRecordDictionaryBuilder::GetEncryptionInfoPath() {
   return kEncryptionInfoKey;
 }
 
 // static
-base::StringPiece
+std::string_view
 EncryptedRecordDictionaryBuilder::GetCompressionInformationPath() {
   return kCompressionInformationKey;
 }
@@ -266,17 +266,17 @@ SequenceInformationDictionaryBuilder::Build() {
 }
 
 // static
-base::StringPiece SequenceInformationDictionaryBuilder::GetSequencingIdPath() {
+std::string_view SequenceInformationDictionaryBuilder::GetSequencingIdPath() {
   return kSequencingId;
 }
 
 // static
-base::StringPiece SequenceInformationDictionaryBuilder::GetGenerationIdPath() {
+std::string_view SequenceInformationDictionaryBuilder::GetGenerationIdPath() {
   return kGenerationId;
 }
 
 // static
-base::StringPiece SequenceInformationDictionaryBuilder::GetPriorityPath() {
+std::string_view SequenceInformationDictionaryBuilder::GetPriorityPath() {
   return kPriority;
 }
 
@@ -306,12 +306,12 @@ absl::optional<base::Value::Dict> EncryptionInfoDictionaryBuilder::Build() {
 }
 
 // static
-base::StringPiece EncryptionInfoDictionaryBuilder::GetEncryptionKeyPath() {
+std::string_view EncryptionInfoDictionaryBuilder::GetEncryptionKeyPath() {
   return kEncryptionKey;
 }
 
 // static
-base::StringPiece EncryptionInfoDictionaryBuilder::GetPublicKeyIdPath() {
+std::string_view EncryptionInfoDictionaryBuilder::GetPublicKeyIdPath() {
   return kPublicKeyId;
 }
 
@@ -341,7 +341,7 @@ CompressionInformationDictionaryBuilder::Build() {
 }
 
 // static
-base::StringPiece
+std::string_view
 CompressionInformationDictionaryBuilder::GetCompressionAlgorithmPath() {
   return kCompressionAlgorithmKey;
 }

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_POLICY_MESSAGING_LAYER_PUBLIC_REPORT_CLIENT_H_
 
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "base/functional/callback.h"
@@ -67,7 +68,7 @@ class ReportingClient : public ReportQueueProvider {
 
   static void CreateLocalStorageModule(
       const base::FilePath& local_reporting_path,
-      base::StringPiece verification_key,
+      std::string_view verification_key,
       CompressionInformation::CompressionAlgorithm compression_algorithm,
       UploaderInterface::AsyncStartUploaderCb async_start_upload_cb,
       base::OnceCallback<void(StatusOr<scoped_refptr<StorageModuleInterface>>)>

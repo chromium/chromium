@@ -6,12 +6,12 @@
 #define CHROME_BROWSER_ASH_POLICY_REPORTING_METRICS_REPORTING_APPS_APP_EVENTS_OBSERVER_H_
 
 #include <memory>
+#include <string_view>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
-#include "base/strings/string_piece_forward.h"
 #include "base/thread_annotations.h"
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/apps/app_platform_metrics_retriever.h"
@@ -75,14 +75,14 @@ class AppEventsObserver : public MetricEventObserver,
     ~AppInstallTracker();
 
     // Adds the specified app id for tracking purposes.
-    void Add(base::StringPiece app_id);
+    void Add(std::string_view app_id);
 
     // Removes the specified app id.
-    void Remove(base::StringPiece app_id);
+    void Remove(std::string_view app_id);
 
     // Returns true if the specified app is being tracked in the user pref
     // store. False otherwise.
-    bool Contains(base::StringPiece app_id) const;
+    bool Contains(std::string_view app_id) const;
 
    private:
     SEQUENCE_CHECKER(sequence_checker_);

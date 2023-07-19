@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/base64.h"
@@ -92,7 +93,7 @@ class ReportClientTest : public ::testing::TestWithParam<bool> {
     // Provide client test environment with local storage.
     test_reporting_ = ReportingClient::TestEnvironment::CreateWithLocalStorage(
         base::FilePath(location_.GetPath()),
-        base::StringPiece(
+        std::string_view(
             reinterpret_cast<const char*>(signature_verification_public_key_),
             kKeySize));
 
@@ -134,16 +135,16 @@ class ReportClientTest : public ::testing::TestWithParam<bool> {
     uint8_t signature[kSignatureSize];
     test::SignMessage(
         signing_private_key_,
-        base::StringPiece(reinterpret_cast<const char*>(value_to_sign),
-                          sizeof(value_to_sign)),
+        std::string_view(reinterpret_cast<const char*>(value_to_sign),
+                         sizeof(value_to_sign)),
         signature);
     signed_encryption_key.set_signature(
         std::string(reinterpret_cast<const char*>(signature), kSignatureSize));
     // Double check signature.
     DCHECK(VerifySignature(
         signature_verification_public_key_,
-        base::StringPiece(reinterpret_cast<const char*>(value_to_sign),
-                          sizeof(value_to_sign)),
+        std::string_view(reinterpret_cast<const char*>(value_to_sign),
+                         sizeof(value_to_sign)),
         signature));
     return signed_encryption_key;
   }

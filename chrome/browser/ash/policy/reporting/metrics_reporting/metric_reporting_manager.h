@@ -7,12 +7,12 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/feature_list.h"
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
-#include "base/strings/string_piece_forward.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -190,7 +190,7 @@ class MetricReportingManager : public policy::ManagedSessionService::Observer,
   base::TimeDelta GetUploadDelay() const;
 
   std::vector<CollectorBase*> GetTelemetryCollectorsFromSetting(
-      base::StringPiece setting_name);
+      std::string_view setting_name);
 
   CrosReportingSettings reporting_settings_;
   std::unique_ptr<UserReportingSettings> user_reporting_settings_;

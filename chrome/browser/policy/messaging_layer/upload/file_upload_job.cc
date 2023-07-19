@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <tuple>
 #include <utility>
 
@@ -19,7 +20,6 @@
 #include "base/sequence_checker.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
@@ -42,8 +42,8 @@ namespace {
 // `delegate` is invalidated.
 void CallInitiateOnSequence(
     base::WeakPtr<FileUploadJob::Delegate> delegate,
-    base::StringPiece origin_path,
-    base::StringPiece upload_parameters,
+    std::string_view origin_path,
+    std::string_view upload_parameters,
     base::OnceCallback<void(
         StatusOr<std::pair<int64_t /*total*/, std::string /*session_token*/>>)>
         cb) {
@@ -58,7 +58,7 @@ void CallNextStepOnSequence(
     base::WeakPtr<FileUploadJob::Delegate> delegate,
     int64_t total,
     int64_t uploaded,
-    base::StringPiece session_token,
+    std::string_view session_token,
     ScopedReservation scoped_reservation,
     base::OnceCallback<void(StatusOr<std::pair<int64_t /*uploaded*/,
                                                std::string /*session_token*/>>)>
@@ -73,7 +73,7 @@ void CallNextStepOnSequence(
 
 void CallFinalizeOnSequence(
     base::WeakPtr<FileUploadJob::Delegate> delegate,
-    base::StringPiece session_token,
+    std::string_view session_token,
     base::OnceCallback<void(StatusOr<std::string /*access_parameters*/>)> cb) {
   if (!delegate) {
     std::move(cb).Run(Status(error::UNAVAILABLE, "Delegate is unavailable"));
@@ -443,7 +443,7 @@ void FileUploadJob::DoneInitiate(
     return;
   }
   int64_t total = 0L;
-  base::StringPiece session_token;
+  std::string_view session_token;
   std::tie(total, session_token) = result.ValueOrDie();
   if (total <= 0L) {
     Status{error::FAILED_PRECONDITION, "Empty upload"}.SaveTo(
@@ -510,7 +510,7 @@ void FileUploadJob::DoneNextStep(
     return;
   }
   int64_t uploaded = 0L;
-  base::StringPiece session_token;
+  std::string_view session_token;
   std::tie(uploaded, session_token) = result.ValueOrDie();
   if (session_token.empty()) {
     Status{error::DATA_LOSS, "Job has lost session_token"}.SaveTo(
@@ -573,7 +573,7 @@ void FileUploadJob::DoneFinalize(
     result.status().SaveTo(tracker_.mutable_status());
     return;
   }
-  base::StringPiece access_parameters = result.ValueOrDie();
+  std::string_view access_parameters = result.ValueOrDie();
   if (access_parameters.empty()) {
     Status{error::FAILED_PRECONDITION, "Access parameters not set"}.SaveTo(
         tracker_.mutable_status());

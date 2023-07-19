@@ -5,6 +5,7 @@
 #include "chrome/browser/policy/messaging_layer/util/user_dm_token_retriever.h"
 
 #include <memory>
+#include <string_view>
 
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -55,7 +56,7 @@ class UserDMTokenRetrieverTest : public ::testing::Test {
   }
 
   // Creates a new profile with the current context for testing purposes.
-  TestingProfile* CreateProfile(base::StringPiece id) {
+  TestingProfile* CreateProfile(std::string_view id) {
     TestingProfile* const profile =
         testing_profile_manager_.CreateTestingProfile(std::string(id));
     return profile;

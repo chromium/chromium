@@ -11,10 +11,10 @@
 #include <ostream>
 #include <sstream>
 #include <string>
+#include <string_view>
 #include <type_traits>
 
 #include "base/containers/flat_map.h"
-#include "base/strings/string_piece.h"
 #include "base/values.h"
 
 #include "testing/gmock/include/gmock/gmock.h"
@@ -263,7 +263,7 @@ class RequestValidityMatcherBuilder {
   }
 
   // Remove a matcher.
-  RequestValidityMatcherBuilder<T>& RemoveMatcher(base::StringPiece name) {
+  RequestValidityMatcherBuilder<T>& RemoveMatcher(std::string_view name) {
     auto matcher_it = matcher_index_.find(name);
     EXPECT_NE(matcher_it, matcher_index_.end())
         << "Matcher \"" << name << "\" not found.";
@@ -287,8 +287,7 @@ class RequestContainingRecordMatcher {
  public:
   using is_gtest_matcher = void;
 
-  explicit RequestContainingRecordMatcher(
-      base::StringPiece matched_record_json);
+  explicit RequestContainingRecordMatcher(std::string_view matched_record_json);
   bool MatchAndExplain(const base::Value::Dict& arg,
                        MatchResultListener* os) const;
   void DescribeTo(std::ostream* os) const;
@@ -356,7 +355,7 @@ Matcher<T> IsRecordValid() {
 // In this way, you can specify only part of the record of interest (e.g., omit
 // "encryptedWrappedRecord").
 template <class T = base::Value::Dict>
-Matcher<T> DoesRequestContainRecord(base::StringPiece matched_record_json) {
+Matcher<T> DoesRequestContainRecord(std::string_view matched_record_json) {
   return RequestContainingRecordMatcher(matched_record_json);
 }
 

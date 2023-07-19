@@ -5,13 +5,13 @@
 #include "chrome/browser/policy/messaging_layer/upload/file_upload_job.h"
 
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string_piece.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/policy/messaging_layer/upload/file_upload_job_test_util.h"
@@ -45,8 +45,8 @@ class MockFileUploadJobDelegate : public FileUploadJob::Delegate {
  public:
   MOCK_METHOD(void,
               DoInitiate,
-              (base::StringPiece origin_path,
-               base::StringPiece upload_parameters,
+              (std::string_view origin_path,
+               std::string_view upload_parameters,
                base::OnceCallback<void(
                    StatusOr<std::pair<int64_t /*total*/,
                                       std::string /*session_token*/>>)> cb),
@@ -56,7 +56,7 @@ class MockFileUploadJobDelegate : public FileUploadJob::Delegate {
               DoNextStep,
               (int64_t total,
                int64_t uploaded,
-               base::StringPiece session_token,
+               std::string_view session_token,
                ScopedReservation scoped_reservation,
                base::OnceCallback<void(
                    StatusOr<std::pair<int64_t /*uploaded*/,
@@ -66,14 +66,14 @@ class MockFileUploadJobDelegate : public FileUploadJob::Delegate {
   MOCK_METHOD(
       void,
       DoFinalize,
-      (base::StringPiece session_token,
+      (std::string_view session_token,
        base::OnceCallback<void(StatusOr<std::string /*access_parameters*/>)>
            cb),
       (override));
 
   MOCK_METHOD(void,
               DoDeleteFile,
-              (base::StringPiece /*origin_path*/),
+              (std::string_view /*origin_path*/),
               (override));
 };
 
@@ -150,7 +150,7 @@ TEST_F(FileUploadJobTest, SuccessfulRun) {
       std::move(log_upload_event)));
   EXPECT_CALL(*mock_delegate_, DoInitiate(Not(IsEmpty()), Not(IsEmpty()), _))
       .WillOnce(Invoke(
-          [](base::StringPiece origin_path, base::StringPiece upload_parameters,
+          [](std::string_view origin_path, std::string_view upload_parameters,
              base::OnceCallback<void(
                  StatusOr<std::pair<int64_t /*total*/,
                                     std::string /*session_token*/>>)> cb) {
@@ -163,7 +163,7 @@ TEST_F(FileUploadJobTest, SuccessfulRun) {
   EXPECT_CALL(*mock_delegate_, DoNextStep(_, _, StrEq(kSessionToken), _, _))
       .Times(3)
       .WillRepeatedly(
-          [](int64_t total, int64_t uploaded, base::StringPiece session_token,
+          [](int64_t total, int64_t uploaded, std::string_view session_token,
              ScopedReservation scoped_reservation,
              base::OnceCallback<void(
                  StatusOr<std::pair<int64_t /*uploaded*/,
@@ -180,7 +180,7 @@ TEST_F(FileUploadJobTest, SuccessfulRun) {
 
   EXPECT_CALL(*mock_delegate_, DoFinalize(StrEq(kSessionToken), _))
       .WillOnce(
-          Invoke([](base::StringPiece session_token,
+          Invoke([](std::string_view session_token,
                     base::OnceCallback<void(
                         StatusOr<std::string /*access_parameters*/>)> cb) {
             std::move(cb).Run(kAccessParameters);
@@ -236,7 +236,7 @@ TEST_F(FileUploadJobTest, FailToInitiate) {
       std::move(log_upload_event)));
   EXPECT_CALL(*mock_delegate_, DoInitiate(Not(IsEmpty()), Not(IsEmpty()), _))
       .WillOnce(Invoke(
-          [](base::StringPiece origin_path, base::StringPiece upload_parameters,
+          [](std::string_view origin_path, std::string_view upload_parameters,
              base::OnceCallback<void(
                  StatusOr<std::pair<int64_t /*total*/,
                                     std::string /*session_token*/>>)> cb) {
@@ -270,7 +270,7 @@ TEST_F(FileUploadJobTest, FailToInitiateWithMoreRetries) {
       std::move(log_upload_event)));
   EXPECT_CALL(*mock_delegate_, DoInitiate(Not(IsEmpty()), Not(IsEmpty()), _))
       .WillOnce(Invoke(
-          [](base::StringPiece origin_path, base::StringPiece upload_parameters,
+          [](std::string_view origin_path, std::string_view upload_parameters,
              base::OnceCallback<void(
                  StatusOr<std::pair<int64_t /*total*/,
                                     std::string /*session_token*/>>)> cb) {
@@ -328,7 +328,7 @@ TEST_F(FileUploadJobTest, FailToPerformNextStep) {
       std::move(log_upload_event)));
   EXPECT_CALL(*mock_delegate_, DoInitiate(Not(IsEmpty()), Not(IsEmpty()), _))
       .WillOnce(Invoke(
-          [](base::StringPiece origin_path, base::StringPiece upload_parameters,
+          [](std::string_view origin_path, std::string_view upload_parameters,
              base::OnceCallback<void(
                  StatusOr<std::pair<int64_t /*total*/,
                                     std::string /*session_token*/>>)> cb) {
@@ -340,7 +340,7 @@ TEST_F(FileUploadJobTest, FailToPerformNextStep) {
 
   EXPECT_CALL(*mock_delegate_, DoNextStep(_, _, StrEq(kSessionToken), _, _))
       .WillOnce(Invoke(
-          [](int64_t total, int64_t uploaded, base::StringPiece session_token,
+          [](int64_t total, int64_t uploaded, std::string_view session_token,
              ScopedReservation scoped_reservation,
              base::OnceCallback<void(
                  StatusOr<std::pair<int64_t /*uploaded*/,
@@ -350,7 +350,7 @@ TEST_F(FileUploadJobTest, FailToPerformNextStep) {
                 std::make_pair(uploaded + 100L, std::string(session_token)));
           }))
       .WillOnce(Invoke(
-          [](int64_t total, int64_t uploaded, base::StringPiece session_token,
+          [](int64_t total, int64_t uploaded, std::string_view session_token,
              ScopedReservation scoped_reservation,
              base::OnceCallback<void(
                  StatusOr<std::pair<int64_t /*uploaded*/,
@@ -386,7 +386,7 @@ TEST_F(FileUploadJobTest, FailToPerformNextStepWithMoreRetries) {
       std::move(log_upload_event)));
   EXPECT_CALL(*mock_delegate_, DoInitiate(Not(IsEmpty()), Not(IsEmpty()), _))
       .WillOnce(Invoke(
-          [](base::StringPiece origin_path, base::StringPiece upload_parameters,
+          [](std::string_view origin_path, std::string_view upload_parameters,
              base::OnceCallback<void(
                  StatusOr<std::pair<int64_t /*total*/,
                                     std::string /*session_token*/>>)> cb) {
@@ -398,7 +398,7 @@ TEST_F(FileUploadJobTest, FailToPerformNextStepWithMoreRetries) {
 
   EXPECT_CALL(*mock_delegate_, DoNextStep(_, _, StrEq(kSessionToken), _, _))
       .WillOnce(Invoke(
-          [](int64_t total, int64_t uploaded, base::StringPiece session_token,
+          [](int64_t total, int64_t uploaded, std::string_view session_token,
              ScopedReservation scoped_reservation,
              base::OnceCallback<void(
                  StatusOr<std::pair<int64_t /*uploaded*/,
@@ -408,7 +408,7 @@ TEST_F(FileUploadJobTest, FailToPerformNextStepWithMoreRetries) {
                 std::make_pair(uploaded + 100L, std::string(session_token)));
           }))
       .WillOnce(Invoke(
-          [](int64_t total, int64_t uploaded, base::StringPiece session_token,
+          [](int64_t total, int64_t uploaded, std::string_view session_token,
              ScopedReservation scoped_reservation,
              base::OnceCallback<void(
                  StatusOr<std::pair<int64_t /*uploaded*/,
@@ -443,7 +443,7 @@ TEST_F(FileUploadJobTest, FailToFinalize) {
       std::move(log_upload_event)));
   EXPECT_CALL(*mock_delegate_, DoInitiate(Not(IsEmpty()), Not(IsEmpty()), _))
       .WillOnce(Invoke(
-          [](base::StringPiece origin_path, base::StringPiece upload_parameters,
+          [](std::string_view origin_path, std::string_view upload_parameters,
              base::OnceCallback<void(
                  StatusOr<std::pair<int64_t /*total*/,
                                     std::string /*session_token*/>>)> cb) {
@@ -456,7 +456,7 @@ TEST_F(FileUploadJobTest, FailToFinalize) {
   EXPECT_CALL(*mock_delegate_, DoNextStep(_, _, StrEq(kSessionToken), _, _))
       .Times(3)
       .WillRepeatedly(
-          [](int64_t total, int64_t uploaded, base::StringPiece session_token,
+          [](int64_t total, int64_t uploaded, std::string_view session_token,
              ScopedReservation scoped_reservation,
              base::OnceCallback<void(
                  StatusOr<std::pair<int64_t /*uploaded*/,
@@ -473,7 +473,7 @@ TEST_F(FileUploadJobTest, FailToFinalize) {
 
   EXPECT_CALL(*mock_delegate_, DoFinalize(StrEq(kSessionToken), _))
       .WillOnce(
-          Invoke([](base::StringPiece session_token,
+          Invoke([](std::string_view session_token,
                     base::OnceCallback<void(
                         StatusOr<std::string /*access_parameters*/>)> cb) {
             std::move(cb).Run(Status(error::CANCELLED, "Declined in test"));
@@ -505,7 +505,7 @@ TEST_F(FileUploadJobTest, FailToFinalizeWithMoreRetries) {
       std::move(log_upload_event)));
   EXPECT_CALL(*mock_delegate_, DoInitiate(Not(IsEmpty()), Not(IsEmpty()), _))
       .WillOnce(Invoke(
-          [](base::StringPiece origin_path, base::StringPiece upload_parameters,
+          [](std::string_view origin_path, std::string_view upload_parameters,
              base::OnceCallback<void(
                  StatusOr<std::pair<int64_t /*total*/,
                                     std::string /*session_token*/>>)> cb) {
@@ -518,7 +518,7 @@ TEST_F(FileUploadJobTest, FailToFinalizeWithMoreRetries) {
   EXPECT_CALL(*mock_delegate_, DoNextStep(_, _, StrEq(kSessionToken), _, _))
       .Times(3)
       .WillRepeatedly(
-          [](int64_t total, int64_t uploaded, base::StringPiece session_token,
+          [](int64_t total, int64_t uploaded, std::string_view session_token,
              ScopedReservation scoped_reservation,
              base::OnceCallback<void(
                  StatusOr<std::pair<int64_t /*uploaded*/,
@@ -535,7 +535,7 @@ TEST_F(FileUploadJobTest, FailToFinalizeWithMoreRetries) {
 
   EXPECT_CALL(*mock_delegate_, DoFinalize(StrEq(kSessionToken), _))
       .WillOnce(
-          Invoke([](base::StringPiece session_token,
+          Invoke([](std::string_view session_token,
                     base::OnceCallback<void(
                         StatusOr<std::string /*access_parameters*/>)> cb) {
             std::move(cb).Run(Status(error::CANCELLED, "Declined in test"));
@@ -564,7 +564,7 @@ TEST_F(FileUploadJobTest, IncompleteUpload) {
       std::move(log_upload_event)));
   EXPECT_CALL(*mock_delegate_, DoInitiate(Not(IsEmpty()), Not(IsEmpty()), _))
       .WillOnce(Invoke(
-          [](base::StringPiece origin_path, base::StringPiece upload_parameters,
+          [](std::string_view origin_path, std::string_view upload_parameters,
              base::OnceCallback<void(
                  StatusOr<std::pair<int64_t /*total*/,
                                     std::string /*session_token*/>>)> cb) {
@@ -577,7 +577,7 @@ TEST_F(FileUploadJobTest, IncompleteUpload) {
   EXPECT_CALL(*mock_delegate_, DoNextStep(_, _, StrEq(kSessionToken), _, _))
       .Times(3)
       .WillRepeatedly(
-          [](int64_t total, int64_t uploaded, base::StringPiece session_token,
+          [](int64_t total, int64_t uploaded, std::string_view session_token,
              ScopedReservation scoped_reservation,
              base::OnceCallback<void(
                  StatusOr<std::pair<int64_t /*uploaded*/,
@@ -619,7 +619,7 @@ TEST_F(FileUploadJobTest, ExcessiveUpload) {
       std::move(log_upload_event)));
   EXPECT_CALL(*mock_delegate_, DoInitiate(Not(IsEmpty()), Not(IsEmpty()), _))
       .WillOnce(Invoke(
-          [](base::StringPiece origin_path, base::StringPiece upload_parameters,
+          [](std::string_view origin_path, std::string_view upload_parameters,
              base::OnceCallback<void(
                  StatusOr<std::pair<int64_t /*total*/,
                                     std::string /*session_token*/>>)> cb) {
@@ -631,7 +631,7 @@ TEST_F(FileUploadJobTest, ExcessiveUpload) {
 
   EXPECT_CALL(*mock_delegate_, DoNextStep(300L, _, StrEq(kSessionToken), _, _))
       .WillOnce(
-          [](int64_t total, int64_t uploaded, base::StringPiece session_token,
+          [](int64_t total, int64_t uploaded, std::string_view session_token,
              ScopedReservation scoped_reservation,
              base::OnceCallback<void(
                  StatusOr<std::pair<int64_t /*uploaded*/,
@@ -669,7 +669,7 @@ TEST_F(FileUploadJobTest, BackingUpload) {
       std::move(log_upload_event)));
   EXPECT_CALL(*mock_delegate_, DoInitiate(Not(IsEmpty()), Not(IsEmpty()), _))
       .WillOnce(Invoke(
-          [](base::StringPiece origin_path, base::StringPiece upload_parameters,
+          [](std::string_view origin_path, std::string_view upload_parameters,
              base::OnceCallback<void(
                  StatusOr<std::pair<int64_t /*total*/,
                                     std::string /*session_token*/>>)> cb) {
@@ -681,7 +681,7 @@ TEST_F(FileUploadJobTest, BackingUpload) {
 
   EXPECT_CALL(*mock_delegate_, DoNextStep(_, _, StrEq(kSessionToken), _, _))
       .WillOnce(
-          [](int64_t total, int64_t uploaded, base::StringPiece session_token,
+          [](int64_t total, int64_t uploaded, std::string_view session_token,
              ScopedReservation scoped_reservation,
              base::OnceCallback<void(
                  StatusOr<std::pair<int64_t /*uploaded*/,
@@ -691,7 +691,7 @@ TEST_F(FileUploadJobTest, BackingUpload) {
                 std::make_pair(uploaded + 100L, std::string(session_token)));
           })
       .WillOnce(
-          [](int64_t total, int64_t uploaded, base::StringPiece session_token,
+          [](int64_t total, int64_t uploaded, std::string_view session_token,
              ScopedReservation scoped_reservation,
              base::OnceCallback<void(
                  StatusOr<std::pair<int64_t /*uploaded*/,
@@ -730,7 +730,7 @@ TEST_F(FileUploadJobTest, SuccessfulResumption) {
   EXPECT_CALL(*mock_delegate_, DoNextStep(_, _, StrEq(kSessionToken), _, _))
       .Times(2)
       .WillRepeatedly(
-          [](int64_t total, int64_t uploaded, base::StringPiece session_token,
+          [](int64_t total, int64_t uploaded, std::string_view session_token,
              ScopedReservation scoped_reservation,
              base::OnceCallback<void(
                  StatusOr<std::pair<int64_t /*uploaded*/,
@@ -747,7 +747,7 @@ TEST_F(FileUploadJobTest, SuccessfulResumption) {
 
   EXPECT_CALL(*mock_delegate_, DoFinalize(StrEq(kSessionToken), _))
       .WillOnce(
-          Invoke([](base::StringPiece session_token,
+          Invoke([](std::string_view session_token,
                     base::OnceCallback<void(
                         StatusOr<std::string /*access_parameters*/>)> cb) {
             std::move(cb).Run(kAccessParameters);
@@ -838,8 +838,7 @@ TEST_F(FileUploadJobTest, AttemptToInitiateMultipleJobs) {
     // Initiation will happen only once!
     EXPECT_CALL(*mock_delegate_, DoInitiate(Not(IsEmpty()), Not(IsEmpty()), _))
         .WillOnce(Invoke(
-            [](base::StringPiece origin_path,
-               base::StringPiece upload_parameters,
+            [](std::string_view origin_path, std::string_view upload_parameters,
                base::OnceCallback<void(
                    StatusOr<std::pair<int64_t /*total*/,
                                       std::string /*session_token*/>>)> cb) {
@@ -919,7 +918,7 @@ TEST_F(FileUploadJobTest, AttemptToNextStepMultipleJobs) {
     EXPECT_CALL(*mock_delegate_, DoNextStep(_, _, StrEq(kSessionToken), _, _))
         .Times(Between(1, 3))
         .WillRepeatedly(
-            [](int64_t total, int64_t uploaded, base::StringPiece session_token,
+            [](int64_t total, int64_t uploaded, std::string_view session_token,
                ScopedReservation scoped_reservation,
                base::OnceCallback<void(
                    StatusOr<std::pair<int64_t /*uploaded*/,
@@ -1000,7 +999,7 @@ TEST_F(FileUploadJobTest, AttemptToFinalizeMultipleJobs) {
     // Finalize will happen only once!
     EXPECT_CALL(*mock_delegate_, DoFinalize(StrEq(kSessionToken), _))
         .WillOnce(
-            Invoke([](base::StringPiece session_token,
+            Invoke([](std::string_view session_token,
                       base::OnceCallback<void(
                           StatusOr<std::string /*access_parameters*/>)> cb) {
               std::move(cb).Run(kAccessParameters);
@@ -1075,8 +1074,7 @@ TEST_F(FileUploadJobTest, MultipleStagesJob) {
 
     EXPECT_CALL(*mock_delegate_, DoInitiate(Not(IsEmpty()), Not(IsEmpty()), _))
         .WillOnce(Invoke(
-            [](base::StringPiece origin_path,
-               base::StringPiece upload_parameters,
+            [](std::string_view origin_path, std::string_view upload_parameters,
                base::OnceCallback<void(
                    StatusOr<std::pair<int64_t /*total*/,
                                       std::string /*session_token*/>>)> cb) {
@@ -1111,7 +1109,7 @@ TEST_F(FileUploadJobTest, MultipleStagesJob) {
   EXPECT_CALL(*mock_delegate_, DoNextStep(_, _, StrEq(kSessionToken), _, _))
       .Times(3)
       .WillRepeatedly(
-          [](int64_t total, int64_t uploaded, base::StringPiece session_token,
+          [](int64_t total, int64_t uploaded, std::string_view session_token,
              ScopedReservation scoped_reservation,
              base::OnceCallback<void(
                  StatusOr<std::pair<int64_t /*uploaded*/,
@@ -1145,7 +1143,7 @@ TEST_F(FileUploadJobTest, MultipleStagesJob) {
     test::TestCallbackAutoWaiter waiter;
     EXPECT_CALL(*mock_delegate_, DoFinalize(StrEq(kSessionToken), _))
         .WillOnce(
-            Invoke([](base::StringPiece session_token,
+            Invoke([](std::string_view session_token,
                       base::OnceCallback<void(
                           StatusOr<std::string /*access_parameters*/>)> cb) {
               std::move(cb).Run(kAccessParameters);

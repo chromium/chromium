@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -44,7 +45,7 @@ MissiveClient* g_instance = nullptr;
 
 // Returns `false` if the api_key is empty or known to be used for testing
 // purposes, or by devices that are running unofficial builds.
-bool IsApiKeyAccepted(base::StringPiece api_key) {
+bool IsApiKeyAccepted(std::string_view api_key) {
   static constexpr const char* kBlockListedKeys[] = {
       "dummykey", "dummytoken",
       // More keys or key fragments can be added.

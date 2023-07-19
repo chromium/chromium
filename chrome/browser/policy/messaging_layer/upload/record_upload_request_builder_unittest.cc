@@ -6,11 +6,11 @@
 
 #include <cstdint>
 #include <string>
-#include "base/logging.h"
+#include <string_view>
 
+#include "base/logging.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/test/task_environment.h"
 #include "base/token.h"
 #include "chrome/browser/policy/messaging_layer/util/test_request_payload.h"
@@ -42,7 +42,7 @@ class RecordUploadRequestBuilderTest : public ::testing::TestWithParam<bool> {
 
  protected:
   static EncryptedRecord GenerateEncryptedRecord(
-      const base::StringPiece encrypted_wrapped_record,
+      const std::string_view encrypted_wrapped_record,
       const bool set_compression = false) {
     EncryptedRecord record;
     record.set_encrypted_wrapped_record(std::string(encrypted_wrapped_record));

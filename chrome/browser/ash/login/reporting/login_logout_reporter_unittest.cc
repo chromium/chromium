@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/login/reporting/login_logout_reporter_test_delegate.h"
 
+#include <string_view>
+
 #include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/simple_test_clock.h"
@@ -140,15 +142,15 @@ class LoginLogoutTestHelper {
             base::SequencedTaskRunner::GetCurrentDefault()));
 
     ON_CALL(*mock_queue, AddRecord(_, ::reporting::Priority::SECURITY, _))
-        .WillByDefault([this, status](
-                           base::StringPiece record_string,
+        .WillByDefault(
+            [this, status](std::string_view record_string,
                            ::reporting::Priority event_priority,
                            ::reporting::ReportQueue::EnqueueCallback cb) {
-          ++report_count_;
-          EXPECT_TRUE(record_.ParseFromArray(record_string.data(),
-                                             record_string.size()));
-          std::move(cb).Run(status);
-        });
+              ++report_count_;
+              EXPECT_TRUE(record_.ParseFromArray(record_string.data(),
+                                                 record_string.size()));
+              std::move(cb).Run(status);
+            });
 
     auto reporter_helper =
         std::make_unique<::reporting::UserEventReporterHelperTesting>(
