@@ -232,7 +232,7 @@ TEST_F(BubbleViewPixelTest, ReturnToApp) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "video_conference_tray_return_to_app_one_app",
-      /*revision_number=*/1, GetReturnToAppPanel()));
+      /*revision_number=*/2, GetReturnToAppPanel()));
 
   controller()->AddMediaApp(CreateFakeMediaApp(
       /*is_capturing_camera=*/false, /*is_capturing_microphone=*/true,
@@ -248,7 +248,7 @@ TEST_F(BubbleViewPixelTest, ReturnToApp) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "video_conference_tray_return_to_app_two_apps_collapsed",
-      /*revision_number=*/1, return_to_app_panel));
+      /*revision_number=*/2, return_to_app_panel));
 
   // Click the summary row to expand the panel.
   auto* summary_row = static_cast<video_conference::ReturnToAppButton*>(
@@ -258,7 +258,7 @@ TEST_F(BubbleViewPixelTest, ReturnToApp) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "video_conference_tray_return_to_app_two_apps_expanded",
-      /*revision_number=*/1, return_to_app_panel));
+      /*revision_number=*/2, return_to_app_panel));
 }
 
 TEST_F(BubbleViewPixelTest, ReturnToAppLinux) {

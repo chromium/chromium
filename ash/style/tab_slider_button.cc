@@ -8,6 +8,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/color_util.h"
 #include "ash/style/style_util.h"
+#include "ash/style/typography.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -192,6 +193,7 @@ LabelSliderButton::LabelSliderButton(PressedCallback callback,
   SetUseDefaultFillLayout(true);
   // Force the label to use requested colors.
   label_->SetAutoColorReadabilityEnabled(false);
+  TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton2, *label_);
 }
 
 LabelSliderButton::~LabelSliderButton() = default;
@@ -270,6 +272,7 @@ IconLabelSliderButton::IconLabelSliderButton(
 
   // Force the label to use requested colors.
   label_->SetAutoColorReadabilityEnabled(false);
+  TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton2, *label_);
 }
 
 IconLabelSliderButton::~IconLabelSliderButton() = default;
