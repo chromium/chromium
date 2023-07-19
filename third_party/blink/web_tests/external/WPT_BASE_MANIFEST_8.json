@@ -19166,6 +19166,58 @@
    },
    "svg": {
     "layout": {
+     "svg-use-symbol-animateMotion-print.html": [
+      "aa658117b66be49aa3a9830f2d6d710327383025",
+      [
+       null,
+       [
+        [
+         "/svg/layout/svg-use-symbol-animateMotion-print-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "svg-use-symbol-animateTransform-print.html": [
+      "f979d8317cead2da988d35c20c476a4176ba5f90",
+      [
+       null,
+       [
+        [
+         "/svg/layout/svg-use-symbol-animateTransform-print-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "svg-use-symbol-opacity-print.html": [
+      "339939b0c3de7114a95d0a0721e962733fb851f1",
+      [
+       null,
+       [
+        [
+         "/svg/layout/svg-use-symbol-opacity-print-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "svg-use-symbol-path-print.html": [
+      "c671a8413af2401727e7adfd79ad1157ad49f7a3",
+      [
+       null,
+       [
+        [
+         "/svg/layout/svg-use-symbol-path-print-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "svg-use-symbol-width-print.html": [
       "ae56d68eee25648dafa194fedac07835048cecac",
       [
@@ -266464,6 +266516,19 @@
         {}
        ]
       ],
+      "empty-msqrt.html": [
+       "f9fb65ba4b13b732572544599decc96e39f838da",
+       [
+        null,
+        [
+         [
+          "/mathml/presentation-markup/radicals/empty-msqrt-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "radical-rendering-from-in-flow.html": [
        "7a5de3811b1e45b85f8805ae4dc01225649ae7a9",
        [
@@ -326581,6 +326646,14 @@
        "08a8719d0c0ee09d97a55787b9fcc6435c852e6b",
        []
       ],
+      "text-autospace-computed-expected.txt": [
+       "76f7a437eb01e5b4c6fcaa4ba678072388ce24e7",
+       []
+      ],
+      "text-autospace-valid-expected.txt": [
+       "cabc2aac5b99d3678f3dc0cfe94916607a193b56",
+       []
+      ],
       "text-group-align-valid-expected.txt": [
        "1682a1697e88f0cfb9def0e3945b940ed8b10190",
        []
@@ -344481,10 +344554,6 @@
      "ac2ccf565590b6ab06666a33c80a855be5220d85",
      []
     ],
-    "ElementInternals-accessibility-expected.txt": [
-     "d9feb9ce96661e623f78212dea72d3bde4882f7d",
-     []
-    ],
     "ElementInternals-accessibility.html.ini": [
      "94a6251d30ed954bc559080ba9aadd83cf0f6d72",
      []
@@ -344588,10 +344657,6 @@
      []
     ],
     "reactions": {
-     "AriaMixin-element-attributes-expected.txt": [
-      "b0df273d40a77324d5e01c2b5cb73fb3674420b6",
-      []
-     ],
      "AriaMixin-element-attributes.html.ini": [
       "c00c026121c7c9c09abca25c96025884bc7604fe",
       []
@@ -362577,7 +362642,7 @@
     },
     "dom": {
      "aria-element-reflection-expected.txt": [
-      "58e4c2392cfc20ccb35178ed9b9b038e6d0a082b",
+      "f1de15cf627a1d8166b9b20041d858df41fd1fa3",
       []
      ],
      "aria-element-reflection.html.ini": [
@@ -366909,6 +366974,18 @@
         ],
         "windows-1252_include=xml-expected.txt": [
          "51ae80165dffe53781122372fdcf58694f3637dc",
+         []
+        ]
+       }
+      },
+      "terminology-0": {
+       "nontraditional-about-srcdoc-expected.txt": [
+        "ee9751ca76c08095ee0fb16ce903fb3dbb0a6f7c",
+        []
+       ],
+       "resources": {
+        "echo-referrer-text.py": [
+         "8a48d3346a6ad71e9fee2b103abfd97148e3bb43",
          []
         ]
        }
@@ -372801,14 +372878,6 @@
         ],
         "missing-export.js": [
          "e6f5746eb743a338ad6fbd401715fed368e4cf74",
-         []
-        ],
-        "module-import-referrer-expected.txt": [
-         "e69ffcf09439f1c4309330b86e00e7631ff080a0",
-         []
-        ],
-        "module-import-referrer.html.ini": [
-         "a7f54a8281a9573f30ca43211d44d90ec141fcc5",
          []
         ],
         "module-import-referrer.js": [
@@ -379509,6 +379578,10 @@
      "radicals": {
       "dynamic-radical-paint-invalidation-001-ref.html": [
        "632d6739db9fdea3b68c850db0aadbc64e5a19c1",
+       []
+      ],
+      "empty-msqrt-ref.html": [
+       "8ff5cbe9edd632cfd5fd6bb1f71f2df4209908df",
        []
       ],
       "radical-rendering-from-in-flow-ref.html": [
@@ -395068,6 +395141,22 @@
       "acfc7be517b3cc6783a372de4c67cc0d7a8b976e",
       []
      ],
+     "svg-use-symbol-animateMotion-print-ref.html": [
+      "07e162c8a5182d7550640801d05c3ccc36718adc",
+      []
+     ],
+     "svg-use-symbol-animateTransform-print-ref.html": [
+      "07e162c8a5182d7550640801d05c3ccc36718adc",
+      []
+     ],
+     "svg-use-symbol-opacity-print-ref.html": [
+      "d6b2f6bd9bb301ae7dbb41be8bdf5b244e31676d",
+      []
+     ],
+     "svg-use-symbol-path-print-ref.html": [
+      "07e162c8a5182d7550640801d05c3ccc36718adc",
+      []
+     ],
      "svg-use-symbol-width-print-ref.html": [
       "6c94e34c04546eb4488d7927c93c46838ab1c817",
       []
@@ -398554,7 +398643,7 @@
        []
       ],
       "accumulation-per-property-002-expected.txt": [
-       "96a040e5acfef08ed095efbe24086db73556bac0",
+       "d43528f09d34e69467e2211721fa651359263989",
        []
       ],
       "accumulation-per-property-002.html.ini": [
@@ -398570,7 +398659,7 @@
        []
       ],
       "addition-per-property-002-expected.txt": [
-       "25dff42839b5660b2f06ee66a6b85feac5bfadc6",
+       "882eb329194a175e7d6caaaa388514e8ef632dc2",
        []
       ],
       "addition-per-property-002.html.ini": [
@@ -398586,7 +398675,7 @@
        []
       ],
       "interpolation-per-property-002-expected.txt": [
-       "e8b495414d53b76e4fe6630b7d9d31d7ddf22194",
+       "42d8088c60432cb1cb7bddf2febc41b56f1498d6",
        []
       ],
       "interpolation-per-property-002.html.ini": [
@@ -398594,7 +398683,7 @@
        []
       ],
       "property-list.js": [
-       "315687a4e1b26742239810466132326a3303842d",
+       "c4ef7937ba3d71906db089855b81e1a4f9239625",
        []
       ],
       "property-types.js": [
@@ -468654,6 +468743,27 @@
       ],
       "text-align-valid.html": [
        "e67f4f6f1679baa83d5fd034acafb6b353eb755d",
+       [
+        null,
+        {}
+       ]
+      ],
+      "text-autospace-computed.html": [
+       "9656f70956e01304629368fd488d83310428b5ef",
+       [
+        null,
+        {}
+       ]
+      ],
+      "text-autospace-invalid.html": [
+       "7be73ba76eec5c6196017b7fa02c949a359aadaf",
+       [
+        null,
+        {}
+       ]
+      ],
+      "text-autospace-valid.html": [
+       "c40c0e0a4ce7c2cf2a339db926ba5d368fac4919",
        [
         null,
         {}
@@ -555365,6 +555475,13 @@
          null,
          {}
         ]
+       ],
+       "nontraditional-about-srcdoc.html": [
+        "bdb33842a7da62011419650f5093396d509805f7",
+        [
+         null,
+         {}
+        ]
        ]
       }
      }
@@ -580666,7 +580783,7 @@
       ]
      ],
      "loaf-source-location.html": [
-      "ffda00020717cf87684ba0a8331100778592f619",
+      "1065564206fc151e9690aca9bf512f7d48016099",
       [
        null,
        {
@@ -667015,7 +667132,7 @@
      ]
     ],
     "streams-close.https.any.js": [
-     "4871ee8e7be0fbba33838b717554dc7eeb23337b",
+     "30b645a6a9c34a1823886bc8eb9fa5b5c5b95963",
      [
       "webtransport/streams-close.https.any.html",
       {
