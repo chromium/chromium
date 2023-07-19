@@ -166,11 +166,6 @@ Browser* GetBrowserForTabWithId(BrowserList* browser_list,
   return nullptr;
 }
 
-// Records the number of Tabs closed after a bulk or a "Close All" operation.
-void RecordTabGridCloseTabsCount(int count) {
-  base::UmaHistogramCounts100("IOS.TabGrid.CloseTabs", count);
-}
-
 }  // namespace
 
 @interface BaseGridMediator () <CRWWebStateObserver,
@@ -625,7 +620,8 @@ void RecordTabGridCloseTabsCount(int count) {
   __block bool allTabsClosed = true;
 
   base::UmaHistogramCounts100("IOS.TabGrid.Selection.CloseTabs", itemIDs.count);
-  RecordTabGridCloseTabsCount(itemIDs.count);
+  base::UmaHistogramCounts100(kTabGridCloseMultipleTabsHistogram,
+                              itemIDs.count);
 
   self.webStateList->PerformBatchOperation(
       base::BindOnce(^(WebStateList* list) {
@@ -655,7 +651,8 @@ void RecordTabGridCloseTabsCount(int count) {
 }
 
 - (void)closeAllItems {
-  RecordTabGridCloseTabsCount(self.webStateList->count());
+  base::UmaHistogramCounts100(kTabGridCloseMultipleTabsHistogram,
+                              self.webStateList->count());
   if (!self.browserState->IsOffTheRecord()) {
     base::RecordAction(
         base::UserMetricsAction("MobileTabGridCloseAllRegularTabs"));
@@ -669,7 +666,8 @@ void RecordTabGridCloseTabsCount(int count) {
 }
 
 - (void)saveAndCloseAllItems {
-  RecordTabGridCloseTabsCount(self.webStateList->count());
+  base::UmaHistogramCounts100(kTabGridCloseMultipleTabsHistogram,
+                              self.webStateList->count());
   base::RecordAction(
       base::UserMetricsAction("MobileTabGridCloseAllRegularTabs"));
 

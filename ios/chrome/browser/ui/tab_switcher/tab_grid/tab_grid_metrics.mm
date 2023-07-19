@@ -11,3 +11,5 @@
 // Key of the UMA IOS.TabSwitcher.PageChangeInteraction histogram.
 const char kUMATabSwitcherPageChangeInteractionHistogram[] =
     "IOS.TabSwitcher.PageChangeInteraction";
+
+const char kTabGridCloseMultipleTabsHistogram[] = "IOS.TabGrid.CloseTabs";
