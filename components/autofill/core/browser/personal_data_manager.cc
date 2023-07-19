@@ -1082,7 +1082,7 @@ void PersonalDataManager::UpdateServerCardsMetadata(
 
 void PersonalDataManager::AddServerCvc(int64_t instrument_id,
                                        const std::u16string& cvc) {
-  // We don't check for the validity of the instrument_id.
+  // We don't check the validity of the instrument_id.
   // When a user saves a new card along with the CVC, we first save the card and
   // wait for the instrument id passed back from the UploadResponse. Then this
   // function is triggered to save server cvc. At this time, a new card should
@@ -1109,6 +1109,21 @@ void PersonalDataManager::UpdateServerCvc(int64_t instrument_id,
 
   // Update the new server cvc to the web database.
   database_helper_->GetServerDatabase()->UpdateServerCvc(instrument_id, cvc);
+
+  // Refresh our local cache and send notifications to observers.
+  Refresh();
+}
+
+void PersonalDataManager::RemoveServerCvc(int64_t instrument_id) {
+  // We don't check the validity of the instrument_id.
+  // This is only called in cvc sync bridge's ApplyIncrementalSyncChanges()
+  // call. If the card sync finishes before cvc sync, the card is gone before
+  // removing cvc.
+  CHECK(database_helper_->GetServerDatabase())
+      << "Removing Server cvc without server storage.";
+
+  // Remove the server cvc in the web database.
+  database_helper_->GetServerDatabase()->RemoveServerCvc(instrument_id);
 
   // Refresh our local cache and send notifications to observers.
   Refresh();

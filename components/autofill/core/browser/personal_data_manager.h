@@ -284,9 +284,10 @@ class PersonalDataManager : public KeyedService,
   virtual void UpdateServerCardsMetadata(
       const std::vector<CreditCard>& credit_cards);
 
-  // Methods to add, update server cvc in the web database.
+  // Methods to add, update, remove server cvc in the web database.
   void AddServerCvc(int64_t instrument_id, const std::u16string& cvc);
   void UpdateServerCvc(int64_t instrument_id, const std::u16string& cvc);
+  void RemoveServerCvc(int64_t instrument_id);
 
   // Resets the card for |guid| to the masked state.
   void ResetFullServerCard(const std::string& guid);
