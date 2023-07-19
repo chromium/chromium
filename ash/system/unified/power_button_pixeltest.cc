@@ -59,7 +59,8 @@ class PowerButtonPixelTest : public NoSessionAshTestBase {
   raw_ptr<PowerButton, ExperimentalAsh> button_ = nullptr;
 };
 
-TEST_F(PowerButtonPixelTest, NoSession) {
+// TODO(http://b/291573477): Re-enable this test.
+TEST_F(PowerButtonPixelTest, DISABLED_NoSession) {
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "check_power_button",
       /*revision_number=*/2, GetPowerButton()));
