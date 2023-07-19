@@ -3,7 +3,9 @@ Short Name: cld_3
 URL: https://github.com/google/cld3
 Version: 0
 License: Apache 2.0
+License File: LICENSE
 Security Critical: yes
+Shipped: yes
 
 Description:
 CLD3 is a neural net model for detecting the language of text.
