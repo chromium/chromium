@@ -611,13 +611,13 @@ void DownloadBubbleSecurityView::UpdateButtons() {
 
 void DownloadBubbleSecurityView::UpdateProgressBar() {
   DownloadUIModel::BubbleUIInfo& ui_info = download_row_view_->ui_info();
+  progress_bar_->SetVisible(ui_info.has_progress_bar);
   // The progress bar is only supported for deep scanning currently, which
   // requires a looping progress bar.
   if (!ui_info.has_progress_bar || !ui_info.is_progress_bar_looping) {
     return;
   }
 
-  progress_bar_->SetVisible(true);
   progress_bar_->SetValue(-1);
 }
 
@@ -701,6 +701,8 @@ void DownloadBubbleSecurityView::UpdateViews() {
   UpdateIconAndText();
   UpdateSecondaryIconAndText();
   UpdateProgressBar();
+
+  bubble_delegate_->SizeToContents();
 }
 
 void DownloadBubbleSecurityView::UpdateAccessibilityTextAndFocus() {
