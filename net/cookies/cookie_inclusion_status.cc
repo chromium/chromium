@@ -273,6 +273,7 @@ std::string CookieInclusionStatus::GetDebugString() const {
            {WARN_TENTATIVELY_ALLOWING_SECURE_SOURCE_SCHEME,
             "WARN_TENTATIVELY_ALLOWING_SECURE_SOURCE_SCHEME"},
            {WARN_SHADOWING_DOMAIN, "WARN_SHADOWING_DOMAIN"},
+           {WARN_THIRD_PARTY_PHASEOUT, "WARN_THIRD_PARTY_PHASEOUT"},
        }) {
     if (HasWarningReason(reason.first))
       base::StrAppend(&out, {reason.second, ", "});

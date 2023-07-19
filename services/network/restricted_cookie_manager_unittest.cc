@@ -52,6 +52,8 @@
 #include "url/origin.h"
 #include "url/url_util.h"
 
+using testing::AllOf;
+
 namespace net {
 bool operator==(const net::SiteForCookies& a, const net::SiteForCookies& b) {
   return a.IsEquivalent(b);
@@ -850,7 +852,10 @@ TEST_P(RestrictedCookieManagerTest, FilteredCookieAccessEvents) {
             mojom::CookieAccessDetails::Type::kRead, kDefaultUrlWithPath,
             net::SiteForCookies(),
             CookieOrLine(cookie_name_field, mojom::CookieOrLine::Tag::kCookie),
-            net::CookieInclusionStatus())));
+            AllOf(
+                net::IsInclude(),
+                net::HasWarningReason(
+                    net::CookieInclusionStatus::WARN_THIRD_PARTY_PHASEOUT)))));
   }
 
   {
@@ -871,7 +876,10 @@ TEST_P(RestrictedCookieManagerTest, FilteredCookieAccessEvents) {
             mojom::CookieAccessDetails::Type::kRead, kDefaultUrlWithPath,
             net::SiteForCookies(),
             CookieOrLine(cookie_name_field, mojom::CookieOrLine::Tag::kCookie),
-            net::CookieInclusionStatus())));
+            AllOf(
+                net::IsInclude(),
+                net::HasWarningReason(
+                    net::CookieInclusionStatus::WARN_THIRD_PARTY_PHASEOUT)))));
   }
 
   // Change the cookie with a new value so that a cookie access
@@ -926,7 +934,10 @@ TEST_P(RestrictedCookieManagerTest, FilteredCookieAccessEvents) {
             mojom::CookieAccessDetails::Type::kRead, kDefaultUrlWithPath,
             net::SiteForCookies(),
             CookieOrLine(cookie_name_field, mojom::CookieOrLine::Tag::kCookie),
-            net::CookieInclusionStatus())));
+            AllOf(
+                net::IsInclude(),
+                net::HasWarningReason(
+                    net::CookieInclusionStatus::WARN_THIRD_PARTY_PHASEOUT)))));
   }
 }
 

@@ -90,13 +90,16 @@ class CookieSettingsBase {
    public:
     CookieSettingWithMetadataBase(
         ContentSetting cookie_setting,
-        absl::optional<ThirdPartyBlockingScope> third_party_blocking_scope);
+        absl::optional<ThirdPartyBlockingScope> third_party_blocking_scope,
+        bool is_explicit_setting);
 
     // Returns true iff the setting is "block" due to the user's
     // third-party-cookie-blocking setting.
     bool BlockedByThirdPartyCookieBlocking() const;
 
     ContentSetting cookie_setting() const { return cookie_setting_; }
+
+    bool is_explicit_setting() const { return is_explicit_setting_; }
 
    protected:
     // The setting itself.
@@ -107,6 +110,9 @@ class CookieSettingsBase {
     // reason for blocking cookies is the third-party cookie blocking setting
     // (rather than a site-specific setting).
     absl::optional<ThirdPartyBlockingScope> third_party_blocking_scope_;
+
+    // Whether the setting is for a specific pattern.
+    bool is_explicit_setting_ = false;
   };
 
   // Returns true if the cookie associated with |domain| should be deleted

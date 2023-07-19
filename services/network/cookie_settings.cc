@@ -53,6 +53,17 @@ const ContentSettingPatternSource* FindMatchingSetting(
   return entry == settings.end() ? nullptr : &*entry;
 }
 
+// `block_third_party_cookies` should be the global setting of whether or not
+// third party cookies is blocked.
+bool ShouldWarnThirdPartyCookiePhaseout(const bool is_cookie_allowed,
+                                        const bool block_third_party_cookies,
+                                        const bool is_third_party_request,
+                                        const bool is_cookie_partitioned,
+                                        const bool is_explicit_setting) {
+  return is_cookie_allowed && !block_third_party_cookies &&
+         is_third_party_request && !is_cookie_partitioned &&
+         !is_explicit_setting;
+}
 }  // namespace
 
 bool CookieSettings::CookieSettingWithMetadata::IsCookieAllowed(
@@ -146,13 +157,25 @@ bool CookieSettings::IsCookieAccessible(
     const GURL& url,
     const net::SiteForCookies& site_for_cookies,
     const absl::optional<url::Origin>& top_frame_origin,
-    net::CookieSettingOverrides overrides) const {
-  return GetCookieSettingWithMetadata(
-             url,
-             GetFirstPartyURL(site_for_cookies,
-                              base::OptionalToPtr(top_frame_origin)),
-             IsThirdPartyRequest(url, site_for_cookies), overrides)
-      .IsCookieAllowed(cookie);
+    net::CookieSettingOverrides overrides,
+    net::CookieInclusionStatus* cookie_inclusion_status) const {
+  const CookieSettingWithMetadata setting_with_metadata =
+      GetCookieSettingWithMetadata(
+          url,
+          GetFirstPartyURL(site_for_cookies,
+                           base::OptionalToPtr(top_frame_origin)),
+          IsThirdPartyRequest(url, site_for_cookies), overrides);
+  bool allowed = setting_with_metadata.IsCookieAllowed(cookie);
+
+  if (cookie_inclusion_status &&
+      ShouldWarnThirdPartyCookiePhaseout(
+          allowed, block_third_party_cookies_,
+          IsThirdPartyRequest(url, site_for_cookies), cookie.IsPartitioned(),
+          setting_with_metadata.is_explicit_setting())) {
+    cookie_inclusion_status->AddWarningReason(
+        net::CookieInclusionStatus::WARN_THIRD_PARTY_PHASEOUT);
+  }
+  return allowed;
 }
 
 bool CookieSettings::ShouldAlwaysAllowCookies(
@@ -197,7 +220,8 @@ CookieSettings::GetCookieSettingWithMetadata(
     net::CookieSettingOverrides overrides) const {
   if (ShouldAlwaysAllowCookies(url, first_party_url)) {
     return {/*cookie_setting=*/CONTENT_SETTING_ALLOW,
-            /*third_party_blocking_scope=*/absl::nullopt};
+            /*third_party_blocking_scope=*/absl::nullopt,
+            /*is_explicit_setting=*/true};
   }
 
   // Default to allowing cookies.
@@ -259,7 +283,7 @@ CookieSettings::GetCookieSettingWithMetadata(
 
   FireStorageAccessHistogram(storage_access_result);
 
-  return {cookie_setting, third_party_blocking_scope};
+  return {cookie_setting, third_party_blocking_scope, found_explicit_setting};
 }
 
 CookieSettings::CookieSettingWithMetadata
@@ -295,17 +319,26 @@ bool CookieSettings::AnnotateAndMoveUserBlockedCookies(
   const CookieSettingWithMetadata setting_with_metadata =
       GetCookieSettingWithMetadata(url, site_for_cookies, top_frame_origin,
                                    overrides);
-
+  bool is_any_allowed = false;
   if (IsAllowed(setting_with_metadata.cookie_setting())) {
-    return true;
+    is_any_allowed = true;
   }
 
-  // Add the `EXCLUDE_USER_PREFERENCES` `ExclusionReason` for cookies that ought
-  // to be blocked, and find any cookies that should still be allowed.
-  bool is_any_allowed = false;
+  // Add `WARN_THIRD_PARTY_PHASEOUT` `WarningReason` for allowed cookies that
+  // meets the conditions and add the `EXCLUDE_USER_PREFERENCES`
+  // `ExclusionReason` for cookies that ought to be blocked.
   for (net::CookieWithAccessResult& cookie : maybe_included_cookies) {
     if (setting_with_metadata.IsCookieAllowed(cookie.cookie)) {
       is_any_allowed = true;
+
+      if (ShouldWarnThirdPartyCookiePhaseout(
+              /*is_cookie_allowed=*/true, block_third_party_cookies_,
+              IsThirdPartyRequest(url, site_for_cookies),
+              cookie.cookie.IsPartitioned(),
+              setting_with_metadata.is_explicit_setting())) {
+        cookie.access_result.status.AddWarningReason(
+            net::CookieInclusionStatus::WARN_THIRD_PARTY_PHASEOUT);
+      }
     } else {
       cookie.access_result.status.AddExclusionReason(
           net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES);

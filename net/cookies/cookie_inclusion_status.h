@@ -243,6 +243,9 @@ class NET_EXPORT CookieInclusionStatus {
     // enabled.
     WARN_SHADOWING_DOMAIN = 18,
 
+    // This cookie will be blocked for third-party cookie phaseout.
+    WARN_THIRD_PARTY_PHASEOUT = 19,
+
     // This should be kept last.
     NUM_WARNING_REASONS
   };

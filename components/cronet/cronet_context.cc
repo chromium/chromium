@@ -45,6 +45,7 @@
 #include "net/cert/caching_cert_verifier.h"
 #include "net/cert/cert_verifier.h"
 #include "net/cert/x509_certificate.h"
+#include "net/cookies/cookie_inclusion_status.h"
 #include "net/cookies/cookie_monster.h"
 #include "net/cookies/cookie_setting_override.h"
 #include "net/first_party_sets/first_party_set_metadata.h"
@@ -133,7 +134,8 @@ class BasicNetworkDelegate : public net::NetworkDelegateImpl {
 
   bool OnCanSetCookie(const net::URLRequest& request,
                       const net::CanonicalCookie& cookie,
-                      net::CookieOptions* options) override {
+                      net::CookieOptions* options,
+                      net::CookieInclusionStatus* inclusion_status) override {
     // Disallow saving cookies by default.
     return false;
   }

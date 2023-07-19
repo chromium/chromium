@@ -292,7 +292,8 @@ class RestrictedCookieManager::Listener : public base::LinkNode<Listener> {
     if (!restricted_cookie_manager_->cookie_settings().IsCookieAccessible(
             change.cookie, url_, site_for_cookies_, top_frame_origin_,
             restricted_cookie_manager_->GetCookieSettingOverrides(
-                has_storage_access_))) {
+                has_storage_access_),
+            /*cookie_inclusion_status=*/nullptr)) {
       return;
     }
 
@@ -604,7 +605,7 @@ void RestrictedCookieManager::SetCanonicalCookie(
   // TODO(morlovich): Try to validate site_for_cookies as well.
   bool blocked = !cookie_settings_->IsCookieAccessible(
       cookie, url, site_for_cookies, top_frame_origin,
-      GetCookieSettingOverrides(has_storage_access));
+      GetCookieSettingOverrides(has_storage_access), &status);
 
   if (blocked)
     status.AddExclusionReason(

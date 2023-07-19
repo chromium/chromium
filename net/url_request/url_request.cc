@@ -1074,11 +1074,13 @@ void URLRequest::NotifySSLCertificateError(int net_error,
 }
 
 bool URLRequest::CanSetCookie(const net::CanonicalCookie& cookie,
-                              CookieOptions* options) const {
+                              CookieOptions* options,
+                              CookieInclusionStatus* inclusion_status) const {
   DCHECK(!(load_flags_ & LOAD_DO_NOT_SAVE_COOKIES));
   bool can_set_cookies = g_default_can_use_cookies;
   if (network_delegate()) {
-    can_set_cookies = network_delegate()->CanSetCookie(*this, cookie, options);
+    can_set_cookies = network_delegate()->CanSetCookie(*this, cookie, options,
+                                                       inclusion_status);
   }
   if (!can_set_cookies)
     net_log_.AddEvent(NetLogEventType::COOKIE_SET_BLOCKED_BY_NETWORK_DELEGATE);

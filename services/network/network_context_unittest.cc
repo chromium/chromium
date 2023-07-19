@@ -73,6 +73,7 @@
 #include "net/cert/x509_certificate.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_access_result.h"
+#include "net/cookies/cookie_inclusion_status.h"
 #include "net/cookies/cookie_options.h"
 #include "net/cookies/cookie_setting_override.h"
 #include "net/cookies/cookie_store.h"
@@ -4586,11 +4587,15 @@ TEST_F(NetworkContextTest, CanSetCookieFalseIfCookiesBlocked) {
       net::COOKIE_PRIORITY_LOW, false);
   EXPECT_TRUE(
       network_context->url_request_context()->network_delegate()->CanSetCookie(
-          *request, *cookie, nullptr));
+          *request, *cookie, /* options */ nullptr,
+          /* inclusion_status */ nullptr));
   SetDefaultContentSetting(CONTENT_SETTING_BLOCK, network_context.get());
+  net::CookieInclusionStatus status;
   EXPECT_FALSE(
       network_context->url_request_context()->network_delegate()->CanSetCookie(
-          *request, *cookie, nullptr));
+          *request, *cookie, /* options */ nullptr, &status));
+  EXPECT_FALSE(status.HasWarningReason(
+      net::CookieInclusionStatus::WARN_THIRD_PARTY_PHASEOUT));
 }
 
 TEST_F(NetworkContextTest, CanSetCookieTrueIfCookiesAllowed) {
@@ -4607,9 +4612,13 @@ TEST_F(NetworkContextTest, CanSetCookieTrueIfCookiesAllowed) {
       net::COOKIE_PRIORITY_LOW, false);
 
   SetDefaultContentSetting(CONTENT_SETTING_ALLOW, network_context.get());
+  net::CookieInclusionStatus status;
   EXPECT_TRUE(
       network_context->url_request_context()->network_delegate()->CanSetCookie(
-          *request, *cookie, nullptr));
+          *request, *cookie, /* options */ nullptr, &status));
+
+  EXPECT_TRUE(status.HasWarningReason(
+      net::CookieInclusionStatus::WARN_THIRD_PARTY_PHASEOUT));
 }
 
 TEST_F(NetworkContextTest, CanSetCookieTrueIfBlockThirdPartyCookiesOverridden) {
@@ -4630,16 +4639,20 @@ TEST_F(NetworkContextTest, CanSetCookieTrueIfBlockThirdPartyCookiesOverridden) {
   network_context->cookie_manager()->BlockThirdPartyCookies(true);
   EXPECT_FALSE(
       network_context->url_request_context()->network_delegate()->CanSetCookie(
-          *request, *cookie, nullptr));
+          *request, *cookie, /* options */ nullptr,
+          /* inclusion_status */ nullptr));
 
   // Now the cookie should be allowed if the request includes the override that
   // the user is forcing 3PCs.
   request->cookie_setting_overrides().Clear();
   request->cookie_setting_overrides().Put(
       net::CookieSettingOverride::kForceThirdPartyByUser);
+  net::CookieInclusionStatus status;
   EXPECT_TRUE(
       network_context->url_request_context()->network_delegate()->CanSetCookie(
-          *request, *cookie, nullptr));
+          *request, *cookie, /* options */ nullptr, &status));
+  EXPECT_FALSE(status.HasWarningReason(
+      net::CookieInclusionStatus::WARN_THIRD_PARTY_PHASEOUT));
 }
 
 TEST_F(NetworkContextTest,

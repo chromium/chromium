@@ -48,9 +48,11 @@ CookieSettingsBase::CookieSettingsBase()
 CookieSettingsBase::CookieSettingWithMetadataBase::
     CookieSettingWithMetadataBase(
         ContentSetting cookie_setting,
-        absl::optional<ThirdPartyBlockingScope> third_party_blocking_scope)
+        absl::optional<ThirdPartyBlockingScope> third_party_blocking_scope,
+        bool is_explicit_setting)
     : cookie_setting_(cookie_setting),
-      third_party_blocking_scope_(third_party_blocking_scope) {
+      third_party_blocking_scope_(third_party_blocking_scope),
+      is_explicit_setting_(is_explicit_setting) {
   DCHECK(!third_party_blocking_scope_.has_value() ||
          !IsAllowed(cookie_setting_));
 }
