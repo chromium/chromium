@@ -4172,6 +4172,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="NetworkService.IpProtection.TokenExpirationRate"
+    units="tokens" expires_after="2023-12-31">
+  <owner>djmitche@chromium.org</owner>
+  <owner>src/chrome/browser/ip_protection/OWNERS</owner>
+  <summary>
+    Number of auth tokens that expired before they were used, as a rate per
+    hour, up to 100,000. This value is measured approximately every 5 minutes.
+  </summary>
+</histogram>
+
+<histogram name="NetworkService.IpProtection.TokenSpendRate" units="tokens"
+    expires_after="2023-12-31">
+  <owner>djmitche@chromium.org</owner>
+  <owner>src/chrome/browser/ip_protection/OWNERS</owner>
+  <summary>
+    Number of auth tokens spent, as a rate per hour, up to 1000. This value is
+    measured approximately every 5 minutes.
+  </summary>
+</histogram>
+
 <histogram name="NetworkService.IpProtection.TryGetAuthTokensResult"
     enum="IpProtectionTokenBatchRequestResult" expires_after="2023-12-31">
   <owner>djmitche@chromium.org</owner>

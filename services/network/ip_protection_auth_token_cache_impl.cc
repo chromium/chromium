@@ -4,6 +4,8 @@
 
 #include "services/network/ip_protection_auth_token_cache_impl.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "base/time/time.h"
 
 namespace network {
@@ -26,6 +28,9 @@ const int kCacheLowWaterMark = 256;
 // not "expired" by `RemoveExpiredTokens`.
 const base::TimeDelta kFreshnessConstant = base::Seconds(5);
 
+// Interval between measurements of the token rates.
+const base::TimeDelta kTokenRateMeasurementInterval = base::Minutes(5);
+
 }  // namespace
 
 IpProtectionAuthTokenCacheImpl::IpProtectionAuthTokenCacheImpl(
@@ -34,6 +39,11 @@ IpProtectionAuthTokenCacheImpl::IpProtectionAuthTokenCacheImpl(
   if (auth_token_getter.is_valid()) {
     auth_token_getter_.Bind(std::move(auth_token_getter));
   }
+
+  last_token_rate_measurement_ = base::TimeTicks::Now();
+  // Start the timer. The timer is owned by `this` and thus cannot outlive it.
+  measurement_timer_.Start(FROM_HERE, kTokenRateMeasurementInterval, this,
+                           &IpProtectionAuthTokenCacheImpl::MeasureTokenRates);
 }
 
 IpProtectionAuthTokenCacheImpl::~IpProtectionAuthTokenCacheImpl() = default;
@@ -80,6 +90,7 @@ IpProtectionAuthTokenCacheImpl::GetAuthToken() {
   if (cache_.size() > 0) {
     auto result = std::move(cache_.front());
     cache_.pop_front();
+    tokens_spent_++;
     return result;
   }
   return absl::nullopt;
@@ -87,6 +98,7 @@ IpProtectionAuthTokenCacheImpl::GetAuthToken() {
 
 void IpProtectionAuthTokenCacheImpl::RemoveExpiredTokens() {
   base::Time fresh_after = base::Time::Now() + kFreshnessConstant;
+  auto size_before = cache_.size();
   cache_.erase(
       std::remove_if(
           cache_.begin(), cache_.end(),
@@ -94,6 +106,37 @@ void IpProtectionAuthTokenCacheImpl::RemoveExpiredTokens() {
             return token->expiration <= fresh_after;
           }),
       cache_.end());
+  tokens_expired_ += size_before - cache_.size();
+}
+
+void IpProtectionAuthTokenCacheImpl::MeasureTokenRates() {
+  RemoveExpiredTokens();
+
+  auto now = base::TimeTicks::Now();
+  auto interval = now - last_token_rate_measurement_;
+  auto interval_ms = interval.InMilliseconds();
+
+  auto denominator = base::Hours(1).InMilliseconds();
+  if (interval_ms != 0) {
+    last_token_rate_measurement_ = now;
+
+    auto spend_rate = tokens_spent_ * denominator / interval_ms;
+    // A maximum of 1000 would correspond to a spend rate of about 16/min,
+    // which is higher than we expect to see.
+    base::UmaHistogramCounts1000("NetworkService.IpProtection.TokenSpendRate",
+                                 spend_rate);
+
+    auto expiration_rate = tokens_expired_ * denominator / interval_ms;
+    // Entire batches of tokens are likely to expire within a single 5-minute
+    // measurement interval. 1024 tokens in 5 minutes is equivalent to 12288
+    // tokens per hour, comfortably under 100,000.
+    base::UmaHistogramCounts100000(
+        "NetworkService.IpProtection.TokenExpirationRate", expiration_rate);
+  }
+
+  last_token_rate_measurement_ = now;
+  tokens_spent_ = 0;
+  tokens_expired_ = 0;
 }
 
 void IpProtectionAuthTokenCacheImpl::FillCacheForTesting(

@@ -18,7 +18,13 @@ namespace {
 
 const int kExpectedBatchSize = 1024;
 const base::Time kFutureExpiration = base::Time::Now() + base::Hours(1);
-constexpr char kHistogram[] = "NetworkService.IpProtection.GetAuthTokenResult";
+constexpr char kGetAuthTokenResultHistogram[] =
+    "NetworkService.IpProtection.GetAuthTokenResult";
+constexpr char kTokenSpendRateHistogram[] =
+    "NetworkService.IpProtection.TokenSpendRate";
+constexpr char kTokenExpirationRateHistogram[] =
+    "NetworkService.IpProtection.TokenExpirationRate";
+const base::TimeDelta kTokenRateMeasurementInterval = base::Minutes(5);
 
 class MockIpProtectionAuthTokenGetter
     : public network::mojom::IpProtectionAuthTokenGetter {
@@ -79,13 +85,16 @@ struct HistogramState {
 class IpProtectionAuthTokenCacheImplTest : public testing::Test {
  protected:
   IpProtectionAuthTokenCacheImplTest()
-      : receiver_(&mock_),
+      : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
+        receiver_(&mock_),
         auth_token_cache_(std::make_unique<IpProtectionAuthTokenCacheImpl>(
             receiver_.BindNewPipeAndPassRemote())) {}
 
   void ExpectHistogramState(HistogramState state) {
-    histogram_tester_.ExpectBucketCount(kHistogram, true, state.success);
-    histogram_tester_.ExpectBucketCount(kHistogram, false, state.failure);
+    histogram_tester_.ExpectBucketCount(kGetAuthTokenResultHistogram, true,
+                                        state.success);
+    histogram_tester_.ExpectBucketCount(kGetAuthTokenResultHistogram, false,
+                                        state.failure);
   }
 
   base::test::TaskEnvironment task_environment_;
@@ -245,6 +254,89 @@ TEST_F(IpProtectionAuthTokenCacheImplTest, Null_Getter) {
   auto token = auth_token_cache.GetAuthToken();
   ASSERT_FALSE(token);
   ExpectHistogramState(HistogramState{.success = 0, .failure = 1});
+}
+
+// Verify that the token spend rate is measured correctly.
+TEST_F(IpProtectionAuthTokenCacheImplTest, TokenSpendRate) {
+  std::vector<network::mojom::BlindSignedAuthTokenPtr> tokens;
+
+  // Fill the cache with 5 tokens.
+  for (int i = 0; i < 5; i++) {
+    tokens.emplace_back(
+        network::mojom::BlindSignedAuthToken::New("token", kFutureExpiration));
+  }
+  mock_.ExpectTryGetAuthTokensCall(kExpectedBatchSize, std::move(tokens));
+
+  // Indicate that a token will be required soon.
+  auth_token_cache_->SetOnCacheRefilledForTesting(
+      task_environment_.QuitClosure());
+  auth_token_cache_->MayNeedAuthTokenSoon();
+  task_environment_.RunUntilQuit();
+  ASSERT_TRUE(mock_.GotAllExpectedTryGetAuthTokensCalls());
+
+  // Get four tokens from the batch.
+  for (int i = 0; i < 4; i++) {
+    auto got_token = auth_token_cache_->GetAuthToken();
+    EXPECT_EQ(got_token.value()->token, "token");
+    EXPECT_EQ(got_token.value()->expiration, kFutureExpiration);
+  }
+
+  // Fast-forward to run the measurement timer.
+  task_environment_.FastForwardBy(kTokenRateMeasurementInterval);
+
+  // Four tokens in five minutes is a rate of 36 tokens per hour.
+  histogram_tester_.ExpectUniqueSample(kTokenSpendRateHistogram, 48, 1);
+
+  // Get the remaining token in the batch.
+  auto got_token = auth_token_cache_->GetAuthToken();
+  EXPECT_EQ(got_token.value()->token, "token");
+  EXPECT_EQ(got_token.value()->expiration, kFutureExpiration);
+
+  // Fast-forward to run the measurement timer again, for another interval.
+  task_environment_.FastForwardBy(kTokenRateMeasurementInterval);
+
+  // One token in five minutes is a rate of 12 tokens per hour.
+  histogram_tester_.ExpectBucketCount(kTokenSpendRateHistogram, 12, 1);
+  histogram_tester_.ExpectTotalCount(kTokenSpendRateHistogram, 2);
+}
+
+// Verify that the token expiration rate is measured correctly.
+TEST_F(IpProtectionAuthTokenCacheImplTest, TokenExpirationRate) {
+  std::vector<network::mojom::BlindSignedAuthTokenPtr> tokens;
+
+  // Fill the cache with 1024 expired tokens. An entire batch expiring
+  // in one 5-minute interval is a very likely event.
+  const base::Time kExpired = base::Time::Now() - base::Hours(10);
+  tokens.reserve(1024);
+  for (int i = 0; i < 1024; i++) {
+    tokens.emplace_back(
+        network::mojom::BlindSignedAuthToken::New("token", kExpired));
+  }
+  mock_.ExpectTryGetAuthTokensCall(kExpectedBatchSize, std::move(tokens));
+
+  // Indicate that a token will be required soon.
+  auth_token_cache_->SetOnCacheRefilledForTesting(
+      task_environment_.QuitClosure());
+  auth_token_cache_->MayNeedAuthTokenSoon();
+  task_environment_.RunUntilQuit();
+  ASSERT_TRUE(mock_.GotAllExpectedTryGetAuthTokensCalls());
+
+  // Try to get a token, which will incidentally record the expired tokens.
+  auto got_token = auth_token_cache_->GetAuthToken();
+  EXPECT_FALSE(got_token);
+
+  // Fast-forward to run the measurement timer.
+  task_environment_.FastForwardBy(kTokenRateMeasurementInterval);
+
+  // 1024 tokens in five minutes is a rate of 12288 tokens per hour.
+  histogram_tester_.ExpectUniqueSample(kTokenExpirationRateHistogram, 12288, 1);
+
+  // Fast-forward to run the measurement timer again.
+  task_environment_.FastForwardBy(kTokenRateMeasurementInterval);
+
+  // Zero tokens expired in this interval.
+  histogram_tester_.ExpectBucketCount(kTokenExpirationRateHistogram, 0, 1);
+  histogram_tester_.ExpectTotalCount(kTokenExpirationRateHistogram, 2);
 }
 
 }  // namespace network
