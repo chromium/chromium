@@ -66,6 +66,7 @@ PermissionRequestChipDialogBrowserTest.*
 *PopupViewViewsBrowsertest*
 PrivacySandboxDialogViewBrowserTest.*
 PrivacySandboxNoticeBubbleBrowserTest.*
+ProfileMenuViewPixelTest.*
 ProfilePickerUIPixelTest.*
 ProfileTypeChoiceUIPixelTest.*
 PromptForScanningModalDialogTest.*
