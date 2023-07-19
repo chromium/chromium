@@ -15,6 +15,8 @@ pub struct ChromiumPaths {
     pub root: PathBuf,
     /// The third_party/rust directory.
     pub third_party: &'static Path,
+    /// The library directory relative to the root of the Rust source tree.
+    pub rust_src_library_subdir: &'static Path,
     /// The vendor directory relative to the root of the Rust source tree.
     pub rust_src_vendor_subdir: &'static Path,
     /// The root of the Rust source tree that is installed in //third_party and
@@ -37,6 +39,10 @@ impl ChromiumPaths {
         Ok(ChromiumPaths {
             root: cur_dir.clone(),
             third_party: check_path(&cur_dir, RUST_THIRD_PARTY_DIR)?,
+            // We tolerate the Rust sources being missing, as they are only used to generate
+            // rules for the stdlib during Clang/Rust rolls, and they are not checked out for
+            // most machines.
+            rust_src_library_subdir: Path::new(RUST_SRC_LIBRARY_SUBDIR),
             // We tolerate the Rust sources being missing, as they are only used to generate
             // rules for the stdlib during Clang/Rust rolls, and they are not checked out for
             // most machines.
@@ -86,6 +92,7 @@ fn check_path<'a>(root: &Path, p_str: &'a str) -> io::Result<&'a Path> {
 }
 
 static RUST_THIRD_PARTY_DIR: &str = "third_party/rust";
+static RUST_SRC_LIBRARY_SUBDIR: &str = "library";
 static RUST_SRC_VENDOR_SUBDIR: &str = "vendor";
 static RUST_SRC_INSTALLED_DIR: &str = "third_party/rust-toolchain/lib/rustlib/src/rust";
 static STD_CONFIG_FILE: &str = "build/rust/std/gnrt_config.toml";

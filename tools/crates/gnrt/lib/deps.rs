@@ -171,15 +171,15 @@ pub fn collect_dependencies(
     exclude: Option<Vec<String>>,
 ) -> Vec<Package> {
     // The metadata is split into two parts:
-    // 1. A list of packages and associated info: targets (e.g. lib, bin,
-    //    tests), source path, etc. This includes all workspace members and all
-    //    transitive dependencies. Deps are not filtered based on platform or
-    //    features: it is the maximal set of dependencies.
-    // 2. Resolved dependency graph. There is a node for each package pointing
-    //    to its dependencies in each configuration (normal, build, dev), and
-    //    the resolved feature set. This includes platform-specific info so one
-    //    can filter based on target platform. Nodes include an ID that uniquely
-    //    refers to a package in both (1) and (2).
+    // 1. A list of packages and associated info: targets (e.g. lib, bin, tests),
+    //    source path, etc. This includes all workspace members and all transitive
+    //    dependencies. Deps are not filtered based on platform or features: it is
+    //    the maximal set of dependencies.
+    // 2. Resolved dependency graph. There is a node for each package pointing to
+    //    its dependencies in each configuration (normal, build, dev), and the
+    //    resolved feature set. This includes platform-specific info so one can
+    //    filter based on target platform. Nodes include an ID that uniquely refers
+    //    to a package in both (1) and (2).
     //
     // We need info from both parts. Traversing the graph tells us exactly which
     // crates are needed for a given configuration and platform. In the process,

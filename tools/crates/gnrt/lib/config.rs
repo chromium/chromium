@@ -9,6 +9,43 @@ use std::collections::BTreeMap;
 
 use serde::Deserialize;
 
+/// For list-type configuration fields, combine the configuration entries with
+/// the same field name from a particular crate's config with the global config.
+/// This allows for a global setting to be applied to every crate, with
+/// individual crates extending it.
+///
+/// The result is an iterator over all config values. The crate config will come
+/// first, then global configs will come later in the list.
+macro_rules! config_field {
+    ($config:expr, $name:expr, $field:ident, $default_config:expr) => {
+        $config
+            .per_crate_config
+            .get($name)
+            .or_else(|| Some($default_config))
+            .map(|crate_config| {
+                crate::config::do_concat_field(|c| &c.$field, &crate_config, &$config.all_config)
+            })
+            .unwrap()
+    };
+}
+pub(crate) use config_field;
+
+/// Combine a field from `crate_config` and `all_config`, in order. This can be
+/// used to combine config lists, or get the first set `Option<_>` of the two
+/// configs.
+pub fn do_concat_field<
+    'a,
+    T: 'a,
+    Field: 'a + IntoIterator<Item = T>,
+    F: Fn(&'a CrateConfig) -> Field,
+>(
+    field_mapper: F,
+    crate_config: &'a CrateConfig,
+    all_config: &'a CrateConfig,
+) -> impl Iterator<Item = T> {
+    field_mapper(crate_config).into_iter().chain(field_mapper(all_config).into_iter())
+}
+
 #[derive(Clone, Debug, Default, Deserialize)]
 #[serde(default, deny_unknown_fields)]
 pub struct BuildConfig {
@@ -76,4 +113,11 @@ pub struct CrateConfig {
     /// These do not affect dependency resolution, so it will not change any
     /// other generated targets.
     pub exclude_deps_in_gn: Vec<String>,
+    /// Include rs and input files under these relative paths as part of the
+    /// crate.
+    #[serde(default)]
+    pub extra_src_roots: Vec<std::path::PathBuf>,
+    /// Include input files under these relative paths as part of the crate.
+    #[serde(default)]
+    pub extra_input_roots: Vec<std::path::PathBuf>,
 }

@@ -333,10 +333,10 @@ template("single_msvc_toolchain") {
     }
 
     if (toolchain_has_rust) {
+      rust_sysroot_relative = rebase_path(rust_sysroot, root_build_dir)
+      rustc = "$rust_sysroot_relative/bin/rustc"
       rustc_wrapper =
           rebase_path("//build/rust/rustc_wrapper.py", root_build_dir)
-      rustc = rebase_path("${rust_sysroot}/bin/rustc", root_build_dir)
-      rust_sysroot_relative_to_out = rebase_path(rust_sysroot, root_out_dir)
       rustc_windows_args = " -Clinker=$link$rust_linkflags $rustc_common_args"
 
       tool("rust_staticlib") {
@@ -350,9 +350,9 @@ template("single_msvc_toolchain") {
         description = "RUST(STATICLIB) {{output}}"
         outputs = [ libname ]
 
-        rspfile_content = "{{rustdeps}} {{externs}}"
+        rspfile_content = "{{rustdeps}} {{externs}} SOURCES {{sources}}"
         command = "\"$python_path\" \"$rustc_wrapper\" --target-windows --rustc=$rustc --depfile=$depfile --rsp=$rspfile -- $rustc_windows_args --emit=dep-info=$depfile,link -o $libname LDFLAGS RUSTENV {{rustenv}}"
-        rust_sysroot = rust_sysroot_relative_to_out
+        rust_sysroot = rust_sysroot_relative
       }
 
       tool("rust_rlib") {
@@ -361,11 +361,8 @@ template("single_msvc_toolchain") {
         # actually liblibc.rlib).
         rlibname =
             "{{output_dir}}/lib{{target_output_name}}{{output_extension}}"
+        rspfile = "$rlibname.rsp"
         depfile = "$rlibname.d"
-
-        # Do not use rsp files in this (common) case because they occupy the
-        # ninja main thread, and {{rlibs}} have shorter command lines than
-        # fully linked targets.
 
         default_output_extension = ".rlib"
 
@@ -375,8 +372,9 @@ template("single_msvc_toolchain") {
         description = "RUST {{output}}"
         outputs = [ rlibname ]
 
-        command = "\"$python_path\" \"$rustc_wrapper\" --target-windows --rustc=$rustc --depfile=$depfile -- $rustc_windows_args --emit=dep-info=$depfile,link -o $rlibname {{rustdeps}} {{externs}} LDFLAGS RUSTENV {{rustenv}}"
-        rust_sysroot = rust_sysroot_relative_to_out
+        rspfile_content = "{{rustdeps}} {{externs}} SOURCES {{sources}}"
+        command = "\"$python_path\" \"$rustc_wrapper\" --target-windows --rustc=$rustc --depfile=$depfile --rsp=$rspfile -- $rustc_windows_args --emit=dep-info=$depfile,link -o $rlibname {{rustdeps}} {{externs}} LDFLAGS RUSTENV {{rustenv}}"
+        rust_sysroot = rust_sysroot_relative
       }
 
       tool("rust_bin") {
@@ -396,10 +394,10 @@ template("single_msvc_toolchain") {
         ]
         runtime_outputs = outputs
 
-        rspfile_content = "{{rustdeps}} {{externs}}"
+        rspfile_content = "{{rustdeps}} {{externs}} SOURCES {{sources}}"
         dynamic_link_switch = ""
         command = "\"$python_path\" \"$rustc_wrapper\" --target-windows --rustc=$rustc --depfile=$depfile --rsp=$rspfile -- $rustc_windows_args --emit=dep-info=$depfile,link -o $exename LDFLAGS {{ldflags}} $sys_lib_flags /PDB:$pdbname RUSTENV {{rustenv}}"
-        rust_sysroot = rust_sysroot_relative_to_out
+        rust_sysroot = rust_sysroot_relative
       }
 
       tool("rust_cdylib") {
@@ -428,10 +426,10 @@ template("single_msvc_toolchain") {
           pdbname,
         ]
 
-        rspfile_content = "{{rustdeps}} {{externs}}"
+        rspfile_content = "{{rustdeps}} {{externs}} SOURCES {{sources}}"
         dynamic_link_switch = ""
         command = "\"$python_path\" \"$rustc_wrapper\" --target-windows --rustc=$rustc --depfile=$depfile --rsp=$rspfile -- $rustc_windows_args --emit=dep-info=$depfile,link -o $dllname LDFLAGS {{ldflags}} $sys_lib_flags /PDB:$pdbname /IMPLIB:$libname RUSTENV {{rustenv}}"
-        rust_sysroot = rust_sysroot_relative_to_out
+        rust_sysroot = rust_sysroot_relative
 
         # Since the above commands only updates the .lib file when it changes,
         # ask Ninja to check if the timestamp actually changed to know if
@@ -463,10 +461,10 @@ template("single_msvc_toolchain") {
         ]
         runtime_outputs = outputs
 
-        rspfile_content = "{{rustdeps}} {{externs}}"
+        rspfile_content = "{{rustdeps}} {{externs}} SOURCES {{sources}}"
         dynamic_link_switch = ""
         command = "\"$python_path\" \"$rustc_wrapper\" --target-windows --rustc=$rustc --depfile=$depfile --rsp=$rspfile -- $rustc_windows_args --emit=dep-info=$depfile,link -o $dllname LDFLAGS {{ldflags}} $sys_lib_flags /PDB:$pdbname RUSTENV {{rustenv}}"
-        rust_sysroot = rust_sysroot_relative_to_out
+        rust_sysroot = rust_sysroot_relative
 
         # Since the above commands only updates the .lib file when it changes,
         # ask Ninja to check if the timestamp actually changed to know if

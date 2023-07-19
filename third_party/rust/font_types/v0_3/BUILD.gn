@@ -9,10 +9,27 @@ cargo_crate("lib") {
   epoch = "0.3"
   crate_type = "rlib"
   crate_root = "crate/src/lib.rs"
+  sources = [
+    "//third_party/rust/font_types/v0_3/crate/src/bbox.rs",
+    "//third_party/rust/font_types/v0_3/crate/src/fixed.rs",
+    "//third_party/rust/font_types/v0_3/crate/src/fword.rs",
+    "//third_party/rust/font_types/v0_3/crate/src/glyph_id.rs",
+    "//third_party/rust/font_types/v0_3/crate/src/lib.rs",
+    "//third_party/rust/font_types/v0_3/crate/src/longdatetime.rs",
+    "//third_party/rust/font_types/v0_3/crate/src/name_id.rs",
+    "//third_party/rust/font_types/v0_3/crate/src/offset.rs",
+    "//third_party/rust/font_types/v0_3/crate/src/pen.rs",
+    "//third_party/rust/font_types/v0_3/crate/src/point.rs",
+    "//third_party/rust/font_types/v0_3/crate/src/raw.rs",
+    "//third_party/rust/font_types/v0_3/crate/src/serde_test.rs",
+    "//third_party/rust/font_types/v0_3/crate/src/tag.rs",
+    "//third_party/rust/font_types/v0_3/crate/src/uint24.rs",
+    "//third_party/rust/font_types/v0_3/crate/src/version.rs",
+  ]
+  inputs = [ "//third_party/rust/font_types/v0_3/crate/README.md" ]
 
   # Unit tests skipped. Generate with --with-tests to include them.
   build_native_rust_unit_tests = false
-  sources = [ "crate/src/lib.rs" ]
   edition = "2021"
   cargo_pkg_version = "0.3.0"
   cargo_pkg_name = "font-types"

@@ -4,6 +4,7 @@
 
 import("//build/config/rust.gni")
 import("//build/rust/rust_static_library.gni")
+import("//mojo/public/interfaces/bindings/tests/validation_data_files.gni")
 
 rust_static_library("mojo_rust_system_tests") {
   testonly = true
@@ -41,13 +42,30 @@ rust_static_library("mojo_rust_encoding_tests") {
     "//mojo/public/rust:mojo_rust_system_test_support",
     "//testing/rust_gtest_interop",
   ]
+
+  # TODO(danakj): There is no way to get the set of files from a copy() rule
+  # such as //mojo/public/interfaces/bindings/tests:validation_test_data as a
+  # set of inputs here directly through GN. So we have to use a variable and
+  # rebase them on that directory.
+  #
+  # Depending on the rule and using get_target_outputs() is only allowed for
+  # rules located in the same GN file.
+  inputs = []
+  foreach(f, mojo_public_interfaces_bindings_test_validation_data_files) {
+    inputs += [ "//mojo/public/interfaces/bindings/tests/$f" ]
+  }
 }
 
 rust_static_library("mojo_rust_integration_tests") {
   testonly = true
   allow_unsafe = true
   crate_root = "integration/lib.rs"
-  sources = [ "integration/lib.rs" ]
+  sources = [
+    # TODO(crbug.com/1274864): This is also in mojo_rust_encoding_tests, split
+    # it into another library?
+    "encoding/mojom_validation.rs",
+    "integration/lib.rs",
+  ]
   deps = [
     ":c_test_support",
     ":test_util",

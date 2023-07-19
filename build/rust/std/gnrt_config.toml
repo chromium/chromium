@@ -55,6 +55,8 @@ extra_gn_deps_to_ignore = ['//build/rust/std:profiler_builtins_group']
 remove_library_configs = ['//build/config/coverage:default_coverage']
 extra_gn_deps_to_ignore = ['//build/rust/std:profiler_builtins_group']
 add_library_configs = ['//build/rust:panic_immediate_abort']
+extra_src_roots = ['../../portable-simd/crates/core_simd', '../../stdarch/crates/core_arch']
+extra_input_roots = ['../primitive_docs']
 
 [crate.hashbrown]
 # Workaround for Cargo issue: hashbrown's Cargo.toml uses an unstable Cargo
@@ -108,6 +110,8 @@ extra_gn_deps_to_ignore = ['//build/rust/std:profiler_builtins_group']
 cfg = ['backtrace_in_libstd']
 env = ['STD_ENV_ARCH=$rust_target_arch']
 add_library_configs = ['//build/rust:panic_immediate_abort']
+extra_src_roots = ['../../backtrace/src', '../../portable-simd/crates/std_float/src']
+extra_input_roots = ['../primitive_docs', '../../core/src', '../../portable-simd/crates/core_simd/src', '../../stdarch/crates/core_arch/src']
 
 # Remove this from std. It will be depended on directly when needed.
 exclude_deps_in_gn = ['profiler_builtins']

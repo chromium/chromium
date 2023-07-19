@@ -4,12 +4,12 @@
 
 use crate::*;
 
-use crates::{Epoch, ThirdPartySource, VendoredCrate};
+use crates::{CrateFiles, Epoch, ThirdPartySource, VendoredCrate};
 use manifest::*;
 
 use crate::util::{check_exit_ok, check_spawn, check_wait_with_output, create_dirs_if_needed};
 
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use std::fs;
 use std::io::{self, Write};
 use std::path::{Path, PathBuf};
@@ -119,7 +119,7 @@ fn generate_for_third_party(args: &clap::ArgMatches, paths: &paths::ChromiumPath
     // * Each discovered crate matches with a resolved dependency (no unused
     //   crates).
     let mut has_error = false;
-    let present_crates = source.present_crates();
+    let present_crates: &HashMap<VendoredCrate, CrateFiles> = source.crate_files();
 
     // Construct the set of requested third-party crates, ensuring we don't have
     // duplicate epochs. For example, if we resolved two versions of a
@@ -357,7 +357,7 @@ fn generate_for_std(args: &clap::ArgMatches, paths: &paths::ChromiumPaths) -> Re
 
     // Check that all resolved third party deps are available. First, collect
     // the set of third-party dependencies vendored in the Rust source package.
-    let vendored_crates: HashMap<VendoredCrate, manifest::CargoPackage> =
+    let vendored_crates: HashSet<VendoredCrate> =
         crates::collect_std_vendored_crates(&rust_src_root.join(paths.rust_src_vendor_subdir))
             .unwrap()
             .into_iter()
@@ -376,10 +376,7 @@ fn generate_for_std(args: &clap::ArgMatches, paths: &paths::ChromiumPaths) -> Re
         }
 
         vendored_crates
-            .get_key_value(&VendoredCrate {
-                name: dep.package_name.clone(),
-                version: dep.version.clone(),
-            })
+            .get(&VendoredCrate { name: dep.package_name.clone(), version: dep.version.clone() })
             .ok_or_else(|| {
                 format_err!(
                     "Resolved dependency does not match any vendored crate: {} {}",
@@ -389,7 +386,17 @@ fn generate_for_std(args: &clap::ArgMatches, paths: &paths::ChromiumPaths) -> Re
             })?;
     }
 
-    let build_file = gn::build_file_from_std_deps(dependencies.iter(), paths, &config);
+    let crate_inputs: HashMap<VendoredCrate, CrateFiles> = dependencies
+        .iter()
+        .filter(|p| p.lib_target.is_some())
+        .map(|p| crates::collect_std_crate_files(p, &config).unwrap())
+        .collect();
+
+    let build_file =
+        gn::build_file_from_std_deps(dependencies.iter(), paths, &config, |crate_id| {
+            // A missing crate should have been detected above, so unwrap.
+            crate_inputs.get(crate_id).unwrap()
+        });
     write_build_file(&paths.std_build.join("BUILD.gn"), &build_file).unwrap();
 
     Ok(())

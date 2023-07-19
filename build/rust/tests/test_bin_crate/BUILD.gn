@@ -7,7 +7,10 @@ import("//build/rust/cargo_crate.gni")
 cargo_crate("test_bin_crate") {
   crate_type = "bin"
   crate_root = "crate/src/main.rs"
-  sources = [ "crate/src/main.rs" ]
+  sources = [
+    "crate/src/main.rs",
+    "crate/src/more.rs",
+  ]
   build_sources = [ "crate/build.rs" ]
   build_root = "crate/build.rs"
 
