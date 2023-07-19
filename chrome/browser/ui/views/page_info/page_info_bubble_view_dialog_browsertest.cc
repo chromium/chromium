@@ -27,6 +27,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/core/browser/content_settings_registry.h"
+#include "components/content_settings/core/common/features.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/page_info/core/about_this_site_service.h"
@@ -677,11 +678,38 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewHistoryDialogBrowserTest,
   ShowAndVerifyUi();
 }
 
-class PageInfoBubbleViewCookiesSubpageBrowserTest : public DialogBrowserTest {
+enum class UserBypassFeatureState {
+  kOff = 0,
+  kOnTemporaryExceptions = 1,
+  kOnPermanentExceptions = 2,
+};
+
+class PageInfoBubbleViewCookiesSubpageBrowserTest
+    : public DialogBrowserTest,
+      public testing::WithParamInterface<UserBypassFeatureState> {
  public:
   PageInfoBubbleViewCookiesSubpageBrowserTest() {
-    feature_list_.InitWithFeatures(
-        {privacy_sandbox::kPrivacySandboxFirstPartySetsUI}, {});
+    std::vector<base::test::FeatureRefAndParams> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
+
+    enabled_features.push_back(
+        {privacy_sandbox::kPrivacySandboxFirstPartySetsUI, {}});
+
+    switch (GetParam()) {
+      case UserBypassFeatureState::kOff:
+        disabled_features.push_back(content_settings::features::kUserBypassUI);
+        break;
+      case UserBypassFeatureState::kOnTemporaryExceptions:
+        enabled_features.push_back({content_settings::features::kUserBypassUI,
+                                    {{"expiration", "30d"}}});
+        break;
+      case UserBypassFeatureState::kOnPermanentExceptions:
+        enabled_features.push_back({content_settings::features::kUserBypassUI,
+                                    {{"expiration", "0d"}}});
+        break;
+    }
+    feature_list_.InitWithFeaturesAndParameters(enabled_features,
+                                                disabled_features);
   }
 
   // DialogBrowserTest:
@@ -755,6 +783,11 @@ class PageInfoBubbleViewCookiesSubpageBrowserTest : public DialogBrowserTest {
       cookie_info.status = CookieControlsStatus::kDisabled;
     }
 
+    if (GetParam() == UserBypassFeatureState::kOnTemporaryExceptions) {
+      cookie_info.expiration = base::Time::Now() + base::Days(30);
+    }
+    cookie_info.confidence = CookieControlsBreakageConfidenceLevel::kMedium;
+
     // Open Page Info and wait for it to be fully initialized.
     base::RunLoop run_loop;
     GetPageInfoDialogCreatedCallbackForTesting() = run_loop.QuitClosure();
@@ -792,40 +825,47 @@ class PageInfoBubbleViewCookiesSubpageBrowserTest : public DialogBrowserTest {
 // Show different sets of buttons in cookies subpage with different
 // enforcements:
 
-IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewCookiesSubpageBrowserTest,
+IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewCookiesSubpageBrowserTest,
                        InvokeUi_CookiesSubpageFpsBlocked3pcAllowed) {
   ShowAndVerifyUi();
 }
-IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewCookiesSubpageBrowserTest,
+IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewCookiesSubpageBrowserTest,
                        InvokeUi_CookiesSubpageFpsAllowed3pcBlocked) {
   ShowAndVerifyUi();
 }
-IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewCookiesSubpageBrowserTest,
+IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewCookiesSubpageBrowserTest,
                        InvokeUi_CookiesSubpageFpsBlocked3pcBlocked) {
   ShowAndVerifyUi();
 }
-IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewCookiesSubpageBrowserTest,
+IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewCookiesSubpageBrowserTest,
                        InvokeUi_CookiesSubpageFpsAllowed3pcAllowed) {
   ShowAndVerifyUi();
 }
-IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewCookiesSubpageBrowserTest,
+IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewCookiesSubpageBrowserTest,
                        InvokeUi_CookiesSubpageFpsAllowed3pcEnforcedByPolicy) {
   ShowAndVerifyUi();
 }
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     PageInfoBubbleViewCookiesSubpageBrowserTest,
     InvokeUi_CookiesSubpageFpsAllowed3pcEnforcedByExtension) {
   ShowAndVerifyUi();
 }
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     PageInfoBubbleViewCookiesSubpageBrowserTest,
     InvokeUi_CookiesSubpageFpsAllowed3pcEnforcedByCookieSetting) {
   ShowAndVerifyUi();
 }
-IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewCookiesSubpageBrowserTest,
+IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewCookiesSubpageBrowserTest,
                        InvokeUi_CookiesSubpageFpsManaged3pcAllowed) {
   ShowAndVerifyUi();
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    /*no prefix*/,
+    PageInfoBubbleViewCookiesSubpageBrowserTest,
+    testing::ValuesIn({UserBypassFeatureState::kOff,
+                       UserBypassFeatureState::kOnTemporaryExceptions,
+                       UserBypassFeatureState::kOnPermanentExceptions}));
 
 class PageInfoBubbleViewIsolatedWebAppBrowserTest : public DialogBrowserTest {
  public:
