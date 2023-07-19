@@ -27,7 +27,7 @@
 #error "This file requires ARC support."
 #endif
 
-@interface SigninScreenMediator () {
+@interface SigninScreenMediator () <ChromeAccountManagerServiceObserver> {
   std::unique_ptr<ChromeAccountManagerServiceObserverBridge>
       _accountManagerServiceObserver;
 }
