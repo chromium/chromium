@@ -152,7 +152,6 @@ constexpr CGFloat kErrorSymbolPointSize = 22.;
   if (self) {
     DCHECK(syncService);
     CHECK(authenticationService);
-    _authenticationService = authenticationService;
     _syncService = syncService;
     _syncObserver = std::make_unique<SyncObserverBridge>(self, syncService);
     _identityManagerObserver =
@@ -171,7 +170,6 @@ constexpr CGFloat kErrorSymbolPointSize = 22.;
 }
 
 - (void)disconnect {
-  _authenticationService = nullptr;
   _syncObserver.reset();
   _syncService = nullptr;
   _identityManagerObserver.reset();
