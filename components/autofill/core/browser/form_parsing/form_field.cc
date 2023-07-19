@@ -88,7 +88,7 @@ void FormField::ParseFormFields(
   // Single fields pass.
   ParseSingleFieldForms(fields, page_language, is_form_tag, pattern_source,
                         field_candidates, log_manager);
-  const size_t fillable_single_fields = field_candidates.size() - email_count;
+  size_t fillable_single_fields = field_candidates.size() - email_count;
 
   // Phone pass.
   ParseFormFieldsPass(PhoneField::Parse, processed_fields, field_candidates,
@@ -114,10 +114,21 @@ void FormField::ParseFormFields(
                       field_candidates, page_language, pattern_source,
                       log_manager);
 
+  const size_t candidates_size = field_candidates.size();
   // Credit card pass.
   ParseFormFieldsPass(CreditCardField::Parse, processed_fields,
                       field_candidates, page_language, pattern_source,
                       log_manager);
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillParseVcnCardOnFileStandaloneCvcFields) &&
+      email_count == 0 && candidates_size == field_candidates.size()) {
+    // No email or cc fields found. Standalone CVC field pass for the VCN card
+    // on file case.
+    ParseStandaloneCVCFields(fields, page_language, pattern_source,
+                             field_candidates, log_manager);
+    // Any detected standalone cvc fields are considered fillable single fields.
+    fillable_single_fields += field_candidates.size() - candidates_size;
+  }
 
   // Price pass.
   ParseFormFieldsPass(PriceField::Parse, processed_fields, field_candidates,
@@ -213,6 +224,18 @@ void FormField::ParseSingleFieldForms(
     ParseFormFieldsPass(IBANField::Parse, processed_fields, field_candidates,
                         page_language, pattern_source, log_manager);
   }
+}
+
+void FormField::ParseStandaloneCVCFields(
+    const std::vector<std::unique_ptr<AutofillField>>& fields,
+    const LanguageCode& page_language,
+    PatternSource pattern_source,
+    FieldCandidatesMap& field_candidates,
+    LogManager* log_manager) {
+  std::vector<AutofillField*> processed_fields = RemoveCheckableFields(fields);
+  ParseFormFieldsPass(StandaloneCvcField::Parse, processed_fields,
+                      field_candidates, page_language, pattern_source,
+                      log_manager);
 }
 
 // static

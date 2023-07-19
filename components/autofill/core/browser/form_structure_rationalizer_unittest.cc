@@ -14,6 +14,7 @@
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/form_structure_test_api.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -208,7 +209,8 @@ class FormStructureRationalizerTest : public testing::Test {
 FormStructureRationalizerTest::FormStructureRationalizerTest() {
   scoped_features_.InitWithFeatures(
       /*enabled_features=*/
-      {features::kAutofillEnableSupportForPhoneNumberTrunkTypes},
+      {features::kAutofillEnableSupportForPhoneNumberTrunkTypes,
+       features::kAutofillParseVcnCardOnFileStandaloneCvcFields},
       /*disabled_features=*/{});
 }
 
@@ -698,6 +700,49 @@ TEST_F(FormStructureRationalizerTest,
               ElementsAre(ADDRESS_HOME_COUNTRY, ADDRESS_HOME_COUNTRY,
                           ADDRESS_HOME_COUNTRY, NAME_FULL, ADDRESS_HOME_STATE,
                           ADDRESS_HOME_STATE));
+}
+
+TEST_F(FormStructureRationalizerTest, RationalizeStandaloneCVCField) {
+  std::unique_ptr<FormStructure> form_structure =
+      BuildFormStructure({{"Full Name", "fullName", NAME_FULL},
+                          {"CVC", "cvc", CREDIT_CARD_VERIFICATION_CODE}},
+                         /*run_heuristics=*/false);
+
+  // As there are no other credit card fields or an email address field, we
+  // rationalize the CVC field to a standalone CVC field.
+  EXPECT_THAT(GetTypes(*form_structure),
+              ElementsAre(NAME_FULL, CREDIT_CARD_STANDALONE_VERIFICATION_CODE));
+}
+
+TEST_F(FormStructureRationalizerTest,
+       RationalizeAndKeepCVCField_OtherCreditCardFields) {
+  std::unique_ptr<FormStructure> form_structure =
+      BuildFormStructure({{"Cardholder", "fullname", CREDIT_CARD_NAME_FULL},
+                          {"Card Number", "address", CREDIT_CARD_NUMBER},
+                          {"Month", "expiry_month", CREDIT_CARD_EXP_MONTH},
+                          {"Year", "expiry_year", CREDIT_CARD_EXP_2_DIGIT_YEAR},
+                          {"CVC", "cvc", CREDIT_CARD_VERIFICATION_CODE}},
+                         /*run_heuristics=*/false);
+
+  // As there are other credit card fields, we won't map the CVC field to a
+  // standalone CVC field.
+  EXPECT_THAT(GetTypes(*form_structure),
+              ElementsAre(CREDIT_CARD_NAME_FULL, CREDIT_CARD_NUMBER,
+                          CREDIT_CARD_EXP_MONTH, CREDIT_CARD_EXP_2_DIGIT_YEAR,
+                          CREDIT_CARD_VERIFICATION_CODE));
+}
+
+TEST_F(FormStructureRationalizerTest,
+       RationalizeAndKeepCVCField_EmailAddressField) {
+  std::unique_ptr<FormStructure> form_structure =
+      BuildFormStructure({{"email", "email", EMAIL_ADDRESS},
+                          {"CVC", "cvc", CREDIT_CARD_VERIFICATION_CODE}},
+                         /*run_heuristics=*/false);
+
+  // As there is an email address field we won't map the CVC field to a
+  // standalone CVC field.
+  EXPECT_THAT(GetTypes(*form_structure),
+              ElementsAre(EMAIL_ADDRESS, UNKNOWN_TYPE));
 }
 
 // Tests the rationalization that ignores certain types on the main origin. The

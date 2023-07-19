@@ -63,9 +63,15 @@ bool StandaloneCvcField::MatchGiftCard(AutofillScanner* scanner,
   base::span<const MatchPatternRef> gift_card_patterns =
       GetMatchPatterns("GIFT_CARD", page_language, pattern_source);
 
-  return ParseFieldSpecifics(scanner, kGiftCardRe, kMatchFieldType,
-                             gift_card_patterns, nullptr,
-                             {log_manager, "kGiftCardRe"});
+  size_t saved_cursor = scanner->SaveCursor();
+  const bool gift_card_match = ParseFieldSpecifics(
+      scanner, kGiftCardRe, kMatchFieldType, gift_card_patterns, nullptr,
+      {log_manager, "kGiftCardRe"});
+  // MatchGiftCard only wants to test the presence of a gift card but not
+  // consume the field.
+  scanner->RewindTo(saved_cursor);
+
+  return gift_card_match;
 }
 
 StandaloneCvcField::StandaloneCvcField(const AutofillField* field)

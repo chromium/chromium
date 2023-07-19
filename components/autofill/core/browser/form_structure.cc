@@ -1197,6 +1197,10 @@ void FormStructure::ParseFieldTypesWithPatterns(PatternSource pattern_source,
     FormField::ParseSingleFieldForms(fields_, current_page_language_,
                                      is_form_tag_, pattern_source,
                                      field_type_map, log_manager);
+
+    FormField::ParseStandaloneCVCFields(fields_, current_page_language_,
+                                        pattern_source, field_type_map,
+                                        log_manager);
   }
   if (field_type_map.empty())
     return;
