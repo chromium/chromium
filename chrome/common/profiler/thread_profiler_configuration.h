@@ -44,11 +44,6 @@ class ThreadProfilerConfiguration {
   bool IsProfilerEnabledForCurrentProcessAndThread(
       metrics::CallStackProfileParams::Thread thread) const;
 
-  // TODO(crbug.com/1430519): Remove this function when the DAU shift is
-  // explained.
-  // True if the startup profiling should be enabled.
-  bool IsStartupProfilingEnabled() const;
-
   // Get the synthetic field trial configuration. Returns true if a synthetic
   // field trial should be registered. This should only be called from the
   // browser process. When run at startup, the profiler must use a synthetic
@@ -84,12 +79,6 @@ class ThreadProfilerConfiguration {
 
     // Enabled outside of the experiment.
     kProfileEnabled,
-
-    // TODO(crbug.com/1430519): Remove this variation group when the DAU shift
-    // is explained.
-    // Enable periodic collection only, i.e. no startup profiling, within the
-    // experiment (and paired with equal-sized kProfileDisabled group).
-    kProfilePeriodicOnly,
   };
 
   struct BrowserProcessConfiguration {
@@ -110,7 +99,6 @@ class ThreadProfilerConfiguration {
   enum ChildProcessConfiguration {
     kChildProcessProfileDisabled,
     kChildProcessProfileEnabled,
-    kChildProcessPeriodicOnly,
   };
 
   // The configuration state for the current process, browser or child.
