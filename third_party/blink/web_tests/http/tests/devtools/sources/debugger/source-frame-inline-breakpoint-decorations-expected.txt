@@ -1,7 +1,0 @@
-Checks that JavaScriptSourceFrame show inline breakpoints correctly
-
-
-Running: testAddRemoveBreakpoint
-Setting breakpoint
-PROMISE FAILURE: undefined
-
