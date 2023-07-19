@@ -194,8 +194,14 @@ class OmniboxSuggestionsDropdownEmbedderImpl implements OmniboxSuggestionsDropdo
             if (OmniboxFeatures.shouldShowModernizeVisualUpdate(mContext)) {
                 // Case 1: tablets with revamp enabled. Width equal to alignment view and left
                 // equivalent to left of alignment view.
-                left = mPositionArray[0];
                 width = mHorizontalAlignmentView.getMeasuredWidth();
+
+                if (mAnchorView.getLayoutDirection() == View.LAYOUT_DIRECTION_RTL) {
+                    // The view will be shifted to the left, so the adjustment needs to be negative.
+                    left = -(mAnchorView.getMeasuredWidth() - width - mPositionArray[0]);
+                } else {
+                    left = mPositionArray[0];
+                }
                 paddingLeft = 0;
                 paddingRight = 0;
             } else {

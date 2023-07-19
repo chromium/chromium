@@ -140,8 +140,8 @@ public class OmniboxSuggestionsDropdownEmbedderImplTest {
     }
 
     @Test
-    @Config(qualifiers = "w600dp-h820dp")
-    public void testRecalculateOmniboxAlignment_tablet() {
+    @Config(qualifiers = "ldltr-sw600dp")
+    public void testRecalculateOmniboxAlignment_tablet_ltr() {
         doReturn(mAnchorView).when(mHorizontalAlignmentView).getParent();
         doReturn(40).when(mHorizontalAlignmentView).getLeft();
         mImpl.recalculateOmniboxAlignment();
@@ -152,7 +152,20 @@ public class OmniboxSuggestionsDropdownEmbedderImplTest {
     }
 
     @Test
-    @Config(qualifiers = "w600dp-h820dp")
+    @Config(qualifiers = "ldrtl-sw600dp")
+    public void testRecalculateOmniboxAlignment_tablet_rtl() {
+        doReturn(View.LAYOUT_DIRECTION_RTL).when(mAnchorView).getLayoutDirection();
+        doReturn(mAnchorView).when(mHorizontalAlignmentView).getParent();
+        doReturn(40).when(mHorizontalAlignmentView).getLeft();
+        mImpl.recalculateOmniboxAlignment();
+        OmniboxAlignment alignment = mImpl.getCurrentAlignment();
+        assertEquals(new OmniboxAlignment(0, ANCHOR_HEIGHT + ANCHOR_TOP, ANCHOR_WIDTH, 0, 40,
+                             ANCHOR_WIDTH - ALIGNMENT_WIDTH - 40),
+                alignment);
+    }
+
+    @Test
+    @Config(qualifiers = "ldltr-sw600dp")
     @EnableFeatures({ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE,
             ChromeFeatureList.OMNIBOX_ADAPT_NARROW_TABLET_WINDOWS})
     @CommandLineFlags.
@@ -186,7 +199,7 @@ public class OmniboxSuggestionsDropdownEmbedderImplTest {
     Add({"enable-features=" + ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE + "<Study",
             "force-fieldtrials=Study/Group",
             "force-fieldtrial-params=Study.Group:enable_modernize_visual_update_on_tablet/true"})
-    @Config(qualifiers = "w600dp-h820dp")
+    @Config(qualifiers = "ldltr-sw600dp")
     public void
     testRecalculateOmniboxAlignment_phoneToTabletSwitch() {
         OmniboxFeatures.ENABLE_MODERNIZE_VISUAL_UPDATE_ON_TABLET.setForTesting(true);
@@ -211,7 +224,7 @@ public class OmniboxSuggestionsDropdownEmbedderImplTest {
 
     @Test
     @EnableFeatures({ChromeFeatureList.OMNIBOX_ADAPT_NARROW_TABLET_WINDOWS})
-    @Config(qualifiers = "w400dp-h610dp")
+    @Config(qualifiers = "sw400dp")
     public void testAdaptToNarrowWindows_widePhoneScreen() {
         doReturn(mAnchorView).when(mHorizontalAlignmentView).getParent();
         doReturn(40).when(mHorizontalAlignmentView).getLeft();
@@ -225,7 +238,7 @@ public class OmniboxSuggestionsDropdownEmbedderImplTest {
 
     @Test
     @EnableFeatures({ChromeFeatureList.OMNIBOX_ADAPT_NARROW_TABLET_WINDOWS})
-    @Config(qualifiers = "w600dp-h820dp")
+    @Config(qualifiers = "sw600dp")
     public void testRecalculateOmniboxAlignment_tabletToPhoneSwitch_revampDisabled() {
         doReturn(mAnchorView).when(mHorizontalAlignmentView).getParent();
         doReturn(40).when(mHorizontalAlignmentView).getLeft();
@@ -245,14 +258,14 @@ public class OmniboxSuggestionsDropdownEmbedderImplTest {
     }
 
     @Test
-    @Config(qualifiers = "w600dp-h820dp")
+    @Config(qualifiers = "ldltr-sw600dp")
     @EnableFeatures({ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE})
     @CommandLineFlags.
     Add({"enable-features=" + ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE + "<Study",
             "force-fieldtrials=Study/Group",
             "force-fieldtrial-params=Study.Group:enable_modernize_visual_update_on_tablet/true"})
     public void
-    testRecalculateOmniboxAlignment_tabletRevampEnabled() {
+    testRecalculateOmniboxAlignment_tabletRevampEnabled_ltr() {
         OmniboxFeatures.ENABLE_MODERNIZE_VISUAL_UPDATE_ON_TABLET.setForTesting(true);
         doReturn(mAnchorView).when(mHorizontalAlignmentView).getParent();
         doReturn(40).when(mHorizontalAlignmentView).getLeft();
@@ -260,6 +273,27 @@ public class OmniboxSuggestionsDropdownEmbedderImplTest {
         mImpl.recalculateOmniboxAlignment();
         OmniboxAlignment alignment = mImpl.getCurrentAlignment();
         assertEquals(new OmniboxAlignment(40, ANCHOR_HEIGHT + ANCHOR_TOP, ALIGNMENT_WIDTH, 0, 0, 0),
+                alignment);
+    }
+
+    @Test
+    @Config(qualifiers = "ldrtl-sw600dp")
+    @EnableFeatures({ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE})
+    @CommandLineFlags.
+    Add({"enable-features=" + ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE + "<Study",
+            "force-fieldtrials=Study/Group",
+            "force-fieldtrial-params=Study.Group:enable_modernize_visual_update_on_tablet/true"})
+    public void
+    testRecalculateOmniboxAlignment_tabletRevampEnabled_rtl() {
+        OmniboxFeatures.ENABLE_MODERNIZE_VISUAL_UPDATE_ON_TABLET.setForTesting(true);
+        doReturn(View.LAYOUT_DIRECTION_RTL).when(mAnchorView).getLayoutDirection();
+        doReturn(mAnchorView).when(mHorizontalAlignmentView).getParent();
+        doReturn(40).when(mHorizontalAlignmentView).getLeft();
+        doReturn(60).when(mHorizontalAlignmentView).getTop();
+        mImpl.recalculateOmniboxAlignment();
+        OmniboxAlignment alignment = mImpl.getCurrentAlignment();
+        assertEquals(new OmniboxAlignment(-(ANCHOR_WIDTH - ALIGNMENT_WIDTH - 40),
+                             ANCHOR_HEIGHT + ANCHOR_TOP, ALIGNMENT_WIDTH, 0, 0, 0),
                 alignment);
     }
 }
