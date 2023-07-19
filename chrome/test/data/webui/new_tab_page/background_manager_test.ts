@@ -89,7 +89,6 @@ suite('NewTabPageBackgroundManagerTest', () => {
       repeatY: 'repeat',
       positionX: 'left',
       positionY: 'top',
-      scrimDisplay: 'none',
       imageSource: NtpBackgroundImageSource.kFirstPartyThemeWithoutDailyRefresh,
     });
 
@@ -99,7 +98,7 @@ suite('NewTabPageBackgroundManagerTest', () => {
         `url=${encodeURIComponent('https://example.com')}&` +
         `url2x=${encodeURIComponent('https://example2x.com')}&` +
         'size=cover&repeatX=no-repeat&repeatY=repeat&positionX=left&' +
-        'positionY=top&scrimDisplay=none';
+        'positionY=top';
     assertEquals(expected, backgroundImage.url);
   });
 

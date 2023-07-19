@@ -110,9 +110,6 @@ export class BackgroundManager {
     if (image.positionY) {
       url.searchParams.append('positionY', image.positionY);
     }
-    if (image.scrimDisplay) {
-      url.searchParams.append('scrimDisplay', image.scrimDisplay);
-    }
     if (url.href === this.url_) {
       return;
     }

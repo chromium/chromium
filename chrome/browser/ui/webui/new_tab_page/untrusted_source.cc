@@ -174,7 +174,8 @@ void UntrustedSource::StartDataRequest(
         params.count("repeatY") == 1 ? params["repeatY"] : "no-repeat",
         params.count("positionX") == 1 ? params["positionX"] : "center",
         params.count("positionY") == 1 ? params["positionY"] : "center",
-        params.count("scrimDisplay") == 1 ? params["scrimDisplay"] : "inherit",
+        base::FeatureList::IsEnabled(ntp_features::kNtpRemoveScrim) ? "none"
+                                                                    : "inherit",
         std::move(callback));
     return;
   }

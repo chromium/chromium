@@ -486,13 +486,9 @@ TEST_P(NewTabPageHandlerThemeTest, SetTheme) {
   if (!RemoveScrim()) {
     EXPECT_EQ(SkColorSetRGB(0, 0, 2), theme->text_color);
     EXPECT_EQ(SkColorSetRGB(0, 0, 4), theme->logo_color);
-    EXPECT_EQ(RemoveScrim(),
-              theme->background_image->scrim_display.has_value());
   } else {
     EXPECT_EQ(SkColorSetRGB(0, 0, 3), theme->text_color);
     EXPECT_EQ(SkColorSetRGB(0, 0, 5), theme->logo_color);
-    EXPECT_TRUE(theme->background_image->scrim_display.has_value());
-    EXPECT_EQ("none", theme->background_image->scrim_display.value());
   }
   EXPECT_FALSE(theme->background_image_attribution_1.has_value());
   EXPECT_FALSE(theme->background_image_attribution_2.has_value());
@@ -545,6 +541,7 @@ TEST_P(NewTabPageHandlerThemeTest, SetCustomBackground) {
   mock_page_.FlushForTesting();
 
   ASSERT_TRUE(theme);
+  EXPECT_EQ(SkColorSetRGB(0, 0, 4), theme->most_visited->background_color);
   if (CustomizeChromeSidePanel()) {
     EXPECT_FALSE(theme->is_custom_background);
     EXPECT_FALSE(theme->background_image_attribution_1.has_value());
@@ -568,14 +565,6 @@ TEST_P(NewTabPageHandlerThemeTest, SetCustomBackground) {
                   kFirstPartyThemeWithoutDailyRefresh,
               theme->background_image->image_source);
   }
-  if (RemoveScrim()) {
-    EXPECT_TRUE(theme->background_image->scrim_display.has_value());
-    EXPECT_EQ("none", theme->background_image->scrim_display.value());
-  } else {
-    EXPECT_FALSE(theme->background_image->scrim_display.has_value());
-  }
-
-  EXPECT_EQ(SkColorSetRGB(0, 0, 4), theme->most_visited->background_color);
 }
 
 TEST_P(NewTabPageHandlerThemeTest, SetDailyRefresh) {

@@ -258,12 +258,6 @@ new_tab_page::mojom::ThemePtr MakeTheme(
     background_image = nullptr;
   }
 
-  if (remove_scrim && background_image) {
-    // If a background image is defined and the scrim removal flag is active
-    // disable the scrim.
-    background_image->scrim_display = "none";
-  }
-
   // The special case handling that forces a dark Google logo should only be
   // applied when the user does not have a custom background selected and has
   // installed a CWS theme with a bundled background image. The first condition
