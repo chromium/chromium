@@ -558,6 +558,7 @@ src/webgpu/shader/validation/parse/builtin.spec.ts
 src/webgpu/shader/validation/parse/comments.spec.ts
 src/webgpu/shader/validation/parse/const.spec.ts
 src/webgpu/shader/validation/parse/const_assert.spec.ts
+src/webgpu/shader/validation/parse/diagnostic.spec.ts
 src/webgpu/shader/validation/parse/discard.spec.ts
 src/webgpu/shader/validation/parse/enable.spec.ts
 src/webgpu/shader/validation/parse/identifiers.spec.ts
