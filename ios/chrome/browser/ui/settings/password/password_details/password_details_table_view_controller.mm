@@ -76,13 +76,6 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
   ReauthenticationReasonEdit,
 };
 
-// Return if the feature flag for the password grouping is enabled.
-// TODO(crbug.com/1359392): Remove this when kPasswordsGrouping flag is removed.
-bool IsPasswordGroupingEnabled() {
-  return base::FeatureList::IsEnabled(
-      password_manager::features::kPasswordsGrouping);
-}
-
 bool IsPasswordNotesWithBackupEnabled() {
   return base::FeatureList::IsEnabled(syncer::kPasswordNotesWithBackup);
 }
@@ -950,7 +943,6 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
       break;
     }
     case ReauthenticationReasonCopy: {
-      CHECK(IsPasswordGroupingEnabled());
       NSString* copiedString =
           self.passwords[self.tableView.indexPathForSelectedRow.section]
               .password;
@@ -1120,8 +1112,6 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
 // Creates the model items corresponding to a `PasswordDetails` and adds them to
 // the `model`.
 - (void)addPasswordDetailsToModel:(PasswordDetails*)passwordDetails {
-  CHECK(IsPasswordGroupingEnabled());
-
   TableViewModel* model = self.tableViewModel;
   PasswordDetailsInfoItem* passwordItem =
       [[PasswordDetailsInfoItem alloc] init];
@@ -1307,7 +1297,6 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
 
 // Called when the user tapped on the show/hide button near password.
 - (void)didTapShowHideButton:(UIButton*)buttonView {
-  CHECK(IsPasswordGroupingEnabled());
   [self setOrExtendAuthValidityTimer];
   [self.tableView deselectRowAtIndexPath:self.tableView.indexPathForSelectedRow
                                 animated:NO];
@@ -1373,8 +1362,6 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
 // Copies the password information to system pasteboard and shows a toast of
 // success/failure.
 - (void)copyPasswordDetails:(id)sender {
-  CHECK(IsPasswordGroupingEnabled());
-
   [self setOrExtendAuthValidityTimer];
   UIMenuController* menu = base::mac::ObjCCastStrict<UIMenuController>(sender);
   PasswordDetailsMenuItem* menuItem =

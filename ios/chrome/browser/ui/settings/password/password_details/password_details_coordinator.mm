@@ -250,9 +250,6 @@
   [self.actionSheetCoordinator start];
 }
 
-// TODO(crbug.com/1359392): By convention, passing nil for `anchorView` means
-// to use the delete button in the bottom bar as the anchor. This is a temporary
-// hack and will be removed when `kPasswordsGrouping` is enabled by default.
 - (void)showPasswordDeleteDialogWithPasswordDetails:(PasswordDetails*)password
                                          anchorView:(UIView*)anchorView {
   NSString* title;
