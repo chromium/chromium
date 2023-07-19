@@ -144,6 +144,8 @@ class ASH_EXPORT ColorPaletteController : public SessionObserver,
   virtual absl::optional<SkColor> GetStaticColor(
       const AccountId& account_id) const = 0;
 
+  virtual bool GetUseKMeansPref(const AccountId& account_id) const = 0;
+
   // Updates the system colors with the given account's color prefs. Used for
   // the login screen.
   virtual void SelectLocalAccount(const AccountId& account_id) = 0;

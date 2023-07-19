@@ -66,6 +66,9 @@ class TestColorPaletteController : public ash::ColorPaletteController {
       const AccountId& account_id) const override {
     return seed_.seed_color;
   }
+  bool GetUseKMeansPref(const AccountId& account_id) const override {
+    return false;
+  }
   void GenerateSampleColorSchemes(
       base::span<const ash::ColorScheme> color_scheme_buttons,
       ash::ColorPaletteController::SampleColorSchemeCallback callback)

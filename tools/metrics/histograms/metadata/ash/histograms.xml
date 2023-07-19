@@ -6288,6 +6288,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.Style.ColorPalette.KMeansAlgorithm" enum="BooleanEnabled"
+    expires_after="2024-07-13">
+  <owner>ericamlee@google.com</owner>
+  <owner>skau@google.com</owner>
+  <owner>cowmoo@google.com</owner>
+  <summary>
+    Whether or not to use the kmeans algorithm to determine the user's color
+    palette. This metric is recorded once per UMA upload.
+  </summary>
+</histogram>
+
 <histogram name="Ash.SwipeDownDrag.Tab.PresentationTime.MaxLatency.TabletMode"
     units="ms" expires_after="2023-06-30">
   <owner>xdai@chromium.org</owner>

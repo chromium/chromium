@@ -70,5 +70,16 @@ bool PersonalizationAppThemeMetricsProvider::ProvideHistograms() {
         "Ash.Personalization.DynamicColor.ColorScheme.Settled",
         color_palette_seed.scheme);
   }
+  const auto* session =
+      ash::Shell::Get()->session_controller()->GetUserSession(/*index=*/0);
+  if (!session) {
+    return false;
+  }
+  const AccountId& account_id = session->user_info.account_id;
+  const bool use_k_means =
+      ash::Shell::Get()->color_palette_controller()->GetUseKMeansPref(
+          account_id);
+  base::UmaHistogramBoolean("Ash.Style.ColorPalette.KMeansAlgorithm",
+                            use_k_means);
   return true;
 }

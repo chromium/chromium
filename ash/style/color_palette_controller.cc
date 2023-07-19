@@ -468,6 +468,23 @@ class ColorPaletteControllerImpl : public ColorPaletteController,
     return default_color;
   }
 
+  bool GetUseKMeansPref(const AccountId& account_id) const override {
+    PrefService* pref_service = GetUserPrefService(account_id);
+    if (pref_service) {
+      return pref_service->GetBoolean(prefs::kDynamicColorUseKMeans);
+    }
+    CHECK(local_state_);
+    const base::Value* value =
+        user_manager::KnownUser(local_state_)
+            .FindPath(account_id, prefs::kDynamicColorUseKMeans);
+    if (value && value->GetIfBool().has_value()) {
+      return value->GetBool();
+    }
+    DVLOG(1) << "No user pref service or local pref service available. "
+                "Returning UseKMeans pref as false.";
+    return false;
+  }
+
  private:
   // Gets the user's current wallpaper color.
   // TODO(b/289106519): Combine this function with |GetUserWallpaperColor|.
@@ -512,23 +529,6 @@ class ColorPaletteControllerImpl : public ColorPaletteController,
   bool ShouldUseKMeans(const AccountId& account_id) const {
     return GetColorScheme(account_id) == ColorScheme::kTonalSpot &&
            GetUseKMeansPref(account_id);
-  }
-
-  bool GetUseKMeansPref(const AccountId& account_id) const {
-    PrefService* pref_service = GetUserPrefService(account_id);
-    if (pref_service) {
-      return pref_service->GetBoolean(prefs::kDynamicColorUseKMeans);
-    }
-    CHECK(local_state_);
-    const base::Value* value =
-        user_manager::KnownUser(local_state_)
-            .FindPath(account_id, prefs::kDynamicColorUseKMeans);
-    if (value && value->GetIfBool().has_value()) {
-      return value->GetBool();
-    }
-    DVLOG(1) << "No user pref service or local pref service available. "
-                "Returning UseKMeans pref as false.";
-    return false;
   }
 
   void UpdateUseKMeanColor(const AccountId& account_id, bool value) {
