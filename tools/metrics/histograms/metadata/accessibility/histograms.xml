@@ -1752,6 +1752,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Accessibility.Performance.AXObjectCacheImpl.RedundantSerializations"
+    units="count" expires_after="2023-12-10">
+  <owner>aleventhal@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Tracks how many Blink accessibility nodes are being redundantly serialized
+    whenever the renderer process sends a batch of AXTreeUpdates to the browser
+    process.
+
+    Logged every time the document layout is clean and we need update the the
+    accessibility tree.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.Performance.AXTree.Destroy" units="ms"
     expires_after="2023-12-10">
   <owner>agarwaltushar@google.com</owner>

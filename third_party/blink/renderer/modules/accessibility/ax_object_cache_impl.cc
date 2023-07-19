@@ -4399,8 +4399,6 @@ void AXObjectCacheImpl::SerializeDirtyObjectsAndEvents(
     bool& had_end_of_test_event,
     bool& had_load_complete_messages,
     bool& need_to_send_location_changes) {
-  HashSet<int32_t> already_serialized_ids;
-
   // Make a copy of the events, because it's possible that
   // actions inside this loop will cause more events to be
   // queued up.
@@ -4425,6 +4423,9 @@ void AXObjectCacheImpl::SerializeDirtyObjectsAndEvents(
 
   size_t num_remaining_objects_to_serialize =
       dirty_objects_.size() + kMaxExtraDirtyObjectsToSerialize;
+
+  HashSet<int32_t> already_serialized_ids;
+  int redundant_serialization_count = 0;
 
   DCHECK_GE(GetDocument().Lifecycle().GetState(),
             DocumentLifecycle::kLayoutClean);
@@ -4459,14 +4460,8 @@ void AXObjectCacheImpl::SerializeDirtyObjectsAndEvents(
 
     DCHECK(obj->AXObjectID());
 
-    // Further down this loop, we update |already_serialized_ids| with all
-    // IDs actually serialized. However, add this object's ID first because
-    // there's a chance that we try to serialize this object but the serializer
-    // ends up skipping it. That's probably a Blink bug if that happens, but
-    // still we need to make sure we don't keep trying the same object over
-    // again.
     if (already_serialized_ids.Contains(obj->AXObjectID()))
-      continue;  // No insertion, was already present.
+      continue;  // No need to serialize, was already present.
 
     ui::AXTreeUpdate update;
     update.event_from = current_dirty_object->event_from;
@@ -4485,7 +4480,10 @@ void AXObjectCacheImpl::SerializeDirtyObjectsAndEvents(
 
     for (auto& node_data : update.nodes) {
       DCHECK(node_data.id);
-      already_serialized_ids.insert(node_data.id);
+      auto result = already_serialized_ids.insert(node_data.id);
+      if (!result.is_new_entry) {
+        redundant_serialization_count++;
+      }
     }
 
     DCHECK(already_serialized_ids.Contains(obj->AXObjectID()))
@@ -4501,6 +4499,10 @@ void AXObjectCacheImpl::SerializeDirtyObjectsAndEvents(
 
     updates.push_back(update);
   }
+
+  UMA_HISTOGRAM_COUNTS_10000(
+      "Accessibility.Performance.AXObjectCacheImpl.RedundantSerializations",
+      redundant_serialization_count);
 
   // Add kLayoutComplete if layout has changed.
   if (need_to_send_location_changes_) {
