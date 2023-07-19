@@ -22453,6 +22453,7 @@ to ensure that the crash string is shown properly on the user-facing crash UI.
   <int value="2" label="Platform"/>
   <int value="3" label="Arc"/>
   <int value="4" label="Lacros"/>
+  <int value="5" label="Unknown Value"/>
 </enum>
 
 <enum name="CrashVisibility">

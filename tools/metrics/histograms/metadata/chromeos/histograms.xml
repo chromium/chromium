@@ -2859,6 +2859,8 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
     <variant name="Error"/>
     <variant name="Fatal"/>
     <variant name="Info"/>
+    <variant name="UnknownValue"/>
+    <variant name="Unspecified"/>
     <variant name="Warning"/>
   </token>
 </histogram>
